@@ -122,13 +122,13 @@ namespace pcl
     }
 
 	__global__ void
-    truncateDepthKernel(PtrStepSz<ushort> depth, ushort max_distance)
+    truncateDepthKernel(PtrStepSz<ushort> depth, ushort max_distance_mm)
 	{
 		int x = blockIdx.x * blockDim.x + threadIdx.x;
 		int y = blockIdx.y * blockDim.y + threadIdx.y;
 
 		if (x < depth.cols && y < depth.rows)		
-			if(depth.ptr(y)[x] > max_distance)
+			if(depth.ptr(y)[x] > max_distance_mm)
 				depth.ptr(y)[x] = 0;
 	}
   }
@@ -162,12 +162,12 @@ pcl::device::pyrDown (const DepthMap& src, DepthMap& dst)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl::device::truncateDepth(DepthMap& depth, unsigned short max_distance)
+pcl::device::truncateDepth(DepthMap& depth, float max_distance)
 {
   dim3 block (32, 8);
   dim3 grid (divUp (depth.cols (), block.x), divUp (depth.rows (), block.y));
 
-  truncateDepthKernel<<<grid, block>>>(depth, max_distance);
+  truncateDepthKernel<<<grid, block>>>(depth, static_cast<ushort>(max_distance * 1000.f));
 
   cudaSafeCall ( cudaGetLastError () );
 }

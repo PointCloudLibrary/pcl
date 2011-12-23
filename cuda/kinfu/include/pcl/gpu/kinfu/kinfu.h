@@ -87,13 +87,13 @@ namespace pcl
         void
         setInitalCameraPose (const Eigen::Affine3f& pose);
 
-        /** \brief Sets Tsdf volume size for each dimention in mm
+        /** \brief Sets Tsdf volume size for each dimention
           * \param[in] volume_size size of tsdf volume
           */
         void
         setVolumeSize (const Eigen::Vector3f& volume_size);
 
-        /** \brief Sets Tsdf trancation distance in mm. Must be greater than 2 * volume cell size
+        /** \brief Sets Tsdf trancation distance. Must be greater than 2 * volume cell size
           * \param[in] distance TSDF trancation distance 
           */
         void
@@ -101,19 +101,19 @@ namespace pcl
 
 		/** \brief Sets truncation threshold for depth image for ICP step only! This helps 
 		  *  to filter measurements that are outside tsdf volume. Pass zero to disable the truncation.
-          * \param[in] max_icp_distance_ Maximal distance in mm, higher values are reset to zero (means no measurement). 
+          * \param[in] max_icp_distance_ Maximal distance, higher values are reset to zero (means no measurement). 
           */
         void
-        setDepthTruncationForICP (unsigned short max_icp_distance = 0);
+        setDepthTruncationForICP (float max_icp_distance = 0.f);
 
         /** \brief Sets ICP filtering parameters.
-          * \param[in] distThreshold distance in mm.
+          * \param[in] distThreshold distance.
           * \param[in] sineOfAngle sine of angle between normals.
           */
         void
         setIcpCorespFilteringParams (float distThreshold, float sineOfAngle);
 
-        /** \brief Returns volume size in mm */
+        /** \brief Returns volume size */
         Eigen::Vector3f
         getVolumeSize () const;
 
@@ -126,7 +126,7 @@ namespace pcl
         rows ();
 
         /** \brief Processes next frame.
-          * \param[in] Depth next frame with values in mm
+          * \param[in] Depth next frame with values in millimeters
           * \return true if can render 3D view.
           */
         bool operator() (const DepthMap& depth);
@@ -229,13 +229,13 @@ namespace pcl
         /** \brief Frame counter */
         int global_time_;
 
-		/** \brief Truncation threshold for depth image for ICP step */
-		unsigned short max_icp_distance_;
+        /** \brief Truncation threshold for depth image for ICP step */
+        float max_icp_distance_;
 
         /** \brief Intrinsic parameters of depth camera. */
         float fx_, fy_, cx_, cy_;
 
-        /** \brief Size of volume in mm. */
+        /** \brief Size of volume. */
         Vector3f volume_size_;
 
         /** \brief Initial camera rotation in volume coo space. */
@@ -250,7 +250,7 @@ namespace pcl
         float  distThres_;
         /** \brief angle threshold in correspondences filtering. Represents max sine of angle between normals. */
         float angleThres_;
-        /** \brief TSDF truncation  distance in mm. Must be greater than tsdf volume cell size */
+        /** \brief TSDF truncation  distance. Must be greater than tsdf volume cell size */
         float tranc_dist_;
 
         /** \brief Array of dpeth pyramids. */

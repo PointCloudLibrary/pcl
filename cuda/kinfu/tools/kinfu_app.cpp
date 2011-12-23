@@ -55,13 +55,12 @@
 #include "tsdf_volume.hpp"
 
 #ifdef HAVE_OPENCV
-    #include "opencv2/opencv.hpp"
-    #include "pcl/gpu/utils/timers_opencv.hpp"
-//#include "video_recorder.h"
-
-typedef pcl::gpu::ScopeTimerCV ScopeTimeT;
+  #include "opencv2/opencv.hpp"
+  #include "pcl/gpu/utils/timers_opencv.hpp"
+  //#include "video_recorder.h"
+  typedef pcl::gpu::ScopeTimerCV ScopeTimeT;
 #else
-typedef pcl::ScopeTime ScopeTimeT;
+  typedef pcl::ScopeTime ScopeTimeT;
 #endif
 
 using namespace std;
@@ -107,7 +106,7 @@ struct KinFuApp
   {
     /////////////////////////////////////////
     //Init Kinfu Tracker
-    Eigen::Vector3f volume_size = Vector3f::Constant (3000);
+    Eigen::Vector3f volume_size = Vector3f::Constant (3.f);
 
     float f = capture_.depth_focal_length_VGA;
     kinfu_.setDepthIntrinsics (f, f);
@@ -119,9 +118,9 @@ struct KinFuApp
     Eigen::Affine3f pose = Eigen::Translation3f (t) * Eigen::AngleAxisf (R);
 
     kinfu_.setInitalCameraPose (pose);
-    kinfu_.setTrancationDistance (30);    // in mm;
-    kinfu_.setIcpCorespFilteringParams (100 /*mm*/, sin (20.f * 3.14159254f / 180.f));
-	//kinfu_.setDepthTruncationForICP(5000 /*mm*/);
+    kinfu_.setTrancationDistance (0.030f);    // in meters;
+    kinfu_.setIcpCorespFilteringParams (0.1f /*meters*/, sin (20.f * 3.14159254f / 180.f));
+	//kinfu_.setDepthTruncationForICP(5.f /*meters*/);
 
     /////////////////////////////////////////
     //Init KinfuApp
@@ -140,10 +139,10 @@ struct KinFuApp
     cloud_viewer_.setBackgroundColor (0, 0, 0);
     cloud_viewer_.addPointCloud<pcl::PointXYZ> (cloud_ptr_);
     cloud_viewer_.setPointCloudRenderingProperties (visualization::PCL_VISUALIZER_POINT_SIZE, 1);
-    cloud_viewer_.addCoordinateSystem (1000.0);
+    cloud_viewer_.addCoordinateSystem (1.0);
     cloud_viewer_.initCameraParameters ();
     cloud_viewer_.camera_.clip[0] = 0.01;
-    cloud_viewer_.camera_.clip[1] = 10000.01;
+    cloud_viewer_.camera_.clip[1] = 10.01;
     cloud_viewer_.addText ("HotKeys: T, M, S, B, P, C, N", 2, 15, 20, 34, 135, 246);
 
     float diag = sqrt ((float)kinfu_.cols () * kinfu_.cols () + kinfu_.rows () * kinfu_.rows ());
@@ -167,10 +166,10 @@ struct KinFuApp
       frame_cloud_viewer_->setBackgroundColor (0, 0, 0.3);
       frame_cloud_viewer_->addPointCloud<pcl::PointXYZ> (frame_cloud_ptr_);
       frame_cloud_viewer_->setPointCloudRenderingProperties (visualization::PCL_VISUALIZER_POINT_SIZE, 1);
-      frame_cloud_viewer_->addCoordinateSystem (1000.0);
+      frame_cloud_viewer_->addCoordinateSystem (1.0);
       frame_cloud_viewer_->initCameraParameters ();
       frame_cloud_viewer_->camera_.clip[0] = 0.01;
-      frame_cloud_viewer_->camera_.clip[1] = 10000.01;
+      frame_cloud_viewer_->camera_.clip[1] = 10.01;
       frame_cloud_viewer_->registerKeyboardCallback (keyboard_callback, (void*)this);
       setViewerPose (*frame_cloud_viewer_, kinfu_.getCameraPose ());
     }
@@ -266,10 +265,7 @@ struct KinFuApp
           cloud_viewer_.addPointCloud<pcl::PointNormal> (cloud_combined_ptr_, "Cloud");
         }
         else
-        {
           cloud_viewer_.addPointCloud<pcl::PointXYZ> (cloud_ptr_);
-          //printf("exact_size = %d\n", cloud_ptr_->points.size());
-        }
       }
 
       if (hasImage_)
@@ -279,8 +275,11 @@ struct KinFuApp
         viewer3d_.showRGBImage ((unsigned char*)&view_host_[0], view_device_.cols (), view_device_.rows ());
 
 #ifdef HAVE_OPENCV
-        //views_.push_back(cv::Mat());
-        //cv::cvtColor(cv::Mat(480, 640, CV_8UC3, (void*)&view_host_[0]), views_.back(), CV_RGB2GRAY);
+        if (false)
+        {
+          views_.push_back(cv::Mat());
+          cv::cvtColor(cv::Mat(480, 640, CV_8UC3, (void*)&view_host_[0]), views_.back(), CV_RGB2GRAY);
+        }
 #endif
 
         if (frame_cloud_viewer_)
@@ -451,21 +450,19 @@ main ()
   //cout << "Saved to cloud.pcd" << endl;
 
 #ifdef HAVE_OPENCV
-  // save initial view
-  cout << "Saving depth map of first view." << endl;
-  cv::imwrite ("./depthmap_1stview.png", app.views_[0]);
-
-  if (false)
+  for (size_t t = 0; t < app.views_.size (); ++t)
   {
-    cout << "Saving sequence of (" << app.views_.size () << ") views." << endl;
-    for (size_t t = 0; t < app.views_.size (); ++t)
+    if (t == 0)
     {
-      char buf[4096];
-      sprintf (buf, "./%06d.png", (int)t);
-      cv::imwrite (buf, app.views_[t]);
-      printf ("writing: %s\n", buf);
+      cout << "Saving depth map of first view." << endl;
+      cv::imwrite ("./depthmap_1stview.png", app.views_[0]);
+      cout << "Saving sequence of (" << app.views_.size () << ") views." << endl;
     }
-  }
+    char buf[4096];
+    sprintf (buf, "./%06d.png", (int)t);
+    cv::imwrite (buf, app.views_[t]);
+    printf ("writing: %s\n", buf);
+  }  
 #endif
   return 0;
 }

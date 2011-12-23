@@ -63,7 +63,7 @@ namespace pcl
       grid.x = divUp (volume.cols, block.x);
       grid.y = divUp (volume.rows, block.y);
 
-      initializeVolume << < grid, block >> > (volume);
+      initializeVolume<<<grid, block>>>(volume);
       cudaSafeCall ( cudaGetLastError () );
       cudaSafeCall (cudaDeviceSynchronize ());
     }
@@ -86,16 +86,16 @@ namespace pcl
       };
 
       mutable PtrStep<short2> volume;
-      float3 volume_size;       //in mm
+      float3 volume_size;
 
       Intr intr;
 
       Mat33 Rcurr_inv;
       float3 tcurr;
 
-      PtrStepSz<ushort> depth_raw;
+      PtrStepSz<ushort> depth_raw; //depth in mm
 
-      float tranc_dist;
+      float tranc_dist_mm;
 
       __device__ __forceinline__ float3
       getVoxelGCoo (int x, int y, int z) const
@@ -143,13 +143,13 @@ namespace pcl
               float yl = (coo.y - intr.cy) / intr.fy;
               float lambda_inv = rsqrtf (xl * xl + yl * yl + 1);
 
-              float sdf = norm (tcurr - v_g) * lambda_inv - Dp;
+              float sdf = 1000 * norm (tcurr - v_g) * lambda_inv - Dp; //mm
 
               sdf *= (-1);
 
-              if (sdf >= -tranc_dist)
+              if (sdf >= -tranc_dist_mm)
               {
-                float tsdf = fmin (1, sdf / tranc_dist);
+                float tsdf = fmin (1, sdf / tranc_dist_mm);
 
                 int weight_prev;
                 float tsdf_prev;
@@ -176,7 +176,7 @@ namespace pcl
     }
 
     __global__ void
-    tsdf2 (PtrStep<short2> volume, const float3 volume_size, const float tranc_dist, const Mat33 Rcurr_inv, float3 tcurr,
+    tsdf2 (PtrStep<short2> volume, const float3 volume_size, const float tranc_dist_mm, const Mat33 Rcurr_inv, float3 tcurr,
            const Intr intr, const PtrStepSz<ushort> depth_raw, const float3 cell_size)
     {
       int x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -216,7 +216,7 @@ namespace pcl
 
         if (v.z > 0 && coo.x >= 0 && coo.y >= 0 && coo.x < depth_raw.cols && coo.y < depth_raw.rows)         //6
         {
-          int Dp = depth_raw.ptr (coo.y)[coo.x];
+          int Dp = depth_raw.ptr (coo.y)[coo.x]; //mm
 
           if (Dp != 0)
           {
@@ -224,12 +224,12 @@ namespace pcl
             float yl = (coo.y - intr.cy) / intr.fy;
             float lambda_inv = rsqrtf (xl * xl + yl * yl + 1);
 
-            float sdf = Dp - norm (vr) * lambda_inv;
+            float sdf = Dp - norm (vr) * lambda_inv * 1000; //mm
 
 
-            if (sdf >= -tranc_dist)
+            if (sdf >= -tranc_dist_mm)
             {
-              float tsdf = fmin (1, sdf / tranc_dist);
+              float tsdf = fmin (1.f, sdf / tranc_dist_mm);
 
               int weight_prev;
               float tsdf_prev;
@@ -270,7 +270,7 @@ pcl::device::integrateTsdfVolume (const PtrStepSz<ushort>& depth_raw, const Intr
   tsdf.tcurr = tcurr;
   tsdf.depth_raw = depth_raw;
 
-  tsdf.tranc_dist = tranc_dist;
+  tsdf.tranc_dist_mm = tranc_dist*1000; //mm
 
   dim3 block (Tsdf::CTA_SIZE_X, Tsdf::CTA_SIZE_Y);
   dim3 grid (divUp (VOLUME_X, block.x), divUp (VOLUME_Y, block.y));
@@ -282,7 +282,7 @@ pcl::device::integrateTsdfVolume (const PtrStepSz<ushort>& depth_raw, const Intr
   //cell_size.z = volume_size.z / VOLUME_Z;
   //tsdf2<<<grid, block>>>(volume, volume_size, tranc_dist, Rcurr_inv, tcurr, intr, depth_raw, cell_size);
   else
-    integrateTsdfKernel << < grid, block >> > (tsdf);
+    integrateTsdfKernel<<<grid, block>>>(tsdf);
 #endif
   cudaSafeCall ( cudaGetLastError () );
   cudaSafeCall (cudaDeviceSynchronize ());
@@ -308,7 +308,7 @@ namespace pcl
       float yl = (y - intr.cy) / intr.fy;
       float lambda = sqrtf (xl * xl + yl * yl + 1);
 
-      scaled.ptr (y)[x] = Dp * lambda;
+      scaled.ptr (y)[x] = Dp * lambda/1000.f; //meters
     }
 
     __global__ void
@@ -363,11 +363,11 @@ namespace pcl
 
         if (coo.x >= 0 && coo.y >= 0 && coo.x < depthScaled.cols && coo.y < depthScaled.rows)         //6
         {
-          float Dp_scaled = depthScaled.ptr (coo.y)[coo.x];
+          float Dp_scaled = depthScaled.ptr (coo.y)[coo.x]; //meters
 
           float sdf = Dp_scaled - sqrtf (v_g_z * v_g_z + v_g_part_norm);
 
-          if (Dp_scaled != 0 && sdf >= -tranc_dist)
+          if (Dp_scaled != 0 && sdf >= -tranc_dist) //meters
           {
             float tsdf = fmin (1.0f, sdf * tranc_dist_inv);
 
@@ -439,11 +439,11 @@ namespace pcl
 
             if (coo.x >= 0 && coo.y >= 0 && coo.x < depthScaled.cols && coo.y < depthScaled.rows)         //6
             {
-                float Dp_scaled = depthScaled.ptr (coo.y)[coo.x];
+                float Dp_scaled = depthScaled.ptr (coo.y)[coo.x]; //meters
 
                 float sdf = Dp_scaled - sqrtf (v_g_z * v_g_z + v_g_part_norm);
 
-                if (Dp_scaled != 0 && sdf >= -tranc_dist)
+                if (Dp_scaled != 0 && sdf >= -tranc_dist) //meters
                 {
                     float tsdf = fmin (1.0f, sdf * tranc_dist_inv);                                              
 
@@ -522,7 +522,8 @@ pcl::device::integrateTsdfVolume (const PtrStepSz<ushort>& depth, const Intr& in
   dim3 block_scale (32, 8);
   dim3 grid_scale (divUp (depth.cols, block_scale.x), divUp (depth.rows, block_scale.y));
 
-  scaleDepth << < grid_scale, block_scale >> > (depth, depthScaled, intr);
+  //scales depth along ray and converts mm -> meters. 
+  scaleDepth<<<grid_scale, block_scale>>>(depth, depthScaled, intr);
   cudaSafeCall ( cudaGetLastError () );
 
   float3 cell_size;
@@ -589,11 +590,11 @@ namespace pcl
 
         if (inv_z > 0 && coo.x >= 0 && coo.y >= 0 && coo.x < depthScaled.cols && coo.y < depthScaled.rows)         //6
         {
-          float Dp_scaled = depthScaled.ptr (coo.y)[coo.x];
+          float Dp_scaled = depthScaled.ptr (coo.y)[coo.x]; //meters
 
           float sdf = Dp_scaled - sqrtf (__fmaf_rn (v_g_z, v_g_z, v_g_part_norm));
 
-          if (Dp_scaled != 0 && sdf >= -tranc_dist)
+          if (Dp_scaled != 0 && sdf >= -tranc_dist) //meters
           {
             float tsdf = fmin (1.0f, sdf * tranc_dist_inv);
 
@@ -632,28 +633,26 @@ pcl::device::integrateTsdfVolume (const PtrStepSz<ushort>& depth, const Intr& in
                                   PtrStep<ushort2> volume, DeviceArray2D<float>& depthRawScaled)
 {
   depthRawScaled.create (depth.rows, depth.cols);
-  {
-    dim3 block (32, 8);
-    dim3 grid (divUp (depth.cols, block.x), divUp (depth.rows, block.y));
+  
+  dim3 block_scale (32, 8);
+  dim3 grid_scale (divUp (depth.cols, block_scale.x), divUp (depth.rows, block_scale.y));
 
-    scaleDepth << < grid, block >> > (depth, depthRawScaled, intr);
-    cudaSafeCall ( cudaGetLastError () );
-  }
+  //scales depth along ray and converts mm -> meters.
+  scaleDepth<<<grid_scale, block_scale>>>(depth, depthRawScaled, intr);
+  cudaSafeCall ( cudaGetLastError () );
+  
+  float3 cell_size;
+  cell_size.x = volume_size.x / VOLUME_X;
+  cell_size.y = volume_size.y / VOLUME_Y;
+  cell_size.z = volume_size.z / VOLUME_Z;
 
-  {
-    float3 cell_size;
-    cell_size.x = volume_size.x / VOLUME_X;
-    cell_size.y = volume_size.y / VOLUME_Y;
-    cell_size.z = volume_size.z / VOLUME_Z;
+  dim3 block (Tsdf::CTA_SIZE_X, Tsdf::CTA_SIZE_Y);
+  dim3 grid (divUp (VOLUME_X, block.x), divUp (VOLUME_Y, block.y));
 
-    dim3 block (Tsdf::CTA_SIZE_X, Tsdf::CTA_SIZE_Y);
-    dim3 grid (divUp (VOLUME_X, block.x), divUp (VOLUME_Y, block.y));
+  cudaFuncSetCacheConfig (tsdf24, cudaFuncCachePreferL1);
 
-    cudaFuncSetCacheConfig (tsdf24, cudaFuncCachePreferL1);
-
-    tsdf24 << < grid, block >> > (depthRawScaled, volume, tranc_dist, Rcurr_inv, tcurr, intr, cell_size);
-    cudaSafeCall (cudaGetLastError ());
-  }
+  tsdf24<<<grid, block>>>(depthRawScaled, volume, tranc_dist, Rcurr_inv, tcurr, intr, cell_size);
+  cudaSafeCall (cudaGetLastError ());
 
   cudaSafeCall (cudaDeviceSynchronize ());
 }

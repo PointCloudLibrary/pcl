@@ -225,7 +225,7 @@ pcl::device::findCoresp (const MapArr& vmap_g_curr, const MapArr& nmap_g_curr,
   dim3 block (CorespSearch::CTA_SIZE_X, CorespSearch::CTA_SIZE_Y);
   dim3 grid (divUp (coresp.cols, block.x), divUp (coresp.rows, block.y));
 
-  corespKernel << < grid, block >> > (cs);
+  corespKernel<<<grid, block>>>(cs);
 
   cudaSafeCall ( cudaGetLastError () );
   cudaSafeCall (cudaDeviceSynchronize ());

@@ -144,7 +144,7 @@ pcl::device::computeNormalsEigen (const MapArr& vmap, MapArr& nmap)
   grid.x = divUp (cols, block.x);
   grid.y = divUp (rows, block.y);
 
-  computeNmapKernelEigen << < grid, block >> > (rows, cols, vmap, nmap);
+  computeNmapKernelEigen<<<grid, block>>>(rows, cols, vmap, nmap);
   cudaSafeCall (cudaGetLastError ());
   cudaSafeCall (cudaDeviceSynchronize ());
 }

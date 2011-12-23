@@ -281,12 +281,12 @@ namespace pcl
         float time_start_volume = getMinTime (volume_size, ray_start, ray_dir);
         float time_exit_volume = getMaxTime (volume_size, ray_start, ray_dir);
 
-        const float min_dist = 0.f;         //in mm
+        const float min_dist = 0.f;         //in meters
         time_start_volume = fmax (time_start_volume, min_dist);
         if (time_start_volume >= time_exit_volume)
           return;
 
-        int time_curr = time_start_volume;
+        float time_curr = time_start_volume;
         int3 g = getVoxel (ray_start + ray_dir * time_curr);
         g.x = max (0, min (g.x, VOLUME_X - 1));
         g.y = max (0, min (g.y, VOLUME_Y - 1));
@@ -420,7 +420,7 @@ pcl::device::raycast (const Intr& intr, const Mat33& Rcurr, const float3& tcurr,
   dim3 block (RayCaster::CTA_SIZE_X, RayCaster::CTA_SIZE_Y);
   dim3 grid (divUp (rc.cols, block.x), divUp (rc.rows, block.y));
 
-  rayCastKernel << < grid, block >> > (rc);
+  rayCastKernel<<<grid, block>>>(rc);
   cudaSafeCall (cudaGetLastError ());
   //cudaSafeCall(cudaDeviceSynchronize());
 }

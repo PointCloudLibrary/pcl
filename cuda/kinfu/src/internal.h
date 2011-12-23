@@ -153,7 +153,7 @@ namespace pcl
       * \param[in] max_distance truncation threshold, values that are higher than the threshold are reset to zero (means not measurement)
       */
 	void 
-	truncateDepth(DepthMap& depth, unsigned short max_distance);
+	truncateDepth(DepthMap& depth, float max_distance);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //   ICP 

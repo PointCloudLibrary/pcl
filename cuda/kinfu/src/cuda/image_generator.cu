@@ -118,7 +118,7 @@ pcl::device::generateImage (const MapArr& vmap, const MapArr& nmap, const LightS
   dim3 block (ImageGenerator::CTA_SIZE_X, ImageGenerator::CTA_SIZE_Y);
   dim3 grid (divUp (dst.cols, block.x), divUp (dst.rows, block.y));
 
-  generateImageKernel << < grid, block >> > (ig);
+  generateImageKernel<<<grid, block>>>(ig);
   cudaSafeCall (cudaGetLastError ());
   cudaSafeCall (cudaDeviceSynchronize ());
 }

@@ -52,7 +52,7 @@ namespace pcl
 
       if (u < depth.cols && v < depth.rows)
       {
-        int z = depth.ptr (v)[u];
+        float z = depth.ptr (v)[u]/1000.f; // load and convert: mm -> meters
 
         if (z != 0)
         {
@@ -126,7 +126,7 @@ pcl::device::createVMap (const Intr& intr, const DepthMap& depth, MapArr& vmap)
   float fx = intr.fx, cx = intr.cx;
   float fy = intr.fy, cy = intr.cy;
 
-  computeVmapKernel << < grid, block >> > (depth, vmap, 1.f / fx, 1.f / fy, cx, cy);
+  computeVmapKernel<<<grid, block>>>(depth, vmap, 1.f / fx, 1.f / fy, cx, cy);
   cudaSafeCall (cudaGetLastError ());
 }
 
@@ -144,7 +144,7 @@ pcl::device::createNMap (const MapArr& vmap, MapArr& nmap)
   grid.x = divUp (cols, block.x);
   grid.y = divUp (rows, block.y);
 
-  computeNmapKernel << < grid, block >> > (rows, cols, vmap, nmap);
+  computeNmapKernel<<<grid, block>>>(rows, cols, vmap, nmap);
   cudaSafeCall (cudaGetLastError ());
 }
 
@@ -218,7 +218,7 @@ pcl::device::tranformMaps (const MapArr& vmap_src, const MapArr& nmap_src,
   grid.x = divUp (cols, block.x);
   grid.y = divUp (rows, block.y);
 
-  tranformMapsKernel << < grid, block >> > (rows, cols, vmap_src, nmap_src, Rmat, tvec, vmap_dst, nmap_dst);
+  tranformMapsKernel<<<grid, block>>>(rows, cols, vmap_src, nmap_src, Rmat, tvec, vmap_dst, nmap_dst);
   cudaSafeCall (cudaGetLastError ());
 
   cudaSafeCall (cudaDeviceSynchronize ());
@@ -296,7 +296,7 @@ namespace pcl
 
       dim3 block (32, 8);
       dim3 grid (divUp (out_cols, block.x), divUp (out_rows, block.y));
-      resizeMapKernel<normalize><< < grid, block >> > (out_rows, out_cols, in_rows, input, output);
+      resizeMapKernel<normalize><<< grid, block>>>(out_rows, out_cols, in_rows, input, output);
       cudaSafeCall ( cudaGetLastError () );
       cudaSafeCall (cudaDeviceSynchronize ());
     }
@@ -361,7 +361,7 @@ pcl::device::convert (const MapArr& vmap, DeviceArray2D<T>& output)
   dim3 block (32, 8);
   dim3 grid (divUp (cols, block.x), divUp (rows, block.y));
 
-  convertMapKernel<T><< < grid, block >> > (rows, cols, vmap, output);
+  convertMapKernel<T><<< grid, block>>>(rows, cols, vmap, output);
   cudaSafeCall ( cudaGetLastError () );
   cudaSafeCall (cudaDeviceSynchronize ());
 }

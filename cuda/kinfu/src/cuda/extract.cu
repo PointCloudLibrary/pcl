@@ -302,7 +302,7 @@ pcl::device::extractCloud (const PtrStep<volume_elem_type>& volume, const float3
   //cudaFuncSetCacheConfig(extractKernel, cudaFuncCachePreferL1);
   //printFuncAttrib(extractKernel);
 
-  extractKernel << < grid, block >> > (fs);
+  extractKernel<<<grid, block>>>(fs);
   cudaSafeCall ( cudaGetLastError () );
   cudaSafeCall (cudaDeviceSynchronize ());
 
@@ -460,7 +460,7 @@ pcl::device::extractNormals (const PtrStep<volume_elem_type>& volume, const floa
   dim3 block (256);
   dim3 grid (divUp (points.size, block.x));
 
-  extractNormalsKernel << < grid, block >> > (en);
+  extractNormalsKernel<<<grid, block>>>(en);
   cudaSafeCall ( cudaGetLastError () );
   cudaSafeCall (cudaDeviceSynchronize ());
 }

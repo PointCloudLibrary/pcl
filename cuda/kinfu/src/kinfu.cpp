@@ -75,7 +75,7 @@ pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(c
   tvecs_.reserve (30000);
 
   setDepthIntrinsics (525.f, 525.f);
-  setVolumeSize (Vector3f::Constant (3000));
+  setVolumeSize (Vector3f::Constant (3.f));
 
   init_Rcam_ = Eigen::Matrix3f::Identity ();// * AngleAxisf(-30.f/180*3.1415926, Vector3f::UnitX());
   init_tcam_ = volume_size_ * 0.5f - Vector3f (0, 0, volume_size_ (2) / 2 * 1.2f);
@@ -83,9 +83,9 @@ pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(c
   const int iters[] = {10, 5, 4};
   std::copy (iters, iters + LEVELS, icp_iterations_);
 
-  const float default_distThres = 100; //mm
+  const float default_distThres = 0.10f; //meters
   const float default_angleThres = sin (20.f * 3.14159254f / 180.f);
-  const float default_tranc_dist = 30; //mm
+  const float default_tranc_dist = 0.03f; //meters
 
   setIcpCorespFilteringParams (default_distThres, default_angleThres);
   setTrancationDistance (default_tranc_dist);
@@ -132,7 +132,7 @@ pcl::gpu::KinfuTracker::setTrancationDistance (float distance)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::gpu::KinfuTracker::setDepthTruncationForICP (unsigned short max_icp_distance)
+pcl::gpu::KinfuTracker::setDepthTruncationForICP (float max_icp_distance)
 {
   max_icp_distance_ = max_icp_distance;
 }
