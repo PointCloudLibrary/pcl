@@ -190,7 +190,7 @@ namespace pcl
         }; 
 
 
-        //////////////////////////////////////////////////////////////////////////////////////////////  
+        //////////////////////////////////////////////////////////////////////////////////////////////
         ///** \brief @b Class for PPFRGBRegion estimation.  */
 
         class PCL_EXPORTS PrincipalCurvaturesEstimation : public FeatureFromNormals
@@ -248,6 +248,56 @@ namespace pcl
             NormalType normal_to_use_;
             PointType centroid_to_use_;
         }; 
+
+
+        //////////////////////////////////////////////////////////////////////////////////////////////
+        ///** \brief @b Class for SpinImages estimation.  */
+
+        class PCL_EXPORTS SpinImageEstimation : public FeatureFromNormals
+        {
+        public:  
+            typedef Histogram<153> SpinImage;
+
+            SpinImageEstimation (unsigned int image_width = 8,
+                double support_angle_cos = 0.0,   // when 0, this is bogus, so not applied
+                unsigned int min_pts_neighb = 0);
+            
+            void setImageWidth (unsigned int bin_count);            
+            void setSupportAngle (float support_angle_cos);                        
+            void setMinPointCountInNeighbourhood (unsigned int min_pts_neighb);            
+            void setInputWithNormals (const PointCloud& input, const Normals& normals);                        
+            void setSearchSurfaceWithNormals (const PointCloud& surface, const Normals& normals);
+            
+            void setRotationAxis (const NormalType& axis);
+            void setInputRotationAxes (const Normals& axes);            
+            void useNormalsAsRotationAxis();
+            void setAngularDomain (bool is_angular = true);
+            void setRadialStructure (bool is_radial = true);
+
+            void compute(DeviceArray2D<SpinImage>& features, DeviceArray<unsigned char>& mask);
+        
+        private:            
+            Normals input_normals_;
+            Normals rotation_axes_cloud_;
+
+            bool is_angular_;
+
+            NormalType rotation_axis_;
+            bool use_custom_axis_;
+			
+			/* use input normals as rotation axes*/
+            bool use_custom_axes_cloud_; 
+
+            bool is_radial_;
+
+            unsigned int image_width_;
+            float support_angle_cos_;
+            unsigned int min_pts_neighb_;
+
+            bool fake_surface_;
+
+			NeighborIndices nn_indices_;
+        };
     }
 };
 

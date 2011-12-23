@@ -57,8 +57,8 @@ namespace pcl
 			{
 				__syncthreads();                
 			}
-			
-            static __device__ __forceinline__ int flattenedThreadId()
+
+			static __device__ __forceinline__ int flattenedThreadId()
 			{
 				return threadIdx.z * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.x;
 			}
@@ -73,16 +73,16 @@ namespace pcl
 					*t = value;
 			}
 
-            template<typename OutIt, typename T>
-            static __device__ __forceinline__ void yota(OutIt beg, OutIt end, T value)
-            {
-                int STRIDE = stride();
-                int tid = flattenedThreadId();                                
-                value += tid;
+			template<typename OutIt, typename T>
+			static __device__ __forceinline__ void yota(OutIt beg, OutIt end, T value)
+			{
+				int STRIDE = stride();
+				int tid = flattenedThreadId();                                
+				value += tid;
 
-                for(OutIt t = beg + tid; t < end; t += STRIDE, value += STRIDE)
+				for(OutIt t = beg + tid; t < end; t += STRIDE, value += STRIDE)
 					*t = value;                
-            }
+			}
 
 			template<typename InIt, typename OutIt>
 			static __device__ __forceinline__ void copy(InIt beg, InIt end, OutIt out)
@@ -94,12 +94,36 @@ namespace pcl
 				for(; t < end; t += STRIDE, o += STRIDE)
 					*o = *t;
 			}
+
+			template<typename InIt, typename OutIt, class UnOp>
+			static __device__ __forceinline__ void transfrom(InIt beg, InIt end, OutIt out, UnOp op)
+			{
+				int STRIDE = stride();
+				InIt  t = beg + flattenedThreadId();
+				OutIt o = out + (t - beg);
+
+				for(; t < end; t += STRIDE, o += STRIDE)
+					*o = op(*t);
+			}
+
+			template<typename InIt1, typename InIt2, typename OutIt, class BinOp>
+			static __device__ __forceinline__ void transfrom(InIt1 beg1, InIt1 end1, InIt2 beg2, OutIt out, BinOp op)
+			{
+				int STRIDE = stride();
+				InIt1 t1 = beg1 + flattenedThreadId();
+				InIt1 t2 = beg2 + flattenedThreadId();
+				OutIt o  = out + (t1 - beg1);
+
+				for(; t1 < end1; t1 += STRIDE, t2 += STRIDE, o += STRIDE)
+					*o = op(*t1, *t2);
+			}
+
 			template<int CTA_SIZE, typename T, class BinOp>
 			static __device__ __forceinline__ void reduce(volatile T* buffer, BinOp op)
 			{
 				int tid = flattenedThreadId();
 				T val =  buffer[tid];
-				
+
 				if (CTA_SIZE >= 1024) { if (tid < 512) buffer[tid] = val = op(val, buffer[tid + 512]); __syncthreads(); }
 				if (CTA_SIZE >=  512) { if (tid < 256) buffer[tid] = val = op(val, buffer[tid + 256]); __syncthreads(); }
 				if (CTA_SIZE >=  256) { if (tid < 128) buffer[tid] = val = op(val, buffer[tid + 128]); __syncthreads(); }
@@ -139,6 +163,35 @@ namespace pcl
 				}
 				__syncthreads();				
 				return buffer[0];
+			}
+
+			template <typename T, class BinOp>
+			static __device__ __forceinline__ void reduce_n(T* data, unsigned int n, BinOp op)
+			{
+				int ftid = flattenedThreadId();
+				int sft = stride();
+
+				if (sft < n)
+				{
+					for (unsigned int i = sft + ftid; i < n; i += sft)
+						data[ftid] = op(data[ftid], data[i]);
+
+					__syncthreads();
+
+					n = sft;
+				}
+
+				while (n > 1)
+				{
+					unsigned int half = n/2;
+
+					if (ftid < half)
+						data[ftid] = op(data[ftid], data[n - ftid - 1]);
+
+					__syncthreads();
+
+					n = n - half;
+				}
 			}
 		};
 	}

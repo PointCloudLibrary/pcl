@@ -111,9 +111,14 @@ namespace pcl
             return rsqrtf(dot(v, v));
         }
 
-        template<typename T> __host__ __device__ T normalized(const T& v)
+        template<typename T> __host__ __device__ __forceinline__ T normalized(const T& v)
         {
             return v * inverse_norm(v);
+        }
+
+		template<typename T> __host__ __device__ __forceinline__ T normalized_safe(const T& v)
+        {			
+			return (dot(v, v) > 0) ? (v * rsqrtf(dot(v, v))) : v;            
         }
     }
 }
