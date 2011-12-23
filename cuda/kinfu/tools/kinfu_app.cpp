@@ -101,8 +101,8 @@ donwloadOrganized (const DeviceArray2D<PointT>& device, pcl::PointCloud<PointT>&
 
 struct KinFuApp
 {
-  KinFuApp(CaptureOpenNI& source, bool show_current_frame = false) : exit_ (false), scan_ (false), showNormals_ (false), connected26_ (false), use_cpu_for_cloud_extraction_ (false), hasImage_ (false),
-    capture_ (source), cloud_viewer_ ("Volume Cloud Viewer")
+  KinFuApp(CaptureOpenNI& source, bool show_current_frame = false) : exit_ (false), scan_ (false), scan_volume_(false), showNormals_ (false), connected26_ (false), use_cpu_for_cloud_extraction_ (false), hasImage_ (false),
+    frame_time_ms(0), capture_ (source), cloud_viewer_ ("Volume Cloud Viewer")
   {
     /////////////////////////////////////////
     //Init Kinfu Tracker
@@ -180,7 +180,7 @@ struct KinFuApp
   {
     PtrStepSz<const unsigned short> depth;
     PtrStepSz<const KinfuTracker::RGB> rgb24;
-
+    
     for (int i = 0; !exit_; ++i)
     {
       //cout << i << endl;
@@ -193,14 +193,21 @@ struct KinFuApp
       }
 
       depth_device_.upload (depth.data, depth.step, depth.rows, depth.cols);
+      
+      //start timer
+      stopWatch_.reset();
 
-      {
-        //ScopeTimeT time ("total-frame");
-        hasImage_ = kinfu_ (depth_device_);
-        if (hasImage_)
-          kinfu_.getImage (view_device_);
-      }
-
+      //run kinfu algorithm
+      hasImage_ = kinfu_ (depth_device_);
+      if (hasImage_)
+        kinfu_.getImage (view_device_);
+      
+      //stop timer
+      frame_time_ms += stopWatch_.getTime();                
+      const int each = 33;
+      if (i % each == 0)
+          cout << "Average frame time = " << frame_time_ms/each  << "ms ( " << 1000.f * each/frame_time_ms << "fps )" << endl, frame_time_ms = 0;
+      
       if (scan_)
       {
         scan_ = false;
@@ -231,38 +238,42 @@ struct KinFuApp
         cout << "  Cloud size: " << cloud_ptr_->points.size () / 1000 << "K" << endl << endl;
         cloud_viewer_.removeAllPointClouds ();
 
-        // download tsdf volume
+        if (scan_volume_)
         {
-          ScopeTimeT time ("tsdf volume download");
-          cout << "Downloading TSDF volume from device ... " << flush;
-          kinfu_.getTsdfVolumeAndWeighs (tsdf_volume_.volumeWriteable(), tsdf_volume_.weightsWriteable());
-          tsdf_volume_.setHeader (Eigen::Vector3i (pcl::device::VOLUME_X, pcl::device::VOLUME_Y, pcl::device::VOLUME_Z), kinfu_.getVolumeSize());
-          cout << "done [" << tsdf_volume_.size() << " voxels]" << endl;
+          // download tsdf volume
+          {
+            ScopeTimeT time ("tsdf volume download");
+            cout << "Downloading TSDF volume from device ... " << flush;
+            kinfu_.getTsdfVolumeAndWeighs (tsdf_volume_.volumeWriteable(), tsdf_volume_.weightsWriteable());
+            tsdf_volume_.setHeader (Eigen::Vector3i (pcl::device::VOLUME_X, pcl::device::VOLUME_Y, pcl::device::VOLUME_Z), kinfu_.getVolumeSize());
+            cout << "done [" << tsdf_volume_.size() << " voxels]" << endl << endl;
+          }          
+          {
+            ScopeTimeT time ("converting");
+            cout << "Converting volume to TSDF cloud ... " << flush;
+            tsdf_volume_.convertToTsdfCloud (tsdf_cloud_ptr_);
+            cout << "done [" << tsdf_cloud_ptr_->size() << " points]" << endl << endl;
+          }          
         }
-        cout << endl;
-        {
-          ScopeTimeT time ("");
-          cout << "Converting volume to TSDF cloud ... " << flush;
-          tsdf_volume_.convertToTsdfCloud (tsdf_cloud_ptr_);
-          cout << "done [" << tsdf_cloud_ptr_->size() << " points]" << endl;
-        }
-        cout << endl;
+        else
+          cout << "[!] tsdf volume download is disabled" << endl << endl;
 
         // handle and show normals
         if (showNormals_ && !use_cpu_for_cloud_extraction_)
         {
-          // cloud_viewer_.addPointCloud<pcl::PointXYZ> (cloud_ptr_, "Cloud");
-          // cloud_viewer_.addPointCloudNormals<pcl::PointXYZ, pcl::Normal>(cloud_ptr_, cloud_normals_ptr_, 50, 20);
+          cloud_viewer_.addPointCloud<pcl::PointXYZ> (cloud_ptr_, "Cloud");
+          cloud_viewer_.addPointCloudNormals<pcl::PointXYZ, pcl::Normal>(cloud_ptr_, cloud_normals_ptr_, 50);
 
-          std::cout << "Copying X,Y,Z points and normals in one cloud" << std::endl;
-          cout << "clear comb. cloud" << endl;
-          cloud_combined_ptr_->clear ();
-          cout << "copy cloud:" << endl;
-          pcl::copyPointCloud (*cloud_ptr_, *cloud_combined_ptr_);
-          cout << "copy normals:" << endl;
-          pcl::copyPointCloud (*cloud_normals_ptr_, *cloud_combined_ptr_);
-          cout << "show comb. in viewer" << endl;
-          cloud_viewer_.addPointCloud<pcl::PointNormal> (cloud_combined_ptr_, "Cloud");
+          //AB: It seems this doesn't work
+          //std::cout << "Copying X,Y,Z points and normals in one cloud" << std::endl;
+          //cout << "clear comb. cloud" << endl;
+          //cloud_combined_ptr_->clear ();
+          //cout << "copy cloud:" << endl;
+          //pcl::copyPointCloud (*cloud_ptr_, *cloud_combined_ptr_);
+          //cout << "copy normals:" << endl;
+          //pcl::copyPointCloud (*cloud_normals_ptr_, *cloud_combined_ptr_);
+          //cout << "show comb. in viewer" << endl;
+          //cloud_viewer_.addPointCloud<pcl::PointNormal> (cloud_combined_ptr_, "Cloud");
         }
         else
           cloud_viewer_.addPointCloud<pcl::PointXYZ> (cloud_ptr_);
@@ -304,17 +315,22 @@ struct KinFuApp
 #endif      
     }
   }
-
+  
   bool exit_;
   bool scan_;
+  bool scan_volume_;
   bool showNormals_;
   bool connected26_;
   bool use_cpu_for_cloud_extraction_;
 
   bool hasImage_;
 
+  int frame_time_ms;
+
   CaptureOpenNI& capture_;
   KinfuTracker kinfu_;
+
+  pcl::StopWatch stopWatch_;
 
   visualization::ImageViewer viewer3d_;
   visualization::ImageViewer viewer2d_;
@@ -368,6 +384,10 @@ struct KinFuApp
         case (int)'n': case (int)'N':
           app->showNormals_ = !app->showNormals_;
           cout << endl << "Show normals: " << (app->showNormals_ ? "true (GPU only)" : "false") << endl << endl;
+          break;
+        case (int)'x': case (int)'X':
+          app->scan_volume_ = !app->scan_volume_;
+          cout << endl << "Volume scan: " << (app->scan_volume_ ? "enabled" : "disabled") << endl << endl;
           break;
         case (int)'c': case (int)'C':
           app->cloud_viewer_.removeAllPointClouds ();
