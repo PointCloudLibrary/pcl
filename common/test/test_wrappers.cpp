@@ -87,7 +87,6 @@ TEST (PointCloud, constructor_with_allocation)
   EXPECT_EQ (cloud2.size (), 5*80);
 }
 
-
 TEST (PointCloud, iterators)
 {
   EXPECT_EQ_VECTORS (cloud.begin ()->getVector3fMap (), 
