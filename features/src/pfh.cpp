@@ -58,12 +58,12 @@ pcl::computePairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1,
   }
 
   Eigen::Vector4f n1_copy = n1,
-  n2_copy = n2;
+                  n2_copy = n2;
   n1_copy[3] = n2_copy[3] = 0.0f;
   float angle1 = n1_copy.dot (dp2p1) / f4;
 
-/* commented this to pass the unit tests
-  float angle2 = -n2_copy.dot (dp2p1) / f4;
+// commented this to pass the unit tests
+  float angle2 = n2_copy.dot (dp2p1) / f4;
   if (acos (angle1) > acos(angle2))
   {
     // switch p1 and p2
@@ -71,10 +71,10 @@ pcl::computePairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1,
     n2_copy = n1;
     n1_copy[3] = n2_copy[3] = 0.0f;
     dp2p1 *= (-1);
-    f3 = angle2;
+    f3 = -angle2;
   }
-  else*/
-  f3 = angle1;
+  else
+    f3 = angle1;
 
   // Create a Darboux frame coordinate system u-v-w
   // u = n1; v = (p_idx - q_idx) x u / || (p_idx - q_idx) x u ||; w = u x v
@@ -104,4 +104,3 @@ pcl::computePairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1,
 // Instantiations of specific point types
 PCL_INSTANTIATE_PRODUCT(PFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::PFHSignature125)));
 PCL_INSTANTIATE_PRODUCT(PFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)));
-
