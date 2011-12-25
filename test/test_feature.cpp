@@ -84,7 +84,7 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
   //
   PointCloud<OutputT> full_output, output0, output1, output2;
 
-  // Compute for all points and then subsample the resultsp
+  // Compute for all points and then subsample the results
   FeatureEstimation est0;
   est0.setSearchMethod (typename search::KdTree<PointT>::Ptr (new search::KdTree<PointT>));
   est0.setKSearch (10);
