@@ -42,6 +42,7 @@
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
+#include <boost/unordered_map.hpp>
 
 namespace pcl
 {
@@ -114,7 +115,19 @@ namespace pcl
       PFHEstimation () : nr_subdiv_ (5), d_pi_ (1.0 / (2.0 * M_PI))
       {
         feature_name_ = "PFHEstimation";
+
+        // Default 2GB memory size. Need to set it to something more conservative.
+        max_cache_size_ = (2ul*1024ul*1024ul*1024ul) / sizeof (std::pair<std::pair<int, int>, Eigen::Vector4f>);
       };
+
+      /** \brief Set the maximum internal cache size. Defaults to 2GB worth of entries.
+        * \param[in] cache_size maximum cache size 
+        */
+      inline void
+      setMaximumCacheSize (unsigned int cache_size)
+      {
+        max_cache_size_ = cache_size;
+      }
 
       /** \brief Compute the 4-tuple representation containing the three angles and one distance between two points
         * represented by Cartesian coordinates and normals.
@@ -170,6 +183,15 @@ namespace pcl
       /** \brief Float constant = 1.0 / (2.0 * M_PI) */
       float d_pi_; 
 
+      /** \brief Internal hashmap, used to optimize efficiency of redundant computations. */
+      boost::unordered_map<std::pair<int, int>, Eigen::Vector4f> feature_map_;
+
+      /** \brief Queue of pairs saved, used to constrain memory usage. */
+      std::queue<std::pair<int, int> > key_list_;
+
+      /** \brief Maximum size of internal cache memory. */
+      unsigned int max_cache_size_;
+
     private:
       /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
         * \param[out] output the output point cloud 
@@ -220,6 +242,8 @@ namespace pcl
       using PFHEstimation<PointInT, PointNT, pcl::PFHSignature125>::normals_;
       using PFHEstimation<PointInT, PointNT, pcl::PFHSignature125>::computePointPFHSignature;
       using PFHEstimation<PointInT, PointNT, pcl::PFHSignature125>::compute;
+      using PFHEstimation<PointInT, PointNT, pcl::PFHSignature125>::feature_map_;
+      using PFHEstimation<PointInT, PointNT, pcl::PFHSignature125>::key_list_;
 
     private:
       /** \brief Estimate the Point Feature Histograms (PFH) descriptors at a set of points given by
