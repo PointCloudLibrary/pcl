@@ -84,6 +84,7 @@ if(build)
         include/pcl/common/geometry.h
         include/pcl/common/gaussian.h
         include/pcl/common/spring.h
+        include/pcl/common/point_operators.h
         include/pcl/common/convolution.h
         )
 
@@ -105,7 +106,6 @@ if(build)
         include/pcl/common/impl/gaussian.hpp
         include/pcl/common/impl/spring.hpp
         include/pcl/common/impl/convolution.hpp
-        include/pcl/common/impl/point_operators.hpp
        )
 
     set(impl_incs include/pcl/impl/instantiate.hpp
