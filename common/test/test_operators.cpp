@@ -37,8 +37,8 @@
 
 #include <gtest/gtest.h>
 #include <pcl/pcl_tests.h>
-#include <pcl/common/convolution.h>
 #include <pcl/point_types.h>
+#include <pcl/common/point_operators.h>
 
 using namespace pcl;
 using namespace pcl::test;

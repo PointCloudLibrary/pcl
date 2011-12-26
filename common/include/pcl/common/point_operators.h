@@ -37,8 +37,8 @@
  *
  */
 
-#ifndef PCL_COMMON_POINT_OPERATORS_IMPL_HPP
-#define PCL_COMMON_POINT_OPERATORS_IMPL_HPP
+#ifndef PCL_COMMON_POINT_OPERATORS_H
+#define PCL_COMMON_POINT_OPERATORS_H
 
 #include <pcl/point_types.h>
 
@@ -47,9 +47,24 @@ namespace pcl
   namespace common
   {
 
+    /** PointOperators is a struct that provides basic arithmetic 
+      * operations on points: addition, product and plus-assign operation.
+      * It also provide an operator() for the transformation from a 
+      * PointIN to PointOUT (the transformation can be as simple as 
+      * accessing a member of PointIN).
+      *
+      * \author Nizar Sallem
+      * \ingroup common
+      */
+    template <typename PointIN, typename PointOUT>
+    struct PointOperators 
+    {
+      typedef PointIN PointIn;
+      typedef PointOUT PointOut;
+    };
+    
     struct PointXYZItoIntensity : PointOperators <pcl::PointXYZI, float>
     {
-
       float
       operator () ()
       {

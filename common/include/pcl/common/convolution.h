@@ -41,6 +41,7 @@
 #define PCL_COMMON_CONVOLUTION_H_
 
 #include <Eigen/Core>
+#include <pcl/common/point_operators.h>
 #include <pcl/common/spring.h>
 #include <pcl/exceptions.h>
 
@@ -48,22 +49,6 @@ namespace pcl
 {
   namespace common
   {
-    /** PointOperators is a struct that provides basic arithmetic 
-      * operations on points: addition, product and plus-assign operation.
-      * It also provide an operator() for the transformation from a 
-      * PointIN to PointOUT (the transformation can be as simple as 
-      * accessing a member of PointIN).
-      *
-      * \author Nizar Sallem
-      * \ingroup common
-      */
-    template <typename PointIN, typename PointOUT>
-    struct PointOperators 
-    {
-      typedef PointIN PointIn;
-      typedef PointOUT PointOut;
-    };
-
     /** Class Convolution
       * Convolution is a mathematical operation on two functions f and g, 
       * producing a third function that is typically viewed as a modified 
@@ -289,7 +274,6 @@ namespace pcl
   }
 }
 
-#include <pcl/common/impl/point_operators.hpp>
 #include <pcl/common/impl/convolution.hpp>
 
 #endif
