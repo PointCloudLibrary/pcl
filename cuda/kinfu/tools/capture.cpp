@@ -152,31 +152,30 @@ pcl::gpu::CaptureOpenNI::CaptureOpenNI(int device) : depth_focal_length_VGA (0),
     sprintf (impl_->strError, "Depth generator  failed: %s\n", xnGetStatusString (rc));
     REPORT_ERROR (impl_->strError);
   }
+  //rc = impl_->depth.SetIntProperty("HoleFilter", 1);
+  rc = impl_->depth.SetMapOutputMode (mode);
+  impl_->has_depth = true;  
 
   rc = impl_->image.Create (impl_->context);
   if (rc != XN_STATUS_OK)
   {
-    sprintf (impl_->strError, "Image generator reate failed: %s\n", xnGetStatusString (rc));
-    REPORT_ERROR (impl_->strError);
+    sprintf ("Image generator creation failed: %s\n", xnGetStatusString (rc));
+    impl_->has_image = false;    
   }
+  else
+  {
+      impl_->has_image = true;
+      rc = impl_->image.SetMapOutputMode (mode);
+  }     
 
-  impl_->has_depth = true;
-  impl_->has_image = true;
-
-  //rc = impl_->depth.SetIntProperty("HoleFilter", 1);
-  rc = impl_->depth.SetMapOutputMode (mode);
-  rc = impl_->image.SetMapOutputMode (mode);
+  getParams ();
 
   rc = impl_->context.StartGeneratingAll ();
   if (rc != XN_STATUS_OK)
   {
     sprintf (impl_->strError, "Start failed: %s\n", xnGetStatusString (rc));
     REPORT_ERROR (impl_->strError);
-  }
-
-
-
-  getParams ();
+  }  
 }
 
 
@@ -205,8 +204,8 @@ pcl::gpu::CaptureOpenNI::CaptureOpenNI(const string& filename) : depth_focal_len
   rc = impl_->context.FindExistingNode (XN_NODE_TYPE_IMAGE, impl_->image);
   impl_->has_image = (rc == XN_STATUS_OK);
 
-  if (!impl_->has_image && impl_->has_depth)
-    REPORT_ERROR ("Not depth and image nodes. Check your configuration");
+  if (!impl_->has_depth)
+    REPORT_ERROR ("No depth nodes. Check your configuration");
 
   if (impl_->has_depth)
     impl_->depth.GetMetaData (impl_->depthMD);
@@ -218,7 +217,7 @@ pcl::gpu::CaptureOpenNI::CaptureOpenNI(const string& filename) : depth_focal_len
   if (impl_->imageMD.PixelFormat () != XN_PIXEL_FORMAT_RGB24)
     REPORT_ERROR ("Image format must be RGB24\n");
 
-  getParams ();
+  getParams ();  
 }
 
 bool
@@ -257,7 +256,11 @@ pcl::gpu::CaptureOpenNI::grab (PtrStepSz<const unsigned short>& depth, PtrStepSz
     rgb24.step = x * rgb24.elemSize ();
   }
   else
+  {
     printf ("no image\n");
+    rgb24.data = 0;
+    rgb24.cols = rgb24.rows = rgb24.step = 0;
+  }
 
   return impl_->has_image || impl_->has_depth;
 }
@@ -326,6 +329,9 @@ pcl::gpu::CaptureOpenNI::setRegistration (bool value)
 
   if (value)
   {
+    if (!impl_->has_image)
+        return false;
+
     if (impl_->depth.GetAlternativeViewPointCap ().IsViewPointAs (impl_->image) )
       return true;
 

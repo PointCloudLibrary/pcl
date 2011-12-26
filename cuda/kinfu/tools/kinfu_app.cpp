@@ -102,7 +102,7 @@ donwloadOrganized (const DeviceArray2D<PointT>& device, pcl::PointCloud<PointT>&
 struct KinFuApp
 {
   KinFuApp(CaptureOpenNI& source, bool show_current_frame = false) : exit_ (false), scan_ (false), scan_volume_(false), showNormals_ (false), connected26_ (false), use_cpu_for_cloud_extraction_ (false), hasImage_ (false),
-    frame_time_ms(0), capture_ (source), cloud_viewer_ ("Volume Cloud Viewer")
+    registration_(false), frame_time_ms(0), capture_ (source), cloud_viewer_ ("Volume Cloud Viewer")
   {
     /////////////////////////////////////////
     //Init Kinfu Tracker
@@ -125,6 +125,8 @@ struct KinFuApp
     /////////////////////////////////////////
     //Init KinfuApp
 
+    bool registration_ = capture_.setRegistration(true);
+    
     viewer3d_.setWindowTitle ("View3D from ray tracing");
     viewer2d_.setWindowTitle ("Kinect Depth stream");
 
@@ -324,6 +326,8 @@ struct KinFuApp
   bool use_cpu_for_cloud_extraction_;
 
   bool hasImage_;
+
+  bool registration_;
 
   int frame_time_ms;
 
