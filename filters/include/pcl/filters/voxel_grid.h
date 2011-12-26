@@ -383,7 +383,7 @@ namespace pcl
       /** \brief Destructor. */
       virtual ~VoxelGrid ()
       {
-        leaves_.clear();
+        leaves_.clear ();
       }
 
       /** \brief Set the voxel grid leaf size.
