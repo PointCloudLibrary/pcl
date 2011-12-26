@@ -6,6 +6,13 @@ The CloudViewer
 The CloudViewer is a straight forward, simple point cloud visualization, meant
 to get you up and viewing clouds in as little code as possible.  
 
+.. note::
+   
+   The CloudViewer class is **NOT** meant to be used in multi-threaded
+   applications! Please check the documentation on
+   :pcl:`PCLVisualizer<pcl::PCLVisualizer>` or read the :ref:`pcl_visualizer`
+   for thread safe visualization.
+
 Simple Cloud Visualization
 --------------------------
 
