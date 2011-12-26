@@ -28,7 +28,7 @@ these are the header files that contain the definitions for all of the classes w
 
 .. literalinclude:: sources/iterative_closest_point/iterative_closest_point.cpp
    :language: cpp
-   :lines: 11-12
+   :lines: 9-10
 
 Creates two pcl::PointCloud<pcl::PointXYZ> boost shared pointers and initializes them. The type of each point is set to PointXYZ in the pcl namespace which is:
 
@@ -46,7 +46,7 @@ The lines:
 
 .. literalinclude:: sources/iterative_closest_point/iterative_closest_point.cpp
    :language: cpp
-   :lines: 14-31
+   :lines: 12-29
 
 fill in the PointCloud structure with random point values, and set the appropriate parameters (width, height, is_dense).  Also, they output the number of points saved, and their actual data values.
    
@@ -54,13 +54,13 @@ Then:
 
 .. literalinclude:: sources/iterative_closest_point/iterative_closest_point.cpp
    :language: cpp
-   :lines: 32-38
+   :lines: 30-36
 
 performs a simple rigid transform on the pointcloud and again outputs the data values.
 
 .. literalinclude:: sources/iterative_closest_point/iterative_closest_point.cpp
    :language: cpp
-   :lines: 39-41
+   :lines: 37-39
 
 This creates an instance of an IterativeClosestPoint and gives it some useful information.  "icp.setInputCloud(cloud_in);" sets cloud_in as the PointCloud to begin from and "icp.setInputTarget(cloud_out);" sets cloud_out as the PointCloud which we want cloud_in to look like.
 
@@ -68,7 +68,7 @@ Next,
 
 .. literalinclude:: sources/iterative_closest_point/iterative_closest_point.cpp
    :language: cpp
-   :lines: 42-46
+   :lines: 40-44
 
 Creates a pcl::PointCloud<pcl::PointXYZ> to which the IterativeClosestPoint can save the resultant cloud after applying the algorithm.  If the two PointClouds align correctly (meaning they are both the same cloud merely with some kind of rigid transformation applied to one of them) then icp.hasConverged() = 1 (true).  It then outputs the fitness score of the final transformation and some information about it.
 
