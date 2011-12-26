@@ -56,8 +56,14 @@ public:
     enum { PROP_OPENNI_REGISTRATION_ON  = 104 };
 
 
+    CaptureOpenNI();
     CaptureOpenNI(int device);
     CaptureOpenNI(const std::string& oni_filename);
+
+    void init(int device);
+    void init(const std::string& oni_filename);
+    void release();
+
     ~CaptureOpenNI();
 
     bool grab (PtrStepSz<const unsigned short>& depth, PtrStepSz<const RGB>& rgb24);

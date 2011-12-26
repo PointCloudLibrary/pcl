@@ -137,16 +137,19 @@ namespace pcl
       
       if (x < dst.cols && y < dst.rows)
       {
-        uchar3 value = dst.ptr(y)[x];
+        uchar3 value = dst.ptr(y)[x];        
         uchar3 color = colors.ptr(y)[x];
 
-        float cx = value.x * (1.f - colors_weight) + color.x * colors_weight;
-        float cy = value.y * (1.f - colors_weight) + color.y * colors_weight;
-        float cz = value.z * (1.f - colors_weight) + color.z * colors_weight;
+        if (value.x != 0 || value.y != 0 || value.z != 0)
+        {
+          float cx = value.x * (1.f - colors_weight) + color.x * colors_weight;
+          float cy = value.y * (1.f - colors_weight) + color.y * colors_weight;
+          float cz = value.z * (1.f - colors_weight) + color.z * colors_weight;
 
-        value.x = min(255, max(0, __float2int_rn(cx)));
-        value.y = min(255, max(0, __float2int_rn(cy)));
-        value.z = min(255, max(0, __float2int_rn(cz)));
+          value.x = min(255, max(0, __float2int_rn(cx)));
+          value.y = min(255, max(0, __float2int_rn(cy)));
+          value.z = min(255, max(0, __float2int_rn(cz)));
+        }
 
         dst.ptr(y)[x] = value;
       }

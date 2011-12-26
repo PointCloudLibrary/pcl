@@ -360,7 +360,8 @@ namespace pcl
     
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Utility
-    struct float8 { float x, y, z, w, f1, f2, f3, f4; };
+    struct float8  { float x, y, z, w, c1, c2, c3, c4; };
+    struct float12 { float x, y, z, w, normal_x, normal_y, normal_z, n4, c1, c2, c3, c4; };
 
     /** \brief Conversion from SOA to AOS
       * \param[in] vmap SOA map
@@ -369,6 +370,14 @@ namespace pcl
     template<typename T> 
     void 
     convert (const MapArr& vmap, DeviceArray2D<T>& output);
+
+    /** \brief Merges pcl::PointXYZ and pcl::Normal to PointNormal
+      * \param[in] coud points cloud
+      * \param[in] normals normals cloud
+      * \param[out] output array of PointNomals.
+      */
+    void 
+    mergePointNormal(const DeviceArray<float4>& cloud, const DeviceArray<float8>& normals, const DeviceArray<float12>& output);
 
     /** \brief  Check for qnan (unused now) 
       * \param[in] value

@@ -624,7 +624,27 @@ pcl::gpu::KinfuTracker::getTsdfVolumeAndWeighs (std::vector<float>& volume, std:
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void pcl::gpu::paint3DView(const KinfuTracker::View& rgb24, KinfuTracker::View& view, float colors_weight)
-{   
-    device::paint3DView(rgb24, view, colors_weight);
+
+namespace pcl
+{
+  namespace gpu
+  {
+    PCL_EXPORTS void 
+    paint3DView(const KinfuTracker::View& rgb24, KinfuTracker::View& view, float colors_weight = 0.5f)
+    {
+      device::paint3DView(rgb24, view, colors_weight);
+    }
+
+    PCL_EXPORTS void
+    mergePointNormal(const DeviceArray<PointXYZ>& cloud, const DeviceArray<Normal>& normals, DeviceArray<PointNormal>& output)
+    {
+      const size_t size = min(cloud.size(), normals.size());
+      output.create(size);
+
+      const DeviceArray<float4>& c = (const DeviceArray<float4>&)cloud;
+      const DeviceArray<float8>& n = (const DeviceArray<float8>&)normals;
+      const DeviceArray<float12>& o = (const DeviceArray<float12>&)output;
+      device::mergePointNormal(c, n, o);           
+    }
+  }
 }

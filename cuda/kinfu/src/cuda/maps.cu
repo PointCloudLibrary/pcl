@@ -3,7 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
- * 
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ namespace pcl
 
       if (u < depth.cols && v < depth.rows)
       {
-        float z = depth.ptr (v)[u]/1000.f; // load and convert: mm -> meters
+        float z = depth.ptr (v)[u] / 1000.f; // load and convert: mm -> meters
 
         if (z != 0)
         {
@@ -203,8 +203,8 @@ namespace pcl
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::device::tranformMaps (const MapArr& vmap_src, const MapArr& nmap_src, 
-                           const Mat33& Rmat, const float3& tvec, 
+pcl::device::tranformMaps (const MapArr& vmap_src, const MapArr& nmap_src,
+                           const Mat33& Rmat, const float3& tvec,
                            MapArr& vmap_dst, MapArr& nmap_dst)
 {
   int cols = vmap_src.cols ();
@@ -296,7 +296,7 @@ namespace pcl
 
       dim3 block (32, 8);
       dim3 grid (divUp (out_cols, block.x), divUp (out_rows, block.y));
-      resizeMapKernel<normalize><<< grid, block>>>(out_rows, out_cols, in_rows, input, output);
+      resizeMapKernel<normalize><< < grid, block>>>(out_rows, out_cols, in_rows, input, output);
       cudaSafeCall ( cudaGetLastError () );
       cudaSafeCall (cudaDeviceSynchronize ());
     }
@@ -361,7 +361,7 @@ pcl::device::convert (const MapArr& vmap, DeviceArray2D<T>& output)
   dim3 block (32, 8);
   dim3 grid (divUp (cols, block.x), divUp (rows, block.y));
 
-  convertMapKernel<T><<< grid, block>>>(rows, cols, vmap, output);
+  convertMapKernel<T><< < grid, block>>>(rows, cols, vmap, output);
   cudaSafeCall ( cudaGetLastError () );
   cudaSafeCall (cudaDeviceSynchronize ());
 }
@@ -369,3 +369,42 @@ pcl::device::convert (const MapArr& vmap, DeviceArray2D<T>& output)
 template void pcl::device::convert (const MapArr& vmap, DeviceArray2D<float4>& output);
 template void pcl::device::convert (const MapArr& vmap, DeviceArray2D<float8>& output);
 
+namespace pcl
+{
+  namespace device
+  {
+    __global__ void
+    mergePointNormalKernel (const float4* cloud, const float8* normals, PtrSz<float12> output)
+    {
+      int idx = threadIdx.x + blockIdx.x * blockDim.x;
+
+      if (idx < output.size)
+      {
+        float4 p = cloud[idx];
+        float8 n = normals[idx];
+
+        float12 o;
+        o.x = p.x;
+        o.y = p.y;
+        o.z = p.z;
+
+        o.normal_x = n.x;
+        o.normal_y = n.y;
+        o.normal_z = n.z;
+
+        output.data[idx] = o;
+      }
+    }
+  }
+}
+
+void
+pcl::device::mergePointNormal (const DeviceArray<float4>& cloud, const DeviceArray<float8>& normals, const DeviceArray<float12>& output)
+{
+  const int block = 256;
+  int total = (int)output.size ();
+
+  mergePointNormalKernel<<<divUp (total, block), block>>>(cloud, normals, output);
+  cudaSafeCall ( cudaGetLastError () );
+  cudaSafeCall (cudaDeviceSynchronize ());
+}

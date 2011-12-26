@@ -91,15 +91,16 @@ struct pcl::gpu::CaptureOpenNI::Impl
   bool has_image;
 };
 
-pcl::gpu::CaptureOpenNI::~CaptureOpenNI()
-{
-  impl_->context.StopGeneratingAll ();
-  impl_->context.Release ();
-}
+pcl::gpu::CaptureOpenNI::CaptureOpenNI() : depth_focal_length_VGA (0.f), baseline (0.f), shadow_value (0), no_sample_value (0), pixelSize (0.0), max_depth (0) {}
+pcl::gpu::CaptureOpenNI::CaptureOpenNI(int device) {init (device); }
+pcl::gpu::CaptureOpenNI::CaptureOpenNI(const string& filename) {init (filename); }
+pcl::gpu::CaptureOpenNI::~CaptureOpenNI() { release (); }
 
-pcl::gpu::CaptureOpenNI::CaptureOpenNI(int device) : depth_focal_length_VGA (0), baseline (0.f),
-  shadow_value (0), no_sample_value (0), pixelSize (0.0), impl_ ( new Impl () )
+void
+pcl::gpu::CaptureOpenNI::init (int device)
 {
+  impl_.reset ( new Impl () );
+
   XnMapOutputMode mode;
   mode.nXRes = XN_VGA_X_RES;
   mode.nYRes = XN_VGA_Y_RES;
@@ -154,19 +155,19 @@ pcl::gpu::CaptureOpenNI::CaptureOpenNI(int device) : depth_focal_length_VGA (0),
   }
   //rc = impl_->depth.SetIntProperty("HoleFilter", 1);
   rc = impl_->depth.SetMapOutputMode (mode);
-  impl_->has_depth = true;  
+  impl_->has_depth = true;
 
   rc = impl_->image.Create (impl_->context);
   if (rc != XN_STATUS_OK)
   {
     sprintf ("Image generator creation failed: %s\n", xnGetStatusString (rc));
-    impl_->has_image = false;    
+    impl_->has_image = false;
   }
   else
   {
-      impl_->has_image = true;
-      rc = impl_->image.SetMapOutputMode (mode);
-  }     
+    impl_->has_image = true;
+    rc = impl_->image.SetMapOutputMode (mode);
+  }
 
   getParams ();
 
@@ -175,13 +176,14 @@ pcl::gpu::CaptureOpenNI::CaptureOpenNI(int device) : depth_focal_length_VGA (0),
   {
     sprintf (impl_->strError, "Start failed: %s\n", xnGetStatusString (rc));
     REPORT_ERROR (impl_->strError);
-  }  
+  }
 }
 
-
-pcl::gpu::CaptureOpenNI::CaptureOpenNI(const string& filename) : depth_focal_length_VGA (0), baseline (0.f),
-  shadow_value (0), no_sample_value (0), pixelSize (0.0), impl_ ( new Impl () )
+void
+pcl::gpu::CaptureOpenNI::init (const std::string& filename)
 {
+  impl_.reset ( new Impl () );
+
   XnStatus rc;
 
   rc = impl_->context.Init ();
@@ -217,7 +219,24 @@ pcl::gpu::CaptureOpenNI::CaptureOpenNI(const string& filename) : depth_focal_len
   if (impl_->imageMD.PixelFormat () != XN_PIXEL_FORMAT_RGB24)
     REPORT_ERROR ("Image format must be RGB24\n");
 
-  getParams ();  
+  getParams ();
+}
+
+void
+pcl::gpu::CaptureOpenNI::release ()
+{
+  if (impl_)
+  {
+    impl_->context.StopGeneratingAll ();
+    impl_->context.Release ();
+  }
+
+  impl_.reset ();
+  depth_focal_length_VGA = 0;
+  baseline = 0.f;
+  shadow_value = 0;
+  no_sample_value = 0;
+  pixelSize = 0.0;
 }
 
 bool
@@ -330,7 +349,7 @@ pcl::gpu::CaptureOpenNI::setRegistration (bool value)
   if (value)
   {
     if (!impl_->has_image)
-        return false;
+      return false;
 
     if (impl_->depth.GetAlternativeViewPointCap ().IsViewPointAs (impl_->image) )
       return true;
