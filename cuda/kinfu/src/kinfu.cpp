@@ -605,6 +605,7 @@ pcl::gpu::KinfuTracker::getTsdfVolume (std::vector<float>& volume) const
   }
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::gpu::KinfuTracker::getTsdfVolumeAndWeighs (std::vector<float>& volume, std::vector<short>& weights) const
 {
@@ -622,3 +623,8 @@ pcl::gpu::KinfuTracker::getTsdfVolumeAndWeighs (std::vector<float>& volume, std:
   }
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void pcl::gpu::paint3DView(const KinfuTracker::View& rgb24, KinfuTracker::View& view, float colors_weight)
+{   
+    device::paint3DView(rgb24, view, colors_weight);
+}

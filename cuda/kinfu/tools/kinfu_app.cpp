@@ -102,7 +102,7 @@ donwloadOrganized (const DeviceArray2D<PointT>& device, pcl::PointCloud<PointT>&
 struct KinFuApp
 {
   KinFuApp(CaptureOpenNI& source, bool show_current_frame = false) : exit_ (false), scan_ (false), scan_volume_(false), showNormals_ (false), connected26_ (false), use_cpu_for_cloud_extraction_ (false), hasImage_ (false),
-    registration_(false), frame_time_ms(0), capture_ (source), cloud_viewer_ ("Volume Cloud Viewer")
+    registration_(false), paintImage_(false), frame_time_ms(0), capture_ (source), cloud_viewer_ ("Volume Cloud Viewer")
   {
     /////////////////////////////////////////
     //Init Kinfu Tracker
@@ -125,7 +125,7 @@ struct KinFuApp
     /////////////////////////////////////////
     //Init KinfuApp
 
-    bool registration_ = capture_.setRegistration(true);
+    registration_ = capture_.setRegistration(true);
     
     viewer3d_.setWindowTitle ("View3D from ray tracing");
     viewer2d_.setWindowTitle ("Kinect Depth stream");
@@ -283,9 +283,16 @@ struct KinFuApp
 
       if (hasImage_)
       {
+        if (registration_ && paintImage_)
+        {
+          colors_device_.upload(rgb24.data, rgb24.step, rgb24.rows, rgb24.cols);            
+          paint3DView(colors_device_, view_device_);
+        }
+
         int cols;
         view_device_.download (view_host_, cols);
         viewer3d_.showRGBImage ((unsigned char*)&view_host_[0], view_device_.cols (), view_device_.rows ());
+ 
 
 #ifdef HAVE_OPENCV
         if (false)
@@ -309,6 +316,7 @@ struct KinFuApp
       cloud_viewer_.spinOnce ();
 
 	  viewer2d_.showShortImage (depth.data, depth.cols, depth.rows, 0, 5000, true);
+      //viewer2d_.showRGBImage((const unsigned char*)rgb24.data, rgb24.cols, rgb24.rows);
 
 #if ((VTK_MAJOR_VERSION >= 5) && (VTK_MINOR_VERSION > 6))
       if (hasImage_)
@@ -328,6 +336,7 @@ struct KinFuApp
   bool hasImage_;
 
   bool registration_;
+  bool paintImage_;
 
   int frame_time_ms;
 
@@ -351,6 +360,7 @@ struct KinFuApp
 
   KinfuTracker::DepthMap depth_device_;
   KinfuTracker::View view_device_;
+  KinfuTracker::View colors_device_;
   vector<KinfuTracker::RGB> view_host_;
 
   DeviceArray2D<KinfuTracker::PointType> frameCloud_;
@@ -380,6 +390,9 @@ struct KinFuApp
         case (int)'t': case (int)'T':
           app->scan_ = true;
           cout << "Scan set to true" << endl;
+          break;
+        case '*': 
+          app->paintImage_ = !app->paintImage_;
           break;
         case (int)'m': case (int)'M':
           app->connected26_ = !app->connected26_;

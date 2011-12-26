@@ -300,6 +300,13 @@ namespace pcl
         void
         reset ();
     };
+
+    /** \brief Paints 3D view with color map grabbed from Kinect
+      * \param[in] rgb24 rgb color frame
+      * \param[out] view 3D view
+      * \param[in] colors_weight weight for colors
+      */
+    PCL_EXPORTS void paint3DView(const KinfuTracker::View& rgb24, KinfuTracker::View& view, float colors_weight = 0.5f);
   }
 };
 

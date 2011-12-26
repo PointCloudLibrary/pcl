@@ -43,7 +43,7 @@ namespace pcl
 {
   namespace device
   {
-    struct ImageGenerator
+     struct ImageGenerator
     {
       enum
       {
@@ -121,5 +121,48 @@ pcl::device::generateImage (const MapArr& vmap, const MapArr& nmap, const LightS
   generateImageKernel<<<grid, block>>>(ig);
   cudaSafeCall (cudaGetLastError ());
   cudaSafeCall (cudaDeviceSynchronize ());
+} 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+  namespace device
+  {
+    __global__ void 
+    paint3DViewKernel(const PtrStep<uchar3> colors, PtrStepSz<uchar3> dst, float colors_weight)
+    {
+      int x = threadIdx.x + blockIdx.x * blockDim.x;
+      int y = threadIdx.y + blockIdx.y * blockDim.y;
+      
+      if (x < dst.cols && y < dst.rows)
+      {
+        uchar3 value = dst.ptr(y)[x];
+        uchar3 color = colors.ptr(y)[x];
+
+        float cx = value.x * (1.f - colors_weight) + color.x * colors_weight;
+        float cy = value.y * (1.f - colors_weight) + color.y * colors_weight;
+        float cz = value.z * (1.f - colors_weight) + color.z * colors_weight;
+
+        value.x = min(255, max(0, __float2int_rn(cx)));
+        value.y = min(255, max(0, __float2int_rn(cy)));
+        value.z = min(255, max(0, __float2int_rn(cz)));
+
+        dst.ptr(y)[x] = value;
+      }
+    }
+  }
 }
 
+void 
+pcl::device::paint3DView(const PtrStep<uchar3>& colors, PtrStepSz<uchar3> dst, float colors_weight)
+{
+  dim3 block(32, 8);
+  dim3 grid(divUp(dst.cols, block.x), divUp(dst.rows, block.y));
+
+  colors_weight = min(1.f, max(0.f, colors_weight));
+
+  paint3DViewKernel<<<grid, block>>>(colors, dst, colors_weight);
+  cudaSafeCall (cudaGetLastError ());
+  cudaSafeCall (cudaDeviceSynchronize ());  
+}

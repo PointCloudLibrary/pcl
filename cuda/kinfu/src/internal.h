@@ -314,6 +314,14 @@ namespace pcl
     void 
     generateImage (const MapArr& vmap, const MapArr& nmap, const LightSource& light, PtrStepSz<uchar3> dst);
 
+     /** \brief Paints 3D view with color map
+      * \param[in] colors rgb color frame from OpenNI   
+      * \param[out] dst output 3D view
+      * \param[in] colors_wight weight for colors   
+      */
+    void 
+    paint3DView(const PtrStep<uchar3>& colors, PtrStepSz<uchar3> dst, float colors_weight = 0.5f);
+
     /** \brief Performs resize of vertex map to next pyramid level by averaging each four points
       * \param[in] input vertext map
       * \param[out] output resized vertex map
