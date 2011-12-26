@@ -49,7 +49,7 @@ Eigen::ArrayXf filter(7);
 TEST (Convolution, convolveRows)
 {
   using namespace pcl::common;
-  Convolution<PointXYZI, PointXYZI> convolve;
+  Convolution<PointXYZItoPointXYZI> convolve;
   PointCloud<PointXYZI>::Ptr output;
   output.reset (new PointCloud<PointXYZI> ());
   convolve.setInputCloud (input.makeShared ());

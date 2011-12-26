@@ -46,8 +46,8 @@ namespace pcl
 {
   namespace common
   {
-    template <>
-    struct PointOperators <pcl::PointXYZI, float>
+
+    struct PointXYZItoIntensity : PointOperators <pcl::PointXYZI, float>
     {
 
       float
@@ -81,8 +81,7 @@ namespace pcl
       }
     };
 
-    template <>
-    struct PointOperators <pcl::PointXYZRGB, float>
+    struct PointXYZRGBtoIntensity : PointOperators <pcl::PointXYZRGB, float>
     {
       float
       operator () ()
@@ -115,8 +114,7 @@ namespace pcl
       }
     };
 
-    template <>
-    struct PointOperators <pcl::PointXYZI, pcl::PointXYZI>
+    struct PointXYZItoPointXYZI : PointOperators <pcl::PointXYZI, pcl::PointXYZI>
     {
       pcl::PointXYZI
       operator () ()
@@ -193,8 +191,7 @@ namespace pcl
       }
     };
 
-    template <>
-    struct PointOperators <pcl::PointXYZRGB, pcl::PointXYZRGB>
+    struct PointXYZRGBtoPointXYZRGB : PointOperators <pcl::PointXYZRGB, pcl::PointXYZRGB>
     {
       pcl::PointXYZRGB
       operator () ()
@@ -237,8 +234,7 @@ namespace pcl
       }
     };
 
-    template <>
-    struct PointOperators <pcl::PointXYZRGB, pcl::PointXYZI>
+    struct PointXYZRGBtoPointXYZI : PointOperators <pcl::PointXYZRGB, pcl::PointXYZI>
     {
       PointXYZI
       operator () (pcl::PointXYZRGB& p)

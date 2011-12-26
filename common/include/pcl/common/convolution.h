@@ -58,7 +58,11 @@ namespace pcl
       * \ingroup common
       */
     template <typename PointIN, typename PointOUT>
-    struct PointOperators {};
+    struct PointOperators 
+    {
+      typedef PointIN PointIn;
+      typedef PointOUT PointOut;
+    };
 
     /** Class Convolution
       * Convolution is a mathematical operation on two functions f and g, 
@@ -88,11 +92,12 @@ namespace pcl
       * \author Nizar Sallem
       * \ingroup common
       */
-    template <typename PointIn, typename PointOut>
+    template <typename PointOperatorsType>
     class Convolution
     {
       public:
-        typedef pcl::common::PointOperators<PointIn, PointOut> PointOperators;
+        typedef typename PointOperatorsType::PointIn PointIn;
+        typedef typename PointOperatorsType::PointOut PointOut;
         typedef typename pcl::PointCloud<PointIn> PointCloudIn;
         typedef typename PointCloudIn::Ptr PointCloudInPtr;
         typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
@@ -265,7 +270,7 @@ namespace pcl
         inline void
         convolve_cols (const Eigen::ArrayXf& kernel, PointCloudOutPtr& out);
         /// Convolution Operator
-        PointOperators operators_;
+        PointOperatorsType operators_;
         /// Border policy
         int borders_policy_;
         /// Convolving direction

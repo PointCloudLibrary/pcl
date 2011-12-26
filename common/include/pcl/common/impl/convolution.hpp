@@ -40,8 +40,8 @@
 #ifndef PCL_COMMON_CONVOLUTION_IMPL_HPP
 #define PCL_COMMON_CONVOLUTION_IMPL_HPP
 
-template <typename PointIn, typename PointOut> void
-pcl::common::Convolution<PointIn, PointOut>::initCompute ()
+template <typename PointOperatorsType> void
+pcl::common::Convolution<PointOperatorsType>::initCompute ()
 {
   if(kernel_width_ % 2 == 0)
     PCL_THROW_EXCEPTION (InitFailedException,
@@ -87,8 +87,8 @@ pcl::common::Convolution<PointIn, PointOut>::initCompute ()
     input_.reset (new PointCloudOut (*input_));
 }
 
-template <typename PointIn, typename PointOut> inline void
-pcl::common::Convolution<PointIn, PointOut>::convolve_rows (const Eigen::ArrayXf& kernel, 
+template <typename PointOperatorsType> inline void
+pcl::common::Convolution<PointOperatorsType>::convolve_rows (const Eigen::ArrayXf& kernel, 
                                                               PointCloudOutPtr& output)
 {
   int i, h(input_->height), w(input_->width), last(w - half_width_);
@@ -109,8 +109,8 @@ pcl::common::Convolution<PointIn, PointOut>::convolve_rows (const Eigen::ArrayXf
   }
 }
 
-template <typename PointIn, typename PointOut> inline void
-pcl::common::Convolution<PointIn, PointOut>::convolve_cols (const Eigen::ArrayXf& kernel, 
+template <typename PointOperatorsType> inline void
+pcl::common::Convolution<PointOperatorsType>::convolve_cols (const Eigen::ArrayXf& kernel, 
                                                               PointCloudOutPtr& output)
 {
   int j, h(input_->height), w(input_->width), last(h - half_width_);

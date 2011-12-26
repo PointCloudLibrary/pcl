@@ -43,10 +43,10 @@
 using namespace pcl;
 using namespace pcl::test;
 
-TEST (PointOperators, PointXYZIPointXYZI)
+TEST (PointOperators, PointXYZItoPointXYZI)
 {
   using namespace pcl::common;
-  PointOperators<PointXYZI, PointXYZI> operators;
+  PointXYZItoPointXYZI operators;
   PointXYZI p0; p0.x = 0.1; p0.y = 0.2;  p0.z = 0.3; p0.intensity = 123;
   PointXYZI p1; p1.x = 0.05; p1.y = 0.05; p1.z = 0.05; p1.intensity = 133;
   PointXYZI p2 = operators.add (p0, p1);
@@ -64,10 +64,10 @@ TEST (PointOperators, PointXYZIPointXYZI)
   EXPECT_EQ_VECTORS (p2.getVector3fMap (), p3.getVector3fMap ());
 }
 
-TEST (PointOperators, PointXYZIfloat)
+TEST (PointOperators, PointXYZItoIntensity)
 {
   using namespace pcl::common;
-  PointOperators<PointXYZI, float> operators;
+  PointXYZItoIntensity operators;
   PointXYZI p0; p0.x = 0.1; p0.y = 0.2;  p0.z = 0.3; p0.intensity = 123;
   PointXYZI p1; p1.x = 0.05; p1.y = 0.05; p1.z = 0.05; p1.intensity = 133;
   float p2 = operators.add (p0, p1);
