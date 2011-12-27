@@ -57,15 +57,18 @@ namespace pcl
       * - MutableGraph
       *
       * Other valid expressions:
-      * - add_edge (m,g)      add a new edge according to the given measurement. Return type: std::pair<edge_descriptor, bool>
-      * - add_vertex (e,g)    add a new vertex according to the given estimate. Return type: vertex_descriptor
-      * - get_pose (v,g)      retrieve the pose estimate for v, if any. Return type: Eigen::Matrix4f
-      * - get_cloud (v,g)     retrieve the cloud pointer associated to v, if any. Return type: pcl::PointCloud<PointT>::ConstPtr
+      * - add_edge (m,g)          add a new edge according to the given measurement. Return type: std::pair<edge_descriptor, bool>
+      * - add_vertex (e,g)        add a new vertex according to the given estimate. Return type: vertex_descriptor
+      * - get_pose (v,g)          retrieve the pose estimate for v, if any. Return type: Eigen::Matrix4f
+      * - get_cloud (v,g)         retrieve the cloud pointer associated to v, if any. Return type: pcl::PointCloud<PointT>::ConstPtr
+      * - set_estimate (v,e,g)    set the estimate for an existing vertex. Return type: void.
+      * - set_measurement (d,m,g) set the measurement for an existing edge. Return type: void.
       * Notation:
-      * - m                   an edge measurement
-      * - e                   a vertex estimate
-      * - v                   a vertex
-      * - g                   a graph
+      * - m                       an edge measurement
+      * - e                       a vertex estimate
+      * - v                       a vertex
+      * - d                       an edge
+      * - g                       a graph
       * A valid graph implementation should accept at least the PoseEstimate estimate and the PoseMeasurement measurement
       *
       * If a specific graph implementation needs initialization and/or finalization,
