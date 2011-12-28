@@ -76,8 +76,8 @@ class OpenNIVoxelGrid
     , device_id_(device_id)
     {
       grid_.setLeafSize (leaf_size_x, leaf_size_y, leaf_size_z);
-      grid_.setFilterFieldName (field_name);
-      grid_.setFilterLimits (min_v, max_v);
+      //grid_.setFilterFieldName (field_name);
+      //grid_.setFilterLimits (min_v, max_v);
     }
     
     void 
