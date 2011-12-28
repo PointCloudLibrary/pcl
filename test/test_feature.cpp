@@ -1761,14 +1761,26 @@ TEST (PCL, RSDEstimation)
   rsd.setSearchMethod (tree);
   rsd.setRadiusSearch (0.015);
 
-  // Optional: return histograms
-  PointCloud<Histogram<25> >::Ptr histograms (new PointCloud<Histogram<25> > ());
-  rsd.setOutputHistograms (histograms);
-
   // estimate
   rsd.compute (*rsds);
   EXPECT_NEAR (rsds->points[0].r_min, 0.0413937, 0.01);
   EXPECT_NEAR (rsds->points[0].r_max, 0.0775842, 0.01);
+
+  // Optional: save histograms
+  rsd.setSaveHistograms (true);
+  
+  // estimate, try different number of divisions and larger radius for a more descriptive signature
+  rsd.setNrSubdivisions (17);
+  rsd.setRadiusSearch (0.06);
+  rsd.compute (*rsds);
+  
+  // Get histograms for each point
+  std::vector<Eigen::MatrixXf>* histograms2D = rsd.getHistograms ();
+  
+  // Transform list of histograms to a point cloud
+  PointCloud<Histogram<17*17> >::Ptr histograms (new PointCloud<Histogram<17*17> > ());
+  pcl::getFeaturePointCloud (*histograms2D, *histograms);
+  EXPECT_EQ (histograms2D->size (), histograms->points.size ());
 
   // Check the 2D histogram of the first point
   std::vector<int> k_indices;
@@ -1776,7 +1788,8 @@ TEST (PCL, RSDEstimation)
   tree.reset (new search::KdTree<PointXYZ>());
   tree->setInputCloud (cloud.makeShared ());
   int k = tree->radiusSearch (cloud.points.at (indicesptr->at (0)), rsd.getRadiusSearch (), k_indices, k_sqr_distances);
-  Eigen::Map<Eigen::MatrixXf> histogram (&(histograms->points[0].histogram[0]), 5, 5);
+  Eigen::Map<Eigen::MatrixXf> histogram (&(histograms->points[0].histogram[0]), rsd.getNrSubdivisions (), rsd.getNrSubdivisions ());
+  EXPECT_EQ ((*histograms2D)[0], histogram);
   //EXPECT_EQ (histogram.sum (), k-1);
 
   // Save output

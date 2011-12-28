@@ -70,20 +70,48 @@ namespace pcl
       return 4; // edge
   }
 
+  /** \brief Transform a list of 2D matrices into a point cloud containing the values in a vector (Histogram<N>).
+    * Can be used to transform the 2D histograms obtained in \ref RSDEstimation into a point cloud.
+    * @note The template paramter N should be (greater or) equal to the product of the number of rows and columns.
+    * \param[in] histograms2D the list of neighborhood 2D histograms
+    * \param[out] histogramsPC the dataset containing the linearized matrices
+    * \ingroup features
+    */
+  template <int N> void
+  getFeaturePointCloud (const std::vector<Eigen::MatrixXf> &histograms2D, PointCloud<Histogram<N> > &histogramsPC)
+  {
+    histogramsPC.points.resize (histograms2D.size ());
+    histogramsPC.width    = histograms2D.size ();
+    histogramsPC.height   = 1;
+    histogramsPC.is_dense = true;
+
+    const int rows  = histograms2D.at(0).rows();
+    const int cols = histograms2D.at(0).cols();
+
+    typename PointCloud<Histogram<N> >::VectorType::iterator it = histogramsPC.points.begin ();
+    BOOST_FOREACH (Eigen::MatrixXf h, histograms2D)
+    {
+      Eigen::Map<Eigen::MatrixXf> histogram (&(it->histogram[0]), rows, cols);
+      histogram = h;
+      ++it;
+    }
+  }
+
   /** \brief Estimate the Radius-based Surface Descriptor (RSD) for a given point based on its spatial neighborhood of 3D points with normals
-    * \param surface the dataset containing the XYZ points
-    * \param normals the dataset containing the surface normals at each point in the dataset
-    * \param indices the neighborhood point indices in the dataset
-    * \param max_dist the upper bound for the considered distance interval
-    * \param nr_subdiv the number of subdivisions for the considered distance interval
-    * \param plane_radius maximum radius, above which everything can be considered planar
-    * \param radii the output point of a type that should have r_min and r_max fields
+    * \param[in] surface the dataset containing the XYZ points
+    * \param[in] normals the dataset containing the surface normals at each point in the dataset
+    * \param[in] indices the neighborhood point indices in the dataset
+    * \param[in] max_dist the upper bound for the considered distance interval
+    * \param[in] nr_subdiv the number of subdivisions for the considered distance interval
+    * \param[in] plane_radius maximum radius, above which everything can be considered planar
+    * \param[in] radii the output point of a type that should have r_min and r_max fields
+    * \param[out] histogram if not NULL, the full neighborhood histogram is provided, usable as a point signature
     * \ingroup features
     */
   template <typename PointInT, typename PointNT, typename PointOutT> void
-  computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud<PointNT> &normals,
+  computeRSD (const PointCloud<PointInT> &surface, const PointCloud<PointNT> &normals,
               const std::vector<int> &indices, double max_dist,
-              int nr_subdiv, double plane_radius, PointOutT &radii, Eigen::Map<Eigen::MatrixXf> *histogram = NULL);
+              int nr_subdiv, double plane_radius, PointOutT &radii, Eigen::MatrixXf *histogram = NULL);
 
   /** \brief @b RSDEstimation estimates the Radius-based Surface Descriptor (minimal and maximal radius of the local surface's curves)
     * for a given point cloud dataset containing points and normals.
@@ -123,13 +151,13 @@ namespace pcl
       typedef typename Feature<PointInT, PointOutT>::PointCloudIn  PointCloudIn;
 
       /** \brief Empty constructor. */
-      RSDEstimation () : nr_subdiv_ (5), plane_radius_ (0.2)
+      RSDEstimation () : nr_subdiv_ (5), plane_radius_ (0.2), save_histograms_ (false)
       {
         feature_name_ = "RadiusSurfaceDescriptor";
       };
 
       /** \brief Set the number of subdivisions for the considered distance interval.
-        * \param nr_subdiv the number of subdivisions
+        * \param[in] nr_subdiv the number of subdivisions
         */
       inline void 
       setNrSubdivisions (int nr_subdiv) { nr_subdiv_ = nr_subdiv; }
@@ -141,7 +169,7 @@ namespace pcl
       /** \brief Set the maximum radius, above which everything can be considered planar.
         * \note the order of magnitude should be around 10-20 times the search radius (0.2 works well for typical datasets).
         * \note on accurate 3D data (e.g. openni sernsors) a search radius as low as 0.01 still gives good results.
-        * \param plane_radius the new plane radius
+        * \param[in] plane_radius the new plane radius
         */
       inline void 
       setPlaneRadius (double plane_radius) { plane_radius_ = plane_radius; }
@@ -157,16 +185,20 @@ namespace pcl
         PCL_ERROR ("[pcl::%s::setKSearch] RSD does not work with k nearest neighbor search. Use setRadiusSearch() instead!\n", getClassName ().c_str ());
       }
 
-      /** \brief Provide a pointer to a point cloud where the full distance-angle histograms should be saved
-        * \note This is optional, and currently works only with the default number of subdivisions: 5 (thus a histogram of 5*5=25 values)
-        * \param[in] cloud the const boost shared pointer to a point cloud with histogram[25]
+      /** \brief Set whether the full distance-angle histograms should be saved.
+        * @note Obtain the list of histograms by getHistograms ()
+        * \param[in] save set to true if histograms should be saved
         */
       inline void
-      setOutputHistograms (pcl::PointCloud<pcl::Histogram<25> >::Ptr cloud) { histograms_ = cloud; }
+      setSaveHistograms (bool save) { save_histograms_ = save; }
 
-      /** \brief Returns a pointer to a point cloud where the full distance-angle histograms were saved. */
-      inline pcl::PointCloud<pcl::Histogram<25> >::Ptr
-      getOutputHistograms () { return histograms_; }
+      /** \brief Returns whether the full distance-angle histograms are being saved. */
+      inline bool
+      getSaveHistograms () { return save_histograms_; }
+
+      /** \brief Returns a pointer to the list of full distance-angle histograms for all points. */
+      inline std::vector<Eigen::MatrixXf>*
+      getHistograms () { return &histograms_; }
 
     protected:
 
@@ -178,8 +210,8 @@ namespace pcl
       void 
       computeFeature (PointCloudOut &output);
 
-      /** \brief The point cloud that will hold the full distance-angle histograms should be saved, if set. */
-      pcl::PointCloud<pcl::Histogram<25> >::Ptr histograms_; // TODO make it work with any nr_subdiv_
+      /** \brief The list of full distance-angle histograms for all points. */
+      std::vector<Eigen::MatrixXf> histograms_;
 
     private:
       /** \brief The upper bound for the considered distance interval. */
@@ -190,6 +222,9 @@ namespace pcl
 
       /** \brief The maximum radius, above which everything can be considered planar. */
       double plane_radius_;
+
+      /** \brief Signals whether the full distance-angle histograms are being saved. */
+      bool save_histograms_;
 
       /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
         * \param[out] output the output point cloud 

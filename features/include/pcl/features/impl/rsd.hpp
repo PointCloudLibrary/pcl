@@ -45,7 +45,7 @@
 template <typename PointInT, typename PointNT, typename PointOutT> inline void
 pcl::computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud<PointNT> &normals,
 		 const std::vector<int> &indices, double max_dist,
-		 int nr_subdiv, double plane_radius, PointOutT &radii, Eigen::Map<Eigen::MatrixXf> *histogram)
+		 int nr_subdiv, double plane_radius, PointOutT &radii, Eigen::MatrixXf *histogram)
 {
   // Check if the full histogram has to be saved or not
   if (histogram)
@@ -149,14 +149,9 @@ pcl::RSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   std::vector<int> nn_indices;
   std::vector<float> nn_sqr_dists;
 
-  // Resize the output normal dataset
-  if (histograms_)
-  {
-    histograms_->points.resize (output.points.size ());
-    histograms_->width    = output.width;
-    histograms_->height   = output.height;
-    histograms_->is_dense = output.is_dense;
-  }
+  // Resize the output histogram dataset
+  if (save_histograms_)
+    histograms_.resize (output.points.size ());
 
   // Iterating over the entire index vector
   for (size_t idx = 0; idx < indices_->size (); ++idx)
@@ -165,11 +160,8 @@ pcl::RSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
     this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_sqr_dists);
 
     // check if the full histogram has to be saved or not
-    if (histograms_ && nr_subdiv_ == 5)
-    {
-      Eigen::Map<Eigen::MatrixXf> histogram (&(histograms_->points[idx].histogram[0]), nr_subdiv_, nr_subdiv_);
-      computeRSD (*surface_, *normals_, nn_indices, search_radius_, nr_subdiv_, plane_radius_, output.points[idx], &histogram);
-    }
+    if (save_histograms_)
+      computeRSD (*surface_, *normals_, nn_indices, search_radius_, nr_subdiv_, plane_radius_, output.points[idx], &(histograms_[idx]));
     else
       computeRSD (*surface_, *normals_, nn_indices, search_radius_, nr_subdiv_, plane_radius_, output.points[idx]);
   }
