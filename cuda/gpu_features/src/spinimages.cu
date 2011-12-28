@@ -75,14 +75,14 @@ namespace pcl
 
 		struct Div12eps
 		{
-			__device__ __forceinline__ float operator()(float v1, float v2) const { return (float)(v1 / ( v2 + numeric_limits<double>::epsilon() )); };
+            __device__ __forceinline__ float operator()(float v1, float v2) const { return (float)(v1 / ( v2 + numeric_limits<double>::epsilon() )); }
 		};
 
 		struct DivValIfNonZero
 		{
 			float val;
 			__device__ __forceinline__ DivValIfNonZero(float value) : val(value) {}
-			__device__ __forceinline__ float operator()(float v) const { return val == 0 ? v : v/val; };
+            __device__ __forceinline__ float operator()(float v) const { return val == 0 ? v : v/val; }
 		};
 
 		template<bool radial, bool angular, typename AxesStrategy>
@@ -90,7 +90,7 @@ namespace pcl
 		{	
 			enum
 			{
-				CTA_SIZE = 192,
+                CTA_SIZE = 192
 			};
 			
 			int work_size;
@@ -143,7 +143,7 @@ namespace pcl
 				float3 origin_normal = input_normals ? fetch(input_normals, index) : make_float3(0.f, 0.f, 0.f); 				
 				origin_normal = normalized_safe(origin_normal); //normalize if non-zero
 
-				float3 rotation_axis = getRotationAxes(index, origin_normal);
+                float3 rotation_axis = AxesStrategy::getRotationAxes(index, origin_normal);
 				rotation_axis = normalized_safe(rotation_axis); //normalize if non-zero
 
 				const float eps = numeric_limits<float>::epsilon ();
@@ -333,7 +333,7 @@ namespace pcl
 			SpinImpl<radial, angular, UseCustomAxesCloud> si;
 			si.rotation_axes_cloud = rotation_axes_cloud;
 			computeSpinImages_caller(si, support_angle_cos, indices, input_cloud, input_normals, surface, normals, neighbours, min_neighb, image_width, bin_size, output);		
-		};		
+        }
 	}
 }
 
