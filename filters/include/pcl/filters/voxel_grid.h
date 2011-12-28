@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -45,72 +47,97 @@
 
 namespace pcl
 {
+  /** \brief Obtain the maximum and minimum points in 3D from a given point cloud.
+    * \param[in] cloud the pointer to a sensor_msgs::PointCloud2 dataset
+    * \param[in] x_idx the index of the X channel
+    * \param[in] y_idx the index of the Y channel
+    * \param[in] z_idx the index of the Z channel
+    * \param[out] min_pt the minimum data point 
+    * \param[out] max_pt the maximum data point
+    */
   PCL_EXPORTS void 
   getMinMax3D (const sensor_msgs::PointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx, 
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt);
 
+  /** \brief Obtain the maximum and minimum points in 3D from a given point cloud. 
+    * \note Performs internal data filtering as well.
+    * \param[in] cloud the pointer to a sensor_msgs::PointCloud2 dataset
+    * \param[in] x_idx the index of the X channel
+    * \param[in] y_idx the index of the Y channel
+    * \param[in] z_idx the index of the Z channel
+    * \param[in] distance_field_name the name of the dimension to filter data along to
+    * \param[in] min_distance the minimum acceptable value in \a distance_field_name data
+    * \param[in] max_distance the maximum acceptable value in \a distance_field_name data
+    * \param[out] min_pt the minimum data point 
+    * \param[out] max_pt the maximum data point
+    * \param[in] limit_negative \b false if data \b inside of the [min_distance; max_distance] interval should be
+    * considered, \b true otherwise.
+    */
   PCL_EXPORTS void 
   getMinMax3D (const sensor_msgs::PointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx, 
                const std::string &distance_field_name, float min_distance, float max_distance, 
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
 
   /** \brief Get the relative cell indices of the "upper half" 13 neighbors.
-    * @note Useful in combination with getNeighborCentroidIndices() from \ref VoxelGrid
+    * \note Useful in combination with getNeighborCentroidIndices() from \ref VoxelGrid
     * \ingroup filters
     */
   inline Eigen::MatrixXi
   getHalfNeighborCellIndices ()
   {
-    Eigen::MatrixXi relative_coordinates(3, 13);
+    Eigen::MatrixXi relative_coordinates (3, 13);
     int idx = 0;
 
     // 0 - 8
-    for (int i = -1; i < 2; i++) {
-      for (int j = -1; j < 2; j++) {
-        relative_coordinates(0, idx) = i;
-        relative_coordinates(1, idx) = j;
-        relative_coordinates(2, idx) = -1;
+    for (int i = -1; i < 2; i++) 
+    {
+      for (int j = -1; j < 2; j++) 
+      {
+        relative_coordinates (0, idx) = i;
+        relative_coordinates (1, idx) = j;
+        relative_coordinates (2, idx) = -1;
         idx++;
       }
     }
     // 9 - 11
-    for (int i = -1; i < 2; i++) {
-      relative_coordinates(0, idx) = i;
-      relative_coordinates(1, idx) = -1;
-      relative_coordinates(2, idx) = 0;
+    for (int i = -1; i < 2; i++) 
+    {
+      relative_coordinates (0, idx) = i;
+      relative_coordinates (1, idx) = -1;
+      relative_coordinates (2, idx) = 0;
       idx++;
     }
     // 12
-    relative_coordinates(0, idx) = -1;
-    relative_coordinates(1, idx) = 0;
-    relative_coordinates(2, idx) = 0;
+    relative_coordinates (0, idx) = -1;
+    relative_coordinates (1, idx) = 0;
+    relative_coordinates (2, idx) = 0;
 
-    return relative_coordinates;
+    return (relative_coordinates);
   }
 
   /** \brief Get the relative cell indices of all the 26 neighbors.
-    * @note Useful in combination with getNeighborCentroidIndices() from \ref VoxelGrid
+    * \note Useful in combination with getNeighborCentroidIndices() from \ref VoxelGrid
     * \ingroup filters
     */
   inline Eigen::MatrixXi
   getAllNeighborCellIndices ()
   {
-    Eigen::MatrixXi relative_coordinates = getHalfNeighborCellIndices();
-    Eigen::MatrixXi relative_coordinates_all(3, 26);
+    Eigen::MatrixXi relative_coordinates = getHalfNeighborCellIndices ();
+    Eigen::MatrixXi relative_coordinates_all( 3, 26);
     relative_coordinates_all.block<3, 13> (0, 0) = relative_coordinates;
     relative_coordinates_all.block<3, 13> (0, 13) = -relative_coordinates;
-    return relative_coordinates_all;
+    return (relative_coordinates_all);
   }
 
   /** \brief Get the minimum and maximum values on each of the 3 (x-y-z) dimensions
     * in a given pointcloud, without considering points outside of a distance threshold from the laser origin
-    * \param cloud the point cloud data message
-    * \param distance_field_name the field name that contains the distance values
-    * \param min_distance the minimum distance a point will be considered from
-    * \param max_distance the maximum distance a point will be considered to
-    * \param min_pt the resultant minimum bounds
-    * \param max_pt the resultant maximum bounds
-    * \param limit_negative if set to true, then all points outside of the interval (min_distance;max_distace) are considered
+    * \param[in] cloud the point cloud data message
+    * \param[in] distance_field_name the field name that contains the distance values
+    * \param[in] min_distance the minimum distance a point will be considered from
+    * \param[in] max_distance the maximum distance a point will be considered to
+    * \param[out] min_pt the resultant minimum bounds
+    * \param[out] max_pt the resultant maximum bounds
+    * \param[in] limit_negative if set to true, then all points outside of the interval (min_distance;max_distace) are considered
     * \ingroup filters
     */
   template <typename PointT> void 
@@ -118,16 +145,16 @@ namespace pcl
                const std::string &distance_field_name, float min_distance, float max_distance,
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
 
-  /** \brief @b VoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
+  /** \brief VoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
     *
-    * The @b VoxelGrid class creates a *3D voxel grid* (think about a voxel
+    * The VoxelGrid class creates a *3D voxel grid* (think about a voxel
     * grid as a set of tiny 3D boxes in space) over the input point cloud data.
     * Then, in each *voxel* (i.e., 3D box), all the points present will be
     * approximated (i.e., *downsampled*) with their centroid. This approach is
     * a bit slower than approximating them with the center of the voxel, but it
     * represents the underlying surface more accurately.
     *
-    * \author Radu Bogdan Rusu, Bastian Steder
+    * \author Radu B. Rusu, Bastian Steder
     * \ingroup filters
     */
   template <typename PointT>
@@ -137,10 +164,6 @@ namespace pcl
     using Filter<PointT>::getClassName;
     using Filter<PointT>::input_;
     using Filter<PointT>::indices_;
-    using Filter<PointT>::filter_limit_negative_;
-    using Filter<PointT>::filter_limit_min_;
-    using Filter<PointT>::filter_limit_max_;
-    using Filter<PointT>::filter_field_name_;
 
     typedef typename Filter<PointT>::PointCloud PointCloud;
     typedef typename PointCloud::Ptr PointCloudPtr;
@@ -148,7 +171,11 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      VoxelGrid () : downsample_all_data_ (true), save_leaf_layout_ (false)
+      VoxelGrid () : 
+        downsample_all_data_ (true), save_leaf_layout_ (false),
+        filter_field_name_ (""), 
+        filter_limit_min_ (-FLT_MAX), filter_limit_max_ (FLT_MAX),
+        filter_limit_negative_ (false)
       {
         leaf_size_.setZero ();
         min_b_.setZero ();
@@ -163,7 +190,7 @@ namespace pcl
       }
 
       /** \brief Set the voxel grid leaf size.
-        * \param leaf_size the voxel grid leaf size
+        * \param[in] leaf_size the voxel grid leaf size
         */
       inline void 
       setLeafSize (const Eigen::Vector4f &leaf_size) 
@@ -177,9 +204,9 @@ namespace pcl
       }
 
       /** \brief Set the voxel grid leaf size.
-        * \param lx the leaf size for X
-        * \param ly the leaf size for Y
-        * \param lz the leaf size for Z
+        * \param[in] lx the leaf size for X
+        * \param[in] ly the leaf size for Y
+        * \param[in] lz the leaf size for Z
         */
       inline void
       setLeafSize (float lx, float ly, float lz)
@@ -197,7 +224,7 @@ namespace pcl
       getLeafSize () { return (leaf_size_.head<3> ()); }
 
       /** \brief Set to true if all fields need to be downsampled, or false if just XYZ.
-        * \param downsample the new value (true/false)
+        * \param[in] downsample the new value (true/false)
         */
       inline void 
       setDownsampleAllData (bool downsample) { downsample_all_data_ = downsample; }
@@ -209,7 +236,7 @@ namespace pcl
       getDownsampleAllData () { return (downsample_all_data_); }
 
       /** \brief Set to true if leaf layout information needs to be saved for later access.
-        * \param save_leaf_layout the new value (true/false)
+        * \param[in] save_leaf_layout the new value (true/false)
         */
       inline void 
       setSaveLeafLayout (bool save_leaf_layout) { save_leaf_layout_ = save_leaf_layout; }
@@ -248,7 +275,7 @@ namespace pcl
         * performed, and that the point is inside the grid, to avoid invalid access (or use
         * getGridCoordinates+getCentroidIndexAt)
         *
-        * \param p the point to get the index at
+        * \param[in] p the point to get the index at
         */
       inline int 
       getCentroidIndex (const PointT &p)
@@ -258,8 +285,8 @@ namespace pcl
 
       /** \brief Returns the indices in the resulting downsampled cloud of the points at the specified grid coordinates,
         * relative to the grid coordinates of the specified point (or -1 if the cell was empty/out of bounds).
-        * \param reference_point the coordinates of the reference point (corresponding cell is allowed to be empty/out of bounds)
-        * \param relative_coordinates matrix with the columns being the coordinates of the requested cells, relative to the reference point's cell
+        * \param[in] reference_point the coordinates of the reference point (corresponding cell is allowed to be empty/out of bounds)
+        * \param[in] relative_coordinates matrix with the columns being the coordinates of the requested cells, relative to the reference point's cell
         * \note for efficiency, user must make sure that the saving of the leaf layout is enabled and filtering performed
         */
       inline std::vector<int> 
@@ -278,7 +305,7 @@ namespace pcl
           else
             neighbors[ni] = -1; // cell is out of bounds, consider it empty
         }
-        return neighbors;
+        return (neighbors);
       }
 
       /** \brief Returns the layout of the leafs for fast access to cells relative to current position.
@@ -287,25 +314,98 @@ namespace pcl
       inline std::vector<int> 
       getLeafLayout () { return (leaf_layout_); }
 
-      /** \brief Returns the corresponding (i,j,k) coordinates in the grid of point (x,y,z). */
+      /** \brief Returns the corresponding (i,j,k) coordinates in the grid of point (x,y,z). 
+        * \param[in] x the X point coordinate to get the (i, j, k) index at
+        * \param[in] y the Y point coordinate to get the (i, j, k) index at
+        * \param[in] z the Z point coordinate to get the (i, j, k) index at
+        */
       inline Eigen::Vector3i 
       getGridCoordinates (float x, float y, float z) 
       { 
-        return Eigen::Vector3i (floor (x / leaf_size_[0]), floor (y / leaf_size_[1]), floor (z / leaf_size_[2])); 
+        return (Eigen::Vector3i (floor (x / leaf_size_[0]), floor (y / leaf_size_[1]), floor (z / leaf_size_[2]))); 
       }
 
-      /** \brief Returns the index in the downsampled cloud corresponding to coordinates (i,j,k) in the grid (-1 if empty) */
+      /** \brief Returns the index in the downsampled cloud corresponding to a given set of coordinates.
+        * \param[in] ijk the coordinates (i,j,k) in the grid (-1 if empty)
+        */
       inline int 
-      getCentroidIndexAt (const Eigen::Vector3i &ijk, bool verbose = true)
+      getCentroidIndexAt (const Eigen::Vector3i &ijk)
       {
         int idx = ((Eigen::Vector4i() << ijk, 0).finished() - min_b_).dot (divb_mul_);
         if (idx < 0 || idx >= (int)leaf_layout_.size ()) // this checks also if leaf_layout_.size () == 0 i.e. everything was computed as needed
         {
-          if (verbose)
-            PCL_ERROR ("[pcl::%s::getCentroidIndexAt] Specified coordinate is outside grid bounds, or leaf layout is not saved, make sure to call setSaveLeafLayout(true) and filter(output) first!\n", getClassName ().c_str ());
-          return -1;
+          //if (verbose)
+          //  PCL_ERROR ("[pcl::%s::getCentroidIndexAt] Specified coordinate is outside grid bounds, or leaf layout is not saved, make sure to call setSaveLeafLayout(true) and filter(output) first!\n", getClassName ().c_str ());
+          return (-1);
         }
-        return leaf_layout_[idx];
+        return (leaf_layout_[idx]);
+      }
+
+      /** \brief Provide the name of the field to be used for filtering data. In conjunction with  \a setFilterLimits,
+        * points having values outside this interval will be discarded.
+        * \param[in] field_name the name of the field that contains values used for filtering
+        */
+      inline void
+      setFilterFieldName (const std::string &field_name)
+      {
+        filter_field_name_ = field_name;
+      }
+
+      /** \brief Get the name of the field used for filtering. */
+      inline std::string const
+      getFilterFieldName ()
+      {
+        return (filter_field_name_);
+      }
+
+      /** \brief Set the field filter limits. All points having field values outside this interval will be discarded.
+        * \param[in] limit_min the minimum allowed field value
+        * \param[in] limit_max the maximum allowed field value
+        */
+      inline void
+      setFilterLimits (const double &limit_min, const double &limit_max)
+      {
+        filter_limit_min_ = limit_min;
+        filter_limit_max_ = limit_max;
+      }
+
+      /** \brief Get the field filter limits (min/max) set by the user. The default values are -FLT_MAX, FLT_MAX. 
+        * \param[out] limit_min the minimum allowed field value
+        * \param[out] limit_max the maximum allowed field value
+        */
+      inline void
+      getFilterLimits (double &limit_min, double &limit_max)
+      {
+        limit_min = filter_limit_min_;
+        limit_max = filter_limit_max_;
+      }
+
+      /** \brief Set to true if we want to return the data outside the interval specified by setFilterLimits (min, max).
+        * Default: false.
+        * \param[in] limit_negative return data inside the interval (false) or outside (true)
+        */
+      inline void
+      setFilterLimitsNegative (const bool limit_negative)
+      {
+        filter_limit_negative_ = limit_negative;
+      }
+
+      /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false). 
+        * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
+        */
+      inline void
+      getFilterLimitsNegative (bool &limit_negative)
+      {
+        limit_negative = filter_limit_negative_;
+      }
+
+      /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false). 
+        * \return true if data \b outside the interval [min; max] is to be returned, false otherwise
+        */
+      inline bool
+      getFilterLimitsNegative ()
+      {
+        return (filter_limit_negative_);
       }
 
     protected:
@@ -339,25 +439,37 @@ namespace pcl
       /** \brief The minimum and maximum bin coordinates, the number of divisions, and the division multiplier. */
       Eigen::Vector4i min_b_, max_b_, div_b_, divb_mul_;
 
+      /** \brief The desired user filter field name. */
+      std::string filter_field_name_;
+
+      /** \brief The minimum allowed filter value a point will be considered from. */
+      double filter_limit_min_;
+
+      /** \brief The maximum allowed filter value a point will be considered from. */
+      double filter_limit_max_;
+
+      /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
+      bool filter_limit_negative_;
+
       typedef typename pcl::traits::fieldList<PointT>::type FieldList;
 
       /** \brief Downsample a Point Cloud using a voxelized grid approach
-        * \param output the resultant point cloud message
+        * \param[out] output the resultant point cloud message
         */
       void 
       applyFilter (PointCloud &output);
   };
 
-  /** \brief @b VoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
+  /** \brief VoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
     *
-    * The @b VoxelGrid class creates a *3D voxel grid* (think about a voxel
+    * The VoxelGrid class creates a *3D voxel grid* (think about a voxel
     * grid as a set of tiny 3D boxes in space) over the input point cloud data.
     * Then, in each *voxel* (i.e., 3D box), all the points present will be
     * approximated (i.e., *downsampled*) with their centroid. This approach is
     * a bit slower than approximating them with the center of the voxel, but it
     * represents the underlying surface more accurately.
     *
-     * \author Radu Bogdan Rusu, Bastian Steder
+     * \author Radu B. Rusu, Bastian Steder
     * \ingroup filters
     */
   template <>
@@ -372,7 +484,10 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      VoxelGrid () : downsample_all_data_ (true), save_leaf_layout_ (false)
+      VoxelGrid () : 
+        downsample_all_data_ (true), save_leaf_layout_ (false),
+        filter_field_name_ (""), filter_limit_min_ (-FLT_MAX), filter_limit_max_ (FLT_MAX),
+        filter_limit_negative_ (false)
       {
         leaf_size_.setZero ();
         min_b_.setZero ();
@@ -387,7 +502,7 @@ namespace pcl
       }
 
       /** \brief Set the voxel grid leaf size.
-        * \param leaf_size the voxel grid leaf size
+        * \param[in] leaf_size the voxel grid leaf size
         */
       inline void 
       setLeafSize (const Eigen::Vector4f &leaf_size) 
@@ -401,9 +516,9 @@ namespace pcl
       }
 
       /** \brief Set the voxel grid leaf size.
-        * \param lx the leaf size for X
-        * \param ly the leaf size for Y
-        * \param lz the leaf size for Z
+        * \param[in] lx the leaf size for X
+        * \param[in] ly the leaf size for Y
+        * \param[in] lz the leaf size for Z
         */
       inline void
       setLeafSize (float lx, float ly, float lz)
@@ -421,7 +536,7 @@ namespace pcl
       getLeafSize () { return (leaf_size_.head<3> ()); }
 
       /** \brief Set to true if all fields need to be downsampled, or false if just XYZ.
-        * \param downsample the new value (true/false)
+        * \param[in] downsample the new value (true/false)
         */
       inline void 
       setDownsampleAllData (bool downsample) { downsample_all_data_ = downsample; }
@@ -433,7 +548,7 @@ namespace pcl
       getDownsampleAllData () { return (downsample_all_data_); }
 
       /** \brief Set to true if leaf layout information needs to be saved for later access.
-        * \param save_leaf_layout the new value (true/false)
+        * \param[in] save_leaf_layout the new value (true/false)
         */
       inline void 
       setSaveLeafLayout (bool save_leaf_layout) { save_leaf_layout_ = save_leaf_layout; }
@@ -469,19 +584,22 @@ namespace pcl
       /** \brief Returns the index in the resulting downsampled cloud of the specified point.
         * \note for efficiency, user must make sure that the saving of the leaf layout is enabled and filtering performed,
         * and that the point is inside the grid, to avoid invalid access (or use getGridCoordinates+getCentroidIndexAt)
+        * \param[in] x the X point coordinate to get the index at
+        * \param[in] y the Y point coordinate to get the index at
+        * \param[in] z the Z point coordinate to get the index at
         */
       inline int 
       getCentroidIndex (float x, float y, float z)
       {
-        return leaf_layout_.at ((Eigen::Vector4i ((int) floor (x / leaf_size_[0]), (int) floor (y / leaf_size_[1]), (int) floor (z / leaf_size_[2]), 0) - min_b_).dot (divb_mul_));
+        return (leaf_layout_.at ((Eigen::Vector4i ((int) floor (x / leaf_size_[0]), (int) floor (y / leaf_size_[1]), (int) floor (z / leaf_size_[2]), 0) - min_b_).dot (divb_mul_)));
       }
 
       /** \brief Returns the indices in the resulting downsampled cloud of the points at the specified grid coordinates,
         * relative to the grid coordinates of the specified point (or -1 if the cell was empty/out of bounds).
-        * \param x the X coordinate of the reference point (corresponding cell is allowed to be empty/out of bounds)
-        * \param y the Y coordinate of the reference point (corresponding cell is allowed to be empty/out of bounds)
-        * \param z the Z coordinate of the reference point (corresponding cell is allowed to be empty/out of bounds)
-        * \param relative_coordinates matrix with the columns being the coordinates of the requested cells, relative to the reference point's cell
+        * \param[in] x the X coordinate of the reference point (corresponding cell is allowed to be empty/out of bounds)
+        * \param[in] y the Y coordinate of the reference point (corresponding cell is allowed to be empty/out of bounds)
+        * \param[in] z the Z coordinate of the reference point (corresponding cell is allowed to be empty/out of bounds)
+        * \param[out] relative_coordinates matrix with the columns being the coordinates of the requested cells, relative to the reference point's cell
         * \note for efficiency, user must make sure that the saving of the leaf layout is enabled and filtering performed
         */
       inline std::vector<int> 
@@ -500,9 +618,17 @@ namespace pcl
           else
             neighbors[ni] = -1; // cell is out of bounds, consider it empty
         }
-        return neighbors;
+        return (neighbors);
       }
       
+      /** \brief Returns the indices in the resulting downsampled cloud of the points at the specified grid coordinates,
+        * relative to the grid coordinates of the specified point (or -1 if the cell was empty/out of bounds).
+        * \param[in] x the X coordinate of the reference point (corresponding cell is allowed to be empty/out of bounds)
+        * \param[in] y the Y coordinate of the reference point (corresponding cell is allowed to be empty/out of bounds)
+        * \param[in] z the Z coordinate of the reference point (corresponding cell is allowed to be empty/out of bounds)
+        * \param[out] relative_coordinates vector with the elements being the coordinates of the requested cells, relative to the reference point's cell
+        * \note for efficiency, user must make sure that the saving of the leaf layout is enabled and filtering performed
+        */
       inline std::vector<int> 
       getNeighborCentroidIndices (float x, float y, float z, const std::vector<Eigen::Vector3i> &relative_coordinates)
       {
@@ -511,7 +637,7 @@ namespace pcl
         neighbors.reserve (relative_coordinates.size ());
         for (std::vector<Eigen::Vector3i>::const_iterator it = relative_coordinates.begin (); it != relative_coordinates.end (); it++)
           neighbors.push_back (leaf_layout_[(ijk + (Eigen::Vector4i() << *it, 0).finished() - min_b_).dot (divb_mul_)]);
-        return neighbors;
+        return (neighbors);
       }
 
       /** \brief Returns the layout of the leafs for fast access to cells relative to current position.
@@ -520,25 +646,98 @@ namespace pcl
       inline std::vector<int> 
       getLeafLayout () { return (leaf_layout_); }
 
-      /** \brief Returns the corresponding (i,j,k) coordinates in the grid of point (x,y,z). */
-      inline Eigen::Vector3i 
+      /** \brief Returns the corresponding (i,j,k) coordinates in the grid of point (x,y,z).
+        * \param[in] x the X point coordinate to get the (i, j, k) index at
+        * \param[in] y the Y point coordinate to get the (i, j, k) index at
+        * \param[in] z the Z point coordinate to get the (i, j, k) index at
+        */
+       inline Eigen::Vector3i 
       getGridCoordinates (float x, float y, float z) 
       { 
-        return Eigen::Vector3i ((int) floor (x / leaf_size_[0]), (int) floor (y / leaf_size_[1]), (int) floor (z / leaf_size_[2])); 
+        return (Eigen::Vector3i ((int) floor (x / leaf_size_[0]), (int) floor (y / leaf_size_[1]), (int) floor (z / leaf_size_[2]))); 
       }
 
-      /** \brief Returns the index in the downsampled cloud corresponding to coordinates (i,j,k) in the grid (-1 if empty) */
+      /** \brief Returns the index in the downsampled cloud corresponding to a given set of coordinates.
+        * \param[in] ijk the coordinates (i,j,k) in the grid (-1 if empty)
+        */
       inline int 
-      getCentroidIndexAt (const Eigen::Vector3i &ijk, bool verbose = true)
+      getCentroidIndexAt (const Eigen::Vector3i &ijk)
       {
         int idx = ((Eigen::Vector4i() << ijk, 0).finished() - min_b_).dot (divb_mul_);
         if (idx < 0 || idx >= (int)leaf_layout_.size ()) // this checks also if leaf_layout_.size () == 0 i.e. everything was computed as needed
         {
-          if (verbose)
-            PCL_ERROR ("[pcl::%s::getCentroidIndexAt] Specified coordinate is outside grid bounds, or leaf layout is not saved, make sure to call setSaveLeafLayout(true) and filter(output) first!\n", getClassName ().c_str ());
-          return -1;
+          //if (verbose)
+          //  PCL_ERROR ("[pcl::%s::getCentroidIndexAt] Specified coordinate is outside grid bounds, or leaf layout is not saved, make sure to call setSaveLeafLayout(true) and filter(output) first!\n", getClassName ().c_str ());
+          return (-1);
         }
-        return leaf_layout_[idx];
+        return (leaf_layout_[idx]);
+      }
+
+      /** \brief Provide the name of the field to be used for filtering data. In conjunction with  \a setFilterLimits,
+        * points having values outside this interval will be discarded.
+        * \param[in] field_name the name of the field that contains values used for filtering
+        */
+      inline void
+      setFilterFieldName (const std::string &field_name)
+      {
+        filter_field_name_ = field_name;
+      }
+
+      /** \brief Get the name of the field used for filtering. */
+      inline std::string const
+      getFilterFieldName ()
+      {
+        return (filter_field_name_);
+      }
+
+      /** \brief Set the field filter limits. All points having field values outside this interval will be discarded.
+        * \param[in] limit_min the minimum allowed field value
+        * \param[in] limit_max the maximum allowed field value
+        */
+      inline void
+      setFilterLimits (const double &limit_min, const double &limit_max)
+      {
+        filter_limit_min_ = limit_min;
+        filter_limit_max_ = limit_max;
+      }
+
+      /** \brief Get the field filter limits (min/max) set by the user. The default values are -FLT_MAX, FLT_MAX. 
+        * \param[out] limit_min the minimum allowed field value
+        * \param[out] limit_max the maximum allowed field value
+        */
+      inline void
+      getFilterLimits (double &limit_min, double &limit_max)
+      {
+        limit_min = filter_limit_min_;
+        limit_max = filter_limit_max_;
+      }
+
+      /** \brief Set to true if we want to return the data outside the interval specified by setFilterLimits (min, max).
+        * Default: false.
+        * \param[in] limit_negative return data inside the interval (false) or outside (true)
+        */
+      inline void
+      setFilterLimitsNegative (const bool limit_negative)
+      {
+        filter_limit_negative_ = limit_negative;
+      }
+
+      /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false). 
+        * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
+        */
+      inline void
+      getFilterLimitsNegative (bool &limit_negative)
+      {
+        limit_negative = filter_limit_negative_;
+      }
+
+      /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false). 
+        * \return true if data \b outside the interval [min; max] is to be returned, false otherwise
+        */
+      inline bool
+      getFilterLimitsNegative ()
+      {
+        return (filter_limit_negative_);
       }
 
     protected:
@@ -578,8 +777,20 @@ namespace pcl
         */
       Eigen::Vector4i min_b_, max_b_, div_b_, divb_mul_;
 
+      /** \brief The desired user filter field name. */
+      std::string filter_field_name_;
+
+      /** \brief The minimum allowed filter value a point will be considered from. */
+      double filter_limit_min_;
+
+      /** \brief The maximum allowed filter value a point will be considered from. */
+      double filter_limit_max_;
+
+      /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
+      bool filter_limit_negative_;
+
       /** \brief Downsample a Point Cloud using a voxelized grid approach
-        * \param output the resultant point cloud
+        * \param[out] output the resultant point cloud
         */
       void 
       applyFilter (PointCloud2 &output);

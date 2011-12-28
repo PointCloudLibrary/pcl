@@ -79,10 +79,10 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
     centroid_size += 3;
   }
 
-  for (size_t i = 0; i < histsize; i++) 
+  for (size_t i = 0; i < histsize_; i++) 
   {
-    history[i].count = 0;
-    history[i].centroid = Eigen::VectorXf::Zero (centroid_size);
+    history_[i].count = 0;
+    history_[i].centroid = Eigen::VectorXf::Zero (centroid_size);
   }
   Eigen::VectorXf scratch = Eigen::VectorXf::Zero (centroid_size);
 
@@ -93,8 +93,8 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
     int ix = (int)floor (input_->points[cp].x * inverse_leaf_size_[0]);
     int iy = (int)floor (input_->points[cp].y * inverse_leaf_size_[1]);
     int iz = (int)floor (input_->points[cp].z * inverse_leaf_size_[2]);
-    unsigned int hash = (ix * 7171 + iy * 3079 + iz * 4231) & (histsize - 1);
-    he *hhe = &history[hash];
+    unsigned int hash = (ix * 7171 + iy * 3079 + iz * 4231) & (histsize_ - 1);
+    he *hhe = &history_[hash];
     if (hhe->count && ((ix != hhe->ix) || (iy != hhe->iy) || (iz != hhe->iz))) 
     {
       flush (output, op++, hhe, rgba_index, centroid_size);
@@ -120,9 +120,9 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
     pcl::for_each_type <FieldList> (xNdCopyPointEigenFunctor <PointT> (input_->points[cp], scratch));
     hhe->centroid += scratch;
   }
-  for (size_t i = 0; i < histsize; i++) 
+  for (size_t i = 0; i < histsize_; i++) 
   {
-    he *hhe = &history[i];
+    he *hhe = &history_[i];
     if (hhe->count)
       flush (output, op++, hhe, rgba_index, centroid_size);
   }

@@ -16,7 +16,6 @@ if(build)
         src/filter.cpp
         src/filter_indices.cpp
         src/passthrough.cpp
-        src/color.cpp
         src/project_inliers.cpp
         src/radius_outlier_removal.cpp
         src/random_sample.cpp
@@ -38,7 +37,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/filter.h
         include/pcl/${SUBSYS_NAME}/filter_indices.h
         include/pcl/${SUBSYS_NAME}/passthrough.h
-        include/pcl/${SUBSYS_NAME}/color.h
         include/pcl/${SUBSYS_NAME}/project_inliers.h
         include/pcl/${SUBSYS_NAME}/radius_outlier_removal.h
         include/pcl/${SUBSYS_NAME}/random_sample.h
@@ -58,7 +56,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/filter.hpp
         include/pcl/${SUBSYS_NAME}/impl/filter_indices.hpp
         include/pcl/${SUBSYS_NAME}/impl/passthrough.hpp
-        include/pcl/${SUBSYS_NAME}/impl/color.hpp
         include/pcl/${SUBSYS_NAME}/impl/project_inliers.hpp
         include/pcl/${SUBSYS_NAME}/impl/radius_outlier_removal.hpp
         include/pcl/${SUBSYS_NAME}/impl/random_sample.hpp
