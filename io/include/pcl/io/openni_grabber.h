@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2009-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,7 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Nico Blodow (blodow@cs.tum.edu), Suat Gedikli (gedikli@willowgarage.com)
  */
 
 #include "pcl/pcl_config.h"
@@ -59,27 +60,26 @@ namespace pcl
   struct PointXYZI;
   template <typename T> class PointCloud;
 
-  /**
-   * @author Nico Blodow <blodow@cs.tum.edu>, @author Suat Gedikli <gedikli@willowgarage.com>
-   * @brief Grabber for OpenNI devices
-   * @ingroup io
-   */
+  /** \brief Grabber for OpenNI devices (i.e., Primesense PSDK, Microsoft Kinect, Asus XTion Pro/Live)
+    * \author Nico Blodow <blodow@cs.tum.edu>, Suat Gedikli <gedikli@willowgarage.com>
+    * \ingroup io
+    */
   class PCL_EXPORTS OpenNIGrabber : public Grabber
   {
     public:
 
       typedef enum
       {
-        OpenNI_Default_Mode = 0, /*This can depend on the device. For now all devices (PSDK, Xtion, Kinect) its VGA@30Hz*/
-        OpenNI_SXGA_15Hz = 1,  /*Only supported by the Kinect*/
-        OpenNI_VGA_30Hz = 2,   /*Supported by PSDK, Xtion and Kinect*/
-        OpenNI_VGA_25Hz = 3,   /*Supportged by PSDK and Xtion*/
-        OpenNI_QVGA_25Hz = 4,  /*Supported by PSDK and Xtion*/
-        OpenNI_QVGA_30Hz = 5,  /*Supported by PSDK, Xtion and Kinect*/
-        OpenNI_QVGA_60Hz = 6,  /*Supported by PSDK and Xtion*/
-        OpenNI_QQVGA_25Hz = 7, /*Not supported -> using software downsampling (only for integer scale factor and only NN)*/
-        OpenNI_QQVGA_30Hz = 8, /*Not supported -> using software downsampling (only for integer scale factor and only NN)*/
-        OpenNI_QQVGA_60Hz = 9  /*Not supported -> using software downsampling (only for integer scale factor and only NN)*/
+        OpenNI_Default_Mode = 0, // This can depend on the device. For now all devices (PSDK, Xtion, Kinect) its VGA@30Hz
+        OpenNI_SXGA_15Hz = 1,    // Only supported by the Kinect
+        OpenNI_VGA_30Hz = 2,     // Supported by PSDK, Xtion and Kinect
+        OpenNI_VGA_25Hz = 3,     // Supportged by PSDK and Xtion
+        OpenNI_QVGA_25Hz = 4,    // Supported by PSDK and Xtion
+        OpenNI_QVGA_30Hz = 5,    // Supported by PSDK, Xtion and Kinect
+        OpenNI_QVGA_60Hz = 6,    // Supported by PSDK and Xtion
+        OpenNI_QQVGA_25Hz = 7,   // Not supported -> using software downsampling (only for integer scale factor and only NN)
+        OpenNI_QQVGA_30Hz = 8,   // Not supported -> using software downsampling (only for integer scale factor and only NN)
+        OpenNI_QQVGA_60Hz = 9    // Not supported -> using software downsampling (only for integer scale factor and only NN)
       } Mode;
 
       //define callback signature typedefs
@@ -91,54 +91,85 @@ namespace pcl
       typedef void (sig_cb_openni_point_cloud) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> >&);
       typedef void (sig_cb_openni_point_cloud_rgb) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB> >&);
       typedef void (sig_cb_openni_point_cloud_i) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&);
+      typedef void (sig_cb_openni_point_cloud_eigen) (const boost::shared_ptr<const pcl::PointCloud<Eigen::MatrixXf> >&);
 
     public:
-      /** @brief Constructor
-        * @param[in] device_id ID of the device, which might be a serial number, bus@address or the index of the device.
-        * @param[in] depth_mode the mode of the depth stream
-        * @param[in] image_mode the mode of the image stream
+      /** \brief Constructor
+        * \param[in] device_id ID of the device, which might be a serial number, bus@address or the index of the device.
+        * \param[in] depth_mode the mode of the depth stream
+        * \param[in] image_mode the mode of the image stream
         */
       OpenNIGrabber (const std::string& device_id = "",
                      const Mode& depth_mode = OpenNI_Default_Mode,
                      const Mode& image_mode = OpenNI_Default_Mode);
 
-      /**
-       * @brief virtual Destructor inherited from the Grabber interface. It never throws
-       */
+      /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
       virtual ~OpenNIGrabber () throw ();
 
+      /** \brief Start the data acquisition. */
       virtual void
       start ();
 
+      /** \brief Stop the data acquisition. */
       virtual void
       stop ();
 
+      /** \brief Check if the data acquisition is still running. */
       virtual bool
       isRunning () const;
 
       virtual std::string
       getName () const;
 
-      virtual float getFramesPerSecond () const;
+      /** \brief Obtain the number of frames per second (FPS). */
+      virtual float 
+      getFramesPerSecond () const;
 
+      /** \brief Get a boost shared pointer to the \ref OpenNIDevice object. */
       inline boost::shared_ptr<openni_wrapper::OpenNIDevice>
       getDevice () const;
 
+      /** \brief Obtain a list of the available depth modes that this device supports. */
       std::vector<std::pair<int, XnMapOutputMode> >
       getAvailableDepthModes () const;
 
+      /** \brief Obtain a list of the available image modes that this device supports. */
       std::vector<std::pair<int, XnMapOutputMode> >
       getAvailableImageModes () const;
 
-      void setPrincipalPoint (float cx, float cy);
+      /** \brief Set the principal point.
+        * \param[in] cx ...
+        * \param[in] cy ...
+        */
+      void 
+      setPrincipalPoint (float cx, float cy);
 
-      void setAspectRatio (float aspect_ratio);
+      /** \brief Set the aspect ratio camera parameter
+        * \param[in] aspect_ratio ...
+        */
+      void 
+      setAspectRatio (float aspect_ratio);
 
-      void setFocalLength (float focal_length);
+      /** \brief Set the focal length camera parameter
+        * \param[in] focal_length ...
+        */
+      void 
+      setFocalLength (float focal_length);
 
-      void setLensDistortion (float k1, float k2, float t1, float t2);
+      /** \brief Set the lens distortion camera parameter
+        * \param[in] k1 ...
+        * \param[in] k2 ...
+        * \param[in] t1 ...
+        * \param[in] t2 ...
+        */
+      void 
+      setLensDistortion (float k1, float k2, float t1, float t2);
 
-      float getFocalLength (unsigned image_width) const;
+      /** \brief Obtain the focal length camera parameter for a given image width
+        * \param[in] image_width the image width to get the focal length for
+        */
+      float 
+      getFocalLength (unsigned image_width) const;
 
     private:
       /** \brief ... */
@@ -209,7 +240,7 @@ namespace pcl
 
       /** \brief ... */
       virtual inline void
-      checkIRStreamRequired();
+      checkIRStreamRequired ();
 
       /** \brief ... */
       boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> >
@@ -227,6 +258,15 @@ namespace pcl
       Synchronizer<boost::shared_ptr<openni_wrapper::Image>, boost::shared_ptr<openni_wrapper::DepthImage> > rgb_sync_;
       Synchronizer<boost::shared_ptr<openni_wrapper::IRImage>, boost::shared_ptr<openni_wrapper::DepthImage> > ir_sync_;
 
+      /** \brief Convert a pair of depth + RGB images to a PointCloud<MatrixXf> dataset.
+        * \param[in] image the RGB image
+        * \param[in] depth_image the depth image
+        * \return a PointCloud<MatrixXf> dataset
+        */
+      boost::shared_ptr<pcl::PointCloud<Eigen::MatrixXf> >
+      convertToEigenPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
+                                const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
+      
       /** \brief the actual openni device*/
       boost::shared_ptr<openni_wrapper::OpenNIDevice> device_;
 
@@ -242,14 +282,15 @@ namespace pcl
       bool ir_required_;
       bool sync_required_;
 
-      boost::signals2::signal<sig_cb_openni_image >* image_signal_;
-      boost::signals2::signal<sig_cb_openni_depth_image >* depth_image_signal_;
-      boost::signals2::signal<sig_cb_openni_ir_image >* ir_image_signal_;
+      boost::signals2::signal<sig_cb_openni_image>* image_signal_;
+      boost::signals2::signal<sig_cb_openni_depth_image>* depth_image_signal_;
+      boost::signals2::signal<sig_cb_openni_ir_image>* ir_image_signal_;
       boost::signals2::signal<sig_cb_openni_image_depth_image>* image_depth_image_signal_;
       boost::signals2::signal<sig_cb_openni_ir_depth_image>* ir_depth_image_signal_;
-      boost::signals2::signal<sig_cb_openni_point_cloud >* point_cloud_signal_;
-      boost::signals2::signal<sig_cb_openni_point_cloud_i >* point_cloud_i_signal_;
-      boost::signals2::signal<sig_cb_openni_point_cloud_rgb >* point_cloud_rgb_signal_;
+      boost::signals2::signal<sig_cb_openni_point_cloud>* point_cloud_signal_;
+      boost::signals2::signal<sig_cb_openni_point_cloud_i>* point_cloud_i_signal_;
+      boost::signals2::signal<sig_cb_openni_point_cloud_rgb>* point_cloud_rgb_signal_;
+      boost::signals2::signal<sig_cb_openni_point_cloud_eigen>* point_cloud_eigen_signal_;
 
       struct modeComp
       {
