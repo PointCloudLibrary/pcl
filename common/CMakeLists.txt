@@ -70,7 +70,6 @@ if(build)
         include/pcl/common/intersections.h
         include/pcl/common/norms.h
         include/pcl/common/piecewise_linear_function.h
-        include/pcl/common/point_correspondence.h
         include/pcl/common/polynomial_calculations.h
         include/pcl/common/poses_from_matches.h
         include/pcl/common/time.h

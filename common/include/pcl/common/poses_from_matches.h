@@ -37,7 +37,7 @@
 #define PCL_POSES_FROM_MATCHES_H_
 
 #include <pcl/pcl_macros.h>
-#include <pcl/common/point_correspondence.h>
+#include <pcl/correspondence.h>
 
 namespace pcl
 {
