@@ -83,8 +83,6 @@ class OpenNIIntegralImageNormalEstimation
       ne_.setRectSize (10, 10);
       new_cloud_ = false;
 
-      pass_.setFilterFieldName ("z");
-      pass_.setFilterLimits (0.0, 1.0);
       pass_.setDownsampleAllData (true);
       pass_.setLeafSize (0.005, 0.005, 0.005);
 
