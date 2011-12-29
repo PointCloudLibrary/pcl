@@ -145,12 +145,12 @@ namespace pcl
     * \ingroup surface
     */
   template <typename PointInT>
-  class GreedyProjectionTriangulation : public SurfaceReconstruction<PointInT>
+  class GreedyProjectionTriangulation : public MeshConstruction<PointInT>
   {
     public:
-      using SurfaceReconstruction<PointInT>::tree_;
-      using SurfaceReconstruction<PointInT>::input_;
-      using SurfaceReconstruction<PointInT>::indices_;
+      using MeshConstruction<PointInT>::tree_;
+      using MeshConstruction<PointInT>::input_;
+      using MeshConstruction<PointInT>::indices_;
 
       typedef typename pcl::KdTree<PointInT> KdTree;
       typedef typename pcl::KdTree<PointInT>::Ptr KdTreePtr;
@@ -161,7 +161,8 @@ namespace pcl
 
       // FIXME this enum should have a type.  Not be anonymous. 
       // Otherplaces where consts are used probably should be fixed.
-      enum { 
+      enum 
+      { 
         NONE = -1,    // not-defined
         FREE = 0,    
         FRINGE = 1,  
@@ -177,7 +178,7 @@ namespace pcl
 
       /** \brief Set the multiplier of the nearest neighbor distance to obtain the final search radius for each point
        *  (this will make the algorithm adapt to different point densities in the cloud).
-        * \param mu the multiplier
+        * \param[in] mu the multiplier
         */
       inline void 
       setMu (double mu) { mu_ = mu; }
@@ -187,7 +188,7 @@ namespace pcl
       getMu () { return (mu_); }
 
       /** \brief Set the maximum number of nearest neighbors to be searched for.
-        * \param nnn the maximum number of nearest neighbors
+        * \param[in] nnn the maximum number of nearest neighbors
         */
       inline void 
       setMaximumNearestNeighbors (int nnn) { nnn_ = nnn; }
@@ -197,7 +198,7 @@ namespace pcl
       getMaximumNearestNeighbors () { return (nnn_); }
 
       /** \brief Set the sphere radius that is to be used for determining the k-nearest neighbors used for triangulating.
-        * \param radius the sphere radius that is to contain all k-nearest neighbors
+        * \param[in] radius the sphere radius that is to contain all k-nearest neighbors
         * \note This distance limits the maximum edge length!
         */
       inline void 
@@ -208,7 +209,7 @@ namespace pcl
       getSearchRadius () { return (search_radius_); }
 
       /** \brief Set the minimum angle each triangle should have.
-        * \param minimum_angle the minimum angle each triangle should have
+        * \param[in] minimum_angle the minimum angle each triangle should have
         * \note As this is a greedy approach, this will have to be violated from time to time
         */
       inline void 
@@ -219,7 +220,7 @@ namespace pcl
       getMinimumAngle () { return (minimum_angle_); }
 
       /** \brief Set the maximum angle each triangle can have.
-        * \param maximum_angle the maximum angle each triangle can have
+        * \param[in] maximum_angle the maximum angle each triangle can have
         * \note For best results, its value should be around 120 degrees
         */
       inline void 
@@ -230,7 +231,7 @@ namespace pcl
       getMaximumAngle () { return (maximum_angle_); }
 
       /** \brief Don't consider points for triangulation if their normal deviates more than this value from the query point's normal.
-        * \param eps_angle maximum surface angle
+        * \param[in] eps_angle maximum surface angle
         * \note As normal estimation methods usually give smooth transitions at sharp edges, this ensures correct triangulation
         *       by avoiding connecting points from one side to points from the other through forcing the use of the edge points.
         */
@@ -242,7 +243,7 @@ namespace pcl
       getMaximumSurfaceAngle () { return (eps_angle_); }
 
       /** \brief Set the flag for consistently oriented normals.
-        * \param consistent set it to true if the normals are consistently oriented
+        * \param[in] consistent set it to true if the normals are consistently oriented
         */
       inline void 
       setNormalConsistency (bool consistent) { consistent_ = consistent; }
@@ -264,31 +265,13 @@ namespace pcl
       getPartIDs () { return (part_); }
 
 
-      // add by ktran for update & merge meshes
-      /** \brief Get the sfn list.
-       */
+      /** \brief Get the sfn list. */
       inline std::vector<int>
       getSFN () { return (sfn_); }
 
-      /** \brief Get the sfn list.
-       */
+      /** \brief Get the ffn list. */
       inline std::vector<int>
       getFFN () { return (ffn_); }
-
-      /** \brief Update mesh when new point cloud is added without recreating mesh.
-        * \param[in] update point cloud update 
-        * \param[out] output mesh output
-        */
-      void
-      updateMesh (const PointCloudInConstPtr &update, pcl::PolygonMesh &output);
-
-      /** \brief Update texture mesh when new point cloud is added without recreating mesh.
-        * \param[in] update point cloud update 
-        * \param[out] output mesh output
-        * \param[out] tex_mesh texture mesh output
-        */
-      void
-      updateMesh (const PointCloudInConstPtr &update, pcl::PolygonMesh &output, pcl::TextureMesh &tex_mesh);
 
      /** \brief Remove the triangles from the 1st mesh that have neighbors in the 2nd mesh
        * \param[in,out] mesh1 the first polygon mesh
@@ -296,16 +279,6 @@ namespace pcl
        */
       void
       removeOverlapTriangles (pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2);
-
-      /** \brief Remove the triangles from the 1st mesh that have neighbors in the 2nd mesh
-        * \param[in,out] mesh1 the first polygon mesh
-        * \param[in,out] mesh2 the second polygon mesh
-        * \param[in] state2 a state vector 
-        * \param[in] sfn2
-        * \param[in] ffn2
-        */
-      void
-      merge2Meshes (pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2, std::vector<int> state2, std::vector<int> sfn2, std::vector<int> ffn2);
 
     protected:
       /** \brief The maximum number of nearest neighbors accepted by searching. */
@@ -413,11 +386,23 @@ namespace pcl
       /** \brief Temporary variable to store 3 coordiantes **/
       Eigen::Vector3f tmp_;
 
-      /** \brief The actual urface reconstruction method.
-        * \param output the resultant polygonal mesh
+      /** \brief The actual surface reconstruction method.
+        * \param[out] output the resultant polygonal mesh
         */
       void 
       performReconstruction (pcl::PolygonMesh &output);
+
+      /** \brief The actual surface reconstruction method.
+        * \param[out] polygons the resultant polygons, as a set of vertices. The Vertices structure contains an array of point indices.
+        */
+      void 
+      performReconstruction (std::vector<pcl::Vertices> &polygons);
+
+      /** \brief The actual surface reconstruction method.
+        * \param[out] polygons the resultant polygons, as a set of vertices. The Vertices structure contains an array of point indices.
+        */
+      bool
+      reconstructPolygons (std::vector<pcl::Vertices> &polygons);
 
       /** \brief Class get name method. */
       std::string 
@@ -425,16 +410,16 @@ namespace pcl
 
       /** \brief Forms a new triangle by connecting the current neighbor to the query point 
         * and the previous neighbor
-        * \param output the polygon mesh to be updated
-        * \param prev_index index of the previous point
-        * \param next_index index of the next point
-        * \param next_next_index index of the point after the next one
-        * \param uvn_current 2D coordinate of the current point
-        * \param uvn_prev 2D coordinates of the previous point
-        * \param uvn_next 2D coordinates of the next point
+        * \param[out] polygons the polygon mesh to be updated
+        * \param[in] prev_index index of the previous point
+        * \param[in] next_index index of the next point
+        * \param[in] next_next_index index of the point after the next one
+        * \param[in] uvn_current 2D coordinate of the current point
+        * \param[in] uvn_prev 2D coordinates of the previous point
+        * \param[in] uvn_next 2D coordinates of the next point
         */
       void 
-      connectPoint (pcl::PolygonMesh &output, 
+      connectPoint (std::vector<pcl::Vertices> &polygons, 
                     const int prev_index, 
                     const int next_index, 
                     const int next_next_index, 
@@ -444,39 +429,36 @@ namespace pcl
 
       /** \brief Whenever a query point is part of a boundary loop containing 3 points, that triangle is created
         * (called if angle constraints make it possible)
-        * \param output the polygon mesh to be updated
+        * \param[out] polygons the polygon mesh to be updated
         */
       void 
-      closeTriangle (pcl::PolygonMesh &output);
+      closeTriangle (std::vector<pcl::Vertices> &polygons);
 
-
-      // add by ktran
-      /** \brief get the list of containing triangles for each vertex in a PolygonMesh
-        * \param polygonMesh
+      /** \brief Get the list of containing triangles for each vertex in a PolygonMesh
+        * \param[in] polygonMesh the input polygon mesh
         */
       std::vector<std::vector<size_t> >
-      getTriangleList (pcl::PolygonMesh input);
-
+      getTriangleList (const pcl::PolygonMesh &input);
 
       /** \brief Add a new triangle to the current polygon mesh
-        * \param a index of the first vertex
-        * \param b index of the second vertex
-        * \param c index of the third vertex
-        * \param output the polygon mesh to be updated
+        * \param[in] a index of the first vertex
+        * \param[in] b index of the second vertex
+        * \param[in] c index of the third vertex
+        * \param[out] polygons the polygon mesh to be updated
         */
       inline void
-      addTriangle (int a, int b, int c, pcl::PolygonMesh &output)
+      addTriangle (int a, int b, int c, std::vector<pcl::Vertices> &polygons)
       {
-        triangle_.vertices.clear ();
-        triangle_.vertices.push_back (a);
-        triangle_.vertices.push_back (b);
-        triangle_.vertices.push_back (c);
-        output.polygons.push_back(triangle_);
+        triangle_.vertices.resize (3);
+        triangle_.vertices[0] = a;
+        triangle_.vertices[1] = b;
+        triangle_.vertices[2] = c;
+        polygons.push_back (triangle_);
       }
 
       /** \brief Add a new vertex to the advancing edge front and set its source point
-        * \param v index of the vertex that was connected
-        * \param s index of the source point
+        * \param[in] v index of the vertex that was connected
+        * \param[in] s index of the source point
         */
       inline void
       addFringePoint (int v, int s)
@@ -488,8 +470,8 @@ namespace pcl
 
       /** \brief Function for ascending sort of nnAngle, taking visibility into account
         * (angles to visible neighbors will be first, to the invisible ones after).
-        * \param a1 the first angle
-        * \param a2 the second angle
+        * \param[in] a1 the first angle
+        * \param[in] a2 the second angle
         */
       static inline bool 
       nnAngleSortAsc (const nnAngle& a1, const nnAngle& a2)
