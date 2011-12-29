@@ -35,6 +35,7 @@ if(build)
         include/pcl/correspondence.h
         include/pcl/point_types.h
         include/pcl/cloud_properties.h
+        include/pcl/channel_properties.h
         include/pcl/for_each_type.h
         include/pcl/pcl_tests.h
         )

@@ -47,9 +47,11 @@
 #include <std_msgs/Header.h>
 #include <pcl/exceptions.h>
 #include <pcl/cloud_properties.h>
+#include <pcl/channel_properties.h>
 #include <pcl/point_traits.h>
 #include <pcl/for_each_type.h>
 #include <boost/shared_ptr.hpp>
+#include <map>
 #include <boost/mpl/size.hpp>
 
 namespace pcl
@@ -541,6 +543,9 @@ namespace pcl
         properties.sensor_orientation = pc.sensor_orientation_;
 
         typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+        // Copy the fields
+        // ...
+
         // Resize the array
         points.resize (pc.points.size (), boost::mpl::size<FieldList>::value);
 
@@ -571,6 +576,10 @@ namespace pcl
         properties.sensor_orientation = pc.sensor_orientation_;
 
         typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+
+        // Copy the fields
+        // ...
+
         // Resize the array
         points.resize (pc.points.size (), boost::mpl::size<FieldList>::value);
 
@@ -590,6 +599,7 @@ namespace pcl
         height   = 1;
         is_dense = pc.is_dense;
         properties = pc.properties;
+        channels = pc.channels;
 
         assert ((int)indices.size () <= pc.points.rows ());
         points.resize (indices.size (), pc.points.cols ());
@@ -642,6 +652,7 @@ namespace pcl
         for (int i = nr_points; i < points.rows (); ++i)
           points.row (i) = rhs.points.row (i - nr_points);
 
+        channels = rhs.channels;
         width    = (uint32_t) points.rows ();
         height   = 1;
         if (rhs.is_dense && is_dense)
@@ -705,6 +716,9 @@ namespace pcl
       /** \brief The point data. */
       Eigen::MatrixXf points;
 
+      /** \brief The channel data information. We need the entries to be ordered here. */
+      std::map<std::string, pcl::ChannelProperties> channels;
+
       /** \brief The point cloud width (if organized as an image-structure). */
       uint32_t width;
       /** \brief The point cloud height (if organized as an image-structure). */
@@ -727,6 +741,7 @@ namespace pcl
         std::swap (height, rhs.height);
         std::swap (is_dense, rhs.is_dense);
         std::swap (properties, rhs.properties);
+        std::swap (channels, rhs.channels);
       }
 
       /** \brief Removes all points in a cloud and sets the width and height to 0. */
