@@ -130,8 +130,8 @@ endmacro(find_qhull)
 #remove this as soon as openni-dev is shipped with FindOpenni.cmake
 macro(find_openni)
   if(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "ON"))
-    set(OPENNI_INCLUDE_DIRS "@OPENNI_INCLUDE_DIRS@")
-    set(OPENNI_LIBRARY "@OPENNI_LIBRARY@")
+    set(OPENNI_INCLUDE_DIRS_HINT "@OPENNI_INCLUDE_DIRS@")
+    set(OPENNI_LIBRARY_HINT "@OPENNI_LIBRARY@")
   endif(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "ON"))
 
   if(PKG_CONFIG_FOUND)
