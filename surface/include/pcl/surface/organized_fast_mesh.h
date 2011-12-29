@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Dirk Holz, University of Bonn.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -45,8 +47,8 @@ namespace pcl
 {
 
   /** \brief Simple triangulation/surface reconstruction for organized point
-   *  clouds. Neighboring points (pixels in image space) are connected to
-   *  construct a triangular mesh.
+    * clouds. Neighboring points (pixels in image space) are connected to
+    * construct a triangular mesh.
     * \author Dirk Holz
     * \ingroup surface
     */
@@ -69,7 +71,8 @@ namespace pcl
         QUAD_MESH               // create a simple quad mesh
       };
 
-      OrganizedFastMesh()
+      /** \brief Constructor. */
+      OrganizedFastMesh ()
       : max_edge_length_squared_ (0.025f)
       , triangle_pixel_size_ (1)
       , triangulation_type_ (TRIANGLE_RIGHT_CUT)
@@ -78,7 +81,9 @@ namespace pcl
         check_tree_ = false;
         cos_angle_tolerance_ = fabs(cos(pcl::deg2rad(12.5f)));
       };
-      ~OrganizedFastMesh(){};
+
+      /** \brief Destructor. */
+      ~OrganizedFastMesh () {};
 
       /** \brief Create the surface.
         *
@@ -151,10 +156,10 @@ namespace pcl
       float cos_angle_tolerance_;
 
       /** \brief Add a new triangle to the current polygon mesh
-        * \param a index of the first vertex
-        * \param b index of the second vertex
-        * \param c index of the third vertex
-        * \param output the polygon mesh to be updated
+        * \param[in] a index of the first vertex
+        * \param[in] b index of the second vertex
+        * \param[in] c index of the third vertex
+        * \param[out] output the polygon mesh to be updated
         */
       inline void
       addTriangle (int a, int b, int c, std::vector<pcl::Vertices>& polygons)
@@ -169,8 +174,15 @@ namespace pcl
         polygons.push_back (triangle_);
       }
 
+      /** \brief Add a new quad to the current polygon mesh
+        * \param[in] a index of the first vertex
+        * \param[in] b index of the second vertex
+        * \param[in] c index of the third vertex
+        * \param[in] d index of the fourth vertex
+        * \param[out] output the polygon mesh to be updated
+        */
       inline void
-      addQuad(int a, int b, int c, int d, std::vector<pcl::Vertices>& polygons)
+      addQuad (int a, int b, int c, int d, std::vector<pcl::Vertices>& polygons)
       {
         quad_.vertices.clear ();
         quad_.vertices.push_back (a);
@@ -180,11 +192,13 @@ namespace pcl
         polygons.push_back (quad_);
       }
 
-
       /** \brief Set (all) coordinates of a particular point to the specified value
-        * \param point_index index of point
-        * \param mesh to modify
-        * \param value value to use when re-setting
+        * \param[in] point_index index of point
+        * \param[out] mesh to modify
+        * \param[in] value value to use when re-setting
+        * \param[in] field_x_idx the X coordinate of the point
+        * \param[in] field_y_idx the Y coordinate of the point
+        * \param[in] field_z_idx the Z coordinate of the point
         */
       inline void
       resetPointData (const int &point_index, pcl::PolygonMesh &mesh, const float &value = 0.0f,
@@ -196,78 +210,119 @@ namespace pcl
         memcpy(&mesh.cloud.data[point_index * mesh.cloud.point_step + mesh.cloud.fields[field_z_idx].offset], &new_value, sizeof(float));
       }
 
+      /** \brief Check if a point is shadowed by another point
+        * \param[in] point_a the first point
+        * \param[in] point_b the second point
+        */
       inline bool
-      isShadowed(const PointInT& point_a, const PointInT& point_b)
+      isShadowed (const PointInT& point_a, const PointInT& point_b)
       {
-        Eigen::Vector3f viewpoint(0.0f, 0.0f, 0.0f); // TODO: allow for passing viewpoint information
-        Eigen::Vector3f dir_a = viewpoint - point_a.getVector3fMap();
-        Eigen::Vector3f dir_b = point_b.getVector3fMap() - point_a.getVector3fMap();
-        float distance_to_points = dir_a.norm();
-        float distance_between_points = dir_b.norm();
-        float cos_angle = dir_a.dot(dir_b) / (distance_to_points*distance_between_points);
-        if (cos_angle != cos_angle) cos_angle = 1.0f;
-        return ( fabs(cos_angle) >= cos_angle_tolerance_ );
+        Eigen::Vector3f viewpoint = Eigen::Vector3f::Zero (); // TODO: allow for passing viewpoint information
+        Eigen::Vector3f dir_a = viewpoint - point_a.getVector3fMap ();
+        Eigen::Vector3f dir_b = point_b.getVector3fMap () - point_a.getVector3fMap ();
+        float distance_to_points = dir_a.norm ();
+        float distance_between_points = dir_b.norm ();
+        float cos_angle = dir_a.dot (dir_b) / (distance_to_points*distance_between_points);
+        if (cos_angle != cos_angle) 
+          cos_angle = 1.0f;
+        return (fabs (cos_angle) >= cos_angle_tolerance_);
         // TODO: check for both: angle almost 0/180 _and_ distance between points larger than noise level
       }
 
+      /** \brief Check if a triangle is valid.
+        * \param[in] a index of the first vertex
+        * \param[in] b index of the second vertex
+        * \param[in] c index of the third vertex
+        */
       inline bool
-      isValidTriangle(const int& a, const int& b, const int& c)
+      isValidTriangle (const int& a, const int& b, const int& c)
       {
-        if ( !pcl::hasValidXYZ(input_->points[a]) ) return false;
-        if ( !pcl::hasValidXYZ(input_->points[b]) ) return false;
-        if ( !pcl::hasValidXYZ(input_->points[c]) ) return false;
-        return true;
+        if (!pcl::hasValidXYZ (input_->points[a])) return (false);
+        if (!pcl::hasValidXYZ (input_->points[b])) return (false);
+        if (!pcl::hasValidXYZ (input_->points[c])) return (false);
+        return (true);
       }
 
+      /** \brief Check if a triangle is shadowed.
+        * \param[in] a index of the first vertex
+        * \param[in] b index of the second vertex
+        * \param[in] c index of the third vertex
+        */
       inline bool
-      isShadowedTriangle(const int& a, const int& b, const int& c)
+      isShadowedTriangle (const int& a, const int& b, const int& c)
       {
-        if ( isShadowed(input_->points[a], input_->points[b]) ) return true;
-        if ( isShadowed(input_->points[b], input_->points[c]) ) return true;
-        if ( isShadowed(input_->points[c], input_->points[a]) ) return true;
-        return false;
+        if (isShadowed (input_->points[a], input_->points[b])) return (true);
+        if (isShadowed (input_->points[b], input_->points[c])) return (true);
+        if (isShadowed (input_->points[c], input_->points[a])) return (true);
+        return (false);
       }
 
+      /** \brief Check if a quad is valid.
+        * \param[in] a index of the first vertex
+        * \param[in] b index of the second vertex
+        * \param[in] c index of the third vertex
+        * \param[in] d index of the fourth vertex
+        */
       inline bool
-      isValidQuad(const int& a, const int& b, const int& c, const int& d)
+      isValidQuad (const int& a, const int& b, const int& c, const int& d)
       {
-        if ( !pcl::hasValidXYZ(input_->points[a]) ) return false;
-        if ( !pcl::hasValidXYZ(input_->points[b]) ) return false;
-        if ( !pcl::hasValidXYZ(input_->points[c]) ) return false;
-        if ( !pcl::hasValidXYZ(input_->points[d]) ) return false;
-        return true;
+        if (!pcl::hasValidXYZ (input_->points[a])) return (false);
+        if (!pcl::hasValidXYZ (input_->points[b])) return (false);
+        if (!pcl::hasValidXYZ (input_->points[c])) return (false);
+        if (!pcl::hasValidXYZ (input_->points[d])) return (false);
+        return (true);
       }
 
+      /** \brief Check if a triangle is shadowed.
+        * \param[in] a index of the first vertex
+        * \param[in] b index of the second vertex
+        * \param[in] c index of the third vertex
+        * \param[in] d index of the fourth vertex
+        */
       inline bool
-      isShadowedQuad(const int& a, const int& b, const int& c, const int& d)
+      isShadowedQuad (const int& a, const int& b, const int& c, const int& d)
       {
-        if ( isShadowed(input_->points[a], input_->points[b]) ) return true;
-        if ( isShadowed(input_->points[b], input_->points[c]) ) return true;
-        if ( isShadowed(input_->points[c], input_->points[d]) ) return true;
-        if ( isShadowed(input_->points[d], input_->points[a]) ) return true;
-        return false;
+        if (isShadowed (input_->points[a], input_->points[b])) return (true);
+        if (isShadowed (input_->points[b], input_->points[c])) return (true);
+        if (isShadowed (input_->points[c], input_->points[d])) return (true);
+        if (isShadowed (input_->points[d], input_->points[a])) return (true);
+        return (false);
       }
 
+      /** \brief Obtain a 1D index from a given 2D index.
+        * \param[in] x the first coordinate of the 2D index
+        * \parma[in] y the second coordinate of the 2D index
+        */
       inline int
-      getIndex(int x, int y)
+      getIndex (int x, int y)
       {
-        return (int)(y * input_->width + x);
+        return ((int)(y * input_->width + x));
       }
 
+      /** \brief Create a quad mesh. 
+        * \param[out] polygons the resultant mesh 
+        */
       void
       makeQuadMesh (std::vector<pcl::Vertices>& polygons);
 
+      /** \brief Create a right cut mesh. 
+        * \param[out] polygons the resultant mesh 
+        */
       void
       makeRightCutMesh (std::vector<pcl::Vertices>& polygons);
 
+      /** \brief Create a left cut mesh. 
+        * \param[out] polygons the resultant mesh 
+        */
       void
       makeLeftCutMesh (std::vector<pcl::Vertices>& polygons);
 
+      /** \brief Create an adaptive cut mesh. 
+        * \param[out] polygons the resultant mesh 
+        */
       void
       makeAdaptiveCutMesh (std::vector<pcl::Vertices>& polygons);
-
   };
-
 }
 
 #endif  // PCL_SURFACE_ORGANIZED_FAST_MESH_H_
