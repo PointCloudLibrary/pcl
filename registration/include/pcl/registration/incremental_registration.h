@@ -5,7 +5,7 @@
 #include <pcl/filters/voxel_grid.h>
 
 #include <pcl/registration/correspondence_estimation.h>
-
+#include <pcl/registration/gicp.h>
 #include <pcl/registration/correspondence_rejection_distance.h>
 #include <pcl/registration/correspondence_rejection_trimmed.h>
 #include <pcl/registration/correspondence_rejection_one_to_one.h>
@@ -131,27 +131,29 @@ namespace pcl
               // determine correspondences
               PointCloudConstPtr cloud_output_ptr = output.makeShared();
 
-              Correspondences correspondences;
+              pcl::CorrespondencesPtr correspondences_ptr (new pcl::Correspondences);
               corr_est_.setInputTarget(cloud_model_ptr_);
               corr_est_.setInputCloud(cloud_output_ptr);
-              corr_est_.determineCorrespondences(correspondences, max_dist);
+              corr_est_.determineCorrespondences (*correspondences_ptr, max_dist);
 
               // remove one-to-n correspondences
-              Correspondences correspondeces_one_to_one;
-              cor_rej_one_to_one_.getCorrespondences(correspondences, correspondeces_one_to_one);
+              pcl::CorrespondencesPtr correspondeces_one_to_one_ptr (new pcl::Correspondences);
+              cor_rej_one_to_one_.setInputCorrespondences (correspondences_ptr);
+              cor_rej_one_to_one_.getCorrespondences (*correspondeces_one_to_one_ptr);
 
               // SAC-based correspondence rejection
               double sac_threshold = max_dist;
               int sac_max_iterations = 100;
               pcl::Correspondences correspondences_sac;
-              cor_rej_sac_.setInputCloud(cloud_output_ptr);
-              cor_rej_sac_.setTargetCloud(cloud_model_ptr_);
-              cor_rej_sac_.setInlierThreshold(sac_threshold);
-              cor_rej_sac_.setMaxIterations(sac_max_iterations);
-              cor_rej_sac_.getCorrespondences(correspondeces_one_to_one, correspondences_sac);
+              cor_rej_sac_.setInputCloud (cloud_output_ptr);
+              cor_rej_sac_.setTargetCloud (cloud_model_ptr_);
+              cor_rej_sac_.setInlierThreshold (sac_threshold);
+              cor_rej_sac_.setMaxIterations (sac_max_iterations);
+              cor_rej_sac_.setInputCorrespondences (correspondeces_one_to_one_ptr);
+              cor_rej_sac_.getCorrespondences (correspondences_sac);
 
               unsigned int nr_min_correspondences = 10;
-              if ( correspondences_sac.size() < nr_min_correspondences )
+              if (correspondences_sac.size() < nr_min_correspondences)
               {
                 registration_successful = false;
                 break;

@@ -268,7 +268,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFun
   gicp_->applyState(transformation_matrix, x);
   //Zero out g
   g.setZero ();
-  Eigen::Vector3d g_t = g.head<3> ();
+  //Eigen::Vector3d g_t = g.head<3> ();
   Eigen::Matrix3d R = Eigen::Matrix3d::Zero ();
   int m = gicp_->tmp_idx_src_->size ();
   for (int i = 0; i < m; ++i)
