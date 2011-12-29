@@ -73,12 +73,12 @@ nearestKSearch (flann::Index<flann::ChiSquareDistance<float> > &index, const vfh
 {
   // Query point
   flann::Matrix<float> p = flann::Matrix<float>(new float[model.second.size ()], 1, model.second.size ());
-  memcpy (&p.data[0], &model.second[0], p.cols * p.rows * sizeof (float));
+  memcpy (&p.ptr ()[0], &model.second[0], p.cols * p.rows * sizeof (float));
 
   indices = flann::Matrix<int>(new int[k], 1, k);
   distances = flann::Matrix<float>(new float[k], 1, k);
   index.knnSearch (p, indices, distances, k, flann::SearchParams (512));
-  p.free();
+  delete[] p.ptr ();
 }
 
 /** \brief Load the list of file model names from an ASCII file
@@ -124,9 +124,6 @@ main (int argc, char** argv)
     pcl::console::print_value ("%f", thresh); pcl::console::print_info (")\n\n");
     return (-1);
   }
-
-  // this won't be needed for flann > 1.6.10
-  flann::ObjectFactory<flann::IndexParams, flann_algorithm_t>::instance().register_<flann::LinearIndexParams>(FLANN_INDEX_LINEAR);
 
   std::string extension (".pcd");
   transform (extension.begin (), extension.end (), extension.begin (), (int(*)(int))tolower);
