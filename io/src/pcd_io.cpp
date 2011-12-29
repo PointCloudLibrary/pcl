@@ -1291,3 +1291,183 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
   return (0);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+std::string
+pcl::PCDWriter::generateHeaderEigen (const pcl::PointCloud<Eigen::MatrixXf> &cloud, 
+                                     const int nr_points)
+{
+  std::ostringstream oss;
+  oss.imbue (std::locale::classic ());
+
+  oss << "# .PCD v0.7 - Point Cloud Data file format"
+         "\nVERSION 0.7"
+         "\nFIELDS";
+
+  std::stringstream field_names, field_types, field_sizes, field_counts;
+  for (std::map<std::string, pcl::ChannelProperties>::const_iterator it = cloud.channels.begin (); it != cloud.channels.end (); ++it)
+  {
+    // Add the regular dimension
+    field_names << " " << it->second.name;
+    field_sizes << " " << pcl::getFieldSize (it->second.datatype);
+    field_types << " " << pcl::getFieldType (it->second.datatype);
+    int count = abs ((int)it->second.count);
+    if (count == 0) count = 1;  // check for 0 counts (coming from older converter code)
+    field_counts << " " << count;
+  }
+  oss << field_names.str ();
+  oss << "\nSIZE" << field_sizes.str () 
+      << "\nTYPE" << field_types.str () 
+      << "\nCOUNT" << field_counts.str ();
+  // If the user passes in a number of points value, use that instead
+  if (nr_points != std::numeric_limits<int>::max ())
+    oss << "\nWIDTH " << nr_points << "\nHEIGHT " << 1 << "\n";
+  else
+    oss << "\nWIDTH " << cloud.width << "\nHEIGHT " << cloud.height << "\n";
+
+  oss << "VIEWPOINT " << cloud.properties.sensor_origin[0] << " " << 
+                         cloud.properties.sensor_origin[1] << " " << 
+                         cloud.properties.sensor_origin[2] << " " << 
+                         cloud.properties.sensor_orientation.w () << " " << 
+                         cloud.properties.sensor_orientation.x () << " " << 
+                         cloud.properties.sensor_orientation.y () << " " << 
+                         cloud.properties.sensor_orientation.z () << "\n";
+  
+  // If the user passes in a number of points value, use that instead
+  if (nr_points != std::numeric_limits<int>::max ())
+    oss << "POINTS " << nr_points << "\n";
+  else
+    oss << "POINTS " << cloud.points.rows () << "\n";
+
+  return (oss.str ());
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::PCDWriter::writeBinaryCompressedEigen (
+    const std::string &file_name, 
+    const pcl::PointCloud<Eigen::MatrixXf> &cloud)
+{
+  if (cloud.points.rows () * cloud.points.cols () == 0)
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Input point cloud has no data!");
+    return (-1);
+  }
+  int data_idx = 0;
+  std::ostringstream oss;
+  oss << generateHeaderEigen (cloud) << "DATA binary_compressed\n";
+  oss.flush ();
+  data_idx = oss.tellp ();
+
+#if _WIN32
+  HANDLE h_native_file = CreateFileA (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+  if(h_native_file == INVALID_HANDLE_VALUE)
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during CreateFile!");
+    return (-1);
+  }
+#else
+  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, (mode_t)0600);
+  if (fd < 0)
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during open!");
+    return (-1);
+  }
+#endif
+
+  // Check if the matrix is row or column major
+  // Transpose the matrix
+  Eigen::MatrixXf pts = cloud.points.transpose ();
+ 
+  // Compute the size of data
+  size_t data_size = cloud.points.rows () * cloud.points.cols () * sizeof (float);
+  char* temp_buf = (char*)malloc (data_size * 1.5 + 8);
+  // Compress the valid data
+  unsigned int compressed_size = pcl::lzfCompress ((char*)pts.data (), data_size, &temp_buf[8], data_size * 1.5);
+  unsigned int compressed_final_size = 0;
+  // Was the compression successful?
+  if (compressed_size)
+  {
+    char *header = &temp_buf[0];
+    memcpy (&header[0], &compressed_size, sizeof (unsigned int));
+    memcpy (&header[4], &data_size, sizeof (unsigned int));
+    data_size = compressed_size + 8;
+    compressed_final_size = data_size + data_idx;
+  }
+  else
+  {
+#if !_WIN32
+    pcl_close (fd);
+#endif
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during compression!");
+    return (-1);
+  }
+
+#if !_WIN32
+  // Stretch the file size to the size of the data
+  int result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
+  if (result < 0)
+  {
+    pcl_close (fd);
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during lseek ()!");
+    return (-1);
+  }
+  // Write a bogus entry so that the new file size comes in effect
+  result = ::write (fd, "", 1);
+  if (result != 1)
+  {
+    pcl_close (fd);
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during write ()!");
+    return (-1);
+  }
+#endif
+
+  // Prepare the map
+#if _WIN32
+  HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, compressed_final_size, NULL);
+  char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, compressed_final_size));
+  CloseHandle (fm);
+
+#else
+  char *map = (char*)mmap (0, compressed_final_size, PROT_WRITE, MAP_SHARED, fd, 0);
+  if (map == MAP_FAILED)
+  {
+    pcl_close (fd);
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during mmap ()!");
+    return (-1);
+  }
+#endif
+
+  // Copy the header
+  memcpy (&map[0], oss.str ().c_str (), data_idx);
+  // Copy the compressed data
+  memcpy (&map[data_idx], temp_buf, data_size);
+
+#if !_WIN32
+  // If the user set the synchronization flag on, call msync
+  if (map_synchronization_)
+    msync (map, compressed_final_size, MS_SYNC);
+#endif
+
+  // Unmap the pages of memory
+#if _WIN32
+    UnmapViewOfFile (map);
+#else
+  if (munmap (map, (compressed_final_size)) == -1)
+  {
+    pcl_close (fd);
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during munmap ()!");
+    return (-1);
+  }
+#endif
+  // Close file
+#if _WIN32
+  CloseHandle (h_native_file);
+#else
+  pcl_close (fd);
+#endif
+
+  free (temp_buf);
+  return (0);
+}
+
+

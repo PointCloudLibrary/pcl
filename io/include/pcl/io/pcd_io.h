@@ -40,6 +40,7 @@
 #ifndef PCL_IO_PCD_IO_H_
 #define PCL_IO_PCD_IO_H_
 
+#include <pcl/point_cloud.h>
 #include "pcl/io/file_io.h"
 
 namespace pcl
@@ -211,6 +212,16 @@ namespace pcl
       generateHeader (const pcl::PointCloud<PointT> &cloud, 
                       const int nr_points = std::numeric_limits<int>::max ());
 
+      /** \brief Generate the header of a PCD file format
+        * \note This version is specialized for PointCloud<Eigen::MatrixXf> data types. 
+        * \param[in] cloud the point cloud data message
+        * \param[in] nr_points if given, use this to fill in WIDTH, HEIGHT (=1), and POINTS in the header
+        * By default, nr_points is set to INTMAX, and the data in the header is used instead.
+        */
+      std::string
+      generateHeaderEigen (const pcl::PointCloud<Eigen::MatrixXf> &cloud, 
+                           const int nr_points = std::numeric_limits<int>::max ());
+
       /** \brief Save point cloud data to a PCD file containing n-D points, in ASCII format
         * \param[in] file_name the output file name
         * \param[in] cloud the point cloud data message
@@ -323,6 +334,15 @@ namespace pcl
       template <typename PointT> int 
       writeBinaryCompressed (const std::string &file_name, 
                              const pcl::PointCloud<PointT> &cloud);
+
+      /** \brief Save point cloud data to a binary comprssed PCD file.
+        * \note This version is specialized for PointCloud<Eigen::MatrixXf> data types. 
+        * \param[in] file_name the output file name
+        * \param[in] cloud the point cloud data message
+        */
+      int 
+      writeBinaryCompressedEigen (const std::string &file_name, 
+                                  const pcl::PointCloud<Eigen::MatrixXf> &cloud);
 
       /** \brief Save point cloud data to a PCD file containing n-D points, in BINARY format
         * \param[in] file_name the output file name

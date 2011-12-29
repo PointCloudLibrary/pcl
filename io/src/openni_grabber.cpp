@@ -693,6 +693,15 @@ pcl::OpenNIGrabber::convertToEigenPointCloud (const boost::shared_ptr<openni_wra
   cloud->height = depth_height_;
   cloud->width = depth_width_;
   cloud->is_dense = false;
+  // Prepare channels. Default soring order for channels is: rgb x y z
+  cloud->channels["rgb"].name = "rgb";
+  cloud->channels["x"].name = "x"; cloud->channels["y"].name = "y"; cloud->channels["z"].name = "z";
+  cloud->channels["rgb"].offset = 0;
+  cloud->channels["x"].offset = 4; cloud->channels["y"].offset = 8; cloud->channels["z"].offset = 12;
+  cloud->channels["x"].size = cloud->channels["y"].size = cloud->channels["z"].size = cloud->channels["rgb"].size = 4;
+  cloud->channels["rgb"].datatype = 6;
+  cloud->channels["x"].datatype = cloud->channels["y"].datatype = cloud->channels["z"].datatype = 7;
+  cloud->channels["x"].count = cloud->channels["y"].count = cloud->channels["z"].count = cloud->channels["rgb"].count = 1;
 
   // Resize the output to width * height * 4Bpp (xyz+rgb)
   cloud->points.resize (cloud->height * cloud->width, 4);
@@ -747,16 +756,16 @@ pcl::OpenNIGrabber::convertToEigenPointCloud (const boost::shared_ptr<openni_wra
       }
       else
       {
-        cloud->points (depth_idx, 2) = depth_map[depth_idx] * 0.001f;
-        cloud->points (depth_idx, 0) = u * cloud->points (depth_idx, 2) * constant;
-        cloud->points (depth_idx, 1) = v * cloud->points (depth_idx, 2) * constant;
+        cloud->points (depth_idx, 3) = depth_map[depth_idx] * 0.001f;
+        cloud->points (depth_idx, 1) = u * cloud->points (depth_idx, 3) * constant;
+        cloud->points (depth_idx, 2) = v * cloud->points (depth_idx, 3) * constant;
       }
 
       // Fill in color
       color.Red = rgb_buffer[color_idx];
       color.Green = rgb_buffer[color_idx + 1];
       color.Blue = rgb_buffer[color_idx + 2];
-      cloud->points (depth_idx, 3) = color.long_value;
+      cloud->points (depth_idx, 0) = color.float_value;
     }
   }
   return (cloud);

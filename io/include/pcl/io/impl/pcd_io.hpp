@@ -45,6 +45,7 @@
 #include <string>
 #include <stdlib.h>
 #include <boost/algorithm/string.hpp>
+#include <pcl/channel_properties.h>
 #include <pcl/console/print.h>
 #ifdef _WIN32
 # include <io.h>
@@ -421,7 +422,6 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   free (temp_buf);
   return (0);
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
