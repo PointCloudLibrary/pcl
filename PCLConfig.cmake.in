@@ -45,6 +45,11 @@ macro(find_boost)
     set(Boost_USE_STATIC_LIBS ON)
     set(Boost_USE_STATIC ON)
   endif(WIN32)
+  if(${CMAKE_VERSION} VERSION_LESS 2.8.5)
+    SET(Boost_ADDITIONAL_VERSIONS "1.43" "1.43.0" "1.44" "1.44.0" "1.45" "1.45.0" "1.46.1" "1.46.0" "1.46" "1.47" "1.47.0")
+  else(${CMAKE_VERSION} VERSION_LESS 2.8.5)
+    SET(Boost_ADDITIONAL_VERSIONS "1.47" "1.47.0")
+  endif(${CMAKE_VERSION} VERSION_LESS 2.8.5)
   find_package(Boost 1.40.0 ${QUIET_} COMPONENTS system filesystem thread date_time iostreams)
   set(BOOST_FOUND ${Boost_FOUND})
   set(BOOST_INCLUDE_DIRS "${Boost_INCLUDE_DIR}")
@@ -127,23 +132,24 @@ macro(find_openni)
   if(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "ON"))
     set(OPENNI_INCLUDE_DIRS "@OPENNI_INCLUDE_DIRS@")
     set(OPENNI_LIBRARY "@OPENNI_LIBRARY@")
-  else(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "ON"))
+  endif(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "ON"))
+
   if(PKG_CONFIG_FOUND)
     pkg_check_modules(PC_OPENNI openni-dev)
   endif(PKG_CONFIG_FOUND)
   find_path(OPENNI_INCLUDE_DIRS XnStatus.h
     HINTS ${PC_OPENNI_INCLUDEDIR} ${PC_OPENNI_INCLUDE_DIRS} 
           "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}"
-    PATHS "$ENV{PROGRAMFILES}/OpenNI/Include" "$ENV{PROGRAMW6432}/OpenNI/Include"
+    PATHS "$ENV{PROGRAMFILES}/OpenNI/Include" "$ENV{PROGRAMW6432}/OpenNI/Include" "${OPENNI_INCLUDE_DIRS_HINT}"
     PATH_SUFFIXES include/openni Include)
   #add a hint so that it can find it without the pkg-config
   find_library(OPENNI_LIBRARY 
     NAMES OpenNI64 OpenNI 
     HINTS ${PC_OPENNI_LIBDIR} ${PC_OPENNI_LIBRARY_DIRS} 
           "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}"
-    PATHS "$ENV{PROGRAMFILES}/OpenNI/Lib" "$ENV{PROGRAMW6432}/OpenNI/Lib64"
+    PATHS "$ENV{PROGRAMFILES}/OpenNI/Lib" "$ENV{PROGRAMW6432}/OpenNI/Lib64" "${OPENNI_LIBRARY_HINT}"
     PATH_SUFFIXES lib Lib Lib64)
-  endif(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "ON"))
+
   find_package_handle_standard_args(openni DEFAULT_MSG OPENNI_LIBRARY OPENNI_INCLUDE_DIRS)
 
   if(OPENNI_FOUND)
