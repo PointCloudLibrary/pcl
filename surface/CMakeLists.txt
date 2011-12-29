@@ -28,9 +28,16 @@ if(build)
     if (VTK_FOUND AND NOT ANDROID_NDK)
         set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
         include (${VTK_USE_FILE})
-        set(VTK_SURFACE_INCLUDES include/pcl/${SUBSYS_NAME}/vtk_smoother.h)
-        set(VTK_SURFACE_SOURCE src/vtk_smoother.cpp)
-        set(VTK_SURFACE_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets)
+        
+        set(VTK_SMOOTHING_INCLUDES include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_utils.h
+                                   include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_subdivision.h
+                                   include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_smoothing_laplacian.h
+                                   include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.h)
+        set(VTK_SMOOTHING_SOURCE src/vtk_smoothing/vtk_utils.cpp
+                                 src/vtk_smoothing/vtk_mesh_subdivision.cpp
+                                 src/vtk_smoothing/vtk_mesh_smoothing_laplacian.cpp
+                                 src/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.cpp)
+        set(VTK_SMOOTHING_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets)
     endif()
     
     ####### NURBS FITTING by thomas.moerwald #########
@@ -95,7 +102,8 @@ if(build)
     #	src/poisson/Time.cpp
     #	)
     #
-    set(srcs src/ear_clipping.cpp
+    set(srcs src/mesh_processing.cpp 
+        src/ear_clipping.cpp
         src/gp3.cpp
         src/grid_projection.cpp
         src/marching_cubes.cpp
@@ -107,7 +115,7 @@ if(build)
         src/simplification_remove_unused_vertices.cpp
         src/surfel_smoothing.cpp
         src/texture_mapping.cpp
-        ${VTK_SURFACE_SOURCE}
+        ${VTK_SMOOTHING_SOURCE}
         #src/poisson.cpp
         ${HULL_SOURCES}
         #${POISSON_SOURCES}
@@ -124,10 +132,11 @@ if(build)
         include/pcl/${SUBSYS_NAME}/mls_omp.h
         include/pcl/${SUBSYS_NAME}/organized_fast_mesh.h
         include/pcl/${SUBSYS_NAME}/reconstruction.h
+        include/pcl/${SUBSYS_NAME}/mesh_processing.h
         include/pcl/${SUBSYS_NAME}/simplification_remove_unused_vertices.h
         include/pcl/${SUBSYS_NAME}/surfel_smoothing.h        
         include/pcl/${SUBSYS_NAME}/texture_mapping.h
-        ${VTK_SURFACE_INCLUDES}
+        ${VTK_SMOOTHING_INCLUDES}
         #include/pcl/${SUBSYS_NAME}/poisson.h
         ${HULL_INCLUDES}
         #${POISSON_INCLUDES}
@@ -157,7 +166,7 @@ if(build)
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     PCL_ADD_OPENMP_FLAGS(${LIB_NAME})
     PCL_LINK_OPENMP(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_search pcl_kdtree pcl_octree ${OpenCV_LIBS} ${VTK_SURFACE_TARGET_LINK_LIBRARIES})
+    target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_search pcl_kdtree pcl_octree ${OpenCV_LIBS} ${VTK_SMOOTHING_TARGET_LINK_LIBRARIES})
     if(QHULL_FOUND)
       target_link_libraries(${LIB_NAME} ${QHULL_LIBRARIES})
     endif(QHULL_FOUND)

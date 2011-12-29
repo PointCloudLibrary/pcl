@@ -1,6 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
  *  All rights reserved.
  *
@@ -35,115 +36,51 @@
  *
  */
 
-#include <pcl/surface/vtk_smoother.h>
-#include <pcl/point_types.h>
-#include <pcl/pcl_base.h>
+
+#include "pcl/surface/vtk_smoothing/vtk_utils.h"
+
 #include <pcl/ros/conversions.h>
 #include <pcl/common/common.h>
 #include <vtkCellArray.h>
-#include <vtkPoints.h>
 #include <vtkTriangleFilter.h>
-#include <vtkWindowedSincPolyDataFilter.h>
-#include <vtkSmoothPolyDataFilter.h>
+#include <vtkPoints.h>
 #include <vtkPolyData.h>
-#include <vtkLinearSubdivisionFilter.h>
-#include <vtkLoopSubdivisionFilter.h>
-#include <vtkButterflySubdivisionFilter.h>
-#include <vtkPolyDataWriter.h>
 #include <vtkPointData.h>
 #include <vtkFloatArray.h>
 
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::surface::VTKSmoother::convertToVTK (const pcl::PolygonMesh &triangles)
+pcl::VTKUtils::convertToVTK (const pcl::PolygonMesh &triangles, vtkSmartPointer<vtkPolyData> &triangles_out_vtk)
 {
   if (triangles.cloud.data.empty ())
   {
     PCL_ERROR ("[pcl::surface::convertToVTK] Input point cloud has no data!\n");
     return (-1);
   }
-  mesh2vtk (triangles, vtk_polygons_);
+
+  vtkSmartPointer<vtkPolyData> vtk_polygons;
+  mesh2vtk (triangles, vtk_polygons);
 
   vtkSmartPointer<vtkTriangleFilter> vtk_triangles = vtkTriangleFilter::New ();
-  vtk_triangles->SetInput (vtk_polygons_);
+  vtk_triangles->SetInput (vtk_polygons);
   vtk_triangles->Update();
 
-  vtk_polygons_ = vtk_triangles->GetOutput ();
-
+  triangles_out_vtk = vtk_triangles->GetOutput ();
   return 1;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::surface::VTKSmoother::subdivideMesh()
-{
-  vtkSmartPointer<vtkPolyDataAlgorithm> vtk_subdivision_filter;
-  switch(subdivision_filter_)
-  {
-    case 0:
-      return;
-      break;
-    case 1:
-      vtk_subdivision_filter = vtkLinearSubdivisionFilter::New ();
-      break;
-    case 2:
-      vtk_subdivision_filter = vtkLoopSubdivisionFilter::New ();
-      break;
-    case 3:
-      vtk_subdivision_filter = vtkButterflySubdivisionFilter::New ();
-      break;
-    default:
-      PCL_ERROR ("[pcl::surface::VTKSmoother::subdivideMesh] Invalid filter selection!\n");
-      return;
-      break;
-  }
-
-  vtk_subdivision_filter->SetInput (vtk_polygons_);
-  vtk_subdivision_filter->Update ();
-
-  vtk_polygons_ = vtk_subdivision_filter->GetOutput ();
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::surface::VTKSmoother::smoothMeshWindowedSinc()
+pcl::VTKUtils::convertToPCL (vtkSmartPointer<vtkPolyData> &vtk_polygons, pcl::PolygonMesh &triangles)
 {
-  vtkSmartPointer<vtkWindowedSincPolyDataFilter> vtk_smoother = vtkWindowedSincPolyDataFilter::New ();
-  vtk_smoother->SetInput (vtk_polygons_);
-  vtk_smoother->SetNumberOfIterations (num_iter_);
-  vtk_smoother->SetFeatureAngle (feature_angle_);
-  vtk_smoother->SetPassBand (pass_band_);
-  vtk_smoother->BoundarySmoothingOff ();
-  vtk_smoother->FeatureEdgeSmoothingOff ();
-  vtk_smoother->NonManifoldSmoothingOff ();
-  vtk_smoother->NormalizeCoordinatesOn ();
-  vtk_smoother->Update ();
-
-  vtk_polygons_ = vtk_smoother->GetOutput ();
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::surface::VTKSmoother::smoothMeshLaplacian()
-{
-  vtkSmartPointer<vtkSmoothPolyDataFilter> vtk_smoother = vtkSmoothPolyDataFilter::New ();
-  vtk_smoother->SetInput (vtk_polygons_);
-  vtk_smoother->SetNumberOfIterations (num_iter_);
-  vtk_smoother->Update ();
-
-  vtk_polygons_ = vtk_smoother->GetOutput ();
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::surface::VTKSmoother::convertToPCL (pcl::PolygonMesh &triangles)
-{
-  vtk2mesh (vtk_polygons_, triangles);
+  vtk2mesh (vtk_polygons, triangles);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::surface::VTKSmoother::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMesh& mesh)
+pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMesh& mesh)
 {
   mesh.polygons.clear ();
   mesh.cloud.data.clear ();
@@ -228,7 +165,7 @@ pcl::surface::VTKSmoother::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_da
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::surface::VTKSmoother::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData> &poly_data)
+pcl::VTKUtils::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData> &poly_data)
 {
   int nr_points = mesh.cloud.width * mesh.cloud.height;
   int nr_polygons = mesh.polygons.size ();
@@ -321,4 +258,5 @@ pcl::surface::VTKSmoother::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPoint
     return (0);
   return ((int)(poly_data->GetPoints()->GetNumberOfPoints ()));
 }
+
 
