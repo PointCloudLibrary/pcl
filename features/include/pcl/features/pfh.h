@@ -42,7 +42,7 @@
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
-#include <boost/unordered_map.hpp>
+#include <map>
 
 namespace pcl
 {
@@ -184,7 +184,7 @@ namespace pcl
       float d_pi_; 
 
       /** \brief Internal hashmap, used to optimize efficiency of redundant computations. */
-      boost::unordered_map<std::pair<int, int>, Eigen::Vector4f> feature_map_;
+      std::map<std::pair<int, int>, Eigen::Vector4f, std::less<std::pair<int, int> >, Eigen::aligned_allocator<Eigen::Vector4f> > feature_map_;
 
       /** \brief Queue of pairs saved, used to constrain memory usage. */
       std::queue<std::pair<int, int> > key_list_;

@@ -96,7 +96,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
       std::pair<int, int> key (p1, p2);
 
       // Check to see if we already estimated this pair in the global hashmap
-      boost::unordered_map<std::pair<int, int>, Eigen::Vector4f>::iterator fm_it = feature_map_.find (key);
+      std::map<std::pair<int, int>, Eigen::Vector4f, std::less<std::pair<int, int> >, Eigen::aligned_allocator<Eigen::Vector4f> >::iterator fm_it = feature_map_.find (key);
       if (fm_it != feature_map_.end ())
         pfh_tuple_ = fm_it->second;
       else
