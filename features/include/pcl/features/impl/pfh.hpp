@@ -68,6 +68,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
   // Factorization constant
   float hist_incr = 100.0 / (indices.size () * indices.size () - 1);
 
+  std::pair<int, int> key;
   // Iterate over all the points in the neighborhood
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
@@ -81,26 +82,35 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
       if (!isFinite (cloud.points[indices[i_idx]]) || !isFinite (cloud.points[indices[j_idx]]))
         continue;
 
-      // In order to create the key, always use the smaller index as the first key pair member
-      int p1, p2;
-//      if (indices[i_idx] >= indices[j_idx])
-//      {
-        p1 = indices[i_idx];
-        p2 = indices[j_idx];
-//      }
-//      else
-//      {
-//        p1 = indices[j_idx];
-//        p2 = indices[i_idx];
-//      }
-      std::pair<int, int> key (p1, p2);
+      if (use_cache_)
+      {
+        // In order to create the key, always use the smaller index as the first key pair member
+        int p1, p2;
+  //      if (indices[i_idx] >= indices[j_idx])
+  //      {
+          p1 = indices[i_idx];
+          p2 = indices[j_idx];
+  //      }
+  //      else
+  //      {
+  //        p1 = indices[j_idx];
+  //        p2 = indices[i_idx];
+  //      }
+        key = std::pair<int, int> (p1, p2);
 
-      // Check to see if we already estimated this pair in the global hashmap
-      std::map<std::pair<int, int>, Eigen::Vector4f, std::less<std::pair<int, int> >, Eigen::aligned_allocator<Eigen::Vector4f> >::iterator fm_it = feature_map_.find (key);
-      if (fm_it != feature_map_.end ())
-        pfh_tuple_ = fm_it->second;
+        // Check to see if we already estimated this pair in the global hashmap
+        std::map<std::pair<int, int>, Eigen::Vector4f, std::less<std::pair<int, int> >, Eigen::aligned_allocator<Eigen::Vector4f> >::iterator fm_it = feature_map_.find (key);
+        if (fm_it != feature_map_.end ())
+          pfh_tuple_ = fm_it->second;
+        else
+        {
+          // Compute the pair NNi to NNj
+          if (!computePairFeatures (cloud, normals, indices[i_idx], indices[j_idx],
+                                    pfh_tuple_[0], pfh_tuple_[1], pfh_tuple_[2], pfh_tuple_[3]))
+            continue;
+        }
+      }
       else
-        // Compute the pair NNi to NNj
         if (!computePairFeatures (cloud, normals, indices[i_idx], indices[j_idx],
                                   pfh_tuple_[0], pfh_tuple_[1], pfh_tuple_[2], pfh_tuple_[3]))
           continue;
@@ -128,17 +138,20 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
       }
       pfh_histogram[h_index] += hist_incr;
 
-      // Save the value in the hashmap
-      feature_map_[key] = pfh_tuple_;
-
-      // Use a maximum cache so that we don't go overboard on RAM usage
-      key_list_.push (key);
-      // Check to see if we need to remove an element due to exceeding max_size
-      if (key_list_.size () > max_cache_size_)
+      if (use_cache_)
       {
-        // Remove the last element.
-        feature_map_.erase (key_list_.back ());
-        key_list_.pop ();
+        // Save the value in the hashmap
+        feature_map_[key] = pfh_tuple_;
+
+        // Use a maximum cache so that we don't go overboard on RAM usage
+        key_list_.push (key);
+        // Check to see if we need to remove an element due to exceeding max_size
+        if (key_list_.size () > max_cache_size_)
+        {
+          // Remove the last element.
+          feature_map_.erase (key_list_.back ());
+          key_list_.pop ();
+        }
       }
     }
   }

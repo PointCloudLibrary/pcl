@@ -111,13 +111,15 @@ namespace pcl
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
       typedef typename Feature<PointInT, PointOutT>::PointCloudIn  PointCloudIn;
 
-      /** \brief Empty constructor. */
-      PFHEstimation () : nr_subdiv_ (5), d_pi_ (1.0 / (2.0 * M_PI))
+      /** \brief Empty constructor. 
+        * Sets \a use_cache_ to false, \a nr_subdiv_ to 5, and the internal maximum cache size to 1GB.
+        */
+      PFHEstimation () : nr_subdiv_ (5), d_pi_ (1.0 / (2.0 * M_PI)), use_cache_ (false)
       {
         feature_name_ = "PFHEstimation";
 
-        // Default 2GB memory size. Need to set it to something more conservative.
-        max_cache_size_ = (2ul*1024ul*1024ul*1024ul) / sizeof (std::pair<std::pair<int, int>, Eigen::Vector4f>);
+        // Default 1GB memory size. Need to set it to something more conservative.
+        max_cache_size_ = (1ul*1024ul*1024ul*1024ul) / sizeof (std::pair<std::pair<int, int>, Eigen::Vector4f>);
       };
 
       /** \brief Set the maximum internal cache size. Defaults to 2GB worth of entries.
@@ -127,6 +129,37 @@ namespace pcl
       setMaximumCacheSize (unsigned int cache_size)
       {
         max_cache_size_ = cache_size;
+      }
+
+      /** \brief Get the maximum internal cache size. */
+      inline unsigned int 
+      getMaximumCacheSize ()
+      {
+        return (max_cache_size_);
+      }
+
+      /** \brief Set whether to use an internal cache mechanism for removing redundant calculations or not. 
+        *
+        * \note Depending on how the point cloud is ordered and how the nearest
+        * neighbors are estimated, using a cache could have a positive or a
+        * negative influence. Please test with and without a cache on your
+        * data, and choose whatever works best!
+        *
+        * See \ref setMaximumCacheSize for setting the maximum cache size
+        *
+        * \param[in] use_cache set to true to use the internal cache, false otherwise
+        */
+      inline void
+      setUseInternalCache (bool use_cache)
+      {
+        use_cache_ = use_cache;
+      }
+
+      /** \brief Get whether the internal cache is used or not for computing the PFH features. */
+      inline bool
+      getUseInternalCache ()
+      {
+        return (use_cache_);
       }
 
       /** \brief Compute the 4-tuple representation containing the three angles and one distance between two points
@@ -192,6 +225,8 @@ namespace pcl
       /** \brief Maximum size of internal cache memory. */
       unsigned int max_cache_size_;
 
+      /** \brief Set to true to use the internal cache for removing redundant computations. */
+      bool use_cache_;
     private:
       /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
         * \param[out] output the output point cloud 
