@@ -50,7 +50,7 @@ namespace pcl
   class MeshProcessing
   {
     public:
-      typedef typename PolygonMesh::ConstPtr PolygonMeshConstPtr;
+      typedef PolygonMesh::ConstPtr PolygonMeshConstPtr;
 
       /** \brief Constructor. */
       MeshProcessing () : input_mesh_ () {};
