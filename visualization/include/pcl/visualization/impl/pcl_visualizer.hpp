@@ -1026,24 +1026,26 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
   // Get a pointer to the beginning of the data array
   float *data = ((vtkFloatArray*)points->GetData ())->GetPointer (0);
 
+  std::vector<int> lookup;
   // If the dataset is dense (no NaNs)
   if (cloud->is_dense)
   {
     for (vtkIdType i = 0; i < nr_points; ++i)
-      memcpy (&data[i * 3], &cloud->points[i].x, 12);    // sizeof (float) * 3
+      memcpy (&data[i * 3], &cloud->points[i].x, sizeof (float) * 3);
   }
   else
   {
+    lookup.resize (nr_points);
     vtkIdType j = 0;    // true point index
     for (vtkIdType i = 0; i < nr_points; ++i)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud->points[i].x) || 
-          !pcl_isfinite (cloud->points[i].y) || 
+      if (!pcl_isfinite (cloud->points[i].x) ||
+          !pcl_isfinite (cloud->points[i].y) ||
           !pcl_isfinite (cloud->points[i].z))
         continue;
-
-      memcpy (&data[j * 3], &cloud->points[i].x, 12);    // sizeof (float) * 3
+      lookup [i] = j;
+      memcpy (&data[j * 3], &cloud->points[i].x, sizeof (float) * 3 );
       j++;
     }
     nr_points = j;
@@ -1055,15 +1057,27 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
   {
     //create polys from polyMesh.polygons
     vtkSmartPointer<vtkCellArray> cell_array = vtkSmartPointer<vtkCellArray>::New ();
-    
-    for (size_t i = 0; i < vertices.size (); ++i) 
-    {
-      size_t n_points = vertices[i].vertices.size ();
-      cell_array->InsertNextCell (n_points);
-      for (size_t j = 0; j < n_points; j++) 
-        cell_array->InsertCellPoint (vertices[i].vertices[j]);
-    }
 
+    if (lookup.size () > 0)
+    {
+      for (size_t i = 0; i < vertices.size (); ++i)
+      {
+        size_t n_points = vertices[i].vertices.size ();
+        cell_array->InsertNextCell (n_points);
+        for (size_t j = 0; j < n_points; j++)
+          cell_array->InsertCellPoint (lookup[vertices[i].vertices[j]]);
+      }
+    }
+    else
+    {
+      for (size_t i = 0; i < vertices.size (); ++i)
+      {
+        size_t n_points = vertices[i].vertices.size ();
+        cell_array->InsertNextCell (n_points);
+        for (size_t j = 0; j < n_points; j++)
+          cell_array->InsertCellPoint (vertices[i].vertices[j]);
+      }
+    }
     vtkSmartPointer<vtkPolyData> polydata;
     allocVtkPolyData (polydata);
     polydata->SetStrips (cell_array);
@@ -1077,9 +1091,16 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     size_t n_points = vertices[0].vertices.size ();
     polygon->GetPointIds ()->SetNumberOfIds (n_points - 1);
 
-    for (size_t j = 0; j < (n_points - 1); ++j) 
-      polygon->GetPointIds ()->SetId (j, vertices[0].vertices[j]);
-
+    if (lookup.size () > 0)
+    {
+      for (size_t j = 0; j < (n_points - 1); ++j)
+        polygon->GetPointIds ()->SetId (j, lookup[vertices[0].vertices[j]]);
+    }
+    else
+    {
+      for (size_t j = 0; j < (n_points - 1); ++j)
+        polygon->GetPointIds ()->SetId (j, vertices[0].vertices[j]);
+    }
     vtkSmartPointer<vtkUnstructuredGrid> poly_grid;
     allocVtkUnstructuredGrid (poly_grid);
     poly_grid->Allocate (1, 1);
