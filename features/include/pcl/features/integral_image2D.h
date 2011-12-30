@@ -103,7 +103,7 @@ namespace pcl
     * \author Suat Gedikli
     */
   template <class DataType, unsigned Dimension>
-  class IntegralImage2Dim
+  class IntegralImage2D
   {
     public:
       static const unsigned second_order_size = (Dimension * (Dimension + 1)) >> 1;
@@ -113,14 +113,14 @@ namespace pcl
       /** \brief Constructor for an Integral Image
         * \param[in] compute_second_order_integral_images set to true if we want to compute a second order image
         */
-      IntegralImage2Dim (bool compute_second_order_integral_images)
+      IntegralImage2D (bool compute_second_order_integral_images)
         : width_ (1), height_ (1), compute_second_order_integral_images_ (compute_second_order_integral_images)
       {
       }
 
       /** \brief Destructor */
       virtual
-      ~IntegralImage2Dim () { }
+      ~IntegralImage2D () { }
 
       /** \brief Set the input data to compute the integral image for
         * \param[in] data the input data
@@ -178,7 +178,7 @@ namespace pcl
      * \brief partial template specialization for integral images with just one channel.
      */
   template <class DataType>
-  class IntegralImage2Dim <DataType, 1>
+  class IntegralImage2D <DataType, 1>
   {
     public:
       static const unsigned second_order_size = 1;
@@ -188,14 +188,14 @@ namespace pcl
       /** \brief Constructor for an Integral Image
         * \param[in] compute_second_order_integral_images set to true if we want to compute a second order image
         */
-      IntegralImage2Dim (bool compute_second_order_integral_images)
+      IntegralImage2D (bool compute_second_order_integral_images)
         : width_ (1), height_ (1), compute_second_order_integral_images_ (compute_second_order_integral_images)
       {
       }
 
       /** \brief Destructor */
       virtual
-      ~IntegralImage2Dim () { }
+      ~IntegralImage2D () { }
 
       /** \brief Set the input data to compute the integral image for
         * \param[in] data the input data
