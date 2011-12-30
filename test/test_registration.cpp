@@ -457,8 +457,7 @@ TEST (PCL, PyramidFeatureHistogram)
   pyramid_target->compute ();
 
   float similarity_value = PyramidFeatureHistogram<PPFSignature>::comparePyramidFeatureHistograms (pyramid_source, pyramid_target);
-  EXPECT_NEAR (similarity_value, 0.739672, 1e-4);
-
+  EXPECT_NEAR (similarity_value, 0.74101555347442627, 1e-4);
 
   vector<pair<float, float> > dim_range_target2;
   for (size_t i = 0; i < 3; ++i) dim_range_target2.push_back (pair<float, float> ((float) -M_PI * 5.0f, (float) M_PI * 5.0f));
@@ -471,7 +470,7 @@ TEST (PCL, PyramidFeatureHistogram)
   pyramid_target->compute ();
 
   float similarity_value2 = PyramidFeatureHistogram<PPFSignature>::comparePyramidFeatureHistograms (pyramid_source, pyramid_target);
-  EXPECT_NEAR (similarity_value2, 0.801435, 1e-4);
+  EXPECT_NEAR (similarity_value2, 0.80097091197967529, 1e-4);
 
 
   vector<pair<float, float> > dim_range_target3;
@@ -485,7 +484,7 @@ TEST (PCL, PyramidFeatureHistogram)
   pyramid_target->compute ();
 
   float similarity_value3 = PyramidFeatureHistogram<PPFSignature>::comparePyramidFeatureHistograms (pyramid_source, pyramid_target);
-  EXPECT_NEAR (similarity_value3, 0.881507, 1e-3);
+  EXPECT_NEAR (similarity_value3, 0.87623238563537598, 1e-3);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -547,18 +546,18 @@ TEST (PCL, PPFRegistration)
   ppf_registration.align (cloud_output);
   Eigen::Matrix4f transformation = ppf_registration.getFinalTransformation ();
 
-  EXPECT_NEAR (transformation(0, 0), -0.105976, 1e-4);
-  EXPECT_NEAR (transformation(0, 1), -0.987014, 1e-4);
-  EXPECT_NEAR (transformation(0, 2), 0.120714, 1e-4);
-  EXPECT_NEAR (transformation(0, 3), 10.701012, 1e-4);
-  EXPECT_NEAR (transformation(1, 0), 0.914111, 1e-4);
-  EXPECT_NEAR (transformation(1, 1), -0.144482, 1e-4);
-  EXPECT_NEAR (transformation(1, 2), -0.378848, 1e-4);
-  EXPECT_NEAR (transformation(1, 3), -91.315384, 1e-4);
-  EXPECT_NEAR (transformation(2, 0), 0.391370, 1e-4);
-  EXPECT_NEAR (transformation(2, 1), 0.070197, 1e-4);
-  EXPECT_NEAR (transformation(2, 2), 0.917552, 1e-4);
-  EXPECT_NEAR (transformation(2, 3), -39.084114, 1e-4);
+  EXPECT_NEAR (transformation(0, 0), -0.153768, 1e-4);
+  EXPECT_NEAR (transformation(0, 1), -0.628136, 1e-4);
+  EXPECT_NEAR (transformation(0, 2), 0.762759, 1e-4);
+  EXPECT_NEAR (transformation(0, 3), 15.472, 1e-4);
+  EXPECT_NEAR (transformation(1, 0), 0.967397, 1e-4);
+  EXPECT_NEAR (transformation(1, 1), -0.252918, 1e-4);
+  EXPECT_NEAR (transformation(1, 2), -0.0132578, 1e-4);
+  EXPECT_NEAR (transformation(1, 3), -96.6221, 1e-4);
+  EXPECT_NEAR (transformation(2, 0), 0.201243, 1e-4);
+  EXPECT_NEAR (transformation(2, 1), 0.735852, 1e-4);
+  EXPECT_NEAR (transformation(2, 2), 0.646547, 1e-4);
+  EXPECT_NEAR (transformation(2, 3), -20.134, 1e-4);
   EXPECT_NEAR (transformation(3, 0), 0.000000, 1e-4);
   EXPECT_NEAR (transformation(3, 1), 0.000000, 1e-4);
   EXPECT_NEAR (transformation(3, 2), 0.000000, 1e-4);
