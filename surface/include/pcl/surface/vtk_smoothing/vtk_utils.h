@@ -49,30 +49,30 @@ namespace pcl
   {
     public:
       /** \brief Convert a PCL PolygonMesh to a VTK vtkPolyData.
-       * \param[in] triangles PolygonMesh to be converted to vtkPolyData, stored in the object.
-       */
+        * \param[in] triangles PolygonMesh to be converted to vtkPolyData, stored in the object.
+        */
       static int
       convertToVTK (const pcl::PolygonMesh &triangles, vtkSmartPointer<vtkPolyData> &triangles_out_vtk);
 
       /** \brief Convert the vtkPolyData object back to PolygonMesh.
-       * \param[out] triangles the PolygonMesh to store the vtkPolyData in.
-       */
+        * \param[out] triangles the PolygonMesh to store the vtkPolyData in.
+        */
       static void
       convertToPCL (vtkSmartPointer<vtkPolyData> &vtk_polygons, pcl::PolygonMesh &triangles);
 
       /** \brief Convert vtkPolyData object to a PCL PolygonMesh
-       * \param[in] poly_data Pointer (vtkSmartPointer) to a vtkPolyData object
-       * \param[out] mesh PCL Polygon Mesh to fill
-       * \return Number of points in the point cloud of mesh.
-       */
+        * \param[in] poly_data Pointer (vtkSmartPointer) to a vtkPolyData object
+        * \param[out] mesh PCL Polygon Mesh to fill
+        * \return Number of points in the point cloud of mesh.
+        */
       static int
       vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMesh& mesh);
 
       /** \brief Convert a PCL PolygonMesh to a vtkPolyData object
-       * \param[in] mesh Reference to PCL Polygon Mesh
-       * \param[out] poly_data Pointer (vtkSmartPointer) to a vtkPolyData object
-       * \return Number of points in the point cloud of mesh.
-       */
+        * \param[in] mesh Reference to PCL Polygon Mesh
+        * \param[out] poly_data Pointer (vtkSmartPointer) to a vtkPolyData object
+        * \return Number of points in the point cloud of mesh.
+        */
       static int
       mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData> &poly_data);
   };

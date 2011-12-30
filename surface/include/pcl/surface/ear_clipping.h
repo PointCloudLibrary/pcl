@@ -39,7 +39,7 @@
 #define PCL_SURFACE_EAR_CLIPPING_H_
 
 #include <pcl/point_types.h>
-#include <pcl/surface/mesh_processing.h>
+#include <pcl/surface/processing.h>
 
 namespace pcl
 {
@@ -72,7 +72,7 @@ namespace pcl
         * \param[out] output the output polygonal mesh 
         */
       void
-      performReconstruction (pcl::PolygonMesh &output);
+      performProcessing (pcl::PolygonMesh &output);
 
       /** \brief Triangulate one polygon. 
         * \param[in] vertices the set of vertices

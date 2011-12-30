@@ -44,7 +44,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::MeshSmoothingLaplacianVTK::performReconstruction (pcl::PolygonMesh &output)
+pcl::MeshSmoothingLaplacianVTK::performProcessing (pcl::PolygonMesh &output)
 {
   // Convert from PCL mesh representation to the VTK representation
   VTKUtils::convertToVTK (*input_mesh_, vtk_polygons_);

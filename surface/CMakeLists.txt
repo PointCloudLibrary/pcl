@@ -102,7 +102,7 @@ if(build)
     #	src/poisson/Time.cpp
     #	)
     #
-    set(srcs src/mesh_processing.cpp 
+    set(srcs src/processing.cpp 
         src/ear_clipping.cpp
         src/gp3.cpp
         src/grid_projection.cpp
@@ -132,7 +132,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/mls_omp.h
         include/pcl/${SUBSYS_NAME}/organized_fast_mesh.h
         include/pcl/${SUBSYS_NAME}/reconstruction.h
-        include/pcl/${SUBSYS_NAME}/mesh_processing.h
+        include/pcl/${SUBSYS_NAME}/processing.h
         include/pcl/${SUBSYS_NAME}/simplification_remove_unused_vertices.h
         include/pcl/${SUBSYS_NAME}/surfel_smoothing.h        
         include/pcl/${SUBSYS_NAME}/texture_mapping.h

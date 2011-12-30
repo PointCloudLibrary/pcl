@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,25 +37,28 @@
  *
  */
 
-#include "pcl/surface/mesh_processing.h"
+#include <pcl/surface/processing.h>
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::MeshProcessing::initCompute ()
 {
   if (!input_mesh_)
-    return false;
+    return (false);
 
-  return true;
+  return (true);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::MeshProcessing::deinitCompute ()
 {
 
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::MeshProcessing::reconstruct (pcl::PolygonMesh &output)
+pcl::MeshProcessing::process (pcl::PolygonMesh &output)
 {
   // Copy the header
   output.header = input_mesh_->header;
@@ -68,10 +73,13 @@ pcl::MeshProcessing::reconstruct (pcl::PolygonMesh &output)
 
   // Set up the output dataset
   output.cloud = input_mesh_->cloud;
-  output.polygons.clear ();
-  output.polygons.reserve (2*input_mesh_->polygons.size ()); /// NOTE: usually the number of triangles is around twice the number of vertices
+  // \TODO: Double check if this is needed
+  {
+    output.polygons.clear ();
+    output.polygons.reserve (2*input_mesh_->polygons.size ()); /// NOTE: usually the number of triangles is around twice the number of vertices
+  }
   // Perform the actual surface reconstruction
-  performReconstruction (output);
+  performProcessing (output);
 
   deinitCompute ();
 }

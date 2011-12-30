@@ -54,7 +54,7 @@ pcl::EarClipping::initCompute ()
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::EarClipping::performReconstruction (PolygonMesh& output)
+pcl::EarClipping::performProcessing (PolygonMesh& output)
 {
   output.polygons.clear ();
   output.cloud = input_mesh_->cloud;

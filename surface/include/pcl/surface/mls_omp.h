@@ -94,7 +94,8 @@ namespace pcl
       /** \brief Abstract surface reconstruction method. 
         * \param[out] output the result of the reconstruction 
         */
-      virtual void performReconstruction (PointCloudIn &output);
+      virtual void 
+      performReconstruction (PointCloudIn &output);
 
       /** \brief Abstract class get name method. */
       std::string getClassName () const { return ("MovingLeastSquaresOMP"); }

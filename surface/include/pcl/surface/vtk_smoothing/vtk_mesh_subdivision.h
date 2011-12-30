@@ -39,7 +39,7 @@
 #ifndef VTK_MESH_SUBDIVISION_H_
 #define VTK_MESH_SUBDIVISION_H_
 
-#include "pcl/surface/mesh_processing.h"
+#include <pcl/surface/processing.h>
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 
@@ -57,8 +57,8 @@ namespace pcl
       { LINEAR, LOOP, BUTTERFLY };
 
       /** \brief Set the mesh subdivision filter type
-       * \param[in] type the filter type
-       */
+        * \param[in] type the filter type
+        */
       inline void
       setFilterType (MeshSubdivisionVTKFilterType type)
       {
@@ -74,7 +74,7 @@ namespace pcl
 
     protected:
       void
-      performReconstruction (pcl::PolygonMesh &output);
+      performProcessing (pcl::PolygonMesh &output);
 
     private:
       MeshSubdivisionVTKFilterType filter_type_;

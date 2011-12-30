@@ -716,7 +716,7 @@ TEST (PCL, EarClipping)
   clipper.setInputMesh (mesh_aux);
 
   PolygonMesh triangulated_mesh;
-  clipper.reconstruct (triangulated_mesh);
+  clipper.process (triangulated_mesh);
 
   EXPECT_EQ (triangulated_mesh.polygons.size (), 4);
   for (int i = 0; i < (int)triangulated_mesh.polygons.size (); ++i)

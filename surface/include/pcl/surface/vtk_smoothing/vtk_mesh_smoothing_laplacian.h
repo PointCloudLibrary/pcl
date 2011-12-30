@@ -39,7 +39,7 @@
 #ifndef VTK_MESH_SMOOTHING_LAPLACIAN_H_
 #define VTK_MESH_SMOOTHING_LAPLACIAN_H_
 
-#include "pcl/surface/mesh_processing.h"
+#include <pcl/surface/processing.h>
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 
@@ -67,8 +67,8 @@ namespace pcl
       {};
 
       /** \brief Set the number of iterations for the smoothing filter.
-       * \param[in] num_iter the number of iterations
-       */
+        * \param[in] num_iter the number of iterations
+        */
       inline void
       setNumIter (int num_iter)
       {
@@ -183,7 +183,7 @@ namespace pcl
 
     protected:
       void
-      performReconstruction (pcl::PolygonMesh &output);
+      performProcessing (pcl::PolygonMesh &output);
 
     private:
       vtkSmartPointer<vtkPolyData> vtk_polygons_;

@@ -54,7 +54,7 @@ pcl::MeshSubdivisionVTK::MeshSubdivisionVTK ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::MeshSubdivisionVTK::performReconstruction (pcl::PolygonMesh &output)
+pcl::MeshSubdivisionVTK::performProcessing (pcl::PolygonMesh &output)
 {
   // Convert from PCL mesh representation to the VTK representation
   VTKUtils::convertToVTK (*input_mesh_, vtk_polygons_);

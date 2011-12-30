@@ -39,7 +39,7 @@
 #ifndef VTK_MESH_SMOOTHING_WINDOWED_SINC_H_
 #define VTK_MESH_SMOOTHING_WINDOWED_SINC_H_
 
-#include "pcl/surface/mesh_processing.h"
+#include <pcl/surface/processing.h>
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 
@@ -53,8 +53,8 @@ namespace pcl
       MeshSmoothingWindowedSincVTK ();
 
       /** \brief Set the number of iterations for the smoothing filter.
-       * \param[in] num_iter the number of iterations
-       */
+        * \param[in] num_iter the number of iterations
+        */
       inline void
       setNumIter (int num_iter)
       {
@@ -62,8 +62,8 @@ namespace pcl
       };
 
       /** \brief Set the feature angle for sharp edge identification.
-       * \param[in] feature_angle the feature angle.
-       */
+        * \param[in] feature_angle the feature angle.
+        */
       inline void
       setFeatureAngle (float feature_angle)
       {
@@ -71,8 +71,8 @@ namespace pcl
       };
 
       /** \brief Set the pass band value for windowed sinc filtering.
-       * \param[in] pass_band value for the pass band.
-       */
+        * \param[in] pass_band value for the pass band.
+        */
       inline void
       setPassBand (float pass_band)
       {
@@ -103,7 +103,7 @@ namespace pcl
 
     protected:
       void
-      performReconstruction (pcl::PolygonMesh &output);
+      performProcessing (pcl::PolygonMesh &output);
 
     private:
       vtkSmartPointer<vtkPolyData> vtk_polygons_;

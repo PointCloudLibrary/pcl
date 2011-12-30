@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -55,24 +57,39 @@ namespace pcl
       /** \brief Constructor. */
       MeshProcessing () : input_mesh_ () {};
 
-      void setInputMesh (pcl::PolygonMeshConstPtr &input) { input_mesh_ = input; }
-
-      /** \brief Base method for surface reconstruction for all points given in
-        * <setInputCloud (), setIndices ()>
-        * \param output the resultant reconstructed surface model
+      /** \brief Set the input mesh that we want to process
+        * \param[in] input the input polygonal mesh
         */
-      void reconstruct (pcl::PolygonMesh &output);
+      void 
+      setInputMesh (const pcl::PolygonMeshConstPtr &input) 
+      { 
+        input_mesh_ = input; 
+      }
+
+      /** \brief Process the input surface mesh and store the results
+        * \param[out] output the resultant processed surface model
+        */
+      void 
+      process (pcl::PolygonMesh &output);
 
     protected:
-      virtual bool initCompute ();
-      virtual void deinitCompute ();
+      /** \brief Initialize computation. Must be called before processing starts. */
+      virtual bool 
+      initCompute ();
+      
+      /** \brief UnInitialize computation. Must be called after processing ends. */
+      virtual void 
+      deinitCompute ();
 
-      /** \brief Abstract surface reconstruction method. */
-      virtual void performReconstruction (pcl::PolygonMesh &output) = 0;
+      /** \brief Abstract surface processing method. */
+      virtual void 
+      performProcessing (pcl::PolygonMesh &output) = 0;
 
       /** \brief Abstract class get name method. */
-      virtual std::string getClassName () const { return (""); }
+      virtual std::string 
+      getClassName () const { return (""); }
 
+      /** \brief Input polygonal mesh. */
       pcl::PolygonMeshConstPtr input_mesh_;
   };
 }
