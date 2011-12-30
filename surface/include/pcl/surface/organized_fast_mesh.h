@@ -114,8 +114,11 @@ namespace pcl
         triangulation_type_ = type;
       }
 
+      /** \brief Store shadowed faces or not.
+        * \param[in] enable set to true to store shadowed faces
+        */
       inline void
-      storeShadowedFaces(bool enable)
+      storeShadowedFaces (bool enable)
       {
         store_shadowed_faces_ = enable;
       }
@@ -188,17 +191,18 @@ namespace pcl
         * \param[in] b index of the second vertex
         * \param[in] c index of the third vertex
         * \param[in] d index of the fourth vertex
-        * \param[out] output the polygon mesh to be updated
+        * \param[in] idx the index in the set of polygon vertices (assumes \a idx is valid in \a polygons)
+        * \param[out] polygons the polygon mesh to be updated
         */
       inline void
-      addQuad (int a, int b, int c, int d, std::vector<pcl::Vertices>& polygons)
+      addQuad (int a, int b, int c, int d, int idx, std::vector<pcl::Vertices>& polygons)
       {
-        quad_.vertices.clear ();
-        quad_.vertices.push_back (a);
-        quad_.vertices.push_back (b);
-        quad_.vertices.push_back (c);
-        quad_.vertices.push_back (d);
-        polygons.push_back (quad_);
+        quad_.vertices.resize (4);
+        quad_.vertices[0] = a;
+        quad_.vertices[1] = b;
+        quad_.vertices[2] = c;
+        quad_.vertices[3] = d;
+        polygons[idx] = quad_;
       }
 
       /** \brief Set (all) coordinates of a particular point to the specified value
@@ -305,7 +309,7 @@ namespace pcl
       inline int
       getIndex (int x, int y)
       {
-        return ((int)(y * input_->width + x));
+        return (y * input_->width + x);
       }
 
       /** \brief Create a quad mesh. 

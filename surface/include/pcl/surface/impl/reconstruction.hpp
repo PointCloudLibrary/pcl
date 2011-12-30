@@ -187,8 +187,8 @@ pcl::MeshConstruction<PointInT>::reconstruct (std::vector<pcl::Vertices> &polygo
   }
 
   // Set up the output dataset
-  polygons.clear ();
-  polygons.reserve (2 * indices_->size ()); /// NOTE: usually the number of triangles is around twice the number of vertices
+  //polygons.clear ();
+  //polygons.reserve (2 * indices_->size ()); /// NOTE: usually the number of triangles is around twice the number of vertices
   // Perform the actual surface reconstruction
   performReconstruction (polygons);
 
