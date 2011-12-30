@@ -115,7 +115,7 @@ if(build)
       target_link_libraries(openni_planar_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface)
     
       PCL_ADD_EXECUTABLE(openni_icp_reg ${SUBSYS_NAME} src/openni_icp_reg.cpp)
-      target_link_libraries(openni_icp_reg pcl_common pcl_kdtree pcl_registration pcl_visualization pcl_filters gsl gslcblas)
+      target_link_libraries(openni_icp_reg pcl_common pcl_kdtree pcl_registration pcl_visualization pcl_filters)
     
     endif() # OPENNI_FOUND + BUILD_OPENNI
     
