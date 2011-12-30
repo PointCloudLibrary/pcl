@@ -58,7 +58,7 @@ TEST(PCL, IntegralImage)
   const unsigned width = 640;
   const unsigned height = 480;
   const unsigned max_window_size = 11;
-  IntegralImage2Dim<float,1> integral_image(true);
+  IntegralImage2D<float,1> integral_image(true);
   
   // test for dense data with elementstride = 1
   float* data = new float[width * height];
@@ -79,7 +79,7 @@ TEST(PCL, IntegralImage)
       {
         for(unsigned xIdx = 0; xIdx < width - window_width; ++xIdx)
         {
-          EXPECT_EQ (window_width * window_height, integral_image.getFirstOrderSum (xIdx, yIdx, window_width, window_height)[0]);
+          EXPECT_EQ (window_width * window_height, integral_image.getFirstOrderSum (xIdx, yIdx, window_width, window_height));
         }
       }
     } 
@@ -107,7 +107,7 @@ TEST(PCL, IntegralImage)
       {
         for(unsigned xIdx = 0; xIdx < width - window_width; ++xIdx)
         {
-          EXPECT_EQ (window_width * window_height, integral_image.getFirstOrderSum (xIdx, yIdx, window_width, window_height)[0]);
+          EXPECT_EQ (window_width * window_height, integral_image.getFirstOrderSum (xIdx, yIdx, window_width, window_height));
         }
       }
     } 
@@ -136,8 +136,8 @@ TEST(PCL, IntegralImage)
       {
         for(unsigned xIdx = 0; xIdx < width - window_width; ++xIdx)
         {
-          EXPECT_EQ (window_width * window_height, integral_image.getFirstOrderSum (xIdx, yIdx, window_width, window_height)[0]);
-          EXPECT_EQ (window_width * window_height, integral_image.getSecondOrderSum (xIdx, yIdx, window_width, window_height)[0]);
+          EXPECT_EQ (window_width * window_height, integral_image.getFirstOrderSum (xIdx, yIdx, window_width, window_height));
+          EXPECT_EQ (window_width * window_height, integral_image.getSecondOrderSum (xIdx, yIdx, window_width, window_height));
         }
       }
     } 
@@ -145,7 +145,7 @@ TEST(PCL, IntegralImage)
   delete[] data;
 
   // now test multidimensional case with 3D but element_stride = 4 and row_stride non-dividable by element_stride
-  IntegralImage2Dim<float, 3> integral_image3(true);
+  IntegralImage2D<float, 3> integral_image3(true);
   element_stride = 4;
   row_stride = width * element_stride + 1;
   data = new float[row_stride * height];
@@ -168,15 +168,15 @@ TEST(PCL, IntegralImage)
       {
         for(unsigned xIdx = 0; xIdx < width - window_width; ++xIdx)
         {
-          IntegralImage2Dim<float, 3>::ElementType sum = integral_image3.getFirstOrderSum (xIdx, yIdx, window_width, window_height);
+          IntegralImage2D<float, 3>::ElementType sum = integral_image3.getFirstOrderSum (xIdx, yIdx, window_width, window_height);
 
           EXPECT_EQ (window_height * window_width * (window_width + 2 * xIdx - 1), sum[0] * 2);
           EXPECT_EQ (window_width * window_height * (window_height + 2 * yIdx - 1), sum[1] * 2);
           EXPECT_EQ (window_width * window_height * (window_height + 2 * yIdx - 1) + window_height * window_width * (window_width + 2 * xIdx - 1), sum[2] * 2);
 
-          IntegralImage2Dim<float, 3>::SecondOrderType sumSqr = integral_image3.getSecondOrderSum (xIdx, yIdx, window_width, window_height);
+          IntegralImage2D<float, 3>::SecondOrderType sumSqr = integral_image3.getSecondOrderSum (xIdx, yIdx, window_width, window_height);
   
-          IntegralImage2Dim<float, 3>::SecondOrderType ground_truth;
+          IntegralImage2D<float, 3>::SecondOrderType ground_truth;
           ground_truth.setZero ();
           for (unsigned wy = yIdx; wy < yIdx + window_height; ++wy)
           {
