@@ -102,18 +102,6 @@ namespace pcl
       /** \brief Destructor. */
       ~GridProjection ();
 
-      /** \brief Create the surface. 
-        *
-        * The 1st step is filling the padding, so that all the cells in the padding
-        * area are in the hash map. The 2nd step is store the vector, and projected
-        * point. The 3rd step is finding all the edges intersects the surface, and
-        * creating surface.
-        *
-        * \param output the resultant polygonal mesh
-        */
-      void 
-      performReconstruction (pcl::PolygonMesh &output);
-
       /** \brief Set the size of the grid cell
         * \param resolution  the size of the grid cell
         */
@@ -198,13 +186,45 @@ namespace pcl
         return (surface_);
       }
 
+    protected:
       /** \brief Get the bounding box for the input data points, also calculating the
         * cell size, and the gaussian scale factor
         */
       void 
       getBoundingBox ();
 
-    protected:
+      /** \brief The actual surface reconstruction method.
+        * \param[out] polygons the resultant polygons, as a set of vertices. The Vertices structure contains an array of point indices.
+        */
+      bool
+      reconstructPolygons (std::vector<pcl::Vertices> &polygons);
+
+      /** \brief Create the surface. 
+        *
+        * The 1st step is filling the padding, so that all the cells in the padding
+        * area are in the hash map. The 2nd step is store the vector, and projected
+        * point. The 3rd step is finding all the edges intersects the surface, and
+        * creating surface.
+        *
+        * \param[out] output the resultant polygonal mesh
+        */
+      void 
+      performReconstruction (pcl::PolygonMesh &output);
+
+      /** \brief Create the surface. 
+        *
+        * The 1st step is filling the padding, so that all the cells in the padding
+        * area are in the hash map. The 2nd step is store the vector, and projected
+        * point. The 3rd step is finding all the edges intersects the surface, and
+        * creating surface.
+        *
+        * \param[out] points the resultant points lying on the surface
+        * \param[out] polygons the resultant polygons, as a set of vertices. The Vertices structure contains an array of point indices.
+        */
+      void 
+      performReconstruction (pcl::PointCloud<PointNT> &points, 
+                             std::vector<pcl::Vertices> &polygons);
+
       /** \brief When the input data points don't fill into the 1*1*1 box, 
         * scale them so that they can be filled in the unit box. Otherwise, 
         * it will be some drawing problem when doing visulization
