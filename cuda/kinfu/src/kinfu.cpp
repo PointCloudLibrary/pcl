@@ -49,9 +49,9 @@
 #include <Eigen/LU>
 
 #ifdef HAVE_OPENCV
-#include <opencv2/opencv.hpp>
-#include <opencv2/gpu/gpu.hpp>
-#include "pcl/gpu/utils/timers_opencv.hpp"
+  #include <opencv2/opencv.hpp>
+  #include <opencv2/gpu/gpu.hpp>
+  #include "pcl/gpu/utils/timers_opencv.hpp"
 #endif
 
 using namespace std;
@@ -69,7 +69,7 @@ device_cast (Matx& matx)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(cols), global_time_(0), max_icp_distance_(0)
+pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(cols), global_time_(0), max_icp_distance_(0), max_weight_(1)
 {
   rmats_.reserve (30000);
   tvecs_.reserve (30000);
@@ -181,6 +181,9 @@ pcl::gpu::KinfuTracker::reset()
   tvecs_.push_back (init_tcam_);
 
   device::initVolume<volume_elem_type> (volume_);
+  
+  if (!colors_volume_.empty()) // color integration mode is enabled
+    device::initColorVolume(colors_volume_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -188,7 +191,7 @@ void
 pcl::gpu::KinfuTracker::allocateBufffers (int rows, int cols)
 {
   volume_.create (device::VOLUME_Y * device::VOLUME_Z, device::VOLUME_X);
-
+  
   depths_curr_.resize (LEVELS);
   vmaps_g_curr_.resize (LEVELS);
   nmaps_g_curr_.resize (LEVELS);
@@ -389,7 +392,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Eigen::Affine3f
-pcl::gpu::KinfuTracker::getCameraPose (int time)
+pcl::gpu::KinfuTracker::getCameraPose (int time) const
 {
   if (time > (int)rmats_.size () || time < 0)
     time = rmats_.size () - 1;
@@ -588,6 +591,53 @@ pcl::gpu::KinfuTracker::getNormalsFromVolume (const DeviceArray<PointType>& clou
   normals.create (cloud.size ());
   const float3 device_volume_size = device_cast<const float3> (volume_size_);
   device::extractNormals (volume_, device_volume_size, cloud, (device::float8*)normals.ptr ());
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::gpu::KinfuTracker::initColorIntegration(int max_weight)
+{     
+  max_weight_ = max_weight < 0 ? max_weight_ : max_weight;
+  colors_volume_.create (device::VOLUME_Y * device::VOLUME_Z, device::VOLUME_X);  
+  device::initColorVolume(colors_volume_);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool 
+pcl::gpu::KinfuTracker::operator() (const DepthMap& depth, const View& colors)
+{ 
+  bool res = (*this)(depth);
+
+  if (res)
+  {
+    const float3 device_volume_size = device_cast<const float3> (volume_size_);
+    device::Intr intr(fx_, fy_, cx_, cy_);
+
+    Matrix3frm R_inv = rmats_.back().inverse();
+    Vector3f   t     = tvecs_.back();
+    
+    Mat33&  device_Rcurr_inv = device_cast<Mat33> (R_inv);
+    float3& device_tcurr = device_cast<float3> (t);
+    
+    device::updateColorVolume(intr, tranc_dist_, device_Rcurr_inv, device_tcurr, vmaps_g_prev_[0], colors, device_volume_size, colors_volume_, max_weight_);
+  }
+
+  return res;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::gpu::KinfuTracker::getColorsFromVolume (const DeviceArray<PointType>& cloud, DeviceArray<RGB>& colors) const
+{
+  if (colors_volume_.empty())
+  {
+    colors.release();
+    return;
+  }
+  colors.create(cloud.size());
+  const float3 device_volume_size = device_cast<const float3> (volume_size_);    
+  exctractColors(colors_volume_, device_volume_size, cloud, (uchar4*)colors.ptr()/*bgra*/); 
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

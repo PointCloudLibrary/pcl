@@ -219,11 +219,11 @@ namespace pcl
     //typedef ushort2 volume_elem_type;
 
     /** \brief Perform tsdf volume initialization
-      *  \param[out]
+      *  \param[out] array volume to be initialized
       */
     template<typename T> 
     void
-    initVolume(PtrStepSz<T> array);
+    initVolume(PtrStep<T> array);
 
     //first version
     /** \brief Performs Tsfg volume uptation (extra obsolete now)
@@ -268,9 +268,8 @@ namespace pcl
     PCL_EXPORTS void 
     integrateTsdfVolume (const PtrStepSz<ushort>& depth_raw, const Intr& intr, const float3& volume_size, 
                          const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist, PtrStep<ushort2> volume, DeviceArray2D<float>& depthRawScaled);
-
-    // Dispatcher
-    /** \brief Dispatched function for fast swithing between two tsdf volume element formats
+    
+    /** \brief Dispatcher function for fast swithing between two tsdf volume element formats
       * \param[in] depth Kinect depth image
       * \param[in] intr camera intrinsics
       * \param[in] volume_size size of volume in mm
@@ -288,6 +287,28 @@ namespace pcl
       integrateTsdfVolume (depth, intr, volume_size, Rcurr_inv, tcurr, tranc_dist, (PtrStep<volume_elem_type>) volume, depthRawScaled);
     }
     
+    
+    /** \brief Initialzied color volume
+      * \param[out] color_volume color volume for initialization
+      */
+
+    void 
+    initColorVolume(PtrStep<uchar4> color_volume);    
+
+    /** \brief Performs integration in color volume
+      * \param[in] intr Depth camera intrionsics structure
+      * \param[in] tranc_dist tsdf truncation distance
+      * \param[in] R_inv Inverse camera rotation
+      * \param[in] t camera translation      
+      * \param[in] vmap Raycasted vertex map
+      * \param[in] colors RGB colors for current frame
+      * \param[in] volume_size volume size in meters
+      * \param[in] color_volume color volume to be integrated
+      * \param[in] max_weight max weight for running color average. Zero means not average, one means average with prev value, etc.
+      */    
+    void 
+    updateColorVolume(const Intr& intr, float tranc_dist, const Mat33& R_inv, const float3& t, const MapArr& vmap, 
+            const PtrStepSz<uchar3>& colors, const float3& volume_size, PtrStep<uchar4> color_volume, int max_weight = 1);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Raycast and view generation        
@@ -357,7 +378,16 @@ namespace pcl
     template<typename NormalType> 
     void 
     extractNormals (const PtrStep<volume_elem_type>& volume, const float3& volume_size, const PtrSz<PointType>& input, NormalType* output);
-    
+
+    /** \brief Performs colors exctraction from color volume
+      * \param[in] color_volume color volume
+      * \param[in] volume_size volume size
+      * \param[in] points points for which color are computed
+      * \param[out] colors output array with colors.
+      */
+    void 
+    exctractColors(const PtrStep<uchar4>& color_volume, const float3& volume_size, const PtrSz<PointType>& points, uchar4* colors);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Utility
     struct float8  { float x, y, z, w, c1, c2, c3, c4; };

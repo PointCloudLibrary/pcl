@@ -45,23 +45,31 @@ namespace pcl
   {
     template<typename T>
     __global__ void
-    initializeVolume (PtrStepSz<T> volume)
+    initializeVolume (PtrStep<T> volume)
     {
       int x = threadIdx.x + blockIdx.x * blockDim.x;
       int y = threadIdx.y + blockIdx.y * blockDim.y;
+      
+      
+      if (x < VOLUME_X && y < VOLUME_Y)
+      {
+          T *pos = volume.ptr(y) + x;
+          int z_step = VOLUME_Y * volume.step / sizeof(*pos);
 
-      if (x < volume.cols && y < volume.rows)
-        pack_tsdf (0.f, 0, volume.ptr (y)[x]);
+#pragma unroll
+          for(int z = 0; z < VOLUME_Z; ++z, pos+=z_step)
+             pack_tsdf (0.f, 0, *pos);
+      }
     }
 
     template<typename T>
     void
-    initVolume (PtrStepSz<T> volume)
+    initVolume (PtrStep<T> volume)
     {
       dim3 block (32, 16);
       dim3 grid (1, 1, 1);
-      grid.x = divUp (volume.cols, block.x);
-      grid.y = divUp (volume.rows, block.y);
+      grid.x = divUp (VOLUME_X, block.x);      
+      grid.y = divUp (VOLUME_Y, block.y);
 
       initializeVolume<<<grid, block>>>(volume);
       cudaSafeCall ( cudaGetLastError () );
@@ -70,8 +78,8 @@ namespace pcl
   }
 }
 
-template PCL_EXPORTS void pcl::device::initVolume (PtrStepSz<short2> volume);
-template PCL_EXPORTS void pcl::device::initVolume (PtrStepSz<ushort2> volume);
+template PCL_EXPORTS void pcl::device::initVolume (PtrStep<short2> volume);
+template PCL_EXPORTS void pcl::device::initVolume (PtrStep<ushort2> volume);
 
 namespace pcl
 {
@@ -120,7 +128,7 @@ namespace pcl
           return;
 
         short2 *pos = volume.ptr (y) + x;
-        int elem_step = volume.step * VOLUME_Y / sizeof(short2);
+        int elem_step = volume.step * VOLUME_Y / sizeof(*pos);
 
         for (int z = 0; z < VOLUME_Z; ++z, pos += elem_step)
         {

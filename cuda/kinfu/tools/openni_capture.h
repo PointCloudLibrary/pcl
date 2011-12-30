@@ -51,7 +51,7 @@ namespace pcl
     class CaptureOpenNI
     {
 public:
-    typedef KinfuTracker::RGB RGB;
+    typedef KinfuTracker::PixelRGB RGB;
 
     enum { PROP_OPENNI_REGISTRATION_ON  = 104 };
 
@@ -60,8 +60,8 @@ public:
     CaptureOpenNI(int device);
     CaptureOpenNI(const std::string& oni_filename);
 
-    void init(int device);
-    void init(const std::string& oni_filename);
+    void open(int device);
+    void open(const std::string& oni_filename);
     void release();
 
     ~CaptureOpenNI();

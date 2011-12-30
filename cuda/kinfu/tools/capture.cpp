@@ -92,12 +92,12 @@ struct pcl::gpu::CaptureOpenNI::Impl
 };
 
 pcl::gpu::CaptureOpenNI::CaptureOpenNI() : depth_focal_length_VGA (0.f), baseline (0.f), shadow_value (0), no_sample_value (0), pixelSize (0.0), max_depth (0) {}
-pcl::gpu::CaptureOpenNI::CaptureOpenNI(int device) {init (device); }
-pcl::gpu::CaptureOpenNI::CaptureOpenNI(const string& filename) {init (filename); }
+pcl::gpu::CaptureOpenNI::CaptureOpenNI(int device) {open (device); }
+pcl::gpu::CaptureOpenNI::CaptureOpenNI(const string& filename) {open (filename); }
 pcl::gpu::CaptureOpenNI::~CaptureOpenNI() { release (); }
 
 void
-pcl::gpu::CaptureOpenNI::init (int device)
+pcl::gpu::CaptureOpenNI::open (int device)
 {
   impl_.reset ( new Impl () );
 
@@ -180,7 +180,7 @@ pcl::gpu::CaptureOpenNI::init (int device)
 }
 
 void
-pcl::gpu::CaptureOpenNI::init (const std::string& filename)
+pcl::gpu::CaptureOpenNI::open (const std::string& filename)
 {
   impl_.reset ( new Impl () );
 
@@ -372,5 +372,6 @@ pcl::gpu::CaptureOpenNI::setRegistration (bool value)
       printf ("SetRegistration failed: %s\n", xnGetStatusString (rc));
   }
 
+  getParams ();
   return rc == XN_STATUS_OK;
 }

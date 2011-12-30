@@ -56,11 +56,11 @@ namespace pcl
     {
       public:
         /** \brief Pixel type for rendered image. */
-        struct RGB
+        struct PixelRGB
         {
           unsigned char r, g, b;
         };
-        typedef DeviceArray2D<RGB> View;
+        typedef DeviceArray2D<PixelRGB> View;
         typedef DeviceArray2D<unsigned short> DepthMap;
 
         typedef pcl::PointXYZ PointType;
@@ -68,7 +68,7 @@ namespace pcl
 
         /** \brief Constructor
           * \param[in] rows height of depth image
-          * \param[in] cols width of depth image
+          * \param[in] cols width of depth image          
           */
         KinfuTracker (int rows = 480, int cols = 640);
 
@@ -113,6 +113,12 @@ namespace pcl
         void
         setIcpCorespFilteringParams (float distThreshold, float sineOfAngle);
 
+        /** \brief Performs initialization for color integration. Must be called before calling color integration. 
+          * \param[in] max_weight max weighe for color integration. Passing -1 does nothing.
+          */
+        void
+        initColorIntegration(int max_weight = -1);
+
         /** \brief Returns volume size */
         Eigen::Vector3f
         getVolumeSize () const;
@@ -131,12 +137,19 @@ namespace pcl
           */
         bool operator() (const DepthMap& depth);
 
+        /** \brief Processes next frame (both depth and color integration). Please call initColorIntegration before invpoking this.
+          * \param[in] depth next depth frame with values in millimeters
+          * \param[in] colors next RGB frame
+          * \return true if can render 3D view.
+          */
+        bool operator() (const DepthMap& depth, const View& colors);
+
         /** \brief Returns camera pose at given time, default the last pose
           * \param[in] time Index of frame for which camera pose is returned.
           * \return camera pose
           */
         Eigen::Affine3f
-        getCameraPose (int time = -1);
+        getCameraPose (int time = -1) const;
 
         /** \brief Renders 3D scene to display to human
           * \param[out] view output array with image
@@ -191,6 +204,13 @@ namespace pcl
         void
         getNormalsFromVolume (const DeviceArray<PointType>& cloud, DeviceArray<NormalType>& normals) const;
 
+        /** \brief Computes colors from color volume
+          * \param[in] cloud Points for which colors are to be computed.
+          * \param[out] colors output array for colors
+          */
+        void
+        getColorsFromVolume (const DeviceArray<PointType>& cloud, DeviceArray<RGB>& colors) const;
+
         /** \brief Downloads TSDF volume from GPU memory.           
           * \param[out] volume Array with tsdf values. Volume size is 512x512x512, so for voxel (x,y,z) tsdf value can be retrieved as volume[512*512*z + 512*y + x];
           */
@@ -202,8 +222,7 @@ namespace pcl
           * \param[out] weights Array with tsdf voxel weights. Same size and access index as for volume. A weight of 0 indicates the voxel was never used.
           */
         void
-        getTsdfVolumeAndWeighs (std::vector<float>& volume, std::vector<short>& weights) const;
-
+        getTsdfVolumeAndWeighs (std::vector<float>& volume, std::vector<short>& weights) const;        
       private:
         
         enum
@@ -278,6 +297,12 @@ namespace pcl
         /** \brief Buffer for storing scaled depth image */
         DeviceArray2D<float> depthRawScaled_;
 
+        /** \brief COLORS volume storage */
+        DeviceArray2D<int> colors_volume_;
+
+        /** \brief maximal weight for color integration. Zero means not averaging, one means average with previous value, etc. */
+        int max_weight_;
+
         /** \brief Temporary buffer for ICP */
         DeviceArray2D<float> gbuf_;
         /** \brief Buffer to store MLS matrix. */
@@ -290,7 +315,7 @@ namespace pcl
 
         /** \brief Allocates all GPU internal buffers.
           * \param[in] rows_arg
-          * \param[in] cols_arg
+          * \param[in] cols_arg          
           */
         void
         allocateBufffers (int rows_arg, int cols_arg);
@@ -299,6 +324,8 @@ namespace pcl
           */
         void
         reset ();
+
+        friend class OflineColorsEstimation;
     };        
   }
 };

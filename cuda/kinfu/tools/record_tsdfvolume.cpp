@@ -228,7 +228,7 @@ DeviceVolume::getCloud (pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud)
  */
 //TODO implement correct color reading (how does rgb24 look like?)
 bool
-convertDepthRGBToCloud (const pcl::device::PtrStepSz<const unsigned short> &depth, const pcl::device::PtrStepSz<const pcl::gpu::KinfuTracker::RGB> &rgb24, const pcl::device::Intr &intr,
+convertDepthRGBToCloud (const pcl::device::PtrStepSz<const unsigned short> &depth, const pcl::device::PtrStepSz<const pcl::gpu::KinfuTracker::PixelRGB> &rgb24, const pcl::device::Intr &intr,
                 pcl::PointCloud<PointT>::Ptr &cloud)
 {
   // resize point cloud if it doesn't fit
@@ -285,7 +285,7 @@ convertDepthRGBToCloud (const pcl::device::PtrStepSz<const unsigned short> &dept
  */
 bool
 captureCloud (pcl::gpu::CaptureOpenNI &capture,
-              pcl::device::PtrStepSz<const unsigned short> &depth, pcl::device::PtrStepSz<const pcl::gpu::KinfuTracker::RGB> &rgb24,
+              pcl::device::PtrStepSz<const unsigned short> &depth, pcl::device::PtrStepSz<const pcl::gpu::KinfuTracker::PixelRGB> &rgb24,
               pcl::device::Intr &intr, pcl::PointCloud<PointT>::Ptr &cloud)
 {
   // capture frame
@@ -396,7 +396,7 @@ main (int argc, char* argv[])
 
   pcl::gpu::CaptureOpenNI capture (0);  // first OpenNI device;
   pcl::device::PtrStepSz<const unsigned short> depth;
-  pcl::device::PtrStepSz<const pcl::gpu::KinfuTracker::RGB> rgb24;
+  pcl::device::PtrStepSz<const pcl::gpu::KinfuTracker::PixelRGB> rgb24;
 
   pcl::PointCloud<PointT>::Ptr cloud; // (new pcl::PointCloud<PointT>);
   pcl::device::Intr intr;
