@@ -1163,35 +1163,37 @@ TEST (PCL, PFHEstimationEigen)
   int nr_subdiv = 3;
   Eigen::VectorXf pfh_histogram (nr_subdiv * nr_subdiv * nr_subdiv);
   pfh.computePointPFHSignature (cloud, *normals, indices, nr_subdiv, pfh_histogram);
-  EXPECT_NEAR (pfh_histogram[0], 0.534875, 1e-4);
-  EXPECT_NEAR (pfh_histogram[1], 1.481491, 1e-4);
-  EXPECT_NEAR (pfh_histogram[2], 0.211284, 1e-4);
-  EXPECT_NEAR (pfh_histogram[3], 0.751871, 1e-4);
-  EXPECT_NEAR (pfh_histogram[4], 3.254728, 1e-4);
-  EXPECT_NEAR (pfh_histogram[5], 0.190981, 1e-4);
-  EXPECT_NEAR (pfh_histogram[6], 1.070379, 1e-4);
-  EXPECT_NEAR (pfh_histogram[7], 2.534648, 1e-4);
-  EXPECT_NEAR (pfh_histogram[8], 0.190346, 1e-4);
-  EXPECT_NEAR (pfh_histogram[9], 1.780308, 1e-4);
-  EXPECT_NEAR (pfh_histogram[10], 4.376545, 1e-4);
-  EXPECT_NEAR (pfh_histogram[11], 0.707457, 1e-4);
-  EXPECT_NEAR (pfh_histogram[12], 2.162236, 1e-4);
-  EXPECT_NEAR (pfh_histogram[13], 18.234676, 1e-4);
-  EXPECT_NEAR (pfh_histogram[14], 0.737912, 1e-4);
-  EXPECT_NEAR (pfh_histogram[15], 3.294063, 1e-4);
-  EXPECT_NEAR (pfh_histogram[16], 8.590946, 1e-4);
-  EXPECT_NEAR (pfh_histogram[17], 0.831817, 1e-4);
-  EXPECT_NEAR (pfh_histogram[18], 5.927044, 1e-4);
-  EXPECT_NEAR (pfh_histogram[19], 3.893601, 1e-4);
-  EXPECT_NEAR (pfh_histogram[20], 1.003129, 1e-4);
-  EXPECT_NEAR (pfh_histogram[21], 11.114402, 1e-4);
-  EXPECT_NEAR (pfh_histogram[22], 11.265974, 1e-4);
-  EXPECT_NEAR (pfh_histogram[23], 1.323517, 1e-4);
-  EXPECT_NEAR (pfh_histogram[24], 6.231051, 1e-4);
-  EXPECT_NEAR (pfh_histogram[25], 6.215185, 1e-4);
-  EXPECT_NEAR (pfh_histogram[26], 1.837407, 1e-4);
+  EXPECT_NEAR (pfh_histogram[0],  0.932506, 1e-4);
+  EXPECT_NEAR (pfh_histogram[1],  2.32429 , 1e-4);
+  EXPECT_NEAR (pfh_histogram[2],  0.357477, 1e-4);
+  EXPECT_NEAR (pfh_histogram[3],  0.848541, 1e-4);
+  EXPECT_NEAR (pfh_histogram[4],  3.65565 , 2e-3); // larger error w.r.t. considering all point pairs (feature bins=0,1,1 where 1 is middle, so angle of 0)
+  EXPECT_NEAR (pfh_histogram[5],  0.178104, 1e-4);
+  EXPECT_NEAR (pfh_histogram[6],  1.45284 , 1e-4);
+  EXPECT_NEAR (pfh_histogram[7],  3.60795 , 1e-4);
+  EXPECT_NEAR (pfh_histogram[8],  0.298959, 1e-4);
+  EXPECT_NEAR (pfh_histogram[9],  0.295143, 1e-4);
+  EXPECT_NEAR (pfh_histogram[10], 2.13474 , 1e-4);
+  EXPECT_NEAR (pfh_histogram[11], 0.41218 , 1e-4);
+  EXPECT_NEAR (pfh_histogram[12], 0.165382, 1e-4);
+  EXPECT_NEAR (pfh_histogram[13], 8.97282 , 1e-4);
+  EXPECT_NEAR (pfh_histogram[14], 0.306592, 1e-4);
+  EXPECT_NEAR (pfh_histogram[15], 0.455432, 1e-4);
+  EXPECT_NEAR (pfh_histogram[16], 4.59645 , 1e-4);
+  EXPECT_NEAR (pfh_histogram[17], 0.393097, 1e-4);
+  EXPECT_NEAR (pfh_histogram[18], 7.54668 , 1e-4);
+  EXPECT_NEAR (pfh_histogram[19], 6.78336 , 1e-4);
+  EXPECT_NEAR (pfh_histogram[20], 1.63858 , 1e-4);
+  EXPECT_NEAR (pfh_histogram[21], 9.93842 , 1e-4);
+  EXPECT_NEAR (pfh_histogram[22], 18.4947 , 2e-3); // larger error w.r.t. considering all point pairs (feature bins=2,1,1 where 1 is middle, so angle of 0)
+  EXPECT_NEAR (pfh_histogram[23], 1.96553 , 1e-4);
+  EXPECT_NEAR (pfh_histogram[24], 8.04793 , 1e-4);
+  EXPECT_NEAR (pfh_histogram[25], 11.278  , 1e-4);
+  EXPECT_NEAR (pfh_histogram[26], 2.91714 , 1e-4);
 
-
+  // Sum of values should be 100
+  EXPECT_NEAR (pfh_histogram.sum (), 100.0, 1e-2);
+ 
   // Object
   PointCloud<Eigen::MatrixXf>::Ptr pfhs (new PointCloud<Eigen::MatrixXf>);
 
@@ -1207,33 +1209,33 @@ TEST (PCL, PFHEstimationEigen)
 
   for (int i = 0; i < pfhs->points.rows (); ++i)
   {
-    EXPECT_NEAR (pfhs->points (i, 0), 0.078042, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 1), 0.273464, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 2), 0.206843, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 3), 0.092000, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 4), 0.057738, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 5), 0.028552, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 6), 0.135780, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 7), 0.184636, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 8), 0.133242, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 9), 0.001903, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 10), 0.051393, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 11), 0.165601, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 12), 0.255064, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 13), 0.150373, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 14), 0.000634, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 15), 0.058373, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 16), 0.258237, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 17), 0.237298, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 18), 0.132607, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 19), 0.000634, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 20), 0.074235, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 21), 0.389576, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 22), 0.232222, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 23), 0.111035, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 24), 0.010786, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 25), 0.142759, 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 26), 0.182098, 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 0),  0.156477  , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 1),  0.539396  , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 2),  0.410907  , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 3),  0.184465  , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 4),  0.115767  , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 5),  0.0572475 , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 6),  0.206092  , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 7),  0.339667  , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 8),  0.265883  , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 9),  0.0038165 , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 10), 0.103046  , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 11), 0.214997  , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 12), 0.398186  , 3e-3); // larger error w.r.t. considering all point pairs (feature bins=0,2,2 where 2 is middle, so angle of 0)
+    EXPECT_NEAR (pfhs->points (i, 13), 0.298959  , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 14), 0.00127217, 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 15), 0.11704   , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 16), 0.255706  , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 17), 0.356205  , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 18), 0.265883  , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 19), 0.00127217, 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 20), 0.148844  , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 21), 0.722593  , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 22), 0.437622  , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 23), 0.22263   , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 24), 0.0216269 , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 25), 0.223902  , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 26), 0.07633   , 1e-4);
   }
 
 
@@ -1274,41 +1276,41 @@ TEST (PCL, FPFHEstimationEigen)
   for (size_t i = 0; i < indices.size (); ++i)
     fpfh.computePointSPFHSignature (cloud, *normals, i, i, indices, hist_f1, hist_f2, hist_f3);
 
-  EXPECT_NEAR (hist_f1 (0, 0), 3.030303, 1e-4);
-  EXPECT_NEAR (hist_f1 (0, 1), 1.262626, 1e-4);
-  EXPECT_NEAR (hist_f1 (0, 2), 5.050506, 1e-4);
-  EXPECT_NEAR (hist_f1 (0, 3), 20.202024, 1e-4);
-  EXPECT_NEAR (hist_f1 (0, 4), 40.151524, 1e-4);
-  EXPECT_NEAR (hist_f1 (0, 5), 21.464651, 1e-4);
+  EXPECT_NEAR (hist_f1 (0, 0), 0.757576, 1e-4);
+  EXPECT_NEAR (hist_f1 (0, 1), 0.757576, 1e-4);
+  EXPECT_NEAR (hist_f1 (0, 2), 4.54545,  1e-4);
+  EXPECT_NEAR (hist_f1 (0, 3), 19.697,   1e-4);
+  EXPECT_NEAR (hist_f1 (0, 4), 40.6566,  1e-4);
+  EXPECT_NEAR (hist_f1 (0, 5), 21.4647,  1e-4);
   EXPECT_NEAR (hist_f1 (0, 6), 7.575759, 1e-4);
   EXPECT_NEAR (hist_f1 (0, 7), 0.000000, 1e-4);
   EXPECT_NEAR (hist_f1 (0, 8), 0.000000, 1e-4);
-  EXPECT_NEAR (hist_f1 (0, 9), 0.000000, 1e-4);
-  EXPECT_NEAR (hist_f1 (0, 10), 1.262626, 1e-4);
+  EXPECT_NEAR (hist_f1 (0, 9), 0.50505,  1e-4);
+  EXPECT_NEAR (hist_f1 (0, 10), 4.0404,  1e-4);
 
-  EXPECT_NEAR (hist_f2 (0, 0), 0.000000, 1e-4);
-  EXPECT_NEAR (hist_f2 (0, 1), 0.505050, 1e-4);
-  EXPECT_NEAR (hist_f2 (0, 2), 2.272727, 1e-4);
-  EXPECT_NEAR (hist_f2 (0, 3), 10.606063, 1e-4);
-  EXPECT_NEAR (hist_f2 (0, 4), 24.747480, 1e-4);
-  EXPECT_NEAR (hist_f2 (0, 5), 19.949499, 1e-4);
-  EXPECT_NEAR (hist_f2 (0, 6), 17.424246, 1e-4);
-  EXPECT_NEAR (hist_f2 (0, 7), 11.868690, 1e-4);
-  EXPECT_NEAR (hist_f2 (0, 8), 6.313132, 1e-4);
-  EXPECT_NEAR (hist_f2 (0, 9), 3.787879, 1e-4);
-  EXPECT_NEAR (hist_f2 (0, 10), 2.525253, 1e-4);
+  EXPECT_NEAR (hist_f2 (0, 0), 0.757576, 1e-4);
+  EXPECT_NEAR (hist_f2 (0, 1), 1.51515,  1e-4);
+  EXPECT_NEAR (hist_f2 (0, 2), 6.31313,  1e-4);
+  EXPECT_NEAR (hist_f2 (0, 3), 9.59596,  1e-4);
+  EXPECT_NEAR (hist_f2 (0, 4), 20.7071,  1e-4);
+  EXPECT_NEAR (hist_f2 (0, 5), 18.9394,  1e-4);
+  EXPECT_NEAR (hist_f2 (0, 6), 15.9091,  1e-4);
+  EXPECT_NEAR (hist_f2 (0, 7), 12.8788,  1e-4);
+  EXPECT_NEAR (hist_f2 (0, 8), 6.56566,  1e-4);
+  EXPECT_NEAR (hist_f2 (0, 9), 4.29293,  1e-4);
+  EXPECT_NEAR (hist_f2 (0, 10), 2.52525, 1e-4);
 
   EXPECT_NEAR (hist_f3 (0, 0), 0.000000, 1e-4);
-  EXPECT_NEAR (hist_f3 (0, 1), 5.050506, 1e-4);
-  EXPECT_NEAR (hist_f3 (0, 2), 4.545455, 1e-4);
-  EXPECT_NEAR (hist_f3 (0, 3), 5.050506, 1e-4);
-  EXPECT_NEAR (hist_f3 (0, 4), 1.515151, 1e-4);
-  EXPECT_NEAR (hist_f3 (0, 5), 11.868690, 1e-4);
-  EXPECT_NEAR (hist_f3 (0, 6), 19.444448, 1e-4);
-  EXPECT_NEAR (hist_f3 (0, 7), 37.373745, 1e-4);
-  EXPECT_NEAR (hist_f3 (0, 8), 12.121215, 1e-4);
-  EXPECT_NEAR (hist_f3 (0, 9), 3.030303, 1e-4);
-  EXPECT_NEAR (hist_f3 (0, 10), 0.000000, 1e-4);
+  EXPECT_NEAR (hist_f3 (0, 1), 5.05051,  1e-4);
+  EXPECT_NEAR (hist_f3 (0, 2), 4.54545,  1e-4);
+  EXPECT_NEAR (hist_f3 (0, 3), 5.05051,  1e-4);
+  EXPECT_NEAR (hist_f3 (0, 4), 1.76768,  1e-4);
+  EXPECT_NEAR (hist_f3 (0, 5), 3.0303,   1e-4);
+  EXPECT_NEAR (hist_f3 (0, 6), 9.09091,  1e-4);
+  EXPECT_NEAR (hist_f3 (0, 7), 31.8182,  1e-4);
+  EXPECT_NEAR (hist_f3 (0, 8), 22.2222,  1e-4);
+  EXPECT_NEAR (hist_f3 (0, 9), 11.8687,  1e-4);
+  EXPECT_NEAR (hist_f3 (0, 10), 5.55556, 1e-4);
 
   // weightPointSPFHSignature
   Eigen::VectorXf fpfh_histogram (nr_subdiv + nr_subdiv + nr_subdiv);
@@ -1317,39 +1319,39 @@ TEST (PCL, FPFHEstimationEigen)
   for (size_t i = 0; i < dists.size (); ++i) dists[i] = i;
   fpfh.weightPointSPFHSignature (hist_f1, hist_f2, hist_f3, indices, dists, fpfh_histogram);
 
-  EXPECT_NEAR (fpfh_histogram[0], 2.235183, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[1], 4.277350, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[2], 9.270952, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[3], 23.578320, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[4], 29.768152, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[5], 18.492353, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[6], 7.528943, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[7], 1.635015, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[8], 0.809479, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[9], 0.955730, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[10], 1.448486, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[11], 1.324533, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[12], 3.484986, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[13], 7.022393, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[14], 10.956238, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[15], 18.838923, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[16], 17.499048, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[17], 12.990987, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[18], 10.547534, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[19], 6.818617, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[20], 5.871921, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[21], 4.644787, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[22], 0.732736, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[23], 2.810466, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[24], 4.833643, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[25], 5.986883, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[26], 5.575591, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[27], 8.190613, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[28], 14.659019, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[29], 20.581768, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[30], 18.648823, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[31], 12.813086, 1e-4);
-  EXPECT_NEAR (fpfh_histogram[32], 5.167324, 1e-4);
+  EXPECT_NEAR (fpfh_histogram[0],  1.9798 ,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[1],  2.86927,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[2],  8.47911,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[3],  22.8784,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[4],  29.8597,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[5],  19.6877,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[6],  7.38611,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[7],  1.44265,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[8],  0.69677,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[9],  1.72609,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[10], 2.99435,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[11], 2.26313,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[12], 5.16573,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[13], 8.3263 ,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[14], 9.92427,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[15], 16.8062,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[16], 16.2767,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[17], 12.251 ,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[18], 10.3159,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[19], 6.69369,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[20], 6.1437 ,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[21], 5.83341,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[22], 1.08809,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[23], 3.34133,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[24], 5.59236,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[25], 5.6355 ,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[26], 3.03257,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[27], 1.37437,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[28], 7.99746,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[29], 18.0343,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[30], 23.691 ,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[31], 19.8475,  1e-4);
+  EXPECT_NEAR (fpfh_histogram[32], 10.3655,  1e-4);
 
   // Object
   PointCloud<Eigen::MatrixXf>::Ptr fpfhs (new PointCloud<Eigen::MatrixXf>);
@@ -1365,40 +1367,39 @@ TEST (PCL, FPFHEstimationEigen)
   fpfh.compute (*fpfhs);
   EXPECT_EQ (fpfhs->points.rows (), indices.size ());
 
-  EXPECT_NEAR (fpfhs->points (0, 0), 2.121176, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 1), 3.166825, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 2), 7.646459, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 3), 23.723145, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 4), 33.103897, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 5), 19.550802, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 6), 7.403052, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 7), 1.148289, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 8), 0.484390, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 9), 0.587204, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 10), 1.064761, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 11), 0.628057, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 12), 2.187382, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 13), 5.761130, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 14), 10.818363, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 15), 20.232224, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 16), 19.494528, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 17), 15.078060, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 18), 10.543551, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 19), 6.200090, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 20), 5.051622, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 21), 4.004990, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 22), 0.366050, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 23), 3.003855, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 24), 4.798720, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 25), 5.552973, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 26), 5.131496, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 27), 10.366766, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 28), 17.552223, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 29), 23.837053, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 30), 18.135691, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 31), 9.081526, 1e-4);
-  EXPECT_NEAR (fpfhs->points (0, 32), 2.173666, 1e-4);
-
+  EXPECT_NEAR (fpfhs->points (0, 0),  1.58591, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 1),  1.68365, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 2),  6.71   , 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 3),  23.0717, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 4),  33.3844, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 5),  20.4002, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 6),  7.31067, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 7),  1.02635, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 8),  0.48591, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 9),  1.47069, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 10), 2.87061, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 11), 1.78321, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 12), 4.30795, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 13), 7.05514, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 14), 9.37615, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 15), 17.963 , 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 16), 18.2801, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 17), 14.2766, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 18), 10.8376, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 19), 6.09557, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 20), 5.28565, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 21), 4.73887, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 22), 0.56984, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 23), 3.29826, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 24), 5.28156, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 25), 5.26939, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 26), 3.13191, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 27), 1.74453, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 28), 9.41971, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 29), 21.5894, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 30), 24.6302, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 31), 17.7764, 1e-4);
+  EXPECT_NEAR (fpfhs->points (0, 32), 7.28878, 1e-4);
 
   // Test results when setIndices and/or setSearchSurface are used
   boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
@@ -1514,21 +1515,21 @@ TEST (PCL, PPFEstimation)
   EXPECT_EQ (pcl_isnan (feature_cloud->points[0].f3), true);
   EXPECT_EQ (pcl_isnan (feature_cloud->points[0].f4), true);
   EXPECT_TRUE (pcl_isnan (feature_cloud->points[0].alpha_m));
-  EXPECT_NEAR (feature_cloud->points[15127].f1, 2.516365, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[15127].f2, -0.003132, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[15127].f3, 0.076962, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[15127].f4, 0.010681, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[15127].f1, -2.51637, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[15127].f2, -0.00365916, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[15127].f3, -0.521141, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[15127].f4, 0.0106809, 1e-4);
   EXPECT_NEAR (feature_cloud->points[15127].alpha_m, -0.255664, 1e-4);
   EXPECT_NEAR (feature_cloud->points[30254].f1, 0.185142, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[30254].f2, 0.042500, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[30254].f2, 0.0425001, 1e-4);
   EXPECT_NEAR (feature_cloud->points[30254].f3, -0.191276, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[30254].f4, 0.013851, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[30254].alpha_m, 2.429551, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[45381].f1, -1.962630, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[30254].f4, 0.0138508, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[30254].alpha_m, 2.42955, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[45381].f1, -1.96263, 1e-4);
   EXPECT_NEAR (feature_cloud->points[45381].f2, -0.431919, 1e-4);
   EXPECT_NEAR (feature_cloud->points[45381].f3, 0.868716, 1e-4);
   EXPECT_NEAR (feature_cloud->points[45381].f4, 0.140129, 1e-4);
-  EXPECT_NEAR (feature_cloud->points[45381].alpha_m, -1.972757, 1e-4);
+  EXPECT_NEAR (feature_cloud->points[45381].alpha_m, -1.97276, 1e-4);
 }
 /*
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
