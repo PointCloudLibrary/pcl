@@ -57,44 +57,86 @@ namespace pcl
       using MeshProcessing::initCompute;
       /** \brief Empty constructor */
       EarClipping () : MeshProcessing (), points_ ()
-        { };
+      { 
+      };
 
     protected:
-      PointCloud<PointXYZ>::Ptr points_;
+      /** \brief a Pointer to the point cloud data. */
+      pcl::PointCloud<pcl::PointXYZ>::Ptr points_;
 
+      /** \brief This method should get called before starting the actual computation. */
       bool
       initCompute ();
 
+      /** \brief The actual surface reconstruction method. 
+        * \param[out] output the output polygonal mesh 
+        */
       void
       performReconstruction (pcl::PolygonMesh &output);
 
-      /** \brief Triangulate one polygon. */
+      /** \brief Triangulate one polygon. 
+        * \param[in] vertices the set of vertices
+        * \param[out] output the resultant polygonal mesh
+        */
       void
       triangulate (const Vertices& vertices, PolygonMesh& output);
 
-      /** \brief Compute the signed area of a polygon. */
+      /** \brief Compute the signed area of a polygon. 
+        * \param[in] vertices the vertices representing the polygon 
+        */
       float
       area (const std::vector<uint32_t>& vertices);
 
-      /** \brief Check if the triangle (u,v,w) is an ear. */
+      /** \brief Check if the triangle (u,v,w) is an ear. 
+        * \param[in] u the first triangle vertex 
+        * \param[in] v the second triangle vertex 
+        * \param[in] w the third triangle vertex 
+        * \param[in] vertices a set of input vertices
+        */
       bool
       isEar (int u, int v, int w, const std::vector<uint32_t>& vertices);
 
-      /** \brief Check if p is inside the triangle (u,v,w). */
+      /** \brief Check if p is inside the triangle (u,v,w). 
+        * \param[in] u the first triangle vertex 
+        * \param[in] v the second triangle vertex 
+        * \param[in] w the third triangle vertex 
+        * \param[in] p the point to check
+        */
       bool
-      isInsideTriangle (const PointXY& u, const PointXY& v, const PointXY& w,const PointXY& p);
+      isInsideTriangle (const PointXY& u, const PointXY& v, const PointXY& w, const PointXY& p);
 
-      /** \brief Project a 3D point to 2D. */
-      PointXY
-      toPointXY (const PointXYZ& p) const;
+      /** \brief Project a 3D point to 2D. 
+        * \param[in] p_in the input 3D point
+        * \param[out] p_out the output 2D point
+        */
+      inline void
+      toPointXY (const PointXYZ& p_in, PointXY &p_out) const
+      {
+        p_out.x = p_in.x;
+        p_out.y = p_in.y;
+      }
 
-      /** \brief Compute the cross product between 2D vectors. */
-      float
-      crossProduct (const PointXY& p1, const PointXY& p2) const;
+      /** \brief Compute the cross product between 2D vectors. 
+        * \param[in] p1 the first 2D vector
+        * \param[in] p2 the first 2D vector
+        */
+      inline float
+      crossProduct (const PointXY& p1, const PointXY& p2) const
+      {
+        return ((p1.x*p2.y) - (p1.y*p2.x));
+      }
 
-      /** \brief Subtract two 2D vectors. */
-      PointXY
-      difference (const PointXY& p1, const PointXY& p2) const;
+      /** \brief Subtract two 2D vectors. 
+        * \param[in] p1 the first 2D vector
+        * \param[in] p2 the first 2D vector
+        * \param[out] r the output 2D vector representing the difference
+        */
+      inline void
+      difference (const PointXY& p1, const PointXY& p2, PointXY &r) const
+      {
+        r.x = p1.x - p2.x;
+        r.y = p1.y - p2.y;
+      }
   };
 
 }
