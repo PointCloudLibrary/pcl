@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Dirk Holz (University of Bonn)
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -84,67 +85,6 @@ pcl::OrganizedFastMesh<PointInT>::reconstructPolygons (std::vector<pcl::Vertices
     makeQuadMesh (polygons);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////
-//template <typename PointInT> void
-//pcl::OrganizedFastMesh<PointInT>::makeQuadMesh (std::vector<pcl::Vertices>& polygons)
-//{
-//  int last_column = input_->width - triangle_pixel_size_;
-//  int last_row = input_->height - triangle_pixel_size_;
-//
-//  int i = 0, 
-//      index_down = 0,
-//      index_right = triangle_pixel_size_,
-//      index_down_right = triangle_pixel_size_;
-//  int idx = 0;
-//  int y_big_incr = triangle_pixel_size_ * input_->width,
-//      x_big_incr = y_big_incr + triangle_pixel_size_;
-//  // Reserve enough space
-//  polygons.resize (input_->width * input_->height);
-//
-//  for (int x = 0; x < last_column; x += triangle_pixel_size_)
-//  {
-//    // Initialize a new column
-//    i = x;
-//    index_right = i + triangle_pixel_size_;
-//    index_down = i + y_big_incr;
-//    index_down_right = i + x_big_incr;
-//
-//    for (int y = 0; y < last_row; y += triangle_pixel_size_, 
-//                                  i += y_big_incr,
-//                                  index_right += y_big_incr,
-//                                  index_down += y_big_incr,
-//                                  index_down_right += y_big_incr)
-//    {
-////      int j = getIndex (x, y);
-////      int jndex_right = getIndex (x + triangle_pixel_size_, y);
-////      int jndex_down = getIndex (x, y + triangle_pixel_size_);
-////      int jndex_down_right = getIndex (x + triangle_pixel_size_, y + triangle_pixel_size_);
-////int i = getIndex (x, y);
-////int index_right = getIndex (x + triangle_pixel_size_, y);
-////int index_down = getIndex (x, y + triangle_pixel_size_);
-////int index_down_right = getIndex (x + triangle_pixel_size_, y + triangle_pixel_size_);
-////      if (fabs (i - j) > 1e-5 || fabs (index_right - jndex_right) > 1e-5 || fabs (index_down_right - jndex_down_right) > 1e-5 || fabs (index_down - jndex_down) > 1e-5)
-////      {
-////        std::cerr << " --------------" << x << ": " << y << std::endl;
-////        std::cerr << i << " " << index_right <<  " " << index_down_right << " " << index_down << std::endl;
-////        std::cerr << j << " " << jndex_right <<  " " << jndex_down_right << " " << jndex_down << std::endl;
-////        break;
-////      }
-//      if (isValidQuad (i, index_right, index_down_right, index_down))
-//      {
-//        if (store_shadowed_faces_)
-//          addQuad (i, index_right, index_down_right, index_down, idx++, polygons);
-//        else 
-//        {
-//          if (!isShadowedQuad (i, index_right, index_down_right, index_down))
-//            addQuad (i, index_right, index_down_right, index_down, idx++, polygons);
-//        }
-//      }
-//    }
-//  }
-//  polygons.resize (idx);
-//}
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
 pcl::OrganizedFastMesh<PointInT>::makeQuadMesh (std::vector<pcl::Vertices>& polygons)
@@ -175,15 +115,8 @@ pcl::OrganizedFastMesh<PointInT>::makeQuadMesh (std::vector<pcl::Vertices>& poly
                                      index_down_right += triangle_pixel_size_)
     {
       if (isValidQuad (i, index_right, index_down_right, index_down))
-      {
-        if (store_shadowed_faces_)
+        if (store_shadowed_faces_ || !isShadowedQuad (i, index_right, index_down_right, index_down))
           addQuad (i, index_right, index_down_right, index_down, idx++, polygons);
-        else 
-        {
-          if (!isShadowedQuad (i, index_right, index_down_right, index_down))
-            addQuad (i, index_right, index_down_right, index_down, idx++, polygons);
-        }
-      }
     }
   }
   polygons.resize (idx);
@@ -193,61 +126,113 @@ pcl::OrganizedFastMesh<PointInT>::makeQuadMesh (std::vector<pcl::Vertices>& poly
 template <typename PointInT> void
 pcl::OrganizedFastMesh<PointInT>::makeRightCutMesh (std::vector<pcl::Vertices>& polygons)
 {
-  unsigned int last_column = input_->width - triangle_pixel_size_;
-  unsigned int last_row = input_->height - triangle_pixel_size_;
-  for (unsigned int x = 0; x < last_column; x += triangle_pixel_size_)
+  int last_column = input_->width - triangle_pixel_size_;
+  int last_row = input_->height - triangle_pixel_size_;
+
+  int i = 0, index_down = 0, index_right = 0, index_down_right = 0, idx = 0;
+  int y_big_incr = triangle_pixel_size_ * input_->width,
+      x_big_incr = y_big_incr + triangle_pixel_size_;
+  // Reserve enough space
+  polygons.resize (input_->width * input_->height * 2);
+
+  // Go over the rows first
+  for (int y = 0; y < last_row; y += triangle_pixel_size_)
   {
-    for (unsigned int y = 0; y < last_row; y += triangle_pixel_size_)
+    // Initialize a new row
+    i = y * input_->width;
+    index_right = i + triangle_pixel_size_;
+    index_down = i + y_big_incr;
+    index_down_right = i + x_big_incr;
+
+    // Go over the columns
+    for (int x = 0; x < last_column; x += triangle_pixel_size_, 
+                                     i += triangle_pixel_size_,
+                                     index_right += triangle_pixel_size_,
+                                     index_down += triangle_pixel_size_,
+                                     index_down_right += triangle_pixel_size_)
     {
-      int i = getIndex (x, y);
-      int index_right = getIndex (x + triangle_pixel_size_, y);
-      int index_down = getIndex (x, y + triangle_pixel_size_);
-      int index_down_right = getIndex (x + triangle_pixel_size_, y + triangle_pixel_size_);
       if (isValidTriangle (i, index_right, index_down_right))
-        addTriangle (i, index_right, index_down_right, polygons);
+        if (store_shadowed_faces_ || !isShadowedTriangle (i, index_right, index_down_right))
+          addTriangle (i, index_right, index_down_right, idx++, polygons);
+
       if (isValidTriangle (i, index_down, index_down_right))
-        addTriangle (i, index_down, index_down_right, polygons);
+        if (store_shadowed_faces_ || !isShadowedTriangle (i, index_down, index_down_right))
+          addTriangle (i, index_down, index_down_right, idx++, polygons);
     }
   }
+  polygons.resize (idx);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
 pcl::OrganizedFastMesh<PointInT>::makeLeftCutMesh (std::vector<pcl::Vertices>& polygons)
 {
-  unsigned int last_column = input_->width - triangle_pixel_size_;
-  unsigned int last_row = input_->height - triangle_pixel_size_;
-  for (unsigned int x = 0; x < last_column; x += triangle_pixel_size_)
+  int last_column = input_->width - triangle_pixel_size_;
+  int last_row = input_->height - triangle_pixel_size_;
+
+  int i = 0, index_down = 0, index_right = 0, index_down_right = 0, idx = 0;
+  int y_big_incr = triangle_pixel_size_ * input_->width,
+      x_big_incr = y_big_incr + triangle_pixel_size_;
+  // Reserve enough space
+  polygons.resize (input_->width * input_->height * 2);
+
+  // Go over the rows first
+  for (int y = 0; y < last_row; y += triangle_pixel_size_)
   {
-    for (unsigned int y = 0; y < last_row; y += triangle_pixel_size_)
+    // Initialize a new row
+    i = y * input_->width;
+    index_right = i + triangle_pixel_size_;
+    index_down = i + y_big_incr;
+    index_down_right = i + x_big_incr;
+
+    // Go over the columns
+    for (int x = 0; x < last_column; x += triangle_pixel_size_, 
+                                     i += triangle_pixel_size_,
+                                     index_right += triangle_pixel_size_,
+                                     index_down += triangle_pixel_size_,
+                                     index_down_right += triangle_pixel_size_)
     {
-      int i = getIndex (x, y);
-      int index_right = getIndex (x + triangle_pixel_size_, y);
-      int index_down = getIndex (x, y + triangle_pixel_size_);
-      int index_down_right = getIndex (x + triangle_pixel_size_, y + triangle_pixel_size_);
       if (isValidTriangle (i, index_right, index_down))
-        addTriangle (i, index_right, index_down, polygons);
-      if (isValidTriangle(index_right, index_down, index_down_right))
-        addTriangle (index_right, index_down, index_down_right, polygons);
+        if (store_shadowed_faces_ || !isShadowedTriangle (i, index_right, index_down))
+          addTriangle (i, index_right, index_down, idx++, polygons);
+
+      if (isValidTriangle (index_right, index_down, index_down_right))
+        if (store_shadowed_faces_ || !isShadowedTriangle (index_right, index_down, index_down_right))
+          addTriangle (index_right, index_down, index_down_right, idx++, polygons);
     }
   }
+  polygons.resize (idx);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
 pcl::OrganizedFastMesh<PointInT>::makeAdaptiveCutMesh (std::vector<pcl::Vertices>& polygons)
 {
-  unsigned int last_column = input_->width - triangle_pixel_size_;
-  unsigned int last_row = input_->height - triangle_pixel_size_;
-  for (unsigned int x = 0; x < last_column; x += triangle_pixel_size_)
-  {
-    for (unsigned int y = 0; y < last_row; y += triangle_pixel_size_)
-    {
-      int i = getIndex (x, y);
-      int index_right = getIndex (x + triangle_pixel_size_, y);
-      int index_down = getIndex (x, y + triangle_pixel_size_);
-      int index_down_right = getIndex (x + triangle_pixel_size_, y + triangle_pixel_size_);
+  int last_column = input_->width - triangle_pixel_size_;
+  int last_row = input_->height - triangle_pixel_size_;
 
+  int i = 0, index_down = 0, index_right = 0, index_down_right = 0, idx = 0;
+  int y_big_incr = triangle_pixel_size_ * input_->width,
+      x_big_incr = y_big_incr + triangle_pixel_size_;
+  // Reserve enough space
+  polygons.resize (input_->width * input_->height * 4);
+
+  // Go over the rows first
+  for (int y = 0; y < last_row; y += triangle_pixel_size_)
+  {
+    // Initialize a new row
+    i = y * input_->width;
+    index_right = i + triangle_pixel_size_;
+    index_down = i + y_big_incr;
+    index_down_right = i + x_big_incr;
+
+    // Go over the columns
+    for (int x = 0; x < last_column; x += triangle_pixel_size_, 
+                                     i += triangle_pixel_size_,
+                                     index_right += triangle_pixel_size_,
+                                     index_down += triangle_pixel_size_,
+                                     index_down_right += triangle_pixel_size_)
+    {
       const bool right_cut_upper = isValidTriangle (i, index_right, index_down_right);
       const bool right_cut_lower = isValidTriangle (i, index_down, index_down_right);
       const bool left_cut_upper = isValidTriangle (i, index_right, index_down);
@@ -259,28 +244,37 @@ pcl::OrganizedFastMesh<PointInT>::makeAdaptiveCutMesh (std::vector<pcl::Vertices
         float dist_left_cut = fabs (input_->points[i].z - input_->points[index_down_right].z);
         if (dist_right_cut >= dist_left_cut)
         {
-          addTriangle (i, index_right, index_down_right, polygons);
-          addTriangle (i, index_down, index_down_right, polygons);
+          if (store_shadowed_faces_ || !isShadowedTriangle (i, index_right, index_down_right))
+            addTriangle (i, index_right, index_down_right, idx++, polygons);
+          if (store_shadowed_faces_ || !isShadowedTriangle (i, index_down, index_down_right))
+            addTriangle (i, index_down, index_down_right, idx++, polygons);
         }
         else
         {
-          addTriangle (i, index_right, index_down, polygons);
-          addTriangle (index_right, index_down, index_down_right, polygons);
+          if (store_shadowed_faces_ || !isShadowedTriangle (i, index_right, index_down))
+            addTriangle (i, index_right, index_down, idx++, polygons);
+          if (store_shadowed_faces_ || !isShadowedTriangle (index_right, index_down, index_down_right))
+            addTriangle (index_right, index_down, index_down_right, idx++, polygons);
         }
       }
       else
       {
         if (right_cut_upper)
-          addTriangle (i, index_right, index_down_right, polygons);
+          if (store_shadowed_faces_ || !isShadowedTriangle (i, index_right, index_down_right))
+            addTriangle (i, index_right, index_down_right, idx++, polygons);
         if (right_cut_lower)
-          addTriangle (i, index_down, index_down_right, polygons);
+          if (store_shadowed_faces_ || !isShadowedTriangle (i, index_down, index_down_right))
+            addTriangle (i, index_down, index_down_right, idx++, polygons);
         if (left_cut_upper)
-          addTriangle (i, index_right, index_down, polygons);
+          if (store_shadowed_faces_ || !isShadowedTriangle (i, index_right, index_down))
+            addTriangle (i, index_right, index_down, idx++, polygons);
         if (left_cut_lower)
-          addTriangle (index_right, index_down, index_down_right, polygons);
+          if (store_shadowed_faces_ || !isShadowedTriangle (index_right, index_down, index_down_right))
+            addTriangle (index_right, index_down, index_down_right, idx++, polygons);
       }
     }
   }
+  polygons.resize (idx);
 }
 
 #define PCL_INSTANTIATE_OrganizedFastMesh(T)                \

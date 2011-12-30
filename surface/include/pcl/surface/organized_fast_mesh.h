@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Dirk Holz, University of Bonn.
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -49,7 +50,8 @@ namespace pcl
   /** \brief Simple triangulation/surface reconstruction for organized point
     * clouds. Neighboring points (pixels in image space) are connected to
     * construct a triangular mesh.
-    * \author Dirk Holz
+    *
+    * \author Dirk Holz, Radu B. Rusu
     * \ingroup surface
     */
   template <typename PointInT>
@@ -71,11 +73,11 @@ namespace pcl
         QUAD_MESH               // create a simple quad mesh
       };
 
-      /** \brief Constructor. */
+      /** \brief Constructor. Triangulation type defaults to \a QUAD_MESH. */
       OrganizedFastMesh ()
       : max_edge_length_squared_ (0.025f)
       , triangle_pixel_size_ (1)
-      , triangulation_type_ (TRIANGLE_RIGHT_CUT)
+      , triangulation_type_ (QUAD_MESH)
       , store_shadowed_faces_ (false)
       {
         check_tree_ = false;
@@ -124,13 +126,6 @@ namespace pcl
       }
 
     protected:
-
-      /** \brief Temporary variable to store a triangle **/
-      pcl::Vertices triangle_;
-
-      /** \brief Temporary variable to store a quad **/
-      pcl::Vertices quad_;
-
       /** \brief max (squared) length of edge */
       float max_edge_length_squared_;
 
@@ -171,19 +166,17 @@ namespace pcl
         * \param[in] a index of the first vertex
         * \param[in] b index of the second vertex
         * \param[in] c index of the third vertex
-        * \param[out] output the polygon mesh to be updated
+        * \param[in] idx the index in the set of polygon vertices (assumes \a idx is valid in \a polygons)
+        * \param[out] polygons the polygon mesh to be updated
         */
       inline void
-      addTriangle (int a, int b, int c, std::vector<pcl::Vertices>& polygons)
+      addTriangle (int a, int b, int c, int idx, std::vector<pcl::Vertices>& polygons)
       {
-        if (isShadowedTriangle (a, b, c))
-          return;
-
-        triangle_.vertices.resize (3);
-        triangle_.vertices[0] = a;
-        triangle_.vertices[1] = b;
-        triangle_.vertices[2] = c;
-        polygons.push_back (triangle_);
+        assert (idx < (int)polygons.size ());
+        polygons[idx].vertices.resize (3);
+        polygons[idx].vertices[0] = a;
+        polygons[idx].vertices[1] = b;
+        polygons[idx].vertices[2] = c;
       }
 
       /** \brief Add a new quad to the current polygon mesh
@@ -197,12 +190,12 @@ namespace pcl
       inline void
       addQuad (int a, int b, int c, int d, int idx, std::vector<pcl::Vertices>& polygons)
       {
-        quad_.vertices.resize (4);
-        quad_.vertices[0] = a;
-        quad_.vertices[1] = b;
-        quad_.vertices[2] = c;
-        quad_.vertices[3] = d;
-        polygons[idx] = quad_;
+        assert (idx < (int)polygons.size ());
+        polygons[idx].vertices.resize (4);
+        polygons[idx].vertices[0] = a;
+        polygons[idx].vertices[1] = b;
+        polygons[idx].vertices[2] = c;
+        polygons[idx].vertices[3] = d;
       }
 
       /** \brief Set (all) coordinates of a particular point to the specified value
@@ -300,16 +293,6 @@ namespace pcl
         if (isShadowed (input_->points[c], input_->points[d])) return (true);
         if (isShadowed (input_->points[d], input_->points[a])) return (true);
         return (false);
-      }
-
-      /** \brief Obtain a 1D index from a given 2D index.
-        * \param[in] x the first coordinate of the 2D index
-        * \parma[in] y the second coordinate of the 2D index
-        */
-      inline int
-      getIndex (int x, int y)
-      {
-        return (y * input_->width + x);
       }
 
       /** \brief Create a quad mesh. 
