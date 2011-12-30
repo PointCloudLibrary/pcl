@@ -16,8 +16,8 @@ if (build)
         src/sac_model.cu
         src/sac_model_plane.cu
         src/sac_model_1point_plane.cu
-        src/ransac.cpp
-        src/multi_ransac.cpp
+        src/ransac.cu
+        src/multi_ransac.cu
         )
 
     set(incs
