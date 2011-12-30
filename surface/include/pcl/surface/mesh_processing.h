@@ -47,7 +47,7 @@ namespace pcl
     * \author Alexandru Eugen Ichim
     * \ingroup surface
     */
-  class MeshProcessing
+  class PCL_EXPORTS MeshProcessing
   {
     public:
       typedef PolygonMesh::ConstPtr PolygonMeshConstPtr;
