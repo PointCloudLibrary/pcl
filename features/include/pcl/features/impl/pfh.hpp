@@ -66,18 +66,14 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
   pfh_histogram.setZero ();
 
   // Factorization constant
-  float hist_incr = 100.0 / (indices.size () * (indices.size () - 1));
+  float hist_incr = 100.0 / (indices.size () * (indices.size () - 1) / 2);
 
   std::pair<int, int> key;
   // Iterate over all the points in the neighborhood
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
-    for (size_t j_idx = 0; j_idx < indices.size (); ++j_idx)
+    for (size_t j_idx = 0; j_idx < i_idx; ++j_idx)
     {
-      // Avoid unnecessary returns
-      if (i_idx == j_idx)
-        continue;
-
       // If the 3D points are invalid, don't bother estimating, just continue
       if (!isFinite (cloud.points[indices[i_idx]]) || !isFinite (cloud.points[indices[j_idx]]))
         continue;
