@@ -40,6 +40,7 @@
 #include <vtkTextActor.h>
 
 #include <pcl/pcl_macros.h>
+#include <Eigen/Dense>
 
 namespace pcl
 {
@@ -52,7 +53,7 @@ namespace pcl
       * \param min minimum value for the colors
       * \param max maximum value for the colors
       */
-    PCL_EXPORTS void 
+    PCL_EXPORTS void
     getRandomColors (double &r, double &g, double &b, double min = 0.2, double max = 2.8);
 
     enum RenderingProperties
@@ -77,16 +78,61 @@ namespace pcl
     class Camera
     {
       public:
-        double focal[3];    // focal point
-        double pos[3];      // position
-        double view[3];     // viewup
+        // focal point or lookAt
+        double focal[3];
 
-        double clip[2];     // clipping range
-        double fovy;         // field of view angle 
-                             // in y direction (radians)
+        // position of the camera
+        double pos[3];
 
-        double window_size[2];  // window size
-        double window_pos[2];   // window position
+        // up vector of the camera
+        double view[3];
+
+        // clipping planes clip[0] is near clipping plane or also the image plane, and clip [1] is the far clipping plane
+        double clip[2];
+
+        // field of view angle in y direction (radians)
+        double fovy;
+
+        // the following variables are the actual position and size of the window on the screen
+        // and NOT the viewport! except for the size, which is the same
+        // the viewport is assumed to be centered and same size as the window.
+        double window_size[2];
+        double window_pos[2];
+
+    /** \brief Computes View matrix for Camera (Based on gluLookAt)
+      * \param view_mat the resultant matrix
+      */
+        void computeViewMatrix(Eigen::Matrix4d& view_mat) const;
+
+    /** \brief Computes Projection Matrix for Camera
+     *  \param proj the resultant matrix
+     */
+        void computeProjectionMatrix(Eigen::Matrix4d& proj) const;
+
+     /**\brief converts point to window coordiantes
+      * \param pt  xyz point to be converted
+      * \param window_cord vector containing the pts' window X,Y, Z and 1
+      *
+      * This function computes the projection and view matrix every time.
+      * It is very inefficient to use this for every point in the point cloud!
+      */
+      template<typename PointT>
+        void cvtWindowCoordinates(const PointT& pt, Eigen::Vector4d& window_cord);
+
+    /**\brief converts point to window coordiantes
+      * \param pt  xyz point to be converted
+      * \param window_cord vector containing the pts' window X,Y, Z and 1
+      * \param composite_mat composite transformation matrix (proj*view)
+      *
+      * Use this function to compute window coordinates with a precomputed
+      * transformation function.  The typical composite matrix will be
+      * the projection matrix * the view matrix.  However, additional
+      * matrices like a camera disortion matrix can also be added.
+      */
+
+      template<typename PointT>
+        void cvtWindowCoordinates(const PointT& pt, Eigen::Vector4d& window_cord,
+                                        const Eigen::Matrix4d& composite_mat);
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////////
