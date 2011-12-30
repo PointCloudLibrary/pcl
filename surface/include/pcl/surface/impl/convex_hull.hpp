@@ -417,6 +417,25 @@ pcl::ConvexHull<PointInT>::reconstruct (PointCloud &output)
   deinitCompute ();
 }
 
+
+template <typename PointInT> void
+pcl::ConvexHull<PointInT>::performReconstruction (PolygonMesh &output)
+{  
+  // Perform reconstruction
+  pcl::PointCloud<PointInT> hull_points;
+  performReconstruction (hull_points, output.polygons, true);
+
+  // Convert the PointCloud into a PointCloud2
+  pcl::toROSMsg (hull_points, output.cloud);
+}
+
+template <typename PointInT> void
+pcl::ConvexHull<PointInT>::performReconstruction (std::vector<pcl::Vertices> &polygons)
+{
+  pcl::PointCloud<PointInT> hull_points;
+  performReconstruction (hull_points, polygons, true);
+}
+
 //////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
 pcl::ConvexHull<PointInT>::reconstruct (PointCloud &points, std::vector<pcl::Vertices> &polygons)

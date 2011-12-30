@@ -152,12 +152,13 @@ namespace pcl
   template <typename PointInT>
   class MeshConstruction: public PCLBase<PointInT>
   {
-    public:
+    protected:
       using PCLBase<PointInT>::input_;
       using PCLBase<PointInT>::indices_;
       using PCLBase<PointInT>::initCompute;
       using PCLBase<PointInT>::deinitCompute;
 
+    public:
       typedef typename pcl::search::Search<PointInT> KdTree;
       typedef typename pcl::search::Search<PointInT>::Ptr KdTreePtr;
 

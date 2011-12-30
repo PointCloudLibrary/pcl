@@ -42,7 +42,7 @@
 #define PCL_CONVEX_HULL_2D_H_
 
 // PCL includes
-#include "pcl/pcl_base.h"
+#include "pcl/surface/reconstruction.h"
 
 #include "pcl/ModelCoefficients.h"
 #include "pcl/PolygonMesh.h"
@@ -68,14 +68,17 @@ namespace pcl
     * \ingroup surface
     */
   template<typename PointInT>
-  class ConvexHull : public PCLBase<PointInT>
+  class ConvexHull : public MeshConstruction<PointInT>
   {
-    using PCLBase<PointInT>::input_;
-    using PCLBase<PointInT>::indices_;
-    using PCLBase<PointInT>::initCompute;
-    using PCLBase<PointInT>::deinitCompute;
+    protected:
+      using PCLBase<PointInT>::input_;
+      using PCLBase<PointInT>::indices_;
+      using PCLBase<PointInT>::initCompute;
+      using PCLBase<PointInT>::deinitCompute;
 
     public:
+      using MeshConstruction<PointInT>::reconstruct;
+
       typedef pcl::PointCloud<PointInT> PointCloud;
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
@@ -147,7 +150,7 @@ namespace pcl
         return dim_;
       }
 
-    private:
+    protected:
       /** \brief The actual reconstruction method. 
         * 
         * \param points the resultant points lying on the convex hull 
@@ -160,6 +163,20 @@ namespace pcl
                              std::vector<pcl::Vertices> &polygons, 
                              bool fill_polygon_data = false);
 
+      virtual void
+      performReconstruction (PolygonMesh &output);
+
+      virtual void
+      performReconstruction (std::vector<pcl::Vertices> &polygons);
+
+
+      /** \brief Class get name method. */
+      std::string
+      getClassName () const
+      {
+        return ("ConvexHull");
+      }
+
       bool keep_information_;
       bool compute_area_;
       double total_area_;
@@ -168,13 +185,6 @@ namespace pcl
       /** \brief the dimensionality of the concave hull */
       int dim_;
 
-    protected:
-      /** \brief Class get name method. */
-      std::string
-      getClassName () const
-      {
-        return ("ConvexHull");
-      }
     };
 }
 

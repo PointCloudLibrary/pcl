@@ -590,6 +590,25 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   }
 }
 
+template <typename PointInT> void
+pcl::ConcaveHull<PointInT>::performReconstruction (PolygonMesh &output)
+{  
+  // Perform reconstruction
+  pcl::PointCloud<PointInT> hull_points;
+  performReconstruction (hull_points, output.polygons);
+
+  // Convert the PointCloud into a PointCloud2
+  pcl::toROSMsg (hull_points, output.cloud);
+}
+
+template <typename PointInT> void
+pcl::ConcaveHull<PointInT>::performReconstruction (std::vector<pcl::Vertices> &polygons)
+{
+  pcl::PointCloud<PointInT> hull_points;
+  performReconstruction (hull_points, polygons);
+}
+
+
 #define PCL_INSTANTIATE_ConcaveHull(T) template class PCL_EXPORTS pcl::ConcaveHull<T>;
 
 #endif    // PCL_SURFACE_IMPL_CONCAVE_HULL_H_

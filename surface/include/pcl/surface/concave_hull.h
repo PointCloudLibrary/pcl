@@ -53,14 +53,17 @@ namespace pcl
     * \ingroup surface
     */
   template<typename PointInT>
-  class ConcaveHull : public PCLBase<PointInT>
+  class ConcaveHull : public MeshConstruction<PointInT>
   {
-    using PCLBase<PointInT>::input_;
-    using PCLBase<PointInT>::indices_;
-    using PCLBase<PointInT>::initCompute;
-    using PCLBase<PointInT>::deinitCompute;
+    protected:
+      using PCLBase<PointInT>::input_;
+      using PCLBase<PointInT>::indices_;
+      using PCLBase<PointInT>::initCompute;
+      using PCLBase<PointInT>::deinitCompute;
 
     public:
+      using MeshConstruction<PointInT>::reconstruct;
+
       typedef pcl::PointCloud<PointInT> PointCloud;
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
@@ -139,19 +142,7 @@ namespace pcl
         return ("ConcaveHull");
       }
 
-    private:
-      /** \brief The method accepts facets only if the distance from any vertex to the facet->center (center of the voronoi cell) is smaller than alpha */
-      double alpha_;
-
-      /** \brief If set to true, the reconstructed point cloud describing the hull is obtained from the original input cloud by performing a nearest neighbor search from Qhull output. */
-      bool keep_information_;
-
-      /** \brief describe voronoi_centers here.. */
-      PointCloudPtr voronoi_centers_;
-      
-      /** \brief the dimensionality of the concave hull */
-      int dim_;
-
+    protected:
       /** \brief The actual reconstruction method.
         * 
         * \param points the resultant points lying on the concave hull 
@@ -161,6 +152,28 @@ namespace pcl
       void
       performReconstruction (PointCloud &points, 
                              std::vector<pcl::Vertices> &polygons);
+
+      virtual void
+      performReconstruction (PolygonMesh &output);
+
+      virtual void
+      performReconstruction (std::vector<pcl::Vertices> &polygons);
+
+      /** \brief The method accepts facets only if the distance from any vertex to the facet->center 
+        * (center of the voronoi cell) is smaller than alpha 
+        */
+      double alpha_;
+
+      /** \brief If set to true, the reconstructed point cloud describing the hull is obtained from 
+        * the original input cloud by performing a nearest neighbor search from Qhull output. 
+        */
+      bool keep_information_;
+
+      /** \brief the centers of the voronoi cells */
+      PointCloudPtr voronoi_centers_;
+      
+      /** \brief the dimensionality of the concave hull */
+      int dim_;
   };
 }
 

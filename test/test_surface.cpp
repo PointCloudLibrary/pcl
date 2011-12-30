@@ -380,6 +380,65 @@ TEST (PCL, ConvexHull_bunny)
   pcl::getMinMax3D (hull, min_pt, max_pt);
 
   EXPECT_NEAR ((min_pt - max_pt).norm (), (min_pt_hull - max_pt_hull).norm (), 1e-5);
+
+  //
+  // Test the face-vertices-only output variant
+  //
+
+  // construct the hull mesh
+  std::vector<pcl::Vertices> polygons2;
+  chull.reconstruct (polygons2);
+
+  // compare the face vertices (polygons2) to the output from the original test --- they should be identical
+  ASSERT_EQ (polygons.size (), polygons2.size ());
+  for (size_t i = 0; i < polygons.size (); ++i)
+  {
+    const pcl::Vertices & face1 = polygons[i];
+    const pcl::Vertices & face2 = polygons2[i];
+    ASSERT_EQ (face1.vertices.size (), face2.vertices.size ());
+    for (size_t j = 0; j < face1.vertices.size (); ++j)
+    {
+      ASSERT_EQ (face1.vertices[j], face2.vertices[j]);
+    }
+  }
+
+
+  //
+  // Test the PolygonMesh output variant
+  //
+
+  // construct the hull mesh
+  PolygonMesh mesh;
+  chull.reconstruct (mesh);
+
+  // convert the internal PointCloud2 to a PointCloud
+  PointCloud<pcl::PointXYZ> hull2;
+  pcl::fromROSMsg (mesh.cloud, hull2);
+
+  // compare the PointCloud (hull2) to the output from the original test --- they should be identical
+  ASSERT_EQ (hull.points.size (), hull2.points.size ());
+  for (size_t i = 0; i < hull.points.size (); ++i)
+  {
+    const PointXYZ & p1 = hull.points[i];
+    const PointXYZ & p2 = hull2.points[i];
+    ASSERT_EQ (p1.x, p2.x);
+    ASSERT_EQ (p1.y, p2.y);
+    ASSERT_EQ (p1.z, p2.z);
+  }
+
+  // compare the face vertices (mesh.polygons) to the output from the original test --- they should be identical
+  ASSERT_EQ (polygons.size (), mesh.polygons.size ());
+  for (size_t i = 0; i < polygons.size (); ++i)
+  {
+    const pcl::Vertices & face1 = polygons[i];
+    const pcl::Vertices & face2 = mesh.polygons[i];
+    ASSERT_EQ (face1.vertices.size (), face2.vertices.size ());
+    for (size_t j = 0; j < face1.vertices.size (); ++j)
+    {
+      ASSERT_EQ (face1.vertices[j], face2.vertices[j]);
+    }
+  }    
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -449,6 +508,66 @@ TEST (PCL, ConvexHull_LTable)
 
   EXPECT_EQ (polygons.size (), 1);
   EXPECT_EQ (hull.points.size (), 5);
+
+
+  //
+  // Test the face-vertices-only output variant
+  //
+
+  // construct the hull mesh
+  std::vector<pcl::Vertices> polygons2;
+  chull.reconstruct (polygons2);
+
+  // compare the face vertices (polygons2) to the output from the original test --- they should be identical
+  ASSERT_EQ (polygons.size (), polygons2.size ());
+  for (size_t i = 0; i < polygons.size (); ++i)
+  {
+    const pcl::Vertices & face1 = polygons[i];
+    const pcl::Vertices & face2 = polygons2[i];
+    ASSERT_EQ (face1.vertices.size (), face2.vertices.size ());
+    for (size_t j = 0; j < face1.vertices.size (); ++j)
+    {
+      ASSERT_EQ (face1.vertices[j], face2.vertices[j]);
+    }
+  }
+
+
+  //
+  // Test the PolygonMesh output variant
+  //
+
+  // construct the hull mesh
+  PolygonMesh mesh;
+  chull.reconstruct (mesh);
+
+  // convert the internal PointCloud2 to a PointCloud
+  PointCloud<pcl::PointXYZ> hull2;
+  pcl::fromROSMsg (mesh.cloud, hull2);
+
+  // compare the PointCloud (hull2) to the output from the original test --- they should be identical
+  ASSERT_EQ (hull.points.size (), hull2.points.size ());
+  for (size_t i = 0; i < hull.points.size (); ++i)
+  {
+    const PointXYZ & p1 = hull.points[i];
+    const PointXYZ & p2 = hull2.points[i];
+    ASSERT_EQ (p1.x, p2.x);
+    ASSERT_EQ (p1.y, p2.y);
+    ASSERT_EQ (p1.z, p2.z);
+  }
+
+  // compare the face vertices (mesh.polygons) to the output from the original test --- they should be identical
+  ASSERT_EQ (polygons.size (), mesh.polygons.size ());
+  for (size_t i = 0; i < polygons.size (); ++i)
+  {
+    const pcl::Vertices & face1 = polygons[i];
+    const pcl::Vertices & face2 = mesh.polygons[i];
+    ASSERT_EQ (face1.vertices.size (), face2.vertices.size ());
+    for (size_t j = 0; j < face1.vertices.size (); ++j)
+    {
+      ASSERT_EQ (face1.vertices[j], face2.vertices[j]);
+    }
+  }    
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
