@@ -151,8 +151,8 @@ namespace pcl
         std::string name_;
         int data_type_;
         size_t offset_;
-      property(const std::string& name) : name_(name), offset_(0) {}
-      property(const std::string& name, int data_type) : 
+        property(const std::string& name) : name_(name), offset_(0) {}
+        property(const std::string& name, int data_type) : 
         name_(name), data_type_(data_type)
         {
           offset_ = pcl::getFieldSize(data_type_);
@@ -162,8 +162,8 @@ namespace pcl
       struct list_property : public property
       {
         int size_type_;
-      list_property(const std::string& name, int size_type, int data_type) : 
-        property(name, data_type), size_type_(size_type) 
+        list_property(const std::string& name, int size_type, int data_type)
+          : property(name, data_type), size_type_(size_type) 
         {
           offset_ = pcl::getFieldSize(size_type_) + 
             getMaximumCapacity(size_type_) * pcl::getFieldSize(data_type_);
