@@ -65,7 +65,7 @@ pcl::IntegralImage2Dim<DataType, Dimension>::getFirstOrderSum (
   const unsigned upper_right_idx     = upper_left_idx + width;
   const unsigned lower_left_idx      = (start_y + height) * (width_ + 1) + start_x;
   const unsigned lower_right_idx     = lower_left_idx + width;
-  
+
   return (first_order_integral_image_[lower_right_idx] + first_order_integral_image_[upper_left_idx]  -
           first_order_integral_image_[upper_right_idx] - first_order_integral_image_[lower_left_idx]  );
 }
@@ -79,7 +79,7 @@ pcl::IntegralImage2Dim<DataType, Dimension>::getSecondOrderSum (
   const unsigned upper_right_idx     = upper_left_idx + width;
   const unsigned lower_left_idx      = (start_y + height) * (width_ + 1) + start_x;
   const unsigned lower_right_idx     = lower_left_idx + width;
-  
+
   return (second_order_integral_image_[lower_right_idx] + second_order_integral_image_[upper_left_idx]  -
           second_order_integral_image_[upper_right_idx] - second_order_integral_image_[lower_left_idx]  );
 }
@@ -91,7 +91,7 @@ pcl::IntegralImage2Dim<DataType, Dimension>::computeIntegralImages (
 {
   ElementType* previous_row = &first_order_integral_image_[0];
   ElementType* current_row = previous_row + (width_ + 1);
-  memset (previous_row, 0, sizeof (ElementType) * (width_ + 1));    
+  memset (previous_row, 0, sizeof (ElementType) * (width_ + 1));
 
   if (!compute_second_order_integral_images_)
   {
@@ -113,11 +113,11 @@ pcl::IntegralImage2Dim<DataType, Dimension>::computeIntegralImages (
   {
     SecondOrderType* so_previous_row = &second_order_integral_image_[0];
     SecondOrderType* so_current_row  = so_previous_row + (width_ + 1);
-    memset (so_previous_row, 0, sizeof (SecondOrderType) * (width_ + 1));    
-    
+    memset (so_previous_row, 0, sizeof (SecondOrderType) * (width_ + 1));
+
     SecondOrderType so_element;
-    for (unsigned rowIdx = 0; rowIdx < height_; ++rowIdx, 
-         previous_row = current_row, current_row += (width_ + 1), 
+    for (unsigned rowIdx = 0; rowIdx < height_; ++rowIdx,
+         previous_row = current_row, current_row += (width_ + 1),
          so_previous_row = so_current_row, so_current_row += (width_ + 1), data += row_stride)
     {
       current_row [0].setZero ();
@@ -126,12 +126,12 @@ pcl::IntegralImage2Dim<DataType, Dimension>::computeIntegralImages (
       {
         current_row [colIdx + 1] = previous_row [colIdx + 1] + current_row [colIdx] - previous_row [colIdx];
         so_current_row [colIdx + 1] = so_previous_row [colIdx + 1] + so_current_row [colIdx] - so_previous_row [colIdx];
-        
+
         const InputType* element = reinterpret_cast <const InputType*> (&data [valIdx]);
         if (pcl_isfinite (element->sum ()))
         {
           current_row [colIdx + 1] += element->template cast<typename IntegralImageTypeTraits<DataType>::IntegralType>();
-          
+
           for (unsigned myIdx = 0, elIdx = 0; myIdx < Dimension; ++myIdx)
             for (unsigned mxIdx = myIdx; mxIdx < Dimension; ++mxIdx, ++elIdx)
               so_current_row [colIdx + 1][elIdx] += (*element)[myIdx] * (*element)[mxIdx];
@@ -141,5 +141,96 @@ pcl::IntegralImage2Dim<DataType, Dimension>::computeIntegralImages (
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename DataType> void
+pcl::IntegralImage2Dim<DataType, 1>::setInput (const DataType * data, unsigned width,unsigned height, unsigned element_stride, unsigned row_stride)
+{
+  if ((width + 1) * (height + 1) > first_order_integral_image_.size () )
+  {
+    width_  = width;
+    height_ = height;
+    first_order_integral_image_.resize ( (width_ + 1) * (height_ + 1) );
+    if (compute_second_order_integral_images_)
+      second_order_integral_image_.resize ( (width_ + 1) * (height_ + 1) );
+  }
+  computeIntegralImages (data, row_stride, element_stride);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename DataType> typename pcl::IntegralImage2Dim<DataType, 1>::ElementType
+pcl::IntegralImage2Dim<DataType, 1>::getFirstOrderSum (
+    unsigned start_x, unsigned start_y, unsigned width, unsigned height) const
+{
+  const unsigned upper_left_idx      = start_y * (width_ + 1) + start_x;
+  const unsigned upper_right_idx     = upper_left_idx + width;
+  const unsigned lower_left_idx      = (start_y + height) * (width_ + 1) + start_x;
+  const unsigned lower_right_idx     = lower_left_idx + width;
+
+  return (first_order_integral_image_[lower_right_idx] + first_order_integral_image_[upper_left_idx]  -
+          first_order_integral_image_[upper_right_idx] - first_order_integral_image_[lower_left_idx]  );
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename DataType> typename pcl::IntegralImage2Dim<DataType, 1>::SecondOrderType
+pcl::IntegralImage2Dim<DataType, 1>::getSecondOrderSum (
+    unsigned start_x, unsigned start_y, unsigned width, unsigned height) const
+{
+  const unsigned upper_left_idx      = start_y * (width_ + 1) + start_x;
+  const unsigned upper_right_idx     = upper_left_idx + width;
+  const unsigned lower_left_idx      = (start_y + height) * (width_ + 1) + start_x;
+  const unsigned lower_right_idx     = lower_left_idx + width;
+
+  return (second_order_integral_image_[lower_right_idx] + second_order_integral_image_[upper_left_idx]  -
+          second_order_integral_image_[upper_right_idx] - second_order_integral_image_[lower_left_idx]  );
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename DataType> void
+pcl::IntegralImage2Dim<DataType, 1>::computeIntegralImages (
+    const DataType *data, unsigned row_stride, unsigned element_stride)
+{
+  ElementType* previous_row = &first_order_integral_image_[0];
+  ElementType* current_row = previous_row + (width_ + 1);
+  memset (previous_row, 0, sizeof (ElementType) * (width_ + 1));
+
+  if (!compute_second_order_integral_images_)
+  {
+    for (unsigned rowIdx = 0; rowIdx < height_; ++rowIdx, previous_row = current_row, current_row += (width_ + 1), data += row_stride)
+    {
+      current_row [0] = 0.0;
+      for (unsigned colIdx = 0, valIdx = 0; colIdx < width_; ++colIdx, valIdx += element_stride)
+      {
+        current_row [colIdx + 1] = previous_row [colIdx + 1] + current_row [colIdx] - previous_row [colIdx];
+        if (pcl_isfinite (data [valIdx]))
+          current_row [colIdx + 1] += data [valIdx];
+      }
+    }
+  }
+  else
+  {
+    SecondOrderType* so_previous_row = &second_order_integral_image_[0];
+    SecondOrderType* so_current_row  = so_previous_row + (width_ + 1);
+    memset (so_previous_row, 0, sizeof (SecondOrderType) * (width_ + 1));
+
+    for (unsigned rowIdx = 0; rowIdx < height_; ++rowIdx,
+         previous_row = current_row, current_row += (width_ + 1),
+         so_previous_row = so_current_row, so_current_row += (width_ + 1), data += row_stride)
+    {
+      current_row [0] = 0.0;
+      so_current_row [0] = 0.0;
+      for (unsigned colIdx = 0, valIdx = 0; colIdx < width_; ++colIdx, valIdx += element_stride)
+      {
+        current_row [colIdx + 1] = previous_row [colIdx + 1] + current_row [colIdx] - previous_row [colIdx];
+        so_current_row [colIdx + 1] = so_previous_row [colIdx + 1] + so_current_row [colIdx] - so_previous_row [colIdx];
+        if (pcl_isfinite (data[valIdx]))
+        {
+          current_row [colIdx + 1] += data[valIdx];
+          so_current_row [colIdx + 1] += data[valIdx] * data[valIdx];
+        }
+      }
+    }
+  }
+}
 #endif    // PCL_INTEGRAL_IMAGE2D_IMPL_H_
 

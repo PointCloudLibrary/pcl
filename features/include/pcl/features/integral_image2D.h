@@ -49,14 +49,14 @@ namespace pcl
     typedef DataType Type;
     typedef DataType IntegralType;
   };
-  
+
   template <>
   struct IntegralImageTypeTraits<float>
   {
     typedef float Type;
     typedef double IntegralType;
   };
-  
+
   template <>
   struct IntegralImageTypeTraits<char>
   {
@@ -77,21 +77,21 @@ namespace pcl
     typedef unsigned short Type;
     typedef unsigned long IntegralType;
   };
-  
+
   template <>
   struct IntegralImageTypeTraits<unsigned char>
   {
     typedef unsigned char Type;
     typedef unsigned int IntegralType;
   };
-  
+
   template <>
   struct IntegralImageTypeTraits<int>
   {
     typedef int Type;
     typedef long IntegralType;
   };
-  
+
   template <>
   struct IntegralImageTypeTraits<unsigned int>
   {
@@ -109,19 +109,19 @@ namespace pcl
       static const unsigned second_order_size = (Dimension * (Dimension + 1)) >> 1;
       typedef Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::IntegralType, Dimension, 1> ElementType;
       typedef Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::IntegralType, second_order_size, 1> SecondOrderType;
-      
-      /** \brief Constructor for an Integral Image 
+
+      /** \brief Constructor for an Integral Image
         * \param[in] compute_second_order_integral_images set to true if we want to compute a second order image
         */
       IntegralImage2Dim (bool compute_second_order_integral_images)
         : width_ (1), height_ (1), compute_second_order_integral_images_ (compute_second_order_integral_images)
       {
       }
-      
+
       /** \brief Destructor */
-      virtual 
+      virtual
       ~IntegralImage2Dim () { }
-      
+
       /** \brief Set the input data to compute the integral image for
         * \param[in] data the input data
         * \param[in] width the width of the data
@@ -129,17 +129,17 @@ namespace pcl
         * \param[in] element_stride the element stride of the data
         * \param[in] row_stride the row stride of the data
         */
-      void 
-      setInput (const DataType * data, 
+      void
+      setInput (const DataType * data,
                 unsigned width, unsigned height, unsigned element_stride, unsigned row_stride);
-      
+
       /** \brief Compute the first order sum
         * \param[in] start_x
         * \param[in] start_y
         * \param[in] width
         * \param[in] height
         */
-      inline ElementType 
+      inline ElementType
       getFirstOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
 
       /** \brief Compute the second order sum
@@ -148,9 +148,9 @@ namespace pcl
         * \param[in] width
         * \param[in] height
         */
-      inline SecondOrderType 
+      inline SecondOrderType
       getSecondOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
-    
+
     private:
       typedef Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::Type, Dimension, 1> InputType;
 
@@ -158,18 +158,93 @@ namespace pcl
         * \param[in] data the input data
         * \param[in] element_stride the element stride of the data
         * \param[in] row_stride the row stride of the data
-        */ 
-      void 
+        */
+      void
       computeIntegralImages (const DataType * data, unsigned row_stride, unsigned element_stride);
-      
+
       std::vector<ElementType, Eigen::aligned_allocator<ElementType> > first_order_integral_image_;
       std::vector<SecondOrderType, Eigen::aligned_allocator<SecondOrderType> > second_order_integral_image_;
-      
+
       /** \brief The width of the 2d input data array */
       unsigned width_;
       /** \brief The height of the 2d input data array */
       unsigned height_;
-      
+
+      /** \brief Indicates whether second order integral images are available **/
+      bool compute_second_order_integral_images_;
+   };
+
+   /**
+     * \brief partial template specialization for integral images with just one channel.
+     */
+  template <class DataType>
+  class IntegralImage2Dim <DataType, 1>
+  {
+    public:
+      static const unsigned second_order_size = 1;
+      typedef typename IntegralImageTypeTraits<DataType>::IntegralType ElementType;
+      typedef typename IntegralImageTypeTraits<DataType>::IntegralType SecondOrderType;
+
+      /** \brief Constructor for an Integral Image
+        * \param[in] compute_second_order_integral_images set to true if we want to compute a second order image
+        */
+      IntegralImage2Dim (bool compute_second_order_integral_images)
+        : width_ (1), height_ (1), compute_second_order_integral_images_ (compute_second_order_integral_images)
+      {
+      }
+
+      /** \brief Destructor */
+      virtual
+      ~IntegralImage2Dim () { }
+
+      /** \brief Set the input data to compute the integral image for
+        * \param[in] data the input data
+        * \param[in] width the width of the data
+        * \param[in] height the height of the data
+        * \param[in] element_stride the element stride of the data
+        * \param[in] row_stride the row stride of the data
+        */
+      void
+      setInput (const DataType * data,
+                unsigned width, unsigned height, unsigned element_stride, unsigned row_stride);
+
+      /** \brief Compute the first order sum
+        * \param[in] start_x
+        * \param[in] start_y
+        * \param[in] width
+        * \param[in] height
+        */
+      inline ElementType
+      getFirstOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
+
+      /** \brief Compute the second order sum
+        * \param[in] start_x
+        * \param[in] start_y
+        * \param[in] width
+        * \param[in] height
+        */
+      inline SecondOrderType
+      getSecondOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
+
+    private:
+    //  typedef typename IntegralImageTypeTraits<DataType>::Type InputType;
+
+      /** \brief Compute the actual integral image data
+        * \param[in] data the input data
+        * \param[in] element_stride the element stride of the data
+        * \param[in] row_stride the row stride of the data
+        */
+      void
+      computeIntegralImages (const DataType * data, unsigned row_stride, unsigned element_stride);
+
+      std::vector<ElementType, Eigen::aligned_allocator<ElementType> > first_order_integral_image_;
+      std::vector<SecondOrderType, Eigen::aligned_allocator<SecondOrderType> > second_order_integral_image_;
+
+      /** \brief The width of the 2d input data array */
+      unsigned width_;
+      /** \brief The height of the 2d input data array */
+      unsigned height_;
+
       /** \brief Indicates whether second order integral images are available **/
       bool compute_second_order_integral_images_;
    };
