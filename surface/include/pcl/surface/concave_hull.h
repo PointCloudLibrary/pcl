@@ -49,9 +49,9 @@ namespace pcl
 {
   ////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b ConcaveHull (alpha shapes) using libqhull library.
-   * \author Aitor Aldoma
-   * \ingroup surface
-   */
+    * \author Aitor Aldoma
+    * \ingroup surface
+    */
   template<typename PointInT>
   class ConcaveHull : public PCLBase<PointInT>
   {

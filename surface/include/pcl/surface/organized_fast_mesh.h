@@ -53,11 +53,11 @@ namespace pcl
     * \ingroup surface
     */
   template <typename PointInT>
-  class OrganizedFastMesh : public SurfaceReconstruction<PointInT>
+  class OrganizedFastMesh : public MeshConstruction<PointInT>
   {
     public:
-      using SurfaceReconstruction<PointInT>::input_;
-      using SurfaceReconstruction<PointInT>::check_tree_;
+      using MeshConstruction<PointInT>::input_;
+      using MeshConstruction<PointInT>::check_tree_;
 
       typedef typename pcl::PointCloud<PointInT>::Ptr PointCloudPtr;
 
@@ -76,53 +76,40 @@ namespace pcl
       : max_edge_length_squared_ (0.025f)
       , triangle_pixel_size_ (1)
       , triangulation_type_ (TRIANGLE_RIGHT_CUT)
-      , store_shadowed_faces_(false)
+      , store_shadowed_faces_ (false)
       {
         check_tree_ = false;
-        cos_angle_tolerance_ = fabs(cos(pcl::deg2rad(12.5f)));
+        cos_angle_tolerance_ = fabs (cos (pcl::deg2rad (12.5f)));
       };
 
       /** \brief Destructor. */
       ~OrganizedFastMesh () {};
 
-      /** \brief Create the surface.
-        *
-        * Simply uses image indices to create an initial polygonal mesh for organized point clouds.
-        * \a indices_ are ignored!
-        *
-        * \param output the resultant polygonal mesh
+      /** \brief Set a maximum edge length. TODO: Implement! 
+        * \param[in] max_edge_length the maximum edge length
         */
-      void
-      performReconstruction (pcl::PolygonMesh &output);
-
-      void
-      reconstructPolygons (std::vector<pcl::Vertices>& polygons);
-
-      /** \brief Set a maximum edge length. TODO: Implement! */
       inline void
-      setMaxEdgeLength(float max_edge_length)
+      setMaxEdgeLength (float max_edge_length)
       {
-        max_edge_length_squared_ = max_edge_length*max_edge_length;
+        max_edge_length_squared_ = max_edge_length * max_edge_length;
       };
 
-      /**
-       * \brief Set the edge length (in pixels) used for constructing the fixed mesh.
-       * \param triangle_size edge length in pixels
-       * (Default: 1 = neighboring pixels are connected)
-       */
+      /** \brief Set the edge length (in pixels) used for constructing the fixed mesh.
+        * \param[in] triangle_size edge length in pixels
+        * (Default: 1 = neighboring pixels are connected)
+        */
       inline void
-      setTrianglePixelSize(int triangle_size)
+      setTrianglePixelSize (int triangle_size)
       {
         triangle_pixel_size_ = std::max(1, (triangle_size - 1));
       }
 
-      /**
-       * \brief Set the triangulation type (see \a TriangulationType)
-       * @param type quad mesh, triangle mesh with fixed left, right cut,
-       * or adaptive cut (splits a quad wrt. the depth (z) of the points)
-       */
+      /** \brief Set the triangulation type (see \a TriangulationType)
+        * \param[in] type quad mesh, triangle mesh with fixed left, right cut,
+        * or adaptive cut (splits a quad wrt. the depth (z) of the points)
+        */
       inline void
-      setTriangulationType(TriangulationType type)
+      setTriangulationType (TriangulationType type)
       {
         triangulation_type_ = type;
       }
@@ -155,6 +142,28 @@ namespace pcl
 
       float cos_angle_tolerance_;
 
+      /** \brief Perform the actual polygonal reconstruction.
+        * \param[out] polygons the resultant polygons
+        */
+      void
+      reconstructPolygons (std::vector<pcl::Vertices>& polygons);
+
+      /** \brief Create the surface. 
+        * \param[out] polygons the resultant polygons, as a set of vertices. The Vertices structure contains an array of point indices.
+        */
+      virtual void 
+      performReconstruction (std::vector<pcl::Vertices> &polygons);
+
+      /** \brief Create the surface.
+        *
+        * Simply uses image indices to create an initial polygonal mesh for organized point clouds.
+        * \a indices_ are ignored!
+        *
+        * \param[out] output the resultant polygonal mesh
+        */
+      void
+      performReconstruction (pcl::PolygonMesh &output);
+
       /** \brief Add a new triangle to the current polygon mesh
         * \param[in] a index of the first vertex
         * \param[in] b index of the second vertex
@@ -164,13 +173,13 @@ namespace pcl
       inline void
       addTriangle (int a, int b, int c, std::vector<pcl::Vertices>& polygons)
       {
-        if (isShadowedTriangle(a, b, c))
+        if (isShadowedTriangle (a, b, c))
           return;
 
-        triangle_.vertices.clear ();
-        triangle_.vertices.push_back (a);
-        triangle_.vertices.push_back (b);
-        triangle_.vertices.push_back (c);
+        triangle_.vertices.resize (3);
+        triangle_.vertices[0] = a;
+        triangle_.vertices[1] = b;
+        triangle_.vertices[2] = c;
         polygons.push_back (triangle_);
       }
 
@@ -205,10 +214,10 @@ namespace pcl
                       int field_x_idx = 0, int field_y_idx = 1, int field_z_idx = 2)
       {
         float new_value = value;
-        memcpy(&mesh.cloud.data[point_index * mesh.cloud.point_step + mesh.cloud.fields[field_x_idx].offset], &new_value, sizeof(float));
-        memcpy(&mesh.cloud.data[point_index * mesh.cloud.point_step + mesh.cloud.fields[field_y_idx].offset], &new_value, sizeof(float));
-        memcpy(&mesh.cloud.data[point_index * mesh.cloud.point_step + mesh.cloud.fields[field_z_idx].offset], &new_value, sizeof(float));
-      }
+        memcpy (&mesh.cloud.data[point_index * mesh.cloud.point_step + mesh.cloud.fields[field_x_idx].offset], &new_value, sizeof (float));
+        memcpy (&mesh.cloud.data[point_index * mesh.cloud.point_step + mesh.cloud.fields[field_y_idx].offset], &new_value, sizeof (float));
+        memcpy (&mesh.cloud.data[point_index * mesh.cloud.point_step + mesh.cloud.fields[field_z_idx].offset], &new_value, sizeof (float));
+      } 
 
       /** \brief Check if a point is shadowed by another point
         * \param[in] point_a the first point
