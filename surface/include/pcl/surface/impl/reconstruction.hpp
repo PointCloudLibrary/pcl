@@ -92,7 +92,7 @@ pcl::SurfaceReconstruction<PointInT>::reconstruct (pcl::PointCloud<PointInT> &po
   if (!initCompute ()) 
   {
     points.width = points.height = 0;
-    points.data.clear ();
+    points.clear ();
     polygons.clear ();
     return;
   }
@@ -130,7 +130,7 @@ pcl::MeshConstruction<PointInT>::reconstruct (pcl::PolygonMesh &output)
 
   if (!initCompute ()) 
   {
-    output.cloud.width = output.cloud.height = 0;
+    output.cloud.width = output.cloud.height = 1;
     output.cloud.data.clear ();
     output.polygons.clear ();
     return;
