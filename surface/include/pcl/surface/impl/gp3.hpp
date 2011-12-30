@@ -45,7 +45,9 @@
 template <typename PointInT> void
 pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::PolygonMesh &output)
 {
-  if (!reconstructPolygons (output.polygons))
+  output.polygons.clear ();
+  output.polygons.reserve (2 * indices_->size ()); /// NOTE: usually the number of triangles is around twice the number of vertices
+ if (!reconstructPolygons (output.polygons))
   {
     PCL_ERROR ("[pcl::%s::performReconstruction] Reconstruction failed. Check parameters: search radius (%f) or mu (%f) before continuing.\n", getClassName ().c_str (), search_radius_, mu_);
     output.cloud.width = output.cloud.height = 0;
@@ -58,6 +60,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (pcl::Polygo
 template <typename PointInT> void
 pcl::GreedyProjectionTriangulation<PointInT>::performReconstruction (std::vector<pcl::Vertices> &polygons)
 {
+  polygons.clear ();
+  polygons.reserve (2 * indices_->size ()); /// NOTE: usually the number of triangles is around twice the number of vertices
   if (!reconstructPolygons (polygons))
   {
     PCL_ERROR ("[pcl::%s::performReconstruction] Reconstruction failed. Check parameters: search radius (%f) or mu (%f) before continuing.\n", getClassName ().c_str (), search_radius_, mu_);
