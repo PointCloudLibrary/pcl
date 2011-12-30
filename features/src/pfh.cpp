@@ -62,9 +62,9 @@ pcl::computePairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1,
   n1_copy[3] = n2_copy[3] = 0.0f;
   float angle1 = n1_copy.dot (dp2p1) / f4;
 
-  // commented this to pass the unit tests
+  // Make sure the same point is selected as 1 and 2 for each pair
   float angle2 = n2_copy.dot (dp2p1) / f4;
-  if (acos (angle1) > acos(angle2))
+  if (acos (fabs (angle1)) > acos (fabs (angle2)))
   {
     // switch p1 and p2
     n1_copy = n2;
