@@ -35,9 +35,33 @@
  *
  */
 
-#include <pcl/pcl_config.h>
 #include "pcl/surface/ear_clipping.h"
+#include <pcl/ros/conversions.h>
+#include <pcl/pcl_config.h>
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::EarClipping::initCompute ()
+{
+  if (!MeshProcessing::initCompute ())
+    return false;
+  fromROSMsg (input_mesh_->cloud, *points_);
+
+  return true;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::EarClipping::performReconstruction (PolygonMesh& output)
+{
+  output.polygons.clear ();
+  output.cloud = input_mesh_->cloud;
+  for (int i = 0; i < (int) input_mesh_->polygons.size (); ++i)
+    triangulate (input_mesh_->polygons[i], output);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::EarClipping::triangulate (const Vertices& vertices, PolygonMesh& output)
 {
@@ -65,8 +89,8 @@ pcl::EarClipping::triangulate (const Vertices& vertices, PolygonMesh& output)
 
   // null_iterations avoids infinite loops if the polygon is not simple.
   for (int u = remaining_vertices.size () - 1, null_iterations = 0;
-       remaining_vertices.size () > 2 && null_iterations < (int)(remaining_vertices.size()*2);
-       ++null_iterations, u = (u+1) % remaining_vertices.size ())
+      remaining_vertices.size () > 2 && null_iterations < (int)(remaining_vertices.size()*2);
+      ++null_iterations, u = (u+1) % remaining_vertices.size ())
   {
     int v = (u + 1) % remaining_vertices.size ();
     int w = (u + 2) % remaining_vertices.size ();
@@ -85,6 +109,8 @@ pcl::EarClipping::triangulate (const Vertices& vertices, PolygonMesh& output)
   }
 }
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 float
 pcl::EarClipping::area (const std::vector<uint32_t>& vertices)
 {
@@ -92,19 +118,21 @@ pcl::EarClipping::area (const std::vector<uint32_t>& vertices)
   float area = 0.0f;
   for (int prev = n - 1, cur = 0; cur < n; prev = cur++)
   {
-    PointXY prev_p = toPointXY (points_.points[vertices[prev]]);
-    PointXY cur_p = toPointXY (points_.points[vertices[cur]]);
+    PointXY prev_p = toPointXY (points_->points[vertices[prev]]);
+    PointXY cur_p = toPointXY (points_->points[vertices[cur]]);
     area += crossProduct (prev_p, cur_p);
   }
   return area * 0.5f;
 }
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::EarClipping::isEar (int u, int v, int w, const std::vector<uint32_t>& vertices)
 {
-  PointXY p_u = toPointXY (points_.points[vertices[u]]);
-  PointXY p_v = toPointXY (points_.points[vertices[v]]);
-  PointXY p_w = toPointXY (points_.points[vertices[w]]);
+  PointXY p_u = toPointXY (points_->points[vertices[u]]);
+  PointXY p_v = toPointXY (points_->points[vertices[v]]);
+  PointXY p_w = toPointXY (points_->points[vertices[w]]);
 
   // Avoid flat triangles.
   // FIXME: triangulation would fail if all the triangles are flat in the X-Y axis
@@ -119,13 +147,14 @@ pcl::EarClipping::isEar (int u, int v, int w, const std::vector<uint32_t>& verti
   {
     if ((k == u) || (k == v) || (k == w))
       continue;
-    PointXY p = toPointXY (points_.points[vertices[k]]);
+    PointXY p = toPointXY (points_->points[vertices[k]]);
     if (isInsideTriangle (p_u, p_v, p_w, p))
       return false;
   }
   return true;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::EarClipping::isInsideTriangle (const PointXY& u, const PointXY& v, const PointXY& w,
                                     const PointXY& p)
@@ -151,3 +180,35 @@ pcl::EarClipping::isInsideTriangle (const PointXY& u, const PointXY& v, const Po
 
   return true;
 }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+pcl::PointXY
+pcl::EarClipping::toPointXY (const PointXYZ& p) const
+{
+  PointXY r;
+  r.x = p.x;
+  r.y = p.y;
+  return r;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+float
+pcl::EarClipping::crossProduct (const PointXY& p1, const PointXY& p2) const
+{
+  return (p1.x*p2.y) - (p1.y*p2.x);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+pcl::PointXY
+pcl::EarClipping::difference (const PointXY& p1, const PointXY& p2) const
+{
+  PointXY r;
+  r.x = p1.x - p2.x;
+  r.y = p1.y - p2.y;
+  return r;
+}
+
+

@@ -39,9 +39,7 @@
 #define PCL_SURFACE_EAR_CLIPPING_H_
 
 #include <pcl/point_types.h>
-#include <pcl/point_cloud.h>
-#include <pcl/ros/conversions.h>
-#include <pcl/PolygonMesh.h>
+#include <pcl/surface/mesh_processing.h>
 
 namespace pcl
 {
@@ -52,63 +50,51 @@ namespace pcl
     * \author Nicolas Burrus
     * \ingroup surface
     */
-  class PCL_EXPORTS EarClipping
+  class EarClipping : public MeshProcessing
   {
     public:
-      /** \brief Provide a pointer to the input PolygonMesh
-        * \param polygon the const boost shared pointer to a PolygonMesh
-        */
-      void setInputPolygonMesh (pcl::PolygonMeshConstPtr polygon)
-      {
-        polygon_ = polygon;
-        fromROSMsg (polygon->cloud, points_);
-      }
-
-      /** \brief Decompose a polygon mesh into a set of triangles.
-        *
-        * Every polygon of the input PolygonMesh will be divided into
-        * triangle polygons.
-        *
-        * \param output the resultant mesh with triangular polygons
-        */
-      void triangulate (PolygonMesh& output)
-      {
-        output.polygons.clear ();
-        output.cloud = polygon_->cloud;
-        for (int i = 0; i < (int) polygon_->polygons.size (); ++i)
-        {
-          triangulate (polygon_->polygons[i], output);
-        }
-      }
+      using MeshProcessing::input_mesh_;
+      using MeshProcessing::initCompute;
+      /** \brief Empty constructor */
+      EarClipping () : MeshProcessing (), points_ ()
+        { };
 
     protected:
+      PointCloud<PointXYZ>::Ptr points_;
+
+      bool
+      initCompute ();
+
+      void
+      performReconstruction (pcl::PolygonMesh &output);
+
       /** \brief Triangulate one polygon. */
-      void triangulate (const Vertices& vertices, PolygonMesh& output);
+      void
+      triangulate (const Vertices& vertices, PolygonMesh& output);
 
       /** \brief Compute the signed area of a polygon. */
-      float area (const std::vector<uint32_t>& vertices);
+      float
+      area (const std::vector<uint32_t>& vertices);
 
       /** \brief Check if the triangle (u,v,w) is an ear. */
-      bool isEar (int u, int v, int w, const std::vector<uint32_t>& vertices);
+      bool
+      isEar (int u, int v, int w, const std::vector<uint32_t>& vertices);
 
       /** \brief Check if p is inside the triangle (u,v,w). */
-      bool isInsideTriangle (const PointXY& u, const PointXY& v, const PointXY& w,const PointXY& p);
+      bool
+      isInsideTriangle (const PointXY& u, const PointXY& v, const PointXY& w,const PointXY& p);
 
       /** \brief Project a 3D point to 2D. */
-      PointXY toPointXY (const PointXYZ& p) const { PointXY r; r.x = p.x; r.y = p.y; return r; }
+      PointXY
+      toPointXY (const PointXYZ& p) const;
 
       /** \brief Compute the cross product between 2D vectors. */
-      float crossProduct (const PointXY& p1, const PointXY& p2) const { return (p1.x*p2.y) - (p1.y*p2.x); }
+      float
+      crossProduct (const PointXY& p1, const PointXY& p2) const;
 
       /** \brief Subtract two 2D vectors. */
-      PointXY difference (const PointXY& p1, const PointXY& p2) const { PointXY r; r.x = p1.x - p2.x; r.y = p1.y - p2.y; return r; }
-
-    private:
-      PolygonMeshConstPtr polygon_;
-      PointCloud<PointXYZ> points_;
-
-    public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      PointXY
+      difference (const PointXY& p1, const PointXY& p2) const;
   };
 
 }
