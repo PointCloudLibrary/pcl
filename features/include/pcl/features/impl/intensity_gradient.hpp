@@ -89,9 +89,51 @@ pcl::IntensityGradientEstimation <PointInT, PointNT, PointOutT>::computePointInt
   A (2, 0) = A (0, 2);
   A (2, 1) = A (1, 2);
 
-  // Fit a hyperplane to the data
+//*
   Eigen::Vector3f x = A.colPivHouseholderQr ().solve (b);
+/*/
 
+  Eigen::Vector3f eigen_values;
+  Eigen::Matrix3f eigen_vectors;
+  eigen33 (A, eigen_vectors, eigen_values);
+
+  b = eigen_vectors.transpose () * b;
+
+  if ( eigen_values (0) != 0)
+    b (0) /= eigen_values (0);
+  else
+    b (0) = 0;
+
+  if ( eigen_values (1) != 0)
+    b (1) /= eigen_values (1);
+  else
+    b (1) = 0;
+
+  if ( eigen_values (2) != 0)
+    b (2) /= eigen_values (2);
+  else
+    b (2) = 0;
+
+
+  Eigen::Vector3f x = eigen_vectors * b;
+
+//  if (A.col (0).squaredNorm () != 0)
+//    x [0] /= A.col (0).squaredNorm ();
+//  b -= x [0] * A.col (0);
+//
+//
+//  if (A.col (1).squaredNorm ()  != 0)
+//    x [1] /= A.col (1).squaredNorm ();
+//  b -= x[1] * A.col (1);
+//
+//  x [2] = b.dot (A.col (2));
+//  if (A.col (2).squaredNorm () != 0)
+//    x[2] /= A.col (2).squaredNorm ();
+  // Fit a hyperplane to the data
+
+//*/
+//  std::cout << A << "\n*\n" << bb << "\n=\n" << x << "\nvs.\n" << x2 << "\n\n";
+//  std::cout << A * x << "\nvs.\n" << A * x2 << "\n\n------\n";
   // Project the gradient vector, x, onto the tangent plane
   gradient = (Eigen::Matrix3f::Identity () - normal*normal.transpose ()) * x;
 }
