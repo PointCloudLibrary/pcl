@@ -43,6 +43,7 @@
 #include <pcl/surface/organized_fast_mesh.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
+#include <pcl/console/time.h>
 #include <pcl/visualization/cloud_viewer.h>
 
 using namespace pcl;
@@ -72,89 +73,144 @@ class OpenNIFastMesh
     typedef typename Cloud::ConstPtr CloudConstPtr;
 
     OpenNIFastMesh (const std::string& device_id = "")
-      : viewer ("PCL OpenNI Mesh Viewer"), device_id_(device_id), vertices_ (), new_cloud_ (false)
+      : /*viewer ("PCL OpenNI Mesh Viewer"), */device_id_(device_id), vertices_ ()
     {
+      ofm.setTrianglePixelSize (3);
+      //ofm.setTriangulationType (pcl::OrganizedFastMesh<PointType>::TRIANGLE_ADAPTIVE_CUT);
+      ofm.setTriangulationType (pcl::OrganizedFastMesh<PointType>::QUAD_MESH);
+      //ofm.setTriangulationType (pcl::OrganizedFastMesh<PointType>::TRIANGLE_RIGHT_CUT);
+      //ofm.setTriangulationType (pcl::OrganizedFastMesh<PointType>::TRIANGLE_LEFT_CUT);
     }
     
     void 
     cloud_cb (const CloudConstPtr& cloud)
     {
-      boost::mutex::scoped_lock lock (mtx_);
+      // Computation goes here
       FPS_CALC ("computation");
+     
+      // Prepare input
+      ofm.setInputCloud (cloud);
 
-      if (!new_cloud_)
-      {
-        mesh_.reset (new pcl::PolygonMesh);
-        vertices_.reset (new std::vector<pcl::Vertices>);
-        // Computation goes here
-        pcl::OrganizedFastMesh<PointType> ofm;
-        ofm.setMaxEdgeLength (1.5);
-        ofm.setTrianglePixelSize (1);
-        ofm.setTriangulationType (pcl::OrganizedFastMesh<PointType>::TRIANGLE_ADAPTIVE_CUT);
-        ofm.setInputCloud (cloud);
-        ofm.reconstruct (*mesh_);
-        //ofm.reconstruct (*vertices_);
-      }
-      cloud_ = cloud;
-      new_cloud_ = true;
-    }
+      // Store the results in a temporary object
+      boost::shared_ptr<std::vector<pcl::Vertices> > temp_verts (new std::vector<pcl::Vertices>);
+      ofm.reconstruct (*temp_verts);
 
-    void
-    viz_cb (pcl::visualization::PCLVisualizer& viz)
-    {
-      if (!new_cloud_)
-      {
-        boost::this_thread::sleep(boost::posix_time::milliseconds(1));
-        return;
-      }
-      CloudConstPtr temp_cloud;
-      temp_cloud.swap (cloud_);
-
+      // Lock and copy
       {
         boost::mutex::scoped_lock lock (mtx_);
-        FPS_CALC ("visualization");
-        // Render the data 
-        //if (!viz.updatePolygonalMesh (*mesh_, *vertices_, "surface"))
-        {
-          viz.removeShape ("surface");
-          //viz.addPolygonMesh<PointType> (temp_cloud, *vertices_, "surface");
-          viz.addPolygonMesh (*mesh_, "surface");
-          //viz.resetCameraViewpoint ("surface");
-        }
-        viz.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME, "surface");
-        new_cloud_ = false;
+        //boost::unique_lock<boost::shared_mutex> lock (mtx_);
+
+//        if (!vertices_)
+//          vertices_.reset (new std::vector<pcl::Vertices>);
+        //vertices_.reset (new std::vector<pcl::Vertices> (*temp_verts));
+        vertices_= temp_verts;
+        cloud_ = cloud;//reset (new Cloud (*cloud));
       }
     }
 
+//    void
+//    viz_cb (pcl::visualization::PCLVisualizer& viz)
+//    {
+//      pcl::ScopeTime t1 ("draw ");
+//      if (!vertices_)
+//      {
+//        boost::this_thread::sleep (boost::posix_time::milliseconds (1));
+//        return;
+//      }
+//
+//      CloudConstPtr temp_cloud;
+//      boost::shared_ptr<std::vector<pcl::Vertices> > temp_verts;
+//      {
+//        //boost::mutex::scoped_lock lock (mtx_);
+//        boost::shared_lock<boost::shared_mutex> lock (mtx_);
+//        FPS_CALC ("visualization");
+//        //viz.removeShape ("surface");
+//
+//        // Copy the data
+//        pcl::ScopeTime t1 ("swap ");
+//        {
+//          temp_cloud.reset (new Cloud (*cloud_));
+//          //temp_cloud.swap (cloud_);
+//          temp_verts.reset (new std::vector<pcl::Vertices> (*vertices_));
+//        }
+//        //temp_verts.swap (vertices_);
+//      }
+//
+//
+//      {
+//        // Render the data 
+//        if (!viz.updatePolygonMesh<PointType> (temp_cloud, *temp_verts, "surface"))
+//        //viz.removePolygonMesh ("surface");
+//        {
+//          viz.addPolygonMesh<PointType> (temp_cloud, *temp_verts, "surface");
+//          //viz.addPolygonMesh (*temp_mesh, "surface");
+//          viz.resetCameraViewpoint ("surface");
+//        }
+//        //viz.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME, "surface");
+//      }
+//    }
+
     void
-    run ()
+    run (int argc, char **argv)
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
 
       boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIFastMesh::cloud_cb, this, _1);
       boost::signals2::connection c = interface->registerCallback (f);
      
-      viewer.runOnVisualizationThread (boost::bind(&OpenNIFastMesh::viz_cb, this, _1), "viz_cb");
+      //viewer.runOnVisualizationThread (boost::bind (&OpenNIFastMesh::viz_cb, this, _1), "viz_cb");
+
+      view.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCL OpenNI Mesh Viewer"));
 
       interface->start ();
       
-      while (!viewer.wasStopped ())
+      CloudConstPtr temp_cloud;
+      boost::shared_ptr<std::vector<pcl::Vertices> > temp_verts;
+      pcl::console::TicToc t1;
+
+      while (!view->wasStopped ())
+      //while (!viewer.wasStopped ())
       {
-        boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+        //boost::this_thread::sleep (boost::posix_time::milliseconds (1));
+        if (!cloud_ || !mtx_.try_lock ())
+        {
+          boost::this_thread::sleep (boost::posix_time::milliseconds (1));
+          continue;
+        }
+
+        //temp_cloud.reset (new Cloud (*cloud_));
+        //temp_cloud.swap (cloud_);
+        //temp_verts.swap (vertices_);//reset (new std::vector<pcl::Vertices> (*vertices_));
+        temp_cloud = cloud_;
+        temp_verts = vertices_;//reset (new std::vector<pcl::Vertices> (*vertices_));
+        mtx_.unlock ();
+
+        //view->removePolygonMesh ("surface");
+        if (!view->updatePolygonMesh<PointType> (temp_cloud, *temp_verts, "surface"))
+        {
+          view->addPolygonMesh<PointType> (temp_cloud, *temp_verts, "surface");
+          view->resetCameraViewpoint ("surface");
+        }
+
+        FPS_CALC ("visualization");
+        view->spinOnce (1);
       }
 
       interface->stop ();
     }
 
-    pcl::visualization::CloudViewer viewer;
+    //pcl::visualization::CloudViewer viewer;
 
+    pcl::OrganizedFastMesh<PointType> ofm;
     std::string device_id_;
+    //boost::shared_mutex mtx_;
     boost::mutex mtx_;
     // Data
     CloudConstPtr cloud_;
     boost::shared_ptr<std::vector<pcl::Vertices> > vertices_;
     pcl::PolygonMesh::Ptr mesh_;
-    bool new_cloud_;
+
+    boost::shared_ptr<pcl::visualization::PCLVisualizer> view;
 };
 
 void
@@ -196,13 +252,13 @@ main (int argc, char ** argv)
   {
     PCL_INFO ("PointXYZRGB mode enabled.\n");
     OpenNIFastMesh<pcl::PointXYZRGB> v ("");
-    v.run ();
+    v.run (argc, argv);
   }
   else
   {
     PCL_INFO ("PointXYZ mode enabled.\n");
     OpenNIFastMesh<pcl::PointXYZ> v ("");
-    v.run ();
+    v.run (argc, argv);
   }
   return (0);
 }

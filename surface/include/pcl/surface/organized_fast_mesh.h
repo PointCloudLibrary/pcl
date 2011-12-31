@@ -103,7 +103,7 @@ namespace pcl
       inline void
       setTrianglePixelSize (int triangle_size)
       {
-        triangle_pixel_size_ = std::max(1, (triangle_size - 1));
+        triangle_pixel_size_ = std::max (1, (triangle_size - 1));
       }
 
       /** \brief Set the triangulation type (see \a TriangulationType)
