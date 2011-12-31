@@ -73,13 +73,10 @@ class OpenNIFastMesh
     typedef typename Cloud::ConstPtr CloudConstPtr;
 
     OpenNIFastMesh (const std::string& device_id = "")
-      : /*viewer ("PCL OpenNI Mesh Viewer"), */device_id_(device_id), vertices_ ()
+      : device_id_(device_id), vertices_ ()
     {
       ofm.setTrianglePixelSize (3);
-      //ofm.setTriangulationType (pcl::OrganizedFastMesh<PointType>::TRIANGLE_ADAPTIVE_CUT);
       ofm.setTriangulationType (pcl::OrganizedFastMesh<PointType>::QUAD_MESH);
-      //ofm.setTriangulationType (pcl::OrganizedFastMesh<PointType>::TRIANGLE_RIGHT_CUT);
-      //ofm.setTriangulationType (pcl::OrganizedFastMesh<PointType>::TRIANGLE_LEFT_CUT);
     }
     
     void 
@@ -108,48 +105,6 @@ class OpenNIFastMesh
       }
     }
 
-//    void
-//    viz_cb (pcl::visualization::PCLVisualizer& viz)
-//    {
-//      pcl::ScopeTime t1 ("draw ");
-//      if (!vertices_)
-//      {
-//        boost::this_thread::sleep (boost::posix_time::milliseconds (1));
-//        return;
-//      }
-//
-//      CloudConstPtr temp_cloud;
-//      boost::shared_ptr<std::vector<pcl::Vertices> > temp_verts;
-//      {
-//        //boost::mutex::scoped_lock lock (mtx_);
-//        boost::shared_lock<boost::shared_mutex> lock (mtx_);
-//        FPS_CALC ("visualization");
-//        //viz.removeShape ("surface");
-//
-//        // Copy the data
-//        pcl::ScopeTime t1 ("swap ");
-//        {
-//          temp_cloud.reset (new Cloud (*cloud_));
-//          //temp_cloud.swap (cloud_);
-//          temp_verts.reset (new std::vector<pcl::Vertices> (*vertices_));
-//        }
-//        //temp_verts.swap (vertices_);
-//      }
-//
-//
-//      {
-//        // Render the data 
-//        if (!viz.updatePolygonMesh<PointType> (temp_cloud, *temp_verts, "surface"))
-//        //viz.removePolygonMesh ("surface");
-//        {
-//          viz.addPolygonMesh<PointType> (temp_cloud, *temp_verts, "surface");
-//          //viz.addPolygonMesh (*temp_mesh, "surface");
-//          viz.resetCameraViewpoint ("surface");
-//        }
-//        //viz.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME, "surface");
-//      }
-//    }
-
     void
     run (int argc, char **argv)
     {
@@ -158,8 +113,6 @@ class OpenNIFastMesh
       boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIFastMesh::cloud_cb, this, _1);
       boost::signals2::connection c = interface->registerCallback (f);
      
-      //viewer.runOnVisualizationThread (boost::bind (&OpenNIFastMesh::viz_cb, this, _1), "viz_cb");
-
       view.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCL OpenNI Mesh Viewer"));
 
       interface->start ();
@@ -198,8 +151,6 @@ class OpenNIFastMesh
 
       interface->stop ();
     }
-
-    //pcl::visualization::CloudViewer viewer;
 
     pcl::OrganizedFastMesh<PointType> ofm;
     std::string device_id_;
