@@ -123,6 +123,17 @@ namespace pcl
         * \param indices a pointer to the vector of indices that represents the input data.
         */
       inline void
+      setIndices (const IndicesConstPtr &indices)
+      {
+        indices_.reset (new std::vector<int> (*indices));
+        fake_indices_ = false;
+        use_indices_  = true;
+      }
+
+      /** \brief Provide a pointer to the vector of indices that represents the input data.
+        * \param indices a pointer to the vector of indices that represents the input data.
+        */
+      inline void
       setIndices (const PointIndicesConstPtr &indices)
       {
         indices_.reset (new std::vector<int> (indices->indices));
