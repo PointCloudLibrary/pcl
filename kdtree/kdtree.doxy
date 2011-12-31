@@ -1,0 +1,21 @@
+/**
+  \addtogroup kdtree Module kdtree
+
+  \section secKDtreePresentation Overview 
+
+  The <b>pcl_kdtree</b> library provides the kd-tree data-structure, using
+  <a href="http://www.cs.ubc.ca/~mariusm/index.php/FLANN/FLANN">FLANN</a>,
+  that allows for fast <a href="http://en.wikipedia.org/wiki/Nearest_neighbor_search">nearest neighbor searches</a>.
+
+  A <a href="http://en.wikipedia.org/wiki/Kd-tree">Kd-tree</a> (<i>k</i>-dimensional tree) is a space-partitioning data 
+  structure that stores a set of k-dimensional points in a tree structure that enables efficient range searches and 
+  nearest neighbor searches. Nearest neighbor searches are a core operation when working with point cloud data and can 
+  be used to find correspondences between groups of points or feature descriptors or to define the local neighborhood 
+  around a point or points.
+
+  \image html http://www.pointclouds.org/assets/images/contents/documentation/kdtree_mug.png
+	
+	\section secKDtreeRequirements Requirements
+	- \ref common "common"
+
+*/

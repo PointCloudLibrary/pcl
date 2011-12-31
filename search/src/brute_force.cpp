@@ -32,18 +32,11 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *
- * $Id: pcl_search.h 2956 2011-10-29 23:12:06Z rusu $
- *
  */
+#include "pcl/impl/instantiate.hpp"
+#include "pcl/point_types.h"
+#include "pcl/search/brute_force.h"
+#include "pcl/search/impl/brute_force.hpp"
 
-#ifndef PCL_SEARCH_PCL_SEARCH_H_
-#define PCL_SEARCH_PCL_SEARCH_H_
-
-#include <pcl/search/search.h>
-#include <pcl/search/kdtree.h>
-#include <pcl/search/octree.h>
-#include <pcl/search/organized.h>
-
-#endif    // PCL_SEARCH_PCL_SEARCH_H_
-
+// Instantiations of specific point types
+PCL_INSTANTIATE (BruteForce, PCL_XYZ_POINT_TYPES);

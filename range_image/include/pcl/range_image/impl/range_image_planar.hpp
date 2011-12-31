@@ -31,10 +31,9 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Bastian Steder
  */
 
-#include "pcl/win32_macros.h"
+#include <pcl/pcl_macros.h>
 #include <Eigen/Geometry>
 
 namespace pcl

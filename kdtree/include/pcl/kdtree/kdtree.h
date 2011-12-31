@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2009-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -46,9 +48,8 @@
 
 namespace pcl
 {
-  /** \brief @b KdTree represents the base spatial locator class for nearest neighbor estimation. All types of spatial
-    * locators should inherit from KdTree.
-    * \author Radu Bogdan Rusu, Bastian Steder, Michael Dixon
+  /** \brief KdTree represents the base spatial locator class for kd-tree implementations.
+    * \author Radu B Rusu, Bastian Steder, Michael Dixon
     * \ingroup kdtree
     */
   template <typename PointT>
@@ -130,7 +131,7 @@ namespace pcl
         * \param[in] index the index in \a cloud representing the query point
         * \param[in] k the number of neighbors to search for
         * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-        * \param[out] k_distances the resultant squared distances to the neighboring points (must be resized to \a k 
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k 
         * a priori!)
         * \return number of neighbors found
         */
@@ -140,9 +141,9 @@ namespace pcl
 
       /** \brief Search for k-nearest neighbors for the given query point.
         * \param[in] p_q the given query point
-        * \param[in[ k the number of neighbors to search for
+        * \param[in] k the number of neighbors to search for
         * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-        * \param[out] k_distances the resultant squared distances to the neighboring points (must be resized to \a k 
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k 
         * a priori!)
         * \return number of neighbors found
         */
@@ -150,34 +151,34 @@ namespace pcl
       nearestKSearch (const PointT &p_q, int k, 
                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) = 0;
 
-      /** \brief Search for k-nearest neighbors for the given query point.
+      /** \brief Search for k-nearest neighbors for the given query point. 
+        * This method accepts a different template parameter for the point type.
         * \param[in] point the given query point
         * \param[in] k the number of neighbors to search for
         * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-        * \param[out] k_distances the resultant squared distances to the neighboring points (must be resized to \a k 
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k 
         * a priori!)
         * \return number of neighbors found
         */
       template <typename PointTDiff> inline int 
       nearestKSearchT (const PointTDiff &point, int k, 
-                       std::vector<int> &k_indices, std::vector<float> &k_distances)
+                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
       {
         PointT p;
         // Copy all the data fields from the input cloud to the output one
         typedef typename pcl::traits::fieldList<PointT>::type FieldListInT;
         typedef typename pcl::traits::fieldList<PointTDiff>::type FieldListOutT;
         typedef typename pcl::intersect<FieldListInT, FieldListOutT>::type FieldList;
-        pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (
-              point, p));
-        return (nearestKSearch (p, k, k_indices, k_distances));
+        pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (point, p));
+        return (nearestKSearch (p, k, k_indices, k_sqr_distances));
       }
 
       /** \brief Search for k-nearest neighbors for the given query point (zero-copy).
-        * \param index the index representing the query point in the dataset given by \a setInputCloud
+        * \param[in] index the index representing the query point in the dataset given by \a setInputCloud
         *        if indices were given in setInputCloud, index will be the position in the indices vector
-        * \param k the number of neighbors to search for
-        * \param k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-        * \param k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
+        * \param[in] k the number of neighbors to search for
+        * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
         * a priori!)
         * \return number of neighbors found
         */
@@ -189,7 +190,7 @@ namespace pcl
         * \param[in] index the index in \a cloud representing the query point
         * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
         * \param[out] k_indices the resultant indices of the neighboring points
-        * \param[out] k_distances the resultant squared distances to the neighboring points
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
         * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
         * \return number of neighbors found in radius
         */
@@ -201,7 +202,7 @@ namespace pcl
         * \param[in] p_q the given query point
         * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
         * \param[out] k_indices the resultant indices of the neighboring points
-        * \param[out] k_distances the resultant squared distances to the neighboring points
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
         * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
         * \return number of neighbors found in radius
         */
@@ -213,22 +214,21 @@ namespace pcl
         * \param[in] point the given query point
         * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
         * \param[out] k_indices the resultant indices of the neighboring points
-        * \param[out] k_distances the resultant squared distances to the neighboring points
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
         * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
         * \return number of neighbors found in radius
         */
       template <typename PointTDiff> inline int 
       radiusSearchT (const PointTDiff &point, double radius, std::vector<int> &k_indices,
-                     std::vector<float> &k_distances, int max_nn = -1) const
+                     std::vector<float> &k_sqr_distances, int max_nn = -1) const
       {
         PointT p;
         // Copy all the data fields from the input cloud to the output one
         typedef typename pcl::traits::fieldList<PointT>::type FieldListInT;
         typedef typename pcl::traits::fieldList<PointTDiff>::type FieldListOutT;
         typedef typename pcl::intersect<FieldListInT, FieldListOutT>::type FieldList;
-        pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (
-              point, p));
-        return (radiusSearch (p, radius, k_indices, k_distances, max_nn));
+        pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (point, p));
+        return (radiusSearch (p, radius, k_indices, k_sqr_distances, max_nn));
       }
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius (zero-copy).
@@ -236,7 +236,7 @@ namespace pcl
         *        if indices were given in setInputCloud, index will be the position in the indices vector
         * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
         * \param[out] k_indices the resultant indices of the neighboring points
-        * \param[out] k_distances the resultant squared distances to the neighboring points
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
         * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
         * \return number of neighbors found in radius
         */
@@ -247,7 +247,7 @@ namespace pcl
       /** \brief Set the search epsilon precision (error bound) for nearest neighbors searches.
         * \param[in] eps precision (error bound) for nearest neighbors searches
         */
-      inline void
+      virtual inline void
       setEpsilon (double eps)
       {
         epsilon_ = eps;
