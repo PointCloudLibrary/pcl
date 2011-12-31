@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
+ * $id $
  */
 
 #ifndef PCL_SEGMENTATION_IMPL_EXTRACT_LABELED_CLUSTERS_H_
@@ -75,7 +75,10 @@ pcl::extractLabeledEuclideanClusters (const PointCloud<PointT> &cloud,
     while (sq_idx < (int)seed_queue.size ())
     {
       // Search for sq_idx
-      if (!tree->radiusSearch (seed_queue[sq_idx], tolerance, nn_indices, nn_distances))
+      int ret = tree->radiusSearch (seed_queue[sq_idx], tolerance, nn_indices, nn_distances, std::numeric_limits<int>::max());
+      if(ret == -1)
+        PCL_ERROR("radiusSearch on tree came back with error -1");
+      if (!ret)
       {
         sq_idx++;
         continue;
