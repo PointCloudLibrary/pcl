@@ -40,11 +40,11 @@
 #ifndef PCL_POINT_CLOUD_H_
 #define PCL_POINT_CLOUD_H_
 
-#include <cstddef>
-#include <pcl/pcl_macros.h>
 #include <Eigen/StdVector>
 #include <Eigen/Geometry>
+#include <cstddef>
 #include <std_msgs/Header.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/exceptions.h>
 #include <pcl/cloud_properties.h>
 #include <pcl/channel_properties.h>
@@ -292,10 +292,31 @@ namespace pcl
         * \note for getting only XYZ coordinates out of PointXYZ use dim=3, stride=4 and offset=0 due to the alignment.
         * \attention PointT types are most of the time aligned, so the offsets are not continuous! 
         */
-      inline Eigen::MatrixXf
-      getMatrixXfMap (int dim, int stride, int offset) const
+      inline Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> > 
+      getMatrixXfMap (int dim, int stride, int offset)
       {
         //return Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, dim, points.size(), Eigen::OuterStride<>(stride));
+        return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
+      }
+
+      /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
+        * \anchor getMatrixXfMap
+        * \note This method is for advanced users only! Use with care!
+        * 
+        * \attention Since 1.4.0, Eigen matrices are forced to Row Major to increase the efficiency of the algorithms in PCL
+        *   This means that the behavior of getMatrixXfMap changed, and is now correctly mapping 1-1 with a PointCloud structure, 
+        *   that is: number of points in a cloud = rows in a matrix, number of point dimensions = columns in a matrix
+        *
+        * \param[in] dim the number of dimensions to consider for each point
+        * \param[in] stride the number of values in each point (will be the number of values that separate two of the columns)
+        * \param[in] offset the number of dimensions to skip from the beginning of each point
+        *            (stride = offset + dim + x, where x is the number of dimensions to skip from the end of each point)
+        * \note for getting only XYZ coordinates out of PointXYZ use dim=3, stride=4 and offset=0 due to the alignment.
+        * \attention PointT types are most of the time aligned, so the offsets are not continuous! 
+        */
+      inline const Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >
+      getMatrixXfMap (int dim, int stride, int offset) const
+      {
         return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
       }
 
@@ -305,7 +326,18 @@ namespace pcl
         * \attention PointT types are most of the time aligned, so the offsets are not continuous! 
         * See \ref getMatrixXfMap for more information.
         */
-      inline Eigen::MatrixXf
+      inline Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >
+      getMatrixXfMap () 
+      {
+        return (getMatrixXfMap (sizeof (PointT) / sizeof (float),  sizeof (PointT) / sizeof (float), 0));
+      }
+
+      /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the PointCloud.
+        * \note This method is for advanced users only! Use with care!
+        * \attention PointT types are most of the time aligned, so the offsets are not continuous! 
+        * See \ref getMatrixXfMap for more information.
+        */
+      inline const Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >
       getMatrixXfMap () const
       {
         return (getMatrixXfMap (sizeof (PointT) / sizeof (float),  sizeof (PointT) / sizeof (float), 0));
