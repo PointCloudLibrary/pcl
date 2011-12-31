@@ -53,64 +53,87 @@ KdTreePtr tree;
 NormalEstimation<PointXYZ, Normal> n;
 IntegralImageNormalEstimation<PointXYZ, Normal> ne;
 
-TEST(PCL, IntegralImage)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST(PCL, IntegralImage1D)
 {
   const unsigned width = 640;
   const unsigned height = 480;
-  const unsigned max_window_size = 11;
-  IntegralImage2D<float,1> integral_image(true);
-  
-  // test for dense data with elementstride = 1
+  const unsigned max_window_size = 5;
+  const unsigned min_window_size = 1;
+  IntegralImage2D<float,1> integral_image1(true); // calculate second order
+  IntegralImage2D<float,1> integral_image2(false);// calculate just first order (other if branch)
+
+  // test for dense data with element stride = 1
   float* data = new float[width * height];
   for(unsigned yIdx = 0; yIdx < height; ++yIdx)
   {
     for(unsigned xIdx = 0; xIdx < width; ++xIdx)
     {
-      data[width * yIdx + xIdx] = 1;
+      data[width * yIdx + xIdx] = xIdx;
     }
   }
-  integral_image.setInput (data, width, height, 1, width);
-  
-  for (unsigned window_width = 2; window_width < max_window_size; ++window_width)
+
+  // calculate integral images
+  integral_image1.setInput (data, width, height, 1, width);
+  integral_image2.setInput (data, width, height, 1, width);
+
+  // check results
+  for (unsigned window_width = min_window_size; window_width < max_window_size; ++window_width)
   {
-    for (unsigned window_height = 2; window_height < max_window_size; ++window_height)
+    for (unsigned window_height = min_window_size; window_height < max_window_size; ++window_height)
     {
       for(unsigned yIdx = 0; yIdx < height - window_height; ++yIdx)
       {
         for(unsigned xIdx = 0; xIdx < width - window_width; ++xIdx)
         {
-          EXPECT_EQ (window_width * window_height, integral_image.getFirstOrderSum (xIdx, yIdx, window_width, window_height));
+          //cout << xIdx << " : " << yIdx << " - " << window_width << " x " << window_height << " :: " << integral_image1.getFirstOrderSum (xIdx, yIdx, window_width, window_height) * 2 << endl;
+          EXPECT_EQ (window_height * window_width * (window_width + 2 * xIdx - 1), integral_image1.getFirstOrderSum (xIdx, yIdx, window_width, window_height) * 2);
+          EXPECT_EQ (window_height * window_width * (window_width + 2 * xIdx - 1), integral_image2.getFirstOrderSum (xIdx, yIdx, window_width, window_height) * 2);
+          EXPECT_EQ (window_height * window_width, integral_image1.getFiniteElementsCount (xIdx, yIdx, window_width, window_height));
+          EXPECT_EQ (window_height * window_width, integral_image2.getFiniteElementsCount (xIdx, yIdx, window_width, window_height));
+
+          int w = window_width + xIdx - 1;
+          long result = w * (w + 1) * (2*w + 1) - xIdx * (xIdx - 1) * (2*xIdx - 1);
+          EXPECT_EQ (window_height * result, integral_image1.getSecondOrderSum (xIdx, yIdx, window_width, window_height) * 6);
         }
       }
-    } 
+    }
   }
   delete[] data;
 
-  //now test with element-stride 2
+  //now test with element-stride 2 and modulo even row stride (no padding)
   unsigned element_stride = 2;
-  unsigned row_stride = width * element_stride;  
+  unsigned row_stride = width * element_stride;
   data = new float[row_stride * height];
   for(unsigned yIdx = 0; yIdx < height; ++yIdx)
   {
     for(unsigned xIdx = 0; xIdx < row_stride; xIdx += element_stride)
     {
-      data[row_stride * yIdx + xIdx] = 1;
+      data[row_stride * yIdx + xIdx] = xIdx >> 1;
       data[row_stride * yIdx + xIdx + 1] = -1;
     }
   }
-  integral_image.setInput (data, width, height, element_stride, row_stride);
-  for (unsigned window_width = 1; window_width < max_window_size; ++window_width)
+  integral_image1.setInput (data, width, height, element_stride, row_stride);
+  integral_image2.setInput (data, width, height, element_stride, row_stride);
+  for (unsigned window_width = min_window_size; window_width < max_window_size; ++window_width)
   {
-    for (unsigned window_height = 1; window_height < max_window_size; ++window_height)
+    for (unsigned window_height = min_window_size; window_height < max_window_size; ++window_height)
     {
       for(unsigned yIdx = 0; yIdx < height - window_height; ++yIdx)
       {
         for(unsigned xIdx = 0; xIdx < width - window_width; ++xIdx)
         {
-          EXPECT_EQ (window_width * window_height, integral_image.getFirstOrderSum (xIdx, yIdx, window_width, window_height));
+          EXPECT_EQ (window_height * window_width * (window_width + 2 * xIdx - 1), integral_image1.getFirstOrderSum (xIdx, yIdx, window_width, window_height) * 2);
+          EXPECT_EQ (window_height * window_width * (window_width + 2 * xIdx - 1), integral_image2.getFirstOrderSum (xIdx, yIdx, window_width, window_height) * 2);
+          EXPECT_EQ (window_height * window_width, integral_image1.getFiniteElementsCount (xIdx, yIdx, window_width, window_height));
+          EXPECT_EQ (window_height * window_width, integral_image2.getFiniteElementsCount (xIdx, yIdx, window_width, window_height));
+
+          int w = window_width + xIdx - 1;
+          long result = w * (w + 1) * (2*w + 1) - xIdx * (xIdx - 1) * (2*xIdx - 1);
+          EXPECT_EQ (window_height * result, integral_image1.getSecondOrderSum (xIdx, yIdx, window_width, window_height) * 6);
         }
       }
-    } 
+    }
   }
   delete[] data;
 
@@ -127,28 +150,133 @@ TEST(PCL, IntegralImage)
       data[row_stride * yIdx + element_stride * xIdx + 2] = xIdx;
     }
   }
-  integral_image.setInput (data, width, height, element_stride, row_stride);
-  for (unsigned window_width = 1; window_width < max_window_size; ++window_width)
+  integral_image1.setInput (data, width, height, element_stride, row_stride);
+  integral_image2.setInput (data, width, height, element_stride, row_stride);
+  for (unsigned window_width = min_window_size; window_width < max_window_size; ++window_width)
   {
-    for (unsigned window_height = 1; window_height < max_window_size; ++window_height)
+    for (unsigned window_height = min_window_size; window_height < max_window_size; ++window_height)
     {
       for(unsigned yIdx = 0; yIdx < height - window_height; ++yIdx)
       {
         for(unsigned xIdx = 0; xIdx < width - window_width; ++xIdx)
         {
-          EXPECT_EQ (window_width * window_height, integral_image.getFirstOrderSum (xIdx, yIdx, window_width, window_height));
-          EXPECT_EQ (window_width * window_height, integral_image.getSecondOrderSum (xIdx, yIdx, window_width, window_height));
+          EXPECT_EQ (window_width * window_height, integral_image1.getFirstOrderSum (xIdx, yIdx, window_width, window_height));
+          EXPECT_EQ (window_width * window_height, integral_image2.getFirstOrderSum (xIdx, yIdx, window_width, window_height));
+          EXPECT_EQ (window_width * window_height, integral_image1.getFiniteElementsCount (xIdx, yIdx, window_width, window_height));
+          EXPECT_EQ (window_width * window_height, integral_image2.getFiniteElementsCount (xIdx, yIdx, window_width, window_height));
+
+          EXPECT_EQ (window_width * window_height, integral_image1.getSecondOrderSum (xIdx, yIdx, window_width, window_height));
         }
       }
-    } 
+    }
+  }
+  //check for second channel
+  integral_image1.setInput (data + 1, width, height, element_stride, row_stride);
+  integral_image2.setInput (data + 1, width, height, element_stride, row_stride);
+  for (unsigned window_width = min_window_size; window_width < max_window_size; ++window_width)
+  {
+    for (unsigned window_height = min_window_size; window_height < max_window_size; ++window_height)
+    {
+      for(unsigned yIdx = 0; yIdx < height - window_height; ++yIdx)
+      {
+        for(unsigned xIdx = 0; xIdx < width - window_width; ++xIdx)
+        {
+          EXPECT_EQ (window_width * window_height * 2, integral_image1.getFirstOrderSum (xIdx, yIdx, window_width, window_height));
+          EXPECT_EQ (window_width * window_height * 2, integral_image2.getFirstOrderSum (xIdx, yIdx, window_width, window_height));
+          EXPECT_EQ (window_width * window_height, integral_image1.getFiniteElementsCount (xIdx, yIdx, window_width, window_height));
+          EXPECT_EQ (window_width * window_height, integral_image2.getFiniteElementsCount (xIdx, yIdx, window_width, window_height));
+
+          EXPECT_EQ (window_width * window_height * 4, integral_image1.getSecondOrderSum (xIdx, yIdx, window_width, window_height));
+        }
+      }
+    }
+  }
+
+  //check for third channel
+  integral_image1.setInput (data + 2, width, height, element_stride, row_stride);
+  integral_image2.setInput (data + 2, width, height, element_stride, row_stride);
+  for (unsigned window_width = min_window_size; window_width < max_window_size; ++window_width)
+  {
+    for (unsigned window_height = min_window_size; window_height < max_window_size; ++window_height)
+    {
+      for(unsigned yIdx = 0; yIdx < height - window_height; ++yIdx)
+      {
+        for(unsigned xIdx = 0; xIdx < width - window_width; ++xIdx)
+        {
+          EXPECT_EQ (window_height * window_width * (window_width + 2 * xIdx - 1), integral_image1.getFirstOrderSum (xIdx, yIdx, window_width, window_height) * 2);
+          EXPECT_EQ (window_height * window_width * (window_width + 2 * xIdx - 1), integral_image2.getFirstOrderSum (xIdx, yIdx, window_width, window_height) * 2);
+          EXPECT_EQ (window_width * window_height, integral_image1.getFiniteElementsCount (xIdx, yIdx, window_width, window_height));
+          EXPECT_EQ (window_width * window_height, integral_image2.getFiniteElementsCount (xIdx, yIdx, window_width, window_height));
+
+          int w = window_width + xIdx - 1;
+          long result = w * (w + 1) * (2*w + 1) - xIdx * (xIdx - 1) * (2*xIdx - 1);
+          EXPECT_EQ (window_height * result, integral_image1.getSecondOrderSum (xIdx, yIdx, window_width, window_height) * 6);
+        }
+      }
+    }
   }
   delete[] data;
 
-  // now test multidimensional case with 3D but element_stride = 4 and row_stride non-dividable by element_stride
-  IntegralImage2D<float, 3> integral_image3(true);
-  element_stride = 4;
-  row_stride = width * element_stride + 1;
+  //now test whether count of non finite elements are correct
+  element_stride = 3;
+  row_stride = width * element_stride + 1; // +1 to enforce a non-zero modulo
   data = new float[row_stride * height];
+  for(unsigned yIdx = 0; yIdx < height; ++yIdx)
+  {
+    for(unsigned xIdx = 0; xIdx < width; ++xIdx)
+    {
+      // set nans for odd fields
+      if (xIdx & 1)
+      {
+        data[row_stride * yIdx + element_stride * xIdx]     = std::numeric_limits<float>::quiet_NaN ();;
+        data[row_stride * yIdx + element_stride * xIdx + 1] = std::numeric_limits<float>::quiet_NaN ();;
+        data[row_stride * yIdx + element_stride * xIdx + 2] = std::numeric_limits<float>::quiet_NaN ();;
+      }
+      else
+      {
+        data[row_stride * yIdx + element_stride * xIdx] = 3;
+        data[row_stride * yIdx + element_stride * xIdx + 1] = 2;
+        data[row_stride * yIdx + element_stride * xIdx + 2] = xIdx;
+      }
+    }
+  }
+  integral_image1.setInput (data, width, height, element_stride, row_stride);
+  integral_image2.setInput (data, width, height, element_stride, row_stride);
+  for (unsigned window_width = min_window_size; window_width < max_window_size; ++window_width)
+  {
+    for (unsigned window_height = min_window_size; window_height < max_window_size; ++window_height)
+    {
+      for(unsigned yIdx = 0; yIdx < height - window_height; ++yIdx)
+      {
+        for(unsigned xIdx = 0; xIdx < width - window_width; ++xIdx)
+        {
+          int count = window_height * ((window_width - (xIdx&1) + 1) >> 1);
+
+          EXPECT_EQ (count * 3, integral_image1.getFirstOrderSum (xIdx, yIdx, window_width, window_height));
+          EXPECT_EQ (count * 3, integral_image2.getFirstOrderSum (xIdx, yIdx, window_width, window_height));
+          EXPECT_EQ (count, integral_image1.getFiniteElementsCount (xIdx, yIdx, window_width, window_height));
+          EXPECT_EQ (count, integral_image2.getFiniteElementsCount (xIdx, yIdx, window_width, window_height));
+          EXPECT_EQ (count * 9, integral_image1.getSecondOrderSum (xIdx, yIdx, window_width, window_height));
+        }
+      }
+    }
+  }
+  delete[] data;
+
+
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST(PCL, IntegralImage3D)
+{
+  const unsigned width = 640;
+  const unsigned height = 480;
+  const unsigned max_window_size = 5;
+  const unsigned min_window_size = 1;
+  IntegralImage2D<float, 3> integral_image3(true);
+  unsigned element_stride = 4;
+  unsigned row_stride = width * element_stride + 1;
+  float* data = new float[row_stride * height];
   for(unsigned yIdx = 0; yIdx < height; ++yIdx)
   {
     for(unsigned xIdx = 0; xIdx < width; ++xIdx)
@@ -160,9 +288,9 @@ TEST(PCL, IntegralImage)
     }
   }
   integral_image3.setInput (data, width, height, element_stride, row_stride);
-  for (unsigned window_width = 1; window_width < max_window_size; ++window_width)
+  for (unsigned window_width = min_window_size; window_width < max_window_size; ++window_width)
   {
-    for (unsigned window_height = 1; window_height < max_window_size; ++window_height)
+    for (unsigned window_height = min_window_size; window_height < max_window_size; ++window_height)
     {
       for(unsigned yIdx = 0; yIdx < height - window_height; ++yIdx)
       {
@@ -175,7 +303,7 @@ TEST(PCL, IntegralImage)
           EXPECT_EQ (window_width * window_height * (window_height + 2 * yIdx - 1) + window_height * window_width * (window_width + 2 * xIdx - 1), sum[2] * 2);
 
           IntegralImage2D<float, 3>::SecondOrderType sumSqr = integral_image3.getSecondOrderSum (xIdx, yIdx, window_width, window_height);
-  
+
           IntegralImage2D<float, 3>::SecondOrderType ground_truth;
           ground_truth.setZero ();
           for (unsigned wy = yIdx; wy < yIdx + window_height; ++wy)
@@ -209,10 +337,11 @@ TEST(PCL, IntegralImage)
           EXPECT_EQ (window_width * result, sumSqr[3] * 6);
         }
       }
-    } 
+    }
   }
   delete[] data;
 }
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, NormalEstimation)
 {
@@ -261,9 +390,9 @@ TEST (PCL, IINormalEstimation)
   {
     for (size_t u = 0; u < cloud.width; ++u)
     {
-      if (!pcl_isfinite(output (u, v).normal_x) && 
-          !pcl_isfinite(output (u, v).normal_y) && 
-          !pcl_isfinite(output (u, v).normal_z)) 
+      if (!pcl_isfinite(output (u, v).normal_x) &&
+          !pcl_isfinite(output (u, v).normal_y) &&
+          !pcl_isfinite(output (u, v).normal_z))
         continue;
 
       EXPECT_NEAR (fabs (output (u, v).normal_x),   0, 1e-2);
@@ -287,9 +416,9 @@ TEST (PCL, IINormalEstimation)
   {
     for (size_t u = 0; u < cloud.width; ++u)
     {
-      if (!pcl_isfinite(output (u, v).normal_x) && 
-          !pcl_isfinite(output (u, v).normal_y) && 
-          !pcl_isfinite(output (u, v).normal_z)) 
+      if (!pcl_isfinite(output (u, v).normal_x) &&
+          !pcl_isfinite(output (u, v).normal_y) &&
+          !pcl_isfinite(output (u, v).normal_z))
         continue;
 
       EXPECT_NEAR (fabs (output (u, v).normal_x),   0, 1e-2);
@@ -320,7 +449,7 @@ main (int argc, char** argv)
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
-  
+
   return 1;
 }
 /* ]--- */
