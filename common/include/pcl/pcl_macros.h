@@ -35,6 +35,20 @@
 #ifndef PCL_MACROS_H_
 #define PCL_MACROS_H_
 
+#include <boost/cstdint.hpp>
+
+namespace pcl
+{
+  using boost::uint8_t;
+  using boost::int8_t;
+  using boost::int16_t;
+  using boost::uint16_t;
+  using boost::int32_t;
+  using boost::uint32_t;
+  using boost::int64_t;
+  using boost::uint64_t;
+}
+
 #if defined __INTEL_COMPILER
   #pragma warning disable 2196 2536 279
 #endif
@@ -47,12 +61,99 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+// MSCV doesn't have std::{isnan,isfinite}
+#if defined _WIN32 && defined _MSC_VER
+
+// Stupid. This should be removed when all the PCL dependencies have min/max fixed.
+#ifndef NOMINMAX
+# define NOMINMAX
+#endif
+
+# define pcl_isnan(x)    _isnan(x)
+# define pcl_isfinite(x) (_finite(x) != 0)
+# define pcl_isinf(x)    (_finite(x) == 0)
+
+# define __PRETTY_FUNCTION__ __FUNCTION__
+# define __func__ __FUNCTION__
+
+#elif ANDROID
+// Use the math.h macros
+# include <math.h>
+# define pcl_isnan(x)    isnan(x)
+# define pcl_isfinite(x) isfinite(x)
+# define pcl_isinf(x)    isinf(x)
+
+#elif _GLIBCXX_USE_C99_MATH
+// Are the C++ cmath functions enabled?
+# include <cmath>
+# define pcl_isnan(x)    std::isnan(x)
+# define pcl_isfinite(x) std::isfinite(x)
+# define pcl_isinf(x)    std::isinf(x)
+
+#elif __PATHCC__
+# include <cmath>
+# include <stdio.h>
+template <typename T> int
+pcl_isnan (T &val)
+{
+  return (val != val);
+}
+//# define pcl_isnan(x)    std::isnan(x)
+# define pcl_isfinite(x) std::isfinite(x)
+# define pcl_isinf(x)    std::isinf(x)
+
+#else
+// Use the math.h macros
+# include <math.h>
+# define pcl_isnan(x)    isnan(x)
+# define pcl_isfinite(x) isfinite(x)
+# define pcl_isinf(x)    isinf(x)
+
+#endif
+
+// Windows doesn't like M_PI.
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+#ifndef M_E
+#define M_E 2.7182818284590452354
+#endif
+
+#ifndef M_LN2
+#define M_LN2 0.693147180559945309417
+#endif
+
 #ifndef DEG2RAD
 #define DEG2RAD(x) ((x)*0.017453293)
 #endif
 
 #ifndef RAD2DEG
 #define RAD2DEG(x) ((x)*57.29578)
+#endif
+
+/** Win32 doesn't seem to have rounding functions.
+  * Therefore implement our own versions of these functions here.
+  */
+#include <math.h>
+__inline double 
+pcl_round (double number)
+{
+  return (number < 0.0 ? ceil(number - 0.5) : floor(number + 0.5));
+}
+__inline float 
+pcl_round (float number)
+{
+  return (number < 0.0f ? ceil(number - 0.5f) : floor(number + 0.5f));
+}
+
+#define pcl_lrint(x) ((long int) pcl_round(x))
+#define pcl_lrintf(x) ((long int) pcl_round(x))
+
+#ifdef WIN32
+#define pcl_sleep(x) Sleep(1000*(x))
+#else
+#define pcl_sleep(x) sleep(x)
 #endif
 
 #ifndef PVAR

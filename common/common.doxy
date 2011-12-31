@@ -1,0 +1,14 @@
+/**
+  \addtogroup common Module common
+
+  \section secCommonPresentation Overview
+
+  The <b>pcl_common</b> library contains the common data structures and methods used by the majority of PCL libraries.
+  The core data structures include the PointCloud class and a multitude of point types that are used to represent 
+  points, surface normals, RGB color values, feature descriptors, etc.  It also contains numerous functions for 
+  computing distances/norms, means and covariances, angular conversions, geometric transformations, and more.
+	
+  \section secCommonRequirements Requirements
+  - none
+
+*/

@@ -41,7 +41,14 @@
 #include <pcl/console/print.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-int 
+bool
+pcl::console::find_switch (int argc, char** argv, const char* argument_name)
+{
+  return (find_argument (argc, argv, argument_name) != -1);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+int
 pcl::console::find_argument (int argc, char** argv, const char* argument_name)
 {
   for (int i = 1; i < argc; ++i)

@@ -6,6 +6,8 @@ set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS eigen boost)
 
+PCL_ADD_DOC(${SUBSYS_NAME})
+
 if(build)
     set(srcs 
         src/pcl_base.cpp
@@ -18,6 +20,7 @@ if(build)
         src/poses_from_matches.cpp
         src/print.cpp
         src/time_trigger.cpp
+        src/gaussian.cpp
         )
 
     set(incs 
@@ -26,11 +29,15 @@ if(build)
         include/pcl/pcl_base.h
         include/pcl/pcl_macros.h
         include/pcl/point_cloud.h
+        include/pcl/point_traits.h
         include/pcl/point_types_conversion.h
         include/pcl/point_representation.h
         include/pcl/correspondence.h
         include/pcl/point_types.h
-        include/pcl/win32_macros.h
+        include/pcl/cloud_properties.h
+        include/pcl/channel_properties.h
+        include/pcl/for_each_type.h
+        include/pcl/pcl_tests.h
         )
         
     if(NOT USE_ROS)
@@ -40,7 +47,7 @@ if(build)
           include/pcl/Vertices.h
           include/pcl/PointIndices.h
           include/pcl/TextureMesh.h
-        )
+          )
 
         set(sensor_msg_incs 
           include/sensor_msgs/PointField.h
@@ -64,7 +71,6 @@ if(build)
         include/pcl/common/intersections.h
         include/pcl/common/norms.h
         include/pcl/common/piecewise_linear_function.h
-        include/pcl/common/point_correspondence.h
         include/pcl/common/polynomial_calculations.h
         include/pcl/common/poses_from_matches.h
         include/pcl/common/time.h
@@ -76,6 +82,10 @@ if(build)
         include/pcl/common/synchronizer.h
         include/pcl/common/utils.h
         include/pcl/common/geometry.h
+        include/pcl/common/gaussian.h
+        include/pcl/common/spring.h
+        include/pcl/common/point_operators.h
+        include/pcl/common/convolution.h
         )
 
     set(common_incs_impl
@@ -93,6 +103,9 @@ if(build)
         include/pcl/common/impl/transforms.hpp
         include/pcl/common/impl/transformation_from_correspondences.hpp
         include/pcl/common/impl/vector_average.hpp
+        include/pcl/common/impl/gaussian.hpp
+        include/pcl/common/impl/spring.hpp
+        include/pcl/common/impl/convolution.hpp
        )
 
     set(impl_incs include/pcl/impl/instantiate.hpp
@@ -100,8 +113,6 @@ if(build)
         )
 
     set(ros_incs include/pcl/ros/conversions.h
-        include/pcl/ros/for_each_type.h
-        include/pcl/ros/point_traits.h
         include/pcl/ros/register_point_struct.h
         )
 

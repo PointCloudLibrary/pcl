@@ -70,7 +70,7 @@ namespace pcl
       const PointCorrespondence6D& correspondence = correspondences[correspondence_idx];
       PoseEstimate pose_estimate;
       pose_estimate.transformation = correspondence.transformation;
-      pose_estimate.score = correspondence.score;
+      pose_estimate.score = correspondence.distance;
       pose_estimate.correspondence_indices.push_back (correspondence_idx);
       pose_estimates.push_back (pose_estimate);
     }
@@ -179,7 +179,7 @@ namespace pcl
         ++counter_for_added_pose_estimates;
         PoseEstimate pose_estimate;
         pose_estimate.transformation = transformation_from_correspondeces.getTransformation ();
-        pose_estimate.score = 0.5f*(correspondence1.score+correspondence2.score); // TODO: based
+        pose_estimate.score = 0.5f * (correspondence1.distance + correspondence2.distance); // TODO: based
                                                                                   // on the measured distance_errors?
         pose_estimate.correspondence_indices.push_back (correspondence1_idx);
         pose_estimate.correspondence_indices.push_back (correspondence2_idx);
@@ -273,7 +273,7 @@ namespace pcl
           ++counter_for_added_pose_estimates;
           PoseEstimate pose_estimate;
           pose_estimate.transformation = transformation_from_correspondeces.getTransformation ();
-          pose_estimate.score = (correspondence1.score+correspondence2.score+correspondence3.score) / 3.0f; // TODO: based
+          pose_estimate.score = (correspondence1.distance + correspondence2.distance + correspondence3.distance) / 3.0f; // TODO: based
                                                                                     // on the measured distance_errors?
           pose_estimate.correspondence_indices.push_back (correspondence1_idx);
           pose_estimate.correspondence_indices.push_back (correspondence2_idx);

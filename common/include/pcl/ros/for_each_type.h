@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,67 +37,9 @@
  *
  */
 
-#ifndef PCL_FOR_EACH_TYPE_H_
-#define PCL_FOR_EACH_TYPE_H_
+#ifndef PCL_ROS_FOR_EACH_TYPE_H_
+#define PCL_ROS_FOR_EACH_TYPE_H_
 
-#include <boost/mpl/is_sequence.hpp>
-#include <boost/mpl/begin_end.hpp>
-#include <boost/mpl/next_prior.hpp>
-#include <boost/mpl/deref.hpp>
-#include <boost/mpl/assert.hpp>
-#include <boost/mpl/remove_if.hpp>
-#include <boost/mpl/contains.hpp>
-#include <boost/mpl/not.hpp>
-#include <boost/mpl/aux_/unwrap.hpp>
-#include <boost/type_traits/is_same.hpp>
+#include <pcl/for_each_type.h>
 
-namespace pcl 
-{
-  //////////////////////////////////////////////////////////////////////////////////////////////
-  template <bool done = true>
-  struct for_each_type_impl
-  {
-    template<typename Iterator, typename LastIterator, typename F>
-    static void execute (F) {}
-  };
-
-  //////////////////////////////////////////////////////////////////////////////////////////////
-  template <>
-  struct for_each_type_impl<false>
-  {
-    template<typename Iterator, typename LastIterator, typename F>
-    static void execute (F f)
-    {
-      typedef typename boost::mpl::deref<Iterator>::type arg;
-
-#if (defined _WIN32 && defined _MSC_VER)
-      boost::mpl::aux::unwrap (f, 0).operator()<arg> ();
-#else
-      boost::mpl::aux::unwrap (f, 0).template operator()<arg> ();
-#endif
-
-      typedef typename boost::mpl::next<Iterator>::type iter;
-      for_each_type_impl<boost::is_same<iter, LastIterator>::value>
-        ::template execute<iter, LastIterator, F> (f);
-    }
-  };
-
-  //////////////////////////////////////////////////////////////////////////////////////////////
-  template<typename Sequence, typename F>
-  inline void for_each_type (F f)
-  {
-    BOOST_MPL_ASSERT (( boost::mpl::is_sequence<Sequence> ));
-    typedef typename boost::mpl::begin<Sequence>::type first;
-    typedef typename boost::mpl::end<Sequence>::type last;
-    for_each_type_impl< boost::is_same<first, last>::value >::template execute<first, last, F> (f);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////
-  template<typename Sequence1, typename Sequence2>
-  struct intersect 
-  { 
-    typedef typename boost::mpl::remove_if<Sequence1, boost::mpl::not_<boost::mpl::contains<Sequence2, boost::mpl::_1> > >::type type; 
-  }; 
-}
-
-#endif  //#ifndef PCL_FOR_EACH_TYPE_H_
+#endif  //#ifndef PCL_ROS_FOR_EACH_TYPE_H_

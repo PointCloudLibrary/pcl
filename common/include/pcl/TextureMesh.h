@@ -59,7 +59,7 @@ namespace pcl
       float b;
     }; //RGB
 
-    /** \nbrief Texture name. */
+    /** \brief Texture name. */
     std::string tex_name;
 
     /** \brief Texture file. */

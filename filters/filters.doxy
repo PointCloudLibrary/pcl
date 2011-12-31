@@ -1,0 +1,32 @@
+/**
+  \addtogroup filters Module filters
+
+  \section secFiltersPresentation Overview
+
+The <b>pcl_filters</b> library contains outlier and noise removal mechanisms
+for 3D point cloud data filtering applications.
+
+An example of noise removal is presented in the figure below. Due to
+measurement errors, certain datasets present a large number of <i>shadow
+points</i>. This complicates the estimation of local point cloud 3D features.
+Some of these outliers can be filtered by performing a statistical analysis on
+each point's neighborhood, and trimming those which do not meet a certain
+criteria. The sparse outlier removal implementation in PCL is based on the
+computation of the distribution of point to neighbors distances in the input
+dataset. For each point, the mean distance from it to all its neighbors is
+computed. By assuming that the resulted distribution is Gaussian with a mean
+and a standard deviation, all points whose mean distances are outside an
+interval defined by the global distances mean and standard deviation can be
+considered as outliers and trimmed from the dataset.
+
+\image html http://www.pointclouds.org/assets/images/contents/documentation/filters_statistical_noise.png
+
+	
+  \section secFiltersRequirements Requirements
+  - \ref common "common"
+  - \ref sample_consensus "sample_consensus"
+  - \ref search "search"
+  - \ref kdtree "kdtree"
+  - \ref octree "octree"
+
+*/

@@ -37,7 +37,7 @@
 #define PCL_COMMON_CENTROID_H_
 
 #include <pcl/point_cloud.h>
-#include <pcl/ros/point_traits.h>
+#include <pcl/point_traits.h>
 #include <pcl/PointIndices.h>
 
 /**

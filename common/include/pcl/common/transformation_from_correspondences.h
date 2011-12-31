@@ -49,10 +49,10 @@ namespace pcl
      public:
         //-----CONSTRUCTOR&DESTRUCTOR-----
         /** Constructor - dimension gives the size of the vectors to work with. */
-        TransformationFromCorrespondences ();
+        TransformationFromCorrespondences ()  { reset(); }
 
         /** Destructor */
-        ~TransformationFromCorrespondences ();
+        ~TransformationFromCorrespondences () { };
         
         //-----METHODS-----
         /** Reset the object to work with a new data set */

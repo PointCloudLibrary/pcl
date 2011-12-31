@@ -47,11 +47,9 @@ namespace pcl
 {
   /** \brief @b StatisticalOutlierRemoval uses point neighborhood statistics to filter outlier data. For more
     * information check:
-    * <ul>
-    * <li> R. B. Rusu, Z. C. Marton, N. Blodow, M. Dolha, and M. Beetz.
-    *      Towards 3D Point Cloud Based Object Maps for Household Environments
-    *      Robotics and Autonomous Systems Journal (Special Issue on Semantic Knowledge), 2008.
-    * </ul>
+    *   - R. B. Rusu, Z. C. Marton, N. Blodow, M. Dolha, and M. Beetz.
+    *     Towards 3D Point Cloud Based Object Maps for Household Environments
+    *     Robotics and Autonomous Systems Journal (Special Issue on Semantic Knowledge), 2008.
     *
     * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
     * \author Radu Bogdan Rusu
@@ -127,8 +125,8 @@ namespace pcl
         negative_ = negative;
       }
 
-      /** \brief Get the value of the internal \ref negative_ parameter. If
-        * true, all points _except_ the input indices will be returned.
+      /** \brief Get the value of the internal negative_ parameter. If
+        * true, all points \e except the input indices will be returned.
         */
       inline bool
       getNegative ()
@@ -159,11 +157,9 @@ namespace pcl
 
   /** \brief @b StatisticalOutlierRemoval uses point neighborhood statistics to filter outlier data. For more
     * information check:
-    * <ul>
-    * <li> R. B. Rusu, Z. C. Marton, N. Blodow, M. Dolha, and M. Beetz.
-    *      Towards 3D Point Cloud Based Object Maps for Household Environments
-    *      Robotics and Autonomous Systems Journal (Special Issue on Semantic Knowledge), 2008.
-    * </ul>
+    *   - R. B. Rusu, Z. C. Marton, N. Blodow, M. Dolha, and M. Beetz.
+    *     Towards 3D Point Cloud Based Object Maps for Household Environments
+    *     Robotics and Autonomous Systems Journal (Special Issue on Semantic Knowledge), 2008.
     *
     * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
     * \author Radu Bogdan Rusu
@@ -229,8 +225,8 @@ namespace pcl
         return (std_mul_);
       }
 
-      /** \brief Set whether the indices should be returned, or all points _except_ the indices.
-        * \param negative true if all points _except_ the input indices will be returned, false otherwise
+      /** \brief Set whether the indices should be returned, or all points \e except the indices.
+        * \param negative true if all points \e except the input indices will be returned, false otherwise
         */
       inline void
       setNegative (bool negative)
@@ -238,8 +234,9 @@ namespace pcl
         negative_ = negative;
       }
 
-      /** \brief Get the value of the internal \ref negative_ parameter. If
-        * true, all points _except_ the input indices will be returned.
+      /** \brief Get the value of the internal #negative_ parameter. If
+        * true, all points \e except the input indices will be returned.
+        * \return The value of the "negative" flag
         */
       inline bool
       getNegative ()

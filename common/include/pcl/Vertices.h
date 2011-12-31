@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <ostream>
-#include <pcl/win32_macros.h>
+#include <pcl/pcl_macros.h>
 
 namespace pcl
 {

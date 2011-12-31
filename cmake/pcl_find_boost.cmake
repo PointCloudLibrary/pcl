@@ -11,8 +11,8 @@ else(${CMAKE_VERSION} VERSION_LESS 2.8.5)
   SET(Boost_ADDITIONAL_VERSIONS "1.47" "1.47.0")
 endif(${CMAKE_VERSION} VERSION_LESS 2.8.5)
 
-#find_package(Boost 1.40.0 REQUIRED COMPONENTS system filesystem thread date_time iostreams)
-find_package(Boost 1.40.0 REQUIRED COMPONENTS system filesystem thread iostreams)
+#find_package(Boost 1.40.0 REQUIRED COMPONENTS system filesystem thread date_time iostreams serialization mpi)
+find_package(Boost 1.40.0 REQUIRED COMPONENTS system filesystem thread date_time iostreams)
 
 if(Boost_FOUND)
   set(BOOST_FOUND TRUE)

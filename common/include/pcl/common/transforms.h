@@ -48,8 +48,6 @@ namespace pcl
     * \param cloud_in the input point cloud
     * \param cloud_out the resultant output point cloud
     * \param transform an affine transformation (typically a rigid transformation)
-    * \note The density of the point cloud is lost, since density implies that
-    * the origin is the point of view
     * \note Can be used with cloud_in equal to cloud_out
     * \ingroup common
     */
@@ -63,8 +61,6 @@ namespace pcl
     * \param indices the set of point indices to use from the input point cloud
     * \param cloud_out the resultant output point cloud
     * \param transform an affine transformation (typically a rigid transformation)
-    * \note The density of the point cloud is lost, since density implies that
-    * the origin is the point of view
     * \note Can be used with cloud_in equal to cloud_out
     * \ingroup common
     */
@@ -78,8 +74,6 @@ namespace pcl
     * \param cloud_in the input point cloud
     * \param cloud_out the resultant output point cloud
     * \param transform an affine transformation (typically a rigid transformation)
-    * \note The density of the point cloud is lost, since density implies that
-    * the origin is the point of view
     * \note Can be used with cloud_in equal to cloud_out
     */
   template <typename PointT> void 
@@ -91,8 +85,6 @@ namespace pcl
     * \param cloud_in the input point cloud
     * \param cloud_out the resultant output point cloud
     * \param transform an affine transformation (typically a rigid transformation)
-    * \note The density of the point cloud is lost, since density implies that
-    * the origin is the point of view
     * \note Can be used with cloud_in equal to cloud_out
     * \ingroup common
     */
@@ -105,8 +97,6 @@ namespace pcl
     * \param cloud_in the input point cloud
     * \param cloud_out the resultant output point cloud
     * \param transform an affine transformation (typically a rigid transformation)
-    * \note The density of the point cloud is lost, since density implies that
-    * the origin is the point of view
     * \note Can be used with cloud_in equal to cloud_out
     * \ingroup common
     */
@@ -120,8 +110,6 @@ namespace pcl
     * \param cloud_out the resultant output point cloud
     * \param offset the translation component of the rigid transformation
     * \param rotation the rotation component of the rigid transformation
-    * \note density of the point cloud is lost, since density implies that the
-    * origin is the point of view
     * \ingroup common
     */
   template <typename PointT> inline void 
@@ -135,8 +123,6 @@ namespace pcl
     * \param cloud_out the resultant output point cloud
     * \param offset the translation component of the rigid transformation
     * \param rotation the rotation component of the rigid transformation
-    * \note density of the point cloud is lost, since density implies that the
-    * origin is the point of view
     * \ingroup common
     */
   template <typename PointT> inline void 
@@ -145,8 +131,8 @@ namespace pcl
                                   const Eigen::Vector3f &offset, 
                                   const Eigen::Quaternionf &rotation);
   /** \brief Transform a point with members x,y,z
-    * \param transformation the transformation to apply
-    * \param point the point to transform
+    * \param[in] point the point to transform
+    * \param[out] transform the transformation to apply
     * \return the transformed point
     * \ingroup common
     */

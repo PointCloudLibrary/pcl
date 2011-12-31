@@ -41,10 +41,11 @@
 #include <sensor_msgs/PointField.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/Image.h>
-#include "pcl/point_cloud.h"
-#include "pcl/ros/point_traits.h"
-#include "pcl/ros/for_each_type.h"
-#include "pcl/exceptions.h"
+#include <pcl/point_cloud.h>
+#include <pcl/point_traits.h>
+#include <pcl/for_each_type.h>
+#include <pcl/exceptions.h>
+#include <pcl/console/print.h>
 #include <boost/foreach.hpp>
 
 namespace pcl

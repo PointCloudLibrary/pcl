@@ -34,7 +34,6 @@
  */
 
 #include <pcl/pcl_macros.h>
-#include <pcl/win32_macros.h>
 
 void pcl::getTransFromUnitVectorsZY(const Eigen::Vector3f& z_axis, const Eigen::Vector3f& y_direction, Eigen::Affine3f& transformation)
 {

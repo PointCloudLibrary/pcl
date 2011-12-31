@@ -12,6 +12,7 @@ string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/" ${CMAKE_MODULE_PATH})
 
 # ---[ Release/Debug specific flags
+add_definitions("-DEIGEN_DEFAULT_TO_ROW_MAJOR")   # see http://eigen.tuxfamily.org/api/TopicStorageOrders.html
 if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
   add_definitions("-DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG")
 endif()
@@ -68,21 +69,28 @@ DISSECT_VERSION()
 GET_OS_INFO()
 SET_INSTALL_DIRS()
 
-set(PCL_RESOURCES_DIR ${PCL_SOURCE_DIR}/resources)
-set(PCL_POINTCLOUDS_DIR ${PCL_RESOURCES_DIR}/pointclouds)
-# ---[ Windows requires DLLs (shared libraries) to be installed in the same directory as executables
 if(WIN32)
-  set(PCL_OUTPUT_LIB_DIR ${PCL_BINARY_DIR}/${LIB_INSTALL_DIR})
-  set(PCL_OUTPUT_BIN_DIR ${PCL_BINARY_DIR}/${BIN_INSTALL_DIR})
-  make_directory(${PCL_OUTPUT_LIB_DIR})
-  make_directory(${PCL_OUTPUT_BIN_DIR})
-  foreach(CONF ${CMAKE_CONFIGURATION_TYPES})        # For each configuration (Debug, Release, MinSizeRel... and/or anything the user chooses)
-    string(TOUPPER "${CONF}" CONF)                # Go uppercase (DEBUG, RELEASE...)
-    set("CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${CONF}" "${PCL_OUTPUT_LIB_DIR}")
-    set("CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONF}" "${PCL_OUTPUT_BIN_DIR}")
-    set("CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CONF}" "${PCL_OUTPUT_BIN_DIR}")
-  endforeach()
-endif()
+  set(PCL_RESOURCES_DIR ${PCL_SOURCE_DIR}/resources)
+  set(PCL_POINTCLOUDS_DIR ${PCL_RESOURCES_DIR}/pointclouds)
+endif(WIN32)
+
+set(PCL_OUTPUT_LIB_DIR ${PCL_BINARY_DIR}/${LIB_INSTALL_DIR})
+set(PCL_OUTPUT_BIN_DIR ${PCL_BINARY_DIR}/${BIN_INSTALL_DIR})
+make_directory(${PCL_OUTPUT_LIB_DIR})
+make_directory(${PCL_OUTPUT_BIN_DIR})
+if(WIN32)
+  foreach(config ${CMAKE_CONFIGURATION_TYPES})
+    string(TOUPPER ${config} CONFIG)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${CONFIG} "${PCL_OUTPUT_LIB_DIR}")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONFIG} "${PCL_OUTPUT_BIN_DIR}")
+    # ---[ Windows requires DLLs (shared libraries) to be installed in the same directory as executables
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CONFIG} "${PCL_OUTPUT_BIN_DIR}")
+  endforeach(config)
+else(WIN32)
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PCL_OUTPUT_LIB_DIR}")
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PCL_OUTPUT_BIN_DIR}")
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PCL_OUTPUT_LIB_DIR}")
+endif(WIN32)
 
 # Add an "uninstall" target
 configure_file("${PCL_SOURCE_DIR}/cmake/uninstall_target.cmake.in"
@@ -95,7 +103,7 @@ add_custom_target(uninstall "${CMAKE_COMMAND}" -P
 # in order to always make a full statement RPATH
 ###
 SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
-SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}" is_system_dir)
@@ -125,7 +133,7 @@ find_package(OpenNI)
 find_package(Qhull)
 # Find ROS
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_ros.cmake)
-# Find VTK 
+# Find VTK
 find_package(VTK)
 if(VTK_FOUND)
   set(VTK_FOUND TRUE)
@@ -133,6 +141,16 @@ if(VTK_FOUND)
   link_directories(${VTK_LIBRARY_DIRS})
   set(HAVE_VTK ON)
 endif()
+#Find MPI
+find_package(MPI)
+if(MPI_CXX_FOUND)
+  include_directories(${MPI_INCLUDE_PATH})
+endif(MPI_CXX_FOUND)
+#Find Doxygen and html help compiler if any
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+  find_package(HTMLHelp)
+endif(DOXYGEN_FOUND)
 
 ### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")

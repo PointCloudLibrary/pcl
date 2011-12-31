@@ -41,6 +41,7 @@
 #include "pcl/common/common.h"
 #include "pcl/filters/voxel_grid.h"
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
                   const std::string &distance_field_name, float min_distance, float max_distance,

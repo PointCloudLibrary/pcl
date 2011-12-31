@@ -55,7 +55,7 @@
 #include <sensor_msgs/PointCloud2.h>
 #include "pcl/point_cloud.h"
 #include "pcl/PointIndices.h"
-#include "pcl/win32_macros.h"
+#include <pcl/pcl_macros.h>
 
 #include <pcl/console/print.h>
 
@@ -66,7 +66,9 @@ namespace pcl
   typedef boost::shared_ptr <const std::vector<int> > IndicesConstPtr;
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief PCL base class. Implements methods that are used by all PCL objects. */
+  /** \brief PCL base class. Implements methods that are used by all PCL objects. 
+    * \ingroup common 
+    */
   template <typename PointT>
   class PCLBase
   {
@@ -80,6 +82,14 @@ namespace pcl
 
       /** \brief Empty constructor. */
       PCLBase () : input_ (), indices_ (), use_indices_ (false), fake_indices_ (false) {}
+      
+      /** \brief Copy constructor. */
+      PCLBase (const PCLBase& base)
+        : input_ (base.input_)
+        , indices_ (base.indices_)
+        , use_indices_ (base.use_indices_)
+        , fake_indices_ (base.fake_indices_)
+      {}
 
       /** \brief destructor. */
       virtual ~PCLBase() 
@@ -105,17 +115,6 @@ namespace pcl
       setIndices (const IndicesPtr &indices)
       {
         indices_ = indices;
-        fake_indices_ = false;
-        use_indices_  = true;
-      }
-
-      /** \brief Provide a pointer to the vector of indices that represents the input data.
-        * \param indices a pointer to the vector of indices that represents the input data.
-        */
-      inline void
-      setIndices (const IndicesConstPtr &indices)
-      {
-        indices_.reset (new std::vector<int> (*indices));
         fake_indices_ = false;
         use_indices_  = true;
       }
@@ -207,14 +206,11 @@ namespace pcl
       /** \brief This method should get called before starting the actual computation. 
         *
         * Internally, initCompute() does the following:
-        * <ul>
-        *   <li>checks if an input dataset is given, and returns false otherwise
-        *   <li>checks whether a set of input indices has been given. Returns true if yes.
-        *   <li>if no input indices have been given, a fake set is created, which will be used until:
-        *   <ul><li>either a new set is given via setIndices(), or 
-        *       <li>a new cloud is given that has a different set of points. This will trigger an update on the set of fake indices
-        *   </ul>
-        * </ul>
+        *   - checks if an input dataset is given, and returns false otherwise
+        *   - checks whether a set of input indices has been given. Returns true if yes.
+        *   - if no input indices have been given, a fake set is created, which will be used until:
+        *     - either a new set is given via setIndices(), or 
+        *     - a new cloud is given that has a different set of points. This will trigger an update on the set of fake indices
         */
       inline bool
       initCompute ()

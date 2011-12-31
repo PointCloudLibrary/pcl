@@ -2048,53 +2048,53 @@ TEST (PCL, SpinImageEstimation)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, IntensitySpinEstimation)
-{
-  // Generate a sample point cloud
-  PointCloud<PointXYZI> cloud_xyzi;
-  cloud_xyzi.height = 1;
-  cloud_xyzi.is_dense = true;
-
-  for (float x = -10.0; x <= 10.0; x += 1.0)
-  {
-    for (float y = -10.0; y <= 10.0; y += 1.0)
-    {
-      PointXYZI p;
-      p.x = x;
-      p.y = y;
-      p.z = sqrt (400 - x * x - y * y);
-      p.intensity = exp (-(pow (x - 3, 2) + pow (y + 2, 2)) / (2 * 25.0)) + exp (-(pow (x + 5, 2) + pow (y - 5, 2))
-          / (2 * 4.0));
-
-      cloud_xyzi.points.push_back (p);
-    }
-  }
-  cloud_xyzi.width = cloud_xyzi.points.size ();
-
-  // Compute the intensity-domain spin features
-  typedef Histogram<20> IntensitySpin;
-  IntensitySpinEstimation<PointXYZI, IntensitySpin> ispin_est;
-  search::KdTree<PointXYZI>::Ptr treept3 (new search::KdTree<PointXYZI> (false));
-  ispin_est.setSearchMethod (treept3);
-  ispin_est.setRadiusSearch (10.0);
-  ispin_est.setNrDistanceBins (4);
-  ispin_est.setNrIntensityBins (5);
-
-  ispin_est.setInputCloud (cloud_xyzi.makeShared ());
-  PointCloud<IntensitySpin> ispin_output;
-  ispin_est.compute (ispin_output);
-
-  // Compare to independently verified values
-  const IntensitySpin &ispin = ispin_output.points[220];
-  const float correct_ispin_feature_values[20] = {2.4387, 9.4737, 21.3232, 28.3025, 22.5639, 13.2426, 35.7026, 60.0755,
-                                                  66.9240, 50.4225, 42.7086, 83.5818, 105.4513, 97.8454, 67.3801,
-                                                  75.7127, 119.4726, 120.9649, 93.4829, 55.4045};
-  for (int i = 0; i < 20; ++i)
-  {
-    EXPECT_NEAR (ispin.histogram[i], correct_ispin_feature_values[i], 1e-4);
-  }
-}
-
+//TEST (PCL, IntensitySpinEstimation)
+//{
+//  // Generate a sample point cloud
+//  PointCloud<PointXYZI> cloud_xyzi;
+//  cloud_xyzi.height = 1;
+//  cloud_xyzi.is_dense = true;
+//
+//  for (float x = -10.0; x <= 10.0; x += 1.0)
+//  {
+//    for (float y = -10.0; y <= 10.0; y += 1.0)
+//    {
+//      PointXYZI p;
+//      p.x = x;
+//      p.y = y;
+//      p.z = sqrt (400 - x * x - y * y);
+//      p.intensity = exp (-(pow (x - 3, 2) + pow (y + 2, 2)) / (2 * 25.0)) + exp (-(pow (x + 5, 2) + pow (y - 5, 2))
+//          / (2 * 4.0));
+//
+//      cloud_xyzi.points.push_back (p);
+//    }
+//  }
+//  cloud_xyzi.width = cloud_xyzi.points.size ();
+//
+//  // Compute the intensity-domain spin features
+//  typedef Histogram<20> IntensitySpin;
+//  IntensitySpinEstimation<PointXYZI, IntensitySpin> ispin_est;
+//  search::KdTree<PointXYZI>::Ptr treept3 (new search::KdTree<PointXYZI> (false));
+//  ispin_est.setSearchMethod (treept3);
+//  ispin_est.setRadiusSearch (10.0);
+//  ispin_est.setNrDistanceBins (4);
+//  ispin_est.setNrIntensityBins (5);
+//
+//  ispin_est.setInputCloud (cloud_xyzi.makeShared ());
+//  PointCloud<IntensitySpin> ispin_output;
+//  ispin_est.compute (ispin_output);
+//
+//  // Compare to independently verified values
+//  const IntensitySpin &ispin = ispin_output.points[220];
+//  const float correct_ispin_feature_values[20] = {2.4387, 9.4737, 21.3232, 28.3025, 22.5639, 13.2426, 35.7026, 60.0755,
+//                                                  66.9240, 50.4225, 42.7086, 83.5818, 105.4513, 97.8454, 67.3801,
+//                                                  75.7127, 119.4726, 120.9649, 93.4829, 55.4045};
+//  for (int i = 0; i < 20; ++i)
+//  {
+//    EXPECT_NEAR (ispin.histogram[i], correct_ispin_feature_values[i], 1e-4);
+//  }
+//}
+//
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, RIFTEstimation)
 {

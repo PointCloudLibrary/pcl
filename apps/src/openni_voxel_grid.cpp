@@ -76,8 +76,8 @@ class OpenNIVoxelGrid
     , device_id_(device_id)
     {
       grid_.setLeafSize (leaf_size_x, leaf_size_y, leaf_size_z);
-      grid_.setFilterFieldName (field_name);
-      grid_.setFilterLimits (min_v, max_v);
+      //grid_.setFilterFieldName (field_name);
+      //grid_.setFilterLimits (min_v, max_v);
     }
     
     void 
@@ -141,10 +141,10 @@ void
 usage (char ** argv)
 {
   std::cout << "usage: " << argv[0] << " <device_id> <options>\n\n"
-            << "where options are:\n         -minmax min-max  :: set the PassThrough min-max cutting values (default: 0-5.0)\n"
+            << "where options are:\n         -minmax min-max  :: set the ApproximateVoxelGrid min-max cutting values (default: 0-5.0)\n"
             <<                     "         -field  X        :: use field/dimension 'X' to filter data on (default: 'z')\n"
 
-            << "                             -leaf x, y, z  :: set the VoxelGrid leaf size (default: 0.01)\n";
+            << "                             -leaf x, y, z  :: set the ApproximateVoxelGrid leaf size (default: 0.01)\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
   if (driver.getNumberDevices () > 0)
@@ -165,11 +165,8 @@ usage (char ** argv)
 int 
 main (int argc, char ** argv)
 {
-  if (pcl::console::find_argument (argc, argv, "-h") == -1)
-  {
+  if (pcl::console::find_argument (argc, argv, "-h") != -1)
     usage (argv);
-    //return (1);
-  }
 
   double min_v = 0, max_v = 5.0;
   pcl::console::parse_2x_arguments (argc, argv, "-minmax", min_v, max_v, false);

@@ -78,6 +78,12 @@ pcl::CropBox<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
     int offset = point_offset + input_->fields[x_idx_].offset;
     memcpy (&local_pt, &input_->data[offset], sizeof (float)*3);
 
+    // Check if the point is invalid
+    if (!pcl_isfinite (local_pt.x ()) ||
+        !pcl_isfinite (local_pt.y ()) ||
+        !pcl_isfinite (local_pt.z ()))
+      continue;
+
     // Transform point to world space
     if (!(transform_.matrix().isIdentity()))
       local_pt = transform_ * local_pt;

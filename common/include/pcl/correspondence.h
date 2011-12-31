@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,15 +39,16 @@
 #define PCL_COMMON_CORRESPONDENCE_H_
 
 #include <Eigen/Core>
-#include <vector>
 #include <boost/shared_ptr.hpp>
+#include <Eigen/Geometry>
+#include <vector>
 
 namespace pcl
 {
-  /** @b Correspondence represents a match between two entities (e.g., points, descriptors, etc). This is 
+  /** \brief Correspondence represents a match between two entities (e.g., points, descriptors, etc). This is 
     * represesented via the indices of a \a source point and a \a target point, and the distance between them.
     *
-    * \author Dirk Holz, Radu B. Rusu
+    * \author Dirk Holz, Radu B. Rusu, Bastian Steder
     * \ingroup common
     */
   struct Correspondence
@@ -103,8 +106,43 @@ namespace pcl
                            std::vector<int>& indices,
                            bool presorting_required = true);
 
+  /**
+    * \brief Representation of a (possible) correspondence between two 3D points in two different coordinate frames
+    *        (e.g. from feature matching)
+    * \ingroup common
+    */
+  struct PointCorrespondence3D : public Correspondence
+  {
+    Eigen::Vector3f point1;  //!< The 3D position of the point in the first coordinate frame
+    Eigen::Vector3f point2;  //!< The 3D position of the point in the second coordinate frame
 
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+  typedef std::vector<PointCorrespondence3D, Eigen::aligned_allocator<PointCorrespondence3D> > PointCorrespondences3DVector;
 
+  /**
+    * \brief Representation of a (possible) correspondence between two points (e.g. from feature matching),
+    *        that encode complete 6DOF transoformations.
+    * \ingroup common
+    */
+  struct PointCorrespondence6D : public PointCorrespondence3D
+  {
+    Eigen::Affine3f transformation;  //!< The transformation to go from the coordinate system
+                                        //!< of point2 to the coordinate system of point1
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+  typedef std::vector<PointCorrespondence6D, Eigen::aligned_allocator<PointCorrespondence6D> > PointCorrespondences6DVector;
+
+  /**
+    * \brief Comparator to enable us to sort a vector of PointCorrespondences according to their scores using
+    *        std::sort (begin(), end(), isBetterCorrespondence);
+    * \ingroup common
+    */
+  inline bool
+  isBetterCorrespondence (const Correspondence &pc1, const Correspondence &pc2)
+  {
+    return (pc1.distance > pc2.distance);
+  }
 }
 
 #endif /* PCL_COMMON_CORRESPONDENCE_H_ */

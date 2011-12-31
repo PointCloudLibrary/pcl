@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,17 +33,13 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Date: 31. March 2011
- * Author: Suat Gedikli (gedikli@willowgarage.com)
- *
  */
 
 #include "pcl/common/time_trigger.h"
 #include "pcl/common/time.h"
 #include <iostream>
 
-using namespace boost;
-
+//////////////////////////////////////////////////////////////////////////////////////////////
 pcl::TimeTrigger::TimeTrigger (double interval, const callback_type& callback)
 : interval_ (interval)
 , quit_ (false)
@@ -51,6 +49,7 @@ pcl::TimeTrigger::TimeTrigger (double interval, const callback_type& callback)
   registerCallback (callback);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 pcl::TimeTrigger::TimeTrigger (double interval)
 : interval_ (interval)
 , quit_ (false)
@@ -59,9 +58,10 @@ pcl::TimeTrigger::TimeTrigger (double interval)
 {
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 pcl::TimeTrigger::~TimeTrigger ()
 {
-  unique_lock<mutex> lock (condition_mutex_);
+  boost::unique_lock<boost::mutex> lock (condition_mutex_);
   quit_ = true;
   condition_.notify_all ();
   lock.unlock ();
@@ -69,23 +69,29 @@ pcl::TimeTrigger::~TimeTrigger ()
   timer_thread_.join ();
 }
 
-boost::signals2::connection pcl::TimeTrigger::registerCallback (const callback_type& callback)
+//////////////////////////////////////////////////////////////////////////////////////////////
+boost::signals2::connection 
+pcl::TimeTrigger::registerCallback (const callback_type& callback)
 {
-  unique_lock<mutex> lock (condition_mutex_);
-  return callbacks_.connect (callback);
+  boost::unique_lock<boost::mutex> lock (condition_mutex_);
+  return (callbacks_.connect (callback));
 }
 
-void pcl::TimeTrigger::setInterval (double interval_seconds)
+//////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::TimeTrigger::setInterval (double interval_seconds)
 {
-  unique_lock<mutex> lock (condition_mutex_);
+  boost::unique_lock<boost::mutex> lock (condition_mutex_);
   interval_ = interval_seconds;
   // notify, since we could switch from a large interval to a shorter one -> interrupt waiting for timeout!
   condition_.notify_all ();
 }
 
-void pcl::TimeTrigger::start ()
+//////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::TimeTrigger::start ()
 {
-  unique_lock<mutex> lock (condition_mutex_);
+  boost::unique_lock<boost::mutex> lock (condition_mutex_);
   if (!running_)
   {
     running_ = true;
@@ -93,9 +99,11 @@ void pcl::TimeTrigger::start ()
   }
 }
 
-void pcl::TimeTrigger::stop ()
+//////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::TimeTrigger::stop ()
 {
-  unique_lock<mutex> lock (condition_mutex_);
+  boost::unique_lock<boost::mutex> lock (condition_mutex_);
   if (running_)
   {
     running_ = false;
@@ -103,22 +111,22 @@ void pcl::TimeTrigger::stop ()
   }
 }
 
-void pcl::TimeTrigger::thread_function ()
+//////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::TimeTrigger::thread_function ()
 {
   static double time = 0;
   while (!quit_)
   {
     time = getTime ();
-    unique_lock<mutex> lock (condition_mutex_);
+    boost::unique_lock<boost::mutex> lock (condition_mutex_);
     if (!running_)
-    {
       condition_.wait (lock); // wait util start is called or destructor is called
-    }
     else
     {
       callbacks_();
       double rest = interval_ + time - getTime ();
-      condition_.timed_wait (lock, posix_time::microseconds(rest * 1000000.0));
+      condition_.timed_wait (lock, boost::posix_time::microseconds (rest * 1000000.0));
     }
   }
 }

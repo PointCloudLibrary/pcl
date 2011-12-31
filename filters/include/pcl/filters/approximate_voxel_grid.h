@@ -43,7 +43,8 @@
 
 namespace pcl
 {
-  struct he {
+  struct he 
+  {
     int ix, iy, iz;
     int count;
     Eigen::VectorXf centroid;
@@ -97,16 +98,9 @@ namespace pcl
       int f_idx_;
   };
 
-  /** \brief @b ApproximateVoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
+  /** \brief ApproximateVoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
     *
-    * The @b ApproximateVoxelGrid class creates a *3D voxel grid* (think about a voxel
-    * grid as a set of tiny 3D boxes in space) over the input point cloud data.
-    * Then, in each *voxel* (i.e., 3D box), all the points present will be
-    * approximated (i.e., *downsampled*) with their centroid. This approach is
-    * a bit slower than approximating them with the center of the voxel, but it
-    * represents the underlying surface more accurately.
-    *
-    * \author Radu Bogdan Rusu, Bastian Steder
+    * \author James Bowman, Radu B. Rusu
     * \ingroup filters
     */
   template <typename PointT>
@@ -116,10 +110,6 @@ namespace pcl
     using Filter<PointT>::getClassName;
     using Filter<PointT>::input_;
     using Filter<PointT>::indices_;
-    using Filter<PointT>::filter_limit_negative_;
-    using Filter<PointT>::filter_limit_min_;
-    using Filter<PointT>::filter_limit_max_;
-    using Filter<PointT>::filter_field_name_;
 
     typedef typename Filter<PointT>::PointCloud PointCloud;
     typedef typename PointCloud::Ptr PointCloudPtr;
@@ -127,11 +117,11 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      ApproximateVoxelGrid () : downsample_all_data_ (true), histsize(512)
+      ApproximateVoxelGrid () : downsample_all_data_ (true), histsize_ (512)
       {
-        setLeafSize(1, 1, 1);
+        setLeafSize (1, 1, 1);
         filter_name_ = "ApproximateVoxelGrid";
-        history = new he[histsize];
+        history_ = new he[histsize_];
       }
 
       /** \brief Destructor. */
@@ -187,10 +177,10 @@ namespace pcl
       bool downsample_all_data_;
 
       /** \brief history buffer size, power of 2 */
-      size_t histsize;
+      size_t histsize_;
 
       /** \brief history buffer */
-      struct he *history;
+      struct he *history_;
 
       typedef typename pcl::traits::fieldList<PointT>::type FieldList;
 

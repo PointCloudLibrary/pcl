@@ -98,7 +98,14 @@
 
 namespace pcl
 {
-	template<typename Scalar, typename Roots> inline void computeRoots2 (const Scalar& b, const Scalar& c, Roots& roots)
+  /** \brief Compute the roots of 2 scalars
+    * \param[in] b the first scalar
+    * \param[in] c the second scalar
+    * \param[out] roots the output roots
+    * \ingroup common
+    */
+	template<typename Scalar, typename Roots> inline void 
+  computeRoots2 (const Scalar& b, const Scalar& c, Roots& roots)
 	{
 		roots(0) = Scalar(0);
 		Scalar d = Scalar(b * b - 4.0 * c);
@@ -111,6 +118,11 @@ namespace pcl
 		roots (1) = 0.5f * (b - sd);
 	}
 
+  /** \brief Compute the roots of a matrix.
+    * \param[in] m the matrix
+    * \param[out] roots the output roots
+    * \ingroup common
+    */
   template<typename Matrix, typename Roots> inline void
   computeRoots (const Matrix& m, Roots& roots)
   {
@@ -176,12 +188,13 @@ namespace pcl
 		}
   }
 
-  /**
-   * @brief determines the eigenvector and eigenvalue of the smallest eigenvalue of the symmetric positive semi definite input matrix
-   * @param mat symmetric positive semi definite input matrix
-   * @param evalsor
-   * @note if the smallest eigenvalue is not unique, this function may return any eigenvector that is consistent to the eigenvalue.
-   */
+  /** \brief determines the eigenvector and eigenvalue of the smallest eigenvalue of the symmetric positive semi definite input matrix
+    * \param[in] mat symmetric positive semi definite input matrix
+    * \param[out] eigenvalue the smallest eigenvalue
+    * \param[out] eigenvector the eigenvector corresponding to the smallest eigenvalue
+    * \note if the smallest eigenvalue is not unique, this function may return any eigenvector that is consistent to the eigenvalue.
+    * \ingroup common
+    */
   template<typename Matrix, typename Vector> inline void
   eigen33 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& eigenvector)
   {
@@ -217,24 +230,23 @@ namespace pcl
       eigenvector = vec3 / Eigen::internal::sqrt (len3);
   }
 
-  /**
-   * @brief determines the eigenvalues of the symmetric positive semi definite input matrix
-   * @param mat symmetric positive semi definite input matrix
-   * @param evals resulting eigenvalues in ascending order
-   */
+  /** \brief determines the eigenvalues of the symmetric positive semi definite input matrix
+    * \param[in] mat symmetric positive semi definite input matrix
+    * \param[out] evals resulting eigenvalues in ascending order
+    * \ingroup common
+    */
   template<typename Matrix, typename Vector> inline void
   eigen33 (const Matrix& mat, Vector& evals)
   {
     computeRoots (mat, evals);
   }
 
-
-  /**
-   * @brief determines the eigenvalues and corresponding eigenvectors of the symmetric positive semi definite input matrix
-   * @param mat symmetric positive semi definite input matrix
-   * @param evecs resulting eigenvalues in ascending order
-   * @param evals corresponding eigenvectors in correct order according to eigenvalues
-   */
+  /** \brief determines the eigenvalues and corresponding eigenvectors of the symmetric positive semi definite input matrix
+    * \param[in] mat symmetric positive semi definite input matrix
+    * \param[out] evecs resulting eigenvalues in ascending order
+    * \param[out] evals corresponding eigenvectors in correct order according to eigenvalues
+    * \ingroup common
+    */
   template<typename Matrix, typename Vector> inline void
   eigen33 (const Matrix& mat, Matrix& evecs, Vector& evals)
   {
@@ -418,16 +430,15 @@ namespace pcl
   }
 
 
-  /**
-   * @brief calculates the inverse of a 3x3 symmetric matrix.
-   * @param matrix to be inverted
-   * @param inverse.
-   * @note only the upper triangular part is taken into account => non symmetric matrices will give wrong results
-   * @return determinant of the original matrix => if 0 no inverse exists => result is invalid
-   * @author Suat Gedikli
-   */
-  template<typename Matrix>
-  inline typename Matrix::Scalar invert3x3SymMatrix (const Matrix& matrix, Matrix& inverse)
+  /** \brief calculates the inverse of a 3x3 symmetric matrix.
+    * \param[in] matrix matrix to be inverted
+    * \param[out] inverse the resultant inverted matrix
+    * \note only the upper triangular part is taken into account => non symmetric matrices will give wrong results
+    * \return determinant of the original matrix => if 0 no inverse exists => result is invalid
+    * \ingroup common
+    */
+  template<typename Matrix> inline typename Matrix::Scalar 
+  invert3x3SymMatrix (const Matrix& matrix, Matrix& inverse)
   {
     typedef typename Matrix::Scalar Scalar;
     // elements
@@ -456,9 +467,9 @@ namespace pcl
 
   /** \brief Get the unique 3D rotation that will rotate \a z_axis into (0,0,1) and \a y_direction into a vector
     * with x=0 (or into (0,1,0) should \a y_direction be orthogonal to \a z_axis)
-    * \param z_axis the z-axis
-    * \param y_direction the y direction
-    * \param transformation the resultant 3D rotation
+    * \param[in] z_axis the z-axis
+    * \param[in] y_direction the y direction
+    * \param[out] transformation the resultant 3D rotation
     * \ingroup common
     */
   inline void
@@ -467,8 +478,8 @@ namespace pcl
 
   /** \brief Get the unique 3D rotation that will rotate \a z_axis into (0,0,1) and \a y_direction into a vector
     * with x=0 (or into (0,1,0) should \a y_direction be orthogonal to \a z_axis)
-    * \param z_axis the z-axis
-    * \param y_direction the y direction
+    * \param[in] z_axis the z-axis
+    * \param[in] y_direction the y direction
     * \return the resultant 3D rotation
     * \ingroup common
     */
@@ -477,9 +488,9 @@ namespace pcl
 
   /** \brief Get the unique 3D rotation that will rotate \a x_axis into (1,0,0) and \a y_direction into a vector
     * with z=0 (or into (0,1,0) should \a y_direction be orthogonal to \a z_axis)
-    * \param x_axis the x-axis
-    * \param y_direction the y direction
-    * \param transformation the resultant 3D rotation
+    * \param[in] x_axis the x-axis
+    * \param[in] y_direction the y direction
+    * \param[out] transformation the resultant 3D rotation
     * \ingroup common
     */
   inline void
@@ -488,29 +499,41 @@ namespace pcl
 
   /** \brief Get the unique 3D rotation that will rotate \a x_axis into (1,0,0) and \a y_direction into a vector
     * with z=0 (or into (0,1,0) should \a y_direction be orthogonal to \a z_axis)
-    * \param x_axis the x-axis
-    * \param y_direction the y direction
+    * \param[in] x_axis the x-axis
+    * \param[in] y_direction the y direction
     * \return the resulting 3D rotation
     * \ingroup common
     */
   inline Eigen::Affine3f
   getTransFromUnitVectorsXY (const Eigen::Vector3f& x_axis, const Eigen::Vector3f& y_direction);
 
-  /** Same as getTransFromUnitVectorsZY - for downwards compatibility */
+  /** \brief Get the unique 3D rotation that will rotate \a z_axis into (0,0,1) and \a y_direction into a vector
+    * with x=0 (or into (0,1,0) should \a y_direction be orthogonal to \a z_axis)
+    * \param[in] y_direction the y direction
+    * \param[in] z_axis the z-axis
+    * \param[out] transformation the resultant 3D rotation
+    * \ingroup common
+    */
   inline void
   getTransformationFromTwoUnitVectors (const Eigen::Vector3f& y_direction, const Eigen::Vector3f& z_axis,
                                        Eigen::Affine3f& transformation);
 
-  /** Same as getTransFromUnitVectorsZY - for downwards compatibility */
+  /** \brief Get the unique 3D rotation that will rotate \a z_axis into (0,0,1) and \a y_direction into a vector
+    * with x=0 (or into (0,1,0) should \a y_direction be orthogonal to \a z_axis)
+    * \param[in] y_direction the y direction
+    * \param[in] z_axis the z-axis
+    * \return transformation the resultant 3D rotation
+    * \ingroup common
+    */
   inline Eigen::Affine3f
   getTransformationFromTwoUnitVectors (const Eigen::Vector3f& y_direction, const Eigen::Vector3f& z_axis);
 
   /** \brief Get the transformation that will translate \a orign to (0,0,0) and rotate \a z_axis into (0,0,1)
     * and \a y_direction into a vector with x=0 (or into (0,1,0) should \a y_direction be orthogonal to \a z_axis)
-    * \param y_direction the y direction
-    * \param z_axis the z-axis
-    * \param origin the origin
-    * \param transformation the resultant transformation matrix
+    * \param[in] y_direction the y direction
+    * \param[in] z_axis the z-axis
+    * \param[in] origin the origin
+    * \param[in] transformation the resultant transformation matrix
     * \ingroup common
     */
   inline void
@@ -518,23 +541,23 @@ namespace pcl
                                                 const Eigen::Vector3f& origin, Eigen::Affine3f& transformation);
 
   /** \brief Extract the Euler angles (XYZ-convention) from the given transformation
-    * \param t the input transformation matrix
-    * \param roll the resulting roll angle
-    * \param pitch the resulting pitch angle
-    * \param yaw the resulting yaw angle
+    * \param[in] t the input transformation matrix
+    * \param[in] roll the resulting roll angle
+    * \param[in] pitch the resulting pitch angle
+    * \param[in] yaw the resulting yaw angle
     * \ingroup common
     */
   inline void
   getEulerAngles (const Eigen::Affine3f& t, float& roll, float& pitch, float& yaw);
 
   /** Extract x,y,z and the Euler angles (XYZ-convention) from the given transformation
-    * \param t the input transformation matrix
-    * \param x the resulting x translation
-    * \param y the resulting y translation
-    * \param z the resulting z translation
-    * \param roll the resulting roll angle
-    * \param pitch the resulting pitch angle
-    * \param yaw the resulting yaw angle
+    * \param[in] t the input transformation matrix
+    * \param[out] x the resulting x translation
+    * \param[out] y the resulting y translation
+    * \param[out] z the resulting z translation
+    * \param[out] roll the resulting roll angle
+    * \param[out] pitch the resulting pitch angle
+    * \param[out] yaw the resulting yaw angle
     * \ingroup common
     */
   inline void
@@ -542,25 +565,25 @@ namespace pcl
                                 float& roll, float& pitch, float& yaw);
 
   /** \brief Create a transformation from the given translation and Euler angles (XYZ-convention)
-    * \param x the input x translation
-    * \param y the input y translation
-    * \param z the input z translation
-    * \param roll the input roll angle
-    * \param pitch the input pitch angle
-    * \param yaw the input yaw angle
-    * \param t the resulting transformation matrix
+    * \param[in] x the input x translation
+    * \param[in] y the input y translation
+    * \param[in] z the input z translation
+    * \param[in] roll the input roll angle
+    * \param[in] pitch the input pitch angle
+    * \param[in] yaw the input yaw angle
+    * \param[out] t the resulting transformation matrix
     * \ingroup common
     */
   inline void
   getTransformation (float x, float y, float z, float roll, float pitch, float yaw, Eigen::Affine3f& t);
 
   /** \brief Create a transformation from the given translation and Euler angles (XYZ-convention)
-    * \param x the input x translation
-    * \param y the input y translation
-    * \param z the input z translation
-    * \param roll the input roll angle
-    * \param pitch the input pitch angle
-    * \param yaw the input yaw angle
+    * \param[in] x the input x translation
+    * \param[in] y the input y translation
+    * \param[in] z the input z translation
+    * \param[in] roll the input roll angle
+    * \param[in] pitch the input pitch angle
+    * \param[in] yaw the input yaw angle
     * \return the resulting transformation matrix
     * \ingroup common
     */
@@ -568,16 +591,16 @@ namespace pcl
   getTransformation (float x, float y, float z, float roll, float pitch, float yaw);
 
   /** \brief Write a matrix to an output stream
-    * \param matrix the matrix to output
-    * \param file the output stream
+    * \param[in] matrix the matrix to output
+    * \param[out] file the output stream
     * \ingroup common
     */
   template <typename Derived> void
   saveBinary (const Eigen::MatrixBase<Derived>& matrix, std::ostream& file);
 
   /** \brief Read a matrix from an input stream
-    * \param matrix the resulting matrix, read from the input stream
-    * \param file the input stream
+    * \param[out] matrix the resulting matrix, read from the input stream
+    * \param[in,out] file the input stream
     * \ingroup common
     */
   template <typename Derived> void
