@@ -54,7 +54,7 @@ namespace pcl
   class PCL_EXPORTS MeshSmoothingLaplacianVTK : public MeshProcessing
   {
     public:
-      /** \brief Empty constructor that sets the values of the algorithm parameters to the VTK defaults*/
+      /** \brief Empty constructor that sets the values of the algorithm parameters to the VTK defaults */
       MeshSmoothingLaplacianVTK ()
         : MeshProcessing (),
           num_iter_ (20),
