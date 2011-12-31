@@ -1,7 +1,8 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Dirk Holz, University of Bonn.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2011, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,51 +32,50 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: vtk_utils.h 3732 2011-12-31 00:56:15Z rusu $
  *
  */
 
-#ifndef PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_
-#define PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_
+#ifndef VTK_UTILS_H_
+#define VTK_UTILS_H_
 
-#include <boost/shared_ptr.hpp>
 #include <pcl/PolygonMesh.h>
-
-#include <pcl/pcl_macros.h>
+#include <vtkPolyData.h>
+#include <vtkSmartPointer.h>
 
 namespace pcl
 {
-  namespace surface
+  class PCL_EXPORTS VTKUtils
   {
-    class PCL_EXPORTS SimplificationRemoveUnusedVertices
-    {
-      public:
-        /** \brief Constructor. */
-        SimplificationRemoveUnusedVertices () {};
-        /** \brief Destructor. */
-        ~SimplificationRemoveUnusedVertices () {};
+    public:
+      /** \brief Convert a PCL PolygonMesh to a VTK vtkPolyData.
+        * \param[in] triangles PolygonMesh to be converted to vtkPolyData, stored in the object.
+        */
+      static int
+      convertToVTK (const pcl::PolygonMesh &triangles, vtkSmartPointer<vtkPolyData> &triangles_out_vtk);
 
-        /** \brief Simply a polygonal mesh.
-          * \param[in] input the input mesh
-          * \param[out] output the output mesh
-          */
-        inline void
-        simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output)
-        {
-          std::vector<int> indices;
-          simplify (input, output, indices);
-        }
+      /** \brief Convert the vtkPolyData object back to PolygonMesh.
+        * \param[out] triangles the PolygonMesh to store the vtkPolyData in.
+        */
+      static void
+      convertToPCL (vtkSmartPointer<vtkPolyData> &vtk_polygons, pcl::PolygonMesh &triangles);
 
-        /** \brief Perform simplification (remove unused vertices).
-          * \param[in] input the input mesh
-          * \param[out] output the output mesh
-          * \param[out] indices the resultant vector of indices
-          */
-        void
-        simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output, std::vector<int>& indices);
+      /** \brief Convert vtkPolyData object to a PCL PolygonMesh
+        * \param[in] poly_data Pointer (vtkSmartPointer) to a vtkPolyData object
+        * \param[out] mesh PCL Polygon Mesh to fill
+        * \return Number of points in the point cloud of mesh.
+        */
+      static int
+      vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMesh& mesh);
 
-    };
-  }
+      /** \brief Convert a PCL PolygonMesh to a vtkPolyData object
+        * \param[in] mesh Reference to PCL Polygon Mesh
+        * \param[out] poly_data Pointer (vtkSmartPointer) to a vtkPolyData object
+        * \return Number of points in the point cloud of mesh.
+        */
+      static int
+      mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData> &poly_data);
+  };
 }
 
-#endif /* PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_ */
+#endif /* VTK_UTILS_H_ */

@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Dirk Holz, University of Bonn.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,51 +33,54 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: processing.cpp 3726 2011-12-30 21:58:56Z rusu $
  *
  */
 
-#ifndef PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_
-#define PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_
+#include <pcl/surface/processing.h>
 
-#include <boost/shared_ptr.hpp>
-#include <pcl/PolygonMesh.h>
-
-#include <pcl/pcl_macros.h>
-
-namespace pcl
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::MeshProcessing::initCompute ()
 {
-  namespace surface
-  {
-    class PCL_EXPORTS SimplificationRemoveUnusedVertices
-    {
-      public:
-        /** \brief Constructor. */
-        SimplificationRemoveUnusedVertices () {};
-        /** \brief Destructor. */
-        ~SimplificationRemoveUnusedVertices () {};
+  if (!input_mesh_)
+    return (false);
 
-        /** \brief Simply a polygonal mesh.
-          * \param[in] input the input mesh
-          * \param[out] output the output mesh
-          */
-        inline void
-        simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output)
-        {
-          std::vector<int> indices;
-          simplify (input, output, indices);
-        }
-
-        /** \brief Perform simplification (remove unused vertices).
-          * \param[in] input the input mesh
-          * \param[out] output the output mesh
-          * \param[out] indices the resultant vector of indices
-          */
-        void
-        simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output, std::vector<int>& indices);
-
-    };
-  }
+  return (true);
 }
 
-#endif /* PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_ */
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::MeshProcessing::deinitCompute ()
+{
+
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::MeshProcessing::process (pcl::PolygonMesh &output)
+{
+  // Copy the header
+  output.header = input_mesh_->header;
+
+  if (!initCompute ())
+  {
+    output.cloud.width = output.cloud.height = 0;
+    output.cloud.data.clear ();
+    output.polygons.clear ();
+    return;
+  }
+
+  // Set up the output dataset
+  output.cloud = input_mesh_->cloud;
+  // \TODO: Double check if this is needed
+  {
+    output.polygons.clear ();
+    output.polygons.reserve (2*input_mesh_->polygons.size ()); /// NOTE: usually the number of triangles is around twice the number of vertices
+  }
+  // Perform the actual surface reconstruction
+  performProcessing (output);
+
+  deinitCompute ();
+}
+

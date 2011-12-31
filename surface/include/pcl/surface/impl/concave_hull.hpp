@@ -176,6 +176,8 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     transform1.setIdentity ();
   }
 
+  dim_ = dim;
+
   PointCloud cloud_transformed;
   pcl::demeanPointCloud (*input_, *indices_, xyz_centroid, cloud_transformed);
   pcl::transformPointCloud (cloud_transformed, cloud_transformed, transform1);
@@ -587,6 +589,25 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     pcl::copyPointCloud (*input_, indices, alpha_shape);
   }
 }
+
+template <typename PointInT> void
+pcl::ConcaveHull<PointInT>::performReconstruction (PolygonMesh &output)
+{  
+  // Perform reconstruction
+  pcl::PointCloud<PointInT> hull_points;
+  performReconstruction (hull_points, output.polygons);
+
+  // Convert the PointCloud into a PointCloud2
+  pcl::toROSMsg (hull_points, output.cloud);
+}
+
+template <typename PointInT> void
+pcl::ConcaveHull<PointInT>::performReconstruction (std::vector<pcl::Vertices> &polygons)
+{
+  pcl::PointCloud<PointInT> hull_points;
+  performReconstruction (hull_points, polygons);
+}
+
 
 #define PCL_INSTANTIATE_ConcaveHull(T) template class PCL_EXPORTS pcl::ConcaveHull<T>;
 

@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Dirk Holz, University of Bonn.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,51 +33,14 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: mls_omp.cpp 3388 2011-12-05 05:17:31Z svn $
  *
  */
 
-#ifndef PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_
-#define PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_
+#include "pcl/impl/instantiate.hpp"
+#include "pcl/point_types.h"
+#include "pcl/surface/mls_omp.h"
+#include "pcl/surface/impl/mls_omp.hpp"
 
-#include <boost/shared_ptr.hpp>
-#include <pcl/PolygonMesh.h>
-
-#include <pcl/pcl_macros.h>
-
-namespace pcl
-{
-  namespace surface
-  {
-    class PCL_EXPORTS SimplificationRemoveUnusedVertices
-    {
-      public:
-        /** \brief Constructor. */
-        SimplificationRemoveUnusedVertices () {};
-        /** \brief Destructor. */
-        ~SimplificationRemoveUnusedVertices () {};
-
-        /** \brief Simply a polygonal mesh.
-          * \param[in] input the input mesh
-          * \param[out] output the output mesh
-          */
-        inline void
-        simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output)
-        {
-          std::vector<int> indices;
-          simplify (input, output, indices);
-        }
-
-        /** \brief Perform simplification (remove unused vertices).
-          * \param[in] input the input mesh
-          * \param[out] output the output mesh
-          * \param[out] indices the resultant vector of indices
-          */
-        void
-        simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output, std::vector<int>& indices);
-
-    };
-  }
-}
-
-#endif /* PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_ */
+// Instantiations of specific point types
+PCL_INSTANTIATE_PRODUCT(MovingLeastSquaresOMP, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES));

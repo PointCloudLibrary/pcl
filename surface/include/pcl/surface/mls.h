@@ -58,13 +58,13 @@ namespace pcl
   template <typename PointInT, typename NormalOutT>
   class MovingLeastSquares: public PCLBase<PointInT>
   {
-    using PCLBase<PointInT>::input_;
-    using PCLBase<PointInT>::indices_;
-    using PCLBase<PointInT>::fake_indices_;
-    using PCLBase<PointInT>::initCompute;
-    using PCLBase<PointInT>::deinitCompute;
-
     public:
+      using PCLBase<PointInT>::input_;
+      using PCLBase<PointInT>::indices_;
+      using PCLBase<PointInT>::fake_indices_;
+      using PCLBase<PointInT>::initCompute;
+      using PCLBase<PointInT>::deinitCompute;
+
       typedef typename pcl::search::Search<PointInT> KdTree;
       typedef typename pcl::search::Search<PointInT>::Ptr KdTreePtr;
 
@@ -81,7 +81,7 @@ namespace pcl
       /** \brief Empty constructor. */
       MovingLeastSquares () : PCLBase<PointInT> (), tree_ (), order_ (2), polynomial_fit_ (true), search_radius_ (0), sqr_gauss_param_ (0) {};
 
-      /** \brief Provide a pointer to an point cloud where normal information should be saved
+      /** \brief Provide a pointer to a point cloud where normal information should be saved
         * \note This is optional, it can be the same as the parameter to the reconstruction method, but no normals are estimated if it is not set.
         * \param[in] cloud the const boost shared pointer to a point cloud with normal
         */
@@ -157,7 +157,7 @@ namespace pcl
       reconstruct (PointCloudIn &output);
 
     protected:
-      /** \brief The input point cloud dataset. */
+      /** \brief The point cloud that will hold the estimated normals, if set. */
       NormalCloudOutPtr normals_;
 
       /** \brief The search method template for indices. */
@@ -177,6 +177,9 @@ namespace pcl
 
       /** \brief Parameter for distance based weighting of neighbors (search_radius_ * search_radius_ works fine) */
       double sqr_gauss_param_;
+
+      /** \brief Number of coefficients, to be computed from the requested order.*/
+      int nr_coeff_;
 
       /** \brief Search for the closest nearest neighbors of a given point using a radius search
         * \param[in] index the index of the query point
@@ -202,13 +205,10 @@ namespace pcl
                              Eigen::Vector4f &normal);
 
     private:
-      /** \brief Number of coefficients, to be computed from the requested order.*/
-      int nr_coeff_;
-
       /** \brief Abstract surface reconstruction method. 
         * \param[out] output the result of the reconstruction 
         */
-      void performReconstruction (PointCloudIn &output);
+      virtual void performReconstruction (PointCloudIn &output);
 
       /** \brief Abstract class get name method. */
       std::string getClassName () const { return ("MovingLeastSquares"); }

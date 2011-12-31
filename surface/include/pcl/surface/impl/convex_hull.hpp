@@ -117,6 +117,8 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
   else
     transform1.setIdentity ();
 
+  dim_ = dim;
+
   PointCloud cloud_transformed;
   pcl::demeanPointCloud (*input_, *indices_, xyz_centroid, cloud_transformed);
   pcl::transformPointCloud (cloud_transformed, cloud_transformed, transform1);
@@ -398,7 +400,7 @@ template <typename PointInT> void
 pcl::ConvexHull<PointInT>::reconstruct (PointCloud &output)
 {
   output.header = input_->header;
-  if (!initCompute ())
+  if (!initCompute () || input_->points.empty ())
   {
     output.points.clear ();
     return;
@@ -415,12 +417,31 @@ pcl::ConvexHull<PointInT>::reconstruct (PointCloud &output)
   deinitCompute ();
 }
 
+
+template <typename PointInT> void
+pcl::ConvexHull<PointInT>::performReconstruction (PolygonMesh &output)
+{  
+  // Perform reconstruction
+  pcl::PointCloud<PointInT> hull_points;
+  performReconstruction (hull_points, output.polygons, true);
+
+  // Convert the PointCloud into a PointCloud2
+  pcl::toROSMsg (hull_points, output.cloud);
+}
+
+template <typename PointInT> void
+pcl::ConvexHull<PointInT>::performReconstruction (std::vector<pcl::Vertices> &polygons)
+{
+  pcl::PointCloud<PointInT> hull_points;
+  performReconstruction (hull_points, polygons, true);
+}
+
 //////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
 pcl::ConvexHull<PointInT>::reconstruct (PointCloud &points, std::vector<pcl::Vertices> &polygons)
 {
   points.header = input_->header;
-  if (!initCompute ())
+  if (!initCompute () || input_->points.empty ())
   {
     points.points.clear ();
     return;

@@ -1,7 +1,8 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Dirk Holz, University of Bonn.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2011, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,51 +32,38 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: vtk_mesh_smoothing_laplacian.cpp 3726 2011-12-30 21:58:56Z rusu $
  *
  */
 
-#ifndef PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_
-#define PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_
+#include "pcl/surface/vtk_smoothing/vtk_mesh_smoothing_laplacian.h"
+#include "pcl/surface/vtk_smoothing/vtk_utils.h"
 
-#include <boost/shared_ptr.hpp>
-#include <pcl/PolygonMesh.h>
+#include <vtkSmoothPolyDataFilter.h>
 
-#include <pcl/pcl_macros.h>
 
-namespace pcl
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::MeshSmoothingLaplacianVTK::performProcessing (pcl::PolygonMesh &output)
 {
-  namespace surface
-  {
-    class PCL_EXPORTS SimplificationRemoveUnusedVertices
-    {
-      public:
-        /** \brief Constructor. */
-        SimplificationRemoveUnusedVertices () {};
-        /** \brief Destructor. */
-        ~SimplificationRemoveUnusedVertices () {};
+  // Convert from PCL mesh representation to the VTK representation
+  VTKUtils::convertToVTK (*input_mesh_, vtk_polygons_);
 
-        /** \brief Simply a polygonal mesh.
-          * \param[in] input the input mesh
-          * \param[out] output the output mesh
-          */
-        inline void
-        simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output)
-        {
-          std::vector<int> indices;
-          simplify (input, output, indices);
-        }
+  // Apply the VTK algorithm
+  vtkSmartPointer<vtkSmoothPolyDataFilter> vtk_smoother = vtkSmoothPolyDataFilter::New ();
+  vtk_smoother->SetInput (vtk_polygons_);
+  vtk_smoother->SetNumberOfIterations (num_iter_);
+  if (convergence_ != 0.0f)
+    vtk_smoother->SetConvergence (convergence_);
+  vtk_smoother->SetRelaxationFactor (relaxation_factor_);
+  vtk_smoother->SetFeatureEdgeSmoothing (feature_edge_smoothing_);
+  vtk_smoother->SetFeatureAngle (feature_angle_);
+  vtk_smoother->SetEdgeAngle (edge_angle_);
+  vtk_smoother->SetBoundarySmoothing (boundary_smoothing_);
+  vtk_smoother->Update ();
 
-        /** \brief Perform simplification (remove unused vertices).
-          * \param[in] input the input mesh
-          * \param[out] output the output mesh
-          * \param[out] indices the resultant vector of indices
-          */
-        void
-        simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output, std::vector<int>& indices);
+  vtk_polygons_ = vtk_smoother->GetOutput ();
 
-    };
-  }
+  // Convert the result back to the PCL representation
+  VTKUtils::convertToPCL (vtk_polygons_, output);
 }
-
-#endif /* PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_ */

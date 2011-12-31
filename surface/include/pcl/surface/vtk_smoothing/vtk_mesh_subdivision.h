@@ -1,7 +1,8 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Dirk Holz, University of Bonn.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2011, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,51 +32,52 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: vtk_mesh_subdivision.h 3732 2011-12-31 00:56:15Z rusu $
  *
  */
 
-#ifndef PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_
-#define PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_
+#ifndef VTK_MESH_SUBDIVISION_H_
+#define VTK_MESH_SUBDIVISION_H_
 
-#include <boost/shared_ptr.hpp>
-#include <pcl/PolygonMesh.h>
-
-#include <pcl/pcl_macros.h>
+#include <pcl/surface/processing.h>
+#include <vtkPolyData.h>
+#include <vtkSmartPointer.h>
 
 namespace pcl
 {
-  namespace surface
+  class PCL_EXPORTS MeshSubdivisionVTK : public MeshProcessing
   {
-    class PCL_EXPORTS SimplificationRemoveUnusedVertices
-    {
-      public:
-        /** \brief Constructor. */
-        SimplificationRemoveUnusedVertices () {};
-        /** \brief Destructor. */
-        ~SimplificationRemoveUnusedVertices () {};
+    public:
+      /** \brief Empty constructor */
+      MeshSubdivisionVTK ();
 
-        /** \brief Simply a polygonal mesh.
-          * \param[in] input the input mesh
-          * \param[out] output the output mesh
-          */
-        inline void
-        simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output)
-        {
-          std::vector<int> indices;
-          simplify (input, output, indices);
-        }
+      enum MeshSubdivisionVTKFilterType
+      { LINEAR, LOOP, BUTTERFLY };
 
-        /** \brief Perform simplification (remove unused vertices).
-          * \param[in] input the input mesh
-          * \param[out] output the output mesh
-          * \param[out] indices the resultant vector of indices
-          */
-        void
-        simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output, std::vector<int>& indices);
+      /** \brief Set the mesh subdivision filter type
+        * \param[in] type the filter type
+        */
+      inline void
+      setFilterType (MeshSubdivisionVTKFilterType type)
+      {
+        filter_type_ = type;
+      };
 
-    };
-  }
+      /** \brief Get the mesh subdivision filter type */
+      inline MeshSubdivisionVTKFilterType
+      getFilterType ()
+      {
+        return filter_type_;
+      };
+
+    protected:
+      void
+      performProcessing (pcl::PolygonMesh &output);
+
+    private:
+      MeshSubdivisionVTKFilterType filter_type_;
+
+      vtkSmartPointer<vtkPolyData> vtk_polygons_;
+  };
 }
-
-#endif /* PCL_SURFACE_SIMPLIFICATION_REMOVE_UNUSED_VERTICES_H_ */
+#endif /* VTK_MESH_SUBDIVISION_H_ */

@@ -194,9 +194,8 @@ TEST (PCL, GreedyProjectionTriangulation_Merge2Meshes)
     std::vector<int> sfn1 = gp31.getSFN();
     std::vector<int> ffn1 = gp31.getFFN();
 
-    gp3.merge2Meshes(triangles, triangles1, states1, sfn1, ffn1);
-
-    saveVTKFile ("bun_merged.vtk", triangles);
+    //gp3.merge2Meshes(triangles, triangles1, states1, sfn1, ffn1);
+    //saveVTKFile ("bun_merged.vtk", triangles);
   }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -240,50 +239,48 @@ TEST (PCL, UpdateMesh_With_TextureMapping)
     tex_mesh.tex_polygons.push_back(triangles.polygons);
 
     // update mesh and texture mesh
-    gp3.updateMesh(cloud_with_normals1, triangles, tex_mesh);
-
+    //gp3.updateMesh(cloud_with_normals1, triangles, tex_mesh);
     // set texture for added cloud
-    tex_files.push_back("tex8.jpg");
-
+    //tex_files.push_back("tex8.jpg");
     // save updated mesh
-    saveVTKFile ("update_bunny.vtk", triangles);
+    //saveVTKFile ("update_bunny.vtk", triangles);
 
-    TextureMapping<PointXYZ> tm;
+    //TextureMapping<PointXYZ> tm;
 
-    // set mesh scale control
-    tm.setF(0.01);
+    //// set mesh scale control
+    //tm.setF(0.01);
 
-    // set vector field
-    tm.setVectorField(1, 0, 0);
+    //// set vector field
+    //tm.setVectorField(1, 0, 0);
 
-    TexMaterial tex_material;
+    //TexMaterial tex_material;
 
-    // default texture materials parameters
-    tex_material.tex_Ka.r = 0.2f;
-    tex_material.tex_Ka.g = 0.2f;
-    tex_material.tex_Ka.b = 0.2f;
+    //// default texture materials parameters
+    //tex_material.tex_Ka.r = 0.2f;
+    //tex_material.tex_Ka.g = 0.2f;
+    //tex_material.tex_Ka.b = 0.2f;
 
-    tex_material.tex_Kd.r = 0.8f;
-    tex_material.tex_Kd.g = 0.8f;
-    tex_material.tex_Kd.b = 0.8f;
+    //tex_material.tex_Kd.r = 0.8f;
+    //tex_material.tex_Kd.g = 0.8f;
+    //tex_material.tex_Kd.b = 0.8f;
 
-    tex_material.tex_Ks.r = 1.0f;
-    tex_material.tex_Ks.g = 1.0f;
-    tex_material.tex_Ks.b = 1.0f;
-    tex_material.tex_d = 1.0f;
-    tex_material.tex_Ns = 0.0f;
-    tex_material.tex_illum = 2;
+    //tex_material.tex_Ks.r = 1.0f;
+    //tex_material.tex_Ks.g = 1.0f;
+    //tex_material.tex_Ks.b = 1.0f;
+    //tex_material.tex_d = 1.0f;
+    //tex_material.tex_Ns = 0.0f;
+    //tex_material.tex_illum = 2;
 
-    // set texture material paramaters
-    tm.setTextureMaterials(tex_material);
+    //// set texture material paramaters
+    //tm.setTextureMaterials(tex_material);
 
-    // set texture files
-    tm.setTextureFiles(tex_files);
+    //// set texture files
+    //tm.setTextureFiles(tex_files);
 
-    // mapping
-    tm.mapTexture2Mesh(tex_mesh);
+    //// mapping
+    //tm.mapTexture2Mesh(tex_mesh);
 
-    saveOBJFile ("update_bunny.obj", tex_mesh);
+    //saveOBJFile ("update_bunny.obj", tex_mesh);
   }
 }
 
@@ -383,6 +380,65 @@ TEST (PCL, ConvexHull_bunny)
   pcl::getMinMax3D (hull, min_pt, max_pt);
 
   EXPECT_NEAR ((min_pt - max_pt).norm (), (min_pt_hull - max_pt_hull).norm (), 1e-5);
+
+  //
+  // Test the face-vertices-only output variant
+  //
+
+  // construct the hull mesh
+  std::vector<pcl::Vertices> polygons2;
+  chull.reconstruct (polygons2);
+
+  // compare the face vertices (polygons2) to the output from the original test --- they should be identical
+  ASSERT_EQ (polygons.size (), polygons2.size ());
+  for (size_t i = 0; i < polygons.size (); ++i)
+  {
+    const pcl::Vertices & face1 = polygons[i];
+    const pcl::Vertices & face2 = polygons2[i];
+    ASSERT_EQ (face1.vertices.size (), face2.vertices.size ());
+    for (size_t j = 0; j < face1.vertices.size (); ++j)
+    {
+      ASSERT_EQ (face1.vertices[j], face2.vertices[j]);
+    }
+  }
+
+
+  //
+  // Test the PolygonMesh output variant
+  //
+
+  // construct the hull mesh
+  PolygonMesh mesh;
+  chull.reconstruct (mesh);
+
+  // convert the internal PointCloud2 to a PointCloud
+  PointCloud<pcl::PointXYZ> hull2;
+  pcl::fromROSMsg (mesh.cloud, hull2);
+
+  // compare the PointCloud (hull2) to the output from the original test --- they should be identical
+  ASSERT_EQ (hull.points.size (), hull2.points.size ());
+  for (size_t i = 0; i < hull.points.size (); ++i)
+  {
+    const PointXYZ & p1 = hull.points[i];
+    const PointXYZ & p2 = hull2.points[i];
+    ASSERT_EQ (p1.x, p2.x);
+    ASSERT_EQ (p1.y, p2.y);
+    ASSERT_EQ (p1.z, p2.z);
+  }
+
+  // compare the face vertices (mesh.polygons) to the output from the original test --- they should be identical
+  ASSERT_EQ (polygons.size (), mesh.polygons.size ());
+  for (size_t i = 0; i < polygons.size (); ++i)
+  {
+    const pcl::Vertices & face1 = polygons[i];
+    const pcl::Vertices & face2 = mesh.polygons[i];
+    ASSERT_EQ (face1.vertices.size (), face2.vertices.size ());
+    for (size_t j = 0; j < face1.vertices.size (); ++j)
+    {
+      ASSERT_EQ (face1.vertices[j], face2.vertices[j]);
+    }
+  }    
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -452,6 +508,66 @@ TEST (PCL, ConvexHull_LTable)
 
   EXPECT_EQ (polygons.size (), 1);
   EXPECT_EQ (hull.points.size (), 5);
+
+
+  //
+  // Test the face-vertices-only output variant
+  //
+
+  // construct the hull mesh
+  std::vector<pcl::Vertices> polygons2;
+  chull.reconstruct (polygons2);
+
+  // compare the face vertices (polygons2) to the output from the original test --- they should be identical
+  ASSERT_EQ (polygons.size (), polygons2.size ());
+  for (size_t i = 0; i < polygons.size (); ++i)
+  {
+    const pcl::Vertices & face1 = polygons[i];
+    const pcl::Vertices & face2 = polygons2[i];
+    ASSERT_EQ (face1.vertices.size (), face2.vertices.size ());
+    for (size_t j = 0; j < face1.vertices.size (); ++j)
+    {
+      ASSERT_EQ (face1.vertices[j], face2.vertices[j]);
+    }
+  }
+
+
+  //
+  // Test the PolygonMesh output variant
+  //
+
+  // construct the hull mesh
+  PolygonMesh mesh;
+  chull.reconstruct (mesh);
+
+  // convert the internal PointCloud2 to a PointCloud
+  PointCloud<pcl::PointXYZ> hull2;
+  pcl::fromROSMsg (mesh.cloud, hull2);
+
+  // compare the PointCloud (hull2) to the output from the original test --- they should be identical
+  ASSERT_EQ (hull.points.size (), hull2.points.size ());
+  for (size_t i = 0; i < hull.points.size (); ++i)
+  {
+    const PointXYZ & p1 = hull.points[i];
+    const PointXYZ & p2 = hull2.points[i];
+    ASSERT_EQ (p1.x, p2.x);
+    ASSERT_EQ (p1.y, p2.y);
+    ASSERT_EQ (p1.z, p2.z);
+  }
+
+  // compare the face vertices (mesh.polygons) to the output from the original test --- they should be identical
+  ASSERT_EQ (polygons.size (), mesh.polygons.size ());
+  for (size_t i = 0; i < polygons.size (); ++i)
+  {
+    const pcl::Vertices & face1 = polygons[i];
+    const pcl::Vertices & face2 = mesh.polygons[i];
+    ASSERT_EQ (face1.vertices.size (), face2.vertices.size ());
+    for (size_t j = 0; j < face1.vertices.size (); ++j)
+    {
+      ASSERT_EQ (face1.vertices[j], face2.vertices[j]);
+    }
+  }    
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -596,10 +712,11 @@ TEST (PCL, EarClipping)
   mesh->polygons.push_back (vertices);
 
   EarClipping clipper;
-  clipper.setInputPolygonMesh (mesh);
+  PolygonMesh::ConstPtr mesh_aux (mesh);
+  clipper.setInputMesh (mesh_aux);
 
   PolygonMesh triangulated_mesh;
-  clipper.triangulate (triangulated_mesh);
+  clipper.process (triangulated_mesh);
 
   EXPECT_EQ (triangulated_mesh.polygons.size (), 4);
   for (int i = 0; i < (int)triangulated_mesh.polygons.size (); ++i)

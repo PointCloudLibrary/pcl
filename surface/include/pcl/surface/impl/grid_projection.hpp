@@ -606,8 +606,8 @@ pcl::GridProjection<PointNT>::storeVectAndSurfacePointKNN (int index_1d, const E
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointNT> void
-pcl::GridProjection<PointNT>::performReconstruction (pcl::PolygonMesh &output)
+template <typename PointNT> bool
+pcl::GridProjection<PointNT>::reconstructPolygons (std::vector<pcl::Vertices> &polygons)
 {
   data_.reset (new pcl::PointCloud<PointNT> (*input_));
   getBoundingBox ();
@@ -696,6 +696,26 @@ pcl::GridProjection<PointNT>::performReconstruction (pcl::PolygonMesh &output)
       createSurfaceForCell (index, pt_union_indices);
   }
 
+  polygons.resize (surface_.size () / 4);
+  // Copy the data from surface_ to polygons
+  for (size_t i = 0; i < polygons.size (); ++i)
+  {
+    pcl::Vertices v;
+    v.vertices.resize (4);
+    for (int j = 0; j < 4; ++j)
+      v.vertices[j] = i*4+j;
+     polygons[i] = v;
+  }
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointNT> void
+pcl::GridProjection<PointNT>::performReconstruction (pcl::PolygonMesh &output)
+{
+  if (!reconstructPolygons (output.polygons))
+    return;
+
   // The mesh surface is held in surface_. Copy it to the output format
   output.header = input_->header;
 
@@ -713,16 +733,29 @@ pcl::GridProjection<PointNT>::performReconstruction (pcl::PolygonMesh &output)
     cloud.points[i].z = surface_[i].z ();
   }
   pcl::toROSMsg (cloud, output.cloud);
+}
 
-  output.polygons.resize (surface_.size () / 4);
-  // Copy the data from surface_ to polygons
-  for (size_t i = 0; i < output.polygons.size (); ++i)
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointNT> void
+pcl::GridProjection<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points, 
+                                                     std::vector<pcl::Vertices> &polygons)
+{
+  if (!reconstructPolygons (polygons))
+    return;
+
+  // The mesh surface is held in surface_. Copy it to the output format
+  points.header = input_->header;
+  points.width = surface_.size ();
+  points.height = 1;
+  points.is_dense = true;
+
+  points.resize (surface_.size ());
+  // Copy the data from surface_ to cloud
+  for (size_t i = 0; i < points.size (); ++i)
   {
-    pcl::Vertices v;
-    v.vertices.resize (4);
-    for (int j = 0; j < 4; ++j)
-      v.vertices[j] = i*4+j;
-     output.polygons[i] = v;
+    points[i].x = surface_[i].x ();
+    points[i].y = surface_[i].y ();
+    points[i].z = surface_[i].z ();
   }
 }
 
