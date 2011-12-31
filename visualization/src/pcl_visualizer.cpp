@@ -77,12 +77,6 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
   // Create a RendererWindow
   win_ = vtkSmartPointer<vtkRenderWindow>::New ();
   win_->SetWindowName (name.c_str ());
-  win_->AlphaBitPlanesOff ();
-  win_->PointSmoothingOff ();
-  win_->LineSmoothingOff ();
-  win_->PolygonSmoothingOff ();
-  win_->SwapBuffersOn ();
-  win_->SetStereoTypeToAnaglyph ();
 
   // Get screen size
   int *scr_size = win_->GetScreenSize ();
@@ -130,12 +124,6 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   // Create a RendererWindow
   win_ = vtkSmartPointer<vtkRenderWindow>::New ();
   win_->SetWindowName (name.c_str ());
-  win_->AlphaBitPlanesOff ();
-  win_->PointSmoothingOff ();
-  win_->LineSmoothingOff ();
-  win_->PolygonSmoothingOff ();
-  win_->SwapBuffersOn ();
-  win_->SetStereoTypeToAnaglyph ();
 
   // Get screen size
   int *scr_size = win_->GetScreenSize ();
@@ -179,6 +167,16 @@ pcl::visualization::PCLVisualizer::createInteractor ()
 #else
   interactor_ = vtkSmartPointer<vtkRenderWindowInteractor>::New ();
 #endif
+
+  //win_->PointSmoothingOn ();
+  //win_->LineSmoothingOn ();
+  //win_->PolygonSmoothingOn ();
+  win_->AlphaBitPlanesOff ();
+  win_->PointSmoothingOff ();
+  win_->LineSmoothingOff ();
+  win_->PolygonSmoothingOff ();
+  win_->SwapBuffersOn ();
+  win_->SetStereoTypeToAnaglyph ();
 
   interactor_->SetRenderWindow (win_);
   interactor_->SetInteractorStyle (style_);
@@ -268,18 +266,11 @@ pcl::visualization::PCLVisualizer::spinOnce (int time, bool force_redraw)
 
   if (time <= 0)
     time = 1;
-  
+ 
   if (force_redraw)
-  {
     interactor_->Render ();
-    exit_main_loop_timer_callback_->right_timer_id = interactor_->CreateRepeatingTimer (time);
-    interactor_->Start ();
-    interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
-    return;
-  }
   
-  DO_EVERY(1.0/interactor_->GetDesiredUpdateRate (),
-    interactor_->Render ();
+  DO_EVERY (1.0 / interactor_->GetDesiredUpdateRate (),
     exit_main_loop_timer_callback_->right_timer_id = interactor_->CreateRepeatingTimer (time);
     interactor_->Start ();
     interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
@@ -728,28 +719,35 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data, 
-                                                              vtkSmartPointer<vtkLODActor> &actor)
+                                                              vtkSmartPointer<vtkLODActor> &actor,
+                                                              bool use_scalars)
 {
   // If actor is not initialized, initialize it here
   if (!actor)
     actor = vtkSmartPointer<vtkLODActor>::New ();
 
-  vtkSmartPointer<vtkDataArray> scalars = data->GetPointData ()->GetScalars ();
-  double minmax[2];
-  if (scalars)
-    scalars->GetRange (minmax);
-
   vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();      
   mapper->SetInput (data);
-  if (scalars)
-    mapper->SetScalarRange (minmax);
-  mapper->SetScalarModeToUsePointData ();
-  mapper->InterpolateScalarsBeforeMappingOn ();
-  mapper->ScalarVisibilityOn ();
+
+  if (use_scalars)
+  {
+    vtkSmartPointer<vtkDataArray> scalars = data->GetPointData ()->GetScalars ();
+    double minmax[2];
+    if (scalars)
+    {
+      scalars->GetRange (minmax);
+      mapper->SetScalarRange (minmax);
+
+      mapper->SetScalarModeToUsePointData ();
+      mapper->InterpolateScalarsBeforeMappingOn ();
+      mapper->ScalarVisibilityOn ();
+    }
+  }
   mapper->ImmediateModeRenderingOff ();
 
   actor->SetNumberOfCloudPoints (data->GetNumberOfPoints () / 10);
   actor->GetProperty ()->SetInterpolationToFlat ();
+  actor->GetProperty ()->BackfaceCullingOn ();
 
   actor->SetMapper (mapper);
 }
@@ -1822,11 +1820,11 @@ pcl::visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &i
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_mesh, 
-                                                  const std::string &id,
-                                                  int viewport)
+                                                   const std::string &id,
+                                                   int viewport)
 {
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  if (am_it != shape_actor_map_->end ())
+  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
+  if (am_it != cloud_actor_map_->end ())
   {
     pcl::console::print_warn (
                                 "[addPolygonMesh] A shape with id <%s> already exists! Please choose a different id and retry.\n",
@@ -1925,7 +1923,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  (*shape_actor_map_)[id] = actor;
+  (*cloud_actor_map_)[id].actor = actor;
   return (true);
 }
 

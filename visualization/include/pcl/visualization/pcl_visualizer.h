@@ -277,6 +277,17 @@ namespace pcl
         bool 
         removePointCloud (const std::string &id = "cloud", int viewport = 0);
 
+        /** \brief Removes a PolygonMesh from screen, based on a given ID.
+          * \param[in] id the polygon object id (i.e., given on \a addPolygonMesh)
+          * \param[in] viewport view port from where the PolygonMesh should be removed (default: all)
+          */
+        inline bool 
+        removePolygonMesh (const std::string &id = "polygon", int viewport = 0)
+        {
+          // Polygon Meshes are represented internally as point clouds with special cell array structures since 1.4
+          return (removePointCloud (id, viewport));
+        }
+
         /** \brief Removes an added shape from screen (line, polygon, etc.), based on a given ID
           * \param[in] id the shape object id (i.e., given on \a addLine etc.)
           * \param[in] viewport view port from where the Point Cloud should be removed (default: all)
@@ -619,6 +630,17 @@ namespace pcl
                         const std::vector<pcl::Vertices> &vertices,
                         const std::string &id = "polygon", 
                         int viewport = 0);
+
+        /** \brief Update a PolygonMesh object on screen
+          * \param[in] cloud the polygonal mesh point cloud
+          * \param[in] vertices the polygonal mesh vertices
+          * \param[in] id the polygon object id (default: "polygon")
+          * \return false if no polygonmesh with the specified ID was found
+          */
+        template <typename PointT> bool
+        updatePolygonMesh (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+                           const std::vector<pcl::Vertices> &vertices,
+                           const std::string &id = "polygon");
 
         /** \brief Add a Polygonline from a polygonMesh object to screen
           * \param[in] polymesh the polygonal mesh from where the polylines will be extracted
@@ -1285,10 +1307,12 @@ namespace pcl
         /** \brief Internal method. Creates a vtk actor from a vtk polydata object.
           * \param[in] data the vtk polydata object to create an actor for
           * \param[out] actor the resultant vtk actor object
+          * \param[in] use_scalars set scalar properties to the mapper if it exists in the data. Default: true.
           */
         void 
         createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data, 
-                                   vtkSmartPointer<vtkLODActor> &actor);
+                                   vtkSmartPointer<vtkLODActor> &actor,
+                                   bool use_scalars = true);
 
         /** \brief Converts a PCL templated PointCloud object to a vtk polydata object.
           * \param[in] cloud the input PCL PointCloud dataset

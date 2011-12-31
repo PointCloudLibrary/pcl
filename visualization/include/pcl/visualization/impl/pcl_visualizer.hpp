@@ -41,9 +41,12 @@
 #define PCL_PCL_VISUALIZER_IMPL_H_
 
 #include <vtkCellData.h>
+#include <vtkSmartPointer.h>
+#include <vtkCellArray.h>
 #include <vtkProperty2D.h>
 #include <vtkMapper2D.h>
 #include <vtkLeaderActor2D.h>
+#include <pcl/common/time.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool 
@@ -1009,8 +1012,14 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     const std::string &id,
     int viewport)
 {
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  if (am_it != shape_actor_map_->end ())
+  if (vertices.empty ())
+  {
+    pcl::console::print_error ("[addPolygonMesh] No vertices given!\n");
+    return (false);
+  }
+
+  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
+  if (am_it != cloud_actor_map_->end ())
   {
     pcl::console::print_warn (
                                 "[addPolygonMesh] A shape with id <%s> already exists! Please choose a different id and retry.\n",
@@ -1022,16 +1031,18 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
   vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New ();
   vtkIdType nr_points = cloud->points.size ();
   points->SetNumberOfPoints (nr_points);
+  vtkSmartPointer<vtkLODActor> actor;
 
   // Get a pointer to the beginning of the data array
   float *data = ((vtkFloatArray*)points->GetData ())->GetPointer (0);
 
+  int ptr = 0;
   std::vector<int> lookup;
   // If the dataset is dense (no NaNs)
   if (cloud->is_dense)
   {
-    for (vtkIdType i = 0; i < nr_points; ++i)
-      memcpy (&data[i * 3], &cloud->points[i].x, sizeof (float) * 3);
+    for (vtkIdType i = 0; i < nr_points; ++i, ptr += 3)
+      memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
   }
   else
   {
@@ -1040,50 +1051,62 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     for (vtkIdType i = 0; i < nr_points; ++i)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud->points[i].x) ||
-          !pcl_isfinite (cloud->points[i].y) ||
-          !pcl_isfinite (cloud->points[i].z))
+      if (!isFinite (cloud->points[i]))
         continue;
+
       lookup [i] = j;
-      memcpy (&data[j * 3], &cloud->points[i].x, sizeof (float) * 3 );
+      memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
       j++;
+      ptr += 3;
     }
     nr_points = j;
     points->SetNumberOfPoints (nr_points);
   }
 
-  vtkSmartPointer<vtkLODActor> actor;
+  // Get the maximum size of a polygon
+  int max_size_of_polygon = -1;
+  for (size_t i = 0; i < vertices.size (); ++i)
+    if (max_size_of_polygon < (int)vertices[i].vertices.size ())
+      max_size_of_polygon = vertices[i].vertices.size ();
+
   if (vertices.size () > 1) 
   {
-    //create polys from polyMesh.polygons
+    // Create polys from polyMesh.polygons
     vtkSmartPointer<vtkCellArray> cell_array = vtkSmartPointer<vtkCellArray>::New ();
-
+    vtkIdType *cell = cell_array->WritePointer (vertices.size (), vertices.size () * (max_size_of_polygon + 1));
+    int idx = 0;
     if (lookup.size () > 0)
     {
-      for (size_t i = 0; i < vertices.size (); ++i)
+      for (size_t i = 0; i < vertices.size (); ++i, ++idx)
       {
         size_t n_points = vertices[i].vertices.size ();
-        cell_array->InsertNextCell (n_points);
-        for (size_t j = 0; j < n_points; j++)
-          cell_array->InsertCellPoint (lookup[vertices[i].vertices[j]]);
+        *cell++ = n_points;
+        //cell_array->InsertNextCell (n_points);
+        for (size_t j = 0; j < n_points; j++, ++idx)
+          *cell++ = lookup[vertices[i].vertices[j]];
+          //cell_array->InsertCellPoint (lookup[vertices[i].vertices[j]]);
       }
     }
     else
     {
-      for (size_t i = 0; i < vertices.size (); ++i)
+      for (size_t i = 0; i < vertices.size (); ++i, ++idx)
       {
         size_t n_points = vertices[i].vertices.size ();
-        cell_array->InsertNextCell (n_points);
-        for (size_t j = 0; j < n_points; j++)
-          cell_array->InsertCellPoint (vertices[i].vertices[j]);
+        *cell++ = n_points;
+        //cell_array->InsertNextCell (n_points);
+        for (size_t j = 0; j < n_points; j++, ++idx)
+          *cell++ = lookup[vertices[i].vertices[j]];
+          //cell_array->InsertCellPoint (vertices[i].vertices[j]);
       }
     }
     vtkSmartPointer<vtkPolyData> polydata;
     allocVtkPolyData (polydata);
+    cell_array->GetData ()->SetNumberOfValues (idx);
+    cell_array->Squeeze ();
     polydata->SetStrips (cell_array);
     polydata->SetPoints (points);
 
-    createActorFromVTKDataSet (polydata, actor);
+    createActorFromVTKDataSet (polydata, actor, false);
   } 
   else 
   {
@@ -1108,14 +1131,151 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     poly_grid->SetPoints (points);
     poly_grid->Update ();
 
-    createActorFromVTKDataSet (poly_grid, actor);
+    createActorFromVTKDataSet (poly_grid, actor, false);
   }
 
-  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetRepresentationToSurface ();
+  actor->GetProperty ()->BackfaceCullingOn ();
+  actor->GetProperty ()->EdgeVisibilityOff ();
+  actor->GetProperty ()->ShadingOff ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  (*shape_actor_map_)[id] = actor;
+  (*cloud_actor_map_)[id].actor = actor;
+  (*cloud_actor_map_)[id].cells = static_cast<vtkPolyDataMapper*>(actor->GetMapper ())->GetInput ()->GetVerts ()->GetData ();
+  return (true);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> bool
+pcl::visualization::PCLVisualizer::updatePolygonMesh (
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
+    const std::vector<pcl::Vertices> &verts,
+    const std::string &id)
+{
+  if (verts.empty ())
+  {
+     pcl::console::print_error ("[addPolygonMesh] No vertices given!\n");
+     return (false);
+  }
+
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
+  if (am_it == cloud_actor_map_->end ())
+    return (false);
+
+  // Get the current poly data
+  vtkSmartPointer<vtkPolyData> polydata = static_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->GetInput ();
+  if (!polydata)
+    return (false);
+  vtkSmartPointer<vtkCellArray> cells = polydata->GetStrips ();
+  if (!cells)
+    return (false);
+  vtkSmartPointer<vtkPoints> points   = polydata->GetPoints ();
+  // Copy the new point array in
+  vtkIdType nr_points = cloud->points.size ();
+  points->SetNumberOfPoints (nr_points);
+
+  // Get a pointer to the beginning of the data array
+  float *data = ((vtkFloatArray*)points->GetData ())->GetPointer (0);
+
+  int ptr = 0;
+  std::vector<int> lookup;
+  // If the dataset is dense (no NaNs)
+  if (cloud->is_dense)
+  {
+    for (vtkIdType i = 0; i < nr_points; ++i, ptr += 3)
+      memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
+  }
+  else
+  {
+    lookup.resize (nr_points);
+    vtkIdType j = 0;    // true point index
+    for (vtkIdType i = 0; i < nr_points; ++i)
+    {
+      // Check if the point is invalid
+      if (!isFinite (cloud->points[i]))
+        continue;
+
+      lookup [i] = j;
+      memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
+      j++;
+      ptr += 3;
+    }
+    nr_points = j;
+    points->SetNumberOfPoints (nr_points);
+  }
+
+  // Get the maximum size of a polygon
+  int max_size_of_polygon = -1;
+  for (size_t i = 0; i < verts.size (); ++i)
+    if (max_size_of_polygon < (int)verts[i].vertices.size ())
+      max_size_of_polygon = verts[i].vertices.size ();
+
+  // Update the cells
+  cells = vtkSmartPointer<vtkCellArray>::New ();
+  vtkIdType *cell = cells->WritePointer (verts.size (), verts.size () * (max_size_of_polygon + 1));
+  int idx = 0;
+  if (lookup.size () > 0)
+  {
+    for (size_t i = 0; i < verts.size (); ++i, ++idx) 
+    {
+      size_t n_points = verts[i].vertices.size ();
+      *cell++ = n_points;
+      for (size_t j = 0; j < n_points; j++, cell++, ++idx)
+        *cell = lookup[verts[i].vertices[j]];
+    }
+  }
+  else
+  {
+    for (size_t i = 0; i < verts.size (); ++i, ++idx) 
+    {
+      size_t n_points = verts[i].vertices.size ();
+      *cell++ = n_points;
+      for (size_t j = 0; j < n_points; j++, cell++, ++idx)
+        *cell = verts[i].vertices[j];
+    }
+  }
+  cells->GetData ()->SetNumberOfValues (idx);
+  cells->Squeeze ();
+  // Set the the vertices
+  polydata->SetStrips (cells);
+  polydata->Update ();
+
+/*  
+  vtkSmartPointer<vtkLODActor> actor;
+  if (vertices.size () > 1) 
+  {
+  } 
+  else 
+  {
+    vtkSmartPointer<vtkPolygon> polygon = vtkSmartPointer<vtkPolygon>::New ();
+    size_t n_points = vertices[0].vertices.size ();
+    polygon->GetPointIds ()->SetNumberOfIds (n_points - 1);
+
+    for (size_t j = 0; j < (n_points - 1); ++j) 
+      polygon->GetPointIds ()->SetId (j, vertices[0].vertices[j]);
+
+    vtkSmartPointer<vtkUnstructuredGrid> poly_grid;
+    allocVtkUnstructuredGrid (poly_grid);
+    poly_grid->Allocate (1, 1);
+    poly_grid->InsertNextCell (polygon->GetCellType (), polygon->GetPointIds ());
+    poly_grid->SetPoints (points);
+    poly_grid->Update ();
+
+    createActorFromVTKDataSet (poly_grid, actor);
+  }
+*/
+
+  // Get the colors from the handler
+  //vtkSmartPointer<vtkDataArray> scalars;
+  //color_handler.getColor (scalars);
+  //polydata->GetPointData ()->SetScalars (scalars);
+//  polydata->Update ();
+  
+  am_it->second.actor->GetProperty ()->BackfaceCullingOn ();
+//  am_it->second.actor->Modified ();
+
   return (true);
 }
 
