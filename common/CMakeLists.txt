@@ -34,6 +34,7 @@ if(build)
         include/pcl/point_representation.h
         include/pcl/correspondence.h
         include/pcl/point_types.h
+        include/pcl/win32_macros.h
         include/pcl/cloud_properties.h
         include/pcl/channel_properties.h
         include/pcl/for_each_type.h
@@ -70,6 +71,7 @@ if(build)
         include/pcl/common/file_io.h
         include/pcl/common/intersections.h
         include/pcl/common/norms.h
+        include/pcl/common/point_correspondence.h
         include/pcl/common/piecewise_linear_function.h
         include/pcl/common/polynomial_calculations.h
         include/pcl/common/poses_from_matches.h
@@ -114,6 +116,8 @@ if(build)
 
     set(ros_incs include/pcl/ros/conversions.h
         include/pcl/ros/register_point_struct.h
+        include/pcl/ros/for_each_type.h
+        include/pcl/ros/point_traits.h
         )
 
     set(tools_incs 
