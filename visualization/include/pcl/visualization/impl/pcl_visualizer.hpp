@@ -784,6 +784,14 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
   // Save the pointer/ID pair to the global actor map
   (*cloud_actor_map_)[id].actor = actor;
   (*cloud_actor_map_)[id].cells = initcells;
+
+  // Save the viewpoint transformation matrix to the global actor map
+  vtkSmartPointer<vtkMatrix4x4> transformation = vtkSmartPointer<vtkMatrix4x4>::New();
+  Eigen::Vector4f origin = geometry_handler.getOrigin ();
+  Eigen::Quaternion<float> orientation = geometry_handler.getOrientation ();
+  convertToVtkMatrix (origin, orientation, transformation);
+  (*cloud_actor_map_)[id].viewpoint_transformation_ = transformation;
+
   return (true);
 }
 
@@ -830,6 +838,15 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
   (*cloud_actor_map_)[id].actor = actor;
   (*cloud_actor_map_)[id].cells = initcells;
   (*cloud_actor_map_)[id].color_handlers.push_back (color_handler);
+
+  // Save the viewpoint transformation matrix to the global actor map
+  // Save the viewpoint transformation matrix to the global actor map
+  vtkSmartPointer<vtkMatrix4x4> transformation = vtkSmartPointer<vtkMatrix4x4>::New();
+  Eigen::Vector4f origin = geometry_handler.getOrigin ();
+  Eigen::Quaternion<float> orientation = geometry_handler.getOrientation ();
+  convertToVtkMatrix (origin, orientation, transformation);
+  (*cloud_actor_map_)[id].viewpoint_transformation_ = transformation;
+
   return (true);
 }
 
