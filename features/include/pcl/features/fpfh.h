@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -39,32 +41,36 @@
 #define PCL_FPFH_H_
 
 #include <pcl/features/feature.h>
-
 #include <set>
 
 namespace pcl
 {
-  /** \brief @b FPFHEstimation estimates the <b>Fast Point Feature Histogram (FPFH)</b> descriptor for a given point 
+  /** \brief FPFHEstimation estimates the <b>Fast Point Feature Histogram (FPFH)</b> descriptor for a given point 
     * cloud dataset containing points and normals.
     *
-    * @note If you use this code in any academic work, please cite:
+    * \note If you use this code in any academic work, please cite:
     *
-    * <ul>
-    * <li> R.B. Rusu, N. Blodow, M. Beetz.
-    *      Fast Point Feature Histograms (FPFH) for 3D Registration.
-    *      In Proceedings of the IEEE International Conference on Robotics and Automation (ICRA),
-    *      Kobe, Japan, May 12-17 2009.
-    * </li>
-    * <li> R.B. Rusu, A. Holzbach, N. Blodow, M. Beetz.
-    *      Fast Geometric Point Labeling using Conditional Random Fields.
-    *      In Proceedings of the 22nd IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS),
-    *      St. Louis, MO, USA, October 11-15 2009.
-    * </li>
-    * </ul>
+    *   - R.B. Rusu, N. Blodow, M. Beetz.
+    *     Fast Point Feature Histograms (FPFH) for 3D Registration.
+    *     In Proceedings of the IEEE International Conference on Robotics and Automation (ICRA),
+    *     Kobe, Japan, May 12-17 2009.
+    *   - R.B. Rusu, A. Holzbach, N. Blodow, M. Beetz.
+    *     Fast Geometric Point Labeling using Conditional Random Fields.
+    *     In Proceedings of the 22nd IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS),
+    *     St. Louis, MO, USA, October 11-15 2009.
     *
-    * @note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
+    * \attention 
+    * The convention for FPFH features is:
+    *   - if a query point's nearest neighbors cannot be estimated, the FPFH feature will be set to NaN 
+    *     (not a number)
+    *   - it is impossible to estimate a FPFH descriptor for a point that
+    *     doesn't have finite 3D coordinates. Therefore, any point that contains
+    *     NaN data on x, y, or z, will have its FPFH feature property set to NaN.
+    *
+    * \note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
     * \ref FPFHEstimationOMP for examples on parallel implementations of the FPFH (Fast Point Feature Histogram).
-    * \author Radu Bogdan Rusu
+    *
+    * \author Radu B. Rusu
     * \ingroup features
     */
   template <typename PointInT, typename PointNT, typename PointOutT>
@@ -92,14 +98,14 @@ namespace pcl
         * represented by Cartesian coordinates and normals.
         * \note For explanations about the features, please see the literature mentioned above (the order of the
         * features might be different).
-        * \param cloud the dataset containing the XYZ Cartesian coordinates of the two points
-        * \param normals the dataset containing the surface normals (assuming normalized vectors) at each point in cloud
-        * \param p_idx the index of the first point (source)
-        * \param q_idx the index of the second point (target)
-        * \param f1 the first angular feature (angle between the projection of nq_idx and u)
-        * \param f2 the second angular feature (angle between nq_idx and v)
-        * \param f3 the third angular feature (angle between np_idx and |p_idx - q_idx|)
-        * \param f4 the distance feature (p_idx - q_idx)
+        * \param[in] cloud the dataset containing the XYZ Cartesian coordinates of the two points
+        * \param[in] normals the dataset containing the surface normals (assuming normalized vectors) at each point in cloud
+        * \param[in] p_idx the index of the first point (source)
+        * \param[in] q_idx the index of the second point (target)
+        * \param[out] f1 the first angular feature (angle between the projection of nq_idx and u)
+        * \param[out] f2 the second angular feature (angle between nq_idx and v)
+        * \param[out] f3 the third angular feature (angle between np_idx and |p_idx - q_idx|)
+        * \param[out] f4 the distance feature (p_idx - q_idx)
         */
       bool 
       computePairFeatures (const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals, 
@@ -107,14 +113,14 @@ namespace pcl
 
       /** \brief Estimate the SPFH (Simple Point Feature Histograms) individual signatures of the three angular
         * (f1, f2, f3) features for a given point based on its spatial neighborhood of 3D points with normals
-        * \param cloud the dataset containing the XYZ Cartesian coordinates of the two points
-        * \param normals the dataset containing the surface normals at each point in \a cloud
-        * \param p_idx the index of the query point (source)
-        * \param row the index row in feature histogramms
-        * \param indices the k-neighborhood point indices in the dataset
-        * \param hist_f1 the resultant SPFH histogram for feature f1
-        * \param hist_f2 the resultant SPFH histogram for feature f2
-        * \param hist_f3 the resultant SPFH histogram for feature f3
+        * \param[in] cloud the dataset containing the XYZ Cartesian coordinates of the two points
+        * \param[in] normals the dataset containing the surface normals at each point in \a cloud
+        * \param[in] p_idx the index of the query point (source)
+        * \param[in] row the index row in feature histogramms
+        * \param[in] indices the k-neighborhood point indices in the dataset
+        * \param[out] hist_f1 the resultant SPFH histogram for feature f1
+        * \param[out] hist_f2 the resultant SPFH histogram for feature f2
+        * \param[out] hist_f3 the resultant SPFH histogram for feature f3
         */
       void 
       computePointSPFHSignature (const pcl::PointCloud<PointInT> &cloud, 
@@ -124,12 +130,12 @@ namespace pcl
 
       /** \brief Weight the SPFH (Simple Point Feature Histograms) individual histograms to create the final FPFH
         * (Fast Point Feature Histogram) for a given point based on its 3D spatial neighborhood
-        * \param hist_f1 the histogram feature vector of \a f1 values over the given patch
-        * \param hist_f2 the histogram feature vector of \a f2 values over the given patch
-        * \param hist_f3 the histogram feature vector of \a f3 values over the given patch
-        * \param indices the point indices of p_idx's k-neighborhood in the point cloud
-        * \param dists the distances from p_idx to all its k-neighbors
-        * \param fpfh_histogram the resultant FPFH histogram representing the feature at the query point
+        * \param[in] hist_f1 the histogram feature vector of \a f1 values over the given patch
+        * \param[in] hist_f2 the histogram feature vector of \a f2 values over the given patch
+        * \param[in] hist_f3 the histogram feature vector of \a f3 values over the given patch
+        * \param[in] indices the point indices of p_idx's k-neighborhood in the point cloud
+        * \param[in] dists the distances from p_idx to all its k-neighbors
+        * \param[out] fpfh_histogram the resultant FPFH histogram representing the feature at the query point
         */
       void 
       weightPointSPFHSignature (const Eigen::MatrixXf &hist_f1, 
@@ -140,9 +146,9 @@ namespace pcl
                                 Eigen::VectorXf &fpfh_histogram);
 
       /** \brief Set the number of subdivisions for each angular feature interval.
-        * \param nr_bins_f1 number of subdivisions for the first angular feature
-        * \param nr_bins_f2 number of subdivisions for the second angular feature
-        * \param nr_bins_f3 number of subdivisions for the third angular feature
+        * \param[in] nr_bins_f1 number of subdivisions for the first angular feature
+        * \param[in] nr_bins_f2 number of subdivisions for the second angular feature
+        * \param[in] nr_bins_f3 number of subdivisions for the third angular feature
         */
       inline void
       setNrSubdivisions (int nr_bins_f1, int nr_bins_f2, int nr_bins_f3)
@@ -152,7 +158,11 @@ namespace pcl
         nr_bins_f3_ = nr_bins_f3;
       }
 
-      /** \brief Get the number of subdivisions for each angular feature interval. */
+      /** \brief Get the number of subdivisions for each angular feature interval. 
+        * \param[out] nr_bins_f1 number of subdivisions for the first angular feature
+        * \param[out] nr_bins_f2 number of subdivisions for the second angular feature
+        * \param[out] nr_bins_f3 number of subdivisions for the third angular feature
+         */
       inline void
       getNrSubdivisions (int &nr_bins_f1, int &nr_bins_f2, int &nr_bins_f3)
       {
@@ -163,10 +173,20 @@ namespace pcl
 
     protected:
 
+      /** \brief Estimate the set of all SPFH (Simple Point Feature Histograms) signatures for the input cloud
+        * \param[out] spfh_hist_lookup a lookup table for all the SPF feature indices
+        * \param[out] hist_f1 the resultant SPFH histogram for feature f1
+        * \param[out] hist_f2 the resultant SPFH histogram for feature f2
+        * \param[out] hist_f3 the resultant SPFH histogram for feature f3
+        */
+      void 
+      computeSPFHSignatures (std::vector<int> &spf_hist_lookup, 
+                             Eigen::MatrixXf &hist_f1, Eigen::MatrixXf &hist_f2, Eigen::MatrixXf &hist_f3);
+
       /** \brief Estimate the Fast Point Feature Histograms (FPFH) descriptors at a set of points given by
         * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the spatial locator in
         * setSearchMethod ()
-        * \param output the resultant point cloud model dataset that contains the FPFH feature estimates
+        * \param[out] output the resultant point cloud model dataset that contains the FPFH feature estimates
         */
       void 
       computeFeature (PointCloudOut &output);
@@ -183,12 +203,79 @@ namespace pcl
       /** \brief Placeholder for the f3 histogram. */
       Eigen::MatrixXf hist_f3_;
 
-    private:
       /** \brief Placeholder for a point's FPFH signature. */
       Eigen::VectorXf fpfh_histogram_;
 
       /** \brief Float constant = 1.0 / (2.0 * M_PI) */
       float d_pi_; 
+
+    private:
+      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+  };
+
+  /** \brief FPFHEstimation estimates the <b>Fast Point Feature Histogram (FPFH)</b> descriptor for a given point 
+    * cloud dataset containing points and normals.
+    *
+    * \note If you use this code in any academic work, please cite:
+    *
+    *   - R.B. Rusu, N. Blodow, M. Beetz.
+    *     Fast Point Feature Histograms (FPFH) for 3D Registration.
+    *     In Proceedings of the IEEE International Conference on Robotics and Automation (ICRA),
+    *     Kobe, Japan, May 12-17 2009.
+    *   - R.B. Rusu, A. Holzbach, N. Blodow, M. Beetz.
+    *     Fast Geometric Point Labeling using Conditional Random Fields.
+    *     In Proceedings of the 22nd IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS),
+    *     St. Louis, MO, USA, October 11-15 2009.
+    *
+    * \attention 
+    * The convention for FPFH features is:
+    *   - if a query point's nearest neighbors cannot be estimated, the FPFH feature will be set to NaN 
+    *     (not a number)
+    *   - it is impossible to estimate a FPFH descriptor for a point that
+    *     doesn't have finite 3D coordinates. Therefore, any point that contains
+    *     NaN data on x, y, or z, will have its FPFH feature property set to NaN.
+    *
+    * \note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
+    * \ref FPFHEstimationOMP for examples on parallel implementations of the FPFH (Fast Point Feature Histogram).
+    *
+    * \author Radu B. Rusu
+    * \ingroup features
+    */
+  template <typename PointInT, typename PointNT>
+  class FPFHEstimation<PointInT, PointNT, Eigen::MatrixXf> : public FPFHEstimation<PointInT, PointNT, pcl::FPFHSignature33>
+  {
+    public:
+      using FPFHEstimation<PointInT, PointNT, pcl::FPFHSignature33>::k_;
+      using FPFHEstimation<PointInT, PointNT, pcl::FPFHSignature33>::nr_bins_f1_;
+      using FPFHEstimation<PointInT, PointNT, pcl::FPFHSignature33>::nr_bins_f2_;
+      using FPFHEstimation<PointInT, PointNT, pcl::FPFHSignature33>::nr_bins_f3_;
+      using FPFHEstimation<PointInT, PointNT, pcl::FPFHSignature33>::hist_f1_;
+      using FPFHEstimation<PointInT, PointNT, pcl::FPFHSignature33>::hist_f2_;
+      using FPFHEstimation<PointInT, PointNT, pcl::FPFHSignature33>::hist_f3_;
+      using FPFHEstimation<PointInT, PointNT, pcl::FPFHSignature33>::indices_;
+      using FPFHEstimation<PointInT, PointNT, pcl::FPFHSignature33>::search_parameter_;
+      using FPFHEstimation<PointInT, PointNT, pcl::FPFHSignature33>::input_;
+      using FPFHEstimation<PointInT, PointNT, pcl::FPFHSignature33>::compute;
+      using FPFHEstimation<PointInT, PointNT, pcl::FPFHSignature33>::fpfh_histogram_;
+
+    private:
+      /** \brief Estimate the Fast Point Feature Histograms (FPFH) descriptors at a set of points given by
+        * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the spatial locator in
+        * setSearchMethod ()
+        * \param output the resultant point cloud model dataset that contains the FPFH feature estimates
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
+
+      /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      compute (pcl::PointCloud<pcl::FPFHSignature33> &output) {}
   };
 }
 

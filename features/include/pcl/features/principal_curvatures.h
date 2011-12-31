@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -44,12 +46,13 @@
 
 namespace pcl
 {
-  /** \brief @b PrincipalCurvaturesEstimation estimates the directions (eigenvectors) and magnitudes (eigenvalues) of
+  /** \brief PrincipalCurvaturesEstimation estimates the directions (eigenvectors) and magnitudes (eigenvalues) of
     * principal surface curvatures for a given point cloud dataset containing points and normals.
     *
-    * @note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
-    * \a NormalEstimationOpenMP and \a NormalEstimationTBB for examples on how to extend this to parallel implementations.
-    * \author Radu Bogdan Rusu, Jared Glover
+    * \note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
+    * \ref NormalEstimationOMP for an example on how to extend this to parallel implementations.
+    *
+    * \author Radu B. Rusu, Jared Glover
     * \ingroup features
     */
   template <typename PointInT, typename PointNT, typename PointOutT>
@@ -62,6 +65,7 @@ namespace pcl
       using Feature<PointInT, PointOutT>::k_;
       using Feature<PointInT, PointOutT>::search_parameter_;
       using Feature<PointInT, PointOutT>::surface_;
+      using Feature<PointInT, PointOutT>::input_;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
@@ -76,14 +80,14 @@ namespace pcl
       /** \brief Perform Principal Components Analysis (PCA) on the point normals of a surface patch in the tangent
        *  plane of the given point normal, and return the principal curvature (eigenvector of the max eigenvalue),
        *  along with both the max (pc1) and min (pc2) eigenvalues
-       * \param normals the point cloud normals
-       * \param p_idx the query point at which the least-squares plane was estimated
-       * \param indices the point cloud indices that need to be used
-       * \param pcx the principal curvature X direction
-       * \param pcy the principal curvature Y direction
-       * \param pcz the principal curvature Z direction
-       * \param pc1 the max eigenvalue of curvature
-       * \param pc2 the min eigenvalue of curvature
+       * \param[in] normals the point cloud normals
+       * \param[in] p_idx the query point at which the least-squares plane was estimated
+       * \param[in] indices the point cloud indices that need to be used
+       * \param[out] pcx the principal curvature X direction
+       * \param[out] pcy the principal curvature Y direction
+       * \param[out] pcz the principal curvature Z direction
+       * \param[out] pc1 the max eigenvalue of curvature
+       * \param[out] pc2 the min eigenvalue of curvature
        */
       void 
       computePointPrincipalCurvatures (const pcl::PointCloud<PointNT> &normals, 
@@ -95,7 +99,7 @@ namespace pcl
       /** \brief Estimate the principal curvature (eigenvector of the max eigenvalue), along with both the max (pc1)
         * and min (pc2) eigenvalues for all points given in <setInputCloud (), setIndices ()> using the surface in
         * setSearchSurface () and the spatial locator in setSearchMethod ()
-        * \param output the resultant point cloud model dataset that contains the principal curvature estimates
+        * \param[out] output the resultant point cloud model dataset that contains the principal curvature estimates
         */
       void 
       computeFeature (PointCloudOut &output);
@@ -117,6 +121,49 @@ namespace pcl
       EIGEN_ALIGN16 Eigen::Matrix3f eigenvectors_;
       /** \brief eigenvalues placeholder for a covariance matrix. */
       Eigen::Vector3f eigenvalues_;
+
+      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+  };
+
+  /** \brief PrincipalCurvaturesEstimation estimates the directions (eigenvectors) and magnitudes (eigenvalues) of
+    * principal surface curvatures for a given point cloud dataset containing points and normals.
+    *
+    * \note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
+    * \ref NormalEstimationOMP for an example on how to extend this to parallel implementations.
+    *
+    * \author Radu B. Rusu, Jared Glover
+    * \ingroup features
+    */
+  template <typename PointInT, typename PointNT>
+  class PrincipalCurvaturesEstimation<PointInT, PointNT, Eigen::MatrixXf> : public PrincipalCurvaturesEstimation<PointInT, PointNT, pcl::PrincipalCurvatures>
+  {
+    public:
+      using PrincipalCurvaturesEstimation<PointInT, PointNT, pcl::PrincipalCurvatures>::indices_;
+      using PrincipalCurvaturesEstimation<PointInT, PointNT, pcl::PrincipalCurvatures>::k_;
+      using PrincipalCurvaturesEstimation<PointInT, PointNT, pcl::PrincipalCurvatures>::search_parameter_;
+      using PrincipalCurvaturesEstimation<PointInT, PointNT, pcl::PrincipalCurvatures>::surface_;
+      using PrincipalCurvaturesEstimation<PointInT, PointNT, pcl::PrincipalCurvatures>::compute;
+      using PrincipalCurvaturesEstimation<PointInT, PointNT, pcl::PrincipalCurvatures>::input_;
+      using PrincipalCurvaturesEstimation<PointInT, PointNT, pcl::PrincipalCurvatures>::normals_;
+
+    private:
+      /** \brief Estimate the principal curvature (eigenvector of the max eigenvalue), along with both the max (pc1)
+        * and min (pc2) eigenvalues for all points given in <setInputCloud (), setIndices ()> using the surface in
+        * setSearchSurface () and the spatial locator in setSearchMethod ()
+        * \param[out] output the resultant point cloud model dataset that contains the principal curvature estimates
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
+
+      /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      compute (pcl::PointCloud<pcl::Normal> &output) {}
   };
 }
 

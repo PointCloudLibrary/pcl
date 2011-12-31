@@ -51,7 +51,7 @@ namespace pcl
     *    Proceedings of the third Eurographics symposium on Geometry processing
     *    July 2005, Vienna, Austria
     *
-    * \Note These features were meant to be used at keypoints detected by a detector using different smoothing radii
+    * \note These features were meant to be used at keypoints detected by a detector using different smoothing radii
     * (e.g., SmoothedSurfacesKeypoint)
     * \author Alexandru-Eugen Ichim
     */
@@ -149,6 +149,12 @@ namespace pcl
     private:
       float scale_h_;
       size_t N_, M_, N_prime_, M_prime_;
+
+      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
 }
 

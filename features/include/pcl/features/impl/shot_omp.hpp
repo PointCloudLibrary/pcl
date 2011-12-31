@@ -40,8 +40,7 @@
 #include "pcl/features/shot_omp.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointInT, typename PointNT, typename PointOutT>
-void
+template<typename PointInT, typename PointNT, typename PointOutT> void
 pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   if (threads_ < 0)
@@ -66,8 +65,6 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
   for (int i = 0; i < threads_; i++)
     shot[i].setZero (descLength_);
-
-  
 
   // Iterating over the entire index vector
   #pragma omp parallel for num_threads(threads_)
@@ -98,8 +95,7 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointNT, typename PointOutT>
-void
+template<typename PointNT, typename PointOutT> void
 pcl::SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   if (threads_ < 0)

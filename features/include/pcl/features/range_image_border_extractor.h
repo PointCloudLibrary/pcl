@@ -339,8 +339,14 @@ namespace pcl
       /** \brief Implementation of abstract derived function */
       virtual void
       computeFeature (PointCloudOut &output);
-  };
 
+    private:
+      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+  };
 }  // namespace end
 
 #include <pcl/features/impl/range_image_border_extractor.hpp>  // Definitions of templated and inline functions

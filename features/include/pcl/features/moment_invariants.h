@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -44,9 +46,9 @@ namespace pcl
 {
   /** \brief MomentInvariantsEstimation estimates the 3 moment invariants (j1, j2, j3) at each 3D point.
     *
-    * @note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
-    * \a NormalEstimationOpenMP and \a NormalEstimationTBB for examples on how to extend this to parallel implementations.
-    * \author Radu Bogdan Rusu
+    * \note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
+    * \ref NormalEstimationOMP for an example on how to extend this to parallel implementations.
+    * \author Radu B. Rusu
     * \ingroup features
     */
   template <typename PointInT, typename PointOutT>
@@ -59,6 +61,7 @@ namespace pcl
       using Feature<PointInT, PointOutT>::k_;
       using Feature<PointInT, PointOutT>::search_parameter_;
       using Feature<PointInT, PointOutT>::surface_;
+      using Feature<PointInT, PointOutT>::input_;
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
@@ -69,11 +72,11 @@ namespace pcl
       };
 
       /** \brief Compute the 3 moment invariants (j1, j2, j3) for a given set of points, using their indices.
-        * \param cloud the input point cloud
-        * \param indices the point cloud indices that need to be used
-        * \param j1 the resultant first moment invariant
-        * \param j2 the resultant second moment invariant
-        * \param j3 the resultant third moment invariant
+        * \param[in] cloud the input point cloud
+        * \param[in] indices the point cloud indices that need to be used
+        * \param[out] j1 the resultant first moment invariant
+        * \param[out] j2 the resultant second moment invariant
+        * \param[out] j3 the resultant third moment invariant
         */
       void 
       computePointMomentInvariants (const pcl::PointCloud<PointInT> &cloud, 
@@ -81,10 +84,10 @@ namespace pcl
                                     float &j1, float &j2, float &j3);
 
       /** \brief Compute the 3 moment invariants (j1, j2, j3) for a given set of points, using their indices.
-        * \param cloud the input point cloud
-        * \param j1 the resultant first moment invariant
-        * \param j2 the resultant second moment invariant
-        * \param j3 the resultant third moment invariant
+        * \param[in] cloud the input point cloud
+        * \param[out] j1 the resultant first moment invariant
+        * \param[out] j2 the resultant second moment invariant
+        * \param[out] j3 the resultant third moment invariant
         */
       void 
       computePointMomentInvariants (const pcl::PointCloud<PointInT> &cloud, 
@@ -94,7 +97,7 @@ namespace pcl
 
       /** \brief Estimate moment invariants for all points given in <setInputCloud (), setIndices ()> using the surface
         * in setSearchSurface () and the spatial locator in setSearchMethod ()
-        * \param output the resultant point cloud model dataset that contains the moment invariants
+        * \param[out] output the resultant point cloud model dataset that contains the moment invariants
         */
       void 
       computeFeature (PointCloudOut &output);
@@ -105,6 +108,45 @@ namespace pcl
 
       /** \brief Internal data vector. */
       Eigen::Vector4f temp_pt_;
+
+      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+  };
+
+  /** \brief MomentInvariantsEstimation estimates the 3 moment invariants (j1, j2, j3) at each 3D point.
+    *
+    * \note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
+    * \ref NormalEstimationOMP for an example on how to extend this to parallel implementations.
+    * \author Radu B. Rusu
+    * \ingroup features
+    */
+  template <typename PointInT>
+  class MomentInvariantsEstimation<PointInT, Eigen::MatrixXf>: public MomentInvariantsEstimation<PointInT, pcl::MomentInvariants>
+  {
+    public:
+      using MomentInvariantsEstimation<PointInT, pcl::MomentInvariants>::k_;
+      using MomentInvariantsEstimation<PointInT, pcl::MomentInvariants>::indices_;
+      using MomentInvariantsEstimation<PointInT, pcl::MomentInvariants>::search_parameter_;
+      using MomentInvariantsEstimation<PointInT, pcl::MomentInvariants>::surface_;
+      using MomentInvariantsEstimation<PointInT, pcl::MomentInvariants>::input_;
+      using MomentInvariantsEstimation<PointInT, pcl::MomentInvariants>::compute;
+
+   private:
+      /** \brief Estimate moment invariants for all points given in <setInputCloud (), setIndices ()> using the surface
+        * in setSearchSurface () and the spatial locator in setSearchMethod ()
+        * \param[out] output the resultant point cloud model dataset that contains the moment invariants
+        */
+      void 
+      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
+
+      /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
+        * \param[out] output the output point cloud 
+        */
+      void 
+      compute (pcl::PointCloud<pcl::Normal> &output) {}
   };
 }
 

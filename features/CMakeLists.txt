@@ -6,15 +6,16 @@ set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
+PCL_ADD_DOC(${SUBSYS_NAME})
+
 if(build)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-    set(incs 
+    set(incs
         include/pcl/${SUBSYS_NAME}/cvfh.h
         include/pcl/${SUBSYS_NAME}/feature.h
         include/pcl/${SUBSYS_NAME}/fpfh.h
         include/pcl/${SUBSYS_NAME}/fpfh_omp.h
-        include/pcl/${SUBSYS_NAME}/integral_image_2d.h
         include/pcl/${SUBSYS_NAME}/integral_image2D.h
         include/pcl/${SUBSYS_NAME}/integral_image_normal.h
         include/pcl/${SUBSYS_NAME}/intensity_gradient.h
@@ -44,13 +45,17 @@ if(build)
         include/pcl/${SUBSYS_NAME}/boundary.h
         include/pcl/${SUBSYS_NAME}/range_image_border_extractor.h
         )
-    
-    set(impl_incs 
+
+      set(feature_evaluation_incs
+          include/pcl/${SUBSYS_NAME}/feature_evaluation/feature_evaluation_framework.h
+          include/pcl/${SUBSYS_NAME}/feature_evaluation/feature_test.h
+          )
+
+    set(impl_incs
         include/pcl/${SUBSYS_NAME}/impl/cvfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/feature.hpp
         include/pcl/${SUBSYS_NAME}/impl/fpfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/fpfh_omp.hpp
-        include/pcl/${SUBSYS_NAME}/impl/integral_image_2d.hpp
         include/pcl/${SUBSYS_NAME}/impl/integral_image2D.hpp
         include/pcl/${SUBSYS_NAME}/impl/integral_image_normal.hpp
         include/pcl/${SUBSYS_NAME}/impl/intensity_gradient.hpp
@@ -80,7 +85,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/range_image_border_extractor.hpp
         )
 
-    set(srcs 
+    set(srcs
         src/feature.cpp
         src/boundary.cpp
         src/cvfh.cpp
@@ -105,7 +110,7 @@ if(build)
         src/spin_image.cpp
         src/principal_curvatures.cpp
         src/rift.cpp
-        src/rsd.cpp 
+        src/rsd.cpp
         src/statistical_multiscale_interest_region_extraction.cpp
         src/vfh.cpp
         src/3dsc.cpp
@@ -123,17 +128,21 @@ if(build)
       "${SUBSYS_DEPS}" "" "" "" "")
     # Install headers
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/feature_evaluation ${feature_evaluation_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
-    set(border_srcs src/boundary.cpp
+    set(border_srcs
+        src/boundary.cpp
         src/range_image_border_extractor.cpp
         )
 
-    set(border_incs include/pcl/${SUBSYS_NAME}/boundary.h
+    set(border_incs
+        include/pcl/${SUBSYS_NAME}/boundary.h
         include/pcl/${SUBSYS_NAME}/range_image_border_extractor.h
         )
 
-    set(border_impl_incs include/pcl/${SUBSYS_NAME}/impl/boundary.hpp
+    set(border_impl_incs
+        include/pcl/${SUBSYS_NAME}/impl/boundary.hpp
         include/pcl/${SUBSYS_NAME}/impl/range_image_border_extractor.hpp
         )
 
@@ -148,6 +157,6 @@ if(build)
     # Install headers
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${border_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${border_impl_incs})
-    
+
     add_subdirectory(test)
 endif(build)

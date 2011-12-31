@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -281,6 +283,42 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> void
+pcl::Feature<PointInT, PointOutT>::compute (pcl::PointCloud<Eigen::MatrixXf> &output)
+{
+  if (!initCompute ())
+  {
+    output.width = output.height = 0;
+    output.points.resize (0, 0);
+    return;
+  }
+
+  // Copy the properties
+  output.properties.acquisition_time = input_->header.stamp;
+  output.properties.sensor_origin = input_->sensor_origin_;
+  output.properties.sensor_orientation = input_->sensor_orientation_;
+  
+  // Check if the output will be computed for all points or only a subset
+  if (indices_->size () != input_->points.size ())
+  {
+    output.width = (int) indices_->size ();
+    output.height = 1;
+  }
+  else
+  {
+    output.width = input_->width;
+    output.height = input_->height;
+  }
+
+  output.is_dense = input_->is_dense;
+
+  // Perform the actual feature computation
+  computeFeature (output);
+
+  deinitCompute ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> bool
@@ -306,6 +344,37 @@ pcl::FeatureFromNormals<PointInT, PointNT, PointOutT>::initCompute ()
     PCL_ERROR ("[pcl::%s::initCompute] ", getClassName ().c_str ());
     PCL_ERROR ("The number of points in the input dataset differs from ");
     PCL_ERROR ("the number of points in the dataset containing the normals!\n");
+    Feature<PointInT, PointOutT>::deinitCompute();
+    return (false);
+  }
+
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointLT, typename PointOutT> bool
+pcl::FeatureFromLabels<PointInT, PointLT, PointOutT>::initCompute ()
+{
+  if (!Feature<PointInT, PointOutT>::initCompute ())
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] Init failed.\n", getClassName ().c_str ());
+    return (false);
+  }
+
+  // Check if input normals are set
+  if (!labels_)
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] No input dataset containing labels was given!\n", getClassName ().c_str ());
+    Feature<PointInT, PointOutT>::deinitCompute();
+    return (false);
+  }
+
+  // Check if the size of normals is the same as the size of the surface
+  if (labels_->points.size () != surface_->points.size ())
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] The number of points in the input dataset differs from the number of points in the dataset containing the labels!\n", getClassName ().c_str ());
     Feature<PointInT, PointOutT>::deinitCompute();
     return (false);
   }

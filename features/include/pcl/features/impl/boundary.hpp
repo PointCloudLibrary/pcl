@@ -45,7 +45,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> bool
-  pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::isBoundaryPoint (
+pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::isBoundaryPoint (
       const pcl::PointCloud<PointInT> &cloud, int q_idx, 
       const std::vector<int> &indices, 
       const Eigen::Vector4f &u, const Eigen::Vector4f &v, 
@@ -56,7 +56,7 @@ template <typename PointInT, typename PointNT, typename PointOutT> bool
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> bool
-  pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::isBoundaryPoint (
+pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::isBoundaryPoint (
       const pcl::PointCloud<PointInT> &cloud, const PointInT &q_point, 
       const std::vector<int> &indices, 
       const Eigen::Vector4f &u, const Eigen::Vector4f &v, 
@@ -111,7 +111,7 @@ template <typename PointInT, typename PointNT, typename PointOutT> bool
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void
-  pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
+pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
@@ -120,26 +120,109 @@ template <typename PointInT, typename PointNT, typename PointOutT> void
 
   Eigen::Vector4f u = Eigen::Vector4f::Zero (), v = Eigen::Vector4f::Zero ();
 
-  // Iterating over the entire index vector
-  for (size_t idx = 0; idx < indices_->size (); ++idx)
+  output.is_dense = true;
+  // Save a few cycles by not checking every point for NaN/Inf values if the cloud is set to dense
+  if (input_->is_dense)
   {
-    if (!pcl_isfinite (input_->points[(*indices_)[idx]].x) || 
-        !pcl_isfinite (input_->points[(*indices_)[idx]].y) || 
-        !pcl_isfinite (input_->points[(*indices_)[idx]].z))
+    // Iterating over the entire index vector
+    for (size_t idx = 0; idx < indices_->size (); ++idx)
     {
-      output.points[idx].boundary_point = 0;
-      continue;
+      if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+      {
+        output.points[idx].boundary_point = std::numeric_limits<float>::quiet_NaN ();
+        output.is_dense = false;
+        continue;
+      }
+
+      // Obtain a coordinate system on the least-squares plane
+      //v = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().unitOrthogonal ();
+      //u = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().cross3 (v);
+      getCoordinateSystemOnPlane (normals_->points[(*indices_)[idx]], u, v);
+
+      // Estimate whether the point is lying on a boundary surface or not
+      output.points[idx].boundary_point = isBoundaryPoint (*surface_, input_->points[(*indices_)[idx]], nn_indices, u, v, angle_threshold_);
     }
+  }
+  else
+  {
+    // Iterating over the entire index vector
+    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    {
+      if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+          this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+      {
+        output.points[idx].boundary_point = std::numeric_limits<float>::quiet_NaN ();
+        output.is_dense = false;
+        continue;
+      }
 
-    this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
+      // Obtain a coordinate system on the least-squares plane
+      //v = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().unitOrthogonal ();
+      //u = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().cross3 (v);
+      getCoordinateSystemOnPlane (normals_->points[(*indices_)[idx]], u, v);
 
-    // Obtain a coordinate system on the least-squares plane
-    //v = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().unitOrthogonal ();
-    //u = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().cross3 (v);
-    getCoordinateSystemOnPlane (normals_->points[(*indices_)[idx]], u, v);
+      // Estimate whether the point is lying on a boundary surface or not
+      output.points[idx].boundary_point = isBoundaryPoint (*surface_, input_->points[(*indices_)[idx]], nn_indices, u, v, angle_threshold_);
+    }
+  }
+}
 
-    // Estimate whether the point is lying on a boundary surface or not
-    output.points[idx].boundary_point = isBoundaryPoint (*surface_, input_->points[(*indices_)[idx]], nn_indices, u, v, angle_threshold_);
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointNT> void
+pcl::BoundaryEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output)
+{
+  // Allocate enough space to hold the results
+  // \note This resize is irrelevant for a radiusSearch ().
+  std::vector<int> nn_indices (k_);
+  std::vector<float> nn_dists (k_);
+
+  Eigen::Vector4f u = Eigen::Vector4f::Zero (), v = Eigen::Vector4f::Zero ();
+
+  output.is_dense = true;
+  output.points.resize (indices_->size (), 1);
+  // Save a few cycles by not checking every point for NaN/Inf values if the cloud is set to dense
+  if (input_->is_dense)
+  {
+    // Iterating over the entire index vector
+    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    {
+      if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+      {
+        output.points (idx, 0) = std::numeric_limits<float>::quiet_NaN ();
+        output.is_dense = false;
+        continue;
+      }
+
+      // Obtain a coordinate system on the least-squares plane
+      //v = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().unitOrthogonal ();
+      //u = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().cross3 (v);
+      getCoordinateSystemOnPlane (normals_->points[(*indices_)[idx]], u, v);
+
+      // Estimate whether the point is lying on a boundary surface or not
+      output.points (idx, 0) = isBoundaryPoint (*surface_, input_->points[(*indices_)[idx]], nn_indices, u, v, angle_threshold_);
+    }
+  }
+  else
+  {
+    // Iterating over the entire index vector
+    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    {
+      if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+          this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+      {
+        output.points (idx, 0) = std::numeric_limits<float>::quiet_NaN ();
+        output.is_dense = false;
+        continue;
+      }
+
+      // Obtain a coordinate system on the least-squares plane
+      //v = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().unitOrthogonal ();
+      //u = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().cross3 (v);
+      getCoordinateSystemOnPlane (normals_->points[(*indices_)[idx]], u, v);
+
+      // Estimate whether the point is lying on a boundary surface or not
+      output.points (idx, 0) = isBoundaryPoint (*surface_, input_->points[(*indices_)[idx]], nn_indices, u, v, angle_threshold_);
+    }
   }
 }
 

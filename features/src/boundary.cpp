@@ -42,4 +42,5 @@
 
 // Instantiations of specific point types
 PCL_INSTANTIATE_PRODUCT(BoundaryEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::Boundary)));
+PCL_INSTANTIATE_PRODUCT(BoundaryEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)));
 
