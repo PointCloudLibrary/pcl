@@ -189,8 +189,8 @@ namespace pcl
       vtkSmartPointer<vtkPolyData> vtk_polygons_;
 
       /// Parameters
-      float convergence_;
       int num_iter_;
+      float convergence_;
       float relaxation_factor_;
       bool feature_edge_smoothing_;
       float feature_angle_;
