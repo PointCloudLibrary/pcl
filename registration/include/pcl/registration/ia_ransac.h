@@ -183,7 +183,7 @@ namespace pcl
 
       /** \brief Specify the error function to minimize
        * \note This call is optional.  TruncatedError will be used by default
-       * \param A shared pointer to a subclass of SampleConsensusInitialAlignment::ErrorFunctor
+       * \param[in] error_functor a shared pointer to a subclass of SampleConsensusInitialAlignment::ErrorFunctor
        */
       void
       setErrorFunction (const boost::shared_ptr<ErrorFunctor> & error_functor) { error_functor_ = error_functor; }

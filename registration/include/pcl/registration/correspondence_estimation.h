@@ -44,7 +44,7 @@
 #include <pcl/pcl_base.h>
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/kdtree/kdtree_flann.h>
-#include "pcl/win32_macros.h"
+#include <pcl/pcl_macros.h>
 
 #include <pcl/registration/correspondence_types.h>
 

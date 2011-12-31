@@ -123,7 +123,7 @@ namespace pcl
             Eigen::Matrix4f &transformation_matrix);
 
         /** \brief Set the function we use to warp points. Defaults to rigid 6D warp.
-          * \param[in] shared pointer to object that warps points
+          * \param[in] warp_fcn a shared pointer to an object that warps points
           */
         void
         setWarpFunction (const boost::shared_ptr<WarpPointRigid<PointSource, PointTarget> > &warp_fcn)

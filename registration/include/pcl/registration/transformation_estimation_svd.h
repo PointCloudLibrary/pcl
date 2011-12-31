@@ -103,11 +103,11 @@ namespace pcl
           * \param[in] correspondences the vector of correspondences between source and target point cloud
           * \param[out] transformation_matrix the resultant transformation matrix
           */
-        inline void
+        void
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            const Correspondences &correspondences,
+            const pcl::Correspondences &correspondences,
             Eigen::Matrix4f &transformation_matrix);
 
       protected:

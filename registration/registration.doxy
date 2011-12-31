@@ -1,0 +1,27 @@
+/**
+  \addtogroup registration Module registration
+
+  \section secRegistrationPresentation Overview
+
+Combining several datasets into a global consistent model is usually performed
+using a technique called registration. The key idea is to identify
+corresponding points between the data sets and find a transformation that
+minimizes the distance (alignment error) between corresponding points. This
+process is repeated, since correspondence search is affected by the relative
+position and orientation of the data sets. Once the alignment errors fall below
+a given threshold, the registration is said to be complete.
+
+The <b>pcl_registration</b> library implements a plethora of point cloud
+registration algorithms for both organized an unorganized (general purpose)
+datasets.
+
+\image html http://www.pointclouds.org/assets/images/contents/documentation/registration_outdoor.png
+\image html http://www.pointclouds.org/assets/images/contents/documentation/registration_closeup.png
+
+  \section secRegistrationRequirements Requirements
+  - \ref common "common"
+  - \ref kdtree "kdtree"
+  - \ref sample_consensus "sample_consensus"
+  - \ref features "features"
+
+*/

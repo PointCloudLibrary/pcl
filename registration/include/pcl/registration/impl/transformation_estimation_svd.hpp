@@ -130,7 +130,7 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::estima
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> inline void
+template <typename PointSource, typename PointTarget> void
 pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,

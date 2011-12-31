@@ -131,8 +131,8 @@ namespace pcl
       }
 
       /** \brief Provide a pointer to the input target (e.g., the point cloud that we want to align the input source to)
-       * \param cloud the input point cloud target
-       */
+        * \param[in] target the input point cloud target
+        */
       inline void 
       setInputTarget (const PointCloudTargetConstPtr &target)
       {
@@ -142,11 +142,11 @@ namespace pcl
 
       /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using an iterative
         * non-linear Levenberg-Marquardt approach.
-        * \param cloud_src the source point cloud dataset
-        * \param indices_src the vector of indices describing the points of interest in \a cloud_src
-        * \param cloud_tgt the target point cloud dataset
-        * \param indices_tgt the vector of indices describing the correspondences of the interst points from \a indices_src
-        * \param transformation_matrix the resultant transformation matrix
+        * \param[in] cloud_src the source point cloud dataset
+        * \param[in] indices_src the vector of indices describing the points of interest in \a cloud_src
+        * \param[in] cloud_tgt the target point cloud dataset
+        * \param[in] indices_tgt the vector of indices describing the correspondences of the interst points from \a indices_src
+        * \param[out] transformation_matrix the resultant transformation matrix
         */
       void
       estimateRigidTransformationBFGS (const PointCloudSource &cloud_src,

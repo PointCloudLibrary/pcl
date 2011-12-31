@@ -38,7 +38,7 @@
 #ifndef PCL_REGISTRATION_IMPL_PYRAMID_FEATURE_MATCHING_H_
 #define PCL_REGISTRATION_IMPL_PYRAMID_FEATURE_MATCHING_H_
 
-#include <pcl/win32_macros.h>
+#include <pcl/pcl_macros.h>
 
 #include "pcl/registration/pyramid_feature_matching.h"
 

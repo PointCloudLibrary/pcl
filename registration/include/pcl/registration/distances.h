@@ -103,6 +103,7 @@ namespace pcl
       * (for more information, see 
       * \param[in] val the norm difference between two vectors
       * \param[in] clipping the clipping value
+      * \param[in] slope the slope. Default: 4
       */
     inline double
     gedikli (double val, double clipping, double slope = 4) 

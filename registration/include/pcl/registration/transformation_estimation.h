@@ -48,13 +48,11 @@ namespace pcl
 {
   namespace registration
   {
-    /** @b TransformationEstimation represents the base class for methods for transformation estimation based on:
-      * <ul>
-      * <li>correspondence vectors
-      * <li>two point clouds (source and target) of the same size
-      * <li>a point cloud with a set of indices (source), and another point cloud (target)
-      * <li>two point clouds with two sets of indices (source and target) of the same size
-      * </ul>
+    /** \brief TransformationEstimation represents the base class for methods for transformation estimation based on:
+      *   - correspondence vectors
+      *   - two point clouds (source and target) of the same size
+      *   - a point cloud with a set of indices (source), and another point cloud (target)
+      *   - two point clouds with two sets of indices (source and target) of the same size
       *
       * \author Dirk Holz, Radu B. Rusu
       * \ingroup registration
