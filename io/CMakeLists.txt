@@ -6,6 +6,8 @@ set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk)
 
+PCL_ADD_DOC(${SUBSYS_NAME})
+
 if(build)
     OPTION(BUILD_OPENNI "Build the OpenNI Grabber." ON)
     MARK_AS_ADVANCED(BUILD_OPENNI)
@@ -16,10 +18,8 @@ if(build)
     endif()
     if(OPENNI_FOUND)
         set(OPENNI_GRABBER_INCLUDES
-            include/pcl/io/grabber.h
             include/pcl/io/openni_grabber.h
             include/pcl/io/oni_grabber.h
-            include/pcl/io/pcd_grabber.h
             )
         set(OPENNI_INCLUDES
             include/pcl/io/openni_camera/openni_depth_image.h
@@ -50,7 +50,6 @@ if(build)
             src/openni_camera/openni_image_rgb24.cpp
             src/openni_grabber.cpp
             src/oni_grabber.cpp
-            src/pcd_grabber.cpp
             )
     endif(OPENNI_FOUND)
 
@@ -63,6 +62,7 @@ if(build)
     endif ()
 
     set(srcs 
+        src/pcd_grabber.cpp
         src/pcd_io.cpp
         src/vtk_io.cpp
         src/ply_io.cpp
@@ -77,6 +77,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/file_io.h
         include/pcl/${SUBSYS_NAME}/lzf.h
         include/pcl/${SUBSYS_NAME}/io.h
+        include/pcl/${SUBSYS_NAME}/grabber.h
+        include/pcl/${SUBSYS_NAME}/pcd_grabber.h
         include/pcl/${SUBSYS_NAME}/pcd_io.h
         include/pcl/${SUBSYS_NAME}/pcl_io_exception.h
         include/pcl/${SUBSYS_NAME}/vtk_io.h
@@ -102,11 +104,13 @@ if(build)
        )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
+
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${VTK_INCLUDE_DIRECTORIES})
-    link_directories(${VTK_LINK_DIRECTORIES})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
+    link_directories(${VTK_LINK_DIRECTORIES})
     target_link_libraries(${LIB_NAME} pcl_common ${VTK_IO_TARGET_LINK_LIBRARIES})
+
     if(OPENNI_FOUND)
       target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
     endif(OPENNI_FOUND)

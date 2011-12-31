@@ -2,7 +2,6 @@
  * Software License Agreement (BSD License)
  *
  *  Copyright (c) 2011 Willow Garage, Inc.
- *    Patrick Mihelich <mihelich@willowgarage.com>
  *
  *  All rights reserved.
  *
@@ -47,6 +46,7 @@ namespace openni_wrapper
 
 /**
  * @brief Class containing just a reference to IR meta data.
+ * @author Patrick Mihelich <mihelich@willowgarage.com>, Suat Gedikli <gedikli@willowgarage.com>
  */
 class PCL_EXPORTS IRImage
 {

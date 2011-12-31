@@ -70,8 +70,14 @@ class OpenNIIO
     typedef typename Cloud::ConstPtr CloudConstPtr;
 
     OpenNIIO (const std::string& device_id = "")
-      : device_id_(device_id)
+      : device_id_ (device_id)
     {
+    }
+
+    virtual ~OpenNIIO ()
+    {
+      if (interface_)
+        interface_->stop ();
     }
     
     void 
@@ -84,18 +90,21 @@ class OpenNIIO
     }
 
     void
-    run ()
+    init ()
     {
-      pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
+      interface_ = new pcl::OpenNIGrabber (device_id_);
 
       boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIIO::cloud_cb, this, _1);
-      boost::signals2::connection c = interface->registerCallback (f);
+      boost::signals2::connection c = interface_->registerCallback (f);
      
-      interface->start ();
+      interface_->start ();
       
-      PCDWriter w;
-      w.setMapSynchronization (false);    // Setting this to true will enable msync() => drop I/O performance
+      writer_.setMapSynchronization (false);    // Setting this to true will enable msync() => drop I/O performance
+    }
 
+    void
+    run ()
+    {
       while (true)
       {
         if (cloud_)
@@ -105,17 +114,35 @@ class OpenNIIO
 
           CloudConstPtr temp_cloud;
           temp_cloud.swap (cloud_);
-          w.writeBinaryCompressed<PointType> ("test_binary.pcd", *temp_cloud);
+          writer_.writeBinaryCompressed ("test_binary.pcd", *temp_cloud);
         }
-        boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+        boost::this_thread::sleep (boost::posix_time::milliseconds (1));
       }
+    }
 
-      interface->stop ();
+    void
+    runEigen ()
+    {
+      while (true)
+      {
+        if (cloud_)
+        {
+          //boost::mutex::scoped_lock lock (mtx_);
+          FPS_CALC ("write");
+
+          CloudConstPtr temp_cloud;
+          temp_cloud.swap (cloud_);
+          writer_.writeBinaryCompressedEigen ("test_binary.pcd", *temp_cloud);
+        }
+        boost::this_thread::sleep (boost::posix_time::milliseconds (1));
+      }
     }
 
     std::string device_id_;
     boost::mutex mtx_;
     CloudConstPtr cloud_;
+    pcl::Grabber* interface_;
+    PCDWriter writer_;
 };
 
 void
@@ -153,16 +180,25 @@ main (int argc, char ** argv)
   }
 
   pcl::OpenNIGrabber grabber ("");
-  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
+  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_eigen> ())
+  {
+    PCL_INFO ("Eigen mode enabled.\n");
+    OpenNIIO<Eigen::MatrixXf> v ("");
+    v.init ();
+    v.runEigen ();
+  }
+  else if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
   {
     PCL_INFO ("PointXYZRGB mode enabled.\n");
     OpenNIIO<pcl::PointXYZRGB> v ("");
+    v.init ();
     v.run ();
   }
   else
   {
     PCL_INFO ("PointXYZ mode enabled.\n");
     OpenNIIO<pcl::PointXYZ> v ("");
+    v.init ();
     v.run ();
   }
   return (0);

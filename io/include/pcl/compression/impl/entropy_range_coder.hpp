@@ -252,7 +252,7 @@ namespace pcl
     unsigned int i, f;
     char out;
 
-    unsigned long frequencyTableSize;
+    uint64_t frequencyTableSize;
     uint8_t frequencyTableByteSize;
 
     // define numerical limits
@@ -331,7 +331,7 @@ namespace pcl
       }
     }
 
-    // calculate amount of bytes per frequeny table entry
+    // calculate amount of bytes per frequency table entry
     frequencyTableByteSize = (uint8_t)ceil (Log2 (cFreqTable_[frequencyTableSize - 1]) / 8.0);
 
     // write size of frequency table to output stream
@@ -408,7 +408,7 @@ namespace pcl
     unsigned int outputBufPos;
     unsigned long output_size;
 
-    unsigned long frequencyTableSize;
+    uint64_t frequencyTableSize;
     unsigned char frequencyTableByteSize;
 
     unsigned long streamByteCount;
@@ -458,7 +458,7 @@ namespace pcl
     {
       uint64_t count = (code - low) / (range /= cFreqTable_[frequencyTableSize - 1]);
 
-      // sybmol lookup in cumulative frequency table
+      // symbol lookup in cumulative frequency table
       uint64_t symbol = 0;
       uint64_t sSize = (frequencyTableSize - 1) / 2;
       while (sSize > 0)

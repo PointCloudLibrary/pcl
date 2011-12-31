@@ -2,7 +2,6 @@
  * Software License Agreement (BSD License)
  *
  *  Copyright (c) 2011 Willow Garage, Inc.
- *    Suat Gedikli <gedikli@willowgarage.com>
  *
  *  All rights reserved.
  *
@@ -48,38 +47,40 @@
 namespace openni_wrapper
 {
 
-/**
- * @brief Concrete implementation of the interface OpenNIDevice for a MS Kinect device.
- * @author Suat Gedikli
- * @date 02.january 2011
- * @ingroup io
- */
-class DeviceKinect : public OpenNIDevice
-{
-  friend class OpenNIDriver;
-public:
-  DeviceKinect (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node);
-  virtual ~DeviceKinect () throw ();
+  /**
+   * @brief Concrete implementation of the interface OpenNIDevice for a MS Kinect device.
+   * @author Suat Gedikli
+   * @date 02.january 2011
+   * @ingroup io
+   */
+  class DeviceKinect : public OpenNIDevice
+  {
+    friend class OpenNIDriver;
+  public:
+    DeviceKinect (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node);
+    virtual ~DeviceKinect () throw ();
 
-  inline void setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& debayering_method) throw ();
-  inline const ImageBayerGRBG::DebayeringMethod& getDebayeringMethod () const throw ();
+    inline void setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& debayering_method) throw ();
+    inline const ImageBayerGRBG::DebayeringMethod& getDebayeringMethod () const throw ();
 
-protected:
-  virtual boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw ();
-  void enumAvailableModes () throw ();
-  virtual bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ();
-  ImageBayerGRBG::DebayeringMethod debayering_method_;
-};
+  protected:
+    virtual boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw ();
+    void enumAvailableModes () throw ();
+    virtual bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ();
+    ImageBayerGRBG::DebayeringMethod debayering_method_;
+  } ;
 
-void DeviceKinect::setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& debayering_method) throw ()
-{
-  debayering_method_ = debayering_method;
-}
+  void
+  DeviceKinect::setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& debayering_method) throw ()
+  {
+    debayering_method_ = debayering_method;
+  }
 
-const ImageBayerGRBG::DebayeringMethod& DeviceKinect::getDebayeringMethod () const throw ()
-{
-  return debayering_method_;
-}
+  const ImageBayerGRBG::DebayeringMethod&
+  DeviceKinect::getDebayeringMethod () const throw ()
+  {
+    return debayering_method_;
+  }
 } // namespace
 
 #endif

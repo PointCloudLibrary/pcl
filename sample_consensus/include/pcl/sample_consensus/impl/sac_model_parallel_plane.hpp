@@ -99,14 +99,10 @@ pcl::SampleConsensusModelParallelPlane<PointT>::isModelValid (const Eigen::Vecto
     // Obtain the plane normal
     Eigen::Vector4f coeff = model_coefficients;
     coeff[3] = 0;
+    coeff.normalize ();
 
-    Eigen::Vector4f axis (axis_[0], axis_[1], axis_[2], 0);
-    double angle_diff = fabs (getAngle3D (axis, coeff));
-    //angle_diff = (std::min) (angle_diff, M_PI - angle_diff);
-    angle_diff = fabs (angle_diff - (M_PI/2.0));
-    // Check whether the current plane model satisfies our angle threshold criterion with respect to the given axis
-    if (angle_diff > eps_angle_)
-      return (false);
+    if (fabs (axis_.dot (coeff)) < cos_angle_)
+      return  (false);
   }
 
   return (true);

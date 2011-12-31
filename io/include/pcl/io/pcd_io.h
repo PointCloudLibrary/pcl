@@ -40,6 +40,7 @@
 #ifndef PCL_IO_PCD_IO_H_
 #define PCL_IO_PCD_IO_H_
 
+#include <pcl/point_cloud.h>
 #include "pcl/io/file_io.h"
 
 namespace pcl
@@ -58,26 +59,23 @@ namespace pcl
       /** \brief Various PCD file versions.
         *
         * PCD_V6 represents PCD files with version 0.6, which contain the following fields:
-        * <ul>
-        *  <li> lines beginning with # are treated as comments</li>
-        *  <li> FIELDS ...</li>
-        *  <li> SIZE ...</li>
-        *  <li> TYPE ...</li>
-        *  <li> COUNT ...</li>
-        *  <li> WIDTH ...</li>
-        *  <li> HEIGHT ...</li>
-        *  <li> POINTS ...</li>
-        *  <li> DATA ascii/binary</li>
-        * </ul>
-        * Everything that follows <b>DATA</b> is intepreted as data points and
+        *   - lines beginning with # are treated as comments
+        *   - FIELDS ...
+        *   - SIZE ...
+        *   - TYPE ...
+        *   - COUNT ...
+        *   - WIDTH ...
+        *   - HEIGHT ...
+        *   - POINTS ...
+        *   - DATA ascii/binary
+        * 
+        * Everything that follows \b DATA is intepreted as data points and
         * will be read accordingly.
         *
         * PCD_V7 represents PCD files with version 0.7 and has an important
         * addon: it adds sensor origin/orientation (aka viewpoint) information
         * to a dataset through the use of a new header field:
-        * <ul>
-        *  <li> VIEWPOINT tx ty tz qw qx qy qz</li>
-        * </ul>
+        *   - VIEWPOINT tx ty tz qw qx qy qz
         */
       enum
       {
@@ -214,6 +212,16 @@ namespace pcl
       generateHeader (const pcl::PointCloud<PointT> &cloud, 
                       const int nr_points = std::numeric_limits<int>::max ());
 
+      /** \brief Generate the header of a PCD file format
+        * \note This version is specialized for PointCloud<Eigen::MatrixXf> data types. 
+        * \param[in] cloud the point cloud data message
+        * \param[in] nr_points if given, use this to fill in WIDTH, HEIGHT (=1), and POINTS in the header
+        * By default, nr_points is set to INTMAX, and the data in the header is used instead.
+        */
+      std::string
+      generateHeaderEigen (const pcl::PointCloud<Eigen::MatrixXf> &cloud, 
+                           const int nr_points = std::numeric_limits<int>::max ());
+
       /** \brief Save point cloud data to a PCD file containing n-D points, in ASCII format
         * \param[in] file_name the output file name
         * \param[in] cloud the point cloud data message
@@ -326,6 +334,15 @@ namespace pcl
       template <typename PointT> int 
       writeBinaryCompressed (const std::string &file_name, 
                              const pcl::PointCloud<PointT> &cloud);
+
+      /** \brief Save point cloud data to a binary comprssed PCD file.
+        * \note This version is specialized for PointCloud<Eigen::MatrixXf> data types. 
+        * \param[in] file_name the output file name
+        * \param[in] cloud the point cloud data message
+        */
+      int 
+      writeBinaryCompressedEigen (const std::string &file_name, 
+                                  const pcl::PointCloud<Eigen::MatrixXf> &cloud);
 
       /** \brief Save point cloud data to a PCD file containing n-D points, in BINARY format
         * \param[in] file_name the output file name

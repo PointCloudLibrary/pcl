@@ -69,7 +69,7 @@ namespace pcl
 #  error
 #endif
       ///@return endianess of the host machine
-      Format getEndianess()
+      inline Format getEndianess()
       {
 #ifdef PCL_LITTLE_ENDIAN
         return LITTLE_ENDIAN_FORMAT;
@@ -106,7 +106,7 @@ namespace pcl
         ALL               = 0xFFFFFFF
       };
       ///@return a property type from its type name
-      int getTypeFromTypeName(const std::string& type_name) 
+      inline int getTypeFromTypeName(const std::string& type_name) 
       {
         if(!strcmp(type_name.c_str(), "char"))
           return sensor_msgs::PointField::INT8;
@@ -129,7 +129,7 @@ namespace pcl
         return -2;
       };
       
-      size_t getMaximumCapacity(int size_type)
+      inline size_t getMaximumCapacity(int size_type)
       {
         switch(size_type)
         {
@@ -151,8 +151,8 @@ namespace pcl
         std::string name_;
         int data_type_;
         size_t offset_;
-      property(const std::string& name) : name_(name), offset_(0) {}
-      property(const std::string& name, int data_type) : 
+        property(const std::string& name) : name_(name), offset_(0) {}
+        property(const std::string& name, int data_type) : 
         name_(name), data_type_(data_type)
         {
           offset_ = pcl::getFieldSize(data_type_);
@@ -162,8 +162,8 @@ namespace pcl
       struct list_property : public property
       {
         int size_type_;
-      list_property(const std::string& name, int size_type, int data_type) : 
-        property(name, data_type), size_type_(size_type) 
+        list_property(const std::string& name, int size_type, int data_type)
+          : property(name, data_type), size_type_(size_type) 
         {
           offset_ = pcl::getFieldSize(size_type_) + 
             getMaximumCapacity(size_type_) * pcl::getFieldSize(data_type_);
@@ -503,44 +503,49 @@ namespace pcl
         float z_axisx; float z_axisy; float z_axisz;
         float focal; float scalex; float scaley; float centerx; float centery;
         int viewportx; int viewporty; float k1; float k2;
-        /**constructor 
-         *\param origin: sensor origin to store in view_p[x,y,z]
-         *\param orientation: sensor orientation to store in [x,y,z]_axis[x,y,z]
-         *\remark instrinsics are set to 0 cause they are unused
-         */
-      camera() :
-        view_px(0), view_py(0), view_pz(0),
-          x_axisx(0), x_axisy(0), x_axisz(0),
-          y_axisx(0), y_axisy(0), y_axisz(0),
-          z_axisx(0), z_axisy(0), z_axisz(0),
-          focal(0), scalex(0), centerx(0), centery(0), viewportx(0), viewporty(0),
-          k1(0), k2(0) {}
 
-      camera(const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation) :
-        view_px(origin[0]), view_py(origin[1]), view_pz(origin[2]),
-          focal(0), scalex(0), centerx(0), centery(0), viewportx(0), viewporty(0),
-          k1(0), k2(0)
-        {
-          Eigen::Matrix3f R = orientation.toRotationMatrix ();
-          x_axisx = R(0,0); x_axisy = R(0,1); x_axisz = R(0,2);
-          y_axisx = R(1,0); y_axisy = R(1,1); y_axisz = R(1,2);
-          z_axisx = R(2,0); z_axisy = R(2,1); z_axisz = R(2,2);
-        }
-        
-        /** converts extrinsics camera parameters to eigen structures */
-        void ext_to_eigen(Eigen::Vector4f &origin, Eigen::Quaternionf &orientation)
-        {
-          origin[0] = view_px; origin[1] = view_py;  origin[2] = view_pz; origin[3] = 1.0;
-          Eigen::Matrix3f R;
-          R << x_axisx, x_axisy, x_axisz,
-            y_axisx, y_axisy, y_axisz,
-            z_axisx, z_axisy, z_axisz;
-          orientation = Eigen::Quaternionf(R);
-        }
+        /** \brief Constructor 
+          * \remark instrinsics are set to 0 cause they are unused
+          */
+        camera () :
+          view_px(0), view_py(0), view_pz(0),
+            x_axisx(0), x_axisy(0), x_axisz(0),
+            y_axisx(0), y_axisy(0), y_axisz(0),
+            z_axisx(0), z_axisy(0), z_axisz(0),
+            focal(0), scalex(0), centerx(0), centery(0), viewportx(0), viewporty(0),
+            k1(0), k2(0) {}
+
+        /** \brief Constructor 
+          * \param origin: sensor origin to store in view_p[x,y,z]
+          * \param orientation: sensor orientation to store in [x,y,z]_axis[x,y,z]
+          * \remark instrinsics are set to 0 cause they are unused
+          */
+         camera(const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation) :
+          view_px(origin[0]), view_py(origin[1]), view_pz(origin[2]),
+            focal(0), scalex(0), centerx(0), centery(0), viewportx(0), viewporty(0),
+            k1(0), k2(0)
+          {
+            Eigen::Matrix3f R = orientation.toRotationMatrix ();
+            x_axisx = R(0,0); x_axisy = R(0,1); x_axisz = R(0,2);
+            y_axisx = R(1,0); y_axisy = R(1,1); y_axisz = R(1,2);
+            z_axisx = R(2,0); z_axisy = R(2,1); z_axisz = R(2,2);
+          }
+          
+          /** converts extrinsics camera parameters to eigen structures */
+          void 
+          ext_to_eigen (Eigen::Vector4f &origin, Eigen::Quaternionf &orientation)
+          {
+            origin[0] = view_px; origin[1] = view_py;  origin[2] = view_pz; origin[3] = 1.0;
+            Eigen::Matrix3f R;
+            R << x_axisx, x_axisy, x_axisz,
+              y_axisx, y_axisy, y_axisz,
+              z_axisx, z_axisy, z_axisz;
+            orientation = Eigen::Quaternionf(R);
+          }
       };
       
       /** write out a pcl::io::ply::camera structure to an ostream */
-      void write(const pcl::io::ply::camera& c, std::ostream& out, bool binary)
+      inline void write(const pcl::io::ply::camera& c, std::ostream& out, bool binary)
       {
         if(!binary)
         {

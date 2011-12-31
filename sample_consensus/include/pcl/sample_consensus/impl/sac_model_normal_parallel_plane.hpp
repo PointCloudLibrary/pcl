@@ -60,7 +60,6 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::selectWithinDista
 
   // Obtain the plane normal
   Eigen::Vector4f coeff = model_coefficients;
-  coeff[3] = 0;
 
   int nr_p = 0;
   inliers.resize (indices_->size ());
@@ -69,13 +68,13 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::selectWithinDista
   {
     // Calculate the distance from the point to the plane normal as the dot product
     // D = (P-A).N/|N|
-    Eigen::Vector4f p (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 0);
+    Eigen::Vector4f p (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 1);
     Eigen::Vector4f n (normals_->points[(*indices_)[i]].normal[0], normals_->points[(*indices_)[i]].normal[1], normals_->points[(*indices_)[i]].normal[2], 0);
-    double d_euclid = fabs (coeff.dot (p) + model_coefficients[3]);
+    double d_euclid = fabs (coeff.dot (p));
 
     // Calculate the angular distance between the point normal and the plane normal
-    double d_normal = fabs (getAngle3D (n, coeff));
-    d_normal = (std::min) (d_normal, M_PI - d_normal);
+    double d_normal = getAngle3D (n, coeff);
+    d_normal = (std::min) (d_normal, fabs(M_PI - d_normal));
 
     if (fabs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid) < threshold)
     {
@@ -104,7 +103,6 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::countWithinDistan
 
   // Obtain the plane normal
   Eigen::Vector4f coeff = model_coefficients;
-  coeff[3] = 0;
 
   int nr_p = 0;
 
@@ -113,13 +111,13 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::countWithinDistan
   {
     // Calculate the distance from the point to the plane normal as the dot product
     // D = (P-A).N/|N|
-    Eigen::Vector4f p (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 0);
+    Eigen::Vector4f p (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 1);
     Eigen::Vector4f n (normals_->points[(*indices_)[i]].normal[0], normals_->points[(*indices_)[i]].normal[1], normals_->points[(*indices_)[i]].normal[2], 0);
-    double d_euclid = fabs (coeff.dot (p) + model_coefficients[3]);
+    double d_euclid = fabs (coeff.dot (p));
 
     // Calculate the angular distance between the point normal and the plane normal
     double d_normal = fabs (getAngle3D (n, coeff));
-    d_normal = (std::min) (d_normal, M_PI - d_normal);
+    d_normal = (std::min) (d_normal, fabs(M_PI - d_normal));
 
     if (fabs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid) < threshold)
       nr_p++;
@@ -148,7 +146,6 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::getDistancesToMod
 
   // Obtain the plane normal
   Eigen::Vector4f coeff = model_coefficients;
-  coeff[3] = 0;
 
   distances.resize (indices_->size ());
 
@@ -157,13 +154,13 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::getDistancesToMod
   {
     // Calculate the distance from the point to the plane normal as the dot product
     // D = (P-A).N/|N|
-    Eigen::Vector4f p (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 0);
+    Eigen::Vector4f p (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 1);
     Eigen::Vector4f n (normals_->points[(*indices_)[i]].normal[0], normals_->points[(*indices_)[i]].normal[1], normals_->points[(*indices_)[i]].normal[2], 0);
-    double d_euclid = fabs (coeff.dot (p) + model_coefficients[3]);
+    double d_euclid = fabs (coeff.dot (p));
 
     // Calculate the angular distance between the point normal and the plane normal
-    double d_normal = fabs (getAngle3D (n, coeff));
-    d_normal = (std::min) (d_normal, M_PI - d_normal);
+    double d_normal = getAngle3D (n, coeff);
+    d_normal = (std::min) (d_normal, fabs (M_PI - d_normal));
 
     distances[i] = fabs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid);
   }
@@ -186,13 +183,10 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::isModelValid (con
     // Obtain the plane normal
     Eigen::Vector4f coeff = model_coefficients;
     coeff[3] = 0;
+    coeff.normalize ();
 
-    Eigen::Vector4f axis (axis_[0], axis_[1], axis_[2], 0);
-    double angle_deviation_from_90 = fabs (getAngle3D (axis, coeff));
-    angle_deviation_from_90 = fabs (angle_deviation_from_90 - (M_PI/2.0));
-    // Check whether the current plane model satisfies our angle threshold criterion with respect to the given axis
-    if (angle_deviation_from_90 > eps_angle_)
-      return (false);
+    if (fabs (axis_.dot (coeff)) < cos_angle_)
+      return  (false);
   }
 
   if (eps_dist_ > 0.0)

@@ -2,7 +2,6 @@
  * Software License Agreement (BSD License)
  *
  *  Copyright (c) 2011 Willow Garage, Inc.
- *    Suat Gedikli <gedikli@willowgarage.com>
  *
  *  All rights reserved.
  *
@@ -48,98 +47,201 @@
 
 namespace openni_wrapper
 {
-/**
-* @brief This class provides methods to fill a depth or disparity image.
-* @author Suat Gedikli
-* @date 02.january 2011
-*/
-class PCL_EXPORTS DepthImage
-{
-public:
-  typedef boost::shared_ptr<DepthImage> Ptr;
-  typedef boost::shared_ptr<const DepthImage> ConstPtr;
 
-  inline DepthImage (boost::shared_ptr<xn::DepthMetaData> depth_meta_data, float baseline, float focal_length, XnUInt64 shadow_value, XnUInt64 no_sample_value) throw ();
-  inline virtual ~DepthImage () throw ();
+  /**
+   * @brief This class provides methods to fill a depth or disparity image.
+   * @author Suat Gedikli
+   * @date 02.january 2011
+   */
+  class PCL_EXPORTS DepthImage
+  {
+  public:
+    typedef boost::shared_ptr<DepthImage> Ptr;
+    typedef boost::shared_ptr<const DepthImage> ConstPtr;
 
-  inline const xn::DepthMetaData& getDepthMetaData () const throw ();
-  void fillDisparityImage (unsigned width, unsigned height, float* disparity_buffer, unsigned line_step = 0) const;
-  void fillDepthImage (unsigned width, unsigned height, float* depth_buffer, unsigned line_step = 0) const;
-  void fillDepthImageRaw (unsigned width, unsigned height, unsigned short* depth_buffer, unsigned line_step = 0) const;
+    /**
+     * @author Suat Gedikli
+     * @brief Constructor
+     * @param[in] depth_meta_data the actual data from the OpenNI library
+     * @param[in] baseline the baseline of the "stereo" camera, i.e. the distance between the projector and the IR camera for
+     *        Primesense like cameras. e.g. 7.5cm for PSDK5 and PSDK6 reference design.
+     * @param[in] focal_length focal length of the "stereo" frame.
+     * @param[in] shadow_value defines which values in the depth data are indicating shadow (resulting from the parallax between projector and IR camera)
+     * @param[in] no_sample_value defines which values in the depth data are indicating that no depth (disparity) could be determined .
+     * @attention The focal length may change, depending whether the depth stream is registered/mapped to the RGB stream or not.
+     */
+    inline DepthImage (boost::shared_ptr<xn::DepthMetaData> depth_meta_data, float baseline, float focal_length, XnUInt64 shadow_value, XnUInt64 no_sample_value) throw ();
 
-  inline float getBaseline () const throw ();
-  inline float getFocalLength () const throw ();
-  inline XnUInt64 getShadowValue () const throw ();
-  inline XnUInt64 getNoSampleValue () const throw ();
-  inline unsigned getWidth () const throw ();
-  inline unsigned getHeight () const throw ();
-  inline unsigned getFrameID () const throw ();
-  inline unsigned long getTimeStamp () const throw ();
-protected:
-  boost::shared_ptr<xn::DepthMetaData> depth_md_;
-  float baseline_;
-  float focal_length_;
-  XnUInt64 shadow_value_;
-  XnUInt64 no_sample_value_;
-};
+    /**
+     * @author Suat Gedikli
+     * @brief Destructor. Never throws an exception.
+     */
+    inline virtual ~DepthImage () throw ();
 
-DepthImage::DepthImage (boost::shared_ptr<xn::DepthMetaData> depth_meta_data, float baseline, float focal_length, XnUInt64 shadow_value, XnUInt64 no_sample_value) throw ()
-: depth_md_ (depth_meta_data)
-, baseline_ (baseline)
-, focal_length_ (focal_length)
-, shadow_value_ (shadow_value)
-, no_sample_value_ (no_sample_value)
-{
-}
+    /**
+     * @author Suat Gedikli
+     * @brief method to access the internal data structure from OpenNI. If the data is accessed just read-only, then this method is faster than a fillXXX method
+     * @return the actual depth data of type xn::DepthMetaData.
+     */
+    inline const xn::DepthMetaData& getDepthMetaData () const throw ();
 
-DepthImage::~DepthImage () throw ()
-{
-}
+    /**
+     * @author Suat Gedikli
+     * @brief fills a user given block of memory with the disparity values with additional nearest-neighbor down-scaling.
+     * @param[in] width the width of the desired disparity image.
+     * @param[in] height the height of the desired disparity image.
+     * @param[in,out] disparity_buffer the float pointer to the actual memory buffer to be filled with the disparity values.
+     * @param[in] line_step if only a rectangular sub region of the buffer needs to be filled, then line_step is the
+     *        width in bytes (not floats) of the original width of the depth buffer.
+     */
+    void fillDisparityImage (unsigned width, unsigned height, float* disparity_buffer, unsigned line_step = 0) const;
 
-const xn::DepthMetaData& DepthImage::getDepthMetaData () const throw ()
-{
-  return *depth_md_;
-}
+    /**
+     * @author Suat Gedikli
+     * @brief fills a user given block of memory with the disparity values with additional nearest-neighbor down-scaling.
+     * @param[in] width width the width of the desired depth image.
+     * @param[in] height height the height of the desired depth image.
+     * @param[in,out] depth_buffer the float pointer to the actual memory buffer to be filled with the depth values.
+     * @param[in] line_step if only a rectangular sub region of the buffer needs to be filled, then line_step is the
+     *        width in bytes (not floats) of the original width of the depth buffer.
+     */
+    void fillDepthImage (unsigned width, unsigned height, float* depth_buffer, unsigned line_step = 0) const;
 
-float DepthImage::getBaseline () const throw ()
-{
-  return baseline_;
-}
+    /**
+     * @author Suat Gedikli
+     * @brief fills a user given block of memory with the raw values with additional nearest-neighbor down-scaling.
+     * @param[in] width width the width of the desired raw image.
+     * @param[in] height height the height of the desired raw image.
+     * @param[in,out] depth_buffer the unsigned short pointer to the actual memory buffer to be filled with the raw values.
+     * @param[in] line_step if only a rectangular sub region of the buffer needs to be filled, then line_step is the
+     *        width in bytes (not floats) of the original width of the depth buffer.
+     */
+    void fillDepthImageRaw (unsigned width, unsigned height, unsigned short* depth_buffer, unsigned line_step = 0) const;
 
-float DepthImage::getFocalLength () const throw ()
-{
-  return focal_length_;
-}
+    /**
+     * @author Suat Gedikli
+     * @brief method to access the baseline of the "stereo" frame that was used to retrieve the depth image.
+     * @return baseline in meters
+     */
+    inline float getBaseline () const throw ();
 
-XnUInt64 DepthImage::getShadowValue () const throw ()
-{
-  return shadow_value_;
-}
+    /**
+     * @author Suat Gedikli
+     * @brief method to access the focal length of the "stereo" frame that was used to retrieve the depth image.
+     * @return focal length in pixels
+     */
+    inline float getFocalLength () const throw ();
 
-XnUInt64 DepthImage::getNoSampleValue () const throw ()
-{
-  return no_sample_value_;
-}
+    /**
+     * @author Suat Gedikli
+     * @brief method to access the shadow value, that indicates pixels lying in shadow in the depth image.
+     * @return shadow value
+     */
+    inline XnUInt64 getShadowValue () const throw ();
 
-unsigned DepthImage::getWidth () const throw ()
-{
-  return depth_md_->XRes ();
-}
+    /**
+     * @author Suat Gedikli
+     * @brief method to access the no-sample value, that indicates pixels where no disparity could be determined for the depth image.
+     * @return no-sample value
+     */
+    inline XnUInt64 getNoSampleValue () const throw ();
 
-unsigned DepthImage::getHeight () const throw ()
-{
-  return depth_md_->YRes ();
-}
+    /**
+     * @author Suat Gedikli
+     * @return the width of the depth image
+     */
+    inline unsigned getWidth () const throw ();
 
-unsigned DepthImage::getFrameID () const throw ()
-{
-  return depth_md_->FrameID ();
-}
+    /**
+     * @author Suat Gedikli
+     * @return the height of the depth image
+     */
+    inline unsigned getHeight () const throw ();
 
-unsigned long DepthImage::getTimeStamp () const throw ()
-{
-  return (unsigned long) depth_md_->Timestamp ();
-}
+    /**
+     * @author Suat Gedikli
+     * @return an ascending id for the depth frame
+     * @attention not necessarily synchronized with other streams
+     */
+    inline unsigned getFrameID () const throw ();
+
+    /**
+     * @author Suat Gedikli
+     * @return a ascending timestamp for the depth frame
+     * @attention its not the system time, thus can not be used directly to synchronize different sensors.
+     *            But definitely synchronized with other streams
+     */
+    inline unsigned long getTimeStamp () const throw ();
+  protected:
+    boost::shared_ptr<xn::DepthMetaData> depth_md_;
+    float baseline_;
+    float focal_length_;
+    XnUInt64 shadow_value_;
+    XnUInt64 no_sample_value_;
+  } ;
+
+  DepthImage::DepthImage (boost::shared_ptr<xn::DepthMetaData> depth_meta_data, float baseline, float focal_length, XnUInt64 shadow_value, XnUInt64 no_sample_value) throw ()
+  : depth_md_ (depth_meta_data)
+  , baseline_ (baseline)
+  , focal_length_ (focal_length)
+  , shadow_value_ (shadow_value)
+  , no_sample_value_ (no_sample_value) { }
+
+  DepthImage::~DepthImage () throw () { }
+
+  const xn::DepthMetaData&
+  DepthImage::getDepthMetaData () const throw ()
+  {
+    return *depth_md_;
+  }
+
+  float
+  DepthImage::getBaseline () const throw ()
+  {
+    return baseline_;
+  }
+
+  float
+  DepthImage::getFocalLength () const throw ()
+  {
+    return focal_length_;
+  }
+
+  XnUInt64
+  DepthImage::getShadowValue () const throw ()
+  {
+    return shadow_value_;
+  }
+
+  XnUInt64
+  DepthImage::getNoSampleValue () const throw ()
+  {
+    return no_sample_value_;
+  }
+
+  unsigned
+  DepthImage::getWidth () const throw ()
+  {
+    return depth_md_->XRes ();
+  }
+
+  unsigned
+  DepthImage::getHeight () const throw ()
+  {
+    return depth_md_->YRes ();
+  }
+
+  unsigned
+  DepthImage::getFrameID () const throw ()
+  {
+    return depth_md_->FrameID ();
+  }
+
+  unsigned long
+  DepthImage::getTimeStamp () const throw ()
+  {
+    return (unsigned long) depth_md_->Timestamp ();
+  }
 } // namespace
 #endif
 #endif //__OPENNI_DEPTH_IMAGE

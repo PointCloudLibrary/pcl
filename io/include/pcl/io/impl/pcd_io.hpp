@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: pcd_io.hpp 2693 2011-10-11 03:45:58Z rusu $
+ * $Id: pcd_io.hpp 3670 2011-12-29 08:26:01Z rusu $
  *
  */
 
@@ -45,6 +45,7 @@
 #include <string>
 #include <stdlib.h>
 #include <boost/algorithm/string.hpp>
+#include <pcl/channel_properties.h>
 #include <pcl/console/print.h>
 #ifdef _WIN32
 # include <io.h>
@@ -421,7 +422,6 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   free (temp_buf);
   return (0);
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int

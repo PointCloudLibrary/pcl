@@ -49,7 +49,7 @@
  * For a low-memory/faster configuration, use HLOG == 13;
  * For best compression, use 15 or 16 (or more, up to 22).
  */
-#define HLOG 16
+#define HLOG 13
 
 typedef unsigned int LZF_HSLOT;
 typedef unsigned int LZF_STATE[1 << (HLOG)];

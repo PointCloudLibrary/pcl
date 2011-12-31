@@ -97,9 +97,23 @@ pcl::PLYReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
       properties_it != vertex->properties_.end();
       ++properties_it, counter++)
   {
-    cloud.fields.at(counter).name = (*properties_it)->name_;
-    cloud.fields.at(counter).offset = counter * (*properties_it)->offset_;
-    cloud.fields.at(counter).datatype = (*properties_it)->data_type_;
+    if ((*properties_it)->name_ != "red" && 
+        (*properties_it)->name_ != "green" &&
+        (*properties_it)->name_ != "blue")
+    {
+      cloud.fields.at(counter).name = (*properties_it)->name_;
+      cloud.fields.at(counter).offset = counter * (*properties_it)->offset_;
+      cloud.fields.at(counter).datatype = (*properties_it)->data_type_;
+    }
+    else
+    {
+      if ((*properties_it)->name_ == "red")
+      {
+        cloud.fields.at(counter).name = "rgb";
+        cloud.fields.at(counter).offset = counter * 4;
+        cloud.fields.at(counter).datatype = sensor_msgs::PointField::FLOAT32;
+      }
+    }
     if(!vertex->is_list_property(properties_it))
       cloud.fields.at(counter).count = 1;
     else
@@ -128,7 +142,8 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
   int res = readHeader (file_name, cloud, origin, orientation, ply_version, binary_data, data_idx);
   if (res < 0)
     return (res);
-  
+  int r, g, b;
+  int rgb_offset_before = 0;
   int line_count = 0;
   assert(parser_["vertex"] != NULL);
 
@@ -188,67 +203,130 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
                   {
                     switch (lp->data_type_)
                     {
-                    case sensor_msgs::PointField::INT8:
-                      copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT8>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
-                      break;
-                    case sensor_msgs::PointField::UINT8:
-                      copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT8>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
-                      break;
-                    case sensor_msgs::PointField::INT16:
-                      copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT16>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
-                      break;
-                    case sensor_msgs::PointField::UINT16:
-                      copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
-                      break;
-                    case sensor_msgs::PointField::INT32:
-                      copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT32>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
-                      break;
-                    case sensor_msgs::PointField::UINT32:
-                      copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
-                      break;
-                    case sensor_msgs::PointField::FLOAT32:
-                      copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT32>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
-                      break;
-                    case sensor_msgs::PointField::FLOAT64:
-                      copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT64>::type> (st.at(prop_counter+i), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
-                      break;
-                    default:
-                      PCL_WARN ("[pcl::PCDReader::read] Incorrect data type specified for list element (%d)!\n",lp->data_type_);
-                      break;
+                      case sensor_msgs::PointField::INT8:
+                        copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT8>::type> (
+                          st.at(prop_counter+i), associated_data[(*elements_it)->name_], 
+                          counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                        break;
+                      case sensor_msgs::PointField::UINT8:
+                        copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT8>::type> (
+                          st.at(prop_counter+i), associated_data[(*elements_it)->name_], 
+                          counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                        break;
+                      case sensor_msgs::PointField::INT16:
+                        copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT16>::type> (
+                          st.at(prop_counter+i), associated_data[(*elements_it)->name_], 
+                          counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                        break;
+                      case sensor_msgs::PointField::UINT16:
+                        copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type> (
+                          st.at(prop_counter+i), associated_data[(*elements_it)->name_], 
+                          counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                        break;
+                      case sensor_msgs::PointField::INT32:
+                        copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT32>::type> (
+                          st.at(prop_counter+i), associated_data[(*elements_it)->name_], 
+                          counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                        break;
+                      case sensor_msgs::PointField::UINT32:
+                        copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type> (
+                          st.at(prop_counter+i), associated_data[(*elements_it)->name_], 
+                          counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                        break;
+                      case sensor_msgs::PointField::FLOAT32:
+                        copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT32>::type> (
+                          st.at(prop_counter+i), associated_data[(*elements_it)->name_], 
+                          counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                        break;
+                      case sensor_msgs::PointField::FLOAT64:
+                        copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT64>::type> (
+                          st.at(prop_counter+i), associated_data[(*elements_it)->name_], 
+                          counter * (*elements_it)->offset_ + offset_before + i * pcl::getFieldSize(lp->data_type_));
+                        break;
+                      default:
+                        PCL_WARN ("[pcl::PCDReader::read] Incorrect data type specified for list element (%d)!\n",
+                                  lp->data_type_);
+                        break;
                     }
                   }
                 }
                 else
                 {
-                  switch ((*properties_it)->data_type_)
+                  if ((*properties_it)->name_ == "red" || 
+                      (*properties_it)->name_ == "green" || 
+                      (*properties_it)->name_ == "blue")
                   {
-                  case sensor_msgs::PointField::INT8:
-                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT8>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
-                    break;
-                  case sensor_msgs::PointField::UINT8:
-                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT8>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
-                    break;
-                  case sensor_msgs::PointField::INT16:
-                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT16>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
-                    break;
-                  case sensor_msgs::PointField::UINT16:
-                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
-                    break;
-                  case sensor_msgs::PointField::INT32:
-                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT32>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
-                    break;
-                  case sensor_msgs::PointField::UINT32:
-                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
-                    break;
-                  case sensor_msgs::PointField::FLOAT32:
-                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT32>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
-                    break;
-                  case sensor_msgs::PointField::FLOAT64:
-                    copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT64>::type> (st.at(prop_counter), associated_data[(*elements_it)->name_], counter * (*elements_it)->offset_ + offset_before);
-                    break;
-                  default:
-                    PCL_WARN ("[pcl::PCDReader::read] Incorrect data type specified (%d)!\n",(*properties_it)->data_type_);
-                    break;
+                    if ((*properties_it)->name_ == "red")
+                    {
+                      copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type> (
+                        st.at(prop_counter), &r, 0);
+                      rgb_offset_before = offset_before;
+                    }
+                    if ((*properties_it)->name_ == "green")
+                    {
+                      copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type> (
+                        st.at(prop_counter), &g, 0);
+                    }
+                    if ((*properties_it)->name_ == "blue")
+                    {
+                      copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type> (
+                        st.at(prop_counter), &b, 0);
+                      int rgb = r << 16 | g << 8 | b;
+                      memcpy ((char*)associated_data[(*elements_it)->name_] + 
+                              counter * (*elements_it)->offset_ + rgb_offset_before, 
+                              &rgb,
+                              sizeof(int));
+                    }
+                  }
+                  else 
+                  {
+                    switch ((*properties_it)->data_type_)
+                    {
+                      case sensor_msgs::PointField::INT8:
+                        copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT8>::type> (
+                          st.at(prop_counter), associated_data[(*elements_it)->name_], 
+                          counter * (*elements_it)->offset_ + offset_before);
+                        break;
+                      case sensor_msgs::PointField::UINT8:
+                        copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT8>::type> (
+                          st.at(prop_counter), associated_data[(*elements_it)->name_], 
+                          counter * (*elements_it)->offset_ + offset_before);
+                        break;
+                      case sensor_msgs::PointField::INT16:
+                        copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT16>::type> (
+                          st.at(prop_counter), associated_data[(*elements_it)->name_], 
+                          counter * (*elements_it)->offset_ + offset_before);
+                        break;
+                      case sensor_msgs::PointField::UINT16:
+                        copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type> (
+                          st.at(prop_counter), associated_data[(*elements_it)->name_], 
+                          counter * (*elements_it)->offset_ + offset_before);
+                        break;
+                      case sensor_msgs::PointField::INT32:
+                        copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT32>::type> (
+                          st.at(prop_counter), associated_data[(*elements_it)->name_], 
+                          counter * (*elements_it)->offset_ + offset_before);
+                        break;
+                      case sensor_msgs::PointField::UINT32:
+                        copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type> (
+                          st.at(prop_counter), associated_data[(*elements_it)->name_], 
+                          counter * (*elements_it)->offset_ + offset_before);
+                        break;
+                      case sensor_msgs::PointField::FLOAT32:
+                        copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT32>::type> (
+                          st.at(prop_counter), associated_data[(*elements_it)->name_], 
+                          counter * (*elements_it)->offset_ + offset_before);
+                        break;
+                      case sensor_msgs::PointField::FLOAT64:
+                        copyStringValue<pcl::traits::asType<sensor_msgs::PointField::FLOAT64>::type> (
+                          st.at(prop_counter), associated_data[(*elements_it)->name_], 
+                          counter * (*elements_it)->offset_ + offset_before);
+                        break;
+                      default:
+                        PCL_WARN ("[pcl::PCDReader::read] Incorrect data type specified (%d)!\n",
+                                  (*properties_it)->data_type_);
+                        break;
+                    }
                   }
                 }
                 offset_before+= (*properties_it)->offset_;
@@ -573,9 +651,21 @@ pcl::PLYWriter::writeASCII (const std::string &file_name,
           }
           case sensor_msgs::PointField::FLOAT32:
           {
-            float value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
-            fs << value;
+            if("rgb" != cloud.fields[d].name)
+            {
+              float value;
+              memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+              fs << value;
+            }
+            else 
+            {
+              pcl::RGB color;
+              memcpy (&color, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (pcl::RGB));
+              int r = color.r;
+              int g = color.g;
+              int b = color.b;
+              fs << r << " " << g << " " << b;
+            }
             break;
           }
           case sensor_msgs::PointField::FLOAT64:
@@ -716,9 +806,23 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
           }
           case sensor_msgs::PointField::FLOAT32:
           {
-            float value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
-            fpout.write((const char *) &value,sizeof(float));
+            if("rgb" != cloud.fields[d].name)
+            {
+              float value;
+              memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+              fpout.write((const char *) &value,sizeof(float));
+            }
+            else
+            {
+              pcl::RGB color;
+              memcpy (&color, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (pcl::RGB));
+              unsigned char r = color.r;
+              unsigned char g = color.g;
+              unsigned char b = color.b;
+              fpout.write((const char *) &r,sizeof(unsigned char));
+              fpout.write((const char *) &g,sizeof(unsigned char));
+              fpout.write((const char *) &b,sizeof(unsigned char));
+            }
             break;
           }
           case sensor_msgs::PointField::FLOAT64:
@@ -800,12 +904,12 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
     PCL_ERROR ("[pcl::io::savePLYFile] Error during opening (%s)!\n", file_name.c_str());
     return (-1);
   }
-  
+
   // number of points
   size_t nr_points  = mesh.cloud.width * mesh.cloud.height;
   size_t point_size = mesh.cloud.data.size () / nr_points;
 
-  // mesh size
+  // number of faces
   size_t nr_faces = mesh.polygons.size ();
 
   // Write header
@@ -825,6 +929,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
       "\nproperty uchar green"
       "\nproperty uchar blue";    
   }
+
   // Faces
   fs << "\nelement face "<< nr_faces;
   fs << "\nproperty list uchar int vertex_index";
@@ -850,11 +955,11 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
         float value;
         memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
         fs << value;
-        if (++xyz == 3)
-          break;
-      }
-      fs << " ";
-      if (mesh.cloud.fields[rgb_index].datatype == sensor_msgs::PointField::FLOAT32)
+        // if (++xyz == 3)
+        //   break;
+        ++xyz;
+      } 
+      else if(mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32 && mesh.cloud.fields[d].name == "rgb")
       {
         pcl::RGB color;
         memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgb_index].offset + c * sizeof (float)], sizeof (RGB));
@@ -863,6 +968,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
         int b = color.b;
         fs << r << " " << g << " " << b;
       }
+      fs << " ";
     }
     if (xyz != 3)
     {
