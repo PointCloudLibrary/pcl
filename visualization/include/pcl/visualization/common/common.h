@@ -75,7 +75,7 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief Camera class holds a set of camera parameters together with the window pos/size. */
-    class Camera
+    class PCL_EXPORTS Camera
     {
       public:
         // focal point or lookAt
@@ -99,40 +99,40 @@ namespace pcl
         double window_size[2];
         double window_pos[2];
 
-    /** \brief Computes View matrix for Camera (Based on gluLookAt)
-      * \param view_mat the resultant matrix
-      */
-        void computeViewMatrix(Eigen::Matrix4d& view_mat) const;
+        /** \brief Computes View matrix for Camera (Based on gluLookAt)
+          * \param[out] view_mat the resultant matrix
+          */
+        void 
+        computeViewMatrix (Eigen::Matrix4d& view_mat) const;
 
-    /** \brief Computes Projection Matrix for Camera
-     *  \param proj the resultant matrix
-     */
-        void computeProjectionMatrix(Eigen::Matrix4d& proj) const;
+        /** \brief Computes Projection Matrix for Camera
+          *  \param[out] proj the resultant matrix
+          */
+        void 
+        computeProjectionMatrix (Eigen::Matrix4d& proj) const;
 
-     /**\brief converts point to window coordiantes
-      * \param pt  xyz point to be converted
-      * \param window_cord vector containing the pts' window X,Y, Z and 1
-      *
-      * This function computes the projection and view matrix every time.
-      * It is very inefficient to use this for every point in the point cloud!
-      */
-      template<typename PointT>
-        void cvtWindowCoordinates(const PointT& pt, Eigen::Vector4d& window_cord);
+        /** \brief converts point to window coordiantes
+          * \param[in] pt xyz point to be converted
+          * \param[out] window_cord vector containing the pts' window X,Y, Z and 1
+          *
+          * This function computes the projection and view matrix every time.
+          * It is very inefficient to use this for every point in the point cloud!
+          */
+        template<typename PointT> void 
+        cvtWindowCoordinates (const PointT& pt, Eigen::Vector4d& window_cord);
 
-    /**\brief converts point to window coordiantes
-      * \param pt  xyz point to be converted
-      * \param window_cord vector containing the pts' window X,Y, Z and 1
-      * \param composite_mat composite transformation matrix (proj*view)
-      *
-      * Use this function to compute window coordinates with a precomputed
-      * transformation function.  The typical composite matrix will be
-      * the projection matrix * the view matrix.  However, additional
-      * matrices like a camera disortion matrix can also be added.
-      */
-
-      template<typename PointT>
-        void cvtWindowCoordinates(const PointT& pt, Eigen::Vector4d& window_cord,
-                                        const Eigen::Matrix4d& composite_mat);
+        /** \brief converts point to window coordiantes
+          * \param[in] pt xyz point to be converted
+          * \param[out] window_cord vector containing the pts' window X,Y, Z and 1
+          * \param[in] composite_mat composite transformation matrix (proj*view)
+          *
+          * Use this function to compute window coordinates with a precomputed
+          * transformation function.  The typical composite matrix will be
+          * the projection matrix * the view matrix.  However, additional
+          * matrices like a camera disortion matrix can also be added.
+          */
+        template<typename PointT> void 
+        cvtWindowCoordinates (const PointT& pt, Eigen::Vector4d& window_cord, const Eigen::Matrix4d& composite_mat);
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////////
