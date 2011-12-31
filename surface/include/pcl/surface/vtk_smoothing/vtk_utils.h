@@ -45,7 +45,7 @@
 
 namespace pcl
 {
-  class VTKUtils
+  class PCL_EXPORTS VTKUtils
   {
     public:
       /** \brief Convert a PCL PolygonMesh to a VTK vtkPolyData.

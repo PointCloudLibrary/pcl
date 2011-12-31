@@ -51,7 +51,7 @@ namespace pcl
    *  Warning: This wrapper does two fairly computationally expensive conversions from the PCL PolygonMesh
    *  data structure to the vtkPolyData data structure and back.
    */
-  class MeshSmoothingLaplacianVTK : public MeshProcessing
+  class PCL_EXPORTS MeshSmoothingLaplacianVTK : public MeshProcessing
   {
     public:
       /** \brief Empty constructor that sets the values of the algorithm parameters to the VTK defaults*/

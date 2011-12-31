@@ -46,7 +46,7 @@
 
 namespace pcl
 {
-  class MeshSmoothingWindowedSincVTK : public MeshProcessing
+  class PCL_EXPORTS MeshSmoothingWindowedSincVTK : public MeshProcessing
   {
     public:
       /** \brief Empty constructor */

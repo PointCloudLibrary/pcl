@@ -43,11 +43,9 @@
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 
-
-
 namespace pcl
 {
-  class MeshSubdivisionVTK : public MeshProcessing
+  class PCL_EXPORTS MeshSubdivisionVTK : public MeshProcessing
   {
     public:
       /** \brief Empty constructor */

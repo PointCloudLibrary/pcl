@@ -50,7 +50,7 @@ namespace pcl
     * \author Nicolas Burrus
     * \ingroup surface
     */
-  class EarClipping : public MeshProcessing
+  class PCL_EXPORTS EarClipping : public MeshProcessing
   {
     public:
       using MeshProcessing::input_mesh_;
