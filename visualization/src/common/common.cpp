@@ -37,7 +37,6 @@
 
 #include <pcl/visualization/common/common.h>
 #include <stdlib.h>
-#include <eigen3/Eigen/src/Core/PlainObjectBase.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
