@@ -1221,7 +1221,7 @@ TEST (PCL, PFHEstimationEigen)
     EXPECT_NEAR (pfhs->points (i, 9),  0.0038165 , 1e-4);
     EXPECT_NEAR (pfhs->points (i, 10), 0.103046  , 1e-4);
     EXPECT_NEAR (pfhs->points (i, 11), 0.214997  , 1e-4);
-    EXPECT_NEAR (pfhs->points (i, 12), 0.398186  , 3e-3); // larger error w.r.t. considering all point pairs (feature bins=0,2,2 where 2 is middle, so angle of 0)
+    EXPECT_NEAR (pfhs->points (i, 12), 0.398186  , 3e-2); // larger error w.r.t. considering all point pairs (feature bins=0,2,2 where 2 is middle, so angle of 0)
     EXPECT_NEAR (pfhs->points (i, 13), 0.298959  , 1e-4);
     EXPECT_NEAR (pfhs->points (i, 14), 0.00127217, 1e-4);
     EXPECT_NEAR (pfhs->points (i, 15), 0.11704   , 1e-4);
