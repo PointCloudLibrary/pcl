@@ -48,7 +48,7 @@ namespace pcl
 {
   namespace visualization
   {
-    class CloudActor
+    class PCL_EXPORTS CloudActor
     {
       typedef PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
       typedef GeometryHandler::Ptr GeometryHandlerPtr;
