@@ -104,7 +104,6 @@ main (int argc, char** argv)
   std::string training_data_list_file_name = "training_data.list";
 
   std::vector<vfh_model> models;
-  flann::Matrix<float> data;
 
   // Load the model histograms
   loadFeatureModels (argv[1], extension, models);
@@ -112,13 +111,11 @@ main (int argc, char** argv)
       (int)models.size (), training_data_h5_file_name.c_str (), training_data_list_file_name.c_str ());
 
   // Convert data into FLANN format
-  data.rows = models.size ();
-  data.cols = models[0].second.size (); // number of histogram bins
-  data.data = (float*)malloc (data.rows * data.cols * sizeof (float)); 
+  flann::Matrix<float> data (new float[models.size () * models[0].second.size ()], models.size (), models[0].second.size ());
 
   for (size_t i = 0; i < data.rows; ++i)
     for (size_t j = 0; j < data.cols; ++j)
-      data.data[i * data.cols  + j] = models[i].second[j];
+      data[i][j] = models[i].second[j];
 
   // Save data to disk (list of models)
   flann::save_to_file (data, training_data_h5_file_name, "training_data");
@@ -134,6 +131,7 @@ main (int argc, char** argv)
   //flann::Index<flann::ChiSquareDistance<float> > index (data, flann::KDTreeIndexParams (4));
   index.buildIndex ();
   index.save (kdtree_idx_file_name);
+  delete[] data.ptr ();
 
   return (0);
 }
