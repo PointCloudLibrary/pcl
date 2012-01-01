@@ -162,9 +162,6 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 ### ---[ Set up for tests
 include(${PCL_SOURCE_DIR}/cmake/pcl_tests.cmake)
 
-### ---[ Python
-include(${PCL_SOURCE_DIR}/cmake/pcl_find_python.cmake)
-
 ### ---[ Add the libraries subdirectories
 include(${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake)
 
