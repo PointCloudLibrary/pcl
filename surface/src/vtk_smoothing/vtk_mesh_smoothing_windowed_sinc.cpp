@@ -32,7 +32,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: vtk_mesh_smoothing_windowed_sinc.cpp 3726 2011-12-30 21:58:56Z rusu $
+ * $Id: vtk_mesh_smoothing_windowed_sinc.cpp 3739 2011-12-31 09:52:02Z aichim $
  *
  */
 
@@ -41,12 +41,6 @@
 
 #include <vtkWindowedSincPolyDataFilter.h>
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-pcl::MeshSmoothingWindowedSincVTK::MeshSmoothingWindowedSincVTK ()
-  : pcl::MeshProcessing ()
-{
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -59,12 +53,12 @@ pcl::MeshSmoothingWindowedSincVTK::performProcessing (pcl::PolygonMesh &output)
   vtkSmartPointer<vtkWindowedSincPolyDataFilter> vtk_smoother = vtkWindowedSincPolyDataFilter::New ();
   vtk_smoother->SetInput (vtk_polygons_);
   vtk_smoother->SetNumberOfIterations (num_iter_);
-  vtk_smoother->SetFeatureAngle (feature_angle_);
   vtk_smoother->SetPassBand (pass_band_);
-  vtk_smoother->BoundarySmoothingOff ();
-  vtk_smoother->FeatureEdgeSmoothingOff ();
-  vtk_smoother->NonManifoldSmoothingOff ();
-  vtk_smoother->NormalizeCoordinatesOn ();
+  vtk_smoother->SetNormalizeCoordinates (normalize_coordinates_);
+  vtk_smoother->SetFeatureEdgeSmoothing (feature_edge_smoothing_);
+  vtk_smoother->SetFeatureAngle (feature_angle_);
+  vtk_smoother->SetEdgeAngle (edge_angle_);
+  vtk_smoother->SetBoundarySmoothing (boundary_smoothing_);
   vtk_smoother->Update ();
 
   vtk_polygons_ = vtk_smoother->GetOutput ();

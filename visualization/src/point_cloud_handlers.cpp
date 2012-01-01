@@ -37,7 +37,7 @@
 
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/console/time.h>
-#include <pcl/win32_macros.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/common/io.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -190,6 +190,170 @@ pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::ge
       colors[j * 3 + 0] = ((rgb >> 16) & 0xff);
       colors[j * 3 + 1] = ((rgb >> 8) & 0xff);
       colors[j * 3 + 2] = (rgb & 0xff);
+      j++;
+    }
+  }
+  reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, 3 * j, 0);
+  //delete [] colors;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>::PointCloudColorHandlerHSVField (
+    const pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudConstPtr &cloud) : 
+  pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudColorHandler (cloud)
+{
+  // Check for the presence of the "H" field
+  field_idx_ = pcl::getFieldIndex (*cloud, "h");
+  if (field_idx_ == -1)
+  {
+    capable_ = false;
+    return;
+  }
+
+  // Check for the presence of the "S" field
+  s_field_idx_ = pcl::getFieldIndex (*cloud, "s");
+  if (s_field_idx_ == -1)
+  {
+    capable_ = false;
+    return;
+  }
+
+  // Check for the presence of the "V" field
+  v_field_idx_ = pcl::getFieldIndex (*cloud, "v");
+  if (v_field_idx_ == -1)
+  {
+    capable_ = false;
+    return;
+  }
+  capable_ = true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
+{
+  if (!capable_)
+    return;
+
+  if (!scalars)
+    scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
+  scalars->SetNumberOfComponents (3);
+
+  vtkIdType nr_points = cloud_->width * cloud_->height;
+  reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
+  
+  
+  // Allocate enough memory to hold all colors
+  unsigned char* colors = new unsigned char[nr_points * 3];
+
+  float h_data;
+  float v_data;
+  float s_data;
+  int point_offset = cloud_->fields[field_idx_].offset;
+  int j = 0;
+  
+  // If XYZ present, check if the points are invalid
+  int x_idx = pcl::getFieldIndex (*cloud_, "x");
+  if (x_idx != -1)
+  {
+    float x_data, y_data, z_data;
+    int x_point_offset = cloud_->fields[x_idx].offset;
+    
+    // Color every point
+    for (vtkIdType cp = 0; cp < nr_points; ++cp, 
+                                           point_offset += cloud_->point_step, 
+                                           x_point_offset += cloud_->point_step)
+    {
+      // Copy the value at the specified field
+      memcpy (&h_data, &cloud_->data[point_offset], sizeof (float));
+      memcpy (&s_data, &cloud_->data[point_offset + sizeof (float)], sizeof (float));
+      memcpy (&v_data, &cloud_->data[point_offset + 2 * sizeof (float)], sizeof (float));
+
+      if (!pcl_isfinite (h_data) || !pcl_isfinite (s_data) || !pcl_isfinite (v_data))
+        continue;
+
+      memcpy (&x_data, &cloud_->data[x_point_offset], sizeof (float));
+      memcpy (&y_data, &cloud_->data[x_point_offset + sizeof (float)], sizeof (float));
+      memcpy (&z_data, &cloud_->data[x_point_offset + 2 * sizeof (float)], sizeof (float));
+
+      if (!pcl_isfinite (x_data) || !pcl_isfinite (y_data) || !pcl_isfinite (z_data))
+        continue;
+
+      int idx = j * 3;
+      // Fill color data with HSV here:
+      if (s_data == 0)
+      {
+        colors[idx] = colors[idx+1] = colors[idx+2] = v_data;
+        return;
+      } 
+      float a = h_data / 60;
+      int   i = floor (a);
+      float f = a - i;
+      float p = v_data * (1 - s_data);
+      float q = v_data * (1 - s_data * f);
+      float t = v_data * (1 - s_data * (1 - f));
+
+      switch (i) 
+      {
+        case 0:
+          colors[idx] = v_data; colors[idx+1] = t; colors[idx+2] = p; break;
+        case 1:
+          colors[idx] = q; colors[idx+1] = v_data; colors[idx+2] = p; break;
+        case 2:
+          colors[idx] = p; colors[idx+1] = v_data; colors[idx+2] = t; break;
+        case 3:
+          colors[idx] = p; colors[idx+1] = q; colors[idx+2] = v_data; break;
+        case 4:
+          colors[idx] = t; colors[idx+1] = p; colors[idx+2] = v_data; break;
+        default:
+          colors[idx] = v_data; colors[idx+1] = p; colors[idx+2] = q; break;
+      }
+      j++;
+    }
+  }
+  // No XYZ data checks
+  else
+  {
+    // Color every point
+    for (vtkIdType cp = 0; cp < nr_points; ++cp, point_offset += cloud_->point_step)
+    {
+      // Copy the value at the specified field
+      memcpy (&h_data, &cloud_->data[point_offset], sizeof (float));
+      memcpy (&s_data, &cloud_->data[point_offset + sizeof (float)], sizeof (float));
+      memcpy (&v_data, &cloud_->data[point_offset + 2 * sizeof (float)], sizeof (float));
+
+      if (!pcl_isfinite (h_data) || !pcl_isfinite (s_data) || !pcl_isfinite (v_data))
+        continue;
+
+      int idx = j * 3;
+      // Fill color data with HSV here:
+      if (s_data == 0)
+      {
+        colors[idx] = colors[idx+1] = colors[idx+2] = v_data;
+        return;
+      } 
+      float a = h_data / 60;
+      int   i = floor (a);
+      float f = a - i;
+      float p = v_data * (1 - s_data);
+      float q = v_data * (1 - s_data * f);
+      float t = v_data * (1 - s_data * (1 - f));
+
+      switch (i) 
+      {
+        case 0:
+          colors[idx] = v_data; colors[idx+1] = t; colors[idx+2] = p; break;
+        case 1:
+          colors[idx] = q; colors[idx+1] = v_data; colors[idx+2] = p; break;
+        case 2:
+          colors[idx] = p; colors[idx+1] = v_data; colors[idx+2] = t; break;
+        case 3:
+          colors[idx] = p; colors[idx+1] = q; colors[idx+2] = v_data; break;
+        case 4:
+          colors[idx] = t; colors[idx+1] = p; colors[idx+2] = v_data; break;
+        default:
+          colors[idx] = v_data; colors[idx+1] = p; colors[idx+2] = q; break;
+      }
       j++;
     }
   }

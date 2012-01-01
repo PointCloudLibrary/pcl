@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -141,6 +143,49 @@ namespace pcl
                              const std::string &field_name, 
                              const int index,
                              const std::string &id = "cloud", int win_width = 640, int win_height = 200);
+        
+        /** \brief Update a histogram feature that is already on screen, with a cloud containing a single histogram.
+          * \param[in] cloud the PointCloud dataset containing the histogram
+          * \param[in] hsize the length of the histogram
+          * \param[in] id the point cloud object id (default: cloud)
+          */
+        template <typename PointT> bool 
+        updateFeatureHistogram (const pcl::PointCloud<PointT> &cloud, int hsize, const std::string &id = "cloud");
+        
+                             
+        /** \brief Update a histogram feature that is already on screen, with a cloud containing a single histogram.
+          * \param[in] cloud the PointCloud dataset containing the histogram
+          * \param[in] field_name the field name containing the histogram
+          * \param[in] id the point cloud object id (default: cloud)
+          */
+        bool 
+        updateFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, 
+                                const std::string &field_name, 
+                                const std::string &id = "cloud");
+                             
+        
+        /** \brief Update a histogram feature that is already on screen, with a cloud containing a single histogram.
+          * \param[in] cloud the PointCloud dataset containing the histogram
+          * \param[in] field_name the field name containing the histogram
+          * \param[in] index the point index to extract the histogram from
+          * \param[in] id the point cloud object id (default: cloud)
+          */
+        template <typename PointT> bool 
+        updateFeatureHistogram (const pcl::PointCloud<PointT> &cloud, const std::string &field_name,
+        			                   const int index, const std::string &id = "cloud");
+        
+                             
+        /** \brief Update a histogram feature that is already on screen, with a cloud containing a single histogram.
+          * \param[in] cloud the PointCloud dataset containing the histogram
+          * \param[in] field_name the field name containing the histogram
+          * \param[in] index the point index to extract the histogram from
+          * \param[in] id the point cloud object id (default: cloud)
+          */
+        bool 
+        updateFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, 
+                                const std::string &field_name, const int index,
+                                const std::string &id = "cloud");         
+
 
          /** \brief Set the Y range to minp-maxp for all histograms.
            * \param[in] minp the minimum Y range
@@ -174,6 +219,15 @@ namespace pcl
         createActor (const vtkSmartPointer<vtkDoubleArray> &xy_array, 
                      RenWinInteract &renwinint,
                      const std::string &id, const int win_width, const int win_height);
+        
+        /** \brief Remove the current 2d actor and create a new 2D actor from the given vtkDoubleArray histogram and add it to the screen.
+          * \param[in] xy_array the input vtkDoubleArray holding the histogram data
+          * \param[out] renwinint the resultant render window interactor holding the rendered object
+          * \param[in] id the point cloud object id
+          */             
+        void
+        reCreateActor (const vtkSmartPointer<vtkDoubleArray> &xy_array, 
+                       RenWinInteract* renwinupd, const int hsize);
 
       private:
         /** \brief A map of all windows on screen (with their renderers and interactors). */

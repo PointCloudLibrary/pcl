@@ -32,7 +32,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: vtk_mesh_smoothing_laplacian.h 3733 2011-12-31 01:00:47Z rusu $
+ * $Id: vtk_mesh_smoothing_laplacian.h 3739 2011-12-31 09:52:02Z aichim $
  *
  */
 
@@ -54,7 +54,7 @@ namespace pcl
   class PCL_EXPORTS MeshSmoothingLaplacianVTK : public MeshProcessing
   {
     public:
-      /** \brief Empty constructor that sets the values of the algorithm parameters to the VTK defaults*/
+      /** \brief Empty constructor that sets the values of the algorithm parameters to the VTK defaults */
       MeshSmoothingLaplacianVTK ()
         : MeshProcessing (),
           num_iter_ (20),

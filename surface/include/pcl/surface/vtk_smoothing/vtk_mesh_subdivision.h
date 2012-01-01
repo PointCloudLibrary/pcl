@@ -32,7 +32,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: vtk_mesh_subdivision.h 3732 2011-12-31 00:56:15Z rusu $
+ * $Id: vtk_mesh_subdivision.h 3739 2011-12-31 09:52:02Z aichim $
  *
  */
 
@@ -45,6 +45,13 @@
 
 namespace pcl
 {
+
+  /** \brief PCL mesh smoothing based on the vtkLinearSubdivisionFilter, vtkLoopSubdivisionFilter, vtkButterflySubdivisionFilter
+   *  depending on the selected MeshSubdivisionVTKFilterType algorithm from the VTK library.
+   *  Please check out the original documentation for more details on the inner workings of the algorithm
+   *  Warning: This wrapper does two fairly computationally expensive conversions from the PCL PolygonMesh
+   *  data structure to the vtkPolyData data structure and back.
+   */
   class PCL_EXPORTS MeshSubdivisionVTK : public MeshProcessing
   {
     public:

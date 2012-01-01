@@ -658,7 +658,7 @@ TEST (PCL, PLYReaderWriter)
 // test for toROSMsg ()
 
   PLYWriter writer;
-  writer.write ("test_pcl_io.ply", cloud_blob, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), true);
+  writer.write ("test_pcl_io.ply", cloud_blob, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), true, true);
 
   PLYReader reader;
   reader.read ("test_pcl_io.ply", cloud_blob);

@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,7 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Suat Gedikli (gedikli@willowgarage.com)
  */
 
 #ifndef PCL_VISUALIZATION_IMAGE_VISUALIZER_H__
@@ -59,44 +60,91 @@ namespace pcl
     static const Vector3ub red_color(255,0,0);
     static const Vector3ub blue_color(0,0,255);
 
+    /** \brief ImageViewer is a class for 2D image visualization.
+      * \author Radu B. Rusu, Suat Gedikli
+      */
     class PCL_EXPORTS ImageViewer
     {
       public:
+        /** \brief Constructor.
+          * \param[in] window_title the title of the window
+          */
         ImageViewer (const std::string& window_title = "");
+
+        /** \brief Destructor. */
         virtual ~ImageViewer ();
-        
+       
+        /** \brief Show a 2D image on screen.
+          * \param[in] data the input data representing the image
+          * \param[in] width the width of the image
+          * \param[in] height the height of the image
+          */
         void 
         showRGBImage (const unsigned char* data, unsigned width, unsigned height);
 
+        /** \brief Show a 2D image on screen, obtained from the RGB channel of a PointXYZRGB-type point cloud.
+          * \param[in] data the input data representing the PointXYZRGB point cloud 
+          */
         void 
         showRGBImage (const pcl::PointCloud<pcl::PointXYZRGB> &data);
 
+        /** \brief Show a 2D image (float) on screen.
+          * \param[in] data the input data representing the image in float format
+          * \param[in] width the width of the image
+          * \param[in] height the height of the image
+          * \param[in] min_value filter all values in the image to be larger than this minimum value
+          * \param[in] max_value filter all values in the image to be smaller than this maximum value
+          * \param[in] grayscale show data as grayscale (true) or not (false). Default: false
+          */
         void 
         showFloatImage (const float* data, unsigned int width, unsigned int height, 
                         float min_value, float max_value, bool grayscale = false);
         
+        /** \brief Show a 2D image (unsigned short) on screen.
+          * \param[in] short_image the input data representing the image in unsigned short format
+          * \param[in] width the width of the image
+          * \param[in] height the height of the image
+          * \param[in] min_value filter all values in the image to be larger than this minimum value
+          * \param[in] max_value filter all values in the image to be smaller than this maximum value
+          * \param[in] grayscale show data as grayscale (true) or not (false). Default: false
+          */
         void
         showShortImage (const unsigned short* short_image, unsigned int width, unsigned int height, 
-                        unsigned short min_value, unsigned short max_value, bool grayscale);
+                        unsigned short min_value, unsigned short max_value, bool grayscale = false);
 
+        /** \brief Show a 2D image on screen representing angle data.
+          * \param[in] data the input data representing the image
+          * \param[in] width the width of the image
+          * \param[in] height the height of the image
+          */
         void 
         showAngleImage (const float* data, unsigned width, unsigned height);
 
+        /** \brief Show a 2D image on screen representing half angle data.
+          * \param[in] data the input data representing the image
+          * \param[in] width the width of the image
+          * \param[in] height the height of the image
+          */
         void 
         showHalfAngleImage (const float* data, unsigned width, unsigned height);
 
-        /**\brief Sets the pixel at coordinates(u,v) to color while setting the neighborhood to another
-          * \param fg_color the pixel color
-          * \param bg_color the neighborhood color
-          * \param radius the circle radius around the pixel
+        /** \brief Sets the pixel at coordinates(u,v) to color while setting the neighborhood to another
+          * \param[in] u the u/x coordinate of the pixel
+          * \param[in] v the v/y coordinate of the pixel
+          * \param[in] fg_color the pixel color
+          * \param[in] bg_color the neighborhood color
+          * \param[in] radius the circle radius around the pixel
           */
         void
         markPoint (size_t u, size_t v, Vector3ub fg_color, Vector3ub bg_color = red_color, float radius = 2);
 
+        /** \brief Set the window title name
+          * \param[in] name the window title
+          */
         void
-        setName(const std::string& name)
+        setWindowTitle (const std::string& name)
         {
-          strcpy(image_viewer_->GetWindowName (), name.c_str ());
+          strcpy (image_viewer_->GetWindowName (), name.c_str ());
         }
 
         /** \brief Spin method. Calls the interactor and runs an internal loop. */
@@ -104,17 +152,17 @@ namespace pcl
         spin ();
         
         /** \brief Spin once method. Calls the interactor and updates the screen once. 
-          * \param time - How long (in ms) should the visualization loop be allowed to run.
-          * \param force_redraw - if false it might return without doing anything if the 
+          * \param[in] time - How long (in ms) should the visualization loop be allowed to run.
+          * \param[in] force_redraw - if false it might return without doing anything if the 
           * interactor's framerate does not require a redraw yet.
           */
         void 
         spinOnce (int time = 1, bool force_redraw = false);
         
-        /** \brief registering a callback function for keyboard events
-          * \param callback  the function that will be registered as a callback for a keyboard event
-          * \param cookie    user data that is passed to the callback
-          * \return          connection object that allows to disconnect the callback function.
+        /** \brief Register a callback function for keyboard events
+          * \param[in] callback  the function that will be registered as a callback for a keyboard event
+          * \param[in] cookie    user data that is passed to the callback
+          * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection 
         registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), 
@@ -123,11 +171,11 @@ namespace pcl
           return (registerKeyboardCallback (boost::bind (callback, _1, cookie)));
         }
         
-        /** \brief registering a callback function for keyboard events
-          * \param callback  the member function that will be registered as a callback for a keyboard event
-          * \param instance  instance to the class that implements the callback function
-          * \param cookie    user data that is passed to the callback
-          * \return          connection object that allows to disconnect the callback function.
+        /** \brief Register a callback function for keyboard events
+          * \param[in] callback  the member function that will be registered as a callback for a keyboard event
+          * \param[in] instance  instance to the class that implements the callback function
+          * \param[in] cookie    user data that is passed to the callback
+          * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> boost::signals2::connection 
         registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), 
@@ -136,17 +184,17 @@ namespace pcl
           return (registerKeyboardCallback (boost::bind (callback,  boost::ref (instance), _1, cookie)));
         }
         
-        /** \brief   registering a callback boost::function for keyboard events
-          * \param   the boost function that will be registered as a callback for a keyboard event
-          * \return  connection object that allows to disconnect the callback function.
+        /** \brief Register a callback boost::function for keyboard events
+          * \param[in] cb the boost function that will be registered as a callback for a keyboard event
+          * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection 
-        registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> );
+        registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> cb);
 
-        /** \brief 
-          * \param callback  the function that will be registered as a callback for a mouse event
-          * \param cookie    user data that is passed to the callback
-          * \return          connection object that allows to disconnect the callback function.
+        /** \brief Register a callback boost::function for mouse events
+          * \param[in] callback  the function that will be registered as a callback for a mouse event
+          * \param[in] cookie    user data that is passed to the callback
+          * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection 
         registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), 
@@ -155,11 +203,11 @@ namespace pcl
           return (registerMouseCallback (boost::bind (callback, _1, cookie)));
         }
         
-        /** \brief registering a callback function for mouse events
-          * \param callback  the member function that will be registered as a callback for a mouse event
-          * \param instance  instance to the class that implements the callback function
-          * \param cookie    user data that is passed to the callback
-          * \return          connection object that allows to disconnect the callback function.
+        /** \brief Register a callback function for mouse events
+          * \param[in] callback  the member function that will be registered as a callback for a mouse event
+          * \param[in] instance  instance to the class that implements the callback function
+          * \param[in] cookie    user data that is passed to the callback
+          * \return a connection object that allows to disconnect the callback function.
           */
         template<typename T> boost::signals2::connection 
         registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), 
@@ -168,22 +216,28 @@ namespace pcl
           return (registerMouseCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
         }
 
-        /** \brief   registering a callback function for mouse events
-          * \param   the boost function that will be registered as a callback for a mouse event
-          * \return  connection object that allows to disconnect the callback function.
+        /** \brief Register a callback function for mouse events
+          * \param[in] cb the boost function that will be registered as a callback for a mouse event
+          * \return a connection object that allows to disconnect the callback function.
           */        
         boost::signals2::connection 
-        registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> );
+        registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> cb);
         
       protected: // methods
         /** \brief Set the stopped flag back to false. */
         void 
         resetStoppedFlag () { stopped_ = false; }
 
+        /** \brief Fire up a mouse event with a specified event ID
+          * \param[int] event_id the id of the event
+          */
         void 
         emitMouseEvent (unsigned long event_id);
         
-        void 
+        /** \brief Fire up a keyboard event with a specified event ID
+          * \param[int] event_id the id of the event
+          */
+         void 
         emitKeyboardEvent (unsigned long event_id);
         
         // Callbacks used to register for vtk command

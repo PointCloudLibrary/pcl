@@ -114,7 +114,9 @@ namespace pcl
         * \param[in] compute_second_order_integral_images set to true if we want to compute a second order image
         */
       IntegralImage2D (bool compute_second_order_integral_images)
-        : width_ (1), height_ (1), compute_second_order_integral_images_ (compute_second_order_integral_images)
+        : width_ (1)
+        , height_ (1)
+        , compute_second_order_integral_images_ (compute_second_order_integral_images)
       {
       }
 
@@ -133,24 +135,32 @@ namespace pcl
       setInput (const DataType * data,
                 unsigned width, unsigned height, unsigned element_stride, unsigned row_stride);
 
-      /** \brief Compute the first order sum
-        * \param[in] start_x
-        * \param[in] start_y
-        * \param[in] width
-        * \param[in] height
+      /** \brief Compute the first order sum within a given rectangle
+        * \param[in] start_x x position of rectangle
+        * \param[in] start_y y position of rectangle
+        * \param[in] width width of rectangle
+        * \param[in] height height of rectangle
         */
       inline ElementType
       getFirstOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
 
-      /** \brief Compute the second order sum
-        * \param[in] start_x
-        * \param[in] start_y
-        * \param[in] width
-        * \param[in] height
+      /** \brief Compute the second order sum within a given rectangle
+        * \param[in] start_x x position of rectangle
+        * \param[in] start_y y position of rectangle
+        * \param[in] width width of rectangle
+        * \param[in] height height of rectangle
         */
       inline SecondOrderType
       getSecondOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
 
+      /** \brief Compute the number of finite elements within a given rectangle
+        * \param[in] start_x x position of rectangle
+        * \param[in] start_y y position of rectangle
+        * \param[in] width width of rectangle
+        * \param[in] height height of rectangle
+        */
+      inline unsigned
+      getFiniteElementsCount (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
     private:
       typedef Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::Type, Dimension, 1> InputType;
 
@@ -164,6 +174,7 @@ namespace pcl
 
       std::vector<ElementType, Eigen::aligned_allocator<ElementType> > first_order_integral_image_;
       std::vector<SecondOrderType, Eigen::aligned_allocator<SecondOrderType> > second_order_integral_image_;
+      std::vector<unsigned> finite_values_integral_image_;
 
       /** \brief The width of the 2d input data array */
       unsigned width_;
@@ -208,24 +219,32 @@ namespace pcl
       setInput (const DataType * data,
                 unsigned width, unsigned height, unsigned element_stride, unsigned row_stride);
 
-      /** \brief Compute the first order sum
-        * \param[in] start_x
-        * \param[in] start_y
-        * \param[in] width
-        * \param[in] height
+      /** \brief Compute the first order sum within a given rectangle
+        * \param[in] start_x x position of rectangle
+        * \param[in] start_y y position of rectangle
+        * \param[in] width width of rectangle
+        * \param[in] height height of rectangle
         */
       inline ElementType
       getFirstOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
 
-      /** \brief Compute the second order sum
-        * \param[in] start_x
-        * \param[in] start_y
-        * \param[in] width
-        * \param[in] height
+      /** \brief Compute the second order sum within a given rectangle
+        * \param[in] start_x x position of rectangle
+        * \param[in] start_y y position of rectangle
+        * \param[in] width width of rectangle
+        * \param[in] height height of rectangle
         */
       inline SecondOrderType
       getSecondOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
 
+      /** \brief Compute the number of finite elements within a given rectangle
+        * \param[in] start_x x position of rectangle
+        * \param[in] start_y y position of rectangle
+        * \param[in] width width of rectangle
+        * \param[in] height height of rectangle
+        */
+      inline unsigned
+      getFiniteElementsCount (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
     private:
     //  typedef typename IntegralImageTypeTraits<DataType>::Type InputType;
 
@@ -239,6 +258,7 @@ namespace pcl
 
       std::vector<ElementType, Eigen::aligned_allocator<ElementType> > first_order_integral_image_;
       std::vector<SecondOrderType, Eigen::aligned_allocator<SecondOrderType> > second_order_integral_image_;
+      std::vector<unsigned> finite_values_integral_image_;
 
       /** \brief The width of the 2d input data array */
       unsigned width_;

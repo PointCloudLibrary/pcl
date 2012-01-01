@@ -30,7 +30,7 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *	
+ *
  * Author: Suat Gedikli (gedikli@willowgarage.com)
  */
 
@@ -66,7 +66,20 @@ class SimpleOpenNIProcessor
         std::cout << "wrote point clouds to file " << ss.str() << std::endl;
       }
     }
-    
+
+    void imageDepthImageCallback (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant)
+    {
+      static unsigned count = 0;
+      static double last = pcl::getTime ();
+      if (++count == 30)
+      {
+        double now = pcl::getTime ();
+        std::cout << "got synchronized image x depth-image with constant factor: " << constant << ". Average framerate: " << double(count)/double(now - last) << " Hz" <<  std::endl;
+        count = 0;
+        last = now;
+      }
+    }
+
     void run ()
     {
       save = false;
@@ -80,6 +93,13 @@ class SimpleOpenNIProcessor
 
       // connect callback function for desired signal. In this case its a point cloud with color values
       boost::signals2::connection c = interface->registerCallback (f);
+
+      // make callback function from member function
+      boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant)> f2 =
+        boost::bind (&SimpleOpenNIProcessor::imageDepthImageCallback, this, _1, _2, _3);
+
+      // connect callback function for desired signal. In this case its a point cloud with color values
+      boost::signals2::connection c2 = interface->registerCallback (f2);
 
       // start receiving point clouds
       interface->start ();
@@ -108,7 +128,7 @@ class SimpleOpenNIProcessor
     }
 };
 
-int 
+int
 main ()
 {
   SimpleOpenNIProcessor v;

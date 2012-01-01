@@ -48,7 +48,7 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
 {
   vtkRenderWindowInteractor* iren = reinterpret_cast<pcl::visualization::PCLVisualizerInteractorStyle*>(caller)->GetInteractor ();
 
-  if ((eventid == vtkCommand::LeftButtonPressEvent) && (iren->GetShiftKey () == 1)) 
+  if ((eventid == vtkCommand::LeftButtonPressEvent) && (iren->GetShiftKey () > 0)) 
   {
     float x = 0, y = 0, z = 0;
     int idx = performSinglePick (iren, x, y, z);

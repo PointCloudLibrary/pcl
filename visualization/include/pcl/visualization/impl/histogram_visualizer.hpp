@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -128,6 +130,86 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
   resetStoppedFlag ();
 #endif
+  return (true);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> bool
+pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
+    const pcl::PointCloud<PointT> &cloud, int hsize, 
+    const std::string &id)
+{
+  RenWinInteractMap::iterator am_it = wins_.find (id);
+  if (am_it == wins_.end ())
+  {
+    PCL_WARN ("[updateFeatureHistogram] A window with id <%s> does not exists!.\n", id.c_str ());
+    return (false);
+  }
+  RenWinInteract* renwinupd = &wins_[id];
+  
+  vtkSmartPointer<vtkDoubleArray> xy_array = vtkSmartPointer<vtkDoubleArray>::New ();
+  xy_array->SetNumberOfComponents (2);
+  xy_array->SetNumberOfTuples (hsize);
+  
+  // Parse the cloud data and store it in the array
+  double xy[2];
+  for (int d = 0; d < hsize; ++d)
+  {
+    xy[0] = d;
+    xy[1] = cloud.points[0].histogram[d];
+    xy_array->SetTuple (d, xy);
+  }
+  reCreateActor (xy_array, renwinupd, hsize);
+  return (true);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> bool
+pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
+    const pcl::PointCloud<PointT> &cloud, const std::string &field_name, const int index, 
+    const std::string &id)
+{
+  if (index < 0 || index >= cloud.points.size ())
+  {
+    PCL_ERROR ("[updateFeatureHistogram] Invalid point index (%d) given!\n", index);
+    return (false);
+  }
+  
+  // Get the fields present in this cloud
+  std::vector<sensor_msgs::PointField> fields;
+  // Check if our field exists
+  int field_idx = pcl::getFieldIndex<PointT> (cloud, field_name, fields);
+  if (field_idx == -1)
+  {
+    PCL_ERROR ("[updateFeatureHistogram] The specified field <%s> does not exist!\n", field_name.c_str ());
+    return (false);
+  }
+
+  RenWinInteractMap::iterator am_it = wins_.find (id);
+  if (am_it == wins_.end ())
+  {
+    PCL_WARN ("[updateFeatureHistogram] A window with id <%s> does not exists!.\n", id.c_str ());
+    return (false);
+  }
+  RenWinInteract* renwinupd = &wins_[id];
+    
+  vtkSmartPointer<vtkDoubleArray> xy_array = vtkSmartPointer<vtkDoubleArray>::New ();
+  xy_array->SetNumberOfComponents (2);
+  xy_array->SetNumberOfTuples (fields[field_idx].count);
+
+  // Parse the cloud data and store it in the array
+  double xy[2];
+  for (int d = 0; d < fields[field_idx].count; ++d)
+  {
+    xy[0] = d;
+    //xy[1] = cloud.points[index].histogram[d];
+    float data;
+    memcpy (&data, (const char*)&cloud.points[index] + fields[field_idx].offset + d * sizeof (float), sizeof (float));
+    xy[1] = data;
+    xy_array->SetTuple (d, xy);
+  }
+  
+  reCreateActor (xy_array, renwinupd, cloud.fields[field_idx].count - 1);
   return (true);
 }
 
