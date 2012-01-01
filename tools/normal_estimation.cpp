@@ -40,7 +40,6 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
-#include <pcl/features/integral_image_normal.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
@@ -76,7 +75,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
   if (loadPCDFile (filename, cloud, translation, orientation) < 0)
     return (false);
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
-  print_info ("Available dimensions: "); print_value ("%s\n", getFieldsList (cloud).c_str ());
+  print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (cloud).c_str ());
 
   return (true);
 }
@@ -95,26 +94,14 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   
   print_highlight (stderr, "Computing ");
 
+  NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
+  ne.setInputCloud (xyz);
+  //ne.setSearchMethod (pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr (new pcl::KdTreeFLANN<pcl::PointXYZ>));
+  ne.setKSearch (k);
+  ne.setRadiusSearch (radius);
+  
   PointCloud<Normal> normals;
-  if (xyz->isOrganized ())
-  {
-    IntegralImageNormalEstimation<PointXYZ, Normal> ne;
-    ne.setNormalEstimationMethod (IntegralImageNormalEstimation<PointXYZ, Normal>::COVARIANCE_MATRIX);
-    ne.setInputCloud (xyz);
-    ne.setRectSize (10, 10);
-    
-    ne.compute (normals);
-  }
-  else
-  {
-    NormalEstimation<PointXYZ, Normal> ne;
-    ne.setInputCloud (xyz);
-    //ne.setSearchMethod (KdTreeFLANN<PointXYZ>::Ptr (new KdTreeFLANN<PointXYZ>));
-    ne.setKSearch (k);
-    ne.setRadiusSearch (radius);
-    
-    ne.compute (normals);
-  }
+  ne.compute (normals);
 
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", normals.width * normals.height); print_info (" points]\n");
 
@@ -132,7 +119,7 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
 
   print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
   
-  io::savePCDFile (filename, output, translation, orientation, true);
+  pcl::io::savePCDFile (filename, output, translation, orientation, true);
   
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }

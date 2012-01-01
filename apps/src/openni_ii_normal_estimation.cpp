@@ -69,12 +69,12 @@ class OpenNIIntegralImageNormalEstimation
     typedef typename Cloud::ConstPtr CloudConstPtr;
 
     OpenNIIntegralImageNormalEstimation (const std::string& device_id = "")
-      : //viewer ("PCL OpenNI NormalEstimation Viewer"), 
-        device_id_(device_id)
+      : viewer ("PCL OpenNI NormalEstimation Viewer") 
+    , device_id_(device_id)
     {
 //      ne_.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointType, pcl::Normal>::AVERAGE_3D_GRADIENT);
       ne_.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointType, pcl::Normal>::COVARIANCE_MATRIX);
-      ne_.setRectSize (10, 10);
+      ne_.setRectSize (50, 50);
       new_cloud_ = false;
     }
 
@@ -130,12 +130,11 @@ class OpenNIIntegralImageNormalEstimation
       boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIIntegralImageNormalEstimation::cloud_cb, this, _1);
       boost::signals2::connection c = interface->registerCallback (f);
      
-      //viewer.runOnVisualizationThread (boost::bind(&OpenNIIntegralImageNormalEstimation::viz_cb, this, _1), "viz_cb");
+      viewer.runOnVisualizationThread (boost::bind(&OpenNIIntegralImageNormalEstimation::viz_cb, this, _1), "viz_cb");
 
       interface->start ();
       
-      //while (!viewer.wasStopped ())
-      while (true)
+      while (!viewer.wasStopped ())
       {
         boost::this_thread::sleep(boost::posix_time::seconds(1));
       }
@@ -144,7 +143,7 @@ class OpenNIIntegralImageNormalEstimation
     }
 
     pcl::IntegralImageNormalEstimation<PointType, pcl::Normal> ne_;
-    //pcl::visualization::CloudViewer viewer;
+    pcl::visualization::CloudViewer viewer;
     std::string device_id_;
     boost::mutex mtx_;
     // Data

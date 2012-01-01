@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,22 +33,21 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *	
- * Author: Nico Blodow (blodow@cs.tum.edu)
- *         Radu Bogdan Rusu (rusu@willowgarage.com)
- *         Suat Gedikli (gedikli@willowgarage.com)
- *         Ethan Rublee (rublee@willowgarage.com)
  */
 
 #include <boost/thread/thread.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/common/time.h> //fps calculations
 #include <pcl/io/openni_grabber.h>
-#include <pcl/visualization/cloud_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
+#include <pcl/console/parse.h>
+#include <vtkImageViewer.h>
+#include <vtkImageImport.h>
+#include <vtkJPEGWriter.h>
 #include <vector>
-#include <pcl/registration/incremental_registration.h>
+#include <string>
+
+#include <pcl/visualization/pcl_visualizer.h>
 
 #define SHOW_FPS 1
 #if SHOW_FPS
@@ -71,98 +72,96 @@ do \
 }while(false)
 #endif
 
-template <typename PointType>
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class SimpleOpenNIViewer
 {
-public:
-  typedef pcl::PointCloud<PointType> Cloud;
-  typedef typename Cloud::ConstPtr CloudConstPtr;
-
-  SimpleOpenNIViewer(pcl::OpenNIGrabber& grabber)
-    : viewer("PCL OpenNI Viewer")
-    , grabber_(grabber)
-  {
-  }
-
-  /**
-   * @brief Callback method for the grabber interface
-   * @param cloud The new point cloud from Grabber
-   */
-  void
-  cloud_cb_ (const CloudConstPtr& cloud)
-  {
-    FPS_CALC ("callback");
-    boost::mutex::scoped_lock lock (mtx_);
-
-  reg_.setInputCloud(cloud);
-  reg_.setDownsamplingLeafSizeInput(0.03);
-  reg_.setDownsamplingLeafSizeModel(0.03);
-  reg_.setRegistrationDistanceThreshold(0.5);
-
-  bool use_vanilla_icp = false;
-  typename Cloud::Ptr cloud_registered (new Cloud);
-  reg_.align(*cloud_registered, use_vanilla_icp);
-  typename Cloud::Ptr model (new Cloud);
-  pcl::PointCloud<PointType> *c = reg_.getModel();
-  pcl::copyPointCloud(*c, *model);
-
-    cloud_ = model;
-  }
-
-  /**
-   * @brief swaps the pointer to the point cloud with Null pointer and returns the cloud pointer
-   * @return boost shared pointer to point cloud
-   */
-  CloudConstPtr
-  getLatestCloud ()
-  {
-    //lock while we swap our cloud and reset it.
-    boost::mutex::scoped_lock lock(mtx_);
-    CloudConstPtr temp_cloud;
-    temp_cloud.swap (cloud_); //here we set cloud_ to null, so that
-    //it is safe to set it again from our
-    //callback
-    return (temp_cloud);
-  }
-
-  /**
-   * @brief starts the main loop
-   */
-  void
-  run()
-  {
-    //pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id_, pcl::OpenNIGrabber::OpenNI_QQVGA_30Hz, pcl::OpenNIGrabber::OpenNI_VGA_30Hz);
-
-    boost::function<void (const CloudConstPtr&) > f = boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
-
-    boost::signals2::connection c = grabber_.registerCallback (f);
-
-    grabber_.start();
-
-    while (!viewer.wasStopped ())
+  public:
+    SimpleOpenNIViewer (pcl::OpenNIGrabber& grabber)
+      : grabber_ (grabber),
+        importer_ (vtkSmartPointer<vtkImageImport>::New ()),
+        writer_ (vtkSmartPointer<vtkJPEGWriter>::New ())
     {
-      if (cloud_)
-      {
-        FPS_CALC ("drawing");
-        //the call to get() sets the cloud_ to null;
-        viewer.showCloud (getLatestCloud ());
-      }
+      importer_->SetNumberOfScalarComponents (3);
+      importer_->SetDataScalarTypeToUnsignedChar ();
+      writer_->SetQuality (95);
     }
 
-    grabber_.stop();
-  }
+    void
+    image_callback (const boost::shared_ptr<openni_wrapper::Image>& image)
+    {
+      FPS_CALC ("image callback");
+      boost::mutex::scoped_lock lock (image_mutex_);
+      image_ = image;
+    }
+    
+    void
+    run ()
+    {
+      boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&) > image_cb = boost::bind (&SimpleOpenNIViewer::image_callback, this, _1);
+      boost::signals2::connection image_connection = grabber_.registerCallback (image_cb);
+      
+      grabber_.start ();
+      
+      unsigned char* rgb_data = 0;
+      unsigned rgb_data_size = 0;
+      void* data;
+       
+      while (true)
+      {
+        boost::mutex::scoped_lock lock (image_mutex_);
+        if (image_)
+        {
+          boost::shared_ptr<openni_wrapper::Image> image;
+          image.swap (image_);
 
-  pcl::visualization::CloudViewer viewer;
-  pcl::OpenNIGrabber& grabber_;
-  boost::mutex mtx_;
-  CloudConstPtr cloud_;
-  pcl::registration::IncrementalRegistration<PointType> reg_;
+          if (image->getEncoding() == openni_wrapper::Image::RGB)
+          {
+            data = (void*)image->getMetaData ().Data ();
+            importer_->SetWholeExtent (0, image->getWidth () - 1, 0, image->getHeight () - 1, 0, 0);
+            importer_->SetDataExtentToWholeExtent ();
+          }
+          else
+          {
+            if (rgb_data_size < image->getWidth () * image->getHeight ())
+            {
+              rgb_data_size = image->getWidth () * image->getHeight ();
+              rgb_data = new unsigned char [rgb_data_size * 3];
+              importer_->SetWholeExtent (0, image->getWidth () - 1, 0, image->getHeight () - 1, 0, 0);
+              importer_->SetDataExtentToWholeExtent ();
+            }
+            image->fillRGB (image->getWidth (), image->getHeight (), rgb_data);
+            data = (void*)rgb_data;
+          }
+
+          std::stringstream ss;
+          ss << "frame_" + boost::posix_time::to_iso_string (boost::posix_time::microsec_clock::local_time ()) + ".jpg";
+          importer_->SetImportVoidPointer (data, 1);
+          importer_->Update ();
+          writer_->SetFileName (ss.str ().c_str ());
+          writer_->SetInputConnection (importer_->GetOutputPort ());
+          writer_->Write ();
+        }
+      }
+
+      grabber_.stop ();
+      
+      image_connection.disconnect ();
+      
+      if (rgb_data)
+        delete[] rgb_data;
+    }
+
+    pcl::OpenNIGrabber& grabber_;
+    boost::mutex image_mutex_;
+    boost::shared_ptr<openni_wrapper::Image> image_;
+    vtkSmartPointer<vtkImageImport> importer_;
+    vtkSmartPointer<vtkJPEGWriter> writer_;
 };
 
 void
 usage(char ** argv)
 {
-  cout << "usage: " << argv[0] << " [<device_id> [<depth-mode> [<image-mode>] ] ] | [path-to-oni-file]\n";
+  cout << "usage: " << argv[0] << " [((<device_id> | <path-to-oni-file>) [-imagemode <mode>] | -l [<device_id>]| -h | --help)]" << endl;
   cout << argv[0] << " -h | --help : shows this help" << endl;
   cout << argv[0] << " -l : list all available devices" << endl;
   cout << argv[0] << " -l <device-id> : list all available modes for specified device" << endl;
@@ -188,7 +187,7 @@ usage(char ** argv)
   cout << argv[0] << " A00361800903049A" << endl;
   cout << "    uses the device with the serial number \'A00361800903049A\'." << endl;
   cout << argv[0] << " 1@16" << endl;
-  cout << "    uses the device on address 16 at usb bus 1." << endl;
+  cout << "    uses the device on address 16 at USB bus 1." << endl;
   #endif
   return;
 }
@@ -196,39 +195,34 @@ usage(char ** argv)
 int
 main(int argc, char ** argv)
 {
-  std::string arg("");
-  pcl::OpenNIGrabber::Mode depth_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
+  std::string device_id("");
   pcl::OpenNIGrabber::Mode image_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
-
+  
   if (argc >= 2)
   {
-    arg = argv[1];
-
-    if (arg == "--help" || arg == "-h")
+    device_id = argv[1];
+    if (device_id == "--help" || device_id == "-h")
     {
       usage(argv);
-      return 1;
+      return 0;
     }
-    else if (arg == "-l")
+    else if (device_id == "-l")
     {
       if (argc >= 3)
       {
         pcl::OpenNIGrabber grabber(argv[2]);
         boost::shared_ptr<openni_wrapper::OpenNIDevice> device = grabber.getDevice();
-        cout << "Supported depth modes for device: " << device->getVendorName() << " , " << device->getProductName() << endl;
-        std::vector<std::pair<int, XnMapOutputMode > > modes = grabber.getAvailableDepthModes();
-        for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin(); it != modes.end(); ++it)
-        {
-          cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << endl;
-        }
+        std::vector<std::pair<int, XnMapOutputMode > > modes;
 
-        cout << endl << "Supported image modes for device: " << device->getVendorName() << " , " << device->getProductName() << endl;
-        modes = grabber.getAvailableImageModes();
-        for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin(); it != modes.end(); ++it)
+        if (device->hasImageStream ())
         {
-          cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << endl;
+          cout << endl << "Supported image modes for device: " << device->getVendorName() << " , " << device->getProductName() << endl;
+          modes = grabber.getAvailableImageModes();
+          for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin(); it != modes.end(); ++it)
+          {
+            cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << endl;
+          }
         }
-        return 0;
       }
       else
       {
@@ -246,17 +240,8 @@ main(int argc, char ** argv)
           cout << "No devices connected." << endl;
         
         cout <<"Virtual Devices available: ONI player" << endl;
-        return 0;
       }
-    }
-
-    if (argc >= 3)
-    {
-      depth_mode = (pcl::OpenNIGrabber::Mode) atoi(argv[2]);
-      if (argc == 4)
-      {
-        image_mode = (pcl::OpenNIGrabber::Mode) atoi(argv[3]);
-      }
+      return 0;
     }
   }
   else
@@ -265,18 +250,14 @@ main(int argc, char ** argv)
     if (driver.getNumberDevices() > 0)
       cout << "Device Id not set, using first device." << endl;
   }
-
-  pcl::OpenNIGrabber grabber(arg, depth_mode, image_mode);
-  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb > ())
-  {
-    SimpleOpenNIViewer<pcl::PointXYZRGB> v(grabber);
-    v.run();
-  }
-  else
-  {
-    SimpleOpenNIViewer<pcl::PointXYZI> v(grabber);
-    v.run();
-  }
+  
+  unsigned mode;
+  if (pcl::console::parse(argc, argv, "-imagemode", mode) != -1)
+    image_mode = (pcl::OpenNIGrabber::Mode) mode;
+  
+  pcl::OpenNIGrabber grabber (device_id, pcl::OpenNIGrabber::OpenNI_Default_Mode, image_mode);
+  SimpleOpenNIViewer v (grabber);
+  v.run ();
 
   return (0);
 }

@@ -45,7 +45,6 @@
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/filters/approximate_voxel_grid.h>
 #include <pcl/filters/extract_indices.h>
 
 

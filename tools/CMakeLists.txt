@@ -58,13 +58,21 @@ if (build)
   target_link_libraries(icp2d pcl_common pcl_io pcl_registration)
 
   PCL_ADD_EXECUTABLE(elch ${SUBSYS_NAME} elch.cpp)
-  target_link_libraries(elch pcl_common pcl_io pcl_registration)  
+  target_link_libraries(elch pcl_common pcl_io pcl_registration)
+
+  PCL_ADD_EXECUTABLE(ndt2d ${SUBSYS_NAME} ndt2d.cpp)
+  target_link_libraries(ndt2d pcl_common pcl_io pcl_registration)
+
+  PCL_ADD_EXECUTABLE(crop_to_hull ${SUBSYS_NAME} crop_to_hull.cpp)
+  target_link_libraries(crop_to_hull pcl_common pcl_io pcl_filters pcl_surface)
+
+  PCL_ADD_EXECUTABLE(concatenate_points_pcd ${SUBSYS_NAME} concatenate_points_pcd.cpp)
+  target_link_libraries(concatenate_points_pcd pcl_common pcl_io)
 
   if(NOT VTK_FOUND)
     set(DEFAULT FALSE)
     set(REASON "VTK was not found.")
-  else()
-    if(NOT ANDROID_NDK)
+  else(NOT VTK_FOUND)
       set(DEFAULT TRUE)
       set(REASON)
       set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
@@ -82,8 +90,15 @@ if (build)
       
       PCL_ADD_EXECUTABLE(mesh_sampling ${SUBSYS_NAME} mesh_sampling.cpp)
       target_link_libraries(mesh_sampling pcl_common pcl_io pcl_visualization pcl_filters vtkCommon)
-    endif()
-  endif()
+      
+      PCL_ADD_EXECUTABLE(virtual_scanner ${SUBSYS_NAME} virtual_scanner.cpp)
+      target_link_libraries(virtual_scanner pcl_common pcl_io pcl_filters pcl_visualization vtkCommon)
+
+      if(BUILD_OPENNI AND OPENNI_FOUND)
+        PCL_ADD_EXECUTABLE(openni_save_image ${SUBSYS_NAME} openni_save_image.cpp)
+        target_link_libraries(openni_save_image pcl_common pcl_io pcl_visualization)  
+      endif(BUILD_OPENNI AND OPENNI_FOUND)
+  endif(NOT VTK_FOUND)
 
   PCL_ADD_EXECUTABLE (transform_point_cloud ${SUBSYS_NAME} transform_point_cloud.cpp)
   target_link_libraries (transform_point_cloud pcl_common pcl_io pcl_registration)

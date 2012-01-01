@@ -1,9 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
- *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,15 +31,13 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 
 #include <pcl/console/parse.h>
+#include <pcl/console/print.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
-#include <pcl/registration/icp.h>
-#include <pcl/registration/icp_nl.h>
+#include <pcl/registration/ndt.h>
 #include <pcl/registration/transformation_estimation_lm.h>
 #include <pcl/registration/warp_point_rigid_3d.h>
 
@@ -55,17 +51,57 @@ typedef pcl::PointCloud<PointType> Cloud;
 typedef Cloud::ConstPtr CloudConstPtr;
 typedef Cloud::Ptr CloudPtr;
 
+
+void
+selfTest ()
+{
+  CloudPtr model (new Cloud);
+  model->points.push_back (PointType (1,1,0));  
+  model->points.push_back (PointType (4,4,0)); 
+  model->points.push_back (PointType (5,6,0));
+  model->points.push_back (PointType (3,3,0));
+  model->points.push_back (PointType (6,7,0));
+  model->points.push_back (PointType (7,11,0));
+  model->points.push_back (PointType (12,15,0));
+  model->points.push_back (PointType (7,12,0));
+
+  CloudPtr data (new Cloud);
+  data->points.push_back (PointType (3,1,0));
+  data->points.push_back (PointType (7,4,0));
+  data->points.push_back (PointType (9,6,0));
+
+  pcl::console::setVerbosityLevel (pcl::console::L_DEBUG);  
+  
+  pcl::NormalDistributionsTransform<PointType, PointType> ndt;
+
+  ndt.setMaximumIterations (40);
+  ndt.setGridCentre (Eigen::Vector2f (0,0));
+  ndt.setGridExtent (Eigen::Vector2f (20,20));
+  ndt.setGridStep (Eigen::Vector2f (20,20));
+  ndt.setOptimizationStepSize (Eigen::Vector3d (0.4,0.4,0.1));
+  ndt.setTransformationEpsilon (1e-9);
+
+  ndt.setInputTarget (model);
+  ndt.setInputCloud (data);
+
+  CloudPtr tmp (new Cloud);
+  ndt.align (*tmp);
+  std::cout << ndt.getFinalTransformation () << std::endl;
+}
+
+
 int
 main (int argc, char **argv)
 {
-  double dist = 0.05;
-  pcl::console::parse_argument (argc, argv, "-d", dist);
+  int iter = 10;
+  double grid_step = 3.0;
+  double grid_extent = 25.0;
+  double optim_step = 1.0;
 
-  double rans = 0.05;
-  pcl::console::parse_argument (argc, argv, "-r", rans);
-
-  int iter = 50;
   pcl::console::parse_argument (argc, argv, "-i", iter);
+  pcl::console::parse_argument (argc, argv, "-g", grid_step);
+  pcl::console::parse_argument (argc, argv, "-e", grid_extent);
+  pcl::console::parse_argument (argc, argv, "-s", optim_step);
 
   std::vector<int> pcd_indices;
   pcd_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
@@ -80,8 +116,15 @@ main (int argc, char **argv)
 
   std::string result_filename (argv[pcd_indices[0]]);
   result_filename = result_filename.substr (result_filename.rfind ("/") + 1);
-  pcl::io::savePCDFile (result_filename.c_str (), *model);
-  std::cout << "saving first model to " << result_filename << std::endl;
+  try
+  {
+    pcl::io::savePCDFile (result_filename.c_str (), *model);
+    std::cout << "saving first model to " << result_filename << std::endl;
+  }
+  catch(pcl::IOException& e)
+  {
+    std::cerr << e.what() << std::endl;
+  }
 
   Eigen::Matrix4f t (Eigen::Matrix4f::Identity ());
 
@@ -95,41 +138,42 @@ main (int argc, char **argv)
     }
     std::cout << argv[pcd_indices[i]] << " width: " << data->width << " height: " << data->height << std::endl;
 
-    pcl::IterativeClosestPointNonLinear<PointType, PointType> icp;
+    //pcl::console::setVerbosityLevel(pcl::console::L_DEBUG);
 
-    boost::shared_ptr<pcl::WarpPointRigid3D<PointType, PointType> > warp_fcn 
-      (new pcl::WarpPointRigid3D<PointType, PointType>);
+    pcl::NormalDistributionsTransform<PointType, PointType> ndt;
 
-    // Create a TransformationEstimationLM object, and set the warp to it
-    boost::shared_ptr<pcl::registration::TransformationEstimationLM<PointType, PointType> > te (new pcl::registration::TransformationEstimationLM<PointType, PointType>);
-    te->setWarpFunction (warp_fcn);
+    ndt.setMaximumIterations (iter);
+    ndt.setGridCentre (Eigen::Vector2f (15,0));
+    ndt.setGridExtent (Eigen::Vector2f (grid_extent,grid_extent));
+    ndt.setGridStep (Eigen::Vector2f (grid_step,grid_step));
+    ndt.setOptimizationStepSize (optim_step);
+    ndt.setTransformationEpsilon (1e-5);
 
-    // Pass the TransformationEstimation objec to the ICP algorithm
-    icp.setTransformationEstimation (te);
-
-    icp.setMaximumIterations (iter);
-    icp.setMaxCorrespondenceDistance (dist);
-    icp.setRANSACOutlierRejectionThreshold (rans);
-
-    icp.setInputTarget (model);
-
-    icp.setInputCloud (data);
+    ndt.setInputTarget (model);
+    ndt.setInputCloud (data);
 
     CloudPtr tmp (new Cloud);
-    icp.align (*tmp);
+    ndt.align (*tmp);
 
-    t = icp.getFinalTransformation () * t;
+    t = ndt.getFinalTransformation () * t;
 
     pcl::transformPointCloud (*data, *tmp, t);
 
-    std::cout << icp.getFinalTransformation () << std::endl;
+    std::cout << ndt.getFinalTransformation () << std::endl;
 
     *model = *data;
 
-    std::string result_filename (argv[pcd_indices[i]]);
-    result_filename = result_filename.substr (result_filename.rfind ("/") + 1);
-    pcl::io::savePCDFileBinary (result_filename.c_str (), *tmp);
-    std::cout << "saving result to " << result_filename << std::endl;
+    try
+    {
+      std::string result_filename (argv[pcd_indices[i]]);
+      result_filename = result_filename.substr (result_filename.rfind ("/") + 1);
+      pcl::io::savePCDFileBinary (result_filename.c_str (), *tmp);
+      std::cout << "saving result to " << result_filename << std::endl;
+    }
+    catch(pcl::IOException& e)
+    {
+      std::cerr << e.what() << std::endl;
+    }
   }
 
   return 0;

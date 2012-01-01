@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: test_registration_api.cpp 2771 2011-10-14 11:32:13Z dirkholz $
+ * $Id: test_registration_api.cpp 3499 2011-12-12 04:32:01Z rusu $
  *
  */
 
