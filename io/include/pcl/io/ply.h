@@ -144,16 +144,14 @@ namespace pcl
         }
       };
 
-      const size_t CAMERA_SIZE = sizeof(float) * 19 + sizeof(int) * 2;
-
       struct property
       {
         std::string name_;
         int data_type_;
         size_t offset_;
         property(const std::string& name) : name_(name), offset_(0) {}
-        property(const std::string& name, int data_type) : 
-        name_(name), data_type_(data_type)
+        property(const std::string& name, int data_type)
+          : name_(name), data_type_(data_type)
         {
           offset_ = pcl::getFieldSize(data_type_);
         }
@@ -202,8 +200,13 @@ namespace pcl
         std::string name_;
         size_t count_;
         size_t offset_;
-      element(const std::string& name, size_t count) : 
-        name_(name), count_(count), offset_(0), properties_(0), list_properties_(0) {}
+        element(const std::string& name, size_t count)
+          : name_(name)
+          , count_(count)
+          , offset_(0)
+          , properties_(0)
+          , list_properties_(0) 
+        {}
 
         typedef std::vector<property*>::iterator iterator;
         typedef std::vector<property*>::const_iterator const_iterator;
@@ -279,15 +282,28 @@ namespace pcl
                               list_properties_.end(),
                               std::bind1st(std::equal_to<const_iterator>(),property_pos)) != list_properties_.end();
         }
-
         std::vector<property*> properties_;
         std::vector<iterator> list_properties_;
+      };
+
+      struct obj_info 
+      {
+        std::string name_;
+        union
+        {
+          float float_data_;
+          int int_data_;
+        };
+        obj_info (std::string name, float data)
+          : name_(name), float_data_(data) {}
+        obj_info (std::string name, int data)
+          : name_(name), int_data_(data) {}        
       };
 
       class parser
       {
       public:
-      parser() : elements_(0), last_element_(0) {}
+      parser() : elements_(0), last_element_(0), infos_(0) {}
 
         typedef std::vector<element*>::iterator iterator;
         typedef std::vector<element*>::const_iterator const_iterator;
@@ -331,6 +347,26 @@ namespace pcl
         int push_property(const std::string& name, int size_type, int data_type)
         {
           return last_element_->push_property(name, size_type, data_type);
+        }
+
+        void push_obj_info(const std::string& name, const std::string& data)
+        {
+          if (data.find ('.') != std::string::npos || 
+              data.find ('e') != std::string::npos ||
+              data.find ('E') != std::string::npos ||
+              data.find ('f') != std::string::npos)
+            infos_.push_back (new obj_info (name, float (atof (data.c_str ()))));
+          else
+            infos_.push_back (new obj_info (name, atoi (data.c_str ())));
+        }
+        
+        obj_info*
+        get_obj_info(const std::string& name) const
+        {
+          std::vector <obj_info*>::const_iterator info = infos_.begin ();
+          for ( ;info!=infos_.end (); ++info)
+            if ( (*info)->name_ == name ) break;
+          return *info;
         }
 
         size_t offset_before(const std::string& element_name)
@@ -426,6 +462,16 @@ namespace pcl
               // ignore comments
               if (line_type.substr (0, 7) == "comment")
                 continue;
+              // read obj_info
+              if (line_type.substr (0, 8) == "obj_info") 
+              {
+                if(st.size() == 3)
+                  push_obj_info(st.at(1), st.at(2));
+                else
+                  PCL_ERROR ("[pcl::io::ply::parser::parse_header] parse error obj_info %s\n",
+                             st.at(2).c_str ());
+                continue;
+              }
               // read element
               if (line_type.substr (0, 7) == "element") 
               {
@@ -445,7 +491,8 @@ namespace pcl
                   int data_type = pcl::io::ply::getTypeFromTypeName(st.at(3));
                   if(data_type < -1 || size_type < -1)
                   {
-                    PCL_ERROR ("[pcl::io::ply::parser::parse_header] parse error property list %s %s %s.\n", st[2].c_str(), st[3].c_str (), st[4].c_str ());
+                    PCL_ERROR ("[pcl::io::ply::parser::parse_header] parse error property list %s %s %s.\n", 
+                               st[2].c_str(), st[3].c_str (), st[4].c_str ());
                     return -1;
                   }
                   else
@@ -492,6 +539,7 @@ namespace pcl
       private:
         std::vector<element*> elements_;
         element* last_element_;
+        std::vector <obj_info*> infos_;
       };
 
       /** Wrapper for PLY camera structure to ease read/write */
@@ -561,6 +609,15 @@ namespace pcl
         }
         else {
           out.write ((const char*) &c, sizeof(camera));
+        }
+      };
+
+      struct range_grid
+      {
+        std::vector<int> indices_;
+        void resize (const std::string&, size_t size)
+        {
+          indices_.resize (size);
         }
       };
     } //namespace ply

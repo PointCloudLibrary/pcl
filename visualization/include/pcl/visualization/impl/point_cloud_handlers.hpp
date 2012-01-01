@@ -36,7 +36,7 @@
  */
 
 #include <pcl/console/time.h>
-#include <pcl/win32_macros.h>
+#include <pcl/pcl_macros.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -167,6 +167,145 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor (vtkSmartPo
       colors[idx    ] = cloud_->points[cp].r;
       colors[idx + 1] = cloud_->points[cp].g;
       colors[idx + 2] = cloud_->points[cp].b;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+pcl::visualization::PointCloudColorHandlerHSVField<PointT>::PointCloudColorHandlerHSVField (const PointCloudConstPtr &cloud) : 
+  pcl::visualization::PointCloudColorHandler<PointT>::PointCloudColorHandler (cloud)
+{
+  // Check for the presence of the "H" field
+  field_idx_ = pcl::getFieldIndex (*cloud, "h", fields_);
+  if (field_idx_ == -1)
+  {
+    capable_ = false;
+    return;
+  }
+
+  // Check for the presence of the "S" field
+  s_field_idx_ = pcl::getFieldIndex (*cloud, "s", fields_);
+  if (s_field_idx_ == -1)
+  {
+    capable_ = false;
+    return;
+  }
+
+  // Check for the presence of the "V" field
+  v_field_idx_ = pcl::getFieldIndex (*cloud, "v", fields_);
+  if (v_field_idx_ == -1)
+  {
+    capable_ = false;
+    return;
+  }
+  capable_ = true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void 
+pcl::visualization::PointCloudColorHandlerHSVField<PointT>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
+{
+  if (!capable_)
+    return;
+
+  if (!scalars)
+    scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
+  scalars->SetNumberOfComponents (3);
+
+  vtkIdType nr_points = cloud_->points.size ();
+  reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
+  unsigned char* colors = reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->GetPointer (0);
+
+  int j = 0;
+  // If XYZ present, check if the points are invalid
+  int x_idx = -1;
+  
+  for (size_t d = 0; d < fields_.size (); ++d)
+    if (fields_[d].name == "x")
+      x_idx = (int) d;
+
+  if (x_idx != -1)
+  {
+    // Color every point
+    for (vtkIdType cp = 0; cp < nr_points; ++cp)
+    {
+      // Copy the value at the specified field
+      if (!pcl_isfinite (cloud_->points[cp].x) ||
+          !pcl_isfinite (cloud_->points[cp].y) || 
+          !pcl_isfinite (cloud_->points[cp].z))
+        continue;
+
+      int idx = j * 3;
+
+      ///@todo do this with the point_types_conversion in common, first template it!
+
+      // Fill color data with HSV here:
+      if (cloud_->points[cp].s == 0)
+      {
+        colors[idx] = colors[idx+1] = colors[idx+2] = cloud_->points[cp].v;
+        return;
+      } 
+      float a = cloud_->points[cp].h / 60;
+      int   i = floor (a);
+      float f = a - i;
+      float p = cloud_->points[cp].v * (1 - cloud_->points[cp].s);
+      float q = cloud_->points[cp].v * (1 - cloud_->points[cp].s * f);
+      float t = cloud_->points[cp].v * (1 - cloud_->points[cp].s * (1 - f));
+
+      switch (i) 
+      {
+        case 0:
+          colors[idx] = cloud_->points[cp].v; colors[idx+1] = t; colors[idx+2] = p; break;
+        case 1:
+          colors[idx] = q; colors[idx+1] = cloud_->points[cp].v; colors[idx+2] = p; break;
+        case 2:
+          colors[idx] = p; colors[idx+1] = cloud_->points[cp].v; colors[idx+2] = t; break;
+        case 3:
+          colors[idx] = p; colors[idx+1] = q; colors[idx+2] = cloud_->points[cp].v; break;
+        case 4:
+          colors[idx] = t; colors[idx+1] = p; colors[idx+2] = cloud_->points[cp].v; break;
+        default:
+          colors[idx] = cloud_->points[cp].v; colors[idx+1] = p; colors[idx+2] = q; break;
+      }
+      j++;
+    }
+  }
+  else
+  {
+    // Color every point
+    for (vtkIdType cp = 0; cp < nr_points; ++cp)
+    {
+      int idx = cp * 3;
+
+      // Fill color data with HSV here:
+      if (cloud_->points[cp].s == 0)
+      {
+        colors[idx] = colors[idx+1] = colors[idx+2] = cloud_->points[cp].v;
+        return;
+      } 
+      float a = cloud_->points[cp].h / 60;
+      int   i = floor (a);
+      float f = a - i;
+      float p = cloud_->points[cp].v * (1 - cloud_->points[cp].s);
+      float q = cloud_->points[cp].v * (1 - cloud_->points[cp].s * f);
+      float t = cloud_->points[cp].v * (1 - cloud_->points[cp].s * (1 - f));
+
+      switch (i) 
+      {
+        case 0:
+          colors[idx] = cloud_->points[cp].v; colors[idx+1] = t; colors[idx+2] = p; break;
+        case 1:
+          colors[idx] = q; colors[idx+1] = cloud_->points[cp].v; colors[idx+2] = p; break;
+        case 2:
+          colors[idx] = p; colors[idx+1] = cloud_->points[cp].v; colors[idx+2] = t; break;
+        case 3:
+          colors[idx] = p; colors[idx+1] = q; colors[idx+2] = cloud_->points[cp].v; break;
+        case 4:
+          colors[idx] = t; colors[idx+1] = p; colors[idx+2] = cloud_->points[cp].v; break;
+        default:
+          colors[idx] = cloud_->points[cp].v; colors[idx+1] = p; colors[idx+2] = q; break;
+      }
     }
   }
 }

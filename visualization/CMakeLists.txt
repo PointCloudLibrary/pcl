@@ -21,6 +21,8 @@ if (ANDROID_NDK)
   message("VTK was found, but cannot be compiled for Android. Please use VES instead.")
 endif ()
 
+PCL_ADD_DOC(${SUBSYS_NAME})
+
 if(build)
     set(srcs
         src/point_picking_event.cpp
@@ -97,5 +99,4 @@ if(build)
     add_subdirectory(test)
     add_subdirectory(tools)
 
-    # share data: http://pr.willowgarage.com/data/pcl/partial_cup_model_new.pcd
 endif(build)

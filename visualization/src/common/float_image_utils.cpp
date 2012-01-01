@@ -37,7 +37,7 @@
 #include <pcl/visualization/common/float_image_utils.h>
 #include <cmath>
 #include <algorithm>
-#include <pcl/win32_macros.h>
+#include <pcl/pcl_macros.h>
 
 using std::cout;
 using std::cerr;

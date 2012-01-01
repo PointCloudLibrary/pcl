@@ -179,19 +179,26 @@ namespace pcl
         * \param[in] cloud the point cloud data message
         */
       inline std::string
-      generateHeaderBinary (const sensor_msgs::PointCloud2 &cloud)
+      generateHeaderBinary (const sensor_msgs::PointCloud2 &cloud, 
+                            const Eigen::Vector4f &origin, 
+                            const Eigen::Quaternionf &orientation,
+                            int valid_points,
+                            bool use_camera = true)
       {
-        return (generateHeader (cloud, true));
+        return (generateHeader (cloud, origin, orientation, true, use_camera, valid_points));
       }
       
       /** \brief Generate the header of a PLY v.7 file format
         * \param[in] cloud the point cloud data message
         */
       inline std::string
-      generateHeaderASCII (const sensor_msgs::PointCloud2 &cloud)
-
+      generateHeaderASCII (const sensor_msgs::PointCloud2 &cloud, 
+                           const Eigen::Vector4f &origin, 
+                           const Eigen::Quaternionf &orientation,
+                           int valid_points,
+                           bool use_camera = true)
       {
-        return (generateHeader (cloud, false));
+        return (generateHeader (cloud, origin, orientation, false, use_camera, valid_points));
       }
 
       /** \brief Save point cloud data to a PLY file containing n-D points, in ASCII format
@@ -205,7 +212,8 @@ namespace pcl
       writeASCII (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
                   const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
                   const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
-                  int precision = 8);
+                  int precision = 8,
+                  bool use_camera = true);
 
       /** \brief Save point cloud data to a PLY file containing n-D points, in BINARY format
         * \param[in] file_name the output file name
@@ -235,7 +243,30 @@ namespace pcl
         if (binary)
           return (this->writeBinary (file_name, cloud, origin, orientation));
         else
-          return (this->writeASCII (file_name, cloud, origin, orientation, 8));
+          return (this->writeASCII (file_name, cloud, origin, orientation, 8, true));
+      }
+
+      /** \brief Save point cloud data to a PLY file containing n-D points
+        * \param[in] file_name the output file name
+        * \param[in] cloud the point cloud data message
+        * \param[in] origin the sensor acquisition origin
+        * \param[in] orientation the sensor acquisition orientation
+        * \param[in] binary set to true if the file is to be written in a binary
+        * \param[in] use_camera set to true to used camera element and false to
+        * use range_grid element
+        * PLY format, false (default) for ASCII
+        */
+      inline int
+      write (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
+             const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
+             const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
+             bool binary = false,
+             bool use_camera = true)
+      {
+        if (binary)
+          return (this->writeBinary (file_name, cloud, origin, orientation));
+        else
+          return (this->writeASCII (file_name, cloud, origin, orientation, 8, use_camera));
       }
 
       /** \brief Save point cloud data to a PLY file containing n-D points
@@ -250,9 +281,10 @@ namespace pcl
       write (const std::string &file_name, const sensor_msgs::PointCloud2::ConstPtr &cloud, 
              const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
              const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
-             bool binary = false)
+             bool binary = false,
+             bool use_camera = true)
       {
-        return (write (file_name, *cloud, origin, orientation, binary));
+        return (write (file_name, *cloud, origin, orientation, binary, use_camera));
       }
 
       /** \brief Save point cloud data to a PLY file containing n-D points
@@ -264,7 +296,8 @@ namespace pcl
       template<typename PointT> inline int
       write (const std::string &file_name, 
              const pcl::PointCloud<PointT> &cloud, 
-             bool binary = false)
+             bool binary = false,
+             bool use_camera = true)
       {
         Eigen::Vector4f origin = cloud.sensor_origin_;
         Eigen::Quaternionf orientation = cloud.sensor_orientation_;
@@ -273,7 +306,7 @@ namespace pcl
         pcl::toROSMsg (cloud, blob);
 
         // Save the data
-        return (this->write (file_name, blob, origin, orientation, binary));
+        return (this->write (file_name, blob, origin, orientation, binary, use_camera));
       }
       
     private:
@@ -282,7 +315,27 @@ namespace pcl
         * \param[in] binary whether the PLY file should be saved as binary data (true) or ascii (false)
         */
       std::string
-      generateHeader (const sensor_msgs::PointCloud2 &cloud, bool binary);
+      generateHeader (const sensor_msgs::PointCloud2 &cloud, 
+                      const Eigen::Vector4f &origin, 
+                      const Eigen::Quaternionf &orientation,
+                      bool binary, 
+                      bool use_camera,
+                      int valid_points);
+
+      void
+      writeContentWithCameraASCII (int nr_points, 
+                                   int point_size,
+                                   const sensor_msgs::PointCloud2 &cloud, 
+                                   const Eigen::Vector4f &origin, 
+                                   const Eigen::Quaternionf &orientation,
+                                   std::ofstream& fs);
+
+      void
+      writeContentWithRangeGridASCII (int nr_points, 
+                                      int point_size,
+                                      const sensor_msgs::PointCloud2 &cloud, 
+                                      std::ostringstream& fs,
+                                      int& nb_valid_points);
 
       /** \brief Construct a mask from a list of fields.
         * \param[in] fields_list the list of fields to construct a mask from
@@ -353,10 +406,10 @@ namespace pcl
     savePLYFile (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
                  const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
                  const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
-                 bool binary_mode = false)
+                 bool binary_mode = false, bool use_camera = true)
     {
       PLYWriter w;
-      return (w.write (file_name, cloud, origin, orientation, binary_mode));
+      return (w.write (file_name, cloud, origin, orientation, binary_mode, use_camera));
     }
 
     /** \brief Templated version for saving point cloud data to a PLY file

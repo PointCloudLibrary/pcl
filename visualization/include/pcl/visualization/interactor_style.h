@@ -98,6 +98,8 @@ namespace pcl
           */
         inline void 
         setCloudActorMap (const CloudActorMapPtr &actors) { actors_ = actors; }
+
+        /** \brief Get the cloud actor map pointer. */
         inline CloudActorMapPtr 
         getCloudActorMap () { return (actors_); }
 
@@ -108,25 +110,25 @@ namespace pcl
         setRendererCollection (vtkSmartPointer<vtkRendererCollection> &rens) { rens_ = rens; }
 
         /** \brief Register a callback function for mouse events
-          * \param[in] a boost function that will be registered as a callback for a mouse event
-          * \return    connection object that allows to disconnect the callback function.
+          * \param[in] cb a boost function that will be registered as a callback for a mouse event
+          * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection 
-        registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> );
+        registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> cb);
 
         /** \brief Register a callback boost::function for keyboard events
-          * \param[in] a boost function that will be registered as a callback for a keyboard event
-          * \return    connection object that allows to disconnect the callback function.
+          * \param[in] cb a boost function that will be registered as a callback for a keyboard event
+          * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection 
-        registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> );
+        registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> cb);
 
         /** \brief Register a callback function for point picking events
-          * \param[in] a boost function that will be registered as a callback for a point picking event
-          * \return    connection object that allows to disconnect the callback function.
+          * \param[in] cb a boost function that will be registered as a callback for a point picking event
+          * \return a connection object that allows to disconnect the callback function.
           */
         boost::signals2::connection 
-        registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)>);
+        registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> cb);
 
         /** \brief Save the current rendered image to disk, as a PNG screenshot.
           * \param[in] file the name of the PNG file

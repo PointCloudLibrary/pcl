@@ -39,7 +39,7 @@
 
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <vector>
-#include <map>
+#include <boost/unordered_map.hpp>
 #include <vtkLODActor.h>
 #include <vtkSmartPointer.h>
 #include <sensor_msgs/PointCloud2.h>
@@ -48,7 +48,7 @@ namespace pcl
 {
   namespace visualization
   {
-    class CloudActor
+    class PCL_EXPORTS CloudActor
     {
       typedef PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
       typedef GeometryHandler::Ptr GeometryHandlerPtr;
@@ -82,14 +82,17 @@ namespace pcl
         /** \brief The active geometry handler. */
         int geometry_handler_index_;
 
+        /** \brief The viewpoint transformation matrix. */
+        vtkSmartPointer<vtkMatrix4x4> viewpoint_transformation_;
+
         /** \brief Internal cell array. Used for optimizing updatePointCloud. */
         vtkSmartPointer<vtkIdTypeArray> cells;
     };
 
-    typedef std::map<std::string, CloudActor> CloudActorMap;
+    typedef boost::unordered_map<std::string, CloudActor> CloudActorMap;
     typedef boost::shared_ptr<CloudActorMap> CloudActorMapPtr;
 
-    typedef std::map<std::string, vtkSmartPointer<vtkProp> > ShapeActorMap;
+    typedef boost::unordered_map<std::string, vtkSmartPointer<vtkProp> > ShapeActorMap;
     typedef boost::shared_ptr<ShapeActorMap> ShapeActorMapPtr;
 
     typedef std::map<int, vtkSmartPointer<vtkProp> > CoordinateActorMap;
