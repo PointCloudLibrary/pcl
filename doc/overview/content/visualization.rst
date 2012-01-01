@@ -32,7 +32,7 @@ and for drawing basic 2D shapes on screen, the library offers:
 
   .. image:: images/visualization/range_image.jpg
 
-The package makes use of the VTK library for 3D rendering and wxwidgets for
+The package makes use of the VTK library for 3D rendering for
 range image and 2D operations.
 
 For implementing your own visualizers, take a look at the tests and examples
