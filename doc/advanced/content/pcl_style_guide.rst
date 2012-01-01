@@ -259,6 +259,25 @@ spaces** to indent them, e.g.:
    }
 
 
+Class and struct members are indented by **2 spaces**. Access qualifiers (public, private and protected) are put at the
+indentation level of the class body and members affected by these qualifiers are indented by one more level, i.e. 2 spaces. E.g.:
+
+.. code-block:: cpp
+
+   namespace foo
+   {
+     class Bar
+     {
+       int i;
+       public:
+         int j;
+       protected:
+         void
+         baz ();
+     }
+   }
+
+
 2.6 Automatic code indentation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -282,7 +301,13 @@ As you edit a file, Eclipse should use this new profile to format your code
 following the PCL conventions. To reformat an entire file, select **Edit ->
 Format**.
 
-2.6.2 UniversalIndent
+2.6.2 Uncrustify
+""""""""""""""""
+
+You can find a config for `Uncrustify <http://uncrustify.sourceforge.net/>`_
+`here <http://dev.pointclouds.org/attachments/download/537/uncrustify.cfg>`_
+
+2.6.3 UniversalIndent
 """""""""""""""""""""
 
 TBD...
