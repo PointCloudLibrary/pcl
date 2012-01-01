@@ -22,9 +22,11 @@ Table of contents
   * :ref:`filtering_tutorial`
   * :ref:`i_o`
   * :ref:`keypoints_tutorial`
+  * :ref:`kdtree_tutorial`
   * :ref:`octree_tutorial`
   * :ref:`range_images`
   * :ref:`registration_tutorial`
+  * :ref:`sample_consensus`
   * :ref:`segmentation_tutorial`
   * :ref:`surface_tutorial`
   * :ref:`visualization_tutorial`
@@ -34,6 +36,21 @@ Table of contents
 
 Basic Usage
 -----------
+
+  * :ref:`basic_structures`
+
+     ======  ======
+     |mi_0|  Title: **Getting Started / Basic Structures**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: > PCL 1.0
+             
+             Presents the basic data structures in PCL and discusses their usage with a simple code example.
+     ======  ======
+
+     .. |mi_0| image:: images/pcl_logo.png
+               :height: 75px
 
   * :ref:`using_pcl_pcl_config`
 
@@ -87,7 +104,7 @@ Basic Usage
 
              Author: *Mourad Boufarguine*
 
-             Compatibility: > PCL 1.0
+             Compatibility: > PCL 1.0 
              
              In this tutorial, we will explain how to compile PCL in Microsoft Windows using the provided 3rd Party installers.
      ======  ======
@@ -105,6 +122,21 @@ Basic Usage
              Compatibility: > PCL 1.0
              
              This tutorial explains how to build the Point Cloud Library **from MacPorts and source** on Mac OS X platforms.
+     ======  ======
+
+     .. |mi_5| image:: images/macosx_logo.png
+               :height: 100px
+
+  * :ref:`installing_homebrew`
+
+     ======  ======
+     |mi_5|  Title: **Installing on Mac OS X using Homebrew**
+
+             Author: *Geoffrey Biggs*
+
+             Compatibility: > PCL 1.2
+
+             This tutorial explains how to install the Point Cloud Library on Mac OS X using Homebrew. Both direct installation and compiling PCL from source are explained.
      ======  ======
 
      .. |mi_5| image:: images/macosx_logo.png
@@ -248,7 +280,7 @@ Features
 
              Author: *Bastian Steder*
 
-             Compatibility: > PCL 1.0
+             Compatibility: > 1.3
 
              In this tutorial, we will learn how to extract NARF features from a range image.
      ======  ======
@@ -256,6 +288,21 @@ Features
      .. |fe_7| image:: images/narf_keypoint_extraction.png
                :height: 100px
 
+  * :ref:`feature_evaluation_framework`
+    
+     ======  ======
+     |fe_8|  Title: **How to benchmark feature descriptor algorithms**
+
+             Author: *Pararth Shah*
+
+             Compatibility: > PCL 1.0
+
+             In this tutorial, we will go over how to use the FeatureEvaluationFramework class to benchmark various feature descriptor algorithms.
+     ======  ======
+     
+     .. |fe_8| image:: images/feature_evaluation/class_hierarchy.png
+               :height: 100px
+               
 .. _filtering_tutorial:
 
 Filtering
@@ -273,7 +320,7 @@ Filtering
              In this tutorial, we will learn how to remove points whose values fall inside/outside a user given interval along a specified dimension.
      ======  ======
      
-     .. |fi_1| image:: images/passthrough.jpg
+     .. |fi_1| image:: images/passthrough.png
                :height: 100px
 
   * :ref:`voxelgrid`
@@ -319,7 +366,7 @@ Filtering
              In this tutorial, we will learn how to project points to a parametric model (i.e., plane).
      ======  ======
      
-     .. |fi_4| image:: images/project_inliers.jpg
+     .. |fi_4| image:: images/project_inliers.png
                :height: 100px
 
   * :ref:`extract_indices`
@@ -444,12 +491,32 @@ Keypoints
 
              Author: *Bastian Steder*
 
-             Compatibility: > PCL 1.0
+             Compatibility: > 1.3
 
              In this tutorial, we will learn how to extract NARF keypoints from a range image.
      ======  ======
      
      .. |kp_1| image:: images/narf_keypoint_extraction.png
+               :height: 100px
+
+.. _kdtree_tutorial:
+
+KdTree
+------
+
+  * :ref:`kdtree_search`
+
+     ======  ======
+     |kd_1|  Title: **KdTree Search**
+
+             Author: *Gabe O'Leary*
+
+             Compatibility: > PCL 1.0
+
+             In this tutorial, we will learn how to search using the nearest neighbor method for k-d trees
+     ======  ======
+     
+     .. |kd_1| image:: images/kdtree_search.png
                :height: 100px
 
 .. _octree_tutorial:
@@ -529,12 +596,12 @@ Range Images
 
              Author: *Bastian Steder*
 
-             Compatibility: > PCL 1.0
+             Compatibility: > PCL 1.3
              
              This tutorial demonstrates how to extract borders (traversals from foreground to background) from a range image. 
      ======  ======
 
-     .. |ri_2| image:: images/range_image_border_points.gif
+     .. |ri_2| image:: images/range_image_border_points.png
                :height: 100px
 
 .. _registration_tutorial:
@@ -542,10 +609,25 @@ Range Images
 Registration
 ------------
 
+  * :ref:`registration_api`
+
+     ======  ======
+     |re_1|  Title: **The PCL Registration API**
+
+             Author: *Dirk Holz, Radu B. Rusu, Jochen Sprickerhof*
+
+             Compatibility: PCL 1.2
+
+             In this document, we describe the point cloud registration API and its modules: the estimation and rejection of point correspondences, and the estimation of rigid transformations.
+     ======  ======
+
+     .. |re_1| image:: images/registration/registration_api.png
+               :height: 100px
+
   * :ref:`iterative_closest_point`
 
      ======  ======
-     |re_1|  Title: **How to use iterative closest point algorithm**
+     |re_2|  Title: **How to use iterative closest point algorithm**
 
              Author: *Gabe O'Leary*
 
@@ -554,7 +636,27 @@ Registration
              This tutorial gives an example of how to use the iterative closest point algorithm to see if one PointCloud is just a rigid transformation of another PointCloud.
      ======  ======
 
-     .. |re_1| image:: images/iterative_closest_point.gif
+     .. |re_2| image:: images/iterative_closest_point.gif
+               :height: 100px
+
+.. _sample_consensus:
+
+Sample Consensus
+----------------
+
+  * :ref:`random_sample_consensus`
+    
+     ======  ======
+     |sc_1|  Title: **How to use Random Sample Consensus model**
+
+             Author: *Gabe O'Leary*
+
+             Compatibility: > PCL 1.0
+
+             In this tutorial we learn how to use a RandomSampleConsensus with a plane model to obtain the cloud fitting to this model.
+     ======  ======
+     
+     .. |sc_1| image:: images/ransac_outliers_plane.png
                :height: 100px
 
 .. _segmentation_tutorial:
@@ -584,7 +686,7 @@ Segmentation
 
              Author: *Radu B. Rusu*
 
-             Compatibility: > PCL 1.0
+             Compatibility: > PCL 1.3
 
              In this tutorial, we will learn how to segment arbitrary cylindrical models from a given point cloud dataset.
      ======  ======
@@ -599,7 +701,7 @@ Segmentation
 
              Author: *Serkan Tuerker*
 
-             Compatibility: > PCL 1.0
+             Compatibility: > PCL 1.3
 
              In this tutorial we will learn how to extract Euclidean clusters with the ``pcl::EuclideanClusterExtraction`` class.
      ======  ======
@@ -684,7 +786,7 @@ Visualization
 
              Author: *Bastian Steder*
 
-             Compatibility: > PCL 1.0
+             Compatibility: > PCL 1.3
 
              This tutorial demonstrates how to use the pcl visualization tools for range images.
      ======  ======
@@ -699,27 +801,12 @@ Visualization
 
              Author: *Geoffrey Biggs*
 
-             Compatibility: >= PCL 1.0
+             Compatibility: >= PCL 1.3
 
              This tutorial demonstrates how to use the PCLVisualizer class for powerful visualisation of point clouds and related data.
      ======  ======
 
      .. |vi_3| image:: images/pcl_visualizer_viewports.png
-               :height: 100px
-
-  * :ref:`narf_descriptor_visualization`
-    
-     ======  ======
-     |vi_4|  Title: **Visualization of how the NARF descriptor is calculated**
-
-             Author: *Bastian Steder*
-
-             Compatibility: > PCL 1.0
-
-             This tutorial is about the visualization of how the NARF descriptor is calculated and to test how the descriptor distances between certain points in a range image behave.
-     ======  ======
-     
-     .. |vi_4| image:: images/narf_descriptor.jpg
                :height: 100px
 
 .. _applications_tutorial:
@@ -734,7 +821,7 @@ Applications
 
              Author: *Michael Dixon*
 
-             Compatibility: > PCL 1.0
+             Compatibility: > PCL 1.3
 
              This tutorial gives an example of how some of the tools covered in the previous tutorials can be combined to solve a higher level problem --- aligning a previously captured model of an object to some newly captured data.
      ======  ======
@@ -771,8 +858,6 @@ Applications
       How to extract NARF keypoints from a range image
     * :ref:`narf_descriptor`
       How to extract NARF descriptors from points in a range images
-    * :ref:`narf_descriptor_visualization`
-      Visualization of how the NARF descriptor is calculated and of the descriptor distances to a marked point.
     * :ref:`octree_search`
       Octrees for spatial partitioning and neighbor search.     
 

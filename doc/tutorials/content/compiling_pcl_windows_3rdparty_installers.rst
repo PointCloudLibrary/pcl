@@ -43,7 +43,7 @@ used in `kdtree` for fast approximate nearest neighbors search. **mandatory**
 - **Visualization ToolKit (VTK)** 
 
 used in `visualization` for 3D point cloud rendering and visualization. **mandatory**
-	
+
 - **QHULL** 
 
 used for convex/concave hull decompositions in `surface`. **optional**
@@ -55,7 +55,7 @@ used to grab point clouds from OpenNI compliant devices. **optional**
 - **GTest** version >= 1.6.0 (http://code.google.com/p/googletest/)
 
 is needed only to build PCL tests. We do not provide GTest installers. **optional**
-	
+
 .. note::
   
    Though not a dependency per se, don't forget that you also need the CMake
