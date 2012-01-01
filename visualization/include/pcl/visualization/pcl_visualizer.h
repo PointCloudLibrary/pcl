@@ -1434,33 +1434,33 @@ namespace pcl
         void
         allocVtkUnstructuredGrid (vtkSmartPointer<vtkUnstructuredGrid> &polydata);
 
-	/** \brief Transform the point cloud viewpoint to a transformation matrix
-	  * \param[in] camera origin
-	  * \param[in] camera orientation
-	  * \param[out] camera transformation matrix
-	  */
-	void
-	getTransformationMatrix (const Eigen::Vector4f &origin,
-				 const Eigen::Quaternion<float> &orientation,
-				 Eigen::Matrix4f &transformation);
-	/** \brief Convert Eigen::Matrix4f to vtkMatrix4x4
-	  * \param[in] Eigen::Matrix4f
-	  * \param[out] vtkMatrix4x4
-	  */
-	void
-	convertToVtkMatrix (const Eigen::Matrix4f &m,
-			    vtkSmartPointer<vtkMatrix4x4> &vtk_matrix);
+        /** \brief Transform the point cloud viewpoint to a transformation matrix
+          * \param[in] origin the camera origin
+          * \param[in] orientation the camera orientation
+          * \param[out] transformation the camera transformation matrix
+          */
+        void
+        getTransformationMatrix (const Eigen::Vector4f &origin,
+                                 const Eigen::Quaternion<float> &orientation,
+                                 Eigen::Matrix4f &transformation);
 
-	/** \brief Convert origin and orientation to vtkMatrix4x4
-	  * \param[in] Eigen::Vector4f
-	  * \param[in] Eigen::Quaternion<float>
-	  * \param[out] vtkMatrix4x4
-	  */
-	void
-	convertToVtkMatrix (const Eigen::Vector4f &origin,
-			    const Eigen::Quaternion<float> &orientation,
-			    vtkSmartPointer<vtkMatrix4x4> &vtk_matrix);
+        /** \brief Convert Eigen::Matrix4f to vtkMatrix4x4
+          * \param[in] m the input Eigen matrix
+          * \param[out] vtk_matrix the resultant VTK matrix
+          */
+        void
+        convertToVtkMatrix (const Eigen::Matrix4f &m,
+                            vtkSmartPointer<vtkMatrix4x4> &vtk_matrix);
 
+        /** \brief Convert origin and orientation to vtkMatrix4x4
+          * \param[in] origin the point cloud origin
+          * \param[in] orientation the point cloud orientation
+          * \param[out] vtk_matrix the resultant VTK 4x4 matrix
+          */
+        void
+        convertToVtkMatrix (const Eigen::Vector4f &origin,
+                            const Eigen::Quaternion<float> &orientation,
+                            vtkSmartPointer<vtkMatrix4x4> &vtk_matrix);
 
     };
   }

@@ -1153,22 +1153,23 @@ pcl::visualization::PCLVisualizer::resetCamera ()
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizer::setCameraPosition (double posX,double posY, double posZ,
-                   double viewX, double viewY, double viewZ)
+pcl::visualization::PCLVisualizer::setCameraPosition (
+    double posX,double posY, double posZ,
+    double viewX, double viewY, double viewZ)
 {
-    // Set position
-    camera_.pos[0] = posX;
-    camera_.pos[1] = posY;
-    camera_.pos[2] = posZ;
+  // Set position
+  camera_.pos[0] = posX;
+  camera_.pos[1] = posY;
+  camera_.pos[2] = posZ;
 
-    // Set "rotation"
-    camera_.view[0] = viewX;
-    camera_.view[1] = viewY;
-    camera_.view[2] = viewZ;
+  // Set "rotation"
+  camera_.view[0] = viewX;
+  camera_.view[1] = viewY;
+  camera_.view[2] = viewZ;
 
-    updateCamera();
-    //Render one frame from the new camera position
-    spinOnce();
+  updateCamera();
+  //Render one frame from the new camera position
+  spinOnce();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -2690,9 +2691,10 @@ pcl::visualization::PCLVisualizer::allocVtkUnstructuredGrid (vtkSmartPointer<vtk
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizer::getTransformationMatrix (const Eigen::Vector4f &origin,
-							    const Eigen::Quaternion<float> &orientation,
-							    Eigen::Matrix4f &transformation)
+pcl::visualization::PCLVisualizer::getTransformationMatrix (
+    const Eigen::Vector4f &origin,
+    const Eigen::Quaternion<float> &orientation,
+    Eigen::Matrix4f &transformation)
 {
   transformation.setIdentity ();
   transformation.block<3,3>(0,0) = orientation.toRotationMatrix ();
@@ -2701,31 +2703,33 @@ pcl::visualization::PCLVisualizer::getTransformationMatrix (const Eigen::Vector4
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizer::convertToVtkMatrix (const Eigen::Vector4f &origin,
-						       const Eigen::Quaternion<float> &orientation,
-						       vtkSmartPointer<vtkMatrix4x4> &vtk_matrix)
+pcl::visualization::PCLVisualizer::convertToVtkMatrix (
+    const Eigen::Vector4f &origin,
+    const Eigen::Quaternion<float> &orientation,
+    vtkSmartPointer<vtkMatrix4x4> &vtk_matrix)
 { 
   // set rotation
   Eigen::Matrix3f rot = orientation.toRotationMatrix ();
-  for (int i=0; i<3; i++)
-    for (int k=0; k<3; k++)
-      vtk_matrix->SetElement(i,k, rot(i,k));
+  for (int i = 0; i < 3; i++)
+    for (int k = 0; k < 3; k++)
+      vtk_matrix->SetElement (i, k, rot (i, k));
   
   // set translation
-  vtk_matrix->SetElement(0,3, origin(0));
-  vtk_matrix->SetElement(1,3, origin(1));
-  vtk_matrix->SetElement(2,3, origin(2));
-  vtk_matrix->SetElement(3,3, 1.0f);
+  vtk_matrix->SetElement (0, 3, origin (0));
+  vtk_matrix->SetElement (1, 3, origin (1));
+  vtk_matrix->SetElement (2, 3, origin (2));
+  vtk_matrix->SetElement (3, 3, 1.0f);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizer::convertToVtkMatrix (const Eigen::Matrix4f &m,
-						       vtkSmartPointer<vtkMatrix4x4> &vtk_matrix)
+pcl::visualization::PCLVisualizer::convertToVtkMatrix (
+    const Eigen::Matrix4f &m,
+    vtkSmartPointer<vtkMatrix4x4> &vtk_matrix)
 {
-  for (int i=0; i<4; i++)
-    for (int k=0; k<4; k++)
-      vtk_matrix->SetElement(i,k, m(i,k));
+  for (int i = 0; i < 4; i++)
+    for (int k = 0; k < 4; k++)
+      vtk_matrix->SetElement (i, k, m (i, k));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

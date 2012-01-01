@@ -94,13 +94,13 @@ namespace pcl
         virtual void 
         getGeometry (vtkSmartPointer<vtkPoints> &points) const = 0;
 
-	/** \brief Get the sensor origin */
-	virtual Eigen::Vector4f
-	getOrigin () const { return cloud_->sensor_origin_; }
+        /** \brief Get the sensor origin */
+        virtual Eigen::Vector4f
+        getOrigin () const { return (cloud_->sensor_origin_); }
 
-	/** \brief Get the sensor orientation */
-	virtual Eigen::Quaternion<float>
-	getOrientation () const { return cloud_->sensor_orientation_; }
+        /** \brief Get the sensor orientation */
+        virtual Eigen::Quaternion<float>
+        getOrientation () const { return (cloud_->sensor_orientation_); }
 
       protected:
         /** \brief A pointer to the input dataset. */

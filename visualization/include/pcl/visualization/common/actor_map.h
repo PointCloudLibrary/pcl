@@ -82,8 +82,8 @@ namespace pcl
         /** \brief The active geometry handler. */
         int geometry_handler_index_;
 
-	/** \brief The viewpoint transformation matrix. */
-	vtkSmartPointer<vtkMatrix4x4> viewpoint_transformation_;
+        /** \brief The viewpoint transformation matrix. */
+        vtkSmartPointer<vtkMatrix4x4> viewpoint_transformation_;
 
         /** \brief Internal cell array. Used for optimizing updatePointCloud. */
         vtkSmartPointer<vtkIdTypeArray> cells;
