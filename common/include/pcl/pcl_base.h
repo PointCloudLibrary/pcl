@@ -46,17 +46,15 @@
 #include <vector>
 
 // Include PCL macros such as PCL_ERROR, etc
-#include "pcl/pcl_macros.h"
+#include <pcl/pcl_macros.h>
 
 // Boost includes. Needed everywhere.
 #include <boost/shared_ptr.hpp>
 
 // Point Cloud message includes. Needed everywhere.
 #include <sensor_msgs/PointCloud2.h>
-#include "pcl/point_cloud.h"
-#include "pcl/PointIndices.h"
-#include <pcl/pcl_macros.h>
-
+#include <pcl/point_cloud.h>
+#include <pcl/PointIndices.h>
 #include <pcl/console/print.h>
 
 namespace pcl

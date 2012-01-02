@@ -39,6 +39,7 @@
 #ifndef VTK_UTILS_H_
 #define VTK_UTILS_H_
 
+#include <pcl/pcl_macros.h>
 #include <pcl/PolygonMesh.h>
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>

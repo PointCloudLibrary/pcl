@@ -193,11 +193,11 @@ namespace pcl
       vtkSmartPointer<vtkPolyData> vtk_polygons_;
       int num_iter_;
       float pass_band_;
-      bool normalize_coordinates_;
       bool feature_edge_smoothing_;
       float feature_angle_;
       float edge_angle_;
       bool boundary_smoothing_;
+      bool normalize_coordinates_;
   };
 }
 #endif /* VTK_MESH_SMOOTHING_WINDOWED_SINC_H_ */

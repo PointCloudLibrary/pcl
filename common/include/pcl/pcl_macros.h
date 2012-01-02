@@ -35,6 +35,7 @@
 #ifndef PCL_MACROS_H_
 #define PCL_MACROS_H_
 
+#include <pcl/pcl_config.h>
 #include <boost/cstdint.hpp>
 
 namespace pcl
