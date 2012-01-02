@@ -76,6 +76,13 @@ namespace pcl
         void
         performReconstruction (pcl::PolygonMesh &output);
 
+        void
+        performReconstruction (pcl::PointCloud<PointNT> &points,
+                               std::vector<pcl::Vertices> &polygons)
+        {
+          PCL_ERROR ("[pcl::surface::Poisson::performReconstruction] Method not implemented!\n");
+        }
+
         inline void
         setNoResetSamples (bool no_reset_samples)
         {

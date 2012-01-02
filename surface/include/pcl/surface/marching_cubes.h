@@ -467,6 +467,12 @@ namespace pcl
       void 
       performReconstruction (pcl::PolygonMesh &output);
 
+      void
+      performReconstruction (pcl::PointCloud<PointNT> &points,
+                             std::vector<pcl::Vertices> &polygons)
+      {
+        PCL_ERROR ("[pcl::MarchingCubes::performReconstruction] Method not implemented!\n");
+      }
 
     protected:
 
