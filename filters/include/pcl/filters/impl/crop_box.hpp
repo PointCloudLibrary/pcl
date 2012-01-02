@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2009-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -60,23 +62,21 @@ pcl::CropBox<PointT>::applyFilter (PointCloud &output)
     pcl::getTransformation (0, 0, 0,
                             rotation_ (0), rotation_ (1), rotation_ (2),
                             transform);
-    inverse_transform = transform.inverse();
+    inverse_transform = transform.inverse ();
   }
 
   for (size_t index = 0; index < indices_->size (); ++index)
   {
     if (!input_->is_dense)
       // Check if the point is invalid
-      if (!pcl_isfinite (input_->points[index].x) ||
-          !pcl_isfinite (input_->points[index].y) ||
-          !pcl_isfinite (input_->points[index].z))
+      if (!isFinite (input_->points[index]))
         continue;
 
     // Get local point
     PointT local_pt = input_->points[(*indices_)[index]];
 
     // Transform point to world space
-    if (!(transform_.matrix().isIdentity()))
+    if (!(transform_.matrix ().isIdentity ()))
       local_pt = pcl::transformPoint<PointT> (local_pt, transform_);
 
     if (translation_ != Eigen::Vector3f::Zero ())
@@ -87,7 +87,7 @@ pcl::CropBox<PointT>::applyFilter (PointCloud &output)
     }
 
     // Transform point to local space of crop box
-    if (!(inverse_transform.matrix().isIdentity()))
+    if (!(inverse_transform.matrix ().isIdentity ()))
       local_pt = pcl::transformPoint<PointT> (local_pt, inverse_transform);
 
     if (local_pt.x < min_pt_[0] || local_pt.y < min_pt_[1] || local_pt.z < min_pt_[2])
@@ -109,24 +109,29 @@ pcl::CropBox<PointT>::applyFilter (std::vector<int> &indices)
   indices.resize (input_->points.size ());
   int indice_count = 0;
 
-  Eigen::Affine3f transform = Eigen::Affine3f::Identity();
-  Eigen::Affine3f inverse_transform = Eigen::Affine3f::Identity();
+  Eigen::Affine3f transform = Eigen::Affine3f::Identity ();
+  Eigen::Affine3f inverse_transform = Eigen::Affine3f::Identity ();
 
   if (rotation_ != Eigen::Vector3f::Zero ())
   {
     pcl::getTransformation (0, 0, 0,
                             rotation_ (0), rotation_ (1), rotation_ (2),
                             transform);
-    inverse_transform = transform.inverse();
+    inverse_transform = transform.inverse ();
   }
 
   for (size_t index = 0; index < indices_->size (); ++index)
   {
+    if (!input_->is_dense)
+      // Check if the point is invalid
+      if (!isFinite (input_->points[index]))
+        continue;
+
     // Get local point
     PointT local_pt = input_->points[(*indices_)[index]];
 
     // Transform point to world space
-    if (!(transform_.matrix().isIdentity()))
+    if (!(transform_.matrix ().isIdentity ()))
       local_pt = pcl::transformPoint<PointT> (local_pt, transform_);
 
     if (translation_ != Eigen::Vector3f::Zero ())
@@ -137,7 +142,7 @@ pcl::CropBox<PointT>::applyFilter (std::vector<int> &indices)
     }
 
     // Transform point to local space of crop box
-    if (!(inverse_transform.matrix().isIdentity()))
+    if (!(inverse_transform.matrix ().isIdentity ()))
       local_pt = pcl::transformPoint<PointT> (local_pt, inverse_transform);
 
     if (local_pt.x < min_pt_[0] || local_pt.y < min_pt_[1] || local_pt.z < min_pt_[2])
