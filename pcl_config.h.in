@@ -2,6 +2,8 @@
 
 /* PCL version string */
 #cmakedefine PCL_VERSION "${PCL_VERSION}"
+#cmakedefine PCL_MAJOR_VERSION ${PCL_MAJOR_VERSION}
+#cmakedefine PCL_MINOR_VERSION ${PCL_MINOR_VERSION}
 
 #cmakedefine HAVE_TBB 1
 
@@ -12,6 +14,8 @@
 #cmakedefine HAVE_QHULL_2011 1
 
 #cmakedefine HAVE_CUDA 1
+
+#cmakedefine USE_ROS
 
 #ifdef DISABLE_OPENNI
 #undef HAVE_OPENNI
