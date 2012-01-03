@@ -77,9 +77,11 @@ struct EventHelper
   cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr & cloud)
   {
     // Add the cloud to the renderer
-    boost::mutex::scoped_lock lock (mutex_);
-
-    cloud_ = cloud;
+    if (mutex_.try_lock ())
+    {
+      cloud_ = cloud;
+      mutex_.unlock ();
+    }
   }
 };
 
@@ -221,14 +223,17 @@ main (int argc, char** argv)
       continue;
     }
 
-    boost::mutex::scoped_lock lock (mutex_);
-    pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr temp_cloud;
-    temp_cloud.swap (cloud_);
-
-    if (!p->updatePointCloud (temp_cloud, "PCDCloud"))
+    if (mutex_.try_lock ())
     {
-      p->addPointCloud (temp_cloud, "PCDCloud");
-      p->resetCameraViewpoint ("PCDCloud");
+      pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr temp_cloud;
+      temp_cloud.swap (cloud_);
+      mutex_.unlock ();
+
+      if (!p->updatePointCloud (temp_cloud, "PCDCloud"))
+      {
+        p->addPointCloud (temp_cloud, "PCDCloud");
+        p->resetCameraViewpoint ("PCDCloud");
+      }
     }
     p->spinOnce ();
     if (p->wasStopped ())
