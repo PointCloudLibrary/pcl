@@ -49,6 +49,7 @@ using pcl::console::print_info;
 using pcl::console::print_value;
 
 boost::mutex mutex_;
+pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud_;
 
 void
 printHelp (int argc, char **argv)
@@ -77,13 +78,8 @@ struct EventHelper
   {
     // Add the cloud to the renderer
     boost::mutex::scoped_lock lock (mutex_);
-    if (!cloud)
-      return;
-    if (!p->updatePointCloud (cloud, "PCDCloud"))
-    {
-      p->addPointCloud (cloud, "PCDCloud");
-      p->resetCameraViewpoint ("PCDCloud");
-    }
+
+    cloud_ = cloud;
   }
 };
 
@@ -219,13 +215,24 @@ main (int argc, char** argv)
   grabber->start ();
   while (true)
   {
-    boost::this_thread::sleep(boost::posix_time::microseconds(10000));
+    if (!cloud_)
     {
-      boost::mutex::scoped_lock lock (mutex_);
-      p->spinOnce ();
-      if (p->wasStopped ())
-        break;
+      boost::this_thread::sleep(boost::posix_time::microseconds(10000));
+      continue;
     }
+
+    boost::mutex::scoped_lock lock (mutex_);
+    pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr temp_cloud;
+    temp_cloud.swap (cloud_);
+
+    if (!p->updatePointCloud (temp_cloud, "PCDCloud"))
+    {
+      p->addPointCloud (temp_cloud, "PCDCloud");
+      p->resetCameraViewpoint ("PCDCloud");
+    }
+    p->spinOnce ();
+    if (p->wasStopped ())
+      break;
   }
 
   grabber->stop ();
