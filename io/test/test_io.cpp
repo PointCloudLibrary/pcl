@@ -156,6 +156,105 @@ TEST (PCL, ComplexPCDFileASCII)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, AllTypesPCDFile)
+{
+  std::ofstream fs;
+  fs.open ("all_types.pcd");
+  fs << "# .PCD v0.7 - Point Cloud Data file format\n"
+        "VERSION 0.7\n"
+        "FIELDS a1 a2 a3 a4 a5 a6 a7 a8\n"
+        "SIZE    1  1  2  2  4  4  4  8\n"
+        "TYPE    I  U  I  U  I  U  F  F\n"
+        "COUNT   1  2  1  2  1  2  1  2\n"
+        "WIDTH 1\n"
+        "HEIGHT 1\n"
+        "VIEWPOINT 0 0 0 1 0 0 0\n"
+        "POINTS 1\n"
+        "DATA ascii\n"
+        "-50 250 251 -250 2500 2501 -250000 250000 250001 250.05 -250.05 -251.05";
+  fs.close ();
+
+  sensor_msgs::PointCloud2 blob;
+  int res = loadPCDFile ("all_types.pcd", blob);
+  EXPECT_NE ((int)res, -1);
+  EXPECT_EQ (blob.width, 1);
+  EXPECT_EQ (blob.height, 1);
+  EXPECT_EQ (blob.data.size (), 1 + 1 * 2 + 2 * 1 + 2 * 2 + 4 * 1 + 4 * 2 + 4 * 1 + 8 * 2);
+  EXPECT_EQ (blob.is_dense, true);
+
+  EXPECT_EQ (blob.fields.size (), 8);
+  // Check fields
+  EXPECT_EQ (blob.fields[0].name, "a1");
+  EXPECT_EQ (blob.fields[1].name, "a2");
+  EXPECT_EQ (blob.fields[2].name, "a3");
+  EXPECT_EQ (blob.fields[3].name, "a4");
+  EXPECT_EQ (blob.fields[4].name, "a5");
+  EXPECT_EQ (blob.fields[5].name, "a6");
+  EXPECT_EQ (blob.fields[6].name, "a7");
+  EXPECT_EQ (blob.fields[7].name, "a8");
+
+  EXPECT_EQ (blob.fields[0].offset, 0);
+  EXPECT_EQ (blob.fields[1].offset, 1);
+  EXPECT_EQ (blob.fields[2].offset, 1 + 1 * 2);
+  EXPECT_EQ (blob.fields[3].offset, 1 + 1 * 2 + 2 * 1);
+  EXPECT_EQ (blob.fields[4].offset, 1 + 1 * 2 + 2 * 1 + 2 * 2);
+  EXPECT_EQ (blob.fields[5].offset, 1 + 1 * 2 + 2 * 1 + 2 * 2 + 4 * 1);
+  EXPECT_EQ (blob.fields[6].offset, 1 + 1 * 2 + 2 * 1 + 2 * 2 + 4 * 1 + 4 * 2);
+  EXPECT_EQ (blob.fields[7].offset, 1 + 1 * 2 + 2 * 1 + 2 * 2 + 4 * 1 + 4 * 2 + 4 * 1);
+
+  EXPECT_EQ (blob.fields[0].count, 1);
+  EXPECT_EQ (blob.fields[1].count, 2);
+  EXPECT_EQ (blob.fields[2].count, 1);
+  EXPECT_EQ (blob.fields[3].count, 2);
+  EXPECT_EQ (blob.fields[4].count, 1);
+  EXPECT_EQ (blob.fields[5].count, 2);
+  EXPECT_EQ (blob.fields[6].count, 1);
+  EXPECT_EQ (blob.fields[7].count, 2);
+
+  EXPECT_EQ (blob.fields[0].datatype, sensor_msgs::PointField::INT8);
+  EXPECT_EQ (blob.fields[1].datatype, sensor_msgs::PointField::UINT8);
+  EXPECT_EQ (blob.fields[2].datatype, sensor_msgs::PointField::INT16);
+  EXPECT_EQ (blob.fields[3].datatype, sensor_msgs::PointField::UINT16);
+  EXPECT_EQ (blob.fields[4].datatype, sensor_msgs::PointField::INT32);
+  EXPECT_EQ (blob.fields[5].datatype, sensor_msgs::PointField::UINT32);
+  EXPECT_EQ (blob.fields[6].datatype, sensor_msgs::PointField::FLOAT32);
+  EXPECT_EQ (blob.fields[7].datatype, sensor_msgs::PointField::FLOAT64);
+
+  int8_t b1;
+  uint8_t b2;
+  int16_t b3;
+  uint16_t b4;
+  int32_t b5;
+  uint32_t b6;
+  float b7;
+  double b8;
+  memcpy (&b1, &blob.data[blob.fields[0].offset], sizeof (int8_t));
+  EXPECT_FLOAT_EQ (b1, -50);
+  memcpy (&b2, &blob.data[blob.fields[1].offset], sizeof (uint8_t));
+  EXPECT_FLOAT_EQ (b2, 250);
+  memcpy (&b2, &blob.data[blob.fields[1].offset + sizeof (uint8_t)], sizeof (uint8_t));
+  EXPECT_FLOAT_EQ (b2, 251);
+  memcpy (&b3, &blob.data[blob.fields[2].offset], sizeof (int16_t));
+  EXPECT_FLOAT_EQ (b3, -250);
+  memcpy (&b4, &blob.data[blob.fields[3].offset], sizeof (uint16_t));
+  EXPECT_FLOAT_EQ (b4, 2500);
+  memcpy (&b4, &blob.data[blob.fields[3].offset + sizeof (uint16_t)], sizeof (uint16_t));
+  EXPECT_FLOAT_EQ (b4, 2501);
+  memcpy (&b5, &blob.data[blob.fields[4].offset], sizeof (int32_t));
+  EXPECT_FLOAT_EQ (b5, -250000);
+  memcpy (&b6, &blob.data[blob.fields[5].offset], sizeof (uint32_t));
+  EXPECT_FLOAT_EQ (b6, 250000);
+  memcpy (&b6, &blob.data[blob.fields[5].offset + sizeof (uint32_t)], sizeof (uint32_t));
+  EXPECT_FLOAT_EQ (b6, 250001);
+  memcpy (&b7, &blob.data[blob.fields[6].offset], sizeof (float));
+  EXPECT_FLOAT_EQ (b7, 250.05);
+  memcpy (&b8, &blob.data[blob.fields[7].offset], sizeof (double));
+  EXPECT_FLOAT_EQ (b8, -250.05);
+  memcpy (&b8, &blob.data[blob.fields[7].offset + sizeof (double)], sizeof (double));
+  EXPECT_FLOAT_EQ (b8, -251.05);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, ConcatenatePoints)
 {
   pcl::PointCloud<pcl::PointXYZ> cloud_a, cloud_b, cloud_c;

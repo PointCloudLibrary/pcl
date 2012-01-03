@@ -53,9 +53,9 @@ namespace pcl
   {
     public:
       /** Empty constructor */      
-      PCDReader() : FileReader() {}
+      PCDReader () : FileReader () {}
       /** Empty destructor */      
-      ~PCDReader() {}
+      ~PCDReader () {}
       /** \brief Various PCD file versions.
         *
         * PCD_V6 represents PCD files with version 0.6, which contain the following fields:

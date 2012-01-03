@@ -42,9 +42,9 @@
 #include <string>
 #include <stdlib.h>
 #include <boost/algorithm/string.hpp>
-#include "pcl/common/io.h"
-#include "pcl/io/pcd_io.h"
-#include "pcl/io/lzf.h"
+#include <pcl/common/io.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/io/lzf.h>
 
 #include <boost/filesystem.hpp>
 
@@ -356,6 +356,9 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
   // Get the number of points the cloud should have
   int nr_points = cloud.width * cloud.height;
 
+  // Setting the is_dense property to true by default
+  cloud.is_dense = true;
+
   // if ascii
   if (data_type == 0)
   {
@@ -386,7 +389,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
         // Tokenize the line
         boost::trim (line);
         boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
-
+        
         // We must have points then
         // Convert the first token to float and use it as the first point coordinate
         if (idx >= nr_points)
@@ -436,7 +439,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
               }
               case sensor_msgs::PointField::INT32:
               {
-                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type> (
+                copyStringValue<pcl::traits::asType<sensor_msgs::PointField::INT32>::type> (
                     st.at (total + c), cloud, idx, d, c);
                 break;
               }
@@ -613,6 +616,12 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     return (-1);
   }
 
+  // No need to do any extra checks if the data type is ASCII
+  if (data_type == 0)
+    return (0);
+
+  // Check for NAN data in XYZ. This code needs to be rewritten 
+  ///////////////////////////////////////////////////////////////////
   // Get the X-Y-Z offset
   int x_idx = -1, y_idx = -1, z_idx = -1;
   for (size_t d = 0; d < cloud.fields.size (); ++d)                            
@@ -637,7 +646,6 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
   if (x_idx == -1 || y_idx == -1 || z_idx == -1)
     return (0);
 
-  cloud.is_dense = true;
   // We want to make sure that is_dense is set accordingly on read, and must therefore check for invalid data here
   float xval, yval, zval;
   for (size_t i = 0; i < cloud.width * cloud.height; ++i)
