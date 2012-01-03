@@ -256,6 +256,30 @@ namespace pcl
       stream << boost::numeric_cast<int>(value);
   }
 
+  /** \brief Check whether a given value of type Type (uchar, char, uint, int, float, double, ...) is finite or not
+    *
+    * \param[in] cloud the cloud that contains the data
+    * \param[in] point_index the index of the point
+    * \param[in] point_size the size of the point in the cloud
+    * \param[in] field_idx the index of the dimension/field
+    * \param[in] fields_count the current fields count
+    *
+    * \return true if the value is finite, false otherwise
+    */
+  template <typename Type> inline bool
+  isValueFinite (const sensor_msgs::PointCloud2 &cloud, 
+                 const unsigned int point_index, 
+                 const int point_size, 
+                 const unsigned int field_idx, 
+                 const unsigned int fields_count)
+  {
+    Type value;
+    memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (Type)], sizeof (Type));
+    if (!pcl_isfinite (value))
+      return (false);
+    return (true);
+  }
+
   /** \brief Copy one single value of type T (uchar, char, uint, int, float, double, ...) from a string
     * 
     * Uses aoti/atof to do the conversion.

@@ -620,43 +620,66 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
   if (data_type == 0)
     return (0);
 
-  // Check for NAN data in XYZ. This code needs to be rewritten 
-  ///////////////////////////////////////////////////////////////////
-  // Get the X-Y-Z offset
-  int x_idx = -1, y_idx = -1, z_idx = -1;
-  for (size_t d = 0; d < cloud.fields.size (); ++d)                            
+  int point_size = cloud.data.size () / (cloud.height * cloud.width);
+  // Once copied, we need to go over each field and check if it has NaN/Inf values and assign cloud.is_dense to true or false
+  for (uint32_t i = 0; i < cloud.width * cloud.height; ++i)
   {
-    if (cloud.fields[d].name == "x")
+    for (size_t d = 0; d < cloud.fields.size (); ++d)
     {
-      x_idx = d;
-      continue;
-    }
-    if (cloud.fields[d].name == "y")
-    {
-      y_idx = d;
-      continue;
-    }
-    if (cloud.fields[d].name == "z")
-    {
-      z_idx = d;
-      continue;
-    }
-  }
-  // No sense in checking anything if the X-Y-Z fields are not found
-  if (x_idx == -1 || y_idx == -1 || z_idx == -1)
-    return (0);
-
-  // We want to make sure that is_dense is set accordingly on read, and must therefore check for invalid data here
-  float xval, yval, zval;
-  for (size_t i = 0; i < cloud.width * cloud.height; ++i)
-  {
-    memcpy (&xval, &cloud.data[i * cloud.point_step + cloud.fields[x_idx].offset], sizeof (float));
-    memcpy (&yval, &cloud.data[i * cloud.point_step + cloud.fields[y_idx].offset], sizeof (float));
-    memcpy (&zval, &cloud.data[i * cloud.point_step + cloud.fields[z_idx].offset], sizeof (float));
-    if (!pcl_isfinite (xval) || !pcl_isfinite (yval) || !pcl_isfinite (zval))
-    {
-      cloud.is_dense = false;
-      break;
+      for (uint32_t c = 0; c < cloud.fields[d].count; ++c)
+      {
+        switch (cloud.fields[d].datatype)
+        {
+          case sensor_msgs::PointField::INT8:
+          {
+            if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::INT8>::type>(cloud, i, point_size, d, c))
+              cloud.is_dense = false;
+            break;
+          }
+          case sensor_msgs::PointField::UINT8:
+          {
+            if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::UINT8>::type>(cloud, i, point_size, d, c))
+              cloud.is_dense = false;
+            break;
+          }
+          case sensor_msgs::PointField::INT16:
+          {
+            if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::INT16>::type>(cloud, i, point_size, d, c))
+              cloud.is_dense = false;
+            break;
+          }
+          case sensor_msgs::PointField::UINT16:
+          {
+            if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type>(cloud, i, point_size, d, c))
+              cloud.is_dense = false;
+            break;
+          }
+          case sensor_msgs::PointField::INT32:
+          {
+            if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::INT32>::type>(cloud, i, point_size, d, c))
+              cloud.is_dense = false;
+            break;
+          }
+          case sensor_msgs::PointField::UINT32:
+          {
+            if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type>(cloud, i, point_size, d, c))
+              cloud.is_dense = false;
+            break;
+          }
+          case sensor_msgs::PointField::FLOAT32:
+          {
+            if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::FLOAT32>::type>(cloud, i, point_size, d, c))
+              cloud.is_dense = false;
+            break;
+          }
+          case sensor_msgs::PointField::FLOAT64:
+          {
+            if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::FLOAT64>::type>(cloud, i, point_size, d, c))
+              cloud.is_dense = false;
+            break;
+          }
+        }
+      }
     }
   }
 

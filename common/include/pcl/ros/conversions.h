@@ -120,8 +120,8 @@ namespace pcl
 
   } //namespace detail
 
-  template<typename PointT>
-  void createMapping (const std::vector<sensor_msgs::PointField>& msg_fields, MsgFieldMap& field_map)
+  template<typename PointT> void 
+  createMapping (const std::vector<sensor_msgs::PointField>& msg_fields, MsgFieldMap& field_map)
   {
     // Create initial 1-1 mapping between serialized data segments and struct fields
     detail::FieldMapper<PointT> mapper (msg_fields, field_map);
@@ -151,9 +151,22 @@ namespace pcl
     }
   }
 
-  template<typename PointT>  
-  void fromROSMsg (const sensor_msgs::PointCloud2& msg, pcl::PointCloud<PointT>& cloud,
-                   const MsgFieldMap& field_map)
+  /** \brief Convert a PointCloud2 binary data blob into a pcl::PointCloud<T> object using a field_map.
+    * \param[in] msg the PointCloud2 binary blob
+    * \param[out] cloud the resultant pcl::PointCloud<T>
+    * \param[in] field_map a MsgFieldMap object
+    *
+    * \note Use fromROSMsg (PointCloud2, PointCloud<T>) directly or create you
+    * own MsgFieldMap using:
+    *
+    * \code
+    * MsgFieldMap field_map;
+    * createMapping<PointT> (msg.fields, field_map);
+    * \endcode
+    */
+  template <typename PointT> void 
+  fromROSMsg (const sensor_msgs::PointCloud2& msg, pcl::PointCloud<PointT>& cloud,
+              const MsgFieldMap& field_map)
   {
     // Copy info fields
     cloud.header   = msg.header;
@@ -177,14 +190,14 @@ namespace pcl
       // Should usually be able to copy all rows at once
       if (msg.row_step == cloud_row_step)
       {
-        memcpy (cloud_data, msg_data, msg.data.size());
+        memcpy (cloud_data, msg_data, msg.data.size ());
       }
       else
       {
-        for (uint32_t i = 0; i < msg.height;
-             ++i, cloud_data += cloud_row_step, msg_data += msg.row_step)
+        for (uint32_t i = 0; i < msg.height; ++i, cloud_data += cloud_row_step, msg_data += msg.row_step)
           memcpy (cloud_data, msg_data, cloud_row_step);
       }
+
     }
     else
     {
@@ -205,16 +218,24 @@ namespace pcl
     }
   }
 
-  template<typename PointT>  
-  void fromROSMsg (const sensor_msgs::PointCloud2& msg, pcl::PointCloud<PointT>& cloud)
+  /** \brief Convert a PointCloud2 binary data blob into a pcl::PointCloud<T> object.
+    * \param[in] msg the PointCloud2 binary blob
+    * \param[out] cloud the resultant pcl::PointCloud<T>
+    */
+  template<typename PointT> void 
+  fromROSMsg (const sensor_msgs::PointCloud2& msg, pcl::PointCloud<PointT>& cloud)
   {
     MsgFieldMap field_map;
     createMapping<PointT> (msg.fields, field_map);
     fromROSMsg (msg, cloud, field_map);
   }
 
-  template<typename PointT>
-  void toROSMsg (const pcl::PointCloud<PointT>& cloud, sensor_msgs::PointCloud2& msg)
+  /** \brief Convert a pcl::PointCloud<T> object to a PointCloud2 binary data blob.
+    * \param[in] cloud the input pcl::PointCloud<T>
+    * \param[out] msg the resultant PointCloud2 binary blob
+    */
+  template<typename PointT> void 
+  toROSMsg (const pcl::PointCloud<PointT>& cloud, sensor_msgs::PointCloud2& msg)
   {
     // Ease the user's burden on specifying width/height for unorganized datasets
     if (cloud.width == 0 && cloud.height == 0)
@@ -246,10 +267,10 @@ namespace pcl
   }
 
    /** \brief Copy the RGB fields of a PointCloud into sensor_msgs::Image format
-     * \param cloud the point cloud message
-     * \param msg the resultant sensor_msgs::Image
+     * \param[in] cloud the point cloud message
+     * \param[out] msg the resultant sensor_msgs::Image
      * CloudT cloud type, CloudT should be akin to pcl::PointCloud<pcl::PointXYZRGB>
-     *  will throw std::runtime_error if there is a problem
+     * \note will throw std::runtime_error if there is a problem
      */
   template<typename CloudT> void
   toROSMsg(const CloudT& cloud, sensor_msgs::Image& msg)
