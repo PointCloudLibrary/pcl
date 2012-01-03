@@ -83,7 +83,6 @@ struct EventHelper
   void 
   cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr & cloud)
   {
-    // Add the cloud to the renderer
     if (mutex_.try_lock ())
     {
       cloud_ = cloud;
@@ -95,12 +94,9 @@ struct EventHelper
 void 
 keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
 {
-  std::string* message = (std::string*)cookie;
-  cout << (*message) << " :: ";
+  /// If SPACE is pressed, trigger new cloud callback (only works if framerate is set to 0)
   if (event.getKeyCode() == ' ' && grabber)
-  {
     grabber->trigger ();
-  }
 }
 
 void mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)

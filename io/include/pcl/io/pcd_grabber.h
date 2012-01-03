@@ -54,10 +54,10 @@ namespace pcl
   class PCL_EXPORTS PCDGrabberBase : public Grabber
   {
     public:
-      /** \brief Constuctor taking just one PCD file.
+      /** \brief Constructor taking just one PCD file.
         * \param[in] pcd_file path to the PCD file
         * \param[in] frames_per_second frames per second. If 0, start() functions like a trigger, publishing the next PCD in the list.
-        * \param[in] repeat wheter to play PCD file in an endless lopp or not.
+        * \param[in] repeat whether to play PCD file in an endless loop or not.
         */
       PCDGrabberBase (const std::string& pcd_file, float frames_per_second, bool repeat);
 
@@ -65,7 +65,7 @@ namespace pcl
        * @brief Constuctor taking a list of paths to PCD files, that are played in the order the appear in the list.
        * @param pcd_files vector of paths to PCD files.
        * @param frames_per_second frames per second. If 0, start() functions like a trigger, publishing the next PCD in the list.
-       * @param repeat wheter to play PCD file in an endless lopp or not.
+       * @param repeat whether to play PCD file in an endless loop or not.
        */
       PCDGrabberBase (const std::vector<std::string>& pcd_files, float frames_per_second, bool repeat);
       /**
@@ -81,7 +81,11 @@ namespace pcl
        */
       virtual void stop ();
       /**
-       * @brief wheter the grabber is started (publishing) or not.
+       * @brief triggers a callback with new data
+       */
+      virtual void trigger ();
+      /**
+       * @brief whether the grabber is started (publishing) or not.
        * @return true only if publishing.
        */
       virtual bool isRunning () const;
@@ -108,7 +112,7 @@ namespace pcl
     private:
       virtual void publish (const sensor_msgs::PointCloud2& blob) const = 0;
 
-      // to seperate and hide the implementation from interface: PIMPL
+      // to separate and hide the implementation from interface: PIMPL
       struct PCDGrabberImpl;
       PCDGrabberImpl* impl_;
   };
