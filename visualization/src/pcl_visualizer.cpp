@@ -227,7 +227,10 @@ pcl::visualization::PCLVisualizer::setupInteractor (
 
   // Initialize and create timer, also create window
   iren->Initialize ();
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+#else
   timer_id_ = iren->CreateRepeatingTimer (5000L);
+#endif
 
   // Set a simple PointPicker
   vtkSmartPointer<vtkPointPicker> pp = vtkSmartPointer<vtkPointPicker>::New ();
@@ -2670,10 +2673,13 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
   vtkSmartPointer<vtkDataArray> scalars;
   color_handler->getColor (scalars);
   polydata->GetPointData ()->SetScalars (scalars);
-
+  double minmax[2];
+  scalars->GetRange (minmax);
+ 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (polydata, actor);
+  actor->GetMapper ()->SetScalarRange (minmax);
 
   // Add it to all renderers
   addActorToRenderer (actor, viewport);
