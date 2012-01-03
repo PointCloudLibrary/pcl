@@ -43,12 +43,15 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <pcl/console/print.h>
 #include <pcl/visualization/cloud_viewer.h>
+#include <pcl/visualization/image_viewer.h>
+
 
 using pcl::console::print_error;
 using pcl::console::print_info;
 using pcl::console::print_value;
 
 boost::mutex mutex_;
+boost::shared_ptr<pcl::PCDGrabber<pcl::PointXYZRGB> > grabber;
 pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud_;
 
 void
@@ -67,7 +70,11 @@ printHelp (int argc, char **argv)
 }
 
 // Create the PCLVisualizer object
-boost::shared_ptr<pcl::visualization::PCLVisualizer> p;
+boost::shared_ptr<pcl::visualization::PCLVisualizer> cloud_viewer;
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
+boost::shared_ptr<pcl::visualization::ImageViewer> img_viewer;
+#endif
+
 std::vector<double> fcolor_r, fcolor_b, fcolor_g;
 bool fcolorparam = false;
 
@@ -90,14 +97,10 @@ keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
 {
   std::string* message = (std::string*)cookie;
   cout << (*message) << " :: ";
-  if (event.getKeyCode())
-    cout << "the key \'" << event.getKeyCode() << "\' (" << (int)event.getKeyCode() << ") was";
-  else
-    cout << "the special key \'" << event.getKeySym() << "\' was";
-  if (event.keyDown())
-    cout << " pressed" << endl;
-  else
-    cout << " released" << endl;
+  if (event.getKeyCode() == ' ' && grabber)
+  {
+    grabber->trigger ();
+  }
 }
 
 void mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
@@ -139,7 +142,11 @@ main (int argc, char** argv)
   double opaque;
   pcl::console::parse_argument (argc, argv, "-opaque", opaque);
 
-  p.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
+  cloud_viewer.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
+
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
+  img_viewer.reset (new pcl::visualization::ImageViewer ("OpenNI Viewer"));
+#endif
 
   //  // Change the cloud rendered point size
   //  if (psize > 0)
@@ -149,20 +156,18 @@ main (int argc, char** argv)
   //  if (opaque >= 0)
   //    p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque, "OpenNICloud");
 
-  p->setBackgroundColor (bcolor[0], bcolor[1], bcolor[2]);
+  cloud_viewer->setBackgroundColor (bcolor[0], bcolor[1], bcolor[2]);
 
   // Read axes settings
   double axes = 0.0;
   pcl::console::parse_argument (argc, argv, "-ax", axes);
-  if (axes != 0.0 && p)
+  if (axes != 0.0 && cloud_viewer)
   {
     double ax_x = 0.0, ax_y = 0.0, ax_z = 0.0;
     pcl::console::parse_3x_arguments (argc, argv, "-ax_pos", ax_x, ax_y, ax_z, false);
     // Draw XYZ axes if command-line enabled
-    p->addCoordinateSystem (axes, ax_x, ax_y, ax_z);
+    cloud_viewer->addCoordinateSystem (axes, ax_x, ax_y, ax_z);
   }
-
-  pcl::Grabber* grabber = 0;
 
   float frames_per_second = 0; // 0 means only if triggered!
   pcl::console::parse (argc, argv, "-fps", frames_per_second);
@@ -178,7 +183,7 @@ main (int argc, char** argv)
   std::cout << "path: " << path << std::endl;
   if (path != "" && boost::filesystem::exists (path))
   {
-    grabber = new pcl::PCDGrabber<pcl::PointXYZRGB> (path, frames_per_second, repeat);
+    grabber.reset (new pcl::PCDGrabber<pcl::PointXYZRGB> (path, frames_per_second, repeat));
   }
   else
   {
@@ -201,7 +206,7 @@ main (int argc, char** argv)
     {
       std::cout << "Neither a pcd file given using the \"-file\" option, nor given a directory containing pcd files using the \"-dir\" option." << std::endl;
     }
-    grabber = new pcl::PCDGrabber<pcl::PointXYZRGB> (pcd_files, frames_per_second, repeat);
+    grabber.reset (new pcl::PCDGrabber<pcl::PointXYZRGB> (pcd_files, frames_per_second, repeat));
   }
 
   EventHelper h;
@@ -211,12 +216,19 @@ main (int argc, char** argv)
   std::string mouseMsg3D ("Mouse coordinates in PCL Visualizer");
   std::string keyMsg3D ("Key event for PCL Visualizer");
 
-  p->registerMouseCallback (&mouse_callback, (void*)(&mouseMsg3D));    
-  p->registerKeyboardCallback(&keyboard_callback, (void*)(&keyMsg3D));
-        
+  cloud_viewer->registerMouseCallback (&mouse_callback, (void*)(&mouseMsg3D));
+  cloud_viewer->registerKeyboardCallback(&keyboard_callback, (void*)(&keyMsg3D));
+
   grabber->start ();
   while (true)
   {
+    cloud_viewer->spinOnce ();
+
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
+    img_viewer->spinOnce ();
+#endif
+
+
     if (!cloud_)
     {
       boost::this_thread::sleep(boost::posix_time::microseconds(10000));
@@ -229,14 +241,19 @@ main (int argc, char** argv)
       temp_cloud.swap (cloud_);
       mutex_.unlock ();
 
-      if (!p->updatePointCloud (temp_cloud, "PCDCloud"))
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
+      img_viewer->showRGBImage (*temp_cloud);
+#endif
+
+
+      if (!cloud_viewer->updatePointCloud (temp_cloud, "PCDCloud"))
       {
-        p->addPointCloud (temp_cloud, "PCDCloud");
-        p->resetCameraViewpoint ("PCDCloud");
+        cloud_viewer->addPointCloud (temp_cloud, "PCDCloud");
+        cloud_viewer->resetCameraViewpoint ("PCDCloud");
       }
     }
-    p->spinOnce ();
-    if (p->wasStopped ())
+
+    if (cloud_viewer->wasStopped ())
       break;
   }
 
