@@ -143,7 +143,13 @@ pcl::visualization::ImageViewer::showRGBImage (const pcl::PointCloud<pcl::PointX
   }
 
   for (size_t i = 0; i < cloud.points.size (); ++i)
-    memcpy (&data_[i * 3], (char*)&cloud.points[i].rgb, sizeof (char) * 3);
+  {
+    memcpy (&data_[i * 3], (unsigned char*)&cloud.points[i].rgb, sizeof (unsigned char) * 3);
+    /// Convert from BGR to RGB
+    unsigned char aux = data_[i*3];
+    data_[i*3] = data_[i*3+2];
+    data_[i*3+2] = aux;
+  }
   return (showRGBImage (data_.get (), cloud.width, cloud.height));
 }
 
