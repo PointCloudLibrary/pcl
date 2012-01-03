@@ -1208,6 +1208,14 @@ namespace pcl
         void 
         createInteractor ();
 
+        /** \brief Set up an vtkRenderWindowInteractor object for a given vtkRenderWindow
+          * \param[in,out] iren a vtkRenderWindowInteractor object
+          * \param[in,out] win a vtkRenderWindow object
+          */
+        void 
+        setupInteractor (vtkRenderWindowInteractor *iren,
+                         vtkRenderWindow *ren);
+
       protected:
         /** \brief The render window interactor. */
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
