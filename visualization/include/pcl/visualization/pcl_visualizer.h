@@ -1078,11 +1078,26 @@ namespace pcl
 
         /** \brief Add a cube from a set of given model coefficients 
           * \param[in] coefficients the model coefficients (Tx, Ty, Tz, Qx, Qy, Qz, Qw, width, height, depth)
-          * \param[in] id the cone id/name (default: "cube")
+          * \param[in] id the cube id/name (default: "cube")
           * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
         bool 
         addCube (const pcl::ModelCoefficients &coefficients, 
+                 const std::string &id = "cube", 
+                 int viewport = 0);
+
+        /** \brief Add a cube from a set of given model coefficients 
+          * \param[in] translation a translation to apply to the cube from 0,0,0
+          * \param[in] rotation a quaternion-based rotation to apply to the cube 
+          * \param[in] width the cube's width
+          * \param[in] height the cube's height
+          * \param[in] depth the cube's depth 
+          * \param[in] id the cube id/name (default: "cube")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
+          */
+        bool 
+        addCube (const Eigen::Vector3f &translation, const Eigen::Quaternionf &rotation,
+                 double width, double height, double depth,
                  const std::string &id = "cube", 
                  int viewport = 0);
 
