@@ -133,8 +133,6 @@ pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::ge
 
   vtkIdType nr_points = cloud_->width * cloud_->height;
   reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
-  
-  
   // Allocate enough memory to hold all colors
   unsigned char* colors = new unsigned char[nr_points * 3];
 

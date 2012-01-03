@@ -978,11 +978,12 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   // Get a pointer to the beginning of the data array
   float *data = ((vtkFloatArray*)points->GetData ())->GetPointer (0);
 
+  int pts = 0;
   // If the dataset is dense (no NaNs)
   if (cloud->is_dense)
   {
-    for (vtkIdType i = 0; i < nr_points; ++i)
-      memcpy (&data[i * 3], &cloud->points[i].x, 12);    // sizeof (float) * 3
+    for (vtkIdType i = 0; i < nr_points; ++i, pts += 3)
+      memcpy (&data[pts], &cloud->points[i].x, 12);    // sizeof (float) * 3
   }
   else
   {
@@ -990,12 +991,11 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
     for (vtkIdType i = 0; i < nr_points; ++i)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud->points[i].x) || 
-          !pcl_isfinite (cloud->points[i].y) || 
-          !pcl_isfinite (cloud->points[i].z))
+      if (!isFinite (cloud->points[i]))
         continue;
 
-      memcpy (&data[j * 3], &cloud->points[i].x, 12);    // sizeof (float) * 3
+      memcpy (&data[pts], &cloud->points[i].x, 12);    // sizeof (float) * 3
+      pts += 3;
       j++;
     }
     nr_points = j;
@@ -1011,10 +1011,14 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   // Get the colors from the handler
   vtkSmartPointer<vtkDataArray> scalars;
   color_handler.getColor (scalars);
+  double minmax[2];
+  scalars->GetRange (minmax);
+  // Update the data
   polydata->GetPointData ()->SetScalars (scalars);
   polydata->Update ();
   
   am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
+  am_it->second.actor->GetMapper ()->SetScalarRange (minmax);
 
   // Update the mapper
   reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->SetInput (polydata);
