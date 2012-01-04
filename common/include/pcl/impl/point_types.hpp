@@ -114,11 +114,9 @@ namespace pcl
 {
 
   template <typename PointT> inline bool
-  isFinite (PointT &pt)
+  isFinite (const PointT &pt)
   {
-    if (!pcl_isfinite (pt.x) || !pcl_isfinite (pt.y) || !pcl_isfinite (pt.z))
-      return (false);
-    return (true);
+    return hasValidXYZ (pt);
   }
 
 #define PCL_ADD_POINT4D \
@@ -198,7 +196,7 @@ namespace pcl
     return (os);
   }
 
-  /** \brief A structure representing RGB color information. 
+  /** \brief A structure representing RGB color information.
     *
     * The RGBA information is available either as separate r, g, b, or as a
     * packed uint32_t rgba value. To pack it, use:
@@ -325,7 +323,7 @@ namespace pcl
     unsigned char* rgba_ptr = (unsigned char*)&p.rgba;
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << (int)(*rgba_ptr) << "," << (int)(*(rgba_ptr+1)) << "," << (int)(*(rgba_ptr+2)) << "," <<(int)(*(rgba_ptr+3)) << ")";
     return (os);
-  } 
+  }
 
   struct EIGEN_ALIGN16 _PointXYZRGB
   {
