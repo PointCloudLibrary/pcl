@@ -64,15 +64,15 @@ namespace pcl
       }
 
       /** \brief Retrieve the time in milliseconds spent since the last call to \a reset(). */
-      inline float
+      inline double
       getTime ()
       {
         boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time ();
-        return (float)((end_time - start_time_).total_milliseconds ());
+        return ((end_time - start_time_).total_milliseconds ());
       }
 
       /** \brief Retrieve the time in seconds spent since the last call to \a reset(). */
-      inline float
+      inline double
       getTimeSeconds ()
       {
         return (getTime () * 0.001f);
@@ -82,7 +82,7 @@ namespace pcl
       inline void
       reset ()
       {
-        start_time_ = boost::posix_time::microsec_clock::local_time();
+        start_time_ = boost::posix_time::microsec_clock::local_time ();
       }
 
     protected:
@@ -110,16 +110,18 @@ namespace pcl
       inline ScopeTime (const char* title)
       {
         title_ = std::string (title);
+        start_time_ = boost::posix_time::microsec_clock::local_time ();
       }
 
       inline ScopeTime ()
       {
-        title_ = std::string ();
+        start_time_ = boost::posix_time::microsec_clock::local_time ();
       }
 
       inline ~ScopeTime ()
       {
-        std::cerr << title_ << " took " << getTime () << "ms.\n";
+        double val = this->getTime ();
+        std::cerr << title_ << " took " << val << "ms.\n";
       }
 
     private:
@@ -132,11 +134,12 @@ namespace pcl
   ScopeTime scopeTime(__func__)
 #endif
 
-inline double getTime ()
+inline double 
+getTime ()
 {
-  boost::posix_time::ptime epoch_time(boost::gregorian::date(1970,1,1));
-  boost::posix_time::ptime current_time = boost::posix_time::microsec_clock::local_time();
-  return (current_time - epoch_time).total_nanoseconds() * 1.0e-9;
+  boost::posix_time::ptime epoch_time (boost::gregorian::date (1970, 1, 1));
+  boost::posix_time::ptime current_time = boost::posix_time::microsec_clock::local_time ();
+  return (current_time - epoch_time).total_nanoseconds () * 1.0e-9;
 }
 
 /// Executes code, only if secs are gone since last exec.
