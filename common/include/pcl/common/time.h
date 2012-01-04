@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -50,36 +52,35 @@
 namespace pcl
 {
 
-  /**
-   * \brief Simple stopwatch.
-   * \ingroup common
-   */
+  /** \brief Simple stopwatch.
+    * \ingroup common
+    */
   class StopWatch
   {
     public:
-      StopWatch()
+      StopWatch ()
       {
-        start_time_ = boost::posix_time::microsec_clock::local_time();
+        start_time_ = boost::posix_time::microsec_clock::local_time ();
       }
 
       /** \brief Retrieve the time in milliseconds spent since the last call to \a reset(). */
       inline float
-      getTime()
+      getTime ()
       {
-        boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time();
-        return (float)((end_time - start_time_).total_milliseconds());
+        boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time ();
+        return (float)((end_time - start_time_).total_milliseconds ());
       }
 
       /** \brief Retrieve the time in seconds spent since the last call to \a reset(). */
       inline float
-      getTimeSeconds()
+      getTimeSeconds ()
       {
-        return (getTime() * 0.001f);
+        return (getTime () * 0.001f);
       }
 
       /** \brief Reset the stopwatch to 0. */
       inline void
-      reset()
+      reset ()
       {
         start_time_ = boost::posix_time::microsec_clock::local_time();
       }
@@ -88,24 +89,37 @@ namespace pcl
       boost::posix_time::ptime start_time_;
   };
 
-  /**
-   * \brief Class to measure the time spent in a scope
-   *
-   * To use this class, e.g. to measure the time spent in a function,
-   * just create an instance at the beginning of the function.
-   * \ingroup common
-   */
+  /** \brief Class to measure the time spent in a scope
+    *
+    * To use this class, e.g. to measure the time spent in a function,
+    * just create an instance at the beginning of the function. Example:
+    *
+    * \code
+    * {
+    *   pcl::ScopeTime t1 ("calculation");
+    *
+    *   // ... perform calculation here
+    * }
+    * \endcode
+    *
+    * \ingroup common
+    */
   class ScopeTime : public StopWatch
   {
     public:
       inline ScopeTime (const char* title)
       {
-        title_ = std::string(title);
+        title_ = std::string (title);
+      }
+
+      inline ScopeTime ()
+      {
+        title_ = std::string ();
       }
 
       inline ~ScopeTime ()
       {
-        std::cerr << title_ << " took " << getTime() << "ms.\n";
+        std::cerr << title_ << " took " << getTime () << "ms.\n";
       }
 
     private:
