@@ -83,8 +83,6 @@ namespace pcl
   }
 }
 
-struct KinFuApp;
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct SampledScopeTime : public StopWatch
@@ -128,36 +126,15 @@ setViewerPose (visualization::PCLVisualizer& viewer, const Eigen::Affine3f& view
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename CloudT>
-void
-writeCloudFile (int format, const CloudT& cloud)
-{
-  if (format == KinFuApp::PCD_BIN)
-  {
-    cout << "Saving point cloud to 'cloud_bin.pcd' (binary)... ";
-    pcl::io::savePCDFile ("cloud_bin.pcd", cloud, true);
-  }
-  else
-  if (format == KinFuApp::PCD_ASCII)
-  {
-    cout << "Saving point cloud to 'cloud.pcd' (ASCII)... ";
-    pcl::io::savePCDFile ("cloud.pcd", cloud, false);
-  }
-  else   /* if (format == KinFuApp::PLY) */
-  {
-    cout << "Saving point cloud to 'cloud.ply' (ASCII)... ";
-    pcl::io::savePLYFileASCII ("cloud.ply", cloud);
-  
-  }
-  cout << "Done" << endl;
-}
+template<typename CloudT> void
+writeCloudFile (int format, const CloudT& cloud);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename MergedT, typename PointT>
 typename PointCloud<MergedT>::Ptr merge(const PointCloud<PointT>& points, const PointCloud<RGB>& colors)
 {    
-  PointCloud<MergedT>::Ptr merged_ptr(new PointCloud<MergedT>());
+  typename PointCloud<MergedT>::Ptr merged_ptr(new PointCloud<MergedT>());
     
   pcl::copyPointCloud (points, *merged_ptr);
   //pcl::copyPointCloud (colors, *merged_ptr); why error?
@@ -643,7 +620,30 @@ struct KinFuApp
   }
 };
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+template<typename CloudT> void
+writeCloudFile (int format, const CloudT& cloud)
+{
+  if (format == KinFuApp::PCD_BIN)
+  {
+    cout << "Saving point cloud to 'cloud_bin.pcd' (binary)... ";
+    pcl::io::savePCDFile ("cloud_bin.pcd", cloud, true);
+  }
+  else
+  if (format == KinFuApp::PCD_ASCII)
+  {
+    cout << "Saving point cloud to 'cloud.pcd' (ASCII)... ";
+    pcl::io::savePCDFile ("cloud.pcd", cloud, false);
+  }
+  else   /* if (format == KinFuApp::PLY) */
+  {
+    cout << "Saving point cloud to 'cloud.ply' (ASCII)... ";
+    pcl::io::savePLYFileASCII ("cloud.ply", cloud);
+  
+  }
+  cout << "Done" << endl;
+}
 
 int
 print_cli_help ()
