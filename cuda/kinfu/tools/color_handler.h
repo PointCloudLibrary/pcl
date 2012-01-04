@@ -47,16 +47,19 @@ namespace pcl
   {
     template <typename PointT>
     class PointCloudColorHandlerRGBHack : public PointCloudColorHandler<PointT>
-    {            
-      typedef typename typename PointCloudColorHandler<PointT>::PointCloud::ConstPtr PointCloudConstPtr;                            
+    {
+      using PointCloudColorHandler<PointT>::capable_;
+      using PointCloudColorHandler<PointT>::cloud_;
+
+      typedef typename PointCloudColorHandler<PointT>::PointCloud::ConstPtr PointCloudConstPtr;                            
       typedef typename pcl::PointCloud<RGB>::ConstPtr RgbCloudConstPtr;
-      
+
     public:
       typedef boost::shared_ptr<PointCloudColorHandlerRGBHack<PointT> > Ptr;
       typedef boost::shared_ptr<const PointCloudColorHandlerRGBHack<PointT> > ConstPtr;
       
       PointCloudColorHandlerRGBHack (const PointCloudConstPtr& cloud, const RgbCloudConstPtr& colors) : 
-          PointCloudColorHandler<PointT>(cloud), rgb_(colors)
+          PointCloudColorHandler<PointT> (cloud), rgb_ (colors)
       {
         capable_ = true;
       }
@@ -75,7 +78,7 @@ namespace pcl
         unsigned char* colors = reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->GetPointer (0);
         
         // Color every point
-        if (nr_points != (int)rgb_->points.size())
+        if (nr_points != (int)rgb_->points.size ())
           std::fill(colors, colors + nr_points * 3, (unsigned char)0xFF);
         else
           for (vtkIdType cp = 0; cp < nr_points; ++cp)
