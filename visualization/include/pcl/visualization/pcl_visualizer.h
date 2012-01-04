@@ -1208,14 +1208,21 @@ namespace pcl
         void 
         createInteractor ();
 
-        /** \brief Set up an vtkRenderWindowInteractor object for a given vtkRenderWindow
-          * \param[in,out] iren a vtkRenderWindowInteractor object
-          * \param[in,out] win a vtkRenderWindow object
+        /** \brief Set up our unique PCL interactor style for a given vtkRenderWindowInteractor object 
+          * attached to a given vtkRenderWindow
+          * \param[in,out] iren the vtkRenderWindowInteractor object to set up
+          * \param[in,out] win a vtkRenderWindow object that the interactor is attached to
           */
         void 
         setupInteractor (vtkRenderWindowInteractor *iren,
                          vtkRenderWindow *ren);
 
+        /** \brief Get a pointer to the current interactor style used. */
+        inline vtkSmartPointer<PCLVisualizerInteractorStyle>
+        getInteractorStyle ()
+        {
+          return (style_);
+        }
       protected:
         /** \brief The render window interactor. */
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))

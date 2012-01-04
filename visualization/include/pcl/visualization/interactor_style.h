@@ -76,8 +76,43 @@ namespace pcl
 {
   namespace visualization
   {
-    /** \brief PCL Visualizer interactory style class. 
-      * \author Radu Bogdan Rusu
+
+    /** \brief A list of potential keyboard modifiers for \ref PCLVisualizerInteractorStyle.
+      * Defaults to Alt. 
+      */ 
+    enum InteractorKeyboardModifier
+    {
+      INTERACTOR_KB_MOD_ALT,
+      INTERACTOR_KB_MOD_CTRL,
+      INTERACTOR_KB_MOD_SHIFT
+    };
+
+    /** \brief @PCLVisualizerInteractorStyle@ defines an unique, custom VTK
+      * based interactory style for PCL Visualizer applications. Besides
+      * defining the rendering style, we also create a list of custom actions
+      * that are triggered on different keys being pressed:
+      *
+      * -        p, P   : switch to a point-based representation
+      * -        w, W   : switch to a wireframe-based representation (where available)
+      * -        s, S   : switch to a surface-based representation (where available)
+      * -        j, J   : take a .PNG snapshot of the current window view
+      * -        c, C   : display current camera/window parameters
+      * -        f, F   : fly to point mode
+      * -        e, E   : exit the interactor\
+      * -        q, Q   : stop and call VTK's TerminateApp
+      * -       + / -   : increment/decrement overall point size
+      * -        g, G   : display scale grid (on/off)
+      * -        u, U   : display lookup table (on/off)
+      * -  r, R [+ ALT] : reset camera [to viewpoint = {0, 0, 0} -> center_{x, y, z}]
+      * -  ALT + s, S   : turn stereo mode on/off
+      * -  ALT + f, F   : switch between maximized window mode and original size
+      * -        l, L           : list all available geometric and color handlers for the current actor map
+      * -  ALT + 0..9 [+ CTRL]  : switch between different geometric handlers (where available)
+      * -        0..9 [+ CTRL]  : switch between different color handlers (where available)
+      * - 
+      * -  SHIFT + left click   : select a point
+      *
+      * \author Radu B. Rusu
       * \ingroup visualization
       */
     class PCL_EXPORTS PCLVisualizerInteractorStyle : public vtkInteractorStyleTrackballCamera
@@ -87,7 +122,7 @@ namespace pcl
       public:
         static PCLVisualizerInteractorStyle *New ();
         // this macro defines Superclass, the isA functionality and the safe downcast method
-        vtkTypeMacro(PCLVisualizerInteractorStyle,vtkInteractorStyleTrackballCamera);
+        vtkTypeMacro (PCLVisualizerInteractorStyle, vtkInteractorStyleTrackballCamera);
         
         /** \brief Initialization routine. Must be called before anything else. */
         virtual void 
@@ -135,6 +170,19 @@ namespace pcl
           */
         void
         saveScreenshot (const std::string &file);
+
+        /** \brief Change the default keyboard modified from ALT to a different special key.
+          * Allowed values are:
+          * - INTERACTOR_KB_MOD_ALT
+          * - INTERACTOR_KB_MOD_CTRL
+          * - INTERACTOR_KB_MOD_SHIFT
+          * \param[in] modified the new keyboard modifier
+          */
+        inline void
+        setKeyboardModifier (const InteractorKeyboardModifier &modifier)
+        {
+          modifier_ = modifier;
+        }
 
        protected:
         /** \brief Set to true after initialization is complete. */
@@ -222,6 +270,9 @@ namespace pcl
 
         /** \brief A VTK Mouse Callback object, used for point picking. */
         vtkSmartPointer<PointPickingCallback> mouse_callback_;
+
+        /** \brief The keyboard modifier to use. Default: Alt. */
+        InteractorKeyboardModifier modifier_;
 
         friend class PointPickingCallback;
     };

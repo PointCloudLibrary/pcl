@@ -773,10 +773,13 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
   vtkSmartPointer<vtkDataArray> scalars;
   color_handler.getColor (scalars);
   polydata->GetPointData ()->SetScalars (scalars);
+  double minmax[2];
+  scalars->GetRange (minmax);
 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (polydata, actor);
+  actor->GetMapper ()->SetScalarRange (minmax);
 
   // Add it to all renderers
   addActorToRenderer (actor, viewport);
@@ -826,10 +829,13 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
   vtkSmartPointer<vtkDataArray> scalars;
   color_handler->getColor (scalars);
   polydata->GetPointData ()->SetScalars (scalars);
+  double minmax[2];
+  scalars->GetRange (minmax);
 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (polydata, actor);
+  actor->GetMapper ()->SetScalarRange (minmax);
 
   // Add it to all renderers
   addActorToRenderer (actor, viewport);
@@ -881,10 +887,13 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
   vtkSmartPointer<vtkDataArray> scalars;
   color_handler.getColor (scalars);
   polydata->GetPointData ()->SetScalars (scalars);
+  double minmax[2];
+  scalars->GetRange (minmax);
 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (polydata, actor);
+  actor->GetMapper ()->SetScalarRange (minmax);
 
   // Add it to all renderers
   addActorToRenderer (actor, viewport);

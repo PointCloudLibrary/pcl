@@ -54,6 +54,7 @@
 void
 pcl::visualization::PCLVisualizerInteractorStyle::Initialize ()
 {
+  modifier_ = pcl::visualization::INTERACTOR_KB_MOD_ALT;
   // Set windows size (width, height) to unknown (-1)
   win_height_ = win_width_ = -1;
   win_pos_x_ = win_pos_y_ = 0;
@@ -141,7 +142,26 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
   else if (key.find ("XF86ZoomOut") != std::string::npos)
     zoomOut ();
 
-  bool alt = Interactor->GetAltKey ();
+  bool keymod = false;
+  switch (modifier_)
+  {
+    case INTERACTOR_KB_MOD_ALT:
+    {
+      keymod = Interactor->GetAltKey ();
+      break;
+    }
+    case INTERACTOR_KB_MOD_CTRL:
+    {
+      keymod = Interactor->GetControlKey ();
+      break;
+    }
+    case INTERACTOR_KB_MOD_SHIFT:
+    {
+      keymod = Interactor->GetShiftKey ();
+      break;
+    }
+  }
+
   switch (Interactor->GetKeyCode ())
   {
     // All of the options below simply exit
@@ -164,7 +184,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
     case 'r': case 'R':
     case 's': case 'S':
     {
-      if (!alt)
+      if (!keymod)
         Superclass::OnChar ();
       break;
     }
@@ -231,11 +251,30 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
   }
 
   // Get the status of special keys (Cltr+Alt+Shift)
-  //bool shift = Interactor->GetShiftKey   ();
+  bool shift = Interactor->GetShiftKey   ();
   bool ctrl  = Interactor->GetControlKey ();
   bool alt   = Interactor->GetAltKey ();
 
-  //fprintf (stderr, "Key sym: %s\n", Interactor->GetKeySym ());
+  bool keymod = false;
+  switch (modifier_)
+  {
+    case INTERACTOR_KB_MOD_ALT:
+    {
+      keymod = alt;
+      break;
+    }
+    case INTERACTOR_KB_MOD_CTRL:
+    {
+      keymod = ctrl;
+      break;
+    }
+    case INTERACTOR_KB_MOD_SHIFT:
+    {
+      keymod = shift;
+      break;
+    }
+  }
+
   // ---[ Check the rest of the key codes 
 
   // Switch between point color/geometry handlers
@@ -250,7 +289,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       index += 10;
 
     // Geometry ?
-    if (alt)
+    if (keymod)
     {
       for (it = actors_->begin (); it != actors_->end (); ++it)
       {
@@ -494,7 +533,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     // Switch between maximize and original window size
     case 'f': case 'F':
     {
-      if (alt)
+      if (keymod)
       {
         // Get screen size
         int *temp = Interactor->GetRenderWindow ()->GetScreenSize ();
@@ -550,7 +589,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     // 's'/'S' w/out ALT
     case 's': case 'S':
     {
-      if (alt)
+      if (keymod)
       {
         int stereo_render = Interactor->GetRenderWindow ()->GetStereoRender ();
         if (!stereo_render)
@@ -632,7 +671,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     // Overwrite the camera reset
     case 'r': case 'R':
     {
-      if (!alt)
+      if (!keymod)
       {
         Superclass::OnKeyDown ();
         break;
