@@ -58,15 +58,28 @@ namespace pcl
 
       virtual ~PlaneClipper3D () throw ();
 
-      virtual bool clipPoint3D (const PointT& point) const;
+      virtual bool
+      clipPoint3D (const PointT& point) const;
 
-      virtual bool clipLineSegment3D (PointT& from, PointT& to) const;
+      virtual bool
+      clipLineSegment3D (PointT& from, PointT& to) const;
 
-      virtual void clipPlanarPolygon3D (std::vector<PointT>& polygon) const;
+      virtual void
+      clipPlanarPolygon3D (std::vector<PointT>& polygon) const;
 
-      virtual void clipPointCloud3D (const pcl::PointCloud<PointT> &cloud_in, std::vector<int>& clipped, const std::vector<int>& indices = std::vector<int> ()) const;
+      virtual void
+      clipPlanarPolygon3D (const std::vector<PointT>& polygon, std::vector<PointT>& clipped_polygon) const;
+
+      virtual void
+      clipPointCloud3D (const pcl::PointCloud<PointT> &cloud_in, std::vector<int>& clipped, const std::vector<int>& indices = std::vector<int> ()) const;
+
+      virtual Clipper3D<PointT>*
+      clone () const;
+
     protected:
-      float getDistance (const PointT& point) const;
+      float
+      getDistance (const PointT& point) const;
+
     private:
       Eigen::Vector4f plane_params_;
   };
