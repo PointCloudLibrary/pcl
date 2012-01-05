@@ -116,7 +116,7 @@ namespace pcl
   template <typename PointT> inline bool
   isFinite (const PointT &pt)
   {
-    return !(!pcl_isfinite (pt.x) || !pcl_isfinite (pt.y) || !pcl_isfinite (pt.z))
+    return !(!pcl_isfinite (pt.x) || !pcl_isfinite (pt.y) || !pcl_isfinite (pt.z));
   }
 
 #define PCL_ADD_POINT4D \
