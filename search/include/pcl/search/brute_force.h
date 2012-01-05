@@ -207,6 +207,22 @@ namespace pcl
           return (radiusSearch (cloud_->operator[](index), radius, k_indices, k_distances, max_nn));
         }
 
+      private:
+        int
+        denseKSearch (const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_distances);
+
+        int
+        sparseKSearch (const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_distances);
+
+        int
+        denseRadiusSearch (const PointT& point, double radius,
+                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
+                      int max_nn = -1) const;
+
+        int
+        sparseRadiusSearch (const PointT& point, double radius,
+                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
+                      int max_nn = -1) const;
       protected:
         PointCloudConstPtr cloud_;
         IndicesConstPtr indices_;
