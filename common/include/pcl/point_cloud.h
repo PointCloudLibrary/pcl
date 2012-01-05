@@ -742,6 +742,14 @@ namespace pcl
         return (height != 1);
       }
       
+      ////////////////////////////////////////////////////////////////////////////////////////
+      /** \brief Return whether a dataset is empty (i.e., has no points) */
+      inline bool 
+      empty () const 
+      { 
+        return (points.rows () == 0); 
+      }
+
       /** \brief A list of optional point cloud properties. See \ref CloudProperties for more information. */
       pcl::CloudProperties properties;
 

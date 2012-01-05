@@ -58,7 +58,7 @@ namespace pcl
   computePointNormal (const pcl::PointCloud<PointT> &cloud, 
                       Eigen::Vector4f &plane_parameters, float &curvature)
   {
-    if (cloud.points.empty ())
+    if (cloud.empty ())
     {
       plane_parameters.setConstant (std::numeric_limits<float>::quiet_NaN ());
       curvature = std::numeric_limits<float>::quiet_NaN ();
