@@ -222,7 +222,7 @@ namespace pcl
       {
         // Compute the principal directions via PCA
         Eigen::Vector4f xyz_centroid;
-        Eigen::Matrix3f covariance_matrix;
+        Eigen::Matrix3f covariance_matrix = Eigen::Matrix3f::Zero ();
 
         computeMeanAndCovarianceMatrix (*cloud, covariance_matrix, xyz_centroid);
 
