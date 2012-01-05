@@ -810,7 +810,7 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> inline void
+template <typename PointT> inline unsigned int
 pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
                                   const pcl::PointIndices &indices,
                                   Eigen::Matrix3d &covariance_matrix,

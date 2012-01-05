@@ -336,7 +336,7 @@ namespace pcl
     * \ingroup common
     */
   template <typename PointT> inline unsigned int
-  computCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
+  computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
                           const std::vector<int> &indices,
                           Eigen::Matrix3f &covariance_matrix);
 
