@@ -79,8 +79,8 @@ namespace pcl
         * \param[in] cloud the input point cloud dataset
         * \param[in] indices a vector of point indices to be used from \a cloud
         */
-      SampleConsensusModelRegistration (const PointCloudConstPtr &cloud, 
-                                        const std::vector<int> &indices) : 
+      SampleConsensusModelRegistration (const PointCloudConstPtr &cloud,
+                                        const std::vector<int> &indices) :
         SampleConsensusModel<PointT> (cloud, indices)
       {
         computeOriginalIndexMapping ();
@@ -119,7 +119,7 @@ namespace pcl
         * \param[in] target the input point cloud target
         * \param[in] indices_tgt a vector of point indices to be used from \a target
         */
-      inline void 
+      inline void
       setInputTarget (const PointCloudConstPtr &target, const std::vector<int> &indices_tgt)
       {
         target_ = target;
@@ -131,16 +131,16 @@ namespace pcl
         * \param[in] samples the indices found as good candidates for creating a valid model
         * \param[out] model_coefficients the resultant model coefficients
         */
-      bool 
-      computeModelCoefficients (const std::vector<int> &samples, 
+      bool
+      computeModelCoefficients (const std::vector<int> &samples,
                                 Eigen::VectorXf &model_coefficients);
 
       /** \brief Compute all distances from the transformed points to their correspondences
         * \param[in] model_coefficients the 4x4 transformation matrix
         * \param[out] distances the resultant estimated distances
         */
-      void 
-      getDistancesToModel (const Eigen::VectorXf &model_coefficients, 
+      void
+      getDistancesToModel (const Eigen::VectorXf &model_coefficients,
                            std::vector<double> &distances);
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
@@ -148,19 +148,19 @@ namespace pcl
         * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
         * \param[out] inliers the resultant model inliers
         */
-      void 
-      selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
-                            const double threshold, 
+      void
+      selectWithinDistance (const Eigen::VectorXf &model_coefficients,
+                            const double threshold,
                             std::vector<int> &inliers);
 
-      /** \brief Count all the points which respect the given model coefficients as inliers. 
-        * 
+      /** \brief Count all the points which respect the given model coefficients as inliers.
+        *
         * \param[in] model_coefficients the coefficients of a model that we need to compute distances to
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
         */
       virtual int
-      countWithinDistance (const Eigen::VectorXf &model_coefficients, 
+      countWithinDistance (const Eigen::VectorXf &model_coefficients,
                            const double threshold);
 
       /** \brief Recompute the 4x4 transformation using the given inlier set
@@ -168,20 +168,20 @@ namespace pcl
         * \param[in] model_coefficients the initial guess for the optimization
         * \param[out] optimized_coefficients the resultant recomputed transformation
         */
-      void 
-      optimizeModelCoefficients (const std::vector<int> &inliers, 
-                                 const Eigen::VectorXf &model_coefficients, 
+      void
+      optimizeModelCoefficients (const std::vector<int> &inliers,
+                                 const Eigen::VectorXf &model_coefficients,
                                  Eigen::VectorXf &optimized_coefficients);
 
-      void 
-      projectPoints (const std::vector<int> &inliers, 
-                     const Eigen::VectorXf &model_coefficients, 
-                     PointCloud &projected_points, bool copy_data_fields = true) 
+      void
+      projectPoints (const std::vector<int> &inliers,
+                     const Eigen::VectorXf &model_coefficients,
+                     PointCloud &projected_points, bool copy_data_fields = true)
       {};
 
-      bool 
-      doSamplesVerifyModel (const std::set<int> &indices, 
-                            const Eigen::VectorXf &model_coefficients, 
+      bool
+      doSamplesVerifyModel (const std::set<int> &indices,
+                            const Eigen::VectorXf &model_coefficients,
                             const double threshold)
       {
         //PCL_ERROR ("[pcl::SampleConsensusModelRegistration::doSamplesVerifyModel] called!\n");
@@ -189,14 +189,14 @@ namespace pcl
       }
 
       /** \brief Return an unique id for this model (SACMODEL_REGISTRATION). */
-      inline pcl::SacModel 
+      inline pcl::SacModel
       getModelType () const { return (SACMODEL_REGISTRATION); }
 
     protected:
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */
-      inline bool 
+      inline bool
       isModelValid (const Eigen::VectorXf &model_coefficients)
       {
         // Needs a valid model coefficients
@@ -217,17 +217,17 @@ namespace pcl
         * principal directions of the input cloud.
         * \param[in] cloud the const boost shared pointer to a PointCloud message
         */
-      inline void 
+      inline void
       computeSampleDistanceThreshold (const PointCloudConstPtr &cloud)
       {
         // Compute the principal directions via PCA
         Eigen::Vector4f xyz_centroid;
-        compute3DCentroid (*cloud, xyz_centroid);
-        EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
-        computeCovarianceMatrixNormalized (*cloud, xyz_centroid, covariance_matrix);
-        EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
-        EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
-        pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
+        Eigen::Matrix3f covariance_matrix;
+
+        computeMeanAndCovarianceMatrix (*cloud, covariance_matrix, xyz_centroid);
+
+        Eigen::Vector3f eigen_values;
+        pcl::eigen33 (covariance_matrix, eigen_values);
 
         // Compute the distance threshold for sample selection
         sample_dist_thresh_ = eigen_values.array ().sqrt ().sum () / 3.0;
@@ -239,18 +239,17 @@ namespace pcl
         * principal directions of the input cloud.
         * \param[in] cloud the const boost shared pointer to a PointCloud message
         */
-      inline void 
+      inline void
       computeSampleDistanceThreshold (const PointCloudConstPtr &cloud,
-                                      const std::vector<int> &indices) 
+                                      const std::vector<int> &indices)
       {
         // Compute the principal directions via PCA
         Eigen::Vector4f xyz_centroid;
-        compute3DCentroid (*cloud, indices, xyz_centroid);
-        EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
-        computeCovarianceMatrixNormalized (*cloud, indices, xyz_centroid, covariance_matrix);
-        EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
-        EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
-        pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
+        Eigen::Matrix3f covariance_matrix;
+        computeMeanAndCovarianceMatrix (*cloud, indices, covariance_matrix, xyz_centroid);
+
+        Eigen::Vector3f eigen_values;
+        pcl::eigen33 (covariance_matrix, eigen_values);
 
         // Compute the distance threshold for sample selection
         sample_dist_thresh_ = eigen_values.array ().sqrt ().sum () / 3.0;
@@ -260,7 +259,7 @@ namespace pcl
 
     private:
 
-    /** \brief Estimate a rigid transformation between a source and a target point cloud using an SVD closed-form 
+    /** \brief Estimate a rigid transformation between a source and a target point cloud using an SVD closed-form
       * solution of absolute orientation using unit quaternions
       * \param[in] cloud_src the source point cloud dataset
       * \param[in] indices_src the vector of indices describing the points of interest in cloud_src
@@ -271,16 +270,16 @@ namespace pcl
       *
       * This method is an implementation of: Horn, B. “Closed-Form Solution of Absolute Orientation Using Unit Quaternions,” JOSA A, Vol. 4, No. 4, 1987
       */
-      void 
-      estimateRigidTransformationSVD (const pcl::PointCloud<PointT> &cloud_src, 
-                                      const std::vector<int> &indices_src, 
-                                      const pcl::PointCloud<PointT> &cloud_tgt, 
-                                      const std::vector<int> &indices_tgt, 
+      void
+      estimateRigidTransformationSVD (const pcl::PointCloud<PointT> &cloud_src,
+                                      const std::vector<int> &indices_src,
+                                      const pcl::PointCloud<PointT> &cloud_tgt,
+                                      const std::vector<int> &indices_tgt,
                                       Eigen::VectorXf &transform);
 
       /** \brief Compute mappings between original indices of the input_/target_ clouds. */
       void
-      computeOriginalIndexMapping () 
+      computeOriginalIndexMapping ()
       {
         if (!indices_tgt_ || !indices_ || indices_->empty () || indices_->size () != indices_tgt_->size ())
           return;
