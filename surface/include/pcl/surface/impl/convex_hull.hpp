@@ -82,8 +82,8 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
   // FInd the principal directions
   EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
   Eigen::Vector4f xyz_centroid;
-  compute3DCentroid (*input_, *indices_, xyz_centroid);
-  computeCovarianceMatrix (*input_, *indices_, xyz_centroid, covariance_matrix);
+  computeMeanAndCovarianceMatrix (*input_, *indices_, covariance_matrix, xyz_centroid);
+
   EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
   EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
   pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
@@ -96,22 +96,17 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
   {
     // We have points laying on a plane, using 2d convex hull
     // Compute transformation bring eigen_vectors.col(i) to z-axis
-
-    eigen_vectors.col (2) = eigen_vectors.col (0).cross (eigen_vectors.col (1));
-    eigen_vectors.col (1) = eigen_vectors.col (2).cross (eigen_vectors.col (0));
-
-    transform1 (0, 2) = eigen_vectors (0, 0);
-    transform1 (1, 2) = eigen_vectors (1, 0);
+    transform1 (2, 0) = eigen_vectors (0, 0);
+    transform1 (2, 1) = eigen_vectors (1, 0);
     transform1 (2, 2) = eigen_vectors (2, 0);
 
-    transform1 (0, 1) = eigen_vectors (0, 1);
+    transform1 (1, 0) = eigen_vectors (0, 1);
     transform1 (1, 1) = eigen_vectors (1, 1);
-    transform1 (2, 1) = eigen_vectors (2, 1);
+    transform1 (1, 2) = eigen_vectors (2, 1);
     transform1 (0, 0) = eigen_vectors (0, 2);
-    transform1 (1, 0) = eigen_vectors (1, 2);
-    transform1 (2, 0) = eigen_vectors (2, 2);
+    transform1 (0, 1) = eigen_vectors (1, 2);
+    transform1 (0, 2) = eigen_vectors (2, 2);
 
-    transform1 = transform1.inverse ();
     dim = 2;
   }
   else
@@ -170,7 +165,7 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
       bool NaNvalues = false;
       for (size_t i = 0; i < cloud_transformed.size (); ++i)
       {
-        if (!pcl_isfinite (cloud_transformed.points[i].x) || 
+        if (!pcl_isfinite (cloud_transformed.points[i].x) ||
             !pcl_isfinite (cloud_transformed.points[i].y) ||
             !pcl_isfinite (cloud_transformed.points[i].z))
         {
@@ -420,7 +415,7 @@ pcl::ConvexHull<PointInT>::reconstruct (PointCloud &output)
 
 template <typename PointInT> void
 pcl::ConvexHull<PointInT>::performReconstruction (PolygonMesh &output)
-{  
+{
   // Perform reconstruction
   pcl::PointCloud<PointInT> hull_points;
   performReconstruction (hull_points, output.polygons, true);
