@@ -96,17 +96,15 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computePointPr
   }
 
   // Extract the eigenvalues and eigenvectors
-  //Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> ei_symm (covariance_matrix_);
-  //eigenvalues_  = ei_symm.eigenvalues ();
-  //eigenvectors_ = ei_symm.eigenvectors ();
-  pcl::eigen33 (covariance_matrix_, eigenvectors_, eigenvalues_);
- 
-  pcx = eigenvectors_ (0, 2);
-  pcy = eigenvectors_ (1, 2);
-  pcz = eigenvectors_ (2, 2);
+  pcl::eigen33 (covariance_matrix_, eigenvalues_);
+  pcl::eigen33 (covariance_matrix_, eigenvalues_ [2], eigenvector_);
+
+  pcx = eigenvector_ [0];
+  pcy = eigenvector_ [1];
+  pcz = eigenvector_ [2];
   float indices_size = 1.0f / indices.size ();
-  pc1 = eigenvalues_ (2) * indices_size;
-  pc2 = eigenvalues_ (1) * indices_size;
+  pc1 = eigenvalues_ [2] * indices_size;
+  pc2 = eigenvalues_ [1] * indices_size;
 }
 
 
@@ -128,7 +126,7 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computeFeature
     {
       if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
-        output.points[idx].principal_curvature[0] = output.points[idx].principal_curvature[1] = output.points[idx].principal_curvature[2] = 
+        output.points[idx].principal_curvature[0] = output.points[idx].principal_curvature[1] = output.points[idx].principal_curvature[2] =
           output.points[idx].pc1 = output.points[idx].pc2 = std::numeric_limits<float>::quiet_NaN ();
         output.is_dense = false;
         continue;
@@ -148,7 +146,7 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computeFeature
       if (!isFinite ((*input_)[(*indices_)[idx]]) ||
           this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
-        output.points[idx].principal_curvature[0] = output.points[idx].principal_curvature[1] = output.points[idx].principal_curvature[2] = 
+        output.points[idx].principal_curvature[0] = output.points[idx].principal_curvature[1] = output.points[idx].principal_curvature[2] =
           output.points[idx].pc1 = output.points[idx].pc2 = std::numeric_limits<float>::quiet_NaN ();
         output.is_dense = false;
         continue;
@@ -216,4 +214,4 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeF
 
 #define PCL_INSTANTIATE_PrincipalCurvaturesEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::PrincipalCurvaturesEstimation<T,NT,OutT>;
 
-#endif    // PCL_FEATURES_IMPL_PRINCIPAL_CURVATURES_H_ 
+#endif    // PCL_FEATURES_IMPL_PRINCIPAL_CURVATURES_H_

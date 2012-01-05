@@ -72,7 +72,7 @@ namespace pcl
       typedef pcl::PointCloud<PointInT> PointCloudIn;
 
       /** \brief Empty constructor. */
-      PrincipalCurvaturesEstimation () 
+      PrincipalCurvaturesEstimation ()
       {
         feature_name_ = "PrincipalCurvaturesEstimation";
       };
@@ -89,9 +89,9 @@ namespace pcl
        * \param[out] pc1 the max eigenvalue of curvature
        * \param[out] pc2 the min eigenvalue of curvature
        */
-      void 
-      computePointPrincipalCurvatures (const pcl::PointCloud<PointNT> &normals, 
-                                       int p_idx, const std::vector<int> &indices, 
+      void
+      computePointPrincipalCurvatures (const pcl::PointCloud<PointNT> &normals,
+                                       int p_idx, const std::vector<int> &indices,
                                        float &pcx, float &pcy, float &pcz, float &pc1, float &pc2);
 
     protected:
@@ -101,7 +101,7 @@ namespace pcl
         * setSearchSurface () and the spatial locator in setSearchMethod ()
         * \param[out] output the resultant point cloud model dataset that contains the principal curvature estimates
         */
-      void 
+      void
       computeFeature (PointCloudOut &output);
 
     private:
@@ -118,14 +118,14 @@ namespace pcl
       EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix_;
 
       /** \brief SSE aligned eigenvectors placeholder for a covariance matrix. */
-      EIGEN_ALIGN16 Eigen::Matrix3f eigenvectors_;
+      Eigen::Vector3f eigenvector_;
       /** \brief eigenvalues placeholder for a covariance matrix. */
       Eigen::Vector3f eigenvalues_;
 
       /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
-        * \param[out] output the output point cloud 
+        * \param[out] output the output point cloud
         */
-      void 
+      void
       computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
 
@@ -156,13 +156,13 @@ namespace pcl
         * setSearchSurface () and the spatial locator in setSearchMethod ()
         * \param[out] output the resultant point cloud model dataset that contains the principal curvature estimates
         */
-      void 
+      void
       computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
 
       /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
-        * \param[out] output the output point cloud 
+        * \param[out] output the output point cloud
         */
-      void 
+      void
       compute (pcl::PointCloud<pcl::Normal> &output) {}
   };
 }
