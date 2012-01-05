@@ -70,8 +70,8 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::reconstruct (PointCloudIn &output
     return;
   }
 
-  
-  if (!initCompute ()) 
+
+  if (!initCompute ())
   {
     output.width = output.height = 0;
     output.points.clear ();
@@ -136,7 +136,7 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (PointInT &
   pcl::computeCovarianceMatrix (input, nn_indices, xyz_centroid, covariance_matrix);
 
   // Get the plane normal
-  EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value;
+  EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value = -1;
   EIGEN_ALIGN16 Eigen::Vector3f eigen_vector;
   pcl::eigen33 (covariance_matrix, eigen_value, eigen_vector);
   model_coefficients.head<3> () = eigen_vector;
@@ -250,7 +250,7 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
   // \note resize is irrelevant for a radiusSearch ().
   std::vector<int> nn_indices;
   std::vector<float> nn_sqr_dists;
-  
+
   // For all points
   for (size_t cp = 0; cp < indices_->size (); ++cp)
   {
@@ -270,7 +270,7 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
     Eigen::Vector4f model_coefficients;
     // Get a plane approximating the local surface's tangent and project point onto it
     computeMLSPointNormal (output.points[cp], *input_, nn_indices, nn_sqr_dists,
-                           model_coefficients); 
+                           model_coefficients);
 
     // Save results to output cloud
     if (normals_)
