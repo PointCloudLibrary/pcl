@@ -255,8 +255,8 @@ pcl::RSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
     {
       // Compute and store r_min and r_max in the output cloud
       this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_sqr_dists);
-      histograms_->push_back (computeRSD (surface_, normals_, nn_indices, search_radius_, nr_subdiv_, plane_radius_, output.points[idx], true));
-      //histograms_->push_back (computeRSD (normals_, nn_indices, nn_sqr_dists, search_radius_, nr_subdiv_, plane_radius_, output.points[idx], true));
+      //histograms_->push_back (computeRSD (surface_, normals_, nn_indices, search_radius_, nr_subdiv_, plane_radius_, output.points[idx], true));
+      histograms_->push_back (computeRSD (normals_, nn_indices, nn_sqr_dists, search_radius_, nr_subdiv_, plane_radius_, output.points[idx], true));
     }
   }
   else
@@ -266,8 +266,8 @@ pcl::RSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
     {
       // Compute and store r_min and r_max in the output cloud
       this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_sqr_dists);
-      computeRSD (surface_, normals_, nn_indices, search_radius_, nr_subdiv_, plane_radius_, output.points[idx], false);
-      //computeRSD (normals_, nn_indices, nn_sqr_dists, search_radius_, nr_subdiv_, plane_radius_, output.points[idx], false);
+      //computeRSD (surface_, normals_, nn_indices, search_radius_, nr_subdiv_, plane_radius_, output.points[idx], false);
+      computeRSD (normals_, nn_indices, nn_sqr_dists, search_radius_, nr_subdiv_, plane_radius_, output.points[idx], false);
     }
   }
 }
