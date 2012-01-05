@@ -717,7 +717,7 @@ TEST (PCL, PrincipalCurvaturesEstimation)
 
   pc.computePointPrincipalCurvatures (*normals, indices.size () - 1, indices, pcx, pcy, pcz, pc1, pc2);
   EXPECT_NEAR (pcx, 0.86725, 1e-4);
-  EXPECT_NEAR (pcy, -0.37599, 1e-4);
+  EXPECT_NEAR (pcy, -0.375851, 1e-4);
   EXPECT_NEAR (pcz, 0.32636, 1e-4);
   EXPECT_NEAR (pc1, 0.2590005099773407,  1e-4);
   EXPECT_NEAR (pc2, 0.17906956374645233, 1e-4);
@@ -755,7 +755,7 @@ TEST (PCL, PrincipalCurvaturesEstimation)
   EXPECT_NEAR (pcs->points[indices.size () - 3].pc2, 0.17906941473484039, 1e-4);
 
   EXPECT_NEAR (pcs->points[indices.size () - 1].principal_curvature[0], 0.86725, 1e-4);
-  EXPECT_NEAR (pcs->points[indices.size () - 1].principal_curvature[1], -0.37599, 1e-4);
+  EXPECT_NEAR (pcs->points[indices.size () - 1].principal_curvature[1], -0.375851, 1e-4);
   EXPECT_NEAR (pcs->points[indices.size () - 1].principal_curvature[2], 0.32636, 1e-4);
   EXPECT_NEAR (pcs->points[indices.size () - 1].pc1, 0.25900065898895264, 1e-4);
   EXPECT_NEAR (pcs->points[indices.size () - 1].pc2, 0.17906941473484039, 1e-4);
@@ -1290,16 +1290,16 @@ TEST (PCL, PFHEstimation)
   EXPECT_NEAR (pfh_histogram[4],  3.65565 , 2e-2); // larger error w.r.t. considering all point pairs (feature bins=0,1,1 where 1 is middle, so angle of 0)
   EXPECT_NEAR (pfh_histogram[5],  0.178104, 1e-4);
   EXPECT_NEAR (pfh_histogram[6],  1.45284 , 1e-4);
-  EXPECT_NEAR (pfh_histogram[7],  3.60795 , 1e-4);
+  EXPECT_NEAR (pfh_histogram[7],  3.60666 , 1e-4);
   EXPECT_NEAR (pfh_histogram[8],  0.298959, 1e-4);
   EXPECT_NEAR (pfh_histogram[9],  0.295143, 1e-4);
   EXPECT_NEAR (pfh_histogram[10], 2.13474 , 1e-4);
   EXPECT_NEAR (pfh_histogram[11], 0.41218 , 1e-4);
   EXPECT_NEAR (pfh_histogram[12], 0.165382, 1e-4);
-  EXPECT_NEAR (pfh_histogram[13], 8.97282 , 1e-4);
+  EXPECT_NEAR (pfh_histogram[13], 8.97407 , 1e-4);
   EXPECT_NEAR (pfh_histogram[14], 0.306592, 1e-4);
   EXPECT_NEAR (pfh_histogram[15], 0.455432, 1e-4);
-  EXPECT_NEAR (pfh_histogram[16], 4.59645 , 1e-4);
+  EXPECT_NEAR (pfh_histogram[16], 4.5977 , 1e-4);
   EXPECT_NEAR (pfh_histogram[17], 0.393097, 1e-4);
   EXPECT_NEAR (pfh_histogram[18], 7.54668 , 1e-4);
   EXPECT_NEAR (pfh_histogram[19], 6.78336 , 1e-4);
@@ -1308,9 +1308,9 @@ TEST (PCL, PFHEstimation)
   EXPECT_NEAR (pfh_histogram[22], 18.4947 , 2e-2); // larger error w.r.t. considering all point pairs (feature bins=2,1,1 where 1 is middle, so angle of 0)
   EXPECT_NEAR (pfh_histogram[23], 1.96553 , 1e-4);
   EXPECT_NEAR (pfh_histogram[24], 8.04793 , 1e-4);
-  EXPECT_NEAR (pfh_histogram[25], 11.278  , 1e-4);
+  EXPECT_NEAR (pfh_histogram[25], 11.2793  , 1e-4);
   EXPECT_NEAR (pfh_histogram[26], 2.91714 , 1e-4);
-  
+
   // Sum of values should be 100
   EXPECT_NEAR (pfh_histogram.sum (), 100.0, 1e-2);
   //std::cerr << pfh_histogram << std::endl;
@@ -1351,8 +1351,8 @@ TEST (PCL, PFHEstimation)
     EXPECT_NEAR (pfhs->points[i].histogram[18], 0.265883  , 1e-4);
     EXPECT_NEAR (pfhs->points[i].histogram[19], 0.00127217, 1e-4);
     EXPECT_NEAR (pfhs->points[i].histogram[20], 0.148844  , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[21], 0.722593  , 1e-4);
-    EXPECT_NEAR (pfhs->points[i].histogram[22], 0.437622  , 1e-4);
+    EXPECT_NEAR (pfhs->points[i].histogram[21], 0.721316  , 1e-4);
+    EXPECT_NEAR (pfhs->points[i].histogram[22], 0.438899  , 1e-4);
     EXPECT_NEAR (pfhs->points[i].histogram[23], 0.22263   , 1e-4);
     EXPECT_NEAR (pfhs->points[i].histogram[24], 0.0216269 , 1e-4);
     EXPECT_NEAR (pfhs->points[i].histogram[25], 0.223902  , 1e-4);
@@ -1458,8 +1458,8 @@ TEST (PCL, FPFHEstimation)
   EXPECT_NEAR (fpfh_histogram[15], 16.8062,  1e-2);
   EXPECT_NEAR (fpfh_histogram[16], 16.2767,  1e-2);
   EXPECT_NEAR (fpfh_histogram[17], 12.251 ,  1e-2);
-  EXPECT_NEAR (fpfh_histogram[18], 10.3159,  1e-2);
-  EXPECT_NEAR (fpfh_histogram[19], 6.69369,  1e-2);
+  EXPECT_NEAR (fpfh_histogram[18], 10.354,  1e-2);
+  EXPECT_NEAR (fpfh_histogram[19], 6.65578,  1e-2);
   EXPECT_NEAR (fpfh_histogram[20], 6.1437 ,  1e-2);
   EXPECT_NEAR (fpfh_histogram[21], 5.83341,  1e-2);
   EXPECT_NEAR (fpfh_histogram[22], 1.08809,  1e-2);
@@ -1506,8 +1506,8 @@ TEST (PCL, FPFHEstimation)
   EXPECT_NEAR (fpfhs->points[0].histogram[15], 17.963 , 1e-2);
   EXPECT_NEAR (fpfhs->points[0].histogram[16], 18.2801, 1e-2);
   EXPECT_NEAR (fpfhs->points[0].histogram[17], 14.2766, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[18], 10.8376, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[19], 6.09557, 1e-2);
+  EXPECT_NEAR (fpfhs->points[0].histogram[18], 10.8542, 1e-2);
+  EXPECT_NEAR (fpfhs->points[0].histogram[19], 6.07925, 1e-2);
   EXPECT_NEAR (fpfhs->points[0].histogram[20], 5.28565, 1e-2);
   EXPECT_NEAR (fpfhs->points[0].histogram[21], 4.73887, 1e-2);
   EXPECT_NEAR (fpfhs->points[0].histogram[22], 0.56984, 1e-2);
@@ -1567,8 +1567,8 @@ TEST (PCL, FPFHEstimationOpenMP)
   EXPECT_NEAR (fpfhs->points[0].histogram[0],  1.58591, 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[1],  1.68365, 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[2],  6.71   , 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[3],  23.0717, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[4],  33.3844, 1e-3);
+  EXPECT_NEAR (fpfhs->points[0].histogram[3],  23.073, 1e-3);
+  EXPECT_NEAR (fpfhs->points[0].histogram[4],  33.3828, 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[5],  20.4002, 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[6],  7.31067, 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[7],  1.02635, 1e-3);
@@ -1582,10 +1582,10 @@ TEST (PCL, FPFHEstimationOpenMP)
   EXPECT_NEAR (fpfhs->points[0].histogram[15], 17.963 , 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[16], 18.2801, 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[17], 14.2766, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[18], 10.8376, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[19], 6.09557, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[20], 5.28565, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[21], 4.73887, 1e-3);
+  EXPECT_NEAR (fpfhs->points[0].histogram[18], 10.8542, 1e-3);
+  EXPECT_NEAR (fpfhs->points[0].histogram[19], 6.07925, 1e-3);
+  EXPECT_NEAR (fpfhs->points[0].histogram[20], 5.28991, 1e-3);
+  EXPECT_NEAR (fpfhs->points[0].histogram[21], 4.73438, 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[22], 0.56984, 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[23], 3.29826, 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[24], 5.28156, 1e-3);
@@ -1761,20 +1761,20 @@ TEST (PCL, RSDEstimation)
 
   // estimate
   rsd.compute (*rsds);
-  EXPECT_NEAR (rsds->points[0].r_min, 0.07594616711139679, 0.01);
-  EXPECT_NEAR (rsds->points[0].r_max, 0.10181228816509247, 0.01);
+  EXPECT_NEAR (rsds->points[0].r_min, 0.0484987, 0.01);
+  EXPECT_NEAR (rsds->points[0].r_max, 0.0729983, 0.01);
 
   // Optional: save histograms
   rsd.setSaveHistograms (true);
-  
+
   // estimate, try different number of divisions and larger radius for a more descriptive signature
   rsd.setNrSubdivisions (17);
   rsd.setRadiusSearch (0.06);
   rsd.compute (*rsds);
-  
+
   // Get histograms for each point
   std::vector<Eigen::MatrixXf>* histograms2D = rsd.getHistograms ();
-  
+
   // Transform list of histograms to a point cloud
   PointCloud<Histogram<17*17> >::Ptr histograms (new PointCloud<Histogram<17*17> > ());
   pcl::getFeaturePointCloud (*histograms2D, *histograms);
@@ -1866,7 +1866,7 @@ TEST (PCL, IntensityGradientEstimation)
     float gz = (-nz * nx) * tmpx + (-nz * ny) * tmpy + (1 - nz * nz) * tmpz;
 
     // Compare the estimates to the derived values.
-    const float tolerance = 0.1;
+    const float tolerance = 0.11;
     EXPECT_NEAR (g_est[0], gx, tolerance);
     EXPECT_NEAR (g_est[1], gy, tolerance);
     EXPECT_NEAR (g_est[2], gz, tolerance);
@@ -1955,9 +1955,9 @@ TEST (PCL, SpinImageEstimation)
 
   EXPECT_NEAR (spin_images->points[100].histogram[0], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[12], 0, 1e-5);
-  EXPECT_NEAR (spin_images->points[100].histogram[24], 0.132141, 1e-5);
+  EXPECT_NEAR (spin_images->points[100].histogram[24], 0.132139, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[36], 0, 1e-5);
-  EXPECT_NEAR (spin_images->points[100].histogram[48], 0.908802, 1e-5);
+  EXPECT_NEAR (spin_images->points[100].histogram[48], 0.908814, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[60], 0.63875, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[72], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[84], 0, 1e-5);
@@ -2025,10 +2025,10 @@ TEST (PCL, SpinImageEstimation)
 
   EXPECT_NEAR (spin_images->points[100].histogram[0], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[12], 0, 1e-5);
-  EXPECT_NEAR (spin_images->points[100].histogram[24], 0.132141, 1e-5);
+  EXPECT_NEAR (spin_images->points[100].histogram[24], 0.132139, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[36], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[48], 0, 1e-5);
-  EXPECT_NEAR (spin_images->points[100].histogram[60], 0.388027, 1e-5);
+  EXPECT_NEAR (spin_images->points[100].histogram[60], 0.388022, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[72], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[84], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[96], 0.468881, 1e-5);
