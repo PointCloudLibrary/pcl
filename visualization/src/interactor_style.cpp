@@ -197,21 +197,21 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-boost::signals2::connection 
+boost::signals2::connection
 pcl::visualization::PCLVisualizerInteractorStyle::registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> callback)
 {
   return (mouse_signal_.connect (callback));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-boost::signals2::connection 
+boost::signals2::connection
 pcl::visualization::PCLVisualizerInteractorStyle::registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
 {
   return (keyboard_signal_.connect (callback));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-boost::signals2::connection 
+boost::signals2::connection
 pcl::visualization::PCLVisualizerInteractorStyle::registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> callback)
 {
   return (point_picking_signal_.connect (callback));
@@ -275,7 +275,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     }
   }
 
-  // ---[ Check the rest of the key codes 
+  // ---[ Check the rest of the key codes
 
   // Switch between point color/geometry handlers
   if (Interactor->GetKeyCode () >= '0' && Interactor->GetKeyCode () <= '9')
@@ -434,7 +434,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
           pcl::console::print_info ("\n");
         }
       }
-      
+
       break;
     }
 
@@ -473,7 +473,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       int *win_pos = Interactor->GetRenderWindow ()->GetPosition ();
       int *win_size = Interactor->GetRenderWindow ()->GetSize ();
       ofs_cam << clip[0]  << "," << clip[1]  << "/" << focal[0] << "," << focal[1] << "," << focal[2] << "/" <<
-                 pos[0]   << "," << pos[1]   << "," << pos[2]   << "/" << view[0]  << "," << view[1]  << "," << view[2] << "/" << 
+                 pos[0]   << "," << pos[1]   << "," << pos[2]   << "/" << view[0]  << "," << view[1]  << "," << view[2] << "/" <<
                  cam->GetViewAngle () / 180.0 * M_PI  << "/" << win_size[0] << "," << win_size[1] << "/" << win_pos[0] << "," << win_pos[1]
               << endl;
       ofs_cam.close ();
@@ -612,9 +612,9 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       else
         Superclass::OnKeyDown ();
       break;
-    } 
+    }
 
-    // Display a grid/scale over the screen               
+    // Display a grid/scale over the screen
     case 'g': case 'G':
     {
       if (!grid_enabled_)
@@ -624,7 +624,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         grid_enabled_ = true;
       }
       else
-      { 
+      {
         CurrentRenderer->RemoveViewProp (grid_actor_);
         grid_enabled_ = false;
       }
@@ -636,12 +636,12 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       vtkSmartPointer<vtkCamera> cam = CurrentRenderer->GetActiveCamera ();
       int flag = cam->GetParallelProjection ();
       cam->SetParallelProjection (!flag);
- 
+
       CurrentRenderer->SetActiveCamera (cam);
       CurrentRenderer->Render ();
       break;
     }
-    // Display a LUT actor on screen               
+    // Display a LUT actor on screen
     case 'u': case 'U':
     {
       CloudActorMap::iterator it;
@@ -660,7 +660,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         lut_enabled_ = true;
       }
       else
-      { 
+      {
         CurrentRenderer->RemoveActor (lut_actor_);
         lut_enabled_ = false;
       }
@@ -676,26 +676,12 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         Superclass::OnKeyDown ();
         break;
       }
-      // Get all the data
-      double bounds[6];
-      double focal[3];
-      CurrentRenderer->ComputeVisiblePropBounds (bounds);
-      focal[0] = (bounds[0] + bounds[1]) / 2.0;
-      focal[1] = (bounds[2] + bounds[3]) / 2.0;
-      focal[2] = (bounds[4] + bounds[5]) / 2.0;
 
       vtkSmartPointer<vtkCamera> cam = CurrentRenderer->GetActiveCamera ();
-      double view[3];
-      cam->SetFocalPoint (focal);
-      cam->SetPosition (0 - .25 * focal[0], 0 - .25 * focal[1], 0 - .25 * focal[2]);
-      cam->GetViewUp (view);
-
-      // Dataset negative on Z?
-      if (focal[2] > 0)
-        for (int i = 0; i < 3; i++) view[i] *= -1;
-      cam->SetViewUp (view[0], view[1], view[2]);
+      cam->SetPosition (0, 0, 0);
+      cam->SetFocalPoint (0, 0, 1);
+      cam->SetViewUp (0, -1, 0);
       CurrentRenderer->SetActiveCamera (cam);
-      CurrentRenderer->ResetCameraClippingRange (bounds);
       CurrentRenderer->Render ();
       break;
     }
@@ -724,7 +710,7 @@ void
 pcl::visualization::PCLVisualizerInteractorStyle::OnKeyUp ()
 {
   KeyboardEvent event (false, Interactor->GetKeySym (), Interactor->GetKeyCode (), Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey ());
-  keyboard_signal_ (event);  
+  keyboard_signal_ (event);
   Superclass::OnKeyUp ();
 }
 
@@ -786,7 +772,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnMiddleButtonDown ()
   {
     MouseEvent event (MouseEvent::MouseDblClick, MouseEvent::MiddleButton, x, y, Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey ());
     mouse_signal_ (event);
-  }  
+  }
   Superclass::OnMiddleButtonDown ();
 }
 
@@ -816,7 +802,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnRightButtonDown ()
   {
     MouseEvent event (MouseEvent::MouseDblClick, MouseEvent::RightButton, x, y, Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey ());
     mouse_signal_ (event);
-  }  
+  }
   Superclass::OnRightButtonDown ();
 }
 
@@ -897,7 +883,7 @@ pcl::visualization::PCLHistogramVisualizerInteractorStyle::OnKeyDown ()
   FindPokedRenderer (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
 
   //fprintf (stderr, "Key sym: %s\n", Interactor->GetKeySym ());
-  // ---[ Check the rest of the key codes 
+  // ---[ Check the rest of the key codes
   switch (Interactor->GetKeyCode ())
   {
     case 'q': case 'Q':
