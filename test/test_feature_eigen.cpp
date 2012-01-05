@@ -1807,7 +1807,7 @@ TEST (PCL, SpinImageEstimationEigen)
   EXPECT_NEAR (spin_images->points (100, 12), 0, 1e-5);
   EXPECT_NEAR (spin_images->points (100, 24), 0.132126, 1e-5);
   EXPECT_NEAR (spin_images->points (100, 36), 0, 1e-5);
-  EXPECT_NEAR (spin_images->points (100, 48), 0.908802, 1e-5);
+  EXPECT_NEAR (spin_images->points (100, 48), 0.9087836, 1e-5);
   EXPECT_NEAR (spin_images->points (100, 60), 0.63875, 1e-5);
   EXPECT_NEAR (spin_images->points (100, 72), 0, 1e-5);
   EXPECT_NEAR (spin_images->points (100, 84), 0, 1e-5);
