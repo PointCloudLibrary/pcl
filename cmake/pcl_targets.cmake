@@ -205,6 +205,55 @@ macro(PCL_ADD_EXECUTABLE _name _component)
         COMPONENT ${_component})
 endmacro(PCL_ADD_EXECUTABLE)
 
+###############################################################################
+# Add an executable target as a bundle when available and required
+# _name The executable name.
+# _component The part of PCL that this library belongs to.
+# _bundle 
+# ARGN the source files for the library.
+macro(PCL_ADD_EXECUTABLE_OPT_BUNDLE _name _component)
+if(APPLE AND VTK_USE_COCOA)
+    add_executable(${_name} MACOSX_BUNDLE ${ARGN})
+else(APPLE AND VTK_USE_COCOA)
+    add_executable(${_name} ${ARGN})
+endif(APPLE AND VTK_USE_COCOA)
+
+    # must link explicitly against boost.
+    if(UNIX AND NOT ANDROID_NDK)
+      target_link_libraries(${_name} ${Boost_LIBRARIES} pthread)
+    else()
+      target_link_libraries(${_name} ${Boost_LIBRARIES})
+    endif()
+    #
+    # Only link if needed
+    if(WIN32 AND MSVC)
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX})
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
+    elseif(__COMPILER_PATHSCALE)
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS -mp)
+    else()
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
+    endif()
+    #
+    if(USE_PROJECT_FOLDERS)
+      set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
+    endif(USE_PROJECT_FOLDERS)
+
+    set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
+#    message(STATUS "COMMAND ${CMAKE_COMMAND} -E create_symlink \"${_name}.app/Contents/MacOS/${_name}\" \"${_name}\"")
+if(APPLE AND VTK_USE_COCOA)
+#     add_custom_command(TARGET ${_name}
+#                         POST_BUILD
+#                         COMMAND ${CMAKE_COMMAND} -E create_symlink ${PCL_OUTPUT_BIN_DIR}/${_name}.app/Contents/MacOS/${_name} ${PCL_OUTPUT_BIN_DIR}/${_name}
+# #			WORKING_DIRECTORY 
+#                         COMMENT "Creating an alias for ${_name}.app to ${_name}")
+    install(TARGETS ${_name} BUNDLE DESTINATION ${BIN_INSTALL_DIR} COMPONENT ${_component})
+else(APPLE AND VTK_USE_COCOA)
+    install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT ${_component})
+endif(APPLE AND VTK_USE_COCOA)
+endmacro(PCL_ADD_EXECUTABLE_OPT_BUNDLE)
+
 
 ###############################################################################
 # Add an executable target.

@@ -1,4 +1,4 @@
-PCL_ADD_EXECUTABLE(pcd_viewer ${SUBSYS_NAME} pcd_viewer.cpp)
+PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcd_viewer ${SUBSYS_NAME} pcd_viewer.cpp)
 target_link_libraries(pcd_viewer pcl_common pcl_io pcl_kdtree pcl_range_image pcl_visualization)
     
 PCL_ADD_EXECUTABLE(timed_trigger_test ${SUBSYS_NAME} timed_trigger_test.cpp)
