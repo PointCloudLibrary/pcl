@@ -36,53 +36,59 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_H_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_H_
+#ifndef PCL_REGISTRATION_TRANSFORMATION_VALIDATION_H_
+#define PCL_REGISTRATION_TRANSFORMATION_VALIDATION_H_
 
-#include <pcl/registration/transformation_estimation.h>
-#include <pcl/registration/transformation_estimation_lm.h>
-#include <pcl/registration/warp_point_rigid.h>
+#include <pcl/correspondence.h>
+#include <pcl/features/feature.h>
+#include <pcl/common/transforms.h>
+#include <pcl/registration/correspondence_types.h>
 
 namespace pcl
 {
   namespace registration
   {
-    /** @b TransformationEstimationPointToPlane uses Levenberg Marquardt optimization to find the
-      * transformation that minimizes the point-to-plane distance between the given correspondences.
+    /** \brief TransformationValidation represents the base class for methods
+      * that validate the correctness of a transformation found through \ref TransformationEstimation.
       *
-      * \author Michael Dixon
+      * The inputs for a validation estimation can take any or all of the following:
+      *
+      *   - source point cloud
+      *   - target point cloud
+      *   - estimated transformation between source and target
+      *
+      * The output is in the form of a score or a confidence measure.
+      *
+      * \author Radu B. Rusu
       * \ingroup registration
       */
     template <typename PointSource, typename PointTarget>
-    class TransformationEstimationPointToPlane : public TransformationEstimationLM<PointSource, PointTarget>
+    class TransformationValidation
     {
       public:
-        typedef boost::shared_ptr<TransformationEstimationPointToPlane<PointSource, PointTarget> > Ptr;
-        typedef pcl::PointCloud<PointSource> PointCloudSource;
-        typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
-        typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
-        typedef pcl::PointCloud<PointTarget> PointCloudTarget;
-        typedef PointIndices::Ptr PointIndicesPtr;
-        typedef PointIndices::ConstPtr PointIndicesConstPtr;
+        TransformationValidation () {};
+        virtual ~TransformationValidation () {};
 
-
-        TransformationEstimationPointToPlane () {};
-        virtual ~TransformationEstimationPointToPlane () {};
-
-      protected:
+        /** \brief Validate the given transformation with respect to the input cloud data, and return a score.
+          *
+          * \param[in] cloud_src the source point cloud dataset
+          * \param[in] cloud_tgt the target point cloud dataset
+          * \param[out] transformation_matrix the resultant transformation matrix
+          *
+          * \return the score or confidence measure for the given
+          * transformation_matrix with respect to the input data
+          */
         virtual double
-        computeDistance (const PointSource &p_src, const PointTarget &p_tgt)
-        { 
-          // Compute the point-to-plane distance
-          Vector4fMapConst s = p_src.getVector4fMap ();
-          Vector4fMapConst t = p_tgt.getVector4fMap ();
-          Vector4fMapConst n = p_tgt.getNormalVector4fMap ();
-          return ((s - t).dot (n));
-        }
+        validateTransformation (
+            const pcl::PointCloud<PointSource> &cloud_src,
+            const pcl::PointCloud<PointTarget> &cloud_tgt,
+            const Eigen::Matrix4f &transformation_matrix) = 0;
 
+
+        typedef boost::shared_ptr<TransformationValidation<PointSource, PointTarget> > Ptr;
+        typedef boost::shared_ptr<const TransformationValidation<PointSource, PointTarget> > ConstPtr;
     };
   }
 }
 
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_H_ */
-
+#endif /* PCL_REGISTRATION_TRANSFORMATION_VALIDATION_H_ */

@@ -65,9 +65,9 @@ namespace pcl
         virtual ~TransformationEstimation () {};
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud.
-          * \param cloud_src the source point cloud dataset
-          * \param cloud_tgt the target point cloud dataset
-          * \param transformation_matrix the resultant transformation matrix
+          * \param[in] cloud_src the source point cloud dataset
+          * \param[in] cloud_tgt the target point cloud dataset
+          * \param[out] transformation_matrix the resultant transformation matrix
           */
         virtual void
         estimateRigidTransformation (
@@ -76,10 +76,10 @@ namespace pcl
             Eigen::Matrix4f &transformation_matrix) = 0;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud.
-          * \param cloud_src the source point cloud dataset
-          * \param indices_src the vector of indices describing the points of interest in \a cloud_src
-          * \param cloud_tgt the target point cloud dataset
-          * \param transformation_matrix the resultant transformation matrix
+          * \param[in] cloud_src the source point cloud dataset
+          * \param[in] indices_src the vector of indices describing the points of interest in \a cloud_src
+          * \param[in] cloud_tgt the target point cloud dataset
+          * \param[out] transformation_matrix the resultant transformation matrix
           */
         virtual void
         estimateRigidTransformation (
@@ -89,11 +89,11 @@ namespace pcl
             Eigen::Matrix4f &transformation_matrix) = 0;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud.
-          * \param cloud_src the source point cloud dataset
-          * \param indices_src the vector of indices describing the points of interest in \a cloud_src
-          * \param cloud_tgt the target point cloud dataset
-          * \param indices_tgt the vector of indices describing the correspondences of the interst points from \a indices_src
-          * \param transformation_matrix the resultant transformation matrix
+          * \param[in] cloud_src the source point cloud dataset
+          * \param[in] indices_src the vector of indices describing the points of interest in \a cloud_src
+          * \param[in] cloud_tgt the target point cloud dataset
+          * \param[in] indices_tgt the vector of indices describing the correspondences of the interst points from \a indices_src
+          * \param[out] transformation_matrix the resultant transformation matrix
           */
         virtual void
         estimateRigidTransformation (
@@ -104,10 +104,10 @@ namespace pcl
             Eigen::Matrix4f &transformation_matrix) = 0;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud.
-          * \param cloud_src the source point cloud dataset
-          * \param cloud_tgt the target point cloud dataset
-          * \param correspondences the vector of correspondences between source and target point cloud
-          * \param transformation_matrix the resultant transformation matrix
+          * \param[in] cloud_src the source point cloud dataset
+          * \param[in] cloud_tgt the target point cloud dataset
+          * \param[in] correspondences the vector of correspondences between source and target point cloud
+          * \param[out] transformation_matrix the resultant transformation matrix
           */
         virtual void
         estimateRigidTransformation (

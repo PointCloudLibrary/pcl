@@ -81,11 +81,11 @@ namespace pcl
             Eigen::Matrix4f &transformation_matrix);
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using LM.
-         * \param[in] cloud_src the source point cloud dataset
-         * \param[in] indices_src the vector of indices describing the points of interest in \a cloud_src
-         * \param[in] cloud_tgt the target point cloud dataset
-         * \param[out] transformation_matrix the resultant transformation matrix
-         */
+          * \param[in] cloud_src the source point cloud dataset
+          * \param[in] indices_src the vector of indices describing the points of interest in \a cloud_src
+          * \param[in] cloud_tgt the target point cloud dataset
+          * \param[out] transformation_matrix the resultant transformation matrix
+          */
         inline void
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
@@ -94,13 +94,13 @@ namespace pcl
             Eigen::Matrix4f &transformation_matrix);
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using LM.
-         * \param[in] cloud_src the source point cloud dataset
-         * \param[in] indices_src the vector of indices describing the points of interest in \a cloud_src
-         * \param[in] cloud_tgt the target point cloud dataset
-         * \param[in] indices_tgt the vector of indices describing the correspondences of the interst points from 
-         * \a indices_src
-         * \param[out] transformation_matrix the resultant transformation matrix
-         */
+          * \param[in] cloud_src the source point cloud dataset
+          * \param[in] indices_src the vector of indices describing the points of interest in \a cloud_src
+          * \param[in] cloud_tgt the target point cloud dataset
+          * \param[in] indices_tgt the vector of indices describing the correspondences of the interst points from 
+          * \a indices_src
+          * \param[out] transformation_matrix the resultant transformation matrix
+          */
         inline void
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
@@ -110,11 +110,11 @@ namespace pcl
             Eigen::Matrix4f &transformation_matrix);
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using LM.
-         * \param[in] cloud_src the source point cloud dataset
-         * \param[in] cloud_tgt the target point cloud dataset
-         * \param[in] correspondences the vector of correspondences between source and target point cloud
-         * \param[out] transformation_matrix the resultant transformation matrix
-         */
+          * \param[in] cloud_src the source point cloud dataset
+          * \param[in] cloud_tgt the target point cloud dataset
+          * \param[in] correspondences the vector of correspondences between source and target point cloud
+          * \param[out] transformation_matrix the resultant transformation matrix
+          */
         inline void
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
@@ -133,13 +133,13 @@ namespace pcl
 
       protected:
         /** \brief Compute the distance between a source point and its corresponding target point
-         * \param p_src The source point
-         * \param p_tgt The target point
-         * \return The distance between \a p_src and \a p_tgt
-         *
+          * \param[in] p_src The source point
+          * \param[in] p_tgt The target point
+          * \return The distance between \a p_src and \a p_tgt
+          *
          * \note A different distance function can be defined by creating a subclass of TransformationEstimationLM and 
-         * overriding this method. (See \a TransformationEstimationPointToPlane)
-         */
+          * overriding this method. (See \a TransformationEstimationPointToPlane)
+          */
         virtual double 
         computeDistance (const PointSource &p_src, const PointTarget &p_tgt)
         {
@@ -193,20 +193,20 @@ namespace pcl
           using Functor<double>::m_values;
 
           /** Functor constructor
-           * \param n Number of unknowns to be solved
-           * \param m Number of values
-           * \param estimator pointer to the estimator object
-           * \param distance distance computation function pointer
-           */
+            * \param[in] n Number of unknowns to be solved
+            * \param[in] m Number of values
+            * \param[in,out] estimator pointer to the estimator object
+            */
           OptimizationFunctor (int n, int m, TransformationEstimationLM<PointSource, PointTarget> *estimator) : 
             Functor<double> (n,m), estimator_ (estimator) {}
 
           /** Fill fvec from x. For the current state vector x fill the f values
-           * \param x state vector
-           * \param fvec f values vector
-           * \return 0
-           */
-          int operator () (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const;
+            * \param[in] x state vector
+            * \param[out] fvec f values vector
+            * \return 0
+            */
+          int 
+          operator () (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const;
 
           TransformationEstimationLM<PointSource, PointTarget> *estimator_;
         };
@@ -216,17 +216,16 @@ namespace pcl
           using Functor<double>::m_values;
 
           /** Functor constructor
-            * \param n Number of unknowns to be solved
-            * \param m Number of values
-            * \param estimator pointer to the estimator object
-            * \param distance distance computation function pointer
+            * \param[in] n Number of unknowns to be solved
+            * \param[in] m Number of values
+            * \param[in,out] estimator pointer to the estimator object
             */
           OptimizationFunctorWithIndices (int n, int m, TransformationEstimationLM *estimator) :
             Functor<double> (n,m), estimator_(estimator) {}
 
           /** Fill fvec from x. For the current state vector x fill the f values
-            * \param x state vector
-            * \param fvec f values vector
+            * \param[in] x state vector
+            * \param[out] fvec f values vector
             * \return 0
             */
           int operator () (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const;
