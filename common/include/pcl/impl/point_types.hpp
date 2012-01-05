@@ -116,7 +116,7 @@ namespace pcl
   template <typename PointT> inline bool
   isFinite (const PointT &pt)
   {
-    return hasValidXYZ (pt);
+    return !(!pcl_isfinite (pt.x) || !pcl_isfinite (pt.y) || !pcl_isfinite (pt.z))
   }
 
 #define PCL_ADD_POINT4D \
@@ -1097,12 +1097,6 @@ namespace pcl
   euclideanDistance (const PointType1& p1, const PointType2& p2)
   {
     return (sqrtf (squaredEuclideanDistance (p1, p2)));
-  }
-
-  template <typename PointType> inline bool
-  hasValidXYZ (const PointType& p)
-  {
-    return (pcl_isfinite (p.x) && pcl_isfinite (p.y) && pcl_isfinite (p.z));
   }
 
 } // End namespace
