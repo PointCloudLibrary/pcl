@@ -43,6 +43,8 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
+#include "pcl/common/centroid.h"
+
 using namespace pcl;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -132,11 +134,11 @@ TEST (PCL, Eigen)
   Eigen::Vector3f val;
 
   eigen33 (mat, vec, val);
-  
+
   EXPECT_NEAR (fabs (vec (0, 0)), 0.168841, 1e-4); EXPECT_NEAR (fabs (vec (0, 1)), 0.161623, 1e-4); EXPECT_NEAR (fabs (vec (0, 2)), 0.972302, 1e-4);
   EXPECT_NEAR (fabs (vec (1, 0)), 0.451632, 1e-4); EXPECT_NEAR (fabs (vec (1, 1)), 0.889498, 1e-4); EXPECT_NEAR (fabs (vec (1, 2)), 0.0694328, 1e-4);
   EXPECT_NEAR (fabs (vec (2, 0)), 0.876082, 1e-4); EXPECT_NEAR (fabs (vec (2, 1)), 0.4274,   1e-4); EXPECT_NEAR (fabs (vec (2, 2)), 0.223178, 1e-4);
-  
+
   EXPECT_NEAR (val (0), 2.86806e-06, 1e-4); EXPECT_NEAR (val (1), 0.00037165, 1e-4); EXPECT_NEAR (val (2), 0.000556858, 1e-4);
 
   Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> eig (mat);
@@ -144,13 +146,13 @@ TEST (PCL, Eigen)
   EXPECT_NEAR (eig.eigenvectors () (0, 0), -0.168841, 1e-4); EXPECT_NEAR (eig.eigenvectors () (0, 1),  0.161623, 1e-4); EXPECT_NEAR (eig.eigenvectors () (0, 2),  0.972302, 1e-4);
   EXPECT_NEAR (eig.eigenvectors () (1, 0), -0.451632, 1e-4); EXPECT_NEAR (eig.eigenvectors () (1, 1), -0.889498, 1e-4); EXPECT_NEAR (eig.eigenvectors () (1, 2),  0.0694328, 1e-4);
   EXPECT_NEAR (eig.eigenvectors () (2, 0), -0.876083, 1e-4); EXPECT_NEAR (eig.eigenvectors () (2, 1),  0.4274,   1e-4); EXPECT_NEAR (eig.eigenvectors () (2, 2), -0.223178, 1e-4);
-  
+
   EXPECT_NEAR (eig.eigenvalues () (0), 2.86806e-06, 1e-4); EXPECT_NEAR (eig.eigenvalues () (1), 0.00037165, 1e-4); EXPECT_NEAR (eig.eigenvalues () (2), 0.000556858, 1e-4);
-  
+
   Eigen::Vector3f eivals = mat.selfadjointView<Eigen::Lower>().eigenvalues ();
 
   EXPECT_NEAR (eivals (0), 2.86806e-06, 1e-4); EXPECT_NEAR (eivals (1), 0.00037165, 1e-4); EXPECT_NEAR (eivals (2), 0.000556858, 1e-4);
-  
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -161,14 +163,14 @@ TEST (PCL, PointCloud)
   cloud.height = 480;
 
   EXPECT_EQ (cloud.isOrganized (), true);
-  
+
   cloud.height = 1;
   EXPECT_EQ (cloud.isOrganized (), false);
-  
+
   cloud.width = 10;
   for (uint32_t i = 0; i < cloud.width*cloud.height; ++i)
     cloud.points.push_back (PointXYZ (3 * i + 0, 3 * i + 1, 3 * i + 2));
-    
+
   Eigen::MatrixXf mat_xyz1 = cloud.getMatrixXfMap ();
   EXPECT_EQ (mat_xyz1.cols (), 4);
   EXPECT_EQ (mat_xyz1.rows (), cloud.width);
@@ -223,22 +225,22 @@ TEST (PCL, PointCloud)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PointTypes)
 {
-  EXPECT_EQ (sizeof (PointXYZ), 16); 
+  EXPECT_EQ (sizeof (PointXYZ), 16);
   EXPECT_EQ (__alignof (PointXYZ), 16);
-  EXPECT_EQ (sizeof (PointXYZI), 32); 
+  EXPECT_EQ (sizeof (PointXYZI), 32);
   EXPECT_EQ (__alignof (PointXYZI), 16);
-  EXPECT_EQ (sizeof (PointXYZRGB), 32); 
+  EXPECT_EQ (sizeof (PointXYZRGB), 32);
   EXPECT_EQ (__alignof (PointXYZRGB), 16);
-  EXPECT_EQ (sizeof (PointXYZRGBA), 32); 
+  EXPECT_EQ (sizeof (PointXYZRGBA), 32);
   EXPECT_EQ (__alignof (PointXYZRGBA), 16);
-  EXPECT_EQ (sizeof (Normal), 32); 
+  EXPECT_EQ (sizeof (Normal), 32);
   EXPECT_EQ (__alignof (Normal), 16);
-  EXPECT_EQ (sizeof (PointNormal), 48); 
+  EXPECT_EQ (sizeof (PointNormal), 48);
   EXPECT_EQ (__alignof (PointNormal), 16);
-  EXPECT_EQ (sizeof (PointXYZRGBNormal), 48); 
+  EXPECT_EQ (sizeof (PointXYZRGBNormal), 48);
   EXPECT_EQ (__alignof (PointXYZRGBNormal), 16);
 }
- 
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, Intersections)
 {
@@ -257,6 +259,565 @@ TEST (PCL, Intersections)
   yline << 0.492706,  0.164196, 1.23192, 0.598704,  0.0442014, 0.411328;
   EXPECT_EQ ((pcl::lineWithLineIntersection (zline, yline, pt)), false);
   //intersection: [ 3.06416e+08    15.2237     3.06416e+08       4.04468e-34 ]
+}
+
+TEST (PCL, compute3DCentroid)
+{
+  std::vector<int> indices;
+  PointXYZ point;
+  PointCloud<PointXYZ> cloud;
+  Eigen::Vector4f centroid;
+
+  // test empty cloud which is dense
+  cloud.is_dense = true;
+  EXPECT_EQ (compute3DCentroid (cloud, centroid), 0);
+
+  // test empty cloud non_dense
+  cloud.is_dense = false;
+  EXPECT_EQ (compute3DCentroid (cloud, centroid), 0);
+
+  // test non-empty cloud non_dense
+  point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
+  cloud.push_back (point);
+  EXPECT_EQ (compute3DCentroid (cloud, centroid), 0);
+
+  // test non-empty cloud non_dense
+  point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
+  cloud.push_back (point);
+  indices.push_back (1);
+  EXPECT_EQ (compute3DCentroid (cloud, indices, centroid), 0);
+
+  cloud.clear ();
+  indices.clear ();
+  for (point.x = -1; point.x < 2; point.x += 2)
+  {
+    for (point.y = -1; point.y < 2; point.y += 2)
+    {
+      for (point.z = -1; point.z < 2; point.z += 2)
+      {
+        cloud.push_back (point);
+      }
+    }
+  }
+  cloud.is_dense = true;
+
+  // eight points with (0, 0, 0) as centroid and covarmat (1, 0, 0, 0, 1, 0, 0, 0, 1)
+  centroid [0] = -100;
+  centroid [1] = -200;
+  centroid [2] = -300;
+
+  EXPECT_EQ (compute3DCentroid (cloud, centroid), 8);
+  EXPECT_EQ (centroid [0], 0);
+  EXPECT_EQ (centroid [1], 0);
+  EXPECT_EQ (centroid [2], 0);
+
+  centroid [0] = -100;
+  centroid [1] = -200;
+  centroid [2] = -300;
+  indices.resize (4); // only positive y values
+  indices [0] = 2;
+  indices [1] = 3;
+  indices [2] = 6;
+  indices [3] = 7;
+  EXPECT_EQ (compute3DCentroid (cloud, indices, centroid), 4);
+
+  EXPECT_EQ (centroid [0], 0.0);
+  EXPECT_EQ (centroid [1], 1.0);
+  EXPECT_EQ (centroid [2], 0.0);
+
+  point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
+  cloud.push_back (point);
+  cloud.is_dense = false;
+
+  centroid [0] = -100;
+  centroid [1] = -200;
+  centroid [2] = -300;
+  EXPECT_EQ (compute3DCentroid (cloud, centroid), 8);
+
+  EXPECT_EQ (centroid [0], 0);
+  EXPECT_EQ (centroid [1], 0);
+  EXPECT_EQ (centroid [2], 0);
+
+  centroid [0] = -100;
+  centroid [1] = -200;
+  centroid [2] = -300;
+  indices [0] = 2;
+  indices [1] = 3;
+  indices [2] = 6;
+  indices [3] = 7;
+  indices.push_back (8); // add the NaN
+  EXPECT_EQ (compute3DCentroid (cloud, indices, centroid), 4);
+
+  EXPECT_EQ (centroid [0], 0.0);
+  EXPECT_EQ (centroid [1], 1.0);
+  EXPECT_EQ (centroid [2], 0.0);
+}
+
+TEST (PCL, computeCovarianceMatrix)
+{
+  PointCloud<PointXYZ> cloud;
+  PointXYZ point;
+  std::vector <int> indices;
+  Eigen::Vector4f centroid;
+  Eigen::Matrix3f covariance_matrix;
+
+  centroid [0] = 0;
+  centroid [1] = 0;
+  centroid [2] = 0;
+
+  // test empty cloud which is dense
+  cloud.is_dense = true;
+  EXPECT_EQ (computeCovarianceMatrix (cloud, centroid, covariance_matrix), 0);
+
+  // test empty cloud non_dense
+  cloud.is_dense = false;
+  EXPECT_EQ (computeCovarianceMatrix (cloud, centroid, covariance_matrix), 0);
+
+  // test non-empty cloud non_dense
+  point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
+  cloud.push_back (point);
+  EXPECT_EQ (computeCovarianceMatrix (cloud, centroid, covariance_matrix), 0);
+
+  // test non-empty cloud non_dense
+  point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
+  cloud.push_back (point);
+  indices.push_back (1);
+  EXPECT_EQ (computeCovarianceMatrix (cloud, indices, centroid, covariance_matrix), 0);
+
+  cloud.clear ();
+  indices.clear ();
+  for (point.x = -1; point.x < 2; point.x += 2)
+  {
+    for (point.y = -1; point.y < 2; point.y += 2)
+    {
+      for (point.z = -1; point.z < 2; point.z += 2)
+      {
+        cloud.push_back (point);
+      }
+    }
+  }
+  cloud.is_dense = true;
+
+  // eight points with (0, 0, 0) as centroid and covarmat (1, 0, 0, 0, 1, 0, 0, 0, 1)
+
+  covariance_matrix << -100, -101, -102, -110, -111, -112, -120, -121, -122;
+  centroid [0] = 0;
+  centroid [1] = 0;
+  centroid [2] = 0;
+
+  EXPECT_EQ (computeCovarianceMatrix (cloud, centroid, covariance_matrix), 8);
+  EXPECT_EQ (covariance_matrix (0, 0), 8);
+  EXPECT_EQ (covariance_matrix (0, 1), 0);
+  EXPECT_EQ (covariance_matrix (0, 2), 0);
+  EXPECT_EQ (covariance_matrix (1, 0), 0);
+  EXPECT_EQ (covariance_matrix (1, 1), 8);
+  EXPECT_EQ (covariance_matrix (1, 2), 0);
+  EXPECT_EQ (covariance_matrix (2, 0), 0);
+  EXPECT_EQ (covariance_matrix (2, 1), 0);
+  EXPECT_EQ (covariance_matrix (2, 2), 8);
+
+  indices.resize (4); // only positive y values
+  indices [0] = 2;
+  indices [1] = 3;
+  indices [2] = 6;
+  indices [3] = 7;
+  covariance_matrix << -100, -101, -102, -110, -111, -112, -120, -121, -122;
+  centroid [1] = 1;
+
+  EXPECT_EQ (computeCovarianceMatrix (cloud, indices, centroid, covariance_matrix), 4);
+  EXPECT_EQ (covariance_matrix (0, 0), 4);
+  EXPECT_EQ (covariance_matrix (0, 1), 0);
+  EXPECT_EQ (covariance_matrix (0, 2), 0);
+  EXPECT_EQ (covariance_matrix (1, 0), 0);
+  EXPECT_EQ (covariance_matrix (1, 1), 0);
+  EXPECT_EQ (covariance_matrix (1, 2), 0);
+  EXPECT_EQ (covariance_matrix (2, 0), 0);
+  EXPECT_EQ (covariance_matrix (2, 1), 0);
+  EXPECT_EQ (covariance_matrix (2, 2), 4);
+
+  point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
+  cloud.push_back (point);
+  cloud.is_dense = false;
+  covariance_matrix << -100, -101, -102, -110, -111, -112, -120, -121, -122;
+  centroid [1] = 0;
+
+  EXPECT_EQ (computeCovarianceMatrix (cloud, centroid, covariance_matrix), 8);
+  EXPECT_EQ (covariance_matrix (0, 0), 8);
+  EXPECT_EQ (covariance_matrix (0, 1), 0);
+  EXPECT_EQ (covariance_matrix (0, 2), 0);
+  EXPECT_EQ (covariance_matrix (1, 0), 0);
+  EXPECT_EQ (covariance_matrix (1, 1), 8);
+  EXPECT_EQ (covariance_matrix (1, 2), 0);
+  EXPECT_EQ (covariance_matrix (2, 0), 0);
+  EXPECT_EQ (covariance_matrix (2, 1), 0);
+  EXPECT_EQ (covariance_matrix (2, 2), 8);
+
+  indices.push_back (8); // add the NaN
+  covariance_matrix << -100, -101, -102, -110, -111, -112, -120, -121, -122;
+  centroid [1] = 1;
+
+  EXPECT_EQ (computeCovarianceMatrix (cloud, indices, centroid, covariance_matrix), 4);
+  EXPECT_EQ (covariance_matrix (0, 0), 4);
+  EXPECT_EQ (covariance_matrix (0, 1), 0);
+  EXPECT_EQ (covariance_matrix (0, 2), 0);
+  EXPECT_EQ (covariance_matrix (1, 0), 0);
+  EXPECT_EQ (covariance_matrix (1, 1), 0);
+  EXPECT_EQ (covariance_matrix (1, 2), 0);
+  EXPECT_EQ (covariance_matrix (2, 0), 0);
+  EXPECT_EQ (covariance_matrix (2, 1), 0);
+  EXPECT_EQ (covariance_matrix (2, 2), 4);
+}
+
+TEST (PCL, computeCovarianceMatrixNormalized)
+{
+  PointCloud<PointXYZ> cloud;
+  PointXYZ point;
+  std::vector <int> indices;
+  Eigen::Vector4f centroid;
+  Eigen::Matrix3f covariance_matrix;
+
+  centroid [0] = 0;
+  centroid [1] = 0;
+  centroid [2] = 0;
+
+  // test empty cloud which is dense
+  cloud.is_dense = true;
+  EXPECT_EQ (computeCovarianceMatrixNormalized (cloud, centroid, covariance_matrix), 0);
+
+  // test empty cloud non_dense
+  cloud.is_dense = false;
+  EXPECT_EQ (computeCovarianceMatrixNormalized (cloud, centroid, covariance_matrix), 0);
+
+  // test non-empty cloud non_dense
+  point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
+  cloud.push_back (point);
+  EXPECT_EQ (computeCovarianceMatrixNormalized (cloud, centroid, covariance_matrix), 0);
+
+  // test non-empty cloud non_dense
+  point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
+  cloud.push_back (point);
+  indices.push_back (1);
+  EXPECT_EQ (computeCovarianceMatrixNormalized (cloud, indices, centroid, covariance_matrix), 0);
+
+  cloud.clear ();
+  indices.clear ();
+  for (point.x = -1; point.x < 2; point.x += 2)
+  {
+    for (point.y = -1; point.y < 2; point.y += 2)
+    {
+      for (point.z = -1; point.z < 2; point.z += 2)
+      {
+        cloud.push_back (point);
+      }
+    }
+  }
+  cloud.is_dense = true;
+
+  // eight points with (0, 0, 0) as centroid and covarmat (1, 0, 0, 0, 1, 0, 0, 0, 1)
+
+  covariance_matrix << -100, -101, -102, -110, -111, -112, -120, -121, -122;
+  centroid [0] = 0;
+  centroid [1] = 0;
+  centroid [2] = 0;
+
+  EXPECT_EQ (computeCovarianceMatrixNormalized (cloud, centroid, covariance_matrix), 8);
+
+  EXPECT_EQ (covariance_matrix (0, 0), 1);
+  EXPECT_EQ (covariance_matrix (0, 1), 0);
+  EXPECT_EQ (covariance_matrix (0, 2), 0);
+  EXPECT_EQ (covariance_matrix (1, 0), 0);
+  EXPECT_EQ (covariance_matrix (1, 1), 1);
+  EXPECT_EQ (covariance_matrix (1, 2), 0);
+  EXPECT_EQ (covariance_matrix (2, 0), 0);
+  EXPECT_EQ (covariance_matrix (2, 1), 0);
+  EXPECT_EQ (covariance_matrix (2, 2), 1);
+
+  indices.resize (4); // only positive y values
+  indices [0] = 2;
+  indices [1] = 3;
+  indices [2] = 6;
+  indices [3] = 7;
+  covariance_matrix << -100, -101, -102, -110, -111, -112, -120, -121, -122;
+  centroid [1] = 1;
+
+  EXPECT_EQ (computeCovarianceMatrixNormalized (cloud, indices, centroid, covariance_matrix), 4);
+
+  EXPECT_EQ (covariance_matrix (0, 0), 1);
+  EXPECT_EQ (covariance_matrix (0, 1), 0);
+  EXPECT_EQ (covariance_matrix (0, 2), 0);
+  EXPECT_EQ (covariance_matrix (1, 0), 0);
+  EXPECT_EQ (covariance_matrix (1, 1), 0);
+  EXPECT_EQ (covariance_matrix (1, 2), 0);
+  EXPECT_EQ (covariance_matrix (2, 0), 0);
+  EXPECT_EQ (covariance_matrix (2, 1), 0);
+  EXPECT_EQ (covariance_matrix (2, 2), 1);
+
+  point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
+  cloud.push_back (point);
+  cloud.is_dense = false;
+  covariance_matrix << -100, -101, -102, -110, -111, -112, -120, -121, -122;
+  centroid [1] = 0;
+
+  EXPECT_EQ (computeCovarianceMatrixNormalized (cloud, centroid, covariance_matrix), 8);
+  EXPECT_EQ (covariance_matrix (0, 0), 1);
+  EXPECT_EQ (covariance_matrix (0, 1), 0);
+  EXPECT_EQ (covariance_matrix (0, 2), 0);
+  EXPECT_EQ (covariance_matrix (1, 0), 0);
+  EXPECT_EQ (covariance_matrix (1, 1), 1);
+  EXPECT_EQ (covariance_matrix (1, 2), 0);
+  EXPECT_EQ (covariance_matrix (2, 0), 0);
+  EXPECT_EQ (covariance_matrix (2, 1), 0);
+  EXPECT_EQ (covariance_matrix (2, 2), 1);
+
+  indices.push_back (8); // add the NaN
+  covariance_matrix << -100, -101, -102, -110, -111, -112, -120, -121, -122;
+  centroid [1] = 1;
+
+  EXPECT_EQ (computeCovarianceMatrixNormalized (cloud, indices, centroid, covariance_matrix), 4);
+  EXPECT_EQ (covariance_matrix (0, 0), 1);
+  EXPECT_EQ (covariance_matrix (0, 1), 0);
+  EXPECT_EQ (covariance_matrix (0, 2), 0);
+  EXPECT_EQ (covariance_matrix (1, 0), 0);
+  EXPECT_EQ (covariance_matrix (1, 1), 0);
+  EXPECT_EQ (covariance_matrix (1, 2), 0);
+  EXPECT_EQ (covariance_matrix (2, 0), 0);
+  EXPECT_EQ (covariance_matrix (2, 1), 0);
+  EXPECT_EQ (covariance_matrix (2, 2), 1);
+}
+
+TEST (PCL, computeDemeanedCovariance)
+{
+  PointCloud<PointXYZ> cloud;
+  PointXYZ point;
+  std::vector <int> indices;
+  Eigen::Matrix3f covariance_matrix;
+
+  // test empty cloud which is dense
+  cloud.is_dense = true;
+  EXPECT_EQ (computeCovarianceMatrix (cloud, covariance_matrix), 0);
+
+  // test empty cloud non_dense
+  cloud.is_dense = false;
+  EXPECT_EQ (computeCovarianceMatrix (cloud, covariance_matrix), 0);
+
+  // test non-empty cloud non_dense
+  point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
+  cloud.push_back (point);
+  EXPECT_EQ (computeCovarianceMatrix (cloud, covariance_matrix), 0);
+
+  // test non-empty cloud non_dense
+  point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
+  cloud.push_back (point);
+  indices.push_back (1);
+  EXPECT_EQ (computeCovarianceMatrix (cloud, indices, covariance_matrix), 0);
+
+  cloud.clear ();
+  indices.clear ();
+
+  for (point.x = -1; point.x < 2; point.x += 2)
+  {
+    for (point.y = -1; point.y < 2; point.y += 2)
+    {
+      for (point.z = -1; point.z < 2; point.z += 2)
+      {
+        cloud.push_back (point);
+      }
+    }
+  }
+  cloud.is_dense = true;
+
+  // eight points with (0, 0, 0) as centroid and covarmat (1, 0, 0, 0, 1, 0, 0, 0, 1)
+
+  covariance_matrix << -100, -101, -102, -110, -111, -112, -120, -121, -122;
+
+  EXPECT_EQ (computeCovarianceMatrix (cloud, covariance_matrix), 8);
+  EXPECT_EQ (covariance_matrix (0, 0), 1);
+  EXPECT_EQ (covariance_matrix (0, 1), 0);
+  EXPECT_EQ (covariance_matrix (0, 2), 0);
+  EXPECT_EQ (covariance_matrix (1, 0), 0);
+  EXPECT_EQ (covariance_matrix (1, 1), 1);
+  EXPECT_EQ (covariance_matrix (1, 2), 0);
+  EXPECT_EQ (covariance_matrix (2, 0), 0);
+  EXPECT_EQ (covariance_matrix (2, 1), 0);
+  EXPECT_EQ (covariance_matrix (2, 2), 1);
+
+  indices.resize (4); // only positive y values
+  indices [0] = 2;
+  indices [1] = 3;
+  indices [2] = 6;
+  indices [3] = 7;
+  covariance_matrix << -100, -101, -102, -110, -111, -112, -120, -121, -122;
+
+  EXPECT_EQ (computeCovarianceMatrix (cloud, indices, covariance_matrix), 4);
+  EXPECT_EQ (covariance_matrix (0, 0), 1);
+  EXPECT_EQ (covariance_matrix (0, 1), 0);
+  EXPECT_EQ (covariance_matrix (0, 2), 0);
+  EXPECT_EQ (covariance_matrix (1, 0), 0);
+  EXPECT_EQ (covariance_matrix (1, 1), 1);
+  EXPECT_EQ (covariance_matrix (1, 2), 0);
+  EXPECT_EQ (covariance_matrix (2, 0), 0);
+  EXPECT_EQ (covariance_matrix (2, 1), 0);
+  EXPECT_EQ (covariance_matrix (2, 2), 1);
+
+  point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
+  cloud.push_back (point);
+  cloud.is_dense = false;
+  covariance_matrix << -100, -101, -102, -110, -111, -112, -120, -121, -122;
+
+  EXPECT_EQ (computeCovarianceMatrix (cloud, covariance_matrix), 8);
+  EXPECT_EQ (covariance_matrix (0, 0), 1);
+  EXPECT_EQ (covariance_matrix (0, 1), 0);
+  EXPECT_EQ (covariance_matrix (0, 2), 0);
+  EXPECT_EQ (covariance_matrix (1, 0), 0);
+  EXPECT_EQ (covariance_matrix (1, 1), 1);
+  EXPECT_EQ (covariance_matrix (1, 2), 0);
+  EXPECT_EQ (covariance_matrix (2, 0), 0);
+  EXPECT_EQ (covariance_matrix (2, 1), 0);
+  EXPECT_EQ (covariance_matrix (2, 2), 1);
+
+  indices.push_back (8); // add the NaN
+  covariance_matrix << -100, -101, -102, -110, -111, -112, -120, -121, -122;
+
+  EXPECT_EQ (computeCovarianceMatrix (cloud, indices, covariance_matrix), 4);
+  EXPECT_EQ (covariance_matrix (0, 0), 1);
+  EXPECT_EQ (covariance_matrix (0, 1), 0);
+  EXPECT_EQ (covariance_matrix (0, 2), 0);
+  EXPECT_EQ (covariance_matrix (1, 0), 0);
+  EXPECT_EQ (covariance_matrix (1, 1), 1);
+  EXPECT_EQ (covariance_matrix (1, 2), 0);
+  EXPECT_EQ (covariance_matrix (2, 0), 0);
+  EXPECT_EQ (covariance_matrix (2, 1), 0);
+  EXPECT_EQ (covariance_matrix (2, 2), 1);
+}
+
+TEST (PCL, computeMeanAndCovariance)
+{
+  PointCloud<PointXYZ> cloud;
+  PointXYZ point;
+  std::vector <int> indices;
+  Eigen::Matrix3f covariance_matrix;
+  Eigen::Vector4f centroid;
+
+  // test empty cloud which is dense
+  cloud.is_dense = true;
+  EXPECT_EQ (computeMeanAndCovarianceMatrix (cloud, covariance_matrix, centroid), 0);
+
+  // test empty cloud non_dense
+  cloud.is_dense = false;
+  EXPECT_EQ (computeMeanAndCovarianceMatrix (cloud, covariance_matrix, centroid), 0);
+
+  // test non-empty cloud non_dense
+  point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
+  cloud.push_back (point);
+  EXPECT_EQ (computeMeanAndCovarianceMatrix (cloud, covariance_matrix, centroid), 0);
+
+  // test non-empty cloud non_dense
+  point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
+  cloud.push_back (point);
+  indices.push_back (1);
+  EXPECT_EQ (computeMeanAndCovarianceMatrix (cloud, indices, covariance_matrix, centroid), 0);
+
+  cloud.clear ();
+  indices.clear ();
+
+  for (point.x = -1; point.x < 2; point.x += 2)
+  {
+    for (point.y = -1; point.y < 2; point.y += 2)
+    {
+      for (point.z = -1; point.z < 2; point.z += 2)
+      {
+        cloud.push_back (point);
+      }
+    }
+  }
+  cloud.is_dense = true;
+
+  // eight points with (0, 0, 0) as centroid and covarmat (1, 0, 0, 0, 1, 0, 0, 0, 1)
+
+  covariance_matrix << -100, -101, -102, -110, -111, -112, -120, -121, -122;
+  centroid [0] = -100;
+  centroid [1] = -101;
+  centroid [2] = -102;
+  EXPECT_EQ (computeMeanAndCovarianceMatrix (cloud, covariance_matrix, centroid), 8);
+
+  EXPECT_EQ (centroid [0], 0);
+  EXPECT_EQ (centroid [1], 0);
+  EXPECT_EQ (centroid [2], 0);
+  EXPECT_EQ (covariance_matrix (0, 0), 1);
+  EXPECT_EQ (covariance_matrix (0, 1), 0);
+  EXPECT_EQ (covariance_matrix (0, 2), 0);
+  EXPECT_EQ (covariance_matrix (1, 0), 0);
+  EXPECT_EQ (covariance_matrix (1, 1), 1);
+  EXPECT_EQ (covariance_matrix (1, 2), 0);
+  EXPECT_EQ (covariance_matrix (2, 0), 0);
+  EXPECT_EQ (covariance_matrix (2, 1), 0);
+  EXPECT_EQ (covariance_matrix (2, 2), 1);
+
+  indices.resize (4); // only positive y values
+  indices [0] = 2;
+  indices [1] = 3;
+  indices [2] = 6;
+  indices [3] = 7;
+  covariance_matrix << -100, -101, -102, -110, -111, -112, -120, -121, -122;
+  centroid [0] = -100;
+  centroid [1] = -101;
+  centroid [2] = -102;
+
+  EXPECT_EQ (computeMeanAndCovarianceMatrix (cloud, indices, covariance_matrix, centroid), 4);
+  EXPECT_EQ (centroid [0], 0);
+  EXPECT_EQ (centroid [1], 1);
+  EXPECT_EQ (centroid [2], 0);
+  EXPECT_EQ (covariance_matrix (0, 0), 1);
+  EXPECT_EQ (covariance_matrix (0, 1), 0);
+  EXPECT_EQ (covariance_matrix (0, 2), 0);
+  EXPECT_EQ (covariance_matrix (1, 0), 0);
+  EXPECT_EQ (covariance_matrix (1, 1), 0);
+  EXPECT_EQ (covariance_matrix (1, 2), 0);
+  EXPECT_EQ (covariance_matrix (2, 0), 0);
+  EXPECT_EQ (covariance_matrix (2, 1), 0);
+  EXPECT_EQ (covariance_matrix (2, 2), 1);
+
+  point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
+  cloud.push_back (point);
+  cloud.is_dense = false;
+  covariance_matrix << -100, -101, -102, -110, -111, -112, -120, -121, -122;
+  centroid [0] = -100;
+  centroid [1] = -101;
+  centroid [2] = -102;
+
+  EXPECT_EQ (computeMeanAndCovarianceMatrix (cloud, covariance_matrix, centroid), 8);
+  EXPECT_EQ (centroid [0], 0);
+  EXPECT_EQ (centroid [1], 0);
+  EXPECT_EQ (centroid [2], 0);
+  EXPECT_EQ (covariance_matrix (0, 0), 1);
+  EXPECT_EQ (covariance_matrix (0, 1), 0);
+  EXPECT_EQ (covariance_matrix (0, 2), 0);
+  EXPECT_EQ (covariance_matrix (1, 0), 0);
+  EXPECT_EQ (covariance_matrix (1, 1), 1);
+  EXPECT_EQ (covariance_matrix (1, 2), 0);
+  EXPECT_EQ (covariance_matrix (2, 0), 0);
+  EXPECT_EQ (covariance_matrix (2, 1), 0);
+  EXPECT_EQ (covariance_matrix (2, 2), 1);
+
+  indices.push_back (8); // add the NaN
+  covariance_matrix << -100, -101, -102, -110, -111, -112, -120, -121, -122;
+  centroid [0] = -100;
+  centroid [1] = -101;
+  centroid [2] = -102;
+
+  EXPECT_EQ (computeMeanAndCovarianceMatrix (cloud, indices, covariance_matrix, centroid), 4);
+  EXPECT_EQ (centroid [0], 0);
+  EXPECT_EQ (centroid [1], 1);
+  EXPECT_EQ (centroid [2], 0);
+  EXPECT_EQ (covariance_matrix (0, 0), 1);
+  EXPECT_EQ (covariance_matrix (0, 1), 0);
+  EXPECT_EQ (covariance_matrix (0, 2), 0);
+  EXPECT_EQ (covariance_matrix (1, 0), 0);
+  EXPECT_EQ (covariance_matrix (1, 1), 0);
+  EXPECT_EQ (covariance_matrix (1, 2), 0);
+  EXPECT_EQ (covariance_matrix (2, 0), 0);
+  EXPECT_EQ (covariance_matrix (2, 1), 0);
+  EXPECT_EQ (covariance_matrix (2, 2), 1);
 }
 
 /* ---[ */
