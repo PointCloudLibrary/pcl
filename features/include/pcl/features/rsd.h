@@ -100,7 +100,7 @@ namespace pcl
   /** \brief Estimate the Radius-based Surface Descriptor (RSD) for a given point based on its spatial neighborhood of 3D points with normals
     * \param[in] surface the dataset containing the XYZ points
     * \param[in] normals the dataset containing the surface normals at each point in the dataset
-    * \param[in] indices the neighborhood point indices in the dataset
+    * \param[in] indices the neighborhood point indices in the dataset (first point is used as the reference)
     * \param[in] max_dist the upper bound for the considered distance interval
     * \param[in] nr_subdiv the number of subdivisions for the considered distance interval
     * \param[in] plane_radius maximum radius, above which everything can be considered planar
@@ -108,10 +108,26 @@ namespace pcl
     * \param[out] histogram if not NULL, the full neighborhood histogram is provided, usable as a point signature
     * \ingroup features
     */
-  template <typename PointInT, typename PointNT, typename PointOutT> void
-  computeRSD (const PointCloud<PointInT> &surface, const PointCloud<PointNT> &normals,
-              const std::vector<int> &indices, double max_dist,
-              int nr_subdiv, double plane_radius, PointOutT &radii, Eigen::MatrixXf *histogram = NULL);
+  template <typename PointInT, typename PointNT, typename PointOutT> Eigen::MatrixXf
+  computeRSD (boost::shared_ptr<const pcl::PointCloud<PointInT> > &surface, boost::shared_ptr<const pcl::PointCloud<PointNT> > &normals,
+             const std::vector<int> &indices, double max_dist,
+             int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram = false);
+
+  /** \brief Estimate the Radius-based Surface Descriptor (RSD) for a given point based on its spatial neighborhood of 3D points with normals
+    * \param[in] normals the dataset containing the surface normals at each point in the dataset
+    * \param[in] indices the neighborhood point indices in the dataset (first point is used as the reference)
+    * \param[in] sqr_dists the squared distances from the first to all points in the neighborhood
+    * \param[in] max_dist the upper bound for the considered distance interval
+    * \param[in] nr_subdiv the number of subdivisions for the considered distance interval
+    * \param[in] plane_radius maximum radius, above which everything can be considered planar
+    * \param[in] radii the output point of a type that should have r_min and r_max fields
+    * \param[out] histogram if not NULL, the full neighborhood histogram is provided, usable as a point signature
+    * \ingroup features
+    */
+  template <typename PointNT, typename PointOutT> Eigen::MatrixXf
+  computeRSD (boost::shared_ptr<const pcl::PointCloud<PointNT> > &normals,
+             const std::vector<int> &indices, const std::vector<float> &sqr_dists, double max_dist,
+             int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram = false);
 
   /** \brief @b RSDEstimation estimates the Radius-based Surface Descriptor (minimal and maximal radius of the local surface's curves)
     * for a given point cloud dataset containing points and normals.
@@ -197,8 +213,8 @@ namespace pcl
       getSaveHistograms () { return save_histograms_; }
 
       /** \brief Returns a pointer to the list of full distance-angle histograms for all points. */
-      inline std::vector<Eigen::MatrixXf>*
-      getHistograms () { return &histograms_; }
+      inline boost::shared_ptr<std::vector<Eigen::MatrixXf> >
+      getHistograms () { return histograms_; }
 
     protected:
 
@@ -211,7 +227,7 @@ namespace pcl
       computeFeature (PointCloudOut &output);
 
       /** \brief The list of full distance-angle histograms for all points. */
-      std::vector<Eigen::MatrixXf> histograms_;
+      boost::shared_ptr<std::vector<Eigen::MatrixXf> > histograms_;
 
     private:
       /** \brief The upper bound for the considered distance interval. */
