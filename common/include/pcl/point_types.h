@@ -190,11 +190,6 @@ namespace pcl
   template<typename PointType1, typename PointType2>
     inline float
     squaredEuclideanDistance (const PointType1& p1, const PointType2& p2);
-
-  //! Checks if x,y,z are finite numbers.
-  template<typename PointType>
-    inline bool
-    hasValidXYZ (const PointType& p);
 }
 
 /** @} */

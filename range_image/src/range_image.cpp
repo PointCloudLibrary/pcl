@@ -165,7 +165,7 @@ RangeImage::integrateFarRanges (const PointCloud<PointWithViewpoint>& far_ranges
   for (std::vector<PointWithViewpoint, Eigen::aligned_allocator<PointWithViewpoint> >::const_iterator it
        =far_ranges.points.begin (); it!=far_ranges.points.end (); ++it)
   {
-    //if (!hasValidXYZ (*it))  // Check for NAN etc
+    //if (!isFinite (*it))  // Check for NAN etc
       //continue;
     Vector3fMapConst current_point = it->getVector3fMap ();
     

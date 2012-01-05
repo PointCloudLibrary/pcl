@@ -200,7 +200,7 @@ RangeImage::doZBuffer(const PointCloudType& point_cloud, float noise_level, floa
   int x, y;
   for (typename std::vector<PointType2, Eigen::aligned_allocator<PointType2> >::const_iterator it=points2.begin(); it!=points2.end(); ++it)
   {
-    if (!hasValidXYZ(*it))  // Check for NAN etc
+    if (!isFinite (*it))  // Check for NAN etc
       continue;
     Vector3fMapConst current_point = it->getVector3fMap();
     
