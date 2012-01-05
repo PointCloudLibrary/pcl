@@ -60,7 +60,7 @@ pcl::OrganizedFastMesh<PointInT>::performReconstruction (pcl::PolygonMesh &outpu
   // depending on triangle_pixel_size)
   // avoid to do that here (only needed for ASCII mesh file output, e.g., in vtk files
   for (unsigned int i = 0; i < input_->points.size (); ++i)
-    if (!hasValidXYZ (input_->points[i]))
+    if (!isFinite (input_->points[i]))
       resetPointData (i, output, 0.0f, x_idx, y_idx, z_idx);
 }
 
@@ -108,7 +108,7 @@ pcl::OrganizedFastMesh<PointInT>::makeQuadMesh (std::vector<pcl::Vertices>& poly
     index_down_right = i + x_big_incr;
 
     // Go over the columns
-    for (int x = 0; x < last_column; x += triangle_pixel_size_, 
+    for (int x = 0; x < last_column; x += triangle_pixel_size_,
                                      i += triangle_pixel_size_,
                                      index_right += triangle_pixel_size_,
                                      index_down += triangle_pixel_size_,
@@ -145,7 +145,7 @@ pcl::OrganizedFastMesh<PointInT>::makeRightCutMesh (std::vector<pcl::Vertices>& 
     index_down_right = i + x_big_incr;
 
     // Go over the columns
-    for (int x = 0; x < last_column; x += triangle_pixel_size_, 
+    for (int x = 0; x < last_column; x += triangle_pixel_size_,
                                      i += triangle_pixel_size_,
                                      index_right += triangle_pixel_size_,
                                      index_down += triangle_pixel_size_,
@@ -186,7 +186,7 @@ pcl::OrganizedFastMesh<PointInT>::makeLeftCutMesh (std::vector<pcl::Vertices>& p
     index_down_right = i + x_big_incr;
 
     // Go over the columns
-    for (int x = 0; x < last_column; x += triangle_pixel_size_, 
+    for (int x = 0; x < last_column; x += triangle_pixel_size_,
                                      i += triangle_pixel_size_,
                                      index_right += triangle_pixel_size_,
                                      index_down += triangle_pixel_size_,
@@ -227,7 +227,7 @@ pcl::OrganizedFastMesh<PointInT>::makeAdaptiveCutMesh (std::vector<pcl::Vertices
     index_down_right = i + x_big_incr;
 
     // Go over the columns
-    for (int x = 0; x < last_column; x += triangle_pixel_size_, 
+    for (int x = 0; x < last_column; x += triangle_pixel_size_,
                                      i += triangle_pixel_size_,
                                      index_right += triangle_pixel_size_,
                                      index_down += triangle_pixel_size_,
