@@ -54,26 +54,21 @@ namespace pcl
     * \f]
     * \ingroup features
     */
-  template <typename PointT> inline void 
-  computePointNormal (const pcl::PointCloud<PointT> &cloud, 
+  template <typename PointT> inline void
+  computePointNormal (const pcl::PointCloud<PointT> &cloud,
                       Eigen::Vector4f &plane_parameters, float &curvature)
   {
-    if (cloud.empty ())
-    {
-      plane_parameters.setConstant (std::numeric_limits<float>::quiet_NaN ());
-      curvature = std::numeric_limits<float>::quiet_NaN ();
-      return;
-    }
     // Placeholder for the 3x3 covariance matrix at each surface patch
     EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
     // 16-bytes aligned placeholder for the XYZ centroid of a surface patch
     Eigen::Vector4f xyz_centroid;
 
-    // Estimate the XYZ centroid
-    compute3DCentroid (cloud, xyz_centroid);
-
-    // Compute the 3x3 covariance matrix
-    computeCovarianceMatrix (cloud, xyz_centroid, covariance_matrix);
+    if (computeMeanAndCovarianceMatrix (cloud, covariance_matrix, xyz_centroid) == 0)
+    {
+      plane_parameters.setConstant (std::numeric_limits<float>::quiet_NaN ());
+      curvature = std::numeric_limits<float>::quiet_NaN ();
+      return;
+    }
 
     // Get the plane normal and surface curvature
     solvePlaneParameters (covariance_matrix, xyz_centroid, plane_parameters, curvature);
@@ -90,27 +85,20 @@ namespace pcl
     * \f]
     * \ingroup features
     */
-  template <typename PointT> inline void 
-  computePointNormal (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices, 
+  template <typename PointT> inline void
+  computePointNormal (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices,
                       Eigen::Vector4f &plane_parameters, float &curvature)
   {
-    if (indices.empty ())
+    // Placeholder for the 3x3 covariance matrix at each surface patch
+    EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
+    // 16-bytes aligned placeholder for the XYZ centroid of a surface patch
+    Eigen::Vector4f xyz_centroid;
+    if (computeMeanAndCovarianceMatrix (cloud, indices, covariance_matrix, xyz_centroid) == 0)
     {
       plane_parameters.setConstant (std::numeric_limits<float>::quiet_NaN ());
       curvature = std::numeric_limits<float>::quiet_NaN ();
       return;
     }
-    // Placeholder for the 3x3 covariance matrix at each surface patch
-    EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
-    // 16-bytes aligned placeholder for the XYZ centroid of a surface patch
-    Eigen::Vector4f xyz_centroid;
-
-    // Estimate the XYZ centroid
-    compute3DCentroid (cloud, indices, xyz_centroid);
-
-    // Compute the 3x3 covariance matrix
-    computeCovarianceMatrix (cloud, indices, xyz_centroid, covariance_matrix);
-
     // Get the plane normal and surface curvature
     solvePlaneParameters (covariance_matrix, xyz_centroid, plane_parameters, curvature);
   }
@@ -123,8 +111,8 @@ namespace pcl
     * \param normal the plane normal to be flipped
     * \ingroup features
     */
-  template <typename PointT> inline void 
-  flipNormalTowardsViewpoint (const PointT &point, float vp_x, float vp_y, float vp_z, 
+  template <typename PointT> inline void
+  flipNormalTowardsViewpoint (const PointT &point, float vp_x, float vp_y, float vp_z,
                               Eigen::Vector4f &normal)
   {
     Eigen::Vector4f vp (vp_x, vp_y, vp_z, 0);
@@ -155,8 +143,8 @@ namespace pcl
     * \param nz the resultant Z component of the plane normal
     * \ingroup features
     */
-  template <typename PointT> inline void 
-  flipNormalTowardsViewpoint (const PointT &point, float vp_x, float vp_y, float vp_z, 
+  template <typename PointT> inline void
+  flipNormalTowardsViewpoint (const PointT &point, float vp_x, float vp_y, float vp_z,
                               float &nx, float &ny, float &nz)
   {
     // See if we need to flip any plane normals
@@ -200,7 +188,7 @@ namespace pcl
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
       /** \brief Empty constructor. */
-      NormalEstimation () : vpx_ (0), vpy_ (0), vpz_ (0) 
+      NormalEstimation () : vpx_ (0), vpy_ (0), vpz_ (0)
       {
         feature_name_ = "NormalEstimation";
       };
@@ -215,20 +203,15 @@ namespace pcl
         * \lambda_0 / (\lambda_0 + \lambda_1 + \lambda_2)
         * \f]
         */
-      inline void 
+      inline void
       computePointNormal (const pcl::PointCloud<PointInT> &cloud, const std::vector<int> &indices, Eigen::Vector4f &plane_parameters, float &curvature)
       {
-        if (indices.empty ())
+        if (computeMeanAndCovarianceMatrix (cloud, indices, covariance_matrix_, xyz_centroid_) == 0)
         {
           plane_parameters.setConstant (std::numeric_limits<float>::quiet_NaN ());
           curvature = std::numeric_limits<float>::quiet_NaN ();
           return;
         }
-        // Estimate the XYZ centroid
-        compute3DCentroid (cloud, indices, xyz_centroid_);
-
-        // Compute the 3x3 covariance matrix
-        computeCovarianceMatrix (cloud, indices, xyz_centroid_, covariance_matrix_);
 
         // Get the plane normal and surface curvature
         solvePlaneParameters (covariance_matrix_, xyz_centroid_, plane_parameters, curvature);
@@ -246,19 +229,14 @@ namespace pcl
         * \lambda_0 / (\lambda_0 + \lambda_1 + \lambda_2)
         * \f]
         */
-      inline void 
+      inline void
       computePointNormal (const pcl::PointCloud<PointInT> &cloud, const std::vector<int> &indices, float &nx, float &ny, float &nz, float &curvature)
       {
-        if (indices.empty ())
+        if (computeMeanAndCovarianceMatrix (cloud, indices, covariance_matrix_, xyz_centroid_) == 0)
         {
           nx = ny = nz = curvature = std::numeric_limits<float>::quiet_NaN ();
           return;
         }
-        // Estimate the XYZ centroid
-        compute3DCentroid (cloud, indices, xyz_centroid_);
-
-        // Compute the 3x3 covariance matrix
-        computeCovarianceMatrix (cloud, indices, xyz_centroid_, covariance_matrix_);
 
         // Get the plane normal and surface curvature
         solvePlaneParameters (covariance_matrix_, nx, ny, nz, curvature);
@@ -292,7 +270,7 @@ namespace pcl
         * \note In situations where not enough neighbors are found, the normal and curvature values are set to -1.
         * \param output the resultant point cloud model dataset that contains surface normals and curvatures
         */
-      void 
+      void
       computeFeature (PointCloudOut &output);
 
       /** \brief Values describing the viewpoint ("pinhole" camera model assumed). For per point viewpoints, inherit
@@ -307,9 +285,9 @@ namespace pcl
 
     private:
       /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
-        * \param[out] output the output point cloud 
+        * \param[out] output the output point cloud
         */
-      void 
+      void
       computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
    };
 
@@ -342,13 +320,13 @@ namespace pcl
         * \note In situations where not enough neighbors are found, the normal and curvature values are set to NaN
         * \param[out] output the resultant point cloud model dataset that contains surface normals and curvatures
         */
-      void 
+      void
       computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
 
       /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
-        * \param[out] output the output point cloud 
+        * \param[out] output the output point cloud
         */
-      void 
+      void
       compute (pcl::PointCloud<pcl::Normal> &output) {}
   };
 }
