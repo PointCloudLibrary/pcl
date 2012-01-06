@@ -63,7 +63,8 @@ namespace pcl
       {
         COVARIANCE_MATRIX,
         AVERAGE_3D_GRADIENT,
-        AVERAGE_DEPTH_CHANGE
+        AVERAGE_DEPTH_CHANGE,
+        SIMPLE_3D_GRADIENT
       };
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudIn  PointCloudIn;
@@ -72,9 +73,9 @@ namespace pcl
       /** \brief Constructor */
       IntegralImageNormalEstimation ()
       : normal_estimation_method_(AVERAGE_3D_GRADIENT)
-      , integral_image_X_(false)
-      , integral_image_Y_(false)
-      , integral_image_depth_ (true)
+      , integral_image_DX_(false)
+      , integral_image_DY_(false)
+      , integral_image_depth_ (false)
       , integral_image_XYZ_ (true)
       , diff_x_(NULL)
       , diff_y_(NULL)
@@ -108,7 +109,7 @@ namespace pcl
         * \param normal the output estimated normal
         */
       void
-      computePointNormal (const int pos_x, const int pos_y, PointOutT &normal);
+      computePointNormal (const int pos_x, const int pos_y, const unsigned point_index, PointOutT &normal);
 
       /** \brief The depth change threshold for computing object borders
         * \param max_depth_change_factor the depth change threshold for computing object borders based on
@@ -195,16 +196,20 @@ namespace pcl
 
       /** The width of the neighborhood region used for computing the normal. */
       int rect_width_;
+      int rect_width_2_;
+      int rect_width_4_;
       /** The height of the neighborhood region used for computing the normal. */
       int rect_height_;
+      int rect_height_2_;
+      int rect_height_4_;
 
       /** the threshold used to detect depth discontinuities */
       float distance_threshold_;
 
       /** integral image in x-direction */
-      IntegralImage2D<float, 3> integral_image_X_;
+      IntegralImage2D<float, 3> integral_image_DX_;
       /** integral image in y-direction */
-      IntegralImage2D<float, 3> integral_image_Y_;
+      IntegralImage2D<float, 3> integral_image_DY_;
       /** integral image */
       IntegralImage2D<float, 1> integral_image_depth_;
       /** integral image xyz */
@@ -233,6 +238,9 @@ namespace pcl
       /** \brief True when a dataset has been received and the average 3d gradient data has been initialized. */
       bool init_average_3d_gradient_;
 
+      /** \brief True when a dataset has been received and the simple 3d gradient data has been initialized. */
+      bool init_simple_3d_gradient_;
+
       /** \brief True when a dataset has been received and the depth change data has been initialized. */
       bool init_depth_change_;
 
@@ -247,6 +255,10 @@ namespace pcl
       /** \brief Internal initialization method for AVERAGE_DEPTH_CHANGE estimation. */
       void
       initAverageDepthChangeMethod ();
+
+      /** \brief Internal initialization method for SIMPLE_3D_GRADIENT estimation. */
+      void
+      initSimple3DGradientMethod ();
 
     private:
       /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class

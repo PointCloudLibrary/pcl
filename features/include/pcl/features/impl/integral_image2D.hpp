@@ -43,6 +43,13 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename DataType, unsigned Dimension> void
+pcl::IntegralImage2D<DataType, Dimension>::setSecondOrderComputation (bool compute_second_order_integral_images)
+{
+  compute_second_order_integral_images_ = compute_second_order_integral_images;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename DataType, unsigned Dimension> void
 pcl::IntegralImage2D<DataType, Dimension>::setInput (const DataType * data, unsigned width,unsigned height, unsigned element_stride, unsigned row_stride)
 {
   if ((width + 1) * (height + 1) > first_order_integral_image_.size () )

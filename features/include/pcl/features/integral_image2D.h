@@ -124,6 +124,12 @@ namespace pcl
       virtual
       ~IntegralImage2D () { }
 
+      /** \brief sets the computation for second order integral images on or off.
+        * \param compute_second_order_integral_images
+        * \param start_y
+        */
+      void setSecondOrderComputation (bool compute_second_order_integral_images);
+
       /** \brief Set the input data to compute the integral image for
         * \param[in] data the input data
         * \param[in] width the width of the data
