@@ -1170,7 +1170,7 @@ TEST (PCL, PFHEstimationEigen)
   EXPECT_NEAR (pfh_histogram[4],  3.65565 , 2e-2); // larger error w.r.t. considering all point pairs (feature bins=0,1,1 where 1 is middle, so angle of 0)
   EXPECT_NEAR (pfh_histogram[5],  0.178104, 1e-4);
   EXPECT_NEAR (pfh_histogram[6],  1.45284 , 1e-4);
-  EXPECT_NEAR (pfh_histogram[7],  3.60666 , 1e-4);
+  EXPECT_NEAR (pfh_histogram[7],  3.60666 , 1e-3);
   EXPECT_NEAR (pfh_histogram[8],  0.298959, 1e-4);
   EXPECT_NEAR (pfh_histogram[9],  0.295143, 1e-4);
   EXPECT_NEAR (pfh_histogram[10], 2.13474 , 1e-4);
