@@ -1873,32 +1873,32 @@ TEST (PCL, SpinImageEstimationEigen)
   spin_est.compute (*spin_images);
   EXPECT_EQ (spin_images->points.rows (), indices.size ());
 
-  EXPECT_NEAR (spin_images->points (100, 0), 0, 1e-5);
-  EXPECT_NEAR (spin_images->points (100, 12), 0, 1e-5);
-  EXPECT_NEAR (spin_images->points (100, 24), 0.132126, 1e-5);
-  EXPECT_NEAR (spin_images->points (100, 36), 0, 1e-5);
-  EXPECT_NEAR (spin_images->points (100, 48), 0, 1e-5);
-  EXPECT_NEAR (spin_images->points (100, 60), 0.388011, 1e-5);
-  EXPECT_NEAR (spin_images->points (100, 72), 0, 1e-5);
-  EXPECT_NEAR (spin_images->points (100, 84), 0, 1e-5);
-  EXPECT_NEAR (spin_images->points (100, 96), 0.468881, 1e-5);
-  EXPECT_NEAR (spin_images->points (100, 108), 0, 1e-5);
-  EXPECT_NEAR (spin_images->points (100, 120), 0, 1e-5);
-  EXPECT_NEAR (spin_images->points (100, 132), 0.678995, 1e-5);
-  EXPECT_NEAR (spin_images->points (100, 144), 0, 1e-5);
-  EXPECT_NEAR (spin_images->points (300, 0), 0, 1e-5);
-  EXPECT_NEAR (spin_images->points (300, 12), 0, 1e-5);
-  EXPECT_NEAR (spin_images->points (300, 24), 0.143845, 1e-5);
-  EXPECT_NEAR (spin_images->points (300, 36), 0, 1e-5);
-  EXPECT_NEAR (spin_images->points (300, 48), 0, 1e-5);
-  EXPECT_NEAR (spin_images->points (300, 60), 0, 1e-5);
-  EXPECT_NEAR (spin_images->points (300, 72), 0, 1e-5);
-  EXPECT_NEAR (spin_images->points (300, 84), 0, 1e-5);
-  EXPECT_NEAR (spin_images->points (300, 96), 0, 1e-5);
-  EXPECT_NEAR (spin_images->points (300, 108), 0.706084, 1e-5);
-  EXPECT_NEAR (spin_images->points (300, 120), 0, 1e-5);
-  EXPECT_NEAR (spin_images->points (300, 132), 0, 1e-5);
-  EXPECT_NEAR (spin_images->points (300, 144), 0.272542, 1e-5);
+  EXPECT_NEAR (spin_images->points (100, 0), 0, 1e-4);
+  EXPECT_NEAR (spin_images->points (100, 12), 0, 1e-4);
+  EXPECT_NEAR (spin_images->points (100, 24), 0.132126, 1e-4);
+  EXPECT_NEAR (spin_images->points (100, 36), 0, 1e-4);
+  EXPECT_NEAR (spin_images->points (100, 48), 0, 1e-4);
+  EXPECT_NEAR (spin_images->points (100, 60), 0.388011, 1e-4);
+  EXPECT_NEAR (spin_images->points (100, 72), 0, 1e-4);
+  EXPECT_NEAR (spin_images->points (100, 84), 0, 1e-4);
+  EXPECT_NEAR (spin_images->points (100, 96), 0.468881, 1e-4);
+  EXPECT_NEAR (spin_images->points (100, 108), 0, 1e-4);
+  EXPECT_NEAR (spin_images->points (100, 120), 0, 1e-4);
+  EXPECT_NEAR (spin_images->points (100, 132), 0.678995, 1e-4);
+  EXPECT_NEAR (spin_images->points (100, 144), 0, 1e-4);
+  EXPECT_NEAR (spin_images->points (300, 0), 0, 1e-4);
+  EXPECT_NEAR (spin_images->points (300, 12), 0, 1e-4);
+  EXPECT_NEAR (spin_images->points (300, 24), 0.143845, 1e-4);
+  EXPECT_NEAR (spin_images->points (300, 36), 0, 1e-4);
+  EXPECT_NEAR (spin_images->points (300, 48), 0, 1e-4);
+  EXPECT_NEAR (spin_images->points (300, 60), 0, 1e-4);
+  EXPECT_NEAR (spin_images->points (300, 72), 0, 1e-4);
+  EXPECT_NEAR (spin_images->points (300, 84), 0, 1e-4);
+  EXPECT_NEAR (spin_images->points (300, 96), 0, 1e-4);
+  EXPECT_NEAR (spin_images->points (300, 108), 0.706084, 1e-4);
+  EXPECT_NEAR (spin_images->points (300, 120), 0, 1e-4);
+  EXPECT_NEAR (spin_images->points (300, 132), 0, 1e-4);
+  EXPECT_NEAR (spin_images->points (300, 144), 0.272542, 1e-4);
 }
 
 
