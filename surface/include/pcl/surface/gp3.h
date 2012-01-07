@@ -173,7 +173,7 @@ namespace pcl
       /** \brief Empty constructor. */
       GreedyProjectionTriangulation () : nnn_ (0), mu_ (0), search_radius_ (0), 
                                          minimum_angle_ (0), maximum_angle_ (0), 
-                                         eps_angle_(0), consistent_(false) 
+                                         eps_angle_(0), consistent_(false), consistent_ordering_ (false)
       {};
 
       /** \brief Set the multiplier of the nearest neighbor distance to obtain the final search radius for each point
@@ -242,7 +242,7 @@ namespace pcl
       inline double 
       getMaximumSurfaceAngle () { return (eps_angle_); }
 
-      /** \brief Set the flag for consistently oriented normals.
+      /** \brief Set the flag if the input normals are oriented consistently.
         * \param[in] consistent set it to true if the normals are consistently oriented
         */
       inline void 
@@ -251,6 +251,17 @@ namespace pcl
       /** \brief Get the flag for consistently oriented normals. */
       inline bool 
       getNormalConsistency () { return (consistent_); }
+
+      /** \brief Set the flag to order the resulting triangle vertices consistently (positive direction around normal).
+        * @note Assumes consistently oriented normals (towards the viewpoint) -- see setNormalConsistency ()
+        * \param[in] consistent_ordering set it to true if triangle vertices should be ordered consistently
+        */
+      inline void 
+      setConsistentVertexOrdering (bool consistent_ordering) { consistent_ordering_ = consistent_ordering; }
+
+      /** \brief Get the flag signaling consistently ordered triangle vertices. */
+      inline bool 
+      getConsistentVertexOrdering () { return (consistent_ordering_); }
 
       /** \brief Get the state of each point after reconstruction.
         * \note Options are defined as constants: FREE, FRINGE, COMPLETED, BOUNDARY and NONE
@@ -301,6 +312,9 @@ namespace pcl
 
       /** \brief Set this to true if the normals of the input are consistently oriented. */
       bool consistent_;
+      
+      /** \brief Set this to true if the output triangle vertices should be consistently oriented. */
+      bool consistent_ordering_;
 
      private:
       /** \brief Struct for storing the angles to nearest neighbors **/
@@ -450,9 +464,31 @@ namespace pcl
       addTriangle (int a, int b, int c, std::vector<pcl::Vertices> &polygons)
       {
         triangle_.vertices.resize (3);
-        triangle_.vertices[0] = a;
-        triangle_.vertices[1] = b;
-        triangle_.vertices[2] = c;
+        if (consistent_ordering_)
+        {
+          const PointInT p = input_->at (indices_->at (a));
+          const Eigen::Vector3f pv = p.getVector3fMap ();
+          if (p.getNormalVector3fMap ().dot (
+                (pv - input_->at (indices_->at (b)).getVector3fMap ()).cross (
+                 pv - input_->at (indices_->at (c)).getVector3fMap ()) ) > 0)
+          {
+            triangle_.vertices[0] = a;
+            triangle_.vertices[1] = b;
+            triangle_.vertices[2] = c;
+          }
+          else
+          {
+            triangle_.vertices[0] = a;
+            triangle_.vertices[1] = c;
+            triangle_.vertices[2] = b;
+          }
+        }
+        else
+        {
+          triangle_.vertices[0] = a;
+          triangle_.vertices[1] = b;
+          triangle_.vertices[2] = c;
+        }
         polygons.push_back (triangle_);
       }
 
