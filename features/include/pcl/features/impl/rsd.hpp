@@ -47,11 +47,19 @@ pcl::computeRSD (boost::shared_ptr<const pcl::PointCloud<PointInT> > &surface, b
 		 const std::vector<int> &indices, double max_dist,
 		 int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram)
 {
-  Eigen::MatrixXf histogram;
   // Check if the full histogram has to be saved or not
+  Eigen::MatrixXf histogram;
   if (compute_histogram)
     histogram = Eigen::MatrixXf::Zero (nr_subdiv, nr_subdiv);
 
+  // Check if enough points are provided or not
+  if (indices.size () < 2)
+  {
+    radii.r_max = 0;
+    radii.r_min = 0;
+    return histogram;
+  }
+  
   // Initialize minimum and maximum angle values in each distance bin
   std::vector<std::vector<double> > min_max_angle_by_dist (nr_subdiv);
   min_max_angle_by_dist[0].resize (2);
@@ -88,7 +96,7 @@ pcl::computeRSD (boost::shared_ptr<const pcl::PointCloud<PointInT> > &surface, b
     int bin_d = (int) floor (nr_subdiv * dist / max_dist);
     if (compute_histogram)
     {
-      int bin_a = (int) floor (nr_subdiv * angle / (M_PI/2));
+      int bin_a = std::min (nr_subdiv-1, (int) floor (nr_subdiv * angle / (M_PI/2)));
       histogram(bin_a, bin_d)++;
     }
 
@@ -140,11 +148,19 @@ pcl::computeRSD (boost::shared_ptr<const pcl::PointCloud<PointNT> > &normals,
 		 const std::vector<int> &indices, const std::vector<float> &sqr_dists, double max_dist,
 		 int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram)
 {
-  Eigen::MatrixXf histogram;
   // Check if the full histogram has to be saved or not
+  Eigen::MatrixXf histogram;
   if (compute_histogram)
     histogram = Eigen::MatrixXf::Zero (nr_subdiv, nr_subdiv);
-
+  
+  // Check if enough points are provided or not
+  if (indices.size () < 2)
+  {
+    radii.r_max = 0;
+    radii.r_min = 0;
+    return histogram;
+  }
+  
   // Initialize minimum and maximum angle values in each distance bin
   std::vector<std::vector<double> > min_max_angle_by_dist (nr_subdiv);
   min_max_angle_by_dist[0].resize (2);
@@ -155,7 +171,7 @@ pcl::computeRSD (boost::shared_ptr<const pcl::PointCloud<PointNT> > &normals,
     min_max_angle_by_dist[di][0] = +DBL_MAX;
     min_max_angle_by_dist[di][1] = -DBL_MAX;
   }
-
+  
   // Compute distance by normal angle distribution for points
   std::vector<int>::const_iterator i, begin (indices.begin()), end (indices.end());
   for(i = begin+1; i != end; ++i)
@@ -179,7 +195,7 @@ pcl::computeRSD (boost::shared_ptr<const pcl::PointCloud<PointNT> > &normals,
     int bin_d = (int) floor (nr_subdiv * dist / max_dist);
     if (compute_histogram)
     {
-      int bin_a = (int) floor (nr_subdiv * angle / (M_PI/2));
+      int bin_a = std::min (nr_subdiv-1, (int) floor (nr_subdiv * angle / (M_PI/2)));
       histogram(bin_a, bin_d)++;
     }
 
