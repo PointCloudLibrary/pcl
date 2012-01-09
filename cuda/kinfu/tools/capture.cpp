@@ -160,7 +160,7 @@ pcl::gpu::CaptureOpenNI::open (int device)
   rc = impl_->image.Create (impl_->context);
   if (rc != XN_STATUS_OK)
   {
-    sprintf ("Image generator creation failed: %s\n", xnGetStatusString (rc));
+    printf ("Image generator creation failed: %s\n", xnGetStatusString (rc));
     impl_->has_image = false;
   }
   else

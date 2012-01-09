@@ -531,16 +531,16 @@ struct KinFuApp
     if(view.point_colors_ptr_->points.empty()) // no colors
     {
       if (view.valid_combined_)
-        writeCloudFile (format, *view.combined_ptr_);
+        writeCloudFile (format, view.combined_ptr_);
       else
-        writeCloudFile (format, *view.cloud_ptr_);
+        writeCloudFile (format, view.cloud_ptr_);
     }
     else
     {        
       if (view.valid_combined_)
-        writeCloudFile (format, *merge<PointXYZRGBNormal>(*view.combined_ptr_, *view.point_colors_ptr_));
+        writeCloudFile (format, merge<PointXYZRGBNormal>(*view.combined_ptr_, *view.point_colors_ptr_));
       else
-        writeCloudFile (format, *merge<PointXYZRGB>(*view.cloud_ptr_, *view.point_colors_ptr_));
+        writeCloudFile (format, merge<PointXYZRGB>(*view.cloud_ptr_, *view.point_colors_ptr_));
     }
   }
 
@@ -622,24 +622,24 @@ struct KinFuApp
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template<typename CloudT> void
-writeCloudFile (int format, const CloudT& cloud)
+template<typename CloudPtr> void
+writeCloudFile (int format, const CloudPtr& cloud_prt)
 {
   if (format == KinFuApp::PCD_BIN)
   {
     cout << "Saving point cloud to 'cloud_bin.pcd' (binary)... ";
-    pcl::io::savePCDFile ("cloud_bin.pcd", cloud, true);
+    pcl::io::savePCDFile ("cloud_bin.pcd", *cloud_prt, true);
   }
   else
   if (format == KinFuApp::PCD_ASCII)
   {
     cout << "Saving point cloud to 'cloud.pcd' (ASCII)... ";
-    pcl::io::savePCDFile ("cloud.pcd", cloud, false);
+    pcl::io::savePCDFile ("cloud.pcd", *cloud_prt, false);
   }
   else   /* if (format == KinFuApp::PLY) */
   {
     cout << "Saving point cloud to 'cloud.ply' (ASCII)... ";
-    pcl::io::savePLYFileASCII ("cloud.ply", cloud);
+    pcl::io::savePLYFileASCII ("cloud.ply", *cloud_prt);
   
   }
   cout << "Done" << endl;
