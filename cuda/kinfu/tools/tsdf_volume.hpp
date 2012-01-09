@@ -106,7 +106,7 @@ pcl::TSDFVolume<VoxelT, WeightT>::save (const std::string &filename, bool binary
   pcl::console::print_info ("Saving TSDF volume to "); pcl::console::print_value ("%s ... ", filename.c_str());
   std::cout << std::flush;
 
-  std::ofstream file (filename.c_str(), binary ? ios_base::binary : ios_base::out);
+  std::ofstream file (filename.c_str(), binary ? std::ios_base::binary : std::ios_base::out);
 
   if (file.is_open())
   {
