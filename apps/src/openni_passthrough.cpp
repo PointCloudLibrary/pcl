@@ -122,7 +122,6 @@ main (int argc, char ** argv)
 {
   // Initialize QT
   QApplication app (argc, argv); 
-  QApplication::setStyle (new QGtkStyle);
 
   // Open the first available camera
   pcl::OpenNIGrabber grabber ("#1");
