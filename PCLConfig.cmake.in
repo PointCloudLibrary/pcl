@@ -350,6 +350,7 @@ endif(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/
 
 #set a suffix for debug libraries
 set(PCL_DEBUG_SUFFIX "@CMAKE_DEBUG_POSTFIX@")
+set(PCL_RELEASE_SUFFIX "@CMAKE_RELEASE_POSTFIX@")
 
 set(pcl_all_components @PCLCONFIG_AVAILABLE_COMPONENTS@ )
 list(LENGTH pcl_all_components PCL_NB_COMPONENTS)
@@ -423,7 +424,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
   # Skip find_library for header only modules
   list(FIND pcl_header_only_components ${component} _is_header_only)
   if(_is_header_only EQUAL -1)
-    find_library(PCL_${COMPONENT}_LIBRARY ${pcl_component}
+    find_library(PCL_${COMPONENT}_LIBRARY ${pcl_component}${PCL_RELEASE_SUFFIX}
       HINTS ${PCL_LIBRARY_DIRS}
       DOC "path to ${pcl_component} library"
       NO_DEFAULT_PATH)
