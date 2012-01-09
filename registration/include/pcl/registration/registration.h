@@ -108,6 +108,9 @@ namespace pcl
       /** \brief destructor. */
       virtual ~Registration () {}
 
+      /** \brief Provide a pointer to the transformation estimation object. (e.g., SVD, point to plane etc.) 
+       *  \param te is the pointer to the corresponding transformation estimation object
+       */
       void
       setTransformationEstimation (const TransformationEstimationPtr &te) { transformation_estimation_ = te; }
 
@@ -138,6 +141,16 @@ namespace pcl
       /** \brief Get the maximum number of iterations the internal optimization should run for, as set by the user. */
       inline int 
       getMaximumIterations () { return (max_iterations_); }
+
+      /** \brief Set the number of iterations RANSAC should run for.
+        * \param ransac_iterations is the number of iterations RANSAC should run for
+        */
+      inline void 
+      setRANSACIterations (int ransac_iterations) { ransac_iterations_ = ransac_iterations; }
+
+      /** \brief Get the number of iterations RANSAC should run for, as set by the user. */
+      inline double 
+      getRANSACIterations () { return (ransac_iterations_); }
 
       /** \brief Set the inlier distance threshold for the internal RANSAC outlier rejection loop.
         * 
@@ -274,6 +287,9 @@ namespace pcl
 
       /** \brief The maximum number of iterations the internal optimization should run for. */
       int max_iterations_;
+
+      /** \brief The number of iterations RANSAC should run for. */
+      int ransac_iterations_;
 
       /** \brief The input point cloud dataset target. */
       PointCloudTargetConstPtr target_;
