@@ -1,5 +1,7 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/filters/filter.h>
+#include <pcl/filters/voxel_grid.h>
 
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 8))
 #include <vtkLidarScanner.h>
@@ -98,7 +100,20 @@ namespace pcl {
       transform->GetPosition(v);
       PointCloud<Normal>::Ptr pcn = compute_pcn(pcxyz, v[0], v[1], v[2]);
       concatenateFields(*pcxyz, *pcn, *cloud);
-      return cloud;
+
+      // Remove NaNs
+      PointCloud<PointNormal>::Ptr dense_cloud (new PointCloud<PointNormal>());
+
+      std::vector<int> index;
+      pcl::removeNaNFromPointCloud<PointNormal>(*cloud, *dense_cloud, index);
+
+      PointCloud<PointNormal>::Ptr cloud_subsampled (new PointCloud<PointNormal> ());
+      VoxelGrid<PointNormal> subsampling_filter;
+      subsampling_filter.setInputCloud(dense_cloud);
+      subsampling_filter.setLeafSize(0.1, 0.1, 0.1);
+      subsampling_filter.filter(*cloud_subsampled);
+
+      return cloud_subsampled;
     }
 
     PointCloud<PointNormal>::Ptr Scanner::getCloudCached(int mi, int ti, int pi, Model &model) {
