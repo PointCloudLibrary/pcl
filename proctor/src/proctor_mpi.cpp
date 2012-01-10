@@ -1,9 +1,11 @@
-#include "proctor/proctor_mpi.h"
-#include "proctor/detector.h"
 #include <string>
 #include <sstream>
 #include <boost/serialization/string.hpp>
 #include <boost/unordered_map.hpp>
+
+#include "proctor/proctor_mpi.h"
+#include "proctor/detector.h"
+#include "proctor/scanning_model_source.h"
 
 namespace mpi = boost::mpi;
 
@@ -45,10 +47,10 @@ namespace pcl {
     void ProctorMPI::test(Detector &detector, unsigned int seed) {
       cout << "Loading all models into all nodes" << endl;
       for (int mi = 0; mi < Config::num_models; mi++) {
-        Scene *scene = new Scene(mi, getFullPointCloud(mi));
+        Scene *scene = new Scene(mi, source_->getTrainingModel(mi));
         detector.train(*scene);
       }
-      //Proctor::test(detector, seed);
+
       srand(seed);
       const float theta_scale = (theta_max - theta_min) / RAND_MAX;
       const float phi_scale = (phi_max - phi_min) / RAND_MAX;
@@ -70,7 +72,7 @@ namespace pcl {
     int
     ProctorMPI::generate_feature(int model_index, Detector &detector) {
       cout << "Begin scanning model " << model_index << " (" << models[model_index].id << ")" << endl;
-      Scene *scene = new Scene(model_index, getFullPointCloud(model_index));
+      Scene *scene = new Scene(model_index, source_->getTrainingModel(model_index));
       cout << "Finished scanning model " << model_index << " (" << scene->id << ")" << endl;
 
       cout << "Begin training model " << model_index << " (" << scene->id << ")" << endl;

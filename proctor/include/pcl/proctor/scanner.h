@@ -4,10 +4,16 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
-
 namespace pcl {
+
   namespace proctor {
-    struct Model;
+
+    struct Model {
+      int id;
+      vtkPolyData *mesh;
+      float cx, cy, cz;
+      float scale;
+    };
 
     /** this class provides convenience methods for scanning meshes to point clouds */
     class Scanner {

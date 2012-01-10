@@ -54,7 +54,8 @@ namespace pcl {
           KdTree<Signature>::Ptr tree;
         } Entry;
 
-        Entry database[Config::num_models];
+        //Entry database[Config::num_models];
+        std::map<std::string, Entry> database;
 
         /**
          * do any offline processing
@@ -72,7 +73,7 @@ namespace pcl {
          * populate classifier[candidate model] with a similarity score (higher is better)
          * populate registration[candidate model] with a distance score (lower is better, but 0 means didn't try)
          */
-        int query(PointCloud<PointNormal>::Ptr scene, float *classifier, double *registration);
+        std::string query(Scene scene, float *classifier, double *registration);
 
         /** start a visualizer; if called, must be called before training/querying */
         void enableVisualization();
@@ -91,10 +92,10 @@ namespace pcl {
         PointCloud<Signature>::Ptr computeFeatures(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices);
 
         /** try to load the features from disk, or do it from scratch. for training only */
-        PointCloud<Signature>::Ptr obtainFeatures(Scene &scene, IndicesPtr indices);
+        PointCloud<Signature>::Ptr obtainFeatures(Scene &scene, IndicesPtr indices, bool is_test_phase);
 
         /** run IA_RANSAC and ICP to judge similarity */
-        double computeRegistration(Entry &source, int mi, int ci);
+        double computeRegistration(Entry &source, std::string id, int ci);
 
       private:
 

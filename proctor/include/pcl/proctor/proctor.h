@@ -14,18 +14,13 @@ namespace pcl {
 
   namespace proctor {
 
-    struct Model {
-      int id;
-      vtkPolyData *mesh;
-      float cx, cy, cz;
-      float scale;
-    };
+    class ScanningModelSource;
 
     struct Scene {
-      int id;
+      std::string id;
       PointCloud<PointNormal>::Ptr cloud;
 
-      Scene(int id, PointCloud<PointNormal>::Ptr cloud) : id(id), cloud(cloud) {};
+      Scene(std::string id, PointCloud<PointNormal>::Ptr cloud) : id(id), cloud(cloud) {};
     };
 
     class Proctor {
@@ -43,10 +38,6 @@ namespace pcl {
         /** return a random indices list; use srand() to influence the output */
         static IndicesPtr randomSubset(int n, int r);
 
-        /** read meshes and metadata from disk; this populates models */
-        static void readModels(const char *base, int max_models, unsigned int seed);
-
-        PointCloud<PointNormal>::Ptr getFullPointCloud(int mi);
 
         /** load/generate training data and pass to detector */
         virtual void train(Detector &detector);
@@ -62,6 +53,8 @@ namespace pcl {
 
         /** print the timing data */
         void printTimer();
+
+        void printConfusionMatrix(std::map<std::string, std::map<std::string, int> > &guesses);
 
         /** print the results of testing */
         virtual void printResults(Detector &detector);
@@ -101,6 +94,14 @@ namespace pcl {
         /** the timer */
         Timer<NUM_BINS> timer;
 
+        void setModelSource(ScanningModelSource *source) {
+          this->source_ = source;
+        }
+
+      protected:
+        ScanningModelSource *source_;
+
+        std::vector<std::string> model_ids;
     };
 
   }

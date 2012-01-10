@@ -32,6 +32,8 @@ if(build)
   set(incs
       include/pcl/${SUBSYS_NAME}/config.h
       include/pcl/${SUBSYS_NAME}/detector.h
+      include/pcl/${SUBSYS_NAME}/model_source.h
+      include/pcl/${SUBSYS_NAME}/scanning_model_source.h
       include/pcl/${SUBSYS_NAME}/proctor.h
       include/pcl/${SUBSYS_NAME}/scanner.h
       include/pcl/${SUBSYS_NAME}/timer.h
@@ -49,6 +51,9 @@ if(build)
                      ${incs}
                      ${impl_incs}
                      src/main.cpp 
+                     src/model_source.cpp
+                     src/scanning_model_source.cpp
+                     src/confusion_matrix.cpp
                      src/detector.cpp 
                      src/proctor.cpp 
                      src/proctor_mpi.cpp

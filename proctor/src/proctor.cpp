@@ -5,6 +5,7 @@
 #include <vtkPoints.h>
 
 #include "proctor/proctor.h"
+#include "proctor/scanning_model_source.h"
 
 #ifdef _MSC_VER
 # define snprintf _snprintf
@@ -38,118 +39,27 @@ namespace pcl {
       return subset;
     }
 
-    void Proctor::readModels(const char *base, int max_models, unsigned int seed) {
-      srand(seed);
-      IndicesPtr model_subset = randomSubset(max_models, Config::num_models);
-      for (int mi = 0; mi < Config::num_models; mi++) {
-        int id = (*model_subset)[mi];
-        char path[256];
-        FILE *file;
-        int vertices, faces, edges;
-
-        // read mesh
-        models[mi].id = id;
-        snprintf(path, sizeof(path), "%s/%d/m%d/m%d.off", base, id / 100, id, id);
-        file = fopen(path, "r");
-        int line = 1;
-
-        // read header
-        if (fscanf(file, "OFF\n%d %d %d\n", &vertices, &faces, &edges) != 3) {
-          cerr << "invalid OFF header in file " << path << endl;
-          exit(-1);
-        } else {
-          line += 2;
-        }
-
-        // read vertices
-        vtkFloatArray *fa = vtkFloatArray::New();
-        fa->SetNumberOfComponents(3);
-        float (*v)[3] = reinterpret_cast<float (*)[3]>(fa->WritePointer(0, 3 * vertices));
-        for (int j = 0; j < vertices; j++) {
-          if (fscanf(file, "%f %f %f\n", &v[j][0], &v[j][1], &v[j][2]) != 3) {
-            cerr << "invalid vertex in file " << path << " on line " << line << endl;
-            exit(-1);
-          } else {
-            ++line;
-          }
-        }
-        vtkPoints *p = vtkPoints::New();
-        p->SetData(fa); fa->Delete();
-
-        // read faces
-        vtkCellArray *ca = vtkCellArray::New();
-        vtkIdType (*f)[4] = reinterpret_cast<vtkIdType (*)[4]>(ca->WritePointer(faces, 4 * faces));
-        for (int j = 0; j < faces; j++) {
-          f[j][0] = 3; // only supports triangles...
-          if (fscanf(file, "3 %lld %lld %lld\n", &f[j][1], &f[j][2], &f[j][3]) != 3) {
-            cerr << "invalid face in file " << path << " on line " << line << endl;
-            exit(-1);
-          } else {
-            ++line;
-          }
-        }
-
-        fclose(file);
-
-        models[mi].mesh = vtkPolyData::New(); // lives forever
-        models[mi].mesh->SetPoints(p); p->Delete();
-        models[mi].mesh->SetPolys(ca); ca->Delete();
-
-        // read metadata
-        snprintf(path, sizeof(path), "%s/%d/m%d/m%d_info.txt", base, id / 100, id, id);
-        file = fopen(path, "r");
-        while (!feof(file)) {
-          char buf[256];
-          if (fgets(buf, sizeof(buf), file) != NULL) {
-            if (!strncmp("center: ", buf, 8)) {
-              if (sscanf(buf, "center: (%f,%f,%f)\n", &models[mi].cx, &models[mi].cy, &models[mi].cz) != 3) {
-                cerr << "invalid centroid in file " << path << endl;
-                cerr << buf;
-                exit(-1);
-              }
-            } else if (!strncmp("scale: ", buf, 7)) {
-              if (sscanf(buf, "scale: %f\n", &models[mi].scale) != 1) {
-                cerr << "invalid scale in file " << path << endl;
-                cerr << buf;
-                exit(-1);
-              }
-            }
-          }
-        } // end while over info lines
-        fclose(file);
-      } // end for over models
-    }
-
-    PointCloud<PointNormal>::Ptr
-    Proctor::getFullPointCloud(int mi) {
-        PointCloud<PointNormal>::Ptr full_cloud(new PointCloud<PointNormal>());
-
-        for (int ti = 0; ti < theta_count; ti++) {
-          for (int pi = 0; pi < phi_count; pi++) {
-            *full_cloud += *Scanner::getCloudCached(mi, ti, pi, models[mi]);
-            flush(cout << '.');
-          }
-        }
-        cout << endl;
-
-        return full_cloud;
-    }
-
     void Proctor::train(Detector &detector) {
+      source_->getModelIDs(model_ids);
+
       cout << "Proctor beginning training" << endl;
 
       cout << "[models]" << endl;
-      timer.start();
-      PointCloud<PointNormal>::Ptr scenes[Config::num_models];
-      for (int mi = 0; mi < Config::num_models; mi++) {
-        cout << "Begin scanning model " << mi << " (" << models[mi].id << ")" << endl;
-        Scene *scene = new Scene(mi, getFullPointCloud(mi));
-        cout << "Finished scanning model " << mi << " (" << scene->id << ")" << endl;
 
-        cout << "Begin training model " << mi << " (" << scene->id << ")" << endl;
+      timer.start();
+
+      for (int mi = 0; mi < Config::num_models; mi++) {
+        std::string model_id = model_ids[mi];
+        cout << "Begin scanning model " << mi << " (" << model_id << ")" << endl;
+        Scene *scene = new Scene(model_id, source_->getTrainingModel(model_id));
+        cout << "Finished scanning model " << mi << " (" << model_id << ")" << endl;
+        cout << endl;
+
+        cout << "Begin training model " << mi << " (" << model_id << ")" << endl;
         // TODO Time the training phase
         detector.train(*scene);
-        cout << "Finished training model " << mi << " (" << scene->id << ")" << endl;
+        cout << "Finished training model " << mi << " (" << model_id << ")" << endl;
+        cout << endl;
         cout << endl;
       }
       timer.stop(OBTAIN_CLOUD_TRAINING);
@@ -159,30 +69,44 @@ namespace pcl {
 
     void Proctor::test(Detector &detector, unsigned int seed) {
       srand(seed);
-      const float theta_scale = (theta_max - theta_min) / RAND_MAX;
-      const float phi_scale = (phi_max - phi_min) / RAND_MAX;
+      //const float theta_scale = (theta_max - theta_min) / RAND_MAX;
+      //const float phi_scale = (phi_max - phi_min) / RAND_MAX;
 
-      // prepare test vectors in advance
-      for (int ni = 0; ni < Config::num_trials; ni++) {
-        scenes[ni].mi = rand() % Config::num_models;
-        scenes[ni].theta = theta_min + rand() * theta_scale;
-        scenes[ni].phi = phi_min + rand() * phi_scale;
-      }
+      //// prepare test vectors in advance
+      //for (int ni = 0; ni < Config::num_trials; ni++) {
+        //scenes[ni].mi = rand() % Config::num_models;
+        //scenes[ni].theta = theta_min + rand() * theta_scale;
+        //scenes[ni].phi = phi_min + rand() * phi_scale;
+      //}
 
       // run the tests
       trace = 0;
       memset(confusion, 0, sizeof(confusion));
+
+      std::map<std::string, std::map<std::string, int> > guesses;
+
       for (int ni = 0; ni < Config::num_trials; ni++) {
         cout << "[test " << ni << "]" << endl;
+
+        std::string truth_id = model_ids[ni % model_ids.size()];
+
+        std::map<std::string, int>& guesses_for_id = guesses[truth_id];
+
         timer.start();
-        PointCloud<PointNormal>::Ptr scene = Scanner::getCloud(scenes[ni], models[scenes[ni].mi]);
+        PointCloud<PointNormal>::Ptr test_cloud = source_->getTestModel(truth_id);
         timer.stop(OBTAIN_CLOUD_TESTING);
+
         cout << "scanned model " << scenes[ni].mi << endl;
 
         timer.start();
         int guess;
         try {
-          guess = detector.query(scene, classifier[ni], registration[ni]);
+          Scene test_scene(truth_id, test_cloud);
+          std::string guessed_id = detector.query(test_scene, classifier[ni], registration[ni]);
+
+          guesses_for_id[guessed_id] += 1;
+          cout << "detector guessed " << guessed_id << endl;
+          guess = 0;
         } catch (exception &e) {
           cout << "Detector exception" << endl;
           cout << e.what() << endl;
@@ -191,11 +115,14 @@ namespace pcl {
           memset(registration[ni], 0, sizeof(registration[ni]));
         }
         timer.stop(DETECTOR_TEST);
-        cout << "detector guessed " << guess << endl;
 
         confusion[scenes[ni].mi][guess]++;
         if (guess == scenes[ni].mi) trace++;
+
+        cout << endl;
       }
+
+      printConfusionMatrix(guesses);
     }
 
     typedef struct {
@@ -283,13 +210,7 @@ namespace pcl {
       printClassifierStats();
 
       // confusion matrix
-      printf("[confusion matrix]\n");
-      for (int i = 0; i < Config::num_models; i++) {
-        for (int j = 0; j < Config::num_models; j++) {
-          printf(" %3d", confusion[i][j]);
-        }
-        printf("\n");
-      }
+
 
       // timing
       printf("[timing]\n");
@@ -297,5 +218,29 @@ namespace pcl {
       printf("[detector timing]\n");
       detector.printTimer();
     }
+
+    void Proctor::printConfusionMatrix(std::map<std::string, std::map<std::string, int> > &guesses) {
+      cout << endl;
+      cout << "[confusion matrix]" << endl;
+
+      //std::map<std::string, std::map<std::string, int> >::iterator it;
+      //for ( it=guesses.begin() ; it != guesses.end(); it++ ) {
+        //std::string truth = (*it).first;
+        //cout << truth << ":" << endl;
+      //}
+
+      for(std::vector<std::string>::iterator it = model_ids.begin(); it != model_ids.end(); ++it) {
+        cout << *it << ":";
+        for(std::vector<std::string>::iterator it2 = model_ids.begin(); it2 != model_ids.end(); ++it2) {
+          cout << "\t" << guesses[*it][*it2];
+        }
+
+        cout << endl;
+      }
+
+      cout << endl;
+    }
   }
+
+
 }

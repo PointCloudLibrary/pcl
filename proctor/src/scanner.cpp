@@ -102,19 +102,20 @@ namespace pcl {
     }
 
     PointCloud<PointNormal>::Ptr Scanner::getCloudCached(int mi, int ti, int pi, Model &model) {
+      //TODO Get rid of mi
       Scan scan = {
         mi,
         Proctor::theta_start + ti * Proctor::theta_step,
         Proctor::phi_start + pi * Proctor::phi_step
       };
       char name[22];
-      sprintf(name, "scan_%04d_%03.0f_%03.0f.pcd", mi, deg(scan.theta), deg(scan.phi));
+      sprintf(name, "scan_%04d_%03.0f_%03.0f.pcd", model.id, deg(scan.theta), deg(scan.phi));
       if (ifstream(name)) {
         PointCloud<PointNormal>::Ptr cloud (new PointCloud<PointNormal>());
         io::loadPCDFile(name, *cloud);
         return cloud;
       } else {
-        PointCloud<PointNormal>::Ptr cloud = getCloud(scan, Proctor::models[mi]);
+        PointCloud<PointNormal>::Ptr cloud = getCloud(scan, model);
         io::savePCDFileBinary(name, *cloud);
         return cloud;
       }

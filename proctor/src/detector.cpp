@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include <pcl/features/fpfh.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/uniform_sampling.h>
@@ -7,6 +9,7 @@
 
 #include "proctor/detector.h"
 #include "proctor/proctor.h"
+#include "proctor/ia_ransac_sub.h"
 
 
 namespace pcl {
@@ -87,25 +90,27 @@ namespace pcl {
     };
 
     /** Detector */
-    const double Detector::keypoint_separation = 0.04;
-    const int Detector::max_votes = 20;
-    const int Detector::num_registration = 2;
+    const double Detector::keypoint_separation = 0.1;
+    const int Detector::max_votes = 100;
+    const int Detector::num_registration = 4;
 
     /* Trains a single model */
     void Detector::train(Scene &scene) {
-      srand(time(NULL));
+      srand(0);
       IndicesPtr keypoints = computeKeypoints(scene.cloud);
-      PointCloud<Detector::Signature>::Ptr features = obtainFeatures(scene, keypoints);
+      PointCloud<Detector::Signature>::Ptr features = obtainFeatures(scene, keypoints, false);
       //PointCloud<Signature>::Ptr features (new PointCloud<Signature>);
       //for (int mi = 0; mi < Config::num_models; mi++) {
         //cout << "begin model " << mi << endl;
-      Entry &e = database[scene.id];
+
+      Entry e;
       e.cloud = scene.cloud;
       e.indices = keypoints;
       //
       e.features = features;
       e.tree = KdTree<Signature>::Ptr(new KdTreeFLANN<Signature>());
       e.tree->setInputCloud(e.features);
+      database[scene.id] = e;
       //timer.stop(OBTAIN_FEATURES_TRAINING);
       //*features += *e.features;
       //cout << "finished model " << mi << endl;
@@ -117,7 +122,7 @@ namespace pcl {
     }
 
     typedef struct {
-      int mi;
+      std::string id;
       float votes;
     } Candidate;
 
@@ -144,14 +149,17 @@ namespace pcl {
       return votes;
     }
 
-    int Detector::query(PointCloud<PointNormal>::Ptr scene, float *classifier, double *registration) {
+    // TODO scene as a reference
+    std::string Detector::query(Scene scene, float *classifier, double *registration) {
+      cout << "Running a test on model " << scene.id << endl;
+
       Entry e;
-      e.cloud = scene;
+      e.cloud = scene.cloud;
       timer.start();
       e.indices = computeKeypoints(e.cloud);
       timer.stop(KEYPOINTS_TESTING);
       timer.start();
-      e.features = computeFeatures(e.cloud, e.indices);
+      e.features = obtainFeatures(scene, e.indices, true);
       timer.stop(COMPUTE_FEATURES_TESTING);
       // let each point cast votes
       timer.start();
@@ -160,50 +168,60 @@ namespace pcl {
       float time = 0;
 
       StopWatch s;
-      for (int mi = 0; mi < Config::num_models; mi++) {
-        Scene scene(mi, boost::shared_ptr<PointCloud<PointNormal> >());
-        PointCloud<Detector::Signature>::Ptr features = obtainFeatures(scene, IndicesPtr());
 
-        Entry match;
-        match.tree = KdTree<Signature>::Ptr(new KdTreeFLANN<Signature>());
-        match.tree->setInputCloud(features);
-        classifier[mi] = get_votes(e, match);
-      }
-
-      time += s.getTimeSeconds();
-      cout << "Total K-Nearest Search Time for Query: " << time << endl;
+      std::map<std::string, Entry>::iterator it;
 
       // get top candidates
-      vector<Candidate> ballot(Config::num_models);
-      for (int mi = 0; mi < Config::num_models; mi++) {
-        ballot[mi].mi = mi;
-        ballot[mi].votes = classifier[mi];
+      vector<Candidate> ballot;
+      for ( it = database.begin() ; it != database.end(); it++ ) {
+        std::string target_id = (*it).first;
+        Entry target = (*it).second;
+
+        Candidate* candidate = new Candidate;
+        candidate->id = target_id;
+        candidate->votes = get_votes(e, target);
+        ballot.push_back(*candidate);
       }
+
       sort(ballot.begin(), ballot.end());
-      timer.stop(VOTING_CLASSIFIER);
-      if (vis.get()) {
-        for (int ci = 0; ci < num_registration; ci++) {
-          vis->runOnVisualizationThreadOnce(show_candidate(ci, database[ballot[ci].mi].cloud));
-        }
-      }
-      // run registration on top candidates
-      memset(registration, 0, Config::num_models * sizeof(*registration));
+      //for (int mi = 0; mi < Config::num_models; mi++) {
+        //Scene scene(mi, boost::shared_ptr<PointCloud<PointNormal> >());
+        //PointCloud<Detector::Signature>::Ptr features = obtainFeatures(scene, IndicesPtr());
+
+        //Entry match;
+        //match.tree = KdTree<Signature>::Ptr(new KdTreeFLANN<Signature>());
+        //match.tree->setInputCloud(features);
+        //classifier[mi] = get_votes(e, match);
+      //}
+
+      time += s.getTimeSeconds();
+      //cout << "Total K-Nearest Search Time for Query: " << time << endl;
+
+      //timer.stop(VOTING_CLASSIFIER);
+      //if (vis.get()) {
+        //for (int ci = 0; ci < num_registration; ci++) {
+          //vis->runOnVisualizationThreadOnce(show_candidate(ci, database[ballot[ci].mi].cloud));
+        //}
+      //}
+       //run registration on top candidates
+      //memset(registration, 0, Config::num_models * sizeof(*registration));
+      std::map<std::string, double> reg_scores;
       double best = numeric_limits<double>::infinity();
-      int guess = -1;
+      std::string guessed_id = "";
       for (int ci = 0; ci < num_registration; ci++) {
-        int mi = ballot[ci].mi;
-        flush(cout << mi << ": " << ballot[ci].votes);
-        registration[mi] = computeRegistration(e, mi, ci);
-        cout << " / " << registration[mi] << endl;
-        if (registration[mi] < best) {
-          guess = mi;
-          best = registration[mi];
+        std::string id = ballot[ci].id;
+        flush(cout << id << ": " << ballot[ci].votes);
+        reg_scores[id] = computeRegistration(e, id, ci);
+        cout << " / " << reg_scores[id] << endl;
+        if (reg_scores[id] < best) {
+          guessed_id = id;
+          best = reg_scores[id];
         }
       }
-      for (int ci = num_registration; ci < Config::num_models; ci++) {
-        cout << ballot[ci].mi << ": " << ballot[ci].votes << endl;
-      }
-      return guess;
+      //for (int ci = num_registration; ci < Config::num_models; ci++) {
+        //cout << ballot[ci].mi << ": " << ballot[ci].votes << endl;
+      //}
+      return guessed_id;
     }
 
     void Detector::enableVisualization() {
@@ -242,7 +260,22 @@ namespace pcl {
       us.setInputCloud(cloud);
       us.compute(leaves);
       indices->assign(leaves.points.begin(), leaves.points.end()); // can't use operator=, probably because of different allocators
+
       return indices;
+
+      srand(0);
+      int r = 200;
+      IndicesPtr subset (new vector<int>());
+      for (int i = 0; i < r; i++) {
+        if (indices->size() == 0) {
+          break;
+        }
+        int pick = rand() % indices->size();
+        subset->push_back(indices->at(pick));
+        indices->erase(indices->begin() + pick);
+      }
+      cout << "Subset Size: " << subset->size() << endl;
+      return subset;
     }
 
     PointCloud<Detector::Signature>::Ptr Detector::computeFeatures(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices) {
@@ -261,9 +294,21 @@ namespace pcl {
       return features;
     }
 
-    PointCloud<Detector::Signature>::Ptr Detector::obtainFeatures(Scene &scene, IndicesPtr indices) {
-      char name[17];
-      sprintf(name, "feature_%04d.pcd", scene.id);
+    // TODO Enum for is_test_phase
+    PointCloud<Detector::Signature>::Ptr Detector::obtainFeatures(Scene &scene, IndicesPtr indices, bool is_test_phase) {
+      std::string name_str = std::string("feature_") + scene.id;
+
+      if (is_test_phase) {
+        name_str += "_test";
+      }
+      else {
+        name_str += "_train";
+      }
+
+      name_str += ".pcd";
+
+      const char *name = name_str.c_str();
+
       if (ifstream(name)) {
         PointCloud<Signature>::Ptr features (new PointCloud<Signature>());
         io::loadPCDFile(name, *features);
@@ -277,13 +322,15 @@ namespace pcl {
       }
     }
 
-    double Detector::computeRegistration(Entry &source, int mi, int ci) {
-      Entry &target = database[mi];
+    double Detector::computeRegistration(Entry &source, std::string id, int ci) {
+      Entry& target = database[id];
       typedef boost::function<void(const PointCloud<PointNormal> &cloud_src,
                                   const vector<int> &indices_src,
                                   const PointCloud<PointNormal> &cloud_tgt,
                                   const vector<int> &indices_tgt)> f;
 
+      //cout << "Source: " << id << "\tSize: " << source.cloud->size() << "\tIndices Size: " << source.indices->size() << "\tFeature Size: " << source.features->size() << endl;
+      //cout << "Target: " << id << "\tSize: " << target.cloud->size() << "\tIndices Size: " << target.indices->size() << "\tFeature Size: " << target.features->size() << endl;
       // Copy the source/target clouds with only the subset of points that
       // also features calculated for them.
       PointCloud<PointNormal>::Ptr source_subset(
@@ -294,19 +341,24 @@ namespace pcl {
       timer.start();
 
 
+      // TODO Filtering the source cloud makes it much faster when computing the
+      // error metric, but may not be as good
       SampleConsensusInitialAlignment<PointNormal, PointNormal, Signature> ia_ransac;
       ia_ransac.setMinSampleDistance(0.05);
       ia_ransac.setMaxCorrespondenceDistance(0.5);
       ia_ransac.setMaximumIterations(256);
       ia_ransac.setInputCloud(source_subset);
       ia_ransac.setSourceFeatures(source.features);
+      //ia_ransac.setSourceIndices(source.indices);
       ia_ransac.setInputTarget(target_subset);
       ia_ransac.setTargetFeatures(target.features);
+      //ia_ransac.setTargetIndices(target.indices);
 
       if (vis.get()) {
         f updater (visualization_callback(ci, vis.get()));
         ia_ransac.registerVisualizationCallback(updater);
       }
+
 
       PointCloud<PointNormal>::Ptr aligned (new PointCloud<PointNormal>());
       ia_ransac.align(*aligned);
