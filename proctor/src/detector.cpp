@@ -127,11 +127,11 @@ namespace pcl {
 
         clock_t start = clock();
         StopWatch s;
-        match.tree->nearestKSearch(*query.features, pi, max_votes, indices, distances);
+        int num_found = match.tree->nearestKSearch(*query.features, pi, max_votes, indices, distances);
 
-        for (int ri = 0; ri < max_votes; ri++) {
-          //votes += 1. / (distances[ri] + numeric_limits<float>::epsilon());
-          votes -= distances[ri];
+        for (int ri = 0; ri < num_found; ri++) {
+          votes += 1. / (distances[ri] + numeric_limits<float>::epsilon());
+          //votes -= distances[ri];
         }
       }
 
