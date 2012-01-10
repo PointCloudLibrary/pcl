@@ -20,8 +20,13 @@ namespace pcl {
   namespace proctor {
     struct Scene;
 
-    class Detector {
+    class Proposer;
+
+    class Detector
+    {
       public:
+        typedef boost::shared_ptr<Proposer> ProposerPtr;
+        typedef boost::shared_ptr<const Proposer> ProposerConstPtr;
 
         /** density of keypoints, used as a voxel size */
         static const double keypoint_separation;
@@ -61,7 +66,6 @@ namespace pcl {
          * do any offline processing
          * models[i] is a registered point cloud of the ith model
          */
-        // TODO const reference?
         void train(Scene &scene);
 
         double get_votes(Entry &query, Entry &match);
@@ -95,7 +99,13 @@ namespace pcl {
         PointCloud<Signature>::Ptr obtainFeatures(Scene &scene, IndicesPtr indices, bool is_test_phase);
 
         /** run IA_RANSAC and ICP to judge similarity */
-        double computeRegistration(Entry &source, std::string id, int ci);
+        double
+        computeRegistration(Entry &source, std::string id, int ci);
+
+        void
+        setProposer(const ProposerPtr &proposer) {
+          proposer_ = proposer;
+        }
 
       private:
 
@@ -103,8 +113,9 @@ namespace pcl {
 
         KdTree<Signature>::Ptr tree;
 
+        ProposerPtr proposer_;
     };
   }
 }
 
-#endif //#ifndef DETECTOR_H_
+#endif

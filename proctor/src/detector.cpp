@@ -9,6 +9,7 @@
 
 #include "proctor/detector.h"
 #include "proctor/proctor.h"
+#include "proctor/proposer.h"
 
 
 namespace pcl {
@@ -109,15 +110,6 @@ namespace pcl {
       database[scene.id] = e;
     }
 
-    typedef struct {
-      std::string id;
-      float votes;
-    } Candidate;
-
-    bool operator<(const Candidate &a, const Candidate &b) {
-      return a.votes > b.votes; // sort descending
-    }
-
     double Detector::get_votes(Entry &query, Entry &match) {
       double votes = 0;
       for (unsigned int pi = 0; pi < query.indices->size(); pi++) {
@@ -148,46 +140,26 @@ namespace pcl {
       timer.start();
       e.features = obtainFeatures(scene, e.indices, true);
       timer.stop(COMPUTE_FEATURES_TESTING);
-      // let each point cast votes
-      timer.start();
+
       memset(classifier, 0, Config::num_models * sizeof(*classifier));
       clock_t totalTime = 0;
       float time = 0;
 
       StopWatch s;
 
-      std::map<std::string, Entry>::iterator it;
+      std::vector<std::string> proposed;
+      proposer_->getProposed(num_registration, e, database, proposed);
 
-      // get top candidates
-      vector<Candidate> ballot;
-      for ( it = database.begin() ; it != database.end(); it++ ) {
-        std::string target_id = (*it).first;
-        Entry target = (*it).second;
-
-        Candidate* candidate = new Candidate;
-        candidate->id = target_id;
-        candidate->votes = get_votes(e, target);
-        ballot.push_back(*candidate);
-      }
-
-      sort(ballot.begin(), ballot.end());
-
-      time += s.getTimeSeconds();
-      //cout << "Total K-Nearest Search Time for Query: " << time << endl;
-
-      //timer.stop(VOTING_CLASSIFIER);
-      //if (vis.get()) {
-        //for (int ci = 0; ci < num_registration; ci++) {
-          //vis->runOnVisualizationThreadOnce(show_candidate(ci, database[ballot[ci].mi].cloud));
-        //}
-      //}
       std::map<std::string, double> reg_scores;
       double best = numeric_limits<double>::infinity();
       std::string guessed_id = "";
-      for (int ci = 0; ci < num_registration; ci++) {
-        std::string id = ballot[ci].id;
-        flush(cout << id << ": " << ballot[ci].votes);
-        reg_scores[id] = computeRegistration(e, id, ci);
+      std::vector<std::string>::iterator proposed_it;
+      for (proposed_it = proposed.begin(); proposed_it != proposed.end(); proposed_it++ )
+      {
+        std::string id = *proposed_it;
+        //flush(cout << id << ": " << ballot[ci].votes);
+        cout << id << ": ";
+        reg_scores[id] = computeRegistration(e, id, 0); // TODO Figure out ci
         cout << " / " << reg_scores[id] << endl;
         if (reg_scores[id] < best) {
           guessed_id = id;
