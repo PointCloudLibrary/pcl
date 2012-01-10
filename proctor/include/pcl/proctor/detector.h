@@ -73,7 +73,7 @@ namespace pcl {
          * populate classifier[candidate model] with a similarity score (higher is better)
          * populate registration[candidate model] with a distance score (lower is better, but 0 means didn't try)
          */
-        std::string query(Scene scene, float *classifier, double *registration);
+        std::string query(Scene &scene, float *classifier, double *registration);
 
         /** start a visualizer; if called, must be called before training/querying */
         void enableVisualization();

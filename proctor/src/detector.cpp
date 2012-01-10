@@ -138,9 +138,8 @@ namespace pcl {
       return votes;
     }
 
-    // TODO scene as a reference
-    std::string Detector::query(Scene scene, float *classifier, double *registration) {
-      cout << "Running a test on model " << scene.id << endl;
+    std::string Detector::query(Scene &scene, float *classifier, double *registration) {
+      cout << "detector testing " << scene.id << endl;
 
       Entry e;
       e.cloud = scene.cloud;
