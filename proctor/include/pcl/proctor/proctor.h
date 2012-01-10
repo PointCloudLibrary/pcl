@@ -16,6 +16,8 @@ namespace pcl {
 
     class ScanningModelSource;
 
+    class ConfusionMatrix;
+
     struct Scene {
       std::string id;
       PointCloud<PointNormal>::Ptr cloud;
@@ -54,7 +56,7 @@ namespace pcl {
         /** print the timing data */
         void printTimer();
 
-        void printConfusionMatrix(std::map<std::string, std::map<std::string, int> > &guesses);
+        void printConfusionMatrix(ConfusionMatrix &matrix);
 
         /** print the results of testing */
         virtual void printResults(Detector &detector);
@@ -87,9 +89,6 @@ namespace pcl {
 
         /** detector's registration distance ratings [trial][model candidate] */
         double registration[Config::num_trials][Config::num_models];
-
-        /** total number of correct guesses */
-        int trace;
 
         /** the timer */
         Timer<NUM_BINS> timer;

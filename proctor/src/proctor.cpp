@@ -6,6 +6,7 @@
 
 #include "proctor/proctor.h"
 #include "proctor/scanning_model_source.h"
+#include "proctor/confusion_matrix.h"
 
 #ifdef _MSC_VER
 # define snprintf _snprintf
@@ -60,7 +61,6 @@ namespace pcl {
         detector.train(*scene);
         cout << "Finished training model " << mi << " (" << model_id << ")" << endl;
         cout << endl;
-        cout << endl;
       }
       timer.stop(OBTAIN_CLOUD_TRAINING);
 
@@ -80,10 +80,10 @@ namespace pcl {
       //}
 
       // run the tests
-      trace = 0;
       memset(confusion, 0, sizeof(confusion));
 
       std::map<std::string, std::map<std::string, int> > guesses;
+      ConfusionMatrix confusion_matrix;
 
       for (int ni = 0; ni < Config::num_trials; ni++) {
         cout << "[test " << ni << "]" << endl;
@@ -105,6 +105,7 @@ namespace pcl {
           std::string guessed_id = detector.query(test_scene, classifier[ni], registration[ni]);
 
           guesses_for_id[guessed_id] += 1;
+          confusion_matrix.increment(truth_id, guessed_id);
           cout << "detector guessed " << guessed_id << endl;
           guess = 0;
         } catch (exception &e) {
@@ -116,13 +117,10 @@ namespace pcl {
         }
         timer.stop(DETECTOR_TEST);
 
-        confusion[scenes[ni].mi][guess]++;
-        if (guess == scenes[ni].mi) trace++;
-
         cout << endl;
       }
 
-      printConfusionMatrix(guesses);
+      printConfusionMatrix(confusion_matrix);
     }
 
     typedef struct {
@@ -197,10 +195,6 @@ namespace pcl {
     }
 
     void Proctor::printResults(Detector &detector) {
-      // correct percentage
-      printf("[overview]\n");
-      printf("%d of %d correct (%.2f%%)\n", trace, Config::num_trials, float(trace) / Config::num_trials * 100);
-
       // precision-recall
       printf("[precision-recall]\n");
       printPrecisionRecall();
@@ -209,9 +203,6 @@ namespace pcl {
       printf("[classifier stats]\n");
       printClassifierStats();
 
-      // confusion matrix
-
-
       // timing
       printf("[timing]\n");
       printTimer();
@@ -219,24 +210,15 @@ namespace pcl {
       detector.printTimer();
     }
 
-    void Proctor::printConfusionMatrix(std::map<std::string, std::map<std::string, int> > &guesses) {
+    void Proctor::printConfusionMatrix(ConfusionMatrix &matrix) {
+      // correct percentage
+      printf("[overview]\n");
+      printf("%d of %d correct (%.2f%%)\n", matrix.trace(), matrix.total(), float(matrix.trace()) / matrix.total() * 100);
+
       cout << endl;
+
       cout << "[confusion matrix]" << endl;
-
-      //std::map<std::string, std::map<std::string, int> >::iterator it;
-      //for ( it=guesses.begin() ; it != guesses.end(); it++ ) {
-        //std::string truth = (*it).first;
-        //cout << truth << ":" << endl;
-      //}
-
-      for(std::vector<std::string>::iterator it = model_ids.begin(); it != model_ids.end(); ++it) {
-        cout << *it << ":";
-        for(std::vector<std::string>::iterator it2 = model_ids.begin(); it2 != model_ids.end(); ++it2) {
-          cout << "\t" << guesses[*it][*it2];
-        }
-
-        cout << endl;
-      }
+      matrix.printMatrix();
 
       cout << endl;
     }

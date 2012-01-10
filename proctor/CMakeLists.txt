@@ -31,6 +31,7 @@ if(build)
 
   set(incs
       include/pcl/${SUBSYS_NAME}/config.h
+      include/pcl/${SUBSYS_NAME}/confusion_matrix.h
       include/pcl/${SUBSYS_NAME}/detector.h
       include/pcl/${SUBSYS_NAME}/model_source.h
       include/pcl/${SUBSYS_NAME}/scanning_model_source.h
