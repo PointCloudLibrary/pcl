@@ -38,7 +38,6 @@
 #include <pcl/apps/openni_passthrough.h>
 // QT4
 #include <QApplication>
-#include <QGtkStyle>
 #include <QMutexLocker>
 #include <QEvent>
 #include <QObject>
