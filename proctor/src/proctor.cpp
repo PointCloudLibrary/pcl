@@ -48,7 +48,7 @@ namespace pcl {
       cout << "[models]" << endl;
 
       timer.start();
-
+#pragma omp parallel for
       for (int mi = 0; mi < Config::num_models; mi++) {
         std::string model_id = model_ids[mi];
         cout << "Begin scanning model " << mi << " (" << model_id << ")" << endl;
@@ -85,6 +85,7 @@ namespace pcl {
       std::map<std::string, std::map<std::string, int> > guesses;
       ConfusionMatrix confusion_matrix;
 
+//#pragma omp parallel for
       for (int ni = 0; ni < Config::num_trials; ni++) {
         cout << "[test " << ni << "]" << endl;
 
