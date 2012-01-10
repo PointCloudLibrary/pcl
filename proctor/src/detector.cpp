@@ -9,7 +9,6 @@
 
 #include "proctor/detector.h"
 #include "proctor/proctor.h"
-#include "proctor/ia_ransac_sub.h"
 
 
 namespace pcl {
@@ -182,8 +181,6 @@ namespace pcl {
           //vis->runOnVisualizationThreadOnce(show_candidate(ci, database[ballot[ci].mi].cloud));
         //}
       //}
-       //run registration on top candidates
-      //memset(registration, 0, Config::num_models * sizeof(*registration));
       std::map<std::string, double> reg_scores;
       double best = numeric_limits<double>::infinity();
       std::string guessed_id = "";
@@ -238,20 +235,6 @@ namespace pcl {
       indices->assign(leaves.points.begin(), leaves.points.end()); // can't use operator=, probably because of different allocators
 
       return indices;
-
-      srand(0);
-      int r = 200;
-      IndicesPtr subset (new vector<int>());
-      for (int i = 0; i < r; i++) {
-        if (indices->size() == 0) {
-          break;
-        }
-        int pick = rand() % indices->size();
-        subset->push_back(indices->at(pick));
-        indices->erase(indices->begin() + pick);
-      }
-      cout << "Subset Size: " << subset->size() << endl;
-      return subset;
     }
 
     PointCloud<Detector::Signature>::Ptr Detector::computeFeatures(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices) {
@@ -305,8 +288,6 @@ namespace pcl {
                                   const PointCloud<PointNormal> &cloud_tgt,
                                   const vector<int> &indices_tgt)> f;
 
-      //cout << "Source: " << id << "\tSize: " << source.cloud->size() << "\tIndices Size: " << source.indices->size() << "\tFeature Size: " << source.features->size() << endl;
-      //cout << "Target: " << id << "\tSize: " << target.cloud->size() << "\tIndices Size: " << target.indices->size() << "\tFeature Size: " << target.features->size() << endl;
       // Copy the source/target clouds with only the subset of points that
       // also features calculated for them.
       PointCloud<PointNormal>::Ptr source_subset(
@@ -322,7 +303,7 @@ namespace pcl {
       SampleConsensusInitialAlignment<PointNormal, PointNormal, Signature> ia_ransac;
       ia_ransac.setMinSampleDistance(0.05);
       ia_ransac.setMaxCorrespondenceDistance(0.5);
-      ia_ransac.setMaximumIterations(256);
+      ia_ransac.setMaximumIterations(1000);
       ia_ransac.setInputCloud(source_subset);
       ia_ransac.setSourceFeatures(source.features);
       //ia_ransac.setSourceIndices(source.indices);
