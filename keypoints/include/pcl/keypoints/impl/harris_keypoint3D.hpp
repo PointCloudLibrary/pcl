@@ -433,7 +433,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT>::refineCorners (typename PointCloudIn
         NNTp += nnT * surface->points[*iIt].getVector3fMap ();
       }
       if (NNT.determinant() != 0)
-        *cornerIt.getVector3fMap () = NNT.inverse () * NNTp;
+        cornerIt->getVector3fMap () = NNT.inverse () * NNTp;
       
       diff = (cornerIt->x - corner.x) * (cornerIt->x - corner.x) +
              (cornerIt->y - corner.y) * (cornerIt->y - corner.y) +
