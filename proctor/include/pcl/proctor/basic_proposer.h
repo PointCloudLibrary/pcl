@@ -19,10 +19,10 @@ namespace pcl {
         {}
 
         void
-        getProposed(int max_num, Detector::Entry &query, std::map<std::string, Detector::Entry> &database, std::vector<std::string> &output);
+        getProposed(int max_num, Entry &query, std::vector<std::string> &input, std::vector<std::string> &output);
 
         double
-        getVotes(Detector::Entry &query, Detector::Entry &match);
+        getVotes(Entry &query, Entry &match);
 
       private:
     };

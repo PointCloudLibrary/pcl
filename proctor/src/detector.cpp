@@ -3,14 +3,12 @@
 #include <pcl/features/fpfh.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/uniform_sampling.h>
-#include <pcl/registration/icp.h>
-#include <pcl/registration/ia_ransac.h>
 #include <pcl/common/time.h>
 
 #include "proctor/detector.h"
 #include "proctor/proctor.h"
 #include "proctor/proposer.h"
-
+#include "proctor/registration_proposer.h"
 
 namespace pcl {
   namespace proctor {
@@ -107,26 +105,7 @@ namespace pcl {
       e.tree = KdTree<Signature>::Ptr(new KdTreeFLANN<Signature>());
       e.tree->setInputCloud(e.features);
 
-      database[scene.id] = e;
-    }
-
-    double Detector::get_votes(Entry &query, Entry &match) {
-      double votes = 0;
-      for (unsigned int pi = 0; pi < query.indices->size(); pi++) {
-        vector<int> indices;
-        vector<float> distances;
-
-        clock_t start = clock();
-        StopWatch s;
-        int num_found = match.tree->nearestKSearch(*query.features, pi, max_votes, indices, distances);
-
-        for (int ri = 0; ri < num_found; ri++) {
-          votes += 1. / (distances[ri] + numeric_limits<float>::epsilon());
-          //votes -= distances[ri];
-        }
-      }
-
-      return votes;
+      (*database_)[scene.id] = e;
     }
 
     std::string Detector::query(Scene &scene, float *classifier, double *registration) {
@@ -147,26 +126,22 @@ namespace pcl {
 
       StopWatch s;
 
-      std::vector<std::string> proposed;
-      proposer_->getProposed(num_registration, e, database, proposed);
-
-      std::map<std::string, double> reg_scores;
-      double best = numeric_limits<double>::infinity();
-      std::string guessed_id = "";
-      std::vector<std::string>::iterator proposed_it;
-      for (proposed_it = proposed.begin(); proposed_it != proposed.end(); proposed_it++ )
+      std::vector<std::string> all_ids;
+      for (std::map<std::string, Entry>::iterator db_it = database_->begin(); db_it != database_->end(); db_it++)
       {
-        std::string id = *proposed_it;
-        //flush(cout << id << ": " << ballot[ci].votes);
-        cout << id << ": ";
-        reg_scores[id] = computeRegistration(e, id, 0); // TODO Figure out ci
-        cout << " / " << reg_scores[id] << endl;
-        if (reg_scores[id] < best) {
-          guessed_id = id;
-          best = reg_scores[id];
-        }
+        all_ids.push_back((*db_it).first);
       }
-      return guessed_id;
+
+      std::vector<std::string> proposed;
+      proposer_->setDatabase(database_);
+      proposer_->getProposed(num_registration, e, all_ids, proposed);
+
+      RegistrationProposer reg_proposer;
+      std::vector<std::string> picked;
+      reg_proposer.setDatabase(database_);
+      reg_proposer.getProposed(1, e, proposed, picked);
+
+      return picked[0];
     }
 
     void Detector::enableVisualization() {
@@ -253,60 +228,5 @@ namespace pcl {
       }
     }
 
-    double Detector::computeRegistration(Entry &source, std::string id, int ci) {
-      Entry& target = database[id];
-      typedef boost::function<void(const PointCloud<PointNormal> &cloud_src,
-                                  const vector<int> &indices_src,
-                                  const PointCloud<PointNormal> &cloud_tgt,
-                                  const vector<int> &indices_tgt)> f;
-
-      // Copy the source/target clouds with only the subset of points that
-      // also features calculated for them.
-      PointCloud<PointNormal>::Ptr source_subset(
-          new PointCloud<PointNormal>(*(source.cloud), *(source.indices)));
-      PointCloud<PointNormal>::Ptr target_subset(
-          new PointCloud<PointNormal>(*(target.cloud), *(target.indices)));
-
-      timer.start();
-
-
-      // TODO Filtering the source cloud makes it much faster when computing the
-      // error metric, but may not be as good
-      SampleConsensusInitialAlignment<PointNormal, PointNormal, Signature> ia_ransac;
-      ia_ransac.setMinSampleDistance(0.05);
-      ia_ransac.setMaxCorrespondenceDistance(0.5);
-      ia_ransac.setMaximumIterations(1000);
-      ia_ransac.setInputCloud(source_subset);
-      ia_ransac.setSourceFeatures(source.features);
-      //ia_ransac.setSourceIndices(source.indices);
-      ia_ransac.setInputTarget(target_subset);
-      ia_ransac.setTargetFeatures(target.features);
-      //ia_ransac.setTargetIndices(target.indices);
-
-      if (vis.get()) {
-        f updater (visualization_callback(ci, vis.get()));
-        ia_ransac.registerVisualizationCallback(updater);
-      }
-
-
-      PointCloud<PointNormal>::Ptr aligned (new PointCloud<PointNormal>());
-      ia_ransac.align(*aligned);
-      timer.stop(IA_RANSAC);
-
-      timer.start();
-      IterativeClosestPoint<PointNormal, PointNormal> icp;
-      PointCloud<PointNormal>::Ptr aligned2 (new PointCloud<PointNormal>());
-      icp.setInputCloud(aligned);
-      icp.setInputTarget(target.cloud);
-      icp.setMaxCorrespondenceDistance(0.1);
-      icp.setMaximumIterations(64);
-      if (vis.get()) {
-        f updater (visualization_callback(ci, vis.get()));
-        icp.registerVisualizationCallback(updater);
-      }
-      icp.align(*aligned2);
-      timer.stop(ICP);
-      return icp.getFitnessScore();
-    }
   }
 }

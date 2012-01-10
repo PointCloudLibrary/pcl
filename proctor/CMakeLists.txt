@@ -33,12 +33,14 @@ if(build)
       include/pcl/${SUBSYS_NAME}/basic_proposer.h
       include/pcl/${SUBSYS_NAME}/config.h
       include/pcl/${SUBSYS_NAME}/confusion_matrix.h
+      include/pcl/${SUBSYS_NAME}/database_entry.h
       include/pcl/${SUBSYS_NAME}/detector.h
       include/pcl/${SUBSYS_NAME}/model_source.h
       include/pcl/${SUBSYS_NAME}/scanning_model_source.h
       include/pcl/${SUBSYS_NAME}/proctor.h
       include/pcl/${SUBSYS_NAME}/proctor_mpi.h
       include/pcl/${SUBSYS_NAME}/proposer.h
+      include/pcl/${SUBSYS_NAME}/registration_proposer.h
       include/pcl/${SUBSYS_NAME}/scanner.h
       include/pcl/${SUBSYS_NAME}/timer.h
       include/pcl/${SUBSYS_NAME}/vtkLidarPoint.h
@@ -63,6 +65,7 @@ if(build)
                      src/detector.cpp
                      src/proctor.cpp
                      src/proposer.cpp
+                     src/registration_proposer.cpp
                      src/scanner.cpp
                     )
 

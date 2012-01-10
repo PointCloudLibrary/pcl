@@ -5,23 +5,41 @@
 #include <vector>
 #include <map>
 #include "proctor/detector.h"
+#include "proctor/database_entry.h"
 
 namespace pcl {
 
   namespace proctor {
+
+    struct Candidate {
+      std::string id;
+      float votes;
+    };
 
     class Proposer {
       public:
         typedef boost::shared_ptr<Proposer> Ptr;
         typedef boost::shared_ptr<const Proposer> ConstPtr;
 
+        typedef boost::shared_ptr<std::map<std::string, Entry> > DatabasePtr;
+        typedef boost::shared_ptr<const std::map<std::string, Entry> > ConstDatabasePtr;
+
         Proposer()
         {}
 
-        virtual void
-        getProposed(int max_num, Detector::Entry &query, std::map<std::string, Detector::Entry> &database, std::vector<std::string> &output) = 0;
+        void
+        setDatabase(const DatabasePtr database) {
+          database_ = database;
+        }
 
-      private:
+        virtual void
+        getProposed(int max_num, Entry &query, std::vector<std::string> &input, std::vector<std::string> &output) = 0;
+
+        virtual void
+        selectBestCandidates(int max_num, vector<Candidate> &ballot, std::vector<std::string> &output);
+
+      protected:
+        DatabasePtr database_;
     };
 
   }

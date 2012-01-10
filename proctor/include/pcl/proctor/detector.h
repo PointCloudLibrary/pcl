@@ -9,6 +9,7 @@
 
 #include "proctor/config.h"
 #include "proctor/timer.h"
+#include "proctor/database_entry.h"
 
 using std::vector;
 using std::stringstream;
@@ -25,8 +26,16 @@ namespace pcl {
     class Detector
     {
       public:
+        typedef FPFHSignature33 Signature; // TODO Get rid of this
         typedef boost::shared_ptr<Proposer> ProposerPtr;
         typedef boost::shared_ptr<const Proposer> ProposerConstPtr;
+
+        typedef boost::shared_ptr<std::map<std::string, Entry> > DatabasePtr;
+        typedef boost::shared_ptr<const std::map<std::string, Entry> > ConstDatabasePtr;
+
+        Detector() {
+          database_.reset(new std::map<std::string, Entry>);
+        }
 
         /** density of keypoints, used as a voxel size */
         static const double keypoint_separation;
@@ -49,26 +58,14 @@ namespace pcl {
           NUM_BINS
         };
 
-        typedef FPFHSignature33 Signature;
-
-        /** a cloud and its features */
-        typedef struct {
-          PointCloud<PointNormal>::Ptr cloud;
-          IndicesPtr indices;
-          PointCloud<Signature>::Ptr features;
-          KdTree<Signature>::Ptr tree;
-        } Entry;
 
         //Entry database[Config::num_models];
-        std::map<std::string, Entry> database;
 
         /**
          * do any offline processing
          * models[i] is a registered point cloud of the ith model
          */
         void train(Scene &scene);
-
-        double get_votes(Entry &query, Entry &match);
 
         /**
          * do any online processing
@@ -88,7 +85,6 @@ namespace pcl {
         /** the timer */
         Timer<NUM_BINS> timer;
 
-
         /** get a dense sampling of points as keypoints and return their indices */
         IndicesPtr computeKeypoints(PointCloud<PointNormal>::Ptr cloud);
 
@@ -98,12 +94,8 @@ namespace pcl {
         /** try to load the features from disk, or do it from scratch. for training only */
         PointCloud<Signature>::Ptr obtainFeatures(Scene &scene, IndicesPtr indices, bool is_test_phase);
 
-        /** run IA_RANSAC and ICP to judge similarity */
-        double
-        computeRegistration(Entry &source, std::string id, int ci);
-
         void
-        setProposer(const ProposerPtr &proposer) {
+        setProposer(const ProposerPtr proposer) {
           proposer_ = proposer;
         }
 
@@ -114,6 +106,8 @@ namespace pcl {
         KdTree<Signature>::Ptr tree;
 
         ProposerPtr proposer_;
+
+        DatabasePtr database_;
     };
   }
 }
