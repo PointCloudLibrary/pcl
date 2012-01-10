@@ -99,26 +99,15 @@ namespace pcl {
       srand(0);
       IndicesPtr keypoints = computeKeypoints(scene.cloud);
       PointCloud<Detector::Signature>::Ptr features = obtainFeatures(scene, keypoints, false);
-      //PointCloud<Signature>::Ptr features (new PointCloud<Signature>);
-      //for (int mi = 0; mi < Config::num_models; mi++) {
-        //cout << "begin model " << mi << endl;
 
       Entry e;
       e.cloud = scene.cloud;
       e.indices = keypoints;
-      //
       e.features = features;
       e.tree = KdTree<Signature>::Ptr(new KdTreeFLANN<Signature>());
       e.tree->setInputCloud(e.features);
+
       database[scene.id] = e;
-      //timer.stop(OBTAIN_FEATURES_TRAINING);
-      //*features += *e.features;
-      //cout << "finished model " << mi << endl;
-      //}
-      //timer.start();
-      //tree = KdTree<Signature>::Ptr(new KdTreeFLANN<Signature>());
-      //tree->setInputCloud(features);
-      //timer.stop(BUILD_TREE);
     }
 
     typedef struct {
@@ -184,15 +173,6 @@ namespace pcl {
       }
 
       sort(ballot.begin(), ballot.end());
-      //for (int mi = 0; mi < Config::num_models; mi++) {
-        //Scene scene(mi, boost::shared_ptr<PointCloud<PointNormal> >());
-        //PointCloud<Detector::Signature>::Ptr features = obtainFeatures(scene, IndicesPtr());
-
-        //Entry match;
-        //match.tree = KdTree<Signature>::Ptr(new KdTreeFLANN<Signature>());
-        //match.tree->setInputCloud(features);
-        //classifier[mi] = get_votes(e, match);
-      //}
 
       time += s.getTimeSeconds();
       //cout << "Total K-Nearest Search Time for Query: " << time << endl;
@@ -218,9 +198,6 @@ namespace pcl {
           best = reg_scores[id];
         }
       }
-      //for (int ci = num_registration; ci < Config::num_models; ci++) {
-        //cout << ballot[ci].mi << ": " << ballot[ci].votes << endl;
-      //}
       return guessed_id;
     }
 

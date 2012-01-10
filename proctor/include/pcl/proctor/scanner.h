@@ -24,18 +24,30 @@ namespace pcl {
         static const unsigned int res_x;
         static const unsigned int res_y;
 
+        // parameters for test scans
+        static const float theta_start;
+        static const float theta_step;
+        static const float theta_min;
+        static const float theta_max;
+        static const int theta_count;
+
+        static const float phi_start;
+        static const float phi_step;
+        static const float phi_min;
+        static const float phi_max;
+        static const int phi_count;
+
         /** information about a simulated scan */
-        typedef struct {
-          int mi;
+        struct Scan {
           float theta;
           float phi;
-        } Scan;
+        };
 
         /** does one scan. testing should use this */
         static PointCloud<PointNormal>::Ptr getCloud(Scan scan, Model &model);
 
         /** try to load scan from disk, or do it from scratch. for training only */
-        static PointCloud<PointNormal>::Ptr getCloudCached(int mi, int ti, int pi, Model &model);
+        static PointCloud<PointNormal>::Ptr getCloudCached(int ti, int pi, Model &model);
     };
   }
 }

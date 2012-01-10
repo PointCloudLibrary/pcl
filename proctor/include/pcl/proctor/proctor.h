@@ -2,12 +2,9 @@
 #define PROCTOR_H_
 
 #include <pcl/pcl_base.h>
-
-#include <vtkPolyData.h>
+#include <pcl/point_types.h>
 
 #include "proctor/config.h"
-#include "proctor/detector.h"
-#include "proctor/scanner.h"
 #include "proctor/timer.h"
 
 namespace pcl {
@@ -18,11 +15,13 @@ namespace pcl {
 
     class ConfusionMatrix;
 
+    class Detector;
+
     struct Scene {
       std::string id;
-      PointCloud<PointNormal>::Ptr cloud;
+      pcl::PointCloud<pcl::PointNormal>::Ptr cloud;
 
-      Scene(std::string id, PointCloud<PointNormal>::Ptr cloud) : id(id), cloud(cloud) {};
+      Scene(std::string id, pcl::PointCloud<pcl::PointNormal>::Ptr cloud) : id(id), cloud(cloud) {};
     };
 
     class Proctor {
@@ -60,26 +59,6 @@ namespace pcl {
 
         /** print the results of testing */
         virtual void printResults(Detector &detector);
-
-        // parameters for creating registered point cloud
-        static const float theta_start;
-        static const float theta_step;
-        static const int theta_count;
-        static const float phi_start;
-        static const float phi_step;
-        static const int phi_count;
-
-        // parameters for test scans
-        static const float theta_min;
-        static const float theta_max;
-        static const float phi_min;
-        static const float phi_max;
-
-        /** database of models and metadata */
-        static Model models[Config::num_models];
-
-        /** the exact parameters used during test() */
-        Scanner::Scan scenes[Config::num_trials];
 
         /** histogram of [scene model][detector guess] */
         int confusion[Config::num_models][Config::num_models];

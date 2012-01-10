@@ -155,7 +155,7 @@ namespace pcl {
 
       for (int ti = 0; ti < theta_count; ti++) {
         for (int pi = 0; pi < phi_count; pi++) {
-          *full_cloud += *Scanner::getCloudCached(-1, ti, pi, models[model_id]);
+          *full_cloud += *Scanner::getCloudCached(ti, pi, models[model_id]);
           flush(cout << '.');
         }
       }
@@ -171,7 +171,7 @@ namespace pcl {
       int theta = theta_min + rand() * theta_scale + 5;
       int phi = phi_min + rand() * phi_scale + 5;
 
-      PointCloud<PointNormal>::Ptr test_scan = Scanner::getCloudCached(-1, theta, phi, models[model_id]);
+      PointCloud<PointNormal>::Ptr test_scan = Scanner::getCloudCached(theta, phi, models[model_id]);
       return test_scan;
     }
   }

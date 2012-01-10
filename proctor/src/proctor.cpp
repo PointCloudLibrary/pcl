@@ -5,6 +5,7 @@
 #include <vtkPoints.h>
 
 #include "proctor/proctor.h"
+#include "proctor/detector.h"
 #include "proctor/scanning_model_source.h"
 #include "proctor/confusion_matrix.h"
 
@@ -13,18 +14,8 @@
 #endif
 
 namespace pcl {
+
   namespace proctor {
-    Model Proctor::models[Config::num_models];
-    const float Proctor::theta_start = M_PI / 12;
-    const float Proctor::theta_step = 0.0f;
-    const int Proctor::theta_count = 1;
-    const float Proctor::phi_start = 0.0f;
-    const float Proctor::phi_step = M_PI / 6;
-    const int Proctor::phi_count = 12;
-    const float Proctor::theta_min = 0.0f;
-    const float Proctor::theta_max = M_PI / 6;
-    const float Proctor::phi_min = 0.0f;
-    const float Proctor::phi_max = M_PI * 2;
 
     IndicesPtr Proctor::randomSubset(int n, int r) {
       IndicesPtr subset (new vector<int>());
@@ -69,15 +60,6 @@ namespace pcl {
 
     void Proctor::test(Detector &detector, unsigned int seed) {
       srand(seed);
-      //const float theta_scale = (theta_max - theta_min) / RAND_MAX;
-      //const float phi_scale = (phi_max - phi_min) / RAND_MAX;
-
-      //// prepare test vectors in advance
-      //for (int ni = 0; ni < Config::num_trials; ni++) {
-        //scenes[ni].mi = rand() % Config::num_models;
-        //scenes[ni].theta = theta_min + rand() * theta_scale;
-        //scenes[ni].phi = phi_min + rand() * phi_scale;
-      //}
 
       // run the tests
       memset(confusion, 0, sizeof(confusion));
@@ -97,7 +79,7 @@ namespace pcl {
         PointCloud<PointNormal>::Ptr test_cloud = source_->getTestModel(truth_id);
         timer.stop(OBTAIN_CLOUD_TESTING);
 
-        cout << "scanned model " << scenes[ni].mi << endl;
+        cout << "scanned model " << truth_id << endl;
 
         timer.start();
         int guess;
@@ -135,51 +117,51 @@ namespace pcl {
     }
 
     void Proctor::printPrecisionRecall() {
-      vector<Detection> detections;
-      Detection d;
-      for (d.ni = 0; d.ni < Config::num_trials; d.ni++) {
-        for (d.mi = 0; d.mi < Config::num_models; d.mi++) {
-          d.distance = registration[d.ni][d.mi];
-          if (!d.distance) continue; // did not attempt registration on this model
-          detections.push_back(d);
-        }
-      }
-      sort(detections.begin(), detections.end());
-      int correct = 0;
-      for (unsigned int di = 0; di < detections.size(); di++) {
-        if (detections[di].mi == scenes[detections[di].ni].mi) {
-          correct++;
-          printf(
-            "%.6f %.6f %g\n",
-            double(correct) / double(di + 1),
-            double(correct) / double(Config::num_trials),
-            detections[di].distance
-          );
-        }
-      }
+      //vector<Detection> detections;
+      //Detection d;
+      //for (d.ni = 0; d.ni < Config::num_trials; d.ni++) {
+        //for (d.mi = 0; d.mi < Config::num_models; d.mi++) {
+          //d.distance = registration[d.ni][d.mi];
+          //if (!d.distance) continue; // did not attempt registration on this model
+          //detections.push_back(d);
+        //}
+      //}
+      //sort(detections.begin(), detections.end());
+      //int correct = 0;
+      //for (unsigned int di = 0; di < detections.size(); di++) {
+        //if (detections[di].mi == scenes[detections[di].ni].mi) {
+          //correct++;
+          //printf(
+            //"%.6f %.6f %g\n",
+            //double(correct) / double(di + 1),
+            //double(correct) / double(Config::num_trials),
+            //detections[di].distance
+          //);
+        //}
+      //}
     }
 
     void Proctor::printClassifierStats() {
-      float avg = 0; // average rank of correct id
-      int area = 0; // area under curve of cumulative histogram
-      for (int ni = 0; ni < Config::num_trials; ni++) {
-        int answer = scenes[ni].mi;
-        float votes = classifier[ni][answer];
-        // figure out the rank in this trial
-        int rank = 1;
-        int tie = 0;
-        for (int mi = 0; mi < Config::num_models; mi++) {
-          if (classifier[ni][mi] > votes) rank++;
-          else if (classifier[ni][mi] == votes) tie++;
-        }
-        // contribute to average rank
-        avg += rank + float(tie) / 2;
-        // contribute to area under curve
-        area += Config::num_models - rank + 1;
-      }
-      avg /= Config::num_trials;
-      printf("average vote rank of correct model:                    %0.2f\n", avg);
-      printf("area under cumulative histogram of correct model rank: %d\n", area);
+      //float avg = 0; // average rank of correct id
+      //int area = 0; // area under curve of cumulative histogram
+      //for (int ni = 0; ni < Config::num_trials; ni++) {
+        //int answer = scenes[ni].mi;
+        //float votes = classifier[ni][answer];
+        //// figure out the rank in this trial
+        //int rank = 1;
+        //int tie = 0;
+        //for (int mi = 0; mi < Config::num_models; mi++) {
+          //if (classifier[ni][mi] > votes) rank++;
+          //else if (classifier[ni][mi] == votes) tie++;
+        //}
+        //// contribute to average rank
+        //avg += rank + float(tie) / 2;
+        //// contribute to area under curve
+        //area += Config::num_models - rank + 1;
+      //}
+      //avg /= Config::num_trials;
+      //printf("average vote rank of correct model:                    %0.2f\n", avg);
+      //printf("area under cumulative histogram of correct model rank: %d\n", area);
     }
 
     void Proctor::printTimer() {

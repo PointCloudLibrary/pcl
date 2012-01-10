@@ -21,7 +21,27 @@
 
 
 namespace pcl {
+
   namespace proctor {
+
+    const float Scanner::distance_multiplier = 3.0f;
+    const double Scanner::fov_x = M_PI / 3;
+    const double Scanner::fov_y = M_PI / 4;
+    const unsigned int Scanner::res_x = 320;
+    const unsigned int Scanner::res_y = 240;
+
+    // TODO Find out if step is supposed to be bigger
+    const float Scanner::theta_start = M_PI / 12;
+    const float Scanner::theta_step = 0.0f;
+    const int Scanner::theta_count = 1;
+    const float Scanner::phi_start = 0.0f;
+    const float Scanner::phi_step = M_PI / 6;
+    const int Scanner::phi_count = 12;
+    const float Scanner::theta_min = 0.0f;
+    const float Scanner::theta_max = M_PI / 6;
+    const float Scanner::phi_min = 0.0f;
+    const float Scanner::phi_max = M_PI * 2;
+
     /** convert radians to degrees. thanks a lot, vtk */
     template <typename T>
     static inline T deg(T rad) {
@@ -86,11 +106,6 @@ namespace pcl {
     }
 
     /** Scanner */
-    const float Scanner::distance_multiplier = 3.0f;
-    const double Scanner::fov_x = M_PI / 3;
-    const double Scanner::fov_y = M_PI / 4;
-    const unsigned int Scanner::res_x = 320;
-    const unsigned int Scanner::res_y = 240;
 
     PointCloud<PointNormal>::Ptr Scanner::getCloud(Scan scan, Model &model) {
       PointCloud<PointNormal>::Ptr cloud (new PointCloud<PointNormal>());
@@ -116,12 +131,10 @@ namespace pcl {
       return cloud_subsampled;
     }
 
-    PointCloud<PointNormal>::Ptr Scanner::getCloudCached(int mi, int ti, int pi, Model &model) {
-      //TODO Get rid of mi
+    PointCloud<PointNormal>::Ptr Scanner::getCloudCached(int ti, int pi, Model &model) {
       Scan scan = {
-        mi,
-        Proctor::theta_start + ti * Proctor::theta_step,
-        Proctor::phi_start + pi * Proctor::phi_step
+        Scanner::theta_start + ti * Scanner::theta_step,
+        Scanner::phi_start + pi * Scanner::phi_step
       };
       char name[22];
       sprintf(name, "scan_%04d_%03.0f_%03.0f.pcd", model.id, deg(scan.theta), deg(scan.phi));
