@@ -128,17 +128,16 @@ namespace pcl {
     double Detector::get_votes(Entry &query, Entry &match) {
       double votes = 0;
       for (unsigned int pi = 0; pi < query.indices->size(); pi++) {
-        for (int mi = 0; mi < Config::num_models; mi++) {
-          vector<int> indices;
-          vector<float> distances;
+        vector<int> indices;
+        vector<float> distances;
 
-          clock_t start = clock();
-          StopWatch s;
-          match.tree->nearestKSearch(*query.features, pi, max_votes, indices, distances);
+        clock_t start = clock();
+        StopWatch s;
+        match.tree->nearestKSearch(*query.features, pi, max_votes, indices, distances);
 
-          for (int ri = 0; ri < max_votes; ri++) {
-            votes += 1. / (distances[ri] + numeric_limits<float>::epsilon());
-          }
+        for (int ri = 0; ri < max_votes; ri++) {
+          //votes += 1. / (distances[ri] + numeric_limits<float>::epsilon());
+          votes -= distances[ri];
         }
       }
 
