@@ -18,7 +18,6 @@ endif(NOT VTK_FOUND OR NOT MPI_CXX_FOUND)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk)
 
-set (build FALSE)
 if (ANDROID_NDK)
   set (build FALSE)
 endif ()
@@ -61,7 +60,7 @@ if(build)
                      src/model_source.cpp
                      src/scanning_model_source.cpp
                      src/confusion_matrix.cpp
-                     src/proctor_mpi.cpp
+                     #src/proctor_mpi.cpp
                      src/detector.cpp
                      src/proctor.cpp
                      src/proposer.cpp
@@ -75,6 +74,6 @@ if(build)
   target_link_libraries(proctor 
                         ${FLANN_LIBRARIES} 
                         pcl_common pcl_features pcl_keypoints pcl_io pcl_search pcl_visualization
-                        vtkCommon vtkFiltering vtkGraphics vtkIO ${Boost_mpi_LIBRARY} ${MPI_CXX_LIBRARIES})
+                        vtkCommon vtkFiltering vtkGraphics vtkIO ${Boost_mpi_LIBRARY} ${MPI_CXX_LIBRARIES} boost_serialization boost_mpi)
 endif(build)
 
