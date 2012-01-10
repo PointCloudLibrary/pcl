@@ -1,5 +1,3 @@
-#include <omp.h>
-
 #include "proctor/detector.h"
 #include "proctor/proctor.h"
 #include "proctor/scanning_model_source.h"
