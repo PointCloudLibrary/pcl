@@ -80,8 +80,8 @@ class OpenNIPassthrough : public QMainWindow
   Q_OBJECT
   public:
     typedef pcl::PointCloud<pcl::PointXYZRGB> Cloud;
-    typedef typename Cloud::Ptr CloudPtr;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    typedef Cloud::Ptr CloudPtr;
+    typedef Cloud::ConstPtr CloudConstPtr;
 
     OpenNIPassthrough (pcl::OpenNIGrabber& grabber);
 
