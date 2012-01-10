@@ -1176,7 +1176,7 @@ TEST (PCL, PFHEstimationEigen)
   EXPECT_NEAR (pfh_histogram[10], 2.13474 , 1e-4);
   EXPECT_NEAR (pfh_histogram[11], 0.41218 , 1e-4);
   EXPECT_NEAR (pfh_histogram[12], 0.165382, 1e-4);
-  EXPECT_NEAR (pfh_histogram[13], 8.97407 , 1e-4);
+  EXPECT_NEAR (pfh_histogram[13], 8.97407 , 1e-3);
   EXPECT_NEAR (pfh_histogram[14], 0.306592, 1e-4);
   EXPECT_NEAR (pfh_histogram[15], 0.455432, 1e-4);
   EXPECT_NEAR (pfh_histogram[16], 4.5977 , 1e-4);
