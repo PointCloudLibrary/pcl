@@ -2,10 +2,10 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/uniform_sampling.h>
 #include <pcl/registration/icp.h>
+#include <pcl/registration/ia_ransac.h>
 #include <pcl/common/time.h>
 
 #include "proctor/detector.h"
-#include "proctor/ia_ransac_sub.h"
 #include "proctor/proctor.h"
 
 
@@ -284,23 +284,32 @@ namespace pcl {
                                   const PointCloud<PointNormal> &cloud_tgt,
                                   const vector<int> &indices_tgt)> f;
 
+      // Copy the source/target clouds with only the subset of points that
+      // also features calculated for them.
+      PointCloud<PointNormal>::Ptr source_subset(
+          new PointCloud<PointNormal>(*(source.cloud), *(source.indices)));
+      PointCloud<PointNormal>::Ptr target_subset(
+          new PointCloud<PointNormal>(*(target.cloud), *(target.indices)));
+
       timer.start();
-      SubsetSAC_IA<PointNormal, PointNormal, Signature> ia_ransac_sub;
-      PointCloud<PointNormal>::Ptr aligned (new PointCloud<PointNormal>());
-      ia_ransac_sub.setSourceIndices(source.indices);
-      ia_ransac_sub.setTargetIndices(target.indices);
-      ia_ransac_sub.setMinSampleDistance(0.05);
-      ia_ransac_sub.setMaxCorrespondenceDistance(0.5);
-      ia_ransac_sub.setMaximumIterations(256);
-      ia_ransac_sub.setInputCloud(source.cloud);
-      ia_ransac_sub.setSourceFeatures(source.features);
-      ia_ransac_sub.setInputTarget(target.cloud);
-      ia_ransac_sub.setTargetFeatures(target.features);
+
+
+      SampleConsensusInitialAlignment<PointNormal, PointNormal, Signature> ia_ransac;
+      ia_ransac.setMinSampleDistance(0.05);
+      ia_ransac.setMaxCorrespondenceDistance(0.5);
+      ia_ransac.setMaximumIterations(256);
+      ia_ransac.setInputCloud(source_subset);
+      ia_ransac.setSourceFeatures(source.features);
+      ia_ransac.setInputTarget(target_subset);
+      ia_ransac.setTargetFeatures(target.features);
+
       if (vis.get()) {
         f updater (visualization_callback(ci, vis.get()));
-        ia_ransac_sub.registerVisualizationCallback(updater);
+        ia_ransac.registerVisualizationCallback(updater);
       }
-      ia_ransac_sub.align(*aligned);
+
+      PointCloud<PointNormal>::Ptr aligned (new PointCloud<PointNormal>());
+      ia_ransac.align(*aligned);
       timer.stop(IA_RANSAC);
 
       timer.start();

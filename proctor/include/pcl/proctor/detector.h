@@ -1,9 +1,10 @@
 #ifndef DETECTOR_H_
 #define DETECTOR_H_
 
+#include <pcl/features/feature.h>
+#include <pcl/kdtree/kdtree.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-#include <pcl/kdtree/kdtree.h>
 #include <pcl/visualization/cloud_viewer.h>
 
 #include "proctor/config.h"

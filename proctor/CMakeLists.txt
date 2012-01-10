@@ -32,7 +32,6 @@ if(build)
   set(incs
       include/pcl/${SUBSYS_NAME}/config.h
       include/pcl/${SUBSYS_NAME}/detector.h
-      include/pcl/${SUBSYS_NAME}/ia_ransac_sub.h
       include/pcl/${SUBSYS_NAME}/proctor.h
       include/pcl/${SUBSYS_NAME}/scanner.h
       include/pcl/${SUBSYS_NAME}/timer.h
@@ -42,7 +41,6 @@ if(build)
       )
 
   set(impl_incs
-      include/pcl/${SUBSYS_NAME}/impl/ia_ransac_sub.hpp
       include/pcl/${SUBSYS_NAME}/impl/timer.hpp
       )
 
