@@ -209,10 +209,9 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT>::responseHarris (typename PointCloudI
     Eigen::Matrix3f covariance_matrix;
     covariance_matrix.setZero();
     for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
-    {
-      const Eigen::Vector3f* vec = reinterpret_cast<const Eigen::Vector3f*> (&(normals->points[*iIt].normal_x));
-      covariance_matrix += (*vec) * (vec->transpose());
-    }
+      covariance_matrix += normals->points[*iIt].getNormalVector3fMap () * 
+        normals->points[*iIt].getNormalVector3fMap ().transpose();
+
     point.x = pointIt->x;
     point.y = pointIt->y;
     point.z = pointIt->z;
@@ -243,10 +242,9 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT>::responseNoble (typename PointCloudIn
     Eigen::Matrix3f covariance_matrix;
     covariance_matrix.setZero();
     for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
-    {
-      const Eigen::Vector3f* vec = reinterpret_cast<const Eigen::Vector3f*> (&(normals->points[*iIt].normal_x));
-      covariance_matrix += (*vec) * (vec->transpose());
-    }
+      covariance_matrix += normals->points[*iIt].getNormalVector3fMap () * 
+        normals->points[*iIt].getNormalVector3fMap ().transpose ();
+
     point.x = pointIt->x;
     point.y = pointIt->y;
     point.z = pointIt->z;
@@ -276,10 +274,9 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT>::responseLowe (typename PointCloudIn:
     Eigen::Matrix3f covariance_matrix;
     covariance_matrix.setZero();
     for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
-    {
-      const Eigen::Vector3f* vec = reinterpret_cast<const Eigen::Vector3f*> (&(normals->points[*iIt].normal_x));
-      covariance_matrix += (*vec) * (vec->transpose());
-    }
+      covariance_matrix += normals->points[*iIt].getNormalVector3fMap () * 
+        normals->points[*iIt].getNormalVector3fMap ().transpose ();
+
     point.x = pointIt->x;
     point.y = pointIt->y;
     point.z = pointIt->z;
@@ -332,8 +329,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT>::responseTomasi (typename PointCloudI
     {
       if (pcl_isnan(normals->points[*iIt].normal_x + normals->points[*iIt].normal_y + normals->points[*iIt].normal_z))
         continue;
-      const Eigen::Vector3f* vec = reinterpret_cast<const Eigen::Vector3f*> (&(normals->points[*iIt].normal_x));
-      covariance_matrix += (*vec) * (vec->transpose());
+      covariance_matrix += normals->points[*iIt].getNormalVector3fMap () * 
+        normals->points[*iIt].getNormalVector3fMap ().transpose ();
     }
     point.x = pointIt->x;
     point.y = pointIt->y;
@@ -416,8 +413,6 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT>::refineCorners (typename PointCloudIn
   Eigen::Matrix3f nnT;
   Eigen::Matrix3f NNT;
   Eigen::Vector3f NNTp;
-  const Eigen::Vector3f* normal;
-  const Eigen::Vector3f* point;
   float diff;
   const unsigned max_iterations = 10;
   for (typename PointCloudOut::iterator cornerIt = corners.begin(); cornerIt != corners.end(); ++cornerIt)
@@ -433,14 +428,12 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT>::refineCorners (typename PointCloudIn
       search.radiusSearch (corner, radius_, nn_indices, nn_dists);
       for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
       {
-        normal = reinterpret_cast<const Eigen::Vector3f*> (&(normals->points[*iIt].normal_x));
-        point = reinterpret_cast<const Eigen::Vector3f*> (&(surface->points[*iIt].x));
-        nnT = (*normal) * (normal->transpose());
+        nnT = normals->points[*iIt].getNormalVector3fMap () * normals->points[*iIt].getNormalVector3fMap ().transpose();
         NNT += nnT;
-        NNTp += nnT * (*point);
+        NNTp += nnT * surface->points[*iIt].getVector3fMap ();
       }
       if (NNT.determinant() != 0)
-        *(reinterpret_cast<Eigen::Vector3f*>(&(cornerIt->x))) = NNT.inverse () * NNTp;
+        *cornerIt.getVector3fMap () = NNT.inverse () * NNTp;
       
       diff = (cornerIt->x - corner.x) * (cornerIt->x - corner.x) +
              (cornerIt->y - corner.y) * (cornerIt->y - corner.y) +
