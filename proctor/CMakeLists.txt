@@ -74,6 +74,6 @@ if(build)
   target_link_libraries(proctor 
                         ${FLANN_LIBRARIES} 
                         pcl_common pcl_features pcl_keypoints pcl_io pcl_search pcl_visualization
-                        vtkCommon vtkFiltering vtkGraphics vtkIO ${Boost_mpi_LIBRARY} ${MPI_CXX_LIBRARIES} boost_serialization boost_mpi)
+                        vtkCommon vtkFiltering vtkGraphics vtkIO ${Boost_mpi_LIBRARY} ${MPI_CXX_LIBRARIES} boost_serialization)
 endif(build)
 
