@@ -75,7 +75,7 @@ pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(c
   tvecs_.reserve (30000);
 
   setDepthIntrinsics (525.f, 525.f);
-  setVolumeSize (Vector3f::Constant (3.f));
+  setVolumeSize (Eigen::Vector3f::Constant (VOLUME_SIZE));
 
   init_Rcam_ = Eigen::Matrix3f::Identity ();// * AngleAxisf(-30.f/180*3.1415926, Vector3f::UnitX());
   init_tcam_ = volume_size_ * 0.5f - Vector3f (0, 0, volume_size_ (2) / 2 * 1.2f);
@@ -490,7 +490,7 @@ pcl::gpu::KinfuTracker::getCloudFromVolumeHost (PointCloud<PointType>& cloud, bo
 
   for (int x = 1; x < VOLUME_X-1; ++x)
   {
-    for (int y = 1; y < VOLUME_X-1; ++y)
+    for (int y = 1; y < VOLUME_Y-1; ++y)
     {
       for (int z = 0; z < VOLUME_Z-1; ++z)
       {
