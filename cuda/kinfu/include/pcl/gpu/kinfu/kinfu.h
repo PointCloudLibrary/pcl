@@ -97,7 +97,7 @@ namespace pcl
           * \param[in] distance TSDF trancation distance 
           */
         void
-        setTrancationDistance (float distance);
+        setTsdfTrancationDistance (float distance);
 
 		/** \brief Sets truncation threshold for depth image for ICP step only! This helps 
 		  *  to filter measurements that are outside tsdf volume. Pass zero to disable the truncation.
@@ -163,6 +163,13 @@ namespace pcl
           */
         void
         getImage (View& view, const Eigen::Vector3f& light_source_pose) const;
+
+        /** \brief Renders 3D scene to display for given camera pose.
+          * \param[out] view output array with image
+          * \param[in] camera_pose Pose of camera
+          */
+        void
+        getImageFromPose(View& view, const Eigen::Affine3f& camera_pose) const;
 
         /** \brief Returns point cloud abserved from last camera pose
           * \param[out] cloud output array for points
@@ -283,6 +290,9 @@ namespace pcl
         std::vector<MapArr> vmaps_g_prev_;
         /** \brief Array of pyramids of normal maps for previous frame in global coordinate space. */
         std::vector<MapArr> nmaps_g_prev_;
+
+        /** \brief Temp buffers with vertex and normals maps for raycasting from user given pose. */
+        MapArr temp_vmap, temp_nmap;
 
         /** \brief Array of pyramids of vertex maps for current frame in current coordinate space. */
         std::vector<MapArr> vmaps_curr_;

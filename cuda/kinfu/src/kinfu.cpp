@@ -88,7 +88,7 @@ pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(c
   const float default_tranc_dist = 0.03f; //meters
 
   setIcpCorespFilteringParams (default_distThres, default_angleThres);
-  setTrancationDistance (default_tranc_dist);
+  setTsdfTrancationDistance (default_tranc_dist);
 
   allocateBufffers (rows, cols);
   reset ();
@@ -121,7 +121,7 @@ pcl::gpu::KinfuTracker::setInitalCameraPose (const Eigen::Affine3f& pose)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::gpu::KinfuTracker::setTrancationDistance (float distance)
+pcl::gpu::KinfuTracker::setTsdfTrancationDistance (float distance)
 {
   float cx = volume_size_ (0) / VOLUME_X;
   float cy = volume_size_ (1) / VOLUME_Y;
@@ -222,6 +222,8 @@ pcl::gpu::KinfuTracker::allocateBufffers (int rows, int cols)
 
     coresps_[i].create (pyr_rows, pyr_cols);
   }
+  temp_vmap.create(rows*3, cols);
+  temp_nmap.create(rows*3, cols);
 
   depthRawScaled_.create (rows, cols);
   // see estimate tranform for the magic numbers
@@ -233,7 +235,7 @@ pcl::gpu::KinfuTracker::allocateBufffers (int rows, int cols)
 bool
 pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
 {
-  setTrancationDistance (tranc_dist_);
+  setTsdfTrancationDistance (tranc_dist_);
   device::Intr intr (fx_, fy_, cx_, cy_);
   {
     //ScopeTime time(">>> Bilateral, pyr-down-all, create-maps-all");
@@ -412,14 +414,43 @@ pcl::gpu::KinfuTracker::getImage (View& view) const
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::gpu::KinfuTracker::getImage (View& view_arg, const Eigen::Vector3f& light_source_pose) const
+pcl::gpu::KinfuTracker::getImage (View& view, const Eigen::Vector3f& light_source_pose) const
 {
   device::LightSource light;
   light.number = 1;
   light.pos[0] = device_cast<const float3>(light_source_pose);
 
-  view_arg.create (rows_, cols_);
-  generateImage (vmaps_g_prev_[0], nmaps_g_prev_[0], light, view_arg);
+  view.create (rows_, cols_);
+  generateImage (vmaps_g_prev_[0], nmaps_g_prev_[0], light, view);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::gpu::KinfuTracker::getImageFromPose(View& view, const Eigen::Affine3f& camera_pose) const
+{
+  view.create (rows_, cols_);
+    
+  Matrix3frm Rcurr = camera_pose.linear ();
+  Vector3f   tcurr = camera_pose.translation ();
+
+  device::Intr intr (fx_, fy_, cx_, cy_);
+
+  Mat33& device_Rcurr = device_cast<Mat33> (Rcurr);
+  float3& device_tcurr = device_cast<float3> (tcurr);
+
+  const float3& device_volume_size = device_cast<const float3> (volume_size_);
+  
+  MapArr vmap = temp_vmap, nmap = temp_nmap; //const workaround  
+  device::raycast (intr, device_Rcurr, device_tcurr, tranc_dist_, device_volume_size, volume_, vmap, nmap);
+
+  device::LightSource light;
+  light.number = 1;  
+  light.pos[0] = device_volume_size;
+  light.pos[0].x *= -3.f;
+  light.pos[0].y *= -3.f;
+  light.pos[0].z *= -3.f;
+  
+  generateImage (vmap, nmap, light, view);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

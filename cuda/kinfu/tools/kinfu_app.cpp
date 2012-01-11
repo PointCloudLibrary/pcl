@@ -126,6 +126,24 @@ setViewerPose (visualization::PCLVisualizer& viewer, const Eigen::Affine3f& view
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+Eigen::Affine3f 
+getViewerPose (visualization::PCLVisualizer& viewer)
+{
+  Eigen::Affine3f pose = viewer.getViewerPose();
+  Eigen::Matrix3f rotation = pose.linear();
+
+  Matrix3f axis_reorder;  
+  axis_reorder << 0,  0,  1,
+                 -1,  0,  0,
+                  0, -1,  0;
+
+  rotation = rotation * axis_reorder;
+  pose.linear() = rotation;
+  return pose;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 template<typename CloudT> void
 writeCloudFile (int format, const CloudT& cloud);
 
@@ -200,10 +218,14 @@ struct ImageView
   }
 
   void
-  showScene (KinfuTracker& kinfu, const PtrStepSz<const KinfuTracker::PixelRGB>& rgb24, bool registration = false)
+  showScene (KinfuTracker& kinfu, const PtrStepSz<const KinfuTracker::PixelRGB>& rgb24, bool registration, Eigen::Affine3f* pose_ptr = 0)
   {
-    kinfu.getImage (view_device_);
-    if (paint_image_ && registration)
+    if (pose_ptr)
+        kinfu.getImageFromPose(view_device_, *pose_ptr);
+    else
+      kinfu.getImage (view_device_);
+
+    if (paint_image_ && registration && !pose_ptr)
     {
       colors_device_.upload (rgb24.data, rgb24.step, rgb24.rows, rgb24.cols);
       paint3DView (colors_device_, view_device_);
@@ -335,8 +357,7 @@ struct SceneCloudView
     {
       visualization::PointCloudColorHandlerRGBHack<PointXYZ> rgb(cloud_ptr_, point_colors_ptr_);
       cloud_viewer_.addPointCloud<PointXYZ> (cloud_ptr_, rgb);
-    }        
-    setViewerPose (cloud_viewer_, viewer_pose_);
+    }    
   }
 
   void
@@ -396,7 +417,7 @@ struct KinFuApp
 {
   enum { PCD_BIN = 1, PCD_ASCII = 2, PLY = 3 };
 
-  KinFuApp(CaptureOpenNI& source) : exit_ (false), scan_ (false), scan_volume_ (false),
+  KinFuApp(CaptureOpenNI& source) : exit_ (false), scan_ (false), scan_volume_ (false), independent_camera_ (false),
     registration_ (false), integrate_colors_ (false), capture_ (source)
   {    
     //Init Kinfu Tracker
@@ -412,7 +433,7 @@ struct KinFuApp
     Eigen::Affine3f pose = Eigen::Translation3f (t) * Eigen::AngleAxisf (R);
 
     kinfu_.setInitalCameraPose (pose);
-    kinfu_.setTrancationDistance (0.030f/*meters*/);    
+    kinfu_.setTsdfTrancationDistance (0.030f/*meters*/);    
     kinfu_.setIcpCorespFilteringParams (0.1f/*meters*/, sin (20.f * 3.14159254f / 180.f));
     //kinfu_.setDepthTruncationForICP(5.f/*meters*/);
 
@@ -455,6 +476,13 @@ struct KinFuApp
   }
 
   void
+  toggleIndependentCamera()
+  {
+    independent_camera_ = !independent_camera_;
+    cout << "Camera mode: " << (independent_camera_ ?  "Independent" : "Bound to Kinect pose") << endl;
+  }
+
+  void
   execute ()
   {
     PtrStepSz<const unsigned short> depth;
@@ -481,7 +509,7 @@ struct KinFuApp
         if (integrate_colors_)
           has_image = kinfu_ (depth_device_, image_view_.colors_device_);
         else
-         has_image = kinfu_ (depth_device_);                  
+          has_image = kinfu_ (depth_device_);                  
       }
 
       if (scan_)
@@ -509,16 +537,21 @@ struct KinFuApp
         else
           cout << "[!] tsdf volume download is disabled" << endl << endl;
       }
-
+       
       if (has_image)
-        image_view_.showScene (kinfu_, rgb24, registration_);
+      {
+        Eigen::Affine3f viewer_pose = getViewerPose(scene_cloud_view_.cloud_viewer_);
+        image_view_.showScene (kinfu_, rgb24, registration_, independent_camera_ ? &viewer_pose : 0);
+      }
 
       if (current_frame_cloud_view_)
         current_frame_cloud_view_->show (kinfu_);
 
       image_view_.showDepth (depth);
       
-      setViewerPose (scene_cloud_view_.cloud_viewer_, kinfu_.getCameraPose());
+      if (!independent_camera_)
+        setViewerPose (scene_cloud_view_.cloud_viewer_, kinfu_.getCameraPose());
+      
       scene_cloud_view_.cloud_viewer_.spinOnce (3);      
     }
   }
@@ -555,8 +588,9 @@ struct KinFuApp
     cout << "    T    : take cloud" << endl;
     cout << "    M    : toggle cloud exctraction mode" << endl;
     cout << "    N    : toggle normals exctraction" << endl;
+    cout << "    I    : toggle independent camera mode" << endl;
     //cout << "    *    : toggle scene view painting ( requires registration mode )" << endl;
-    cout << "    C    : clear clouds" << endl;
+    cout << "    C    : clear clouds" << endl;    
     cout << "   1,2,3 : save cloud to PCD(binary), PCD(ASCII), PLY(ASCII)" << endl;
     cout << "   X, V  : TSDF volume utility" << endl;
     cout << endl;
@@ -565,6 +599,8 @@ struct KinFuApp
   bool exit_;
   bool scan_;
   bool scan_volume_;
+
+  bool independent_camera_;
 
   bool registration_;
   bool integrate_colors_;
@@ -595,8 +631,9 @@ struct KinFuApp
       case (int)'t': case (int)'T': app->scan_ = true; break;
       case (int)'h': case (int)'H': app->printHelp (); break;
       case (int)'m': case (int)'M': app->scene_cloud_view_.toggleExctractionMode (); break;
-      case (int)'n': case (int)'N': app->scene_cloud_view_.toggleNormals (); break;
+      case (int)'n': case (int)'N': app->scene_cloud_view_.toggleNormals (); break;      
       case (int)'c': case (int)'C': app->scene_cloud_view_.clearClouds (); break;
+      case (int)'i': case (int)'I': app->toggleIndependentCamera (); break;
       case (int)'1': case (int)'2': case (int)'3': app->writeCloud (key - (int)'0'); break;
       case '*': app->image_view_.toggleImagePaint (); break;
 
@@ -627,18 +664,18 @@ writeCloudFile (int format, const CloudPtr& cloud_prt)
 {
   if (format == KinFuApp::PCD_BIN)
   {
-    cout << "Saving point cloud to 'cloud_bin.pcd' (binary)... ";
+    cout << "Saving point cloud to 'cloud_bin.pcd' (binary)... " << flush;
     pcl::io::savePCDFile ("cloud_bin.pcd", *cloud_prt, true);
   }
   else
   if (format == KinFuApp::PCD_ASCII)
   {
-    cout << "Saving point cloud to 'cloud.pcd' (ASCII)... ";
+    cout << "Saving point cloud to 'cloud.pcd' (ASCII)... " << flush;
     pcl::io::savePCDFile ("cloud.pcd", *cloud_prt, false);
   }
   else   /* if (format == KinFuApp::PLY) */
   {
-    cout << "Saving point cloud to 'cloud.ply' (ASCII)... ";
+    cout << "Saving point cloud to 'cloud.ply' (ASCII)... " << flush;
     pcl::io::savePLYFileASCII ("cloud.ply", *cloud_prt);
   
   }
