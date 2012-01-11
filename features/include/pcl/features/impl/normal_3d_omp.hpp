@@ -44,7 +44,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
-pcl::NormalEstimationOMP<PointInT, Eigen::MatrixXf>::computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output)
+pcl::NormalEstimationOMP<PointInT, Eigen::MatrixXf>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
 {
   float vpx, vpy, vpz;
   getViewPoint (vpx, vpy, vpz);

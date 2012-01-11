@@ -197,7 +197,7 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset containing the estimated features
         */
       void 
-      compute (pcl::PointCloud<Eigen::MatrixXf> &output);
+      computeEigen (pcl::PointCloud<Eigen::MatrixXf> &output);
 
       /** \brief Search for k-nearest neighbors using the spatial locator from 
         * \a setSearchmethod, and the given surface from \a setSearchSurface.
@@ -290,7 +290,7 @@ namespace pcl
         * \param[out] output the resultant features 
         */
       virtual void 
-      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) = 0;
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) = 0;
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW

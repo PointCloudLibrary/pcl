@@ -289,7 +289,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
 
   /** \brief Estimates spin-image descriptors in the  given input points. 
@@ -350,7 +350,7 @@ namespace pcl
         * \param[out] output the resultant point cloud that contains the Spin Image feature estimates
         */
       virtual void 
-      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output); 
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output); 
 
       /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
         * \param[out] output the output point cloud 

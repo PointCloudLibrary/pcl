@@ -179,7 +179,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename GradientT> void
-pcl::RIFTEstimation<PointInT, GradientT, Eigen::MatrixXf>::computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output)
+pcl::RIFTEstimation<PointInT, GradientT, Eigen::MatrixXf>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
 {
   // These should be moved into initCompute ()
   {

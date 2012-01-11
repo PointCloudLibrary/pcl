@@ -259,7 +259,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT>::computeFeature (PointCloudOut &out
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
-pcl::UniqueShapeContext<PointInT, Eigen::MatrixXf>::computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output)
+pcl::UniqueShapeContext<PointInT, Eigen::MatrixXf>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
 {
   output.points.resize (indices_->size (), descriptor_length_ + 9);
   for (size_t point_index = 0; point_index < indices_->size (); point_index++)

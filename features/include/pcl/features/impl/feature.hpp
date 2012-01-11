@@ -235,7 +235,7 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
-pcl::Feature<PointInT, PointOutT>::compute (pcl::PointCloud<Eigen::MatrixXf> &output)
+pcl::Feature<PointInT, PointOutT>::computeEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
 {
   if (!initCompute ())
   {
@@ -266,7 +266,7 @@ pcl::Feature<PointInT, PointOutT>::compute (pcl::PointCloud<Eigen::MatrixXf> &ou
   output.is_dense = input_->is_dense;
 
   // Perform the actual feature computation
-  computeFeature (output);
+  computeFeatureEigen (output);
 
   deinitCompute ();
 }
