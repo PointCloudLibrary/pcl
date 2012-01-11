@@ -9,6 +9,7 @@
 #include "proctor/proctor.h"
 #include "proctor/proposer.h"
 #include "proctor/registration_proposer.h"
+#include "proctor/detector_visualizer.h"
 
 namespace pcl {
   namespace proctor {
@@ -95,6 +96,10 @@ namespace pcl {
     /* Trains a single model */
     void Detector::train(Scene &scene) {
       srand(0);
+      if (detector_vis_) {
+        detector_vis_->addCloud(scene.id, scene.cloud);
+      }
+
       IndicesPtr keypoints = computeKeypoints(scene.cloud);
       PointCloud<Detector::Signature>::Ptr features = obtainFeatures(scene, keypoints, false);
 
@@ -144,11 +149,8 @@ namespace pcl {
       return picked[0];
     }
 
-    void Detector::enableVisualization() {
-      vis.reset(new visualization::CloudViewer("Detector Visualization"));
-      PointCloud<PointNormal>::Ptr sentinel (new PointCloud<PointNormal>());
-      sentinel->points.push_back(PointNormal());
-      vis->runOnVisualizationThreadOnce(create_viewports(sentinel));
+    void Detector::enableVisualization(DetectorVisualizer *vis) {
+      detector_vis_ = vis;
     }
 
     void Detector::printTimer() {

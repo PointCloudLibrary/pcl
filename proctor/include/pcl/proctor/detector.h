@@ -17,11 +17,14 @@ using std::auto_ptr;
 using std::exception;
 using std::numeric_limits;
 
+class DetectorVisualizer; // TODO MOve into the pcl::proctor namespace
+
 namespace pcl {
   namespace proctor {
     struct Scene;
 
     class Proposer;
+
 
     class Detector
     {
@@ -77,7 +80,7 @@ namespace pcl {
         std::string query(Scene &scene, float *classifier, double *registration);
 
         /** start a visualizer; if called, must be called before training/querying */
-        void enableVisualization();
+        void enableVisualization(DetectorVisualizer *vis);
 
         /** print the timing data */
         void printTimer();
@@ -108,6 +111,8 @@ namespace pcl {
         ProposerPtr proposer_;
 
         DatabasePtr database_;
+
+        DetectorVisualizer *detector_vis_;
     };
   }
 }
