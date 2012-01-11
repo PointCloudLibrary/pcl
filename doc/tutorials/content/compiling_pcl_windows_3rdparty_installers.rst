@@ -32,10 +32,6 @@ used for shared pointers, and threading. **mandatory**
 
 used as the matrix backend for SSE optimized math. **mandatory**
 
-- **CMinpack** 
-
-used in the `sample_consensus` and `registration` modules for non-linear (Levenberg-Marquardt) optimizations. **mandatory**
-
 - **FLANN** 
 
 used in `kdtree` for fast approximate nearest neighbors search. **mandatory**
