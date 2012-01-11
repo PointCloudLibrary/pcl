@@ -385,7 +385,8 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
                   "          e, E   : exit the interactor\n"
                   "          q, Q   : stop and call VTK's TerminateApp\n"
                   "\n"
-                  "         + / -   : increment/decrement overall point size\n"
+                  "           +/-   : increment/decrement overall point size\n"
+                  "     +/- [+ ALT] : zoom in/out \n"
                   "\n"
                   "          g, G   : display scale grid (on/off)\n"
                   "          u, U   : display lookup table (on/off)\n"
@@ -498,34 +499,49 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
                 << endl;
       break;
     }
+    case '=':
+    {
+      zoomIn();
+      break;
+    }
     case 43:        // KEY_PLUS
     {
-      vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors ();
-      vtkCollectionSimpleIterator ait;
-      for (ac->InitTraversal (ait); vtkActor* actor = ac->GetNextActor (ait); )
+      if(alt)
+        zoomIn ();        
+      else
       {
-        for (actor->InitPathTraversal (); vtkAssemblyPath* path = actor->GetNextPath (); )
+        vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors ();
+        vtkCollectionSimpleIterator ait;
+        for (ac->InitTraversal (ait); vtkActor* actor = ac->GetNextActor (ait); )
         {
-          vtkSmartPointer<vtkActor> apart = (vtkActor*)path->GetLastNode ()->GetViewProp ();
-          int psize = apart->GetProperty ()->GetPointSize ();
-          if (psize < 63)
-            apart->GetProperty ()->SetPointSize (psize + 1);
+          for (actor->InitPathTraversal (); vtkAssemblyPath* path = actor->GetNextPath (); )
+          {
+            vtkSmartPointer<vtkActor> apart = (vtkActor*)path->GetLastNode ()->GetViewProp ();
+            int psize = apart->GetProperty ()->GetPointSize ();
+            if (psize < 63)
+              apart->GetProperty ()->SetPointSize (psize + 1);
+          }
         }
       }
       break;
     }
     case 45:        // KEY_MINUS
     {
-      vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors ();
-      vtkCollectionSimpleIterator ait;
-      for (ac->InitTraversal (ait); vtkActor* actor = ac->GetNextActor (ait); )
+      if(alt)
+        zoomOut ();
+      else
       {
-        for (actor->InitPathTraversal (); vtkAssemblyPath* path = actor->GetNextPath (); )
+        vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors ();
+        vtkCollectionSimpleIterator ait;
+        for (ac->InitTraversal (ait); vtkActor* actor = ac->GetNextActor (ait); )
         {
-          vtkSmartPointer<vtkActor> apart = (vtkActor*)path->GetLastNode ()->GetViewProp ();
-          int psize = apart->GetProperty ()->GetPointSize ();
-          if (psize > 1)
-            apart->GetProperty ()->SetPointSize (psize - 1);
+          for (actor->InitPathTraversal (); vtkAssemblyPath* path = actor->GetNextPath (); )
+          {
+            vtkSmartPointer<vtkActor> apart = (vtkActor*)path->GetLastNode ()->GetViewProp ();
+            int psize = apart->GetProperty ()->GetPointSize ();
+            if (psize > 1)
+              apart->GetProperty ()->SetPointSize (psize - 1);
+          }
         }
       }
       break;
