@@ -203,32 +203,39 @@ namespace pcl {
     }
 
     // TODO Enum for is_test_phase
-    PointCloud<Detector::Signature>::Ptr Detector::obtainFeatures(Scene &scene, IndicesPtr indices, bool is_test_phase) {
-      std::string name_str = std::string("feature_") + scene.id;
-
-      if (is_test_phase) {
-        name_str += "_test";
-      }
-      else {
-        name_str += "_train";
-      }
-
-      name_str += ".pcd";
-
-      const char *name = name_str.c_str();
-
-      if (ifstream(name)) {
-        PointCloud<Signature>::Ptr features (new PointCloud<Signature>());
-        io::loadPCDFile(name, *features);
-        //if (features->points.size() != indices->size())
-          //cout << "got " << features->points.size() << " features from " << indices->size() << " points" << endl;
-        return features;
-      } else {
+    PointCloud<Detector::Signature>::Ptr Detector::obtainFeatures(Scene &scene, IndicesPtr indices, bool is_test_phase, bool cache) {
+      if (cache == false)
+      {
         PointCloud<Signature>::Ptr features = computeFeatures(scene.cloud, indices);
-        io::savePCDFileBinary(name, *features);
         return features;
+      }
+      else
+      {
+        std::string name_str = std::string("feature_") + scene.id;
+
+        if (is_test_phase) {
+          name_str += "_test";
+        }
+        else {
+          name_str += "_train";
+        }
+
+        name_str += ".pcd";
+
+        const char *name = name_str.c_str();
+
+        if (ifstream(name)) {
+          PointCloud<Signature>::Ptr features (new PointCloud<Signature>());
+          io::loadPCDFile(name, *features);
+          //if (features->points.size() != indices->size())
+          //cout << "got " << features->points.size() << " features from " << indices->size() << " points" << endl;
+          return features;
+        } else {
+          PointCloud<Signature>::Ptr features = computeFeatures(scene.cloud, indices);
+          io::savePCDFileBinary(name, *features);
+          return features;
+        }
       }
     }
-
   }
 }

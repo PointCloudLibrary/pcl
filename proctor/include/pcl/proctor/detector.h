@@ -17,14 +17,13 @@ using std::auto_ptr;
 using std::exception;
 using std::numeric_limits;
 
-class DetectorVisualizer; // TODO MOve into the pcl::proctor namespace
+class DetectorVisualizer; // TODO Move into the pcl::proctor namespace
 
 namespace pcl {
   namespace proctor {
     struct Scene;
 
     class Proposer;
-
 
     class Detector
     {
@@ -95,7 +94,7 @@ namespace pcl {
         PointCloud<Signature>::Ptr computeFeatures(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices);
 
         /** try to load the features from disk, or do it from scratch. for training only */
-        PointCloud<Signature>::Ptr obtainFeatures(Scene &scene, IndicesPtr indices, bool is_test_phase);
+        PointCloud<Signature>::Ptr obtainFeatures(Scene &scene, IndicesPtr indices, bool is_test_phase, bool cache = false);
 
         void
         setProposer(const ProposerPtr proposer) {
