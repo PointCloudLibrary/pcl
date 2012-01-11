@@ -47,6 +47,7 @@
 #include "pcl/registration/icp.h"
 #include "pcl/registration/icp_nl.h"
 #include "pcl/registration/transformation_estimation_point_to_plane.h"
+#include "pcl/registration/transformation_validation_euclidean.h"
 #include "pcl/registration/transformation_estimation_point_to_plane_lls.h"
 #include "pcl/registration/ia_ransac.h"
 #include "pcl/registration/pyramid_feature_matching.h"

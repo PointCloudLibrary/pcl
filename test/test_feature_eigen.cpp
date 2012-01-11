@@ -90,7 +90,7 @@ testIndicesAndSearchSurfaceEigen (const typename PointCloud<PointT>::Ptr & point
   est0.setKSearch (10);
   est0.setInputCloud (points);
   est0.setInputNormals (normals);
-  est0.compute (full_output);
+  est0.computeEigen (full_output);
   output0 = PointCloud<Eigen::MatrixXf> (full_output, *indices);
   //copyPointCloud (full_output, *indices, output0);
 
@@ -103,7 +103,7 @@ testIndicesAndSearchSurfaceEigen (const typename PointCloud<PointT>::Ptr & point
   est1.setInputCloud (subpoints);
   est1.setSearchSurface (points);
   est1.setInputNormals (normals);
-  est1.compute (output1);
+  est1.computeEigen (output1);
 
   // Compute with all points as "input" and the specified indices
   FeatureEstimation est2;
@@ -112,7 +112,7 @@ testIndicesAndSearchSurfaceEigen (const typename PointCloud<PointT>::Ptr & point
   est2.setInputCloud (points);
   est2.setInputNormals (normals);
   est2.setIndices (indices);
-  est2.compute (output2);
+  est2.computeEigen (output2);
 
   // All three of the above cases should produce equivalent results
   ASSERT_EQ (output0.points.rows (), output1.points.rows ());
@@ -143,7 +143,7 @@ testIndicesAndSearchSurfaceEigen (const typename PointCloud<PointT>::Ptr & point
   est3.setInputNormals (normals);
   est3.setInputCloud (subpoints);
   est3.setIndices (indices2);
-  est3.compute (output3);
+  est3.computeEigen (output3);
 
   // Start with features for each point in "subpoints" and then subsample the results
   output4 = PointCloud<Eigen::MatrixXf> (output0, *indices2); // (Re-using "output0" from above)
@@ -245,7 +245,7 @@ testSHOTIndicesAndSearchSurfaceEigen (const typename PointCloud<PointT>::Ptr & p
   est0.setSearchMethod (typename search::KdTree<PointT>::Ptr (new search::KdTree<PointT>));
   est0.setRadiusSearch (radius);
   est0.setInputCloud (points);
-  est0.compute (full_output);
+  est0.computeEigen (full_output);
 
   output0 = PointCloud<Eigen::MatrixXf> (full_output, *indices);
 
@@ -257,7 +257,7 @@ testSHOTIndicesAndSearchSurfaceEigen (const typename PointCloud<PointT>::Ptr & p
   est1.setRadiusSearch (radius);
   est1.setInputCloud (subpoints);
   est1.setSearchSurface (points);
-  est1.compute (output1);
+  est1.computeEigen (output1);
 
   //// Compute with all points as "input" and the specified indices
   FeatureEstimation est2 = createSHOTDesc<FeatureEstimation, PointT, NormalT, Eigen::MatrixXf>(normals, nr_shape_bins,nr_color_bins,describe_shape,describe_color);
@@ -265,7 +265,7 @@ testSHOTIndicesAndSearchSurfaceEigen (const typename PointCloud<PointT>::Ptr & p
   est2.setRadiusSearch (radius);
   est2.setInputCloud (points);
   est2.setIndices (indices);
-  est2.compute (output2);
+  est2.computeEigen (output2);
 
   // All three of the above cases should produce equivalent results
   ASSERT_EQ (output0.points.rows (), output1.points.rows ());
@@ -295,7 +295,7 @@ testSHOTIndicesAndSearchSurfaceEigen (const typename PointCloud<PointT>::Ptr & p
   est3.setSearchSurface (points);
   est3.setInputCloud (subpoints);
   est3.setIndices (indices2);
-  est3.compute (output3);
+  est3.computeEigen (output3);
 
   // Start with features for each point in "subpoints" and then subsample the results
   output4 = PointCloud<Eigen::MatrixXf> (output0, *indices2);
@@ -367,7 +367,7 @@ TEST (PCL, NormalEstimationEigen)
   n.setKSearch (indices.size ());
 
   // estimate
-  n.compute (*normals);
+  n.computeEigen (*normals);
   EXPECT_EQ (normals->points.rows (), indices.size ());
 
   for (int i = 0; i < normals->points.rows (); ++i)
@@ -394,7 +394,7 @@ TEST (PCL, NormalEstimationEigen)
   n.setSearchMethod (tree);
 
   // estimate
-  n.compute (*normals);
+  n.computeEigen (*normals);
   EXPECT_EQ (normals->points.rows (), indices.size ());
 }
 
@@ -418,7 +418,7 @@ TEST (PCL, NormalEstimationOpenMPEigen)
   n.setKSearch (indices.size ());
 
   // estimate
-  n.compute (*normals);
+  n.computeEigen (*normals);
   EXPECT_EQ (normals->points.rows (), indices.size ());
 
   for (int i = 0; i < normals->points.rows (); ++i)
@@ -460,7 +460,7 @@ TEST (PCL, MomentInvariantsEstimationEigen)
   mi.setKSearch (indices.size ());
 
   // estimate
-  mi.compute (*moments);
+  mi.computeEigen (*moments);
   EXPECT_EQ (moments->points.rows (), indices.size ());
 
   for (int i = 0; i < moments->points.rows (); ++i)
@@ -535,7 +535,7 @@ TEST (PCL, BoundaryEstimationEigen)
   b.setKSearch (indices.size ());
 
   // estimate
-  b.compute (*bps);
+  b.computeEigen (*bps);
   EXPECT_EQ (bps->points.rows (), indices.size ());
 
   pt = bps->points (0, 0);
@@ -608,7 +608,7 @@ TEST (PCL, PrincipalCurvaturesEstimationEigen)
   pc.setKSearch (indices.size ());
 
   // estimate
-  pc.compute (*pcs);
+  pc.computeEigen (*pcs);
   EXPECT_EQ (pcs->points.rows (), indices.size ());
 
   // Adjust for small numerical inconsitencies (due to nn_indices not being sorted)
@@ -677,7 +677,7 @@ TEST (PCL, SHOTShapeEstimationEigen)
   shot.setSearchMethod (tree);
 
   // estimate
-  shot.compute (*shots);
+  shot.computeEigen (*shots);
   EXPECT_EQ (shots->points.rows (), indices.size ());
 
   EXPECT_NEAR (shots->points (103, 9 ), 0.0072018504, 1e-4);
@@ -736,7 +736,7 @@ TEST (PCL, GenericSHOTShapeEstimation)
   shot.setSearchMethod (tree);
 
   // estimate
-  shot.compute (*shots);
+  shot.computeEigen (*shots);
   EXPECT_EQ (shots->points.rows (), indices.size ());
 
   EXPECT_NEAR (shots->points (103, 18), 0.0077019366, 1e-5);
@@ -805,7 +805,7 @@ TEST (PCL, SHOTShapeAndColorEstimation)
   shot.setSearchMethod (rgbaTree);
 
   // estimate
-  shot.compute (*shots);
+  shot.computeEigen (*shots);
   EXPECT_EQ (shots->points.rows (), indices.size ());
 
   EXPECT_NEAR (shots->points (103, 10), 0.0020453099, 1e-5);
@@ -870,7 +870,7 @@ TEST (PCL, SHOTShapeEstimationOpenMP)
   shot.setSearchMethod (tree);
 
   // estimate
-  shot.compute (*shots);
+  shot.computeEigen (*shots);
   EXPECT_EQ (shots->points.size (), indices.size ());
 
   EXPECT_NEAR (shots->points[103].descriptor[9 ], 0.0072018504, 1e-4);
@@ -942,7 +942,7 @@ TEST (PCL,SHOTShapeAndColorEstimationOpenMP)
   shot.setSearchMethod (rgbaTree);
 
   // estimate
-  shot.compute (*shots);
+  shot.computeEigen (*shots);
   EXPECT_EQ (shots->points.size (), indices.size ());
 
   EXPECT_NEAR (shots->points[103].descriptor[10], 0.0020453099, 1e-5);
@@ -1011,7 +1011,7 @@ TEST (PCL, 3DSCEstimationEigen)
   sc3d.setPointDensityRadius (ptDensityRad);
   // Compute the features
   PointCloud<Eigen::MatrixXf>::Ptr sc3ds (new PointCloud<Eigen::MatrixXf>);
-  sc3d.compute (*sc3ds);
+  sc3d.computeEigen (*sc3ds);
   EXPECT_EQ (sc3ds->points.rows (), cloud.size ());
 
   // 3DSC does not define a repeatable local RF, we set it to zero to signal it to the user
@@ -1090,7 +1090,7 @@ TEST (PCL, USCEstimation)
   uscd.setLocalRadius (radius);
   // Compute the features
   PointCloud<Eigen::MatrixXf>::Ptr uscds (new PointCloud<Eigen::MatrixXf>);
-  uscd.compute (*uscds);
+  uscd.computeEigen (*uscds);
   EXPECT_EQ (uscds->points.rows (), cloud.size ());
 
   EXPECT_NEAR (uscds->points (0, 0), 0.9876f, 1e-4f);
@@ -1204,7 +1204,7 @@ TEST (PCL, PFHEstimationEigen)
   pfh.setKSearch (indices.size ());
 
   // estimate
-  pfh.compute (*pfhs);
+  pfh.computeEigen (*pfhs);
   EXPECT_EQ (pfhs->points.rows (), indices.size ());
 
   for (int i = 0; i < pfhs->points.rows (); ++i)
@@ -1364,7 +1364,7 @@ TEST (PCL, FPFHEstimationEigen)
   fpfh.setKSearch (indices.size ());
 
   // estimate
-  fpfh.compute (*fpfhs);
+  fpfh.computeEigen (*fpfhs);
   EXPECT_EQ (fpfhs->points.rows (), indices.size ());
 
   EXPECT_NEAR (fpfhs->points (0, 0),  1.58591, 1e-2);
@@ -1638,7 +1638,7 @@ TEST (PCL, RSDEstimation)
   rsd.setRadiusSearch (0.015);
 
   // estimate
-  rsd.compute (*rsds);
+  rsd.computeEigen (*rsds);
   //  EXPECT_NEAR (rsds->points[0].r_min, 0.04599, 0.005);
   //  EXPECT_NEAR (rsds->points[0].r_max, 0.07053, 0.005);
 
@@ -1689,7 +1689,7 @@ TEST (PCL, IntensityGradientEstimation)
   search::KdTree<PointXYZI>::Ptr treept2 (new search::KdTree<PointXYZI> (false));
   grad_est.setSearchMethod (treept2);
   grad_est.setRadiusSearch (0.25);
-  grad_est.compute (gradient);
+  grad_est.computeEigen (gradient);
 
   // Compare to gradient estimates to actual values
   for (size_t i = 0; i < cloud_ptr->points.size (); ++i)
@@ -1765,7 +1765,7 @@ TEST (PCL, SpinImageEstimationEigen)
   spin_est.setRadialStructure ();
 
   // estimate
-  spin_est.compute (*spin_images);
+  spin_est.computeEigen (*spin_images);
   EXPECT_EQ (spin_images->points.rows (), indices.size ());
 
   EXPECT_NEAR (spin_images->points (100, 0), 0, 1e-5);
@@ -1800,7 +1800,7 @@ TEST (PCL, SpinImageEstimationEigen)
   spin_est.setAngularDomain ();
 
   // estimate
-  spin_est.compute (*spin_images);
+  spin_est.computeEigen (*spin_images);
   EXPECT_EQ (spin_images->points.rows (), indices.size ());
 
   EXPECT_NEAR (spin_images->points (100, 0), 0, 1e-4);
@@ -1836,7 +1836,7 @@ TEST (PCL, SpinImageEstimationEigen)
   spin_est.setAngularDomain (false);
 
   // estimate
-  spin_est.compute (*spin_images);
+  spin_est.computeEigen (*spin_images);
   EXPECT_EQ (spin_images->points.rows (), indices.size ());
 
   EXPECT_NEAR (spin_images->points (100, 0), 0, 1e-5);
@@ -1870,7 +1870,7 @@ TEST (PCL, SpinImageEstimationEigen)
   spin_est.setAngularDomain ();
 
   // estimate
-  spin_est.compute (*spin_images);
+  spin_est.computeEigen (*spin_images);
   EXPECT_EQ (spin_images->points.rows (), indices.size ());
 
   EXPECT_NEAR (spin_images->points (100, 0), 0, 1e-4);
@@ -1937,7 +1937,7 @@ TEST (PCL, IntensitySpinEstimation)
 
   ispin_est.setInputCloud (cloud_xyzi.makeShared ());
   PointCloud<Eigen::MatrixXf> ispin_output;
-  ispin_est.compute (ispin_output);
+  ispin_est.computeEigen (ispin_output);
 
   // Compare to independently verified values
   Eigen::VectorXf ispin = ispin_output.points.row (220);
@@ -2019,7 +2019,7 @@ TEST (PCL, RIFTEstimation)
   rift_est.setInputCloud (cloud_xyzi.makeShared ());
   rift_est.setInputGradient (gradient.makeShared ());
   PointCloud<Eigen::MatrixXf> rift_output;
-  rift_est.compute (rift_output);
+  rift_est.computeEigen (rift_output);
 
   // Compare to independently verified values
   Eigen::VectorXf rift = rift_output.points.row (220);
