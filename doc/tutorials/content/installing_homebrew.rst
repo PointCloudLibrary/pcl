@@ -117,12 +117,6 @@ The following libraries are **Required** to build PCL.
   dimensional spaces.  Used in `kdtree` for fast approximate nearest neighbors
   search.
 
-- **CMinPack** version >= 1.1.3
-  (http://devernay.free.fr/hacks/cminpack/cminpack.html)
-  Software for solving nonlinear equations and nonlinear least squares
-  problems.  Used in the `sample_consensus` and `registration` modules for
-  non-linear (Levenberg-Marquardt) optimizations.
-
 - **Visualization ToolKit (VTK)** version >= 5.6.1 (http://www.vtk.org/)
   Software system for 3D computer graphics, image processing and visualization.
   Used in `visualization` for 3D point cloud rendering and visualization.
@@ -201,12 +195,6 @@ Install FLANN
 ::
 
   $ brew install flann
-
-Install CMinPack
-''''''''''''''''
-::
-
-  $ brew install cminpack
 
 Install VTK
 '''''''''''

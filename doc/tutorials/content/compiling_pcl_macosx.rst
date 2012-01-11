@@ -65,12 +65,6 @@ The following libraries are **Required** to build PCL.
   dimensional spaces.  Used in `kdtree` for fast approximate nearest neighbors
   search.
 
-- **CMinPack** version >= 1.1.3
-  (http://devernay.free.fr/hacks/cminpack/cminpack.html)
-  Software for solving nonlinear equations and nonlinear least squares
-  problems.  Used in the `sample_consensus` and `registration` modules for
-  non-linear (Levenberg-Marquardt) optimizations.
-
 - **Visualization ToolKit (VTK)** version >= 5.6.1 (http://www.vtk.org/)
    Software system for 3D computer graphics, image processing and visualization.
    Used in `visualization` for 3D point cloud rendering and visualization.
@@ -149,30 +143,6 @@ Install FLANN
 ::
 
    $ sudo port install flann
-   
-Install CMinPack
-----------------
-
-There is no MacPort currently available for CMinPack.  You can either install
-the Prebuilt Binaries provided on the PCL downloads page
-(http://pointclouds.org/downloads/macosx.html), or build from source.
-
-To build from source download the CMinPack source from
-http://devernay.free.fr/hacks/cminpack/cminpack.html and extract::
-
-   $ cd ~/Downloads/ 
-   $ tar -xzvf cminpack-1.1.3.tar.gz
-   $ cd cminpack-1.1.3
-
-You'll also need to grab the PCL patch, which includes various builds of
-CMinPack::
-   
-   $ svn export http://svn.pointclouds.org/pcl/trunk/3rdparty/cminpack/cpack.patch
-   $ patch < cpack.patch
-   $ cmake -DUSE_FPIC=ON -DSHARED_LIBS=ON -DBUILD_EXAMPLES=OFF .
-   $ make
-   $ sudo make install
-
    
 Install VTK
 -----------
