@@ -15,9 +15,6 @@ else(NOT VTK_FOUND OR NOT Boost_MPI_FOUND)
     set(REASON)
     set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
     include (${VTK_USE_FILE})
-
-    FIND_PACKAGE(Qt4)
-    INCLUDE(${QT_USE_FILE})
 endif(NOT VTK_FOUND OR NOT Boost_MPI_FOUND)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 

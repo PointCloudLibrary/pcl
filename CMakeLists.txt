@@ -141,11 +141,16 @@ if(VTK_FOUND)
   link_directories(${VTK_LIBRARY_DIRS})
   set(HAVE_VTK ON)
 endif()
-#Find MPI
+# Find MPI
 find_package(MPI)
 if(MPI_CXX_FOUND)
   include_directories(${MPI_INCLUDE_PATH})
 endif(MPI_CXX_FOUND)
+# Find QT4
+find_package(Qt4)
+if (QT4_FOUND)
+  include(${QT_USE_FILE})
+endif (QT4_FOUND)
 #Find Doxygen and html help compiler if any
 find_package(Doxygen)
 if(DOXYGEN_FOUND)

@@ -10,10 +10,6 @@ else(NOT VTK_FOUND)
     set(DEFAULT TRUE)
     set(REASON)
     include (${VTK_USE_FILE})
-
-    # Find QVTK
-    FIND_PACKAGE(Qt4)
-    INCLUDE(${QT_USE_FILE})
 endif(NOT VTK_FOUND)
 
 # OpenNI found?
