@@ -164,7 +164,7 @@ In lines:
 
 .. literalinclude:: sources/vfh_recognition/nearest_neighbors.cpp
    :language: cpp
-   :lines: 132-128
+   :lines: 132-143
 
 
 we load the first given user histogram (and ignore the rest). Then we proceed
