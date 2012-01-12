@@ -145,7 +145,7 @@ pcl::search::FlannSearch<PointT>::nearestKSearch (const PointCloud& cloud, const
     // const cast is evil, but the matrix constructor won't change the data, and the
     // search won't change the matrix
     float* cdata = can_cast ? const_cast<float*> (reinterpret_cast<const float*> (&cloud[0])): data;
-    const flann::Matrix<float> m (cdata ,cloud.size (), dim_, can_cast ? sizeof(PointT)/sizeof(float) : dim_ );
+    const flann::Matrix<float> m (cdata ,cloud.size (), dim_, can_cast ? sizeof (PointT) : dim_ * sizeof (float) );
 
     flann::SearchParams p;
     p.eps = eps_;
@@ -250,7 +250,7 @@ pcl::search::FlannSearch<PointT>::radiusSearch (
     }
 
     float* cdata = can_cast ? const_cast<float*> (reinterpret_cast<const float*> (&cloud[0])) : data;
-    const flann::Matrix<float> m (cdata ,cloud.size (), dim_, can_cast ? sizeof(PointT)/sizeof(float) : dim_ );
+    const flann::Matrix<float> m (cdata ,cloud.size (), dim_, can_cast ? sizeof (PointT) : dim_ * sizeof (float));
 
     flann::SearchParams p;
     p.eps = eps_;
