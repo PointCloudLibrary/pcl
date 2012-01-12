@@ -1,7 +1,5 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/filters/filter.h>
-#include <pcl/filters/voxel_grid.h>
 
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 8))
 #include <vtkLidarScanner.h>
@@ -37,6 +35,7 @@ namespace pcl {
     const float Scanner::phi_start = 0.0f;
     const float Scanner::phi_step = M_PI / 6;
     const int Scanner::phi_count = 12;
+
     const float Scanner::theta_min = 0.0f;
     const float Scanner::theta_max = M_PI / 6;
     const float Scanner::phi_min = 0.0f;
@@ -106,7 +105,6 @@ namespace pcl {
     }
 
     /** Scanner */
-
     PointCloud<PointNormal>::Ptr Scanner::getCloud(Scan scan, Model &model) {
       PointCloud<PointNormal>::Ptr cloud (new PointCloud<PointNormal>());
       vtkSmartPointer<vtkTransform> transform = compute_transform(scan, model);
@@ -116,19 +114,7 @@ namespace pcl {
       PointCloud<Normal>::Ptr pcn = compute_pcn(pcxyz, v[0], v[1], v[2]);
       concatenateFields(*pcxyz, *pcn, *cloud);
 
-      // Remove NaNs
-      PointCloud<PointNormal>::Ptr dense_cloud (new PointCloud<PointNormal>());
-
-      std::vector<int> index;
-      pcl::removeNaNFromPointCloud<PointNormal>(*cloud, *dense_cloud, index);
-
-      PointCloud<PointNormal>::Ptr cloud_subsampled (new PointCloud<PointNormal> ());
-      VoxelGrid<PointNormal> subsampling_filter;
-      subsampling_filter.setInputCloud(dense_cloud);
-      subsampling_filter.setLeafSize(0.1, 0.1, 0.1);
-      subsampling_filter.filter(*cloud_subsampled);
-
-      return cloud_subsampled;
+      return cloud;
     }
 
     PointCloud<PointNormal>::Ptr Scanner::getCloudCached(int ti, int pi, Model &model) {

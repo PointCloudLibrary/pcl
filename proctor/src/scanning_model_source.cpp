@@ -9,6 +9,8 @@
 #include <vtkPoints.h>
 
 #include <pcl/pcl_base.h>
+#include <pcl/filters/filter.h>
+#include <pcl/filters/voxel_grid.h>
 
 #include "proctor/config.h"
 
@@ -161,7 +163,19 @@ namespace pcl {
       }
       cout << endl;
 
-      return full_cloud;
+      // Remove NaNs
+      PointCloud<PointNormal>::Ptr dense_cloud (new PointCloud<PointNormal>());
+
+      std::vector<int> index;
+      pcl::removeNaNFromPointCloud<PointNormal>(*full_cloud, *dense_cloud, index);
+
+      PointCloud<PointNormal>::Ptr cloud_subsampled (new PointCloud<PointNormal> ());
+      VoxelGrid<PointNormal> subsampling_filter;
+      subsampling_filter.setInputCloud(dense_cloud);
+      subsampling_filter.setLeafSize(0.01, 0.01, 0.01);
+      subsampling_filter.filter(*cloud_subsampled);
+
+      return cloud_subsampled;
     }
 
     PointCloud<PointNormal>::Ptr ScanningModelSource::getTestModel(std::string model_id) {
