@@ -1,9 +1,11 @@
 #ifndef DATABASE_ENTRY_
 #define DATABASE_ENTRY_
 
-namespace pcl {
+namespace pcl
+{
 
-  namespace proctor {
+  namespace proctor
+  {
 
     typedef FPFHSignature33 Signature;
 

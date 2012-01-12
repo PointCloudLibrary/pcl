@@ -19,8 +19,10 @@ using std::numeric_limits;
 
 class DetectorVisualizer; // TODO Move into the pcl::proctor namespace
 
-namespace pcl {
-  namespace proctor {
+namespace pcl
+{
+  namespace proctor
+  {
     struct Scene;
 
     class Proposer;
@@ -60,14 +62,12 @@ namespace pcl {
           NUM_BINS
         };
 
-
-        //Entry database[Config::num_models];
-
         /**
          * do any offline processing
          * models[i] is a registered point cloud of the ith model
          */
-        void train(Scene &scene);
+        void
+        train(Scene &scene);
 
         /**
          * do any online processing
@@ -76,36 +76,39 @@ namespace pcl {
          * populate classifier[candidate model] with a similarity score (higher is better)
          * populate registration[candidate model] with a distance score (lower is better, but 0 means didn't try)
          */
-        std::string query(Scene &scene, float *classifier, double *registration);
+        std::string
+        query(Scene &scene, float *classifier, double *registration);
 
         /** start a visualizer; if called, must be called before training/querying */
-        void enableVisualization(DetectorVisualizer *vis);
+        void
+        enableVisualization(DetectorVisualizer *vis);
 
         /** print the timing data */
-        void printTimer();
-
-        /** the timer */
-        Timer<NUM_BINS> timer;
+        void
+        printTimer();
 
         /** get a dense sampling of points as keypoints and return their indices */
-        IndicesPtr computeKeypoints(PointCloud<PointNormal>::Ptr cloud);
+        IndicesPtr
+        computeKeypoints(PointCloud<PointNormal>::Ptr cloud);
 
         /** run the feature */
-        PointCloud<Signature>::Ptr computeFeatures(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices);
+        PointCloud<Signature>::Ptr
+        computeFeatures(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices);
 
         /** try to load the features from disk, or do it from scratch. for training only */
-        PointCloud<Signature>::Ptr obtainFeatures(Scene &scene, IndicesPtr indices, bool is_test_phase, bool cache = false);
+        PointCloud<Signature>::Ptr
+        obtainFeatures(Scene &scene, IndicesPtr indices, bool is_test_phase, bool cache = false);
 
         void
-        setProposer(const ProposerPtr proposer) {
+        setProposer(const ProposerPtr proposer)
+        {
           proposer_ = proposer;
         }
 
       private:
 
-        auto_ptr<visualization::CloudViewer> vis;
-
-        KdTree<Signature>::Ptr tree;
+        /** the timer */
+        Timer<NUM_BINS> timer;
 
         ProposerPtr proposer_;
 

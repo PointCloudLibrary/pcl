@@ -6,9 +6,10 @@
 #include "proctor/detector.h"
 #include "proctor/proposer.h"
 
-namespace pcl {
-
-  namespace proctor {
+namespace pcl
+{
+  namespace proctor
+  {
 
     class BasicProposer : public Proposer {
       public:

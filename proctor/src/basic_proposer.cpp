@@ -1,11 +1,14 @@
 #include "proctor/basic_proposer.h"
 
-namespace pcl {
+namespace pcl
+{
   
-  namespace proctor {
+  namespace proctor
+  {
 
     void
-    BasicProposer::getProposed(int max_num, Entry &query, std::vector<std::string> &input, std::vector<std::string> &output) {
+    BasicProposer::getProposed(int max_num, Entry &query, std::vector<std::string> &input, std::vector<std::string> &output)
+    {
       std::vector<std::string>::iterator database_it;
 
       vector<Candidate> ballot;
@@ -23,7 +26,8 @@ namespace pcl {
     }
 
     double
-    BasicProposer::getVotes(Entry &query, Entry &match) {
+    BasicProposer::getVotes(Entry &query, Entry &match)
+    {
       int max_votes = 1; // TODO Set this to what?
 
       double votes = 0;

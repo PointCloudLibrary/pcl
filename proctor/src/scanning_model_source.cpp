@@ -15,9 +15,11 @@
 
 #include "proctor/config.h"
 
-namespace pcl {
+namespace pcl
+{
 
-  namespace proctor {
+  namespace proctor
+  {
 
     const float theta_start = M_PI / 12;
     const float theta_step = 0.0f;
@@ -30,7 +32,9 @@ namespace pcl {
     const float phi_min = 0.0f;
     const float phi_max = M_PI * 2;
 
-    IndicesPtr randomSubset(int n, int r) {
+    IndicesPtr
+    randomSubset(int n, int r)
+    {
       IndicesPtr subset (new std::vector<int>());
       std::vector<int> bag (n);
       for (int i = 0; i < n; i++) bag[i] = i;
@@ -44,7 +48,9 @@ namespace pcl {
       return subset;
     }
 
-    void ScanningModelSource::loadModels() {
+    void
+    ScanningModelSource::loadModels()
+    {
       int max_models = 1814;
       srand(0);
       IndicesPtr model_subset = randomSubset(max_models, Config::num_models);
@@ -58,12 +64,12 @@ namespace pcl {
         // Put model in map
         Model* new_model = new Model;
         std::stringstream ss;
-        ss << name << id;
+        ss << name_ << id;
         std::string new_id = ss.str();
 
         // read mesh
         new_model->id = id;
-        snprintf(path, sizeof(path), "%s/%d/m%d/m%d.off", dir.c_str(), id / 100, id, id);
+        snprintf(path, sizeof(path), "%s/%d/m%d/m%d.off", dir_.c_str(), id / 100, id, id);
         file = fopen(path, "r");
 
         if (file == NULL) {
@@ -116,7 +122,7 @@ namespace pcl {
         new_model->mesh->SetPolys(ca); ca->Delete();
 
         // read metadata
-        snprintf(path, sizeof(path), "%s/%d/m%d/m%d_info.txt", dir.c_str(), id / 100, id, id);
+        snprintf(path, sizeof(path), "%s/%d/m%d/m%d_info.txt", dir_.c_str(), id / 100, id, id);
         file = fopen(path, "r");
         while (!feof(file)) {
           char buf[256];
@@ -138,22 +144,26 @@ namespace pcl {
         } // end while over info lines
         fclose(file);
 
-        models[new_id] = *new_model;
+        models_[new_id] = *new_model;
       } // end for over models
     }
 
-    void ScanningModelSource::getModelIDs(std::vector<std::string> &output) {
+    void
+    ScanningModelSource::getModelIDs(std::vector<std::string> &output)
+    {
       std::map<std::string, Model>::iterator it;
       output.clear();
 
-      for ( it=models.begin() ; it != models.end(); it++ ) {
+      for ( it=models_.begin() ; it != models_.end(); it++ ) {
         output.push_back((*it).first);
       }
 
       sort(output.begin(), output.end());
     }
 
-    PointCloud<PointNormal>::Ptr ScanningModelSource::getTrainingModel(std::string model_id) {
+    PointCloud<PointNormal>::Ptr
+    ScanningModelSource::getTrainingModel(std::string model_id)
+    {
       PointCloud<PointNormal>::Ptr full_cloud(new PointCloud<PointNormal>());
 
       for (int ti = 0; ti < theta_count; ti++) {
@@ -161,7 +171,7 @@ namespace pcl {
           float theta = Scanner::theta_start + ti * Scanner::theta_step;
           float phi = Scanner::phi_start + pi * Scanner::phi_step;
 
-          *full_cloud += *Scanner::getCloudCached(theta, phi, models[model_id]);
+          *full_cloud += *Scanner::getCloudCached(theta, phi, models_[model_id]);
           flush(cout << '.');
         }
       }
@@ -182,17 +192,19 @@ namespace pcl {
       return cloud_subsampled;
     }
 
-    PointCloud<PointNormal>::Ptr ScanningModelSource::getTestModel(std::string model_id) {
+    PointCloud<PointNormal>::Ptr
+    ScanningModelSource::getTestModel(std::string model_id)
+    {
       boost::uniform_real<float> theta_u(theta_min, theta_max);
-      boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > theta_gen(rng, theta_u);
+      boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > theta_gen(rng_, theta_u);
 
       boost::uniform_real<float> phi_u(phi_min, phi_max);
-      boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > phi_gen(rng, phi_u);
+      boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > phi_gen(rng_, phi_u);
 
       float theta = theta_gen();
       float phi = phi_gen();
 
-      PointCloud<PointNormal>::Ptr test_scan = Scanner::getCloudCached(theta, phi, models[model_id]);
+      PointCloud<PointNormal>::Ptr test_scan = Scanner::getCloudCached(theta, phi, models_[model_id]);
       return test_scan;
     }
   }

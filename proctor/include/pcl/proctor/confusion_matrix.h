@@ -5,24 +5,31 @@
 #include <map>
 #include <vector>
 
-namespace pcl {
+namespace pcl
+{
 
-  namespace proctor {
+  namespace proctor
+  {
 
-    class ConfusionMatrix {
+    class ConfusionMatrix
+    {
     public:
-      void increment(std::string truth, std::string guess);
+      void
+      increment(std::string truth, std::string guess);
 
-      void printMatrix();
+      void
+      printMatrix();
 
-      int total();
+      int
+      total();
 
-      int trace();
+      int
+      trace();
 
     private:
-      std::map< std::string, std::map<std::string, int> > matrix;
+      std::map< std::string, std::map<std::string, int> > matrix_;
 
-      std::vector< std::string > ids;
+      std::vector< std::string > ids_;
     };
 
   }

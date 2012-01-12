@@ -9,8 +9,10 @@
 
 namespace mpi = boost::mpi;
 
-namespace pcl {
-  namespace proctor {
+namespace pcl
+{
+  namespace proctor
+  {
     int REQ_FEATURE = 0;
     int FIN_FEATURE = 1;
 

@@ -2,9 +2,11 @@
 #include <pcl/registration/icp.h>
 #include <pcl/registration/ia_ransac.h>
 
-namespace pcl {
+namespace pcl
+{
 
-  namespace proctor {
+  namespace proctor
+  {
 
     void
     RegistrationProposer::getProposed(int max_num, Entry &query, std::vector<std::string> &input, std::vector<std::string> &output) {

@@ -13,11 +13,15 @@
 # define snprintf _snprintf
 #endif
 
-namespace pcl {
+namespace pcl
+{
 
-  namespace proctor {
+  namespace proctor
+  {
 
-    IndicesPtr Proctor::randomSubset(int n, int r) {
+    IndicesPtr
+    Proctor::randomSubset(int n, int r)
+    {
       IndicesPtr subset (new vector<int>());
       vector<int> bag (n);
       for (int i = 0; i < n; i++) bag[i] = i;
@@ -31,8 +35,10 @@ namespace pcl {
       return subset;
     }
 
-    void Proctor::train(Detector &detector) {
-      source_->getModelIDs(model_ids);
+    void
+    Proctor::train(Detector &detector)
+    {
+      source_->getModelIDs(model_ids_);
 
       cout << "Proctor beginning training" << endl;
 
@@ -41,7 +47,7 @@ namespace pcl {
       timer.start();
 #pragma omp parallel for
       for (int mi = 0; mi < Config::num_models; mi++) {
-        std::string model_id = model_ids[mi];
+        std::string model_id = model_ids_[mi];
         cout << "Begin scanning model " << mi << " (" << model_id << ")" << endl;
         Scene *scene = new Scene(model_id, source_->getTrainingModel(model_id));
         cout << "Finished scanning model " << mi << " (" << model_id << ")" << endl;
@@ -58,7 +64,9 @@ namespace pcl {
       cout << "Proctor finished training" << endl;
     }
 
-    void Proctor::test(Detector &detector, unsigned int seed) {
+    void
+    Proctor::test(Detector &detector, unsigned int seed)
+    {
       srand(seed);
 
       // run the tests
@@ -71,7 +79,7 @@ namespace pcl {
       for (int ni = 0; ni < Config::num_trials; ni++) {
         cout << "[test " << ni << "]" << endl;
 
-        std::string truth_id = model_ids[ni % model_ids.size()];
+        std::string truth_id = model_ids_[ni % model_ids_.size()];
 
         std::map<std::string, int>& guesses_for_id = guesses[truth_id];
 
@@ -112,11 +120,15 @@ namespace pcl {
       double distance;
     } Detection;
 
-    bool operator<(const Detection &a, const Detection &b) {
+    bool
+    operator<(const Detection &a, const Detection &b)
+    {
       return a.distance < b.distance;
     }
 
-    void Proctor::printPrecisionRecall() {
+    void
+    Proctor::printPrecisionRecall()
+    {
       //vector<Detection> detections;
       //Detection d;
       //for (d.ni = 0; d.ni < Config::num_trials; d.ni++) {
@@ -141,7 +153,9 @@ namespace pcl {
       //}
     }
 
-    void Proctor::printClassifierStats() {
+    void
+    Proctor::printClassifierStats()
+    {
       //float avg = 0; // average rank of correct id
       //int area = 0; // area under curve of cumulative histogram
       //for (int ni = 0; ni < Config::num_trials; ni++) {
@@ -164,7 +178,9 @@ namespace pcl {
       //printf("area under cumulative histogram of correct model rank: %d\n", area);
     }
 
-    void Proctor::printTimer() {
+    void
+    Proctor::printTimer()
+    {
       printf(
         "obtain training clouds: %10.3f sec\n"
         "obtain testing clouds:  %10.3f sec\n"
@@ -177,7 +193,9 @@ namespace pcl {
       );
     }
 
-    void Proctor::printResults(Detector &detector) {
+    void
+    Proctor::printResults(Detector &detector)
+    {
       // precision-recall
       printf("[precision-recall]\n");
       printPrecisionRecall();
@@ -193,7 +211,9 @@ namespace pcl {
       detector.printTimer();
     }
 
-    void Proctor::printConfusionMatrix(ConfusionMatrix &matrix) {
+    void
+    Proctor::printConfusionMatrix(ConfusionMatrix &matrix)
+    {
       // correct percentage
       printf("[overview]\n");
       printf("%d of %d correct (%.2f%%)\n", matrix.trace(), matrix.total(), float(matrix.trace()) / matrix.total() * 100);

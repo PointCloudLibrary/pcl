@@ -1,7 +1,8 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-namespace Config {
+namespace Config
+{
 
   /** how many models to use in training and testing */
   const int num_models = 4;

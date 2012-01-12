@@ -3,49 +3,59 @@
 #include <iostream>
 #include <algorithm>
 
-namespace pcl {
+namespace pcl
+{
 
-  namespace proctor {
+  namespace proctor
+  {
 
-    void ConfusionMatrix::increment(std::string truth, std::string guess) {
-      if (std::find(ids.begin(), ids.end(), truth) == ids.end()) {
-        ids.push_back(truth);
+    void
+    ConfusionMatrix::increment(std::string truth, std::string guess)
+    {
+      if (std::find(ids_.begin(), ids_.end(), truth) == ids_.end()) {
+        ids_.push_back(truth);
       }
 
-      if (std::find(ids.begin(), ids.end(), guess) == ids.end()) {
-        ids.push_back(guess);
+      if (std::find(ids_.begin(), ids_.end(), guess) == ids_.end()) {
+        ids_.push_back(guess);
       }
-      matrix[truth][guess] += 1;
+      matrix_[truth][guess] += 1;
     }
 
-    void ConfusionMatrix::printMatrix() {
-      for (std::vector<std::string>::iterator it = ids.begin(); it != ids.end(); ++it) {
+    void
+    ConfusionMatrix::printMatrix()
+    {
+      for (std::vector<std::string>::iterator it = ids_.begin(); it != ids_.end(); ++it) {
         std::cout << *it << ":";
-        for (std::vector<std::string>::iterator it2 = ids.begin(); it2 != ids.end(); ++it2) {
-          std::cout << "\t" << matrix[*it][*it2];
+        for (std::vector<std::string>::iterator it2 = ids_.begin(); it2 != ids_.end(); ++it2) {
+          std::cout << "\t" << matrix_[*it][*it2];
         }
 
         std::cout << std::endl;
       }
     }
 
-    int ConfusionMatrix::total() {
+    int
+    ConfusionMatrix::total()
+    {
       int total = 0;
 
-      for (std::vector<std::string>::iterator it = ids.begin(); it != ids.end(); ++it) {
-        for (std::vector<std::string>::iterator it2 = ids.begin(); it2 != ids.end(); ++it2) {
-          total += matrix[*it][*it2];
+      for (std::vector<std::string>::iterator it = ids_.begin(); it != ids_.end(); ++it) {
+        for (std::vector<std::string>::iterator it2 = ids_.begin(); it2 != ids_.end(); ++it2) {
+          total += matrix_[*it][*it2];
         }
       }
 
       return total;
     }
 
-    int ConfusionMatrix::trace() {
+    int
+    ConfusionMatrix::trace()
+    {
       int trace = 0;
 
-      for (std::vector<std::string>::iterator it = ids.begin(); it != ids.end(); ++it) {
-        trace += matrix[*it][*it];
+      for (std::vector<std::string>::iterator it = ids_.begin(); it != ids_.end(); ++it) {
+        trace += matrix_[*it][*it];
       }
 
       return trace;

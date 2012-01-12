@@ -6,9 +6,11 @@
 #include <map>
 #include "proctor/proposer.h"
 
-namespace pcl {
+namespace pcl
+{
 
-  namespace proctor {
+  namespace proctor
+  {
 
     class RegistrationProposer : public Proposer {
       public:

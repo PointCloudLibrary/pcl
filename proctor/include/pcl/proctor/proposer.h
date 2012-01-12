@@ -7,9 +7,11 @@
 #include "proctor/detector.h"
 #include "proctor/database_entry.h"
 
-namespace pcl {
+namespace pcl
+{
 
-  namespace proctor {
+  namespace proctor
+  {
 
     struct Candidate {
       std::string id;
@@ -28,7 +30,8 @@ namespace pcl {
         {}
 
         void
-        setDatabase(const DatabasePtr database) {
+        setDatabase(const DatabasePtr database)
+        {
           database_ = database;
         }
 

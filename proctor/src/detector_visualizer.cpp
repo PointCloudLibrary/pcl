@@ -139,7 +139,8 @@ DetectorVisualizer::timeoutSlot ()
 }
 
 void
-DetectorVisualizer::modelSelectionChanged (QListWidgetItem *current, QListWidgetItem *previous) {
+DetectorVisualizer::modelSelectionChanged (QListWidgetItem *current, QListWidgetItem *previous)
+{
   std::string id = current->text().toStdString();
   if (cloud_database.count(id) > 0) {
     showCloud(current->text().toStdString());
@@ -150,13 +151,3 @@ DetectorVisualizer::modelSelectionChanged (QListWidgetItem *current, QListWidget
   }
 }
 
-//int 
-//main (int argc, char ** argv)
-//{
-  //// Initialize QT
-  //QApplication app (argc, argv); 
-
-  //DetectorVisualizer v;
-  //v.show ();
-  //return (app.exec ());
-//}

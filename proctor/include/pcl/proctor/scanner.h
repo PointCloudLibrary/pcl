@@ -4,9 +4,11 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
-namespace pcl {
+namespace pcl
+{
 
-  namespace proctor {
+  namespace proctor
+  {
 
     struct Model {
       int id;
@@ -44,11 +46,13 @@ namespace pcl {
         };
 
         /** does one scan. testing should use this */
-        static PointCloud<PointNormal>::Ptr getCloud(Scan scan, Model &model);
+        static PointCloud<PointNormal>::Ptr
+        getCloud(Scan scan, Model &model);
 
         /** try to load scan from disk, or do it from scratch. for training only */
         // theta and phi are in radians
-        static PointCloud<PointNormal>::Ptr getCloudCached(float theta, float phi, Model &model);
+        static PointCloud<PointNormal>::Ptr
+        getCloudCached(float theta, float phi, Model &model);
     };
   }
 }

@@ -11,15 +11,19 @@
 #include "proctor/registration_proposer.h"
 #include "proctor/detector_visualizer.h"
 
-namespace pcl {
-  namespace proctor {
+namespace pcl
+{
+  namespace proctor
+  {
     /** Detector */
     const double Detector::keypoint_separation = 0.1;
     const int Detector::max_votes = 100;
     const int Detector::num_registration = 4;
 
     /* Trains a single model */
-    void Detector::train(Scene &scene) {
+    void
+    Detector::train(Scene &scene)
+    {
       srand(0);
       if (detector_vis_) {
         detector_vis_->addCloud(scene.id, scene.cloud);
@@ -38,7 +42,9 @@ namespace pcl {
       (*database_)[scene.id] = e;
     }
 
-    std::string Detector::query(Scene &scene, float *classifier, double *registration) {
+    std::string
+    Detector::query(Scene &scene, float *classifier, double *registration)
+    {
       cout << "detector testing " << scene.id << endl;
 
       Entry e;
@@ -74,11 +80,15 @@ namespace pcl {
       return picked[0];
     }
 
-    void Detector::enableVisualization(DetectorVisualizer *vis) {
+    void
+    Detector::enableVisualization(DetectorVisualizer *vis)
+    {
       detector_vis_ = vis;
     }
 
-    void Detector::printTimer() {
+    void
+    Detector::printTimer()
+    {
       printf(
         "select training keypoints: %10.3f sec\n"
         "obtain training features:  %10.3f sec\n"
@@ -99,7 +109,9 @@ namespace pcl {
       );
     }
 
-    IndicesPtr Detector::computeKeypoints(PointCloud<PointNormal>::Ptr cloud) {
+    IndicesPtr
+    Detector::computeKeypoints(PointCloud<PointNormal>::Ptr cloud)
+    {
       IndicesPtr indices (new vector<int>());
       PointCloud<int> leaves;
       UniformSampling<PointNormal> us;
@@ -111,7 +123,9 @@ namespace pcl {
       return indices;
     }
 
-    PointCloud<Detector::Signature>::Ptr Detector::computeFeatures(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices) {
+    PointCloud<Detector::Signature>::Ptr
+    Detector::computeFeatures(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices)
+    {
       cout << "computing features on " << indices->size() << " points" << endl;
       PointCloud<Signature>::Ptr features (new PointCloud<Signature>());
       FPFHEstimation<PointNormal, PointNormal, Signature> fpfh;
@@ -128,7 +142,9 @@ namespace pcl {
     }
 
     // TODO Enum for is_test_phase
-    PointCloud<Detector::Signature>::Ptr Detector::obtainFeatures(Scene &scene, IndicesPtr indices, bool is_test_phase, bool cache) {
+    PointCloud<Detector::Signature>::Ptr
+    Detector::obtainFeatures(Scene &scene, IndicesPtr indices, bool is_test_phase, bool cache)
+    {
       if (cache == false)
       {
         PointCloud<Signature>::Ptr features = computeFeatures(scene.cloud, indices);

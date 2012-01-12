@@ -1,10 +1,14 @@
 #include "proctor/proposer.h"
 
-namespace pcl {
+namespace pcl
+{
 
-  namespace proctor {
+  namespace proctor
+  {
 
-    bool operator<(const Candidate &a, const Candidate &b) {
+    bool
+    operator<(const Candidate &a, const Candidate &b)
+    {
       return a.votes > b.votes; // sort descending
     }
 

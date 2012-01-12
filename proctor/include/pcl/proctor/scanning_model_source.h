@@ -8,26 +8,32 @@
 #include "proctor/model_source.h"
 #include "proctor/scanner.h"
 
-namespace pcl {
+namespace pcl
+{
 
-  namespace proctor {
+  namespace proctor
+  {
 
     class ScanningModelSource : public ModelSource {
       public:
         ScanningModelSource(std::string name, std::string dir) : ModelSource(name, dir)
         {}
 
-        virtual void loadModels();
+        virtual void
+        loadModels();
 
-        virtual void getModelIDs(std::vector<std::string> &output);
+        virtual void
+        getModelIDs(std::vector<std::string> &output);
 
-        virtual PointCloud<PointNormal>::Ptr getTrainingModel(std::string model_id);
+        virtual
+        PointCloud<PointNormal>::Ptr getTrainingModel(std::string model_id);
 
-        virtual PointCloud<PointNormal>::Ptr getTestModel(std::string model_id);
+        virtual
+        PointCloud<PointNormal>::Ptr getTestModel(std::string model_id);
 
       private:
-        std::map<std::string, Model> models;
-        boost::mt19937 rng;
+        std::map<std::string, Model> models_;
+        boost::mt19937 rng_;
     };
 
   }
