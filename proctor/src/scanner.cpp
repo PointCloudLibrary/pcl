@@ -117,11 +117,8 @@ namespace pcl {
       return cloud;
     }
 
-    PointCloud<PointNormal>::Ptr Scanner::getCloudCached(int ti, int pi, Model &model) {
-      Scan scan = {
-        Scanner::theta_start + ti * Scanner::theta_step,
-        Scanner::phi_start + pi * Scanner::phi_step
-      };
+    PointCloud<PointNormal>::Ptr Scanner::getCloudCached(float theta, float phi, Model &model) {
+      Scan scan = { theta, phi };
       char name[22];
       sprintf(name, "scan_%04d_%03.0f_%03.0f.pcd", model.id, deg(scan.theta), deg(scan.phi));
       if (ifstream(name)) {

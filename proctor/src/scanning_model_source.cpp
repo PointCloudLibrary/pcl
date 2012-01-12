@@ -11,6 +11,7 @@
 #include <pcl/pcl_base.h>
 #include <pcl/filters/filter.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/io/ply_io.h>
 
 #include "proctor/config.h"
 
@@ -157,7 +158,10 @@ namespace pcl {
 
       for (int ti = 0; ti < theta_count; ti++) {
         for (int pi = 0; pi < phi_count; pi++) {
-          *full_cloud += *Scanner::getCloudCached(ti, pi, models[model_id]);
+          float theta = Scanner::theta_start + ti * Scanner::theta_step;
+          float phi = Scanner::phi_start + pi * Scanner::phi_step;
+
+          *full_cloud += *Scanner::getCloudCached(theta, phi, models[model_id]);
           flush(cout << '.');
         }
       }
@@ -179,11 +183,14 @@ namespace pcl {
     }
 
     PointCloud<PointNormal>::Ptr ScanningModelSource::getTestModel(std::string model_id) {
-      const float theta_scale = (theta_max - theta_min) / RAND_MAX;
-      const float phi_scale = (phi_max - phi_min) / RAND_MAX;
+      boost::uniform_real<float> theta_u(theta_min, theta_max);
+      boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > theta_gen(rng, theta_u);
 
-      int theta = theta_min + rand() * theta_scale + 5;
-      int phi = phi_min + rand() * phi_scale + 5;
+      boost::uniform_real<float> phi_u(phi_min, phi_max);
+      boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > phi_gen(rng, phi_u);
+
+      float theta = theta_gen();
+      float phi = phi_gen();
 
       PointCloud<PointNormal>::Ptr test_scan = Scanner::getCloudCached(theta, phi, models[model_id]);
       return test_scan;

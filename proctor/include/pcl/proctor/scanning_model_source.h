@@ -3,6 +3,8 @@
 
 #include <vtkPolyData.h>
 
+#include <boost/random.hpp>
+
 #include "proctor/model_source.h"
 #include "proctor/scanner.h"
 
@@ -25,6 +27,7 @@ namespace pcl {
 
       private:
         std::map<std::string, Model> models;
+        boost::mt19937 rng;
     };
 
   }

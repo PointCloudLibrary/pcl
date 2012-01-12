@@ -47,7 +47,8 @@ namespace pcl {
         static PointCloud<PointNormal>::Ptr getCloud(Scan scan, Model &model);
 
         /** try to load scan from disk, or do it from scratch. for training only */
-        static PointCloud<PointNormal>::Ptr getCloudCached(int ti, int pi, Model &model);
+        // theta and phi are in radians
+        static PointCloud<PointNormal>::Ptr getCloudCached(float theta, float phi, Model &model);
     };
   }
 }
