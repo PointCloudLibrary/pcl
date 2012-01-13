@@ -96,7 +96,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
 
   NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
   ne.setInputCloud (xyz);
-  //ne.setSearchMethod (pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr (new pcl::KdTreeFLANN<pcl::PointXYZ>));
+  ne.setSearchMethod (pcl::search::KdTree<pcl::PointXYZ>::Ptr (new pcl::search::KdTree<pcl::PointXYZ>));
   ne.setKSearch (k);
   ne.setRadiusSearch (radius);
   
