@@ -16,7 +16,7 @@ add_definitions("-DEIGEN_DEFAULT_TO_ROW_MAJOR")   # see http://eigen.tuxfamily.o
 if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
   add_definitions("-DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG")
 endif()
-if(WIN32)
+if(WIN32 AND NOT DEFINED CMAKE_DEBUG_POSTFIX)
   set(CMAKE_DEBUG_POSTFIX "-gd")
 endif()
 
