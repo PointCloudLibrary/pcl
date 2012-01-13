@@ -204,7 +204,7 @@ namespace pcl
       {
         if (indices_ == NULL)
         {
-          assert (index >=0 && index < (int)cloud.points.size () && "Out-of-bounds error in nearestKSearch!");
+          assert (index >=0 && index < (int)input_->points.size () && "Out-of-bounds error in nearestKSearch!");
           return (nearestKSearch (input_->points[index], k, k_indices, k_sqr_distances));
         }
         else
@@ -280,7 +280,7 @@ namespace pcl
       {
         if (indices_ == NULL)
         {
-          assert (index >=0 && index < (int)cloud.points.size () && "Out-of-bounds error in radiusSearch!");
+          assert (index >=0 && index < (int)input_->points.size () && "Out-of-bounds error in radiusSearch!");
           return (radiusSearch (input_->points[index], radius, k_indices, k_sqr_distances, max_nn));
         }
         else
