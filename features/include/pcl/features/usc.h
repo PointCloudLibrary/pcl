@@ -55,7 +55,7 @@ namespace pcl
     *
     * The USC computed feature has the following structure:
     *   - rf float[9] = x_axis | y_axis | normal and represents the local frame
-    *     desc std::vector<float> which size is determined by the number of bins
+    *   - desc std::vector<float> which size is determined by the number of bins
     *     radius_bins_, elevation_bins_ and azimuth_bins_. 
     * 
     * \author Alessandro Franchi, Federico Tombari, Samuele Salti (original code)
