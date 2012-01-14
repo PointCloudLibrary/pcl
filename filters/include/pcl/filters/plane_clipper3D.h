@@ -54,7 +54,7 @@ namespace pcl
        * @brief Constructor taking the homogeneous representation of the plane as a Eigen::Vector4f
        * @param[in] plane_params plane parameters, need not necessarily be normalized
        */
-      PlaneClipper3D (Eigen::Vector4f plane_params);
+      PlaneClipper3D (const Eigen::Vector4f& plane_params);
 
       virtual ~PlaneClipper3D () throw ();
 

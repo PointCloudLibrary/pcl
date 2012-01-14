@@ -91,7 +91,7 @@ namespace pcl
       /**
         * \brief interface to clip a point cloud
         * \param[in] cloud_in input point cloud
-        * \param[out] clipped indices of points that remain after clipping the input cloudd
+        * \param[out] clipped indices of points that remain after clipping the input cloud
         * \param[in] indices the indices of points in the point cloud to be clipped.
         * \return list of indices of remaining points after clipping.
         */

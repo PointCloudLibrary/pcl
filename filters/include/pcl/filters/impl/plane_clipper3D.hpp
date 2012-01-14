@@ -38,7 +38,7 @@
 #include "pcl/filters/plane_clipper3D.h"
 
 template<typename PointT>
-pcl::PlaneClipper3D<PointT>::PlaneClipper3D (Eigen::Vector4f plane_params)
+pcl::PlaneClipper3D<PointT>::PlaneClipper3D (const Eigen::Vector4f& plane_params)
 : plane_params_ (plane_params)
 {
 }
@@ -163,6 +163,7 @@ pcl::PlaneClipper3D<PointT>::clipPlanarPolygon3D (std::vector<PointT>& polygon) 
   polygon = clipped;
 }
 
+// /ToDo: write fast version using eigen map and single matrix vector multiplication, that uses advantages of eigens SSE operations.
 template<typename PointT> void
 pcl::PlaneClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& cloud_in, std::vector<int>& clipped, const std::vector<int>& indices) const
 {
@@ -201,11 +202,15 @@ pcl::PlaneClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& cl
     //cout << "distances: " << distances.rows () << " x " << distances.cols () << endl;
     /*/
     for (register unsigned pIdx = 0; pIdx < cloud_in.size (); ++pIdx)
-    {
       if (clipPoint3D (cloud_in[pIdx]))
         clipped.push_back (pIdx);
-    }
     //*/
+  }
+  else
+  {
+    for (std::vector<int>::const_iterator iIt = indices.begin (); iIt != indices.end (); ++iIt)
+      if (clipPoint3D (cloud_in[*iIt]))
+        clipped.push_back (*iIt);
   }
 }
 #endif //PCL_FILTERS_IMPL_PLANE_CLIPPER3D_HPP
