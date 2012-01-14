@@ -11,6 +11,9 @@ else(${CMAKE_VERSION} VERSION_LESS 2.8.5)
   SET(Boost_ADDITIONAL_VERSIONS "1.47" "1.47.0")
 endif(${CMAKE_VERSION} VERSION_LESS 2.8.5)
 
+# Disable the config mode of find_package(Boost)
+set(Boost_NO_BOOST_CMAKE ON)
+
 #find_package(Boost 1.40.0 REQUIRED COMPONENTS system filesystem thread date_time iostreams serialization mpi)
 find_package(Boost 1.40.0 REQUIRED COMPONENTS system filesystem thread date_time iostreams)
 
