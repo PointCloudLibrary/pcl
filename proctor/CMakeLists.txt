@@ -4,18 +4,21 @@ set(SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree fe
 set(DEFAULT OFF)
 set(REASON "")
 
-find_package(Boost 1.40.0 COMPONENTS mpi)
-
-if(NOT VTK_FOUND OR NOT Boost_MPI_FOUND)
-    set(DEFAULT FALSE)
-    set(REASON "VTK or MPI was not found.")
-    MESSAGE(${REASON})
-else(NOT VTK_FOUND OR NOT Boost_MPI_FOUND)
+if(VTK_FOUND AND VTK_USE_QVTK AND Boost_MPI_FOUND AND Boost_SERIALIZATION_FOUND)
     set(DEFAULT TRUE)
     set(REASON)
     set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
     include (${VTK_USE_FILE})
-endif(NOT VTK_FOUND OR NOT Boost_MPI_FOUND)
+elseif(NOT VTK_FOUND)
+    set(DEFAULT FALSE)
+    set(REASON "VTK was not found.")
+elseif(NOT VTK_USE_QVTK)
+    set(DEFAULT FALSE)
+    set(REASON "VTK was not built with Qt support.")
+elseif(NOT Boost_MPI_FOUND OR NOT Boost_SERIALIZATION_FOUND)
+    set(DEFAULT FALSE)
+    set(REASON "Boost_MPI or Boost_serialization was not found.")
+endif(VTK_FOUND AND VTK_USE_QVTK AND Boost_MPI_FOUND AND Boost_SERIALIZATION_FOUND)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
@@ -89,7 +92,7 @@ if(build)
     target_link_libraries(proctor 
                           ${FLANN_LIBRARIES} 
                           pcl_common pcl_features pcl_keypoints pcl_io pcl_search pcl_visualization
-                          vtkCommon vtkFiltering vtkGraphics vtkIO ${Boost_mpi_LIBRARY} ${MPI_CXX_LIBRARIES} boost_serialization
+                          vtkCommon vtkFiltering vtkGraphics vtkIO ${Boost_MPI_LIBRARY} ${MPI_CXX_LIBRARIES} ${Boost_SERIALIZATION_LIBRARY}
                           pcl_filters QVTK ${QT_LIBRARIES})
   endif ()
 #boost_mpi
