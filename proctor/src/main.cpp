@@ -45,7 +45,7 @@ struct run_proctor
     proctor.test(detector, test_seed);
     proctor.printResults(detector);
 
-    sleep(100000);
+    boost::this_thread::sleep(boost::posix_time::seconds(100000));
   }
 };
 

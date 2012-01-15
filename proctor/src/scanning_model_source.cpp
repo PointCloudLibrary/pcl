@@ -57,7 +57,7 @@ namespace pcl
 
       for (int mi = 0; mi < Config::num_models; mi++) {
         int id = (*model_subset)[mi];
-        char path[256];
+        std::stringstream path;
         FILE *file;
         int vertices, faces, edges;
 
@@ -69,8 +69,8 @@ namespace pcl
 
         // read mesh
         new_model->id = id;
-        snprintf(path, sizeof(path), "%s/%d/m%d/m%d.off", dir_.c_str(), id / 100, id, id);
-        file = fopen(path, "r");
+        path << dir_ << "/" << id / 100 << "/m" << id << "/m" << id << ".off";
+        file = fopen(path.str ().c_str (), "r");
 
         if (file == NULL) {
           cerr << "Could not find " << path << endl;
@@ -122,8 +122,9 @@ namespace pcl
         new_model->mesh->SetPolys(ca); ca->Delete();
 
         // read metadata
-        snprintf(path, sizeof(path), "%s/%d/m%d/m%d_info.txt", dir_.c_str(), id / 100, id, id);
-        file = fopen(path, "r");
+        path.str ("");
+        path << dir_ << "/" << id / 100 << "/m" << id << "/m" << id << "_info.txt";
+        file = fopen(path.str ().c_str (), "r");
         while (!feof(file)) {
           char buf[256];
           if (fgets(buf, sizeof(buf), file) != NULL) {
