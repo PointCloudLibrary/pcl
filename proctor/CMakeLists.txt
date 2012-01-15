@@ -21,7 +21,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk)
 
-set (build TRUE)
 if (ANDROID_NDK)
   set (build FALSE)
 endif ()
