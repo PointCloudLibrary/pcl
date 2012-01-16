@@ -40,13 +40,19 @@
 
 #include "pcl/filters/random_sample.h"
 
+double unifRand()
+{
+  return (rand () / double (RAND_MAX));
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
 pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
 {
+  unsigned N = input_->size ();
   // If sample size is 0 or if the sample size is greater then input cloud size
   //   then return entire copy of cloud
-  if (sample_ >= input_->size ())
+  if (sample_ >= N)
   {
     output = *input_;
   }
@@ -57,21 +63,33 @@ pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
     output.width = sample_;
     output.height = 1;
 
-    // Fill output cloud with first sample points from input cloud
-    for (size_t i = 0; i < output.size (); ++i)
-      output.points[i] = input_->points[i];
-
     // Set random seed so derived indices are the same each time the filter runs
     std::srand (seed_);
 
-    // Iterate over the rest of the points of the input cloud picking a random
-    //   index from the output indices to replace
-    for (size_t i = output.size (); i < input_->size (); ++i)
+    unsigned top = N - sample_;
+    unsigned i = 0;
+    unsigned index = 0;
+
+    // Algorithm A
+    for (size_t n = sample_; n >= 2; n--)
     {
-      size_t index = std::rand () % (i + 1);
-      if (index < output.size ())
-        output.points[index] = input_->points[i];
+      float V = unifRand ();
+      unsigned S = 0;
+      float quot = float (top) / float (N);
+      while (quot > V)
+      {
+        S++;
+        top--;
+        N--;
+        quot = quot * float (top) / float (N);
+      }
+      index += S;
+      output.points[i++] = input_->points[index++];
+      N--;
     }
+
+    index += trunc (N * unifRand ());
+    output.points[i++] = input_->points[index++];
   }
 }
 
@@ -80,9 +98,10 @@ template<typename PointT>
 void
 pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
 {
+  unsigned N = input_->size ();
   // If sample size is 0 or if the sample size is greater then input cloud size
   //   then return all indices
-  if (sample_ >= input_->size ())
+  if (sample_ >= N)
   {
     indices = *indices_;
   }
@@ -91,21 +110,33 @@ pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
     // Resize output indices to sample size
     indices.resize (sample_);
 
-    // Fill output indices with first sample indices from input cloud
-    for (size_t i = 0; i < indices.size (); ++i)
-      indices[i] = (*indices_)[i];
-
     // Set random seed so derived indices are the same each time the filter runs
     std::srand (seed_);
 
-    // Iterate over the rest of the indices of the input cloud picking a random
-    //   index from the output indices to replace
-    for (size_t i = indices.size (); i < (*indices_).size (); ++i)
+    // Algorithm A
+    unsigned top = N - sample_;
+    unsigned i = 0;
+    unsigned index = 0;
+
+    for (size_t n = sample_; n >= 2; n--)
     {
-      size_t index = std::rand () % (i + 1);
-      if (index < indices.size ())
-        indices[index] = (*indices_)[i];
+      float V = unifRand ();
+      unsigned S = 0;
+      float quot = float (top) / float (N);
+      while (quot > V)
+      {
+        S++;
+        top--;
+        N--;
+        quot = quot * float (top) / float (N);
+      }
+      index += S;
+      indices[i++] = (*indices_)[index++];
+      N--;
     }
+
+    index += trunc (N * unifRand ());
+    indices[i++] = (*indices_)[index++];
   }
 }
 

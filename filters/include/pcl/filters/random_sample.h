@@ -45,8 +45,10 @@
 namespace pcl
 {
   /** \brief @b RandomSample applies a random sampling with uniform probability.
-    * Based off http://www.keithschwarz.com/interesting/code/?dir=random-sample
-    * Runs in O(n)
+    * Based off Algorithm A from the paper "Faster Methods for Random Sampling"
+    * by Jeffrey Scott Vitter. The algorithm runs in O(N) and results in sorted
+    * indices
+    * http://www.ittc.ku.edu/~jsv/Papers/Vit84.sampling.pdf
     * \author Justin Rosen
     * \ingroup filters
     */

@@ -897,8 +897,10 @@ TEST (RandomSample, Filters)
   EXPECT_EQ ((int)cloud_out.width, 10);
   EXPECT_EQ ((int)indices.size (), (int)cloud_out.size ());
 
-  for (size_t i = 0; i < indices.size (); ++i)
+  for (size_t i = 0; i < indices.size () - 1; ++i)
   {
+    // Check that indices are sorted
+    EXPECT_LT (indices[i], indices[i+1]);
     // Compare original points with sampled indices against sampled points
     EXPECT_NEAR (cloud->points[indices[i]].x, cloud_out.points[i].x, 1e-4);
     EXPECT_NEAR (cloud->points[indices[i]].y, cloud_out.points[i].y, 1e-4);
@@ -927,8 +929,10 @@ TEST (RandomSample, Filters)
   EXPECT_EQ ((int)cloud_out.width, 10);
   EXPECT_EQ ((int)indices2.size (), (int)cloud_out.size ());
 
-  for (size_t i = 0; i < indices2.size (); ++i)
+  for (size_t i = 0; i < indices2.size () - 1; ++i)
   {
+    // Check that indices are sorted
+    EXPECT_LT (indices2[i], indices2[i+1]);
     // Compare original points with sampled indices against sampled points
     EXPECT_NEAR (cloud->points[indices2[i]].x, cloud_out.points[i].x, 1e-4);
     EXPECT_NEAR (cloud->points[indices2[i]].y, cloud_out.points[i].y, 1e-4);
