@@ -170,12 +170,15 @@ namespace pcl
         COMPLETED = 3,
       };
     
-      /** \brief Empty constructor. */
-      GreedyProjectionTriangulation () : nnn_ (0), mu_ (0), search_radius_ (0), 
-                                         minimum_angle_ (0), maximum_angle_ (0), 
-                                         eps_angle_(0), consistent_(false) 
+     /** \brief Empty constructor. */
+      GreedyProjectionTriangulation () : mu_ (0), search_radius_ (0), // must be set by user
+                                         nnn_ (100),
+                                         minimum_angle_ (M_PI/18), // 10 degrees
+                                         maximum_angle_ (2*M_PI/3), // 120 degrees
+                                         eps_angle_(M_PI/4), //45 degrees,
+                                         consistent_(false), consistent_ordering_ (false)
       {};
-
+  
       /** \brief Set the multiplier of the nearest neighbor distance to obtain the final search radius for each point
        *  (this will make the algorithm adapt to different point densities in the cloud).
         * \param[in] mu the multiplier
