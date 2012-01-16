@@ -83,6 +83,16 @@ std::string pcl::gpu::getDeviceName(int device)
     return prop.name;
 }
 
+bool pcl::gpu::checkIfPreFermiGPU(int device)
+{
+  if (device < 0)
+    cudaSafeCall( cudaGetDevice(&device) );
+
+  cudaDeviceProp prop;
+  cudaSafeCall( cudaGetDeviceProperties(&prop, device) );
+  return prop.major < 2; // CC == 1.x
+}
+
 namespace 
 {
     template <class T> inline void getCudaAttribute(T *attribute, CUdevice_attribute device_attribute, int device)
@@ -231,8 +241,9 @@ void pcl::gpu::printShortCudaDeviceInfo(int device)
         cudaDeviceProp prop;
         cudaSafeCall( cudaGetDeviceProperties(&prop, dev) );
 
-        printf("Device %d:  \"%s\"  %.0fMb", dev, prop.name, (float)prop.totalGlobalMem/1048576.0f);        
-        printf(", sm_%d%d, %d cores", prop.major, prop.minor, convertSMVer2Cores(prop.major, prop.minor) * prop.multiProcessorCount);                
+        const char *arch_str = prop.major < 2 ? " (not Fermi)" : "";
+        printf("Device %d:  \"%s\"  %.0fMb", dev, prop.name, (float)prop.totalGlobalMem/1048576.0f);                
+        printf(", sm_%d%d%s, %d cores", prop.major, prop.minor, arch_str, convertSMVer2Cores(prop.major, prop.minor) * prop.multiProcessorCount);                
         printf(", Driver/Runtime ver.%d.%d/%d.%d\n", driverVersion/1000, driverVersion%100, runtimeVersion/1000, runtimeVersion%100);
     }
     fflush(stdout);

@@ -708,6 +708,9 @@ main (int argc, char* argv[])
   pcl::gpu::setDevice (device);
   pcl::gpu::printShortCudaDeviceInfo (device);
 
+  if(checkIfPreFermiGPU(device))
+    return cout << endl << "Kinfu is not supported for pre-Fermi GPU architectures, and not built for them by default. Exiting..." << endl, 1;
+
   CaptureOpenNI capture;
 
   int openni_device = 0;
