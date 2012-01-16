@@ -88,7 +88,7 @@ pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
       N--;
     }
 
-    index += trunc (N * unifRand ());
+    index += unsigned (N * unifRand ());
     output.points[i++] = input_->points[index++];
   }
 }
@@ -135,7 +135,7 @@ pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
       N--;
     }
 
-    index += trunc (N * unifRand ());
+    index += unsigned (N * unifRand ());
     indices[i++] = (*indices_)[index++];
   }
 }

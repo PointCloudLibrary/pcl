@@ -88,7 +88,7 @@ pcl::RandomSample<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
       N--;
     }
 
-    index += trunc (N * unifRand ());
+    index += unsigned (N * unifRand ());
     memcpy (&output.data[i++ * output.point_step], &input_->data[index++ * output.point_step], output.point_step);
 
     output.width = sample_;
@@ -137,7 +137,7 @@ pcl::RandomSample<sensor_msgs::PointCloud2>::applyFilter (std::vector<int> &indi
       N--;
     }
 
-    index += trunc (N * unifRand ());
+    index += unsigned (N * unifRand ());
     indices[i++] = (*indices_)[index++];
   }
 }
