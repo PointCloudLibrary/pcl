@@ -91,7 +91,6 @@ compute (const PointCloud<PointNormal>::Ptr &input, pcl::PolygonMesh &output,
   gpt.setInputCloud (input);
   gpt.setSearchRadius (radius);
   gpt.setMu (mu);
-//  gpt.setMaximumNearestNeighbors (100);
 
   gpt.reconstruct (output);
 
