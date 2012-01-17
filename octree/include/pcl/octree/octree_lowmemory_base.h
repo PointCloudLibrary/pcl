@@ -83,6 +83,18 @@ namespace pcl
         virtual
         ~OctreeLowMemBase ();
 
+        /** \brief copy constructor. */
+        OctreeLowMemBase (const OctreeLowMemBase& source)
+        {
+        	leafCount_ = source.leafCount_;
+        	branchCount_ = source.branchCount_;
+        	objectCount_ = source.objectCount_;
+        	rootNode_ = new (OctreeBranch) (*(source.rootNode_));
+        	depthMask_ = source.depthMask_;
+        	octreeDepth_ = source.octreeDepth_;
+        }
+
+
         /** \brief Set the maximum amount of voxels per dimension.
          *  \param maxVoxelIndex_arg: maximum amount of voxels per dimension
          * */
@@ -281,6 +293,13 @@ namespace pcl
           ~OctreeBranch ()
           {
           }
+
+    	  /** \brief deep copy function */
+    	  virtual OctreeNode *
+    	  deepCopy () const
+    	  {
+    		  return (OctreeNode*) new OctreeBranch (*this);
+    	  }
 
           /** \brief Get the type of octree node. Returns BRANCH_NODE type
            *  \return Returns BRANCH_NODE type.
@@ -611,12 +630,12 @@ namespace pcl
               case BRANCH_NODE:
                 // free child branch recursively
                 deleteBranch (*(OctreeBranch*)branchChild);
-
                 break;
-
               case LEAF_NODE:
-
                 break;
+              default:
+		break;
+
             }
 
             // delete branch child

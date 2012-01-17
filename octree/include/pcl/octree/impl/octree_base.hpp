@@ -53,8 +53,8 @@ namespace pcl
     using namespace std;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
-      OctreeBase<DataT, LeafT>::OctreeBase ()
+    template<typename DataT, typename LeafT, typename BranchT>
+      OctreeBase<DataT, LeafT, BranchT>::OctreeBase ()
       {
 
         // Initialization of globals
@@ -68,8 +68,8 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
-      OctreeBase<DataT, LeafT>::~OctreeBase ()
+    template<typename DataT, typename LeafT, typename BranchT>
+      OctreeBase<DataT, LeafT, BranchT>::~OctreeBase ()
       {
 
         // deallocate tree structure
@@ -79,9 +79,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::setMaxVoxelIndex (unsigned int maxVoxelIndex_arg)
+      OctreeBase<DataT, LeafT, BranchT>::setMaxVoxelIndex (unsigned int maxVoxelIndex_arg)
       {
         unsigned int treeDepth;
 
@@ -97,9 +97,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::setTreeDepth (unsigned int depth_arg)
+      OctreeBase<DataT, LeafT, BranchT>::setTreeDepth (unsigned int depth_arg)
       {
 
         assert (depth_arg>0);
@@ -113,9 +113,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::add (const unsigned int idxX_arg, const unsigned int idxY_arg,
+      OctreeBase<DataT, LeafT, BranchT>::add (const unsigned int idxX_arg, const unsigned int idxY_arg,
                                      const unsigned int idxZ_arg, const DataT& data_arg)
       {
 
@@ -134,9 +134,9 @@ namespace pcl
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       bool
-      OctreeBase<DataT, LeafT>::get (const unsigned int idxX_arg, const unsigned int idxY_arg,
+      OctreeBase<DataT, LeafT, BranchT>::get (const unsigned int idxX_arg, const unsigned int idxY_arg,
                                      const unsigned int idxZ_arg, DataT& data_arg) const
       {
         OctreeKey key;
@@ -160,9 +160,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       bool
-      OctreeBase<DataT, LeafT>::existLeaf (const unsigned int idxX_arg, const unsigned int idxY_arg,
+      OctreeBase<DataT, LeafT, BranchT>::existLeaf (const unsigned int idxX_arg, const unsigned int idxY_arg,
                                            const unsigned int idxZ_arg) const
       {
         OctreeKey key;
@@ -175,9 +175,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::removeLeaf (const unsigned int idxX_arg, const unsigned int idxY_arg,
+      OctreeBase<DataT, LeafT, BranchT>::removeLeaf (const unsigned int idxX_arg, const unsigned int idxY_arg,
                                             const unsigned int idxZ_arg)
       {
         OctreeKey key;
@@ -190,9 +190,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::deleteTree (  bool freeMemory_arg )
+      OctreeBase<DataT, LeafT, BranchT>::deleteTree (  bool freeMemory_arg )
       {
 
         if (rootNode_)
@@ -212,9 +212,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::serializeTree (std::vector<char>& binaryTreeOut_arg)
+      OctreeBase<DataT, LeafT, BranchT>::serializeTree (std::vector<char>& binaryTreeOut_arg)
       {
         OctreeKey newKey;
         newKey.x = newKey.y = newKey.z = 0;
@@ -227,9 +227,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::serializeTree (std::vector<char>& binaryTreeOut_arg, std::vector<DataT>& dataVector_arg)
+      OctreeBase<DataT, LeafT, BranchT>::serializeTree (std::vector<char>& binaryTreeOut_arg, std::vector<DataT>& dataVector_arg)
       {
         OctreeKey newKey;
         newKey.x = newKey.y = newKey.z = 0;
@@ -241,13 +241,13 @@ namespace pcl
         dataVector_arg.reserve (this->objectCount_);
         binaryTreeOut_arg.reserve (this->branchCount_);
 
-        OctreeBase<DataT, LeafT>::serializeTreeRecursive (binaryTreeOut_arg, rootNode_, newKey, dataVector_arg);
+        OctreeBase<DataT, LeafT, BranchT>::serializeTreeRecursive (binaryTreeOut_arg, rootNode_, newKey, dataVector_arg);
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::serializeLeafs (std::vector<DataT>& dataVector_arg)
+      OctreeBase<DataT, LeafT, BranchT>::serializeLeafs (std::vector<DataT>& dataVector_arg)
       {
 
         OctreeKey newKey;
@@ -262,9 +262,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::deserializeTree (std::vector<char>& binaryTreeIn_arg)
+      OctreeBase<DataT, LeafT, BranchT>::deserializeTree (std::vector<char>& binaryTreeIn_arg)
       {
 
         OctreeKey newKey;
@@ -282,9 +282,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::deserializeTree (std::vector<char>& binaryTreeIn_arg,
+      OctreeBase<DataT, LeafT, BranchT>::deserializeTree (std::vector<char>& binaryTreeIn_arg,
                                                  std::vector<DataT>& dataVector_arg)
       {
         OctreeKey newKey;
@@ -309,9 +309,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::deserializeTreeAndOutputLeafData (std::vector<char>& binaryTreeIn_arg,
+      OctreeBase<DataT, LeafT, BranchT>::deserializeTreeAndOutputLeafData (std::vector<char>& binaryTreeIn_arg,
                                                                   std::vector<DataT>& dataVector_arg)
       {
 
@@ -331,9 +331,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       LeafT*
-      OctreeBase<DataT, LeafT>::getLeafRecursive (const OctreeKey& key_arg, const unsigned int depthMask_arg,
+      OctreeBase<DataT, LeafT, BranchT>::getLeafRecursive (const OctreeKey& key_arg, const unsigned int depthMask_arg,
                                                   OctreeBranch* branch_arg)
       {
 
@@ -404,9 +404,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       LeafT*
-      OctreeBase<DataT, LeafT>::findLeafRecursive (const OctreeKey& key_arg, const unsigned int depthMask_arg,
+      OctreeBase<DataT, LeafT, BranchT>::findLeafRecursive (const OctreeKey& key_arg, const unsigned int depthMask_arg,
                                                    OctreeBranch* branch_arg) const
       {
         // index to branch child
@@ -446,9 +446,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       bool
-      OctreeBase<DataT, LeafT>::deleteLeafRecursive (const OctreeKey& key_arg, const unsigned int depthMask_arg,
+      OctreeBase<DataT, LeafT, BranchT>::deleteLeafRecursive (const OctreeKey& key_arg, const unsigned int depthMask_arg,
                                                      OctreeBranch* branch_arg)
       {
         // index to branch child
@@ -508,9 +508,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::serializeTreeRecursive (std::vector<char>& binaryTreeOut_arg,
+      OctreeBase<DataT, LeafT, BranchT>::serializeTreeRecursive (std::vector<char>& binaryTreeOut_arg,
                                                         const OctreeBranch* branch_arg, const OctreeKey& key_arg)
       {
 
@@ -543,6 +543,9 @@ namespace pcl
 
             switch (childNode->getNodeType ())
             {
+	      default:
+		break;
+
               case BRANCH_NODE:
 
                 // recursively proceed with indexed child branch
@@ -564,9 +567,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::serializeTreeRecursive (std::vector<char>& binaryTreeOut_arg,
+      OctreeBase<DataT, LeafT, BranchT>::serializeTreeRecursive (std::vector<char>& binaryTreeOut_arg,
                                                         const OctreeBranch* branch_arg, const OctreeKey& key_arg,
                                                         typename std::vector<DataT>& dataVector_arg)
       {
@@ -600,6 +603,9 @@ namespace pcl
 
             switch (childNode->getNodeType ())
             {
+	      default:
+		break;
+
               case BRANCH_NODE:
 
                 // recursively proceed with indexed child branch
@@ -621,9 +627,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::serializeLeafsRecursive (const OctreeBranch* branch_arg, const OctreeKey& key_arg,
+      OctreeBase<DataT, LeafT, BranchT>::serializeLeafsRecursive (const OctreeBranch* branch_arg, const OctreeKey& key_arg,
                                                          std::vector<DataT>& dataVector_arg)
       {
         // child iterator
@@ -647,6 +653,9 @@ namespace pcl
 
             switch (childNode->getNodeType ())
             {
+	      default:
+		break;
+
               case BRANCH_NODE:
 
                 // recursively proceed with indexed child branch
@@ -667,9 +676,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::deserializeTreeRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,
+      OctreeBase<DataT, LeafT, BranchT>::deserializeTreeRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,
                                                           OctreeBranch* branch_arg, const unsigned int depthMask_arg,
                                                           const OctreeKey& key_arg)
       {
@@ -727,9 +736,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::deserializeTreeRecursive (
+      OctreeBase<DataT, LeafT, BranchT>::deserializeTreeRecursive (
                                                           typename std::vector<char>::const_iterator& binaryTreeIn_arg,
                                                           OctreeBranch* branch_arg,
                                                           const unsigned int depthMask_arg,
@@ -791,9 +800,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::deserializeTreeAndOutputLeafDataRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,
+      OctreeBase<DataT, LeafT, BranchT>::deserializeTreeAndOutputLeafDataRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,
                                                                            OctreeBranch* branch_arg,
                                                                            const unsigned int depthMask_arg,
                                                                            const OctreeKey& key_arg,
@@ -854,27 +863,27 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg)
+      OctreeBase<DataT, LeafT, BranchT>::serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg)
       {
         // nothing to do
       }
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg,
+      OctreeBase<DataT, LeafT, BranchT>::serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg,
                                                        std::vector<DataT>& dataVector_arg)
       {
         leaf_arg.getData (dataVector_arg);
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::deserializeLeafCallback (
+      OctreeBase<DataT, LeafT, BranchT>::deserializeLeafCallback (
                                                          OctreeLeaf& leaf_arg,
                                                          const OctreeKey& key_arg,
                                                          typename std::vector<DataT>::const_iterator& dataVectorIterator_arg,
@@ -901,9 +910,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg)
+      OctreeBase<DataT, LeafT, BranchT>::deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg)
       {
 
         DataT newDataT;
@@ -917,9 +926,9 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
+    template<typename DataT, typename LeafT, typename BranchT>
       void
-      OctreeBase<DataT, LeafT>::deserializeTreeAndSerializeLeafCallback (OctreeLeaf& leaf_arg,
+      OctreeBase<DataT, LeafT, BranchT>::deserializeTreeAndSerializeLeafCallback (OctreeLeaf& leaf_arg,
                                                                          const OctreeKey& key_arg,
                                                                          std::vector<DataT>& dataVector_arg)
       {

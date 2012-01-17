@@ -437,6 +437,8 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
         || bUpperBoundViolationY || bUpperBoundViolationZ || (!boundingBoxDefined_))
     {
 
+      
+
       double octreeSideLen;
       unsigned char childIdx;
 
@@ -754,6 +756,8 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getOccupiedVoxelCentersRe
         voxelCount++;
         break;
       }
+      default:
+	break;
     }
   }
   return (voxelCount);

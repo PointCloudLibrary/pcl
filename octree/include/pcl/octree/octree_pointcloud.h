@@ -76,6 +76,7 @@ namespace pcl
     class OctreePointCloud : public OctreeT
     {
       public:
+        typedef OctreeT Base;
         /** \brief Octree pointcloud constructor.
           * \param[in] resolution_arg octree resolution at lowest octree level
           */
