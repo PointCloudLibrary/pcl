@@ -52,7 +52,7 @@ namespace pcl
   /** \brief Get the index of a specified field (i.e., dimension/channel)
     * \param[in] cloud the the point cloud message
     * \param[in] field_name the string defining the field name
-    * \ingroup io
+    * \ingroup common
     */
   inline int
   getFieldIndex (const sensor_msgs::PointCloud2 &cloud, const std::string &field_name)
@@ -68,7 +68,7 @@ namespace pcl
     * \param[in] cloud the the point cloud message
     * \param[in] field_name the string defining the field name
     * \param[out] fields a vector to the original \a PointField vector that the raw PointCloud message contains
-    * \ingroup io
+    * \ingroup common
     */
   template <typename PointT> inline int 
   getFieldIndex (const pcl::PointCloud<PointT> &cloud, const std::string &field_name, 
@@ -77,21 +77,21 @@ namespace pcl
   /** \brief Get the list of available fields (i.e., dimension/channel)
     * \param[in] cloud the point cloud message
     * \param[out] fields a vector to the original \a PointField vector that the raw PointCloud message contains
-    * \ingroup io
+    * \ingroup common
     */
   template <typename PointT> inline void 
   getFields (const pcl::PointCloud<PointT> &cloud, std::vector<sensor_msgs::PointField> &fields);
 
   /** \brief Get the list of all fields available in a given cloud
     * \param[in] cloud the the point cloud message
-    * \ingroup io
+    * \ingroup common
     */
   template <typename PointT> inline std::string 
   getFieldsList (const pcl::PointCloud<PointT> &cloud);
 
   /** \brief Get the available point cloud fields as a space separated string
     * \param[in] cloud a pointer to the PointCloud message
-    * \ingroup io
+    * \ingroup common
     */
   inline std::string
   getFieldsList (const sensor_msgs::PointCloud2 &cloud)
@@ -105,7 +105,7 @@ namespace pcl
 
   /** \brief Obtains the size of a specific field data type in bytes
     * \param[in] datatype the field data type (see PointField.h)
-    * \ingroup io
+    * \ingroup common
     */
   inline int
   getFieldSize (const int datatype)
@@ -144,7 +144,7 @@ namespace pcl
   /** \brief Obtains the type of the PointField from a specific size and type
     * \param[in] size the size in bytes of the data field
     * \param[in] type a char describing the type of the field  ('F' = float, 'I' = signed, 'U' = unsigned)
-    * \ingroup io
+    * \ingroup common
     */
   inline int
   getFieldType (const int size, char type)
@@ -182,7 +182,7 @@ namespace pcl
 
   /** \brief Obtains the type of the PointField from a specific PointField as a char
     * \param[in] type the PointField field type
-    * \ingroup io
+    * \ingroup common
     */
   inline char
   getFieldType (const int type)
@@ -210,7 +210,7 @@ namespace pcl
   /** \brief Copy all the fields from a given point cloud into a new point cloud
     * \param[in] cloud_in the input point cloud dataset
     * \param[out] cloud_out the resultant output point cloud dataset
-    * \ingroup io
+    * \ingroup common
     */
   template <typename PointInT, typename PointOutT> void 
   copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, 
@@ -221,7 +221,7 @@ namespace pcl
     * \param[in] cloud2 the second input point cloud dataset
     * \param[out] cloud_out the resultant output point cloud dataset
     * \return true if successful, false if failed (e.g., name/number of fields differs)
-    * \ingroup io
+    * \ingroup common
     */
   PCL_EXPORTS bool 
   concatenatePointCloud (const sensor_msgs::PointCloud2 &cloud1, 
@@ -232,7 +232,7 @@ namespace pcl
     * \param[in] cloud_in the input point cloud dataset
     * \param[in] indices the vector of indices representing the points to be copied from \a cloud_in
     * \param[out] cloud_out the resultant output point cloud dataset
-    * \ingroup io
+    * \ingroup common
     */
   PCL_EXPORTS void 
   copyPointCloud (const sensor_msgs::PointCloud2 &cloud_in, 
@@ -243,7 +243,7 @@ namespace pcl
     * \param[in] cloud_in the input point cloud dataset
     * \param[in] indices the vector of indices representing the points to be copied from \a cloud_in
     * \param[out] cloud_out the resultant output point cloud dataset
-    * \ingroup io
+    * \ingroup common
     */
   template <typename PointT> void 
   copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
@@ -253,7 +253,7 @@ namespace pcl
     * \param[in] cloud_in the input point cloud dataset
     * \param[in] indices the vector of indices representing the points to be copied from \a cloud_in
     * \param[out] cloud_out the resultant output point cloud dataset
-    * \ingroup io
+    * \ingroup common
     */
   template <typename PointT> void 
   copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
@@ -264,7 +264,7 @@ namespace pcl
     * \param[in] cloud_in the input point cloud dataset
     * \param[in] indices the vector of indices representing the points to be copied from \a cloud_in
     * \param[out] cloud_out the resultant output point cloud dataset
-    * \ingroup io
+    * \ingroup common
     */
   template <typename PointInT, typename PointOutT> void 
   copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, 
@@ -275,7 +275,7 @@ namespace pcl
     * \param[in] cloud_in the input point cloud dataset
     * \param[in] indices the vector of indices representing the points to be copied from \a cloud_in
     * \param[out] cloud_out the resultant output point cloud dataset
-    * \ingroup io
+    * \ingroup common
     */
   template <typename PointInT, typename PointOutT> void 
   copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, 
@@ -286,7 +286,7 @@ namespace pcl
     * \param[in] cloud_in the input point cloud dataset
     * \param[in] indices the PointIndices structure representing the points to be copied from cloud_in
     * \param[out] cloud_out the resultant output point cloud dataset
-    * \ingroup io
+    * \ingroup common
     */
   template <typename PointT> void 
   copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
@@ -297,7 +297,7 @@ namespace pcl
     * \param[in] cloud_in the input point cloud dataset
     * \param[in] indices the PointIndices structure representing the points to be copied from cloud_in
     * \param[out] cloud_out the resultant output point cloud dataset
-    * \ingroup io
+    * \ingroup common
     */
   template <typename PointInT, typename PointOutT> void 
   copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, 
@@ -308,7 +308,7 @@ namespace pcl
     * \param[in] cloud_in the input point cloud dataset
     * \param[in] indices the vector of indices representing the points to be copied from \a cloud_in
     * \param[out] cloud_out the resultant output point cloud dataset
-    * \ingroup io
+    * \ingroup common
     */
   template <typename PointT> void 
   copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
@@ -319,7 +319,7 @@ namespace pcl
     * \param[in] cloud_in the input point cloud dataset
     * \param[in] indices the vector of indices representing the points to be copied from cloud_in
     * \param[out] cloud_out the resultant output point cloud dataset
-    * \ingroup io
+    * \ingroup common
     */
   template <typename PointInT, typename PointOutT> void 
   copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, 
@@ -335,7 +335,7 @@ namespace pcl
     * \param[in] cloud1_in the first input dataset
     * \param[in] cloud2_in the second input dataset (overwrites the fields of the first dataset for those that are shared)
     * \param[out] cloud_out the resultant output dataset created by the concatenation of all the fields in the input datasets
-    * \ingroup io
+    * \ingroup common
     */
   template <typename PointIn1T, typename PointIn2T, typename PointOutT> void 
   concatenateFields (const pcl::PointCloud<PointIn1T> &cloud1_in, 
@@ -351,7 +351,7 @@ namespace pcl
     * \param[in] cloud1_in the first input dataset
     * \param[in] cloud2_in the second input dataset (overwrites the fields of the first dataset for those that are shared)
     * \param[out] cloud_out the output dataset created by concatenating all the fields in the input datasets
-    * \ingroup io
+    * \ingroup common
     */
   PCL_EXPORTS bool
   concatenateFields (const sensor_msgs::PointCloud2 &cloud1_in, 
@@ -361,7 +361,7 @@ namespace pcl
   /** \brief Copy the XYZ dimensions of a sensor_msgs::PointCloud2 into Eigen format
     * \param[in] in the point cloud message
     * \param[out] out the resultant Eigen MatrixXf format containing XYZ0 / point
-    * \ingroup io
+    * \ingroup common
     */
   PCL_EXPORTS bool 
   getPointCloudAsEigen (const sensor_msgs::PointCloud2 &in, Eigen::MatrixXf &out);
@@ -370,7 +370,7 @@ namespace pcl
     * \param[in] in the Eigen MatrixXf format containing XYZ0 / point
     * \param[out] out the resultant point cloud message
     * \note the method assumes that the PointCloud2 message already has the fields set up properly !
-    * \ingroup io
+    * \ingroup common
     */
   PCL_EXPORTS bool 
   getEigenAsPointCloud (Eigen::MatrixXf &in, sensor_msgs::PointCloud2 &out);
@@ -379,7 +379,7 @@ namespace pcl
   {
     /** \brief swap bytes order of a char array of length N
       * \param bytes char array to swap
-      * \ingroup io
+      * \ingroup common
       */
     template <std::size_t N> void 
     swapByte (char* bytes);
