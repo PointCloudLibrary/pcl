@@ -329,8 +329,8 @@ TEST (PCL, Organized)
   EXPECT_EQ ((int)triangles.polygons.size(), 2*(triangles.cloud.width-1)*(triangles.cloud.height-1) - 4);
   EXPECT_EQ ((int)triangles.polygons.at(0).vertices.size(), 3);
   EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(0), 0);
-  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(1), 1);
-  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(2), triangles.cloud.width+1);
+  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(1), triangles.cloud.width+1);
+  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(2), 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -799,4 +799,3 @@ main (int argc, char** argv)
   return (RUN_ALL_TESTS ());
 }
 /* ]--- */
-
