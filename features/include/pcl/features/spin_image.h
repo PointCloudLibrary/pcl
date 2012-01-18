@@ -159,7 +159,7 @@ namespace pcl
       setInputWithNormals (const PointCloudInConstPtr& input, 
                            const PointCloudNConstPtr& normals)
       {
-        setInputCloud (input);
+        this->setInputCloud (input);
         input_normals_ = normals;
       }
 
@@ -176,8 +176,8 @@ namespace pcl
       setSearchSurfaceWithNormals (const PointCloudInConstPtr& surface, 
                                    const PointCloudNConstPtr& normals)
       {
-        setSearchSurface (surface);
-        setInputNormals (normals);
+        this->setSearchSurface (surface);
+        this->setInputNormals (normals);
       }
 
       /** \brief Sets single vector a rotation axis for all input points.

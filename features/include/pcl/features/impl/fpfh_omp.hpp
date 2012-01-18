@@ -96,7 +96,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     this->searchForNeighbors (*surface_, p_idx, search_parameter_, nn_indices, nn_dists);
 
     // Estimate the SPFH signature around p_idx
-    computePointSPFHSignature (*surface_, *normals_, p_idx, i, nn_indices, hist_f1_, hist_f2_, hist_f3_);
+    this->computePointSPFHSignature (*surface_, *normals_, p_idx, i, nn_indices, hist_f1_, hist_f2_, hist_f3_);
 
     // Populate a lookup table for converting a point index to its corresponding row in the spfh_hist_* matrices
     spfh_hist_lookup[p_idx] = i;

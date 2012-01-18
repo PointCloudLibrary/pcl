@@ -59,7 +59,7 @@ pcl::MovingLeastSquaresOMP<PointInT, NormalOutT>::performReconstruction (PointCl
     std::vector<float> nn_sqr_dists;
 
     // Get the initial estimates of point positions and their neighborhoods
-    if (!searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
+    if (!this->searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
     {
       if (normals_)
         normals_->points[cp].normal[0] = normals_->points[cp].normal[1] = normals_->points[cp].normal[2] = normals_->points[cp].curvature = std::numeric_limits<float>::quiet_NaN ();
@@ -73,7 +73,7 @@ pcl::MovingLeastSquaresOMP<PointInT, NormalOutT>::performReconstruction (PointCl
 
     Eigen::Vector4f model_coefficients;
     // Get a plane approximating the local surface's tangent and project point onto it
-    computeMLSPointNormal (output.points[cp], *input_, nn_indices, nn_sqr_dists,
+    this->computeMLSPointNormal (output.points[cp], *input_, nn_indices, nn_sqr_dists,
                            model_coefficients); 
 
     // Save results to output cloud

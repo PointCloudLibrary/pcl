@@ -82,7 +82,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
     // Iterating over the entire index vector and  find all correspondences
     for (size_t idx = 0; idx < indices_->size (); ++idx)
     {
-      if (!searchForNeighbors (output, (*indices_)[idx], nn_indices, nn_dists))
+      if (!this->searchForNeighbors (output, (*indices_)[idx], nn_indices, nn_dists))
       {
         PCL_ERROR ("[pcl::%s::computeTransformation] Unable to find a nearest neighbor in the target dataset for point %d in the source!\n", getClassName ().c_str (), (*indices_)[idx]);
         return;
@@ -185,7 +185,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
 
     if (nr_iterations_ >= max_iterations_ ||
         fabs ((transformation_ - previous_transformation_).sum ()) < transformation_epsilon_ ||
-        fabs (getFitnessScore (correspondence_distances_, previous_correspondence_distances)) <= euclidean_fitness_epsilon_
+        fabs (this->getFitnessScore (correspondence_distances_, previous_correspondence_distances)) <= euclidean_fitness_epsilon_
        )
     {
       converged_ = true;
@@ -196,7 +196,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
       PCL_DEBUG ("fabs ((transformation_ - previous_transformation_).sum ()) (%f) < transformation_epsilon_ (%f)\n",
                  fabs ((transformation_ - previous_transformation_).sum ()), transformation_epsilon_);
       PCL_DEBUG ("fabs (getFitnessScore (correspondence_distances_, previous_correspondence_distances)) (%f) <= euclidean_fitness_epsilon_ (%f)\n",
-                 fabs (getFitnessScore (correspondence_distances_, previous_correspondence_distances)),
+                 fabs (this->getFitnessScore (correspondence_distances_, previous_correspondence_distances)),
                  euclidean_fitness_epsilon_);
 
     }
