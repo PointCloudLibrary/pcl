@@ -726,11 +726,11 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getOccupiedVoxelCentersRe
   // iterate over all children
   for (childIdx = 0; childIdx < 8; childIdx++)
   {
-    if (!branchHasChild (*node_arg, childIdx))
+    if (!this->branchHasChild (*node_arg, childIdx))
       continue;
 
     const OctreeNode * childNode;
-    childNode = getBranchChild (*node_arg, childIdx);
+    childNode = this->getBranchChild (*node_arg, childIdx);
 
     // generate new key for current branch voxel
     OctreeKey newKey;

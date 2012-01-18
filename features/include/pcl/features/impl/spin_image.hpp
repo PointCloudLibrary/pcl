@@ -106,7 +106,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
 
   std::vector<int> nn_indices;
   std::vector<float> nn_sqr_dists;
-  const int neighb_cnt = searchForNeighbors (index, search_radius_, nn_indices, nn_sqr_dists);
+  const int neighb_cnt = this->searchForNeighbors (index, search_radius_, nn_indices, nn_sqr_dists);
   if (neighb_cnt < (int)min_pts_neighb_)
   {
     throw PCLException (
@@ -324,7 +324,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEige
   output.points.resize (indices_->size (), 153);
   for (int i_input = 0; i_input < (int)indices_->size (); ++i_input)
   {
-    Eigen::ArrayXXd res = computeSiForPoint (indices_->at (i_input));
+    Eigen::ArrayXXd res = this->computeSiForPoint (indices_->at (i_input));
 
     // Copy into the resultant cloud
     for (int iRow = 0; iRow < res.rows () ; iRow++)

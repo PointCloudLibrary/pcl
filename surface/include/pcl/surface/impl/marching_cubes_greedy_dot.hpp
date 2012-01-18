@@ -72,11 +72,11 @@ pcl::MarchingCubesGreedyDot<PointNT>::voxelizeData()
 
     // the vertices are shared by 8 voxels, so we need to update all 8 of them
     HashMap neighbor_list;
-    getNeighborList1D (cell_data, index_3d, neighbor_list);
+    this->getNeighborList1D (cell_data, index_3d, neighbor_list);
     BOOST_FOREACH (typename HashMap::value_type entry, neighbor_list)
     {
       Eigen::Vector3i i3d;
-      getIndexIn3D (entry.first, i3d);
+      this->getIndexIn3D (entry.first, i3d);
       // getCellCenterFromIndex (const Eigen::Vector3i &index, Eigen::Vector4f &center) const
       Eigen::Vector4f posVector;
       MarchingCubes<PointNT>::getCellCenterFromIndex (i3d, posVector);

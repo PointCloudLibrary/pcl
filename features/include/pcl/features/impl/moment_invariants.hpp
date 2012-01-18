@@ -181,7 +181,7 @@ pcl::MomentInvariantsEstimation<PointInT, Eigen::MatrixXf>::computeFeatureEigen 
         continue;
       }
 
-      computePointMomentInvariants (*surface_, nn_indices,
+      this->computePointMomentInvariants (*surface_, nn_indices,
                                     output.points (idx, 0), output.points (idx, 1), output.points (idx, 2));
     }
   }
@@ -198,7 +198,7 @@ pcl::MomentInvariantsEstimation<PointInT, Eigen::MatrixXf>::computeFeatureEigen 
         continue;
        }
 
-      computePointMomentInvariants (*surface_, nn_indices,
+      this->computePointMomentInvariants (*surface_, nn_indices,
                                     output.points (idx, 0), output.points (idx, 1), output.points (idx, 2));
     }
   }

@@ -196,10 +196,10 @@ pcl::BoundaryEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen
       // Obtain a coordinate system on the least-squares plane
       //v = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().unitOrthogonal ();
       //u = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().cross3 (v);
-      getCoordinateSystemOnPlane (normals_->points[(*indices_)[idx]], u, v);
+      this->getCoordinateSystemOnPlane (normals_->points[(*indices_)[idx]], u, v);
 
       // Estimate whether the point is lying on a boundary surface or not
-      output.points (idx, 0) = isBoundaryPoint (*surface_, input_->points[(*indices_)[idx]], nn_indices, u, v, angle_threshold_);
+      output.points (idx, 0) = this->isBoundaryPoint (*surface_, input_->points[(*indices_)[idx]], nn_indices, u, v, angle_threshold_);
     }
   }
   else
@@ -218,10 +218,10 @@ pcl::BoundaryEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen
       // Obtain a coordinate system on the least-squares plane
       //v = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().unitOrthogonal ();
       //u = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().cross3 (v);
-      getCoordinateSystemOnPlane (normals_->points[(*indices_)[idx]], u, v);
+      this->getCoordinateSystemOnPlane (normals_->points[(*indices_)[idx]], u, v);
 
       // Estimate whether the point is lying on a boundary surface or not
-      output.points (idx, 0) = isBoundaryPoint (*surface_, input_->points[(*indices_)[idx]], nn_indices, u, v, angle_threshold_);
+      output.points (idx, 0) = this->isBoundaryPoint (*surface_, input_->points[(*indices_)[idx]], nn_indices, u, v, angle_threshold_);
     }
   }
 }

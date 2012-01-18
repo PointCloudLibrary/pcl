@@ -246,7 +246,7 @@ pcl::RIFTEstimation<PointInT, GradientT, Eigen::MatrixXf>::computeFeatureEigen (
     }
 
     // Compute the RIFT descriptor
-    computeRIFT (*surface_, *gradient_, (*indices_)[idx], search_radius_, nn_indices, nn_dist_sqr, rift_descriptor);
+    this->computeRIFT (*surface_, *gradient_, (*indices_)[idx], search_radius_, nn_indices, nn_dist_sqr, rift_descriptor);
 
     // Copy into the resultant cloud
     int bin = 0;

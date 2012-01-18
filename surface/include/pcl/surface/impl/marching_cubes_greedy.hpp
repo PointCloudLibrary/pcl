@@ -72,11 +72,11 @@ pcl::MarchingCubesGreedy<PointNT>::voxelizeData()
 
     // the vertices are shared by 8 voxels, so we need to update all 8 of them
     HashMap neighbor_list;
-    getNeighborList1D (cell_data, index_3d, neighbor_list);
+    this->getNeighborList1D (cell_data, index_3d, neighbor_list);
     BOOST_FOREACH (typename HashMap::value_type entry, neighbor_list)
     {
       Eigen::Vector3i i3d;
-      getIndexIn3D(entry.first, i3d);
+      this->getIndexIn3D(entry.first, i3d);
       // if the neighbor doesn't exist, add it, otherwise we need to do an OR operation on the vertices
       if (cell_hash_map_.find (entry.first) == cell_hash_map_.end ())
       {

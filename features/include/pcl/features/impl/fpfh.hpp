@@ -307,7 +307,7 @@ pcl::FPFHEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen (pc
   std::vector<float> nn_dists (k_);
 
   std::vector<int> spfh_hist_lookup;
-  computeSPFHSignatures (spfh_hist_lookup, hist_f1_, hist_f2_, hist_f3_);
+  this->computeSPFHSignatures (spfh_hist_lookup, hist_f1_, hist_f2_, hist_f3_);
 
   // Intialize the array that will store the FPFH signature
   output.points.resize (indices_->size (), nr_bins_f1_ + nr_bins_f2_ + nr_bins_f3_);
@@ -332,7 +332,7 @@ pcl::FPFHEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen (pc
         nn_indices[i] = spfh_hist_lookup[nn_indices[i]];
 
       // Compute the FPFH signature (i.e. compute a weighted combination of local SPFH signatures) ...
-      weightPointSPFHSignature (hist_f1_, hist_f2_, hist_f3_, nn_indices, nn_dists, fpfh_histogram_);
+      this->weightPointSPFHSignature (hist_f1_, hist_f2_, hist_f3_, nn_indices, nn_dists, fpfh_histogram_);
       output.points.row (idx) = fpfh_histogram_;
     }
   }
@@ -354,7 +354,7 @@ pcl::FPFHEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen (pc
         nn_indices[i] = spfh_hist_lookup[nn_indices[i]];
 
       // Compute the FPFH signature (i.e. compute a weighted combination of local SPFH signatures) ...
-      weightPointSPFHSignature (hist_f1_, hist_f2_, hist_f3_, nn_indices, nn_dists, fpfh_histogram_);
+      this->weightPointSPFHSignature (hist_f1_, hist_f2_, hist_f3_, nn_indices, nn_dists, fpfh_histogram_);
       output.points.row (idx) = fpfh_histogram_;
     }
   }

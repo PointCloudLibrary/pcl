@@ -221,7 +221,7 @@ pcl::IntensitySpinEstimation<PointInT, Eigen::MatrixXf>::computeFeatureEigen (pc
     }
 
     // Compute the intensity spin image
-    computeIntensitySpinImage (*surface_, search_radius_, sigma_, k, nn_indices, nn_dist_sqr, intensity_spin_image);
+    this->computeIntensitySpinImage (*surface_, search_radius_, sigma_, k, nn_indices, nn_dist_sqr, intensity_spin_image);
 
     // Copy into the resultant cloud
     int bin = 0;

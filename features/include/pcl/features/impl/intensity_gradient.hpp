@@ -229,7 +229,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFea
 
     Eigen::Vector3f normal = Eigen::Vector3f::Map (normals_->points[idx].normal);
     Eigen::Vector3f gradient;
-    computePointIntensityGradient (*surface_, nn_indices, centroid.head<3> (), mean_intensity, normal, gradient);
+    this->computePointIntensityGradient (*surface_, nn_indices, centroid.head<3> (), mean_intensity, normal, gradient);
 
     output.points (idx, 0) = gradient[0];
     output.points (idx, 1) = gradient[1];

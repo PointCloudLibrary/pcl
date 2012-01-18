@@ -51,9 +51,9 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::voxelSearch (
   bool b_success = false;
 
   // generate key
-  genOctreeKeyforPoint (point, key);
+  this->genOctreeKeyforPoint (point, key);
 
-  LeafT* leaf = getLeaf (key);
+  LeafT* leaf = this->getLeaf (key);
 
   if (leaf)
   {
@@ -196,7 +196,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getKNearestNeighbor
   // iterate over all children
   for (childIdx = 0; childIdx < 8; childIdx++)
   {
-    if (branchHasChild (*node, childIdx))
+    if (this->branchHasChild (*node, childIdx))
     {
       PointT voxelCenter;
 
@@ -205,10 +205,10 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getKNearestNeighbor
       searchEntryHeap[childIdx].key.z = (key.z << 1) + (!!(childIdx & (1 << 0)));
 
       // generate voxel center point for voxel at key
-      genVoxelCenterFromOctreeKey (searchEntryHeap[childIdx].key, treeDepth, voxelCenter);
+      this->genVoxelCenterFromOctreeKey (searchEntryHeap[childIdx].key, treeDepth, voxelCenter);
 
       // generate new priority queue element
-      searchEntryHeap[childIdx].node = getBranchChild (*node, childIdx);
+      searchEntryHeap[childIdx].node = this->getBranchChild (*node, childIdx);
       searchEntryHeap[childIdx].pointDistance = pointSquaredDist (voxelCenter, point);
     }
     else
@@ -301,11 +301,11 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getNeighborsWithinR
   // iterate over all children
   for (childIdx = 0; childIdx < 8; childIdx++)
   {
-    if (!branchHasChild (*node, childIdx))
+    if (!this->branchHasChild (*node, childIdx))
       continue;
 
     const OctreeNode* childNode;
-    childNode = getBranchChild (*node, childIdx);
+    childNode = this->getBranchChild (*node, childIdx);
 
     OctreeKey newKey;
     PointT voxelCenter;
@@ -317,7 +317,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getNeighborsWithinR
     newKey.z = (key.z << 1) + (!!(childIdx & (1 << 0)));
 
     // generate voxel center point for voxel at key
-    genVoxelCenterFromOctreeKey (newKey, treeDepth, voxelCenter);
+    this->genVoxelCenterFromOctreeKey (newKey, treeDepth, voxelCenter);
 
     // calculate distance to search point
     squaredDist = pointSquaredDist ((const PointT &)voxelCenter, point);
@@ -393,7 +393,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::approxNearestSearch
   // iterate over all children
   for (childIdx = 0; childIdx < 8; childIdx++)
   {
-    if (!branchHasChild (*node, childIdx))
+    if (!this->branchHasChild (*node, childIdx))
       continue;
 
     PointT voxelCenter;
@@ -404,7 +404,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::approxNearestSearch
     newKey.z = (key.z << 1) + (!!(childIdx & (1 << 0)));
 
     // generate voxel center point for voxel at key
-    genVoxelCenterFromOctreeKey (newKey, treeDepth, voxelCenter);
+    this->genVoxelCenterFromOctreeKey (newKey, treeDepth, voxelCenter);
 
     voxelPointDist = pointSquaredDist (voxelCenter, point);
 
@@ -420,7 +420,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::approxNearestSearch
   // make sure we found at least one branch child
   assert (minChildIdx<8);
 
-  childNode = getBranchChild (*node, minChildIdx);
+  childNode = this->getBranchChild (*node, minChildIdx);
 
   if (treeDepth < this->octreeDepth_)
   {
@@ -540,7 +540,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
   {
     PointT newPoint;
 
-    genLeafNodeCenterFromOctreeKey (key, newPoint);
+    this->genLeafNodeCenterFromOctreeKey (key, newPoint);
 
     voxelCenterList.push_back (newPoint);
 
@@ -571,7 +571,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
       childIdx = a;
 
     // childNode == 0 if childNode doesn't exist
-    childNode = getBranchChild ((OctreeBranch&)*node, childIdx);
+    childNode = this->getBranchChild ((OctreeBranch&)*node, childIdx);
 
     // Generate new key for current branch voxel
     childKey.x = (key.x << 1) | (!!(childIdx & (1 << 2)));
@@ -695,7 +695,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
       childIdx = a;
 
     // childNode == 0 if childNode doesn't exist
-    childNode = getBranchChild ((OctreeBranch&)*node, childIdx);
+    childNode = this->getBranchChild ((OctreeBranch&)*node, childIdx);
     // Generate new key for current branch voxel
     childKey.x = (key.x << 1) | (!!(childIdx & (1 << 2)));
     childKey.y = (key.y << 1) | (!!(childIdx & (1 << 1)));

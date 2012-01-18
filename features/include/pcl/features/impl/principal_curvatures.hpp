@@ -186,7 +186,7 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeF
       }
 
       // Estimate the principal curvatures at each patch
-      computePointPrincipalCurvatures (*normals_, (*indices_)[idx], nn_indices,
+      this->computePointPrincipalCurvatures (*normals_, (*indices_)[idx], nn_indices,
                                        output.points (idx, 0), output.points (idx, 1), output.points (idx, 2),
                                        output.points (idx, 3), output.points (idx, 4));
     }
@@ -205,7 +205,7 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeF
       }
 
       // Estimate the principal curvatures at each patch
-      computePointPrincipalCurvatures (*normals_, (*indices_)[idx], nn_indices,
+      this->computePointPrincipalCurvatures (*normals_, (*indices_)[idx], nn_indices,
                                        output.points (idx, 0), output.points (idx, 1), output.points (idx, 2),
                                        output.points (idx, 3), output.points (idx, 4));
     }

@@ -672,7 +672,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
     interpolateSingleChannel (indices, sqr_dists, input_->points[index].getVector4fMap (), rf, binDistanceShape, nr_shape_bins_, shot);
 
   // Normalize the final histogram
-  normalizeHistogram (shot, descLength_);
+  this->normalizeHistogram (shot, descLength_);
 }
 
 
@@ -691,14 +691,14 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT>::computePointSHOT (
 
    // Clear the resultant shot
   std::vector<double> binDistanceShape;
-  createBinDistanceShape (index, indices, sqr_dists, *input_, *normals_, *surface_, search_radius_, binDistanceShape, rf);
+  this->createBinDistanceShape (index, indices, sqr_dists, *input_, *normals_, *surface_, search_radius_, binDistanceShape, rf);
 
   // Interpolate
   shot.setZero ();
   interpolateSingleChannel (indices, sqr_dists, input_->points[index].getVector4fMap (), rf, binDistanceShape, nr_shape_bins_, shot);
 
   // Normalize the final histogram
-  normalizeHistogram (shot, descLength_);
+  this->normalizeHistogram (shot, descLength_);
 }
 
 
@@ -717,14 +717,14 @@ pcl::SHOTEstimation<PointInT, PointNT, Eigen::MatrixXf>::computePointSHOT (
 
    // Clear the resultant shot
   std::vector<double> binDistanceShape;
-  createBinDistanceShape (index, indices, sqr_dists, *input_, *normals_, *surface_, search_radius_, binDistanceShape, rf);
+  this->createBinDistanceShape (index, indices, sqr_dists, *input_, *normals_, *surface_, search_radius_, binDistanceShape, rf);
 
   // Interpolate
   shot.setZero ();
   interpolateSingleChannel (indices, sqr_dists, input_->points[index].getVector4fMap (), rf, binDistanceShape, nr_shape_bins_, shot);
 
   // Normalize the final histogram
-  normalizeHistogram (shot, descLength_);
+  this->normalizeHistogram (shot, descLength_);
 }
 
 
@@ -839,7 +839,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, Eigen::MatrixXf>::computeFeature
      }
 
     // Compute the SHOT descriptor for the current 3D feature
-    computePointSHOT ((*indices_)[idx], nn_indices, nn_dists, shot_, rf_);
+    this->computePointSHOT ((*indices_)[idx], nn_indices, nn_dists, shot_, rf_);
 
     // Copy into the resultant cloud
     for (int d = 0; d < shot_.size (); ++d)
@@ -955,7 +955,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen
      }
 
     // Estimate the SHOT at each patch
-    computePointSHOT ((*indices_)[idx], nn_indices, nn_dists, shot_, rf_);
+    this->computePointSHOT ((*indices_)[idx], nn_indices, nn_dists, shot_, rf_);
 
     // Copy into the resultant cloud
     for (int d = 0; d < shot_.size (); ++d)

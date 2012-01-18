@@ -340,7 +340,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatur
     }
 
     std::vector<float> descriptor (descriptor_length_);
-    if (!computePoint (point_index, *normals_, rf, descriptor))
+    if (!this->computePoint (point_index, *normals_, rf, descriptor))
       output.is_dense = false;
     for (int j = 0; j < 9; ++j)
       output.points (point_index, j) = rf[j];
