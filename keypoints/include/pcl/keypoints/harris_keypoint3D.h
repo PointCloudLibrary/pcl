@@ -42,8 +42,11 @@
 
 namespace pcl
 {
-  /** \brief ...
+  /** \brief HarrisKeypoint3D uses the idea of 2D Harris keypoints, but instead of using image gradients, it uses
+    * surface normals.
+    *
     * \author Suat Gedikli 
+    * \ingroup keypoints
     */
   template <typename PointInT, typename PointOutT>
   class HarrisKeypoint3D : public Keypoint<PointInT, PointOutT>
