@@ -50,6 +50,7 @@
 #include "pcl/visualization/pcl_visualizer.h"
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
+#include <pcl/io/vtk_io.h>
 
 #include "openni_capture.h"
 #include "color_handler.h"
@@ -148,6 +149,10 @@ template<typename CloudT> void
 writeCloudFile (int format, const CloudT& cloud);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+writePoligonMeshFile (int format, const pcl::PolygonMesh& mesh);
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename MergedT, typename PointT>
 typename PointCloud<MergedT>::Ptr merge(const PointCloud<PointT>& points, const PointCloud<RGB>& colors)
@@ -162,6 +167,34 @@ typename PointCloud<MergedT>::Ptr merge(const PointCloud<PointT>& points, const 
     merged_ptr->points[i].rgba = colors.points[i].rgba;
       
   return merged_ptr;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+boost::shared_ptr<pcl::PolygonMesh> convertToMesh(const DeviceArray<PointXYZ>& triangles)
+{ 
+  if (triangles.empty())
+      return boost::shared_ptr<pcl::PolygonMesh>();
+
+  pcl::PointCloud<pcl::PointXYZ> cloud;
+  cloud.width  = (int)triangles.size();
+  cloud.height = 1;
+  triangles.download(cloud.points);
+
+  boost::shared_ptr<pcl::PolygonMesh> mesh_ptr( new pcl::PolygonMesh() ); 
+  pcl::toROSMsg(cloud, mesh_ptr->cloud);  
+      
+  mesh_ptr->polygons.resize (triangles.size() / 3);
+  for (size_t i = 0; i < mesh_ptr->polygons.size (); ++i)
+  {
+    pcl::Vertices v;
+    v.vertices.push_back(i*3+0);
+    v.vertices.push_back(i*3+2);
+    v.vertices.push_back(i*3+1);              
+    mesh_ptr->polygons[i] = v;
+  }    
+  return mesh_ptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -304,7 +337,7 @@ struct SceneCloudView
     viewer_pose_ = kinfu.getCameraPose();
 
     ScopeTimeT time ("PointCloud Extraction");
-    cout << "\nGetting cloud... ";
+    cout << "\nGetting cloud... " << flush;
 
     valid_combined_ = false;
 
@@ -346,7 +379,7 @@ struct SceneCloudView
     size_t points_size = valid_combined_ ? combined_ptr_->points.size () : cloud_ptr_->points.size ();
     cout << "Done.  Cloud size: " << points_size / 1000 << "K" << endl;
 
-    cloud_viewer_.removeAllPointClouds ();
+    cloud_viewer_.removeAllPointClouds ();    
     if (valid_combined_)
     {
       visualization::PointCloudColorHandlerRGBHack<PointNormal> rgb(combined_ptr_, point_colors_ptr_);
@@ -382,14 +415,34 @@ struct SceneCloudView
   }
 
   void
-  clearClouds ()
+  clearClouds (bool print_message = false)
   {
     cloud_viewer_.removeAllPointClouds ();
     cloud_ptr_->points.clear ();
-    normals_ptr_->points.clear ();
-    cout << "Clouds were cleared" << endl;
+    normals_ptr_->points.clear ();    
+    if (print_message)
+      cout << "Clouds/Meshes were cleared" << endl;
   }
-  
+
+  void
+  showMesh(KinfuTracker& kinfu, bool /*integrate_colors*/)
+  {
+    ScopeTimeT time ("Mesh Extraction");
+    cout << "\nGetting mesh... " << flush;
+
+    if (!marching_cubes_)
+      marching_cubes_ = KinfuMarchingCubes::Ptr( new KinfuMarchingCubes() );
+
+    DeviceArray<PointXYZ> triangles_device = (*marching_cubes_)(kinfu, triangles_buffer_device_);    
+    mesh_ptr_ = convertToMesh(triangles_device);
+    
+    cloud_viewer_.removeAllPointClouds ();
+    if (mesh_ptr_)
+      cloud_viewer_.addPolygonMesh(*mesh_ptr_);	
+    
+    cout << "Done.  Triangles number: " << triangles_device.size() / 3 / 1000 << "K" << endl;
+  }
+    
   int extraction_mode_;
   bool compute_normals_;
   bool valid_combined_;
@@ -409,15 +462,20 @@ struct SceneCloudView
 
   DeviceArray<RGB> point_colors_device_; 
   PointCloud<RGB>::Ptr point_colors_ptr_;
+
+  KinfuMarchingCubes::Ptr marching_cubes_;
+  DeviceArray<PointXYZ> triangles_buffer_device_;
+
+  boost::shared_ptr<pcl::PolygonMesh> mesh_ptr_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct KinFuApp
 {
-  enum { PCD_BIN = 1, PCD_ASCII = 2, PLY = 3 };
-
-  KinFuApp(CaptureOpenNI& source) : exit_ (false), scan_ (false), scan_volume_ (false), independent_camera_ (false),
+  enum { PCD_BIN = 1, PCD_ASCII = 2, PLY = 3, MESH_PLY = 7, MESH_VTK = 8 };
+  
+  KinFuApp(CaptureOpenNI& source) : exit_ (false), scan_ (false), scan_mesh_(false), scan_volume_ (false), independent_camera_ (false),
     registration_ (false), integrate_colors_ (false), capture_ (source)
   {    
     //Init Kinfu Tracker
@@ -537,6 +595,12 @@ struct KinFuApp
         else
           cout << "[!] tsdf volume download is disabled" << endl << endl;
       }
+
+      if (scan_mesh_)
+      {
+          scan_mesh_ = false;
+          scene_cloud_view_.showMesh(kinfu_, integrate_colors_);
+      }
        
       if (has_image)
       {
@@ -578,6 +642,13 @@ struct KinFuApp
   }
 
   void
+  writeMesh(int format) const
+  {
+    if (scene_cloud_view_.mesh_ptr_) 
+      writePoligonMeshFile(format, *scene_cloud_view_.mesh_ptr_);
+  }
+
+  void
   printHelp ()
   {
     cout << endl;
@@ -586,18 +657,21 @@ struct KinFuApp
     cout << "    H    : print this help" << endl;
     cout << "   Esc   : exit" << endl;
     cout << "    T    : take cloud" << endl;
+    cout << "    A    : take mesh" << endl;
     cout << "    M    : toggle cloud exctraction mode" << endl;
     cout << "    N    : toggle normals exctraction" << endl;
     cout << "    I    : toggle independent camera mode" << endl;
-    //cout << "    *    : toggle scene view painting ( requires registration mode )" << endl;
+    cout << "    *    : toggle scene view painting ( requires registration mode )" << endl;
     cout << "    C    : clear clouds" << endl;    
     cout << "   1,2,3 : save cloud to PCD(binary), PCD(ASCII), PLY(ASCII)" << endl;
+    cout << "    7,8  : save mesh to PLY, VTK" << endl;
     cout << "   X, V  : TSDF volume utility" << endl;
     cout << endl;
   }  
 
   bool exit_;
   bool scan_;
+  bool scan_mesh_;
   bool scan_volume_;
 
   bool independent_camera_;
@@ -629,12 +703,14 @@ struct KinFuApp
       {
       case 27: app->exit_ = true; break;
       case (int)'t': case (int)'T': app->scan_ = true; break;
+      case (int)'a': case (int)'A': app->scan_mesh_ = true; break;
       case (int)'h': case (int)'H': app->printHelp (); break;
       case (int)'m': case (int)'M': app->scene_cloud_view_.toggleExctractionMode (); break;
       case (int)'n': case (int)'N': app->scene_cloud_view_.toggleNormals (); break;      
-      case (int)'c': case (int)'C': app->scene_cloud_view_.clearClouds (); break;
+      case (int)'c': case (int)'C': app->scene_cloud_view_.clearClouds (true); break;
       case (int)'i': case (int)'I': app->toggleIndependentCamera (); break;
-      case (int)'1': case (int)'2': case (int)'3': app->writeCloud (key - (int)'0'); break;
+      case (int)'7': case (int)'8': app->writeMesh (key - (int)'0'); break;
+      case (int)'1': case (int)'2': case (int)'3': app->writeCloud (key - (int)'0'); break;      
       case '*': app->image_view_.toggleImagePaint (); break;
 
       case (int)'x': case (int)'X':
@@ -682,6 +758,26 @@ writeCloudFile (int format, const CloudPtr& cloud_prt)
   cout << "Done" << endl;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+writePoligonMeshFile (int format, const pcl::PolygonMesh& mesh)
+{
+  if (format == KinFuApp::MESH_PLY)
+  {
+    cout << "Saving mesh to to 'mesh.ply'... " << flush;
+    pcl::io::savePLYFile("mesh.ply", mesh);		
+  }
+  else /* if (format == KinFuApp::MESH_VTK) */
+  {
+    cout << "Saving mesh to to 'mesh.vtk'... " << flush;
+    pcl::io::saveVTKFile("mesh.vtk", mesh);    
+  }  
+  cout << "Done" << endl;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 int
 print_cli_help ()
 {
@@ -690,12 +786,14 @@ print_cli_help ()
   cout << "    --registration, -r              : try to enable registration ( requires source to support this )" << endl;
   cout << "    --current-cloud, -cc            : show current frame cloud" << endl;
   cout << "    --save-views, -sv               : accumulate scene view and save in the end ( Requires OpenCV. Will cause 'bad_alloc' after some time )" << endl;  
-  //cout << "    --registration, -r              : enable registration mode" << endl; 
-  //cout << "    --integrate-colors, -ic         : enable color integration mode ( allows to get cloud with colors )" << endl; 
+  cout << "    --registration, -r              : enable registration mode" << endl; 
+  cout << "    --integrate-colors, -ic         : enable color integration mode ( allows to get cloud with colors )" << endl; 
   cout << "    -dev <deivce>, -oni <oni_file>  : select depth source. Default will be selected if not specified" << endl;
     
   return 0;
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int
 main (int argc, char* argv[])

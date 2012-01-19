@@ -44,33 +44,6 @@ namespace pcl
 {
   namespace device
   {
-    ////////////////////////////////////////////////////////////////////////////////////////
-    ///// Prefix Scan utility
-
-    enum ScanKind { exclusive, inclusive };
-
-    template<ScanKind Kind, class T>
-    __device__ __forceinline__ T
-    scan_warp ( volatile T *ptr, const unsigned int idx = threadIdx.x )
-    {
-      const unsigned int lane = idx & 31;       // index of thread in warp (0..31)
-
-      if (lane >= 1)
-        ptr[idx] = ptr[idx - 1] + ptr[idx];
-      if (lane >= 2)
-        ptr[idx] = ptr[idx - 2] + ptr[idx];
-      if (lane >= 4)
-        ptr[idx] = ptr[idx - 4] + ptr[idx];
-      if (lane >= 8)
-        ptr[idx] = ptr[idx - 8] + ptr[idx];
-      if (lane >= 16)
-        ptr[idx] = ptr[idx - 16] + ptr[idx];
-
-      if (Kind == inclusive)
-        return ptr[idx];
-      else
-        return (lane > 0) ? ptr[idx - 1] : 0;
-    }
 
     ////////////////////////////////////////////////////////////////////////////////////////
     ///// Full Volume Scan6

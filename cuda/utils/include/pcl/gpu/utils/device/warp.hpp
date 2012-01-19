@@ -81,7 +81,8 @@ namespace pcl
             }
             static __device__ __forceinline__ unsigned int id()
             {
-                return threadIdx.x >> LOG_WARP_SIZE;
+                int tid = threadIdx.z * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.x;
+                return tid >> LOG_WARP_SIZE;
             }
 
             static __device__ __forceinline__ int binaryInclScan(int ballot_mask)
@@ -92,7 +93,7 @@ namespace pcl
             static __device__ __forceinline__ int binaryExclScan(int ballot_mask)
             {
                  return __popc(Warp::laneMaskLt() & ballot_mask);
-            }
+            }            
 
             template<typename It, typename T>
             static __device__ __forceinline__ void fill(It beg, It end, const T& value)
