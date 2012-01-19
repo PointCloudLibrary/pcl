@@ -458,23 +458,7 @@ namespace pcl
           center[i] = min_p_[i] + index[i] * leaf_size_ + leaf_size_/2;
       }
 
-      /** \brief Create the surface. 
-        *
-        * More details here.
-        *
-        * \param output the resultant polygonal mesh
-        */
-      void 
-      performReconstruction (pcl::PolygonMesh &output);
-
-      void
-      performReconstruction (pcl::PointCloud<PointNT> &points,
-                             std::vector<pcl::Vertices> &polygons)
-      {
-        PCL_ERROR ("[pcl::MarchingCubes::performReconstruction] Method not implemented!\n");
-      }
-
-    protected:
+     protected:
 
 
       /** \brief The point cloud input (XYZ+Normals). */
@@ -523,7 +507,10 @@ namespace pcl
        * \param iso_level the iso level to do the reconstruction on
        */
       void
-      createSurface (Leaf leaf_node, Eigen::Vector3i &index_3d, pcl::PointCloud<pcl::PointXYZ> &cloud, float iso_level);
+      createSurface (Leaf leaf_node,
+                     Eigen::Vector3i &index_3d,
+                     pcl::PointCloud<PointNT> &cloud,
+                     float iso_level);
 
       /** \brief Get the bounding box for the input data points, also calculating the
         * cell size, and the gaussian scale factor
@@ -531,11 +518,21 @@ namespace pcl
       void
       getBoundingBox ();
 
-
       /** \brief Class get name method. */
       std::string getClassName () const { return ("MarchingCubes"); }
 
-    private:
+      /** \brief Create the surface.
+         *
+         * More details here.
+         *
+         * \param output the resultant polygonal mesh
+         */
+       void
+       performReconstruction (pcl::PolygonMesh &output);
+
+       void
+       performReconstruction (pcl::PointCloud<PointNT> &points,
+                              std::vector<pcl::Vertices> &polygons);
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW

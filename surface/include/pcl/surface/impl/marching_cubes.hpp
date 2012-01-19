@@ -99,7 +99,10 @@ pcl::MarchingCubes<PointNT>::interpolateEdge(float iso_level, Eigen::Vector3f &p
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
-pcl::MarchingCubes<PointNT>::createSurface (Leaf leaf_node, Eigen::Vector3i &index_3d, pcl::PointCloud<pcl::PointXYZ> &cloud, float iso_level)
+pcl::MarchingCubes<PointNT>::createSurface (Leaf leaf_node,
+                                            Eigen::Vector3i &index_3d,
+                                            pcl::PointCloud<PointNT> &cloud,
+                                            float iso_level)
 {
   int cubeindex = 0;
   Eigen::Vector3f vertex_list[12];
@@ -169,7 +172,7 @@ pcl::MarchingCubes<PointNT>::createSurface (Leaf leaf_node, Eigen::Vector3i &ind
 
   // Create the triangle
   for (int i=0;triTable[cubeindex][i]!=-1;i+=3) {
-    pcl::PointXYZ p1,p2,p3;
+    PointNT p1,p2,p3;
     p1.x = vertex_list[triTable[cubeindex][i  ]][0];
     p1.y = vertex_list[triTable[cubeindex][i  ]][1];
     p1.z = vertex_list[triTable[cubeindex][i  ]][2];
@@ -305,7 +308,7 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PolygonMesh &output)
 
   // run the actual marching cubes algorithm, store it into a point cloud,
   // and copy the point cloud + connectivity into output
-  pcl::PointCloud<pcl::PointXYZ> cloud;
+  pcl::PointCloud<PointNT> cloud;
   BOOST_FOREACH (typename HashMap::value_type entry, cell_hash_map_)
   {
     Eigen::Vector3i leaf_index;
@@ -324,6 +327,57 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PolygonMesh &output)
      output.polygons[i] = v;
   }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointNT> void
+pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
+                                                    std::vector<pcl::Vertices> &polygons)
+{
+  if( !(iso_level_ > 0 && iso_level_ < 1) )
+  {
+    PCL_ERROR ("[pcl::%s::performReconstruction] Invalid iso level %f! Please use a number between 0 and 1.\n", getClassName ().c_str (), iso_level_);
+    points.width = points.height = 0;
+    points.clear ();
+    polygons.clear ();
+    return;
+  }
+  if( leaf_size_ <=0 )
+  {
+    PCL_ERROR ("[pcl::%s::performReconstruction] Invalid leaf size %f! Please use a number greater than 0.\n", getClassName ().c_str (), leaf_size_);
+    points.width = points.height = 0;
+    points.clear ();
+    polygons.clear ();
+    return;
+
+  }
+
+  getBoundingBox();
+
+  // transform the point cloud into a voxel grid
+  // this needs to be implemented in a child class
+  voxelizeData();
+
+  // run the actual marching cubes algorithm, store it into a point cloud,
+  // and copy the point cloud + connectivity into output
+  BOOST_FOREACH (typename HashMap::value_type entry, cell_hash_map_)
+  {
+    Eigen::Vector3i leaf_index;
+    getIndexIn3D (entry.first, leaf_index);
+    createSurface (entry.second, leaf_index, points, iso_level_);
+  }
+  polygons.resize (points.size () / 3);
+
+  for (size_t i = 0; i < polygons.size (); ++i)
+  {
+    pcl::Vertices v;
+    v.vertices.resize (3);
+    for (int j = 0; j < 3; ++j)
+      v.vertices[j] = i*3+j;
+     polygons[i] = v;
+  }
+}
+
+
 
 #define PCL_INSTANTIATE_MarchingCubes(T) template class PCL_EXPORTS pcl::MarchingCubes<T>;
 
