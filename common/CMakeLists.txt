@@ -144,4 +144,8 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} console ${tools_incs})
 
     add_subdirectory(test)
+
+    if(BUILD_EXAMPLES)
+       add_subdirectory(examples)
+    endif(BUILD_EXAMPLES)
 endif(build)

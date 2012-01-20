@@ -167,6 +167,9 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 ### ---[ Set up for tests
 include(${PCL_SOURCE_DIR}/cmake/pcl_tests.cmake)
 
+### ---[ Set up for examples
+include(${PCL_SOURCE_DIR}/cmake/pcl_examples.cmake)
+
 ### ---[ Add the libraries subdirectories
 include(${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake)
 
