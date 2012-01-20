@@ -135,7 +135,7 @@ void pcl::saveBinary(const Eigen::MatrixBase<Derived>& matrix, std::ostream& fil
 }
 
 template <typename Derived>
-void pcl::loadBinary(Eigen::MatrixBase<Derived> & matrix_, std::istream& file)
+void pcl::loadBinary(Eigen::MatrixBase<Derived> const & matrix_, std::istream& file)
 {
   Eigen::MatrixBase<Derived> &matrix = const_cast<Eigen::MatrixBase<Derived> &> (matrix_);
 
