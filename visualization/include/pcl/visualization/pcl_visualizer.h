@@ -111,6 +111,30 @@ namespace pcl
         /** \brief PCL Visualizer destructor. */
         virtual ~PCLVisualizer ();
 
+        /** \brief Enables/Disabled the underlying window mode to full screen.
+          * \note This might or might not work, depending on your window manager.
+          * See the VTK documentation for additional details.
+          * \param[in] mode true for full screen, false otherwise
+          */
+        inline void 
+        setFullScreen (bool mode)
+        {
+          if (win_)
+            win_->SetFullScreen (mode);
+        }
+
+        /** \brief Enables or disable the underlying window borders.
+          * \note This might or might not work, depending on your window manager.
+          * See the VTK documentation for additional details.
+          * \param[in] mode true for borders, false otherwise
+          */
+        inline void 
+        setWindowBorders (bool mode)
+        {
+          if (win_)
+            win_->SetBorders (mode);
+        }
+
         /** \brief Register a callback boost::function for keyboard events
           * \param[in] cb a boost function that will be registered as a callback for a keyboard event
           * \return a connection object that allows to disconnect the callback function.
