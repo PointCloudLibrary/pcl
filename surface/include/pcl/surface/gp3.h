@@ -295,14 +295,14 @@ namespace pcl
       removeOverlapTriangles (pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2);
 
     protected:
-      /** \brief The maximum number of nearest neighbors accepted by searching. */
-      int nnn_;
-
       /** \brief The nearest neighbor distance multiplier to obtain the final search radius. */
       double mu_;
 
       /** \brief The nearest neighbors search radius for each point and the maximum edge length. */
       double search_radius_;
+
+      /** \brief The maximum number of nearest neighbors accepted by searching. */
+      int nnn_;
 
       /** \brief The preferred minimum angle for the triangles. */
       double minimum_angle_;
