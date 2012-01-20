@@ -1,4 +1,3 @@
-if(BUILD_TESTS)
 #    if(OPENNI_FOUND)
 #        PCL_ADD_TEST(io_io test_io
 #                     FILES test_io.cpp
@@ -12,6 +11,3 @@ if(BUILD_TESTS)
 #    PCL_ADD_TEST(compression_range_coder test_range_coder 
 #             FILES test_range_coder.cpp
 #             LINK_WITH pcl_io)             
-                 
-endif(BUILD_TESTS)
-

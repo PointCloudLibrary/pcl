@@ -96,7 +96,10 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/common/impl
         ${common_impl_incs})
 
-    add_subdirectory(test)
+    if(BUILD_TESTS)
+        add_subdirectory(test)
+    endif(BUILD_TESTS)
+
     add_subdirectory(tools)
 
 endif(build)

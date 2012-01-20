@@ -167,5 +167,8 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${border_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${border_impl_incs})
 
-    add_subdirectory(test)
+    if(BUILD_TESTS)
+        add_subdirectory(test)
+    endif(BUILD_TESTS)
+
 endif(build)

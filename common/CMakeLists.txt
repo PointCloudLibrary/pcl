@@ -143,7 +143,9 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ros ${ros_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} console ${tools_incs})
 
-    add_subdirectory(test)
+    if(BUILD_TESTS)
+       add_subdirectory(test)
+    endif(BUILD_TESTS)
 
     if(BUILD_EXAMPLES)
        add_subdirectory(examples)
