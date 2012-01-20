@@ -669,7 +669,7 @@ namespace pcl
     * \ingroup common
     */
   template <typename Derived> void
-  loadBinary (Eigen::MatrixBase<Derived>& matrix, std::istream& file);
+  loadBinary (Eigen::MatrixBase<Derived> const& matrix, std::istream& file);
 }
 
 #include "pcl/common/impl/eigen.hpp"
