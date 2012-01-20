@@ -112,8 +112,44 @@ pcl::visualization::ImageViewer::showRGBImage (const unsigned char* rgb_data, un
 
   vtkSmartPointer<vtkMatrix4x4> transform = vtkSmartPointer<vtkMatrix4x4>::New ();
   transform->Identity ();
-  transform->SetElement (1,1, -1.0);
-  transform->SetElement (1,3, height);
+  transform->SetElement (1, 1, -1.0);
+  transform->SetElement (1, 3, height);
+  vtkSmartPointer<vtkTransform> imageTransform = vtkSmartPointer<vtkTransform>::New ();
+  imageTransform->SetMatrix (transform);
+  // Now create filter and set previously created transformation
+  vtkSmartPointer<vtkImageReslice> algo = vtkSmartPointer<vtkImageReslice>::New ();
+  algo->SetInput (importer->GetOutput ());
+  algo->SetInformationInput (importer->GetOutput ());
+  algo->SetResliceTransform (imageTransform);
+  algo->SetInterpolationModeToCubic ();
+  algo->Update ();
+
+  image_viewer_->SetInput (algo->GetOutput ());
+  image_viewer_->SetColorLevel (127.5);
+  image_viewer_->SetColorWindow (255);
+  image_viewer_->SetSize (width, height);
+
+  image_viewer_->Render ();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::ImageViewer::showMonoImage (const unsigned char* rgb_data, unsigned width, unsigned height)
+{
+  vtkImageImport* importer = vtkImageImport::New ();
+  importer->SetNumberOfScalarComponents (1);
+  importer->SetWholeExtent (0, width - 1, 0, height - 1, 0, 0);
+  importer->SetDataScalarTypeToUnsignedChar ();
+  importer->SetDataExtentToWholeExtent ();
+
+  void* data = const_cast<void*> ((const void*)rgb_data);
+  importer->SetImportVoidPointer (data, 1);
+  importer->Update ();
+
+  vtkSmartPointer<vtkMatrix4x4> transform = vtkSmartPointer<vtkMatrix4x4>::New ();
+  transform->Identity ();
+  transform->SetElement (1, 1, -1.0);
+  transform->SetElement (1, 3, height);
   vtkSmartPointer<vtkTransform> imageTransform = vtkSmartPointer<vtkTransform>::New ();
   imageTransform->SetMatrix (transform);
   // Now create filter and set previously created transformation
@@ -164,6 +200,7 @@ pcl::visualization::ImageViewer::showFloatImage (const float* float_image, unsig
   delete[] rgb_image;  
  }
  
+/////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::visualization::ImageViewer::showAngleImage (const float* angle_image, unsigned int width, unsigned int height)
 {
@@ -172,6 +209,7 @@ pcl::visualization::ImageViewer::showAngleImage (const float* angle_image, unsig
   delete[] rgb_image;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::visualization::ImageViewer::showHalfAngleImage (const float* angle_image, unsigned int width, unsigned int height)
 {
@@ -180,6 +218,7 @@ pcl::visualization::ImageViewer::showHalfAngleImage (const float* angle_image, u
   delete[] rgb_image;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::visualization::ImageViewer::showShortImage (const unsigned short* short_image, unsigned int width, unsigned int height, 
                                                 unsigned short min_value, unsigned short max_value, bool grayscale)
@@ -190,8 +229,9 @@ pcl::visualization::ImageViewer::showShortImage (const unsigned short* short_ima
   delete[] rgb_image;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::ImageViewer::markPoint(size_t u, size_t v, Vector3ub fg_color, Vector3ub bg_color, float radius)
+pcl::visualization::ImageViewer::markPoint (size_t u, size_t v, Vector3ub fg_color, Vector3ub bg_color, float radius)
 {
   vtkSmartPointer<vtkImageCanvasSource2D> drawing = 
     vtkSmartPointer<vtkImageCanvasSource2D>::New ();
