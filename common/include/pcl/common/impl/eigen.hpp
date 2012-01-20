@@ -135,8 +135,10 @@ void pcl::saveBinary(const Eigen::MatrixBase<Derived>& matrix, std::ostream& fil
 }
 
 template <typename Derived>
-void pcl::loadBinary(Eigen::MatrixBase<Derived>& matrix, std::istream& file)
+void pcl::loadBinary(Eigen::MatrixBase<Derived> const & matrix_, std::istream& file)
 {
+  Eigen::MatrixBase<Derived> &matrix = const_cast<Eigen::MatrixBase<Derived> &> (matrix_);
+
   uint32_t rows, cols;
   file.read((char*) &rows, sizeof(rows));
   file.read((char*) &cols, sizeof(cols));
@@ -144,7 +146,8 @@ void pcl::loadBinary(Eigen::MatrixBase<Derived>& matrix, std::istream& file)
   if (matrix.rows()!=(int)rows || matrix.cols()!=(int)cols)
   {
     //std::cerr << __PRETTY_FUNCTION__ << ": matrix size does not fit!\n";
-    matrix.resize(rows, cols);
+    matrix.derived().resize(rows, cols);
+    // matrix = Eigen::Matrix<Derived, Eigen::Dynamic, Eigen::Dynamic> (rows, cols);
   }
   
   for (uint32_t i=0; i<rows; ++i)
