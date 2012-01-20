@@ -89,7 +89,7 @@ namespace pcl
         hist_f3_.setZero (nr_bins_f3_);
         hist_f4_.setZero (nr_bins_f4_);
         search_radius_ = 0;
-        k_ = 1;
+        k_ = 0;
         feature_name_ = "VFHEstimation";
 
         //default parameters to compute VFH
@@ -99,7 +99,6 @@ namespace pcl
         normalize_distances_ = false;
         size_component_ = false;
       }
-      ;
 
       /** \brief Estimate the SPFH (Simple Point Feature Histograms) signatures of the angular
         * (f1, f2, f3) and distance (f4) features for a given point from its neighborhood
@@ -222,6 +221,10 @@ namespace pcl
       computeFeature (PointCloudOut &output);
 
     protected:
+      /** \brief This method should get called before starting the actual computation. */
+      bool
+      initCompute ();
+
       /** \brief Placeholder for the f1 histogram. */
       Eigen::VectorXf hist_f1_;
       /** \brief Placeholder for the f2 histogram. */
