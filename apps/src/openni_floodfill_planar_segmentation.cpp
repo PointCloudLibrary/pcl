@@ -77,7 +77,7 @@ comparePoints (PointInT p1, PointInT p2, double p1_d, double p2_d, float ang_thr
  * \author Alexander J. B. Trevor
  */
 template<typename PointInT, typename PointOutT> void
-extractPlanesByFloodFill (const pcl::PointCloud<PointInT> & cloud_in, std::vector<Eigen::Vector4f>& normals_out, std::vector<pcl::PointCloud<PointOutT> >& inliers, int min_inliers, double ang_thresh, double dist_thresh)
+extractPlanesByFloodFill (const pcl::PointCloud<PointInT> & cloud_in, std::vector<Eigen::Vector4f>& normals_out, std::vector<pcl::PointCloud<PointOutT> >& inliers, unsigned min_inliers, double ang_thresh, double dist_thresh)
 {
   ang_thresh = cos (ang_thresh);
 
@@ -194,7 +194,7 @@ extractPlanesByFloodFill (const pcl::PointCloud<PointInT> & cloud_in, std::vecto
     for (unsigned int ci = 0; ci < normal_cloud.width; ++ci, ++index)
     {
       clusts[index] = ds.find_set (clusts[index]);
-      if (clusts[index] >= clust_inds.size ())
+      if (clusts[index] >= (int)clust_inds.size ())
       {
         clust_inds.resize (clusts[index] * 2, pcl::PointIndices ());
       }
@@ -505,7 +505,7 @@ run ()
                                            centroid[1] + (0.5 * plane_normals[i][1]),
                                            centroid[2] + (0.5 * plane_normals[i][2]));
         char normal_name[500];
-        sprintf (normal_name, "normal_%d", i);
+        sprintf (normal_name, "normal_%d", (unsigned)i);
         viewer->addArrow (pt2, pt1, 1.0, 0, 0, normal_name);
       }
 
