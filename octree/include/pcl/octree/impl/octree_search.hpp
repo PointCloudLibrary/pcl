@@ -149,7 +149,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::approxNearestSearch
 template<typename PointT, typename LeafT, typename OctreeT> int
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::radiusSearch (
     const PointT &p_q, const double radius, std::vector<int> &k_indices, 
-    std::vector<float> &k_sqr_distances, int max_nn) const
+    std::vector<float> &k_sqr_distances, unsigned int max_nn) const
 {
   OctreeKey key;
   key.x = key.y = key.z = 0;
@@ -167,7 +167,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::radiusSearch (
 template<typename PointT, typename LeafT, typename OctreeT> int
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::radiusSearch (
     int index, const double radius, std::vector<int> &k_indices,
-    std::vector<float> &k_sqr_distances, int max_nn) const
+    std::vector<float> &k_sqr_distances, unsigned int max_nn) const
 {
   const PointT search_point = this->getPointByIndex (index);
 
@@ -290,7 +290,7 @@ template<typename PointT, typename LeafT, typename OctreeT> void
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getNeighborsWithinRadiusRecursive (
     const PointT & point, const double radiusSquared, const OctreeBranch* node,
     const OctreeKey& key, unsigned int treeDepth, std::vector<int>& k_indices,
-    std::vector<float>& k_sqr_distances, int max_nn) const
+    std::vector<float>& k_sqr_distances, unsigned int max_nn) const
 {
   // child iterator
   unsigned char childIdx;
@@ -332,7 +332,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getNeighborsWithinR
         // we have not reached maximum tree depth
         getNeighborsWithinRadiusRecursive (point, radiusSquared, (OctreeBranch*)childNode, newKey,
                                            treeDepth + 1, k_indices, k_sqr_distances, max_nn);
-        if (k_indices.size () == (unsigned int)max_nn)
+        if (max_nn != 0 && k_indices.size () == (unsigned int)max_nn)
           return;
       }
       else
@@ -362,7 +362,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getNeighborsWithinR
           k_indices.push_back (decodedPointVector[i]);
           k_sqr_distances.push_back (squaredDist);
 
-          if (k_indices.size () == (unsigned int)max_nn)
+          if (max_nn != 0 && k_indices.size () == (unsigned int)max_nn)
             return;
         }
       }

@@ -41,9 +41,10 @@
 #include "pcl/search/brute_force.h"
 #include <algorithm>
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> float
-pcl::search::BruteForce<PointT>
-::getDistSqr (const PointT& point1, const PointT& point2) const
+pcl::search::BruteForce<PointT>::getDistSqr (
+    const PointT& point1, const PointT& point2) const
 {
   return ((point1.x - point2.x) * (point1.x - point2.x) +
           (point1.y - point2.y) * (point1.y - point2.y) +
@@ -51,20 +52,20 @@ pcl::search::BruteForce<PointT>
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-
 template <typename PointT> int
-pcl::search::BruteForce<PointT>
-::nearestKSearch (const PointT& point, int k, std::vector<int>& k_indices, std::vector<float>& k_distances)
+pcl::search::BruteForce<PointT>::nearestKSearch (
+    const PointT& point, int k, std::vector<int>& k_indices, std::vector<float>& k_distances) const
 {
-  if (cloud_->is_dense)
+  if (input_->is_dense)
     return denseKSearch (point, k, k_indices, k_distances);
   else
     return sparseKSearch (point, k, k_indices, k_distances);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
-pcl::search::BruteForce<PointT>
-::denseKSearch (const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_distances)
+pcl::search::BruteForce<PointT>::denseKSearch (
+    const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_distances) const
 {
   k_indices.clear ();
   k_indices.reserve (k);
@@ -73,7 +74,7 @@ pcl::search::BruteForce<PointT>
 
   std::vector<Entry> result;
   result.reserve (k + 1);
-  const PointCloud& cloud = *cloud_;
+  const PointCloud& cloud = *input_;
   if (indices_ != NULL)
   {
     const std::vector<int>& indices = *indices_;
@@ -135,9 +136,10 @@ pcl::search::BruteForce<PointT>
   return result.size ();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
-pcl::search::BruteForce<PointT>
-::sparseKSearch (const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_distances)
+pcl::search::BruteForce<PointT>::sparseKSearch (
+    const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_distances) const
 {
   k_indices.clear ();
   k_indices.reserve (k);
@@ -146,7 +148,7 @@ pcl::search::BruteForce<PointT>
 
   std::vector<Entry> result;
   result.reserve (k + 1);
-  const PointCloud& cloud = *cloud_;
+  const PointCloud& cloud = *input_;
   if (indices_ != NULL)
   {
     const std::vector<int>& indices = *indices_;
@@ -223,11 +225,12 @@ pcl::search::BruteForce<PointT>
   return result.size ();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
-pcl::search::BruteForce<PointT>
-::denseRadiusSearch (const PointT& point, double radius,
-              std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
-              int max_nn) const
+pcl::search::BruteForce<PointT>::denseRadiusSearch (
+    const PointT& point, double radius,
+    std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
+    unsigned int max_nn) const
 {
   k_indices.clear ();
   k_sqr_distances.clear ();
@@ -235,19 +238,19 @@ pcl::search::BruteForce<PointT>
   radius *= radius;
 
   int reserve = max_nn;
-  if (reserve < 0)
+  if (reserve == 0)
   {
     if (indices_ != NULL)
-      reserve = std::min (indices_->size (), cloud_->size ());
+      reserve = std::min (indices_->size (), input_->size ());
     else
-      reserve = cloud_->size ();
+      reserve = input_->size ();
   }
   k_indices.reserve (reserve);
   k_sqr_distances.reserve (reserve);
 
   std::vector<Entry> result;
   result.reserve (reserve);
-  const PointCloud& cloud = *cloud_;
+  const PointCloud& cloud = *input_;
   if (indices_ != NULL)
   {
     const std::vector<int>& indices = *indices_;
@@ -260,7 +263,7 @@ pcl::search::BruteForce<PointT>
       if (entry.distance <= radius)
       {
         result.push_back (entry);
-        if ((int) result.size () == max_nn) // never true if max_nn = -1
+        if (result.size () == max_nn) // never true if max_nn = -1
           break;
       }
     }
@@ -276,7 +279,7 @@ pcl::search::BruteForce<PointT>
       if (entry.distance < radius)
       {
         result.push_back (entry);
-        if ((int)result.size () == max_nn) // never true if max_nn = -1
+        if (result.size () == max_nn) // never true if max_nn = -1
           break;
       }
     }
@@ -291,11 +294,12 @@ pcl::search::BruteForce<PointT>
   return result.size ();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
-pcl::search::BruteForce<PointT>
-::sparseRadiusSearch (const PointT& point, double radius,
-              std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
-              int max_nn) const
+pcl::search::BruteForce<PointT>::sparseRadiusSearch (
+    const PointT& point, double radius,
+    std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
+    unsigned int max_nn) const
 {
   k_indices.clear ();
   k_sqr_distances.clear ();
@@ -303,19 +307,19 @@ pcl::search::BruteForce<PointT>
   radius *= radius;
 
   int reserve = max_nn;
-  if (reserve < 0)
+  if (reserve == 0)
   {
     if (indices_ != NULL)
-      reserve = std::min (indices_->size (), cloud_->size ());
+      reserve = std::min (indices_->size (), input_->size ());
     else
-      reserve = cloud_->size ();
+      reserve = input_->size ();
   }
   k_indices.reserve (reserve);
   k_sqr_distances.reserve (reserve);
 
   std::vector<Entry> result;
   result.reserve (reserve);
-  const PointCloud& cloud = *cloud_;
+  const PointCloud& cloud = *input_;
   if (indices_ != NULL)
   {
     const std::vector<int>& indices = *indices_;
@@ -330,7 +334,7 @@ pcl::search::BruteForce<PointT>
       if (entry.distance <= radius)
       {
         result.push_back (entry);
-        if ((int) result.size () == max_nn) // never true if max_nn = -1
+        if (result.size () == max_nn) // never true if max_nn = -1
           break;
       }
     }
@@ -348,7 +352,7 @@ pcl::search::BruteForce<PointT>
       if (entry.distance < radius)
       {
         result.push_back (entry);
-        if ((int)result.size () == max_nn) // never true if max_nn = -1
+        if (result.size () == max_nn) // never true if max_nn = -1
           break;
       }
     }
@@ -363,12 +367,13 @@ pcl::search::BruteForce<PointT>
   return result.size ();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
-pcl::search::BruteForce<PointT>
-::radiusSearch (const PointT& point, double radius, std::vector<int> &k_indices,
-                std::vector<float> &k_sqr_distances, int max_nn) const
+pcl::search::BruteForce<PointT>::radiusSearch (
+    const PointT& point, double radius, std::vector<int> &k_indices,
+    std::vector<float> &k_sqr_distances, unsigned int max_nn) const
 {
-  if (cloud_->is_dense)
+  if (input_->is_dense)
     return denseRadiusSearch (point, radius, k_indices, k_sqr_distances, max_nn);
   else
     return sparseRadiusSearch (point, radius, k_indices, k_sqr_distances, max_nn);

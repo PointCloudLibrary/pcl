@@ -100,8 +100,8 @@ namespace pcl
       {
         tree_ = tree;
         // Declare the search locator definition
-        int (KdTree::*radiusSearch)(int index, double radius, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances, int max_nn) const = &KdTree::radiusSearch;
-        search_method_ = boost::bind (radiusSearch, boost::ref (tree_), _1, _2, _3, _4, INT_MAX);
+        int (KdTree::*radiusSearch)(int index, double radius, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances, unsigned int max_nn) const = &KdTree::radiusSearch;
+        search_method_ = boost::bind (radiusSearch, boost::ref (tree_), _1, _2, _3, _4, 0);
       }
 
       /** \brief Get a pointer to the search method used. */

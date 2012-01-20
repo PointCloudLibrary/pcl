@@ -61,7 +61,8 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     for (size_t idx = 0; idx < indices_->size (); ++idx)
     {
       int p_idx = (*indices_)[idx];
-      this->searchForNeighbors (p_idx, search_parameter_, nn_indices, nn_dists);
+      if (this->searchForNeighbors (p_idx, search_parameter_, nn_indices, nn_dists) == 0)
+        continue;
       
       spfh_indices_set.insert (nn_indices.begin (), nn_indices.end ());
     }
@@ -93,7 +94,8 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     // Find the neighborhood around p_idx
     std::vector<int> nn_indices (k_); // \note These resizes are irrelevant for a radiusSearch ().
     std::vector<float> nn_dists (k_); 
-    this->searchForNeighbors (*surface_, p_idx, search_parameter_, nn_indices, nn_dists);
+    if (this->searchForNeighbors (*surface_, p_idx, search_parameter_, nn_indices, nn_dists) == 0)
+      continue;
 
     // Estimate the SPFH signature around p_idx
     this->computePointSPFHSignature (*surface_, *normals_, p_idx, i, nn_indices, hist_f1_, hist_f2_, hist_f3_);
@@ -112,7 +114,16 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     // Find the indices of point idx's neighbors...
     std::vector<int> nn_indices (k_); // \note These resizes are irrelevant for a radiusSearch ().
     std::vector<float> nn_dists (k_); 
-    this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
+    if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+        this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+    {
+      for (int d = 0; d < nr_bins; ++d)
+        output.points[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN ();
+  
+      output.is_dense = false;
+      continue;
+    }
+
 
     // ... and remap the nn_indices values so that they represent row indices in the spfh_hist_* matrices 
     // instead of indices into surface_->points
@@ -124,7 +135,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     weightPointSPFHSignature (hist_f1_, hist_f2_, hist_f3_, nn_indices, nn_dists, fpfh_histogram);
 
     // ...and copy it into the output cloud
-    for (int d = 0; d < fpfh_histogram.size (); ++d)
+    for (int d = 0; d < nr_bins; ++d)
       output.points[idx].histogram[d] = fpfh_histogram[d];
   }
 

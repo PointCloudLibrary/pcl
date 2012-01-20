@@ -120,8 +120,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &outp
     std::vector<int> nn_indices;
     std::vector<float> nn_dists;
     pcl::search::KdTree<pcl::PointXYZI> response_search;
-    response_search.setInputCloud(response);
-    for (size_t idx = 0; idx < response->points.size(); ++idx)
+    response_search.setInputCloud (response);
+    for (size_t idx = 0; idx < response->points.size (); ++idx)
     {
       if (response->points[idx].intensity < threshold_)
         continue;

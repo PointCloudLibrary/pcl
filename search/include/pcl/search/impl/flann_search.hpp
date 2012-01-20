@@ -83,7 +83,7 @@ pcl::search::FlannSearch<PointT>::setInputCloud (const PointCloudConstPtr& cloud
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
-pcl::search::FlannSearch<PointT>::nearestKSearch (const PointT &point, int k, std::vector<int> &indices, std::vector<float> &dists)
+pcl::search::FlannSearch<PointT>::nearestKSearch (const PointT &point, int k, std::vector<int> &indices, std::vector<float> &dists) const
 {
   bool can_cast = point_representation_->isTrivial ();
 
@@ -120,8 +120,9 @@ pcl::search::FlannSearch<PointT>::nearestKSearch (const PointT &point, int k, st
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::search::FlannSearch<PointT>::nearestKSearch (const PointCloud& cloud, const std::vector<int>& indices, int k, std::vector< std::vector<int> >& k_indices,
-        std::vector< std::vector<float> >& k_sqr_distances)
+pcl::search::FlannSearch<PointT>::nearestKSearch (
+    const PointCloud& cloud, const std::vector<int>& indices, int k, std::vector< std::vector<int> >& k_indices,
+    std::vector< std::vector<float> >& k_sqr_distances) const
 {
   if (indices.empty ())
   {
@@ -229,7 +230,7 @@ pcl::search::FlannSearch<PointT>::radiusSearch (const PointT& point, double radi
 template <typename PointT> void
 pcl::search::FlannSearch<PointT>::radiusSearch (
     const PointCloud& cloud, const std::vector<int>& indices, double radius, std::vector< std::vector<int> >& k_indices,
-    std::vector< std::vector<float> >& k_sqr_distances, int max_nn)
+    std::vector< std::vector<float> >& k_sqr_distances, int max_nn) const
 {
   if (indices.empty ()) // full point cloud + trivial copy operation = no need to do any conversion/copying to the flann matrix!
   {

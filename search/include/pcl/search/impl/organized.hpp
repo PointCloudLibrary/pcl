@@ -44,24 +44,11 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> int
-pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const PointCloudConstPtr    &cloud,
-                                                      int                         index,
-                                                      double                      radius,
-                                                      std::vector<int>            &k_indices,
-                                                      std::vector<float>          &k_sqr_distances,
-                                                      int                         max_nn)
-{
-  this->setInputCloud (cloud);
-  return (radiusSearch (index, radius, k_indices, k_sqr_distances, max_nn));
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT> int
 pcl::search::OrganizedNeighbor<PointT>::radiusSearch (int                 index,
                                                       const double        radius,
                                                       std::vector<int>    &k_indices,
                                                       std::vector<float>  &k_sqr_distances,
-                                                      int                 max_nn) const
+                                                      unsigned int        max_nn) const
 {
   const PointT searchPoint = getPointByIndex (index);
   return (radiusSearch (searchPoint, radius, k_indices, k_sqr_distances, max_nn));
@@ -73,7 +60,7 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
                                                       const double        radius,
                                                       std::vector<int>    &k_indices,
                                                       std::vector<float>  &k_sqr_distances,
-                                                      int                 max_nn) const
+                                                      unsigned int        max_nn) const
 {
   if (input_->height == 1 || input_->width == 1)
   {
@@ -89,7 +76,7 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
   int leftX, rightX, leftY, rightY;
   int x, y, idx;
   double squared_distance, squared_radius;
-  int nnn;
+  unsigned int nnn;
 
   k_indices.clear ();
   k_sqr_distances.clear ();
@@ -100,8 +87,8 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
 
   // iterate over search box
   nnn = 0;
-  if (max_nn < 0)
-    max_nn = input_->size ();
+  if (max_nn == 0 || max_nn >= (unsigned int)input_->points.size ())
+    max_nn = input_->points.size ();
   
   for (x = leftX; (x <= rightX) && (nnn < max_nn); x++)
   {
@@ -134,7 +121,7 @@ template<typename PointT> int
 pcl::search::OrganizedNeighbor<PointT>::exactNearestKSearch (int                 index,
                                                              int                 k,
                                                              std::vector<int>    &k_indices,
-                                                             std::vector<float>  &k_sqr_distances)
+                                                             std::vector<float>  &k_sqr_distances) const
 {
   const PointT searchPoint = getPointByIndex (index);
   return (exactNearestKSearch (searchPoint, k, k_indices, k_sqr_distances));
@@ -146,13 +133,13 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const pcl::PointCloud<Po
                                                         int                           index,
                                                         int                           k,
                                                         std::vector<int>              &k_indices,
-                                                        std::vector<float>            &k_sqr_distances)
+                                                        std::vector<float>            &k_sqr_distances) const
 {
-  if (!exactFocalLength_)
+  if (!have_user_focal_length_)
   {
-    estimateFocalLengthFromInputCloud (cloud);
-    generateRadiusLookupTable (cloud.width, cloud.height);
-    exactFocalLength_ = 1;
+//    estimateFocalLengthFromInputCloud (cloud);
+//    generateRadiusLookupTable (cloud.width, cloud.height);
+//    exactFocalLength_ = 1;
   }
   return (exactNearestKSearch (index, k, k_indices, k_sqr_distances));
 }
@@ -162,7 +149,7 @@ template<typename PointT> int
 pcl::search::OrganizedNeighbor<PointT>::exactNearestKSearch (const PointT &p_q,
                                                              int k,
                                                              std::vector<int> &k_indices,
-                                                             std::vector<float> &k_sqr_distances)
+                                                             std::vector<float> &k_sqr_distances) const
 {
   PCL_ERROR ("[pcl::search::OrganizedNeighbor::exactNearestKSearch] Method not implemented!\n");
   return (0);
@@ -173,9 +160,11 @@ template<typename PointT> int
 pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (int index,
                                                         int k,
                                                         std::vector<int> &k_indices,
-                                                        std::vector<float> &k_distances)
+                                                        std::vector<float> &k_distances) const
 {
-  if (!input_)
+  PCL_ERROR ("[pcl::search::OrganizedNeighbor::nearestKSearch] Method not implemented!\n");
+  return (0);
+/*  if (!input_)
   {
     PCL_ERROR ("[pcl::%s::approxNearestKSearch] Input dataset was not set! use setInputCloud before continuing.\n", getName ().c_str ());
     return (0);
@@ -207,7 +196,6 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (int index,
     setSearchWindowAsK (k);
 
   // Get all point neighbors in a H x V window
-
   for (int x = -horizontal_window_; x != horizontal_window_; ++x)
   {
     uwvx = uwv + x * width; // Get the correct index
@@ -233,7 +221,7 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (int index,
   // We need at least min_pts_ nearest neighbors to do something useful with them
   if (l < min_pts_)
     return (0);
-  return (k);
+  return (k);*/
 }
 
 
@@ -276,8 +264,8 @@ pcl::search::OrganizedNeighbor<PointT>::getProjectedRadiusSearchBox (const Point
     x2 = (x_times_z + sqrt_term_x) * norm;
 
     // determine 2-D search window
-    minX = (int)floor ((double)input_->width / 2 + (x1 / oneOverFocalLength_));
-    maxX = (int)ceil ((double)input_->width / 2 + (x2 / oneOverFocalLength_));
+    minX = (int)floor ((double)input_->width / 2 + (x1 / one_over_focal_length_));
+    maxX = (int)ceil ((double)input_->width / 2 + (x2 / one_over_focal_length_));
 
     // make sure the coordinates fit to point cloud resolution
     minX = std::max<int> (0, minX);
@@ -291,8 +279,8 @@ pcl::search::OrganizedNeighbor<PointT>::getProjectedRadiusSearchBox (const Point
     y2 = (y_times_z + sqrt_term_y) * norm;
 
     // determine 2-D search window
-    minY = (int)floor ((double)input_->height / 2 + (y1 / oneOverFocalLength_));
-    maxY = (int)ceil ((double)input_->height / 2 + (y2 / oneOverFocalLength_));
+    minY = (int)floor ((double)input_->height / 2 + (y1 / one_over_focal_length_));
+    maxY = (int)ceil ((double)input_->height / 2 + (y2 / one_over_focal_length_));
 
     // make sure the coordinates fit to point cloud resolution
     minY = std::max<int> (0, minY);
@@ -322,7 +310,7 @@ pcl::search::OrganizedNeighbor<PointT>::estimateFocalLengthFromInputCloud (const
   size_t i, count;
   int x, y;
 
-  oneOverFocalLength_ = 0;
+  one_over_focal_length_ = 0;
 
   count = 0;
   for (y = 0; y < (int)input_->height; y++)
@@ -337,16 +325,16 @@ pcl::search::OrganizedNeighbor<PointT>::estimateFocalLengthFromInputCloud (const
         if ((double)(x - cloud.width / 2) * (double)(y - cloud.height / 2) * point.z != 0)
         {
           // estimate the focal length for point.x and point.y
-          oneOverFocalLength_ += point.x / ((double)(x - (int)cloud.width / 2) * point.z);
-          oneOverFocalLength_ += point.y / ((double)(y - (int)cloud.height / 2) * point.z);
+          one_over_focal_length_ += point.x / ((double)(x - (int)cloud.width / 2) * point.z);
+          one_over_focal_length_ += point.y / ((double)(y - (int)cloud.height / 2) * point.z);
           count += 2;
         }
       }
     }
   // calculate an average of the focalLength
-  oneOverFocalLength_ /= (double)count;
-  if (pcl_isfinite (oneOverFocalLength_))
-    return (oneOverFocalLength_);
+  one_over_focal_length_ /= (double)count;
+  if (pcl_isfinite (one_over_focal_length_))
+    return (one_over_focal_length_);
   else
   {
     PCL_ERROR ("[pcl::%s::estimateFocalLenghtFromInputCloud] Input dataset is not projectable!\n", getName ().c_str ());
@@ -362,20 +350,21 @@ pcl::search::OrganizedNeighbor<PointT>::generateRadiusLookupTable (unsigned int 
   int x, y, c;
 
   //check if point cloud dimensions changed
-  if ((radiusLookupTableWidth_ != (int)width) || (radiusLookupTableHeight_ != (int)height))
+  if ((radius_lookup_table_width_ != (int)width) || 
+      (radius_lookup_table_height_ != (int)height))
   {
-    radiusLookupTableWidth_ = (int)width;
-    radiusLookupTableHeight_ = (int)height;
+    radius_lookup_table_width_ = (int)width;
+    radius_lookup_table_height_ = (int)height;
 
-    radiusSearchLookup_.clear ();
-    radiusSearchLookup_.resize ((2 * width + 1) * (2 * height + 1));
+    radius_search_lookup_.clear ();
+    radius_search_lookup_.resize ((2 * width + 1) * (2 * height + 1));
 
     c = 0;
     for (x = -(int)width; x < (int)width + 1; x++)
       for (y = -(int)height; y < (int)height + 1; y++)
-        radiusSearchLookup_[c++].defineShiftedSearchPoint (x, y);
+        radius_search_lookup_[c++].defineShiftedSearchPoint (x, y);
 
-    std::sort (radiusSearchLookup_.begin (), radiusSearchLookup_.end ());
+    std::sort (radius_search_lookup_.begin (), radius_search_lookup_.end ());
   }
 }
 

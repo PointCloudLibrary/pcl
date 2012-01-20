@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2009-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,32 +35,31 @@
  *
  *
  */
-/** \author Romain Thibaux, Radu Bogdan Rusu, Bastian Steder, Michael Dixon */
 
 #include <gtest/gtest.h>
-
 #include <iostream>  // For debug
 #include <map>
-using namespace std;
-
 #include <pcl/common/time.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+
+using namespace std;
 using namespace pcl;
 
 struct MyPoint : public PointXYZ 
 {
-  MyPoint(float x, float y, float z) {this->x=x; this->y=y; this->z=z;}
+  MyPoint (float x, float y, float z) {this->x=x; this->y=y; this->z=z;}
 };
 
 PointCloud<MyPoint> cloud, cloud_big;
+PointCloud<Eigen::MatrixXf> cloud_eigen;
 
 // Includ the implementation so that KdTree<MyPoint> works
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 
 void 
-  init ()
+init ()
 {
   float resolution = 0.1;
   for (float z = -0.5f; z <= 0.5f; z += resolution)
@@ -78,6 +79,22 @@ void
                                          1024 * rand () / (RAND_MAX + 1.0)));
 }
 
+void 
+initEigen ()
+{
+  cloud_eigen.width  = 640;
+  cloud_eigen.height = 480;
+  cloud_eigen.points.resize (cloud_eigen.width * cloud_eigen.height, 3);
+  srand (time (NULL));
+  // Randomly create a new point cloud
+  for (int i = 0; i < cloud_eigen.points.rows (); ++i)
+  {
+    cloud_eigen.points (i, 0) = 1024 * rand () / (RAND_MAX + 1.0);
+    cloud_eigen.points (i, 1) = 1024 * rand () / (RAND_MAX + 1.0);
+    cloud_eigen.points (i, 2) = 1024 * rand () / (RAND_MAX + 1.0);
+  }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, KdTreeFLANN_radiusSearch)
 {
@@ -91,7 +108,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
       brute_force_result.insert(i);
   vector<int> k_indices;
   vector<float> k_distances;
-  kdtree.radiusSearch (test_point, max_dist, k_indices, k_distances);
+  kdtree.radiusSearch (test_point, max_dist, k_indices, k_distances, 100);
   
   //cout << k_indices.size()<<"=="<<brute_force_result.size()<<"?\n";
   
@@ -140,6 +157,61 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//TEST (PCL, KdTreeFLANN_radiusSearchEigen)
+//{
+//  KdTreeFLANN<Eigen::MatrixXf> kdtree;
+//  kdtree.setInputCloud (cloud_eigen.makeShared ());
+//  Eigen::VectorXf test_point = Eigen::Vector3f (0.0f, 0.0f, 0.0f);
+//  double max_dist = 0.15;
+//  set<int> brute_force_result;
+//  for (unsigned int i = 0; i < cloud_eigen.points.rows (); ++i)
+//    if ((cloud_eigen.points.row (i) - test_point).norm () < max_dist)
+//      brute_force_result.insert (i);
+//  vector<int> k_indices;
+//  vector<float> k_distances;
+//  kdtree.radiusSearch (test_point, max_dist, k_indices, k_distances);
+//  
+//  for (size_t i = 0; i < k_indices.size (); ++i)
+//  {
+//    set<int>::iterator brute_force_result_it = brute_force_result.find (k_indices[i]);
+//    bool ok = brute_force_result_it != brute_force_result.end ();
+//    EXPECT_EQ (ok, true);
+//    if (ok)
+//      brute_force_result.erase (brute_force_result_it);
+//  }
+//  
+//  bool error = brute_force_result.size () > 0;
+//  EXPECT_EQ (error, false);
+//
+//  {
+//    KdTreeFLANN<Eigen::MatrixXf> kdtree;
+//    kdtree.setInputCloud (cloud_eigen.makeShared ());
+//    // preallocate indices and dists arrays
+//    k_indices.resize (cloud_eigen.points.rows ());
+//    k_distances.resize (cloud_eigen.points.rows ());
+//
+//    ScopeTime scopeTime ("FLANN radiusSearch");
+//    {
+//      for (int i = 0; i < cloud_eigen.points.rows (); ++i)
+//        kdtree.radiusSearch (cloud_eigen.points.row (i), 0.1, k_indices, k_distances);
+//    }
+//  }
+//  
+//  {
+//    KdTreeFLANN<Eigen::MatrixXf> kdtree (false);
+//    kdtree.setInputCloud (cloud_eigen.makeShared ());
+//    // preallocate indices and dists arrays
+//    k_indices.resize (cloud_eigen.points.rows ());
+//    k_distances.resize (cloud_eigen.points.rows ());
+//    ScopeTime scopeTime ("FLANN radiusSearch (unsorted results)");
+//    {
+//      for (int i = 0; i < cloud_eigen.points.rows (); ++i)
+//        kdtree.radiusSearch (cloud_eigen.points.row (i), 0.1, k_indices, k_distances);
+//    }
+//  }
+//}
+//
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, KdTreeFLANN_nearestKSearch)
 {

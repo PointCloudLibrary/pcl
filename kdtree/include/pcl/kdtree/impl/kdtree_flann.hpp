@@ -56,13 +56,19 @@ pcl::KdTreeFLANN<PointT, Dist>::setInputCloud (const PointCloudConstPtr &cloud, 
   // Allocate enough data
   if (!input_)
   {
-    PCL_ERROR ("[pcl::KdTreeANN::setInputCloud] Invalid input!\n");
+    PCL_ERROR ("[pcl::KdTreeFLANN::setInputCloud] Invalid input!\n");
     return;
   }
   if (indices != NULL)
+  {
+    total_nr_points_ = indices_->size ();
     convertCloudToArray (*input_, *indices_);
+  }
   else
+  {
+    total_nr_points_ = input_->points.size ();
     convertCloudToArray (*input_);
+  }
 
   flann_index_ = new FLANNIndex (flann::Matrix<float> (cloud_, index_mapping_.size (), dim_),
                                  flann::KDTreeSingleIndexParams (15)); // max 15 points/leaf
@@ -73,24 +79,28 @@ pcl::KdTreeFLANN<PointT, Dist>::setInputCloud (const PointCloudConstPtr &cloud, 
 template <typename PointT, typename Dist> int 
 pcl::KdTreeFLANN<PointT, Dist>::nearestKSearch (const PointT &point, int k, 
                                                 std::vector<int> &k_indices, 
-                                                std::vector<float> &k_distances)
+                                                std::vector<float> &k_distances) const
 {
   assert (point_representation_->isValid (point) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
 
-  // Pay the price of resizing the arrays the first time nearestKSearch gets called
-  if (k_indices.size () < (size_t)k)
-    k_indices.resize (k);
-  if (k_distances.size () < (size_t)k) 
-    k_distances.resize (k);
+  if (k > total_nr_points_)
+  {
+    PCL_ERROR ("[pcl::KdTreeFLANN::nearestKSearch] An invalid number of nearest neighbors was requested! (k = %d out of %d total points).\n", k, total_nr_points_);
+    k = total_nr_points_;
+  }
 
-  // Wrap the k_indices and k_distances vectors (no data copy)
+  k_indices.resize (k);
+  k_distances.resize (k);
+
+  std::vector<float> query (dim_);
+  point_representation_->vectorize ((PointT)point, query);
+
   flann::Matrix<int> k_indices_mat (&k_indices[0], 1, k);
   flann::Matrix<float> k_distances_mat (&k_distances[0], 1, k);
-
-  std::vector<float> tmp (dim_);
-  point_representation_->vectorize ((PointT)point, tmp);
-
-  flann_index_->knnSearch (flann::Matrix<float>(&tmp[0], 1, dim_), k_indices_mat, k_distances_mat, k, param_k_);
+  // Wrap the k_indices and k_distances vectors (no data copy)
+  flann_index_->knnSearch (flann::Matrix<float> (&query[0], 1, dim_), 
+                           k_indices_mat, k_distances_mat,
+                           k, param_k_);
 
   // Do mapping to original point cloud
   if (!identity_mapping_) 
@@ -108,54 +118,50 @@ pcl::KdTreeFLANN<PointT, Dist>::nearestKSearch (const PointT &point, int k,
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename Dist> int 
 pcl::KdTreeFLANN<PointT, Dist>::radiusSearch (const PointT &point, double radius, std::vector<int> &k_indices,
-                                              std::vector<float> &k_squared_distances, int max_nn) const
+                                              std::vector<float> &k_sqr_dists, unsigned int max_nn) const
 {
   assert (point_representation_->isValid (point) && "Invalid (NaN, Inf) point coordinates given to radiusSearch!");
 
-  static flann::Matrix<int> indices_empty;
-  static flann::Matrix<float> dists_empty;
-
-  std::vector<float> tmp (dim_);
-  point_representation_->vectorize ((PointT)point, tmp);
-  radius *= radius; // flann uses squared radius
-
-  size_t size;
-  if (indices_ == NULL) // no indices set, use full size of point cloud:
-    size = input_->points.size ();
-  else
-    size = indices_->size ();
+  std::vector<float> query (dim_);
+  point_representation_->vectorize ((PointT)point, query);
 
   int neighbors_in_radius = 0;
-  if (k_indices.size () == size && k_squared_distances.size () == size)  // preallocated vectors
+
+  // If the user pre-allocated the arrays, we are only going to 
+  if (k_indices.size () == (size_t)total_nr_points_ && k_sqr_dists.size () == (size_t)total_nr_points_)
   {
-    // if using preallocated vectors we ignore max_nn as we are sure to have enought space
-    // to store all neighbors found in radius
     flann::Matrix<int> k_indices_mat (&k_indices[0], 1, k_indices.size ());
-    flann::Matrix<float> k_distances_mat (&k_squared_distances[0], 1, k_squared_distances.size ());
-    neighbors_in_radius = flann_index_->radiusSearch (flann::Matrix<float>(&tmp[0], 1, dim_),
-                                                      k_indices_mat, k_distances_mat, radius, 
+    flann::Matrix<float> k_distances_mat (&k_sqr_dists[0], 1, k_sqr_dists.size ());
+    neighbors_in_radius = flann_index_->radiusSearch (flann::Matrix<float> (&query[0], 1, dim_),
+                                                      k_indices_mat,
+                                                      k_distances_mat,
+                                                      radius * radius, 
                                                       param_radius_);
   }
-  else // need to do search twice, first to find how many neighbors and allocate the vectors
+  else
   {
-    neighbors_in_radius = flann_index_->radiusSearch (flann::Matrix<float>(&tmp[0], 1, dim_),
-                                                      indices_empty, dists_empty, radius, 
-                                                      param_radius_);
+    // Has max_nn been set properly?
+    if (max_nn == 0 || max_nn > (unsigned int)total_nr_points_)
+      max_nn = total_nr_points_;
 
-    // If the number of maximum nearest neighbors is given, use it to cap the return
-    if (max_nn > 0) 
-      neighbors_in_radius = std::min (neighbors_in_radius, max_nn);
+    static flann::Matrix<int> indices_empty;
+    static flann::Matrix<float> dists_empty;
+    neighbors_in_radius = flann_index_->radiusSearch (flann::Matrix<float> (&query[0], 1, dim_),
+                                                      indices_empty,
+                                                      dists_empty,
+                                                      radius * radius, 
+                                                      param_radius_);
+    neighbors_in_radius = std::min ((unsigned int)neighbors_in_radius, max_nn);
 
     k_indices.resize (neighbors_in_radius);
-    k_squared_distances.resize (neighbors_in_radius);
-
-    if (neighbors_in_radius == 0)
-      return (0);
+    k_sqr_dists.resize (neighbors_in_radius);
 
     flann::Matrix<int> k_indices_mat (&k_indices[0], 1, k_indices.size ());
-    flann::Matrix<float> k_distances_mat (&k_squared_distances[0], 1, k_squared_distances.size ());
-    flann_index_->radiusSearch (flann::Matrix<float>(&tmp[0], 1, dim_),
-                                k_indices_mat, k_distances_mat, radius, 
+    flann::Matrix<float> k_distances_mat (&k_sqr_dists[0], 1, k_sqr_dists.size ());
+    flann_index_->radiusSearch (flann::Matrix<float> (&query[0], 1, dim_),
+                                k_indices_mat,
+                                k_distances_mat,
+                                radius * radius, 
                                 param_radius_);
   }
 
@@ -176,12 +182,16 @@ pcl::KdTreeFLANN<PointT, Dist>::radiusSearch (const PointT &point, double radius
 template <typename PointT, typename Dist> void 
 pcl::KdTreeFLANN<PointT, Dist>::cleanup ()
 {
-  delete flann_index_;
+  if (flann_index_)
+    delete flann_index_;
 
   // Data array cleanup
-  free (cloud_);
-  cloud_ = NULL;
-  index_mapping_.clear();
+  if (cloud_)
+  {
+    free (cloud_);
+    cloud_ = NULL;
+  }
+  index_mapping_.clear ();
 
   if (indices_)
     indices_.reset ();

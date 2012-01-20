@@ -148,15 +148,15 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
       {
         // Declare the search locator definition
         int (KdTree::*radiusSearch)(int index, double radius, std::vector<int> &k_indices,
-                                    std::vector<float> &k_distances, int max_nn) const = &KdTree::radiusSearch;
-        search_method_ = boost::bind (radiusSearch, boost::ref (tree_), _1, _2, _3, _4, INT_MAX);
+                                    std::vector<float> &k_distances, unsigned int max_nn) const = &KdTree::radiusSearch;
+        search_method_ = boost::bind (radiusSearch, boost::ref (tree_), _1, _2, _3, _4, 0);
       }
 
       // Declare the search locator definition
       int (KdTree::*radiusSearchSurface)(const PointCloudIn &cloud, int index, double radius,
                                          std::vector<int> &k_indices, std::vector<float> &k_distances,
-                                         int max_nn) = &pcl::search::Search<PointInT>::radiusSearch;
-      search_method_surface_ = boost::bind (radiusSearchSurface, boost::ref (tree_), _1, _2, _3, _4, _5, INT_MAX);
+                                         unsigned int max_nn) const = &pcl::search::Search<PointInT>::radiusSearch;
+      search_method_surface_ = boost::bind (radiusSearchSurface, boost::ref (tree_), _1, _2, _3, _4, _5, 0);
     }
   }
   else
@@ -168,12 +168,12 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
       {
         // Declare the search locator definition
         int (KdTree::*nearestKSearch)(int index, int k, std::vector<int> &k_indices,
-                                      std::vector<float> &k_distances) = &KdTree::nearestKSearch;
+                                      std::vector<float> &k_distances) const = &KdTree::nearestKSearch;
         search_method_ = boost::bind (nearestKSearch, boost::ref (tree_), _1, _2, _3, _4);
       }
       // Declare the search locator definition
       int (KdTree::*nearestKSearchSurface)(const PointCloudIn &cloud, int index, int k, std::vector<int> &k_indices,
-                                           std::vector<float> &k_distances) = &KdTree::nearestKSearch;
+                                           std::vector<float> &k_distances) const = &KdTree::nearestKSearch;
       search_method_surface_ = boost::bind (nearestKSearchSurface, boost::ref (tree_), _1, _2, _3, _4, _5);
     }
     else

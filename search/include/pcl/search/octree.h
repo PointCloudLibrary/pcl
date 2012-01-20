@@ -80,6 +80,9 @@ namespace pcl
         typedef boost::shared_ptr<const pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, OctreeT> > ConstPtr;
         Ptr tree_;
 
+        using pcl::search::Search<PointT>::input_;
+        using pcl::search::Search<PointT>::indices_;
+
         /** \brief Octree constructor.
           * \param[in] resolution octree resolution at lowest octree level
           */
@@ -103,6 +106,7 @@ namespace pcl
           tree_->deleteTree ();
           tree_->setInputCloud (cloud);
           tree_->addPointsFromInputCloud ();
+          input_ = cloud;
         }
 
         /** \brief Provide a pointer to the input dataset.
@@ -115,20 +119,8 @@ namespace pcl
           tree_->deleteTree ();
           tree_->setInputCloud (cloud, indices);
           tree_->addPointsFromInputCloud ();
-        }
-
-        /** \brief Get a pointer to the input dataset as passed by the user. */
-        PointCloudConstPtr
-        getInputCloud ()
-        {
-          return (tree_->getInputCloud ());
-        }
-
-        /** \brief Get a pointer to the set of input indices used as passed by the user. */
-        IndicesConstPtr const
-        getIndices ()
-        {
-          return (tree_->getIndices ());
+          input_ = cloud;
+          indices_ = indices;
         }
 
         /** \brief Search for the k-nearest neighbors for the given query point.
@@ -142,7 +134,7 @@ namespace pcl
           */
         inline int
         nearestKSearch (const PointCloud &cloud, int index, int k, std::vector<int> &k_indices,
-                        std::vector<float> &k_sqr_distances)
+                        std::vector<float> &k_sqr_distances) const
         {
           return (tree_->nearestKSearch (cloud, index, k, k_indices, k_sqr_distances));
         }
@@ -157,7 +149,7 @@ namespace pcl
           */
         inline int
         nearestKSearch (const PointT &point, int k, std::vector<int> &k_indices,
-                        std::vector<float> &k_sqr_distances)
+                        std::vector<float> &k_sqr_distances) const
         {
           return (tree_->nearestKSearch (point, k, k_indices, k_sqr_distances));
         }
@@ -174,7 +166,7 @@ namespace pcl
           * \return number of neighbors found
           */
         inline int
-        nearestKSearch (int index, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
+        nearestKSearch (int index, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
         {
           return (tree_->nearestKSearch (index, k, k_indices, k_sqr_distances));
         }
@@ -189,8 +181,12 @@ namespace pcl
          * \return number of neighbors found in radius
          */
         inline int
-        radiusSearch (const PointCloud &cloud, int index, double radius,
-                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances, int max_nn = INT_MAX)
+        radiusSearch (const PointCloud &cloud, 
+                      int index, 
+                      double radius,
+                      std::vector<int> &k_indices, 
+                      std::vector<float> &k_sqr_distances, 
+                      unsigned int max_nn = 0) const
         {
           return (tree_->radiusSearch (cloud, index, radius, k_indices, k_sqr_distances, max_nn));
         }
@@ -204,8 +200,11 @@ namespace pcl
          * \return number of neighbors found in radius
          */
         inline int
-        radiusSearch (const PointT &p_q, const double radius, std::vector<int> &k_indices,
-                      std::vector<float> &k_sqr_distances, int max_nn = INT_MAX) const
+        radiusSearch (const PointT &p_q, 
+                      const double radius, 
+                      std::vector<int> &k_indices,
+                      std::vector<float> &k_sqr_distances, 
+                      unsigned int max_nn = 0) const
         {
           return (tree_->radiusSearch (p_q, radius, k_indices, k_sqr_distances, max_nn));
         }
@@ -221,7 +220,7 @@ namespace pcl
          */
         inline int
         radiusSearch (int index, const double radius, std::vector<int> &k_indices,
-                      std::vector<float> &k_sqr_distances, int max_nn = INT_MAX) const
+                      std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
         {
           return (tree_->radiusSearch (index, radius, k_indices, k_sqr_distances, max_nn));
         }

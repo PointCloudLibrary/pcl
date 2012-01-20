@@ -189,7 +189,8 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeSPFHSignatures (std::v
     for (size_t idx = 0; idx < indices_->size (); ++idx)
     {
       int p_idx = (*indices_)[idx];
-      this->searchForNeighbors (p_idx, search_parameter_, nn_indices, nn_dists);
+      if (this->searchForNeighbors (p_idx, search_parameter_, nn_indices, nn_dists) == 0)
+        continue;
 
       spfh_indices.insert (nn_indices.begin (), nn_indices.end ());
     }
@@ -216,7 +217,8 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeSPFHSignatures (std::v
     ++spfh_indices_itr;
 
     // Find the neighborhood around p_idx
-    this->searchForNeighbors (*surface_, p_idx, search_parameter_, nn_indices, nn_dists);
+    if (this->searchForNeighbors (*surface_, p_idx, search_parameter_, nn_indices, nn_dists) == 0)
+      continue;
 
     // Estimate the SPFH signature around p_idx
     computePointSPFHSignature (*surface_, *normals_, p_idx, i, nn_indices, hist_f1, hist_f2, hist_f3);

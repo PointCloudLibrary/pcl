@@ -66,6 +66,7 @@ namespace pcl
       * \note libpcl_search deals with three-dimensional search problems. For higher
       * level dimensional search, please refer to the libpcl_kdtree module.
       *
+      * \author Radu B. Rusu
       * \ingroup search
       */
     template<typename PointT>
@@ -98,21 +99,25 @@ namespace pcl
           * \param[in] indices the point indices subset that is to be used from the cloud
           */
         virtual void
-        setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices) {}
-
-        /** \brief Pass the input dataset that the search will be performed on.
-          * \param[in] cloud a const pointer to the PointCloud data
-          */
-        virtual void
-        setInputCloud (const PointCloudConstPtr& cloud) = 0;
+        setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr &indices = IndicesConstPtr ())
+        {
+          input_ = cloud;
+          indices_ = indices;
+        }
 
         /** \brief Get a pointer to the input point cloud dataset. */
         virtual PointCloudConstPtr
-        getInputCloud () = 0;
+        getInputCloud ()
+        {
+          return (input_);
+        }
 
         /** \brief Get a pointer to the vector of indices used. */
         virtual IndicesConstPtr const
-        getIndices () { return (IndicesConstPtr ()); }
+        getIndices ()
+        { 
+          return (indices_);
+        }
 
         /** \brief Search for the k-nearest neighbors for the given query point.
           * \param[in] point the given query point
@@ -124,54 +129,88 @@ namespace pcl
           */
         virtual int
         nearestKSearch (const PointT &point, int k, std::vector<int> &k_indices,
-                        std::vector<float> &k_sqr_distances) = 0;
+                        std::vector<float> &k_sqr_distances) const = 0;
 
-        /** \brief Search for the k-nearest neighbors for the given query point. Use this method if the query points are of a different type than the points in the data set (e.g. PointXYZRGB instead of PointXYZ).
+        /** \brief Search for k-nearest neighbors for the given query point. 
+          * This method accepts a different template parameter for the point type.
           * \param[in] point the given query point
           * \param[in] k the number of neighbors to search for
           * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k 
           * a priori!)
           * \return number of neighbors found
           */
-        template <typename PointTDiff> int
-        nearestKSearchT (const PointTDiff &point, int k, std::vector<int> &k_indices,
-                         std::vector<float> &k_sqr_distances)
+        template <typename PointTDiff> inline int 
+        nearestKSearchT (const PointTDiff &point, int k, 
+                         std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
         {
           PointT p;
           // Copy all the data fields from the input cloud to the output one
           typedef typename pcl::traits::fieldList<PointT>::type FieldListInT;
           typedef typename pcl::traits::fieldList<PointTDiff>::type FieldListOutT;
           typedef typename pcl::intersect<FieldListInT, FieldListOutT>::type FieldList;
-          pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (
-                point, p));
+          pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (point, p));
           return (nearestKSearch (p, k, k_indices, k_sqr_distances));
         }
 
-        /** \brief Search for the k-nearest neighbors for the given query point.
+        /** \brief Search for k-nearest neighbors for the given query point.
+          * 
+          * \attention This method does not do any bounds checking for the input index
+          * (i.e., index >= cloud.points.size () || index < 0), and assumes valid (i.e., finite) data.
+          * 
           * \param[in] cloud the point cloud data
-          * \param[in] index the index in \a cloud representing the query point
+          * \param[in] index a \a valid index in \a cloud representing a \a valid (i.e., finite) query point
           * \param[in] k the number of neighbors to search for
           * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k 
+          * a priori!)
+          * 
+          * \return number of neighbors found
+          * 
+          * \exception asserts in debug mode if the index is not between 0 and the maximum number of points
+          */
+        virtual int 
+        nearestKSearch (const PointCloud &cloud, int index, int k, 
+                        std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
+        {
+          assert (index >= 0 && index < (int)cloud.points.size () && "Out-of-bounds error in nearestKSearch!");
+          return (nearestKSearch (cloud.points[index], k, k_indices, k_sqr_distances));
+        }
+
+        /** \brief Search for k-nearest neighbors for the given query point (zero-copy).
+          * 
+          * \attention This method does not do any bounds checking for the input index
+          * (i.e., index >= cloud.points.size () || index < 0), and assumes valid (i.e., finite) data.
+          * 
+          * \param[in] index a \a valid index representing a \a valid query point in the dataset given 
+          * by \a setInputCloud. If indices were given in setInputCloud, index will be the position in 
+          * the indices vector.
+          * 
+          * \param[in] k the number of neighbors to search for
+          * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k 
           * a priori!)
           * \return number of neighbors found
+          * 
+          * \exception asserts in debug mode if the index is not between 0 and the maximum number of points
           */
-        virtual int
-        nearestKSearch (const PointCloud& cloud, int index, int k, std::vector<int>& k_indices,
-                        std::vector<float>& k_sqr_distances) = 0;
-
-        /** \brief Search for the k-nearest neighbors for the given query point (zero-copy).
-         * \param[in] index the index representing the query point in the dataset given by \a setInputCloud
-         *        if indices were given in setInputCloud, index will be the position in the indices vector
-         * \param[in] k the number of neighbors to search for
-         * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-         * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
-         * a priori!)
-         * \return number of neighbors found
-         */
-        virtual int
-        nearestKSearch (int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances) = 0;
+        virtual int 
+        nearestKSearch (int index, int k, 
+                        std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
+        {
+          if (indices_ == NULL)
+          {
+            assert (index >= 0 && index < (int)input_->points.size () && "Out-of-bounds error in nearestKSearch!");
+            return (nearestKSearch (input_->points[index], k, k_indices, k_sqr_distances));
+          }
+          else
+          {
+            assert (index >= 0 && index < (int)indices_->size () && "Out-of-bounds error in nearestKSearch!");
+            if (index >= (int)indices_->size() || index < 0)
+              return (0);
+            return (nearestKSearch (input_->points[(*indices_)[index]], k, k_indices, k_sqr_distances));
+          }
+        }
 
         /** \brief Search for the k-nearest neighbors for the given query point.
           * \param[in] cloud the point cloud data
@@ -182,7 +221,7 @@ namespace pcl
           */
         virtual void
         nearestKSearch (const PointCloud& cloud, const std::vector<int>& indices, int k, std::vector< std::vector<int> >& k_indices,
-                        std::vector< std::vector<float> >& k_sqr_distances)
+                        std::vector< std::vector<float> >& k_sqr_distances) const
         {
           if (indices.empty ())
           {
@@ -210,7 +249,7 @@ namespace pcl
           */
         template <typename PointTDiff> void
         nearestKSearchT (const pcl::PointCloud<PointTDiff> &cloud, const std::vector<int>& indices, int k, std::vector< std::vector<int> > &k_indices,
-                         std::vector< std::vector<float> > &k_sqr_distances)
+                         std::vector< std::vector<float> > &k_sqr_distances) const
         {
           // Copy all the data fields from the input cloud to the output one
           typedef typename pcl::traits::fieldList<PointT>::type FieldListInT;
@@ -241,64 +280,102 @@ namespace pcl
         }
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius.
-          * \param[in] point the given query point
+          * \param[in] p_q the given query point
           * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
           * \param[out] k_indices the resultant indices of the neighboring points
           * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
-          * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
+          * \param[in] max_nn if given, bounds the maximum returned neighbors to this value. If \a max_nn is set to
+          * 0 or to a number higher than the number of points in the input cloud, all neighbors in \a radius will be
+          * returned.
           * \return number of neighbors found in radius
           */
         virtual int
         radiusSearch (const PointT& point, double radius, std::vector<int>& k_indices,
-                      std::vector<float>& k_sqr_distances, int max_nn = -1) const = 0;
+                      std::vector<float>& k_sqr_distances, unsigned int max_nn = 0) const = 0;
 
-        /** \brief Search for all the nearest neighbors of the query point in a given radius. Use this method if the query points are of a different type than the points in the data set (e.g. PointXYZRGB instead of PointXYZ).
+        /** \brief Search for all the nearest neighbors of the query point in a given radius.
           * \param[in] point the given query point
           * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
           * \param[out] k_indices the resultant indices of the neighboring points
           * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
-          * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
+          * \param[in] max_nn if given, bounds the maximum returned neighbors to this value. If \a max_nn is set to
+          * 0 or to a number higher than the number of points in the input cloud, all neighbors in \a radius will be
+          * returned.
           * \return number of neighbors found in radius
           */
-        template <typename PointTDiff> int
-        radiusSearchT (const PointTDiff& point, double radius, std::vector<int>& k_indices,
-                       std::vector<float>& k_sqr_distances, int max_nn = -1)
+        template <typename PointTDiff> inline int 
+        radiusSearchT (const PointTDiff &point, double radius, std::vector<int> &k_indices,
+                       std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
         {
           PointT p;
           // Copy all the data fields from the input cloud to the output one
           typedef typename pcl::traits::fieldList<PointT>::type FieldListInT;
           typedef typename pcl::traits::fieldList<PointTDiff>::type FieldListOutT;
           typedef typename pcl::intersect<FieldListInT, FieldListOutT>::type FieldList;
-          pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (
-                point, p));
+          pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (point, p));
           return (radiusSearch (p, radius, k_indices, k_sqr_distances, max_nn));
         }
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius.
+          * 
+          * \attention This method does not do any bounds checking for the input index
+          * (i.e., index >= cloud.points.size () || index < 0), and assumes valid (i.e., finite) data.
+          * 
           * \param[in] cloud the point cloud data
-          * \param[in] index the index in \a cloud representing the query point
+          * \param[in] index a \a valid index in \a cloud representing a \a valid (i.e., finite) query point
           * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
           * \param[out] k_indices the resultant indices of the neighboring points
           * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
-          * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
+          * \param[in] max_nn if given, bounds the maximum returned neighbors to this value. If \a max_nn is set to
+          * 0 or to a number higher than the number of points in the input cloud, all neighbors in \a radius will be
+          * returned.
           * \return number of neighbors found in radius
+          * 
+          * \exception asserts in debug mode if the index is not between 0 and the maximum number of points
           */
-        virtual int
-        radiusSearch (const PointCloud& cloud, int index, double radius, std::vector<int>& k_indices,
-                      std::vector<float>& k_sqr_distances, int max_nn = -1) = 0;
+        virtual int 
+        radiusSearch (const PointCloud &cloud, int index, double radius, 
+                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances, 
+                      unsigned int max_nn = 0) const
+        {
+          assert (index >= 0 && index < (int)cloud.points.size () && "Out-of-bounds error in radiusSearch!");
+          return (radiusSearch(cloud.points[index], radius, k_indices, k_sqr_distances, max_nn));
+        }
 
-        /** \brief search for all the nearest neighbors of the query point in a given radius (zero-copy).
-          * \param[in] index the index representing the query point in the dataset given by \a setInputCloud
-          *        if indices were given in setInputCloud, index will be the position in the indices vector
+        /** \brief Search for all the nearest neighbors of the query point in a given radius (zero-copy).
+          * 
+          * \attention This method does not do any bounds checking for the input index
+          * (i.e., index >= cloud.points.size () || index < 0), and assumes valid (i.e., finite) data.
+          * 
+          * \param[in] index a \a valid index representing a \a valid query point in the dataset given 
+          * by \a setInputCloud. If indices were given in setInputCloud, index will be the position in 
+          * the indices vector.
+          * 
           * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
           * \param[out] k_indices the resultant indices of the neighboring points
           * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
-          * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
+          * \param[in] max_nn if given, bounds the maximum returned neighbors to this value. If \a max_nn is set to
+          * 0 or to a number higher than the number of points in the input cloud, all neighbors in \a radius will be
+          * returned.
           * \return number of neighbors found in radius
+          * 
+          * \exception asserts in debug mode if the index is not between 0 and the maximum number of points
           */
-        virtual int
-        radiusSearch (int index, double radius, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances,
-                      int max_nn = -1) const = 0;
+        virtual int 
+        radiusSearch (int index, double radius, std::vector<int> &k_indices,
+                      std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
+        {
+          if (indices_ == NULL)
+          {
+            assert (index >= 0 && index < (int)input_->points.size () && "Out-of-bounds error in radiusSearch!");
+            return (radiusSearch (input_->points[index], radius, k_indices, k_sqr_distances, max_nn));
+          }
+          else
+          {
+            assert (index >= 0 && index < (int)indices_->size () && "Out-of-bounds error in radiusSearch!");
+            return (radiusSearch (input_->points[(*indices_)[index]], radius, k_indices, k_sqr_distances, max_nn));
+          }
+        }
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius.
           * \param[in] cloud the point cloud data
@@ -306,11 +383,17 @@ namespace pcl
           * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
           * \param[out] k_indices the resultant indices of the neighboring points, k_indices[i] corresponds to the neighbors of the query point i
           * \param[out] k_sqr_distances the resultant squared distances to the neighboring points, k_sqr_distances[i] corresponds to the neighbors of the query point i
-          * \param[in] max_nn if given, bounds the maximum returned neighbors to this value
+          * \param[in] max_nn if given, bounds the maximum returned neighbors to this value. If \a max_nn is set to
+          * 0 or to a number higher than the number of points in the input cloud, all neighbors in \a radius will be
+          * returned.
           */
         virtual void
-        radiusSearch (const PointCloud& cloud, const std::vector<int>& indices, double radius, std::vector< std::vector<int> >& k_indices,
-                std::vector< std::vector<float> > & k_sqr_distances, int max_nn = -1)
+        radiusSearch (const PointCloud& cloud, 
+                      const std::vector<int>& indices, 
+                      double radius, 
+                      std::vector< std::vector<int> >& k_indices,
+                      std::vector< std::vector<float> > &k_sqr_distances, 
+                      unsigned int max_nn = 0) const
         {
           if (indices.empty ())
           {
@@ -335,12 +418,18 @@ namespace pcl
           * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
           * \param[out] k_indices the resultant indices of the neighboring points, k_indices[i] corresponds to the neighbors of the query point i
           * \param[out] k_sqr_distances the resultant squared distances to the neighboring points, k_sqr_distances[i] corresponds to the neighbors of the query point i
-          * \param[in] max_nn if given, bounds the maximum returned neighbors per query point to this value
+          * \param[in] max_nn if given, bounds the maximum returned neighbors to this value. If \a max_nn is set to
+          * 0 or to a number higher than the number of points in the input cloud, all neighbors in \a radius will be
+          * returned.
           * \note This method copies the input point cloud of type PointTDiff to a temporary cloud of type PointT and performs the batch search on the new cloud. You should prefer the single-point search if you don't use a search algorithm that accelerates batch NN search.
           */
         template <typename PointTDiff> void
-        radiusSearchT (const pcl::PointCloud<PointTDiff> &cloud, const std::vector<int>& indices, double radius, std::vector< std::vector<int> > &k_indices,
-                         std::vector< std::vector<float> > & k_sqr_distances, int max_nn = -1)
+        radiusSearchT (const pcl::PointCloud<PointTDiff> &cloud, 
+                       const std::vector<int>& indices, 
+                       double radius, 
+                       std::vector< std::vector<int> > &k_indices,
+                       std::vector< std::vector<float> > &k_sqr_distances, 
+                       unsigned int max_nn = 0) const
         {
           // Copy all the data fields from the input cloud to the output one
           typedef typename pcl::traits::fieldList<PointT>::type FieldListInT;
@@ -363,6 +452,10 @@ namespace pcl
             radiusSearch (pc, std::vector<int>(), radius, k_indices, k_sqr_distances, max_nn);
           }
         }
+
+      protected:
+        PointCloudConstPtr input_;
+        IndicesConstPtr indices_;
     };
   }
 }
