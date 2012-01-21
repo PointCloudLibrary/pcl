@@ -317,7 +317,7 @@ namespace pcl
       inline const Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >
       getMatrixXfMap (int dim, int stride, int offset) const
       {
-        return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
+        return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
