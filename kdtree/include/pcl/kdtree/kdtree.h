@@ -213,8 +213,6 @@ namespace pcl
         else
         {
           assert (index >= 0 && index < (int)indices_->size () && "Out-of-bounds error in nearestKSearch!");
-          if (index >= (int)indices_->size() || index < 0)
-            return (0);
           return (nearestKSearch (input_->points[(*indices_)[index]], k, k_indices, k_sqr_distances));
         }
       }
