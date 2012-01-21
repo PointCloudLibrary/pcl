@@ -186,7 +186,6 @@ namespace pcl
       /** \brief Destructor. */
       virtual ~VoxelGrid ()
       {
-        leaves_.clear();
       }
 
       /** \brief Set the voxel grid leaf size.
@@ -409,18 +408,6 @@ namespace pcl
       }
 
     protected:
-      /** \brief Simple structure to hold an nD centroid and the number of points in a leaf. 
-        */
-      struct Leaf
-      {
-        Leaf () : nr_points(0) {}
-        Eigen::VectorXf centroid;    // @todo we do not support FLOAT64 just yet due to memory issues. Need to fix this.
-        int nr_points;
-      };
-
-      /** \brief The 3D grid leaves. */
-      boost::unordered_map<size_t, Leaf> leaves_;
-
       /** \brief The size of a leaf. */
       Eigen::Vector4f leaf_size_;
 
@@ -469,7 +456,7 @@ namespace pcl
     * a bit slower than approximating them with the center of the voxel, but it
     * represents the underlying surface more accurately.
     *
-     * \author Radu B. Rusu, Bastian Steder
+    * \author Radu B. Rusu, Bastian Steder, Radoslaw Cybulski
     * \ingroup filters
     */
   template <>
@@ -498,7 +485,6 @@ namespace pcl
       /** \brief Destructor. */
       virtual ~VoxelGrid ()
       {
-        leaves_.clear ();
       }
 
       /** \brief Set the voxel grid leaf size.
@@ -651,7 +637,7 @@ namespace pcl
         * \param[in] y the Y point coordinate to get the (i, j, k) index at
         * \param[in] z the Z point coordinate to get the (i, j, k) index at
         */
-       inline Eigen::Vector3i 
+      inline Eigen::Vector3i 
       getGridCoordinates (float x, float y, float z) 
       { 
         return (Eigen::Vector3i ((int) floor (x / leaf_size_[0]), (int) floor (y / leaf_size_[1]), (int) floor (z / leaf_size_[2]))); 
@@ -741,18 +727,6 @@ namespace pcl
       }
 
     protected:
-      /** \brief Simple structure to hold an nD centroid and the number of points in a leaf. 
-        */
-      struct Leaf
-      {
-        Leaf () : nr_points(0) { }
-        Eigen::VectorXf centroid;    // @todo we do not support FLOAT64 just yet due to memory issues. Need to fix this.
-        int nr_points;
-      };
-
-      /** \brief The 3D grid leaves. */
-      boost::unordered_map<size_t, Leaf> leaves_;
-
       /** \brief The size of a leaf. */
       Eigen::Vector4f leaf_size_;
 
