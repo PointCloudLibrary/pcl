@@ -45,6 +45,7 @@
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/ModelCoefficients.h>
 #include <boost/graph/incremental_components.hpp>
 
 typedef pcl::PointXYZ PointT;
@@ -77,7 +78,7 @@ comparePoints (PointInT p1, PointInT p2, double p1_d, double p2_d, float ang_thr
  * \author Alexander J. B. Trevor
  */
 template<typename PointInT, typename PointOutT> void
-extractPlanesByFloodFill (const pcl::PointCloud<PointInT> & cloud_in, std::vector<Eigen::Vector4f>& normals_out, std::vector<pcl::PointCloud<PointOutT> >& inliers, unsigned min_inliers, double ang_thresh, double dist_thresh)
+extractPlanesByFloodFill (const pcl::PointCloud<PointInT> & cloud_in, std::vector<pcl::ModelCoefficients>& normals_out, std::vector<pcl::PointCloud<PointOutT> >& inliers, unsigned min_inliers, double ang_thresh, double dist_thresh)
 {
   ang_thresh = cos (ang_thresh);
 
@@ -224,8 +225,13 @@ extractPlanesByFloodFill (const pcl::PointCloud<PointInT> & cloud_in, std::vecto
       float curvature;
       pcl::solvePlaneParameters (clust_cov, clust_centroid, plane_params, curvature);
       pcl::flipNormalTowardsViewpoint (normal_cloud[clust_inds[i].indices[0]], 0.0f, 0.0f, 0.0f, plane_params);
-
-      normals_out.push_back (plane_params);
+      pcl::ModelCoefficients model;
+      model.values.push_back(plane_params[0]);
+      model.values.push_back(plane_params[1]);
+      model.values.push_back(plane_params[2]);
+      model.values.push_back(plane_params[3]);
+      normals_out.push_back(model);
+      //normals_out.push_back (plane_params);
       inliers.push_back (clust_inliers);
     }
   }
@@ -460,7 +466,8 @@ run ()
     if (prev_cloud && cloud_mutex.try_lock ())
     {
       printf ("Extracting planes...\n");
-      std::vector<Eigen::Vector4f> plane_normals;
+      //std::vector<Eigen::Vector4f> plane_normals; //This doesn't work on Win, using the following instead:
+      std::vector<pcl::ModelCoefficients> plane_normals;
       std::vector<pcl::PointCloud<pcl::PointXYZRGBNormal> > plane_inliers;
 
       double start = pcl::getTime ();
@@ -501,9 +508,9 @@ run ()
         Eigen::Vector4f centroid;
         pcl::compute3DCentroid (plane_inliers[i], centroid);
         pcl::PointXYZ pt1 = pcl::PointXYZ (centroid[0], centroid[1], centroid[2]);
-        pcl::PointXYZ pt2 = pcl::PointXYZ (centroid[0] + (0.5 * plane_normals[i][0]),
-                                           centroid[1] + (0.5 * plane_normals[i][1]),
-                                           centroid[2] + (0.5 * plane_normals[i][2]));
+        pcl::PointXYZ pt2 = pcl::PointXYZ (centroid[0] + (0.5 * plane_normals[i].values[0]),
+                                           centroid[1] + (0.5 * plane_normals[i].values[1]),
+                                           centroid[2] + (0.5 * plane_normals[i].values[2]));
         char normal_name[500];
         sprintf (normal_name, "normal_%d", (unsigned)i);
         viewer->addArrow (pt2, pt1, 1.0, 0, 0, normal_name);
