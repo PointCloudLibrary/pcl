@@ -49,53 +49,24 @@
 
 namespace pcl
 {
-  /** \brief SurfaceReconstruction represents a base surface reconstruction
-    * class. All \b surface reconstruction methods take in a point cloud and
-    * generate a new surface from it, by either resampling the data or
-    * generating new data altogether. These methods are thus \b not preserving
-    * the topology of the original data.
+  /** \brief Pure abstract class. All types of meshing/reconstruction
+    * algorithms in \b libpcl_surface must inherit from this, in order to make
+    * sure we have a consistent API. The methods that we care about here are:
     *
-    * \note Reconstruction methods that always preserve the original input
-    * point cloud data as the surface vertices and simply construct the mesh on
-    * top should inherit from \ref MeshConstruction.
+    *  - \b setSearchMethod(&SearchPtr): passes a search locator
+    *  - \b reconstruct(&PolygonMesh): creates a PolygonMesh object from the input data
     *
     * \author Radu B. Rusu, Michael Dixon, Alex Ichim
-    * \ingroup surface
     */
   template <typename PointInT>
-  class SurfaceReconstruction: public PCLBase<PointInT>
+  class PCLSurfaceBase: public PCLBase<PointInT>
   {
     public:
-      using PCLBase<PointInT>::input_;
-      using PCLBase<PointInT>::indices_;
-      using PCLBase<PointInT>::initCompute;
-      using PCLBase<PointInT>::deinitCompute;
-
       typedef typename pcl::search::Search<PointInT> KdTree;
       typedef typename pcl::search::Search<PointInT>::Ptr KdTreePtr;
 
-      /** \brief Constructor. */
-      SurfaceReconstruction () : tree_ (), check_tree_ (true) {}
-
-      /** \brief Destructor. */
-      virtual ~SurfaceReconstruction () {}
-
-       /** \brief Base method for surface reconstruction for all points given in
-        * <setInputCloud (), setIndices ()> 
-        * \param[out] output the resultant reconstructed surface model
-        */
-      void 
-      reconstruct (pcl::PolygonMesh &output);
-
-      /** \brief Base method for surface reconstruction for all points given in
-        * <setInputCloud (), setIndices ()> 
-        * \param[out] points the resultant points lying on the new surface
-        * \param[out] polygons the resultant polygons, as a set of
-        * vertices. The Vertices structure contains an array of point indices.
-        */
-      void 
-      reconstruct (pcl::PointCloud<PointInT> &points,
-                   std::vector<pcl::Vertices> &polygons);
+      /** \brief Empty constructor. */
+      PCLSurfaceBase () : tree_ () {}
 
       /** \brief Provide an optional pointer to a search object.
         * \param[in] tree a pointer to the spatial search object.
@@ -110,10 +81,70 @@ namespace pcl
       inline KdTreePtr 
       getSearchMethod () { return (tree_); }
 
+      /** \brief Base method for surface reconstruction for all points given in
+        * <setInputCloud (), setIndices ()> 
+        * \param[out] output the resultant reconstructed surface model
+        */
+      virtual void 
+      reconstruct (pcl::PolygonMesh &output) = 0;
+
     protected:
       /** \brief A pointer to the spatial search object. */
       KdTreePtr tree_;
 
+      /** \brief Abstract class get name method. */
+      virtual std::string 
+      getClassName () const { return (""); }
+  };
+
+  /** \brief SurfaceReconstruction represents a base surface reconstruction
+    * class. All \b surface reconstruction methods take in a point cloud and
+    * generate a new surface from it, by either resampling the data or
+    * generating new data altogether. These methods are thus \b not preserving
+    * the topology of the original data.
+    *
+    * \note Reconstruction methods that always preserve the original input
+    * point cloud data as the surface vertices and simply construct the mesh on
+    * top should inherit from \ref MeshConstruction.
+    *
+    * \author Radu B. Rusu, Michael Dixon, Alex Ichim
+    * \ingroup surface
+    */
+  template <typename PointInT>
+  class SurfaceReconstruction: public PCLSurfaceBase<PointInT>
+  {
+    public:
+      using PCLSurfaceBase<PointInT>::input_;
+      using PCLSurfaceBase<PointInT>::indices_;
+      using PCLSurfaceBase<PointInT>::initCompute;
+      using PCLSurfaceBase<PointInT>::deinitCompute;
+      using PCLSurfaceBase<PointInT>::tree_;
+      using PCLSurfaceBase<PointInT>::getClassName;
+
+      /** \brief Constructor. */
+      SurfaceReconstruction () : check_tree_ (true) {}
+
+      /** \brief Destructor. */
+      virtual ~SurfaceReconstruction () {}
+
+       /** \brief Base method for surface reconstruction for all points given in
+        * <setInputCloud (), setIndices ()> 
+        * \param[out] output the resultant reconstructed surface model
+        */
+      virtual void 
+      reconstruct (pcl::PolygonMesh &output);
+
+      /** \brief Base method for surface reconstruction for all points given in
+        * <setInputCloud (), setIndices ()> 
+        * \param[out] points the resultant points lying on the new surface
+        * \param[out] polygons the resultant polygons, as a set of
+        * vertices. The Vertices structure contains an array of point indices.
+        */
+      virtual void 
+      reconstruct (pcl::PointCloud<PointInT> &points,
+                   std::vector<pcl::Vertices> &polygons);
+
+    protected:
       /** \brief A flag specifying whether or not the derived reconstruction
         * algorithm needs the search object \a tree.*/
       bool check_tree_;
@@ -131,10 +162,6 @@ namespace pcl
       virtual void 
       performReconstruction (pcl::PointCloud<PointInT> &points, 
                              std::vector<pcl::Vertices> &polygons) = 0;
-
-      /** \brief Abstract class get name method. */
-      virtual std::string 
-      getClassName () const { return (""); }
   };
 
   /** \brief MeshConstruction represents a base surface reconstruction
@@ -150,20 +177,18 @@ namespace pcl
     * \ingroup surface
     */
   template <typename PointInT>
-  class MeshConstruction: public PCLBase<PointInT>
+  class MeshConstruction: public PCLSurfaceBase<PointInT>
   {
-    protected:
-      using PCLBase<PointInT>::input_;
-      using PCLBase<PointInT>::indices_;
-      using PCLBase<PointInT>::initCompute;
-      using PCLBase<PointInT>::deinitCompute;
-
     public:
-      typedef typename pcl::search::Search<PointInT> KdTree;
-      typedef typename pcl::search::Search<PointInT>::Ptr KdTreePtr;
+      using PCLSurfaceBase<PointInT>::input_;
+      using PCLSurfaceBase<PointInT>::indices_;
+      using PCLSurfaceBase<PointInT>::initCompute;
+      using PCLSurfaceBase<PointInT>::deinitCompute;
+      using PCLSurfaceBase<PointInT>::tree_;
+      using PCLSurfaceBase<PointInT>::getClassName;
 
       /** \brief Constructor. */
-      MeshConstruction () : tree_ (), check_tree_ (true) {}
+      MeshConstruction () : check_tree_ (true) {}
 
       /** \brief Destructor. */
       virtual ~MeshConstruction () {}
@@ -177,7 +202,7 @@ namespace pcl
         * compatibility only!
         *
         */
-      void 
+      virtual void 
       reconstruct (pcl::PolygonMesh &output);
 
       /** \brief Base method for mesh construction for all points given in
@@ -185,26 +210,10 @@ namespace pcl
         * \param[out] polygons the resultant polygons, as a set of
         * vertices. The Vertices structure contains an array of point indices.
         */
-      void 
+      virtual void 
       reconstruct (std::vector<pcl::Vertices> &polygons);
 
-      /** \brief Provide an optional pointer to the search object.
-        * \param[in] tree a pointer to the spatial search object.
-        */
-      inline void
-      setSearchMethod (const KdTreePtr &tree)
-      {
-        tree_ = tree;
-      }
-
-      /** \brief Get a pointer to the search method used. */
-      inline KdTreePtr 
-      getSearchMethod () { return (tree_); }
-
     protected:
-      /** \brief A pointer to the spatial search object. */
-      KdTreePtr tree_;
-
       /** \brief A flag specifying whether or not the derived reconstruction
         * algorithm needs the search object \a tree.*/
       bool check_tree_;
@@ -220,10 +229,6 @@ namespace pcl
         */
       virtual void 
       performReconstruction (std::vector<pcl::Vertices> &polygons) = 0;
-
-      /** \brief Abstract class get name method. */
-      virtual std::string 
-      getClassName () const { return (""); }
   };
 }
 
