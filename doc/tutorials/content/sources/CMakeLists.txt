@@ -47,6 +47,7 @@ foreach(subdir
           voxel_grid
           # Additional/Complex tutorials presented at PCL events
           iros2011
+          iccv2011
        )
 
       add_subdirectory(${subdir})
