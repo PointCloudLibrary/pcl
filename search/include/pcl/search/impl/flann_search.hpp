@@ -48,7 +48,7 @@ template <typename PointT>
 typename pcl::search::FlannSearch<PointT>::IndexPtr
 pcl::search::FlannSearch<PointT>::KdTreeIndexCreator::createIndex (MatrixConstPtr data)
 {
-  return (IndexPtr (new flann::KDTreeSingleIndex<flann::L2<float> > (*data,flann::KDTreeSingleIndexParams (15))));
+  return (IndexPtr (new flann::KDTreeSingleIndex<flann::L2<float> > (*data,flann::KDTreeSingleIndexParams (max_leaf_size_))));
 }
 
 
@@ -99,9 +99,9 @@ pcl::search::FlannSearch<PointT>::nearestKSearch (const PointT &point, int k, st
 
   flann::SearchParams p;
   p.eps = eps_;
-  if (indices.size()!=k)
+  if (indices.size() != (unsigned int) k)
     indices.resize (k,-1);
-  if (dists.size()!=k)
+  if (dists.size() != (unsigned int) k)
     dists.resize (k);
   flann::Matrix<int> i (&indices[0],1,k);
   flann::Matrix<float> d (&dists[0],1,k);
@@ -317,7 +317,7 @@ pcl::search::FlannSearch<PointT>::convertInputToFlannMatrix ()
 
   if (!indices_ || indices_->empty ())
   {
-    /// TODO: implement "no NaN check" option that just re-uses the cloud data in the flann matrix
+    // TODO: implement "no NaN check" option that just re-uses the cloud data in the flann matrix
     for (int i = 0; i < original_no_of_points; ++i)
     {
       const PointT& point = (*input_)[i];

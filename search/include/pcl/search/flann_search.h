@@ -90,16 +90,38 @@ namespace pcl
         typedef boost::shared_ptr<FlannSearch<PointT> > Ptr;
         typedef boost::shared_ptr<const FlannSearch<PointT> > ConstPtr;
 
+        /** \brief Helper class that creates a FLANN index from a given FLANN matrix. To
+          * use a FLANN index type with FlannSearch, implement this interface and
+          * pass an object of the new type to the FlannSearch constructor.
+          * See the implementation of KdTreeIndexCreator for an example.
+          */
         class FlannIndexCreator
         {
           public:
+          /** \brief Create a FLANN Index from the input data.
+            * \param[in] data The FLANN matrix containing the input.
+            * \return The FLANN index.
+            */
             virtual IndexPtr createIndex (MatrixConstPtr data)=0;
         };
 
+        /** \brief Creates a FLANN KdTreeSingleIndex from the given input data.
+          */
         class KdTreeIndexCreator: public FlannIndexCreator
         {
           public:
+          /** \param[in] max_leaf_size All FLANN kd trees created by this class will have
+            * a maximum of max_leaf_size points per leaf node. Higher values make index creation
+            * cheaper, but search more costly (and the other way around).
+            */
+            KdTreeIndexCreator (unsigned int max_leaf_size=15) : max_leaf_size_ (max_leaf_size){}
+          /** \brief Create a FLANN Index from the input data.
+            * \param[in] data The FLANN matrix containing the input.
+            * \return The FLANN index.
+            */
             virtual IndexPtr createIndex (MatrixConstPtr data);
+          private:
+            unsigned int max_leaf_size_;
         };
 
         FlannSearch (FlannIndexCreator* creator = new KdTreeIndexCreator());
@@ -192,7 +214,7 @@ namespace pcl
         setPointRepresentation (const PointRepresentationConstPtr &point_representation)
         {
           point_representation_ = point_representation;
-          setInputCloud (input_, indices_);  // Makes sense in derived classes to reinitialize the tree
+          setInputCloud (input_, indices_);  // re-create the tree, since point_represenation might change things such as the scaling of the point clouds.
         }
 
         /** \brief Get a pointer to the point representation used when converting points into k-D vectors. */
@@ -204,11 +226,24 @@ namespace pcl
 
       protected:
 
+        /** \brief converts the input data to a format usable by FLANN
+          */
         void convertInputToFlannMatrix();
 
+        /** The FLANN index.
+          */
         IndexPtr index_;
+
+        /** The index creator, used to (re-) create the index when the search data is passed.
+          */
         FlannIndexCreator *creator_;
+
+        /** Input data in FLANN format.
+          */
         MatrixPtr input_flann_;
+
+        /** Epsilon for approximate NN search.
+          */
         float eps_;
         bool input_copied_for_flann_;
 
