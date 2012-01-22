@@ -13,7 +13,7 @@ foreach(subdir
           convex_hull_2d
           cylinder_segmentation
           extract_indices
-          feature_evaluation
+          #feature_evaluation
           greedy_projection
           iterative_closest_point
           kdtree_search
@@ -45,6 +45,8 @@ foreach(subdir
           template_alignment
           vfh_recognition
           voxel_grid
+          # Additional/Complex tutorials presented at PCL events
+          iros2011
        )
 
       add_subdirectory(${subdir})
