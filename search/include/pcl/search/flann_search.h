@@ -42,12 +42,13 @@
 #include <pcl/search/search.h>
 #include <pcl/common/time.h>
 #include <pcl/point_representation.h>
-#include <flann/util/matrix.h>
+//#include <flann/util/matrix.h>
 
 namespace flann
 {
   template<typename T> class NNIndex;
   template<typename T> class L2;
+  template<typename T> class Matrix;
 }
 
 namespace pcl
@@ -74,11 +75,16 @@ namespace pcl
       typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
       typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
       typedef flann::NNIndex< flann::L2<float> > Index;
-      typedef boost::shared_ptr<flann::NNIndex< flann::L2<float> > > IndexPtr;
+      typedef boost::shared_ptr<flann::NNIndex <flann::L2<float> > > IndexPtr;
+      typedef boost::shared_ptr<flann::Matrix <float> > MatrixPtr;
+      typedef boost::shared_ptr<const flann::Matrix <float> > MatrixConstPtr;
 
       typedef pcl::PointRepresentation<PointT> PointRepresentation;
       //typedef boost::shared_ptr<PointRepresentation> PointRepresentationPtr;
       typedef boost::shared_ptr<const PointRepresentation> PointRepresentationConstPtr;
+
+      using Search<PointT>::input_;
+      using Search<PointT>::indices_;
 
       public:
         typedef boost::shared_ptr<FlannSearch<PointT> > Ptr;
@@ -87,13 +93,13 @@ namespace pcl
         class FlannIndexCreator
         {
           public:
-            virtual IndexPtr createIndex (const flann::Matrix<float>& data)=0;
+            virtual IndexPtr createIndex (MatrixConstPtr data)=0;
         };
 
         class KdTreeIndexCreator: public FlannIndexCreator
         {
           public:
-            virtual IndexPtr createIndex (const flann::Matrix<float>& data);
+            virtual IndexPtr createIndex (MatrixConstPtr data);
         };
 
         FlannSearch (FlannIndexCreator* creator = new KdTreeIndexCreator());
@@ -138,7 +144,7 @@ namespace pcl
           * \return number of neighbors found
           */
         int
-        nearestKSearch (const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances);
+        nearestKSearch (const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const;
 
 
         /** \brief Search for the k-nearest neighbors for the given query point.
@@ -150,7 +156,7 @@ namespace pcl
           */
         virtual void
         nearestKSearch (const PointCloud& cloud, const std::vector<int>& indices, int k, 
-                        std::vector< std::vector<int> >& k_indices, std::vector< std::vector<float> >& k_sqr_distances);
+                        std::vector< std::vector<int> >& k_indices, std::vector< std::vector<float> >& k_sqr_distances) const;
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius.
           * \param[in] point the given query point
@@ -177,7 +183,7 @@ namespace pcl
           */
         virtual void
         radiusSearch (const PointCloud& cloud, const std::vector<int>& indices, double radius, std::vector< std::vector<int> >& k_indices,
-                std::vector< std::vector<float> >& k_sqr_distances, int max_nn=-1);
+                std::vector< std::vector<float> >& k_sqr_distances, unsigned int max_nn=0) const;
 
         /** \brief Provide a pointer to the point representation to use to convert points into k-D vectors.
           * \param[in] point_representation the const boost shared pointer to a PointRepresentation
@@ -202,7 +208,7 @@ namespace pcl
 
         IndexPtr index_;
         FlannIndexCreator *creator_;
-        flann::Matrix<float> input_flann_;
+        MatrixPtr input_flann_;
         float eps_;
         bool input_copied_for_flann_;
 

@@ -46,9 +46,9 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 typename pcl::search::FlannSearch<PointT>::IndexPtr
-pcl::search::FlannSearch<PointT>::KdTreeIndexCreator::createIndex (const flann::Matrix<float> &data)
+pcl::search::FlannSearch<PointT>::KdTreeIndexCreator::createIndex (MatrixConstPtr data)
 {
-  return (IndexPtr (new flann::KDTreeSingleIndex<flann::L2<float> > (data,flann::KDTreeSingleIndexParams (15))));
+  return (IndexPtr (new flann::KDTreeSingleIndex<flann::L2<float> > (*data,flann::KDTreeSingleIndexParams (15))));
 }
 
 
@@ -67,7 +67,7 @@ pcl::search::FlannSearch<PointT>::~FlannSearch()
 {
   delete creator_;
   if (input_copied_for_flann_)
-    delete [] input_flann_.ptr();
+    delete [] input_flann_->ptr();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,8 +99,10 @@ pcl::search::FlannSearch<PointT>::nearestKSearch (const PointT &point, int k, st
 
   flann::SearchParams p;
   p.eps = eps_;
-  indices.resize (k,-1);
-  dists.resize (k);
+  if (indices.size()!=k)
+    indices.resize (k,-1);
+  if (dists.size()!=k)
+    dists.resize (k);
   flann::Matrix<int> i (&indices[0],1,k);
   flann::Matrix<float> d (&dists[0],1,k);
   int result = index_->knnSearch (m,i,d,k, p);
@@ -190,7 +192,7 @@ pcl::search::FlannSearch<PointT>::nearestKSearch (
 template <typename PointT> int
 pcl::search::FlannSearch<PointT>::radiusSearch (const PointT& point, double radius,
     std::vector<int> &indices, std::vector<float> &distances,
-    int max_nn) const
+    unsigned int max_nn) const
 {
   bool can_cast = point_representation_->isTrivial ();
 
@@ -206,14 +208,14 @@ pcl::search::FlannSearch<PointT>::radiusSearch (const PointT& point, double radi
 
   flann::SearchParams p;
   p.eps = eps_;
-  p.max_neighbors = max_nn;
+  p.max_neighbors = max_nn != 0 ? max_nn : -1;
   std::vector<std::vector<int> > i (1);
   std::vector<std::vector<float> > d (1);
   int result = index_->radiusSearch (m,i,d,radius*radius, p);
 
   delete [] data;
-  indices=i [0];
-  distances=d [0];
+  indices = i [0];
+  distances = d [0];
 
   if (!identity_mapping_)
   {
@@ -230,7 +232,7 @@ pcl::search::FlannSearch<PointT>::radiusSearch (const PointT& point, double radi
 template <typename PointT> void
 pcl::search::FlannSearch<PointT>::radiusSearch (
     const PointCloud& cloud, const std::vector<int>& indices, double radius, std::vector< std::vector<int> >& k_indices,
-    std::vector< std::vector<float> >& k_sqr_distances, int max_nn) const
+    std::vector< std::vector<float> >& k_sqr_distances, unsigned int max_nn) const
 {
   if (indices.empty ()) // full point cloud + trivial copy operation = no need to do any conversion/copying to the flann matrix!
   {
@@ -255,7 +257,8 @@ pcl::search::FlannSearch<PointT>::radiusSearch (
 
     flann::SearchParams p;
     p.eps = eps_;
-    p.max_neighbors = max_nn;
+    // here: max_nn==0: take all neighbors. flann: max_nn==0: return no neighbors, only count them. max_nn==-1: return all neighbors
+    p.max_neighbors = max_nn != 0 ? max_nn : -1;
     index_->radiusSearch (m,k_indices,k_sqr_distances,radius*radius, p);
 
     delete [] data;
@@ -275,7 +278,8 @@ pcl::search::FlannSearch<PointT>::radiusSearch (
 
     flann::SearchParams p;
     p.eps = eps_;
-    p.max_neighbors = max_nn;
+    // here: max_nn==0: take all neighbors. flann: max_nn==0: return no neighbors, only count them. max_nn==-1: return all neighbors
+    p.max_neighbors = max_nn != 0 ? max_nn : -1;
     index_->radiusSearch (m, k_indices, k_sqr_distances, radius * radius, p);
 
     delete[] data;
@@ -300,14 +304,14 @@ pcl::search::FlannSearch<PointT>::convertInputToFlannMatrix ()
   int original_no_of_points = indices_ && !indices_->empty () ? indices_->size () : input_->size ();
 
   if (input_copied_for_flann_)
-    delete input_flann_.ptr();
+    delete input_flann_->ptr();
   input_copied_for_flann_ = true;
   identity_mapping_ = true;
 
-  input_flann_ = flann::Matrix<float> (new float[original_no_of_points*point_representation_->getNumberOfDimensions ()], original_no_of_points, point_representation_->getNumberOfDimensions ());
+  input_flann_ = MatrixPtr (new flann::Matrix<float> (new float[original_no_of_points*point_representation_->getNumberOfDimensions ()], original_no_of_points, point_representation_->getNumberOfDimensions ()));
 
   //cloud_ = (float*)malloc (original_no_of_points * dim_ * sizeof (float));
-  float* cloud_ptr = input_flann_.ptr();
+  float* cloud_ptr = input_flann_->ptr();
   //index_mapping_.reserve(original_no_of_points);
   //identity_mapping_ = true;
 
@@ -350,7 +354,7 @@ pcl::search::FlannSearch<PointT>::convertInputToFlannMatrix ()
       cloud_ptr += dim_;
     }
   }
-  input_flann_.rows = index_mapping_.size ();
+  input_flann_->rows = index_mapping_.size ();
 }
 
 #define PCL_INSTANTIATE_FlannSearch(T) template class PCL_EXPORTS pcl::search::FlannSearch<T>;
