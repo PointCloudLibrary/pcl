@@ -147,7 +147,4 @@ if(build)
        add_subdirectory(test)
     endif(BUILD_TESTS)
 
-    if(BUILD_EXAMPLES)
-       add_subdirectory(examples)
-    endif(BUILD_EXAMPLES)
 endif(build)
