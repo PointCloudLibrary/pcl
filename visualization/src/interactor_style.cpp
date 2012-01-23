@@ -278,10 +278,10 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
   // ---[ Check the rest of the key codes
 
   // Switch between point color/geometry handlers
-  if (Interactor->GetKeyCode () >= '0' && Interactor->GetKeyCode () <= '9')
+  if (Interactor->GetKeySym () && Interactor->GetKeySym ()[0]  >= '0' && Interactor->GetKeySym ()[0] <= '9')
   {
     CloudActorMap::iterator it;
-    int index = Interactor->GetKeyCode () - '0' - 1;
+    int index = Interactor->GetKeySym ()[0] - '0' - 1;
     if (index == -1) index = 9;
 
     // Add 10 more for CTRL+0..9 keys
