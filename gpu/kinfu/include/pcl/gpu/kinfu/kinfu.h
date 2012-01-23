@@ -40,6 +40,10 @@
 
 #include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_array.hpp>
+#include <pcl/gpu/kinfu/pixel_rgb.h>
+#include <pcl/gpu/kinfu/tsdf_volume.h>
+#include <pcl/gpu/kinfu/color_volume.h>
+#include <pcl/gpu/kinfu/raycaster.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <Eigen/Core>
@@ -56,10 +60,8 @@ namespace pcl
     {
       public:
         /** \brief Pixel type for rendered image. */
-        struct PixelRGB
-        {
-          unsigned char r, g, b;
-        };
+        typedef pcl::gpu::PixelRGB PixelRGB;
+
         typedef DeviceArray2D<PixelRGB> View;
         typedef DeviceArray2D<unsigned short> DepthMap;
 
@@ -86,19 +88,7 @@ namespace pcl
           */
         void
         setInitalCameraPose (const Eigen::Affine3f& pose);
-
-        /** \brief Sets Tsdf volume size for each dimention
-          * \param[in] volume_size size of tsdf volume
-          */
-        void
-        setVolumeSize (const Eigen::Vector3f& volume_size);
-
-        /** \brief Sets Tsdf trancation distance. Must be greater than 2 * volume cell size
-          * \param[in] distance TSDF trancation distance 
-          */
-        void
-        setTsdfTrancationDistance (float distance);
-
+                        
 		/** \brief Sets truncation threshold for depth image for ICP step only! This helps 
 		  *  to filter measurements that are outside tsdf volume. Pass zero to disable the truncation.
           * \param[in] max_icp_distance_ Maximal distance, higher values are reset to zero (means no measurement). 
@@ -112,16 +102,19 @@ namespace pcl
           */
         void
         setIcpCorespFilteringParams (float distThreshold, float sineOfAngle);
-
-        /** \brief Performs initialization for color integration. Must be called before calling color integration. 
-          * \param[in] max_weight max weighe for color integration. Passing -1 does nothing.
+        
+        /** \brief Sets integration threshold. TSDF volume is integrated iff a camera movement metric excess the threshold value. 
+          * The metric represents the following: M = (rodrigues(Rotation).norm() + alpha*translation.norm())/2, where alpha = 1.f (hardcoded constant)
+          * \param[in] threshold a value to compare with the metric. Suitable values are ~0.001          
           */
         void
-        initColorIntegration(int max_weight = -1);
+        setCameraMovementThreshold(float threshold = 0.001f);
 
-        /** \brief Returns volume size */
-        Eigen::Vector3f
-        getVolumeSize () const;
+        /** \brief Performs initialization for color integration. Must be called before calling color integration. 
+          * \param[in] max_weight max weighe for color integration. -1 means default weight.
+          */
+        void
+        initColorIntegration(int max_weight = -1);        
 
         /** \brief Returns cols passed to ctor */
         int
@@ -151,26 +144,24 @@ namespace pcl
         Eigen::Affine3f
         getCameraPose (int time = -1) const;
 
+        /** \brief Returns TSDF volume storage */
+        const TsdfVolume& volume() const;
+
+        /** \brief Returns TSDF volume storage */
+        TsdfVolume& volume();
+
+        /** \brief Returns color volume storage */
+        const ColorVolume& colorVolume() const;
+
+        /** \brief Returns color volume storage */
+        ColorVolume& colorVolume();
+        
         /** \brief Renders 3D scene to display to human
           * \param[out] view output array with image
           */
         void
         getImage (View& view) const;
-
-        /** \brief Renders 3D scene to display to human
-          * \param[out] view output array with image
-          * \param[in] light_source_pose Pose of light source for computing illumination
-          */
-        void
-        getImage (View& view, const Eigen::Vector3f& light_source_pose) const;
-
-        /** \brief Renders 3D scene to display for given camera pose.
-          * \param[out] view output array with image
-          * \param[in] camera_pose Pose of camera
-          */
-        void
-        getImageFromPose(View& view, const Eigen::Affine3f& camera_pose) const;
-
+        
         /** \brief Returns point cloud abserved from last camera pose
           * \param[out] cloud output array for points
           */
@@ -183,61 +174,10 @@ namespace pcl
         void
         getLastFrameNormals (DeviceArray2D<NormalType>& normals) const;
 
-        /** \brief Generates cloud on CPU
-          * \param[out] cloud output array for cloud
-          * \param[in] connected26 If false point cloud is extracted using 6 neighbor, otherwise 26.
-          */
-        void
-        getCloudFromVolumeHost (PointCloud<PointType>& cloud, bool connected26 = false);
-
-        /** \brief Generates cloud on GPU in connected6 mode only
-          * \param[out] cloud_buffer buffer to store point cloud
-          * \return DeviceArray with disabled reference counting that points to filled part of cloud_buffer.
-          */
-        DeviceArray<PointType>
-        getCloudFromVolume (DeviceArray<PointType>& cloud_buffer);
-
-        /** \brief Computes normals as gradient of tsdf for given points
-          * \param[in] cloud Points for which normals are to be computed.
-          * \param[out] normals Buffer for normals
-          */
-        void
-        getNormalsFromVolume (const DeviceArray<PointType>& cloud, DeviceArray<PointType>& normals) const;
-
-        /** \brief Computes normals as gradient of tsdf for given points
-          * \param[in] cloud Points for which normals are to be computed.
-          * \param[out] normals Buffer for normals
-          */
-        void
-        getNormalsFromVolume (const DeviceArray<PointType>& cloud, DeviceArray<NormalType>& normals) const;
-
-        /** \brief Computes colors from color volume
-          * \param[in] cloud Points for which colors are to be computed.
-          * \param[out] colors output array for colors
-          */
-        void
-        getColorsFromVolume (const DeviceArray<PointType>& cloud, DeviceArray<RGB>& colors) const;
-
-        /** \brief Downloads TSDF volume from GPU memory.           
-          * \param[out] volume Array with tsdf values. Volume size is 512x512x512, so for voxel (x,y,z) tsdf value can be retrieved as volume[512*512*z + 512*y + x];
-          */
-        void
-        getTsdfVolume (std::vector<float>& volume) const;
-
-        /** \brief Downloads TSDF volume and according voxel weights from GPU memory
-          * \param[out] volume Array with tsdf values. Volume size is 512x512x512, so for voxel (x,y,z) tsdf value can be retrieved as volume[512*512*z + 512*y + x];
-          * \param[out] weights Array with tsdf voxel weights. Same size and access index as for volume. A weight of 0 indicates the voxel was never used.
-          */
-        void
-        getTsdfVolumeAndWeighs (std::vector<float>& volume, std::vector<short>& weights) const;        
       private:
         
-        enum
-        {
-          /** \brief Number of pyramid levels */
-          LEVELS = 3,            
-          DEFAULT_VOLUME_CLOUD_BUFFER_SIZE = 10 * 1000 * 1000,
-        };
+        /** \brief Number of pyramid levels */
+        enum { LEVELS = 3 };
 
         /** \brief ICP Correspondences  map type */
         typedef DeviceArray2D<int> CorespMap;
@@ -261,9 +201,10 @@ namespace pcl
         /** \brief Intrinsic parameters of depth camera. */
         float fx_, fy_, cx_, cy_;
 
-        /** \brief Size of volume. */
-        Vector3f volume_size_;
-
+        /** \brief Tsdf volume container. */
+        TsdfVolume::Ptr tsdf_volume_;
+        ColorVolume::Ptr color_volume_;
+                
         /** \brief Initial camera rotation in volume coo space. */
         Matrix3frm init_Rcam_;
 
@@ -276,9 +217,7 @@ namespace pcl
         float  distThres_;
         /** \brief angle threshold in correspondences filtering. Represents max sine of angle between normals. */
         float angleThres_;
-        /** \brief TSDF truncation  distance. Must be greater than tsdf volume cell size */
-        float tranc_dist_;
-
+        
         /** \brief Array of dpeth pyramids. */
         std::vector<DepthMap> depths_curr_;
         /** \brief Array of pyramids of vertex maps for current frame in global coordinate space. */
@@ -290,10 +229,7 @@ namespace pcl
         std::vector<MapArr> vmaps_g_prev_;
         /** \brief Array of pyramids of normal maps for previous frame in global coordinate space. */
         std::vector<MapArr> nmaps_g_prev_;
-
-        /** \brief Temp buffers with vertex and normals maps for raycasting from user given pose. */
-        MapArr temp_vmap, temp_nmap;
-
+                
         /** \brief Array of pyramids of vertex maps for current frame in current coordinate space. */
         std::vector<MapArr> vmaps_curr_;
         /** \brief Array of pyramids of vertex maps for current frame in current coordinate space. */
@@ -301,18 +237,10 @@ namespace pcl
 
         /** \brief Array of buffers with ICP correspondences for each pyramid level. */
         std::vector<CorespMap> coresps_;
-
-        /** \brief TSDF volume storage */
-        DeviceArray2D<int> volume_;
+        
         /** \brief Buffer for storing scaled depth image */
         DeviceArray2D<float> depthRawScaled_;
-
-        /** \brief COLORS volume storage */
-        DeviceArray2D<int> colors_volume_;
-
-        /** \brief maximal weight for color integration. Zero means not averaging, one means average with previous value, etc. */
-        int max_weight_;
-
+        
         /** \brief Temporary buffer for ICP */
         DeviceArray2D<float> gbuf_;
         /** \brief Buffer to store MLS matrix. */
@@ -320,9 +248,13 @@ namespace pcl
 
         /** \brief Array of camera rotation matrices for each moment of time. */
         std::vector<Matrix3frm> rmats_;
+        
         /** \brief Array of camera translations for each moment of time. */
         std::vector<Vector3f>   tvecs_;
 
+        /** \brief Camera movement threshold. TSDF is integrated iff a camera movement metric exeeces some value. */
+        float integration_metric_threshold_;
+        
         /** \brief Allocates all GPU internal buffers.
           * \param[in] rows_arg
           * \param[in] cols_arg          
@@ -333,57 +265,7 @@ namespace pcl
         /** \brief Performs the tracker reset to initial  state. It's used if case of camera tracking fail.
           */
         void
-        reset ();
-
-        friend class KinfuMarchingCubes;
-    };        
-
-
-    /** \brief KinfuMarchingCubes implements MarchingCubes functionality for TSDF volume on GPU
-      * \author Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
-      */
-    class PCL_EXPORTS KinfuMarchingCubes
-    {
-    public:
-
-      /** \brief Point type. */
-      typedef KinfuTracker::PointType PointType;
-
-      /** \brief Smart pointer. */
-      typedef boost::shared_ptr<KinfuMarchingCubes> Ptr;
-      
-      /** \brief Default constructor */
-      KinfuMarchingCubes();
-
-      /** \brief Destructor */
-      ~KinfuMarchingCubes();
-
-      /** \brief Runs marching cubes triangulation.
-          * \param[in] kinfu KinFu tracker class to take tsdf volume from
-          * \param[in] triangles_buffer Buffer for triangles. Its size determines max extracted triangles. If empty, it will be allocated with default size will be used.          
-          * \return Array with triangles. Each 3 consequent poits belond to a single triangle. The returned array points to 'triangles_buffer' data.
-          */
-      DeviceArray<PointType> operator()(const KinfuTracker& kinfu, DeviceArray<PointType>& triangles_buffer);
-
-    private:
-
-      /** \brief Default size for triangles buffer */
-      enum
-      {                      
-        DEFAULT_TRIANGLES_BUFFER_SIZE = 2 * 1000 * 1000 * 3       
-      };
-
-      /** \brief Edge table for marching cubes  */
-      DeviceArray<int> edgeTable_;
-
-      /** \brief Number of vertextes table for marching cubes  */
-      DeviceArray<int> numVertsTable_;
-
-      /** \brief Triangles table for marching cubes  */
-      DeviceArray<int> triTable_;     
-
-      /** \brief Temporary buffer used by marching cubes (first row stores occuped voxes id, second number of vetexes, third poits offsets */
-      DeviceArray2D<int> occupied_voxels_buffer_;
+        reset ();       
     };
   }
 };

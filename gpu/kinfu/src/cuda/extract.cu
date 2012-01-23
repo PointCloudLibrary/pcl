@@ -67,7 +67,7 @@ namespace pcl
 
     struct FullScan6
     {
-      PtrStep<volume_elem_type> volume;
+      PtrStep<short2> volume;
       float3 cell_size;
 
       mutable PtrSz<PointType> output;
@@ -259,7 +259,7 @@ namespace pcl
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 size_t
-pcl::device::extractCloud (const PtrStep<volume_elem_type>& volume, const float3& volume_size, 
+pcl::device::extractCloud (const PtrStep<short2>& volume, const float3& volume_size, 
                            PtrSz<PointType> output)
 {
   FullScan6 fs;
@@ -293,7 +293,7 @@ namespace pcl
     struct ExtractNormals
     {
       float3 cell_size;
-      PtrStep<volume_elem_type> volume;
+      PtrStep<short2> volume;
       PtrSz<PointType> points;
 
       mutable NormalType* output;
@@ -419,7 +419,7 @@ namespace pcl
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename NormalType> void
-pcl::device::extractNormals (const PtrStep<volume_elem_type>& volume, const float3& volume_size, 
+pcl::device::extractNormals (const PtrStep<short2>& volume, const float3& volume_size, 
                              const PtrSz<PointType>& points, NormalType* output)
 {
   ExtractNormals<NormalType> en;
@@ -440,6 +440,6 @@ pcl::device::extractNormals (const PtrStep<volume_elem_type>& volume, const floa
 
 using namespace pcl::device;
 
-template void pcl::device::extractNormals<PointType>(const PtrStep<volume_elem_type>&volume, const float3 &volume_size, const PtrSz<PointType>&input, PointType * output);
-template void pcl::device::extractNormals<float8>(const PtrStep<volume_elem_type>&volume, const float3 &volume_size, const PtrSz<PointType>&input, float8 * output);
+template void pcl::device::extractNormals<PointType>(const PtrStep<short2>&volume, const float3 &volume_size, const PtrSz<PointType>&input, PointType * output);
+template void pcl::device::extractNormals<float8>(const PtrStep<short2>&volume, const float3 &volume_size, const PtrSz<PointType>&input, float8 * output);
 

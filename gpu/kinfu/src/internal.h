@@ -214,18 +214,13 @@ namespace pcl
                       DeviceArray2D<float>& gbuf, DeviceArray<float>& mbuf, float* matrixA_host, float* vectorB_host);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // TSDF volume functions        
-
-    //switch between two tsdf volume formats
-    typedef short2 volume_elem_type;
-    //typedef ushort2 volume_elem_type;
+    // TSDF volume functions            
 
     /** \brief Perform tsdf volume initialization
       *  \param[out] array volume to be initialized
       */
-    template<typename T> 
-    void
-    initVolume(PtrStep<T> array);
+    PCL_EXPORTS void
+    initVolume(PtrStep<short2> array);
 
     //first version
     /** \brief Performs Tsfg volume uptation (extra obsolete now)
@@ -234,7 +229,7 @@ namespace pcl
       * \param[in] volume_size size of volume in mm
       * \param[in] Rcurr_inv inverse rotation for current camera pose
       * \param[in] tcurr translation for current camera pose
-      * \param[in] tranc_dist tsdf trancation distance
+      * \param[in] tranc_dist tsdf truncation distance
       * \param[in] volume tsdf volume to be updated
       */
     void 
@@ -248,47 +243,13 @@ namespace pcl
       * \param[in] volume_size size of volume in mm
       * \param[in] Rcurr_inv inverse rotation for current camera pose
       * \param[in] tcurr translation for current camera pose
-      * \param[in] tranc_dist tsdf trancation distance
+      * \param[in] tranc_dist tsdf truncation distance
       * \param[in] volume tsdf volume to be updated
       * \param[out] depthRawScaled Buffer for scaled depth along ray
       */
     PCL_EXPORTS void 
     integrateTsdfVolume (const PtrStepSz<ushort>& depth_raw, const Intr& intr, const float3& volume_size, 
                          const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist, PtrStep<short2> volume, DeviceArray2D<float>& depthRawScaled);
-
-    //third version (half)
-    /** \brief Function that integrates volume if volume element contains: 2 bytes for half-float(tsdf) and 2 bytes for integer weight.
-      * \param[in] depth_raw Kinect depth image
-      * \param[in] intr camera intrinsics
-      * \param[in] volume_size size of volume in mm
-      * \param[in] Rcurr_inv inverse rotation for current camera pose
-      * \param[in] tcurr translation for current camera pose
-      * \param[in] tranc_dist tsdf trancation distance
-      * \param[in] volume tsdf volume to be updated
-      * \param[out] depthRawScaled buffer for scaled depth along ray
-      */
-    PCL_EXPORTS void 
-    integrateTsdfVolume (const PtrStepSz<ushort>& depth_raw, const Intr& intr, const float3& volume_size, 
-                         const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist, PtrStep<ushort2> volume, DeviceArray2D<float>& depthRawScaled);
-    
-    /** \brief Dispatcher function for fast swithing between two tsdf volume element formats
-      * \param[in] depth Kinect depth image
-      * \param[in] intr camera intrinsics
-      * \param[in] volume_size size of volume in mm
-      * \param[in] Rcurr_inv inverse rotation for current camera pose
-      * \param[in] tcurr translation for current camera pose
-      * \param[in] tranc_dist tsdf trancation distance
-      * \param[in] volume  tsdf volume to be updated
-      * \param[out] depthRawScaled buffer for scaled depth along ray
-      */
-    inline 
-    void 
-    integrateVolume (const PtrStepSz<ushort>& depth, const Intr& intr, const float3& volume_size, const Mat33& Rcurr_inv, const float3& tcurr, float tranc_dist, 
-                     DeviceArray2D<int>& volume, DeviceArray2D<float>& depthRawScaled)
-    {
-      integrateTsdfVolume (depth, intr, volume_size, Rcurr_inv, tcurr, tranc_dist, (PtrStep<volume_elem_type>) volume, depthRawScaled);
-    }
-    
     
     /** \brief Initialzied color volume
       * \param[out] color_volume color volume for initialization
@@ -318,7 +279,7 @@ namespace pcl
       * \param[in] intr camera intrinsices
       * \param[in] Rcurr current rotation
       * \param[in] tcurr current translation
-      * \param[in] tranc_dist volume trancation distance
+      * \param[in] tranc_dist volume truncation distance
       * \param[in] volume_size volume size in mm
       * \param[in] volume tsdf volume
       * \param[out] vmap output vertex map
@@ -326,7 +287,7 @@ namespace pcl
       */
     void 
     raycast (const Intr& intr, const Mat33& Rcurr, const float3& tcurr, float tranc_dist, const float3& volume_size, 
-             const PtrStep<volume_elem_type>& volume, MapArr& vmap, MapArr& nmap);
+             const PtrStep<short2>& volume, MapArr& vmap, MapArr& nmap);
 
     /** \brief Renders 3D image of the scene
       * \param[in] vmap vetex map
@@ -336,6 +297,16 @@ namespace pcl
       */
     void 
     generateImage (const MapArr& vmap, const MapArr& nmap, const LightSource& light, PtrStepSz<uchar3> dst);
+
+
+    /** \brief Renders depth image from give pose
+      * \param[in] vmap inverse camera rotation
+      * \param[in] nmap camera translation
+      * \param[in] light vertex map
+      * \param[out] dst buffer where depth is generated
+      */
+    void
+    generateDepth (const Mat33& R_inv, const float3& t, const MapArr& vmap, DepthMap& dst);
 
      /** \brief Paints 3D view with color map
       * \param[in] colors rgb color frame from OpenNI   
@@ -369,7 +340,7 @@ namespace pcl
       * \return number of point stored to passed buffer
       */ 
     PCL_EXPORTS size_t 
-    extractCloud (const PtrStep<volume_elem_type>& volume, const float3& volume_size, PtrSz<PointType> output);
+    extractCloud (const PtrStep<short2>& volume, const float3& volume_size, PtrSz<PointType> output);
 
     /** \brief Performs normals computation for given poins using tsdf volume
       * \param[in] volume tsdf volume
@@ -379,7 +350,7 @@ namespace pcl
       */ 
     template<typename NormalType> 
     void 
-    extractNormals (const PtrStep<volume_elem_type>& volume, const float3& volume_size, const PtrSz<PointType>& input, NormalType* output);
+    extractNormals (const PtrStep<short2>& volume, const float3& volume_size, const PtrSz<PointType>& input, NormalType* output);
 
     /** \brief Performs colors exctraction from color volume
       * \param[in] color_volume color volume
@@ -426,27 +397,37 @@ namespace pcl
     sync () { cudaSafeCall (cudaDeviceSynchronize ()); }
 
 
+    template<class D, class Matx> D&
+    device_cast (Matx& matx)
+    {
+      return (*reinterpret_cast<D*>(matx.data ()));
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Marching cubes implementation
 
     /** \brief Binds marching cubes tables to texture references */
-    void bindTextures(const int *edgeBuf, const int *triBuf, const int *numVertsBuf);            
+    void 
+    bindTextures(const int *edgeBuf, const int *triBuf, const int *numVertsBuf);            
     
     /** \brief Unbinds */
-    void unbindTextures();
+    void 
+    unbindTextures();
     
     /** \brief Scans tsdf volume and retrieves occuped voxes
       * \param[in] volume tsdf volume
       * \param[out] occupied_voxels buffer for occuped voxels. The function fulfills first row with voxel ids and second row with number of vertextes.
       * \return number of voxels in the buffer
       */
-    int getOccupiedVoxels(const PtrStep<volume_elem_type>& volume, DeviceArray2D<int>& occupied_voxels);
+    int
+    getOccupiedVoxels(const PtrStep<short2>& volume, DeviceArray2D<int>& occupied_voxels);
 
     /** \brief Computes total number of vertexes for all voxels and offsets of vertexes in final triangle array
       * \param[out] occupied_voxels buffer with occuped voxels. The function fulfills 3nd only with offsets      
       * \return total number of vertexes
       */
-    int computeOffsetsAndTotalVertexes(DeviceArray2D<int>& occupied_voxels);
+    int
+    computeOffsetsAndTotalVertexes(DeviceArray2D<int>& occupied_voxels);
 
     /** \brief Generates final triangle array
       * \param[in] volume tsdf volume
@@ -454,7 +435,8 @@ namespace pcl
       * \param[in] volume_size volume size in meters
       * \param[out] output triangle array            
       */
-    void generateTriangles(const PtrStep<volume_elem_type>& volume, const DeviceArray2D<int>& occupied_voxels, const float3& volume_size, DeviceArray<PointType>& output);
+    void
+    generateTriangles(const PtrStep<short2>& volume, const DeviceArray2D<int>& occupied_voxels, const float3& volume_size, DeviceArray<PointType>& output);
   }
 }
 

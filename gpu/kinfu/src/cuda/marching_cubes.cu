@@ -79,7 +79,7 @@ namespace pcl
 
     struct CubeIndexEstimator
     {
-      PtrStep<volume_elem_type> volume;
+      PtrStep<short2> volume;
 
       __device__ __forceinline__ void
       readTsdf (int x, int y, int z, float& tsdf, int& weight) const
@@ -205,7 +205,7 @@ namespace pcl
 }
 
 int
-pcl::device::getOccupiedVoxels (const PtrStep<volume_elem_type>& volume, DeviceArray2D<int>& occupied_voxels)
+pcl::device::getOccupiedVoxels (const PtrStep<short2>& volume, DeviceArray2D<int>& occupied_voxels)
 {
   OccupiedVoxels ov;
   ov.volume = volume;
@@ -365,7 +365,7 @@ namespace pcl
 
 
 void
-pcl::device::generateTriangles (const PtrStep<volume_elem_type>& volume, const DeviceArray2D<int>& occupied_voxels, const float3& volume_size, DeviceArray<PointType>& output)
+pcl::device::generateTriangles (const PtrStep<short2>& volume, const DeviceArray2D<int>& occupied_voxels, const float3& volume_size, DeviceArray<PointType>& output)
 {
   TrianglesGenerator tg;
 

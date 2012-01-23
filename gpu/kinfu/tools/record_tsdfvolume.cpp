@@ -89,7 +89,7 @@ public:
   {
     // initialize GPU
     device_volume_.create (volume_res[1] * volume_res[2], volume_res[0]); // (device::VOLUME_Y * device::VOLUME_Z, device::VOLUME_X)
-    pcl::device::initVolume<pcl::device::volume_elem_type> (device_volume_);
+    pcl::device::initVolume (device_volume_);
 
     // truncation distance
     Eigen::Vector3f voxel_size = volume_size.array() / volume_res.array().cast<float>();
@@ -160,9 +160,8 @@ DeviceVolume::createFromDepth (const pcl::device::PtrStepSz<const unsigned short
 
   // integrate depth values into volume
   float3 device_volume_size = device_cast<float3> (volume_size_);
-  device::integrateVolume (device_depth, intr, device_volume_size, device_Rcam_inv, device_tcam, trunc_dist_,
-                           device_volume_, device_depth_scaled);
-
+  device::integrateTsdfVolume (device_depth, intr, device_volume_size, device_Rcam_inv, device_tcam, trunc_dist_,
+                               device_volume_, device_depth_scaled);
 }
 
 

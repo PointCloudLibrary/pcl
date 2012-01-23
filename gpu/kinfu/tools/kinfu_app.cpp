@@ -41,6 +41,8 @@
 #include <pcl/console/parse.h>
 
 #include "pcl/gpu/kinfu/kinfu.h"
+#include "pcl/gpu/kinfu/raycaster.h"
+#include "pcl/gpu/kinfu/marching_cubes.h"
 #include "pcl/gpu/containers/initialization.hpp"
 
 #include <pcl/common/time.h>
@@ -254,7 +256,10 @@ struct ImageView
   showScene (KinfuTracker& kinfu, const PtrStepSz<const KinfuTracker::PixelRGB>& rgb24, bool registration, Eigen::Affine3f* pose_ptr = 0)
   {
     if (pose_ptr)
-        kinfu.getImageFromPose(view_device_, *pose_ptr);
+    {
+        raycaster_ptr_->run(kinfu.volume(), *pose_ptr);
+        raycaster_ptr_->generateSceneView(view_device_);
+    }
     else
       kinfu.getImage (view_device_);
 
@@ -284,9 +289,22 @@ struct ImageView
 
   void
   showDepth (const PtrStepSz<const unsigned short>& depth) { viewerDepth_.showShortImage (depth.data, depth.cols, depth.rows, 0, 5000, true); }
+  
+  void
+  showGeneratedDepth (KinfuTracker& kinfu, const Eigen::Affine3f& pose)
+  {            
+    raycaster_ptr_->run(kinfu.volume(), pose);
+    raycaster_ptr_->generateDepthImage(generated_depth_);    
+
+    int c;
+    vector<unsigned short> data;
+    generated_depth_.download(data, c);
+
+    viewerDepth_.showShortImage (&data[0], generated_depth_.cols(), generated_depth_.rows(), 0, 5000, true);
+  }
 
   void
-  toggleImagePaint ()
+  toggleImagePaint()
   {
     paint_image_ = !paint_image_;
     cout << "Paint image: " << (paint_image_ ? "On   (requires registration mode)" : "Off") << endl;
@@ -303,6 +321,10 @@ struct ImageView
   KinfuTracker::View colors_device_;
   vector<KinfuTracker::PixelRGB> view_host_;
 
+  RayCaster::Ptr raycaster_ptr_;
+
+  KinfuTracker::DepthMap generated_depth_;
+  
 #ifdef HAVE_OPENCV
   vector<cv::Mat> views_;
 #endif
@@ -343,15 +365,15 @@ struct SceneCloudView
 
     if (extraction_mode_ != GPU_Connected6)     // So use CPU
     {
-      kinfu.getCloudFromVolumeHost (*cloud_ptr_, extraction_mode_ == CPU_Connected26);
+      kinfu.volume().fetchCloudHost (*cloud_ptr_, extraction_mode_ == CPU_Connected26);
     }
     else
     {
-      DeviceArray<PointXYZ> extracted = kinfu.getCloudFromVolume (cloud_buffer_device_);             
+      DeviceArray<PointXYZ> extracted = kinfu.volume().fetchCloud (cloud_buffer_device_);             
 
       if (compute_normals_)
       {
-        kinfu.getNormalsFromVolume (extracted, normals_device_);
+        kinfu.volume().fetchNormals (extracted, normals_device_);
         pcl::gpu::mergePointNormal (extracted, normals_device_, combined_device_);
         combined_device_.download (combined_ptr_->points);
         combined_ptr_->width = (int)combined_ptr_->points.size ();
@@ -368,7 +390,7 @@ struct SceneCloudView
 
       if (integrate_colors)
       {
-        kinfu.getColorsFromVolume(extracted, point_colors_device_);
+        kinfu.colorVolume().fetchColors(extracted, point_colors_device_);
         point_colors_device_.download(point_colors_ptr_->points);
         point_colors_ptr_->width = (int)point_colors_ptr_->points.size ();
         point_colors_ptr_->height = 1;
@@ -431,9 +453,9 @@ struct SceneCloudView
     cout << "\nGetting mesh... " << flush;
 
     if (!marching_cubes_)
-      marching_cubes_ = KinfuMarchingCubes::Ptr( new KinfuMarchingCubes() );
+      marching_cubes_ = MarchingCubes::Ptr( new MarchingCubes() );
 
-    DeviceArray<PointXYZ> triangles_device = (*marching_cubes_)(kinfu, triangles_buffer_device_);    
+    DeviceArray<PointXYZ> triangles_device = marching_cubes_->run(kinfu.volume(), triangles_buffer_device_);    
     mesh_ptr_ = convertToMesh(triangles_device);
     
     cloud_viewer_.removeAllPointClouds ();
@@ -463,7 +485,7 @@ struct SceneCloudView
   DeviceArray<RGB> point_colors_device_; 
   PointCloud<RGB>::Ptr point_colors_ptr_;
 
-  KinfuMarchingCubes::Ptr marching_cubes_;
+  MarchingCubes::Ptr marching_cubes_;
   DeviceArray<PointXYZ> triangles_buffer_device_;
 
   boost::shared_ptr<pcl::PolygonMesh> mesh_ptr_;
@@ -483,7 +505,7 @@ struct KinFuApp
 
     float f = capture_.depth_focal_length_VGA;
     kinfu_.setDepthIntrinsics (f, f);
-    kinfu_.setVolumeSize (volume_size);
+    kinfu_.volume().setSize (volume_size);
 
     Eigen::Matrix3f R = Eigen::Matrix3f::Identity ();   // * AngleAxisf(-30.f/180*3.1415926, Vector3f::UnitX());
     Eigen::Vector3f t = volume_size * 0.5f - Vector3f (0, 0, volume_size (2) / 2 * 1.2f);
@@ -491,12 +513,14 @@ struct KinFuApp
     Eigen::Affine3f pose = Eigen::Translation3f (t) * Eigen::AngleAxisf (R);
 
     kinfu_.setInitalCameraPose (pose);
-    kinfu_.setTsdfTrancationDistance (0.030f/*meters*/);    
+    kinfu_.volume().setTsdfTruncDist (0.030f/*meters*/);    
     kinfu_.setIcpCorespFilteringParams (0.1f/*meters*/, sin (20.f * 3.14159254f / 180.f));
     //kinfu_.setDepthTruncationForICP(5.f/*meters*/);
+    kinfu_.setCameraMovementThreshold(0.001f);
 
     //Init KinfuApp        
     tsdf_cloud_ptr_ = pcl::PointCloud<pcl::PointXYZI>::Ptr (new pcl::PointCloud<pcl::PointXYZI>);
+    image_view_.raycaster_ptr_ = RayCaster::Ptr( new RayCaster(kinfu_.rows (), kinfu_.cols (), f, f) );
 
     scene_cloud_view_.cloud_viewer_.registerKeyboardCallback (keyboard_callback, (void*)this);
     image_view_.viewerScene_.registerKeyboardCallback (keyboard_callback, (void*)this);
@@ -581,8 +605,8 @@ struct KinFuApp
           {
             ScopeTimeT time ("tsdf volume download");
             cout << "Downloading TSDF volume from device ... " << flush;
-            kinfu_.getTsdfVolumeAndWeighs (tsdf_volume_.volumeWriteable (), tsdf_volume_.weightsWriteable ());
-            tsdf_volume_.setHeader (Eigen::Vector3i (pcl::device::VOLUME_X, pcl::device::VOLUME_Y, pcl::device::VOLUME_Z), kinfu_.getVolumeSize ());
+            kinfu_.volume().downloadTsdfAndWeighs (tsdf_volume_.volumeWriteable (), tsdf_volume_.weightsWriteable ());
+            tsdf_volume_.setHeader (Eigen::Vector3i (pcl::device::VOLUME_X, pcl::device::VOLUME_Y, pcl::device::VOLUME_Z), kinfu_.volume().getSize ());
             cout << "done [" << tsdf_volume_.size () << " voxels]" << endl << endl;
           }
           {
@@ -610,8 +634,9 @@ struct KinFuApp
 
       if (current_frame_cloud_view_)
         current_frame_cloud_view_->show (kinfu_);
-
+      
       image_view_.showDepth (depth);
+      //image_view_.showGeneratedDepth(kinfu_, kinfu_.getCameraPose());
       
       if (!independent_camera_)
         setViewerPose (scene_cloud_view_.cloud_viewer_, kinfu_.getCameraPose());
@@ -698,7 +723,7 @@ struct KinFuApp
 
     int key = e.getKeyCode ();
 
-    if (e.keyDown ())
+    if (e.keyUp ())    
       switch (key)
       {
       case 27: app->exit_ = true; break;
@@ -728,8 +753,7 @@ struct KinFuApp
 
       default:
         break;
-      }
-    ;
+      }    
   }
 };
 

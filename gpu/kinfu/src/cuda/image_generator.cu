@@ -43,7 +43,7 @@ namespace pcl
 {
   namespace device
   {
-     struct ImageGenerator
+    struct ImageGenerator
     {
       enum
       {
@@ -104,7 +104,7 @@ namespace pcl
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void
 pcl::device::generateImage (const MapArr& vmap, const MapArr& nmap, const LightSource& light, 
                             PtrStepSz<uchar3> dst)
@@ -122,6 +122,49 @@ pcl::device::generateImage (const MapArr& vmap, const MapArr& nmap, const LightS
   cudaSafeCall (cudaGetLastError ());
   cudaSafeCall (cudaDeviceSynchronize ());
 } 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+  namespace device
+  {
+    __global__ void generateDepthKernel(const float3 R_inv_row3, const float3 t, const PtrStep<float> vmap, PtrStepSz<unsigned short> depth)
+    {
+      int x = threadIdx.x + blockIdx.x * blockDim.x;
+      int y = threadIdx.y + blockIdx.y * blockDim.y;
+
+      if (x < depth.cols && y < depth.rows)
+      {
+        unsigned short result = 0;
+                
+        float3 v_g;
+        v_g.x = vmap.ptr (y)[x];        
+        if (!isnan (v_g.x))
+        {
+          v_g.y = vmap.ptr (y +     depth.rows)[x];
+          v_g.z = vmap.ptr (y + 2 * depth.rows)[x]; 
+
+          float v_z = dot(R_inv_row3, v_g - t);
+          
+          result = static_cast<unsigned short>(v_z * 1000);
+        }
+        depth.ptr(y)[x] = result;
+      }      
+    }     
+  }
+}
+
+void
+pcl::device::generateDepth (const Mat33& R_inv, const float3& t, const MapArr& vmap, DepthMap& dst)
+{
+  dim3 block(32, 8);
+  dim3 grid(divUp(dst.cols(), block.x), divUp(dst.rows(), block.y));
+  
+  generateDepthKernel<<<grid, block>>>(R_inv.data[2], t, vmap, dst);
+  cudaSafeCall (cudaGetLastError ());
+  cudaSafeCall (cudaDeviceSynchronize ());  
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
