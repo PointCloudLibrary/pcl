@@ -695,7 +695,7 @@ main (int argc, char ** argv)
   {
     case 1:
     {
-      typename pcl::Feature<pcl::PointXYZRGB, pcl::FPFHSignature33>::Ptr feature_extractor (new pcl::FPFHEstimationOMP<pcl::PointXYZRGB, pcl::Normal, pcl::FPFHSignature33>); 
+      pcl::Feature<pcl::PointXYZRGB, pcl::FPFHSignature33>::Ptr feature_extractor (new pcl::FPFHEstimationOMP<pcl::PointXYZRGB, pcl::Normal, pcl::FPFHSignature33>); 
       feature_extractor->setSearchMethod (pcl::search::Search<pcl::PointXYZRGB>::Ptr (new pcl::search::KdTree<pcl::PointXYZRGB>));
       feature_extractor->setRadiusSearch (0.05);
       ICCVTutorial<pcl::FPFHSignature33> tutorial (keypoint_detector, feature_extractor, surface_reconstruction, source, target);
