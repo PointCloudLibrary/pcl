@@ -61,7 +61,10 @@ namespace pcl
   // Members: float x, y, z, intensity; 
 
   struct PointXYZL;
-  // Members: float x, y, z, uin8_t label;
+  // Members: float x, y, z, uin32_t label;
+
+  struct Label;
+  // Members: uint32_t label;
 
   struct PointXYZRGBA;
   // Members: float x, y, z; uint32_t rgba;
@@ -70,7 +73,7 @@ namespace pcl
   // Members: float x, y, z, rgb;
 
   struct PointXYZRGBL;
-  // Members: float x, y, z, rgb, uint8_t label;
+  // Members: float x, y, z, rgb, uint32_t label;
 
   struct PointXYZHSV;
   // Members: float x, y, z, h, s, v;
@@ -228,7 +231,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZRGBL,
     (float, y, y)
     (float, z, z)
     (uint32_t, rgba, rgba)
-    (uint8_t, label, label)
+    (uint32_t, label, label)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZRGBL, pcl::_PointXYZRGBL)
 
@@ -265,7 +268,11 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXYZL,
     (float, x, x)
     (float, y, y)
     (float, z, z)
-    (uint8_t, label, label)
+    (uint32_t, label, label)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Label,
+    (uint32_t, label, label)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Normal,

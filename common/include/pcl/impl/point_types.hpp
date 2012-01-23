@@ -43,6 +43,7 @@
   (pcl::PointXYZ)               \
   (pcl::PointXYZI)              \
   (pcl::PointXYZL)              \
+  (pcl::Label)                  \
   (pcl::PointXYZRGBA)           \
   (pcl::PointXYZRGB)            \
   (pcl::PointXYZRGBL)           \
@@ -90,7 +91,8 @@
 // Define all point types with XYZ and label
 #define PCL_XYZL_POINT_TYPES  \
   (pcl::PointXYZL)            \
-  (pcl::PointXYZRGBL)
+  (pcl::PointXYZRGBL)       
+
 
 // Define all point types that include normal[3] data
 #define PCL_NORMAL_POINT_TYPES  \
@@ -255,19 +257,23 @@ namespace pcl
   struct EIGEN_ALIGN16 PointXYZL
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
-    union
-    {
-      struct
-      {
-        uint8_t label;
-      };
-      uint32_t data_l;
-    };
+    uint32_t label;
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
   inline std::ostream& operator << (std::ostream& os, const PointXYZL& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.label << ")";
+    return (os);
+  }
+  
+  struct Label
+  {
+    uint32_t label;  	
+  };
+  
+  inline std::ostream& operator << (std::ostream& os, const Label& p)
+  {
+    os << "(" << p.label << ")";
     return (os);
   }
 
@@ -359,11 +365,12 @@ namespace pcl
           uint8_t b;
           uint8_t g;
           uint8_t r;
-          uint8_t label;
+          uint8_t a;
         };
         float rgb;
       };
       uint32_t rgba;
+      uint32_t label;
     };
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
@@ -432,7 +439,7 @@ namespace pcl
     {
       label = 255;
     }
-    inline PointXYZRGBL (uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _label)
+    inline PointXYZRGBL (uint8_t _r, uint8_t _g, uint8_t _b, uint32_t _label)
     {
       r = _r;
       g = _g;
