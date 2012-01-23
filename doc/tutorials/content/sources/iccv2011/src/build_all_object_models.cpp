@@ -6,7 +6,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
-
+#define BOOST_FILESYSTEM_VERSION 2
 #include <boost/filesystem.hpp>
 namespace bf = boost::filesystem;
 
@@ -19,19 +19,19 @@ getModelsInDirectory (bf::path & dir, std::string & rel_path_so_far, std::vector
     //check if its a directory, then get models in it
     if (bf::is_directory (*itr))
     {
-      std::string so_far = rel_path_so_far + itr->path ().filename ().string() + "/";
+      std::string so_far = rel_path_so_far + itr->path ().filename () + "/";
       bf::path curr_path = itr->path ();
       getModelsInDirectory (curr_path, so_far, relative_paths);
     }
     else
     {
       std::vector<std::string> strs;
-      std::string file = itr->path ().filename ().string ();
+      std::string file = itr->path ().filename ();
       boost::split (strs, file, boost::is_any_of ("."));
       std::string extension = strs[strs.size () - 1];
 
       if((file.compare (0, 3, "raw") == 0) && extension == "pcd") {
-        std::string path = rel_path_so_far + itr->path ().filename ().string ();
+        std::string path = rel_path_so_far + itr->path ().filename ();
         relative_paths.push_back (path);
       }
     }
