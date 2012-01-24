@@ -164,8 +164,9 @@ namespace pcl
     }
   }
 
-  /** \brief NormalEstimation estimates local surface properties at each 3D point, such as surface normals and
-    * curvatures.
+  /** \brief NormalEstimation estimates local surface properties (surface normals and curvatures)at each
+    * 3D point. If PointOutT is specified as pcl::Normal, the normal is stored in the first 3 components (0-2),
+    * and the curvature is stored in component 3.
     *
     * \note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
     * \ref NormalEstimationOMP for a parallel implementation.
