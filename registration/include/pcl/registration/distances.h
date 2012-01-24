@@ -82,7 +82,7 @@ namespace pcl
       return (norm);
     }
     ///\brief pointer to huber function
-    double(*huberFunctionPtr) (const Eigen::Vector4f &p_src, const Eigen::Vector4f &p_tgt, double sigma) = &pcl::distances::huber;
+    static double(*huberFunctionPtr) (const Eigen::Vector4f &p_src, const Eigen::Vector4f &p_tgt, double sigma) = &pcl::distances::huber;
 
     /** \brief Use a Huber kernel to estimate the distance between two vectors
       * \param[in] diff the norm difference between two vectors
@@ -121,7 +121,7 @@ namespace pcl
       return ((p_src.array () - p_tgt.array ()).abs ().sum ());
     }
     ///\brief pointer to l1 function
-    double(*l1FunctionPtr) (const Eigen::Vector4f &p_src, const Eigen::Vector4f &p_tgt) = &pcl::distances::l1;
+    static double(*l1FunctionPtr) (const Eigen::Vector4f &p_src, const Eigen::Vector4f &p_tgt) = &pcl::distances::l1;
 
     /** \brief Compute the Euclidean distance between two eigen vectors.
       * \param[in] p_src the first eigen vector
@@ -133,7 +133,7 @@ namespace pcl
       return ((p_src - p_tgt).norm ());
     }
     ///\brief pointer to l2 function
-    double(*l2FunctionPtr) (const Eigen::Vector4f &p_src, const Eigen::Vector4f &p_tgt) = &pcl::distances::l2;
+    static double(*l2FunctionPtr) (const Eigen::Vector4f &p_src, const Eigen::Vector4f &p_tgt) = &pcl::distances::l2;
 
     /** \brief Compute the squared Euclidean distance between two eigen vectors.
       * \param[in] p_src the first eigen vector
@@ -145,7 +145,7 @@ namespace pcl
       return ((p_src - p_tgt).squaredNorm ());
     }
     ///\brief pointer to l2Sqr function
-    double(*l2SqrFunctionPtr) (const Eigen::Vector4f &p_src, const Eigen::Vector4f &p_tgt) = &pcl::distances::l2Sqr;
+    static double(*l2SqrFunctionPtr) (const Eigen::Vector4f &p_src, const Eigen::Vector4f &p_tgt) = &pcl::distances::l2Sqr;
   };
 }
 
