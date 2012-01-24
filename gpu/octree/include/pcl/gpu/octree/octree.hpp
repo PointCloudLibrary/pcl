@@ -64,11 +64,13 @@ namespace pcl
             typedef DeviceArray<int> Indices;    
             
             typedef DeviceArray<float> ResultSqrDists;
+            bool builded;
             
             /*  Methods */            
             void setCloud(const PointCloud& cloud_arg);
 
 			void build();
+            bool isBuild();
 
             void internalDownload();
             void radiusSearchHost(const PointType& center, float radius, std::vector<int>& out, int max_nn = INT_MAX);
