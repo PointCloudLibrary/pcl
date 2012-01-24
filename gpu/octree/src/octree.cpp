@@ -50,7 +50,7 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////// Octree Host Interface implementation ////////////////////////////////
 
-pcl::gpu::Octree::Octree() : impl(0)
+pcl::gpu::Octree::Octree() : impl(0), cloud_(NULL)
 {
     Static<sizeof(PointType) == sizeof(OctreeImpl::PointType)>::check();
 
@@ -84,6 +84,7 @@ void pcl::gpu::Octree::clear()
 void pcl::gpu::Octree::setCloud(const PointCloud& cloud_arg)
 {    
     const OctreeImpl::PointCloud& cloud = (const OctreeImpl::PointCloud&)cloud_arg;
+    cloud_ =  &cloud_arg;
     static_cast<OctreeImpl*>(impl)->setCloud(cloud);
 }
 

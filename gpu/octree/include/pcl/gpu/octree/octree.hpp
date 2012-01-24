@@ -55,6 +55,7 @@ namespace pcl
             virtual ~Octree();
 
             /* Types */
+            typedef boost::shared_ptr< ::pcl::gpu::Octree> Ptr;
 
             typedef pcl::PointXYZ PointType;
             typedef DeviceArray<PointType> PointCloud;
@@ -64,7 +65,9 @@ namespace pcl
             typedef DeviceArray<int> Indices;    
             
             typedef DeviceArray<float> ResultSqrDists;
-            bool builded;
+
+            bool                builded;
+            const PointCloud*   cloud_;
             
             /*  Methods */            
             void setCloud(const PointCloud& cloud_arg);
