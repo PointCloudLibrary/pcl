@@ -1,2 +1,2 @@
-add_executable(ScopeTime ScopeTime.cpp)
-target_link_libraries(ScopeTime pcl_common)
+add_executable(example_ScopeTime ScopeTime.cpp)
+target_link_libraries(example_ScopeTime pcl_common)

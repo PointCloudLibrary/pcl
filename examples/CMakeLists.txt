@@ -1,6 +1,6 @@
 set(SUBSYS_NAME examples)
 set(SUBSYS_DESC "PCL examples")
-set(SUBSYS_DEPS common io features)
+set(SUBSYS_DEPS common io features search kdtree octree)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})

@@ -1,2 +1,2 @@
-add_executable(NormalEstimation NormalEstimation.cpp)
-target_link_libraries(NormalEstimation pcl_common)
+add_executable(example_NormalEstimation NormalEstimation.cpp)
+target_link_libraries(example_NormalEstimation pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
