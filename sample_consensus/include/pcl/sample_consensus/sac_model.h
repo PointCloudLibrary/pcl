@@ -479,7 +479,8 @@ namespace pcl
   struct Functor
   {
     typedef _Scalar Scalar;
-    enum {
+    enum 
+    {
       InputsAtCompileTime = NX,
       ValuesAtCompileTime = NY
     };
@@ -487,13 +488,19 @@ namespace pcl
     typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,1> ValueType;
     typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,InputsAtCompileTime> JacobianType;
     
-    const int m_inputs, m_values;
     
-    Functor() : m_inputs(InputsAtCompileTime), m_values(ValuesAtCompileTime) {}
-    Functor(int inputs, int values) : m_inputs(inputs), m_values(values) {}
+    Functor () : m_inputs (InputsAtCompileTime), m_values (ValuesAtCompileTime) {}
+    Functor (int inputs, int values) : m_inputs (inputs), m_values (values) {}
   
-    int inputs() const { return m_inputs; }
-    int values() const { return m_values; }
+    /** \brief Get the number of inputs. */ 
+    int 
+    inputs () const { return (m_inputs); }
+
+    /** \brief Get the number of values. */ 
+    int
+    values () const { return (m_values); }
+
+    const int m_inputs, m_values;
   };
 }
 

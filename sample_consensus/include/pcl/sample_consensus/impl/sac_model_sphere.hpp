@@ -256,14 +256,14 @@ pcl::SampleConsensusModelSphere<PointT>::optimizeModelCoefficients (
 
   int m = inliers.size ();
 
-  Eigen::VectorXd x(n_unknowns);
+  Eigen::VectorXd x (n_unknowns);
   for(int d = 0; d < n_unknowns; d++)
     x[d] = model_coefficients[d];
 
-  OptimizationFunctor functor(n_unknowns, m, this);
-  Eigen::NumericalDiff<OptimizationFunctor> num_diff(functor);
-  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor> > lm(num_diff);
-  int info = lm.minimize(x);
+  OptimizationFunctor functor (n_unknowns, m, this);
+  Eigen::NumericalDiff<OptimizationFunctor> num_diff (functor);
+  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor> > lm (num_diff);
+  int info = lm.minimize (x);
 
   // Compute the L2 norm of the residuals
   PCL_DEBUG ("[pcl::SampleConsensusModelSphere::optimizeModelCoefficients] LM solver finished with exit code %i, having a residual norm of %g. \nInitial solution: %g %g %g %g \nFinal solution: %g %g %g %g\n",
