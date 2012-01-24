@@ -1,0 +1,2 @@
+add_executable(NormalEstimation NormalEstimation.cpp)
+target_link_libraries(NormalEstimation pcl_common)
