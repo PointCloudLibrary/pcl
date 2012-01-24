@@ -56,19 +56,25 @@ namespace pcl
 
     virtual ~WarpPointRigid () {};
 
-    virtual void setParam (const Eigen::VectorXf& p) = 0;
+    virtual void 
+    setParam (const Eigen::VectorXf& p) = 0;
 
-    void warpPoint (const PointSourceT& pnt_in, PointSourceT& pnt_out) const
+    void 
+    warpPoint (const PointSourceT& pnt_in, PointSourceT& pnt_out) const
     {
       pnt_out.getVector3fMap () = transform_matrix_.topLeftCorner<3, 3> () * pnt_in.getVector3fMap() + 
         transform_matrix_.block<3,1> (0, 3);
       pnt_out.data [3] = pnt_in.data [3];
     }
 
-    int getDimension () const {return nr_dim_;}
+    int 
+    getDimension () const {return nr_dim_;}
 
-    const Eigen::Matrix4f& getTransform () const { return transform_matrix_; }
+    const Eigen::Matrix4f& 
+    getTransform () const { return transform_matrix_; }
     
+  public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   protected:
     int nr_dim_;
