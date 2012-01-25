@@ -66,8 +66,9 @@ endif(NOT WIN32 AND NOT USB_10_FOUND)
 if(OPENNI_FOUND)
   set(HAVE_OPENNI ON)
   # Add the include directories
-  set(OPENNI_INCLUDE_DIRS ${OPENNI_INCLUDE_DIRS} ${USB_10_INCLUDE_DIR})
+  set(OPENNI_INCLUDE_DIRS ${OPENNI_INCLUDE_DIRS})
   include_directories(${OPENNI_INCLUDE_DIRS})
+	include_directories(${USB_10_INCLUDE_DIR})
   message(STATUS "OpenNI found (include: ${OPENNI_INCLUDE_DIRS}, lib: ${OPENNI_LIBRARY})")
 endif(OPENNI_FOUND)
 
