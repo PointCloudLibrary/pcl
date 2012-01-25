@@ -69,7 +69,7 @@ computeInitialAlignment (const PointCloudPtr & source_points, const LocalDescrip
  */
 Eigen::Matrix4f
 refineAlignment (const PointCloudPtr & source_points, const PointCloudPtr & target_points, 
-                 const Eigen::Matrix4f initial_alignment, float max_correspondence_distance,
+                 const Eigen::Matrix4f &initial_alignment, float max_correspondence_distance,
                  float outlier_rejection_threshold, float transformation_epsilon, float max_iterations)
 {
 
