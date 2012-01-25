@@ -1,4 +1,5 @@
 set(SUBSYS_NAME gpu_segmentation)
+set(SUBSYS_PATH gpu/segmentation)
 set(SUBSYS_DESC "Point cloud GPU segmentation library")
 set(SUBSYS_DEPS common gpu_containers gpu_utils gpu_octree)
 
@@ -27,8 +28,8 @@ if(build)
       "${SUBSYS_DEPS}" "" "" "" "")
 
     # Install include files
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_PATH} ${incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_PATH}/impl ${impl_incs})
 endif(build)
 
 
