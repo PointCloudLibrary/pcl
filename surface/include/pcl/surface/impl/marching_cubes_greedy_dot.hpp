@@ -39,14 +39,15 @@
 #include "pcl/surface/marching_cubes_greedy_dot.h"
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
-pcl::MarchingCubesGreedyDot<PointNT>::MarchingCubesGreedyDot () : dp_threshold_(0)
-{}
+pcl::MarchingCubesGreedyDot<PointNT>::MarchingCubesGreedyDot ()
+  : dp_threshold_(0)
+{
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
 pcl::MarchingCubesGreedyDot<PointNT>::~MarchingCubesGreedyDot ()
 {
-
 }
 
 template <typename PointNT> void
@@ -65,9 +66,8 @@ pcl::MarchingCubesGreedyDot<PointNT>::voxelizeData()
     uint64_t index_1d = MarchingCubes<PointNT>::getIndexIn1D (index_3d);
     Leaf cell_data;
     for (int i = 0; i < 8; ++i)
-    {
       cell_data.vertex[i] = 1;
-    }
+
     cell_hash_map_[index_1d] = cell_data;
 
     // the vertices are shared by 8 voxels, so we need to update all 8 of them
@@ -95,7 +95,7 @@ pcl::MarchingCubesGreedyDot<PointNT>::voxelizeData()
       {
         for(int i = 0; i < 8; ++i)
         {
-          if(entry.second.vertex[i] > 0)
+          if (entry.second.vertex[i] > 0)
             cell_hash_map_[entry.first].vertex[i] = entry.second.vertex[i];
         }
       }

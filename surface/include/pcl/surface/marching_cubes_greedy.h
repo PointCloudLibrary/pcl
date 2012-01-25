@@ -66,10 +66,7 @@ namespace pcl
       /** \brief Destructor. */
       ~MarchingCubesGreedy ();
 
-    protected:
-
     private:
-
       /** \brief Convert the point cloud into voxel data. */
       void
       voxelizeData();
