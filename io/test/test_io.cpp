@@ -40,10 +40,11 @@
 #include <gtest/gtest.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl/point_traits.h>
-#include "pcl/point_types.h"
-#include "pcl/common/io.h"
-#include "pcl/io/pcd_io.h"
-#include "pcl/io/ply_io.h"
+#include <pcl/point_types.h>
+#include <pcl/common/io.h>
+#include <pcl/console/print.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/io/ply_io.h>
 #include <fstream>
 #include <locale>
 #include <stdexcept>
@@ -1070,7 +1071,7 @@ TEST (PCL, Locale)
     }
     catch (std::runtime_error e)
     {
-      FAIL () << "Failed to set locale, skipping test.";
+      PCL_WARN ("Failed to set locale, skipping test.\n");
     }
     int res = writer.writeASCII<PointXYZ> ("test_pcl_io_ascii.pcd", cloud);
     EXPECT_EQ (res, 0);
@@ -1086,7 +1087,7 @@ TEST (PCL, Locale)
     }
     catch (std::runtime_error e)
     {
-      FAIL () << "Failed to set locale, skipping test.";
+      PCL_WARN ("Failed to set locale, skipping test.\n");
     }
     reader.read<PointXYZ> ("test_pcl_io_ascii.pcd", cloud2);
     std::locale::global (std::locale::classic ());
