@@ -61,6 +61,8 @@ if(NOT WIN32 AND NOT USB_10_FOUND)
   message(STATUS "OpeNI disabled because libusb-1.0 not found.")
   set(HAVE_OPENNI OFF)
   return()
+else(NOT WIN32 AND NOT USB_10_FOUND)
+	include_directories(${USB_10_INCLUDE_DIR})
 endif(NOT WIN32 AND NOT USB_10_FOUND)
 
 if(OPENNI_FOUND)
@@ -68,7 +70,6 @@ if(OPENNI_FOUND)
   # Add the include directories
   set(OPENNI_INCLUDE_DIRS ${OPENNI_INCLUDE_DIRS})
   include_directories(${OPENNI_INCLUDE_DIRS})
-	include_directories(${USB_10_INCLUDE_DIR})
   message(STATUS "OpenNI found (include: ${OPENNI_INCLUDE_DIRS}, lib: ${OPENNI_LIBRARY})")
 endif(OPENNI_FOUND)
 
