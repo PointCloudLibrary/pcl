@@ -80,7 +80,12 @@ if(build)
                  LINK_WITH pcl_io pcl_features
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd)
                  
-               #Needs office1.pcd
+    PCL_ADD_TEST(test_non_linear test_non_linear
+                 FILES test_non_linear.cpp
+                 LINK_WITH pcl_common pcl_io pcl_sample_consensus pcl_segmentation
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/noisy_slice_displaced.pcd)
+
+                #Needs office1.pcd
                #PCL_ADD_TEST(organized_index test_organized_index 
                #  FILES test_organized_index.cpp
                #  LINK_WITH pcl_search pcl_io pcl_filters)

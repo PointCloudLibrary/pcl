@@ -41,7 +41,6 @@
 #include "pcl/segmentation/sac_segmentation.h"
 
 // Sample Consensus methods
-#include "pcl/sample_consensus/method_types.h"
 #include "pcl/sample_consensus/sac.h"
 #include "pcl/sample_consensus/lmeds.h"
 #include "pcl/sample_consensus/mlesac.h"
@@ -52,7 +51,6 @@
 #include "pcl/sample_consensus/prosac.h"
 
 // Sample Consensus models
-#include "pcl/sample_consensus/model_types.h"
 #include "pcl/sample_consensus/sac_model.h"
 #include "pcl/sample_consensus/sac_model_circle.h"
 #include "pcl/sample_consensus/sac_model_cylinder.h"

@@ -42,7 +42,6 @@
 
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
-#include <boost/thread/mutex.hpp>
 
 namespace pcl
 {
@@ -178,35 +177,33 @@ namespace pcl
       isSampleGood(const std::vector<int> &samples) const;
 
     private:
-      /** \brief Temporary boost mutex for \a tmp_inliers_ */
-      boost::mutex tmp_mutex_;
-
       /** \brief Temporary pointer to a list of given indices for optimizeModelCoefficients () */
       const std::vector<int> *tmp_inliers_;
 
       /** \brief Functor for the optimization function */
-      struct OptimizationFunctor : pcl::Functor<double>
+      struct OptimizationFunctor : pcl::Functor<float>
       {
         /** Functor constructor
-         * \param[in] n the number of variables
-         * \param[in] m the number of functions   
-         * \param[in] estimator pointer to the estimator object
-         * \param[in] distance distance computation function pointer
-         */
-        OptimizationFunctor(int n, int m, pcl::SampleConsensusModelCircle2D<PointT> *model) : 
-          pcl::Functor<double>(m,n), model_(model) {}
+          * \param[in] m_data_points the number of data points to evaluate
+          * \param[in] estimator pointer to the estimator object
+          * \param[in] distance distance computation function pointer
+          */
+        OptimizationFunctor (int m_data_points, pcl::SampleConsensusModelCircle2D<PointT> *model) : 
+          pcl::Functor<float>(m_data_points), model_ (model) {}
+
         /** Cost function to be minimized
-         * \param[in] x the variables array
-         * \param[out] fvec the resultant functions evaluations
-         * \return 0
-         */
-        int operator() (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const
+          * \param[in] x the variables array
+          * \param[out] fvec the resultant functions evaluations
+          * \return 0
+          */
+        int 
+        operator() (const Eigen::VectorXf &x, Eigen::VectorXf &fvec) const
         {
-          for (int i = 0; i < m_values; ++i)
+          for (int i = 0; i < values (); ++i)
           {
             // Compute the difference between the center of the circle and the datapoint X_i
-            double xt = model_->input_->points[(*model_->tmp_inliers_)[i]].x - x[0];
-            double yt = model_->input_->points[(*model_->tmp_inliers_)[i]].y - x[1];
+            float xt = model_->input_->points[(*model_->tmp_inliers_)[i]].x - x[0];
+            float yt = model_->input_->points[(*model_->tmp_inliers_)[i]].y - x[1];
             
             // g = sqrt ((x-a)^2 + (y-b)^2) - R
             fvec[i] = sqrt (xt * xt + yt * yt) - x[2];

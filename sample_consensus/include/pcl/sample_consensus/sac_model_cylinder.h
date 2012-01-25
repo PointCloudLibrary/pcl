@@ -42,7 +42,6 @@
 
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
-#include <boost/thread/mutex.hpp>
 #include <pcl/common/common.h>
 #include "pcl/common/distances.h"
 
@@ -260,33 +259,32 @@ namespace pcl
       /** \brief The maximum allowed difference between the plane normal and the given axis. */
       double eps_angle_;
 
-      /** \brief Temporary boost mutex for \a tmp_inliers_ */
-      boost::mutex tmp_mutex_;
-
       /** \brief temporary pointer to a list of given indices for optimizeModelCoefficients () */
       const std::vector<int> *tmp_inliers_;
 
       /** \brief Functor for the optimization function */
-      struct OptimizationFunctor : pcl::Functor<double>
+      struct OptimizationFunctor : pcl::Functor<float>
       {
         /** Functor constructor
-          * \param[in] n the number of variables
-          * \param[in] m the number of functions   
+          * \param[in] m_data_points the number of data points to evaluate
           * \param[in] estimator pointer to the estimator object
           * \param[in] distance distance computation function pointer
           */
-        OptimizationFunctor(int n, int m, pcl::SampleConsensusModelCylinder<PointT, PointNT> *model) : pcl::Functor<double>(m,n), model_(model) {}
+        OptimizationFunctor (int m_data_points, pcl::SampleConsensusModelCylinder<PointT, PointNT> *model) : 
+          pcl::Functor<float> (m_data_points), model_ (model) {}
+
         /** Cost function to be minimized
           * \param[in] x variables array
           * \param[out] fvec resultant functions evaluations
           * \return 0
           */
-        int operator() (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const
+        int 
+        operator() (const Eigen::VectorXf &x, Eigen::VectorXf &fvec) const
         {
           Eigen::Vector4f line_pt  (x[0], x[1], x[2], 0);
           Eigen::Vector4f line_dir (x[3], x[4], x[5], 0);
           
-          for (int i = 0; i < m_values; ++i)
+          for (int i = 0; i < values (); ++i)
           {
             // dist = f - r
             Eigen::Vector4f pt (model_->input_->points[(*model_->tmp_inliers_)[i]].x,

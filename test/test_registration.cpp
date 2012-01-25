@@ -232,7 +232,7 @@ TEST (PCL, IterativeClosestPointNonLinear)
   EXPECT_EQ (transformation (3, 2), 0);
   EXPECT_EQ (transformation (3, 3), 1);
   */
-  EXPECT_LT (reg.getFitnessScore (), 0.0001);
+  EXPECT_LT (reg.getFitnessScore (), 0.001);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -290,7 +290,7 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
   EXPECT_EQ (transformation (3, 2), 0);
   EXPECT_EQ (transformation (3, 3), 1);
   */
-  EXPECT_LT (reg.getFitnessScore (), 0.0001);
+  EXPECT_LT (reg.getFitnessScore (), 0.001);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

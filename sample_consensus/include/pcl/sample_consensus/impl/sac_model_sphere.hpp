@@ -233,14 +233,12 @@ template <typename PointT> void
 pcl::SampleConsensusModelSphere<PointT>::optimizeModelCoefficients (
       const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients)
 {
-  boost::mutex::scoped_lock lock (tmp_mutex_);
+  optimized_coefficients = model_coefficients;
 
-  const int n_unknowns = 4;      // 4 unknowns
   // Needs a set of valid model coefficients
-  if (model_coefficients.size () != n_unknowns)
+  if (model_coefficients.size () != 4)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelSphere::optimizeModelCoefficients] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
-    optimized_coefficients = model_coefficients;
     return;
   }
 
@@ -248,28 +246,19 @@ pcl::SampleConsensusModelSphere<PointT>::optimizeModelCoefficients (
   if (inliers.size () <= 4)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelSphere::optimizeModelCoefficients] Not enough inliers found to support a model (%lu)! Returning the same coefficients.\n", (unsigned long)inliers.size ());
-    optimized_coefficients = model_coefficients;
     return;
   }
 
   tmp_inliers_ = &inliers;
 
-  int m = inliers.size ();
-
-  Eigen::VectorXd x (n_unknowns);
-  for(int d = 0; d < n_unknowns; d++)
-    x[d] = model_coefficients[d];
-
-  OptimizationFunctor functor (n_unknowns, m, this);
+  OptimizationFunctor functor (inliers.size (), this);
   Eigen::NumericalDiff<OptimizationFunctor> num_diff (functor);
-  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor> > lm (num_diff);
-  int info = lm.minimize (x);
+  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, float> lm (num_diff);
+  int info = lm.minimize (optimized_coefficients);
 
   // Compute the L2 norm of the residuals
   PCL_DEBUG ("[pcl::SampleConsensusModelSphere::optimizeModelCoefficients] LM solver finished with exit code %i, having a residual norm of %g. \nInitial solution: %g %g %g %g \nFinal solution: %g %g %g %g\n",
-             info, lm.fvec.norm (), model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3], x[0], x[1], x[2], x[3]);
-
-  optimized_coefficients = Eigen::Vector4f (x[0], x[1], x[2], x[3]);
+             info, lm.fvec.norm (), model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3], optimized_coefficients[0], optimized_coefficients[1], optimized_coefficients[2], optimized_coefficients[3]);
 }
 
 //////////////////////////////////////////////////////////////////////////

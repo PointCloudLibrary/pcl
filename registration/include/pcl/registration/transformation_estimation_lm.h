@@ -166,7 +166,10 @@ namespace pcl
         /** \brief The parameterized function used to warp the source to the target. */
         boost::shared_ptr<WarpPointRigid<PointSource, PointTarget> > warp_point_;
         
-        /** Generic functor for the optimization */
+        /** Base functor all the models that need non linear optimization must
+          * define their own one and implement operator() (const Eigen::VectorXd& x, Eigen::VectorXd& fvec)
+          * or operator() (const Eigen::VectorXf& x, Eigen::VectorXf& fvec) dependening on the choosen _Scalar
+          */
         template<typename _Scalar, int NX=Eigen::Dynamic, int NY=Eigen::Dynamic>
         struct Functor
         {
@@ -178,32 +181,37 @@ namespace pcl
           typedef Eigen::Matrix<Scalar,InputsAtCompileTime,1> InputType;
           typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,1> ValueType;
           typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,InputsAtCompileTime> JacobianType;
-          
-          const int m_inputs, m_values;
-          
-          Functor () : m_inputs (InputsAtCompileTime), m_values (ValuesAtCompileTime) {}
-          Functor (int inputs, int values) : m_inputs (inputs), m_values (values) {}
-          
-          int inputs () const { return m_inputs; }
-          int values () const { return m_values; }
+
+          /** \brief Empty Construtor. */
+          Functor () : m_data_points_ (ValuesAtCompileTime) {}
+
+          /** \brief Constructor
+            * \param[in] m_data_points number of data points to evaluate.
+            */
+          Functor (int m_data_points) : m_data_points_ (m_data_points) {}
+        
+          /** \brief Get the number of values. */ 
+          int
+          values () const { return (m_data_points_); }
+
+          private:
+            const int m_data_points_;
         };
 
-        struct OptimizationFunctor : Functor<double>
+        struct OptimizationFunctor : public Functor<double>
         {
-          using Functor<double>::m_values;
+          using Functor<double>::values;
 
           /** Functor constructor
-            * \param[in] n Number of unknowns to be solved
-            * \param[in] m Number of values
+            * \param[in] m_data_points the number of data points to evaluate
             * \param[in,out] estimator pointer to the estimator object
             */
-          OptimizationFunctor (int n, int m, TransformationEstimationLM<PointSource, PointTarget> *estimator) : 
-            Functor<double> (n,m), estimator_ (estimator) {}
+          OptimizationFunctor (int m_data_points, TransformationEstimationLM<PointSource, PointTarget> *estimator) : 
+            Functor<double> (m_data_points), estimator_ (estimator) {}
 
           /** Fill fvec from x. For the current state vector x fill the f values
             * \param[in] x state vector
             * \param[out] fvec f values vector
-            * \return 0
             */
           int 
           operator () (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const;
@@ -211,24 +219,23 @@ namespace pcl
           TransformationEstimationLM<PointSource, PointTarget> *estimator_;
         };
 
-        struct OptimizationFunctorWithIndices : Functor<double>
+        struct OptimizationFunctorWithIndices : public Functor<double>
         {
-          using Functor<double>::m_values;
+          using Functor<double>::values;
 
           /** Functor constructor
-            * \param[in] n Number of unknowns to be solved
-            * \param[in] m Number of values
+            * \param[in] m_data_points the number of data points to evaluate
             * \param[in,out] estimator pointer to the estimator object
             */
-          OptimizationFunctorWithIndices (int n, int m, TransformationEstimationLM *estimator) :
-            Functor<double> (n,m), estimator_(estimator) {}
+          OptimizationFunctorWithIndices (int m_data_points, TransformationEstimationLM *estimator) :
+            Functor<double> (m_data_points), estimator_ (estimator) {}
 
           /** Fill fvec from x. For the current state vector x fill the f values
             * \param[in] x state vector
             * \param[out] fvec f values vector
-            * \return 0
             */
-          int operator () (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const;
+          int 
+          operator () (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const;
 
           TransformationEstimationLM<PointSource, PointTarget> *estimator_;
         };

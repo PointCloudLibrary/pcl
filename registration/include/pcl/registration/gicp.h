@@ -236,9 +236,6 @@ namespace pcl
       /** \brief base transformation */
       Eigen::Matrix4f base_transformation_;
 
-      /* /\** \brief Temporary boost mutex for \a tmp_src_ and \a tmp_tgt_*\/ */
-      /* boost::mutex tmp_mutex_; */
-
       /** \brief Temporary pointer to the source dataset. */
       const PointCloudSource *tmp_src_;
 

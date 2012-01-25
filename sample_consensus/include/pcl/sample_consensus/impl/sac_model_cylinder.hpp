@@ -252,44 +252,32 @@ template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::optimizeModelCoefficients (
       const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients)
 {
-  boost::mutex::scoped_lock lock (tmp_mutex_);
+  optimized_coefficients = model_coefficients;
 
-  const int n_unknowns = 7;      // 4 unknowns
   // Needs a set of valid model coefficients
-  if (model_coefficients.size () != n_unknowns)
+  if (model_coefficients.size () != 7)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelCylinder::optimizeModelCoefficients] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
-    optimized_coefficients = model_coefficients;
     return;
   }
 
   if (inliers.empty ())
   {
     PCL_DEBUG ("[pcl::SampleConsensusModelCylinder:optimizeModelCoefficients] Inliers vector empty! Returning the same coefficients.\n"); 
-    optimized_coefficients = model_coefficients;
     return;
   }
 
   tmp_inliers_ = &inliers;
-  int m = inliers.size ();
 
-  Eigen::VectorXd x(n_unknowns);
-  for(int d = 0; d < n_unknowns; d++)
-    x[d] = model_coefficients[d];
-
-  OptimizationFunctor functor(n_unknowns, m, this);
-  Eigen::NumericalDiff<OptimizationFunctor > num_diff(functor);
-  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor> > lm(num_diff);
-  int info = lm.minimize(x);
+  OptimizationFunctor functor (inliers.size (), this);
+  Eigen::NumericalDiff<OptimizationFunctor > num_diff (functor);
+  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, float> lm (num_diff);
+  int info = lm.minimize (optimized_coefficients);
   
   // Compute the L2 norm of the residuals
   PCL_DEBUG ("[pcl::SampleConsensusModelCylinder::optimizeModelCoefficients] LM solver finished with exit code %i, having a residual norm of %g. \nInitial solution: %g %g %g %g %g %g %g \nFinal solution: %g %g %g %g %g %g %g\n",
              info, lm.fvec.norm (), model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3],
-             model_coefficients[4], model_coefficients[5], model_coefficients[6], x[0], x[1], x[2], x[3], x[4], x[5], x[6]);
-
-  optimized_coefficients.resize (n_unknowns);
-  for (int d = 0; d < n_unknowns; ++d)
-    optimized_coefficients[d] = x[d];
+             model_coefficients[4], model_coefficients[5], model_coefficients[6], optimized_coefficients[0], optimized_coefficients[1], optimized_coefficients[2], optimized_coefficients[3], optimized_coefficients[4], optimized_coefficients[5], optimized_coefficients[6]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

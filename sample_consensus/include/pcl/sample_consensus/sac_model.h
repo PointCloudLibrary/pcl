@@ -346,8 +346,8 @@ namespace pcl
         min_radius = radius_min_;
         max_radius = radius_max_;
       }
-
-		friend class ProgressiveSampleConsensus<PointT>;
+      
+      friend class ProgressiveSampleConsensus<PointT>;
 
 		protected:
       /** \brief Fills a sample array with random samples from the indices_ vector
@@ -411,13 +411,15 @@ namespace pcl
       {
         return ((*rng_gen_) ());
       }
-  };
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+ };
 
   /** \brief @b SampleConsensusModelFromNormals represents the base model class
     * for models that require the use of surface normals for estimation.
     */
   template <typename PointT, typename PointNT>
-  class SampleConsensusModelFromNormals
+  class SampleConsensusModelFromNormals //: public SampleConsensusModel<PointT>
   {
     public:
       typedef typename pcl::PointCloud<PointNT>::ConstPtr PointCloudNConstPtr;
@@ -484,23 +486,25 @@ namespace pcl
       InputsAtCompileTime = NX,
       ValuesAtCompileTime = NY
     };
-    typedef Eigen::Matrix<Scalar,InputsAtCompileTime,1> InputType;
-    typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,1> ValueType;
-    typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,InputsAtCompileTime> JacobianType;
-    
-    
-    Functor () : m_inputs (InputsAtCompileTime), m_values (ValuesAtCompileTime) {}
-    Functor (int inputs, int values) : m_inputs (inputs), m_values (values) {}
-  
-    /** \brief Get the number of inputs. */ 
-    int 
-    inputs () const { return (m_inputs); }
 
+    typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,1> ValueType;
+    typedef Eigen::Matrix<Scalar,InputsAtCompileTime,1> InputType;
+    typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,InputsAtCompileTime> JacobianType;
+
+    /** \brief Empty Construtor. */
+    Functor () : m_data_points_ (ValuesAtCompileTime) {}
+
+    /** \brief Constructor
+      * \param[in] m_data_points number of data points to evaluate.
+      */
+    Functor (int m_data_points) : m_data_points_ (m_data_points) {}
+  
     /** \brief Get the number of values. */ 
     int
-    values () const { return (m_values); }
+    values () const { return (m_data_points_); }
 
-    const int m_inputs, m_values;
+    private:
+      const int m_data_points_;
   };
 }
 
