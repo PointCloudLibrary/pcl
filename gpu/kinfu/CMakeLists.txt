@@ -1,7 +1,7 @@
 if(TRUE)
 
 set(SUBSYS_NAME gpu_kinfu)
-set(SUBSYS_PATH gpu/gpu_kinfu)
+set(SUBSYS_PATH gpu/kinfu)
 set(SUBSYS_DESC "Kinect Fusion implementation")
 set(SUBSYS_DEPS common gpu_containers gpu_utils gpu_features visualization io)
 
