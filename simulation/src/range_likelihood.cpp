@@ -215,6 +215,7 @@ void RangeLikelihood::compute_scores(int cols, int rows,
       // scores[row/row_height * cols + col/col_width] += sqr(*depth);
       // scores[row/row_height * cols + col/col_width] += sqr(ref[col%col_width] - ((*depth++)*19.3 +  0.7) );
       // cout << (*depth) << ", ";
+      float depth_val = (*depth++); // added jan 2012 - check this is not a breaking fix later mfallon
 
       
       if (which_cost_function==0){ // Original Cost Function:
@@ -239,7 +240,7 @@ void RangeLikelihood::compute_scores(int cols, int rows,
 	}
 	scores[row/row_height * cols + col/col_width] += log(cost);
       }else if(which_cost_function==2){ // 1st likelihood version:
-	float min_dist = abs(ref[col%col_width] - 1/(1.4285 -(*depth)*1.3788));
+	float min_dist = abs(ref[col%col_width] - 1/(1.4285 -(depth_val)*1.3788));
 	
 	int lup = (int) ceil(min_dist*100 ); // has resulution of 0.01m
 	if (lup > 300){ // implicitly this caps the cost if there is a hole in the model
@@ -270,7 +271,7 @@ void RangeLikelihood::compute_scores(int cols, int rows,
 	}else if (ref[col%col_width] > 7){ 
 	  // ignore long ranges... for now
 	}else{ // working range
-	  float min_dist = abs(ref[col%col_width] - 0.7253/(1.0360 - (*depth)));
+	  float min_dist = abs(ref[col%col_width] - 0.7253/(1.0360 - (depth_val)));
 	
 	  int lup = (int) ceil(min_dist*100 ); // has resulution of 0.01m
 	  if (lup > 300){ // implicitly this caps the cost if there is a hole in the model
@@ -284,7 +285,7 @@ void RangeLikelihood::compute_scores(int cols, int rows,
 	}
 	scores[row/row_height * cols + col/col_width] += log_lhood;	
       }else if (which_cost_function==4){
-	  float disparity_diff = abs( ( -0.7253/ref[col%col_width] +1.0360 ) -  *depth );
+	  float disparity_diff = abs( ( -0.7253/ref[col%col_width] +1.0360 ) -  depth_val);
 	
 	  int top_lup = (int) ceil(disparity_diff*300 ); // has resulution of 0.001m
 	  if (top_lup > 300){
@@ -294,7 +295,7 @@ void RangeLikelihood::compute_scores(int cols, int rows,
 	  
 	  // bottom:
 	  //bottom = bottom_lookup(   round(mu*1000+1));
-	  int bottom_lup = (int) ceil( (*depth) *300 ); // has resulution of 0.001m
+	  int bottom_lup = (int) ceil( (depth_val) *300 ); // has resulution of 0.001m
 	  if (bottom_lup > 300){
 	    bottom_lup =300;
 	  }
@@ -318,9 +319,12 @@ void RangeLikelihood::compute_scores(int cols, int rows,
 	  }
 	  scores[row/row_height * cols + col/col_width] += log(lhood);	
 	}
-	*depth++;
+
+	//was pre-jan 2012: *depth++;
       }
     }
+    float unused= (*depth); // to remove the compiler warning
+    unused++;
   }
  
   void RangeLikelihood::getPointCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc,
