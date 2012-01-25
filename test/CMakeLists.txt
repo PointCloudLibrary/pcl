@@ -1,7 +1,6 @@
 set(SUBSYS_NAME global_tests)
 set(SUBSYS_DESC "Point cloud library global tests")
-set(SUBSYS_DEPS common sample_consensus io kdtree features range_image filters
-    keypoints search surface registration segmentation octree)
+set(SUBSYS_DEPS common sample_consensus io kdtree features range_image filters keypoints search surface registration segmentation octree)
 
 find_package(GTest)
 if(GTEST_FOUND)
