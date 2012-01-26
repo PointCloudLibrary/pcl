@@ -19,8 +19,6 @@ find_package(Boost 1.40.0 REQUIRED COMPONENTS system filesystem thread date_time
 
 if(Boost_FOUND)
   set(BOOST_FOUND TRUE)
-	# Optional boost modules
-	find_package(Boost 1.40.0 COMPONENTS mpi serialization)
   # Obtain diagnostic information about Boost's automatic linking outputted 
   # during compilation time.
   add_definitions(${Boost_LIB_DIAGNOSTIC_DEFINITIONS})
