@@ -47,6 +47,9 @@ if (build)
   
   PCL_ADD_EXECUTABLE (mls_smoothing ${SUBSYS_NAME} mls_smoothing.cpp)
   target_link_libraries (mls_smoothing pcl_common pcl_io pcl_surface)
+  
+  PCL_ADD_EXECUTABLE (marching_cubes_reconstruction ${SUBSYS_NAME} marching_cubes_reconstruction.cpp)
+  target_link_libraries (marching_cubes_reconstruction pcl_common pcl_io pcl_surface)
 
   PCL_ADD_EXECUTABLE (gp3_surface ${SUBSYS_NAME} gp3_surface.cpp)
   target_link_libraries (gp3_surface pcl_common pcl_io pcl_surface)
@@ -78,6 +81,10 @@ if (build)
       set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
       include (${VTK_USE_FILE})
       include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+      
+      PCL_ADD_EXECUTABLE (vtk_smoothing ${SUBSYS_NAME} vtk_smoothing.cpp)
+      target_link_libraries (vtk_smoothing pcl_common pcl_io pcl_surface)
+      
       
       PCL_ADD_EXECUTABLE(registration_visualizer ${SUBSYS_NAME} registration_visualizer.cpp)
       target_link_libraries(registration_visualizer pcl_common pcl_io pcl_kdtree pcl_filters pcl_registration pcl_visualization)
