@@ -57,9 +57,10 @@ endif()
 if (__COMPILER_PATHSCALE)
   add_definitions("-Wno-uninitialized -zerouv -pthread -mp")
 endif()
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR (UNIX AND CMAKE_COMPILER_IS_GNUCXX))
+
+if (UNIX AND ((CMAKE_CXX_COMPILER_ID STREQUAL "Clang") OR CMAKE_COMPILER_IS_GNUCXX))
   add_definitions("-std=gnu++0x")
-else()
+elseif(APPLE)
   add_definitions("-std=c++0x")
 endif()
 
