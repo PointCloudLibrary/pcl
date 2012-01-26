@@ -126,25 +126,29 @@ namespace ply
           
         public:
           template <typename ScalarType>
-          const typename scalar_property_definition_callback_type<ScalarType>::type& get () const
+          const typename scalar_property_definition_callback_type<ScalarType>::type& 
+          get () const
           {
             return static_cast<const callbacks_element<ScalarType>&> (callbacks_).callback;
           }
 
           template <typename ScalarType>
-          typename scalar_property_definition_callback_type<ScalarType>::type& get ()
+          typename scalar_property_definition_callback_type<ScalarType>::type& 
+          get ()
           {
             return static_cast<callbacks_element<ScalarType>&> (callbacks_).callback;
           }
 
           template <typename ScalarType>
-          friend typename scalar_property_definition_callback_type<ScalarType>::type& at (scalar_property_definition_callbacks_type& scalar_property_definition_callbacks)
+          friend typename scalar_property_definition_callback_type<ScalarType>::type& 
+          at (scalar_property_definition_callbacks_type& scalar_property_definition_callbacks)
           {
             return scalar_property_definition_callbacks.get<ScalarType> ();
           }
             
           template <typename ScalarType>
-          friend const typename scalar_property_definition_callback_type<ScalarType>::type& at (const scalar_property_definition_callbacks_type& scalar_property_definition_callbacks)
+          friend const typename scalar_property_definition_callback_type<ScalarType>::type& 
+          at (const scalar_property_definition_callbacks_type& scalar_property_definition_callbacks)
           {
             return scalar_property_definition_callbacks.get<ScalarType> ();
           }
@@ -222,42 +226,69 @@ namespace ply
       
         public:
           template <typename SizeType, typename ScalarType>
-          typename list_property_definition_callback_type<SizeType, ScalarType>::type& get ()
+          typename list_property_definition_callback_type<SizeType, ScalarType>::type& 
+          get ()
           {
             return static_cast<callbacks_element<boost::mpl::pair<SizeType, ScalarType> >&> (callbacks_).callback;
           }
 
           template <typename SizeType, typename ScalarType>
-          const typename list_property_definition_callback_type<SizeType, ScalarType>::type& get () const
+          const typename list_property_definition_callback_type<SizeType, ScalarType>::type& 
+          get () const
           {
             return static_cast<const callbacks_element<boost::mpl::pair<SizeType, ScalarType> >&> (callbacks_).callback;
           }
 
           template <typename SizeType, typename ScalarType>
-          friend typename list_property_definition_callback_type<SizeType, ScalarType>::type& at (list_property_definition_callbacks_type& list_property_definition_callbacks)
+          friend typename list_property_definition_callback_type<SizeType, ScalarType>::type& 
+          at (list_property_definition_callbacks_type& list_property_definition_callbacks)
           {
             return list_property_definition_callbacks.get<SizeType, ScalarType> ();
           }
             
           template <typename SizeType, typename ScalarType>
-          friend const typename list_property_definition_callback_type<SizeType, ScalarType>::type& at (const list_property_definition_callbacks_type& list_property_definition_callbacks)
+          friend const typename list_property_definition_callback_type<SizeType, ScalarType>::type& 
+          at (const list_property_definition_callbacks_type& list_property_definition_callbacks)
           {
             return list_property_definition_callbacks.get<SizeType, ScalarType> ();
           }
       };
 
-      inline void info_callback (const info_callback_type& info_callback);
-      inline void warning_callback (const warning_callback_type& warning_callback);
-      inline void error_callback (const error_callback_type& error_callback);
-      inline void magic_callback (const magic_callback_type& magic_callback);
-      inline void format_callback (const format_callback_type& format_callback);
-      inline void element_definition_callback (const element_definition_callback_type& element_definition_callback);
-      inline void element_closure_callback (const element_closure_callback_type& element_closure_callback);
-      inline void scalar_property_definition_callbacks (const scalar_property_definition_callbacks_type& scalar_property_definition_callbacks);
-      inline void list_property_definition_callbacks (const list_property_definition_callbacks_type& list_property_definition_callbacks);
-      inline void comment_callback (const comment_callback_type& comment_callback);
-      inline void obj_info_callback (const obj_info_callback_type& obj_info_callback);
-      inline void end_header_callback (const end_header_callback_type& end_header_callback);
+      inline void 
+      info_callback (const info_callback_type& info_callback);
+      
+      inline void
+      warning_callback (const warning_callback_type& warning_callback);
+      
+      inline void
+      error_callback (const error_callback_type& error_callback);
+      
+      inline void
+      magic_callback (const magic_callback_type& magic_callback);
+      
+      inline void
+      format_callback (const format_callback_type& format_callback);
+      
+      inline void
+      element_definition_callback (const element_definition_callback_type& element_definition_callback);
+      
+      inline void
+      element_closure_callback (const element_closure_callback_type& element_closure_callback);
+      
+      inline void
+      scalar_property_definition_callbacks (const scalar_property_definition_callbacks_type& scalar_property_definition_callbacks);
+      
+      inline void
+      list_property_definition_callbacks (const list_property_definition_callbacks_type& list_property_definition_callbacks);
+      
+      inline void
+      comment_callback (const comment_callback_type& comment_callback);
+      
+      inline void
+      obj_info_callback (const obj_info_callback_type& obj_info_callback);
+      
+      inline void
+      end_header_callback (const end_header_callback_type& end_header_callback);
 
       typedef int flags_type;
       enum flags { };
@@ -284,8 +315,16 @@ namespace ply
       {
         typedef ScalarType scalar_type;
         typedef typename scalar_property_callback_type<scalar_type>::type callback_type;
-        scalar_property (const std::string& name, callback_type callback) : property (name), callback (callback) {}
-        bool parse (class ply_parser& ply_parser, format_type format, std::istream& istream) { return ply_parser.parse_scalar_property<scalar_type> (format, istream, callback); }
+        scalar_property (const std::string& name, callback_type callback)
+          : property (name)
+          , callback (callback)
+        {}
+        bool parse (class ply_parser& ply_parser, 
+                    format_type format, 
+                    std::istream& istream) 
+        { 
+          return ply_parser.parse_scalar_property<scalar_type> (format, istream, callback); 
+        }
         callback_type callback;
       };
 
@@ -297,16 +336,24 @@ namespace ply
         typedef typename list_property_begin_callback_type<size_type, scalar_type>::type begin_callback_type;
         typedef typename list_property_element_callback_type<size_type, scalar_type>::type element_callback_type;
         typedef typename list_property_end_callback_type<size_type, scalar_type>::type end_callback_type;
-        list_property (const std::string& name, begin_callback_type begin_callback, element_callback_type element_callback, end_callback_type end_callback) : property (name), begin_callback (begin_callback), element_callback (element_callback), end_callback (end_callback) {}
+        list_property (const std::string& name, 
+                       begin_callback_type begin_callback, 
+                       element_callback_type element_callback, 
+                       end_callback_type end_callback)
+          : property (name)
+          , begin_callback (begin_callback)
+          , element_callback (element_callback)
+          , end_callback (end_callback)
+        {}
         bool parse (class ply_parser& ply_parser, 
                    format_type format, 
                    std::istream& istream) 
         { 
           return ply_parser.parse_list_property<size_type, scalar_type> (format, 
-                                                                        istream, 
-                                                                        begin_callback, 
-                                                                        element_callback, 
-                                                                        end_callback); 
+                                                                         istream, 
+                                                                         begin_callback, 
+                                                                         element_callback, 
+                                                                         end_callback); 
         }
         begin_callback_type begin_callback;
         element_callback_type element_callback;
