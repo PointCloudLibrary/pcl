@@ -58,7 +58,7 @@ find_package_handle_standard_args(OpenNI DEFAULT_MSG
     
 mark_as_advanced(OPENNI_LIBRARY OPENNI_INCLUDE_DIR)
 if(NOT WIN32 AND NOT USB_10_FOUND)
-  message(STATUS "OpeNI disabled because libusb-1.0 not found.")
+  message(STATUS "OpenNI disabled because libusb-1.0 not found.")
   set(HAVE_OPENNI OFF)
   return()
 else(NOT WIN32 AND NOT USB_10_FOUND)
