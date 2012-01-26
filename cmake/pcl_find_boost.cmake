@@ -14,18 +14,16 @@ endif(${CMAKE_VERSION} VERSION_LESS 2.8.5)
 # Disable the config mode of find_package(Boost)
 set(Boost_NO_BOOST_CMAKE ON)
 
-# Optional boost modules
-find_package(Boost 1.40.0 COMPONENTS mpi serialization)
-
 # Required boost modules
 find_package(Boost 1.40.0 REQUIRED COMPONENTS system filesystem thread date_time iostreams)
 
 if(Boost_FOUND)
   set(BOOST_FOUND TRUE)
+	# Optional boost modules
+	find_package(Boost 1.40.0 COMPONENTS mpi serialization)
   # Obtain diagnostic information about Boost's automatic linking outputted 
   # during compilation time.
   add_definitions(${Boost_LIB_DIAGNOSTIC_DEFINITIONS})
-  
   include_directories(${Boost_INCLUDE_DIRS})
   link_directories(${Boost_LIBRARY_DIRS})
 endif(Boost_FOUND)
