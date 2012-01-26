@@ -42,7 +42,11 @@
 #include <fstream>
 #include <iostream>
 
+#ifdef _MSC_VER
+#include <functional>
+#else
 #include <tr1/functional>
+#endif
 
 #include <pcl/io/ply/ply_parser.h>
 

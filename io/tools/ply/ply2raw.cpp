@@ -42,8 +42,13 @@
 #include <fstream>
 #include <iostream>
 
+#ifdef _MSC_VER
+#include <functional>
+#include <tuple>
+#else
 #include <tr1/functional>
 #include <tr1/tuple>
+#endif
 
 #include <pcl/io/ply/ply_parser.h>
 

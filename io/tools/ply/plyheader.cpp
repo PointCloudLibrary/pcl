@@ -40,6 +40,7 @@
 #include <fstream>
 #include <iostream>
 #include <string.h>
+#include <string>
 #include <stdlib.h>
 
 /** \file plheader extracts and prints out the header of a PLY file
