@@ -209,7 +209,7 @@ endmacro(find_flann)
 
 macro(find_VTK)
   if(PCL_ALL_IN_ONE_INSTALLER)
-    set(VTK_DIR "${PCL_ROOT}/3rdParty/VTK 5.8.0/lib/vtk-5.8")
+    set(VTK_DIR "${PCL_ROOT}/3rdParty/VTK/lib/vtk-5.8")
   elseif(NOT VTK_DIR)
     set(VTK_DIR "@VTK_DIR@")
   endif(PCL_ALL_IN_ONE_INSTALLER)

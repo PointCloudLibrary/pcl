@@ -14,8 +14,8 @@ if(BUILD_all_in_one_installer)
     foreach(dep Eigen Boost Qhull Flann VTK)
         string(TOUPPER ${dep} DEP)
         install(
-            DIRECTORY "${${DEP}_ROOT}"
-            DESTINATION 3rdParty
+            DIRECTORY "${${DEP}_ROOT}/"
+            DESTINATION 3rdParty/${dep}
             COMPONENT ${dep}
             PATTERN "*/Uninstall.exe" EXCLUDE
         )
