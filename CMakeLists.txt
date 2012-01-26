@@ -59,8 +59,6 @@ if (__COMPILER_PATHSCALE)
 endif()
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
   add_definitions("-std=gnu++0x")
-else()
-  add_definitions("-std=c++0x")
 endif()
 
 # ---[ Project folders

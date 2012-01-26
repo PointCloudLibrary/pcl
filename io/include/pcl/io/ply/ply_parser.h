@@ -48,8 +48,14 @@
 #include <string>
 #include <vector>
 
+#ifdef _MSC_VER
+#include <functional>
+#include <memory>
+#include <tuple>
+#else
 #include <tr1/functional>
 #include <tr1/memory>
+#endif
 
 #include <boost/mpl/fold.hpp>
 #include <boost/mpl/inherit.hpp>
@@ -60,6 +66,7 @@
 
 #include <pcl/io/ply/ply.h>
 #include <pcl/io/ply/io_operators.h>
+#include <pcl/pcl_macros.h>
 
 namespace ply 
 {
@@ -69,7 +76,7 @@ namespace ply
     * Ported with agreement from the author under the terms of the BSD
     * license.
     */      
-  class ply_parser
+  class PCL_EXPORTS ply_parser
   {
     public:
 
@@ -556,7 +563,7 @@ inline bool ply::ply_parser::parse_scalar_property (format_type format,
     {
       istream >> space >> std::ws;
     }
-    if (!istream || !std::isspace (space))
+    if (!istream || !isspace (space))
     {
       if (error_callback_)
       {
@@ -613,7 +620,7 @@ inline bool ply::ply_parser::parse_list_property (format_type format, std::istre
     {
       istream >> space >> std::ws;
     }
-    if (!istream || !std::isspace (space))
+    if (!istream || !isspace (space))
     {
       if (error_callback_)
       {
@@ -634,7 +641,7 @@ inline bool ply::ply_parser::parse_list_property (format_type format, std::istre
       {
         istream >> space >> std::ws;
       }
-      if (!istream || !std::isspace (space))
+      if (!istream || !isspace (space))
       {
         if (error_callback_)
         {
