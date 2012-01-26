@@ -36,10 +36,10 @@ if(build)
 
     #  PCL_CUDA_ADD_EXECUTABLE(kinect_segmentation_planes_cuda ${SUBSYS_NAME} src/kinect_segmentation_planes_cuda.cpp)
     #  target_link_libraries (kinect_segmentation_planes_cuda pcl_io pcl_cuda_io pcl_cuda_features pcl_cuda_segmentation pcl_visualization pcl_common pcl_kdtree pcl_range_image ${OpenCV_LIBS})
+    
+    #  PCL_CUDA_ADD_EXECUTABLE(kinect_planes_cuda ${SUBSYS_NAME} src/kinect_planes_cuda.cpp)
+    #  target_link_libraries (kinect_planes_cuda pcl_io pcl_cuda_io pcl_cuda_features pcl_cuda_sample_consensus pcl_cuda_segmentation pcl_visualization pcl_common pcl_kdtree pcl_range_image)
     #endif(OpenCV_FOUND)
-
-    PCL_CUDA_ADD_EXECUTABLE(kinect_planes_cuda ${SUBSYS_NAME} src/kinect_planes_cuda.cpp)
-    target_link_libraries (kinect_planes_cuda pcl_io pcl_cuda_io pcl_cuda_features pcl_cuda_sample_consensus pcl_cuda_segmentation pcl_visualization pcl_common pcl_kdtree pcl_range_image)
 
   endif(VTK_FOUND AND OPENNI_FOUND AND BUILD_OPENNI)
 endif(build)
