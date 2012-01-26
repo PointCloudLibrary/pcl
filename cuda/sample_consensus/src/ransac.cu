@@ -35,6 +35,12 @@
  *
  */
 
+#ifdef _WIN32
+# define NOMINMAX
+# define WIN32_LEAN_AND_MEAN
+# include <windows.h>
+#endif
+
 #include "pcl/cuda/sample_consensus/ransac.h"
 #include "pcl/cuda/time_gpu.h"
 #include <stdio.h>
