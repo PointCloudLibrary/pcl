@@ -8,6 +8,8 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk)
 
 PCL_ADD_DOC(${SUBSYS_NAME})
 
+#option(BUILD_PLY ON "build libply within PCL")
+
 if(build)
     OPTION(BUILD_OPENNI "Build the OpenNI Grabber." ON)
     MARK_AS_ADVANCED(BUILD_OPENNI)
@@ -61,6 +63,22 @@ if(build)
         set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets)
     endif ()
 
+#		if(BUILD_PLY)
+			set(PLY_SOURCES src/ply/ply_parser.cpp)
+			set(PLY_INCLUDES 
+				  include/pcl/${SUBSYS_NAME}/ply/byte_order.h
+					include/pcl/${SUBSYS_NAME}/ply/io_operators.h
+					include/pcl/${SUBSYS_NAME}/ply/ply.h
+					include/pcl/${SUBSYS_NAME}/ply/ply_parser.h)
+			PCL_ADD_LIBRARY(pcl_io_ply ${SUBSYS_NAME} ${PLY_SOURCES} ${PLY_INCLUDES})
+			set_target_properties(pcl_io_ply PROPERTIES 
+				                    OUTPUT_NAME "ply"
+														VERSION 0.1
+														SOVERSION 0.1)
+			PCL_ADD_SSE_FLAGS(pcl_io_ply)
+			PCL_ADD_INCLUDES(${SUBSYS_NAME} ply ${PLY_INCLUDES})
+#		endif(BUILD_PLY)
+
     set(srcs 
         src/pcd_grabber.cpp
         src/pcd_io.cpp
@@ -83,7 +101,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/pcl_io_exception.h
         include/pcl/${SUBSYS_NAME}/vtk_io.h
         include/pcl/${SUBSYS_NAME}/ply_io.h
-        include/pcl/${SUBSYS_NAME}/ply.h
         include/pcl/${SUBSYS_NAME}/obj_io.h 
         ${VTK_IO_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
@@ -109,7 +126,7 @@ if(build)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
     link_directories(${VTK_LINK_DIRECTORIES})
-    target_link_libraries(${LIB_NAME} pcl_common ${VTK_IO_TARGET_LINK_LIBRARIES})
+    target_link_libraries(${LIB_NAME} pcl_common pcl_io_ply ${VTK_IO_TARGET_LINK_LIBRARIES})
 
     if(OPENNI_FOUND)
       target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
@@ -127,7 +144,7 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} compression ${compression_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/openni_camera ${OPENNI_INCLUDES})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
-
+		
     add_subdirectory(tools)
 
     if(BUILD_TESTS)
