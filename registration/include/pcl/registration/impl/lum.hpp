@@ -40,19 +40,6 @@
 #ifndef PCL_REGISTRATION_IMPL_LUM_H_
 #define PCL_REGISTRATION_IMPL_LUM_H_
 
-#include <list>
-#include <algorithm>
-
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/graph_traits.hpp>
-
-#include <Eigen/Geometry>
-
-#include <pcl/common/transforms.h>
-#include <pcl/pcl_base.h>
-#include <pcl/point_types.h>
-#include <pcl/point_cloud.h>
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT>
   inline typename pcl::registration::LUM<PointT>::Vertex
@@ -73,12 +60,44 @@ template<typename PointT>
     (*slam_graph_)[v].cloud_ = cloud;
     if (v == 0)
     {
-      PCL_WARN("[pcl::registration::LUM::addPointCloud] The pose estimate is ignored for the first cloud in the graph since that will become the reference pose.\n");
+      PCL_WARN ("[pcl::registration::LUM::addPointCloud] The pose estimate is ignored for the first cloud in the graph since that will become the reference pose.\n");
       (*slam_graph_)[v].pose_ = Vector6f::Zero ();
-      return 0;
+      return v;
     }
     (*slam_graph_)[v].pose_ = pose;
     return v;
+  }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT>
+  inline void
+  pcl::registration::LUM<PointT>::setPointCloud (Vertex vertex, PointCloudPtr cloud)
+  {
+    if (vertex < 0 || vertex >= num_vertices (*slam_graph_))
+    {
+      PCL_ERROR ("[pcl::registration::LUM::setPointCloud] You are attempting to set a point cloud to a non-existing graph vertex.\n");
+      return;
+    }
+    (*slam_graph_)[vertex].cloud_ = cloud;
+    typename SLAMGraph::out_edge_iterator out_edge, out_edge_end;
+    for (tie (out_edge, out_edge_end) = out_edges (vertex, *slam_graph_); out_edge != out_edge_end; ++out_edge)
+      (*slam_graph_)[*out_edge].converged_ = false;
+    typename SLAMGraph::in_edge_iterator in_edge, in_edge_end;
+    for (tie (in_edge, in_edge_end) = in_edges (vertex, *slam_graph_); in_edge != in_edge_end; ++in_edge)
+      (*slam_graph_)[*in_edge].converged_ = false;
+  }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT>
+  inline typename pcl::registration::LUM<PointT>::PointCloudPtr
+  pcl::registration::LUM<PointT>::getPointCloud (Vertex vertex)
+  {
+    if (vertex < 0 || vertex >= num_vertices (*slam_graph_))
+    {
+      PCL_ERROR ("[pcl::registration::LUM::getPointCloud] You are attempting to get a point cloud from a non-existing graph vertex.\n");
+      return PointCloudPtr ();
+    }
+    return (*slam_graph_)[vertex].cloud_;
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -88,21 +107,21 @@ template<typename PointT>
   {
     if (vertex == 0)
     {
-      PCL_WARN("[pcl::registration::LUM::setPose] The pose estimate is ignored for the first cloud in the graph since that will become the reference pose.\n");
+      PCL_ERROR ("[pcl::registration::LUM::setPose] The pose estimate is ignored for the first cloud in the graph since that will become the reference pose.\n");
       return;
     }
     if (vertex < 0 || vertex >= num_vertices (*slam_graph_))
     {
-      PCL_WARN("[pcl::registration::LUM::setPose] You are attempting to set a pose estimate to a non-existing graph vertex.\n");
+      PCL_ERROR ("[pcl::registration::LUM::setPose] You are attempting to set a pose estimate to a non-existing graph vertex.\n");
       return;
     }
     (*slam_graph_)[vertex].pose_ = pose;
     typename SLAMGraph::out_edge_iterator out_edge, out_edge_end;
     for (tie (out_edge, out_edge_end) = out_edges (vertex, *slam_graph_); out_edge != out_edge_end; ++out_edge)
-      (*slam_graph_)[*out_edge].computed_ = false;
+      (*slam_graph_)[*out_edge].converged_ = false;
     typename SLAMGraph::in_edge_iterator in_edge, in_edge_end;
     for (tie (in_edge, in_edge_end) = in_edges (vertex, *slam_graph_); in_edge != in_edge_end; ++in_edge)
-      (*slam_graph_)[*in_edge].computed_ = false;
+      (*slam_graph_)[*in_edge].converged_ = false;
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,7 +131,7 @@ template<typename PointT>
   {
     if (vertex < 0 || vertex >= num_vertices (*slam_graph_))
     {
-      PCL_WARN("[pcl::registration::LUM::getPose] You are attempting to get a pose estimate from a non-existing graph vertex.\n");
+      PCL_ERROR ("[pcl::registration::LUM::getPose] You are attempting to get a pose estimate from a non-existing graph vertex.\n");
       return Vector6f::Zero ();
     }
     return (*slam_graph_)[vertex].pose_;
@@ -121,16 +140,16 @@ template<typename PointT>
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT>
   inline void
-  pcl::registration::LUM<PointT>::setCorrespondences (Vertex source_vertex, Vertex target_vertex, CorrespondencesPtr corrs)
+  pcl::registration::LUM<PointT>::setCorrespondences (Vertex source_vertex, Vertex target_vertex, pcl::CorrespondencesPtr corrs)
   {
     if (corrs->size () < 3)
     {
-      PCL_WARN("[pcl::registration::LUM::setCorrespondences] A set of correspondences needs to contain at least 3 different correspondences.\n");
+      PCL_ERROR ("[pcl::registration::LUM::setCorrespondences] A set of correspondences needs to contain at least 3 different correspondences.\n");
       return;
     }
     if (source_vertex < 0 || source_vertex >= num_vertices (*slam_graph_) || target_vertex < 0 || target_vertex >= num_vertices (*slam_graph_) || source_vertex == target_vertex)
     {
-      PCL_WARN("[pcl::registration::LUM::setCorrespondences] You are attempting to set a set of correspondences between non-existing or identical graph vertices.\n");
+      PCL_ERROR ("[pcl::registration::LUM::setCorrespondences] You are attempting to set a set of correspondences between non-existing or identical graph vertices.\n");
       return;
     }
     Edge e;
@@ -139,7 +158,7 @@ template<typename PointT>
     if (!present)
       tie (e, present) = add_edge (source_vertex, target_vertex, *slam_graph_);
     (*slam_graph_)[e].corrs_ = corrs;
-    (*slam_graph_)[e].computed_ = false;
+    (*slam_graph_)[e].converged_ = false;
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -149,7 +168,7 @@ template<typename PointT>
   {
     if (source_vertex < 0 || source_vertex >= num_vertices (*slam_graph_) || target_vertex < 0 || target_vertex >= num_vertices (*slam_graph_))
     {
-      PCL_WARN("[pcl::registration::LUM::getCorrespondences] You are attempting to get a set of correspondences between non-existing graph vertices.\n");
+      PCL_ERROR ("[pcl::registration::LUM::getCorrespondences] You are attempting to get a set of correspondences between non-existing graph vertices.\n");
       return pcl::CorrespondencesPtr ();
     }
     Edge e;
@@ -157,7 +176,7 @@ template<typename PointT>
     tie (e, present) = edge (source_vertex, target_vertex, *slam_graph_);
     if (!present)
     {
-      PCL_WARN("[pcl::registration::LUM::getCorrespondences] You are attempting to get a set of correspondences from a non-existing graph edge.\n");
+      PCL_ERROR ("[pcl::registration::LUM::getCorrespondences] You are attempting to get a set of correspondences from a non-existing graph edge.\n");
       return pcl::CorrespondencesPtr ();
     }
     return (*slam_graph_)[e].corrs_;
@@ -168,20 +187,26 @@ template<typename PointT>
   void
   pcl::registration::LUM<PointT>::compute ()
   {
-    // Get graph size
-    size_t n = num_vertices (*slam_graph_);
-    if (n < 2)
-    {
-      PCL_WARN("[pcl::registration::LUM::compute] The internal SLAM graph needs to contain at least 2 vertices.\n");
-      return;
-    }
-
+    size_t n;
     for (size_t i = 0; i < max_iterations_; ++i)
     {
-      // Linearized computation of C^-1 and C^-1*D for all edges in the graph (results stored in slam_graph_)
+      // Linearized computation of C^-1 and C^-1*D and convergence checking for all edges in the graph (results stored in slam_graph_)
+      n = 0;
       typename SLAMGraph::edge_iterator e, e_end;
       for (tie (e, e_end) = edges (*slam_graph_); e != e_end; ++e)
-        computeEdge (*e);
+        if (!computeEdge (*e))
+          ++n;
+
+      // All edges have converged
+      if (n == 0)
+      {
+        PCL_INFO ("[pcl::registration::LUM::compute] Computation converged after %d iteration%s.\n", i, i == 1 ? "" : "s");
+        return;
+      }
+
+      // The entire graph gets processed
+      // TODO Only process those parts of the graph that matter
+      n = num_vertices (*slam_graph_);
 
       // Declare matrices G and B
       Eigen::MatrixXf G = Eigen::MatrixXf::Zero (6 * (n - 1), 6 * (n - 1));
@@ -220,6 +245,22 @@ template<typename PointT>
       for (size_t vi = 1; vi != n; ++vi)
         setPose (vi, getPose (vi) - incidenceCorrection (getPose (vi)).inverse () * X.segment (6 * (vi - 1), 6));
     }
+    PCL_INFO ("[pcl::registration::LUM::compute] Computation ended after %d iteration%s.\n", max_iterations_, max_iterations_ == 1 ? "" : "s");
+  }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT>
+  typename pcl::registration::LUM<PointT>::PointCloudPtr
+  pcl::registration::LUM<PointT>::getTransformedCloud (Vertex vertex)
+  {
+    if (vertex < 0 || vertex >= num_vertices (*slam_graph_))
+    {
+      PCL_ERROR ("[pcl::registration::LUM::getTransformedCloud] You are attempting to get a point cloud from a non-existing graph vertex.\n");
+      return PointCloudPtr ();
+    }
+    PointCloudPtr out (new PointCloud);
+    pcl::transformPointCloud (*(*slam_graph_)[vertex].cloud_, *out, poseToTransform ((*slam_graph_)[vertex].pose_));
+    return out;
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -240,60 +281,57 @@ template<typename PointT>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT>
-  void
+  bool
   pcl::registration::LUM<PointT>::computeEdge (Edge e)
   {
-    if ((*slam_graph_)[e].computed_)
-      return;
+    if ((*slam_graph_)[e].converged_)
+      return true;
 
-    // Get correspondences and size
-    CorrespondencesPtr corrs = (*slam_graph_)[e].corrs_;
+    // Get necessary local data from graph
+    PointCloudPtr source_cloud = (*slam_graph_)[source (e, *slam_graph_)].cloud_;
+    PointCloudPtr target_cloud = (*slam_graph_)[target (e, *slam_graph_)].cloud_;
+    Vector6f source_pose = (*slam_graph_)[source (e, *slam_graph_)].pose_;
+    Vector6f target_pose = (*slam_graph_)[target (e, *slam_graph_)].pose_;
+    pcl::CorrespondencesPtr corrs = (*slam_graph_)[e].corrs_;
     size_t m = corrs->size ();
 
-    // Get compounded point clouds
-    // TODO use the linearized compounding operation and apply it only to the correspondence points instead of all points
-    PointCloud source_cloud, target_cloud;
-    pcl::transformPointCloud (*(*slam_graph_)[source (e, *slam_graph_)].cloud_, source_cloud, poseToTransform ((*slam_graph_)[source (e, *slam_graph_)].pose_));
-    pcl::transformPointCloud (*(*slam_graph_)[target (e, *slam_graph_)].cloud_, target_cloud, poseToTransform ((*slam_graph_)[target (e, *slam_graph_)].pose_));
-
-    // Declare matrices M'M and M'Z
-    Matrix6f MM = Matrix6f::Identity ();
+    // Declare and initialize data to be used
+    std::vector<Eigen::Vector3f> corrs_aver (m);
+    std::vector<Eigen::Vector3f> corrs_diff (m);
+    Matrix6f MM = Matrix6f::Zero ();
     Vector6f MZ = Vector6f::Zero ();
 
     for (size_t k = 0; k != m; ++k)
     {
-      // Declare temporary variables
-      float x, y, z, dx, dy, dz;
+      // Get compounded correspondence pair
+      Eigen::Vector3f source_compounded = linearizedCompound (source_pose, source_cloud->points[(*corrs)[k].index_query].getVector3fMap ());
+      Eigen::Vector3f target_compounded = linearizedCompound (target_pose, target_cloud->points[(*corrs)[k].index_match].getVector3fMap ());
 
-      // Get average of point pair k and difference of point pair k
-      x = (source_cloud.points[(*corrs)[k].index_query].x + target_cloud.points[(*corrs)[k].index_match].x) / 2.0;
-      y = (source_cloud.points[(*corrs)[k].index_query].y + target_cloud.points[(*corrs)[k].index_match].y) / 2.0;
-      z = (source_cloud.points[(*corrs)[k].index_query].z + target_cloud.points[(*corrs)[k].index_match].z) / 2.0;
-      dx = source_cloud.points[(*corrs)[k].index_query].x - target_cloud.points[(*corrs)[k].index_match].x;
-      dy = source_cloud.points[(*corrs)[k].index_query].y - target_cloud.points[(*corrs)[k].index_match].y;
-      dz = source_cloud.points[(*corrs)[k].index_query].z - target_cloud.points[(*corrs)[k].index_match].z;
+      // Compute correspondence pair average and difference
+      corrs_aver[k] = (source_compounded + target_compounded) / 2.0;
+      corrs_diff[k] = source_compounded - target_compounded;
 
       // Fast computation of summation elements of M'M
-      MM (0, 4) -= y;
-      MM (0, 5) += z;
-      MM (1, 3) -= z;
-      MM (1, 4) += x;
-      MM (2, 3) += y;
-      MM (2, 5) -= x;
-      MM (3, 4) -= x * z;
-      MM (3, 5) -= x * y;
-      MM (4, 5) -= y * z;
-      MM (3, 3) += y * y + z * z;
-      MM (4, 4) += x * x + y * y;
-      MM (5, 5) += x * x + z * z;
+      MM (0, 4) -= corrs_aver[k] (1);
+      MM (0, 5) += corrs_aver[k] (2);
+      MM (1, 3) -= corrs_aver[k] (2);
+      MM (1, 4) += corrs_aver[k] (0);
+      MM (2, 3) += corrs_aver[k] (1);
+      MM (2, 5) -= corrs_aver[k] (0);
+      MM (3, 4) -= corrs_aver[k] (0) * corrs_aver[k] (2);
+      MM (3, 5) -= corrs_aver[k] (0) * corrs_aver[k] (1);
+      MM (4, 5) -= corrs_aver[k] (1) * corrs_aver[k] (2);
+      MM (3, 3) += corrs_aver[k] (1) * corrs_aver[k] (1) + corrs_aver[k] (2) * corrs_aver[k] (2);
+      MM (4, 4) += corrs_aver[k] (0) * corrs_aver[k] (0) + corrs_aver[k] (1) * corrs_aver[k] (1);
+      MM (5, 5) += corrs_aver[k] (0) * corrs_aver[k] (0) + corrs_aver[k] (2) * corrs_aver[k] (2);
 
       // Fast computation of M'Z
-      MZ (0) += dx;
-      MZ (1) += dy;
-      MZ (2) += dz;
-      MZ (3) += y * dz - z * dy;
-      MZ (4) += x * dy - y * dx;
-      MZ (5) += z * dx - x * dz;
+      MZ (0) += corrs_diff[k] (0);
+      MZ (1) += corrs_diff[k] (1);
+      MZ (2) += corrs_diff[k] (2);
+      MZ (3) += corrs_aver[k] (1) * corrs_diff[k] (2) - corrs_aver[k] (2) * corrs_diff[k] (1);
+      MZ (4) += corrs_aver[k] (0) * corrs_diff[k] (1) - corrs_aver[k] (1) * corrs_diff[k] (0);
+      MZ (5) += corrs_aver[k] (2) * corrs_diff[k] (0) - corrs_aver[k] (0) * corrs_diff[k] (2);
     }
 
     // Remaining elements of M'M
@@ -308,33 +346,42 @@ template<typename PointT>
     MM (5, 3) = MM (3, 5);
     MM (5, 4) = MM (4, 5);
 
-    // Pose difference estimation
+    // Compute pose difference estimation
     Vector6f D = MM.inverse () * MZ;
 
-    // Declare s^2
+    // Convergence check: whether the two poses attached to this edge are aligned
+    // TODO Possibly upgrade to a more advanced metric
+    float translation = fabs (D (0)) + fabs (D (1)) + fabs (D (2));
+    float rotation = fabs (D (3)) + fabs (D (4)) + fabs (D (5));
+    if (translation < convergence_distance_ && rotation < convergence_angle_)
+      (*slam_graph_)[e].converged_ = true;
+
+    // Compute s^2
     float ss = 0;
     for (size_t k = 0; k != m; ++k)
+      ss += pow (corrs_diff[k] (0) - (D (0) + corrs_aver[k] (2) * D (5) - corrs_aver[k] (1) * D (4)), 2) + pow (corrs_diff[k] (1) - (D (1) + corrs_aver[k] (0) * D (4) - corrs_aver[k] (2) * D (3)), 2)
+          + pow (corrs_diff[k] (2) - (D (2) + corrs_aver[k] (1) * D (3) - corrs_aver[k] (0) * D (5)), 2);
+
+    // Convergence check: computational limitations
+    // TODO More accurately determine the computational limitations and update this threshold
+    if (ss < 0.0000000001 || !pcl_isfinite (ss))
     {
-      // Declare temporary variables
-      float x, y, z, dx, dy, dz;
-
-      // Get average of point pair k and difference of point pair k
-      x = (source_cloud.points[(*corrs)[k].index_query].x + target_cloud.points[(*corrs)[k].index_match].x) / 2.0;
-      y = (source_cloud.points[(*corrs)[k].index_query].y + target_cloud.points[(*corrs)[k].index_match].y) / 2.0;
-      z = (source_cloud.points[(*corrs)[k].index_query].z + target_cloud.points[(*corrs)[k].index_match].z) / 2.0;
-      dx = source_cloud.points[(*corrs)[k].index_query].x - target_cloud.points[(*corrs)[k].index_match].x;
-      dy = source_cloud.points[(*corrs)[k].index_query].y - target_cloud.points[(*corrs)[k].index_match].y;
-      dz = source_cloud.points[(*corrs)[k].index_query].z - target_cloud.points[(*corrs)[k].index_match].z;
-
-      // Computation of s^2
-      // TODO if s^2 becomes very small, GX = B is in risk of not being computable
-      ss += pow (dx - (D (0) + z * D (5) - y * D (4)), 2) + pow (dy - (D (1) + x * D (4) - z * D (3)), 2) + pow (dz - (D (2) + y * D (3) - x * D (5)), 2);
+      std::cout << e;
+      if (!pcl_isfinite (ss))
+        PCL_WARN ("[pcl::registration::LUM::compute] Non-finite entries detected on computation between vertex %d and %d.\n", source (e, *slam_graph_), target (e, *slam_graph_));
+      (*slam_graph_)[e].converged_ = true;
     }
 
     // Output results
+    if ((*slam_graph_)[e].converged_)
+    {
+      (*slam_graph_)[e].cinv_ = Matrix6f::Zero ();
+      (*slam_graph_)[e].cinvd_ = Vector6f::Zero ();
+      return true;
+    }
     (*slam_graph_)[e].cinv_ = MM * (1 / ss);
     (*slam_graph_)[e].cinvd_ = MZ * (1 / ss);
-    (*slam_graph_)[e].computed_ = true;
+    return false;
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -343,11 +390,13 @@ template<typename PointT>
   pcl::registration::LUM<PointT>::linearizedCompound (Vector6f pose, Eigen::Vector3f point)
   {
     Eigen::Vector3f out;
-    out (0) = pose (0) - point (2) * sin (pose (4)) + cos (pose (4)) * (point (0) * cos (pose (5)) - point (1) * sin (pose (5)));
-    out (1) = pose (1) + point (2) * cos (pose (4)) * sin (pose (3)) + cos (pose (3)) * (point (1) * cos (pose (5)) + point (0) * sin (pose (5)))
-        + sin (pose (3)) * sin (pose (4)) * (point (0) * cos (pose (5)) - point (1) * sin (pose (5)));
-    out (2) = pose (2) - sin (pose (3)) * (point (1) * cos (pose (5)) + point (0) * sin (pose (5)))
-        + cos (pose (3)) * (point (2) * cos (pose (4)) + sin (pose (4)) * (point (0) * cos (pose (5)) - point (1) * sin (pose (5))));
+    // TODO the following linearized compound has bugs in it
+//    out (0) = pose (0) - point (2) * sin (pose (4)) + cos (pose (4)) * (point (0) * cos (pose (5)) - point (1) * sin (pose (5)));
+//    out (1) = pose (1) + point (2) * cos (pose (4)) * sin (pose (3)) + cos (pose (3)) * (point (1) * cos (pose (5)) + point (0) * sin (pose (5)))
+//        + sin (pose (3)) * sin (pose (4)) * (point (0) * cos (pose (5)) - point (1) * sin (pose (5)));
+//    out (2) = pose (2) - sin (pose (3)) * (point (1) * cos (pose (5)) + point (0) * sin (pose (5)))
+//        + cos (pose (3)) * (point (2) * cos (pose (4)) + sin (pose (4)) * (point (0) * cos (pose (5)) - point (1) * sin (pose (5))));
+    out = poseToTransform (pose) * point;
     return out;
   }
 
