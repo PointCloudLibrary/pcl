@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: gpu_extract_clusters.h$
+ * $Id:$
  *
  */
 
@@ -51,13 +51,13 @@ namespace pcl
 {
   namespace gpu
   {
-
     void
-    extractEuclideanClusters (const pcl::gpu::Octree                &tree,
-                              float                                 tolerance, 
-                              std::vector<PointIndices>             &clusters,
-                              unsigned int                          min_pts_per_cluster, 
-                              unsigned int                          max_pts_per_cluster);
+    extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> > &host_cloud_,
+                              const pcl::gpu::Octree::Ptr                 &tree,
+                              float                                       tolerance,
+                              std::vector<PointIndices>                   &clusters,
+                              unsigned int                                min_pts_per_cluster, 
+                              unsigned int                                max_pts_per_cluster);
 
    /** \brief @b EuclideanClusterExtraction represents a segmentation class for cluster extraction in an Euclidean sense, depending on pcl::gpu::octree
     * \author Koen Buys, Radu Bogdan Rusu
@@ -70,10 +70,10 @@ namespace pcl
         typedef pcl::PointCloud<pcl::PointXYZ> PointCloudHost;
         typedef PointCloudHost::Ptr PointCloudHostPtr;
         typedef PointCloudHost::ConstPtr PointCloudHostConstPtr;
-        
+
         typedef PointIndices::Ptr PointIndicesPtr;
         typedef PointIndices::ConstPtr PointIndicesConstPtr;
-        
+
         typedef pcl::gpu::Octree GPUTree;
         typedef pcl::gpu::Octree::Ptr GPUTreePtr;
 
@@ -121,15 +121,20 @@ namespace pcl
 
         inline void setInput (CloudDevice input) {input_ = input;}
 
+        inline void setHostCloud (PointCloudHostPtr host_cloud) {host_cloud_ = host_cloud;}
+
         /** \brief Cluster extraction in a PointCloud given by <setInputCloud (), setIndices ()>
           * \param clusters the resultant point clusters
           */
         void extract (std::vector<PointIndices> &clusters);
 
       protected:
-        // Members derived from the base class
+        /** \brief the input cloud on the GPU */
         CloudDevice input_;
-        
+
+        /** \brief the original cloud the Host */
+        PointCloudHostPtr host_cloud_;
+
         /** \brief A pointer to the spatial search object. */
         GPUTreePtr tree_;
 
@@ -152,7 +157,7 @@ namespace pcl
       comparePointClusters (const pcl::PointIndices &a, const pcl::PointIndices &b)
     {
       return (a.indices.size () < b.indices.size ());
-    }    
+    }
   }
 }
 
