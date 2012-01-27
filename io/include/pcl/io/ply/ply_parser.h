@@ -556,7 +556,7 @@ inline bool ply::ply_parser::parse_scalar_property (format_type format,
   typedef ScalarType scalar_type;
   if (format == ascii_format)
   {
-    scalar_type value;
+    scalar_type value = std::numeric_limits<scalar_type>::quiet_NaN ();
     char space = ' ';
     istream >> value;
     if (!istream.eof ())
@@ -579,7 +579,7 @@ inline bool ply::ply_parser::parse_scalar_property (format_type format,
   }
   else
   {
-    scalar_type value;
+    scalar_type value = std::numeric_limits<scalar_type>::quiet_NaN ();
     istream.read (reinterpret_cast<char*> (&value), sizeof (scalar_type));
     if (!istream)
     {
@@ -613,7 +613,7 @@ inline bool ply::ply_parser::parse_list_property (format_type format, std::istre
   typedef ScalarType scalar_type;
   if (format == ascii_format)
   {
-    size_type size;
+    size_type size = std::numeric_limits<size_type>::infinity ();
     char space = ' ';
     istream >> size;
     if (!istream.eof ())
@@ -634,7 +634,7 @@ inline bool ply::ply_parser::parse_list_property (format_type format, std::istre
     }
     for (std::size_t index = 0; index < size; ++index)
     {
-      scalar_type value;
+      scalar_type value = std::numeric_limits<scalar_type>::quiet_NaN ();
       char space = ' ';
       istream >> value;
       if (!istream.eof ())
@@ -661,7 +661,7 @@ inline bool ply::ply_parser::parse_list_property (format_type format, std::istre
     return (true);
   }
   else {
-    size_type size;
+    size_type size = std::numeric_limits<size_type>::infinity ();
     istream.read (reinterpret_cast<char*> (&size), sizeof (size_type));
     if (((format == binary_big_endian_format) && (host_byte_order == little_endian_byte_order)) || 
         ((format == binary_little_endian_format) && (host_byte_order == little_endian_byte_order)))
@@ -681,7 +681,7 @@ inline bool ply::ply_parser::parse_list_property (format_type format, std::istre
       list_property_begin_callback (size);
     }
     for (std::size_t index = 0; index < size; ++index) {
-      scalar_type value;
+      scalar_type value  = std::numeric_limits<scalar_type>::quiet_NaN ();
       istream.read (reinterpret_cast<char*> (&value), sizeof (scalar_type));
       if (!istream) {
         if (error_callback_) {

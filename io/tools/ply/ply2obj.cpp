@@ -70,7 +70,7 @@ class ply_to_obj_converter
 {
   public:
     typedef int flags_type;
-    typedef enum { triangulate = 1 << 0 };
+    enum { triangulate = 1 << 0 };
 
     ply_to_obj_converter (flags_type flags = 0);
 
