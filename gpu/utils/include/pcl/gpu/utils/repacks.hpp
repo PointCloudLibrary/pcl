@@ -78,9 +78,9 @@ namespace pcl
         
         void copyFields(const DeviceArray<PointXYZ>& src, DeviceArray<PointNormal>& dst)
         {
-            //PointXYZ.x -> PointNormal.x
-            //PointXYZ.y -> PointNormal.y
-            //PointXYZ.z -> PointNormal.z
+            //PointXYZ.x (0) -> PointNormal.x (0)
+            //PointXYZ.y (1) -> PointNormal.y (1)
+            //PointXYZ.z (2) -> PointNormal.z (2)
             copyFieldsEx(src, dst, rule(cp(0, 0), cp(1, 1), cp(2, 2)));
         };
 
@@ -94,9 +94,9 @@ namespace pcl
 
         void copyFields(const DeviceArray<PointXYZRGBL>& src, DeviceArray<PointXYZ>& dst)
         {
-            //PointXYZRGBL.x -> PointXYZ.x
-            //PointXYZRGBL.y -> PointXYZ.y
-            //PointXYZRGBL.z -> PointXYZ.z
+            //PointXYZRGBL.x (0) -> PointXYZ.x (0)
+            //PointXYZRGBL.y (1) -> PointXYZ.y (1)
+            //PointXYZRGBL.z (2) -> PointXYZ.z (2)
             copyFieldsEx(src, dst, rule(cp(0, 0), cp(1, 1), cp(2, 2)));
         };
     }

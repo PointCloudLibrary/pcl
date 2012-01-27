@@ -76,7 +76,7 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
     // Create the query queue on the device, point based not indices
     pcl::gpu::Octree::Queries queries_device;
     // Create the query queue on the host
-    std::vector<pcl::PointXYZ> queries_host;
+    std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>  > queries_host;
 
 //    std::vector<int> seed_queue;
 //    seed_queue.push_back (i);
