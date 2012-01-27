@@ -48,9 +48,6 @@ namespace pcl
 
                     byte = ((code >> 0) & 0xFF);
 
-                    if (idx == 0 && out == 12)
-                        printf("byte1 = %d\n", byte);
-
                     if (byte == 0xFF)
                         break;
                     else
@@ -58,32 +55,20 @@ namespace pcl
 
                     byte = ((code >> 8) & 0xFF);
 
-                    if (idx == 0 && out == 12)
-                        printf("byte2 = %d\n", byte);
-
                     if (byte == 0xFF)
                         break;
                     else
                         point_out.data[byte >> 4] = point_in.data[byte & 0xF];
 
-
-
-
                     byte = ((code >> 16) & 0xFF);
-
-                    if (idx == 0 && out == 12)
-                        printf("byte3 = %d\n", byte);
-
+                    
                     if (byte == 0xFF)
                         break;
                     else
                         point_out.data[byte >> 4] = point_in.data[byte & 0xF];
 
                     byte = ((code >> 24) & 0xFF);
-
-                    if (idx == 0 && out == 12)
-                        printf("byte4 = %d\n", byte);
-
+                    
                     if (byte == 0xFF)
                         break;
                     else
