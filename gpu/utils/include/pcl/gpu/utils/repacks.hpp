@@ -46,23 +46,59 @@ namespace pcl
 {
     namespace gpu
     {
-        struct PCL_EXPORTS Repack
-        {            
-            template<typename In, typename Out>
-            static void invoke(const DeviceArray<In>& input, DeviceArray<Out>& ouput);
+        ///////////////////////////////////////
+        ///  This is an experimental code   ///
+        ///////////////////////////////////////
 
-            template<typename In, typename Out>
-            static void invoke(const DeviceArray<In>& input, DeviceArray2D<Out>& ouput);
+        const int NoCP = 0xFFFFFFFF;
+        
+        /** \brief Returns field copy operation code. */
+        inline int cp(int from, int to) 
+        { 
+            return ((to & 0xF) << 4) + (from & 0xF); 
+        }
 
-            template<typename In, typename Out>
-            static void invoke(const DeviceArray2D<In>& input, DeviceArray<Out>& ouput);            
+        /* Combines several field copy operations to one int (called rule) */
+        inline int rule(int cp1, int cp2 = NoCP, int cp3 = NoCP, int cp4 = NoCP)
+        {
+            return (cp1 & 0xFF) + ((cp2 & 0xFF) << 8) + ((cp3 & 0xFF) << 16) + ((cp4 & 0xFF) << 24);            
+        }
+
+        /* Combines performs all field copy operations in given rule array (can be 0, 1, or 16 copies) */
+        void copyFieldsImpl(int in_size, int out_size, int rules[4], int size, const void* input, void* output);
+                      
+
+        template<typename PointIn, typename PointOut>
+        void copyFieldsEx(const DeviceArray<PointIn>& src, DeviceArray<PointOut>& dst, int rule1 = NoCP, int rule2 = NoCP, int rule3 = NoCP, int rule4 = NoCP)
+        {
+            int rules[4] = { rule1, rule2, rule3, rule4 };
+            dst.create(src.size());
+            copyFieldsImpl(sizeof(PointIn)/sizeof(int), sizeof(PointOut)/sizeof(int), rules, (int)src.size(), src.ptr(), dst.ptr());
+        }
+        
+        void copyFields(const DeviceArray<PointXYZ>& src, DeviceArray<PointNormal>& dst)
+        {
+            //PointXYZ.x -> PointNormal.x
+            //PointXYZ.y -> PointNormal.y
+            //PointXYZ.z -> PointNormal.z
+            copyFieldsEx(src, dst, rule(cp(0, 0), cp(1, 1), cp(2, 2)));
         };
 
-        template<>
-        PCL_EXPORTS void Repack::invoke<pcl::PointXYZ, float>(const DeviceArray<pcl::PointXYZ>& input, DeviceArray2D<float>& ouput);
+        void copyFields(const DeviceArray<Normal>& src, DeviceArray<PointNormal>& dst)
+        {
+            //PointXYZ.normal_x (0) -> PointNormal.normal_x (4)
+            //PointXYZ.normal_y (1) -> PointNormal.normal_y (5)
+            //PointXYZ.normal_z (2) -> PointNormal.normal_z (6)
+            copyFieldsEx(src, dst, rule(cp(0, 4), cp(1, 5), cp(2, 6)));
+        };
 
-        template<>
-        PCL_EXPORTS void Repack::invoke<float, pcl::PointXYZ>(const DeviceArray2D<float>& input, DeviceArray<pcl::PointXYZ>& ouput);
+        void copyFields(const DeviceArray<PointXYZRGBL>& src, DeviceArray<PointXYZ>& dst)
+        {
+            //PointXYZRGBL.x -> PointXYZ.x
+            //PointXYZRGBL.y -> PointXYZ.y
+            //PointXYZRGBL.z -> PointXYZ.z
+            copyFieldsEx(src, dst, rule(cp(0, 0), cp(1, 1), cp(2, 2)));
+        };
     }
 }
 

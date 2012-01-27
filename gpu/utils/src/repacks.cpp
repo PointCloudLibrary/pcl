@@ -39,15 +39,3 @@
 #include "pcl/gpu/utils/repacks.hpp"
 #include "internal.hpp"
 
-template<> 
-void pcl::gpu::Repack::invoke<pcl::PointXYZ, float>(const DeviceArray<pcl::PointXYZ>& input, DeviceArray2D<float>& ouput)
-{
-    ouput.create(3, input.size());
-}
-
-template<> 
-void pcl::gpu::Repack::invoke<float, pcl::PointXYZ>(const DeviceArray2D<float>& input, DeviceArray<pcl::PointXYZ>& ouput)
-{
-    assert(input.rows() == 3);
-}
-
