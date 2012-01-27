@@ -410,7 +410,6 @@ pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>
         continue;
 
       // Copy the value at the specified field
-      //memcpy (&field_data, &cloud_->data[point_offset], sizeof (float));
       memcpy (&field_data, &cloud_->data[point_offset], pcl::getFieldSize (cloud_->fields[field_idx_].datatype));
       colors[j] = field_data;
       j++;
