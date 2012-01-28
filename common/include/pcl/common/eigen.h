@@ -200,24 +200,41 @@ namespace pcl
   template <typename Matrix, typename Vector> inline void
   eigen22 (const Matrix& mat, Matrix& eigenvectors, Vector& eigenvalues)
   {
+    // if diagonal matrix, the eigenvalues are the diagonal elements
+    // and the eigenvectors are not unique, thus set to Identity
+    if (fabs(mat.coeff (1)) <= std::numeric_limits<typename Matrix::Scalar>::min ())
+    {
+      eigenvalues.coeffRef (0) = std::min(mat.coeff (0), mat.coeff (2));
+      eigenvalues.coeffRef (1) = std::max(mat.coeff (0), mat.coeff (2));
+      eigenvectors.coeffRef (0) = 1.0;
+      eigenvectors.coeffRef (1) = 0.0;
+      eigenvectors.coeffRef (2) = 0.0;
+      eigenvectors.coeffRef (3) = 1.0;
+      return;
+    }
+
     // 0.5 to optimize further calculations
-    typename Matrix::Scalar trace = 0.5 * (mat (0, 0) + mat (1, 1));
-    typename Matrix::Scalar determinant = mat (0, 0) * mat (1, 1) - mat (0,1) * mat (1, 0);
+    typename Matrix::Scalar trace = 0.5 * (mat.coeff (0) + mat.coeff (3));
+    typename Matrix::Scalar determinant = mat.coeff (0) * mat.coeff (3) - mat.coeff (1) * mat.coeff (1);
 
     typename Matrix::Scalar temp = trace * trace - determinant;
+
     if (temp < 0)
       temp = 0;
+    else
+      temp = sqrt (temp);
 
-    eigenvalues (0) = trace - sqrt (temp);
-    eigenvalues (1) = trace + sqrt (temp);
+    eigenvalues.coeffRef (0) = trace - temp;
+    eigenvalues.coeffRef (1) = trace + temp;
 
-    eigenvectors (0, 0) = - mat (0, 1);
-    eigenvectors (1, 0) = mat (0, 0) - eigenvalues (0);
-
-    eigenvectors.col (0).normalize ();
-
-    eigenvectors (0, 1) = - eigenvectors (0, 1);
-    eigenvectors (1, 1) = eigenvectors (0, 0);
+    // either this is in a row or column depending on RowMajor or ColumnMajor
+    eigenvectors.coeffRef (0) = - mat.coeff (1);
+    eigenvectors.coeffRef (2) = mat.coeff (0) - eigenvalues.coeff (0);
+    typename Matrix::Scalar norm = 1.0 / sqrt (eigenvectors.coeffRef (0) * eigenvectors.coeffRef (0) + eigenvectors.coeffRef (2) * eigenvectors.coeffRef (2));
+    eigenvectors.coeffRef (0) *= norm;
+    eigenvectors.coeffRef (2) *= norm;
+    eigenvectors.coeffRef (1) = eigenvectors.coeffRef (2);
+    eigenvectors.coeffRef (3) = -eigenvectors.coeffRef (0);
   }
 
   /** \brief determines the eigenvector and eigenvalue of the smallest eigenvalue of the symmetric positive semi definite input matrix
@@ -472,6 +489,31 @@ namespace pcl
     evals *= scale;
   }
 
+  /** \brief calculates the inverse of a 2x2 matrix
+    * \param[in] matrix matrix to be inverted
+    * \param[out] inverse the resultant inverted matrix
+    * \note only the upper triangular part is taken into account => non symmetric matrices will give wrong results
+    * \return determinant of the original matrix => if 0 no inverse exists => result is invalid
+    * \ingroup common
+    */
+  template<typename Matrix> inline typename Matrix::Scalar
+  invert2x2 (const Matrix& matrix, Matrix& inverse)
+  {
+    typedef typename Matrix::Scalar Scalar;
+    Scalar det = matrix.coeff (0) * matrix.coeff (3) - matrix.coeff (1) * matrix.coeff (2) ;
+
+    if (det != 0)
+    {
+      //Scalar inv_det = Scalar (1.0) / det;
+      inverse.coeffRef (0) =   matrix.coeff (3);
+      inverse.coeffRef (1) = - matrix.coeff (1);
+      inverse.coeffRef (2) = - matrix.coeff (2);
+      inverse.coeffRef (3) =   matrix.coeff (0);
+      inverse /= det;
+    }
+    return det;
+  }
+
   /** \brief calculates the inverse of a 3x3 symmetric matrix.
     * \param[in] matrix matrix to be inverted
     * \param[out] inverse the resultant inverted matrix
@@ -479,7 +521,7 @@ namespace pcl
     * \return determinant of the original matrix => if 0 no inverse exists => result is invalid
     * \ingroup common
     */
-  template<typename Matrix> inline typename Matrix::Scalar 
+  template<typename Matrix> inline typename Matrix::Scalar
   invert3x3SymMatrix (const Matrix& matrix, Matrix& inverse)
   {
     typedef typename Matrix::Scalar Scalar;
@@ -487,22 +529,66 @@ namespace pcl
     // a b c
     // b d e
     // c e f
+    //| a b c |-1             |   fd-ee    ce-bf   be-cd  |
+    //| b d e |    =  1/det * |   ce-bf    af-cc   bc-ae  |
+    //| c e f |               |   be-cd    bc-ae   ad-bb  |
 
-    Scalar df_ee = matrix (1, 1) * matrix (2, 2) - matrix (1, 2) * matrix (1, 2);
-    Scalar ce_bf = matrix (0, 2) * matrix (1, 2) - matrix (0, 1) * matrix (2, 2);
-    Scalar be_cd = matrix (0, 1) * matrix (1, 2) - matrix (0, 2) * matrix (1, 1);
+    //det = a(fd-ee) + b(ec-fb) + c(eb-dc)
 
-    Scalar det = matrix (0, 0) * df_ee + matrix (0, 1) * ce_bf + matrix (0, 2) * be_cd;
+    Scalar fd_ee = matrix.coeff (4) * matrix.coeff (8) - matrix.coeff (7) * matrix.coeff (5);
+    Scalar ce_bf = matrix.coeff (2) * matrix.coeff (5) - matrix.coeff (1) * matrix.coeff (8);
+    Scalar be_cd = matrix.coeff (1) * matrix.coeff (5) - matrix.coeff (2) * matrix.coeff (4);
+
+    Scalar det = matrix.coeff (0) * fd_ee + matrix.coeff (1) * ce_bf + matrix.coeff (2) * be_cd;
 
     if (det != 0)
     {
-      Scalar inv_det = Scalar (1.0) / det;
-      inverse (0, 0) = df_ee * inv_det;
-      inverse (0, 1) = ce_bf * inv_det;
-      inverse (0, 2) = be_cd * inv_det;
-      inverse (1, 1) = (matrix (0, 0) * matrix (2, 2) - matrix (0, 2) * matrix (0, 2)) * inv_det;
-      inverse (1, 2) = (matrix (0, 1) * matrix (0, 2) - matrix (0, 0) * matrix (1, 2)) * inv_det;
-      inverse (2, 2) = (matrix (0, 0) * matrix (1, 1) - matrix (0, 1) * matrix (0, 1)) * inv_det;
+      //Scalar inv_det = Scalar (1.0) / det;
+      inverse.coeffRef (0) = fd_ee;
+      inverse.coeffRef (1) = inverse.coeffRef (3) = ce_bf;
+      inverse.coeffRef (2) = inverse.coeffRef (6) = be_cd;
+      inverse.coeffRef (4) = (matrix.coeff (0) * matrix.coeff (8) - matrix.coeff (2) * matrix.coeff (2));
+      inverse.coeffRef (5) = inverse.coeffRef (7) = (matrix.coeff (1) * matrix.coeff (2) - matrix.coeff (0) * matrix.coeff (5));
+      inverse.coeffRef (8) = (matrix.coeff (0) * matrix.coeff (4) - matrix.coeff (1) * matrix.coeff (1));
+      inverse /= det;
+    }
+    return det;
+  }
+
+  /** \brief calculates the inverse of a general 3x3 matrix.
+    * \param[in] matrix matrix to be inverted
+    * \param[out] inverse the resultant inverted matrix
+    * \return determinant of the original matrix => if 0 no inverse exists => result is invalid
+    * \ingroup common
+    */
+  template<typename Matrix> inline typename Matrix::Scalar
+  invert3x3Matrix (const Matrix& matrix, Matrix& inverse)
+  {
+    typedef typename Matrix::Scalar Scalar;
+
+    //| a b c |-1             |   ie-hf    hc-ib   fb-ec  |
+    //| d e f |    =  1/det * |   gf-id    ia-gc   dc-fa  |
+    //| g h i |               |   hd-ge    gb-ha   ea-db  |
+    //det = a(ie-hf) + d(hc-ib) + g(fb-ec)
+
+    Scalar ie_hf = matrix.coeff (8) * matrix.coeff (4) - matrix.coeff (7) * matrix.coeff (5);
+    Scalar hc_ib = matrix.coeff (7) * matrix.coeff (2) - matrix.coeff (8) * matrix.coeff (1);
+    Scalar fb_ec = matrix.coeff (5) * matrix.coeff (1) - matrix.coeff (4) * matrix.coeff (2);
+    Scalar det = matrix.coeff (0) * (ie_hf) + matrix.coeff (3) * (hc_ib) + matrix.coeff (6) * (fb_ec) ;
+
+    if (det != 0)
+    {
+      inverse.coeffRef (0) = ie_hf;
+      inverse.coeffRef (1) = hc_ib;
+      inverse.coeffRef (2) = fb_ec;
+      inverse.coeffRef (3) = matrix.coeff (6) * matrix.coeff (5) - matrix.coeff (8) * matrix.coeff (3);
+      inverse.coeffRef (4) = matrix.coeff (8) * matrix.coeff (0) - matrix.coeff (6) * matrix.coeff (2);
+      inverse.coeffRef (5) = matrix.coeff (3) * matrix.coeff (2) - matrix.coeff (5) * matrix.coeff (0);
+      inverse.coeffRef (6) = matrix.coeff (7) * matrix.coeff (3) - matrix.coeff (6) * matrix.coeff (4);
+      inverse.coeffRef (7) = matrix.coeff (6) * matrix.coeff (1) - matrix.coeff (7) * matrix.coeff (0);
+      inverse.coeffRef (8) = matrix.coeff (4) * matrix.coeff (0) - matrix.coeff (3) * matrix.coeff (1);
+
+      inverse /= det;
     }
     return det;
   }
