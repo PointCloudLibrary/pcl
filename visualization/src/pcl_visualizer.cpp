@@ -874,6 +874,7 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
     case PCL_VISUALIZER_COLOR:
     {
       actor->GetProperty ()->SetColor (val1, val2, val3);
+      actor->GetMapper ()->ScalarVisibilityOff ();
       actor->Modified ();
       break;
     }
