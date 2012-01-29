@@ -48,6 +48,8 @@ namespace pcl
   /** \brief FPFHEstimation estimates the <b>Fast Point Feature Histogram (FPFH)</b> descriptor for a given point 
     * cloud dataset containing points and normals.
     *
+    * A commonly used type for PointOutT is pcl::FPFHSignature33.
+    *
     * \note If you use this code in any academic work, please cite:
     *
     *   - R.B. Rusu, N. Blodow, M. Beetz.

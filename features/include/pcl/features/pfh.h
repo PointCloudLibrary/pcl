@@ -70,6 +70,8 @@ namespace pcl
   /** \brief PFHEstimation estimates the Point Feature Histogram (PFH) descriptor for a given point cloud dataset
     * containing points and normals.
     *
+    * A commonly used type for PointOutT is pcl::PFHSignature125.
+    *
     * \note If you use this code in any academic work, please cite:
     *
     *   - R.B. Rusu, N. Blodow, Z.C. Marton, M. Beetz.
