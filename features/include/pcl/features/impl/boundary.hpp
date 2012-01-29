@@ -129,7 +129,7 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClou
     {
       if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
-        output.points[idx].boundary_point = std::numeric_limits<float>::quiet_NaN ();
+        output.points[idx].boundary_point = std::numeric_limits<uint8_t>::quiet_NaN ();
         output.is_dense = false;
         continue;
       }
