@@ -863,8 +863,8 @@ namespace pcl
   }
 
   /** \brief A point structure representing the generic Signature of Histograms of OrienTations (SHOT).
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct SHOT
   {
     std::vector<float> descriptor;
@@ -880,63 +880,9 @@ namespace pcl
     return (os);
   }
 
-  /** \brief A point structure representing the Signature of Histograms of OrienTations (SHOT).
-   * \ingroup common
-   */
-  //struct _SHOT352
-  //{
-  //
-  ////  std::vector<float> descriptor;
-  //  float descriptor[352];
-  //	float rf[9];
-  //  uint32_t size;
-  //};
-  //struct SHOT352 : public _SHOT352
-  //{
-  //  SHOT352 ()
-  //  {
-  //    size = 352;
-  //  }
-  //};
-  //inline std::ostream& operator << (std::ostream& os, const SHOT352& p)
-  //{
-  //	for (int i = 0; i < 9; ++i)
-  //    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
-  //  for (uint32_t i = 0; i < p.size; ++i)
-  //    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 351 ? ", " : ")");
-  //  return (os);
-  //}
-  //
-  //
-  ///** \brief A point structure representing the Signature of Histograms of OrienTations (SHOT) with shape and color information.
-  //  * \ingroup common
-  //  */
-  //struct _SHOT1344
-  //{
-  ////  std::vector<float> descriptor;
-  //  float descriptor[1344];
-  //	float rf[9];
-  //  uint32_t size;
-  //};
-  //struct SHOT1344 : public _SHOT1344
-  //{
-  //  SHOT1344 ()
-  //  {
-  //    size = 1344;
-  //  }
-  //};
-  //inline std::ostream& operator << (std::ostream& os, const SHOT1344& p)
-  //{
-  //	for (int i = 0; i < 9; ++i)
-  //    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
-  //  for (uint32_t i = 0; i < p.size; ++i)
-  //    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 1343 ? ", " : ")");
-  //  return (os);
-  //}
-
   /** \brief A point structure representing the Fast Point Feature Histogram (FPFH).
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct FPFHSignature33
   {
     float histogram[33];
