@@ -61,7 +61,11 @@ namespace pcl
     *  than the median distance between vertices in the mesh 
     *  (the definition of mesh resolution), the position of individual 
     *  vertices will be averaged out during spin image generation.
-    *  
+    *
+    *  With the default paramters, pcl::Histogram<153> is a good choice for PointOutT.
+    *  Of course the dimension of this descriptor must change to match the number
+    *  of bins set by the parameters.
+    *
     *  For further information please see: <br>
     *  Johnson, A. E., & Hebert, M. (1998). Surface Matching for Object Recognition in 
     *  Complex 3D Scenes. Image and Vision Computing, 16, 635-651.

@@ -58,7 +58,9 @@ namespace pcl
     *   - desc std::vector<float> which size is determined by the number of bins 
     *     radius_bins_ + elevation_bins_ + azimuth_bins_. If shift is required then the 
     *     computed descriptor will be shift along the azimuthal direction.
-    * 
+    *
+    * The pcl::SHOT descriptor is a good choice for PointOutT.
+    *
     * \attention 
     * The convention for a 3D shape context descriptor is:
     *   - if a query point's nearest neighbors cannot be estimated, the feature descriptor will be set to NaN (not a number), and the RF to 0
