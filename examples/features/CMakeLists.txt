@@ -1,14 +1,18 @@
+add_executable(example_FastPointFeatureHistograms FastPointFeatureHistograms.cpp)
+target_link_libraries(example_FastPointFeatureHistograms pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
+
 add_executable(example_NormalEstimation NormalEstimation.cpp)
 target_link_libraries(example_NormalEstimation pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
 
 add_executable(example_PointFeatureHistograms PointFeatureHistograms.cpp)
 target_link_libraries(example_PointFeatureHistograms pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
 
-add_executable(example_FastPointFeatureHistograms FastPointFeatureHistograms.cpp)
-target_link_libraries(example_FastPointFeatureHistograms pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
+add_executable(example_PrincipalCurvaturesEstimation PrincipalCurvaturesEstimation.cpp)
+target_link_libraries(example_PrincipalCurvaturesEstimation pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
 
 add_executable(example_ShapeContexts ShapeContexts.cpp)
 target_link_libraries(example_ShapeContexts pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
 
 add_executable(example_SpinImages SpinImages.cpp)
 target_link_libraries(example_SpinImages pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
+
