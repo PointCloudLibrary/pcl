@@ -5,14 +5,15 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/kdtree/kdtree_flann.h>
 
-int main (int argc, char** argv)
+int
+main (int argc, char** argv)
 {
   std::string fileName = argv[1];
   std::cout << "Reading " << fileName << std::endl;
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
-  if (pcl::io::loadPCDFile<pcl::PointXYZ> (fileName, *cloud) == -1) //* load the file
+  if (pcl::io::loadPCDFile<pcl::PointXYZ> (fileName, *cloud) == -1) // load the file
   {
     PCL_ERROR ("Couldn't read file");
     return -1;
