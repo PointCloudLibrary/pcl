@@ -132,13 +132,21 @@ main (int argc, char** argv)
   }
 
   // Parse the command line arguments for .pcd files
-  std::vector<int> p_file_indices;
-  p_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
-  if (p_file_indices.size () != 2)
+  std::vector<int> pcd_file_indices;
+  pcd_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
+  if (pcd_file_indices.size () != 1)
   {
     print_error ("Need one input PCD file and one output PCD file to continue.\n");
     return (-1);
   }
+
+  std::vector<int> vtk_file_indices = parse_file_extension_argument (argc, argv, ".vtk");
+  if (vtk_file_indices.size () != 1)
+  {
+    print_error ("Need one output VTK file to continue.\n");
+    return (-1);
+  }
+
 
   // Command line parsing
   double leaf_size = default_leaf_size;
@@ -158,7 +166,7 @@ main (int argc, char** argv)
 
   // Load the first file
   sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
-  if (!loadCloud (argv[p_file_indices[0]], *cloud))
+  if (!loadCloud (argv[pcd_file_indices[0]], *cloud))
     return (-1);
 
   // Apply the marching cubes algorithm
@@ -166,6 +174,6 @@ main (int argc, char** argv)
   compute (cloud, output, leaf_size, iso_level, use_dot);
 
   // Save into the second file
-  saveCloud (argv[p_file_indices[1]], output);
+  saveCloud (argv[vtk_file_indices[0]], output);
 }
 
