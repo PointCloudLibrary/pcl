@@ -419,7 +419,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getBoundingBox (
 template<typename PointT, typename LeafT, typename OctreeT> void
 pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (const PointT& pointIdx_arg)
 {
-  const double minValue = 1e-10;
+  const double minValue = std::numeric_limits<float>::epsilon();
 
   // increase octree size until point fits into bounding box
   while (true)
@@ -456,7 +456,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
 
         this->rootNode_ = newRootBranch;
 
-        octreeSideLen = maxX_ - minX_ - minValue;
+        octreeSideLen = maxX_ - minX_ + minValue;
 
         if (bUpperBoundViolationX)
           maxX_ += octreeSideLen;
@@ -476,13 +476,13 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
       else
       {
         // octree is empty - we set the center of the bounding box to our first pixel
-        this->minX_ = pointIdx_arg.x - this->resolution_ / 2 + minValue;
-        this->minY_ = pointIdx_arg.y - this->resolution_ / 2 + minValue;
-        this->minZ_ = pointIdx_arg.z - this->resolution_ / 2 + minValue;
+        this->minX_ = pointIdx_arg.x - this->resolution_ / 2;
+        this->minY_ = pointIdx_arg.y - this->resolution_ / 2;
+        this->minZ_ = pointIdx_arg.z - this->resolution_ / 2;
 
-        this->maxX_ = pointIdx_arg.x + this->resolution_ / 2 - minValue;
-        this->maxY_ = pointIdx_arg.y + this->resolution_ / 2 - minValue;
-        this->maxZ_ = pointIdx_arg.z + this->resolution_ / 2 - minValue;
+        this->maxX_ = pointIdx_arg.x + this->resolution_ / 2;
+        this->maxY_ = pointIdx_arg.y + this->resolution_ / 2;
+        this->maxZ_ = pointIdx_arg.z + this->resolution_ / 2;
       }
 
       getKeyBitSize ();
@@ -555,7 +555,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getKeyBitSize ()
 
   double octreeSideLen;
 
-  const double minValue = 1e-10;
+  const double minValue = std::numeric_limits<float>::epsilon();
 
   // find maximum key values for x, y, z
   maxKeyX = ceil ((maxX_ - minX_) / resolution_);

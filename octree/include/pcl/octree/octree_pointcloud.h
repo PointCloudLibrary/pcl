@@ -174,6 +174,8 @@ namespace pcl
           assert( this->leafCount_ == 0 );
 
           resolution_ = resolution_arg;
+
+          getKeyBitSize();
         }
 
         /** \brief Get octree voxel resolution
