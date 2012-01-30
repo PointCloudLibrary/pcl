@@ -127,8 +127,11 @@ if(build)
     target_link_libraries(${LIB_NAME} pcl_common pcl_io_ply ${VTK_IO_TARGET_LINK_LIBRARIES})
 
     if(OPENNI_FOUND)
-      find_package(libusb-1.0 REQUIRED)
-      target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES} ${LIBUSB_1_LIBRARIES})
+      target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
+      if(NOT WIN32)
+        find_package(libusb-1.0 REQUIRED)
+        target_link_libraries(${LIB_NAME} ${LIBUSB_1_LIBRARIES})
+      endif()
     endif(OPENNI_FOUND)
 
     set(EXT_DEPS eigen3)
