@@ -31,6 +31,7 @@ if (ANDROID_NDK)
   message ("PCL shared libs on Android must be: ${PCL_SHARED_LIBS}")
 endif()
 
+include(${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake)
 include(${PCL_SOURCE_DIR}/cmake/pcl_options.cmake)
 
 # ---[ Unix/Darwin/Windows specific flags
@@ -121,6 +122,11 @@ ENDIF("${is_system_dir}" STREQUAL "-1")
 # SSE flags
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
 PCL_CHECK_FOR_SSE()
+FIND_PACKAGE(OpenMP)
+if(OPENMP_FOUND)
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
 # Boost (required)
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake)
 # Eigen (required)
@@ -131,8 +137,6 @@ add_definitions(-DEIGEN_USE_NEW_STDVECTOR
 # FLANN (required)
 find_package(Flann REQUIRED)
 include_directories(SYSTEM ${FLANN_INCLUDE_DIRS})
-# OpenMP
-include(${PCL_SOURCE_DIR}/cmake/pcl_openmp.cmake)
 # OpenNI
 find_package(OpenNI)
 # Qhull

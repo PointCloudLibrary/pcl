@@ -300,7 +300,6 @@ macro(PCL_ADD_TEST _name _exename)
     if(NOT WIN32)
       set_target_properties(${_exename} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     endif(NOT WIN32)
-    PCL_ADD_OPENMP_FLAGS(${_exename})
     target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
     #
     # Only link if needed
@@ -315,7 +314,6 @@ macro(PCL_ADD_TEST _name _exename)
       set_target_properties(${_exename} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
     endif()
     # 
-    PCL_LINK_OPENMP(${_exename})
     # must link explicitly against boost only on Windows
     target_link_libraries(${_exename} ${Boost_LIBRARIES})
     #
