@@ -4,7 +4,8 @@ set(SUBSYS_DEPS common io surface kdtree features search octree range_image visu
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk)
+PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk opengl)
+find_package(OpenGL)
 
 PCL_ADD_DOC(${SUBSYS_NAME})
 
@@ -33,7 +34,7 @@ if(build)
                     ${VTK_IO_TARGET_LINK_LIBRARIES} 
                     ${OPENNI_INCLUDES})
     PCL_ADD_SSE_FLAGS(${LIB_NAME})
-    target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_range_image ${VTK_IO_TARGET_LINK_LIBRARIES})
+    target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_range_image ${VTK_IO_TARGET_LINK_LIBRARIES} ${OPENGL_LIBRARIES})
 
     set(EXT_DEPS eigen3)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
