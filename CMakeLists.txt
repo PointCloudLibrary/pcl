@@ -125,12 +125,12 @@ PCL_CHECK_FOR_SSE()
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake)
 # Eigen (required)
 find_package(Eigen REQUIRED)
-include_directories(${EIGEN_INCLUDE_DIRS})
+include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
 add_definitions(-DEIGEN_USE_NEW_STDVECTOR
                 -DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
 # FLANN (required)
 find_package(Flann REQUIRED)
-include_directories(${FLANN_INCLUDE_DIRS})
+include_directories(SYSTEM ${FLANN_INCLUDE_DIRS})
 # OpenMP
 include(${PCL_SOURCE_DIR}/cmake/pcl_openmp.cmake)
 # OpenNI
@@ -150,7 +150,7 @@ endif()
 # Find MPI
 find_package(MPI)
 if(MPI_CXX_FOUND)
-  include_directories(${MPI_INCLUDE_PATH})
+  include_directories(SYSTEM ${MPI_INCLUDE_PATH})
 endif(MPI_CXX_FOUND)
 # Find QT4
 find_package(Qt4)
