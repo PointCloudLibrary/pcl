@@ -25,7 +25,6 @@ if(build)
 	set(LIB_NAME pcl_${SUBSYS_NAME})
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/utils)
 	PCL_CUDA_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs})
-	PCL_ADD_SSE_FLAGS(${LIB_NAME})
 	target_link_libraries(${LIB_NAME} pcl_gpu_containers)
 
 	set(EXT_DEPS "")

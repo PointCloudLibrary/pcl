@@ -33,7 +33,6 @@ if(build)
                     ${srcs} ${incs} ${compression_incs} ${impl_incs}
                     ${VTK_IO_TARGET_LINK_LIBRARIES} 
                     ${OPENNI_INCLUDES})
-    PCL_ADD_SSE_FLAGS(${LIB_NAME})
     target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_range_image ${VTK_IO_TARGET_LINK_LIBRARIES} ${OPENGL_LIBRARIES})
 
     set(EXT_DEPS eigen3)

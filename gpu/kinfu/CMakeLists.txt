@@ -61,7 +61,6 @@ if (build)
 	endif()
 	 
 	PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${cuda} ${cuda_objs})
-	PCL_ADD_SSE_FLAGS(${LIB_NAME})
 	target_link_libraries(${LIB_NAME} pcl_gpu_utils pcl_gpu_containers pcl_gpu_octree)
 			
 	if(OpenCV_FOUND)

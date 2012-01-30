@@ -75,7 +75,6 @@ if(build)
 				                    OUTPUT_NAME "ply"
 														VERSION 0.1
 														SOVERSION 0.1)
-			PCL_ADD_SSE_FLAGS(pcl_io_ply)
 			PCL_ADD_INCLUDES(${SUBSYS_NAME} ply ${PLY_INCLUDES})
 #		endif(BUILD_PLY)
 
@@ -124,7 +123,6 @@ if(build)
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${VTK_INCLUDE_DIRECTORIES})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES})
-    PCL_ADD_SSE_FLAGS(${LIB_NAME})
     link_directories(${VTK_LINK_DIRECTORIES})
     target_link_libraries(${LIB_NAME} pcl_common pcl_io_ply ${VTK_IO_TARGET_LINK_LIBRARIES})
 

@@ -37,7 +37,7 @@ include(${PCL_SOURCE_DIR}/cmake/pcl_options.cmake)
 # ---[ Unix/Darwin/Windows specific flags
 if(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_CXX_FLAGS "-Wall -Wno-unknown-pragmas -fno-strict-aliasing -pthread")
-  SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
+  SET(CMAKE_CXX_FLAGS_RELEASE "-march=native -O3")
   if(NOT APPLE)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x")
   endif()
@@ -56,6 +56,25 @@ if(MSVC)
   if(MSVC90 OR MSVC10)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
   endif()
+
+  include(CheckCXXSourceRuns)
+  check_cxx_source_runs("
+      #include <emmintrin.h>
+
+      int main()
+      {
+          __m128d a, b;
+          double vals[2] = {0};
+          a = _mm_loadu_pd(vals);
+          b = _mm_add_pd(a,a);
+          _mm_storeu_pd(vals,b);
+          return 0;
+      }"
+      HAVE_SSE2_EXTENSIONS)
+
+  if(HAVE_SSE2_EXTENSIONS)
+    SET(CMAKE_CXX_FLAGS_RELEASE "/arch:SSE2 /fp:fast -D__SSE__ -D__SSE2__")
+  endif(HAVE_SSE2_EXTENSIONS)
 endif()
 
 if (__COMPILER_PATHSCALE)
@@ -122,9 +141,6 @@ SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 ENDIF("${is_system_dir}" STREQUAL "-1")
 
 ### ---[ Find universal dependencies
-# SSE flags
-include(${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
-PCL_CHECK_FOR_SSE()
 FIND_PACKAGE(OpenMP)
 if(OPENMP_FOUND)
   SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
