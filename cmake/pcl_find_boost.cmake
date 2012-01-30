@@ -22,6 +22,6 @@ if(Boost_FOUND)
   # Obtain diagnostic information about Boost's automatic linking outputted 
   # during compilation time.
   add_definitions(${Boost_LIB_DIAGNOSTIC_DEFINITIONS})
-  include_directories(${Boost_INCLUDE_DIRS})
+  include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
   link_directories(${Boost_LIBRARY_DIRS})
 endif(Boost_FOUND)
