@@ -4,7 +4,7 @@ set(SUBSYS_DEPS common octree)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk)
+PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk libusb-1.0)
 
 PCL_ADD_DOC(${SUBSYS_NAME})
 
@@ -129,7 +129,8 @@ if(build)
     target_link_libraries(${LIB_NAME} pcl_common pcl_io_ply ${VTK_IO_TARGET_LINK_LIBRARIES})
 
     if(OPENNI_FOUND)
-      target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
+      find_package(libusb-1.0 REQUIRED)
+      target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES} ${LIBUSB_1_LIBRARIES})
     endif(OPENNI_FOUND)
 
     set(EXT_DEPS eigen3)
