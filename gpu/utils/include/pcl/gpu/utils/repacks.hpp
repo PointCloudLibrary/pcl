@@ -69,7 +69,7 @@ namespace pcl
                       
 
         template<typename PointIn, typename PointOut>
-        void copyFieldsEx(const DeviceArray<PointIn>& src, DeviceArray<PointOut>& dst, int rule1 = NoCP, int rule2 = NoCP, int rule3 = NoCP, int rule4 = NoCP)
+        void copyFieldsEx(const DeviceArray<PointIn>& src, DeviceArray<PointOut>& dst, int rule1, int rule2 = NoCP, int rule3 = NoCP, int rule4 = NoCP)
         {
             int rules[4] = { rule1, rule2, rule3, rule4 };
             dst.create(src.size());
@@ -86,10 +86,11 @@ namespace pcl
 
         void copyFields(const DeviceArray<Normal>& src, DeviceArray<PointNormal>& dst)
         {
-            //PointXYZ.normal_x (0) -> PointNormal.normal_x (4)
-            //PointXYZ.normal_y (1) -> PointNormal.normal_y (5)
-            //PointXYZ.normal_z (2) -> PointNormal.normal_z (6)
-            copyFieldsEx(src, dst, rule(cp(0, 4), cp(1, 5), cp(2, 6)));
+            //PointXYZ.normal_x (0)  -> PointNormal.normal_x (4)
+            //PointXYZ.normal_y (1)  -> PointNormal.normal_y (5)
+            //PointXYZ.normal_z (2)  -> PointNormal.normal_z (6)
+            //PointXYZ.curvature (4) -> PointNormal.curvature (8)
+            copyFieldsEx(src, dst, rule(cp(0, 4), cp(1, 5), cp(2, 6), cp(4,8)));
         };
 
         void copyFields(const DeviceArray<PointXYZRGBL>& src, DeviceArray<PointXYZ>& dst)
