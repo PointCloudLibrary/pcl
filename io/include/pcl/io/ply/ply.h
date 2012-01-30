@@ -41,11 +41,7 @@
 #ifndef PLY_PLY_H
 #define PLY_PLY_H
 
-#ifdef _MSC_VER
-#include <cstdint>
-#else
-#include <tr1/cstdint>
-#endif
+#include <boost/cstdint.hpp>
 #include <pcl/io/ply/byte_order.h>
 
 /** \file ply.h contains standard typedefs and generic type traits
@@ -56,21 +52,13 @@
   */
 namespace ply 
 {
-#ifdef _MSC_VER
-  typedef std::int8_t int8;
-  typedef std::int16_t int16;
-  typedef std::int32_t int32;
-  typedef std::uint8_t uint8;
-  typedef std::uint16_t uint16;
-  typedef std::uint32_t uint32;
-#else
-  typedef std::tr1::int8_t int8;
-  typedef std::tr1::int16_t int16;
-  typedef std::tr1::int32_t int32;
-  typedef std::tr1::uint8_t uint8;
-  typedef std::tr1::uint16_t uint16;
-  typedef std::tr1::uint32_t uint32;
-#endif
+  typedef boost::int8_t int8;
+  typedef boost::int16_t int16;
+  typedef boost::int32_t int32;
+  typedef boost::uint8_t uint8;
+  typedef boost::uint16_t uint16;
+  typedef boost::uint32_t uint32;         
+
   typedef float float32;
   typedef double float64;
   
