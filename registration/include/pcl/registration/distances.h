@@ -146,7 +146,7 @@ namespace pcl
     }
     ///\brief pointer to l2Sqr function
     static double(*l2SqrFunctionPtr) (const Eigen::Vector4f &p_src, const Eigen::Vector4f &p_tgt) = &pcl::distances::l2Sqr;
-  };
+  }
 }
 
 #endif
