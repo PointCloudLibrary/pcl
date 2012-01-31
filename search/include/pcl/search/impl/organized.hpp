@@ -40,7 +40,7 @@
 #ifndef PCL_SEARCH_IMPL_ORGANIZED_NEIGHBOR_SEARCH_H_
 #define PCL_SEARCH_IMPL_ORGANIZED_NEIGHBOR_SEARCH_H_
 
-#include "pcl/search/organized2.h"
+#include "pcl/search/organized.h"
 #include <pcl/common/eigen.h>
 #include "pcl/common/time.h"
 #include <eigen3/Eigen/Eigenvalues>
@@ -109,7 +109,7 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
         k_sqr_distances.push_back (squared_distance);
         // already done ?
         if (k_indices.size () == max_nn)
-          return k_indices.size ();
+          return max_nn;
       }
     }
   }
