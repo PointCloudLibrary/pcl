@@ -70,7 +70,7 @@ pcl::gpu::Octree::Octree() : impl(0), cloud_(NULL)
         pcl::gpu::error("This must be compiled for compute capability >= 2.0", __FILE__, __LINE__);    
 
     impl = new OctreeImpl();        
-    builded = false;
+    built_ = false;
 }
 
 pcl::gpu::Octree::~Octree() { clear(); }
@@ -91,12 +91,12 @@ void pcl::gpu::Octree::setCloud(const PointCloud& cloud_arg)
 void pcl::gpu::Octree::build()
 {
     static_cast<OctreeImpl*>(impl)->build();    
-    builded = true;
+    built_ = true;
 }
 
-bool pcl::gpu::Octree::isBuild()
+bool pcl::gpu::Octree::isBuilt()
 {
-    return builded;
+    return built_;
 }
 
 void pcl::gpu::Octree::internalDownload()

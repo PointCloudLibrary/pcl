@@ -147,7 +147,7 @@ pcl::gpu::EuclideanClusterExtraction::extract (std::vector<PointIndices> &cluste
     ///@todo what do we do if input isn't a PointXYZ cloud?
     tree_->setCloud(input_);
   }
-  if (!tree_->isBuild())
+  if (!tree_->isBuilt())
   {
     tree_->build();
   }
