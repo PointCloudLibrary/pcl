@@ -244,6 +244,10 @@ namespace pcl
       /** \brief True when a dataset has been received and the depth change data has been initialized. */
       bool init_depth_change_;
 
+      /** \brief This method should get called before starting the actual computation. */
+      bool
+      initCompute ();
+
       /** \brief Internal initialization method for COVARIANCE_MATRIX estimation. */
       void
       initCovarianceMatrixMethod ();
