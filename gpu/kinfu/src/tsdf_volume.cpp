@@ -302,7 +302,7 @@ pcl::gpu::TsdfVolume::downloadTsdf (std::vector<float>& tsdf) const
   volume_.download(&tsdf[0], volume_.cols() * sizeof(int));
 
 #pragma omp parallel for
-  for(size_t i = 0; i < tsdf.size(); ++i)
+  for(int i = 0; i < (int) tsdf.size(); ++i)
   {
     float tmp = reinterpret_cast<short2*>(&tsdf[i])->x;
     tsdf[i] = tmp/device::DIVISOR;
@@ -320,7 +320,7 @@ pcl::gpu::TsdfVolume::downloadTsdfAndWeighs (std::vector<float>& tsdf, std::vect
   volume_.download(&tsdf[0], volume_.cols() * sizeof(int));
 
 #pragma omp parallel for
-  for(size_t i = 0; i < tsdf.size(); ++i)
+  for(int i = 0; i < (int) tsdf.size(); ++i)
   {
     short2 elem = *reinterpret_cast<short2*>(&tsdf[i]);
     tsdf[i] = (float)(elem.x)/device::DIVISOR;    

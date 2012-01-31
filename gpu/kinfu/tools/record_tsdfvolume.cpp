@@ -182,7 +182,7 @@ DeviceVolume::getVolume (pcl::TSDFVolume<VoxelT, WeightT>::Ptr &volume)
   device_volume_.download (&volume_vec[0], device_volume_.cols() * sizeof(int));
 
   #pragma omp parallel for
-  for(size_t i = 0; i < volume->size(); ++i)
+  for(int i = 0; i < (int) volume->size(); ++i)
   {
     short2 *elem = (short2*)&volume_vec[i];
     volume_vec[i]  = (float)(elem->x)/pcl::device::DIVISOR;
