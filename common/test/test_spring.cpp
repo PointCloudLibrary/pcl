@@ -43,7 +43,7 @@
 using namespace pcl;
 using namespace pcl::test;
 
-PointCloud<PointXYZ> cloud(5, 4);
+PointCloud<PointXYZ> cloud(4,5);
 const size_t size = 5 * 4;
 const int amount = 2;
 
@@ -85,13 +85,12 @@ const int amount = 2;
 //   EXPECT_EQ (cloud_ptr->width, old_width +2*2);
 // }
 
-TEST(PointCloudSpring, duplicateVertical)
+TEST(PointCloudSpring, duplicateRows)
 {
   PointCloudSpring<PointXYZ> spring;
   PointCloud<PointXYZ>::Ptr cloud_ptr = cloud.makeShared ();
   spring.setInputCloud (cloud_ptr);
-  spring.setAmount (amount);
-  spring.setDirection (PointCloudSpring<PointXYZ>::VERTICAL);
+  spring.setRowsAmount (amount);
   spring.setExpandPolicy (PointCloudSpring<PointXYZ>::DUPLICATE);
   spring.expand ();
   int w(cloud_ptr->width);
@@ -110,13 +109,12 @@ TEST(PointCloudSpring, duplicateVertical)
   }
 }
 
-TEST(PointCloudSpring, mirrorVertical)
+TEST(PointCloudSpring, mirrorRows)
 {
   PointCloudSpring<PointXYZ> spring;
   PointCloud<PointXYZ>::Ptr cloud_ptr = cloud.makeShared ();
   spring.setInputCloud (cloud_ptr);
-  spring.setAmount (amount);
-  spring.setDirection (PointCloudSpring<PointXYZ>::VERTICAL);
+  spring.setRowsAmount (amount);
   spring.setExpandPolicy (PointCloudSpring<PointXYZ>::MIRROR);
   spring.expand ();
   int w(cloud_ptr->width);
@@ -136,17 +134,17 @@ TEST(PointCloudSpring, mirrorVertical)
   }
 }
 
-TEST(PointCloudSpring, mirrorHorizontal)
+TEST(PointCloudSpring, mirrorColumns)
 {
   PointCloudSpring<PointXYZ> spring;
   PointCloud<PointXYZ>::Ptr cloud_ptr = cloud.makeShared ();
   spring.setInputCloud (cloud_ptr);
-  spring.setAmount (amount);
-  spring.setDirection (PointCloudSpring<PointXYZ>::HORIZONTAL);
+  spring.setColumnsAmount (amount);
   spring.setExpandPolicy (PointCloudSpring<PointXYZ>::MIRROR);
   spring.expand ();
   int w(cloud_ptr->width);
   int h(cloud_ptr->height);
+  std::cerr << "input" << std::endl;
   EXPECT_EQ (cloud_ptr->width, cloud.width +2*amount);
 
   for (int j = 0; j < h; ++j)
@@ -162,13 +160,12 @@ TEST(PointCloudSpring, mirrorHorizontal)
   }
 }
 
-TEST(PointCloudSpring, duplicateHorizontal)
+TEST(PointCloudSpring, duplicateColumns)
 {
   PointCloudSpring<PointXYZ> spring;
   PointCloud<PointXYZ>::Ptr cloud_ptr = cloud.makeShared ();
   spring.setInputCloud (cloud_ptr);
-  spring.setAmount (amount);
-  spring.setDirection (PointCloudSpring<PointXYZ>::HORIZONTAL);
+  spring.setColumnsAmount (amount);
   spring.setExpandPolicy (PointCloudSpring<PointXYZ>::DUPLICATE);
   spring.expand ();
   int h(cloud_ptr->height);
@@ -193,17 +190,19 @@ TEST(PointCloudSpring, deleteRows)
   PointCloudSpring<PointXYZ> spring;
   PointCloud<PointXYZ>::Ptr cloud_ptr = cloud.makeShared ();
   spring.setInputCloud (cloud_ptr);
-  spring.setAmount (amount);
-  spring.setDirection (PointCloudSpring<PointXYZ>::VERTICAL);
+  spring.setRowsAmount (amount);
   spring.setExpandPolicy (PointCloudSpring<PointXYZ>::MIRROR);
   spring.expand ();
   EXPECT_EQ (cloud_ptr->height, cloud.height +2*amount);
   spring.shrink ();
   EXPECT_EQ (cloud_ptr->height, cloud.height);
+
   for(uint32_t i = 0; i < cloud.width; i++)
     for(uint32_t j = 0; j < cloud.height; j++)
+    {
       EXPECT_EQ_VECTORS ((*cloud_ptr)(i,j).getVector3fMap (),
                          cloud(i,j).getVector3fMap ());
+    }
 }
 
 TEST(PointCloudSpring, deleteCols)
@@ -211,17 +210,19 @@ TEST(PointCloudSpring, deleteCols)
   PointCloudSpring<PointXYZ> spring;
   PointCloud<PointXYZ>::Ptr cloud_ptr = cloud.makeShared ();
   spring.setInputCloud (cloud_ptr);
-  spring.setAmount (amount);
-  spring.setDirection (PointCloudSpring<PointXYZ>::HORIZONTAL);
+  spring.setColumnsAmount (amount);
   spring.setExpandPolicy (PointCloudSpring<PointXYZ>::MIRROR);
   spring.expand ();
   EXPECT_EQ (cloud_ptr->width, cloud.width +2*amount);
   spring.shrink ();
   EXPECT_EQ (cloud_ptr->width, cloud.width);
+
   for(uint32_t i = 0; i < cloud.width; i++)
     for(uint32_t j = 0; j < cloud.height; j++)
+    {
       EXPECT_EQ_VECTORS ((*cloud_ptr)(i,j).getVector3fMap (),
                          cloud(i,j).getVector3fMap ());
+    }
 }
 
 int
@@ -229,7 +230,6 @@ main (int argc, char** argv)
 {
   for (uint32_t i = 0; i < size; ++i)
     cloud[i]  = PointXYZ (3*i+0,3*i+1,3*i+2);
-
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
 }

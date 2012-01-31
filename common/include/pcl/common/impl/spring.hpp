@@ -51,70 +51,65 @@ pcl::PointCloudSpring<PointT>::initCompute ()
     return false;
   }
 
-  if ((direction_ != HORIZONTAL) && (direction_ != VERTICAL) && (direction_ != BOTH))
-  {
-    PCL_THROW_EXCEPTION (InitFailedException,
-                         "[pcl::PointCloudSpring::initCompute] init failed: "
-                         << "border must be a HORIZONTAL, VERTICAL or BOTH");
-    return false;
-  }
-
-  if (amount_ <= 0)
+  if (c_amount_ <= 0 && r_amount_ <=0)
   {
     PCL_THROW_EXCEPTION (InitFailedException,
                          "[pcl::PointCloudSpring::initCompute] init failed: " 
                          << "expansion amount must be strict positive!");
     return false;
   }
-        
-  if (!input_->isOrganized () && (expand_policy_ == VERTICAL || expand_policy_ == BOTH))
+
+  if (!input_->isOrganized () && c_amount_ > 0)
   {
     PCL_THROW_EXCEPTION (InitFailedException,
                          "[pcl::PointCloudSpring::initCompute] init failed: " 
-                         << "vertical expansion requires organised point cloud");
+                         << "columns expansion requires organised point cloud");
     return false;
   }
   return true;
 }
 
 template <typename PointT> void 
-pcl::PointCloudSpring<PointT>::expandHorizontal(const PointT& val)
+pcl::PointCloudSpring<PointT>::expandColumns (const PointT& val)
 {
   uint32_t old_height = input_->height;
   uint32_t old_width = input_->width;
-  uint32_t new_width = old_width + 2*amount_;
+  uint32_t new_width = old_width + 2*c_amount_;
+  input_->reserve (new_width * old_height);
   for (int j = 0; j < input_->height; ++j)
   {
     iterator start = input_->begin() + (j * new_width);
-    input_->insert (start, amount_, val);
-    start = input_->begin() + (j * new_width) + old_width + amount_;
-    input_->insert (start, amount_, val);
+    input_->insert (start, c_amount_, val);
+    start = input_->begin() + (j * new_width) + old_width + c_amount_;
+    input_->insert (start, c_amount_, val);
     input_->height = old_height;
   }
-  input_->width = old_width + 2*amount_;
+  input_->width = new_width;
   input_->height = old_height;
 }
       
 template <typename PointT> void 
-pcl::PointCloudSpring<PointT>::expandVertical(const PointT& val)
+pcl::PointCloudSpring<PointT>::expandRows (const PointT& val)
 {
   uint32_t old_height = input_->height;
+  uint32_t new_height = old_height + 2*r_amount_;
   uint32_t old_width = input_->width;
-  input_->insert (input_->begin (), amount_ * old_width, val);
-  iterator last = input_->end () -1;
-  input_->insert (last, amount_ * old_width, val);
+  input_->reserve (new_height * old_width);
+  input_->insert (input_->begin (), r_amount_ * old_width, val);
+  input_->insert (input_->end (), r_amount_ * old_width, val);
   input_->width = old_width;
-  input_->height = old_height + 2*amount_;
+  input_->height = new_height;
 }
 
 template <typename PointT> void 
-pcl::PointCloudSpring<PointT>::expandHorizontalDuplicate()
+pcl::PointCloudSpring<PointT>::expandColumnsDuplicate ()
 {
   int old_height = input_->height;
   int old_width = input_->width;
-  int new_width = old_width + 2*amount_;
+  int new_width = old_width + 2*c_amount_;
+  input_->reserve (new_width * old_height);
   for (int j = 0; j < old_height; ++j)
-    for(int i = 0; i < amount_; ++i)
+    for(int i = 0; i < c_amount_; ++i)
     {
       iterator start = input_->begin () + (j * new_width);
       input_->insert (start, *start);
@@ -122,58 +117,66 @@ pcl::PointCloudSpring<PointT>::expandHorizontalDuplicate()
       input_->insert (start, *start);
     }
 
-  input_->width = old_width + 2*amount_;
+  input_->width = new_width;
   input_->height = old_height;
 }
 
 template <typename PointT> void 
-pcl::PointCloudSpring<PointT>::expandVerticalDuplicate()
+pcl::PointCloudSpring<PointT>::expandRowsDuplicate ()
 {
   uint32_t old_height = input_->height;
+  uint32_t new_height = old_height + 2*r_amount_;
   uint32_t old_width = input_->width;
-  for(int i = 0; i < amount_; ++i)
+  input_->reserve (new_height * old_width);
+  for(int i = 0; i < r_amount_; ++i)
   {
     input_->insert (input_->begin (), input_->begin (), input_->begin () + old_width);
     input_->insert (input_->end (), input_->end () - old_width, input_->end ());
   }
+
   input_->width = old_width;
-  input_->height = old_height + 2*amount_;
+  input_->height = new_height;
 }
 
 template <typename PointT> void 
-pcl::PointCloudSpring<PointT>::expandHorizontalMirror()
+pcl::PointCloudSpring<PointT>::expandColumnsMirror ()
 {
   int old_height = input_->height;
   int old_width = input_->width;
-  int new_width = old_width + 2*amount_;
+  int new_width = old_width + 2*c_amount_;
+  input_->reserve (new_width * old_height);
   for (int j = 0; j < old_height; ++j)
-    for(int i = 0; i < amount_; ++i)
+    for(int i = 0; i < c_amount_; ++i)
     {
       iterator start = input_->begin () + (j * new_width);
       input_->insert (start, *(start + 2*i));
       start = input_->begin () + (j * new_width) + old_width + 2*i;
       input_->insert (start+1, *(start - 2*i));
     }
-  input_->width = old_width + 2*amount_;
+  input_->width = new_width;
   input_->height = old_height;
 }
 
 template <typename PointT> void 
-pcl::PointCloudSpring<PointT>::expandVerticalMirror()
+pcl::PointCloudSpring<PointT>::expandRowsMirror ()
 {
   uint32_t old_height = input_->height;
+  uint32_t new_height = old_height + 2*r_amount_;
   uint32_t old_width = input_->width;
-
-  iterator up = input_->begin (), low = input_->end ();
-  for(int i = 0; i < amount_; ++i)
+  input_->reserve (new_height * old_width);
+  for(int i = 0; i < r_amount_; i++)
   {
-    up = input_->begin () + 2*i*old_width;
+    iterator up;
+    if (input_->height % 2 ==  0)
+      up = input_->begin () + (2*i) * old_width;
+    else
+      up = input_->begin () + (2*i+1) * old_width;
     input_->insert (input_->begin (), up, up + old_width);
-    low = input_->end () - 2*i*old_width;
-    input_->insert (input_->end (), low - old_width, low);
+    iterator bottom = input_->end () - (2*i+1) * old_width;
+    input_->insert (input_->end (), bottom, bottom + old_width);
   }
   input_->width = old_width;
-  input_->height = old_height + 2*amount_;
+  input_->height = new_height;
 }
 
 template <typename PointT> inline void 
@@ -181,9 +184,9 @@ pcl::PointCloudSpring<PointT>::deleteRows ()
 {
   uint32_t old_height = input_->height;
   uint32_t old_width = input_->width;
-  input_->erase (input_->begin (), input_->begin () + amount_ * old_width);
-  input_->erase (input_->end () - amount_ * old_width, input_->end ());
-  input_->height = old_height - 2*amount_;
+  input_->erase (input_->begin (), input_->begin () + r_amount_ * old_width);
+  input_->erase (input_->end () - r_amount_ * old_width, input_->end ());
+  input_->height = old_height - 2*r_amount_;
   input_->width = old_width;
 }
 
@@ -192,13 +195,13 @@ pcl::PointCloudSpring<PointT>::deleteCols ()
 {
   uint32_t old_height = input_->height;
   uint32_t old_width = input_->width;
-  uint32_t new_width = old_width - 2 * amount_;
+  uint32_t new_width = old_width - 2 * c_amount_;
   for(uint32_t j = 0; j < old_height; j++)
   {
     iterator start = input_->begin () + j * new_width;
-    input_->erase (start, start + amount_);
+    input_->erase (start, start + c_amount_);
     start = input_->begin () + (j+1) * new_width;
-    input_->erase (start, start + amount_);    
+    input_->erase (start, start + c_amount_);    
   }
   input_->height = old_height;
   input_->width = new_width;

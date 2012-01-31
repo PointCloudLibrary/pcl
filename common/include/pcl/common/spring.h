@@ -37,8 +37,8 @@
  *
  */
 
-#ifndef PCL_POINT_CLOUD_EXPANDER_H_
-#define PCL_POINT_CLOUD_EXPANDER_H_
+#ifndef PCL_POINT_CLOUD_SPRING_H_
+#define PCL_POINT_CLOUD_SPRING_H_
 
 #include <pcl/point_cloud.h>
 
@@ -46,7 +46,7 @@ namespace pcl
 {
 
   /** Class PointCloudSpring used to expand or shrink a point cloud in  
-    * horizontal and or vertical direction using either mirroring or 
+    * columns and or rows direction using either mirroring or 
     * duplicating edges of the input point cloud or filling the new cells 
     * with some value.
     * This class will modify the input point cloud so that no deep copy 
@@ -65,29 +65,45 @@ namespace pcl
 
       /// expansion policy
       enum EXPAND_POLICY { MIRROR = 0, DUPLICATE };
-      /// direction of the expansion
-      enum DIRECTION { HORIZONTAL = 0, VERTICAL, BOTH };
       /// Default constructor
-      PointCloudSpring () : expand_policy_(-1), direction_(-1) {}
+      PointCloudSpring ()
+        : expand_policy_(-1)
+        , r_amount_ (0)
+        , c_amount_ (0)
+      {}
       /// \set expansion policy
       inline void
       setExpandPolicy (int policy) { expand_policy_ = policy; }
       /// \return the policy
       inline int
       getExpandPolicy () { return (expand_policy_); } 
-      /// \set expansion's direction
+      /** set expansion amount for columns and rows direction
+        * \param[in] amount expand/shrink amount for both rows and columns
+        */
       inline void
-      setDirection (int direction) { direction_ = direction; }
-      /// \return direction
-      inline int
-      getDirection () { return (direction_); } 
-      /// \set expansion amount
+      setAmount (int amount) { c_amount_ = r_amount_ = amount; }
+      /// reset the amounts to 0
+      inline void 
+      reset () { c_amount_ = r_amount_ = 0; }
+      /** set expansion amount for columns 
+        * \param[in] amount expand/shrink amount for columns
+        */
       inline void
-      setAmount (int amount) { amount_ = amount; }
-      /// \return the amount
+      setColumnsAmount (int amount) { c_amount_ = amount; }
+      /// \return the columns expansion amount
       inline int
-      getAmount () { return (amount_); }
-      /// \set input cloud
+      getColumnsAmount () { return (c_amount_); }
+      /** set expansion amount for rows
+        * \param[in] amount expand/shrink amount for rows
+        */
+      inline void
+      setRowsAmount (int amount) { r_amount_ = amount; }
+      /// \return the expansion amount for rows
+      inline int
+      getRowsAmount () { return (r_amount_); }
+      /** set input cloud
+        * param[in][out] input pointer to the cloud to be modified
+        */ 
       inline void
       setInputCloud (PointCloudPtr& input) { input_ = input; }
       /// \return input cloud
@@ -111,108 +127,99 @@ namespace pcl
       {
         if (!initCompute ())
           PCL_THROW_EXCEPTION (InitFailedException,
-                               "[pcl::PointCloudSpring::initCompute] init failed");
+                               "[pcl::PointCloudSpring::expand] init failed");
         if (expand_policy_ == DUPLICATE)
         {
-          if ((direction_ == VERTICAL) || (direction_ == BOTH))
-            expandVerticalDuplicate ();
-          if ((direction_ == HORIZONTAL) || (direction_ == BOTH))
-            expandHorizontalDuplicate ();
+          if (r_amount_ > 0)
+            expandRowsDuplicate ();
+          if (c_amount_ > 0)
+            expandColumnsDuplicate ();
         }
         else
         {
-          if ((direction_ == VERTICAL) || (direction_ == BOTH))
-            expandVerticalMirror ();
-          if ((direction_ == HORIZONTAL) || (direction_ == BOTH))
-            expandHorizontalMirror ();
+          if (r_amount_ > 0)
+            expandRowsMirror ();
+          if (c_amount_ > 0)
+            expandColumnsMirror ();
         }
       }
 
       /** expand a point cloud in the set direction.
-        * \input val the point value to be used to fill.
+        * \param[in] val the point value to be used to fill.
         */
       inline void
       expand (const PointT& val)
       {
         if (!initCompute ())
           PCL_THROW_EXCEPTION (InitFailedException,
-                               "[pcl::PointCloudSpring::initCompute] init failed");
-        if ((direction_ == VERTICAL) || (direction_ == BOTH))
-        {
-          expandVertical (val);
-        }
-        if ((direction_ == HORIZONTAL) || (direction_ == BOTH))
-        {
-          expandHorizontal (val);
-        }
+                               "[pcl::PointCloudSpring::expand] init failed");
+        if (r_amount_ > 0)
+          expandRows (val);
+        if (c_amount_ > 0)
+          expandColumns (val);
       }
 
       /** shrink a point cloud in the set direction.
-        * - If direction is vertical or both then the specified amount of
-        *   top and bottom rows are deleted.
-        * - If direction is horizontal or both then the specified amount
-        *   of left and right columns are deleted.
+        * - If direction is rows or both then \a h_amount rows are deleted
+        *   from top and bottom.
+        * - If direction is columns or both then \a v_amount columns are deleted
+        *   from left and right.
         */
       inline void
       shrink ()
       {
         if (!initCompute ())
           PCL_THROW_EXCEPTION (InitFailedException,
-                               "[pcl::PointCloudShrinker::initCompute] init failed");
-        if ((direction_ == VERTICAL) || (direction_ == BOTH))
+                               "[pcl::PointCloudSpring::shrink] init failed");
+        if (r_amount_ > 0)
           deleteRows ();
-        if ((direction_ == HORIZONTAL) || (direction_ == BOTH))
+        if (c_amount_ > 0)
           deleteCols ();
       }
 
     private:
-      /** expand point cloud vertically inserting \a amount_ rows at the 
+      /** expand point cloud inserting \a r_amount_ rows at the 
         * top and the bottom of a point cloud and filling them with 
         * custom values.
-        * \param val the point value to be insterted
+        * \param[in] val the point value to be insterted
         */
       void 
-      expandVertical(const PointT& val);
-      /** expand point cloud vertically inserting \a amount_ columns at 
+      expandRows(const PointT& val);
+      /** expand point cloud inserting \a c_amount_ columns at 
         * the right and the left of a point cloud and filling them with 
         * custom values.
-        * \param val the point value to be insterted
+        * \param[in] val the point value to be insterted
         */
       void 
-      expandHorizontal(const PointT& val);
-      /** expand point cloud vertically duplicating the top and bottom
-        * rows \a amount_ times.
+      expandColumns(const PointT& val);
+      /** expand point cloud duplicating the top and bottom rows \a r_amount_ times.
         */
       void 
-      expandVerticalDuplicate();
-      /** expand point cloud vertically duplicating the right and left
-        * columns \a amount_ times.
+      expandRowsDuplicate();
+      /** expand point cloud duplicating the right and left columns \a c_amount_ 
+        * times.
         */
       void 
-      expandHorizontalDuplicate();
-      /** expand point cloud vertically mirroring \a amount_ top and 
-        * bottom rows.
-        */
+      expandColumnsDuplicate();
+      /** expand point cloud mirroring \a r_amount_ top and bottom rows. */
       void 
-      expandVerticalMirror();
-      /** expand point cloud vertically mirroring \a amount_ right and 
-        * left columns.
-        */
+      expandRowsMirror();
+      /** expand point cloud mirroring \a c_amount_ right and left columns. */
       void 
-      expandHorizontalMirror();
-      /** delete \a amount_ rows in top and bottom of point cloud */
+      expandColumnsMirror();
+      /** delete \a r_amount_ rows in top and bottom of point cloud */
       inline void
       deleteRows ();
-      /** delete \a amount_ columns in top and bottom of point cloud */
+      /** delete \a c_amount_ columns in top and bottom of point cloud */
       inline void
       deleteCols ();
       
       /// expansion policy
       int expand_policy_;
-      /// expansion direction
-      int direction_;
-      /// expansion amount
-      int amount_;
+      /// expansion amount for rows
+      int r_amount_;
+      /// expansion amount for columns
+      int c_amount_;
       /// pointer to the input point cloud
       PointCloudPtr input_;
   };
