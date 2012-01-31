@@ -144,6 +144,13 @@ namespace pcl
               */
             void approxNearestSearch(const Queries& queries, NeighborIndices& result) const;
 
+            /** \brief Batch exact k-nearest search on GPU for k == 1 only!
+              * \param[in] queries array of centers
+              * \param[in] k nubmer of neighbors (only k == 1 is supported)
+              * \param[out] result array of results
+              */
+            void nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results) const;
+
             /** \brief Desroys octree and release all resources */
             void clear();            
         private:

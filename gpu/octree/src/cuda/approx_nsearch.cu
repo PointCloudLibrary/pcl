@@ -188,17 +188,15 @@ namespace pcl { namespace device { namespace appnearest_search
 
         template<int CTA_SIZE>
 		__device__ __forceinline__ int NearestWarpKernel(const float* points, int points_step, int length, const float3& active_query)
-		{                        
-			const int STRIDE = warpSize;
-			int tid = threadIdx.x;
-
+		{                        						
             __shared__ volatile float dist2[CTA_SIZE];
             __shared__ volatile int   index[CTA_SIZE];
-			            			
+			
+            int tid = threadIdx.x;
 			dist2[tid] = pcl::device::numeric_limits<float>::max();
 
 			//serial step
-			for (int idx = Warp::laneId(); idx < length; idx += STRIDE)
+            for (int idx = Warp::laneId(); idx < length; idx += Warp::STRIDE)
 			{
 				float dx = points[idx                  ] - active_query.x;
 				float dy = points[idx + points_step    ] - active_query.y;
@@ -268,7 +266,6 @@ namespace pcl { namespace device { namespace appnearest_search
 			}        
 
 			return index[tid - lane];
-
 		}
 	};
 	

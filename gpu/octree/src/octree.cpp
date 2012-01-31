@@ -41,6 +41,7 @@
 #include "internal.hpp"
 #include "cuda_runtime.h"
 #include "pcl/gpu/utils/device/static_check.hpp"
+#include "pcl/exceptions.h"
 
 #include<assert.h>
 
@@ -171,18 +172,18 @@ void pcl::gpu::Octree::approxNearestSearch(const Queries& queries, NeighborIndic
     static_cast<OctreeImpl*>(impl)->approxNearestSearch(q, results);
 }
 
-//void pcl::gpu::Octree::nearestKSearchBatch(const BatchQueries& queries, int k, BatchResult& results, BatchResultSqrDists& sqr_dists) const
-//{
-//    assert(k == 32); // others are not supported
-//
-//	assert(queries.size() > 0);
-//    results.create(queries.size() * k);
-//    sqr_dists.create(queries.size() * k);
-//
-//	const OctreeImpl::BatchQueries& q = (const OctreeImpl::BatchQueries&)queries;
-//
-//    static_cast<OctreeImpl*>(impl)->nearestKSearchBatch(q, k, results, sqr_dists);
-//}
+void pcl::gpu::Octree::nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results) const
+{    
+    if (k != 1)
+        throw pcl::PCLException("OctreeGPU::knnSearch is supported only for k == 1", __FILE__, "", __LINE__);
+    
+    assert(queries.size() > 0);
+    results.create(queries.size(), k);	    
+
+	const OctreeImpl::Queries& q = (const OctreeImpl::Queries&)queries;
+
+    static_cast<OctreeImpl*>(impl)->nearestKSearchBatch(q, k, results);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////// Brute Force Radius Search Mediator //////////////////////////////////
