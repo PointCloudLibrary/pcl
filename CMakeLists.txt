@@ -54,7 +54,7 @@ endif()
 
 if(MSVC)
   add_definitions ("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -DNOMINMAX")
-  SET(CMAKE_CXX_FLAGS "-W0 /bigobj")
+  SET(CMAKE_CXX_FLAGS "-W0 /bigobj /EHsc")
   if(MSVC90 OR MSVC10)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
   endif()
