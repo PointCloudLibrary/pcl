@@ -181,7 +181,6 @@ pcl::search::OrganizedNeighbor<PointT>::getProjectedRadiusSearchBox (const Point
     minX = (unsigned) std::max (0, (int) floor ((b + sqrt (det)) / a));
     maxX = (unsigned) std::min ((int)input_->width - 1, (int) ceil ((b - sqrt (det)) / a));
   }
-  std::cout << "window2: " << minX << " : " << minY << " - " << maxX << " : " << maxY << std::endl;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
