@@ -796,7 +796,7 @@ struct PointXYZFPFH33
 };
 POINT_CLOUD_REGISTER_POINT_STRUCT (PointXYZFPFH33,
     (float, x, x) (float, y, y) (float, z, z)
-    (float[33], histogram, fpfh));
+    (float[33], histogram, fpfh))
 
 inline std::ostream& operator << (std::ostream& os, const PointXYZFPFH33& p)
 {

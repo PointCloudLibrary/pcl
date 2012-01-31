@@ -319,8 +319,8 @@ namespace pcl
       bool running_;
 
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
-  } ;
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
 
   boost::shared_ptr<openni_wrapper::OpenNIDevice>
   OpenNIGrabber::getDevice () const

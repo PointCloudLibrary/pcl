@@ -591,7 +591,7 @@ namespace pcl
       PCDWriter w;
       return (w.write<PointT> (file_name, cloud, indices, binary_mode));
     }
-  };
+  }
 }
 
 #include "pcl/io/impl/pcd_io.hpp"
