@@ -75,7 +75,16 @@ namespace pcl
     template<typename PointT, typename LeafT = OctreeLeafDataTVector<int> , typename OctreeT = OctreeBase<int, LeafT> >
     class OctreePointCloud : public OctreeT
     {
+      friend class OctreeNodeIterator<int, LeafT, OctreePointCloud> ;
+      friend class OctreeLeafNodeIterator<int, LeafT, OctreePointCloud> ;
+
       public:
+        typedef OctreeT Base;
+
+        // Octree iterators
+        typedef OctreeNodeIterator<int, LeafT, OctreePointCloud> Iterator;
+        typedef const OctreeNodeIterator<int, LeafT, OctreePointCloud> ConstIterator;
+
         /** \brief Octree pointcloud constructor.
           * \param[in] resolution_arg octree resolution at lowest octree level
           */
@@ -165,6 +174,8 @@ namespace pcl
           assert( this->leafCount_ == 0 );
 
           resolution_ = resolution_arg;
+
+          getKeyBitSize();
         }
 
         /** \brief Get octree voxel resolution

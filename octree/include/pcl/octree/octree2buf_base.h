@@ -86,6 +86,20 @@ namespace pcl
         virtual
         ~Octree2BufBase ();
 
+        /** \brief Copy constructor. */
+        Octree2BufBase (const Octree2BufBase& source)
+        {
+          leafCount_ = source.leafCount_;
+          branchCount_ = source.branchCount_;
+          objectCount_ = source.objectCount_;
+          rootNode_ = new (OctreeBranch) (*(source.rootNode_));
+          depthMask_ = source.depthMask_;
+          octreeDepth_ = source.octreeDepth_;
+          bufferSelector_ = source.bufferSelector_;
+          resetTree_ = source.resetTree_;
+          treeDirtyFlag_ = source.treeDirtyFlag_;
+        }
+
         /** \brief Set the maximum amount of voxels per dimension.
          *  \param maxVoxelIndex_arg: maximum amount of voxels per dimension
          * */
@@ -293,9 +307,18 @@ namespace pcl
           {
           }
 
+    	  /** \brief Octree deep copy function */
+    	  inline 
+          virtual OctreeNode *
+    	  deepCopy () const
+    	  {
+            return (OctreeNode*) new OctreeBranch (*this);
+    	  }
+
           /** \brief Get the type of octree node. Returns BRANCH_NODE type
            *  \return Returns BRANCH_NODE type.
            * */
+          inline
           virtual node_type_t
           getNodeType () const
           {
@@ -306,7 +329,6 @@ namespace pcl
 
           /** \brief Child node pointer array of size 2x8 for both octree structures.  */
           const OctreeNode * subNodes_[2][8];
-
         };
 
         typedef LeafT OctreeLeaf;
@@ -597,18 +619,22 @@ namespace pcl
             switch (branchChild->getNodeType ())
             {
               case BRANCH_NODE:
+              {
                 // free child branch recursively
                 deleteBranch (*(OctreeBranch*)branchChild);
 
                 // push unused branch to branch pool
                 unusedBranchesPool_.push_back ((OctreeBranch*)branchChild);
+              }
                 break;
 
               case LEAF_NODE:
-
                 // push unused leaf to branch pool
                 unusedLeafsPool_.push_back ((OctreeLeaf*)branchChild);
                 break;
+
+              default:
+		break;
             }
 
             // set branch child pointer to 0
@@ -633,18 +659,22 @@ namespace pcl
             switch (branchChild->getNodeType ())
             {
               case BRANCH_NODE:
+              {
                 // free child branch recursively
                 deleteBranch (*(OctreeBranch*)branchChild);
 
                 // push unused branch to branch pool
                 unusedBranchesPool_.push_back ((OctreeBranch*)branchChild);
+              }
                 break;
 
               case LEAF_NODE:
-
                 // push unused leaf to branch pool
                 unusedLeafsPool_.push_back ((OctreeLeaf*)branchChild);
                 break;
+
+	      default:
+		break;
             }
 
             // set branch child pointer to 0

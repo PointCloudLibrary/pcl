@@ -201,7 +201,7 @@ namespace pcl
         int
         radiusSearch (const PointCloud &cloud, int index, double radius,
                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
-                      int max_nn = INT_MAX)
+                      unsigned int max_nn = 0)
         {
           return (radiusSearch (cloud.points[index], radius, k_indices, k_sqr_distances, max_nn));
         }
@@ -216,7 +216,7 @@ namespace pcl
           */
         int
         radiusSearch (const PointT &p_q, const double radius, std::vector<int> &k_indices,
-                      std::vector<float> &k_sqr_distances, int max_nn = INT_MAX) const;
+                      std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const;
 
         /** \brief Search for all neighbors of query point that are within a given radius.
           * \param[in] index index representing the query point in the dataset given by \a setInputCloud.
@@ -229,7 +229,7 @@ namespace pcl
           */
         int
         radiusSearch (int index, const double radius, std::vector<int> &k_indices,
-                      std::vector<float> &k_sqr_distances, int max_nn = INT_MAX) const;
+                      std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const;
 
         /** \brief Get a PointT vector of centers of all voxels that intersected by a ray (origin, direction).
           * \param[in] origin ray origin
@@ -365,7 +365,7 @@ namespace pcl
         getNeighborsWithinRadiusRecursive (const PointT& point, const double radiusSquared,
                                            const OctreeBranch* node, const OctreeKey& key,
                                            unsigned int treeDepth, std::vector<int>& k_indices,
-                                           std::vector<float>& k_sqr_distances, int max_nn) const;
+                                           std::vector<float>& k_sqr_distances, unsigned int max_nn) const;
 
         /** \brief Recursive search method that explores the octree and finds the K nearest neighbors
           * \param[in] point query point

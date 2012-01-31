@@ -214,6 +214,35 @@ TEST (PCL, Octree_Test)
     ASSERT_EQ ( (leafVectorA[i] == leafVectorB[i]), true );
   }
 
+  //  test iterator
+  OctreeBase<int>::Iterator a_it(octreeA);
+  unsigned int node_count = 0;
+  unsigned int branch_count = 0;
+  unsigned int leaf_count = 0;
+
+  // iterate over tree
+  while (*++a_it)
+  {
+    // depth should always be less than tree depth
+    unsigned int depth = a_it.getCurrentOctreeDepth ();
+    ASSERT_LE (depth, octreeA.getTreeDepth());
+
+    // store node, branch and leaf count
+    const OctreeNode* node = a_it.getCurrentOctreeNode ();
+    if (node->getNodeType () == BRANCH_NODE)
+    {
+      branch_count++;
+    }
+    else if( node->getNodeType () == LEAF_NODE)
+    {
+      leaf_count++;
+    }
+    node_count++;
+  }
+
+  // compare node, branch and leaf count against actual tree values
+  ASSERT_EQ (node_count, branch_count + leaf_count);
+  ASSERT_EQ (leaf_count, octreeA.getLeafCount ());
 }
 
 TEST (PCL, Octree2Buf_Test)
@@ -767,6 +796,50 @@ TEST (PCL, Octree_Pointcloud_Test)
     // check if all points from leaf data can be found in input pointcloud data sets
     octreeB.defineBoundingBox();
     octreeB.addPointsFromInputCloud();
+
+    //  test iterator
+    OctreePointCloudSearch<PointXYZ>::Iterator b_it(octreeB);
+    unsigned int node_count = 0;
+    unsigned int branch_count = 0;
+    unsigned int leaf_count = 0;
+
+    double minx, miny, minz, maxx, maxy, maxz;
+    octreeB.getBoundingBox (minx, miny, minz, maxx, maxy, maxz);
+
+    // iterate over tree
+    while (*++b_it)
+    {
+      // depth should always be less than tree depth
+      unsigned int depth = b_it.getCurrentOctreeDepth ();
+      ASSERT_LE (depth, octreeB.getTreeDepth());
+
+      Eigen::Vector3f voxel_min, voxel_max;
+      b_it.getVoxelBounds (voxel_min, voxel_max);
+
+      ASSERT_GE(voxel_min.x (), minx - 1e-4);
+      ASSERT_GE(voxel_min.y (), miny - 1e-4);
+      ASSERT_GE(voxel_min.z (), minz - 1e-4);
+
+      ASSERT_LE(voxel_max.x (), maxx + 1e-4);
+      ASSERT_LE(voxel_max.y (), maxy + 1e-4);
+      ASSERT_LE(voxel_max.z (), maxz + 1e-4);
+
+      // store node, branch and leaf count
+      const OctreeNode* node = b_it.getCurrentOctreeNode ();
+      if (node->getNodeType () == BRANCH_NODE)
+      {
+        branch_count++;
+      }
+      else if( node->getNodeType () == LEAF_NODE)
+      {
+        leaf_count++;
+      }
+      node_count++;
+    }
+
+    // compare node, branch and leaf count against actual tree values
+    ASSERT_EQ (node_count, branch_count + leaf_count);
+    ASSERT_EQ (leaf_count, octreeB.getLeafCount ());
 
     for (i = 0; i < cloudB->points.size (); i++)
     {

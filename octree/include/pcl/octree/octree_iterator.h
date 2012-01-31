@@ -117,7 +117,7 @@ namespace pcl
         inline void
         getVoxelBounds (Eigen::Vector3f &min_pt, Eigen::Vector3f &max_pt) const
         {
-          octree_->genVoxelBoundsFromOctreeKey (currentOctreeKey_, currentOctreeDepth_, min_pt, max_pt);
+          octree_.genVoxelBoundsFromOctreeKey (currentOctreeKey_, currentOctreeDepth_, min_pt, max_pt);
         }
 
         /** \brief *operator.
