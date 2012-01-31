@@ -1199,13 +1199,14 @@ namespace pcl
           * \param[in] posX the x co-ordinate of the camera location
           * \param[in] posY the y co-ordinate of the camera location
           * \param[in] posZ the z co-ordinate of the camera location
-          * \param[in] viewX the x component of the normal direction of the camera
-          * \param[in] viewY the y component of the normal direction of the camera
-          * \param[in] viewZ the z component of the normal direction of the camera
+          * \param[in] viewX the x component of the view up direction of the camera
+          * \param[in] viewY the y component of the view up direction of the camera
+          * \param[in] viewZ the z component of the view up direction of the camera
+          * \param[in] viewport the viewport to modify camera of, if 0, modifies all cameras
           */
         void
         setCameraPosition (double posX,double posY, double posZ,
-                           double viewX, double viewY, double viewZ);
+                           double viewX, double viewY, double viewZ, int viewport = 0);
 
         /** \brief Get the current camera parameters. */
         void

@@ -35,9 +35,8 @@
  *
  */
 
-#include <pcl/common/common_headers.h>
-#include <pcl/ros/conversions.h>
 #include <pcl/visualization/common/common.h>
+#include <pcl/ros/conversions.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <vtkTextActor.h>
 #include <vtkTextProperty.h>
@@ -50,9 +49,6 @@
 #include <vtkTransform.h>
 #include <vtkVisibleCellSelector.h>
 #include <vtkSelection.h>
-// Only available in older versions of VTK
-//#include <vtkHardwareSelector.h>
-//#include <vtkSelectionNode.h>
 #include <vtkPointPicker.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1193,21 +1189,31 @@ pcl::visualization::PCLVisualizer::resetCamera ()
 void
 pcl::visualization::PCLVisualizer::setCameraPosition (
     double posX,double posY, double posZ,
-    double viewX, double viewY, double viewZ)
+    double vx, double vy, double vz, int viewport)
 {
-  // Set position
-  camera_.pos[0] = posX;
-  camera_.pos[1] = posY;
-  camera_.pos[2] = posZ;
-
-  // Set "rotation"
-  camera_.view[0] = viewX;
-  camera_.view[1] = viewY;
-  camera_.view[2] = viewZ;
-
-  updateCamera();
-  //Render one frame from the new camera position
-  spinOnce();
+  rens_->InitTraversal ();
+  vtkRenderer* renderer = NULL;
+  int i = 1;
+  while ((renderer = rens_->GetNextItem ()) != NULL)
+  {
+    // Modify all renderer's cameras
+    if (viewport == 0)
+    {
+      vtkSmartPointer<vtkCamera> cam = renderer->GetActiveCamera ();
+      cam->SetPosition (posX, posY, posZ);
+      cam->SetViewUp (vx, vy, vz);
+      renderer->Render ();
+    }
+    else if (viewport == i)  //Only modify this viewpoint's camera  
+    {
+      vtkSmartPointer<vtkCamera> cam = renderer->GetActiveCamera ();
+      cam->SetPosition (posX, posY, posZ);
+      cam->SetViewUp (vx, vy, vz);
+      renderer->Render ();
+    }
+    ++i;
+  }  
+ 
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
