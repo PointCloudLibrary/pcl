@@ -5,7 +5,7 @@ PCL_ADD_TEST(common_vector_average test_vector_average FILES test_vector_average
 PCL_ADD_TEST(common_common test_common FILES test_common.cpp LINK_WITH pcl_common)
 PCL_ADD_TEST(common_pca test_pca FILES test_pca.cpp LINK_WITH pcl_common)
 link_ros_libs(test_pca)
-PCL_ADD_TEST(common_spring test_spring FILES test_spring.cpp LINK_WITH pcl_common)
+#PCL_ADD_TEST(common_spring test_spring FILES test_spring.cpp LINK_WITH pcl_common)
 PCL_ADD_TEST(common_gaussian test_gaussian FILES test_gaussian.cpp LINK_WITH pcl_common)
 PCL_ADD_TEST(common_operators test_operators FILES test_operators.cpp LINK_WITH pcl_common)
 #PCL_ADD_TEST(common_convolution test_convolution FILES test_convolution.cpp LINK_WITH pcl_common)
