@@ -118,11 +118,7 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
   if (!tree_)
   {
     if (surface_->isOrganized () && input_->isOrganized ())
-    {
-      pcl::search::OrganizedNeighbor<PointInT>* organized_search = new pcl::search::OrganizedNeighbor<PointInT> ();
-      organized_search->setPrecision (1);
-      tree_.reset (organized_search);
-    }
+      tree_.reset (new pcl::search::OrganizedNeighbor<PointInT> ());
     else
       tree_.reset (new pcl::search::KdTree<PointInT> (false));
   }
