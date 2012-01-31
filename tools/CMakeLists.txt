@@ -65,12 +65,14 @@ if (build)
 
   PCL_ADD_EXECUTABLE(ndt2d ${SUBSYS_NAME} ndt2d.cpp)
   target_link_libraries(ndt2d pcl_common pcl_io pcl_registration)
-
-  PCL_ADD_EXECUTABLE(crop_to_hull ${SUBSYS_NAME} crop_to_hull.cpp)
-  target_link_libraries(crop_to_hull pcl_common pcl_io pcl_filters pcl_surface)
-
+  
   PCL_ADD_EXECUTABLE(concatenate_points_pcd ${SUBSYS_NAME} concatenate_points_pcd.cpp)
   target_link_libraries(concatenate_points_pcd pcl_common pcl_io)
+
+  if (QHULL_FOUND)
+    PCL_ADD_EXECUTABLE(crop_to_hull ${SUBSYS_NAME} crop_to_hull.cpp)
+    target_link_libraries(crop_to_hull pcl_common pcl_io pcl_filters pcl_surface)
+  endif (QHULL_FOUND)
 
   if(NOT VTK_FOUND)
     set(DEFAULT FALSE)
@@ -96,7 +98,7 @@ if (build)
       
       PCL_ADD_EXECUTABLE(virtual_scanner ${SUBSYS_NAME} virtual_scanner.cpp)
       target_link_libraries(virtual_scanner pcl_common pcl_io pcl_filters pcl_visualization vtkCommon)
-
+      
       if(BUILD_OPENNI AND OPENNI_FOUND)
         PCL_ADD_EXECUTABLE(openni_save_image ${SUBSYS_NAME} openni_save_image.cpp)
         target_link_libraries(openni_save_image pcl_common pcl_io pcl_visualization)  
