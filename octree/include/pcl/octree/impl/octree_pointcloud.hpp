@@ -608,11 +608,6 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getKeyBitSize ()
  // configure tree depth of octree
   this->setTreeDepth (this->octreeDepth_);
 
-  maxKeyX = ceil ((maxX_ - minX_) / resolution_);
-  maxKeyY = ceil ((maxY_ - minY_) / resolution_);
-  maxKeyZ = ceil ((maxZ_ - minZ_) / resolution_);
-  maxVoxels = max (max (max (maxKeyX, maxKeyY), maxKeyZ), (unsigned int)2);
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
