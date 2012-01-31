@@ -723,8 +723,8 @@ TEST (PCL, PCDReaderWriter)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PLYReaderWriter)
 {
-  sensor_msgs::PointCloud2 cloud_blob;
-  PointCloud<PointXYZI> cloud;
+  sensor_msgs::PointCloud2 cloud_blob, cloud_blob2;
+  PointCloud<PointXYZI> cloud, cloud2;
 
   cloud.width  = 640;
   cloud.height = 480;
@@ -739,13 +739,8 @@ TEST (PCL, PLYReaderWriter)
     cloud[i].x = 1024 * rand () / (RAND_MAX + 1.0);
     cloud[i].y = 1024 * rand () / (RAND_MAX + 1.0);
     cloud[i].z = 1024 * rand () / (RAND_MAX + 1.0);
-    cloud.points[i].intensity = i;
+    cloud[i].intensity = i;
   }
-  PointXYZI first, last;
-  first.x = cloud[0].x;       first.y = cloud[0].y;       first.z = cloud[0].z;
-  first.intensity = cloud[0].intensity;
-  last.x = cloud[nr_p - 1].x; last.y = cloud[nr_p - 1].y; last.z = cloud[nr_p - 1].z;
-  last.intensity = cloud[nr_p - 1].intensity;
 
   // Convert from data type to blob
   toROSMsg (cloud, cloud_blob);
@@ -755,36 +750,34 @@ TEST (PCL, PLYReaderWriter)
   EXPECT_EQ (cloud_blob.is_dense, cloud.is_dense);  // test for toROSMsg ()
   EXPECT_EQ (cloud_blob.data.size (), 
              cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  
-// test for toROSMsg ()
 
+  // test for toROSMsg ()
   PLYWriter writer;
   writer.write ("test_pcl_io.ply", cloud_blob, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), true, true);
 
   PLYReader reader;
-  reader.read ("test_pcl_io.ply", cloud_blob);
-  //PLY doesn't preserve organiziation
-  EXPECT_EQ (cloud_blob.width * cloud_blob.height, cloud.width * cloud.height);
-  EXPECT_EQ (cloud_blob.is_dense, false);   
-  EXPECT_EQ ((size_t)cloud_blob.data.size (),         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
-             cloud_blob.width * cloud_blob.height * sizeof (PointXYZ));  // test for loadPLYFile ()
+  reader.read ("test_pcl_io.ply", cloud_blob2);
+  //PLY DOES preserve organiziation
+  EXPECT_EQ (cloud_blob.width * cloud_blob.height, cloud_blob2.width * cloud_blob2.height);
+  EXPECT_EQ (cloud_blob.is_dense, cloud.is_dense);   
+  EXPECT_EQ ((size_t)cloud_blob2.data.size (),         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
+             cloud_blob2.width * cloud_blob2.height * sizeof (PointXYZ));  // test for loadPLYFile ()
 
   // Convert from blob to data type
-  fromROSMsg (cloud_blob, cloud);
+  fromROSMsg (cloud_blob2, cloud2);
 
-  EXPECT_EQ ((uint32_t)cloud.width, cloud_blob.width);    // test for fromROSMsg ()
-  EXPECT_EQ ((uint32_t)cloud.height, cloud_blob.height);  // test for fromROSMsg ()
-  EXPECT_EQ ((int)cloud.is_dense, cloud_blob.is_dense);   // test for fromROSMsg ()
-  EXPECT_EQ ((size_t)cloud.size (), nr_p);         // test for fromROSMsg ()
+  EXPECT_EQ (cloud.width, cloud2.width);    // test for fromROSMsg ()
+  EXPECT_EQ (cloud.height, cloud2.height);  // test for fromROSMsg ()
+  EXPECT_EQ (cloud.is_dense, cloud2.is_dense);   // test for fromROSMsg ()
+  EXPECT_EQ (cloud.size (), cloud2.size ());         // test for fromROSMsg ()
 
-  EXPECT_FLOAT_EQ (cloud[0].x, first.x);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud[0].y, first.y);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud[0].z, first.z);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud[0].intensity, first.intensity);  // test for fromROSMsg ()
-
-  EXPECT_FLOAT_EQ (cloud[nr_p - 1].x, last.x);    // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud[nr_p - 1].y, last.y);    // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud[nr_p - 1].z, last.z);    // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud[nr_p - 1].intensity, last.intensity); // test for fromROSMsg ()
+  for (uint32_t counter = 0; counter < cloud.size (); ++counter)
+  {
+    EXPECT_FLOAT_EQ (cloud[counter].x, cloud2[counter].x);     // test for fromROSMsg ()
+    EXPECT_FLOAT_EQ (cloud[counter].y, cloud2[counter].y);     // test for fromROSMsg ()
+    EXPECT_FLOAT_EQ (cloud[counter].z, cloud2[counter].z);     // test for fromROSMsg ()
+    EXPECT_FLOAT_EQ (cloud[counter].intensity, cloud2[counter].intensity);  // test for fromROSMsg ()
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

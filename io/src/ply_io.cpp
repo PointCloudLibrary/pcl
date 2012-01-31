@@ -73,6 +73,7 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
   // }
   else if (element_name == "camera")
   {
+    cloud_->is_dense = true;
     return (std::tr1::tuple<std::tr1::function<void ()>, std::tr1::function<void ()> > (0, 0));
   }
   else if (element_name == "range_grid")
@@ -929,11 +930,18 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
   // Iterate through the points
   for (int i = 0; i < nr_points; ++i)
   {
+    size_t total = 0;
     for (size_t d = 0; d < cloud.fields.size (); ++d)
     {
       int count = cloud.fields[d].count;
       if (count == 0) 
         count = 1; //workaround
+      // Ignore invalid padded dimensions that are inherited from binary data
+      if (cloud.fields[d].name == "_")
+      {
+	total += cloud.fields[d].count; // jump over this many elements in the string token
+	continue;
+      }
 
       for (int c = 0; c < count; ++c)
       {
@@ -942,42 +950,42 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
           case sensor_msgs::PointField::INT8:
           {
             char value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (char)], sizeof (char));
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (char)], sizeof (char));
             fpout.write ((const char *) &value,sizeof (char));
             break;
           }
           case sensor_msgs::PointField::UINT8:
           {
             unsigned char value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned char)], sizeof (unsigned char));
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (unsigned char)], sizeof (unsigned char));
             fpout.write ((const char *) &value,sizeof (unsigned char));
             break;
           }
           case sensor_msgs::PointField::INT16:
           {
             short value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (short)], sizeof (short));
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (short)], sizeof (short));
             fpout.write ((const char *) &value,sizeof (short));
             break;
           }
           case sensor_msgs::PointField::UINT16:
           {
             unsigned short value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned short)], sizeof (unsigned short));
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (unsigned short)], sizeof (unsigned short));
             fpout.write ((const char *) &value,sizeof (unsigned short));
             break;
           }
           case sensor_msgs::PointField::INT32:
           {
             int value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (int)], sizeof (int));
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (int)], sizeof (int));
             fpout.write ((const char *) &value,sizeof (int));
             break;
           }
           case sensor_msgs::PointField::UINT32:
           {
             unsigned int value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned int)], sizeof (unsigned int));
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (unsigned int)], sizeof (unsigned int));
             fpout.write ((const char *) &value,sizeof (unsigned int));
             break;
           }
@@ -986,13 +994,13 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
             if ("rgb" != cloud.fields[d].name)
             {
               float value;
-              memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+              memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (float)], sizeof (float));
               fpout.write ((const char *) &value,sizeof (float));
             }
             else
             {
               pcl::RGB color;
-              memcpy (&color, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (pcl::RGB));
+              memcpy (&color, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (float)], sizeof (pcl::RGB));
               unsigned char r = color.r;
               unsigned char g = color.g;
               unsigned char b = color.b;
@@ -1005,7 +1013,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
           case sensor_msgs::PointField::FLOAT64:
           {
             double value;
-            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (double)], sizeof (double));
+            memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (double)], sizeof (double));
             fpout.write ((const char *) &value,sizeof (double));
             break;
           }
