@@ -1398,7 +1398,7 @@ TEST (PCL, PrincipalCurvaturesEstimationEigen)
   EXPECT_NEAR (pcs->points (indices.size () - 3, 4), 0.17906941473484039, 1e-4);
 
   EXPECT_NEAR (pcs->points (indices.size () - 1, 0), 0.86725, 1e-4);
-  EXPECT_NEAR (pcs->points (indices.size () - 1, 1), -0.375851, 1e-4);
+  EXPECT_NEAR (pcs->points (indices.size () - 1, 1), -0.375851, 1e-3);
   EXPECT_NEAR (pcs->points (indices.size () - 1, 2), 0.32636, 1e-4);
   EXPECT_NEAR (pcs->points (indices.size () - 1, 3), 0.25900065898895264, 1e-4);
   EXPECT_NEAR (pcs->points (indices.size () - 1, 4), 0.17906941473484039, 1e-4);
@@ -1998,7 +1998,7 @@ TEST (PCL, PFHEstimationEigen)
     EXPECT_NEAR (pfhs->points (i, 19), 0.00127217, 1e-4);
     EXPECT_NEAR (pfhs->points (i, 20), 0.148844  , 1e-4);
     EXPECT_NEAR (pfhs->points (i, 21), 0.721316  , 1e-2);
-    EXPECT_NEAR (pfhs->points (i, 22), 0.438899  , 1e-4);
+    EXPECT_NEAR (pfhs->points (i, 22), 0.438899  , 1e-2);
     EXPECT_NEAR (pfhs->points (i, 23), 0.22263   , 1e-4);
     EXPECT_NEAR (pfhs->points (i, 24), 0.0216269 , 1e-4);
     EXPECT_NEAR (pfhs->points (i, 25), 0.223902  , 1e-4);
