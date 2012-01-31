@@ -51,7 +51,7 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::PPFEstimation ()
   // Slight hack in order to pass the check for the presence of a search method in Feature::initCompute ()
   Feature<PointInT, PointOutT>::tree_.reset (new pcl::search::KdTree <PointInT> ());
   Feature<PointInT, PointOutT>::search_radius_ = 1.0f;
-};
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////

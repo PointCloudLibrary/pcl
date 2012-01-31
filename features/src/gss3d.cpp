@@ -40,5 +40,5 @@
 #include "pcl/features/impl/gss3d.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(GSS3DEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::PointXYZ)));
+PCL_INSTANTIATE_PRODUCT(GSS3DEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::PointXYZ)))
 /// TODO add specific feature type when created

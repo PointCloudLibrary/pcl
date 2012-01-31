@@ -64,6 +64,6 @@ pcl::computePPFPairFeature (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1
 }
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(PPFEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::PPFSignature)));
-PCL_INSTANTIATE_PRODUCT(PPFEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)));
+PCL_INSTANTIATE_PRODUCT(PPFEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::PPFSignature)))
+PCL_INSTANTIATE_PRODUCT(PPFEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)))
 

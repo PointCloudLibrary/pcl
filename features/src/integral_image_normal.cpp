@@ -39,5 +39,5 @@
 #include "pcl/features/impl/integral_image_normal.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(IntegralImageNormalEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES));
+PCL_INSTANTIATE_PRODUCT(IntegralImageNormalEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
 

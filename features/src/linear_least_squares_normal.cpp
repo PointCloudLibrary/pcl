@@ -39,5 +39,5 @@
 #include "pcl/features/impl/linear_least_squares_normal.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(LinearLeastSquaresNormalEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES));
+PCL_INSTANTIATE_PRODUCT(LinearLeastSquaresNormalEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
 

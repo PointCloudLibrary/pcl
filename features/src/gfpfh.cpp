@@ -44,4 +44,4 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(GFPFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_XYZL_POINT_TYPES)((pcl::GFPFHSignature16)));
+PCL_INSTANTIATE_PRODUCT(GFPFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_XYZL_POINT_TYPES)((pcl::GFPFHSignature16)))

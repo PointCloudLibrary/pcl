@@ -13,7 +13,7 @@ pcl::PPFRGBEstimation<PointInT, PointNT, PointOutT>::PPFRGBEstimation ()
   // Slight hack in order to pass the check for the presence of a search method in Feature::initCompute ()
   Feature<PointInT, PointOutT>::tree_.reset (new pcl::search::KdTree <PointInT> ());
   Feature<PointInT, PointOutT>::search_radius_ = 1.0f;
-};
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,7 +78,7 @@ pcl::PPFRGBRegionEstimation<PointInT, PointNT, PointOutT>::PPFRGBRegionEstimatio
 : FeatureFromNormals <PointInT, PointNT, PointOutT> ()
 {
   feature_name_ = "PPFRGBEstimation";
-};
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void

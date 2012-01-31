@@ -41,5 +41,5 @@
 #include "pcl/features/impl/rsd.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(RSDEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::PrincipalRadiiRSD)));
+PCL_INSTANTIATE_PRODUCT(RSDEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::PrincipalRadiiRSD)))
 
