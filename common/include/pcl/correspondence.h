@@ -72,7 +72,7 @@ namespace pcl
       index_query (_index_query), index_match (_index_match), distance (_distance)
     {}
     
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
   
   /** \brief overloaded << operator */

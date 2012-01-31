@@ -56,7 +56,7 @@ namespace pcl
     {
       return (fabs (val1 - val2) < eps);
     }
-  };
+  }
 }
 
 #endif

@@ -66,8 +66,8 @@ namespace pcl
       int length = v1.size ();
       for (int i = 0; i < length; ++i)
         EXPECT_NEAR (v1[i], v2[i], epsilon);
-    };
-  };
+    }
+  }
 }
 
 #endif

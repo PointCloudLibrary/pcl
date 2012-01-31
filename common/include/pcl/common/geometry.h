@@ -90,7 +90,7 @@ namespace pcl
       float lambda = plane_normal.dot(po);
       projected = point - (lambda * plane_normal);
     }
-  };
+  }
 }
 
 /*@}*/

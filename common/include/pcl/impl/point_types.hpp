@@ -168,7 +168,7 @@ namespace pcl
   struct _PointXYZ
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /*struct PointXYZ
@@ -182,13 +182,15 @@ namespace pcl
    */
   struct EIGEN_ALIGN16 PointXYZ : public _PointXYZ
   {
-    inline PointXYZ()
+    inline PointXYZ ()
     {
       x = y = z = 0.0f;
       data[3] = 1.0f;
     }
+
     inline PointXYZ (float _x, float _y, float _z)
     { x = _x; y = _y; z = _z; data[3] = 1.0f;}
+
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -706,7 +708,7 @@ namespace pcl
       };
       float data_c[4];
     };
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /** \brief A point structure representing Euclidean xyz coordinates together with the viewpoint from which it was seen.

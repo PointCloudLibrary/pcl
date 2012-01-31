@@ -203,10 +203,9 @@ namespace pcl
       * \param argv the command line arguments
       * \param str the command line argument to search for
       * \param v the vector into which the parsed values will be copied
-      * \param debug whether to print debug info or not
       */
     PCL_EXPORTS int
-    parse_x_arguments (int argc, char** argv, const char* str, std::vector<double>& v, bool debug = true);
+    parse_x_arguments (int argc, char** argv, const char* str, std::vector<double>& v);
 
     /** \brief Parse for specific given command line arguments (N values comma
       * separated). Returns the values sent as ints.
@@ -214,10 +213,9 @@ namespace pcl
       * \param argv the command line arguments
       * \param str the command line argument to search for
       * \param v the vector into which the parsed values will be copied
-      * \param debug whether to print debug info or not
       */
     PCL_EXPORTS int
-    parse_x_arguments (int argc, char** argv, const char* str, std::vector<int>& v, bool debug = true);
+    parse_x_arguments (int argc, char** argv, const char* str, std::vector<int>& v);
 
     /** \brief Parse for specific given command line arguments (multiple occurances
       * of the same command line parameter). Returns the values sent as a vector.

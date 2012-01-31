@@ -255,7 +255,7 @@ pcl::console::parse_3x_arguments (int argc, char** argv, const char* str, int &f
 
 ////////////////////////////////////////////////////////////////////////////////
 int
-pcl::console::parse_x_arguments (int argc, char** argv, const char* str, std::vector<double>& v, bool debug)
+pcl::console::parse_x_arguments (int argc, char** argv, const char* str, std::vector<double>& v)
 {
   for (int i = 1; i < argc; ++i)
   {
@@ -278,7 +278,7 @@ pcl::console::parse_x_arguments (int argc, char** argv, const char* str, std::ve
 
 ////////////////////////////////////////////////////////////////////////////////
 int
-pcl::console::parse_x_arguments (int argc, char** argv, const char* str, std::vector<int>& v, bool debug)
+pcl::console::parse_x_arguments (int argc, char** argv, const char* str, std::vector<int>& v)
 {
   for (int i = 1; i < argc; ++i)
   {
