@@ -92,16 +92,16 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOu
   computeTransitionHistograms (line_histograms, transition_histograms);
 
   std::vector<float> distances;
-  computeDistancesToMean(transition_histograms, distances);
+  computeDistancesToMean (transition_histograms, distances);
 
   std::vector<float> gfpfh_histogram;
-  computeDistanceHistogram(distances, gfpfh_histogram);
+  computeDistanceHistogram (distances, gfpfh_histogram);
 
-  output.clear();
+  output.clear ();
   output.width = 1;
   output.height = 1;
-  output.points.resize(1);
-  std::copy(gfpfh_histogram.begin(), gfpfh_histogram.end(), output.points[0].histogram);
+  output.points.resize (1);
+  std::copy (gfpfh_histogram.begin (), gfpfh_histogram.end (), output.points[0].histogram);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -127,7 +127,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeTransitionHistograms 
       uint32_t second_class = label_histograms[i][k];
       // Order has no influence.
       if (second_class < first_class)
-        std::swap(first_class, second_class);
+        std::swap (first_class, second_class);
 
       transitions[first_class][second_class] += 1;
     }
@@ -215,7 +215,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeHIKDistance (const st
     norm += std::min ((float) histogram[i], mean_histogram[i]);
 
   norm /= histogram.size ();
-  return norm;
+  return (norm);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -232,9 +232,9 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::getDominantLabel (const std:
   std::vector<uint32_t>::const_iterator max_it;
   max_it = std::max_element (counts.begin (), counts.end ());
   if (max_it == counts.end ())
-    return emptyLabel ();
+    return (emptyLabel ());
 
-  return max_it - counts.begin ();
+  return (max_it - counts.begin ());
 }
 
 #define PCL_INSTANTIATE_GFPFHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::GFPFHEstimation<T,NT,OutT>;
