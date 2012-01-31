@@ -489,6 +489,23 @@ TEST (PCL, IINormalEstimationSimple3DGradient)
     }
   }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, IINormalEstimationSimple3DGradientUnorganized)
+{
+  PointCloud<Normal> output;
+  cloud.height = 1;
+  cloud.points.resize (cloud.height * cloud.width);
+  ne.setInputCloud (cloud.makeShared ());
+  ne.setRectSize (3, 3);
+  ne.setNormalEstimationMethod (ne.SIMPLE_3D_GRADIENT);
+  ne.compute (output);
+
+  EXPECT_EQ (output.points.size (), 0);
+  EXPECT_EQ (output.width, 0);
+  EXPECT_EQ (output.height, 0);
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
