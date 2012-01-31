@@ -167,10 +167,10 @@ pcl::PointCloudSpring<PointT>::expandVerticalMirror()
   iterator up = input_->begin (), low = input_->end ();
   for(int i = 0; i < amount_; ++i)
   {
+    up = input_->begin () + 2*i*old_width;
     input_->insert (input_->begin (), up, up + old_width);
-    up+= old_width;
+    low = input_->end () - 2*i*old_width;
     input_->insert (input_->end (), low - old_width, low);
-    low-= old_width;
   }
   input_->width = old_width;
   input_->height = old_height + 2*amount_;
