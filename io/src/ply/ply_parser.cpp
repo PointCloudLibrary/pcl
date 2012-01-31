@@ -40,7 +40,7 @@
 
 #include <pcl/io/ply/ply_parser.h>
 
-bool ply::ply_parser::parse (std::istream& istream)
+bool pcl::io::ply::ply_parser::parse (std::istream& istream)
 {
   std::string line;
   line_number_ = 0;
@@ -51,7 +51,7 @@ bool ply::ply_parser::parse (std::istream& istream)
   std::size_t number_of_obj_info_statements = 0; 
   std::size_t number_of_comment_statements = 0;
 
-  format_type format;
+  format_type format = pcl::io::ply::unknown;
   std::vector< std::tr1::shared_ptr<element> > elements;
 
   // magic
@@ -191,10 +191,6 @@ bool ply::ply_parser::parse (std::istream& istream)
         if (element_definition_callbacks_)
         {
           element_callbacks = element_definition_callbacks_ (name, count);
-        }
-        if (element_closure_callback_ && number_of_element_statements > 1)
-        {
-          element_closure_callback_ (current_element_->name);
         }
         std::tr1::shared_ptr<element> element_ptr (new element (name, 
                                                                 count, 
@@ -508,8 +504,8 @@ bool ply::ply_parser::parse (std::istream& istream)
 
   if (number_of_format_statements == 0)
   {
-    if (error_callback_)
-      error_callback_ (line_number_, "parse error");
+    if (error_callback_) 
+     error_callback_ (line_number_, "parse error");
     return false;
   }
 
@@ -524,15 +520,11 @@ bool ply::ply_parser::parse (std::istream& istream)
       for (std::size_t element_index = 0; element_index < element.count; ++element_index)
       {
         if (element.begin_element_callback) 
-        {
           element.begin_element_callback ();
-        }
         if (!std::getline (istream, line))
         {
           if (error_callback_)
-          {
             error_callback_ (line_number_, "parse error");
-          }
           return false;
         }
         ++line_number_;
@@ -545,31 +537,23 @@ bool ply::ply_parser::parse (std::istream& istream)
         {
           class property& property = *(property_iterator->get ());
           if (property.parse (*this, format, stringstream) == false)
-          {
             return false;
-          }
         }
         if (!stringstream.eof ())
         {
           if (error_callback_)
-          {
             error_callback_ (line_number_, "parse error");
-          }
           return false;
         }
         if (element.end_element_callback)
-        {
           element.end_element_callback ();
-        }
       }
     }
     istream >> std::ws;
     if (istream.fail () || !istream.eof () || istream.bad ())
     {
       if (error_callback_)
-      {
         error_callback_ (line_number_, "parse error");
-      }
       return false;
     }
     return true;

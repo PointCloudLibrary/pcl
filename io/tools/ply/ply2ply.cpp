@@ -92,7 +92,7 @@ class ply_to_ply_converter
     magic_callback();
     
     void
-    format_callback(ply::format_type format, const std::string& version);
+    format_callback(pcl::io::ply::format_type format, const std::string& version);
     
     void
     element_begin_callback();
@@ -133,7 +133,7 @@ class ply_to_ply_converter
     end_header_callback();
 
     format_type format_;
-    ply::format_type input_format_, output_format_;
+    pcl::io::ply::format_type input_format_, output_format_;
     bool bol_;
     std::ostream* ostream_;
 };
@@ -163,7 +163,7 @@ ply_to_ply_converter::magic_callback()
 }
 
 void
-ply_to_ply_converter::format_callback(ply::format_type format, const std::string& version)
+ply_to_ply_converter::format_callback(pcl::io::ply::format_type format, const std::string& version)
 {
   input_format_ = format;
 
@@ -172,28 +172,28 @@ ply_to_ply_converter::format_callback(ply::format_type format, const std::string
       output_format_ = input_format_;
       break;
     case ascii_format:
-      output_format_ = ply::ascii_format;
+      output_format_ = pcl::io::ply::ascii_format;
       break;
     case binary_format:
-      output_format_ = ply::host_byte_order == ply::little_endian_byte_order ? ply::binary_little_endian_format : ply::binary_big_endian_format;
+      output_format_ = pcl::io::ply::host_byte_order == pcl::io::ply::little_endian_byte_order ? pcl::io::ply::binary_little_endian_format : pcl::io::ply::binary_big_endian_format;
       break;
     case binary_big_endian_format:
-      output_format_ = ply::binary_big_endian_format;
+      output_format_ = pcl::io::ply::binary_big_endian_format;
       break;
     case binary_little_endian_format:
-      output_format_ = ply::binary_little_endian_format;
+      output_format_ = pcl::io::ply::binary_little_endian_format;
       break;
   };
 
   (*ostream_) << "format ";
   switch (output_format_) {
-    case ply::ascii_format:
+    case pcl::io::ply::ascii_format:
       (*ostream_) << "ascii";
       break;
-    case ply::binary_little_endian_format:
+    case pcl::io::ply::binary_little_endian_format:
       (*ostream_) << "binary_little_endian";
       break;
-    case ply::binary_big_endian_format:
+    case pcl::io::ply::binary_big_endian_format:
       (*ostream_) << "binary_big_endian";
       break;
   }
@@ -203,7 +203,7 @@ ply_to_ply_converter::format_callback(ply::format_type format, const std::string
 void
 ply_to_ply_converter::element_begin_callback()
 {
-  if (output_format_ == ply::ascii_format) {
+  if (output_format_ == pcl::io::ply::ascii_format) {
     bol_ = true;
   }
 }
@@ -211,7 +211,7 @@ ply_to_ply_converter::element_begin_callback()
 void
 ply_to_ply_converter::element_end_callback()
 {
-  if (output_format_ == ply::ascii_format) {
+  if (output_format_ == pcl::io::ply::ascii_format) {
     (*ostream_) << "\n";
   }
 }
@@ -229,8 +229,8 @@ template <typename ScalarType>
 void
 ply_to_ply_converter::scalar_property_callback(ScalarType scalar)
 {
-  if (output_format_ == ply::ascii_format) {
-    using namespace ply::io_operators;
+  if (output_format_ == pcl::io::ply::ascii_format) {
+    using namespace pcl::io::ply::io_operators;
     if (bol_) {
       bol_ = false;
       (*ostream_) << scalar;
@@ -240,9 +240,9 @@ ply_to_ply_converter::scalar_property_callback(ScalarType scalar)
     }
   }
   else {
-    if (((ply::host_byte_order == ply::little_endian_byte_order) && (output_format_ == ply::binary_big_endian_format))
-      || ((ply::host_byte_order == ply::big_endian_byte_order) && (output_format_ == ply::binary_little_endian_format))) {
-      ply::swap_byte_order(scalar);
+    if (((pcl::io::ply::host_byte_order == pcl::io::ply::little_endian_byte_order) && (output_format_ == pcl::io::ply::binary_big_endian_format))
+      || ((pcl::io::ply::host_byte_order == pcl::io::ply::big_endian_byte_order) && (output_format_ == pcl::io::ply::binary_little_endian_format))) {
+      pcl::io::ply::swap_byte_order(scalar);
     }
     ostream_->write(reinterpret_cast<char*>(&scalar), sizeof(scalar));
   }
@@ -251,15 +251,15 @@ ply_to_ply_converter::scalar_property_callback(ScalarType scalar)
 template <typename ScalarType> std::tr1::function<void (ScalarType)> 
 ply_to_ply_converter::scalar_property_definition_callback(const std::string& element_name, const std::string& property_name)
 {
-  (*ostream_) << "property " << ply::type_traits<ScalarType>::old_name() << " " << property_name << "\n";
+  (*ostream_) << "property " << pcl::io::ply::type_traits<ScalarType>::old_name() << " " << property_name << "\n";
   return std::tr1::bind(&ply_to_ply_converter::scalar_property_callback<ScalarType>, this, _1);
 }
 
 template <typename SizeType, typename ScalarType> void
 ply_to_ply_converter::list_property_begin_callback(SizeType size)
 {
-  if (output_format_ == ply::ascii_format) {
-    using namespace ply::io_operators;
+  if (output_format_ == pcl::io::ply::ascii_format) {
+    using namespace pcl::io::ply::io_operators;
     if (bol_) {
       bol_ = false;
       (*ostream_) << size;
@@ -269,9 +269,9 @@ ply_to_ply_converter::list_property_begin_callback(SizeType size)
     }
   }
   else {
-    if (((ply::host_byte_order == ply::little_endian_byte_order) && (output_format_ == ply::binary_big_endian_format))
-      || ((ply::host_byte_order == ply::big_endian_byte_order) && (output_format_ == ply::binary_little_endian_format))) {
-      ply::swap_byte_order(size);
+    if (((pcl::io::ply::host_byte_order == pcl::io::ply::little_endian_byte_order) && (output_format_ == pcl::io::ply::binary_big_endian_format))
+      || ((pcl::io::ply::host_byte_order == pcl::io::ply::big_endian_byte_order) && (output_format_ == pcl::io::ply::binary_little_endian_format))) {
+      pcl::io::ply::swap_byte_order(size);
     }
     ostream_->write(reinterpret_cast<char*>(&size), sizeof(size));
   }
@@ -280,14 +280,14 @@ ply_to_ply_converter::list_property_begin_callback(SizeType size)
 template <typename SizeType, typename ScalarType> void
 ply_to_ply_converter::list_property_element_callback(ScalarType scalar)
 {
-  if (output_format_ == ply::ascii_format) {
-    using namespace ply::io_operators;
+  if (output_format_ == pcl::io::ply::ascii_format) {
+    using namespace pcl::io::ply::io_operators;
     (*ostream_) << " " << scalar;
   }
   else {
-    if (((ply::host_byte_order == ply::little_endian_byte_order) && (output_format_ == ply::binary_big_endian_format))
-      || ((ply::host_byte_order == ply::big_endian_byte_order) && (output_format_ == ply::binary_little_endian_format))) {
-      ply::swap_byte_order(scalar);
+    if (((pcl::io::ply::host_byte_order == pcl::io::ply::little_endian_byte_order) && (output_format_ == pcl::io::ply::binary_big_endian_format))
+      || ((pcl::io::ply::host_byte_order == pcl::io::ply::big_endian_byte_order) && (output_format_ == pcl::io::ply::binary_little_endian_format))) {
+      pcl::io::ply::swap_byte_order(scalar);
     }
     ostream_->write(reinterpret_cast<char*>(&scalar), sizeof(scalar));
   }
@@ -301,7 +301,7 @@ template <typename SizeType, typename ScalarType> std::tr1::tuple<std::tr1::func
                                                                   std::tr1::function<void ()> > 
 ply_to_ply_converter::list_property_definition_callback(const std::string& element_name, const std::string& property_name)
 {
-  (*ostream_) << "property list " << ply::type_traits<SizeType>::old_name() << " " << ply::type_traits<ScalarType>::old_name() << " " << property_name << "\n";
+  (*ostream_) << "property list " << pcl::io::ply::type_traits<SizeType>::old_name() << " " << pcl::io::ply::type_traits<ScalarType>::old_name() << " " << property_name << "\n";
   return std::tr1::tuple<std::tr1::function<void (SizeType)>, std::tr1::function<void (ScalarType)>, std::tr1::function<void ()> >(
     std::tr1::bind(&ply_to_ply_converter::list_property_begin_callback<SizeType, ScalarType>, this, _1),
     std::tr1::bind(&ply_to_ply_converter::list_property_element_callback<SizeType, ScalarType>, this, _1),
@@ -331,9 +331,9 @@ ply_to_ply_converter::end_header_callback()
 bool 
 ply_to_ply_converter::convert(std::istream& istream, std::ostream& ostream)
 {
-  ply::ply_parser::flags_type ply_parser_flags = 0;
+  pcl::io::ply::ply_parser::flags_type ply_parser_flags = 0;
 
-  ply::ply_parser ply_parser(ply_parser_flags);
+  pcl::io::ply::ply_parser ply_parser(ply_parser_flags);
 
   std::string ifilename;
 
@@ -345,47 +345,47 @@ ply_to_ply_converter::convert(std::istream& istream, std::ostream& ostream)
   ply_parser.format_callback(std::tr1::bind(&ply_to_ply_converter::format_callback, this, _1, _2));
   ply_parser.element_definition_callback(std::tr1::bind(&ply_to_ply_converter::element_definition_callback, this, _1, _2));
 
-  ply::ply_parser::scalar_property_definition_callbacks_type scalar_property_definition_callbacks;
+  pcl::io::ply::ply_parser::scalar_property_definition_callbacks_type scalar_property_definition_callbacks;
 
-  ply::at<ply::int8>(scalar_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::scalar_property_definition_callback<ply::int8>, this, _1, _2);
-  ply::at<ply::int16>(scalar_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::scalar_property_definition_callback<ply::int16>, this, _1, _2);
-  ply::at<ply::int32>(scalar_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::scalar_property_definition_callback<ply::int32>, this, _1, _2);
-  ply::at<ply::uint8>(scalar_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::scalar_property_definition_callback<ply::uint8>, this, _1, _2);
-  ply::at<ply::uint16>(scalar_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::scalar_property_definition_callback<ply::uint16>, this, _1, _2);
-  ply::at<ply::uint32>(scalar_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::scalar_property_definition_callback<ply::uint32>, this, _1, _2);
-  ply::at<ply::float32>(scalar_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::scalar_property_definition_callback<ply::float32>, this, _1, _2);
-  ply::at<ply::float64>(scalar_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::scalar_property_definition_callback<ply::float64>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::int8>(scalar_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::scalar_property_definition_callback<pcl::io::ply::int8>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::int16>(scalar_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::scalar_property_definition_callback<pcl::io::ply::int16>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::int32>(scalar_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::scalar_property_definition_callback<pcl::io::ply::int32>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint8>(scalar_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::scalar_property_definition_callback<pcl::io::ply::uint8>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint16>(scalar_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::scalar_property_definition_callback<pcl::io::ply::uint16>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint32>(scalar_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::scalar_property_definition_callback<pcl::io::ply::uint32>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::float32>(scalar_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::scalar_property_definition_callback<pcl::io::ply::float32>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::float64>(scalar_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::scalar_property_definition_callback<pcl::io::ply::float64>, this, _1, _2);
 
   ply_parser.scalar_property_definition_callbacks(scalar_property_definition_callbacks);
 
-  ply::ply_parser::list_property_definition_callbacks_type list_property_definition_callbacks;
+  pcl::io::ply::ply_parser::list_property_definition_callbacks_type list_property_definition_callbacks;
 
-  ply::at<ply::uint8, ply::int8>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint8, ply::int8>, this, _1, _2);
-  ply::at<ply::uint8, ply::int16>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint8, ply::int16>, this, _1, _2);
-  ply::at<ply::uint8, ply::int32>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint8, ply::int32>, this, _1, _2);
-  ply::at<ply::uint8, ply::uint8>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint8, ply::uint8>, this, _1, _2);
-  ply::at<ply::uint8, ply::uint16>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint8, ply::uint16>, this, _1, _2);
-  ply::at<ply::uint8, ply::uint32>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint8, ply::uint32>, this, _1, _2);
-  ply::at<ply::uint8, ply::float32>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint8, ply::float32>, this, _1, _2);
-  ply::at<ply::uint8, ply::float64>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint8, ply::float64>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint8, pcl::io::ply::int8>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::int8>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint8, pcl::io::ply::int16>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::int16>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint8, pcl::io::ply::int32>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::int32>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint8, pcl::io::ply::uint8>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::uint8>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint8, pcl::io::ply::uint16>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::uint16>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint8, pcl::io::ply::uint32>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::uint32>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint8, pcl::io::ply::float32>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::float32>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint8, pcl::io::ply::float64>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::float64>, this, _1, _2);
 
-  ply::at<ply::uint16, ply::int8>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint16, ply::int8>, this, _1, _2);
-  ply::at<ply::uint16, ply::int16>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint16, ply::int16>, this, _1, _2);
-  ply::at<ply::uint16, ply::int32>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint16, ply::int32>, this, _1, _2);
-  ply::at<ply::uint16, ply::uint8>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint16, ply::uint8>, this, _1, _2);
-  ply::at<ply::uint16, ply::uint16>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint16, ply::uint16>, this, _1, _2);
-  ply::at<ply::uint16, ply::uint32>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint16, ply::uint32>, this, _1, _2);
-  ply::at<ply::uint16, ply::float32>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint16, ply::float32>, this, _1, _2);
-  ply::at<ply::uint16, ply::float64>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint16, ply::float64>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint16, pcl::io::ply::int8>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::int8>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint16, pcl::io::ply::int16>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::int16>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint16, pcl::io::ply::int32>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::int32>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint16, pcl::io::ply::uint8>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::uint8>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint16, pcl::io::ply::uint16>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::uint16>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint16, pcl::io::ply::uint32>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::uint32>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint16, pcl::io::ply::float32>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::float32>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint16, pcl::io::ply::float64>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint16, pcl::io::ply::float64>, this, _1, _2);
 
-  ply::at<ply::uint32, ply::int8>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint32, ply::int8>, this, _1, _2);
-  ply::at<ply::uint32, ply::int16>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint32, ply::int16>, this, _1, _2);
-  ply::at<ply::uint32, ply::int32>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint32, ply::int32>, this, _1, _2);
-  ply::at<ply::uint32, ply::uint8>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint32, ply::uint8>, this, _1, _2);
-  ply::at<ply::uint32, ply::uint16>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint32, ply::uint16>, this, _1, _2);
-  ply::at<ply::uint32, ply::uint32>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint32, ply::uint32>, this, _1, _2);
-  ply::at<ply::uint32, ply::float32>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint32, ply::float32>, this, _1, _2);
-  ply::at<ply::uint32, ply::float64>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<ply::uint32, ply::float64>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint32, pcl::io::ply::int8>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::int8>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint32, pcl::io::ply::int16>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::int16>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint32, pcl::io::ply::int32>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::int32>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint32, pcl::io::ply::uint8>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::uint8>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint32, pcl::io::ply::uint16>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::uint16>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint32, pcl::io::ply::uint32>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::uint32>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint32, pcl::io::ply::float32>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::float32>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint32, pcl::io::ply::float64>(list_property_definition_callbacks) = std::tr1::bind(&ply_to_ply_converter::list_property_definition_callback<pcl::io::ply::uint32, pcl::io::ply::float64>, this, _1, _2);
 
   ply_parser.list_property_definition_callbacks(list_property_definition_callbacks);
 

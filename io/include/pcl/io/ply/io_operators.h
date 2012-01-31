@@ -37,67 +37,65 @@
  *
  */
 
-#ifndef PLY_IO_OPERATORS_H
-#define PLY_IO_OPERATORS_H
+#ifndef PCL_IO_PLY_IO_OPERATORS_H
+#define PCL_IO_PLY_IO_OPERATORS_H
 
 #include <istream>
 #include <limits>
 #include <ostream>
 
-namespace ply {
-
-  /** \file io_operators.h
-    * defines output operators for int8 and uint8
-    * \ingroup io
-    */
-  namespace io_operators {
-
-    inline std::istream& operator>> (std::istream& istream, int8 &value)
+namespace pcl
+{
+  namespace io
+  {
+    namespace ply 
     {
-      int16 tmp;
-      if (istream >> tmp)
+      /** \file io_operators.h
+       * defines output operators for int8 and uint8
+       * \ingroup io
+       */
+      namespace io_operators 
       {
-        if (tmp <= std::numeric_limits<int8>::max ())
+
+        inline std::istream& operator>> (std::istream& istream, int8 &value)
         {
-          value = static_cast<int8> (tmp);
+          int16 tmp;
+          if (istream >> tmp)
+          {
+            if (tmp <= std::numeric_limits<int8>::max ())
+              value = static_cast<int8> (tmp);
+            else
+              istream.setstate (std::ios_base::failbit);
+          }
+          return (istream);
         }
-        else
+
+        inline std::istream& operator>> (std::istream& istream, uint8 &value)
         {
-          istream.setstate (std::ios_base::failbit);
+          uint16 tmp;
+          if (istream >> tmp)
+          {
+            if (tmp <= std::numeric_limits<uint8>::max ())
+              value = static_cast<uint8> (tmp);
+            else
+              istream.setstate (std::ios_base::failbit);
+          }
+          return (istream);
         }
-      }
-      return (istream);
-    }
 
-    inline std::istream& operator>> (std::istream& istream, uint8 &value)
-    {
-      uint16 tmp;
-      if (istream >> tmp)
-      {
-        if (tmp <= std::numeric_limits<uint8>::max ())
+        inline std::ostream& operator<<(std::ostream& ostream, int8 value)
         {
-          value = static_cast<uint8> (tmp);
+          return (ostream << static_cast<int16> (value));
         }
-        else
+
+        inline std::ostream& operator<<(std::ostream& ostream, uint8 value)
         {
-          istream.setstate (std::ios_base::failbit);
+          return (ostream << static_cast<uint16> (value));
         }
-      }
-      return (istream);
-    }
 
-    inline std::ostream& operator<<(std::ostream& ostream, int8 value)
-    {
-      return ostream << static_cast<int16> (value);
-    }
-
-    inline std::ostream& operator<<(std::ostream& ostream, uint8 value)
-    {
-      return (ostream << static_cast<uint16> (value));
-    }
-
-  } // namespace io_operators
-
-} // namespace ply
+      } // namespace io_operators
+    } // namespace ply
+  } // namespace io
+} // namespace pcl
 
 #endif // PLY_IO_OPERATORS_H

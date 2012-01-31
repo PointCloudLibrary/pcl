@@ -41,7 +41,7 @@
 #define PCL_IO_PLY_IO_H_
 
 #include "pcl/io/file_io.h"
-#include "pcl/io/ply.h"
+#include "pcl/io/ply/ply_parser.h"
 #include <pcl/PolygonMesh.h>
 #include <sstream>
 
@@ -50,12 +50,26 @@ namespace pcl
   /** \brief Point Cloud Data (PLY) file format reader.
     *
     * The PLY data format is organized in the following way:
-    *   - lines beginning with "comment" are treated as comments
+    * lines beginning with "comment" are treated as comments
     *   - ply
     *   - format [ascii|binary_little_endian|binary_big_endian] 1.0
     *   - element vertex COUNT
-    *   - [ascii/binary] point coordinates
-    *   
+    *   - property float x 
+    *   - property float y 
+    *   - [property float z] 
+    *   - [property float normal_x] 
+    *   - [property float normal_y] 
+    *   - [property float normal_z] 
+    *   - [property uchar red] 
+    *   - [property uchar green] 
+    *   - [property uchar blue] ...
+    *   - ascii/binary point coordinates
+    *   - [element camera 1]
+    *   - [property float view_px] ...
+    *   - [element range_grid COUNT]
+    *   - [property list uchar int vertex_indices]
+    *   - end header
+    *
     * \author Nizar Sallem
     * \ingroup io
     */
@@ -67,7 +81,15 @@ namespace pcl
         PLY_V0 = 0,
         PLY_V1 = 1
       };
+      
+      PLYReader ()
+        : FileReader ()
+        , origin_ (Eigen::Vector4f::Zero ())
+        , orientation_ (Eigen::Matrix3f::Zero ())
+        , range_grid_(0)
+      {}
 
+      ~PLYReader () { delete range_grid_; }
       /** \brief Read a point cloud data header from a PLY file.
         *
         * Load only the meta information (number of points, their types, etc),
@@ -140,29 +162,148 @@ namespace pcl
       }
       
     private:
-      pcl::io::ply::parser parser_;
-      bool swap_bytes_;
+      ::pcl::io::ply::ply_parser parser_;
 
-      /** \brief Copy one single value of type T (uchar, char, uint, int, float, double, ...) from a string
-        *
-        * Uses atoi/atof to do the conversion.
-        * Checks if the st is "nan" and converts it accordingly.
-        *
-        * \param[in] string_value the string containing the value to convert and copy
-        * \param[out] data the output data
-        * \param[in] offset the data offset (e.g., where to copy)
+      bool
+      parse (const std::string& istream_filename);
+
+      /** \brief Info callback function
+        * \param[in] filename PLY file read
+        * \param[in] line_number line triggering the callback
+        * \param[in] message information message
         */
-      template <typename Type> inline void
-      copyStringValue (const std::string &string_value, void* data, size_t offset = 0)
+      void 
+      infoCallback(const std::string& filename, std::size_t line_number, const std::string& message)
       {
-        //char value = (char)atoi (st.at (d + c).c_str ());
-        static char* char_ptr;
-        char_ptr = (char*) data;
-        Type value;
-        std::istringstream is(string_value);
-        is >> value;
-        memcpy (char_ptr+offset, &value, sizeof (Type));
+        PCL_DEBUG ("[pcl::PLYReader] %s:%lu: %s\n", filename.c_str (), line_number, message.c_str ());
       }
+      
+      /** \brief Warning callback function
+        * \param[in] filename PLY file read
+        * \param[in] line_number line triggering the callback
+        * \param[in] message warning message
+        */
+      void 
+      warningCallback(const std::string& filename, std::size_t line_number, const std::string& message)
+      {
+        PCL_WARN ("[pcl::PLYReader] %s:%lu: %s\n", filename.c_str (), line_number, message.c_str ());
+      }
+      
+      /** \brief Error callback function
+        * \param[in] filename PLY file read
+        * \param[in] line_number line triggering the callback
+        * \param[in] message error message
+        */
+      void 
+      errorCallback(const std::string& filename, std::size_t line_number, const std::string& message)
+      {
+        PCL_ERROR ("[pcl::PLYReader] %s:%lu: %s\n", filename.c_str (), line_number, message.c_str ());
+      }
+      
+      /** \brief function called when the keyword element is parsed
+        * \param[in] element_name element name
+        * \param[in] count number of instances
+        */
+      std::tr1::tuple<std::tr1::function<void()>, std::tr1::function<void()> > 
+      elementDefinitionCallback (const std::string& element_name, std::size_t count);
+      
+      bool
+      endHeaderCallback ();
+
+      /** \brief function called when a scalar property is parsed
+        * \param[in] element_name element name to which the property belongs
+        * \param[in] property_name property name
+        */
+      template <typename ScalarType> std::tr1::function<void (ScalarType)> 
+      scalarPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name);
+
+      /** \brief function called when a list property is parsed
+        * \param[in] element_name element name to which the property belongs
+        * \param[in] property_name list property name
+        */
+      template <typename SizeType, typename ScalarType> 
+      std::tr1::tuple<std::tr1::function<void (SizeType)>, std::tr1::function<void (ScalarType)>, std::tr1::function<void ()> > 
+        listPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name);
+
+      inline void
+      vertexFloatPropertyCallback (pcl::io::ply::float32 value);
+
+      inline void
+      vertexColorCallback (const std::string& color_name, pcl::io::ply::uint8 color);
+
+      inline void
+      vertexIntensityCallback (pcl::io::ply::uint8 intensity);
+      
+      inline void
+      originXCallback (const float& value) { origin_[0] = value; }
+      
+      inline void
+      originYCallback (const float& value) { origin_[1] = value; }
+      
+      inline void
+      originZCallback (const float& value) { origin_[2] = value; }
+    
+      inline void
+      orientationXaxisXCallback (const float& value) { orientation_ (0,0) = value; }
+      
+      inline void
+      orientationXaxisYCallback (const float& value) { orientation_ (0,1) = value; }
+      
+      inline void
+      orientationXaxisZCallback (const float& value) { orientation_ (0,2) = value; }
+      
+      inline void
+      orientationYaxisXCallback (const float& value) { orientation_ (1,0) = value; }
+      
+      inline void
+      orientationYaxisYCallback (const float& value) { orientation_ (1,1) = value; }
+
+      inline void
+      orientationYaxisZCallback (const float& value) { orientation_ (1,2) = value; }
+      
+      inline void
+      orientationZaxisXCallback (const float& value) { orientation_ (2,0) = value; }
+    
+      inline void
+      orientationZaxisYCallback (const float& value) { orientation_ (2,1) = value; }
+      
+      inline void
+      orientationZaxisZCallback (const float& value) { orientation_ (2,2) = value; }
+      
+      inline void
+      cloudHeightCallback (const int &height) { cloud_->height = height; }
+
+      inline void
+      cloudWidthCallback (const int &width) { cloud_->width = width; }
+        
+      void
+      appendFloatProperty (const std::string& name, const size_t& size = 1);
+
+      void vertexBeginCallback ();
+      void vertexEndCallback ();
+      void rangeGridBeginCallback ();
+      void rangeGridVertexIndicesBeginCallback (pcl::io::ply::uint8 size);
+      void rangeGridVertexIndicesElementCallback (pcl::io::ply::int32 vertex_index);
+      void rangeGridVertexIndicesEndCallback ();
+      void rangeGridEndCallback ();
+      /* void faceBegin(); */
+      /* void faceVertexIndicesBegin(pcl::io::ply::uint8 size); */
+      /* void faceVertexIndices_element(pcl::io::ply::int32 vertex_index); */
+      /* void faceVertexIndicesEnd(); */
+      /* void faceEnd(); */
+      void objInfoCallback (const std::string& line);
+      //origin
+      Eigen::Vector4f origin_;
+      //orientation
+      Eigen::Matrix3f orientation_;
+      //vertex element artifacts
+      sensor_msgs::PointCloud2 *cloud_;
+      size_t vertex_count_, vertex_properties_counter_;
+      int vertex_offset_before_;
+      //range element artifacts
+      std::vector<std::vector <int> > *range_grid_;
+      size_t range_count_, range_grid_vertex_indices_element_index_;
+      size_t rgb_offset_before_;
   };
 
   /** \brief Point Cloud Data (PLY) file format writer.

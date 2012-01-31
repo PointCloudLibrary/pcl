@@ -100,13 +100,13 @@ class ply_to_raw_converter
     vertex_begin ();
 
     void
-    vertex_x (ply::float32 x);
+    vertex_x (pcl::io::ply::float32 x);
 
     void
-    vertex_y (ply::float32 y);
+    vertex_y (pcl::io::ply::float32 y);
 
     void
-    vertex_z (ply::float32 z);
+    vertex_z (pcl::io::ply::float32 z);
 
     void
     vertex_end ();
@@ -115,10 +115,10 @@ class ply_to_raw_converter
     face_begin ();
 
     void
-    face_vertex_indices_begin (ply::uint8 size);
+    face_vertex_indices_begin (pcl::io::ply::uint8 size);
 
     void
-    face_vertex_indices_element (ply::int32 vertex_index);
+    face_vertex_indices_element (pcl::io::ply::int32 vertex_index);
 
     void
     face_vertex_indices_end ();
@@ -127,9 +127,9 @@ class ply_to_raw_converter
     face_end ();
 
     std::ostream* ostream_;
-    ply::float32 vertex_x_, vertex_y_, vertex_z_;
-    ply::int32 face_vertex_indices_element_index_, face_vertex_indices_first_element_, face_vertex_indices_previous_element_;
-    std::vector<std::tr1::tuple<ply::float32, ply::float32, ply::float32> > vertices_;
+    pcl::io::ply::float32 vertex_x_, vertex_y_, vertex_z_;
+    pcl::io::ply::int32 face_vertex_indices_element_index_, face_vertex_indices_first_element_, face_vertex_indices_previous_element_;
+    std::vector<std::tr1::tuple<pcl::io::ply::float32, pcl::io::ply::float32, pcl::io::ply::float32> > vertices_;
 };
 
 void
@@ -170,7 +170,7 @@ ply_to_raw_converter::element_definition_callback (const std::string& element_na
   }
 }
 
-template <> std::tr1::function<void (ply::float32)> 
+template <> std::tr1::function<void (pcl::io::ply::float32)> 
 ply_to_raw_converter::scalar_property_definition_callback (const std::string& element_name, const std::string& property_name)
 {
   if (element_name == "vertex") {
@@ -192,15 +192,15 @@ ply_to_raw_converter::scalar_property_definition_callback (const std::string& el
   }
 }
 
-template <> std::tr1::tuple<std::tr1::function<void (ply::uint8)>, 
-                            std::tr1::function<void (ply::int32)>, 
+template <> std::tr1::tuple<std::tr1::function<void (pcl::io::ply::uint8)>, 
+                            std::tr1::function<void (pcl::io::ply::int32)>, 
                             std::tr1::function<void ()> > 
 ply_to_raw_converter::list_property_definition_callback (const std::string& element_name, const std::string& property_name)
 {
   if ((element_name == "face") && (property_name == "vertex_indices")) 
   {
-    return std::tr1::tuple<std::tr1::function<void (ply::uint8)>, 
-      std::tr1::function<void (ply::int32)>, 
+    return std::tr1::tuple<std::tr1::function<void (pcl::io::ply::uint8)>, 
+      std::tr1::function<void (pcl::io::ply::int32)>, 
       std::tr1::function<void ()> > (
         std::tr1::bind (&ply_to_raw_converter::face_vertex_indices_begin, this, _1),
       std::tr1::bind (&ply_to_raw_converter::face_vertex_indices_element, this, _1),
@@ -208,8 +208,8 @@ ply_to_raw_converter::list_property_definition_callback (const std::string& elem
     );
   }
   else {
-    return std::tr1::tuple<std::tr1::function<void (ply::uint8)>, 
-      std::tr1::function<void (ply::int32)>, 
+    return std::tr1::tuple<std::tr1::function<void (pcl::io::ply::uint8)>, 
+      std::tr1::function<void (pcl::io::ply::int32)>, 
       std::tr1::function<void ()> > (0, 0, 0);
   }
 }
@@ -218,19 +218,19 @@ void
 ply_to_raw_converter::vertex_begin () {}
 
 void
-ply_to_raw_converter::vertex_x (ply::float32 x)
+ply_to_raw_converter::vertex_x (pcl::io::ply::float32 x)
 {
   vertex_x_ = x;
 }
 
 void
-ply_to_raw_converter::vertex_y (ply::float32 y)
+ply_to_raw_converter::vertex_y (pcl::io::ply::float32 y)
 {
   vertex_y_ = y;
 }
 
 void
-ply_to_raw_converter::vertex_z (ply::float32 z)
+ply_to_raw_converter::vertex_z (pcl::io::ply::float32 z)
 {
   vertex_z_ = z;
 }
@@ -238,20 +238,20 @@ ply_to_raw_converter::vertex_z (ply::float32 z)
 void
 ply_to_raw_converter::vertex_end ()
 {
-  vertices_.push_back (std::tr1::tuple<ply::float32, ply::float32, ply::float32 > (vertex_x_, vertex_y_, vertex_z_));
+  vertices_.push_back (std::tr1::tuple<pcl::io::ply::float32, pcl::io::ply::float32, pcl::io::ply::float32 > (vertex_x_, vertex_y_, vertex_z_));
 }
 
 void
 ply_to_raw_converter::face_begin () {}
 
 void
-ply_to_raw_converter::face_vertex_indices_begin (ply::uint8 size)
+ply_to_raw_converter::face_vertex_indices_begin (pcl::io::ply::uint8 size)
 {
   face_vertex_indices_element_index_ = 0;
 }
 
 void
-ply_to_raw_converter::face_vertex_indices_element (ply::int32 vertex_index)
+ply_to_raw_converter::face_vertex_indices_element (pcl::io::ply::int32 vertex_index)
 {
   if (face_vertex_indices_element_index_ == 0) {
     face_vertex_indices_first_element_ = vertex_index;
@@ -283,8 +283,8 @@ ply_to_raw_converter::face_end () {}
 bool 
 ply_to_raw_converter::convert (std::istream& istream, const std::string& istream_filename, std::ostream& ostream, const std::string& ostream_filename)
 {
-  ply::ply_parser::flags_type ply_parser_flags = 0;
-  ply::ply_parser ply_parser (ply_parser_flags);
+  pcl::io::ply::ply_parser::flags_type ply_parser_flags = 0;
+  pcl::io::ply::ply_parser ply_parser (ply_parser_flags);
 
   ply_parser.info_callback (std::tr1::bind (&ply_to_raw_converter::info_callback, this, std::tr1::ref (istream_filename), _1, _2));
   ply_parser.warning_callback (std::tr1::bind (&ply_to_raw_converter::warning_callback, this, std::tr1::ref (istream_filename), _1, _2));
@@ -292,12 +292,12 @@ ply_to_raw_converter::convert (std::istream& istream, const std::string& istream
 
   ply_parser.element_definition_callback (std::tr1::bind (&ply_to_raw_converter::element_definition_callback, this, _1, _2));
 
-  ply::ply_parser::scalar_property_definition_callbacks_type scalar_property_definition_callbacks;
-  ply::at<ply::float32> (scalar_property_definition_callbacks) = std::tr1::bind (&ply_to_raw_converter::scalar_property_definition_callback<ply::float32>, this, _1, _2);
+  pcl::io::ply::ply_parser::scalar_property_definition_callbacks_type scalar_property_definition_callbacks;
+  pcl::io::ply::at<pcl::io::ply::float32> (scalar_property_definition_callbacks) = std::tr1::bind (&ply_to_raw_converter::scalar_property_definition_callback<pcl::io::ply::float32>, this, _1, _2);
   ply_parser.scalar_property_definition_callbacks (scalar_property_definition_callbacks);
 
-  ply::ply_parser::list_property_definition_callbacks_type list_property_definition_callbacks;
-  ply::at<ply::uint8, ply::int32> (list_property_definition_callbacks) = std::tr1::bind (&ply_to_raw_converter::list_property_definition_callback<ply::uint8, ply::int32>, this, _1, _2);
+  pcl::io::ply::ply_parser::list_property_definition_callbacks_type list_property_definition_callbacks;
+  pcl::io::ply::at<pcl::io::ply::uint8, pcl::io::ply::int32> (list_property_definition_callbacks) = std::tr1::bind (&ply_to_raw_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::int32>, this, _1, _2);
   ply_parser.list_property_definition_callbacks (list_property_definition_callbacks);
 
   ostream_ = &ostream;
