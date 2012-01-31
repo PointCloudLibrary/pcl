@@ -54,7 +54,7 @@ namespace pcl
     * \return point cloud containing the extracted feature
     */
   template <typename PointT> pcl::PointCloud<pcl::VFHSignature308>::Ptr
-    computeVFH (typename PointCloud<PointT>::ConstPtr cloud, double radius)
+  computeVFH (typename PointCloud<PointT>::ConstPtr cloud, double radius)
   {
     using namespace pcl;
 

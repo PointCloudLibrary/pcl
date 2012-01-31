@@ -121,7 +121,7 @@ template <typename PointT> int
 pcl::PCDWriter::writeBinary (const std::string &file_name, 
                              const pcl::PointCloud<PointT> &cloud)
 {
-  if (cloud.points.empty ())
+  if (cloud.empty ())
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Input point cloud has no data!");
     return (-1);
@@ -428,7 +428,7 @@ template <typename PointT> int
 pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<PointT> &cloud, 
                             const int precision)
 {
-  if (cloud.points.empty ())
+  if (cloud.empty ())
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Input point cloud has no data!");
     return (-1);
