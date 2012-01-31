@@ -106,7 +106,7 @@ if (build)
   PCL_ADD_EXECUTABLE (transform_point_cloud ${SUBSYS_NAME} transform_point_cloud.cpp)
   target_link_libraries (transform_point_cloud pcl_common pcl_io pcl_registration)
 
-  find_package(tide)
+  find_package(tide QUIET)
   if(Tide_FOUND)
       include_directories(${Tide_INCLUDE_DIRS})
       add_definitions(${Tide_DEFINITIONS})
