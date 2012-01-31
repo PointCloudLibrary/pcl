@@ -40,16 +40,21 @@ endif()
 
 set(OPENNI_DEFINITIONS ${PC_OPENNI_CFLAGS_OTHER})
 
+set(OPENNI_SUFFIX)
+if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+  set(OPENNI_SUFFIX 64)
+endif(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+
 #add a hint so that it can find it without the pkg-config
 find_path(OPENNI_INCLUDE_DIR XnStatus.h
           HINTS ${PC_OPENNI_INCLUDEDIR} ${PC_OPENNI_INCLUDE_DIRS} /usr/include/openni /usr/include/ni "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}"
-          PATHS "$ENV{PROGRAMFILES}/OpenNI/Include" "$ENV{PROGRAMW6432}/OpenNI/Include"
+          PATHS "$ENV{OPEN_NI_INSTALL_PATH${OPENNI_SUFFIX}}/Include"
           PATH_SUFFIXES openni include Include)
 #add a hint so that it can find it without the pkg-config
 find_library(OPENNI_LIBRARY 
-             NAMES OpenNI64 OpenNI
+             NAMES OpenNI${OPENNI_SUFFIX}
              HINTS ${PC_OPENNI_LIBDIR} ${PC_OPENNI_LIBRARY_DIRS} /usr/lib "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}"
-             PATHS "$ENV{PROGRAMFILES}/OpenNI/Lib" "$ENV{PROGRAMW6432}/OpenNI/Lib64"
+             PATHS "$ENV{OPEN_NI_LIB${OPENNI_SUFFIX}}"
              PATH_SUFFIXES lib Lib Lib64)
 
 set(OPENNI_INCLUDE_DIRS ${OPENNI_INCLUDE_DIR})
