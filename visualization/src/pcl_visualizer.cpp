@@ -785,7 +785,11 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
 
   actor->SetNumberOfCloudPoints (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10));
   actor->GetProperty ()->SetInterpolationToFlat ();
-  actor->GetProperty ()->BackfaceCullingOn ();
+
+  /// FIXME disabling backface culling due to known VTK bug: vtkTextActors are not
+  /// shown when there is a vtkActor with backface culling on present in the scene
+  /// Please see VTK bug tracker for more details: http://www.vtk.org/Bug/view.php?id=12588
+  // actor->GetProperty ()->BackfaceCullingOn ();
 
   actor->SetMapper (mapper);
 }
