@@ -85,7 +85,7 @@ if(build)
         include/pcl/common/gaussian.h
         include/pcl/common/spring.h
         include/pcl/common/point_operators.h
-        include/pcl/common/convolution.h
+#        include/pcl/common/convolution.h
         )
 
     set(common_incs_impl
@@ -105,7 +105,7 @@ if(build)
         include/pcl/common/impl/vector_average.hpp
         include/pcl/common/impl/gaussian.hpp
         include/pcl/common/impl/spring.hpp
-        include/pcl/common/impl/convolution.hpp
+#        include/pcl/common/impl/convolution.hpp
        )
 
     set(impl_incs include/pcl/impl/instantiate.hpp
