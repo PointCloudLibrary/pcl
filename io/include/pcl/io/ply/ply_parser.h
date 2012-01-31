@@ -94,8 +94,6 @@ namespace ply
       typedef std::tr1::function<void ()> end_element_callback_type;
       typedef std::tr1::tuple<begin_element_callback_type, end_element_callback_type> element_callbacks_type;
       typedef std::tr1::function<element_callbacks_type (const std::string&, std::size_t)> element_definition_callback_type;
-      // Added to the original implementation triggered at the end of element declaration
-      typedef std::tr1::function<void (const std::string&)> element_closure_callback_type;
       
       template <typename ScalarType>
       struct scalar_property_callback_type
@@ -280,9 +278,6 @@ namespace ply
       element_definition_callback (const element_definition_callback_type& element_definition_callback);
       
       inline void
-      element_closure_callback (const element_closure_callback_type& element_closure_callback);
-      
-      inline void
       scalar_property_definition_callbacks (const scalar_property_definition_callbacks_type& scalar_property_definition_callbacks);
       
       inline void
@@ -394,7 +389,6 @@ namespace ply
       magic_callback_type magic_callback_;
       format_callback_type format_callback_;
       element_definition_callback_type element_definition_callbacks_;
-      element_closure_callback_type element_closure_callback_;
       scalar_property_definition_callbacks_type scalar_property_definition_callbacks_;
       list_property_definition_callbacks_type list_property_definition_callbacks_;
       comment_callback_type comment_callback_;
@@ -460,11 +454,6 @@ inline void ply::ply_parser::element_definition_callback (const element_definiti
   element_definition_callbacks_ = element_definition_callback;
 }
     
-inline void ply::ply_parser::element_closure_callback (const element_closure_callback_type& element_closure_callback)
-{
-  element_closure_callback_ = element_closure_callback;
-}
-
 inline void ply::ply_parser::scalar_property_definition_callbacks (const scalar_property_definition_callbacks_type& scalar_property_definition_callbacks)
 {
   scalar_property_definition_callbacks_ = scalar_property_definition_callbacks;
@@ -560,21 +549,15 @@ inline bool ply::ply_parser::parse_scalar_property (format_type format,
     char space = ' ';
     istream >> value;
     if (!istream.eof ())
-    {
       istream >> space >> std::ws;
-    }
     if (!istream || !isspace (space))
     {
       if (error_callback_)
-      {
         error_callback_ (line_number_, "parse error");
-      }
       return (false);
     }
     if (scalar_property_callback)
-    {
       scalar_property_callback (value);
-    }
     return (true);
   }
   else
@@ -584,20 +567,14 @@ inline bool ply::ply_parser::parse_scalar_property (format_type format,
     if (!istream)
     {
       if (error_callback_)
-      {
         error_callback_ (line_number_, "parse error");
-      }
       return (false);
     }
     if (((format == binary_big_endian_format) && (host_byte_order == little_endian_byte_order)) ||
-        ((format == binary_little_endian_format) && (host_byte_order == little_endian_byte_order)))
-    {
+        ((format == binary_little_endian_format) && (host_byte_order == big_endian_byte_order)))
       swap_byte_order (value);
-    }
     if (scalar_property_callback)
-    {
       scalar_property_callback (value);
-    }
     return (true);
   }
 }
@@ -664,7 +641,7 @@ inline bool ply::ply_parser::parse_list_property (format_type format, std::istre
     size_type size = std::numeric_limits<size_type>::infinity ();
     istream.read (reinterpret_cast<char*> (&size), sizeof (size_type));
     if (((format == binary_big_endian_format) && (host_byte_order == little_endian_byte_order)) || 
-        ((format == binary_little_endian_format) && (host_byte_order == little_endian_byte_order)))
+        ((format == binary_little_endian_format) && (host_byte_order == big_endian_byte_order)))
     {
       swap_byte_order (size);
     }
@@ -690,7 +667,7 @@ inline bool ply::ply_parser::parse_list_property (format_type format, std::istre
         return (false);
       }
       if (((format == binary_big_endian_format) && (host_byte_order == little_endian_byte_order)) ||
-          ((format == binary_little_endian_format) && (host_byte_order == little_endian_byte_order)))
+          ((format == binary_little_endian_format) && (host_byte_order == big_endian_byte_order)))
       {
         swap_byte_order (value);
       }

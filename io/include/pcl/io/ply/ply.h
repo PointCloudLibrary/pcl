@@ -90,6 +90,6 @@ namespace ply
 #undef PLY_TYPE_TRAITS
       
   typedef int format_type;
-  enum format { ascii_format, binary_little_endian_format, binary_big_endian_format };  
+  enum format { ascii_format, binary_little_endian_format, binary_big_endian_format, unknown };  
 } // namespace ply
 #endif // PCL_IO_PLY_PLY_H
