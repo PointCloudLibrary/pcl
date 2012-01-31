@@ -8,8 +8,6 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk l
 
 PCL_ADD_DOC(${SUBSYS_NAME})
 
-#option(BUILD_PLY ON "build libply within PCL")
-
 if(build)
     OPTION(BUILD_OPENNI "Build the OpenNI Grabber." ON)
     MARK_AS_ADVANCED(BUILD_OPENNI)
@@ -63,20 +61,14 @@ if(build)
         set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets)
     endif ()
 
-#		if(BUILD_PLY)
-			set(PLY_SOURCES src/ply/ply_parser.cpp)
-			set(PLY_INCLUDES 
-				  include/pcl/${SUBSYS_NAME}/ply/byte_order.h
-					include/pcl/${SUBSYS_NAME}/ply/io_operators.h
-					include/pcl/${SUBSYS_NAME}/ply/ply.h
-					include/pcl/${SUBSYS_NAME}/ply/ply_parser.h)
-			PCL_ADD_LIBRARY(pcl_io_ply ${SUBSYS_NAME} ${PLY_SOURCES} ${PLY_INCLUDES})
-			set_target_properties(pcl_io_ply PROPERTIES 
-				                    OUTPUT_NAME "ply"
-														VERSION 0.1
-														SOVERSION 0.1)
-			PCL_ADD_INCLUDES(${SUBSYS_NAME} ply ${PLY_INCLUDES})
-#		endif(BUILD_PLY)
+    set(PLY_SOURCES src/ply/ply_parser.cpp)
+    set(PLY_INCLUDES 
+        include/pcl/${SUBSYS_NAME}/ply/byte_order.h
+	include/pcl/${SUBSYS_NAME}/ply/io_operators.h
+	include/pcl/${SUBSYS_NAME}/ply/ply.h
+	include/pcl/${SUBSYS_NAME}/ply/ply_parser.h)
+    PCL_ADD_LIBRARY(pcl_io_ply ${SUBSYS_NAME} ${PLY_SOURCES} ${PLY_INCLUDES})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ply ${PLY_INCLUDES})
 
     set(srcs 
         src/pcd_grabber.cpp
@@ -146,7 +138,7 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} compression ${compression_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/openni_camera ${OPENNI_INCLUDES})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
-		
+                
     add_subdirectory(tools)
 
     if(BUILD_TESTS)
