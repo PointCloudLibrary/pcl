@@ -24,13 +24,13 @@ if(DOXYGEN_FOUND)
   endif(USE_PROJECT_FOLDERS)
   if(DOCUMENTATION_HTML_HELP STREQUAL YES)
     install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html"
-            DESTINATION share/doc/pcl
+            DESTINATION "${DOC_INSTALL_DIR}"
             COMPONENT doc
             FILES_MATCHING PATTERN *.chm
             )
   else(DOCUMENTATION_HTML_HELP STREQUAL YES)
     install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html" 
-            DESTINATION share/doc/pcl
+            DESTINATION "${DOC_INSTALL_DIR}"
             COMPONENT doc
             PATTERN "*.md5" EXCLUDE
             PATTERN "*.map" EXCLUDE
