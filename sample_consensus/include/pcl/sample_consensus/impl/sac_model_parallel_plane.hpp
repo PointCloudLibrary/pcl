@@ -101,7 +101,8 @@ pcl::SampleConsensusModelParallelPlane<PointT>::isModelValid (const Eigen::Vecto
     coeff[3] = 0;
     coeff.normalize ();
 
-    if (fabs (axis_.dot (coeff)) < cos_angle_)
+    Eigen::Vector4f axis (axis_[0], axis_[1], axis_[2], 0);
+    if (fabs (axis.dot (coeff)) < cos_angle_)
       return  (false);
   }
 
