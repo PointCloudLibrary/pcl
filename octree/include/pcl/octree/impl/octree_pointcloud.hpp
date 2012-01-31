@@ -452,7 +452,6 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
 
         this->rootNode_ = newRootBranch;
 
-        maxKeys_ = (1 << this->octreeDepth_);
         octreeSideLen = (double)maxKeys_ * resolution_ ;
 
         if (bUpperBoundViolationX)
@@ -473,6 +472,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
        // configure tree depth of octree
         this->octreeDepth_ ++;
         this->setTreeDepth (this->octreeDepth_);
+        maxKeys_ = (1 << this->octreeDepth_);
 
       }
       else
