@@ -41,7 +41,7 @@
 #include "pcl/segmentation/impl/extract_polygonal_prism_data.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(ExtractPolygonalPrismData, PCL_XYZ_POINT_TYPES);
-PCL_INSTANTIATE(isPointIn2DPolygon, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(ExtractPolygonalPrismData, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(isPointIn2DPolygon, PCL_XYZ_POINT_TYPES)
 PCL_INSTANTIATE(isXYPointIn2DXYPolygon, PCL_XYZ_POINT_TYPES);
 

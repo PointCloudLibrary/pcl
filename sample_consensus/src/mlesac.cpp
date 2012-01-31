@@ -41,5 +41,5 @@
 #include "pcl/sample_consensus/impl/mlesac.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(MaximumLikelihoodSampleConsensus, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(MaximumLikelihoodSampleConsensus, PCL_XYZ_POINT_TYPES)
 

@@ -42,5 +42,5 @@
 #include "pcl/search/impl/organized.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(OrganizedNeighbor, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(OrganizedNeighbor, PCL_XYZ_POINT_TYPES)
 

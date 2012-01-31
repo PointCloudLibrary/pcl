@@ -501,6 +501,6 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 }
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(getMinMax3D, PCL_XYZ_POINT_TYPES);
-PCL_INSTANTIATE(VoxelGrid, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(getMinMax3D, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(VoxelGrid, PCL_XYZ_POINT_TYPES)
 

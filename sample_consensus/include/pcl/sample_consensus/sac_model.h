@@ -412,7 +412,7 @@ namespace pcl
         return ((*rng_gen_) ());
       }
     public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
  };
 
   /** \brief @b SampleConsensusModelFromNormals represents the base model class

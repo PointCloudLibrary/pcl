@@ -41,5 +41,5 @@
 #include "pcl/sample_consensus/impl/msac.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(MEstimatorSampleConsensus, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(MEstimatorSampleConsensus, PCL_XYZ_POINT_TYPES)
 

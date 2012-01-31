@@ -167,4 +167,4 @@ pcl::CropBox<sensor_msgs::PointCloud2>::applyFilter (std::vector<int> &indices)
   indices.resize (indice_count);
 }
 
-PCL_INSTANTIATE(CropBox, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(CropBox, PCL_XYZ_POINT_TYPES)

@@ -142,4 +142,4 @@ pcl::RandomSample<sensor_msgs::PointCloud2>::applyFilter (std::vector<int> &indi
   }
 }
 
-PCL_INSTANTIATE(RandomSample, PCL_POINT_TYPES);
+PCL_INSTANTIATE(RandomSample, PCL_POINT_TYPES)

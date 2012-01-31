@@ -41,4 +41,4 @@
 #include "pcl/point_types.h"
 #include "pcl/filters/impl/normal_space.hpp"
 
-PCL_INSTANTIATE_PRODUCT(NormalSpaceSampling, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES));
+PCL_INSTANTIATE_PRODUCT(NormalSpaceSampling, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))

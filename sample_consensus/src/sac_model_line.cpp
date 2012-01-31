@@ -41,5 +41,5 @@
 #include "pcl/sample_consensus/impl/sac_model_line.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(SampleConsensusModelLine, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(SampleConsensusModelLine, PCL_XYZ_POINT_TYPES)
 

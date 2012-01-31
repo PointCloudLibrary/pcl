@@ -41,5 +41,5 @@
 #include "pcl/sample_consensus/impl/rransac.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(RandomizedRandomSampleConsensus, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(RandomizedRandomSampleConsensus, PCL_XYZ_POINT_TYPES)
 

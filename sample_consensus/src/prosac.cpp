@@ -41,4 +41,4 @@
 #include "pcl/sample_consensus/impl/prosac.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(ProgressiveSampleConsensus, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(ProgressiveSampleConsensus, PCL_XYZ_POINT_TYPES)

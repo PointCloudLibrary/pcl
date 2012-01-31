@@ -40,5 +40,5 @@
 #include "pcl/point_types.h"
 #include "pcl/impl/instantiate.hpp"
 
-PCL_INSTANTIATE_PRODUCT(SampleConsensusModelCylinder, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES));
+PCL_INSTANTIATE_PRODUCT(SampleConsensusModelCylinder, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
 

@@ -41,5 +41,5 @@
 #include "pcl/sample_consensus/impl/sac_model_sphere.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(SampleConsensusModelSphere, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(SampleConsensusModelSphere, PCL_XYZ_POINT_TYPES)
 

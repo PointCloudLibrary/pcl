@@ -41,5 +41,5 @@
 #include "pcl/sample_consensus/impl/sac_model_plane.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(SampleConsensusModelPlane, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(SampleConsensusModelPlane, PCL_XYZ_POINT_TYPES)
 
