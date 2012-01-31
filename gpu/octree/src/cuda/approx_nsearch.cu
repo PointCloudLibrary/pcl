@@ -42,15 +42,13 @@
 #include "utils/boxutils.hpp"
 #include "utils/scan_block.hpp"
 
-#include "octree_iterator.hpp"
-
 
 namespace pcl { namespace device { namespace appnearest_search
 {   
-	template<typename PointT>
+    typedef OctreeImpl::PointType PointType;
+	
 	struct Batch
 	{   
-		typedef PointT PointType;
 		const PointType* queries;
 
 		const int *indices;
@@ -72,32 +70,19 @@ namespace pcl { namespace device { namespace appnearest_search
 			LOG_WARP_SIZE = 5,
 			WARP_SIZE = 1 << LOG_WARP_SIZE,
 			WARPS_COUNT = CTA_SIZE/WARP_SIZE,                    
-		};
-
-		struct SmemStorage
-		{         
-			volatile int   per_warp_buffer[WARPS_COUNT];
-			volatile int   cta_buffer_int[CTA_SIZE];
-			volatile float cta_buffer_flt[CTA_SIZE];
-		};
+		};	
 	};
 
-	__shared__ KernelPolicy::SmemStorage storage;
-
-
-	template<typename PointType>
 	struct Warp_appNearestSearch
 	{   
-	public:                
-		typedef Batch<PointType> BatchType;
-
-		const BatchType& batch;
+	public:                		
+		const Batch& batch;
 
 		int query_index;        
 		float3 query;  
 		int result_idx;
 
-		__device__ __forceinline__ Warp_appNearestSearch(const BatchType& batch_arg, int query_index_arg) 
+		__device__ __forceinline__ Warp_appNearestSearch(const Batch& batch_arg, int query_index_arg) 
 			: batch(batch_arg), query_index(query_index_arg){}
 
 		__device__ __forceinline__ void launch(bool active)
@@ -154,7 +139,9 @@ namespace pcl { namespace device { namespace appnearest_search
 
 		__device__ __forceinline__ void processNode(int node_idx)
 		{   
-			int mask = __ballot(node_idx != -1);            
+            __shared__ volatile int  per_warp_buffer[KernelPolicy::WARPS_COUNT];
+
+			int mask = __ballot(node_idx != -1);                        
 
 			while(mask)
 			{                
@@ -164,7 +151,7 @@ namespace pcl { namespace device { namespace appnearest_search
 				int active_lane = __ffs(mask) - 1; //[0..31]                        
 				mask &= ~(1 << active_lane);   
 
-				volatile int* warp_buffer = &storage.per_warp_buffer[warpId];
+				volatile int* warp_buffer = &per_warp_buffer[warpId];
 
 				//broadcast beg
 				if (active_lane == laneId)
@@ -177,7 +164,7 @@ namespace pcl { namespace device { namespace appnearest_search
 				int end = *warp_buffer;
 
 				float3 active_query;
-				volatile float* warp_buffer_float = (float*)&storage.per_warp_buffer[warpId];
+				volatile float* warp_buffer_float = (float*)&per_warp_buffer[warpId];
 
 				//broadcast warp_query
 				if (active_lane == laneId)
@@ -192,21 +179,22 @@ namespace pcl { namespace device { namespace appnearest_search
 					*warp_buffer_float = query.z;
 				active_query.z = *warp_buffer_float;                            
 
-				int offset = NearestWarpKernel(batch.points + beg, batch.points_step, end - beg, active_query);                    
+				int offset = NearestWarpKernel<KernelPolicy::CTA_SIZE>(batch.points + beg, batch.points_step, end - beg, active_query);                    
 
 				if (active_lane == laneId)
 					result_idx = beg + offset;
 			}
 		}
 
+        template<int CTA_SIZE>
 		__device__ __forceinline__ int NearestWarpKernel(const float* points, int points_step, int length, const float3& active_query)
 		{                        
 			const int STRIDE = warpSize;
 			int tid = threadIdx.x;
 
-			volatile float* dist2 = storage.cta_buffer_flt;
-			volatile int*   index = storage.cta_buffer_int;
-			
+            __shared__ volatile float dist2[CTA_SIZE];
+            __shared__ volatile int   index[CTA_SIZE];
+			            			
 			dist2[tid] = pcl::device::numeric_limits<float>::max();
 
 			//serial step
@@ -283,9 +271,8 @@ namespace pcl { namespace device { namespace appnearest_search
 
 		}
 	};
-
-	template<typename PointType>
-	__global__ void KernelAN(const Batch<PointType> batch) 
+	
+	__global__ void KernelAN(const Batch batch) 
 	{         
 		int query_index = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -294,7 +281,7 @@ namespace pcl { namespace device { namespace appnearest_search
 		if (__all(active == false)) 
 			return;
 
-		Warp_appNearestSearch<PointType> search(batch, query_index);
+		Warp_appNearestSearch search(batch, query_index);
 		search.launch(active); 
 	}
 
@@ -303,8 +290,7 @@ namespace pcl { namespace device { namespace appnearest_search
 
 void pcl::device::OctreeImpl::approxNearestSearch(const Queries& queries, NeighborIndices& results) const
 {
-    typedef OctreeImpl::PointType PointType;
-    typedef pcl::device::appnearest_search::Batch<PointType> BatchType;
+    typedef pcl::device::appnearest_search::Batch BatchType;
 
     BatchType batch;
     batch.indices = indices;
@@ -320,7 +306,7 @@ void pcl::device::OctreeImpl::approxNearestSearch(const Queries& queries, Neighb
     int block = pcl::device::appnearest_search::KernelPolicy::CTA_SIZE;
     int grid = (batch.queries_num + block - 1) / block;    
 
-    cudaSafeCall( cudaFuncSetCacheConfig(pcl::device::appnearest_search::KernelAN<PointType>, cudaFuncCachePreferL1) );
+    cudaSafeCall( cudaFuncSetCacheConfig(pcl::device::appnearest_search::KernelAN, cudaFuncCachePreferL1) );
 
     pcl::device::appnearest_search::KernelAN<<<grid, block>>>(batch);
     cudaSafeCall( cudaGetLastError() );
