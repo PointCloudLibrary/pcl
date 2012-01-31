@@ -419,8 +419,6 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getBoundingBox (
 template<typename PointT, typename LeafT, typename OctreeT> void
 pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (const PointT& pointIdx_arg)
 {
-  const double minValue = std::numeric_limits<float>::epsilon();
-
   // increase octree size until point fits into bounding box
   while (true)
   {
@@ -436,8 +434,6 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
     if (bLowerBoundViolationX || bLowerBoundViolationY || bLowerBoundViolationZ || bUpperBoundViolationX
         || bUpperBoundViolationY || bUpperBoundViolationZ || (!boundingBoxDefined_))
     {
-
-      
 
       double octreeSideLen;
       unsigned char childIdx;
@@ -456,7 +452,8 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
 
         this->rootNode_ = newRootBranch;
 
-        octreeSideLen = maxX_ - minX_ + minValue;
+        maxKeys_ = (1 << this->octreeDepth_);
+        octreeSideLen = (double)maxKeys_ * resolution_ ;
 
         if (bUpperBoundViolationX)
           maxX_ += octreeSideLen;
@@ -472,6 +469,11 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
           maxZ_ += octreeSideLen;
         else
           minZ_ -= octreeSideLen;
+
+       // configure tree depth of octree
+        this->octreeDepth_ ++;
+        this->setTreeDepth (this->octreeDepth_);
+
       }
       else
       {
@@ -483,15 +485,19 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
         this->maxX_ = pointIdx_arg.x + this->resolution_ / 2;
         this->maxY_ = pointIdx_arg.y + this->resolution_ / 2;
         this->maxZ_ = pointIdx_arg.z + this->resolution_ / 2;
+
+        getKeyBitSize();
       }
 
-      getKeyBitSize ();
       boundingBoxDefined_ = true;
     }
     else
       // no bound violations anymore - leave while loop
       break;
   }
+  
+  
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -555,7 +561,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getKeyBitSize ()
 
   double octreeSideLen;
 
-  const double minValue = std::numeric_limits<float>::epsilon();
+  const double minValue = std::numeric_limits<double>::epsilon();
 
   // find maximum key values for x, y, z
   maxKeyX = ceil ((maxX_ - minX_) / resolution_);
@@ -565,13 +571,14 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getKeyBitSize ()
   // find maximum amount of keys
   maxVoxels = max (max (max (maxKeyX, maxKeyY), maxKeyZ), (unsigned int)2);
 
+
   // tree depth == amount of bits of maxVoxels
-  this->octreeDepth_ = max ((min ((unsigned int)OCT_MAXTREEDEPTH, (unsigned int)ceil (this->Log2 (maxVoxels)))),
+  this->octreeDepth_ = max ((min ((unsigned int)OCT_MAXTREEDEPTH, (unsigned int)ceil (this->Log2 (maxVoxels)-minValue))),
                             (unsigned int)0);
 
   maxKeys_ = (1 << this->octreeDepth_);
 
-  octreeSideLen = (double)maxKeys_ * resolution_ - minValue;
+  octreeSideLen = (double)maxKeys_ * resolution_;
 
   if (this->leafCount_ == 0)
   {
@@ -593,13 +600,19 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getKeyBitSize ()
   }
   else
   {
-    maxX_ = minX_ + octreeSideLen;
-    maxY_ = minY_ + octreeSideLen;
-    maxZ_ = minZ_ + octreeSideLen;
+    maxX_ = minX_ + octreeSideLen-minValue;
+    maxY_ = minY_ + octreeSideLen-minValue;
+    maxZ_ = minZ_ + octreeSideLen-minValue;
   }
 
-  // configure tree depth of octree
+ // configure tree depth of octree
   this->setTreeDepth (this->octreeDepth_);
+
+  maxKeyX = ceil ((maxX_ - minX_) / resolution_);
+  maxKeyY = ceil ((maxY_ - minY_) / resolution_);
+  maxKeyZ = ceil ((maxZ_ - minZ_) / resolution_);
+  maxVoxels = max (max (max (maxKeyX, maxKeyY), maxKeyZ), (unsigned int)2);
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
