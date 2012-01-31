@@ -457,14 +457,16 @@ namespace pcl
 
           k_indices.resize (neighbors_in_radius);
           k_sqr_dists.resize (neighbors_in_radius);
-
-          flann::Matrix<int> k_indices_mat (&k_indices[0], 1, k_indices.size ());
-          flann::Matrix<float> k_distances_mat (&k_sqr_dists[0], 1, k_sqr_dists.size ());
-          flann_index_->radiusSearch (flann::Matrix<float> (&query[0], 1, dim),
-                                      k_indices_mat,
-                                      k_distances_mat,
-                                      radius * radius, 
-                                      param_radius_);
+          if(neighbors_in_radius != 0)
+          {
+            flann::Matrix<int> k_indices_mat (&k_indices[0], 1, k_indices.size ());
+            flann::Matrix<float> k_distances_mat (&k_sqr_dists[0], 1, k_sqr_dists.size ());
+            flann_index_->radiusSearch (flann::Matrix<float> (&query[0], 1, dim),
+                                        k_indices_mat,
+                                        k_distances_mat,
+                                        radius * radius, 
+                                        param_radius_);
+          }
         }
 
         // Do mapping to original point cloud
