@@ -43,7 +43,7 @@
 #include "pcl/search/organized.h"
 #include <pcl/common/eigen.h>
 #include "pcl/common/time.h"
-#include <eigen3/Eigen/Eigenvalues>
+#include <Eigen/Eigenvalues>
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> int
 pcl::search::OrganizedNeighbor<PointT>::radiusSearch (int                 index,
