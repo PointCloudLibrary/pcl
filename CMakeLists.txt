@@ -37,9 +37,11 @@ include(${PCL_SOURCE_DIR}/cmake/pcl_options.cmake)
 # ---[ Unix/Darwin/Windows specific flags
 if(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_CXX_FLAGS "-Wall -Wno-unknown-pragmas -fno-strict-aliasing -pthread")
-  SET(CMAKE_CXX_FLAGS_RELEASE "-march=native -O3")
+  SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
   if(NOT APPLE)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x -march=native")
+  else()
+    include(${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
   endif()
   if(WIN32)
     if(PCL_SHARED_LIBS)
@@ -57,24 +59,7 @@ if(MSVC)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
   endif()
 
-  include(CheckCXXSourceRuns)
-  check_cxx_source_runs("
-      #include <emmintrin.h>
-
-      int main()
-      {
-          __m128d a, b;
-          double vals[2] = {0};
-          a = _mm_loadu_pd(vals);
-          b = _mm_add_pd(a,a);
-          _mm_storeu_pd(vals,b);
-          return 0;
-      }"
-      HAVE_SSE2_EXTENSIONS)
-
-  if(HAVE_SSE2_EXTENSIONS)
-    SET(CMAKE_CXX_FLAGS_RELEASE "/arch:SSE2 /fp:fast -D__SSE__ -D__SSE2__")
-  endif(HAVE_SSE2_EXTENSIONS)
+  include(${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
 endif()
 
 if (__COMPILER_PATHSCALE)
