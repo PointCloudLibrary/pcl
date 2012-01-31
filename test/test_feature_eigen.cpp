@@ -61,7 +61,6 @@
 #include <pcl/features/rift.h>
 #include <pcl/features/3dsc.h>
 #include <pcl/features/usc.h>
-#include <iostream>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -72,6 +71,7 @@ typedef search::KdTree<PointXYZ>::Ptr KdTreePtr;
 PointCloud<PointXYZ> cloud;
 vector<int> indices;
 KdTreePtr tree;
+boost::variate_generator< boost::mt19937, boost::uniform_real<double> > rng(boost::mt19937 (), boost::uniform_real<double> (0, 1));
 
 ///////////////////////////////////////////////////////////////////////////////////
 template <typename FeatureEstimation, typename PointT, typename NormalT> void
@@ -323,14 +323,13 @@ TEST (PCL, InverseGeneral3x3f)
   const Scalar epsilon = 1e-5;
   const unsigned iterations = 1000000;
 
+
   // test floating point row-major : row-major
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
-    {
-      r_matrix.coeffRef (elIdx) = Scalar(rand ()) / Scalar(RAND_MAX);
-      //c_matrix.coeffRef (elIdx) = Scalar(rand ()) / Scalar(RAND_MAX);
-    }
+      r_matrix.coeffRef (elIdx) = Scalar(rng ());
+
     c_matrix = r_matrix;
 
     // test row-major -> row-major
@@ -390,8 +389,7 @@ TEST (PCL, InverseGeneral3x3d)
   {
     for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
     {
-      r_matrix.coeffRef (elIdx) = Scalar(rand ()) / Scalar(RAND_MAX);
-      //c_matrix.coeffRef (elIdx) = Scalar(rand ()) / Scalar(RAND_MAX);
+      r_matrix.coeffRef (elIdx) = Scalar(rng ());
     }
     c_matrix = r_matrix;
     // test row-major -> row-major
@@ -443,17 +441,15 @@ TEST (PCL, InverseSymmetric3x3f)
   Eigen::Matrix<Scalar, 3, 3> result = Eigen::Matrix<Scalar, 3, 3>::Zero ();
   Eigen::Matrix<Scalar, 3, 3> error = Eigen::Matrix<Scalar, 3, 3>::Zero ();
   Scalar determinant;
-  const Scalar epsilon = 1e-6;
+  const Scalar epsilon = 1e-5;
   const unsigned iterations = 1000000;
 
   // test floating point row-major : row-major
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
-    {
-      r_matrix.coeffRef (elIdx) = Scalar(rand ()) / Scalar(RAND_MAX);
-      //c_matrix.coeffRef (elIdx) = Scalar(rand ()) / Scalar(RAND_MAX);
-    }
+      r_matrix.coeffRef (elIdx) = Scalar(rng ());
+
     r_matrix.coeffRef (3) = r_matrix.coeffRef (1);
     r_matrix.coeffRef (6) = r_matrix.coeffRef (2);
     r_matrix.coeffRef (7) = r_matrix.coeffRef (5);
@@ -518,10 +514,8 @@ TEST (PCL, InverseSymmetric3x3d)
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
-    {
-      r_matrix.coeffRef (elIdx) = Scalar(rand ()) / Scalar(RAND_MAX);
-      //c_matrix.coeffRef (elIdx) = Scalar(rand ()) / Scalar(RAND_MAX);
-    }
+      r_matrix.coeffRef (elIdx) = Scalar(rng ());
+
     r_matrix.coeffRef (3) = r_matrix.coeffRef (1);
     r_matrix.coeffRef (6) = r_matrix.coeffRef (2);
     r_matrix.coeffRef (7) = r_matrix.coeffRef (5);
@@ -587,10 +581,7 @@ TEST (PCL, Inverse2x2f)
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 4; ++elIdx)
-    {
-      r_matrix.coeffRef (elIdx) = Scalar(rand ()) / Scalar(RAND_MAX);
-      //c_matrix.coeffRef (elIdx) = Scalar(rand ()) / Scalar(RAND_MAX);
-    }
+      r_matrix.coeffRef (elIdx) = Scalar(rng ());
 
     c_matrix = r_matrix;
     // test row-major -> row-major
@@ -635,10 +626,10 @@ TEST (PCL, Inverse2x2d)
   typedef double Scalar;
   typedef Eigen::Matrix<Scalar, 2, 2, Eigen::RowMajor> RMatrix;
   typedef Eigen::Matrix<Scalar, 2, 2, Eigen::ColMajor> CMatrix;
-  RMatrix r_matrix;
-  RMatrix r_inverse;
-  CMatrix c_matrix;
-  CMatrix c_inverse;
+  RMatrix r_matrix = RMatrix::Zero ();
+  RMatrix r_inverse = RMatrix::Zero ();
+  CMatrix c_matrix = CMatrix::Zero ();
+  CMatrix c_inverse = CMatrix::Zero ();
   Eigen::Matrix<Scalar, 2, 2> result;
   Eigen::Matrix<Scalar, 2, 2> error;
   Scalar determinant;
@@ -649,10 +640,7 @@ TEST (PCL, Inverse2x2d)
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 4; ++elIdx)
-    {
-      r_matrix.coeffRef (elIdx) = Scalar(rand ()) / Scalar(RAND_MAX);
-      //c_matrix.coeffRef (elIdx) = Scalar(rand ()) / Scalar(RAND_MAX);
-    }
+      r_matrix.coeffRef (elIdx) = Scalar(rng ());
 
     c_matrix = r_matrix;
     // test row-major -> row-major
@@ -698,8 +686,8 @@ inline void generateSymPosMatrix2x2 (Matrix& matrix)
 
   unsigned test_case = rand () % 10;
 
-	Scalar val1 = Scalar (rand()) / Scalar(RAND_MAX);
-	Scalar val2 = Scalar (rand()) / Scalar(RAND_MAX);
+	Scalar val1 = Scalar (rng ());
+	Scalar val2 = Scalar (rng ());
 
   // 10% of test cases include equal eigenvalues
   if (test_case == 0)
@@ -716,8 +704,8 @@ inline void generateSymPosMatrix2x2 (Matrix& matrix)
 
   do
   {
-    eigenvectors.col (0)[0] = Scalar (rand()) / Scalar(RAND_MAX);
-    eigenvectors.col (0)[1] = Scalar (rand()) / Scalar(RAND_MAX);
+    eigenvectors.col (0)[0] = Scalar (rng ());
+    eigenvectors.col (0)[1] = Scalar (rng ());
     sqrNorm = eigenvectors.col (0).squaredNorm ();
   } while (sqrNorm == 0);
   eigenvectors.col (0) /= sqrt (sqrNorm);
@@ -864,9 +852,9 @@ inline void generateSymPosMatrix3x3 (Matrix& matrix)
 
   unsigned test_case = rand () % 100;
 
-	Scalar val1 = Scalar (rand()) / Scalar(RAND_MAX);
-	Scalar val2 = Scalar (rand()) / Scalar(RAND_MAX);
-	Scalar val3 = Scalar (rand()) / Scalar(RAND_MAX);
+	Scalar val1 = Scalar (rng ());
+	Scalar val2 = Scalar (rng ());
+	Scalar val3 = Scalar (rng ());
 
   // 1%: all three values are equal and non-zero
   if (test_case == 0)
@@ -907,12 +895,12 @@ inline void generateSymPosMatrix3x3 (Matrix& matrix)
 
   do
   {
-    eigenvectors.col (0)[0] = Scalar (rand()) / Scalar(RAND_MAX);
-    eigenvectors.col (0)[1] = Scalar (rand()) / Scalar(RAND_MAX);
-    eigenvectors.col (0)[2] = Scalar (rand()) / Scalar(RAND_MAX);
-    eigenvectors.col (1)[0] = Scalar (rand()) / Scalar(RAND_MAX);
-    eigenvectors.col (1)[1] = Scalar (rand()) / Scalar(RAND_MAX);
-    eigenvectors.col (1)[2] = Scalar (rand()) / Scalar(RAND_MAX);
+    eigenvectors.col (0)[0] = Scalar (rng ());
+    eigenvectors.col (0)[1] = Scalar (rng ());
+    eigenvectors.col (0)[2] = Scalar (rng ());
+    eigenvectors.col (1)[0] = Scalar (rng ());
+    eigenvectors.col (1)[1] = Scalar (rng ());
+    eigenvectors.col (1)[2] = Scalar (rng ());
     eigenvectors.col (2) = eigenvectors.col (0).cross (eigenvectors.col (1));
 
     sqrNorm = eigenvectors.col (2).squaredNorm ();
@@ -949,7 +937,7 @@ TEST (PCL, eigen33d)
   Eigen::Matrix<Scalar, 3, 3> c_error;
   Scalar diff;
 
-  const Scalar epsilon = 1e-5;
+  const Scalar epsilon = 2e-5;
   const unsigned iterations = 1000000;
 
   // test floating point row-major : row-major
@@ -1034,7 +1022,6 @@ TEST (PCL, eigen33f)
     diff = r_error.cwiseAbs (). sum ();
     if (diff > epsilon)
       r_failed = true;
-    //EXPECT_LE (diff, epsilon);
 
     // test if the eigenvalues are orthonormal
     g_result = r_vectors * r_vectors.transpose ();
@@ -1045,7 +1032,6 @@ TEST (PCL, eigen33f)
 
     if(r_failed)
       ++r_fail_count;
-//    EXPECT_LE (diff, epsilon);
 
     // test if column major matrices are also calculated correctly
     eigen33 (c_matrix, c_vectors, c_eigenvalues);
@@ -1054,7 +1040,6 @@ TEST (PCL, eigen33f)
     diff = c_error.cwiseAbs (). sum ();
     if (diff > epsilon)
       c_failed = true;
-//    EXPECT_LE (diff, epsilon);
 
     g_result = c_vectors * c_vectors.transpose ();
     g_error = g_result - CMatrix::Identity ();
@@ -1064,14 +1049,11 @@ TEST (PCL, eigen33f)
 
     if(c_failed)
       ++c_fail_count;
-//    EXPECT_LE (diff, epsilon);
   }
 
   // less than 1% failure rate
   EXPECT_LE (float(r_fail_count) / float(iterations), 0.01);
   EXPECT_LE (float(r_fail_count) / float(iterations), 0.01);
-//  std::cout << "RowMajor failed: " << r_fail_count << " / " << iterations << std::endl;
-//  std::cout << "ColMajor failed: " << c_fail_count << " / " << iterations << std::endl;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
