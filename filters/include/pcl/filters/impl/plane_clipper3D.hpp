@@ -48,6 +48,18 @@ pcl::PlaneClipper3D<PointT>::~PlaneClipper3D () throw ()
 {
 }
 
+template<typename PointT> void
+pcl::PlaneClipper3D<PointT>::setPlaneParameters (const Eigen::Vector4f& plane_params)
+{
+  plane_params_ = plane_params;
+}
+
+template<typename PointT> const Eigen::Vector4f&
+pcl::PlaneClipper3D<PointT>::getPlaneParameters () const
+{
+  return plane_params_;
+}
+
 template<typename PointT> pcl::Clipper3D<PointT>*
 pcl::PlaneClipper3D<PointT>::clone () const
 {

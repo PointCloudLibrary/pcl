@@ -32,6 +32,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/crop_box.h
         include/pcl/${SUBSYS_NAME}/clipper3D.h
         include/pcl/${SUBSYS_NAME}/plane_clipper3D.h
+        include/pcl/${SUBSYS_NAME}/box_clipper3D.h
         include/pcl/${SUBSYS_NAME}/crop_hull.h
         include/pcl/${SUBSYS_NAME}/extract_indices.h
         include/pcl/${SUBSYS_NAME}/filter.h
@@ -52,6 +53,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/crop_box.hpp
         include/pcl/${SUBSYS_NAME}/impl/crop_hull.hpp
         include/pcl/${SUBSYS_NAME}/impl/plane_clipper3D.hpp
+        include/pcl/${SUBSYS_NAME}/impl/box_clipper3D.hpp
         include/pcl/${SUBSYS_NAME}/impl/extract_indices.hpp
         include/pcl/${SUBSYS_NAME}/impl/filter.hpp
         include/pcl/${SUBSYS_NAME}/impl/filter_indices.hpp

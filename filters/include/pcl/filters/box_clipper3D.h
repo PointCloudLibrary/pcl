@@ -35,40 +35,54 @@
  *
  */
 
-#ifndef PCL_PLANE_CLIPPER3D_H_
-#define PCL_PLANE_CLIPPER3D_H_
+#ifndef PCL_BOX_CLIPPER3D_H_
+#define PCL_BOX_CLIPPER3D_H_
 #include "clipper3D.h"
 
 namespace pcl
 {
   /**
-   * @author Suat Gedikli <gedikli@willowgarage.com>
-   * @brief Implementation of a plane clipper in 3D
-   */
+    * \author Suat Gedikli <gedikli@willowgarage.com>
+    * \brief Implementation of a box clipper in 3D. Actually it allows affine transformations, thus any parallelepiped in general pose.
+    *        The affine transformation is used to transform the point before clipping it using the unit cube centered at origin and with an extend of -1 to +1 in each dimension
+    */
   template<typename PointT>
-  class PlaneClipper3D : public Clipper3D<PointT>
+  class BoxClipper3D : public Clipper3D<PointT>
   {
     public:
       /**
-       * @author Suat Gedikli <gedikli@willowgarage.com>
-       * @brief Constructor taking the homogeneous representation of the plane as a Eigen::Vector4f
-       * @param[in] plane_params plane parameters, need not necessarily be normalized
-       */
-      PlaneClipper3D (const Eigen::Vector4f& plane_params);
-
-      virtual ~PlaneClipper3D () throw ();
+        * \author Suat Gedikli <gedikli@willowgarage.com>
+        * \brief Constructor taking an affine transformation matrix, which allows also shearing of the clipping area
+        * \param[in] transformation the 3x3 affine transformation matrix that is used to describe the unit cube
+        */
+      BoxClipper3D (const Eigen::Affine3f& transformation);
 
       /**
-        * \brief Set new plane parameters
-        * \param plane_params
+        * \brief creates a BoxClipper object with a scaled box in general pose
+        * \param[in] rodrigues the rotation axis and angle given by the vector direction and length respectively
+        * \param[in] translation the position of the box center
+        * \param[in] box_size the size of the box for each dimension
         */
-      void setPlaneParameters (const Eigen::Vector4f& plane_params);
+      BoxClipper3D (const Eigen::Vector3f& rodrigues, const Eigen::Vector3f& translation, const Eigen::Vector3f& box_size);
 
       /**
-        * \brief return the current plane parameters
-        * \return the current plane parameters
+        * \brief Set the affine transformation
+        * \param[in] transformation
         */
-      const Eigen::Vector4f& getPlaneParameters () const;
+      void setTransformation (const Eigen::Affine3f& transformation);
+
+      /**
+        * \brief sets the box in general pose given by the orientation position and size
+        * \param[in] rodrigues the rotation axis and angle given by the vector direction and length respectively
+        * \param[in] translation the position of the box center
+        * \param[in] box_size the size of the box for each dimension
+        */
+      void setTransformation (const Eigen::Vector3f& rodrigues, const Eigen::Vector3f& translation, const Eigen::Vector3f& box_size);
+
+      /**
+        * \brief virtual destructor
+        */
+      virtual ~BoxClipper3D () throw ();
 
       virtual bool
       clipPoint3D (const PointT& point) const;
@@ -89,12 +103,14 @@ namespace pcl
       clone () const;
 
     protected:
-      float
-      getDistance (const PointT& point) const;
-
+      float getDistance (const PointT& point) const;
+      void transformPoint (const PointT& pointIn, PointT& pointOut) const;
     private:
-      Eigen::Vector4f plane_params_;
+      /**
+        * \brief the affine transformation that is applied before clipping is done on the unit cube.
+        */
+      Eigen::Affine3f transformation_;
   };
 }
 
-#endif // PCL_PLANE_CLIPPER3D_H_
+#endif // PCL_BOX_CLIPPER3D_H_
