@@ -42,5 +42,5 @@
 
 // Instantiations of specific point types
 PCL_INSTANTIATE_PRODUCT(IntensitySpinEstimation, ((pcl::PointXYZI)(pcl::PointXYZINormal))((pcl::Histogram<20>)))
-PCL_INSTANTIATE_PRODUCT(IntensitySpinEstimation, ((pcl::PointXYZI)(pcl::PointXYZINormal))((Eigen::MatrixXf)));
+PCL_INSTANTIATE_PRODUCT(IntensitySpinEstimation, ((pcl::PointXYZI)(pcl::PointXYZINormal))((Eigen::MatrixXf)))
 

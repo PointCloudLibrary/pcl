@@ -42,5 +42,5 @@
 
 // Instantiations of specific point types
 PCL_INSTANTIATE_PRODUCT(MomentInvariantsEstimation, (PCL_XYZ_POINT_TYPES)((pcl::MomentInvariants)))
-PCL_INSTANTIATE_PRODUCT(MomentInvariantsEstimation, (PCL_XYZ_POINT_TYPES)((Eigen::MatrixXf)));
+PCL_INSTANTIATE_PRODUCT(MomentInvariantsEstimation, (PCL_XYZ_POINT_TYPES)((Eigen::MatrixXf)))
 

@@ -244,6 +244,17 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
 template <typename PointInT, typename PointNT, typename PointOutT> bool 
 pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::initCompute ()
 {
+  // We need a positive definite search radius to continue
+  if (search_radius_ == 0)
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] Need a search radius different than 0!\n", getClassName ().c_str ());
+    return (false);
+  }
+  if (k_ != 0)
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] K-nearest neighbor search for spin images not implemented. Used a search radius instead!\n", getClassName ().c_str ());
+    return (false);
+  }
   // If the surface won't be set, make fake surface and fake surface normals
   // if we wouldn't do it here, the following method would alarm that no surface normals is given
   if (!surface_)

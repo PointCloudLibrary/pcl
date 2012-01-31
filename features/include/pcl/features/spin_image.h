@@ -84,6 +84,7 @@ namespace pcl
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::indices_;
       using Feature<PointInT, PointOutT>::search_radius_;
+      using Feature<PointInT, PointOutT>::k_;
       using Feature<PointInT, PointOutT>::surface_;
       using Feature<PointInT, PointOutT>::fake_surface_;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
@@ -330,6 +331,7 @@ namespace pcl
     public:
       using SpinImageEstimation<PointInT, PointNT, pcl::Histogram<153> >::indices_;
       using SpinImageEstimation<PointInT, PointNT, pcl::Histogram<153> >::search_radius_;
+      using SpinImageEstimation<PointInT, PointNT, pcl::Histogram<153> >::k_;
       using SpinImageEstimation<PointInT, PointNT, pcl::Histogram<153> >::surface_;
       using SpinImageEstimation<PointInT, PointNT, pcl::Histogram<153> >::fake_surface_;
       using SpinImageEstimation<PointInT, PointNT, pcl::Histogram<153> >::compute;

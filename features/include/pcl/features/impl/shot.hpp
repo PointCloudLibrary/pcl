@@ -55,7 +55,7 @@ inline bool
 areEquals (double val1, double val2, double zeroDoubleEps = zeroDoubleEps15)
 {
   return (fabs (val1 - val2)<zeroDoubleEps);
-};
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Check if val1 and val2 are equals.
