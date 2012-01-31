@@ -14,6 +14,7 @@ if(build)
 
     set(incs 
         include/pcl/${SUBSYS_NAME}/octree_base.h 
+        include/pcl/${SUBSYS_NAME}/octree_base_state.h
         include/pcl/${SUBSYS_NAME}/octree_impl.h 
         include/pcl/${SUBSYS_NAME}/octree_nodes.h 
         include/pcl/${SUBSYS_NAME}/octree_pointcloud_density.h
