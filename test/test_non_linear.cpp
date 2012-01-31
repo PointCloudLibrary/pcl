@@ -68,7 +68,7 @@ TEST (SACSegmentation, Segmentation)
   seg.setInputCloud (cloud_);
   seg.segment (*inliers, *sphere_coefficients);
 
-  EXPECT_NEAR (sphere_coefficients->values[0], 0.998776,  1e-3);
+  EXPECT_NEAR (sphere_coefficients->values[0], 0.998776,  1e-2);
   EXPECT_NEAR (sphere_coefficients->values[1], 0.752023,  1e-3);
   EXPECT_NEAR (sphere_coefficients->values[2], 1.24558,   1e-3);
   EXPECT_NEAR (sphere_coefficients->values[3], 0.0536238, 1e-3);
