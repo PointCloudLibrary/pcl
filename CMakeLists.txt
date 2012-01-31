@@ -178,6 +178,16 @@ if(VTK_FOUND)
   message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, lib: ${VTK_LIBRARY_DIRS})")
   link_directories(${VTK_LIBRARY_DIRS})
   set(HAVE_VTK ON)
+  if(VTK_USE_QVTK)
+    # workaround for debian package
+    get_target_property(QVTK_IMPORTED_LOCATION_RELEASE QVTK IMPORTED_LOCATION_RELEASE)
+    get_target_property(QVTK_IMPORTED_LOCATION_DEBUG QVTK IMPORTED_LOCATION_DEBUG)
+    # if both don't exist
+    if(NOT EXISTS "${QVTK_IMPORTED_LOCATION_RELEASE}" AND NOT EXISTS "${QVTK_IMPORTED_LOCATION_DEBUG}")
+      set(VTK_USE_QVTK OFF)
+      message("QVTK is not found")
+    endif()
+  endif()
 endif()
 # Find MPI
 find_package(MPI)
