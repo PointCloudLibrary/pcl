@@ -41,5 +41,5 @@
 #include "pcl/kdtree/impl/kdtree_flann.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(KdTreeFLANN, PCL_POINT_TYPES);
+PCL_INSTANTIATE(KdTreeFLANN, PCL_POINT_TYPES)
 

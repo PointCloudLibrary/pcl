@@ -75,11 +75,10 @@ namespace pcl
         * \param[in] sorted set to true if the application that the tree will be used for requires sorted nearest neighbor indices (default). False otherwise. 
         */
       KdTree (bool sorted = true) : input_(), indices_(), 
-                                    epsilon_(0.0), min_pts_(1), sorted_(sorted)
+                                    epsilon_(0.0), min_pts_(1), sorted_(sorted), 
+                                    point_representation_ (new DefaultPointRepresentation<PointT>)
       {
-        point_representation_.reset (new DefaultPointRepresentation<PointT>);
       };
-
 
       /** \brief Provide a pointer to the input dataset.
         * \param[in] cloud the const boost shared pointer to a PointCloud message

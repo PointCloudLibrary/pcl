@@ -44,6 +44,6 @@
 #include "pcl/surface/impl/convex_hull.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(ConvexHull, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(ConvexHull, PCL_XYZ_POINT_TYPES)
 
 #endif

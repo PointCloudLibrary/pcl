@@ -167,7 +167,7 @@ namespace pcl
         FREE = 0,    
         FRINGE = 1,  
         BOUNDARY = 2,
-        COMPLETED = 3,
+        COMPLETED = 3
       };
     
       /** \brief Empty constructor. */

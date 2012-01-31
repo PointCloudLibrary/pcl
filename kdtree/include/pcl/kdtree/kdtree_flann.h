@@ -82,10 +82,13 @@ namespace pcl
         *
         * By setting sorted to false, the \ref radiusSearch operations will be faster.
         */
-      KdTreeFLANN (bool sorted = true) : pcl::KdTree<PointT> (sorted), flann_index_ (NULL), cloud_ (NULL)
+      KdTreeFLANN (bool sorted = true) : 
+        pcl::KdTree<PointT> (sorted), 
+        flann_index_ (NULL), cloud_ (NULL), 
+        dim_ (0), total_nr_points_ (0),
+        param_k_ (flann::SearchParams (-1 ,epsilon_)),
+        param_radius_ (flann::SearchParams (-1, epsilon_, sorted))
       {
-        param_k_ = flann::SearchParams (-1 ,epsilon_);
-        param_radius_ = flann::SearchParams (-1 ,epsilon_, sorted);
       }
 
       /** \brief Set the search epsilon precision (error bound) for nearest neighbors searches.

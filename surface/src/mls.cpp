@@ -41,4 +41,4 @@
 #include "pcl/surface/impl/mls.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES));
+PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
