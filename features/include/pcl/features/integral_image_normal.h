@@ -165,6 +165,11 @@ namespace pcl
       setInputCloud (const typename PointCloudIn::ConstPtr &cloud)
       {
         input_ = cloud;
+        if (!cloud->isOrganized ())
+        {
+          PCL_ERROR ("[pcl::IntegralImageNormalEstimation::setInputCloud] Input dataset is not organized (height = 1).\n");
+          return;
+        }
 
         init_covariance_matrix_ = init_average_3d_gradient_ = init_depth_change_ = false;
 

@@ -560,17 +560,12 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
 template <typename PointInT, typename PointOutT> bool
 pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initCompute ()
 {
-  if (!Feature<PointInT, PointOutT>::initCompute ())
-  {
-    PCL_ERROR ("[pcl::IntegralImageNormalEstimation::initCompute] Init failed.\n");
-    return (false);
-  }
   if (!input_->isOrganized ())
   {
     PCL_ERROR ("[pcl::IntegralImageNormalEstimation::initCompute] Input dataset is not organized (height = 1).\n");
     return (false);
   }
-  return (true);
+  return (Feature<PointInT, PointOutT>::initCompute ());
 }
 
 #define PCL_INSTANTIATE_IntegralImageNormalEstimation(T,NT) template class PCL_EXPORTS pcl::IntegralImageNormalEstimation<T,NT>;
