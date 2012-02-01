@@ -153,7 +153,7 @@ pcl::search::OrganizedNeighbor<PointT>::getProjectedRadiusSearchBox (const Point
   float a = squared_radius * KR_KRT_.coeff (8) - q [2] * q [2];
   float b = squared_radius * KR_KRT_.coeff (7) - q [1] * q [2];
   float c = squared_radius * KR_KRT_.coeff (4) - q [1] * q [1];
-
+  int min, max;
   // a and c are multiplied by two already => - 4ac -> - ac
   float det = b * b - a * c;
   if (det < 0)
@@ -163,8 +163,10 @@ pcl::search::OrganizedNeighbor<PointT>::getProjectedRadiusSearchBox (const Point
   }
   else
   {
-    minY = (unsigned) std::max (0, (int) floor ((b + sqrt (det)) / a));
-    maxY = (unsigned) std::min ((int) input_->height - 1, (int) ceil ((b - sqrt (det)) / a));
+    min = std::min ((int) floor ((b - sqrt (det)) / a), (int) floor ((b + sqrt (det)) / a));
+    max = std::max ((int) ceil ((b - sqrt (det)) / a), (int) ceil ((b + sqrt (det)) / a));
+    minY = (unsigned) std::min ((int) input_->height - 1, std::max (0, min));
+    maxY = (unsigned) std::max (std::min ((int) input_->height - 1, max), 0);
   }
 
   b = squared_radius * KR_KRT_.coeff (6) - q [0] * q [2];
@@ -178,8 +180,10 @@ pcl::search::OrganizedNeighbor<PointT>::getProjectedRadiusSearchBox (const Point
   }
   else
   {
-    minX = (unsigned) std::max (0, (int) floor ((b + sqrt (det)) / a));
-    maxX = (unsigned) std::min ((int)input_->width - 1, (int) ceil ((b - sqrt (det)) / a));
+    min = std::min ((int) floor ((b - sqrt (det)) / a), (int) floor ((b + sqrt (det)) / a));
+    max = std::max ((int) ceil ((b - sqrt (det)) / a), (int) ceil ((b + sqrt (det)) / a));
+    minX = (unsigned) std::min ((int)input_->width - 1, std::max (0, min));
+    maxX = (unsigned) std::max (std::min ((int)input_->width - 1, max), 0);
   }
 }
 
