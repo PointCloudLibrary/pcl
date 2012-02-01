@@ -41,7 +41,7 @@
 #define PCL_POINT_CLOUD_SPRING_IMPL_HPP_
 
 template <typename PointT> inline bool
-pcl::PointCloudSpring<PointT>::initCompute ()
+pcl::PointCloudSpring<PointT>::initCompute (PointCloud& output)
 {
   if ((expand_policy_ != MIRROR) && (expand_policy_ != DUPLICATE))
   {
@@ -66,145 +66,149 @@ pcl::PointCloudSpring<PointT>::initCompute ()
                          << "columns expansion requires organised point cloud");
     return false;
   }
+  
+  if (&(*input_) != &output)
+    output = *input_;
+
   return true;
 }
 
 template <typename PointT> void 
-pcl::PointCloudSpring<PointT>::expandColumns (const PointT& val)
+pcl::PointCloudSpring<PointT>::expandColumns (const PointT& val, PointCloud& output)
 {
   uint32_t old_height = input_->height;
   uint32_t old_width = input_->width;
   uint32_t new_width = old_width + 2*c_amount_;
-  input_->reserve (new_width * old_height);
-  for (int j = 0; j < input_->height; ++j)
+  output.reserve (new_width * old_height);
+  for (int j = 0; j < output.height; ++j)
   {
-    iterator start = input_->begin() + (j * new_width);
-    input_->insert (start, c_amount_, val);
-    start = input_->begin() + (j * new_width) + old_width + c_amount_;
-    input_->insert (start, c_amount_, val);
-    input_->height = old_height;
+    iterator start = output.begin() + (j * new_width);
+    output.insert (start, c_amount_, val);
+    start = output.begin() + (j * new_width) + old_width + c_amount_;
+    output.insert (start, c_amount_, val);
+    output.height = old_height;
   }
-  input_->width = new_width;
-  input_->height = old_height;
+  output.width = new_width;
+  output.height = old_height;
 }
       
 template <typename PointT> void 
-pcl::PointCloudSpring<PointT>::expandRows (const PointT& val)
+pcl::PointCloudSpring<PointT>::expandRows (const PointT& val, PointCloud& output)
 {
   uint32_t old_height = input_->height;
   uint32_t new_height = old_height + 2*r_amount_;
   uint32_t old_width = input_->width;
-  input_->reserve (new_height * old_width);
-  input_->insert (input_->begin (), r_amount_ * old_width, val);
-  input_->insert (input_->end (), r_amount_ * old_width, val);
-  input_->width = old_width;
-  input_->height = new_height;
+  output.reserve (new_height * old_width);
+  output.insert (output.begin (), r_amount_ * old_width, val);
+  output.insert (output.end (), r_amount_ * old_width, val);
+  output.width = old_width;
+  output.height = new_height;
 }
 
 template <typename PointT> void 
-pcl::PointCloudSpring<PointT>::expandColumnsDuplicate ()
+pcl::PointCloudSpring<PointT>::expandColumnsDuplicate (PointCloud& output)
 {
   int old_height = input_->height;
   int old_width = input_->width;
   int new_width = old_width + 2*c_amount_;
-  input_->reserve (new_width * old_height);
+  output.reserve (new_width * old_height);
   for (int j = 0; j < old_height; ++j)
     for(int i = 0; i < c_amount_; ++i)
     {
-      iterator start = input_->begin () + (j * new_width);
-      input_->insert (start, *start);
-      start = input_->begin () + (j * new_width) + old_width + i;
-      input_->insert (start, *start);
+      iterator start = output.begin () + (j * new_width);
+      output.insert (start, *start);
+      start = output.begin () + (j * new_width) + old_width + i;
+      output.insert (start, *start);
     }
 
-  input_->width = new_width;
-  input_->height = old_height;
+  output.width = new_width;
+  output.height = old_height;
 }
 
 template <typename PointT> void 
-pcl::PointCloudSpring<PointT>::expandRowsDuplicate ()
+pcl::PointCloudSpring<PointT>::expandRowsDuplicate (PointCloud& output)
 {
   uint32_t old_height = input_->height;
   uint32_t new_height = old_height + 2*r_amount_;
   uint32_t old_width = input_->width;
-  input_->reserve (new_height * old_width);
+  output.reserve (new_height * old_width);
   for(int i = 0; i < r_amount_; ++i)
   {
-    input_->insert (input_->begin (), input_->begin (), input_->begin () + old_width);
-    input_->insert (input_->end (), input_->end () - old_width, input_->end ());
+    output.insert (output.begin (), output.begin (), output.begin () + old_width);
+    output.insert (output.end (), output.end () - old_width, output.end ());
   }
 
-  input_->width = old_width;
-  input_->height = new_height;
+  output.width = old_width;
+  output.height = new_height;
 }
 
 template <typename PointT> void 
-pcl::PointCloudSpring<PointT>::expandColumnsMirror ()
+pcl::PointCloudSpring<PointT>::expandColumnsMirror (PointCloud& output)
 {
   int old_height = input_->height;
   int old_width = input_->width;
   int new_width = old_width + 2*c_amount_;
-  input_->reserve (new_width * old_height);
+  output.reserve (new_width * old_height);
   for (int j = 0; j < old_height; ++j)
     for(int i = 0; i < c_amount_; ++i)
     {
-      iterator start = input_->begin () + (j * new_width);
-      input_->insert (start, *(start + 2*i));
-      start = input_->begin () + (j * new_width) + old_width + 2*i;
-      input_->insert (start+1, *(start - 2*i));
+      iterator start = output.begin () + (j * new_width);
+      output.insert (start, *(start + 2*i));
+      start = output.begin () + (j * new_width) + old_width + 2*i;
+      output.insert (start+1, *(start - 2*i));
     }
-  input_->width = new_width;
-  input_->height = old_height;
+  output.width = new_width;
+  output.height = old_height;
 }
 
 template <typename PointT> void 
-pcl::PointCloudSpring<PointT>::expandRowsMirror ()
+pcl::PointCloudSpring<PointT>::expandRowsMirror (PointCloud& output)
 {
   uint32_t old_height = input_->height;
   uint32_t new_height = old_height + 2*r_amount_;
   uint32_t old_width = input_->width;
-  input_->reserve (new_height * old_width);
+  output.reserve (new_height * old_width);
   for(int i = 0; i < r_amount_; i++)
   {
     iterator up;
-    if (input_->height % 2 ==  0)
-      up = input_->begin () + (2*i) * old_width;
+    if (output.height % 2 ==  0)
+      up = output.begin () + (2*i) * old_width;
     else
-      up = input_->begin () + (2*i+1) * old_width;
-    input_->insert (input_->begin (), up, up + old_width);
-    iterator bottom = input_->end () - (2*i+1) * old_width;
-    input_->insert (input_->end (), bottom, bottom + old_width);
+      up = output.begin () + (2*i+1) * old_width;
+    output.insert (output.begin (), up, up + old_width);
+    iterator bottom = output.end () - (2*i+1) * old_width;
+    output.insert (output.end (), bottom, bottom + old_width);
   }
-  input_->width = old_width;
-  input_->height = new_height;
+  output.width = old_width;
+  output.height = new_height;
 }
 
 template <typename PointT> inline void 
-pcl::PointCloudSpring<PointT>::deleteRows ()
+pcl::PointCloudSpring<PointT>::deleteRows (PointCloud& output)
 {
   uint32_t old_height = input_->height;
   uint32_t old_width = input_->width;
-  input_->erase (input_->begin (), input_->begin () + r_amount_ * old_width);
-  input_->erase (input_->end () - r_amount_ * old_width, input_->end ());
-  input_->height = old_height - 2*r_amount_;
-  input_->width = old_width;
+  output.erase (output.begin (), output.begin () + r_amount_ * old_width);
+  output.erase (output.end () - r_amount_ * old_width, output.end ());
+  output.height = old_height - 2*r_amount_;
+  output.width = old_width;
 }
 
 template <typename PointT> inline void 
-pcl::PointCloudSpring<PointT>::deleteCols ()
+pcl::PointCloudSpring<PointT>::deleteCols (PointCloud& output)
 {
   uint32_t old_height = input_->height;
   uint32_t old_width = input_->width;
   uint32_t new_width = old_width - 2 * c_amount_;
   for(uint32_t j = 0; j < old_height; j++)
   {
-    iterator start = input_->begin () + j * new_width;
-    input_->erase (start, start + c_amount_);
-    start = input_->begin () + (j+1) * new_width;
-    input_->erase (start, start + c_amount_);    
+    iterator start = output.begin () + j * new_width;
+    output.erase (start, start + c_amount_);
+    start = output.begin () + (j+1) * new_width;
+    output.erase (start, start + c_amount_);    
   }
-  input_->height = old_height;
-  input_->width = new_width;
+  output.height = old_height;
+  output.width = new_width;
 }
 
 #endif

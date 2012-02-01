@@ -49,8 +49,6 @@ namespace pcl
     * columns and or rows direction using either mirroring or 
     * duplicating edges of the input point cloud or filling the new cells 
     * with some value.
-    * This class will modify the input point cloud so that no deep copy 
-    * are made.
     *
     * \author Nizar Sallem
     */
@@ -67,7 +65,7 @@ namespace pcl
       enum EXPAND_POLICY { MIRROR = 0, DUPLICATE };
       /// Default constructor
       PointCloudSpring ()
-        : expand_policy_(-1)
+        : expand_policy_ (-1)
         , r_amount_ (0)
         , c_amount_ (0)
       {}
@@ -105,14 +103,17 @@ namespace pcl
         * param[in][out] input pointer to the cloud to be modified
         */ 
       inline void
-      setInputCloud (PointCloudPtr& input) { input_ = input; }
+      setInputCloud (const PointCloudConstPtr& input) { input_ = input; }
       /// \return input cloud
-      inline PointCloudPtr
+      inline PointCloudConstPtr const
       getInputCloud () { return (input_); }
       
     private:
+      /** init computation checking params and copying point cloud if necessary
+	* \param[out] output the output point cloud
+        */
       inline bool
-      initCompute ();
+      initCompute (PointCloud& output);
       
     public:
       /** expand a point cloud in the set direction and policy. 
@@ -121,42 +122,44 @@ namespace pcl
         * and right columns of the original point cloud.
         * If the policy is set to duplicate then the top and bottom rows 
         * and/or the right and left columns will be duplicated.
+	* \param[out] output the output point cloud
         */
       inline void
-      expand ()
+      expand (PointCloud& output)
       {
-        if (!initCompute ())
+        if (!initCompute (output))
           PCL_THROW_EXCEPTION (InitFailedException,
                                "[pcl::PointCloudSpring::expand] init failed");
         if (expand_policy_ == DUPLICATE)
         {
           if (r_amount_ > 0)
-            expandRowsDuplicate ();
+            expandRowsDuplicate (output);
           if (c_amount_ > 0)
-            expandColumnsDuplicate ();
+            expandColumnsDuplicate (output);
         }
         else
         {
           if (r_amount_ > 0)
-            expandRowsMirror ();
+            expandRowsMirror (output);
           if (c_amount_ > 0)
-            expandColumnsMirror ();
+            expandColumnsMirror (output);
         }
       }
 
       /** expand a point cloud in the set direction.
         * \param[in] val the point value to be used to fill.
+	* \param[out] output the output point cloud
         */
       inline void
-      expand (const PointT& val)
+      expand (const PointT& val, PointCloud& output)
       {
-        if (!initCompute ())
+        if (!initCompute (output))
           PCL_THROW_EXCEPTION (InitFailedException,
                                "[pcl::PointCloudSpring::expand] init failed");
         if (r_amount_ > 0)
-          expandRows (val);
+          expandRows (val, output);
         if (c_amount_ > 0)
-          expandColumns (val);
+          expandColumns (val, output);
       }
 
       /** shrink a point cloud in the set direction.
@@ -164,17 +167,18 @@ namespace pcl
         *   from top and bottom.
         * - If direction is columns or both then \a v_amount columns are deleted
         *   from left and right.
+	* \param[out] output the output point cloud
         */
       inline void
-      shrink ()
+      shrink (PointCloud& output)
       {
-        if (!initCompute ())
+        if (!initCompute (output))
           PCL_THROW_EXCEPTION (InitFailedException,
                                "[pcl::PointCloudSpring::shrink] init failed");
         if (r_amount_ > 0)
-          deleteRows ();
+          deleteRows (output);
         if (c_amount_ > 0)
-          deleteCols ();
+          deleteCols (output);
       }
 
     private:
@@ -182,37 +186,49 @@ namespace pcl
         * top and the bottom of a point cloud and filling them with 
         * custom values.
         * \param[in] val the point value to be insterted
+	* \param[out] output the output point cloud
         */
       void 
-      expandRows(const PointT& val);
+      expandRows (const PointT& val, PointCloud& output);
       /** expand point cloud inserting \a c_amount_ columns at 
         * the right and the left of a point cloud and filling them with 
         * custom values.
         * \param[in] val the point value to be insterted
+	* \param[out] output the output point cloud
         */
       void 
-      expandColumns(const PointT& val);
+      expandColumns (const PointT& val, PointCloud& output);
       /** expand point cloud duplicating the top and bottom rows \a r_amount_ times.
+	* \param[out] output the output point cloud
         */
       void 
-      expandRowsDuplicate();
+      expandRowsDuplicate (PointCloud& output);
       /** expand point cloud duplicating the right and left columns \a c_amount_ 
         * times.
+	* \param[out] output the output point cloud
         */
       void 
-      expandColumnsDuplicate();
-      /** expand point cloud mirroring \a r_amount_ top and bottom rows. */
+      expandColumnsDuplicate (PointCloud& output);
+      /** expand point cloud mirroring \a r_amount_ top and bottom rows. 
+	* \param[out] output the output point cloud
+        */
       void 
-      expandRowsMirror();
-      /** expand point cloud mirroring \a c_amount_ right and left columns. */
+      expandRowsMirror (PointCloud& output);
+      /** expand point cloud mirroring \a c_amount_ right and left columns. 
+	* \param[out] output the output point cloud
+        */
       void 
-      expandColumnsMirror();
-      /** delete \a r_amount_ rows in top and bottom of point cloud */
+      expandColumnsMirror (PointCloud& output);
+      /** delete \a r_amount_ rows in top and bottom of point cloud 
+	* \param[out] output the output point cloud
+        */
       inline void
-      deleteRows ();
-      /** delete \a c_amount_ columns in top and bottom of point cloud */
+      deleteRows (PointCloud& output);
+      /** delete \a c_amount_ columns in top and bottom of point cloud 
+	* \param[out] output the output point cloud
+        */
       inline void
-      deleteCols ();
+      deleteCols (PointCloud& output);
       
       /// expansion policy
       int expand_policy_;
@@ -221,7 +237,7 @@ namespace pcl
       /// expansion amount for columns
       int c_amount_;
       /// pointer to the input point cloud
-      PointCloudPtr input_;
+      PointCloudConstPtr input_;
   };
 }
 
