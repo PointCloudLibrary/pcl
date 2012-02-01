@@ -62,11 +62,6 @@ include(${PCL_SOURCE_DIR}/cmake/pcl_options.cmake)
 # ---[ Unix/Darwin/Windows specific flags
 if(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-unknown-pragmas -fno-strict-aliasing -pthread")
-  if(NOT APPLE)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x -march=native")
-  else()
-    include(${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
-  endif()
   if(WIN32)
     if(PCL_SHARED_LIBS)
       SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--export-all-symbols -Wl,--enable-auto-import")
@@ -82,9 +77,11 @@ if(MSVC)
   if(MSVC90 OR MSVC10)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
   endif()
-
-  include(${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
 endif()
+
+# check for SSE flags
+include(${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
+PCL_CHECK_FOR_SSE()
 
 if (__COMPILER_PATHSCALE)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-uninitialized -zerouv -pthread -mp")
@@ -221,7 +218,7 @@ include(${PCL_SOURCE_DIR}/cmake/pcl_examples.cmake)
 ### ---[ Add the libraries subdirectories
 include(${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake)
 
-collect_subproject_directory_names(${PCL_SOURCE_DIR} "CMakeLists.txt" PCL_MODULES_NAMES PCL_MODULES_DIRS doc)
+collect_subproject_directory_names(${PCL_SOURCE_DIR} "CMakeLists.txt" PCL_MODULES_NAMES PCL_MODULES_DIRS doc simulation proctor people cuda)
 set(PCL_MODULES_NAMES_UNSORTED ${PCL_MODULES_NAMES})
 topological_sort(PCL_MODULES_NAMES PCL_ _DEPENDS)
 sort_relative(PCL_MODULES_NAMES_UNSORTED PCL_MODULES_NAMES PCL_MODULES_DIRS)
