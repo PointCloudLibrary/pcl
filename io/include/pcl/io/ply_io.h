@@ -304,6 +304,9 @@ namespace pcl
       std::vector<std::vector <int> > *range_grid_;
       size_t range_count_, range_grid_vertex_indices_element_index_;
       size_t rgb_offset_before_;
+			
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /** \brief Point Cloud Data (PLY) file format writer.
