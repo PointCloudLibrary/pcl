@@ -64,6 +64,14 @@ namespace pcl
       return ((299*p.r + 587*p.g + 114*p.b)/1000.0f);
     }
   };
+  template<>
+  struct SIFTKeypointFieldSelector<PointXYZRGBA>
+  {
+    inline float operator ()(const PointXYZRGBA & p) const
+    {
+      return ((299*p.r + 587*p.g + 114*p.b)/1000.0f);
+    }
+  };
 
   /** \brief @b SIFTKeypoint detects the Scale Invariant Feature Transform
     * keypoints for a given point cloud dataset containing points and intensity.
