@@ -54,6 +54,7 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl/ros/conversions.h>
 #include <pcl/visualization/cloud_viewer.h>
+#include <pcl/console/parse.h>
 
 namespace bpt = boost::posix_time;
 
@@ -104,7 +105,7 @@ void record_cb(pcl::PointCloud<pcl::PointXYZ>::ConstPtr const& cloud)
     // it has an adverse affect on seeking through the file. We will aim for 5
     // seconds of data per cluster.
     bpt::time_duration cluster_len(bpt::microsec_clock::local_time() - c_start);
-    if (cluster_len.total_seconds() >= 5)
+    if (cluster_len.total_seconds() >= 1)
     {
         // Finalise the cluster
         cluster->finalise(*stream);
@@ -113,6 +114,115 @@ void record_cb(pcl::PointCloud<pcl::PointXYZ>::ConstPtr const& cloud)
         // Record that a new cluster is needed
         new_cluster = true;
     }
+}
+
+
+int record(std::string const& filename)
+{
+    // Open a new file and write the EBML Header. This specifies that the file
+    // is an EBML file, and is a Tide document.
+    stream = new std::fstream(filename,
+            std::ios::in|std::ios::out|std::ios::trunc);
+    tide::EBMLElement ebml_el;
+    ebml_el.write(*stream);
+
+    // Open a new segment in the file. This will write some initial meta-data
+    // and place some padding at the start of the file for final meta-data to
+    // be written after tracks, clusters, etc. have been written.
+    tide::Segment segment;
+    segment.write(*stream);
+    // Set up the segment information so it can be used while writing tracks
+    // and clusters.
+    // A UID is not required, but is highly recommended.
+    boost::uuids::random_generator gen;
+    boost::uuids::uuid uuid = gen();
+    std::vector<char> uuid_data(uuid.size());
+    std::copy(uuid.begin(), uuid.end(), uuid_data.begin());
+    segment.info.uid(uuid_data);
+    // The filename can be nice to know.
+    segment.info.filename(filename);
+    // The segment's timecode scale is possibly the most important value in the
+    // segment meta-data data. Without it, timely playback of frames is not
+    // possible. It has a sensible default (defined in the Tide specification),
+    // but here we set it to ten milliseconds for demonstrative purposes.
+    segment.info.timecode_scale(10000000);
+    // The segment's date should be set. It is the somewhat-awkward value of
+    // the number of seconds since the start of the millennium. Boost::Date_Time
+    // to the rescue!
+    bpt::ptime basis(boost::gregorian::date(2001, 1, 1));
+    start = boost::posix_time::microsec_clock::local_time();
+    bpt::time_duration td = start - basis;
+    segment.info.date(td.total_microseconds() * 1000);
+    // Let's give the segment an inspirational title.
+    segment.info.title("World's first true 3D video");
+    // It sometimes helps to know what created a Tide file.
+    segment.info.muxing_app("libtide-0.1");
+    segment.info.writing_app("pcl_video");
+
+    // Set up the tracks meta-data and write it to the file.
+    tide::Tracks tracks;
+    // Each track is represented in the Tracks information by a TrackEntry.
+    // This specifies such things as the track number, the track's UID and the
+    // codec used.
+    tide::TrackEntry::Ptr track(new tide::TrackEntry(1, 1, "pointcloud2"));
+    track->name("3D video");
+    track->codec_name("sensor_msgs::PointCloud2");
+    // Adding each level 1 element (only the first occurance, in the case of
+    // clusters) to the index makes opening the file later much faster.
+    segment.index.insert(std::make_pair(tracks.id(),
+                segment.to_segment_offset(stream->tellp())));
+    // Now we can write the Tracks element.
+    tracks.insert(track);
+    tracks.write(*stream);
+    // The file is now ready for writing the data. The data itself is stored in
+    // clusters. Each cluster contains a number of blocks, with each block
+    // containing a single frame of data. Different cluster implementations are
+    // (will be) available using different optimisations. Here, we use the
+    // implementation that stores all its blocks in memory before writing them
+    // all to the file at once. As with the segment, clusters must be opened
+    // for writing before blocks are added. Once the cluster is complete, it is
+    // finalised. How many blocks each cluster contains is relatively flexible:
+    // the only limitation is on the range of block timecodes that can be
+    // stored. Each timecode is a signed 16-bit integer, and usually blocks
+    // have timecodes that are positive, limiting the range to 32767. The unit
+    // of this value is the segment's timecode scale. The default timecode
+    // scale therefore gives approximately 65 seconds of total range, with 32
+    // seconds being usable.
+    // The first cluster will appear at this point in the file, so it is
+    // recorded in the segment's index for faster file reading.
+    segment.index.insert(std::make_pair(tide::ids::Cluster,
+                segment.to_segment_offset(stream->tellp())));
+
+    // Set up a callback to get clouds from a grabber and write them to the
+    // file.
+    pcl::Grabber* interface(new pcl::OpenNIGrabber());
+    boost::function<void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)> f(
+            boost::bind(&record_cb, _1));
+    interface->registerCallback(f);
+    c_start = bpt::ptime(bpt::microsec_clock::local_time());
+    interface->start();
+
+    std::cerr << "Segment starts at " << start << " (" <<
+        td.total_microseconds() * 1000 << ")\n";
+    std::cout << "Recording frames. Press any key to stop.\n";
+    getchar();
+
+    interface->stop();
+    // Close the last open cluster
+    if (cluster)
+    {
+        cluster->finalise(*stream);
+        delete cluster;
+    }
+
+    // Now that the data has been written, the last thing to do is to finalise
+    // the segment.
+    segment.finalise(*stream);
+    // And finally, close the file.
+    stream->close();
+    delete stream;
+
+    return 0;
 }
 
 
@@ -261,119 +371,19 @@ int playback(std::string const& filename)
 
 int main(int argc, char** argv)
 {
-    // TODO: proper args parsing using the existing stuff
-    if (argc < 2)
+    std::string filename;
+    if (pcl::console::parse_argument(argc, argv, "-f", filename) < 0)
     {
-        std::cerr << "Usage: " << argv[0] << " <file name>\n";
+        std::cerr << "Usage: " << argv[0] << " -f <file name> [-p]\n";
         return 1;
     }
-    if (argc == 3)
+    if (pcl::console::find_switch(argc, argv, "-p"))
     {
-        return playback(argv[1]);
+        return playback(filename);
     }
-
-    // Open a new file and write the EBML Header. This specifies that the file
-    // is an EBML file, and is a Tide document.
-    stream = new std::fstream(argv[1], std::ios::in|std::ios::out|std::ios::trunc);
-    tide::EBMLElement ebml_el;
-    ebml_el.write(*stream);
-
-    // Open a new segment in the file. This will write some initial meta-data
-    // and place some padding at the start of the file for final meta-data to
-    // be written after tracks, clusters, etc. have been written.
-    tide::Segment segment;
-    segment.write(*stream);
-    // Set up the segment information so it can be used while writing tracks
-    // and clusters.
-    // A UID is not required, but is highly recommended.
-    boost::uuids::random_generator gen;
-    boost::uuids::uuid uuid = gen();
-    std::vector<char> uuid_data(uuid.size());
-    std::copy(uuid.begin(), uuid.end(), uuid_data.begin());
-    segment.info.uid(uuid_data);
-    // The filename can be nice to know.
-    segment.info.filename(argv[1]);
-    // The segment's timecode scale is possibly the most important value in the
-    // segment meta-data data. Without it, timely playback of frames is not
-    // possible. It has a sensible default (defined in the Tide specification),
-    // but here we set it to ten milliseconds for demonstrative purposes.
-    segment.info.timecode_scale(10000000);
-    // The segment's date should be set. It is the somewhat-awkward value of
-    // the number of seconds since the start of the millennium. Boost::Date_Time
-    // to the rescue!
-    bpt::ptime basis(boost::gregorian::date(2001, 1, 1));
-    start = boost::posix_time::microsec_clock::local_time();
-    bpt::time_duration td = start - basis;
-    segment.info.date(td.total_microseconds() * 1000);
-    // Let's give the segment an inspirational title.
-    segment.info.title("World's first true 3D video");
-    // It sometimes helps to know what created a Tide file.
-    segment.info.muxing_app("libtide-0.1");
-    segment.info.writing_app("pcl_video");
-
-    // Set up the tracks meta-data and write it to the file.
-    tide::Tracks tracks;
-    // Each track is represented in the Tracks information by a TrackEntry.
-    // This specifies such things as the track number, the track's UID and the
-    // codec used.
-    tide::TrackEntry::Ptr track(new tide::TrackEntry(1, 1, "pointcloud2"));
-    track->name("3D video");
-    track->codec_name("sensor_msgs::PointCloud2");
-    // Adding each level 1 element (only the first occurance, in the case of
-    // clusters) to the index makes opening the file later much faster.
-    segment.index.insert(std::make_pair(tracks.id(),
-                segment.to_segment_offset(stream->tellp())));
-    // Now we can write the Tracks element.
-    tracks.insert(track);
-    tracks.write(*stream);
-    // The file is now ready for writing the data. The data itself is stored in
-    // clusters. Each cluster contains a number of blocks, with each block
-    // containing a single frame of data. Different cluster implementations are
-    // (will be) available using different optimisations. Here, we use the
-    // implementation that stores all its blocks in memory before writing them
-    // all to the file at once. As with the segment, clusters must be opened
-    // for writing before blocks are added. Once the cluster is complete, it is
-    // finalised. How many blocks each cluster contains is relatively flexible:
-    // the only limitation is on the range of block timecodes that can be
-    // stored. Each timecode is a signed 16-bit integer, and usually blocks
-    // have timecodes that are positive, limiting the range to 32767. The unit
-    // of this value is the segment's timecode scale. The default timecode
-    // scale therefore gives approximately 65 seconds of total range, with 32
-    // seconds being usable.
-    // The first cluster will appear at this point in the file, so it is
-    // recorded in the segment's index for faster file reading.
-    segment.index.insert(std::make_pair(tide::ids::Cluster,
-                segment.to_segment_offset(stream->tellp())));
-
-    // Set up a callback to get clouds from a grabber and write them to the
-    // file.
-    pcl::Grabber* interface(new pcl::OpenNIGrabber());
-    boost::function<void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)> f(
-            boost::bind(&record_cb, _1));
-    interface->registerCallback(f);
-    c_start = bpt::ptime(bpt::microsec_clock::local_time());
-    interface->start();
-
-    std::cerr << "Segment starts at " << start << " (" <<
-        td.total_microseconds() * 1000 << ")\n";
-    std::cout << "Recording frames. Press any key to stop.\n";
-    getchar();
-
-    interface->stop();
-    // Close the last open cluster
-    if (cluster)
+    else
     {
-        cluster->finalise(*stream);
-        delete cluster;
+        return record(filename);
     }
-
-    // Now that the data has been written, the last thing to do is to finalise
-    // the segment.
-    segment.finalise(*stream);
-    // And finally, close the file.
-    stream->close();
-    delete stream;
-
-    return 0;
 }
 
