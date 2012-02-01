@@ -37,7 +37,7 @@
 #ifndef PCL_GPU_CONTAINER_DEVICE_ARRAY_HPP_
 #define PCL_GPU_CONTAINER_DEVICE_ARRAY_HPP_
 
-#include "pcl/pcl_macros.h"
+#include "pcl/pcl_exports.h"
 #include <pcl/gpu/containers/device_memory.hpp>
 
 #include <vector>

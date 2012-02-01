@@ -41,17 +41,6 @@
 #include "pcl/gpu/containers/device_array.hpp"
 #include "pcl/gpu/utils/safe_call.hpp"
 
-//don't want to include pcl_macros.h as it produces stupid warnings in cu-files because of boost.
-#if defined WIN32 || defined _WIN32 || defined WINCE || defined __MINGW32__
-    #ifdef PCLAPI_EXPORTS
-        #define PCL_EXPORTS __declspec(dllexport)
-    #else
-        #define PCL_EXPORTS
-    #endif
-#else
-    #define PCL_EXPORTS
-#endif
-
 namespace pcl
 {
   namespace device

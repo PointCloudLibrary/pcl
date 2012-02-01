@@ -42,6 +42,7 @@
 
 #include <cuda_runtime.h>
 
+#undef PI
 #ifndef PI
     #define PI 3.1415926535897931f               
 #endif

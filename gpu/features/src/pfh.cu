@@ -197,7 +197,7 @@ namespace pcl
                         //if (computePairFeatures (pi, ni, pj, nj, f1, f2, f3, f4))
                         {                            
                             // Normalize the f1, f2, f3 features and push them in the histogram
-                            int find0 = floor( NR_SPLIT * ((f1 + M_PI) * (1.f / (2.f * M_PI))) );                            
+                            int find0 = floor( NR_SPLIT * ((f1 + PI) * (1.f / (2.f * PI))) );                            
                             find0 = min(NR_SPLIT - 1, max(0, find0));
 
                             int find1 = floor( NR_SPLIT * ( (f2 + 1.f) * 0.5f ) );
