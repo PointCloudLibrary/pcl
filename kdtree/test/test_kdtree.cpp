@@ -167,7 +167,7 @@ TEST (PCL, KdTreeFLANN_radiusSearchEigen)
   Eigen::VectorXf test_point = Eigen::Vector3f (0.0f, 0.0f, 0.0f);
   double max_dist = 0.15;
   set<int> brute_force_result;
-  for (unsigned int i = 0; i < cloud_eigen.points.rows (); ++i)
+  for (int i = 0; i < cloud_eigen.points.rows (); ++i)
     if ((cloud_eigen.points.row (i) - test_point.transpose ()).norm () < max_dist)
       brute_force_result.insert (i);
   vector<int> k_indices;
