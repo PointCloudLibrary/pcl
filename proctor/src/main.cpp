@@ -25,7 +25,7 @@ struct run_proctor
 
   void operator()()
   {
-    unsigned int model_seed = 2;
+    //unsigned int model_seed = 2;
     unsigned int test_seed = 0; //time(NULL);
 
     Detector detector;
