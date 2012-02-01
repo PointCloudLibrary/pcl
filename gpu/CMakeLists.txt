@@ -40,7 +40,9 @@ if(BUILD_GPU)
         # Guess this macros will be included in cmake distributive
         include(${PCL_SOURCE_DIR}/cmake/CudaComputeTargetFlags.cmake)                  
         APPEND_TARGET_ARCH_FLAGS()
-        
+		
+		string(REPLACE "-std=gnu++0x" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+		        
         collect_subproject_directory_names(${CMAKE_CURRENT_SOURCE_DIR} "CMakeLists.txt" PCL_GPU_MODULES_NAMES PCL_GPU_MODULES_DIRS)
         set(PCL_GPU_MODULES_NAMES_UNSORTED ${PCL_GPU_MODULES_NAMES})
         topological_sort(PCL_GPU_MODULES_NAMES PCL_ _DEPENDS)
