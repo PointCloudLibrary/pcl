@@ -1,2 +1,5 @@
 add_executable(example_removeNaNFromPointCloud example_removeNaNFromPointCloud.cpp)
 target_link_libraries(example_removeNaNFromPointCloud pcl_common pcl_filters)
+
+add_executable(example_ExtractIndices example_ExtractIndices.cpp)
+target_link_libraries(example_ExtractIndices pcl_common pcl_filters)
