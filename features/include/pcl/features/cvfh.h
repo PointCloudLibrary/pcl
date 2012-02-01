@@ -52,6 +52,8 @@ namespace pcl
     * point cloud dataset containing XYZ data and normals, as presented in:
     *   -
     *
+    * The suggested PointOutT is pcl::VFHSignature308.
+    *
     * \author Aitor Aldoma
     * \ingroup features
     */
