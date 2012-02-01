@@ -1,0 +1,2 @@
+add_executable(example_removeNaNFromPointCloud example_removeNaNFromPointCloud.cpp)
+target_link_libraries(example_removeNaNFromPointCloud pcl_common pcl_filters)
