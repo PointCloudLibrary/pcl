@@ -37,6 +37,7 @@
 #include <boost/date_time/gregorian/gregorian_types.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
+#include <boost/thread/thread.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <iostream>
@@ -228,6 +229,8 @@ class Player
         Player(std::string const& filename)
             : filename_(filename), viewer_("PCL Video Player: " + filename)
         {
+            //viewer_.setBackgroundColor(0, 0, 0);
+            //viewer_.initCameraParameters();
         }
 
         int Run()
@@ -278,7 +281,7 @@ class Player
             // start of the millenium. Boost::Date_Time is invaluable here.
             bpt::ptime basis(boost::gregorian::date(2001, 1, 1));
             bpt::time_duration sd(bpt::microseconds(segment.info.date() / 1000));
-            bpt::ptime start(basis + sd);
+            bpt::ptime seg_start(basis + sd);
 
             // The segment is now open and we can start reading its child elements. To
             // begin with, we get the tracks element (their may be more than one, if
@@ -314,55 +317,78 @@ class Player
                 return 1;
             }
 
+            bpt::ptime pb_start(bpt::microsec_clock::local_time());
+
             // Now we can start reading the clusters. Get an iterator to the clusters
             // in the segment.
             // In this case, we are using a memory-based cluster implementation, which
             // reads all blocks in the cluster in one go and stores them in memory. For
             // larger quantities of data (such as point clouds), using the in-file
             // cluster implementation will use significantly less memory.
-            for (tide::Segment::MemClusterIterator cluster(segment.clusters_begin(stream));
-                    cluster != segment.clusters_end(stream); ++cluster)
+            for (tide::Segment::MemBlockIterator block(segment.blocks_begin(stream));
+                    block != segment.blocks_end(stream); ++block)
             {
-                for (tide::MemoryCluster::Iterator block(cluster->begin());
-                        block != cluster->end(); ++block)
+                bpt::time_duration blk_offset(bpt::microseconds((
+                        (block.cluster()->timecode() + (*block)->timecode()) *
+                        segment.info.timecode_scale() / 1000)));
+                bpt::time_duration played_time(bpt::microsec_clock::local_time() -
+                        pb_start);
+                // If the current playback time is ahead of this block, skip it
+                if (played_time > blk_offset)
                 {
-                    // Some blocks may actually contain multiple frames in a lace. In
-                    // this case, we are reading blocks that do not use lacing, so
-                    // there is only one frame per block. This is the general case;
-                    // lacing is typically only used when the frame size is very small
-                    // to reduce overhead.
-                    tide::BlockElement::Ptr first_block(*block);
-                    tide::BlockElement::FramePtr frame_data(*(first_block->begin()));
-                    // Copy the frame data into a serialised cloud structure
-                    sensor_msgs::PointCloud2 blob;
-                    blob.height = 480;
-                    blob.width = 640;
-                    sensor_msgs::PointField ptype;
-                    ptype.name = "x";
-                    ptype.offset = 0;
-                    ptype.datatype = 7;
-                    ptype.count = 1;
-                    blob.fields.push_back(ptype);
-                    ptype.name = "y";
-                    ptype.offset = 4;
-                    ptype.datatype = 7;
-                    ptype.count = 1;
-                    blob.fields.push_back(ptype);
-                    ptype.name = "z";
-                    ptype.offset = 8;
-                    ptype.datatype = 7;
-                    ptype.count = 1;
-                    blob.fields.push_back(ptype);
-                    blob.is_bigendian = false;
-                    blob.point_step = 16;
-                    blob.row_step = 10240;
-                    blob.is_dense = false;
-                    blob.data.assign(frame_data->begin(), frame_data->end());
-
-                    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-                    pcl::fromROSMsg(blob, *cloud);
-                    viewer_.showCloud(cloud);
+                    std::cerr << "Skipping block at " << blk_offset <<
+                        " because current playback time is " << played_time << '\n';
+                    continue;
                 }
+                // Some blocks may actually contain multiple frames in a lace.
+                // In this case, we are reading blocks that do not use lacing,
+                // so there is only one frame per block. This is the general
+                // case; lacing is typically only used when the frame size is
+                // very small to reduce overhead.
+                tide::BlockElement::Ptr first_block(*block);
+                // This is weird because the Tide API is broken
+                tide::BlockElement::FramePtr frame_data(*(first_block->begin()));
+                // Copy the frame data into a serialised cloud structure
+                sensor_msgs::PointCloud2 blob;
+                blob.height = 480;
+                blob.width = 640;
+                sensor_msgs::PointField ptype;
+                ptype.name = "x";
+                ptype.offset = 0;
+                ptype.datatype = 7;
+                ptype.count = 1;
+                blob.fields.push_back(ptype);
+                ptype.name = "y";
+                ptype.offset = 4;
+                ptype.datatype = 7;
+                ptype.count = 1;
+                blob.fields.push_back(ptype);
+                ptype.name = "z";
+                ptype.offset = 8;
+                ptype.datatype = 7;
+                ptype.count = 1;
+                blob.fields.push_back(ptype);
+                blob.is_bigendian = false;
+                blob.point_step = 16;
+                blob.row_step = 10240;
+                blob.is_dense = false;
+                blob.data.assign(frame_data->begin(), frame_data->end());
+                pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+                pcl::fromROSMsg(blob, *cloud);
+                // Sleep until the block's display time. The played_time is
+                // updated to account for the time spent preparing the data.
+                played_time = bpt::microsec_clock::local_time() - pb_start;
+                bpt::time_duration sleep_time(blk_offset - played_time);
+                std::cerr << "Will sleep " << sleep_time << " until displaying block\n";
+                boost::this_thread::sleep(sleep_time);
+                viewer_.showCloud(cloud);
+                //viewer_.removePointCloud("1");
+                //viewer_.addPointCloud(cloud, "1");
+                //viewer_.spinOnce();
+                //if (viewer_.wasStopped())
+                //{
+                    //break;
+                //}
             }
 
             return 0;
@@ -370,6 +396,7 @@ class Player
 
     private:
         std::string filename_;
+        //pcl::visualization::PCLVisualizer viewer_;
         pcl::visualization::CloudViewer viewer_;
 };
 
