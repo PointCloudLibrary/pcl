@@ -40,8 +40,10 @@
 
 #include <pcl/io/ply/ply_parser.h>
 
-bool pcl::io::ply::ply_parser::parse (std::istream& istream)
+bool pcl::io::ply::ply_parser::parse (const std::string& filename)
 {
+  std::ifstream istream (filename.c_str ());
+
   std::string line;
   line_number_ = 0;
 
@@ -150,7 +152,6 @@ bool pcl::io::ply::ply_parser::parse (std::istream& istream)
           format_callback_ (format, version);
         }
       }
-
       // element
       else if (keyword == "element")
       {
@@ -492,7 +493,6 @@ bool pcl::io::ply::ply_parser::parse (std::istream& istream)
         }
         break;
       }
-      
       // unknown keyword
       else
       {
@@ -562,6 +562,11 @@ bool pcl::io::ply::ply_parser::parse (std::istream& istream)
   // binary
   else
   {
+    size_t data_start = istream.tellg ();
+    istream.close ();
+    istream.open (filename.c_str (), std::ios::binary);
+    istream.seekg (data_start);
+
     for (std::vector< std::tr1::shared_ptr<element> >::const_iterator element_iterator = elements.begin (); 
          element_iterator != elements.end (); 
          ++element_iterator)

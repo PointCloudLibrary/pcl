@@ -394,7 +394,7 @@ ply_to_ply_converter::convert(std::istream& istream, std::ostream& ostream)
   ply_parser.end_header_callback(std::tr1::bind(&ply_to_ply_converter::end_header_callback, this));
 
   ostream_ = &ostream;
-  return ply_parser.parse(istream);
+  return ply_parser.parse(ifilename);
 }
 
 int main(int argc, char* argv[])

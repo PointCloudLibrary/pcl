@@ -303,8 +303,8 @@ namespace pcl
             : flags_ (flags) 
           {}
               
-          bool parse (std::istream& istream);
-          inline bool parse (const std::string& filename);
+          bool parse (const std::string& filename);
+          //inline bool parse (const std::string& filename);
 
         private:
             
@@ -424,11 +424,11 @@ namespace pcl
   } // namespace io
 } // namespace pcl
 
-inline bool pcl::io::ply::ply_parser::parse (const std::string& filename)
-{
-  std::ifstream ifstream (filename.c_str ());
-  return (parse (ifstream));
-}
+/* inline bool pcl::io::ply::ply_parser::parse (const std::string& filename) */
+/* { */
+/*   std::ifstream ifstream (filename.c_str ()); */
+/*   return (parse (ifstream)); */
+/* } */
 
 inline void pcl::io::ply::ply_parser::info_callback (const info_callback_type& info_callback)
 {

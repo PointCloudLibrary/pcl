@@ -314,7 +314,7 @@ ply_to_obj_converter::convert (std::istream& istream, const std::string& istream
 
   ostream_ = &ostream;
 
-  return ply_parser.parse (istream);
+  return ply_parser.parse (istream_filename);
 }
 
 int main (int argc, char* argv[])

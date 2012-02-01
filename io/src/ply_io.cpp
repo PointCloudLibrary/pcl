@@ -939,8 +939,8 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
       // Ignore invalid padded dimensions that are inherited from binary data
       if (cloud.fields[d].name == "_")
       {
-	total += cloud.fields[d].count; // jump over this many elements in the string token
-	continue;
+        total += cloud.fields[d].count; // jump over this many elements in the string token
+        continue;
       }
 
       for (int c = 0; c < count; ++c)
