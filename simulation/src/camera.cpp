@@ -2,7 +2,6 @@
 #include "pcl/simulation/camera.hpp"
 
 using namespace Eigen;
-
 namespace pcl
 {
 
