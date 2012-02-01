@@ -42,6 +42,7 @@
 
 #include <pcl/surface/mls_omp.h>
 
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename NormalOutT> void
 pcl::MovingLeastSquaresOMP<PointInT, NormalOutT>::performReconstruction (PointCloudIn &output)
@@ -49,41 +50,49 @@ pcl::MovingLeastSquaresOMP<PointInT, NormalOutT>::performReconstruction (PointCl
   // Compute the number of coefficients
   nr_coeff_ = (order_ + 1) * (order_ + 2) / 2;
 
+  // Allocate enough space to hold the results of nearest neighbor searches
+  // \note resize is irrelevant for a radiusSearch ().
+  std::vector<int> nn_indices;
+  std::vector<float> nn_sqr_dists;
+
 #pragma omp parallel for schedule (dynamic, threads_)
   // For all points
-  for (int cp = 0; cp < (int) indices_->size (); ++cp)
+  for (size_t cp = 0; cp < indices_->size (); ++cp)
   {
-    // Allocate enough space to hold the results of nearest neighbor searches
-    // \note resize is irrelevant for a radiusSearch ().
-    std::vector<int> nn_indices;
-    std::vector<float> nn_sqr_dists;
-
     // Get the initial estimates of point positions and their neighborhoods
-    if (!this->searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
-    {
-      if (normals_)
-        normals_->points[cp].normal[0] = normals_->points[cp].normal[1] = normals_->points[cp].normal[2] = normals_->points[cp].curvature = std::numeric_limits<float>::quiet_NaN ();
+    if (!searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
       continue;
-    }
 
     // Check the number of nearest neighbors for normal estimation (and later
     // for polynomial fit as well)
     if (nn_indices.size () < 3)
       continue;
 
-    Eigen::Vector4f model_coefficients;
-    // Get a plane approximating the local surface's tangent and project point onto it
-    this->computeMLSPointNormal (output.points[cp], *input_, nn_indices, nn_sqr_dists,
-                           model_coefficients); 
 
-    // Save results to output cloud
-    if (normals_)
-    {
-      normals_->points[cp].normal[0] = model_coefficients[0];
-      normals_->points[cp].normal[1] = model_coefficients[1];
-      normals_->points[cp].normal[2] = model_coefficients[2];
-      normals_->points[cp].curvature = model_coefficients[3];
-    }
+    PointCloudIn projected_points;
+    NormalCloudOut projected_points_normals;
+    // Get a plane approximating the local surface's tangent and project point onto it
+    computeMLSPointNormal ((*indices_)[cp], *input_, nn_indices, nn_sqr_dists, projected_points, projected_points_normals);
+
+    // Append projected points to output
+    output.insert (output.end (), projected_points.begin (), projected_points.end ());
+    normals_->insert (normals_->end (), projected_points_normals.begin (), projected_points_normals.end ());
+  }
+
+  // Set proper widths and heights for the clouds
+  if (upsample_method_ == MovingLeastSquares<PointInT, NormalOutT>::NONE && fake_indices_)
+  {
+    normals_->width = input_->width;
+    normals_->height = input_->height;
+    output.width = input_->width;
+    output.height = input_->height;
+  }
+  else
+  {
+    normals_->height = 1;
+    normals_->width = normals_->size ();
+    output.height = 1;
+    output.width = output.size ();
   }
 }
 

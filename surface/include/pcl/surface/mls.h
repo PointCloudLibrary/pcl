@@ -1,37 +1,37 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ * Point Cloud Library (PCL) - www.pointclouds.org
+ * Copyright (c) 2009-2011, Willow Garage, Inc.
  *
- *  All rights reserved.
+ * All rights reserved.
  *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
  *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above
+ *   copyright notice, this list of conditions and the following
+ *   disclaimer in the documentation and/or other materials provided
+ *   with the distribution.
+ * * Neither the name of Willow Garage, Inc. nor the names of its
+ *   contributors may be used to endorse or promote products derived
+ *   from this software without specific prior written permission.
  *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  *
  * $Id$
  *
@@ -78,8 +78,19 @@ namespace pcl
 
       typedef boost::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
 
+      enum UpsamplingMethod { NONE, SAMPLE_LOCAL_PLANE };
+
       /** \brief Empty constructor. */
-      MovingLeastSquares () : PCLBase<PointInT> (), tree_ (), order_ (2), polynomial_fit_ (true), search_radius_ (0), sqr_gauss_param_ (0) {};
+      MovingLeastSquares () : PCLBase<PointInT> (),
+                              tree_ (),
+                              order_ (2),
+                              polynomial_fit_ (true),
+                              search_radius_ (0.0),
+                              sqr_gauss_param_ (0.0),
+                              upsample_method_ (NONE),
+                              upsampling_radius_ (0.0),
+                              upsampling_step_ (0.0)
+                              {};
 
       /** \brief Provide a pointer to a point cloud where normal information should be saved
         * \note This is optional, it can be the same as the parameter to the reconstruction method, but no normals are estimated if it is not set.
@@ -150,6 +161,15 @@ namespace pcl
       inline double 
       getSqrGaussParam () { return (sqr_gauss_param_); }
 
+      inline void
+      setUpsamplingMethod (UpsamplingMethod method) { upsample_method_ = method; }
+
+      inline void
+      setUpsamplingRadius (double radius) { upsampling_radius_ = radius; }
+
+      inline void
+      setUpsamplingStepSize (double step_size) { upsampling_step_ = step_size; }
+
       /** \brief Base method for surface reconstruction for all points given in <setInputCloud (), setIndices ()>
         * \param[out] output the resultant reconstructed surface model
         */
@@ -178,6 +198,10 @@ namespace pcl
       /** \brief Parameter for distance based weighting of neighbors (search_radius_ * search_radius_ works fine) */
       double sqr_gauss_param_;
 
+      UpsamplingMethod upsample_method_;
+      double upsampling_radius_;
+      double upsampling_step_;
+
       /** \brief Number of coefficients, to be computed from the requested order.*/
       int nr_coeff_;
 
@@ -200,9 +224,12 @@ namespace pcl
         * \param[out] normal the output smoothed normal and curvature as a 4D vector (nx, ny, nz, curvature)
         */
       void
-      computeMLSPointNormal (PointInT &pt, const PointCloudIn &input, 
-                             const std::vector<int> &nn_indices, std::vector<float> &nn_sqr_dists,
-                             Eigen::Vector4f &normal);
+      computeMLSPointNormal (int index,
+                             const PointCloudIn &input,
+                             const std::vector<int> &nn_indices,
+                             std::vector<float> &nn_sqr_dists,
+                             PointCloudIn &projected_points,
+                             NormalCloudOut &projected_points_normals);
 
     private:
       /** \brief Abstract surface reconstruction method. 

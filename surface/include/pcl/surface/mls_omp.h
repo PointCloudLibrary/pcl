@@ -60,8 +60,10 @@ namespace pcl
     using MovingLeastSquares<PointInT, NormalOutT>::nr_coeff_;
     using MovingLeastSquares<PointInT, NormalOutT>::order_;
     using MovingLeastSquares<PointInT, NormalOutT>::normals_;
+    using MovingLeastSquares<PointInT, NormalOutT>::upsample_method_;
       
     typedef typename MovingLeastSquares<PointInT, NormalOutT>::PointCloudIn PointCloudIn;
+    typedef typename MovingLeastSquares<PointInT, NormalOutT>::NormalCloudOut NormalCloudOut;
 
     public:
       /** \brief Empty constructor. */
