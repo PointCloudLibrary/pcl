@@ -1593,7 +1593,7 @@ TEST (PCL, FPFHEstimationOpenMP)
   EXPECT_NEAR (fpfhs->points[0].histogram[26], 3.13191, 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[27], 1.74453, 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[28], 9.41971, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[29], 21.5894, 1e-3);
+  EXPECT_NEAR (fpfhs->points[0].histogram[29], 21.5894, 1e-2);
   EXPECT_NEAR (fpfhs->points[0].histogram[30], 24.6302, 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[31], 17.7764, 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[32], 7.28878, 1e-3);
