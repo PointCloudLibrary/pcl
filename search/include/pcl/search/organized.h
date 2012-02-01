@@ -73,7 +73,7 @@ namespace pcl
 
         /** \brief OrganizedNeighbor constructor. */
         OrganizedNeighbor (bool recalculate_projection_matrix = true) 
-          : projection_matrix_ (Eigen::Matrix<float, 3, 4, Eigen::RowMajor>::Zero ()),
+          : projection_matrix_ (Eigen::Matrix<float, 3, 4, Eigen::RowMajor>::Zero ())
           , eps_ (1e-2)
         {
         }
