@@ -223,78 +223,157 @@ namespace pcl
         */
       template <typename SizeType, typename ScalarType> 
       std::tr1::tuple<std::tr1::function<void (SizeType)>, std::tr1::function<void (ScalarType)>, std::tr1::function<void ()> > 
-        listPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name);
-
+      listPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name);
+			
+			/** Callback function for an anonymous vertex float property.
+			  * Writes down a float value in cloud data.
+			  * param[in] value float value parsed
+			  */			
       inline void
       vertexFloatPropertyCallback (pcl::io::ply::float32 value);
 
+			/** Callback function for vertex RGB color.
+			  * This callback is in charge of packing red green and blue in a single int
+				* before writing it down in cloud data.
+			  * param[in] color_name color name in {red, green, blue}
+				* param[in] color value of {red, green, blue} property
+			  */			
       inline void
       vertexColorCallback (const std::string& color_name, pcl::io::ply::uint8 color);
 
+			/** Callback function for vertex intensity.
+			  * converts intensity from int to float before writing it down in cloud data.
+			  * param[in] intensity
+			  */
       inline void
       vertexIntensityCallback (pcl::io::ply::uint8 intensity);
       
+			/** Callback function for origin x component.
+			  * param[in] value origin x value
+			  */
       inline void
       originXCallback (const float& value) { origin_[0] = value; }
       
+			/** Callback function for origin y component.
+			  * param[in] value origin y value
+			  */
       inline void
       originYCallback (const float& value) { origin_[1] = value; }
-      
+
+			/** Callback function for origin z component.
+			  * param[in] value origin z value
+			  */      
       inline void
       originZCallback (const float& value) { origin_[2] = value; }
     
+			/** Callback function for orientation x axis x component.
+			  * param[in] value orientation x axis x value
+			  */
       inline void
       orientationXaxisXCallback (const float& value) { orientation_ (0,0) = value; }
       
+			/** Callback function for orientation x axis y component.
+			  * param[in] value orientation x axis y value
+			  */
       inline void
       orientationXaxisYCallback (const float& value) { orientation_ (0,1) = value; }
       
+			/** Callback function for orientation x axis z component.
+			  * param[in] value orientation x axis z value
+			  */
       inline void
       orientationXaxisZCallback (const float& value) { orientation_ (0,2) = value; }
       
+			/** Callback function for orientation y axis x component.
+			  * param[in] value orientation y axis x value
+			  */
       inline void
       orientationYaxisXCallback (const float& value) { orientation_ (1,0) = value; }
       
+			/** Callback function for orientation y axis y component.
+			  * param[in] value orientation y axis y value
+			  */
       inline void
       orientationYaxisYCallback (const float& value) { orientation_ (1,1) = value; }
 
+			/** Callback function for orientation y axis z component.
+			  * param[in] value orientation y axis z value
+			  */
       inline void
       orientationYaxisZCallback (const float& value) { orientation_ (1,2) = value; }
       
+			/** Callback function for orientation z axis x component.
+			  * param[in] value orientation z axis x value
+			  */
       inline void
       orientationZaxisXCallback (const float& value) { orientation_ (2,0) = value; }
     
+			/** Callback function for orientation z axis y component.
+			  * param[in] value orientation z axis y value
+			  */
       inline void
       orientationZaxisYCallback (const float& value) { orientation_ (2,1) = value; }
       
+			/** Callback function for orientation z axis z component.
+			  * param[in] value orientation z axis z value
+			  */
       inline void
       orientationZaxisZCallback (const float& value) { orientation_ (2,2) = value; }
       
+			/** Callback function to set the cloud height
+			  * param[in] height cloud height
+				*/
       inline void
       cloudHeightCallback (const int &height) { cloud_->height = height; }
 
+			/** Callback function to set the cloud width
+			  * param[in] width cloud width
+				*/
       inline void
       cloudWidthCallback (const int &width) { cloud_->width = width; }
         
+			/** Append a float property to the cloud fields.
+			  * param[in] name property name
+				* param[in] count property count: 1 for scalar properties and higher for a 
+				* list property.
+			  */
       void
-      appendFloatProperty (const std::string& name, const size_t& size = 1);
+      appendFloatProperty (const std::string& name, const size_t& count = 1);
 
+			/** Callback function for the begin of vertex line */
       void vertexBeginCallback ();
+
+			/** Callback function for the end of vertex line */
       void vertexEndCallback ();
+
+			/** Callback function for the begin of range_grid line */
       void rangeGridBeginCallback ();
+
+			/** Callback function for the begin of range_grid vertex_indices property 
+			  * param[in] size vertex_indices list size  
+			  */
       void rangeGridVertexIndicesBeginCallback (pcl::io::ply::uint8 size);
+
+			/** Callback function for each range_grid vertex_indices element
+			  * param[in] vertex_index index of the vertex in vertex_indices
+ 			  */			
       void rangeGridVertexIndicesElementCallback (pcl::io::ply::int32 vertex_index);
+
+			/** Callback function for the end of a range_grid vertex_indices property */
       void rangeGridVertexIndicesEndCallback ();
+
+			/** Callback function for the end of a range_grid element end */
       void rangeGridEndCallback ();
       /* void faceBegin(); */
       /* void faceVertexIndicesBegin(pcl::io::ply::uint8 size); */
       /* void faceVertexIndices_element(pcl::io::ply::int32 vertex_index); */
       /* void faceVertexIndicesEnd(); */
       /* void faceEnd(); */
+			/** Callback function for obj_info */
       void objInfoCallback (const std::string& line);
-      //origin
+      /// origin
       Eigen::Vector4f origin_;
-      //orientation
+      /// orientation
       Eigen::Matrix3f orientation_;
       //vertex element artifacts
       sensor_msgs::PointCloud2 *cloud_;
