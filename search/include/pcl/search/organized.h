@@ -72,9 +72,9 @@ namespace pcl
         typedef boost::shared_ptr<const pcl::search::OrganizedNeighbor<PointT> > ConstPtr;
 
         /** \brief OrganizedNeighbor constructor. */
-        OrganizedNeighbor (bool recalculate_projection_matrix = true)
-        : projection_matrix_ (Eigen::Matrix <float, 3, 4>::Zero ())
-        , eps_ (1e-2)
+        OrganizedNeighbor (bool recalculate_projection_matrix = true) 
+          : projection_matrix_ (Eigen::Matrix<float, 3, 4, Eigen::RowMajor>::Zero ()),
+          , eps_ (1e-2)
         {
         }
 
@@ -247,6 +247,9 @@ namespace pcl
 
         /** \brief epsilon value for the MSE of the projection matrix estimation*/
         float eps_;
+
+      public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
   }
 }
