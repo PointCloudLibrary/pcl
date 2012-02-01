@@ -97,9 +97,9 @@ vtkLidarScanner::~vtkLidarScanner()
 {
   if(this->Scan)
     {
-    for(unsigned int i = this->Scan->GetExtent(0).GetBegin(); i <this->Scan->GetExtent(0).GetEnd(); i++)
+    for(int i = this->Scan->GetExtent(0).GetBegin(); i <this->Scan->GetExtent(0).GetEnd(); i++)
       {
-      for(unsigned int j = this->Scan->GetExtent(1).GetBegin(); j <this->Scan->GetExtent(1).GetEnd(); j++)
+      for(int j = this->Scan->GetExtent(1).GetBegin(); j <this->Scan->GetExtent(1).GetEnd(); j++)
         {
         this->Scan->GetValue(i,j)->Delete();
         }
@@ -683,7 +683,7 @@ void vtkLidarScanner::GetValidOutputPoints(vtkPolyData* output)
   norms->SetName("Normals");
 
   // Store the scanner position as a point so rays can be drawn between scanner and scan points
-  vtkIdType ScannerLocationPid[1];
+  vtkIdType ScannerLocationPid[1] = {0};
   if(StoreRays)
     {
     ScannerLocationPid[0] = Points->InsertNextPoint(this->GetLocation());
