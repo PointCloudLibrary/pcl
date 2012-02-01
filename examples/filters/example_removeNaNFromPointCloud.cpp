@@ -33,28 +33,42 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: example_ScopeTime.cpp 4117 2012-01-31 17:56:02Z aichim $
+ * $Id: example_removeNaNFromPointCloud.cpp 4117 2012-01-31 17:56:02Z aichim $
  *
  */
 
 
-
+// STL
 #include <iostream>
+#include <limits>
 
-#include <pcl/common/time.h>
-
+// PCL
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/filters/filter.h>
 
 int main (int argc, char** argv)
 {
-  pcl::ScopeTime scopeTime ("Test loop");
-  {
-    float total = 0.0f;
-    for (size_t i = 0; i < 1e4; ++i)
-      {
-      total += i;
-      }
-  }
-  std::cout << "Done." << std::endl;
+  typedef pcl::PointCloud<pcl::PointXYZ> CloudType;
+  CloudType::Ptr cloud (new CloudType);
+  cloud->is_dense = false;
+  CloudType::Ptr outputCloud (new CloudType);
 
-  return (0);
+  CloudType::PointType p_nan;
+  p_nan.x = std::numeric_limits<float>::quiet_NaN();
+  p_nan.y = std::numeric_limits<float>::quiet_NaN();
+  p_nan.z = std::numeric_limits<float>::quiet_NaN();
+  cloud->push_back(p_nan);
+  
+  CloudType::PointType p_valid;
+  p_valid.x = 1.0f;
+  cloud->push_back(p_valid);
+
+  std::cout << "size: " << cloud->points.size () << std::endl;
+  
+  std::vector<int> indices;
+  pcl::removeNaNFromPointCloud(*cloud, *outputCloud, indices);
+  std::cout << "size: " << outputCloud->points.size () << std::endl;
+  
+  return 0;
 }
