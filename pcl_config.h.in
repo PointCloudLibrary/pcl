@@ -23,6 +23,7 @@
 
 #cmakedefine USE_ROS
 
+#cmakedefine HAVE_SSE4_1_EXTENSIONS
 #cmakedefine HAVE_SSE3_EXTENSIONS
 #cmakedefine HAVE_SSE2_EXTENSIONS
 #cmakedefine HAVE_SSE_EXTENSIONS

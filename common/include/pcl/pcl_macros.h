@@ -37,6 +37,7 @@
 
 #include <pcl/pcl_config.h>
 #include <boost/cstdint.hpp>
+#include <Eigen/Core>
 
 namespace pcl
 {
@@ -137,12 +138,12 @@ pcl_isnan (T &val)
   * Therefore implement our own versions of these functions here.
   */
 #include <math.h>
-__inline double 
+__inline double
 pcl_round (double number)
 {
   return (number < 0.0 ? ceil(number - 0.5) : floor(number + 0.5));
 }
-__inline float 
+__inline float
 pcl_round (float number)
 {
   return (number < 0.0f ? ceil(number - 0.5f) : floor(number + 0.5f));
@@ -286,5 +287,18 @@ pcl_round (float number)
 #pragma message("WARNING: You need to implement PCL_DEPRECATED for this compiler")
 #define PCL_DEPRECATED(func) func
 #endif
+
+#define PCL_ALIGN(boundary) EIGEN_ALIGN_TO_BOUNDARY(boundary)
+
+inline void* aligned_malloc(size_t size)
+{
+  // use eigen aligned malloc
+  return Eigen::internal::aligned_malloc (size);
+}
+
+inline void aligned_free (void* ptr)
+{
+  Eigen::internal::aligned_free (ptr);
+}
 
 #endif  //#ifndef PCL_MACROS_H_
