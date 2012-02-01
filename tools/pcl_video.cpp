@@ -43,7 +43,7 @@
 #include <iostream>
 #include <string>
 #include <tide/ebml_element.h>
-#include <tide/memory_cluster.h>
+#include <tide/file_cluster.h>
 #include <tide/segment.h>
 #include <tide/simple_block.h>
 #include <tide/tide_impl.h>
@@ -56,6 +56,7 @@
 #include <pcl/ros/conversions.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/console/parse.h>
+#include <pcl/common/time.h>
 
 namespace bpt = boost::posix_time;
 
@@ -65,7 +66,8 @@ class Recorder
     public:
         Recorder(std::string const& filename, std::string const& title)
             : filename_(filename), title_(title),
-            stream_(filename, std::ios::in|std::ios::out|std::ios::trunc)
+            stream_(filename, std::ios::in|std::ios::out|std::ios::trunc),
+            count_(0)
         {
         }
 
@@ -86,6 +88,15 @@ class Recorder
                         blob.data.end()));
             block->push_back(frame_ptr);
             cluster_->push_back(block);
+            // Benchmarking
+            if (++count_ == 30)
+            {
+                double now = pcl::getTime();
+                std::cerr << "Average framerate: " <<
+                    static_cast<double>(count_) / (now - last_) << "Hz\n";
+                count_ = 0;
+                last_ = now;
+            }
             // Check if the cluster has enough data in it.
             // What "enough" is depends on your own needs. Generally, a cluster
             // shouldn't be allowed to get too big in data size or too long in time, or
@@ -100,7 +111,7 @@ class Recorder
                 // Create a new cluster
                 cltr_start_ = bpt::microsec_clock::local_time();
                 bpt::time_duration cltr_offset = cltr_start_ - seg_start_;
-                cluster_.reset(new tide::MemoryCluster(
+                cluster_.reset(new tide::FileCluster(
                             cltr_offset.total_microseconds() / 10000));
                 cluster_->write(stream_);
             }
@@ -189,9 +200,10 @@ class Recorder
             // Start the first cluster
             cltr_start_ = bpt::microsec_clock::local_time();
             bpt::time_duration cltr_offset = cltr_start_ - seg_start_;
-            cluster_.reset(new tide::MemoryCluster(
+            cluster_.reset(new tide::FileCluster(
                         cltr_offset.total_microseconds() / 10000));
             cluster_->write(stream_);
+            last_ = pcl::getTime();
             interface->start();
 
             std::cout << "Recording frames. Press any key to stop.\n";
@@ -217,9 +229,11 @@ class Recorder
         std::string filename_;
         std::string title_;
         std::fstream stream_;
-        tide::MemoryCluster::Ptr cluster_;
+        tide::FileCluster::Ptr cluster_;
         bpt::ptime seg_start_;
         bpt::ptime cltr_start_;
+        unsigned int count_;
+        double last_;
 };
 
 
