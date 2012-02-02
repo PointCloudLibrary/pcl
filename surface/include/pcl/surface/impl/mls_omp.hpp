@@ -40,13 +40,14 @@
 #ifndef PCL_SURFACE_IMPL_MLS_OMP_H_
 #define PCL_SURFACE_IMPL_MLS_OMP_H_
 
+#include <cstddef>
 #include <pcl/surface/mls_omp.h>
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename NormalOutT> void
 pcl::MovingLeastSquaresOMP<PointInT, NormalOutT>::performReconstruction (PointCloudIn &output)
 {
+  typedef std::size_t size_t;
   // Compute the number of coefficients
   nr_coeff_ = (order_ + 1) * (order_ + 2) / 2;
 
@@ -57,7 +58,7 @@ pcl::MovingLeastSquaresOMP<PointInT, NormalOutT>::performReconstruction (PointCl
 
 #pragma omp parallel for schedule (dynamic, threads_)
   // For all points
-  for (size_t cp = 0; cp < indices_->size (); ++cp)
+  for (int cp = 0; cp < (int)indices_->size (); ++cp)
   {
     // Get the initial estimates of point positions and their neighborhoods
     if (!searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
