@@ -176,7 +176,7 @@ void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float rad
             end = beg + min<int>((int)out.size() + end - beg, max_nn) - (int)out.size();
 
             out.insert(out.end(), host_octree.indices.begin() + beg, host_octree.indices.begin() + end);
-            if (out.size() == max_nn)
+            if (out.size() == (size_t)max_nn)
                 return;
 
             ++iterator;
@@ -209,7 +209,7 @@ void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float rad
                 if (dist2 < radius * radius)
                     out.push_back(index);
 
-                if (out.size() == max_nn)
+                if (out.size() == (size_t)max_nn)
                     return;
             }               
             ++iterator;               

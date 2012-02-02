@@ -45,6 +45,7 @@
     #define __PCL_GPU_HOST_DEVICE__
 #endif  
 
+#include <cstddef>
 
 namespace pcl
 {
