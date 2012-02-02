@@ -335,15 +335,15 @@ class Player
 
             // Now we can start reading the clusters. Get an iterator to the clusters
             // in the segment.
-            // In this case, we are using a memory-based cluster implementation, which
-            // reads all blocks in the cluster in one go and stores them in memory. For
-            // larger quantities of data (such as point clouds), using the in-file
-            // cluster implementation will use significantly less memory.
-            for (tide::Segment::MemBlockIterator block(segment.blocks_begin(stream));
-                    block != segment.blocks_end(stream); ++block)
+            // In this case, we are using a file-based cluster implementation, which
+            // reads blocks from the file on demand. This is usually a better
+            // option tham the memory-based cluster when the size of the stored
+            // data is large.
+            for (tide::Segment::FileBlockIterator block(segment.blocks_begin_file(stream));
+                    block != segment.blocks_end_file(stream); ++block)
             {
                 bpt::time_duration blk_offset(bpt::microseconds((
-                        (block.cluster()->timecode() + (*block)->timecode()) *
+                        (block.cluster()->timecode() + block->timecode()) *
                         segment.info.timecode_scale() / 1000)));
                 bpt::time_duration played_time(bpt::microsec_clock::local_time() -
                         pb_start);
@@ -359,9 +359,7 @@ class Player
                 // so there is only one frame per block. This is the general
                 // case; lacing is typically only used when the frame size is
                 // very small to reduce overhead.
-                tide::BlockElement::Ptr first_block(*block);
-                // This is weird because the Tide API is broken
-                tide::BlockElement::FramePtr frame_data(*(first_block->begin()));
+                tide::BlockElement::FramePtr frame_data(*block->begin());
                 // Copy the frame data into a serialised cloud structure
                 sensor_msgs::PointCloud2 blob;
                 blob.height = 480;
