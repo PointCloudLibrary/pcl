@@ -228,7 +228,7 @@ void RangeLikelihood::compute_scores(int cols, int rows,
 	//float cost = sqr(ref[col%col_width] - 1/(1.33 -(*depth)*1.29));
 	
 	// Version 1: [29 aug 2011] Exact version using correct mappings:
-	float cost = sqr(ref[col%col_width] - 1/(1.4285 -(*depth)*1.3788));
+	float cost = sqr(ref[col%col_width] - 1/(1.4285 -(depth_val)*1.3788));
 
 	if (ref[col%col_width] < 0){ // all images pixels with no range
 	  cost =1;
@@ -286,7 +286,7 @@ void RangeLikelihood::compute_scores(int cols, int rows,
 	}
 	scores[row/row_height * cols + col/col_width] += log_lhood;	
       }else if (which_cost_function==4){
-	  float disparity_diff = abs( ( -0.7253/ref[col%col_width] +1.0360 ) -  depth_val);
+	  float disparity_diff = abs( ( -0.7253/ref[col%col_width] +1.0360 ) -  depth_val );
 	
 	  int top_lup = (int) ceil(disparity_diff*300 ); // has resulution of 0.001m
 	  if (top_lup > 300){

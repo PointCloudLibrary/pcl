@@ -11,6 +11,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include <pcl/pcl_macros.h>
+//#include <pcl/win32_macros.h>
 
 #include "camera.hpp"
 #include "model.hpp"
