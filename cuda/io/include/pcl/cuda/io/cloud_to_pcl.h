@@ -40,7 +40,7 @@
 
 #include "pcl/cuda/point_cloud.h"
 
-#include <pcl/pcl_macros.h>
+#include <pcl/pcl_exports.h>
 
 namespace pcl
 {

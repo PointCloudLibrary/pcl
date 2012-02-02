@@ -35,7 +35,7 @@
  *
  */
 
-#include <pcl/pcl_macros.h>
+#include <pcl/pcl_exports.h>
 
 #include <pcl/cuda/point_cloud.h>
 //#include <pcl/cuda/segmentation/connected_components.h>
@@ -88,11 +88,11 @@ namespace pcl
       //int** stencils = new int*[inlier_stencils.size()];
       thrust::host_vector<int*> stencils_host (inlier_stencils.size ());
       for (int i = 0; i < inlier_stencils.size (); ++i)
-        stencils_host[i] = thrust::raw_pointer_cast<int> (&(*inlier_stencils[i])[0]);
+        stencils_host[i] = thrust::raw_pointer_cast(&(*inlier_stencils[i])[0]);
         //stencils_host[i] = thrust::raw_pointer_cast<int> (&(*inlier_stencils[i])[0]);
 
       typename Storage<int*>::type stencils_storage = stencils_host;
-      int** stencils = thrust::raw_pointer_cast<int*> (&stencils_storage[0]);
+      int** stencils = thrust::raw_pointer_cast(&stencils_storage[0]);
 
       thrust::counting_iterator<int> first (0);
       thrust::counting_iterator<int> last = first + region_mask.size ();

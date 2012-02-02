@@ -35,13 +35,14 @@
  *
  */
 
-#include <pcl/pcl_macros.h>
+#include <pcl/pcl_exports.h>
 
 #include "pcl/cuda/io/debayering.h"
 #include <thrust/sequence.h>
 #include <iostream>
 #include <pcl/cuda/time_cpu.h>
 #include <thrust/device_ptr.h>
+#include <thrust/copy.h>
 
 #define ABS(x) ((x)>0)?(x):(-(x))
 namespace pcl

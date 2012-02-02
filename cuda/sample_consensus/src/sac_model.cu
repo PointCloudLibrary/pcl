@@ -39,7 +39,7 @@
 # define WIN32_LEAN_AND_MEAN
 #endif
 
-#include <pcl/pcl_macros.h>
+#include <pcl/pcl_exports.h>
 
 #include "pcl/cuda/sample_consensus/sac_model.h"
 #include "pcl/cuda/time_gpu.h"

@@ -41,7 +41,7 @@
 # include <windows.h>
 #endif
 
-#include <pcl/pcl_macros.h>
+#include <pcl/pcl_exports.h>
 
 #include "pcl/cuda/sample_consensus/multi_ransac.h"
 #include "pcl/cuda/time_gpu.h"

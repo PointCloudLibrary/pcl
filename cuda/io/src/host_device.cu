@@ -38,7 +38,7 @@
 #include <pcl/cuda/point_cloud.h>
 #include "pcl/cuda/io/host_device.h"
 
-#include <pcl/pcl_macros.h>
+#include <pcl/pcl_exports.h>
 
 namespace pcl
 {

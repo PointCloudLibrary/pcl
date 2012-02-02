@@ -45,6 +45,8 @@
 //#include <sensor_msgs/CameraInfo.h>
 //#include <sensor_msgs/Image.h>
 
+#include <boost/cstdint.hpp>
+
 namespace pcl
 {
 namespace cuda
@@ -113,7 +115,7 @@ namespace cuda
                bool downsample = false, int stride = 2, int smoothing_nr_iterations = 0, int smoothing_filter_size = 2);
 
       template <template <typename> class Storage> void
-      compute (const uint16_t* depth_image,
+      compute (const boost::uint16_t* depth_image,
                const OpenNIRGB* rgb_image,
                int width, int height,
                float constant,

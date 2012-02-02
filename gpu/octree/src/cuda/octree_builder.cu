@@ -342,6 +342,7 @@ void pcl::device::OctreeImpl::build()
             PointType atmax, atmin;
             atmax.x = atmax.y = atmax.z = FLT_MAX;
             atmin.x = atmin.y = atmin.z = -FLT_MAX;
+            atmax.w = atmin.w = 0;
 
             //ScopeTimer timer("reduce"); 
             PointType minp = thrust::reduce(beg, end, atmax, SelectMinPoint<PointType>());

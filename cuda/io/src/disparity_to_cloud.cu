@@ -44,6 +44,7 @@
 #include <pcl/io/openni_camera/openni_depth_image.h>
 
 #include <thrust/iterator/constant_iterator.h>
+#include <thrust/copy.h>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -183,7 +184,7 @@ ComputeXYZRGB::operator () (const Tuple &t)
 
 //////////////////////////////////////////////////////////////////////////
 template <template <typename> class Storage> void
-DisparityToCloud::compute (const uint16_t* depth_image,
+DisparityToCloud::compute (const boost::uint16_t* depth_image,
                            const OpenNIRGB* rgb_image,
                            int width, int height,
                            float constant,
@@ -215,17 +216,19 @@ DisparityToCloud::compute (const uint16_t* depth_image,
   {
     typename Storage<float3>::type disp_helper_map (output_size);
 
+    float* depth_ptr = raw_pointer_cast(&depth[0]);
+
     transform (counting_iterator<int>(0),
                counting_iterator<int>(0) + output_size,
                disp_helper_map.begin (), 
-               DisparityHelperMap (raw_pointer_cast<float>(&depth[0]), width, height, smoothing_filter_size, baseline, 1.0f/constant, disp_thresh));
+               DisparityHelperMap (depth_ptr, width, height, smoothing_filter_size, baseline, 1.0f/constant, disp_thresh));
 
     for (int iter = 0; iter < smoothing_nr_iterations; iter++)
     {
       transform (
           make_zip_iterator (make_tuple (depth.begin (), counting_iterator<int>(0))),
           make_zip_iterator (make_tuple (depth.begin (), counting_iterator<int>(0))) + output_size,
-          depth.begin (), DisparityClampedSmoothing (raw_pointer_cast<float>(&depth[0]), raw_pointer_cast<float3>(&disp_helper_map[0]), width, height, smoothing_filter_size));
+          depth.begin (), DisparityClampedSmoothing (raw_pointer_cast(&depth[0]), raw_pointer_cast(&disp_helper_map[0]), width, height, smoothing_filter_size));
     }
 
     // Send the data to the device
@@ -354,14 +357,14 @@ DisparityToCloud::compute (const boost::shared_ptr<openni_wrapper::DepthImage>& 
     transform (counting_iterator<int>(0),
                counting_iterator<int>(0) + output_size,
                disp_helper_map.begin (), 
-               DisparityHelperMap (thrust::raw_pointer_cast<float>(&depth[0]), output->width, output->height, smoothing_filter_size, baseline, 1.0f/constant, disp_thresh));
+               DisparityHelperMap (thrust::raw_pointer_cast(&depth[0]), output->width, output->height, smoothing_filter_size, baseline, 1.0f/constant, disp_thresh));
 
     for (int iter = 0; iter < smoothing_nr_iterations; iter++)
     {
       transform (
           make_zip_iterator (make_tuple (depth.begin (), counting_iterator<int>(0))),
           make_zip_iterator (make_tuple (depth.begin (), counting_iterator<int>(0))) + output_size,
-          depth.begin (), DisparityClampedSmoothing (raw_pointer_cast<float>(&depth[0]), raw_pointer_cast<float3>(&disp_helper_map[0]), output->width, output->height, smoothing_filter_size));
+          depth.begin (), DisparityClampedSmoothing (raw_pointer_cast(&depth[0]), raw_pointer_cast(&disp_helper_map[0]), output->width, output->height, smoothing_filter_size));
     }
 
     // Send the data to the device
@@ -509,14 +512,14 @@ DisparityToCloud::compute<Device> (const boost::shared_ptr<openni_wrapper::Depth
                                      PointCloudAOS<Device>::Ptr &output,
                                      bool downsample, int stridem, int, int);
 template PCL_EXPORTS void
-DisparityToCloud::compute<Host> (const uint16_t* depth_image,
+DisparityToCloud::compute<Host> (const boost::uint16_t* depth_image,
                                  const OpenNIRGB* rgb_image,
                                  int width, int height,
                                  float constant,
                                  typename PointCloudAOS<Host>::Ptr &output,
                                  int smoothing_nr_iterations, int smoothing_filter_size);
 template PCL_EXPORTS void
-DisparityToCloud::compute<Device> (const uint16_t* depth_image,
+DisparityToCloud::compute<Device> (const boost::uint16_t* depth_image,
                                    const OpenNIRGB* rgb_image,
                                    int width, int height,
                                    float constant,

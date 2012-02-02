@@ -35,7 +35,7 @@
  *
  */
 
-#include <pcl/pcl_macros.h>
+#include <pcl/pcl_exports.h>
 
 #include <pcl/cuda/sample_consensus/sac_model_1point_plane.h>
 #include <pcl/cuda/common/eigen.h>

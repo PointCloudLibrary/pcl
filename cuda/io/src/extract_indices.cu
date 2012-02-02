@@ -35,7 +35,7 @@
  *
  */
 
-#include <pcl/pcl_macros.h>
+#include <pcl/pcl_exports.h>
 
 #include "pcl/cuda/point_cloud.h"
 //#include "pcl/cuda/io/extract_indices.h"
@@ -172,7 +172,7 @@ void colorCloud  (typename PointCloudAOS<Storage>::Ptr &input,
 {
   thrust::transform (thrust::make_zip_iterator(thrust::make_tuple (input->points.begin(), thrust::counting_iterator<int>(0))),
                      thrust::make_zip_iterator(thrust::make_tuple (input->points.begin(), thrust::counting_iterator<int>(0))) + input->width * input->height,
-                     input->points.begin (), ColorCloudFromImage (thrust::raw_pointer_cast<char4>(&colors[0])));
+                     input->points.begin (), ColorCloudFromImage (thrust::raw_pointer_cast(&colors[0])));
 }
 
 

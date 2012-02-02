@@ -13,7 +13,7 @@ PCL_SET_SUBSYS_INCLUDE_DIR(${SUBSYS_NAME} ${SUBSYS_PATH})
 
 
 if (build)
-    find_package(OpenCV)
+    find_package(OpenCV QUIET)
 
     set(incs
         include/pcl/cuda/segmentation/connected_components.h

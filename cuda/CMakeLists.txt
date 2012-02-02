@@ -6,7 +6,7 @@ set(SUBSYS_DEPS )
 
 # Find CUDA
 set(CUDA_FIND_QUIETLY TRUE)
-find_package(CUDA)
+find_package(CUDA 4.1)
 if(NOT CUDA_FOUND)
     set(DEFAULT FALSE)
     set(REASON "CUDA was not found.")
@@ -41,7 +41,7 @@ if(BUILD_CUDA)
         include(${PCL_SOURCE_DIR}/cmake/CudaComputeTargetFlags.cmake)                  
         APPEND_TARGET_ARCH_FLAGS()
         
-		string(REPLACE "-std=gnu++0x" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+	string(REPLACE "-std=gnu++0x" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 		
         collect_subproject_directory_names(${CMAKE_CURRENT_SOURCE_DIR} "CMakeLists.txt" PCL_CUDA_MODULES_NAMES PCL_CUDA_MODULES_DIRS)
         set(PCL_CUDA_MODULES_NAMES_UNSORTED ${PCL_CUDA_MODULES_NAMES})

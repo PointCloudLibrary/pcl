@@ -40,7 +40,7 @@
 
 #include <pcl/io/openni_camera/openni_image.h>
 #include <thrust/tuple.h>
-#include <pcl/pcl_macros.h>
+#include <pcl/pcl_exports.h>
 
 namespace pcl
 {
