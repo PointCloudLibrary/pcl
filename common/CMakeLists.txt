@@ -27,6 +27,7 @@ if(build)
         include/pcl/correspondence.h
         include/pcl/exceptions.h
         include/pcl/pcl_base.h
+        include/pcl/pcl_exports.h
         include/pcl/pcl_macros.h
         include/pcl/point_cloud.h
         include/pcl/point_traits.h
