@@ -61,14 +61,13 @@ pcl::solvePlaneParameters (const Eigen::Matrix3f &covariance_matrix,
                            float &nx, float &ny, float &nz, float &curvature)
 {
   // Avoid getting hung on Eigen's optimizers
-  for (int i = 0; i < 3; ++i)
-    for (int j = 0; j < 3; ++j)
-      if (!pcl_isfinite (covariance_matrix (i, j)))
-      {
-        //PCL_WARN ("[pcl::solvePlaneParameteres] Covariance matrix has NaN/Inf values!\n");
-        nx = ny = nz = curvature = std::numeric_limits<float>::quiet_NaN ();
-        return;
-      }
+//  for (int i = 0; i < 9; ++i)
+//    if (!pcl_isfinite (covariance_matrix.coeff (i)))
+//    {
+//      //PCL_WARN ("[pcl::solvePlaneParameteres] Covariance matrix has NaN/Inf values!\n");
+//      nx = ny = nz = curvature = std::numeric_limits<float>::quiet_NaN ();
+//      return;
+//    }
   // Extract the smallest eigenvalue and its eigenvector
   EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value = -1;
   EIGEN_ALIGN16 Eigen::Vector3f eigen_vector;
