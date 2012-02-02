@@ -4,7 +4,7 @@ set(SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree fe
 set(DEFAULT OFF)
 set(REASON "")
 
-if(VTK_FOUND AND VTK_USE_QVTK AND Boost_MPI_FOUND AND Boost_SERIALIZATION_FOUND)
+if(VTK_FOUND AND VTK_USE_QVTK AND ${Boost_MPI_FOUND} AND ${Boost_SERIALIZATION_FOUND})
     set(DEFAULT TRUE)
     set(REASON)
     set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
@@ -18,11 +18,11 @@ elseif(NOT VTK_USE_QVTK)
 elseif(NOT Boost_MPI_FOUND OR NOT Boost_SERIALIZATION_FOUND)
     set(DEFAULT FALSE)
     set(REASON "Boost_MPI or Boost_serialization was not found.")
-endif(VTK_FOUND AND VTK_USE_QVTK AND Boost_MPI_FOUND AND Boost_SERIALIZATION_FOUND)
+endif(VTK_FOUND AND VTK_USE_QVTK AND ${Boost_MPI_FOUND} AND ${Boost_SERIALIZATION_FOUND})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk)
+PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk boost_mpi boost_serialization)
 
 if (ANDROID_NDK)
   set (build FALSE)
