@@ -13,8 +13,8 @@
 #include <pcl/pcl_macros.h>
 //#include <pcl/win32_macros.h>
 
-#include "camera.hpp"
-#include "model.hpp"
+#include "pcl/simulation/camera.h"
+#include "pcl/simulation/model.h"
 
 namespace pcl
 {

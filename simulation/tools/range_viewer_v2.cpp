@@ -19,10 +19,10 @@
 #endif
 #include <GL/gl.h>
 
-#include "pcl/simulation/camera.hpp"
-#include "pcl/simulation/model.hpp"
-#include "pcl/simulation/scene.hpp"
-#include "pcl/simulation/range_likelihood.hpp"
+#include "pcl/simulation/camera.h"
+#include "pcl/simulation/model.h"
+#include "pcl/simulation/scene.h"
+#include "pcl/simulation/range_likelihood.h"
 
 #include <pcl/io/vtk_lib_io.h>
 

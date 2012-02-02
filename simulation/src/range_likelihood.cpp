@@ -3,7 +3,7 @@
 
 
 #include <pcl/common/time.h>
-#include "pcl/simulation/range_likelihood.hpp"
+#include "pcl/simulation/range_likelihood.h"
 
 #define DO_TIMING 0
 

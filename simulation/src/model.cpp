@@ -1,4 +1,4 @@
-#include "pcl/simulation/model.hpp"
+#include "pcl/simulation/model.h"
 
 namespace pcl
 {

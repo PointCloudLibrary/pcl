@@ -1,8 +1,8 @@
 #ifndef PCL_RANGE_LIKELIHOOD
 #define PCL_RANGE_LIKELIHOOD
 
-#include "camera.hpp"
-#include "scene.hpp"
+#include "pcl/simulation/camera.h"
+#include "pcl/simulation/scene.h"
 
 //#include <math.h>
 #include <Eigen/StdVector>

@@ -5,7 +5,7 @@
  *      Author: hordurj
  */
 
-#include <pcl/simulation/glsl_shader.hpp>
+#include <pcl/simulation/glsl_shader.h>
 #include <iostream>
 #include <fstream>
 

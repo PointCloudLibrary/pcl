@@ -18,10 +18,10 @@ if(build)
         )
 
     set(incs 
-        include/pcl/${SUBSYS_NAME}/camera.hpp
-        include/pcl/${SUBSYS_NAME}/model.hpp
-        include/pcl/${SUBSYS_NAME}/range_likelihood.hpp
-        include/pcl/${SUBSYS_NAME}/scene.hpp
+        include/pcl/${SUBSYS_NAME}/camera.h
+        include/pcl/${SUBSYS_NAME}/model.h
+        include/pcl/${SUBSYS_NAME}/range_likelihood.h
+        include/pcl/${SUBSYS_NAME}/scene.h
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})

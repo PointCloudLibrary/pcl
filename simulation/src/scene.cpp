@@ -5,7 +5,7 @@
  *      Author: Hordur Johannsson
  */
 
-#include "pcl/simulation/scene.hpp"
+#include "pcl/simulation/scene.h"
 
 namespace pcl
 {
