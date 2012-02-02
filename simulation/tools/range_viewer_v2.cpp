@@ -2,6 +2,8 @@
 #include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
 #include <cfloat>
+// define the following in order to eliminate the deprecated headers warning
+#define VTK_EXCLUDE_STRSTREAM_HEADERS
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/visualization/window.h>

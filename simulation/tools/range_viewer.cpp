@@ -1,5 +1,7 @@
 #include <Eigen/Geometry>
 #include <pcl/common/common.h>
+// define the following in order to eliminate the deprecated headers warning
+#define VTK_EXCLUDE_STRSTREAM_HEADERS
 #include <pcl/io/pcd_io.h>
 #include <cfloat>
 #include <pcl/visualization/point_cloud_handlers.h>
