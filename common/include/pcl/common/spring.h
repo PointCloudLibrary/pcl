@@ -110,7 +110,7 @@ namespace pcl
       
     private:
       /** init computation checking params and copying point cloud if necessary
-	* \param[out] output the output point cloud
+        * \param[out] output the output point cloud
         */
       inline bool
       initCompute (PointCloud& output);
@@ -122,7 +122,7 @@ namespace pcl
         * and right columns of the original point cloud.
         * If the policy is set to duplicate then the top and bottom rows 
         * and/or the right and left columns will be duplicated.
-	* \param[out] output the output point cloud
+        * \param[out] output the output point cloud
         */
       inline void
       expand (PointCloud& output)
@@ -148,7 +148,7 @@ namespace pcl
 
       /** expand a point cloud in the set direction.
         * \param[in] val the point value to be used to fill.
-	* \param[out] output the output point cloud
+        * \param[out] output the output point cloud
         */
       inline void
       expand (const PointT& val, PointCloud& output)
@@ -167,7 +167,7 @@ namespace pcl
         *   from top and bottom.
         * - If direction is columns or both then \a v_amount columns are deleted
         *   from left and right.
-	* \param[out] output the output point cloud
+        * \param[out] output the output point cloud
         */
       inline void
       shrink (PointCloud& output)
@@ -186,7 +186,7 @@ namespace pcl
         * top and the bottom of a point cloud and filling them with 
         * custom values.
         * \param[in] val the point value to be insterted
-	* \param[out] output the output point cloud
+        * \param[out] output the output point cloud
         */
       void 
       expandRows (const PointT& val, PointCloud& output);
@@ -194,38 +194,38 @@ namespace pcl
         * the right and the left of a point cloud and filling them with 
         * custom values.
         * \param[in] val the point value to be insterted
-	* \param[out] output the output point cloud
+        * \param[out] output the output point cloud
         */
       void 
       expandColumns (const PointT& val, PointCloud& output);
       /** expand point cloud duplicating the top and bottom rows \a r_amount_ times.
-	* \param[out] output the output point cloud
+        * \param[out] output the output point cloud
         */
       void 
       expandRowsDuplicate (PointCloud& output);
       /** expand point cloud duplicating the right and left columns \a c_amount_ 
         * times.
-	* \param[out] output the output point cloud
+        * \param[out] output the output point cloud
         */
       void 
       expandColumnsDuplicate (PointCloud& output);
       /** expand point cloud mirroring \a r_amount_ top and bottom rows. 
-	* \param[out] output the output point cloud
+        * \param[out] output the output point cloud
         */
       void 
       expandRowsMirror (PointCloud& output);
       /** expand point cloud mirroring \a c_amount_ right and left columns. 
-	* \param[out] output the output point cloud
+        * \param[out] output the output point cloud
         */
       void 
       expandColumnsMirror (PointCloud& output);
       /** delete \a r_amount_ rows in top and bottom of point cloud 
-	* \param[out] output the output point cloud
+        * \param[out] output the output point cloud
         */
       inline void
       deleteRows (PointCloud& output);
       /** delete \a c_amount_ columns in top and bottom of point cloud 
-	* \param[out] output the output point cloud
+        * \param[out] output the output point cloud
         */
       inline void
       deleteCols (PointCloud& output);
