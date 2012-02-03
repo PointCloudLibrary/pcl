@@ -4,7 +4,11 @@ set(SUBSYS_DEPS common octree)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk libusb-1.0)
+if(WIN32)
+    PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk)
+else(WIN32)
+    PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk libusb-1.0)
+endif(WIN32)
 
 PCL_ADD_DOC(${SUBSYS_NAME})
 
