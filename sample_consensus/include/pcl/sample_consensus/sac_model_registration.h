@@ -226,6 +226,12 @@ namespace pcl
 
         computeMeanAndCovarianceMatrix (*cloud, covariance_matrix, xyz_centroid);
 
+        // Check if the covariance matrix is finite or not.
+        for (int i = 0; i < 3; ++i)
+          for (int j = 0; j < 3; ++j)
+            if (!pcl_isfinite (covariance_matrix.coeffRef (i, j)))
+              PCL_ERROR ("[pcl::SampleConsensusModelRegistration::computeSampleDistanceThreshold] Covariance matrix has NaN values! Is the input cloud finite?\n");
+
         Eigen::Vector3f eigen_values;
         pcl::eigen33 (covariance_matrix, eigen_values);
 
@@ -247,6 +253,12 @@ namespace pcl
         Eigen::Vector4f xyz_centroid;
         Eigen::Matrix3f covariance_matrix;
         computeMeanAndCovarianceMatrix (*cloud, indices, covariance_matrix, xyz_centroid);
+
+        // Check if the covariance matrix is finite or not.
+        for (int i = 0; i < 3; ++i)
+          for (int j = 0; j < 3; ++j)
+            if (!pcl_isfinite (covariance_matrix.coeffRef (i, j)))
+              PCL_ERROR ("[pcl::SampleConsensusModelRegistration::computeSampleDistanceThreshold] Covariance matrix has NaN values! Is the input cloud finite?\n");
 
         Eigen::Vector3f eigen_values;
         pcl::eigen33 (covariance_matrix, eigen_values);
