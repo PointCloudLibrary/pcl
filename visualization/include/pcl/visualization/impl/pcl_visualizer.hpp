@@ -1042,11 +1042,8 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     const std::string &id,
     int viewport)
 {
-  if (vertices.empty ())
-  {
-    pcl::console::print_error ("[addPolygonMesh] No vertices given!\n");
+  if (vertices.empty () || cloud->points.empty ())
     return (false);
-  }
 
   CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
   if (am_it != cloud_actor_map_->end ())
@@ -1084,7 +1081,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
       if (!isFinite (cloud->points[i]))
         continue;
 
-      lookup [i] = j;
+      lookup[i] = j;
       memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
       j++;
       ptr += 3;
@@ -1125,7 +1122,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
         *cell++ = n_points;
         //cell_array->InsertNextCell (n_points);
         for (size_t j = 0; j < n_points; j++, ++idx)
-          *cell++ = lookup[vertices[i].vertices[j]];
+          *cell++ = vertices[i].vertices[j];
           //cell_array->InsertCellPoint (vertices[i].vertices[j]);
       }
     }
@@ -1163,7 +1160,6 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
 
     createActorFromVTKDataSet (poly_grid, actor, false);
   }
-
   actor->GetProperty ()->SetRepresentationToSurface ();
   actor->GetProperty ()->BackfaceCullingOn ();
   actor->GetProperty ()->EdgeVisibilityOff ();
