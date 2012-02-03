@@ -86,7 +86,7 @@ namespace pcl
         : FileReader ()
         , origin_ (Eigen::Vector4f::Zero ())
         , orientation_ (Eigen::Matrix3f::Zero ())
-        , range_grid_(0)
+        , range_grid_ (0)
       {}
 
       ~PLYReader () { delete range_grid_; }
@@ -173,7 +173,7 @@ namespace pcl
         * \param[in] message information message
         */
       void 
-      infoCallback(const std::string& filename, std::size_t line_number, const std::string& message)
+      infoCallback (const std::string& filename, std::size_t line_number, const std::string& message)
       {
         PCL_DEBUG ("[pcl::PLYReader] %s:%lu: %s\n", filename.c_str (), line_number, message.c_str ());
       }
@@ -184,7 +184,7 @@ namespace pcl
         * \param[in] message warning message
         */
       void 
-      warningCallback(const std::string& filename, std::size_t line_number, const std::string& message)
+      warningCallback (const std::string& filename, std::size_t line_number, const std::string& message)
       {
         PCL_WARN ("[pcl::PLYReader] %s:%lu: %s\n", filename.c_str (), line_number, message.c_str ());
       }
@@ -195,7 +195,7 @@ namespace pcl
         * \param[in] message error message
         */
       void 
-      errorCallback(const std::string& filename, std::size_t line_number, const std::string& message)
+      errorCallback (const std::string& filename, std::size_t line_number, const std::string& message)
       {
         PCL_ERROR ("[pcl::PLYReader] %s:%lu: %s\n", filename.c_str (), line_number, message.c_str ());
       }
@@ -204,7 +204,7 @@ namespace pcl
         * \param[in] element_name element name
         * \param[in] count number of instances
         */
-      std::tr1::tuple<std::tr1::function<void()>, std::tr1::function<void()> > 
+      std::tr1::tuple<std::tr1::function<void ()>, std::tr1::function<void ()> > 
       elementDefinitionCallback (const std::string& element_name, std::size_t count);
       
       bool
@@ -403,7 +403,7 @@ namespace pcl
   {
     public:
       ///Constructor
-      PLYWriter () : mask_ (0) {};
+      PLYWriter () : FileWriter () {};
 
       ///Destructor
       ~PLYWriter () {};
@@ -587,15 +587,6 @@ namespace pcl
                                       const sensor_msgs::PointCloud2 &cloud, 
                                       std::ostringstream& fs,
                                       int& nb_valid_points);
-
-      /** \brief Construct a mask from a list of fields.
-        * \param[in] fields_list the list of fields to construct a mask from
-        */
-      void 
-      setMaskFromFieldsList (const std::string& fields_list);
-
-      /** \brief Internally used mask. */
-      int mask_;
   };
 
   namespace io

@@ -111,143 +111,143 @@ pcl::PLYReader::appendFloatProperty (const std::string& name, const size_t& size
 
 namespace pcl
 {
-template <> 
-std::tr1::function<void (pcl::io::ply::float32)> 
-PLYReader::scalarPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
-{
-  if (element_name == "vertex")
+  template <> 
+  std::tr1::function<void (pcl::io::ply::float32)> 
+  PLYReader::scalarPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
   {
-    appendFloatProperty (property_name, 1);
-    return (std::tr1::bind (&pcl::PLYReader::vertexFloatPropertyCallback, this, _1));
-  }
-  else if (element_name == "camera")
-  {
-    if (property_name == "view_px")
+    if (element_name == "vertex")
     {
-      return std::tr1::bind (&pcl::PLYReader::originXCallback, this, _1);
-    } 
-    else if (property_name == "view_py")
-    {
-      return std::tr1::bind (&pcl::PLYReader::originYCallback, this, _1);
-    } 
-    else if (property_name == "view_pz")
-    {
-      return std::tr1::bind (&pcl::PLYReader::originZCallback, this, _1);
+      appendFloatProperty (property_name, 1);
+      return (std::tr1::bind (&pcl::PLYReader::vertexFloatPropertyCallback, this, _1));
     }
-    else if (property_name == "x_axisx")
+    else if (element_name == "camera")
     {
-      return std::tr1::bind (&pcl::PLYReader::orientationXaxisXCallback, this, _1);
-    } 
-    else if (property_name == "x_axisy")
-    {
-      return std::tr1::bind (&pcl::PLYReader::orientationXaxisYCallback, this, _1);
-    } 
-    else if (property_name == "x_axisz")
-    {
-      return std::tr1::bind (&pcl::PLYReader::orientationXaxisZCallback, this, _1);
-    }    
-    else if (property_name == "y_axisx")
-    {
-      return std::tr1::bind (&pcl::PLYReader::orientationYaxisXCallback, this, _1);
-    } 
-    else if (property_name == "y_axisy")
-    {
-      return std::tr1::bind (&pcl::PLYReader::orientationYaxisYCallback, this, _1);
-    } 
-    else if (property_name == "y_axisz")
-    {
-      return std::tr1::bind (&pcl::PLYReader::orientationYaxisZCallback, this, _1);
+      if (property_name == "view_px")
+      {
+        return std::tr1::bind (&pcl::PLYReader::originXCallback, this, _1);
+      } 
+      else if (property_name == "view_py")
+      {
+        return std::tr1::bind (&pcl::PLYReader::originYCallback, this, _1);
+      } 
+      else if (property_name == "view_pz")
+      {
+        return std::tr1::bind (&pcl::PLYReader::originZCallback, this, _1);
+      }
+      else if (property_name == "x_axisx")
+      {
+        return std::tr1::bind (&pcl::PLYReader::orientationXaxisXCallback, this, _1);
+      } 
+      else if (property_name == "x_axisy")
+      {
+        return std::tr1::bind (&pcl::PLYReader::orientationXaxisYCallback, this, _1);
+      } 
+      else if (property_name == "x_axisz")
+      {
+        return std::tr1::bind (&pcl::PLYReader::orientationXaxisZCallback, this, _1);
+      }    
+      else if (property_name == "y_axisx")
+      {
+        return std::tr1::bind (&pcl::PLYReader::orientationYaxisXCallback, this, _1);
+      } 
+      else if (property_name == "y_axisy")
+      {
+        return std::tr1::bind (&pcl::PLYReader::orientationYaxisYCallback, this, _1);
+      } 
+      else if (property_name == "y_axisz")
+      {
+        return std::tr1::bind (&pcl::PLYReader::orientationYaxisZCallback, this, _1);
+      }
+      else if (property_name == "z_axisx")
+      {
+        return std::tr1::bind (&pcl::PLYReader::orientationZaxisXCallback, this, _1);
+      } 
+      else if (property_name == "z_axisy")
+      {
+        return std::tr1::bind (&pcl::PLYReader::orientationZaxisYCallback, this, _1);
+      } 
+      else if (property_name == "z_axisz")
+      {
+        return std::tr1::bind (&pcl::PLYReader::orientationZaxisZCallback, this, _1);
+      }
+      else
+      {
+        return (0);
+      }
     }
-    else if (property_name == "z_axisx")
-    {
-      return std::tr1::bind (&pcl::PLYReader::orientationZaxisXCallback, this, _1);
-    } 
-    else if (property_name == "z_axisy")
-    {
-      return std::tr1::bind (&pcl::PLYReader::orientationZaxisYCallback, this, _1);
-    } 
-    else if (property_name == "z_axisz")
-    {
-      return std::tr1::bind (&pcl::PLYReader::orientationZaxisZCallback, this, _1);
-    }
-    else
+    else 
     {
       return (0);
     }
   }
-  else 
+  
+  template <> std::tr1::function<void (pcl::io::ply::uint8)> 
+  PLYReader::scalarPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
   {
-    return (0);
-  }
-}
-
-template <> std::tr1::function<void (pcl::io::ply::uint8)> 
-PLYReader::scalarPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
-{
-  if (element_name == "vertex") 
-  {
-    if ((property_name == "red") || (property_name == "green") || (property_name == "blue"))
+    if (element_name == "vertex") 
     {
-      if (property_name == "red")
-        appendFloatProperty ("rgb");
-      return std::tr1::bind (&pcl::PLYReader::vertexColorCallback, this, property_name, _1);
-    }
-    else if (property_name == "intensity")
-    {
-      appendFloatProperty (property_name);
-      return std::tr1::bind (&pcl::PLYReader::vertexIntensityCallback, this, _1);
+      if ((property_name == "red") || (property_name == "green") || (property_name == "blue"))
+      {
+        if (property_name == "red")
+          appendFloatProperty ("rgb");
+        return std::tr1::bind (&pcl::PLYReader::vertexColorCallback, this, property_name, _1);
+      }
+      else if (property_name == "intensity")
+      {
+        appendFloatProperty (property_name);
+        return std::tr1::bind (&pcl::PLYReader::vertexIntensityCallback, this, _1);
+      }
+      else
+        return (0);
     }
     else
       return (0);
   }
-  else
-    return (0);
-}
-
-template <> std::tr1::function<void (pcl::io::ply::int32)> 
-PLYReader::scalarPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
-{
-  if (element_name == "camera")
+  
+  template <> std::tr1::function<void (pcl::io::ply::int32)> 
+  PLYReader::scalarPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
   {
-    if (property_name == "viewportx")
+    if (element_name == "camera")
     {
-      return std::tr1::bind (&pcl::PLYReader::cloudWidthCallback, this, _1);
-    }
-    else if (property_name == "viewporty")
-    {
-      return std::tr1::bind (&pcl::PLYReader::cloudHeightCallback, this, _1);
+      if (property_name == "viewportx")
+      {
+        return std::tr1::bind (&pcl::PLYReader::cloudWidthCallback, this, _1);
+      }
+      else if (property_name == "viewporty")
+      {
+        return std::tr1::bind (&pcl::PLYReader::cloudHeightCallback, this, _1);
+      }
+      else
+      {
+        return (0);
+      }
     }
     else
-    {
       return (0);
+  }
+  
+  template <>
+  std::tr1::tuple<std::tr1::function<void (pcl::io::ply::uint8)>, std::tr1::function<void (pcl::io::ply::int32)>, std::tr1::function<void ()> > 
+  pcl::PLYReader::listPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
+  {
+    if ((element_name == "range_grid") && (property_name == "vertex_indices")) {
+      return std::tr1::tuple<std::tr1::function<void (pcl::io::ply::uint8)>, std::tr1::function<void (pcl::io::ply::int32)>, std::tr1::function<void ()> > (
+        std::tr1::bind (&pcl::PLYReader::rangeGridVertexIndicesBeginCallback, this, _1),
+        std::tr1::bind (&pcl::PLYReader::rangeGridVertexIndicesElementCallback, this, _1),
+        std::tr1::bind (&pcl::PLYReader::rangeGridVertexIndicesEndCallback, this)
+      );
+    }
+    // else if ((element_name == "face") && (property_name == "vertex_indices")) {
+    // return std::tr1::tuple<std::tr1::function<void (pcl::io::ply::uint8)>, std::tr1::function<void (pcl::io::ply::int32)>, std::tr1::function<void ()> > (
+    //     std::tr1::bind (&pcl::PLYReader::faceVertexIndicesBegin, this, _1),
+    //     std::tr1::bind (&pcl::PLYReader::faceVertexIndicesElement, this, _1),
+    //     std::tr1::bind (&pcl::PLYReader::faceVertexIndicesEnd, this)
+    //   );
+    // } 
+    else {
+      return std::tr1::tuple<std::tr1::function<void (pcl::io::ply::uint8)>, std::tr1::function<void (pcl::io::ply::int32)>, std::tr1::function<void ()> > (0, 0, 0);
     }
   }
-  else
-    return (0);
-}
-
-template <>
-std::tr1::tuple<std::tr1::function<void (pcl::io::ply::uint8)>, std::tr1::function<void (pcl::io::ply::int32)>, std::tr1::function<void ()> > 
-pcl::PLYReader::listPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
-{
-  if ((element_name == "range_grid") && (property_name == "vertex_indices")) {
-    return std::tr1::tuple<std::tr1::function<void (pcl::io::ply::uint8)>, std::tr1::function<void (pcl::io::ply::int32)>, std::tr1::function<void ()> > (
-      std::tr1::bind (&pcl::PLYReader::rangeGridVertexIndicesBeginCallback, this, _1),
-      std::tr1::bind (&pcl::PLYReader::rangeGridVertexIndicesElementCallback, this, _1),
-      std::tr1::bind (&pcl::PLYReader::rangeGridVertexIndicesEndCallback, this)
-    );
-  }
-  // else if ((element_name == "face") && (property_name == "vertex_indices")) {
-  //   return std::tr1::tuple<std::tr1::function<void (pcl::io::ply::uint8)>, std::tr1::function<void (pcl::io::ply::int32)>, std::tr1::function<void ()> > (
-  //     std::tr1::bind (&pcl::PLYReader::faceVertexIndicesBegin, this, _1),
-  //     std::tr1::bind (&pcl::PLYReader::faceVertexIndicesElement, this, _1),
-  //     std::tr1::bind (&pcl::PLYReader::faceVertexIndicesEnd, this)
-  //   );
-  // } 
-  else {
-    return std::tr1::tuple<std::tr1::function<void (pcl::io::ply::uint8)>, std::tr1::function<void (pcl::io::ply::int32)>, std::tr1::function<void ()> > (0, 0, 0);
-  }
-}
 }
 
 void 
