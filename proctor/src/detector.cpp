@@ -57,8 +57,6 @@ namespace pcl
       timer.stop(COMPUTE_FEATURES_TESTING);
 
       memset(classifier, 0, Config::num_models * sizeof(*classifier));
-      clock_t totalTime = 0;
-      float time = 0;
 
       StopWatch s;
 

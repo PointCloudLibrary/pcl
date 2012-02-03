@@ -90,7 +90,6 @@ namespace pcl
         cout << "scanned model " << truth_id << endl;
 
         timer.start();
-        int guess;
         try {
           Scene test_scene(truth_id, test_cloud);
           std::string guessed_id = detector.query(test_scene, classifier[ni], registration[ni]);
@@ -98,11 +97,9 @@ namespace pcl
           guesses_for_id[guessed_id] += 1;
           confusion_matrix.increment(truth_id, guessed_id);
           cout << "detector guessed " << guessed_id << endl;
-          guess = 0;
         } catch (exception &e) {
           cout << "Detector exception" << endl;
           cout << e.what() << endl;
-          guess = 0;
           memset(classifier[ni], 0, sizeof(classifier[ni]));
           memset(registration[ni], 0, sizeof(registration[ni]));
         }
