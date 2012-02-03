@@ -79,7 +79,7 @@ class OpenNIPassthrough : public QMainWindow
 {
   Q_OBJECT
   public:
-    typedef pcl::PointCloud<pcl::PointXYZRGB> Cloud;
+    typedef pcl::PointCloud<pcl::PointXYZRGBA> Cloud;
     typedef Cloud::Ptr CloudPtr;
     typedef Cloud::ConstPtr CloudConstPtr;
 
@@ -99,7 +99,7 @@ class OpenNIPassthrough : public QMainWindow
     pcl::OpenNIGrabber& grabber_;
     std::string device_id_;
     CloudPtr cloud_pass_;
-    pcl::PassThrough<pcl::PointXYZRGB> pass_;
+    pcl::PassThrough<pcl::PointXYZRGBA> pass_;
 
   private:
     QMutex mtx_;

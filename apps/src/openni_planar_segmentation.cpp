@@ -186,9 +186,9 @@ main (int argc, char ** argv)
   pcl::console::parse_argument (argc, argv, "-thresh", threshold);
 
   pcl::OpenNIGrabber grabber (arg);
-  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
+  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba> ())
   {
-    OpenNIPlanarSegmentation<pcl::PointXYZRGB> v (arg, threshold);
+    OpenNIPlanarSegmentation<pcl::PointXYZRGBA> v (arg, threshold);
     v.run ();
   }
   else

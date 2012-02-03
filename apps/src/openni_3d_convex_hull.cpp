@@ -124,7 +124,7 @@ class OpenNI3DConvexHull
         // Render the data 
         if (new_cloud_ && cloud_hull_)
         {
-          viz.removeShape ("hull");
+          viz.removePointCloud ("hull");
           viz.addPolygonMesh<PointType> (cloud_hull_, vertices_, "hull");
         }
         new_cloud_ = false;
@@ -198,10 +198,10 @@ main (int argc, char ** argv)
   }
 
   pcl::OpenNIGrabber grabber ("");
-  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
+  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba> ())
   {
-    PCL_INFO ("PointXYZRGB mode enabled.\n");
-    OpenNI3DConvexHull<pcl::PointXYZRGB> v ("");
+    PCL_INFO ("PointXYZRGBA mode enabled.\n");
+    OpenNI3DConvexHull<pcl::PointXYZRGBA> v ("");
     v.run ();
   }
   else

@@ -63,7 +63,7 @@ do \
 class OpenNIUniformSampling
 {
   public:
-    typedef pcl::PointCloud<pcl::PointXYZRGB> Cloud;
+    typedef pcl::PointCloud<pcl::PointXYZRGBA> Cloud;
     typedef Cloud::Ptr CloudPtr;
     typedef Cloud::ConstPtr CloudConstPtr;
 
@@ -89,7 +89,7 @@ class OpenNIUniformSampling
       pass_.compute (*indices_);
       *cloud_  = *cloud;
       
-      pcl::copyPointCloud<pcl::PointXYZRGB, pcl::PointXYZ> (*cloud, indices_->points, *keypoints_);
+      pcl::copyPointCloud<pcl::PointXYZRGBA, pcl::PointXYZ> (*cloud, indices_->points, *keypoints_);
     }
 
     void
@@ -104,8 +104,8 @@ class OpenNIUniformSampling
 
       FPS_CALC ("visualization");
       viz.removePointCloud ("raw");
-      pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> color_handler (cloud_);
-      viz.addPointCloud<pcl::PointXYZRGB> (cloud_, color_handler, "raw");
+      pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBA> color_handler (cloud_);
+      viz.addPointCloud<pcl::PointXYZRGBA> (cloud_, color_handler, "raw");
 
       if (!viz.updatePointCloud<pcl::PointXYZ> (keypoints_, "keypoints"))
       {
@@ -134,7 +134,7 @@ class OpenNIUniformSampling
       interface->stop ();
     }
 
-    pcl::UniformSampling<pcl::PointXYZRGB> pass_;
+    pcl::UniformSampling<pcl::PointXYZRGBA> pass_;
     pcl::visualization::CloudViewer viewer;
     std::string device_id_;
     boost::mutex mtx_;

@@ -229,10 +229,10 @@ main (int argc, char ** argv)
   std::cout << "<Q,q> quit\n\n";
 
   pcl::OpenNIGrabber grabber ("");
-  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
+  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba> ())
   {
-    PCL_INFO ("PointXYZRGB mode enabled.\n");
-    OpenNIIntegralImageNormalEstimation<pcl::PointXYZRGB> v ("");
+    PCL_INFO ("PointXYZRGBA mode enabled.\n");
+    OpenNIIntegralImageNormalEstimation<pcl::PointXYZRGBA> v ("");
     v.run ();
   }
   else

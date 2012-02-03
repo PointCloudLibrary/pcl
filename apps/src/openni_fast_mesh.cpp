@@ -199,10 +199,10 @@ main (int argc, char ** argv)
   }
 
   pcl::OpenNIGrabber grabber ("");
-  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
+  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba> ())
   {
-    PCL_INFO ("PointXYZRGB mode enabled.\n");
-    OpenNIFastMesh<pcl::PointXYZRGB> v ("");
+    PCL_INFO ("PointXYZRGBA mode enabled.\n");
+    OpenNIFastMesh<pcl::PointXYZRGBA> v ("");
     v.run (argc, argv);
   }
   else

@@ -267,9 +267,9 @@ main(int argc, char ** argv)
   }
 
   pcl::OpenNIGrabber grabber(arg, depth_mode, image_mode);
-  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb > ())
+  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba> ())
   {
-    SimpleOpenNIViewer<pcl::PointXYZRGB> v(grabber);
+    SimpleOpenNIViewer<pcl::PointXYZRGBA> v(grabber);
     v.run();
   }
   else

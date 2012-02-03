@@ -73,8 +73,8 @@ template <typename PointType>
 class OpenNISegmentTracking
 {
 public:
-  //typedef pcl::PointXYZRGBNormal RefPointType;
-  typedef pcl::PointXYZRGB RefPointType;
+  //typedef pcl::PointXYZRGBANormal RefPointType;
+  typedef pcl::PointXYZRGBA RefPointType;
   //typedef pcl::PointXYZ RefPointType;
   typedef ParticleXYZRPY ParticleT;
   
@@ -425,7 +425,7 @@ public:
       point.x = cloud->points[i].x;
       point.y = cloud->points[i].y;
       point.z = cloud->points[i].z;
-      point.rgb = cloud->points[i].rgb;
+      point.rgba = cloud->points[i].rgba;
       // point.normal[0] = normals->points[i].normal[0];
       // point.normal[1] = normals->points[i].normal[1];
       // point.normal[2] = normals->points[i].normal[2];
@@ -706,9 +706,9 @@ main (int argc, char** argv)
   }
   
   // open kinect
-  OpenNISegmentTracking<pcl::PointXYZRGB> v (device_id, 8, downsampling_grid_size,
-                                             use_convex_hull,
-                                             visualize_non_downsample, visualize_particles,
-                                             use_fixed);
+  OpenNISegmentTracking<pcl::PointXYZRGBA> v (device_id, 8, downsampling_grid_size,
+                                              use_convex_hull,
+                                              visualize_non_downsample, visualize_particles,
+                                              use_fixed);
   v.run ();
 }

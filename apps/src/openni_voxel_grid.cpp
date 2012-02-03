@@ -130,7 +130,7 @@ class OpenNIVoxelGrid
       interface->stop ();
     }
 
-    pcl::ApproximateVoxelGrid<PointType> grid_;
+    pcl::VoxelGrid<PointType> grid_;
     pcl::visualization::CloudViewer viewer;
     std::string device_id_;
     boost::mutex mtx_;
@@ -178,9 +178,9 @@ main (int argc, char ** argv)
   PCL_INFO ("Using %f, %f, %f as a leaf size for VoxelGrid.\n", leaf_x, leaf_y, leaf_z);
 
   pcl::OpenNIGrabber grabber ("");
-  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
+  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba> ())
   {
-    OpenNIVoxelGrid<pcl::PointXYZRGB> v ("", field_name, min_v, max_v, leaf_x, leaf_y, leaf_z);
+    OpenNIVoxelGrid<pcl::PointXYZRGBA> v ("", field_name, min_v, max_v, leaf_x, leaf_y, leaf_z);
     v.run ();
   }
   else

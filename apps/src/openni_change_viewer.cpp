@@ -57,13 +57,13 @@ class OpenNIChangeViewer
     OpenNIChangeViewer (double resolution, int mode, int noise_filter)
       : viewer ("PCL OpenNI Viewer")
     {
-      octree = new pcl::octree::OctreePointCloudChangeDetector<pcl::PointXYZRGB>(resolution);
+      octree = new pcl::octree::OctreePointCloudChangeDetector<pcl::PointXYZRGBA>(resolution);
       mode_ = mode;
       noise_filter_ = noise_filter;
     }
 
     void 
-    cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+    cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud)
     {
       std::cerr << cloud->points.size() << " -- ";
 
@@ -81,24 +81,24 @@ class OpenNIChangeViewer
 
       std::cerr << newPointIdxVector->size() << std::endl;
 
-      pcl::PointCloud<pcl::PointXYZRGB>::Ptr filtered_cloud;
+      pcl::PointCloud<pcl::PointXYZRGBA>::Ptr filtered_cloud;
 
       switch (mode_) 
       {
         case REDDIFF_MODE:
-          filtered_cloud = (pcl::PointCloud<pcl::PointXYZRGB>::Ptr) new pcl::PointCloud<pcl::PointXYZRGB> (*cloud);
+          filtered_cloud = (pcl::PointCloud<pcl::PointXYZRGBA>::Ptr) new pcl::PointCloud<pcl::PointXYZRGBA> (*cloud);
 
           filtered_cloud->points.reserve(newPointIdxVector->size());
 
           for (std::vector<int>::iterator it = newPointIdxVector->begin (); it != newPointIdxVector->end (); it++)
-            filtered_cloud->points[*it].rgb = 255<<16;
+            filtered_cloud->points[*it].rgba = 255<<16;
 
           if (!viewer.wasStopped())
             viewer.showCloud (filtered_cloud);
 
           break;
         case ONLYDIFF_MODE:
-          filtered_cloud = (pcl::PointCloud<pcl::PointXYZRGB>::Ptr) new pcl::PointCloud<pcl::PointXYZRGB> ();
+          filtered_cloud = (pcl::PointCloud<pcl::PointXYZRGBA>::Ptr) new pcl::PointCloud<pcl::PointXYZRGBA> ();
 
           filtered_cloud->points.reserve(newPointIdxVector->size());
 
@@ -120,7 +120,7 @@ class OpenNIChangeViewer
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
-      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = 
+      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f = 
         boost::bind (&OpenNIChangeViewer::cloud_cb_, this, _1);
 
       boost::signals2::connection c = interface->registerCallback (f);
@@ -135,7 +135,7 @@ class OpenNIChangeViewer
       interface->stop ();
     }
 
-    pcl::octree::OctreePointCloudChangeDetector<pcl::PointXYZRGB> *octree;
+    pcl::octree::OctreePointCloudChangeDetector<pcl::PointXYZRGBA> *octree;
     pcl::visualization::CloudViewer viewer;
 
     int mode_;
@@ -165,5 +165,3 @@ main (int argc, char* argv[])
   v.run ();
   return 0;
 }
-
-
