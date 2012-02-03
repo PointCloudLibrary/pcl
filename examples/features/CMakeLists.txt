@@ -1,18 +1,17 @@
-add_executable(example_FastPointFeatureHistograms example_FastPointFeatureHistograms.cpp)
-target_link_libraries(example_FastPointFeatureHistograms pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
+PCL_ADD_EXAMPLE(example_FastPointFeatureHistograms FILES example_FastPointFeatureHistograms.cpp
+                LINK_WITH pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
 
-add_executable(example_NormalEstimation example_NormalEstimation.cpp)
-target_link_libraries(example_NormalEstimation pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
+PCL_ADD_EXAMPLE(example_NormalEstimation FILES example_NormalEstimation.cpp
+                LINK_WITH pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
 
-add_executable(example_PointFeatureHistograms example_PointFeatureHistograms.cpp)
-target_link_libraries(example_PointFeatureHistograms pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
+PCL_ADD_EXAMPLE(example_PointFeatureHistograms FILES example_PointFeatureHistograms.cpp
+                LINK_WITH pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
 
-add_executable(example_PrincipalCurvaturesEstimation example_PrincipalCurvaturesEstimation.cpp)
-target_link_libraries(example_PrincipalCurvaturesEstimation pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
+PCL_ADD_EXAMPLE(example_PrincipalCurvaturesEstimation FILES example_PrincipalCurvaturesEstimation.cpp
+                LINK_WITH pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
 
-add_executable(example_ShapeContexts example_ShapeContexts.cpp)
-target_link_libraries(example_ShapeContexts pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
+PCL_ADD_EXAMPLE(example_ShapeContexts FILES example_ShapeContexts.cpp
+                LINK_WITH pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
 
-add_executable(example_SpinImages example_SpinImages.cpp)
-target_link_libraries(example_SpinImages pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
-
+PCL_ADD_EXAMPLE(example_SpinImages FILES example_SpinImages.cpp
+                LINK_WITH pcl_common pcl_kdtree pcl_search pcl_features pcl_io)

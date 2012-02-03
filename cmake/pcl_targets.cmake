@@ -334,6 +334,27 @@ macro(PCL_ADD_TEST _name _exename)
     endif(${CMAKE_VERSION} VERSION_LESS 2.8.4)
 endmacro(PCL_ADD_TEST)
 
+###############################################################################
+# Add an example target.
+# _name The example name.
+# ARGN :
+#    FILES the source files for the example
+#    LINK_WITH link example executable with libraries
+macro(PCL_ADD_EXAMPLE _name)
+    set(options)
+    set(oneValueArgs)
+    set(multiValueArgs FILES LINK_WITH)
+    cmake_parse_arguments(PCL_ADD_EXAMPLE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+    add_executable(${_name} ${PCL_ADD_EXAMPLE_FILES})
+    target_link_libraries(${_name} ${PCL_ADD_EXAMPLE_LINK_WITH})
+    if(WIN32 AND MSVC)
+      set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
+                                                RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
+    endif(WIN32 AND MSVC)
+    if(USE_PROJECT_FOLDERS)
+      set_target_properties(${_name} PROPERTIES FOLDER "Examples")
+    endif(USE_PROJECT_FOLDERS)
+endmacro(PCL_ADD_EXAMPLE)
 
 ###############################################################################
 # Add compile flags to a target (because CMake doesn't provide something so
