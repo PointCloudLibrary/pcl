@@ -37,7 +37,6 @@
 
 #include <pcl/pcl_config.h>
 #include <boost/cstdint.hpp>
-#include <Eigen/Core>
 
 namespace pcl
 {
@@ -288,17 +287,63 @@ pcl_round (float number)
 #define PCL_DEPRECATED(func) func
 #endif
 
-#define PCL_ALIGN(boundary) EIGEN_ALIGN_TO_BOUNDARY(boundary)
+#if defined (__GNUC__) || defined (__PGI) || defined (__IBMCPP__) || defined (__SUNPRO_CC)
+  #define PCL_ALIGN(alignment) __attribute__((aligned(alignment)))
+#elif defined (_MSC_VER)
+  #define PCL_ALIGN(alignment) __declspec(align(alignment))
+#else
+  #error Alignment not supported on your platform
+#endif
+
+#if defined(__GLIBC__) && ((__GLIBC__>=2 && __GLIBC_MINOR__ >= 8) || __GLIBC__>2) \
+ && defined(__LP64__)
+  #define GLIBC_MALLOC_ALIGNED 1
+#else
+  #define GLIBC_MALLOC_ALIGNED 0
+#endif
+
+#if defined(__FreeBSD__) && !defined(__arm__) && !defined(__mips__)
+  #define FREEBSD_MALLOC_ALIGNED 1
+#else
+  #define FREEBSD_MALLOC_ALIGNED 0
+#endif
+
+#if defined(__APPLE__) || defined(_WIN64) || GLIBC_MALLOC_ALIGNED || FREEBSD_MALLOC_ALIGNED
+  #define MALLOC_ALIGNED 1
+#else
+  #define MALLOC_ALIGNED 0
+#endif
 
 inline void* aligned_malloc(size_t size)
 {
-  // use eigen aligned malloc
-  return Eigen::internal::aligned_malloc (size);
+  void *ptr;
+#if   defined (MALLOC_ALIGNED)
+  ptr = std::malloc (size);
+#elif defined (HAVE_POSIX_MEMALIGN)
+  if(posix_memalign(&ptr, 16, size))
+    ptr = 0;
+#elif defined (HAVE_MM_MALLOC)
+  ptr = _mm_malloc (size, 16);
+#elif defined (_MSC_VER)
+  ptr = _aligned_malloc(size, 16);
+#else
+  #error aligned_malloc not supported on your platform
+  ptr = 0;
+#endif
+  return ptr;
 }
 
 inline void aligned_free (void* ptr)
 {
-  Eigen::internal::aligned_free (ptr);
+#if   defined (MALLOC_ALIGNED) || defined (HAVE_POSIX_MEMALIGN)
+  std::free (ptr);
+#elif defined (HAVE_MM_MALLOC)
+  ptr = _mm_free (ptr);
+#elif defined (_MSC_VER)
+  _aligned_free(ptr);
+#else
+  #error aligned_free not supported on your platform
+#endif
 }
 
 #endif  //#ifndef PCL_MACROS_H_
