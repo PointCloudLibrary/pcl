@@ -122,6 +122,9 @@ namespace pcl
   struct SHOT;
   // Members: std::vector<float> descriptor, rf[9];
 
+  struct ShapeContext;
+  // Members: std::vector<float> descriptor, rf[9];
+
   //struct SHOT1344;
   // Members: float descriptor[1344], rf[9];
 

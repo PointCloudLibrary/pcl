@@ -863,6 +863,15 @@ namespace pcl
     os << (i == 0 ? "(" : "") << p.values[i] << (i < 11 ? ", " : ")");
     return (os);
   }
+  
+  /** \brief A point structure representing a Shape Context.
+    * \ingroup common
+    */
+  struct ShapeContext
+  {
+    std::vector<float> descriptor;
+    float rf[9];
+  };
 
   /** \brief A point structure representing the generic Signature of Histograms of OrienTations (SHOT).
     * \ingroup common

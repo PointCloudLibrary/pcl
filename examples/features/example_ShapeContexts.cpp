@@ -74,7 +74,7 @@ main (int argc, char** argv) {
   normal_estimation.compute (*normals);
 
   // Setup the shape context computation
-  pcl::ShapeContext3DEstimation<pcl::PointXYZ, pcl::Normal, pcl::SHOT> shape_context;
+  pcl::ShapeContext3DEstimation<pcl::PointXYZ, pcl::Normal, pcl::ShapeContext> shape_context;
 
   // Provide the point cloud
   shape_context.setInputCloud (cloud);
@@ -82,7 +82,7 @@ main (int argc, char** argv) {
   shape_context.setInputNormals (normals);
   // Use the same KdTree from the normal estimation
   shape_context.setSearchMethod (kdtree);
-  pcl::PointCloud<pcl::SHOT>::Ptr shape_context_features (new pcl::PointCloud<pcl::SHOT>);
+  pcl::PointCloud<pcl::SHOT>::Ptr shape_context_features (new pcl::PointCloud<pcl::ShapeContext>);
 
   // The minimal radius is generally set to approx. 1/10 of the search radius, while the pt. density radius is generally set to 1/5
   shape_context.setRadiusSearch (0.2);
