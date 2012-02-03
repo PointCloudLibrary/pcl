@@ -50,7 +50,11 @@ namespace pcl
 {
   /** \brief CVFHEstimation estimates the Clustered Viewpoint Feature Histogram (CVFH) descriptor for a given 
     * point cloud dataset containing XYZ data and normals, as presented in:
-    *   -
+    *  
+    * CAD-Model Recognition and 6 DOF Pose Estimation
+    * A. Aldoma, N. Blodow, D. Gossow, S. Gedikli, R.B. Rusu, M. Vincze and G. Bradski
+    * ICCV 2011, 3D Representation and Recognition (3dRR11) workshop
+    * Barcelona, Spain, (2011) 
     *
     * The suggested PointOutT is pcl::VFHSignature308.
     *
