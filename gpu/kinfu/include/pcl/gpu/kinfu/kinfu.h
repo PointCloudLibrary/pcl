@@ -218,21 +218,21 @@ namespace pcl
         /** \brief angle threshold in correspondences filtering. Represents max sine of angle between normals. */
         float angleThres_;
         
-        /** \brief Array of dpeth pyramids. */
+        /** \brief Depth pyramid. */
         std::vector<DepthMap> depths_curr_;
-        /** \brief Array of pyramids of vertex maps for current frame in global coordinate space. */
+        /** \brief Vertex maps pyramid for current frame in global coordinate space. */
         std::vector<MapArr> vmaps_g_curr_;
-        /** \brief Array of pyramids of normal maps for current frame in global coordinate space. */
+        /** \brief Normal maps pyramid for current frame in global coordinate space. */
         std::vector<MapArr> nmaps_g_curr_;
 
-        /** \brief Array of pyramids of vertex maps for previous frame in global coordinate space. */
+        /** \brief Vertex maps pyramid for previous frame in global coordinate space. */
         std::vector<MapArr> vmaps_g_prev_;
-        /** \brief Array of pyramids of normal maps for previous frame in global coordinate space. */
+        /** \brief Normal maps pyramid for previous frame in global coordinate space. */
         std::vector<MapArr> nmaps_g_prev_;
                 
-        /** \brief Array of pyramids of vertex maps for current frame in current coordinate space. */
+        /** \brief Vertex maps pyramid for current frame in current coordinate space. */
         std::vector<MapArr> vmaps_curr_;
-        /** \brief Array of pyramids of vertex maps for current frame in current coordinate space. */
+        /** \brief Vertex maps pyramid for current frame in current coordinate space. */
         std::vector<MapArr> nmaps_curr_;
 
         /** \brief Array of buffers with ICP correspondences for each pyramid level. */
