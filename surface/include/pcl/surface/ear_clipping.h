@@ -103,40 +103,22 @@ namespace pcl
         * \param[in] p the point to check
         */
       bool
-      isInsideTriangle (const PointXY& u, const PointXY& v, const PointXY& w, const PointXY& p);
+      isInsideTriangle (const Eigen::Vector2f& u,
+                        const Eigen::Vector2f& v,
+                        const Eigen::Vector2f& w,
+                        const Eigen::Vector2f& p);
 
-      /** \brief Project a 3D point to 2D. 
-        * \param[in] p_in the input 3D point
-        * \param[out] p_out the output 2D point
-        */
-      inline void
-      toPointXY (const PointXYZ& p_in, PointXY &p_out) const
+
+      /** \brief Compute the cross product between 2D vectors.
+       * \param[in] p1 the first 2D vector
+       * \param[in] p2 the first 2D vector
+       */
+      float
+      crossProduct (const Eigen::Vector2f& p1, const Eigen::Vector2f& p2) const
       {
-        p_out.x = p_in.x;
-        p_out.y = p_in.y;
+        return p1[0]*p2[1] - p1[1]*p2[0];
       }
 
-      /** \brief Compute the cross product between 2D vectors. 
-        * \param[in] p1 the first 2D vector
-        * \param[in] p2 the first 2D vector
-        */
-      inline float
-      crossProduct (const PointXY& p1, const PointXY& p2) const
-      {
-        return ((p1.x*p2.y) - (p1.y*p2.x));
-      }
-
-      /** \brief Subtract two 2D vectors. 
-        * \param[in] p1 the first 2D vector
-        * \param[in] p2 the first 2D vector
-        * \param[out] r the output 2D vector representing the difference
-        */
-      inline void
-      difference (const PointXY& p1, const PointXY& p2, PointXY &r) const
-      {
-        r.x = p1.x - p2.x;
-        r.y = p1.y - p2.y;
-      }
   };
 
 }

@@ -111,11 +111,14 @@ pcl::EarClipping::area (const std::vector<uint32_t>& vertices)
 {
   int n = vertices.size ();
   float area = 0.0f;
-  PointXY prev_p, cur_p;
+  Eigen::Vector2f prev_p, cur_p;
   for (int prev = n - 1, cur = 0; cur < n; prev = cur++)
   {
-    toPointXY (points_->points[vertices[prev]], prev_p);
-    toPointXY (points_->points[vertices[cur]], cur_p);
+    prev_p[0] = points_->points[vertices[prev]].x;
+    prev_p[1] = points_->points[vertices[prev]].y;
+    cur_p[0] = points_->points[vertices[cur]].x;
+    cur_p[1] = points_->points[vertices[cur]].y;
+
     area += crossProduct (prev_p, cur_p);
   }
   return (area * 0.5f);
@@ -126,27 +129,32 @@ pcl::EarClipping::area (const std::vector<uint32_t>& vertices)
 bool
 pcl::EarClipping::isEar (int u, int v, int w, const std::vector<uint32_t>& vertices)
 {
-  PointXY p_u, p_v, p_w;
-  toPointXY (points_->points[vertices[u]], p_u);
-  toPointXY (points_->points[vertices[v]], p_v);
-  toPointXY (points_->points[vertices[w]], p_w);
+  Eigen::Vector2f p_u, p_v, p_w;
+  p_u[0] = points_->points[vertices[u]].x;
+  p_u[1] = points_->points[vertices[u]].y;
+  p_v[0] = points_->points[vertices[v]].x;
+  p_v[1] = points_->points[vertices[v]].y;
+  p_w[0] = points_->points[vertices[w]].x;
+  p_w[1] = points_->points[vertices[w]].y;
 
   // Avoid flat triangles.
   // FIXME: triangulation would fail if all the triangles are flat in the X-Y axis
   const float eps = 1e-15;
-  PointXY p_uv, p_uw;
-  difference (p_v, p_u, p_uv);
-  difference (p_w, p_u, p_uw);
+  Eigen::Vector2f p_uv, p_uw;
+  p_uv = p_v - p_u;
+  p_uw = p_w - p_u;
   if (crossProduct (p_uv, p_uw) < eps)
     return (false);
 
-  PointXY p; 
+  Eigen::Vector2f p;
   // Check if any other vertex is inside the triangle.
   for (int k = 0; k < (int)vertices.size (); k++)
   {
     if ((k == u) || (k == v) || (k == w))
       continue;
-    toPointXY (points_->points[vertices[k]], p);
+    p[0] = points_->points[vertices[k]].x;
+    p[1] = points_->points[vertices[k]].y;
+
     if (isInsideTriangle (p_u, p_v, p_w, p))
       return (false);
   }
@@ -155,27 +163,21 @@ pcl::EarClipping::isEar (int u, int v, int w, const std::vector<uint32_t>& verti
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::EarClipping::isInsideTriangle (const PointXY& u, const PointXY& v, const PointXY& w,
-                                    const PointXY& p)
+pcl::EarClipping::isInsideTriangle (const Eigen::Vector2f& u,
+                                    const Eigen::Vector2f& v,
+                                    const Eigen::Vector2f& w,
+                                    const Eigen::Vector2f& p)
 {
-  PointXY vw, wu, uv, up, vp, wp;
-  difference (w, v, vw);
-  difference (u, w, wu);
-  difference (v, u, uv);
-  difference (p, u, up);
-  difference (p, v, vp);
-  difference (p, w, wp);
-
   // Check first side.
-  if (crossProduct (vw, vp) < 0)
+  if (crossProduct (w - v, p - v) < 0)
     return (false);
 
   // Check second side.
-  if (crossProduct (uv, up) < 0)
+  if (crossProduct (v - u, p - u) < 0)
     return (false);
 
   // Check third side.
-  if (crossProduct (wu, wp) < 0)
+  if (crossProduct (u - w, p - w) < 0)
     return (false);
 
   return (true);
