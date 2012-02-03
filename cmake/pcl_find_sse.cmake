@@ -5,6 +5,24 @@ macro(PCL_CHECK_FOR_SSE)
     if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
         set(SSE_FLAGS)
 
+        check_cxx_source_runs("
+            #include <mm_malloc.h>
+            int main()
+            {
+              void* mem = _mm_malloc (100, 16);
+              return 0;
+            }"
+            HAVE_MM_MALLOC)
+
+        check_cxx_source_runs("
+            #include <stdlib.h>
+            int main()
+            {
+              void* mem;
+              return posix_memalign (&mem, 16, 100);
+            }"
+            HAVE_POSIX_MEMALIGN)
+
         set(CMAKE_REQUIRED_FLAGS "-msse4.1")
         check_cxx_source_runs("
             #include <smmintrin.h>
@@ -71,7 +89,7 @@ macro(PCL_CHECK_FOR_SSE)
        if (NOT APPLE)
          SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x -march=native")
        endif (NOT APPLE)
-       
+
        if (HAVE_SSE4_1_EXTENSIONS)
            if (APPLE)
              SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.1 -mfpmath=sse")

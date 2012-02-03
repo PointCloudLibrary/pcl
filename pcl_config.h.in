@@ -27,6 +27,8 @@
 #cmakedefine HAVE_SSE3_EXTENSIONS
 #cmakedefine HAVE_SSE2_EXTENSIONS
 #cmakedefine HAVE_SSE_EXTENSIONS
+#cmakedefine HAVE_POSIX_MEMALIGN
+#cmakedefine HAVE_MM_MALLOC
 
 #ifdef DISABLE_OPENNI
 #undef HAVE_OPENNI
