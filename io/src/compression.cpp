@@ -50,3 +50,4 @@
 
 template class PCL_EXPORTS pcl::octree::PointCloudCompression<pcl::PointXYZ>;
 template class PCL_EXPORTS pcl::octree::PointCloudCompression<pcl::PointXYZRGB>;
+template class PCL_EXPORTS pcl::octree::PointCloudCompression<pcl::PointXYZRGBA>;

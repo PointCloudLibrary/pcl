@@ -42,6 +42,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/time.h>
+#include <pcl/console/print.h>
 #include <pcl/io/pcl_io_exception.h>
 #include <boost/shared_array.hpp>
 #define BOOST_FILESYSTEM_VERSION 2
@@ -90,6 +91,7 @@ pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Mode& dep
     image_signal_             = createSignal<sig_cb_openni_image> ();
     image_depth_image_signal_ = createSignal<sig_cb_openni_image_depth_image> ();
     point_cloud_rgb_signal_   = createSignal<sig_cb_openni_point_cloud_rgb> ();
+    point_cloud_rgba_signal_  = createSignal<sig_cb_openni_point_cloud_rgba> ();
     point_cloud_eigen_signal_ = createSignal<sig_cb_openni_point_cloud_eigen> ();
     rgb_sync_.addCallback (boost::bind (&OpenNIGrabber::imageDepthImageCallback, this, _1, _2));
     openni_wrapper::DeviceKinect* kinect = dynamic_cast<openni_wrapper::DeviceKinect*> (device_.get ());
@@ -125,6 +127,7 @@ pcl::OpenNIGrabber::~OpenNIGrabber () throw ()
     disconnect_all_slots<sig_cb_openni_image_depth_image> ();
     disconnect_all_slots<sig_cb_openni_point_cloud> ();
     disconnect_all_slots<sig_cb_openni_point_cloud_rgb> ();
+    disconnect_all_slots<sig_cb_openni_point_cloud_rgba> ();
     disconnect_all_slots<sig_cb_openni_point_cloud_i> ();
     disconnect_all_slots<sig_cb_openni_point_cloud_eigen> ();
 
@@ -143,6 +146,7 @@ pcl::OpenNIGrabber::checkImageAndDepthSynchronizationRequired ()
 {
   // do we have anyone listening to images or color point clouds?
   if (num_slots<sig_cb_openni_point_cloud_rgb> ()   > 0 ||
+      num_slots<sig_cb_openni_point_cloud_rgba> () > 0 ||
       num_slots<sig_cb_openni_point_cloud_eigen> () > 0 ||
       num_slots<sig_cb_openni_image_depth_image> () > 0)
     sync_required_ = true;
@@ -158,6 +162,7 @@ pcl::OpenNIGrabber::checkImageStreamRequired ()
   if (num_slots<sig_cb_openni_image>             () > 0 ||
       num_slots<sig_cb_openni_image_depth_image> () > 0 ||
       num_slots<sig_cb_openni_point_cloud_eigen> () > 0 ||
+      num_slots<sig_cb_openni_point_cloud_rgba> () > 0 ||
       num_slots<sig_cb_openni_point_cloud_rgb>   () > 0)
     image_required_ = true;
   else
@@ -174,6 +179,7 @@ pcl::OpenNIGrabber::checkDepthStreamRequired ()
       num_slots<sig_cb_openni_ir_depth_image>    () > 0 ||
       num_slots<sig_cb_openni_point_cloud_eigen> () > 0 ||
       num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
+      num_slots<sig_cb_openni_point_cloud_rgba>   () > 0 ||
       num_slots<sig_cb_openni_point_cloud>       () > 0 ||
       num_slots<sig_cb_openni_point_cloud_i>     () > 0 )
     depth_required_ = true;
@@ -449,6 +455,7 @@ void
 pcl::OpenNIGrabber::imageCallback (boost::shared_ptr<openni_wrapper::Image> image, void* cookie)
 {
   if (num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
+      num_slots<sig_cb_openni_point_cloud_rgba> () > 0 ||
       num_slots<sig_cb_openni_point_cloud_eigen> () > 0 ||
       num_slots<sig_cb_openni_image_depth_image> () > 0)
     rgb_sync_.add0 (image, image->getTimeStamp ());
@@ -462,6 +469,7 @@ void
 pcl::OpenNIGrabber::depthCallback (boost::shared_ptr<openni_wrapper::DepthImage> depth_image, void* cookie)
 {
   if (num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
+      num_slots<sig_cb_openni_point_cloud_rgba> () > 0 ||
       num_slots<sig_cb_openni_point_cloud_eigen> () > 0 ||
       num_slots<sig_cb_openni_image_depth_image> () > 0)
     rgb_sync_.add1 (depth_image, depth_image->getTimeStamp ());
@@ -496,7 +504,13 @@ pcl::OpenNIGrabber::imageDepthImageCallback (const boost::shared_ptr<openni_wrap
 {
   // check if we have color point cloud slots
   if (point_cloud_rgb_signal_->num_slots () > 0)
+  {
+    PCL_WARN ("PointXYZRGB callbacks deprecated. Use PointXYZRGBA instead.\n");
     point_cloud_rgb_signal_->operator()(convertToXYZRGBPointCloud (image, depth_image));
+  }
+
+  if (point_cloud_rgba_signal_->num_slots () > 0)
+    point_cloud_rgba_signal_->operator()(convertToXYZRGBAPointCloud (image, depth_image));
 
   // check if we have color point cloud slots
   if (point_cloud_eigen_signal_->num_slots () > 0)
@@ -599,9 +613,6 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
 
   boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> > cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
 
-#ifndef USE_ROS
-  cloud->header.stamp = depth_image->getTimeStamp ();
-#endif
   cloud->header.frame_id = rgb_frame_id_;
   cloud->height = depth_height_;
   cloud->width = depth_width_;
@@ -670,6 +681,90 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
       color.Green = rgb_buffer[color_idx + 1];
       color.Blue = rgb_buffer[color_idx + 2];
       pt.rgb = color.float_value;
+    }
+  }
+  return (cloud);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+pcl::PointCloud<pcl::PointXYZRGBA>::Ptr 
+pcl::OpenNIGrabber::convertToXYZRGBAPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
+                                                const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const
+{
+  static unsigned rgb_array_size = 0;
+  static boost::shared_array<unsigned char> rgb_array (0);
+  static unsigned char* rgb_buffer = 0;
+
+  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGBA> > cloud (new pcl::PointCloud<pcl::PointXYZRGBA>);
+
+  cloud->header.frame_id = rgb_frame_id_;
+  cloud->height = depth_height_;
+  cloud->width = depth_width_;
+  cloud->is_dense = false;
+
+  cloud->points.resize (cloud->height * cloud->width);
+
+  float constant = 1.0f / device_->getImageFocalLength (cloud->width);
+  register int centerX = (cloud->width >> 1);
+  int centerY = (cloud->height >> 1);
+
+  register const XnDepthPixel* depth_map = depth_image->getDepthMetaData ().Data ();
+  if (depth_image->getWidth () != depth_width_ || depth_image->getHeight() != depth_height_)
+  {
+    static unsigned buffer_size = 0;
+    static boost::shared_array<unsigned short> depth_buffer (0);
+
+    if (buffer_size < depth_width_ * depth_height_)
+    {
+      buffer_size = depth_width_ * depth_height_;
+      depth_buffer.reset (new unsigned short [buffer_size]);
+    }
+
+    depth_image->fillDepthImageRaw (depth_width_, depth_height_, depth_buffer.get ());
+    depth_map = depth_buffer.get ();
+  }
+
+  // here we need exact the size of the point cloud for a one-one correspondence!
+  if (rgb_array_size < image_width_ * image_height_ * 3)
+  {
+    rgb_array_size = image_width_ * image_height_ * 3;
+    rgb_array.reset (new unsigned char [rgb_array_size]);
+    rgb_buffer = rgb_array.get ();
+  }
+  image->fillRGB (image_width_, image_height_, rgb_buffer, image_width_ * 3);
+
+  // depth_image already has the desired dimensions, but rgb_msg may be higher res.
+  register int color_idx = 0, depth_idx = 0;
+  RGBValue color;
+  color.Alpha = 0;
+
+  float bad_point = std::numeric_limits<float>::quiet_NaN ();
+
+  for (int v = -centerY; v < centerY; ++v)
+  {
+    for (register int u = -centerX; u < centerX; ++u, color_idx += 3, ++depth_idx)
+    {
+      pcl::PointXYZRGBA& pt = cloud->points[depth_idx];
+      /// @todo Different values for these cases
+      // Check for invalid measurements
+      if (depth_map[depth_idx] == 0 ||
+          depth_map[depth_idx] == depth_image->getNoSampleValue () ||
+          depth_map[depth_idx] == depth_image->getShadowValue ())
+      {
+        pt.x = pt.y = pt.z = bad_point;
+      }
+      else
+      {
+        pt.z = depth_map[depth_idx] * 0.001f;
+        pt.x = u * pt.z * constant;
+        pt.y = v * pt.z * constant;
+      }
+
+      // Fill in color
+      color.Red = rgb_buffer[color_idx];
+      color.Green = rgb_buffer[color_idx + 1];
+      color.Blue = rgb_buffer[color_idx + 2];
+      pt.rgba = color.long_value;
     }
   }
   return (cloud);
@@ -775,9 +870,6 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud (const boost::shared_ptr<openni_wrap
 {
   boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> > cloud (new pcl::PointCloud<pcl::PointXYZI > ());
 
-#ifndef USE_ROS
-  cloud->header.stamp = depth_image->getTimeStamp ();
-#endif
   cloud->header.frame_id = rgb_frame_id_;
   cloud->height = depth_height_;
   cloud->width = depth_width_;

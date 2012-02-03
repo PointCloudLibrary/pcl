@@ -191,6 +191,27 @@ pcl::visualization::ImageViewer::showRGBImage (const pcl::PointCloud<pcl::PointX
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
+pcl::visualization::ImageViewer::showRGBImage (const pcl::PointCloud<pcl::PointXYZRGBA> &cloud)
+{
+  if (data_size_ < cloud.width * cloud.height)
+  {
+    data_size_ = cloud.width * cloud.height * 3;
+    data_.reset (new unsigned char[data_size_]);
+  }
+
+  for (size_t i = 0; i < cloud.points.size (); ++i)
+  {
+    memcpy (&data_[i * 3], (unsigned char*)&cloud.points[i].rgba, sizeof (unsigned char) * 3);
+    /// Convert from BGR to RGB
+    unsigned char aux = data_[i*3];
+    data_[i*3] = data_[i*3+2];
+    data_[i*3+2] = aux;
+  }
+  return (showRGBImage (data_.get (), cloud.width, cloud.height));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
 pcl::visualization::ImageViewer::showFloatImage (const float* float_image, unsigned int width, unsigned int height,
                                                 float min_value, float max_value, bool grayscale)
 {

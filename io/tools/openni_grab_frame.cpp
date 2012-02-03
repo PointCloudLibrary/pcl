@@ -57,7 +57,7 @@ class OpenNIGrabFrame
     }
 
     void 
-    cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+    cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud)
     {
       if (!no_frame)
         return;
@@ -75,24 +75,24 @@ class OpenNIGrabFrame
 
       if (strcmp (format.c_str (), "ascii") == 0)
       {
-        w.writeASCII<pcl::PointXYZRGB> (file + ".pcd", *cloud);
+        w.writeASCII<pcl::PointXYZRGBA> (file + ".pcd", *cloud);
         std::cerr << "Data saved in ASCII format to " << file << ".pcd" << std::endl;
       }        
       else if (strcmp (format.c_str (), "b") == 0)
       {
-        w.writeBinary<pcl::PointXYZRGB> (file + ".pcd", *cloud);
+        w.writeBinary<pcl::PointXYZRGBA> (file + ".pcd", *cloud);
         std::cerr << "Data saved in BINARY format to " << file << ".pcd" << std::endl;
       }
       else if (strcmp (format.c_str (), "bc") == 0)
       {
-        w.writeBinaryCompressed<pcl::PointXYZRGB> (file + ".pcd", *cloud);
+        w.writeBinaryCompressed<pcl::PointXYZRGBA> (file + ".pcd", *cloud);
         std::cerr << "Data saved in BINARY COMPRESSED format to " << file << ".pcd" << std::endl;
       }
         else if (strcmp (format.c_str (), "all") == 0)
       {
-        w.writeASCII<pcl::PointXYZRGB> (file + "_ascii.pcd", *cloud);
-        w.writeBinary<pcl::PointXYZRGB> (file + "_binary.pcd", *cloud);
-        w.writeBinaryCompressed<pcl::PointXYZRGB> (file + "_binary_compressed.pcd", *cloud);
+        w.writeASCII<pcl::PointXYZRGBA> (file + "_ascii.pcd", *cloud);
+        w.writeBinary<pcl::PointXYZRGBA> (file + "_binary.pcd", *cloud);
+        w.writeBinaryCompressed<pcl::PointXYZRGBA> (file + "_binary_compressed.pcd", *cloud);
         std::cerr << "Data saved as ASCII, BINARY and BINARY COMPRESSED to " << file << "_{ascii,binary,binary_compresed}.pcd" << std::endl;
       }
               
@@ -107,7 +107,7 @@ class OpenNIGrabFrame
       pcl::Grabber* interface = new pcl::OpenNIGrabber ();
 
       // make callback function from member function
-      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
+      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
         boost::bind (&OpenNIGrabFrame::cloud_cb_, this, _1);
 
       // connect callback function for desired signal. In this case its a point cloud with color values
@@ -152,7 +152,7 @@ usage (char ** argv)
   
   print_info ("  filename: if no filename is provided a generic timestamp will be set as filename\n\n");
   print_info ("  where options are:\n");
-  print_info ("                    -format = PCD file format (b=binary; bc=binary compressed; ascii=acsii; all=all) (default: ");
+  print_info ("                    -format = PCD file format (b=binary; bc=binary compressed; ascii=ascii; all=all) (default: ");
   print_value ("%s", default_format.c_str()); print_info(")\n");
   print_info ("                    -noend  = Store files to disk until the user quits the program with Ctrl-C (default: ") ;
   print_value ("%d", default_noend); print_info(")\n");

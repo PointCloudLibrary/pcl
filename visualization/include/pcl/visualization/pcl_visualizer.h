@@ -608,6 +608,19 @@ namespace pcl
           return (addPointCloud<pcl::PointXYZRGB> (cloud, color_handler, id, viewport));
         }
 
+        /** \brief Add a PointXYZRGBA Point Cloud to screen. 
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] viewport the view port where the Point Cloud should be added (default: all)
+          */
+        inline bool 
+        addPointCloud (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud, 
+                       const std::string &id = "cloud", int viewport = 0)
+        {
+          pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBA> color_handler (cloud);
+          return (addPointCloud<pcl::PointXYZRGBA> (cloud, color_handler, id, viewport));
+        }
+
         /** \brief Updates the XYZ data for an existing cloud object id on screen. 
           * \param[in] cloud the input point cloud dataset
           * \param[in] id the point cloud object id to update (default: cloud)
@@ -631,6 +644,19 @@ namespace pcl
         {
           pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> color_handler (cloud);
           return (updatePointCloud<pcl::PointXYZRGB> (cloud, color_handler, id));
+        }
+
+        /** \brief Updates the XYZRGBA data for an existing cloud object id on screen. 
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] id the point cloud object id to update (default: cloud)
+          * \return false if no cloud with the specified ID was found
+          */
+        inline bool 
+        updatePointCloud (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud, 
+                          const std::string &id = "cloud")
+        {
+          pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBA> color_handler (cloud);
+          return (updatePointCloud<pcl::PointXYZRGBA> (cloud, color_handler, id));
         }
 
         /** \brief Add a PolygonMesh object to screen

@@ -51,8 +51,8 @@ using pcl::console::print_info;
 using pcl::console::print_value;
 
 boost::mutex mutex_;
-boost::shared_ptr<pcl::PCDGrabber<pcl::PointXYZRGB> > grabber;
-pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud_;
+boost::shared_ptr<pcl::PCDGrabber<pcl::PointXYZRGBA> > grabber;
+pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud_;
 
 void
 printHelp (int argc, char **argv)
@@ -81,7 +81,7 @@ bool fcolorparam = false;
 struct EventHelper
 {
   void 
-  cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr & cloud)
+  cloud_cb (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr & cloud)
   {
     if (mutex_.try_lock ())
     {
@@ -179,7 +179,7 @@ main (int argc, char** argv)
   std::cout << "path: " << path << std::endl;
   if (path != "" && boost::filesystem::exists (path))
   {
-    grabber.reset (new pcl::PCDGrabber<pcl::PointXYZRGB> (path, frames_per_second, repeat));
+    grabber.reset (new pcl::PCDGrabber<pcl::PointXYZRGBA> (path, frames_per_second, repeat));
   }
   else
   {
@@ -205,11 +205,11 @@ main (int argc, char** argv)
 
     // Sort the read files by name
     sort (pcd_files.begin (), pcd_files.end ());
-    grabber.reset (new pcl::PCDGrabber<pcl::PointXYZRGB> (pcd_files, frames_per_second, repeat));
+    grabber.reset (new pcl::PCDGrabber<pcl::PointXYZRGBA> (pcd_files, frames_per_second, repeat));
   }
 
   EventHelper h;
-  boost::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &h, _1);
+  boost::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &h, _1);
   boost::signals2::connection c1 = grabber->registerCallback (f);
 
   std::string mouseMsg3D ("Mouse coordinates in PCL Visualizer");
@@ -236,7 +236,7 @@ main (int argc, char** argv)
 
     if (mutex_.try_lock ())
     {
-      pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr temp_cloud;
+      pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr temp_cloud;
       temp_cloud.swap (cloud_);
       mutex_.unlock ();
 

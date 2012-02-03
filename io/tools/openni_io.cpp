@@ -187,10 +187,10 @@ main (int argc, char ** argv)
     v.init ();
     v.runEigen ();
   }
-  else if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
+  else if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba> ())
   {
-    PCL_INFO ("PointXYZRGB mode enabled.\n");
-    OpenNIIO<pcl::PointXYZRGB> v ("");
+    PCL_INFO ("PointXYZRGBA mode enabled.\n");
+    OpenNIIO<pcl::PointXYZRGBA> v ("");
     v.init ();
     v.run ();
   }

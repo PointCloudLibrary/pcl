@@ -96,6 +96,12 @@ namespace pcl
         void 
         showRGBImage (const pcl::PointCloud<pcl::PointXYZRGB> &data);
 
+        /** \brief Show a 2D image on screen, obtained from the RGB channel of a PointXYZRGBA-type point cloud.
+          * \param[in] data the input data representing the PointXYZRGBA point cloud 
+          */
+        void 
+        showRGBImage (const pcl::PointCloud<pcl::PointXYZRGBA> &data);
+
         /** \brief Show a 2D image (float) on screen.
           * \param[in] data the input data representing the image in float format
           * \param[in] width the width of the image

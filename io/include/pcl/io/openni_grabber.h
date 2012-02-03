@@ -57,6 +57,7 @@ namespace pcl
 {
   struct PointXYZ;
   struct PointXYZRGB;
+  struct PointXYZRGBA;
   struct PointXYZI;
   template <typename T> class PointCloud;
 
@@ -90,6 +91,7 @@ namespace pcl
       typedef void (sig_cb_openni_ir_depth_image) (const boost::shared_ptr<openni_wrapper::IRImage>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant) ;
       typedef void (sig_cb_openni_point_cloud) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> >&);
       typedef void (sig_cb_openni_point_cloud_rgb) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB> >&);
+      typedef void (sig_cb_openni_point_cloud_rgba) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> >&);
       typedef void (sig_cb_openni_point_cloud_i) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&);
       typedef void (sig_cb_openni_point_cloud_eigen) (const boost::shared_ptr<const pcl::PointCloud<Eigen::MatrixXf> >&);
 
@@ -250,6 +252,11 @@ namespace pcl
       boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> >
       convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
                                  const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
+
+      /** \brief ... */
+      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGBA> >
+      convertToXYZRGBAPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
+                                  const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
       /** \brief ... */
       boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> >
       convertToXYZIPointCloud (const boost::shared_ptr<openni_wrapper::IRImage> &image,
@@ -290,6 +297,7 @@ namespace pcl
       boost::signals2::signal<sig_cb_openni_point_cloud>* point_cloud_signal_;
       boost::signals2::signal<sig_cb_openni_point_cloud_i>* point_cloud_i_signal_;
       boost::signals2::signal<sig_cb_openni_point_cloud_rgb>* point_cloud_rgb_signal_;
+      boost::signals2::signal<sig_cb_openni_point_cloud_rgba>* point_cloud_rgba_signal_;
       boost::signals2::signal<sig_cb_openni_point_cloud_eigen>* point_cloud_eigen_signal_;
 
       struct modeComp

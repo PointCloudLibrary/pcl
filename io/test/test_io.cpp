@@ -883,7 +883,7 @@ TEST (PCL, EigenConversions)
 TEST (PCL, CopyPointCloud)
 {
   pcl::PointCloud<pcl::PointXYZ> cloud_a;
-  pcl::PointCloud<pcl::PointXYZRGB> cloud_b;
+  pcl::PointCloud<pcl::PointXYZRGBA> cloud_b;
 
   // Fill in the cloud data
   cloud_a.width  = cloud_b.width  = 3;
@@ -896,28 +896,28 @@ TEST (PCL, CopyPointCloud)
     cloud_a.points[i].x = 1024 * rand () / (RAND_MAX + 1.0);
     cloud_a.points[i].y = 1024 * rand () / (RAND_MAX + 1.0);
     cloud_a.points[i].z = 1024 * rand () / (RAND_MAX + 1.0);
-    cloud_b.points[i].rgb = 255;
+    cloud_b.points[i].rgba = 255;
   }
 
-  pcl::copyPointCloud<pcl::PointXYZ, pcl::PointXYZRGB> (cloud_a, cloud_b);
+  pcl::copyPointCloud<pcl::PointXYZ, pcl::PointXYZRGBA> (cloud_a, cloud_b);
 
   for (size_t i = 0; i < cloud_a.points.size (); ++i)
   {
     EXPECT_EQ (cloud_b.points[i].x, cloud_a.points[i].x);
     EXPECT_EQ (cloud_b.points[i].y, cloud_a.points[i].y);
     EXPECT_EQ (cloud_b.points[i].z, cloud_a.points[i].z);
-    EXPECT_EQ (cloud_b.points[i].rgb, 255);
+    EXPECT_EQ (cloud_b.points[i].rgba, 255);
     cloud_a.points[i].x = cloud_a.points[i].y = cloud_a.points[i].z = 0;
   }
 
-  pcl::copyPointCloud<pcl::PointXYZRGB, pcl::PointXYZ> (cloud_b, cloud_a);
+  pcl::copyPointCloud<pcl::PointXYZRGBA, pcl::PointXYZ> (cloud_b, cloud_a);
 
   for (size_t i = 0; i < cloud_a.points.size (); ++i)
   {
     EXPECT_EQ (cloud_b.points[i].x, cloud_a.points[i].x);
     EXPECT_EQ (cloud_b.points[i].y, cloud_a.points[i].y);
     EXPECT_EQ (cloud_b.points[i].z, cloud_a.points[i].z);
-    EXPECT_EQ (cloud_b.points[i].rgb, 255);
+    EXPECT_EQ (cloud_b.points[i].rgba, 255);
   }
 }
 
