@@ -16,14 +16,24 @@ again. This can speed up your compilation by many orders of magnitude,
 especially in those situations where your file timestamps change, and ``make``
 is triggering a recompile.
 
-We usually like to combine `ccache` with another tool, called `colorgcc
-<https://github.com/johannes/colorgcc>`_. ``colorgcc`` is a colorizer for the
-output of GCC, and allows you to better interpret the compiler warnings/errors.
-To install ``colorgcc`` on an Ubuntu system, do::
+To enable ccache, simply add '/usr/lib/ccache' to the beginning of your PATH.
+This directory contains symlinks to ccache, and ccache is smart enough to
+look at the name of the calling executable to determine which real executable
+to run. I.e. there is a symlink from '/usr/lib/ccache/g++' to just 'ccache',
+but it actually runs the equivalent of 'ccache g++'.
+
+Using colorgcc to colorize output
+---------------------------------
+`colorgcc<https://github.com/johannes/colorgcc>`_ is a colorizer for the output
+of GCC, and allows you to better interpret the compiler warnings/errors.
+
+To enable both colorgcc and ccache, perform the following steps:
+
+Install ``colorgcc`` on an Ubuntu system with ::
 
   sudo apt-get install colorgcc
 
-To enable both colorgcc and ccache, perform the following steps:
+To enable colorgcc, perform the following steps:
 
 .. code-block:: cmake
 
