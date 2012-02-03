@@ -1,3 +1,41 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ * $Id: pcl_base.h 4093 2012-01-31 04:54:52Z rusu $
+ *
+ */
 #ifndef PCL_TRACKING_IMPL_HSV_COLOR_COHERENCE_H_
 #define PCL_TRACKING_IMPL_HSV_COLOR_COHERENCE_H_
 
@@ -20,7 +58,9 @@ namespace pcl
       long long_value;
     } RGBValue;
 
-    void RGB2HSV(int r, int g, int b, float& fh, float& fs, float& fv)
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    void 
+    RGB2HSV (int r, int g, int b, float& fh, float& fs, float& fv)
     {
       // mostly copied from opencv-svn/modules/imgproc/src/color.cpp
       // revision is 4351
@@ -67,10 +107,10 @@ namespace pcl
       int vmin = b, diff;
       int vr, vg;
                     
-      v = std::max<int>(v, g);
-      v = std::max<int>(v, r);
-      vmin = std::min<int>(vmin, g);
-      vmin = std::min<int>(vmin, r);
+      v = std::max<int> (v, g);
+      v = std::max<int> (v, r);
+      vmin = std::min<int> (vmin, g);
+      vmin = std::min<int> (vmin, r);
                 
       diff = v - vmin;
       vr = v == r ? -1 : 0;
@@ -78,24 +118,25 @@ namespace pcl
                     
       s = diff * div_table[v] >> hsv_shift;
       h = (vr & (g - b)) +
-        (~vr & ((vg & (b - r + 2 * diff))
-                + ((~vg) & (r - g + 4 * diff))));
+          (~vr & ((vg & (b - r + 2 * diff))
+          + ((~vg) & (r - g + 4 * diff))));
       h = (h * div_table[diff] * hscale +
-           (1 << (hsv_shift + 6))) >> (7 + hsv_shift);
+          (1 << (hsv_shift + 6))) >> (7 + hsv_shift);
                 
       h += h < 0 ? hr : 0;
       fh = h / 180.0;
       fs = s / 255.0;
       fv = v / 255.0;
     }
-    
+   
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename PointInT> double
     HSVColorCoherence<PointInT>::computeCoherence (PointInT &source, PointInT &target)
     {
       // convert color space from RGB to HSV
       RGBValue source_rgb, target_rgb;
-      source_rgb.float_value = (source.rgb);
-      target_rgb.float_value = (target.rgb);
+      source_rgb.float_value = source.rgba;
+      target_rgb.float_value = target.rgba;
 
       float source_h, source_s, source_v, target_h, target_s, target_v;
       RGB2HSV (source_rgb.Red, source_rgb.Blue, source_rgb.Green,
@@ -105,20 +146,16 @@ namespace pcl
       // hue value is in 0 ~ 2pi, but circulated.
       const float _h_diff = fabs (source_h - target_h);
       float h_diff;
-      if ( _h_diff > 0.5)
-      {
+      if (_h_diff > 0.5)
         h_diff = h_weight_ * (_h_diff - 0.5) * (_h_diff - 0.5);
-      }
       else
-      {
         h_diff = h_weight_ * _h_diff * _h_diff;
-      }
 
       const float s_diff = s_weight_ * (source_s - target_s) * (source_s - target_s);
       const float v_diff = v_weight_ * (source_v - target_v) * (source_v - target_v);
       const float diff2 = h_diff + s_diff + v_diff;
       
-      return 1.0 / (1.0 + weight_ * diff2);
+      return (1.0 / (1.0 + weight_ * diff2));
     }
   }
 }

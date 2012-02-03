@@ -5,4 +5,4 @@
 #include "pcl/tracking/hsv_color_coherence.h"
 #include "pcl/tracking/impl/hsv_color_coherence.hpp"
 
-PCL_INSTANTIATE_PRODUCT(HSVColorCoherence, ((pcl::PointXYZRGB) (pcl::PointXYZRGBNormal)));
+PCL_INSTANTIATE_PRODUCT(HSVColorCoherence, ((pcl::PointXYZRGB)(pcl::PointXYZRGBNormal)(pcl::PointXYZRGBA)));
