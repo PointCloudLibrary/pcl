@@ -269,7 +269,7 @@ namespace pcl
    /** \brief Copy the RGB fields of a PointCloud into sensor_msgs::Image format
      * \param[in] cloud the point cloud message
      * \param[out] msg the resultant sensor_msgs::Image
-     * CloudT cloud type, CloudT should be akin to pcl::PointCloud<pcl::PointXYZRGB>
+     * CloudT cloud type, CloudT should be akin to pcl::PointCloud<pcl::PointXYZRGBA>
      * \note will throw std::runtime_error if there is a problem
      */
   template<typename CloudT> void

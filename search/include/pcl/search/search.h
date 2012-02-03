@@ -239,7 +239,7 @@ namespace pcl
           }
         }
 
-        /** \brief Search for the k-nearest neighbors for the given query point. Use this method if the query points are of a different type than the points in the data set (e.g. PointXYZRGB instead of PointXYZ).
+        /** \brief Search for the k-nearest neighbors for the given query point. Use this method if the query points are of a different type than the points in the data set (e.g. PointXYZRGBA instead of PointXYZ).
           * \param[in] cloud the point cloud data
           * \param[in] indices a vector of point cloud indices to query for nearest neighbors
           * \param[in] k the number of neighbors to search for
