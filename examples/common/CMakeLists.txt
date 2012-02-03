@@ -1,2 +1,5 @@
+add_executable(example_CopyPointCloud example_CopyPointCloud.cpp)
+target_link_libraries(example_CopyPointCloud pcl_common)
+
 add_executable(example_ScopeTime example_ScopeTime.cpp)
 target_link_libraries(example_ScopeTime pcl_common)
