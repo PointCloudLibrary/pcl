@@ -59,7 +59,7 @@ namespace pcl
     *     radius_bins_ + elevation_bins_ + azimuth_bins_. If shift is required then the 
     *     computed descriptor will be shift along the azimuthal direction.
     *
-    * The pcl::SHOT descriptor is a good choice for PointOutT.
+    * The pcl::ShapeContext descriptor is the default PointOutT.
     *
     * \attention 
     * The convention for a 3D shape context descriptor is:
@@ -73,7 +73,7 @@ namespace pcl
     * \author Nizar Sallem (port to PCL)
     * \ingroup features
     */
-  template <typename PointInT, typename PointNT, typename PointOutT> 
+  template <typename PointInT, typename PointNT, typename PointOutT = pcl::ShapeContext> 
   class ShapeContext3DEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
