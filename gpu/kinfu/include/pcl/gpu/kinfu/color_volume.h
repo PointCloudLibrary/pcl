@@ -48,7 +48,7 @@ namespace pcl
 {
   namespace gpu
   {
-    struct TsdfVolume;
+    class TsdfVolume;
 
     /** \brief ColorVolume class
       * \author Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)

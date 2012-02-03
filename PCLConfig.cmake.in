@@ -414,7 +414,8 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
           "${PCL_SOURCES_TREE}"
     PATH_SUFFIXES
           ${component}/include
-          cuda/${cuda_component}/include cuda/${gpu_component}/include
+          cuda/${cuda_component}/include 
+		  gpu/${gpu_component}/include
     DOC "path to ${component} headers"
     NO_DEFAULT_PATH)
 
