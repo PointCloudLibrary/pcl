@@ -367,8 +367,8 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
     output.height = 1;
     output.width = output.size ();
   }
-  printf ("output size %d %d %d\n", output.width, output.height, output.size ());
-  printf ("Normals size %d %d %d\n", normals_->width, normals_->height, normals_->size ());
+  //printf ("output size %d %d %d\n", output.width, output.height, output.size ());
+  //printf ("Normals size %d %d %d\n", normals_->width, normals_->height, normals_->size ());
 }
 
 #define PCL_INSTANTIATE_MovingLeastSquares(T,OutT) template class PCL_EXPORTS pcl::MovingLeastSquares<T,OutT>;
