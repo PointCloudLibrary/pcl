@@ -142,6 +142,12 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   Eigen::Vector4f xyz_centroid;
   computeMeanAndCovarianceMatrix (*input_, *indices_, covariance_matrix, xyz_centroid);
 
+  // Check if the covariance matrix is finite or not.
+  for (int i = 0; i < 3; ++i)
+    for (int j = 0; j < 3; ++j)
+      if (!pcl_isfinite (covariance_matrix.coeffRef (i, j)))
+          return;
+
   EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
   EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
   pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
