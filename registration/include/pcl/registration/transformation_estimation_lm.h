@@ -239,6 +239,8 @@ namespace pcl
 
           TransformationEstimationLM<PointSource, PointTarget> *estimator_;
         };
+      public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
   }
 }

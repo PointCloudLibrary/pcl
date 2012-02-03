@@ -126,6 +126,8 @@ namespace pcl
 
         /** \brief A pointer to the spatial search object. */
         KdTreePtr tree_;
+      public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
   }
 }

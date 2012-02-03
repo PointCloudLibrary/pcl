@@ -142,6 +142,8 @@ namespace pcl
         PointCloudConstPtr target_;
 
         Eigen::Matrix4f best_transformation_;
+      public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
   }
 }

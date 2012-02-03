@@ -256,7 +256,8 @@ namespace pcl
 
       /** */
       boost::shared_ptr<ErrorFunctor> error_functor_;
-
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 
