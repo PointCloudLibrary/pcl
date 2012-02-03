@@ -873,6 +873,15 @@ namespace pcl
     float rf[9];
   };
 
+  inline std::ostream& operator << (std::ostream& os, const ShapeContext& p)
+  {
+    for (int i = 0; i < 9; ++i)
+    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
+    for (size_t i = 0; i < p.descriptor.size (); ++i)
+    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < p.descriptor.size()-1 ? ", " : ")");
+    return (os);
+  }
+
   /** \brief A point structure representing the generic Signature of Histograms of OrienTations (SHOT).
     * \ingroup common
     */
