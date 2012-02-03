@@ -314,33 +314,35 @@ pcl_round (float number)
   #define MALLOC_ALIGNED 0
 #endif
 
-inline void* aligned_malloc(size_t size)
+inline void* 
+aligned_malloc (size_t size)
 {
   void *ptr;
 #if   defined (MALLOC_ALIGNED)
   ptr = std::malloc (size);
 #elif defined (HAVE_POSIX_MEMALIGN)
-  if(posix_memalign(&ptr, 16, size))
+  if (posix_memalign (&ptr, 16, size))
     ptr = 0;
 #elif defined (HAVE_MM_MALLOC)
   ptr = _mm_malloc (size, 16);
 #elif defined (_MSC_VER)
-  ptr = _aligned_malloc(size, 16);
+  ptr = _aligned_malloc (size, 16);
 #else
   #error aligned_malloc not supported on your platform
   ptr = 0;
 #endif
-  return ptr;
+  return (ptr);
 }
 
-inline void aligned_free (void* ptr)
+inline void 
+aligned_free (void* ptr)
 {
 #if   defined (MALLOC_ALIGNED) || defined (HAVE_POSIX_MEMALIGN)
   std::free (ptr);
 #elif defined (HAVE_MM_MALLOC)
   ptr = _mm_free (ptr);
 #elif defined (_MSC_VER)
-  _aligned_free(ptr);
+  _aligned_free (ptr);
 #else
   #error aligned_free not supported on your platform
 #endif
