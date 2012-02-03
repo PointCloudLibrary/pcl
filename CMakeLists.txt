@@ -168,34 +168,25 @@ find_package(OpenNI)
 find_package(Qhull)
 # Find ROS
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_ros.cmake)
-# Find VTK
-find_package(VTK)
-if(VTK_FOUND)
-  set(VTK_FOUND TRUE)
-  message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, lib: ${VTK_LIBRARY_DIRS})")
-  link_directories(${VTK_LIBRARY_DIRS})
-  set(HAVE_VTK ON)
-  if(VTK_USE_QVTK)
-    # workaround for debian package
-    get_target_property(QVTK_IMPORTED_LOCATION_RELEASE QVTK IMPORTED_LOCATION_RELEASE)
-    get_target_property(QVTK_IMPORTED_LOCATION_DEBUG QVTK IMPORTED_LOCATION_DEBUG)
-    # if both don't exist
-    if(NOT EXISTS "${QVTK_IMPORTED_LOCATION_RELEASE}" AND NOT EXISTS "${QVTK_IMPORTED_LOCATION_DEBUG}")
-      set(VTK_USE_QVTK OFF)
-      message("QVTK is not found")
-    endif()
-  endif()
-endif()
-# Find MPI
-find_package(MPI)
-if(MPI_CXX_FOUND)
-  include_directories(SYSTEM ${MPI_INCLUDE_PATH})
-endif(MPI_CXX_FOUND)
 # Find QT4
 find_package(Qt4)
 if (QT4_FOUND)
   include(${QT_USE_FILE})
 endif (QT4_FOUND)
+# Find VTK
+find_package(VTK)
+if(VTK_FOUND)
+  set(VTK_FOUND TRUE)
+  find_package (QVTK)
+  message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, lib: ${VTK_LIBRARY_DIRS})")
+  link_directories(${VTK_LIBRARY_DIRS})
+  set(HAVE_VTK ON)
+endif(VTK_FOUND)
+# Find MPI
+find_package(MPI)
+if(MPI_CXX_FOUND)
+  include_directories(SYSTEM ${MPI_INCLUDE_PATH})
+endif(MPI_CXX_FOUND)
 #Find Doxygen and html help compiler if any
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
