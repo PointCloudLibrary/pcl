@@ -1168,8 +1168,8 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
 
   // Save the pointer/ID pair to the global actor map
   (*cloud_actor_map_)[id].actor = actor;
-  if (vertices.size () > 1) 
-    (*cloud_actor_map_)[id].cells = static_cast<vtkPolyDataMapper*>(actor->GetMapper ())->GetInput ()->GetVerts ()->GetData ();
+  //if (vertices.size () > 1) 
+  //  (*cloud_actor_map_)[id].cells = static_cast<vtkPolyDataMapper*>(actor->GetMapper ())->GetInput ()->GetVerts ()->GetData ();
   return (true);
 }
 
