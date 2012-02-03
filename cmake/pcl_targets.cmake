@@ -187,7 +187,9 @@ macro(PCL_ADD_EXECUTABLE _name _component)
     #
     # Only link if needed
     if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX})
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF
+                                                DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
+                                                RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
       set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
     elseif(__COMPILER_PATHSCALE)
@@ -227,7 +229,9 @@ endif(APPLE AND VTK_USE_COCOA)
     #
     # Only link if needed
     if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX})
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF
+                                                DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
+                                                RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
       set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
     elseif(__COMPILER_PATHSCALE)
@@ -267,7 +271,9 @@ macro(PCL_CUDA_ADD_EXECUTABLE _name _component)
     #
     # Only link if needed
     if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX})
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF
+                                                DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
+                                                RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
       set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
     else()
