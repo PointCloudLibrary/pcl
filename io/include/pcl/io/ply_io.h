@@ -341,40 +341,47 @@ namespace pcl
       appendFloatProperty (const std::string& name, const size_t& count = 1);
 
       /** Callback function for the begin of vertex line */
-      void vertexBeginCallback ();
+      void
+      vertexBeginCallback ();
 
       /** Callback function for the end of vertex line */
-      void vertexEndCallback ();
+      void
+      vertexEndCallback ();
 
       /** Callback function for the begin of range_grid line */
-      void rangeGridBeginCallback ();
+      void
+      rangeGridBeginCallback ();
 
       /** Callback function for the begin of range_grid vertex_indices property 
         * param[in] size vertex_indices list size  
         */
-      void rangeGridVertexIndicesBeginCallback (pcl::io::ply::uint8 size);
+      void
+      rangeGridVertexIndicesBeginCallback (pcl::io::ply::uint8 size);
 
       /** Callback function for each range_grid vertex_indices element
         * param[in] vertex_index index of the vertex in vertex_indices
         */      
-      void rangeGridVertexIndicesElementCallback (pcl::io::ply::int32 vertex_index);
+      void
+      rangeGridVertexIndicesElementCallback (pcl::io::ply::int32 vertex_index);
 
       /** Callback function for the end of a range_grid vertex_indices property */
-      void rangeGridVertexIndicesEndCallback ();
+      void
+      rangeGridVertexIndicesEndCallback ();
 
       /** Callback function for the end of a range_grid element end */
-      void rangeGridEndCallback ();
-      /* void faceBegin(); */
-      /* void faceVertexIndicesBegin(pcl::io::ply::uint8 size); */
-      /* void faceVertexIndices_element(pcl::io::ply::int32 vertex_index); */
-      /* void faceVertexIndicesEnd(); */
-      /* void faceEnd(); */
+      void
+      rangeGridEndCallback ();
+
       /** Callback function for obj_info */
-      void objInfoCallback (const std::string& line);
+      void
+      objInfoCallback (const std::string& line);
+
       /// origin
       Eigen::Vector4f origin_;
+
       /// orientation
       Eigen::Matrix3f orientation_;
+
       //vertex element artifacts
       sensor_msgs::PointCloud2 *cloud_;
       size_t vertex_count_, vertex_properties_counter_;
@@ -395,11 +402,20 @@ namespace pcl
   class PCL_EXPORTS PLYWriter : public FileWriter
   {
     public:
+      ///Constructor
       PLYWriter () : mask_ (0) {};
+
+      ///Destructor
       ~PLYWriter () {};
 
       /** \brief Generate the header of a PLY v.7 file format
         * \param[in] cloud the point cloud data message
+        * \param[in] origin the sensor data acquisition origin (translation)
+        * \param[in] orientation the sensor data acquisition origin (rotation)
+        * \param[in] valid_points number of valid points (finite ones for range_grid and
+        * all of them for camer)
+        * \param[in] use_camera if set to true then PLY file will use element camera else
+        * element range_grid will be used.
         */
       inline std::string
       generateHeaderBinary (const sensor_msgs::PointCloud2 &cloud, 
@@ -413,6 +429,12 @@ namespace pcl
       
       /** \brief Generate the header of a PLY v.7 file format
         * \param[in] cloud the point cloud data message
+        * \param[in] origin the sensor data acquisition origin (translation)
+        * \param[in] orientation the sensor data acquisition origin (rotation)
+        * \param[in] valid_points number of valid points (finite ones for range_grid and
+        * all of them for camer)
+        * \param[in] use_camera if set to true then PLY file will use element camera else
+        * element range_grid will be used.
         */
       inline std::string
       generateHeaderASCII (const sensor_msgs::PointCloud2 &cloud, 
@@ -430,6 +452,8 @@ namespace pcl
         * \param[in] origin the sensor data acquisition origin (translation)
         * \param[in] orientation the sensor data acquisition origin (rotation)
         * \param[in] precision the specified output numeric stream precision (default: 8)
+        * \param[in] use_camera if set to true then PLY file will use element camera else
+        * element range_grid will be used.
         */
       int 
       writeASCII (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
@@ -475,9 +499,9 @@ namespace pcl
         * \param[in] origin the sensor acquisition origin
         * \param[in] orientation the sensor acquisition orientation
         * \param[in] binary set to true if the file is to be written in a binary
+        * PLY format, false (default) for ASCII
         * \param[in] use_camera set to true to used camera element and false to
         * use range_grid element
-        * PLY format, false (default) for ASCII
         */
       inline int
       write (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
@@ -499,6 +523,8 @@ namespace pcl
         * \param[in] orientation the sensor acquisition orientation
         * \param[in] binary set to true if the file is to be written in a binary
         * PLY format, false (default) for ASCII
+        * \param[in] use_camera set to true to used camera element and false to
+        * use range_grid element
         */
       inline int
       write (const std::string &file_name, const sensor_msgs::PointCloud2::ConstPtr &cloud, 
@@ -515,6 +541,8 @@ namespace pcl
         * \param[in] cloud the pcl::PointCloud data
         * \param[in] binary set to true if the file is to be written in a binary
         * PLY format, false (default) for ASCII
+        * \param[in] use_camera set to true to used camera element and false to
+        * use range_grid element
         */
       template<typename PointT> inline int
       write (const std::string &file_name, 
@@ -544,7 +572,7 @@ namespace pcl
                       bool binary, 
                       bool use_camera,
                       int valid_points);
-
+      
       void
       writeContentWithCameraASCII (int nr_points, 
                                    int point_size,
