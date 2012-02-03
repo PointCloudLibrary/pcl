@@ -182,6 +182,7 @@ pcl::io::savePolygonFilePLY (const std::string &file_name, const pcl::PolygonMes
   vtkSmartPointer<vtkPLYWriter> poly_writer = vtkSmartPointer<vtkPLYWriter>::New ();
   poly_writer->SetInput (poly_data);
   poly_writer->SetFileName (file_name.c_str ());
+	poly_writer->SetArrayName ("Colors");
   poly_writer->Write ();
 
   return ((int)(mesh.cloud.width * mesh.cloud.width));
