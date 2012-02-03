@@ -190,18 +190,15 @@ main (int argc, char** argv)
 
   // Perform the feature estimation
   sensor_msgs::PointCloud2 output;
-  if (feature_name == "PFHEstimation") {
+  if (feature_name == "PFHEstimation") 
     computeFeatureViaNormals< PFHEstimation<PointXYZ, Normal, PFHSignature125>, PointXYZ, Normal, PFHSignature125>
       (cloud, output, argc, argv);
-  }
-  else if (feature_name == "FPFHEstimation") {
+  else if (feature_name == "FPFHEstimation")
     computeFeatureViaNormals< FPFHEstimation<PointXYZ, Normal, FPFHSignature33>, PointXYZ, Normal, FPFHSignature33>
       (cloud, output, argc, argv);
-  }
-  else if (feature_name == "VFHEstimation") {
+  else if (feature_name == "VFHEstimation")
     computeFeatureViaNormals< VFHEstimation<PointXYZ, Normal, VFHSignature308>, PointXYZ, Normal, VFHSignature308>
     (cloud, output, argc, argv, false);
-  }
 
   // Save into the second file
   saveCloud (argv[p_file_indices[1]], output);
