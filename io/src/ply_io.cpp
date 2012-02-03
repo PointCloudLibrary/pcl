@@ -836,9 +836,7 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
               if ("x" == cloud.fields[d].name)
               {
                 if (value != value)
-                {
                   is_valid_line = false;
-                }
               }
               line << value;
             }
@@ -872,7 +870,7 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
     
     if (is_valid_line)
     {
-      grids[i].push_back (i);
+      grids[i].push_back (valid_points);
       fs << line.str () << std::endl;
       ++valid_points;
     }
