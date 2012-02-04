@@ -8,7 +8,6 @@ if(VTK_FOUND AND VTK_USE_QVTK AND ${Boost_MPI_FOUND} AND ${Boost_SERIALIZATION_F
     set(DEFAULT TRUE)
     set(REASON)
     set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
-    include (${VTK_USE_FILE})
 elseif(NOT VTK_FOUND)
     set(DEFAULT FALSE)
     set(REASON "VTK was not found.")
@@ -19,7 +18,9 @@ elseif(NOT Boost_MPI_FOUND OR NOT Boost_SERIALIZATION_FOUND)
     set(DEFAULT FALSE)
     set(REASON "Boost_MPI or Boost_serialization was not found.")
 endif(VTK_FOUND AND VTK_USE_QVTK AND ${Boost_MPI_FOUND} AND ${Boost_SERIALIZATION_FOUND})
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+include (${VTK_USE_FILE})
 
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk)
@@ -62,7 +63,7 @@ if(build)
       )
 
   # TODO Get it to build without a visualizer when QT4 does not exist
-  if (QT4_FOUND)
+  if (QT4_FOUND AND VTK_USE_QVTK)
     QT4_WRAP_UI(detector_visualizer_ui src/detector_visualizer.ui)
     QT4_WRAP_CPP(detector_visualizer_moc include/pcl/proctor/detector_visualizer.h src/detector_visualizer.ui)
 
