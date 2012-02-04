@@ -32,7 +32,7 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *	
+ *  
  * $Id$
  *
  */
@@ -51,9 +51,10 @@ namespace pcl
     namespace ply 
     {
       /** \file io_operators.h
-       * defines output operators for int8 and uint8
-       * \ingroup io
-       */
+        * defines output operators for int8 and uint8
+        * \author Ares Lagae as part of libply, Nizar Sallem
+        * \ingroup io
+        */
       namespace io_operators 
       {
 

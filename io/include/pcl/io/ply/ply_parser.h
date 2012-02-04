@@ -76,7 +76,7 @@ namespace pcl
     {
       /** Class ply_parser parses a PLY file and generates appropriate atomic
         * parsers for the body.
-        * \author Ares Lagae as part of libply
+        * \author Ares Lagae as part of libply, Nizar Sallem
         * Ported with agreement from the author under the terms of the BSD
         * license.
         */     

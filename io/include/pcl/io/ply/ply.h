@@ -45,10 +45,10 @@
 #include <pcl/io/ply/byte_order.h>
 
 /** \file ply.h contains standard typedefs and generic type traits
-  * \author Ares Lagae as part of libply
+  * \author Ares Lagae as part of libply, Nizar Sallem
   * Ported with agreement from the author under the terms of the BSD
   * license.
-  * 
+  * \ingroup io
   */
 namespace pcl
 {

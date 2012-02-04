@@ -32,7 +32,7 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *	
+ *  
  * $Id$
  *
  */
@@ -46,6 +46,11 @@ namespace pcl
   {
     namespace ply
     {
+      /** \file byte_order.h
+        * defines byte shift operations and endianess.
+        * \author Ares Lagae as part of libply, Nizar Sallem
+        * \ingroup io
+        */
 
 #if defined (PLY_BIG_ENDIAN) || defined (PLY_LITTLE_ENDIAN)
 #  error
