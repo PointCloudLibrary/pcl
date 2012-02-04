@@ -107,7 +107,8 @@ namespace pcl
         vtkIdType (*f)[4] = reinterpret_cast<vtkIdType (*)[4]>(ca->WritePointer(faces, 4 * faces));
         for (int j = 0; j < faces; j++) {
           f[j][0] = 3; // only supports triangles...
-          if (fscanf(file, "3 %lld %lld %lld\n", &f[j][1], &f[j][2], &f[j][3]) != 3) {
+          if (fscanf (file, "3 %lld %lld %lld\n", (long long int*)&f[j][1], (long long int*)&f[j][2], (long long int*)&f[j][3]) != 3) 
+          {
             cerr << "invalid face in file " << path << " on line " << line << endl;
             exit(-1);
           } else {
