@@ -191,11 +191,10 @@ namespace pcl
     eigenvector.normalize ();
   }
 
-  /**
-    * \brief determine the smallest eigenvalue and its corresponding eigenvector
-    * \param mat input matrix that needs to be symmetric and positive semi definite
-    * \param eigenvalue the smallest eigenvalue of the input matrix
-    * \param eigenvector the corresponding eigenvector to the smallest eigenvalue of the input matrix
+  /** \brief determine the smallest eigenvalue and its corresponding eigenvector
+    * \param[in] mat input matrix that needs to be symmetric and positive semi definite
+    * \param[out] eigenvectors the corresponding eigenvector to the smallest eigenvalue of the input matrix
+    * \param[out] eigenvalues the smallest eigenvalue of the input matrix
     */
   template <typename Matrix, typename Vector> inline void
   eigen22 (const Matrix& mat, Matrix& eigenvectors, Vector& eigenvalues)

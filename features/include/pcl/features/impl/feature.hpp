@@ -286,7 +286,7 @@ pcl::FeatureFromNormals<PointInT, PointNT, PointOutT>::initCompute ()
   if (!normals_)
   {
     PCL_ERROR ("[pcl::%s::initCompute] No input dataset containing normals was given!\n", getClassName ().c_str ());
-    Feature<PointInT, PointOutT>::deinitCompute();
+    Feature<PointInT, PointOutT>::deinitCompute ();
     return (false);
   }
 
@@ -296,7 +296,7 @@ pcl::FeatureFromNormals<PointInT, PointNT, PointOutT>::initCompute ()
     PCL_ERROR ("[pcl::%s::initCompute] ", getClassName ().c_str ());
     PCL_ERROR ("The number of points in the input dataset differs from ");
     PCL_ERROR ("the number of points in the dataset containing the normals!\n");
-    Feature<PointInT, PointOutT>::deinitCompute();
+    Feature<PointInT, PointOutT>::deinitCompute ();
     return (false);
   }
 
@@ -319,7 +319,7 @@ pcl::FeatureFromLabels<PointInT, PointLT, PointOutT>::initCompute ()
   if (!labels_)
   {
     PCL_ERROR ("[pcl::%s::initCompute] No input dataset containing labels was given!\n", getClassName ().c_str ());
-    Feature<PointInT, PointOutT>::deinitCompute();
+    Feature<PointInT, PointOutT>::deinitCompute ();
     return (false);
   }
 
@@ -327,7 +327,7 @@ pcl::FeatureFromLabels<PointInT, PointLT, PointOutT>::initCompute ()
   if (labels_->points.size () != surface_->points.size ())
   {
     PCL_ERROR ("[pcl::%s::initCompute] The number of points in the input dataset differs from the number of points in the dataset containing the labels!\n", getClassName ().c_str ());
-    Feature<PointInT, PointOutT>::deinitCompute();
+    Feature<PointInT, PointOutT>::deinitCompute ();
     return (false);
   }
 

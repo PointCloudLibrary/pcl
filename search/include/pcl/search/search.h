@@ -280,7 +280,7 @@ namespace pcl
         }
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius.
-          * \param[in] p_q the given query point
+          * \param[in] point the given query point
           * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
           * \param[out] k_indices the resultant indices of the neighboring points
           * \param[out] k_sqr_distances the resultant squared distances to the neighboring points

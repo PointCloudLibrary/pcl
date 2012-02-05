@@ -105,7 +105,7 @@ namespace pcl
     * \param[in] nr_subdiv the number of subdivisions for the considered distance interval
     * \param[in] plane_radius maximum radius, above which everything can be considered planar
     * \param[in] radii the output point of a type that should have r_min and r_max fields
-    * \param[out] histogram if not NULL, the full neighborhood histogram is provided, usable as a point signature
+    * \param[in] compute_histogram if not false, the full neighborhood histogram is provided, usable as a point signature
     * \ingroup features
     */
   template <typename PointInT, typename PointNT, typename PointOutT> Eigen::MatrixXf
@@ -121,7 +121,7 @@ namespace pcl
     * \param[in] nr_subdiv the number of subdivisions for the considered distance interval
     * \param[in] plane_radius maximum radius, above which everything can be considered planar
     * \param[in] radii the output point of a type that should have r_min and r_max fields
-    * \param[out] histogram if not NULL, the full neighborhood histogram is provided, usable as a point signature
+    * \param[in] compute_histogram if not false, the full neighborhood histogram is provided, usable as a point signature
     * \ingroup features
     */
   template <typename PointNT, typename PointOutT> Eigen::MatrixXf

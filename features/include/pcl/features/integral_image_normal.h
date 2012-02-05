@@ -97,22 +97,23 @@ namespace pcl
       virtual ~IntegralImageNormalEstimation ();
 
       /** \brief Set the regions size which is considered for normal estimation.
-        * \param width the width of the search rectangle
-        * \param height the height of the search rectangle
+        * \param[in] width the width of the search rectangle
+        * \param[in] height the height of the search rectangle
         */
       void
       setRectSize (const int width, const int height);
 
       /** \brief Computes the normal at the specified position.
-        * \param pos_x x position (pixel)
-        * \param pos_y y position (pixel)
-        * \param normal the output estimated normal
+        * \param[in] pos_x x position (pixel)
+        * \param[in] pos_y y position (pixel)
+        * \param[in] point_index the position index of the point
+        * \param[out] normal the output estimated normal
         */
       void
       computePointNormal (const int pos_x, const int pos_y, const unsigned point_index, PointOutT &normal);
 
       /** \brief The depth change threshold for computing object borders
-        * \param max_depth_change_factor the depth change threshold for computing object borders based on
+        * \param[in] max_depth_change_factor the depth change threshold for computing object borders based on
         * depth changes
         */
       void
@@ -122,7 +123,7 @@ namespace pcl
       }
 
       /** \brief Set the normal smoothing size
-        * \param normal_smoothing_size factor which influences the size of the area used to smooth normals
+        * \param[in] normal_smoothing_size factor which influences the size of the area used to smooth normals
         * (depth dependent if useDepthDependentSmoothing is true)
         */
       void
@@ -141,7 +142,7 @@ namespace pcl
         *   <li><b>AVERAGE_DEPTH_CHANGE</b> -  creates only a single integral image and computes the normals
         *   from the average depth changes.
         * </ul>
-        * \param normal_estimation_method the method used for normal estimation
+        * \param[in] normal_estimation_method the method used for normal estimation
         */
       void
       setNormalEstimationMethod (NormalEstimationMethod normal_estimation_method)
@@ -150,7 +151,7 @@ namespace pcl
       }
 
       /** \brief Set whether to use depth depending smoothing or not
-        * \param use_depth_dependent_smoothing decides whether the smoothing is depth dependent
+        * \param[in] use_depth_dependent_smoothing decides whether the smoothing is depth dependent
         */
       void
       setDepthDependentSmoothing (bool use_depth_dependent_smoothing)
@@ -159,8 +160,8 @@ namespace pcl
       }
 
        /** \brief Provide a pointer to the input dataset (overwrites the PCLBase::setInputCloud method)
-        * \param cloud the const boost shared pointer to a PointCloud message
-        */
+         * \param[in] cloud the const boost shared pointer to a PointCloud message
+         */
       virtual inline void
       setInputCloud (const typename PointCloudIn::ConstPtr &cloud)
       {
@@ -180,13 +181,12 @@ namespace pcl
     protected:
 
       /** \brief Computes the normal for the complete cloud.
-        * \param output the resultant normals
+        * \param[out] output the resultant normals
         */
       void
       computeFeature (PointCloudOut &output);
 
-      /** \brief Initialize the data structures, based on the normal estimation method chosen.
-        */
+      /** \brief Initialize the data structures, based on the normal estimation method chosen. */
       void
       initData ();
 

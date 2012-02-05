@@ -410,7 +410,7 @@ namespace pcl
         * \param[in] point the given query point
         * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
         * \param[out] k_indices the resultant indices of the neighboring points
-        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
+        * \param[out] k_sqr_dists the resultant squared distances to the neighboring points
         * \param[in] max_nn if given, bounds the maximum returned neighbors to this value. If \a max_nn is set to
         * 0 or to a number higher than the number of points in the input cloud, all neighbors in \a radius will be
         * returned.

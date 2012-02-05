@@ -145,8 +145,8 @@ namespace pcl
         use_given_normal_ = use;
       }
 
-      /** \brief Set normal_to_use_
-        * \param]in] normal Sets the normal to be used in the VFH computation. It is is used
+      /** \brief Set the normal to use
+        * \param[in] normal Sets the normal to be used in the VFH computation. It is is used
         * to build the Darboux Coordinate system.
         */
       inline void

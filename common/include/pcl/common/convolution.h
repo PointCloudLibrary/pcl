@@ -104,11 +104,12 @@ namespace pcl
         setConvolveDirection (int direction) { convolve_direction_ = direction; }
         /// Get the convolving direction
         int getConvolveDirection () { return (convolve_direction_); }        
+        
         /** Convolve point cloud with an horizontal kernel along rows 
           * then vertical kernel along columns : convolve separately.
           * \param[in] h_kernel kernel for convolving rows
           * \param[in] v_kernel kernel for convolving columns
-          * \param[out] output the convolved cloud
+          * \param[out] out the convolved cloud
           * \note if output doesn't fit in input i.e. output.rows () < input.rows () or
           * output.cols () < input.cols () then output is resized to input sizes.
           */
