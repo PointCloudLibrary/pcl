@@ -36,18 +36,18 @@
  *
  */
 
-#ifndef PCL_GPU_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_
-#define PCL_GPU_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_
+#ifndef PCL_GPU_SEGMENTATION_IMPL_SEEDED_HUE_SEGMENTATION_H_
+#define PCL_GPU_SEGMENTATION_IMPL_SEEDED_HUE_SEGMENTATION_H_
 
-#include "pcl/gpu/segmentation/gpu_extract_clusters.h"
+#include "pcl/gpu/segmentation/gpu_seeded_hue_segmentation.h"
 
 void
-pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> >  &host_cloud_,
-                                    const pcl::gpu::Octree::Ptr                 &tree,
-                                    float                                       tolerance,
-                                    std::vector<PointIndices>                   &clusters,
-                                    unsigned int                                min_pts_per_cluster,
-                                    unsigned int                                max_pts_per_cluster)
+seededHueSegmentation (const boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> >  &host_cloud_,
+                       const pcl::gpu::Octree::Ptr                                  &tree,
+                       float                                                        tolerance,
+                       PointIndices                                                 &clusters_in,
+                       PointIndices                                                 &clusters_out,
+                       float                                                        delta_hue)
 {
 
   // Create a bool vector of processed point indices, and initialize it to false
@@ -143,7 +143,7 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
 }
 
 void 
-pcl::gpu::EuclideanClusterExtraction::extract (std::vector<PointIndices> &clusters)
+pcl::gpu::SeededHueSegmentation::segment (PointIndices &indices_in, PointIndices &indices_out)
 {
   // Initialize the GPU search tree
   if (!tree_)
@@ -152,22 +152,19 @@ pcl::gpu::EuclideanClusterExtraction::extract (std::vector<PointIndices> &cluste
     ///@todo what do we do if input isn't a PointXYZ cloud?
     tree_->setCloud(input_);
   }
-  if (!tree_->isBuilt())
+  if (!tree_->isBuild())
   {
     tree_->build();
   }
 /*
   if(tree_->cloud_.size() != host_cloud.points.size ())
   {
-    PCL_ERROR("[pcl::gpu::EuclideanClusterExtraction] size of host cloud and device cloud don't match!\n");
+    PCL_ERROR("[pcl::gpu::SeededHueSegmentation] size of host cloud and device cloud don't match!\n");
     return;
   }
 */
   // Extract the actual clusters
-  extractEuclideanClusters (host_cloud_, tree_, cluster_tolerance_, clusters, min_pts_per_cluster_, max_pts_per_cluster_);
-
-  // Sort the clusters based on their size (largest one first)
-  std::sort (clusters.rbegin (), clusters.rend (), comparePointClusters);
+  seededHueSegmentation (host_cloud_, tree_, cluster_tolerance_, indices_in, indices_out, delta_hue_);
 }
 
-#endif //PCL_GPU_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_
+#endif //PCL_GPU_SEGMENTATION_IMPL_SEEDED_HUE_SEGMENTATION_H_

@@ -36,18 +36,18 @@
  *
  */
 
-#ifndef PCL_GPU_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_
-#define PCL_GPU_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_
+#ifndef PCL_GPU_SEGMENTATION_IMPL_EXTRACT_LABELED_CLUSTERS_H_
+#define PCL_GPU_SEGMENTATION_IMPL_EXTRACT_LABELED_CLUSTERS_H_
 
-#include "pcl/gpu/segmentation/gpu_extract_clusters.h"
+#include "pcl/gpu/segmentation/gpu_extract_labeled_clusters.h"
 
 void
-pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> >  &host_cloud_,
-                                    const pcl::gpu::Octree::Ptr                 &tree,
-                                    float                                       tolerance,
-                                    std::vector<PointIndices>                   &clusters,
-                                    unsigned int                                min_pts_per_cluster,
-                                    unsigned int                                max_pts_per_cluster)
+pcl::gpu::extractLabeledEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGBL> >  &host_cloud_,
+                                           const pcl::gpu::Octree::Ptr                 &tree,
+                                           float                                       tolerance,
+                                           std::vector<PointIndices>                   &clusters,
+                                           unsigned int                                min_pts_per_cluster,
+                                           unsigned int                                max_pts_per_cluster)
 {
 
   // Create a bool vector of processed point indices, and initialize it to false
@@ -112,9 +112,13 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
         {
           if(processed[data[qp_r + qp * max_answers]])
             continue;
-          processed[data[qp_r + qp * max_answers]] = true;
-          queries_host.push_back (host_cloud_->points[data[qp_r + qp * max_answers]]);
-          found_points++;
+          // Only add if label matches the original label
+          if(host_cloud_->points[i].label == host_cloud_->points[data[qp_r + qp * max_answers]])
+          {
+            processed[data[qp_r + qp * max_answers]] = true;
+            queries_host.push_back (host_cloud_->points[data[qp_r + qp * max_answers]]);
+            found_points++;
+          }
         }
       }
     }
@@ -143,7 +147,7 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
 }
 
 void 
-pcl::gpu::EuclideanClusterExtraction::extract (std::vector<PointIndices> &clusters)
+pcl::gpu::EuclideanLabeledClusterExtraction::extract (std::vector<PointIndices> &clusters)
 {
   // Initialize the GPU search tree
   if (!tree_)
@@ -170,4 +174,4 @@ pcl::gpu::EuclideanClusterExtraction::extract (std::vector<PointIndices> &cluste
   std::sort (clusters.rbegin (), clusters.rend (), comparePointClusters);
 }
 
-#endif //PCL_GPU_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_
+#endif //PCL_GPU_SEGMENTATION_IMPL_EXTRACT_LABELED_CLUSTERS_H_
