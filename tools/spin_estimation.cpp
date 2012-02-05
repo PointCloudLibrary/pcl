@@ -169,7 +169,9 @@ main (int argc, char** argv)
   typedef Histogram<153> SpinImage;
   SpinImageEstimation<PointNormal, PointNormal, SpinImage> spin_est (
     image_width, support_angle, min_neigh); 
-  spin_est.setInputWithNormals (xyznormals, xyznormals);
+  //spin_est.setInputWithNormals (xyznormals, xyznormals);
+  spin_est.setInputCloud (xyznormals);
+  spin_est.setInputNormals (xyznormals);
   spin_est.setSearchMethod (search::KdTree<PointNormal>::Ptr (new search::KdTree<PointNormal>));
   spin_est.setRadiusSearch (radius);
 

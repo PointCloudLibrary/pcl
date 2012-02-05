@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -96,13 +96,9 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
   // according to the volumes ratio
   double bin_size = 0.0;
   if (is_radial_)
-  {
     bin_size = search_radius_ / image_width_;  
-  }
   else
-  {
     bin_size = search_radius_ / image_width_ / sqrt(2.0);
-  }
 
   std::vector<int> nn_indices;
   std::vector<float> nn_sqr_dists;
@@ -121,9 +117,8 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
     double cos_between_normals = -2.0; // should be initialized if used
     if (support_angle_cos_ > 0.0 || is_angular_) // not bogus
     {
-      cos_between_normals = origin_normal.dot (
-        normals_->points[nn_indices[i_neigh]].getNormalVector3fMap ());
-      if (fabs(cos_between_normals) > (1.0 + 10*std::numeric_limits<float>::epsilon())) // should be okay for numeric stability
+      cos_between_normals = origin_normal.dot (input_normals_->points[nn_indices[i_neigh]].getNormalVector3fMap ());
+      if (fabs (cos_between_normals) > (1.0 + 10*std::numeric_limits<float>::epsilon ())) // should be okay for numeric stability
       {      
         PCL_ERROR ("[pcl::%s::computeSiForPoint] Normal for the point %d and/or the point %d are not normalized, dot ptoduct is %f.\n", 
           getClassName ().c_str (), nn_indices[i_neigh], index, cos_between_normals);
@@ -211,17 +206,17 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
     assert (0 <= a && a <= 1);
     assert (0 <= b && b <= 1);
 
-    m_matrix(alpha_bin, beta_bin) += (1-a) * (1-b);
-    m_matrix(alpha_bin+1, beta_bin) += a * (1-b);
-    m_matrix(alpha_bin, beta_bin+1) += (1-a) * b;
-    m_matrix(alpha_bin+1, beta_bin+1) += a * b;
+    m_matrix (alpha_bin, beta_bin) += (1-a) * (1-b);
+    m_matrix (alpha_bin+1, beta_bin) += a * (1-b);
+    m_matrix (alpha_bin, beta_bin+1) += (1-a) * b;
+    m_matrix (alpha_bin+1, beta_bin+1) += a * b;
 
     if (is_angular_)
     {
-      m_averAngles(alpha_bin, beta_bin) += (1-a) * (1-b) * acos (cos_between_normals); 
-      m_averAngles(alpha_bin+1, beta_bin) += a * (1-b) * acos (cos_between_normals);
-      m_averAngles(alpha_bin, beta_bin+1) += (1-a) * b * acos (cos_between_normals);
-      m_averAngles(alpha_bin+1, beta_bin+1) += a * b * acos (cos_between_normals);
+      m_averAngles (alpha_bin, beta_bin) += (1-a) * (1-b) * acos (cos_between_normals); 
+      m_averAngles (alpha_bin+1, beta_bin) += a * (1-b) * acos (cos_between_normals);
+      m_averAngles (alpha_bin, beta_bin+1) += (1-a) * b * acos (cos_between_normals);
+      m_averAngles (alpha_bin+1, beta_bin+1) += a * b * acos (cos_between_normals);
     }
   }
 
@@ -244,15 +239,41 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
 template <typename PointInT, typename PointNT, typename PointOutT> bool 
 pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::initCompute ()
 {
-  // We need a positive definite search radius to continue
+  if (!Feature<PointInT, PointOutT>::initCompute ())
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] Init failed.\n", getClassName ().c_str ());
+    return (false);
+  }
+
+  // Check if input normals are set
+  if (!input_normals_)
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] No input dataset containing normals was given!\n", getClassName ().c_str ());
+    Feature<PointInT, PointOutT>::deinitCompute ();
+    return (false);
+  }
+
+  // Check if the size of normals is the same as the size of the surface
+  if (input_normals_->points.size () != input_->points.size ())
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] ", getClassName ().c_str ());
+    PCL_ERROR ("The number of points in the input dataset differs from ");
+    PCL_ERROR ("the number of points in the dataset containing the normals!\n");
+    Feature<PointInT, PointOutT>::deinitCompute ();
+    return (false);
+  }
+
+   // We need a positive definite search radius to continue
   if (search_radius_ == 0)
   {
     PCL_ERROR ("[pcl::%s::initCompute] Need a search radius different than 0!\n", getClassName ().c_str ());
+    Feature<PointInT, PointOutT>::deinitCompute ();
     return (false);
   }
   if (k_ != 0)
   {
     PCL_ERROR ("[pcl::%s::initCompute] K-nearest neighbor search for spin images not implemented. Used a search radius instead!\n", getClassName ().c_str ());
+    Feature<PointInT, PointOutT>::deinitCompute ();
     return (false);
   }
   // If the surface won't be set, make fake surface and fake surface normals
@@ -260,22 +281,12 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::initCompute ()
   if (!surface_)
   {
     surface_ = input_;
-    normals_ = input_normals_;
     fake_surface_ = true;
   }
 
-  if (!FeatureFromNormals<PointInT, PointNT, PointOutT>::initCompute ())
-  {
-    PCL_ERROR ("[pcl::%s::initCompute] Init failed.\n", getClassName ().c_str ());
-    return (false);
-  }
-
-  if (fake_surface_ && !input_normals_)
-  {
-    input_normals_ = normals_; // normals_ is set, as checked earlier
-  }
+  //if (fake_surface_ && !input_normals_)
+  //  input_normals_ = normals_; // normals_ is set, as checked earlier
   
-
   assert(!(use_custom_axis_ && use_custom_axes_cloud_));
 
   if (!use_custom_axis_ && !use_custom_axes_cloud_ // use input normals as rotation axes
@@ -283,7 +294,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::initCompute ()
   {
     PCL_ERROR ("[pcl::%s::initCompute] No normals for input cloud were given!\n", getClassName ().c_str ());
     // Cleanup
-    FeatureFromNormals<PointInT, PointNT, PointOutT>::deinitCompute ();
+    Feature<PointInT, PointOutT>::deinitCompute ();
     return (false);
   }
 
@@ -292,7 +303,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::initCompute ()
   {
     PCL_ERROR ("[pcl::%s::initCompute] No normals for input cloud were given!\n", getClassName ().c_str ());
     // Cleanup
-    FeatureFromNormals<PointInT, PointNT, PointOutT>::deinitCompute ();
+    Feature<PointInT, PointOutT>::deinitCompute ();
     return (false);
   }
 
@@ -301,11 +312,11 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::initCompute ()
   {
     PCL_ERROR ("[pcl::%s::initCompute] Rotation axis cloud have different size from input!\n", getClassName ().c_str ());
     // Cleanup
-    FeatureFromNormals<PointInT, PointNT, PointOutT>::deinitCompute ();
+    Feature<PointInT, PointOutT>::deinitCompute ();
     return (false);
   }
 
-  return true;
+  return (true);
 }
 
 

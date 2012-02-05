@@ -75,7 +75,8 @@ main (int argc, char** argv) {
 
   // Setup spin image computation
   pcl::SpinImageEstimation<pcl::PointXYZ, pcl::Normal, pcl::Histogram<153> > spin_image_descriptor(8, 0.5, 16);
-  spin_image_descriptor.setInputWithNormals(cloud, normals);
+  spin_image_descriptor.setInputCloud (cloud);
+  spin_image_descriptor.setInputNormals (normals);
 
   // Use the same KdTree from the normal estimation
   spin_image_descriptor.setSearchMethod (kdtree);

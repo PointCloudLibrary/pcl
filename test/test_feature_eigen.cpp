@@ -2502,7 +2502,9 @@ TEST (PCL, SpinImageEstimationEigen)
 
   SpinImageEstimation<PointXYZ, Normal, Eigen::MatrixXf> spin_est (8, 0.5, 16);
   // set parameters
-  spin_est.setInputWithNormals (cloud.makeShared (), normals);
+  //spin_est.setInputWithNormals (cloud.makeShared (), normals);
+  spin_est.setInputCloud (cloud.makeShared ());
+  spin_est.setInputNormals (normals);
   spin_est.setIndices (indicesptr);
   spin_est.setSearchMethod (tree);
   spin_est.setRadiusSearch (40*mr);

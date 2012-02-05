@@ -46,38 +46,45 @@ namespace pcl
 {
   /** \brief Estimates spin-image descriptors in the  given input points. 
     *  
-    *  This class represents spin image descriptor. Spin image is
-    *  a histogram of point locations summed along the bins of the image.
-    *  A 2D accumulator indexed by <VAR>a</VAR> and <VAR>b</VAR> is created. Next, 
-    *  the coordinates (<VAR>a</VAR>, <VAR>b</VAR>) are computed for a vertex in 
-    *  the surface mesh that is within the support of the spin image 
-    *  (explained below). The bin indexed by (<VAR>a</VAR>, <VAR>b</VAR>) in 
-    *  the accumulator is then incremented; bilinear interpolation is used 
-    *  to smooth the contribution of the vertex. This procedure is repeated 
-    *  for all vertices within the support of the spin image. 
-    *  The resulting accumulator can be thought of as an image; 
-    *  dark areas in the image correspond to bins that contain many projected points. 
-    *  As long as the size of the bins in the accumulator is greater 
-    *  than the median distance between vertices in the mesh 
-    *  (the definition of mesh resolution), the position of individual 
-    *  vertices will be averaged out during spin image generation.
+    * This class represents spin image descriptor. Spin image is
+    * a histogram of point locations summed along the bins of the image.
+    * A 2D accumulator indexed by <VAR>a</VAR> and <VAR>b</VAR> is created. Next, 
+    * the coordinates (<VAR>a</VAR>, <VAR>b</VAR>) are computed for a vertex in 
+    * the surface mesh that is within the support of the spin image 
+    * (explained below). The bin indexed by (<VAR>a</VAR>, <VAR>b</VAR>) in 
+    * the accumulator is then incremented; bilinear interpolation is used 
+    * to smooth the contribution of the vertex. This procedure is repeated 
+    * for all vertices within the support of the spin image. 
+    * The resulting accumulator can be thought of as an image; 
+    * dark areas in the image correspond to bins that contain many projected points. 
+    * As long as the size of the bins in the accumulator is greater 
+    * than the median distance between vertices in the mesh 
+    * (the definition of mesh resolution), the position of individual 
+    * vertices will be averaged out during spin image generation.
     *
-    *  With the default paramters, pcl::Histogram<153> is a good choice for PointOutT.
-    *  Of course the dimension of this descriptor must change to match the number
-    *  of bins set by the parameters.
+    * \attention The input normals given by \ref setInputNormals have to match
+    * the input point cloud given by \ref setInputCloud. This behavior is
+    * different than feature estimation methods that extend \ref
+    * FeatureFromNormals, which match the normals with the search surface.
     *
-    *  For further information please see: <br>
-    *  Johnson, A. E., & Hebert, M. (1998). Surface Matching for Object Recognition in 
-    *  Complex 3D Scenes. Image and Vision Computing, 16, 635-651.
-    *  
-    *  The class also implements radial spin images and spin-images in angular domain 
-    *  (or both).
-    *  
-    *  \author Roman Shapovalov, Alexander Velizhev
-    *  \ingroup features
+    * With the default paramters, pcl::Histogram<153> is a good choice for PointOutT.
+    * Of course the dimension of this descriptor must change to match the number
+    * of bins set by the parameters.
+    *
+    * For further information please see:
+    *
+    *  - Johnson, A. E., & Hebert, M. (1998). Surface Matching for Object
+    *    Recognition in Complex 3D Scenes. Image and Vision Computing, 16,
+    *    635-651.
+    * 
+    * The class also implements radial spin images and spin-images in angular domain 
+    * (or both).
+    * 
+    * \author Roman Shapovalov, Alexander Velizhev
+    * \ingroup features
     */
   template <typename PointInT, typename PointNT, typename PointOutT>
-  class SpinImageEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
+  class SpinImageEstimation : public Feature<PointInT, PointOutT>
   {
     public:
       using Feature<PointInT, PointOutT>::feature_name_;
@@ -87,7 +94,6 @@ namespace pcl
       using Feature<PointInT, PointOutT>::k_;
       using Feature<PointInT, PointOutT>::surface_;
       using Feature<PointInT, PointOutT>::fake_surface_;
-      using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
       using PCLBase<PointInT>::input_;
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
@@ -152,37 +158,20 @@ namespace pcl
         min_pts_neighb_ = min_pts_neighb;
       }
 
-
-      /** \brief Sets input cloud along with corresponding normals.
+      /** \brief Provide a pointer to the input dataset that contains the point normals of 
+        * the input XYZ dataset given by \ref setInputCloud
         * 
-        * Note that if no search surface is given explicitly, these points
-        *   and normals are used to estimate the descriptor
-        * \param[in] input the cloud that provides the query points where the descriptor is estimated
-        * \param[in] normals provides normals for input, they should be normalized
+        * \attention The input normals given by \ref setInputNormals have to match
+        * the input point cloud given by \ref setInputCloud. This behavior is
+        * different than feature estimation methods that extend \ref
+        * FeatureFromNormals, which match the normals with the search surface.
+        * \param[in] normals the const boost shared pointer to a PointCloud of normals. 
+        * By convention, L2 norm of each normal should be 1. 
         */
-      void 
-      setInputWithNormals (const PointCloudInConstPtr& input, 
-                           const PointCloudNConstPtr& normals)
-      {
-        this->setInputCloud (input);
-        input_normals_ = normals;
-      }
-
-      /** \brief Sets surface that is used to estimate descriptor.
-        * 
-        * This method is not mandatory. If it has not been called, the points
-        *   and normals from setInputWithNormals() are used to estimate the descriptor
-        *   Calling this method is tantamount to calling setSearchSurface() and setInputNormals()
-        *   with the same parameters (note that setInputNormals() in fact sets surface normals)
-        * \param[in] surface search surface used to estimate descriptor
-        * \param[in] normals provides normals for surface, they should be normalized
-        */
-      void 
-      setSearchSurfaceWithNormals (const PointCloudInConstPtr& surface, 
-                                   const PointCloudNConstPtr& normals)
-      {
-        this->setSearchSurface (surface);
-        this->setInputNormals (normals);
+      inline void 
+      setInputNormals (const PointCloudNConstPtr &normals)
+      { 
+        input_normals_ = normals; 
       }
 
       /** \brief Sets single vector a rotation axis for all input points.
@@ -213,9 +202,7 @@ namespace pcl
         use_custom_axis_ = false;
       }
 
-      /** \brief Sets input normals as rotation axes (default setting).
-        * 
-        */
+      /** \brief Sets input normals as rotation axes (default setting). */
       void 
       useNormalsAsRotationAxis () 
       { 
@@ -225,13 +212,13 @@ namespace pcl
 
       /** \brief Sets/unsets flag for angular spin-image domain.
         * 
-        *  Angular spin-image differs from the vanilla one in the way that not 
-        *  the points are collected in the bins but the angles between their
-        *  normals and the normal to the reference point. For further
-        *  information please see 
-        *  Endres, F., Plagemann, C., Stachniss, C., & Burgard, W. (2009). 
-        *  Unsupervised Discovery of Object Classes from Range Data using Latent Dirichlet Allocation. 
-        *  In Robotics: Science and Systems. Seattle, USA.
+        * Angular spin-image differs from the vanilla one in the way that not 
+        * the points are collected in the bins but the angles between their
+        * normals and the normal to the reference point. For further
+        * information please see 
+        * Endres, F., Plagemann, C., Stachniss, C., & Burgard, W. (2009). 
+        * Unsupervised Discovery of Object Classes from Range Data using Latent Dirichlet Allocation. 
+        * In Robotics: Science and Systems. Seattle, USA.
         * \param[in] is_angular true for angular domain, false for point domain
         */
       void 
@@ -239,9 +226,9 @@ namespace pcl
 
       /** \brief Sets/unsets flag for radial spin-image structure.
         * 
-        *  Instead of rectangular coordinate system for reference frame 
-        *  polar coordinates are used. Binning is done depending on the distance and 
-        *  inclination angle from the reference point
+        * Instead of rectangular coordinate system for reference frame 
+        * polar coordinates are used. Binning is done depending on the distance and 
+        * inclination angle from the reference point
         * \param[in] is_radial true for radial spin-image structure, false for rectangular
         */
       void 
@@ -262,10 +249,8 @@ namespace pcl
       virtual bool
       initCompute ();
 
-
       /** \brief Computes a spin-image for the point of the scan. 
-        * 
-        * \param index the index of the reference point in the input cloud
+        * \param[in] index the index of the reference point in the input cloud
         * \return estimated spin-image (or its variant) as a matrix
         */
       Eigen::ArrayXXd 
@@ -315,9 +300,11 @@ namespace pcl
     *  (the definition of mesh resolution), the position of individual 
     *  vertices will be averaged out during spin image generation.
     *  
-    *  For further information please see: <br>
-    *  Johnson, A. E., & Hebert, M. (1998). Surface Matching for Object Recognition in 
-    *  Complex 3D Scenes. Image and Vision Computing, 16, 635-651.
+    * For further information please see:
+    *
+    *  - Johnson, A. E., & Hebert, M. (1998). Surface Matching for Object
+    *    Recognition in Complex 3D Scenes. Image and Vision Computing, 16,
+    *    635-651.
     *  
     *  The class also implements radial spin images and spin-images in angular domain 
     *  (or both).
