@@ -37,6 +37,7 @@
 
 #include <pcl/pcl_config.h>
 #include <boost/cstdint.hpp>
+#include <cstdlib>
 
 namespace pcl
 {
