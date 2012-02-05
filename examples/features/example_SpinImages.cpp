@@ -41,15 +41,15 @@
 
 #include <iostream>
 #include <vector>
+
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/spin_image.h>
 
-
 int
-main (int argc, char** argv) {
-
+main (int argc, char** argv)
+{
   std::string filename = argv[1];
   std::cout << "Reading " << filename << std::endl;
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);

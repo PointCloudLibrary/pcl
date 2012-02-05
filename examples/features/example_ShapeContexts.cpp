@@ -37,20 +37,18 @@
  *
  */
 
-
-
 #include <iostream>
 #include <vector>
+
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/features/3dsc.h>
 #include <pcl/features/impl/3dsc.hpp>
 #include <pcl/features/normal_3d.h>
 
-
 int
-main (int argc, char** argv) {
-
+main (int argc, char** argv)
+{
   std::string filename = argv[1];
   std::cout << "Reading " << filename << std::endl;
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
@@ -99,5 +97,4 @@ main (int argc, char** argv) {
   std::vector<float> first_descriptor = shape_context_features->points[0].descriptor;
 
   return 0;
-
 }

@@ -68,41 +68,41 @@ main (int argc, char** argv)
   std::cout << "Loaded " << cloud->points.size () << " points." << std::endl;
 
   // Compute the normals
-  pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normalEstimation;
-  normalEstimation.setInputCloud (cloud);
+  pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normal_estimation;
+  normal_estimation.setInputCloud (cloud);
 
   pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
-  normalEstimation.setSearchMethod (tree);
+  normal_estimation.setSearchMethod (tree);
 
-  pcl::PointCloud<pcl::Normal>::Ptr cloudWithNormals (new pcl::PointCloud<pcl::Normal>);
+  pcl::PointCloud<pcl::Normal>::Ptr cloud_with_normals (new pcl::PointCloud<pcl::Normal>);
 
-  normalEstimation.setRadiusSearch (0.03);
+  normal_estimation.setRadiusSearch (0.03);
 
-  normalEstimation.compute (*cloudWithNormals);
+  normal_estimation.compute (*cloud_with_normals);
 
   // Setup the feature computation
 
-  pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::FPFHSignature33> fpfhEstimation;
+  pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::FPFHSignature33> fpfh_estimation;
   // Provide the original point cloud (without normals)
-  fpfhEstimation.setInputCloud (cloud);
+  fpfh_estimation.setInputCloud (cloud);
   // Provide the point cloud with normals
-  fpfhEstimation.setInputNormals (cloudWithNormals);
+  fpfh_estimation.setInputNormals (cloud_with_normals);
 
   // fpfhEstimation.setInputWithNormals(cloud, cloudWithNormals); PFHEstimation does not have this function
   // Use the same KdTree from the normal estimation
-  fpfhEstimation.setSearchMethod (tree);
+  fpfh_estimation.setSearchMethod (tree);
 
-  pcl::PointCloud<pcl::FPFHSignature33>::Ptr pfhFeatures (new pcl::PointCloud<pcl::FPFHSignature33>);
+  pcl::PointCloud<pcl::FPFHSignature33>::Ptr pfh_features (new pcl::PointCloud<pcl::FPFHSignature33>);
 
-  fpfhEstimation.setRadiusSearch (0.2);
+  fpfh_estimation.setRadiusSearch (0.2);
 
   // Actually compute the spin images
-  fpfhEstimation.compute (*pfhFeatures);
+  fpfh_estimation.compute (*pfh_features);
 
-  std::cout << "output points.size (): " << pfhFeatures->points.size () << std::endl;
+  std::cout << "output points.size (): " << pfh_features->points.size () << std::endl;
 
   // Display and retrieve the shape context descriptor vector for the 0th point.
-  pcl::FPFHSignature33 descriptor = pfhFeatures->points[0];
+  pcl::FPFHSignature33 descriptor = pfh_features->points[0];
   std::cout << descriptor << std::endl;
 
   return 0;

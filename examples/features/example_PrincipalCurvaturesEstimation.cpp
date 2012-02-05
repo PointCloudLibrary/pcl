@@ -50,12 +50,12 @@
 int
 main (int argc, char** argv)
 {
-  std::string fileName = argv[1];
-  std::cout << "Reading " << fileName << std::endl;
+  std::string filename = argv[1];
+  std::cout << "Reading " << filename << std::endl;
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
-  if (pcl::io::loadPCDFile<pcl::PointXYZ> (fileName, *cloud) == -1) //* load the file
+  if (pcl::io::loadPCDFile<pcl::PointXYZ> (filename, *cloud) == -1) //* load the file
   {
     PCL_ERROR ("Couldn't read file");
     return (-1);
@@ -64,39 +64,39 @@ main (int argc, char** argv)
   std::cout << "Loaded " << cloud->points.size () << " points." << std::endl;
 
   // Compute the normals
-  pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normalEstimation;
-  normalEstimation.setInputCloud (cloud);
+  pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normal_estimation;
+  normal_estimation.setInputCloud (cloud);
 
   pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
-  normalEstimation.setSearchMethod (tree);
+  normal_estimation.setSearchMethod (tree);
 
-  pcl::PointCloud<pcl::Normal>::Ptr cloudWithNormals (new pcl::PointCloud<pcl::Normal>);
+  pcl::PointCloud<pcl::Normal>::Ptr cloud_with_normals (new pcl::PointCloud<pcl::Normal>);
 
-  normalEstimation.setRadiusSearch (0.03);
+  normal_estimation.setRadiusSearch (0.03);
 
-  normalEstimation.compute (*cloudWithNormals);
+  normal_estimation.compute (*cloud_with_normals);
 
   // Setup the principal curvatures computation
-  pcl::PrincipalCurvaturesEstimation<pcl::PointXYZ, pcl::Normal, pcl::PrincipalCurvatures> principalCurvaturesEstimation;
+  pcl::PrincipalCurvaturesEstimation<pcl::PointXYZ, pcl::Normal, pcl::PrincipalCurvatures> principal_curvatures_estimation;
 
   // Provide the original point cloud (without normals)
-  principalCurvaturesEstimation.setInputCloud (cloud);
+  principal_curvatures_estimation.setInputCloud (cloud);
 
   // Provide the point cloud with normals
-  principalCurvaturesEstimation.setInputNormals (cloudWithNormals);
+  principal_curvatures_estimation.setInputNormals (cloud_with_normals);
 
   // Use the same KdTree from the normal estimation
-  principalCurvaturesEstimation.setSearchMethod (tree);
-  principalCurvaturesEstimation.setRadiusSearch (1.0);
+  principal_curvatures_estimation.setSearchMethod (tree);
+  principal_curvatures_estimation.setRadiusSearch (1.0);
 
   // Actually compute the principal curvatures
-  pcl::PointCloud<pcl::PrincipalCurvatures>::Ptr principalCurvatures (new pcl::PointCloud<pcl::PrincipalCurvatures> ());
-  principalCurvaturesEstimation.compute (*principalCurvatures);
+  pcl::PointCloud<pcl::PrincipalCurvatures>::Ptr principal_curvatures (new pcl::PointCloud<pcl::PrincipalCurvatures> ());
+  principal_curvatures_estimation.compute (*principal_curvatures);
 
-  std::cout << "output points.size (): " << principalCurvatures->points.size () << std::endl;
+  std::cout << "output points.size (): " << principal_curvatures->points.size () << std::endl;
 
   // Display and retrieve the shape context descriptor vector for the 0th point.
-  pcl::PrincipalCurvatures descriptor = principalCurvatures->points[0];
+  pcl::PrincipalCurvatures descriptor = principal_curvatures->points[0];
   std::cout << descriptor << std::endl;
 
   return 0;

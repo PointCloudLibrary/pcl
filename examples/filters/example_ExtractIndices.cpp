@@ -37,12 +37,15 @@
  *
  */
 
+// STL
 #include <iostream>
 
+// PCL
 #include <pcl/point_types.h>
 #include <pcl/filters/extract_indices.h>
 
-int main (int argc, char** argv)
+int
+main (int argc, char** argv)
 {
   typedef pcl::PointXYZ PointType;
   typedef pcl::PointCloud<PointType> CloudType;
@@ -61,11 +64,11 @@ int main (int argc, char** argv)
   indices.indices.push_back(0);
   indices.indices.push_back(2);
 
-  pcl::ExtractIndices<PointType> extractIndices;
-  extractIndices.setIndices(boost::make_shared<const pcl::PointIndices> (indices));
-  extractIndices.setInputCloud(cloud);
+  pcl::ExtractIndices<PointType> extract_indices;
+  extract_indices.setIndices(boost::make_shared<const pcl::PointIndices> (indices));
+  extract_indices.setInputCloud(cloud);
   pcl::PointCloud<pcl::PointXYZ>::Ptr output(new pcl::PointCloud<pcl::PointXYZ>);
-  extractIndices.filter(*output);
+  extract_indices.filter(*output);
 
   std::cout << "Output has " << output->points.size() << " points." << std::endl;
   return (0);
