@@ -364,6 +364,6 @@ namespace pcl
   }
 }
 
-#include "lum.hpp"
+#include "impl/lum.hpp"
 
 #endif // PCL_LUM_H_
