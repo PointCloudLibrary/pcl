@@ -35,7 +35,6 @@ namespace pcl
         vector<int> indices;
         vector<float> distances;
 
-        clock_t start = clock();
         StopWatch s;
         int num_found = match.tree->nearestKSearch(*query.features, pi, max_votes, indices, distances);
 
