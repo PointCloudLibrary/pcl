@@ -431,7 +431,7 @@ namespace pcl
   };
   inline std::ostream& operator << (std::ostream& os, const PointXYZRGB& p)
   {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.r << "," << p.g << "," << p.b << ")";
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " << (int) p.r << "," << (int) p.g << "," << (int) p.b << ")";
     return (os);
   }
 
