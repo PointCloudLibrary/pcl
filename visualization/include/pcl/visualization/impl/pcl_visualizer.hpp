@@ -925,7 +925,11 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   vtkSmartPointer<vtkDataArray> scalars;
   polydata->GetPointData ()->SetScalars (scalars);
   polydata->Update ();
+  double minmax[2];
+  minmax[0] = std::numeric_limits<double>::min ();
+  minmax[1] = std::numeric_limits<double>::max ();
   am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
+  am_it->second.actor->GetMapper ()->SetScalarRange (minmax);
 
   // Update the mapper
   reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->SetInput (polydata);
@@ -954,7 +958,11 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   vtkSmartPointer<vtkDataArray> scalars;
   polydata->GetPointData ()->SetScalars (scalars);
   polydata->Update ();
+  double minmax[2];
+  minmax[0] = std::numeric_limits<double>::min ();
+  minmax[1] = std::numeric_limits<double>::max ();
   am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
+  am_it->second.actor->GetMapper ()->SetScalarRange (minmax);
 
   // Update the mapper
   reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->SetInput (polydata);
