@@ -149,7 +149,7 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (int index,
   // Vector in which the polynomial coefficients will be put
   Eigen::VectorXd c_vec;
   // Local coordinate system (Darboux frame)
-  Eigen::Vector3d v, u;
+  Eigen::Vector3d v (0.0f, 0.0f, 0.0f), u (0.0f, 0.0f, 0.0f);
 
 
 
@@ -257,7 +257,7 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (int index,
             double d_u = 0.0f, d_v = 0.0f;
             if (polynomial_fit_ && (int)nn_indices.size () >= nr_coeff_ && pcl_isfinite (c_vec[0]))
             {
-              printf ("\nc_vec: ");
+         //     printf ("\nc_vec: ");
               // Compute the displacement along the normal using the fitted polynomial
               // and compute the partial derivatives needed for estimating the normal
               int j = 0;
@@ -267,7 +267,7 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (int index,
                 v_pow = 1;
                 for (int vi = 0; vi <= order_ - ui; ++vi)
                 {
-                  printf ("%f ", c_vec[j]);
+             //     printf ("%f ", c_vec[j]);
                   n_disp += u_pow * v_pow * c_vec[j++];
 
                   // Compute partial derivatives
@@ -287,100 +287,11 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (int index,
             PointInT aux;
             // MEGA HACK!!!
             if (fabs(n_disp) > 0.1) n_disp = 0.0f;
-            aux.x = point[0] + u[0] * u_disp + v[0] * v_disp + plane_normal[0] * n_disp;
-            aux.y = point[1] + u[1] * u_disp + v[1] * v_disp + plane_normal[1] * n_disp;
-            aux.z = point[2] + u[2] * u_disp + v[2] * v_disp + plane_normal[2] * n_disp;
-
-            Eigen::Vector3d normal = plane_normal - d_u * u - d_v * v;
-
-            NormalOutT aux_normal;
-            aux_normal.normal_x = normal[0];
-            aux_normal.normal_y = normal[1];
-            aux_normal.normal_z = normal[2];
-            aux_normal.curvature = curvature;
-
-            projected_points.push_back (aux);
-            projected_points_normals.push_back (aux_normal);
-          }
-    }
-
-    case (UNIFORM_DENSITY):
-    {
-      // Compute the local point density and add more samples if necessary
-      int num_points_to_add = (int) ceil (point_density_ * search_radius_) - nn_indices.size ();
-
-      if (num_points_to_add <= 0)
-      {
-        // Just add the current point
-        Eigen::Vector3d normal = plane_normal;
-
-        if (polynomial_fit_ && (int)nn_indices.size () >= nr_coeff_ && pcl_isfinite (c_vec[0]))
-        {
-          // Projection onto MLS surface along Darboux normal to the height at (0,0)
-          point += (c_vec[0] * plane_normal).cast<float> ();
-
-          // Compute tangent vectors using the partial derivates evaluated at (0,0) which is c_vec[order_+1] and c_vec[1]
-          if (normals_)
-            normal = plane_normal - c_vec[order_ + 1] * u - c_vec[1] * v;
-        }
-
-        PointInT aux;
-        aux.x = point[0];
-        aux.y = point[1];
-        aux.z = point[2];
-        projected_points.push_back (aux);
-
-        NormalOutT aux_normal;
-        aux_normal.normal_x = normal[0];
-        aux_normal.normal_y = normal[1];
-        aux_normal.normal_z = normal[2];
-        aux_normal.curvature = curvature;
-        projected_points_normals.push_back (aux_normal);
-
-        break;
-
-      }
-
-      // Sample the local plane
-      /// TODO use the random number generator here - create samples inside a circle and apply same logics as above
-      for (float u_disp = -upsampling_radius_; u_disp <= upsampling_radius_; u_disp += upsampling_step_)
-        for (float v_disp = -upsampling_radius_; v_disp <= upsampling_radius_; v_disp += upsampling_step_)
-          if (u_disp*u_disp + v_disp*v_disp < upsampling_radius_*upsampling_radius_)
-          {
-            // If polynomial fitting was done, calculate the displacement along the normal
-            double n_disp = 0.0f;
-            double d_u = 0.0f, d_v = 0.0f;
-            if (polynomial_fit_ && (int)nn_indices.size () >= nr_coeff_ && pcl_isfinite (c_vec[0]))
-            {
-              // Compute the displacement along the normal using the fitted polynomial
-              // and compute the partial derivatives needed for estimating the normal
-              int j = 0;
-              float u_pow = 1, v_pow = 1;
-              for (int ui = 0; ui <= order_; ++ui)
-              {
-                v_pow = 1;
-                for (int vi = 0; vi <= order_ - ui; ++vi)
-                {
-                  n_disp += u_pow * v_pow * c_vec[j++];
-
-                  // Compute partial derivatives
-                  if (ui >= 1)
-                    d_u += c_vec[j-1] * ui * u_pow / u_disp * v_pow;
-                  if (vi >= 1)
-                    d_v += c_vec[j-1] * vi * u_pow * v_pow / v_disp;
-
-                  v_pow *= v_disp;
-                }
-                u_pow *= u_disp;
-              }
-            }
-
-            PointInT aux;
-            aux.x = point[0] + u[0] * u_disp + v[0] * v_disp + plane_normal[0] * n_disp;
-            aux.y = point[1] + u[1] * u_disp + v[1] * v_disp + plane_normal[1] * n_disp;
-            aux.z = point[2] + u[2] * u_disp + v[2] * v_disp + plane_normal[2] * n_disp;
-
-            Eigen::Vector3d normal = plane_normal - d_u * u - d_v * v;
+            Eigen::Vector3d normal = plane_normal.normalized () - d_u * u - d_v * v;
+            normal.normalize ();
+            aux.x = point[0] + u[0] * u_disp + v[0] * v_disp + normal[0] * n_disp;
+            aux.y = point[1] + u[1] * u_disp + v[1] * v_disp + normal[1] * n_disp;
+            aux.z = point[2] + u[2] * u_disp + v[2] * v_disp + normal[2] * n_disp;
 
             NormalOutT aux_normal;
             aux_normal.normal_x = normal[0];
@@ -391,8 +302,10 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (int index,
             projected_points.push_back (aux);
             projected_points_normals.push_back (aux_normal);
           }
+		break;
     }
-  }
+
+     }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
