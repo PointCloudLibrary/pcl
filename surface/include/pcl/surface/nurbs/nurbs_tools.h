@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer
+ *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -39,128 +39,128 @@
 #define _NURBS_TOOLS_H_
 
 #include <vector>
-#include <opennurbs.h>
-//#undef Success
-#include <Eigen/Dense>
+#include "nurbs_surface.h"
+
+#ifdef USE_UMFPACK
+#include <suitesparse/cholmod.h>
+#include <suitesparse/umfpack.h>
+#endif
 
 namespace pcl
 {
-
-  enum
-  {
-    NORTH = 1, NORTHEAST = 2, EAST = 3, SOUTHEAST = 4, SOUTH = 5, SOUTHWEST = 6, WEST = 7, NORTHWEST = 8
-  };
-
-  class NurbsTools
+  namespace nurbs
   {
 
-  public:
-    ON_NurbsSurface* surf_;
-
-    class myvec
+    enum
     {
-    public:
-      int side;
-      double hint;
-      myvec (int side, double hint)
-      {
-        this->side = side;
-        this->hint = hint;
-      }
+      NORTH = 1, NORTHEAST = 2, EAST = 3, SOUTHEAST = 4, SOUTH = 5, SOUTHWEST = 6, WEST = 7, NORTHWEST = 8
     };
 
-    NurbsTools (ON_NurbsSurface* surf);
-
-    // evaluations in the parameter domain
-    Eigen::Vector3d
-    x (double u, double v);
-
-    Eigen::MatrixXd
-    jacX (double u, double v);
-
-    std::vector<double>
-    getElementVector (int dim);
-
-    std::vector<double>
-    getElementVectorDeltas (int dim);
-
-    Eigen::Vector3d
-    getDistanceVector (Eigen::Vector3d pt, Eigen::Vector2d params);
-
-    Eigen::Vector2d
-    inverseMapping (Eigen::Vector3d pt, Eigen::Vector2d hint, double &error, int maxSteps = 100,
-                    double accuracy = 1e-6, bool quiet = true);
-
-    Eigen::Vector2d
-    inverseMappingBoundary (Eigen::Vector3d pt, double &error, int maxSteps = 100, double accuracy = 1e-6,
-                            bool quiet = true);
-
-    Eigen::Vector2d
-    inverseMappingBoundary (Eigen::Vector3d pt, int side, double hint, double &error, int maxSteps = 100,
-                            double accuracy = 1e-6, bool quiet = true);
-
-    Eigen::Vector2d
-    inverseMapping (Eigen::Vector3d pt, Eigen::Vector2d* phint, double &error, int maxSteps = 100,
-                    double accuracy = 1e-6, bool quiet = true);
-
-    // index routines
-    int
-    A (int I, int J)
+    class NurbsTools
     {
-      return surf_->m_cv_count[1] * I + J;
-    } // two global indices to one global index (lexicographic)
 
-    int
-    a (int i, int j)
-    {
-      return surf_->m_order[1] * i + j;
-    } // two local indices into one local index (lexicographic)
+    public:
+      NurbsSurface* m_surf;
 
-    int
-    i (int a)
-    {
-      return (int)(a / surf_->m_order[1]);
-    } // local lexicographic in local row index
+      class myvec
+      {
+      public:
+        int side;
+        double hint;
+        myvec (int side, double hint)
+        {
+          this->side = side;
+          this->hint = hint;
+        }
+      };
 
-    int
-    j (int a)
-    {
-      return (int)(a % surf_->m_order[1]);
-    } // local lexicographic in local col index
+      NurbsTools (NurbsSurface* surf);
 
-    int
-    I (int A)
-    {
-      return (int)(A / surf_->m_cv_count[1]);
-    } // global lexicographic in global row index
+      // evaluations in the parameter domain
+      vec3
+      x (double u, double v);
+      //  ON_3dPoint evaluatePointOnNurbs(cvec params);
+      Eigen::MatrixXd
+      jacX (double u, double v);
 
-    int
-    J (int A)
-    {
-      return (int)(A % surf_->m_cv_count[1]);
-    } // global lexicographic in global col index
+      std::vector<double>
+      getElementVector (int dim);
+      std::vector<double>
+      getElementVectorDeltas (int dim);
 
-    int
-    A (int E, int F, int i, int j)
-    {
-      return A (E + i, F + j);
-    }
-    ; // check this: element + local indices to one global index (lexicographic)
+      vec2
+      inverseMapping (const vec3 &pt, const vec2 &hint, double &error, vec3 &p, vec3 &tu, vec3 &tv, int maxSteps = 100,
+                      double accuracy = 1e-6, bool quiet = true);
 
-    int
-    E (double u)
-    {
-      return ON_NurbsSpanIndex (surf_->m_order[0], surf_->m_cv_count[0], surf_->m_knot[0], u, 0, 0);
-    } // element index in u-direction
+      vec2
+      inverseMapping (const vec3 &pt, vec2* phint, double &error, vec3 &p, vec3 &tu, vec3 &tv, int maxSteps = 100,
+                      double accuracy = 1e-6, bool quiet = true);
 
-    int
-    F (double v)
-    {
-      return ON_NurbsSpanIndex (surf_->m_order[1], surf_->m_cv_count[1], surf_->m_knot[1], v, 0, 0);
-    } // element index in v-direction
+      vec2
+      inverseMappingBoundary (const vec3 &pt, double &error, vec3 &p, vec3 &tu, vec3 &tv, int maxSteps = 100,
+                              double accuracy = 1e-6, bool quiet = true);
 
-  };
+      vec2
+      inverseMappingBoundary (const vec3 &pt, int side, double hint, double &error, vec3 &p, vec3 &tu, vec3 &tv,
+                              int maxSteps = 100, double accuracy = 1e-6, bool quiet = true);
 
-} // namespace pcl_nurbs
+#ifdef USE_UMFPACK
+      bool solveSparseLinearSystem(cholmod_sparse* A, cholmod_dense* b, cholmod_dense* x, bool transpose);
+      bool solveSparseLinearSystemLQ(cholmod_sparse* A, cholmod_dense* b, cholmod_dense* x);
+#endif
+
+      // index routines
+      int
+      A (int I, int J)
+      {
+        return m_surf->CountCPV () * I + J;
+      } // two global indices to one global index (lexicographic)
+      int
+      a (int i, int j)
+      {
+        return (m_surf->DegreeV () + 1) * i + j;
+      } // two local indices into one local index (lexicographic)
+      int
+      i (int a)
+      {
+        return (int)(a / (m_surf->DegreeV () + 1));
+      } // local lexicographic in local row index
+      int
+      j (int a)
+      {
+        return (int)(a % (m_surf->DegreeV () + 1));
+      } // local lexicographic in local col index
+      int
+      I (int A)
+      {
+        return (int)(A / (m_surf->DegreeV () + 1));
+      } // global lexicographic in global row index
+      int
+      J (int A)
+      {
+        return (int)(A % (m_surf->DegreeV () + 1));
+      } // global lexicographic in global col index
+      int
+      A (int E, int F, int i, int j)
+      {
+        return A (E + i, F + j);
+      }
+      // check this: element + local indices to one global index (lexicographic)
+      int
+      E (double u)
+      {
+        return m_surf->basisU.GetSpan (u) - m_surf->DegreeU ();
+        //    return ON_NurbsSpanIndex((m_surf->Degree(0)+1), (m_surf->Degree(0)+1), m_surf->m_knot[0], u, 0, 0);
+      } // element index in u-direction
+      int
+      F (double v)
+      {
+        return m_surf->basisU.GetSpan (v) - m_surf->DegreeV ();
+        //    return ON_NurbsSpanIndex(m_surf->m_order[1], m_surf->m_cv_count[1], m_surf->m_knot[1], v, 0, 0);
+      } // element index in v-direction
+
+    };
+  }
+} // namespace nurbsfitting
 
 #endif /* NTOOLS_H_ */

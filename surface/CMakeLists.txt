@@ -41,28 +41,30 @@ if(build)
     endif()
     
     ####### NURBS FITTING by thomas.moerwald #########
-
-    #SET(BUILD_surface_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds" )
-    #IF(BUILD_surface_nurbs)
-		# TODO remove this ugly thing
-    #set(OPENNURBS_PATH /home/tm/svn-repositories/v4r/trunk/external/opennurbs)
-    #link_directories(${OPENNURBS_PATH})
-    #include_directories(${OPENNURBS_PATH})
-    #set(NURBS_INCLUDES
-    #		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_data.h
-    #		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_fitting.h
-    #		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_tools.h
-    #		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_fitter.h
-    #		)
-    #set(NURBS_SOURCES
-    #		src/nurbs/nurbs_fitting.cpp
-    #		src/nurbs/nurbs_tools.cpp
-    #		src/nurbs/nurbs_fitter.cpp
-    #		)
-    #set(NURBS_IMPL
-    #		include/pcl/${SUBSYS_NAME}/impl/nurbs/nurbs_fitter.hpp
-    #		)
-    #ENDIF(BUILD_surface_nurbs)
+    SET(BUILD_surface_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds" )
+    IF(BUILD_surface_nurbs)
+    set(NURBS_INCLUDES
+		include/pcl/${SUBSYS_NAME}/nurbs/eigen_defs.h
+		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_basis.h
+		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_curve.h
+		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_surface.h
+    		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_data.h
+    		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_fitting.h
+    		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_tools.h
+    		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_fitter.h
+    		)
+    set(NURBS_SOURCES
+		src/nurbs/nurbs_basis.cpp
+		src/nurbs/nurbs_curve.cpp
+		src/nurbs/nurbs_surface.cpp
+    		src/nurbs/nurbs_fitting.cpp
+    		src/nurbs/nurbs_tools.cpp
+    		src/nurbs/nurbs_fitter.cpp
+    		)
+    set(NURBS_IMPL
+    		include/pcl/${SUBSYS_NAME}/impl/nurbs/nurbs_fitter.hpp
+    		)
+    ENDIF(BUILD_surface_nurbs)
     
 
     #    # Includes for Misha's Poisson reconstruction code
@@ -140,7 +142,6 @@ if(build)
         #include/pcl/${SUBSYS_NAME}/poisson.h
         ${HULL_INCLUDES}
         #${POISSON_INCLUDES}
-        ${NURBS_INCLUDES}
         )
 
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/gp3.hpp
@@ -156,7 +157,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/texture_mapping.hpp
         #include/pcl/${SUBSYS_NAME}/impl/poisson.hpp
         ${HULL_IMPLS}
-        ${NURBS_IMPLS}
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
@@ -175,5 +175,9 @@ if(build)
     #PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/poisson ${POISSON_INCLUDES})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
     #PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl/poisson ${POISSON_IMPLS})
+
+    if(BUILD_surface_nurbs)
+        PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/nurbs ${NURBS_INCLUDES})
+    endif(BUILD_surface_nurbs)
 
 endif(build)

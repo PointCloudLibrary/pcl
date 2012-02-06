@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer
+ *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,54 +31,69 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * @author thomas.moerwald
+ *
  */
 
 #include <iostream>
 #include <stdexcept>
+#include <stdio.h>
 #include "pcl/surface/nurbs/nurbs_tools.h"
 
+#undef Success
+#include <Eigen/Dense>
+
 using namespace pcl;
+using namespace nurbs;
 using namespace Eigen;
 
-NurbsTools::NurbsTools (ON_NurbsSurface* surf)
+NurbsTools::NurbsTools (NurbsSurface* surf)
 {
-
-  surf_ = surf;
-
+  m_surf = surf;
 }
 
-Vector3d
+vec3
 NurbsTools::x (double u, double v)
 {
-  Vector3d result;
 
-  double pointAndTangents[3];
-  surf_->Evaluate (u, v, 0, 3, pointAndTangents);
+  vec3 result;
 
-  result (0) = pointAndTangents[0];
-  result (1) = pointAndTangents[1];
-  result (2) = pointAndTangents[2];
+  m_surf->Evaluate (u, v, result);
 
   return result;
+
 }
 
 MatrixXd
 NurbsTools::jacX (double u, double v) // !
 {
+
   MatrixXd Dx = MatrixXd::Zero (3, 2);
 
-  double pointAndTangents[9];
-  surf_->Evaluate (u, v, 1, 3, pointAndTangents);
+  vec3 pt, gu, gv;
+  m_surf->Evaluate (u, v, pt, gu, gv);
 
-  Dx (0, 0) = pointAndTangents[3];
-  Dx (1, 0) = pointAndTangents[4];
-  Dx (2, 0) = pointAndTangents[5];
+  Dx (0, 0) = gu (0);
+  Dx (1, 0) = gu (1);
+  Dx (2, 0) = gu (2);
 
-  Dx (0, 1) = pointAndTangents[6];
-  Dx (1, 1) = pointAndTangents[7];
-  Dx (2, 1) = pointAndTangents[8];
+  Dx (0, 1) = gv (0);
+  Dx (1, 1) = gv (1);
+  Dx (2, 1) = gv (2);
+
+  //  double pointAndTangents[9];
+  //  m_surf->Evaluate(u, v, 1, 3, pointAndTangents);
+  //
+  //  Dx(0, 0) = pointAndTangents[3];
+  //  Dx(1, 0) = pointAndTangents[4];
+  //  Dx(2, 0) = pointAndTangents[5];
+  //
+  //  Dx(0, 1) = pointAndTangents[6];
+  //  Dx(1, 1) = pointAndTangents[7];
+  //  Dx(2, 1) = pointAndTangents[8];
 
   return Dx;
+
 }
 
 std::vector<double>
@@ -88,53 +103,12 @@ NurbsTools::getElementVector (int dim) // !
 
   if (dim == 0)
   {
-    int idx_min = 0;
-    int idx_max = surf_->m_knot_capacity[0] - 1;
-    if (surf_->IsClosed (0))
-    {
-      idx_min = surf_->m_order[0] - 2;
-      idx_max = surf_->m_knot_capacity[0] - surf_->m_order[0] + 1;
-    }
-
-    const double* knotsU = surf_->Knot (0);
-
-    result.push_back (knotsU[idx_min]);
-
-    //for(int E=(surf_->m_order[0]-2); E<(surf_->m_knot_capacity[0]-surf_->m_order[0]+2); E++) {
-    for (int E = idx_min + 1; E <= idx_max; E++)
-    {
-
-      if (knotsU[E] != knotsU[E - 1]) // do not count double knots
-        result.push_back (knotsU[E]);
-
-    }
-
-  }
-  else if (dim == 1)
-  {
-    int idx_min = 0;
-    int idx_max = surf_->m_knot_capacity[1] - 1;
-    if (surf_->IsClosed (1))
-    {
-      idx_min = surf_->m_order[1] - 2;
-      idx_max = surf_->m_knot_capacity[1] - surf_->m_order[1] + 1;
-    }
-    const double* knotsV = surf_->Knot (1);
-
-    result.push_back (knotsV[idx_min]);
-
-    //for(int F=(surf_->m_order[1]-2); F<(surf_->m_knot_capacity[1]-surf_->m_order[1]+2); F++) {
-    for (int F = idx_min + 1; F <= idx_max; F++)
-    {
-
-      if (knotsV[F] != knotsV[F - 1])
-        result.push_back (knotsV[F]);
-
-    }
-
+    m_surf->GetElementVectorU (result);
   }
   else
-    std::cout << "[NurbsTools::getElementVector] ERROR: Index exceeds problem dimensions!" << std::endl;
+  {
+    m_surf->GetElementVectorV (result);
+  }
 
   return result;
 }
@@ -142,6 +116,7 @@ NurbsTools::getElementVector (int dim) // !
 std::vector<double>
 NurbsTools::getElementVectorDeltas (int dim)
 {
+
   std::vector<double> elements = this->getElementVector (dim);
   std::vector<double> deltas;
 
@@ -153,33 +128,17 @@ NurbsTools::getElementVectorDeltas (int dim)
   }
 
   return deltas;
+
 }
 
-Vector3d
-NurbsTools::getDistanceVector (Vector3d pt, Vector2d params)
+vec2
+NurbsTools::inverseMapping (const vec3 &pt, const vec2 &hint, double &error, vec3 &p, vec3 &tu, vec3 &tv, int maxSteps,
+                            double accuracy, bool quiet)
 {
-  Vector3d r;
-  double pointAndTangents[9];
-
-  surf_->Evaluate (params (0), params (1), 1, 3, pointAndTangents);
-
-  r (0) = pointAndTangents[0] - pt (0);
-  r (1) = pointAndTangents[1] - pt (1);
-  r (2) = pointAndTangents[2] - pt (2);
-
-  return r;
-}
-
-Vector2d
-NurbsTools::inverseMapping (Vector3d pt, Vector2d hint, double &error, int maxSteps, double accuracy, bool quiet)
-{
-  double pointAndTangents[9];
-
-  Vector2d current (hint), delta;
+  vec2 current(0.0,0.0), delta(0.0,0.0);
   Matrix2d A;
-  Vector2d b;
-  Vector3d r, tu, tv;
-
+  vec2 b(0.0,0.0);
+  vec3 r(0.0,0.0,0.0);
   std::vector<double> elementsU = getElementVector (0);
   std::vector<double> elementsV = getElementVector (1);
   double minU = elementsU[0];
@@ -187,25 +146,14 @@ NurbsTools::inverseMapping (Vector3d pt, Vector2d hint, double &error, int maxSt
   double maxU = elementsU[elementsU.size () - 1];
   double maxV = elementsV[elementsV.size () - 1];
 
-  if (maxSteps <= 0)
-    r = getDistanceVector (pt, current);
+  current = hint;
 
   for (int k = 0; k < maxSteps; k++)
   {
 
-    surf_->Evaluate (current (0), current (1), 1, 3, pointAndTangents);
+    m_surf->Evaluate (current (0), current (1), p, tu, tv);
 
-    r (0) = pointAndTangents[0] - pt (0);
-    r (1) = pointAndTangents[1] - pt (1);
-    r (2) = pointAndTangents[2] - pt (2);
-
-    tu (0) = pointAndTangents[3];
-    tu (1) = pointAndTangents[4];
-    tu (2) = pointAndTangents[5];
-
-    tv (0) = pointAndTangents[6];
-    tv (1) = pointAndTangents[7];
-    tv (2) = pointAndTangents[8];
+    r = p - pt;
 
     b (0) = -r.dot (tu);
     b (1) = -r.dot (tv);
@@ -261,24 +209,74 @@ NurbsTools::inverseMapping (Vector3d pt, Vector2d hint, double &error, int maxSt
 
   }
 
+  if (!quiet)
+    std::cout << "ERROR: Method did not converge after maximum number of steps!" << std::endl;
+
   error = r.norm ();
 
   if (!quiet)
-  {
-    std::cout << "[NurbsTools::inverseMapping] ERROR: Method did not converge after maximum number of steps!"
-        << std::endl;
     std::cout << "  " << hint (0) << " " << hint (1) << " .. " << current (0) << " " << current (1) << std::endl;
-  }
 
   return current;
+
 }
 
-Vector2d
-NurbsTools::inverseMappingBoundary (Vector3d pt, double &error, int maxSteps, double accuracy, bool quiet)
+vec2
+NurbsTools::inverseMapping (const vec3 &pt, vec2* phint, double &error, vec3 &p, vec3 &tu, vec3 &tv, int maxSteps,
+                            double accuracy, bool quiet)
 {
-  Vector2d result;
+
+  vec2 hint;
+  vec3 r;
+  std::vector<double> elementsU = getElementVector (0);
+  std::vector<double> elementsV = getElementVector (1);
+
+  if (phint == NULL)
+  {
+    double d_shortest(0.0);
+    for (unsigned i = 0; i < elementsU.size () - 1; i++)
+    {
+      for (unsigned j = 0; j < elementsV.size () - 1; j++)
+      {
+        vec3 point;
+        double d;
+
+        double xi = elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i]);
+        double eta = elementsV[j] + 0.5 * (elementsV[j + 1] - elementsV[j]);
+
+        m_surf->Evaluate (xi, eta, point);
+
+        r = point - pt;
+
+        d = r.norm ();
+
+        if ((i == 0 && j == 0) || d < d_shortest)
+        {
+          d_shortest = d;
+          hint (0) = xi;
+          hint (1) = eta;
+        }
+      }
+    }
+  }
+  else
+  {
+    hint = *phint;
+  }
+
+  return inverseMapping (pt, hint, error, p, tu, tv, maxSteps, accuracy, quiet);
+}
+
+vec2
+NurbsTools::inverseMappingBoundary (const vec3 &pt, double &error, vec3 &p, vec3 &tu, vec3 &tv, int maxSteps,
+                                    double accuracy, bool quiet)
+{
+
+  vec2 result;
   double min_err = 100.0;
   std::vector<myvec> ini_points;
+  double err_tmp;
+  vec3 p_tmp, tu_tmp, tv_tmp;
 
   std::vector<double> elementsU = getElementVector (0);
   std::vector<double> elementsV = getElementVector (1);
@@ -299,31 +297,34 @@ NurbsTools::inverseMappingBoundary (Vector3d pt, double &error, int maxSteps, do
 
   for (unsigned i = 0; i < ini_points.size (); i++)
   {
-    double err;
-    Vector2d params = inverseMappingBoundary (pt, ini_points[i].side, ini_points[i].hint, err);
 
-    if (i == 0 || err < min_err)
+    vec2 params = inverseMappingBoundary (pt, ini_points[i].side, ini_points[i].hint, err_tmp, p_tmp, tu_tmp, tv_tmp,
+                                          maxSteps, accuracy, quiet);
+
+    if (i == 0 || err_tmp < min_err)
     {
-      min_err = err;
+      min_err = err_tmp;
       result = params;
+      p = p_tmp;
+      tu = tu_tmp;
+      tv = tv_tmp;
     }
   }
 
-  double pointAndTangents[9];
-  this->surf_->Evaluate (result (0), result (1), 1, 3, pointAndTangents);
-
   error = min_err;
   return result;
+
 }
 
-Vector2d
-NurbsTools::inverseMappingBoundary (Vector3d pt, int side, double hint, double &error, int maxSteps, double accuracy,
-                                    bool quiet)
+vec2
+NurbsTools::inverseMappingBoundary (const vec3 &pt, int side, double hint, double &error, vec3 &p, vec3 &tu, vec3 &tv,
+                                    int maxSteps, double accuracy, bool quiet)
 {
-  double pointAndTangents[9];
-  double current (hint), delta (DBL_MAX);
-  Vector3d r (0.0, 0.0, 0.0), t (0.0);
-  Vector2d params;
+  double current(0.0), delta(0.0);
+  vec3 r(0.0,0.0,0.0), t(0.0,0.0,0.0);
+  vec2 params(0.0,0.0);
+
+  current = hint;
 
   std::vector<double> elementsU = getElementVector (0);
   std::vector<double> elementsV = getElementVector (1);
@@ -342,54 +343,44 @@ NurbsTools::inverseMappingBoundary (Vector3d pt, int side, double hint, double &
 
         params (0) = minU;
         params (1) = current;
-        surf_->Evaluate (minU, current, 1, 3, pointAndTangents);
+        m_surf->Evaluate (minU, current, p, tu, tv);
 
-        t (0) = pointAndTangents[6]; // use tv
-        t (1) = pointAndTangents[7];
-        t (2) = pointAndTangents[8];
+        t = tv; // use tv
 
         break;
       case SOUTH:
 
         params (0) = current;
         params (1) = maxV;
-        surf_->Evaluate (current, maxV, 1, 3, pointAndTangents);
+        m_surf->Evaluate (current, maxV, p, tu, tv);
 
-        t (0) = pointAndTangents[3]; // use tu
-        t (1) = pointAndTangents[4];
-        t (2) = pointAndTangents[5];
+        t = tu; // use tu
 
         break;
       case EAST:
 
         params (0) = maxU;
         params (1) = current;
-        surf_->Evaluate (maxU, current, 1, 3, pointAndTangents);
+        m_surf->Evaluate (maxU, current, p, tu, tv);
 
-        t (0) = pointAndTangents[6]; // use tv
-        t (1) = pointAndTangents[7];
-        t (2) = pointAndTangents[8];
+        t = tv; // use tv
 
         break;
       case NORTH:
 
         params (0) = current;
         params (1) = minV;
-        surf_->Evaluate (current, minV, 1, 3, pointAndTangents);
+        m_surf->Evaluate (current, minV, p, tu, tv);
 
-        t (0) = pointAndTangents[3]; // use tu
-        t (1) = pointAndTangents[4];
-        t (2) = pointAndTangents[5];
+        t = tu; // use tu
 
         break;
       default:
         throw std::runtime_error ("[PatchFitting::inverseMappingBoundary] ERROR: Specify a boundary!");
 
-    } // switch
+    }
 
-    r (0) = pointAndTangents[0] - pt (0);
-    r (1) = pointAndTangents[1] - pt (1);
-    r (2) = pointAndTangents[2] - pt (2);
+    r = p - pt;
 
     delta = -0.5 * r.dot (t) / t.dot (t);
 
@@ -439,7 +430,7 @@ NurbsTools::inverseMappingBoundary (Vector3d pt, int side, double hint, double &
           }
 
           break;
-      } // switch
+      }
 
       if (stop)
       {
@@ -447,66 +438,118 @@ NurbsTools::inverseMappingBoundary (Vector3d pt, int side, double hint, double &
         return params;
       }
 
-    } // else (fabs (delta) < accuracy)
+    }
 
-  } // for (k)
+  }
 
   error = r.norm ();
-
   if (!quiet)
-  {
-    std::cout << "[NurbsTools::inverseMappingBoundary] ERROR: Method did not converge after maximum number of steps!"
-        << std::endl;
-    std::cout << "  error: " << error << "  delta: " << delta << "  params: " << params (0) << " " << params (1)
-        << std::endl;
-  }
+    printf ("ERROR: Method did not converge! (residual: %f, delta: %f, params: %f %f)\n", error, delta, params (0),
+            params (1));
 
   return params;
 }
 
-Vector2d
-NurbsTools::inverseMapping (Vector3d pt, Vector2d* phint, double &error, int maxSteps, double accuracy, bool quiet)
+#ifdef USE_UMFPACK
+bool NurbsTools::solveSparseLinearSystem(cholmod_sparse* A, cholmod_dense* b, cholmod_dense* x, bool transpose)
 {
-  Vector3d r;
-  Vector2d hint;
 
-  std::vector<double> elementsU = getElementVector (0);
-  std::vector<double> elementsV = getElementVector (1);
+  double* vals = (double*) A->x;
+  int* cols = (int*) A->p;
+  int* rows = (int*) A->i;
+  double* rhs = (double*) b->x;
+  double* sol = (double*) x->x;
 
-  if (phint == NULL)
+  int noOfVerts = b->nrow;
+  int noOfCols = b->ncol;
+
+  double* tempRhs = new double[noOfVerts];
+  double* tempSol = new double[noOfVerts];
+
+  int i, k, status;
+  double* null = (double*) NULL;
+  void *Symbolic, *Numeric;
+
+  status = umfpack_di_symbolic(A->nrow, A->ncol, cols, rows, vals, &Symbolic, null, null);
+
+  if( status != 0 )
   {
-    double d_shortest (DBL_MAX);
-    for (unsigned i = 0; i < elementsU.size () - 1; i++)
-    {
-      for (unsigned j = 0; j < elementsV.size () - 1; j++)
-      {
-        double points[3];
-        double d;
 
-        double xi = elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i]);
-        double eta = elementsV[j] + 0.5 * (elementsV[j + 1] - elementsV[j]);
+    std::cout << "ERROR: something is wrong with input matrix!" << std::endl;
+    return 1;
 
-        surf_->Evaluate (xi, eta, 0, 3, points);
-
-        r (0) = points[0] - pt (0);
-        r (1) = points[1] - pt (1);
-        r (2) = points[2] - pt (2);
-
-        d = r.norm ();
-
-        if ((i == 0 && j == 0) || d < d_shortest)
-        {
-          d_shortest = d;
-          hint (0) = xi;
-          hint (1) = eta;
-        }
-      }
-    }
-  }
-  else
-  {
-    hint = *phint;
   }
 
-  return inverseMapping (pt, hint, error, maxSteps, accuracy, quiet);
+  status = umfpack_di_numeric(cols, rows, vals, Symbolic, &Numeric, null, null);
+
+  if( status != 0 )
+  {
+
+    std::cout << "ERROR: ordering was ok but factorization failed!" << std::endl;
+    return 1;
+
+  }
+
+  umfpack_di_free_symbolic(&Symbolic);
+
+  for( i = 0; i < noOfCols; i++ )
+  {
+
+    for( k = 0; k < noOfVerts; k++ )
+    tempRhs[k] = rhs[i * noOfVerts + k];
+
+    // At or A?
+    if( transpose )
+    umfpack_di_solve(UMFPACK_At, cols, rows, vals, tempSol, tempRhs, Numeric, null, null);
+    else
+    umfpack_di_solve(UMFPACK_A, cols, rows, vals, tempSol, tempRhs, Numeric, null, null);
+
+    for( k = 0; k < noOfVerts; k++ )
+    sol[i * noOfVerts + k] = tempSol[k];
+
+  }
+
+  // clean up
+  umfpack_di_free_numeric(&Numeric);
+  delete tempRhs;
+  delete tempSol;
+
+  return 0;
+
 }
+
+bool NurbsTools::solveSparseLinearSystemLQ(cholmod_sparse* A, cholmod_dense* b, cholmod_dense* x)
+{
+
+  cholmod_common c;
+  cholmod_start(&c);
+  c.print = 4;
+
+  cholmod_sparse* At = cholmod_allocate_sparse(A->ncol, A->nrow, 10 * A->nrow, 0, 1, 0, CHOLMOD_REAL, &c);
+  //  cholmod_dense* Atb = cholmod_allocate_dense(b->nrow, b->ncol, b->nrow, CHOLMOD_REAL, &c);
+  cholmod_dense* Atb = cholmod_allocate_dense(A->ncol, b->ncol, A->ncol, CHOLMOD_REAL, &c);
+
+  double one[2] =
+  { 1, 0};
+  double zero[2] =
+  { 0, 0};
+  cholmod_sdmult(A, 1, one, zero, b, Atb, &c);
+
+  cholmod_transpose_unsym(A, 1, NULL, NULL, A->ncol, At, &c);
+
+  cholmod_sparse* AtA = cholmod_ssmult(At, A, 0, 1, 1, &c);
+
+  //  cholmod_print_sparse(AtA,"A: ", &c);
+
+  solveSparseLinearSystem(AtA, Atb, x, false);
+
+  cholmod_free_sparse(&At, &c);
+  cholmod_free_sparse(&AtA, &c);
+  cholmod_free_dense(&Atb, &c);
+
+  cholmod_finish(&c);
+
+  return 0;
+
+}
+#endif

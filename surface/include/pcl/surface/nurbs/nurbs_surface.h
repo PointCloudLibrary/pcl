@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer, Inc.
+ *  Copyright (c) 2011, Thomas Mörwald (University of Technology Vienna)
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Thomas Mörwald or Jonathan Balzer nor the names of its
+ *   * Neither the name of Thomas Mörwald nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -35,10 +35,10 @@
  *
  */
 
-#ifndef _NURBS_DATA_H_
-#define _NURBS_DATA_H_
+#ifndef _NURBS_SURFACE_H_
+#define _NURBS_SURFACE_H_
 
-#include <vector>
+#include "nurbs_basis.h"
 #include "eigen_defs.h"
 
 namespace pcl
@@ -46,49 +46,81 @@ namespace pcl
   namespace nurbs
   {
 
-    struct NurbsData
+    class NurbsSurface
     {
-      vector_vec3 interior; ///<<input
-      std::vector<double> interior_error;
-      vector_vec2 interior_param; ///>> output
-      vector_vec3 interior_line_start; ///>> output
-      vector_vec3 interior_line_end; ///>> output
-      vector_vec3 interior_normals; ///>> output
-      // http://eigen.tuxfamily.org/dox-devel/TopicStlContainers.html
 
-      vector_vec3 boundary; ///<<input
-      std::vector<double> boundary_error;
-      vector_vec2 boundary_param; ///>> output
-      vector_vec3 boundary_line_start; ///>> output
-      vector_vec3 boundary_line_end; ///>> output
-      vector_vec3 boundary_normals; ///>> output
-      // http://eigen.tuxfamily.org/dox-devel/TopicStlContainers.html
+    public:
+      NurbsBasis basisU;
+      NurbsBasis basisV;
 
-      inline void
-      clear_interior ()
+      unsigned ncpsU;
+      unsigned ncpsV;
+
+      vector_vec4 cps;
+
+    public:
+      NurbsSurface ();
+      NurbsSurface (unsigned degree, unsigned ncpsU, unsigned ncpsV, const vector_vec4 &cps);
+
+      void
+      Evaluate (double u, double v, vec3 &point) const;
+
+      void
+      Evaluate (double u, double v, vec3 &point, vec3 &grad_u, vec3 &grad_v) const;
+
+      void
+      InsertKnotU (double u);
+
+      void
+      InsertKnotV (double v);
+
+      unsigned
+      I (unsigned i, unsigned j) const;
+
+      vec4
+      GetCP (unsigned i, unsigned j) const;
+
+      void
+      SetCP (unsigned i, unsigned j, const vec4 &cp);
+
+      inline unsigned
+      CountCPU () const
       {
-        interior.clear ();
-        interior_error.clear ();
-        interior_param.clear ();
-        interior_line_start.clear ();
-        interior_line_end.clear ();
-        interior_normals.clear ();
+        return ncpsU;
+      }
+      inline unsigned
+      CountCPV () const
+      {
+        return ncpsV;
+      }
+
+      inline unsigned
+      DegreeU () const
+      {
+        return basisU.degree;
+      }
+      inline unsigned
+      DegreeV () const
+      {
+        return basisV.degree;
       }
 
       inline void
-      clear_boundary ()
+      GetElementVectorU (std::vector<double> &result) const
       {
-        boundary.clear ();
-        boundary_error.clear ();
-        boundary_param.clear ();
-        boundary_line_start.clear ();
-        boundary_line_end.clear ();
-        boundary_normals.clear ();
+        basisU.GetElementVector (result);
       }
+      inline void
+      GetElementVectorV (std::vector<double> &result) const
+      {
+        basisV.GetElementVector (result);
+      }
+
+      void
+      Dump () const;
 
     };
-  } // namespace nurbs
-} // namespace pcl
+  }
+}
 
 #endif
-

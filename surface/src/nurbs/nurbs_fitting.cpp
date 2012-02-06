@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer
+ *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,469 +31,410 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * @author thomas.moerwald
+ *
  */
 
-#include <map>
 #include <stdexcept>
 #include "pcl/surface/nurbs/nurbs_fitting.h"
-#include "pcl/common/common.h"
+#include <float.h>
+#include <map>
+
+#include <Eigen/Dense>
 
 using namespace pcl;
+using namespace nurbs;
 using namespace Eigen;
 
-NurbsFitting::NurbsFitting (int order, NurbsData *nurbs_data_, ON_3dPoint ll, ON_3dPoint lr, ON_3dPoint ur,
-                            ON_3dPoint ul)
+unsigned GetClosestPoint(const vec3 &p, const vector_vec3 &v)
+{
+  double d = DBL_MAX;
+  unsigned idx = 0;
+  for (unsigned i = 0; i < v.size(); i++) {
+    double dn = (v[i] - p).norm();
+    if (dn < d) {
+      idx = i;
+      d = dn;
+    }
+  }
+  return idx;
+}
+
+void GetBoundingBox(const vector_vec3 &v, vec3 &vmin, vec3 &vmax)
+{
+  vmin = vec3(DBL_MAX, DBL_MAX, DBL_MAX);
+  vmax = vec3(0.0, 0.0, 0.0);
+
+  for (unsigned i = 0; i < v.size(); i++) {
+    vec3 p = v[i];
+    for (unsigned k = 0; k < 3; k++) {
+      if (p(k) < vmin(k))
+        vmin(k) = p(k);
+      if (p(k) > vmax(k))
+        vmax(k) = p(k);
+    }
+  }
+}
+
+NurbsFitting::NurbsFitting(int order, NurbsData *data, vec4 ll, vec4 lr, vec4 ur, vec4 ul)
 {
   if (order < 2)
-    throw std::runtime_error ("[NurbsFitting::NurbsFitting] Error order to low (order<2).");
+    throw std::runtime_error("[NurbsFitting::NurbsFitting] Error order to low (order<2).");
 
-  ON::Begin ();
+  this->data = data;
 
-  this->nurbs_data_ = nurbs_data_;
-
-  nurbs_patch_ = new ON_NurbsSurface (3, false, order, order, order, order);
-  nurbs_patch_->MakeClampedUniformKnotVector (0, 1.0);
-  nurbs_patch_->MakeClampedUniformKnotVector (1, 1.0);
-
-  std::map<int, std::map<int, ON_3dPoint> > cv_map;
+  std::map<int, std::map<int, vec4> > cv_map;
+  vector_vec4 cps;
 
   double dc = 1.0 / (order - 1);
 
-  for (int i = 0; i < order; i++)
-  {
-
+  for (int i = 0; i < order; i++) {
     double di = dc * i;
     cv_map[i][0] = ll + (lr - ll) * di;
     cv_map[0][i] = ll + (ul - ll) * di;
     cv_map[i][order - 1] = ul + (ur - ul) * di;
     cv_map[order - 1][i] = lr + (ur - lr) * di;
+  }
 
-  } // i
-
-  for (int i = 1; i < order - 1; i++)
-  {
-    for (int j = 1; j < order - 1; j++)
-    {
-
-      ON_3dPoint du = cv_map[0][j] + (cv_map[order - 1][j] - cv_map[0][j]) * dc * j;
-      ON_3dPoint dv = cv_map[i][0] + (cv_map[i][order - 1] - cv_map[i][0]) * dc * i;
+  for (int i = 1; i < order - 1; i++) {
+    for (int j = 1; j < order - 1; j++) {
+      vec4 du = cv_map[0][j] + (cv_map[order - 1][j] - cv_map[0][j]) * dc * j;
+      vec4 dv = cv_map[i][0] + (cv_map[i][order - 1] - cv_map[i][0]) * dc * i;
       cv_map[i][j] = du * 0.5 + dv * 0.5;
-
-    } // j
-  } // i
+      cv_map[i][j](3) = 1.0;
+    }
+  }
 
   for (int i = 0; i < order; i++)
-  {
     for (int j = 0; j < order; j++)
-    {
+      cps.push_back(cv_map[i][j]);
 
-      nurbs_patch_->SetCV (i, j, cv_map[i][j]);
+  m_patch = new NurbsSurface(order - 1, order, order, cps);
 
-    } // j
-  } // i
-
-  //	nurbs_patch_->Dump(on_out_);
-  //	printf("closed: %d %d\n", nurbs_patch_->IsClosed(0), nurbs_patch_->IsClosed(1));
-  //	printf("periodic: %d %d\n", nurbs_patch_->IsPeriodic(0), nurbs_patch_->IsPeriodic(1));
-
-  this->init ();
+  this->init();
 }
 
-NurbsFitting::NurbsFitting (int order, NurbsData *nurbs_data_, const std::vector<ON_3dPoint> &cv)
+NurbsFitting::NurbsFitting(int order, NurbsData *data, const vector_vec3 &cv)
 {
   if (order < 2)
-    throw std::runtime_error ("[NurbsFitting::NurbsFitting] Error order to low (order<2).");
+    throw std::runtime_error("[NurbsFitting::NurbsFitting] Error order to low (order<2).");
 
-  if (unsigned (order * order) != cv.size ())
-    throw std::runtime_error (
-                              "[NurbsFitting::NurbsFitting] Error number of control points don't match: (order*order != cps.size()).\n");
+  if (order * order != (int) cv.size())
+    throw std::runtime_error(
+        "[NurbsFitting::NurbsFitting] Error number of control points don't match: (order*order != cps.size()).\n");
 
-  ON::Begin ();
+  this->data = data;
 
-  this->nurbs_data_ = nurbs_data_;
+  vector_vec4 cps;
 
-  nurbs_patch_ = new ON_NurbsSurface (3, false, order, order, order, order);
-  nurbs_patch_->MakeClampedUniformKnotVector (0, 1.0);
-  nurbs_patch_->MakeClampedUniformKnotVector (1, 1.0);
+  unsigned cvi(0);
+  for (int i = 0; i < order; i++) {
+    for (int j = 0; j < order; j++) {
+      vec3 cp = cv[cvi++];
+      cps.push_back(vec4(cp(0), cp(1), cp(2), 1.0));
+    }
+  }
 
-  unsigned cvi (0);
-  for (int i = 0; i < order; i++)
-  {
-    for (int j = 0; j < order; j++)
-    {
+  m_patch = new NurbsSurface(order - 1, order, order, cps);
 
-      nurbs_patch_->SetCV (i, j, cv[cvi++]);
-
-    } // j
-  } // i
-
-  //	nurbs_patch_->Dump(on_out_);
-  //	printf("closed: %d %d\n", nurbs_patch_->IsClosed(0), nurbs_patch_->IsClosed(1));
-  //	printf("periodic: %d %d\n", nurbs_patch_->IsPeriodic(0), nurbs_patch_->IsPeriodic(1));
-
-  this->init ();
+  this->init();
 }
 
-NurbsFitting::NurbsFitting (int order, NurbsData *nurbs_data_)
+NurbsFitting::NurbsFitting(int order, NurbsData *data)
 {
   if (order < 2)
-    throw std::runtime_error ("[NurbsFitting::NurbsFitting] Error order to low (order<2).");
+    throw std::runtime_error("[NurbsFitting::NurbsFitting] Error order to low (order<2).");
 
-  ON::Begin ();
+  this->data = data;
 
-  this->nurbs_data_ = nurbs_data_;
+  vec3 m_min;
+  vec3 m_max;
+  vec3 m_mid;
 
-  double m_min[3];
-  double m_max[3];
-  double m_mid[3];
+  if (data->boundary.empty())
+    GetBoundingBox(data->interior, m_min, m_max);
+  else
+    GetBoundingBox(data->boundary, m_min, m_max);
 
-  pcl::PointXYZ min, max;
-  pcl::getMinMax3D (*nurbs_data_->boundary, min, max);
-  m_min[0] = min.x;
-  m_min[1] = min.y, m_min[2] = min.z;
-  m_max[0] = max.x;
-  m_max[1] = max.y, m_max[2] = max.z;
+  m_mid = m_min + (m_max - m_min) * 0.5;
 
-  //  nurbs_data_->boundary.GetBBox (m_min, m_max);
+  double dcu = (m_max(0) - m_min(0)) / (order - 1); // image sizes are power of two
+  double dcv = (m_max(1) - m_min(1)) / (order - 1);
 
-  m_mid[0] = m_min[0] + (m_max[0] - m_min[0]) * 0.5;
-  m_mid[1] = m_min[1] + (m_max[1] - m_min[1]) * 0.5;
-  m_mid[2] = m_min[2] + (m_max[2] - m_min[2]) * 0.5;
+  vector_vec4 cps;
+  vec4 cv(0.0, 0.0, 0.0, 1.0);
+  for (int j = 0; j < order; j++) {
+    for (int i = 0; i < order; i++) {
+      cv(0) = m_min(0) + dcu * i;
+      cv(1) = m_min(1) + dcv * j;
+      cv(2) = m_mid(2);
+      cv(3) = 1.0;
+      //      m_patch->SetCV(i, j, cv);
+      cps.push_back(cv);
+    }
+  }
 
-  nurbs_patch_ = new ON_NurbsSurface (3, false, order, order, order, order);
-  nurbs_patch_->MakeClampedUniformKnotVector (0, 1.0);
-  nurbs_patch_->MakeClampedUniformKnotVector (1, 1.0);
+  m_patch = new NurbsSurface(order - 1, order, order, cps);
 
-  double dcu = (m_max[0] - m_min[0]) / (order - 1); // image sizes are power of two
-  double dcv = (m_max[1] - m_min[1]) / (order - 1);
-
-  ON_3dPoint cv (0.0, 0.0, 0.0);
-  for (int i = 0; i < order; i++)
-  {
-    for (int j = 0; j < order; j++)
-    {
-
-      cv.x = m_min[0] + dcu * i;
-      cv.y = m_min[1] + dcv * j;
-      cv.z = m_mid[2];
-      nurbs_patch_->SetCV (i, j, cv);
-
-    } // j
-  } // i
-
-  //	nurbs_patch_->Dump(on_out_);
-  //	printf("closed: %d %d\n", nurbs_patch_->IsClosed(0), nurbs_patch_->IsClosed(1));
-  //	printf("periodic: %d %d\n", nurbs_patch_->IsPeriodic(0), nurbs_patch_->IsPeriodic(1));
-
-  this->init ();
+  this->init();
 }
 
-NurbsFitting::NurbsFitting (NurbsData *nurbs_data_, const ON_NurbsSurface &ns)
+NurbsFitting::NurbsFitting(NurbsData *data, const NurbsSurface &ns)
 {
-  ON::Begin ();
+  this->m_patch = new NurbsSurface(ns);
+  this->data = data;
 
-  this->nurbs_data_ = nurbs_data_;
-
-  this->init ();
+  this->init();
 }
 
-NurbsFitting::~NurbsFitting ()
+NurbsFitting::~NurbsFitting()
 {
 
-  delete (nurbs_patch_);
-
-  ON::End ();
+  delete (m_patch);
 
 }
 
-void
-NurbsFitting::refine (int dim)
+void NurbsFitting::refine(int dim)
 {
-
-  NurbsTools ntools (nurbs_patch_);
+  NurbsTools ntools(m_patch);
 
   std::vector<double> xi;
+  std::vector<double> elements = ntools.getElementVector(dim);
 
-  std::vector<double> elements = ntools.getElementVector (dim);
+  for (unsigned i = 0; i < elements.size() - 1; i++)
+    xi.push_back(elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
-  for (unsigned i = 0; i < elements.size () - 1; i++)
-  {
+  for (unsigned i = 0; i < xi.size(); i++) {
+    if (dim == 0)
+      m_patch->InsertKnotU(xi[i]);
+    if (dim == 1)
+      m_patch->InsertKnotV(xi[i]);
+  }
 
-    xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
+  m_elementsU = ntools.getElementVector(0);
+  m_elementsV = ntools.getElementVector(1);
+  m_minU = m_elementsU[0];
+  m_minV = m_elementsV[0];
+  m_maxU = m_elementsU[m_elementsU.size() - 1];
+  m_maxV = m_elementsV[m_elementsV.size() - 1];
 
-  } // i
-
-  for (unsigned i = 0; i < xi.size (); i++)
-  {
-
-    nurbs_patch_->InsertKnot (dim, xi[i], 1);
-
-  } // i
-
-  m_elementsU = ntools.getElementVector (0);
-  m_elementsV = ntools.getElementVector (1);
-  min_u_ = m_elementsU[0];
-  min_v_ = m_elementsV[0];
-  max_u_ = m_elementsU[m_elementsU.size () - 1];
-  max_v_ = m_elementsV[m_elementsV.size () - 1];
-
-  x_eig_ = Eigen::MatrixXd::Zero (nurbs_patch_->m_cv_count[0] * nurbs_patch_->m_cv_count[1], 3);
-
-  //	nurbs_patch_->Dump(on_out_);
-
+  m_xeig = Eigen::MatrixXd::Zero(m_patch->CountCPU() * m_patch->CountCPV(), 3);
 }
 
-void
-NurbsFitting::init ()
-{
-  NurbsTools ntools (nurbs_patch_);
-  m_elementsU = ntools.getElementVector (0);
-  m_elementsV = ntools.getElementVector (1);
-  min_u_ = m_elementsU[0];
-  min_v_ = m_elementsV[0];
-  max_u_ = m_elementsU[m_elementsU.size () - 1];
-  max_v_ = m_elementsV[m_elementsV.size () - 1];
-
-  x_eig_ = Eigen::MatrixXd::Zero (nurbs_patch_->m_cv_count[0] * nurbs_patch_->m_cv_count[1], 3);
-
-  inv_map_iter_bnd_ = 100;
-  inv_map_iter_int_ = 100;
-  inv_map_accuracy_bnd_ = 1e-3;
-  inv_map_accuracy_int_ = 1e-3;
-
-  quiet_ = true;
-  use_int_hints_ = false;
-}
-
-void
-NurbsFitting::assemble ()
+void NurbsFitting::assemble(double smoothness)
 {
   clock_t time_start, time_end;
-  time_start = clock ();
+  time_start = clock();
 
-  NurbsTools ntools (nurbs_patch_);
+  NurbsTools ntools(m_patch);
 
-  int ncp = nurbs_patch_->m_cv_count[0] * nurbs_patch_->m_cv_count[1];
-  int nInt = nurbs_data_->interior->size ();
-  int nCageRegInt = (nurbs_patch_->m_cv_count[0] - 2) * (nurbs_patch_->m_cv_count[1] - 2);
-  int nCageRegBnd = 2 * (nurbs_patch_->m_cv_count[0] - 1) + 2 * (nurbs_patch_->m_cv_count[1] - 1);
+  int ncp = m_patch->ncpsU * m_patch->ncpsV;
+  int nInt = data->interior.size();
+  int nCageRegInt = (m_patch->ncpsU - 2) * (m_patch->ncpsV - 2);
+  int nCageRegBnd = 2 * (m_patch->ncpsU - 1) + 2 * (m_patch->ncpsV - 1);
 
   double wInt = 1.0;
-  double wCageRegInt = 0.00001;
-  double wCageRegBnd = 0.00001;
+  double wCageRegInt = smoothness;
+  double wCageRegBnd = smoothness;
 
   int nrows = nInt + nCageRegInt + nCageRegBnd;
 
-  K_eig_ = Eigen::MatrixXd::Zero (nrows, ncp);
-  f_eig_ = Eigen::MatrixXd::Zero (nrows, 3);
+#ifdef USE_UMFPACK
+  m_Ksparse.clear();
+#else
+  m_Keig = Eigen::MatrixXd::Zero(nrows, ncp);
+#endif
 
-  int row (0);
+  m_feig = Eigen::MatrixXd::Zero(nrows, 3);
+
+  int row(0);
 
   // interior points should lie on surface
-  nurbs_data_->interior_line_start.clear ();
-  nurbs_data_->interior_line_end.clear ();
-  nurbs_data_->interior_error.clear ();
-  for (int p = 0; p < nInt; p++)
-  {
-    Vector3d pcp;
-    pcp (0) = nurbs_data_->interior->at (p).x;
-    pcp (1) = nurbs_data_->interior->at (p).y;
-    pcp (2) = nurbs_data_->interior->at (p).z;
+  data->interior_line_start.clear();
+  data->interior_line_end.clear();
+  data->interior_error.clear();
+  data->interior_normals.clear();
+
+  for (int p = 0; p < nInt; p++) {
+    vec3 pcp;
+    pcp = data->interior[p];
 
     // inverse mapping
-    Vector2d params;
+    vec2 params;
+    vec3 pt, tu, tv, n;
     double error;
-    if (p < (int)nurbs_data_->interior_param.size ())
-    {
-      params = ntools.inverseMapping (pcp, &nurbs_data_->interior_param[p], error, inv_map_iter_int_,
-                                      inv_map_accuracy_int_);
-      nurbs_data_->interior_param[p] = params;
+    if (p < (int) data->interior_param.size()) {
+      params = ntools.inverseMapping(pcp, &data->interior_param[p], error, pt, tu, tv, invMapInt_maxSteps, invMapInt_accuracy);
+      data->interior_param[p] = params;
+    } else {
+      params = ntools.inverseMapping(pcp, NULL, error, pt, tu, tv, invMapInt_maxSteps, invMapInt_accuracy);
+      data->interior_param.push_back(params);
     }
-    else
-    {
-      params = ntools.inverseMapping (pcp, NULL, error, inv_map_iter_int_, inv_map_accuracy_int_);
-      nurbs_data_->interior_param.push_back (params);
-    }
-    nurbs_data_->interior_error.push_back (error);
+    data->interior_error.push_back(error);
 
-    double pointAndTangents[9];
-    nurbs_patch_->Evaluate (params (0), params (1), 1, 3, pointAndTangents);
-    nurbs_data_->interior_line_start.push_back (pcp);
-    Vector3d r;
-    r (0) = pointAndTangents[0];
-    r (1) = pointAndTangents[1];
-    r (2) = pointAndTangents[2];
-    nurbs_data_->interior_line_end.push_back (r);
+    n = tu.cross(tv);
+    n.normalize();
 
-    addPointConstraint (params, pcp, wInt, row);
-  } // p
+    data->interior_normals.push_back(n);
+    data->interior_line_start.push_back(pcp);
+    data->interior_line_end.push_back(pt);
+
+    addPointConstraint(params, pcp, wInt, row);
+  }
 
   // cage regularisation
   if (nCageRegInt > 0)
-    addCageInteriorRegularisation (wCageRegInt, row);
+    addCageInteriorRegularisation(wCageRegInt, row);
 
-  if (nCageRegBnd > 0)
-  {
-    addCageBoundaryRegularisation (wCageRegBnd, NORTH, row);
-    addCageBoundaryRegularisation (wCageRegBnd, SOUTH, row);
-    addCageBoundaryRegularisation (wCageRegBnd, WEST, row);
-    addCageBoundaryRegularisation (wCageRegBnd, EAST, row);
-    addCageCornerRegularisation (wCageRegBnd * 4.0, row);
+  if (nCageRegBnd > 0) {
+    addCageBoundaryRegularisation(wCageRegBnd, NORTH, row);
+    addCageBoundaryRegularisation(wCageRegBnd, SOUTH, row);
+    addCageBoundaryRegularisation(wCageRegBnd, WEST, row);
+    addCageBoundaryRegularisation(wCageRegBnd, EAST, row);
+    addCageCornerRegularisation(wCageRegBnd * 2.0, row);
   }
 
-  time_end = clock ();
-  if (!quiet_)
-  {
-    double solve_time = (double)(time_end - time_start) / (double)(CLOCKS_PER_SEC);
-    printf ("[NurbsFitting::assemble()] (assemble (%d,%d): %f sec)\n", nrows, ncp, solve_time);
+  time_end = clock();
+  if (!m_quiet) {
+    double solve_time = (double) (time_end - time_start) / (double) (CLOCKS_PER_SEC);
+    printf("[NurbsFitting::assemble()] (assemble (%d,%d): %f sec)\n", nrows, ncp, solve_time);
   }
 
 }
 
-void
-NurbsFitting::assemble (std::vector<double> &wBnd, std::vector<double> &wInt, double wCageRegBnd, double wCageRegInt)
+void NurbsFitting::assemble(std::vector<double> &wBnd, std::vector<double> &wInt, double wCageRegBnd, double wCageRegInt)
 {
-  if (wBnd.size () > (unsigned)nurbs_data_->boundary->size ())
-    throw std::runtime_error ("[NurbsFitting::assemble] Size of weight vector greater than point size (boundary).");
+  if (wBnd.size() > data->boundary.size())
+    throw std::runtime_error("[NurbsFitting::assemble] Size of weight vector greater than point size (boundary).");
 
-  if (wInt.size () > (unsigned)nurbs_data_->interior->size ())
-    throw std::runtime_error ("[NurbsFitting::assemble] Size of weight vector greater than point size (interior).");
+  if (wInt.size() > data->interior.size())
+    throw std::runtime_error("[NurbsFitting::assemble] Size of weight vector greater than point size (interior).");
 
-  NurbsTools ntools (nurbs_patch_);
+  NurbsTools ntools(m_patch);
 
   clock_t time_start, time_end;
-  time_start = clock ();
+  time_start = clock();
 
-  int nBnd = wBnd.size ();
-  int nInt = wInt.size ();
-  int nCageRegInt = (nurbs_patch_->m_cv_count[0] - 2) * (nurbs_patch_->m_cv_count[1] - 2);
-  int nCageRegBnd = 2 * (nurbs_patch_->m_cv_count[0] - 1) + 2 * (nurbs_patch_->m_cv_count[1] - 1);
+  int nBnd = wBnd.size();
+  int nInt = wInt.size();
+  int nCageRegInt = (m_patch->ncpsU - 2) * (m_patch->ncpsV - 2);
+  int nCageRegBnd = 2 * (m_patch->ncpsU - 1) + 2 * (m_patch->ncpsV - 1);
 
   if (wCageRegInt <= 0.0)
     nCageRegInt = 0;
   if (wCageRegBnd <= 0.0)
     nCageRegBnd = 0;
 
-  int ncp = nurbs_patch_->m_cv_count[0] * nurbs_patch_->m_cv_count[1];
+  int ncp = m_patch->ncpsU * m_patch->ncpsV;
   int nrows = nBnd + nInt + nCageRegInt + nCageRegBnd;
 
-  K_eig_ = Eigen::MatrixXd::Zero (nrows, ncp);
-  f_eig_ = Eigen::MatrixXd::Zero (nrows, 3);
+#ifdef USE_UMFPACK
+  m_Ksparse.clear();
+#else
+  m_Keig = Eigen::MatrixXd::Zero(nrows, ncp);
+#endif
+
+  m_feig = Eigen::MatrixXd::Zero(nrows, 3);
 
   int row = 0;
 
   // boundary points should lie on edges of surface
-  nurbs_data_->boundary_line_start.clear ();
-  nurbs_data_->boundary_line_end.clear ();
-  nurbs_data_->boundary_error.clear ();
-  for (int p = 0; p < nBnd; p++)
-  {
-    Vector3d pcp;
-    pcp (0) = nurbs_data_->boundary->at (p).x;
-    pcp (1) = nurbs_data_->boundary->at (p).y;
-    pcp (2) = nurbs_data_->boundary->at (p).z;
+  data->boundary_line_start.clear();
+  data->boundary_line_end.clear();
+  data->boundary_error.clear();
+  data->boundary_normals.clear();
+  for (int p = 0; p < nBnd; p++) {
+    vec3 pcp;
+    pcp = data->boundary[p];
 
     double error;
-    Vector2d params = ntools.inverseMappingBoundary (pcp, error, inv_map_iter_bnd_, inv_map_accuracy_bnd_);
-    nurbs_data_->boundary_error.push_back (error);
+    vec3 pt, tu, tv, n;
+    vec2 params = ntools.inverseMappingBoundary(pcp, error, pt, tu, tv, invMapBnd_maxSteps, invMapBnd_accuracy);
+    data->boundary_error.push_back(error);
 
-    if (p < (int)nurbs_data_->boundary_param.size ())
-    {
-      nurbs_data_->boundary_param[p] = params;
-    }
-    else
-    {
-      nurbs_data_->boundary_param.push_back (params);
+    if (p < (int) data->boundary_param.size()) {
+      data->boundary_param[p] = params;
+    } else {
+      data->boundary_param.push_back(params);
     }
 
-    double pointAndTangents[9];
-    nurbs_patch_->Evaluate (params (0), params (1), 1, 3, pointAndTangents);
-    Vector3d r;
-    r (0) = pointAndTangents[0];
-    r (1) = pointAndTangents[1];
-    r (2) = pointAndTangents[2];
-    nurbs_data_->boundary_line_start.push_back (pcp);
-    nurbs_data_->boundary_line_end.push_back (r);
+    n = tu.cross(tv);
+    n.normalize();
 
-    addPointConstraint (params, pcp, wBnd[p], row);
-  } // p
+    data->boundary_normals.push_back(n);
+    data->boundary_line_start.push_back(pcp);
+    data->boundary_line_end.push_back(pt);
+
+    addPointConstraint(params, pcp, wBnd[p], row);
+  }
 
   // interior points should lie on surface
-  nurbs_data_->interior_line_start.clear ();
-  nurbs_data_->interior_line_end.clear ();
-  nurbs_data_->interior_error.clear ();
-  for (int p = 0; p < nInt; p++)
-  {
-    Vector3d pcp;
-    pcp (0) = nurbs_data_->interior->at (p).x;
-    pcp (1) = nurbs_data_->interior->at (p).y;
-    pcp (2) = nurbs_data_->interior->at (p).z;
+  data->interior_line_start.clear();
+  data->interior_line_end.clear();
+  data->interior_error.clear();
+  data->interior_normals.clear();
+  for (int p = 0; p < nInt; p++) {
+    vec3 pcp;
+    pcp = data->interior[p];
 
     // inverse mapping
-    Vector2d params;
+    vec2 params;
+    vec3 pt, tu, tv, n;
     double error;
-    if (p < (int)nurbs_data_->interior_param.size ())
-    {
-      params = ntools.inverseMapping (pcp, &nurbs_data_->interior_param[p], error, inv_map_iter_int_,
-                                      inv_map_accuracy_int_);
-      nurbs_data_->interior_param[p] = params;
+    if (p < (int) data->interior_param.size()) {
+      params = data->interior_param[p];
+      params = ntools.inverseMapping(pcp, &params, error, pt, tu, tv, invMapInt_maxSteps, invMapInt_accuracy);
+      data->interior_param[p] = params;
+    } else {
+      params = ntools.inverseMapping(pcp, NULL, error, pt, tu, tv, invMapInt_maxSteps, invMapInt_accuracy);
+      data->interior_param.push_back(params);
     }
-    else
-    {
-      params = ntools.inverseMapping (pcp, NULL, error, inv_map_iter_int_, inv_map_accuracy_int_);
-      nurbs_data_->interior_param.push_back (params);
-    }
-    nurbs_data_->interior_error.push_back (error);
+    data->interior_error.push_back(error);
 
-    double pointAndTangents[9];
-    nurbs_patch_->Evaluate (params (0), params (1), 1, 3, pointAndTangents);
-    nurbs_data_->interior_line_start.push_back (pcp);
-    Vector3d r;
-    r (0) = pointAndTangents[0];
-    r (1) = pointAndTangents[1];
-    r (2) = pointAndTangents[2];
-    nurbs_data_->interior_line_end.push_back (r);
+    n = tu.cross(tv);
+    n.normalize();
 
-    addPointConstraint (params, pcp, wInt[p], row);
-  } // p
+    data->interior_normals.push_back(n);
+    data->interior_line_start.push_back(pcp);
+    data->interior_line_end.push_back(pt);
+
+    addPointConstraint(params, pcp, wInt[p], row);
+  }
 
   // cage regularisation
   if (nCageRegInt > 0)
-    addCageInteriorRegularisation (wCageRegInt, row);
+    addCageInteriorRegularisation(wCageRegInt, row);
 
-  if (nCageRegBnd > 0)
-  {
-    addCageBoundaryRegularisation (wCageRegBnd, NORTH, row);
-    addCageBoundaryRegularisation (wCageRegBnd, SOUTH, row);
-    addCageBoundaryRegularisation (wCageRegBnd, WEST, row);
-    addCageBoundaryRegularisation (wCageRegBnd, EAST, row);
-    addCageCornerRegularisation (wCageRegBnd * 4.0, row);
+  if (nCageRegBnd > 0) {
+    addCageBoundaryRegularisation(wCageRegBnd, NORTH, row);
+    addCageBoundaryRegularisation(wCageRegBnd, SOUTH, row);
+    addCageBoundaryRegularisation(wCageRegBnd, WEST, row);
+    addCageBoundaryRegularisation(wCageRegBnd, EAST, row);
+    addCageCornerRegularisation(wCageRegBnd * 2.0, row);
   }
 
-  time_end = clock ();
-  if (!quiet_)
-  {
-    double solve_time = (double)(time_end - time_start) / (double)(CLOCKS_PER_SEC);
-    printf ("[NurbsFitting::assemble()] (assemble (%d,%d): %f sec)\n", nrows, ncp, solve_time);
+  time_end = clock();
+  if (!m_quiet) {
+    double solve_time = (double) (time_end - time_start) / (double) (CLOCKS_PER_SEC);
+    printf("[NurbsFitting::assemble()] (assemble (%d,%d): %f sec)\n", nrows, ncp, solve_time);
   }
 }
 
-void
-NurbsFitting::assemble (int resU, int resV, double wBnd, double wInt, double wCurBnd, double wCurInt,
-                        double wCageRegBnd, double wCageReg, double wCorner)
+void NurbsFitting::assemble(int resU, int resV, double wBnd, double wInt, double wCurBnd, double wCurInt, double wCageRegBnd,
+    double wCageReg, double wCorner)
 {
 
-  NurbsTools ntools (nurbs_patch_);
+  NurbsTools ntools(m_patch);
 
   clock_t time_start, time_end;
-  time_start = clock ();
+  time_start = clock();
 
-  int nBnd = nurbs_data_->boundary->size ();
-  int nInt = nurbs_data_->interior->size ();
+  int nBnd = data->boundary.size();
+  int nInt = data->interior.size();
   int nCurInt = resU * resV;
   int nCurBnd = 2 * resU + 2 * resV;
-  int nCageReg = (nurbs_patch_->m_cv_count[0] - 2) * (nurbs_patch_->m_cv_count[1] - 2);
-  int nCageRegBnd = 2 * (nurbs_patch_->m_cv_count[0] - 1) + 2 * (nurbs_patch_->m_cv_count[1] - 1);
+  int nCageReg = (m_patch->ncpsU - 2) * (m_patch->ncpsV - 2);
+  int nCageRegBnd = 2 * (m_patch->ncpsU - 1) + 2 * (m_patch->ncpsV - 1);
   int nCorner = 4;
 
   if (wBnd <= 0.0)
@@ -511,227 +452,317 @@ NurbsFitting::assemble (int resU, int resV, double wBnd, double wInt, double wCu
   if (wCorner <= 0.0)
     nCorner = 0;
 
-  int ncp = nurbs_patch_->m_cv_count[0] * nurbs_patch_->m_cv_count[1];
+  int ncp = m_patch->ncpsU * m_patch->ncpsV;
   int nrows = nBnd + nInt + nCurInt + nCurBnd + nCorner + nCageReg + nCageRegBnd;
 
-  K_eig_ = Eigen::MatrixXd::Zero (nrows, ncp);
-  f_eig_ = Eigen::MatrixXd::Zero (nrows, 3);
+#ifdef USE_UMFPACK
+  m_Ksparse.clear();
+#else
+  m_Keig = Eigen::MatrixXd::Zero(nrows, ncp);
+#endif
+
+  m_feig = Eigen::MatrixXd::Zero(nrows, 3);
 
   int row = 0;
 
   // boundary points should lie on edges of surface
-  nurbs_data_->boundary_line_start.clear ();
-  nurbs_data_->boundary_line_end.clear ();
-  nurbs_data_->boundary_error.clear ();
-  for (int p = 0; p < nBnd; p++)
-  {
-    Vector3d pcp;
-    pcp (0) = nurbs_data_->boundary->at (p).x;
-    pcp (1) = nurbs_data_->boundary->at (p).y;
-    pcp (2) = nurbs_data_->boundary->at (p).z;
+  data->boundary_line_start.clear();
+  data->boundary_line_end.clear();
+  data->boundary_error.clear();
+  data->boundary_normals.clear();
+  for (int p = 0; p < nBnd; p++) {
+    vec3 pcp;
+    pcp = data->boundary[p];
 
     double error;
-    Vector2d params = ntools.inverseMappingBoundary (pcp, error, inv_map_iter_bnd_, inv_map_accuracy_bnd_);
-    nurbs_data_->boundary_error.push_back (error);
+    vec3 pt, tu, tv, n;
+    vec2 params = ntools.inverseMappingBoundary(pcp, error, pt, tu, tv, invMapBnd_maxSteps, invMapBnd_accuracy);
+    data->boundary_error.push_back(error);
 
-    if (p < (int)nurbs_data_->boundary_param.size ())
-    {
-      nurbs_data_->boundary_param[p] = params;
-    }
-    else
-    {
-      nurbs_data_->boundary_param.push_back (params);
+    if (p < (int) data->boundary_param.size()) {
+      data->boundary_param[p] = params;
+    } else {
+      data->boundary_param.push_back(params);
     }
 
-    double pointAndTangents[9];
-    nurbs_patch_->Evaluate (params (0), params (1), 1, 3, pointAndTangents);
-    Vector3d r;
-    r (0) = pointAndTangents[0];
-    r (1) = pointAndTangents[1];
-    r (2) = pointAndTangents[2];
-    nurbs_data_->boundary_line_start.push_back (pcp);
-    nurbs_data_->boundary_line_end.push_back (r);
+    n = tu.cross(tv);
+    n.normalize();
 
-    addPointConstraint (params, pcp, wBnd, row);
-  } // p
+    data->boundary_normals.push_back(n);
+    data->boundary_line_start.push_back(pcp);
+    data->boundary_line_end.push_back(pt);
+
+    addPointConstraint(params, pcp, wBnd, row);
+
+  }
 
   // interior points should lie on surface
-  nurbs_data_->interior_line_start.clear ();
-  nurbs_data_->interior_line_end.clear ();
-  nurbs_data_->interior_error.clear ();
-  for (int p = 0; p < nInt; p++)
-  {
-    Vector3d pcp;
-    pcp (0) = nurbs_data_->interior->at (p).x;
-    pcp (1) = nurbs_data_->interior->at (p).y;
-    pcp (2) = nurbs_data_->interior->at (p).z;
+  data->interior_line_start.clear();
+  data->interior_line_end.clear();
+  data->interior_error.clear();
+  data->interior_normals.clear();
+  for (int p = 0; p < nInt; p++) {
+
+    vec3 pcp = data->interior[p];
 
     // inverse mapping
-    Vector2d params;
+    vec2 params;
     double error;
-    if (p < (int)nurbs_data_->interior_param.size ())
-    {
-      params = ntools.inverseMapping (pcp, &nurbs_data_->interior_param[p], error, inv_map_iter_int_,
-                                      inv_map_accuracy_int_);
-      nurbs_data_->interior_param[p] = params;
+    vec3 pt, tu, tv, n;
+    if (p < (int) data->interior_param.size()) {
+      params = data->interior_param[p];
+      params = ntools.inverseMapping(pcp, &params, error, pt, tu, tv, invMapInt_maxSteps, invMapInt_accuracy);
+      data->interior_param[p] = params;
+    } else {
+      params = ntools.inverseMapping(pcp, NULL, error, pt, tu, tv, invMapInt_maxSteps, invMapInt_accuracy);
+      data->interior_param.push_back(params);
     }
-    else
-    {
-      params = ntools.inverseMapping (pcp, NULL, error, inv_map_iter_int_, inv_map_accuracy_int_);
-      nurbs_data_->interior_param.push_back (params);
-    }
-    nurbs_data_->interior_error.push_back (error);
+    data->interior_error.push_back(error);
 
-    double pointAndTangents[9];
-    nurbs_patch_->Evaluate (params (0), params (1), 1, 3, pointAndTangents);
-    nurbs_data_->interior_line_start.push_back (pcp);
-    Vector3d r;
-    r (0) = pointAndTangents[0];
-    r (1) = pointAndTangents[1];
-    r (2) = pointAndTangents[2];
-    nurbs_data_->interior_line_end.push_back (r);
+    n = tu.cross(tv);
+    n.normalize();
 
-    addPointConstraint (params, pcp, wInt, row);
-  } // p
+    data->interior_normals.push_back(n);
+    data->interior_line_start.push_back(pcp);
+    data->interior_line_end.push_back(pt);
+
+    addPointConstraint(params, pcp, wInt, row);
+
+  }
 
   // minimal curvature on surface
-  if (nCurInt > 0)
-  {
-    if (nurbs_patch_->m_order[0] < 3 || nurbs_patch_->m_order[1] < 3)
-      printf ("[NurbsFitting::assemble] Error insufficient NURBS order to add curvature regularisation.\n");
+  if (nCurInt > 0) {
+    if (m_patch->DegreeU() < 3 || m_patch->DegreeV() < 3)
+      printf("[NurbsFitting::assemble] Error insufficient NURBS order to add curvature regularisation.\n");
     else
-      addInteriorRegularisation (2, resU, resV, wCurInt / resU, row);
+      addInteriorRegularisation(2, resU, resV, wCurInt / resU, row);
   }
 
   // minimal curvature on boundary
-  if (nCurBnd > 0)
-  {
-    if (nurbs_patch_->m_order[0] < 3 || nurbs_patch_->m_order[1] < 3)
-      printf ("[NurbsFitting::assemble] Error insufficient NURBS order to add curvature regularisation.\n");
+  if (nCurBnd > 0) {
+    if (m_patch->DegreeU() < 3 || m_patch->DegreeV() < 3)
+      printf("[NurbsFitting::assemble] Error insufficient NURBS order to add curvature regularisation.\n");
     else
-      addBoundaryRegularisation (2, resU, resV, wCurBnd / resU, row);
+      addBoundaryRegularisation(2, resU, resV, wCurBnd / resU, row);
   }
 
   // cage regularisation
   if (nCageReg > 0)
-    addCageInteriorRegularisation (wCageReg, row);
+    addCageInteriorRegularisation(wCageReg, row);
 
-  if (nCageRegBnd > 0)
-  {
-    addCageBoundaryRegularisation (wCageRegBnd, NORTH, row);
-    addCageBoundaryRegularisation (wCageRegBnd, SOUTH, row);
-    addCageBoundaryRegularisation (wCageRegBnd, WEST, row);
-    addCageBoundaryRegularisation (wCageRegBnd, EAST, row);
-    addCageCornerRegularisation (wCageRegBnd * 4.0, row);
+  if (nCageRegBnd > 0) {
+    addCageBoundaryRegularisation(wCageRegBnd, NORTH, row);
+    addCageBoundaryRegularisation(wCageRegBnd, SOUTH, row);
+    addCageBoundaryRegularisation(wCageRegBnd, WEST, row);
+    addCageBoundaryRegularisation(wCageRegBnd, EAST, row);
+    addCageCornerRegularisation(wCageRegBnd * 2.0, row);
   }
 
-  //  // corners of surface should lie on boundary
-  //  if (nCorner > 0)
-  //  {
-  //    addBoundaryPointConstraint (min_u_, min_v_, 1.0, row);
-  //    addBoundaryPointConstraint (min_u_, max_v_, 1.0, row);
-  //    addBoundaryPointConstraint (max_u_, min_v_, 1.0, row);
-  //    addBoundaryPointConstraint (max_u_, max_v_, 1.0, row);
-  //  }
+  // corners of surface should lie on boundary
+  if (nCorner > 0) {
+    addBoundaryPointConstraint(m_minU, m_minV, 1.0, row);
+    addBoundaryPointConstraint(m_minU, m_maxV, 1.0, row);
+    addBoundaryPointConstraint(m_maxU, m_minV, 1.0, row);
+    addBoundaryPointConstraint(m_maxU, m_maxV, 1.0, row);
+  }
 
-  time_end = clock ();
-  if (!quiet_)
-  {
-    double solve_time = (double)(time_end - time_start) / (double)(CLOCKS_PER_SEC);
-    printf ("[NurbsFitting::assemble()] (assemble (%d,%d): %f sec)\n", nrows, ncp, solve_time);
+  time_end = clock();
+  if (!m_quiet) {
+    double solve_time = (double) (time_end - time_start) / (double) (CLOCKS_PER_SEC);
+    printf("[NurbsFitting::assemble()] (assemble (%d,%d): %f sec)\n", nrows, ncp, solve_time);
   }
 }
 
-void
-NurbsFitting::solve (double damp)
+void NurbsFitting::init()
 {
-  solve_eigen (damp);
+  NurbsTools ntools(m_patch);
+  m_elementsU = ntools.getElementVector(0);
+  m_elementsV = ntools.getElementVector(1);
+  m_minU = m_elementsU[0];
+  m_minV = m_elementsV[0];
+  m_maxU = m_elementsU[m_elementsU.size() - 1];
+  m_maxV = m_elementsV[m_elementsV.size() - 1];
+
+  m_xeig = Eigen::MatrixXd::Zero(m_patch->ncpsU * m_patch->ncpsV, 3);
+
+  invMapBnd_maxSteps = 100;
+  invMapInt_maxSteps = 100;
+  invMapBnd_accuracy = 1e-4;
+  invMapInt_accuracy = 1e-4;
+
+  m_quiet = true;
+  use_int_hints = false;
 }
 
-void
-NurbsFitting::solve_eigen (double damp)
+void NurbsFitting::solve(double damp)
+{
+#ifdef USE_UMFPACK
+  solve_umfpack(damp);
+#else
+  solve_eigen(damp);
+#endif
+
+}
+
+#ifdef USE_UMFPACK
+void NurbsFitting::solve_umfpack(double damp)
+{
+  NurbsTools ntools(m_patch);
+
+  clock_t time_start, time_end;
+  time_start = clock();
+
+  cholmod_common c;
+  cholmod_start(&c);
+
+  if( m_patch->DegreeU() > 3 || m_patch->DegreeV() > 3 )
+  printf("[NurbsFitting::solve_umfpack] Bug-Warning: UMFPACK cannot solve NURBS with higher order than 3 (at least for interior points).\n");
+
+  int n_rows, n_cols, n_nz;
+  m_Ksparse.size(n_rows, n_cols);
+  n_nz = m_Ksparse.nonzeros();
+
+  cholmod_sparse* K = cholmod_allocate_sparse(n_rows, n_cols, n_rows * n_cols, 0, 1, 0, CHOLMOD_REAL, &c);
+  cholmod_dense* f = cholmod_allocate_dense(n_rows, 3, n_rows, CHOLMOD_REAL, &c);
+  cholmod_dense* d = cholmod_allocate_dense(n_cols, 3, n_cols, CHOLMOD_REAL, &c);
+
+  std::vector<int> rowinds;
+  std::vector<int> colinds;
+  std::vector<double> values;
+  m_Ksparse.get(rowinds, colinds, values);
+
+  double* vals = (double*) K->x;
+  int* cols = (int*) K->p;
+  int* rows = (int*) K->i;
+
+  umfpack_di_triplet_to_col(n_rows, n_cols, n_nz, &rowinds[0], &colinds[0], &values[0], cols, rows, vals, NULL);
+
+  double* temp = (double*) f->x;
+
+  for( int j = 0; j < 3; j++ )
+  {
+    for( int i = 0; i < n_rows; i++ )
+    {
+
+      temp[j * n_rows + i] = m_feig(i, j);
+
+    }
+  }
+
+  bool not_solve = ntools.solveSparseLinearSystemLQ(K, f, d);
+
+  temp = (double*) d->x;
+
+  for( int j = 0; j < 3; j++ )
+  {
+    for( int i = 0; i < n_cols; i++ )
+    {
+
+      m_xeig(i, j) = temp[j * n_cols + i];
+
+    }
+  }
+
+  cholmod_free_sparse(&K, &c);
+  cholmod_free_dense(&f, &c);
+  cholmod_free_dense(&d, &c);
+
+  cholmod_finish(&c);
+
+  time_end = clock();
+
+  if( not_solve )
+  printf("[NurbsFitting::solve_umfpack()] Error: solution NOT found\n");
+  else
+  {
+    if( !m_quiet )
+    {
+      double solve_time = (double) (time_end - time_start) / (double) (CLOCKS_PER_SEC);
+      printf("[NurbsFitting::solve_umfpack()] solution found! (%f sec)\n", solve_time);
+    }
+    updateSurf(damp);
+  }
+
+}
+#else
+
+void NurbsFitting::solve_eigen(double damp)
 {
 
   clock_t time_start, time_end;
-  time_start = clock ();
+  time_start = clock();
 
-  x_eig_ = K_eig_.colPivHouseholderQr ().solve (f_eig_);
+  //  m_xeig = m_Keig.colPivHouseholderQr().solve(m_feig);
   //  Eigen::MatrixXd x = A.householderQr().solve(b);
+  m_xeig = m_Keig.jacobiSvd(ComputeThinU | ComputeThinV).solve(m_feig);
 
-  time_end = clock ();
+  time_end = clock();
 
-  if (!quiet_)
-  {
-    double solve_time = (double)(time_end - time_start) / (double)(CLOCKS_PER_SEC);
-    printf ("[NurbsFitting::solve_eigen()] solution found! (%f sec)\n", solve_time);
+  if (!m_quiet) {
+    double solve_time = (double) (time_end - time_start) / (double) (CLOCKS_PER_SEC);
+    printf("[NurbsFitting::solve_eigen()] solution found! (%f sec)\n", solve_time);
   }
-  updateSurf (damp);
+  updateSurf(damp);
 }
+#endif
 
-void
-NurbsFitting::updateSurf (double damp)
+void NurbsFitting::updateSurf(double damp)
 {
+  for (unsigned j = 0; j < m_patch->ncpsV; j++) {
+    for (unsigned i = 0; i < m_patch->ncpsU; i++) {
 
-  NurbsTools ntools (nurbs_patch_);
+      unsigned A = m_patch->I(i,j);
 
-  int ncp = nurbs_patch_->m_cv_count[0] * nurbs_patch_->m_cv_count[1];
+      vec4 cp_prev = m_patch->GetCP(i, j);
+      vec4 cp;
 
-  for (int A = 0; A < ncp; A++)
-  {
+      cp(0) = cp_prev(0) + damp * (m_xeig(A, 0) - cp_prev(0));
+      cp(1) = cp_prev(1) + damp * (m_xeig(A, 1) - cp_prev(1));
+      cp(2) = cp_prev(2) + damp * (m_xeig(A, 2) - cp_prev(2));
+      cp(3) = 1.0;
 
-    int I = ntools.I (A);
-    int J = ntools.J (A);
-
-    ON_3dPoint cp_prev;
-    nurbs_patch_->GetCV (I, J, cp_prev);
-
-    ON_3dPoint cp;
-    cp.x = cp_prev.x + damp * (x_eig_ (A, 0) - cp_prev.x);
-    cp.y = cp_prev.y + damp * (x_eig_ (A, 1) - cp_prev.y);
-    cp.z = cp_prev.z + damp * (x_eig_ (A, 2) - cp_prev.z);
-
-    nurbs_patch_->SetCV (I, J, cp);
-
+      m_patch->SetCP(i,j, cp);
+    }
   }
-
 }
 
-void
-NurbsFitting::setInvMapParams (double inv_map_iter_bnd, double inv_map_iter_int, double inv_map_accuracy_bnd,
-                               double inv_map_accuracy_int)
+void NurbsFitting::setInvMapParams(double invMapBnd_maxSteps, double invMapInt_maxSteps, double invMapBnd_accuracy,
+    double invMapInt_accuracy)
 {
-  this->inv_map_iter_bnd_ = inv_map_iter_bnd;
-  this->inv_map_iter_int_ = inv_map_iter_int;
-  this->inv_map_accuracy_bnd_ = inv_map_accuracy_bnd;
-  this->inv_map_accuracy_int_ = inv_map_accuracy_int;
+  this->invMapBnd_maxSteps = invMapBnd_maxSteps;
+  this->invMapInt_maxSteps = invMapInt_maxSteps;
+  this->invMapBnd_accuracy = invMapBnd_accuracy;
+  this->invMapInt_accuracy = invMapInt_accuracy;
 }
 
-void
-NurbsFitting::addPointConstraint (Vector2d params, Vector3d point, double weight, int& row)
+void NurbsFitting::addPointConstraint(const vec2 &params, const vec3 &point, double weight, int& row)
 {
 
-  NurbsTools ntools (nurbs_patch_);
+  NurbsTools ntools(m_patch);
 
-  double N0[nurbs_patch_->m_order[0] * nurbs_patch_->m_order[0]];
-  double N1[nurbs_patch_->m_order[1] * nurbs_patch_->m_order[1]];
+  int E = ntools.E(params(0));
+  int F = ntools.F(params(1));
 
-  int E = ntools.E (params (0));
-  int F = ntools.F (params (1));
+  std::vector<double> N0, N1;
+  m_patch->basisU.Cox(params(0), N0);
+  m_patch->basisV.Cox(params(1), N1);
 
-  ON_EvaluateNurbsBasis (nurbs_patch_->m_order[0], nurbs_patch_->m_knot[0] + E, params (0), N0);
-  ON_EvaluateNurbsBasis (nurbs_patch_->m_order[1], nurbs_patch_->m_knot[1] + F, params (1), N1);
+  unsigned degreeU = m_patch->DegreeU();
+  unsigned degreeV = m_patch->DegreeV();
 
-  f_eig_ (row, 0) = point (0) * weight;
-  f_eig_ (row, 1) = point (1) * weight;
-  f_eig_ (row, 2) = point (2) * weight;
+  m_feig(row, 0) = point(0) * weight;
+  m_feig(row, 1) = point(1) * weight;
+  m_feig(row, 2) = point(2) * weight;
 
-  for (int i = 0; i < nurbs_patch_->m_order[0]; i++)
-  {
+  for (unsigned i = 0; i < degreeU + 1; i++) {
+    unsigned iu = i + degreeU * (degreeU + 1);
+    for (unsigned j = 0; j < degreeV + 1; j++) {
 
-    for (int j = 0; j < nurbs_patch_->m_order[1]; j++)
-    {
-
-      K_eig_ (row, ntools.A (E, F, i, j)) = weight * N0[i] * N1[j];
+#ifdef USE_UMFPACK
+      m_Ksparse.set(row, ntools.A(E, F, i, j), weight * N0[iu] * N1[j + degreeV * (degreeV + 1)]);
+#else
+      m_Keig(row, ntools.A(E, F, i, j)) = weight * N0[iu] * N1[j + degreeV * (degreeV + 1)];
+#endif
 
     } // j
 
@@ -741,391 +772,427 @@ NurbsFitting::addPointConstraint (Vector2d params, Vector3d point, double weight
 
 }
 
-//void
-//NurbsFitting::addBoundaryPointConstraint (double paramU, double paramV, double weight, int &row)
-//{
-//  // edges on surface
-//  NurbsTools ntools (nurbs_patch_);
-//
-//  double N0[nurbs_patch_->m_order[0] * nurbs_patch_->m_order[0]];
-//  double N1[nurbs_patch_->m_order[1] * nurbs_patch_->m_order[1]];
-//
-//  double points[3];
-//  int E, F;
-//  ON_3dPoint closest;
-//  int closest_idx;
-//
-//  nurbs_patch_->Evaluate (paramU, paramV, 0, 3, points);
-//  closest.x = points[0];
-//  closest.y = points[1];
-//  closest.z = points[2];
-//  nurbs_data_->boundary.GetClosestPoint (closest, &closest_idx);
-//
-//  E = ntools.E (paramU);
-//  F = ntools.F (paramV);
-//  ON_EvaluateNurbsBasis (nurbs_patch_->m_order[0], nurbs_patch_->m_knot[0] + E, paramU, N0);
-//  ON_EvaluateNurbsBasis (nurbs_patch_->m_order[1], nurbs_patch_->m_knot[1] + F, paramV, N1);
-//
-//  f_eig_ (row, 0) = nurbs_data_->boundary[closest_idx].x * weight;
-//  f_eig_ (row, 1) = nurbs_data_->boundary[closest_idx].y * weight;
-//  f_eig_ (row, 2) = nurbs_data_->boundary[closest_idx].z * weight;
-//
-//  for (int i = 0; i < nurbs_patch_->m_order[0]; i++)
-//  {
-//
-//    for (int j = 0; j < nurbs_patch_->m_order[1]; j++)
-//    {
-//
-//      K_eig_ (row, ntools.A (E, F, i, j)) = N0[i] * N1[j] * weight;
-//
-//    } // j
-//
-//  } // i
-//
-//  row++;
-//
-//}
-
-void
-NurbsFitting::addCageInteriorRegularisation (double weight, int &row)
+void NurbsFitting::addBoundaryPointConstraint(double paramU, double paramV, double weight, int &row)
 {
+  // edges on surface
+  NurbsTools ntools(m_patch);
 
-  NurbsTools ntools (nurbs_patch_);
+  vec3 pt;
+  int closest_idx;
 
-  for (int i = 1; i < (nurbs_patch_->m_cv_count[0] - 1); i++)
-  {
-    for (int j = 1; j < (nurbs_patch_->m_cv_count[1] - 1); j++)
-    {
+  m_patch->Evaluate(paramU, paramV, pt);
+  closest_idx = GetClosestPoint(pt, data->boundary);
 
-      f_eig_ (row, 0) = 0.0;
-      f_eig_ (row, 1) = 0.0;
-      f_eig_ (row, 2) = 0.0;
+  int E = ntools.E(paramU);
+  int F = ntools.F(paramV);
+  std::vector<double> N0, N1;
+  m_patch->basisU.Cox(paramU, E, N0);
+  m_patch->basisV.Cox(paramV, F, N1);
 
-      K_eig_ (row, ntools.A (i + 0, j + 0)) = -4.0 * weight;
-      K_eig_ (row, ntools.A (i + 0, j - 1)) = 1.0 * weight;
-      K_eig_ (row, ntools.A (i + 0, j + 1)) = 1.0 * weight;
-      K_eig_ (row, ntools.A (i - 1, j + 0)) = 1.0 * weight;
-      K_eig_ (row, ntools.A (i + 1, j + 0)) = 1.0 * weight;
+  unsigned degreeU = m_patch->DegreeU();
+  unsigned degreeV = m_patch->DegreeV();
+
+  m_feig(row, 0) = data->boundary[closest_idx](0) * weight;
+  m_feig(row, 1) = data->boundary[closest_idx](1) * weight;
+  m_feig(row, 2) = data->boundary[closest_idx](2) * weight;
+
+  for (unsigned i = 0; i < m_patch->DegreeU() + 1; i++) {
+    unsigned iu = i + degreeU * (degreeU + 1);
+    for (unsigned j = 0; j < m_patch->DegreeV() + 1; j++) {
+#ifdef USE_UMFPACK
+      m_Ksparse.set(row, ntools.A(E, F, i, j), N0[iu] * N1[j + degreeV * (degreeV + 1)] * weight);
+#else
+      m_Keig(row, ntools.A(E, F, i, j)) = N0[iu] * N1[j + degreeV * (degreeV + 1)] * weight;
+#endif
+
+    } // j
+
+  } // i
+
+  row++;
+
+}
+
+void NurbsFitting::addCageInteriorRegularisation(double weight, int &row)
+{
+  NurbsTools ntools(m_patch);
+
+  for (unsigned i = 1; i < (m_patch->ncpsU - 1); i++) {
+    for (unsigned j = 1; j < (m_patch->ncpsV - 1); j++) {
+
+      m_feig(row, 0) = 0.0;
+      m_feig(row, 1) = 0.0;
+      m_feig(row, 2) = 0.0;
+
+#ifdef USE_UMFPACK
+      m_Ksparse.set(row, ntools.A(i + 0, j + 0), -4.0 * weight);
+      m_Ksparse.set(row, ntools.A(i + 0, j - 1), 1.0 * weight);
+      m_Ksparse.set(row, ntools.A(i + 0, j + 1), 1.0 * weight);
+      m_Ksparse.set(row, ntools.A(i - 1, j + 0), 1.0 * weight);
+      m_Ksparse.set(row, ntools.A(i + 1, j + 0), 1.0 * weight);
+#else
+      m_Keig(row, ntools.A(i + 0, j + 0)) = -4.0 * weight;
+      m_Keig(row, ntools.A(i + 0, j - 1)) = 1.0 * weight;
+      m_Keig(row, ntools.A(i + 0, j + 1)) = 1.0 * weight;
+      m_Keig(row, ntools.A(i - 1, j + 0)) = 1.0 * weight;
+      m_Keig(row, ntools.A(i + 1, j + 0)) = 1.0 * weight;
+#endif
 
       row++;
     }
   }
 }
 
-void
-NurbsFitting::addCageBoundaryRegularisation (double weight, int side, int &row)
+void NurbsFitting::addCageBoundaryRegularisation(double weight, int side, int &row)
 {
+  NurbsTools ntools(m_patch);
+  unsigned i = 0;
+  unsigned j = 0;
 
-  NurbsTools ntools (nurbs_patch_);
-  int i = 0;
-  int j = 0;
+  switch (side) {
+  case SOUTH:
+    j = m_patch->ncpsV - 1;
+  case NORTH:
+    for (i = 1; i < (m_patch->ncpsU - 1); i++) {
 
-  switch (side)
-  {
-    case SOUTH:
-      j = nurbs_patch_->m_cv_count[1] - 1;
-    case NORTH:
-      for (i = 1; i < (nurbs_patch_->m_cv_count[0] - 1); i++)
-      {
+      m_feig(row, 0) = 0.0;
+      m_feig(row, 1) = 0.0;
+      m_feig(row, 2) = 0.0;
 
-        f_eig_ (row, 0) = 0.0;
-        f_eig_ (row, 1) = 0.0;
-        f_eig_ (row, 2) = 0.0;
+#ifdef USE_UMFPACK
+      m_Ksparse.set(row, ntools.A(i + 0, j), -2.0 * weight);
+      m_Ksparse.set(row, ntools.A(i - 1, j), 1.0 * weight);
+      m_Ksparse.set(row, ntools.A(i + 1, j), 1.0 * weight);
+#else
+      m_Keig(row, ntools.A(i + 0, j)) = -2.0 * weight;
+      m_Keig(row, ntools.A(i - 1, j)) = 1.0 * weight;
+      m_Keig(row, ntools.A(i + 1, j)) = 1.0 * weight;
+#endif
 
-        K_eig_ (row, ntools.A (i + 0, j)) = -2.0 * weight;
-        K_eig_ (row, ntools.A (i - 1, j)) = 1.0 * weight;
-        K_eig_ (row, ntools.A (i + 1, j)) = 1.0 * weight;
+      row++;
+    }
+    break;
 
-        row++;
-      }
-      break;
+  case EAST:
+    i = m_patch->ncpsU - 1;
+  case WEST:
+    for (j = 1; j < (m_patch->ncpsV - 1); j++) {
 
-    case EAST:
-      i = nurbs_patch_->m_cv_count[0] - 1;
-    case WEST:
-      for (j = 1; j < (nurbs_patch_->m_cv_count[1] - 1); j++)
-      {
+      m_feig(row, 0) = 0.0;
+      m_feig(row, 1) = 0.0;
+      m_feig(row, 2) = 0.0;
 
-        f_eig_ (row, 0) = 0.0;
-        f_eig_ (row, 1) = 0.0;
-        f_eig_ (row, 2) = 0.0;
-
-        K_eig_ (row, ntools.A (i, j + 0)) = -2.0 * weight;
-        K_eig_ (row, ntools.A (i, j - 1)) = 1.0 * weight;
-        K_eig_ (row, ntools.A (i, j + 1)) = 1.0 * weight;
-
-        row++;
-      }
-      break;
+#ifdef USE_UMFPACK
+      m_Ksparse.set(row, ntools.A(i, j + 0), -2.0 * weight);
+      m_Ksparse.set(row, ntools.A(i, j - 1), 1.0 * weight);
+      m_Ksparse.set(row, ntools.A(i, j + 1), 1.0 * weight);
+#else
+      m_Keig(row, ntools.A(i, j + 0)) = -2.0 * weight;
+      m_Keig(row, ntools.A(i, j - 1)) = 1.0 * weight;
+      m_Keig(row, ntools.A(i, j + 1)) = 1.0 * weight;
+#endif
+      row++;
+    }
+    break;
   }
 }
 
-void
-NurbsFitting::addCageCornerRegularisation (double weight, int &row)
+void NurbsFitting::addCageCornerRegularisation(double weight, int &row)
 {
-
-  NurbsTools ntools (nurbs_patch_);
+  NurbsTools ntools(m_patch);
 
   { // NORTH-WEST
     int i = 0;
     int j = 0;
 
-    f_eig_ (row, 0) = 0.0;
-    f_eig_ (row, 1) = 0.0;
-    f_eig_ (row, 2) = 0.0;
+    m_feig(row, 0) = 0.0;
+    m_feig(row, 1) = 0.0;
+    m_feig(row, 2) = 0.0;
 
-    K_eig_ (row, ntools.A (i + 0, j + 0)) = -2.0 * weight;
-    K_eig_ (row, ntools.A (i + 1, j + 0)) = 1.0 * weight;
-    K_eig_ (row, ntools.A (i + 0, j + 1)) = 1.0 * weight;
+#ifdef USE_UMFPACK
+    m_Ksparse.set(row, ntools.A(i + 0, j + 0), -2.0 * weight);
+    m_Ksparse.set(row, ntools.A(i + 1, j + 0), 1.0 * weight);
+    m_Ksparse.set(row, ntools.A(i + 0, j + 1), 1.0 * weight);
+#else
+    m_Keig(row, ntools.A(i + 0, j + 0)) = -2.0 * weight;
+    m_Keig(row, ntools.A(i + 1, j + 0)) = 1.0 * weight;
+    m_Keig(row, ntools.A(i + 0, j + 1)) = 1.0 * weight;
+#endif
 
     row++;
   }
 
   { // NORTH-EAST
-    int i = nurbs_patch_->m_cv_count[0] - 1;
+    int i = m_patch->ncpsU - 1;
     int j = 0;
 
-    f_eig_ (row, 0) = 0.0;
-    f_eig_ (row, 1) = 0.0;
-    f_eig_ (row, 2) = 0.0;
+    m_feig(row, 0) = 0.0;
+    m_feig(row, 1) = 0.0;
+    m_feig(row, 2) = 0.0;
 
-    K_eig_ (row, ntools.A (i + 0, j + 0)) = -2.0 * weight;
-    K_eig_ (row, ntools.A (i - 1, j + 0)) = 1.0 * weight;
-    K_eig_ (row, ntools.A (i + 0, j + 1)) = 1.0 * weight;
+#ifdef USE_UMFPACK
+    m_Ksparse.set(row, ntools.A(i + 0, j + 0), -2.0 * weight);
+    m_Ksparse.set(row, ntools.A(i - 1, j + 0), 1.0 * weight);
+    m_Ksparse.set(row, ntools.A(i + 0, j + 1), 1.0 * weight);
+#else
+    m_Keig(row, ntools.A(i + 0, j + 0)) = -2.0 * weight;
+    m_Keig(row, ntools.A(i - 1, j + 0)) = 1.0 * weight;
+    m_Keig(row, ntools.A(i + 0, j + 1)) = 1.0 * weight;
+#endif
 
     row++;
   }
 
   { // SOUTH-EAST
-    int i = nurbs_patch_->m_cv_count[0] - 1;
-    int j = nurbs_patch_->m_cv_count[1] - 1;
+    int i = m_patch->ncpsU - 1;
+    int j = m_patch->ncpsV - 1;
 
-    f_eig_ (row, 0) = 0.0;
-    f_eig_ (row, 1) = 0.0;
-    f_eig_ (row, 2) = 0.0;
+    m_feig(row, 0) = 0.0;
+    m_feig(row, 1) = 0.0;
+    m_feig(row, 2) = 0.0;
 
-    K_eig_ (row, ntools.A (i + 0, j + 0)) = -2.0 * weight;
-    K_eig_ (row, ntools.A (i - 1, j + 0)) = 1.0 * weight;
-    K_eig_ (row, ntools.A (i + 0, j - 1)) = 1.0 * weight;
+#ifdef USE_UMFPACK
+    m_Ksparse.set(row, ntools.A(i + 0, j + 0), -2.0 * weight);
+    m_Ksparse.set(row, ntools.A(i - 1, j + 0), 1.0 * weight);
+    m_Ksparse.set(row, ntools.A(i + 0, j - 1), 1.0 * weight);
+#else
+    m_Keig(row, ntools.A(i + 0, j + 0)) = -2.0 * weight;
+    m_Keig(row, ntools.A(i - 1, j + 0)) = 1.0 * weight;
+    m_Keig(row, ntools.A(i + 0, j - 1)) = 1.0 * weight;
+#endif
 
     row++;
   }
 
   { // SOUTH-WEST
     int i = 0;
-    int j = nurbs_patch_->m_cv_count[1] - 1;
+    int j = m_patch->ncpsV - 1;
 
-    f_eig_ (row, 0) = 0.0;
-    f_eig_ (row, 1) = 0.0;
-    f_eig_ (row, 2) = 0.0;
+    m_feig(row, 0) = 0.0;
+    m_feig(row, 1) = 0.0;
+    m_feig(row, 2) = 0.0;
 
-    K_eig_ (row, ntools.A (i + 0, j + 0)) = -2.0 * weight;
-    K_eig_ (row, ntools.A (i + 1, j + 0)) = 1.0 * weight;
-    K_eig_ (row, ntools.A (i + 0, j - 1)) = 1.0 * weight;
+#ifdef USE_UMFPACK
+    m_Ksparse.set(row, ntools.A(i + 0, j + 0), -2.0 * weight);
+    m_Ksparse.set(row, ntools.A(i + 1, j + 0), 1.0 * weight);
+    m_Ksparse.set(row, ntools.A(i + 0, j - 1), 1.0 * weight);
+#else
+    m_Keig(row, ntools.A(i + 0, j + 0)) = -2.0 * weight;
+    m_Keig(row, ntools.A(i + 1, j + 0)) = 1.0 * weight;
+    m_Keig(row, ntools.A(i + 0, j - 1)) = 1.0 * weight;
+#endif
 
     row++;
   }
 
 }
 
-void
-NurbsFitting::addInteriorRegularisation (int order, int resU, int resV, double weight, int &row)
+void NurbsFitting::addInteriorRegularisation(int order, int resU, int resV, double weight, int &row)
 {
-
-  NurbsTools ntools (nurbs_patch_);
-
-  double N0[nurbs_patch_->m_order[0] * nurbs_patch_->m_order[0]];
-  double N1[nurbs_patch_->m_order[1] * nurbs_patch_->m_order[1]];
-
-  double dU = (max_u_ - min_u_) / resU;
-  double dV = (max_v_ - min_v_) / resV;
-
-  for (int u = 0; u < resU; u++)
-  {
-    for (int v = 0; v < resV; v++)
-    {
-
-      Vector2d params;
-      params (0) = min_u_ + u * dU + 0.5 * dU;
-      params (1) = min_v_ + v * dV + 0.5 * dV;
-
-      //			printf("%f %f, %f %f\n", min_u_, dU, params(0), params(1));
-
-      int E = ntools.E (params (0));
-      int F = ntools.F (params (1));
-
-      ON_EvaluateNurbsBasis (nurbs_patch_->m_order[0], nurbs_patch_->m_knot[0] + E, params (0), N0);
-      ON_EvaluateNurbsBasis (nurbs_patch_->m_order[1], nurbs_patch_->m_knot[1] + F, params (1), N1);
-      ON_EvaluateNurbsBasisDerivatives (nurbs_patch_->m_order[0], nurbs_patch_->m_knot[0] + E, order, N0); // derivative order?
-      ON_EvaluateNurbsBasisDerivatives (nurbs_patch_->m_order[1], nurbs_patch_->m_knot[1] + F, order, N1);
-
-      f_eig_ (row, 0) = 0.0;
-      f_eig_ (row, 1) = 0.0;
-      f_eig_ (row, 2) = 0.0;
-
-      for (int i = 0; i < nurbs_patch_->m_order[0]; i++)
-      {
-        for (int j = 0; j < nurbs_patch_->m_order[1]; j++)
-        {
-
-          K_eig_ (row, ntools.A (E, F, i, j)) = weight * (N0[order * nurbs_patch_->m_order[0] + i] * N1[j] + N0[i]
-              * N1[order * nurbs_patch_->m_order[1] + j]);
-
-        } // i
-      } // j
-
-      row++;
-    } // u
-  } // v
+  // TODO: implement
+  printf("NurbsFitting::addInteriorRegularisation] Warning: Not implementet yet!\n");
+  //  NurbsTools ntools(m_patch);
+  //
+  //  double N0[m_patch->DegreeU() * m_patch->DegreeU()];
+  //  double N1[m_patch->DegreeV() * m_patch->DegreeV()];
+  //
+  //  double dU = (m_maxU - m_minU) / resU;
+  //  double dV = (m_maxV - m_minV) / resV;
+  //
+  //  for (int u = 0; u < resU; u++) {
+  //    for (int v = 0; v < resV; v++) {
+  //
+  //      vec2 params;
+  //      params(0) = m_minU + u * dU + 0.5 * dU;
+  //      params(1) = m_minV + v * dV + 0.5 * dV;
+  //
+  //      //                    printf("%f %f, %f %f\n", m_minU, dU, params(0), params(1));
+  //
+  //      int E = ntools.E(params(0));
+  //      int F = ntools.F(params(1));
+  //
+  //      ON_EvaluateNurbsBasis(m_patch->DegreeU(), m_patch->m_knot[0] + E, params(0), N0);
+  //      ON_EvaluateNurbsBasis(m_patch->DegreeV(), m_patch->m_knot[1] + F, params(1), N1);
+  //      ON_EvaluateNurbsBasisDerivatives(m_patch->DegreeU(), m_patch->m_knot[0] + E, order, N0); // derivative order?
+  //      ON_EvaluateNurbsBasisDerivatives(m_patch->DegreeV(), m_patch->m_knot[1] + F, order, N1);
+  //
+  //      m_feig(row, 0) = 0.0;
+  //      m_feig(row, 1) = 0.0;
+  //      m_feig(row, 2) = 0.0;
+  //
+  //      for (int i = 0; i < m_patch->DegreeU(); i++) {
+  //
+  //        for (int j = 0; j < m_patch->DegreeV(); j++) {
+  //#ifdef USE_UMFPACK
+  //          m_Ksparse.set(row, ntools.A(E, F, i, j), weight * (N0[order * m_patch->DegreeU() + i] * N1[j] + N0[i] * N1[order * m_patch->DegreeV() + j]));
+  //#else
+  //          m_Keig(row, ntools.A(E, F, i, j)) = weight * (N0[order * m_patch->DegreeU() + i] * N1[j] + N0[i] * N1[order
+  //              * m_patch->DegreeV() + j]);
+  //#endif
+  //        } // i
+  //
+  //      } // j
+  //
+  //      row++;
+  //
+  //    }
+  //  }
 
 }
 
-void
-NurbsFitting::addBoundaryRegularisation (int order, int resU, int resV, double weight, int &row)
+void NurbsFitting::addBoundaryRegularisation(int order, int resU, int resV, double weight, int &row)
 {
-
-  NurbsTools ntools (nurbs_patch_);
-
-  double N0[nurbs_patch_->m_order[0] * nurbs_patch_->m_order[0]];
-  double N1[nurbs_patch_->m_order[1] * nurbs_patch_->m_order[1]];
-
-  double dU = (max_u_ - min_u_) / resU;
-  double dV = (max_v_ - min_v_) / resV;
-
-  for (int u = 0; u < resU; u++)
-  {
-
-    Vector2d params;
-    params (0) = min_u_ + u * dU + 0.5 * dU;
-    params (1) = min_v_;
-
-    int E = ntools.E (params (0));
-    int F = ntools.F (params (1));
-
-    ON_EvaluateNurbsBasis (nurbs_patch_->m_order[0], nurbs_patch_->m_knot[0] + E, params (0), N0);
-    ON_EvaluateNurbsBasis (nurbs_patch_->m_order[1], nurbs_patch_->m_knot[1] + F, params (1), N1);
-    ON_EvaluateNurbsBasisDerivatives (nurbs_patch_->m_order[0], nurbs_patch_->m_knot[0] + E, order, N0); // derivative order?
-    ON_EvaluateNurbsBasisDerivatives (nurbs_patch_->m_order[1], nurbs_patch_->m_knot[1] + F, order, N1);
-
-    f_eig_ (row, 0) = 0.0;
-    f_eig_ (row, 1) = 0.0;
-    f_eig_ (row, 2) = 0.0;
-
-    for (int i = 0; i < nurbs_patch_->m_order[0]; i++)
-    {
-      for (int j = 0; j < nurbs_patch_->m_order[1]; j++)
-      {
-
-        K_eig_ (row, ntools.A (E, F, i, j)) = weight * (N0[order * nurbs_patch_->m_order[0] + i] * N1[j] + N0[i]
-            * N1[order * nurbs_patch_->m_order[1] + j]);
-
-      } // i
-    } // j
-
-    row++;
-
-  } // u
-
-  for (int u = 0; u < resU; u++)
-  {
-
-    Vector2d params;
-    params (0) = min_u_ + u * dU + 0.5 * dU;
-    params (1) = max_v_;
-
-    int E = ntools.E (params (0));
-    int F = ntools.F (params (1));
-
-    ON_EvaluateNurbsBasis (nurbs_patch_->m_order[0], nurbs_patch_->m_knot[0] + E, params (0), N0);
-    ON_EvaluateNurbsBasis (nurbs_patch_->m_order[1], nurbs_patch_->m_knot[1] + F, params (1), N1);
-    ON_EvaluateNurbsBasisDerivatives (nurbs_patch_->m_order[0], nurbs_patch_->m_knot[0] + E, order, N0); // derivative order?
-    ON_EvaluateNurbsBasisDerivatives (nurbs_patch_->m_order[1], nurbs_patch_->m_knot[1] + F, order, N1);
-
-    f_eig_ (row, 0) = 0.0;
-    f_eig_ (row, 1) = 0.0;
-    f_eig_ (row, 2) = 0.0;
-
-    for (int i = 0; i < nurbs_patch_->m_order[0]; i++)
-    {
-      for (int j = 0; j < nurbs_patch_->m_order[1]; j++)
-      {
-
-        K_eig_ (row, ntools.A (E, F, i, j)) = weight * (N0[order * nurbs_patch_->m_order[0] + i] * N1[j] + N0[i]
-            * N1[order * nurbs_patch_->m_order[1] + j]);
-
-      } // i
-    } // j
-
-    row++;
-
-  } // u
-
-  for (int v = 0; v < resV; v++)
-  {
-
-    Vector2d params;
-    params (0) = min_u_;
-    params (1) = min_v_ + v * dV + 0.5 * dV;
-
-    int E = ntools.E (params (0));
-    int F = ntools.F (params (1));
-
-    ON_EvaluateNurbsBasis (nurbs_patch_->m_order[0], nurbs_patch_->m_knot[0] + E, params (0), N0);
-    ON_EvaluateNurbsBasis (nurbs_patch_->m_order[1], nurbs_patch_->m_knot[1] + F, params (1), N1);
-    ON_EvaluateNurbsBasisDerivatives (nurbs_patch_->m_order[0], nurbs_patch_->m_knot[0] + E, order, N0); // derivative order?
-    ON_EvaluateNurbsBasisDerivatives (nurbs_patch_->m_order[1], nurbs_patch_->m_knot[1] + F, order, N1);
-
-    f_eig_ (row, 0) = 0.0;
-    f_eig_ (row, 1) = 0.0;
-    f_eig_ (row, 2) = 0.0;
-
-    for (int i = 0; i < nurbs_patch_->m_order[0]; i++)
-    {
-      for (int j = 0; j < nurbs_patch_->m_order[1]; j++)
-      {
-
-        K_eig_ (row, ntools.A (E, F, i, j)) = weight * (N0[order * nurbs_patch_->m_order[0] + i] * N1[j] + N0[i]
-            * N1[order * nurbs_patch_->m_order[1] + j]);
-
-      } // i
-    } // j
-
-    row++;
-
-  } // v
-
-  for (int v = 0; v < resV; v++)
-  {
-
-    Vector2d params;
-    params (0) = max_u_;
-    params (1) = min_v_ + v * dV + 0.5 * dV;
-
-    int E = ntools.E (params (0));
-    int F = ntools.F (params (1));
-
-    ON_EvaluateNurbsBasis (nurbs_patch_->m_order[0], nurbs_patch_->m_knot[0] + E, params (0), N0);
-    ON_EvaluateNurbsBasis (nurbs_patch_->m_order[1], nurbs_patch_->m_knot[1] + F, params (1), N1);
-    ON_EvaluateNurbsBasisDerivatives (nurbs_patch_->m_order[0], nurbs_patch_->m_knot[0] + E, order, N0); // derivative order?
-    ON_EvaluateNurbsBasisDerivatives (nurbs_patch_->m_order[1], nurbs_patch_->m_knot[1] + F, order, N1);
-
-    f_eig_ (row, 0) = 0.0;
-    f_eig_ (row, 1) = 0.0;
-    f_eig_ (row, 2) = 0.0;
-
-    for (int i = 0; i < nurbs_patch_->m_order[0]; i++)
-    {
-      for (int j = 0; j < nurbs_patch_->m_order[1]; j++)
-      {
-
-        K_eig_ (row, ntools.A (E, F, i, j)) = weight * (N0[order * nurbs_patch_->m_order[0] + i] * N1[j] + N0[i]
-            * N1[order * nurbs_patch_->m_order[1] + j]);
-
-      } // i
-    } // j
-
-    row++;
-
-  } // v
+  // TODO: implement
+  printf("NurbsFitting::addBoundaryRegularisation] Warning: Not implementet yet!\n");
+  //
+  //  NurbsTools ntools(m_patch);
+  //
+  //  double N0[m_patch->DegreeU() * m_patch->DegreeU()];
+  //  double N1[m_patch->DegreeV() * m_patch->DegreeV()];
+  //
+  //  double dU = (m_maxU - m_minU) / resU;
+  //  double dV = (m_maxV - m_minV) / resV;
+  //
+  //  for (int u = 0; u < resU; u++) {
+  //
+  //    vec2 params;
+  //    params(0) = m_minU + u * dU + 0.5 * dU;
+  //    params(1) = m_minV;
+  //
+  //    int E = ntools.E(params(0));
+  //    int F = ntools.F(params(1));
+  //
+  //    ON_EvaluateNurbsBasis(m_patch->DegreeU(), m_patch->m_knot[0] + E, params(0), N0);
+  //    ON_EvaluateNurbsBasis(m_patch->DegreeV(), m_patch->m_knot[1] + F, params(1), N1);
+  //    ON_EvaluateNurbsBasisDerivatives(m_patch->DegreeU(), m_patch->m_knot[0] + E, order, N0); // derivative order?
+  //    ON_EvaluateNurbsBasisDerivatives(m_patch->DegreeV(), m_patch->m_knot[1] + F, order, N1);
+  //
+  //    m_feig(row, 0) = 0.0;
+  //    m_feig(row, 1) = 0.0;
+  //    m_feig(row, 2) = 0.0;
+  //
+  //    for (int i = 0; i < m_patch->DegreeU(); i++) {
+  //
+  //      for (int j = 0; j < m_patch->DegreeV(); j++) {
+  //
+  //#ifdef USE_UMFPACK
+  //        m_Ksparse.set(row, ntools.A(E, F, i, j), weight * (N0[order * m_patch->DegreeU() + i] * N1[j] + N0[i] * N1[order * m_patch->DegreeV() + j]));
+  //#else
+  //        m_Keig(row, ntools.A(E, F, i, j)) = weight * (N0[order * m_patch->DegreeU() + i] * N1[j] + N0[i] * N1[order
+  //            * m_patch->DegreeV() + j]);
+  //#endif
+  //
+  //      } // i
+  //
+  //    } // j
+  //
+  //    row++;
+  //
+  //  }
+  //
+  //  for (int u = 0; u < resU; u++) {
+  //
+  //    vec2 params;
+  //    params(0) = m_minU + u * dU + 0.5 * dU;
+  //    params(1) = m_maxV;
+  //
+  //    int E = ntools.E(params(0));
+  //    int F = ntools.F(params(1));
+  //
+  //    ON_EvaluateNurbsBasis(m_patch->DegreeU(), m_patch->m_knot[0] + E, params(0), N0);
+  //    ON_EvaluateNurbsBasis(m_patch->DegreeV(), m_patch->m_knot[1] + F, params(1), N1);
+  //    ON_EvaluateNurbsBasisDerivatives(m_patch->DegreeU(), m_patch->m_knot[0] + E, order, N0); // derivative order?
+  //    ON_EvaluateNurbsBasisDerivatives(m_patch->DegreeV(), m_patch->m_knot[1] + F, order, N1);
+  //
+  //    m_feig(row, 0) = 0.0;
+  //    m_feig(row, 1) = 0.0;
+  //    m_feig(row, 2) = 0.0;
+  //
+  //    for (int i = 0; i < m_patch->DegreeU(); i++) {
+  //
+  //      for (int j = 0; j < m_patch->DegreeV(); j++) {
+  //#ifdef USE_UMFPACK
+  //        m_Ksparse.set(row, ntools.A(E, F, i, j), weight * (N0[order * m_patch->DegreeU() + i] * N1[j] + N0[i] * N1[order * m_patch->DegreeV() + j]));
+  //#else
+  //        m_Keig(row, ntools.A(E, F, i, j)) = weight * (N0[order * m_patch->DegreeU() + i] * N1[j] + N0[i] * N1[order
+  //            * m_patch->DegreeV() + j]);
+  //#endif
+  //      } // i
+  //
+  //    } // j
+  //
+  //    row++;
+  //
+  //  }
+  //
+  //  for (int v = 0; v < resV; v++) {
+  //
+  //    vec2 params;
+  //    params(0) = m_minU;
+  //    params(1) = m_minV + v * dV + 0.5 * dV;
+  //
+  //    int E = ntools.E(params(0));
+  //    int F = ntools.F(params(1));
+  //
+  //    ON_EvaluateNurbsBasis(m_patch->DegreeU(), m_patch->m_knot[0] + E, params(0), N0);
+  //    ON_EvaluateNurbsBasis(m_patch->DegreeV(), m_patch->m_knot[1] + F, params(1), N1);
+  //    ON_EvaluateNurbsBasisDerivatives(m_patch->DegreeU(), m_patch->m_knot[0] + E, order, N0); // derivative order?
+  //    ON_EvaluateNurbsBasisDerivatives(m_patch->DegreeV(), m_patch->m_knot[1] + F, order, N1);
+  //
+  //    m_feig(row, 0) = 0.0;
+  //    m_feig(row, 1) = 0.0;
+  //    m_feig(row, 2) = 0.0;
+  //
+  //    for (int i = 0; i < m_patch->DegreeU(); i++) {
+  //
+  //      for (int j = 0; j < m_patch->DegreeV(); j++) {
+  //#ifdef USE_UMFPACK
+  //        m_Ksparse.set(row, ntools.A(E, F, i, j), weight * (N0[order * m_patch->DegreeU() + i] * N1[j] + N0[i] * N1[order * m_patch->DegreeV() + j]));
+  //#else
+  //        m_Keig(row, ntools.A(E, F, i, j)) = weight * (N0[order * m_patch->DegreeU() + i] * N1[j] + N0[i] * N1[order
+  //            * m_patch->DegreeV() + j]);
+  //#endif
+  //      } // i
+  //
+  //    } // j
+  //
+  //    row++;
+  //
+  //  }
+  //
+  //  for (int v = 0; v < resV; v++) {
+  //
+  //    vec2 params;
+  //    params(0) = m_maxU;
+  //    params(1) = m_minV + v * dV + 0.5 * dV;
+  //
+  //    int E = ntools.E(params(0));
+  //    int F = ntools.F(params(1));
+  //
+  //    ON_EvaluateNurbsBasis(m_patch->DegreeU(), m_patch->m_knot[0] + E, params(0), N0);
+  //    ON_EvaluateNurbsBasis(m_patch->DegreeV(), m_patch->m_knot[1] + F, params(1), N1);
+  //    ON_EvaluateNurbsBasisDerivatives(m_patch->DegreeU(), m_patch->m_knot[0] + E, order, N0); // derivative order?
+  //    ON_EvaluateNurbsBasisDerivatives(m_patch->DegreeV(), m_patch->m_knot[1] + F, order, N1);
+  //
+  //    m_feig(row, 0) = 0.0;
+  //    m_feig(row, 1) = 0.0;
+  //    m_feig(row, 2) = 0.0;
+  //
+  //    for (int i = 0; i < m_patch->DegreeU(); i++) {
+  //
+  //      for (int j = 0; j < m_patch->DegreeV(); j++) {
+  //#ifdef USE_UMFPACK
+  //        m_Ksparse.set(row, ntools.A(E, F, i, j), weight * (N0[order * m_patch->DegreeU() + i] * N1[j] + N0[i] * N1[order * m_patch->DegreeV() + j]));
+  //#else
+  //        m_Keig(row, ntools.A(E, F, i, j)) = weight * (N0[order * m_patch->DegreeU() + i] * N1[j] + N0[i] * N1[order
+  //            * m_patch->DegreeV() + j]);
+  //#endif
+  //      } // i
+  //
+  //    } // j
+  //
+  //    row++;
+  //
+  //  }
 
 }

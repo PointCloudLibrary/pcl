@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer
+ *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -38,96 +38,101 @@
 #ifndef _NURBS_FITTING_H_
 #define _NURBS_FITTING_H_
 
-#include "pcl/surface/nurbs/nurbs_tools.h"
-#include "pcl/surface/nurbs/nurbs_data.h"
+#include "nurbs_tools.h"
+#include "nurbs_data.h"
 
 namespace pcl
 {
-
-  class NurbsFitting
+  namespace nurbs
   {
-  public:
-    ON_TextLog on_out_;
-    ON_NurbsSurface* nurbs_patch_;
-    NurbsData *nurbs_data_;
 
-    NurbsFitting (int order, NurbsData *nurbs_data_, ON_3dPoint ll, ON_3dPoint lr, ON_3dPoint ur, ON_3dPoint ul);
-    NurbsFitting (int order, NurbsData *nurbs_data_, const std::vector<ON_3dPoint> &cv);
-    NurbsFitting (NurbsData *nurbs_data_, const ON_NurbsSurface &ns);
-    NurbsFitting (int order, NurbsData *nurbs_data_);
-    ~NurbsFitting ();
+    class NurbsFitting
+    {
+    public:
+      NurbsSurface* m_patch;
+      NurbsData *data;
 
-    void
-    refine (int dim);
-    //	void assemble_minimal_surface(int resU=64, int resV=64);
-    void
-    assemble ();
-    void
-    assemble (std::vector<double> &wBnd, std::vector<double> &wInt, double wCageRegBnd, double wCageRegInt);
-    void
-    assemble (int resU, int resV, double wBnd, double wInt, double wCurBnd, double wCurInt, double wCageRegBnd,
-              double wCageReg, double wCorner);
+      NurbsFitting (int order, NurbsData *data, vec4 ll, vec4 lr, vec4 ur, vec4 ul);
+      NurbsFitting (int order, NurbsData *data, const vector_vec3 &cv);
+      NurbsFitting (NurbsData *data, const NurbsSurface &ns);
+      NurbsFitting (int order, NurbsData *data);
+      ~NurbsFitting ();
 
-    void
-    solve (double damp = 1.0);
+      void
+      refine (int dim);
+      //    void assemble_minimal_surface(int resU=64, int resV=64);
+      void
+      assemble (double smoothness = 0.00001);
+      void
+      assemble (std::vector<double> &wBnd, std::vector<double> &wInt, double wCageRegBnd, double wCageRegInt);
+      void
+      assemble (int resU, int resV, double wBnd, double wInt, double wCurBnd, double wCurInt, double wCageRegBnd,
+                double wCageReg, double wCorner);
 
-    void
-    updateSurf (double damp);
+      void
+      solve (double damp = 1.0);
 
-    void
-    setInvMapParams (double inv_map_iter_bnd_, double inv_map_iter_int, double inv_map_accuracy_bnd,
-                     double inv_map_accuracy_int_);
+      void
+      updateSurf (double damp);
 
-  protected:
+      void
+      setInvMapParams (double invMapBnd_maxSteps, double invMapInt_maxSteps, double invMapBnd_accuracy,
+                       double invMapInt_accuracy);
 
-    void
-    init ();
+      //protected:
 
-    void
-    solve_eigen (double damp);
+      void
+      init ();
 
-    void
-    addPointConstraint (Eigen::Vector2d params, Eigen::Vector3d point, double weight, int& row);
+#ifdef USE_UMFPACK
+      void solve_umfpack(double damp);
+#else
+      void
+      solve_eigen (double damp);
+#endif
 
-    void
-    addBoundaryPointConstraint (double paramU, double paramV, double weight, int &row);
+      void
+      addPointConstraint (const vec2 &params, const vec3 &point, double weight, int& row);
+      void
+      addBoundaryPointConstraint (double paramU, double paramV, double weight, int &row);
 
-    void
-    addCageInteriorRegularisation (double weight, int &row);
+      void
+      addCageInteriorRegularisation (double weight, int &row);
+      void
+      addCageBoundaryRegularisation (double weight, int side, int &row);
+      void
+      addCageCornerRegularisation (double weight, int &row);
 
-    void
-    addCageBoundaryRegularisation (double weight, int side, int &row);
+      void
+      addInteriorRegularisation (int order, int resU, int resV, double weight, int &row);
+      void
+      addBoundaryRegularisation (int order, int resU, int resV, double weight, int &row);
 
-    void
-    addCageCornerRegularisation (double weight, int &row);
+      bool m_quiet;
+      bool use_int_hints;
 
-    void
-    addInteriorRegularisation (int order, int resU, int resV, double weight, int &row);
+#ifdef USE_UMFPACK
+      SparseMat m_Ksparse;
+#endif
 
-    void
-    addBoundaryRegularisation (int order, int resU, int resV, double weight, int &row);
+      Eigen::MatrixXd m_xeig;
+      Eigen::MatrixXd m_feig;
+      Eigen::MatrixXd m_Keig;
 
-    bool quiet_;
-    bool use_int_hints_;
+      std::vector<double> m_elementsU;
+      std::vector<double> m_elementsV;
 
-    Eigen::MatrixXd x_eig_;
-    Eigen::MatrixXd f_eig_;
-    Eigen::MatrixXd K_eig_;
+      double m_minU;
+      double m_minV;
+      double m_maxU;
+      double m_maxV;
 
-    std::vector<double> m_elementsU;
-    std::vector<double> m_elementsV;
-
-    double min_u_;
-    double min_v_;
-    double max_u_;
-    double max_v_;
-
-    int inv_map_iter_bnd_;
-    int inv_map_iter_int_;
-    double inv_map_accuracy_bnd_;
-    double inv_map_accuracy_int_;
-  };
-
-} // namespace pcl_nurbs
+      int invMapBnd_maxSteps;
+      int invMapInt_maxSteps;
+      double invMapBnd_accuracy;
+      double invMapInt_accuracy;
+    };
+  }
+} // namespace nurbs
 
 #endif /* _NURBS_FITTING_H_ */

@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer, Inc.
+ *  Copyright (c) 2011, Thomas Mörwald (University of Technology Vienna)
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Thomas Mörwald or Jonathan Balzer nor the names of its
+ *   * Neither the name of Thomas Mörwald nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -35,60 +35,62 @@
  *
  */
 
-#ifndef _NURBS_DATA_H_
-#define _NURBS_DATA_H_
+#ifndef _NURBS_BASIS_H_
+#define _NURBS_BASIS_H_
 
 #include <vector>
-#include "eigen_defs.h"
+#include <stdexcept>
 
 namespace pcl
 {
   namespace nurbs
   {
 
-    struct NurbsData
+    class NurbsCurve;
+    class NurbsSurface;
+
+    class NurbsBasis
     {
-      vector_vec3 interior; ///<<input
-      std::vector<double> interior_error;
-      vector_vec2 interior_param; ///>> output
-      vector_vec3 interior_line_start; ///>> output
-      vector_vec3 interior_line_end; ///>> output
-      vector_vec3 interior_normals; ///>> output
-      // http://eigen.tuxfamily.org/dox-devel/TopicStlContainers.html
 
-      vector_vec3 boundary; ///<<input
-      std::vector<double> boundary_error;
-      vector_vec2 boundary_param; ///>> output
-      vector_vec3 boundary_line_start; ///>> output
-      vector_vec3 boundary_line_end; ///>> output
-      vector_vec3 boundary_normals; ///>> output
-      // http://eigen.tuxfamily.org/dox-devel/TopicStlContainers.html
+    protected:
+      unsigned degree; ///< polynomial degree
+      std::vector<double> knots; ///< knot vector
 
-      inline void
-      clear_interior ()
-      {
-        interior.clear ();
-        interior_error.clear ();
-        interior_param.clear ();
-        interior_line_start.clear ();
-        interior_line_end.clear ();
-        interior_normals.clear ();
-      }
+      static void
+      cox (double xi, int knotSpan, unsigned degree, const std::vector<double> &supKnot, std::vector<double> &N);
+      static void
+      coxder (unsigned degree, const std::vector<double> &supKnot, const std::vector<double> &N,
+              std::vector<double> &Nd);
 
-      inline void
-      clear_boundary ()
-      {
-        boundary.clear ();
-        boundary_error.clear ();
-        boundary_param.clear ();
-        boundary_line_start.clear ();
-        boundary_line_end.clear ();
-        boundary_normals.clear ();
-      }
+    public:
+      NurbsBasis ();
+      NurbsBasis (unsigned order, unsigned ncps);
+
+      /** @brief Find the knot span to a parameter xi */
+      int
+      GetSpan (double xi) const;
+
+      void
+      GetElementVector (std::vector<double> &result) const;
+
+      void
+      InsertKnot (double xi);
+
+      /** @brief Cox-De-Boor recursion formula */
+      void
+      Cox (double xi, std::vector<double> &N) const;
+      void
+      Cox (double xi, std::vector<double> &N, std::vector<double> &Nd) const;
+      void
+      Cox (double xi, int span, std::vector<double> &N) const;
+      void
+      Cox (double xi, int span, std::vector<double> &N, std::vector<double> &Nd) const;
+
+      friend class NurbsCurve;
+      friend class NurbsSurface;
 
     };
-  } // namespace nurbs
-} // namespace pcl
+  }
+}
 
 #endif
-
