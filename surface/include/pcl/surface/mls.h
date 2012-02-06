@@ -209,7 +209,7 @@ namespace pcl
       double upsampling_radius_;
       double upsampling_step_;
 
-      boost::variate_generator<boost::mt19937, boost::random::uniform_real_distribution<float> > *rng_uniform_distribution_;
+      boost::variate_generator<boost::mt19937, boost::uniform_real<float> > *rng_uniform_distribution_;
       double point_density_;
 
       /** \brief Number of coefficients, to be computed from the requested order.*/

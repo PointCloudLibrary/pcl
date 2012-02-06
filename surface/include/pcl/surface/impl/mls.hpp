@@ -94,9 +94,9 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::reconstruct (PointCloudIn &output
   // Initialize random number generator if necessary
   if (upsample_method_ == UNIFORM_DENSITY)
   {
-    boost::random::mt19937 *rng = new boost::random::mt19937 (static_cast<unsigned int>(std::time(0)));
-    boost::random::uniform_real_distribution<float> *uniform_distrib = new boost::random::uniform_real_distribution<float> (-search_radius_, search_radius_);
-    rng_uniform_distribution_ = new boost::variate_generator<boost::mt19937, boost::random::uniform_real_distribution<float> > (*rng, *uniform_distrib);
+    boost::mt19937 *rng = new boost::mt19937 (static_cast<unsigned int>(std::time(0)));
+    boost::uniform_real<float> *uniform_distrib = new boost::uniform_real<float> (-search_radius_, search_radius_);
+    rng_uniform_distribution_ = new boost::variate_generator<boost::mt19937, boost::uniform_real<float> > (*rng, *uniform_distrib);
   }
 
   // Perform the actual surface reconstruction
@@ -452,4 +452,3 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
 #define PCL_INSTANTIATE_MovingLeastSquares(T,OutT) template class PCL_EXPORTS pcl::MovingLeastSquares<T,OutT>;
 
 #endif    // PCL_SURFACE_IMPL_MLS_H_
-
