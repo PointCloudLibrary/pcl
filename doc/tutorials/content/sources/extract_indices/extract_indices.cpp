@@ -9,10 +9,10 @@
 #include <pcl/filters/extract_indices.h>
 
 int
- main (int argc, char** argv)
+main (int argc, char** argv)
 {
   sensor_msgs::PointCloud2::Ptr cloud_blob (new sensor_msgs::PointCloud2), cloud_filtered_blob (new sensor_msgs::PointCloud2);
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>), cloud_p (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>), cloud_p (new pcl::PointCloud<pcl::PointXYZ>), cloud_f (new pcl::PointCloud<pcl::PointXYZ>);
 
   // Fill in the cloud data
   pcl::PCDReader reader;
@@ -76,8 +76,8 @@ int
 
     // Create the filtering object
     extract.setNegative (true);
-    extract.filter (*cloud_filtered);
-
+    extract.filter (*cloud_f);
+    cloud_filtered = cloud_f;
     i++;
   }
 
