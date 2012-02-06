@@ -82,8 +82,8 @@ namespace openni_wrapper
     virtual ~OpenNIDevice () throw ();
 
     /** \brief finds an image output mode that can be used to retrieve images in desired output mode.
-      *        e.g If device just supports VGA@30Hz, then the desired mode QVGA@30Hz would be possible by down sampling,
-      *        but the modes VGA@25Hz and SXGA@30Hz would not be compatible.
+      *        e.g If device just supports VGA at 30Hz, then the desired mode QVGA at 30Hz would be possible by down sampling,
+      *        but the modes VGA at 25Hz and SXGA at 30Hz would not be compatible.
       * \param[in] output_mode the desired output mode
       * \param[out] mode the compatible mode that the device natively supports.
       * \return true, if a compatible mode could be found, false otherwise.
@@ -92,8 +92,8 @@ namespace openni_wrapper
     findCompatibleImageMode (const XnMapOutputMode& output_mode, XnMapOutputMode& mode ) const throw ();
 
     /** \brief finds a depth output mode that can be used to retrieve depth images in desired output mode.
-      *        e.g If device just supports VGA@30Hz, then a desired mode of QVGA@30Hz would be possbile by downsampling,
-      *        but the modes VGA@25Hz and SXGA@30Hz would not be compatible.
+      *        e.g If device just supports VGA at 30Hz, then a desired mode of QVGA at 30Hz would be possbile by downsampling,
+      *        but the modes VGA at 25Hz and SXGA at 30Hz would not be compatible.
       * \param[in] output_mode the desired output mode
       * \param[out] mode the compatible mode that the device natively supports.
       * \return true, if a compatible mode could be found, false otherwise.
