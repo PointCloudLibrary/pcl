@@ -48,8 +48,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include "boost/tuple/tuple.hpp"
-
 #include <iterator>
 
 namespace pcl
@@ -314,7 +312,11 @@ namespace pcl
         typedef typename OctreeIteratorBase<DataT, LeafT, OctreeT>::OctreeBranch OctreeBranch;
         typedef typename OctreeIteratorBase<DataT, LeafT, OctreeT>::OctreeKey OctreeKey;
 
-        typedef boost::tuples::tuple<const OctreeNode*, OctreeKey, unsigned int> FIFOElement;
+        struct FIFOElement {
+          const OctreeNode* node;
+          OctreeKey key;
+          unsigned int depth;
+        };
 
       public:
         /** \brief Constructor.

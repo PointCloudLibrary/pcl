@@ -259,7 +259,10 @@ namespace pcl
               newKey.y = (this->currentOctreeKey_.y << 1) | (!!(i & (1 << 1)));
               newKey.z = (this->currentOctreeKey_.z << 1) | (!!(i & (1 << 0)));
 
-              FIFOElement newListElement (itNode, newKey, this->currentOctreeDepth_ + 1);
+              FIFOElement newListElement;
+              newListElement.node = itNode;
+              newListElement.key = newKey;
+              newListElement.depth = this->currentOctreeDepth_ + 1;
 
               FIFO_.push_back (newListElement);
             }
@@ -300,9 +303,9 @@ namespace pcl
             FIFO_.pop_front ();
 
             // update iterator variables
-            this->currentNode_ = FIFOElement.get<0> ();
-            this->currentOctreeKey_ = FIFOElement.get<1> ();
-            this->currentOctreeDepth_ = FIFOElement.get<2> ();
+            this->currentNode_ = FIFOElement.node;
+            this->currentOctreeKey_ = FIFOElement.key;
+            this->currentOctreeDepth_ = FIFOElement.depth;
 
           }
           else
