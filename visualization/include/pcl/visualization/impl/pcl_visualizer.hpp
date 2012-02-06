@@ -49,9 +49,9 @@
 #include <pcl/common/time.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> bool 
+template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addPointCloud (
-    const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
     const std::string &id, int viewport)
 {
   // Convert the PointCloud to VTK PolyData
@@ -60,9 +60,9 @@ pcl::visualization::PCLVisualizer::addPointCloud (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> bool 
+template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addPointCloud (
-    const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
     const PointCloudGeometryHandler<PointT> &geometry_handler,
     const std::string &id, int viewport)
 {
@@ -74,16 +74,16 @@ pcl::visualization::PCLVisualizer::addPointCloud (
     PCL_WARN ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
-  
+
   //PointCloudColorHandlerRandom<PointT> color_handler (cloud);
   PointCloudColorHandlerCustom<PointT> color_handler (cloud, 255, 255, 255);
-  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport));
+  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport, cloud->sensor_origin_, cloud->sensor_orientation_));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> bool 
+template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addPointCloud (
-    const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
     const GeometryHandlerConstPtr &geometry_handler,
     const std::string &id, int viewport)
 {
@@ -100,14 +100,14 @@ pcl::visualization::PCLVisualizer::addPointCloud (
 
   //PointCloudColorHandlerRandom<PointT> color_handler (cloud);
   PointCloudColorHandlerCustom<PointT> color_handler (cloud, 255, 255, 255);
-  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport));
+  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport, cloud->sensor_origin_, cloud->sensor_orientation_));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> bool 
+template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addPointCloud (
-    const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
-    const PointCloudColorHandler<PointT> &color_handler, 
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
+    const PointCloudColorHandler<PointT> &color_handler,
     const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
@@ -125,14 +125,14 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   }
   // Convert the PointCloud to VTK PolyData
   PointCloudGeometryHandlerXYZ<PointT> geometry_handler (cloud);
-  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport));
+  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport, cloud->sensor_origin_, cloud->sensor_orientation_));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> bool 
+template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addPointCloud (
-    const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
-    const ColorHandlerConstPtr &color_handler, 
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
+    const ColorHandlerConstPtr &color_handler,
     const std::string &id, int viewport)
 {
   // Check to see if this entry already exists (has it been already added to the visualizer?)
@@ -146,15 +146,15 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   }
 
   PointCloudGeometryHandlerXYZ<PointT> geometry_handler (cloud);
-  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport));
+  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport, cloud->sensor_origin_, cloud->sensor_orientation_));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> bool 
+template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addPointCloud (
-    const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
-    const GeometryHandlerConstPtr &geometry_handler,  
-    const ColorHandlerConstPtr &color_handler, 
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
+    const GeometryHandlerConstPtr &geometry_handler,
+    const ColorHandlerConstPtr &color_handler,
     const std::string &id, int viewport)
 {
   // Check to see if this entry already exists (has it been already added to the visualizer?)
@@ -167,14 +167,14 @@ pcl::visualization::PCLVisualizer::addPointCloud (
     am_it->second.color_handlers.push_back (color_handler);
     return (true);
   }
-  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport));
+  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport, cloud->sensor_origin_, cloud->sensor_orientation_));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> bool 
+template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addPointCloud (
-    const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
-    const PointCloudColorHandler<PointT> &color_handler, 
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
+    const PointCloudColorHandler<PointT> &color_handler,
     const PointCloudGeometryHandler<PointT> &geometry_handler,
     const std::string &id, int viewport)
 {
@@ -191,13 +191,13 @@ pcl::visualization::PCLVisualizer::addPointCloud (
     //style_->setCloudActorMap (boost::make_shared<CloudActorMap> (cloud_actor_map_));
     return (false);
   }
-  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport));
+  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport, cloud->sensor_origin_, cloud->sensor_orientation_));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void 
+template <typename PointT> void
 pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
-    const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
     vtkSmartPointer<vtkPolyData> &polydata,
     vtkSmartPointer<vtkIdTypeArray> &initcells)
 {
@@ -240,8 +240,8 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
     for (vtkIdType i = 0; i < nr_points; ++i)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud->points[i].x) || 
-          !pcl_isfinite (cloud->points[i].y) || 
+      if (!pcl_isfinite (cloud->points[i].x) ||
+          !pcl_isfinite (cloud->points[i].y) ||
           !pcl_isfinite (cloud->points[i].z))
         continue;
 
@@ -260,9 +260,9 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void 
+template <typename PointT> void
 pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
-    const pcl::visualization::PointCloudGeometryHandler<PointT> &geometry_handler, 
+    const pcl::visualization::PointCloudGeometryHandler<PointT> &geometry_handler,
     vtkSmartPointer<vtkPolyData> &polydata,
     vtkSmartPointer<vtkIdTypeArray> &initcells)
 {
@@ -287,7 +287,7 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
     vertices = vtkSmartPointer<vtkCellArray>::New ();
 
   vtkSmartPointer<vtkIdTypeArray> cells = vertices->GetData ();
-  updateCells (cells, initcells, nr_points);  
+  updateCells (cells, initcells, nr_points);
   // Set the cells and the vertices
   vertices->SetCells (nr_points, cells);
 }
@@ -295,7 +295,7 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addPolygon (
-    const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
     double r, double g, double b, const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
@@ -324,7 +324,7 @@ pcl::visualization::PCLVisualizer::addPolygon (
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addPolygon (
-    const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
     const std::string &id, int viewport)
 {
   return (!addPolygon<PointT> (cloud, 0.5, 0.5, 0.5, id, viewport));
@@ -477,13 +477,13 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addText3D (
-    const std::string &text, 
-    const PointT& position, 
-    double textScale, 
-    double r, 
-    double g, 
-    double b, 
-    const std::string &id, 
+    const std::string &text,
+    const PointT& position,
+    double textScale,
+    double r,
+    double g,
+    double b,
+    const std::string &id,
     int viewport)
 {
   std::string tid;
@@ -514,7 +514,7 @@ pcl::visualization::PCLVisualizer::addText3D (
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
     // Should we add the actor to all renderers or just to i-nth renderer?
-    if (viewport == 0 || viewport == i)               
+    if (viewport == 0 || viewport == i)
     {
       vtkSmartPointer<vtkFollower> textActor = vtkSmartPointer<vtkFollower>::New ();
       textActor->SetMapper (textMapper);
@@ -526,7 +526,7 @@ pcl::visualization::PCLVisualizer::addText3D (
       renderer->AddActor (textActor);
       renderer->Render ();
 
-      // Save the pointer/ID pair to the global actor map. If we are saving multiple vtkFollowers 
+      // Save the pointer/ID pair to the global actor map. If we are saving multiple vtkFollowers
       // for multiple viewport
       std::string alternate_tid = tid;
       alternate_tid.append(i, '*');
@@ -577,17 +577,17 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
   points->SetDataTypeToFloat ();
   vtkSmartPointer<vtkFloatArray> data = vtkSmartPointer<vtkFloatArray>::New ();
   data->SetNumberOfComponents (3);
-  
+
   vtkIdType nr_normals = (cloud->points.size () - 1) / level + 1 ;
   float* pts = new float[2 * nr_normals * 3];
 
   for (vtkIdType i = 0, j = 0; j < nr_normals; j++, i = j * level)
   {
     PointT p = cloud->points[i];
-    p.x += normals->points[i].normal[0] * scale; 
-    p.y += normals->points[i].normal[1] * scale; 
+    p.x += normals->points[i].normal[0] * scale;
+    p.y += normals->points[i].normal[1] * scale;
     p.z += normals->points[i].normal[2] * scale;
-    
+
     pts[2 * j * 3 + 0] = cloud->points[i].x;
     pts[2 * j * 3 + 1] = cloud->points[i].y;
     pts[2 * j * 3 + 2] = cloud->points[i].z;
@@ -607,7 +607,7 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
   polyData->SetPoints(points);
   polyData->SetLines(lines);
 
-  vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();      
+  vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
   mapper->SetInput (polyData);
   mapper->SetColorModeToMapScalars();
   mapper->SetScalarModeToUsePointData();
@@ -615,7 +615,7 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
   // create actor
   vtkSmartPointer<vtkLODActor> actor = vtkSmartPointer<vtkLODActor>::New();
   actor->SetMapper(mapper);
-  
+
   // Add it to all renderers
   addActorToRenderer (actor, viewport);
 
@@ -657,7 +657,7 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   {
     const PointT &p_src = source_points->points[i];
     const PointT &p_tgt = target_points->points[correspondences[i]];
-    
+
     // Add the line
     vtkSmartPointer<vtkLineSource> line = vtkSmartPointer<vtkLineSource>::New ();
     line->SetPoint1 (p_src.x, p_src.y, p_src.z);
@@ -716,7 +716,7 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   {
     const PointT &p_src = source_points->points[correspondences[i].index_query];
     const PointT &p_tgt = target_points->points[correspondences[i].index_match];
-    
+
     // Add the line
     vtkSmartPointer<vtkLineSource> line = vtkSmartPointer<vtkLineSource>::New ();
     line->SetPoint1 (p_src.x, p_src.y, p_src.z);
@@ -746,9 +746,11 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
 template <typename PointT> bool
 pcl::visualization::PCLVisualizer::fromHandlersToScreen (
     const PointCloudGeometryHandler<PointT> &geometry_handler,
-    const PointCloudColorHandler<PointT> &color_handler, 
+    const PointCloudColorHandler<PointT> &color_handler,
     const std::string &id,
-    int viewport)
+    int viewport,
+    const Eigen::Vector4f& sensor_origin,
+    const Eigen::Quaternion<float>& sensor_orientation)
 {
   if (!geometry_handler.isCapable ())
   {
@@ -790,9 +792,7 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
 
   // Save the viewpoint transformation matrix to the global actor map
   vtkSmartPointer<vtkMatrix4x4> transformation = vtkSmartPointer<vtkMatrix4x4>::New();
-  Eigen::Vector4f origin = geometry_handler.getOrigin ();
-  Eigen::Quaternion<float> orientation = geometry_handler.getOrientation ();
-  convertToVtkMatrix (origin, orientation, transformation);
+  convertToVtkMatrix (sensor_origin, sensor_orientation, transformation);
   (*cloud_actor_map_)[id].viewpoint_transformation_ = transformation;
 
   return (true);
@@ -802,9 +802,11 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
 template <typename PointT> bool
 pcl::visualization::PCLVisualizer::fromHandlersToScreen (
     const PointCloudGeometryHandler<PointT> &geometry_handler,
-    const ColorHandlerConstPtr &color_handler, 
+    const ColorHandlerConstPtr &color_handler,
     const std::string &id,
-    int viewport)
+    int viewport,
+    const Eigen::Vector4f& sensor_origin,
+    const Eigen::Quaternion<float>& sensor_orientation)
 {
   if (!geometry_handler.isCapable ())
   {
@@ -848,9 +850,7 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
   // Save the viewpoint transformation matrix to the global actor map
   // Save the viewpoint transformation matrix to the global actor map
   vtkSmartPointer<vtkMatrix4x4> transformation = vtkSmartPointer<vtkMatrix4x4>::New();
-  Eigen::Vector4f origin = geometry_handler.getOrigin ();
-  Eigen::Quaternion<float> orientation = geometry_handler.getOrientation ();
-  convertToVtkMatrix (origin, orientation, transformation);
+  convertToVtkMatrix (sensor_origin, sensor_orientation, transformation);
   (*cloud_actor_map_)[id].viewpoint_transformation_ = transformation;
 
   return (true);
@@ -860,9 +860,11 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
 template <typename PointT> bool
 pcl::visualization::PCLVisualizer::fromHandlersToScreen (
     const GeometryHandlerConstPtr &geometry_handler,
-    const PointCloudColorHandler<PointT> &color_handler, 
+    const PointCloudColorHandler<PointT> &color_handler,
     const std::string &id,
-    int viewport)
+    int viewport,
+    const Eigen::Vector4f& sensor_origin,
+    const Eigen::Quaternion<float>& sensor_orientation)
 {
   if (!geometry_handler->isCapable ())
   {
@@ -902,12 +904,18 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
   (*cloud_actor_map_)[id].actor = actor;
   (*cloud_actor_map_)[id].cells = initcells;
   (*cloud_actor_map_)[id].geometry_handlers.push_back (geometry_handler);
+
+  // Save the viewpoint transformation matrix to the global actor map
+  vtkSmartPointer<vtkMatrix4x4> transformation = vtkSmartPointer<vtkMatrix4x4>::New();
+  convertToVtkMatrix (sensor_origin, sensor_orientation, transformation);
+  (*cloud_actor_map_)[id].viewpoint_transformation_ = transformation;
+
   return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
                                                      const std::string &id)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
@@ -921,7 +929,7 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   convertPointCloudToVTKPolyData<PointT> (cloud, polydata, am_it->second.cells);
   polydata->Update ();
 
-  // Set scalars to blank, since there is no way we can update them here. 
+  // Set scalars to blank, since there is no way we can update them here.
   vtkSmartPointer<vtkDataArray> scalars;
   polydata->GetPointData ()->SetScalars (scalars);
   polydata->Update ();
@@ -938,7 +946,7 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
                                                      const PointCloudGeometryHandler<PointT> &geometry_handler,
                                                      const std::string &id)
 {
@@ -954,7 +962,7 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   // Convert the PointCloud to VTK PolyData
   convertPointCloudToVTKPolyData (geometry_handler, polydata, am_it->second.cells);
 
-  // Set scalars to blank, since there is no way we can update them here. 
+  // Set scalars to blank, since there is no way we can update them here.
   vtkSmartPointer<vtkDataArray> scalars;
   polydata->GetPointData ()->SetScalars (scalars);
   polydata->Update ();
@@ -972,7 +980,7 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
                                                      const PointCloudColorHandler<PointT> &color_handler,
                                                      const std::string &id)
 {
@@ -991,7 +999,7 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   // Copy the new point array in
   vtkIdType nr_points = cloud->points.size ();
   points->SetNumberOfPoints (nr_points);
-  
+
   // Get a pointer to the beginning of the data array
   float *data = ((vtkFloatArray*)points->GetData ())->GetPointer (0);
 
@@ -1033,7 +1041,7 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   // Update the data
   polydata->GetPointData ()->SetScalars (scalars);
   polydata->Update ();
-  
+
   am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
   am_it->second.actor->GetMapper ()->SetScalarRange (minmax);
 
@@ -1104,7 +1112,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     if (max_size_of_polygon < (int)vertices[i].vertices.size ())
       max_size_of_polygon = vertices[i].vertices.size ();
 
-  if (vertices.size () > 1) 
+  if (vertices.size () > 1)
   {
     // Create polys from polyMesh.polygons
     vtkSmartPointer<vtkCellArray> cell_array = vtkSmartPointer<vtkCellArray>::New ();
@@ -1142,8 +1150,8 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     polydata->SetPoints (points);
 
     createActorFromVTKDataSet (polydata, actor, false);
-  } 
-  else 
+  }
+  else
   {
     vtkSmartPointer<vtkPolygon> polygon = vtkSmartPointer<vtkPolygon>::New ();
     size_t n_points = vertices[0].vertices.size ();
@@ -1176,7 +1184,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
 
   // Save the pointer/ID pair to the global actor map
   (*cloud_actor_map_)[id].actor = actor;
-  //if (vertices.size () > 1) 
+  //if (vertices.size () > 1)
   //  (*cloud_actor_map_)[id].cells = static_cast<vtkPolyDataMapper*>(actor->GetMapper ())->GetInput ()->GetVerts ()->GetData ();
   return (true);
 }
@@ -1253,7 +1261,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   int idx = 0;
   if (lookup.size () > 0)
   {
-    for (size_t i = 0; i < verts.size (); ++i, ++idx) 
+    for (size_t i = 0; i < verts.size (); ++i, ++idx)
     {
       size_t n_points = verts[i].vertices.size ();
       *cell++ = n_points;
@@ -1263,7 +1271,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   }
   else
   {
-    for (size_t i = 0; i < verts.size (); ++i, ++idx) 
+    for (size_t i = 0; i < verts.size (); ++i, ++idx)
     {
       size_t n_points = verts[i].vertices.size ();
       *cell++ = n_points;
@@ -1277,18 +1285,18 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   polydata->SetStrips (cells);
   polydata->Update ();
 
-/*  
+/*
   vtkSmartPointer<vtkLODActor> actor;
-  if (vertices.size () > 1) 
+  if (vertices.size () > 1)
   {
-  } 
-  else 
+  }
+  else
   {
     vtkSmartPointer<vtkPolygon> polygon = vtkSmartPointer<vtkPolygon>::New ();
     size_t n_points = vertices[0].vertices.size ();
     polygon->GetPointIds ()->SetNumberOfIds (n_points - 1);
 
-    for (size_t j = 0; j < (n_points - 1); ++j) 
+    for (size_t j = 0; j < (n_points - 1); ++j)
       polygon->GetPointIds ()->SetId (j, vertices[0].vertices[j]);
 
     vtkSmartPointer<vtkUnstructuredGrid> poly_grid;
@@ -1307,7 +1315,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   //color_handler.getColor (scalars);
   //polydata->GetPointData ()->SetScalars (scalars);
 //  polydata->Update ();
-  
+
   am_it->second.actor->GetProperty ()->BackfaceCullingOn ();
 //  am_it->second.actor->Modified ();
 
@@ -1318,7 +1326,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
 /////////////////////////////////////////////////////////////////////////////////////////////
 /* Optimized function: need to do something with the signature as it colides with the general T one
 bool
-pcl::visualization::PCLVisualizer::updatePointCloud (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud, 
+pcl::visualization::PCLVisualizer::updatePointCloud (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud,
                                                      const PointCloudColorHandlerRGBField<pcl::PointXYZRGB> &color_handler,
                                                      const std::string &id)
 {
@@ -1344,7 +1352,7 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const pcl::PointCloud<pcl::
   scalars->SetNumberOfTuples (nr_points);
   polydata->GetPointData ()->SetScalars (scalars);
   unsigned char* colors = scalars->GetPointer (0);
- 
+
   // Get a pointer to the beginning of the data array
   float *data = ((vtkFloatArray*)points->GetData ())->GetPointer (0);
 
@@ -1366,8 +1374,8 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const pcl::PointCloud<pcl::
     for (vtkIdType i = 0; i < nr_points; ++i)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud->points[i].x) || 
-          !pcl_isfinite (cloud->points[i].y) || 
+      if (!pcl_isfinite (cloud->points[i].x) ||
+          !pcl_isfinite (cloud->points[i].y) ||
           !pcl_isfinite (cloud->points[i].z))
         continue;
 

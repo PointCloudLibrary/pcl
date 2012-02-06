@@ -75,7 +75,7 @@ isValidFieldName (const std::string &field)
 bool
 isMultiDimensionalFeatureField (const sensor_msgs::PointField &field)
 {
-  if (field.count > 1) 
+  if (field.count > 1)
     return (true);
   return (false);
 }
@@ -90,7 +90,7 @@ printHelp (int argc, char **argv)
   print_info ("                     -ps X                    = point size ("); print_value ("1..64"); print_info (") \n");
   print_info ("                     -opaque X                = rendered point cloud opacity ("); print_value ("0..1"); print_info (")\n");
 
-  print_info ("                     -ax "); print_value ("n"); print_info ("                    = enable on-screen display of "); 
+  print_info ("                     -ax "); print_value ("n"); print_info ("                    = enable on-screen display of ");
   print_color (stdout, TT_BRIGHT, TT_RED, "X"); print_color (stdout, TT_BRIGHT, TT_GREEN, "Y"); print_color (stdout, TT_BRIGHT, TT_BLUE, "Z");
   print_info (" axes and scale them to "); print_value ("n\n");
   print_info ("                     -ax_pos X,Y,Z            = if axes are enabled, set their X,Y,Z position in space (default "); print_value ("0,0,0"); print_info (")\n");
@@ -315,7 +315,7 @@ main (int argc, char** argv)
     tt.tic ();
     if (pcd.read (argv[p_file_indices.at (i)], *cloud, origin, orientation, version) < 0)
       return (-1);
-   
+
     std::stringstream cloud_name;
 
     // ---[ Special check for 1-point multi-dimension histograms
@@ -339,6 +339,11 @@ main (int argc, char** argv)
     {
       p.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
       p->registerPointPickingCallback (&pp_callback, (void*)&cloud);
+      Eigen::Matrix3f rotation;
+      rotation = orientation;
+      p->setCameraPose (origin [0]                  , origin [1]                  , origin [2],
+                        origin [0] + rotation (0, 2), origin [1] + rotation (1, 2), origin [2] + rotation (2, 2),
+                                     rotation (0, 1),              rotation (1, 1),              rotation (2, 1));
     }
 
     // Multiview enabled?
@@ -356,6 +361,8 @@ main (int argc, char** argv)
     // Convert from blob to pcl::PointCloud
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg (*cloud, *cloud_xyz);
+    cloud_xyz->sensor_origin_ = origin;
+    cloud_xyz->sensor_orientation_ = orientation;
 
     if (cloud_xyz->points.size () == 0)
     {
@@ -364,7 +371,7 @@ main (int argc, char** argv)
     }
     print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", (int)cloud_xyz->points.size ()); print_info (" points]\n");
     print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (*cloud).c_str ());
-   
+
     // If no color was given, get random colors
     if (fcolorparam)
     {
@@ -376,7 +383,7 @@ main (int argc, char** argv)
     else
       color_handler.reset (new pcl::visualization::PointCloudColorHandlerRandom<sensor_msgs::PointCloud2> (cloud));
 
-    // Add the dataset with a XYZ and a random handler 
+    // Add the dataset with a XYZ and a random handler
     geometry_handler.reset (new pcl::visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2> (cloud));
     // Add the cloud to the renderer
     p->addPointCloud<pcl::PointXYZ> (cloud_xyz, geometry_handler, color_handler, cloud_name.str (), viewport);
@@ -390,7 +397,7 @@ main (int argc, char** argv)
         print_error ("Normal information requested but not available.\n");
         continue;
         //return (-1);
-      }      
+      }
       //
       // Convert from blob to pcl::PointCloud
       pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
@@ -412,14 +419,14 @@ main (int argc, char** argv)
         print_error ("Normal information requested but not available.\n");
         continue;
         //return (-1);
-      }      
+      }
       int pc_idx = pcl::getFieldIndex (*cloud, "principal_curvature_x");
       if (pc_idx == -1)
       {
         print_error ("Principal Curvature information requested but not available.\n");
         continue;
         //return (-1);
-      }      
+      }
       //
       // Convert from blob to pcl::PointCloud
       pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
@@ -468,8 +475,8 @@ main (int argc, char** argv)
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque.at (i), cloud_name.str ());
 
     // Reset camera viewpoint to center of cloud if camera parameters were not passed manually and this is the first loaded cloud
-    if (i == 0 && !p->cameraParamsSet ())
-      p->resetCameraViewpoint (cloud_name.str ());
+    //if (i == 0 && !p->cameraParamsSet ())
+     // p->resetCameraViewpoint (cloud_name.str ());
   }
 
   if (p)

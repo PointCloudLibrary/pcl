@@ -49,6 +49,7 @@
 #include <vtkAbstractPropPicker.h>
 #include <vtkPlanes.h>
 #include <vtkPointPicker.h>
+#include <vtkMatrix4x4.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -507,7 +508,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     case 43:        // KEY_PLUS
     {
       if(alt)
-        zoomIn ();        
+        zoomIn ();
       else
       {
         vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors ();
@@ -694,9 +695,34 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       }
 
       vtkSmartPointer<vtkCamera> cam = CurrentRenderer->GetActiveCamera ();
-      cam->SetPosition (0, 0, 0);
-      cam->SetFocalPoint (0, 0, 1);
-      cam->SetViewUp (0, -1, 0);
+      static CloudActorMap::iterator it = actors_->begin ();
+      if (actors_->size () > 0)
+      {
+        if (it == actors_->end ())
+          it = actors_->begin ();
+
+        const CloudActor& actor = it->second;
+
+        cam->SetPosition (actor.viewpoint_transformation_->GetElement (0, 3),
+                          actor.viewpoint_transformation_->GetElement (1, 3),
+                          actor.viewpoint_transformation_->GetElement (2, 3));
+
+        cam->SetFocalPoint (actor.viewpoint_transformation_->GetElement (0, 3) - actor.viewpoint_transformation_->GetElement (0, 2),
+                            actor.viewpoint_transformation_->GetElement (1, 3) - actor.viewpoint_transformation_->GetElement (1, 2),
+                            actor.viewpoint_transformation_->GetElement (2, 3) - actor.viewpoint_transformation_->GetElement (2, 2));
+
+        cam->SetViewUp (actor.viewpoint_transformation_->GetElement (0, 1),
+                        actor.viewpoint_transformation_->GetElement (1, 1),
+                        actor.viewpoint_transformation_->GetElement (2, 1));
+
+        ++it;
+      }
+      else
+      {
+        cam->SetPosition (0, 0, 0);
+        cam->SetFocalPoint (0, 0, 1);
+        cam->SetViewUp (0, -1, 0);
+      }
       CurrentRenderer->SetActiveCamera (cam);
       CurrentRenderer->Render ();
       break;
