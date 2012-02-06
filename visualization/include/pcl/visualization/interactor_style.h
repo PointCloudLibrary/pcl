@@ -87,7 +87,7 @@ namespace pcl
       INTERACTOR_KB_MOD_SHIFT
     };
 
-    /** \brief @PCLVisualizerInteractorStyle@ defines an unique, custom VTK
+    /** \brief PCLVisualizerInteractorStyle defines an unique, custom VTK
       * based interactory style for PCL Visualizer applications. Besides
       * defining the rendering style, we also create a list of custom actions
       * that are triggered on different keys being pressed:
@@ -176,7 +176,7 @@ namespace pcl
           * - INTERACTOR_KB_MOD_ALT
           * - INTERACTOR_KB_MOD_CTRL
           * - INTERACTOR_KB_MOD_SHIFT
-          * \param[in] modified the new keyboard modifier
+          * \param[in] modifier the new keyboard modifier
           */
         inline void
         setKeyboardModifier (const InteractorKeyboardModifier &modifier)
