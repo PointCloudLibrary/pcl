@@ -1266,7 +1266,7 @@ namespace pcl
           */
         void 
         setupInteractor (vtkRenderWindowInteractor *iren,
-                         vtkRenderWindow *ren);
+                         vtkRenderWindow *win);
 
         /** \brief Get a pointer to the current interactor style used. */
         inline vtkSmartPointer<PCLVisualizerInteractorStyle>
