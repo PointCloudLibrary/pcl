@@ -35,8 +35,8 @@
  *  $Id$
  */
 
-#ifndef PCL_PFHRGH_H_
-#define PCL_PFHRGH_H_
+#ifndef PCL_PFHRGB_H_
+#define PCL_PFHRGB_H_
 
 #include <pcl/features/feature.h>
 
@@ -104,4 +104,4 @@ namespace pcl
   };
 }
 
-#endif /* PCL_PFHRGH_H_ */
+#endif /* PCL_PFHRGB_H_ */
