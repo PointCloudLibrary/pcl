@@ -91,25 +91,13 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::reconstruct (PointCloudIn &output
   // Send the surface dataset to the spatial locator
   tree_->setInputCloud (input_, indices_);
 
-
-/// DON'T NEED THESE ANYMORE, BECAUSE WE HAVE UPSAMPLING
-//  // Use original point positions for fitting
-//  // \note no up/down/adapting-sampling or hole filling possible like this
-//  output.points.resize (indices_->size ());
-//  // Check if fake indices were used, otherwise the output loses its organized structure
-//  if (!fake_indices_)
-//    pcl::copyPointCloud (*input_, *indices_, output);
-//  else
-//    output = *input_;
-//
-//  // Resize the output normal dataset
-//  if (normals_)
-//  {
-//    normals_->points.resize (output.points.size ());
-//    normals_->width    = output.width;
-//    normals_->height   = output.height;
-//    normals_->is_dense = output.is_dense;
-//  }
+  // Initialize random number generator if necessary
+  if (upsample_method_ == UNIFORM_DENSITY)
+  {
+    boost::random::mt19937 *rng = new boost::random::mt19937 (static_cast<unsigned int>(std::time(0)));
+    boost::random::uniform_real_distribution<float> *uniform_distrib = new boost::random::uniform_real_distribution<float> (-search_radius_, search_radius_);
+    rng_uniform_distribution_ = new boost::variate_generator<boost::mt19937, boost::random::uniform_real_distribution<float> > (*rng, *uniform_distrib);
+  }
 
   // Perform the actual surface reconstruction
   performReconstruction (output);
@@ -230,20 +218,15 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (int index,
   {
     case (NONE):
     {
-      printf ("NONE");
       Eigen::Vector3d normal = plane_normal;
 
-      if (c_vec.size () != 0)
+      if (polynomial_fit_ && (int)nn_indices.size () >= nr_coeff_ && pcl_isfinite (c_vec[0]))
       {
-        // Projection onto MLS surface along Darboux normal to the height at (0,0)
-        if (pcl_isfinite (c_vec[0]))
-        {
-          point += (c_vec[0] * plane_normal).cast<float> ();
+        point += (c_vec[0] * plane_normal).cast<float> ();
 
-          // Compute tangent vectors using the partial derivates evaluated at (0,0) which is c_vec[order_+1] and c_vec[1]
-          if (normals_)
-            normal = plane_normal - c_vec[order_ + 1] * u - c_vec[1] * v;
-        }
+        // Compute tangent vectors using the partial derivates evaluated at (0,0) which is c_vec[order_+1] and c_vec[1]
+        if (normals_)
+          normal = plane_normal - c_vec[order_ + 1] * u - c_vec[1] * v;
       }
 
       PointInT aux;
@@ -272,7 +255,102 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (int index,
             // If polynomial fitting was done, calculate the displacement along the normal
             double n_disp = 0.0f;
             double d_u = 0.0f, d_v = 0.0f;
-            if (c_vec.size () != 0)
+            if (polynomial_fit_ && (int)nn_indices.size () >= nr_coeff_ && pcl_isfinite (c_vec[0]))
+            {
+              printf ("\nc_vec: ");
+              // Compute the displacement along the normal using the fitted polynomial
+              // and compute the partial derivatives needed for estimating the normal
+              int j = 0;
+              float u_pow = 1.0f, v_pow = 1.0f, u_pow_prev = 1.0f, v_pow_prev = 1.0f;
+              for (int ui = 0; ui <= order_; ++ui)
+              {
+                v_pow = 1;
+                for (int vi = 0; vi <= order_ - ui; ++vi)
+                {
+                  printf ("%f ", c_vec[j]);
+                  n_disp += u_pow * v_pow * c_vec[j++];
+
+                  // Compute partial derivatives
+                  if (ui >= 1)
+                    d_u += c_vec[j-1] * ui * u_pow_prev * v_pow;
+                  if (vi >= 1)
+                    d_v += c_vec[j-1] * vi * u_pow * v_pow_prev;
+
+                  v_pow_prev = v_pow;
+                  v_pow *= v_disp;
+                }
+                u_pow_prev = u_pow;
+                u_pow *= u_disp;
+              }
+            }
+
+            PointInT aux;
+            // MEGA HACK!!!
+            if (fabs(n_disp) > 0.1) n_disp = 0.0f;
+            aux.x = point[0] + u[0] * u_disp + v[0] * v_disp + plane_normal[0] * n_disp;
+            aux.y = point[1] + u[1] * u_disp + v[1] * v_disp + plane_normal[1] * n_disp;
+            aux.z = point[2] + u[2] * u_disp + v[2] * v_disp + plane_normal[2] * n_disp;
+
+            Eigen::Vector3d normal = plane_normal - d_u * u - d_v * v;
+
+            NormalOutT aux_normal;
+            aux_normal.normal_x = normal[0];
+            aux_normal.normal_y = normal[1];
+            aux_normal.normal_z = normal[2];
+            aux_normal.curvature = curvature;
+
+            projected_points.push_back (aux);
+            projected_points_normals.push_back (aux_normal);
+          }
+    }
+
+    case (UNIFORM_DENSITY):
+    {
+      // Compute the local point density and add more samples if necessary
+      int num_points_to_add = (int) ceil (point_density_ * search_radius_) - nn_indices.size ();
+
+      if (num_points_to_add <= 0)
+      {
+        // Just add the current point
+        Eigen::Vector3d normal = plane_normal;
+
+        if (polynomial_fit_ && (int)nn_indices.size () >= nr_coeff_ && pcl_isfinite (c_vec[0]))
+        {
+          // Projection onto MLS surface along Darboux normal to the height at (0,0)
+          point += (c_vec[0] * plane_normal).cast<float> ();
+
+          // Compute tangent vectors using the partial derivates evaluated at (0,0) which is c_vec[order_+1] and c_vec[1]
+          if (normals_)
+            normal = plane_normal - c_vec[order_ + 1] * u - c_vec[1] * v;
+        }
+
+        PointInT aux;
+        aux.x = point[0];
+        aux.y = point[1];
+        aux.z = point[2];
+        projected_points.push_back (aux);
+
+        NormalOutT aux_normal;
+        aux_normal.normal_x = normal[0];
+        aux_normal.normal_y = normal[1];
+        aux_normal.normal_z = normal[2];
+        aux_normal.curvature = curvature;
+        projected_points_normals.push_back (aux_normal);
+
+        break;
+
+      }
+
+      // Sample the local plane
+      /// TODO use the random number generator here - create samples inside a circle and apply same logics as above
+      for (float u_disp = -upsampling_radius_; u_disp <= upsampling_radius_; u_disp += upsampling_step_)
+        for (float v_disp = -upsampling_radius_; v_disp <= upsampling_radius_; v_disp += upsampling_step_)
+          if (u_disp*u_disp + v_disp*v_disp < upsampling_radius_*upsampling_radius_)
+          {
+            // If polynomial fitting was done, calculate the displacement along the normal
+            double n_disp = 0.0f;
+            double d_u = 0.0f, d_v = 0.0f;
+            if (polynomial_fit_ && (int)nn_indices.size () >= nr_coeff_ && pcl_isfinite (c_vec[0]))
             {
               // Compute the displacement along the normal using the fitted polynomial
               // and compute the partial derivatives needed for estimating the normal

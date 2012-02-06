@@ -44,7 +44,10 @@
 #include <pcl/pcl_base.h>
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
+#include <boost/random.hpp>
 #include "pcl/search/pcl_search.h"
+
+
 
 #include <Eigen/SVD>
 
@@ -78,7 +81,7 @@ namespace pcl
 
       typedef boost::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
 
-      enum UpsamplingMethod { NONE, SAMPLE_LOCAL_PLANE };
+      enum UpsamplingMethod { NONE, SAMPLE_LOCAL_PLANE, UNIFORM_DENSITY };
 
       /** \brief Empty constructor. */
       MovingLeastSquares () : PCLBase<PointInT> (),
@@ -89,7 +92,8 @@ namespace pcl
                               sqr_gauss_param_ (0.0),
                               upsample_method_ (NONE),
                               upsampling_radius_ (0.0),
-                              upsampling_step_ (0.0)
+                              upsampling_step_ (0.0),
+                              point_density_ (0.0)
                               {};
 
       /** \brief Provide a pointer to a point cloud where normal information should be saved
@@ -170,6 +174,9 @@ namespace pcl
       inline void
       setUpsamplingStepSize (double step_size) { upsampling_step_ = step_size; }
 
+      inline void
+      setPointDensity (double density) { point_density_ = density; }
+
       /** \brief Base method for surface reconstruction for all points given in <setInputCloud (), setIndices ()>
         * \param[out] output the resultant reconstructed surface model
         */
@@ -201,6 +208,9 @@ namespace pcl
       UpsamplingMethod upsample_method_;
       double upsampling_radius_;
       double upsampling_step_;
+
+      boost::variate_generator<boost::mt19937, boost::random::uniform_real_distribution<float> > *rng_uniform_distribution_;
+      double point_density_;
 
       /** \brief Number of coefficients, to be computed from the requested order.*/
       int nr_coeff_;
