@@ -84,7 +84,7 @@ namespace pcl
       typedef OctreeDepthFirstIterator<DataT, LeafT, OctreeBase> DepthFirstIterator;
       typedef const OctreeDepthFirstIterator<DataT, LeafT, OctreeBase> ConstDepthFirstIterator;
       typedef OctreeBreadthFirstIterator<DataT, LeafT, OctreeBase> BreadthFirstIterator;
-      typedef const OctreeBreadthFirstIterator<DataT, LeafT, OctreeBase> BreadthDepthFirstIterator;
+      typedef const OctreeBreadthFirstIterator<DataT, LeafT, OctreeBase> ConstBreadthFirstIterator;
 
       /** \brief Empty constructor. */
       OctreeBase ();

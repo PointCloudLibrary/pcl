@@ -252,6 +252,15 @@ namespace pcl
                                     std::vector<int> &k_indices) const;
 
 
+        /** \brief Search for points within rectangular search area
+         * \param[in] min_pt lower corner of search area
+         * \param[in] max_pt upper corner of search area
+         * \param[out] k_indices the resultant point indices
+         * \return number of points found within search area
+         */
+        int
+        boxSearch (const Eigen::Vector3f &min_pt, const Eigen::Vector3f &max_pt, std::vector<int> &k_indices) const;
+
       protected:
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Octree-based search routines & helpers
@@ -414,6 +423,19 @@ namespace pcl
         getIntersectedVoxelCentersRecursive (double minX, double minY, double minZ, double maxX, double maxY,
                                              double maxZ, unsigned char a, const OctreeNode* node,
                                              const OctreeKey& key, AlignedPointTVector &voxelCenterList) const;
+
+
+        /** \brief Recursive search method that explores the octree and finds points within a rectangular search area
+         * \param[in] min_pt lower corner of search area
+         * \param[in] max_pt upper corner of search area
+         * \param[in] node current octree node to be explored
+         * \param[in] key octree key addressing a leaf node.
+         * \param[in] treeDepth current depth/level in the octree
+         * \param[out] k_indices the resultant point indices
+         */
+        void
+        boxSearchRecursive (const Eigen::Vector3f &min_pt, const Eigen::Vector3f &max_pt, const OctreeBranch* node,
+                            const OctreeKey& key, unsigned int treeDepth, std::vector<int>& k_indices) const;
 
         /** \brief Recursively search the tree for all intersected leaf nodes and return a vector of indices.
           * This algorithm is based off the paper An Efficient Parametric Algorithm for Octree Traversal:

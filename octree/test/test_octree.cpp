@@ -1327,10 +1327,84 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
 
 }
 
-TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
+TEST (PCL, Octree_Pointcloud_Box_Search)
 {
 
-  const unsigned int test_runs = 100;
+  const unsigned int test_runs = 30;
+  unsigned int test_id;
+
+  // instantiate point cloud
+  PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
+
+  size_t i;
+
+  srand (time (NULL));
+
+  // create octree
+  OctreePointCloudSearch<PointXYZ> octree (1);
+  octree.setInputCloud (cloudIn);
+
+  for (test_id = 0; test_id < test_runs; test_id++)
+  {
+    std::vector<int> k_indices;
+
+    // generate point cloud
+    cloudIn->width = 300;
+    cloudIn->height = 1;
+    cloudIn->points.resize (cloudIn->width * cloudIn->height);
+    for (i = 0; i < cloudIn->points.size(); i++)
+    {
+      cloudIn->points[i] = PointXYZ (10.0 * ((double)rand () / (double)RAND_MAX),
+                                     10.0 * ((double)rand () / (double)RAND_MAX),
+                                     10.0 * ((double)rand () / (double)RAND_MAX));
+    }
+
+
+    // octree points to octree
+    octree.deleteTree ();
+    octree.addPointsFromInputCloud ();
+
+    // define a random search area
+
+    Eigen::Vector3f lowerBoxCorner (4.0 * ((double)rand () / (double)RAND_MAX),
+                                    4.0 * ((double)rand () / (double)RAND_MAX),
+                                    4.0 * ((double)rand () / (double)RAND_MAX));
+    Eigen::Vector3f upperBoxCorner (5 + 4.0 * ((double)rand () / (double)RAND_MAX),
+                                    5 + 4.0 * ((double)rand () / (double)RAND_MAX),
+                                    5 + 4.0 * ((double)rand () / (double)RAND_MAX));
+
+    octree.boxSearch (lowerBoxCorner, upperBoxCorner, k_indices);
+
+    // test every point in point cloud
+    for (i = 0; i < 300; i++)
+    {
+      std::size_t j;
+      bool inBox;
+      bool idxInResults;
+      const PointXYZ& pt = cloudIn->points[i];
+
+      inBox = (pt.x > lowerBoxCorner (0)) && (pt.x < upperBoxCorner (0)) &&
+              (pt.y > lowerBoxCorner (1)) && (pt.y < upperBoxCorner (1)) &&
+              (pt.z > lowerBoxCorner (2)) && (pt.z < upperBoxCorner (2));
+
+      idxInResults = false;
+      for (j = 0; (j < k_indices.size ()) && (!idxInResults); ++j)
+      {
+        if (i == (unsigned int)k_indices[j])
+          idxInResults = true;
+      }
+
+      ASSERT_EQ(idxInResults, inBox);
+
+    }
+
+  }
+}
+
+  TEST(PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
+  {
+
+    const unsigned int test_runs = 100;
   unsigned int test_id;
 
   unsigned int bestMatchCount = 0;
