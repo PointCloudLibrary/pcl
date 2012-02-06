@@ -47,6 +47,7 @@
 #include <pcl/point_types.h>
 
 #include "octree_nodes.h"
+#include "octree_iterator.h"
 
 #include <queue>
 #include <vector>
@@ -75,15 +76,27 @@ namespace pcl
     template<typename PointT, typename LeafT = OctreeLeafDataTVector<int> , typename OctreeT = OctreeBase<int, LeafT> >
     class OctreePointCloud : public OctreeT
     {
-      friend class OctreeNodeIterator<int, LeafT, OctreePointCloud> ;
-      friend class OctreeLeafNodeIterator<int, LeafT, OctreePointCloud> ;
+      // iterators are friends
+      friend class OctreeIteratorBase<int, LeafT, OctreeT> ;
+      friend class OctreeDepthFirstIterator<int, LeafT, OctreeT> ;
+      friend class OctreeBreadthFirstIterator<int, LeafT, OctreeT> ;
+      friend class OctreeLeafNodeIterator<int, LeafT, OctreeT> ;
 
       public:
         typedef OctreeT Base;
+        typedef typename OctreeT::OctreeLeaf OctreeLeaf;
 
         // Octree iterators
-        typedef OctreeNodeIterator<int, LeafT, OctreePointCloud> Iterator;
-        typedef const OctreeNodeIterator<int, LeafT, OctreePointCloud> ConstIterator;
+        typedef OctreeDepthFirstIterator<int, LeafT, OctreeT> Iterator;
+        typedef const OctreeDepthFirstIterator<int, LeafT, OctreeT> ConstIterator;
+
+        typedef OctreeLeafNodeIterator<int, LeafT, OctreeT> LeafNodeIterator;
+        typedef const OctreeLeafNodeIterator<int, LeafT, OctreeT> ConstLeafNodeIterator;
+
+        typedef OctreeDepthFirstIterator<int, LeafT, OctreeT> DepthFirstIterator;
+        typedef const OctreeDepthFirstIterator<int, LeafT, OctreeT> ConstDepthFirstIterator;
+        typedef OctreeBreadthFirstIterator<int, LeafT, OctreeT> BreadthFirstIterator;
+        typedef const OctreeBreadthFirstIterator<int, LeafT, OctreeT> ConstBreadthFirstIterator;
 
         /** \brief Octree pointcloud constructor.
           * \param[in] resolution_arg octree resolution at lowest octree level
@@ -134,7 +147,7 @@ namespace pcl
           * \return pointer to vector of indices used.
           */
         inline IndicesConstPtr const
-        getIndices ()
+        getIndices () const
         {
           return (indices_);
         }
@@ -143,7 +156,7 @@ namespace pcl
           * \return pointer to pointcloud input class.
           */
         inline PointCloudConstPtr
-        getInputCloud ()
+        getInputCloud () const
         {
           return (input_);
         }
@@ -159,7 +172,7 @@ namespace pcl
 
         /** \brief Get the search epsilon precision (error bound) for nearest neighbors searches. */
         inline double
-        getEpsilon ()
+        getEpsilon () const
         {
           return (epsilon_);
         }
@@ -182,9 +195,18 @@ namespace pcl
           * \return voxel resolution at lowest tree level
           */
         inline double
-        getResolution ()
+        getResolution () const
         {
           return (resolution_);
+        }
+
+        /** \brief Get the maximum depth of the octree.
+         *  \return depth_arg: maximum depth of octree
+         * */
+        inline unsigned int
+        getTreeDepth () const
+        {
+          return this->octreeDepth_;
         }
 
         /** \brief Add points from input point cloud to octree. */
@@ -369,7 +391,18 @@ namespace pcl
           return getVoxelSquaredSideLen (this->octreeDepth_);
         }
 
-        typedef typename OctreeT::OctreeLeaf OctreeLeaf;
+
+        /** \brief Generate bounds of the current voxel of an octree iterator
+         * \param[in] iterator: octree iterator
+         * \param[out] min_pt lower bound of voxel
+         * \param[out] max_pt upper bound of voxel
+         */
+        inline void
+        getVoxelBounds (OctreeIteratorBase<int,LeafT,OctreeT>& iterator, Eigen::Vector3f &min_pt, Eigen::Vector3f &max_pt)
+        {
+          this->genVoxelBoundsFromOctreeKey (iterator.getCurrentOctreeKey(), iterator.getCurrentOctreeDepth(), min_pt, max_pt);
+        }
+
 
       protected:
 

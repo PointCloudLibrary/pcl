@@ -65,19 +65,26 @@ namespace pcl
     class OctreeBase
     {
 
-      friend class OctreeNodeIterator<DataT, LeafT, OctreeBase> ;
+      // iterators are friends
+      friend class OctreeIteratorBase<DataT, LeafT, OctreeBase> ;
+      friend class OctreeDepthFirstIterator<DataT, LeafT, OctreeBase> ;
+      friend class OctreeBreadthFirstIterator<DataT, LeafT, OctreeBase> ;
       friend class OctreeLeafNodeIterator<DataT, LeafT, OctreeBase> ;
 
     public:
       typedef OctreeBranchT OctreeBranch;
 
       // Octree iterators
-      typedef OctreeNodeIterator<DataT, LeafT, OctreeBase> Iterator;
-      typedef const OctreeNodeIterator<DataT, LeafT, OctreeBase> ConstIterator;
+      typedef OctreeDepthFirstIterator<DataT, LeafT, OctreeBase> Iterator;
+      typedef const OctreeDepthFirstIterator<DataT, LeafT, OctreeBase> ConstIterator;
 
-      // Octree iterators
       typedef OctreeLeafNodeIterator<DataT, LeafT, OctreeBase> LeafNodeIterator;
       typedef const OctreeLeafNodeIterator<DataT, LeafT, OctreeBase> ConstLeafNodeIterator;
+
+      typedef OctreeDepthFirstIterator<DataT, LeafT, OctreeBase> DepthFirstIterator;
+      typedef const OctreeDepthFirstIterator<DataT, LeafT, OctreeBase> ConstDepthFirstIterator;
+      typedef OctreeBreadthFirstIterator<DataT, LeafT, OctreeBase> BreadthFirstIterator;
+      typedef const OctreeBreadthFirstIterator<DataT, LeafT, OctreeBase> BreadthDepthFirstIterator;
 
       /** \brief Empty constructor. */
       OctreeBase ();
