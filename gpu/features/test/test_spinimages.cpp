@@ -99,7 +99,8 @@ TEST(PCL_FeaturesGPU, spinImages_rectangular)
 
 	//////////// CPU ////////////
 	pcl::SpinImageEstimation<PointXYZ, Normal, SpinImage> se(8, 0.0, 16);   
-	se.setInputWithNormals (source.cloud, source.normals);
+	se.setInputCloud (source.cloud);
+	se.setInputNormals (source.normals);
 	se.setIndices (source.indices);	
 	se.setRadiusSearch (source.radius);    
 	se.setMinPointCountInNeighbourhood(min_beighbours);
@@ -188,7 +189,8 @@ TEST(PCL_FeaturesGPU, spinImages_radial)
 
 	//////////// CPU ////////////
 	pcl::SpinImageEstimation<PointXYZ, Normal, SpinImage> se(8, 0.0, 16);   
-	se.setInputWithNormals (source.cloud, source.normals);
+	se.setInputCloud (source.cloud);
+	se.setInputNormals (source.normals);
 	se.setIndices (source.indices);	
 	se.setRadiusSearch (source.radius);    
 	se.setMinPointCountInNeighbourhood(min_beighbours);
@@ -277,7 +279,8 @@ TEST(PCL_FeaturesGPU, spinImages_rectangular_angular)
 
 	//////////// CPU ////////////
 	pcl::SpinImageEstimation<PointXYZ, Normal, SpinImage> se(8, 0.0, 16);   
-	se.setInputWithNormals (source.cloud, source.normals);
+	se.setInputCloud (source.cloud);
+	se.setInputNormals (source.normals);
 	se.setIndices (source.indices);	
 	se.setRadiusSearch (source.radius);    
 	se.setMinPointCountInNeighbourhood(min_beighbours);
@@ -366,7 +369,8 @@ TEST(PCL_FeaturesGPU, spinImages_radial_angular)
 
 	//////////// CPU ////////////
 	pcl::SpinImageEstimation<PointXYZ, Normal, SpinImage> se(8, 0.0, 16);   
-	se.setInputWithNormals (source.cloud, source.normals);
+	se.setInputCloud (source.cloud);
+	se.setInputNormals (source.normals);
 	se.setIndices (source.indices);	
 	se.setRadiusSearch (source.radius);    
 	se.setMinPointCountInNeighbourhood(min_beighbours);
