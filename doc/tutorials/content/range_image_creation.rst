@@ -3,7 +3,7 @@
 How to create a range image from a point cloud
 ----------------------------------------------
 
-This tutorial demonstrates how to create a range image from a point cloud and a given sensor position. The code creates an example point cloud of a rectangle floating in front of the obeserver.
+This tutorial demonstrates how to create a range image from a point cloud and a given sensor position. The code creates an example point cloud of a rectangle floating in front of the observer.
 
 The code
 --------
