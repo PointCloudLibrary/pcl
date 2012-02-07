@@ -327,6 +327,15 @@ namespace pcl
       writeBinary (const std::string &file_name, 
                    const pcl::PointCloud<PointT> &cloud);
 
+      /** \brief Save point cloud data to a PCD file containing n-D points, in BINARY format
+        * \note This version is specialized for PointCloud<Eigen::MatrixXf> data types. 
+        * \param[in] file_name the output file name
+        * \param[in] cloud the point cloud data
+        */
+      int 
+      writeBinaryEigen (const std::string &file_name, 
+                        const pcl::PointCloud<Eigen::MatrixXf> &cloud);
+
       /** \brief Save point cloud data to a binary comprssed PCD file
         * \param[in] file_name the output file name
         * \param[in] cloud the point cloud data message
@@ -363,6 +372,17 @@ namespace pcl
       writeASCII (const std::string &file_name, 
                   const pcl::PointCloud<PointT> &cloud,
                   const int precision = 8);
+
+      /** \brief Save point cloud data to a PCD file containing n-D points, in ASCII format
+        * \note This version is specialized for PointCloud<Eigen::MatrixXf> data types. 
+        * \param[in] file_name the output file name
+        * \param[in] cloud the point cloud data message
+        * \param[in] precision the specified output numeric stream precision (default: 8)
+        */
+      int 
+      writeASCIIEigen (const std::string &file_name, 
+                       const pcl::PointCloud<Eigen::MatrixXf> &cloud,
+                       const int precision = 8);
 
        /** \brief Save point cloud data to a PCD file containing n-D points, in ASCII format
         * \param[in] file_name the output file name
@@ -427,9 +447,21 @@ namespace pcl
       }
 
     private:
-
       /** \brief Set to true if msync() should be called before munmap(). Prevents data loss on NFS systems. */
       bool map_synchronization_;
+
+      typedef std::pair<std::string, pcl::ChannelProperties> pair_channel_properties;
+      /** \brief Internal structure used to sort the ChannelProperties in the
+        * cloud.channels map based on their offset. 
+        */
+      struct ChannelPropertiesComparator
+      {
+        bool 
+        operator()(const pair_channel_properties &lhs, const pair_channel_properties &rhs) 
+        {
+          return (lhs.second.offset < rhs.second.offset);
+        }
+      };
   };
 
   namespace io

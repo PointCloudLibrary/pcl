@@ -1335,7 +1335,11 @@ pcl::PCDWriter::generateHeaderEigen (const pcl::PointCloud<Eigen::MatrixXf> &clo
          "\nFIELDS";
 
   std::stringstream field_names, field_types, field_sizes, field_counts;
-  for (std::map<std::string, pcl::ChannelProperties>::const_iterator it = cloud.channels.begin (); it != cloud.channels.end (); ++it)
+  // Copy the channels into a vector and sort them according to the channel offset
+  std::vector<pair_channel_properties> vec (cloud.channels.begin (), cloud.channels.end ());
+  std::sort (vec.begin (), vec.end (), ChannelPropertiesComparator ());
+//  for (std::map<std::string, pcl::ChannelProperties>::const_iterator it = cloud.channels.begin (); it != cloud.channels.end (); ++it)
+  for (std::vector<pair_channel_properties>::iterator it = vec.begin (); it != vec.end (); ++it)
   {
     // Add the regular dimension
     field_names << " " << it->second.name;
@@ -1370,6 +1374,163 @@ pcl::PCDWriter::generateHeaderEigen (const pcl::PointCloud<Eigen::MatrixXf> &clo
     oss << "POINTS " << cloud.points.rows () << "\n";
 
   return (oss.str ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::PCDWriter::writeASCIIEigen (const std::string &file_name, const pcl::PointCloud<Eigen::MatrixXf> &cloud, 
+                                 const int precision)
+{
+  if (cloud.empty ())
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Input point cloud has no data!");
+    return (-1);
+  }
+
+  if (cloud.width * cloud.height != cloud.points.rows ())
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Number of points different than width * height!");
+    return (-1);
+  }
+
+  std::ofstream fs;
+  fs.open (file_name.c_str ());      // Open file
+  
+  if (!fs.is_open () || fs.fail ())
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Could not open file for writing!");
+    return (-1);
+  }
+  
+  fs.precision (precision);
+  fs.imbue (std::locale::classic ());
+
+  //std::vector<sensor_msgs::PointField> fields;
+  //pcl::getFields (cloud, fields);
+
+  // Write the header information
+  fs << generateHeaderEigen (cloud) << "DATA ascii\n";
+
+  std::ostringstream stream;
+  stream.precision (precision);
+  stream.imbue (std::locale::classic ());
+  // Iterate through the points
+  for (int i = 0; i < cloud.points.rows (); ++i)
+  {
+    for (int j = 0; j < cloud.points.cols (); ++j)
+    {
+      stream << cloud.points.coeffRef (i, j);
+      if (j < cloud.points.cols () - 1)
+        stream << " ";
+    }
+    // Copy the stream, trim it, and write it to disk
+    std::string result = stream.str ();
+    boost::trim (result);
+    stream.str ("");
+    fs << result << "\n";
+  }
+  fs.close ();              // Close file
+  return (0);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::PCDWriter::writeBinaryEigen (const std::string &file_name, 
+                                  const pcl::PointCloud<Eigen::MatrixXf> &cloud)
+{
+  if (cloud.points.rows () * cloud.points.cols () == 0)
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Input point cloud has no data!");
+    return (-1);
+  }
+  int data_idx = 0;
+  std::ostringstream oss;
+  oss << generateHeaderEigen (cloud) << "DATA binary\n";
+  oss.flush ();
+  data_idx = (int) oss.tellp ();
+
+#if _WIN32
+  HANDLE h_native_file = CreateFileA (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+  if(h_native_file == INVALID_HANDLE_VALUE)
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during CreateFile!");
+    return (-1);
+  }
+#else
+  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, (mode_t)0600);
+  if (fd < 0)
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during open!");
+    return (-1);
+  }
+#endif
+
+  size_t data_size = cloud.points.rows () * cloud.points.cols () * sizeof (float);
+
+  // Prepare the map
+#if _WIN32
+  HANDLE fm = CreateFileMappingA (h_native_file, NULL, PAGE_READWRITE, 0, (DWORD) (data_idx + data_size), NULL);
+  char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + data_size));
+  CloseHandle (fm);
+
+#else
+  // Stretch the file size to the size of the data
+  int result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
+  if (result < 0)
+  {
+    pcl_close (fd);
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during lseek ()!");
+    return (-1);
+  }
+  // Write a bogus entry so that the new file size comes in effect
+  result = ::write (fd, "", 1);
+  if (result != 1)
+  {
+    pcl_close (fd);
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during write ()!");
+    return (-1);
+  }
+
+  char *map = (char*)mmap (0, data_idx + data_size, PROT_WRITE, MAP_SHARED, fd, 0);
+  if (map == MAP_FAILED)
+  {
+    pcl_close (fd);
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during mmap ()!");
+    return (-1);
+  }
+#endif
+
+  // Copy the header
+  memcpy (&map[0], oss.str ().c_str (), data_idx);
+
+  // Copy the data
+  memcpy (&map[0] + data_idx, (const char*)cloud.points.data (), data_size);
+
+  // If the user set the synchronization flag on, call msync
+#if !_WIN32
+  if (map_synchronization_)
+    msync (map, data_idx + data_size, MS_SYNC);
+#endif
+
+  // Unmap the pages of memory
+#if _WIN32
+    UnmapViewOfFile (map);
+#else
+  if (munmap (map, (data_idx + data_size)) == -1)
+  {
+    pcl_close (fd);
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during munmap ()!");
+    return (-1);
+  }
+#endif
+  // Close file
+#if _WIN32
+  CloseHandle (h_native_file);
+#else
+  pcl_close (fd);
+#endif
+  return (0);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////

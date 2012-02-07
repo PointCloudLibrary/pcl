@@ -66,13 +66,201 @@ namespace pcl
     };
   } // namespace detail
 
-
   // Forward declarations
   template <typename PointT> class PointCloud;
   typedef std::vector<detail::FieldMapping> MsgFieldMap;
-  template <typename PointT> struct NdCopyEigenPointFunctor;
-  template <typename PointT> struct NdCopyPointEigenFunctor;
  
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief Helper functor structure for copying channel information */
+  template <typename T>
+  struct CopyFieldsChannelProperties
+  {
+    /** \brief Constructor
+      * \param[out] channels the map of ChannelProperties
+      */
+    CopyFieldsChannelProperties (std::map<std::string, pcl::ChannelProperties> &channels)
+      : channels_ (channels) {}
+
+    /** \brief Operator. Data copy happens here. */
+    template<typename U> inline void 
+    operator() ()
+    {
+      //boost::fusion::at_key<Key> (p2_) = p1_[f_idx_++];
+      std::string name = pcl::traits::name<T, U>::value;
+      channels_[name].name     = name;
+      channels_[name].offset   = pcl::traits::offset<T, U>::value;
+      int datatype = pcl::traits::datatype<T, U>::value;
+      channels_[name].datatype = datatype;
+      int count = pcl::traits::datatype<T, U>::size;
+      channels_[name].count    = count;
+      switch (datatype)
+      {
+        case sensor_msgs::PointField::INT8:
+        case sensor_msgs::PointField::UINT8:
+        {
+          channels_[name].size = count;
+          break;
+        }
+  
+        case sensor_msgs::PointField::INT16:
+        case sensor_msgs::PointField::UINT16:
+        {
+          channels_[name].size = count * 2;
+          break;
+        }
+  
+        case sensor_msgs::PointField::INT32:
+        case sensor_msgs::PointField::UINT32:
+        case sensor_msgs::PointField::FLOAT32:
+        {
+          channels_[name].size = count * 4;
+          break;
+        }
+  
+        case sensor_msgs::PointField::FLOAT64:
+        {
+          channels_[name].size = count * 8;
+          break;
+        }
+      }
+    }
+
+    private:
+      std::map<std::string, pcl::ChannelProperties> &channels_;
+   };
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief Helper functor structure for copying data between an Eigen type and a PointT. */
+  template <typename PointOutT, typename PointInT>
+  struct NdCopyEigenPointFunctor
+  {
+    typedef typename traits::POD<PointOutT>::type Pod;
+    
+    /** \brief Constructor
+      * \param[in] p1 the input Eigen type
+      * \param[out] p2 the output Point type
+      */
+    NdCopyEigenPointFunctor (const PointInT p1, PointOutT &p2)
+      : p1_ (p1),
+        p2_ (reinterpret_cast<Pod&>(p2)),
+        f_idx_ (0) { }
+
+    /** \brief Operator. Data copy happens here. */
+    template<typename Key> inline void 
+    operator() ()
+    {
+      //boost::fusion::at_key<Key> (p2_) = p1_[f_idx_++];
+      typedef typename pcl::traits::datatype<PointOutT, Key>::type T;
+      uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&p2_) + pcl::traits::offset<PointOutT, Key>::value;
+      *reinterpret_cast<T*>(data_ptr) = p1_[f_idx_++];
+    }
+
+    private:
+      const PointInT p1_;
+      Pod &p2_;
+      int f_idx_;
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+   };
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief Helper functor structure for copying data between an Eigen type and a PointT. */
+  template <typename PointOutT>
+  struct NdCopyEigenPointFunctor<PointOutT, Eigen::VectorXf>
+  {
+    typedef typename traits::POD<PointOutT>::type Pod;
+    
+    /** \brief Constructor
+      * \param[in] p1 the input Eigen type
+      * \param[out] p2 the output Point type
+      */
+    NdCopyEigenPointFunctor (const Eigen::VectorXf &p1, PointOutT &p2)
+      : p1_ (p1),
+        p2_ (reinterpret_cast<Pod&>(p2)),
+        f_idx_ (0) { }
+
+    /** \brief Operator. Data copy happens here. */
+    template<typename Key> inline void 
+    operator() ()
+    {
+      //boost::fusion::at_key<Key> (p2_) = p1_[f_idx_++];
+      typedef typename pcl::traits::datatype<PointOutT, Key>::type T;
+      uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&p2_) + pcl::traits::offset<PointOutT, Key>::value;
+      *reinterpret_cast<T*>(data_ptr) = p1_[f_idx_++];
+    }
+
+    private:
+      const Eigen::VectorXf &p1_;
+      Pod &p2_;
+      int f_idx_;
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+   };
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief Helper functor structure for copying data between an Eigen type and a PointT. */
+  template <typename PointInT, typename PointOutT>
+  struct NdCopyPointEigenFunctor
+  {
+    typedef typename traits::POD<PointInT>::type Pod;
+    
+    /** \brief Constructor
+      * \param[in] p1 the input Point type
+      * \param[out] p2 the output Eigen type
+      */
+     NdCopyPointEigenFunctor (const PointInT &p1, PointOutT p2)
+      : p1_ (reinterpret_cast<const Pod&>(p1)), p2_ (p2), f_idx_ (0) { }
+
+    /** \brief Operator. Data copy happens here. */
+    template<typename Key> inline void 
+    operator() ()
+    {
+      //p2_[f_idx_++] = boost::fusion::at_key<Key> (p1_);
+      typedef typename pcl::traits::datatype<PointInT, Key>::type T;
+      const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&p1_) + pcl::traits::offset<PointInT, Key>::value;
+      p2_[f_idx_++] = *reinterpret_cast<const T*>(data_ptr);
+    }
+
+    private:
+      const Pod &p1_;
+      PointOutT p2_;
+      int f_idx_;
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief Helper functor structure for copying data between an Eigen type and a PointT. */
+  template <typename PointInT>
+  struct NdCopyPointEigenFunctor<PointInT, Eigen::VectorXf>
+  {
+    typedef typename traits::POD<PointInT>::type Pod;
+    
+    /** \brief Constructor
+      * \param[in] p1 the input Point type
+      * \param[out] p2 the output Eigen type
+      */
+     NdCopyPointEigenFunctor (const PointInT &p1, Eigen::VectorXf &p2)
+      : p1_ (reinterpret_cast<const Pod&>(p1)), p2_ (p2), f_idx_ (0) { }
+
+    /** \brief Operator. Data copy happens here. */
+    template<typename Key> inline void 
+    operator() ()
+    {
+      //p2_[f_idx_++] = boost::fusion::at_key<Key> (p1_);
+      typedef typename pcl::traits::datatype<PointInT, Key>::type T;
+      const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&p1_) + pcl::traits::offset<PointInT, Key>::value;
+      p2_[f_idx_++] = *reinterpret_cast<const T*>(data_ptr);
+    }
+
+    private:
+      const Pod &p1_;
+      Eigen::VectorXf &p2_;
+      int f_idx_;
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+
   namespace detail
   {
     template <typename PointT> boost::shared_ptr<pcl::MsgFieldMap>&
@@ -581,13 +769,13 @@ namespace pcl
 
         typedef typename pcl::traits::fieldList<PointT>::type FieldList;
         // Copy the fields
-        // ...
-
+        pcl::for_each_type <FieldList> (CopyFieldsChannelProperties <PointT> (channels));
+      
         // Resize the array
         points.resize (pc.points.size (), boost::mpl::size<FieldList>::value);
 
         for (size_t cp = 0; cp < pc.points.size (); ++cp)
-          pcl::for_each_type <FieldList> (NdCopyPointEigenFunctor<PointT> (pc.points[cp], points.row (cp)));
+          pcl::for_each_type <FieldList> (NdCopyPointEigenFunctor<PointT, Eigen::MatrixXf::RowXpr> (pc.points[cp], points.row (cp)));
       }
  
       /** \brief Copy constructor (needed by compilers such as Intel C++)
@@ -606,7 +794,7 @@ namespace pcl
       PointCloud (const PointCloud<PointT> &pc) :
         properties (), points (Eigen::MatrixXf (0, 0)), channels (), 
         width (pc.width), height (pc.height), is_dense (pc.is_dense)
-       {
+      {
         // Copy the obvious
         properties.acquisition_time   = pc.header.stamp;
         properties.sensor_origin      = pc.sensor_origin_;//.head<3> ();
@@ -615,13 +803,13 @@ namespace pcl
         typedef typename pcl::traits::fieldList<PointT>::type FieldList;
 
         // Copy the fields
-        // ...
+        pcl::for_each_type <FieldList> (CopyFieldsChannelProperties <PointT> (channels));
 
         // Resize the array
         points.resize (pc.points.size (), boost::mpl::size<FieldList>::value);
 
         for (size_t cp = 0; cp < pc.points.size (); ++cp)
-          pcl::for_each_type <FieldList> (NdCopyPointEigenFunctor<PointT> (pc.points[cp], points.row (cp)));
+          pcl::for_each_type <FieldList> (NdCopyPointEigenFunctor<PointT, Eigen::MatrixXf::RowXpr> (pc.points[cp], points.row (cp)));
       }
 
       /** \brief Copy constructor from point cloud subset
@@ -630,7 +818,9 @@ namespace pcl
         */
       PointCloud (const PointCloud &pc, 
                   const std::vector<int> &indices) :
-        properties (pc.properties), points (Eigen::MatrixXf (indices.size (), pc.points.cols ())), channels (pc.channels), 
+        properties (pc.properties), 
+        points (Eigen::MatrixXf (indices.size (), pc.points.cols ())), 
+        channels (pc.channels), 
         width (indices.size ()), height (1), is_dense (pc.is_dense)
       {
         // Copy the obvious
@@ -817,72 +1007,6 @@ namespace pcl
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief Helper functor structure for copying data between an Eigen::VectorXf and a PointT. */
-  template <typename PointT>
-  struct NdCopyEigenPointFunctor
-  {
-    typedef typename traits::POD<PointT>::type Pod;
-    
-    /** \brief Constructor
-      * \param[in] p1 the input Eigen type
-      * \param[out] p2 the output Point type
-      */
-    NdCopyEigenPointFunctor (const Eigen::VectorXf &p1, PointT &p2)
-      : p1_ (p1),
-        p2_ (reinterpret_cast<Pod&>(p2)),
-        f_idx_ (0) { }
-
-    /** \brief Operator. Data copy happens here. */
-    template<typename Key> inline void 
-    operator() ()
-    {
-      //boost::fusion::at_key<Key> (p2_) = p1_[f_idx_++];
-      typedef typename pcl::traits::datatype<PointT, Key>::type T;
-      uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&p2_) + pcl::traits::offset<PointT, Key>::value;
-      *reinterpret_cast<T*>(data_ptr) = p1_[f_idx_++];
-    }
-
-    private:
-      const Eigen::VectorXf &p1_;
-      Pod &p2_;
-      int f_idx_;
-    public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-   };
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief Helper functor structure for copying data between an Eigen::VectorXf and a PointT. */
-  template <typename PointT>
-  struct NdCopyPointEigenFunctor
-  {
-    typedef typename traits::POD<PointT>::type Pod;
-    
-    /** \brief Constructor
-      * \param[in] p1 the input Point type
-      * \param[out] p2 the output Eigen type
-      */
-     NdCopyPointEigenFunctor (const PointT &p1, Eigen::VectorXf &p2)
-      : p1_ (reinterpret_cast<const Pod&>(p1)), p2_ (p2), f_idx_ (0) { }
-
-    /** \brief Operator. Data copy happens here. */
-    template<typename Key> inline void 
-    operator() ()
-    {
-      //p2_[f_idx_++] = boost::fusion::at_key<Key> (p1_);
-      typedef typename pcl::traits::datatype<PointT, Key>::type T;
-      const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&p1_) + pcl::traits::offset<PointT, Key>::value;
-      p2_[f_idx_++] = *reinterpret_cast<const T*>(data_ptr);
-    }
-
-    private:
-      const Pod &p1_;
-      Eigen::VectorXf &p2_;
-      int f_idx_;
-    public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-   };
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
   namespace detail

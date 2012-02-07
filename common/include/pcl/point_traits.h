@@ -86,7 +86,8 @@ namespace pcl
     };
 
     // For non-POD point types, this is specialized to return the corresponding POD type.
-    template<typename PointT> struct POD
+    template<typename PointT> 
+    struct POD
     {
       typedef PointT type;
     };
