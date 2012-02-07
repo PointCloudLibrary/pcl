@@ -38,6 +38,8 @@
 #ifndef _NURBS_BASIS_H_
 #define _NURBS_BASIS_H_
 
+#include <pcl/pcl_macros.h>
+
 #include <vector>
 #include <stdexcept>
 
@@ -49,7 +51,7 @@ namespace pcl
     class NurbsCurve;
     class NurbsSurface;
 
-    class NurbsBasis
+    class PCL_EXPORTS NurbsBasis
     {
 
     protected:

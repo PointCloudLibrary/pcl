@@ -38,6 +38,8 @@
 #ifndef _NURBS_SURFACE_H_
 #define _NURBS_SURFACE_H_
 
+#include <pcl/pcl_macros.h>
+
 #include "nurbs_basis.h"
 #include "eigen_defs.h"
 
@@ -46,7 +48,7 @@ namespace pcl
   namespace nurbs
   {
 
-    class NurbsSurface
+    class PCL_EXPORTS NurbsSurface
     {
 
     public:

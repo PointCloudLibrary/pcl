@@ -38,6 +38,8 @@
 #ifndef _NURBS_FITTING_H_
 #define _NURBS_FITTING_H_
 
+#include <pcl/pcl_macros.h>
+
 #include "nurbs_tools.h"
 #include "nurbs_data.h"
 
@@ -46,7 +48,7 @@ namespace pcl
   namespace nurbs
   {
 
-    class NurbsFitting
+    class PCL_EXPORTS NurbsFitting
     {
     public:
       NurbsSurface* m_patch;

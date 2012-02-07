@@ -525,7 +525,7 @@ NurbsFitter::grow (float max_dist, float max_angle, unsigned min_length, unsigne
       unsigned idx = row * m_cloud->width + col;
 
       pcl::PointXYZ &pt = m_cloud->at (idx);
-      if (!isnan (pt.x) && !isnan (pt.y) && !isnan (pt.z))
+      if (!pcl_isnan (pt.x) && !pcl_isnan (pt.y) && !pcl_isnan (pt.z))
       {
 
         // distance requirement
@@ -580,7 +580,7 @@ NurbsFitter::PCL2Eigen (pcl::PointCloud<pcl::PointXYZ>::Ptr &pcl_cloud, const st
 
     pcl::PointXYZ &pt = pcl_cloud->at (indices[i]);
 
-    if (!isnan (pt.x) && !isnan (pt.y) && !isnan (pt.z))
+    if (!pcl_isnan (pt.x) && !pcl_isnan (pt.y) && !pcl_isnan (pt.z))
     {
       on_cloud.push_back (vec3 (pt.x, pt.y, pt.z));
       numPoints++;

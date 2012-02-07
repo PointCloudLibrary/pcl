@@ -37,6 +37,7 @@
 
 #include <stdexcept>
 #include "pcl/surface/nurbs/nurbs_fitting.h"
+#include <ctime>
 #include <float.h>
 #include <map>
 

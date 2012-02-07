@@ -38,6 +38,8 @@
 #ifndef _NURBS_CURVE_H_
 #define _NURBS_CURVE_H_
 
+#include <pcl/pcl_macros.h>
+
 #include "eigen_defs.h"
 #include "nurbs_basis.h"
 
@@ -46,7 +48,7 @@ namespace pcl
   namespace nurbs
   {
 
-    class NurbsCurve
+    class PCL_EXPORTS NurbsCurve
     {
 
     private:

@@ -39,6 +39,8 @@
 #define _NURBS_TOOLS_H_
 
 #include <vector>
+
+#include <pcl/pcl_macros.h>
 #include "nurbs_surface.h"
 
 #ifdef USE_UMFPACK

@@ -47,6 +47,7 @@
 #include "nurbs_fitting.h"
 
 #include <pcl/pcl_base.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
@@ -56,7 +57,7 @@ namespace pcl
   namespace nurbs
   {
 
-    class NurbsFitter
+    class PCL_EXPORTS NurbsFitter
     {
     private:
       //  TomGine::tgTomGineThread* m_dbgWin;
