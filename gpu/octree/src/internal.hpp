@@ -37,7 +37,7 @@
 #ifndef PCL_GPU_OCTREE_INTERNAL_HPP_
 #define PCL_GPU_OCTREE_INTERNAL_HPP_
 
-#include "pcl/gpu/containers/device_array.hpp"
+#include "pcl/gpu/containers/device_array.h"
 #include "pcl/gpu/octree/device_format.hpp"
 #include "pcl/gpu/utils/safe_call.hpp"
 

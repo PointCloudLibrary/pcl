@@ -34,7 +34,7 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#include "pcl/gpu/containers/device_memory.hpp"
+#include "pcl/gpu/containers/device_memory.h"
 #include "pcl/gpu/utils/safe_call.hpp"
 
 #include "cuda_runtime_api.h"

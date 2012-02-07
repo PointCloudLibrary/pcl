@@ -36,8 +36,8 @@
 
 #pragma once
 
-#include <pcl/gpu/containers/device_array.hpp>
-#include <pcl/gpu/containers/kernel_containers.hpp>
+#include <pcl/gpu/containers/device_array.h>
+#include <pcl/gpu/containers/kernel_containers.h>
 
 #include <boost/shared_ptr.hpp>
 #include <string>

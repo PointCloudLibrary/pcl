@@ -39,7 +39,7 @@
 #define PCL_KINFU_COLOR_VOLUME_H_
 
 #include <pcl/pcl_macros.h>
-#include <pcl/gpu/containers/device_array.hpp>
+#include <pcl/gpu/containers/device_array.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <Eigen/Core>

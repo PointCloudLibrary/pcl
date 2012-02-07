@@ -38,7 +38,7 @@
 #ifndef PCL_KINFU_INTERNAL_HPP_
 #define PCL_KINFU_INTERNAL_HPP_
 
-#include "pcl/gpu/containers/device_array.hpp"
+#include "pcl/gpu/containers/device_array.h"
 #include "pcl/gpu/utils/safe_call.hpp"
 
 namespace pcl

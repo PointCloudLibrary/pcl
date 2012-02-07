@@ -40,7 +40,7 @@
 #include "pcl/pcl_macros.h"
 #include "pcl/point_types.h"
 
-#include "pcl/gpu/containers/device_array.hpp"
+#include "pcl/gpu/containers/device_array.h"
 
 namespace pcl
 {

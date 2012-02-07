@@ -34,7 +34,7 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#include "pcl/gpu/containers/initialization.hpp"
+#include "pcl/gpu/containers/initialization.h"
 #include "pcl/gpu/features/features.hpp"
 #include "pcl/gpu/utils/device/static_check.hpp"
 #include "internal.hpp"

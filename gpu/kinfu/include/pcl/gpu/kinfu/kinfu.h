@@ -39,7 +39,7 @@
 #define PCL_KINFU_KINFUTRACKER_HPP_
 
 #include <pcl/pcl_macros.h>
-#include <pcl/gpu/containers/device_array.hpp>
+#include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/kinfu/pixel_rgb.h>
 #include <pcl/gpu/kinfu/tsdf_volume.h>
 #include <pcl/gpu/kinfu/color_volume.h>
@@ -143,6 +143,10 @@ namespace pcl
           */
         Eigen::Affine3f
         getCameraPose (int time = -1) const;
+
+        /** \brief Returns number of poses including initial */
+        size_t
+        getNumberOfPoses () const;
 
         /** \brief Returns TSDF volume storage */
         const TsdfVolume& volume() const;

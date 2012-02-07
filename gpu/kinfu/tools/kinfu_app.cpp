@@ -43,7 +43,7 @@
 #include "pcl/gpu/kinfu/kinfu.h"
 #include "pcl/gpu/kinfu/raycaster.h"
 #include "pcl/gpu/kinfu/marching_cubes.h"
-#include "pcl/gpu/containers/initialization.hpp"
+#include "pcl/gpu/containers/initialization.h"
 
 #include <pcl/common/time.h>
 #include <pcl/point_cloud.h>
@@ -56,6 +56,9 @@
 
 #include "openni_capture.h"
 #include "color_handler.h"
+#include "evaluation.h"
+
+#include "pcl/common/angles.h"
 
 #include "tsdf_volume.h"
 #include "tsdf_volume.hpp"
@@ -337,7 +340,7 @@ struct SceneCloudView
 {
   enum { GPU_Connected6 = 0, CPU_Connected6 = 1, CPU_Connected26 = 2 };
 
-  SceneCloudView() : extraction_mode_ (GPU_Connected6), compute_normals_ (false), valid_combined_ (false), cloud_viewer_ ("Scene Cloud Viewer")
+  SceneCloudView() : extraction_mode_ (GPU_Connected6), compute_normals_ (false), valid_combined_ (false), cube_added_(false), cloud_viewer_ ("Scene Cloud Viewer")
   {
     cloud_ptr_ = PointCloud<PointXYZ>::Ptr (new PointCloud<PointXYZ>);
     normals_ptr_ = PointCloud<Normal>::Ptr (new PointCloud<Normal>);
@@ -350,7 +353,7 @@ struct SceneCloudView
     cloud_viewer_.camera_.clip[0] = 0.01;
     cloud_viewer_.camera_.clip[1] = 10.01;
 
-    cloud_viewer_.addText ("H: print help", 2, 15, 20, 34, 135, 246);
+    cloud_viewer_.addText ("H: print help", 2, 15, 20, 34, 135, 246);         
   }
 
   void
@@ -416,6 +419,17 @@ struct SceneCloudView
   }
 
   void
+  toggleCube(const Eigen::Vector3f& size)
+  {
+      if (cube_added_)
+          cloud_viewer_.removeShape("cube");
+      else
+        cloud_viewer_.addCube(size*0.5, Eigen::Quaternionf::Identity(), size(0), size(1), size(2));
+
+      cube_added_ = !cube_added_;
+  }
+
+  void
   toggleExctractionMode ()
   {
     extraction_mode_ = (extraction_mode_ + 1) % 3;
@@ -462,12 +476,13 @@ struct SceneCloudView
     if (mesh_ptr_)
       cloud_viewer_.addPolygonMesh(*mesh_ptr_);	
     
-    cout << "Done.  Triangles number: " << triangles_device.size() / 3 / 1000 << "K" << endl;
+    cout << "Done.  Triangles number: " << triangles_device.size() / MarchingCubes::POINTS_PER_TRIANGLE / 1000 << "K" << endl;
   }
     
   int extraction_mode_;
   bool compute_normals_;
   bool valid_combined_;
+  bool cube_added_;
 
   Eigen::Affine3f viewer_pose_;
 
@@ -507,18 +522,18 @@ struct KinFuApp
     kinfu_.setDepthIntrinsics (f, f);
     kinfu_.volume().setSize (volume_size);
 
-    Eigen::Matrix3f R = Eigen::Matrix3f::Identity ();   // * AngleAxisf(-30.f/180*3.1415926, Vector3f::UnitX());
+    Eigen::Matrix3f R = Eigen::Matrix3f::Identity ();   // * AngleAxisf( pcl::deg2rad(-30.f), Vector3f::UnitX());
     Eigen::Vector3f t = volume_size * 0.5f - Vector3f (0, 0, volume_size (2) / 2 * 1.2f);
 
     Eigen::Affine3f pose = Eigen::Translation3f (t) * Eigen::AngleAxisf (R);
 
     kinfu_.setInitalCameraPose (pose);
     kinfu_.volume().setTsdfTruncDist (0.030f/*meters*/);    
-    kinfu_.setIcpCorespFilteringParams (0.1f/*meters*/, sin (20.f * 3.14159254f / 180.f));
+    kinfu_.setIcpCorespFilteringParams (0.1f/*meters*/, sin ( pcl::deg2rad(20.f) ));
     //kinfu_.setDepthTruncationForICP(5.f/*meters*/);
     kinfu_.setCameraMovementThreshold(0.001f);
-
-    //Init KinfuApp        
+    
+    //Init KinfuApp            
     tsdf_cloud_ptr_ = pcl::PointCloud<pcl::PointXYZI>::Ptr (new pcl::PointCloud<pcl::PointXYZI>);
     image_view_.raycaster_ptr_ = RayCaster::Ptr( new RayCaster(kinfu_.rows (), kinfu_.cols (), f, f) );
 
@@ -528,6 +543,14 @@ struct KinFuApp
 
     float diag = sqrt ((float)kinfu_.cols () * kinfu_.cols () + kinfu_.rows () * kinfu_.rows ());
     scene_cloud_view_.cloud_viewer_.camera_.fovy = 2 * atan (diag / (2 * f)) * 1.5;
+    
+    scene_cloud_view_.toggleCube(volume_size);    
+  }
+
+  ~KinFuApp()
+  {
+    if (evaluation_ptr_)
+      evaluation_ptr_->saveAllPoses(kinfu_);
   }
 
   void
@@ -563,6 +586,13 @@ struct KinFuApp
     independent_camera_ = !independent_camera_;
     cout << "Camera mode: " << (independent_camera_ ?  "Independent" : "Bound to Kinect pose") << endl;
   }
+  
+  void
+  toggleEvaluationMode(const string& eval_folder)
+  {
+    evaluation_ptr_ = Evaluation::Ptr( new Evaluation(eval_folder) );
+    kinfu_.setDepthIntrinsics (evaluation_ptr_->fx, evaluation_ptr_->fy, evaluation_ptr_->cx, evaluation_ptr_->cy);
+  }
 
   void
   execute ()
@@ -574,7 +604,8 @@ struct KinFuApp
 
     for (int i = 0; !exit_; ++i)
     {      
-      if (!capture_.grab (depth, rgb24))
+      bool has_frame = evaluation_ptr_ ? evaluation_ptr_->grab(i, depth) : capture_.grab (depth, rgb24);      
+      if (!has_frame)
       {
         cout << "Can't grab" << endl;
         break;
@@ -686,6 +717,7 @@ struct KinFuApp
     cout << "    M    : toggle cloud exctraction mode" << endl;
     cout << "    N    : toggle normals exctraction" << endl;
     cout << "    I    : toggle independent camera mode" << endl;
+    cout << "    B    : toggle volume bounds" << endl;
     cout << "    *    : toggle scene view painting ( requires registration mode )" << endl;
     cout << "    C    : clear clouds" << endl;    
     cout << "   1,2,3 : save cloud to PCD(binary), PCD(ASCII), PLY(ASCII)" << endl;
@@ -716,6 +748,8 @@ struct KinFuApp
   pcl::TSDFVolume<float, short> tsdf_volume_;
   pcl::PointCloud<pcl::PointXYZI>::Ptr tsdf_cloud_ptr_;
 
+  Evaluation::Ptr evaluation_ptr_;
+
   static void
   keyboard_callback (const visualization::KeyboardEvent &e, void *cookie)
   {
@@ -734,6 +768,7 @@ struct KinFuApp
       case (int)'n': case (int)'N': app->scene_cloud_view_.toggleNormals (); break;      
       case (int)'c': case (int)'C': app->scene_cloud_view_.clearClouds (true); break;
       case (int)'i': case (int)'I': app->toggleIndependentCamera (); break;
+      case (int)'b': case (int)'B': app->scene_cloud_view_.toggleCube(app->kinfu_.volume().getSize()); break;
       case (int)'7': case (int)'8': app->writeMesh (key - (int)'0'); break;
       case (int)'1': case (int)'2': case (int)'3': app->writeCloud (key - (int)'0'); break;      
       case '*': app->image_view_.toggleImagePaint (); break;
@@ -813,6 +848,7 @@ print_cli_help ()
   cout << "    --registration, -r              : enable registration mode" << endl; 
   cout << "    --integrate-colors, -ic         : enable color integration mode ( allows to get cloud with colors )" << endl; 
   cout << "    -dev <deivce>, -oni <oni_file>  : select depth source. Default will be selected if not specified" << endl;
+  cout << "    -eval <eval_folder>             : process evaluation data set (Requires OpenCV)" << endl;
     
   return 0;
 }
@@ -834,9 +870,9 @@ main (int argc, char* argv[])
     return cout << endl << "Kinfu is not supported for pre-Fermi GPU architectures, and not built for them by default. Exiting..." << endl, 1;
 
   CaptureOpenNI capture;
-
+  
   int openni_device = 0;
-  std::string oni_file;
+  std::string oni_file, eval_folder;
   if (pc::parse_argument (argc, argv, "-dev", openni_device) > 0)
   {
     capture.open (openni_device);
@@ -845,6 +881,11 @@ main (int argc, char* argv[])
   if (pc::parse_argument (argc, argv, "-oni", oni_file) > 0)
   {
     capture.open (oni_file);
+  }
+  else
+  if (pc::parse_argument (argc, argv, "-eval", eval_folder) > 0)
+  {
+    //ini latter
   }
   else
   {
@@ -859,6 +900,9 @@ main (int argc, char* argv[])
   }
       
   KinFuApp app (capture);
+
+  if (pc::parse_argument (argc, argv, "-eval", eval_folder) > 0)
+    app.toggleEvaluationMode(eval_folder);
 
   if (pc::find_switch (argc, argv, "--current-cloud") || pc::find_switch (argc, argv, "-cc"))
     app.initCurrentFrameView ();

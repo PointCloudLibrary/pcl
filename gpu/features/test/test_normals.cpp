@@ -39,7 +39,7 @@
 #include <iostream>
 
 #include "pcl/gpu/features/features.hpp"
-#include "pcl/gpu/containers/initialization.hpp"
+#include "pcl/gpu/containers/initialization.h"
 #include <pcl/search/search.h>
 
 using namespace std;

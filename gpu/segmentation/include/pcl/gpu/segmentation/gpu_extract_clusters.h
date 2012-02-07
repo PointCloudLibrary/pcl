@@ -45,7 +45,7 @@
 #include "pcl/PointIndices.h"
 #include "pcl/pcl_macros.h"
 #include "pcl/gpu/octree/octree.hpp"
-#include "pcl/gpu/containers/device_array.hpp"
+#include "pcl/gpu/containers/device_array.h"
 
 namespace pcl
 {

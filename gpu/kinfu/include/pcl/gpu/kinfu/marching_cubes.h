@@ -39,14 +39,14 @@
 #define PCL_KINFU_TSDF_MARCHING_CUBES_H_
 
 #include <pcl/pcl_macros.h>
-#include <pcl/gpu/containers/device_array.hpp>
+#include <pcl/gpu/containers/device_array.h>
 #include <Eigen/Core>
 
 namespace pcl
 {
   namespace gpu
   {
-    struct TsdfVolume;
+    class TsdfVolume;
       
     /** \brief MarchingCubes implements MarchingCubes functionality for TSDF volume on GPU
       * \author Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
@@ -54,6 +54,13 @@ namespace pcl
     class PCL_EXPORTS MarchingCubes
     {
     public:
+
+      /** \brief Default size for triangles buffer */
+      enum
+      { 
+        POINTS_PER_TRIANGLE = 3,
+        DEFAULT_TRIANGLES_BUFFER_SIZE = 2 * 1000 * 1000 * POINTS_PER_TRIANGLE      
+      };
     
       /** \brief Point type. */
       typedef pcl::PointXYZ PointType;
@@ -75,14 +82,7 @@ namespace pcl
       DeviceArray<PointType> 
       run(const TsdfVolume& tsdf, DeviceArray<PointType>& triangles_buffer);
 
-    private:
-    
-      /** \brief Default size for triangles buffer */
-      enum
-      {                      
-        DEFAULT_TRIANGLES_BUFFER_SIZE = 2 * 1000 * 1000 * 3       
-      };
-      
+    private:             
       /** \brief Edge table for marching cubes  */
       DeviceArray<int> edgeTable_;
       

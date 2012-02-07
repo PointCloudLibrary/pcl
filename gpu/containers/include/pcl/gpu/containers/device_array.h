@@ -38,7 +38,7 @@
 #define PCL_GPU_CONTAINER_DEVICE_ARRAY_HPP_
 
 #include "pcl/pcl_exports.h"
-#include <pcl/gpu/containers/device_memory.hpp>
+#include <pcl/gpu/containers/device_memory.h>
 
 #include <vector>
 
@@ -218,14 +218,14 @@ namespace pcl
 
             /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to ensure that intenal buffer size is enough.
               * \param data: host vector to upload from              
-              * \param cols: stride in elements between  two consecutive rows in bytes for host buffer
+              * \param cols: stride in elements between two consecutive rows for host buffer
               * */
             template<class A>
             void upload(const std::vector<T, A>& data, int cols);
 
             /** \brief Downloads data from internal buffer to CPU memory
                * \param data: host vector to download to                 
-               * \param cols: Output stride in elements between two consecutive rows in bytes for host vector.
+               * \param cols: Output stride in elements between two consecutive rows for host vector.
                * */
             template<class A>
             void download(std::vector<T, A>& data, int& cols) const;
@@ -266,6 +266,6 @@ namespace pcl
     }
 }
 
-#include "pcl/gpu/containers/device_array_impl.hpp"
+#include "pcl/gpu/containers/impl/device_array.hpp"
 
 #endif /* PCL_GPU_CONTAINER_DEVICE_ARRAY_HPP_ */

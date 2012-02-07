@@ -11,7 +11,7 @@ mark_as_advanced("BUILD_${SUBSYS_NAME}")
 
 if (build)
     FILE(GLOB srcs src/*.cpp src/*.hpp)
-    FILE(GLOB incs include/pcl/gpu/containers/*.hpp)
+    FILE(GLOB incs include/pcl/gpu/containers/*.h)
     FILE(GLOB incs_impl include/pcl/gpu/containers/impl/*.hpp)
 
     source_group("Header Files\\impl" FILES ${incs_impl})
@@ -29,4 +29,5 @@ if (build)
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_PATH} ${incs})
+	PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${incs_impl})
 endif()

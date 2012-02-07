@@ -160,7 +160,7 @@ namespace pcl
 
           int total = __popc (__ballot (numVerts > 0));
 
-          if (Warp::laneId () == 0)
+          if (ftid & 31 == 0)
           {
             int old = atomicAdd (&global_count, total);
             warps_buffer[wapp_id] = old;

@@ -42,7 +42,7 @@
 
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
-#include <pcl/gpu/containers/device_array.hpp>
+#include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/kinfu/pixel_rgb.h>
 #include <boost/shared_ptr.hpp>
 #include <Eigen/Geometry>
@@ -51,7 +51,7 @@ namespace pcl
 {
   namespace gpu
   {
-    struct TsdfVolume;
+    class TsdfVolume;
 
     /** \brief Class that performs raycasting for TSDF volume
       * \author Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)

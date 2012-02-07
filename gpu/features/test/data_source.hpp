@@ -46,7 +46,7 @@
 #include "pcl/common/common.h"
 #include "pcl/features/normal_3d.h"
 #include "pcl/visualization/cloud_viewer.h"
-#include "pcl/gpu/containers/kernel_containers.hpp"
+#include "pcl/gpu/containers/kernel_containers.h"
 #include <pcl/search/search.h>
 
 #include <Eigen/StdVector>

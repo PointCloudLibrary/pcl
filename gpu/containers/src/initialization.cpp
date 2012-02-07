@@ -34,7 +34,7 @@
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
 
-#include "pcl/gpu/containers/initialization.hpp"
+#include "pcl/gpu/containers/initialization.h"
 #include "pcl/gpu/utils/safe_call.hpp"
 
 #include "cuda.h"

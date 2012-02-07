@@ -34,36 +34,44 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef __PCL_CUDA_SAFE_CALL_HPP__
-#define __PCL_CUDA_SAFE_CALL_HPP__
+#pragma once
 
-#include "cuda_runtime_api.h"
-#include "pcl/gpu/containers/initialization.h"
+#include <string>
+#include <boost/shared_ptr.hpp>
+#include <pcl/gpu/containers/kernel_containers.h>
+#include "pcl/gpu/kinfu/kinfu.h"
 
-#if defined(__GNUC__)
-    #define cudaSafeCall(expr)  pcl::gpu::___cudaSafeCall(expr, __FILE__, __LINE__, __func__)
-#else /* defined(__CUDACC__) || defined(__MSVC__) */
-    #define cudaSafeCall(expr)  pcl::gpu::___cudaSafeCall(expr, __FILE__, __LINE__)    
-#endif
 
-namespace pcl
+/** \brief  class for  RGB-D SLAM Dataset and Benchmark
+  * \author Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
+  */
+class Evaluation
 {
-    namespace gpu
-    {
-        static inline void ___cudaSafeCall(cudaError_t err, const char *file, const int line, const char *func = "")
-        {
-            if (cudaSuccess != err)
-                error(cudaGetErrorString(err), file, line, func);
-        }        
+public:
+  typedef boost::shared_ptr<Evaluation> Ptr; 
+  typedef pcl::gpu::KinfuTracker::PixelRGB RGB;
 
-        static inline int divUp(int total, int grain) { return (total + grain - 1) / grain; }
-    }
+  Evaluation(const std::string& folder);
 
-    namespace device
-    {
-        using pcl::gpu::divUp;        
-    }
-}
+  bool grab (double stamp, pcl::gpu::PtrStepSz<const RGB>& rgb24);
+  bool grab (double stamp, pcl::gpu::PtrStepSz<const unsigned short>& depth);
+  bool grab (double stamp, pcl::gpu::PtrStepSz<const unsigned short>& depth, pcl::gpu::PtrStepSz<const RGB>& rgb24);
+
+  const float fx, fy, cx, cy;
 
 
-#endif /* __PCL_CUDA_SAFE_CALL_HPP__ */
+  void saveAllPoses(const pcl::gpu::KinfuTracker& kinfu, int frame_number = -1, const std::string& logfile = "kinfu_poses.txt") const;
+
+private:
+  std::string folder_;
+  bool visualization_;
+
+  std::vector< std::pair<double, std::string> > rgb_stamps_and_filenames_;
+  std::vector< std::pair<double, std::string> > depth_stamps_and_filenames_;
+
+  void readFile(const std::string& file, std::vector< std::pair<double, std::string> >& output);
+
+  struct Impl;
+  boost::shared_ptr<Impl> impl_;
+};
+
