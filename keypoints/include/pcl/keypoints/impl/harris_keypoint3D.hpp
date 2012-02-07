@@ -32,7 +32,7 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  */
 
 #ifndef PCL_HARRIS_KEYPOINT_3D_IMPL_H_
@@ -43,74 +43,188 @@
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/features/integral_image_normal.h>
+#include <pcl/common/time.h>
+#include <pcl/common/centroid.h>
 
-template <typename PointInT, typename PointOutT> void 
-pcl::HarrisKeypoint3D<PointInT, PointOutT>::setMethod (ResponseMethod method)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT> void
+pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::setMethod (ResponseMethod method)
 {
   method_ = method;
 }
 
-template <typename PointInT, typename PointOutT> void 
-pcl::HarrisKeypoint3D<PointInT, PointOutT>::setThreshold (float threshold)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT> void
+pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::setThreshold (float threshold)
 {
   threshold_= threshold;
 }
 
-template <typename PointInT, typename PointOutT> void 
-pcl::HarrisKeypoint3D<PointInT, PointOutT>::setRadius (float radius)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT> void
+pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::setRadius (float radius)
 {
-  radius_ = radius;
+  search_radius_ = radius;
 }
 
-template <typename PointInT, typename PointOutT> void 
-pcl::HarrisKeypoint3D<PointInT, PointOutT>::setRefine (bool do_refine)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT> void
+pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::setRefine (bool do_refine)
 {
   refine_ = do_refine;
 }
 
-template <typename PointInT, typename PointOutT> void 
-pcl::HarrisKeypoint3D<PointInT, PointOutT>::setNonMaxSupression (bool nonmax)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT> void
+pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::setNonMaxSupression (bool nonmax)
 {
   nonmax_ = nonmax;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointOutT> void 
-pcl::HarrisKeypoint3D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
+template <typename PointInT, typename PointOutT, typename NormalT> void
+pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::setNormals (boost::shared_ptr<pcl::PointCloud<NormalT> > normals ) const
 {
-  typename pcl::PointCloud<PointInT>::Ptr cloud (new pcl::PointCloud<PointInT>);
-  pcl::PassThrough<PointInT> pass_;
-  pass_.setInputCloud (input_);
-  pass_.filter (*cloud);
-//  typename pcl::PointCloud<PointInT>::ConstPtr cloud;
-//  cloud = input_;
-  boost::shared_ptr<pcl::PointCloud<pcl::Normal> > normals (new pcl::PointCloud<Normal> ());
-  pcl::NormalEstimation<PointInT, pcl::Normal> normal_estimation;
-  normal_estimation.setInputCloud(cloud);
-  normal_estimation.setRadiusSearch(radius_);
-  normal_estimation.compute (*normals);
-  
+  normals_.reset (normals);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT> void
+pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::calculateNormalCovar (const std::vector<int>& neighbors, float* coefficients) const
+{
+  // indices        0   1   2   3   4   5   6   7
+  // coefficients: xx  xy  xz  ??  yx  yy  yz  ??
+#ifdef HAVE_SSE_EXTENSIONS
+  // accumulator for xx, xy, xz
+  __m128 vec1 = _mm_setzero_ps();
+  // accumulator for yy, yz, zz
+  __m128 vec2 = _mm_setzero_ps();
+
+  __m128 norm1;
+
+  __m128 norm2;
+
+  float zz = 0;
+  unsigned count = 0;
+  for (std::vector<int>::const_iterator iIt = neighbors.begin(); iIt != neighbors.end(); ++iIt)
+  {
+    if (pcl_isfinite (normals_->points[*iIt].normal_x))
+    {
+      // nx, ny, nz, h
+      norm1 = _mm_load_ps (&(normals_->points[*iIt].normal_x));
+
+      // nx, nx, nx, nx
+      norm2 = _mm_set1_ps (normals_->points[*iIt].normal_x);
+
+      // nx * nx, nx * ny, nx * nz, nx * h
+      norm2 = _mm_mul_ps (norm1, norm2);
+
+      // accumulate
+      vec1 = _mm_add_ps (vec1, norm2);
+
+      // ny, ny, ny, ny
+      norm2 = _mm_set1_ps (normals_->points[*iIt].normal_y);
+
+      // ny * nx, ny * ny, ny * nz, ny * h
+      norm2 = _mm_mul_ps (norm1, norm2);
+
+      // accumulate
+      vec2 = _mm_add_ps (vec2, norm2);
+
+      zz += normals_->points[*iIt].normal_z * normals_->points[*iIt].normal_z;
+      ++count;
+    }
+  }
+  if (count > 0)
+  {
+    norm2 = _mm_set1_ps (float(count));
+    vec1 = _mm_div_ps (vec1, norm2);
+    vec2 = _mm_div_ps (vec2, norm2);
+    _mm_store_ps (coefficients, vec1);
+    _mm_store_ps (coefficients + 4, vec2);
+    coefficients [7] = zz / float(count);
+  }
+  else
+    memset (coefficients, 0, sizeof (float) * 8);
+#else
+  memset (coefficients, 0, sizeof (float) * 8);
+  count = 0;
+  for (std::vector<int>::const_iterator iIt = neighbors.begin(); iIt != neighbors.end(); ++iIt)
+  {
+    if (pcl_isfinite (normals_->points[*iIt].normal_x))
+    {
+      coefficients[0] += normals_->points[*iIt].normal_x * normals_->points[*iIt].normal_x;
+      coefficients[1] += normals_->points[*iIt].normal_x * normals_->points[*iIt].normal_y;
+      coefficients[2] += normals_->points[*iIt].normal_x * normals_->points[*iIt].normal_z;
+
+      coefficients[5] += normals_->points[*iIt].normal_y * normals_->points[*iIt].normal_y;
+      coefficients[6] += normals_->points[*iIt].normal_y * normals_->points[*iIt].normal_z;
+      coefficients[7] += normals_->points[*iIt].normal_z * normals_->points[*iIt].normal_z;
+
+      ++count;
+    }
+  }
+  if (count > 0)
+  {
+    float norm = 1.0 / float (count);
+    coefficients[0] *= norm;
+    coefficients[1] *= norm;
+    coefficients[2] *= norm;
+    coefficients[5] *= norm;
+    coefficients[6] *= norm;
+    coefficients[7] *= norm;
+  }
+#endif
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT> void
+pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut &output)
+{
+  if (normals_->empty ())
+  {
+    normals_->reserve (surface_->size ());
+    if (input_->height == 1 ) // not organized
+    {
+      pcl::NormalEstimation<PointInT, NormalT> normal_estimation;
+      normal_estimation.setInputCloud(surface_);
+      normal_estimation.setRadiusSearch(search_radius_);
+      normal_estimation.compute (*normals_);
+    }
+    else
+    {
+      IntegralImageNormalEstimation<PointInT, NormalT> normal_estimation;
+      normal_estimation.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointInT, NormalT>::SIMPLE_3D_GRADIENT);
+      normal_estimation.setInputCloud(surface_);
+      normal_estimation.setNormalSmoothingSize (5.0);
+      normal_estimation.compute (*normals_);
+    }
+  }
+
   boost::shared_ptr<pcl::PointCloud<PointOutT> > response (new pcl::PointCloud<PointOutT> ());
+
+  response->points.reserve (input_->points.size());
+
   switch (method_)
   {
     case HARRIS:
-      responseHarris(cloud, normals, *response);
+      responseHarris(*response);
       break;
     case NOBLE:
-      responseNoble(cloud, normals, *response);
+      responseNoble(*response);
       break;
     case LOWE:
-      responseLowe(cloud, normals, *response);
+      responseLowe(*response);
       break;
     case CURVATURE:
-      responseCurvature(cloud, normals, *response);
+      responseCurvature(*response);
       break;
     case TOMASI:
-      responseTomasi(cloud, normals, *response);
-      break;     
+      responseTomasi(*response);
+      break;
   }
-  
-  // just return the response
+
   if (!nonmax_)
     output = *response;
   else
@@ -119,14 +233,13 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &outp
     output.points.reserve (response->points.size());
     std::vector<int> nn_indices;
     std::vector<float> nn_dists;
-    pcl::search::KdTree<pcl::PointXYZI> response_search;
-    response_search.setInputCloud (response);
+
+    #pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
     for (size_t idx = 0; idx < response->points.size (); ++idx)
     {
-      if (response->points[idx].intensity < threshold_)
+      if (!isFinite (response->points[idx]) || response->points[idx].intensity < threshold_)
         continue;
-      
-      response_search.radiusSearch (idx, radius_, nn_indices, nn_dists);
+      tree_->radiusSearch (idx, search_radius_, nn_indices, nn_dists);
       bool is_maxima = true;
       for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
       {
@@ -137,312 +250,235 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &outp
         }
       }
       if (is_maxima)
+        #pragma omp critical
         output.points.push_back (response->points[idx]);
     }
-    
+
     if (refine_)
-      refineCorners (cloud, normals, output);
-    
+      refineCorners (output);
+
     output.height = 1;
     output.width = output.points.size();
   }
+
+  // we don not change the denseness
+  output.is_dense = input_->is_dense;
 }
 
-#if 0
-template <typename PointInT, typename PointOutT> void 
-pcl::HarrisKeypoint3D<PointInT, PointOutT>::responseHarris (typename PointCloudIn::ConstPtr input, pcl::PointCloud<Normal>::ConstPtr normals, PointCloudOut &output) const
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT> void
+pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseHarris (PointCloudOut &output) const
 {
-  output.points.clear ();
-  output.points.reserve (input->points.size());
-  
+  PCL_ALIGN (16) float covar [8];
   std::vector<int> nn_indices;
   std::vector<float> nn_dists;
-  pcl::search::KdTree<PointInT> search;
-  search.setInputCloud(input);
-  
-  PointOutT point;
-  float covar[6];
-  for (typename PointCloudIn::const_iterator pointIt = input->begin(); pointIt != input->end(); ++pointIt)
+  output.resize (input_->size ());
+  #pragma omp parallel for shared (output) private (covar, nn_indices, nn_dists) num_threads(threads_)
+  for (unsigned pIdx = 0; pIdx < input_->size (); ++pIdx)
   {
-    search.radiusSearch (*pointIt, radius_, nn_indices, nn_dists);
-
-    covar[0] = covar[1] = covar[2] = covar[3] = covar[4] = covar[5] = 0;
-    for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
+    const PointInT& pointIn = input_->points [pIdx];
+    output [pIdx].intensity = 0.0; //std::numeric_limits<float>::quiet_NaN ();
+    if (isFinite (pointIn))
     {
-      covar[0] += normals->points[*iIt].normal_x * normals->points[*iIt].normal_x;
-      covar[1] += normals->points[*iIt].normal_x * normals->points[*iIt].normal_y;
-      covar[2] += normals->points[*iIt].normal_x * normals->points[*iIt].normal_z;
-      covar[3] += normals->points[*iIt].normal_y * normals->points[*iIt].normal_y;
-      covar[4] += normals->points[*iIt].normal_y * normals->points[*iIt].normal_z;
-      covar[5] += normals->points[*iIt].normal_z * normals->points[*iIt].normal_z;
+      tree_->radiusSearch (pointIn, search_radius_, nn_indices, nn_dists);
+      calculateNormalCovar (nn_indices, covar);
+
+      float trace = covar [0] + covar [5] + covar [7];
+      if (trace != 0)
+      {
+        float det = covar [0] * covar [5] * covar [7] + 2.0 * covar [1] * covar [2] * covar [6]
+                  - covar [2] * covar [2] * covar [5]
+                  - covar [1] * covar [1] * covar [7]
+                  - covar [6] * covar [6] * covar [0];
+
+        output [pIdx].intensity = 0.04 + det - 0.04 * trace * trace;
+      }
     }
-    point.x = pointIt->x;
-    point.y = pointIt->y;
-    point.z = pointIt->z;
-    
-    float trace = covar[0] + covar[3] + covar[5];
-    point.intensity = covar[0] * covar[3] * covar[5] + 2 * covar[1] * covar[2] * covar[4] - covar[2] * covar[2] * covar[3] - 
-                      covar[4] * covar[4] * covar[0] - covar[1] * covar[1] * covar[5] - 0.04 * trace * trace;
-    output.points.push_back(point);
+    output [pIdx].x = pointIn.x;
+    output [pIdx].y = pointIn.y;
+    output [pIdx].z = pointIn.z;
   }
-  output.height = input->height;
-  output.width = input->width;
+  output.height = input_->height;
+  output.width = input_->width;
 }
-#else
-template <typename PointInT, typename PointOutT> void 
-pcl::HarrisKeypoint3D<PointInT, PointOutT>::responseHarris (typename PointCloudIn::ConstPtr input, pcl::PointCloud<Normal>::ConstPtr normals, PointCloudOut &output) const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT> void
+pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseNoble (PointCloudOut &output) const
 {
-  output.points.clear ();
-  output.points.reserve (input->points.size());
-  
   std::vector<int> nn_indices;
   std::vector<float> nn_dists;
-  pcl::search::KdTree<PointInT> search;
-  search.setInputCloud(input);
-  
-  PointOutT point;
-  for (typename PointCloudIn::const_iterator pointIt = input->begin(); pointIt != input->end(); ++pointIt)
-  //for (std::vector<int>::const_iterator idxIt = indices_->begin(); idxIt != indices_->end(); ++idxIt)
+  PCL_ALIGN (16) float covar [8];
+  output.resize (input_->size ());
+  #pragma omp parallel for shared (output) private (covar, nn_indices, nn_dists) num_threads(threads_)
+  for (unsigned pIdx = 0; pIdx < input_->size (); ++pIdx)
   {
-    search.radiusSearch (*pointIt, radius_, nn_indices, nn_dists);
+    const PointInT& pointIn = input_->points [pIdx];
+    output [pIdx].intensity = 0.0;
+    if (isFinite (pointIn))
+    {
+      tree_->radiusSearch (pointIn, search_radius_, nn_indices, nn_dists);
+      calculateNormalCovar (nn_indices, covar);
+      float trace = covar [0] + covar [5] + covar [7];
+      if (trace != 0)
+      {
+        float det = covar [0] * covar [5] * covar [7] + 2.0 * covar [1] * covar [2] * covar [6]
+                  - covar [2] * covar [2] * covar [5]
+                  - covar [1] * covar [1] * covar [7]
+                  - covar [6] * covar [6] * covar [0];
 
-    Eigen::Matrix3f covariance_matrix;
-    covariance_matrix.setZero();
-    for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
-      covariance_matrix += normals->points[*iIt].getNormalVector3fMap () * 
-        normals->points[*iIt].getNormalVector3fMap ().transpose();
-
-    point.x = pointIt->x;
-    point.y = pointIt->y;
-    point.z = pointIt->z;
-    point.intensity = covariance_matrix.determinant () - 0.04 * covariance_matrix.trace () * covariance_matrix.trace ();    
-    output.points.push_back(point);
+        output [pIdx].intensity = det / trace;
+      }
+    }
+    output [pIdx].x = pointIn.x;
+    output [pIdx].y = pointIn.y;
+    output [pIdx].z = pointIn.z;
   }
-  output.height = input->height;
-  output.width = input->width;
+  output.height = input_->height;
+  output.width = input_->width;
 }
-#endif
 
-template <typename PointInT, typename PointOutT> void 
-pcl::HarrisKeypoint3D<PointInT, PointOutT>::responseNoble (typename PointCloudIn::ConstPtr input, pcl::PointCloud<Normal>::ConstPtr normals, PointCloudOut &output) const
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT> void
+pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseLowe (PointCloudOut &output) const
 {
-  output.points.clear ();
-  output.points.reserve (input->points.size());
-  
   std::vector<int> nn_indices;
   std::vector<float> nn_dists;
-  pcl::search::KdTree<PointInT> search;
-  search.setInputCloud(input);
-  
-  PointOutT point;
-  for (typename PointCloudIn::const_iterator pointIt = input->begin(); pointIt != input->end(); ++pointIt)
+  PCL_ALIGN (16) float covar [8];
+  output.resize (input_->size ());
+  #pragma omp parallel for shared (output) private (covar, nn_indices, nn_dists) num_threads(threads_)
+  for (unsigned pIdx = 0; pIdx < input_->size (); ++pIdx)
   {
-    search.radiusSearch (*pointIt, radius_, nn_indices, nn_dists);
+    const PointInT& pointIn = input_->points [pIdx];
+    output [pIdx].intensity = 0.0;
+    if (isFinite (pointIn))
+    {
+      tree_->radiusSearch (pointIn, search_radius_, nn_indices, nn_dists);
+      calculateNormalCovar (nn_indices, covar);
+      float trace = covar [0] + covar [5] + covar [7];
+      if (trace != 0)
+      {
+        float det = covar [0] * covar [5] * covar [7] + 2.0 * covar [1] * covar [2] * covar [6]
+                  - covar [2] * covar [2] * covar [5]
+                  - covar [1] * covar [1] * covar [7]
+                  - covar [6] * covar [6] * covar [0];
 
-    Eigen::Matrix3f covariance_matrix;
-    covariance_matrix.setZero();
-    for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
-      covariance_matrix += normals->points[*iIt].getNormalVector3fMap () * 
-        normals->points[*iIt].getNormalVector3fMap ().transpose ();
-
-    point.x = pointIt->x;
-    point.y = pointIt->y;
-    point.z = pointIt->z;
-    point.intensity = covariance_matrix.determinant () / covariance_matrix.trace ();
-    output.points.push_back(point);
+        output [pIdx].intensity = det / (trace * trace);
+      }
+    }
+    output [pIdx].x = pointIn.x;
+    output [pIdx].y = pointIn.y;
+    output [pIdx].z = pointIn.z;
   }
-  output.height = input->height;
-  output.width = input->width;
+  output.height = input_->height;
+  output.width = input_->width;
 }
 
-template <typename PointInT, typename PointOutT> void 
-pcl::HarrisKeypoint3D<PointInT, PointOutT>::responseLowe (typename PointCloudIn::ConstPtr input, pcl::PointCloud<Normal>::ConstPtr normals, PointCloudOut &output) const
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT> void
+pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseCurvature (PointCloudOut &output) const
 {
-  output.points.clear ();
-  output.points.reserve (input->points.size());
-  
-  std::vector<int> nn_indices;
-  std::vector<float> nn_dists;
-  pcl::search::KdTree<PointInT> search;
-  search.setInputCloud(input);
-  
   PointOutT point;
-  for (typename PointCloudIn::const_iterator pointIt = input->begin(); pointIt != input->end(); ++pointIt)
+  for (unsigned idx = 0; idx < input_->points.size(); ++idx)
   {
-    search.radiusSearch (*pointIt, radius_, nn_indices, nn_dists);
-
-    Eigen::Matrix3f covariance_matrix;
-    covariance_matrix.setZero();
-    for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
-      covariance_matrix += normals->points[*iIt].getNormalVector3fMap () * 
-        normals->points[*iIt].getNormalVector3fMap ().transpose ();
-
-    point.x = pointIt->x;
-    point.y = pointIt->y;
-    point.z = pointIt->z;
-    point.intensity = covariance_matrix.determinant () / (covariance_matrix.trace () * covariance_matrix.trace ());
-    output.points.push_back(point);
-  }
-  output.height = input->height;
-  output.width = input->width;
-}
-
-template <typename PointInT, typename PointOutT> void 
-pcl::HarrisKeypoint3D<PointInT, PointOutT>::responseCurvature (typename PointCloudIn::ConstPtr input, pcl::PointCloud<Normal>::ConstPtr normals, PointCloudOut &output) const
-{
-  output.points.clear ();
-  output.points.reserve (input->points.size());
-  
-  PointOutT point;
-  for (unsigned idx = 0; idx < input->points.size(); ++idx)
-  {
-    point.x = input->points[idx].x;
-    point.y = input->points[idx].y;
-    point.z = input->points[idx].z;
-    point.intensity = (*normals)[idx].curvature;
+    point.x = input_->points[idx].x;
+    point.y = input_->points[idx].y;
+    point.z = input_->points[idx].z;
+    point.intensity = normals_->points[idx].curvature;
     output.points.push_back(point);
   }
   // does not change the order
-  output.height = input->height;
-  output.width = input->width;
+  output.height = input_->height;
+  output.width = input_->width;
 }
 
-template <typename PointInT, typename PointOutT> void 
-pcl::HarrisKeypoint3D<PointInT, PointOutT>::responseTomasi (typename PointCloudIn::ConstPtr input, pcl::PointCloud<Normal>::ConstPtr normals, PointCloudOut &output) const
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT> void
+pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudOut &output) const
 {
-  output.points.clear ();
-  output.points.reserve (input->points.size());
-  
   std::vector<int> nn_indices;
   std::vector<float> nn_dists;
-  pcl::search::KdTree<PointInT> search;
-  search.setInputCloud(input);
-  
-  PointOutT point;
-  for (typename PointCloudIn::const_iterator pointIt = input->begin(); pointIt != input->end(); ++pointIt)
+  PCL_ALIGN (16) float covar [8];
+  Eigen::Matrix3f covariance_matrix;
+  output.resize (input_->size ());
+  #pragma omp parallel for shared (output) private (covar, nn_indices, nn_dists, covariance_matrix) num_threads(threads_)
+  for (unsigned pIdx = 0; pIdx < input_->size (); ++pIdx)
   {
-    search.radiusSearch (*pointIt, radius_, nn_indices, nn_dists);
-
-    Eigen::Matrix3f covariance_matrix;
-    covariance_matrix.setZero();
-    for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
+    const PointInT& pointIn = input_->points [pIdx];
+    output [pIdx].intensity = 0.0;
+    if (isFinite (pointIn))
     {
-      if (pcl_isnan(normals->points[*iIt].normal_x + normals->points[*iIt].normal_y + normals->points[*iIt].normal_z))
-        continue;
-      covariance_matrix += normals->points[*iIt].getNormalVector3fMap () * 
-        normals->points[*iIt].getNormalVector3fMap ().transpose ();
+      tree_->radiusSearch (pointIn, search_radius_, nn_indices, nn_dists);
+      calculateNormalCovar (nn_indices, covar);
+      float trace = covar [0] + covar [5] + covar [7];
+      if (trace != 0)
+      {
+        covariance_matrix.coeffRef (0) = covar [0];
+        covariance_matrix.coeffRef (1) = covariance_matrix.coeffRef (3) = covar [1];
+        covariance_matrix.coeffRef (2) = covariance_matrix.coeffRef (6) = covar [2];
+        covariance_matrix.coeffRef (4) = covar [5];
+        covariance_matrix.coeffRef (5) = covariance_matrix.coeffRef (7) = covar [6];
+        covariance_matrix.coeffRef (8) = covar [7];
+
+        EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
+        pcl::eigen33(covariance_matrix, eigen_values);
+        output [pIdx].intensity = eigen_values[0];
+      }
     }
-    point.x = pointIt->x;
-    point.y = pointIt->y;
-    point.z = pointIt->z;
-    
-    EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
-    EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
-    pcl::eigen33(covariance_matrix, eigen_vectors, eigen_values);
-    point.intensity = eigen_values[0];
-    output.points.push_back(point);
+    output [pIdx].x = pointIn.x;
+    output [pIdx].y = pointIn.y;
+    output [pIdx].z = pointIn.z;
   }
-  output.height = input->height;
-  output.width = input->width;
+  output.height = input_->height;
+  output.width = input_->width;
 }
 
-#if 0
-template <typename PointInT, typename PointOutT> void 
-pcl::HarrisKeypoint3D<PointInT, PointOutT>::refineCorners (typename PointCloudIn::ConstPtr surface, pcl::PointCloud<Normal>::ConstPtr normals, PointCloudOut &corners) const
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT> void
+pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOut &corners) const
 {
   std::vector<int> nn_indices;
   std::vector<float> nn_dists;
-  pcl::search::KdTree<PointInT> search;
-  search.setInputCloud(surface);
-
-  float sumSqr[15];
-  float diff;
-  const unsigned max_iterations = 10;
-  for (typename PointCloudOut::iterator cornerIt = corners.begin(); cornerIt != corners.end(); ++cornerIt)
-  {
-    unsigned iterations = 0;
-    do {
-      memset (sumSqr, 0, sizeof(float) * 15);
-      PointInT corner;
-      corner.x = cornerIt->x;
-      corner.y = cornerIt->y;
-      corner.z = cornerIt->z;
-      search.radiusSearch (corner, radius_, nn_indices, nn_dists);
-      for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
-      {
-        float a = normals->points[*iIt].normal_x * normals->points[*iIt].normal_x;
-        float b = normals->points[*iIt].normal_x * normals->points[*iIt].normal_y;
-        float c = normals->points[*iIt].normal_x * normals->points[*iIt].normal_z;
-        float d = normals->points[*iIt].normal_y * normals->points[*iIt].normal_y;
-        float e = normals->points[*iIt].normal_y * normals->points[*iIt].normal_z;
-        float f = normals->points[*iIt].normal_z * normals->points[*iIt].normal_z;
-        
-        sumSqr[0] += a;
-        sumSqr[1] += b;
-        sumSqr[2] += c;
-        sumSqr[3] += d;
-        sumSqr[4] += e;
-        sumSqr[5] += f;
-        sumSqr[6] += a * surface->points[*iIt].x + b * surface->points[*iIt].y + c * surface->points[*iIt].z;
-        sumSqr[7] += b * surface->points[*iIt].x + d * surface->points[*iIt].y + e * surface->points[*iIt].z;
-        sumSqr[8] += c * surface->points[*iIt].x + e * surface->points[*iIt].y + f * surface->points[*iIt].z;
-      }
-      
-      float det = invert3x3SymMatrix (sumSqr, sumSqr + 9);
-      if (det != 0)
-      {
-        cornerIt->x = sumSqr[ 9] * sumSqr[6] + sumSqr[10] * sumSqr[7] + sumSqr[11] * sumSqr[8];
-        cornerIt->y = sumSqr[10] * sumSqr[6] + sumSqr[12] * sumSqr[7] + sumSqr[13] * sumSqr[8];
-        cornerIt->z = sumSqr[11] * sumSqr[6] + sumSqr[13] * sumSqr[7] + sumSqr[14] * sumSqr[8];
-      }
-      diff = (cornerIt->x - corner.x) * (cornerIt->x - corner.x) +
-             (cornerIt->y - corner.y) * (cornerIt->y - corner.y) +
-             (cornerIt->z - corner.z) * (cornerIt->z - corner.z);
-    } while (diff > 1e-5 && ++iterations < max_iterations);
-  }
-}
-#else
-template <typename PointInT, typename PointOutT> void 
-pcl::HarrisKeypoint3D<PointInT, PointOutT>::refineCorners (typename PointCloudIn::ConstPtr surface, pcl::PointCloud<Normal>::ConstPtr normals, PointCloudOut &corners) const
-{
-  std::vector<int> nn_indices;
-  std::vector<float> nn_dists;
-  pcl::search::KdTree<PointInT> search;
-  search.setInputCloud(surface);
 
   Eigen::Matrix3f nnT;
   Eigen::Matrix3f NNT;
+  Eigen::Matrix3f NNTInv;
   Eigen::Vector3f NNTp;
   float diff;
   const unsigned max_iterations = 10;
-  for (typename PointCloudOut::iterator cornerIt = corners.begin(); cornerIt != corners.end(); ++cornerIt)
+  #pragma omp parallel for shared (corners) private (nnT, NNT, NNTInv, NNTp, diff, nn_indices, nn_dists) num_threads(threads_)
+  //for (typename PointCloudOut::iterator cornerIt = corners.begin(); cornerIt != corners.end(); ++cornerIt)
+  for (unsigned cIdx = 0; cIdx < corners.size (); ++cIdx)
   {
     unsigned iterations = 0;
     do {
       NNT.setZero();
       NNTp.setZero();
       PointInT corner;
-      corner.x = cornerIt->x;
-      corner.y = cornerIt->y;
-      corner.z = cornerIt->z;
-      search.radiusSearch (corner, radius_, nn_indices, nn_dists);
+      corner.x = corners[cIdx].x;
+      corner.y = corners[cIdx].y;
+      corner.z = corners[cIdx].z;
+      tree_->radiusSearch (corner, search_radius_, nn_indices, nn_dists);
       for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
       {
-        nnT = normals->points[*iIt].getNormalVector3fMap () * normals->points[*iIt].getNormalVector3fMap ().transpose();
+        if (!pcl_isfinite (normals_->points[*iIt].normal_x))
+          continue;
+
+        nnT = normals_->points[*iIt].getNormalVector3fMap () * normals_->points[*iIt].getNormalVector3fMap ().transpose();
         NNT += nnT;
-        NNTp += nnT * surface->points[*iIt].getVector3fMap ();
+        NNTp += nnT * surface_->points[*iIt].getVector3fMap ();
       }
-      if (NNT.determinant() != 0)
-        cornerIt->getVector3fMap () = NNT.inverse () * NNTp;
-      
-      diff = (cornerIt->x - corner.x) * (cornerIt->x - corner.x) +
-             (cornerIt->y - corner.y) * (cornerIt->y - corner.y) +
-             (cornerIt->z - corner.z) * (cornerIt->z - corner.z);
-    } while (diff > 1e-5 && ++iterations < max_iterations);
+      if (invert3x3SymMatrix (NNT, NNTInv) != 0)
+        corners[cIdx].getVector3fMap () = NNTInv * NNTp;
+
+      diff = (corners[cIdx].getVector3fMap () - corner.getVector3fMap()).squaredNorm ();
+//      diff = (cornerIt->x - corner.x) * (cornerIt->x - corner.x) +
+//             (cornerIt->y - corner.y) * (cornerIt->y - corner.y) +
+//             (cornerIt->z - corner.z) * (cornerIt->z - corner.z);
+    } while (diff > 1e-6 && ++iterations < max_iterations);
   }
 }
-#endif
-#define PCL_INSTANTIATE_HarrisKeypoint3D(T,U) template class PCL_EXPORTS pcl::HarrisKeypoint3D<T,U>;
 
+#define PCL_INSTANTIATE_HarrisKeypoint3D(T,U,N) template class PCL_EXPORTS pcl::HarrisKeypoint3D<T,U,N>;
 #endif // #ifndef PCL_HARRIS_KEYPOINT_3D_IMPL_H_
 

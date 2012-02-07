@@ -66,7 +66,7 @@ namespace pcl
       typedef pcl::PointCloud<PointOutT> PointCloudOut;
       typedef boost::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
       typedef boost::function<int (const PointCloudIn &cloud, int index, double, std::vector<int> &, std::vector<float> &)> SearchMethodSurface;
-    
+
     public:
       /** \brief Empty constructor. */
       Keypoint () : BaseClass(), surface_ (), tree_ (), search_parameter_ (0), search_radius_ (0), k_ (0) {};
@@ -74,53 +74,53 @@ namespace pcl
       /** \brief Provide a pointer to the input dataset that we need to estimate features at every point for.
         * \param cloud the const boost shared pointer to a PointCloud message
         */
-      inline void
+      virtual void
       setSearchSurface (const PointCloudInConstPtr &cloud) { surface_ = cloud; }
 
       /** \brief Get a pointer to the surface point cloud dataset. */
-      inline PointCloudInConstPtr 
+      inline PointCloudInConstPtr
       getSearchSurface () { return (surface_); }
 
       /** \brief Provide a pointer to the search object.
         * \param tree a pointer to the spatial search object.
         */
-      inline void 
+      inline void
       setSearchMethod (const KdTreePtr &tree) { tree_ = tree; }
 
       /** \brief Get a pointer to the search method used. */
-      inline KdTreePtr 
+      inline KdTreePtr
       getSearchMethod () { return (tree_); }
 
       /** \brief Get the internal search parameter. */
-      inline double 
+      inline double
       getSearchParameter () { return (search_parameter_); }
 
       /** \brief Set the number of k nearest neighbors to use for the feature estimation.
         * \param k the number of k-nearest neighbors
         */
-      inline void 
+      inline void
       setKSearch (int k) { k_ = k; }
 
       /** \brief get the number of k nearest neighbors used for the feature estimation. */
-      inline int 
+      inline int
       getKSearch () { return (k_); }
 
       /** \brief Set the sphere radius that is to be used for determining the nearest neighbors used for the
        *         key point detection
         * \param radius the sphere radius used as the maximum distance to consider a point a neighbor
         */
-      inline void 
+      inline void
       setRadiusSearch (double radius) { search_radius_ = radius; }
 
       /** \brief Get the sphere radius used for determining the neighbors. */
-      inline double 
+      inline double
       getRadiusSearch () { return (search_radius_); }
 
       /** \brief Base method for key point detection for all points given in <setInputCloud (), setIndices ()> using
         * the surface in setSearchSurface () and the spatial locator in setSearchMethod ()
         * \param output the resultant point cloud model dataset containing the estimated features
         */
-      inline void 
+      inline void
       compute (PointCloudOut &output);
 
       /** \brief Search for k-nearest neighbors using the spatial locator from \a setSearchmethod, and the given surface
@@ -171,11 +171,11 @@ namespace pcl
       int k_;
 
       /** \brief Get a string representation of the name of this class. */
-      inline const std::string& 
+      inline const std::string&
       getClassName () const { return (name_); }
-      
+
       /** \brief Abstract key point detection method. */
-      virtual void 
+      virtual void
       detectKeypoints (PointCloudOut &output) = 0;
   };
 }
