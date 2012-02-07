@@ -60,7 +60,7 @@ namespace pcl
     * \author Aitor Aldoma
     * \ingroup features
     */
-  template<typename PointInT, typename PointNT, typename PointOutT>
+  template<typename PointInT, typename PointNT, typename PointOutT = pcl::VFHSignature308>
   class CVFHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:

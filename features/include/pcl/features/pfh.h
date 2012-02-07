@@ -97,7 +97,7 @@ namespace pcl
     * \author Radu B. Rusu
     * \ingroup features
     */
-  template <typename PointInT, typename PointNT, typename PointOutT>
+  template <typename PointInT, typename PointNT, typename PointOutT = pcl::PFHSignature125>
   class PFHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:

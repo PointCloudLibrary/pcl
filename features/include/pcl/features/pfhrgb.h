@@ -48,7 +48,7 @@ namespace pcl
                           float &f1, float &f2, float &f3, float &f4, float &f5, float &f6, float &f7);
 
 
-  template <typename PointInT, typename PointNT, typename PointOutT>
+  template <typename PointInT, typename PointNT, typename PointOutT = pcl::PFHRGBSignature250>
   class PFHRGBEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:

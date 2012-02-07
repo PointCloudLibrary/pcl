@@ -47,6 +47,8 @@ namespace pcl
   /** \brief SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for 
     * a given point cloud dataset containing points and normals.
     *
+    * The suggested PointOutT is pcl::SHOT.
+    *
     * \note If you use this code in any academic work, please cite:
     *
     *   - F. Tombari, S. Salti, L. Di Stefano
@@ -61,7 +63,7 @@ namespace pcl
     * \author Samuele Salti, Federico Tombari
     * \ingroup features
     */
-  template <typename PointInT, typename PointNT, typename PointOutT> 
+  template <typename PointInT, typename PointNT, typename PointOutT = pcl::SHOT> 
   class SHOTEstimationBase : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:

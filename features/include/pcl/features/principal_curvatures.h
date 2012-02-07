@@ -49,13 +49,15 @@ namespace pcl
   /** \brief PrincipalCurvaturesEstimation estimates the directions (eigenvectors) and magnitudes (eigenvalues) of
     * principal surface curvatures for a given point cloud dataset containing points and normals.
     *
+    * The recommended PointOutT is pcl::PrincipalCurvatures.
+    *
     * \note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
     * \ref NormalEstimationOMP for an example on how to extend this to parallel implementations.
     *
     * \author Radu B. Rusu, Jared Glover
     * \ingroup features
     */
-  template <typename PointInT, typename PointNT, typename PointOutT>
+  template <typename PointInT, typename PointNT, typename PointOutT = pcl::PrincipalCurvatures>
   class PrincipalCurvaturesEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
