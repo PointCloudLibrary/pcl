@@ -93,6 +93,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::setNormals (boost::shared_p
 template <typename PointInT, typename PointOutT, typename NormalT> void
 pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::calculateNormalCovar (const std::vector<int>& neighbors, float* coefficients) const
 {
+  unsigned count = 0;
   // indices        0   1   2   3   4   5   6   7
   // coefficients: xx  xy  xz  ??  yx  yy  yz  ??
 #ifdef HAVE_SSE_EXTENSIONS
@@ -106,7 +107,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::calculateNormalCovar (const
   __m128 norm2;
 
   float zz = 0;
-  unsigned count = 0;
+
   for (std::vector<int>::const_iterator iIt = neighbors.begin(); iIt != neighbors.end(); ++iIt)
   {
     if (pcl_isfinite (normals_->points[*iIt].normal_x))
@@ -149,7 +150,6 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::calculateNormalCovar (const
     memset (coefficients, 0, sizeof (float) * 8);
 #else
   memset (coefficients, 0, sizeof (float) * 8);
-  count = 0;
   for (std::vector<int>::const_iterator iIt = neighbors.begin(); iIt != neighbors.end(); ++iIt)
   {
     if (pcl_isfinite (normals_->points[*iIt].normal_x))
