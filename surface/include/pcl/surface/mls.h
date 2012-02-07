@@ -55,7 +55,7 @@ namespace pcl
 {
   /** \brief MovingLeastSquares represent an implementation of the MLS (Moving Least Squares) algorithm for data
     * smoothing and improved normal estimation.
-    * \author Zoltan Csaba Marton, Radu B. Rusu, Suat Gedikli
+    * \author Zoltan Csaba Marton, Radu B. Rusu, Alexandru-Eugen Ichim, Suat Gedikli
     * \ingroup surface
     */
   template <typename PointInT, typename NormalOutT>
@@ -81,7 +81,7 @@ namespace pcl
 
       typedef boost::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
 
-      enum UpsamplingMethod { NONE, SAMPLE_LOCAL_PLANE, UNIFORM_DENSITY };
+      enum UpsamplingMethod { NONE, SAMPLE_LOCAL_PLANE, UNIFORM_DENSITY, FILL_HOLES };
 
       /** \brief Empty constructor. */
       MovingLeastSquares () : PCLBase<PointInT> (),
@@ -93,7 +93,8 @@ namespace pcl
                               upsample_method_ (NONE),
                               upsampling_radius_ (0.0),
                               upsampling_step_ (0.0),
-                              point_density_ (0.0)
+                              desired_num_points_in_radius_ (0),
+                              filling_step_size_ (0.0)
                               {};
 
       /** \brief Provide a pointer to a point cloud where normal information should be saved
@@ -175,7 +176,10 @@ namespace pcl
       setUpsamplingStepSize (double step_size) { upsampling_step_ = step_size; }
 
       inline void
-      setPointDensity (double density) { point_density_ = density; }
+      setPointDensity (int desired_num_points_in_radius) { desired_num_points_in_radius_ = desired_num_points_in_radius; }
+
+      inline void
+      setFillingStepSize (double filling_step_size) { filling_step_size_ = filling_step_size; }
 
       /** \brief Base method for surface reconstruction for all points given in <setInputCloud (), setIndices ()>
         * \param[out] output the resultant reconstructed surface model
@@ -205,12 +209,19 @@ namespace pcl
       /** \brief Parameter for distance based weighting of neighbors (search_radius_ * search_radius_ works fine) */
       double sqr_gauss_param_;
 
+
+
       UpsamplingMethod upsample_method_;
       double upsampling_radius_;
       double upsampling_step_;
 
       boost::variate_generator<boost::mt19937, boost::uniform_real<float> > *rng_uniform_distribution_;
-      double point_density_;
+      int desired_num_points_in_radius_;
+
+
+      double filling_step_size_;
+
+
 
       /** \brief Number of coefficients, to be computed from the requested order.*/
       int nr_coeff_;
@@ -241,6 +252,17 @@ namespace pcl
                              PointCloudIn &projected_points,
                              NormalCloudOut &projected_points_normals);
 
+      void
+      projectPointToMLSSurface (float &u_disp, float &v_disp,
+                                Eigen::Vector3d &u, Eigen::Vector3d &v,
+                                Eigen::Vector3d &plane_normal,
+                                float &curvature,
+                                Eigen::Vector3f &query_point,
+                                Eigen::VectorXd &c_vec,
+                                int num_neighbors,
+                                PointInT &result_point,
+                                NormalOutT &result_normal);
+
     private:
       /** \brief Abstract surface reconstruction method. 
         * \param[out] output the result of the reconstruction 
@@ -252,4 +274,4 @@ namespace pcl
   };
 }
 
-#endif  //#ifndef PCL_MLS_H_
+#endif  /* #ifndef PCL_MLS_H_ */
