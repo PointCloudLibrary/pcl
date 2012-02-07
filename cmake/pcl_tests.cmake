@@ -23,7 +23,11 @@ if(NOT ${DEFAULT} AND NOT ${BUILD_TESTS})
 elseif(NOT ${BUILD_TESTS})
     message(STATUS "Tests will not be built: Disabled manually")
 else(NOT ${DEFAULT} AND NOT ${BUILD_TESTS})
-    message(STATUS "Tests will be built")
+    if(GTEST_FOUND)
+        message(STATUS "Tests will be built")
+    else(GTEST_FOUND)
+        set (BUILD_TESTS OFF CACHE BOOL "Tests can not be built!" FORCE)
+    endif(GTEST_FOUND)
 endif(NOT ${DEFAULT} AND NOT ${BUILD_TESTS})
 
 # Set up for testing if tests are enabled
