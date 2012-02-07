@@ -220,55 +220,55 @@ namespace pcl
       }
       
       ////////////////////////////////////////////////////////////////////////////////////////
-      /** \brief Obtain the point given by the (u, v) coordinates. Only works on organized 
+      /** \brief Obtain the point given by the (column, row) coordinates. Only works on organized 
         * datasets (those that have height != 1).
-        * \param[in] u the u coordinate
-        * \param[in] v the v coordinate
+        * \param[in] column the column coordinate
+        * \param[in] row the row coordinate
         */
       inline const PointT&
-      at (int u, int v) const
+      at (int column, int row) const
       {
         if (this->height > 1)
-          return (points.at (v * this->width + u));
+          return (points.at (row * this->width + column));
         else
           throw IsNotDenseException ("Can't use 2D indexing with a unorganized point cloud");
       }
 
-      /** \brief Obtain the point given by the (u, v) coordinates. Only works on organized 
+      /** \brief Obtain the point given by the (column, row) coordinates. Only works on organized 
         * datasets (those that have height != 1).
-        * \param[in] u the u coordinate
-        * \param[in] v the v coordinate
+        * \param[in] column the column coordinate
+        * \param[in] row the row coordinate
         */
       inline PointT&
-      at (int u, int v)
+      at (int column, int row)
       {
         if (this->height > 1)
-          return (points.at (v * this->width + u));
+          return (points.at (row * this->width + column));
         else
           throw IsNotDenseException ("Can't use 2D indexing with a unorganized point cloud");
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
-      /** \brief Obtain the point given by the (u, v) coordinates. Only works on organized 
+      /** \brief Obtain the point given by the (column, row) coordinates. Only works on organized 
         * datasets (those that have height != 1).
-        * \param[in] u the u coordinate
-        * \param[in] v the v coordinate
+        * \param[in] column the column coordinate
+        * \param[in] row the row coordinate
         */
       inline const PointT&
-      operator () (int u, int v) const
+      operator () (int column, int row) const
       {
-        return (points[v * this->width + u]);
+        return (points[row * this->width + column]);
       }
 
-      /** \brief Obtain the point given by the (u, v) coordinates. Only works on organized 
+      /** \brief Obtain the point given by the (column, row) coordinates. Only works on organized 
         * datasets (those that have height != 1).
-        * \param[in] u the u coordinate
-        * \param[in] v the v coordinate
+        * \param[in] column the column coordinate
+        * \param[in] row the row coordinate
         */
       inline PointT&
-      operator () (int u, int v)
+      operator () (int column, int row)
       {
-        return (points[v * this->width + u]);
+        return (points[row * this->width + column]);
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
@@ -710,30 +710,30 @@ namespace pcl
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
-      /** \brief Obtain the point given by the (u, v) coordinates. Only works on organized 
+      /** \brief Obtain the point given by the (column, row) coordinates. Only works on organized 
         * datasets (those that have height != 1).
-        * \param[in] u the u coordinate
-        * \param[in] v the v coordinate
+        * \param[in] column the column coordinate
+        * \param[in] row the row coordinate
         */
       inline Eigen::Map<Eigen::VectorXf>
-      at (int u, int v)
+      at (int column, int row)
       {
         if (height > 1)
-          return (Eigen::VectorXf::Map (&points (v * width + u, 0), points.cols ()));
+          return (Eigen::VectorXf::Map (&points (row * width + column, 0), points.cols ()));
         else
           throw IsNotDenseException ("Can't use 2D indexing with a unorganized point cloud");
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
-      /** \brief Obtain the point given by the (u, v) coordinates. Only works on organized 
+      /** \brief Obtain the point given by the (column, row) coordinates. Only works on organized 
         * datasets (those that have height != 1).
-        * \param[in] u the u coordinate
-        * \param[in] v the v coordinate
+        * \param[in] column the column coordinate
+        * \param[in] row the row coordinate
         */
       inline Eigen::Map<Eigen::VectorXf>
-      operator () (int u, int v) 
+      operator () (int column, int row) 
       {
-        return (Eigen::VectorXf::Map (&points (v * width + u, 0), points.cols ()));
+        return (Eigen::VectorXf::Map (&points (row * width + column, 0), points.cols ()));
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
