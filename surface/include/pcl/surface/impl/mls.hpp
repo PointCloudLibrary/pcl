@@ -266,7 +266,7 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (int index,
     case (UNIFORM_DENSITY):
     {
       // Compute the local point density and add more samples if necessary
-      int num_points_to_add = (int) floor (desired_num_points_in_radius_/2 / nn_indices.size ());
+      int num_points_to_add = (int) floor (desired_num_points_in_radius_/2.0 / nn_indices.size ());
 
       // Just add the query point, because the density is good
       if (num_points_to_add <= 0)
