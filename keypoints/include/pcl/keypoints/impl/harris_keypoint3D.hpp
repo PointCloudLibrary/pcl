@@ -46,6 +46,7 @@
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/common/time.h>
 #include <pcl/common/centroid.h>
+#include <xmmintrin.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT> void
