@@ -42,6 +42,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/surface/mls.h>
+#include <pcl/filters/voxel_grid.h>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -89,8 +90,20 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
          bool use_polynomial_fit, int polynomial_order)
 {
 
-  PointCloud<PointXYZ>::Ptr xyz_cloud (new pcl::PointCloud<PointXYZ> ());
-  fromROSMsg (*input, *xyz_cloud);
+  PointCloud<PointXYZ>::Ptr xyz_cloud_pre (new pcl::PointCloud<PointXYZ> ()),
+      xyz_cloud (new pcl::PointCloud<PointXYZ> ());
+  fromROSMsg (*input, *xyz_cloud_pre);
+
+  // Filter the NaNs from the cloud
+  for (size_t i = 0; i < xyz_cloud_pre->size (); ++i)
+    if (pcl_isfinite (xyz_cloud_pre->points[i].x))
+      xyz_cloud->push_back (xyz_cloud_pre->points[i]);
+  xyz_cloud->header = xyz_cloud_pre->header;
+  xyz_cloud->height = 1;
+  xyz_cloud->width = xyz_cloud->size ();
+  xyz_cloud->is_dense = false;
+
+//  io::savePCDFile ("test.pcd", *xyz_cloud);
 
   PointCloud<PointXYZ>::Ptr xyz_cloud_smoothed (new PointCloud<PointXYZ> ());
 
@@ -100,6 +113,15 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   if (sqr_gauss_param_set) mls.setSqrGaussParam (sqr_gauss_param);
   mls.setPolynomialFit (use_polynomial_fit);
   mls.setPolynomialOrder (polynomial_order);
+
+//  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, Normal>::SAMPLE_LOCAL_PLANE);
+  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, Normal>::UNIFORM_DENSITY);
+//  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, Normal>::FILL_HOLES);
+//  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, Normal>::NONE);
+  mls.setFillingStepSize (0.02);
+  mls.setPointDensity (50000*search_radius); // 300 points in a 5 cm radius
+  mls.setUpsamplingRadius (0.025);
+  mls.setUpsamplingStepSize (0.015);
 
   search::KdTree<PointXYZ>::Ptr tree (new search::KdTree<PointXYZ> ());
   mls.setSearchMethod (tree);
@@ -111,14 +133,25 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   TicToc tt;
   tt.tic ();
   mls.reconstruct (*xyz_cloud_smoothed);
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", xyz_cloud_smoothed->width * xyz_cloud_smoothed->height); print_info (" points]\n");
 
-  sensor_msgs::PointCloud2 output_positions, output_normals, output_positions_normals;
+  sensor_msgs::PointCloud2 output_positions, output_normals;
+//  printf ("sizes: %d %d   %d\n", xyz_cloud_smoothed->width, xyz_cloud_smoothed->height, xyz_cloud_smoothed->size ());
   toROSMsg (*xyz_cloud_smoothed, output_positions);
   toROSMsg (*mls_normals, output_normals);
 
-  concatenateFields (output_positions, output_normals, output_positions_normals);
-  concatenateFields (*input, output_positions_normals, output);
+  concatenateFields (output_positions, output_normals, output);
+
+
+  PointCloud<PointXYZ> xyz_vg;
+  VoxelGrid<PointXYZ> vg;
+  vg.setInputCloud (xyz_cloud_smoothed);
+  vg.setLeafSize (0.005, 0.005, 0.005);
+  vg.filter (xyz_vg);
+  sensor_msgs::PointCloud2 xyz_vg_2;
+  toROSMsg (xyz_vg, xyz_vg_2);
+  pcl::io::savePCDFile ("cloud_vg.pcd", xyz_vg_2,  Eigen::Vector4f::Zero (),
+                        Eigen::Quaternionf::Identity (), true);
 }
 
 void
@@ -129,7 +162,8 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
 
   print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
 
-  pcl::io::savePCDFile (filename, output);
+  pcl::io::savePCDFile (filename, output,  Eigen::Vector4f::Zero (),
+                        Eigen::Quaternionf::Identity (), true);
 
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }
@@ -182,4 +216,3 @@ main (int argc, char** argv)
   // Save into the second file
   saveCloud (argv[p_file_indices[1]], output);
 }
-

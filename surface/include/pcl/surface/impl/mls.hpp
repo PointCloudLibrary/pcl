@@ -324,24 +324,34 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (int index,
     {
       // Take all point pairs and sample space between them in a grid-fashion
       // \note consider only point pairs with increasing indices
-      for (size_t p1_i = 0; p1_i < nn_indices.size (); ++p1_i)
-        for (size_t p2_i = 0; p2_i < nn_indices.size (); ++p2_i)
+      int count = 0;
+
+      for (size_t p1_i = 0; p1_i < nn_indices.size (); p1_i += 40)
+      {
+        PointInT p1 = input_->points[nn_indices[p1_i]];
+        for (size_t p2_i = 0; p2_i < nn_indices.size (); p2_i += 40)
           if (nn_indices[p1_i] < nn_indices[p2_i])
           {
-            PointInT p1 = input_->points[nn_indices[p1_i]],
-                     p2 = input_->points[nn_indices[p2_i]];
-
+            PointInT p2 = input_->points[nn_indices[p2_i]];
 
             // Sample in between with filling_step_size_ steps
             int x_dir, y_dir, z_dir;
-            do {
-              x_dir = (p1.x - p2.x >= filling_step_size_) ? 1 : ((p2.x - p1.x >= filling_step_size_) ? -1 : 0);
-              y_dir = (p1.y - p2.y >= filling_step_size_) ? 1 : ((p2.y - p1.y >= filling_step_size_) ? -1 : 0);
-              z_dir = (p1.z - p2.z >= filling_step_size_) ? 1 : ((p2.z - p1.z >= filling_step_size_) ? -1 : 0);
+            while (1)
+            {
+              x_dir = (p1.x - p2.x >= filling_step_size_) ? -1 : ((p2.x - p1.x >= filling_step_size_) ? 1 : 0);
+              y_dir = (p1.y - p2.y >= filling_step_size_) ? -1 : ((p2.y - p1.y >= filling_step_size_) ? 1 : 0);
+              z_dir = (p1.z - p2.z >= filling_step_size_) ? -1 : ((p2.z - p1.z >= filling_step_size_) ? 1 : 0);
+
+              if (x_dir == 0 && y_dir == 0 && z_dir == 0)
+                break;
 
               Eigen::Vector3f hole_point (p1.x + x_dir * filling_step_size_,
                                           p1.y + y_dir * filling_step_size_,
                                           p1.z + z_dir * filling_step_size_);
+              p1.x = hole_point[0];
+              p1.y = hole_point[1];
+              p1.z = hole_point[2];
+
               float u_disp = (hole_point - point).dot (u.cast<float> ()),
                     v_disp = (hole_point - point).dot (v.cast<float> ());
 
@@ -352,9 +362,12 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (int index,
 
               projected_points.push_back (projected_point);
               projected_points_normals.push_back (projected_normal);
-            } while ((x_dir != 0) || (y_dir != 0) || (z_dir != 0));
+              count ++;
+            }
           }
+      }
 
+//      printf ("Got %d additional points\n", count);
 
       // And then add the query point itself
       Eigen::Vector3d normal = plane_normal;
@@ -480,20 +493,10 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
   }
 
   // Set proper widths and heights for the clouds
-  if (upsample_method_ == NONE && fake_indices_)
-  {
-    normals_->width = input_->width;
-    normals_->height = input_->height;
-    output.width = input_->width;
-    output.height = input_->height;
-  }
-  else
-  {
-    normals_->height = 1;
-    normals_->width = normals_->size ();
-    output.height = 1;
-    output.width = output.size ();
-  }
+  normals_->height = 1;
+  normals_->width = normals_->size ();
+  output.height = 1;
+  output.width = output.size ();
 }
 
 #define PCL_INSTANTIATE_MovingLeastSquares(T,OutT) template class PCL_EXPORTS pcl::MovingLeastSquares<T,OutT>;
