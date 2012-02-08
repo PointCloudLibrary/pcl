@@ -41,11 +41,16 @@
 using namespace pcl::gpu;
 using namespace std;
 
+const float Evaluation::fx = 525.0f;
+const float Evaluation::fy = 525.0f;
+const float Evaluation::cx = 319.5f;
+const float Evaluation::cy = 239.5f;
+
 #ifndef HAVE_OPENCV
 
 struct Evaluation::Impl {};
 
-Evaluation::Evaluation(const std::string&) : fx(0.f), fy(0.f), cx(0.f), cy(0.f) { cout << "Evaluation requires OpenCV. Please enable it in cmake-file" << endl; exit(0); }
+Evaluation::Evaluation(const std::string&) { cout << "Evaluation requires OpenCV. Please enable it in cmake-file" << endl; exit(0); }
 bool Evaluation::grab (double stamp, pcl::gpu::PtrStepSz<const RGB>& rgb24) { return false; }
 bool Evaluation::grab (double stamp, pcl::gpu::PtrStepSz<const unsigned short>& depth) { return false; }
 bool Evaluation::grab (double stamp, pcl::gpu::PtrStepSz<const unsigned short>& depth, pcl::gpu::PtrStepSz<const RGB>& rgb24) { return false; }
@@ -65,10 +70,7 @@ struct Evaluation::Impl
    Mat rgb_buffer;
 };
 
-const float Evaluation::fx = 525.0f;
-const float Evaluation::fy = 525.0f;
-const float Evaluation::cx = 319.5f;
-const float Evaluation::cy = 239.5f;
+
 
 Evaluation::Evaluation(const std::string& folder) : folder_(folder), visualization_(false)
 {   
