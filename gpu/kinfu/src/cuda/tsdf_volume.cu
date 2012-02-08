@@ -90,7 +90,7 @@ namespace pcl
       };
 
       mutable PtrStep<short2> volume;
-      float3 volume_size;
+      float3 cell_size;
 
       Intr intr;
 
@@ -107,9 +107,9 @@ namespace pcl
         float3 coo = make_float3 (x, y, z);
         coo += 0.5f;         //shift to cell center;
 
-        coo.x *= volume_size.x / VOLUME_X;
-        coo.y *= volume_size.y / VOLUME_Y;
-        coo.z *= volume_size.z / VOLUME_Z;
+        coo.x *= cell_size.x;
+        coo.y *= cell_size.y;
+        coo.z *= cell_size.z;
 
         return coo;
       }
@@ -180,7 +180,7 @@ namespace pcl
     }
 
     __global__ void
-    tsdf2 (PtrStep<short2> volume, const float3 volume_size, const float tranc_dist_mm, const Mat33 Rcurr_inv, float3 tcurr,
+    tsdf2 (PtrStep<short2> volume, const float tranc_dist_mm, const Mat33 Rcurr_inv, float3 tcurr,
            const Intr intr, const PtrStepSz<ushort> depth_raw, const float3 cell_size)
     {
       int x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -265,9 +265,11 @@ pcl::device::integrateTsdfVolume (const PtrStepSz<ushort>& depth_raw, const Intr
 {
   Tsdf tsdf;
 
-  tsdf.volume = volume;
-  tsdf.volume_size = volume_size;
-
+  tsdf.volume = volume;  
+  tsdf.cell_size.x = volume_size.x / VOLUME_X;
+  tsdf.cell_size.y = volume_size.y / VOLUME_Y;
+  tsdf.cell_size.z = volume_size.z / VOLUME_Z;
+  
   tsdf.intr = intr;
 
   tsdf.Rcurr_inv = Rcurr_inv;
@@ -280,13 +282,8 @@ pcl::device::integrateTsdfVolume (const PtrStepSz<ushort>& depth_raw, const Intr
   dim3 grid (divUp (VOLUME_X, block.x), divUp (VOLUME_Y, block.y));
 
 #if 0
-  //float3 cell_size;
-  //cell_size.x = volume_size.x / VOLUME_X;
-  //cell_size.y = volume_size.y / VOLUME_Y;
-  //cell_size.z = volume_size.z / VOLUME_Z;
-  //tsdf2<<<grid, block>>>(volume, volume_size, tranc_dist, Rcurr_inv, tcurr, intr, depth_raw, cell_size);
-  else
-    integrateTsdfKernel<<<grid, block>>>(tsdf);
+   //tsdf2<<<grid, block>>>(volume, tranc_dist, Rcurr_inv, tcurr, intr, depth_raw, tsdf.cell_size);
+   integrateTsdfKernel<<<grid, block>>>(tsdf);
 #endif
   cudaSafeCall ( cudaGetLastError () );
   cudaSafeCall (cudaDeviceSynchronize ());
