@@ -1066,16 +1066,36 @@ namespace pcl
     return (sqrtf (squaredEuclideanDistance (p1, p2)));
   }
 
+  /** Tests if the 3D components of a point are all finite
+    * param[in] pt point to be tested
+    */
   template <typename PointT> inline bool
   isFinite (const PointT &pt)
   {
     return (pcl_isfinite (pt.x) && pcl_isfinite (pt.y) && pcl_isfinite (pt.z));
   }
 
+  // specification for pcl::Normal
   template <> inline bool
   isFinite<pcl::Normal> (const pcl::Normal &n)
   {
     return (pcl_isfinite (n.normal_x) && pcl_isfinite (n.normal_y) && pcl_isfinite (n.normal_z));
+  }
+
+  /** Fast version of isFinite tests only the first component
+    * param[in] pt point to be tested
+    */
+  template <typename PointT> inline bool
+  isFiniteFast (const PointT& pt)
+  {
+    return (pcl_isfinite (pt.x));
+  }
+
+  // specification for pcl::Normal
+  template <> inline bool
+  isFiniteFast<pcl::Normal> (const pcl::Normal& n)
+  {
+    return (pcl_isfinite (n.normal_x));
   }
 } // End namespace
 
