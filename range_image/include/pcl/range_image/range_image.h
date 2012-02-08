@@ -134,7 +134,8 @@ namespace pcl
         * \param angular_resolution the angle between each sample in the depth image
         * \param max_angle_width an angle defining the horizontal bounds of the sensor
         * \param max_angle_height an angle defining the vertical bounds of the sensor
-        * \param sensor_pose an affine matrix defining the pose of the sensor
+        * \param sensor_pose an affine matrix defining the pose of the sensor (defaults to
+        *                    Eigen::Affine3f::Identity() )
         * \param coordinate_frame the coordinate frame (defaults to CAMERA_FRAME)
         * \param noise_level - The distance in meters inside of which the z-buffer will not use the minimum,
         *                      but the mean of the points. If 0.0 it is equivalent to a normal z-buffer and
@@ -144,7 +145,7 @@ namespace pcl
         */
       template <typename PointCloudType> void
       createFromPointCloud (const PointCloudType& point_cloud, float angular_resolution, float max_angle_width,
-                            float max_angle_height, const Eigen::Affine3f& sensor_pose,
+                            float max_angle_height, const Eigen::Affine3f& sensor_pose = Eigen::Affine3f::Identity(),
                             CoordinateFrame coordinate_frame=CAMERA_FRAME, float noise_level=0.0f,
                             float min_range=0.0f, int border_size=0);
   
@@ -154,7 +155,8 @@ namespace pcl
         * \param angular_resolution the angle between each sample in the depth image
         * \param point_cloud_center the center of bounding sphere
         * \param point_cloud_radius the radius of the bounding sphere
-        * \param sensor_pose an affine matrix defining the pose of the sensor
+        * \param sensor_pose an affine matrix defining the pose of the sensor (defaults to
+        *                     Eigen::Affine3f::Identity() )
         * \param coordinate_frame the coordinate frame (defaults to CAMERA_FRAME)
         * \param noise_level - The distance in meters inside of which the z-buffer will not use the minimum,
         *                      but the mean of the points. If 0.0 it is equivalent to a normal z-buffer and
@@ -165,7 +167,7 @@ namespace pcl
       template <typename PointCloudType> void
       createFromPointCloudWithKnownSize (const PointCloudType& point_cloud, float angular_resolution,
                                          const Eigen::Vector3f& point_cloud_center, float point_cloud_radius,
-                                         const Eigen::Affine3f& sensor_pose,
+                                         const Eigen::Affine3f& sensor_pose = Eigen::Affine3f::Identity(),
                                          CoordinateFrame coordinate_frame=CAMERA_FRAME,
                                          float noise_level=0.0f, float min_range=0.0f, int border_size=0);
       
@@ -192,7 +194,7 @@ namespace pcl
 
       /** \brief Create an empty depth image (filled with unobserved points)
         * \param[in] angular_resolution the angle between each sample in the depth image
-        * \param[in] sensor_pose an affine matrix defining the pose of the sensor (defaults to Identity)
+        * \param[in] sensor_pose an affine matrix defining the pose of the sensor (defaults to  Eigen::Affine3f::Identity() )
         * \param[in] coordinate_frame the coordinate frame (defaults to CAMERA_FRAME)
         * \param[in] angle_width an angle defining the horizontal bounds of the sensor (defaults to full 360deg)
         * \param[in] angle_height an angle defining the vertical bounds of the sensor (defaults to full 180deg)
