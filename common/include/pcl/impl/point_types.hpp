@@ -115,12 +115,6 @@
 namespace pcl
 {
 
-  template <typename PointT> inline bool
-  isFinite (const PointT &pt)
-  {
-    return (pcl_isfinite (pt.x) && pcl_isfinite (pt.y) && pcl_isfinite (pt.z));
-  }
-
 #define PCL_ADD_POINT4D \
   EIGEN_ALIGN16 \
   union { \
@@ -270,7 +264,7 @@ namespace pcl
   
   struct Label
   {
-    uint32_t label;  	
+    uint32_t label;   
   };
   
   inline std::ostream& operator << (std::ostream& os, const Label& p)
@@ -1072,6 +1066,17 @@ namespace pcl
     return (sqrtf (squaredEuclideanDistance (p1, p2)));
   }
 
+  template <typename PointT> inline bool
+  isFinite (const PointT &pt)
+  {
+    return (pcl_isfinite (pt.x) && pcl_isfinite (pt.y) && pcl_isfinite (pt.z));
+  }
+
+  template <> inline bool
+  isFinite<pcl::Normal> (const pcl::Normal &n)
+  {
+    return (pcl_isfinite (n.normal_x) && pcl_isfinite (n.normal_y) && pcl_isfinite (n.normal_z));
+  }
 } // End namespace
 
 #endif

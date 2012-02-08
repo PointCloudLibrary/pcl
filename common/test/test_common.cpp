@@ -112,6 +112,17 @@ TEST (PCL, PointXYZRGBNormal)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST(PCL, isFinite)
+{
+  PointXYZ p;
+  p.x = std::numeric_limits<float>::quiet_NaN ();
+  EXPECT_EQ (isFinite (p), false);
+  Normal n;
+  n.normal_x = std::numeric_limits<float>::quiet_NaN ();
+  EXPECT_EQ (isFinite (n), false);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, Common)
 {
   PointXYZ p1, p2, p3;
