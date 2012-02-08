@@ -61,7 +61,7 @@ printHelp (int argc, char **argv)
   print_value ("%f", default_leaf_size); print_info (")\n");
   print_info ("                     -iso X     = the iso level (default: ");
   print_value ("%f", default_iso_level); print_info (")\n");
-  print_info ("                     -dot X     = use the voxelization algorithm combined with a dot product (i.e. MarchingCubesGreedy vs. MarchingCubesGreedyDot (default: ");
+  print_info ("                     -dot X     = use the voxelization algorithm combined with a dot product (i.e. MarchingCubesGreedy vs. MarchingCubesGreedyDot) (default: ");
   print_value ("%d", default_use_dot); print_info (")\n");
 }
 

@@ -87,10 +87,23 @@ compute (const PointCloud<PointNormal>::Ptr &input, pcl::PolygonMesh &output,
   
   print_highlight (stderr, "Computing ");
 
+
+  PointCloud<PointNormal>::Ptr cloud (new PointCloud<PointNormal> ());
+  for (size_t i = 0; i < cloud->size (); ++i)
+    if (pcl_isfinite (input->points[i].x))
+      cloud->push_back (input->points[i]);
+
+  cloud->width = cloud->size ();
+  cloud->height = 1;
+  cloud->is_dense = false;
+
+
   GreedyProjectionTriangulation<PointNormal> gpt;
-  gpt.setInputCloud (input);
+  gpt.setSearchMethod (pcl::search::KdTree<pcl::PointNormal>::Ptr (new pcl::search::KdTree<pcl::PointNormal>));
+  gpt.setInputCloud (cloud);
   gpt.setSearchRadius (radius);
   gpt.setMu (mu);
+
 
   gpt.reconstruct (output);
 
