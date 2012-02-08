@@ -53,11 +53,25 @@ public:
 
   Evaluation(const std::string& folder);
 
+  /** \brief Sets file with matches between depth and rgb */
+  void setMatchFile(const std::string& file);
+
+  /** \brief Reads rgb frame from the folder   
+    * \param stamp index of frame to read (stamps are not implemented)
+    */
   bool grab (double stamp, pcl::gpu::PtrStepSz<const RGB>& rgb24);
+
+  /** \brief Reads depth frame from the folder
+    * \param stamp index of frame to read (stamps are not implemented)
+    */
   bool grab (double stamp, pcl::gpu::PtrStepSz<const unsigned short>& depth);
+
+  /** \brief Reads depth & rgb frame from the folder. Before calling this folder please call 'setMatchFile', or an error will be returned otherwise.
+    * \param stamp index of accociated frame pair (stamps are not implemented)
+    */
   bool grab (double stamp, pcl::gpu::PtrStepSz<const unsigned short>& depth, pcl::gpu::PtrStepSz<const RGB>& rgb24);
 
-  const float fx, fy, cx, cy;
+  const static float fx, fy, cx, cy;
 
 
   void saveAllPoses(const pcl::gpu::KinfuTracker& kinfu, int frame_number = -1, const std::string& logfile = "kinfu_poses.txt") const;
@@ -68,6 +82,14 @@ private:
 
   std::vector< std::pair<double, std::string> > rgb_stamps_and_filenames_;
   std::vector< std::pair<double, std::string> > depth_stamps_and_filenames_;
+
+  struct Association
+  {
+    double time1, time2;
+    std::string name1, name2;
+  };
+
+  std::vector< Association > accociations_;
 
   void readFile(const std::string& file, std::vector< std::pair<double, std::string> >& output);
 

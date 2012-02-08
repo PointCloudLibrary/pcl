@@ -105,7 +105,7 @@ namespace pcl
         ukr.x = __float2int_rn (vcurr_cp.x * intr.fx / vcurr_cp.z + intr.cx);      //4
         ukr.y = __float2int_rn (vcurr_cp.y * intr.fy / vcurr_cp.z + intr.cy);                      //4
 
-        if (ukr.x < 0 || ukr.y < 0 || ukr.x >= cols || ukr.y >= rows)
+        if (ukr.x < 0 || ukr.y < 0 || ukr.x >= cols || ukr.y >= rows || vcurr_cp.z < 0)
           return (false);
 
         float3 nprev_g;

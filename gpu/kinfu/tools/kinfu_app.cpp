@@ -529,7 +529,7 @@ struct KinFuApp
 
     kinfu_.setInitalCameraPose (pose);
     kinfu_.volume().setTsdfTruncDist (0.030f/*meters*/);    
-    kinfu_.setIcpCorespFilteringParams (0.1f/*meters*/, sin ( pcl::deg2rad(20.f) ));
+    kinfu_.setIcpCorespFilteringParams (0.05f/*meters*/, sin ( pcl::deg2rad(10.f) ));
     //kinfu_.setDepthTruncationForICP(5.f/*meters*/);
     kinfu_.setCameraMovementThreshold(0.001f);
     
@@ -588,9 +588,12 @@ struct KinFuApp
   }
   
   void
-  toggleEvaluationMode(const string& eval_folder)
+  toggleEvaluationMode(const string& eval_folder, const string& match_file = string())
   {
     evaluation_ptr_ = Evaluation::Ptr( new Evaluation(eval_folder) );
+    if (!match_file.empty())
+        evaluation_ptr_->setMatchFile(match_file);
+
     kinfu_.setDepthIntrinsics (evaluation_ptr_->fx, evaluation_ptr_->fy, evaluation_ptr_->cx, evaluation_ptr_->cy);
     image_view_.raycaster_ptr_ = RayCaster::Ptr( new RayCaster(kinfu_.rows (), kinfu_.cols (), 
         evaluation_ptr_->fx, evaluation_ptr_->fy, evaluation_ptr_->cx, evaluation_ptr_->cy) );
@@ -848,9 +851,11 @@ print_cli_help ()
   cout << "    --current-cloud, -cc            : show current frame cloud" << endl;
   cout << "    --save-views, -sv               : accumulate scene view and save in the end ( Requires OpenCV. Will cause 'bad_alloc' after some time )" << endl;  
   cout << "    --registration, -r              : enable registration mode" << endl; 
-  cout << "    --integrate-colors, -ic         : enable color integration mode ( allows to get cloud with colors )" << endl; 
+  cout << "    --integrate-colors, -ic         : enable color integration mode ( allows to get cloud with colors )" << endl;   
   cout << "    -dev <deivce>, -oni <oni_file>  : select depth source. Default will be selected if not specified" << endl;
-  cout << "    -eval <eval_folder>             : process evaluation data set (Requires OpenCV)" << endl;
+  cout << "";
+  cout << " For RGBD benchmark (Requires OpenCV):" << endl; 
+  cout << "    -eval <eval_folder> [-match_file <associations_file_in_the_folder>]" << endl;
     
   return 0;
 }
@@ -874,7 +879,7 @@ main (int argc, char* argv[])
   CaptureOpenNI capture;
   
   int openni_device = 0;
-  std::string oni_file, eval_folder;
+  std::string oni_file, eval_folder, match_file;
   if (pc::parse_argument (argc, argv, "-dev", openni_device) > 0)
   {
     capture.open (openni_device);
@@ -887,7 +892,8 @@ main (int argc, char* argv[])
   else
   if (pc::parse_argument (argc, argv, "-eval", eval_folder) > 0)
   {
-    //ini latter
+    //init data source latter
+    pc::parse_argument (argc, argv, "-match_file", match_file);
   }
   else
   {
@@ -904,7 +910,7 @@ main (int argc, char* argv[])
   KinFuApp app (capture);
 
   if (pc::parse_argument (argc, argv, "-eval", eval_folder) > 0)
-    app.toggleEvaluationMode(eval_folder);
+    app.toggleEvaluationMode(eval_folder, match_file);
 
   if (pc::find_switch (argc, argv, "--current-cloud") || pc::find_switch (argc, argv, "-cc"))
     app.initCurrentFrameView ();
