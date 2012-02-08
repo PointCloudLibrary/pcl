@@ -46,7 +46,7 @@
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/common/time.h>
 #include <pcl/common/centroid.h>
-#if HAVE_SSE_EXTENSIONS
+#if defined(HAVE_SSE_EXTENSIONS)
 #include <xmmintrin.h>
 #endif
 
