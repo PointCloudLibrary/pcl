@@ -236,7 +236,7 @@ namespace pcl
                 
         /** \brief Vertex maps pyramid for current frame in current coordinate space. */
         std::vector<MapArr> vmaps_curr_;
-        /** \brief Vertex maps pyramid for current frame in current coordinate space. */
+        /** \brief Normal maps pyramid for current frame in current coordinate space. */
         std::vector<MapArr> nmaps_curr_;
 
         /** \brief Array of buffers with ICP correspondences for each pyramid level. */

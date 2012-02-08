@@ -124,11 +124,10 @@ bool Evaluation::grab (double stamp, PtrStepSz<const unsigned short>& depth)
     exit(1);
   }
 
-  // Datasets are with factor 5000 (pixel to m)
+  // Datasets are with factor 5000 (pixel to m) 
   // http://cvpr.in.tum.de/data/datasets/rgbd-dataset/file_formats#color_images_and_depth_maps
-  
-  d_img/=5;
-  d_img.copyTo(impl_->depth_buffer);
+    
+  d_img.convertTo(impl_->depth_buffer, d_img.type(), 0.2);
   depth.data = impl_->depth_buffer.ptr<ushort>();
   depth.cols = impl_->depth_buffer.cols;
   depth.rows = impl_->depth_buffer.rows;
