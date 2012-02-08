@@ -13,10 +13,14 @@ if(build)
     set(srcs src/extract_clusters.cpp
         )
 
-    set(incs include/pcl/gpu/segmentation/gpu_extract_clusters.h
+    set(incs  include/pcl/gpu/segmentation/gpu_extract_clusters.h
+              include/pcl/gpu/segmentation/gpu_extract_labeled_clusters.h
+              include/pcl/gpu/segmentation/gpu_seeded_hue_segmentation.h
         )
 
     set(impl_incs include/pcl/gpu/segmentation/impl/gpu_extract_clusters.hpp
+                  include/pcl/gpu/segmentation/impl/gpu_extract_labeled_clusters.hpp
+                  include/pcl/gpu/segmentation/impl/gpu_seeded_hue_segmentation.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})

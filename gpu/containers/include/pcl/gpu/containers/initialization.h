@@ -34,8 +34,8 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef PCL_GPU_CONTAINERS_INITIALISATION_HPP_
-#define PCL_GPU_CONTAINERS_INITIALISATION_HPP_
+#ifndef PCL_GPU_CONTAINERS_INITIALISATION_H_
+#define PCL_GPU_CONTAINERS_INITIALISATION_H_
 
 #include "pcl/pcl_exports.h"
 #include <string>
@@ -73,4 +73,4 @@ namespace pcl
     }
 }
 
-#endif /* PCL_GPU_CONTAINERS_INITIALISATION_HPP_ */
+#endif /* PCL_GPU_CONTAINERS_INITIALISATION_H_ */

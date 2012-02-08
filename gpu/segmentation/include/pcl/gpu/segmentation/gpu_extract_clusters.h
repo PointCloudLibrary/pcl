@@ -52,11 +52,11 @@ namespace pcl
   namespace gpu
   {
     void
-    extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> > &host_cloud_,
-                              const pcl::gpu::Octree::Ptr                 &tree,
-                              float                                       tolerance,
-                              std::vector<PointIndices>                   &clusters,
-                              unsigned int                                min_pts_per_cluster, 
+    extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> >  &host_cloud_,
+                              const pcl::gpu::Octree::Ptr                               &tree,
+                              float                                                     tolerance,
+                              std::vector<PointIndices>                                 &clusters,
+                              unsigned int                                              min_pts_per_cluster, 
                               unsigned int                                max_pts_per_cluster);
 
    /** \brief @b EuclideanClusterExtraction represents a segmentation class for cluster extraction in an Euclidean sense, depending on pcl::gpu::octree
@@ -81,14 +81,19 @@ namespace pcl
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /** \brief Empty constructor. */
-        EuclideanClusterExtraction () : tree_ (), min_pts_per_cluster_ (1), 
-                                      max_pts_per_cluster_ (std::numeric_limits<int>::max ())
+        EuclideanClusterExtraction () : min_pts_per_cluster_ (1), max_pts_per_cluster_ (std::numeric_limits<int>::max ())
         {};
 
+        /** \brief the destructor */
+/*        ~EuclideanClusterExtraction ()
+        {
+          tree_.clear();
+        };
+*/
         /** \brief Provide a pointer to the search object.
           * \param tree a pointer to the spatial search object.
           */
-        inline void setSearchMethod (const GPUTreePtr &tree) { tree_ = tree; }
+        inline void setSearchMethod (GPUTreePtr &tree) { tree_ = tree; }
 
         /** \brief Get a pointer to the search method used. 
           *  @todo fix this for a generic search tree

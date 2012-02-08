@@ -45,14 +45,14 @@
 #include "pcl/PointIndices.h"
 #include "pcl/pcl_macros.h"
 #include "pcl/gpu/octree/octree.hpp"
-#include "pcl/gpu/containers/device_array.hpp"
+#include "pcl/gpu/containers/impl/device_array.hpp"
 
 namespace pcl
 {
   namespace gpu
   {
-    void
-    extractLabeledEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGBL> > &host_cloud_,
+    template <typename PointT> void
+    extractLabeledEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<PointT> > &host_cloud_,
                                      const pcl::gpu::Octree::Ptr                 &tree,
                                      float                                       tolerance,
                                      std::vector<PointIndices>                   &clusters,
@@ -63,13 +63,14 @@ namespace pcl
     * \author Koen Buys, Radu Bogdan Rusu
     * \ingroup segmentation
     */
+    template <typename PointT>
     class EuclideanLabeledClusterExtraction
     {
       public:
         typedef pcl::PointXYZ PointType;
-        typedef pcl::PointCloud<pcl::PointXYZ> PointCloudHost;
-        typedef PointCloudHost::Ptr PointCloudHostPtr;
-        typedef PointCloudHost::ConstPtr PointCloudHostConstPtr;
+        typedef pcl::PointCloud<PointT> PointCloudHost;
+        typedef typename PointCloudHost::Ptr PointCloudHostPtr;
+        typedef typename PointCloudHost::ConstPtr PointCloudHostConstPtr;
 
         typedef PointIndices::Ptr PointIndicesPtr;
         typedef PointIndices::ConstPtr PointIndicesConstPtr;
@@ -81,8 +82,7 @@ namespace pcl
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /** \brief Empty constructor. */
-        EuclideanLabeledClusterExtraction () : tree_ (), min_pts_per_cluster_ (1), 
-                                      max_pts_per_cluster_ (std::numeric_limits<int>::max ())
+        EuclideanLabeledClusterExtraction () : min_pts_per_cluster_ (1), max_pts_per_cluster_ (std::numeric_limits<int>::max ())
         {};
 
         /** \brief Provide a pointer to the search object.
@@ -148,13 +148,13 @@ namespace pcl
         int max_pts_per_cluster_;
 
         /** \brief Class getName method. */
-        virtual std::string getClassName () const { return ("gpu::EuclideanClusterExtraction"); }
+        virtual std::string getClassName () const { return ("gpu::EuclideanLabeledClusterExtraction"); }
     };
     /** \brief Sort clusters method (for std::sort). 
       * \ingroup segmentation
       */
     inline bool 
-      comparePointClusters (const pcl::PointIndices &a, const pcl::PointIndices &b)
+      compareLabeledPointClusters (const pcl::PointIndices &a, const pcl::PointIndices &b)
     {
       return (a.indices.size () < b.indices.size ());
     }
@@ -162,7 +162,3 @@ namespace pcl
 }
 
 #endif //PCL_GPU_EXTRACT_LABELED_CLUSTERS_H_
-
-
-
-

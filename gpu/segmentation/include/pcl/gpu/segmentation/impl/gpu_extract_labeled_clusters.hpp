@@ -41,21 +41,18 @@
 
 #include "pcl/gpu/segmentation/gpu_extract_labeled_clusters.h"
 
-void
-pcl::gpu::extractLabeledEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGBL> >  &host_cloud_,
-                                           const pcl::gpu::Octree::Ptr                 &tree,
-                                           float                                       tolerance,
-                                           std::vector<PointIndices>                   &clusters,
-                                           unsigned int                                min_pts_per_cluster,
-                                           unsigned int                                max_pts_per_cluster)
+template <typename PointT> void
+pcl::gpu::extractLabeledEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<PointT> >  &host_cloud_,
+                                           const pcl::gpu::Octree::Ptr                                   &tree,
+                                           float                                                         tolerance,
+                                           std::vector<PointIndices>                                     &clusters,
+                                           unsigned int                                                  min_pts_per_cluster,
+                                           unsigned int                                                  max_pts_per_cluster)
 {
 
   // Create a bool vector of processed point indices, and initialize it to false
   // cloud is a DeviceArray<PointType>
   std::vector<bool> processed (host_cloud_->points.size (), false);
-
-  std::vector<int> nn_indices;
-  std::vector<float> nn_distances;
 
   int max_answers;
 
@@ -63,6 +60,9 @@ pcl::gpu::extractLabeledEuclideanClusters (const boost::shared_ptr<pcl::PointClo
     max_answers = host_cloud_->points.size();
   else
     max_answers = max_pts_per_cluster;
+
+  // to store the current cluster
+  pcl::PointIndices r;
 
   // Process all points in the cloud
   for (size_t i = 0; i < host_cloud_->points.size (); ++i)
@@ -77,16 +77,23 @@ pcl::gpu::extractLabeledEuclideanClusters (const boost::shared_ptr<pcl::PointClo
     pcl::gpu::Octree::Queries queries_device;
     // Create the query queue on the host
     std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>  > queries_host;
+
+    // Buffer in a new PointXYZ type
+    PointT t = host_cloud_->points[i];
+    PointXYZ p;
+    p.x = t.x; p.y = t.y; p.z = t.z;
+
     // Push the starting point in the vector
-    queries_host.push_back (host_cloud_->points[i]);
+    queries_host.push_back (p);
+    // Clear vector
+    r.indices.clear();
+    // Push the starting point in
+    r.indices.push_back(i);
 
     unsigned int found_points = queries_host.size ();
     unsigned int previous_found_points = 0;
 
     pcl::gpu::NeighborIndices result_device;
-
-    // Host buffer for results
-    std::vector<int> sizes, data;
 
     // once the area stop growing, stop also iterating.
     while (previous_found_points < found_points)
@@ -99,8 +106,8 @@ pcl::gpu::extractLabeledEuclideanClusters (const boost::shared_ptr<pcl::PointClo
       // Store the previously found number of points
       previous_found_points = found_points;
 
-      // Clear the Host vectors
-      sizes.clear (); data.clear ();
+      // Host buffer for results
+      std::vector<int> sizes, data;
 
       // Copy results from GPU to Host
       result_device.sizes.download (sizes);
@@ -113,11 +120,15 @@ pcl::gpu::extractLabeledEuclideanClusters (const boost::shared_ptr<pcl::PointClo
           if(processed[data[qp_r + qp * max_answers]])
             continue;
           // Only add if label matches the original label
-          if(host_cloud_->points[i].label == host_cloud_->points[data[qp_r + qp * max_answers]])
+          if(host_cloud_->points[i].label == host_cloud_->points[data[qp_r + qp * max_answers]].label)
           {
             processed[data[qp_r + qp * max_answers]] = true;
-            queries_host.push_back (host_cloud_->points[data[qp_r + qp * max_answers]]);
+            PointT t_l = host_cloud_->points[data[qp_r + qp * max_answers]];
+            PointXYZ p_l;
+            p_l.x = t_l.x; p_l.y = t_l.y; p_l.z = t_l.z;
+            queries_host.push_back (p_l);
             found_points++;
+            r.indices.push_back(data[qp_r + qp * max_answers]);
           }
         }
       }
@@ -125,17 +136,6 @@ pcl::gpu::extractLabeledEuclideanClusters (const boost::shared_ptr<pcl::PointClo
     // If this queue is satisfactory, add to the clusters
     if (found_points >= min_pts_per_cluster && found_points <= max_pts_per_cluster)
     {
-      pcl::PointIndices r;
-      r.indices.resize (found_points);
-      int idx = 0;
-      for(size_t qp = 0; qp < sizes.size (); qp++)
-      {
-        for(int qp_r = 0; qp_r < sizes[qp]; qp_r++)
-        {
-          r.indices[idx] = data[qp_r + qp * max_answers];
-          idx ++;
-        }
-      }
       std::sort (r.indices.begin (), r.indices.end ());
       // @todo: check if the following is actually still needed
       //r.indices.erase (std::unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
@@ -146,8 +146,8 @@ pcl::gpu::extractLabeledEuclideanClusters (const boost::shared_ptr<pcl::PointClo
   }
 }
 
-void 
-pcl::gpu::EuclideanLabeledClusterExtraction::extract (std::vector<PointIndices> &clusters)
+template <typename PointT> void 
+pcl::gpu::EuclideanLabeledClusterExtraction<PointT>::extract (std::vector<PointIndices> &clusters)
 {
   // Initialize the GPU search tree
   if (!tree_)
@@ -168,10 +168,16 @@ pcl::gpu::EuclideanLabeledClusterExtraction::extract (std::vector<PointIndices> 
   }
 */
   // Extract the actual clusters
-  extractEuclideanClusters (host_cloud_, tree_, cluster_tolerance_, clusters, min_pts_per_cluster_, max_pts_per_cluster_);
+  extractLabeledEuclideanClusters (host_cloud_, tree_, cluster_tolerance_, clusters, min_pts_per_cluster_, max_pts_per_cluster_);
 
   // Sort the clusters based on their size (largest one first)
-  std::sort (clusters.rbegin (), clusters.rend (), comparePointClusters);
+  std::sort (clusters.rbegin (), clusters.rend (), compareLabeledPointClusters);
 }
 
+#define PCL_INSTANTIATE_extractLabeledEuclideanClusters(T) template void PCL_EXPORTS pcl::gpu::extractLabeledEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<T> >  &, const pcl::gpu::Octree::Ptr &,float, std::vector<PointIndices> &, unsigned int, unsigned int);
+#define PCL_INSTANTIATE_EuclideanLabeledClusterExtraction(T) template class PCL_EXPORTS pcl::gpu::EuclideanLabeledClusterExtraction<T>;
+/*
+#define PCL_INSTANTIATE_extractLabeledEuclideanClusters(T) template void PCL_EXPORTS pcl::gpu::extractLabeledEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGBL> >  &, const pcl::gpu::Octree::Ptr &,float, std::vector<PointIndices> &, unsigned int, unsigned int);
+#define PCL_INSTANTIATE_EuclideanLabeledClusterExtraction(T) template class PCL_EXPORTS pcl::gpu::EuclideanLabeledClusterExtraction<T>;
+*/
 #endif //PCL_GPU_SEGMENTATION_IMPL_EXTRACT_LABELED_CLUSTERS_H_

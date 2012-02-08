@@ -41,12 +41,13 @@
 
 #include "pcl/gpu/segmentation/gpu_seeded_hue_segmentation.h"
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 void
 seededHueSegmentation (const boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> >  &host_cloud_,
                        const pcl::gpu::Octree::Ptr                                  &tree,
                        float                                                        tolerance,
-                       PointIndices                                                 &clusters_in,
-                       PointIndices                                                 &clusters_out,
+                       PointIndices                                                 &indices_in,
+                       PointIndices                                                 &indices_out,
                        float                                                        delta_hue)
 {
 
@@ -54,24 +55,22 @@ seededHueSegmentation (const boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB>
   // cloud is a DeviceArray<PointType>
   std::vector<bool> processed (host_cloud_->points.size (), false);
 
-  std::vector<int> nn_indices;
-  std::vector<float> nn_distances;
+  int max_answers = host_cloud_->points.size();
 
-  int max_answers;
-
-  if(max_pts_per_cluster > host_cloud_->points.size())
-    max_answers = host_cloud_->points.size();
-  else
-    max_answers = max_pts_per_cluster;
-
-  // Process all points in the cloud
-  for (size_t i = 0; i < host_cloud_->points.size (); ++i)
+  // Process all points in the indices vector
+  for (size_t k = 0; k < indices_in.indices.size (); ++k)
   {
+    int i = indices_in.indices[k];
     // if we already processed this point continue with the next one
     if (processed[i])
       continue;
     // now we will process this point
     processed[i] = true;
+
+    PointXYZRGB  p;
+    p = host_cloud_->points[i];
+    PointXYZHSV h;
+    PointXYZRGBtoXYZHSV(p, h);
 
     // Create the query queue on the device, point based not indices
     pcl::gpu::Octree::Queries queries_device;
@@ -112,34 +111,30 @@ seededHueSegmentation (const boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB>
         {
           if(processed[data[qp_r + qp * max_answers]])
             continue;
-          processed[data[qp_r + qp * max_answers]] = true;
-          queries_host.push_back (host_cloud_->points[data[qp_r + qp * max_answers]]);
-          found_points++;
+
+          PointXYZRGB  p_l;
+          p_l = host_cloud_->points[data[qp_r + qp * max_answers]];
+          PointXYZHSV h_l;
+          PointXYZRGBtoXYZHSV(p_l, h_l);
+
+          if (fabs(h_l.h - h.h) < delta_hue)
+          {
+            processed[data[qp_r + qp * max_answers]] = true;
+            queries_host.push_back (host_cloud_->points[data[qp_r + qp * max_answers]]);
+            found_points++;
+          }
         }
       }
     }
-    // If this queue is satisfactory, add to the clusters
-    if (found_points >= min_pts_per_cluster && found_points <= max_pts_per_cluster)
+    for(size_t qp = 0; qp < sizes.size (); qp++)
     {
-      pcl::PointIndices r;
-      r.indices.resize (found_points);
-      int idx = 0;
-      for(size_t qp = 0; qp < sizes.size (); qp++)
+      for(int qp_r = 0; qp_r < sizes[qp]; qp_r++)
       {
-        for(int qp_r = 0; qp_r < sizes[qp]; qp_r++)
-        {
-          r.indices[idx] = data[qp_r + qp * max_answers];
-          idx ++;
-        }
+        indices_out.indices.push_back(data[qp_r + qp * max_answers]);
       }
-      std::sort (r.indices.begin (), r.indices.end ());
-      // @todo: check if the following is actually still needed
-      //r.indices.erase (std::unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
-
-      r.header = host_cloud_->header;
-      clusters.push_back (r);   // We could avoid a copy by working directly in the vector
     }
   }
+  // @todo: do we need to sort here and remove double points?
 }
 
 void 

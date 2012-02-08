@@ -43,19 +43,16 @@
 
 void
 pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> >  &host_cloud_,
-                                    const pcl::gpu::Octree::Ptr                 &tree,
-                                    float                                       tolerance,
-                                    std::vector<PointIndices>                   &clusters,
-                                    unsigned int                                min_pts_per_cluster,
-                                    unsigned int                                max_pts_per_cluster)
+                                    const pcl::gpu::Octree::Ptr                               &tree,
+                                    float                                                     tolerance,
+                                    std::vector<PointIndices>                                 &clusters,
+                                    unsigned int                                              min_pts_per_cluster,
+                                    unsigned int                                              max_pts_per_cluster)
 {
 
   // Create a bool vector of processed point indices, and initialize it to false
   // cloud is a DeviceArray<PointType>
   std::vector<bool> processed (host_cloud_->points.size (), false);
-
-  std::vector<int> nn_indices;
-  std::vector<float> nn_distances;
 
   int max_answers;
 
@@ -63,6 +60,9 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
     max_answers = host_cloud_->points.size();
   else
     max_answers = max_pts_per_cluster;
+
+  // to store the current cluster
+  pcl::PointIndices r;
 
   // Process all points in the cloud
   for (size_t i = 0; i < host_cloud_->points.size (); ++i)
@@ -79,14 +79,15 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
     std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>  > queries_host;
     // Push the starting point in the vector
     queries_host.push_back (host_cloud_->points[i]);
+    // Clear vector
+    r.indices.clear();
+    // Push the starting point in
+    r.indices.push_back(i);
 
     unsigned int found_points = queries_host.size ();
     unsigned int previous_found_points = 0;
 
     pcl::gpu::NeighborIndices result_device;
-
-    // Host buffer for results
-    std::vector<int> sizes, data;
 
     // once the area stop growing, stop also iterating.
     while (previous_found_points < found_points)
@@ -99,8 +100,8 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
       // Store the previously found number of points
       previous_found_points = found_points;
 
-      // Clear the Host vectors
-      sizes.clear (); data.clear ();
+      // Host buffer for results
+      std::vector<int> sizes, data;
 
       // Copy results from GPU to Host
       result_device.sizes.download (sizes);
@@ -115,23 +116,13 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
           processed[data[qp_r + qp * max_answers]] = true;
           queries_host.push_back (host_cloud_->points[data[qp_r + qp * max_answers]]);
           found_points++;
+          r.indices.push_back(data[qp_r + qp * max_answers]);
         }
       }
     }
     // If this queue is satisfactory, add to the clusters
     if (found_points >= min_pts_per_cluster && found_points <= max_pts_per_cluster)
     {
-      pcl::PointIndices r;
-      r.indices.resize (found_points);
-      int idx = 0;
-      for(size_t qp = 0; qp < sizes.size (); qp++)
-      {
-        for(int qp_r = 0; qp_r < sizes[qp]; qp_r++)
-        {
-          r.indices[idx] = data[qp_r + qp * max_answers];
-          idx ++;
-        }
-      }
       std::sort (r.indices.begin (), r.indices.end ());
       // @todo: check if the following is actually still needed
       //r.indices.erase (std::unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
@@ -145,13 +136,15 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
 void 
 pcl::gpu::EuclideanClusterExtraction::extract (std::vector<PointIndices> &clusters)
 {
+/*
   // Initialize the GPU search tree
   if (!tree_)
   {
     tree_.reset (new pcl::gpu::Octree());
     ///@todo what do we do if input isn't a PointXYZ cloud?
-    tree_->setCloud(input_);
+    tree_.setCloud(input_);
   }
+*/
   if (!tree_->isBuilt())
   {
     tree_->build();
@@ -165,9 +158,9 @@ pcl::gpu::EuclideanClusterExtraction::extract (std::vector<PointIndices> &cluste
 */
   // Extract the actual clusters
   extractEuclideanClusters (host_cloud_, tree_, cluster_tolerance_, clusters, min_pts_per_cluster_, max_pts_per_cluster_);
-
+  std::cout << "INFO: end of extractEuclideanClusters " << std::endl;
   // Sort the clusters based on their size (largest one first)
-  std::sort (clusters.rbegin (), clusters.rend (), comparePointClusters);
+  //std::sort (clusters.rbegin (), clusters.rend (), comparePointClusters);
 }
 
 #endif //PCL_GPU_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_
