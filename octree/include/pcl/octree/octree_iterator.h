@@ -41,7 +41,7 @@
 
 #include <cstddef>
 #include <vector>
-#include <list>
+#include <deque>
 
 #include "octree_nodes.h"
 
@@ -359,7 +359,7 @@ namespace pcl
         addChildNodesToFIFO (const OctreeNode* node);
 
         /** FIFO list */
-        std::list<FIFOElement> FIFO_;
+        std::deque<FIFOElement> FIFO_;
       };
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
