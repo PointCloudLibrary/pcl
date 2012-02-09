@@ -294,8 +294,8 @@ pcl::FeatureFromNormals<PointInT, PointNT, PointOutT>::initCompute ()
   if (normals_->points.size () != surface_->points.size ())
   {
     PCL_ERROR ("[pcl::%s::initCompute] ", getClassName ().c_str ());
-    PCL_ERROR ("The number of points in the input dataset differs from ");
-    PCL_ERROR ("the number of points in the dataset containing the normals!\n");
+    PCL_ERROR ("The number of points in the input dataset (%u) differs from ", surface_->points.size ());
+    PCL_ERROR ("the number of points in the dataset containing the normals (%u)!\n", normals_->points.size ());
     Feature<PointInT, PointOutT>::deinitCompute ();
     return (false);
   }
