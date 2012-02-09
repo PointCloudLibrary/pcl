@@ -44,21 +44,25 @@ if(build)
       include/pcl/${SUBSYS_NAME}/confusion_matrix.h
       include/pcl/${SUBSYS_NAME}/database_entry.h
       include/pcl/${SUBSYS_NAME}/detector.h
+
       include/pcl/${SUBSYS_NAME}/model_source.h
       include/pcl/${SUBSYS_NAME}/scanning_model_source.h
       include/pcl/${SUBSYS_NAME}/primitive_model_source.h
+
       include/pcl/${SUBSYS_NAME}/proctor.h
       include/pcl/${SUBSYS_NAME}/proctor_mpi.h
       include/pcl/${SUBSYS_NAME}/proposer.h
       include/pcl/${SUBSYS_NAME}/registration_proposer.h
-      include/pcl/${SUBSYS_NAME}/keypoint_wrapper.h
       include/pcl/${SUBSYS_NAME}/scanner.h
       include/pcl/${SUBSYS_NAME}/timer.h
-      include/pcl/${SUBSYS_NAME}/uniform_sampling_wrapper.h
       include/pcl/${SUBSYS_NAME}/vtkLidarPoint.h
       include/pcl/${SUBSYS_NAME}/vtkLidarScanner.h
       include/pcl/${SUBSYS_NAME}/vtkRay.h
       include/pcl/${SUBSYS_NAME}/detector_visualizer.h
+
+      include/pcl/${SUBSYS_NAME}/keypoint_wrapper.h
+      include/pcl/${SUBSYS_NAME}/uniform_sampling_wrapper.h
+      include/pcl/${SUBSYS_NAME}/harris_wrapper.h
       )
 
   set(impl_incs
@@ -79,7 +83,6 @@ if(build)
                       ${impl_incs}
                       src/basic_proposer.cpp
                       src/confusion_matrix.cpp
-                      src/keypoint_wrapper.cpp
                       src/main.cpp
                       src/model_source.cpp
                       src/detector.cpp
@@ -90,7 +93,10 @@ if(build)
                       src/scanning_model_source.cpp
                       src/primitive_model_source.cpp
                       src/scanner.cpp
+
+                      src/keypoint_wrapper.cpp
                       src/uniform_sampling_wrapper.cpp
+                      src/harris_wrapper.cpp
                       )
 
     target_link_libraries(proctor 

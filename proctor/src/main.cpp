@@ -9,12 +9,17 @@
 #include "proctor/primitive_model_source.h"
 #include "proctor/basic_proposer.h"
 
+#include "proctor/uniform_sampling_wrapper.h"
+#include "proctor/harris_wrapper.h"
+
 using pcl::proctor::Detector;
 //using pcl::proctor::ProctorMPI;
 using pcl::proctor::Proctor;
 using pcl::proctor::ScanningModelSource;
 using pcl::proctor::PrimitiveModelSource;
 using pcl::proctor::BasicProposer;
+using pcl::proctor::UniformSamplingWrapper;
+using pcl::proctor::HarrisWrapper;
 
 struct run_proctor
 {
