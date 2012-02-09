@@ -15,7 +15,7 @@ namespace pcl
 
     struct Candidate {
       std::string id;
-      float votes;
+      double votes;
     };
 
     class Proposer {
