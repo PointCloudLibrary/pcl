@@ -513,17 +513,30 @@ pcl::visualization::PCLVisualizer::removeShape (const std::string &id, int viewp
   // Check to see if the given ID entry exists
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
 
+  bool shape = true;
+  // Try to find a shape first
   if (am_it == shape_actor_map_->end ())
   {
-    //pcl::console::print_warn ("[removeSape] Could not find any shape with id <%s>!\n", id.c_str ());
-    return (false);
+    // Extra step: check if there is a cloud with the same ID
+    CloudActorMap::iterator ca_it = cloud_actor_map_->find (id);
+    // There is no cloud or shape with this ID, so just exit
+    if (ca_it == cloud_actor_map_->end ())
+      return (false);
+    // Cloud found, set shape to false
+    shape = false;
   }
 
-  // Remove it from all renderers
-  removeActorFromRenderer (am_it->second, viewport);
-
   // Remove the pointer/ID pair to the global actor map
-  shape_actor_map_->erase (am_it);
+  if (shape)
+  {
+    removeActorFromRenderer (am_it->second, viewport);
+    shape_actor_map_->erase (am_it);
+  }
+  else
+  {
+    removeActorFromRenderer (am_it->second.actor, viewport);
+    cloud_actor_map_->erase (am_it);
+  }
   return (true);
 }
 
