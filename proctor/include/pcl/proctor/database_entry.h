@@ -7,13 +7,13 @@ namespace pcl
   namespace proctor
   {
 
-    typedef FPFHSignature33 Signature;
+    typedef Eigen::MatrixXf Signature;
 
     struct Entry {
       PointCloud<PointNormal>::Ptr cloud;
       PointCloud<PointNormal>::Ptr keypoints;
       PointCloud<Signature>::Ptr features;
-      KdTree<Signature>::Ptr tree;
+      KdTreeFLANN<Signature>::Ptr tree;
     };
 
   }

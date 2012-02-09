@@ -60,6 +60,11 @@ if(build)
       include/pcl/${SUBSYS_NAME}/vtkRay.h
       include/pcl/${SUBSYS_NAME}/detector_visualizer.h
 
+      include/pcl/${SUBSYS_NAME}/feature_wrapper.h
+      include/pcl/${SUBSYS_NAME}/fpfh_wrapper.h
+      include/pcl/${SUBSYS_NAME}/shot_wrapper.h
+      include/pcl/${SUBSYS_NAME}/si_wrapper.h
+
       include/pcl/${SUBSYS_NAME}/keypoint_wrapper.h
       include/pcl/${SUBSYS_NAME}/uniform_sampling_wrapper.h
       include/pcl/${SUBSYS_NAME}/harris_wrapper.h
@@ -93,6 +98,10 @@ if(build)
                       src/scanning_model_source.cpp
                       src/primitive_model_source.cpp
                       src/scanner.cpp
+
+                      src/fpfh_wrapper.cpp
+                      src/shot_wrapper.cpp
+                      src/si_wrapper.cpp
 
                       src/keypoint_wrapper.cpp
                       src/uniform_sampling_wrapper.cpp

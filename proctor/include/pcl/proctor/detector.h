@@ -2,7 +2,7 @@
 #define DETECTOR_H_
 
 #include <pcl/features/feature.h>
-#include <pcl/kdtree/kdtree.h>
+#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/visualization/cloud_viewer.h>
@@ -11,6 +11,8 @@
 #include "proctor/timer.h"
 #include "proctor/database_entry.h"
 #include "proctor/keypoint_wrapper.h"
+#include "proctor/feature_wrapper.h"
+#include <pcl/features/fpfh.h>
 
 using std::vector;
 using std::stringstream;
@@ -31,7 +33,7 @@ namespace pcl
     class Detector
     {
       public:
-        typedef FPFHSignature33 Signature; // TODO Get rid of this
+        //typedef Eigen::MatrixXf Signature; // TODO Get rid of this
         typedef boost::shared_ptr<Proposer> ProposerPtr;
         typedef boost::shared_ptr<const Proposer> ProposerConstPtr;
 
@@ -41,6 +43,9 @@ namespace pcl
         typedef boost::shared_ptr<KeypointWrapper> KeypointWrapperPtr;
         typedef boost::shared_ptr<const KeypointWrapper> ConstKeypointWrapperPtr;
 
+        typedef boost::shared_ptr<FeatureWrapper> FeatureWrapperPtr;
+        //typedef boost::shared_ptr<const KeypointWrapper> ConstKeypointWrapperPtr;
+        
         Detector() {
           database_.reset(new std::map<std::string, Entry>);
         }
@@ -98,9 +103,9 @@ namespace pcl
         obtainFeatures(Scene &scene, PointCloud<PointNormal>::Ptr keypoints, bool is_test_phase, bool cache = false);
 
         void
-        setProposer(const ProposerPtr proposer)
+        setProposers(const std::vector<ProposerPtr>& proposers)
         {
-          proposer_ = proposer;
+          proposers_ = proposers;
         }
 
         void
@@ -109,16 +114,24 @@ namespace pcl
           keypoint_wrap_ = wrapper;
         }
 
+        void
+        setFeatureEstimator(FeatureWrapperPtr &feature_est)
+        {
+          feature_est_ = feature_est;
+        }
+
       private:
 
         /** the timer */
         Timer<NUM_BINS> timer;
 
-        ProposerPtr proposer_;
+        std::vector<ProposerPtr> proposers_;
 
         DatabasePtr database_;
 
         KeypointWrapperPtr keypoint_wrap_;
+
+        FeatureWrapperPtr feature_est_;
 
         DetectorVisualizer *detector_vis_;
     };

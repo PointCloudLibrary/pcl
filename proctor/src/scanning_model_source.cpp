@@ -192,7 +192,7 @@ namespace pcl
       PointCloud<PointNormal>::Ptr cloud_subsampled (new PointCloud<PointNormal> ());
       VoxelGrid<PointNormal> subsampling_filter;
       subsampling_filter.setInputCloud(dense_cloud);
-      subsampling_filter.setLeafSize(0.01, 0.01, 0.01);
+      subsampling_filter.setLeafSize(0.001, 0.001, 0.001);
       subsampling_filter.filter(*cloud_subsampled);
 
       return cloud_subsampled;

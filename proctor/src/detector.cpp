@@ -32,13 +32,13 @@ namespace pcl
         detector_vis_->addCloud(scene.id + "keypoints", keypoints);
         detector_vis_->addCloud(scene.id + "original", scene.cloud);
       }
-      PointCloud<Detector::Signature>::Ptr features = obtainFeatures(scene, keypoints, false);
+      PointCloud<Signature>::Ptr features = obtainFeatures(scene, keypoints, false);
 
       Entry e;
       e.cloud = scene.cloud;
       e.keypoints = keypoints;
       e.features = features;
-      e.tree = KdTree<Signature>::Ptr(new KdTreeFLANN<Signature>());
+      e.tree = KdTreeFLANN<Signature>::Ptr(new KdTreeFLANN<Signature>());
       e.tree->setInputCloud(e.features);
 
       (*database_)[scene.id] = e;
@@ -78,16 +78,22 @@ namespace pcl
         all_ids.push_back((*db_it).first);
       }
 
-      std::vector<std::string> proposed;
-      proposer_->setDatabase(database_);
-      proposer_->getProposed(num_registration, e, all_ids, proposed);
+      std::vector<std::string> current_ids = all_ids;
 
-      RegistrationProposer reg_proposer;
-      std::vector<std::string> picked;
-      reg_proposer.setDatabase(database_);
-      reg_proposer.getProposed(1, e, proposed, picked);
+      for (int i = 0; i < proposers_.size(); i++)
+      {
+        Proposer::Ptr current_proposer = proposers_[i];
+        current_proposer->setDatabase(database_);
+        current_proposer->getProposed(num_registration, e, current_ids, current_ids);
 
-      return picked[0];
+        cout << "Proposed after stage " << i << ":";
+        for (int i = 0; i < current_ids.size(); i++) {
+          cout << current_ids[i] << " ";
+        }
+        cout << endl;
+      }
+
+      return current_ids[0];
     }
 
     void
@@ -151,24 +157,31 @@ namespace pcl
       return keypoints;
     }
 
-    PointCloud<Detector::Signature>::Ptr
+    PointCloud<Signature>::Ptr
     Detector::computeFeatures(PointCloud<PointNormal>::Ptr cloud, PointCloud<PointNormal>::Ptr keypoints)
     {
       cout << "computing features on " << keypoints->size() << " points" << endl;
       PointCloud<Signature>::Ptr features (new PointCloud<Signature>());
-      FPFHEstimation<PointNormal, PointNormal, Signature> fpfh;
-      fpfh.setRadiusSearch(0.1);
-      fpfh.setInputCloud(keypoints);
-      search::KdTree<PointNormal>::Ptr kdt (new search::KdTree<PointNormal>());
-      fpfh.setSearchMethod(kdt);
-      fpfh.setInputNormals(keypoints);
-      fpfh.compute(*features);
+      //FPFHEstimation<PointNormal, PointNormal, Signature> fpfh;
+      //fpfh.setRadiusSearch(0.1);
+      ////fpfh.setKSearch(10);
+      //fpfh.setInputCloud(keypoints);
+      //search::KdTree<PointNormal>::Ptr kdt (new search::KdTree<PointNormal>());
+      //fpfh.setSearchMethod(kdt);
+
+      //fpfh.setSearchSurface(cloud);
+      //fpfh.setInputNormals(cloud);
+
+      ////fpfh.setInputNormals(keypoints);
+
+      //fpfh.compute(*features);
+      feature_est_->compute(cloud, keypoints, *features);
       cout << "done computing features" << endl;
       return features;
     }
 
     // TODO Enum for is_test_phase
-    PointCloud<Detector::Signature>::Ptr
+    PointCloud<Signature>::Ptr
     Detector::obtainFeatures(Scene &scene, PointCloud<PointNormal>::Ptr keypoints, bool is_test_phase, bool cache)
     {
       if (cache == false)
@@ -193,13 +206,13 @@ namespace pcl
 
         if (ifstream(name)) {
           PointCloud<Signature>::Ptr features (new PointCloud<Signature>());
-          io::loadPCDFile(name, *features);
+          //io::loadPCDFile(name, *features);
           //if (features->points.size() != indices->size())
           //cout << "got " << features->points.size() << " features from " << indices->size() << " points" << endl;
           return features;
         } else {
           PointCloud<Signature>::Ptr features = computeFeatures(scene.cloud, keypoints);
-          io::savePCDFileBinary(name, *features);
+          //io::savePCDFileBinary(name, *features);
           return features;
         }
       }

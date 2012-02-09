@@ -20,6 +20,8 @@ namespace pcl
         candidate->id = target_id;
         candidate->votes = getVotes(query, target);
         ballot.push_back(*candidate);
+
+        std::cout << target_id << "\t" << candidate->votes << endl;
       }
 
       selectBestCandidates(max_num, ballot, output);
@@ -40,6 +42,7 @@ namespace pcl
 
         for (int ri = 0; ri < num_found; ri++) {
           votes += 1. / (distances[ri] + numeric_limits<float>::epsilon());
+          //cout << distances[ri] << " ";
           //votes -= distances[ri];
         }
       }
