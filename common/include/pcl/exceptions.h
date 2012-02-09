@@ -38,6 +38,7 @@
 #define PCL_EXCEPTIONS_H_
 
 #include <stdexcept>
+#include <sstream>
 #include <pcl/pcl_macros.h>
 
 namespace pcl
