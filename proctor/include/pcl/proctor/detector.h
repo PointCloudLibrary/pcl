@@ -45,12 +45,6 @@ namespace pcl
           database_.reset(new std::map<std::string, Entry>);
         }
 
-        /** density of keypoints, used as a voxel size */
-        static const double keypoint_separation;
-
-        /** each feature point can vote for up to this many models */
-        static const int max_votes;
-
         /** run the registration on this many models */
         static const int num_registration;
 

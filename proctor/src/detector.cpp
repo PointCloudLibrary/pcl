@@ -18,9 +18,7 @@ namespace pcl
   namespace proctor
   {
     /** Detector */
-    const double Detector::keypoint_separation = 0.1;
-    const int Detector::max_votes = 100;
-    const int Detector::num_registration = 4;
+    const int Detector::num_registration = 3;
 
     /* Trains a single model */
     void
