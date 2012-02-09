@@ -238,7 +238,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
     std::vector<float> nn_dists;
 
     #pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
-    for (size_t idx = 0; idx < response->points.size (); ++idx)
+    for (int idx = 0; idx < (int) response->points.size (); ++idx)
     {
       if (!isFinite (response->points[idx]) || response->points[idx].intensity < threshold_)
         continue;
@@ -277,7 +277,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseHarris (PointCloudO
   std::vector<float> nn_dists;
   output.resize (input_->size ());
   #pragma omp parallel for shared (output) private (covar, nn_indices, nn_dists) num_threads(threads_)
-  for (unsigned pIdx = 0; pIdx < input_->size (); ++pIdx)
+  for (int pIdx = 0; pIdx < (int) input_->size (); ++pIdx)
   {
     const PointInT& pointIn = input_->points [pIdx];
     output [pIdx].intensity = 0.0; //std::numeric_limits<float>::quiet_NaN ();
@@ -314,7 +314,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseNoble (PointCloudOu
   PCL_ALIGN (16) float covar [8];
   output.resize (input_->size ());
   #pragma omp parallel for shared (output) private (covar, nn_indices, nn_dists) num_threads(threads_)
-  for (unsigned pIdx = 0; pIdx < input_->size (); ++pIdx)
+  for (int pIdx = 0; pIdx < (int) input_->size (); ++pIdx)
   {
     const PointInT& pointIn = input_->points [pIdx];
     output [pIdx].intensity = 0.0;
@@ -350,7 +350,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseLowe (PointCloudOut
   PCL_ALIGN (16) float covar [8];
   output.resize (input_->size ());
   #pragma omp parallel for shared (output) private (covar, nn_indices, nn_dists) num_threads(threads_)
-  for (unsigned pIdx = 0; pIdx < input_->size (); ++pIdx)
+  for (int pIdx = 0; pIdx < (int) input_->size (); ++pIdx)
   {
     const PointInT& pointIn = input_->points [pIdx];
     output [pIdx].intensity = 0.0;
@@ -405,7 +405,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
   Eigen::Matrix3f covariance_matrix;
   output.resize (input_->size ());
   #pragma omp parallel for shared (output) private (covar, nn_indices, nn_dists, covariance_matrix) num_threads(threads_)
-  for (unsigned pIdx = 0; pIdx < input_->size (); ++pIdx)
+  for (int pIdx = 0; pIdx < (int) input_->size (); ++pIdx)
   {
     const PointInT& pointIn = input_->points [pIdx];
     output [pIdx].intensity = 0.0;
@@ -451,7 +451,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
   const unsigned max_iterations = 10;
   #pragma omp parallel for shared (corners) private (nnT, NNT, NNTInv, NNTp, diff, nn_indices, nn_dists) num_threads(threads_)
   //for (typename PointCloudOut::iterator cornerIt = corners.begin(); cornerIt != corners.end(); ++cornerIt)
-  for (unsigned cIdx = 0; cIdx < corners.size (); ++cIdx)
+  for (int cIdx = 0; cIdx < (int) corners.size (); ++cIdx)
   {
     unsigned iterations = 0;
     do {
