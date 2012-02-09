@@ -1,3 +1,21 @@
+/*=========================================================================
+ *
+ *  Copyright David Doria 2011 daviddoria@gmail.com
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
 // STL
 #include <limits>
 #include <fstream>
@@ -42,11 +60,25 @@ vtkStandardNewMacro(vtkLidarScanner);
 const double vtkLidarScanner::Forward[3] = {0.0, 1.0, 0.0};
 double vtkLidarScanner::Origin[3] = {0.0, 0.0, 0.0};
 
-double* vtkLidarScanner::GetLocation() const {return this->GetPosition();} //convenience function
+double* vtkLidarScanner::GetLocation() const
+{
+  return this->GetPosition();
+} //convenience function
 
-double vtkLidarScanner::GetPhiStep() const {return fabs(MaxPhiAngle - MinPhiAngle)/static_cast<double> (NumberOfPhiPoints - 1);}
-double vtkLidarScanner::GetThetaStep() const {return fabs(MaxThetaAngle - MinThetaAngle)/static_cast<double>(NumberOfThetaPoints - 1);}
-double vtkLidarScanner::GetNumberOfTotalPoints() const {return NumberOfPhiPoints * NumberOfThetaPoints;}
+double vtkLidarScanner::GetPhiStep() const
+{
+  return fabs(MaxPhiAngle - MinPhiAngle)/static_cast<double> (NumberOfPhiPoints - 1);
+}
+
+double vtkLidarScanner::GetThetaStep() const
+{
+  return fabs(MaxThetaAngle - MinThetaAngle)/static_cast<double>(NumberOfThetaPoints - 1);
+}
+
+double vtkLidarScanner::GetNumberOfTotalPoints() const
+{
+  return NumberOfPhiPoints * NumberOfThetaPoints;
+}
 
 vtkLidarScanner::vtkLidarScanner()
 {
@@ -126,22 +158,22 @@ vtkLidarScanner::~vtkLidarScanner()
 }
 
 // Convenience functions for setting values from degrees.
-void vtkLidarScanner::SetMinPhiAngleDegrees(double deg)
+void vtkLidarScanner::SetMinPhiAngleDegrees(const double deg)
 {
   this->SetMinPhiAngle(vtkMath::RadiansFromDegrees(deg));
 }
 
-void vtkLidarScanner::SetMaxPhiAngleDegrees(double deg)
+void vtkLidarScanner::SetMaxPhiAngleDegrees(const double deg)
 {
   this->SetMaxPhiAngle(vtkMath::RadiansFromDegrees(deg));
 }
 
-void vtkLidarScanner::SetMinThetaAngleDegrees(double deg)
+void vtkLidarScanner::SetMinThetaAngleDegrees(const double deg)
 {
   this->SetMinThetaAngle(vtkMath::RadiansFromDegrees(deg));
 }
 
-void vtkLidarScanner::SetMaxThetaAngleDegrees(double deg)
+void vtkLidarScanner::SetMaxThetaAngleDegrees(const double deg)
 {
   this->SetMaxThetaAngle(vtkMath::RadiansFromDegrees(deg));
 }
@@ -196,7 +228,7 @@ void vtkLidarScanner::SetScene(vtkSmartPointer<vtkPolyData> scene)
   // Set the polydata that we are going to scan
   //this->Scene = scene;
 
-  // %%% std::cout << "input to SetScene has " << scene->GetNumberOfPoints() << " points." << std::endl;
+  std::cout << "input to SetScene has " << scene->GetNumberOfPoints() << " points." << std::endl;
 
   this->Scene->ShallowCopy(scene);
 
@@ -271,7 +303,7 @@ vtkTransform* vtkLidarScanner::GetTransform()
 }
 
 int vtkLidarScanner::RequestData(vtkInformation *vtkNotUsed(request),
-		vtkInformationVector **inputVector,
+                                 vtkInformationVector **inputVector,
   vtkInformationVector *outputVector)
 {
   // Get the info objects
@@ -290,13 +322,13 @@ int vtkLidarScanner::RequestData(vtkInformation *vtkNotUsed(request),
 
   this->ConstructOutput();
 
-  // {
-  // vtkSmartPointer<vtkXMLImageDataWriter> writer =
-  //   vtkSmartPointer<vtkXMLImageDataWriter>::New();
-  // writer->SetFileName("scan.vti");
-  // writer->SetInput(this->Output);
-  // writer->Write();
-  // } %%%
+//   {
+//   vtkSmartPointer<vtkXMLImageDataWriter> writer =
+//     vtkSmartPointer<vtkXMLImageDataWriter>::New();
+//   writer->SetFileName("scan.vti");
+//   writer->SetInput(this->Output);
+//   writer->Write();
+//   }
 
   output->ShallowCopy(this->Output);
   //output->SetUpdateExtent(output->GetExtent());
@@ -320,7 +352,7 @@ void vtkLidarScanner::ConstructOutput()
 */
   int extent[6];
   this->Output->GetExtent(extent);
-  // %%% std::cout << "extent: " << extent[0] << " " << extent[1] << " " << extent[2] << " " << extent[3] << " " << extent[4] << " " << extent[5] << std::endl;
+  std::cout << "extent: " << extent[0] << " " << extent[1] << " " << extent[2] << " " << extent[3] << " " << extent[4] << " " << extent[5] << std::endl;
   this->Output->SetNumberOfScalarComponents(3);
   this->Output->SetScalarTypeToUnsignedChar();
   this->Output->AllocateScalars();
@@ -351,7 +383,7 @@ void vtkLidarScanner::ConstructOutput()
 
   vtkUnsignedCharArray* imageScalars = vtkUnsignedCharArray::SafeDownCast(this->Output->GetPointData()->GetArray("ImageScalars"));
 
-  // %%% std::cout << "should be " << this->NumberOfPhiPoints * this->NumberOfThetaPoints << " points." << std::endl;
+  std::cout << "should be " << this->NumberOfPhiPoints * this->NumberOfThetaPoints << " points." << std::endl;
 
   for(unsigned int phi = 0; phi < this->NumberOfPhiPoints; phi++)
     {
@@ -427,23 +459,28 @@ void vtkLidarScanner::AcquirePoint(const unsigned int thetaIndex, const unsigned
     return;
     }
 
-  vtkPoints* triPoints = vtkTriangle::SafeDownCast(this->Scene->GetCell(cellId))->GetPoints();
+  // If the cell is a triangle, we can compute it's normal.
+  vtkTriangle* triangle = vtkTriangle::SafeDownCast(this->Scene->GetCell(cellId));
 
-  double n[3];
-  double t0[3];
-  double t1[3];
-  double t2[3];
+  if(triangle)
+    {
+    vtkPoints* triPoints = triangle->GetPoints();
+    double n[3];
+    double t0[3];
+    double t1[3];
+    double t2[3];
 
-  triPoints->GetPoint(0, t0);
-  triPoints->GetPoint(1, t1);
-  triPoints->GetPoint(2, t2);
-  vtkTriangle::ComputeNormal(t0, t1, t2, n);
+    triPoints->GetPoint(0, t0);
+    triPoints->GetPoint(1, t1);
+    triPoints->GetPoint(2, t2);
+    vtkTriangle::ComputeNormal(t0, t1, t2, n);
+
+    // Save the normal of the intersection
+    this->Scan->GetValue(phiIndex, thetaIndex)->SetNormal(n);
+    }
 
   // Save the intersection
   this->Scan->GetValue(phiIndex,thetaIndex)->SetCoordinate(x);
-
-  // Save the normal of the intersection
-  this->Scan->GetValue(phiIndex, thetaIndex)->SetNormal(n);
 
   // Set the flag for this point indicating that there was a valid intersection
   this->Scan->GetValue(phiIndex, thetaIndex)->SetHit(true);
@@ -452,10 +489,9 @@ void vtkLidarScanner::AcquirePoint(const unsigned int thetaIndex, const unsigned
 
 }
 
-
 void vtkLidarScanner::PerformScan()
 {
-  // %%% std::cout << "Performing scan..." << std::endl;
+  std::cout << "Performing scan..." << std::endl;
 
   this->MakeSphericalGrid();
 
@@ -512,12 +548,12 @@ void vtkLidarScanner::MakeSphericalGrid()
 
 }
 
-void vtkLidarScanner::GetFullOutput(vtkImageData* output)
+vtkImageData* vtkLidarScanner::GetFullOutput()
 {
-  output = this->Output;
+  return this->Output;
 }
 
-void vtkLidarScanner::WritePTX(std::string filename)
+void vtkLidarScanner::WritePTX(const std::string& filename)
 {
  // Open the file for writing
   std::ofstream fout(filename.c_str(), ios::out);
@@ -545,6 +581,7 @@ void vtkLidarScanner::WritePTX(std::string filename)
     // If the point is valid, write it to the file
     if(validArray->GetValue(i))
       {
+      double p[3];
       this->Output->GetPoint(i,coordinate);
       fout << coordinate[0] << " " << coordinate[1] << " " << coordinate[2] << " .5 0 0 0" << endl;
       }
@@ -557,7 +594,7 @@ void vtkLidarScanner::WritePTX(std::string filename)
   fout.close();
 }
 
-void vtkLidarScanner::GetOutputMesh(vtkPolyData* output)
+void vtkLidarScanner::GetOutputMesh(vtkPolyData* const output)
 {
   // std::cout << "GetOutputMesh" << std::endl;
   // This function connects the raw points output into a mesh using the connectivity
@@ -584,7 +621,7 @@ void vtkLidarScanner::GetOutputMesh(vtkPolyData* output)
       } //end phi loop
     }//end theta loop
 
-  // %%% std::cout << PointCounter << " points were added." << std::endl;
+  std::cout << PointCounter << " points were added." << std::endl;
 
   // Add the 2d grid points to a polydata object
   vtkSmartPointer<vtkPolyData> polydata2d = vtkSmartPointer<vtkPolyData>::New();
@@ -667,7 +704,7 @@ void vtkLidarScanner::GetOutputMesh(vtkPolyData* output)
 
 }
 
-void vtkLidarScanner::GetValidOutputPoints(vtkPolyData* output)
+void vtkLidarScanner::GetValidOutputPoints(vtkPolyData* const output)
 {
   //std::cout << "GetOutputPoints" << std::endl;
 
@@ -751,8 +788,7 @@ void vtkLidarScanner::GetValidOutputPoints(vtkPolyData* output)
 
 }
 
-
-void vtkLidarScanner::GetAllOutputPoints(vtkPolyData* output)
+void vtkLidarScanner::GetAllOutputPoints(vtkPolyData* const output)
 {
   vtkSmartPointer<vtkPoints> points =
     vtkSmartPointer<vtkPoints>::New();
@@ -890,7 +926,7 @@ void vtkLidarScanner::AddNoise(vtkSmartPointer<vtkLidarPoint> point)
   if(this->LOSVariance > 0.0)
     {
     double losLength = vtkMath::Gaussian(0.0, this->LOSVariance); //LOS noise should be zero mean
-    // %%% std::cout << "LOSLength: " << losLength << std::endl;
+    std::cout << "LOSLength: " << losLength << std::endl;
 
     losNoise[0] = losLength * losX;
     losNoise[1] = losLength * losY;
@@ -914,7 +950,7 @@ void vtkLidarScanner::AddNoise(vtkSmartPointer<vtkLidarPoint> point)
     originalDirection[2] = losZ;
     GetOrthogonalVector(originalDirection, orthogonalNoise);
     double orthogonalLength = vtkMath::Gaussian(0.0, this->OrthogonalVariance); //LOS noise should be zero mean
-    // %%% std::cout << "OrthogonalLength: " << orthogonalLength << std::endl;
+    std::cout << "OrthogonalLength: " << orthogonalLength << std::endl;
     for(unsigned int i = 0; i < 3; i++)
       {
       orthogonalNoise[i] = orthogonalLength * orthogonalNoise[i];
@@ -946,7 +982,7 @@ void vtkLidarScanner::AddNoise(vtkSmartPointer<vtkLidarPoint> point)
   point->SetCoordinate(newPoint);
 }
 
-void GetOrthogonalVector(const double* v, double* orthogonalVector)
+void GetOrthogonalVector(const double* const v, double* const orthogonalVector)
 {
   //Gram Schmidt Orthogonalization
 
@@ -966,7 +1002,7 @@ void GetOrthogonalVector(const double* v, double* orthogonalVector)
 
 }
 
-void Project(const double* a, const double* b, double* projection)
+void Project(const double* const a, const double* const b, double* const projection)
 {
   // The projection of A on B
   double scale = vtkMath::Dot(a,b)/pow(vtkMath::Norm(b), 2);
@@ -977,7 +1013,7 @@ void Project(const double* a, const double* b, double* projection)
 
 }
 
-void vtkLidarScanner::CreateRepresentation(vtkPolyData* representation)
+void vtkLidarScanner::CreateRepresentation(vtkPolyData* const representation)
 {
   vtkSmartPointer<vtkConeSource> coneSource =
     vtkSmartPointer<vtkConeSource>::New();
@@ -1119,7 +1155,7 @@ void vtkLidarScanner::PrintSelf(ostream &os, vtkIndent indent)
 
 namespace
 {
-  int sign(double v)
+  int sign(const double v)
   {
   return v > 0 ? 1 : (v < 0 ? -1 : 0);
   }

@@ -1,3 +1,21 @@
+/*=========================================================================
+ *
+ *  Copyright David Doria 2011 daviddoria@gmail.com
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
 #ifndef __vtkLidarScanner_h
 #define __vtkLidarScanner_h
 
@@ -53,10 +71,10 @@ public:
   vtkGetMacro(MaxThetaAngle, double);
 
   // These functions expect radians
-  void SetMinPhiAngleDegrees(double);
-  void SetMaxPhiAngleDegrees(double);
-  void SetMinThetaAngleDegrees(double);
-  void SetMaxThetaAngleDegrees(double);
+  void SetMinPhiAngleDegrees(const double);
+  void SetMaxPhiAngleDegrees(const double);
+  void SetMinThetaAngleDegrees(const double);
+  void SetMaxThetaAngleDegrees(const double);
 
   vtkGetMacro(LOSVariance, double);
   vtkGetMacro(OrthogonalVariance, double);
@@ -101,16 +119,16 @@ public:
   void PerformScan(); //actually do all of the ray/scene intersections
 
   void AddNoise(vtkSmartPointer<vtkLidarPoint> point);
-  void CreateRepresentation(vtkPolyData*);
+  void CreateRepresentation(vtkPolyData* const);
 
   // Outputs
-  void GetValidOutputPoints(vtkPolyData* output); //put all of the valid scene intersections into a PolyData
-  void GetAllOutputPoints(vtkPolyData* output); //put all returns (including misses) into a PolyData
-  void GetOutputMesh(vtkPolyData* output); //put all of the valid scene intersections into a PolyData and connect them using Delaunay triangulation
-  void GetFullOutput(vtkImageData* output);
-  void WritePTX(std::string filename);
+  void GetValidOutputPoints(vtkPolyData* const output); //put all of the valid scene intersections into a PolyData
+  void GetAllOutputPoints(vtkPolyData* const output); //put all returns (including misses) into a PolyData
+  void GetOutputMesh(vtkPolyData* const output); //put all of the valid scene intersections into a PolyData and connect them using Delaunay triangulation
+  vtkImageData* GetFullOutput();
+  void WritePTX(const std::string& filename);
 
-  void WriteScanner(const std::string &filename) const; //write a vtp file of a coordinate system indicating the scanner's location and orientation
+  void WriteScanner(const std::string& filename) const; //write a vtp file of a coordinate system indicating the scanner's location and orientation
 
 protected:
 
@@ -164,8 +182,8 @@ private:
 
 };
 
-void Project(const double* a, const double* b, double* projection);
-void GetOrthogonalVector(const double* v, double* orthogonalVector);
+void Project(const double* const a, const double* const b, double* const projection);
+void GetOrthogonalVector(const double* const v, double* const orthogonalVector);
 
 namespace
 {
