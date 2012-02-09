@@ -313,6 +313,7 @@ namespace pcl
         }
 
         /** \brief Removes an added shape from screen (line, polygon, etc.), based on a given ID
+          * \note This methods also removes PolygonMesh objects and PointClouds, if they match the ID
           * \param[in] id the shape object id (i.e., given on \a addLine etc.)
           * \param[in] viewport view port from where the Point Cloud should be removed (default: all)
           */
