@@ -512,13 +512,13 @@ pcl::visualization::PCLVisualizer::removeShape (const std::string &id, int viewp
 {
   // Check to see if the given ID entry exists
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  // Extra step: check if there is a cloud with the same ID
+  CloudActorMap::iterator ca_it = cloud_actor_map_->find (id);
 
   bool shape = true;
   // Try to find a shape first
   if (am_it == shape_actor_map_->end ())
   {
-    // Extra step: check if there is a cloud with the same ID
-    CloudActorMap::iterator ca_it = cloud_actor_map_->find (id);
     // There is no cloud or shape with this ID, so just exit
     if (ca_it == cloud_actor_map_->end ())
       return (false);
@@ -534,8 +534,8 @@ pcl::visualization::PCLVisualizer::removeShape (const std::string &id, int viewp
   }
   else
   {
-    removeActorFromRenderer (am_it->second.actor, viewport);
-    cloud_actor_map_->erase (am_it);
+    removeActorFromRenderer (ca_it->second.actor, viewport);
+    cloud_actor_map_->erase (ca_it);
   }
   return (true);
 }
