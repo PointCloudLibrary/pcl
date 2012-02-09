@@ -50,6 +50,16 @@ namespace pcl
     std::string
     Detector::query(Scene &scene, float *classifier, double *registration)
     {
+      static int i = 0;
+      if (detector_vis_) {
+        std::stringstream ss;
+        std::string s;
+        ss << i;
+        s = ss.str();
+        detector_vis_->addCloud(scene.id + "_test_" + s, scene.cloud);
+        i++;
+      }
+
       cout << "detector testing " << scene.id << endl;
 
       Entry e;
