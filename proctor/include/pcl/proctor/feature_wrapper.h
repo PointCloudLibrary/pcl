@@ -23,13 +23,16 @@ namespace pcl
         typedef PointCloudOut::Ptr PointCloudOutPtr;
         typedef PointCloudOut::ConstPtr PointCloudOutConstPtr;
 
-        FeatureWrapper()
+        FeatureWrapper(std::string name) : name_(name)
         {}
 
         virtual void
         compute(PointCloud<PointNormal>::Ptr cloud, PointCloud<PointNormal>::Ptr keypoints, pcl::PointCloud<Eigen::MatrixXf> &output) = 0;
 
+        std::string name_;
+
       private:
+
     };
 
   }

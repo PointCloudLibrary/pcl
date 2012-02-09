@@ -160,21 +160,9 @@ namespace pcl
     PointCloud<Signature>::Ptr
     Detector::computeFeatures(PointCloud<PointNormal>::Ptr cloud, PointCloud<PointNormal>::Ptr keypoints)
     {
-      cout << "computing features on " << keypoints->size() << " points" << endl;
+      cout << "computing features on " << keypoints->size() << " points. search surface size: " << cloud->size() << endl;
       PointCloud<Signature>::Ptr features (new PointCloud<Signature>());
-      //FPFHEstimation<PointNormal, PointNormal, Signature> fpfh;
-      //fpfh.setRadiusSearch(0.1);
-      ////fpfh.setKSearch(10);
-      //fpfh.setInputCloud(keypoints);
-      //search::KdTree<PointNormal>::Ptr kdt (new search::KdTree<PointNormal>());
-      //fpfh.setSearchMethod(kdt);
 
-      //fpfh.setSearchSurface(cloud);
-      //fpfh.setInputNormals(cloud);
-
-      ////fpfh.setInputNormals(keypoints);
-
-      //fpfh.compute(*features);
       feature_est_->compute(cloud, keypoints, *features);
       cout << "done computing features" << endl;
       return features;
@@ -191,7 +179,7 @@ namespace pcl
       }
       else
       {
-        std::string name_str = std::string("feature_") + scene.id;
+        std::string name_str = std::string(feature_est_->name_) + scene.id;
 
         if (is_test_phase) {
           name_str += "_test";

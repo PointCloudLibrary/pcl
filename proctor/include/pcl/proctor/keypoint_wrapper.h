@@ -23,11 +23,13 @@ namespace pcl
         typedef PointCloudOut::Ptr PointCloudOutPtr;
         typedef PointCloudOut::ConstPtr PointCloudOutConstPtr;
 
-        KeypointWrapper()
+        KeypointWrapper(std::string name) : name_(name)
         {}
 
         virtual void
         compute(PointCloudInPtr input, PointCloudOut &output) = 0;
+
+        std::string name_;
 
       private:
     };

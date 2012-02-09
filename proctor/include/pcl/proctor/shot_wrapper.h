@@ -13,7 +13,7 @@ namespace pcl
 
     class SHOTWrapper : public FeatureWrapper {
       public:
-        SHOTWrapper()
+        SHOTWrapper() : FeatureWrapper(std::string("shot"))
         {}
 
         void

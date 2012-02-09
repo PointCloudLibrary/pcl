@@ -10,7 +10,7 @@ namespace pcl
 
     class HarrisWrapper : public KeypointWrapper {
       public:
-        HarrisWrapper()
+        HarrisWrapper() : KeypointWrapper("harris 3d")
         {}
 
         void

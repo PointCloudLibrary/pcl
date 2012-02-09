@@ -11,13 +11,17 @@ namespace pcl
     void
     SIWrapper::compute(PointCloud<PointNormal>::Ptr cloud, PointCloud<PointNormal>::Ptr keypoints, pcl::PointCloud<Eigen::MatrixXf> &output)
     {
-      SpinImageEstimation<PointNormal, PointNormal, Eigen::MatrixXf> si (8, 0.5, 0);
-      si.setRadiusSearch(0.02);
-      si.setInputCloud(keypoints);
+      SpinImageEstimation<PointNormal, PointNormal, Eigen::MatrixXf> si (8, 0.5, 10);
+      si.setRadiusSearch(0.08);
       search::KdTree<PointNormal>::Ptr kdt (new search::KdTree<PointNormal>());
       si.setSearchMethod(kdt);
-      si.setSearchSurface(cloud);
-      si.setInputNormals(cloud);
+
+      si.setInputCloud(keypoints);
+      //si.setSearchSurface(cloud);
+      //si.setSearchSurfaceNormals(cloud);
+      //si.setInputNormals(keypoints);
+      //si.setSearchSurfaceWithNormals(cloud, cloud);
+      //si.setInputWithNormals(keypoints, keypoints);
       si.computeEigen(output);
     }
 

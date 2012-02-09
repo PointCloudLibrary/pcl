@@ -65,7 +65,7 @@ namespace pcl
       cout << "Proctor finished training" << endl;
     }
 
-    void
+    double
     Proctor::test(Detector &detector, unsigned int seed)
     {
       srand(seed);
@@ -111,6 +111,8 @@ namespace pcl
       }
 
       printConfusionMatrix(confusion_matrix);
+
+      return confusion_matrix.trace();
     }
 
     typedef struct {

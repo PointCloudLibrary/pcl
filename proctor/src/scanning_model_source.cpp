@@ -12,6 +12,9 @@
 #include <pcl/filters/filter.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/ply_io.h>
+#include <pcl/common/eigen.h>
+#include <pcl/common/transforms.h>
+#include <pcl/common/common.h>
 
 #include "proctor/config.h"
 
@@ -53,9 +56,9 @@ namespace pcl
     {
       int max_models = 1814;
       srand(0);
-      IndicesPtr model_subset = randomSubset(max_models, 100);
+      IndicesPtr model_subset = randomSubset(max_models, max_models);
 
-      for (int mi = 0; mi < 100; mi++) {
+      for (int mi = 0; mi < max_models; mi++) {
         int id = (*model_subset)[mi];
         std::stringstream path;
         FILE *file;
@@ -160,11 +163,30 @@ namespace pcl
       std::map<std::string, Model>::iterator it;
       output.clear();
 
-      for ( it=models_.begin() ; it != models_.end(); it++ ) {
-        output.push_back((*it).first);
-      }
+      //for ( it=models_.begin() ; it != models_.end(); it++ ) {
+        //if (it->first != "princeton1064")
+          //if (it->first != "princeton1095")
+            //if (it->first != "princeton1006")
+              //if (it->first != "princeton109")
+                //if (it->first != "princeton1113")
+                  //if (it->first != "princeton267")
+                    //output.push_back((*it).first);
+      //}
+      output.push_back("princeton1298");
+      output.push_back("princeton1303");
+      output.push_back("princeton48");
+      //output.push_back("princeton273");
+      output.push_back("princeton97");
+      output.push_back("princeton99");
+      output.push_back("princeton70");
+      output.push_back("princeton725");
+      output.push_back("princeton688");
+      output.push_back("princeton1779");
+      output.push_back("princeton382");
+      output.push_back("princeton398");
+      output.push_back("princeton407");
 
-      sort(output.begin(), output.end());
+      //sort(output.begin(), output.end());
     }
 
     PointCloud<PointNormal>::Ptr
@@ -195,6 +217,8 @@ namespace pcl
       subsampling_filter.setLeafSize(0.001, 0.001, 0.001);
       subsampling_filter.filter(*cloud_subsampled);
 
+      assert(cloud_subsampled->is_dense == true);
+
       return cloud_subsampled;
     }
 
@@ -211,7 +235,12 @@ namespace pcl
       float phi = phi_gen();
 
       PointCloud<PointNormal>::Ptr test_scan = Scanner::getCloudCached(theta, phi, models_[model_id]);
-      return test_scan;
+      Eigen::Affine3f t;
+      getTransformation(0, 0, 0, M_PI, 0.5, 1.5, t);
+      PointCloud<PointNormal>::Ptr rotated_scan(new PointCloud<PointNormal>());
+      transformPointCloudWithNormals(*test_scan, *rotated_scan, t);
+      //return test_scan;
+      return rotated_scan;
     }
   }
 

@@ -45,9 +45,10 @@ namespace pcl
 
         typedef boost::shared_ptr<FeatureWrapper> FeatureWrapperPtr;
         //typedef boost::shared_ptr<const KeypointWrapper> ConstKeypointWrapperPtr;
-        
+
         Detector() {
           database_.reset(new std::map<std::string, Entry>);
+          detector_vis_ = NULL;
         }
 
         /** run the registration on this many models */
@@ -120,6 +121,8 @@ namespace pcl
           feature_est_ = feature_est;
         }
 
+        DetectorVisualizer *detector_vis_;
+
       private:
 
         /** the timer */
@@ -133,7 +136,6 @@ namespace pcl
 
         FeatureWrapperPtr feature_est_;
 
-        DetectorVisualizer *detector_vis_;
     };
   }
 }

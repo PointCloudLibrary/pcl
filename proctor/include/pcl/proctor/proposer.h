@@ -26,7 +26,7 @@ namespace pcl
         typedef boost::shared_ptr<std::map<std::string, Entry> > DatabasePtr;
         typedef boost::shared_ptr<const std::map<std::string, Entry> > ConstDatabasePtr;
 
-        Proposer()
+        Proposer(Detector *detector = NULL) : detector_(detector)
         {}
 
         void
@@ -43,6 +43,8 @@ namespace pcl
 
       protected:
         DatabasePtr database_;
+
+        Detector *detector_;
     };
 
   }

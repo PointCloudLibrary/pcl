@@ -39,7 +39,6 @@ if(build)
   include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include)
 
   set(incs
-      include/pcl/${SUBSYS_NAME}/basic_proposer.h
       include/pcl/${SUBSYS_NAME}/config.h
       include/pcl/${SUBSYS_NAME}/confusion_matrix.h
       include/pcl/${SUBSYS_NAME}/database_entry.h
@@ -51,8 +50,6 @@ if(build)
 
       include/pcl/${SUBSYS_NAME}/proctor.h
       include/pcl/${SUBSYS_NAME}/proctor_mpi.h
-      include/pcl/${SUBSYS_NAME}/proposer.h
-      include/pcl/${SUBSYS_NAME}/registration_proposer.h
       include/pcl/${SUBSYS_NAME}/scanner.h
       include/pcl/${SUBSYS_NAME}/timer.h
       include/pcl/${SUBSYS_NAME}/vtkLidarPoint.h
@@ -60,10 +57,16 @@ if(build)
       include/pcl/${SUBSYS_NAME}/vtkRay.h
       include/pcl/${SUBSYS_NAME}/detector_visualizer.h
 
+      include/pcl/${SUBSYS_NAME}/proposer.h
+      include/pcl/${SUBSYS_NAME}/basic_proposer.h
+      include/pcl/${SUBSYS_NAME}/registration_proposer.h
+      include/pcl/${SUBSYS_NAME}/hough_proposer.h
+
       include/pcl/${SUBSYS_NAME}/feature_wrapper.h
       include/pcl/${SUBSYS_NAME}/fpfh_wrapper.h
       include/pcl/${SUBSYS_NAME}/shot_wrapper.h
       include/pcl/${SUBSYS_NAME}/si_wrapper.h
+      include/pcl/${SUBSYS_NAME}/3dsc_wrapper.h
 
       include/pcl/${SUBSYS_NAME}/keypoint_wrapper.h
       include/pcl/${SUBSYS_NAME}/uniform_sampling_wrapper.h
@@ -86,7 +89,6 @@ if(build)
                       src/detector_visualizer.cpp
                       ${incs}
                       ${impl_incs}
-                      src/basic_proposer.cpp
                       src/confusion_matrix.cpp
                       src/main.cpp
                       src/model_source.cpp
@@ -94,14 +96,18 @@ if(build)
                       src/proctor.cpp
                       #src/proctor_mpi.cpp
                       src/proposer.cpp
-                      src/registration_proposer.cpp
                       src/scanning_model_source.cpp
                       src/primitive_model_source.cpp
                       src/scanner.cpp
 
+                      src/basic_proposer.cpp
+                      src/registration_proposer.cpp
+                      src/hough_proposer.cpp
+
                       src/fpfh_wrapper.cpp
                       src/shot_wrapper.cpp
                       src/si_wrapper.cpp
+                      src/3dsc_wrapper.cpp
 
                       src/keypoint_wrapper.cpp
                       src/uniform_sampling_wrapper.cpp

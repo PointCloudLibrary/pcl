@@ -13,7 +13,7 @@ namespace pcl
 
     class FPFHWrapper : public FeatureWrapper {
       public:
-        FPFHWrapper()
+        FPFHWrapper() : FeatureWrapper("fpfh")
         {}
 
         void

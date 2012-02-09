@@ -1,5 +1,5 @@
-#ifndef SI_WRAPPER_H
-#define SI_WRAPPER_H
+#ifndef PCL_PROCTOR_3DSC_WRAPPER_H
+#define PCL_PROCTOR_3DSC_WRAPPER_H
 
 #include "proctor/feature_wrapper.h"
 
@@ -11,9 +11,9 @@ namespace pcl
   namespace proctor
   {
 
-    class SIWrapper : public FeatureWrapper {
+    class ShapeContextWrapper : public FeatureWrapper {
       public:
-        SIWrapper() : FeatureWrapper(std::string("spin image"))
+        ShapeContextWrapper() : FeatureWrapper(std::string("3d shape context"))
         {}
 
         void

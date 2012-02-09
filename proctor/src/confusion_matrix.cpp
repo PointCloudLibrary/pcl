@@ -1,3 +1,4 @@
+#include "boost/format.hpp"
 #include "proctor/confusion_matrix.h"
 
 #include <iostream>
@@ -26,9 +27,9 @@ namespace pcl
     ConfusionMatrix::printMatrix()
     {
       for (std::vector<std::string>::iterator it = ids_.begin(); it != ids_.end(); ++it) {
-        std::cout << *it << ":";
+        std::cout << boost::format("%-18s:      ") % *it;
         for (std::vector<std::string>::iterator it2 = ids_.begin(); it2 != ids_.end(); ++it2) {
-          std::cout << "\t" << matrix_[*it][*it2];
+          std::cout << boost::format("%-8d ") % matrix_[*it][*it2];
         }
 
         std::cout << std::endl;

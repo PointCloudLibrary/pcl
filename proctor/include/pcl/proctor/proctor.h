@@ -47,7 +47,7 @@ namespace pcl
         train(Detector &detector);
 
         /** generate testing data and pass to detector; this populates scenes, confusion, and distance */
-        virtual void
+        virtual double
         test(Detector &detector, unsigned int seed);
 
         /** compute and print the precision and recall data */

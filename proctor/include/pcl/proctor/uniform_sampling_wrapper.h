@@ -10,7 +10,7 @@ namespace pcl
 
     class UniformSamplingWrapper : public KeypointWrapper {
       public:
-        UniformSamplingWrapper()
+        UniformSamplingWrapper() : KeypointWrapper("uniform sampling")
         {}
 
         void
