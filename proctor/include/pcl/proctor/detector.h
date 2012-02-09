@@ -10,6 +10,7 @@
 #include "proctor/config.h"
 #include "proctor/timer.h"
 #include "proctor/database_entry.h"
+#include "proctor/keypoint_wrapper.h"
 
 using std::vector;
 using std::stringstream;
@@ -36,6 +37,9 @@ namespace pcl
 
         typedef boost::shared_ptr<std::map<std::string, Entry> > DatabasePtr;
         typedef boost::shared_ptr<const std::map<std::string, Entry> > ConstDatabasePtr;
+
+        typedef boost::shared_ptr<KeypointWrapper> KeypointWrapperPtr;
+        typedef boost::shared_ptr<const KeypointWrapper> ConstKeypointWrapperPtr;
 
         Detector() {
           database_.reset(new std::map<std::string, Entry>);
@@ -105,6 +109,12 @@ namespace pcl
           proposer_ = proposer;
         }
 
+        void
+        setKeypointWrapper(const KeypointWrapperPtr wrapper)
+        {
+          keypoint_wrap_ = wrapper;
+        }
+
       private:
 
         /** the timer */
@@ -113,6 +123,8 @@ namespace pcl
         ProposerPtr proposer_;
 
         DatabasePtr database_;
+
+        KeypointWrapperPtr keypoint_wrap_;
 
         DetectorVisualizer *detector_vis_;
     };

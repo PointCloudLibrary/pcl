@@ -11,6 +11,9 @@ namespace pcl
 
     class KeypointWrapper {
       public:
+        typedef boost::shared_ptr<KeypointWrapper> Ptr;
+        typedef boost::shared_ptr<const KeypointWrapper> ConstPtr;
+
         typedef PointNormal PointInT;
         typedef PointNormal PointOutT;
         typedef pcl::PointCloud<PointInT> PointCloudIn;

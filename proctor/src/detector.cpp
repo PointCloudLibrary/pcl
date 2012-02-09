@@ -12,7 +12,6 @@
 #include "proctor/proposer.h"
 #include "proctor/registration_proposer.h"
 #include "proctor/detector_visualizer.h"
-#include "proctor/uniform_sampling_wrapper.h"
 
 namespace pcl
 {
@@ -141,31 +140,17 @@ namespace pcl
       //
       PointCloud<PointNormal>::Ptr keypoints (new PointCloud<PointNormal>());
 
-      UniformSamplingWrapper us_wrap;
-      us_wrap.compute(cloud, *keypoints);
+      if (keypoint_wrap_)
+      {
+        keypoint_wrap_->compute(cloud, *keypoints);
+      }
+      else
+      {
+        // TODO Figure out how to handle this error
+        cerr << "No keypoint estimator given" << endl;
+      }
 
       return keypoints;
-
-      //IndicesPtr indices (new vector<int>());
-      //PointCloud<int> leaves;
-      //UniformSampling<PointNormal> us;
-      //us.setRadiusSearch(keypoint_separation);
-      //us.setInputCloud(cloud);
-      //us.compute(leaves);
-      //indices->assign(leaves.points.begin(), leaves.points.end()); // can't use operator=, probably because of different allocators
-
-      //return indices;
-
-      //IndicesPtr subsampled_indices (new vector<int>());
-      //int i = 0;
-      //while (i < 10000) {
-        //int next_index = rand() % ((int) indices->size());
-        //subsampled_indices->push_back(indices->at(next_index));
-        //indices->erase(indices->begin() + next_index);
-        //i++;
-      //}
-
-      //return subsampled_indices;
     }
 
     PointCloud<Detector::Signature>::Ptr

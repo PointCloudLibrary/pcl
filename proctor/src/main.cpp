@@ -20,6 +20,7 @@ using pcl::proctor::PrimitiveModelSource;
 using pcl::proctor::BasicProposer;
 using pcl::proctor::UniformSamplingWrapper;
 using pcl::proctor::HarrisWrapper;
+using pcl::proctor::KeypointWrapper;
 
 struct run_proctor
 {
@@ -35,11 +36,20 @@ struct run_proctor
     //unsigned int model_seed = 2;
     unsigned int test_seed = 0; //time(NULL);
 
+    /* Configure Detector */
     Detector detector;
-    Proctor proctor;
 
     BasicProposer::Ptr proposer(new BasicProposer);
     detector.setProposer(proposer);
+
+    KeypointWrapper::Ptr us_wrap (new UniformSamplingWrapper);
+    KeypointWrapper::Ptr harris_wrap (new HarrisWrapper);
+    detector.setKeypointWrapper(harris_wrap);
+
+    detector.enableVisualization(vis_);
+
+    // Configure Proctor
+    Proctor proctor;
 
     //ScanningModelSource model_source("princeton", "/home/justin/Documents/benchmark/db");
     //model_source.loadModels();
@@ -47,17 +57,12 @@ struct run_proctor
     PrimitiveModelSource model_source("primitive");
     model_source.loadModels();
 
-    detector.enableVisualization(vis_);
-
     proctor.setModelSource(&model_source);
     proctor.train(detector);
     proctor.test(detector, test_seed);
     proctor.printResults(detector);
 
     sleep(100000);
-
-    UniformSamplingWrapper us_wrap;
-    HarrisWrapper harris_wrap;
   }
 };
 
