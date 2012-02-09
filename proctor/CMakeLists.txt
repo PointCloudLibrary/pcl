@@ -50,8 +50,10 @@ if(build)
       include/pcl/${SUBSYS_NAME}/proctor_mpi.h
       include/pcl/${SUBSYS_NAME}/proposer.h
       include/pcl/${SUBSYS_NAME}/registration_proposer.h
+      include/pcl/${SUBSYS_NAME}/keypoint_wrapper.h
       include/pcl/${SUBSYS_NAME}/scanner.h
       include/pcl/${SUBSYS_NAME}/timer.h
+      include/pcl/${SUBSYS_NAME}/uniform_sampling_wrapper.h
       include/pcl/${SUBSYS_NAME}/vtkLidarPoint.h
       include/pcl/${SUBSYS_NAME}/vtkLidarScanner.h
       include/pcl/${SUBSYS_NAME}/vtkRay.h
@@ -75,16 +77,18 @@ if(build)
                       ${incs}
                       ${impl_incs}
                       src/basic_proposer.cpp
+                      src/confusion_matrix.cpp
+                      src/keypoint_wrapper.cpp
                       src/main.cpp
                       src/model_source.cpp
-                      src/scanning_model_source.cpp
-                      src/confusion_matrix.cpp
                       src/detector.cpp
                       src/proctor.cpp
+                      #src/proctor_mpi.cpp
                       src/proposer.cpp
                       src/registration_proposer.cpp
-                      #src/proctor_mpi.cpp
+                      src/scanning_model_source.cpp
                       src/scanner.cpp
+                      src/uniform_sampling_wrapper.cpp
                       )
 
     target_link_libraries(proctor 

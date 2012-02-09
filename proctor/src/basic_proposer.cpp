@@ -31,7 +31,7 @@ namespace pcl
       int max_votes = 1; // TODO Set this to what?
 
       double votes = 0;
-      for (unsigned int pi = 0; pi < query.indices->size(); pi++) {
+      for (unsigned int pi = 0; pi < query.features->size(); pi++) {
         vector<int> indices;
         vector<float> distances;
 

@@ -1,15 +1,18 @@
 #include <sstream>
+#include <stdlib.h>
 
 #include <pcl/features/fpfh.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/uniform_sampling.h>
 #include <pcl/common/time.h>
+#include <pcl/common/common.h>
 
 #include "proctor/detector.h"
 #include "proctor/proctor.h"
 #include "proctor/proposer.h"
 #include "proctor/registration_proposer.h"
 #include "proctor/detector_visualizer.h"
+#include "proctor/uniform_sampling_wrapper.h"
 
 namespace pcl
 {
@@ -25,16 +28,18 @@ namespace pcl
     Detector::train(Scene &scene)
     {
       srand(0);
-      if (detector_vis_) {
-        detector_vis_->addCloud(scene.id, scene.cloud);
-      }
 
-      IndicesPtr keypoints = computeKeypoints(scene.cloud);
+      PointCloud<PointNormal>::Ptr keypoints = computeKeypoints(scene.cloud);
+
+      if (detector_vis_) {
+        detector_vis_->addCloud(scene.id + "keypoints", keypoints);
+        detector_vis_->addCloud(scene.id + "original", scene.cloud);
+      }
       PointCloud<Detector::Signature>::Ptr features = obtainFeatures(scene, keypoints, false);
 
       Entry e;
       e.cloud = scene.cloud;
-      e.indices = keypoints;
+      e.keypoints = keypoints;
       e.features = features;
       e.tree = KdTree<Signature>::Ptr(new KdTreeFLANN<Signature>());
       e.tree->setInputCloud(e.features);
@@ -50,10 +55,10 @@ namespace pcl
       Entry e;
       e.cloud = scene.cloud;
       timer.start();
-      e.indices = computeKeypoints(e.cloud);
+      e.keypoints = computeKeypoints(e.cloud);
       timer.stop(KEYPOINTS_TESTING);
       timer.start();
-      e.features = obtainFeatures(scene, e.indices, true);
+      e.features = obtainFeatures(scene, e.keypoints, true);
       timer.stop(COMPUTE_FEATURES_TESTING);
 
       memset(classifier, 0, Config::num_models * sizeof(*classifier));
@@ -107,45 +112,75 @@ namespace pcl
       );
     }
 
-    IndicesPtr
+    PointCloud<PointNormal>::Ptr
     Detector::computeKeypoints(PointCloud<PointNormal>::Ptr cloud)
     {
-      IndicesPtr indices (new vector<int>());
-      PointCloud<int> leaves;
-      UniformSampling<PointNormal> us;
-      us.setRadiusSearch(keypoint_separation);
-      us.setInputCloud(cloud);
-      us.compute(leaves);
-      indices->assign(leaves.points.begin(), leaves.points.end()); // can't use operator=, probably because of different allocators
+      //PointNormal min;
+      //PointNormal max;
 
-      return indices;
+      //getMinMax3D(*cloud, min, max);
+      //cout << "Max: " << max << "\tMin: " << min << endl;
+      //float vol = 1;
+      //vol *= max.x - min.x;
+      //vol *= max.y - min.y;
+      //vol *= max.z - min.z;
+
+      //float keypoint_separation = pow(vol / 10000, 0.3);
+      //cout << "Sep: " << vol << " " << keypoint_separation << endl;
+      //keypoint_separation = 0.05;
+      //
+      PointCloud<PointNormal>::Ptr keypoints (new PointCloud<PointNormal>());
+
+      UniformSamplingWrapper us_wrap;
+      us_wrap.compute(cloud, *keypoints);
+
+      return keypoints;
+
+      //IndicesPtr indices (new vector<int>());
+      //PointCloud<int> leaves;
+      //UniformSampling<PointNormal> us;
+      //us.setRadiusSearch(keypoint_separation);
+      //us.setInputCloud(cloud);
+      //us.compute(leaves);
+      //indices->assign(leaves.points.begin(), leaves.points.end()); // can't use operator=, probably because of different allocators
+
+      //return indices;
+
+      //IndicesPtr subsampled_indices (new vector<int>());
+      //int i = 0;
+      //while (i < 10000) {
+        //int next_index = rand() % ((int) indices->size());
+        //subsampled_indices->push_back(indices->at(next_index));
+        //indices->erase(indices->begin() + next_index);
+        //i++;
+      //}
+
+      //return subsampled_indices;
     }
 
     PointCloud<Detector::Signature>::Ptr
-    Detector::computeFeatures(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices)
+    Detector::computeFeatures(PointCloud<PointNormal>::Ptr cloud, PointCloud<PointNormal>::Ptr keypoints)
     {
-      cout << "computing features on " << indices->size() << " points" << endl;
+      cout << "computing features on " << keypoints->size() << " points" << endl;
       PointCloud<Signature>::Ptr features (new PointCloud<Signature>());
       FPFHEstimation<PointNormal, PointNormal, Signature> fpfh;
       fpfh.setRadiusSearch(0.1);
-      fpfh.setInputCloud(cloud);
-      fpfh.setIndices(indices);
+      fpfh.setInputCloud(keypoints);
       search::KdTree<PointNormal>::Ptr kdt (new search::KdTree<PointNormal>());
       fpfh.setSearchMethod(kdt);
-      fpfh.setInputNormals(cloud);
+      fpfh.setInputNormals(keypoints);
       fpfh.compute(*features);
-      if (features->points.size() != indices->size())
-        cout << "got " << features->points.size() << " features from " << indices->size() << " points" << endl;
+      cout << "done computing features" << endl;
       return features;
     }
 
     // TODO Enum for is_test_phase
     PointCloud<Detector::Signature>::Ptr
-    Detector::obtainFeatures(Scene &scene, IndicesPtr indices, bool is_test_phase, bool cache)
+    Detector::obtainFeatures(Scene &scene, PointCloud<PointNormal>::Ptr keypoints, bool is_test_phase, bool cache)
     {
       if (cache == false)
       {
-        PointCloud<Signature>::Ptr features = computeFeatures(scene.cloud, indices);
+        PointCloud<Signature>::Ptr features = computeFeatures(scene.cloud, keypoints);
         return features;
       }
       else
@@ -170,7 +205,7 @@ namespace pcl
           //cout << "got " << features->points.size() << " features from " << indices->size() << " points" << endl;
           return features;
         } else {
-          PointCloud<Signature>::Ptr features = computeFeatures(scene.cloud, indices);
+          PointCloud<Signature>::Ptr features = computeFeatures(scene.cloud, keypoints);
           io::savePCDFileBinary(name, *features);
           return features;
         }

@@ -11,7 +11,7 @@ namespace pcl
 
     struct Entry {
       PointCloud<PointNormal>::Ptr cloud;
-      IndicesPtr indices;
+      PointCloud<PointNormal>::Ptr keypoints;
       PointCloud<Signature>::Ptr features;
       KdTree<Signature>::Ptr tree;
     };

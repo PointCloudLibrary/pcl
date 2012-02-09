@@ -29,31 +29,16 @@ namespace pcl
     double
     RegistrationProposer::computeRegistration(Entry &source, Entry &target)
     {
-      typedef boost::function<void(const PointCloud<PointNormal> &cloud_src,
-                                  const vector<int> &indices_src,
-                                  const PointCloud<PointNormal> &cloud_tgt,
-                                  const vector<int> &indices_tgt)> f;
-
-      // Copy the source/target clouds with only the subset of points that
-      // also features calculated for them.
-      PointCloud<PointNormal>::Ptr source_subset(
-          new PointCloud<PointNormal>(*(source.cloud), *(source.indices)));
-      PointCloud<PointNormal>::Ptr target_subset(
-          new PointCloud<PointNormal>(*(target.cloud), *(target.indices)));
-
-
       // TODO Filtering the source cloud makes it much faster when computing the
       // error metric, but may not be as good
       SampleConsensusInitialAlignment<PointNormal, PointNormal, Signature> ia_ransac;
       ia_ransac.setMinSampleDistance (0.05);
       ia_ransac.setMaxCorrespondenceDistance (0.5);
       ia_ransac.setMaximumIterations (1000);
-      ia_ransac.setInputCloud (source_subset);
+      ia_ransac.setInputCloud ((source.keypoints));
       ia_ransac.setSourceFeatures (source.features);
-      //ia_ransac.setSourceIndices(source.indices);
-      ia_ransac.setInputTarget (target_subset);
+      ia_ransac.setInputTarget ((target.keypoints));
       ia_ransac.setTargetFeatures (target.features);
-      //ia_ransac.setTargetIndices(target.indices);
 
       PointCloud<PointNormal>::Ptr aligned (new PointCloud<PointNormal>());
       ia_ransac.align(*aligned);

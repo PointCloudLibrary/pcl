@@ -88,16 +88,16 @@ namespace pcl
         printTimer();
 
         /** get a dense sampling of points as keypoints and return their indices */
-        IndicesPtr
+        PointCloud<PointNormal>::Ptr
         computeKeypoints(PointCloud<PointNormal>::Ptr cloud);
 
         /** run the feature */
         PointCloud<Signature>::Ptr
-        computeFeatures(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices);
+        computeFeatures(PointCloud<PointNormal>::Ptr cloud, PointCloud<PointNormal>::Ptr keypoints);
 
         /** try to load the features from disk, or do it from scratch. for training only */
         PointCloud<Signature>::Ptr
-        obtainFeatures(Scene &scene, IndicesPtr indices, bool is_test_phase, bool cache = false);
+        obtainFeatures(Scene &scene, PointCloud<PointNormal>::Ptr keypoints, bool is_test_phase, bool cache = false);
 
         void
         setProposer(const ProposerPtr proposer)
