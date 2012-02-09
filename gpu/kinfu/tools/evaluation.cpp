@@ -51,7 +51,7 @@ const float Evaluation::cy = 239.5f;
 struct Evaluation::Impl {};
 
 Evaluation::Evaluation(const std::string&) { cout << "Evaluation requires OpenCV. Please enable it in cmake-file" << endl; exit(0); }
-void Evaluation::Evaluation::setMatchFile(const std::string&) { }
+void Evaluation::setMatchFile(const std::string&) { }
 bool Evaluation::grab (double stamp, pcl::gpu::PtrStepSz<const RGB>& rgb24) { return false; }
 bool Evaluation::grab (double stamp, pcl::gpu::PtrStepSz<const unsigned short>& depth) { return false; }
 bool Evaluation::grab (double stamp, pcl::gpu::PtrStepSz<const unsigned short>& depth, pcl::gpu::PtrStepSz<const RGB>& rgb24) { return false; }
