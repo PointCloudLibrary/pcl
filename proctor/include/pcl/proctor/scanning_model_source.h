@@ -8,6 +8,8 @@
 #include "proctor/model_source.h"
 #include "proctor/scanner.h"
 
+#include <pcl/pcl_base.h>
+
 namespace pcl
 {
 
@@ -18,6 +20,9 @@ namespace pcl
       public:
         ScanningModelSource(std::string name, std::string dir) : ModelSource(name, dir)
         {}
+
+        IndicesPtr
+        randomSubset(int n, int r);
 
         virtual void
         loadModels();
@@ -31,7 +36,7 @@ namespace pcl
         virtual
         PointCloud<PointNormal>::Ptr getTestModel(std::string model_id);
 
-      private:
+      protected:
         std::map<std::string, Model> models_;
         boost::mt19937 rng_;
     };

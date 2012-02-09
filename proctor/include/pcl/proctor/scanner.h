@@ -4,6 +4,7 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
+
 namespace pcl
 {
 
@@ -11,8 +12,8 @@ namespace pcl
   {
 
     struct Model {
-      int id;
-      vtkPolyData *mesh;
+      std::string id;
+      vtkAlgorithmOutput* mesh;
       float cx, cy, cz;
       float scale;
     };

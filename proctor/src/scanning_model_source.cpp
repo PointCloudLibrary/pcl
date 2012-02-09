@@ -7,8 +7,8 @@
 #include <vtkCellArray.h>
 #include <vtkFloatArray.h>
 #include <vtkPoints.h>
+#include <vtkSmartPointer.h>
 
-#include <pcl/pcl_base.h>
 #include <pcl/filters/filter.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/ply_io.h>
@@ -33,7 +33,7 @@ namespace pcl
     const float phi_max = M_PI * 2;
 
     IndicesPtr
-    randomSubset(int n, int r)
+    ScanningModelSource::randomSubset(int n, int r)
     {
       IndicesPtr subset (new std::vector<int>());
       std::vector<int> bag (n);
@@ -53,9 +53,9 @@ namespace pcl
     {
       int max_models = 1814;
       srand(0);
-      IndicesPtr model_subset = randomSubset(max_models, Config::num_models);
+      IndicesPtr model_subset = randomSubset(max_models, 100);
 
-      for (int mi = 0; mi < Config::num_models; mi++) {
+      for (int mi = 0; mi < 100; mi++) {
         int id = (*model_subset)[mi];
         std::stringstream path;
         FILE *file;
@@ -66,15 +66,16 @@ namespace pcl
         std::stringstream ss;
         ss << name_ << id;
         std::string new_id = ss.str();
+        new_model->id = new_id;
 
         // read mesh
-        new_model->id = id;
         path << dir_ << "/" << id / 100 << "/m" << id << "/m" << id << ".off";
         file = fopen(path.str ().c_str (), "r");
 
         if (file == NULL) {
-          cerr << "Could not find " << path << endl;
-          exit(-1);
+          cerr << "Could not find " << path.str() << endl;
+          continue;
+          //exit(-1);
         }
 
         int line = 1;
@@ -118,9 +119,12 @@ namespace pcl
 
         fclose(file);
 
-        new_model->mesh = vtkPolyData::New(); // lives forever
-        new_model->mesh->SetPoints(p); p->Delete();
-        new_model->mesh->SetPolys(ca); ca->Delete();
+
+        vtkPolyData* new_mesh = vtkPolyData::New();
+        new_mesh->SetPoints(p);// p->Delete();
+        new_mesh->SetPolys(ca);// ca->Delete();
+
+        new_model->mesh = new_mesh->GetProducerPort();
 
         // read metadata
         path.str ("");

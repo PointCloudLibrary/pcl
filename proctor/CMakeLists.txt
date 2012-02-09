@@ -46,6 +46,7 @@ if(build)
       include/pcl/${SUBSYS_NAME}/detector.h
       include/pcl/${SUBSYS_NAME}/model_source.h
       include/pcl/${SUBSYS_NAME}/scanning_model_source.h
+      include/pcl/${SUBSYS_NAME}/primitive_model_source.h
       include/pcl/${SUBSYS_NAME}/proctor.h
       include/pcl/${SUBSYS_NAME}/proctor_mpi.h
       include/pcl/${SUBSYS_NAME}/proposer.h
@@ -87,6 +88,7 @@ if(build)
                       src/proposer.cpp
                       src/registration_proposer.cpp
                       src/scanning_model_source.cpp
+                      src/primitive_model_source.cpp
                       src/scanner.cpp
                       src/uniform_sampling_wrapper.cpp
                       )

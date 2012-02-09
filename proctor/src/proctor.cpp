@@ -45,8 +45,8 @@ namespace pcl
       cout << "[models]" << endl;
 
       timer.start();
-#pragma omp parallel for
-      for (int mi = 0; mi < Config::num_models; mi++) {
+//#pragma omp parallel for
+      for (int mi = 0; mi < model_ids_.size() && mi < Config::num_models; mi++) {
         std::string model_id = model_ids_[mi];
         cout << "Begin scanning model " << mi << " (" << model_id << ")" << endl;
         Scene *scene = new Scene(model_id, source_->getTrainingModel(model_id));
@@ -76,7 +76,7 @@ namespace pcl
       ConfusionMatrix confusion_matrix;
 
 //#pragma omp parallel for
-      for (int ni = 0; ni < Config::num_trials; ni++) {
+      for (int ni = 0; model_ids_.size() > 0 && ni < Config::num_trials; ni++) {
         cout << "[test " << ni << "]" << endl;
 
         std::string truth_id = model_ids_[ni % model_ids_.size()];

@@ -1,6 +1,8 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
 
+#include <sstream>
+
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 8))
 #include <vtkLidarScanner.h>
 #endif
@@ -79,7 +81,8 @@ namespace pcl
       ls->SetNumberOfThetaPoints(Scanner::res_y);
       ls->SetNumberOfPhiPoints(Scanner::res_x);
       ls->SetTransform(transform);
-      ls->SetInputConnection(model.mesh->GetProducerPort());
+      ls->SetInputConnection(model.mesh);
+      ls->SetCreateMesh(false);
       ls->Update();
 
       ls->GetValidOutputPoints(pd);
@@ -132,9 +135,11 @@ namespace pcl
     Scanner::getCloudCached(float theta, float phi, Model &model)
     {
       Scan scan = { theta, phi };
-      char name[22];
-      sprintf(name, "scan_%04d_%03.0f_%03.0f.pcd", model.id, deg(scan.theta), deg(scan.phi));
-      if (ifstream(name)) {
+
+      std::stringstream ss;
+      ss << "scan_" << model.id << "_" << deg(scan.theta) << "_" << deg(scan.phi) << ".pcd";
+      std::string name = ss.str();
+      if (ifstream(name.c_str())) {
         PointCloud<PointNormal>::Ptr cloud (new PointCloud<PointNormal>());
         io::loadPCDFile(name, *cloud);
         return cloud;
