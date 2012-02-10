@@ -1,12 +1,12 @@
 .. _pairwise_incremental_registration:
 
-How to incrementaly register pairs of clouds
+How to incrementally register pairs of clouds
 --------------------------------------------
 
 This document demonstrates using the Iterative Closest Point algorithm in order
 to incrementally register a series of point clouds two by two.
 
-| The idea is to transform all the clouds int he first cloud's frame.
+| The idea is to transform all the clouds in the first cloud's frame.
 | This is done by finding the best transform between each consecutive cloud, and accumulating these transforms over the whole set of clouds.
 
 | Your data set should consist of clouds that have been roughly pre-aligned in a common frame (e.g. in a robot's odometry or map frame) and overlap with one another.
@@ -104,7 +104,7 @@ We now arrive to the actual pair registration.
    
         reg.setMaximumIterations (2);
         
-And is manualy iterated (30 times in our case):
+And is manually iterated (30 times in our case):
 
    .. code-block:: cpp
    

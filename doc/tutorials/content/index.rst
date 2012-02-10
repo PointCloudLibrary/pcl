@@ -642,13 +642,13 @@ Registration
   * :ref:`pairwise_incremental_registration`
 
      ======  ======
-     |re_3|  Title: **How to use iterative closest point algorithm**
+     |re_3|  Title: **How to incrementally register pairs of clouds**
 
              Author: *Raphael Favier*
 
              Compatibility: > PCL 1.4
 
-             This document demonstrates using the Iterative Closest Point algorithm in order to incrementaly register a serie of pointclouds two by two.
+             This document demonstrates using the Iterative Closest Point algorithm in order to incrementally register a series of point clouds two by two.
      ======  ======
 
      .. |re_3| image:: images/iterative_closest_point.gif
