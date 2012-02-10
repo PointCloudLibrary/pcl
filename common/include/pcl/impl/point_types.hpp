@@ -231,7 +231,7 @@ namespace pcl
   /** \brief A point structure representing Euclidean xyz coordinates, and the intensity value.
     * \ingroup common
     */
-  struct EIGEN_ALIGN16 PointXYZI
+  struct EIGEN_ALIGN16 _PointXYZI
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     union
@@ -244,6 +244,23 @@ namespace pcl
     };
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
+
+  struct PointXYZI : public _PointXYZI
+  {
+    inline PointXYZI ()
+    {
+      x = y = z = 0.0f; 
+      data[3] = 1.0f;
+      intensity = 0.0f;
+    }
+    inline PointXYZI (float _intensity)
+    {
+      x = y = z = 0.0f; 
+      data[3] = 1.0f;
+      intensity = _intensity;
+    }
+  };
+
   inline std::ostream& operator << (std::ostream& os, const PointXYZI& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.intensity << ")";
@@ -406,10 +423,14 @@ namespace pcl
   {
     inline PointXYZRGB ()
     {
-      _unused = 0;
+      x = y = z = 0.0f; 
+      data[3] = 1.0f;
+      r = g = b = _unused = 0;
     }
     inline PointXYZRGB (uint8_t _r, uint8_t _g, uint8_t _b)
     {
+      x = y = z = 0.0f; 
+      data[3] = 1.0f;
       r = _r;
       g = _g;
       b = _b;
@@ -433,10 +454,15 @@ namespace pcl
   {
     inline PointXYZRGBL ()
     {
+      x = y = z = 0.0f; 
+      data[3] = 1.0f;
+      r = g = b = 0; 
       label = 255;
     }
     inline PointXYZRGBL (uint8_t _r, uint8_t _g, uint8_t _b, uint32_t _label)
     {
+      x = y = z = 0.0f; 
+      data[3] = 1.0f;
       r = _r;
       g = _g;
       b = _b;
@@ -470,7 +496,8 @@ namespace pcl
   {
     inline PointXYZHSV ()
     {
-      data_c[3] = 0;
+      x = y = z = 0.0f; data[3] = 1.0f;
+      h = s = v = data_c[3] = 0;
     }
     inline PointXYZHSV (float _h, float _v, float _s)
     {
@@ -525,7 +552,7 @@ namespace pcl
   /** \brief A point structure representing normal coordinates and the surface curvature estimate. (SSE friendly)
    * \ingroup common
    */
-  struct EIGEN_ALIGN16 Normal
+  struct EIGEN_ALIGN16 _Normal
   {
     PCL_ADD_NORMAL4D; // This adds the member normal[3] which can also be accessed using the point (which is float[4])
     union
@@ -538,6 +565,20 @@ namespace pcl
     };
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
+
+  struct Normal : public _Normal
+  {
+    inline Normal ()
+    {
+      normal_x = normal_y = normal_z = data_n[3] = 0.0f;
+    }
+
+    inline Normal (float n_x, float n_y, float n_z)
+    { normal_x = n_x; normal_y = n_y; normal_z = n_z; data_n[3] = 0.0f; }
+
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+
   inline std::ostream& operator << (std::ostream& os, const Normal& p)
   {
     os << "(" << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - " << p.curvature << ")";
@@ -627,9 +668,9 @@ namespace pcl
   {
     inline PointXYZRGBNormal ()
     {
-      _unused = 0;
-      data[3] = 1.0f;
-      data_n[3] = 0.0f;
+      x = y = z = 0.0f; data[3] = 1.0f;
+      r = g = b = _unused = 0;
+      normal_x = normal_y = normal_z = data_n[3] = 0.0f;
     }
 
     inline Eigen::Vector3i getRGBVector3i () { return (Eigen::Vector3i (r, g, b)); }

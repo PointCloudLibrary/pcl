@@ -260,12 +260,13 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::InterestPoint,
     (float, strength, strength)
 )
 
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXYZI,
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZI,
     (float, x, x)
     (float, y, y)
     (float, z, z)
     (float, intensity, intensity)
 )
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZI, pcl::_PointXYZI)
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXYZL,
     (float, x, x)
@@ -278,12 +279,14 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Label,
     (uint32_t, label, label)
 )
 
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Normal,
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_Normal,
     (float, normal_x, normal_x)
     (float, normal_y, normal_y)
     (float, normal_z, normal_z)
     (float, curvature, curvature)
 )
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::Normal, pcl::_Normal)
+
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointNormal,
     (float, x, x)
     (float, y, y)
