@@ -72,17 +72,16 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
     warp_point_.reset (new WarpPointRigid6D<PointSource, PointTarget>);
 
   int n_unknowns = warp_point_->getDimension ();
-  int m = cloud_src.points.size ();
-  Eigen::VectorXd x(n_unknowns);
+  Eigen::VectorXd x (n_unknowns);
   x.setZero ();
   
   // Set temporary pointers
   tmp_src_ = &cloud_src;
   tmp_tgt_ = &cloud_tgt;
 
-  OptimizationFunctor functor (n_unknowns, m, this);
+  OptimizationFunctor functor (cloud_src.points.size (), this);
   Eigen::NumericalDiff<OptimizationFunctor> num_diff (functor);
-  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor> > lm (num_diff);
+  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, double> lm (num_diff);
   int info = lm.minimize (x);
 
   // Compute the norm of the residuals
@@ -156,8 +155,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
     warp_point_.reset (new WarpPointRigid6D<PointSource, PointTarget>);
 
   int n_unknowns = warp_point_->getDimension ();  // get dimension of unknown space
-  int m = indices_src.size ();
-  Eigen::VectorXd x(n_unknowns);
+  Eigen::VectorXd x (n_unknowns);
   x.setConstant (n_unknowns, 0);
 
   // Set temporary pointers
@@ -166,7 +164,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
   tmp_idx_src_ = &indices_src;
   tmp_idx_tgt_ = &indices_tgt;
 
-  OptimizationFunctorWithIndices functor (n_unknowns, m, this);
+  OptimizationFunctorWithIndices functor (indices_src.size (), this);
   Eigen::NumericalDiff<OptimizationFunctorWithIndices> num_diff (functor);
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctorWithIndices> > lm (num_diff);
   int info = lm.minimize (x);
@@ -211,7 +209,8 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> int 
-pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::OptimizationFunctor::operator() (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const
+pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::OptimizationFunctor::operator () (
+    const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const
 {
   const PointCloud<PointSource> & src_points = *estimator_->tmp_src_;
   const PointCloud<PointTarget> & tgt_points = *estimator_->tmp_tgt_;
@@ -221,7 +220,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::Optimiz
   estimator_->warp_point_->setParam (params);
 
   // Transform each source point and compute its distance to the corresponding target point
-  for (int i = 0; i < m_values; i++)
+  for (int i = 0; i < values (); ++i)
   {
     const PointSource & p_src = src_points.points[i];
     const PointTarget & p_tgt = tgt_points.points[i];
@@ -233,12 +232,13 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::Optimiz
     // Estimate the distance (cost function)
     fvec[i] = estimator_->computeDistance (p_src_warped, p_tgt);
   }
-  return 0;
+  return (0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> int
-pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::OptimizationFunctorWithIndices::operator() (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const
+pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::OptimizationFunctorWithIndices::operator() (
+    const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const
 {
   const PointCloud<PointSource> & src_points = *estimator_->tmp_src_;
   const PointCloud<PointTarget> & tgt_points = *estimator_->tmp_tgt_;
@@ -250,7 +250,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::Optimiz
   estimator_->warp_point_->setParam (params);
 
   // Transform each source point and compute its distance to the corresponding target point
-  for (int i = 0; i < m_values; ++i)
+  for (int i = 0; i < values (); ++i)
   {
     const PointSource & p_src = src_points.points[src_indices[i]];
     const PointTarget & p_tgt = tgt_points.points[tgt_indices[i]];

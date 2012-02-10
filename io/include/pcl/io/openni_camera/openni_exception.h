@@ -44,7 +44,14 @@
 #include <cstdio>
 #include <exception>
 #include <string>
-#include <pcl/pcl_macros.h>
+//#include <pcl/pcl_macros.h> <-- because current header is included in NVCC-compiled code and contains <Eigen/Core>. Consider <pcl/pcl_exports.h>
+
+
+//fom <pcl/pcl_macros.h>
+#if defined _WIN32 && defined _MSC_VER && !defined __PRETTY_FUNCTION__
+  #define __PRETTY_FUNCTION__ __FUNCTION__  
+#endif
+
 
 #define THROW_OPENNI_EXCEPTION(format,...) throwOpenNIException( __PRETTY_FUNCTION__, __FILE__, __LINE__, format , ##__VA_ARGS__ )
 

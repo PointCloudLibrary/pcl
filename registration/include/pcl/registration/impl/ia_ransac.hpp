@@ -39,7 +39,7 @@
 template <typename PointSource, typename PointTarget, typename FeatureT> void 
 pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::setSourceFeatures (const FeatureCloudConstPtr &features)
 {
-  if (features == NULL || features->points.empty ())
+  if (features == NULL || features->empty ())
   {
     PCL_ERROR ("[pcl::%s::setSourceFeatures] Invalid or empty point cloud dataset given!\n", getClassName ().c_str ());
     return;
@@ -51,7 +51,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::setSou
 template <typename PointSource, typename PointTarget, typename FeatureT> void 
 pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::setTargetFeatures (const FeatureCloudConstPtr &features)
 {
-  if (features == NULL || features->points.empty ())
+  if (features == NULL || features->empty ())
   {
     PCL_ERROR ("[pcl::%s::setTargetFeatures] Invalid or empty point cloud dataset given!\n", getClassName ().c_str ());
     return;

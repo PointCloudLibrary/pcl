@@ -119,6 +119,7 @@ namespace pcl
       using Registration<PointSource, PointTarget>::target_;
       using Registration<PointSource, PointTarget>::nr_iterations_;
       using Registration<PointSource, PointTarget>::max_iterations_;
+      using Registration<PointSource, PointTarget>::ransac_iterations_;
       using Registration<PointSource, PointTarget>::previous_transformation_;
       using Registration<PointSource, PointTarget>::final_transformation_;
       using Registration<PointSource, PointTarget>::transformation_;

@@ -4,7 +4,11 @@ set(SUBSYS_DEPS common octree)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk)
+if(WIN32)
+    PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk)
+else(WIN32)
+    PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk libusb-1.0)
+endif(WIN32)
 
 PCL_ADD_DOC(${SUBSYS_NAME})
 
@@ -61,6 +65,15 @@ if(build)
         set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets)
     endif ()
 
+    set(PLY_SOURCES src/ply/ply_parser.cpp)
+    set(PLY_INCLUDES 
+        include/pcl/${SUBSYS_NAME}/ply/byte_order.h
+	include/pcl/${SUBSYS_NAME}/ply/io_operators.h
+	include/pcl/${SUBSYS_NAME}/ply/ply.h
+	include/pcl/${SUBSYS_NAME}/ply/ply_parser.h)
+    PCL_ADD_LIBRARY(pcl_io_ply ${SUBSYS_NAME} ${PLY_SOURCES} ${PLY_INCLUDES})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ply ${PLY_INCLUDES})
+
     set(srcs 
         src/pcd_grabber.cpp
         src/pcd_io.cpp
@@ -83,7 +96,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/pcl_io_exception.h
         include/pcl/${SUBSYS_NAME}/vtk_io.h
         include/pcl/${SUBSYS_NAME}/ply_io.h
-        include/pcl/${SUBSYS_NAME}/ply.h
         include/pcl/${SUBSYS_NAME}/obj_io.h 
         ${VTK_IO_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
@@ -107,12 +119,15 @@ if(build)
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${VTK_INCLUDE_DIRECTORIES})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES})
-    PCL_ADD_SSE_FLAGS(${LIB_NAME})
     link_directories(${VTK_LINK_DIRECTORIES})
-    target_link_libraries(${LIB_NAME} pcl_common ${VTK_IO_TARGET_LINK_LIBRARIES})
+    target_link_libraries(${LIB_NAME} pcl_common pcl_io_ply ${VTK_IO_TARGET_LINK_LIBRARIES})
 
     if(OPENNI_FOUND)
       target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
+      if(NOT WIN32)
+        find_package(libusb-1.0 REQUIRED)
+        target_link_libraries(${LIB_NAME} ${LIBUSB_1_LIBRARIES})
+      endif()
     endif(OPENNI_FOUND)
 
     set(EXT_DEPS eigen3)
@@ -127,8 +142,11 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} compression ${compression_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/openni_camera ${OPENNI_INCLUDES})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
-
+                
     add_subdirectory(tools)
-    add_subdirectory(test)
-endif(build)
 
+    if(BUILD_TESTS)
+        add_subdirectory(test)
+    endif(BUILD_TESTS)
+
+endif(build)

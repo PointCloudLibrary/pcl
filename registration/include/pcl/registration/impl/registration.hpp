@@ -62,8 +62,8 @@ pcl::Registration<PointSource, PointTarget>::getFitnessScore (const std::vector<
                                                               const std::vector<float> &distances_b)
 {
   unsigned int nr_elem = std::min (distances_a.size (), distances_b.size ());
-  Eigen::VectorXf map_a = Eigen::VectorXf::MapAligned (&distances_a[0], nr_elem);
-  Eigen::VectorXf map_b = Eigen::VectorXf::MapAligned (&distances_b[0], nr_elem);
+  Eigen::VectorXf map_a = Eigen::VectorXf::Map (&distances_a[0], nr_elem);
+  Eigen::VectorXf map_b = Eigen::VectorXf::Map (&distances_b[0], nr_elem);
   return ((map_a - map_b).sum () / nr_elem);
 }
 

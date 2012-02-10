@@ -32,7 +32,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: pyramid_feature_matching.cpp 1881 2011-07-25 17:23:16Z aichim $
+ * $Id: pyramid_feature_matching.cpp 4098 2012-01-31 05:01:31Z rusu $
  */
 
 #include <pcl/point_types.h>
@@ -41,4 +41,4 @@
 #include "pcl/registration/impl/pyramid_feature_matching.hpp"
 
 
-PCL_INSTANTIATE_PRODUCT(PyramidFeatureHistogram, (PCL_FEATURE_POINT_TYPES));
+PCL_INSTANTIATE_PRODUCT(PyramidFeatureHistogram, (PCL_FEATURE_POINT_TYPES))

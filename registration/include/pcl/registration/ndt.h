@@ -135,6 +135,8 @@ namespace pcl
       Eigen::Vector2f grid_step_;
       Eigen::Vector2f grid_extent_;
       Eigen::Vector3d newton_lambda_;
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 } // namespace pcl

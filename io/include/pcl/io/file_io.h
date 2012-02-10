@@ -77,8 +77,8 @@ namespace pcl
         */
       virtual int 
       readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, 
-                  Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &file_version,
-                  int &data_type, int &data_idx) = 0;
+                  Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, 
+                  int &file_version, int &data_type, int &data_idx) = 0;
 
       /** \brief Read a point cloud data from a FILE file and store it into a sensor_msgs/PointCloud2.
         * \param[in] file_name the name of the file containing the actual PointCloud data
@@ -128,40 +128,6 @@ namespace pcl
         pcl::fromROSMsg (blob, cloud);
         return 0;
       }
-
-      /** \brief Copy one single value of type T (uchar, char, uint, int, float, double, ...) from a string
-        * 
-        * Uses aoti/atof to do the conversion.
-        * Checks if the st is "nan" and converts it accordingly.
-        *
-        * \param[in] st the string containing the value to convert and copy
-        * \param[out] cloud the cloud to copy it to
-        * \param[in] point_index the index of the point
-        * \param[in] field_idx the index of the dimension/field
-        * \param[in] fields_count the current fields count
-        */
-      template <typename Type> inline void
-      copyStringValue (const std::string &st, sensor_msgs::PointCloud2 &cloud,
-                       unsigned int point_index, unsigned int field_idx, unsigned int fields_count)
-      {
-        Type value;
-        if (st == "nan")
-        {
-          value = std::numeric_limits<Type>::quiet_NaN ();
-          cloud.is_dense = false;
-        }
-        else
-        {
-          std::istringstream is(st);
-          is.imbue (std::locale::classic ());
-          is >> value;
-        }
-
-        memcpy (&cloud.data[point_index * cloud.point_step + 
-                            cloud.fields[field_idx].offset + 
-                            fields_count * sizeof (Type)], (char*)&value, sizeof (Type));
-      }
-
   };
 
   /** \brief Point Cloud Data (FILE) file format writer.
@@ -288,6 +254,111 @@ namespace pcl
     else
       // Numeric cast doesn't give us what we want for uint8_t
       stream << boost::numeric_cast<int>(value);
+  }
+
+  /** \brief Check whether a given value of type Type (uchar, char, uint, int, float, double, ...) is finite or not
+    *
+    * \param[in] cloud the cloud that contains the data
+    * \param[in] point_index the index of the point
+    * \param[in] point_size the size of the point in the cloud
+    * \param[in] field_idx the index of the dimension/field
+    * \param[in] fields_count the current fields count
+    *
+    * \return true if the value is finite, false otherwise
+    */
+  template <typename Type> inline bool
+  isValueFinite (const sensor_msgs::PointCloud2 &cloud, 
+                 const unsigned int point_index, 
+                 const int point_size, 
+                 const unsigned int field_idx, 
+                 const unsigned int fields_count)
+  {
+    Type value;
+    memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (Type)], sizeof (Type));
+    if (!pcl_isfinite (value))
+      return (false);
+    return (true);
+  }
+
+  /** \brief Copy one single value of type T (uchar, char, uint, int, float, double, ...) from a string
+    * 
+    * Uses aoti/atof to do the conversion.
+    * Checks if the st is "nan" and converts it accordingly.
+    *
+    * \param[in] st the string containing the value to convert and copy
+    * \param[out] cloud the cloud to copy it to
+    * \param[in] point_index the index of the point
+    * \param[in] field_idx the index of the dimension/field
+    * \param[in] fields_count the current fields count
+    */
+  template <typename Type> inline void
+  copyStringValue (const std::string &st, sensor_msgs::PointCloud2 &cloud,
+                   unsigned int point_index, unsigned int field_idx, unsigned int fields_count)
+  {
+    Type value;
+    if (st == "nan")
+    {
+      value = std::numeric_limits<Type>::quiet_NaN ();
+      cloud.is_dense = false;
+    }
+    else
+    {
+      std::istringstream is (st);
+      is.imbue (std::locale::classic ());
+      is >> value;
+    }
+
+    memcpy (&cloud.data[point_index * cloud.point_step + 
+                        cloud.fields[field_idx].offset + 
+                        fields_count * sizeof (Type)], (char*)&value, sizeof (Type));
+  }
+
+  template <> inline void
+  copyStringValue<int8_t> (const std::string &st, sensor_msgs::PointCloud2 &cloud,
+                           unsigned int point_index, unsigned int field_idx, unsigned int fields_count)
+  {
+    int8_t value;
+    if (st == "nan")
+    {
+      value = std::numeric_limits<int>::quiet_NaN ();
+      cloud.is_dense = false;
+    }
+    else
+    {
+      int val;
+      std::istringstream is (st);
+      is.imbue (std::locale::classic ());
+      is >> val;
+      value = val;
+    }
+
+    memcpy (&cloud.data[point_index * cloud.point_step + 
+                        cloud.fields[field_idx].offset + 
+                        fields_count * sizeof (int8_t)], (char*)&value, sizeof (int8_t));
+  }
+
+  template <> inline void
+  copyStringValue<uint8_t> (const std::string &st, sensor_msgs::PointCloud2 &cloud,
+                           unsigned int point_index, unsigned int field_idx, unsigned int fields_count)
+  {
+    uint8_t value;
+    if (st == "nan")
+    {
+      value = std::numeric_limits<int>::quiet_NaN ();
+      cloud.is_dense = false;
+    }
+    else
+    {
+      int val;
+      std::istringstream is (st);
+      is.imbue (std::locale::classic ());
+      is >> val;
+      value = val;
+    }
+
+    memcpy (&cloud.data[point_index * cloud.point_step + 
+                        cloud.fields[field_idx].offset + 
+                        fields_count * sizeof (uint8_t)], (char*)&value, sizeof (uint8_t));
   }
 }
 

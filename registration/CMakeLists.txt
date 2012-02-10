@@ -33,6 +33,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/transformation_estimation_lm.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_plane.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_plane_lls.h
+        include/pcl/${SUBSYS_NAME}/transformation_validation.h
+        include/pcl/${SUBSYS_NAME}/transformation_validation_euclidean.h
         include/pcl/${SUBSYS_NAME}/gicp.h
         include/pcl/${SUBSYS_NAME}/warp_point_rigid.h
         include/pcl/${SUBSYS_NAME}/warp_point_rigid_6d.h
@@ -60,6 +62,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_svd.hpp
         include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_lm.hpp
         include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_point_to_plane_lls.hpp
+        include/pcl/${SUBSYS_NAME}/impl/transformation_validation_euclidean.hpp
         include/pcl/${SUBSYS_NAME}/impl/gicp.hpp
         )
 
@@ -71,7 +74,6 @@ if(build)
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
-    PCL_ADD_SSE_FLAGS(${LIB_NAME})
     target_link_libraries(${LIB_NAME} pcl_kdtree pcl_sample_consensus pcl_features)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "" "" "" "")

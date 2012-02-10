@@ -41,7 +41,7 @@
 #define PCL_IO_PLY_IO_H_
 
 #include "pcl/io/file_io.h"
-#include "pcl/io/ply.h"
+#include "pcl/io/ply/ply_parser.h"
 #include <pcl/PolygonMesh.h>
 #include <sstream>
 
@@ -50,12 +50,26 @@ namespace pcl
   /** \brief Point Cloud Data (PLY) file format reader.
     *
     * The PLY data format is organized in the following way:
-    *   - lines beginning with "comment" are treated as comments
+    * lines beginning with "comment" are treated as comments
     *   - ply
     *   - format [ascii|binary_little_endian|binary_big_endian] 1.0
     *   - element vertex COUNT
-    *   - [ascii/binary] point coordinates
-    *   
+    *   - property float x 
+    *   - property float y 
+    *   - [property float z] 
+    *   - [property float normal_x] 
+    *   - [property float normal_y] 
+    *   - [property float normal_z] 
+    *   - [property uchar red] 
+    *   - [property uchar green] 
+    *   - [property uchar blue] ...
+    *   - ascii/binary point coordinates
+    *   - [element camera 1]
+    *   - [property float view_px] ...
+    *   - [element range_grid COUNT]
+    *   - [property list uchar int vertex_indices]
+    *   - end header
+    *
     * \author Nizar Sallem
     * \ingroup io
     */
@@ -67,7 +81,15 @@ namespace pcl
         PLY_V0 = 0,
         PLY_V1 = 1
       };
+      
+      PLYReader ()
+        : FileReader ()
+        , origin_ (Eigen::Vector4f::Zero ())
+        , orientation_ (Eigen::Matrix3f::Zero ())
+        , range_grid_ (0)
+      {}
 
+      ~PLYReader () { delete range_grid_; }
       /** \brief Read a point cloud data header from a PLY file.
         *
         * Load only the meta information (number of points, their types, etc),
@@ -140,29 +162,237 @@ namespace pcl
       }
       
     private:
-      pcl::io::ply::parser parser_;
-      bool swap_bytes_;
+      ::pcl::io::ply::ply_parser parser_;
 
-      /** \brief Copy one single value of type T (uchar, char, uint, int, float, double, ...) from a string
-        *
-        * Uses atoi/atof to do the conversion.
-        * Checks if the st is "nan" and converts it accordingly.
-        *
-        * \param[in] string_value the string containing the value to convert and copy
-        * \param[out] data the output data
-        * \param[in] offset the data offset (e.g., where to copy)
+      bool
+      parse (const std::string& istream_filename);
+
+      /** \brief Info callback function
+        * \param[in] filename PLY file read
+        * \param[in] line_number line triggering the callback
+        * \param[in] message information message
         */
-      template <typename Type> inline void
-      copyStringValue (const std::string &string_value, void* data, size_t offset = 0)
+      void 
+      infoCallback (const std::string& filename, std::size_t line_number, const std::string& message)
       {
-        //char value = (char)atoi (st.at (d + c).c_str ());
-        static char* char_ptr;
-        char_ptr = (char*) data;
-        Type value;
-        std::istringstream is(string_value);
-        is >> value;
-        memcpy (char_ptr+offset, &value, sizeof (Type));
+        PCL_DEBUG ("[pcl::PLYReader] %s:%lu: %s\n", filename.c_str (), line_number, message.c_str ());
       }
+      
+      /** \brief Warning callback function
+        * \param[in] filename PLY file read
+        * \param[in] line_number line triggering the callback
+        * \param[in] message warning message
+        */
+      void 
+      warningCallback (const std::string& filename, std::size_t line_number, const std::string& message)
+      {
+        PCL_WARN ("[pcl::PLYReader] %s:%lu: %s\n", filename.c_str (), line_number, message.c_str ());
+      }
+      
+      /** \brief Error callback function
+        * \param[in] filename PLY file read
+        * \param[in] line_number line triggering the callback
+        * \param[in] message error message
+        */
+      void 
+      errorCallback (const std::string& filename, std::size_t line_number, const std::string& message)
+      {
+        PCL_ERROR ("[pcl::PLYReader] %s:%lu: %s\n", filename.c_str (), line_number, message.c_str ());
+      }
+      
+      /** \brief function called when the keyword element is parsed
+        * \param[in] element_name element name
+        * \param[in] count number of instances
+        */
+      std::tr1::tuple<std::tr1::function<void ()>, std::tr1::function<void ()> > 
+      elementDefinitionCallback (const std::string& element_name, std::size_t count);
+      
+      bool
+      endHeaderCallback ();
+
+      /** \brief function called when a scalar property is parsed
+        * \param[in] element_name element name to which the property belongs
+        * \param[in] property_name property name
+        */
+      template <typename ScalarType> std::tr1::function<void (ScalarType)> 
+      scalarPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name);
+
+      /** \brief function called when a list property is parsed
+        * \param[in] element_name element name to which the property belongs
+        * \param[in] property_name list property name
+        */
+      template <typename SizeType, typename ScalarType> 
+      std::tr1::tuple<std::tr1::function<void (SizeType)>, std::tr1::function<void (ScalarType)>, std::tr1::function<void ()> > 
+      listPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name);
+      
+      /** Callback function for an anonymous vertex float property.
+        * Writes down a float value in cloud data.
+        * param[in] value float value parsed
+        */      
+      inline void
+      vertexFloatPropertyCallback (pcl::io::ply::float32 value);
+
+      /** Callback function for vertex RGB color.
+        * This callback is in charge of packing red green and blue in a single int
+        * before writing it down in cloud data.
+        * param[in] color_name color name in {red, green, blue}
+        * param[in] color value of {red, green, blue} property
+        */      
+      inline void
+      vertexColorCallback (const std::string& color_name, pcl::io::ply::uint8 color);
+
+      /** Callback function for vertex intensity.
+        * converts intensity from int to float before writing it down in cloud data.
+        * param[in] intensity
+        */
+      inline void
+      vertexIntensityCallback (pcl::io::ply::uint8 intensity);
+      
+      /** Callback function for origin x component.
+        * param[in] value origin x value
+        */
+      inline void
+      originXCallback (const float& value) { origin_[0] = value; }
+      
+      /** Callback function for origin y component.
+        * param[in] value origin y value
+        */
+      inline void
+      originYCallback (const float& value) { origin_[1] = value; }
+
+      /** Callback function for origin z component.
+        * param[in] value origin z value
+        */      
+      inline void
+      originZCallback (const float& value) { origin_[2] = value; }
+    
+      /** Callback function for orientation x axis x component.
+        * param[in] value orientation x axis x value
+        */
+      inline void
+      orientationXaxisXCallback (const float& value) { orientation_ (0,0) = value; }
+      
+      /** Callback function for orientation x axis y component.
+        * param[in] value orientation x axis y value
+        */
+      inline void
+      orientationXaxisYCallback (const float& value) { orientation_ (0,1) = value; }
+      
+      /** Callback function for orientation x axis z component.
+        * param[in] value orientation x axis z value
+        */
+      inline void
+      orientationXaxisZCallback (const float& value) { orientation_ (0,2) = value; }
+      
+      /** Callback function for orientation y axis x component.
+        * param[in] value orientation y axis x value
+        */
+      inline void
+      orientationYaxisXCallback (const float& value) { orientation_ (1,0) = value; }
+      
+      /** Callback function for orientation y axis y component.
+        * param[in] value orientation y axis y value
+        */
+      inline void
+      orientationYaxisYCallback (const float& value) { orientation_ (1,1) = value; }
+
+      /** Callback function for orientation y axis z component.
+        * param[in] value orientation y axis z value
+        */
+      inline void
+      orientationYaxisZCallback (const float& value) { orientation_ (1,2) = value; }
+      
+      /** Callback function for orientation z axis x component.
+        * param[in] value orientation z axis x value
+        */
+      inline void
+      orientationZaxisXCallback (const float& value) { orientation_ (2,0) = value; }
+    
+      /** Callback function for orientation z axis y component.
+        * param[in] value orientation z axis y value
+        */
+      inline void
+      orientationZaxisYCallback (const float& value) { orientation_ (2,1) = value; }
+      
+      /** Callback function for orientation z axis z component.
+        * param[in] value orientation z axis z value
+        */
+      inline void
+      orientationZaxisZCallback (const float& value) { orientation_ (2,2) = value; }
+      
+      /** Callback function to set the cloud height
+        * param[in] height cloud height
+        */
+      inline void
+      cloudHeightCallback (const int &height) { cloud_->height = height; }
+
+      /** Callback function to set the cloud width
+        * param[in] width cloud width
+        */
+      inline void
+      cloudWidthCallback (const int &width) { cloud_->width = width; }
+        
+      /** Append a float property to the cloud fields.
+        * param[in] name property name
+        * param[in] count property count: 1 for scalar properties and higher for a 
+        * list property.
+        */
+      void
+      appendFloatProperty (const std::string& name, const size_t& count = 1);
+
+      /** Callback function for the begin of vertex line */
+      void
+      vertexBeginCallback ();
+
+      /** Callback function for the end of vertex line */
+      void
+      vertexEndCallback ();
+
+      /** Callback function for the begin of range_grid line */
+      void
+      rangeGridBeginCallback ();
+
+      /** Callback function for the begin of range_grid vertex_indices property 
+        * param[in] size vertex_indices list size  
+        */
+      void
+      rangeGridVertexIndicesBeginCallback (pcl::io::ply::uint8 size);
+
+      /** Callback function for each range_grid vertex_indices element
+        * param[in] vertex_index index of the vertex in vertex_indices
+        */      
+      void
+      rangeGridVertexIndicesElementCallback (pcl::io::ply::int32 vertex_index);
+
+      /** Callback function for the end of a range_grid vertex_indices property */
+      void
+      rangeGridVertexIndicesEndCallback ();
+
+      /** Callback function for the end of a range_grid element end */
+      void
+      rangeGridEndCallback ();
+
+      /** Callback function for obj_info */
+      void
+      objInfoCallback (const std::string& line);
+
+      /// origin
+      Eigen::Vector4f origin_;
+
+      /// orientation
+      Eigen::Matrix3f orientation_;
+
+      //vertex element artifacts
+      sensor_msgs::PointCloud2 *cloud_;
+      size_t vertex_count_, vertex_properties_counter_;
+      int vertex_offset_before_;
+      //range element artifacts
+      std::vector<std::vector <int> > *range_grid_;
+      size_t range_count_, range_grid_vertex_indices_element_index_;
+      size_t rgb_offset_before_;
+      
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /** \brief Point Cloud Data (PLY) file format writer.
@@ -172,11 +402,20 @@ namespace pcl
   class PCL_EXPORTS PLYWriter : public FileWriter
   {
     public:
-      PLYWriter () : mask_ (0) {};
+      ///Constructor
+      PLYWriter () : FileWriter () {};
+
+      ///Destructor
       ~PLYWriter () {};
 
       /** \brief Generate the header of a PLY v.7 file format
         * \param[in] cloud the point cloud data message
+        * \param[in] origin the sensor data acquisition origin (translation)
+        * \param[in] orientation the sensor data acquisition origin (rotation)
+        * \param[in] valid_points number of valid points (finite ones for range_grid and
+        * all of them for camer)
+        * \param[in] use_camera if set to true then PLY file will use element camera else
+        * element range_grid will be used.
         */
       inline std::string
       generateHeaderBinary (const sensor_msgs::PointCloud2 &cloud, 
@@ -190,6 +429,12 @@ namespace pcl
       
       /** \brief Generate the header of a PLY v.7 file format
         * \param[in] cloud the point cloud data message
+        * \param[in] origin the sensor data acquisition origin (translation)
+        * \param[in] orientation the sensor data acquisition origin (rotation)
+        * \param[in] valid_points number of valid points (finite ones for range_grid and
+        * all of them for camer)
+        * \param[in] use_camera if set to true then PLY file will use element camera else
+        * element range_grid will be used.
         */
       inline std::string
       generateHeaderASCII (const sensor_msgs::PointCloud2 &cloud, 
@@ -207,6 +452,8 @@ namespace pcl
         * \param[in] origin the sensor data acquisition origin (translation)
         * \param[in] orientation the sensor data acquisition origin (rotation)
         * \param[in] precision the specified output numeric stream precision (default: 8)
+        * \param[in] use_camera if set to true then PLY file will use element camera else
+        * element range_grid will be used.
         */
       int 
       writeASCII (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
@@ -252,9 +499,9 @@ namespace pcl
         * \param[in] origin the sensor acquisition origin
         * \param[in] orientation the sensor acquisition orientation
         * \param[in] binary set to true if the file is to be written in a binary
+        * PLY format, false (default) for ASCII
         * \param[in] use_camera set to true to used camera element and false to
         * use range_grid element
-        * PLY format, false (default) for ASCII
         */
       inline int
       write (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
@@ -276,6 +523,8 @@ namespace pcl
         * \param[in] orientation the sensor acquisition orientation
         * \param[in] binary set to true if the file is to be written in a binary
         * PLY format, false (default) for ASCII
+        * \param[in] use_camera set to true to used camera element and false to
+        * use range_grid element
         */
       inline int
       write (const std::string &file_name, const sensor_msgs::PointCloud2::ConstPtr &cloud, 
@@ -292,6 +541,8 @@ namespace pcl
         * \param[in] cloud the pcl::PointCloud data
         * \param[in] binary set to true if the file is to be written in a binary
         * PLY format, false (default) for ASCII
+        * \param[in] use_camera set to true to used camera element and false to
+        * use range_grid element
         */
       template<typename PointT> inline int
       write (const std::string &file_name, 
@@ -321,7 +572,7 @@ namespace pcl
                       bool binary, 
                       bool use_camera,
                       int valid_points);
-
+      
       void
       writeContentWithCameraASCII (int nr_points, 
                                    int point_size,
@@ -336,15 +587,6 @@ namespace pcl
                                       const sensor_msgs::PointCloud2 &cloud, 
                                       std::ostringstream& fs,
                                       int& nb_valid_points);
-
-      /** \brief Construct a mask from a list of fields.
-        * \param[in] fields_list the list of fields to construct a mask from
-        */
-      void 
-      setMaskFromFieldsList (const std::string& fields_list);
-
-      /** \brief Internally used mask. */
-      int mask_;
   };
 
   namespace io

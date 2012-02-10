@@ -121,7 +121,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
       model->setInputTarget (target_, target_indices);
       // Create a RANSAC model
       RandomSampleConsensus<PointSource> sac (model, inlier_threshold_);
-      sac.setMaxIterations (1000);
+      sac.setMaxIterations (ransac_iterations_);
 
       // Compute the set of inliers
       if (!sac.computeModel ())
