@@ -197,8 +197,9 @@ void loadData (int argc, char **argv, std::vector<PCD, Eigen::aligned_allocator<
   * \param cloud_src the source PointCloud
   * \param cloud_tgt the target PointCloud
   * \param output the resultant aligned source PointCloud
+  * \param final_transform the resultant transform between source and target
   */
-void pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt, PointCloud::Ptr output, bool downsample = false)
+void pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt, PointCloud::Ptr output, Eigen::Matrix4f &final_transform, bool downsample = false)
 {
   //
   // Downsample for consistency and speed
@@ -208,7 +209,7 @@ void pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt
   pcl::VoxelGrid<PointT> grid;
   if (downsample)
   {
-    grid.setLeafSize (0.001, 0.001, 0.001);
+    grid.setLeafSize (0.05, 0.05, 0.05);
     grid.setInputCloud (cloud_src);
     grid.filter (*src);
 
@@ -263,7 +264,7 @@ void pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt
 
   //
   // Run the same optimization in a loop and visualize the results
-  Eigen::Matrix4f Ti = Eigen::Matrix4f::Identity (), prev;
+  Eigen::Matrix4f Ti = Eigen::Matrix4f::Identity (), prev, targetToSource;
   PointCloudWithNormals::Ptr reg_result = points_with_normals_src;
   reg.setMaximumIterations (2);
   for (int i = 0; i < 30; ++i)
@@ -292,24 +293,32 @@ void pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt
     showCloudsRight(points_with_normals_tgt, points_with_normals_src);
   }
 
+	//
+  // Get the transformation from target to source
+  targetToSource = Ti.inverse();
+
   //
-  // Apply transformation to source and concatenate with target
-  pcl::transformPointCloud (*cloud_src, *output, Ti);
+  // Transform target back in source frame
+  pcl::transformPointCloud (*cloud_tgt, *output, targetToSource);
 
   p->removePointCloud ("source");
   p->removePointCloud ("target");
 
-  PointCloudColorHandlerCustom<PointT> cloud_tgt_h (cloud_tgt, 0, 255, 0);
-  PointCloudColorHandlerCustom<PointT> cloud_src_h (output, 255, 0, 0);
-  p->addPointCloud (cloud_tgt, cloud_tgt_h, "target", vp_2); 
-  p->addPointCloud (output, cloud_src_h, "source", vp_2); 
+  PointCloudColorHandlerCustom<PointT> cloud_tgt_h (output, 0, 255, 0);
+  PointCloudColorHandlerCustom<PointT> cloud_src_h (cloud_src, 255, 0, 0);
+  p->addPointCloud (output, cloud_tgt_h, "target", vp_2);
+  p->addPointCloud (cloud_src, cloud_src_h, "source", vp_2);
 
+	PCL_INFO ("Press q to continue the registration.\n");
   p->spin ();
 
   p->removePointCloud ("source"); 
   p->removePointCloud ("target");
 
-  *output += *cloud_tgt;
+  //add the source to the transformed target
+  *output += *cloud_src;
+  
+  final_transform = targetToSource;
  }
 
 
@@ -335,20 +344,28 @@ int main (int argc, char** argv)
   p->createViewPort (0.0, 0, 0.5, 1.0, vp_1);
   p->createViewPort (0.5, 0, 1.0, 1.0, vp_2);
 
-  PointCloud::Ptr result = data[0].cloud;
+	PointCloud::Ptr result (new PointCloud), source, target;
+  Eigen::Matrix4f GlobalTransform = Eigen::Matrix4f::Identity (), pairTransform;
+  
   for (size_t i = 1; i < data.size (); ++i)
   {
+    source = data[i-1].cloud;
+    target = data[i].cloud;
+
     // Add visualization data
-    showCloudsLeft(data[i].cloud, result);
+    showCloudsLeft(source, target);
 
-    // Align current pair (i-1 and i)
     PointCloud::Ptr temp (new PointCloud);
-    PCL_INFO ("Aligning %s (%d) with %s (%d).", data[i-1].f_name.c_str (), (int)result->points.size (), 
-							data[i].f_name.c_str (), (int)data[i].cloud->points.size ());
-    pairAlign (result, data[i].cloud, temp);
-    result = temp;
+    PCL_INFO ("Aligning %s (%d) with %s (%d).\n", data[i-1].f_name.c_str (), source->points.size (), data[i].f_name.c_str (), target->points.size ());
+    pairAlign (source, target, temp, pairTransform, true);
 
-    // Save the registered pair
+    //transform current pair into the global transform
+    pcl::transformPointCloud (*temp, *result, GlobalTransform);
+
+    //update the global transform
+    GlobalTransform = pairTransform * GlobalTransform;
+
+		//save aligned pair, transformed into the first cloud's frame
     std::stringstream ss;
     ss << i << ".pcd";
     pcl::io::savePCDFile (ss.str (), *result, true);

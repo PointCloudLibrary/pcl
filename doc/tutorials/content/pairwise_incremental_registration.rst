@@ -6,9 +6,11 @@ How to incrementaly register pairs of clouds
 This document demonstrates using the Iterative Closest Point algorithm in order
 to incrementally register a series of point clouds two by two.
 
-The idea is to find the best transformation for each point-pair and save the registered pair to disk.
+| The idea is to transform all the clouds int he first cloud's frame.
+| This is done by finding the best transform between each consecutive cloud, and accumulating these transforms over the whole set of clouds.
 
-Your data set should consist of clouds that have roughly pre-aligned in a common frame (e.g. in a robot's odometry or map frame).
+| Your data set should consist of clouds that have been roughly pre-aligned in a common frame (e.g. in a robot's odometry or map frame) and overlap with one another.
+| We provide a set of clouds at `pairwise_incremental_registration_tutorial_data.tar.gz <http://dev.pointclouds.org/attachments/download/742/pairwise_incremental_registration_tutorial_data.tar.gz>`_.
 
 
 The code
@@ -58,11 +60,12 @@ Registering functions
 Let's see how are our functions organized.
    
 
-The main function checks the user input, loads the data in a vector and starts the pair-registration process..
+| The main function checks the user input, loads the data in a vector and starts the pair-registration process..
+| After a transform is found for a pair, the pair is transformed into the first cloud's frame, and the global transformation is updated.
 
 .. literalinclude:: sources/pairwise_incremental_registration/pairwise-incremental-registration.cpp
    :language: cpp
-   :lines: 317-357
+   :lines: 326-374
 
 | Loading data is pretty straightforward. We iterate other the program's arguments. 
 | For each argument, we check if it links to a pcd file. If so, we create a PCD object that is added to the vector of clouds.
@@ -75,21 +78,31 @@ We now arrive to the actual pair registration.
 
 .. literalinclude:: sources/pairwise_incremental_registration/pairwise-incremental-registration.cpp
    :language: cpp
-   :lines: 201-201
+   :lines: 202-202
 
 | First, we optionally down sample our clouds. This is useful in the case of large datasets. Curvature are then computed (for visualization purpose).
 | We then create the ICP object, set its parameters and link it to the two clouds we wish to align. Remember to adapt these to your own datasets.
 
-   .. literalinclude:: sources/pairwise_incremental_registration/pairwise-incremental-registration.cpp
-      :language: cpp
-      :lines: 250-260
+   .. code-block:: cpp
+
+        // Align
+        pcl::IterativeClosestPointNonLinear<PointNormalT, PointNormalT> reg;
+        reg.setTransformationEpsilon (1e-6);
+        // Set the maximum distance between two correspondences (src<->tgt) to 10cm
+        // Note: adjust this based on the size of your datasets
+        reg.setMaxCorrespondenceDistance (0.1);  
+        // Set the point representation
+        reg.setPointRepresentation (boost::make_shared<const MyPointRepresentation> (point_representation));
+
+        reg.setInputCloud (points_with_normals_src);
+        reg.setInputTarget (points_with_normals_tgt);
 
 | As this is a tutorial, we wish to display the intermediate of the registration process.
 | To this end, the ICP is limited to 2 registration iterations:
 
-   .. literalinclude:: sources/pairwise_incremental_registration/pairwise-incremental-registration.cpp
-      :language: cpp
-      :lines: 268
+   .. code-block:: cpp
+   
+        reg.setMaximumIterations (2);
         
 And is manualy iterated (30 times in our case):
 
@@ -109,7 +122,7 @@ During each iteration, we keep track of and accumulate the transformations retur
 
    .. code-block:: cpp
    
-		 Eigen::Matrix4f Ti = Eigen::Matrix4f::Identity (), prev;
+		 Eigen::Matrix4f Ti = Eigen::Matrix4f::Identity (), prev, targetToSource;
 		 [...]
 		 for (int i = 0; i < 30; ++i)
 		 {
@@ -125,23 +138,29 @@ During each iteration, we keep track of and accumulate the transformations retur
    
 		for (int i = 0; i < 30; ++i)
 		{
-			[...]
-			if (fabs ((reg.getLastIncrementalTransformation () - prev).sum ()) < reg.getTransformationEpsilon ())
-      reg.setMaxCorrespondenceDistance (reg.getMaxCorrespondenceDistance () - 0.001);
-    
-			prev = reg.getLastIncrementalTransformation ();
-			[...]
+		 [...]
+		 if (fabs ((reg.getLastIncrementalTransformation () - prev).sum ()) < reg.getTransformationEpsilon ())
+		   reg.setMaxCorrespondenceDistance (reg.getMaxCorrespondenceDistance () - 0.001);
+     
+		 prev = reg.getLastIncrementalTransformation ();
+		 [...]
 		}
 
-| Once the best transformation has been found, we apply it to the source cloud. 
-| The transformed source is then added to the target and returned to be written to disk in the main function.
+| Once the best transformation has been found, we invert it (to get the transformation from target to source) and apply it to the target cloud. 
+| The transformed target is then added to the source and returned to the main function with the transformation.
 
    .. code-block:: cpp
    
-		// Apply transformation to source and concatenate with target
-		pcl::transformPointCloud (*cloud_src, *output, Ti);
-		[...]
-		*output += *cloud_tgt;
+			//
+			// Get the transformation from target to source
+			targetToSource = Ti.inverse();
+
+			//
+			// Transform target back in source frame
+			pcl::transformPointCloud (*cloud_tgt, *output, targetToSource);
+			[...]
+			*output += *cloud_tgt;
+			final_transform = targetToSource;
 
 Compiling and running the program
 ---------------------------------
@@ -166,15 +185,31 @@ is usefull only on 32-bit systems, that would (sometimes) trigger the following 
 
 
 
-Copy the files bun0.pcd and bun4.pcd in your working folder. These files can be found in pcl's trunk *test* folder.
-
+Copy the files from `pairwise_incremental_registration_tutorial_data.tar.gz <http://dev.pointclouds.org/attachments/download/742/pairwise_incremental_registration_tutorial_data.tar.gz>`_  in your working folder.
   
 
 After you have made the executable (cmake ., make), you can run it. Simply do::
 
-  $ ./registration bun0.pcd bun4.pcd
+  $ ./pairwise_incremental_registration capture000[1-5].pcd
 
 You will see something similar to:
 
-.. image:: images/pair_inc.png
+.. image:: images/pairwise_incremental_registration/1.png
+  :height: 300
+  
+.. image:: images/pairwise_incremental_registration/2.png
+  :height: 300
+  
+.. image:: images/pairwise_incremental_registration/3.png
+  :height: 300
+  
+  
+Visualize the final results by running::
+
+  $ pcd_viewer [1-4].pcd	
+  
+.. image:: images/pairwise_incremental_registration/4.png
+  :height: 300
+  
+.. image:: images/pairwise_incremental_registration/5.png
   :height: 300

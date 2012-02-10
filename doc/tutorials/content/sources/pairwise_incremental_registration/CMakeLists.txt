@@ -9,5 +9,5 @@ link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 add_definitions(-Wno-deprecated -DEIGEN_DONT_VECTORIZE -DEIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT)
 
-add_executable (pairwise-incremental-registration pairwise-incremental-registration.cpp)
-target_link_libraries (pairwise-incremental-registration ${PCL_LIBRARIES})
+add_executable (pairwise_incremental_registration pairwise_incremental_registration.cpp)
+target_link_libraries (pairwise_incremental_registration ${PCL_LIBRARIES})
