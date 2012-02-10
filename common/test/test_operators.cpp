@@ -43,40 +43,64 @@
 using namespace pcl;
 using namespace pcl::test;
 
-TEST (PointOperators, PointXYZItoPointXYZI)
+TEST (PointOperators, PointXYZI)
 {
   using namespace pcl::common;
-  PointXYZItoPointXYZI operators;
   PointXYZI p0; p0.x = 0.1; p0.y = 0.2;  p0.z = 0.3; p0.intensity = 123;
   PointXYZI p1; p1.x = 0.05; p1.y = 0.05; p1.z = 0.05; p1.intensity = 133;
-  PointXYZI p2 = operators.add (p0, p1);
+  PointXYZI p2 = p0 + p1;
 
   EXPECT_EQ (p2.x, p0.x + p1.x);
   EXPECT_EQ (p2.y, p0.y + p1.y);
   EXPECT_EQ (p2.z, p0.z + p1.z);
   EXPECT_EQ (p2.intensity, p0.intensity + p1.intensity);
-  p2 = operators.dot (0.1, p1);
+  p2 = 0.1f * p1;
   EXPECT_NEAR (p2.x, 0.1 * p1.x, 1e-4);
   EXPECT_NEAR (p2.y, 0.1 * p1.y, 1e-4);
   EXPECT_NEAR (p2.z, 0.1 * p1.z, 1e-4);
   EXPECT_NEAR (p2.intensity, 0.1 * p1.intensity, 1e-4);
-  PointXYZI p3 = operators.dot (p1, 0.1);
+  PointXYZI p3 = p1 * 0.1f;
   EXPECT_EQ_VECTORS (p2.getVector3fMap (), p3.getVector3fMap ());
+  EXPECT_EQ (p2.intensity, p3.intensity);
 }
 
 TEST (PointOperators, PointXYZItoIntensity)
 {
   using namespace pcl::common;
-  PointXYZItoIntensity operators;
+  PointInToPointOut <PointXYZI, float> convert;
   PointXYZI p0; p0.x = 0.1; p0.y = 0.2;  p0.z = 0.3; p0.intensity = 123;
   PointXYZI p1; p1.x = 0.05; p1.y = 0.05; p1.z = 0.05; p1.intensity = 133;
-  float p2 = operators.add (p0, p1);
+  float p2 = convert (p0 + p1);
 
   EXPECT_EQ (p2, p0.intensity + p1.intensity);
-  p2 = operators.dot (0.1, p1);
+  p2 = 0.1 * convert (p1);
   EXPECT_NEAR (p2, 0.1 * p1.intensity, 1e-4);
-  float p3 = operators.dot (p1, 0.1);
-  EXPECT_NEAR (p2, p3, 1e-4);
+}
+
+TEST (PointOperators, PointXYZRGBtoIntensity)
+{
+  using namespace pcl::common;
+  PointInToPointOut <PointXYZRGB, float> convert;
+  PointXYZRGB p0; p0.x = 0.1; p0.y = 0.2;  p0.z = 0.3; p0.r = 0; p0.g = 127; p0.b = 127;
+  PointXYZRGB p1; p1.x = 0.05; p1.y = 0.05; p1.z = 0.05; p1.r = 0; p1.g = 127; p1.b = 127;
+  float p2 = convert (p0 + p1);
+
+  EXPECT_EQ (p2, (299*p0.r + 587*p0.g + 114*p0.b)/1000.0f + (299*p1.r + 587*p1.g + 114*p1.b)/1000.0f);
+  p2 = 0.1 * convert (p1);
+  EXPECT_NEAR (p2, 0.1 * (299*p1.r + 587*p1.g + 114*p1.b)/1000.0f, 1e-4);
+}
+
+TEST (PointOperators, PointXYZRGBtoPointXYZI)
+{
+  using namespace pcl::common;
+  PointInToPointOut <PointXYZRGB, PointXYZI> convert;
+  PointXYZRGB p0; p0.x = 0.1; p0.y = 0.2;  p0.z = 0.3; p0.r = 0; p0.g = 127; p0.b = 127;
+  PointXYZRGB p1; p1.x = 0.05; p1.y = 0.05; p1.z = 0.05; p1.r = 0; p1.g = 127; p1.b = 127;
+  PointXYZI p2 = convert (p0 + p1);
+
+  EXPECT_EQ (p2.intensity, (299*p0.r + 587*p0.g + 114*p0.b)/1000.0f + (299*p1.r + 587*p1.g + 114*p1.b)/1000.0f);
+  p2 = convert (p1) * 0.1f;
+  EXPECT_NEAR (p2.intensity, (299*p1.r + 587*p1.g + 114*p1.b) / 1000.0f * 0.1, 1e-4);
 }
 
 int

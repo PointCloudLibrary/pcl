@@ -41,250 +41,365 @@
 #define PCL_COMMON_POINT_OPERATORS_H
 
 #include <pcl/point_types.h>
+#include <pcl/exceptions.h>
 
 namespace pcl
 {
   namespace common
   {
-
-    /** PointOperators is a struct that provides basic arithmetic 
-      * operations on points: addition, product and plus-assign operation.
-      * It also provide an operator() for the transformation from a 
-      * PointIN to PointOUT (the transformation can be as simple as 
-      * accessing a member of PointIN).
-      *
-      * \author Nizar Sallem
-      * \ingroup common
-      */
-    template <typename PointIN, typename PointOUT>
-    struct PointOperators 
+    /// abstract class to convert from PointIn to PointOut
+    template <typename PointIn, typename PointOut>
+    struct PointInToPointOut 
     {
-      typedef PointIN PointIn;
-      typedef PointOUT PointOut;
+      inline PointOut operator() (const float& value = 0) 
+      {
+        PCL_THROW_EXCEPTION (UnhandledPointTypeException,
+                             "no suitable implementation available");
+      }
+
+      inline PointOut operator() (const PointIn& p)
+      {
+        PCL_THROW_EXCEPTION (UnhandledPointTypeException,
+                             "no suitable implementation available");
+      }
+    };
+
+    /// extracts intensity from PointXYZI
+    template <> 
+    struct PointInToPointOut <pcl::PointXYZI, float>
+    {
+      typedef pcl::PointXYZI PointIn;
+      typedef float PointOut;
+      
+      inline float 
+      operator() (const float& val = 0) { return val; }
+      
+      inline float 
+      operator() (const pcl::PointXYZI& p) { return (p.intensity); }
     };
     
-    struct PointXYZItoIntensity : PointOperators <pcl::PointXYZI, float>
+    /// extracts intensity from PointXYZRGB
+    template<>
+    struct PointInToPointOut <pcl::PointXYZRGB, float>
     {
-      float
-      operator () ()
-      {
-        return 0;
-      }
+      typedef pcl::PointXYZRGB PointIn;
+      typedef float PointOut;
 
-      float
-      operator () (pcl::PointXYZI& p)
-      {
-        return (p.intensity);
-      }
-
-      float 
-      add (const pcl::PointXYZI& lhs, const pcl::PointXYZI& rhs)
-      {
-        return (lhs.intensity + rhs.intensity);
-      }
-
-      float 
-      dot (const float& scalar, const pcl::PointXYZI& p)
-      {
-        return (scalar * p.intensity);
-      }
-
-      float 
-      dot (const pcl::PointXYZI& p, const float& scalar)
-      {
-        return dot (scalar, p);
-      }
+      inline float 
+      operator() (const float& val = 0) { return val; }
+      
+      inline float 
+      operator() (const pcl::PointXYZRGB& p) { return ((299*p.r + 587*p.g + 114*p.b)/1000.0f); }
     };
 
-    struct PointXYZRGBtoIntensity : PointOperators <pcl::PointXYZRGB, float>
+    /// Converts a PointXYZRGB to PointXYZI
+    template<>
+    struct PointInToPointOut <pcl::PointXYZRGB, pcl::PointXYZI>
     {
-      float
-      operator () ()
-      {
-        return 0;
-      }
+      typedef pcl::PointXYZRGB PointIn;
+      typedef pcl::PointXYZI PointOut;
 
-      float
-      operator () (pcl::PointXYZRGB& p)
-      {
-        return ((299*p.r + 587*p.g + 114*p.b)/1000.0f);
-      }
-
-      float 
-      add (const pcl::PointXYZRGB& lhs, const pcl::PointXYZRGB& rhs)
-      {
-        return ((299*(lhs.r + rhs.r) + 587*(lhs.g + rhs.g) + 114*(lhs.b + rhs.b))/1000.0);
-      }
-
-      float 
-      dot (const float& scalar, const pcl::PointXYZRGB& p)
-      {
-        return (scalar * (299*p.r + 587*p.g + 114*p.b)/1000.0);
+      inline PointXYZI
+      operator() (const float& val = 0)
+      { 
+        pcl::PointXYZI zero;
+        zero.x = val; zero.y = val; zero.z = val; zero.intensity = val;
+        return (zero);
       }
       
-      float 
-      dot (const pcl::PointXYZRGB& p, const float& scalar)
-      {
-        return (dot (p, scalar));
-      }
-    };
-
-    struct PointXYZItoPointXYZI : PointOperators <pcl::PointXYZI, pcl::PointXYZI>
-    {
-      pcl::PointXYZI
-      operator () ()
-      {
-        pcl::PointXYZI zero;
-        zero.x = 0; zero.y = 0; zero.z = 0; zero.intensity = 0;
-        return zero;
-      }
-
-      const pcl::PointXYZI&
-      operator () (const pcl::PointXYZI& p)
-      {
-        return (p);
-      }
-
-      pcl::PointXYZI&
-      operator () (pcl::PointXYZI& p)
-      {
-        return (p);
-      }
-
-      // pcl::PointXYZI&
-      // operator= (pcl::PointXYZI& p, int 0)
-      // {
-      //   p.x = p.y = p.z = p.intensity = 0;
-      //   return (p);
-      // }
-
-      pcl::PointXYZI 
-      add (const pcl::PointXYZI& lhs, const pcl::PointXYZI& rhs) 
-      {
-        pcl::PointXYZI result;
-        result.x = lhs.x + rhs.x;
-        result.y = lhs.y + rhs.y;
-        result.z = lhs.z + rhs.z;
-        result.intensity = lhs.intensity + rhs.intensity;
-        return (result);
-      }
-
-
-      pcl::PointXYZI 
-      minus (const pcl::PointXYZI& lhs, const pcl::PointXYZI& rhs) 
-      {
-        pcl::PointXYZI result;
-        result.x = lhs.x - rhs.x;
-        result.y = lhs.y - rhs.y;
-        result.z = lhs.z - rhs.z;
-        result.intensity = lhs.intensity - rhs.intensity;
-        return (result);
-      }
-
-      pcl::PointXYZI 
-      dot (const float& scalar, const pcl::PointXYZI& p) 
-      {
-        pcl::PointXYZI result;
-        result.x = scalar * p.x;
-        result.y = scalar * p.y;
-        result.z = scalar * p.z;
-        result.intensity = scalar * p.intensity;
-        return (result);
-      }
-
-      pcl::PointXYZI 
-      dot (const pcl::PointXYZI& p, const float& scalar)
-      {
-        return (dot (scalar, p));
-      }
-
-      pcl::PointXYZI&
-      plus_assign (pcl::PointXYZI& lhs, const pcl::PointXYZI& rhs)
-      {
-        lhs.x+= rhs.x; lhs.y+= rhs.y; lhs.z+= rhs.z; lhs.intensity+= rhs.intensity;
-        return (lhs);
-      }
-    };
-
-    struct PointXYZRGBtoPointXYZRGB : PointOperators <pcl::PointXYZRGB, pcl::PointXYZRGB>
-    {
-      pcl::PointXYZRGB
-      operator () ()
-      {
-        pcl::PointXYZRGB zero;
-        zero.x = 0; zero.y = 0; zero.z = 0; zero.r = 0; zero.g = 0; zero.b = 0;
-        return zero;
-      }
-
-      pcl::PointXYZRGB
-      operator () (pcl::PointXYZRGB& p)
-      {
-        return (p);
-      }
-
-      pcl::PointXYZRGB 
-      add (const pcl::PointXYZRGB& lhs, const pcl::PointXYZRGB& rhs) 
-      {
-        pcl::PointXYZRGB result;
-        result.x = lhs.x + rhs.x; result.y = lhs.y + rhs.y; result.z = lhs.z + rhs.z;
-        result.r = lhs.r + rhs.r; result.g = lhs.g + rhs.g; result.b = lhs.b + rhs.b;
-        return (result);
-      }
-            
-      pcl::PointXYZRGB 
-      dot (const float& scalar, const pcl::PointXYZRGB& p) 
-      {
-        pcl::PointXYZRGB result;
-        result.x = scalar * p.x; result.y = scalar * p.y; result.z = scalar * p.z; 
-        result.r = scalar * p.r; result.g = scalar * p.g; result.b = scalar * p.b;
-        return (result);
-      }
-
-      pcl::PointXYZRGB&
-      plus_assign (pcl::PointXYZRGB& lhs, const pcl::PointXYZRGB& rhs)
-      {
-        lhs.x+= rhs.x; lhs.y+= rhs.y; lhs.z+= rhs.z; 
-        lhs.r+= rhs.r; lhs.g+= rhs.g; lhs.b+= rhs.b;
-        return (lhs);
-      }
-    };
-
-    struct PointXYZRGBtoPointXYZI : PointOperators <pcl::PointXYZRGB, pcl::PointXYZI>
-    {
-      PointXYZI
-      operator () (pcl::PointXYZRGB& p)
+      inline PointXYZI
+      operator() (const pcl::PointXYZRGB& p)
       {
         pcl::PointXYZI result;
         result.x = p.x; result.y = p.y; result.z = p.z;
         result.intensity = (299*p.r + 587*p.g + 114*p.b)/1000.0f;
         return (result);
       }
-      
-      pcl::PointXYZI 
-      add (const pcl::PointXYZRGB& lhs, const pcl::PointXYZRGB& rhs) 
-      {
-        pcl::PointXYZI result;
-        result.x = lhs.x + rhs.x; result.y = lhs.y + rhs.y; result.z = lhs.z + rhs.z;
-        result.intensity = (299*(lhs.r + rhs.r) + 587*(lhs.g + rhs.g) + 114*(lhs.b + rhs.b))/1000.0;
-        return (result);
-      }
-      
-      pcl::PointXYZI 
-      dot (const float& scalar, const pcl::PointXYZRGB& p) 
-      {
-        pcl::PointXYZI result;
-        result.x = scalar * p.x; result.y = scalar * p.y; result.z = scalar * p.z; 
-        result.intensity = scalar * (299*p.r + 587*p.g + 114*p.b)/1000.0;
-        return (result);
-      }
-
-      pcl::PointXYZI&
-      plus_assign (pcl::PointXYZI& lhs, const pcl::PointXYZI& rhs)
-      {
-        lhs.x+= rhs.x; lhs.y+= rhs.y; lhs.z+= rhs.z; lhs.intensity+= rhs.intensity;
-        return (lhs);
-      }
     };
+
+    ///addition operator for PointT
+    template <typename PointT> inline PointT 
+    operator+ (const PointT& lhs, const PointT& rhs) 
+    {
+      PCL_THROW_EXCEPTION (UnhandledPointTypeException,
+                           "no suitable implementation available");
+      return (PointT ());    
+    }
+    ///substraction operator for PointT
+    template <typename PointT> inline PointT 
+    operator- (const PointT& lhs, const PointT& rhs) 
+    {
+      PCL_THROW_EXCEPTION (UnhandledPointTypeException,
+                           "no suitable implementation available");
+      return (PointT ());
+    }
+    ///multiplication operator for PointT and a scalar
+    template <typename PointT> inline PointT 
+    operator* (const float& scalar, const PointT& p) 
+    {
+      PCL_THROW_EXCEPTION (UnhandledPointTypeException,
+                           "no suitable implementation available");
+      return (PointT ());
+    }
+    ///multiplication operator for PointT and a scalar
+    template <typename PointT> inline PointT 
+    operator* (const PointT& p, const float& scalar)
+    {
+      PCL_THROW_EXCEPTION (UnhandledPointTypeException,
+                           "no suitable implementation available");
+      return (PointT ());
+    }
+    ///plus assign operator for PointT
+    template <typename PointT> inline PointT&
+    operator+= (PointT& lhs, const PointT& rhs)
+    {
+      PCL_THROW_EXCEPTION (UnhandledPointTypeException,
+                           "no suitable implementation available");
+      return (lhs);
+    }
+    ///minus assign operator for PointT
+    template <typename PointT> inline PointT&
+    operator-= (PointT& lhs, const PointT& rhs)
+    {
+      PCL_THROW_EXCEPTION (UnhandledPointTypeException,
+                           "no suitable implementation available");
+      return (lhs);
+    }
+    ///addition operator for PointXYZI
+    template <> inline pcl::PointXYZI 
+    operator+ (const pcl::PointXYZI& lhs, const pcl::PointXYZI& rhs) 
+    {
+      pcl::PointXYZI result;
+      result.getVector3fMap () = lhs.getVector3fMap ();
+      result.getVector3fMap () += rhs.getVector3fMap ();
+      result.intensity = lhs.intensity + rhs.intensity;
+      return (result);
+    }
+    ///substraction operator for PointXYZI
+    template <> inline pcl::PointXYZI 
+    operator- (const pcl::PointXYZI& lhs, const pcl::PointXYZI& rhs) 
+    {
+      pcl::PointXYZI result;
+      result.getVector3fMap () = lhs.getVector3fMap ();
+      result.getVector3fMap () -= rhs.getVector3fMap ();
+      result.intensity = lhs.intensity - rhs.intensity;
+      return (result);
+    }
+    ///multiplication operator for PointXYZI and a scalar
+    template <> inline pcl::PointXYZI 
+    operator* (const float& scalar, const pcl::PointXYZI& p) 
+    {
+      pcl::PointXYZI result;
+      result.getVector3fMap () = p.getVector3fMap ();
+      result.getVector3fMap () *= scalar;
+      result.intensity = scalar * p.intensity;
+      return (result);
+    }
+    ///multiplication operator for PointXYZI and a scalar
+    template <> inline pcl::PointXYZI 
+    operator* (const pcl::PointXYZI& p, const float& scalar)
+    {
+      pcl::PointXYZI result;
+      result.getVector3fMap () = p.getVector3fMap ();
+      result.getVector3fMap () *= scalar;
+      result.intensity = scalar * p.intensity;
+      return (result);
+    }
+    ///plus assign operator for PointXYZI
+    template <> inline pcl::PointXYZI&
+    operator+= (pcl::PointXYZI& lhs, const pcl::PointXYZI& rhs)
+    {
+      lhs.getVector3fMap () += rhs.getVector3fMap ();
+      lhs.intensity+= rhs.intensity;
+      return (lhs);
+    }
+    ///minus assign operator for PointXYZI
+    template <> inline pcl::PointXYZI&
+    operator-= (pcl::PointXYZI& lhs, const pcl::PointXYZI& rhs)
+    {
+      lhs.getVector3fMap () -= rhs.getVector3fMap ();
+      lhs.intensity-= rhs.intensity;
+      return (lhs);
+    }
+    ///addition operator for PointXYZRGB
+    template <> inline pcl::PointXYZRGB
+    operator+ (const pcl::PointXYZRGB& lhs, const pcl::PointXYZRGB& rhs) 
+    {
+      pcl::PointXYZRGB result;
+      result.getVector3fMap () = lhs.getVector3fMap ();
+      result.getVector3fMap () += rhs.getVector3fMap ();
+      result.r = lhs.r + rhs.r; result.g = lhs.g + rhs.g; result.b = lhs.b + rhs.b;
+      return (result);
+    }
+    ///substraction operator for PointXYZRGB
+    template <> inline pcl::PointXYZRGB
+    operator- (const pcl::PointXYZRGB& lhs, const pcl::PointXYZRGB& rhs) 
+    {
+      pcl::PointXYZRGB result;
+      result.getVector3fMap () = lhs.getVector3fMap ();
+      result.getVector3fMap () -= rhs.getVector3fMap ();
+      result.r = lhs.r - rhs.r; result.g = lhs.g - rhs.g; result.b = lhs.b - rhs.b;
+      return (result);
+    }
+
+    template <> inline pcl::PointXYZRGB
+    operator* (const float& scalar, const pcl::PointXYZRGB& p)
+    {
+      pcl::PointXYZRGB result;
+      result.getVector3fMap () = p.getVector3fMap ();
+      result.getVector3fMap () *= scalar;
+      result.r = scalar * p.r; result.g = scalar * p.g; result.b = scalar * p.b;
+      return (result);
+    }
+
+    template <> inline pcl::PointXYZRGB
+    operator* (const pcl::PointXYZRGB& p, const float& scalar)
+    {
+      pcl::PointXYZRGB result;
+      result.getVector3fMap () = p.getVector3fMap ();
+      result.getVector3fMap () *= scalar;
+      result.r = scalar * p.r; result.g = scalar * p.g; result.b = scalar * p.b;
+      return (result);
+    }
+
+    template <> inline pcl::PointXYZRGB&
+    operator+= (pcl::PointXYZRGB& lhs, const pcl::PointXYZRGB& rhs)
+    {
+      lhs.getVector3fMap () += rhs.getVector3fMap ();
+      lhs.r+= rhs.r; lhs.g+= rhs.g; lhs.b+= rhs.b;
+      return (lhs);
+    }
+
+    template <> inline pcl::PointXYZRGB&
+    operator-= (pcl::PointXYZRGB& lhs, const pcl::PointXYZRGB& rhs)
+    {
+      lhs.getVector3fMap () -= rhs.getVector3fMap ();
+      lhs.r-= rhs.r; lhs.g-= rhs.g; lhs.b-= rhs.b;
+      return (lhs);
+    }
+
+    template <> inline pcl::PointXYZINormal
+    operator+ (const pcl::PointXYZINormal& lhs, const pcl::PointXYZINormal& rhs) 
+    {
+      pcl::PointXYZINormal result;
+      result.getVector3fMap () = lhs.getVector3fMap ();
+      result.getVector3fMap () += rhs.getVector3fMap ();
+      result.getNormalVector3fMap () = lhs.getNormalVector3fMap ();
+      result.getNormalVector3fMap () += rhs.getNormalVector3fMap ();
+      result.intensity = lhs.intensity + rhs.intensity;
+      result.curvature = lhs.curvature + rhs.curvature;
+      return (result);
+    }
+
+    template <> inline pcl::PointXYZINormal 
+    operator- (const pcl::PointXYZINormal& lhs, const pcl::PointXYZINormal& rhs) 
+    {
+      pcl::PointXYZINormal result;
+      result.getVector3fMap () = lhs.getVector3fMap ();
+      result.getVector3fMap () -= rhs.getVector3fMap ();
+      result.getNormalVector3fMap () = lhs.getNormalVector3fMap ();
+      result.getNormalVector3fMap () -= rhs.getNormalVector3fMap ();
+      result.intensity = lhs.intensity - rhs.intensity;
+      result.curvature = lhs.curvature - rhs.curvature;
+      return (result);
+    }
+
+    template <> inline pcl::PointXYZINormal&
+    operator+= (pcl::PointXYZINormal& lhs, const pcl::PointXYZINormal& rhs)
+    {
+      lhs.getVector3fMap () += rhs.getVector3fMap ();
+      lhs.getNormalVector3fMap () += rhs.getNormalVector3fMap ();
+      lhs.intensity+= rhs.intensity;
+      lhs.curvature+= rhs.curvature;
+      return (lhs);
+    }
+
+    template <> inline pcl::PointXYZINormal&
+    operator-= (pcl::PointXYZINormal& lhs, const pcl::PointXYZINormal& rhs)
+    {
+      lhs.getVector3fMap () -= rhs.getVector3fMap ();
+      lhs.getNormalVector3fMap () -= rhs.getNormalVector3fMap ();
+      lhs.intensity-= rhs.intensity;
+      lhs.curvature-= rhs.curvature;
+      return (lhs);
+    }
+
+    template <> inline pcl::PointXYZINormal 
+    operator* (const float& scalar, const pcl::PointXYZINormal& p) 
+    {
+      pcl::PointXYZINormal result;
+      result.getVector3fMap () = p.getVector3fMap ();
+      result.getVector3fMap () *= scalar;
+      result.getNormalVector3fMap () = p.getNormalVector3fMap ();
+      result.getNormalVector3fMap () *= scalar;
+      result.intensity = scalar * p.intensity;
+      result.curvature = scalar * p.curvature;
+      return (result);
+    }
+
+    template <> inline pcl::PointXYZINormal 
+    operator* (const pcl::PointXYZINormal& p, const float& scalar)
+    {
+      return ( operator* (scalar, p));
+    }
+
+    ///addition operator for Normal
+    template <> inline pcl::Normal 
+    operator+ (const pcl::Normal& lhs, const pcl::Normal& rhs) 
+    {
+      pcl::Normal result;
+      result.getNormalVector3fMap () = lhs.getNormalVector3fMap ();
+      result.getNormalVector3fMap () += rhs.getNormalVector3fMap ();
+      result.curvature = lhs.curvature + rhs.curvature;
+      return (result);
+    }
+    ///substraction operator for Normal
+    template <> inline pcl::Normal 
+    operator- (const pcl::Normal& lhs, const pcl::Normal& rhs) 
+    {
+      pcl::Normal result;
+      result.getNormalVector3fMap () = lhs.getNormalVector3fMap ();
+      result.getNormalVector3fMap () -= rhs.getNormalVector3fMap ();
+      result.curvature = lhs.curvature - rhs.curvature;
+      return (result);
+    }
+    ///multiplication operator for Normal and a scalar
+    template <> inline pcl::Normal 
+    operator* (const float& scalar, const pcl::Normal& p) 
+    {
+      pcl::Normal result;
+      result.getNormalVector3fMap () = p.getNormalVector3fMap ();
+      result.getNormalVector3fMap () *= scalar;
+      result.curvature = scalar * p.curvature;
+      return (result);
+    }
+    ///multiplication operator for Normal and a scalar
+    template <> inline pcl::Normal 
+    operator* (const pcl::Normal& p, const float& scalar)
+    {
+      pcl::Normal result;
+      result.getNormalVector3fMap () = p.getNormalVector3fMap ();
+      result.getNormalVector3fMap () *= scalar;
+      result.curvature = scalar * p.curvature;
+      return (result);
+    }
+    ///plus assign operator for Normal
+    template <> inline pcl::Normal&
+    operator+= (pcl::Normal& lhs, const pcl::Normal& rhs)
+    {
+      lhs.getNormalVector3fMap () += rhs.getNormalVector3fMap ();
+      lhs.curvature+= rhs.curvature;
+      return (lhs);
+    }
+    ///minus assign operator for Normal
+    template <> inline pcl::Normal&
+    operator-= (pcl::Normal& lhs, const pcl::Normal& rhs)
+    {
+      lhs.getNormalVector3fMap () -= rhs.getNormalVector3fMap ();
+      lhs.curvature-= rhs.curvature;
+      return (lhs);
+    }
+
   }
 }
 
