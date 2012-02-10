@@ -51,7 +51,7 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::PPFEstimation ()
   // Slight hack in order to pass the check for the presence of a search method in Feature::initCompute ()
   Feature<PointInT, PointOutT>::tree_.reset (new pcl::search::KdTree <PointInT> ());
   Feature<PointInT, PointOutT>::search_radius_ = 1.0f;
-};
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,7 +116,7 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT> void
-pcl::PPFEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output)
+pcl::PPFEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
 {
   // Initialize output container - overwrite the sizes done by Feature::initCompute ()
   output.points.resize (indices_->size () * input_->points.size (), 5);

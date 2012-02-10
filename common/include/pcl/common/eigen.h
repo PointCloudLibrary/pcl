@@ -2,6 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (C) 2010 Gael Guennebaud <gael.guennebaud@inria.fr>
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -34,30 +35,6 @@
  * $Id$
  *
  */
-// This file is part of Eigen, a lightweight C++ template library
-// for linear algebra.
-//
-// Copyright (C) 2010 Gael Guennebaud <gael.guennebaud@inria.fr>
-//
-// Eigen is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 3 of the License, or (at your option) any later version.
-//
-// Alternatively, you can redistribute it and/or
-// modify it under the terms of the GNU General Public License as
-// published by the Free Software Foundation; either version 2 of
-// the License, or (at your option) any later version.
-//
-// Eigen is distributed in the hope that it will be useful, but WITHOUT ANY
-// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-// FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License or the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License and a copy of the GNU General Public License along with
-// Eigen. If not, see <http://www.gnu.org/licenses/>.
-
 // The computeRoots function included in this is based on materials
 // covered by the following copyright and license:
 //
@@ -98,30 +75,31 @@
 
 namespace pcl
 {
-  /** \brief Compute the roots of 2 scalars
-    * \param[in] b the first scalar
-    * \param[in] c the second scalar
-    * \param[out] roots the output roots
-    * \ingroup common
+
+  /**
+    * \brief Compute the roots of a quadratic polynom x^2 + b*x + c = 0
+    * \param[in] b linear parameter
+    * \param[in] c constant parameter
+    * \param[out] roots solutions of x^2 + b*x + c = 0
     */
-	template<typename Scalar, typename Roots> inline void 
+  template<typename Scalar, typename Roots> inline void
   computeRoots2 (const Scalar& b, const Scalar& c, Roots& roots)
-	{
-		roots(0) = Scalar(0);
-		Scalar d = Scalar(b * b - 4.0 * c);
-		if (d < 0.0) // no real roots!!!! THIS SHOULD NOT HAPPEN!
-			d = 0.0;
+  {
+    roots (0) = Scalar (0);
+    Scalar d = Scalar (b * b - 4.0 * c);
+    if (d < 0.0) // no real roots!!!! THIS SHOULD NOT HAPPEN!
+      d = 0.0;
 
-		Scalar sd = sqrt (d);
+    Scalar sd = sqrt (d);
 
-		roots (2) = 0.5f * (b + sd);
-		roots (1) = 0.5f * (b - sd);
-	}
+    roots (2) = 0.5f * (b + sd);
+    roots (1) = 0.5f * (b - sd);
+  }
 
-  /** \brief Compute the roots of a matrix.
-    * \param[in] m the matrix
-    * \param[out] roots the output roots
-    * \ingroup common
+  /**
+    * \brief computes the roots of the characteristic polynomial of the input matrix m, which are the eigenvalues
+    * \param[in] m input matrix
+    * \param[out] roots roots of the characteristic polynomial of the input matrix m, which are the eigenvalues
     */
   template<typename Matrix, typename Roots> inline void
   computeRoots (const Matrix& m, Roots& roots)
@@ -131,67 +109,139 @@ namespace pcl
     // The characteristic equation is x^3 - c2*x^2 + c1*x - c0 = 0.  The
     // eigenvalues are the roots to this equation, all guaranteed to be
     // real-valued, because the matrix is symmetric.
-    Scalar c0 =               m(0,0)*m(1,1)*m(2,2)
-                + Scalar(2) * m(0,1)*m(0,2)*m(1,2)
-                            - m(0,0)*m(1,2)*m(1,2)
-                            - m(1,1)*m(0,2)*m(0,2)
-                            - m(2,2)*m(0,1)*m(0,1);
-    Scalar c1 = m(0,0)*m(1,1) -
-                m(0,1)*m(0,1) +
-                m(0,0)*m(2,2) -
-                m(0,2)*m(0,2) +
-                m(1,1)*m(2,2) -
-                m(1,2)*m(1,2);
-    Scalar c2 = m(0,0) + m(1,1) + m(2,2);
+    Scalar c0 =            m (0, 0) * m (1, 1) * m (2, 2)
+            + Scalar (2) * m (0, 1) * m (0, 2) * m (1, 2)
+                         - m (0, 0) * m (1, 2) * m (1, 2)
+                         - m (1, 1) * m (0, 2) * m (0, 2)
+                         - m (2, 2) * m (0, 1) * m (0, 1);
+    Scalar c1 = m (0, 0) * m (1, 1) -
+                m (0, 1) * m (0, 1) +
+                m (0, 0) * m (2, 2) -
+                m (0, 2) * m (0, 2) +
+                m (1, 1) * m (2, 2) -
+                m (1, 2) * m (1, 2);
+    Scalar c2 = m (0, 0) + m (1, 1) + m (2, 2);
 
 
-		if (fabs(c0) < Eigen::NumTraits<Scalar>::epsilon())// one root is 0 -> quadratic equation
-			computeRoots2 (c2, c1, roots);
-		else
-		{
-		  const Scalar s_inv3 = Scalar(1.0/3.0);
-		  const Scalar s_sqrt3 = Eigen::internal::sqrt (Scalar (3.0));
-		  // Construct the parameters used in classifying the roots of the equation
-		  // and in solving the equation for the roots in closed form.
-		  Scalar c2_over_3 = c2*s_inv3;
-		  Scalar a_over_3 = (c1 - c2*c2_over_3)*s_inv3;
-		  if (a_over_3 > Scalar (0))
-		    a_over_3 = Scalar (0);
+    if (fabs (c0) < Eigen::NumTraits<Scalar>::epsilon ())// one root is 0 -> quadratic equation
+      computeRoots2 (c2, c1, roots);
+    else
+    {
+      const Scalar s_inv3 = Scalar (1.0 / 3.0);
+      const Scalar s_sqrt3 = Eigen::internal::sqrt (Scalar (3.0));
+      // Construct the parameters used in classifying the roots of the equation
+      // and in solving the equation for the roots in closed form.
+      Scalar c2_over_3 = c2*s_inv3;
+      Scalar a_over_3 = (c1 - c2 * c2_over_3) * s_inv3;
+      if (a_over_3 > Scalar (0))
+        a_over_3 = Scalar (0);
 
-		  Scalar half_b = Scalar(0.5) * (c0 + c2_over_3 * (Scalar(2) * c2_over_3 * c2_over_3 - c1));
+      Scalar half_b = Scalar (0.5) * (c0 + c2_over_3 * (Scalar (2) * c2_over_3 * c2_over_3 - c1));
 
-		  Scalar q = half_b*half_b + a_over_3*a_over_3*a_over_3;
-		  if (q > Scalar(0))
-		    q = Scalar(0);
+      Scalar q = half_b * half_b + a_over_3 * a_over_3*a_over_3;
+      if (q > Scalar (0))
+        q = Scalar (0);
 
-		  // Compute the eigenvalues by solving for the roots of the polynomial.
-		  Scalar rho = Eigen::internal::sqrt (-a_over_3);
-		  Scalar theta = std::atan2 (Eigen::internal::sqrt (-q), half_b)*s_inv3;
-		  Scalar cos_theta = Eigen::internal::cos (theta);
-		  Scalar sin_theta = Eigen::internal::sin (theta);
-		  roots(0) = c2_over_3 + Scalar(2) * rho * cos_theta;
-		  roots(1) = c2_over_3 - rho * (cos_theta + s_sqrt3 * sin_theta);
-		  roots(2) = c2_over_3 - rho * (cos_theta - s_sqrt3 * sin_theta);
+      // Compute the eigenvalues by solving for the roots of the polynomial.
+      Scalar rho = Eigen::internal::sqrt (-a_over_3);
+      Scalar theta = std::atan2 (Eigen::internal::sqrt (-q), half_b) * s_inv3;
+      Scalar cos_theta = Eigen::internal::cos (theta);
+      Scalar sin_theta = Eigen::internal::sin (theta);
+      roots (0) = c2_over_3 + Scalar (2) * rho * cos_theta;
+      roots (1) = c2_over_3 - rho * (cos_theta + s_sqrt3 * sin_theta);
+      roots (2) = c2_over_3 - rho * (cos_theta - s_sqrt3 * sin_theta);
 
-		  // Sort in increasing order.
-		  if (roots (0) >= roots (1))
-		    std::swap (roots (0), roots (1));
-		  if (roots (1) >= roots (2))
-		  {
-		    std::swap (roots (1), roots (2));
-		    if (roots (0) >= roots (1))
-		      std::swap (roots (0), roots (1));
-		  }
+      // Sort in increasing order.
+      if (roots (0) >= roots (1))
+        std::swap (roots (0), roots (1));
+      if (roots (1) >= roots (2))
+      {
+        std::swap (roots (1), roots (2));
+        if (roots (0) >= roots (1))
+          std::swap (roots (0), roots (1));
+      }
 
-		  if (roots(0) <= 0) // eigenval for symetric positive semi-definite matrix can not be negative! Set it to 0
-			  computeRoots2 (c2, c1, roots);
-		}
+      if (roots (0) <= 0) // eigenval for symetric positive semi-definite matrix can not be negative! Set it to 0
+        computeRoots2 (c2, c1, roots);
+    }
+  }
+
+  /**
+    * \brief determine the smallest eigenvalue and its corresponding eigenvector
+    * \param mat input matrix that needs to be symmetric and positive semi definite
+    * \param eigenvalue the smallest eigenvalue of the input matrix
+    * \param eigenvector the corresponding eigenvector to the smallest eigenvalue of the input matrix
+    */
+  template <typename Matrix, typename Vector> inline void
+  eigen22 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& eigenvector)
+  {
+    // 0.5 to optimize further calculations
+    typename Matrix::Scalar trace = 0.5 * (mat (0, 0) + mat (1, 1));
+    typename Matrix::Scalar determinant = mat (0, 0) * mat (1, 1) - mat (0,1) * mat (1, 0);
+
+    typename Matrix::Scalar temp = trace * trace - determinant;
+    if (temp < 0)
+      temp = 0;
+
+    eigenvalue = trace - sqrt (temp);
+
+    eigenvector (0) = - mat (0, 1);
+    eigenvector (1) = mat (0, 0) - eigenvalue;
+
+    eigenvector.normalize ();
+  }
+
+  /** \brief determine the smallest eigenvalue and its corresponding eigenvector
+    * \param[in] mat input matrix that needs to be symmetric and positive semi definite
+    * \param[out] eigenvectors the corresponding eigenvector to the smallest eigenvalue of the input matrix
+    * \param[out] eigenvalues the smallest eigenvalue of the input matrix
+    */
+  template <typename Matrix, typename Vector> inline void
+  eigen22 (const Matrix& mat, Matrix& eigenvectors, Vector& eigenvalues)
+  {
+    // if diagonal matrix, the eigenvalues are the diagonal elements
+    // and the eigenvectors are not unique, thus set to Identity
+    if (fabs(mat.coeff (1)) <= std::numeric_limits<typename Matrix::Scalar>::min ())
+    {
+      eigenvalues.coeffRef (0) = std::min(mat.coeff (0), mat.coeff (2));
+      eigenvalues.coeffRef (1) = std::max(mat.coeff (0), mat.coeff (2));
+      eigenvectors.coeffRef (0) = 1.0;
+      eigenvectors.coeffRef (1) = 0.0;
+      eigenvectors.coeffRef (2) = 0.0;
+      eigenvectors.coeffRef (3) = 1.0;
+      return;
+    }
+
+    // 0.5 to optimize further calculations
+    typename Matrix::Scalar trace = 0.5 * (mat.coeff (0) + mat.coeff (3));
+    typename Matrix::Scalar determinant = mat.coeff (0) * mat.coeff (3) - mat.coeff (1) * mat.coeff (1);
+
+    typename Matrix::Scalar temp = trace * trace - determinant;
+
+    if (temp < 0)
+      temp = 0;
+    else
+      temp = sqrt (temp);
+
+    eigenvalues.coeffRef (0) = trace - temp;
+    eigenvalues.coeffRef (1) = trace + temp;
+
+    // either this is in a row or column depending on RowMajor or ColumnMajor
+    eigenvectors.coeffRef (0) = - mat.coeff (1);
+    eigenvectors.coeffRef (2) = mat.coeff (0) - eigenvalues.coeff (0);
+    typename Matrix::Scalar norm = 1.0 / sqrt (eigenvectors.coeffRef (0) * eigenvectors.coeffRef (0) + eigenvectors.coeffRef (2) * eigenvectors.coeffRef (2));
+    eigenvectors.coeffRef (0) *= norm;
+    eigenvectors.coeffRef (2) *= norm;
+    eigenvectors.coeffRef (1) = eigenvectors.coeffRef (2);
+    eigenvectors.coeffRef (3) = -eigenvectors.coeffRef (0);
   }
 
   /** \brief determines the eigenvector and eigenvalue of the smallest eigenvalue of the symmetric positive semi definite input matrix
     * \param[in] mat symmetric positive semi definite input matrix
-    * \param[out] eigenvalue the smallest eigenvalue
-    * \param[out] eigenvector the eigenvector corresponding to the smallest eigenvalue
+    * \param[in,out] eigenvalue extract the eigenvector for this eigenvalue.
+    * \note Note that if this value is negative, it will be replaced by the smallest eigenvalue of the input matrix and its corresponding
+    *       eigenvector will be determined.
+    * \param[out] eigenvector the corresponding eigenvector for the input eigenvalue
     * \note if the smallest eigenvalue is not unique, this function may return any eigenvector that is consistent to the eigenvalue.
     * \ingroup common
     */
@@ -203,24 +253,33 @@ namespace pcl
     // only when at least one matrix entry has magnitude larger than 1.
 
     Scalar scale = mat.cwiseAbs ().maxCoeff ();
-    if (scale <= std::numeric_limits<Scalar>::min())
-    	scale = Scalar(1.0);
+    if (scale <= std::numeric_limits<Scalar>::min ())
+      scale = Scalar (1.0);
 
+    Scalar lambda;
     Matrix scaledMat = mat / scale;
-    Vector eigenvalues;
-    computeRoots (scaledMat, eigenvalues);
+    if (eigenvalue < 0)
+    {
+      Vector eigenvalues;
+      computeRoots (scaledMat, eigenvalues);
 
-    eigenvalue = eigenvalues(0) * scale;
+      lambda = eigenvalues (0);
+      eigenvalue = eigenvalues (0) * scale;
+    }
+    else
+    {
+      lambda = eigenvalue / scale;
+    }
 
-    scaledMat.diagonal ().array () -= eigenvalues (0);
+    scaledMat.diagonal ().array () -= lambda;
 
     Vector vec1 = scaledMat.row (0).cross (scaledMat.row (1));
     Vector vec2 = scaledMat.row (0).cross (scaledMat.row (2));
     Vector vec3 = scaledMat.row (1).cross (scaledMat.row (2));
 
-    Scalar len1 = vec1.squaredNorm();
-    Scalar len2 = vec2.squaredNorm();
-    Scalar len3 = vec3.squaredNorm();
+    Scalar len1 = vec1.squaredNorm ();
+    Scalar len2 = vec2.squaredNorm ();
+    Scalar len3 = vec3.squaredNorm ();
 
     if (len1 >= len2 && len1 >= len3)
       eigenvector = vec1 / Eigen::internal::sqrt (len1);
@@ -255,180 +314,204 @@ namespace pcl
     // only when at least one matrix entry has magnitude larger than 1.
 
     Scalar scale = mat.cwiseAbs ().maxCoeff ();
-    if (scale <= std::numeric_limits<Scalar>::min())
-    	scale = Scalar(1.0);
+    if (scale <= std::numeric_limits<Scalar>::min ())
+      scale = Scalar (1.0);
 
     Matrix scaledMat = mat / scale;
 
     // Compute the eigenvalues
-    computeRoots (scaledMat,evals);
+    computeRoots (scaledMat, evals);
 
-		if((evals(2)-evals(0))<=Eigen::NumTraits<Scalar>::epsilon())
-		{
-			// all three equal
-			evecs.setIdentity();
-		}
-		else if ((evals(1)-evals(0))<=Eigen::NumTraits<Scalar>::epsilon() )
-		{
-			// first and second equal
-			Matrix tmp;
-			tmp = scaledMat;
-			tmp.diagonal ().array () -= evals (2);
+    if ((evals (2) - evals (0)) <= Eigen::NumTraits<Scalar>::epsilon ())
+    {
+      // all three equal
+      evecs.setIdentity ();
+    }
+    else if ((evals (1) - evals (0)) <= Eigen::NumTraits<Scalar>::epsilon () )
+    {
+      // first and second equal
+      Matrix tmp;
+      tmp = scaledMat;
+      tmp.diagonal ().array () -= evals (2);
 
-			Vector vec1 = tmp.row (0).cross (tmp.row (1));
-			Vector vec2 = tmp.row (0).cross (tmp.row (2));
-			Vector vec3 = tmp.row (1).cross (tmp.row (2));
+      Vector vec1 = tmp.row (0).cross (tmp.row (1));
+      Vector vec2 = tmp.row (0).cross (tmp.row (2));
+      Vector vec3 = tmp.row (1).cross (tmp.row (2));
 
-			Scalar len1 = vec1.squaredNorm();
-			Scalar len2 = vec2.squaredNorm();
-			Scalar len3 = vec3.squaredNorm();
+      Scalar len1 = vec1.squaredNorm ();
+      Scalar len2 = vec2.squaredNorm ();
+      Scalar len3 = vec3.squaredNorm ();
 
-			if (len1 >= len2 && len1 >= len3)
-			 	evecs.col (2) = vec1 / Eigen::internal::sqrt (len1);
-			else if (len2 >= len1 && len2 >= len3)
-		 		evecs.col (2) = vec2 / Eigen::internal::sqrt (len2);
-			else
-				evecs.col (2) = vec3 / Eigen::internal::sqrt (len3);
+      if (len1 >= len2 && len1 >= len3)
+        evecs.col (2) = vec1 / Eigen::internal::sqrt (len1);
+      else if (len2 >= len1 && len2 >= len3)
+        evecs.col (2) = vec2 / Eigen::internal::sqrt (len2);
+      else
+        evecs.col (2) = vec3 / Eigen::internal::sqrt (len3);
 
-			evecs.col (1) = evecs.col (2).unitOrthogonal ();
-			evecs.col (0) = evecs.col (1).cross (evecs.col (2));
-		}
-		else if ((evals(2)-evals(1))<=Eigen::NumTraits<Scalar>::epsilon() )
-		{
-			// second and third equal
-			Matrix tmp;
-			tmp = scaledMat;
-			tmp.diagonal ().array () -= evals (0);
+      evecs.col (1) = evecs.col (2).unitOrthogonal ();
+      evecs.col (0) = evecs.col (1).cross (evecs.col (2));
+    }
+    else if ((evals (2) - evals (1)) <= Eigen::NumTraits<Scalar>::epsilon () )
+    {
+      // second and third equal
+      Matrix tmp;
+      tmp = scaledMat;
+      tmp.diagonal ().array () -= evals (0);
 
-			Vector vec1 = tmp.row (0).cross (tmp.row (1));
-			Vector vec2 = tmp.row (0).cross (tmp.row (2));
-			Vector vec3 = tmp.row (1).cross (tmp.row (2));
+      Vector vec1 = tmp.row (0).cross (tmp.row (1));
+      Vector vec2 = tmp.row (0).cross (tmp.row (2));
+      Vector vec3 = tmp.row (1).cross (tmp.row (2));
 
-			Scalar len1 = vec1.squaredNorm();
-			Scalar len2 = vec2.squaredNorm();
-			Scalar len3 = vec3.squaredNorm();
+      Scalar len1 = vec1.squaredNorm ();
+      Scalar len2 = vec2.squaredNorm ();
+      Scalar len3 = vec3.squaredNorm ();
 
-			if (len1 >= len2 && len1 >= len3)
-			 	evecs.col (0) = vec1 / Eigen::internal::sqrt (len1);
-			else if (len2 >= len1 && len2 >= len3)
-		 		evecs.col (0) = vec2 / Eigen::internal::sqrt (len2);
-			else
-				evecs.col (0) = vec3 / Eigen::internal::sqrt (len3);
+      if (len1 >= len2 && len1 >= len3)
+        evecs.col (0) = vec1 / Eigen::internal::sqrt (len1);
+      else if (len2 >= len1 && len2 >= len3)
+        evecs.col (0) = vec2 / Eigen::internal::sqrt (len2);
+      else
+        evecs.col (0) = vec3 / Eigen::internal::sqrt (len3);
 
-			evecs.col (1) = evecs.col (0).unitOrthogonal ();
-			evecs.col (2) = evecs.col (0).cross (evecs.col (1));
-		}
-		else
-		{
-		  Matrix tmp;
-		  tmp = scaledMat;
-		  tmp.diagonal ().array () -= evals (2);
+      evecs.col (1) = evecs.col (0).unitOrthogonal ();
+      evecs.col (2) = evecs.col (0).cross (evecs.col (1));
+    }
+    else
+    {
+      Matrix tmp;
+      tmp = scaledMat;
+      tmp.diagonal ().array () -= evals (2);
 
-		  Vector vec1 = tmp.row (0).cross (tmp.row (1));
-		  Vector vec2 = tmp.row (0).cross (tmp.row (2));
-		  Vector vec3 = tmp.row (1).cross (tmp.row (2));
+      Vector vec1 = tmp.row (0).cross (tmp.row (1));
+      Vector vec2 = tmp.row (0).cross (tmp.row (2));
+      Vector vec3 = tmp.row (1).cross (tmp.row (2));
 
-		  Scalar len1 = vec1.squaredNorm ();
-		  Scalar len2 = vec2.squaredNorm ();
-		  Scalar len3 = vec3.squaredNorm ();
+      Scalar len1 = vec1.squaredNorm ();
+      Scalar len2 = vec2.squaredNorm ();
+      Scalar len3 = vec3.squaredNorm ();
 #ifdef _WIN32
-		  Scalar *mmax = new Scalar[3];
+      Scalar *mmax = new Scalar[3];
 #else
-			Scalar mmax[3];
+      Scalar mmax[3];
 #endif
-		  unsigned int min_el = 2;
-		  unsigned int max_el = 2;
-		  if (len1 >= len2 && len1 >= len3)
-		  {
-		    mmax[2] = len1;
-		    evecs.col (2) = vec1 / Eigen::internal::sqrt (len1);
-		  }
-		  else if (len2 >= len1 && len2 >= len3)
-		  {
-		    mmax[2] = len2;
-		    evecs.col (2) = vec2 / Eigen::internal::sqrt (len2);
-		  }
-		  else
-		  {
-		    mmax[2] = len3;
-		    evecs.col (2) = vec3 / Eigen::internal::sqrt (len3);
-		  }
+      unsigned int min_el = 2;
+      unsigned int max_el = 2;
+      if (len1 >= len2 && len1 >= len3)
+      {
+        mmax[2] = len1;
+        evecs.col (2) = vec1 / Eigen::internal::sqrt (len1);
+      }
+      else if (len2 >= len1 && len2 >= len3)
+      {
+        mmax[2] = len2;
+        evecs.col (2) = vec2 / Eigen::internal::sqrt (len2);
+      }
+      else
+      {
+        mmax[2] = len3;
+        evecs.col (2) = vec3 / Eigen::internal::sqrt (len3);
+      }
 
-		  tmp = scaledMat;
-		  tmp.diagonal ().array () -= evals (1);
+      tmp = scaledMat;
+      tmp.diagonal ().array () -= evals (1);
 
-		  vec1 = tmp.row (0).cross (tmp.row (1));
-		  vec2 = tmp.row (0).cross (tmp.row (2));
-		  vec3 = tmp.row (1).cross (tmp.row (2));
+      vec1 = tmp.row (0).cross (tmp.row (1));
+      vec2 = tmp.row (0).cross (tmp.row (2));
+      vec3 = tmp.row (1).cross (tmp.row (2));
 
-		  len1 = vec1.squaredNorm ();
-		  len2 = vec2.squaredNorm ();
-		  len3 = vec3.squaredNorm ();
-		  if (len1 >= len2 && len1 >= len3)
-		  {
-		    mmax[1] = len1;
-		    evecs.col (1) = vec1 / Eigen::internal::sqrt (len1);
-		    min_el = len1 <= mmax[min_el]? 1: min_el;
-		    max_el = len1 > mmax[max_el]? 1: max_el;
-		  }
-		  else if (len2 >= len1 && len2 >= len3)
-		  {
-		    mmax[1] = len2;
-		    evecs.col (1) = vec2 / Eigen::internal::sqrt (len2);
-		    min_el = len2 <= mmax[min_el]? 1: min_el;
-		    max_el = len2 > mmax[max_el]? 1: max_el;
-		  }
-		  else
-		  {
-		    mmax[1] = len3;
-		    evecs.col (1) = vec3 / Eigen::internal::sqrt (len3);
-		    min_el = len3 <= mmax[min_el]? 1: min_el;
-		    max_el = len3 > mmax[max_el]? 1: max_el;
-		  }
+      len1 = vec1.squaredNorm ();
+      len2 = vec2.squaredNorm ();
+      len3 = vec3.squaredNorm ();
+      if (len1 >= len2 && len1 >= len3)
+      {
+        mmax[1] = len1;
+        evecs.col (1) = vec1 / Eigen::internal::sqrt (len1);
+        min_el = len1 <= mmax[min_el] ? 1 : min_el;
+        max_el = len1 > mmax[max_el] ? 1 : max_el;
+      }
+      else if (len2 >= len1 && len2 >= len3)
+      {
+        mmax[1] = len2;
+        evecs.col (1) = vec2 / Eigen::internal::sqrt (len2);
+        min_el = len2 <= mmax[min_el] ? 1 : min_el;
+        max_el = len2 > mmax[max_el] ? 1 : max_el;
+      }
+      else
+      {
+        mmax[1] = len3;
+        evecs.col (1) = vec3 / Eigen::internal::sqrt (len3);
+        min_el = len3 <= mmax[min_el] ? 1 : min_el;
+        max_el = len3 > mmax[max_el] ? 1 : max_el;
+      }
 
-		  tmp = scaledMat;
-		  tmp.diagonal ().array () -= evals (0);
+      tmp = scaledMat;
+      tmp.diagonal ().array () -= evals (0);
 
-		  vec1 = tmp.row (0).cross (tmp.row (1));
-		  vec2 = tmp.row (0).cross (tmp.row (2));
-		  vec3 = tmp.row (1).cross (tmp.row (2));
+      vec1 = tmp.row (0).cross (tmp.row (1));
+      vec2 = tmp.row (0).cross (tmp.row (2));
+      vec3 = tmp.row (1).cross (tmp.row (2));
 
-		  len1 = vec1.squaredNorm ();
-		  len2 = vec2.squaredNorm ();
-		  len3 = vec3.squaredNorm ();
-		  if (len1 >= len2 && len1 >= len3)
-		  {
-		    mmax[0] = len1;
-		    evecs.col (0) = vec1 / Eigen::internal::sqrt (len1);
-		    min_el = len3 <= mmax[min_el]? 0: min_el;
-		    max_el = len3 > mmax[max_el]? 0: max_el;
-		  }
-		  else if (len2 >= len1 && len2 >= len3)
-		  {
-		    mmax[0] = len2;
-		    evecs.col (0) = vec2 / Eigen::internal::sqrt (len2);
-		    min_el = len3 <= mmax[min_el]? 0: min_el;
-		    max_el = len3 > mmax[max_el]? 0: max_el;
-		  }
-		  else
-		  {
-		    mmax[0] = len3;
-		    evecs.col (0) = vec3 / Eigen::internal::sqrt (len3);
-		    min_el = len3 <= mmax[min_el]? 0: min_el;
-		    max_el = len3 > mmax[max_el]? 0: max_el;
-		  }
+      len1 = vec1.squaredNorm ();
+      len2 = vec2.squaredNorm ();
+      len3 = vec3.squaredNorm ();
+      if (len1 >= len2 && len1 >= len3)
+      {
+        mmax[0] = len1;
+        evecs.col (0) = vec1 / Eigen::internal::sqrt (len1);
+        min_el = len3 <= mmax[min_el] ? 0 : min_el;
+        max_el = len3 > mmax[max_el] ? 0 : max_el;
+      }
+      else if (len2 >= len1 && len2 >= len3)
+      {
+        mmax[0] = len2;
+        evecs.col (0) = vec2 / Eigen::internal::sqrt (len2);
+        min_el = len3 <= mmax[min_el] ? 0 : min_el;
+        max_el = len3 > mmax[max_el] ? 0 : max_el;
+      }
+      else
+      {
+        mmax[0] = len3;
+        evecs.col (0) = vec3 / Eigen::internal::sqrt (len3);
+        min_el = len3 <= mmax[min_el] ? 0 : min_el;
+        max_el = len3 > mmax[max_el] ? 0 : max_el;
+      }
 
-		  unsigned mid_el = 3 - min_el - max_el;
-		  evecs.col (min_el) = evecs.col ((min_el+1)%3).cross ( evecs.col ((min_el+2)%3) ).normalized ();
-			evecs.col (mid_el) = evecs.col ((mid_el+1)%3).cross ( evecs.col ((mid_el+2)%3) ).normalized ();
+      unsigned mid_el = 3 - min_el - max_el;
+      evecs.col (min_el) = evecs.col ((min_el + 1) % 3).cross ( evecs.col ((min_el + 2) % 3) ).normalized ();
+      evecs.col (mid_el) = evecs.col ((mid_el + 1) % 3).cross ( evecs.col ((mid_el + 2) % 3) ).normalized ();
 #ifdef _WIN32
-		  delete [] mmax;
+      delete [] mmax;
 #endif
-		}
-	  // Rescale back to the original size.
-	  evals *= scale;
+    }
+    // Rescale back to the original size.
+    evals *= scale;
   }
 
+  /** \brief calculates the inverse of a 2x2 matrix
+    * \param[in] matrix matrix to be inverted
+    * \param[out] inverse the resultant inverted matrix
+    * \note only the upper triangular part is taken into account => non symmetric matrices will give wrong results
+    * \return determinant of the original matrix => if 0 no inverse exists => result is invalid
+    * \ingroup common
+    */
+  template<typename Matrix> inline typename Matrix::Scalar
+  invert2x2 (const Matrix& matrix, Matrix& inverse)
+  {
+    typedef typename Matrix::Scalar Scalar;
+    Scalar det = matrix.coeff (0) * matrix.coeff (3) - matrix.coeff (1) * matrix.coeff (2) ;
+
+    if (det != 0)
+    {
+      //Scalar inv_det = Scalar (1.0) / det;
+      inverse.coeffRef (0) =   matrix.coeff (3);
+      inverse.coeffRef (1) = - matrix.coeff (1);
+      inverse.coeffRef (2) = - matrix.coeff (2);
+      inverse.coeffRef (3) =   matrix.coeff (0);
+      inverse /= det;
+    }
+    return det;
+  }
 
   /** \brief calculates the inverse of a 3x3 symmetric matrix.
     * \param[in] matrix matrix to be inverted
@@ -437,7 +520,7 @@ namespace pcl
     * \return determinant of the original matrix => if 0 no inverse exists => result is invalid
     * \ingroup common
     */
-  template<typename Matrix> inline typename Matrix::Scalar 
+  template<typename Matrix> inline typename Matrix::Scalar
   invert3x3SymMatrix (const Matrix& matrix, Matrix& inverse)
   {
     typedef typename Matrix::Scalar Scalar;
@@ -445,22 +528,66 @@ namespace pcl
     // a b c
     // b d e
     // c e f
+    //| a b c |-1             |   fd-ee    ce-bf   be-cd  |
+    //| b d e |    =  1/det * |   ce-bf    af-cc   bc-ae  |
+    //| c e f |               |   be-cd    bc-ae   ad-bb  |
 
-    Scalar df_ee = matrix (1, 1) * matrix (2, 2) - matrix (1, 2) * matrix (1, 2);
-    Scalar ce_bf = matrix (0, 2) * matrix (1, 2) - matrix (0, 1) * matrix (2, 2);
-    Scalar be_cd = matrix (0, 1) * matrix (1, 2) - matrix (0, 2) * matrix (1, 1);
+    //det = a(fd-ee) + b(ec-fb) + c(eb-dc)
 
-    Scalar det = matrix (0, 0) * df_ee + matrix (0, 1) * ce_bf + matrix (0, 2) * be_cd;
+    Scalar fd_ee = matrix.coeff (4) * matrix.coeff (8) - matrix.coeff (7) * matrix.coeff (5);
+    Scalar ce_bf = matrix.coeff (2) * matrix.coeff (5) - matrix.coeff (1) * matrix.coeff (8);
+    Scalar be_cd = matrix.coeff (1) * matrix.coeff (5) - matrix.coeff (2) * matrix.coeff (4);
+
+    Scalar det = matrix.coeff (0) * fd_ee + matrix.coeff (1) * ce_bf + matrix.coeff (2) * be_cd;
 
     if (det != 0)
     {
-      Scalar inv_det = Scalar(1.0) / det;
-      inverse (0, 0) = df_ee * inv_det;
-      inverse (0, 1) = ce_bf * inv_det;
-      inverse (0, 2) = be_cd * inv_det;
-      inverse (1, 1) = (matrix (0, 0) * matrix (2, 2) - matrix (0, 2) * matrix (0, 2)) * inv_det;
-      inverse (1, 2) = (matrix (0, 1) * matrix (0, 2) - matrix (0, 0) * matrix (1, 2)) * inv_det;
-      inverse (2, 2) = (matrix (0, 0) * matrix (1, 1) - matrix (0, 1) * matrix (0, 1)) * inv_det;
+      //Scalar inv_det = Scalar (1.0) / det;
+      inverse.coeffRef (0) = fd_ee;
+      inverse.coeffRef (1) = inverse.coeffRef (3) = ce_bf;
+      inverse.coeffRef (2) = inverse.coeffRef (6) = be_cd;
+      inverse.coeffRef (4) = (matrix.coeff (0) * matrix.coeff (8) - matrix.coeff (2) * matrix.coeff (2));
+      inverse.coeffRef (5) = inverse.coeffRef (7) = (matrix.coeff (1) * matrix.coeff (2) - matrix.coeff (0) * matrix.coeff (5));
+      inverse.coeffRef (8) = (matrix.coeff (0) * matrix.coeff (4) - matrix.coeff (1) * matrix.coeff (1));
+      inverse /= det;
+    }
+    return det;
+  }
+
+  /** \brief calculates the inverse of a general 3x3 matrix.
+    * \param[in] matrix matrix to be inverted
+    * \param[out] inverse the resultant inverted matrix
+    * \return determinant of the original matrix => if 0 no inverse exists => result is invalid
+    * \ingroup common
+    */
+  template<typename Matrix> inline typename Matrix::Scalar
+  invert3x3Matrix (const Matrix& matrix, Matrix& inverse)
+  {
+    typedef typename Matrix::Scalar Scalar;
+
+    //| a b c |-1             |   ie-hf    hc-ib   fb-ec  |
+    //| d e f |    =  1/det * |   gf-id    ia-gc   dc-fa  |
+    //| g h i |               |   hd-ge    gb-ha   ea-db  |
+    //det = a(ie-hf) + d(hc-ib) + g(fb-ec)
+
+    Scalar ie_hf = matrix.coeff (8) * matrix.coeff (4) - matrix.coeff (7) * matrix.coeff (5);
+    Scalar hc_ib = matrix.coeff (7) * matrix.coeff (2) - matrix.coeff (8) * matrix.coeff (1);
+    Scalar fb_ec = matrix.coeff (5) * matrix.coeff (1) - matrix.coeff (4) * matrix.coeff (2);
+    Scalar det = matrix.coeff (0) * (ie_hf) + matrix.coeff (3) * (hc_ib) + matrix.coeff (6) * (fb_ec) ;
+
+    if (det != 0)
+    {
+      inverse.coeffRef (0) = ie_hf;
+      inverse.coeffRef (1) = hc_ib;
+      inverse.coeffRef (2) = fb_ec;
+      inverse.coeffRef (3) = matrix.coeff (6) * matrix.coeff (5) - matrix.coeff (8) * matrix.coeff (3);
+      inverse.coeffRef (4) = matrix.coeff (8) * matrix.coeff (0) - matrix.coeff (6) * matrix.coeff (2);
+      inverse.coeffRef (5) = matrix.coeff (3) * matrix.coeff (2) - matrix.coeff (5) * matrix.coeff (0);
+      inverse.coeffRef (6) = matrix.coeff (7) * matrix.coeff (3) - matrix.coeff (6) * matrix.coeff (4);
+      inverse.coeffRef (7) = matrix.coeff (6) * matrix.coeff (1) - matrix.coeff (7) * matrix.coeff (0);
+      inverse.coeffRef (8) = matrix.coeff (4) * matrix.coeff (0) - matrix.coeff (3) * matrix.coeff (1);
+
+      inverse /= det;
     }
     return det;
   }
@@ -604,7 +731,7 @@ namespace pcl
     * \ingroup common
     */
   template <typename Derived> void
-  loadBinary (Eigen::MatrixBase<Derived>& matrix, std::istream& file);
+  loadBinary (Eigen::MatrixBase<Derived> const& matrix, std::istream& file);
 }
 
 #include "pcl/common/impl/eigen.hpp"

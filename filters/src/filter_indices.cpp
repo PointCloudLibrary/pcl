@@ -59,5 +59,5 @@ pcl::FilterIndices<sensor_msgs::PointCloud2>::filter (std::vector<int> &indices)
 }
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(removeNanFromPointCloud, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(removeNanFromPointCloud, PCL_XYZ_POINT_TYPES)
 

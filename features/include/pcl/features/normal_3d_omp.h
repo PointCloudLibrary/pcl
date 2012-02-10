@@ -108,7 +108,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
 
   /** \brief NormalEstimationOMP estimates local surface properties at each 3D point, such as surface normals and
@@ -144,7 +144,7 @@ namespace pcl
         * \param output the resultant point cloud model dataset that contains surface normals and curvatures
         */
       void 
-      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output);
 
       /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
         * \param[out] output the output point cloud 

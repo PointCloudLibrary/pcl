@@ -145,25 +145,23 @@ main (int argc, char** argv)
   // -----Show range image-----
   // --------------------------
   pcl::visualization::RangeImageVisualizer range_image_widget ("Range image");
-  range_image_widget.setRangeImage (range_image);
-  //range_image_widget.savePPM("range_image.ppm", "Range Image Visualization");
+  range_image_widget.showRangeImage (range_image);
   
   //--------------------
   // -----Main loop-----
   //--------------------
-  std::vector<pcl::visualization::Camera> cameras;
-  while (!viewer.wasStopped () && range_image_widget.isShown ())
+  while (!viewer.wasStopped ())
   {
-    pcl::visualization::ImageWidgetWX::spinOnce ();  // process GUI events
-    viewer.spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    range_image_widget.spinOnce ();
+    viewer.spinOnce ();
+    pcl_sleep (0.01);
     
     if (live_update)
     {
       scene_sensor_pose = viewer.getViewerPose();
       range_image.createFromPointCloud (point_cloud, angular_resolution, pcl::deg2rad (360.0f), pcl::deg2rad (180.0f),
                                         scene_sensor_pose, pcl::RangeImage::LASER_FRAME, noise_level, min_range, border_size);
-      range_image_widget.setRangeImage (range_image);
+      range_image_widget.showRangeImage (range_image);
     }
   }
 }

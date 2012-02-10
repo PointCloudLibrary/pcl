@@ -152,7 +152,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
 
   /** \brief RIFTEstimation estimates the Rotation Invariant Feature Transform descriptors for a given point cloud 
@@ -187,7 +187,7 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset that contains the RIFT feature estimates
         */
       void 
-      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output);
 
       /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
         * \param[out] output the output point cloud 

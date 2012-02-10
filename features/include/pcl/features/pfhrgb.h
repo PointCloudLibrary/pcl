@@ -35,8 +35,8 @@
  *  $Id$
  */
 
-#ifndef PCL_PFHRGH_H_
-#define PCL_PFHRGH_H_
+#ifndef PCL_PFHRGB_H_
+#define PCL_PFHRGB_H_
 
 #include <pcl/features/feature.h>
 
@@ -48,7 +48,7 @@ namespace pcl
                           float &f1, float &f2, float &f3, float &f4, float &f5, float &f6, float &f7);
 
 
-  template <typename PointInT, typename PointNT, typename PointOutT>
+  template <typename PointInT, typename PointNT, typename PointOutT = pcl::PFHRGBSignature250>
   class PFHRGBEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
@@ -100,8 +100,8 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
 }
 
-#endif /* PCL_PFHRGH_H_ */
+#endif /* PCL_PFHRGB_H_ */

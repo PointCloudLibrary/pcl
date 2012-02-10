@@ -48,6 +48,8 @@ namespace pcl
   /** \brief FPFHEstimation estimates the <b>Fast Point Feature Histogram (FPFH)</b> descriptor for a given point 
     * cloud dataset containing points and normals.
     *
+    * A commonly used type for PointOutT is pcl::FPFHSignature33.
+    *
     * \note If you use this code in any academic work, please cite:
     *
     *   - R.B. Rusu, N. Blodow, M. Beetz.
@@ -73,7 +75,7 @@ namespace pcl
     * \author Radu B. Rusu
     * \ingroup features
     */
-  template <typename PointInT, typename PointNT, typename PointOutT>
+  template <typename PointInT, typename PointNT, typename PointOutT = pcl::FPFHSignature33>
   class FPFHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
@@ -214,7 +216,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
 
   /** \brief FPFHEstimation estimates the <b>Fast Point Feature Histogram (FPFH)</b> descriptor for a given point 
@@ -269,7 +271,7 @@ namespace pcl
         * \param output the resultant point cloud model dataset that contains the FPFH feature estimates
         */
       void 
-      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output);
 
       /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
         * \param[out] output the output point cloud 

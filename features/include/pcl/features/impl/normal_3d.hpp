@@ -100,7 +100,7 @@ pcl::NormalEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &outpu
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
-pcl::NormalEstimation<PointInT, Eigen::MatrixXf>::computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output)
+pcl::NormalEstimation<PointInT, Eigen::MatrixXf>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
 {
   // Resize the output dataset
   output.points.resize (indices_->size (), 4);

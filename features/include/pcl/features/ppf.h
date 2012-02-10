@@ -102,7 +102,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
 
   /** \brief Class that calculates the "surflet" features for each pair in the given
@@ -134,7 +134,7 @@ namespace pcl
         * the input cloud);
         */
       void
-      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output);
 
       /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
         * \param[out] output the output point cloud 

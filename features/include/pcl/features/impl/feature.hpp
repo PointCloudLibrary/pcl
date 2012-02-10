@@ -44,52 +44,15 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 inline void
-pcl::solvePlaneParameters (const Eigen::Matrix3f &covariance_matrix, 
+pcl::solvePlaneParameters (const Eigen::Matrix3f &covariance_matrix,
                            const Eigen::Vector4f &point,
                            Eigen::Vector4f &plane_parameters, float &curvature)
 {
-  // Avoid getting hung on Eigen's optimizers
-  for (int i = 0; i < 3; ++i)
-    for (int j = 0; j < 3; ++j)
-      if (!pcl_isfinite (covariance_matrix (i, j)))
-      {
-        //PCL_WARN ("[pcl::solvePlaneParameteres] Covariance matrix has NaN/Inf values!\n");
-        plane_parameters.setConstant (std::numeric_limits<float>::quiet_NaN ());
-        curvature = std::numeric_limits<float>::quiet_NaN ();
-        return;
-      }
+  solvePlaneParameters (covariance_matrix, plane_parameters [0], plane_parameters [1], plane_parameters [2], curvature);
 
-  // Extract the eigenvalues and eigenvectors
-  //Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> ei_symm (covariance_matrix);
-  //EIGEN_ALIGN16 Eigen::Vector3f eigen_values  = ei_symm.eigenvalues ();
-  //EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors = ei_symm.eigenvectors ();
-  EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
-  EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
-  pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
-
-  // Normalize the surface normal (eigenvector corresponding to the smallest eigenvalue)
-  // Note: Remember to take care of the eigen_vectors ordering
-  //float norm = 1.0 / eigen_vectors.col (0).norm ();
-
-  //plane_parameters[0] = eigen_vectors (0, 0) * norm;
-  //plane_parameters[1] = eigen_vectors (1, 0) * norm;
-  //plane_parameters[2] = eigen_vectors (2, 0) * norm;
-
-  // The normalization is not necessary, since the eigenvectors from libeigen are already normalized
-  plane_parameters[0] = eigen_vectors (0, 0);
-  plane_parameters[1] = eigen_vectors (1, 0);
-  plane_parameters[2] = eigen_vectors (2, 0);
   plane_parameters[3] = 0;
-
   // Hessian form (D = nc . p_plane (centroid here) + p)
   plane_parameters[3] = -1 * plane_parameters.dot (point);
-
-  // Compute the curvature surface change
-  float eig_sum = eigen_values.sum ();
-  if (eig_sum != 0)
-    curvature = fabs ( eigen_values[0] / eig_sum );
-  else
-    curvature = 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -98,39 +61,26 @@ pcl::solvePlaneParameters (const Eigen::Matrix3f &covariance_matrix,
                            float &nx, float &ny, float &nz, float &curvature)
 {
   // Avoid getting hung on Eigen's optimizers
-  for (int i = 0; i < 3; ++i)
-    for (int j = 0; j < 3; ++j)
-      if (!pcl_isfinite (covariance_matrix (i, j)))
-      {
-        //PCL_WARN ("[pcl::solvePlaneParameteres] Covariance matrix has NaN/Inf values!\n");
-        nx = ny = nz = curvature = std::numeric_limits<float>::quiet_NaN ();
-        return;
-      }
-  // Extract the eigenvalues and eigenvectors
-  //Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> ei_symm (covariance_matrix);
-  //EIGEN_ALIGN16 Eigen::Vector3f eigen_values  = ei_symm.eigenvalues ();
-  //EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors = ei_symm.eigenvectors ();
-  EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
-  EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
-  pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
+//  for (int i = 0; i < 9; ++i)
+//    if (!pcl_isfinite (covariance_matrix.coeff (i)))
+//    {
+//      //PCL_WARN ("[pcl::solvePlaneParameteres] Covariance matrix has NaN/Inf values!\n");
+//      nx = ny = nz = curvature = std::numeric_limits<float>::quiet_NaN ();
+//      return;
+//    }
+  // Extract the smallest eigenvalue and its eigenvector
+  EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value = -1;
+  EIGEN_ALIGN16 Eigen::Vector3f eigen_vector;
+  pcl::eigen33 (covariance_matrix, eigen_value, eigen_vector);
 
-  // Normalize the surface normal (eigenvector corresponding to the smallest eigenvalue)
-  // Note: Remember to take care of the eigen_vectors ordering
-  //float norm = 1.0 / eigen_vectors.col (0).norm ();
-
-  //nx = eigen_vectors (0, 0) * norm;
-  //ny = eigen_vectors (1, 0) * norm;
-  //nz = eigen_vectors (2, 0) * norm;
-  
-  // The normalization is not necessary, since the eigenvectors from libeigen are already normalized
-  nx = eigen_vectors (0, 0);
-  ny = eigen_vectors (1, 0);
-  nz = eigen_vectors (2, 0);
+  nx = eigen_vector [0];
+  ny = eigen_vector [1];
+  nz = eigen_vector [2];
 
   // Compute the curvature surface change
-  float eig_sum = eigen_values.sum ();
+  float eig_sum = covariance_matrix.coeff (0) + covariance_matrix.coeff (4) + covariance_matrix.coeff (8);
   if (eig_sum != 0)
-    curvature = fabs ( eigen_values[0] / eig_sum );
+    curvature = fabs ( eigen_value / eig_sum );
   else
     curvature = 0;
 }
@@ -193,15 +143,15 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
       {
         // Declare the search locator definition
         int (KdTree::*radiusSearch)(int index, double radius, std::vector<int> &k_indices,
-                                    std::vector<float> &k_distances, int max_nn) const = &KdTree::radiusSearch;
-        search_method_ = boost::bind (radiusSearch, boost::ref (tree_), _1, _2, _3, _4, INT_MAX);
+                                    std::vector<float> &k_distances, unsigned int max_nn) const = &KdTree::radiusSearch;
+        search_method_ = boost::bind (radiusSearch, boost::ref (tree_), _1, _2, _3, _4, 0);
       }
 
       // Declare the search locator definition
       int (KdTree::*radiusSearchSurface)(const PointCloudIn &cloud, int index, double radius,
                                          std::vector<int> &k_indices, std::vector<float> &k_distances,
-                                         int max_nn) = &pcl::search::Search<PointInT>::radiusSearch;
-      search_method_surface_ = boost::bind (radiusSearchSurface, boost::ref (tree_), _1, _2, _3, _4, _5, INT_MAX);
+                                         unsigned int max_nn) const = &pcl::search::Search<PointInT>::radiusSearch;
+      search_method_surface_ = boost::bind (radiusSearchSurface, boost::ref (tree_), _1, _2, _3, _4, _5, 0);
     }
   }
   else
@@ -212,13 +162,13 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
       if (surface_ == input_) // if the two surfaces are the same
       {
         // Declare the search locator definition
-        int (KdTree::*nearestKSearch)(int index, int k, std::vector<int> &k_indices, 
-                                      std::vector<float> &k_distances) = &KdTree::nearestKSearch;
+        int (KdTree::*nearestKSearch)(int index, int k, std::vector<int> &k_indices,
+                                      std::vector<float> &k_distances) const = &KdTree::nearestKSearch;
         search_method_ = boost::bind (nearestKSearch, boost::ref (tree_), _1, _2, _3, _4);
       }
       // Declare the search locator definition
-      int (KdTree::*nearestKSearchSurface)(const PointCloudIn &cloud, int index, int k, std::vector<int> &k_indices, 
-                                           std::vector<float> &k_distances) = &KdTree::nearestKSearch;
+      int (KdTree::*nearestKSearchSurface)(const PointCloudIn &cloud, int index, int k, std::vector<int> &k_indices,
+                                           std::vector<float> &k_distances) const = &KdTree::nearestKSearch;
       search_method_surface_ = boost::bind (nearestKSearchSurface, boost::ref (tree_), _1, _2, _3, _4, _5);
     }
     else
@@ -284,7 +234,7 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
-pcl::Feature<PointInT, PointOutT>::compute (pcl::PointCloud<Eigen::MatrixXf> &output)
+pcl::Feature<PointInT, PointOutT>::computeEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
 {
   if (!initCompute ())
   {
@@ -299,7 +249,7 @@ pcl::Feature<PointInT, PointOutT>::compute (pcl::PointCloud<Eigen::MatrixXf> &ou
 #endif
   output.properties.sensor_origin = input_->sensor_origin_;
   output.properties.sensor_orientation = input_->sensor_orientation_;
-  
+
   // Check if the output will be computed for all points or only a subset
   if (indices_->size () != input_->points.size ())
   {
@@ -315,7 +265,7 @@ pcl::Feature<PointInT, PointOutT>::compute (pcl::PointCloud<Eigen::MatrixXf> &ou
   output.is_dense = input_->is_dense;
 
   // Perform the actual feature computation
-  computeFeature (output);
+  computeFeatureEigen (output);
 
   deinitCompute ();
 }
@@ -336,7 +286,7 @@ pcl::FeatureFromNormals<PointInT, PointNT, PointOutT>::initCompute ()
   if (!normals_)
   {
     PCL_ERROR ("[pcl::%s::initCompute] No input dataset containing normals was given!\n", getClassName ().c_str ());
-    Feature<PointInT, PointOutT>::deinitCompute();
+    Feature<PointInT, PointOutT>::deinitCompute ();
     return (false);
   }
 
@@ -344,9 +294,9 @@ pcl::FeatureFromNormals<PointInT, PointNT, PointOutT>::initCompute ()
   if (normals_->points.size () != surface_->points.size ())
   {
     PCL_ERROR ("[pcl::%s::initCompute] ", getClassName ().c_str ());
-    PCL_ERROR ("The number of points in the input dataset differs from ");
-    PCL_ERROR ("the number of points in the dataset containing the normals!\n");
-    Feature<PointInT, PointOutT>::deinitCompute();
+    PCL_ERROR ("The number of points in the input dataset (%u) differs from ", surface_->points.size ());
+    PCL_ERROR ("the number of points in the dataset containing the normals (%u)!\n", normals_->points.size ());
+    Feature<PointInT, PointOutT>::deinitCompute ();
     return (false);
   }
 
@@ -369,7 +319,7 @@ pcl::FeatureFromLabels<PointInT, PointLT, PointOutT>::initCompute ()
   if (!labels_)
   {
     PCL_ERROR ("[pcl::%s::initCompute] No input dataset containing labels was given!\n", getClassName ().c_str ());
-    Feature<PointInT, PointOutT>::deinitCompute();
+    Feature<PointInT, PointOutT>::deinitCompute ();
     return (false);
   }
 
@@ -377,7 +327,7 @@ pcl::FeatureFromLabels<PointInT, PointLT, PointOutT>::initCompute ()
   if (labels_->points.size () != surface_->points.size ())
   {
     PCL_ERROR ("[pcl::%s::initCompute] The number of points in the input dataset differs from the number of points in the dataset containing the labels!\n", getClassName ().c_str ());
-    Feature<PointInT, PointOutT>::deinitCompute();
+    Feature<PointInT, PointOutT>::deinitCompute ();
     return (false);
   }
 

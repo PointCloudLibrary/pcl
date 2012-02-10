@@ -40,4 +40,4 @@
 #include <pcl/filters/bilateral.h>
 #include <pcl/filters/impl/bilateral.hpp>
 
-PCL_INSTANTIATE(BilateralFilter, (pcl::PointXYZI)(pcl::PointXYZINormal));
+PCL_INSTANTIATE(BilateralFilter, (pcl::PointXYZI)(pcl::PointXYZINormal))

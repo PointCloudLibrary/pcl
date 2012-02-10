@@ -30,14 +30,12 @@ plane. Assuming that we use a Kd-tree structure for finding the nearest
 neighbors, the algorithmic steps for that would be (from [RusuDissertation]_):
 
 
-  1. *create a Kd-tree representation for the input point cloud dataset* :math:`P`;
+ 1. *create a Kd-tree representation for the input point cloud dataset* :math:`P`;
+
+ 2. *set up an empty list of clusters* :math:`C`, *and a queue of the points that need to be checked* :math:`Q`;
 
 
-  2. *set up an empty list of clusters* :math:`C`, *and a queue of the points that need to be checked* :math:`Q`;
-
-
-  3. *then for every point* :math:`\boldsymbol{p}_i \in P`, *perform the following steps:*
-
+ 3. *then for every point* :math:`\boldsymbol{p}_i \in P`, *perform the following steps:*
 
      * *add* :math:`\boldsymbol{p}_i` *to the current queue* :math:`Q`;
 
@@ -51,8 +49,7 @@ neighbors, the algorithmic steps for that would be (from [RusuDissertation]_):
       :math:`Q` *to the list of clusters* :math:`C`, *and reset* :math:`Q` *to an
       empty list*
 
-
-  4. *the algorithm terminates when all points* :math:`\boldsymbol{p}_i \in P` *have been processed and are now part of the list of point clusters* :math:`C`
+ 4. *the algorithm terminates when all points* :math:`\boldsymbol{p}_i \in P` *have been processed and are now part of the list of point clusters* :math:`C`
 
 The Code
 --------
@@ -76,9 +73,9 @@ Now, let's break down the code piece by piece, skipping the obvious.
 
 	// Read in the cloud data
 	pcl::PCDReader reader;
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>), cloud_f (new pcl::PointCloud<pcl::PointXYZ>);
 	reader.read ("table_scene_lms400.pcd", *cloud);
-	std::cout << "PointCloud before filtering has: " << cloud->points.size () << " data points." << std::endl; //*
+	std::cout << "PointCloud before filtering has: " << cloud->points.size () << " data points." << std::endl;
 
 		  .
 		  .
@@ -93,7 +90,8 @@ Now, let's break down the code piece by piece, skipping the obvious.
 
 		// Remove the plane inliers, extract the rest
 	  extract.setNegative (true);
-	  extract.filter (*cloud_filtered); //*
+	  extract.filter (*cloud_f);
+    cloud_filtered = cloud_f;
 	}
 
 The code above is already described in other tutorials, so you can read the
@@ -102,14 +100,14 @@ explanation there (in particular :ref:`planar_segmentation` and
 
 .. literalinclude:: sources/cluster_extraction/cluster_extraction.cpp
    :language: cpp
-   :lines: 71-72
+   :lines: 71-73
 
 There we are creating a KdTree object for the search method of our extraction
 algorithm.
 
 .. literalinclude:: sources/cluster_extraction/cluster_extraction.cpp
    :language: cpp
-   :lines: 74
+   :lines: 75
 
 Here we are creating a vector of `PointIndices`, which contain the actual index information in a `vector<int>`. The indices of each detected
 cluster are saved here - please take note of the fact that `cluster_indices` is a
@@ -118,7 +116,7 @@ vector containing one instance of PointIndices for each detected cluster. So
 
 .. literalinclude:: sources/cluster_extraction/cluster_extraction.cpp
    :language: cpp
-   :lines: 75-81
+   :lines: 76-82
 
 Here we are creating a EuclideanClusterExtraction object with point type
 PointXYZ since our point cloud is of type PointXYZ. We are also setting the
@@ -139,7 +137,7 @@ each entry and write all points of the current cluster in the `PointCloud`.
 
 .. literalinclude:: sources/cluster_extraction/cluster_extraction.cpp
    :language: cpp
-   :lines: 83-95
+   :lines: 84-93
 
 Compiling and running the program
 ---------------------------------

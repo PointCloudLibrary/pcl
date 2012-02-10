@@ -38,6 +38,7 @@
 #define PCL_EXCEPTIONS_H_
 
 #include <stdexcept>
+#include <sstream>
 #include <pcl/pcl_macros.h>
 
 namespace pcl
@@ -109,7 +110,7 @@ namespace pcl
   /** \class InvalidConversionException
     * \brief An exception that is thrown when a PointCloud2 message cannot be converted into a PCL type
     */
-  class PCL_EXPORTS InvalidConversionException : public PCLException
+  class InvalidConversionException : public PCLException
   {
     public:
 
@@ -123,7 +124,7 @@ namespace pcl
   /** \class IsNotDenseException
     * \brief An exception that is thrown when a PointCloud is not dense but is attemped to be used as dense
     */
-  class PCL_EXPORTS IsNotDenseException : public PCLException
+  class IsNotDenseException : public PCLException
   {
     public:
 
@@ -138,7 +139,7 @@ namespace pcl
     * \brief An exception that is thrown when a sample consensus model doesn't
     * have the correct number of samples defined in model_types.h
     */
-  class PCL_EXPORTS InvalidSACModelTypeException : public PCLException
+  class InvalidSACModelTypeException : public PCLException
   {
     public:
 
@@ -152,7 +153,7 @@ namespace pcl
   /** \class IOException
     * \brief An exception that is thrown during an IO error (typical read/write errors)
     */
-  class PCL_EXPORTS IOException : public PCLException
+  class IOException : public PCLException
   {
     public:
 
@@ -167,7 +168,7 @@ namespace pcl
     * \brief An exception thrown when init can not be performed should be used in all the
     * PCLBase class inheritants.
     */
-  class PCL_EXPORTS InitFailedException : public PCLException
+  class InitFailedException : public PCLException
   {
     public:
       InitFailedException (const std::string& error_description = "",
@@ -181,7 +182,7 @@ namespace pcl
     * \brief An exception that is thrown when an organized point cloud is needed
     * but not provided.
     */
-  class PCL_EXPORTS UnorganizedPointCloudException : public PCLException
+  class UnorganizedPointCloudException : public PCLException
   {
     public:
     
@@ -195,7 +196,7 @@ namespace pcl
   /** \class KernelWidthTooSmallException
     * \brief An exception that is thrown when the kernel size is too small
     */
-  class PCL_EXPORTS KernelWidthTooSmallException : public PCLException
+  class KernelWidthTooSmallException : public PCLException
   {
     public:
     

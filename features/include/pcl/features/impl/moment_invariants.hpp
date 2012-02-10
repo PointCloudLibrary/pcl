@@ -157,7 +157,7 @@ pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computeFeature (PointCloud
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
-pcl::MomentInvariantsEstimation<PointInT, Eigen::MatrixXf>::computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output)
+pcl::MomentInvariantsEstimation<PointInT, Eigen::MatrixXf>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
 {
   // Resize the output dataset
   output.points.resize (indices_->size (), 3);

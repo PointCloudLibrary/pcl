@@ -22,14 +22,14 @@ public:
   }
 
   void
-  cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+  cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud)
   {
     if (!viewer.wasStopped ())
     {
       // stringstream to store compressed point cloud
       std::stringstream compressedData;
       // output pointcloud
-      pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloudOut (new pcl::PointCloud<pcl::PointXYZRGB> ());
+      pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloudOut (new pcl::PointCloud<pcl::PointXYZRGBA> ());
 
       // compress point cloud
       PointCloudEncoder->encodePointCloud (cloud, compressedData);
@@ -53,15 +53,15 @@ public:
     pcl::octree::compression_Profiles_e compressionProfile = pcl::octree::MED_RES_ONLINE_COMPRESSION_WITH_COLOR;
 
     // instantiate point cloud compression for encoding and decoding
-    PointCloudEncoder = new pcl::octree::PointCloudCompression<pcl::PointXYZRGB> (compressionProfile, showStatistics);
-    PointCloudDecoder = new pcl::octree::PointCloudCompression<pcl::PointXYZRGB> ();
+    PointCloudEncoder = new pcl::octree::PointCloudCompression<pcl::PointXYZRGBA> (compressionProfile, showStatistics);
+    PointCloudDecoder = new pcl::octree::PointCloudCompression<pcl::PointXYZRGBA> ();
 
     // create a new grabber for OpenNI devices
     pcl::Grabber* interface = new pcl::OpenNIGrabber ();
 
     // make callback function from member function
     boost::function<void
-    (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
+    (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f = boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
 
     // connect callback function for desired signal. In this case its a point cloud with color values
     boost::signals2::connection c = interface->registerCallback (f);
@@ -84,8 +84,8 @@ public:
 
   pcl::visualization::CloudViewer viewer;
 
-  pcl::octree::PointCloudCompression<pcl::PointXYZRGB>* PointCloudEncoder;
-  pcl::octree::PointCloudCompression<pcl::PointXYZRGB>* PointCloudDecoder;
+  pcl::octree::PointCloudCompression<pcl::PointXYZRGBA>* PointCloudEncoder;
+  pcl::octree::PointCloudCompression<pcl::PointXYZRGBA>* PointCloudDecoder;
 
 };
 

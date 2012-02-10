@@ -131,17 +131,17 @@ print_usage (std::string msg)
 class SimpleOpenNIViewer
 {
   public:
-    SimpleOpenNIViewer (ostream& outputFile_arg, PointCloudCompression<PointXYZRGB>* octreeEncoder_arg) :
+    SimpleOpenNIViewer (ostream& outputFile_arg, PointCloudCompression<PointXYZRGBA>* octreeEncoder_arg) :
       viewer ("Input Point Cloud - PCL Compression Viewer"),
       outputFile_(outputFile_arg), octreeEncoder_(octreeEncoder_arg)
     {
     }
 
-    void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+    void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud)
     {
       if (!viewer.wasStopped ())
       {
-        PointCloud<PointXYZRGB>::Ptr cloudOut (new PointCloud<PointXYZRGB>);
+        PointCloud<PointXYZRGBA>::Ptr cloudOut (new PointCloud<PointXYZRGBA>);
 
         octreeEncoder_->encodePointCloud ( cloud, outputFile_);
 
@@ -156,7 +156,7 @@ class SimpleOpenNIViewer
       pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
       // make callback function from member function
-      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
+      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
         boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
 
       // connect callback function for desired signal. In this case its a point cloud with color values
@@ -176,12 +176,12 @@ class SimpleOpenNIViewer
 
     pcl::visualization::CloudViewer viewer;
     ostream& outputFile_;
-    PointCloudCompression<PointXYZRGB>* octreeEncoder_;
+    PointCloudCompression<PointXYZRGBA>* octreeEncoder_;
 };
 
 struct EventHelper
 {
-  EventHelper (ostream& outputFile_arg, PointCloudCompression<PointXYZRGB>* octreeEncoder_arg,
+  EventHelper (ostream& outputFile_arg, PointCloudCompression<PointXYZRGBA>* octreeEncoder_arg,
                const std::string& field_name = "z", float min_v = 0, float max_v = 3.0) :
     outputFile_ (outputFile_arg), octreeEncoder_ (octreeEncoder_arg)
   {
@@ -190,11 +190,11 @@ struct EventHelper
   }
 
   void
-  cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+  cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud)
   {
     if (!outputFile_.fail ())
     {
-      PointCloud<PointXYZRGB>::Ptr cloud_out (new PointCloud<PointXYZRGB>);
+      PointCloud<PointXYZRGBA>::Ptr cloud_out (new PointCloud<PointXYZRGBA>);
 
       // Use a PassThrough filter to clean NaNs and remove data which is not interesting
       pass_.setInputCloud (cloud);
@@ -212,7 +212,7 @@ struct EventHelper
 
     // make callback function from member function
     boost::function<void
-    (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = boost::bind (&EventHelper::cloud_cb_, this, _1);
+    (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f = boost::bind (&EventHelper::cloud_cb_, this, _1);
 
     // connect callback function for desired signal. In this case its a point cloud with color values
     boost::signals2::connection c = interface->registerCallback (f);
@@ -228,15 +228,15 @@ struct EventHelper
     interface->stop ();
   }
 
-  pcl::PassThrough<PointXYZRGB> pass_;
+  pcl::PassThrough<PointXYZRGBA> pass_;
   ostream& outputFile_;
-  PointCloudCompression<PointXYZRGB>* octreeEncoder_;
+  PointCloudCompression<PointXYZRGBA>* octreeEncoder_;
 };
 
 int
 main (int argc, char **argv)
 {
-  PointCloudCompression<PointXYZRGB>* octreeCoder;
+  PointCloudCompression<PointXYZRGBA>* octreeCoder;
 
   pcl::octree::compression_Profiles_e compressionProfile;
 
@@ -386,9 +386,9 @@ main (int argc, char **argv)
     return -1;
   }
 
-  octreeCoder = new PointCloudCompression<PointXYZRGB> (compressionProfile, showStatistics, pointResolution,
-                                                        octreeResolution, doVoxelGridDownDownSampling, iFrameRate,
-                                                        doColorEncoding, colorBitResolution);
+  octreeCoder = new PointCloudCompression<PointXYZRGBA> (compressionProfile, showStatistics, pointResolution,
+                                                         octreeResolution, doVoxelGridDownDownSampling, iFrameRate,
+                                                         doColorEncoding, colorBitResolution);
 
 
   if (!bServerFileMode) 
@@ -422,7 +422,7 @@ main (int argc, char **argv)
 
       while (!compressedPCFile.eof())
       {
-        PointCloud<PointXYZRGB>::Ptr cloudOut (new PointCloud<PointXYZRGB> ());
+        PointCloud<PointXYZRGBA>::Ptr cloudOut (new PointCloud<PointXYZRGBA> ());
         octreeCoder->decodePointCloud ( compressedPCFile, cloudOut);
         viewer.showCloud (cloudOut);
       }
@@ -497,7 +497,7 @@ main (int argc, char **argv)
         while (!socketStream.fail()) 
         {
           FPS_CALC ("drawing");
-          PointCloud<PointXYZRGB>::Ptr cloudOut (new PointCloud<PointXYZRGB> ());
+          PointCloud<PointXYZRGBA>::Ptr cloudOut (new PointCloud<PointXYZRGBA> ());
           octreeCoder->decodePointCloud (socketStream, cloudOut);
           viewer.showCloud (cloudOut);
         }

@@ -95,8 +95,8 @@ namespace pcl
     float max_distance_quotient = 1.0f+parameters_.max_correspondence_distance_error,
           max_distance_quotient_squared=powf (max_distance_quotient, 2),
           min_distance_quotient = 1.0f / (max_distance_quotient),
-          min_distance_quotient_squared=powf (min_distance_quotient, 2);
-    
+          min_distance_quotient_squared = std::pow (min_distance_quotient, 2);
+
     TransformationFromCorrespondences transformation_from_correspondeces;
     
     // The following loop structure goes through the pairs in the order 12, 13, 23, 14, 24, 34, ...,
@@ -209,10 +209,10 @@ namespace pcl
     int counter_for_tested_combinations = 0,
         counter_for_added_pose_estimates = 0;
     float max_distance_quotient = 1.0f+parameters_.max_correspondence_distance_error,
-          max_distance_quotient_squared=powf (max_distance_quotient, 2),
+          max_distance_quotient_squared = std::pow (max_distance_quotient, 2),
           min_distance_quotient = 1.0f / (max_distance_quotient),
-          min_distance_quotient_squared=powf (min_distance_quotient, 2);
-    
+          min_distance_quotient_squared = std::pow (min_distance_quotient, 2);
+
     TransformationFromCorrespondences transformation_from_correspondeces;
     
     // The following loop structure goes through the triples in the order 123, 124, 134, 234, 125, 135, 235, ...,

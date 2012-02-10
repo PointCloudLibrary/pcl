@@ -236,5 +236,5 @@ pcl::ProjectInliers<sensor_msgs::PointCloud2>::initSACModel (int model_type)
 }
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(ProjectInliers, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(ProjectInliers, PCL_XYZ_POINT_TYPES)
 

@@ -250,7 +250,7 @@ Features
 
              Author: *Radu B. Rusu*
 
-             Compatibility: > PCL 1.0
+             Compatibility: > PCL 1.3
 
              This tutorial introduces the FPFH (Fast Point Feature Histograms) 3D descriptor and discusses their implementation details from PCL's perspective.
      ======  ======
@@ -671,7 +671,7 @@ Segmentation
 
              Author: *Radu B. Rusu*
 
-             Compatibility: > PCL 1.0
+             Compatibility: > PCL 1.3
 
              In this tutorial, we will learn how to segment arbitrary plane models from a given point cloud dataset.
      ======  ======
@@ -721,7 +721,7 @@ Surface
 
              Author: *Zoltan-Csaba Marton*
 
-             Compatibility: > PCL 1.0
+             Compatibility: > PCL 1.3
 
              In this tutorial, we will learn how to construct and run a Moving Least Squares (MLS) algorithm to obtain smoothed XYZ coordinates and normals.
      ======  ======
@@ -801,7 +801,7 @@ Visualization
 
              Author: *Geoffrey Biggs*
 
-             Compatibility: >= PCL 1.3
+             Compatibility: > PCL 1.3
 
              This tutorial demonstrates how to use the PCLVisualizer class for powerful visualisation of point clouds and related data.
      ======  ======

@@ -210,9 +210,9 @@ main (int argc, char ** argv)
   
   pcl::OpenNIGrabber grabber (arg);
   
-  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
+  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba> ())
   {
-    OpenNIPassthrough<pcl::PointXYZRGB> v (grabber, red, green, blue, radius);
+    OpenNIPassthrough<pcl::PointXYZRGBA> v (grabber, red, green, blue, radius);
     v.run ();
   }
   else

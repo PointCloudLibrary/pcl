@@ -102,5 +102,5 @@ pcl::computePairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1,
 }
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(PFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::PFHSignature125)));
-PCL_INSTANTIATE_PRODUCT(PFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)));
+PCL_INSTANTIATE_PRODUCT(PFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::PFHSignature125)))
+PCL_INSTANTIATE_PRODUCT(PFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)))

@@ -49,15 +49,7 @@ The next part visualizes the range image in 2D, using color coding for the range
   range_image_widget.setRangeImage (range_image);
   ...
 
-if you want to save the image to disc as a PPM you can uncomment this line:
-
-.. code-block:: cpp
-
-  ...
-  range_image_widget.savePPM("range_image.ppm", "Range Image Visualization");
-  ...
-
-Now we can start the main loop to keep the visualization alive, until one of the windows is closed:
+Now we can start the main loop to keep the visualization alive, until the viewer window is closed:
 
 .. code-block:: cpp
 
@@ -69,7 +61,7 @@ Now we can start the main loop to keep the visualization alive, until one of the
     pcl_sleep (0.01);
   ...
 
-ImageWidgetWX::spinOnce() handles the current events of the RangeImageVisualizer and viewer.spinOnce(100) does the same for the 3D viewer (giving it 100ms time).
+range_image_widget.spinOnce() handles the current events of the RangeImageVisualizer and viewer.spinOnce() does the same for the 3D viewer.
 
 Additionally there is the possibility to always update the 2D range image to correspond to the current percpective in the viewer window, which is activated using the command line parameter -l:
 

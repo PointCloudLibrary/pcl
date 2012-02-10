@@ -1,3 +1,0 @@
-if(BUILD_TESTS)
-endif(BUILD_TESTS)
-

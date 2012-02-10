@@ -43,6 +43,7 @@
   (pcl::PointXYZ)               \
   (pcl::PointXYZI)              \
   (pcl::PointXYZL)              \
+  (pcl::Label)                  \
   (pcl::PointXYZRGBA)           \
   (pcl::PointXYZRGB)            \
   (pcl::PointXYZRGBL)           \
@@ -90,7 +91,8 @@
 // Define all point types with XYZ and label
 #define PCL_XYZL_POINT_TYPES  \
   (pcl::PointXYZL)            \
-  (pcl::PointXYZRGBL)
+  (pcl::PointXYZRGBL)       
+
 
 // Define all point types that include normal[3] data
 #define PCL_NORMAL_POINT_TYPES  \
@@ -112,14 +114,6 @@
 
 namespace pcl
 {
-
-  template <typename PointT> inline bool
-  isFinite (PointT &pt)
-  {
-    if (!pcl_isfinite (pt.x) || !pcl_isfinite (pt.y) || !pcl_isfinite (pt.z))
-      return (false);
-    return (true);
-  }
 
 #define PCL_ADD_POINT4D \
   EIGEN_ALIGN16 \
@@ -168,7 +162,7 @@ namespace pcl
   struct _PointXYZ
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /*struct PointXYZ
@@ -182,13 +176,15 @@ namespace pcl
    */
   struct EIGEN_ALIGN16 PointXYZ : public _PointXYZ
   {
-    inline PointXYZ()
+    inline PointXYZ ()
     {
       x = y = z = 0.0f;
       data[3] = 1.0f;
     }
+
     inline PointXYZ (float _x, float _y, float _z)
     { x = _x; y = _y; z = _z; data[3] = 1.0f;}
+
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -198,7 +194,7 @@ namespace pcl
     return (os);
   }
 
-  /** \brief A structure representing RGB color information. 
+  /** \brief A structure representing RGB color information.
     *
     * The RGBA information is available either as separate r, g, b, or as a
     * packed uint32_t rgba value. To pack it, use:
@@ -257,19 +253,23 @@ namespace pcl
   struct EIGEN_ALIGN16 PointXYZL
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
-    union
-    {
-      struct
-      {
-        uint8_t label;
-      };
-      uint32_t data_l;
-    };
+    uint32_t label;
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
   inline std::ostream& operator << (std::ostream& os, const PointXYZL& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.label << ")";
+    return (os);
+  }
+  
+  struct Label
+  {
+    uint32_t label;   
+  };
+  
+  inline std::ostream& operator << (std::ostream& os, const Label& p)
+  {
+    os << "(" << p.label << ")";
     return (os);
   }
 
@@ -325,7 +325,7 @@ namespace pcl
     unsigned char* rgba_ptr = (unsigned char*)&p.rgba;
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << (int)(*rgba_ptr) << "," << (int)(*(rgba_ptr+1)) << "," << (int)(*(rgba_ptr+2)) << "," <<(int)(*(rgba_ptr+3)) << ")";
     return (os);
-  } 
+  }
 
   struct EIGEN_ALIGN16 _PointXYZRGB
   {
@@ -361,11 +361,12 @@ namespace pcl
           uint8_t b;
           uint8_t g;
           uint8_t r;
-          uint8_t label;
+          uint8_t a;
         };
         float rgb;
       };
       uint32_t rgba;
+      uint32_t label;
     };
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
@@ -424,7 +425,7 @@ namespace pcl
   };
   inline std::ostream& operator << (std::ostream& os, const PointXYZRGB& p)
   {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.r << "," << p.g << "," << p.b << ")";
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " << (int) p.r << "," << (int) p.g << "," << (int) p.b << ")";
     return (os);
   }
 
@@ -434,7 +435,7 @@ namespace pcl
     {
       label = 255;
     }
-    inline PointXYZRGBL (uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _label)
+    inline PointXYZRGBL (uint8_t _r, uint8_t _g, uint8_t _b, uint32_t _label)
     {
       r = _r;
       g = _g;
@@ -701,7 +702,7 @@ namespace pcl
       };
       float data_c[4];
     };
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   /** \brief A point structure representing Euclidean xyz coordinates together with the viewpoint from which it was seen.
@@ -856,10 +857,28 @@ namespace pcl
     os << (i == 0 ? "(" : "") << p.values[i] << (i < 11 ? ", " : ")");
     return (os);
   }
+  
+  /** \brief A point structure representing a Shape Context.
+    * \ingroup common
+    */
+  struct ShapeContext
+  {
+    std::vector<float> descriptor;
+    float rf[9];
+  };
+
+  inline std::ostream& operator << (std::ostream& os, const ShapeContext& p)
+  {
+    for (int i = 0; i < 9; ++i)
+    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
+    for (size_t i = 0; i < p.descriptor.size (); ++i)
+    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < p.descriptor.size()-1 ? ", " : ")");
+    return (os);
+  }
 
   /** \brief A point structure representing the generic Signature of Histograms of OrienTations (SHOT).
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct SHOT
   {
     std::vector<float> descriptor;
@@ -875,63 +894,9 @@ namespace pcl
     return (os);
   }
 
-  /** \brief A point structure representing the Signature of Histograms of OrienTations (SHOT).
-   * \ingroup common
-   */
-  //struct _SHOT352
-  //{
-  //
-  ////  std::vector<float> descriptor;
-  //  float descriptor[352];
-  //	float rf[9];
-  //  uint32_t size;
-  //};
-  //struct SHOT352 : public _SHOT352
-  //{
-  //  SHOT352 ()
-  //  {
-  //    size = 352;
-  //  }
-  //};
-  //inline std::ostream& operator << (std::ostream& os, const SHOT352& p)
-  //{
-  //	for (int i = 0; i < 9; ++i)
-  //    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
-  //  for (uint32_t i = 0; i < p.size; ++i)
-  //    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 351 ? ", " : ")");
-  //  return (os);
-  //}
-  //
-  //
-  ///** \brief A point structure representing the Signature of Histograms of OrienTations (SHOT) with shape and color information.
-  //  * \ingroup common
-  //  */
-  //struct _SHOT1344
-  //{
-  ////  std::vector<float> descriptor;
-  //  float descriptor[1344];
-  //	float rf[9];
-  //  uint32_t size;
-  //};
-  //struct SHOT1344 : public _SHOT1344
-  //{
-  //  SHOT1344 ()
-  //  {
-  //    size = 1344;
-  //  }
-  //};
-  //inline std::ostream& operator << (std::ostream& os, const SHOT1344& p)
-  //{
-  //	for (int i = 0; i < 9; ++i)
-  //    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
-  //  for (uint32_t i = 0; i < p.size; ++i)
-  //    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 1343 ? ", " : ")");
-  //  return (os);
-  //}
-
   /** \brief A point structure representing the Fast Point Feature Histogram (FPFH).
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct FPFHSignature33
   {
     float histogram[33];
@@ -1101,12 +1066,37 @@ namespace pcl
     return (sqrtf (squaredEuclideanDistance (p1, p2)));
   }
 
-  template <typename PointType> inline bool
-  hasValidXYZ (const PointType& p)
+  /** Tests if the 3D components of a point are all finite
+    * param[in] pt point to be tested
+    */
+  template <typename PointT> inline bool
+  isFinite (const PointT &pt)
   {
-    return (pcl_isfinite (p.x) && pcl_isfinite (p.y) && pcl_isfinite (p.z));
+    return (pcl_isfinite (pt.x) && pcl_isfinite (pt.y) && pcl_isfinite (pt.z));
   }
 
+  // specification for pcl::Normal
+  template <> inline bool
+  isFinite<pcl::Normal> (const pcl::Normal &n)
+  {
+    return (pcl_isfinite (n.normal_x) && pcl_isfinite (n.normal_y) && pcl_isfinite (n.normal_z));
+  }
+
+  /** Fast version of isFinite tests only the first component
+    * param[in] pt point to be tested
+    */
+  template <typename PointT> inline bool
+  isFiniteFast (const PointT& pt)
+  {
+    return (pcl_isfinite (pt.x));
+  }
+
+  // specification for pcl::Normal
+  template <> inline bool
+  isFiniteFast<pcl::Normal> (const pcl::Normal& n)
+  {
+    return (pcl_isfinite (n.normal_x));
+  }
 } // End namespace
 
 #endif

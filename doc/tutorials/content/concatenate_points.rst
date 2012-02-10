@@ -1,4 +1,4 @@
-.. _concatenate_clouds:
+.. _concatenate_points:
 
 Concatenate the points or the fields of two Point Clouds
 --------------------------------------------------------

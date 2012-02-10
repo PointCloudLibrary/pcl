@@ -220,7 +220,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT> void
-pcl::PFHEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output)
+pcl::PFHEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
 {
   // Clear the feature map
   feature_map_.clear ();

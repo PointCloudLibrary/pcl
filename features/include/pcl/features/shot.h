@@ -47,6 +47,8 @@ namespace pcl
   /** \brief SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for 
     * a given point cloud dataset containing points and normals.
     *
+    * The suggested PointOutT is pcl::SHOT.
+    *
     * \note If you use this code in any academic work, please cite:
     *
     *   - F. Tombari, S. Salti, L. Di Stefano
@@ -61,7 +63,7 @@ namespace pcl
     * \author Samuele Salti, Federico Tombari
     * \ingroup features
     */
-  template <typename PointInT, typename PointNT, typename PointOutT> 
+  template <typename PointInT, typename PointNT, typename PointOutT = pcl::SHOT> 
   class SHOTEstimationBase : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
@@ -197,7 +199,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
 
   /** \brief SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for 
@@ -248,7 +250,7 @@ namespace pcl
         * \param output the resultant point cloud model dataset that contains the SHOT feature estimates
         */
       void 
-      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output);
 
       /** \brief Base method for feature estimation for all points given in 
         * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () 
@@ -256,9 +258,9 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset containing the estimated features
         */
       void 
-      compute (pcl::PointCloud<Eigen::MatrixXf> &output) 
+      computeEigen (pcl::PointCloud<Eigen::MatrixXf> &output) 
       { 
-        pcl::SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::compute (output); 
+        pcl::SHOTEstimationBase<PointInT, PointNT, pcl::SHOT>::computeEigen (output); 
       }
 
       /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
@@ -598,7 +600,7 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset that contains the SHOT feature estimates
         */
       void 
-      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output);
   };
 }
 

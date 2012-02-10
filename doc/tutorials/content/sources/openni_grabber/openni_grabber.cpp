@@ -10,7 +10,7 @@
 class SimpleOpenNIProcessor
 {
 public:
-  void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+  void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud)
   {
     static unsigned count = 0;
     static double last = pcl::getTime ();
@@ -29,7 +29,7 @@ public:
     pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
     // make callback function from member function
-    boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
+    boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
       boost::bind (&SimpleOpenNIProcessor::cloud_cb_, this, _1);
 
     // connect callback function for desired signal. In this case its a point cloud with color values
@@ -49,7 +49,7 @@ public:
 
 int main ()
 {
-SimpleOpenNIProcessor v;
-v.run ();
-return 0;
+  SimpleOpenNIProcessor v;
+  v.run ();
+  return (0);
 }

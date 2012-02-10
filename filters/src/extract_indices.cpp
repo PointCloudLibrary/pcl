@@ -106,4 +106,4 @@ pcl::ExtractIndices<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
   output.row_step = output.point_step * output.width;
 }
 
-PCL_INSTANTIATE(ExtractIndices, PCL_POINT_TYPES);
+PCL_INSTANTIATE(ExtractIndices, PCL_POINT_TYPES)

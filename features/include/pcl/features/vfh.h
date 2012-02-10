@@ -46,7 +46,12 @@
 namespace pcl
 {
   /** \brief VFHEstimation estimates the <b>Viewpoint Feature Histogram (VFH)</b> descriptor for a given point cloud
-    * dataset containing points and normals.
+    * dataset containing points and normals. The default VFH implementation uses 45 binning subdivisions for each of
+    * the three extended FPFH values, and 128 binning subdivisions for the viewpoint component, which results in a
+    * 308-byte array of float values. These are stored in a pcl::VFHSignature308 point type.
+    * A major difference between the PFH/FPFH descriptors and VFH, is that for a given point cloud dataset, only a
+    * single VFH descriptor will be estimated (vfhs->points.size() should be 1), while the resultant PFH/FPFH data
+    * will have the same number of entries as the number of points in the cloud.
     *
     * \note If you use this code in any academic work, please cite:
     *
@@ -60,7 +65,7 @@ namespace pcl
     * \author Radu B. Rusu
     * \ingroup features
     */
-  template<typename PointInT, typename PointNT, typename PointOutT>
+  template<typename PointInT, typename PointNT, typename PointOutT = pcl::VFHSignature308>
   class VFHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
@@ -69,6 +74,7 @@ namespace pcl
       using Feature<PointInT, PointOutT>::indices_;
       using Feature<PointInT, PointOutT>::k_;
       using Feature<PointInT, PointOutT>::search_radius_;
+      using Feature<PointInT, PointOutT>::input_;
       using Feature<PointInT, PointOutT>::surface_;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
@@ -84,7 +90,7 @@ namespace pcl
         hist_f3_.setZero (nr_bins_f3_);
         hist_f4_.setZero (nr_bins_f4_);
         search_radius_ = 0;
-        k_ = 1;
+        k_ = 0;
         feature_name_ = "VFHEstimation";
 
         //default parameters to compute VFH
@@ -94,7 +100,6 @@ namespace pcl
         normalize_distances_ = false;
         size_component_ = false;
       }
-      ;
 
       /** \brief Estimate the SPFH (Simple Point Feature Histograms) signatures of the angular
         * (f1, f2, f3) and distance (f4) features for a given point from its neighborhood
@@ -140,8 +145,8 @@ namespace pcl
         use_given_normal_ = use;
       }
 
-      /** \brief Set normal_to_use_
-        * \param]in] normal Sets the normal to be used in the VFH computation. It is is used
+      /** \brief Set the normal to use
+        * \param[in] normal Sets the normal to be used in the VFH computation. It is is used
         * to build the Darboux Coordinate system.
         */
       inline void
@@ -217,6 +222,10 @@ namespace pcl
       computeFeature (PointCloudOut &output);
 
     protected:
+      /** \brief This method should get called before starting the actual computation. */
+      bool
+      initCompute ();
+
       /** \brief Placeholder for the f1 histogram. */
       Eigen::VectorXf hist_f1_;
       /** \brief Placeholder for the f2 histogram. */
@@ -254,7 +263,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
 
   /** \brief VFHEstimation estimates the <b>Viewpoint Feature Histogram (VFH)</b> descriptor for a given point cloud

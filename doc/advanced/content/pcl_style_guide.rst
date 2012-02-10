@@ -118,6 +118,19 @@ Namespaces should be **under_scored**, e.g.:
     ...
   }
 
+1.7 Return statements
+^^^^^^^^^^^^^^^^^^^^^
+
+Return statements should have their values in parentheses, e.g.:
+
+.. code-block:: cpp
+
+  int
+  main ()
+  {
+    return (0);
+  }
+
 
 
 Chapter 2 - Indentation and Formatting
@@ -142,7 +155,7 @@ In a header file, the contets of a namespace should be indented, e.g.:
     };
   }
 
-In an implementation file, the namespace must be added to each individual method or function declaration, e.g.:
+In an implementation file, the namespace must be added to each individual method or function definition, e.g.:
 
 .. code-block:: cpp
 
@@ -170,7 +183,7 @@ e.g.:
 2.3 Functions / Methods
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-The return type of each function or a method must be stored on a different
+The return type of each function declaration must be placed on a different
 line, e.g.:
 
 .. code-block:: cpp
@@ -178,7 +191,7 @@ line, e.g.:
    void
    bar ();
 
-Same for the implementation, e.g.:
+Same for the implementation/definition, e.g.:
 
 .. code-block:: cpp
 

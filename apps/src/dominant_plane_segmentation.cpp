@@ -42,4 +42,4 @@
 #include <pcl/apps/impl/dominant_plane_segmentation.hpp>
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(DominantPlaneSegmentation, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(DominantPlaneSegmentation, PCL_XYZ_POINT_TYPES)

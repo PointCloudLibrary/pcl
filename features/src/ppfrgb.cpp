@@ -6,9 +6,9 @@
 // Instantiations of specific point types
 PCL_INSTANTIATE_PRODUCT(PPFRGBEstimation, ((pcl::PointXYZRGB) (pcl::PointXYZRGBNormal))
                         ((pcl::Normal) (pcl::PointNormal)  (pcl::PointXYZRGBNormal))
-                        ((pcl::PPFRGBSignature)));
+                        ((pcl::PPFRGBSignature)))
 
 PCL_INSTANTIATE_PRODUCT(PPFRGBRegionEstimation, ((pcl::PointXYZRGB) (pcl::PointXYZRGBNormal))
                         ((pcl::Normal) (pcl::PointNormal)  (pcl::PointXYZRGBNormal))
-                        ((pcl::PPFRGBSignature)));
+                        ((pcl::PPFRGBSignature)))
 

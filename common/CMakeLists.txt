@@ -27,6 +27,7 @@ if(build)
         include/pcl/correspondence.h
         include/pcl/exceptions.h
         include/pcl/pcl_base.h
+        include/pcl/pcl_exports.h
         include/pcl/pcl_macros.h
         include/pcl/point_cloud.h
         include/pcl/point_traits.h
@@ -85,9 +86,9 @@ if(build)
         include/pcl/common/utils.h
         include/pcl/common/geometry.h
         include/pcl/common/gaussian.h
-        include/pcl/common/spring.h
+#        include/pcl/common/spring.h
         include/pcl/common/point_operators.h
-        include/pcl/common/convolution.h
+#        include/pcl/common/convolution.h
         )
 
     set(common_incs_impl
@@ -106,8 +107,8 @@ if(build)
         include/pcl/common/impl/transformation_from_correspondences.hpp
         include/pcl/common/impl/vector_average.hpp
         include/pcl/common/impl/gaussian.hpp
-        include/pcl/common/impl/spring.hpp
-        include/pcl/common/impl/convolution.hpp
+#        include/pcl/common/impl/spring.hpp
+#        include/pcl/common/impl/convolution.hpp
        )
 
     set(impl_incs include/pcl/impl/instantiate.hpp
@@ -116,8 +117,6 @@ if(build)
 
     set(ros_incs include/pcl/ros/conversions.h
         include/pcl/ros/register_point_struct.h
-        include/pcl/ros/for_each_type.h
-        include/pcl/ros/point_traits.h
         )
 
     set(tools_incs 
@@ -131,7 +130,6 @@ if(build)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${common_incs_impl} ${sensor_msg_incs} ${std_msg_incs})
     link_ros_libs (${LIB_NAME})
-    PCL_ADD_SSE_FLAGS(${LIB_NAME})
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" ""
         "" "" "")
 
@@ -147,5 +145,8 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ros ${ros_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} console ${tools_incs})
 
-    add_subdirectory(test)
+    if(BUILD_TESTS)
+       add_subdirectory(test)
+    endif(BUILD_TESTS)
+
 endif(build)

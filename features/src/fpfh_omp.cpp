@@ -41,5 +41,5 @@
 #include "pcl/features/impl/fpfh_omp.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(FPFHEstimationOMP, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::FPFHSignature33)));
+PCL_INSTANTIATE_PRODUCT(FPFHEstimationOMP, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::FPFHSignature33)))
 

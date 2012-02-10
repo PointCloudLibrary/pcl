@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: geometry.h 2479 2011-09-15 16:15:44Z nizar $
+ * $Id: geometry.h 4093 2012-01-31 04:54:52Z rusu $
  */
 
 #ifndef PCL_GEOMETRY_H_
@@ -90,7 +90,7 @@ namespace pcl
       float lambda = plane_normal.dot(po);
       projected = point - (lambda * plane_normal);
     }
-  };
+  }
 }
 
 /*@}*/

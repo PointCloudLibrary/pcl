@@ -236,10 +236,10 @@ main (int argc, char ** argv)
   pcl::console::parse_argument (argc, argv, "-use_polynomial_fit", use_polynomial_fit);
 
   pcl::OpenNIGrabber grabber (arg);
-  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
+  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba> ())
   {
-    OpenNISmoothing<pcl::PointXYZRGB> v (search_radius, sqr_gauss_param, sqr_gauss_param_set,
-                                         use_polynomial_fit, polynomial_order, arg);
+    OpenNISmoothing<pcl::PointXYZRGBA> v (search_radius, sqr_gauss_param, sqr_gauss_param_set,
+                                          use_polynomial_fit, polynomial_order, arg);
     v.run ();
   }
   else

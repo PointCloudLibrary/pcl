@@ -319,7 +319,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computeFeature (Poi
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT> void
-pcl::ShapeContext3DEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeature (
+pcl::ShapeContext3DEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen (
     pcl::PointCloud<Eigen::MatrixXf> &output)
 {
   // Resize the output dataset

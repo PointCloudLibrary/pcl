@@ -281,6 +281,7 @@ namespace pcl
 
       /** \brief Empty constructor. */
       PCLBase () : input_ (), indices_ (), use_indices_ (false), fake_indices_ (false),
+                   field_sizes_ (0), x_idx_ (-1), y_idx_ (-1), z_idx_ (-1),
                    x_field_name_ ("x"), y_field_name_ ("y"), z_field_name_ ("z")
       {};
 

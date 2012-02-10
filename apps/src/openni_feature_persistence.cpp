@@ -278,14 +278,14 @@ main (int argc, char **argv)
 
 
   pcl::OpenNIGrabber grabber ("");
-  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
+  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba> ())
   {
-    PCL_INFO ("PointXYZRGB mode enabled.\n");
-    OpenNIFeaturePersistence<pcl::PointXYZRGB> v (subsampling_leaf_size,
-                                                  normal_search_radius,
-                                                  scales_vector,
-                                                  alpha,
-                                                  "");
+    PCL_INFO ("PointXYZRGBA mode enabled.\n");
+    OpenNIFeaturePersistence<pcl::PointXYZRGBA> v (subsampling_leaf_size,
+                                                   normal_search_radius,
+                                                   scales_vector,
+                                                   alpha,
+                                                   "");
     v.run ();
   }
   else

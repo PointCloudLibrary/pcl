@@ -37,6 +37,7 @@
 
 #include <pcl/pcl_config.h>
 #include <boost/cstdint.hpp>
+#include <cstdlib>
 
 namespace pcl
 {
@@ -117,6 +118,10 @@ pcl_isnan (T &val)
 #define M_PI 3.14159265358979323846
 #endif
 
+#ifndef M_PI_4
+#define M_PI_4 0.785398163397448309616
+#endif
+
 #ifndef M_E
 #define M_E 2.7182818284590452354
 #endif
@@ -137,12 +142,12 @@ pcl_isnan (T &val)
   * Therefore implement our own versions of these functions here.
   */
 #include <math.h>
-__inline double 
+__inline double
 pcl_round (double number)
 {
   return (number < 0.0 ? ceil(number - 0.5) : floor(number + 0.5));
 }
-__inline float 
+__inline float
 pcl_round (float number)
 {
   return (number < 0.0f ? ceil(number - 0.5f) : floor(number + 0.5f));
@@ -286,5 +291,66 @@ pcl_round (float number)
 #pragma message("WARNING: You need to implement PCL_DEPRECATED for this compiler")
 #define PCL_DEPRECATED(func) func
 #endif
+
+#if defined (__GNUC__) || defined (__PGI) || defined (__IBMCPP__) || defined (__SUNPRO_CC)
+  #define PCL_ALIGN(alignment) __attribute__((aligned(alignment)))
+#elif defined (_MSC_VER)
+  #define PCL_ALIGN(alignment) __declspec(align(alignment))
+#else
+  #error Alignment not supported on your platform
+#endif
+
+#if defined(__GLIBC__) && ((__GLIBC__>=2 && __GLIBC_MINOR__ >= 8) || __GLIBC__>2) \
+ && defined(__LP64__)
+  #define GLIBC_MALLOC_ALIGNED 1
+#else
+  #define GLIBC_MALLOC_ALIGNED 0
+#endif
+
+#if defined(__FreeBSD__) && !defined(__arm__) && !defined(__mips__)
+  #define FREEBSD_MALLOC_ALIGNED 1
+#else
+  #define FREEBSD_MALLOC_ALIGNED 0
+#endif
+
+#if defined(__APPLE__) || defined(_WIN64) || GLIBC_MALLOC_ALIGNED || FREEBSD_MALLOC_ALIGNED
+  #define MALLOC_ALIGNED 1
+#else
+  #define MALLOC_ALIGNED 0
+#endif
+
+inline void* 
+aligned_malloc (size_t size)
+{
+  void *ptr;
+#if   defined (MALLOC_ALIGNED)
+  ptr = std::malloc (size);
+#elif defined (HAVE_POSIX_MEMALIGN)
+  if (posix_memalign (&ptr, 16, size))
+    ptr = 0;
+#elif defined (HAVE_MM_MALLOC)
+  ptr = _mm_malloc (size, 16);
+#elif defined (_MSC_VER)
+  ptr = _aligned_malloc (size, 16);
+#else
+  #error aligned_malloc not supported on your platform
+  ptr = 0;
+#endif
+  return (ptr);
+}
+
+inline void 
+aligned_free (void* ptr)
+{
+#if   defined (MALLOC_ALIGNED) || defined (HAVE_POSIX_MEMALIGN)
+  std::free (ptr);
+#elif defined (HAVE_MM_MALLOC)
+  ptr = _mm_free (ptr);
+#elif defined (_MSC_VER)
+  _aligned_free (ptr);
+#else
+  #error aligned_free not supported on your platform
+#endif
+}
 
 #endif  //#ifndef PCL_MACROS_H_

@@ -277,5 +277,5 @@ pcl::PassThrough<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
   removed_indices_->resize (nr_removed_p);
 }
 // Instantiations of specific point types
-PCL_INSTANTIATE(PassThrough, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(PassThrough, PCL_XYZ_POINT_TYPES)
 

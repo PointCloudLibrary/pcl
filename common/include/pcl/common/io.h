@@ -388,7 +388,7 @@ namespace pcl
      * \param bytes char array to swap
      */
     template <> inline void 
-    swapByte<1> (char* bytes) {}
+    swapByte<1> (char* bytes) { bytes[0] = bytes[0]; }
 
   
    /** \brief specialization of swapByte for dimension 2

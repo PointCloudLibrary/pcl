@@ -55,7 +55,7 @@ inline bool
 areEquals (double val1, double val2, double zeroDoubleEps = zeroDoubleEps15)
 {
   return (fabs (val1 - val2)<zeroDoubleEps);
-};
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Check if val1 and val2 are equals.
@@ -798,7 +798,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (Poin
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
-pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, Eigen::MatrixXf>::computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output)
+pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, Eigen::MatrixXf>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
 {
   if (rf_.size () != 3)
     rf_.resize (3);
@@ -917,7 +917,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::computeFeature (pcl::Poin
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT> void
-pcl::SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output)
+pcl::SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
 {
   if (rf_.size () != 3)
     rf_.resize (3);

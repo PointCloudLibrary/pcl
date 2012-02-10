@@ -70,6 +70,8 @@ namespace pcl
   /** \brief PFHEstimation estimates the Point Feature Histogram (PFH) descriptor for a given point cloud dataset
     * containing points and normals.
     *
+    * A commonly used type for PointOutT is pcl::PFHSignature125.
+    *
     * \note If you use this code in any academic work, please cite:
     *
     *   - R.B. Rusu, N. Blodow, Z.C. Marton, M. Beetz.
@@ -95,7 +97,7 @@ namespace pcl
     * \author Radu B. Rusu
     * \ingroup features
     */
-  template <typename PointInT, typename PointNT, typename PointOutT>
+  template <typename PointInT, typename PointNT, typename PointOutT = pcl::PFHSignature125>
   class PFHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
@@ -232,7 +234,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
 
   /** \brief PFHEstimation estimates the Point Feature Histogram (PFH) descriptor for a given point cloud dataset
@@ -287,7 +289,7 @@ namespace pcl
         * \param[out] output the resultant point cloud model dataset that contains the PFH feature estimates
         */
       void 
-      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output);
 
       /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
         * \param[out] output the output point cloud 

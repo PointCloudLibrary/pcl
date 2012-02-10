@@ -43,5 +43,5 @@
 #include "pcl/filters/impl/approximate_voxel_grid.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(ApproximateVoxelGrid, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(ApproximateVoxelGrid, PCL_XYZ_POINT_TYPES)
 

@@ -76,7 +76,10 @@ namespace pcl
 
       /** \brief Empty constructor */
       PointRepresentation () : nr_dimensions_ (0), alpha_ (0), trivial_ (false) {}
-      
+     
+      /** \brief Empty destructor */
+      virtual ~PointRepresentation () {}
+
       /** \brief Copy point data from input point to a float array. This method must be overriden in all subclasses. 
        *  \param[in] p The input point
        *  \param[out] out A pointer to a float array.
@@ -191,6 +194,8 @@ namespace pcl
 
         trivial_ = true;
       }
+
+      virtual ~DefaultPointRepresentation () {}
 
       inline Ptr 
       makeShared () const 

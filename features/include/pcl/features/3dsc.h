@@ -58,7 +58,9 @@ namespace pcl
     *   - desc std::vector<float> which size is determined by the number of bins 
     *     radius_bins_ + elevation_bins_ + azimuth_bins_. If shift is required then the 
     *     computed descriptor will be shift along the azimuthal direction.
-    * 
+    *
+    * The pcl::ShapeContext descriptor is the default PointOutT.
+    *
     * \attention 
     * The convention for a 3D shape context descriptor is:
     *   - if a query point's nearest neighbors cannot be estimated, the feature descriptor will be set to NaN (not a number), and the RF to 0
@@ -71,7 +73,7 @@ namespace pcl
     * \author Nizar Sallem (port to PCL)
     * \ingroup features
     */
-  template <typename PointInT, typename PointNT, typename PointOutT> 
+  template <typename PointInT, typename PointNT, typename PointOutT = pcl::ShapeContext> 
   class ShapeContext3DEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
@@ -238,7 +240,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
   };
 
   /** \brief ShapeContext3DEstimation implements the 3D shape context descriptor as
@@ -282,7 +284,7 @@ namespace pcl
         * \param[out] output the resultant feature 
         */
       void
-      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output);
 
       /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
         * \param[out] output the output point cloud 

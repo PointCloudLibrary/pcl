@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: utils.h 3535 2011-12-14 22:21:39Z rusu $
+ * $Id: utils.h 4093 2012-01-31 04:54:52Z rusu $
  */
 
 #ifndef PCL_UTILS
@@ -56,7 +56,7 @@ namespace pcl
     {
       return (fabs (val1 - val2) < eps);
     }
-  };
+  }
 }
 
 #endif

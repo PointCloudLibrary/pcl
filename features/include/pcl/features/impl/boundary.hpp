@@ -129,7 +129,7 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClou
     {
       if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
-        output.points[idx].boundary_point = std::numeric_limits<float>::quiet_NaN ();
+        output.points[idx].boundary_point = std::numeric_limits<uint8_t>::quiet_NaN ();
         output.is_dense = false;
         continue;
       }
@@ -151,7 +151,7 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClou
       if (!isFinite ((*input_)[(*indices_)[idx]]) ||
           this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
-        output.points[idx].boundary_point = std::numeric_limits<float>::quiet_NaN ();
+        output.points[idx].boundary_point = std::numeric_limits<uint8_t>::quiet_NaN ();
         output.is_dense = false;
         continue;
       }
@@ -169,7 +169,7 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClou
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT> void
-pcl::BoundaryEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output)
+pcl::BoundaryEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
 {
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().

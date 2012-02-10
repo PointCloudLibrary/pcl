@@ -228,8 +228,7 @@ namespace pcl
       {
         H, // -128 to 127 corresponds to -pi to pi
         S, // 0 to 255
-        I,
-      // 0 to 255
+        I  // 0 to 255
       } ComponentId;
 
     protected:

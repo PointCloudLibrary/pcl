@@ -1,9 +1,9 @@
 #include <pcl/ModelCoefficients.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/features/normal_3d.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/features/normal_3d.h>
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
@@ -16,7 +16,7 @@ main (int argc, char** argv)
 {
   // Read in the cloud data
   pcl::PCDReader reader;
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>), cloud_f (new pcl::PointCloud<pcl::PointXYZ>);
   reader.read ("table_scene_lms400.pcd", *cloud);
   std::cout << "PointCloud before filtering has: " << cloud->points.size () << " data points." << std::endl; //*
 
@@ -44,8 +44,8 @@ main (int argc, char** argv)
   while (cloud_filtered->points.size () > 0.3 * nr_points)
   {
     // Segment the largest planar component from the remaining cloud
-    seg.setInputCloud(cloud_filtered);
-    seg.segment (*inliers, *coefficients); //*
+    seg.setInputCloud (cloud_filtered);
+    seg.segment (*inliers, *coefficients);
     if (inliers->indices.size () == 0)
     {
       std::cout << "Could not estimate a planar model for the given dataset." << std::endl;
@@ -59,12 +59,13 @@ main (int argc, char** argv)
     extract.setNegative (false);
 
     // Write the planar inliers to disk
-    extract.filter (*cloud_plane); //*
+    extract.filter (*cloud_plane);
     std::cout << "PointCloud representing the planar component: " << cloud_plane->points.size () << " data points." << std::endl;
 
     // Remove the planar inliers, extract the rest
     extract.setNegative (true);
-    extract.filter (*cloud_filtered); //*
+    extract.filter (*cloud_f);
+    cloud_filtered = cloud_f;
   }
 
   // Creating the KdTree object for the search method of the extraction
@@ -77,7 +78,7 @@ main (int argc, char** argv)
   ec.setMinClusterSize (100);
   ec.setMaxClusterSize (25000);
   ec.setSearchMethod (tree);
-  ec.setInputCloud( cloud_filtered);
+  ec.setInputCloud (cloud_filtered);
   ec.extract (cluster_indices);
 
   int j = 0;

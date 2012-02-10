@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: point_traits.h 3564 2011-12-16 06:11:13Z rusu $
+ * $Id: point_traits.h 4302 2012-02-07 23:14:39Z rusu $
  *
  */
 
@@ -86,7 +86,8 @@ namespace pcl
     };
 
     // For non-POD point types, this is specialized to return the corresponding POD type.
-    template<typename PointT> struct POD
+    template<typename PointT> 
+    struct POD
     {
       typedef PointT type;
     };

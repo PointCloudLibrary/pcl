@@ -15,10 +15,10 @@ if(SPHINX_FOUND)
     set_target_properties(Tutorials PROPERTIES FOLDER "Documentation")
   endif(USE_PROJECT_FOLDERS)
   install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html"
-          DESTINATION share/doc/pcl/tutorials
+          DESTINATION "${DOC_INSTALL_DIR}/tutorials"
           COMPONENT doc)
   install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/content/sources"
-          DESTINATION share/doc/pcl/tutorials
+          DESTINATION "${DOC_INSTALL_DIR}/tutorials"
           COMPONENT doc
           PATTERN ".svn" EXCLUDE)
 endif(SPHINX_FOUND)

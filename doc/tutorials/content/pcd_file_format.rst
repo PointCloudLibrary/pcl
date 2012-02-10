@@ -136,8 +136,8 @@ As of version 0.7, the PCD header contains the following entries:
   between different coordinate systems, or for aiding with features such as
   surface normals, that need a consistent orientation.
 
-  The viewpoint information is specified as a quaternion (qx qy qz qw) +
-  translation (tx ty tz). The default value is::
+  The viewpoint information is specified as a translation (tx ty tz) +
+  quaternion (qw qx qy qz). The default value is::
 
     VIEWPOINT 0 0 0 1 0 0 0
 

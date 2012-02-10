@@ -45,6 +45,20 @@
 #include <pcl/common/common.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointInT, typename PointNT, typename PointOutT> bool
+pcl::VFHEstimation<PointInT, PointNT, PointOutT>::initCompute ()
+{
+  if (input_->points.size () < 2 || (surface_ && surface_->points.size () < 2))
+  {
+    PCL_ERROR ("[pcl::VFHEstimation::initCompute] Input dataset must have at least 2 points!\n");
+    return (false);
+  }
+  if (search_radius_ == 0 && k_ == 0)
+    k_ = 1;
+  return (Feature<PointInT, PointOutT>::initCompute ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT> void
 pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (const Eigen::Vector4f &centroid_p,
                                                                              const Eigen::Vector4f &centroid_n,

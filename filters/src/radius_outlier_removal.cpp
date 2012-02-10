@@ -118,5 +118,5 @@ pcl::RadiusOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &o
   removed_indices_->resize (nr_removed_p);
 }
 // Instantiations of specific point types
-PCL_INSTANTIATE(RadiusOutlierRemoval, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(RadiusOutlierRemoval, PCL_XYZ_POINT_TYPES)
 

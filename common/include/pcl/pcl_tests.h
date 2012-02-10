@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: pcl_tests.h 3545 2011-12-14 23:07:34Z rusu $
+ * $Id: pcl_tests.h 4093 2012-01-31 04:54:52Z rusu $
  */
 
 
@@ -66,8 +66,8 @@ namespace pcl
       int length = v1.size ();
       for (int i = 0; i < length; ++i)
         EXPECT_NEAR (v1[i], v2[i], epsilon);
-    };
-  };
+    }
+  }
 }
 
 #endif

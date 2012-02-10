@@ -128,6 +128,21 @@ pcl::getLocalRF (const pcl::PointCloud<PointInT> &cloud,
   double e2c = solver.eigenvalues ()[1];
   double e3c = solver.eigenvalues ()[2];
 
+  if(!pcl_isfinite(e1c) || !pcl_isfinite(e2c) || !pcl_isfinite(e3c)){
+    PCL_ERROR ("[pcl::%s::getSHOTLocalRF] Warning! Eigenvectors are NaN. Aborting Local RF computation of feature point (%lf, %lf, %lf)\n", "SHOT", central_point[0], central_point[1], central_point[2]);
+    rf[0].setZero ();
+    rf[1].setZero ();
+    rf[2].setZero ();
+
+    rf[0][0] = 1;
+    rf[1][1] = 1;
+    rf[2][2] = 1;
+
+    delete [] vij;
+
+    return (std::numeric_limits<float>::max ());
+  }
+
   Eigen::Vector4d v1 = Eigen::Vector4d::Zero ();
   Eigen::Vector4d v3 = Eigen::Vector4d::Zero ();
 

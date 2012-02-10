@@ -15,9 +15,9 @@ int
 
   for (size_t i = 0; i < cloud->points.size (); ++i)
   {
-    cloud->points[i].x = 1024 * rand () / (RAND_MAX + 1.0);
-    cloud->points[i].y = 1024 * rand () / (RAND_MAX + 1.0);
-    cloud->points[i].z = 1024 * rand () / (RAND_MAX + 1.0);
+    cloud->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
+    cloud->points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
+    cloud->points[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
   }
 
   std::cerr << "Cloud before filtering: " << std::endl;

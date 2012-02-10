@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: test_spring.cpp 3624 2011-12-22 01:18:57Z nizar $
+ * $Id: test_spring.cpp 4251 2012-02-04 00:33:47Z nizar $
  */
 
 #include <gtest/gtest.h>
@@ -43,11 +43,11 @@
 using namespace pcl;
 using namespace pcl::test;
 
-PointCloud<PointXYZ> cloud(5, 4);
+PointCloud<PointXYZ>::Ptr cloud_ptr (new PointCloud<PointXYZ> (4, 5));
 const size_t size = 5 * 4;
 const int amount = 2;
 
-// TEST(PointCloudSpring, vertical)
+// TEST (PointCloudSpring, vertical)
 // {
 //   PointCloudSpring<PointXYZ> spring;
 //   spring.setInputCloud (cloud_ptr);
@@ -62,7 +62,7 @@ const int amount = 2;
 //   EXPECT_EQ (cloud_ptr->height, old_height +2*2);
 // }
 
-// TEST(PointCloudSpring, horizontal)
+// TEST (PointCloudSpring, horizontal)
 // {
 //   PointCloudSpring<PointXYZ> spring;
 //   spring.setInputCloud (cloud_ptr);
@@ -75,161 +75,137 @@ const int amount = 2;
 //   int old_width (cloud_ptr->width);
 //   for (int i = 0; i < cloud_ptr->height; i++)    
 //   {
-//     std::cout << (*cloud_ptr) (0,i) << std::endl;
+//     std::cout << (*cloud_ptr) (0, i) << std::endl;
 //   }
 //   spring.expand (xyz);
 //   for (int i = 0; i < cloud_ptr->height; i++)    
 //   {
-//     std::cout << (*cloud_ptr) (0,i) << std::endl;
+//     std::cout << (*cloud_ptr) (0, i) << std::endl;
 //   }
 //   EXPECT_EQ (cloud_ptr->width, old_width +2*2);
 // }
 
-TEST(PointCloudSpring, duplicateVertical)
+TEST (PointCloudSpring, duplicateRows)
 {
-  PointCloudSpring<PointXYZ> spring;
-  PointCloud<PointXYZ>::Ptr cloud_ptr = cloud.makeShared ();
-  spring.setInputCloud (cloud_ptr);
-  spring.setAmount (amount);
-  spring.setDirection (PointCloudSpring<PointXYZ>::VERTICAL);
-  spring.setExpandPolicy (PointCloudSpring<PointXYZ>::DUPLICATE);
-  spring.expand ();
-  int w(cloud_ptr->width);
-  EXPECT_EQ (cloud_ptr->height, cloud.height +2*amount);
+  PointCloud<PointXYZ>::Ptr output (new PointCloud<PointXYZ> ());
+  pcl::common::duplicateRows (*cloud_ptr, *output, amount);
+  int w = output->width;
+  EXPECT_EQ (output->height, cloud_ptr->height + 2*amount);
 
   for (int i = 0; i < w; ++i)
   {
-    EXPECT_EQ_VECTORS((*cloud_ptr)(i,0).getVector3fMap (), 
-                      (*cloud_ptr)(i,1).getVector3fMap ());
-    EXPECT_EQ_VECTORS((*cloud_ptr)(i,0).getVector3fMap (), 
-                      (*cloud_ptr)(i,2).getVector3fMap ());
-    EXPECT_EQ_VECTORS((*cloud_ptr)(i,cloud_ptr->height - 3).getVector3fMap (), 
-                      (*cloud_ptr)(i,cloud_ptr->height - 1).getVector3fMap ());
-    EXPECT_EQ_VECTORS((*cloud_ptr)(i,cloud_ptr->height - 3).getVector3fMap (), 
-                      (*cloud_ptr)(i,cloud_ptr->height - 2).getVector3fMap ());
+    EXPECT_EQ_VECTORS ((*output) (i, 0).getVector3fMap (), 
+           (*output) (i, 1).getVector3fMap ());
+    EXPECT_EQ_VECTORS ((*output) (i, 0).getVector3fMap (), 
+           (*output) (i, 2).getVector3fMap ());
+    EXPECT_EQ_VECTORS ((*output) (i, output->height - 3).getVector3fMap (), 
+           (*output) (i, output->height - 1).getVector3fMap ());
+    EXPECT_EQ_VECTORS ((*output) (i, output->height - 3).getVector3fMap (), 
+           (*output) (i, output->height - 2).getVector3fMap ());
   }
 }
 
-TEST(PointCloudSpring, mirrorVertical)
+TEST (PointCloudSpring, duplicateColumns)
 {
-  PointCloudSpring<PointXYZ> spring;
-  PointCloud<PointXYZ>::Ptr cloud_ptr = cloud.makeShared ();
-  spring.setInputCloud (cloud_ptr);
-  spring.setAmount (amount);
-  spring.setDirection (PointCloudSpring<PointXYZ>::VERTICAL);
-  spring.setExpandPolicy (PointCloudSpring<PointXYZ>::MIRROR);
-  spring.expand ();
-  int w(cloud_ptr->width);
-  int h(cloud_ptr->height);
-  EXPECT_EQ (cloud_ptr->height, cloud.height +2*amount);
-
-  for (int i = 0; i < w; ++i)
-  {
-    EXPECT_EQ_VECTORS((*cloud_ptr)(i,1).getVector3fMap (), 
-                      (*cloud_ptr)(i,2).getVector3fMap ());
-    EXPECT_EQ_VECTORS((*cloud_ptr)(i,0).getVector3fMap (), 
-                      (*cloud_ptr)(i,3).getVector3fMap ());
-    EXPECT_EQ_VECTORS((*cloud_ptr)(i,h - 3).getVector3fMap (), 
-                      (*cloud_ptr)(i,h - 2).getVector3fMap ());
-    EXPECT_EQ_VECTORS((*cloud_ptr)(i,h - 4).getVector3fMap (), 
-                      (*cloud_ptr)(i,h - 1).getVector3fMap ());
-  }
-}
-
-TEST(PointCloudSpring, mirrorHorizontal)
-{
-  PointCloudSpring<PointXYZ> spring;
-  PointCloud<PointXYZ>::Ptr cloud_ptr = cloud.makeShared ();
-  spring.setInputCloud (cloud_ptr);
-  spring.setAmount (amount);
-  spring.setDirection (PointCloudSpring<PointXYZ>::HORIZONTAL);
-  spring.setExpandPolicy (PointCloudSpring<PointXYZ>::MIRROR);
-  spring.expand ();
-  int w(cloud_ptr->width);
-  int h(cloud_ptr->height);
-  EXPECT_EQ (cloud_ptr->width, cloud.width +2*amount);
-
-  for (int j = 0; j < h; ++j)
-  {
-    EXPECT_EQ_VECTORS((*cloud_ptr)(0,j).getVector3fMap (), 
-                      (*cloud_ptr)(3,j).getVector3fMap ());
-    EXPECT_EQ_VECTORS((*cloud_ptr)(1,j).getVector3fMap (), 
-                      (*cloud_ptr)(2,j).getVector3fMap ());
-    EXPECT_EQ_VECTORS((*cloud_ptr)(w - 3,j).getVector3fMap (), 
-                      (*cloud_ptr)(w - 2,j).getVector3fMap ());
-    EXPECT_EQ_VECTORS((*cloud_ptr)(w - 4,j).getVector3fMap (), 
-                      (*cloud_ptr)(w - 1,j).getVector3fMap ());
-  }
-}
-
-TEST(PointCloudSpring, duplicateHorizontal)
-{
-  PointCloudSpring<PointXYZ> spring;
-  PointCloud<PointXYZ>::Ptr cloud_ptr = cloud.makeShared ();
-  spring.setInputCloud (cloud_ptr);
-  spring.setAmount (amount);
-  spring.setDirection (PointCloudSpring<PointXYZ>::HORIZONTAL);
-  spring.setExpandPolicy (PointCloudSpring<PointXYZ>::DUPLICATE);
-  spring.expand ();
-  int h(cloud_ptr->height);
-  int w(cloud_ptr->width);
-  EXPECT_EQ (cloud_ptr->width, cloud.width +2*amount);
+  PointCloud<PointXYZ>::Ptr output (new PointCloud<PointXYZ> ());
+  pcl::common::duplicateColumns (*cloud_ptr, *output, amount);
+  int h = output->height;
+  int w = output->width;
+  EXPECT_EQ (output->width, cloud_ptr->width +2*amount);
 
   for (int i = 0; i < h; ++i)
   {
-    EXPECT_EQ_VECTORS((*cloud_ptr)(0,i).getVector3fMap (), 
-                      (*cloud_ptr)(1,i).getVector3fMap ());
-    EXPECT_EQ_VECTORS((*cloud_ptr)(0,i).getVector3fMap (), 
-                      (*cloud_ptr)(2,i).getVector3fMap ());
-    EXPECT_EQ_VECTORS((*cloud_ptr)(w - 3,i).getVector3fMap (), 
-                      (*cloud_ptr)(w - 1,i).getVector3fMap ());
-    EXPECT_EQ_VECTORS((*cloud_ptr)(w - 3,i).getVector3fMap (), 
-                      (*cloud_ptr)(w - 2,i).getVector3fMap ());
+    EXPECT_EQ_VECTORS ((*output) (0, i).getVector3fMap (), 
+           (*output) (1, i).getVector3fMap ());
+    EXPECT_EQ_VECTORS ((*output) (0, i).getVector3fMap (), 
+           (*output) (2, i).getVector3fMap ());
+    EXPECT_EQ_VECTORS ((*output) (w - 3, i).getVector3fMap (), 
+           (*output) (w - 1, i).getVector3fMap ());
+    EXPECT_EQ_VECTORS ((*output) (w - 3, i).getVector3fMap (), 
+           (*output) (w - 2, i).getVector3fMap ());
   }
 }
 
-TEST(PointCloudSpring, deleteRows)
+TEST (PointCloudSpring, mirrorRows)
 {
-  PointCloudSpring<PointXYZ> spring;
-  PointCloud<PointXYZ>::Ptr cloud_ptr = cloud.makeShared ();
-  spring.setInputCloud (cloud_ptr);
-  spring.setAmount (amount);
-  spring.setDirection (PointCloudSpring<PointXYZ>::VERTICAL);
-  spring.setExpandPolicy (PointCloudSpring<PointXYZ>::MIRROR);
-  spring.expand ();
-  EXPECT_EQ (cloud_ptr->height, cloud.height +2*amount);
-  spring.shrink ();
-  EXPECT_EQ (cloud_ptr->height, cloud.height);
-  for(uint32_t i = 0; i < cloud.width; i++)
-    for(uint32_t j = 0; j < cloud.height; j++)
-      EXPECT_EQ_VECTORS ((*cloud_ptr)(i,j).getVector3fMap (),
-                         cloud(i,j).getVector3fMap ());
+  PointCloud<PointXYZ>::Ptr output (new PointCloud<PointXYZ> ());
+  pcl::common::mirrorRows (*cloud_ptr, *output, amount);
+  int w = output->width;
+  int h = output->height;
+  EXPECT_EQ (output->height, cloud_ptr->height + 2*amount);
+
+  for (int i = 0; i < w; ++i)
+  {
+    EXPECT_EQ_VECTORS ((*output) (i, 1).getVector3fMap (), 
+           (*output) (i, 2).getVector3fMap ());
+    EXPECT_EQ_VECTORS ((*output) (i, 0).getVector3fMap (), 
+           (*output) (i, 3).getVector3fMap ());
+    EXPECT_EQ_VECTORS ((*output) (i, h - 3).getVector3fMap (), 
+           (*output) (i, h - 2).getVector3fMap ());
+    EXPECT_EQ_VECTORS ((*output) (i, h - 4).getVector3fMap (), 
+           (*output) (i, h - 1).getVector3fMap ());
+  }
 }
 
-TEST(PointCloudSpring, deleteCols)
+TEST (PointCloudSpring, mirrorColumns)
 {
-  PointCloudSpring<PointXYZ> spring;
-  PointCloud<PointXYZ>::Ptr cloud_ptr = cloud.makeShared ();
-  spring.setInputCloud (cloud_ptr);
-  spring.setAmount (amount);
-  spring.setDirection (PointCloudSpring<PointXYZ>::HORIZONTAL);
-  spring.setExpandPolicy (PointCloudSpring<PointXYZ>::MIRROR);
-  spring.expand ();
-  EXPECT_EQ (cloud_ptr->width, cloud.width +2*amount);
-  spring.shrink ();
-  EXPECT_EQ (cloud_ptr->width, cloud.width);
-  for(uint32_t i = 0; i < cloud.width; i++)
-    for(uint32_t j = 0; j < cloud.height; j++)
-      EXPECT_EQ_VECTORS ((*cloud_ptr)(i,j).getVector3fMap (),
-                         cloud(i,j).getVector3fMap ());
+  PointCloud<PointXYZ>::Ptr output (new PointCloud<PointXYZ> ());
+  pcl::common::mirrorColumns (*cloud_ptr, *output, amount);
+  int w = output->width;
+  int h = output->height;
+
+  EXPECT_EQ (output->width, cloud_ptr->width +2*amount);
+
+  for (int j = 0; j < h; ++j)
+  {
+    EXPECT_EQ_VECTORS ((*output) (0, j).getVector3fMap (), 
+           (*output) (3, j).getVector3fMap ());
+    EXPECT_EQ_VECTORS ((*output) (1, j).getVector3fMap (), 
+           (*output) (2, j).getVector3fMap ());
+    EXPECT_EQ_VECTORS ((*output) (w - 3, j).getVector3fMap (), 
+           (*output) (w - 2, j).getVector3fMap ());
+    EXPECT_EQ_VECTORS ((*output) (w - 4, j).getVector3fMap (), 
+           (*output) (w - 1, j).getVector3fMap ());
+  }
+}
+
+TEST (PointCloudSpring, deleteRows)
+{
+  PointCloud<PointXYZ>::Ptr output (new PointCloud<PointXYZ> ());
+  pcl::common::mirrorRows (*cloud_ptr, *output, amount);
+  EXPECT_EQ (output->height, cloud_ptr->height +2*amount);
+  pcl::common::deleteRows (*output, *output, amount);
+  EXPECT_EQ (output->height, cloud_ptr->height);
+
+  for (uint32_t i = 0; i < cloud_ptr->width; i++)
+    for (uint32_t j = 0; j < cloud_ptr->height; j++)
+    {
+      EXPECT_EQ_VECTORS ((*output) (i, j).getVector3fMap (),
+                         (*cloud_ptr) (i, j).getVector3fMap ());
+    }
+}
+
+TEST (PointCloudSpring, deleteCols)
+{
+  PointCloud<PointXYZ>::Ptr output (new PointCloud<PointXYZ> ());
+  pcl::common::duplicateColumns (*cloud_ptr, *output, amount);
+  EXPECT_EQ (output->width, cloud_ptr->width +2*amount);
+  pcl::common::deleteCols (*output, *output, amount);
+  EXPECT_EQ (output->width, cloud_ptr->width);
+
+  for (uint32_t i = 0; i < cloud_ptr->width; i++)
+    for (uint32_t j = 0; j < cloud_ptr->height; j++)
+    {
+      EXPECT_EQ_VECTORS ((*output) (i, j).getVector3fMap (),
+                         (*cloud_ptr) (i, j).getVector3fMap ());
+    }
 }
 
 int
 main (int argc, char** argv)
 {
   for (uint32_t i = 0; i < size; ++i)
-    cloud[i]  = PointXYZ (3*i+0,3*i+1,3*i+2);
-
+    (*cloud_ptr)[i]  = PointXYZ (3*i+0, 3*i+1, 3*i+2);
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
 }

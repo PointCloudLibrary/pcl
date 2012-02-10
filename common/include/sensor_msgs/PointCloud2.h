@@ -24,7 +24,7 @@ namespace sensor_msgs
   struct PointCloud2
   {
     PointCloud2 () : header (), height (0), width (0), fields (),
-                     point_step (0), row_step (0),
+                     is_bigendian (false), point_step (0), row_step (0),
                      data (), is_dense (false)
     {
 #ifdef PCL_BIG_ENDIAN

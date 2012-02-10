@@ -41,6 +41,6 @@
 #include "pcl/features/impl/vfh.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(VFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::VFHSignature308)));
-//PCL_INSTANTIATE_PRODUCT(VFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)));
+PCL_INSTANTIATE_PRODUCT(VFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::VFHSignature308)))
+//PCL_INSTANTIATE_PRODUCT(VFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)))
 
