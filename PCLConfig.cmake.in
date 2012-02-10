@@ -493,7 +493,7 @@ if(NOT "${PCL_LIBRARY_DIRS}" STREQUAL "")
 endif(NOT "${PCL_LIBRARY_DIRS}" STREQUAL "")
 
 # We need to export march=native for tutorials or user code
-list (APPEND PCL_DEFINITIONS "@CMAKE_CXX_FLAGS@")
+list (APPEND PCL_DEFINITIONS "@SSE_FLAGS@")
 
 if(NOT "${PCL_DEFINITIONS}" STREQUAL "")
   list(REMOVE_DUPLICATES PCL_DEFINITIONS)
