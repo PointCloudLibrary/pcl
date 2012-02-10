@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: mls_omp.h 3726 2011-12-30 21:58:56Z rusu $
+ * $Id: mls_omp.h 4193 2012-02-01 23:39:05Z aichim $
  *
  */
 
@@ -60,8 +60,10 @@ namespace pcl
     using MovingLeastSquares<PointInT, NormalOutT>::nr_coeff_;
     using MovingLeastSquares<PointInT, NormalOutT>::order_;
     using MovingLeastSquares<PointInT, NormalOutT>::normals_;
+    using MovingLeastSquares<PointInT, NormalOutT>::upsample_method_;
       
     typedef typename MovingLeastSquares<PointInT, NormalOutT>::PointCloudIn PointCloudIn;
+    typedef typename MovingLeastSquares<PointInT, NormalOutT>::NormalCloudOut NormalCloudOut;
 
     public:
       /** \brief Empty constructor. */
