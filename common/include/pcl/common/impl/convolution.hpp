@@ -208,6 +208,7 @@ pcl::common::Convolution<PointT>::convolve_rows ( PointCloud<PointT>& output)
       
       for ( ; i < last; ++i)
       {
+        int counter = 0;
         output (i,j) = PointT ();
         for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l)
         {
@@ -219,10 +220,14 @@ pcl::common::Convolution<PointT>::convolve_rows ( PointCloud<PointT>& output)
           if (!isFinite ((*input_) (l,j)))
             continue;
           if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (l,j)) < distance_threshold_)
+          {
             output (i,j)+= (*input_) (l,j) * kernel_ [k];
+            ++counter;
+          }
         }
-      }
-      
+        if (counter == 0)
+          output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();          
+      }      
       for ( ; i < w; ++i)
         output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
     }
@@ -265,6 +270,7 @@ pcl::common::Convolution<PointT>::convolve_cols (PointCloud<PointT>& output)
       for ( ; j < last; ++j)
       {
         output (i,j) = PointT ();
+        int counter = 0;
         for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
         {
           // if (!isFinite ((*input_) (i,l)))
@@ -275,8 +281,13 @@ pcl::common::Convolution<PointT>::convolve_cols (PointCloud<PointT>& output)
           if (!isFinite ((*input_) (i,l)))
             continue;
           if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (i,l)) < distance_threshold_)
+          {
             output (i,j)+= (*input_) (i,l) * kernel_ [k];
+            ++counter;
+          }
         }
+        if (counter == 0)
+          output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
       }
       
       for ( ; j < h; ++j)
@@ -291,20 +302,52 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows (PointCl
   int half_width_ = kernel_.size () / 2;
   int kernel_width_ = kernel_.size () - 1;
   int i, h(input_->height), w(input_->width), last(w - half_width_);
-  for(int j = 0; j < h; ++j)
+  if (input_->is_dense)
   {
-    for (i = 0; i < half_width_; ++i)
-      output (i,j) = transform_ ();
-    
-    for ( ; i < last; ++i)
+    for(int j = 0; j < h; ++j)
     {
-      output (i,j) = transform_ ();
-      for (int k = kernel_width_ - 1, l = i - half_width_; k > -1; --k, ++l)
-        output (i,j)+= transform_ ((*input_) (l,j) * kernel_ [k]);
+      for (i = 0; i < half_width_; ++i)
+        output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
+      
+      for ( ; i < last; ++i)
+      {
+        output (i,j) = transform_ (0);
+        for (int k = kernel_width_ - 1, l = i - half_width_; k > -1; --k, ++l)
+          output (i,j)+= transform_ ((*input_) (l,j) * kernel_ [k]);
+      }
+      
+      for ( ; i < w; ++i)
+        output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
     }
-    
-    for ( ; i < w; ++i)
-      output (i,j) = transform_ ();
+  }
+  else
+  {
+    for(int j = 0; j < h; ++j)
+    {
+      for (i = 0; i < half_width_; ++i)
+        output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
+      
+      for ( ; i < last; ++i)
+      {
+        int counter = 0;
+        output (i,j) = transform_ (0);
+        for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l)
+        {
+          if (!isFinite ((*input_) (l,j)))
+            continue;
+          if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (l,j)) < distance_threshold_)
+          {
+            output (i,j)+= transform_ ((*input_) (l,j) * kernel_ [k]);
+            ++counter;
+          }
+        }
+        if (counter == 0)
+          output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
+      }
+
+      for ( ; i < w; ++i)
+        output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
+    }
   }
 }
 
@@ -314,20 +357,52 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols (PointCl
   int half_width_ = kernel_.size () / 2;
   int kernel_width_ = kernel_.size () - 1;
   int j, h(input_->height), w(input_->width), last(h - half_width_);
-  for(int i = 0; i < w; ++i)
+  if (input_->is_dense)
   {
-    for (j = 0; j < half_width_; ++j)
-      output (i,j) = transform_ ();
-    
-    for ( ; j < last; ++j)
+    for(int i = 0; i < w; ++i)
     {
-      output (i,j) = transform_ ();
-      for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
-        output (i,j)+= transform_ ((*input_) (i,l) * kernel_ [k]);
+      for (j = 0; j < half_width_; ++j)
+        output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
+      
+      for ( ; j < last; ++j)
+      {
+        output (i,j) = transform_ (0);
+        for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
+          output (i,j)+= transform_ ((*input_) (i,l) * kernel_ [k]);
+      }
+      
+      for ( ; j < h; ++j)
+        output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
     }
-    
-    for ( ; j < h; ++j)
-      output (i,j) = transform_ ();
+  }
+  else
+  {
+    for(int i = 0; i < w; ++i)
+    {
+      for (j = 0; j < half_width_; ++j)
+        output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
+     
+      for ( ; j < last; ++j)
+      {
+        output (i,j) = transform_ (0);
+        int counter = 0;
+        for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
+        {
+          if (!isFinite ((*input_) (i,l)))
+            continue;
+          if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (i,l)) < distance_threshold_)
+          {
+            output (i,j)+= transform_ ((*input_) (i,l) * kernel_ [k]);
+            ++counter;
+          }
+        }
+        if (counter == 0)
+          output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
+      }
+      
+      for ( ; j < h; ++j)
+        output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
+    }
   }
 }
 

@@ -352,6 +352,7 @@ namespace pcl
         using ConvolutionBase::setKernel;
         using ConvolutionBase::input_;
         using ConvolutionBase::kernel_;
+        using ConvolutionBase::distance_threshold_;
         
         ConvolutionWithTransform () : ConvolutionBase () {}
 
