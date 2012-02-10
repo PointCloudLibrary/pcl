@@ -72,7 +72,7 @@ namespace pcl
       typedef float PointOut;
       
       inline float 
-      operator() (const float& val = 0) { return val; }
+      operator() (const float& val = 0) { return (val); }
       
       inline float 
       operator() (const pcl::PointXYZI& p) { return (p.intensity); }
@@ -86,7 +86,7 @@ namespace pcl
       typedef float PointOut;
 
       inline float 
-      operator() (const float& val = 0) { return val; }
+      operator() (const float& val = 0) { return (val); }
       
       inline float 
       operator() (const pcl::PointXYZRGB& p) { return ((299*p.r + 587*p.g + 114*p.b)/1000.0f); }
