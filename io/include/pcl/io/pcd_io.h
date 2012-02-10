@@ -105,6 +105,25 @@ namespace pcl
                   Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version,
                   int &data_type, int &data_idx);
 
+      /** \brief Read a point cloud data header from a PCD file. 
+        *
+        * Load only the meta information (number of points, their types, etc),
+        * and not the points themselves, from a given PCD file. Useful for fast
+        * evaluation of the underlying data structure.
+        *
+        * Returns:
+        *  * < 0 (-1) on error
+        *  * > 0 on success
+        * \param[in] file_name the name of the file to load
+        * \param[out] cloud the resultant point cloud dataset (only the properties will be filled)
+        * \param[out] pcd_version the PCD version of the file (either PCD_V6 or PCD_V7)
+        * \param[out] data_type the type of data (0 = ASCII, 1 = Binary, 2 = Binary compressed) 
+        * \param[out] data_idx the offset of cloud data within the file
+        */
+      int 
+      readHeaderEigen (const std::string &file_name, pcl::PointCloud<Eigen::MatrixXf> &cloud,
+                       int &pcd_version, int &data_type, int &data_idx);
+
       /** \brief Read a point cloud data from a PCD file and store it into a sensor_msgs/PointCloud2.
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] cloud the resultant PointCloud message read from disk
@@ -133,7 +152,7 @@ namespace pcl
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] cloud the resultant PointCloud message read from disk
         */
-      template<typename PointT> inline int
+      template<typename PointT> int
       read (const std::string &file_name, pcl::PointCloud<PointT> &cloud)
       {
         sensor_msgs::PointCloud2 blob;
@@ -143,10 +162,17 @@ namespace pcl
 
         // Exit in case of error
         if (res < 0)
-          return res;
+          return (res);
         pcl::fromROSMsg (blob, cloud);
-        return 0;
+        return (0);
       }
+
+      /** \brief Read a point cloud data from any PCD file, and convert it to a pcl::PointCloud<Eigen::MatrixXf> format.
+        * \param[in] file_name the name of the file containing the actual PointCloud data
+        * \param[out] cloud the resultant PointCloud message read from disk
+        */
+      int
+      readEigen (const std::string &file_name, pcl::PointCloud<Eigen::MatrixXf> &cloud);
   };
 
   /** \brief Point Cloud Data (PCD) file format writer.

@@ -843,6 +843,36 @@ TEST (PCL, PCDReaderWriterEigen)
   EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].y, last.y);    // test for fromROSMsg ()
   EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].z, last.z);    // test for fromROSMsg ()
   EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].intensity, last.intensity); // test for fromROSMsg ()
+
+  reader.readEigen ("test_pcl_io.pcd", cloud_eigen);
+
+  EXPECT_EQ ((uint32_t)cloud_eigen.width, cloud.width);
+  EXPECT_EQ ((uint32_t)cloud_eigen.height, cloud.height);
+  EXPECT_EQ ((bool)cloud_eigen.is_dense, cloud.is_dense);
+
+  for (size_t i = 0; i < cloud.points.size (); ++i)
+  {
+    EXPECT_FLOAT_EQ (cloud_eigen.points (i, 0), cloud.points[i].x);
+    EXPECT_FLOAT_EQ (cloud_eigen.points (i, 1), cloud.points[i].y);
+    EXPECT_FLOAT_EQ (cloud_eigen.points (i, 2), cloud.points[i].z);
+    EXPECT_FLOAT_EQ (cloud_eigen.points (i, 3), cloud.points[i].intensity);
+  }
+
+  writer.writeBinaryEigen ("test_pcl_io.pcd", cloud);
+
+  reader.readEigen ("test_pcl_io.pcd", cloud_eigen);
+
+  EXPECT_EQ ((uint32_t)cloud_eigen.width, cloud.width);
+  EXPECT_EQ ((uint32_t)cloud_eigen.height, cloud.height);
+  EXPECT_EQ ((bool)cloud_eigen.is_dense, cloud.is_dense);
+
+  for (size_t i = 0; i < cloud.points.size (); ++i)
+  {
+    EXPECT_FLOAT_EQ (cloud_eigen.points (i, 0), cloud.points[i].x);
+    EXPECT_FLOAT_EQ (cloud_eigen.points (i, 1), cloud.points[i].y);
+    EXPECT_FLOAT_EQ (cloud_eigen.points (i, 2), cloud.points[i].z);
+    EXPECT_FLOAT_EQ (cloud_eigen.points (i, 3), cloud.points[i].intensity);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
