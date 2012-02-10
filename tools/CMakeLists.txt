@@ -45,9 +45,6 @@ if (build)
   PCL_ADD_EXECUTABLE (add_gaussian_noise ${SUBSYS_NAME} add_gaussian_noise.cpp)
   target_link_libraries (add_gaussian_noise pcl_common pcl_io)
   
-  PCL_ADD_EXECUTABLE (mls_smoothing ${SUBSYS_NAME} mls_smoothing.cpp)
-  target_link_libraries (mls_smoothing pcl_common pcl_io pcl_surface pcl_filters)
-  
   PCL_ADD_EXECUTABLE (marching_cubes_reconstruction ${SUBSYS_NAME} marching_cubes_reconstruction.cpp)
   target_link_libraries (marching_cubes_reconstruction pcl_common pcl_io pcl_surface)
 
