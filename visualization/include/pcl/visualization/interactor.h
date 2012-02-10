@@ -39,6 +39,7 @@
 
 #include <pcl/pcl_macros.h>
 
+#include <vtkConfigure.h>
 #include <vtkObjectFactory.h>
 #ifdef _WIN32
 #  include <vtkWin32RenderWindowInteractor.h>

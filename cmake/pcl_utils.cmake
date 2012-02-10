@@ -87,6 +87,7 @@ macro(SET_INSTALL_DIRS)
     set(INCLUDE_INSTALL_ROOT
         "include/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
     set(INCLUDE_INSTALL_DIR "${INCLUDE_INSTALL_ROOT}/pcl")
+    set(DOC_INSTALL_DIR "share/doc/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
     set(BIN_INSTALL_DIR "bin")
     set(PKGCFG_INSTALL_DIR "${LIB_INSTALL_DIR}/pkgconfig")
     if(WIN32)
@@ -373,7 +374,7 @@ macro(sort_relative _list _sorted_list _to_sort_relative)
   list(LENGTH ${_to_sort_relative} to_sort_list_length)
 
   if(NOT (list_length EQUAL sorted_list_length))
-    message(FATAL_ERROR "size mismatch between ${_sorted_list} and ${_list}")
+    message(FATAL_ERROR "size mismatch between ${_sorted_list} (length ${sorted_list_length}) and ${_list} (length ${list_length})")
   endif(NOT (list_length EQUAL sorted_list_length))
 
   if(NOT (list_length EQUAL to_sort_list_length))

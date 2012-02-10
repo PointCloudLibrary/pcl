@@ -207,6 +207,57 @@ macro(PCL_ADD_EXECUTABLE _name _component)
         COMPONENT ${_component})
 endmacro(PCL_ADD_EXECUTABLE)
 
+###############################################################################
+# Add an executable target as a bundle when available and required
+# _name The executable name.
+# _component The part of PCL that this library belongs to.
+# _bundle 
+# ARGN the source files for the library.
+macro(PCL_ADD_EXECUTABLE_OPT_BUNDLE _name _component)
+if(APPLE AND VTK_USE_COCOA)
+    add_executable(${_name} MACOSX_BUNDLE ${ARGN})
+else(APPLE AND VTK_USE_COCOA)
+    add_executable(${_name} ${ARGN})
+endif(APPLE AND VTK_USE_COCOA)
+
+    # must link explicitly against boost.
+    if(UNIX AND NOT ANDROID_NDK)
+      target_link_libraries(${_name} ${Boost_LIBRARIES} pthread)
+    else()
+      target_link_libraries(${_name} ${Boost_LIBRARIES})
+    endif()
+    #
+    # Only link if needed
+    if(WIN32 AND MSVC)
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF
+                                                DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
+                                                RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
+    elseif(__COMPILER_PATHSCALE)
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS -mp)
+    else()
+      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
+    endif()
+    #
+    if(USE_PROJECT_FOLDERS)
+      set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
+    endif(USE_PROJECT_FOLDERS)
+
+    set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
+#    message(STATUS "COMMAND ${CMAKE_COMMAND} -E create_symlink \"${_name}.app/Contents/MacOS/${_name}\" \"${_name}\"")
+if(APPLE AND VTK_USE_COCOA)
+#     add_custom_command(TARGET ${_name}
+#                         POST_BUILD
+#                         COMMAND ${CMAKE_COMMAND} -E create_symlink ${PCL_OUTPUT_BIN_DIR}/${_name}.app/Contents/MacOS/${_name} ${PCL_OUTPUT_BIN_DIR}/${_name}
+# #			WORKING_DIRECTORY 
+#                         COMMENT "Creating an alias for ${_name}.app to ${_name}")
+    install(TARGETS ${_name} BUNDLE DESTINATION ${BIN_INSTALL_DIR} COMPONENT ${_component})
+else(APPLE AND VTK_USE_COCOA)
+    install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT ${_component})
+endif(APPLE AND VTK_USE_COCOA)
+endmacro(PCL_ADD_EXECUTABLE_OPT_BUNDLE)
+
 
 ###############################################################################
 # Add an executable target.
@@ -255,7 +306,6 @@ macro(PCL_ADD_TEST _name _exename)
     if(NOT WIN32)
       set_target_properties(${_exename} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     endif(NOT WIN32)
-    PCL_ADD_OPENMP_FLAGS(${_exename})
     target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
     #
     # Only link if needed
@@ -270,7 +320,6 @@ macro(PCL_ADD_TEST _name _exename)
       set_target_properties(${_exename} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
     endif()
     # 
-    PCL_LINK_OPENMP(${_exename})
     # must link explicitly against boost only on Windows
     target_link_libraries(${_exename} ${Boost_LIBRARIES})
     #
@@ -285,6 +334,27 @@ macro(PCL_ADD_TEST _name _exename)
     endif(${CMAKE_VERSION} VERSION_LESS 2.8.4)
 endmacro(PCL_ADD_TEST)
 
+###############################################################################
+# Add an example target.
+# _name The example name.
+# ARGN :
+#    FILES the source files for the example
+#    LINK_WITH link example executable with libraries
+macro(PCL_ADD_EXAMPLE _name)
+    set(options)
+    set(oneValueArgs)
+    set(multiValueArgs FILES LINK_WITH)
+    cmake_parse_arguments(PCL_ADD_EXAMPLE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+    add_executable(${_name} ${PCL_ADD_EXAMPLE_FILES})
+    target_link_libraries(${_name} ${PCL_ADD_EXAMPLE_LINK_WITH})
+    if(WIN32 AND MSVC)
+      set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
+                                                RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
+    endif(WIN32 AND MSVC)
+    if(USE_PROJECT_FOLDERS)
+      set_target_properties(${_name} PROPERTIES FOLDER "Examples")
+    endif(USE_PROJECT_FOLDERS)
+endmacro(PCL_ADD_EXAMPLE)
 
 ###############################################################################
 # Add compile flags to a target (because CMake doesn't provide something so
@@ -550,8 +620,8 @@ macro(PCL_DISABLE_DEPENDIES _subsys)
     string(TOUPPER "pcl_${_subsys}_dependies" PCL_SUBSYS_DEPENDIES)
     if(NOT ("${${PCL_SUBSYS_DEPENDIES}}" STREQUAL ""))
         foreach(dep ${${PCL_SUBSYS_DEPENDIES}})
-            PCL_SET_SUBSYS_HYPERSTATUS(${_subsys} ${dep} AUTO_OFF "Automatically disabled.")
-            set(BUILD_${dep} OFF CACHE BOOL "Automatically disabled ${dep}" FORCE)
+            PCL_SET_SUBSYS_HYPERSTATUS(${_subsys} ${dep} AUTO_OFF "Disabled: ${_subsys} missing.")
+            set(BUILD_${dep} OFF CACHE BOOL "Disabled: ${_subsys} missing." FORCE)
         endforeach(dep)
     endif(NOT ("${${PCL_SUBSYS_DEPENDIES}}" STREQUAL ""))
 endmacro(PCL_DISABLE_DEPENDIES subsys)

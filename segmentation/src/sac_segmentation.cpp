@@ -41,6 +41,6 @@
 #include "pcl/segmentation/impl/sac_segmentation.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(SACSegmentation, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(SACSegmentation, PCL_XYZ_POINT_TYPES)
 PCL_INSTANTIATE_PRODUCT(SACSegmentationFromNormals, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES));
 

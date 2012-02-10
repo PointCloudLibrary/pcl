@@ -368,7 +368,7 @@ main(int argc, char ** argv)
   }
   else if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
   {
-    SimpleOpenNIViewer<pcl::PointXYZRGB> v (grabber);
+    SimpleOpenNIViewer<pcl::PointXYZRGBA> v (grabber);
     v.run ();
   }
   else

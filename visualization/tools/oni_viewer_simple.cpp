@@ -193,7 +193,7 @@ main(int argc, char ** argv)
   }
   if (grabber->providesCallback<pcl::ONIGrabber::sig_cb_openni_point_cloud_rgb > ())
   {
-    SimpleONIViewer<pcl::PointXYZRGB> v(*grabber);
+    SimpleONIViewer<pcl::PointXYZRGBA> v(*grabber);
     v.run();
   }
   else

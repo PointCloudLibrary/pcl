@@ -94,10 +94,18 @@ namespace pcl
     bool popped_;
   };
   
+  typedef pcl::PointCloud<pcl::PointXYZRGBA> cca;
   typedef pcl::PointCloud<pcl::PointXYZRGB> cc;
   typedef pcl::PointCloud<pcl::PointXYZI> gc;
   typedef pcl::PointCloud<pcl::PointXYZ> mc;
 
+  template <> void
+  cloud_show<cca>::pop ()
+  {
+    pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBA> handler (cloud);
+    pop (handler);
+  }
+  
   template <> void
   cloud_show<cc>::pop ()
   {
@@ -263,6 +271,16 @@ pcl::visualization::CloudViewer::~CloudViewer ()
 {
   impl_->quit_ = true;
   impl_->viewer_thread_.join();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::CloudViewer::showCloud (const ColorACloud::ConstPtr &cloud,
+                                            const std::string &cloudname)
+{
+  if (!impl_->viewer_ || impl_->viewer_->wasStopped ())
+    return;
+  impl_->block_post_cloud<ColorACloud>(cloud, cloudname);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

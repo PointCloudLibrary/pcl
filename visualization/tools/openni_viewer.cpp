@@ -70,7 +70,7 @@ do \
 #endif
 
 boost::mutex cld_mutex, img_mutex;
-pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr g_cloud;
+pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr g_cloud;
 boost::shared_ptr<openni_wrapper::Image> g_image;
 
 void
@@ -96,7 +96,7 @@ boost::shared_ptr<pcl::visualization::ImageViewer> img;
 struct EventHelper
 {
   void 
-  cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr & cloud)
+  cloud_cb (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr & cloud)
   {
     FPS_CALC ("callback");
     cld_mutex.lock ();
@@ -169,7 +169,7 @@ main (int argc, char** argv)
   std::string keyMsg3D ("Key event for PCL Visualizer");
   cld->registerMouseCallback (&mouse_callback, (void*)(&mouseMsg3D));    
   cld->registerKeyboardCallback(&keyboard_callback, (void*)(&keyMsg3D));
-  boost::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &event_helper, _1);
+  boost::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &event_helper, _1);
   boost::signals2::connection c1 = interface->registerCallback (f);
 
 #if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
@@ -207,7 +207,7 @@ main (int argc, char** argv)
         cld_init = !cld_init;
       }
 
-      pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> handler (g_cloud);
+      pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBA> handler (g_cloud);
       if (!cld->updatePointCloud (g_cloud, handler, "OpenNICloud"))
       {
         cld->addPointCloud (g_cloud, handler, "OpenNICloud");

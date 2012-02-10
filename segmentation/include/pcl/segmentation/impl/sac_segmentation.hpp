@@ -41,7 +41,6 @@
 #include "pcl/segmentation/sac_segmentation.h"
 
 // Sample Consensus methods
-#include "pcl/sample_consensus/method_types.h"
 #include "pcl/sample_consensus/sac.h"
 #include "pcl/sample_consensus/lmeds.h"
 #include "pcl/sample_consensus/mlesac.h"
@@ -52,7 +51,6 @@
 #include "pcl/sample_consensus/prosac.h"
 
 // Sample Consensus models
-#include "pcl/sample_consensus/model_types.h"
 #include "pcl/sample_consensus/sac_model.h"
 #include "pcl/sample_consensus/sac_model_circle.h"
 #include "pcl/sample_consensus/sac_model_cylinder.h"
@@ -317,6 +315,11 @@ pcl::SACSegmentation<PointT>::initSAC (const int method_type)
 template <typename PointT, typename PointNT> bool
 pcl::SACSegmentationFromNormals<PointT, PointNT>::initSACModel (const int model_type)
 {
+  if (!input_ || !normals_)
+  {
+    PCL_ERROR ("[pcl::%s::initSACModel] Input data (XYZ or normals) not given! Cannot continue.\n", getClassName ().c_str ());
+    return (false);
+  }
   // Check if input is synced with the normals
   if (input_->points.size () != normals_->points.size ())
   {

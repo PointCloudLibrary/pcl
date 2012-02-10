@@ -41,4 +41,4 @@
 #include "pcl/sample_consensus/impl/sac_model_circle.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(SampleConsensusModelCircle2D, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(SampleConsensusModelCircle2D, PCL_XYZ_POINT_TYPES)

@@ -43,8 +43,10 @@
 #include "pcl/ModelCoefficients.h"
 
 // Sample Consensus methods
+#include "pcl/sample_consensus/method_types.h"
 #include "pcl/sample_consensus/sac.h"
 // Sample Consensus models
+#include "pcl/sample_consensus/model_types.h"
 #include "pcl/sample_consensus/sac_model.h"
 
 namespace pcl

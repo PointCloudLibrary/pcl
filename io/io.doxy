@@ -2,16 +2,31 @@
   \addtogroup io Module io
 
   \section secIoPresentation Overview
-	The pcl_io library contains classes and functions for reading and writing point cloud data and capturing from OpenNI-compatible depth cameras.  An introduction to some of these capabilities can be found in the following tutorials.
+  
+  The \b pcl_io library contains classes and functions for reading and writing
+  point cloud data (PCD) files, as well as capturing point clouds from a
+  variety of sensing devices. An introduction to some of these capabilities can
+  be found in the following tutorials:
 
-	<ul>
-	<li><a href="http://pointclouds.org/documentation/tutorials/pcd_file_format.php#pcd-file-format">The PCD (Point Cloud Data) file format</a>
-	<li><a href="http://pointclouds.org/documentation/tutorials/reading_pcd.php#reading-pcd">Reading PointCloud data from PCD files</a>
-	<li><a href="http://pointclouds.org/documentation/tutorials/writing_pcd.php#writing-pcd">Writing PointCloud data to PCD files</a>
-	<li><a href="http://pointclouds.org/documentation/tutorials/openni_grabber.php#openni-grabber">The OpenNI Grabber Framework in PCL</a>
-	</ul>
+	- <a href="http://pointclouds.org/documentation/tutorials/pcd_file_format.php#pcd-file-format">The PCD (Point Cloud Data) file format</a>
+	- <a href="http://pointclouds.org/documentation/tutorials/reading_pcd.php#reading-pcd">Reading PointCloud data from PCD files</a>
+	- <a href="http://pointclouds.org/documentation/tutorials/writing_pcd.php#writing-pcd">Writing PointCloud data to PCD files</a>
+	- <a href="http://pointclouds.org/documentation/tutorials/openni_grabber.php#openni-grabber">The OpenNI Grabber Framework in PCL</a>
 	
-	
+  PCL is agnostic with respect to the data sources that are used to generate 3D
+  point clouds. While OpenNI-compatible cameras have recently been at the
+  center of attention in the 3D/robotics sensing community, many of the devices
+  enumerated below have been used with PCL tools in the past:
+
+  \image html http://pointclouds.org/assets/images/contents/documentation/io/pr2.jpg
+  \image html http://pointclouds.org/assets/images/contents/documentation/io/composite.jpg
+  \image html http://pointclouds.org/assets/images/contents/documentation/io/lms400.jpg
+  \image html http://pointclouds.org/assets/images/contents/documentation/io/openni.jpg
+  \image html http://pointclouds.org/assets/images/contents/documentation/io/trimble.jpg
+  \image html http://pointclouds.org/assets/images/contents/documentation/io/minolta.jpg
+  \image html http://pointclouds.org/assets/images/contents/documentation/io/fujiw3.jpg
+  \image html http://pointclouds.org/assets/images/contents/documentation/io/borg.jpg
+
   \section secIoRequirements Requirements
   - \ref common "common"
   - \ref octree "octree"

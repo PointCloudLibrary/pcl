@@ -101,6 +101,31 @@ pcl::visualization::createCube (const pcl::ModelCoefficients &coefficients)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 vtkSmartPointer<vtkDataSet> 
+pcl::visualization::createCube (const Eigen::Vector3f &translation, const Eigen::Quaternionf &rotation,
+                                double width, double height, double depth)
+{
+  // coefficients = [Tx, Ty, Tz, Qx, Qy, Qz, Qw, width, height, depth]
+  vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New ();
+  t->Identity ();
+  t->Translate (translation.x (), translation.y (), translation.z ());
+  
+  Eigen::AngleAxisf a (rotation);
+  t->RotateWXYZ (pcl::rad2deg (a.angle ()), a.axis ()[0], a.axis ()[1], a.axis ()[2]);
+  
+  vtkSmartPointer<vtkCubeSource> cube = vtkSmartPointer<vtkCubeSource>::New ();
+  cube->SetXLength (width);
+  cube->SetYLength (height);
+  cube->SetZLength (depth);
+  
+  vtkSmartPointer<vtkTransformPolyDataFilter> tf = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
+  tf->SetTransform (t);
+  tf->SetInputConnection (cube->GetOutputPort ());
+  
+  return (tf->GetOutput ());
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+vtkSmartPointer<vtkDataSet> 
 pcl::visualization::createLine (const pcl::ModelCoefficients &coefficients)
 {
   vtkSmartPointer<vtkLineSource> line = vtkSmartPointer<vtkLineSource>::New ();

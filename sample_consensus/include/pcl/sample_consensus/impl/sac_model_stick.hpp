@@ -199,7 +199,7 @@ pcl::SampleConsensusModelStick<PointT>::countWithinDistance (
     //  continue;
 
     float sqr_distance = dir.cross3 (line_dir).squaredNorm ();
-    // Use a larger threshold (4 times the radius) to get more points in 
+    // Use a larger threshold (4 times the radius) to get more points in
     if (sqr_distance < sqr_threshold)
       nr_i++;
     else if (sqr_distance < 4 * sqr_threshold)
@@ -233,19 +233,21 @@ pcl::SampleConsensusModelStick<PointT>::optimizeModelCoefficients (
 
   // Compute the 3x3 covariance matrix
   Eigen::Vector4f centroid;
-  compute3DCentroid (*input_, inliers, centroid);
   Eigen::Matrix3f covariance_matrix;
-  computeCovarianceMatrix (*input_, inliers, centroid, covariance_matrix);
+
+  computeMeanAndCovarianceMatrix (*input_, inliers, covariance_matrix, centroid);
+
   optimized_coefficients[0] = centroid[0];
   optimized_coefficients[1] = centroid[1];
   optimized_coefficients[2] = centroid[2];
 
   // Extract the eigenvalues and eigenvectors
-  EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
-  EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
-  pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
+  Eigen::Vector3f eigen_values;
+  Eigen::Vector3f eigen_vector;
+  pcl::eigen33 (covariance_matrix, eigen_values);
+  pcl::eigen33 (covariance_matrix, eigen_values [2], eigen_vector);
 
-  optimized_coefficients.template segment<3> (3) = eigen_vectors.col (2).normalized ();
+  optimized_coefficients.template segment<3> (3) = eigen_vector;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -335,7 +337,7 @@ pcl::SampleConsensusModelStick<PointT>::doSamplesVerifyModel (
   Eigen::Vector4f line_dir (model_coefficients[3] - model_coefficients[0], model_coefficients[4] - model_coefficients[1], model_coefficients[5] - model_coefficients[2], 0);
   //Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
   line_dir.normalize ();
-  
+
   float sqr_threshold = threshold * threshold;
   // Iterate through the 3d points and calculate the distances from them to the line
   for (std::set<int>::const_iterator it = indices.begin (); it != indices.end (); ++it)

@@ -40,6 +40,7 @@ macro(find_boost)
   elseif(NOT BOOST_INCLUDEDIR)
     set(BOOST_INCLUDEDIR "@Boost_INCLUDE_DIR@")
   endif(PCL_ALL_IN_ONE_INSTALLER)
+  # use static Boost in Windows
   if(WIN32)
     set(Boost_USE_STATIC_LIBS ON)
     set(Boost_USE_STATIC ON)
@@ -68,14 +69,14 @@ macro(find_eigen)
   elseif(NOT EIGEN_ROOT)
     get_filename_component(EIGEN_ROOT "@EIGEN_INCLUDE_DIRS@" PATH)
   endif(PCL_ALL_IN_ONE_INSTALLER)
-  if(PkgConfig_FOUND)
+  if(PKG_CONFIG_FOUND)
     pkg_check_modules(PC_EIGEN eigen3)
-  endif(PkgConfig_FOUND)
+  endif(PKG_CONFIG_FOUND)
   find_path(EIGEN_INCLUDE_DIRS Eigen/Core
     HINTS ${PC_EIGEN_INCLUDEDIR} ${PC_EIGEN_INCLUDE_DIRS} 
           "${EIGEN_ROOT}" "$ENV{EIGEN_ROOT}"
     PATHS "$ENV{PROGRAMFILES}/Eigen 3.0.0" "$ENV{PROGRAMW6432}/Eigen 3.0.0"
-          "$ENV{PROGRAMFILES}/Eigen" "$ENV{PROGRAMW6432}/Eigen"	  
+          "$ENV{PROGRAMFILES}/Eigen" "$ENV{PROGRAMW6432}/Eigen"   
     PATH_SUFFIXES eigen3 include/eigen3 include)
   find_package_handle_standard_args(eigen DEFAULT_MSG EIGEN_INCLUDE_DIRS)
   set(EIGEN_DEFINITIONS ${EIGEN_DEFINITIONS} -DEIGEN_USE_NEW_STDVECTOR 
@@ -136,9 +137,9 @@ macro(find_openni)
     set(OPENNI_LIBRARY_HINT "@OPENNI_LIBRARY@")
   endif(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "ON"))
 
-  if(PkgConfig_FOUND)
+  if(PKG_CONFIG_FOUND)
     pkg_check_modules(PC_OPENNI openni-dev)
-  endif(PkgConfig_FOUND)
+  endif(PKG_CONFIG_FOUND)
   find_path(OPENNI_INCLUDE_DIRS XnStatus.h
     HINTS ${PC_OPENNI_INCLUDEDIR} ${PC_OPENNI_INCLUDE_DIRS} 
           "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}"
@@ -148,7 +149,7 @@ macro(find_openni)
   find_library(OPENNI_LIBRARY 
     NAMES OpenNI64 OpenNI 
     HINTS ${PC_OPENNI_LIBDIR} ${PC_OPENNI_LIBRARY_DIRS} 
-          "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}" 
+          "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}"
     PATHS "$ENV{PROGRAMFILES}/OpenNI/Lib" "$ENV{PROGRAMW6432}/OpenNI/Lib64" "${OPENNI_LIBRARY_HINT}"
     PATH_SUFFIXES lib Lib Lib64)
 
@@ -168,9 +169,9 @@ macro(find_flann)
   elseif(NOT FLANN_ROOT)
     get_filename_component(FLANN_ROOT "@FLANN_INCLUDE_DIRS@" PATH)
   endif(PCL_ALL_IN_ONE_INSTALLER)
-  if(PkgConfig_FOUND)
+  if(PKG_CONFIG_FOUND)
     pkg_check_modules(PC_FLANN flann)
-  endif(PkgConfig_FOUND)
+  endif(PKG_CONFIG_FOUND)
 
   find_path(FLANN_INCLUDE_DIRS flann/flann.hpp
     HINTS ${PC_FLANN_INCLUDEDIR} ${PC_FLANN_INCLUDE_DIRS} 
@@ -215,9 +216,9 @@ macro(find_VTK)
     set(VTK_DIR "@VTK_DIR@")
   endif(PCL_ALL_IN_ONE_INSTALLER)
   find_package(VTK ${QUIET_})
-  if(VTK_FOUND)
+  if (VTK_FOUND AND NOT ANDROID_NDK)
     set(VTK_LIBRARIES vtkCommon vtkRendering vtkHybrid)
-  endif(VTK_FOUND)
+  endif(VTK_FOUND AND NOT ANDROID_NDK)
 endmacro(find_VTK)
 
 # Finds each component external libraries if any
@@ -319,6 +320,9 @@ else(PCL_FIND_QUIETLY)
   set(QUIET_)
 endif(PCL_FIND_QUIETLY)
 
+find_package(PkgConfig)
+
+file(TO_CMAKE_PATH "${PCL_DIR}" PCL_DIR)
 if(WIN32)
 # PCLConfig.cmake is installed to PCL_ROOT/cmake
   get_filename_component(PCL_ROOT "${PCL_DIR}" PATH)
@@ -362,6 +366,8 @@ list(LENGTH pcl_all_components PCL_NB_COMPONENTS)
 
 @PCLCONFIG_OPTIONAL_DEPENDENCIES@
 
+set(pcl_header_only_components cuda_common)
+
 include(FindPackageHandleStandardArgs)
 
 #check if user provided a list of components
@@ -383,14 +389,12 @@ compute_dependencies(PCL_TO_FIND_COMPONENTS)
 
 # compute external dependencies per component
 foreach(component ${PCL_TO_FIND_COMPONENTS})
-  if(NOT PkgConfig_FOUND)
     foreach(opt ${pcl_${component}_opt_dep})
       find_external_library(${component} ${opt} OPTIONAL)
     endforeach(opt)
     foreach(ext ${pcl_${component}_ext_dep})
       find_external_library(${component} ${ext} REQUIRED)
     endforeach(ext) 
-  endif(NOT PkgConfig_FOUND)
 endforeach(component)
 
 foreach(component ${PCL_TO_FIND_COMPONENTS})
@@ -398,12 +402,20 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
   string(TOUPPER "${component}" COMPONENT)
 
   pcl_message(STATUS "looking for PCL_${COMPONENT}")
+
+  string(REGEX REPLACE "^cuda_(.*)$" "\\1" cuda_component "${component}")
+  string(REGEX REPLACE "^gpu_(.*)$" "\\1" gpu_component "${component}") 
   
   find_path(PCL_${COMPONENT}_INCLUDE_DIR
     NAMES pcl/${component}
+          pcl/cuda/${cuda_component} pcl/cuda/${gpu_component} pcl/cuda/${component}
+          pcl/gpu/${cuda_component} pcl/gpu/${gpu_component} pcl/gpu/${component}
     HINTS ${PCL_INCLUDE_DIRS}
           "${PCL_SOURCES_TREE}"
-    PATH_SUFFIXES ${component}/include
+    PATH_SUFFIXES
+          ${component}/include
+          cuda/${cuda_component}/include 
+		  gpu/${gpu_component}/include
     DOC "path to ${component} headers"
     NO_DEFAULT_PATH)
 
@@ -413,30 +425,37 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
     #pcl_message("No include directory found for pcl_${component}.")
   endif(PCL_${COMPONENT}_INCLUDE_DIR)
   
-  find_library(PCL_${COMPONENT}_LIBRARY ${pcl_component}${PCL_RELEASE_SUFFIX}
-    HINTS ${PCL_LIBRARY_DIRS} "${PCL_DIR}/${component}"
-    DOC "path to ${pcl_component} library"
-    NO_DEFAULT_PATH)
-  get_filename_component(${component}_library_path 
-    ${PCL_${COMPONENT}_LIBRARY}
-    PATH)
+  # Skip find_library for header only modules
+  list(FIND pcl_header_only_components ${component} _is_header_only)
+  if(_is_header_only EQUAL -1)
+    find_library(PCL_${COMPONENT}_LIBRARY ${pcl_component}${PCL_RELEASE_SUFFIX}
+      HINTS ${PCL_LIBRARY_DIRS}
+      DOC "path to ${pcl_component} library"
+      NO_DEFAULT_PATH)
+    get_filename_component(${component}_library_path 
+      ${PCL_${COMPONENT}_LIBRARY}
+      PATH)
 
-  find_library(PCL_${COMPONENT}_LIBRARY_DEBUG ${pcl_component}${PCL_DEBUG_SUFFIX}
-    HINTS ${PCL_LIBRARY_DIRS} "${PCL_DIR}/${component}"
-    DOC "path to ${pcl_component} library debug"
-    NO_DEFAULT_PATH)
-  # if only release found let release be debug too
-  # NOTE: this is only for non Makefile sake
-  if(NOT PCL_${COMPONENT}_LIBRARY_DEBUG AND PCL_${COMPONENT}_LIBRARY)
-    set(PCL_${COMPONENT}_LIBRARY_DEBUG ${PCL_${COMPONENT}_LIBRARY})
-  endif(NOT PCL_${COMPONENT}_LIBRARY_DEBUG AND PCL_${COMPONENT}_LIBRARY)
+    find_library(PCL_${COMPONENT}_LIBRARY_DEBUG ${pcl_component}${PCL_DEBUG_SUFFIX}
+      HINTS ${PCL_LIBRARY_DIRS}
+      DOC "path to ${pcl_component} library debug"
+      NO_DEFAULT_PATH)
+    # if only release found let release be debug too
+    # NOTE: this is only for non Makefile sake
+    if(NOT PCL_${COMPONENT}_LIBRARY_DEBUG AND PCL_${COMPONENT}_LIBRARY)
+      set(PCL_${COMPONENT}_LIBRARY_DEBUG ${PCL_${COMPONENT}_LIBRARY})
+    endif(NOT PCL_${COMPONENT}_LIBRARY_DEBUG AND PCL_${COMPONENT}_LIBRARY)
 
-  get_filename_component(${component}_library_path_debug 
-    ${PCL_${COMPONENT}_LIBRARY_DEBUG}
-    PATH)
+    get_filename_component(${component}_library_path_debug 
+      ${PCL_${COMPONENT}_LIBRARY_DEBUG}
+      PATH)
   
-  find_package_handle_standard_args(PCL_${COMPONENT} DEFAULT_MSG
-    PCL_${COMPONENT}_LIBRARY PCL_${COMPONENT}_INCLUDE_DIR)
+    find_package_handle_standard_args(PCL_${COMPONENT} DEFAULT_MSG
+      PCL_${COMPONENT}_LIBRARY PCL_${COMPONENT}_INCLUDE_DIR)
+  else(_is_header_only EQUAL -1)
+    find_package_handle_standard_args(PCL_${COMPONENT} DEFAULT_MSG
+      PCL_${COMPONENT}_INCLUDE_DIR)  
+  endif(_is_header_only EQUAL -1)
   
   if(PCL_${COMPONENT}_FOUND)
     if(NOT "${PCL_${COMPONENT}_INCLUDE_DIRS}" STREQUAL "")
@@ -444,12 +463,14 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
     endif(NOT "${PCL_${COMPONENT}_INCLUDE_DIRS}" STREQUAL "")
     list(APPEND PCL_INCLUDE_DIRS ${PCL_${COMPONENT}_INCLUDE_DIRS})
     mark_as_advanced(PCL_${COMPONENT}_INCLUDE_DIRS)
-    list(APPEND PCL_${COMPONENT}_LIBRARIES optimized ${PCL_${COMPONENT}_LIBRARY} debug ${PCL_${COMPONENT}_LIBRARY_DEBUG})
-    list(APPEND PCL_LIBRARIES ${PCL_${COMPONENT}_LIBRARIES})
-    list(APPEND PCL_DEFINITIONS ${PCL_${COMPONENT}_DEFINITIONS})
-    list(APPEND PCL_LIBRARY_DIRS ${component_library_path})
-    list(APPEND PCL_LIBRARY_DIRS ${component_library_path_debug})
-    mark_as_advanced(PCL_${COMPONENT}_LIBRARY PCL_${COMPONENT}_LIBRARY_DEBUG)
+    if(_is_header_only EQUAL -1)
+      list(APPEND PCL_${COMPONENT}_LIBRARIES optimized ${PCL_${COMPONENT}_LIBRARY} debug ${PCL_${COMPONENT}_LIBRARY_DEBUG})
+      list(APPEND PCL_LIBRARIES ${PCL_${COMPONENT}_LIBRARIES})
+      list(APPEND PCL_DEFINITIONS ${PCL_${COMPONENT}_DEFINITIONS})
+      list(APPEND PCL_LIBRARY_DIRS ${component_library_path})
+      list(APPEND PCL_LIBRARY_DIRS ${component_library_path_debug})
+      mark_as_advanced(PCL_${COMPONENT}_LIBRARY PCL_${COMPONENT}_LIBRARY_DEBUG)
+    endif(_is_header_only EQUAL -1)    
     # Append internal dependencies
     foreach(int_dep ${pcl_${component}_int_dep})
       string(TOUPPER "${int_dep}" INT_DEP)
@@ -470,6 +491,9 @@ endif(NOT "${PCL_INCLUDE_DIRS}" STREQUAL "")
 if(NOT "${PCL_LIBRARY_DIRS}" STREQUAL "")
   list(REMOVE_DUPLICATES PCL_LIBRARY_DIRS)
 endif(NOT "${PCL_LIBRARY_DIRS}" STREQUAL "")
+
+# We need to export march=native for tutorials or user code
+list (APPEND PCL_DEFINITIONS "@SSE_FLAGS@")
 
 if(NOT "${PCL_DEFINITIONS}" STREQUAL "")
   list(REMOVE_DUPLICATES PCL_DEFINITIONS)

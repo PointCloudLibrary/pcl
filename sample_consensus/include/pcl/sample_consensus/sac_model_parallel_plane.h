@@ -94,11 +94,11 @@ namespace pcl
         * \param[in] ax the axis along which we need to search for a plane perpendicular to
         */
       inline void
-      setAxis (const Eigen::Vector3f &ax) { axis_.head<3>() = ax; axis_.normalize ();}
+      setAxis (const Eigen::Vector3f &ax) { axis_ = ax; }
 
       /** \brief Get the axis along which we need to search for a plane perpendicular to. */
       inline Eigen::Vector3f
-      getAxis ()  { return (axis_.head<3>()); }
+      getAxis ()  { return (axis_); }
 
       /** \brief Set the angle epsilon (delta) threshold.
         * \param[in] ea the maximum allowed difference between the plane normal and the given axis.
@@ -151,7 +151,7 @@ namespace pcl
       isModelValid (const Eigen::VectorXf &model_coefficients);
 
       /** \brief The axis along which we need to search for a plane perpendicular to. */
-      Eigen::Vector4f axis_;
+      Eigen::Vector3f axis_;
 
       /** \brief The maximum allowed difference between the plane normal and the given axis. */
       double eps_angle_;

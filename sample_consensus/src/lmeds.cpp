@@ -41,5 +41,5 @@
 #include "pcl/sample_consensus/impl/lmeds.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(LeastMedianSquares, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE(LeastMedianSquares, PCL_XYZ_POINT_TYPES)
 

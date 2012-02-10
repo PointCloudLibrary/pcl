@@ -224,23 +224,18 @@ pcl::SampleConsensusModelPlane<PointT>::optimizeModelCoefficients (
   EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
   Eigen::Vector4f xyz_centroid;
 
-  // Estimate the XYZ centroid
-  compute3DCentroid (*input_, inliers, xyz_centroid);
-  xyz_centroid[3] = 0;
-
-  // Compute the 3x3 covariance matrix
-  computeCovarianceMatrix (*input_, inliers, xyz_centroid, covariance_matrix);
+  computeMeanAndCovarianceMatrix (*input_, inliers, covariance_matrix, xyz_centroid);
 
   // Compute the model coefficients
-  EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
-  EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
-  pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
+  EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value = -1;
+  EIGEN_ALIGN16 Eigen::Vector3f eigen_vector;
+  pcl::eigen33 (covariance_matrix, eigen_value, eigen_vector);
 
   // Hessian form (D = nc . p_plane (centroid here) + p)
   optimized_coefficients.resize (4);
-  optimized_coefficients[0] = eigen_vectors (0, 0);
-  optimized_coefficients[1] = eigen_vectors (1, 0);
-  optimized_coefficients[2] = eigen_vectors (2, 0);
+  optimized_coefficients[0] = eigen_vector [0];
+  optimized_coefficients[1] = eigen_vector [1];
+  optimized_coefficients[2] = eigen_vector [2];
   optimized_coefficients[3] = 0;
   optimized_coefficients[3] = -1 * optimized_coefficients.dot (xyz_centroid);
 }
@@ -292,7 +287,7 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
                          input_->points[inliers[i]].y,
                          input_->points[inliers[i]].z,
                          1);
-      // use normalized coefficients to calculate the scalar projection 
+      // use normalized coefficients to calculate the scalar projection
       float distance_to_plane = tmp_mc.dot (p);
 
       pcl::Vector4fMap pp = projected_points.points[inliers[i]].getVector4fMap ();
@@ -320,7 +315,7 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
                          input_->points[inliers[i]].y,
                          input_->points[inliers[i]].z,
                          1);
-      // use normalized coefficients to calculate the scalar projection 
+      // use normalized coefficients to calculate the scalar projection
       float distance_to_plane = tmp_mc.dot (p);
 
       pcl::Vector4fMap pp = projected_points.points[i].getVector4fMap ();

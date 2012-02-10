@@ -55,6 +55,7 @@ namespace pcl
     class PCL_EXPORTS CloudViewer : boost::noncopyable
     {
       public:
+        typedef pcl::PointCloud<pcl::PointXYZRGBA> ColorACloud;
         typedef pcl::PointCloud<pcl::PointXYZRGB> ColorCloud;
         typedef pcl::PointCloud<pcl::PointXYZI> GrayCloud;
         typedef pcl::PointCloud<pcl::PointXYZ> MonochromeCloud;
@@ -71,24 +72,31 @@ namespace pcl
         ~CloudViewer ();
 
         /** \brief Show a cloud, with an optional key for multiple clouds.
-         * \param cloud RGB point cloud
-         * \param cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
-         */
+          * \param[in] cloud RGB point cloud
+          * \param[in] cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
+          */
         void
         showCloud (const ColorCloud::ConstPtr &cloud, const std::string& cloudname = "cloud");
 
         /** \brief Show a cloud, with an optional key for multiple clouds.
-         *  \param cloud XYZI point cloud
-         *  \param cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
-         */
+          * \param[in] cloud RGB point cloud
+          * \param[in] cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
+          */
+        void
+        showCloud (const ColorACloud::ConstPtr &cloud, const std::string& cloudname = "cloud");
+
+        /** \brief Show a cloud, with an optional key for multiple clouds.
+          * \param[in] cloud XYZI point cloud
+          * \param[in] cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
+          */
         void
         showCloud (const GrayCloud::ConstPtr &cloud, const std::string& cloudname = "cloud");
 
 
         /** \brief Show a cloud, with an optional key for multiple clouds.
-         *  \param cloud XYZ point cloud
-         *  \param cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
-         */
+          * \param[in] cloud XYZ point cloud
+          * \param[in] cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
+          */
         void
         showCloud (const MonochromeCloud::ConstPtr &cloud, const std::string& cloudname = "cloud");
         

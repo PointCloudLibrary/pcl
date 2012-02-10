@@ -66,18 +66,25 @@ namespace pcl
     class Octree2BufBase
       {
 
-        friend class OctreeNodeIterator<DataT, LeafT, Octree2BufBase> ;
+        // iterators are friends
+        friend class OctreeIteratorBase<DataT, LeafT, Octree2BufBase> ;
+        friend class OctreeDepthFirstIterator<DataT, LeafT, Octree2BufBase> ;
+        friend class OctreeBreadthFirstIterator<DataT, LeafT, Octree2BufBase> ;
         friend class OctreeLeafNodeIterator<DataT, LeafT, Octree2BufBase> ;
 
       public:
 
         // Octree iterators
-        typedef OctreeNodeIterator<DataT, LeafT, Octree2BufBase> Iterator;
-        typedef const OctreeNodeIterator<DataT, LeafT, Octree2BufBase> ConstIterator;
+        typedef OctreeDepthFirstIterator<DataT, LeafT, Octree2BufBase> Iterator;
+        typedef const OctreeDepthFirstIterator<DataT, LeafT, Octree2BufBase> ConstIterator;
 
-        // Octree iterators
         typedef OctreeLeafNodeIterator<DataT, LeafT, Octree2BufBase> LeafNodeIterator;
         typedef const OctreeLeafNodeIterator<DataT, LeafT, Octree2BufBase> ConstLeafNodeIterator;
+
+        typedef OctreeDepthFirstIterator<DataT, LeafT, Octree2BufBase> DepthFirstIterator;
+        typedef const OctreeDepthFirstIterator<DataT, LeafT, Octree2BufBase> ConstDepthFirstIterator;
+        typedef OctreeBreadthFirstIterator<DataT, LeafT, Octree2BufBase> BreadthFirstIterator;
+        typedef const OctreeBreadthFirstIterator<DataT, LeafT, Octree2BufBase> ConstBreadthFirstIterator;
 
         /** \brief Empty constructor. */
         Octree2BufBase ();
@@ -116,7 +123,7 @@ namespace pcl
          *  \return depth_arg: maximum depth of octree
          * */
         inline unsigned int
-        getTreeDepth ()
+        getTreeDepth () const
         {
           return this->octreeDepth_;
         }

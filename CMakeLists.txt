@@ -25,40 +25,70 @@ if(WIN32)
   endif()
 endif()
 
+# ---[ special maintainer mode
+SET(CMAKE_CXX_FLAGS_MAINTAINER "-pedantic -Wabi -Wextra -Weffc++" CACHE STRING
+    "Flags used by the C++ compiler during maintainer builds."
+    FORCE)
+SET(CMAKE_C_FLAGS_MAINTAINER "-pedantic -Wabi -Wextra -Weffc++" CACHE STRING
+    "Flags used by the C compiler during maintainer builds."
+    FORCE)
+SET(CMAKE_EXE_LINKER_FLAGS_MAINTAINER
+    "-Wl,--warn-unresolved-symbols,--warn-once" CACHE STRING
+    "Flags used for linking binaries during maintainer builds."
+    FORCE)
+SET(CMAKE_SHARED_LINKER_FLAGS_MAINTAINER
+    "-Wl,--warn-unresolved-symbols,--warn-once" CACHE STRING
+    "Flags used by the shared libraries linker during maintainer builds."
+    FORCE)
+MARK_AS_ADVANCED(
+    CMAKE_CXX_FLAGS_MAINTAINER
+    CMAKE_C_FLAGS_MAINTAINER
+    CMAKE_EXE_LINKER_FLAGS_MAINTAINER
+    CMAKE_SHARED_LINKER_FLAGS_MAINTAINER )
+# Update the documentation string of CMAKE_BUILD_TYPE for GUIs
+SET(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
+    "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel Maintainer."
+    FORCE)
+
 # ---[ Android check
 if (ANDROID_NDK)
   set (PCL_SHARED_LIBS OFF)
   message ("PCL shared libs on Android must be: ${PCL_SHARED_LIBS}")
 endif()
 
+include(${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake)
 include(${PCL_SOURCE_DIR}/cmake/pcl_options.cmake)
 
 # ---[ Unix/Darwin/Windows specific flags
-if(UNIX OR APPLE)
-  add_definitions("-Wall -Wl,--no-undefined -fno-strict-aliasing -pthread")
-  if(CMAKE_COMPILER_IS_GNUCXX)
-    add_definitions("-Wno-unknown-pragmas")
-  endif(CMAKE_COMPILER_IS_GNUCXX)
-else(UNIX OR APPLE)
-  if(MSVC)
-    add_definitions ("-W0 -DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS /bigobj -DNOMINMAX")
-    if(MSVC90 OR MSVC10)
-      add_definitions("/MP")
-    endif(MSVC90 OR MSVC10)
-  else(MSVC)
-    add_definitions("-Wall -Wl,--no-undefined -fno-strict-aliasing")
+if(CMAKE_COMPILER_IS_GNUCXX)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-unknown-pragmas -fno-strict-aliasing -pthread")
+  if(WIN32)
     if(PCL_SHARED_LIBS)
-      add_definitions("-Wl,--export-all-symbols -Wl,--enable-auto-import")
+      SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--export-all-symbols -Wl,--enable-auto-import")
     else(PCL_SHARED_LIBS)
       add_definitions("-DBOOST_LIB_DIAGNOSTIC -DBOOST_THREAD_USE_LIB")
     endif(PCL_SHARED_LIBS)
-  endif(MSVC)
+  endif()
 endif()
+
+if(MSVC)
+  add_definitions ("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -DNOMINMAX /fp:fast")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W0 /bigobj /EHsc")
+  if(MSVC90 OR MSVC10)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+  endif()
+endif()
+
+# check for SSE flags
+include(${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
+PCL_CHECK_FOR_SSE()
+
 if (__COMPILER_PATHSCALE)
-  add_definitions("-Wno-uninitialized -zerouv -pthread -mp")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-uninitialized -zerouv -pthread -mp")
 endif()
+
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  add_definitions("-std=gnu++0x")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x")
 endif()
 
 # ---[ Project folders
@@ -117,39 +147,45 @@ SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 ENDIF("${is_system_dir}" STREQUAL "-1")
 
 ### ---[ Find universal dependencies
-# SSE flags
-include(${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
-PCL_CHECK_FOR_SSE()
+FIND_PACKAGE(OpenMP)
+if(OPENMP_FOUND)
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
 # Boost (required)
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake)
 # Eigen (required)
 find_package(Eigen REQUIRED)
-include_directories(${EIGEN_INCLUDE_DIRS})
+include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
 add_definitions(-DEIGEN_USE_NEW_STDVECTOR
                 -DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
 # FLANN (required)
 find_package(Flann REQUIRED)
-include_directories(${FLANN_INCLUDE_DIRS})
-# OpenMP
-include(${PCL_SOURCE_DIR}/cmake/pcl_openmp.cmake)
+include_directories(SYSTEM ${FLANN_INCLUDE_DIRS})
 # OpenNI
 find_package(OpenNI)
 # Qhull
 find_package(Qhull)
 # Find ROS
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_ros.cmake)
+# Find QT4
+find_package(Qt4)
+if (QT4_FOUND)
+  include(${QT_USE_FILE})
+endif (QT4_FOUND)
 # Find VTK
 find_package(VTK)
 if(VTK_FOUND)
   set(VTK_FOUND TRUE)
+  find_package (QVTK)
   message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, lib: ${VTK_LIBRARY_DIRS})")
   link_directories(${VTK_LIBRARY_DIRS})
   set(HAVE_VTK ON)
-endif()
-#Find MPI
+endif(VTK_FOUND)
+# Find MPI
 find_package(MPI)
 if(MPI_CXX_FOUND)
-  include_directories(${MPI_INCLUDE_PATH})
+  include_directories(SYSTEM ${MPI_INCLUDE_PATH})
 endif(MPI_CXX_FOUND)
 #Find Doxygen and html help compiler if any
 find_package(Doxygen)
@@ -166,6 +202,9 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 
 ### ---[ Set up for tests
 include(${PCL_SOURCE_DIR}/cmake/pcl_tests.cmake)
+
+### ---[ Set up for examples
+#include(${PCL_SOURCE_DIR}/cmake/pcl_examples.cmake)
 
 ### ---[ Add the libraries subdirectories
 include(${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake)

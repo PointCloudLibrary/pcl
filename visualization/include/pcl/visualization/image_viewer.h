@@ -74,7 +74,15 @@ namespace pcl
         /** \brief Destructor. */
         virtual ~ImageViewer ();
        
-        /** \brief Show a 2D image on screen.
+        /** \brief Show a monochrome 2D image on screen.
+          * \param[in] data the input data representing the image
+          * \param[in] width the width of the image
+          * \param[in] height the height of the image
+          */
+        void 
+        showMonoImage (const unsigned char* data, unsigned width, unsigned height);
+
+        /** \brief Show a 2D RGB image on screen.
           * \param[in] data the input data representing the image
           * \param[in] width the width of the image
           * \param[in] height the height of the image
@@ -87,6 +95,12 @@ namespace pcl
           */
         void 
         showRGBImage (const pcl::PointCloud<pcl::PointXYZRGB> &data);
+
+        /** \brief Show a 2D image on screen, obtained from the RGB channel of a PointXYZRGBA-type point cloud.
+          * \param[in] data the input data representing the PointXYZRGBA point cloud 
+          */
+        void 
+        showRGBImage (const pcl::PointCloud<pcl::PointXYZRGBA> &data);
 
         /** \brief Show a 2D image (float) on screen.
           * \param[in] data the input data representing the image in float format

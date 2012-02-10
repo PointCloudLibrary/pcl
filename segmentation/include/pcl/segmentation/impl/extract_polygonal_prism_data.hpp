@@ -51,28 +51,24 @@ pcl::isPointIn2DPolygon (const PointT &point, const pcl::PointCloud<PointT> &pol
   EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
   Eigen::Vector4f xyz_centroid;
 
-  // Estimate the XYZ centroid
-  compute3DCentroid (polygon, xyz_centroid);
-
-  // Compute the 3x3 covariance matrix
-  computeCovarianceMatrix (polygon, xyz_centroid, covariance_matrix);
+  computeMeanAndCovarianceMatrix (polygon, covariance_matrix, xyz_centroid);
 
   // Compute the model coefficients
-  EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
-  EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
-  eigen33 (covariance_matrix, eigen_vectors, eigen_values);
+  EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value = -1;
+  EIGEN_ALIGN16 Eigen::Vector3f eigen_vector;
+  eigen33 (covariance_matrix, eigen_value, eigen_vector);
 
-  model_coefficients[0] = eigen_vectors (0, 0);
-  model_coefficients[1] = eigen_vectors (1, 0);
-  model_coefficients[2] = eigen_vectors (2, 0);
+  model_coefficients[0] = eigen_vector [0];
+  model_coefficients[1] = eigen_vector [1];
+  model_coefficients[2] = eigen_vector [2];
   model_coefficients[3] = 0;
 
   // Hessian form (D = nc . p_plane (centroid here) + p)
   model_coefficients[3] = -1 * model_coefficients.dot (xyz_centroid);
 
-  float distance_to_plane = model_coefficients[0] * point.x + 
-                            model_coefficients[1] * point.y + 
-                            model_coefficients[2] * point.z + 
+  float distance_to_plane = model_coefficients[0] * point.x +
+                            model_coefficients[1] * point.y +
+                            model_coefficients[2] * point.z +
                             model_coefficients[3];
   PointT ppoint;
   // Calculate the projection of the point on the plane
@@ -151,7 +147,7 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
 {
   output.header = input_->header;
 
-  if (!initCompute ()) 
+  if (!initCompute ())
   {
     output.indices.clear ();
     return;
@@ -169,20 +165,16 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
   EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
   Eigen::Vector4f xyz_centroid;
 
-  // Estimate the XYZ centroid
-  compute3DCentroid (*planar_hull_, xyz_centroid);
-
-  // Compute the 3x3 covariance matrix
-  computeCovarianceMatrix (*planar_hull_, xyz_centroid, covariance_matrix);
+  computeMeanAndCovarianceMatrix (*planar_hull_, covariance_matrix, xyz_centroid);
 
   // Compute the model coefficients
-  EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
-  EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
-  eigen33 (covariance_matrix, eigen_vectors, eigen_values);
+  EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value  = -1;
+  EIGEN_ALIGN16 Eigen::Vector3f eigen_vector;
+  eigen33 (covariance_matrix, eigen_value, eigen_vector);
 
-  model_coefficients[0] = eigen_vectors (0, 0);
-  model_coefficients[1] = eigen_vectors (1, 0);
-  model_coefficients[2] = eigen_vectors (2, 0);
+  model_coefficients[0] = eigen_vector [0];
+  model_coefficients[1] = eigen_vector [1];
+  model_coefficients[2] = eigen_vector [2];
   model_coefficients[3] = 0;
 
   // Hessian form (D = nc . p_plane (centroid here) + p)
@@ -197,13 +189,13 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
   float cos_theta = vp.dot (model_coefficients);
   // Flip the plane normal
   if (cos_theta < 0)
-  {                                                                
+  {
     model_coefficients *= -1;
     model_coefficients[3] = 0;
     // Hessian form (D = nc . p_plane (centroid here) + p)
     model_coefficients[3] = -1 * (model_coefficients.dot (planar_hull_->points[0].getVector4fMap ()));
   }
-    
+
   // Project all points
   PointCloud projected_points;
   SampleConsensusModelPlane<PointT> sacmodel (input_);
