@@ -1,9 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
- *  
+ *  Copyright (c) 2012, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,43 +31,48 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: normal_estimation.cpp 1032 2011-05-18 22:43:27Z marton $
+ * $Id: marching_cubes_reconstruction.cpp 4315 2012-02-08 12:45:30Z aichim $
  *
  */
 
+#include <sensor_msgs/PointCloud2.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_io.h>
+#include <pcl/surface/marching_cubes_greedy.h>
+#include <pcl/surface/marching_cubes_greedy_dot.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
-#include <pcl/surface/gp3.h>
 
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
 
-double default_mu = 0.0;
-double default_radius = 0.0;
+double      default_leaf_size = 0.01;
+double      default_iso_level = 0;
+int        default_use_dot = 1;
 
 void
 printHelp (int argc, char **argv)
 {
   print_error ("Syntax is: %s input.pcd output.vtk <options>\n", argv[0]);
   print_info ("  where options are:\n");
-  print_info ("                     -radius X = use a radius of Xm around each point to determine the neighborhood (default: "); 
-  print_value ("%f", default_radius); print_info (")\n");
-  print_info ("                     -mu X     = set the multipler of the nearest neighbor distance to obtain the final search radius (default: "); 
-  print_value ("%f", default_mu); print_info (")\n");
+  print_info ("                     -leaf X    = the voxel size (default: ");
+  print_value ("%f", default_leaf_size); print_info (")\n");
+  print_info ("                     -iso X     = the iso level (default: ");
+  print_value ("%f", default_iso_level); print_info (")\n");
+  print_info ("                     -dot X     = use the voxelization algorithm combined with a dot product (i.e. MarchingCubesGreedy vs. MarchingCubesGreedyDot) (default: ");
+  print_value ("%d", default_use_dot); print_info (")\n");
 }
 
 bool
-loadCloud (const std::string &filename, PointCloud<PointNormal> &cloud)
+loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
 
   tt.tic ();
-  if (loadPCDFile<PointNormal> (filename, cloud) < 0)
+  if (loadPCDFile (filename, cloud) < 0)
     return (false);
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
   print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (cloud).c_str ());
@@ -78,40 +81,34 @@ loadCloud (const std::string &filename, PointCloud<PointNormal> &cloud)
 }
 
 void
-compute (const PointCloud<PointNormal>::Ptr &input, pcl::PolygonMesh &output,
-         double mu, double radius)
+compute (const sensor_msgs::PointCloud2::ConstPtr &input, PolygonMesh &output,
+         float leaf_size, float iso_level, int use_dot)
 {
-  // Estimate
+  PointCloud<PointNormal>::Ptr xyz_cloud (new pcl::PointCloud<PointNormal> ());
+  fromROSMsg (*input, *xyz_cloud);
+
+  boost::shared_ptr<MarchingCubes<PointNormal> > marching_cubes;
+  if (use_dot)
+    marching_cubes.reset (new MarchingCubesGreedyDot<PointNormal> ());
+  else
+    marching_cubes.reset (new MarchingCubesGreedy<PointNormal> ());
+
+  marching_cubes->setLeafSize (leaf_size);
+  marching_cubes->setIsoLevel (iso_level);
+  marching_cubes->setInputCloud (xyz_cloud);
+
+
   TicToc tt;
   tt.tic ();
-  
-  print_highlight (stderr, "Computing ");
 
+  print_highlight ("Computing ");
+  marching_cubes->reconstruct (output);
 
-  PointCloud<PointNormal>::Ptr cloud (new PointCloud<PointNormal> ());
-  for (size_t i = 0; i < cloud->size (); ++i)
-    if (pcl_isfinite (input->points[i].x))
-      cloud->push_back (input->points[i]);
-
-  cloud->width = cloud->size ();
-  cloud->height = 1;
-  cloud->is_dense = false;
-
-
-  GreedyProjectionTriangulation<PointNormal> gpt;
-  gpt.setSearchMethod (pcl::search::KdTree<pcl::PointNormal>::Ptr (new pcl::search::KdTree<pcl::PointNormal>));
-  gpt.setInputCloud (cloud);
-  gpt.setSearchRadius (radius);
-  gpt.setMu (mu);
-
-
-  gpt.reconstruct (output);
-
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%zu", output.polygons.size ()); print_info (" polygons]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms]\n");
 }
 
 void
-saveCloud (const std::string &filename, const pcl::PolygonMesh &output)
+saveCloud (const std::string &filename, const PolygonMesh &output)
 {
   TicToc tt;
   tt.tic ();
@@ -119,14 +116,14 @@ saveCloud (const std::string &filename, const pcl::PolygonMesh &output)
   print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
   saveVTKFile (filename, output);
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%zu", output.polygons.size ()); print_info (" polygons]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms]\n");
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  print_info ("Perform surface triangulation using pcl::GreedyProjectionTriangulation. For more information, use: %s -h\n", argv[0]);
+  print_info ("Compute the surface reconstruction of a point cloud using the marching cubes algorithm (pcl::surface::MarchingCubesGreedy or pcl::surface::MarchingCubesGreedyDot. For more information, use: %s -h\n", argv[0]);
 
   if (argc < 3)
   {
@@ -135,12 +132,14 @@ main (int argc, char** argv)
   }
 
   // Parse the command line arguments for .pcd files
-  std::vector<int> pcd_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
+  std::vector<int> pcd_file_indices;
+  pcd_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
   if (pcd_file_indices.size () != 1)
   {
-    print_error ("Need one input PCD file to continue.\n");
+    print_error ("Need one input PCD file and one output PCD file to continue.\n");
     return (-1);
   }
+
   std::vector<int> vtk_file_indices = parse_file_extension_argument (argc, argv, ".vtk");
   if (vtk_file_indices.size () != 1)
   {
@@ -148,20 +147,31 @@ main (int argc, char** argv)
     return (-1);
   }
 
+
   // Command line parsing
-  double mu = default_mu;
-  double radius = default_radius;
-  parse_argument (argc, argv, "-mu", mu);
-  parse_argument (argc, argv, "-radius", radius);
+  double leaf_size = default_leaf_size;
+  parse_argument (argc, argv, "-leaf", leaf_size);
+  print_info ("Using a leaf size of: "); print_value ("%f\n", leaf_size);
+
+  double iso_level = default_iso_level;
+  parse_argument (argc, argv, "-iso", iso_level);
+  print_info ("Setting an iso level of: "); print_value ("%f\n", iso_level);
+
+  int use_dot = default_use_dot;
+  parse_argument (argc, argv, "-dot", use_dot);
+  if (use_dot)
+    print_info ("Selected algorithm: MarchingCubesGreedyDot\n");
+  else
+    print_info ("Selected algorithm: MarchingCubesGreedy\n");
 
   // Load the first file
-  PointCloud<PointNormal>::Ptr cloud (new PointCloud<PointNormal>);
-  if (!loadCloud (argv[pcd_file_indices[0]], *cloud)) 
+  sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
+  if (!loadCloud (argv[pcd_file_indices[0]], *cloud))
     return (-1);
 
-  // Perform the surface triangulation
-  pcl::PolygonMesh output;
-  compute (cloud, output, mu, radius);
+  // Apply the marching cubes algorithm
+  PolygonMesh output;
+  compute (cloud, output, leaf_size, iso_level, use_dot);
 
   // Save into the second file
   saveCloud (argv[vtk_file_indices[0]], output);

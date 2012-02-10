@@ -96,7 +96,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
 
   NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
   ne.setInputCloud (xyz);
-  //ne.setSearchMethod (pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr (new pcl::KdTreeFLANN<pcl::PointXYZ>));
+//  ne.setSearchMethod (pcl::search::KdTree<pcl::PointXYZ>::Ptr (new pcl::search::KdTree<pcl::PointXYZ>));
   ne.setKSearch (k);
   ne.setRadiusSearch (radius);
   
@@ -119,7 +119,7 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
 
   print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
   
-  pcl::io::savePCDFile (filename, output, translation, orientation, true);
+  pcl::io::savePCDFile (filename, output, translation, orientation, false);
   
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }
