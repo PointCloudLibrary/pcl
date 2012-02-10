@@ -1,9 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
- *
+ *  Copyright (c) 2010, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,14 +30,23 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *
- * $Id$
- *
  */
 
-#ifndef PCL_ROS_FOR_EACH_TYPE_H_
-#define PCL_ROS_FOR_EACH_TYPE_H_
+#ifndef PCL_EXPORTS_H_
+#define PCL_EXPORTS_H_
 
-#include <pcl/for_each_type.h>
+// This header is created to include to NVCC compiled sources.
+// Header 'pcl_macros' is not suitable since it inludes <Eigen/Core>,
+// which can't be eaten by nvcc (it's too weak)
 
-#endif  //#ifndef PCL_ROS_FOR_EACH_TYPE_H_
+#if defined WIN32 || defined _WIN32 || defined WINCE || defined __MINGW32__
+    #ifdef PCLAPI_EXPORTS
+        #define PCL_EXPORTS __declspec(dllexport)
+    #else
+        #define PCL_EXPORTS
+    #endif
+#else
+    #define PCL_EXPORTS
+#endif
+
+#endif  //#ifndef PCL_EXPORTS_H_
