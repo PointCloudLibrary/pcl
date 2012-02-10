@@ -1,0 +1,77 @@
+#ifndef PCL_TRACKING_IMPL_KLD_ADAPTIVE_PARTICLE_OMP_FILTER_H_
+#define PCL_TRACKING_IMPL_KLD_ADAPTIVE_PARTICLE_OMP_FILTER_H_
+
+template <typename PointInT, typename StateT> void
+pcl::tracking::KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight ()
+{
+  if (!use_normal_)
+  {
+#pragma omp parallel for schedule (dynamic, threads_)
+    for (int i = 0; i < particle_num_; i++)
+      computeTransformedPointCloudWithoutNormal (particles_->points[i], *transed_reference_vector_[i]);
+    
+    PointCloudInPtr coherence_input (new PointCloudIn);
+    cropInputPointCloud (input_, *coherence_input);
+    if (change_counter_ == 0)
+    {
+      // test change detector
+      if (!use_change_detector_ || testChangeDetection (coherence_input))
+      {
+        changed_ = true;
+        change_counter_ = change_detector_interval_;
+        coherence_->setTargetCloud (coherence_input);
+        coherence_->initCompute ();
+#pragma omp parallel for schedule (dynamic, threads_)
+        for (int i = 0; i < particle_num_; i++)
+        {
+          IndicesPtr indices;
+          coherence_->compute (transed_reference_vector_[i], indices, particles_->points[i].weight);
+        }
+      }
+      else
+        changed_ = false;
+    }
+    else
+    {
+      --change_counter_;
+      coherence_->setTargetCloud (coherence_input);
+      coherence_->initCompute ();
+#pragma omp parallel for schedule (dynamic, threads_)
+      for (int i = 0; i < particle_num_; i++)
+      {
+        IndicesPtr indices;
+        coherence_->compute (transed_reference_vector_[i], indices, particles_->points[i].weight);
+      }
+    }
+  }
+  else
+  {
+    std::vector<IndicesPtr> indices_list (particle_num_);
+    for (int i = 0; i < particle_num_; i++)
+    {
+      indices_list[i] = IndicesPtr (new std::vector<int>);
+    }
+#pragma omp parallel for schedule (dynamic, threads_)
+    for (int i = 0; i < particle_num_; i++)
+    {
+      computeTransformedPointCloudWithNormal (particles_->points[i], *indices_list[i], *transed_reference_vector_[i]);
+    }
+    
+    PointCloudInPtr coherence_input (new PointCloudIn);
+    cropInputPointCloud (input_, *coherence_input);
+    
+    coherence_->setTargetCloud (coherence_input);
+    coherence_->initCompute ();
+#pragma omp parallel for schedule (dynamic, threads_)
+    for (int i = 0; i < particle_num_; i++)
+    {
+      coherence_->compute (transed_reference_vector_[i], indices_list[i], particles_->points[i].weight);
+    }
+  }
+  
+  normalizeWeight ();
+}
+
+#define PCL_INSTANTIATE_KLDAdaptiveParticleFilterOMPTracker(T,ST) template class PCL_EXPORTS pcl::tracking::KLDAdaptiveParticleFilterOMPTracker<T,ST>;
+
+#endif
