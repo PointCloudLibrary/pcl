@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: mls_omp.cpp 3388 2011-12-05 05:17:31Z svn $
+ * $Id: mls_omp.cpp 4094 2012-01-31 04:56:24Z rusu $
  *
  */
 
@@ -43,4 +43,4 @@
 #include "pcl/surface/impl/mls_omp.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(MovingLeastSquaresOMP, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES));
+PCL_INSTANTIATE_PRODUCT(MovingLeastSquaresOMP, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))

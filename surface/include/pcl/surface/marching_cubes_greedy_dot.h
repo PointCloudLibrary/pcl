@@ -40,7 +40,6 @@
 
 namespace pcl
 {
-
   /** \brief The marching cubes surface reconstruction algorithm, using a "greedy" voxelization algorithm combined with a dot product, to remove the double surface effect
     * \author Gregory Long
     * \ingroup surface
@@ -72,16 +71,14 @@ namespace pcl
         dp_threshold_ = thresh;
       }
 
-    protected:
-
     private:
-
       /** \brief Convert the point cloud into voxel data. */
       void
       voxelizeData ();
 
       /** \brief Theshold value for whether to skip the voxel.  Typically set to 0.*/
       float dp_threshold_;
+
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };

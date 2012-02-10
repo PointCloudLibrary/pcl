@@ -113,12 +113,25 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
   fringe_queue_.clear ();
   int fqIdx = 0; // current fringe's index in the queue to be processed
 
-  // Saving coordinates
+  // Avoiding NaN coordinates if needed
+  if (!input_->is_dense)
+  {
+    // Skip invalid points from the indices list
+    for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
+      if (!pcl_isfinite (input_->points[*it].x) ||
+          !pcl_isfinite (input_->points[*it].y) ||
+          !pcl_isfinite (input_->points[*it].z))
+        state_[*it] = NONE;
+  }
+
+  // Saving coordinates and point to index mapping
   coords_.clear ();
   coords_.reserve (indices_->size ());
+  std::vector<int> point2index (input_->points.size (), -1);
   for (size_t cp = 0; cp < indices_->size (); ++cp)
   {
     coords_.push_back(input_->points[(*indices_)[cp]].getVector3fMap());
+    point2index[(*indices_)[cp]] = cp;
   }
 
   // Initializing
@@ -139,8 +152,17 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
 
       // creating starting triangle
       //searchForNeighbors ((*indices_)[R_], nnIdx, sqrDists);
-      tree_->nearestKSearch ((*indices_)[R_], nnn_, nnIdx, sqrDists);
+      //tree_->nearestKSearch (input_->points[(*indices_)[R_]], nnn_, nnIdx, sqrDists);
+      tree_->nearestKSearch (indices_->at (R_), nnn_, nnIdx, sqrDists);
       double sqr_dist_threshold = (std::min)(sqr_max_edge, sqr_mu * sqrDists[1]);
+
+      // Search tree returns indices into the original cloud, but we are working with indices. TODO: make that optional!
+      for (int i = 1; i < nnn_; i++)
+      {
+        //if (point2index[nnIdx[i]] == -1)
+        //  std::cerr << R_ << " [" << indices_->at (R_) << "] " << i << ": " << nnIdx[i] << " / " << point2index[nnIdx[i]] << std::endl;
+        nnIdx[i] = point2index[nnIdx[i]];
+      }
 
       // Get the normal estimate at the current point 
       const Eigen::Vector3f nc = input_->points[(*indices_)[R_]].getNormalVector3fMap ();
@@ -168,6 +190,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         angles_[i].index = nnIdx[i];
         if (
             (state_[nnIdx[i]] == COMPLETED) || (state_[nnIdx[i]] == BOUNDARY)
+            || (state_[nnIdx[i]] == NONE) || (nnIdx[i] == -1) /// NOTE: discarding NaN points and those that are not in indices_
             || (sqrDists[i] > sqr_dist_threshold)
            )
           angles_[i].visible = false;
@@ -286,7 +309,16 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         continue;
       }
       //searchForNeighbors ((*indices_)[R_], nnIdx, sqrDists);
-      tree_->nearestKSearch ((*indices_)[R_], nnn_, nnIdx, sqrDists);
+      //tree_->nearestKSearch (input_->points[(*indices_)[R_]], nnn_, nnIdx, sqrDists);
+      tree_->nearestKSearch (indices_->at (R_), nnn_, nnIdx, sqrDists);
+
+      // Search tree returns indices into the original cloud, but we are working with indices TODO: make that optional!
+      for (int i = 1; i < nnn_; i++)
+      {
+        //if (point2index[nnIdx[i]] == -1)
+        //  std::cerr << R_ << " [" << indices_->at (R_) << "] " << i << ": " << nnIdx[i] << " / " << point2index[nnIdx[i]] << std::endl;
+        nnIdx[i] = point2index[nnIdx[i]];
+      }
 
       // Locating FFN and SFN to adapt distance threshold
       double sqr_source_dist = (coords_[R_] - coords_[source_[R_]]).squaredNorm ();
@@ -337,6 +369,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         angles_[i].nnIndex = i;
         if (
             (state_[nnIdx[i]] == COMPLETED) || (state_[nnIdx[i]] == BOUNDARY)
+            || (state_[nnIdx[i]] == NONE) || (nnIdx[i] == -1) /// NOTE: discarding NaN points and those that are not in indices_
             || (sqrDists[i] > sqr_dist_threshold)
            )
           angles_[i].visible = false;
@@ -345,7 +378,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         if ((ffn_[R_] == nnIdx[i]) || (sfn_[R_] == nnIdx[i]))
           angles_[i].visible = true;
         bool same_side = true;
-        const Eigen::Vector3f neighbor_normal = input_->points[(*indices_)[nnIdx[i]]].getNormalVector3fMap ();
+        const Eigen::Vector3f neighbor_normal = input_->points[(*indices_)[nnIdx[i]]].getNormalVector3fMap (); /// NOTE: nnIdx was reset
         double cosine = nc.dot (neighbor_normal);
         if (cosine > 1) cosine = 1;
         if (cosine < -1) cosine = -1;
@@ -891,7 +924,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
           if (gaps[*(it-1)])
           {
             if (is_current_free_)
-              state_[current_index_] = NONE;
+              state_[current_index_] = NONE; /// TODO: document!
           }
 
           else // (gaps[*it]) && ^(gaps[*(it-1)])

@@ -60,7 +60,7 @@ pcl::OrganizedFastMesh<PointInT>::performReconstruction (pcl::PolygonMesh &outpu
   // depending on triangle_pixel_size)
   // avoid to do that here (only needed for ASCII mesh file output, e.g., in vtk files
   for (unsigned int i = 0; i < input_->points.size (); ++i)
-    if (!hasValidXYZ (input_->points[i]))
+    if (!isFinite (input_->points[i]))
       resetPointData (i, output, 0.0f, x_idx, y_idx, z_idx);
 }
 
@@ -108,7 +108,7 @@ pcl::OrganizedFastMesh<PointInT>::makeQuadMesh (std::vector<pcl::Vertices>& poly
     index_down_right = i + x_big_incr;
 
     // Go over the columns
-    for (int x = 0; x < last_column; x += triangle_pixel_size_, 
+    for (int x = 0; x < last_column; x += triangle_pixel_size_,
                                      i += triangle_pixel_size_,
                                      index_right += triangle_pixel_size_,
                                      index_down += triangle_pixel_size_,
@@ -145,15 +145,15 @@ pcl::OrganizedFastMesh<PointInT>::makeRightCutMesh (std::vector<pcl::Vertices>& 
     index_down_right = i + x_big_incr;
 
     // Go over the columns
-    for (int x = 0; x < last_column; x += triangle_pixel_size_, 
+    for (int x = 0; x < last_column; x += triangle_pixel_size_,
                                      i += triangle_pixel_size_,
                                      index_right += triangle_pixel_size_,
                                      index_down += triangle_pixel_size_,
                                      index_down_right += triangle_pixel_size_)
     {
-      if (isValidTriangle (i, index_right, index_down_right))
-        if (store_shadowed_faces_ || !isShadowedTriangle (i, index_right, index_down_right))
-          addTriangle (i, index_right, index_down_right, idx++, polygons);
+      if (isValidTriangle (i, index_down_right, index_right))
+        if (store_shadowed_faces_ || !isShadowedTriangle (i, index_down_right, index_right))
+          addTriangle (i, index_down_right, index_right, idx++, polygons);
 
       if (isValidTriangle (i, index_down, index_down_right))
         if (store_shadowed_faces_ || !isShadowedTriangle (i, index_down, index_down_right))
@@ -186,15 +186,15 @@ pcl::OrganizedFastMesh<PointInT>::makeLeftCutMesh (std::vector<pcl::Vertices>& p
     index_down_right = i + x_big_incr;
 
     // Go over the columns
-    for (int x = 0; x < last_column; x += triangle_pixel_size_, 
+    for (int x = 0; x < last_column; x += triangle_pixel_size_,
                                      i += triangle_pixel_size_,
                                      index_right += triangle_pixel_size_,
                                      index_down += triangle_pixel_size_,
                                      index_down_right += triangle_pixel_size_)
     {
-      if (isValidTriangle (i, index_right, index_down))
-        if (store_shadowed_faces_ || !isShadowedTriangle (i, index_right, index_down))
-          addTriangle (i, index_right, index_down, idx++, polygons);
+      if (isValidTriangle (i, index_down, index_right))
+        if (store_shadowed_faces_ || !isShadowedTriangle (i, index_down, index_right))
+          addTriangle (i, index_down, index_right, idx++, polygons);
 
       if (isValidTriangle (index_right, index_down, index_down_right))
         if (store_shadowed_faces_ || !isShadowedTriangle (index_right, index_down, index_down_right))
@@ -227,15 +227,15 @@ pcl::OrganizedFastMesh<PointInT>::makeAdaptiveCutMesh (std::vector<pcl::Vertices
     index_down_right = i + x_big_incr;
 
     // Go over the columns
-    for (int x = 0; x < last_column; x += triangle_pixel_size_, 
+    for (int x = 0; x < last_column; x += triangle_pixel_size_,
                                      i += triangle_pixel_size_,
                                      index_right += triangle_pixel_size_,
                                      index_down += triangle_pixel_size_,
                                      index_down_right += triangle_pixel_size_)
     {
-      const bool right_cut_upper = isValidTriangle (i, index_right, index_down_right);
+      const bool right_cut_upper = isValidTriangle (i, index_down_right, index_right);
       const bool right_cut_lower = isValidTriangle (i, index_down, index_down_right);
-      const bool left_cut_upper = isValidTriangle (i, index_right, index_down);
+      const bool left_cut_upper = isValidTriangle (i, index_down, index_right);
       const bool left_cut_lower = isValidTriangle (index_right, index_down, index_down_right);
 
       if (right_cut_upper && right_cut_lower && left_cut_upper && left_cut_lower)
@@ -244,15 +244,15 @@ pcl::OrganizedFastMesh<PointInT>::makeAdaptiveCutMesh (std::vector<pcl::Vertices
         float dist_left_cut = fabs (input_->points[i].z - input_->points[index_down_right].z);
         if (dist_right_cut >= dist_left_cut)
         {
-          if (store_shadowed_faces_ || !isShadowedTriangle (i, index_right, index_down_right))
-            addTriangle (i, index_right, index_down_right, idx++, polygons);
+          if (store_shadowed_faces_ || !isShadowedTriangle (i, index_down_right, index_right))
+            addTriangle (i, index_down_right, index_right, idx++, polygons);
           if (store_shadowed_faces_ || !isShadowedTriangle (i, index_down, index_down_right))
             addTriangle (i, index_down, index_down_right, idx++, polygons);
         }
         else
         {
-          if (store_shadowed_faces_ || !isShadowedTriangle (i, index_right, index_down))
-            addTriangle (i, index_right, index_down, idx++, polygons);
+          if (store_shadowed_faces_ || !isShadowedTriangle (i, index_down, index_right))
+            addTriangle (i, index_down, index_right, idx++, polygons);
           if (store_shadowed_faces_ || !isShadowedTriangle (index_right, index_down, index_down_right))
             addTriangle (index_right, index_down, index_down_right, idx++, polygons);
         }
@@ -260,14 +260,14 @@ pcl::OrganizedFastMesh<PointInT>::makeAdaptiveCutMesh (std::vector<pcl::Vertices
       else
       {
         if (right_cut_upper)
-          if (store_shadowed_faces_ || !isShadowedTriangle (i, index_right, index_down_right))
-            addTriangle (i, index_right, index_down_right, idx++, polygons);
+          if (store_shadowed_faces_ || !isShadowedTriangle (i, index_down_right, index_right))
+            addTriangle (i, index_down_right, index_right, idx++, polygons);
         if (right_cut_lower)
           if (store_shadowed_faces_ || !isShadowedTriangle (i, index_down, index_down_right))
             addTriangle (i, index_down, index_down_right, idx++, polygons);
         if (left_cut_upper)
-          if (store_shadowed_faces_ || !isShadowedTriangle (i, index_right, index_down))
-            addTriangle (i, index_right, index_down, idx++, polygons);
+          if (store_shadowed_faces_ || !isShadowedTriangle (i, index_down, index_right))
+            addTriangle (i, index_down, index_right, idx++, polygons);
         if (left_cut_lower)
           if (store_shadowed_faces_ || !isShadowedTriangle (index_right, index_down, index_down_right))
             addTriangle (index_right, index_down, index_down_right, idx++, polygons);

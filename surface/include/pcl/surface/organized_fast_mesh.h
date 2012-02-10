@@ -87,7 +87,7 @@ namespace pcl
       /** \brief Destructor. */
       ~OrganizedFastMesh () {};
 
-      /** \brief Set a maximum edge length. TODO: Implement! 
+      /** \brief Set a maximum edge length. TODO: Implement!
         * \param[in] max_edge_length the maximum edge length
         */
       inline void
@@ -146,10 +146,10 @@ namespace pcl
       void
       reconstructPolygons (std::vector<pcl::Vertices>& polygons);
 
-      /** \brief Create the surface. 
+      /** \brief Create the surface.
         * \param[out] polygons the resultant polygons, as a set of vertices. The Vertices structure contains an array of point indices.
         */
-      virtual void 
+      virtual void
       performReconstruction (std::vector<pcl::Vertices> &polygons);
 
       /** \brief Create the surface.
@@ -214,7 +214,7 @@ namespace pcl
         memcpy (&mesh.cloud.data[point_index * mesh.cloud.point_step + mesh.cloud.fields[field_x_idx].offset], &new_value, sizeof (float));
         memcpy (&mesh.cloud.data[point_index * mesh.cloud.point_step + mesh.cloud.fields[field_y_idx].offset], &new_value, sizeof (float));
         memcpy (&mesh.cloud.data[point_index * mesh.cloud.point_step + mesh.cloud.fields[field_z_idx].offset], &new_value, sizeof (float));
-      } 
+      }
 
       /** \brief Check if a point is shadowed by another point
         * \param[in] point_a the first point
@@ -229,7 +229,7 @@ namespace pcl
         float distance_to_points = dir_a.norm ();
         float distance_between_points = dir_b.norm ();
         float cos_angle = dir_a.dot (dir_b) / (distance_to_points*distance_between_points);
-        if (cos_angle != cos_angle) 
+        if (cos_angle != cos_angle)
           cos_angle = 1.0f;
         return (fabs (cos_angle) >= cos_angle_tolerance_);
         // TODO: check for both: angle almost 0/180 _and_ distance between points larger than noise level
@@ -243,9 +243,9 @@ namespace pcl
       inline bool
       isValidTriangle (const int& a, const int& b, const int& c)
       {
-        if (!pcl::hasValidXYZ (input_->points[a])) return (false);
-        if (!pcl::hasValidXYZ (input_->points[b])) return (false);
-        if (!pcl::hasValidXYZ (input_->points[c])) return (false);
+        if (!pcl::isFinite (input_->points[a])) return (false);
+        if (!pcl::isFinite (input_->points[b])) return (false);
+        if (!pcl::isFinite (input_->points[c])) return (false);
         return (true);
       }
 
@@ -272,10 +272,10 @@ namespace pcl
       inline bool
       isValidQuad (const int& a, const int& b, const int& c, const int& d)
       {
-        if (!pcl::hasValidXYZ (input_->points[a])) return (false);
-        if (!pcl::hasValidXYZ (input_->points[b])) return (false);
-        if (!pcl::hasValidXYZ (input_->points[c])) return (false);
-        if (!pcl::hasValidXYZ (input_->points[d])) return (false);
+        if (!pcl::isFinite (input_->points[a])) return (false);
+        if (!pcl::isFinite (input_->points[b])) return (false);
+        if (!pcl::isFinite (input_->points[c])) return (false);
+        if (!pcl::isFinite (input_->points[d])) return (false);
         return (true);
       }
 
@@ -295,26 +295,26 @@ namespace pcl
         return (false);
       }
 
-      /** \brief Create a quad mesh. 
-        * \param[out] polygons the resultant mesh 
+      /** \brief Create a quad mesh.
+        * \param[out] polygons the resultant mesh
         */
       void
       makeQuadMesh (std::vector<pcl::Vertices>& polygons);
 
-      /** \brief Create a right cut mesh. 
-        * \param[out] polygons the resultant mesh 
+      /** \brief Create a right cut mesh.
+        * \param[out] polygons the resultant mesh
         */
       void
       makeRightCutMesh (std::vector<pcl::Vertices>& polygons);
 
-      /** \brief Create a left cut mesh. 
-        * \param[out] polygons the resultant mesh 
+      /** \brief Create a left cut mesh.
+        * \param[out] polygons the resultant mesh
         */
       void
       makeLeftCutMesh (std::vector<pcl::Vertices>& polygons);
 
-      /** \brief Create an adaptive cut mesh. 
-        * \param[out] polygons the resultant mesh 
+      /** \brief Create an adaptive cut mesh.
+        * \param[out] polygons the resultant mesh
         */
       void
       makeAdaptiveCutMesh (std::vector<pcl::Vertices>& polygons);

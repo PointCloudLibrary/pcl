@@ -39,4 +39,5 @@
 #include "pcl/surface/impl/marching_cubes_greedy_dot.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(MarchingCubesGreedyDot, (pcl::PointNormal)(pcl::PointXYZRGBNormal)(pcl::PointXYZINormal));
+PCL_INSTANTIATE(MarchingCubesGreedyDot, (pcl::PointNormal)(pcl::PointXYZRGBNormal)(pcl::PointXYZINormal))
+
