@@ -355,8 +355,8 @@ pcl::io::saveOBJFile (const std::string &file_name,
       fs << "f ";
       size_t j = 0;    
       for (; j < mesh.polygons[i].vertices.size () - 1; ++j)
-        fs << mesh.polygons[i].vertices[j] << " ";
-      fs << mesh.polygons[i].vertices[j] << std::endl;
+        fs << mesh.polygons[i].vertices[j] + 1 << " ";
+      fs << mesh.polygons[i].vertices[j] + 1 << std::endl;
     }
   }
   else
@@ -366,8 +366,8 @@ pcl::io::saveOBJFile (const std::string &file_name,
       fs << "f ";
       size_t j = 0;    
       for (; j < mesh.polygons[i].vertices.size () - 1; ++j)
-        fs << mesh.polygons[i].vertices[j] << "//" << mesh.polygons[i].vertices[j];
-      fs << mesh.polygons[i].vertices[j] << "//" << mesh.polygons[i].vertices[j] << std::endl;
+        fs << mesh.polygons[i].vertices[j] + 1 << "//" << mesh.polygons[i].vertices[j] + 1;
+      fs << mesh.polygons[i].vertices[j] + 1 << "//" << mesh.polygons[i].vertices[j] + 1 << std::endl;
     }
   }
   fs << "# End of File" << std::endl;
