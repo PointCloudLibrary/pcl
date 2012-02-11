@@ -78,7 +78,7 @@ if(build)
       target_link_libraries(openni_mls_smoothing pcl_common pcl_io pcl_surface pcl_visualization)
       
       PCL_ADD_EXECUTABLE(openni_change_viewer ${SUBSYS_NAME} src/openni_change_viewer.cpp)
-      target_link_libraries(openni_change_viewer pcl_common pcl_io pcl_kdtree pcl_octree pcl_range_image pcl_visualization pcl_filters)
+      target_link_libraries(openni_change_viewer pcl_common pcl_io pcl_kdtree pcl_octree pcl_visualization pcl_filters)
       
       PCL_ADD_EXECUTABLE(openni_uniform_sampling ${SUBSYS_NAME} src/openni_uniform_sampling.cpp)
       target_link_libraries(openni_uniform_sampling pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface pcl_keypoints)
