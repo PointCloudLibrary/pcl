@@ -61,6 +61,7 @@
 #include "pcl/pcl_macros.h"
 #include "pcl/ros/conversions.h"
 #include "pcl/io/pcd_io.h"
+#include "pcl/range_image/range_image_planar.h"
 
 namespace pcl
 {
@@ -145,6 +146,14 @@ namespace pcl
     PCL_EXPORTS int
     savePolygonFileSTL (const std::string &file_name, const pcl::PolygonMesh& mesh);
 
+    /** \brief Write a \ref RangeImagePlanar object to a PNG file
+      * \param[in] file_name the name of the file to save the data to
+      * \param[in] range_image the object that contains the data
+      */
+    PCL_EXPORTS void
+    saveRangeImagePlanarFilePNG (const std::string &file_name,
+    const pcl::RangeImagePlanar& range_image);
+
     /**
      * TO DO proper building the library (depending on whether or not vtk was found)
      * TO DO writing files
@@ -153,6 +162,7 @@ namespace pcl
      * TO DO DXF files
      *
      */
+
   }
 }
 
