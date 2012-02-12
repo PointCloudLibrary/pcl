@@ -1082,9 +1082,9 @@ pcl::PCDReader::readEigen (const std::string &file_name, pcl::PointCloud<Eigen::
     return (0);
 
   // Once copied, we need to go over each field and check if it has NaN/Inf values and assign cloud.is_dense to true or false
-  for (uint32_t i = 0; i < cloud.points.rows (); ++i)
+  for (int i = 0; i < cloud.points.rows (); ++i)
   {
-    for (uint32_t j = 0; j < cloud.points.cols (); ++j)
+    for (int j = 0; j < cloud.points.cols (); ++j)
     {
       if (!pcl_isfinite (cloud.points (i, j)))
       {
@@ -1798,7 +1798,7 @@ pcl::PCDWriter::writeASCIIEigen (const std::string &file_name, const pcl::PointC
     return (-1);
   }
 
-  if (cloud.width * cloud.height != cloud.points.rows ())
+  if (static_cast<int>(cloud.width * cloud.height) != cloud.points.rows ())
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Number of points different than width * height!");
     return (-1);
