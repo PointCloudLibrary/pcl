@@ -3,3 +3,5 @@ PCL_ADD_EXAMPLE(example_CopyPointCloud FILES example_CopyPointCloud.cpp LINK_WIT
 PCL_ADD_EXAMPLE(example_ScopeTime FILES example_ScopeTime.cpp LINK_WITH pcl_common)
 
 PCL_ADD_EXAMPLE(example_OrganizedPointCloud FILES example_OrganizedPointCloud.cpp LINK_WITH pcl_common)
+
+PCL_ADD_EXAMPLE(example_CheckIfPointIsValid FILES example_CheckIfPointIsValid.cpp LINK_WITH pcl_common)
