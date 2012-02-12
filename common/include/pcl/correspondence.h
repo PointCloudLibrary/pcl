@@ -57,8 +57,12 @@ namespace pcl
     int index_query;
     /** \brief Index of the matching (target) point. Set to -1 if no correspondence found. */
     int index_match;
-    /** \brief Distance between query and matching point (w.r.t. the used feature descriptors) */
-    float distance;
+    /** \brief Distance between the corresponding points, or the weight denoting the confidence in correspondence estimation */
+    union
+    {
+      float distance;
+      float weight;
+    };
     
     /** \brief Standard constructor. 
       * Sets \ref index_query to 0, \ref index_match to -1, and \ref distance to FLT_MAX.
