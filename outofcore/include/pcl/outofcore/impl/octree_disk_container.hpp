@@ -1,0 +1,528 @@
+#pragma once
+
+/*
+ Copyright (c) 2012, Urban Robotics Inc
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright
+ notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
+ * Neither the name of Urban Robotics Inc nor the
+ names of its contributors may be used to endorse or promote products
+ derived from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/*
+ This code defines the octree used for point storage at Urban Robotics. Please
+ contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions.
+ http://www.urbanrobotics.net/
+ */
+
+// C++
+#include <vector>
+#include <deque>
+#include <string>
+#include <sstream>
+#include <cassert>
+#include <ctime>
+
+// Boost
+#include <boost/filesystem.hpp>
+#pragma warning(push)
+#pragma warning(disable: 4311 4312)
+#include <boost/thread.hpp>
+#pragma warning(pop)
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int.hpp>
+#include <boost/random/bernoulli_distribution.hpp>
+
+// PCL (Urban Robotics)
+#include "pcl/outofcore/octree_disk_container.h"
+
+//allows operation on POSIX
+#ifndef WIN32
+#define _fseeki64 fseeko
+#endif
+
+template<typename PointType>
+  boost::mutex octree_disk_container<PointType>::rng_mutex;
+
+#pragma warning(push)
+#pragma warning(disable : 4244)
+template<typename PointType>
+  boost::mt19937
+  octree_disk_container<PointType>::rand_gen (std::time( NULL));
+#pragma warning(pop)
+
+template<typename PointType>
+  boost::uuids::random_generator octree_disk_container<PointType>::uuid_gen (&rand_gen);
+
+template<typename PointType>
+  void
+  octree_disk_container<PointType>::getRandomUUIDString (std::string& s)
+  {
+    boost::uuids::uuid u;
+    {
+      boost::mutex::scoped_lock lock (rng_mutex);
+      u = uuid_gen ();
+    }
+
+    std::stringstream ss;
+    ss << u;
+    s = ss.str ();
+  }
+
+template<typename PointType>
+  octree_disk_container<PointType>::octree_disk_container ()
+  {
+    std::string temp = getRandomUUIDString ();
+    fileback_name = new std::string ();
+    *fileback_name = temp;
+    filelen = 0;
+    //writebuff.reserve(writebuffmax);
+  }
+
+//if is dir, will create new uuid named file
+//if is existing file, will load file
+template<typename PointType>
+  octree_disk_container<PointType>::octree_disk_container (const boost::filesystem::path& path)
+  {
+    if (boost::filesystem::exists (path))
+    {
+      if (boost::filesystem::is_directory (path))
+      {
+        std::string uuid;
+        getRandomUUIDString (uuid);
+        boost::filesystem::path filename (uuid);
+        boost::filesystem::path file = path / filename;
+
+        fileback_name = new std::string (file.string ());
+
+        filelen = 0;
+      }
+      else
+      {
+        boost::uint64_t len = boost::filesystem::file_size (path);
+
+        fileback_name = new std::string (path.string ());
+
+        filelen = len / sizeof(PointType);
+      }
+    }
+    else
+    {
+      fileback_name = new std::string (path.string ());
+      filelen = 0;
+    }
+
+    //writebuff.reserve(writebuffmax);
+  }
+
+template<typename PointType>
+  octree_disk_container<PointType>::~octree_disk_container ()
+  {
+    flush_writebuff (true);
+    //fileback.flush();
+    //fileback.close();
+    //std::remove(persistant->c_str());
+    //boost::filesystem::remove(fileback_name);//for testing!
+    //std::cerr << "deleted file " << *persistant << std::endl;
+    //std::cerr << "destruct container" << std::endl;
+    delete fileback_name;
+  }
+
+template<typename PointType>
+  void
+  octree_disk_container<PointType>::flush_writebuff (const bool forceCacheDeAlloc)
+  {
+    if (writebuff.size () > 0)
+    {
+      FILE* f = fopen (fileback_name->c_str (), "a+b");
+
+      size_t len = writebuff.size () * sizeof(PointType);
+      char* loc = (char*)&(writebuff.front ());
+      size_t w = fwrite (loc, 1, len, f);
+      assert (w == len);
+
+      //		int closeret = fclose(f);
+      fclose (f);
+
+      filelen += writebuff.size ();
+      writebuff.clear ();
+    }
+
+    //if(forceCacheDeAlloc || (size() >= node<octree_disk_container<PointType>, PointType>::split_thresh))//if told to dump cache, or if we have more nodes than the split threshold
+    if (forceCacheDeAlloc)//if told to dump cache, or if we have more nodes than the split threshold
+    {
+      //don't reserve anymore -- lets us have more nodes and be fairly lazy about dumping the cache. but once it is dumped for the last time, this needs to be empty.
+      writebuff.resize (0);
+    }
+    else
+    {
+      //we are still accepting data, preallocate the storage
+      //writebuff.reserve(writebuffmax);
+    }
+
+  }
+
+template<typename PointType>
+  PointType
+  octree_disk_container<PointType>::operator[] (boost::uint64_t idx)
+  {
+    if (idx < filelen)
+    {
+      PointType temp;
+
+      FILE* f = fopen (fileback_name->c_str (), "rb");
+      assert (f != NULL);
+      int seekret = _fseeki64 (f, idx * sizeof(PointType), SEEK_SET);
+      assert (seekret == 0);
+      size_t readlen = fread (&temp, 1, sizeof(PointType), f);
+      assert (readlen == sizeof(PointType));
+      int closeret = fclose (f);
+
+      //fileback.open(fileback_name->c_str(), std::fstream::in|std::fstream::out|std::fstream::binary);
+      //fileback.seekp(idx*sizeof(PointType), std::ios_base::beg);
+      //fileback.read((char*)&temp, sizeof(PointType));
+      //fileback.close();
+      return temp;
+    }
+
+    if (idx < (filelen + writebuff.size ()))
+    {
+      idx -= filelen;
+      return writebuff[idx];
+    }
+    throw("out of range");
+  }
+
+template<typename PointType>
+  void
+  octree_disk_container<PointType>::readRange (const boost::uint64_t start, const boost::uint64_t count,
+                                               std::vector<PointType>& v)
+  {
+    if ((start + count) > size ())
+    {
+      throw("out of range");
+    }
+
+    if (count == 0)
+    {
+      return;
+    }
+
+    boost::uint64_t filestart;
+    boost::uint64_t filecount;
+
+    boost::int64_t buffstart = -1;
+    boost::int64_t buffcount = -1;
+
+    if (start < filelen)
+    {
+      filestart = start;
+    }
+
+    if ((start + count) <= filelen)
+    {
+      filecount = count;
+    }
+    else
+    {
+      filecount = filelen - start;
+
+      buffstart = 0;
+      buffcount = count - filecount;
+    }
+
+    //resize
+    PointType* loc = NULL;
+    v.resize ((unsigned int)count);
+    loc = &(v.front ());
+
+    //do the read
+    FILE* f = fopen (fileback_name->c_str (), "rb");
+    assert (f != NULL);
+    int seekret = _fseeki64 (f, filestart * boost::uint64_t (sizeof(PointType)), SEEK_SET);
+    assert (seekret == 0);
+
+    //read at most 2 million elements at a time
+    const static boost::uint32_t blocksize = boost::uint32_t (2e6);
+    for (boost::uint64_t pos = 0; pos < filecount; pos += blocksize)
+    {
+      if ((pos + blocksize) < filecount)
+      {
+        size_t readlen = fread (loc, sizeof(PointType), blocksize, f);
+        assert (readlen == blocksize);
+        loc += blocksize;
+      }
+      else
+      {
+        size_t readlen = fread (loc, sizeof(PointType), (size_t) (filecount - pos), f);
+        assert (readlen == filecount - pos);
+        loc += filecount - pos;
+      }
+    }
+
+    //	int closeret = fclose(f);
+    fclose (f);
+
+    //copy the extra
+    if (buffstart != -1)
+    {
+      typename std::vector<PointType>::const_iterator start = writebuff.begin ();
+      typename std::vector<PointType>::const_iterator end = writebuff.begin ();
+
+      std::advance (start, buffstart);
+      std::advance (end, buffstart + buffcount);
+
+      v.insert (v.end (), start, end);
+    }
+
+  }
+
+template<typename PointType>
+  void
+  octree_disk_container<PointType>::readRangeSubSample_bernoulli (const boost::uint64_t start,
+                                                                  const boost::uint64_t count, const double percent,
+                                                                  std::vector<PointType>& v)
+  {
+    if (count == 0)
+    {
+      return;
+    }
+
+    v.clear ();
+
+    boost::uint64_t filestart;
+    boost::uint64_t filecount;
+
+    boost::int64_t buffstart = -1;
+    boost::int64_t buffcount = -1;
+
+    if (start < filelen)
+    {
+      filestart = start;
+    }
+
+    if ((start + count) <= filelen)
+    {
+      filecount = count;
+    }
+    else
+    {
+      filecount = filelen - start;
+
+      buffstart = 0;
+      buffcount = count - filecount;
+    }
+
+    if (buffcount > 0)
+    {
+      {
+        boost::mutex::scoped_lock lock (rng_mutex);
+        boost::bernoulli_distribution<double> buffdist (percent);
+        boost::variate_generator<boost::mt19937&, boost::bernoulli_distribution<double> > buffcoin (rand_gen, buffdist);
+
+        for (boost::uint64_t i = buffstart; i < buffcount; i++)
+        {
+          if (buffcoin ())
+          {
+            v.push_back (writebuff[i]);
+          }
+        }
+      }
+    }
+
+    if (filecount > 0)
+    {
+      //pregen and then sort the offsets to reduce the amount of seek
+      std::vector < boost::uint64_t > offsets;
+      {
+        boost::mutex::scoped_lock lock (rng_mutex);
+
+        boost::bernoulli_distribution<double> filedist (percent);
+        boost::variate_generator<boost::mt19937&, boost::bernoulli_distribution<double> > filecoin (rand_gen, filedist);
+        for (boost::uint64_t i = filestart; i < (filestart + filecount); i++)
+        {
+          if (filecoin ())
+          {
+            offsets.push_back (i);
+          }
+        }
+      }
+      std::sort (offsets.begin (), offsets.end ());
+
+      FILE* f = fopen (fileback_name->c_str (), "rb");
+      assert (f != NULL);
+      PointType p;
+      char* loc = (char*)&p;
+      boost::uint64_t filesamp = offsets.size ();
+      for (boost::uint64_t i = 0; i < filesamp; i++)
+      {
+        int seekret = _fseeki64 (f, offsets[i] * boost::uint64_t (sizeof(PointType)), SEEK_SET);
+        assert (seekret == 0);
+        size_t readlen = fread (loc, sizeof(PointType), 1, f);
+        assert (readlen == 1);
+
+        v.push_back (p);
+      }
+      int closeret = fclose (f);
+    }
+  }
+
+//change this to use a weighted coin flip, to allow sparse sampling of small clouds (eg the bernoulli above)
+template<typename PointType>
+  void
+  octree_disk_container<PointType>::readRangeSubSample (const boost::uint64_t start, const boost::uint64_t count,
+                                                        const double percent, std::vector<PointType>& v)
+  {
+    if (count == 0)
+    {
+      return;
+    }
+
+    v.clear ();
+
+    boost::uint64_t filestart;
+    boost::uint64_t filecount;
+
+    boost::int64_t buffstart = -1;
+    boost::int64_t buffcount = -1;
+
+    if (start < filelen)
+    {
+      filestart = start;
+    }
+
+    if ((start + count) <= filelen)
+    {
+      filecount = count;
+    }
+    else
+    {
+      filecount = filelen - start;
+
+      buffstart = 0;
+      buffcount = count - filecount;
+    }
+
+    boost::uint64_t filesamp = boost::uint64_t (percent * filecount);
+    boost::uint64_t buffsamp = (buffcount > 0) ? (boost::uint64_t (percent * buffcount)) : 0;
+
+    if ((filesamp == 0) && (buffsamp == 0) && (size () > 0))
+    {
+      //std::cerr << "would not add points to LOD, falling back to bernoulli";
+      readRangeSubSample_bernoulli (start, count, percent, v);
+      return;
+    }
+
+    if (buffcount > 0)
+    {
+      {
+        boost::mutex::scoped_lock lock (rng_mutex);
+
+        boost::uniform_int < boost::uint64_t > buffdist (0, buffcount - 1);
+        boost::variate_generator<boost::mt19937&, boost::uniform_int<boost::uint64_t> > buffdie (rand_gen, buffdist);
+
+        for (boost::uint64_t i = 0; i < buffsamp; i++)
+        {
+          boost::uint64_t buffstart = buffdie ();
+          v.push_back (writebuff[buffstart]);
+        }
+      }
+    }
+
+    if (filesamp > 0)
+    {
+      //pregen and then sort the offsets to reduce the amount of seek
+      std::vector < boost::uint64_t > offsets;
+      {
+        boost::mutex::scoped_lock lock (rng_mutex);
+
+        offsets.resize (filesamp);
+        boost::uniform_int < boost::uint64_t > filedist (filestart, filestart + filecount - 1);
+        boost::variate_generator<boost::mt19937&, boost::uniform_int<boost::uint64_t> > filedie (rand_gen, filedist);
+        for (boost::uint64_t i = 0; i < filesamp; i++)
+        {
+          boost::uint64_t filestart = filedie ();
+          offsets[i] = filestart;
+        }
+      }
+      std::sort (offsets.begin (), offsets.end ());
+
+      FILE* f = fopen (fileback_name->c_str (), "rb");
+      assert (f != NULL);
+      PointType p;
+      char* loc = (char*)&p;
+      for (boost::uint64_t i = 0; i < filesamp; i++)
+      {
+        int seekret = _fseeki64 (f, offsets[i] * boost::uint64_t (sizeof(PointType)), SEEK_SET);
+        assert (seekret == 0);
+        size_t readlen = fread (loc, sizeof(PointType), 1, f);
+        assert (readlen == 1);
+
+        v.push_back (p);
+      }
+      int closeret = fclose (f);
+    }
+  }
+
+template<typename PointType>
+  inline void
+  octree_disk_container<PointType>::push_back (const PointType& p)
+  {
+    writebuff.push_back (p);
+    if (writebuff.size () > writebuffmax)
+    {
+      flush_writebuff (false);
+    }
+  }
+
+template<typename PointType>
+  inline void
+  octree_disk_container<PointType>::insertRange (const PointType* start, const boost::uint64_t count)
+  {
+    FILE* f = fopen (fileback_name->c_str (), "a+b");
+
+    //write at most 2 million elements at a ime
+    const static size_t blocksize = (size_t)2e6;
+
+    for (boost::uint64_t pos = 0; pos < count; pos += blocksize)
+    {
+      const PointType* loc = start + pos;
+      if ((pos + blocksize) < count)
+      {
+        size_t w = fwrite (loc, sizeof(PointType), blocksize, f);
+        assert (w == blocksize);
+      }
+      else
+      {
+        size_t w = fwrite (loc, sizeof(PointType), (size_t) (count - pos), f);
+        assert (w == count - pos);
+      }
+    }
+
+    //	int closeret = fclose(f);
+    fclose (f);
+
+    filelen += count;
+  }
+
