@@ -589,6 +589,7 @@ namespace pcl
       };
 
 #include "pcl/surface/impl/poisson/multi_grid_octree_data.hpp"
+
     }
   }
 }

@@ -474,7 +474,7 @@ namespace pcl
         width (const int& maxDepth) const;
       };
 
-#include "pcl/surface/impl/poisson/Octree.hpp"
+#include "pcl/surface/impl/poisson/octree.hpp"
 
     }
   }

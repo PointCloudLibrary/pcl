@@ -180,7 +180,7 @@ namespace pcl
                  const double& min, const double& max) const;
       };
 
-#include "pcl/surface/impl/poisson/PPolynomial.hpp"
+#include "pcl/surface/impl/poisson/ppolynomial.hpp"
 
     }
   }

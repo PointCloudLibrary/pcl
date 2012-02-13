@@ -161,7 +161,7 @@ namespace pcl
                         const double& EPS) const;
       };
 
-#include "pcl/surface/impl/poisson/Polynomial.hpp"
+#include "pcl/surface/impl/poisson/polynomial.hpp"
 
     }
   }
