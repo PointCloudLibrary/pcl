@@ -56,7 +56,7 @@ template<typename Container, typename PointType>
     // Constructors
     // -----------------------------------------------------------------------
 
-    /* \brief Load an existing tree
+    /** \brief Load an existing tree
      *
      * If loadAll is set, the BB and point count for every node is loaded,
      * otherwise only the root node is actually created, and the rest will be
@@ -67,7 +67,7 @@ template<typename Container, typename PointType>
      */
     octree_base (const boost::filesystem::path& rootname, const bool loadAll);
 
-    /* \brief Create a new tree
+    /** \brief Create a new tree
      *
      * Create a new tree rootname with specified bounding box.
      *
@@ -86,7 +86,7 @@ template<typename Container, typename PointType>
                  const double node_dim_meters,
                  const boost::filesystem::path& rootname, const std::string& coord_sys);
 
-    /* \brief Create a new tree
+    /** \brief Create a new tree
      *
      * Create a new tree rootname with specified bounding box.
      *
@@ -104,7 +104,7 @@ template<typename Container, typename PointType>
     // Accessors
     // -----------------------------------------------------------------------
 
-    /* \brief Copy the overall BB to min max */
+    /** \brief Copy the overall BB to min max */
     inline bool
     getBB (double min[3], double max[3]) const
     {
@@ -116,11 +116,11 @@ template<typename Container, typename PointType>
       return false;
     }
 
-    /* \brief Access node's PointType */
+    /** \brief Access node's PointType */
     Container
     get (const size_t* indexes, const size_t len) const;
 
-    /* \brief Access node's PointType */
+    /** \brief Access node's PointType */
     Container&
     get (const size_t* indexes, const size_t len);
 
@@ -138,7 +138,7 @@ template<typename Container, typename PointType>
       return lodPoints;
     }
 
-    /* \brief Get number of LODs
+    /** \brief Get number of LODs
      *
      * Assume fully balanced tree -- all nodes have 8 children, and all branches
      * are same depth
@@ -149,7 +149,7 @@ template<typename Container, typename PointType>
       return maxDepth;
     }
 
-    /* \brief Assume fully balanced tree -- all nodes have same dim */
+    /** \brief Assume fully balanced tree -- all nodes have same dim */
     bool
     getBinDimension (double& x, double& y) const
     {
@@ -179,15 +179,15 @@ template<typename Container, typename PointType>
     // Mutators
     // -----------------------------------------------------------------------
 
-    /* \brief Generate LODs for the tree */
+    /** \brief Generate LODs for the tree */
     void
     buildLOD ();
 
-    /* \brief Recursively add points to the tree */
+    /** \brief Recursively add points to the tree */
     boost::uint64_t
     addDataToLeaf (const std::vector<PointType>& p);
 
-    /* \brief Recursively add points to the tree subsampling LODs on the way.
+    /** \brief Recursively add points to the tree subsampling LODs on the way.
      *
      * shared read_write_mutex lock occurs
      */
@@ -199,7 +199,7 @@ template<typename Container, typename PointType>
     // DB Access
     // -----------------------------------------------------------------------
 
-    /* \brief Get bins at query_depth that intersect with your bin
+    /** \brief Get bins at query_depth that intersect with your bin
      *
      * query_depth == 0 is root
      * query_depth == (this->depth) is full
@@ -227,17 +227,17 @@ template<typename Container, typename PointType>
     bool
     saveToDisk (const char* path);
 
-    /* \brief Save the index files for each node.  You do not need to call this
+    /** \brief Save the index files for each node.  You do not need to call this
      * explicitly
      */
     void
     saveIdx ();
 
-    /* \brief Save each .bin file as an XYZ file */
+    /** \brief Save each .bin file as an XYZ file */
     void
     convertToXYZ ();
 
-    /* \brief Write a python script using the vpython module containing all
+    /** \brief Write a python script using the vpython module containing all
      * the bounding boxes
      */
     void

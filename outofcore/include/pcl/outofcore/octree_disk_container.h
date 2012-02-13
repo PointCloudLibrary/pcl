@@ -164,7 +164,7 @@ template<typename PointType>
       }
     }
 
-    /* \brief Generate a universally unique identifier (UUID)
+    /** \brief Generate a universally unique identifier (UUID)
      *
      * A mutex lock happens to ensure uniquness
      *

@@ -118,29 +118,29 @@ template<typename Container, typename PointType>
 
     }
 
-    /* \brief Load from disk */
+    /** \brief Load from disk */
     octree_base_node (const boost::filesystem::path& path,
                       octree_base_node<Container, PointType>* super,
                       bool loadAll);
 
-    /* \brief Create root node and directory */
+    /** \brief Create root node and directory */
     void init_root_node (const double bbmin[3], const double bbmax[3],
                          octree_base<Container, PointType> * const tree,
                          const boost::filesystem::path& rootname);
 
-    /* \brief Create root node and directory setting voxel size*/
+    /** \brief Create root node and directory setting voxel size*/
     octree_base_node (const double bbmin[3], const double bbmax[3],
                       const double node_dim_meters,
                       octree_base<Container, PointType> * const tree,
                       const boost::filesystem::path& rootname);
 
-    /* \brief Create root node and directory setting setting max depth*/
+    /** \brief Create root node and directory setting setting max depth*/
     octree_base_node (const int maxdepth,
                       const double bbmin[3], const double bbmax[3],
                       octree_base<Container, PointType> * const tree,
                       const boost::filesystem::path& rootname);
 
-    /* \brief Will recursively delete all children calling recFreeChildrein */
+    /** \brief Will recursively delete all children calling recFreeChildrein */
     ~octree_base_node ();
 
     //query
@@ -210,7 +210,7 @@ template<typename Container, typename PointType>
     boost::uint64_t
     addDataToLeaf (const std::vector<const PointType*>& p, const bool skipBBCheck);
 
-    /* \brief Recursively add points to the leaf and children subsampling LODs
+    /** \brief Recursively add points to the leaf and children subsampling LODs
      * on the way down.
      *
      * rng_mutex lock occurs
