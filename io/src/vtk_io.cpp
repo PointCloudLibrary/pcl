@@ -146,3 +146,90 @@ pcl::io::saveVTKFile (const std::string &file_name,
   return (0);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::io::saveVTKFile (const std::string &file_name, 
+                      const sensor_msgs::PointCloud2 &cloud, unsigned precision)
+{
+  if (cloud.data.empty ())
+  {
+    PCL_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no data!\n");
+    return (-1);
+  }
+
+  // Open file
+  std::ofstream fs;
+  fs.precision (precision);
+  fs.open (file_name.c_str ());
+
+  int nr_points  = cloud.width * cloud.height;
+  int point_size = cloud.data.size () / nr_points;
+
+  // Write the header information
+  fs << "# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET POLYDATA\nPOINTS " << nr_points << " float" << std::endl;
+
+  // Iterate through the points
+  for (int i = 0; i < nr_points; ++i)
+  {
+    int xyz = 0;
+    for (size_t d = 0; d < cloud.fields.size (); ++d)
+    {
+      int count = cloud.fields[d].count;
+      if (count == 0)
+        count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
+      int c = 0;
+      if ((cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32) && (
+           cloud.fields[d].name == "x" || 
+           cloud.fields[d].name == "y" || 
+           cloud.fields[d].name == "z"))
+      {
+        float value;
+        memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+        fs << value;
+        if (++xyz == 3)
+          break;
+      }
+      fs << " ";
+    }
+    if (xyz != 3)
+    {
+      PCL_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no XYZ data!\n");
+      return (-2);
+    }
+    fs << std::endl;
+  }
+
+  // Write vertices
+  fs << "\nVERTICES " << nr_points << " " << 2*nr_points << std::endl;
+  for (int i = 0; i < nr_points; ++i)
+    fs << "1 " << i << std::endl;
+
+  // Write RGB values
+  int field_index = getFieldIndex (cloud, "rgb");
+  if (field_index != -1)
+  {
+    fs << "\nPOINT_DATA " << nr_points << "\nCOLOR_SCALARS scalars 3\n";
+    for (int i = 0; i < nr_points; ++i)
+    {
+      int count = cloud.fields[field_index].count;
+      if (count == 0)
+        count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
+      int c = 0;
+      if (cloud.fields[field_index].datatype == sensor_msgs::PointField::FLOAT32)
+      {
+        pcl::RGB color;
+        memcpy (&color, &cloud.data[i * point_size + cloud.fields[field_index].offset + c * sizeof (float)], sizeof (RGB));
+        int r = color.r;
+        int g = color.g;
+        int b = color.b;
+        fs << (float)r/255.0 << " " << (float)g/255.0 << " " << (float)b/255.0;
+      }
+      fs << std::endl;
+    }
+  }
+
+  // Close file
+  fs.close ();
+  return (0);
+}
+
