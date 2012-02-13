@@ -11,6 +11,7 @@
 
 #include "proctor/basic_proposer.h"
 #include "proctor/inverse_bag_proposer.h"
+#include "proctor/threshold_bag_proposer.h"
 #include "proctor/registration_proposer.h"
 #include "proctor/hough_proposer.h"
 #include "proctor/soft_hough_proposer.h"
@@ -37,6 +38,7 @@ using pcl::proctor::PrimitiveModelSource;
 using pcl::proctor::Proposer;
 using pcl::proctor::BasicProposer;
 using pcl::proctor::InverseBagProposer;
+using pcl::proctor::ThresholdBagProposer;
 using pcl::proctor::RegistrationProposer;
 using pcl::proctor::HoughProposer;
 using pcl::proctor::SoftHoughProposer;
@@ -90,8 +92,11 @@ struct run_proctor
     //keypoints.push_back(harris_wrap);
 
     std::vector<Proposer::Ptr> proposers;
-    proposers.push_back(BasicProposer::Ptr(new BasicProposer));
-    proposers.push_back(InverseBagProposer::Ptr(new InverseBagProposer));
+    //proposers.push_back(BasicProposer::Ptr(new BasicProposer));
+    //proposers.push_back(InverseBagProposer::Ptr(new InverseBagProposer));
+    ThresholdBagProposer::Ptr threshold_proposer(new ThresholdBagProposer);
+    threshold_proposer->setThreshold(5);
+    proposers.push_back(threshold_proposer);
     //proposers.push_back(RegistrationProposer::Ptr(new RegistrationProposer));
 
     //HoughProposer::Ptr hough(new HoughProposer());

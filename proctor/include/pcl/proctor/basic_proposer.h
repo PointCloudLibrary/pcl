@@ -19,8 +19,12 @@ namespace pcl
         BasicProposer()
         {}
 
-        void
+        virtual void
         getProposed(int max_num, Entry &query, std::vector<std::string> &input, std::vector<std::string> &output);
+
+        /* Do any preprocessing required */
+        virtual void
+        preGetProposed(Entry &query, std::vector<std::string> &input);
 
         virtual double
         getVotes(Entry &query, Entry &match);

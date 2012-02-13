@@ -10,6 +10,8 @@ namespace pcl
     typedef Eigen::MatrixXf Signature;
 
     struct Entry {
+      std::string id;
+
       PointCloud<PointNormal>::Ptr cloud;
       PointCloud<PointNormal>::Ptr keypoints;
       PointCloud<Signature>::Ptr features;

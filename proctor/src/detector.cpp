@@ -40,6 +40,7 @@ namespace pcl
       e.features = features;
       e.tree = KdTreeFLANN<Signature>::Ptr(new KdTreeFLANN<Signature>());
       e.tree->setInputCloud(e.features);
+      e.id = scene.id;
 
       (*database_)[scene.id] = e;
     }
@@ -67,6 +68,7 @@ namespace pcl
       timer.start();
       e.features = obtainFeatures(scene, e.keypoints, true);
       timer.stop(COMPUTE_FEATURES_TESTING);
+      e.id = scene.id;
 
       memset(classifier, 0, Config::num_models * sizeof(*classifier));
 
@@ -128,20 +130,6 @@ namespace pcl
     PointCloud<PointNormal>::Ptr
     Detector::computeKeypoints(PointCloud<PointNormal>::Ptr cloud)
     {
-      //PointNormal min;
-      //PointNormal max;
-
-      //getMinMax3D(*cloud, min, max);
-      //cout << "Max: " << max << "\tMin: " << min << endl;
-      //float vol = 1;
-      //vol *= max.x - min.x;
-      //vol *= max.y - min.y;
-      //vol *= max.z - min.z;
-
-      //float keypoint_separation = pow(vol / 10000, 0.3);
-      //cout << "Sep: " << vol << " " << keypoint_separation << endl;
-      //keypoint_separation = 0.05;
-      //
       PointCloud<PointNormal>::Ptr keypoints (new PointCloud<PointNormal>());
 
       if (keypoint_wrap_)

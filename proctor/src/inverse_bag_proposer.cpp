@@ -11,6 +11,7 @@ namespace pcl
       int max_votes = 1;
 
       double votes = 0;
+
       for (unsigned int pi = 0; pi < query.features->size(); pi++) {
         vector<int> indices;
         vector<float> distances;
@@ -18,7 +19,10 @@ namespace pcl
         int num_found = match.tree->nearestKSearch(*query.features, pi, max_votes, indices, distances);
 
         for (int ri = 0; ri < num_found; ri++) {
-          votes += 1.0 / distances[ri];
+          /* Assuming that a distance of 0 is an error */
+          if (distances[ri] != 0) {
+            votes += 1.0 / (distances[ri]);
+          }
         }
       }
 

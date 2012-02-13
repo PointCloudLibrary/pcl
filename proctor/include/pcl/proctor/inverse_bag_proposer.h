@@ -2,7 +2,6 @@
 #define INVERSE_BAG_PROPOSER_H
 
 #include <boost/shared_ptr.hpp>
-#include <vector>
 #include "proctor/detector.h"
 #include "proctor/basic_proposer.h"
 

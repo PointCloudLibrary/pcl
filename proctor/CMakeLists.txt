@@ -60,6 +60,7 @@ if(build)
       include/pcl/${SUBSYS_NAME}/proposer.h
       include/pcl/${SUBSYS_NAME}/basic_proposer.h
       include/pcl/${SUBSYS_NAME}/inverse_bag_proposer.h
+      include/pcl/${SUBSYS_NAME}/threshold_bag_proposer.h
       include/pcl/${SUBSYS_NAME}/registration_proposer.h
       include/pcl/${SUBSYS_NAME}/hough_proposer.h
       include/pcl/${SUBSYS_NAME}/soft_hough_proposer.h
@@ -104,6 +105,7 @@ if(build)
 
                       src/basic_proposer.cpp
                       src/inverse_bag_proposer.cpp
+                      src/threshold_bag_proposer.cpp
                       src/registration_proposer.cpp
                       src/hough_proposer.cpp
                       src/soft_hough_proposer.cpp

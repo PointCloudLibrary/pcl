@@ -9,6 +9,8 @@ namespace pcl
     void
     BasicProposer::getProposed(int max_num, Entry &query, std::vector<std::string> &input, std::vector<std::string> &output)
     {
+      preGetProposed(query, input);
+
       std::vector<std::string>::iterator database_it;
 
       vector<Candidate> ballot;
@@ -27,6 +29,11 @@ namespace pcl
       selectBestCandidates(max_num, ballot, output);
     }
 
+    void
+    BasicProposer::preGetProposed(Entry &query, std::vector<std::string> &input)
+    {
+    }
+
     double
     BasicProposer::getVotes(Entry &query, Entry &match)
     {
@@ -40,7 +47,9 @@ namespace pcl
         int num_found = match.tree->nearestKSearch(*query.features, pi, max_votes, indices, distances);
 
         for (int ri = 0; ri < num_found; ri++) {
-          votes -= distances[ri];
+          if (distances[ri] != 0) {
+            votes -= distances[ri];
+          }
         }
       }
       return votes;
