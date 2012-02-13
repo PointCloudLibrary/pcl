@@ -570,6 +570,29 @@ namespace pcl
                        const ColorHandlerConstPtr &color_handler,
                        const std::string &id = "cloud", int viewport = 0);
 
+        /** \brief Add a binary blob Point Cloud to screen.
+          *
+          * Because the geometry/color handler is given as a pointer, it will be pushed back to the list of
+          * available handlers, rather than replacing the current active handler. This makes it possible to
+          * switch between different handlers 'on-the-fly' at runtime, from the PCLVisualizer interactor
+          * interface (using [Alt+]0..9).
+          *
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] geometry_handler a specific PointCloud visualizer handler for geometry
+          * \param[in] color_handler a specific PointCloud visualizer handler for colors
+          * \param[in] sensor_origin the origin of the cloud data in global coordinates (defaults to 0,0,0)
+          * \param[in] sensor_orientation the orientation of the cloud data in global coordinates (defaults to 1,0,0,0)
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] viewport the view port where the Point Cloud should be added (default: all)
+          */
+        bool
+        addPointCloud (const sensor_msgs::PointCloud2::ConstPtr &cloud,
+                       const GeometryHandlerConstPtr &geometry_handler,
+                       const ColorHandlerConstPtr &color_handler,
+                       const Eigen::Vector4f& sensor_origin,
+                       const Eigen::Quaternion<float>& sensor_orientation,
+                       const std::string &id = "cloud", int viewport = 0);
+
         /** \brief Add a Point Cloud (templated) to screen.
           * \param[in] cloud the input point cloud dataset
           * \param[in] color_handler a specific PointCloud visualizer handler for colors
@@ -1466,6 +1489,8 @@ namespace pcl
           * \param[in] color_handler the color handler that contains the "RGB" (scalar) data
           * \param[in] id the point cloud object id
           * \param[in] viewport the view port where the Point Cloud should be added
+          * \param[in] sensor_origin the origin of the cloud data in global coordinates (defaults to 0,0,0)
+          * \param[in] sensor_orientation the orientation of the cloud data in global coordinates (defaults to 1,0,0,0)
           */
         template <typename PointT> bool
         fromHandlersToScreen (const PointCloudGeometryHandler<PointT> &geometry_handler,
@@ -1482,6 +1507,8 @@ namespace pcl
           * \param[in] color_handler the color handler that contains the "RGB" (scalar) data
           * \param[in] id the point cloud object id
           * \param[in] viewport the view port where the Point Cloud should be added
+          * \param[in] sensor_origin the origin of the cloud data in global coordinates (defaults to 0,0,0)
+          * \param[in] sensor_orientation the orientation of the cloud data in global coordinates (defaults to 1,0,0,0)
           */
         template <typename PointT> bool
         fromHandlersToScreen (const PointCloudGeometryHandler<PointT> &geometry_handler,
@@ -1498,6 +1525,8 @@ namespace pcl
           * \param[in] color_handler the color handler that contains the "RGB" (scalar) data
           * \param[in] id the point cloud object id
           * \param[in] viewport the view port where the Point Cloud should be added
+          * \param[in] sensor_origin the origin of the cloud data in global coordinates (defaults to 0,0,0)
+          * \param[in] sensor_orientation the orientation of the cloud data in global coordinates (defaults to 1,0,0,0)
           */
         bool
         fromHandlersToScreen (const GeometryHandlerConstPtr &geometry_handler,
@@ -1514,6 +1543,8 @@ namespace pcl
           * \param[in] color_handler the color handler that contains the "RGB" (scalar) data
           * \param[in] id the point cloud object id
           * \param[in] viewport the view port where the Point Cloud should be added
+          * \param[in] sensor_origin the origin of the cloud data in global coordinates (defaults to 0,0,0)
+          * \param[in] sensor_orientation the orientation of the cloud data in global coordinates (defaults to 1,0,0,0)
           */
         template <typename PointT> bool
         fromHandlersToScreen (const GeometryHandlerConstPtr &geometry_handler,

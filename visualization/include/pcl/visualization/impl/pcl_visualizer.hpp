@@ -613,8 +613,8 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
   mapper->SetScalarModeToUsePointData();
 
   // create actor
-  vtkSmartPointer<vtkLODActor> actor = vtkSmartPointer<vtkLODActor>::New();
-  actor->SetMapper(mapper);
+  vtkSmartPointer<vtkLODActor> actor = vtkSmartPointer<vtkLODActor>::New ();
+  actor->SetMapper (mapper);
 
   // Add it to all renderers
   addActorToRenderer (actor, viewport);

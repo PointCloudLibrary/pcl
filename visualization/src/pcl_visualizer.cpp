@@ -1618,13 +1618,13 @@ pcl::visualization::PCLVisualizer::addModelFromPolyData (
     return (false);
   }
 
-  vtkSmartPointer < vtkTransformFilter > trans_filter = vtkSmartPointer<vtkTransformFilter>::New ();
+  vtkSmartPointer <vtkTransformFilter> trans_filter = vtkSmartPointer<vtkTransformFilter>::New ();
   trans_filter->SetTransform (transform);
-  trans_filter->SetInput ( polydata );
+  trans_filter->SetInput (polydata);
   trans_filter->Update();
 
   // Create an Actor
-  vtkSmartPointer < vtkLODActor > actor;
+  vtkSmartPointer <vtkLODActor> actor;
   createActorFromVTKDataSet (trans_filter->GetOutput (), actor);
   actor->GetProperty ()->SetRepresentationToWireframe ();
   addActorToRenderer (actor, viewport);
@@ -1678,16 +1678,16 @@ pcl::visualization::PCLVisualizer::addModelFromPLYFile (const std::string &filen
     return (false);
   }
 
-  vtkSmartPointer < vtkPLYReader > reader = vtkSmartPointer<vtkPLYReader>::New ();
+  vtkSmartPointer <vtkPLYReader > reader = vtkSmartPointer<vtkPLYReader>::New ();
   reader->SetFileName (filename.c_str ());
 
   //create transformation filter
-  vtkSmartPointer < vtkTransformFilter > trans_filter = vtkSmartPointer<vtkTransformFilter>::New ();
+  vtkSmartPointer <vtkTransformFilter> trans_filter = vtkSmartPointer<vtkTransformFilter>::New ();
   trans_filter->SetTransform (transform);
   trans_filter->SetInputConnection (reader->GetOutputPort ());
 
   // Create an Actor
-  vtkSmartPointer < vtkLODActor > actor;
+  vtkSmartPointer <vtkLODActor> actor;
   createActorFromVTKDataSet (trans_filter->GetOutput (), actor);
   actor->GetProperty ()->SetRepresentationToWireframe ();
   addActorToRenderer (actor, viewport);
@@ -2849,6 +2849,30 @@ pcl::visualization::PCLVisualizer::convertToVtkMatrix (
     for (int k = 0; k < 4; k++)
       vtk_matrix->SetElement (i, k, m (i, k));
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::addPointCloud (
+    const sensor_msgs::PointCloud2::ConstPtr &cloud,
+    const GeometryHandlerConstPtr &geometry_handler,
+    const ColorHandlerConstPtr &color_handler,
+    const Eigen::Vector4f& sensor_origin,
+    const Eigen::Quaternion<float>& sensor_orientation,
+    const std::string &id, int viewport)
+{
+  // Check to see if this entry already exists (has it been already added to the visualizer?)
+  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
+  if (am_it != cloud_actor_map_->end ())
+  {
+    // Here we're just pushing the handlers onto the queue. If needed, something fancier could
+    // be done such as checking if a specific handler already exists, etc.
+    am_it->second.geometry_handlers.push_back (geometry_handler);
+    am_it->second.color_handlers.push_back (color_handler);
+    return (true);
+  }
+  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport, sensor_origin, sensor_orientation));
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
