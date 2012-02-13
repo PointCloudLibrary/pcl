@@ -29,6 +29,9 @@ namespace pcl
         void
         houghVote(Entry &query, Entry &target, bin_t& bins);
 
+        virtual bool
+        castVotes(Eigen::Vector3f& indices, bin_t& bins);
+
       public:
 
         int bins_, num_angles_;

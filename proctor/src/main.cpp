@@ -10,8 +10,10 @@
 #include "proctor/primitive_model_source.h"
 
 #include "proctor/basic_proposer.h"
+#include "proctor/inverse_bag_proposer.h"
 #include "proctor/registration_proposer.h"
 #include "proctor/hough_proposer.h"
+#include "proctor/soft_hough_proposer.h"
 
 #include "proctor/uniform_sampling_wrapper.h"
 #include "proctor/harris_wrapper.h"
@@ -34,8 +36,10 @@ using pcl::proctor::PrimitiveModelSource;
 
 using pcl::proctor::Proposer;
 using pcl::proctor::BasicProposer;
+using pcl::proctor::InverseBagProposer;
 using pcl::proctor::RegistrationProposer;
 using pcl::proctor::HoughProposer;
+using pcl::proctor::SoftHoughProposer;
 
 using pcl::proctor::KeypointWrapper;
 using pcl::proctor::UniformSamplingWrapper;
@@ -85,63 +89,65 @@ struct run_proctor
     KeypointWrapper::Ptr harris_wrap (new HarrisWrapper);
     //keypoints.push_back(harris_wrap);
 
+    std::vector<Proposer::Ptr> proposers;
+    proposers.push_back(BasicProposer::Ptr(new BasicProposer));
+    proposers.push_back(InverseBagProposer::Ptr(new InverseBagProposer));
+    //proposers.push_back(RegistrationProposer::Ptr(new RegistrationProposer));
+
+    //HoughProposer::Ptr hough(new HoughProposer());
+    //hough->num_angles_ = 60;
+    //hough->bins_ = 10;
+    //proposers.push_back(hough);
+    //SoftHoughProposer::Ptr soft_hough(new SoftHoughProposer());
+    //soft_hough->num_angles_ = 60;
+    //soft_hough->bins_ = 10;
+    //proposers.push_back(soft_hough);
+
     for (unsigned int i = 0; i < features.size(); i++)
     {
       for (unsigned int j = 0; j < keypoints.size(); j++)
       {
-        //for (int num_x = 1; num_x < 10; num_x++)
-        //{
-          //for (int num_angles = 1; num_angles < 10; num_angles++)
-          //{
+        for (unsigned int k = 0; k < proposers.size(); k++)
+        {
 
-            // Configure Detector
-            Detector detector;
-            
-            // Enable visualization if available
-            if (vis_)
-              detector.enableVisualization(vis_);
+          // Configure Detector
+          Detector detector;
 
-            // Get current parameters
-            FeatureWrapper::Ptr feature = features[i];
-            KeypointWrapper::Ptr keypoint = keypoints[j];
+          // Enable visualization if available
+          if (vis_)
+            detector.enableVisualization(vis_);
 
-            std::cout << boost::format("Evaluating with feature: %|30t| %s") % feature->name_ << std::endl;
-            std::cout << boost::format("Evaluating with keypoint: %|30t| %s") % keypoint->name_ << std::endl;
+          // Get current parameters
+          FeatureWrapper::Ptr feature = features[i];
+          KeypointWrapper::Ptr keypoint = keypoints[j];
+          Proposer::Ptr proposer = proposers[k];
 
-            std::vector<Proposer::Ptr> proposers;
-            //proposers.push_back(BasicProposer::Ptr(new BasicProposer));
-            //proposers.push_back(RegistrationProposer::Ptr(new RegistrationProposer));
-            HoughProposer::Ptr hough(new HoughProposer(&detector));
-            hough->num_angles_ = 60;
-            hough->bins_ = 20;
+          std::cout << boost::format("Evaluating with feature: %|30t| %s") % feature->name_ << std::endl;
+          std::cout << boost::format("Evaluating with keypoint: %|30t| %s") % keypoint->name_ << std::endl;
 
-            proposers.push_back(hough);
-            detector.setProposers(proposers);
+          std::vector<Proposer::Ptr> input_proposers;
+          input_proposers.push_back(proposer);
 
-            detector.setKeypointWrapper(keypoint);
+          detector.setProposers(input_proposers);
 
-            detector.setFeatureEstimator(feature);
+          detector.setKeypointWrapper(keypoint);
 
-            // Configure Proctor
-            Proctor proctor;
+          detector.setFeatureEstimator(feature);
 
-            ScanningModelSource model_source("princeton", "/home/justin/Documents/benchmark/db");
-            model_source.loadModels();
+          // Configure Proctor
+          Proctor proctor;
 
-            //PrimitiveModelSource model_source("primitive");
-            //model_source.loadModels();
+          ScanningModelSource model_source("princeton", "/home/justin/Documents/benchmark/db");
+          model_source.loadModels();
 
-            proctor.setModelSource(&model_source);
-            proctor.train(detector);
-            proctor.test(detector, test_seed);
-            //double correct = proctor.test(detector, test_seed);
-            //outputFile << "Num Angles: " << num_angles * 5 << endl;
-            //outputFile << "Num Bins: " << 10 << endl;
-            proctor.printResults(detector);
-            //outputFile << "Num Correct: " << correct  << endl;
-            //outputFile << endl;
-          //}
-        //}
+          //PrimitiveModelSource model_source("primitive");
+          //model_source.loadModels();
+
+          proctor.setModelSource(&model_source);
+          proctor.train(detector);
+          proctor.test(detector, test_seed);
+          proctor.printResults(detector);
+        }
       }
     }
   }
@@ -152,12 +158,12 @@ int main(int argc, char **argv)
 
   //if (argc >= 2)
   //{
-    //model_seed = atoi(argv[1]);
+  //model_seed = atoi(argv[1]);
   //}
 
   //if (argc >= 3)
   //{
-    //test_seed = atoi(argv[2]);
+  //test_seed = atoi(argv[2]);
   //}
 
   bool enable_vis = false;

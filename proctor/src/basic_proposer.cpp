@@ -37,24 +37,12 @@ namespace pcl
         vector<int> indices;
         vector<float> distances;
 
-        StopWatch s;
         int num_found = match.tree->nearestKSearch(*query.features, pi, max_votes, indices, distances);
 
         for (int ri = 0; ri < num_found; ri++) {
-          //votes += 1. / (distances[ri] + numeric_limits<float>::epsilon());
-
-          //if (distances[ri] == 0)
-          //{
-            //cout << "Distance = 0" << "\t" << query.features->points.row(pi) << "\t" << match.features->points.row(indices[ri]) << endl;
-          //}
-          //if (distances[ri] < 10) {
-            //votes += 1;
-          //}
           votes -= distances[ri];
         }
       }
-      cout << endl << endl;
-
       return votes;
     }
 

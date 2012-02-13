@@ -59,8 +59,10 @@ if(build)
 
       include/pcl/${SUBSYS_NAME}/proposer.h
       include/pcl/${SUBSYS_NAME}/basic_proposer.h
+      include/pcl/${SUBSYS_NAME}/inverse_bag_proposer.h
       include/pcl/${SUBSYS_NAME}/registration_proposer.h
       include/pcl/${SUBSYS_NAME}/hough_proposer.h
+      include/pcl/${SUBSYS_NAME}/soft_hough_proposer.h
 
       include/pcl/${SUBSYS_NAME}/feature_wrapper.h
       include/pcl/${SUBSYS_NAME}/fpfh_wrapper.h
@@ -101,8 +103,10 @@ if(build)
                       src/scanner.cpp
 
                       src/basic_proposer.cpp
+                      src/inverse_bag_proposer.cpp
                       src/registration_proposer.cpp
                       src/hough_proposer.cpp
+                      src/soft_hough_proposer.cpp
 
                       src/fpfh_wrapper.cpp
                       src/shot_wrapper.cpp

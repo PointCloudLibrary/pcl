@@ -177,12 +177,11 @@ namespace pcl
             Eigen::Vector3f region = query_max - query_min;
             Eigen::Vector3f bin_size = region / bins_;
             Eigen::Vector3f diff = (centroid_est - query_min);
-            Eigen::Vector3i indices = diff.cwiseQuotient(bin_size).cast<int>();
+            Eigen::Vector3f indices = diff.cwiseQuotient(bin_size);
 
-            if ((indices.array() >= 0).all() && (indices.array() < bins_).all())
+            if (castVotes(indices, bins))
             {
               hits++;
-              bins[indices[0]][indices[1]][indices[2]] += 1.0 / num_angles_;
             }
             else
             {
@@ -196,6 +195,24 @@ namespace pcl
       cout << "  Correctly Matched: " << correctly_matched << endl;
       cout << "  Hit: " << hits << endl;
       cout << "  Misses: " << misses << endl;
+    }
+
+
+    bool
+    HoughProposer::castVotes(Eigen::Vector3f& indices, bin_t& bins)
+    {
+      if ((indices.array() >= 0).all() && (indices.array() < bins_).all())
+      {
+        Eigen::Vector3i indices_i = indices.cast<int>();
+
+        float vote = 1.0 / num_angles_;
+
+        bins[indices_i[0]][indices_i[1]][indices_i[2]] += vote;
+
+        return true;
+      }
+
+      return false;
     }
 
   }

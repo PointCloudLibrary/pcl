@@ -22,7 +22,7 @@ namespace pcl
         void
         getProposed(int max_num, Entry &query, std::vector<std::string> &input, std::vector<std::string> &output);
 
-        double
+        virtual double
         getVotes(Entry &query, Entry &match);
 
       private:
