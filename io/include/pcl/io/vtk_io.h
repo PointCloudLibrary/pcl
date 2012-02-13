@@ -41,6 +41,7 @@
 #define PCL_IO_VTK_IO_H_
 
 #include <pcl/pcl_macros.h>
+#include <sensor_msgs/PointCloud2.h>
 #include <pcl/PolygonMesh.h>
 
 namespace pcl
@@ -55,6 +56,15 @@ namespace pcl
       */
     PCL_EXPORTS int 
     saveVTKFile (const std::string &file_name, const pcl::PolygonMesh &triangles, unsigned precision = 5);
+
+    /** \brief Saves a PointCloud in ascii VTK format. 
+      * \param[in] file_name the name of the file to write to disk
+      * \param[in] cloud the point cloud to save
+      * \param[in] precision the output ASCII precision
+      * \ingroup io
+      */
+    PCL_EXPORTS int 
+    saveVTKFile (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, unsigned precision = 5);
   }
 }
 
