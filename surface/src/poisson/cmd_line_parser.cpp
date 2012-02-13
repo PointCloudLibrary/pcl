@@ -50,198 +50,200 @@ namespace pcl
 {
   namespace surface
   {
-
+    namespace poisson
+    {
 #ifdef WIN32
-    int strcasecmp(char* c1,char* c2)
-    { return _stricmp(c1,c2);}
+      int strcasecmp(char* c1,char* c2)
+      { return _stricmp(c1,c2);}
 #endif
 
-    cmdLineReadable::cmdLineReadable (void)
-    {
-      set = 0;
-    }
-    cmdLineReadable::~cmdLineReadable (void)
-    {
-      ;
-    }
-    int
-    cmdLineReadable::read (char**, int)
-    {
-      set = 1;
-      return 0;
-    }
+      cmdLineReadable::cmdLineReadable (void)
+      {
+        set = 0;
+      }
+      cmdLineReadable::~cmdLineReadable (void)
+      {
+        ;
+      }
+      int
+      cmdLineReadable::read (char**, int)
+      {
+        set = 1;
+        return 0;
+      }
 
-    cmdLineInt::cmdLineInt (void)
-    {
-      value = 0;
-    }
-    cmdLineInt::cmdLineInt (const int& v)
-    {
-      value = v;
-    }
-    int
-    cmdLineInt::read (char** argv, int argc)
-    {
-      if (argc > 0)
+      cmdLineInt::cmdLineInt (void)
       {
-        value = atoi (argv[0]);
-        set = 1;
-        return 1;
+        value = 0;
       }
-      else
+      cmdLineInt::cmdLineInt (const int& v)
       {
-        return 0;
+        value = v;
       }
-    }
-    cmdLineFloat::cmdLineFloat (void)
-    {
-      value = 0;
-    }
-    cmdLineFloat::cmdLineFloat (const float& v)
-    {
-      value = v;
-    }
-    int
-    cmdLineFloat::read (char** argv, int argc)
-    {
-      if (argc > 0)
+      int
+      cmdLineInt::read (char** argv, int argc)
       {
-        value = (float)atof (argv[0]);
-        set = 1;
-        return 1;
+        if (argc > 0)
+        {
+          value = atoi (argv[0]);
+          set = 1;
+          return 1;
+        }
+        else
+        {
+          return 0;
+        }
       }
-      else
+      cmdLineFloat::cmdLineFloat (void)
       {
-        return 0;
+        value = 0;
       }
-    }
-    cmdLineString::cmdLineString (void)
-    {
-      value = NULL;
-    }
-    cmdLineString::~cmdLineString (void)
-    {
-      if (value)
+      cmdLineFloat::cmdLineFloat (const float& v)
       {
-        delete[] value;
+        value = v;
+      }
+      int
+      cmdLineFloat::read (char** argv, int argc)
+      {
+        if (argc > 0)
+        {
+          value = (float)atof (argv[0]);
+          set = 1;
+          return 1;
+        }
+        else
+        {
+          return 0;
+        }
+      }
+      cmdLineString::cmdLineString (void)
+      {
         value = NULL;
       }
-    }
-    int
-    cmdLineString::read (char** argv, int argc)
-    {
-      if (argc > 0)
+      cmdLineString::~cmdLineString (void)
       {
-        value = new char[strlen (argv[0]) + 1];
-        strcpy (value, argv[0]);
-        set = 1;
-        return 1;
-      }
-      else
-      {
-        return 0;
-      }
-    }
-    cmdLinePoint3D::cmdLinePoint3D (void)
-    {
-      value.coords[0] = value.coords[1] = value.coords[2] = 0;
-    }
-    cmdLinePoint3D::cmdLinePoint3D (const Point3D<float>& v)
-    {
-      value.coords[0] = v.coords[0];
-      value.coords[1] = v.coords[1];
-      value.coords[2] = v.coords[2];
-    }
-    cmdLinePoint3D::cmdLinePoint3D (const float& v0, const float& v1, const float& v2)
-    {
-      value.coords[0] = v0;
-      value.coords[1] = v1;
-      value.coords[2] = v2;
-    }
-    int
-    cmdLinePoint3D::read (char** argv, int argc)
-    {
-      if (argc > 2)
-      {
-        value.coords[0] = (float)atof (argv[0]);
-        value.coords[1] = (float)atof (argv[1]);
-        value.coords[2] = (float)atof (argv[2]);
-        set = 1;
-        return 3;
-      }
-      else
-      {
-        return 0;
-      }
-    }
-
-    char*
-    GetFileExtension (char* fileName)
-    {
-      char* fileNameCopy;
-      char* ext = NULL;
-      char* temp;
-
-      fileNameCopy = new char[strlen (fileName) + 1];
-      assert(fileNameCopy);
-      strcpy (fileNameCopy, fileName);
-      temp = strtok (fileNameCopy, ".");
-      while (temp != NULL)
-      {
-        if (ext != NULL)
+        if (value)
         {
-          delete[] ext;
+          delete[] value;
+          value = NULL;
         }
-        ext = new char[strlen (temp) + 1];
-        assert(ext);
-        strcpy (ext, temp);
-        temp = strtok (NULL, ".");
       }
-      delete[] fileNameCopy;
-      return ext;
-    }
-
-    void
-    cmdLineParse (int argc, char **argv, char** names, int num, cmdLineReadable** readable, int dumpError)
-    {
-      int i, j;
-
-      while (argc > 0)
+      int
+      cmdLineString::read (char** argv, int argc)
       {
-        if (argv[0][0] == '-' && argv[0][1] == '-')
+        if (argc > 0)
         {
-          for (i = 0; i < num; i++)
+          value = new char[strlen (argv[0]) + 1];
+          strcpy (value, argv[0]);
+          set = 1;
+          return 1;
+        }
+        else
+        {
+          return 0;
+        }
+      }
+      cmdLinePoint3D::cmdLinePoint3D (void)
+      {
+        value.coords[0] = value.coords[1] = value.coords[2] = 0;
+      }
+      cmdLinePoint3D::cmdLinePoint3D (const Point3D<float>& v)
+      {
+        value.coords[0] = v.coords[0];
+        value.coords[1] = v.coords[1];
+        value.coords[2] = v.coords[2];
+      }
+      cmdLinePoint3D::cmdLinePoint3D (const float& v0, const float& v1, const float& v2)
+      {
+        value.coords[0] = v0;
+        value.coords[1] = v1;
+        value.coords[2] = v2;
+      }
+      int
+      cmdLinePoint3D::read (char** argv, int argc)
+      {
+        if (argc > 2)
+        {
+          value.coords[0] = (float)atof (argv[0]);
+          value.coords[1] = (float)atof (argv[1]);
+          value.coords[2] = (float)atof (argv[2]);
+          set = 1;
+          return 3;
+        }
+        else
+        {
+          return 0;
+        }
+      }
+
+      char*
+      GetFileExtension (char* fileName)
+      {
+        char* fileNameCopy;
+        char* ext = NULL;
+        char* temp;
+
+        fileNameCopy = new char[strlen (fileName) + 1];
+        assert(fileNameCopy);
+        strcpy (fileNameCopy, fileName);
+        temp = strtok (fileNameCopy, ".");
+        while (temp != NULL)
+        {
+          if (ext != NULL)
           {
-            if (!strcmp (&argv[0][2], names[i]))
+            delete[] ext;
+          }
+          ext = new char[strlen (temp) + 1];
+          assert(ext);
+          strcpy (ext, temp);
+          temp = strtok (NULL, ".");
+        }
+        delete[] fileNameCopy;
+        return ext;
+      }
+
+      void
+      cmdLineParse (int argc, char **argv, char** names, int num, cmdLineReadable** readable, int dumpError)
+      {
+        int i, j;
+
+        while (argc > 0)
+        {
+          if (argv[0][0] == '-' && argv[0][1] == '-')
+          {
+            for (i = 0; i < num; i++)
             {
+              if (!strcmp (&argv[0][2], names[i]))
+              {
+                argv++, argc--;
+                j = readable[i]->read (argv, argc);
+                argv += j, argc -= j;
+                break;
+              }
+            }
+            if (i == num)
+            {
+              if (dumpError)
+              {
+                fprintf (stderr, "invalid option: %s\n", *argv);
+                fprintf (stderr, "possible options are:\n");
+                for (i = 0; i < num; i++)
+                {
+                  fprintf (stderr, "  %s\n", names[i]);
+                }
+              }
               argv++, argc--;
-              j = readable[i]->read (argv, argc);
-              argv += j, argc -= j;
-              break;
             }
           }
-          if (i == num)
+          else
           {
             if (dumpError)
             {
               fprintf (stderr, "invalid option: %s\n", *argv);
-              fprintf (stderr, "possible options are:\n");
-              for (i = 0; i < num; i++)
-              {
-                fprintf (stderr, "  %s\n", names[i]);
-              }
+              fprintf (stderr, "  options must start with a \'--\'\n");
             }
             argv++, argc--;
           }
-        }
-        else
-        {
-          if (dumpError)
-          {
-            fprintf (stderr, "invalid option: %s\n", *argv);
-            fprintf (stderr, "  options must start with a \'--\'\n");
-          }
-          argv++, argc--;
         }
       }
     }
