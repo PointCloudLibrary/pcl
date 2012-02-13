@@ -135,7 +135,7 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (PointInT &
   pcl::computeCovarianceMatrix (input, nn_indices, xyz_centroid, covariance_matrix);
 
   // Get the plane normal
-  EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value;
+  EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value = -1;
   EIGEN_ALIGN16 Eigen::Vector3f eigen_vector;
   pcl::eigen33 (covariance_matrix, eigen_value, eigen_vector);
   model_coefficients.head<3> () = eigen_vector;

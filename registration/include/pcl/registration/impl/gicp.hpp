@@ -174,11 +174,12 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeRDerivat
 
 ////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void
-  pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTransformationBFGS (
-      const PointCloudSource &cloud_src, const std::vector<int> &indices_src, const PointCloudTarget &cloud_tgt, const std::vector<int> &indices_tgt, Eigen::Matrix4f &transformation_matrix)
+pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTransformationBFGS (const PointCloudSource &cloud_src, 
+                                                                                                  const std::vector<int> &indices_src, 
+                                                                                                  const PointCloudTarget &cloud_tgt, 
+                                                                                                  const std::vector<int> &indices_tgt, 
+                                                                                                  Eigen::Matrix4f &transformation_matrix)
 {
-  boost::mutex::scoped_lock lock (tmp_mutex_);
-
   if (indices_src.size () < 4)     // need at least 4 samples
   {
     PCL_THROW_EXCEPTION (NotEnoughPointsException, 
@@ -223,7 +224,7 @@ template <typename PointSource, typename PointTarget> void
     }
     result = bfgs.testGradient(gradient_tol);
   } while(result == BFGSSpace::Running && inner_iterations_ < max_inner_iterations_);
-  if(result == BFGSSpace::Success || inner_iterations_ == max_inner_iterations_)
+  if(result == BFGSSpace::NoProgress || result == BFGSSpace::Success || inner_iterations_ == max_inner_iterations_)
   {
     PCL_DEBUG ("[pcl::registration::TransformationEstimationBFGS::estimateRigidTransformation]");
     PCL_DEBUG ("BFGS solver finished with exit code %i \n", result);
@@ -370,6 +371,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
           transform_R(i,j)+= double(transformation_(i,k)) * double(guess(k,j));
 
     Eigen::Matrix3d R = transform_R.topLeftCorner<3,3> ();
+
     for(size_t i = 0; i < N; i++)
     {
       PointSource query = output[i];
@@ -433,14 +435,20 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
     if (nr_iterations_ >= max_iterations_ || delta < 1)
     {
       converged_ = true;
+      previous_transformation_ = transformation_;
       PCL_DEBUG ("[pcl::%s::computeTransformation] Convergence reached. Number of iterations: %d out of %d. Transformation difference: %f\n",
                  getClassName ().c_str (), nr_iterations_, max_iterations_, fabs ((transformation_ - previous_transformation_).sum ()));
     } 
-    else {
+    else
       PCL_DEBUG ("[pcl::%s::computeTransformation] Convergence failed\n", getClassName ().c_str ());
-    }
   }
-  final_transformation_ = transformation_;
+  //for some reason the static equivalent methode raises an error
+  // final_transformation_.block<3,3> (0,0) = (transformation_.block<3,3> (0,0)) * (guess.block<3,3> (0,0));
+  // final_transformation_.block <3, 1> (0, 3) = transformation_.block <3, 1> (0, 3) + guess.rightCols<1>.block <3, 1> (0, 3);
+  final_transformation_.topLeftCorner (3,3) = previous_transformation_.topLeftCorner (3,3) * guess.topLeftCorner (3,3);
+  final_transformation_(0,3) = previous_transformation_(0,3) + guess(0,3);
+  final_transformation_(1,3) = previous_transformation_(1,3) + guess(1,3);
+  final_transformation_(2,3) = previous_transformation_(2,3) + guess(2,3);
 }
 
 template <typename PointSource, typename PointTarget> void
@@ -453,5 +461,5 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::applyState(Eige
     * Eigen::AngleAxisf(x[3], Eigen::Vector3f::UnitX ());
   t.topLeftCorner<3,3> () = R * t.topLeftCorner<3,3> ();
   Eigen::Vector4f T (x[0], x[1], x[2], 0);
-  t.block <4, 1> (0, 3) += T;
+  t.col (3) += T;
 }

@@ -93,10 +93,13 @@ namespace pcl
     public:
       /** \brief Empty constructor. */
       GeneralizedIterativeClosestPoint () 
-        : k_correspondences_(20), 
-          gicp_epsilon_(0.001), rotation_epsilon_(2e-3),
-          input_covariances_(0), target_covariances_(0), mahalanobis_(0),
-          max_inner_iterations_(20)
+        : k_correspondences_(20)
+        , gicp_epsilon_(0.001)
+        , rotation_epsilon_(2e-3)
+        , input_covariances_(0)
+        , target_covariances_(0)
+        , mahalanobis_(0)
+        , max_inner_iterations_(20)
       {
         min_number_correspondences_ = 4;
         reg_name_ = "GeneralizedIterativeClosestPoint";
@@ -198,8 +201,18 @@ namespace pcl
       /** \brief Get the number of neighbors used when computing covariances as set by 
         * the user 
         */
-      void
+      int
       getCorrespondenceRandomness () { return (k_correspondences_); }
+
+      /** set maximum number of iterations at the optimization step
+        * \param[in] max maximum number of iterations for the optimizer
+        */
+      void
+      setMaximumOptimizerIterations (int max) { max_inner_iterations_ = max; }
+
+      ///\return maximum number of iterations at the optimization step
+      int
+      getMaximumOptimizerIterations () { return (max_inner_iterations_); }
 
     private:
 
@@ -222,9 +235,6 @@ namespace pcl
 
       /** \brief base transformation */
       Eigen::Matrix4f base_transformation_;
-
-      /** \brief Temporary boost mutex for \a tmp_src_ and \a tmp_tgt_*/
-      boost::mutex tmp_mutex_;
 
       /** \brief Temporary pointer to the source dataset. */
       const PointCloudSource *tmp_src_;
