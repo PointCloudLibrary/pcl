@@ -971,6 +971,17 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
       actor->Modified ();
       break;
     }
+    // Turn on/off flag to control whether data is rendered using immediate
+    // mode or note. Immediate mode rendering tends to be slower but it can
+    // handle larger datasets. The default value is immediate mode off. If you
+    // are having problems rendering a large dataset you might want to consider
+    // using immediate more rendering.
+    case PCL_VISUALIZER_IMMEDIATE_RENDERING:
+    {
+      actor->GetMapper ()->SetImmediateModeRendering ((int)value);
+      actor->Modified ();
+      break;
+    }
     case PCL_VISUALIZER_LINE_WIDTH:
     {
       actor->GetProperty ()->SetLineWidth (value);
@@ -2870,6 +2881,53 @@ pcl::visualization::PCLVisualizer::addPointCloud (
     am_it->second.color_handlers.push_back (color_handler);
     return (true);
   }
+  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport, sensor_origin, sensor_orientation));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::addPointCloud (
+    const sensor_msgs::PointCloud2::ConstPtr &cloud,
+    const GeometryHandlerConstPtr &geometry_handler,
+    const Eigen::Vector4f& sensor_origin,
+    const Eigen::Quaternion<float>& sensor_orientation,
+    const std::string &id, int viewport)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
+
+  if (am_it != cloud_actor_map_->end ())
+  {
+    // Here we're just pushing the handlers onto the queue. If needed, something fancier could
+    // be done such as checking if a specific handler already exists, etc.
+    am_it->second.geometry_handlers.push_back (geometry_handler);
+    return (true);
+  }
+
+  PointCloudColorHandlerCustom<sensor_msgs::PointCloud2>::Ptr color_handler (new PointCloudColorHandlerCustom<sensor_msgs::PointCloud2> (cloud, 255, 255, 255));
+  return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport, sensor_origin, sensor_orientation));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::addPointCloud (
+    const sensor_msgs::PointCloud2::ConstPtr &cloud,
+    const ColorHandlerConstPtr &color_handler,
+    const Eigen::Vector4f& sensor_origin,
+    const Eigen::Quaternion<float>& sensor_orientation,
+    const std::string &id, int viewport)
+{
+  // Check to see if this entry already exists (has it been already added to the visualizer?)
+  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
+  if (am_it != cloud_actor_map_->end ())
+  {
+    // Here we're just pushing the handlers onto the queue. If needed, something fancier could
+    // be done such as checking if a specific handler already exists, etc.
+    am_it->second.color_handlers.push_back (color_handler);
+    return (true);
+  }
+
+  PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2>::Ptr geometry_handler (new PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2> (cloud));
   return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport, sensor_origin, sensor_orientation));
 }
 
