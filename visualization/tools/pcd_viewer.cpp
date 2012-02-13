@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2009-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -302,10 +304,11 @@ main (int argc, char** argv)
       p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque.at (i), cloud_name.str ());
   }
 
+  sensor_msgs::PointCloud2::Ptr cloud;
   // Go through PCD files
   for (size_t i = 0; i < p_file_indices.size (); ++i)
   {
-    sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
+    cloud.reset (new sensor_msgs::PointCloud2);
     Eigen::Vector4f origin;
     Eigen::Quaternionf orientation;
     int version;
@@ -358,18 +361,12 @@ main (int argc, char** argv)
       }
     }
 
-    // Convert from blob to pcl::PointCloud
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::fromROSMsg (*cloud, *cloud_xyz);
-    cloud_xyz->sensor_origin_ = origin;
-    cloud_xyz->sensor_orientation_ = orientation;
-
-    if (cloud_xyz->points.size () == 0)
+    if (cloud->width * cloud->height == 0)
     {
       print_error ("[error: no points found!]\n");
       return (-1);
     }
-    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", (int)cloud_xyz->points.size ()); print_info (" points]\n");
+    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", (int)cloud->width * cloud->height); print_info (" points]\n");
     print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (*cloud).c_str ());
 
     // If no color was given, get random colors
@@ -386,7 +383,8 @@ main (int argc, char** argv)
     // Add the dataset with a XYZ and a random handler
     geometry_handler.reset (new pcl::visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2> (cloud));
     // Add the cloud to the renderer
-    p->addPointCloud<pcl::PointXYZ> (cloud_xyz, geometry_handler, color_handler, cloud_name.str (), viewport);
+    //p->addPointCloud<pcl::PointXYZ> (cloud_xyz, geometry_handler, color_handler, cloud_name.str (), viewport);
+    p->addPointCloud (cloud, geometry_handler, color_handler, origin, orientation, cloud_name.str (), viewport);
 
     // If normal lines are enabled
     if (normals != 0)
@@ -400,6 +398,11 @@ main (int argc, char** argv)
       }
       //
       // Convert from blob to pcl::PointCloud
+      pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
+      pcl::fromROSMsg (*cloud, *cloud_xyz);
+      cloud_xyz->sensor_origin_ = origin;
+      cloud_xyz->sensor_orientation_ = orientation;
+
       pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
       pcl::fromROSMsg (*cloud, *cloud_normals);
       std::stringstream cloud_name_normals;
@@ -429,6 +432,10 @@ main (int argc, char** argv)
       }
       //
       // Convert from blob to pcl::PointCloud
+      pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
+      pcl::fromROSMsg (*cloud, *cloud_xyz);
+      cloud_xyz->sensor_origin_ = origin;
+      cloud_xyz->sensor_orientation_ = orientation;
       pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
       pcl::fromROSMsg (*cloud, *cloud_normals);
       pcl::PointCloud<pcl::PrincipalCurvatures>::Ptr cloud_pc (new pcl::PointCloud<pcl::PrincipalCurvatures>);
@@ -458,13 +465,18 @@ main (int argc, char** argv)
           color_handler.reset (new pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2> (cloud, cloud->fields[f].name));
         }
         // Add the cloud to the renderer
-        p->addPointCloud<pcl::PointXYZ> (cloud_xyz, color_handler, cloud_name.str (), viewport);
+        //p->addPointCloud<pcl::PointXYZ> (cloud_xyz, color_handler, cloud_name.str (), viewport);
+        p->addPointCloud (cloud, color_handler, origin, orientation, cloud_name.str (), viewport);
       }
     }
     // Additionally, add normals as a handler
     geometry_handler.reset (new pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<sensor_msgs::PointCloud2> (cloud));
     if (geometry_handler->isCapable ())
-      p->addPointCloud<pcl::PointXYZ> (cloud_xyz, geometry_handler, cloud_name.str (), viewport);
+      //p->addPointCloud<pcl::PointXYZ> (cloud_xyz, geometry_handler, cloud_name.str (), viewport);
+      p->addPointCloud (cloud, geometry_handler, origin, orientation, cloud_name.str (), viewport);
+
+    // Set immediate mode rendering ON
+    p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_IMMEDIATE_RENDERING, 1.0, cloud_name.str ());
 
     // Change the cloud rendered point size
     if (psize.size () > 0)
@@ -491,6 +503,9 @@ main (int argc, char** argv)
     // Draw XYZ axes if command-line enabled
     p->addCoordinateSystem (axes, ax_x, ax_y, ax_z);
   }
+
+  // Clean up the memory used by the binary blob
+  cloud.reset ();
 
   if (ph)
   {
