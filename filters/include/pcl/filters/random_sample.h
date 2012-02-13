@@ -66,7 +66,7 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      RandomSample () : sample_ (UINT_MAX), seed_(time(NULL))
+      RandomSample () : sample_ (UINT_MAX), seed_ (time (NULL))
       {
         filter_name_ = "RandomSample";
       }
@@ -105,12 +105,13 @@ namespace pcl
         return (seed_);
       }
 
+    protected:
+
       /** \brief Number of indices that will be returned. */
       unsigned int sample_;
       /** \brief Random number seed. */
       unsigned int seed_;
 
-    protected:
       /** \brief Sample of point indices into a separate PointCloud
         * \param output the resultant point cloud
         */
@@ -143,7 +144,7 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      RandomSample () : sample_ (UINT_MAX), seed_(time(NULL))
+      RandomSample () : sample_ (UINT_MAX), seed_ (time (NULL))
       {
         filter_name_ = "RandomSample";
       }

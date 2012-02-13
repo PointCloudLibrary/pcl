@@ -225,13 +225,13 @@ endmacro(find_VTK)
 # The functioning is as following
 # try to find _lib
 # |--> _lib found ==> include the headers,
-#                     link to its library directories or include _lib_USE_FILE
-# ---> _lib not found
+# |                   link to its library directories or include _lib_USE_FILE
+# `--> _lib not found
 #                   |--> _lib is optional ==> disable it (thanks to the guardians) 
 #                   |                         and warn
 #                   ---> _lib is required
 #                                       |--> component is required explicitely ==> error
-#                                       ---> component is induced ==> warn and remove it
+#                                       `--> component is induced ==> warn and remove it
 #                                                                     from the list
 
 macro(find_external_library _component _lib _is_optional)

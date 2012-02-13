@@ -1730,7 +1730,7 @@ TEST (PCL, RSDEstimation)
   rsd.setRadiusSearch (0.06);
   rsd.compute (*rsds);
 
-  
+  // Get histograms for each point
   boost::shared_ptr<std::vector<Eigen::MatrixXf> > histograms2D = rsd.getHistograms ();
 
   // Transform list of histograms to a point cloud

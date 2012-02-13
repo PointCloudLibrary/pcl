@@ -159,7 +159,7 @@ TEST (PCL, IterativeClosestPoint)
   reg.setTransformationEpsilon (1e-8);
   reg.setMaxCorrespondenceDistance (0.05);
 
-  // Register 
+  // Register
   reg.align (cloud_reg);
   EXPECT_EQ ((int)cloud_reg.points.size (), (int)cloud_source.points.size ());
 
@@ -202,11 +202,11 @@ TEST (PCL, IterativeClosestPointNonLinear)
   reg.setMaximumIterations (50);
   reg.setTransformationEpsilon (1e-8);
 
-  // Register 
+  // Register
   reg.align (output);
   EXPECT_EQ ((int)output.points.size (), (int)cloud_source.points.size ());
 
-  // We get different results on 32 vs 64-bit systems.  To address this, we've removed the explicit output test 
+  // We get different results on 32 vs 64-bit systems.  To address this, we've removed the explicit output test
   // on the transformation matrix.  Instead, we're testing to make sure the algorithm converges to a sufficiently
   // low error by checking the fitness score.
   /*
@@ -260,11 +260,11 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
   reg.setMaximumIterations (50);
   reg.setTransformationEpsilon (1e-8);
 
-  // Register 
+  // Register
   reg.align (output);
   EXPECT_EQ ((int)output.points.size (), (int)cloud_source.points.size ());
 
-  // We get different results on 32 vs 64-bit systems.  To address this, we've removed the explicit output test 
+  // We get different results on 32 vs 64-bit systems.  To address this, we've removed the explicit output test
   // on the transformation matrix.  Instead, we're testing to make sure the algorithm converges to a sufficiently
   // low error by checking the fitness score.
   /*
@@ -399,7 +399,7 @@ TEST (PCL, SampleConsensusInitialAlignment)
   reg.setSourceFeatures (features_source.makeShared ());
   reg.setTargetFeatures (features_target.makeShared ());
 
-  // Register 
+  // Register
   reg.align (cloud_reg);
   EXPECT_EQ ((int)cloud_reg.points.size (), (int)cloud_source.points.size ());
   EXPECT_EQ (reg.getFitnessScore () < 0.0005, true);
@@ -487,7 +487,7 @@ TEST (PCL, PyramidFeatureHistogram)
   EXPECT_NEAR (similarity_value3, 0.87623238563537598, 1e-3);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Suat G: disabled, since the transformation does not look correct.
 // ToDo: update transformation from the ground truth.
 #if 0
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
