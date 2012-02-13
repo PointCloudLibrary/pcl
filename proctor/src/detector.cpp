@@ -80,14 +80,14 @@ namespace pcl
 
       std::vector<std::string> current_ids = all_ids;
 
-      for (int i = 0; i < proposers_.size(); i++)
+      for (size_t i = 0; i < proposers_.size(); i++)
       {
         Proposer::Ptr current_proposer = proposers_[i];
         current_proposer->setDatabase(database_);
         current_proposer->getProposed(num_registration, e, current_ids, current_ids);
 
         cout << "Proposed after stage " << i << ":";
-        for (int i = 0; i < current_ids.size(); i++) {
+        for (size_t i = 0; i < current_ids.size(); i++) {
           cout << current_ids[i] << " ";
         }
         cout << endl;
