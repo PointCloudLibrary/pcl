@@ -43,8 +43,8 @@
 #ifndef PCL_POISSON_SPARSEMATRIX_H_
 #define PCL_POISSON_SPARSEMATRIX_H_
 
-#include "pcl/surface/poisson/Vector.h"
-#include "pcl/surface/poisson/Allocator.h"
+#include "pcl/surface/poisson/vector.h"
+#include "pcl/surface/poisson/allocator.h"
 
 namespace pcl
 {

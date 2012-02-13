@@ -216,6 +216,7 @@ namespace pcl
       };
 
 #include "pcl/surface/impl/poisson/vector.hpp"
+
     }
   }
 }
