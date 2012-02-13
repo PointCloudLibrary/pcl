@@ -40,8 +40,8 @@
  */
 
 
-#ifndef __VECTOR_HPP
-#define __VECTOR_HPP
+#ifndef PCL_POISSON_VECTOR_H_
+#define PCL_POISSON_VECTOR_H_
 
 #define Assert assert
 #include <assert.h>
@@ -50,163 +50,174 @@ namespace pcl
 {
   namespace surface
   {
+    namespace poisson
+    {
 
-    template<class T>
+      template<class T>
       class Vector
       {
-      public:
-        Vector ();
-        Vector (const Vector<T>& V);
-        Vector (size_t N);
-        Vector (size_t N, T* pV);
-        ~Vector ();
+        public:
+          Vector ();
+          Vector (const Vector<T>& V);
+          Vector (size_t N);
+          Vector (size_t N, T* pV);
+          ~Vector ();
 
-        const T&
-        operator () (size_t i) const;
-        T&
-        operator () (size_t i);
-        const T&
-        operator [] (size_t i) const;
-        T&
-        operator [] (size_t i);
+          const T&
+          operator () (size_t i) const;
+          T&
+          operator () (size_t i);
+          const T&
+          operator [] (size_t i) const;
+          T&
+          operator [] (size_t i);
 
-        void
-        SetZero ();
+          void
+          SetZero ();
 
-        size_t
-        Dimensions () const;
-        void
-        Resize (size_t N);
+          size_t
+          Dimensions () const;
+          void
+          Resize (size_t N);
 
-        Vector
-        operator * (const T& A) const;
-        Vector
-        operator / (const T& A) const;
-        Vector
-        operator - (const Vector& V) const;
-        Vector
-        operator + (const Vector& V) const;
+          Vector
+          operator * (const T& A) const;
+          Vector
+          operator / (const T& A) const;
+          Vector
+          operator - (const Vector& V) const;
+          Vector
+          operator + (const Vector& V) const;
 
-        Vector&
-        operator *= (const T& A);
-        Vector&
-        operator /= (const T& A);
-        Vector&
-        operator += (const Vector& V);
-        Vector&
-        operator -= (const Vector& V);
+          Vector&
+          operator *= (const T& A);
+          Vector&
+          operator /= (const T& A);
+          Vector&
+          operator += (const Vector& V);
+          Vector&
+          operator -= (const Vector& V);
 
-        Vector&
-        AddScaled (const Vector& V, const T& scale);
-        Vector&
-        SubtractScaled (const Vector& V, const T& scale);
-        static void
-        Add (const Vector& V1, const T& scale1, const Vector& V2, const T& scale2, Vector& Out);
-        static void
-        Add (const Vector& V1, const T& scale1, const Vector& V2, Vector& Out);
+          Vector&
+          AddScaled (const Vector& V, const T& scale);
+          Vector&
+          SubtractScaled (const Vector& V, const T& scale);
+          static void
+          Add (const Vector& V1, const T& scale1,
+               const Vector& V2, const T& scale2,
+               Vector& Out);
+          static void
+          Add (const Vector& V1, const T& scale1,
+               const Vector& V2, Vector& Out);
 
-        Vector
-        operator - () const;
+          Vector
+          operator - () const;
 
-        Vector&
-        operator = (const Vector& V);
+          Vector&
+          operator = (const Vector& V);
 
-        T
-        Dot (const Vector& V) const;
+          T
+          Dot (const Vector& V) const;
 
-        T
-        Length () const;
+          T
+          Length () const;
 
-        T
-        Norm (size_t Ln) const;
-        void
-        Normalize ();
+          T
+          Norm (size_t Ln) const;
+          void
+          Normalize ();
 
-        T* m_pV;
-      protected:
-        size_t m_N;
+          T* m_pV;
+        protected:
+          size_t m_N;
 
       };
 
-    template<class T, int Dim>
+      template<class T, int Dim>
       class NVector
       {
-      public:
-        NVector ();
-        NVector (const NVector& V);
-        NVector (size_t N);
-        NVector (size_t N, T* pV);
-        ~NVector ();
+        public:
+          NVector ();
+          NVector (const NVector& V);
+          NVector (size_t N);
+          NVector (size_t N, T* pV);
+          ~NVector ();
 
-        const T*
-        operator () (size_t i) const;
-        T*
-        operator () (size_t i);
-        const T*
-        operator [] (size_t i) const;
-        T*
-        operator [] (size_t i);
+          const T*
+          operator () (size_t i) const;
+          T*
+          operator () (size_t i);
+          const T*
+          operator [] (size_t i) const;
+          T*
+          operator [] (size_t i);
 
-        void
-        SetZero ();
+          void
+          SetZero ();
 
-        size_t
-        Dimensions () const;
-        void
-        Resize (size_t N);
+          size_t
+          Dimensions () const;
+          void
+          Resize (size_t N);
 
-        NVector
-        operator * (const T& A) const;
-        NVector
-        operator / (const T& A) const;
-        NVector
-        operator - (const NVector& V) const;
-        NVector
-        operator + (const NVector& V) const;
+          NVector
+          operator * (const T& A) const;
+          NVector
+          operator / (const T& A) const;
+          NVector
+          operator - (const NVector& V) const;
+          NVector
+          operator + (const NVector& V) const;
 
-        NVector&
-        operator *= (const T& A);
-        NVector&
-        operator /= (const T& A);
-        NVector&
-        operator += (const NVector& V);
-        NVector&
-        operator -= (const NVector& V);
+          NVector&
+          operator *= (const T& A);
+          NVector&
+          operator /= (const T& A);
+          NVector&
+          operator += (const NVector& V);
+          NVector&
+          operator -= (const NVector& V);
 
-        NVector&
-        AddScaled (const NVector& V, const T& scale);
-        NVector&
-        SubtractScaled (const NVector& V, const T& scale);
-        static void
-        Add (const NVector& V1, const T& scale1, const NVector& V2, const T& scale2, NVector& Out);
-        static void
-        Add (const NVector& V1, const T& scale1, const NVector& V2, NVector& Out);
+          NVector&
+          AddScaled (const NVector& V,
+                     const T& scale);
+          NVector&
+          SubtractScaled (const NVector& V,
+                          const T& scale);
+          static void
+          Add (const NVector& V1, const T& scale1,
 
-        NVector
-        operator - () const;
+               const NVector& V2, const T& scale2, NVector& Out);
+          static void
+          Add (const NVector& V1, const T& scale1,
+               const NVector& V2, NVector& Out);
 
-        NVector&
-        operator = (const NVector& V);
+          NVector
+          operator - () const;
 
-        T
-        Dot (const NVector& V) const;
+          NVector&
+          operator = (const NVector& V);
 
-        T
-        Length () const;
+          T
+          Dot (const NVector& V) const;
 
-        T
-        Norm (size_t Ln) const;
-        void
-        Normalize ();
+          T
+          Length () const;
 
-        T* m_pV;
-      protected:
-        size_t m_N;
+          T
+          Norm (size_t Ln) const;
+          void
+          Normalize ();
+
+          T* m_pV;
+        protected:
+          size_t m_N;
 
       };
 
 #include "pcl/surface/impl/poisson/Vector.hpp"
+    }
   }
 }
 
-#endif
+#endif // PCL_POISSON_VECTOR_H_

@@ -39,77 +39,104 @@
  *
  */
 
-#ifndef POISSON_CMD_LINE_PARSER_H_
-#define POISSON_CMD_LINE_PARSER_H_
+#ifndef PCL_POISSON_CMD_LINE_PARSER_H_
+#define PCL_POISSON_CMD_LINE_PARSER_H_
 #include <stdarg.h>
 #include <string.h>
 
-#include "pcl/surface/poisson/Geometry.h"
+#include "pcl/surface/poisson/geometry.h"
 
 namespace pcl
 {
   namespace surface
   {
+    namespace poisson
+    {
 #ifdef WIN32
-    int strcasecmp(char* c1,char* c2);
+      int strcasecmp(char* c1,char* c2);
 #endif
 
-    class cmdLineReadable
-    {
-    public:
-      int set;
-      cmdLineReadable (void);
-      virtual
-      ~cmdLineReadable (void);
-      virtual int
-      read (char** argv, int argc);
-    };
+      class cmdLineReadable
+      {
+        public:
+          int set;
 
-    class cmdLineInt : public cmdLineReadable
-    {
-    public:
-      int value;
-      cmdLineInt ();
-      cmdLineInt (const int& v);
-      int
-      read (char** argv, int argc);
-    };
-    class cmdLineFloat : public cmdLineReadable
-    {
-    public:
-      float value;
-      cmdLineFloat ();
-      cmdLineFloat (const float& f);
-      int
-      read (char** argv, int argc);
-    };
-    class cmdLineString : public cmdLineReadable
-    {
-    public:
-      char* value;
-      cmdLineString ();
-      ~cmdLineString ();
-      int
-      read (char** argv, int argc);
-    };
-    class cmdLinePoint3D : public cmdLineReadable
-    {
-    public:
-      Point3D<float> value;
-      cmdLinePoint3D ();
-      cmdLinePoint3D (const Point3D<float>& v);
-      cmdLinePoint3D (const float& v0, const float& v1, const float& v2);
-      int
-      read (char** argv, int argc);
-    };
+          cmdLineReadable (void);
 
-    // This reads the arguments in argc, matches them against "names" and sets
-    // the values of "r" appropriately. Parameters start with "--"
-    void
-    cmdLineParse (int argc, char **argv, char** names, int num, cmdLineReadable** r, int dumpError = 1);
+          virtual
+          ~cmdLineReadable (void);
 
-    char*
-    GetFileExtension (char* fileName);
+          virtual int
+          read (char** argv, int argc);
+      };
+
+
+      class cmdLineInt : public cmdLineReadable
+      {
+        public:
+          int value;
+
+          cmdLineInt ();
+
+          cmdLineInt (const int& v);
+
+          int
+          read (char** argv, int argc);
+      };
+
+
+      class cmdLineFloat : public cmdLineReadable
+      {
+        public:
+          float value;
+
+          cmdLineFloat ();
+
+          cmdLineFloat (const float& f);
+
+          int
+          read (char** argv, int argc);
+      };
+
+
+      class cmdLineString : public cmdLineReadable
+      {
+        public:
+          char* value;
+
+          cmdLineString ();
+
+          ~cmdLineString ();
+
+          int
+          read (char** argv, int argc);
+      };
+
+
+      class cmdLinePoint3D : public cmdLineReadable
+      {
+        public:
+          Point3D<float> value;
+
+          cmdLinePoint3D ();
+
+          cmdLinePoint3D (const Point3D<float>& v);
+
+          cmdLinePoint3D (const float& v0, const float& v1, const float& v2);
+
+          int
+          read (char** argv, int argc);
+      };
+
+
+      /* \brief This reads the arguments in argc, matches them against "names" and sets the values of "r" appropriately.
+       * Parameters start with "--" */
+      void
+      cmdLineParse (int argc, char **argv, char** names, int num, cmdLineReadable** r, int dumpError = 1);
+
+      char*
+      GetFileExtension (char* fileName);
+    }
   }
 }
-#endif // CMD_LINE_PARSER_INCLUDED
+#endif // PCL_CMD_LINE_PARSER_INCLUDED

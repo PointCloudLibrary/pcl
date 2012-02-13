@@ -40,8 +40,10 @@
  */
 
 
-#ifndef TIME_INCLUDED
-#define TIME_INCLUDED
+#ifndef PCL_POISSON_TIME_H_
+#define PCL_POISSON_TIME_H_
+
 double
 Time (void);
-#endif // TIME_INCLUDED
+
+#endif // PCL_POISSON_TIME_H_

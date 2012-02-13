@@ -39,6 +39,9 @@
  *
  */
 
+#ifndef PCL_SURFACE_IMPL_POISSON_POLYNOMIAL_H_
+#define PCL_SURFACE_IMPL_POISSON_POLYNOMIAL_H_
+
 
 #include <float.h>
 #include <algorithm>
@@ -464,3 +467,5 @@ template<int Degree>
       }
     }
   }
+
+#endif // PCL_SURFACE_IMPL_POISSON_POLYNOMIAL_H_

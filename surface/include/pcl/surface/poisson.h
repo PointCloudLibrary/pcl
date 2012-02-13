@@ -38,13 +38,12 @@
 
 #include <pcl/surface/reconstruction.h>
 #include <string>
-#include "pcl/surface/poisson/Geometry.h"
+#include "pcl/surface/poisson/geometry.h"
 
 namespace pcl
 {
   namespace surface
   {
-
     /** \brief The Poisson surface reconstruction algorithm.
      * \author Gregory Long
      * \ingroup surface
@@ -186,12 +185,11 @@ namespace pcl
         float samples_per_node_;
         float scale_;
 
-        template<int Degree>
-          void
-          execute (PolygonMesh &output);
+        template<int Degree> void
+        execute (PolygonMesh &output);
 
         void
-        writeOutput (PolygonMesh &output, CoredMeshData* mesh, const Point3D<float>& translate, const float& scale);
+        writeOutput (PolygonMesh &output, poisson::CoredMeshData* mesh, const poisson::Point3D<float>& translate, const float& scale);
 
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW

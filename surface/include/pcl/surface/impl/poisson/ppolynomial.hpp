@@ -39,8 +39,11 @@
  *
  */
 
+#ifndef PCL_SURFACE_IMPL_POISSON_P_POLYNOMIAL_H_
+#define PCL_SURFACE_IMPL_POISSON_P_POLYNOMIAL_H_
 
-#include "pcl/surface/poisson/Factor.h"
+
+#include "pcl/surface/poisson/factor.h"
 
 ////////////////////////
 // StartingPolynomial //
@@ -681,3 +684,6 @@ template<int Degree>
       fwrite (&v, sizeof(float), 1, fp);
     }
   }
+
+
+#endif // PCL_SURFACE_IMPL_POISSON_P_POLYNOMIAL_H_

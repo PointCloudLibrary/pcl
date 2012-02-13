@@ -30,14 +30,17 @@
 
  */
 
-#ifndef __PLY_H__
-#define __PLY_H__
+#ifndef PCL_POISSON_PLY_H_
+#define PCL_POISSON_PLY_H_
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stddef.h>
 #include <string.h>
 #include <vector>
-#include "pcl/surface/poisson/Geometry.h"
+#include "pcl/surface/poisson/geometry.h"
+
+
 namespace pcl
 {
   namespace surface
@@ -263,4 +266,4 @@ namespace pcl
   }
 }
 
-#endif /* !__PLY_H__ */
+#endif // PCL_POISSON_PLY_H_

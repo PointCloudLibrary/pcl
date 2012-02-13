@@ -39,6 +39,8 @@
  *
  */
 
+#ifndef PCL_SURFACE_IMPL_POISSON_SPARSE_MATRIX_H_
+#define PCL_SURFACE_IMPL_POISSON_SPARSE_MATRIX_H_
 
 #include <float.h>
 
@@ -752,3 +754,6 @@ template<class T>
       }
       return iters;
     }
+
+
+#endif // PCL_SURFACE_IMPL_POISSON_SPARSE_MATRIX_H_

@@ -40,6 +40,11 @@
  */
 
 
+#ifndef PCL_SURFACE_IMPL_POISSON_FUNCTION_DATA_H_
+#define PCL_SURFACE_IMPL_POISSON_FUNCTION_DATA_H_
+
+
+
 //////////////////
 // FunctionData //
 //////////////////
@@ -479,3 +484,4 @@ template<int Degree, class Real>
     }
   }
 
+#endif // PCL_SURFACE_IMPL_POISSON_FUNCTION_DATA_H_

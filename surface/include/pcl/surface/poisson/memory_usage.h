@@ -40,8 +40,8 @@
  */
 
 
-#ifndef MEMORY_USAGE_INCLUDED
-#define MEMORY_USAGE_INCLUDED
+#ifndef PCL_POISSON_MEMORY_USAGE_H_
+#define PCL_POISSON_MEMORY_USAGE_H_
 
 #ifdef WIN32
 
@@ -220,4 +220,4 @@ public:
 
 #endif // !__APPLE__  
 #endif // WIN32
-#endif // MEMORY_USAGE_INCLUDE
+#endif // PCL_POISSON_MEMORY_USAGE_H_

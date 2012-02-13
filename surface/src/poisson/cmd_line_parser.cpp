@@ -44,7 +44,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "pcl/surface/poisson/CmdLineParser.h"
+#include "pcl/surface/poisson/cmd_line_parser.h"
 
 namespace pcl
 {

@@ -39,21 +39,20 @@
 #include "pcl/surface/poisson.h"
 #include <pcl/common/common.h>
 #include <pcl/common/vector_average.h>
-#include <pcl/features/normal_3d.h>
 #include <pcl/Vertices.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <float.h>
-#include "pcl/surface/poisson/Time.h"
-#include "pcl/surface/poisson/MarchingCubes.h"
-#include "pcl/surface/poisson/Octree.h"
-#include "pcl/surface/poisson/SparseMatrix.h"
-#include "pcl/surface/poisson/CmdLineParser.h"
-#include "pcl/surface/poisson/FunctionData.h"
-#include "pcl/surface/poisson/PPolynomial.h"
-#include "pcl/surface/poisson/MemoryUsage.h"
-#include "pcl/surface/poisson/MultiGridOctreeData.h"
+#include "pcl/surface/poisson/time.h"
+#include "pcl/surface/poisson/marching_cubes.h"
+#include "pcl/surface/poisson/octree.h"
+#include "pcl/surface/poisson/sparse_matrix.h"
+#include "pcl/surface/poisson/cmd_line_parser.h"
+#include "pcl/surface/poisson/function_data.h"
+#include "pcl/surface/poisson/ppolynomial.h"
+#include "pcl/surface/poisson/memory_usage.h"
+#include "pcl/surface/poisson/multi_grid_octree_data.h"
 
 #define SCALE 1.25
 #define MEMORY_ALLOCATOR_BLOCK_SIZE 1<<12
@@ -61,9 +60,22 @@
 #include <stdarg.h>
 #include <string>
 
+using namespace pcl::surface::poisson;
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
-pcl::surface::Poisson<PointNT>::Poisson () : no_reset_samples_(false),no_clip_tree_(false),confidence_(false),manifold_(false),depth_(10),solver_divide_(8),iso_divide_(8),refine_(3),kernel_depth_(8),samples_per_node_(1.0),scale_(1.25)
+pcl::surface::Poisson<PointNT>::Poisson ()
+  : no_reset_samples_(false),
+    no_clip_tree_(false),
+    confidence_(false),
+    manifold_(false),
+    depth_(10),
+    solver_divide_(8),
+    iso_divide_(8),
+    refine_(3),
+    kernel_depth_(8),
+    samples_per_node_(1.0),
+    scale_(1.25)
 {
 
 }

@@ -39,6 +39,9 @@
  *
  */
 
+#ifndef PCL_SURFACE_IMPL_POISSON_OCTREE_H_
+#define PCL_SURFACE_IMPL_POISSON_OCTREE_H_
+
 
 #include <stdlib.h>
 #include <algorithm>
@@ -2651,3 +2654,6 @@ template<class NodeData, class Real>
       index[i] = BinaryNode<Real>::CornerIndex (maxDepth, d + 1, o[i] << 1, 1);
     }
   }
+
+
+#endif // PCL_SURFACE_IMPL_POISSON_OCTREE_H_
