@@ -225,14 +225,11 @@ namespace pcl
     PointCloud<PointNormal>::Ptr
     ScanningModelSource::getTestModel(std::string model_id)
     {
-      boost::uniform_real<float> theta_u(theta_min, theta_max);
-      boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > theta_gen(rng_, theta_u);
+      float theta = (*theta_gen)();
+      float phi = (*phi_gen)();
 
-      boost::uniform_real<float> phi_u(phi_min, phi_max);
-      boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > phi_gen(rng_, phi_u);
-
-      float theta = theta_gen();
-      float phi = phi_gen();
+      cout << "Theta: " << theta << endl;
+      cout << "Phi: " << phi << endl;
 
       PointCloud<PointNormal>::Ptr test_scan = Scanner::getCloudCached(theta, phi, models_[model_id]);
       Eigen::Affine3f t;
@@ -241,6 +238,16 @@ namespace pcl
       transformPointCloudWithNormals(*test_scan, *rotated_scan, t);
       //return test_scan;
       return rotated_scan;
+    }
+
+    void
+    ScanningModelSource::resetTestGenerator()
+    {
+      rng_.seed(0);
+      theta_u = boost::uniform_real<float>(theta_min, theta_max);
+      phi_u = boost::uniform_real<float>(phi_min, phi_max);
+      theta_gen = new boost::variate_generator<boost::mt19937&, boost::uniform_real<float> >(rng_, theta_u);
+      phi_gen = new boost::variate_generator<boost::mt19937&, boost::uniform_real<float> >(rng_, phi_u);
     }
   }
 

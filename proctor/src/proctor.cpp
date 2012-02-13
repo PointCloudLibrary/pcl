@@ -70,6 +70,8 @@ namespace pcl
     {
       srand(seed);
 
+      source_->resetTestGenerator();
+
       // run the tests
       memset(confusion, 0, sizeof(confusion));
 
