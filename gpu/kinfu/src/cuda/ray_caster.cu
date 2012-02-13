@@ -154,107 +154,6 @@ namespace pcl
                     readTsdf (g.x + 1, g.y + 1, g.z + 1) * a * b * c;
         return res;
       }
-#if 0
-      __device__ __forceinline__ void
-      operator () () const
-      {
-        int x = threadIdx.x + blockIdx.x * CTA_SIZE_X;
-        int y = threadIdx.y + blockIdx.y * CTA_SIZE_Y;
-
-        if (x >= cols || y >= rows)
-          return;
-
-        vmap.ptr (y)[x] = numeric_limits<float>::quiet_NaN ();
-        nmap.ptr (y)[x] = numeric_limits<float>::quiet_NaN ();
-
-        float3 ray_start = tcurr;
-        float3 ray_next = Rcurr * get_ray_next (x, y) + tcurr;
-
-        float3 ray_dir = normalized (ray_next - ray_start);
-
-        //ensure that it isn't a degenerate case
-        ray_dir.x = (ray_dir.x == 0.f) ? 1e-15 : ray_dir.x;
-        ray_dir.y = (ray_dir.y == 0.f) ? 1e-15 : ray_dir.y;
-        ray_dir.z = (ray_dir.z == 0.f) ? 1e-15 : ray_dir.z;
-
-        // computer time when entry and exit volume
-        float time_start_volume = getMinTime (volume_size, ray_start, ray_dir);
-        float time_exit_volume = getMaxTime (volume_size, ray_start, ray_dir);
-
-        const float min_dist = 0.f;         //in mm
-        time_start_volume = fmax (time_start_volume, min_dist);
-        if (time_start_volume >= time_exit_volume)
-          return;
-
-        int time_curr = time_start_volume;
-        int3 g = getVoxel (ray_start + ray_dir * time_curr);
-        g.x = max (0, min (g.x, VOLUME_X - 1));
-        g.y = max (0, min (g.y, VOLUME_Y - 1));
-        g.z = max (0, min (g.z, VOLUME_Z - 1));
-
-        float tsdf = readTsdf (g.x, g.y, g.z);
-
-        //infinite loop guard
-        const float max_time = 3 * (volume_size.x + volume_size.y + volume_size.z);
-
-        for (; time_curr < max_time; time_curr += time_step)
-        {
-          float tsdf_prev = tsdf;
-
-          int3 g = getVoxel (  ray_start + ray_dir * (time_curr + time_step)  );
-          if (!checkInds (g))
-            break;
-
-          tsdf = readTsdf (g.x, g.y, g.z);
-
-          if (tsdf_prev < 0.f && tsdf > 0.f)
-            break;
-
-          if (tsdf_prev > 0.f && tsdf < 0.f)           //zero crossing
-          {
-            float Ftdt = interpolateTrilineary (ray_start, ray_dir, time_curr + time_step);
-            if (isnan (Ftdt))
-              break;
-
-            float Ft = interpolateTrilineary (ray_start, ray_dir, time_curr);
-            if (isnan (Ft))
-              break;
-
-            float Ts = time_curr - time_step * Ft / (Ftdt - Ft);
-
-            float3 vetex_found = ray_start + ray_dir * Ts;
-
-            vmap.ptr (y       )[x] = vetex_found.x;
-            vmap.ptr (y + rows)[x] = vetex_found.y;
-            vmap.ptr (y + 2 * rows)[x] = vetex_found.z;
-
-            int3 g = getVoxel ( ray_start + ray_dir * time_curr );
-            //if (g.x != 0 && g.y != 0 && g.z != 0 && g.x != VOLUME_X - 1 && g.y != VOLUME_Y - 1 && g.z != VOLUME_Z - 1)
-            {
-              float3 normal;
-
-              //extract gradient
-              normal.x = readTsdf (g.x + 1, g.y, g.z) - readTsdf (g.x - 1, g.y, g.z);
-              normal.y = readTsdf (g.x, g.y + 1, g.z) - readTsdf (g.x, g.y - 1, g.z);
-              normal.z = readTsdf (g.x, g.y, g.z + 1) - readTsdf (g.x, g.y, g.z - 1);
-
-              //normalize if volume isn't cubic
-              normal.x /= cell_size.x;
-              normal.y /= cell_size.y;
-              normal.z /= cell_size.z;
-
-              normal = normalized (normal);
-
-              nmap.ptr (y       )[x] = normal.x;
-              nmap.ptr (y + rows)[x] = normal.y;
-              nmap.ptr (y + 2 * rows)[x] = normal.z;
-            }
-            break;
-          }
-        }          /* for(;;)  */
-      }
-
-#else
       __device__ __forceinline__ void
       operator () () const
       {
@@ -310,7 +209,6 @@ namespace pcl
           if (tsdf_prev < 0.f && tsdf > 0.f)
             break;
 
-
           if (tsdf_prev > 0.f && tsdf < 0.f)           //zero crossing
           {
             float Ftdt = interpolateTrilineary (ray_start, ray_dir, time_curr + time_step);
@@ -337,31 +235,31 @@ namespace pcl
               float3 n;
 
               t = vetex_found;
-              t.x += cell_size.x / 4;
+              t.x += cell_size.x;
               float Fx1 = interpolateTrilineary (t);
 
               t = vetex_found;
-              t.x -= cell_size.x / 4;
+              t.x -= cell_size.x;
               float Fx2 = interpolateTrilineary (t);
 
               n.x = (Fx1 - Fx2);
 
               t = vetex_found;
-              t.y += cell_size.y / 4;
+              t.y += cell_size.y;
               float Fy1 = interpolateTrilineary (t);
 
               t = vetex_found;
-              t.y -= cell_size.y / 4;
+              t.y -= cell_size.y;
               float Fy2 = interpolateTrilineary (t);
 
               n.y = (Fy1 - Fy2);
 
               t = vetex_found;
-              t.z += cell_size.z / 4;
+              t.z += cell_size.z;
               float Fz1 = interpolateTrilineary (t);
 
               t = vetex_found;
-              t.z -= cell_size.z / 4;
+              t.z -= cell_size.z;
               float Fz2 = interpolateTrilineary (t);
 
               n.z = (Fz1 - Fz2);
@@ -377,8 +275,6 @@ namespace pcl
 
         }          /* for(;;)  */
       }
-
-#endif
     };
 
     __global__ void

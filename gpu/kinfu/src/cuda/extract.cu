@@ -341,36 +341,36 @@ namespace pcl
         float3 point = fetchPoint (idx);
         int3 g = getVoxel (point);
 
-        if (g.x > 2 && g.y > 2 && g.z > 2 && g.x < VOLUME_X - 3 && g.y < VOLUME_Y - 3 && g.z < VOLUME_Z - 3)
+        if (g.x > 1 && g.y > 1 && g.z > 1 && g.x < VOLUME_X - 2 && g.y < VOLUME_Y - 2 && g.z < VOLUME_Z - 2)
         {
           float3 t;
 
           t = point;
-          t.x += cell_size.x / 4;
+          t.x += cell_size.x;
           float Fx1 = interpolateTrilineary (t);
 
           t = point;
-          t.x -= cell_size.x / 4;
+          t.x -= cell_size.x;
           float Fx2 = interpolateTrilineary (t);
 
           n.x = (Fx1 - Fx2);
 
           t = point;
-          t.y += cell_size.y / 4;
+          t.y += cell_size.y;
           float Fy1 = interpolateTrilineary (t);
 
           t = point;
-          t.y -= cell_size.y / 4;
+          t.y -= cell_size.y;
           float Fy2 = interpolateTrilineary (t);
 
           n.y = (Fy1 - Fy2);
 
           t = point;
-          t.z += cell_size.z / 4;
+          t.z += cell_size.z;
           float Fz1 = interpolateTrilineary (t);
 
           t = point;
-          t.z -= cell_size.z / 4;
+          t.z -= cell_size.z;
           float Fz2 = interpolateTrilineary (t);
 
           n.z = (Fz1 - Fz2);
