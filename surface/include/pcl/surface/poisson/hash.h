@@ -46,11 +46,12 @@
 
 #ifdef WIN32
 #include <hash_map>
+using namespace stdext;
 #else // !WIN32
 #include <ext/hash_map>
-namespace stdext = __gnu_cxx;
+using namespace __gnu_cxx;
 
-namespace stdext
+namespace __gnu_cxx
 {
   template<>
   struct hash<long long>
