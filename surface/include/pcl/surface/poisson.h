@@ -45,7 +45,7 @@ namespace pcl
   namespace surface
   {
     /** \brief The Poisson surface reconstruction algorithm.
-     * \author Gregory Long
+     * \author Alexandru-Eugen Ichim, Gregory Long
      * \ingroup surface
      *
      * TODO: Modify to use PCL's Octree & Marching Cubes code
@@ -76,41 +76,91 @@ namespace pcl
 
         void
         performReconstruction (pcl::PointCloud<PointNT> &points,
-                               std::vector<pcl::Vertices> &polygons)
-        { PCL_ERROR ("[pcl::surface::Poisson::performReconstruction] Method not implemented!\n"); }
+                               std::vector<pcl::Vertices> &polygons);
+
+
+        inline void
+        setDegree (int degree) { degree_ = degree; }
+
+        inline int
+        getDegree () { return degree_; }
+
 
         inline void
         setNoResetSamples (bool no_reset_samples) { no_reset_samples_ = no_reset_samples; }
 
+        inline bool
+        getNoResetSamples () { return no_reset_samples_; }
+
+
         inline void
         setNoClipTree (bool no_clip_tree) { no_clip_tree_ = no_clip_tree; }
+
+        inline bool
+        getNoClipTree () { return no_clip_tree_; }
+
 
         inline void
         setConfidence (bool confidence) { confidence_ = confidence; }
 
+        inline bool
+        getConfidence () { return confidence_; }
+
+
         inline void
         setManifold (bool manifold) { manifold_ = manifold; }
+
+        inline bool
+        getManifold () { return manifold_; }
+
 
         inline void
         setDepth (int depth) { depth_ = depth; }
 
+        inline int
+        getDepth () { return depth_; }
+
+
         inline void
         setSolverDivide (int solver_divide) { solver_divide_ = solver_divide; }
+
+        inline int
+        getSolverDivide () { return solver_divide_; }
+
 
         inline void
         setIsoDivide (int iso_divide) { iso_divide_ = iso_divide; }
 
+        inline int
+        getIsoDivide () { return iso_divide_; }
+
+
         inline void
         setRefine (int refine) { refine_ = refine; }
+
+        inline int
+        getRefine () { return refine_; }
+
 
         inline void
         setKernelDepth (int kernel_depth) { kernel_depth_ = kernel_depth; }
 
+        inline int
+        getKernelDepth () { return kernel_depth_; }
+
+
         inline void
         setSamplesPerNode (float samples_per_node) { samples_per_node_ = samples_per_node; }
 
+        inline float
+        getSamplesPerNode () { return samples_per_node_; }
+
+
         inline void
         setScale (float scale) { scale_ = scale; }
+
+        inline float
+        getScale () { return scale_; }
 
       protected:
         /** \brief The point cloud input (XYZ+Normals). */
@@ -131,15 +181,14 @@ namespace pcl
         int iso_divide_;
         int refine_;
         int kernel_depth_;
+        int degree_;
 
         float samples_per_node_;
         float scale_;
 
         template<int Degree> void
-        execute (PolygonMesh &output);
-
-        void
-        writeOutput (PolygonMesh &output, poisson::CoredMeshData* mesh, const poisson::Point3D<float>& translate, const float& scale);
+        execute (poisson::CoredMeshData &mesh,
+                 poisson::Point3D<float> &translate);
 
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW

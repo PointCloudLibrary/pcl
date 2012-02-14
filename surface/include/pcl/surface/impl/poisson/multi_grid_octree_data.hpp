@@ -1885,12 +1885,12 @@ Octree<Degree>::RestrictedLaplacianMatrixFunction::Function (const TreeOctNode* 
   return 1;
 }
 
+
 template<int Degree>
 void
 Octree<Degree>::GetMCIsoTriangles (const Real& isoValue, CoredMeshData* mesh, const int& fullDepthIso,
                                    const int& nonLinearFit, bool addBarycenter)
-                                   {
-  double t;
+{
   TreeOctNode* temp;
 
   hash_map<long long, int> roots;

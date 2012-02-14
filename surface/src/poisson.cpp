@@ -40,3 +40,4 @@
 
 // Instantiations of specific point types
 PCL_INSTANTIATE(Poisson, (pcl::PointNormal)(pcl::PointXYZRGBNormal)(pcl::PointXYZINormal));
+
