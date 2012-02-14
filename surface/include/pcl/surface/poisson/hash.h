@@ -48,9 +48,9 @@
 #include <hash_map>
 #else // !WIN32
 #include <ext/hash_map>
-using namespace __gnu_cxx;
+namespace stdext = __gnu_cxx;
 
-namespace __gnu_cxx
+namespace stdext
 {
   template<>
   struct hash<long long>

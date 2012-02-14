@@ -229,7 +229,7 @@ namespace pcl
           addTriangle (const int& p1, const int& p2, const int& p3);
 
         protected:
-          hash_map<long long, int> edgeMap;
+          stdext::hash_map<long long, int> edgeMap;
 
           static long long
           EdgeIndex (const int& p1, const int& p2);
