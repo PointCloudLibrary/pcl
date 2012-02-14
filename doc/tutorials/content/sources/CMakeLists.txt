@@ -48,6 +48,7 @@ foreach(subdir
           # Additional/Complex tutorials presented at PCL events
           iros2011
           iccv2011
+		  normal_estimation_using_integral_images
        )
 
       add_subdirectory(${subdir})
