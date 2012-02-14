@@ -2278,13 +2278,13 @@ Octree<Degree>::GetIsoValue (void)
   {
     const TreeOctNode* temp;
     Real isoValue, weightSum, w;
-    Real myRadius;
+    //Real myRadius;
     PointIndexValueFunction cf;
 
     fData.setValueTables (fData.VALUE_FLAG, 0);
     cf.valueTables = fData.valueTables;
     cf.res2 = fData.res2;
-    myRadius = radius;
+    //myRadius = radius;
     isoValue = weightSum = 0;
     temp = tree.nextNode ();
     while (temp)
