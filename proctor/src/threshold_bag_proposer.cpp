@@ -78,7 +78,7 @@ namespace pcl
         }
       }
 
-      for (int i = 0; i < feature_distances.size(); i++)
+      for (unsigned int i = 0; i < feature_distances.size(); i++)
       {
         if (feature_distances[i] < threshold_)
         {

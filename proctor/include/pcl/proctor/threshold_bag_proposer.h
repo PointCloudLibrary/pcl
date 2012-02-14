@@ -26,7 +26,7 @@ namespace pcl
         double
         getVotes(Entry &query, Entry &match);
 
-        double
+        void
         setThreshold(double threshold)
         {
           threshold_ = threshold;
