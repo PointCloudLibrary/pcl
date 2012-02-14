@@ -45,7 +45,7 @@
 
 #include "pcl/surface/poisson/allocator.h"
 #include "pcl/surface/poisson/binary_node.h"
-#include "pcl/surface/poisson/marching_cubes.h"
+#include "pcl/surface/poisson/marching_cubes_poisson.h"
 
 namespace pcl
 {

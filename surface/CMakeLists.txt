@@ -75,7 +75,7 @@ if(build)
     	include/pcl/${SUBSYS_NAME}/poisson/function_data.h
     	include/pcl/${SUBSYS_NAME}/poisson/geometry.h
     	include/pcl/${SUBSYS_NAME}/poisson/hash.h
-    	include/pcl/${SUBSYS_NAME}/poisson/marching_cubes.h
+    	include/pcl/${SUBSYS_NAME}/poisson/marching_cubes_poisson.h
     	include/pcl/${SUBSYS_NAME}/poisson/memory_usage.h
     	include/pcl/${SUBSYS_NAME}/poisson/multi_grid_octree_data.h
     	include/pcl/${SUBSYS_NAME}/poisson/octree.h
@@ -99,7 +99,7 @@ if(build)
     	src/poisson/cmd_line_parser.cpp
     	src/poisson/factor.cpp
     	src/poisson/geometry.cpp
-    	src/poisson/marching_cubes.cpp
+    	src/poisson/marching_cubes_poisson.cpp
     	src/poisson/time.cpp
     	)
     

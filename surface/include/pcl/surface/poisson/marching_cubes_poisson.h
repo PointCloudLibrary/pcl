@@ -49,7 +49,8 @@ namespace pcl
 {
   namespace surface
   {
-    namespace poisson {
+    namespace poisson
+    {
       class Square
       {
         public:
