@@ -112,7 +112,8 @@ namespace pcl
           */
         void 
         showFloatImage (const float* data, unsigned int width, unsigned int height, 
-                        float min_value, float max_value, bool grayscale = false);
+                        float min_value = std::numeric_limits<float>::min (), 
+                        float max_value = std::numeric_limits<float>::max (), bool grayscale = false);
         
         /** \brief Show a 2D image (unsigned short) on screen.
           * \param[in] short_image the input data representing the image in unsigned short format
@@ -124,7 +125,8 @@ namespace pcl
           */
         void
         showShortImage (const unsigned short* short_image, unsigned int width, unsigned int height, 
-                        unsigned short min_value, unsigned short max_value, bool grayscale = false);
+                        unsigned short min_value = std::numeric_limits<unsigned short>::min (), 
+                        unsigned short max_value = std::numeric_limits<unsigned short>::max (), bool grayscale = false);
 
         /** \brief Show a 2D image on screen representing angle data.
           * \param[in] data the input data representing the image
@@ -237,6 +239,15 @@ namespace pcl
         boost::signals2::connection 
         registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> cb);
         
+        /** \brief Set the position in screen coordinates.
+          * \param[in] x where to move the window to (X)
+          * \param[in] y where to move the window to (Y)
+          */
+        void
+        setPosition (int x, int y)
+        {
+          image_viewer_->SetPosition (x, y);
+        }
       protected: // methods
         /** \brief Set the stopped flag back to false. */
         void 
@@ -251,7 +262,7 @@ namespace pcl
         /** \brief Fire up a keyboard event with a specified event ID
           * \param[int] event_id the id of the event
           */
-         void 
+        void 
         emitKeyboardEvent (unsigned long event_id);
         
         // Callbacks used to register for vtk command
