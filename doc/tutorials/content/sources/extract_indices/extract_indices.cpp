@@ -77,7 +77,7 @@ main (int argc, char** argv)
     // Create the filtering object
     extract.setNegative (true);
     extract.filter (*cloud_f);
-    cloud_filtered = cloud_f;
+    cloud_filtered.swap (cloud_f);
     i++;
   }
 
