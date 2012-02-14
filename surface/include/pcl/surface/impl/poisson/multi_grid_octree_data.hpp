@@ -44,8 +44,6 @@
 
 
 #include "pcl/surface/poisson/octree.h"
-#include "pcl/surface/poisson/time.h"
-#include "pcl/surface/poisson/memory_usage.h"
 
 #define ITERATION_POWER 1.0/3
 #define MEMORY_ALLOCATOR_BLOCK_SIZE 1<<12
@@ -149,21 +147,6 @@ TreeNodeData::~TreeNodeData (void)
 ////////////
 // Octree //
 ////////////
-
-template<int Degree>
-double Octree<Degree>::maxMemoryUsage = 0;
-
-template<int Degree>
-double
-Octree<Degree>::MemoryUsage (void)
-{
-  double mem = MemoryInfo::Usage () / (1 << 20);
-  if (mem > maxMemoryUsage)
-  {
-    maxMemoryUsage = mem;
-  }
-  return mem;
-}
 
 template<int Degree>
 Octree<Degree>::Octree (void)
@@ -1223,7 +1206,6 @@ Octree<Degree>::LaplacianMatrixIteration (const int& subdivideDepth)
 {
   int i, iter = 0;
   SortedTreeNodes sNodes;
-  double t;
   fData.setDotTables (fData.D2_DOT_FLAG);
   sNodes.set (tree, 1);
 
@@ -1232,8 +1214,6 @@ Octree<Degree>::LaplacianMatrixIteration (const int& subdivideDepth)
   sNodes.treeNodes[0]->nodeData.value = 0;
   for (i = 1; i < sNodes.maxDepth; i++)
   {
-    //DumpOutput("Depth: %d/%d\n",i,sNodes.maxDepth-1);
-    t = Time ();
     if (subdivideDepth > 0)
     {
       iter += SolveFixedDepthMatrix (i, subdivideDepth, sNodes);
@@ -1256,12 +1236,10 @@ Octree<Degree>::SolveFixedDepthMatrix (const int& depth, const SortedTreeNodes& 
   Vector<double> V, Solution;
   SparseSymmetricMatrix < Real > matrix;
   Real myRadius;
-  double gTime, sTime, uTime;
   Real dx, dy, dz;
   int x1, x2, y1, y2, z1, z2;
   Vector < Real > Diagonal;
 
-  gTime = Time ();
   V.Resize (sNodes.nodeCount[depth + 1] - sNodes.nodeCount[depth]);
   for (i = sNodes.nodeCount[depth]; i < sNodes.nodeCount[depth + 1]; i++)
   {
@@ -1269,14 +1247,8 @@ Octree<Degree>::SolveFixedDepthMatrix (const int& depth, const SortedTreeNodes& 
   }
   SparseSymmetricMatrix<float>::Allocator.rollBack ();
   GetFixedDepthLaplacian (matrix, depth, sNodes);
-  gTime = Time () - gTime;
-  //DumpOutput("\tMatrix entries: %d / %d^2 = %.4f%%\n",matrix.Entries(),matrix.rows,100.0*(matrix.Entries()/double(matrix.rows))/matrix.rows);
-  //DumpOutput("\tMemory Usage: %.3f MB\n",float(MemoryUsage()));
-  sTime = Time ();
   iter += SparseSymmetricMatrix<Real>::Solve (matrix, V, int (pow (matrix.rows, ITERATION_POWER)), Solution,
                                               double (EPSILON), 1);
-  sTime = Time () - sTime;
-  uTime = Time ();
   for (i = sNodes.nodeCount[depth]; i < sNodes.nodeCount[depth + 1]; i++)
   {
     sNodes.treeNodes[i]->nodeData.value = Real (Solution[i - sNodes.nodeCount[depth]]);
@@ -1363,8 +1335,6 @@ Octree<Degree>::SolveFixedDepthMatrix (const int& depth, const SortedTreeNodes& 
       }
     }
   }
-  uTime = Time () - uTime;
-  //DumpOutput("\tGot / Solved / Updated in: %6.3f / %6.3f / %6.3f\n",gTime,sTime,uTime);
   return iter;
 }
 template<int Degree>
@@ -1377,7 +1347,6 @@ Octree<Degree>::SolveFixedDepthMatrix (const int& depth, const int& startingDept
   AdjacencyCountFunction acf;
   Vector < Real > Values;
   Vector<double> SubValues, SubSolution;
-  double gTime, sTime, uTime;
   Real myRadius, myRadius2;
   Real dx, dy, dz;
   Vector < Real > Diagonal;
@@ -1401,7 +1370,6 @@ Octree<Degree>::SolveFixedDepthMatrix (const int& depth, const int& startingDept
   d = depth - startingDepth;
   for (i = sNodes.nodeCount[d]; i < sNodes.nodeCount[d + 1]; i++)
   {
-    gTime = Time ();
     TreeOctNode* temp;
     // Get all of the entries associated to the subspace
     acf.adjacencyCount = 0;
@@ -1456,7 +1424,6 @@ Octree<Degree>::SolveFixedDepthMatrix (const int& depth, const int& startingDept
                                                        2 * width - 1, depth, &asf);
     }
 
-    //DumpOutput("\tNodes[%d/%d]: %d\n",i-sNodes.nodeCount[d]+1,sNodes.nodeCount[d+1]-sNodes.nodeCount[d],asf.adjacencyCount);
     // Get the associated vector
     SubValues.Resize (asf.adjacencyCount);
     for (j = 0; j < asf.adjacencyCount; j++)
@@ -1472,17 +1439,11 @@ Octree<Degree>::SolveFixedDepthMatrix (const int& depth, const int& startingDept
     SparseSymmetricMatrix<float>::Allocator.rollBack ();
     GetRestrictedFixedDepthLaplacian (matrix, depth, asf.adjacencies, asf.adjacencyCount, sNodes.treeNodes[i],
                                       myRadius, sNodes);
-    gTime = Time () - gTime;
-    //DumpOutput("\t\tMatrix entries: %d / %d^2 = %.4f%%\n",matrix.Entries(),matrix.rows,100.0*(matrix.Entries()/double(matrix.rows))/matrix.rows);
-    //DumpOutput("\t\tMemory Usage: %.3f MB\n",float(MemoryUsage()));
 
     // Solve the matrix
-    sTime = Time ();
     iter += SparseSymmetricMatrix<Real>::Solve (matrix, SubValues, int (pow (matrix.rows, ITERATION_POWER)),
                                                 SubSolution, double (EPSILON), 0);
-    sTime = Time () - sTime;
 
-    uTime = Time ();
     LaplacianProjectionFunction lpf;
     lpf.ot = this;
 
@@ -1499,7 +1460,6 @@ Octree<Degree>::SolveFixedDepthMatrix (const int& depth, const int& startingDept
         sNodes.treeNodes[asf.adjacencies[j]]->nodeData.value = Real (SubSolution[j]);
       }
     }
-    //double t=Time();
     // Update the values in the next depth
     int x1, x2, y1, y2, z1, z2;
     if (depth < sNodes.maxDepth - 1)
@@ -1603,8 +1563,6 @@ Octree<Degree>::SolveFixedDepthMatrix (const int& depth, const int& startingDept
         }
       }
     }
-    uTime = Time () - uTime;
-    //DumpOutput("\t\tGot / Solved / Updated in: %6.3f / %6.3f / %6.3f\n",gTime,sTime,uTime);
     delete[] asf.adjacencies;
   }
   return iter;
@@ -1690,7 +1648,6 @@ Octree<Degree>::SetLaplacianWeights (void)
     }
     temp = tree.nextNode (temp);
   }
-  MemoryUsage ();
 
   delete normals;
   normals = NULL;
@@ -1944,7 +1901,6 @@ Octree<Degree>::GetMCIsoTriangles (const Real& isoValue, CoredMeshData* mesh, co
   // At the point all of the corner values have been set and all nodes are valid. Now it's just a matter
   // of running marching cubes.
 
-  t = Time ();
   fData.setValueTables (fData.VALUE_FLAG | fData.D_VALUE_FLAG, 0, postNormalSmooth);
   temp = tree.nextLeaf ();
   while (temp)
@@ -1952,18 +1908,9 @@ Octree<Degree>::GetMCIsoTriangles (const Real& isoValue, CoredMeshData* mesh, co
     SetMCRootPositions (temp, 0, isoValue, roots, NULL, *normalHash, NULL, NULL, mesh, nonLinearFit);
     temp = tree.nextLeaf (temp);
   }
-  MemoryUsage ();
-
-  //DumpOutput("Normal Size: %.2f MB\n",double(sizeof(Point3D<Real>)*normalHash->size())/1000000);
-  //DumpOutput("Set %d root positions in: %f\n",mesh->inCorePoints.size(),Time()-t);
-  //DumpOutput("Memory Usage: %.3f MB\n",float(MemoryUsage()));
 
   fData.clearValueTables ();
   delete normalHash;
-
-  //DumpOutput("Post deletion size: %.3f MB\n",float(MemoryUsage()));
-
-  t = Time ();
 
   // Now get the iso-surfaces, running from finest nodes to coarsest in order to allow for edge propogation from
   // finer faces to coarser ones.
@@ -1973,8 +1920,6 @@ Octree<Degree>::GetMCIsoTriangles (const Real& isoValue, CoredMeshData* mesh, co
     GetMCIsoTriangles (temp, mesh, roots, NULL, NULL, 0, 0, addBarycenter);
     temp = tree.nextLeaf (temp);
   }
-  //DumpOutput("Added triangles in: %f\n",Time()-t);
-  //DumpOutput("Memory Usage: %.3f MB\n",float(MemoryUsage()));
                                    }
 template<int Degree>
 void
@@ -2311,7 +2256,6 @@ template<int Degree>
 void
 Octree<Degree>::SetIsoSurfaceCorners (const Real& isoValue, const int& subdivideDepth, const int& fullDepthIso)
 {
-  //double t=Time();
   int i, j;
   hash_map<long long, Real> values;
   Real cornerValues[Cube::CORNERS];
@@ -2382,7 +2326,6 @@ Octree<Degree>::SetIsoSurfaceCorners (const Real& isoValue, const int& subdivide
     }
   }
 
-  MemoryUsage ();
 
   for (i = sNodes->nodeCount[subdivideDepth]; i < sNodes->nodeCount[subdivideDepth + 1]; i++)
   {
@@ -2443,12 +2386,9 @@ Octree<Degree>::SetIsoSurfaceCorners (const Real& isoValue, const int& subdivide
 
       temp = sNodes->treeNodes[i]->nextLeaf (temp);
     }
-    MemoryUsage ();
     values.clear ();
   }
   delete sNodes;
-  ////DumpOutput("Set corner values in: %f\n",Time()-t);
-  ////DumpOutput("Memory Usage: %.3f MB\n",float(MemoryUsage()));
 
   if (subdivideDepth)
   {

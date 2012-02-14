@@ -44,46 +44,44 @@ if(build)
     SET(BUILD_surface_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds" )
     IF(BUILD_surface_nurbs)
     set(NURBS_INCLUDES
-		include/pcl/${SUBSYS_NAME}/nurbs/eigen_defs.h
-		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_basis.h
-		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_curve.h
-		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_surface.h
-    		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_data.h
-    		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_fitting.h
-    		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_tools.h
-    		include/pcl/${SUBSYS_NAME}/nurbs/nurbs_fitter.h
-    		)
+        include/pcl/${SUBSYS_NAME}/nurbs/eigen_defs.h
+        include/pcl/${SUBSYS_NAME}/nurbs/nurbs_basis.h
+        include/pcl/${SUBSYS_NAME}/nurbs/nurbs_curve.h
+        include/pcl/${SUBSYS_NAME}/nurbs/nurbs_surface.h
+        include/pcl/${SUBSYS_NAME}/nurbs/nurbs_data.h
+        include/pcl/${SUBSYS_NAME}/nurbs/nurbs_fitting.h
+        include/pcl/${SUBSYS_NAME}/nurbs/nurbs_tools.h
+        include/pcl/${SUBSYS_NAME}/nurbs/nurbs_fitter.h
+        )
     set(NURBS_SOURCES
-		src/nurbs/nurbs_basis.cpp
-		src/nurbs/nurbs_curve.cpp
-		src/nurbs/nurbs_surface.cpp
-    		src/nurbs/nurbs_fitting.cpp
-    		src/nurbs/nurbs_tools.cpp
-    		src/nurbs/nurbs_fitter.cpp
-    		)
+        src/nurbs/nurbs_basis.cpp
+        src/nurbs/nurbs_curve.cpp
+        src/nurbs/nurbs_surface.cpp
+        src/nurbs/nurbs_fitting.cpp
+        src/nurbs/nurbs_tools.cpp
+        src/nurbs/nurbs_fitter.cpp
+        )
     set(NURBS_IMPL
-    		include/pcl/${SUBSYS_NAME}/impl/nurbs/nurbs_fitter.hpp
-    		)
+        include/pcl/${SUBSYS_NAME}/impl/nurbs/nurbs_fitter.hpp
+        )
     ENDIF(BUILD_surface_nurbs)
     
 
     set(POISSON_INCLUDES
-    	include/pcl/${SUBSYS_NAME}/poisson/allocator.h
-    	include/pcl/${SUBSYS_NAME}/poisson/binary_node.h
-    	include/pcl/${SUBSYS_NAME}/poisson/factor.h
-    	include/pcl/${SUBSYS_NAME}/poisson/function_data.h
-    	include/pcl/${SUBSYS_NAME}/poisson/geometry.h
-    	include/pcl/${SUBSYS_NAME}/poisson/hash.h
-    	include/pcl/${SUBSYS_NAME}/poisson/marching_cubes_poisson.h
-    	include/pcl/${SUBSYS_NAME}/poisson/memory_usage.h
-    	include/pcl/${SUBSYS_NAME}/poisson/multi_grid_octree_data.h
-    	include/pcl/${SUBSYS_NAME}/poisson/octree.h
-    	include/pcl/${SUBSYS_NAME}/poisson/polynomial.h
-    	include/pcl/${SUBSYS_NAME}/poisson/ppolynomial.h
-    	include/pcl/${SUBSYS_NAME}/poisson/sparse_matrix.h
-    	include/pcl/${SUBSYS_NAME}/poisson/time.h
-    	include/pcl/${SUBSYS_NAME}/poisson/vector.h
-    	)
+        include/pcl/${SUBSYS_NAME}/poisson/allocator.h
+        include/pcl/${SUBSYS_NAME}/poisson/binary_node.h
+        include/pcl/${SUBSYS_NAME}/poisson/factor.h
+        include/pcl/${SUBSYS_NAME}/poisson/function_data.h
+        include/pcl/${SUBSYS_NAME}/poisson/geometry.h
+        include/pcl/${SUBSYS_NAME}/poisson/hash.h
+        include/pcl/${SUBSYS_NAME}/poisson/marching_cubes_poisson.h
+        include/pcl/${SUBSYS_NAME}/poisson/multi_grid_octree_data.h
+        include/pcl/${SUBSYS_NAME}/poisson/octree.h
+        include/pcl/${SUBSYS_NAME}/poisson/polynomial.h
+        include/pcl/${SUBSYS_NAME}/poisson/ppolynomial.h
+        include/pcl/${SUBSYS_NAME}/poisson/sparse_matrix.h
+        include/pcl/${SUBSYS_NAME}/poisson/vector.h
+        )
     set(POISSON_IMPLS
         include/pcl/${SUBSYS_NAME}/impl/poisson/function_data.hpp
         include/pcl/${SUBSYS_NAME}/impl/poisson/geometry.hpp
@@ -93,13 +91,12 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/poisson/ppolynomial.hpp
         include/pcl/${SUBSYS_NAME}/impl/poisson/sparse_matrix.hpp
         include/pcl/${SUBSYS_NAME}/impl/poisson/vector.hpp
-    	)
+        )
     set(POISSON_SOURCES
-    	src/poisson/factor.cpp
-    	src/poisson/geometry.cpp
-    	src/poisson/marching_cubes_poisson.cpp
-    	src/poisson/time.cpp
-    	)
+        src/poisson/factor.cpp
+        src/poisson/geometry.cpp
+        src/poisson/marching_cubes_poisson.cpp
+        )
     
     set(srcs src/processing.cpp 
         src/ear_clipping.cpp

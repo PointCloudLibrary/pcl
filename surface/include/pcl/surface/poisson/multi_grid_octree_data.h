@@ -528,9 +528,6 @@ namespace pcl
                                    Point3D<Real>& normal);
 
         public:
-          static double maxMemoryUsage;
-          static double
-          MemoryUsage (void);
           std::vector<Point3D<Real> >* normals;
           Real postNormalSmooth;
           TreeOctNode tree;
