@@ -43,10 +43,9 @@
 #ifndef PCL_POISSON_HASH_H_
 #define PCL_POISSON_HASH_H_
 
-#include <hash_map>
+
 #ifdef WIN32
 #include <hash_map>
-using stdext::hash_map;
 #else // !WIN32
 #include <ext/hash_map>
 using namespace __gnu_cxx;
