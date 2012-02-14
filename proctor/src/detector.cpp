@@ -182,13 +182,21 @@ namespace pcl
 
         if (ifstream(name)) {
           PointCloud<Signature>::Ptr features (new PointCloud<Signature>());
+          PointCloud<FPFHSignature33>::Ptr tmp (new PointCloud<FPFHSignature33>());
+          PCDReader r;
+          r.readEigen(std::string(name), *features);
+          //*features = *tmp;
           //io::loadPCDFile(name, *features);
           //if (features->points.size() != indices->size())
+          cout << "cloud: "  << features->points << endl;
+          cout << "test: "  << features->points.rows () << endl;
           //cout << "got " << features->points.size() << " features from " << indices->size() << " points" << endl;
           return features;
         } else {
           PointCloud<Signature>::Ptr features = computeFeatures(scene.cloud, keypoints);
-          //io::savePCDFileBinary(name, *features);
+          PCDWriter w;
+          w.writeBinaryEigen(std::string(name), *features);
+          //cout << "cloud: "  << features->points << endl;
           return features;
         }
       }
