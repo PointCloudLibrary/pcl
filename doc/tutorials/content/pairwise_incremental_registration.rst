@@ -16,7 +16,7 @@ to incrementally register a series of point clouds two by two.
 The code
 --------
 
-.. literalinclude:: sources/pairwise_incremental_registration/pairwise-incremental-registration.cpp
+.. literalinclude:: sources/pairwise_incremental_registration/pairwise_incremental_registration.cpp
    :language: cpp
    :linenos:
 
