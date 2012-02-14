@@ -47,7 +47,6 @@
 #include "pcl/surface/poisson/time.h"
 #include "pcl/surface/poisson/octree.h"
 #include "pcl/surface/poisson/sparse_matrix.h"
-#include "pcl/surface/poisson/cmd_line_parser.h"
 #include "pcl/surface/poisson/function_data.h"
 #include "pcl/surface/poisson/ppolynomial.h"
 #include "pcl/surface/poisson/memory_usage.h"

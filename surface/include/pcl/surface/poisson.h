@@ -69,7 +69,6 @@ namespace pcl
         ~Poisson ();
 
         /** \brief Create the surface.
-         *
          * \param output the resultant polygonal mesh
          */
         void
@@ -78,86 +77,40 @@ namespace pcl
         void
         performReconstruction (pcl::PointCloud<PointNT> &points,
                                std::vector<pcl::Vertices> &polygons)
-        {
-          PCL_ERROR ("[pcl::surface::Poisson::performReconstruction] Method not implemented!\n");
-        }
+        { PCL_ERROR ("[pcl::surface::Poisson::performReconstruction] Method not implemented!\n"); }
 
         inline void
-        setNoResetSamples (bool no_reset_samples)
-        {
-          no_reset_samples_ = no_reset_samples;
-        }
-        ;
+        setNoResetSamples (bool no_reset_samples) { no_reset_samples_ = no_reset_samples; }
 
         inline void
-        setNoClipTree (bool no_clip_tree)
-        {
-          no_clip_tree_ = no_clip_tree;
-        }
-        ;
+        setNoClipTree (bool no_clip_tree) { no_clip_tree_ = no_clip_tree; }
 
         inline void
-        setConfidence (bool confidence)
-        {
-          confidence_ = confidence;
-        }
-        ;
+        setConfidence (bool confidence) { confidence_ = confidence; }
 
         inline void
-        setManifold (bool manifold)
-        {
-          manifold_ = manifold;
-        }
-        ;
+        setManifold (bool manifold) { manifold_ = manifold; }
 
         inline void
-        setDepth (int depth)
-        {
-          depth_ = depth;
-        }
-        ;
+        setDepth (int depth) { depth_ = depth; }
 
         inline void
-        setSolverDivide (int solver_divide)
-        {
-          solver_divide_ = solver_divide;
-        }
-        ;
+        setSolverDivide (int solver_divide) { solver_divide_ = solver_divide; }
 
         inline void
-        setIsoDivide (int iso_divide)
-        {
-          iso_divide_ = iso_divide;
-        }
-        ;
+        setIsoDivide (int iso_divide) { iso_divide_ = iso_divide; }
 
         inline void
-        setRefine (int refine)
-        {
-          refine_ = refine;
-        }
-        ;
+        setRefine (int refine) { refine_ = refine; }
 
         inline void
-        setKernelDepth (int kernel_depth)
-        {
-          kernel_depth_ = kernel_depth;
-        }
-        ;
+        setKernelDepth (int kernel_depth) { kernel_depth_ = kernel_depth; }
 
         inline void
-        setSamplesPerNode (float samples_per_node)
-        {
-          samples_per_node_ = samples_per_node;
-        }
-        ;
+        setSamplesPerNode (float samples_per_node) { samples_per_node_ = samples_per_node; }
 
         inline void
-        setScale (float scale)
-        {
-          scale_ = scale;
-        }
-        ;
+        setScale (float scale) { scale_ = scale; }
 
       protected:
         /** \brief The point cloud input (XYZ+Normals). */
@@ -165,10 +118,7 @@ namespace pcl
 
         /** \brief Class get name method. */
         std::string
-        getClassName () const
-        {
-          return ("Poisson");
-        }
+        getClassName () const { return ("Poisson"); }
 
       private:
         bool no_reset_samples_;

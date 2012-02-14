@@ -70,7 +70,6 @@ if(build)
     set(POISSON_INCLUDES
     	include/pcl/${SUBSYS_NAME}/poisson/allocator.h
     	include/pcl/${SUBSYS_NAME}/poisson/binary_node.h
-    	include/pcl/${SUBSYS_NAME}/poisson/cmd_line_parser.h
     	include/pcl/${SUBSYS_NAME}/poisson/factor.h
     	include/pcl/${SUBSYS_NAME}/poisson/function_data.h
     	include/pcl/${SUBSYS_NAME}/poisson/geometry.h
@@ -96,7 +95,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/poisson/vector.hpp
     	)
     set(POISSON_SOURCES
-    	src/poisson/cmd_line_parser.cpp
     	src/poisson/factor.cpp
     	src/poisson/geometry.cpp
     	src/poisson/marching_cubes_poisson.cpp
