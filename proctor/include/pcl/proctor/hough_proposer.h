@@ -20,7 +20,7 @@ namespace pcl
 
         typedef boost::multi_array<double, 3> bin_t;
 
-        HoughProposer(Detector *detector = NULL) : Proposer(detector)
+        HoughProposer(Detector *detector = NULL) : Proposer(detector), is_soft_vote_(false)
         {}
 
         void
@@ -29,8 +29,35 @@ namespace pcl
         void
         houghVote(Entry &query, Entry &target, bin_t& bins);
 
+        void
+        referenceFrameHoughVote();
+
         virtual bool
         castVotes(Eigen::Vector3f& indices, bin_t& bins);
+
+        bool
+        softCastVotes(Eigen::Vector3f& indices, bin_t& bins);
+
+        bool
+        hardCastVotes(Eigen::Vector3f& indices, bin_t& bins);
+
+        Eigen::Matrix3f
+        getTransformationBetweenFrames(Eigen::Vector3f x_from, Eigen::Vector3f y_from, Eigen::Vector3f x_to, Eigen::Vector3f y_to);
+
+        Eigen::Vector3f
+        getVectorCurvatureMap(PrincipalCurvatures p);
+
+        PointCloud<PrincipalCurvatures>::Ptr
+        computeCurvatures(Entry &e);
+
+        double
+        angleBetween(Eigen::Vector3f a, Eigen::Vector3f b);
+
+        void
+        setSoftVote(bool is_soft_vote)
+        {
+          is_soft_vote_ = is_soft_vote_;
+        }
 
       public:
 
@@ -38,6 +65,9 @@ namespace pcl
         
         // The number of features correspondences to vote for
         int num_correspondences;
+
+      private:
+        bool is_soft_vote_;
     };
 
   }
