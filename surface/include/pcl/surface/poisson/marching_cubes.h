@@ -201,7 +201,7 @@ namespace pcl
       };
 
 
-      class MarchingCubes
+      class MarchingCubesPoisson
       {
           static double
           Interpolate (const double& v1, const double& v2);

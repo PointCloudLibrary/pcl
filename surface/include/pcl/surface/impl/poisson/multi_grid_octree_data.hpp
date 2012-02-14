@@ -1752,12 +1752,12 @@ template<int Degree>
 void
 Octree<Degree>::FaceEdgesFunction::Function (const TreeOctNode* node1, const TreeOctNode* node2)
 {
-  if (!node1->children && MarchingCubes::HasRoots (node1->nodeData.mcIndex))
+  if (!node1->children && MarchingCubesPoisson::HasRoots (node1->nodeData.mcIndex))
   {
     RootInfo ri1, ri2;
     hash_map<long long, std::pair<RootInfo, int> >::iterator iter;
-    int isoTri[DIMENSION * MarchingCubes::MAX_TRIANGLES];
-    int count = MarchingCubes::AddTriangleIndices (node1->nodeData.mcIndex, isoTri);
+    int isoTri[DIMENSION * MarchingCubesPoisson::MAX_TRIANGLES];
+    int count = MarchingCubesPoisson::AddTriangleIndices (node1->nodeData.mcIndex, isoTri);
 
     for (int j = 0; j < count; j++)
     {
@@ -2022,7 +2022,7 @@ Octree<Degree>::GetMCIsoTriangles (const Real& isoValue, const int& subdivideDep
     temp = sNodes.treeNodes[i]->nextLeaf ();
     while (temp)
     {
-      if (MarchingCubes::HasRoots (temp->nodeData.mcIndex))
+      if (MarchingCubesPoisson::HasRoots (temp->nodeData.mcIndex))
       {
         SetMCRootPositions (temp, sDepth, isoValue, boundaryRoots, interiorRoots, *boundaryNormalHash,
                             interiorNormalHash, interiorPoints, mesh, nonLinearFit);
@@ -2354,13 +2354,13 @@ Octree<Degree>::SetIsoSurfaceCorners (const Real& isoValue, const int& subdivide
           cornerValues[j] = cf.value;
         }
       }
-      temp->nodeData.mcIndex = MarchingCubes::GetIndex (cornerValues, isoValue);
+      temp->nodeData.mcIndex = MarchingCubesPoisson::GetIndex (cornerValues, isoValue);
 
       if (temp->parent)
       {
         TreeOctNode* parent = temp->parent;
         int c = int (temp - temp->parent->children);
-        int mcid = temp->nodeData.mcIndex & (1 << MarchingCubes::cornerMap[c]);
+        int mcid = temp->nodeData.mcIndex & (1 << MarchingCubesPoisson::cornerMap[c]);
 
         if (mcid)
         {
@@ -2415,13 +2415,13 @@ Octree<Degree>::SetIsoSurfaceCorners (const Real& isoValue, const int& subdivide
           }
         }
       }
-      temp->nodeData.mcIndex = MarchingCubes::GetIndex (cornerValues, isoValue);
+      temp->nodeData.mcIndex = MarchingCubesPoisson::GetIndex (cornerValues, isoValue);
 
       if (temp->parent)
       {
         TreeOctNode* parent = temp->parent;
         int c = int (temp - temp->parent->children);
-        int mcid = temp->nodeData.mcIndex & (1 << MarchingCubes::cornerMap[c]);
+        int mcid = temp->nodeData.mcIndex & (1 << MarchingCubesPoisson::cornerMap[c]);
 
         if (mcid)
         {
@@ -2473,7 +2473,7 @@ Octree<Degree>::Subdivide (TreeOctNode* node, const Real& isoValue, const int& m
   // Copy old corner values
   for (i = 0; i < Cube::CORNERS; i++)
   {
-    cornerIndex2[i] = node->nodeData.mcIndex & (1 << MarchingCubes::cornerMap[i]);
+    cornerIndex2[i] = node->nodeData.mcIndex & (1 << MarchingCubesPoisson::cornerMap[i]);
   }
   // 8 of 27 corners set
 
@@ -2497,7 +2497,7 @@ Octree<Degree>::Subdivide (TreeOctNode* node, const Real& isoValue, const int& m
   {
     for (i = 0; i < Cube::CORNERS; i++)
     {
-      cornerIndex2[i] |= 1 << MarchingCubes::cornerMap[Cube::AntipodalCornerIndex (i)];
+      cornerIndex2[i] |= 1 << MarchingCubesPoisson::cornerMap[Cube::AntipodalCornerIndex (i)];
     }
   }
   // 9 of 27 set
@@ -2521,7 +2521,7 @@ Octree<Degree>::Subdivide (TreeOctNode* node, const Real& isoValue, const int& m
     {
       for (j = 0; j < 4; j++)
       {
-        cornerIndex2[c[j]] |= 1 << MarchingCubes::cornerMap[Cube::EdgeReflectCornerIndex (c[j], e)];
+        cornerIndex2[c[j]] |= 1 << MarchingCubesPoisson::cornerMap[Cube::EdgeReflectCornerIndex (c[j], e)];
       }
     }
   }
@@ -2546,7 +2546,7 @@ Octree<Degree>::Subdivide (TreeOctNode* node, const Real& isoValue, const int& m
     {
       for (j = 0; j < 2; j++)
       {
-        cornerIndex2[c[j]] |= 1 << MarchingCubes::cornerMap[Cube::FaceReflectCornerIndex (c[j], f)];
+        cornerIndex2[c[j]] |= 1 << MarchingCubesPoisson::cornerMap[Cube::FaceReflectCornerIndex (c[j], f)];
       }
     }
   }
@@ -2660,7 +2660,7 @@ Octree<Degree>::EdgeRootCount (const TreeOctNode* node, const int& edgeIndex, co
   }
   else
   {
-    return MarchingCubes::HasEdgeRoots (finest->nodeData.mcIndex, eIndex);
+    return MarchingCubesPoisson::HasEdgeRoots (finest->nodeData.mcIndex, eIndex);
   }
 }
 template<int Degree>
@@ -2798,7 +2798,7 @@ Octree<Degree>::Validate (TreeOctNode* node, const Real& isoValue, const int& ma
   }
 
   // Check if full-depth extraction is enabled and we have an iso-node that is not at maximum depth
-  if (!sub && fullDepthIso && MarchingCubes::HasRoots (node->nodeData.mcIndex))
+  if (!sub && fullDepthIso && MarchingCubesPoisson::HasRoots (node->nodeData.mcIndex))
   {
     sub = 1;
   }
@@ -2809,7 +2809,7 @@ Octree<Degree>::Validate (TreeOctNode* node, const Real& isoValue, const int& ma
     neighbor = treeNode->faceNeighbor (i);
     if (neighbor && neighbor->children)
     {
-      if (MarchingCubes::IsAmbiguous (node->nodeData.mcIndex, i))
+      if (MarchingCubesPoisson::IsAmbiguous (node->nodeData.mcIndex, i))
       {
         sub = 1;
       }
@@ -2828,7 +2828,7 @@ Octree<Degree>::Validate (TreeOctNode* node, const Real& isoValue, const int& ma
   for (i = 0; i < Cube::NEIGHBORS && !sub; i++)
   {
     neighbor = node->faceNeighbor (i);
-    if (neighbor && neighbor->children && !MarchingCubes::HasFaceRoots (node->nodeData.mcIndex, i)
+    if (neighbor && neighbor->children && !MarchingCubesPoisson::HasFaceRoots (node->nodeData.mcIndex, i)
     && InteriorFaceRootCount (neighbor, Cube::FaceReflectFaceIndex (i, i), maxDepth))
     {
       sub = 1;
@@ -2876,7 +2876,7 @@ Octree<Degree>::Validate (TreeOctNode* node, const Real& isoValue, const int& ma
   }
 
   // Check if full-depth extraction is enabled and we have an iso-node that is not at maximum depth
-  if (!sub && fullDepthIso && MarchingCubes::HasRoots (node->nodeData.mcIndex))
+  if (!sub && fullDepthIso && MarchingCubesPoisson::HasRoots (node->nodeData.mcIndex))
   {
     sub = 1;
   }
@@ -2887,7 +2887,7 @@ Octree<Degree>::Validate (TreeOctNode* node, const Real& isoValue, const int& ma
     neighbor = treeNode->faceNeighbor (i);
     if (neighbor && neighbor->children)
     {
-      if (MarchingCubes::IsAmbiguous (node->nodeData.mcIndex, i) || IsBoundaryFace (node, i, subdivideDepth))
+      if (MarchingCubesPoisson::IsAmbiguous (node->nodeData.mcIndex, i) || IsBoundaryFace (node, i, subdivideDepth))
       {
         sub = 1;
       }
@@ -2906,7 +2906,7 @@ Octree<Degree>::Validate (TreeOctNode* node, const Real& isoValue, const int& ma
   for (i = 0; i < Cube::NEIGHBORS && !sub; i++)
   {
     neighbor = node->faceNeighbor (i);
-    if (neighbor && neighbor->children && !MarchingCubes::HasFaceRoots (node->nodeData.mcIndex, i)
+    if (neighbor && neighbor->children && !MarchingCubesPoisson::HasFaceRoots (node->nodeData.mcIndex, i)
     && InteriorFaceRootCount (neighbor, Cube::FaceReflectFaceIndex (i, i), maxDepth))
     {
       sub = 1;
@@ -2950,7 +2950,7 @@ Octree<Degree>::GetRoot (const RootInfo& ri, const Real& isoValue, Point3D<Real>
                          {
   int c1, c2;
   Cube::EdgeCorners (ri.edgeIndex, c1, c2);
-  if (!MarchingCubes::HasEdgeRoots (ri.node->nodeData.mcIndex, ri.edgeIndex))
+  if (!MarchingCubesPoisson::HasEdgeRoots (ri.node->nodeData.mcIndex, ri.edgeIndex))
   {
     return 0;
   }
@@ -3080,7 +3080,7 @@ Octree<Degree>::GetRoot (const RootInfo& ri, const Real& isoValue, const int& ma
                          hash_map<long long, std::pair<Real, Point3D<Real> > >& normals, Point3D<Real>* normal,
                          const int& nonLinearFit)
                          {
-  if (!MarchingCubes::HasRoots (ri.node->nodeData.mcIndex))
+  if (!MarchingCubesPoisson::HasRoots (ri.node->nodeData.mcIndex))
   {
     return 0;
   }
@@ -3166,7 +3166,7 @@ Octree<Degree>::GetRootIndex (const TreeOctNode* node, const int& edgeIndex, con
   }
   else
   {
-    if (!(MarchingCubes::edgeMask[finest->nodeData.mcIndex] & (1 << finestIndex)))
+    if (!(MarchingCubesPoisson::edgeMask[finest->nodeData.mcIndex] & (1 << finestIndex)))
     {
       return 0;
     }
@@ -3207,7 +3207,7 @@ Octree<Degree>::GetRootIndex (const TreeOctNode* node, const int& edgeIndex, con
   int finestIndex;
 
   // The assumption is that the super-edge has a root along it.
-  if (!(MarchingCubes::edgeMask[node->nodeData.mcIndex] & (1 << edgeIndex)))
+  if (!(MarchingCubesPoisson::edgeMask[node->nodeData.mcIndex] & (1 << edgeIndex)))
   {
     return 0;
   }
@@ -3306,7 +3306,7 @@ Octree<Degree>::GetRootPair (const RootInfo& ri, const int& maxDepth, RootInfo& 
     {
       return 0;
     }
-    if (!MarchingCubes::HasEdgeRoots (node->parent->nodeData.mcIndex, ri.edgeIndex))
+    if (!MarchingCubesPoisson::HasEdgeRoots (node->parent->nodeData.mcIndex, ri.edgeIndex))
     {
       if (c == c1)
       {
@@ -3359,7 +3359,7 @@ Octree<Degree>::SetMCRootPositions (TreeOctNode* node, const int& sDepth, const 
   int i, j, k, eIndex;
   RootInfo ri;
   int count = 0;
-  if (!MarchingCubes::HasRoots (node->nodeData.mcIndex))
+  if (!MarchingCubesPoisson::HasRoots (node->nodeData.mcIndex))
   {
     return 0;
   }
@@ -3418,7 +3418,7 @@ Octree<Degree>::SetBoundaryMCRootPositions (
   node = tree.nextLeaf ();
   while (node)
   {
-    if (MarchingCubes::HasRoots (node->nodeData.mcIndex))
+    if (MarchingCubesPoisson::HasRoots (node->nodeData.mcIndex))
     {
       hits = 0;
       for (i = 0; i < DIMENSION; i++)
@@ -3467,7 +3467,7 @@ Octree<Degree>::GetMCIsoEdges (TreeOctNode* node, hash_map<long long, int>& boun
                                {
   TreeOctNode* temp;
   int count = 0;
-  int isoTri[DIMENSION * MarchingCubes::MAX_TRIANGLES];
+  int isoTri[DIMENSION * MarchingCubesPoisson::MAX_TRIANGLES];
   FaceEdgesFunction fef;
   int ref, fIndex;
   hash_map<long long, std::pair<RootInfo, int> >::iterator iter;
@@ -3476,7 +3476,7 @@ Octree<Degree>::GetMCIsoEdges (TreeOctNode* node, hash_map<long long, int>& boun
   fef.edges = &edges;
   fef.maxDepth = fData.depth;
   fef.vertexCount = &vertexCount;
-  count = MarchingCubes::AddTriangleIndices (node->nodeData.mcIndex, isoTri);
+  count = MarchingCubesPoisson::AddTriangleIndices (node->nodeData.mcIndex, isoTri);
   for (fIndex = 0; fIndex < Cube::NEIGHBORS; fIndex++)
   {
     ref = Cube::FaceReflectFaceIndex (fIndex, fIndex);

@@ -117,9 +117,9 @@ if(build)
         src/surfel_smoothing.cpp
         src/texture_mapping.cpp
         ${VTK_SMOOTHING_SOURCE}
-      #  src/poisson.cpp
+        src/poisson.cpp
         ${HULL_SOURCES}
-     #   ${POISSON_SOURCES}
+        ${POISSON_SOURCES}
         ${NURBS_SOURCES}
         )
 
@@ -138,9 +138,9 @@ if(build)
         include/pcl/${SUBSYS_NAME}/surfel_smoothing.h        
         include/pcl/${SUBSYS_NAME}/texture_mapping.h
         ${VTK_SMOOTHING_INCLUDES}
-      #  include/pcl/${SUBSYS_NAME}/poisson.h
+        include/pcl/${SUBSYS_NAME}/poisson.h
         ${HULL_INCLUDES}
-      #  ${POISSON_INCLUDES}
+        ${POISSON_INCLUDES}
         )
 
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/gp3.hpp
@@ -154,7 +154,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/reconstruction.hpp
         include/pcl/${SUBSYS_NAME}/impl/surfel_smoothing.hpp
         include/pcl/${SUBSYS_NAME}/impl/texture_mapping.hpp
-      #  include/pcl/${SUBSYS_NAME}/impl/poisson.hpp
+        include/pcl/${SUBSYS_NAME}/impl/poisson.hpp
         ${HULL_IMPLS}
         )
 
@@ -171,9 +171,9 @@ if(build)
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-    #PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/poisson ${POISSON_INCLUDES})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/poisson ${POISSON_INCLUDES})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
-    #PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl/poisson ${POISSON_IMPLS})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl/poisson ${POISSON_IMPLS})
 
     if(BUILD_surface_nurbs)
         PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/nurbs ${NURBS_INCLUDES})
