@@ -93,7 +93,7 @@ namespace pcl
       __device__ __forceinline__ bool
       checkInds (const int3& g) const
       {
-        return (g.x >= 0 && g.y >= 0 && g.z >= 0 && g.x < VOLUME_X && g.y < VOLUME_Y && g.z < VOLUME_X);
+        return (g.x >= 0 && g.y >= 0 && g.z >= 0 && g.x < VOLUME_X && g.y < VOLUME_Y && g.z < VOLUME_Z);
       }
 
       __device__ __forceinline__ float
