@@ -42,9 +42,9 @@
 
 #include <Eigen/Core>
 #include <pcl/common/point_operators.h>
-#include <pcl/common/spring.h>
+#include <pcl/point_cloud.h>
 #include <pcl/exceptions.h>
-
+#include <pcl/common/time.h>
 namespace pcl
 {
   namespace common
@@ -67,15 +67,10 @@ namespace pcl
       * policies:
       * - Ignoring: elements at special locations are filled with zero 
       * (default behaviour)
-      * - Mirroring: the original point cloud is extending by 1/2 kernel 
-      * width amount mirroring borders
-      * - Duplicating: the original point cloud is extending by 1/2 kernel 
-      * width amount using duplicating the top and bottom rows and/or left
-      * and right columns.
+      * - Mirroring: the missing rows or columns are obtained throug mirroring
+      * - Duplicating: the missing rows or columns are obtained throug 
+      * duplicating
       * 
-      * After convolving the original point cloud is shrinked to the 
-      * original size.
-      *
       * \author Nizar Sallem
       * \ingroup common
       */
@@ -134,13 +129,16 @@ namespace pcl
         {
           try
           {
+            double t0 = pcl::getTime ();
             initCompute (output);
+            std::cerr << pcl::getTime () - t0 << std::endl;
             switch (borders_policy_)
             {
               case MIRROR : convolve_rows_mirror (output);
               case DUPLICATE : convolve_rows_duplicate (output);
               case IGNORE : convolve_rows (output);
             }
+            std::cerr << pcl::getTime () - t0 << std::endl;
           }
           catch (InitFailedException& e)
           {
@@ -214,13 +212,8 @@ namespace pcl
           * \param[in] kernel convolution kernel to be used
           * \throw pcl::InitFailedException
           */
-        inline void
+        virtual void
         initCompute (PointCloudOut& output);
-        /** terminate computation shrinking the input point cloud if 
-          * necessary.
-          */
-        void
-        deinitCompute (PointCloudOut& output);
         /// convolve rows and ignore borders
         virtual void
         convolve_rows (PointCloudOut& output) = 0;
@@ -269,6 +262,7 @@ namespace pcl
         using ConvolutionBase::input_;
         using ConvolutionBase::kernel_;
         using ConvolutionBase::distance_threshold_;
+        using ConvolutionBase::initCompute;
 
         Convolution ()
           : ConvolutionBase ()
@@ -357,6 +351,9 @@ namespace pcl
         /// convolve cols and duplicate borders
         void
         convolve_cols_duplicate (PointCloud<PointT>& output);
+      private:
+        void
+        initCompute (PointCloud<PointT>& output);
     };
 
     /** Class ConvolutionWithTransform
@@ -380,6 +377,8 @@ namespace pcl
       : public AbstractConvolution<typename Conversion::PointIn, typename Conversion::PointOut>
     {
       public:
+        typedef typename Conversion::PointIn PointIn;
+        typedef typename Conversion::PointOut PointOut;
         typedef AbstractConvolution<typename Conversion::PointIn, 
                                     typename Conversion::PointOut> ConvolutionBase;
         typedef typename ConvolutionBase::PointCloudOut PointCloudOut;
@@ -392,7 +391,8 @@ namespace pcl
         using ConvolutionBase::input_;
         using ConvolutionBase::kernel_;
         using ConvolutionBase::distance_threshold_;
-        
+        using ConvolutionBase::initCompute;
+
         ConvolutionWithTransform ()
           : ConvolutionBase ()
           , threads_ (1)
@@ -488,6 +488,7 @@ namespace pcl
 
       private:
         Conversion transform_;
+        void initCompute (PointCloudOut& output);
     };
   }
 }

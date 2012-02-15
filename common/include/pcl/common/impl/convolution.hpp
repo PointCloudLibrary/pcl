@@ -51,19 +51,53 @@ pcl::common::AbstractConvolution<PointIn, PointOut>::initCompute (PointCloudOut&
     PCL_THROW_EXCEPTION (InitFailedException,
                          "[pcl::common::Convolution::initCompute] convolving element width must be odd.");
   
-  if (&(*input_) != &output)
+  if (distance_threshold_ != std::numeric_limits<float>::infinity ())
+    distance_threshold_*= (kernel_.size () % 2) * distance_threshold_;
+}
+
+template <typename PointT> void
+pcl::common::Convolution<PointT>::initCompute (PointCloud<PointT>& output)
+{
+  try
   {
+    pcl::common::AbstractConvolution<PointT, PointT>::initCompute (output);
+    if (&(*input_) != &output)
+    {
+      if (output.height != input_->height || output.width != input_->width)
+      {
+        output.resize (input_->width * input_->height);
+        output.width = input_->width;
+      output.height = input_->height;
+      }
+    }
+    output.is_dense = input_->is_dense;
+  }
+  catch (InitFailedException& e)
+  {
+    PCL_THROW_EXCEPTION (InitFailedException,
+                         "[pcl::common::Convolution::initCompute] " << e.what ());
+  }
+}
+
+template <typename PointInToPointOut> void
+pcl::common::ConvolutionWithTransform<PointInToPointOut>::initCompute (PointCloudOut& output)
+{
+  try
+  {
+    pcl::common::AbstractConvolution<PointIn, PointOut>::initCompute (output);
     if (output.height != input_->height || output.width != input_->width)
     {
       output.resize (input_->width * input_->height);
       output.width = input_->width;
       output.height = input_->height;
     }
+    output.is_dense = input_->is_dense;
   }
-  output.is_dense = input_->is_dense;
-  
-  if (distance_threshold_ != std::numeric_limits<float>::infinity ())
-    distance_threshold_*= (kernel_.size () % 2) * distance_threshold_;
+  catch (InitFailedException& e)
+  {
+    PCL_THROW_EXCEPTION (InitFailedException,
+                         "[pcl::common::ConvolutionWithTransform::initCompute] " << e.what ());
+  }
 }
 
 template <typename PointT> void
@@ -72,13 +106,15 @@ pcl::common::Convolution<PointT>::convolve_rows ( PointCloud<PointT>& output)
   using namespace pcl::common;
   int half_width_ = kernel_.size () / 2;
   int kernel_width_ = kernel_.size () - 1;
+	int width = input_->width;
+	int height = input_->height;
   int last = input_->width - half_width_;
   Eigen::ArrayXf kernel = kernel_;
   
   if (input_->is_dense)
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int j = 0; j < input_->height; ++j)
+    for(int j = 0; j < height; ++j)
     {
       for (int i = 0; i < half_width_; ++i)
         output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
@@ -90,14 +126,14 @@ pcl::common::Convolution<PointT>::convolve_rows ( PointCloud<PointT>& output)
           output (i,j)+= (*input_) (l,j) * kernel [k];
       }
       
-      for (int i = last; i < input_->width; ++i)
+      for (int i = last; i < width; ++i)
         output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
     }
   }
   else
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int j = 0; j < input_->height; ++j)
+    for(int j = 0; j < height; ++j)
     {
       for (int i = 0; i < half_width_; ++i)
         output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
@@ -119,7 +155,7 @@ pcl::common::Convolution<PointT>::convolve_rows ( PointCloud<PointT>& output)
         if (counter == 0)
           output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();          
       }      
-      for (int i = last; i < input_->width; ++i)
+      for (int i = last; i < width; ++i)
         output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
     }
   }
@@ -131,6 +167,8 @@ pcl::common::Convolution<PointT>::convolve_rows_duplicate ( PointCloud<PointT>& 
   using namespace pcl::common;
   int half_width_ = kernel_.size () / 2;
   int kernel_width_ = kernel_.size () - 1;
+	int width = input_->width;
+	int height = input_->height;
   int last = input_->width - half_width_;
   int w = last - 1;
   Eigen::ArrayXf kernel = kernel_;
@@ -138,7 +176,7 @@ pcl::common::Convolution<PointT>::convolve_rows_duplicate ( PointCloud<PointT>& 
   if (input_->is_dense)
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int j = 0; j < input_->height; ++j)
+    for(int j = 0; j < height; ++j)
     {
       for (int i = half_width_; i < last; ++i)
       {
@@ -147,7 +185,7 @@ pcl::common::Convolution<PointT>::convolve_rows_duplicate ( PointCloud<PointT>& 
           output (i,j)+= (*input_) (l,j) * kernel [k];
       }
       
-      for (int i = last; i < input_->width; ++i)
+      for (int i = last; i < width; ++i)
         output (i,j) = output (w, j);
 
       for (int i = 0; i < half_width_; ++i)
@@ -157,7 +195,7 @@ pcl::common::Convolution<PointT>::convolve_rows_duplicate ( PointCloud<PointT>& 
   else
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int j = 0; j < input_->height; ++j)
+    for(int j = 0; j < height; ++j)
     {
       for (int i = half_width_; i < last; ++i)
       {
@@ -177,7 +215,7 @@ pcl::common::Convolution<PointT>::convolve_rows_duplicate ( PointCloud<PointT>& 
           output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();          
       }
       
-      for (int i = last; i < input_->width; ++i)
+      for (int i = last; i < width; ++i)
         output (i,j) = output (w, j);
 
       for (int i = 0; i < half_width_; ++i)
@@ -192,6 +230,8 @@ pcl::common::Convolution<PointT>::convolve_rows_mirror (PointCloud<PointT>& outp
   using namespace pcl::common;
   int half_width_ = kernel_.size () / 2;
   int kernel_width_ = kernel_.size () - 1;
+	int width = input_->width;
+	int height = input_->height;
   int last = input_->width - half_width_;
   int w = last - 1;
   Eigen::ArrayXf kernel = kernel_;
@@ -199,7 +239,7 @@ pcl::common::Convolution<PointT>::convolve_rows_mirror (PointCloud<PointT>& outp
   if (input_->is_dense)
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int j = 0; j < input_->height; ++j)
+    for(int j = 0; j < height; ++j)
     {
       for (int i = half_width_; i < last; ++i)
       {
@@ -208,7 +248,7 @@ pcl::common::Convolution<PointT>::convolve_rows_mirror (PointCloud<PointT>& outp
           output (i,j)+= (*input_) (l,j) * kernel [k];
       }
       
-      for (int i = last, l = 0; i < input_->width; ++i, ++l)
+      for (int i = last, l = 0; i < width; ++i, ++l)
         output (i,j) = output (w-l, j);
 
       for (int i = 0; i < half_width_; ++i)
@@ -218,7 +258,7 @@ pcl::common::Convolution<PointT>::convolve_rows_mirror (PointCloud<PointT>& outp
   else
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int j = 0; j < input_->height; ++j)
+    for(int j = 0; j < height; ++j)
     {
       for (int i = half_width_; i < last; ++i)
       {
@@ -238,7 +278,7 @@ pcl::common::Convolution<PointT>::convolve_rows_mirror (PointCloud<PointT>& outp
           output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();          
       }
       
-      for (int i = last, l = 0; i < input_->width; ++i, ++l)
+      for (int i = last, l = 0; i < width; ++i, ++l)
         output (i,j) = output (w-l, j);
 
       for (int i = 0; i < half_width_; ++i)
@@ -253,13 +293,15 @@ pcl::common::Convolution<PointT>::convolve_cols (PointCloud<PointT>& output)
   using namespace pcl::common;
   int half_width_ = kernel_.size () / 2;
   int kernel_width_ = kernel_.size () - 1;
+	int width = input_->width;
+	int height = input_->height;
   int last = input_->height - half_width_;
   Eigen::ArrayXf kernel = kernel_;
   
   if (input_->is_dense)
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int i = 0; i < input_->width; ++i)
+    for(int i = 0; i < width; ++i)
     {
       for (int j = 0; j < half_width_; ++j)
         output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
@@ -271,14 +313,14 @@ pcl::common::Convolution<PointT>::convolve_cols (PointCloud<PointT>& output)
           output (i,j)+= (*input_) (i,l) * kernel [k];
       }
       
-      for (int j = last; j < input_->height; ++j)
+      for (int j = last; j < height; ++j)
         output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
     }
   }
   else
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int i = 0; i < input_->width; ++i)
+    for(int i = 0; i < width; ++i)
     {
       for (int j = 0; j < half_width_; ++j)
         output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
@@ -301,7 +343,7 @@ pcl::common::Convolution<PointT>::convolve_cols (PointCloud<PointT>& output)
           output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
       }
       
-      for (int j = last; j < input_->height; ++j)
+      for (int j = last; j < height; ++j)
         output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
     }
   }
@@ -313,6 +355,8 @@ pcl::common::Convolution<PointT>::convolve_cols_duplicate (PointCloud<PointT>& o
   using namespace pcl::common;
   int half_width_ = kernel_.size () / 2;
   int kernel_width_ = kernel_.size () - 1;
+	int width = input_->width;
+	int height = input_->height;
   int last = input_->height - half_width_;
   int h = last -1;
   Eigen::ArrayXf kernel = kernel_;
@@ -320,7 +364,7 @@ pcl::common::Convolution<PointT>::convolve_cols_duplicate (PointCloud<PointT>& o
   if (input_->is_dense)
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int i = 0; i < input_->width; ++i)
+    for(int i = 0; i < width; ++i)
     {
       for (int j = half_width_; j < last; ++j)
       {
@@ -329,7 +373,7 @@ pcl::common::Convolution<PointT>::convolve_cols_duplicate (PointCloud<PointT>& o
           output (i,j)+= (*input_) (i,l) * kernel [k];
       }
       
-      for (int j = last; j < input_->height; ++j)
+      for (int j = last; j < height; ++j)
         output (i,j) = output (i,h);
 
       for (int j = 0; j < half_width_; ++j)
@@ -339,7 +383,7 @@ pcl::common::Convolution<PointT>::convolve_cols_duplicate (PointCloud<PointT>& o
   else
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int i = 0; i < input_->width; ++i)
+    for(int i = 0; i < width; ++i)
     {
       for (int j = half_width_; j < last; ++j)
       {
@@ -359,7 +403,7 @@ pcl::common::Convolution<PointT>::convolve_cols_duplicate (PointCloud<PointT>& o
           output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
       }
       
-      for (int j = last; j < input_->height; ++j)
+      for (int j = last; j < height; ++j)
         output (i,j) = output (i,h);
 
       for (int j = 0; j < half_width_; ++j)
@@ -374,6 +418,8 @@ pcl::common::Convolution<PointT>::convolve_cols_mirror (PointCloud<PointT>& outp
   using namespace pcl::common;
   int half_width_ = kernel_.size () / 2;
   int kernel_width_ = kernel_.size () - 1;
+	int width = input_->width;
+	int height = input_->height;
   int last = input_->height - half_width_;
   int h = last -1;
   Eigen::ArrayXf kernel = kernel_;
@@ -381,7 +427,7 @@ pcl::common::Convolution<PointT>::convolve_cols_mirror (PointCloud<PointT>& outp
   if (input_->is_dense)
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int i = 0; i < input_->width; ++i)
+    for(int i = 0; i < width; ++i)
     {
       for (int j = half_width_; j < last; ++j)
       {
@@ -390,7 +436,7 @@ pcl::common::Convolution<PointT>::convolve_cols_mirror (PointCloud<PointT>& outp
           output (i,j)+= (*input_) (i,l) * kernel [k];
       }
       
-      for (int j = last, l = 0; j < input_->height; ++j, ++l)
+      for (int j = last, l = 0; j < height; ++j, ++l)
         output (i,j) = output (i,h-l);
 
       for (int j = 0; j < half_width_; ++j)
@@ -400,7 +446,7 @@ pcl::common::Convolution<PointT>::convolve_cols_mirror (PointCloud<PointT>& outp
   else
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int i = 0; i < input_->width; ++i)
+    for(int i = 0; i < width; ++i)
     {
       for (int j = half_width_; j < last; ++j)
       {
@@ -420,7 +466,7 @@ pcl::common::Convolution<PointT>::convolve_cols_mirror (PointCloud<PointT>& outp
           output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
       }
       
-      for (int j = last, l = 0; j < input_->height; ++j, ++l)
+      for (int j = last, l = 0; j < height; ++j, ++l)
         output (i,j) = output (i,h-l);
 
       for (int j = 0; j < half_width_; ++j)
@@ -434,13 +480,15 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows (PointCl
 {
   int half_width_ = kernel_.size () / 2;
   int kernel_width_ = kernel_.size () - 1;
+	int width = input_->width;
+	int height = input_->height;
   int last = input_->width - half_width_;
   Eigen::ArrayXf kernel = kernel_;
 
   if (input_->is_dense)
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int j = 0; j < input_->height; ++j)
+    for(int j = 0; j < height; ++j)
     {
       for (int i = 0; i < half_width_; ++i)
         output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
@@ -452,14 +500,14 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows (PointCl
           output (i,j)+= transform_ ((*input_) (l,j) * kernel [k]);
       }
       
-      for (int i = last; i < input_->width; ++i)
+      for (int i = last; i < width; ++i)
         output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
     }
   }
   else
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int j = 0; j < input_->height; ++j)
+    for(int j = 0; j < height; ++j)
     {
       for (int i = 0; i < half_width_; ++i)
         output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
@@ -482,7 +530,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows (PointCl
           output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
       }
 
-      for (int i = last; i < input_->width; ++i)
+      for (int i = last; i < width; ++i)
         output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
     }
   }
@@ -493,6 +541,8 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows_duplicat
 {
   int half_width_ = kernel_.size () / 2;
   int kernel_width_ = kernel_.size () - 1;
+	int width = input_->width;
+	int height = input_->height;
   int last = input_->width - half_width_;
   int w = last -1;
   Eigen::ArrayXf kernel = kernel_;
@@ -500,7 +550,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows_duplicat
   if (input_->is_dense)
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int j = 0; j < input_->height; ++j)
+    for(int j = 0; j < height; ++j)
     {
       for (int i = half_width_; i < last; ++i)
       {
@@ -509,7 +559,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows_duplicat
           output (i,j)+= transform_ ((*input_) (l,j) * kernel [k]);
       }
       
-      for (int i = last; i < input_->width; ++i)
+      for (int i = last; i < width; ++i)
         output (i,j) = output (w,j);
 
       for (int i = 0; i < half_width_; ++i)
@@ -519,7 +569,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows_duplicat
   else
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int j = 0; j < input_->height; ++j)
+    for(int j = 0; j < height; ++j)
     {
       for (int i = half_width_; i < last; ++i)
       {
@@ -539,7 +589,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows_duplicat
           output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
       }
 
-      for (int i = last; i < input_->width; ++i)
+      for (int i = last; i < width; ++i)
         output (i,j) = output (w,j);
 
       for (int i = 0; i < half_width_; ++i)
@@ -553,6 +603,8 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows_mirror (
 {
   int half_width_ = kernel_.size () / 2;
   int kernel_width_ = kernel_.size () - 1;
+	int width = input_->width;
+	int height = input_->height;
   int last = input_->width - half_width_;
   int w = last - 1;
   Eigen::ArrayXf kernel = kernel_;
@@ -560,7 +612,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows_mirror (
   if (input_->is_dense)
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int j = 0; j < input_->height; ++j)
+    for(int j = 0; j < height; ++j)
     {
       for (int i = half_width_; i < last; ++i)
       {
@@ -569,7 +621,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows_mirror (
           output (i,j)+= transform_ ((*input_) (l,j) * kernel [k]);
       }
       
-      for (int i = last, l = 0; i < input_->width; ++i, ++l)
+      for (int i = last, l = 0; i < width; ++i, ++l)
         output (i,j) = output (w-l, j);
 
       for (int i = 0; i < half_width_; ++i)
@@ -579,7 +631,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows_mirror (
   else
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int j = 0; j < input_->height; ++j)
+    for(int j = 0; j < height; ++j)
     {
       for (int i = half_width_; i < last; ++i)
       {
@@ -599,7 +651,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows_mirror (
           output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
       }
 
-      for (int i = last, l = 0; i < input_->width; ++i, ++l)
+      for (int i = last, l = 0; i < width; ++i, ++l)
         output (i,j) = output (w-l, j);
 
       for (int i = 0; i < half_width_; ++i)
@@ -613,13 +665,15 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols (PointCl
 {
   int half_width_ = kernel_.size () / 2;
   int kernel_width_ = kernel_.size () - 1;
+	int width = input_->width;
+	int height = input_->height;
   int last = input_->height - half_width_;
   Eigen::ArrayXf kernel = kernel_;
 
   if (input_->is_dense)
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int i = 0; i < input_->width; ++i)
+    for(int i = 0; i < width; ++i)
     {
       for (int j = 0; j < half_width_; ++j)
         output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
@@ -631,14 +685,14 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols (PointCl
           output (i,j)+= transform_ ((*input_) (i,l) * kernel [k]);
       }
       
-      for (int j = last; j < input_->height; ++j)
+      for (int j = last; j < height; ++j)
         output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
     }
   }
   else
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int i = 0; i < input_->width; ++i)
+    for(int i = 0; i < width; ++i)
     {
       for (int j = 0; j < half_width_; ++j)
         output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
@@ -661,7 +715,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols (PointCl
           output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
       }
       
-      for (int j = last; j < input_->height; ++j)
+      for (int j = last; j < height; ++j)
         output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
     }
   }
@@ -672,6 +726,8 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols_duplicat
 {
   int half_width_ = kernel_.size () / 2;
   int kernel_width_ = kernel_.size () - 1;
+	int width = input_->width;
+	int height = input_->height;
   int last = input_->height - half_width_;
   int h = last - 1;
   Eigen::ArrayXf kernel = kernel_;
@@ -679,7 +735,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols_duplicat
   if (input_->is_dense)
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int i = 0; i < input_->width; ++i)
+    for(int i = 0; i < width; ++i)
     {
       for (int j = half_width_; j < last; ++j)
       {
@@ -688,7 +744,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols_duplicat
           output (i,j)+= transform_ ((*input_) (i,l) * kernel [k]);
       }
 
-      for (int j = last; j < input_->height; ++j)
+      for (int j = last; j < height; ++j)
         output (i,j) = output (i,h);
 
       for (int j = 0; j < half_width_; ++j)
@@ -698,7 +754,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols_duplicat
   else
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int i = 0; i < input_->width; ++i)
+    for(int i = 0; i < width; ++i)
     {
       for (int j = half_width_; j < last; ++j)
       {
@@ -718,7 +774,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols_duplicat
           output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
       }
 
-      for (int j = last; j < input_->height; ++j)
+      for (int j = last; j < height; ++j)
         output (i,j) = output (i,h);
 
       for (int j = 0; j < half_width_; ++j)
@@ -732,13 +788,15 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols_mirror (
 {
   int half_width_ = kernel_.size () / 2;
   int kernel_width_ = kernel_.size () - 1;
+	int width = input_->width;
+	int height = input_->height;
   int last = input_->height - half_width_;
   Eigen::ArrayXf kernel = kernel_;
   int h = last - 1;
   if (input_->is_dense)
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int i = 0; i < input_->width; ++i)
+    for(int i = 0; i < width; ++i)
     {
       for (int j = half_width_; j < last; ++j)
       {
@@ -747,7 +805,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols_mirror (
           output (i,j)+= transform_ ((*input_) (i,l) * kernel [k]);
       }
       
-      for (int j = last, l = 0; j < input_->height; ++j, ++l)
+      for (int j = last, l = 0; j < height; ++j, ++l)
         output (i,j) = output (i,h-l);
 
       for (int j = 0; j < half_width_; ++j)
@@ -757,7 +815,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols_mirror (
   else
   {
 #pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
-    for(int i = 0; i < input_->width; ++i)
+    for(int i = 0; i < width; ++i)
     {
       for (int j = half_width_; j < last; ++j)
       {
@@ -777,7 +835,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols_mirror (
           output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
       }
 
-      for (int j = last, l = 0; j < input_->height; ++j, ++l)
+      for (int j = last, l = 0; j < height; ++j, ++l)
         output (i,j) = output (i,h-l);
 
       for (int j = 0; j < half_width_; ++j)
