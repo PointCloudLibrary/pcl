@@ -84,18 +84,15 @@ namespace pcl
     {
       public:
         typedef typename pcl::PointCloud<PointIn> PointCloudIn;
-        typedef typename PointCloudIn::Ptr PointCloudInPtr;
         typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
         typedef typename pcl::PointCloud<PointOut> PointCloudOut;
         typedef typename PointCloudOut::Ptr PointCloudOutPtr;
-        typedef typename PointCloudOut::ConstPtr PointCloudOutConstPtr;
-
+        
         /// The borders policy available
         enum BORDERS_POLICY { IGNORE = -1, MIRROR = 0, DUPLICATE = 1};
         /// Constructor
         AbstractConvolution ()
           : borders_policy_ (IGNORE)
-          , convolve_direction_ (-1)
           , distance_threshold_ (std::numeric_limits<float>::infinity ())
         {}
         /// Empty destructor
@@ -104,7 +101,8 @@ namespace pcl
         void 
         setBordersPolicy (int policy) { borders_policy_ = policy; }
         /// Get the borders policy
-        int getBordersPolicy () { return (borders_policy_); }
+        int 
+        getBordersPolicy () { return (borders_policy_); }
         /** Convolve point cloud with an horizontal kernel along rows 
           * then vertical kernel along columns : convolve separately.
           * \param[in] h_kernel kernel for convolving rows
@@ -136,10 +134,13 @@ namespace pcl
         {
           try
           {
-            convolve_direction_ = HORIZONTAL;
             initCompute (output);
-            convolve_rows (output);
-            deinitCompute (output);
+            switch (borders_policy_)
+            {
+              case MIRROR : convolve_rows_mirror (output);
+              case DUPLICATE : convolve_rows_duplicate (output);
+              case IGNORE : convolve_rows (output);
+            }
           }
           catch (InitFailedException& e)
           {
@@ -158,17 +159,20 @@ namespace pcl
         {
           try
           {
-            convolve_direction_ = VERTICAL;
             initCompute (output);
-            convolve_cols (output);
-            deinitCompute (output);
+            switch (borders_policy_)
+            {
+              case MIRROR : convolve_cols_mirror (output);
+              case DUPLICATE : convolve_cols_duplicate (output);
+              case IGNORE : convolve_cols (output);
+            }
           }
           catch (InitFailedException& e)
           {
             PCL_THROW_EXCEPTION (InitFailedException,
                                  "[pcl::common::Convolution::convolveCols] init failed " << e.what ());
-          }          
-        } 
+          }
+        }
         /** \brief Provide a pointer to the input dataset
           * \param cloud the const boost shared pointer to a PointCloud message
           * \remark Will perform a deep copy
@@ -176,9 +180,11 @@ namespace pcl
         inline void
         setInputCloud (const PointCloudInConstPtr& cloud)
         {
-          input_.reset (new PointCloudIn (*cloud));
+          input_ = cloud;
         }
-
+        /** Set convolving kernel
+          * \param[in] kernel convolving element
+          */
         inline void 
         setKernel (const Eigen::ArrayXf& kernel)
         {
@@ -189,7 +195,7 @@ namespace pcl
           * threshold is used to keep us from ghost points.
           * The value you set here is strongly related to the sensor. A good value for
           * kinect data is 0.001 \default is std::numeric<float>::infinity ()
-          * \param[in] threshold: maximum allowed distance between 2 juxtaposed points
+          * \param[in] threshold maximum allowed distance between 2 juxtaposed points
           */
         inline void
         setDistanceThreshold (const float& threshold)
@@ -204,8 +210,6 @@ namespace pcl
         }
 
       protected:
-        /// direction of the expansion
-        enum DIRECTION { HORIZONTAL = 0, VERTICAL };
         /** init compute is an internal method called before computation
           * \param[in] kernel convolution kernel to be used
           * \throw pcl::InitFailedException
@@ -223,18 +227,28 @@ namespace pcl
         /// convolve cols and ignore borders
         virtual void
         convolve_cols (PointCloudOut& output) = 0;
+        /// convolve rows and mirror borders
+        virtual void
+        convolve_rows_mirror (PointCloudOut& output) = 0;
+        /// convolve cols and mirror borders
+        virtual void
+        convolve_cols_mirror (PointCloudOut& output) = 0;
+        /// convolve rows and duplicate borders
+        virtual void
+        convolve_rows_duplicate (PointCloudOut& output) = 0;
+        /// convolve cols and duplicate borders
+        virtual void
+        convolve_cols_duplicate (PointCloudOut& output) = 0;
         /// Border policy
         int borders_policy_;
-        /// Convolving direction
-        int convolve_direction_;
         /// Threshold distance between adjacent points
         float distance_threshold_;
         /// Pointer to the input cloud
-        PointCloudInPtr input_;
-        /// Pointer to the input cloud
-        PointCloudOutPtr output_;
+        PointCloudInConstPtr input_;
         /// convolution kernel
         Eigen::ArrayXf kernel_;
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
 
     /** Class Convolution
@@ -256,7 +270,10 @@ namespace pcl
         using ConvolutionBase::kernel_;
         using ConvolutionBase::distance_threshold_;
 
-        Convolution () : ConvolutionBase () {}
+        Convolution ()
+          : ConvolutionBase ()
+          , threads_ (1)
+        {}
         
         /** Convolve point cloud with an horizontal kernel along rows 
           * then vertical kernel along columns : convolve separately.
@@ -273,8 +290,7 @@ namespace pcl
         {
           try
           {
-            PointCloudPtr tmp; 
-            tmp.reset (new PointCloud<PointT> ());
+            PointCloudPtr tmp (new PointCloud<PointT> ());
             setKernel (h_kernel);
             convolveRows (*tmp);
             setInputCloud (tmp);
@@ -298,8 +314,7 @@ namespace pcl
         {
           try
           {
-            PointCloudPtr tmp;
-            tmp.reset (new PointCloud<PointT> ());
+            PointCloudPtr tmp (new PointCloud<PointT> ());
             convolveRows (*tmp);
             setInputCloud (tmp);
             convolveCols (output);
@@ -310,14 +325,38 @@ namespace pcl
                                  "[pcl::common::Convolution::convolve] init failed " << e.what ());
           }
         }
+        /** \brief Initialize the scheduler and set the number of threads to use.
+          * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
+          */
+        inline void 
+        setNumberOfThreads (unsigned int nr_threads)
+        { 
+          if (nr_threads == 0)
+            nr_threads = 1;
+          threads_ = nr_threads; 
+        }
 
       protected:
+        /** \brief The number of threads the scheduler should use. */
+        unsigned int threads_;
         /// convolve rows and ignore borders
         void
         convolve_rows (PointCloud<PointT>& output);
         /// convolve cols and ignore borders
         void
         convolve_cols (PointCloud<PointT>& output);
+        /// convolve rows and mirror borders
+        void
+        convolve_rows_mirror (PointCloud<PointT>& output);
+        /// convolve cols and mirror borders
+        void
+        convolve_cols_mirror (PointCloud<PointT>& output);
+        /// convolve rows and duplicate borders
+        void
+        convolve_rows_duplicate (PointCloud<PointT>& output);
+        /// convolve cols and duplicate borders
+        void
+        convolve_cols_duplicate (PointCloud<PointT>& output);
     };
 
     /** Class ConvolutionWithTransform
@@ -354,7 +393,10 @@ namespace pcl
         using ConvolutionBase::kernel_;
         using ConvolutionBase::distance_threshold_;
         
-        ConvolutionWithTransform () : ConvolutionBase () {}
+        ConvolutionWithTransform ()
+          : ConvolutionBase ()
+          , threads_ (1)
+        {}
 
         /** Convolve point cloud with an horizontal kernel along rows 
           * then vertical kernel along columns : convolve separately.
@@ -371,8 +413,7 @@ namespace pcl
         {
           try
           {
-            PointCloudOutPtr tmp; 
-            tmp.reset (new PointCloudOut ());
+            PointCloudOutPtr tmp (new PointCloudOut ());
             setKernel (h_kernel);
             convolveRows (*tmp);
             Convolution<typename Conversion::PointOut> convolution;
@@ -398,8 +439,7 @@ namespace pcl
         {
           try
           {
-            PointCloudOutPtr tmp; 
-            tmp.reset (new PointCloudOut ());
+            PointCloudOutPtr tmp (new PointCloudOut ());
             convolveRows (*tmp);
             Convolution<typename Conversion::PointOut> convolution;
             convolution.setInputCloud (tmp);
@@ -413,14 +453,38 @@ namespace pcl
                                  "[pcl::common::Convolution::convolve] init failed " << e.what ());
           }
         }
-        
+        /** \brief Initialize the scheduler and set the number of threads to use.
+          * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
+          */
+        inline void 
+        setNumberOfThreads (unsigned int nr_threads)
+        { 
+          if (nr_threads == 0)
+            nr_threads = 1;
+          threads_ = nr_threads; 
+        }
+
       protected:
+        /** \brief The number of threads the scheduler should use. */
+        unsigned int threads_;
         /// convolve rows and ignore borders
         void
         convolve_rows (PointCloudOut& output);
         /// convolve cols and ignore borders
         void
         convolve_cols (PointCloudOut& output);
+        /// convolve rows and mirror borders
+        void
+        convolve_rows_mirror (PointCloudOut& output);
+        /// convolve cols and mirror borders
+        void
+        convolve_cols_mirror (PointCloudOut& output);
+        /// convolve rows and duplicate borders
+        void
+        convolve_rows_duplicate (PointCloudOut& output);
+        /// convolve cols and duplicate borders
+        void
+        convolve_cols_duplicate (PointCloudOut& output);
 
       private:
         Conversion transform_;

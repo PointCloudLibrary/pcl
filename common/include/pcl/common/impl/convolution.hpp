@@ -43,87 +43,14 @@
 template <typename PointIn, typename PointOut> void
 pcl::common::AbstractConvolution<PointIn, PointOut>::initCompute (PointCloudOut& output)
 {
+  if (borders_policy_ != IGNORE && borders_policy_ != MIRROR && borders_policy_ != DUPLICATE)
+    PCL_THROW_EXCEPTION (InitFailedException,
+                         "[pcl::common::Convolution::initCompute] unknown borders policy.");
+
   if(kernel_.size () % 2 == 0)
     PCL_THROW_EXCEPTION (InitFailedException,
                          "[pcl::common::Convolution::initCompute] convolving element width must be odd.");
-
-  switch (borders_policy_)
-  {
-    case IGNORE : break;
-    case MIRROR : 
-    {
-      switch (convolve_direction_)
-      {
-        case HORIZONTAL : 
-        {
-          try 
-          {
-            mirrorRows (*input_, *input_, kernel_.size () / 2); 
-          }
-          catch (PCLException &e)
-          {
-            PCL_THROW_EXCEPTION (InitFailedException,
-                                 "[pcl::common::Convolution::initCompute] expand failed");
-          }
-        } break;
-        case VERTICAL : 
-        {
-          try 
-          {
-            mirrorColumns (*input_, *input_, kernel_.size () / 2); 
-          }
-          catch (PCLException &e)
-          {
-            PCL_THROW_EXCEPTION (InitFailedException,
-                                 "[pcl::common::Convolution::initCompute] expand failed");
-          }
-        } break;
-        default : 
-        PCL_THROW_EXCEPTION (InitFailedException, 
-                             "[pcl::common::Convolution::initCompute] invalid convolving direction!"); 
-        break;
-      }
-    } break;
-    case DUPLICATE :
-    {
-      switch (convolve_direction_)
-      {
-        case HORIZONTAL : 
-        {
-          try
-          {
-            duplicateRows (*input_, *input_, kernel_.size () / 2); 
-          }
-          catch (PCLException &e)
-          {
-            PCL_THROW_EXCEPTION (InitFailedException,
-                                 "[pcl::common::Convolution::initCompute] expand failed");
-          }
-        } break;
-        case VERTICAL : 
-        {
-          try 
-          { 
-            duplicateColumns (*input_, *input_, kernel_.size () / 2); 
-          } 
-          catch (PCLException &e)
-          {
-            PCL_THROW_EXCEPTION (InitFailedException,
-                                 "[pcl::common::Convolution::initCompute] expand failed");
-          }
-        } break;
-        default : 
-          PCL_THROW_EXCEPTION (InitFailedException, 
-                               "[pcl::common::Convolution::initCompute] invalid convolving direction!"); 
-          break;
-      }
-    } break;
-    default: 
-      PCL_THROW_EXCEPTION (InitFailedException,
-                           "[pcl::common::Convolution::initCompute] unknown border policy");
-      break;
-  }
-
+  
   if (&(*input_) != &output)
   {
     if (output.height != input_->height || output.width != input_->width)
@@ -137,40 +64,6 @@ pcl::common::AbstractConvolution<PointIn, PointOut>::initCompute (PointCloudOut&
   
   if (distance_threshold_ != std::numeric_limits<float>::infinity ())
     distance_threshold_*= (kernel_.size () % 2) * distance_threshold_;
-}
-
-template <typename PointIn, typename PointOut> void
-pcl::common::AbstractConvolution<PointIn, PointOut>::deinitCompute (PointCloudOut& output)
-{
-  if (borders_policy_ == MIRROR || borders_policy_ == DUPLICATE)
-  {
-    if (convolve_direction_ == HORIZONTAL)
-    { 
-      try 
-      {
-        deleteRows (*input_, *input_, kernel_.size () / 2);
-        deleteRows (output, output, kernel_.size () / 2);
-      }
-      catch (InitFailedException &e)
-      {
-        PCL_THROW_EXCEPTION (InitFailedException,
-                             "[pcl::common::Convolution::deinitCompute] failed " << e.what ());
-      }
-    }
-    else if (convolve_direction_ == VERTICAL)
-    {
-      try 
-      {
-        deleteCols (*input_, *input_, kernel_.size () / 2);
-        deleteCols (output, output, kernel_.size () / 2);
-      }
-      catch (InitFailedException &e)
-      {
-        PCL_THROW_EXCEPTION (InitFailedException,
-                             "[pcl::common::Convolution::deinitCompute] failed " << e.what ());
-      }
-    }
-  }
 }
 
 template <typename PointT> void
@@ -215,11 +108,6 @@ pcl::common::Convolution<PointT>::convolve_rows ( PointCloud<PointT>& output)
         output (i,j) = PointT ();
         for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l)
         {
-          // if (!isFinite ((*input_) (l,j)))
-          // {
-          //  output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
-          //  break;
-          // }
           if (!isFinite ((*input_) (l,j)))
             continue;
           if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (l,j)) < distance_threshold_)
@@ -259,7 +147,7 @@ pcl::common::Convolution<PointT>::convolve_rows_duplicate ( PointCloud<PointT>& 
           output (i,j)+= (*input_) (l,j) * kernel [k];
       }
       
-      for (int i = last; i < kernel->width_; ++i)
+      for (int i = last; i < input_->width; ++i)
         output (i,j) = output (w, j);
 
       for (int i = 0; i < half_width_; ++i)
@@ -277,11 +165,6 @@ pcl::common::Convolution<PointT>::convolve_rows_duplicate ( PointCloud<PointT>& 
         output (i,j) = PointT ();
         for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l)
         {
-          // if (!isFinite ((*input_) (l,j)))
-          // {
-          //  output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
-          //  break;
-          // }
           if (!isFinite ((*input_) (l,j)))
             continue;
           if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (l,j)) < distance_threshold_)
@@ -325,7 +208,7 @@ pcl::common::Convolution<PointT>::convolve_rows_mirror (PointCloud<PointT>& outp
           output (i,j)+= (*input_) (l,j) * kernel [k];
       }
       
-      for (int i = last, l = 0; i < kernel->width_; ++i, ++l)
+      for (int i = last, l = 0; i < input_->width; ++i, ++l)
         output (i,j) = output (w-l, j);
 
       for (int i = 0; i < half_width_; ++i)
@@ -343,11 +226,6 @@ pcl::common::Convolution<PointT>::convolve_rows_mirror (PointCloud<PointT>& outp
         output (i,j) = PointT ();
         for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l)
         {
-          // if (!isFinite ((*input_) (l,j)))
-          // {
-          //  output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
-          //  break;
-          // }
           if (!isFinite ((*input_) (l,j)))
             continue;
           if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (l,j)) < distance_threshold_)
@@ -411,11 +289,6 @@ pcl::common::Convolution<PointT>::convolve_cols (PointCloud<PointT>& output)
         int counter = 0;
         for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
         {
-          // if (!isFinite ((*input_) (i,l)))
-          // {
-          //  output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
-          //  break;
-          // }
           if (!isFinite ((*input_) (i,l)))
             continue;
           if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (i,l)) < distance_threshold_)
@@ -474,11 +347,6 @@ pcl::common::Convolution<PointT>::convolve_cols_duplicate (PointCloud<PointT>& o
         int counter = 0;
         for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
         {
-          // if (!isFinite ((*input_) (i,l)))
-          // {
-          //  output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
-          //  break;
-          // }
           if (!isFinite ((*input_) (i,l)))
             continue;
           if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (i,l)) < distance_threshold_)
@@ -540,11 +408,6 @@ pcl::common::Convolution<PointT>::convolve_cols_mirror (PointCloud<PointT>& outp
         int counter = 0;
         for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
         {
-          // if (!isFinite ((*input_) (i,l)))
-          // {
-          //  output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
-          //  break;
-          // }
           if (!isFinite ((*input_) (i,l)))
             continue;
           if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (i,l)) < distance_threshold_)
@@ -626,6 +489,126 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows (PointCl
 }
 
 template <typename PointInToPointOut> void
+pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows_duplicate (PointCloudOut& output)
+{
+  int half_width_ = kernel_.size () / 2;
+  int kernel_width_ = kernel_.size () - 1;
+  int last = input_->width - half_width_;
+  int w = last -1;
+  Eigen::ArrayXf kernel = kernel_;
+
+  if (input_->is_dense)
+  {
+#pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
+    for(int j = 0; j < input_->height; ++j)
+    {
+      for (int i = half_width_; i < last; ++i)
+      {
+        output (i,j) = transform_ (0);
+        for (int k = kernel_width_ - 1, l = i - half_width_; k > -1; --k, ++l)
+          output (i,j)+= transform_ ((*input_) (l,j) * kernel [k]);
+      }
+      
+      for (int i = last; i < input_->width; ++i)
+        output (i,j) = output (w,j);
+
+      for (int i = 0; i < half_width_; ++i)
+        output (i,j) = output (half_width_,j);
+    }
+  }
+  else
+  {
+#pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
+    for(int j = 0; j < input_->height; ++j)
+    {
+      for (int i = half_width_; i < last; ++i)
+      {
+        int counter = 0;
+        output (i,j) = transform_ (0);
+        for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l)
+        {
+          if (!isFinite ((*input_) (l,j)))
+            continue;
+          if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (l,j)) < distance_threshold_)
+          {
+            output (i,j)+= transform_ ((*input_) (l,j) * kernel [k]);
+            ++counter;
+          }
+        }
+        if (counter == 0)
+          output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
+      }
+
+      for (int i = last; i < input_->width; ++i)
+        output (i,j) = output (w,j);
+
+      for (int i = 0; i < half_width_; ++i)
+        output (i,j) = output (half_width_,j);
+    }
+  }
+}
+
+template <typename PointInToPointOut> void
+pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows_mirror (PointCloudOut& output)
+{
+  int half_width_ = kernel_.size () / 2;
+  int kernel_width_ = kernel_.size () - 1;
+  int last = input_->width - half_width_;
+  int w = last - 1;
+  Eigen::ArrayXf kernel = kernel_;
+
+  if (input_->is_dense)
+  {
+#pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
+    for(int j = 0; j < input_->height; ++j)
+    {
+      for (int i = half_width_; i < last; ++i)
+      {
+        output (i,j) = transform_ (0);
+        for (int k = kernel_width_ - 1, l = i - half_width_; k > -1; --k, ++l)
+          output (i,j)+= transform_ ((*input_) (l,j) * kernel [k]);
+      }
+      
+      for (int i = last, l = 0; i < input_->width; ++i, ++l)
+        output (i,j) = output (w-l, j);
+
+      for (int i = 0; i < half_width_; ++i)
+        output (i,j) = output (half_width_+1-i, j);
+    }
+  }
+  else
+  {
+#pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
+    for(int j = 0; j < input_->height; ++j)
+    {
+      for (int i = half_width_; i < last; ++i)
+      {
+        int counter = 0;
+        output (i,j) = transform_ (0);
+        for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l)
+        {
+          if (!isFinite ((*input_) (l,j)))
+            continue;
+          if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (l,j)) < distance_threshold_)
+          {
+            output (i,j)+= transform_ ((*input_) (l,j) * kernel [k]);
+            ++counter;
+          }
+        }
+        if (counter == 0)
+          output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
+      }
+
+      for (int i = last, l = 0; i < input_->width; ++i, ++l)
+        output (i,j) = output (w-l, j);
+
+      for (int i = 0; i < half_width_; ++i)
+        output (i,j) = output (half_width_+1-i, j);
+    }
+  }
+}
+
+template <typename PointInToPointOut> void
 pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols (PointCloudOut& output)
 {
   int half_width_ = kernel_.size () / 2;
@@ -684,4 +667,122 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols (PointCl
   }
 }
 
+template <typename PointInToPointOut> void
+pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols_duplicate (PointCloudOut& output)
+{
+  int half_width_ = kernel_.size () / 2;
+  int kernel_width_ = kernel_.size () - 1;
+  int last = input_->height - half_width_;
+  int h = last - 1;
+  Eigen::ArrayXf kernel = kernel_;
+
+  if (input_->is_dense)
+  {
+#pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
+    for(int i = 0; i < input_->width; ++i)
+    {
+      for (int j = half_width_; j < last; ++j)
+      {
+        output (i,j) = transform_ (0);
+        for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
+          output (i,j)+= transform_ ((*input_) (i,l) * kernel [k]);
+      }
+
+      for (int j = last; j < input_->height; ++j)
+        output (i,j) = output (i,h);
+
+      for (int j = 0; j < half_width_; ++j)
+        output (i,j) = output (i, half_width_);
+    }
+  }
+  else
+  {
+#pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
+    for(int i = 0; i < input_->width; ++i)
+    {
+      for (int j = half_width_; j < last; ++j)
+      {
+        output (i,j) = transform_ (0);
+        int counter = 0;
+        for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
+        {
+          if (!isFinite ((*input_) (i,l)))
+            continue;
+          if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (i,l)) < distance_threshold_)
+          {
+            output (i,j)+= transform_ ((*input_) (i,l) * kernel [k]);
+            ++counter;
+          }
+        }
+        if (counter == 0)
+          output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
+      }
+
+      for (int j = last; j < input_->height; ++j)
+        output (i,j) = output (i,h);
+
+      for (int j = 0; j < half_width_; ++j)
+        output (i,j) = output (i, half_width_);
+    }
+  }
+}
+
+template <typename PointInToPointOut> void
+pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols_mirror (PointCloudOut& output)
+{
+  int half_width_ = kernel_.size () / 2;
+  int kernel_width_ = kernel_.size () - 1;
+  int last = input_->height - half_width_;
+  Eigen::ArrayXf kernel = kernel_;
+  int h = last - 1;
+  if (input_->is_dense)
+  {
+#pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
+    for(int i = 0; i < input_->width; ++i)
+    {
+      for (int j = half_width_; j < last; ++j)
+      {
+        output (i,j) = transform_ (0);
+        for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
+          output (i,j)+= transform_ ((*input_) (i,l) * kernel [k]);
+      }
+      
+      for (int j = last, l = 0; j < input_->height; ++j, ++l)
+        output (i,j) = output (i,h-l);
+
+      for (int j = 0; j < half_width_; ++j)
+        output (i,j) = output (i, half_width_+1-j);
+    }
+  }
+  else
+  {
+#pragma omp parallel for shared (output, kernel, kernel_width_, last) num_threads (threads_)
+    for(int i = 0; i < input_->width; ++i)
+    {
+      for (int j = half_width_; j < last; ++j)
+      {
+        output (i,j) = transform_ (0);
+        int counter = 0;
+        for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
+        {
+          if (!isFinite ((*input_) (i,l)))
+            continue;
+          if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (i,l)) < distance_threshold_)
+          {
+            output (i,j)+= transform_ ((*input_) (i,l) * kernel [k]);
+            ++counter;
+          }
+        }
+        if (counter == 0)
+          output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
+      }
+
+      for (int j = last, l = 0; j < input_->height; ++j, ++l)
+        output (i,j) = output (i,h-l);
+
+      for (int j = 0; j < half_width_; ++j)
+        output (i,j) = output (i, half_width_+1-j);
+    }
+  }
+}
 #endif
