@@ -141,6 +141,8 @@ struct run_proctor
 
           // Configure Proctor
           Proctor proctor;
+          proctor.setNumModels(10);
+          proctor.setNumTrials(proctor.getNumModels() * 1);
 
           ScanningModelSource model_source("princeton", "/home/justin/Documents/benchmark/db");
           model_source.loadModels();

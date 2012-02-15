@@ -39,7 +39,6 @@ if(build)
   include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include)
 
   set(incs
-      include/pcl/${SUBSYS_NAME}/config.h
       include/pcl/${SUBSYS_NAME}/confusion_matrix.h
       include/pcl/${SUBSYS_NAME}/database_entry.h
       include/pcl/${SUBSYS_NAME}/detector.h

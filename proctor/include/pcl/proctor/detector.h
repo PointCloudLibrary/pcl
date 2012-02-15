@@ -33,7 +33,6 @@ namespace pcl
     class Detector
     {
       public:
-        //typedef Eigen::MatrixXf Signature; // TODO Get rid of this
         typedef boost::shared_ptr<Proposer> ProposerPtr;
         typedef boost::shared_ptr<const Proposer> ProposerConstPtr;
 
@@ -76,12 +75,10 @@ namespace pcl
         /**
          * do any online processing
          * scene is a range scan
-         * return guessed model number
-         * populate classifier[candidate model] with a similarity score (higher is better)
-         * populate registration[candidate model] with a distance score (lower is better, but 0 means didn't try)
+         * return guessed model id
          */
         std::string
-        query(Scene &scene, float *classifier, double *registration);
+        query(Scene &scene);
 
         /** start a visualizer; if called, must be called before training/querying */
         void

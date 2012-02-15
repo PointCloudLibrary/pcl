@@ -69,15 +69,6 @@ namespace pcl
         virtual void
         printResults(Detector &detector);
 
-        /** histogram of [scene model][detector guess] */
-        int confusion[Config::num_models][Config::num_models];
-
-        /** detector's classification similarity ratings [trial][model candidate] */
-        float classifier[Config::num_trials][Config::num_models];
-
-        /** detector's registration distance ratings [trial][model candidate] */
-        double registration[Config::num_trials][Config::num_models];
-
         /** the timer */
         Timer<NUM_BINS> timer;
 
@@ -87,10 +78,37 @@ namespace pcl
           this->source_ = source;
         }
 
+        void
+        setNumModels(int num_models)
+        {
+          num_models_ = num_models;
+        }
+
+        int
+        getNumModels()
+        {
+          return num_models_;
+        }
+
+        void
+        setNumTrials(int num_trials)
+        {
+          num_trials_ = num_trials;
+        }
+
+        int
+        getNumTrials()
+        {
+          return num_trials_;
+        }
+
       protected:
         ScanningModelSource *source_;
 
         std::vector<std::string> model_ids_;
+
+        int num_models_;
+        int num_trials_;
     };
 
   }

@@ -97,7 +97,8 @@ namespace pcl
         timer.start();
         try {
           Scene test_scene(truth_id, test_cloud);
-          std::string guessed_id = detector.query(test_scene, classifier[ni], registration[ni]);
+          //std::string guessed_id = detector.query(test_scene, classifier[ni], registration[ni]);
+          std::string guessed_id = detector.query(test_scene);
 
           guesses_for_id[guessed_id] += 1;
           confusion_matrix.increment(truth_id, guessed_id);
@@ -105,8 +106,8 @@ namespace pcl
         } catch (exception &e) {
           cout << "Detector exception" << endl;
           cout << e.what() << endl;
-          memset(classifier[ni], 0, sizeof(classifier[ni]));
-          memset(registration[ni], 0, sizeof(registration[ni]));
+          //memset(classifier[ni], 0, sizeof(classifier[ni]));
+          //memset(registration[ni], 0, sizeof(registration[ni]));
         }
         timer.stop(DETECTOR_TEST);
 

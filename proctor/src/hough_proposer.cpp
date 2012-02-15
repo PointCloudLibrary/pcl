@@ -11,9 +11,9 @@
 
 namespace pcl
 {
-  
+
   namespace proctor
-  { 
+  {
     template <typename Array>
     void print(std::ostream& os, const Array& A)
     {
@@ -253,7 +253,7 @@ namespace pcl
 
         return true;
       }
-      
+
       return false;
     }
 

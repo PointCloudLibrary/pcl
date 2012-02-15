@@ -46,7 +46,7 @@ namespace pcl
     }
 
     std::string
-    Detector::query(Scene &scene, float *classifier, double *registration)
+    Detector::query(Scene &scene)
     {
       static int i = 0;
       if (detector_vis_) {
@@ -69,8 +69,6 @@ namespace pcl
       e.features = obtainFeatures(scene, e.keypoints, true);
       timer.stop(COMPUTE_FEATURES_TESTING);
       e.id = scene.id;
-
-      memset(classifier, 0, Config::num_models * sizeof(*classifier));
 
       StopWatch s;
 
