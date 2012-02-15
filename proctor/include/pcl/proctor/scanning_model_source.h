@@ -20,16 +20,6 @@ namespace pcl
       public:
         ScanningModelSource(std::string name, std::string dir) : ModelSource(name, dir)
         {
-          const float theta_start = M_PI / 12;
-          const float theta_step = 0.0f;
-          const int theta_count = 1;
-          const float phi_start = 0.0f;
-          const float phi_step = M_PI / 6;
-          const int phi_count = 12;
-          const float theta_min = 0.0f;
-          const float theta_max = M_PI / 6;
-          const float phi_min = 0.0f;
-          const float phi_max = M_PI * 2;
           rng_.seed(0);
 
           resetTestGenerator();
