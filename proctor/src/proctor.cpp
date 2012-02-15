@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <algorithm>
 
 #include <vtkCellArray.h>
 #include <vtkFloatArray.h>
@@ -44,11 +45,10 @@ namespace pcl
 
       cout << "[models]" << endl;
 
-      //for (int mi = 0; mi < num_model_ids && mi < Config::num_models; mi++) {
       timer.start();
-      const int num_model_ids = model_ids_.size();
+      const int num_model_ids = std::min((int) model_ids_.size(), num_models_);
 #pragma omp parallel for
-      for (int mi = 0; mi < Config::num_models; mi++) {
+      for (int mi = 0; mi < num_model_ids; mi++) {
         std::string model_id = model_ids_[mi];
         cout << "Begin scanning model " << mi << " (" << model_id << ")" << endl;
         Scene *scene = new Scene(model_id, source_->getTrainingModel(model_id));
@@ -73,18 +73,17 @@ namespace pcl
 
       source_->resetTestGenerator();
 
-      // run the tests
-      memset(confusion, 0, sizeof(confusion));
-
       std::map<std::string, std::map<std::string, int> > guesses;
       ConfusionMatrix confusion_matrix;
 
-      int num_model_ids = model_ids_.size();
+      int num_model_ids = std::min((int) model_ids_.size(), num_models_);
+      if (num_model_ids == 0)
+        assert(false);
 //#pragma omp parallel for
-      for (int ni = 0; num_model_ids > 0 && ni < Config::num_trials; ni++) {
+      for (int ni = 0; ni < num_trials_; ni++) {
         cout << "[test " << ni << "]" << endl;
 
-        std::string truth_id = model_ids_[ni % model_ids_.size()];
+        std::string truth_id = model_ids_[ni % num_model_ids];
 
         std::map<std::string, int>& guesses_for_id = guesses[truth_id];
 
