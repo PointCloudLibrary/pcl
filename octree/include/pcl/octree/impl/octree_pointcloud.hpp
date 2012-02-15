@@ -284,14 +284,6 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::defineBoundingBox ()
   maxY = max_pt.y;
   maxZ = max_pt.z;
 
-  minX -= this->resolution_ * 0.5f;
-  minY -= this->resolution_ * 0.5f;
-  minZ -= this->resolution_ * 0.5f;
-
-  maxX += this->resolution_ * 0.5f;
-  maxY += this->resolution_ * 0.5f;
-  maxZ += this->resolution_ * 0.5f;
-
   // generate bit masks for octree
   defineBoundingBox (minX, minY, minZ, maxX, maxY, maxZ);
 }
@@ -569,9 +561,9 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getKeyBitSize ()
   const float minValue = std::numeric_limits<float>::epsilon();
 
   // find maximum key values for x, y, z
-  maxKeyX = ceil ((maxX_ - minX_) / resolution_);
-  maxKeyY = ceil ((maxY_ - minY_) / resolution_);
-  maxKeyZ = ceil ((maxZ_ - minZ_) / resolution_);
+  maxKeyX = (maxX_ - minX_) / resolution_;
+  maxKeyY = (maxY_ - minY_) / resolution_;
+  maxKeyZ = (maxZ_ - minZ_) / resolution_;
 
   // find maximum amount of keys
   maxVoxels = max (max (max (maxKeyX, maxKeyY), maxKeyZ), (unsigned int)2);
@@ -613,17 +605,19 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getKeyBitSize ()
  // configure tree depth of octree
   this->setTreeDepth (this->octreeDepth_);
 
-}
+  }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT, typename LeafT, typename OctreeT> void
-pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::genOctreeKeyforPoint (const PointT& point_arg, OctreeKey & key_arg) const
-{
-  // calculate integer key for point coordinates
-  key_arg.x = (unsigned int)((point_arg.x - this->minX_) / this->resolution_);
-  key_arg.y = (unsigned int)((point_arg.y - this->minY_) / this->resolution_);
-  key_arg.z = (unsigned int)((point_arg.z - this->minZ_) / this->resolution_);
-}
+template<typename PointT, typename LeafT, typename OctreeT>
+  void
+  pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::genOctreeKeyforPoint (const PointT& point_arg,
+                                                                               OctreeKey & key_arg) const
+  {
+    // calculate integer key for point coordinates
+    key_arg.x = min ((unsigned int)((point_arg.x - this->minX_) / this->resolution_), maxKeys_ - 1);
+    key_arg.y = min ((unsigned int)((point_arg.y - this->minY_) / this->resolution_), maxKeys_ - 1);
+    key_arg.z = min ((unsigned int)((point_arg.z - this->minZ_) / this->resolution_), maxKeys_ - 1);
+  }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT> void
