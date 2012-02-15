@@ -31,25 +31,25 @@ Declarations
 	
 These are the header files that contain the definitions for all of the classes which we will use.
 
-.. literalinclude:: sources/pairwise_incremental_registration/pairwise-incremental-registration.cpp
+.. literalinclude:: sources/pairwise_incremental_registration/pairwise_incremental_registration.cpp
    :language: cpp
    :lines: 41-57
 
 Creates global variables for visualization purpose
 
-.. literalinclude:: sources/pairwise_incremental_registration/pairwise-incremental-registration.cpp
+.. literalinclude:: sources/pairwise_incremental_registration/pairwise_incremental_registration.cpp
    :language: cpp
    :lines: 68-72
 
 Declare a convenient structure that allow us to handle clouds as couple [points - filename]
 
-.. literalinclude:: sources/pairwise_incremental_registration/pairwise-incremental-registration.cpp
+.. literalinclude:: sources/pairwise_incremental_registration/pairwise_incremental_registration.cpp
    :language: cpp
    :lines: 75-81
 
 Define a new point representation (see :ref:`adding_custom_ptype` for more on the subject)
 
-.. literalinclude:: sources/pairwise_incremental_registration/pairwise-incremental-registration.cpp
+.. literalinclude:: sources/pairwise_incremental_registration/pairwise_incremental_registration.cpp
    :language: cpp
    :lines: 92-112
 
@@ -63,20 +63,20 @@ Let's see how are our functions organized.
 | The main function checks the user input, loads the data in a vector and starts the pair-registration process..
 | After a transform is found for a pair, the pair is transformed into the first cloud's frame, and the global transformation is updated.
 
-.. literalinclude:: sources/pairwise_incremental_registration/pairwise-incremental-registration.cpp
+.. literalinclude:: sources/pairwise_incremental_registration/pairwise_incremental_registration.cpp
    :language: cpp
    :lines: 326-374
 
 | Loading data is pretty straightforward. We iterate other the program's arguments. 
 | For each argument, we check if it links to a pcd file. If so, we create a PCD object that is added to the vector of clouds.
 
-.. literalinclude:: sources/pairwise_incremental_registration/pairwise-incremental-registration.cpp
+.. literalinclude:: sources/pairwise_incremental_registration/pairwise_incremental_registration.cpp
    :language: cpp
    :lines: 165-192
 
 We now arrive to the actual pair registration.
 
-.. literalinclude:: sources/pairwise_incremental_registration/pairwise-incremental-registration.cpp
+.. literalinclude:: sources/pairwise_incremental_registration/pairwise_incremental_registration.cpp
    :language: cpp
    :lines: 202-202
 
@@ -165,7 +165,7 @@ During each iteration, we keep track of and accumulate the transformations retur
 Compiling and running the program
 ---------------------------------
 
-Create a file named pairwise-incremental-registration.cpp and paste the full code in it.
+Create a file named pairwise_incremental_registration.cpp and paste the full code in it.
 
 Create CMakeLists.txt file and add the following line in it:
 
