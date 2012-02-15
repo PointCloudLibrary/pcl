@@ -546,16 +546,17 @@ namespace pcl
           void
           finalize2 (const int& refineNeighbors = -1);
 
-          template<typename PointNT> int
-          setTree (const int& maxDepth,
+          template<typename PointNT> int   
+          setTree (boost::shared_ptr<const PointCloud<PointNT> > input_,
+                   const int& maxDepth,
                    const int& kernelDepth,
                    const Real& samplesPerNode,
                    const Real& scaleFactor,
                    Point3D<Real>& center,
                    Real& scale,
-                   const int& resetSampleDepths,
-                   const int& useConfidence,
-                   boost::shared_ptr<const PointCloud<PointNT> > input_);
+                   const int& resetSamples,
+                   const int& useConfidence);
+        
 
           void
           SetLaplacianWeights (void);

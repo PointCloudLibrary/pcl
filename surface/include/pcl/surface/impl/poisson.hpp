@@ -112,7 +112,7 @@ pcl::surface::Poisson<PointNT>::execute (CoredMeshData &mesh,
   }
 
 
-  tree.setTree (depth_, kernel_depth, float (samples_per_node_), scale_, center, scale, !no_reset_samples_, confidence_, input_);
+  tree.setTree (input_, depth_, kernel_depth, float(samples_per_node_), scale_, center, scale, !no_reset_samples_, confidence_);
 
   if(!no_clip_tree_)
     tree.ClipTree ();

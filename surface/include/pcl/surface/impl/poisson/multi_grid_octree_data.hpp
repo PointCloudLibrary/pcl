@@ -456,588 +456,216 @@ Octree<Degree>::NonLinearUpdateWeightContribution (TreeOctNode* node, const Poin
     }
   }
   return 0;
-                                                   }
+}
 
-template<int Degree>
-template<typename PointNT>
-int
-Octree<Degree>::setTree (const int& maxDepth, const int& kernelDepth,
-                         const Real& samplesPerNode, const Real& scaleFactor, Point3D<Real>& center, Real& scale,
-                         const int& resetSamples, const int& useConfidence,
-                         boost::shared_ptr<const PointCloud<PointNT> > input_)
-                         {
 
+template<int Degree> template<typename PointNT> 
+int Octree<Degree>::setTree (boost::shared_ptr<const PointCloud<PointNT> > input_,
+                             const int& maxDepth,
+                             const int& kernelDepth,
+                             const Real& samplesPerNode,
+                             const Real& scaleFactor,
+                             Point3D<Real>& center,
+                             Real& scale,
+                             const int& resetSamples,
+                             const int& useConfidence)
+{
   Point3D<Real> min, max, position, normal, myCenter;
   Real myWidth;
-  int i = 0;
-  unsigned int cnt = 0;
   TreeOctNode* temp;
-  int splatDepth = 0;
-  float c[2 * DIMENSION];
+  int splatDepth=0;
+  float c[2*DIMENSION];
 
-  TreeNodeData::UseIndex = 1;
-  neighborKey.set (maxDepth);
-  splatDepth = kernelDepth;
-  if (splatDepth < 0)
-  {
-    splatDepth = 0;
-  }
+  TreeNodeData::UseIndex=1;
+  neighborKey.set(maxDepth);
+  splatDepth=kernelDepth;
+  if(splatDepth<0){splatDepth=0;}
+  
+  int i = 0;
 
-  //DumpOutput("Setting bounding box\n");
   // Read through once to get the center and scale
-  while (1)
+  for (unsigned int p_i = 0; p_i < input_->size (); ++p_i)
   {
-    if (cnt >= input_->points.size ())
-    {
-      break;
+    c[0] = input_->points[p_i].x;
+    c[1] = input_->points[p_i].y;
+    c[2] = input_->points[p_i].z;
+    c[3] = input_->points[p_i].normal_x;
+    c[4] = input_->points[p_i].normal_y;
+    c[5] = input_->points[p_i].normal_z;
+
+    for (i = 0; i < DIMENSION; i++){
+      if (c[i]<min.coords[i]) 
+        min.coords[i]=c[i];
+      if (c[i]>max.coords[i])
+        max.coords[i]=c[i];
     }
-    c[0] = input_->points[cnt].x;
-    c[1] = input_->points[cnt].y;
-    c[2] = input_->points[cnt].z;
-    for (i = 0; i < DIMENSION; i++)
-    {
-      if (!cnt || c[i] < min.coords[i])
-      {
-        min.coords[i] = c[i];
-      }
-      if (!cnt || c[i] > max.coords[i])
-      {
-        max.coords[i] = c[i];
-      }
-    }
-    cnt++;
   }
   for (i = 0; i < DIMENSION; i++)
   {
-    if (!i || scale < max.coords[i] - min.coords[i])
-    {
-      scale = Real (max.coords[i] - min.coords[i]);
-    }
-    center.coords[i] = Real (max.coords[i] + min.coords[i]) / 2;
+    if (!i || scale<max.coords[i]-min.coords[i])
+      scale=Real(max.coords[i]-min.coords[i]);
+    center.coords[i]=Real(max.coords[i]+min.coords[i])/2;
   }
 
-  //DumpOutput("Samples: %d\n",cnt);
   scale *= scaleFactor;
+  
   for (i = 0; i < DIMENSION; i++)
-  {
-    center.coords[i] -= scale / 2;
-  }
-  if (splatDepth > 0)
-  {
-    //DumpOutput("Setting sample weights\n");
-    cnt = 0;
-    while (1)
+    center.coords[i]-=scale/2;
+  
+  if (splatDepth>0){
+    for (unsigned int p_i = 0; p_i < input_->size (); ++p_i)
     {
-      if (cnt >= input_->points.size ())
-      {
-        break;
-      }
-      c[0] = input_->points[cnt].x;
-      c[1] = input_->points[cnt].y;
-      c[2] = input_->points[cnt].z;
-      Eigen::Vector3f nc = input_->points[cnt].getNormalVector3fMap ();
-      c[DIMENSION] = nc[0];
-      c[DIMENSION + 1] = nc[1];
-      c[DIMENSION + 2] = nc[2];
+      c[0] = input_->points[p_i].x;
+      c[1] = input_->points[p_i].y;
+      c[2] = input_->points[p_i].z;
+      c[3] = input_->points[p_i].normal_x;
+      c[4] = input_->points[p_i].normal_y;
+      c[5] = input_->points[p_i].normal_z;
 
       for (i = 0; i < DIMENSION; i++)
       {
-        position.coords[i] = (c[i] - center.coords[i]) / scale;
-        normal.coords[i] = c[DIMENSION + i];
+        position.coords[i] = (c[i]-center.coords[i])/scale;
+        normal.coords[i] = c[DIMENSION+i];
       }
-      myCenter.coords[0] = myCenter.coords[1] = myCenter.coords[2] = Real (0.5);
-      myWidth = Real (1.0);
-      for (i = 0; i < DIMENSION; i++)
-      {
-        if (position.coords[i] < myCenter.coords[i] - myWidth / 2 || position.coords[i] > myCenter.coords[i]
-                                                                                                          + myWidth / 2)
-        {
+      myCenter.coords[0]=myCenter.coords[1]=myCenter.coords[2]=Real(0.5);
+      myWidth=Real(1.0);
+      for(i = 0; i < DIMENSION; i++)
+        if (position.coords[i] < myCenter.coords[i]-myWidth/2 || position.coords[i] > myCenter.coords[i]+myWidth/2)
           break;
-        }
-      }
+      
       if (i != DIMENSION)
-      {
         continue;
-      }
+      
       temp = &tree;
-      int d = 0;
-      Real weight = Real (1.0);
+      int d=0;
+      Real weight = Real(1.0);
       if (useConfidence)
-      {
         weight = Real (Length (normal));
-      }
+      
       while (d < splatDepth)
       {
         NonLinearUpdateWeightContribution (temp, position, weight);
         if (!temp->children)
-        {
           temp->initChildren ();
-        }
+        
         int cIndex = TreeOctNode::CornerIndex (myCenter, position);
         temp = &temp->children[cIndex];
-        myWidth /= 2;
-        if (cIndex & 1)
-        {
-          myCenter.coords[0] += myWidth / 2;
-        }
+        myWidth/=2;
+        if (cIndex&1)
+          myCenter.coords[0] += myWidth/2;
         else
-        {
-          myCenter.coords[0] -= myWidth / 2;
-        }
-        if (cIndex & 2)
-        {
-          myCenter.coords[1] += myWidth / 2;
-        }
+          myCenter.coords[0] -= myWidth/2;
+        if (cIndex&2)
+          myCenter.coords[1] += myWidth/2;
+        else            
+          myCenter.coords[1] -= myWidth/2;
+        if (cIndex&4)
+          myCenter.coords[2] += myWidth/2;
         else
-        {
-          myCenter.coords[1] -= myWidth / 2;
-        }
-        if (cIndex & 4)
-        {
-          myCenter.coords[2] += myWidth / 2;
-        }
-        else
-        {
-          myCenter.coords[2] -= myWidth / 2;
-        }
+          myCenter.coords[2] -= myWidth/2;
         d++;
       }
-      NonLinearUpdateWeightContribution (temp, position, weight);
-      cnt++;
+      NonLinearUpdateWeightContribution(temp,position,weight);
     }
   }
 
-  //DumpOutput("Adding Points and Normals\n");
   normals = new std::vector<Point3D<Real> > ();
-  cnt = 0;
-  while (1)
+  for (unsigned int p_i = 0; p_i < input_->size (); ++p_i)
   {
-    if (cnt >= input_->points.size ())
-    {
-      break;
-    }
-    c[0] = input_->points[cnt].x;
-    c[1] = input_->points[cnt].y;
-    c[2] = input_->points[cnt].z;
-    Eigen::Vector3f nc = input_->points[cnt].getNormalVector3fMap ();
-    cnt++;
-    c[DIMENSION] = nc[0];
-    c[DIMENSION + 1] = nc[1];
-    c[DIMENSION + 2] = nc[2];
-
+        c[0] = input_->points[p_i].x;
+        c[1] = input_->points[p_i].y;
+        c[2] = input_->points[p_i].z;
+        c[3] = input_->points[p_i].normal_x;
+        c[4] = input_->points[p_i].normal_y;
+        c[5] = input_->points[p_i].normal_z;
     for (i = 0; i < DIMENSION; i++)
     {
-      position.coords[i] = (c[i] - center.coords[i]) / scale;
-      normal.coords[i] = c[DIMENSION + i];
+      position.coords[i] = (c[i]-center.coords[i])/scale;
+      normal.coords[i] = c[DIMENSION+i];
     }
-    myCenter.coords[0] = myCenter.coords[1] = myCenter.coords[2] = Real (0.5);
+    myCenter.coords[0] = myCenter.coords[1] = myCenter.coords[2] = Real(0.5);
     myWidth = Real (1.0);
     for (i = 0; i < DIMENSION; i++)
-    {
-      if (position.coords[i] < myCenter.coords[i] - myWidth / 2 || position.coords[i] > myCenter.coords[i]
-                                                                                                        + myWidth / 2)
-      {
+      if (position.coords[i]<myCenter.coords[i]-myWidth/2 || position.coords[i]>myCenter.coords[i]+myWidth/2)
         break;
-      }
-    }
     if (i != DIMENSION)
-    {
       continue;
-    }
     Real l = Real (Length (normal));
-    if (l < EPSILON)
-    {
+    if (l!=l || l < EPSILON)
       continue;
-    }
     if (!useConfidence)
     {
-      normal.coords[0] /= l;
-      normal.coords[1] /= l;
-      normal.coords[2] /= l;
+      normal.coords[0]/=l;
+      normal.coords[1]/=l;
+      normal.coords[2]/=l;
     }
-    l = Real (2 << maxDepth);
+    l = Real (2<<maxDepth);
     normal.coords[0] *= l;
     normal.coords[1] *= l;
     normal.coords[2] *= l;
 
-    if (resetSamples && samplesPerNode > 0 && splatDepth)
-    {
+    if (resetSamples && samplesPerNode>0 && splatDepth)
       NonLinearSplatOrientedPoint (position, normal, splatDepth, samplesPerNode, 1, maxDepth);
-    }
     else
     {
-      Real alpha = 1;
-      temp = &tree;
-      int d = 0;
+      Real alpha=1;
+      temp=&tree;
+      int d=0;
       if (splatDepth)
       {
-        while (d < splatDepth)
+        while (d<splatDepth)
         {
           int cIndex = TreeOctNode::CornerIndex (myCenter, position);
           temp = &temp->children[cIndex];
           myWidth /= 2;
-          if (cIndex & 1)
-          {
-            myCenter.coords[0] += myWidth / 2;
-          }
-          else
-          {
-            myCenter.coords[0] -= myWidth / 2;
-          }
-          if (cIndex & 2)
-          {
-            myCenter.coords[1] += myWidth / 2;
-          }
-          else
-          {
-            myCenter.coords[1] -= myWidth / 2;
-          }
-          if (cIndex & 4)
-          {
-            myCenter.coords[2] += myWidth / 2;
-          }
-          else
-          {
-            myCenter.coords[2] -= myWidth / 2;
-          }
+          if (cIndex&1)
+            myCenter.coords[0]+=myWidth/2;
+          else            
+            myCenter.coords[0]-=myWidth/2;
+          if (cIndex&2)
+            myCenter.coords[1]+=myWidth/2;
+          else            
+            myCenter.coords[1]-=myWidth/2;
+          if (cIndex&4)
+            myCenter.coords[2]+=myWidth/2;
+          else  
+            myCenter.coords[2]-=myWidth/2;
           d++;
         }
-        alpha = NonLinearGetSampleWeight (temp, position);
+        alpha=NonLinearGetSampleWeight(temp,position);
       }
       for (i = 0; i < DIMENSION; i++)
-      {
         normal.coords[i] *= alpha;
-      }
       while (d < maxDepth)
       {
         if (!temp->children)
-        {
-          temp->initChildren ();
-        }
+          temp->initChildren();
         int cIndex = TreeOctNode::CornerIndex (myCenter, position);
         temp = &temp->children[cIndex];
-        myWidth /= 2;
-        if (cIndex & 1)
-        {
-          myCenter.coords[0] += myWidth / 2;
-        }
-        else
-        {
-          myCenter.coords[0] -= myWidth / 2;
-        }
-        if (cIndex & 2)
-        {
-          myCenter.coords[1] += myWidth / 2;
-        }
-        else
-        {
-          myCenter.coords[1] -= myWidth / 2;
-        }
-        if (cIndex & 4)
-        {
-          myCenter.coords[2] += myWidth / 2;
-        }
-        else
-        {
-          myCenter.coords[2] -= myWidth / 2;
-        }
+        myWidth/=2;
+        if (cIndex&1)
+          myCenter.coords[0]+=myWidth/2;
+        else            
+          myCenter.coords[0]-=myWidth/2;
+        if (cIndex&2)
+          myCenter.coords[1]+=myWidth/2;
+        else      
+          myCenter.coords[1]-=myWidth/2;
+        if (cIndex&4)
+          myCenter.coords[2]+=myWidth/2;
+        else 
+          myCenter.coords[2]-=myWidth/2;
         d++;
       }
       NonLinearSplatOrientedPoint (temp, position, normal);
     }
   }
-  //DumpOutput("Memory Usage: %.3f MB\n",float(MemoryUsage()));
-  return cnt;
-                         }
+  
+  return input_->size ();
+}
 
-/*
- template<int Degree>
- template <typename PointNT> int Octree<Degree>::setTree(char* fileName,const int& maxDepth,const int& binary,
- const int& kernelDepth,const Real& samplesPerNode,const Real& scaleFactor,Point3D<Real>& center,Real& scale,
- const int& resetSamples,const int& useConfidence, boost::shared_ptr<const PointCloud<PointNT> > input_){
 
- Point3D<Real> min,max,position,normal,myCenter;
- Real myWidth;
- int i,cnt=0;
- TreeOctNode* temp;
- int splatDepth=0;
- FILE* fp;
- float c[2*DIMENSION];
 
- TreeNodeData::UseIndex=1;
- neighborKey.set(maxDepth);
- splatDepth=kernelDepth;
- if(splatDepth<0){splatDepth=0;}
- if(binary){fp=fopen(fileName,"rb");}
- else{fp=fopen(fileName,"r");}
- if(!fp){return 0;}
- std::cerr << "setting bounding box" << std::endl;
- //DumpOutput("Setting bounding box\n");
- // Read through once to get the center and scale
- for (cnt = 0; cnt < input_->points.size (); ++cnt)
- {
- c[0] = input_->points[cnt].x;
- c[1] = input_->points[cnt].y;
- c[2] = input_->points[cnt].z;
- for (i = 0; i < DIMENSION; ++i)
- {
- if(cnt == 0 || c[i]<min.coords[i]){min.coords[i]=c[i];}
- if(cnt == 0 || c[i]>max.coords[i]){max.coords[i]=c[i];}
- }
- }
- #if 0
- while(1){
- if(binary){if(fread(c,sizeof(float),2*DIMENSION,fp)!=6){break;}}
- else{if(fscanf(fp," %f %f %f %f %f %f ",&c[0],&c[1],&c[2],&c[3],&c[4],&c[5])!=2*DIMENSION){break;}}
- for(i=0;i<DIMENSION;i++){
- if(!cnt || c[i]<min.coords[i]){min.coords[i]=c[i];}
- if(!cnt || c[i]>max.coords[i]){max.coords[i]=c[i];}
- }
- cnt++;
- }
- #endif
- for(i=0;i<DIMENSION;i++){
- if(!i || scale<max.coords[i]-min.coords[i]){scale=Real(max.coords[i]-min.coords[i]);}
- center.coords[i]=Real(max.coords[i]+min.coords[i])/2;
- }
- std::cerr << "Samples: " << cnt << std::endl;
- //DumpOutput("Samples: %d\n",cnt);
- scale*=scaleFactor;
- for(i=0;i<DIMENSION;i++){center.coords[i]-=scale/2;}
- if(splatDepth>0){
- std::cerr << "Setting sample weights" << std::endl;
- //DumpOutput("Setting sample weights\n");
- for (cnt = 0; cnt < input_->points.size (); ++cnt)
- {
- for(i=0;i<DIMENSION;i++){
- if(i == 0)
- {
- position.coords[i]=(input_->points[cnt].x-center.coords[i])/scale;
- }
- else if(i == 1)
- {
- position.coords[i]=(input_->points[cnt].y-center.coords[i])/scale;
- }
- else
- {
- position.coords[i]=(input_->points[cnt].z-center.coords[i])/scale;
- }
- Eigen::Vector3f nc = input_->points[cnt].getNormalVector3fMap ();
- normal.coords[i] = nc[i];
- }
- myCenter.coords[0]=myCenter.coords[1]=myCenter.coords[2]=Real(0.5);
- myWidth=Real(1.0);
- for(i=0;i<DIMENSION;i++){if(position.coords[i]<myCenter.coords[i]-myWidth/2 || position.coords[i]>myCenter.coords[i]+myWidth/2){break;}}
- //if(i!=DIMENSION){continue;}
- temp=&tree;
- int d=0;
- Real weight=Real(1.0);
- if(useConfidence){weight=Real(Length(normal));}
- while(d<splatDepth){
- NonLinearUpdateWeightContribution(temp,position,weight);
- if(!temp->children){temp->initChildren();}
- int cIndex=TreeOctNode::CornerIndex(myCenter,position);
- temp=&temp->children[cIndex];
- myWidth/=2;
- if(cIndex&1){myCenter.coords[0]+=myWidth/2;}
- else            {myCenter.coords[0]-=myWidth/2;}
- if(cIndex&2){myCenter.coords[1]+=myWidth/2;}
- else            {myCenter.coords[1]-=myWidth/2;}
- if(cIndex&4){myCenter.coords[2]+=myWidth/2;}
- else            {myCenter.coords[2]-=myWidth/2;}
- d++;
- }
- NonLinearUpdateWeightContribution(temp,position,weight);
- }
- #if 0
- cnt=0;
- fseek(fp,SEEK_SET,0);
- while(1){
- if(binary){if(fread(c,sizeof(float),2*DIMENSION,fp)!=2*DIMENSION){break;}}
- else{if(fscanf(fp," %f %f %f %f %f %f ",&c[0],&c[1],&c[2],&c[3],&c[4],&c[5])!=2*DIMENSION){break;}}
- for(i=0;i<DIMENSION;i++){
- position.coords[i]=(c[i]-center.coords[i])/scale;
- normal.coords[i]=c[DIMENSION+i];
- }
- myCenter.coords[0]=myCenter.coords[1]=myCenter.coords[2]=Real(0.5);
- myWidth=Real(1.0);
- for(i=0;i<DIMENSION;i++){if(position.coords[i]<myCenter.coords[i]-myWidth/2 || position.coords[i]>myCenter.coords[i]+myWidth/2){break;}}
- if(i!=DIMENSION){continue;}
- temp=&tree;
- int d=0;
- Real weight=Real(1.0);
- if(useConfidence){weight=Real(Length(normal));}
- while(d<splatDepth){
- NonLinearUpdateWeightContribution(temp,position,weight);
- if(!temp->children){temp->initChildren();}
- int cIndex=TreeOctNode::CornerIndex(myCenter,position);
- temp=&temp->children[cIndex];
- myWidth/=2;
- if(cIndex&1){myCenter.coords[0]+=myWidth/2;}
- else		{myCenter.coords[0]-=myWidth/2;}
- if(cIndex&2){myCenter.coords[1]+=myWidth/2;}
- else		{myCenter.coords[1]-=myWidth/2;}
- if(cIndex&4){myCenter.coords[2]+=myWidth/2;}
- else		{myCenter.coords[2]-=myWidth/2;}
- d++;
- }
- NonLinearUpdateWeightContribution(temp,position,weight);
- cnt++;
- }
- #endif
- }
- std::cerr << "Adding Points and Normals" << std::endl;
- //DumpOutput("Adding Points and Normals\n");
- normals=new std::vector<Point3D<Real> >();
- cnt=0;
- for(cnt = 0; cnt<input_->points.size(); ++cnt)
- {
- for(i=0;i<DIMENSION;i++){
- if(i == 0)
- {
- position.coords[i]=(input_->points[cnt].x-center.coords[i])/scale;
- }
- else if(i == 1)
- {
- position.coords[i]=(input_->points[cnt].y-center.coords[i])/scale;
- }
- else
- {
- position.coords[i]=(input_->points[cnt].z-center.coords[i])/scale;
- }
- Eigen::Vector3f nc = input_->points[cnt].getNormalVector3fMap ();
- normal.coords[i] = nc[i];
- }
- myCenter.coords[0]=myCenter.coords[1]=myCenter.coords[2]=Real(0.5);
- myWidth=Real(1.0);
- for(i=0;i<DIMENSION;i++){if(position.coords[i]<myCenter.coords[i]-myWidth/2 || position.coords[i]>myCenter.coords[i]+myWidth/2){break;}}
- //if(i!=DIMENSION){continue;}
- Real l=Real(Length(normal));
- if(l<EPSILON){continue;}
- if(!useConfidence){
- normal.coords[0]/=l;
- normal.coords[1]/=l;
- normal.coords[2]/=l;
- }
- l=Real(2<<maxDepth);
- normal.coords[0]*=l;
- normal.coords[1]*=l;
- normal.coords[2]*=l;
-
- if(resetSamples && samplesPerNode>0 && splatDepth){
- NonLinearSplatOrientedPoint(position,normal,splatDepth,samplesPerNode,1,maxDepth);
- }
- else{
- Real alpha=1;
- temp=&tree;
- int d=0;
- if(splatDepth){
- while(d<splatDepth){
- int cIndex=TreeOctNode::CornerIndex(myCenter,position);
- temp=&temp->children[cIndex];
- myWidth/=2;
- if(cIndex&1){myCenter.coords[0]+=myWidth/2;}
- else            {myCenter.coords[0]-=myWidth/2;}
- if(cIndex&2){myCenter.coords[1]+=myWidth/2;}
- else            {myCenter.coords[1]-=myWidth/2;}
- if(cIndex&4){myCenter.coords[2]+=myWidth/2;}
- else            {myCenter.coords[2]-=myWidth/2;}
- d++;
- }
- alpha=NonLinearGetSampleWeight(temp,position);
- }
- for(i=0;i<DIMENSION;i++){normal.coords[i]*=alpha;}
- while(d<maxDepth){
- if(!temp->children){temp->initChildren();}
- int cIndex=TreeOctNode::CornerIndex(myCenter,position);
- temp=&temp->children[cIndex];
- myWidth/=2;
- if(cIndex&1){myCenter.coords[0]+=myWidth/2;}
- else            {myCenter.coords[0]-=myWidth/2;}
- if(cIndex&2){myCenter.coords[1]+=myWidth/2;}
- else            {myCenter.coords[1]-=myWidth/2;}
- if(cIndex&4){myCenter.coords[2]+=myWidth/2;}
- else            {myCenter.coords[2]-=myWidth/2;}
- d++;
- }
- NonLinearSplatOrientedPoint(temp,position,normal);
- }
- }
- std::cerr << "Memory Usage: " << float(MemoryUsage()) << "MB" << std::endl;
- //DumpOutput("Memory Usage: %.3f MB\n",float(MemoryUsage()));
-
- #if 0
- normals=new std::vector<Point3D<Real> >();
- cnt=0;
- fseek(fp,SEEK_SET,0);
- while(1){
- if(binary){if(fread(c,sizeof(float),2*DIMENSION,fp)!=2*DIMENSION){break;}}
- else{if(fscanf(fp," %f %f %f %f %f %f ",&c[0],&c[1],&c[2],&c[3],&c[4],&c[5])!=2*DIMENSION){break;}}
- for(i=0;i<DIMENSION;i++){
- position.coords[i]=(c[i]-center.coords[i])/scale;
- normal.coords[i]=c[DIMENSION+i];
- }
- myCenter.coords[0]=myCenter.coords[1]=myCenter.coords[2]=Real(0.5);
- myWidth=Real(1.0);
- for(i=0;i<DIMENSION;i++){if(position.coords[i]<myCenter.coords[i]-myWidth/2 || position.coords[i]>myCenter.coords[i]+myWidth/2){break;}}
- if(i!=DIMENSION){continue;}
- Real l=Real(Length(normal));
- if(l<EPSILON){continue;}
- if(!useConfidence){
- normal.coords[0]/=l;
- normal.coords[1]/=l;
- normal.coords[2]/=l;
- }
- l=Real(2<<maxDepth);
- normal.coords[0]*=l;
- normal.coords[1]*=l;
- normal.coords[2]*=l;
-
- if(resetSamples && samplesPerNode>0 && splatDepth){
- NonLinearSplatOrientedPoint(position,normal,splatDepth,samplesPerNode,1,maxDepth);
- }
- else{
- Real alpha=1;
- temp=&tree;
- int d=0;
- if(splatDepth){
- while(d<splatDepth){
- int cIndex=TreeOctNode::CornerIndex(myCenter,position);
- temp=&temp->children[cIndex];
- myWidth/=2;
- if(cIndex&1){myCenter.coords[0]+=myWidth/2;}
- else		{myCenter.coords[0]-=myWidth/2;}
- if(cIndex&2){myCenter.coords[1]+=myWidth/2;}
- else		{myCenter.coords[1]-=myWidth/2;}
- if(cIndex&4){myCenter.coords[2]+=myWidth/2;}
- else		{myCenter.coords[2]-=myWidth/2;}
- d++;
- }
- alpha=NonLinearGetSampleWeight(temp,position);
- }
- for(i=0;i<DIMENSION;i++){normal.coords[i]*=alpha;}
- while(d<maxDepth){
- if(!temp->children){temp->initChildren();}
- int cIndex=TreeOctNode::CornerIndex(myCenter,position);
- temp=&temp->children[cIndex];
- myWidth/=2;
- if(cIndex&1){myCenter.coords[0]+=myWidth/2;}
- else		{myCenter.coords[0]-=myWidth/2;}
- if(cIndex&2){myCenter.coords[1]+=myWidth/2;}
- else		{myCenter.coords[1]-=myWidth/2;}
- if(cIndex&4){myCenter.coords[2]+=myWidth/2;}
- else		{myCenter.coords[2]-=myWidth/2;}
- d++;
- }
- NonLinearSplatOrientedPoint(temp,position,normal);
- }
- }
- //DumpOutput("Memory Usage: %.3f MB\n",float(MemoryUsage()));
- fclose(fp);
- #endif
- return cnt;
- }
- */
 
 template<int Degree>
 void
@@ -1890,7 +1518,7 @@ template<int Degree>
 void
 Octree<Degree>::GetMCIsoTriangles (const Real& isoValue, CoredMeshData* mesh, const int& fullDepthIso,
                                    const int& nonLinearFit, bool addBarycenter)
-{
+                                   {
   TreeOctNode* temp;
 
   hash_map<long long, int> roots;
