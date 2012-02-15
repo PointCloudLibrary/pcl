@@ -207,7 +207,7 @@ namespace pcl
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
 
-  class PCL_EXPORTS UnhandledPointTypeException : public PCLException
+  class UnhandledPointTypeException : public PCLException
   {
     public:
     UnhandledPointTypeException (const std::string& error_description,
@@ -217,7 +217,7 @@ namespace pcl
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   };
 
-  class PCL_EXPORTS ComputeFailedException : public PCLException
+  class ComputeFailedException : public PCLException
   {
     public:
     ComputeFailedException (const std::string& error_description,
