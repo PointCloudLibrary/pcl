@@ -55,14 +55,29 @@
 #define _fseeki64 fseeko
 #endif
 
-//todo - consider using per-node RNG (it is currently a shared static rng, which is mutexed. I did i this way to be sure that none of the nodes had RNGs seeded to the same value). the mutex could effect performance though
+/* todo (from original UR code): consider using per-node RNG (it is
+ *  currently a shared static rng, which is mutexed. I did i this way
+ *  to be sure that none of the nodes had RNGs seeded to the same
+ *  value). the mutex could effect performance though 
+ */
+
+/** \class octree_disk_container 
+ *  
+ */
 
 template<typename PointType>
-  class octree_disk_container
-  {
-
+class octree_disk_container
+{
+  
   public:
     octree_disk_container ();
+
+    /** \brief Creates uuid named file or loads existing file
+     * 
+     * If dir is a directory, constructor will create new
+     * uuid named file; if dir is an existing file, it will load the
+     * file
+     */
     octree_disk_container (const boost::filesystem::path& dir);
     ~octree_disk_container ();
 
@@ -91,12 +106,29 @@ template<typename PointType>
     void
     readRange (const boost::uint64_t start, const boost::uint64_t count, std::vector<PointType>& v);
 
+
+    /** \brief  grab percent*count random points. points are _not_ guaranteed to be
+     * unique (could have multiple identical points!)
+     *
+     * \param start
+     * \param count
+     * \param percent
+     * \param v
+     */
     void
     readRangeSubSample (const boost::uint64_t start, const boost::uint64_t count, const double percent,
-                        std::vector<PointType>& v);//grab percent*count random points. points are NOT garenteed to be unique (could have multiple identical points!)
+                        std::vector<PointType>& v);
+
+    /** \brief use bernoulli trials to select points. points are unique
+     *
+     * \param start
+     * \param count
+     * \param percent
+     * \param v
+     */
     void
-    readRangeSubSample_bernoulli (const boost::uint64_t start, const boost::uint64_t count, const double percent,
-                                  std::vector<PointType>& v);//use bernoulli trials to select points. points are unique
+    readRangeSubSample_bernoulli (const boost::uint64_t start, const boost::uint64_t count, 
+                                  const double percent, std::vector<PointType>& v);
 
     boost::uint64_t
     size () const
@@ -168,7 +200,7 @@ template<typename PointType>
      *
      * A mutex lock happens to ensure uniquness
      *
-     * todo: Does this need to be on a templated class?  Seems like this could
+     * \todo Does this need to be on a templated class?  Seems like this could
      * be a general utility function.
      *
      */
@@ -178,15 +210,19 @@ template<typename PointType>
   private:
     //no copy construction
     octree_disk_container (const octree_disk_container& rval) { }
+
     octree_disk_container&
     operator= (const octree_disk_container& rval) { }
 
     void
     flush_writebuff (const bool forceCacheDeAlloc);
+    
+    //elements [0,...,size()-1] map to [filelen, ..., filelen + size()-1]
+    std::vector<PointType> writebuff;
 
-    std::vector<PointType> writebuff;//elements [0,...,size()-1] map to [filelen, ..., filelen + size()-1]
-    std::string *fileback_name;
     //std::fstream fileback;//elements [0,...,filelen-1]
+    std::string *fileback_name;
+
 
     //number of elements in file
     boost::uint64_t filelen;
@@ -203,5 +239,5 @@ template<typename PointType>
     static boost::mutex rng_mutex;
     static boost::mt19937 rand_gen;
     static boost::uuids::random_generator uuid_gen;
-  };
+};
 

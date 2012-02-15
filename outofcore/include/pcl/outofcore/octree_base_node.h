@@ -1,37 +1,37 @@
 #pragma once
 
 /*
- Copyright (c) 2012, Urban Robotics Inc
- All rights reserved.
+  Copyright (c) 2012, Urban Robotics Inc
+  All rights reserved.
 
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are met:
- * Redistributions of source code must retain the above copyright
- notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
- notice, this list of conditions and the following disclaimer in the
- documentation and/or other materials provided with the distribution.
- * Neither the name of Urban Robotics Inc nor the
- names of its contributors may be used to endorse or promote products
- derived from this software without specific prior written permission.
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are met:
+  * Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+  * Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer in the
+  documentation and/or other materials provided with the distribution.
+  * Neither the name of Urban Robotics Inc nor the
+  names of its contributors may be used to endorse or promote products
+  derived from this software without specific prior written permission.
 
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
- DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 
 /*
- This code defines the octree used for point storage at Urban Robotics. Please
- contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions.
- http://www.urbanrobotics.net/
- */
+  This code defines the octree used for point storage at Urban Robotics. Please
+  contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions.
+  http://www.urbanrobotics.net/
+*/
 
 // Boost
 #include "boost/filesystem.hpp"
@@ -48,50 +48,47 @@
 // PCL (Urban Robotics)
 #include "pcl/outofcore/octree_base.h"
 #include "pcl/outofcore/pointCloudTools.h"
-
 // Forward Declarations
 template<typename Container, typename PointType>
-  class octree_base_node;
+class octree_base_node;
 template<typename Container, typename PointType>
-  class octree_base;
+class octree_base;
 
-template<typename Container, typename PointType>
-  octree_base_node<Container, PointType>*
-  makenode_norec (const boost::filesystem::path& path,
-                  octree_base_node<Container, PointType>* super);
+template<typename Container, typename PointType> octree_base_node<Container, PointType>*
+makenode_norec (const boost::filesystem::path& path,
+                octree_base_node<Container, PointType>* super);
 
-template<typename Container, typename PointType>
-  void
-  queryBBIntersects_noload (const boost::filesystem::path& rootnode,
-                            const double min[3], const double max[3],
-                            const boost::uint32_t query_depth,
-                            std::list<std::string>& bin_name);
+//read from specified level
+template<typename Container, typename PointType> void
+queryBBIntersects_noload (const boost::filesystem::path& rootnode,
+                          const double min[3], const double max[3],
+                          const boost::uint32_t query_depth,
+                          std::list<std::string>& bin_name);
 
-template<typename Container, typename PointType>
-  void
-  queryBBIntersects_noload (octree_base_node<Container, PointType>* current,
-                            const double min[3], const double max[3],
-                            const boost::uint32_t query_depth,
-                            std::list<std::string>& bin_name);
+template<typename Container, typename PointType> void
+queryBBIntersects_noload (octree_base_node<Container, PointType>* current,
+                          const double min[3], const double max[3],
+                          const boost::uint32_t query_depth,
+                          std::list<std::string>& bin_name);
 
 
 template<typename Container, typename PointType>
-  class octree_base_node
-  {
-    friend class octree_base<Container, PointType> ;
+class octree_base_node
+{
+  friend class octree_base<Container, PointType> ;
 
-    friend octree_base_node<Container, PointType>*
-    makenode_norec<Container, PointType> (const boost::filesystem::path& path,
-                                          octree_base_node<Container, PointType>* super);
-    friend void
-    queryBBIntersects_noload<Container, PointType> (const boost::filesystem::path& rootnode, const double min[3],
-                                                    const double max[3], const boost::uint32_t query_depth,
-                                                    std::list<std::string>& bin_name);
-    friend void
-    queryBBIntersects_noload<Container, PointType> (octree_base_node<Container, PointType>* current,
-                                                    const double min[3], const double max[3],
-                                                    const boost::uint32_t query_depth,
-                                                    std::list<std::string>& bin_name);
+  friend octree_base_node<Container, PointType>*
+  makenode_norec<Container, PointType> (const boost::filesystem::path& path,
+                                        octree_base_node<Container, PointType>* super);
+  friend void
+  queryBBIntersects_noload<Container, PointType> (const boost::filesystem::path& rootnode, const double min[3],
+                                                  const double max[3], const boost::uint32_t query_depth,
+                                                  std::list<std::string>& bin_name);
+  friend void
+  queryBBIntersects_noload<Container, PointType> (octree_base_node<Container, PointType>* current,
+                                                  const double min[3], const double max[3],
+                                                  const boost::uint32_t query_depth,
+                                                  std::list<std::string>& bin_name);
 
   public:
     const static std::string node_index_basename;
@@ -118,12 +115,30 @@ template<typename Container, typename PointType>
 
     }
 
-    /** \brief Load from disk */
+    /** \brief Load from disk 
+     * If creating root, path is full name. If creating any other
+     * node, path is dir; throws OCT_MISSING_DIR and OCT_MISSING_IDX
+     *
+     * \param path
+     * \param super
+     * \param loadAll
+     */
     octree_base_node (const boost::filesystem::path& path,
                       octree_base_node<Container, PointType>* super,
                       bool loadAll);
 
-    /** \brief Create root node and directory */
+    /** \brief Create root node and directory
+     *
+     * Initializes the root node and performs initial filesystem checks for the octree; 
+     * throws OctreeException::OCT_BAD_PATH if root directory is an existing file
+     *
+     * \param bbmin triple of x,y,z minima for bounding box
+     * \param bbmax triple of x,y,z maxima for bounding box
+     * \param tree adress of the tree data structure that will hold this initial root node
+     * \param rootname Root directory for location of on-disk octree storage; if directory 
+     * doesn't exist, it is created; if "rootname" is an existing file, throws 
+     * OctreeException::OCT_BAD_PATH
+     */
     void init_root_node (const double bbmin[3], const double bbmax[3],
                          octree_base<Container, PointType> * const tree,
                          const boost::filesystem::path& rootname);
@@ -295,7 +310,7 @@ template<typename Container, typename PointType>
 
     //empty node in tree
     octree_base_node (const double bbmin[3], const double bbmax[3], const char* dir,
-                       octree_base_node<Container, PointType>* super);
+                      octree_base_node<Container, PointType>* super);
 
     void
     copyAllCurrentAndChildPointsRec (std::list<PointType>& v);
@@ -354,4 +369,4 @@ template<typename Container, typename PointType>
     /** \brief Random number generator seed */
     const static boost::uint32_t rngseed = 0xAABBCCDD;
 
-  };
+};

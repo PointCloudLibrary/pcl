@@ -47,9 +47,9 @@
 
 
 template<typename Container, typename PointType>
-  class octree_base
-  {
-    friend class octree_base_node<Container, PointType> ;
+class octree_base
+{
+  friend class octree_base_node<Container, PointType> ;
 
   public:
 
@@ -73,13 +73,13 @@ template<typename Container, typename PointType>
      *
      * Makes a tree with enough LODs for the lowest bin to be have a diagonal
      * smaller than node_dim_meters, or a volume less than (node_dim_meters)^3.
-     * Meters is a misnomer – the coord system is assumed to be Cartesian, but
+     * Meters is a misnomer: the coord system is assumed to be Cartesian, but
      * not any particular unit
      *
      * \param min Bounding box min
      * \param max Bounding box max
      * \param node_dim_meters
-     * \param rootname must end in “.oct_idx” (THIS SHOULD CHANGE)
+     * \param rootname must end in ".oct_idx" (THIS SHOULD CHANGE)
      * \param coord_sys
      */
     octree_base (const double min[3], const double max[3],
@@ -93,7 +93,7 @@ template<typename Container, typename PointType>
      * \param maxdepth Specifies a fixed number of LODs to generate
      * \param min Bounding box min
      * \param max Bounding box max
-     * \param rootname must end in “.oct_idx” (THIS SHOULD CHANGE)
+     * \param rootname must end in ".oct_idx" (THIS SHOULD CHANGE)
      * \param coord_sys
      */
     octree_base (const int maxdepth, const double min[3], const double max[3],

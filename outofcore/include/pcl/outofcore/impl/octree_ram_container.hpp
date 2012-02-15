@@ -51,92 +51,90 @@
 //       had RNGs seeded to the same value). the mutex could effect performance
 
 template<typename PointType>
-  boost::mutex octree_ram_container<PointType>::rng_mutex;
-template<typename PointType>
-  boost::mt19937
-  octree_ram_container<PointType>::rand_gen (std::time( NULL));
+boost::mutex octree_ram_container<PointType>::rng_mutex;
 
-template<typename PointType>
-  void
-  octree_ram_container<PointType>::convertToXYZ (const boost::filesystem::path& path)
+template<typename PointType> 
+boost::mt19937 octree_ram_container<PointType>::rand_gen (std::time( NULL));
+
+template<typename PointType> void
+octree_ram_container<PointType>::convertToXYZ (const boost::filesystem::path& path)
+{
+  if (!container.empty ())
   {
-    if (!container.empty ())
+    FILE* fxyz = fopen (path.string ().c_str (), "w");
+
+    boost::uint64_t num = size ();
+    for (boost::uint64_t i = 0; i < num; i++)
     {
-      FILE* fxyz = fopen (path.string ().c_str (), "w");
+      const PointType& p = container[i];
 
-      boost::uint64_t num = size ();
-      for (boost::uint64_t i = 0; i < num; i++)
-      {
-        const PointType& p = container[i];
+      std::stringstream ss;
+      ss << std::fixed;
+      ss.precision (16);
+      ss << p.x << "\t" << p.y << "\t" << p.z << "\n";
 
-        std::stringstream ss;
-        ss << std::fixed;
-        ss.precision (16);
-        ss << p.x << "\t" << p.y << "\t" << p.z << "\n";
-
-        fwrite (ss.str ().c_str (), 1, ss.str ().size (), fxyz);
-      }
-
-      int closeretxyz = fclose (fxyz);
+      fwrite (ss.str ().c_str (), 1, ss.str ().size (), fxyz);
     }
-  }
 
-template<typename PointType>
-  inline void
-  octree_ram_container<PointType>::insertRange (const PointType* start, const boost::uint64_t count)
+    int closeretxyz = fclose (fxyz);
+  }
+}
+
+template<typename PointType> inline void
+octree_ram_container<PointType>::insertRange (const PointType* start, const boost::uint64_t count)
+{
+  container.insert (container.end (), start, start + count);
+}
+
+template<typename PointType> inline void
+octree_ram_container<PointType>::insertRange (const PointType* const * start, const boost::uint64_t count)
+{
+  std::vector<PointType> temp;
+  temp.resize (count);
+  for (boost::uint64_t i = 0; i < count; i++)
   {
-    container.insert (container.end (), start, start + count);
+    temp[i] = *start[i];
   }
+  container.insert (container.end (), temp.begin (), temp.end ());
+}
 
-template<typename PointType>
-  inline void
-  octree_ram_container<PointType>::insertRange (const PointType* const * start, const boost::uint64_t count)
+template<typename PointType> void
+octree_ram_container<PointType>::readRange (const boost::uint64_t start, const boost::uint64_t count,
+                                            std::vector<PointType>& v)
+{
+  /*
+    v.resize(count);
+
+    auto start_it = container.cbegin();
+    std::advance(start_it, start);
+    auto end_it = container.cbegin();
+    std::advance(end_it, start+count);
+
+    v.assign(start_it, end_it);
+  */
+
+  v.resize (count);
+  memcpy (v.data (), container.data () + start, count * sizeof(PointType));
+
+}
+
+template<typename PointType> void
+octree_ram_container<PointType>::readRangeSubSample (const boost::uint64_t start, 
+                                                     const boost::uint64_t count,
+                                                     const double percent, 
+                                                     std::vector<PointType>& v)
+{
+  boost::uint64_t samplesize = percent * static_cast<double> (count);
+
+  boost::mutex::scoped_lock lock (rng_mutex);
+
+  boost::uniform_int < boost::uint64_t > buffdist (start, start + count);
+  boost::variate_generator<boost::mt19937&, boost::uniform_int<boost::uint64_t> > buffdie (rand_gen, buffdist);
+
+  for (boost::uint64_t i = 0; i < samplesize; i++)
   {
-    std::vector<PointType> temp;
-    temp.resize (count);
-    for (boost::uint64_t i = 0; i < count; i++)
-    {
-      temp[i] = *start[i];
-    }
-    container.insert (container.end (), temp.begin (), temp.end ());
+    boost::uint64_t buffstart = buffdie ();
+    v.push_back (container[buffstart]);
   }
-
-template<typename PointType>
-  void
-  octree_ram_container<PointType>::readRange (const boost::uint64_t start, const boost::uint64_t count,
-                                              std::vector<PointType>& v)
-  {
-    /*
-     v.resize(count);
-
-     auto start_it = container.cbegin();
-     std::advance(start_it, start);
-     auto end_it = container.cbegin();
-     std::advance(end_it, start+count);
-
-     v.assign(start_it, end_it);
-     */
-
-    v.resize (count);
-    memcpy (v.data (), container.data () + start, count * sizeof(PointType));
-
-  }
-template<typename PointType>
-  void
-  octree_ram_container<PointType>::readRangeSubSample (const boost::uint64_t start, const boost::uint64_t count,
-                                                       const double percent, std::vector<PointType>& v)//grab percent*count random points. points are NOT garenteed to be unique (could have multiple identicle points!)
-  {
-    boost::uint64_t samplesize = percent * double (count);
-
-    boost::mutex::scoped_lock lock (rng_mutex);
-
-    boost::uniform_int < boost::uint64_t > buffdist (start, start + count);
-    boost::variate_generator<boost::mt19937&, boost::uniform_int<boost::uint64_t> > buffdie (rand_gen, buffdist);
-
-    for (boost::uint64_t i = 0; i < samplesize; i++)
-    {
-      boost::uint64_t buffstart = buffdie ();
-      v.push_back (container[buffstart]);
-    }
-  }
+}
 
