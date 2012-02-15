@@ -16,8 +16,6 @@
 #include <pcl/common/transforms.h>
 #include <pcl/common/common.h>
 
-#include "proctor/config.h"
-
 namespace pcl
 {
 

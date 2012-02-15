@@ -4,7 +4,6 @@
 #include <pcl/pcl_base.h>
 #include <pcl/point_types.h>
 
-#include "proctor/config.h"
 #include "proctor/timer.h"
 
 namespace pcl

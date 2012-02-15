@@ -7,7 +7,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/visualization/cloud_viewer.h>
 
-#include "proctor/config.h"
 #include "proctor/timer.h"
 #include "proctor/database_entry.h"
 #include "proctor/keypoint_wrapper.h"
