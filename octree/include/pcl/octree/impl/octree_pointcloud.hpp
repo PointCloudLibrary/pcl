@@ -262,8 +262,9 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getApproxIntersectedVoxel
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT, typename LeafT, typename OctreeT> void
-pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::defineBoundingBox ()
+template<typename PointT, typename LeafT, typename OctreeT>
+  void
+  pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::defineBoundingBox ()
 {
 
   double minX, minY, minZ, maxX, maxY, maxZ;
@@ -272,27 +273,31 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::defineBoundingBox ()
   PointT max_pt;
 
   // bounding box cannot be changed once the octree contains elements
-  assert (this->leafCount_ == 0);
+  assert(this->leafCount_ == 0);
 
   pcl::getMinMax3D (*input_, min_pt, max_pt);
+
+  float minValue = std::numeric_limits<float>::epsilon () * 512.0;
 
   minX = min_pt.x;
   minY = min_pt.y;
   minZ = min_pt.z;
 
-  maxX = max_pt.x;
-  maxY = max_pt.y;
-  maxZ = max_pt.z;
+  maxX = max_pt.x + minValue;
+  maxY = max_pt.y + minValue;
+  maxZ = max_pt.z + minValue;
 
   // generate bit masks for octree
   defineBoundingBox (minX, minY, minZ, maxX, maxY, maxZ);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT, typename LeafT, typename OctreeT> void
-pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::defineBoundingBox (
-    const double minX_arg, const double minY_arg,
-    const double minZ_arg, const double maxX_arg,
+template<typename PointT, typename LeafT, typename OctreeT>
+  void
+  pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::defineBoundingBox (const double minX_arg,
+                                                                            const double minY_arg,
+                                                                            const double minZ_arg,
+                                                                            const double maxX_arg,
     const double maxY_arg, const double maxZ_arg)
 {
   // bounding box cannot be changed once the octree contains elements
@@ -417,13 +422,13 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
   // increase octree size until point fits into bounding box
   while (true)
   {
-    bool bLowerBoundViolationX = (pointIdx_arg.x <= minX_);
-    bool bLowerBoundViolationY = (pointIdx_arg.y <= minY_);
-    bool bLowerBoundViolationZ = (pointIdx_arg.z <= minZ_);
+    bool bLowerBoundViolationX = (pointIdx_arg.x < minX_);
+    bool bLowerBoundViolationY = (pointIdx_arg.y < minY_);
+    bool bLowerBoundViolationZ = (pointIdx_arg.z < minZ_);
 
-    bool bUpperBoundViolationX = (pointIdx_arg.x > maxX_);
-    bool bUpperBoundViolationY = (pointIdx_arg.y > maxY_);
-    bool bUpperBoundViolationZ = (pointIdx_arg.z > maxZ_);
+    bool bUpperBoundViolationX = (pointIdx_arg.x >= maxX_);
+    bool bUpperBoundViolationY = (pointIdx_arg.y >= maxY_);
+    bool bUpperBoundViolationZ = (pointIdx_arg.z >= maxZ_);
 
     // do we violate any bounds?
     if (bLowerBoundViolationX || bLowerBoundViolationY || bLowerBoundViolationZ || bUpperBoundViolationX
