@@ -81,6 +81,8 @@ namespace pcl
     {
       PtrStep<short2> volume;
 
+	  static __device__ __forceinline__ float isoValue() { return 0.f; }
+
       __device__ __forceinline__ void
       readTsdf (int x, int y, int z, float& tsdf, int& weight) const
       {
@@ -90,8 +92,6 @@ namespace pcl
       __device__ __forceinline__ int
       computeCubeIndex (int x, int y, int z, float f[8]) const
       {
-        const float isoValue = 0.f;
-
         int weight;
         readTsdf (x,     y,     z,     f[0], weight); if (weight == 0) return 0;
         readTsdf (x + 1, y,     z,     f[1], weight); if (weight == 0) return 0;
@@ -104,14 +104,14 @@ namespace pcl
 
         // calculate flag indicating if each vertex is inside or outside isosurface
         int cubeindex;
-        cubeindex = int(f[0] < isoValue);
-        cubeindex += int(f[1] < isoValue) * 2;
-        cubeindex += int(f[2] < isoValue) * 4;
-        cubeindex += int(f[3] < isoValue) * 8;
-        cubeindex += int(f[4] < isoValue) * 16;
-        cubeindex += int(f[5] < isoValue) * 32;
-        cubeindex += int(f[6] < isoValue) * 64;
-        cubeindex += int(f[7] < isoValue) * 128;
+        cubeindex = int(f[0] < isoValue());
+        cubeindex += int(f[1] < isoValue()) * 2;
+        cubeindex += int(f[2] < isoValue()) * 4;
+        cubeindex += int(f[3] < isoValue()) * 8;
+        cubeindex += int(f[4] < isoValue()) * 16;
+        cubeindex += int(f[5] < isoValue()) * 32;
+        cubeindex += int(f[6] < isoValue()) * 64;
+        cubeindex += int(f[7] < isoValue()) * 128;
 
         return cubeindex;
       }
@@ -142,9 +142,10 @@ namespace pcl
           return;
 
         int ftid = Block::flattenedThreadId ();
-        int wapp_id = ftid >> Warp::LOG_WARP_SIZE;
+		int warp_id = Warp::id();
+		int lane_id = Warp::laneId();
 
-        __shared__ int warps_buffer[WARPS_COUNT];
+        volatile __shared__ int warps_buffer[WARPS_COUNT];
 
         for (int z = 0; z < VOLUME_Z - 1; z++)
         {
@@ -155,17 +156,19 @@ namespace pcl
             int cubeindex = computeCubeIndex (x, y, z, field);
 
             // read number of vertices from texture
-            numVerts = (cubeindex == 0 || cubeindex == 8) ? 0 : tex1Dfetch (numVertsTex, cubeindex);
+            numVerts = (cubeindex == 0 || cubeindex == 255) ? 0 : tex1Dfetch (numVertsTex, cubeindex);
           }
 
           int total = __popc (__ballot (numVerts > 0));
+		  if (total == 0)
+			continue;
 
-          if (ftid & 31 == 0)
+          if (lane_id == 0)
           {
             int old = atomicAdd (&global_count, total);
-            warps_buffer[wapp_id] = old;
+            warps_buffer[warp_id] = old;
           }
-          int old_global_voxels_count = warps_buffer[wapp_id];
+          int old_global_voxels_count = warps_buffer[warp_id];
 
           int offs = Warp::binaryExclScan (__ballot (numVerts > 0));
 
@@ -280,9 +283,8 @@ namespace pcl
 
       __device__ __forceinline__ float3
       vertex_interp (float3 p0, float3 p1, float f0, float f1) const
-      {
-        const float isolevel = 0.f;
-        float t = (isolevel - f0) / (f1 - f0);
+      {        
+        float t = (isoValue() - f0) / (f1 - f0 + 1e-15f);
         float x = p0.x + t * (p1.x - p0.x);
         float y = p0.y + t * (p1.y - p0.y);
         float z = p0.z + t * (p1.z - p0.z);
