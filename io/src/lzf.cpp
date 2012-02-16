@@ -126,7 +126,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
     hval = (hval << 8) | ip[2];
     hslot = htab + IDX (hval);
     ref = *hslot + ((const unsigned char*)in_data); 
-    *hslot = ip - ((const unsigned char*)in_data);
+    *hslot = (unsigned int) (ip - ((const unsigned char*)in_data));
 
     if (
         // The next test will actually take care of this, but this is faster if htab is initialized
@@ -143,7 +143,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
     {
       // Match found at *ref++
       unsigned int len = 2;
-      unsigned int maxlen = in_end - ip - len;
+      ptrdiff_t maxlen = in_end - ip - len;
       maxlen = maxlen > ((1 << 8) + (1 << 3)) ? ((1 << 8) + (1 << 3)) : maxlen;
 
       // First a faster conservative test
@@ -200,15 +200,15 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
 
       if (len < 7)
       {
-        *op++ = (off >> 8) + (len << 5);
+        *op++ = (unsigned char) ((off >> 8) + (len << 5));
       }
       else
       {
-        *op++ = (off >> 8) + (  7 << 5);
+        *op++ = (unsigned char) ((off >> 8) + (  7 << 5));
         *op++ = len - 7;
       }
 
-      *op++ = off;
+      *op++ = (unsigned char) off;
 
       // Start run
       lit = 0; op++;
@@ -222,7 +222,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
       hval = (ip[0] << 8) | ip[1];
 
       hval = (hval << 8) | ip[2];
-      htab[IDX (hval)] = ip - ((const unsigned char *)in_data);
+      htab[IDX (hval)] = (unsigned int) (ip - ((const unsigned char *)in_data));
       ip++;
     }
     else
@@ -268,7 +268,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
   // Undo run if length is zero
   op -= !lit;
 
-  return (op - (unsigned char *)out_data);
+  return ((unsigned int) (op - (unsigned char *)out_data));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -389,6 +389,6 @@ pcl::lzfDecompress (const void *const in_data,  unsigned int in_len,
   }
   while (ip < in_end);
 
-  return (op - (unsigned char*)out_data);
+  return ((unsigned int) (op - (unsigned char*)out_data));
 }
 
