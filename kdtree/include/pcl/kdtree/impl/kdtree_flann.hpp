@@ -61,12 +61,12 @@ pcl::KdTreeFLANN<PointT, Dist>::setInputCloud (const PointCloudConstPtr &cloud, 
   }
   if (indices != NULL)
   {
-    total_nr_points_ = indices_->size ();
+    total_nr_points_ = (int) indices_->size ();
     convertCloudToArray (*input_, *indices_);
   }
   else
   {
-    total_nr_points_ = input_->points.size ();
+    total_nr_points_ = (int) input_->points.size ();
     convertCloudToArray (*input_);
   }
 
@@ -135,7 +135,7 @@ pcl::KdTreeFLANN<PointT, Dist>::radiusSearch (const PointT &point, double radius
     neighbors_in_radius = flann_index_->radiusSearch (flann::Matrix<float> (&query[0], 1, dim_),
                                                       k_indices_mat,
                                                       k_distances_mat,
-                                                      radius * radius, 
+                                                      (float) (radius * radius), 
                                                       param_radius_);
   }
   else
@@ -149,7 +149,7 @@ pcl::KdTreeFLANN<PointT, Dist>::radiusSearch (const PointT &point, double radius
     neighbors_in_radius = flann_index_->radiusSearch (flann::Matrix<float> (&query[0], 1, dim_),
                                                       indices_empty,
                                                       dists_empty,
-                                                      radius * radius, 
+                                                      (float) (radius * radius), 
                                                       param_radius_);
     neighbors_in_radius = std::min ((unsigned int)neighbors_in_radius, max_nn);
 
@@ -162,7 +162,7 @@ pcl::KdTreeFLANN<PointT, Dist>::radiusSearch (const PointT &point, double radius
       flann_index_->radiusSearch (flann::Matrix<float> (&query[0], 1, dim_),
                                   k_indices_mat,
                                   k_distances_mat,
-                                  radius * radius, 
+                                  (float) (radius * radius), 
                                   param_radius_);
     }
   }
@@ -210,7 +210,7 @@ pcl::KdTreeFLANN<PointT, Dist>::convertCloudToArray (const PointCloud &cloud)
     return;
   }
 
-  int original_no_of_points = cloud.points.size ();
+  int original_no_of_points = (int) cloud.points.size ();
 
   cloud_ = (float*)malloc (original_no_of_points * dim_ * sizeof(float));
   float* cloud_ptr = cloud_;
@@ -244,7 +244,7 @@ pcl::KdTreeFLANN<PointT, Dist>::convertCloudToArray (const PointCloud &cloud, co
     return;
   }
 
-  int original_no_of_points = indices.size ();
+  int original_no_of_points = (int) indices.size ();
 
   cloud_ = (float*)malloc (original_no_of_points * dim_ * sizeof (float));
   float* cloud_ptr = cloud_;

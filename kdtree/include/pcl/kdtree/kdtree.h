@@ -343,7 +343,7 @@ namespace pcl
       inline float
       getMinPts ()
       {
-        return (min_pts_);
+        return ((float) min_pts_);
       }
 
     protected:
