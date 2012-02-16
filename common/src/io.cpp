@@ -333,7 +333,7 @@ pcl::copyPointCloud (
 {
   cloud_out.header       = cloud_in.header;
   cloud_out.height       = 1;
-  cloud_out.width        = indices.size (); 
+  cloud_out.width        = (uint32_t) indices.size (); 
   cloud_out.fields       = cloud_in.fields;
   cloud_out.is_bigendian = cloud_in.is_bigendian;
   cloud_out.point_step   = cloud_in.point_step;

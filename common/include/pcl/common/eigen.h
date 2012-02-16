@@ -67,7 +67,9 @@
 #ifndef PCL_EIGEN_H_
 #define PCL_EIGEN_H_
 
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 
 #include <Eigen/Core>
 #include <Eigen/Eigenvalues>

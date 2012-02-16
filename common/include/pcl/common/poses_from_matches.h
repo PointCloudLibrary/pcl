@@ -57,7 +57,7 @@ namespace pcl
       
       // =====STRUCTS=====
       //! Parameters used in this class
-      struct Parameters
+      struct PCL_EXPORTS Parameters
       {
         Parameters() : max_correspondence_distance_error(0.2f) {}
         float max_correspondence_distance_error;  // As a fraction

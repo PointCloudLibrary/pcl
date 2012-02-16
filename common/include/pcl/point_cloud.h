@@ -318,7 +318,7 @@ namespace pcl
         * \param[in] row the row coordinate
         */
       inline const PointT&
-      operator () (int column, int row) const
+      operator () (size_t column, size_t row) const
       {
         return (points[row * this->width + column]);
       }
@@ -329,7 +329,7 @@ namespace pcl
         * \param[in] row the row coordinate
         */
       inline PointT&
-      operator () (int column, int row)
+      operator () (size_t column, size_t row)
       {
         return (points[row * this->width + column]);
       }
@@ -696,7 +696,7 @@ namespace pcl
         properties (pc.properties), 
         points (Eigen::MatrixXf (indices.size (), pc.points.cols ())), 
         channels (pc.channels), 
-        width (indices.size ()), height (1), is_dense (pc.is_dense)
+        width ((uint32_t) indices.size ()), height (1), is_dense (pc.is_dense)
       {
         // Copy the obvious
         assert ((int)indices.size () <= pc.points.rows ());
@@ -748,7 +748,7 @@ namespace pcl
         properties.sensor_origin = Eigen::Vector4f::Zero ();
         properties.sensor_orientation = Eigen::Quaternionf::Identity ();
 
-        int nr_points = points.rows ();
+        int nr_points = (int) points.rows ();
         points.resize (nr_points + rhs.points.rows (), points.cols ());
         for (int i = nr_points; i < points.rows (); ++i)
           points.row (i) = rhs.points.row (i - nr_points);

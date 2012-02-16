@@ -56,7 +56,7 @@ namespace pcl
 #endif
 
 #if defined _MSC_VER
-  #pragma warning (disable : 4521)
+  #pragma warning (disable: 4521 4251)
 #endif
 
 #include <iostream>

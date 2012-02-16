@@ -61,7 +61,7 @@ namespace pcl
     //int initial_no_of_pose_estimates = pose_estimates.size ();
     
     if (max_no_of_results < 0)
-      max_no_of_results = correspondences.size ();
+      max_no_of_results = (int) correspondences.size ();
     else
       max_no_of_results = std::min (max_no_of_results, (int)correspondences.size ());
     
@@ -89,7 +89,7 @@ namespace pcl
                           y_direction (0.0f, 1.0f, 0.0f),
                           z_direction (0.0f, 0.0f, 1.0f);
     
-    int max_correspondence_idx = correspondences.size ();
+    int max_correspondence_idx = (int) correspondences.size ();
     int counter_for_tested_combinations = 0,
         counter_for_added_pose_estimates = 0;
     float max_distance_quotient = 1.0f+parameters_.max_correspondence_distance_error,
@@ -205,7 +205,7 @@ namespace pcl
                           y_direction (0.0f, 1.0f, 0.0f),
                           z_direction (0.0f, 0.0f, 1.0f);
     
-    int max_correspondence_idx = correspondences.size ();
+    int max_correspondence_idx = (int) correspondences.size ();
     int counter_for_tested_combinations = 0,
         counter_for_added_pose_estimates = 0;
     float max_distance_quotient = 1.0f+parameters_.max_correspondence_distance_error,
