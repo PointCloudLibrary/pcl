@@ -51,6 +51,9 @@ if (build)
   PCL_ADD_EXECUTABLE (add_gaussian_noise ${SUBSYS_NAME} add_gaussian_noise.cpp)
   target_link_libraries (add_gaussian_noise pcl_common pcl_io)
   
+  PCL_ADD_EXECUTABLE (outlier_removal ${SUBSYS_NAME} outlier_removal.cpp)
+  target_link_libraries (outlier_removal pcl_common pcl_io pcl_filters)
+  
   PCL_ADD_EXECUTABLE (mls_smoothing ${SUBSYS_NAME} mls_smoothing.cpp)
   target_link_libraries (mls_smoothing pcl_common pcl_io pcl_surface pcl_filters)
   
@@ -74,6 +77,9 @@ if (build)
   
   PCL_ADD_EXECUTABLE(concatenate_points_pcd ${SUBSYS_NAME} concatenate_points_pcd.cpp)
   target_link_libraries(concatenate_points_pcd pcl_common pcl_io)
+  
+  PCL_ADD_EXECUTABLE(poisson_reconstruction ${SUBSYS_NAME} poisson_reconstruction.cpp)
+  target_link_libraries(poisson_reconstruction pcl_common pcl_io pcl_surface)
 
   if (QHULL_FOUND)
     PCL_ADD_EXECUTABLE(crop_to_hull ${SUBSYS_NAME} crop_to_hull.cpp)
