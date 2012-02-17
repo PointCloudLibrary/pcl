@@ -59,7 +59,7 @@ namespace __gnu_cxx
     size_t
     operator() (long long __x) const
     {
-      return __x;
+      return (__x);
     }
   };
 
@@ -69,7 +69,7 @@ namespace __gnu_cxx
     size_t
     operator() (const long long __x) const
     {
-      return __x;
+      return (__x);
     }
   };
 
@@ -79,7 +79,7 @@ namespace __gnu_cxx
     size_t
     operator() (unsigned long long __x) const
     {
-      return __x;
+      return (__x);
     }
   };
 
@@ -89,7 +89,7 @@ namespace __gnu_cxx
     size_t
     operator() (const unsigned long long __x) const
     {
-      return __x;
+      return (__x);
     }
   };
 }

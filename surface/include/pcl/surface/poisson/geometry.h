@@ -84,7 +84,6 @@ namespace pcl
       template<class Real> void
       CrossProduct (const Point3D<Real>& p1, const Point3D<Real>& p2, Point3D<Real>& p);
 
-
       class Edge
       {
         public:
@@ -97,7 +96,7 @@ namespace pcl
             d[0] = p[0][0] - p[1][0];
             d[1] = p[0][1] - p[1][1];
 
-            return sqrt (d[0] * d[0] + d[1] * d[1]);
+            return (sqrt (d[0] * d[0] + d[1] * d[1]));
           }
       };
 
@@ -120,7 +119,7 @@ namespace pcl
             v[1] = -v1[0] * v2[2] + v1[2] * v2[0];
             v[2] = v1[0] * v2[1] - v1[1] * v2[0];
 
-            return sqrt (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]) / 2;
+            return (sqrt (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]) / 2);
           }
 
 
@@ -138,10 +137,9 @@ namespace pcl
                 }
             }
 
-            return Area () / d;
+            return (Area () / d);
           }
       };
-
 
       class CoredPointIndex
       {
@@ -163,13 +161,11 @@ namespace pcl
           }
       };
 
-
       class EdgeIndex
       {
         public:
           int idx[2];
       };
-
 
       class CoredEdgeIndex
       {
@@ -177,13 +173,11 @@ namespace pcl
           CoredPointIndex idx[2];
       };
 
-
       class TriangleIndex
       {
         public:
           int idx[3];
       };
-
 
       class TriangulationEdge
       {
@@ -193,14 +187,12 @@ namespace pcl
           int tIndex[2];
       };
 
-
       class TriangulationTriangle
       {
         public:
           TriangulationTriangle (void);
           int eIndex[3];
       };
-
 
       template<class Real>
       class Triangulation
@@ -237,7 +229,6 @@ namespace pcl
           double
           area (const Triangle& t);
       };
-
 
       template<class Real> void
       EdgeCollapse (const Real& edgeRatio, std::vector<TriangleIndex>& triangles,
@@ -278,9 +269,10 @@ namespace pcl
 
       class CoredVectorMeshData : public CoredMeshData
       {
-          std::vector<Point3D<float> > oocPoints;
-          std::vector<TriangleIndex> triangles;
-          int oocPointIndex, triangleIndex;
+        std::vector<Point3D<float> > oocPoints;
+        std::vector<TriangleIndex> triangles;
+        int oocPointIndex, triangleIndex;
+
         public:
           CoredVectorMeshData (void);
 
@@ -308,9 +300,10 @@ namespace pcl
 
       class CoredFileMeshData : public CoredMeshData
       {
-          FILE *oocPointFile, *triangleFile;
-          int oocPoints, triangles;
-      public:
+        FILE *oocPointFile, *triangleFile;
+        int oocPoints, triangles;
+
+        public:
           CoredFileMeshData (void);
           ~CoredFileMeshData (void);
 

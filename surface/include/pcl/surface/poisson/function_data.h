@@ -54,8 +54,9 @@ namespace pcl
       template<int Degree, class Real>
       class FunctionData
       {
-          int useDotRatios;
-          int normalize;
+        int useDotRatios;
+        int normalize;
+
         public:
           const static int DOT_FLAG;
           const static int D_DOT_FLAG;

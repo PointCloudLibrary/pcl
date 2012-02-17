@@ -43,6 +43,7 @@
 #ifndef PCL_POISSON_FACTOR_H_
 #define PCL_POISSON_FACTOR_H_
 
+#include <math.h>
 
 namespace pcl
 {
@@ -51,7 +52,6 @@ namespace pcl
     namespace poisson
     {
 
-#define PI 3.1415926535897932384
 #define SQRT_3 1.7320508075688772935
 
       double
