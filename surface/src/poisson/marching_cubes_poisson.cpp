@@ -58,12 +58,16 @@ namespace pcl
       {
         return (y << 1) | x;
       }
+
+
       void
       Square::FactorCornerIndex (const int& idx, int& x, int& y)
       {
         x = (idx >> 0) % 2;
         y = (idx >> 1) % 2;
       }
+
+
       int
       Square::EdgeIndex (const int& orientation, const int& i)
       {
@@ -90,6 +94,8 @@ namespace pcl
         };
         return -1;
       }
+
+
       void
       Square::FactorEdgeIndex (const int& idx, int& orientation, int& i)
       {
@@ -107,6 +113,8 @@ namespace pcl
             return;
         };
       }
+
+
       void
       Square::EdgeCorners (const int& idx, int& c1, int& c2)
       {
@@ -124,6 +132,8 @@ namespace pcl
             break;
         };
       }
+
+
       int
       Square::ReflectEdgeIndex (const int& idx, const int& edgeIndex)
       {
@@ -139,6 +149,8 @@ namespace pcl
           return EdgeIndex (o, (i + 1) % 2);
         }
       }
+
+
       int
       Square::ReflectCornerIndex (const int& idx, const int& edgeIndex)
       {
@@ -155,6 +167,8 @@ namespace pcl
         return -1;
       }
 
+
+
       //////////
       // Cube //
       //////////
@@ -163,6 +177,8 @@ namespace pcl
       {
         return (z << 2) | (y << 1) | x;
       }
+
+
       void
       Cube::FactorCornerIndex (const int& idx, int& x, int& y, int& z)
       {
@@ -170,11 +186,15 @@ namespace pcl
         y = (idx >> 1) % 2;
         z = (idx >> 2) % 2;
       }
+
+
       int
       Cube::EdgeIndex (const int& orientation, const int& i, const int& j)
       {
         return (i | (j << 1)) | (orientation << 2);
       }
+
+
       void
       Cube::FactorEdgeIndex (const int& idx, int& orientation, int& i, int &j)
       {
@@ -182,6 +202,8 @@ namespace pcl
         i = idx & 1;
         j = (idx & 2) >> 1;
       }
+
+
       int
       Cube::FaceIndex (const int& x, const int& y, const int& z)
       {
@@ -214,11 +236,14 @@ namespace pcl
           return -1;
         }
       }
+
+
       int
       Cube::FaceIndex (const int& dir, const int& offSet)
       {
         return (dir << 1) | offSet;
       }
+
 
       void
       Cube::FactorFaceIndex (const int& idx, int& x, int& y, int& z)
@@ -246,12 +271,15 @@ namespace pcl
             break;
         };
       }
+
+
       void
       Cube::FactorFaceIndex (const int& idx, int& dir, int& offSet)
       {
         dir = idx >> 1;
         offSet = idx & 1;
       }
+
 
       int
       Cube::FaceAdjacentToEdges (const int& eIndex1, const int& eIndex2)
@@ -269,6 +297,7 @@ namespace pcl
         }
         return -1;
       }
+
 
       void
       Cube::FacesAdjacentToEdge (const int& eIndex, int& f1Index, int& f2Index)
@@ -295,6 +324,8 @@ namespace pcl
             break;
         };
       }
+
+
       void
       Cube::EdgeCorners (const int& idx, int& c1, int& c2)
       {
@@ -316,6 +347,8 @@ namespace pcl
             break;
         };
       }
+
+
       void
       Cube::FaceCorners (const int& idx, int& c1, int& c2, int& c3, int& c4)
       {
@@ -342,6 +375,8 @@ namespace pcl
             return;
         }
       }
+
+
       int
       Cube::AntipodalCornerIndex (const int& idx)
       {
@@ -349,6 +384,8 @@ namespace pcl
         FactorCornerIndex (idx, x, y, z);
         return CornerIndex ((x + 1) % 2, (y + 1) % 2, (z + 1) % 2);
       }
+
+
       int
       Cube::FaceReflectFaceIndex (const int& idx, const int& faceIndex)
       {
@@ -368,6 +405,8 @@ namespace pcl
           }
         }
       }
+
+
       int
       Cube::FaceReflectEdgeIndex (const int& idx, const int& faceIndex)
       {
@@ -389,13 +428,14 @@ namespace pcl
                 return EdgeIndex (o, (i + 1) % 2, j);
               case 2:
                 return EdgeIndex (o, i, (j + 1) % 2);
-            }
-            ;
+            };
               case 2:
                 return EdgeIndex (o, i, (j + 1) % 2);
         };
         return -1;
       }
+
+
       int
       Cube::FaceReflectCornerIndex (const int& idx, const int& faceIndex)
       {
@@ -413,6 +453,8 @@ namespace pcl
         };
         return -1;
       }
+
+
       int
       Cube::EdgeReflectCornerIndex (const int& idx, const int& edgeIndex)
       {
@@ -430,6 +472,8 @@ namespace pcl
         };
         return -1;
       }
+
+
       int
       Cube::EdgeReflectEdgeIndex (const int& edgeIndex)
       {
@@ -437,6 +481,8 @@ namespace pcl
         FactorEdgeIndex (edgeIndex, o, i1, i2);
         return Cube::EdgeIndex (o, (i1 + 1) % 2, (i2 + 1) % 2);
       }
+
+
 
       /////////////////////
       // MarchingSquares //
@@ -482,6 +528,7 @@ namespace pcl
                                                                                     {-1, -1, -1, -1, -1}, // (0,0) (1,0) (0,1) (1,1)
       };
 
+
       double MarchingSquares::vertexList[Square::EDGES][2];
       int
       MarchingSquares::GetIndex (const double v[Square::CORNERS], const double& iso)
@@ -497,12 +544,15 @@ namespace pcl
         return idx;
       }
 
+
       int
       MarchingSquares::IsAmbiguous (const double v[Square::CORNERS], const double& isoValue)
       {
         int idx = GetIndex (v, isoValue);
         return (idx == 5) || (idx == 10);
       }
+
+
       int
       MarchingSquares::AddEdges (const double v[Square::CORNERS], const double& iso, Edge* isoEdges)
       {
@@ -538,6 +588,7 @@ namespace pcl
         return nEdges;
       }
 
+
       int
       MarchingSquares::AddEdgeIndices (const double v[Square::CORNERS], const double& iso, int* isoIndices)
       {
@@ -560,6 +611,8 @@ namespace pcl
         }
         return nEdges;
       }
+
+
       void
       MarchingSquares::SetVertex (const int& e, const double values[Square::CORNERS], const double& iso)
       {
@@ -578,11 +631,15 @@ namespace pcl
             break;
         }
       }
+
+
       double
       MarchingSquares::Interpolate (const double& v1, const double& v2)
       {
         return v1 / (v1 - v2);
       }
+
+
 
       //////////////////////////
       // MarchingCubesPoisson //
@@ -898,6 +955,7 @@ namespace pcl
         return idx;
       }
 
+
       int
       MarchingCubesPoisson::GetFaceIndex (const double values[Cube::CORNERS], const double& iso, const int& faceIndex)
       {
@@ -975,6 +1033,7 @@ namespace pcl
         return idx;
       }
 
+
       int
       MarchingCubesPoisson::IsAmbiguous (const double v[Cube::CORNERS], const double& isoValue, const int& faceIndex)
       {
@@ -982,12 +1041,14 @@ namespace pcl
         return (idx == 5) || (idx == 10);
       }
 
+
       int
       MarchingCubesPoisson::HasRoots (const double v[Cube::CORNERS], const double& isoValue, const int& faceIndex)
       {
         int idx = GetFaceIndex (v, isoValue, faceIndex);
         return (idx != 0) && (idx != 15);
       }
+
 
       int
       MarchingCubesPoisson::HasRoots (const double v[Cube::CORNERS], const double& isoValue)
@@ -1003,6 +1064,7 @@ namespace pcl
         }
       }
 
+
       int
       MarchingCubesPoisson::HasRoots (const int& mcIndex)
       {
@@ -1015,6 +1077,7 @@ namespace pcl
           return 1;
         }
       }
+
 
       int
       MarchingCubesPoisson::AddTriangles (const double v[Cube::CORNERS], const double& iso, Triangle* isoTriangles)
@@ -1052,6 +1115,7 @@ namespace pcl
         return ntriang;
       }
 
+
       int
       MarchingCubesPoisson::AddTriangleIndices (const double v[Cube::CORNERS], const double& iso, int* isoIndices)
       {
@@ -1074,6 +1138,7 @@ namespace pcl
         }
         return ntriang;
       }
+
 
       void
       MarchingCubesPoisson::SetVertex (const int& e, const double values[Cube::CORNERS], const double& iso)
@@ -1162,6 +1227,7 @@ namespace pcl
       }
 
 
+
       ///////////////////////////////////
       int
       MarchingCubesPoisson::GetIndex (const float v[Cube::CORNERS], const float& iso)
@@ -1185,6 +1251,7 @@ namespace pcl
           idx |= 128;
         return idx;
       }
+
 
       int
       MarchingCubesPoisson::GetFaceIndex (const float values[Cube::CORNERS], const float& iso, const int& faceIndex)
@@ -1263,6 +1330,7 @@ namespace pcl
         return idx;
       }
 
+
       int
       MarchingCubesPoisson::GetFaceIndex (const int& mcIndex, const int& faceIndex)
       {
@@ -1340,6 +1408,7 @@ namespace pcl
         return idx;
       }
 
+
       int
       MarchingCubesPoisson::IsAmbiguous (const float v[Cube::CORNERS], const float& isoValue, const int& faceIndex)
       {
@@ -1347,12 +1416,14 @@ namespace pcl
         return (idx == 5) || (idx == 10);
       }
 
+
       int
       MarchingCubesPoisson::IsAmbiguous (const int& mcIndex, const int& faceIndex)
       {
         int idx = GetFaceIndex (mcIndex, faceIndex);
         return (idx == 5) || (idx == 10);
       }
+
 
       int
       MarchingCubesPoisson::HasRoots (const float v[Cube::CORNERS], const float& isoValue)
@@ -1368,6 +1439,7 @@ namespace pcl
         }
       }
 
+
       int
       MarchingCubesPoisson::HasRoots (const float v[Cube::CORNERS], const float& isoValue, const int& faceIndex)
       {
@@ -1375,12 +1447,14 @@ namespace pcl
         return (idx != 0) && (idx != 15);
       }
 
+
       int
       MarchingCubesPoisson::HasFaceRoots (const int& mcIndex, const int& faceIndex)
       {
         int idx = GetFaceIndex (mcIndex, faceIndex);
         return (idx != 0) && (idx != 15);
       }
+
 
       int
       MarchingCubesPoisson::HasEdgeRoots (const int& mcIndex, const int& edgeIndex)
@@ -1397,6 +1471,7 @@ namespace pcl
           return 1;
         }
       }
+
 
       int
       MarchingCubesPoisson::AddTriangles (const float v[Cube::CORNERS], const float& iso, Triangle* isoTriangles)
@@ -1434,6 +1509,7 @@ namespace pcl
         return ntriang;
       }
 
+
       int
       MarchingCubesPoisson::AddTriangleIndices (const float v[Cube::CORNERS], const float& iso, int* isoIndices)
       {
@@ -1453,6 +1529,7 @@ namespace pcl
         }
         return ntriang;
       }
+
 
       int
       MarchingCubesPoisson::AddTriangleIndices (const int& idx, int* isoIndices)
@@ -1474,6 +1551,7 @@ namespace pcl
         }
         return ntriang;
       }
+
 
       void
       MarchingCubesPoisson::SetVertex (const int& e, const float values[Cube::CORNERS], const float& iso)
@@ -1555,6 +1633,8 @@ namespace pcl
             break;
         };
       }
+
+
       float
       MarchingCubesPoisson::Interpolate (const float& v1, const float& v2)
       {

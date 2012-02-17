@@ -48,6 +48,7 @@ Random (void)
   return Real (rand ()) / RAND_MAX;
 }
 
+
 template<class Real> Point3D<Real>
 RandomBallPoint (void)
 {
@@ -64,6 +65,8 @@ RandomBallPoint (void)
     }
   }
 }
+
+
 template<class Real> Point3D<Real>
 RandomSpherePoint (void)
 {
@@ -75,17 +78,20 @@ RandomSpherePoint (void)
   return p;
 }
 
+
 template<class Real> double
 SquareLength (const Point3D<Real>& p)
 {
   return p.coords[0] * p.coords[0] + p.coords[1] * p.coords[1] + p.coords[2] * p.coords[2];
 }
 
+
 template<class Real> double
 Length (const Point3D<Real>& p)
 {
   return sqrt (SquareLength (p));
 }
+
 
 template<class Real> double
 SquareDistance (const Point3D<Real>& p1, const Point3D<Real>& p2)
@@ -94,11 +100,13 @@ SquareDistance (const Point3D<Real>& p1, const Point3D<Real>& p2)
       * (p1.coords[1] - p2.coords[1]) + (p1.coords[2] - p2.coords[2]) * (p1.coords[2] - p2.coords[2]);
 }
 
+
 template<class Real> double
 Distance (const Point3D<Real>& p1, const Point3D<Real>& p2)
 {
   return sqrt (SquareDistance (p1, p2));
 }
+
 
 template<class Real> void
 CrossProduct (const Point3D<Real>& p1, const Point3D<Real>& p2, Point3D<Real>& p)
@@ -107,6 +115,7 @@ CrossProduct (const Point3D<Real>& p1, const Point3D<Real>& p2, Point3D<Real>& p
   p.coords[1] = -p1.coords[0] * p2.coords[2] + p1.coords[2] * p2.coords[0];
   p.coords[2] = p1.coords[0] * p2.coords[1] - p1.coords[1] * p2.coords[0];
 }
+
 
 template<class Real> void
 EdgeCollapse (const Real& edgeRatio, std::vector<TriangleIndex>& triangles, std::vector<Point3D<Real> >& positions,
@@ -242,6 +251,7 @@ EdgeCollapse (const Real& edgeRatio, std::vector<TriangleIndex>& triangles, std:
   delete[] pointCount;
   delete[] remapTable;
 }
+
 
 template<class Real> void
 TriangleCollapse (const Real& edgeRatio, std::vector<TriangleIndex>& triangles,
@@ -398,6 +408,8 @@ TriangleCollapse (const Real& edgeRatio, std::vector<TriangleIndex>& triangles,
   delete[] remapTable;
 }
 
+
+
 ///////////////////
 // Triangulation //
 ///////////////////
@@ -413,6 +425,7 @@ Triangulation<Real>::EdgeIndex (const int& p1, const int& p2)
     return ((long long)(p2) << 32) | ((long long)(p1));
   }
 }
+
 
 template<class Real> int
 Triangulation<Real>::factor (const int& tIndex, int& p1, int& p2, int & p3)
@@ -448,6 +461,7 @@ Triangulation<Real>::factor (const int& tIndex, int& p1, int& p2, int & p3)
   return 1;
 }
 
+
 template<class Real> double
 Triangulation<Real>::area (const int& p1, const int& p2, const int& p3)
 {
@@ -461,6 +475,7 @@ Triangulation<Real>::area (const int& p1, const int& p2, const int& p3)
   return Length (q);
 }
 
+
 template<class Real> double
 Triangulation<Real>::area (const int& tIndex)
 {
@@ -468,6 +483,7 @@ Triangulation<Real>::area (const int& tIndex)
   factor (tIndex, p1, p2, p3);
   return area (p1, p2, p3);
 }
+
 
 template<class Real> double
 Triangulation<Real>::area (void)
@@ -479,6 +495,7 @@ Triangulation<Real>::area (void)
   }
   return a;
 }
+
 
 template<class Real> int
 Triangulation<Real>::addTriangle (const int& p1, const int& p2, const int& p3)
@@ -538,6 +555,7 @@ Triangulation<Real>::addTriangle (const int& p1, const int& p2, const int& p3)
   }
   return tIdx;
 }
+
 
 template<class Real> int
 Triangulation<Real>::flipMinimize (const int& eIndex)
