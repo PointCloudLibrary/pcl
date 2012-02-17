@@ -102,6 +102,8 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   xyz_cloud->height = 1;
   xyz_cloud->width = xyz_cloud->size ();
   xyz_cloud->is_dense = false;
+  
+  
 
 //  io::savePCDFile ("test.pcd", *xyz_cloud);
 
@@ -114,14 +116,15 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   mls.setPolynomialFit (use_polynomial_fit);
   mls.setPolynomialOrder (polynomial_order);
 
-//  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, Normal>::SAMPLE_LOCAL_PLANE);
-  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, Normal>::UNIFORM_DENSITY);
-//  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, Normal>::FILL_HOLES);
+  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, Normal>::SAMPLE_LOCAL_PLANE);
+//  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, Normal>::RANDOM_UNIFORM_DENSITY);
+//  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, Normal>::VOXEL_GRID_DILATION);
 //  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, Normal>::NONE);
-  mls.setFillingStepSize (0.02);
   mls.setPointDensity (50000*search_radius); // 300 points in a 5 cm radius
   mls.setUpsamplingRadius (0.025);
   mls.setUpsamplingStepSize (0.015);
+  mls.setDilationIterations (2);
+  mls.setDilationVoxelSize (0.005);
 
   search::KdTree<PointXYZ>::Ptr tree (new search::KdTree<PointXYZ> ());
   mls.setSearchMethod (tree);
@@ -133,6 +136,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   TicToc tt;
   tt.tic ();
   mls.reconstruct (*xyz_cloud_smoothed);
+  pcl::io::savePCDFile ("out_temp.pcd", *xyz_cloud_smoothed);
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", xyz_cloud_smoothed->width * xyz_cloud_smoothed->height); print_info (" points]\n");
 
   sensor_msgs::PointCloud2 output_positions, output_normals;
@@ -142,16 +146,6 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
 
   concatenateFields (output_positions, output_normals, output);
 
-
-  PointCloud<PointXYZ> xyz_vg;
-  VoxelGrid<PointXYZ> vg;
-  vg.setInputCloud (xyz_cloud_smoothed);
-  vg.setLeafSize (0.005, 0.005, 0.005);
-  vg.filter (xyz_vg);
-  sensor_msgs::PointCloud2 xyz_vg_2;
-  toROSMsg (xyz_vg, xyz_vg_2);
-  pcl::io::savePCDFile ("cloud_vg.pcd", xyz_vg_2,  Eigen::Vector4f::Zero (),
-                        Eigen::Quaternionf::Identity (), true);
 }
 
 void
