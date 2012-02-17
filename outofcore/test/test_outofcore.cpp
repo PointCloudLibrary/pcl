@@ -268,7 +268,7 @@ void point_test(octree_disk& t)
 
     //query the list
     std::vector<PointT> pointsinregion;
-    BOOST_FOREACH(const PointT& p, points)
+    for(auto p : points)
     {
       if((query_box_min[0] <= p.x) && (p.x <= qboxmax[0]) && (query_box_min[1] <= p.y) && (p.y <= qboxmax[1]) && (query_box_min[2] <= p.z) && (p.z <= qboxmax[2]))
       {
@@ -279,7 +279,7 @@ void point_test(octree_disk& t)
     ASSERT_EQ (p_ot.size (), pointsinregion.size ());
 
     //very slow exhaustive comparison
-    BOOST_FOREACH(const PointT& p, pointsinregion)
+    while( !p_ot.empty () )
     {
       std::list<PointT>::iterator it;
       it = std::find_first_of(p_ot.begin(), p_ot.end(), pointsinregion.begin (), pointsinregion.end (), compPt);
@@ -290,8 +290,8 @@ void point_test(octree_disk& t)
       }
       else
       {
-        std::cerr << "Dropped Point from tree1!" << std::endl;
-        ASSERT_TRUE(false);
+        FAIL () <<  "Dropped Point from tree1!" << std::endl;
+        break;
       }
     }
 
@@ -372,7 +372,7 @@ TEST (PCL, Ram_Tree)
     ASSERT_EQ(p_ot1.size(), pointsinregion.size());
 
     //very slow exhaustive comparison
-    BOOST_FOREACH(const PointT& p, pointsinregion)
+    while( !p_ot1.empty () )
     {
       std::list<PointT>::iterator it;
       it = std::find_first_of(p_ot1.begin(), p_ot1.end(), pointsinregion.begin (), pointsinregion.end (), compPt);
@@ -383,8 +383,8 @@ TEST (PCL, Ram_Tree)
       }
       else
       {
-        std::cerr << "Dropped Point from tree1!" << std::endl;
-        ASSERT_TRUE(false);
+        break;
+        FAIL () <<  "Dropped Point from tree1!" << std::endl;
       }
     }
 
@@ -453,7 +453,7 @@ TEST_F (OutofcoreTest, Constructors)
   //(Case 2)
   //create Octree by specifying depth
   int depth = 4;
-  octree_disk octreeB (4, min, max, filename_otreeB, "ECEF");
+  octree_disk octreeB (depth, min, max, filename_otreeB, "ECEF");
   octreeB.addDataToLeaf (some_points);
   ASSERT_EQ ( octreeB.getNumPoints (octreeB.getDepth ()), some_points.size () );
 
