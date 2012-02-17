@@ -44,7 +44,7 @@
 #include <pcl/common/point_operators.h>
 #include <pcl/point_cloud.h>
 #include <pcl/exceptions.h>
-#include <pcl/common/time.h>
+
 namespace pcl
 {
   namespace common
@@ -127,18 +127,16 @@ namespace pcl
         inline void
         convolveRows (PointCloudOut& output)
         {
+          
           try
           {
-            double t0 = pcl::getTime ();
             initCompute (output);
-            std::cerr << pcl::getTime () - t0 << std::endl;
             switch (borders_policy_)
             {
               case MIRROR : convolve_rows_mirror (output);
               case DUPLICATE : convolve_rows_duplicate (output);
               case IGNORE : convolve_rows (output);
             }
-            std::cerr << pcl::getTime () - t0 << std::endl;
           }
           catch (InitFailedException& e)
           {
@@ -155,6 +153,7 @@ namespace pcl
         inline void
         convolveCols (PointCloudOut& output)
         {
+
           try
           {
             initCompute (output);
@@ -240,6 +239,10 @@ namespace pcl
         PointCloudInConstPtr input_;
         /// convolution kernel
         Eigen::ArrayXf kernel_;
+        /// half kernel size
+        int half_width_;
+        /// kernel size - 1
+        int kernel_width_;
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
@@ -261,6 +264,8 @@ namespace pcl
         using ConvolutionBase::setKernel;
         using ConvolutionBase::input_;
         using ConvolutionBase::kernel_;
+        using ConvolutionBase::half_width_;
+        using ConvolutionBase::kernel_width_;
         using ConvolutionBase::distance_threshold_;
         using ConvolutionBase::initCompute;
 
@@ -354,6 +359,64 @@ namespace pcl
       private:
         void
         initCompute (PointCloud<PointT>& output);
+
+        PointT
+        convolveOneRowDense (int i, int j)
+        {
+          PointT result;
+          for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l)
+            result+= (*input_) (l,j) * kernel_[k];
+          return (result);
+        }
+        
+        PointT
+        convolveOneColDense (int i, int j)
+        {
+          PointT result;
+          for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
+            result+= (*input_) (i,l) * kernel_[k];
+          return (result);
+        }        
+ 
+        PointT
+        convolveOneRowNonDense (int i, int j)
+        {
+          PointT result;
+          int counter = 0;
+          for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l)
+          {
+            if (!isFinite ((*input_) (l,j)))
+              continue;
+            if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (l,j)) < distance_threshold_)
+            {
+              result+= (*input_) (l,j) * kernel_[k];
+              ++counter;
+            }
+          }
+          if (counter == 0)
+            result.x = result.y = result.z = std::numeric_limits<float>::quiet_NaN ();
+          return (result);
+        }
+        
+        PointT
+        convolveOneColNonDense (int i, int j)
+        {
+          PointT result;
+          int counter = 0;
+          for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
+          {
+            if (!isFinite ((*input_) (i,l)))
+              continue;
+            if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (i,l)) < distance_threshold_)
+            {
+              result+= (*input_) (i,l) * kernel_[k];
+              ++counter;
+            }
+          }
+          if (counter == 0)
+            result.x = result.y = result.z = std::numeric_limits<float>::quiet_NaN ();
+          return (result);
+        }        
     };
 
     /** Class ConvolutionWithTransform
@@ -390,6 +453,8 @@ namespace pcl
         using ConvolutionBase::setKernel;
         using ConvolutionBase::input_;
         using ConvolutionBase::kernel_;
+        using ConvolutionBase::half_width_;
+        using ConvolutionBase::kernel_width_;
         using ConvolutionBase::distance_threshold_;
         using ConvolutionBase::initCompute;
 
