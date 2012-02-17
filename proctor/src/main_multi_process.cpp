@@ -1,5 +1,7 @@
 #include <boost/thread.hpp>
 #include <boost/format.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 
 #include <QApplication>
 
@@ -16,6 +18,7 @@
 #include "proctor/hough_proposer.h"
 #include "proctor/frame_hough_proposer.h"
 #include "proctor/normal_hough_proposer.h"
+#include "proctor/radius_hough_proposer.h"
 
 #include "proctor/uniform_sampling_wrapper.h"
 #include "proctor/harris_wrapper.h"
@@ -74,19 +77,25 @@ struct run_proctor
     std::vector<Proposer::Ptr> proposers;
     //proposers.push_back(BasicProposer::Ptr(new BasicProposer));
     //proposers.push_back(InverseBagProposer::Ptr(new InverseBagProposer));
-    ThresholdBagProposer::Ptr threshold_proposer(new ThresholdBagProposer);
-    threshold_proposer->setThreshold(5);
-    proposers.push_back(threshold_proposer);
+    //ThresholdBagProposer::Ptr threshold_proposer(new ThresholdBagProposer);
+    //threshold_proposer->setThreshold(5);
+    //proposers.push_back(threshold_proposer);
     //proposers.push_back(RegistrationProposer::Ptr(new RegistrationProposer));
 
-    //HoughProposer::Ptr hough(new HoughProposer());
-    //hough->num_angles_ = 60;
-    //hough->bins_ = 10;
-    //proposers.push_back(hough);
-    //SoftHoughProposer::Ptr soft_hough(new SoftHoughProposer());
-    //soft_hough->num_angles_ = 60;
-    //soft_hough->bins_ = 10;
-    //proposers.push_back(soft_hough);
+    //FrameHoughProposer::Ptr frame_hough(new FrameHoughProposer());
+    //frame_hough->num_angles_ = 60;
+    //frame_hough->bins_ = 10;
+    //proposers.push_back(frame_hough);
+
+    //NormalHoughProposer::Ptr normal_hough(new NormalHoughProposer());
+    //normal_hough->num_angles_ = 60;
+    //normal_hough->bins_ = 10;
+    //proposers.push_back(normal_hough);
+
+    RadiusHoughProposer::Ptr radius_hough(new RadiusHoughProposer());
+    radius_hough->num_angles_ = 20;
+    radius_hough->bins_ = 10;
+    proposers.push_back(radius_hough);
 
     for (unsigned int i = 0; i < features.size(); i++)
     {
@@ -94,7 +103,6 @@ struct run_proctor
       {
         for (unsigned int k = 0; k < proposers.size(); k++)
         {
-
           // Configure Detector
           Detector detector;
 
@@ -122,9 +130,9 @@ struct run_proctor
           // Configure Proctor
           Proctor proctor;
           proctor.setNumModels(10);
-          proctor.setNumTrials(proctor.getNumModels() * 1);
+          proctor.setNumTrials(proctor.getNumModels() * 2);
 
-          ScanningModelSource model_source("princeton", "/home/justin/Documents/benchmark/db");
+          ScanningModelSource model_source("princeton", "/home/justin/Documents/benchmark");
           model_source.loadModels();
 
           //PrimitiveModelSource model_source("primitive");
@@ -142,21 +150,36 @@ struct run_proctor
 
 int main(int argc, char **argv)
 {
+  std::ofstream ofs("filename");
+  {
+    Detector d;
+    boost::archive::text_oarchive oa(ofs);
 
-  //if (argc >= 2)
-  //{
-  //model_seed = atoi(argv[1]);
-  //}
+    FeatureWrapper::Ptr fpfh_wrap (new FPFHWrapper);
+    d.setFeatureEstimator(fpfh_wrap);
 
-  //if (argc >= 3)
-  //{
-  //test_seed = atoi(argv[2]);
-  //}
+    KeypointWrapper::Ptr us_wrap (new UniformSamplingWrapper);
+    d.setKeypointWrapper(us_wrap);
+
+    oa << d;
+  }
+
+  Detector test2;
+  {
+
+    std::ifstream ifs("filename");
+    boost::archive::text_iarchive ia(ifs);
+    ia >> test2;
+  }
+  std::cout << test2.feature_est_->name_ << std::endl;
+  std::cout << test2.keypoint_wrap_->name_ << std::endl;
+  exit(0);
+
 
   bool enable_vis = false;
   if (enable_vis)
   {
-    QApplication app (argc, argv); 
+    QApplication app (argc, argv);
 
     DetectorVisualizer v;
     v.show ();

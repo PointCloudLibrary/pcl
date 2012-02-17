@@ -4,6 +4,10 @@
 #include "pcl/point_types.h"
 #include "pcl/point_cloud.h"
 
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+
+
 namespace pcl
 {
   namespace proctor
@@ -11,6 +15,7 @@ namespace pcl
 
     class FeatureWrapper {
       public:
+
         typedef boost::shared_ptr<FeatureWrapper> Ptr;
         typedef boost::shared_ptr<const FeatureWrapper> ConstPtr;
 
@@ -32,7 +37,12 @@ namespace pcl
         std::string name_;
 
       private:
+        friend class boost::serialization::access;
 
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version)
+        {
+        }
     };
 
   }

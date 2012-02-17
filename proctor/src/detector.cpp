@@ -193,7 +193,7 @@ namespace pcl
         } else {
           PointCloud<Signature>::Ptr features = computeFeatures(scene.cloud, keypoints);
           PCDWriter w;
-          w.writeBinaryEigen(std::string(name), *features);
+          w.writeASCIIEigen(std::string(name), *features);
           //cout << "cloud: "  << features->points << endl;
           return features;
         }

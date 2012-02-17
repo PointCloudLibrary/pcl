@@ -17,8 +17,6 @@ namespace pcl
         typedef boost::shared_ptr<NormalHoughProposer> Ptr;
         typedef boost::shared_ptr<const NormalHoughProposer> ConstPtr;
 
-        //typedef boost::multi_array<double, 3> bin_t;
-
         NormalHoughProposer(Detector *detector = NULL) : HoughProposer(detector)
         {}
 

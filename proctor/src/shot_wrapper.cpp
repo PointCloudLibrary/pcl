@@ -17,7 +17,7 @@ namespace pcl
       //getMinMax3D(*cloud, min, max);
       //std::cout << "Min: " << min << "\tMax: " << max << std::endl;
       SHOTEstimation<PointNormal, PointNormal, Eigen::MatrixXf> shot;
-      shot.setRadiusSearch(0.02);
+      shot.setRadiusSearch(0.05);
       shot.setInputCloud(keypoints);
       search::KdTree<PointNormal>::Ptr kdt (new search::KdTree<PointNormal>());
       shot.setSearchMethod(kdt);

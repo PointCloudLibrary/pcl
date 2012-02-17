@@ -13,6 +13,11 @@
 #include "proctor/feature_wrapper.h"
 #include <pcl/features/fpfh.h>
 
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/shared_ptr.hpp>
+#include <boost/serialization/vector.hpp>
+
 using std::vector;
 using std::stringstream;
 using std::auto_ptr;
@@ -25,6 +30,7 @@ namespace pcl
 {
   namespace proctor
   {
+
     struct Scene;
 
     class Proposer;
@@ -119,7 +125,7 @@ namespace pcl
 
         DetectorVisualizer *detector_vis_;
 
-      private:
+      //private:
 
         /** the timer */
         Timer<NUM_BINS> timer;
@@ -132,6 +138,15 @@ namespace pcl
 
         FeatureWrapperPtr feature_est_;
 
+        friend class boost::serialization::access;
+
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version)
+        {
+          ar & feature_est_;
+          ar & keypoint_wrap_;
+          ar & proposers_;
+        }
     };
   }
 }

@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <vector>
 #include <sstream>
+#include <fstream>
 
 #include <vtkCellArray.h>
 #include <vtkFloatArray.h>
@@ -15,6 +16,8 @@
 #include <pcl/common/eigen.h>
 #include <pcl/common/transforms.h>
 #include <pcl/common/common.h>
+
+#include "proctor/PSBClaParse.h"
 
 namespace pcl
 {
@@ -49,15 +52,44 @@ namespace pcl
       return subset;
     }
 
+    // TODO Finish this
+    void
+    ScanningModelSource::pickUniqueModels(std::vector<int>& ids)
+    {
+      std::stringstream path;
+      path << dir_ << "/classification/v1/base/test.cla";
+
+      PSBCategoryList* list = parseFile((char *) (path.str().c_str()), false);
+
+      ids.clear();
+      for (int i = 0; i < list->_numCategories; i++)
+      {
+        PSBCategory *category = list->_categories[i];
+
+        if (category->_numModels > 0)
+        {
+          // Pick the first model from each category
+          char* model = category->_models[0];
+          ids.push_back(atoi(model));
+        }
+      }
+
+    }
+
     void
     ScanningModelSource::loadModels()
     {
-      int max_models = 1814;
-      srand(0);
-      IndicesPtr model_subset = randomSubset(max_models, max_models);
+      std::vector<int> ids;
+      pickUniqueModels(ids);
 
-      for (int mi = 0; mi < max_models; mi++) {
-        int id = (*model_subset)[mi];
+      //int max_models = 1814;
+      //srand(0);
+      //IndicesPtr model_subset = randomSubset(max_models, max_models);
+
+      //for (int mi = 0; mi < ids.size(); mi++) {
+      for (auto it = ids.begin(); it != ids.end(); ++it)
+      {
+        int id = *it;
         std::stringstream path;
         FILE *file;
         int vertices, faces, edges;
@@ -70,7 +102,7 @@ namespace pcl
         new_model->id = new_id;
 
         // read mesh
-        path << dir_ << "/" << id / 100 << "/m" << id << "/m" << id << ".off";
+        path << dir_ << "/db/" << id / 100 << "/m" << id << "/m" << id << ".off";
         file = fopen(path.str ().c_str (), "r");
 
         if (file == NULL) {
@@ -129,7 +161,7 @@ namespace pcl
 
         // read metadata
         path.str ("");
-        path << dir_ << "/" << id / 100 << "/m" << id << "/m" << id << "_info.txt";
+        path << dir_ << "/db/" << id / 100 << "/m" << id << "/m" << id << "_info.txt";
         file = fopen(path.str ().c_str (), "r");
         while (!feof(file)) {
           char buf[256];
@@ -161,30 +193,23 @@ namespace pcl
       std::map<std::string, Model>::iterator it;
       output.clear();
 
-      //for ( it=models_.begin() ; it != models_.end(); it++ ) {
-        //if (it->first != "princeton1064")
-          //if (it->first != "princeton1095")
-            //if (it->first != "princeton1006")
-              //if (it->first != "princeton109")
-                //if (it->first != "princeton1113")
-                  //if (it->first != "princeton267")
-                    //output.push_back((*it).first);
-      //}
-      output.push_back("princeton1298");
-      output.push_back("princeton1303");
-      output.push_back("princeton48");
-      //output.push_back("princeton273");
-      output.push_back("princeton97");
-      output.push_back("princeton99");
-      output.push_back("princeton70");
-      output.push_back("princeton725");
-      output.push_back("princeton688");
-      output.push_back("princeton1779");
-      output.push_back("princeton382");
-      output.push_back("princeton398");
-      output.push_back("princeton407");
+      for ( it = models_.begin() ; it != models_.end(); it++ ) {
+        output.push_back((*it).first);
+      }
+      //output.push_back("princeton1298");
+      //output.push_back("princeton1303");
+      //output.push_back("princeton48");
+      //output.push_back("princeton97");
+      //output.push_back("princeton99");
+      //output.push_back("princeton70");
+      //output.push_back("princeton725");
+      //output.push_back("princeton688");
+      //output.push_back("princeton1779");
+      //output.push_back("princeton382");
+      //output.push_back("princeton398");
+      //output.push_back("princeton407");
 
-      //sort(output.begin(), output.end());
+      sort(output.begin(), output.end());
     }
 
     PointCloud<PointNormal>::Ptr

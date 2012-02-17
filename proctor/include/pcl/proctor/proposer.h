@@ -1,11 +1,16 @@
 #ifndef PROPOSER_H
 #define PROPOSER_H
 
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/export.hpp>
+
 #include <boost/shared_ptr.hpp>
 #include <vector>
 #include <map>
 #include "proctor/detector.h"
 #include "proctor/database_entry.h"
+
 
 namespace pcl
 {
@@ -45,9 +50,18 @@ namespace pcl
         DatabasePtr database_;
 
         Detector *detector_;
+      private:
+        friend class boost::serialization::access;
+
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version)
+        {
+        }
     };
 
   }
 }
+
+BOOST_CLASS_EXPORT_GUID(pcl::proctor::Proposer, "Proposer")
 
 #endif

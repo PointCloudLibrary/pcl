@@ -130,8 +130,39 @@ DetectorVisualizer::timeoutSlot ()
   if (updated) {
     updated = false;
     vis_->removePointCloud("cloud_pass");
+    vis_->removePointCloud("cloud_pass_normals");
 
     vis_->addPointCloud <pcl::PointNormal> (cloud_pass_, "cloud_pass");
+    vis_->addPointCloudNormals <pcl::PointNormal> (cloud_pass_, 50, 0.02, "cloud_pass_normals");
+    vis_->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 0, 0, 1, "cloud_pass_normals");
+    vis_->addCoordinateSystem (1.0);
+    int num_x = 5;
+    int num_y = 5;
+    int num_z = 5;
+
+    double width = 0.2;
+    double height = 0.2;
+    double depth = 0.2;
+
+    for (int i = 0; i < num_x; i++)
+    {
+      for (int j = 0; j < num_y; j++)
+      {
+        for (int k = 0; k < num_z; k++)
+        {
+          //std::stringstream stream;
+          //stream << "cube" << i << j << k;
+          //std::string id = stream.str();
+          //cout << "ID: " << id << endl;
+          //double opacity = float(i + j + k) / (num_x + num_y + num_z) ;
+          //vis_->addCube(Eigen::Vector3f(i * width, j * height, k * depth), Eigen::Quaternionf(), opacity *  width - 0.01, opacity * height - 0.01, opacity * depth - 0.01, id);
+          //vis_->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1, 0, 0, id);
+          //vis_->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME, id);
+          //vis_->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, id);
+        }
+      }
+    }
+
     vis_->resetCameraViewpoint ("cloud_pass");
   }
 

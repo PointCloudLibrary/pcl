@@ -1,3 +1,5 @@
+#include "proctor/proctor_job_manager.h"
+
 #include <cstdio>
 #include <algorithm>
 
@@ -5,7 +7,6 @@
 #include <vtkFloatArray.h>
 #include <vtkPoints.h>
 
-#include "proctor/proctor.h"
 #include "proctor/detector.h"
 #include "proctor/scanning_model_source.h"
 #include "proctor/confusion_matrix.h"
@@ -79,7 +80,7 @@ namespace pcl
       int num_model_ids = std::min((int) model_ids_.size(), num_models_);
       if (num_model_ids == 0)
         assert(false);
-#pragma omp parallel for
+//#pragma omp parallel for
       for (int ni = 0; ni < num_trials_; ni++) {
         cout << "[test " << ni << "]" << endl;
 
@@ -87,13 +88,13 @@ namespace pcl
 
         std::map<std::string, int>& guesses_for_id = guesses[truth_id];
 
-        //timer.start();
+        timer.start();
         PointCloud<PointNormal>::Ptr test_cloud = source_->getTestModel(truth_id);
-        //timer.stop(OBTAIN_CLOUD_TESTING);
+        timer.stop(OBTAIN_CLOUD_TESTING);
 
         cout << "scanned model " << truth_id << endl;
 
-        //timer.start();
+        timer.start();
         try {
           Scene test_scene(truth_id, test_cloud);
           //std::string guessed_id = detector.query(test_scene, classifier[ni], registration[ni]);
@@ -108,7 +109,7 @@ namespace pcl
           //memset(classifier[ni], 0, sizeof(classifier[ni]));
           //memset(registration[ni], 0, sizeof(registration[ni]));
         }
-        //timer.stop(DETECTOR_TEST);
+        timer.stop(DETECTOR_TEST);
 
         cout << endl;
       }

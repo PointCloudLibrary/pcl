@@ -28,6 +28,9 @@ namespace pcl
         IndicesPtr
         randomSubset(int n, int r);
 
+        void
+        pickUniqueModels(std::vector<int>& ids);
+
         virtual void
         loadModels();
 

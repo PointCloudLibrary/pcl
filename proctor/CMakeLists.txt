@@ -39,6 +39,7 @@ if(build)
   include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include)
 
   set(incs
+      include/pcl/${SUBSYS_NAME}/PSBClaParse.h
       include/pcl/${SUBSYS_NAME}/confusion_matrix.h
       include/pcl/${SUBSYS_NAME}/database_entry.h
       include/pcl/${SUBSYS_NAME}/detector.h
@@ -64,6 +65,7 @@ if(build)
       include/pcl/${SUBSYS_NAME}/hough_proposer.h
       include/pcl/${SUBSYS_NAME}/frame_hough_proposer.h
       include/pcl/${SUBSYS_NAME}/normal_hough_proposer.h
+      include/pcl/${SUBSYS_NAME}/radius_hough_proposer.h
 
       include/pcl/${SUBSYS_NAME}/feature_wrapper.h
       include/pcl/${SUBSYS_NAME}/fpfh_wrapper.h
@@ -85,47 +87,84 @@ if(build)
     QT4_WRAP_UI(detector_visualizer_ui src/detector_visualizer.ui)
     QT4_WRAP_CPP(detector_visualizer_moc include/pcl/proctor/detector_visualizer.h src/detector_visualizer.ui)
 
-    PCL_ADD_EXECUTABLE(proctor 
-                      ${SUBSYS_NAME} 
-                      ${detector_visualizer_ui}
-                      ${detector_visualizer_moc}
-                      src/detector_visualizer.cpp
+    PCL_ADD_EXECUTABLE(snippet ${SUBSYS_NAME} src/io_snippet.cpp)
+
+    target_link_libraries(snippet
+                          ${FLANN_LIBRARIES}
+                          pcl_common pcl_features pcl_keypoints pcl_io pcl_search pcl_visualization)
+    set(sources
+        src/PSBClaParse.cpp
+        src/confusion_matrix.cpp
+        src/detector.cpp
+        src/proctor.cpp
+        src/scanner.cpp
+
+        src/model_source.cpp
+        src/scanning_model_source.cpp
+        src/primitive_model_source.cpp
+
+        src/proposer.cpp
+        src/basic_proposer.cpp
+        src/inverse_bag_proposer.cpp
+        src/threshold_bag_proposer.cpp
+        src/registration_proposer.cpp
+        src/hough_proposer.cpp
+        src/frame_hough_proposer.cpp
+        src/normal_hough_proposer.cpp
+        src/radius_hough_proposer.cpp
+
+        src/fpfh_wrapper.cpp
+        src/shot_wrapper.cpp
+        src/si_wrapper.cpp
+        src/3dsc_wrapper.cpp
+
+        src/keypoint_wrapper.cpp
+        src/uniform_sampling_wrapper.cpp
+        src/harris_wrapper.cpp
+
+        ${detector_visualizer_ui}
+        ${detector_visualizer_moc}
+        src/detector_visualizer.cpp
+        )
+
+    PCL_ADD_EXECUTABLE(proctor
+                      ${SUBSYS_NAME}
+
+                      src/main_single_process.cpp
                       ${incs}
                       ${impl_incs}
-                      src/confusion_matrix.cpp
-                      src/main.cpp
-                      src/model_source.cpp
-                      src/detector.cpp
-                      src/proctor.cpp
-                      #src/proctor_mpi.cpp
-                      src/proposer.cpp
-                      src/scanning_model_source.cpp
-                      src/primitive_model_source.cpp
-                      src/scanner.cpp
-
-                      src/basic_proposer.cpp
-                      src/inverse_bag_proposer.cpp
-                      src/threshold_bag_proposer.cpp
-                      src/registration_proposer.cpp
-                      src/hough_proposer.cpp
-                      src/frame_hough_proposer.cpp
-                      src/normal_hough_proposer.cpp
-
-                      src/fpfh_wrapper.cpp
-                      src/shot_wrapper.cpp
-                      src/si_wrapper.cpp
-                      src/3dsc_wrapper.cpp
-
-                      src/keypoint_wrapper.cpp
-                      src/uniform_sampling_wrapper.cpp
-                      src/harris_wrapper.cpp
+                      ${sources}
                       )
 
-    target_link_libraries(proctor 
-                          ${FLANN_LIBRARIES} 
-                          pcl_common pcl_features pcl_keypoints pcl_io pcl_search pcl_visualization
-                          vtkCommon vtkFiltering vtkGraphics vtkIO ${Boost_MPI_LIBRARY} ${MPI_CXX_LIBRARIES} ${Boost_SERIALIZATION_LIBRARY}
-                          pcl_filters QVTK ${QT_LIBRARIES})
+    #PCL_ADD_EXECUTABLE(proctor_parallel
+                      #${SUBSYS_NAME}
+
+                      ##src/proctor_job_manager.cpp
+                      #src/main_multi_process.cpp
+                      #${incs}
+                      #${impl_incs}
+                      #${sources}
+                      #)
+
+    SET_SOURCE_FILES_PROPERTIES(src/hough_proposer.cpp PROPERTIES COMPILE_FLAGS -O0)
+    SET_SOURCE_FILES_PROPERTIES(src/radius_hough_proposer.cpp PROPERTIES COMPILE_FLAGS -O0)
+    SET_SOURCE_FILES_PROPERTIES(src/frame_hough_proposer.cpp PROPERTIES COMPILE_FLAGS -O0)
+
+    target_link_libraries(proctor
+                          pcl_common pcl_features pcl_keypoints pcl_io pcl_search pcl_visualization pcl_filters
+                          vtkCommon vtkFiltering vtkGraphics vtkIO
+                          ${FLANN_LIBRARIES}
+                          ${Boost_MPI_LIBRARY} ${MPI_CXX_LIBRARIES} ${Boost_SERIALIZATION_LIBRARY}
+                          QVTK ${QT_LIBRARIES})
+
+    # TODO figure out how to conditionally add zmq
+    #target_link_libraries(proctor_parallel
+                          #pcl_common pcl_features pcl_keypoints pcl_io pcl_search pcl_visualization pcl_filters
+                          #vtkCommon vtkFiltering vtkGraphics vtkIO
+                          #zmq
+                          #${FLANN_LIBRARIES}
+                          #${Boost_MPI_LIBRARY} ${MPI_CXX_LIBRARIES} ${Boost_SERIALIZATION_LIBRARY}
+                          #QVTK ${QT_LIBRARIES})
   endif ()
 #boost_mpi
 endif(build)

@@ -73,20 +73,21 @@ namespace pcl
           Eigen::Matrix3f other = getTransformationBetweenFrames(target_normal, target_perp, query_normal, query_perp);
 
           // Test that the target_normal goes to (1, 0, 0)
-          assert((A * target_normal).isApprox(world_x, 0.001));
+          assert((A * target_normal).isApprox(world_x, 0.01));
 
           // Test that the target_normal goes to (1, 0, 0) in A space,
           // then when moved to B space, and returned back to world space,
           // it stays the same
-          assert((B.transpose() * other * A * target_normal).isApprox(target_normal, 0.001));
+          assert((B.transpose() * other * A * target_normal).isApprox(target_normal, 0.01));
 
           // Test that the target_normal goes to (1, 0, 0) in A space,
           // then when rotated in A space by the difference between B and A,
           // then returned back to world space, is equal to the query_normal
-          assert((A.transpose() * other.transpose() * A * target_normal).isApprox(query_normal, 0.001));
+          Eigen::Vector3f test = (A.transpose() * other.transpose() * A * target_normal);
+          assert((A.transpose() * other.transpose() * A * target_normal).isApprox(query_normal, 0.01));
 
-          assert(query_normal.isApprox(rot_transform * target_normal, 0.001));
-          assert(query_perp.isApprox(rot_transform * target_perp, 0.001));
+          assert(query_normal.isApprox(rot_transform * target_normal, 0.01));
+          assert(query_perp.isApprox(rot_transform * target_perp, 0.01));
 
           // Transform r based on the difference between the normals
           Eigen::Vector3f transformed_r = rot_transform * r;
