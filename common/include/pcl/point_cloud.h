@@ -230,10 +230,11 @@ namespace pcl
       /** \brief Allocate constructor from point cloud subset
         * \param[in] width_ the cloud width
         * \param[in] height_ the cloud height
+        * \param[in] value_ default value
         */
-      PointCloud (uint32_t width_, uint32_t height_)
+      PointCloud (uint32_t width_, uint32_t height_, const PointT& value_ = PointT ())
         : header ()
-        , points (width_ * height_)
+        , points (width_ * height_, value_)
         , width (width_)
         , height (height_)
         , is_dense (true)
