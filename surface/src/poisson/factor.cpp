@@ -57,12 +57,10 @@ namespace pcl
       Factor (double a1, double a0, double roots[1][2], const double& EPS)
       {
         if (fabs (a1) <= EPS)
-        {
-          return 0;
-        }
+          return (0);
         roots[0][0] = -a0 / a1;
         roots[0][1] = 0;
-        return 1;
+        return (1);
       }
 
 
@@ -71,9 +69,7 @@ namespace pcl
       {
         double d;
         if (fabs (a2) <= EPS)
-        {
-          return Factor (a1, a0, roots, EPS);
-        }
+          return (Factor (a1, a0, roots, EPS));
 
         d = a1 * a1 - 4 * a0 * a2;
         a1 /= (2 * a2);
@@ -91,9 +87,8 @@ namespace pcl
           roots[0][0] = -a1 - d;
           roots[1][0] = -a1 + d;
         }
-        return 2;
+        return (2);
       }
-
 
       // Solution taken from: http://mathworld.wolfram.com/CubicFormula.html
       // and http://www.csit.fsu.edu/~burkardt/f_src/subpak/subpak.f90
@@ -103,9 +98,7 @@ namespace pcl
         double q, r, r2, q3;
 
         if (fabs (a3) <= EPS)
-        {
-          return Factor (a2, a1, a0, roots, EPS);
-        }
+          return (Factor (a2, a1, a0, roots, EPS));
         a2 /= a3;
         a1 /= a3;
         a0 /= a3;
@@ -159,43 +152,30 @@ namespace pcl
         roots[0][0] -= a2 / 3;
         roots[1][0] -= a2 / 3;
         roots[2][0] -= a2 / 3;
-        return 3;
+        return (3);
       }
-
 
       double
       ArcTan2 (const double& y, const double& x)
       {
         /* This first case should never happen */
         if (y == 0 && x == 0)
-        {
-          return 0;
-        }
+          return (0);
         if (x == 0)
         {
           if (y > 0)
-          {
-            return PI / 2.0;
-          }
+            return (M_PI / 2.0);
           else
-          {
-            return -PI / 2.0;
-          }
+            return (-M_PI / 2.0);
         }
         if (x >= 0)
-        {
-          return atan (y / x);
-        }
+          return (atan (y / x));
         else
         {
           if (y >= 0)
-          {
-            return atan (y / x) + PI;
-          }
+            return (atan (y / x) + M_PI);
           else
-          {
-            return atan (y / x) - PI;
-          }
+            return (atan (y / x) - M_PI);
         }
       }
 
@@ -204,13 +184,9 @@ namespace pcl
       Angle (const double in[2])
       {
         if ((in[0] * in[0] + in[1] * in[1]) == 0.0)
-        {
-          return 0;
-        }
+          return (0);
         else
-        {
-          return ArcTan2 (in[1], in[0]);
-        }
+          return (ArcTan2 (in[1], in[0]));
       }
 
 
@@ -267,9 +243,7 @@ namespace pcl
         double R[2], D[2], E[2], R2[2];
 
         if (fabs (a4) < EPS)
-        {
-          return Factor (a3, a2, a1, a0, roots, EPS);
-        }
+          return (Factor (a3, a2, a1, a0, roots, EPS));
         a3 /= a4;
         a2 /= a4;
         a1 /= a4;
@@ -324,7 +298,7 @@ namespace pcl
 
         roots[3][0] = -a3 / 4.0 - R[0] / 2.0 - E[0] / 2.0;
         roots[3][1] = -R[1] / 2.0 - E[1] / 2.0;
-        return 4;
+        return (4);
       }
 
       int
@@ -338,9 +312,7 @@ namespace pcl
         double* myValues = new double[dim];
 
         for (i = 0; i < dim * dim; i++)
-        {
           myEqns[i] = eqns[i];
-        }
         for (i = 0; i < dim; i++)
         {
           myValues[i] = values[i];
@@ -354,9 +326,7 @@ namespace pcl
           for (j = 0; j < dim; j++)
           {
             if (set[j])
-            {
               continue;
-            }
             if (myEqns[j * dim + i] != 0 && fabs (myEqns[j * dim + i]) > m)
             {
               m = fabs (myEqns[j * dim + i]);
@@ -369,7 +339,7 @@ namespace pcl
             delete[] myValues;
             delete[] myEqns;
             delete[] set;
-            return 0;
+            return (0);
           }
           // The position in which the solution for the i-th variable can be found
           index[i] = eIndex;
@@ -378,23 +348,17 @@ namespace pcl
           // Normalize the equation
           v = myEqns[eIndex * dim + i];
           for (j = 0; j < dim; j++)
-          {
             myEqns[eIndex * dim + j] /= v;
-          }
           myValues[eIndex] /= v;
 
           // Subtract it off from everything else
           for (j = 0; j < dim; j++)
           {
             if (j == eIndex)
-            {
               continue;
-            }
             double vv = myEqns[j * dim + i];
             for (int k = 0; k < dim; k++)
-            {
               myEqns[j * dim + k] -= myEqns[eIndex * dim + k] * vv;
-            }
             myValues[j] -= myValues[eIndex] * vv;
           }
         }
@@ -406,7 +370,7 @@ namespace pcl
         delete[] myValues;
         delete[] myEqns;
         delete[] set;
-        return 1;
+        return (1);
       }
     }
   }
