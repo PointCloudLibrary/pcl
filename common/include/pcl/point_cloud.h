@@ -335,29 +335,6 @@ namespace pcl
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
-      /** \brief Obtain the point given by the (column, row) coordinates. Only works on organized 
-        * datasets (those that have height != 1).
-        * \param[in] column the column coordinate
-        * \param[in] row the row coordinate
-        */
-      inline const PointT&
-      operator () (int column, int row) const
-      {
-        return (points[row * this->width + column]);
-      }
-
-      /** \brief Obtain the point given by the (column, row) coordinates. Only works on organized 
-        * datasets (those that have height != 1).
-        * \param[in] column the column coordinate
-        * \param[in] row the row coordinate
-        */
-      inline PointT&
-      operator () (int column, int row)
-      {
-        return (points[row * this->width + column]);
-      }
-
-      ////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Return whether a dataset is organized (e.g., arranged in a structured grid).
         * \note The height value must be different than 1 for a dataset to be organized.
         */
