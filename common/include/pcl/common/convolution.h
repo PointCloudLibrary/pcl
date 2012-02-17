@@ -382,7 +382,7 @@ namespace pcl
         convolveOneRowNonDense (int i, int j)
         {
           PointT result;
-          int counter = 0;
+          float weight = 0;
           for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l)
           {
             if (!isFinite ((*input_) (l,j)))
@@ -390,11 +390,16 @@ namespace pcl
             if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (l,j)) < distance_threshold_)
             {
               result+= (*input_) (l,j) * kernel_[k];
-              ++counter;
+              weight += kernel_[k];
             }
           }
-          if (counter == 0)
+          if (weight == 0)
             result.x = result.y = result.z = std::numeric_limits<float>::quiet_NaN ();
+          else
+          {
+            weight = 1.f/weight;
+            result*= weight;
+          }
           return (result);
         }
         
@@ -402,7 +407,7 @@ namespace pcl
         convolveOneColNonDense (int i, int j)
         {
           PointT result;
-          int counter = 0;
+          float weight = 0;
           for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
           {
             if (!isFinite ((*input_) (i,l)))
@@ -410,11 +415,16 @@ namespace pcl
             if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (i,l)) < distance_threshold_)
             {
               result+= (*input_) (i,l) * kernel_[k];
-              ++counter;
+              weight += kernel_[k];
             }
           }
-          if (counter == 0)
+          if (weight == 0)
             result.x = result.y = result.z = std::numeric_limits<float>::quiet_NaN ();
+          else
+          {
+            weight = 1.f/weight;
+            result*= weight;
+          }
           return (result);
         }        
     };

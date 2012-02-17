@@ -162,7 +162,6 @@ namespace pcl
         result.x*= weight; result.y*= weight; result.z*= weight;
         result.r = (pcl::uint8_t)r; result.g = (pcl::uint8_t)g; result.b = (pcl::uint8_t)b;
       }
-      
       return (result);
     }
 
@@ -192,7 +191,6 @@ namespace pcl
         result.x*= weight; result.y*= weight; result.z*= weight;
         result.r = (pcl::uint8_t)r; result.g = (pcl::uint8_t)g; result.b = (pcl::uint8_t)b;
       }
-      
       return (result);
     }
   }
@@ -478,7 +476,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows (PointCl
       
       for (int i = half_width_; i < last; ++i)
       {
-        int counter = 0;
+        float weight = 0;
         output (i,j) = transform_ (0);
         for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l)
         {
@@ -487,11 +485,16 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows (PointCl
           if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (l,j)) < distance_threshold_)
           {
             output (i,j)+= transform_ ((*input_) (l,j) * kernel_[k]);
-            ++counter;
+            weight+= kernel_[k];
           }
         }
-        if (counter == 0)
+        if (weight == 0)
           output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
+        else
+        {
+          weight = 1.f/weight;
+          output (i,j)*= weight;
+        }
       }
 
       for (int i = last; i < width; ++i)
@@ -533,7 +536,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows_duplicat
     {
       for (int i = half_width_; i < last; ++i)
       {
-        int counter = 0;
+        float weight = 0;
         output (i,j) = transform_ (0);
         for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l)
         {
@@ -542,11 +545,16 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows_duplicat
           if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (l,j)) < distance_threshold_)
           {
             output (i,j)+= transform_ ((*input_) (l,j) * kernel_[k]);
-            ++counter;
+            weight+= kernel_[k];
           }
         }
-        if (counter == 0)
+        if (weight == 0)
           output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
+        else
+        {
+          weight = 1.f/weight;
+          output (i,j)*= weight;
+        }
       }
 
       for (int i = last; i < width; ++i)
@@ -591,7 +599,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows_mirror (
     {
       for (int i = half_width_; i < last; ++i)
       {
-        int counter = 0;
+        float weight = 0;
         output (i,j) = transform_ (0);
         for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l)
         {
@@ -600,11 +608,16 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_rows_mirror (
           if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (l,j)) < distance_threshold_)
           {
             output (i,j)+= transform_ ((*input_) (l,j) * kernel_[k]);
-            ++counter;
+            weight+= kernel_[k];
           }
         }
-        if (counter == 0)
+        if (weight == 0)
           output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
+        else
+        {
+          weight = 1.f/weight;
+          output (i,j)*= weight;
+        }
       }
 
       for (int i = last, l = 0; i < width; ++i, ++l)
@@ -652,7 +665,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols (PointCl
       for (int j = half_width_; j < last; ++j)
       {
         output (i,j) = transform_ (0);
-        int counter = 0;
+        float weight = 0;
         for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
         {
           if (!isFinite ((*input_) (i,l)))
@@ -660,11 +673,16 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols (PointCl
           if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (i,l)) < distance_threshold_)
           {
             output (i,j)+= transform_ ((*input_) (i,l) * kernel_[k]);
-            ++counter;
+            weight+= kernel_[k];
           }
         }
-        if (counter == 0)
+        if (weight == 0)
           output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
+        else
+        {
+          weight = 1.f/weight;
+          output (i,j)*= weight;
+        }
       }
       
       for (int j = last; j < height; ++j)
@@ -707,7 +725,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols_duplicat
       for (int j = half_width_; j < last; ++j)
       {
         output (i,j) = transform_ (0);
-        int counter = 0;
+        float weight = 0;
         for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
         {
           if (!isFinite ((*input_) (i,l)))
@@ -715,11 +733,16 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols_duplicat
           if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (i,l)) < distance_threshold_)
           {
             output (i,j)+= transform_ ((*input_) (i,l) * kernel_[k]);
-            ++counter;
+            weight+= kernel_[k];
           }
         }
-        if (counter == 0)
+        if (weight == 0)
           output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
+        else
+        {
+          weight = 1.f/weight;
+          output (i,j)*= weight;
+        }
       }
 
       for (int j = last; j < height; ++j)
@@ -765,7 +788,7 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols_mirror (
       for (int j = half_width_; j < last; ++j)
       {
         output (i,j) = transform_ (0);
-        int counter = 0;
+        float weight = 0;
         for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
         {
           if (!isFinite ((*input_) (i,l)))
@@ -773,11 +796,16 @@ pcl::common::ConvolutionWithTransform<PointInToPointOut>::convolve_cols_mirror (
           if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (i,l)) < distance_threshold_)
           {
             output (i,j)+= transform_ ((*input_) (i,l) * kernel_[k]);
-            ++counter;
+            weight+= kernel_[k];
           }
         }
-        if (counter == 0)
+        if (weight == 0)
           output (i,j) = transform_ (std::numeric_limits<float>::quiet_NaN ());
+        else
+        {
+          weight = 1.f/weight;
+          output (i,j)*= weight;
+        }        
       }
 
       for (int j = last, l = 0; j < height; ++j, ++l)
