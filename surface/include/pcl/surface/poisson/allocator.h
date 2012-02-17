@@ -51,21 +51,19 @@ namespace pcl
   {
     namespace poisson
     {
-
       class AllocatorState
       {
         public:
           int index, remains;
       };
 
-
       /** \brief This templated class assists in memory allocation and is well suited for instances when it is known
-       * that the sequence of memory allocations is performed in a stack-based manner, so that memory allocated last
-       * is released first. It also preallocates memory in chunks so that multiple requests for small chunks of memory
-       * do not require separate system calls to the memory manager. The allocator is templated off of the class of
-       * objects that we would like it to allocate, ensuring that appropriate constructors and destructors are called
-       * as necessary.
-       */
+        * that the sequence of memory allocations is performed in a stack-based manner, so that memory allocated last
+        * is released first. It also preallocates memory in chunks so that multiple requests for small chunks of memory
+        * do not require separate system calls to the memory manager. The allocator is templated off of the class of
+        * objects that we would like it to allocate, ensuring that appropriate constructors and destructors are called
+        * as necessary.
+        */
       template<class T>
       class Allocator
       {
@@ -74,47 +72,44 @@ namespace pcl
           std::vector<T*> memory;
 
         public:
-          Allocator (void)
+          /** \brief Constructor */
+          Allocator ()
           {
             blockSize = index = remains = 0;
           }
 
-
+          /** \brief Destructor */
           ~Allocator (void)
           {
             reset ();
           }
 
-
           /** \brief This method is the allocators destructor. It frees up any of the memory that it has allocated. */
           void
-          reset (void)
+          reset ()
           {
             for (size_t i = 0; i < memory.size (); i++)
-            {
               delete[] memory[i];
-            }
             memory.clear ();
             blockSize = index = remains = 0;
           }
 
-
           /** \brief This method returns the memory state of the allocator. */
           AllocatorState
-          getState (void) const
+          getState () const
           {
             AllocatorState s;
             s.index = index;
             s.remains = remains;
-            return s;
+            return (s);
           }
 
-
           /** \brief This method rolls back the allocator so that it makes all of the memory previously allocated
-           * available for re-allocation. Note that it does it not call the constructor again, so after this method
-           * has been called, assumptions about the state of the values in memory are no longer valid. */
+            * available for re-allocation. Note that it does it not call the constructor again, so after this method
+            * has been called, assumptions about the state of the values in memory are no longer valid. 
+            */
           void
-          rollBack (void)
+          rollBack ()
           {
             if (memory.size ())
             {
@@ -133,8 +128,10 @@ namespace pcl
 
 
           /** \brief This method rolls back the allocator to the previous memory state and makes all of the memory
-           * previously allocated available for re-allocation. Note that it does it not call the constructor again, so
-           * after this method has been called, assumptions about the state of the values in memory are no longer valid. */
+            * previously allocated available for re-allocation. Note that it does it not call the constructor again, so
+            * after this method has been called, assumptions about the state of the values in memory are no longer valid. 
+            * \param[in] state the previous memory state
+            */
           void
           rollBack (const AllocatorState& state)
           {
@@ -175,36 +172,36 @@ namespace pcl
             }
           }
 
-
-          /** \brief This method initiallizes the constructor and the blockSize variable specifies the the number of
-           * objects that should be pre-allocated at a time. */
+          /** \brief This method initiallizes the constructor and the block_size variable specifies the number of
+            * objects that should be pre-allocated at a time. 
+            * \param[in] block_size the number of objects that should be pre-allocated at a time
+            */
           void
-          set (const int& blockSize)
+          set (const int& block_size)
           {
             reset ();
-            this->blockSize = blockSize;
+            this->blockSize = block_size;
             index = -1;
             remains = 0;
           }
 
-
           /** \brief This method returns a pointer to an array of elements objects. If there is left over pre-allocated
-           * memory, this method simply returns a pointer to the next free piece of memory, otherwise it pre-allocates
-           * more memory. Note that if the number of objects requested is larger than the value blockSize with which
-           * the allocator was initialized, the request for memory will fail.
-           */
+            * memory, this method simply returns a pointer to the next free piece of memory, otherwise it pre-allocates
+            * more memory. Note that if the number of objects requested is larger than the value blockSize with which
+            * the allocator was initialized, the request for memory will fail.
+            * \param[in] elements the elements object
+            */
           T*
           newElements (const int& elements = 1)
           {
             T* mem;
             if (!elements)
-            {
-              return NULL;
-            }
+              return (NULL);
+
             if (elements > blockSize)
             {
               fprintf (stderr, "Allocator Error, elements bigger than block-size: %d>%d\n", elements, blockSize);
-              return NULL;
+              return (NULL);
             }
             if (remains < elements)
             {
@@ -212,10 +209,7 @@ namespace pcl
               {
                 mem = new T[blockSize];
                 if (!mem)
-                {
-                  fprintf (stderr, "Failed to allocate memory\n");
-                  exit (0);
-                }
+                  throw std::runtime_error ("Failed to allocate memory!");
                 memory.push_back (mem);
               }
               index++;
@@ -223,7 +217,7 @@ namespace pcl
             }
             mem = &(memory[index][blockSize - remains]);
             remains -= elements;
-            return mem;
+            return (mem);
           }
       };
     }
