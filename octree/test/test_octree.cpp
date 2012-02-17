@@ -1223,7 +1223,7 @@ public:
 TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
 {
 
-  const unsigned int test_runs = 1;
+  const unsigned int test_runs = 10;
   unsigned int test_id;
 
   // instantiate point cloud
@@ -1256,7 +1256,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
                           10.0 * ((double)rand () / (double)RAND_MAX),
                           10.0 * ((double)rand () / (double)RAND_MAX));
 
-    K = rand () % 10;
+    K = 1 + rand () % 10;
 
     // generate point cloud
     cloudIn->width = 1000;
