@@ -44,34 +44,17 @@
 #include <pcl/common/eigen.h>
 #include "pcl/common/time.h"
 #include <Eigen/Eigenvalues>
-//////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT> int
-pcl::search::OrganizedNeighbor<PointT>::radiusSearch (int                 index,
-                                                       const double        radius,
-                                                       std::vector<int>    &k_indices,
-                                                       std::vector<float>  &k_sqr_distances,
-                                                       unsigned int        max_nn) const
-{
-  const PointT& searchPoint = input_->points [index];
-  return (radiusSearch (searchPoint, radius, k_indices, k_sqr_distances, max_nn));
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> int
-pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT &p_q,
-                                                       const double        radius,
-                                                       std::vector<int>    &k_indices,
-                                                       std::vector<float>  &k_sqr_distances,
-                                                       unsigned int        max_nn) const
+pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT &query,
+                                                      const double        radius,
+                                                      std::vector<int>    &k_indices,
+                                                      std::vector<float>  &k_sqr_distances,
+                                                      unsigned int        max_nn) const
 {
-  if (projection_matrix_.coeffRef (0) == 0)
-  {
-    PCL_ERROR ("[pcl::%s::radiusSearch] Invalid projection matrix. Probably input dataset was not organized!\n", getName ().c_str ());
-    return (0);
-  }
-
   // NAN test
-  if (!pcl_isfinite (p_q.x) || !pcl_isfinite (p_q.y) || !pcl_isfinite (p_q.z))
+  if (!pcl_isfinite (query.x))
     return (0);
 
   // search window
@@ -84,7 +67,7 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
 
   squared_radius = radius * radius;
 
-  this->getProjectedRadiusSearchBox (p_q, squared_radius, left, right, top, bottom);
+  this->getProjectedRadiusSearchBox (query, squared_radius, left, right, top, bottom);
 
   // iterate over search box
   if (max_nn == 0 || max_nn >= (unsigned int)input_->points.size ())
@@ -102,42 +85,177 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
   {
     for (; idx < xEnd; ++idx)
     {
-      squared_distance = (input_->points[idx].getVector3fMap () - p_q.getVector3fMap ()).squaredNorm ();
+      if (!mask_[idx])
+        continue;
+
+      squared_distance = (input_->points[idx].getVector3fMap () - query.getVector3fMap ()).squaredNorm ();
       if (squared_distance <= squared_radius)
       {
         k_indices.push_back (idx);
         k_sqr_distances.push_back (squared_distance);
         // already done ?
         if (k_indices.size () == max_nn)
+        {
+          if (sorted_results_)
+            this->sortResults (k_indices, k_sqr_distances);
           return max_nn;
+        }
       }
     }
   }
+  if (sorted_results_)
+    this->sortResults (k_indices, k_sqr_distances);  
   return (k_indices.size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> int
-pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const pcl::PointCloud<PointT> &cloud,
-                                                        int                           index,
-                                                        int                           k,
-                                                        std::vector<int>              &k_indices,
-                                                        std::vector<float>            &k_sqr_distances) const
-{
-  return (nearestKSearch (index, k, k_indices, k_sqr_distances));
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT> int
-pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (int index,
+pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
                                                         int k,
                                                         std::vector<int> &k_indices,
-                                                        std::vector<float> &k_distances) const
+                                                        std::vector<float> &k_sqr_distances) const
 {
-  PCL_ERROR ("[pcl::search::OrganizedNeighbor::nearestKSearch] Method not implemented!\n");
-  return (0);
-}
+  // dont bother if input point is not finite!
+  if (!pcl_isfinite (query.x) || k < 1)
+  {
+    k_indices.clear ();
+    k_sqr_distances.clear ();
+    return 0;
+  }
 
+  // project query point on the image plane
+  Eigen::Vector3f q = KR_ * query.getVector3fMap () + projection_matrix_.block <3, 1> (0, 3);
+  int xBegin = int(q [0] / q [2] + 0.5f);
+  int yBegin = int(q [1] / q [2] + 0.5f);
+  int xEnd   = xBegin + 1; // end is the pixel that is not used anymore, like in iterators
+  int yEnd   = yBegin + 1;
+
+  // the search window. This is supposed to shrink within the iterations
+  unsigned left = 0;
+  unsigned right = input_->width - 1;
+  unsigned top = 0;
+  unsigned bottom = input_->height - 1;
+
+  std::priority_queue <Entry> results;
+  //std::vector<Entry> k_results;
+  //k_results.reserve (k);
+  // add point laying on the projection of the query point.
+  if (xBegin >= 0 && xBegin < (int)input_->width && yBegin >= 0 && yBegin < (int)input_->height )
+    testPoint (query, k, results, yBegin * input_->width + xBegin);
+  else // point lys
+  {
+    // find the box that touches the image border -> dont waste time evaluating boxes that are completely outside the image!
+    int dist = std::numeric_limits<int>::max ();
+
+    if (xBegin < 0)
+      dist = -xBegin;
+    else if (xBegin >= (int)input_->width)
+      dist = xBegin - (int)input_->width;
+
+    if (yBegin < 0)
+      dist = std::min (dist, -yBegin);
+    else if (yBegin >= (int)input_->height)
+      dist = std::min (dist, yBegin - (int)input_->height);
+
+    xBegin -= dist;
+    xEnd   += dist;
+
+    yBegin -= dist;
+    yEnd   += dist;
+  }
+
+  
+  // stop used as isChanged as well as stop.
+  bool stop = false;
+  do
+  {
+    // increment box size
+    --xBegin;
+    ++xEnd;
+    --yBegin;
+    ++yEnd;
+
+    // the range in x-direction which intersects with the image width
+    int xFrom = xBegin;
+    int xTo   = xEnd;
+    clipRange (xFrom, xTo, 0, input_->width);
+    
+    // if x-extend is not 0
+    if (xTo > xFrom)
+    {
+      // if upper line of the rectangle is visible and x-extend is not 0
+      if (yBegin >= 0 && yBegin < (int)input_->height)
+      {
+        int idx   = yBegin * input_->width + xFrom;
+        int idxTo = idx + xTo - xFrom;
+        for (; idx < idxTo; ++idx)
+          stop = testPoint (query, k, results, idx) || stop;
+      }
+      
+
+      // the row yEnd does NOT belong to the box -> last row = yEnd - 1
+      // if lower line of the rectangle is visible
+      if (yEnd > 0 && yEnd <= (int)input_->height)
+      {
+        int idx   = (yEnd - 1) * input_->width + xFrom;
+        int idxTo = idx + xTo - xFrom;
+
+        for (; idx < idxTo; ++idx)
+          stop = testPoint (query, k, results, idx) || stop;
+      }
+      
+      // skip first row and last row (already handled above)
+      int yFrom = yBegin + 1;
+      int yTo   = yEnd - 1;
+      clipRange (yFrom, yTo, 0, input_->height);
+      
+      // if we have lines in between that are also visible
+      if (yFrom < yTo)
+      {
+        if (xBegin >= 0 && xBegin < (int)input_->width)
+        {
+          int idx   = yFrom * input_->width + xBegin;
+          int idxTo = yTo * input_->width + xBegin;
+
+          for (; idx < idxTo; idx += input_->width)
+            stop = testPoint (query, k, results, idx) || stop;
+        }
+        
+        if (xEnd > 0 && xEnd <= (int)input_->width)
+        {
+          int idx   = yFrom * input_->width + xEnd - 1;
+          int idxTo = yTo * input_->width + xEnd - 1;
+
+          for (; idx < idxTo; idx += input_->width)
+            stop = testPoint (query, k, results, idx) || stop;
+        }
+        
+      }
+      // stop here means that the k-nearest neighbor changed -> recalculate bounding box of ellipse.
+      if (stop)
+        getProjectedRadiusSearchBox (query, results.top ().distance, left, right, top, bottom);
+      
+    }
+    // now we use it as stop flag -> if bounding box is completely within the already examined search box were done!
+    stop = ((int)left >= xBegin && (int)left < xEnd && (int)right  >= xBegin && (int)right  < xEnd &&
+            (int)top  >= yBegin && (int)top  < yEnd && (int)bottom >= yBegin && (int)bottom < yEnd);
+    
+  } while (!stop);
+
+  
+  k_indices.resize (results.size ());
+  k_sqr_distances.resize (results.size ());
+  unsigned idx = results.size () - 1;
+  while (!results.empty ())
+  {
+    k_indices [idx] = results.top ().index;
+    k_sqr_distances [idx] = results.top ().distance;
+    results.pop ();
+    --idx;
+  }
+  
+  return k_indices.size ();
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
@@ -163,8 +281,17 @@ pcl::search::OrganizedNeighbor<PointT>::getProjectedRadiusSearchBox (const Point
   }
   else
   {
-    min = std::min ((int) floor ((b - sqrt (det)) / a), (int) floor ((b + sqrt (det)) / a));
-    max = std::max ((int) ceil ((b - sqrt (det)) / a), (int) ceil ((b + sqrt (det)) / a));
+    float y1 = (b - sqrt (det)) / a;
+    float y2 = (b + sqrt (det)) / a;
+
+//    min = (int)std::floor (std::min (y1, y2));
+//    max = (int)std::ceil  (std::max (y1, y2));
+//
+//    minY = (unsigned) std::min ((int) input_->height - 1, std::max (0, min));
+//    maxY = (unsigned) std::max (std::min ((int) input_->height - 1, max), 0);
+
+    min = std::min ((int) floor (y1), (int) floor (y2));
+    max = std::max ((int) ceil (y1), (int) ceil (y2));
     minY = (unsigned) std::min ((int) input_->height - 1, std::max (0, min));
     maxY = (unsigned) std::max (std::min ((int) input_->height - 1, max), 0);
   }
@@ -180,8 +307,17 @@ pcl::search::OrganizedNeighbor<PointT>::getProjectedRadiusSearchBox (const Point
   }
   else
   {
-    min = std::min ((int) floor ((b - sqrt (det)) / a), (int) floor ((b + sqrt (det)) / a));
-    max = std::max ((int) ceil ((b - sqrt (det)) / a), (int) ceil ((b + sqrt (det)) / a));
+    float x1 = (b - sqrt (det)) / a;
+    float x2 = (b + sqrt (det)) / a;
+//
+//    min = (int)std::floor (std::min (x1, x2));
+//    max = (int)std::ceil  (std::max (x1, x2));
+//
+//    minX = (unsigned) std::min ((int) input_->width - 1, std::max (0, min));
+//    maxX = (unsigned) std::max (std::min ((int) input_->width - 1, max), 0);
+
+    min = std::min ((int) floor (x1), (int) floor (x2));
+    max = std::max ((int) ceil (x1), (int) ceil (x2));
     minX = (unsigned) std::min ((int)input_->width - 1, std::max (0, min));
     maxX = (unsigned) std::max (std::min ((int)input_->width - 1, max), 0);
   }
@@ -213,6 +349,33 @@ pcl::search::OrganizedNeighbor<PointT>::makeSymmetric (MatrixType& matrix, bool 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
+pcl::search::OrganizedNeighbor<PointT>::computeCameraMatrix (Eigen::Matrix3f& camera_matrix) const
+{
+  Eigen::Matrix3f cam = KR_KRT_ / KR_KRT_.coeff (8);
+
+  memset (&(camera_matrix.coeffRef (0)), 0, sizeof (Eigen::Matrix3f::Scalar) * 9);
+  camera_matrix.coeffRef (8) = 1.0;
+  
+  if (camera_matrix.Flags & Eigen::RowMajorBit)
+  {
+    camera_matrix.coeffRef (2) = cam.coeff (2);
+    camera_matrix.coeffRef (5) = cam.coeff (5);
+    camera_matrix.coeffRef (4) = sqrt (cam.coeff (4) - cam.coeff (5) * cam.coeff (5));
+    camera_matrix.coeffRef (1) = (cam.coeff (1) - cam.coeff (2) * cam.coeff (5)) / camera_matrix.coeff (4);
+    camera_matrix.coeffRef (0) = sqrt (cam.coeff (0) - camera_matrix.coeff (1) * camera_matrix.coeff (1) - cam.coeff (2) * cam.coeff (2));
+  }
+  else
+  {
+    camera_matrix.coeffRef (6) = cam.coeff (2);
+    camera_matrix.coeffRef (7) = cam.coeff (5);
+    camera_matrix.coeffRef (4) = sqrt (cam.coeff (4) - cam.coeff (5) * cam.coeff (5));
+    camera_matrix.coeffRef (3) = (cam.coeff (1) - cam.coeff (2) * cam.coeff (5)) / camera_matrix.coeff (4);
+    camera_matrix.coeffRef (0) = sqrt (cam.coeff (0) - camera_matrix.coeff (3) * camera_matrix.coeff (3) - cam.coeff (2) * cam.coeff (2));
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT> void
 pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
 {
   // internally we calculate with double but store the result into float matrices.
@@ -220,10 +383,10 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
   projection_matrix_.setZero ();
   if (input_->height == 1 || input_->width == 1)
   {
-    PCL_ERROR ("[pcl::%s::estimateProjectionMatrix] Input dataset is not organized!\n", getName ().c_str ());
+    PCL_ERROR ("[pcl::%s::estimateProjectionMatrix] Input dataset is not organized!\n", this->getName ().c_str ());
     return;
   }
-
+  
   // we just want to use every 16th column and row -> skip = 2^4
   const unsigned int skip = input_->width >> 4;
   Eigen::Matrix<Scalar, 4, 4> A = Eigen::Matrix<Scalar, 4, 4>::Zero ();
@@ -235,8 +398,11 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
   {
     for (unsigned xIdx = 0; xIdx < input_->width; xIdx += skip, idx += skip)
     {
+      if (!mask_ [idx])
+        continue;
+
       const PointT& point = input_->points[idx];
-      if (isFinite (point))
+      if (pcl_isfinite (point.x))
       {
         Scalar xx = point.x * point.x;
         Scalar xy = point.x * point.y;
@@ -323,12 +489,11 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
 
   // check whether the residual MSE is low. If its high, the cloud was not captured from a projective device.
   Eigen::Matrix<Scalar, 1, 1> residual_sqr = eigen_vectors.col (0).transpose () * X *  eigen_vectors.col (0);
-  if ( residual_sqr.coeff (0) > eps_ * A.coeff (15))
+  if ( fabs (residual_sqr.coeff (0)) > eps_ * A.coeff (15))
   {
-    PCL_ERROR ("[pcl::%s::radiusSearch] Input dataset is not from a projective device!\n", getName ().c_str ());
+    PCL_ERROR ("[pcl::%s::radiusSearch] Input dataset is not from a projective device!\nResidual (MSE) %f, using %d valid points\n", this->getName ().c_str (), residual_sqr.coeff (0) / A.coeff (15), (int)A.coeff (15));
     return;
   }
-
   projection_matrix_.coeffRef (0) = eigen_vectors.coeff (0);
   projection_matrix_.coeffRef (1) = eigen_vectors.coeff (12);
   projection_matrix_.coeffRef (2) = eigen_vectors.coeff (24);
