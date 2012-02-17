@@ -63,7 +63,6 @@ namespace pcl
         return (1);
       }
 
-
       int
       Factor (double a2, double a1, double a0, double roots[2][2], const double& EPS)
       {
@@ -207,7 +206,6 @@ namespace pcl
         out[1] = in1[1] + in2[1];
       }
 
-
       void
       Subtract (const double in1[2], const double in2[2], double out[2])
       {
@@ -215,14 +213,12 @@ namespace pcl
         out[1] = in1[1] - in2[1];
       }
 
-
       void
       Multiply (const double in1[2], const double in2[2], double out[2])
       {
         out[0] = in1[0] * in2[0] - in1[1] * in2[1];
         out[1] = in1[0] * in2[1] + in1[1] * in2[0];
       }
-
 
       void
       Divide (const double in1[2], const double in2[2], double out[2])
@@ -233,7 +229,6 @@ namespace pcl
         temp[1] = -in2[1] / l;
         Multiply (in1, temp, out);
       }
-
 
       // Solution taken from: http://mathworld.wolfram.com/QuarticEquation.html
       // and http://www.csit.fsu.edu/~burkardt/f_src/subpak/subpak.f90

@@ -73,54 +73,38 @@ namespace pcl
         oocPointIndex = triangleIndex = 0;
       }
 
-
       void
       CoredVectorMeshData::resetIterator (void)
       {
         oocPointIndex = triangleIndex = 0;
       }
 
-
       int
       CoredVectorMeshData::addOutOfCorePoint (const Point3D<float>& p)
       {
         oocPoints.push_back (p);
-        return int (oocPoints.size ()) - 1;
+        return (int (oocPoints.size ()) - 1);
       }
-
 
       int
       CoredVectorMeshData::addTriangle (const TriangleIndex& t, const int& coreFlag)
       {
         TriangleIndex tt;
         if (coreFlag & CoredMeshData::IN_CORE_FLAG[0])
-        {
           tt.idx[0] = t.idx[0];
-        }
         else
-        {
           tt.idx[0] = -t.idx[0] - 1;
-        }
         if (coreFlag & CoredMeshData::IN_CORE_FLAG[1])
-        {
           tt.idx[1] = t.idx[1];
-        }
         else
-        {
           tt.idx[1] = -t.idx[1] - 1;
-        }
         if (coreFlag & CoredMeshData::IN_CORE_FLAG[2])
-        {
           tt.idx[2] = t.idx[2];
-        }
         else
-        {
           tt.idx[2] = -t.idx[2] - 1;
-        }
         triangles.push_back (tt);
-        return int (triangles.size ()) - 1;
+        return (int (triangles.size ()) - 1);
       }
-
 
       int
       CoredVectorMeshData::nextOutOfCorePoint (Point3D<float>& p)
@@ -128,14 +112,11 @@ namespace pcl
         if (oocPointIndex < int (oocPoints.size ()))
         {
           p = oocPoints[oocPointIndex++];
-          return 1;
+          return (1);
         }
         else
-        {
-          return 0;
-        }
+          return (0);
       }
-
 
       int
       CoredVectorMeshData::nextTriangle (TriangleIndex& t, int& inCoreFlag)
@@ -145,51 +126,33 @@ namespace pcl
         {
           t = triangles[triangleIndex++];
           if (t.idx[0] < 0)
-          {
             t.idx[0] = -t.idx[0] - 1;
-          }
           else
-          {
             inCoreFlag |= CoredMeshData::IN_CORE_FLAG[0];
-          }
           if (t.idx[1] < 0)
-          {
             t.idx[1] = -t.idx[1] - 1;
-          }
           else
-          {
             inCoreFlag |= CoredMeshData::IN_CORE_FLAG[1];
-          }
           if (t.idx[2] < 0)
-          {
             t.idx[2] = -t.idx[2] - 1;
-          }
           else
-          {
             inCoreFlag |= CoredMeshData::IN_CORE_FLAG[2];
-          }
-          return 1;
+          return (1);
         }
         else
-        {
-          return 0;
-        }
+          return (0);
       }
-
 
       int
       CoredVectorMeshData::outOfCorePointCount (void)
       {
-        return int (oocPoints.size ());
+        return (int (oocPoints.size ()));
       }
-
 
       int
       CoredVectorMeshData::triangleCount (void)
       {
-        return int (triangles.size ());
-      }
-
+        return (int (triangles.size ()));
     }
   }
 }
