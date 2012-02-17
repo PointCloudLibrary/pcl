@@ -69,22 +69,132 @@ namespace pcl
         ~Poisson ();
 
         /** \brief Create the surface.
-         * \param output the resultant polygonal mesh
-         */
+          * \param[out] output the resultant polygonal mesh
+          */
         void
         performReconstruction (pcl::PolygonMesh &output);
 
+        /** \brief Create the surface.
+          * \param[out] points the vertex positions of the resulting mesh
+          * \param[out] polygons the connectivity of the resulting mesh
+          */
         void
         performReconstruction (pcl::PointCloud<PointNT> &points,
                                std::vector<pcl::Vertices> &polygons);
 
 
+        /** \brief Set the degree parameter
+          * \param[in] degree the given degree
+          */
         inline void
         setDegree (int degree) { degree_ = degree; }
 
+        /** \brief Get the degree parameter */
         inline int
         getDegree () { return degree_; }
 
+        /** \brief Set the confidence flag
+          * \note Enabling this flag tells the reconstructor to use the size of the normals as confidence information.
+          * When the flag is not enabled, all normals are normalized to have unit-length prior to reconstruction.
+          * \param[in] confidence the given flag
+          */
+        inline void
+        setConfidence (bool confidence) { confidence_ = confidence; }
+
+        /** \brief Get the confidence flag */
+        inline bool
+        getConfidence () { return confidence_; }
+
+        /** \brief Set the manifold flag.
+          * \note Enabling this flag tells the reconstructor to add the polygon barycenter when triangulating polygons
+          * with more than three vertices.
+          * \param[in] manifold the given flag
+          */
+        inline void
+        setManifold (bool manifold) { manifold_ = manifold; }
+
+        /** \brief Get the manifold flag */
+        inline bool
+        getManifold () { return manifold_; }
+
+        /** \brief Set the maximum depth of the tree that will be used for surface reconstruction.
+          * \note Running at depth d corresponds to solving on a voxel grid whose resolution is no larger than
+          * 2^d x 2^d x 2^d. Note that since the reconstructor adapts the octree to the sampling density, the specified
+          * reconstruction depth is only an upper bound.
+          * \param[in] depth the depth parameter
+          */
+        inline void
+        setDepth (int depth) { depth_ = depth; }
+
+        /** \brief Get the depth parameter */
+        inline int
+        getDepth () { return depth_; }
+
+        /** \brief Set the the depth at which a block Gauss-Seidel solver is used to solve the Laplacian equation
+          * \note Using this parameter helps reduce the memory overhead at the cost of a small increase in
+          * reconstruction time. (In practice, we have found that for reconstructions of depth 9 or higher a subdivide
+          * depth of 7 or 8 can greatly reduce the memory usage.)
+          * \param[in] solver_divide the given parameter value
+          */
+        inline void
+        setSolverDivide (int solver_divide) { solver_divide_ = solver_divide; }
+
+        /** \brief Get the the depth at which a block Gauss-Seidel solver is used to solve the Laplacian equation */
+        inline int
+        getSolverDivide () { return solver_divide_; }
+
+        /** \brief Set the depth at which a block iso-surface extractor should be used to extract the iso-surface
+          * \note Using this parameter helps reduce the memory overhead at the cost of a small increase in extraction
+          * time. (In practice, we have found that for reconstructions of depth 9 or higher a subdivide depth of 7 or 8
+          * can greatly reduce the memory usage.)
+          * \param[in] iso_divide the given parameter value
+          */
+        inline void
+        setIsoDivide (int iso_divide) { iso_divide_ = iso_divide; }
+
+        /** \brief Get the depth at which a block iso-surface extractor should be used to extract the iso-surface */
+        inline int
+        getIsoDivide () { return iso_divide_; }
+
+        /** \brief Set the minimum number of sample points that should fall within an octree node as the octree
+          * construction is adapted to sampling density
+          * \note For noise-free samples, small values in the range [1.0 - 5.0] can be used. For more noisy samples,
+          * larger values in the range [15.0 - 20.0] may be needed to provide a smoother, noise-reduced, reconstruction.
+          * \param[in] samples_per_node the given parameter value
+          */
+        inline void
+        setSamplesPerNode (float samples_per_node) { samples_per_node_ = samples_per_node; }
+
+        /** \brief Get the minimum number of sample points that should fall within an octree node as the octree
+          * construction is adapted to sampling density
+          */
+        inline float
+        getSamplesPerNode () { return samples_per_node_; }
+
+        /** \brief Set the ratio between the diameter of the cube used for reconstruction and the diameter of the
+          * samples' bounding cube.
+          * \param[in] scale the given parameter value
+          */
+        inline void
+        setScale (float scale) { scale_ = scale; }
+
+        /** Get the ratio between the diameter of the cube used for reconstruction and the diameter of the
+          * samples' bounding cube.
+          */
+        inline float
+        getScale () { return scale_; }
+
+        inline void
+        setRefine (int refine) { refine_ = refine; }
+
+        inline int
+        getRefine () { return refine_; }
+
+        inline void
+        setKernelDepth (int kernel_depth) { kernel_depth_ = kernel_depth; }
+
+        inline int
+        getKernelDepth () { return kernel_depth_; }
 
         inline void
         setNoResetSamples (bool no_reset_samples) { no_reset_samples_ = no_reset_samples; }
@@ -99,68 +209,6 @@ namespace pcl
         inline bool
         getNoClipTree () { return no_clip_tree_; }
 
-
-        inline void
-        setConfidence (bool confidence) { confidence_ = confidence; }
-
-        inline bool
-        getConfidence () { return confidence_; }
-
-
-        inline void
-        setManifold (bool manifold) { manifold_ = manifold; }
-
-        inline bool
-        getManifold () { return manifold_; }
-
-
-        inline void
-        setDepth (int depth) { depth_ = depth; }
-
-        inline int
-        getDepth () { return depth_; }
-
-
-        inline void
-        setSolverDivide (int solver_divide) { solver_divide_ = solver_divide; }
-
-        inline int
-        getSolverDivide () { return solver_divide_; }
-
-
-        inline void
-        setIsoDivide (int iso_divide) { iso_divide_ = iso_divide; }
-
-        inline int
-        getIsoDivide () { return iso_divide_; }
-
-
-        inline void
-        setRefine (int refine) { refine_ = refine; }
-
-        inline int
-        getRefine () { return refine_; }
-
-
-        inline void
-        setKernelDepth (int kernel_depth) { kernel_depth_ = kernel_depth; }
-
-        inline int
-        getKernelDepth () { return kernel_depth_; }
-
-
-        inline void
-        setSamplesPerNode (float samples_per_node) { samples_per_node_ = samples_per_node; }
-
-        inline float
-        getSamplesPerNode () { return samples_per_node_; }
-
-
-        inline void
-        setScale (float scale) { scale_ = scale; }
-
-        inline float
-        getScale () { return scale_; }
 
       protected:
         /** \brief The point cloud input (XYZ+Normals). */
