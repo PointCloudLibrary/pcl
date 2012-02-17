@@ -153,6 +153,7 @@ namespace pcl
       CoredVectorMeshData::triangleCount (void)
       {
         return (int (triangles.size ()));
+      }
     }
   }
 }
