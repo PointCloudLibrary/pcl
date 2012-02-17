@@ -86,7 +86,7 @@ namespace pcl
           static void
           EdgeCorners (const int& idx,
                        int& c1, int &c2);
-        };
+      };
 
       class Cube
       {
@@ -168,71 +168,71 @@ namespace pcl
 
       class MarchingSquares
       {
-          static double
-          Interpolate (const double& v1, const double& v2);
+        static double
+        Interpolate (const double& v1, const double& v2);
 
-          static void
-          SetVertex (const int& e,
-                     const double values[Square::CORNERS],
-                     const double& iso);
+        static void
+        SetVertex (const int& e,
+                   const double values[Square::CORNERS],
+                   const double& iso);
 
-      public:
-        const static int MAX_EDGES = 2;
-        static const int edgeMask[1 << Square::CORNERS];
-        static const int edges[1 << Square::CORNERS][2 * MAX_EDGES + 1];
-        static double vertexList[Square::EDGES][2];
+        public:
+          const static int MAX_EDGES = 2;
+          static const int edgeMask[1 << Square::CORNERS];
+          static const int edges[1 << Square::CORNERS][2 * MAX_EDGES + 1];
+          static double vertexList[Square::EDGES][2];
 
-        static int
-        GetIndex (const double values[Square::CORNERS],
-                  const double& iso);
+          static int
+          GetIndex (const double values[Square::CORNERS],
+                    const double& iso);
 
-        static int
-        IsAmbiguous (const double v[Square::CORNERS],
-                     const double& isoValue);
+          static int
+          IsAmbiguous (const double v[Square::CORNERS],
+                       const double& isoValue);
 
-        static int
-        AddEdges (const double v[Square::CORNERS],
-                  const double& isoValue,
-                  Edge* edges);
+          static int
+          AddEdges (const double v[Square::CORNERS],
+                    const double& isoValue,
+                    Edge* edges);
 
-        static int
-        AddEdgeIndices (const double v[Square::CORNERS],
-                        const double& isoValue,
-                        int* edges);
+          static int
+          AddEdgeIndices (const double v[Square::CORNERS],
+                          const double& isoValue,
+                          int* edges);
       };
 
 
       class MarchingCubesPoisson
       {
-          static double
-          Interpolate (const double& v1, const double& v2);
+        static double
+        Interpolate (const double& v1, const double& v2);
 
-          static void
-          SetVertex (const int& e,
-                     const double values[Cube::CORNERS],
-                     const double& iso);
+        static void
+        SetVertex (const int& e,
+                   const double values[Cube::CORNERS],
+                   const double& iso);
 
-          static int
-          GetFaceIndex (const double values[Cube::CORNERS],
-                        const double& iso,
-                        const int& faceIndex);
+        static int
+        GetFaceIndex (const double values[Cube::CORNERS],
+                      const double& iso,
+                      const int& faceIndex);
 
-          static float
-          Interpolate (const float& v1, const float& v2);
+        static float
+        Interpolate (const float& v1, const float& v2);
 
-          static void
-          SetVertex (const int& e,
-                     const float values[Cube::CORNERS],
-                     const float& iso);
+        static void
+        SetVertex (const int& e,
+                   const float values[Cube::CORNERS],
+                   const float& iso);
 
-          static int
-          GetFaceIndex (const float values[Cube::CORNERS],
-                        const float& iso,
-                        const int& faceIndex);
+        static int
+        GetFaceIndex (const float values[Cube::CORNERS],
+                      const float& iso,
+                      const int& faceIndex);
 
-          static int
-          GetFaceIndex (const int& mcIndex,
-                        const int& faceIndex);
+        static int
+        GetFaceIndex (const int& mcIndex,
+                      const int& faceIndex);
 
         public:
           const static int MAX_TRIANGLES = 5;
