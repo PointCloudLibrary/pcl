@@ -297,6 +297,8 @@ namespace pcl
         /** \brief Removes a Point Cloud from screen, based on a given ID.
           * \param[in] id the point cloud object id (i.e., given on \a addPointCloud)
           * \param[in] viewport view port from where the Point Cloud should be removed (default: all)
+          * \return true if the point cloud is successfully removed and false if the point cloud is
+          * not actually displayed
           */
         bool
         removePointCloud (const std::string &id = "cloud", int viewport = 0);
