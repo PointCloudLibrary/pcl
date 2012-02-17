@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -82,8 +84,7 @@ namespace pcl
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
-      /** \brief Empty constructor. 
-       */
+      /** \brief Empty constructor. */
       ConvexHull () : total_area_ (0), total_volume_ (0), dimension_ (0), 
                       projection_angle_thresh_ (cos (0.174532925) ), qhull_flags ("qhull "),
                       x_axis_ (1.0, 0.0, 0.0), y_axis_ (0.0, 1.0, 0.0), z_axis_ (0.0, 0.0, 1.0)
@@ -108,9 +109,9 @@ namespace pcl
       reconstruct (PointCloud &output);
 
       /** \brief If set to true, the qhull library is called to compute the total area and volume of the convex hull.
-       * NOTE: When this option is activated, the qhull library produces output to the console.
-       * \param value wheter to compute the area and the volume, default is false
-       */
+        * NOTE: When this option is activated, the qhull library produces output to the console.
+        * \param[in] value wheter to compute the area and the volume, default is false
+        */
       void
       setComputeAreaVolume (bool value)
       {
@@ -121,28 +122,27 @@ namespace pcl
           qhull_flags = std::string ("qhull ");
       }
 
-      /** \brief Returns the total area of the convex hull.
-       */
+      /** \brief Returns the total area of the convex hull. */
       double
-      getTotalArea ()
+      getTotalArea () const
       {
         return (total_area_);
       }
 
       /** \brief Returns the total volume of the convex hull. Only valid for 3-dimensional sets.
-       *  For 2D-sets volume is zero.
-       */
+        *  For 2D-sets volume is zero. 
+        */
       double
-      getTotalVolume ()
+      getTotalVolume () const
       {
         return (total_volume_);
       }
 
       /** \brief Sets the dimension on the input data, 2D or 3D.
-       *  \param value The dimension of the input data.  If not set, this will be determined automatically.
-       */
+        * \param[in] dimension The dimension of the input data.  If not set, this will be determined automatically.
+        */
       void 
-      setDimension(int dimension)
+      setDimension (int dimension)
       {
         if ((dimension == 2) || (dimension == 3))
           dimension_ = dimension;
@@ -150,12 +150,11 @@ namespace pcl
           PCL_ERROR ("[pcl::%s::setDimension] Invalid input dimension specified!\n", getClassName ().c_str ());
       }
 
-      /** \brief Returns the dimensionality (2 or 3) of the calculated hull. 
-       */
+      /** \brief Returns the dimensionality (2 or 3) of the calculated hull. */
       inline int
       getDimension () const
       {
-        return dimension_;
+        return (dimension_);
       }
 
     protected:
@@ -164,7 +163,7 @@ namespace pcl
         * \param[out] points the resultant points lying on the convex hull 
         * \param[out] polygons the resultant convex hull polygons, as a set of
         * vertices. The Vertices structure contains an array of point indices.
-        * \param fill_polygon_data true if polygons should be filled, false otherwise
+        * \param[in] fill_polygon_data true if polygons should be filled, false otherwise
         */
       void
       performReconstruction (PointCloud &points, 
@@ -176,7 +175,7 @@ namespace pcl
         * \param[out] points the resultant points lying on the convex hull 
         * \param[out] polygons the resultant convex hull polygons, as a set of
         * vertices. The Vertices structure contains an array of point indices.
-        * \param fill_polygon_data true if polygons should be filled, false otherwise
+        * \param[in] fill_polygon_data true if polygons should be filled, false otherwise
         */
       void
       performReconstruction2D (PointCloud &points, 
@@ -188,7 +187,7 @@ namespace pcl
         * \param[out] points the resultant points lying on the convex hull 
         * \param[out] polygons the resultant convex hull polygons, as a set of
         * vertices. The Vertices structure contains an array of point indices.
-        * \param fill_polygon_data true if polygons should be filled, false otherwise
+        * \param[in] fill_polygon_data true if polygons should be filled, false otherwise
         */
       void
       performReconstruction3D (PointCloud &points, 
@@ -196,69 +195,60 @@ namespace pcl
                                bool fill_polygon_data = false);
       
       /** \brief A reconstruction method that returns a polygonmesh.
-       *
-       *  \param[out] output a PolygonMesh representing the convex hull of the input data.
-       */
+        *
+        * \param[out] output a PolygonMesh representing the convex hull of the input data.
+        */
       virtual void
       performReconstruction (PolygonMesh &output);
       
       /** \brief A reconstruction method that returns the polygon of the convex hull.
-       *
-       *  \param[out] polygons the polygon(s) representing the convex hull of the input data.
-       */
+        *
+        * \param[out] polygons the polygon(s) representing the convex hull of the input data.
+        */
       virtual void
       performReconstruction (std::vector<pcl::Vertices> &polygons);
 
-      /** \brief Automatically determines the dimension of input data - 2D or 3D 
-       */
+      /** \brief Automatically determines the dimension of input data - 2D or 3D. */
       void 
       calculateInputDimension ();
 
-      /** \brief Class get name method. 
-       */
+      /** \brief Class get name method. */
       std::string
       getClassName () const
       {
         return ("ConvexHull");
       }
 
-      /* \brief true if we should compute the area and volume of the convex hull
-       */
+      /* \brief True if we should compute the area and volume of the convex hull. */
       bool compute_area_;
 
-      /* \brief the area of the convex hull
-       */
+      /* \brief The area of the convex hull. */
       double total_area_;
 
-      /* \brief the volume of the convex hull (only for 3D hulls, zero for 2D)
-       */
+      /* \brief The volume of the convex hull (only for 3D hulls, zero for 2D). */
       double total_volume_;
       
-      /** \brief the dimensionality of the concave hull (2D or 3D) 
-       */
+      /** \brief The dimensionality of the concave hull (2D or 3D). */
       int dimension_;
 
-      /** \brief how close can a 2D plane's normal be to an axis to make projection problematic 
-       */
+      /** \brief How close can a 2D plane's normal be to an axis to make projection problematic. */
       double projection_angle_thresh_;
 
-      /** \brief option flag string to be used calling qhull 
-       */
+      /** \brief Option flag string to be used calling qhull. */
       std::string qhull_flags;
 
-      /* \brief x-axis - for checking valid projections 
-       */
+      /* \brief x-axis - for checking valid projections. */
       const Eigen::Vector3f x_axis_;
 
-      /* \brief y-axis - for checking valid projections
-       */
+      /* \brief y-axis - for checking valid projections. */
       const Eigen::Vector3f y_axis_;
 
-      /* \brief z-axis - for checking valid projections
-       */
+      /* \brief z-axis - for checking valid projections. */
       const Eigen::Vector3f z_axis_;
 
-    };
+      public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
 }
 
 #endif  //#ifndef PCL_CONVEX_HULL_2D_H_
