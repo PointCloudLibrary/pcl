@@ -62,7 +62,8 @@ if(build)
       include/pcl/${SUBSYS_NAME}/threshold_bag_proposer.h
       include/pcl/${SUBSYS_NAME}/registration_proposer.h
       include/pcl/${SUBSYS_NAME}/hough_proposer.h
-      include/pcl/${SUBSYS_NAME}/soft_hough_proposer.h
+      include/pcl/${SUBSYS_NAME}/frame_hough_proposer.h
+      include/pcl/${SUBSYS_NAME}/normal_hough_proposer.h
 
       include/pcl/${SUBSYS_NAME}/feature_wrapper.h
       include/pcl/${SUBSYS_NAME}/fpfh_wrapper.h
@@ -107,7 +108,8 @@ if(build)
                       src/threshold_bag_proposer.cpp
                       src/registration_proposer.cpp
                       src/hough_proposer.cpp
-                      src/soft_hough_proposer.cpp
+                      src/frame_hough_proposer.cpp
+                      src/normal_hough_proposer.cpp
 
                       src/fpfh_wrapper.cpp
                       src/shot_wrapper.cpp

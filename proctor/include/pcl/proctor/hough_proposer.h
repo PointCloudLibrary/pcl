@@ -26,11 +26,8 @@ namespace pcl
         void
         getProposed(int max_num, Entry &query, std::vector<std::string> &input, std::vector<std::string> &output);
 
-        void
-        houghVote(Entry &query, Entry &target, bin_t& bins);
-
-        void
-        referenceFrameHoughVote();
+        virtual void
+        houghVote(Entry &query, Entry &target, bin_t& bins) = 0;
 
         virtual bool
         castVotes(Eigen::Vector3f& indices, bin_t& bins);
@@ -40,15 +37,6 @@ namespace pcl
 
         bool
         hardCastVotes(Eigen::Vector3f& indices, bin_t& bins);
-
-        Eigen::Matrix3f
-        getTransformationBetweenFrames(Eigen::Vector3f x_from, Eigen::Vector3f y_from, Eigen::Vector3f x_to, Eigen::Vector3f y_to);
-
-        Eigen::Vector3f
-        getVectorCurvatureMap(PrincipalCurvatures p);
-
-        PointCloud<PrincipalCurvatures>::Ptr
-        computeCurvatures(Entry &e);
 
         double
         angleBetween(Eigen::Vector3f a, Eigen::Vector3f b);
@@ -62,7 +50,7 @@ namespace pcl
       public:
 
         int bins_, num_angles_;
-        
+
         // The number of features correspondences to vote for
         int num_correspondences;
 

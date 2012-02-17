@@ -14,7 +14,8 @@
 #include "proctor/threshold_bag_proposer.h"
 #include "proctor/registration_proposer.h"
 #include "proctor/hough_proposer.h"
-#include "proctor/soft_hough_proposer.h"
+#include "proctor/frame_hough_proposer.h"
+#include "proctor/normal_hough_proposer.h"
 
 #include "proctor/uniform_sampling_wrapper.h"
 #include "proctor/harris_wrapper.h"
