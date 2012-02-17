@@ -71,7 +71,7 @@ const unsigned int point_count = 1000;
 const unsigned int ordered_query_count = 100;
 
 /** \brief ordered point cloud*/
-typename PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 
 /** \briet test whether the result of a search containes unique point ids or not
   * @param indices resulting indices from a search
@@ -385,7 +385,7 @@ TEST (PCL, Unorganized_Dense_Complete_KNN)
 {
    const unsigned int size = point_count;
   //Create unorganized point cloud and test some corner cases
-   typename PointCloud<PointXYZ>::Ptr unorganized (new PointCloud<PointXYZ>);
+   PointCloud<PointXYZ>::Ptr unorganized (new PointCloud<PointXYZ>);
    unorganized->resize (size);
    unorganized->height = 1;
    unorganized->width = size;
@@ -429,7 +429,7 @@ TEST (PCL, Unorganized_Dense_View_KNN)
 {
    const unsigned int size = point_count;
   //Create unorganized point cloud and test some corner cases
-   typename PointCloud<PointXYZ>::Ptr unorganized (new PointCloud<PointXYZ>);
+   PointCloud<PointXYZ>::Ptr unorganized (new PointCloud<PointXYZ>);
    unorganized->resize (size);
    unorganized->height = 1;
    unorganized->width = size;
@@ -487,7 +487,7 @@ TEST (PCL, Unorganized_Sparse_Complete_KNN)
 {
    const unsigned int size = point_count;
   //Create unorganized point cloud and test some corner cases
-   typename PointCloud<PointXYZ>::Ptr unorganized (new PointCloud<PointXYZ>);
+   PointCloud<PointXYZ>::Ptr unorganized (new PointCloud<PointXYZ>);
    unorganized->resize (size);
    unorganized->height = 1;
    unorganized->width = size;
@@ -535,7 +535,7 @@ TEST (PCL, Unorganized_Sparse_View_KNN)
 {
    const unsigned int size = point_count;
   //Create unorganized point cloud and test some corner cases
-   typename PointCloud<PointXYZ>::Ptr unorganized (new PointCloud<PointXYZ>);
+   PointCloud<PointXYZ>::Ptr unorganized (new PointCloud<PointXYZ>);
    unorganized->resize (size);
    unorganized->height = 1;
    unorganized->width = size;
@@ -600,7 +600,7 @@ TEST (PCL, Unorganized_Dense_Complete_Radius)
 {
    const unsigned int size = point_count;
   //Create unorganized point cloud and test some corner cases
-   typename PointCloud<PointXYZ>::Ptr unorganized (new PointCloud<PointXYZ>);
+   PointCloud<PointXYZ>::Ptr unorganized (new PointCloud<PointXYZ>);
    unorganized->resize (size);
    unorganized->height = 1;
    unorganized->width = size;
@@ -644,7 +644,7 @@ TEST (PCL, Unorganized_Dense_View_Radius)
 {
    const unsigned int size = point_count;
   //Create unorganized point cloud and test some corner cases
-   typename PointCloud<PointXYZ>::Ptr unorganized (new PointCloud<PointXYZ>);
+   PointCloud<PointXYZ>::Ptr unorganized (new PointCloud<PointXYZ>);
    unorganized->resize (size);
    unorganized->height = 1;
    unorganized->width = size;
@@ -702,7 +702,7 @@ TEST (PCL, Unorganized_Sparse_Complete_Radius)
 {
    const unsigned int size = point_count;
   //Create unorganized point cloud and test some corner cases
-   typename PointCloud<PointXYZ>::Ptr unorganized (new PointCloud<PointXYZ>);
+   PointCloud<PointXYZ>::Ptr unorganized (new PointCloud<PointXYZ>);
    unorganized->resize (size);
    unorganized->height = 1;
    unorganized->width = size;
@@ -751,7 +751,7 @@ TEST (PCL, Unorganized_Sparse_View_Radius)
 {
    const unsigned int size = point_count;
   //Create unorganized point cloud and test some corner cases
-   typename PointCloud<PointXYZ>::Ptr unorganized (new PointCloud<PointXYZ>);
+   PointCloud<PointXYZ>::Ptr unorganized (new PointCloud<PointXYZ>);
    unorganized->resize (size);
    unorganized->height = 1;
    unorganized->width = size;
