@@ -31,28 +31,7 @@
 
 #include <Eigen/Dense>
 
-using pcl::proctor::Detector;
-using pcl::proctor::Proctor;
-using pcl::proctor::ScanningModelSource;
-using pcl::proctor::PrimitiveModelSource;
-
-using pcl::proctor::Proposer;
-using pcl::proctor::BasicProposer;
-using pcl::proctor::InverseBagProposer;
-using pcl::proctor::ThresholdBagProposer;
-using pcl::proctor::RegistrationProposer;
-using pcl::proctor::HoughProposer;
-using pcl::proctor::SoftHoughProposer;
-
-using pcl::proctor::KeypointWrapper;
-using pcl::proctor::UniformSamplingWrapper;
-using pcl::proctor::HarrisWrapper;
-
-using pcl::proctor::FeatureWrapper;
-using pcl::proctor::FPFHWrapper;
-using pcl::proctor::SHOTWrapper;
-using pcl::proctor::SIWrapper;
-using pcl::proctor::ShapeContextWrapper;
+using namespace pcl::proctor;
 
 struct run_proctor
 {
