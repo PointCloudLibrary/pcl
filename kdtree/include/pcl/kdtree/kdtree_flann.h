@@ -102,6 +102,13 @@ namespace pcl
         param_radius_ = flann::SearchParams (-1 , (float) epsilon_, sorted_);
       }
 
+      inline void setSortedResults (bool sorted)
+      {
+        sorted_ = sorted;
+        param_k_ = flann::SearchParams (-1 ,epsilon_);
+        param_radius_ = flann::SearchParams (-1 ,epsilon_, sorted_);
+      }
+      
       inline Ptr makeShared () { return Ptr (new KdTreeFLANN<PointT> (*this)); } 
 
       /** \brief Destructor for KdTreeFLANN. 
