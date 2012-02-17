@@ -1,5 +1,5 @@
-PCL_ADD_EXAMPLE(example_removeNaNFromPointCloud FILES example_removeNaNFromPointCloud.cpp
+PCL_ADD_EXAMPLE(example_remove_nan_from_point_cloud FILES example_remove_nan_from_point_cloud.cpp
                 LINK_WITH pcl_common pcl_filters)
 
-PCL_ADD_EXAMPLE(example_ExtractIndices FILES example_ExtractIndices.cpp
+PCL_ADD_EXAMPLE(example_extract_indices FILES example_extract_indices.cpp
                 LINK_WITH pcl_common pcl_filters)

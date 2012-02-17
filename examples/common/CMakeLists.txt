@@ -1,7 +1,7 @@
-PCL_ADD_EXAMPLE(example_CopyPointCloud FILES example_CopyPointCloud.cpp LINK_WITH pcl_common)
+PCL_ADD_EXAMPLE(example_copy_point_cloud FILES example_copy_point_cloud.cpp LINK_WITH pcl_common)
 
-PCL_ADD_EXAMPLE(example_ScopeTime FILES example_ScopeTime.cpp LINK_WITH pcl_common)
+PCL_ADD_EXAMPLE(example_scope_time FILES example_scope_time.cpp LINK_WITH pcl_common)
 
-PCL_ADD_EXAMPLE(example_OrganizedPointCloud FILES example_OrganizedPointCloud.cpp LINK_WITH pcl_common)
+PCL_ADD_EXAMPLE(example_organized_point_cloud FILES example_organized_point_cloud.cpp LINK_WITH pcl_common)
 
-PCL_ADD_EXAMPLE(example_CheckIfPointIsValid FILES example_CheckIfPointIsValid.cpp LINK_WITH pcl_common)
+PCL_ADD_EXAMPLE(example_check_if_point_is_valid FILES example_check_if_point_is_valid.cpp LINK_WITH pcl_common)
