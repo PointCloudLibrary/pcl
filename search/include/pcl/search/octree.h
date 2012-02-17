@@ -82,11 +82,13 @@ namespace pcl
 
         using pcl::search::Search<PointT>::input_;
         using pcl::search::Search<PointT>::indices_;
+        using pcl::search::Search<PointT>::sorted_results_;
 
         /** \brief Octree constructor.
           * \param[in] resolution octree resolution at lowest octree level
           */
         Octree (const double resolution)
+        : Search<PointT> ("Octree")
         {
           tree_.reset (new pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, OctreeT> (resolution));
         }
@@ -188,7 +190,10 @@ namespace pcl
                       std::vector<float> &k_sqr_distances, 
                       unsigned int max_nn = 0) const
         {
-          return (tree_->radiusSearch (cloud, index, radius, k_indices, k_sqr_distances, max_nn));
+          tree_->radiusSearch (cloud, index, radius, k_indices, k_sqr_distances, max_nn);
+          if (sorted_results_)
+            this->sortResults (k_indices, k_sqr_distances);
+          return k_indices.size ();
         }
 
         /** \brief search for all neighbors of query point that are within a given radius.
@@ -206,7 +211,10 @@ namespace pcl
                       std::vector<float> &k_sqr_distances, 
                       unsigned int max_nn = 0) const
         {
-          return (tree_->radiusSearch (p_q, radius, k_indices, k_sqr_distances, max_nn));
+          tree_->radiusSearch (p_q, radius, k_indices, k_sqr_distances, max_nn);
+          if (sorted_results_)
+            this->sortResults (k_indices, k_sqr_distances);
+          return k_indices.size ();          
         }
 
         /** \brief search for all neighbors of query point that are within a given radius.
@@ -222,7 +230,10 @@ namespace pcl
         radiusSearch (int index, const double radius, std::vector<int> &k_indices,
                       std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
         {
-          return (tree_->radiusSearch (index, radius, k_indices, k_sqr_distances, max_nn));
+          tree_->radiusSearch (index, radius, k_indices, k_sqr_distances, max_nn);
+          if (sorted_results_)
+            this->sortResults (k_indices, k_sqr_distances);
+          return k_indices.size ();          
         }
 
 
