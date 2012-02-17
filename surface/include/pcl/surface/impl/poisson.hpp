@@ -101,8 +101,8 @@ pcl::surface::Poisson<PointNT>::execute (CoredMeshData &mesh,
   TreeOctNode::SetAllocator(MEMORY_ALLOCATOR_BLOCK_SIZE);
 
   int kernel_depth=depth_-2;
-  if (kernel_depth_)
-    kernel_depth=kernel_depth_;
+//  if (kernel_depth_)
+//    kernel_depth=kernel_depth_;
 
   tree.setFunctionData (ReconstructionFunction,depth_, 0, float (1.0) / (1<<depth_));
   if (kernel_depth > depth_)

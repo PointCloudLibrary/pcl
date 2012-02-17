@@ -44,6 +44,7 @@
 #include <pcl/common/io.h>
 #include <pcl/common/centroid.h>
 #include <pcl/common/eigen.h>
+#include <pcl/common/geometry.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename NormalOutT> void
@@ -92,16 +93,27 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::reconstruct (PointCloudIn &output
   tree_->setInputCloud (input_, indices_);
 
   // Initialize random number generator if necessary
-  if (upsample_method_ == UNIFORM_DENSITY)
+  switch (upsample_method_)
   {
-    boost::mt19937 *rng = new boost::mt19937 (static_cast<unsigned int>(std::time(0)));
-    boost::uniform_real<float> *uniform_distrib = new boost::uniform_real<float> (-search_radius_/2, search_radius_/2);
-    rng_uniform_distribution_ = new boost::variate_generator<boost::mt19937, boost::uniform_real<float> > (*rng, *uniform_distrib);
+    case (RANDOM_UNIFORM_DENSITY):
+    {
+      boost::mt19937 *rng = new boost::mt19937 (static_cast<unsigned int>(std::time(0)));
+      boost::uniform_real<float> *uniform_distrib = new boost::uniform_real<float> (-search_radius_/2, search_radius_/2);
+      rng_uniform_distribution_ = new boost::variate_generator<boost::mt19937, boost::uniform_real<float> > (*rng, *uniform_distrib);
+      break;
+    }
+    case (VOXEL_GRID_DILATION):
+    {
+      mls_results_.resize (input_->size ());
+      break;
+    }
+    default:
+      break;
   }
 
   // Perform the actual surface reconstruction
   performReconstruction (output);
-
+ 
   deinitCompute ();
 }
 
@@ -263,7 +275,7 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (int index,
       break;
     }
 
-    case (UNIFORM_DENSITY):
+    case (RANDOM_UNIFORM_DENSITY):
     {
       // Compute the local point density and add more samples if necessary
       int num_points_to_add = (int) floor (desired_num_points_in_radius_/2.0 / nn_indices.size ());
@@ -320,80 +332,12 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (int index,
       break;
     }
 
-    case (FILL_HOLES):
+    case (VOXEL_GRID_DILATION):
     {
       // Take all point pairs and sample space between them in a grid-fashion
       // \note consider only point pairs with increasing indices
-      int count = 0;
-
-      for (size_t p1_i = 0; p1_i < nn_indices.size (); p1_i += 40)
-      {
-        PointInT p1 = input_->points[nn_indices[p1_i]];
-        for (size_t p2_i = 0; p2_i < nn_indices.size (); p2_i += 40)
-          if (nn_indices[p1_i] < nn_indices[p2_i])
-          {
-            PointInT p2 = input_->points[nn_indices[p2_i]];
-
-            // Sample in between with filling_step_size_ steps
-            int x_dir, y_dir, z_dir;
-            while (1)
-            {
-              x_dir = (p1.x - p2.x >= filling_step_size_) ? -1 : ((p2.x - p1.x >= filling_step_size_) ? 1 : 0);
-              y_dir = (p1.y - p2.y >= filling_step_size_) ? -1 : ((p2.y - p1.y >= filling_step_size_) ? 1 : 0);
-              z_dir = (p1.z - p2.z >= filling_step_size_) ? -1 : ((p2.z - p1.z >= filling_step_size_) ? 1 : 0);
-
-              if (x_dir == 0 && y_dir == 0 && z_dir == 0)
-                break;
-
-              Eigen::Vector3f hole_point (p1.x + x_dir * filling_step_size_,
-                                          p1.y + y_dir * filling_step_size_,
-                                          p1.z + z_dir * filling_step_size_);
-              p1.x = hole_point[0];
-              p1.y = hole_point[1];
-              p1.z = hole_point[2];
-
-              float u_disp = (hole_point - point).dot (u.cast<float> ()),
-                    v_disp = (hole_point - point).dot (v.cast<float> ());
-
-              PointInT projected_point;
-              NormalOutT projected_normal;
-              projectPointToMLSSurface (u_disp, v_disp, u, v, plane_normal, curvature, point, c_vec, nn_indices.size (),
-                                        projected_point, projected_normal);
-
-              projected_points.push_back (projected_point);
-              projected_points_normals.push_back (projected_normal);
-              count ++;
-            }
-          }
-      }
-
-//      printf ("Got %d additional points\n", count);
-
-      // And then add the query point itself
-      Eigen::Vector3d normal = plane_normal;
-
-      if (polynomial_fit_ && (int)nn_indices.size () >= nr_coeff_ && pcl_isfinite (c_vec[0]))
-      {
-        point += (c_vec[0] * plane_normal).cast<float> ();
-
-        // Compute tangent vectors using the partial derivates evaluated at (0,0) which is c_vec[order_+1] and c_vec[1]
-        if (normals_)
-          normal = plane_normal - c_vec[order_ + 1] * u - c_vec[1] * v;
-      }
-
-      PointInT aux;
-      aux.x = point[0];
-      aux.y = point[1];
-      aux.z = point[2];
-      projected_points.push_back (aux);
-
-      NormalOutT aux_normal;
-      aux_normal.normal_x = normal[0];
-      aux_normal.normal_y = normal[1];
-      aux_normal.normal_z = normal[2];
-      aux_normal.curvature = curvature;
-      projected_points_normals.push_back (aux_normal);
-
+      MLSResult result (plane_normal, u, v, c_vec, nn_indices.size (), curvature);
+      mls_results_[index] = result;
       break;
     }
   }
@@ -492,12 +436,201 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
     normals_->insert (normals_->end (), projected_points_normals.begin (), projected_points_normals.end ());
   }
 
+ 
+  
+  // For the voxel grid upsampling method, generate the voxel grid and dilate it
+  // Then, project the newly obtained points to the MLS surface
+  if (upsample_method_ == VOXEL_GRID_DILATION)
+  {
+    MLSVoxelGrid voxel_grid (input_, indices_, voxel_size_);
+    
+    for (int iteration = 0; iteration < dilation_iteration_num_; ++iteration)
+      voxel_grid.dilate ();
+    
+    
+    BOOST_FOREACH (typename MLSVoxelGrid::HashMap::value_type voxel, voxel_grid.voxel_grid_)
+    {
+      // Get 3D position of point
+      Eigen::Vector3f pos;
+      voxel_grid.getPosition (voxel.first, pos);
+
+      PointInT p;
+      p.x = pos[0];
+      p.y = pos[1];
+      p.z = pos[2];
+
+      std::vector<int> nn_indices;
+      std::vector<float> nn_dists;
+      tree_->nearestKSearch (p, 1, nn_indices, nn_dists);
+      int input_index = nn_indices.front ();
+
+      // If the closest point did not have a valid MLS fitting result
+      // OR if it is too far away from the sampled point
+      if (mls_results_[input_index].valid == false)
+ //         || nn_dists.front () > 4 * dilation_iteration_num_*dilation_iteration_num_*voxel_size_ * voxel_size_)
+        continue;
+      
+      Eigen::Vector3f add_point = p.getVector3fMap (),
+                      input_point = input_->points[input_index].getVector3fMap ();
+      
+      Eigen::Vector3d aux = mls_results_[input_index].u;
+      Eigen::Vector3f u = aux.cast<float> ();
+      aux = mls_results_[input_index].v;
+      Eigen::Vector3f v = aux.cast<float> ();
+      
+      float u_disp = (add_point - input_point).dot (u),
+            v_disp = (add_point - input_point).dot (v);
+      
+      PointInT result_point;
+      NormalOutT result_normal;
+      projectPointToMLSSurface (u_disp, v_disp,
+                                mls_results_[input_index].u, mls_results_[input_index].v,
+                                mls_results_[input_index].plane_normal,
+                                mls_results_[input_index].curvature,
+                                input_point,
+                                mls_results_[input_index].c_vec,
+                                mls_results_[input_index].num_neighbors,
+                                result_point, result_normal);
+      
+      /// TODO check if the distance between the query and sample point increased after projection - reject it if so
+      float d_before = (pos - input_point).norm (),
+            d_after = (result_point.getVector3fMap () - input_point). norm();
+      if (d_after > d_before)
+        continue;
+
+      output.push_back (result_point);
+      normals_->push_back (result_normal);
+    }
+  }
+  
+  
   // Set proper widths and heights for the clouds
   normals_->height = 1;
   normals_->width = normals_->size ();
   output.height = 1;
   output.width = output.size ();
 }
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename NormalOutT>
+pcl::MovingLeastSquares<PointInT, NormalOutT>::MLSResult::MLSResult (Eigen::Vector3d &a_plane_normal,
+                                                                     Eigen::Vector3d &a_u,
+                                                                     Eigen::Vector3d &a_v,
+                                                                     Eigen::VectorXd a_c_vec,
+                                                                     int a_num_neighbors,
+                                                                     float &a_curvature)
+{
+  plane_normal = a_plane_normal;
+  u = a_u;
+  v = a_v;
+  c_vec = a_c_vec;
+  num_neighbors = a_num_neighbors;
+  curvature = a_curvature;
+  valid = true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename NormalOutT>
+pcl::MovingLeastSquares<PointInT, NormalOutT>::MLSVoxelGrid::MLSVoxelGrid (PointCloudInConstPtr& cloud,
+                                                                           IndicesPtr &indices,
+                                                                           float voxel_size)
+{
+  voxel_size_ = voxel_size;
+  pcl::getMinMax3D (*cloud, *indices, bounding_min_, bounding_max_);
+
+  Eigen::Vector4f bounding_box_size = bounding_max_ - bounding_min_;
+  double max_size = (std::max) ((std::max)(bounding_box_size.x (), bounding_box_size.y ()), bounding_box_size.z ());
+  // Put initial cloud in voxel grid
+  data_size_ = 1.5 * max_size / voxel_size_;
+  for (unsigned int i = 0; i < indices->size (); ++i)
+    if (pcl_isfinite (cloud->points[(*indices)[i]].x))
+    {
+      Eigen::Vector3i pos;
+      getCellIndex (cloud->points[(*indices)[i]].getVector3fMap (), pos);
+
+      uint64_t index_1d;
+      getIndexIn1D (pos, index_1d);
+      Leaf leaf;
+      voxel_grid_[index_1d] = leaf;
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename NormalOutT> void
+pcl::MovingLeastSquares<PointInT, NormalOutT>::MLSVoxelGrid::dilate ()
+{
+  HashMap new_voxel_grid = voxel_grid_;
+  BOOST_FOREACH (typename HashMap::value_type voxel, voxel_grid_)
+  {
+    Eigen::Vector3i index;
+    getIndexIn3D (voxel.first, index);
+
+    /// Now dilate all of its voxels
+    for (int x = -1; x <= 1; ++x)
+      for (int y = -1; y <= 1; ++y)
+        for (int z = -1; z <= 1; ++z)
+          if (x != 0 || y != 0 || z != 0)
+          {
+            Eigen::Vector3i new_index;
+            new_index = index + Eigen::Vector3i (x, y, z);
+
+            uint64_t index_1d;
+            getIndexIn1D (new_index, index_1d);
+            Leaf leaf;
+            new_voxel_grid[index_1d] = leaf;
+          }
+  }
+  voxel_grid_ = new_voxel_grid;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename NormalOutT> void
+pcl::MovingLeastSquares<PointInT, NormalOutT>::MLSVoxelGrid::getIndexIn1D (const Eigen::Vector3i &index,
+                                                                           uint64_t &index_1d) const
+{
+  index_1d = index[0] * data_size_ * data_size_ +
+      index[1] * data_size_ + index[2];
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename NormalOutT> void
+pcl::MovingLeastSquares<PointInT, NormalOutT>::MLSVoxelGrid::getIndexIn3D (uint64_t index_1d,
+                                                                           Eigen::Vector3i& index_3d) const
+{
+  index_3d[0] = index_1d / (data_size_ * data_size_);
+  index_1d -= index_3d[0] * data_size_ * data_size_;
+  index_3d[1] = index_1d / data_size_;
+  index_1d -= index_3d[1] * data_size_;
+  index_3d[2] = index_1d;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename NormalOutT> void
+pcl::MovingLeastSquares<PointInT, NormalOutT>::MLSVoxelGrid::getCellIndex (const Eigen::Vector3f &p,
+                                                                           Eigen::Vector3i& index) const
+{
+  for (int i = 0; i < 3; ++i)
+    index[i] = (p[i] - bounding_min_(i))/voxel_size_;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename NormalOutT> void
+pcl::MovingLeastSquares<PointInT, NormalOutT>::MLSVoxelGrid::getPosition (const uint64_t &index_1d,
+                                                                          Eigen::Vector3f &point) const
+{
+  Eigen::Vector3i index_3d;
+  getIndexIn3D (index_1d, index_3d);
+  for (int i = 0; i < 3; ++i)
+    point[i] = index_3d[i] * voxel_size_ + bounding_min_[i];
+}
+
+
+
 
 #define PCL_INSTANTIATE_MovingLeastSquares(T,OutT) template class PCL_EXPORTS pcl::MovingLeastSquares<T,OutT>;
 
