@@ -59,6 +59,7 @@ namespace pcl
 
       using pcl::search::Search<PointT>::input_;
       using pcl::search::Search<PointT>::indices_;
+      using pcl::search::Search<PointT>::sorted_results_;
 
       struct Entry
       {
@@ -70,12 +71,17 @@ namespace pcl
         {
           return distance < other.distance;
         }
+        bool operator > (const Entry& other) const
+        {
+          return distance > other.distance;
+        }
       };
 
       // replace by some metric functor
       float getDistSqr (const PointT& point1, const PointT& point2) const;
       public:
-        BruteForce ()
+        BruteForce (bool sorted_results = false)
+        : Search<PointT> ("BruteForce", sorted_results)
         {
         }
 
