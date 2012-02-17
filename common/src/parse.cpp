@@ -122,6 +122,18 @@ pcl::console::parse_argument (int argc, char** argv, const char* str, unsigned i
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+int
+pcl::console::parse_argument (int argc, char** argv, const char* str, char &val)
+{
+  int index = find_argument (argc, argv, str) + 1;
+
+  if (index > 0 && index < argc )
+    val = argv[index][0];
+
+  return (index - 1);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 std::vector<int>
 pcl::console::parse_file_extension_argument (int argc, char** argv, const std::string &extension)
 {

@@ -147,6 +147,16 @@ namespace pcl
     PCL_EXPORTS int
     parse_argument (int argc, char** argv, const char* str, unsigned int &val);
 
+    /** \brief Parse for a specific given command line argument. Returns the value
+      * sent as an int.
+      * \param argc the number of command line arguments
+      * \param argv the command line arguments
+      * \param str the string value to search for
+      * \param val the resultant value
+      */
+    PCL_EXPORTS int
+    parse_argument (int argc, char** argv, const char* str, char &val);
+
     /** \brief Parse for specific given command line arguments (2x values comma
       * separated). Returns the values sent as doubles.
       * \param argc the number of command line arguments
