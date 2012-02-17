@@ -7,21 +7,18 @@ namespace pcl
 
   namespace proctor
   {
-    
+
     void
     SIWrapper::compute(PointCloud<PointNormal>::Ptr cloud, PointCloud<PointNormal>::Ptr keypoints, pcl::PointCloud<Eigen::MatrixXf> &output)
     {
-      SpinImageEstimation<PointNormal, PointNormal, Eigen::MatrixXf> si (8, 0.5, 10);
-      si.setRadiusSearch(0.08);
+      SpinImageEstimation<PointNormal, PointNormal, Eigen::MatrixXf> si;
       search::KdTree<PointNormal>::Ptr kdt (new search::KdTree<PointNormal>());
       si.setSearchMethod(kdt);
+      si.setRadiusSearch(0.08);
 
       si.setInputCloud(keypoints);
-      //si.setSearchSurface(cloud);
-      //si.setSearchSurfaceNormals(cloud);
-      //si.setInputNormals(keypoints);
-      //si.setSearchSurfaceWithNormals(cloud, cloud);
-      //si.setInputWithNormals(keypoints, keypoints);
+      si.setInputNormals(keypoints);
+      si.setSearchSurface(cloud);
       si.computeEigen(output);
     }
 
