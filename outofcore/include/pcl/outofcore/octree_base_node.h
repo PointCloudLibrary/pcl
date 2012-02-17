@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PCL_OUTOFCORE_OCTREE_BASE_NODE_H_
+#define PCL_OUTOFCORE_OCTREE_BASE_NODE_H_
 
 /*
   Copyright (c) 2012, Urban Robotics Inc
@@ -29,7 +30,7 @@
 
 /*
   This code defines the octree used for point storage at Urban Robotics. Please
-  contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions.
+ contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions.
   http://www.urbanrobotics.net/
 */
 
@@ -49,46 +50,36 @@
 #include "pcl/outofcore/octree_base.h"
 #include "pcl/outofcore/pointCloudTools.h"
 // Forward Declarations
-template<typename Container, typename PointType>
+template<typename Container, typename PointT>
 class octree_base_node;
-template<typename Container, typename PointType>
+
+template<typename Container, typename PointT>
 class octree_base;
 
-template<typename Container, typename PointType> octree_base_node<Container, PointType>*
-makenode_norec (const boost::filesystem::path& path,
-                octree_base_node<Container, PointType>* super);
+template<typename Container, typename PointT> octree_base_node<Container, PointT>*
+makenode_norec (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super);
 
 //read from specified level
-template<typename Container, typename PointType> void
-queryBBIntersects_noload (const boost::filesystem::path& rootnode,
-                          const double min[3], const double max[3],
-                          const boost::uint32_t query_depth,
-                          std::list<std::string>& bin_name);
+template<typename Container, typename PointT> void
+queryBBIntersects_noload (const boost::filesystem::path& rootnode, const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name);
 
-template<typename Container, typename PointType> void
-queryBBIntersects_noload (octree_base_node<Container, PointType>* current,
-                          const double min[3], const double max[3],
-                          const boost::uint32_t query_depth,
-                          std::list<std::string>& bin_name);
+template<typename Container, typename PointT> void
+queryBBIntersects_noload (octree_base_node<Container, PointT>* current, const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name);
 
 
-template<typename Container, typename PointType>
+template<typename Container, typename PointT>
 class octree_base_node
 {
-  friend class octree_base<Container, PointType> ;
+  friend class octree_base<Container, PointT> ;
 
-  friend octree_base_node<Container, PointType>*
-  makenode_norec<Container, PointType> (const boost::filesystem::path& path,
-                                        octree_base_node<Container, PointType>* super);
+  friend octree_base_node<Container, PointT>*
+  makenode_norec<Container, PointT> (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super);
+
   friend void
-  queryBBIntersects_noload<Container, PointType> (const boost::filesystem::path& rootnode, const double min[3],
-                                                  const double max[3], const boost::uint32_t query_depth,
-                                                  std::list<std::string>& bin_name);
+  queryBBIntersects_noload<Container, PointT> (const boost::filesystem::path& rootnode, const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name);
+
   friend void
-  queryBBIntersects_noload<Container, PointType> (octree_base_node<Container, PointType>* current,
-                                                  const double min[3], const double max[3],
-                                                  const boost::uint32_t query_depth,
-                                                  std::list<std::string>& bin_name);
+  queryBBIntersects_noload<Container, PointT> (octree_base_node<Container, PointT>* current, const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name);
 
   public:
     const static std::string node_index_basename;
@@ -100,11 +91,11 @@ class octree_base_node
     octree_base_node ()
     {
       parent = NULL;
-      root = NULL;
+      root_ = NULL;
       depth = 0;
       maxDepth = 0;
 
-      memset (children, 0, 8 * sizeof(octree_base_node<Container, PointType>*));
+      memset (children, 0, 8 * sizeof(octree_base_node<Container, PointT>*));
       numchild = 0;
 
       midx = 0;
@@ -123,9 +114,7 @@ class octree_base_node
      * \param super
      * \param loadAll
      */
-    octree_base_node (const boost::filesystem::path& path,
-                      octree_base_node<Container, PointType>* super,
-                      bool loadAll);
+    octree_base_node (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super, bool loadAll);
 
     /** \brief Create root node and directory
      *
@@ -139,21 +128,13 @@ class octree_base_node
      * doesn't exist, it is created; if "rootname" is an existing file, throws 
      * OctreeException::OCT_BAD_PATH
      */
-    void init_root_node (const double bbmin[3], const double bbmax[3],
-                         octree_base<Container, PointType> * const tree,
-                         const boost::filesystem::path& rootname);
+    void init_root_node (const double bbmin[3], const double bbmax[3], octree_base<Container, PointT> * const tree, const boost::filesystem::path& rootname);
 
     /** \brief Create root node and directory setting voxel size*/
-    octree_base_node (const double bbmin[3], const double bbmax[3],
-                      const double node_dim_meters,
-                      octree_base<Container, PointType> * const tree,
-                      const boost::filesystem::path& rootname);
+    octree_base_node (const double bbmin[3], const double bbmax[3], const double node_dim_meters, octree_base<Container, PointT> * const tree, const boost::filesystem::path& rootname);
 
     /** \brief Create root node and directory setting setting max depth*/
-    octree_base_node (const int maxdepth,
-                      const double bbmin[3], const double bbmax[3],
-                      octree_base<Container, PointType> * const tree,
-                      const boost::filesystem::path& rootname);
+    octree_base_node (const int maxdepth, const double bbmin[3], const double bbmax[3], octree_base<Container, PointT> * const tree, const boost::filesystem::path& rootname);
 
     /** \brief Will recursively delete all children calling recFreeChildrein */
     ~octree_base_node ();
@@ -186,18 +167,16 @@ class octree_base_node
 
     //point extraction
     void
-    queryBBIncludes (const double minbb[3], const double maxbb[3], size_t query_depth, std::list<PointType>& v);
+    queryBBIncludes (const double minbb[3], const double maxbb[3], size_t query_depth, std::list<PointT>& v);
 
     void
-    queryBBIncludes_subsample (const double minbb[3], const double maxbb[3], int query_depth, const double percent,
-                               std::list<PointType>& v);
+    queryBBIncludes_subsample (const double minbb[3], const double maxbb[3], int query_depth, const double percent, std::list<PointT>& v);
 
     //bin extraction
     //query_depth == 0 is root
     //query_depth == tree->depth is leaf
     void
-    queryBBIntersects (const double minbb[3], const double maxbb[3], const boost::uint32_t query_depth,
-                       std::list<std::string>& file_names);
+    queryBBIntersects (const double minbb[3], const double maxbb[3], const boost::uint32_t query_depth, std::list<std::string>& file_names);
 
     //bb check
     inline bool
@@ -207,11 +186,11 @@ class octree_base_node
     withinBB (const double min[3], const double max[3]) const;
 
     static inline bool
-    pointWithinBB (const double minbb[3], const double maxbb[3], const PointType& p);
+    pointWithinBB (const double minbb[3], const double maxbb[3], const PointT& p);
 
     /** \brief Check whether specified point is within bounds of current node */
     inline bool
-    pointWithinBB (const PointType& p) const;
+    pointWithinBB (const PointT& p) const;
 
     // todo: All of the add data methods check whether the point being added is
     //       within the bounds of the octree created.  This requires a traversal
@@ -220,10 +199,10 @@ class octree_base_node
 
     //add point to this node if we are a leaf, or find the leaf below us that is supposed to take the point
     boost::uint64_t
-    addDataToLeaf (const std::vector<PointType>& p, const bool skipBBCheck);
+    addDataToLeaf (const std::vector<PointT>& p, const bool skipBBCheck);
 
     boost::uint64_t
-    addDataToLeaf (const std::vector<const PointType*>& p, const bool skipBBCheck);
+    addDataToLeaf (const std::vector<const PointT*>& p, const bool skipBBCheck);
 
     /** \brief Recursively add points to the leaf and children subsampling LODs
      * on the way down.
@@ -231,34 +210,30 @@ class octree_base_node
      * rng_mutex lock occurs
      */
     boost::uint64_t
-    addDataToLeaf_and_genLOD (const std::vector<PointType>& p,
+    addDataToLeaf_and_genLOD (const std::vector<PointT>& p,
                               const bool skipBBCheck);
 
-// todo: Do we need to support std::vector<PointType*>
+// todo: Do we need to support std::vector<PointT*>
 //    boost::uint64_t
-//    addDataToLeaf_and_genLOD (const std::vector<PointType*>& p,
+//    addDataToLeaf_and_genLOD (const std::vector<PointT*>& p,
 //                              const bool skipBBCheck);
 
     /** \brief Add data when at max depth of tree */
     boost::uint64_t
-    addDataAtMaxDepth (const std::vector<PointType>& p, const bool skipBBCheck);
+    addDataAtMaxDepth (const std::vector<PointT>& p, const bool skipBBCheck);
 
     /** \brief Randomly sample point data */
     void
-    randomSample(const std::vector<PointType>& p,
-                 std::vector<PointType>& insertBuff,
-                 const bool skipBBCheck);
+    randomSample(const std::vector<PointT>& p, std::vector<PointT>& insertBuff, const bool skipBBCheck);
 
     /** \brief Subdivide points to pass to child nodes */
     void
-    subdividePoints (const std::vector<PointType>& p,
-                     std::vector< std::vector<PointType> >& c,
-                     const bool skipBBCheck);
+    subdividePoints (const std::vector<PointT>& p, std::vector< std::vector<PointT> >& c, const bool skipBBCheck);
 
 
     /** \brief Subdivide a single point into a spefici child node */
     void
-    subdividePoint (const PointType& pt, std::vector< std::vector<PointType> >& c);
+    subdividePoint (const PointT& pt, std::vector< std::vector<PointT> >& c);
 
     /** \brief Number of points in the payload */
     inline boost::uint64_t
@@ -309,14 +284,13 @@ class octree_base_node
     operator= (const octree_base_node& rval);
 
     //empty node in tree
-    octree_base_node (const double bbmin[3], const double bbmax[3], const char* dir,
-                      octree_base_node<Container, PointType>* super);
+    octree_base_node (const double bbmin[3], const double bbmax[3], const char* dir, octree_base_node<Container, PointT>* super);
 
     void
-    copyAllCurrentAndChildPointsRec (std::list<PointType>& v);
+    copyAllCurrentAndChildPointsRec (std::list<PointT>& v);
 
     void
-    copyAllCurrentAndChildPointsRec_sub (std::list<PointType>& v, const double percent);
+    copyAllCurrentAndChildPointsRec_sub (std::list<PointT>& v, const double percent);
 
     /** \brief Returns whether or not a node has unloaded children data */
     inline bool
@@ -331,10 +305,10 @@ class octree_base_node
     boost::filesystem::path thisnodestorage;//the node's storage file, node.dat
 
     /** \brief The tree we belong to */
-    octree_base<Container, PointType>* m_tree;//
+    octree_base<Container, PointT>* m_tree_;//
 
     /** \brief The root node of the tree we belong to */
-    octree_base_node* root;//
+    octree_base_node* root_;//
 
     /** \brief super-node */
     octree_base_node* parent;
@@ -370,3 +344,4 @@ class octree_base_node
     const static boost::uint32_t rngseed = 0xAABBCCDD;
 
 };
+#endif //PCL_OUTOFCORE_OCTREE_BASE_NODE_H_

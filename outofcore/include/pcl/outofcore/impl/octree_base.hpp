@@ -1,3 +1,5 @@
+#ifndef PCL_OUTOFCORE_OCTREE_BASE_IMPL_H_
+#define PCL_OUTOFCORE_OCTREE_BASE_IMPL_H_
 /*
  Copyright (c) 2012, Urban Robotics Inc
  All rights reserved.
@@ -31,7 +33,6 @@
  http://www.urbanrobotics.net/
  */
 
-#pragma once
 
 // C++
 #include <iostream>
@@ -58,93 +59,93 @@
 #include "pcl/outofcore/impl/octree_disk_container.hpp"
 #include "pcl/outofcore/impl/octree_ram_container.hpp"
 
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+
 // JSON
 #include "pcl/outofcore/cJSON.h"
 
-// Typedefs
-typedef octree_base<octree_disk_container<PointCloudTools::point> , PointCloudTools::point> octree_disk;
-typedef octree_base_node<octree_disk_container<PointCloudTools::point> , PointCloudTools::point> octree_disk_node;
+typedef pcl::PointXYZ PointType;
 
-typedef octree_base<octree_ram_container<PointCloudTools::point> , PointCloudTools::point> octree_ram;
-typedef octree_base_node<octree_ram_container<PointCloudTools::point> , PointCloudTools::point> octree_ram_node;
+// Typedefs
+typedef octree_base<octree_disk_container<PointType> , PointType> octree_disk;
+typedef octree_base_node<octree_disk_container<PointType> , PointType> octree_disk_node;
+
+typedef octree_base<octree_ram_container<PointType> , PointType> octree_ram;
+typedef octree_base_node<octree_ram_container<PointType> , PointType> octree_ram_node;
 
 //typedef octree_disk octree;
 //typedef octree_disk_node octree_node;
 
-template<typename Container, typename PointType>
-const std::string octree_base<Container, PointType>::tree_extention = ".octree";
+template<typename Container, typename PointT>
+const std::string octree_base<Container, PointT>::tree_extension_ = ".octree";
 
 // Constructors
 // ---------------------------------------------------------------------------
-template<typename Container, typename PointType>
-octree_base<Container, PointType>::octree_base (const boost::filesystem::path& rootname, const bool loadAll)
+template<typename Container, typename PointT>
+octree_base<Container, PointT>::octree_base (const boost::filesystem::path& rootname, const bool loadAll)
 {
   // Check file extension
-  if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointType>::node_index_extension)
+  if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointT>::node_index_extension)
   {
-    std::cerr << "the tree must be have a root node ending in .oct_idx" << std::endl;
+    std::cerr << "the tree must be have a root_ node ending in .oct_idx" << std::endl;
     throw(OctreeException::OCT_BAD_EXTENTION);
   }
 
-  // Create root node
-  root = new octree_base_node<Container, PointType> (rootname, NULL, loadAll);
+  // Create root_ node
+  root_ = new octree_base_node<Container, PointT> (rootname, NULL, loadAll);
 
-  // Set root nodes tree to the newly created tree
-  root->m_tree = this;
+  // Set root_ nodes tree to the newly created tree
+  root_->m_tree_ = this;
 
-  // Set root nodes file path
-  treepath = rootname.parent_path () / (boost::filesystem::basename (rootname) + tree_extention);
+  // Set root_ nodes file path
+  treepath_ = rootname.parent_path () / (boost::filesystem::basename (rootname) + tree_extension_);
 
   loadFromFile ();
 }
 
-template<typename Container, typename PointType>
-octree_base<Container, PointType>::octree_base (const double min[3], const double max[3],
-                                                const double node_dim_meters,
-                                                const boost::filesystem::path& rootname,
-                                                const std::string& coord_sys)
+template<typename Container, typename PointT>
+octree_base<Container, PointT>::octree_base (const double min[3], const double max[3], const double node_dim_meters, const boost::filesystem::path& rootname, const std::string& coord_sys)
 {
   // Check file extension
-  if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointType>::node_index_extension)
+  if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointT>::node_index_extension)
   {
-    std::cerr << "the tree must be created with a root node ending in .oct_idx" << std::endl;
+    std::cerr << "the tree must be created with a root_ node ending in .oct_idx" << std::endl;
     throw(OctreeException::OCT_BAD_EXTENTION);
   }
 
-  coord_system = coord_sys;
+  coord_system_ = coord_sys;
 
   // Get fullpath and recreate directories
   boost::filesystem::path dir = boost::filesystem::system_complete (rootname.parent_path ());
   boost::filesystem::remove_all (dir);
   boost::filesystem::create_directory (dir);
 
-  // Create root node
-  root = new octree_base_node<Container, PointType> (min, max, node_dim_meters, this, rootname);
-  root->m_tree = this;
-  root->saveIdx (false);
+  // Create root_ node
+  root_ = new octree_base_node<Container, PointT> (min, max, node_dim_meters, this, rootname);
+  root_->m_tree_ = this;
+  root_->saveIdx (false);
 
-  // maxDepth is set when creating the root node
-  lodPoints.resize (maxDepth + 1);
+  // maxDepth_ is set when creating the root_ node
+  lodPoints_.resize (maxDepth_ + 1);
 
-  // Set root nodes file path
-  treepath = dir / (boost::filesystem::basename (rootname) + tree_extention);
+  // Set root_ nodes file path
+  treepath_ = dir / (boost::filesystem::basename (rootname) + tree_extension_);
   saveToFile ();
 }
 
 // todo: Both constructs share the same code except for a single line...
-template<typename Container, typename PointType>
-octree_base<Container, PointType>::octree_base (const int maxdepth, const double min[3], const double max[3],
-                                                const boost::filesystem::path& rootname,
-                                                const std::string& coord_sys)
+template<typename Container, typename PointT>
+octree_base<Container, PointT>::octree_base (const int maxdepth, const double min[3], const double max[3], const boost::filesystem::path& rootname, const std::string& coord_sys)
 {
   // Check file extension
-  if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointType>::node_index_extension)
+  if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointT>::node_index_extension)
   {
-    std::cerr << "the tree must be created with a root node ending in .oct_idx" << std::endl;
+    std::cerr << "the tree must be created with a root_ node ending in .oct_idx" << std::endl;
     throw(OctreeException::OCT_BAD_EXTENTION);
   }
 
-  coord_system = coord_sys;
+  coord_system_ = coord_sys;
 
   // Get fullpath and recreate directories
   boost::filesystem::path dir = rootname.parent_path ();
@@ -162,35 +163,35 @@ octree_base<Container, PointType>::octree_base (const int maxdepth, const double
     if (boost::filesystem::exists (childdir))
     {
       std::cerr << "A dir named " << i
-                << " exists under the root node. Overwriting an existant tree is not supported!";
+                << " exists under the root_ node. Overwriting an existant tree is not supported!";
       throw(OctreeException::OCT_CHILD_EXISTS);
     }
   }
 
   // Create root node
-  root = new octree_base_node<Container, PointType> (maxdepth, min, max, this, rootname);
-  root->saveIdx (false);
+  root_ = new octree_base_node<Container, PointT> (maxdepth, min, max, this, rootname);
+  root_->saveIdx (false);
 
-  // maxDepth is set when creating the root node
-  lodPoints.resize (maxDepth + 1);
+  // maxDepth_ is set when creating the root_ node
+  lodPoints_.resize (maxDepth_ + 1);
 
   // Set root nodes file path
-  treepath = dir / (boost::filesystem::basename (rootname) + tree_extention);
+  treepath_ = dir / (boost::filesystem::basename (rootname) + tree_extension_);
   saveToFile ();
 }
 
-template<typename Container, typename PointType>
-octree_base<Container, PointType>::~octree_base ()
+template<typename Container, typename PointT>
+octree_base<Container, PointT>::~octree_base ()
 {
-  root->flushToDisk ();
-  root->saveIdx (false);
+  root_->flushToDisk ();
+  root_->saveIdx (false);
   saveToFile ();
-  delete root;
+  delete root_;
 }
 
 
-template<typename Container, typename PointType> void
-octree_base<Container, PointType>::saveToFile ()
+template<typename Container, typename PointT> void
+octree_base<Container, PointT>::saveToFile ()
 {
   // Create JSON object
   boost::shared_ptr<cJSON> idx (cJSON_CreateObject (), cJSON_Delete);
@@ -198,12 +199,12 @@ octree_base<Container, PointType>::saveToFile ()
   cJSON* name = cJSON_CreateString ("test");
   cJSON* version = cJSON_CreateNumber (2.0);
   cJSON* pointtype = cJSON_CreateString ("urp");
-  cJSON* lod = cJSON_CreateNumber (root->m_tree->maxDepth);
+  cJSON* lod = cJSON_CreateNumber (root_->m_tree_->maxDepth_);
 
   // cJSON does not allow 64 bit ints.  Have to put the points in a double to
   // use this api, will allow counts up to 2^52 points to be stored correctly
   std::vector<double> lodPoints_db;
-  lodPoints_db.insert (lodPoints_db.begin (), lodPoints.begin (), lodPoints.end ());
+  lodPoints_db.insert (lodPoints_db.begin (), lodPoints_.begin (), lodPoints_.end ());
   cJSON* numpts = cJSON_CreateDoubleArray (&(lodPoints_db.front ()), lodPoints_db.size ());
 
   cJSON_AddItemToObject (idx.get (), "name", name);
@@ -211,26 +212,26 @@ octree_base<Container, PointType>::saveToFile ()
   cJSON_AddItemToObject (idx.get (), "pointtype", pointtype);
   cJSON_AddItemToObject (idx.get (), "lod", lod);
   cJSON_AddItemToObject (idx.get (), "numpts", numpts);
-  cJSON_AddStringToObject(idx.get(), "coord_system", coord_system.c_str());
+  cJSON_AddStringToObject(idx.get(), "coord_system", coord_system_.c_str());
 
   char* idx_txt = cJSON_Print (idx.get ());
 
-  std::ofstream f (treepath.string ().c_str (), std::ios::out | std::ios::trunc);
+  std::ofstream f (treepath_.string ().c_str (), std::ios::out | std::ios::trunc);
   f << idx_txt;
   f.close ();
 
   free (idx_txt);
 }
 
-template<typename Container, typename PointType> void
-octree_base<Container, PointType>::loadFromFile ()
+template<typename Container, typename PointT> void
+octree_base<Container, PointT>::loadFromFile ()
 {
   // Open JSON
   std::vector<char> idx_input;
-  boost::uintmax_t len = boost::filesystem::file_size (treepath);
+  boost::uintmax_t len = boost::filesystem::file_size (treepath_);
   idx_input.resize (len + 1);
 
-  std::ifstream f (treepath.string ().c_str (), std::ios::in);
+  std::ifstream f (treepath_.string ().c_str (), std::ios::in);
   f.read (&(idx_input.front ()), len);
   idx_input.back () = '\0';
 
@@ -246,76 +247,76 @@ octree_base<Container, PointType>::loadFromFile ()
   // Validate JSON
   if (!((name) && (version) && (pointtype) && (lod) && (numpts) && (coord)))
   {
-    std::cerr << "index " << treepath << " failed to parse!" << std::endl;
+    std::cerr << "index " << treepath_ << " failed to parse!" << std::endl;
     throw OctreeException (OctreeException::OCT_PARSE_FAILURE);
   }
   if ((name->type != cJSON_String) || (version->type != cJSON_Number) || (pointtype->type != cJSON_String)
       || (lod->type != cJSON_Number) || (numpts->type != cJSON_Array) || (coord->type != cJSON_String))
   {
-    std::cerr << "index " << treepath << " failed to parse!" << std::endl;
+    std::cerr << "index " << treepath_ << " failed to parse!" << std::endl;
     throw OctreeException (OctreeException::OCT_PARSE_FAILURE);
   }
   if (version->valuedouble != 2.0)
   {
-    std::cerr << "index " << treepath << " failed to parse!" << std::endl;
+    std::cerr << "index " << treepath_ << " failed to parse!" << std::endl;
     throw OctreeException (OctreeException::OCT_PARSE_FAILURE);
   }
   if ((lod->valueint + 1) != cJSON_GetArraySize (numpts))
   {
-    std::cerr << "index " << treepath << " failed to parse!" << std::endl;
+    std::cerr << "index " << treepath_ << " failed to parse!" << std::endl;
     throw OctreeException (OctreeException::OCT_PARSE_FAILURE);
   }
 
   // Get Data
-  lodPoints.resize (lod->valueint + 1);
+  lodPoints_.resize (lod->valueint + 1);
   for (int i = 0; i < (lod->valueint + 1); i++)
   {
     //cJSON doesn't have explicit 64bit int, have to use double, get up to 2^52
-    lodPoints[i] = boost::uint64_t (cJSON_GetArrayItem (numpts, i)->valuedouble);
+    lodPoints_[i] = boost::uint64_t (cJSON_GetArrayItem (numpts, i)->valuedouble);
   }
-  maxDepth = lod->valueint;
-  coord_system = coord->valuestring;
+  maxDepth_ = lod->valueint;
+  coord_system_ = coord->valuestring;
 }
 
 
 
-template<typename Container, typename PointType> boost::uint64_t
-octree_base<Container, PointType>::addDataToLeaf (const std::vector<PointType>& p)
+template<typename Container, typename PointT> boost::uint64_t
+octree_base<Container, PointT>::addDataToLeaf (const std::vector<PointT>& p)
 {
   boost::unique_lock < boost::shared_mutex > lock (read_write_mutex);
-  boost::uint64_t pt_added = root->addDataToLeaf (p, false);
+  boost::uint64_t pt_added = root_->addDataToLeaf (p, false);
   return (pt_added);
 }
 
-template<typename Container, typename PointType> boost::uint64_t
-octree_base<Container, PointType>::addDataToLeaf_and_genLOD (const std::vector<PointType>& p)
+template<typename Container, typename PointT> boost::uint64_t
+octree_base<Container, PointT>::addDataToLeaf_and_genLOD (const std::vector<PointT>& p)
 {
   // Lock the tree while writing
   boost::unique_lock < boost::shared_mutex > lock (read_write_mutex);
-  boost::uint64_t pt_added = root->addDataToLeaf_and_genLOD (p, false);
+  boost::uint64_t pt_added = root_->addDataToLeaf_and_genLOD (p, false);
   return (pt_added);
 }
 
-template<typename Container, typename PointType> void
-octree_base<Container, PointType>::queryBBIncludes (const double min[3], const double max[3], size_t query_depth, std::list<PointType>& v) const
+template<typename Container, typename PointT> void
+octree_base<Container, PointT>::queryBBIncludes (const double min[3], const double max[3], size_t query_depth, std::list<PointT>& v) const
 {
   boost::shared_lock < boost::shared_mutex > lock (read_write_mutex);
   v.clear ();
-  root->queryBBIncludes (min, max, query_depth, v);
+  root_->queryBBIncludes (min, max, query_depth, v);
 }
 
-template<typename Container, typename PointType> void
-octree_base<Container, PointType>::queryBBIncludes_subsample (const double min[3], const double max[3],
+template<typename Container, typename PointT> void
+octree_base<Container, PointT>::queryBBIncludes_subsample (const double min[3], const double max[3],
                                                               size_t query_depth, const double percent,
-                                                              std::list<PointType>& v) const
+                                                              std::list<PointT>& v) const
 {
   boost::shared_lock < boost::shared_mutex > lock (read_write_mutex);
   v.clear ();
-  root->queryBBIncludes_subsample (min, max, query_depth, percent, v);
+  root_->queryBBIncludes_subsample (min, max, query_depth, percent, v);
 }
 
-template<typename Container, typename PointType> void
-octree_base<Container, PointType>::queryBBIntersects (const double min[3], const double max[3],
+template<typename Container, typename PointT> void
+octree_base<Container, PointT>::queryBBIntersects (const double min[3], const double max[3],
                                                       const boost::uint32_t query_depth,
                                                       std::list<std::string>& bin_name) const
 {
@@ -323,53 +324,53 @@ octree_base<Container, PointType>::queryBBIntersects (const double min[3], const
   bin_name.clear ();
 #pragma warning(push)
 #pragma warning(disable : 4267)
-  root->queryBBIntersects (min, max, query_depth, bin_name);
+  root_->queryBBIntersects (min, max, query_depth, bin_name);
 #pragma warning(pop)
 }
 
-template<typename Container, typename PointType> void
-octree_base<Container, PointType>::writeVPythonVisual (const char* file)
+template<typename Container, typename PointT> void
+octree_base<Container, PointT>::writeVPythonVisual (const char* file)
 {
   std::ofstream f (file);
 
   f << "from visual import *\n\n";
 
-  root->writeVPythonVisual (f);
+  root_->writeVPythonVisual (f);
 }
 
-template<typename Container, typename PointType> void
-octree_base<Container, PointType>::flushToDisk ()
+template<typename Container, typename PointT> void
+octree_base<Container, PointT>::flushToDisk ()
 {
-  root->flushToDisk ();
+  root_->flushToDisk ();
 }
 
-template<typename Container, typename PointType> void
-octree_base<Container, PointType>::flushToDiskLazy ()
+template<typename Container, typename PointT> void
+octree_base<Container, PointT>::flushToDiskLazy ()
 {
-  root->flushToDiskLazy ();
+  root_->flushToDiskLazy ();
 }
 
-template<typename Container, typename PointType> void
-octree_base<Container, PointType>::saveIdx ()
+template<typename Container, typename PointT> void
+octree_base<Container, PointT>::saveIdx ()
 {
-  root->saveIdx (true);
+  root_->saveIdx (true);
 }
 
-template<typename Container, typename PointType> void
-octree_base<Container, PointType>::convertToXYZ ()
+template<typename Container, typename PointT> void
+octree_base<Container, PointT>::convertToXYZ ()
 {
   saveToFile ();
-  root->convertToXYZ ();
+  root_->convertToXYZ ();
 }
 
-template<typename Container, typename PointType> void
-octree_base<Container, PointType>::DeAllocEmptyNodeCache ()
+template<typename Container, typename PointT> void
+octree_base<Container, PointT>::DeAllocEmptyNodeCache ()
 {
-  DeAllocEmptyNodeCache (root);
+  DeAllocEmptyNodeCache (root_ );
 }
 
-template<typename Container, typename PointType> void
-octree_base<Container, PointType>::DeAllocEmptyNodeCache (octree_base_node<Container, PointType>* current)
+template<typename Container, typename PointT> void
+octree_base<Container, PointT>::DeAllocEmptyNodeCache (octree_base_node<Container, PointT>* current)
 {
   if (current->size () == 0)
   {
@@ -383,10 +384,10 @@ octree_base<Container, PointType>::DeAllocEmptyNodeCache (octree_base_node<Conta
 
 }
 
-template<typename Container, typename PointType> void
-octree_base<Container, PointType>::buildLOD ()
+template<typename Container, typename PointT> void
+octree_base<Container, PointT>::buildLOD ()
 {
-  if (root == NULL)
+  if (root_ == NULL)
   {
     std::cerr << "root is null, aborting buildLOD" << std::endl;
     return;
@@ -394,13 +395,13 @@ octree_base<Container, PointType>::buildLOD ()
   boost::unique_lock < boost::shared_mutex > lock (read_write_mutex);
 
   const int current_dims = 1;
-  octree_base_node<Container, PointType>* current_branch[current_dims] = {root};
+  octree_base_node<Container, PointT>* current_branch[current_dims] = {root_};
   buildLOD (current_branch, current_dims);
 }
 
 //loads chunks of up to 2e7 pts at a time
-template<typename Container, typename PointType> void
-octree_base<Container, PointType>::buildLOD (octree_base_node<Container, PointType>** current_branch,
+template<typename Container, typename PointT> void
+octree_base<Container, PointT>::buildLOD (octree_base_node<Container, PointT>** current_branch,
                                              const int current_dims)
 {
   //stop if this brach DNE
@@ -414,7 +415,7 @@ octree_base<Container, PointType>::buildLOD (octree_base_node<Container, PointTy
       && (!current_branch[current_dims - 1]->hasUnloadedChildren ()))//at leaf: subsample, remove, and copy to higher nodes
   {
     //this node's idx is (current_dims-1)
-    octree_base_node<Container, PointType>* leaf = current_branch[current_dims - 1];
+    octree_base_node<Container, PointT>* leaf = current_branch[current_dims - 1];
 
     boost::uint64_t leaf_start_size = leaf->payload->size ();
     if (leaf_start_size > 0)//skip empty
@@ -425,14 +426,14 @@ octree_base<Container, PointType>::buildLOD (octree_base_node<Container, PointTy
         for (size_t level = (current_dims - 1); level >= 1; level--)
         {
           //the target
-          octree_base_node<Container, PointType>* target_parent = current_branch[level - 1];
+          octree_base_node<Container, PointT>* target_parent = current_branch[level - 1];
 
           //the percent to copy
-          double percent = pow (double (octree_base_node<Container, PointType>::sample_precent),
+          double percent = pow (double (octree_base_node<Container, PointT>::sample_precent),
                                 double (current_dims - level));//each level up the chain gets sample_precent^l of the leaf's data
 
           //read in percent of node
-          std::vector<PointType> v;
+          std::vector<PointT> v;
           if ((startp + loadcount) < leaf_start_size)
           {
             leaf->payload->readRangeSubSample (startp, loadcount, percent, v);
@@ -459,8 +460,8 @@ octree_base<Container, PointType>::buildLOD (octree_base_node<Container, PointTy
     current_branch[current_dims - 1]->payload->clear ();
 
     const int next_dims = current_dims + 1;
-    octree_base_node<Container, PointType>** next_branch = new octree_base_node<Container, PointType>*[next_dims];
-    memcpy (next_branch, current_branch, current_dims * sizeof(octree_base_node<Container, PointType>**));
+    octree_base_node<Container, PointT>** next_branch = new octree_base_node<Container, PointT>*[next_dims];
+    memcpy (next_branch, current_branch, current_dims * sizeof(octree_base_node<Container, PointT>**));
 
     size_t numchild = current_branch[current_dims - 1]->numchildren ();
     if ((numchild != 8) && (current_branch[current_dims - 1]->hasUnloadedChildren ()))
@@ -478,3 +479,4 @@ octree_base<Container, PointType>::buildLOD (octree_base_node<Container, PointTy
     delete[] next_branch;
   }
 }
+#endif //PCL_OUTOFCORE_OCTREE_BASE_IMPL_H_

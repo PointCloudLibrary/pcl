@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PCL_OUTOFCORE_OCTREE_RAM_CONTAINER_H_
+#define PCL_OUTOFCORE_OCTREE_RAM_CONTAINER_H_
 
 /*
   Copyright (c) 2011, Urban Robotics Inc
@@ -48,10 +49,12 @@
 /** According to the Urban Robotics documentation, this class was not
  *  maintained with the rest of the disk_container code base. Watch
  *  out for drift.
- * \todo Action item for URCS - test this and determine the status of its functionality
+ *
+ * \todo URCS - test this and determine the status of its
+ * functionality; it passes the unit tests
  */
 
-template<typename PointType>
+template<typename PointT>
 class octree_ram_container
 {
   public:
@@ -59,20 +62,20 @@ class octree_ram_container
     octree_ram_container (const boost::filesystem::path& dir) { }
     
     inline void
-    insertRange (const PointType* start, const boost::uint64_t count);
+    insertRange (const PointT* start, const boost::uint64_t count);
 
     inline void
-    insertRange (const PointType* const * start, const boost::uint64_t count);
+    insertRange (const PointT* const * start, const boost::uint64_t count);
 
     void
-    readRange (const boost::uint64_t start, const boost::uint64_t count, std::vector<PointType>& v);
+    readRange (const boost::uint64_t start, const boost::uint64_t count, std::vector<PointT>& v);
 
     /** \brief grab percent*count random points. points are NOT
      *   guaranteed to be unique (could have multiple identical points!)
      */
     void
     readRangeSubSample (const boost::uint64_t start, const boost::uint64_t count, const double percent,
-                        std::vector<PointType>& v);
+                        std::vector<PointT>& v);
 
     inline boost::uint64_t
     size () const
@@ -100,11 +103,12 @@ class octree_ram_container
     operator= (const octree_ram_container& rval) { }
 
     //the actual container
-    //std::deque<PointType> container;
-    std::vector<PointType> container;
+    //std::deque<PointT> container;
+    std::vector<PointT> container;
 
     static boost::mutex rng_mutex;
     static boost::mt19937 rand_gen;
 };
 
 
+#endif //PCL_OUTOFCORE_OCTREE_RAM_CONTAINER_H_

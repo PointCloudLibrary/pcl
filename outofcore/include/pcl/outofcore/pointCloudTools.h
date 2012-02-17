@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PCL_OUTOFCORE_POINTCLOUDSTOOLS_H_
+#define PCL_OUTOFCORE_POINTCLOUDSTOOLS_H_
 
 /*
   Copyright (c) 2012, Urban Robotics Inc
@@ -70,3 +71,4 @@ namespace PointCloudTools
   };
 }
 
+#endif //PCL_OUTOFCORE_POINTCLOUDSTOOLS_H_

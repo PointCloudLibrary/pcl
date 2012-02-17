@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PCL_OUTOFCORE_OCTREE_EXCEPTIONS_H_
+#define PCL_OUTOFCORE_OCTREE_EXCEPTIONS_H_
 
 /*
  Copyright (c) 2012, Urban Robotics Inc
@@ -91,3 +92,5 @@ public:
 private:
   std::string m_msg;
 };
+
+#endif //PCL_OUTOFCORE_OCTREE_EXCEPTIONS_H_

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PCL_OUTOFCORE_RAM_CONTAINER_IMPL_H_
+#define PCL_OUTOFCORE_RAM_CONTAINER_IMPL_H_
 
 /*
  Copyright (c) 2011, Urban Robotics Inc
@@ -50,14 +51,14 @@
 //       which is mutexed. I did i this way to be sure that node of the nodes
 //       had RNGs seeded to the same value). the mutex could effect performance
 
-template<typename PointType>
-boost::mutex octree_ram_container<PointType>::rng_mutex;
+template<typename PointT>
+boost::mutex octree_ram_container<PointT>::rng_mutex;
 
-template<typename PointType> 
-boost::mt19937 octree_ram_container<PointType>::rand_gen (std::time( NULL));
+template<typename PointT> 
+boost::mt19937 octree_ram_container<PointT>::rand_gen (std::time( NULL));
 
-template<typename PointType> void
-octree_ram_container<PointType>::convertToXYZ (const boost::filesystem::path& path)
+template<typename PointT> void
+octree_ram_container<PointT>::convertToXYZ (const boost::filesystem::path& path)
 {
   if (!container.empty ())
   {
@@ -66,7 +67,7 @@ octree_ram_container<PointType>::convertToXYZ (const boost::filesystem::path& pa
     boost::uint64_t num = size ();
     for (boost::uint64_t i = 0; i < num; i++)
     {
-      const PointType& p = container[i];
+      const PointT& p = container[i];
 
       std::stringstream ss;
       ss << std::fixed;
@@ -80,16 +81,16 @@ octree_ram_container<PointType>::convertToXYZ (const boost::filesystem::path& pa
   }
 }
 
-template<typename PointType> inline void
-octree_ram_container<PointType>::insertRange (const PointType* start, const boost::uint64_t count)
+template<typename PointT> inline void
+octree_ram_container<PointT>::insertRange (const PointT* start, const boost::uint64_t count)
 {
   container.insert (container.end (), start, start + count);
 }
 
-template<typename PointType> inline void
-octree_ram_container<PointType>::insertRange (const PointType* const * start, const boost::uint64_t count)
+template<typename PointT> inline void
+octree_ram_container<PointT>::insertRange (const PointT* const * start, const boost::uint64_t count)
 {
-  std::vector<PointType> temp;
+  std::vector<PointT> temp;
   temp.resize (count);
   for (boost::uint64_t i = 0; i < count; i++)
   {
@@ -98,9 +99,9 @@ octree_ram_container<PointType>::insertRange (const PointType* const * start, co
   container.insert (container.end (), temp.begin (), temp.end ());
 }
 
-template<typename PointType> void
-octree_ram_container<PointType>::readRange (const boost::uint64_t start, const boost::uint64_t count,
-                                            std::vector<PointType>& v)
+template<typename PointT> void
+octree_ram_container<PointT>::readRange (const boost::uint64_t start, const boost::uint64_t count,
+                                            std::vector<PointT>& v)
 {
   /*
     v.resize(count);
@@ -114,15 +115,15 @@ octree_ram_container<PointType>::readRange (const boost::uint64_t start, const b
   */
 
   v.resize (count);
-  memcpy (v.data (), container.data () + start, count * sizeof(PointType));
+  memcpy (v.data (), container.data () + start, count * sizeof(PointT));
 
 }
 
-template<typename PointType> void
-octree_ram_container<PointType>::readRangeSubSample (const boost::uint64_t start, 
+template<typename PointT> void
+octree_ram_container<PointT>::readRangeSubSample (const boost::uint64_t start, 
                                                      const boost::uint64_t count,
                                                      const double percent, 
-                                                     std::vector<PointType>& v)
+                                                     std::vector<PointT>& v)
 {
   boost::uint64_t samplesize = percent * static_cast<double> (count);
 
@@ -138,3 +139,4 @@ octree_ram_container<PointType>::readRangeSubSample (const boost::uint64_t start
   }
 }
 
+#endif //PCL_OUTOFCORE_RAM_CONTAINER_IMPL_H_

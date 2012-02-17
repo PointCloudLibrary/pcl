@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PCL_OUTOFCORE_OCTREE_DISK_CONTAINER_H_
+#define PCL_OUTOFCORE_OCTREE_DISK_CONTAINER_H_
 
 /*
  Copyright (c) 2012, Urban Robotics Inc
@@ -65,7 +66,7 @@
  *  
  */
 
-template<typename PointType>
+template<typename PointT>
 class octree_disk_container
 {
   
@@ -81,17 +82,17 @@ class octree_disk_container
     octree_disk_container (const boost::filesystem::path& dir);
     ~octree_disk_container ();
 
-    inline PointType
+    inline PointT
     operator[] (boost::uint64_t idx);
 
     inline void
-    push_back (const PointType& p);
+    push_back (const PointT& p);
 
     void
-    insertRange (const PointType* const * start, const boost::uint64_t count)
+    insertRange (const PointT* const * start, const boost::uint64_t count)
     {
       //copy the handles to a continous block
-      PointType* arr = new PointType[count];
+      PointT* arr = new PointT[count];
       for (size_t i = 0; i < count; i++)
       {
         arr[i] = *(start[i]);
@@ -99,12 +100,12 @@ class octree_disk_container
       insertRange (arr, count);
       delete[] arr;
     }
+    
+    void
+    insertRange (const PointT* start, const boost::uint64_t count);
 
     void
-    insertRange (const PointType* start, const boost::uint64_t count);
-
-    void
-    readRange (const boost::uint64_t start, const boost::uint64_t count, std::vector<PointType>& v);
+    readRange (const boost::uint64_t start, const boost::uint64_t count, std::vector<PointT>& v);
 
 
     /** \brief  grab percent*count random points. points are _not_ guaranteed to be
@@ -117,7 +118,7 @@ class octree_disk_container
      */
     void
     readRangeSubSample (const boost::uint64_t start, const boost::uint64_t count, const double percent,
-                        std::vector<PointType>& v);
+                        std::vector<PointT>& v);
 
     /** \brief use bernoulli trials to select points. points are unique
      *
@@ -128,7 +129,7 @@ class octree_disk_container
      */
     void
     readRangeSubSample_bernoulli (const boost::uint64_t start, const boost::uint64_t count, 
-                                  const double percent, std::vector<PointType>& v);
+                                  const double percent, std::vector<PointT>& v);
 
     boost::uint64_t
     size () const
@@ -173,13 +174,13 @@ class octree_disk_container
         assert (f != NULL);
 
         boost::uint64_t num = size ();
-        PointType p;
+        PointT p;
         char* loc = (char*)&p;
         for (boost::uint64_t i = 0; i < num; i++)
         {
-          int seekret = _fseeki64 (f, i * sizeof(PointType), SEEK_SET);
+          int seekret = _fseeki64 (f, i * sizeof(PointT), SEEK_SET);
           assert (seekret == 0);
-          size_t readlen = fread (loc, sizeof(PointType), 1, f);
+          size_t readlen = fread (loc, sizeof(PointT), 1, f);
           assert (readlen == 1);
 
           //of << p.x << "\t" << p.y << "\t" << p.z << "\n";
@@ -218,7 +219,7 @@ class octree_disk_container
     flush_writebuff (const bool forceCacheDeAlloc);
     
     //elements [0,...,size()-1] map to [filelen, ..., filelen + size()-1]
-    std::vector<PointType> writebuff;
+    std::vector<PointT> writebuff;
 
     //std::fstream fileback;//elements [0,...,filelen-1]
     std::string *fileback_name;
@@ -241,3 +242,4 @@ class octree_disk_container
     static boost::uuids::random_generator uuid_gen;
 };
 
+#endif //PCL_OUTOFCORE_OCTREE_DISK_CONTAINER_H_

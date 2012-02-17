@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PCL_OUTOFCORE_OCTREE_BASE_H_
+#define PCL_OUTOFCORE_OCTREE_BASE_H_
 
 /*
  Copyright (c) 2012, Urban Robotics Inc
@@ -46,10 +47,10 @@
 #include "pcl/outofcore/pointCloudTools.h"
 
 
-template<typename Container, typename PointType>
+template<typename Container, typename PointT>
 class octree_base
 {
-  friend class octree_base_node<Container, PointType> ;
+  friend class octree_base_node<Container, PointT> ;
 
   public:
 
@@ -82,9 +83,7 @@ class octree_base
      * \param rootname must end in ".oct_idx" (THIS SHOULD CHANGE)
      * \param coord_sys
      */
-    octree_base (const double min[3], const double max[3],
-                 const double node_dim_meters,
-                 const boost::filesystem::path& rootname, const std::string& coord_sys);
+    octree_base (const double min[3], const double max[3], const double node_dim_meters, const boost::filesystem::path& rootname, const std::string& coord_sys);
 
     /** \brief Create a new tree
      *
@@ -96,8 +95,7 @@ class octree_base
      * \param rootname must end in ".oct_idx" (THIS SHOULD CHANGE)
      * \param coord_sys
      */
-    octree_base (const int maxdepth, const double min[3], const double max[3],
-                 const boost::filesystem::path& rootname, const std::string& coord_sys);
+    octree_base (const int maxdepth, const double min[3], const double max[3], const boost::filesystem::path& rootname, const std::string& coord_sys);
 
     ~octree_base ();
 
@@ -108,19 +106,19 @@ class octree_base
     inline bool
     getBB (double min[3], double max[3]) const
     {
-      if (root != NULL)
+      if (root_ != NULL)
       {
-        root->getBB (min, max);
+        root_->getBB (min, max);
         return true;
       }
       return false;
     }
 
-    /** \brief Access node's PointType */
+    /** \brief Access node's PointT */
     Container
     get (const size_t* indexes, const size_t len) const;
 
-    /** \brief Access node's PointType */
+    /** \brief Access node's PointT */
     Container&
     get (const size_t* indexes, const size_t len);
 
@@ -128,14 +126,14 @@ class octree_base
     inline boost::uint64_t
     getNumPoints (const boost::uint64_t depth) const
     {
-      return lodPoints[depth];
+      return lodPoints_[depth];
     }
 
     /** \brief Get number of points at each LOD */
     inline const std::vector<boost::uint64_t>&
     getNumPoints () const
     {
-      return lodPoints;
+      return lodPoints_;
     }
 
     /** \brief Get number of LODs
@@ -146,25 +144,25 @@ class octree_base
     boost::uint64_t
     getDepth () const
     {
-      return maxDepth;
+      return maxDepth_;
     }
 
     /** \brief Assume fully balanced tree -- all nodes have same dim */
     bool
     getBinDimension (double& x, double& y) const
     {
-      if (root == NULL)
+      if (root_ == NULL)
       {
         x = 0;
         y = 0;
         return false;
       }
 
-      double y_len = root->max[1] - root->min[1];
-      double x_len = root->max[0] - root->min[0];
+      double y_len = root_->max[1] - root_->min[1];
+      double x_len = root_->max[0] - root_->min[0];
 
-      y = y_len * pow (.5, double (root->maxDepth));
-      x = x_len * pow (.5, double (root->maxDepth));
+      y = y_len * pow (.5, double (root_->maxDepth_));
+      x = x_len * pow (.5, double (root_->maxDepth_));
 
       return true;
     }
@@ -173,7 +171,7 @@ class octree_base
     const std::string&
     get_coord_system ()
     {
-      return coord_system;
+      return coord_system_;
     }
 
     // Mutators
@@ -185,14 +183,14 @@ class octree_base
 
     /** \brief Recursively add points to the tree */
     boost::uint64_t
-    addDataToLeaf (const std::vector<PointType>& p);
+    addDataToLeaf (const std::vector<PointT>& p);
 
     /** \brief Recursively add points to the tree subsampling LODs on the way.
      *
      * shared read_write_mutex lock occurs
      */
     boost::uint64_t
-    addDataToLeaf_and_genLOD (const std::vector<PointType>& p);
+    addDataToLeaf_and_genLOD (const std::vector<PointT>& p);
 
 
 
@@ -205,22 +203,17 @@ class octree_base
      * query_depth == (this->depth) is full
      */
     void
-    queryBBIntersects (const double min[3], const double max[3],
-                       const boost::uint32_t query_depth,
-                       std::list<std::string>& bin_name) const;
+    queryBBIntersects (const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name) const;
 
     //get Points in BB, returning all possible matches, including just BB intersect
     //bool queryBBInterects(const double min[3], const double max[3]);
 
     //get Points in BB, only points inside BB
     void
-    queryBBIncludes (const double min[3], const double max[3],
-                     size_t query_depth, std::list<PointType>& v) const;
+    queryBBIncludes (const double min[3], const double max[3], size_t query_depth, std::list<PointT>& v) const;
 
     void
-    queryBBIncludes_subsample (const double min[3], const double max[3],
-                               size_t query_depth, const double percent,
-                               std::list<PointType>& v) const;
+    queryBBIncludes_subsample (const double min[3], const double max[3], size_t query_depth, const double percent, std::list<PointT>& v) const;
 
     // Serializers
     // -----------------------------------------------------------------------
@@ -270,7 +263,7 @@ class octree_base
 
     //flush empty nodes only
     void
-    DeAllocEmptyNodeCache (octree_base_node<Container, PointType>* current);
+    DeAllocEmptyNodeCache (octree_base_node<Container, PointT>* current);
 
     /** \brief Write octree definition .octree to disk */
     void
@@ -281,23 +274,23 @@ class octree_base
 
     //recursive portion of lod builder
     void
-    buildLOD (octree_base_node<Container, PointType>** current_branch, const int current_dims);
-
-    octree_base_node<Container, PointType>* root;
-    mutable boost::shared_mutex read_write_mutex;
+    buildLOD (octree_base_node<Container, PointT>** current_branch, const int current_dims);
 
     /** \brief Increment current depths (LOD for branch nodes) point count */
     void
     count_point (boost::uint64_t depth, boost::uint64_t inc)
     {
-      lodPoints[depth] += inc;
+      lodPoints_[depth] += inc;
     }
 
-    std::vector<boost::uint64_t> lodPoints;
-    boost::uint64_t maxDepth;
-    boost::filesystem::path treepath;
+    octree_base_node<Container, PointT>* root_;
+    mutable boost::shared_mutex read_write_mutex;
+    std::vector<boost::uint64_t> lodPoints_;
+    boost::uint64_t maxDepth_;
+    boost::filesystem::path treepath_;
+    std::string coord_system_;
 
-    const static std::string tree_extention;
-
-    std::string coord_system;
+    const static std::string tree_extension_;
+ 
   };
+#endif // PCL_OUTOFCORE_OCTREE_BASE_H_
