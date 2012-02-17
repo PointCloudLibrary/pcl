@@ -106,18 +106,16 @@ template<typename PointT, typename LeafT, typename OctreeT>
 
     resultCount = pointCandidates.size ();
 
-    for (i = 0; i < resultCount; i++)
+    k_indices.resize (resultCount);
+    k_sqr_distances.resize (resultCount);
+    
+    for (i = 0; i < resultCount; ++i)
     {
-      pointEntry = pointCandidates.back ();
-
-      k_indices.push_back (pointEntry.pointIdx_);
-      k_sqr_distances.push_back (pointEntry.pointDistance_);
-
-      pointCandidates.pop_back ();
+      k_indices [i] = pointCandidates [i].pointIdx_;
+      k_sqr_distances [i] = pointCandidates [i].pointDistance_;
     }
 
     return k_indices.size ();
-
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -255,7 +253,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
     std::sort (searchEntryHeap.begin (), searchEntryHeap.end ());
 
     // iterate over all children in priority queue
-    // check if the distance to seach candidate is smaller than the best point distance (smallestSquaredDist)
+    // check if the distance to search candidate is smaller than the best point distance (smallestSquaredDist)
     while ((!searchEntryHeap.empty ())
         && (searchEntryHeap.back ().pointDistance
             < smallestSquaredDist + voxelSquaredDiameter / 4.0 + sqrt (smallestSquaredDist * voxelSquaredDiameter)
@@ -509,15 +507,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
   pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::pointSquaredDist (const PointT & pointA,
                                                                                  const PointT & pointB) const
   {
-    double distX, distY, distZ;
-
-    // distance between pointA and pointB for each axis
-    distX = pointA.x - pointB.x;
-    distY = pointA.y - pointB.y;
-    distZ = pointA.z - pointB.z;
-
-    // return squared absolute distance between pointA and pointB
-    return (distX * distX + distY * distY + distZ * distZ);
+    return (pointA.getVector3fMap () - pointB.getVector3fMap ()).squaredNorm ();
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -556,9 +546,9 @@ template<typename PointT, typename LeafT, typename OctreeT>
 
     // test if search region overlap with voxel space
 
-    if ( !( (lowerVoxelCorner (0) > max_pt (0)) || (min_pt (0)>upperVoxelCorner(0)) ||
-            (lowerVoxelCorner (1) > max_pt (1)) || (min_pt (1)>upperVoxelCorner(1)) ||
-            (lowerVoxelCorner (2) > max_pt (2)) || (min_pt (2)>upperVoxelCorner(2)) ) )
+    if ( !( (lowerVoxelCorner (0) > max_pt (0)) || (min_pt (0) > upperVoxelCorner(0)) ||
+            (lowerVoxelCorner (1) > max_pt (1)) || (min_pt (1) > upperVoxelCorner(1)) ||
+            (lowerVoxelCorner (2) > max_pt (2)) || (min_pt (2) > upperVoxelCorner(2)) ) )
     {
 
       if (treeDepth < this->octreeDepth_)
