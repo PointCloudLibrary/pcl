@@ -46,8 +46,6 @@
 #include <pcl/common/eigen.h>
 #include <pcl/common/transforms.h>
 #include <pcl/common/io.h>
-#include <pcl/kdtree/kdtree.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -76,10 +74,9 @@ extern "C"
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
-pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<pcl::Vertices> &polygons,
-                                                  bool fill_polygon_data)
+pcl::ConvexHull<PointInT>::calculateInputDimension ()
 {
-  // FInd the principal directions
+  PCL_WARN ("[pcl::%s::calculateInputDimension] WARNING: Input dimension not specified.  Automatically determining input dimension.\n", getClassName ().c_str ());
   EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
   Eigen::Vector4f xyz_centroid;
   computeMeanAndCovarianceMatrix (*input_, *indices_, covariance_matrix, xyz_centroid);
@@ -88,94 +85,243 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
   EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
   pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
 
-  Eigen::Affine3f transform1;
-  transform1.setIdentity ();
-  int dim = 3;
-
-  if (eigen_values[0] / eigen_values[2] < 1.0e-5)
-  {
-    // We have points laying on a plane, using 2d convex hull
-    // Compute transformation bring eigen_vectors.col(i) to z-axis
-    transform1 (2, 0) = eigen_vectors (0, 0);
-    transform1 (2, 1) = eigen_vectors (1, 0);
-    transform1 (2, 2) = eigen_vectors (2, 0);
-
-    transform1 (1, 0) = eigen_vectors (0, 1);
-    transform1 (1, 1) = eigen_vectors (1, 1);
-    transform1 (1, 2) = eigen_vectors (2, 1);
-    transform1 (0, 0) = eigen_vectors (0, 2);
-    transform1 (0, 1) = eigen_vectors (1, 2);
-    transform1 (0, 2) = eigen_vectors (2, 2);
-
-    dim = 2;
-  }
+  if (eigen_values[0] / eigen_values[2] < 1.0e-3)
+    dimension_ = 2;
   else
-    transform1.setIdentity ();
+    dimension_ = 3;
+}
 
-  dim_ = dim;
+//////////////////////////////////////////////////////////////////////////
+template <typename PointInT> void
+pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vector<pcl::Vertices> &polygons,
+                                                    bool fill_polygon_data)
+{
+  int dimension = 2;
+  bool xy_proj_safe = true;
+  bool yz_proj_safe = true;
+  bool xz_proj_safe = true;
 
-  PointCloud cloud_transformed;
-  pcl::demeanPointCloud (*input_, *indices_, xyz_centroid, cloud_transformed);
-  pcl::transformPointCloud (cloud_transformed, cloud_transformed, transform1);
+  //Check the input's normal to see which projection to use
+  PointInT p0 = input_->points[0];
+  PointInT p1 = input_->points[input_->points.size () - 1];
+  PointInT p2 = input_->points[input_->points.size () / 2];
+  Eigen::Array4f dy1dy2 = (p1.getArray4fMap () - p0.getArray4fMap ()) / (p2.getArray4fMap () - p0.getArray4fMap ());
+  while (!( (dy1dy2[0] != dy1dy2[1]) || (dy1dy2[2] != dy1dy2[1]) ) )
+  {
+    p0 = input_->points[rand () % input_->points.size ()];
+    p1 = input_->points[rand () % input_->points.size ()];
+    p2 = input_->points[rand () % input_->points.size ()];
+    dy1dy2 = (p1.getArray4fMap () - p0.getArray4fMap ()) / (p2.getArray4fMap () - p0.getArray4fMap ());
+  }
+    
+  pcl::PointCloud<PointInT> normal_calc_cloud;
+  normal_calc_cloud.points.resize (3);
+  normal_calc_cloud.points[0] = p0;
+  normal_calc_cloud.points[1] = p1;
+  normal_calc_cloud.points[2] = p2;
+    
+  Eigen::Vector4f normal_calc_centroid;
+  Eigen::Matrix3f normal_calc_covariance;
+  pcl::computeMeanAndCovarianceMatrix (normal_calc_cloud, normal_calc_covariance, normal_calc_centroid);
+  // Why do I have to set eigen_value to -1 which is an output...
+  Eigen::Vector3f::Scalar eigen_value = -1;
+  Eigen::Vector3f plane_params;
+  pcl::eigen33 (normal_calc_covariance, eigen_value, plane_params);
+  float theta_x =  fabs (plane_params.dot (x_axis_));
+  float theta_y =  fabs (plane_params.dot (y_axis_));
+  float theta_z =  fabs (plane_params.dot (z_axis_));
+
+  //Check for degenerate cases of each projection
+  //We must avoid projections in which the plane projects as a line
+  if (theta_z > projection_angle_thresh_)
+  {
+    xz_proj_safe = false;
+    yz_proj_safe = false;
+  }
+  if (theta_x > projection_angle_thresh_)
+  {
+    xz_proj_safe = false;
+    xy_proj_safe = false;
+  }
+  if (theta_y > projection_angle_thresh_)
+  {
+    xy_proj_safe = false;
+    yz_proj_safe = false;
+  }
 
   // True if qhull should free points in qh_freeqhull() or reallocation
   boolT ismalloc = True;
   // output from qh_produce_output(), use NULL to skip qh_produce_output()
   FILE *outfile = NULL;
 
-  std::string flags_str;
-  flags_str = "qhull Tc";
-
   if (compute_area_)
   {
-    flags_str.append (" FA");
     outfile = stderr;
   }
 
   // option flags for qhull, see qh_opt.htm
-  //char flags[] = "qhull Tc FA";
-  char * flags = (char *)flags_str.c_str();
+  char * flags = (char *)qhull_flags.c_str ();
   // error messages from qhull code
   FILE *errfile = stderr;
   // 0 if no error from qhull
   int exitcode;
 
   // Array of coordinates for each point
-  coordT *points = (coordT *)calloc (cloud_transformed.points.size () * dim, sizeof(coordT));
+  coordT *points = (coordT *)calloc (input_->points.size () * dimension, sizeof(coordT));
 
-  for (size_t i = 0; i < cloud_transformed.points.size (); ++i)
+  //Build input data, using appropriate projection
+  int j = 0;
+  if (xy_proj_safe)
   {
-    points[i * dim + 0] = (coordT)cloud_transformed.points[i].x;
-    points[i * dim + 1] = (coordT)cloud_transformed.points[i].y;
+    for (size_t i = 0; i < input_->points.size (); ++i, j+=dimension)
+    {
+      points[j + 0] = (coordT)input_->points[i].x;
+      points[j + 1] = (coordT)input_->points[i].y;
+    }
+  } 
+  else if (yz_proj_safe)
+  {
+    for (size_t i = 0; i < input_->points.size (); ++i, j+=dimension)
+    {
+      points[j + 0] = (coordT)input_->points[i].y;
+      points[j + 1] = (coordT)input_->points[i].z;
+    }
+  }
+  else if (xz_proj_safe)
+  {
+    for (size_t i = 0; i < input_->points.size (); ++i, j+=dimension)
+    {
+      points[j + 0] = (coordT)input_->points[i].x;
+      points[j + 1] = (coordT)input_->points[i].z;
+    }
+  }
+  else
+  {
+    //This should only happen if we had invalid input
+    PCL_ERROR ("[pcl::%s::performReconstruction] Invalid input!\n", getClassName ().c_str ());
+  }
+   
+  // Compute convex hull
+  exitcode = qh_new_qhull (dimension, input_->points.size (), points, ismalloc, flags, outfile, errfile);
+    
+  //Qhull returns the area in volume for 2D
+  if (compute_area_)
+  {
+    total_area_ = qh totvol;
+    total_volume_ = 0.0;
+  }
 
-    if (dim > 2)
-      points[i * dim + 2] = (coordT)cloud_transformed.points[i].z;
+  int num_vertices = qh num_vertices;
+  hull.points.resize (num_vertices);
+  memset (&hull.points[0], hull.points.size (), sizeof (PointInT));
+
+  vertexT * vertex;
+  int i = 0;
+
+  std::vector<std::pair<int, Eigen::Vector4f>, Eigen::aligned_allocator<std::pair<int, Eigen::Vector4f> > > idx_points (num_vertices);
+  idx_points.resize (hull.points.size ());
+  memset (&idx_points[0], hull.points.size (), sizeof(std::pair<int, Eigen::Vector4f>));
+
+  FORALLvertices
+  {
+    hull.points[i] = input_->points[qh_pointid (vertex->point)];
+    idx_points[i].first = qh_pointid (vertex->point);
+    ++i;
+  }
+
+  //Sort
+  Eigen::Vector4f centroid;
+  pcl::compute3DCentroid (hull, centroid);
+  if (xy_proj_safe)
+  {
+    for (size_t j = 0; j < hull.points.size (); j++)
+    {
+      idx_points[j].second[0] = hull.points[j].x - centroid[0];
+      idx_points[j].second[1] = hull.points[j].y - centroid[1];
+    }
+  }
+  else if (yz_proj_safe)
+  {
+    for (size_t j = 0; j < hull.points.size (); j++)
+    {
+      idx_points[j].second[0] = hull.points[j].y - centroid[0];
+      idx_points[j].second[1] = hull.points[j].z - centroid[1];
+    }
+  }
+  else if (xz_proj_safe)
+  {
+    for (size_t j = 0; j < hull.points.size (); j++)
+    {
+      idx_points[j].second[0] = hull.points[j].x - centroid[0];
+      idx_points[j].second[1] = hull.points[j].z - centroid[1];
+    }
+  }
+  std::sort (idx_points.begin (), idx_points.end (), comparePoints2D);
+    
+  polygons.resize (1);
+  polygons[0].vertices.resize (hull.points.size () + 1);  
+
+  for (size_t j = 0; j < hull.points.size (); j++)
+  {
+    hull.points[j] = input_->points[idx_points[j].first];
+    polygons[0].vertices[j] = j;
+  }
+  polygons[0].vertices[hull.points.size ()] = 0;
+    
+  qh_freeqhull (!qh_ALL);
+  int curlong, totlong;
+  qh_memfreeshort (&curlong, &totlong);
+
+  hull.width = hull.points.size ();
+  hull.height = 1;
+  hull.is_dense = false;
+  return;
+}
+
+//////////////////////////////////////////////////////////////////////////
+template <typename PointInT> void
+pcl::ConvexHull<PointInT>::performReconstruction3D (PointCloud &hull, std::vector<pcl::Vertices> &polygons,
+    bool fill_polygon_data)
+{
+  int dimension = 3;
+
+  // True if qhull should free points in qh_freeqhull() or reallocation
+  boolT ismalloc = True;
+  // output from qh_produce_output(), use NULL to skip qh_produce_output()
+  FILE *outfile = NULL;
+
+  if (compute_area_)
+    outfile = stderr;
+
+  // option flags for qhull, see qh_opt.htm
+  char * flags = (char *)qhull_flags.c_str ();
+  // error messages from qhull code
+  FILE *errfile = stderr;
+  // 0 if no error from qhull
+  int exitcode;
+
+  // Array of coordinates for each point
+  coordT *points = (coordT *)calloc (input_->points.size () * dimension, sizeof (coordT));
+
+  int j = 0;
+  for (size_t i = 0; i < input_->points.size (); ++i, j+=dimension)
+  {
+    points[j + 0] = (coordT)input_->points[i].x;
+    points[j + 1] = (coordT)input_->points[i].y;
+    points[j + 2] = (coordT)input_->points[i].z;
   }
 
   // Compute convex hull
-  exitcode = qh_new_qhull (dim, cloud_transformed.points.size (), points, ismalloc, flags, outfile, errfile);
+  exitcode = qh_new_qhull (dimension, input_->points.size (), points, ismalloc, flags, outfile, errfile);
 
   if (exitcode != 0)
   {
     PCL_ERROR ("[pcl::%s::performReconstrution] ERROR: qhull was unable to compute a convex hull for the given point cloud (%lu)!\n", getClassName ().c_str (), (unsigned long) input_->points.size ());
 
     //check if it fails because of NaN values...
-    if (!cloud_transformed.is_dense)
+    if (!input_->is_dense)
     {
-      bool NaNvalues = false;
-      for (size_t i = 0; i < cloud_transformed.size (); ++i)
-      {
-        if (!pcl_isfinite (cloud_transformed.points[i].x) ||
-            !pcl_isfinite (cloud_transformed.points[i].y) ||
-            !pcl_isfinite (cloud_transformed.points[i].z))
-        {
-          NaNvalues = true;
-          break;
-        }
-      }
-
-      if (NaNvalues)
-        PCL_ERROR ("[pcl::%s::performReconstruction] ERROR: point cloud contains NaN values, consider running pcl::PassThrough filter first to remove NaNs!\n", getClassName ().c_str ());
+      PCL_ERROR ("[pcl::%s::performReconstruction] ERROR: point cloud contains NaN values, consider running pcl::PassThrough filter first to remove NaNs!\n", getClassName ().c_str ());
     }
 
     hull.points.resize (0);
@@ -203,7 +349,7 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
   FORALLvertices
   {
     if ((int)vertex->id > max_vertex_id)
-    max_vertex_id = vertex->id;
+      max_vertex_id = vertex->id;
   }
 
   ++max_vertex_id;
@@ -212,13 +358,7 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
   FORALLvertices
   {
     // Add vertices to hull point_cloud
-    hull.points[i].x = vertex->point[0];
-    hull.points[i].y = vertex->point[1];
-
-    if (dim>2)
-    hull.points[i].z = vertex->point[2];
-    else
-    hull.points[i].z = 0;
+    hull.points[i] = input_->points[qh_pointid (vertex->point)];
 
     qhid_to_pcidx[vertex->id] = i; // map the vertex id of qhull to the point cloud index
     ++i;
@@ -232,162 +372,51 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
 
   if (fill_polygon_data)
   {
-    if (dim == 3)
+    polygons.resize (num_facets);
+    int dd = 0;
+
+    facetT * facet;
+    FORALLfacets
     {
-      polygons.resize (num_facets);
-      int dd = 0;
+      polygons[dd].vertices.resize (3);
 
-      facetT * facet;
-      FORALLfacets
-      {
-        polygons[dd].vertices.resize (3);
-
-        // Needed by FOREACHvertex_i_
-        int vertex_n, vertex_i;
-        FOREACHvertex_i_((*facet).vertices)
-        //facet_vertices.vertices.push_back (qhid_to_pcidx[vertex->id]);
-        polygons[dd].vertices[vertex_i] = qhid_to_pcidx[vertex->id];
-        ++dd;
-      }
-
-
-    }
-    else
-    {
-      // dim=2, we want to return just a polygon with all vertices sorted
-      // so that they form a non-intersecting polygon...
-      // this can be moved to the upper loop probably and here just
-      // the sorting + populate
-
-      Eigen::Vector4f centroid;
-      pcl::compute3DCentroid (hull, centroid);
-      centroid[3] = 0;
-      polygons.resize (1);
-
-      int num_vertices = qh num_vertices, dd = 0;
-
-      // Copy all vertices
-      std::vector<std::pair<int, Eigen::Vector4f>, Eigen::aligned_allocator<std::pair<int, Eigen::Vector4f> > > idx_points (num_vertices);
-
-      FORALLvertices
-      {
-        idx_points[dd].first = qhid_to_pcidx[vertex->id];
-        idx_points[dd].second = hull.points[idx_points[dd].first].getVector4fMap () - centroid;
-        ++dd;
-      }
-
-      // Sort idx_points
-      std::sort (idx_points.begin (), idx_points.end (), comparePoints2D);
-      polygons[0].vertices.resize (idx_points.size () + 1);
-
-      //Sort also points...
-      PointCloud hull_sorted;
-      hull_sorted.points.resize (hull.points.size ());
-
-      for (size_t j = 0; j < idx_points.size (); ++j)
-      hull_sorted.points[j] = hull.points[idx_points[j].first];
-
-      hull.points = hull_sorted.points;
-
-      // Populate points
-      for (size_t j = 0; j < idx_points.size (); ++j)
-      polygons[0].vertices[j] = j;
-
-      polygons[0].vertices[idx_points.size ()] = 0;
+      // Needed by FOREACHvertex_i_
+      int vertex_n, vertex_i;
+      FOREACHvertex_i_ ((*facet).vertices)
+      //facet_vertices.vertices.push_back (qhid_to_pcidx[vertex->id]);
+      polygons[dd].vertices[vertex_i] = qhid_to_pcidx[vertex->id];
+      ++dd;
     }
   }
-  else
-  {
-    if (dim == 2)
-    {
-      // We want to sort the points
-      Eigen::Vector4f centroid;
-      pcl::compute3DCentroid (hull, centroid);
-      centroid[3] = 0;
-      polygons.resize (1);
-
-      int num_vertices = qh num_vertices, dd = 0;
-
-      // Copy all vertices
-      std::vector<std::pair<int, Eigen::Vector4f>, Eigen::aligned_allocator<std::pair<int, Eigen::Vector4f> > > idx_points (num_vertices);
-
-      FORALLvertices
-      {
-        idx_points[dd].first = qhid_to_pcidx[vertex->id];
-        idx_points[dd].second = hull.points[idx_points[dd].first].getVector4fMap () - centroid;
-        ++dd;
-      }
-
-      // Sort idx_points
-      std::sort (idx_points.begin (), idx_points.end (), comparePoints2D);
-
-      //Sort also points...
-      PointCloud hull_sorted;
-      hull_sorted.points.resize (hull.points.size ());
-
-      for (size_t j = 0; j < idx_points.size (); ++j)
-      hull_sorted.points[j] = hull.points[idx_points[j].first];
-
-      hull.points = hull_sorted.points;
-    }
-  }
-
   // Deallocates memory (also the points)
-  qh_freeqhull(!qh_ALL);
+  qh_freeqhull (!qh_ALL);
   int curlong, totlong;
   qh_memfreeshort (&curlong, &totlong);
-
-  // Rotate the hull point cloud by transform's inverse
-  // If the input point cloud has been rotated
-  if (dim == 2)
-  {
-    Eigen::Affine3f transInverse = transform1.inverse ();
-    pcl::transformPointCloud (hull, hull, transInverse);
-
-    //for 2D sets, the qhull library delivers the actual area of the 2d hull in the volume
-    if(compute_area_)
-    {
-      total_area_ = total_volume_;
-      total_volume_ = 0.0;
-    }
-
-  }
-
-  xyz_centroid[0] = -xyz_centroid[0];
-  xyz_centroid[1] = -xyz_centroid[1];
-  xyz_centroid[2] = -xyz_centroid[2];
-  pcl::demeanPointCloud (hull, xyz_centroid, hull);
-
-  //if keep_information_
-  if (keep_information_)
-  {
-    //build a tree with the original points
-    pcl::KdTreeFLANN<PointInT> tree (true);
-    tree.setInputCloud (input_, indices_);
-
-    std::vector<int> neighbor;
-    std::vector<float> distances;
-    neighbor.resize (1);
-    distances.resize (1);
-
-    //for each point in the convex hull, search for the nearest neighbor
-
-    std::vector<int> indices;
-    indices.resize (hull.points.size ());
-
-    for (size_t i = 0; i < hull.points.size (); i++)
-    {
-      tree.nearestKSearch (hull.points[i], 1, neighbor, distances);
-      indices[i] = (*indices_)[neighbor[0]];
-    }
-
-    //replace point with the closest neighbor in the original point cloud
-    pcl::copyPointCloud (*input_, indices, hull);
-  }
 
   hull.width = hull.points.size ();
   hull.height = 1;
   hull.is_dense = false;
+}
+
+//////////////////////////////////////////////////////////////////////////
+template <typename PointInT> void
+pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<pcl::Vertices> &polygons,
+                                                  bool fill_polygon_data)
+{
+  if (dimension_ == 0)
+    calculateInputDimension ();
+  if (dimension_ == 2)
+  {
+    performReconstruction2D (hull, polygons, fill_polygon_data);
+  }
+  else if (dimension_ == 3)
+  {
+    performReconstruction3D (hull, polygons, fill_polygon_data);
+  }
+  else
+  {
+    PCL_ERROR ("[pcl::%s::performReconstruction] Error: invalid input dimension requested: %d\n",getClassName ().c_str (),dimension_);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////
