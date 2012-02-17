@@ -35,19 +35,13 @@
 */
 
 // C++
-#include <vector>
-#include <deque>
-#include <string>
 #include <sstream>
 #include <cassert>
 #include <ctime>
 
 // Boost
 #include <boost/filesystem.hpp>
-#pragma warning(push)
-#pragma warning(disable: 4311 4312)
 #include <boost/thread.hpp>
-#pragma warning(pop)
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -66,12 +60,8 @@
 template<typename PointT>
 boost::mutex octree_disk_container<PointT>::rng_mutex;
 
-#pragma warning(push)
-#pragma warning(disable : 4244)
-template<typename PointT>
-boost::mt19937
+template<typename PointT> boost::mt19937
 octree_disk_container<PointT>::rand_gen (std::time( NULL));
-#pragma warning(pop)
 
 template<typename PointT>
 boost::uuids::random_generator octree_disk_container<PointT>::uuid_gen (&rand_gen);

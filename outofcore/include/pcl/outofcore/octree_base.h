@@ -114,11 +114,15 @@ class octree_base
       return false;
     }
 
-    /** \brief Access node's PointT */
+    /** \brief Access node's PointT 
+     *  \note NOT IMPLEMENTED
+     */
     Container
     get (const size_t* indexes, const size_t len) const;
 
-    /** \brief Access node's PointT */
+    /** \brief Access node's PointT 
+     *  \note NOT IMPLEMENTED
+     */
     Container&
     get (const size_t* indexes, const size_t len);
 
@@ -181,13 +185,17 @@ class octree_base
     void
     buildLOD ();
 
-    /** \brief Recursively add points to the tree */
+    /** \brief Recursively add points to the tree 
+     *  \note shared read_write_mutex lock occurs
+     *  \todo overload this to use shared point cloud pointer
+     */
     boost::uint64_t
     addDataToLeaf (const std::vector<PointT>& p);
 
     /** \brief Recursively add points to the tree subsampling LODs on the way.
      *
      * shared read_write_mutex lock occurs
+     * \todo overload this to use shared point cloud pointer
      */
     boost::uint64_t
     addDataToLeaf_and_genLOD (const std::vector<PointT>& p);
@@ -208,10 +216,14 @@ class octree_base
     //get Points in BB, returning all possible matches, including just BB intersect
     //bool queryBBInterects(const double min[3], const double max[3]);
 
-    //get Points in BB, only points inside BB
+    /** \brief get Points in BB, only points inside BB
+     */
     void
     queryBBIncludes (const double min[3], const double max[3], size_t query_depth, std::list<PointT>& v) const;
 
+    /** \brief random sample of points in BB includes
+     *  \todo adjust for varying densities at different LODs
+     */
     void
     queryBBIncludes_subsample (const double min[3], const double max[3], size_t query_depth, const double percent, std::list<PointT>& v) const;
 
@@ -222,6 +234,7 @@ class octree_base
 
     /** \brief Save the index files for each node.  You do not need to call this
      * explicitly
+     * \todo does this need to be  public?
      */
     void
     saveIdx ();
@@ -261,18 +274,22 @@ class octree_base
     octree_base&
     operator= (const octree_base& rval);
 
-    //flush empty nodes only
+    /** \brief flush empty nodes only
+     * \todo public?
+     */
     void
     DeAllocEmptyNodeCache (octree_base_node<Container, PointT>* current);
 
-    /** \brief Write octree definition .octree to disk */
+    /** \brief Write octree definition ".octree" (defined by octree_extension_) to disk */
     void
     saveToFile ();
 
     void
     loadFromFile ();
 
-    //recursive portion of lod builder
+    /** \brief recursive portion of lod builder
+     * \todo does this need to be public?
+     */
     void
     buildLOD (octree_base_node<Container, PointT>** current_branch, const int current_dims);
 
@@ -282,14 +299,30 @@ class octree_base
     {
       lodPoints_[depth] += inc;
     }
-
+    
+    /** \brief Pointer to the root node of the octree data structure */
     octree_base_node<Container, PointT>* root_;
+    /** \brief shared mutex for controlling read/write access to disk */
     mutable boost::shared_mutex read_write_mutex;
+    /** \brief vector indexed by depth containing number of points at each level of detail */
     std::vector<boost::uint64_t> lodPoints_;
+    /** \brief the pre-set maximum depth of the tree */
     boost::uint64_t maxDepth_;
+    /** \brief boost::filesystem::path to the location of the root of
+     *  the tree on disk relative to execution directory*/
     boost::filesystem::path treepath_;
+    /** \brief string representing the coordinate system
+     *
+     *  \note Goal is to support: WGS84 (World Geodetic System), UTM
+     *  (Universal Transverse Mercator), ECEF (Earth Centered Earth
+     *  Fixed) and more. Currently nothing special is done for each coordinate system
+     */
     std::string coord_system_;
 
+    /** \brief defined as ".octree" to append to treepath files
+     * 
+     * \note this might change
+     */
     const static std::string tree_extension_;
  
   };

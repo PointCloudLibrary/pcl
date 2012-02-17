@@ -60,6 +60,11 @@
  *  currently a shared static rng, which is mutexed. I did i this way
  *  to be sure that none of the nodes had RNGs seeded to the same
  *  value). the mutex could effect performance though 
+ *
+ */
+
+/** \todo URCS document this class and refactor / split non-templated
+ *  implementatin into cpp file
  */
 
 /** \class octree_disk_container 

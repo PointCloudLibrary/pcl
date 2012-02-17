@@ -93,7 +93,6 @@ class octree_base_node
       parent = NULL;
       root_ = NULL;
       depth = 0;
-      maxDepth = 0;
 
       memset (children, 0, 8 * sizeof(octree_base_node<Container, PointT>*));
       numchild = 0;
@@ -306,18 +305,16 @@ class octree_base_node
 
     /** \brief The tree we belong to */
     octree_base<Container, PointT>* m_tree_;//
-
     /** \brief The root node of the tree we belong to */
     octree_base_node* root_;//
-
     /** \brief super-node */
     octree_base_node* parent;
-
     /** \brief Depth in the tree, root is 0, root's children are 1, ... */
     size_t depth;
+    /** \brief The children of this node */
     octree_base_node* children[8];
+    /** \brief number of children this node has. Between 0 and 8 inclusive */
     size_t numchild;
-    boost::uint64_t maxDepth;
 
     /** \brief what holds the points. currently a custom class, but in theory
      * you could use an stl container if you rewrote some of this class. I used
