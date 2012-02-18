@@ -85,6 +85,7 @@ namespace pcl
 
       using Search<PointT>::input_;
       using Search<PointT>::indices_;
+      using Search<PointT>::sorted_results_;
 
       public:
         typedef boost::shared_ptr<FlannSearch<PointT> > Ptr;
@@ -124,7 +125,7 @@ namespace pcl
             unsigned int max_leaf_size_;
         };
 
-        FlannSearch (FlannIndexCreator* creator = new KdTreeIndexCreator());
+        FlannSearch (bool sorted = true, FlannIndexCreator* creator = new KdTreeIndexCreator());
 
         /** \brief Destructor for KdTree. */
         virtual
@@ -154,8 +155,8 @@ namespace pcl
           * \param[in] cloud the const boost shared pointer to a PointCloud message
           * \param[in] indices the point indices subset that is to be used from \a cloud
           */
-        inline void
-        setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices);
+        inline virtual void
+        setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices = IndicesConstPtr ());
 
         /** \brief Search for the k-nearest neighbors for the given query point.
           * \param[in] point the given query point
