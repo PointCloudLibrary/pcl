@@ -282,7 +282,7 @@ pcl::search::FlannSearch<PointT>::radiusSearch (
     const flann::Matrix<float> m (data, cloud.size (), point_representation_->getNumberOfDimensions ());
 
     flann::SearchParams p;
-  p.sorted = sorted_results_;
+    p.sorted = sorted_results_;
     p.eps = eps_;
     // here: max_nn==0: take all neighbors. flann: max_nn==0: return no neighbors, only count them. max_nn==-1: return all neighbors
     p.max_neighbors = max_nn > 0 ? max_nn : -1;
