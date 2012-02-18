@@ -59,9 +59,6 @@ namespace pcl
     /** \brief @b search::FlannSearch is a generic FLANN wrapper class for the new search interface.
       * It is able to wrap any FLANN index type, e.g. the kd tree as well as indices for high-dimensional
       * searches and intended as a more powerful and cleaner successor to KdTreeFlann.
-      * THIS CODE IS NOT DONE YET! IT CONTAINS KNOWN UNHANDLED FAILURE CASES, AND IS CURRENTLY TO BE
-      * CONSIDERED WORK-IN-PROGRESS!
-      * \note this class depends on an un-released change in FLANN git, so it is not built by default.
       *
       * \author Andreas Muetzel
       * \ingroup search

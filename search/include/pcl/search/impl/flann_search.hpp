@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: organized.hpp 3220 2011-11-21 15:50:53Z koenbuys $
+ * $Id: $
  *
  */
 
@@ -99,7 +99,7 @@ pcl::search::FlannSearch<PointT>::nearestKSearch (const PointT &point, int k, st
 
   flann::SearchParams p(-1);
   p.eps = eps_;
-  p.sorted = true;//sorted_results_;
+  p.sorted = sorted_results_;
   if (indices.size() != (unsigned int) k)
     indices.resize (k,-1);
   if (dists.size() != (unsigned int) k)
