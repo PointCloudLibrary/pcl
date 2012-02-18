@@ -43,7 +43,7 @@
 //////////////////////
 // Polynomial Roots //
 //////////////////////
-#include <math.h>
+#include <pcl/pcl_macros.h>
 #include "pcl/surface/poisson/factor.h"
 
 
