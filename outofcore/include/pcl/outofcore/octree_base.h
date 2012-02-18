@@ -53,7 +53,14 @@ class octree_base
   friend class octree_base_node<Container, PointT> ;
 
   public:
+    // public typedefs
+    typedef pcl::PointCloud<PointT> PointCloud;
+    typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
+    typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
 
+    typedef boost::shared_ptr<PointCloud> PointCloudPtr;
+    typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
+    
     // Constructors
     // -----------------------------------------------------------------------
 
@@ -126,7 +133,10 @@ class octree_base
     Container&
     get (const size_t* indexes, const size_t len);
 
-    /** \brief Get number of points at specified LOD */
+    /** \brief Get number of points at specified LOD 
+     * \param[in] depth the level of detail at which we want the number of points (0 is root, 1, 2,...)
+     * \return number of points in the lodPoints_ cache
+     **/
     inline boost::uint64_t
     getNumPoints (const boost::uint64_t depth) const
     {
@@ -263,6 +273,32 @@ class octree_base
     void
     DeAllocEmptyNodeCache ();
 
+    ////////////////////////////////////////////////////////////////////////////////
+    //New Point Cloud Methods
+    ////////////////////////////////////////////////////////////////////////////////
+    void
+    setInputCloud (const PointCloudConstPtr &cloud_arg,
+                   const IndicesConstPtr &indices_arg )// = IndicesConstPointer () )
+    {
+      if( (input_ != cloud_arg ))
+      {  
+        input_ = cloud_arg;
+        indices_ = indices_arg;
+      }
+    }
+
+    /** \brief Get a pointer to the input cloud
+     *  \return pointer to point cloud input class
+     */
+    inline PointCloudConstPtr
+    getInputCloud () const
+    {
+      return (input_);
+    }
+
+    boost::uint64_t
+    addPointsFromInputCloud ();
+
   private:
 
     octree_base (octree_base& rval);
@@ -324,6 +360,15 @@ class octree_base
      * \note this might change
      */
     const static std::string tree_extension_;
+
+    ////////////////////////////////////////////////////////////////////////////////
+    //New Globals
+    ////////////////////////////////////////////////////////////////////////////////
+    /** \brief Poitner to input point cloud dataset */
+    PointCloudConstPtr input_;
+    double resolution_;
+    bool boundingBoxDefined_;
+    IndicesPtr indices_;
  
   };
 #endif // PCL_OUTOFCORE_OCTREE_BASE_H_

@@ -79,16 +79,18 @@ octree_disk_container<PointT>::getRandomUUIDString (std::string& s)
   ss << u;
   s = ss.str ();
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename PointT>
 octree_disk_container<PointT>::octree_disk_container ()
 {
   std::string temp = getRandomUUIDString ();
-  fileback_name = new std::string ();
-  *fileback_name = temp;
+  fileback_name_ = new std::string ();
+  *fileback_name_ = temp;
   filelen = 0;
   //writebuff.reserve(writebuffmax);
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename PointT>
 octree_disk_container<PointT>::octree_disk_container (const boost::filesystem::path& path)
@@ -102,7 +104,7 @@ octree_disk_container<PointT>::octree_disk_container (const boost::filesystem::p
       boost::filesystem::path filename (uuid);
       boost::filesystem::path file = path / filename;
 
-      fileback_name = new std::string (file.string ());
+      fileback_name_ = new std::string (file.string ());
 
       filelen = 0;
     }
@@ -110,19 +112,20 @@ octree_disk_container<PointT>::octree_disk_container (const boost::filesystem::p
     {
       boost::uint64_t len = boost::filesystem::file_size (path);
 
-      fileback_name = new std::string (path.string ());
+      fileback_name_ = new std::string (path.string ());
 
       filelen = len / sizeof(PointT);
     }
   }
   else
   {
-    fileback_name = new std::string (path.string ());
+    fileback_name_ = new std::string (path.string ());
     filelen = 0;
   }
 
   //writebuff.reserve(writebuffmax);
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename PointT>
 octree_disk_container<PointT>::~octree_disk_container ()
@@ -131,18 +134,19 @@ octree_disk_container<PointT>::~octree_disk_container ()
   //fileback.flush();
   //fileback.close();
   //std::remove(persistant->c_str());
-  //boost::filesystem::remove(fileback_name);//for testing!
+  //boost::filesystem::remove(fileback_name_);//for testing!
   //std::cerr << "deleted file " << *persistant << std::endl;
   //std::cerr << "destruct container" << std::endl;
-  delete fileback_name;
+  delete fileback_name_;
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename PointT> void
 octree_disk_container<PointT>::flush_writebuff (const bool forceCacheDeAlloc)
 {
   if (writebuff.size () > 0)
   {
-    FILE* f = fopen (fileback_name->c_str (), "a+b");
+    FILE* f = fopen (fileback_name_->c_str (), "a+b");
 
     size_t len = writebuff.size () * sizeof(PointT);
     char* loc = (char*)&(writebuff.front ());
@@ -179,7 +183,7 @@ octree_disk_container<PointT>::operator[] (boost::uint64_t idx)
   {
     PointT temp;
 
-    FILE* f = fopen (fileback_name->c_str (), "rb");
+    FILE* f = fopen (fileback_name_->c_str (), "rb");
     assert (f != NULL);
     int seekret = _fseeki64 (f, idx * sizeof(PointT), SEEK_SET);
     assert (seekret == 0);
@@ -187,7 +191,7 @@ octree_disk_container<PointT>::operator[] (boost::uint64_t idx)
     assert (readlen == sizeof(PointT));
     int closeret = fclose (f);
 
-    //fileback.open(fileback_name->c_str(), std::fstream::in|std::fstream::out|std::fstream::binary);
+    //fileback.open(fileback_name_->c_str(), std::fstream::in|std::fstream::out|std::fstream::binary);
     //fileback.seekp(idx*sizeof(PointT), std::ios_base::beg);
     //fileback.read((char*)&temp, sizeof(PointT));
     //fileback.close();
@@ -201,6 +205,7 @@ octree_disk_container<PointT>::operator[] (boost::uint64_t idx)
   }
   throw("out of range");
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename PointT> void
 octree_disk_container<PointT>::readRange (const boost::uint64_t start, const boost::uint64_t count,
@@ -245,7 +250,7 @@ octree_disk_container<PointT>::readRange (const boost::uint64_t start, const boo
   loc = &(v.front ());
 
   //do the read
-  FILE* f = fopen (fileback_name->c_str (), "rb");
+  FILE* f = fopen (fileback_name_->c_str (), "rb");
   assert (f != NULL);
   int seekret = _fseeki64 (f, filestart * static_cast<boost::uint64_t>(sizeof(PointT)), SEEK_SET);
   assert (seekret == 0);
@@ -284,6 +289,7 @@ octree_disk_container<PointT>::readRange (const boost::uint64_t start, const boo
   }
 
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename PointT> void
 octree_disk_container<PointT>::readRangeSubSample_bernoulli (const boost::uint64_t start,
@@ -357,7 +363,7 @@ octree_disk_container<PointT>::readRangeSubSample_bernoulli (const boost::uint64
     }
     std::sort (offsets.begin (), offsets.end ());
 
-    FILE* f = fopen (fileback_name->c_str (), "rb");
+    FILE* f = fopen (fileback_name_->c_str (), "rb");
     assert (f != NULL);
     PointT p;
     char* loc = (char*)&p;
@@ -374,6 +380,7 @@ octree_disk_container<PointT>::readRangeSubSample_bernoulli (const boost::uint64
     int closeret = fclose (f);
   }
 }
+////////////////////////////////////////////////////////////////////////////////
 
 //change this to use a weighted coin flip, to allow sparse sampling of small clouds (eg the bernoulli above)
 template<typename PointT> void
@@ -454,7 +461,7 @@ octree_disk_container<PointT>::readRangeSubSample (const boost::uint64_t start, 
     }
     std::sort (offsets.begin (), offsets.end ());
 
-    FILE* f = fopen (fileback_name->c_str (), "rb");
+    FILE* f = fopen (fileback_name_->c_str (), "rb");
     assert (f != NULL);
     PointT p;
     char* loc = (char*)&p;
@@ -470,6 +477,7 @@ octree_disk_container<PointT>::readRangeSubSample (const boost::uint64_t start, 
     int closeret = fclose (f);
   }
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename PointT> inline void
 octree_disk_container<PointT>::push_back (const PointT& p)
@@ -480,11 +488,12 @@ octree_disk_container<PointT>::push_back (const PointT& p)
     flush_writebuff (false);
   }
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename PointT> inline void
 octree_disk_container<PointT>::insertRange (const PointT* start, const boost::uint64_t count)
 {
-  FILE* f = fopen (fileback_name->c_str (), "a+b");
+  FILE* f = fopen (fileback_name_->c_str (), "a+b");
 
   //write at most 2 million elements at a ime
   const static size_t blocksize = (size_t)2e6;
@@ -509,5 +518,6 @@ octree_disk_container<PointT>::insertRange (const PointT* start, const boost::ui
 
   filelen += count;
 }
+////////////////////////////////////////////////////////////////////////////////
 
 #endif //PCL_OCTREE_DISK_CONTAINER_IMPL_H_

@@ -138,6 +138,7 @@ octree_base_node<Container, PointT>::octree_base_node (const boost::filesystem::
     loadChildren (true);
   }
 }
+//////////////////////////////////////////////////////////////////////////////// 
 
 template<typename Container, typename PointT> void
 octree_base_node<Container, PointT>::init_root_node (const double bbmin[3], const double bbmax[3], octree_base<Container, PointT> * const tree, const boost::filesystem::path& rootname)
@@ -190,6 +191,7 @@ octree_base_node<Container, PointT>::init_root_node (const double bbmin[3], cons
   // Create data container, ie octree_disk_container, octree_ram_container
   payload = new Container (thisnodestorage);
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT>
 octree_base_node<Container, PointT>::octree_base_node (const double bbmin[3], const double bbmax[3],
@@ -204,13 +206,10 @@ octree_base_node<Container, PointT>::octree_base_node (const double bbmin[3], co
   saveIdx (false);
   //createChildrenToDim(node_dim_meters);
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT>
-octree_base_node<Container, PointT>::octree_base_node (
-                                                          const int maxdepth,
-                                                          const double bbmin[3], const double bbmax[3],
-                                                          octree_base<Container, PointT> * const tree,
-                                                          const boost::filesystem::path& rootname)
+octree_base_node<Container, PointT>::octree_base_node (const int maxdepth, const double bbmin[3], const double bbmax[3], octree_base<Container, PointT> * const tree, const boost::filesystem::path& rootname)
 {
   init_root_node(bbmin, bbmax, tree, rootname);
 
@@ -218,6 +217,7 @@ octree_base_node<Container, PointT>::octree_base_node (
   tree->maxDepth_ = maxdepth;
   saveIdx (false);
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT>
 octree_base_node<Container, PointT>::~octree_base_node ()
@@ -226,6 +226,7 @@ octree_base_node<Container, PointT>::~octree_base_node ()
   recFreeChildren ();
   delete payload;
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT> inline bool
 octree_base_node<Container, PointT>::hasUnloadedChildren () const
@@ -243,10 +244,11 @@ octree_base_node<Container, PointT>::hasUnloadedChildren () const
 
   // If found directories is less than the current nodes loaded children
   if (numChildDirs > numchild)
-    return true;
+    return (true);
 
-  return false;
+  return (false);
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT> void
 octree_base_node<Container, PointT>::loadChildren (bool recursive)
@@ -270,6 +272,7 @@ octree_base_node<Container, PointT>::loadChildren (bool recursive)
     }
   }
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT> void
 octree_base_node<Container, PointT>::recFreeChildren ()
@@ -290,19 +293,18 @@ octree_base_node<Container, PointT>::recFreeChildren ()
   memset (children, 0, 8 * sizeof(octree_base_node<Container, PointT>*));
   numchild = 0;
 }
-
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT> boost::uint64_t
-octree_base_node<Container, PointT>::addDataToLeaf (const std::vector<PointT>& p, 
-                                                       const bool skipBBCheck)
+octree_base_node<Container, PointT>::addDataToLeaf (const std::vector<PointT>& p, const bool skipBBCheck)
 {
   if (p.empty ())
   {
-    return 0;
+    return (0);
   }
 
   if (this->depth == root_->m_tree_->maxDepth_)
-    return addDataAtMaxDepth(p, skipBBCheck);
+    return (addDataAtMaxDepth(p, skipBBCheck));
 
   if (numchild < 8)
     if (hasUnloadedChildren ())
@@ -399,20 +401,18 @@ octree_base_node<Container, PointT>::addDataToLeaf (const std::vector<PointT>& p
     points_added += children[i]->addDataToLeaf (c[i], true);
     c[i].clear ();
   }
-  return points_added;
-
+  return (points_added);
 }
-
+////////////////////////////////////////////////////////////////////////////////
 
 
 //return number of points added
 template<typename Container, typename PointT> boost::uint64_t
-octree_base_node<Container, PointT>::addDataToLeaf (const std::vector<const PointT*>& p,
-                                                       const bool skipBBCheck)
+octree_base_node<Container, PointT>::addDataToLeaf (const std::vector<const PointT*>& p, const bool skipBBCheck)
 {
   if (p.empty ())
   {
-    return 0;
+    return (0);
   }
 
   if (this->depth == root_->m_tree_->maxDepth_)
@@ -421,7 +421,7 @@ octree_base_node<Container, PointT>::addDataToLeaf (const std::vector<const Poin
     {
       root_->m_tree_->count_point (this->depth, p.size ());
       payload->insertRange (p.data (), p.size ());
-      return p.size ();
+      return (p.size ());
     }
     else//check which points belong to this node, throw away the rest
     {
@@ -439,7 +439,7 @@ octree_base_node<Container, PointT>::addDataToLeaf (const std::vector<const Poin
         root_->m_tree_->count_point (this->depth, buff.size ());
         payload->insertRange (buff.data (), buff.size ());
       }
-      return buff.size ();
+      return (buff.size ());
     }
   }
   else
@@ -541,11 +541,12 @@ octree_base_node<Container, PointT>::addDataToLeaf (const std::vector<const Poin
       points_added += children[i]->addDataToLeaf (c[i], true);
       c[i].clear ();
     }
-    return points_added;
+    return (points_added);
   }
   // std::cerr << "failed to place point!!!" << std::endl;
-  return 0;
+  return (0);
 }
+////////////////////////////////////////////////////////////////////////////////
 
 // todo: This seems like a lot of work to get a random uniform sample?
 // todo: Need to refactor this further as to not pass in a BBCheck
@@ -599,7 +600,7 @@ octree_base_node<Container, PointT>::randomSample(const std::vector<PointT>& p, 
         insertBuff.push_back( p[i] );
   }
 }
-
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT> boost::uint64_t
 octree_base_node<Container, PointT>::addDataAtMaxDepth (const std::vector<PointT>& p, const bool skipBBCheck)
@@ -612,7 +613,7 @@ octree_base_node<Container, PointT>::addDataAtMaxDepth (const std::vector<PointT
     root_->m_tree_->count_point (this->depth, p.size ());
     // Insert point data
     payload->insertRange (p.data (), p.size ());
-    return p.size ();
+    return (p.size ());
   }
   // Add points found within the current nodes bounding box
   else
@@ -629,9 +630,11 @@ octree_base_node<Container, PointT>::addDataAtMaxDepth (const std::vector<PointT
       root_->m_tree_->count_point (this->depth, buff.size ());
       payload->insertRange (buff.data (), buff.size ());
     }
-    return buff.size ();
+    return (buff.size ());
   }
 }
+////////////////////////////////////////////////////////////////////////////////
+
 
 template<typename Container, typename PointT> void
 octree_base_node<Container, PointT>::subdividePoints (const std::vector<PointT>& p,
@@ -655,6 +658,8 @@ octree_base_node<Container, PointT>::subdividePoints (const std::vector<PointT>&
     subdividePoint(pt, c);
   }
 }
+////////////////////////////////////////////////////////////////////////////////
+
 
 template<typename Container, typename PointT> void
 octree_base_node<Container, PointT>::subdividePoint (const PointT& pt,
@@ -719,19 +724,21 @@ octree_base_node<Container, PointT>::subdividePoint (const PointT& pt,
     }
   }
 }
+////////////////////////////////////////////////////////////////////////////////
+
 
 template<typename Container, typename PointT> boost::uint64_t
 octree_base_node<Container, PointT>::addDataToLeaf_and_genLOD (const std::vector<PointT>& p, const bool skipBBCheck)
 {
   // If there's no points return
   if (p.empty ())
-    return 0;
+    return (0);
 
   // todo: Why is skipBBCheck set to false when adding points at max depth
   //       when adding data and generating sampled LOD
   // If the max depth has been reached
   if (this->depth == root_->m_tree_->maxDepth_)
-    return addDataAtMaxDepth(p, false);
+    return (addDataAtMaxDepth(p, false));
 
   // Create child nodes of the current node but not grand children+
   if (numchild < 8)
@@ -773,12 +780,14 @@ octree_base_node<Container, PointT>::addDataToLeaf_and_genLOD (const std::vector
     c[i].clear();
   }
 
-  return points_added;
+  return (points_added);
 
   // todo: Make sure I didn't break anything by removing the if/else above
   // std::cerr << "failed to place point!!!" << std::endl;
   //return 0;
 }
+////////////////////////////////////////////////////////////////////////////////
+
 
 // todo: Do we need to support std::vector<PointT*>
 //template<typename Container, typename PointT>
@@ -1017,22 +1026,6 @@ octree_base_node<Container, PointT>::createChild (const int idx)
 
   double childbb_min[3];
   double childbb_max[3];
-  /*
-    int x,y,z;
-    if(idx > 3)
-    {
-    x = ((idx == 6) || (idx == 7)) ? 1 : 0;
-    y = ((idx == 5) || (idx == 7)) ? 1 : 0;
-    z = 1;
-    }
-    else
-    {
-    x = ((idx == 2) || (idx == 3)) ? 1 : 0;
-    y = ((idx == 1) || (idx == 3)) ? 1 : 0;
-    z = 0;
-    }
-  */
-
   int x, y, z;
   if (idx > 3)
   {
@@ -1061,6 +1054,7 @@ octree_base_node<Container, PointT>::createChild (const int idx)
 
   numchild++;
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT> void
 octree_base_node<Container, PointT>::createChildren ()
@@ -1093,14 +1087,14 @@ octree_base_node<Container, PointT>::createChildren ()
         childbb_max[0] = xstart + double (x + 1) * xstep;
 
         boost::filesystem::path childdir = thisdir / boost::filesystem::path (boost::lexical_cast<std::string> (i));
-        children[i] = new octree_base_node<Container, PointT> (childbb_min, childbb_max,
-                                                                  childdir.string ().c_str (), this);
+        children[i] = new octree_base_node<Container, PointT> (childbb_min, childbb_max, childdir.string ().c_str (), this);
         i++;
       }
     }
   }
   numchild = 8;
 }
+////////////////////////////////////////////////////////////////////////////////
 
 //template<typename Container, typename PointT>
 //void octree_base_node<Container, PointT>::createChildrenToDim(const double dim)
@@ -1129,10 +1123,8 @@ octree_base_node<Container, PointT>::createChildren ()
 //	}
 //}
 
-template<typename Container, typename PointT>
-int
-octree_base_node<Container, PointT>::calcDepthForDim (const double minbb[3], const double maxbb[3],
-                                                         const double dim)
+template<typename Container, typename PointT> int
+octree_base_node<Container, PointT>::calcDepthForDim (const double minbb[3], const double maxbb[3], const double dim)
 {
   double volume = 1;
   double diagonal = 0;
@@ -1149,7 +1141,7 @@ octree_base_node<Container, PointT>::calcDepthForDim (const double minbb[3], con
 
   if ((diagonal <= dim) || (volume <= dim_volume))
   {
-    return 0;
+    return (0);
   }
   else
   {
@@ -1172,7 +1164,7 @@ octree_base_node<Container, PointT>::calcDepthForDim (const double minbb[3], con
     childbb_max[1] = ystart + double (1) * ystep;
     childbb_max[2] = zstart + double (1) * zstep;
 
-    return 1 + calcDepthForDim (childbb_min, childbb_max, dim);
+    return (1 + calcDepthForDim (childbb_min, childbb_max, dim));
   }
 
 }
@@ -1185,16 +1177,15 @@ octree_base_node<Container, PointT>::pointWithinBB (const PointT& p) const
       ((min[1] <= p.y) && (p.y <= max[1])) &&
       ((min[2] <= p.z) && (p.z <= max[2])))
   {
-    return true;
+    return (true);
+    
   }
-  return false;
+  return (false);
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT> void
-octree_base_node<Container, PointT>::queryBBIntersects (const double minbb[3], 
-                                                           const double maxbb[3],
-                                                           const boost::uint32_t query_depth,
-                                                           std::list<std::string>& file_names)
+octree_base_node<Container, PointT>::queryBBIntersects (const double minbb[3], const double maxbb[3], const boost::uint32_t query_depth, std::list<std::string>& file_names)
 {
   //
   //  Do a quick check to see if the caller passed in a lat/lon/alt bounding box.
@@ -1257,13 +1248,11 @@ octree_base_node<Container, PointT>::queryBBIntersects (const double minbb[3],
     }
   }
 }
+////////////////////////////////////////////////////////////////////////////////
 
 //read from lowest level
 template<typename Container, typename PointT> void
-octree_base_node<Container, PointT>::queryBBIncludes (const double minbb[3], 
-                                                         const double maxbb[3],
-                                                         size_t query_depth, 
-                                                         std::list<PointT>& v)
+octree_base_node<Container, PointT>::queryBBIncludes (const double minbb[3], const double maxbb[3], size_t query_depth, std::list<PointT>& v)
 {
 
   if (intersectsWithBB (minbb, maxbb))
@@ -1312,10 +1301,10 @@ octree_base_node<Container, PointT>::queryBBIncludes (const double minbb[3],
     }
   }
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT> void
-octree_base_node<Container, PointT>::queryBBIncludes_subsample (const double minbb[3], const double maxbb[3], 
-                                                                   int query_depth, const double percent, std::list<PointT>& v)
+octree_base_node<Container, PointT>::queryBBIncludes_subsample (const double minbb[3], const double maxbb[3], int query_depth, const double percent, std::list<PointT>& v)
 {
   if (intersectsWithBB (minbb, maxbb))
   {
@@ -1373,6 +1362,7 @@ octree_base_node<Container, PointT>::queryBBIncludes_subsample (const double min
     }
   }
 }
+////////////////////////////////////////////////////////////////////////////////
 
 //dir is current level. we put this nodes files into it
 template<typename Container, typename PointT>
@@ -1415,6 +1405,7 @@ octree_base_node<Container, PointT>::octree_base_node (const double bbmin[3], co
   payload = new Container (thisnodestorage);
   saveIdx (false);
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT>
 void
@@ -1438,10 +1429,10 @@ octree_base_node<Container, PointT>::copyAllCurrentAndChildPointsRec (std::list<
     v.insert (v.end (), payload_cache.begin (), payload_cache.end ());
   }
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT> void
-octree_base_node<Container, PointT>::copyAllCurrentAndChildPointsRec_sub (std::list<PointT>& v,
-                                                                             const double percent)
+octree_base_node<Container, PointT>::copyAllCurrentAndChildPointsRec_sub (std::list<PointT>& v, const double percent)
 {
   if ((numchild == 0) && (hasUnloadedChildren ()))
   {
@@ -1462,6 +1453,7 @@ octree_base_node<Container, PointT>::copyAllCurrentAndChildPointsRec_sub (std::l
     v.push_back (payload_cache[i]);
   }
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT> inline bool
 octree_base_node<Container, PointT>::intersectsWithBB (const double minbb[3], const double maxbb[3]) const
@@ -1472,13 +1464,14 @@ octree_base_node<Container, PointT>::intersectsWithBB (const double minbb[3], co
     {
       if (((min[2] <= minbb[2]) && (minbb[2] <= max[2])) || ((minbb[2] <= min[2]) && (min[2] <= maxbb[2])))
       {
-        return true;
+        return (true);
       }
     }
   }
 
-  return false;
+  return (false);
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT> inline bool
 octree_base_node<Container, PointT>::withinBB (const double minbb[3], const double maxbb[3]) const
@@ -1490,13 +1483,14 @@ octree_base_node<Container, PointT>::withinBB (const double minbb[3], const doub
     {
       if ((minbb[2] <= min[2]) && (max[2] <= maxbb[2]))
       {
-        return true;
+        return (true);
       }
     }
   }
 
-  return false;
+  return (false);
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT> inline bool
 octree_base_node<Container, PointT>::pointWithinBB (const double minbb[3], const double maxbb[3],
@@ -1508,12 +1502,13 @@ octree_base_node<Container, PointT>::pointWithinBB (const double minbb[3], const
     {
       if ((minbb[2] <= p.z) && (p.z <= maxbb[2]))
       {
-        return true;
+        return (true);
       }
     }
   }
-  return false;
+  return (false);
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT> void
 octree_base_node<Container, PointT>::writeVPythonVisual (std::ofstream& file)
@@ -1546,6 +1541,7 @@ octree_base_node<Container, PointT>::flushToDisk ()
       children[i]->flushToDisk ();
   }
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT> void
 octree_base_node<Container, PointT>::flushToDiskLazy ()
@@ -1560,6 +1556,7 @@ octree_base_node<Container, PointT>::flushToDiskLazy ()
     }
   }
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT> void
 octree_base_node<Container, PointT>::saveToFile (const boost::filesystem::path& path)
@@ -1585,10 +1582,10 @@ octree_base_node<Container, PointT>::saveToFile (const boost::filesystem::path& 
 
   free (idx_txt);
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT> void
-octree_base_node<Container, PointT>::loadFromFile (const boost::filesystem::path& path,
-                                                      octree_base_node<Container, PointT>* super)
+octree_base_node<Container, PointT>::loadFromFile (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super)
 {
   //load CJSON
   std::vector<char> idx_input;
@@ -1612,8 +1609,7 @@ octree_base_node<Container, PointT>::loadFromFile (const boost::filesystem::path
     std::cerr << "index " << path << " failed to parse!" << std::endl;
     throw OctreeException (OctreeException::OCT_PARSE_FAILURE);
   }
-  if ((version->type != cJSON_Number) || (bbmin->type != cJSON_Array) || (bbmax->type != cJSON_Array) || (bin->type
-                                                                                                          != cJSON_String))
+  if ((version->type != cJSON_Number) || (bbmin->type != cJSON_Array) || (bbmax->type != cJSON_Array) || (bin->type != cJSON_String))
   {
     std::cerr << "index " << path << " failed to parse!" << std::endl;
     throw OctreeException (OctreeException::OCT_PARSE_FAILURE);
@@ -1642,6 +1638,7 @@ octree_base_node<Container, PointT>::loadFromFile (const boost::filesystem::path
   memset (children, 0, 8 * sizeof(octree_base_node<Container, PointT>*));
   this->numchild = 0;
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT>
 void
@@ -1658,6 +1655,7 @@ octree_base_node<Container, PointT>::saveIdx (bool recursive)
     }
   }
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT> void
 octree_base_node<Container, PointT>::convertToXYZ ()
@@ -1757,8 +1755,9 @@ makenode_norec (const boost::filesystem::path& path, octree_base_node<Container,
   memset (thisnode->children, 0, 8 * sizeof(octree_disk_node*));
   thisnode->numchild = 0;
 
-  return thisnode;
+  return (thisnode);
 }
+////////////////////////////////////////////////////////////////////////////////
 
 //accelerate search
 template<typename Container, typename PointT> void
@@ -1796,6 +1795,7 @@ queryBBIntersects_noload2 (const boost::filesystem::path& rootnode, const double
   }
   delete root;
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename Container, typename PointT> void
 queryBBIntersects_noload (octree_base_node<Container, PointT>* current, const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name)
@@ -1813,9 +1813,7 @@ queryBBIntersects_noload (octree_base_node<Container, PointT>* current, const do
     {
       for (int i = 0; i < 8; i++)
       {
-        boost::filesystem::path childdir = current->thisdir / boost::filesystem::path (
-                                                                                       boost::lexical_cast<
-                                                                                       std::string> (i));
+        boost::filesystem::path childdir = current->thisdir / boost::filesystem::path (boost::lexical_cast<std::string> (i));
         if (boost::filesystem::exists (childdir))
         {
           current->children[i] = makenode_norec<Container, PointT> (childdir, current);
@@ -1826,4 +1824,6 @@ queryBBIntersects_noload (octree_base_node<Container, PointT>* current, const do
     }
   }
 }
+////////////////////////////////////////////////////////////////////////////////
+
 #endif //PCL_OCTREE_BASE_NODE_IMPL_H_

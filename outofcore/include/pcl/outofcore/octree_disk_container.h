@@ -40,10 +40,7 @@
 
 // Boost
 #include <boost/filesystem.hpp>
-#pragma warning(push)
-#pragma warning(disable: 4311 4312)
 #include <boost/thread.hpp>
-#pragma warning(pop)
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -157,25 +154,25 @@ class octree_disk_container
     inline std::string&
     path ()
     {
-      return *fileback_name;
+      return *fileback_name_;
     }
 
     inline void
     clear ()
     {
       writebuff.clear ();
-      boost::filesystem::remove (boost::filesystem::path (fileback_name->c_str ()));
+      boost::filesystem::remove (boost::filesystem::path (fileback_name_->c_str ()));
       filelen = 0;
     }
 
     void
     convertToXYZ (const boost::filesystem::path& path)
     {
-      if (boost::filesystem::exists (*fileback_name))
+      if (boost::filesystem::exists (*fileback_name_))
       {
         FILE* fxyz = fopen (path.string ().c_str (), "w");
 
-        FILE* f = fopen (fileback_name->c_str (), "rb");
+        FILE* f = fopen (fileback_name_->c_str (), "rb");
         assert (f != NULL);
 
         boost::uint64_t num = size ();
@@ -227,7 +224,7 @@ class octree_disk_container
     std::vector<PointT> writebuff;
 
     //std::fstream fileback;//elements [0,...,filelen-1]
-    std::string *fileback_name;
+    std::string *fileback_name_;
 
 
     //number of elements in file

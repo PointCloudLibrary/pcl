@@ -80,12 +80,13 @@ octree_ram_container<PointT>::convertToXYZ (const boost::filesystem::path& path)
     int closeretxyz = fclose (fxyz);
   }
 }
-
+////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> inline void
 octree_ram_container<PointT>::insertRange (const PointT* start, const boost::uint64_t count)
 {
   container.insert (container.end (), start, start + count);
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename PointT> inline void
 octree_ram_container<PointT>::insertRange (const PointT* const * start, const boost::uint64_t count)
@@ -98,6 +99,7 @@ octree_ram_container<PointT>::insertRange (const PointT* const * start, const bo
   }
   container.insert (container.end (), temp.begin (), temp.end ());
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename PointT> void
 octree_ram_container<PointT>::readRange (const boost::uint64_t start, const boost::uint64_t count,
@@ -118,6 +120,7 @@ octree_ram_container<PointT>::readRange (const boost::uint64_t start, const boos
   memcpy (v.data (), container.data () + start, count * sizeof(PointT));
 
 }
+////////////////////////////////////////////////////////////////////////////////
 
 template<typename PointT> void
 octree_ram_container<PointT>::readRangeSubSample (const boost::uint64_t start, 
@@ -138,5 +141,6 @@ octree_ram_container<PointT>::readRangeSubSample (const boost::uint64_t start,
     v.push_back (container[buffstart]);
   }
 }
+////////////////////////////////////////////////////////////////////////////////
 
 #endif //PCL_OUTOFCORE_RAM_CONTAINER_IMPL_H_
