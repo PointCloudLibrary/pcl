@@ -13,7 +13,6 @@
 #------------------------------------------------------------------------------------
 
 ### ---[ some useful macros
-
 macro(pcl_report_not_found _reason)
   unset(PCL_FOUND)
   unset(PCL_LIBRARIES)
@@ -154,18 +153,18 @@ macro(find_qhull)
           "$ENV{PROGRAMFILES}/qhull" "$ENV{PROGRAMW6432}/qhull" 
     PATH_SUFFIXES project build bin lib)
   
-  if(NOT QHULL_LIBRARY_DEBUG)
-    set(QHULL_LIBRARY_DEBUG ${QHULL_LIBRARY})
-  endif(NOT QHULL_LIBRARY_DEBUG)
-
-  set(QHULL_LIBRARIES optimized ${QHULL_LIBRARY} debug ${QHULL_LIBRARY_DEBUG})
-
   find_package_handle_standard_args(qhull DEFAULT_MSG QHULL_LIBRARY QHULL_INCLUDE_DIRS)
 
   if(QHULL_FOUND)
     get_filename_component(QHULL_LIBRARY_PATH ${QHULL_LIBRARY} PATH)
-    get_filename_component(QHULL_LIBRARY_DEBUG_PATH ${QHULL_LIBRARY_DEBUG} PATH)
-    set(QHULL_LIBRARY_DIRS ${QHULL_LIBRARY_PATH} ${QHULL_LIBRARY_DEBUG_PATH}) 
+    if(QHULL_LIBRARY_DEBUG)
+      set(QHULL_LIBRARIES optimized ${QHULL_LIBRARY} debug ${QHULL_LIBRARY_DEBUG})
+      get_filename_component(QHULL_LIBRARY_DEBUG_PATH ${QHULL_LIBRARY_DEBUG} PATH)
+      set(QHULL_LIBRARY_DIRS ${QHULL_LIBRARY_PATH} ${QHULL_LIBRARY_DEBUG_PATH}) 
+    else(QHULL_LIBRARY_DEBUG)
+      set(QHULL_LIBRARIES ${QHULL_LIBRARY})
+      set(QHULL_LIBRARY_DIRS ${QHULL_LIBRARY_PATH}) 
+    endif(QHULL_LIBRARY_DEBUG)
   endif(QHULL_FOUND)
 endmacro(find_qhull)
 
@@ -232,16 +231,18 @@ macro(find_flann)
     PATHS "$ENV{PROGRAMFILES}/flann 1.6.9" "$ENV{PROGRAMW6432}/flann 1.6.9" 
           "$ENV{PROGRAMFILES}/flann" "$ENV{PROGRAMW6432}/flann"
     PATH_SUFFIXES lib)
-  if(NOT FLANN_LIBRARY_DEBUG)
-    set(FLANN_LIBRARY_DEBUG ${FLANN_LIBRARY})
-  endif(NOT FLANN_LIBRARY_DEBUG)
 
   find_package_handle_standard_args(Flann DEFAULT_MSG FLANN_LIBRARY FLANN_INCLUDE_DIRS)
   if(FLANN_FOUND)
     get_filename_component(FLANN_LIBRARY_PATH ${FLANN_LIBRARY} PATH)
-    get_filename_component(FLANN_LIBRARY_DEBUG_PATH ${FLANN_LIBRARY_DEBUG} PATH)
-    set(FLANN_LIBRARY_DIRS ${FLANN_LIBRARY_PATH} ${FLANN_LIBRARY_DEBUG_PATH}) 
-    set(FLANN_LIBRARIES optimized ${FLANN_LIBRARY} debug ${FLANN_LIBRARY_DEBUG})
+    if(FLANN_LIBRARY_DEBUG)
+      get_filename_component(FLANN_LIBRARY_DEBUG_PATH ${FLANN_LIBRARY_DEBUG} PATH)
+      set(FLANN_LIBRARY_DIRS ${FLANN_LIBRARY_PATH} ${FLANN_LIBRARY_DEBUG_PATH}) 
+      set(FLANN_LIBRARIES optimized ${FLANN_LIBRARY} debug ${FLANN_LIBRARY_DEBUG})
+    else(FLANN_LIBRARY_DEBUG)
+      set(FLANN_LIBRARY_DIRS ${FLANN_LIBRARY_PATH}) 
+      set(FLANN_LIBRARIES ${FLANN_LIBRARY})
+    endif(FLANN_LIBRARY_DEBUG)
     if("${FLANN_LIBRARY}" MATCHES "flann_cpp_s")
       set(FLANN_DEFINITIONS ${FLANN_DEFINITIONS} -DFLANN_STATIC)
     endif("${FLANN_LIBRARY}" MATCHES "flann_cpp_s")
@@ -470,7 +471,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
     PATH_SUFFIXES
           ${component}/include
           cuda/${cuda_component}/include 
-		  gpu/${gpu_component}/include
+          gpu/${gpu_component}/include
     DOC "path to ${component} headers"
     NO_DEFAULT_PATH)
 
@@ -495,16 +496,12 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
       HINTS ${PCL_LIBRARY_DIRS}
       DOC "path to ${pcl_component} library debug"
       NO_DEFAULT_PATH)
-    # if only release found let release be debug too
-    # NOTE: this is only for non Makefile sake
-    if(NOT PCL_${COMPONENT}_LIBRARY_DEBUG AND PCL_${COMPONENT}_LIBRARY)
-      set(PCL_${COMPONENT}_LIBRARY_DEBUG ${PCL_${COMPONENT}_LIBRARY})
-    endif(NOT PCL_${COMPONENT}_LIBRARY_DEBUG AND PCL_${COMPONENT}_LIBRARY)
+    if(PCL_${COMPONENT}_LIBRARY_DEBUG)
+      get_filename_component(${component}_library_path_debug 
+        ${PCL_${COMPONENT}_LIBRARY_DEBUG}
+        PATH)
+    endif(PCL_${COMPONENT}_LIBRARY_DEBUG)
 
-    get_filename_component(${component}_library_path_debug 
-      ${PCL_${COMPONENT}_LIBRARY_DEBUG}
-      PATH)
-  
     find_package_handle_standard_args(PCL_${COMPONENT} DEFAULT_MSG
       PCL_${COMPONENT}_LIBRARY PCL_${COMPONENT}_INCLUDE_DIR)
   else(_is_header_only EQUAL -1)
@@ -519,11 +516,15 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
     list(APPEND PCL_INCLUDE_DIRS ${PCL_${COMPONENT}_INCLUDE_DIRS})
     mark_as_advanced(PCL_${COMPONENT}_INCLUDE_DIRS)
     if(_is_header_only EQUAL -1)
-      list(APPEND PCL_${COMPONENT}_LIBRARIES optimized ${PCL_${COMPONENT}_LIBRARY} debug ${PCL_${COMPONENT}_LIBRARY_DEBUG})
-      list(APPEND PCL_LIBRARIES ${PCL_${COMPONENT}_LIBRARIES})
       list(APPEND PCL_DEFINITIONS ${PCL_${COMPONENT}_DEFINITIONS})
       list(APPEND PCL_LIBRARY_DIRS ${component_library_path})
-      list(APPEND PCL_LIBRARY_DIRS ${component_library_path_debug})
+      if(PCL_${COMPONENT}_LIBRARY_DEBUG)
+        list(APPEND PCL_${COMPONENT}_LIBRARIES optimized ${PCL_${COMPONENT}_LIBRARY} debug ${PCL_${COMPONENT}_LIBRARY_DEBUG})
+        list(APPEND PCL_LIBRARY_DIRS ${component_library_path_debug})
+      else(PCL_${COMPONENT}_LIBRARY_DEBUG)
+        list(APPEND PCL_${COMPONENT}_LIBRARIES ${PCL_${COMPONENT}_LIBRARY})
+      endif(PCL_${COMPONENT}_LIBRARY_DEBUG)
+      list(APPEND PCL_LIBRARIES ${PCL_${COMPONENT}_LIBRARIES})
       mark_as_advanced(PCL_${COMPONENT}_LIBRARY PCL_${COMPONENT}_LIBRARY_DEBUG)
     endif(_is_header_only EQUAL -1)    
     # Append internal dependencies
