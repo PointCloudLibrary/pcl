@@ -38,28 +38,30 @@
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/parse.h>
+#include <pcl/console/print.h>
 #include <pcl/common/convolution.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
 void
 usage (char ** argv)
 {
-  std::cout << "usage: " << argv[0] << " <filename> <-r|-c|-s> [-p <borders policy>] [-t <number of threads>] [-d <distance>]\n" << std::endl;
-  std::cout << "Where options are:" << std::endl;
-  std::cout << "\t\t\t-r convolve rows" << std::endl;
-  std::cout << "\t\t\t-c convolve columns" << std::endl;
-  std::cout << "\t\t\t-s convolve separate" << std::endl;
-  std::cout << "\t\t\t-p borders policy" << std::endl;
-  std::cout << "\t\t\t\t Z zero padding, default" << std::endl;
-  std::cout << "\t\t\t\t D duplicate borders" << std::endl;
-  std::cout << "\t\t\t\t M mirror borders" << std::endl;
-  std::cout << "\t\t\t-t optional, number of threads, default 1" << std::endl;
-  std::cout << "\t\t\t-d optional, distance threshold, default 0.001" << std::endl;
+  pcl::console::print_info ("usage: %s <filename> <-r|-c|-s> [-p <borders policy>] [-t <number of threads>] [-d <distance>]\n\n", argv[0]);
+  pcl::console::print_info ("Where options are:\n");
+  pcl::console::print_info ("\t\t\t-r convolve rows\n");
+  pcl::console::print_info ("\t\t\t-c convolve columns\n");
+  pcl::console::print_info ("\t\t\t-s convolve separate\n");
+  pcl::console::print_info ("\t\t\t-p borders policy\n");
+  pcl::console::print_info ("\t\t\t\t Z zero padding, default\n");
+  pcl::console::print_info ("\t\t\t\t D duplicate borders\n");
+  pcl::console::print_info ("\t\t\t\t M mirror borders\n");
+  pcl::console::print_info ("\t\t\t-t optional, number of threads, default 1\n");
+  pcl::console::print_info ("\t\t\t-d optional, distance threshold, default 0.001\n");
 }
 
 int
 main (int argc, char ** argv)
 {
+  int viewport_source, viewport_convolved = 0;
   int direction = -1;
   int nb_threads = 0;
   char border_policy = 'Z';
@@ -67,7 +69,10 @@ main (int argc, char ** argv)
 	pcl::common::Convolution<pcl::PointXYZRGB> convolution;
 	Eigen::ArrayXf gaussian_kernel(5);
 	gaussian_kernel << 1.f/16, 1.f/4, 3.f/8, 1.f/4, 1.f/16;
-  std::cout << "convolution kernel " << gaussian_kernel.transpose () << std::endl;
+  pcl::console::print_info ("convolution kernel:");
+  for (int i = 0; i < gaussian_kernel.size (); ++i)
+    pcl::console::print_info (" %f", gaussian_kernel[i]);
+  pcl::console::print_info ("\n");
 
   if (argc < 3)
   {
@@ -86,17 +91,17 @@ main (int argc, char ** argv)
 
   // user don't need help find convolving direction
   // convolve row
-  if (pcl::console::find_switch (argc, argv, "-r") != -1)
+  if (pcl::console::find_switch (argc, argv, "-r"))
     direction = 0;
   else 
   {
     // convolve column
-    if (pcl::console::find_switch (argc, argv, "-c") != -1)
+    if (pcl::console::find_switch (argc, argv, "-c"))
       direction = 1;
     else
       // convolve both
-      if (pcl::console::find_switch (argc, argv, "-s") != -1)
-        direction = 2;    
+      if (pcl::console::find_switch (argc, argv, "-s"))
+        direction = 2;
       else
       {
         // wrong direction given print usage
@@ -146,46 +151,53 @@ main (int argc, char ** argv)
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB> ());
 	if (pcl::io::loadPCDFile (argv[1], *cloud) == -1)
   {
-    std::cerr << "Couldn't read file " << argv[1] << std::endl;
+    pcl::console::print_error ("Couldn't read file %s \n", argv[1]);
     return (-1);
   }
 	cloud->is_dense = false;
 	convolution.setInputCloud (cloud);
 	convolution.setKernel (gaussian_kernel);
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr convolved (new pcl::PointCloud<pcl::PointXYZRGB> ());
-
-  double t0;
-  std::cout << "convolving " << argv[1] << " along ";
   
+  double t0;
+  pcl::console::print_info ("convolving %s along \n", argv[1]);
+  std::ostringstream convolved_label;
+  convolved_label << "convolved along ";
   switch (direction)
   {
     case 0: 
     {
-      std::cout << "rows... ";
+      convolved_label << "rows... ";
       t0 = pcl::getTime ();
       convolution.convolveRows (*convolved);
-    }    
-    break;
+      break;
+    }
     case 1: 
     {
-      std::cout << "columns... ";
+      convolved_label << "columns... ";
       t0 = pcl::getTime ();
       convolution.convolveCols (*convolved);
+      break;
     }
-    break;
     case 2: 
     { 
-      std::cout << "rows and columns... ";
+      convolved_label << "rows and columns... ";
       t0 = pcl::getTime ();
       convolution.convolve (*convolved);
+      break;
     }
-    break;      
   }
-
-  std::cout << "in " << pcl::getTime () - t0 << "s" << std::endl;
+  convolved_label << pcl::getTime () - t0 << "s";
+  // Display
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Convolution"));
+  // viewport stuff
+  viewer->createViewPort (0, 0, 0.5, 1, viewport_source);
+  viewer->createViewPort (0.5, 0, 1, 1, viewport_convolved);
   viewer->setBackgroundColor (0, 0, 0);
-	pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> convolved_color (convolved);
-  viewer->addPointCloud<pcl::PointXYZRGB> (convolved, convolved_color, "convolved");	
+	pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> color_handler (convolved);
+  viewer->addPointCloud<pcl::PointXYZRGB> (cloud, color_handler, "source", viewport_source);
+  viewer->addText ("source", 10, 10, "source_label", viewport_source);
+  viewer->addPointCloud<pcl::PointXYZRGB> (convolved, color_handler, "convolved", viewport_convolved);
+  viewer->addText (convolved_label.str (), 10, 10, "convolved_label", viewport_convolved);
 	viewer->spin ();
 }

@@ -41,9 +41,6 @@ if(build)
   PCL_ADD_EXECUTABLE(statistical_multiscale_interest_region_extraction_example ${SUBSYS_NAME} src/statistical_multiscale_interest_region_extraction_example.cpp)
   target_link_libraries(statistical_multiscale_interest_region_extraction_example pcl_common pcl_io pcl_features pcl_filters)
 
-#  PCL_ADD_EXECUTABLE(convolve ${SUBSYS_NAME} src/convolve.cpp)
-#  target_link_libraries(convolve pcl_common pcl_io)
-
   if (VTK_FOUND)
     PCL_ADD_EXECUTABLE(ppf_object_recognition ${SUBSYS_NAME} src/ppf_object_recognition.cpp)
     target_link_libraries(ppf_object_recognition pcl_common pcl_io pcl_filters pcl_features pcl_registration pcl_visualization pcl_sample_consensus pcl_segmentation)  
@@ -54,6 +51,9 @@ if(build)
     PCL_ADD_EXECUTABLE(surfel_smoothing_test ${SUBSYS_NAME} src/surfel_smoothing_test.cpp)
     target_link_libraries(surfel_smoothing_test pcl_common pcl_io pcl_surface pcl_filters pcl_features pcl_visualization)
     
+#    PCL_ADD_EXECUTABLE(convolve ${SUBSYS_NAME} src/convolve.cpp)
+#    target_link_libraries(convolve pcl_common pcl_io pcl_visualization)
+
     if (OPENNI_FOUND AND BUILD_OPENNI)  
       PCL_ADD_EXECUTABLE(openni_fast_mesh ${SUBSYS_NAME} src/openni_fast_mesh.cpp)
       target_link_libraries(openni_fast_mesh pcl_common pcl_io pcl_visualization pcl_surface)
