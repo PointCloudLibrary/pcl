@@ -210,8 +210,6 @@ class octree_base
     boost::uint64_t
     addDataToLeaf_and_genLOD (const std::vector<PointT>& p);
 
-
-
     // DB Access
     // -----------------------------------------------------------------------
 
@@ -339,7 +337,7 @@ class octree_base
     /** \brief Pointer to the root node of the octree data structure */
     octree_base_node<Container, PointT>* root_;
     /** \brief shared mutex for controlling read/write access to disk */
-    mutable boost::shared_mutex read_write_mutex;
+    mutable boost::shared_mutex read_write_mutex_;
     /** \brief vector indexed by depth containing number of points at each level of detail */
     std::vector<boost::uint64_t> lodPoints_;
     /** \brief the pre-set maximum depth of the tree */

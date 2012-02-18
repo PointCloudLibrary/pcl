@@ -71,16 +71,16 @@ template<typename Container, typename PointT>
 class octree_base_node
 {
   friend class octree_base<Container, PointT> ;
-
+  
   friend octree_base_node<Container, PointT>*
   makenode_norec<Container, PointT> (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super);
-
+  
   friend void
   queryBBIntersects_noload<Container, PointT> (const boost::filesystem::path& rootnode, const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name);
 
   friend void
   queryBBIntersects_noload<Container, PointT> (octree_base_node<Container, PointT>* current, const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name);
-
+  
   public:
     const static std::string node_index_basename;
     const static std::string node_container_basename;
@@ -90,18 +90,18 @@ class octree_base_node
 
     octree_base_node ()
     {
-      parent = NULL;
+      parent_ = NULL;
       root_ = NULL;
-      depth = 0;
+      depth_ = 0;
 
-      memset (children, 0, 8 * sizeof(octree_base_node<Container, PointT>*));
-      numchild = 0;
-
-      midx = 0;
-      midy = 0;
-      midz = 0;
-      memset (min, 0, 3 * sizeof(double));
-      memset (max, 0, 3 * sizeof(double));
+      memset (children_, 0, 8 * sizeof(octree_base_node<Container, PointT>*));
+      numchild_ = 0;
+      
+      midx_ = 0;
+      midy_ = 0;
+      midz_ = 0;
+      memset (min_, 0, 3 * sizeof(double));
+      memset (max_, 0, 3 * sizeof(double));
 
     }
 
@@ -142,8 +142,8 @@ class octree_base_node
     inline void
     getBB (double minCoord[3], double maxCoord[3]) const
     {
-      memcpy (minCoord, min, 3 * sizeof(double));
-      memcpy (maxCoord, max, 3 * sizeof(double));
+      memcpy (minCoord, min_, 3 * sizeof(double));
+      memcpy (maxCoord, max_, 3 * sizeof(double));
     }
 
     void
@@ -206,7 +206,7 @@ class octree_base_node
     /** \brief Recursively add points to the leaf and children subsampling LODs
      * on the way down.
      *
-     * rng_mutex lock occurs
+     * rng_mutex_ lock occurs
      */
     boost::uint64_t
     addDataToLeaf_and_genLOD (const std::vector<PointT>& p,
@@ -238,14 +238,14 @@ class octree_base_node
     inline boost::uint64_t
     size () const
     {
-      return payload->size ();
+      return payload_->size ();
     }
 
     /** \brief Number of children (0 or 8). */
     inline size_t
-    numchildren () const
+    numchild_ren () const
     {
-      return numchild;
+      return numchild_;
     }
 
     /** \brief Flush payload's cache to disk */
@@ -299,43 +299,43 @@ class octree_base_node
     void
     loadChildren (bool recursive);
 
-    boost::filesystem::path thisdir;//the dir containing the node's data and its children
-    boost::filesystem::path thisnodeindex;//the node's index file, node.idx
-    boost::filesystem::path thisnodestorage;//the node's storage file, node.dat
+    boost::filesystem::path thisdir_;//the dir containing the node's data and its children
+    boost::filesystem::path thisnodeindex_;//the node's index file, node.idx
+    boost::filesystem::path thisnodestorage_;//the node's storage file, node.dat
 
     /** \brief The tree we belong to */
     octree_base<Container, PointT>* m_tree_;//
     /** \brief The root node of the tree we belong to */
     octree_base_node* root_;//
     /** \brief super-node */
-    octree_base_node* parent;
+    octree_base_node* parent_;
     /** \brief Depth in the tree, root is 0, root's children are 1, ... */
-    size_t depth;
+    size_t depth_;
     /** \brief The children of this node */
-    octree_base_node* children[8];
+    octree_base_node* children_[8];
     /** \brief number of children this node has. Between 0 and 8 inclusive */
-    size_t numchild;
+    size_t numchild_;
 
     /** \brief what holds the points. currently a custom class, but in theory
      * you could use an stl container if you rewrote some of this class. I used
      * to use deques for this...
      */
-    Container* payload;
+    Container* payload_;
 
     /** \brief The bounding box and middle point */
-    double min[3];
-    double max[3];
-    double midx;
-    double midy;
-    double midz;
+    double min_[3];
+    double max_[3];
+    double midx_;
+    double midy_;
+    double midz_;
 
     /** \brief Random number generator mutex */
-    static boost::mutex rng_mutex;
+    static boost::mutex rng_mutex_;
 
     /** \brief Mersenne Twister: A 623-dimensionally equidistributed uniform
      * pseudo-random number generator
      */
-    static boost::mt19937 rand_gen;
+    static boost::mt19937 rand_gen_;
 
     /** \brief Random number generator seed */
     const static boost::uint32_t rngseed = 0xAABBCCDD;

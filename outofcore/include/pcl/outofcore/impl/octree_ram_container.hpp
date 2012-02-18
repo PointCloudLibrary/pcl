@@ -52,22 +52,22 @@
 //       had RNGs seeded to the same value). the mutex could effect performance
 
 template<typename PointT>
-boost::mutex octree_ram_container<PointT>::rng_mutex;
+boost::mutex octree_ram_container<PointT>::rng_mutex_;
 
 template<typename PointT> 
-boost::mt19937 octree_ram_container<PointT>::rand_gen (std::time( NULL));
+boost::mt19937 octree_ram_container<PointT>::rand_gen_ (std::time( NULL));
 
 template<typename PointT> void
 octree_ram_container<PointT>::convertToXYZ (const boost::filesystem::path& path)
 {
-  if (!container.empty ())
+  if (!container_.empty ())
   {
     FILE* fxyz = fopen (path.string ().c_str (), "w");
 
     boost::uint64_t num = size ();
     for (boost::uint64_t i = 0; i < num; i++)
     {
-      const PointT& p = container[i];
+      const PointT& p = container_[i];
 
       std::stringstream ss;
       ss << std::fixed;
@@ -84,7 +84,7 @@ octree_ram_container<PointT>::convertToXYZ (const boost::filesystem::path& path)
 template<typename PointT> inline void
 octree_ram_container<PointT>::insertRange (const PointT* start, const boost::uint64_t count)
 {
-  container.insert (container.end (), start, start + count);
+  container_.insert (container_.end (), start, start + count);
 }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -97,7 +97,7 @@ octree_ram_container<PointT>::insertRange (const PointT* const * start, const bo
   {
     temp[i] = *start[i];
   }
-  container.insert (container.end (), temp.begin (), temp.end ());
+  container_.insert (container_.end (), temp.begin (), temp.end ());
 }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -117,7 +117,7 @@ octree_ram_container<PointT>::readRange (const boost::uint64_t start, const boos
   */
 
   v.resize (count);
-  memcpy (v.data (), container.data () + start, count * sizeof(PointT));
+  memcpy (v.data (), container_.data () + start, count * sizeof(PointT));
 
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -130,15 +130,15 @@ octree_ram_container<PointT>::readRangeSubSample (const boost::uint64_t start,
 {
   boost::uint64_t samplesize = percent * static_cast<double> (count);
 
-  boost::mutex::scoped_lock lock (rng_mutex);
+  boost::mutex::scoped_lock lock (rng_mutex_);
 
   boost::uniform_int < boost::uint64_t > buffdist (start, start + count);
-  boost::variate_generator<boost::mt19937&, boost::uniform_int<boost::uint64_t> > buffdie (rand_gen, buffdist);
+  boost::variate_generator<boost::mt19937&, boost::uniform_int<boost::uint64_t> > buffdie (rand_gen_, buffdist);
 
   for (boost::uint64_t i = 0; i < samplesize; i++)
   {
     boost::uint64_t buffstart = buffdie ();
-    v.push_back (container[buffstart]);
+    v.push_back (container_[buffstart]);
   }
 }
 ////////////////////////////////////////////////////////////////////////////////

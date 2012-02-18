@@ -286,7 +286,7 @@ octree_base<Container, PointT>::loadFromFile ()
 template<typename Container, typename PointT> boost::uint64_t
 octree_base<Container, PointT>::addDataToLeaf (const std::vector<PointT>& p)
 {
-  boost::unique_lock < boost::shared_mutex > lock (read_write_mutex);
+  boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
   boost::uint64_t pt_added = root_->addDataToLeaf (p, false);
   return (pt_added);
 }
@@ -296,7 +296,7 @@ template<typename Container, typename PointT> boost::uint64_t
 octree_base<Container, PointT>::addDataToLeaf_and_genLOD (const std::vector<PointT>& p)
 {
   // Lock the tree while writing
-  boost::unique_lock < boost::shared_mutex > lock (read_write_mutex);
+  boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
   boost::uint64_t pt_added = root_->addDataToLeaf_and_genLOD (p, false);
   return (pt_added);
 }
@@ -305,7 +305,7 @@ octree_base<Container, PointT>::addDataToLeaf_and_genLOD (const std::vector<Poin
 template<typename Container, typename PointT> void
 octree_base<Container, PointT>::queryBBIncludes (const double min[3], const double max[3], size_t query_depth, std::list<PointT>& v) const
 {
-  boost::shared_lock < boost::shared_mutex > lock (read_write_mutex);
+  boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
   v.clear ();
   root_->queryBBIncludes (min, max, query_depth, v);
 }
@@ -316,7 +316,7 @@ octree_base<Container, PointT>::queryBBIncludes_subsample (const double min[3], 
                                                               size_t query_depth, const double percent,
                                                               std::list<PointT>& v) const
 {
-  boost::shared_lock < boost::shared_mutex > lock (read_write_mutex);
+  boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
   v.clear ();
   root_->queryBBIncludes_subsample (min, max, query_depth, percent, v);
 }
@@ -327,7 +327,7 @@ octree_base<Container, PointT>::queryBBIntersects (const double min[3], const do
                                                       const boost::uint32_t query_depth,
                                                       std::list<std::string>& bin_name) const
 {
-  boost::shared_lock < boost::shared_mutex > lock (read_write_mutex);
+  boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
   bin_name.clear ();
 #pragma warning(push)
 #pragma warning(disable : 4267)
@@ -407,7 +407,7 @@ octree_base<Container, PointT>::buildLOD ()
     std::cerr << "root is null, aborting buildLOD" << std::endl;
     return;
   }
-  boost::unique_lock < boost::shared_mutex > lock (read_write_mutex);
+  boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
 
   const int current_dims = 1;
   octree_base_node<Container, PointT>* current_branch[current_dims] = {root_};
@@ -500,7 +500,7 @@ octree_base<Container, PointT>::buildLOD (octree_base_node<Container, PointT>** 
 template<typename Container, typename PointT> boost::uint64_t
 octree_base<Container, PointT>::addPointsFromInputCloud ()
 {
-  boost::unique_lock < boost::shared_mutex > lock (read_write_mutex);
+  boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
   boost::uint64_t pt_added = root_->addDataToLeaf ( input_->points, false );
 
   return pt_added;

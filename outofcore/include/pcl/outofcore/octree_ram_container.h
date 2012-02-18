@@ -62,7 +62,7 @@ class octree_ram_container
 
     /** \brief empty contructor (with a path parameter?) */
     octree_ram_container (const boost::filesystem::path& dir) { }
-    
+        
     /** \brief inserts count points into container 
      * \param[in] start - address of first point in array
      * \param[in] count - the maximum offset from start of points inserted 
@@ -102,7 +102,7 @@ class octree_ram_container
     inline boost::uint64_t
     size () const
     {
-      return container.size ();
+      return container_.size ();
     }
 
     /** \brief NOT IMPLEMENTED*/
@@ -113,7 +113,7 @@ class octree_ram_container
     inline void
     clear ()
     {
-      container.clear ();
+      container_.clear ();
     }
 
     /** \brief Writes ascii x,y,z point data to path.string().c_str()
@@ -134,10 +134,10 @@ class octree_ram_container
     //std::deque<PointT> container;
 
     /** \brief linear container to hold the points */
-    std::vector<PointT> container;
+    std::vector<PointT> container_;
 
-    static boost::mutex rng_mutex;
-    static boost::mt19937 rand_gen;
+    static boost::mutex rng_mutex_;
+    static boost::mt19937 rand_gen_;
 };
 
 

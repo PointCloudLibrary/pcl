@@ -136,13 +136,13 @@ class octree_disk_container
     boost::uint64_t
     size () const
     {
-      return filelen + writebuff.size ();
+      return filelen_ + writebuff_.size ();
     }
 
     bool
     empty ()
     {
-      return ((filelen == 0) && writebuff.empty ());
+      return ((filelen_ == 0) && writebuff_.empty ());
     }
 
     void
@@ -160,9 +160,9 @@ class octree_disk_container
     inline void
     clear ()
     {
-      writebuff.clear ();
+      writebuff_.clear ();
       boost::filesystem::remove (boost::filesystem::path (fileback_name_->c_str ()));
-      filelen = 0;
+      filelen_ = 0;
     }
 
     void
@@ -221,14 +221,14 @@ class octree_disk_container
     flush_writebuff (const bool forceCacheDeAlloc);
     
     //elements [0,...,size()-1] map to [filelen, ..., filelen + size()-1]
-    std::vector<PointT> writebuff;
+    std::vector<PointT> writebuff_;
 
     //std::fstream fileback;//elements [0,...,filelen-1]
     std::string *fileback_name_;
 
 
     //number of elements in file
-    boost::uint64_t filelen;
+    boost::uint64_t filelen_;
 
     //static const size_t writebuffmax = 100000;
     static const size_t writebuffmax = 50000;
@@ -239,9 +239,9 @@ class octree_disk_container
 
     //boost::posix_time::ptime lastwrite;
 
-    static boost::mutex rng_mutex;
-    static boost::mt19937 rand_gen;
-    static boost::uuids::random_generator uuid_gen;
+    static boost::mutex rng_mutex_;
+    static boost::mt19937 rand_gen_;
+    static boost::uuids::random_generator uuid_gen_;
 };
 
 #endif //PCL_OUTOFCORE_OCTREE_DISK_CONTAINER_H_

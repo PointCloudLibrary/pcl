@@ -58,21 +58,21 @@
 #endif
 
 template<typename PointT>
-boost::mutex octree_disk_container<PointT>::rng_mutex;
+boost::mutex octree_disk_container<PointT>::rng_mutex_;
 
 template<typename PointT> boost::mt19937
-octree_disk_container<PointT>::rand_gen (std::time( NULL));
+octree_disk_container<PointT>::rand_gen_ (std::time( NULL));
 
 template<typename PointT>
-boost::uuids::random_generator octree_disk_container<PointT>::uuid_gen (&rand_gen);
+boost::uuids::random_generator octree_disk_container<PointT>::uuid_gen_ (&rand_gen_);
 
 template<typename PointT> void
 octree_disk_container<PointT>::getRandomUUIDString (std::string& s)
 {
   boost::uuids::uuid u;
   {
-    boost::mutex::scoped_lock lock (rng_mutex);
-    u = uuid_gen ();
+    boost::mutex::scoped_lock lock (rng_mutex_);
+    u = uuid_gen_ ();
   }
 
   std::stringstream ss;
@@ -87,7 +87,7 @@ octree_disk_container<PointT>::octree_disk_container ()
   std::string temp = getRandomUUIDString ();
   fileback_name_ = new std::string ();
   *fileback_name_ = temp;
-  filelen = 0;
+  filelen_ = 0;
   //writebuff.reserve(writebuffmax);
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -106,7 +106,7 @@ octree_disk_container<PointT>::octree_disk_container (const boost::filesystem::p
 
       fileback_name_ = new std::string (file.string ());
 
-      filelen = 0;
+      filelen_ = 0;
     }
     else
     {
@@ -114,13 +114,13 @@ octree_disk_container<PointT>::octree_disk_container (const boost::filesystem::p
 
       fileback_name_ = new std::string (path.string ());
 
-      filelen = len / sizeof(PointT);
+      filelen_ = len / sizeof(PointT);
     }
   }
   else
   {
     fileback_name_ = new std::string (path.string ());
-    filelen = 0;
+    filelen_ = 0;
   }
 
   //writebuff.reserve(writebuffmax);
@@ -144,20 +144,20 @@ octree_disk_container<PointT>::~octree_disk_container ()
 template<typename PointT> void
 octree_disk_container<PointT>::flush_writebuff (const bool forceCacheDeAlloc)
 {
-  if (writebuff.size () > 0)
+  if (writebuff_.size () > 0)
   {
     FILE* f = fopen (fileback_name_->c_str (), "a+b");
 
-    size_t len = writebuff.size () * sizeof(PointT);
-    char* loc = (char*)&(writebuff.front ());
+    size_t len = writebuff_.size () * sizeof(PointT);
+    char* loc = (char*)&(writebuff_.front ());
     size_t w = fwrite (loc, 1, len, f);
     assert (w == len);
 
     //		int closeret = fclose(f);
     fclose (f);
 
-    filelen += writebuff.size ();
-    writebuff.clear ();
+    filelen_ += writebuff_.size ();
+    writebuff_.clear ();
   }
 
   //if(forceCacheDeAlloc || (size() >= node<octree_disk_container<PointT>, PointT>::split_thresh))  //if told to dump cache, or if we have more nodes than the split threshold
@@ -166,7 +166,7 @@ octree_disk_container<PointT>::flush_writebuff (const bool forceCacheDeAlloc)
     //don't reserve anymore -- lets us have more nodes and be fairly
     //lazy about dumping the cache. but once it is dumped for the last
     //time, this needs to be empty.
-    writebuff.resize (0);
+    writebuff_.resize (0);
   }
   else
   {
@@ -179,7 +179,7 @@ octree_disk_container<PointT>::flush_writebuff (const bool forceCacheDeAlloc)
 template<typename PointT> PointT
 octree_disk_container<PointT>::operator[] (boost::uint64_t idx)
 {
-  if (idx < filelen)
+  if (idx < filelen_)
   {
     PointT temp;
 
@@ -198,18 +198,17 @@ octree_disk_container<PointT>::operator[] (boost::uint64_t idx)
     return temp;
   }
 
-  if (idx < (filelen + writebuff.size ()))
+  if (idx < (filelen_ + writebuff_.size ()))
   {
-    idx -= filelen;
-    return writebuff[idx];
+    idx -= filelen_;
+    return writebuff_[idx];
   }
   throw("out of range");
 }
 ////////////////////////////////////////////////////////////////////////////////
 
 template<typename PointT> void
-octree_disk_container<PointT>::readRange (const boost::uint64_t start, const boost::uint64_t count,
-                                             std::vector<PointT>& v)
+octree_disk_container<PointT>::readRange (const boost::uint64_t start, const boost::uint64_t count, std::vector<PointT>& v)
 {
   if ((start + count) > size ())
   {
@@ -227,18 +226,18 @@ octree_disk_container<PointT>::readRange (const boost::uint64_t start, const boo
   boost::int64_t buffstart = -1;
   boost::int64_t buffcount = -1;
 
-  if (start < filelen)
+  if (start < filelen_)
   {
     filestart = start;
   }
 
-  if ((start + count) <= filelen)
+  if ((start + count) <= filelen_)
   {
     filecount = count;
   }
   else
   {
-    filecount = filelen - start;
+    filecount = filelen_ - start;
 
     buffstart = 0;
     buffcount = count - filecount;
@@ -279,8 +278,8 @@ octree_disk_container<PointT>::readRange (const boost::uint64_t start, const boo
   //copy the extra
   if (buffstart != -1)
   {
-    typename std::vector<PointT>::const_iterator start = writebuff.begin ();
-    typename std::vector<PointT>::const_iterator end = writebuff.begin ();
+    typename std::vector<PointT>::const_iterator start = writebuff_.begin ();
+    typename std::vector<PointT>::const_iterator end = writebuff_.begin ();
 
     std::advance (start, buffstart);
     std::advance (end, buffstart + buffcount);
@@ -292,10 +291,7 @@ octree_disk_container<PointT>::readRange (const boost::uint64_t start, const boo
 ////////////////////////////////////////////////////////////////////////////////
 
 template<typename PointT> void
-octree_disk_container<PointT>::readRangeSubSample_bernoulli (const boost::uint64_t start,
-                                                                const boost::uint64_t count, 
-                                                                const double percent,
-                                                                std::vector<PointT>& v)
+octree_disk_container<PointT>::readRangeSubSample_bernoulli (const boost::uint64_t start, const boost::uint64_t count, const double percent, std::vector<PointT>& v)
 {
   if (count == 0)
   {
@@ -310,18 +306,18 @@ octree_disk_container<PointT>::readRangeSubSample_bernoulli (const boost::uint64
   boost::int64_t buffstart = -1;
   boost::int64_t buffcount = -1;
 
-  if (start < filelen)
+  if (start < filelen_)
   {
     filestart = start;
   }
 
-  if ((start + count) <= filelen)
+  if ((start + count) <= filelen_)
   {
     filecount = count;
   }
   else
   {
-    filecount = filelen - start;
+    filecount = filelen_ - start;
 
     buffstart = 0;
     buffcount = count - filecount;
@@ -330,15 +326,15 @@ octree_disk_container<PointT>::readRangeSubSample_bernoulli (const boost::uint64
   if (buffcount > 0)
   {
     {
-      boost::mutex::scoped_lock lock (rng_mutex);
+      boost::mutex::scoped_lock lock (rng_mutex_);
       boost::bernoulli_distribution<double> buffdist (percent);
-      boost::variate_generator<boost::mt19937&, boost::bernoulli_distribution<double> > buffcoin (rand_gen, buffdist);
+      boost::variate_generator<boost::mt19937&, boost::bernoulli_distribution<double> > buffcoin (rand_gen_, buffdist);
 
       for (boost::uint64_t i = buffstart; i < buffcount; i++)
       {
         if (buffcoin ())
         {
-          v.push_back (writebuff[i]);
+          v.push_back (writebuff_[i]);
         }
       }
     }
@@ -349,10 +345,10 @@ octree_disk_container<PointT>::readRangeSubSample_bernoulli (const boost::uint64
     //pregen and then sort the offsets to reduce the amount of seek
     std::vector < boost::uint64_t > offsets;
     {
-      boost::mutex::scoped_lock lock (rng_mutex);
+      boost::mutex::scoped_lock lock (rng_mutex_);
 
       boost::bernoulli_distribution<double> filedist (percent);
-      boost::variate_generator<boost::mt19937&, boost::bernoulli_distribution<double> > filecoin (rand_gen, filedist);
+      boost::variate_generator<boost::mt19937&, boost::bernoulli_distribution<double> > filecoin (rand_gen_, filedist);
       for (boost::uint64_t i = filestart; i < (filestart + filecount); i++)
       {
         if (filecoin ())
@@ -384,8 +380,7 @@ octree_disk_container<PointT>::readRangeSubSample_bernoulli (const boost::uint64
 
 //change this to use a weighted coin flip, to allow sparse sampling of small clouds (eg the bernoulli above)
 template<typename PointT> void
-octree_disk_container<PointT>::readRangeSubSample (const boost::uint64_t start, const boost::uint64_t count,
-                                                      const double percent, std::vector<PointT>& v)
+octree_disk_container<PointT>::readRangeSubSample (const boost::uint64_t start, const boost::uint64_t count, const double percent, std::vector<PointT>& v)
 {
   if (count == 0)
   {
@@ -400,18 +395,18 @@ octree_disk_container<PointT>::readRangeSubSample (const boost::uint64_t start, 
   boost::int64_t buffstart = -1;
   boost::int64_t buffcount = -1;
 
-  if (start < filelen)
+  if (start < filelen_)
   {
     filestart = start;
   }
 
-  if ((start + count) <= filelen)
+  if ((start + count) <= filelen_)
   {
     filecount = count;
   }
   else
   {
-    filecount = filelen - start;
+    filecount = filelen_ - start;
 
     buffstart = 0;
     buffcount = count - filecount;
@@ -430,15 +425,15 @@ octree_disk_container<PointT>::readRangeSubSample (const boost::uint64_t start, 
   if (buffcount > 0)
   {
     {
-      boost::mutex::scoped_lock lock (rng_mutex);
+      boost::mutex::scoped_lock lock (rng_mutex_);
 
       boost::uniform_int < boost::uint64_t > buffdist (0, buffcount - 1);
-      boost::variate_generator<boost::mt19937&, boost::uniform_int<boost::uint64_t> > buffdie (rand_gen, buffdist);
+      boost::variate_generator<boost::mt19937&, boost::uniform_int<boost::uint64_t> > buffdie (rand_gen_, buffdist);
 
       for (boost::uint64_t i = 0; i < buffsamp; i++)
       {
         boost::uint64_t buffstart = buffdie ();
-        v.push_back (writebuff[buffstart]);
+        v.push_back (writebuff_[buffstart]);
       }
     }
   }
@@ -448,11 +443,11 @@ octree_disk_container<PointT>::readRangeSubSample (const boost::uint64_t start, 
     //pregen and then sort the offsets to reduce the amount of seek
     std::vector < boost::uint64_t > offsets;
     {
-      boost::mutex::scoped_lock lock (rng_mutex);
+      boost::mutex::scoped_lock lock (rng_mutex_);
 
       offsets.resize (filesamp);
       boost::uniform_int < boost::uint64_t > filedist (filestart, filestart + filecount - 1);
-      boost::variate_generator<boost::mt19937&, boost::uniform_int<boost::uint64_t> > filedie (rand_gen, filedist);
+      boost::variate_generator<boost::mt19937&, boost::uniform_int<boost::uint64_t> > filedie (rand_gen_, filedist);
       for (boost::uint64_t i = 0; i < filesamp; i++)
       {
         boost::uint64_t filestart = filedie ();
@@ -482,8 +477,8 @@ octree_disk_container<PointT>::readRangeSubSample (const boost::uint64_t start, 
 template<typename PointT> inline void
 octree_disk_container<PointT>::push_back (const PointT& p)
 {
-  writebuff.push_back (p);
-  if (writebuff.size () > writebuffmax)
+  writebuff_.push_back (p);
+  if (writebuff_.size () > writebuffmax)
   {
     flush_writebuff (false);
   }
@@ -516,7 +511,7 @@ octree_disk_container<PointT>::insertRange (const PointT* start, const boost::ui
   //	int closeret = fclose(f);
   fclose (f);
 
-  filelen += count;
+  filelen_ += count;
 }
 ////////////////////////////////////////////////////////////////////////////////
 
