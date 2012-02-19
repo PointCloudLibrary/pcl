@@ -77,7 +77,7 @@ pcl::search::BruteForce<PointT>::denseKSearch (
   if (indices_ != NULL)
   {
     std::vector<int>::const_iterator iIt =indices_->begin ();
-    std::vector<int>::const_iterator iEnd = indices_->begin () + std::min ((unsigned) k, (unsigned) input_->size ());
+    std::vector<int>::const_iterator iEnd = indices_->begin () + std::min ((unsigned) k, (unsigned) indices_->size ());
     for (; iIt != iEnd; ++iIt)
       result.push_back (Entry (*iIt, getDistSqr (input_->points[*iIt], point)));
 
