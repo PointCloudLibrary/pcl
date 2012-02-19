@@ -21,11 +21,11 @@ if(GLUT_FOUND)
     ${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
 
 
-  PCL_ADD_EXECUTABLE(test_viewer ${SUBSYS_NAME} test_viewer.cpp)
-  target_link_libraries (test_viewer
-    ${VTK_IO_TARGET_LINK_LIBRARIES} 
-    pcl_simulation   pcl_common  pcl_io pcl_visualization 
-    ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES})
+#  PCL_ADD_EXECUTABLE(test_viewer ${SUBSYS_NAME} test_viewer.cpp)
+#  target_link_libraries (test_viewer
+#    ${VTK_IO_TARGET_LINK_LIBRARIES} 
+#    pcl_simulation   pcl_common  pcl_io pcl_visualization 
+#    ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES})
 
 #include_directories(${VTK_INCLUDE_DIRS})
 #PCL_ADD_EXECUTABLE(range-test-v2-christian ${SUBSYS_NAME} range_test_v2_christian.cpp)
