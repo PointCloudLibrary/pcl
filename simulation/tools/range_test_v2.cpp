@@ -24,8 +24,8 @@
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>
 #endif
+#include <GL/glew.h>
 #include <GL/gl.h>
-
 #include <GL/glu.h>
 #include <GL/glut.h>
 #include <pcl/io/pcd_io.h>
@@ -63,6 +63,7 @@ using namespace Eigen;
 using namespace pcl;
 using namespace pcl::console;
 using namespace pcl::io;
+using namespace pcl::simulation;
 
 using namespace std;
 
@@ -70,7 +71,8 @@ uint16_t t_gamma[2048];
 
 Scene::Ptr scene_;
 Camera::Ptr camera_;
-RangeLikelihood::Ptr range_likelihood_;
+RangeLikelihoodGLSL::Ptr range_likelihood_;
+
 int window_width_;
 int window_height_;
 bool paused_;
@@ -87,9 +89,38 @@ void wait(){
       std::cout << "\n\n";
 }
 
+void display_score_image(const float* score_buffer){
+  int npixels = range_likelihood_->width() * range_likelihood_->height();
+  uint8_t* score_img = new uint8_t[npixels * 3];
+
+  float min_score = score_buffer[0];
+  float max_score = score_buffer[0];
+  for (int i=1; i<npixels; i++) {
+    if (score_buffer[i] < min_score) min_score = score_buffer[i];
+    if (score_buffer[i] > max_score) max_score = score_buffer[i];
+  }
+  for (int i=0; i<npixels; i++) {
+    float d = (score_buffer[i]-min_score)/(max_score-min_score);
+    score_img[3*i+0] = 0;
+    score_img[3*i+1] = d*255;
+    score_img[3*i+2] = 0;
+  }
+  glRasterPos2i(-1,-1);
+  glDrawPixels(range_likelihood_->width(), range_likelihood_->height(), GL_RGB, GL_UNSIGNED_BYTE, score_img);
+
+  delete [] score_img;
+}
+
 void display_depth_image(const float* depth_buffer){
   int npixels = range_likelihood_->width() * range_likelihood_->height();
   uint8_t* depth_img = new uint8_t[npixels * 3];
+
+  float min_depth = depth_buffer[0];
+  float max_depth = depth_buffer[0];
+  for (int i=1; i<npixels; i++) {
+    if (depth_buffer[i] < min_depth) min_depth = depth_buffer[i];
+    if (depth_buffer[i] > max_depth) max_depth = depth_buffer[i];
+  }
 
   for (int i=0; i<npixels; i++) {
     float zn = 0.7;
@@ -150,8 +181,6 @@ void display_depth_image(const float* depth_buffer){
 }
 
 void display() {
-  glViewport(range_likelihood_->width(), 0, range_likelihood_->width(), range_likelihood_->height());
-  
   float* reference = new float[range_likelihood_->row_height() * range_likelihood_->col_width()];
   const float* depth_buffer = range_likelihood_->depth_buffer();
   // Copy one image from our last as a reference.
@@ -164,40 +193,59 @@ void display() {
   std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses;
   std::vector<float> scores;
   int n = range_likelihood_->rows()*range_likelihood_->cols();
-  for (int i=0; i<n; ++i) { // This is used when there is 
+  for (int i=0; i<n; ++i) {
     Camera camera(*camera_);
-    camera.move(0.0,0.0,0.0);
+    camera.move(0.0,i*0.02,0.0);
     //camera.move(0.0,i*0.02,0.0);
     poses.push_back(camera.pose());
   }
-  float* depth_field =NULL;
-  bool do_depth_field =false;
-  range_likelihood_->compute_likelihoods(reference, poses, scores,depth_field,do_depth_field);
-//  range_likelihood_->compute_likelihoods(reference, poses, scores);
-  delete [] reference;
-  delete [] depth_field;
-
+  float* depth_field = NULL;
+  bool do_depth_field = false;
+  range_likelihood_->compute_likelihoods (reference, poses, scores, depth_field, do_depth_field);
   std::cout << "score: ";
   for (size_t i=0; i<scores.size(); ++i) {
     std::cout << " " << scores[i];
   }
   std::cout << std::endl;
 
-  // Draw the depth image
-  //  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  //  glColorMask(true, true, true, true);
-  glDisable(GL_DEPTH_TEST);
-  glViewport(0, 0, range_likelihood_->width(), range_likelihood_->height());
-  //glViewport(0, 0, range_likelihood_->width(), range_likelihood_->height());
+  delete [] reference;
+  delete [] depth_field;
 
+  glDrawBuffer(GL_BACK);
+  glReadBuffer(GL_BACK);
+
+  // Draw the resulting images from the range_likelihood
+  glViewport(range_likelihood_->width(), 0, range_likelihood_->width(), range_likelihood_->height());
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  //glRasterPos2i(-1,-1);
-  //glDrawPixels(range_likelihood_->width(), range_likelihood_->height(), GL_LUMINANCE, GL_FLOAT, range_likelihood_->depth_buffer());
+  // Draw the color image
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glColorMask(true, true, true, true);
+  glDisable(GL_DEPTH_TEST);
+
+  glRasterPos2i(-1,-1);
+  glDrawPixels(range_likelihood_->width(), range_likelihood_->height(), GL_RGB, GL_UNSIGNED_BYTE, range_likelihood_->color_buffer());
+
+  // Draw the depth image
+  glViewport(0, 0, range_likelihood_->width(), range_likelihood_->height());
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
   display_depth_image(range_likelihood_->depth_buffer());
+
+  // Draw the score image
+  glViewport(0, range_likelihood_->height(), range_likelihood_->width(), range_likelihood_->height());
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  display_score_image(range_likelihood_->score_buffer());
+
   glutSwapBuffers();
   
   if (write_file_){
@@ -212,7 +260,6 @@ void display() {
     //range_likelihood_->getPointCloud(pc_out);
     // Save in global frame - applying the camera frame:
     //range_likelihood_->getPointCloud(pc_out,true,camera_->pose());
-
     // Save in local frame
     range_likelihood_->getPointCloud(pc_out,false,camera_->pose());
     // TODO: what to do when there are more than one simulated view?
@@ -225,7 +272,7 @@ void display() {
     viewer.showCloud (pc_out);
 
     // Problem: vtk and opengl dont seem to play very well together
-    // vtk seems to misbehavew after a little while and wont keep the window on the screen
+    // vtk seems to misbehave after a little while and wont keep the window on the screen
 
     // method1: kill with [x] - but eventually it crashes:
     //while (!viewer.wasStopped ()){
@@ -314,8 +361,8 @@ void on_passive_motion(int x, int y)
 {
   if (paused_) return;
 
-  double pitch = -(0.5-(double)y/window_height_)*M_PI; // in window coordinates positive y-axis is down
-  double yaw =    (0.5-(double)x/window_width_)*M_PI*2;
+  double pitch = -(0.5-(double)y/window_height_)*M_PI * 4; // in window coordinates positive y-axis is down
+  double yaw =    (0.5-(double)x/window_width_)*M_PI*2 * 4;
 
   camera_->set_pitch(pitch);
   camera_->set_yaw(yaw);
@@ -354,10 +401,10 @@ void initialize(int argc, char** argv)
   std::cout << "OpenGL Version: " << version << std::endl;
 
   // works well for MIT CSAIL model 3rd floor:
-//  camera_->set(4.04454, 44.9377, 1.1, 0.0, 0.0, -2.00352);
+  camera_->set(4.04454, 44.9377, 1.1, 0.0, 0.0, -2.00352);
   // works for small files:
   //camera_->set(-5.0, 0.0, 1.0, 0.0, 0.0, 0.0);
-  camera_->set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+  //camera_->set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
   
   cout << "About to read: " << argv[1] << endl;
   load_PolygonMesh_model(argv[1]);
@@ -367,6 +414,12 @@ void initialize(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
+  int width = 640;
+  int height = 480;
+
+  window_width_ = width * 2;
+  window_height_ = height * 2;
+
   print_info ("Manually generate a simulated RGB-D point cloud using pcl::simulation. For more information, use: %s -h\n", argv[0]);
 
   if (argc < 2){
@@ -381,25 +434,41 @@ int main(int argc, char** argv)
     t_gamma[i] = v*6*256;
   }  
 
-  camera_ = Camera::Ptr(new Camera());
-  scene_ = Scene::Ptr(new Scene());
-
-  range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, 480, 640, scene_, 640));
-//  range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(10, 10, 96, 96, scene_));
-  //range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, 480, 640, scene_));
-
-  // Actually corresponds to default parameters:
-  range_likelihood_->set_CameraIntrinsicsParameters(640,480,576.09757860,
-	    576.09757860, 321.06398107,  242.97676897);
-
-  window_width_ = range_likelihood_->width() * 2;
-  window_height_ = range_likelihood_->height();
-
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);// was GLUT_RGBA
   glutInitWindowPosition(10,10);
   glutInitWindowSize(window_width_, window_height_);
   glutCreateWindow("OpenGL range likelihood");
+
+  GLenum err = glewInit();
+  if (GLEW_OK != err) {
+    std::cerr << "Error: " << glewGetErrorString(err) << std::endl;
+    exit(-1);
+  }
+
+  std::cout << "Status: Using GLEW " << glewGetString(GLEW_VERSION) << std::endl;
+
+  if (glewIsSupported("GL_VERSION_2_0"))
+    std::cout << "OpenGL 2.0 supported" << std::endl;
+  else {
+    std::cerr << "Error: OpenGL 2.0 not supported" << std::endl;
+    exit(1);
+  }
+
+  camera_ = Camera::Ptr(new Camera());
+  scene_ = Scene::Ptr(new Scene());
+
+  //range_likelihood_ = RangeLikelihoodGLSL::Ptr(new RangeLikelihoodGLSL(1, 1, height, width, scene_, 0));
+
+  range_likelihood_ = RangeLikelihoodGLSL::Ptr(new RangeLikelihoodGLSL(2, 2, height/2, width/2, scene_, 0));
+  // range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(10, 10, 96, 96, scene_));
+  // range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, 480, 640, scene_));
+
+  // Actually corresponds to default parameters:
+  range_likelihood_->set_CameraIntrinsicsParameters(640,480, 576.09757860,
+            576.09757860, 321.06398107, 242.97676897);
+  range_likelihood_->setComputeOnCPU(false);
+  range_likelihood_->setSumOnCPU(true);
 
   initialize(argc, argv);
 

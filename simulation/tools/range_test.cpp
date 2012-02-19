@@ -23,6 +23,7 @@
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>
 #endif
+#include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
@@ -36,6 +37,7 @@
 
 using namespace Eigen;
 using namespace pcl;
+using namespace pcl::simulation;
 
 uint16_t t_gamma[2048];
 

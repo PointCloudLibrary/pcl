@@ -1,17 +1,21 @@
 /*
- * glsl_shader.hpp
+ * glsl_shader.h
  *
  *  Created on: Nov 27, 2011
- *      Author: hordurj
+ *      Author: Hordur Johannsson
  */
 
-#ifndef GLSL_SHADER_HPP_
-#define GLSL_SHADER_HPP_
+#ifndef PCL_SIMULATION_GLSL_SHADER
+#define PCL_SIMULATION_GLSL_SHADER
 
 #include <GL/glew.h>
 #include <Eigen/Core>
 #include <boost/shared_ptr.hpp>
 
+namespace pcl
+{
+namespace simulation
+{
 namespace gllib
 {
   enum ShaderType { VERTEX = GL_VERTEX_SHADER,
@@ -40,13 +44,11 @@ namespace gllib
        * Add a new shader object to the program.
        */
       bool add_shader_text(const std::string& text, ShaderType shader_type);
-//      bool add_shader_text(const std::string& text, GLuint shader_type);
 
       /**
        * Add a new shader object to the program.
        */
       bool add_shader_file(const std::string& text, ShaderType shader_type);
-//        bool add_shader_file(const std::string& text, GLuint shader_type);
 
       /**
        * Link the program.
@@ -93,6 +95,8 @@ namespace gllib
   void print_program_info_log(GLuint program);
 
 //  static const char*
-}
+} // namespace - gllib
+} // namespace - simulation
+} // namespace - pcl
 
-#endif /* GLSL_SHADER_HPP_ */
+#endif /* PCL_SIMULATION_GLSL_SHADER_HPP_ */

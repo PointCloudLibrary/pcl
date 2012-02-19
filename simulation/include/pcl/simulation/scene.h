@@ -18,6 +18,8 @@
 
 namespace pcl
 {
+namespace simulation
+{
 
 class PCL_EXPORTS Scene
 {
@@ -34,6 +36,7 @@ private:
   std::vector<Model::Ptr> models_;
 };
 
-}
+} // namespace - simulation
+} // namespace - pcl
 
 #endif

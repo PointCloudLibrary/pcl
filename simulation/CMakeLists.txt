@@ -1,8 +1,8 @@
 set(SUBSYS_NAME simulation)
 set(SUBSYS_DESC "Point Cloud Library Simulation")
-set(SUBSYS_DEPS common io surface kdtree features search octree visualization)
+set(SUBSYS_DEPS common io surface kdtree features search octree visualization filters)
 
-set(build TRUE)
+set(build FALSE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk gl)
 find_package(OpenGL)
@@ -15,6 +15,8 @@ if(build)
          src/model.cpp
          src/range_likelihood.cpp
          src/scene.cpp
+         src/glsl_shader.cpp
+         src/sum_reduce.cpp
         )
 
     set(incs 
@@ -22,12 +24,15 @@ if(build)
         include/pcl/${SUBSYS_NAME}/model.h
         include/pcl/${SUBSYS_NAME}/range_likelihood.h
         include/pcl/${SUBSYS_NAME}/scene.h
+        include/pcl/${SUBSYS_NAME}/glsl_shader.h
+        include/pcl/${SUBSYS_NAME}/sum_reduce.h
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
                         ${VTK_INCLUDE_DIRECTORIES}
-                        ${VTK_INCLUDE_DIRS})
+                        ${VTK_INCLUDE_DIRS}
+                        ${GLEW_INCLUDE_DIR})
     link_directories(${VTK_LINK_DIRECTORIES})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME}
                     ${srcs} ${incs} ${compression_incs} ${impl_incs}

@@ -9,6 +9,10 @@
 #include <iostream>
 #include <fstream>
 
+namespace pcl
+{
+namespace simulation
+{
 namespace gllib
 {
 
@@ -94,6 +98,7 @@ void Program::set_uniform(const std::string& name, bool v)
 bool Program::add_shader_text(const std::string& text, ShaderType shader_type)
 {
   GLuint id;
+  GLint compile_status;
   id = glCreateShader(shader_type);
   const char* source_list = text.c_str();
 
@@ -101,22 +106,25 @@ bool Program::add_shader_text(const std::string& text, ShaderType shader_type)
 
   glCompileShader(id);
   print_shader_info_log(id);
+  glGetShaderiv(id, GL_COMPILE_STATUS, &compile_status);
+  if (compile_status == GL_FALSE) return false;
 
   if (get_gl_error() != GL_NO_ERROR) return false;
 
   glAttachShader(program_id_, id);
+  return true;
 }
 
 bool Program::add_shader_file(const std::string& filename, ShaderType shader_type)
 {
   char* text = read_text_file(filename.c_str());
   std::string source(text);
+
   if (text == NULL) return false;
   bool rval = add_shader_text(text, shader_type);
   delete [] text;
   return rval;
 }
-
 
 bool Program::link()
 {
@@ -182,4 +190,6 @@ void print_program_info_log(GLuint program)
 }
 
 
-}
+} // namespace - gllib
+} // namespace - simulation
+} // namespace - pcl

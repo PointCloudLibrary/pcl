@@ -1,3 +1,4 @@
+#include <GL/glew.h>
 #include <Eigen/Geometry>
 #include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
@@ -65,15 +66,7 @@ namespace pcl
     
     int
     OpenGLProp::RenderOpaqueGeometry(vtkViewport * viewport)
-    {
-      
-      glBegin(GL_TRIANGLES);
-        glColor3f(1.0,0.0,0.0);glVertex3f(1.0, 1.0, 0);
-        glColor3f(0.0,1.0,0.0);glVertex3f(0.0, 1.0, 0);
-        glColor3f(0.0,0.0,1.0);glVertex3f(0.0, 0.0, 0);
-      glEnd();
-      return 1;
-      
+    {      
       //scene_->draw();
       
       //glViewport(range_likelihood_->width(), 0, range_likelihood_->width(), range_likelihood_->height());
@@ -239,8 +232,7 @@ namespace pcl
       
       return 1;
     }
-    
-    
+
     vtkStandardNewMacro(OpenGLProp);
 
     class RangeViewer : public pcl::visualization::Window
@@ -278,7 +270,8 @@ namespace pcl
       prop_->range_likelihood_->set_CameraIntrinsicsParameters(640,480,576.09757860,
 	    576.09757860, 321.06398107,  242.97676897);
 
-      string map_file = "/home/mfallon/data/models/stata_models/data/d2_ply_models/stata_03.ply";
+//      string map_file = "/home/mfallon/data/models/stata_models/data/d2_ply_models/stata_03.ply";
+      string map_file = "/home/hordurj/data/3dmodels/stata_03.ply";
       cout << "About to read: " << map_file.c_str() << endl;
       prop_->load_PolygonMesh_model(map_file);
 //    load_PolygonMesh_model(map_file);

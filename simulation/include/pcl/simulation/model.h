@@ -5,6 +5,7 @@
 # define WIN32_LEAN_AND_MEAN 1
 # include <windows.h>
 #endif
+#include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 
@@ -18,6 +19,8 @@
 //#include <bot_vis/bot_vis.h>
 
 namespace pcl
+{
+namespace simulation
 {
 
 typedef struct _SinglePoly {
@@ -36,26 +39,6 @@ public:
   typedef boost::shared_ptr<Model> Ptr;
   typedef boost::shared_ptr<const Model> ConstPtr;
 };
-
-/*
- * RWX support disabled due to libbot depencency
-
-class RWXModel : public Model
-{
-public:
-  RWXModel(const std::string & filename);
-  virtual ~RWXModel();
-  virtual void draw();
-
-  typedef boost::shared_ptr<RWXModel> Ptr;
-  typedef boost::shared_ptr<const RWXModel> ConstPtr;
-private:
-  std::string filename_;
-  BotRwxModel* rwx_model_;
-  bool display_list_ready_;
-  GLuint rwx_dl_;
-};
-*/
 
 class PCL_EXPORTS PolygonMeshModel : public Model
 {
@@ -83,8 +66,6 @@ private:
   */
   GLenum mode_;
 };  
-
-
 
 class PCL_EXPORTS PointCloudModel : public Model
 {
@@ -114,5 +95,39 @@ private:
   GLenum mode_;
   size_t nvertices_;
 };
-}
-#endif /* PCL_MODEL_HPP_ */
+
+/**
+ * Renders a single quad providing position (-1,-1,0) - (1,1,0) and
+ * texture coordinates (0,0) - (1,1) to each vertex.
+ * Coordinates are (lower left) - (upper right).
+ * Position is set as vertex attribute 0 and the texture coordinate
+ * as vertex attribute 1.
+ */
+class Quad
+{
+public:
+  /**
+   * Setup the vbo for the quad.
+   */
+  Quad ();
+
+  /**
+   * Release any resources.
+   */
+
+  ~Quad ();
+
+  /**
+   * Render the quad.
+   */
+  void
+  render ();
+
+private:
+  GLuint quad_vbo_;
+};
+
+} // namespace - simulation
+} // namespace - pcl
+
+#endif /* PCL_SIMULATION_MODEL_HPP_ */

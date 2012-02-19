@@ -9,19 +9,28 @@
 
 namespace pcl
 {
-void Scene::add(Model::Ptr model)
+
+namespace simulation
+{
+
+void
+Scene::add (Model::Ptr model)
 {
   models_.push_back(model);
 }
 
-void Scene::addCompleteModel(std::vector<Model::Ptr> model)
+void
+Scene::addCompleteModel (std::vector<Model::Ptr> model)
 {
   models_.push_back(model[0]);
 }
 
-void Scene::draw()
+void
+Scene::draw ()
 {
   for (std::vector<Model::Ptr>::iterator model = models_.begin(); model != models_.end(); ++model)
     (*model)->draw();
 }
-}
+
+} // namespace - simulation
+} // namespace - pcl
