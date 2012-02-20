@@ -139,40 +139,6 @@ namespace pcl
       std::vector<std::pair<int, XnMapOutputMode> >
       getAvailableImageModes () const;
 
-      /** \brief Set the principal point.
-        * \param[in] cx ...
-        * \param[in] cy ...
-        */
-      void 
-      setPrincipalPoint (float cx, float cy);
-
-      /** \brief Set the aspect ratio camera parameter
-        * \param[in] aspect_ratio ...
-        */
-      void 
-      setAspectRatio (float aspect_ratio);
-
-      /** \brief Set the focal length camera parameter
-        * \param[in] focal_length ...
-        */
-      void 
-      setFocalLength (float focal_length);
-
-      /** \brief Set the lens distortion camera parameter
-        * \param[in] k1 ...
-        * \param[in] k2 ...
-        * \param[in] t1 ...
-        * \param[in] t2 ...
-        */
-      void 
-      setLensDistortion (float k1, float k2, float t1, float t2);
-
-      /** \brief Obtain the focal length camera parameter for a given image width
-        * \param[in] image_width the image width to get the focal length for
-        */
-      float 
-      getFocalLength (unsigned image_width) const;
-
     private:
       /** \brief ... */
       void
