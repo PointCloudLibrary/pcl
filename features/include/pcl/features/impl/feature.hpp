@@ -244,9 +244,9 @@ pcl::Feature<PointInT, PointOutT>::computeEigen (pcl::PointCloud<Eigen::MatrixXf
   }
 
   // Copy the properties
-#ifndef USE_ROS
-  output.properties.acquisition_time = input_->header.stamp;
-#endif
+//#ifndef USE_ROS
+//  output.properties.acquisition_time = input_->header.stamp;
+//#endif
   output.properties.sensor_origin = input_->sensor_origin_;
   output.properties.sensor_orientation = input_->sensor_orientation_;
 
