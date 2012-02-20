@@ -499,11 +499,13 @@ octree_disk_container<PointT>::insertRange (const PointT* start, const boost::ui
     if ((pos + blocksize) < count)
     {
       size_t w = fwrite (loc, sizeof(PointT), blocksize, f);
+      w;
       assert (w == blocksize);
     }
     else
     {
       size_t w = fwrite (loc, sizeof(PointT), (size_t) (count - pos), f);
+      w;
       assert (w == count - pos);
     }
   }
