@@ -87,11 +87,6 @@ if(build)
     QT4_WRAP_UI(detector_visualizer_ui src/detector_visualizer.ui)
     QT4_WRAP_CPP(detector_visualizer_moc include/pcl/proctor/detector_visualizer.h src/detector_visualizer.ui)
 
-    PCL_ADD_EXECUTABLE(snippet ${SUBSYS_NAME} src/io_snippet.cpp)
-
-    target_link_libraries(snippet
-                          ${FLANN_LIBRARIES}
-                          pcl_common pcl_features pcl_keypoints pcl_io pcl_search pcl_visualization)
     set(sources
         src/PSBClaParse.cpp
         src/confusion_matrix.cpp
