@@ -343,6 +343,13 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClo
 template <typename PointInT, typename PointNT> void 
 pcl::SpinImageEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
 { 
+  // Set up the output channels
+  output.channels["spin_image"].name     = "spin_image";
+  output.channels["spin_image"].offset   = 0;
+  output.channels["spin_image"].size     = 4;
+  output.channels["spin_image"].count    = 153;
+  output.channels["spin_image"].datatype = sensor_msgs::PointField::FLOAT32;
+
   output.points.resize (indices_->size (), 153);
   for (int i_input = 0; i_input < (int)indices_->size (); ++i_input)
   {

@@ -222,6 +222,13 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 template <typename PointInT, typename PointNT> void
 pcl::PFHEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
 {
+  // Set up the output channels
+  output.channels["pfh"].name     = "pfh";
+  output.channels["pfh"].offset   = 0;
+  output.channels["pfh"].size     = 4;
+  output.channels["pfh"].count    = nr_subdiv_ * nr_subdiv_ * nr_subdiv_;
+  output.channels["pfh"].datatype = sensor_msgs::PointField::FLOAT32;
+
   // Clear the feature map
   feature_map_.clear ();
   std::queue<std::pair<int, int> > empty;
