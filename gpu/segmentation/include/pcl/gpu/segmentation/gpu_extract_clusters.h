@@ -34,7 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  * $Id:$
- *
+ * @author: Koen Buys
  */
 
 #ifndef PCL_GPU_EXTRACT_CLUSTERS_H_
@@ -131,7 +131,7 @@ namespace pcl
         /** \brief Cluster extraction in a PointCloud given by <setInputCloud (), setIndices ()>
           * \param clusters the resultant point clusters
           */
-        void extract (std::vector<PointIndices> &clusters);
+        void extract (std::vector<pcl::PointIndices> &clusters);
 
       protected:
         /** \brief the input cloud on the GPU */

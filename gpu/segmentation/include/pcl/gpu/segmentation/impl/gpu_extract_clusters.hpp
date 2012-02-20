@@ -33,7 +33,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  * $Id:$
- *
+ * @author: Koen Buys
  */
 
 #ifndef PCL_GPU_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_
@@ -60,9 +60,13 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
     max_answers = host_cloud_->points.size();
   else
     max_answers = max_pts_per_cluster;
+  std::cout << "Max_answers: " << max_answers << std::endl;
 
   // to store the current cluster
   pcl::PointIndices r;
+
+  DeviceArray<PointXYZ> queries_device_buffer;
+  queries_device_buffer.create(max_answers);
 
   // Process all points in the cloud
   for (size_t i = 0; i < host_cloud_->points.size (); ++i)
@@ -90,36 +94,75 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
     pcl::gpu::NeighborIndices result_device;
 
     // once the area stop growing, stop also iterating.
-    while (previous_found_points < found_points)
+    do
     {
-      // Move queries to GPU
-      queries_device.upload(queries_host);
-      // Execute search
-      tree->radiusSearch(queries_device, tolerance, max_answers, result_device);
-
-      // Store the previously found number of points
-      previous_found_points = found_points;
-
       // Host buffer for results
       std::vector<int> sizes, data;
 
-      // Copy results from GPU to Host
-      result_device.sizes.download (sizes);
-      result_device.data.download (data);
-
-      for(size_t qp = 0; qp < sizes.size (); qp++)
+      // if the number of queries is not high enough implement search on Host here
+      if(queries_host.size () <= 10) ///@todo: adjust this to a variable number settable with method
       {
-        for(int qp_r = 0; qp_r < sizes[qp]; qp_r++)
+        std::cout << " CPU: ";
+        for(size_t p = 0; p < queries_host.size (); p++)
         {
-          if(processed[data[qp_r + qp * max_answers]])
+          // Execute the radiusSearch on the host
+          tree->radiusSearchHost(queries_host[p], tolerance, data, max_answers);
+        }
+        // Store the previously found number of points
+        previous_found_points = found_points;
+        // Clear queries list
+        queries_host.clear();
+
+        //std::unique(data.begin(), data.end());
+        if(data.size () == 1)
+          continue;
+
+        // Process the results
+        for(size_t i = 0; i < data.size (); i++)
+        {
+          if(processed[data[i]])
             continue;
-          processed[data[qp_r + qp * max_answers]] = true;
-          queries_host.push_back (host_cloud_->points[data[qp_r + qp * max_answers]]);
+          processed[data[i]] = true;
+          queries_host.push_back (host_cloud_->points[data[i]]);
           found_points++;
-          r.indices.push_back(data[qp_r + qp * max_answers]);
+          r.indices.push_back(data[i]);
         }
       }
+
+      // If number of queries is high enough do it here
+      else
+      {
+        std::cout << " GPU: ";
+        // Copy buffer
+        queries_device = DeviceArray<PointXYZ>(queries_device_buffer.ptr(),queries_host.size());
+        // Move queries to GPU
+        queries_device.upload(queries_host);
+        // Execute search
+        tree->radiusSearch(queries_device, tolerance, max_answers, result_device);
+        // Copy results from GPU to Host
+        result_device.sizes.download (sizes);
+        result_device.data.download (data);
+        // Store the previously found number of points
+        previous_found_points = found_points;
+        // Clear queries list
+        queries_host.clear();
+        for(size_t qp = 0; qp < sizes.size (); qp++)
+        {
+          for(int qp_r = 0; qp_r < sizes[qp]; qp_r++)
+          {
+            if(processed[data[qp_r + qp * max_answers]])
+              continue;
+            processed[data[qp_r + qp * max_answers]] = true;
+            queries_host.push_back (host_cloud_->points[data[qp_r + qp * max_answers]]);
+            found_points++;
+            r.indices.push_back(data[qp_r + qp * max_answers]);
+          }
+        }
+      }
+      std::cout << " data.size: " << data.size() << " foundpoints: " << found_points << " previous: " << previous_found_points;
+      std::cout << " new points: " << found_points - previous_found_points << " next queries size: " << queries_host.size() << std::endl;
     }
+    while (previous_found_points < found_points);
     // If this queue is satisfactory, add to the clusters
     if (found_points >= min_pts_per_cluster && found_points <= max_pts_per_cluster)
     {
@@ -134,7 +177,7 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
 }
 
 void 
-pcl::gpu::EuclideanClusterExtraction::extract (std::vector<PointIndices> &clusters)
+pcl::gpu::EuclideanClusterExtraction::extract (std::vector<pcl::PointIndices> &clusters)
 {
 /*
   // Initialize the GPU search tree
