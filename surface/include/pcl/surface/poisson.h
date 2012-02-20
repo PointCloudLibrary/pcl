@@ -31,6 +31,8 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * $Id$
+ *
  */
 
 #ifndef PCL_SURFACE_POISSON_H_
@@ -47,8 +49,6 @@ namespace pcl
     /** \brief The Poisson surface reconstruction algorithm.
      * \author Alexandru-Eugen Ichim, Gregory Long
      * \ingroup surface
-     *
-     * TODO: Modify to use PCL's Octree & Marching Cubes code
      */
     template<typename PointNT>
       class Poisson : public SurfaceReconstruction<PointNT>
