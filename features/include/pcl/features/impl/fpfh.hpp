@@ -56,11 +56,11 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computePairFeatures (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT, typename PointOutT> 
-void pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::
-computePointSPFHSignature (const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals,
-                           int p_idx, int row, const std::vector<int> &indices,
-                           Eigen::MatrixXf &hist_f1, Eigen::MatrixXf &hist_f2, Eigen::MatrixXf &hist_f3)
+template <typename PointInT, typename PointNT, typename PointOutT> void 
+pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (
+    const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals,
+    int p_idx, int row, const std::vector<int> &indices,
+    Eigen::MatrixXf &hist_f1, Eigen::MatrixXf &hist_f2, Eigen::MatrixXf &hist_f3)
 {
   Eigen::Vector4f pfh_tuple;
   // Get the number of bins from the histograms size
@@ -303,6 +303,13 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
 template <typename PointInT, typename PointNT> void
 pcl::FPFHEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
 {
+  // Set up the output channels
+  output.channels["fpfh"].name     = "fpfh";
+  output.channels["fpfh"].offset   = 0;
+  output.channels["fpfh"].size     = 4;
+  output.channels["fpfh"].count    = 33;
+  output.channels["fpfh"].datatype = sensor_msgs::PointField::FLOAT32;
+
   // Allocate enough space to hold the NN search results
   // \note This resize is irrelevant for a radiusSearch ().
   std::vector<int> nn_indices (k_);
