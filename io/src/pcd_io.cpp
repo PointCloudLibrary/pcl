@@ -528,8 +528,12 @@ pcl::PCDReader::readHeaderEigen (const std::string &file_name, pcl::PointCloud<E
       if (line_type.substr (0, 6) == "POINTS")
       {
         sstream >> nr_points;
+        // Compute the number of columns
+        int nr_cols = 0;
+        for (std::map<std::string, pcl::ChannelProperties>::const_iterator it = cloud.channels.begin (); it != cloud.channels.end (); ++it)
+          nr_cols += it->second.count;
         // Need to allocate: N * point_step
-        cloud.points.resize (nr_points, cloud.channels.size ());
+        cloud.points.resize (nr_points, nr_cols);
         continue;
       }
 
@@ -1815,9 +1819,6 @@ pcl::PCDWriter::writeASCIIEigen (const std::string &file_name, const pcl::PointC
   
   fs.precision (precision);
   fs.imbue (std::locale::classic ());
-
-  //std::vector<sensor_msgs::PointField> fields;
-  //pcl::getFields (cloud, fields);
 
   // Write the header information
   fs << generateHeaderEigen (cloud) << "DATA ascii\n";
