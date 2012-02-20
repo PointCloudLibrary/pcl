@@ -807,6 +807,13 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, Eigen::MatrixXf>::computeFeature
   descLength_ = (b_describe_shape_) ? nr_grid_sector_*(nr_shape_bins_+1) : 0;
   descLength_ +=   (b_describe_color_) ? nr_grid_sector_*(nr_color_bins_+1) : 0;
 
+  // Set up the output channels
+  output.channels["shot"].name     = "shot";
+  output.channels["shot"].offset   = 0;
+  output.channels["shot"].size     = 4;
+  output.channels["shot"].count    = descLength_ + 9;
+  output.channels["shot"].datatype = sensor_msgs::PointField::FLOAT32;
+
   // Useful values
   sqradius_ = search_radius_*search_radius_;
   radius3_4_ = (search_radius_*3) / 4;
@@ -923,6 +930,13 @@ pcl::SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen
     rf_.resize (3);
 
   descLength_ = nr_grid_sector_ * (nr_shape_bins_+1);
+
+  // Set up the output channels
+  output.channels["shot"].name     = "shot";
+  output.channels["shot"].offset   = 0;
+  output.channels["shot"].size     = 4;
+  output.channels["shot"].count    = descLength_ + 9;
+  output.channels["shot"].datatype = sensor_msgs::PointField::FLOAT32;
 
   sqradius_ = search_radius_ * search_radius_;
   radius3_4_ = (search_radius_*3) / 4;

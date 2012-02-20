@@ -322,6 +322,14 @@ template <typename PointInT, typename PointNT> void
 pcl::ShapeContext3DEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen (
     pcl::PointCloud<Eigen::MatrixXf> &output)
 {
+
+  // Set up the output channels
+  output.channels["3dsc"].name     = "3dsc";
+  output.channels["3dsc"].offset   = 0;
+  output.channels["3dsc"].size     = 4;
+  output.channels["3dsc"].count    = descriptor_length_ + 9;
+  output.channels["3dsc"].datatype = sensor_msgs::PointField::FLOAT32;
+
   // Resize the output dataset
   output.points.resize (indices_->size (), descriptor_length_ + 9);
 
