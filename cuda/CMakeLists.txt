@@ -6,9 +6,7 @@ set(SUBSYS_DEPS )
 
 # Find CUDA
 set(CUDA_FIND_QUIETLY TRUE)
-if(WITH_CUDA)
-  find_package(CUDA 4.1)
-endif()
+find_package(CUDA 4.1)
 if(NOT CUDA_FOUND)
     set(DEFAULT FALSE)
     set(REASON "CUDA was not found.")
