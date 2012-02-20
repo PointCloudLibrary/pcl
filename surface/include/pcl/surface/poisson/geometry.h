@@ -89,7 +89,7 @@ namespace pcl
         public:
           double p[2][2];
 
-          double
+          inline double
           Length (void) const
           {
             double d[2];
@@ -106,7 +106,7 @@ namespace pcl
         public:
           double p[3][3];
 
-          double
+          inline double
           Area (void) const
           {
             double v1[3], v2[3], v[3];
@@ -123,19 +123,15 @@ namespace pcl
           }
 
 
-          double
+          inline double
           AspectRatio (void) const
           {
             double d = 0;
             int i, j;
             for (i = 0; i < 3; i++)
-            {
               for (i = 0; i < 3; i++)
                 for (j = 0; j < 3; j++)
-                {
                   d += (p[(i + 1) % 3][j] - p[i][j]) * (p[(i + 1) % 3][j] - p[i][j]);
-                }
-            }
 
             return (Area () / d);
           }
@@ -153,7 +149,6 @@ namespace pcl
             return (index == cpi.index) && (inCore == cpi.inCore);
           }
 
-
           int
           operator != (const CoredPointIndex& cpi) const
           {
@@ -161,37 +156,32 @@ namespace pcl
           }
       };
 
-      class EdgeIndex
+      struct EdgeIndex
       {
-        public:
-          int idx[2];
+        int idx[2];
       };
 
-      class CoredEdgeIndex
+      struct CoredEdgeIndex
       {
-        public:
-          CoredPointIndex idx[2];
+        CoredPointIndex idx[2];
       };
 
-      class TriangleIndex
+      struct TriangleIndex
       {
-        public:
-          int idx[3];
+        int idx[3];
       };
 
-      class TriangulationEdge
+      struct TriangulationEdge
       {
-        public:
-          TriangulationEdge (void);
-          int pIndex[2];
-          int tIndex[2];
+        TriangulationEdge (void);
+        int pIndex[2];
+        int tIndex[2];
       };
 
-      class TriangulationTriangle
+      struct TriangulationTriangle
       {
-        public:
-          TriangulationTriangle (void);
-          int eIndex[3];
+        TriangulationTriangle (void);
+        int eIndex[3];
       };
 
       template<class Real>
