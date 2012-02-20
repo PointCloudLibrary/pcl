@@ -49,6 +49,7 @@
 #include <pcl/surface/concave_hull.h>
 #include <pcl/surface/organized_fast_mesh.h>
 #include <pcl/surface/ear_clipping.h>
+#include <pcl/surface/poisson.h>
 #include <pcl/common/common.h>
 
 #include <pcl/io/obj_io.h>
@@ -838,6 +839,35 @@ TEST (PCL, EarClipping)
     EXPECT_EQ (triangulated_mesh.polygons[pi].vertices[vi], truth[pi][vi]);
   }
 }
+
+TEST (PCL, Poisson)
+{
+  Poisson<PointNormal> poisson;
+  poisson.setInputCloud (cloud_with_normals);
+  PolygonMesh mesh;
+  poisson.reconstruct (mesh);
+
+  io::saveVTKFile ("bunny_poisson.vtk", mesh);
+
+  EXPECT_EQ (mesh.polygons.size (), 1574);
+  // All polygons should be triangles
+  for (size_t i = 0; i < mesh.polygons.size (); ++i)
+    EXPECT_EQ (mesh.polygons[i].vertices.size (), 3);
+
+  EXPECT_EQ (mesh.polygons[10].vertices[0], 259);
+  EXPECT_EQ (mesh.polygons[10].vertices[1], 25);
+  EXPECT_EQ (mesh.polygons[10].vertices[2], 256);
+
+  EXPECT_EQ (mesh.polygons[200].vertices[0], 321);
+  EXPECT_EQ (mesh.polygons[200].vertices[1], 319);
+  EXPECT_EQ (mesh.polygons[200].vertices[2], 316);
+
+  EXPECT_EQ (mesh.polygons[1000].vertices[0], 34);
+  EXPECT_EQ (mesh.polygons[1000].vertices[1], 602);
+  EXPECT_EQ (mesh.polygons[1000].vertices[2], 6);
+}
+
+
 
 /* ---[ */
 int

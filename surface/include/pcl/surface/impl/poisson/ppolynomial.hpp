@@ -557,65 +557,11 @@ PPolynomial<Degree>::operator / (const double& s) const
 }
 
 
-template<int Degree> void
-PPolynomial<Degree>::printnl (void) const
-{
-  Polynomial < Degree > p;
-
-  if (!polyCount)
-  {
-    Polynomial < Degree > p;
-    printf ("[-Infinity,Infinity]\n");
-  }
-  else
-  {
-    for (size_t i = 0; i < polyCount; i++)
-    {
-      printf ("[");
-      if (polys[i].start == DBL_MAX)
-      {
-        printf ("Infinity,");
-      }
-      else if (polys[i].start == -DBL_MAX)
-      {
-        printf ("-Infinity,");
-      }
-      else
-      {
-        printf ("%f,", polys[i].start);
-      }
-      if (i + 1 == polyCount)
-      {
-        printf ("Infinity]\t");
-      }
-      else if (polys[i + 1].start == DBL_MAX)
-      {
-        printf ("Infinity]\t");
-      }
-      else if (polys[i + 1].start == -DBL_MAX)
-      {
-        printf ("-Infinity]\t");
-      }
-      else
-      {
-        printf ("%f]\t", polys[i + 1].start);
-      }
-      p = p + polys[i].p;
-      p.printnl ();
-    }
-  }
-  printf ("\n");
-}
-
-
 template<int Degree> PPolynomial<Degree>
 PPolynomial<Degree>::ConstantFunction (const double& radius)
 {
   if (Degree < 0)
-  {
-    fprintf (stderr, "Could not set degree %d polynomial as constant\n", Degree);
     exit (0);
-  }
   PPolynomial q;
   q.set (2);
 

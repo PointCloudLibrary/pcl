@@ -200,7 +200,7 @@ namespace pcl
 
             if (elements > blockSize)
             {
-              fprintf (stderr, "Allocator Error, elements bigger than block-size: %d>%d\n", elements, blockSize);
+              PCL_ERROR ("Allocator Error, elements bigger than block-size: %d>%d\n", elements, blockSize);
               return (NULL);
             }
             if (remains < elements)

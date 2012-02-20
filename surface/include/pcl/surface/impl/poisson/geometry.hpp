@@ -139,9 +139,7 @@ EdgeCollapse (const Real& edgeRatio, std::vector<TriangleIndex>& triangles, std:
     {
       idx[j] = triangles[i].idx[j];
       while (remapTable[idx[j]] < idx[j])
-      {
         idx[j] = remapTable[idx[j]];
-      }
     }
     if (idx[0] == idx[1] || idx[0] == idx[2] || idx[1] == idx[2])
     {
@@ -169,13 +167,9 @@ EdgeCollapse (const Real& edgeRatio, std::vector<TriangleIndex>& triangles, std:
       // Find the smallest edge
       j = 0;
       if (d[1] < d[j])
-      {
         j = 1;
-      }
       if (d[2] < d[j])
-      {
         j = 2;
-      }
 
       int idx1, idx2;
       if (idx[j] < idx[(j + 1) % 3])
@@ -207,24 +201,18 @@ EdgeCollapse (const Real& edgeRatio, std::vector<TriangleIndex>& triangles, std:
   for (i = 0; i < int (positions.size ()); i++)
   {
     for (j = 0; j < 3; j++)
-    {
       positions[i].coords[j] /= pointCount[i];
-    }
     if (normals)
     {
       Real l = Real (Length ((*normals)[i]));
       for (j = 0; j < 3; j++)
-      {
         (*normals)[i].coords[j] /= l;
-      }
     }
     if (remapTable[i] == i)
     { // If vertex i is being used
       positions[pCount] = positions[i];
       if (normals)
-      {
         (*normals)[pCount] = (*normals)[i];
-      }
       pointCount[i] = pCount;
       pCount++;
     }
@@ -236,9 +224,7 @@ EdgeCollapse (const Real& edgeRatio, std::vector<TriangleIndex>& triangles, std:
     {
       idx[j] = triangles[i].idx[j];
       while (remapTable[idx[j]] < idx[j])
-      {
         idx[j] = remapTable[idx[j]];
-      }
       triangles[i].idx[j] = pointCount[idx[j]];
     }
     if (idx[0] == idx[1] || idx[0] == idx[2] || idx[1] == idx[2])
@@ -275,9 +261,7 @@ TriangleCollapse (const Real& edgeRatio, std::vector<TriangleIndex>& triangles,
     {
       idx[j] = triangles[i].idx[j];
       while (remapTable[idx[j]] < idx[j])
-      {
         idx[j] = remapTable[idx[j]];
-      }
     }
     if (idx[0] == idx[1] || idx[0] == idx[2] || idx[1] == idx[2])
     {
@@ -305,13 +289,9 @@ TriangleCollapse (const Real& edgeRatio, std::vector<TriangleIndex>& triangles,
       // Find the smallest edge
       j = 0;
       if (d[1] < d[j])
-      {
         j = 1;
-      }
       if (d[2] < d[j])
-      {
         j = 2;
-      }
 
       int idx1, idx2, idx3;
       if (idx[0] < idx[1])
@@ -364,24 +344,18 @@ TriangleCollapse (const Real& edgeRatio, std::vector<TriangleIndex>& triangles,
   for (i = 0; i < int (positions.size ()); i++)
   {
     for (j = 0; j < 3; j++)
-    {
       positions[i].coords[j] /= pointCount[i];
-    }
     if (normals)
     {
       Real l = Real (Length ((*normals)[i]));
       for (j = 0; j < 3; j++)
-      {
         (*normals)[i].coords[j] /= l;
-      }
     }
     if (remapTable[i] == i)
     { // If vertex i is being used
       positions[pCount] = positions[i];
       if (normals)
-      {
         (*normals)[pCount] = (*normals)[i];
-      }
       pointCount[i] = pCount;
       pCount++;
     }
@@ -393,9 +367,7 @@ TriangleCollapse (const Real& edgeRatio, std::vector<TriangleIndex>& triangles,
     {
       idx[j] = triangles[i].idx[j];
       while (remapTable[idx[j]] < idx[j])
-      {
         idx[j] = remapTable[idx[j]];
-      }
       triangles[i].idx[j] = pointCount[idx[j]];
     }
     if (idx[0] == idx[1] || idx[0] == idx[2] || idx[1] == idx[2])
@@ -417,13 +389,9 @@ template<class Real> long long
 Triangulation<Real>::EdgeIndex (const int& p1, const int& p2)
 {
   if (p1 > p2)
-  {
     return ((long long)(p1) << 32) | ((long long)(p2));
-  }
   else
-  {
     return ((long long)(p2) << 32) | ((long long)(p1));
-  }
 }
 
 
@@ -431,33 +399,19 @@ template<class Real> int
 Triangulation<Real>::factor (const int& tIndex, int& p1, int& p2, int & p3)
 {
   if (triangles[tIndex].eIndex[0] < 0 || triangles[tIndex].eIndex[1] < 0 || triangles[tIndex].eIndex[2] < 0)
-  {
     return 0;
-  }
   if (edges[triangles[tIndex].eIndex[0]].tIndex[0] == tIndex)
-  {
     p1 = edges[triangles[tIndex].eIndex[0]].pIndex[0];
-  }
   else
-  {
     p1 = edges[triangles[tIndex].eIndex[0]].pIndex[1];
-  }
   if (edges[triangles[tIndex].eIndex[1]].tIndex[0] == tIndex)
-  {
     p2 = edges[triangles[tIndex].eIndex[1]].pIndex[0];
-  }
   else
-  {
     p2 = edges[triangles[tIndex].eIndex[1]].pIndex[1];
-  }
   if (edges[triangles[tIndex].eIndex[2]].tIndex[0] == tIndex)
-  {
     p3 = edges[triangles[tIndex].eIndex[2]].pIndex[0];
-  }
   else
-  {
     p3 = edges[triangles[tIndex].eIndex[2]].pIndex[1];
-  }
   return 1;
 }
 
@@ -490,9 +444,7 @@ Triangulation<Real>::area (void)
 {
   double a = 0;
   for (int i = 0; i < int (triangles.size ()); i++)
-  {
     a += area (i);
-  }
   return a;
 }
 
@@ -528,26 +480,16 @@ Triangulation<Real>::addTriangle (const int& p1, const int& p2, const int& p3)
       if (edges[eIdx].pIndex[0] == p[i])
       {
         if (edges[eIdx].tIndex[0] < 0)
-        {
           edges[eIdx].tIndex[0] = tIdx;
-        }
         else
-        {
-          printf ("Edge Triangle in use 1\n");
           return 0;
-        }
       }
       else
       {
         if (edges[eIdx].tIndex[1] < 0)
-        {
           edges[eIdx].tIndex[1] = tIdx;
-        }
         else
-        {
-          printf ("Edge Triangle in use 2\n");
           return 0;
-        }
       }
 
     }
@@ -565,18 +507,12 @@ Triangulation<Real>::flipMinimize (const int& eIndex)
   TriangulationEdge newEdge;
 
   if (edges[eIndex].tIndex[0] < 0 || edges[eIndex].tIndex[1] < 0)
-  {
     return 0;
-  }
 
   if (!factor (edges[eIndex].tIndex[0], oldP[0], oldP[1], oldP[2]))
-  {
     return 0;
-  }
   if (!factor (edges[eIndex].tIndex[1], oldQ[0], oldQ[1], oldQ[2]))
-  {
     return 0;
-  }
 
   oldArea = area (oldP[0], oldP[1], oldP[2]) + area (oldQ[0], oldQ[1], oldQ[2]);
   int idxP, idxQ;
@@ -586,14 +522,10 @@ Triangulation<Real>::flipMinimize (const int& eIndex)
     for (i = 0; i < 3; i++)
     {
       if (oldP[idxP] == oldQ[i])
-      {
         break;
-      }
     }
     if (i == 3)
-    {
       break;
-    }
   }
   for (idxQ = 0; idxQ < 3; idxQ++)
   {
@@ -601,14 +533,10 @@ Triangulation<Real>::flipMinimize (const int& eIndex)
     for (i = 0; i < 3; i++)
     {
       if (oldP[i] == oldQ[idxQ])
-      {
         break;
-      }
     }
     if (i == 3)
-    {
       break;
-    }
   }
   if (idxP == 3 || idxQ == 3)
   {
@@ -623,9 +551,7 @@ Triangulation<Real>::flipMinimize (const int& eIndex)
 
   newArea = area (newP[0], newP[1], newP[2]) + area (newQ[0], newQ[1], newQ[2]);
   if (oldArea <= newArea)
-  {
     return 0;
-  }
 
   // Remove the entry in the hash_table for the old edge
   edgeMap.erase (EdgeIndex (edges[eIndex].pIndex[0], edges[eIndex].pIndex[1]));
@@ -643,13 +569,9 @@ Triangulation<Real>::flipMinimize (const int& eIndex)
     if (idx != eIndex)
     {
       if (edges[idx].tIndex[0] == edges[eIndex].tIndex[1])
-      {
         edges[idx].tIndex[0] = edges[eIndex].tIndex[0];
-      }
       if (edges[idx].tIndex[1] == edges[eIndex].tIndex[1])
-      {
         edges[idx].tIndex[1] = edges[eIndex].tIndex[0];
-      }
     }
 
     idx = edgeMap[EdgeIndex (newP[i], newP[(i + 1) % 3])];
@@ -657,13 +579,9 @@ Triangulation<Real>::flipMinimize (const int& eIndex)
     if (idx != eIndex)
     {
       if (edges[idx].tIndex[0] == edges[eIndex].tIndex[0])
-      {
         edges[idx].tIndex[0] = edges[eIndex].tIndex[1];
-      }
       if (edges[idx].tIndex[1] == edges[eIndex].tIndex[0])
-      {
         edges[idx].tIndex[1] = edges[eIndex].tIndex[1];
-      }
     }
   }
   return 1;

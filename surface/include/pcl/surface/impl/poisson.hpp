@@ -43,9 +43,6 @@
 #include <pcl/common/vector_average.h>
 #include <pcl/Vertices.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <float.h>
 #include "pcl/surface/poisson/octree.h"
 #include "pcl/surface/poisson/sparse_matrix.h"
 #include "pcl/surface/poisson/function_data.h"
@@ -61,7 +58,7 @@ using namespace pcl::surface::poisson;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
-pcl::surface::Poisson<PointNT>::Poisson ()
+pcl::Poisson<PointNT>::Poisson ()
   : no_reset_samples_ (false),
     no_clip_tree_ (false),
     confidence_ (false),
@@ -80,14 +77,14 @@ pcl::surface::Poisson<PointNT>::Poisson ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
-pcl::surface::Poisson<PointNT>::~Poisson ()
+pcl::Poisson<PointNT>::~Poisson ()
 {
 }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> template <int Degree> void
-pcl::surface::Poisson<PointNT>::execute (CoredMeshData &mesh,
+pcl::Poisson<PointNT>::execute (CoredMeshData &mesh,
                                          Point3D<float> &center)
 {
   float scale = 1;
@@ -103,16 +100,7 @@ pcl::surface::Poisson<PointNT>::execute (CoredMeshData &mesh,
   TreeOctNode::SetAllocator(MEMORY_ALLOCATOR_BLOCK_SIZE);
 
   int kernel_depth=depth_-2;
-//  if (kernel_depth_)
-//    kernel_depth=kernel_depth_;
-
   tree.setFunctionData (ReconstructionFunction,depth_, 0, float (1.0) / (1<<depth_));
-  if (kernel_depth > depth_)
-  {
-    PCL_ERROR ("KernelDepth can't be greater than Depth: %d <= %d\n", kernel_depth, depth_);
-    return;
-  }
-
 
   tree.setTree (input_, depth_, kernel_depth, float(samples_per_node_), scale_, center, scale, !no_reset_samples_, confidence_);
 
@@ -136,12 +124,11 @@ pcl::surface::Poisson<PointNT>::execute (CoredMeshData &mesh,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
-pcl::surface::Poisson<PointNT>::performReconstruction (PolygonMesh &output)
+pcl::Poisson<PointNT>::performReconstruction (PolygonMesh &output)
 {
   CoredVectorMeshData mesh;
   Point3D<float> center;
 
-  printf ("Before execution\n");
   switch (degree_)
   {
     case 1:
@@ -162,8 +149,6 @@ pcl::surface::Poisson<PointNT>::performReconstruction (PolygonMesh &output)
     default:
       PCL_ERROR (stderr,"Degree %d not supported\n", degree_);
   }
-
-  printf ("Done execution \n");
 
   /// Write output PolygonMesh
   float scale = 1;
@@ -214,7 +199,7 @@ pcl::surface::Poisson<PointNT>::performReconstruction (PolygonMesh &output)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
-pcl::surface::Poisson<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
+pcl::Poisson<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
                                                        std::vector<pcl::Vertices> &polygons)
 {
   CoredVectorMeshData mesh;
@@ -286,7 +271,7 @@ pcl::surface::Poisson<PointNT>::performReconstruction (pcl::PointCloud<PointNT> 
 }
 
 
-#define PCL_INSTANTIATE_Poisson(T) template class PCL_EXPORTS pcl::surface::Poisson<T>;
+#define PCL_INSTANTIATE_Poisson(T) template class PCL_EXPORTS pcl::Poisson<T>;
 
 #endif    // PCL_SURFACE_IMPL_POISSON_H_
 

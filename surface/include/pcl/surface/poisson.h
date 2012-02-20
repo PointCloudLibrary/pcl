@@ -39,17 +39,18 @@
 #define PCL_SURFACE_POISSON_H_
 
 #include <pcl/surface/reconstruction.h>
-#include <string>
 #include "pcl/surface/poisson/geometry.h"
 
 namespace pcl
 {
-  namespace surface
-  {
     /** \brief The Poisson surface reconstruction algorithm.
-     * \author Alexandru-Eugen Ichim, Gregory Long
-     * \ingroup surface
-     */
+      * \note Code adapted from Misha Kazhdan: http://www.cs.jhu.edu/~misha/Code/PoissonRecon/
+      * \note Based on the paper:
+      *       * Michael Kazhdan, Matthew Bolitho, Hugues Hoppe, "Poisson surface reconstruction",
+      *         SGP '06 Proceedings of the fourth Eurographics symposium on Geometry processing
+      * \author Alexandru-Eugen Ichim, Gregory Long
+      * \ingroup surface
+      */
     template<typename PointNT>
       class Poisson : public SurfaceReconstruction<PointNT>
       {
@@ -62,7 +63,7 @@ namespace pcl
         typedef typename pcl::KdTree<PointNT> KdTree;
         typedef typename pcl::KdTree<PointNT>::Ptr KdTreePtr;
 
-        /** \brief Constructor. */
+        /** \brief Constructor that sets all the parameters to working default values. */
         Poisson ();
 
         /** \brief Destructor. */
@@ -81,17 +82,6 @@ namespace pcl
         void
         performReconstruction (pcl::PointCloud<PointNT> &points,
                                std::vector<pcl::Vertices> &polygons);
-
-
-        /** \brief Set the degree parameter
-          * \param[in] degree the given degree
-          */
-        inline void
-        setDegree (int degree) { degree_ = degree; }
-
-        /** \brief Get the degree parameter */
-        inline int
-        getDegree () { return degree_; }
 
         /** \brief Set the confidence flag
           * \note Enabling this flag tells the reconstructor to use the size of the normals as confidence information.
@@ -184,30 +174,15 @@ namespace pcl
         inline float
         getScale () { return scale_; }
 
+        /** \brief Set the degree parameter
+          * \param[in] degree the given degree
+          */
         inline void
-        setRefine (int refine) { refine_ = refine; }
+        setDegree (int degree) { degree_ = degree; }
 
+        /** \brief Get the degree parameter */
         inline int
-        getRefine () { return refine_; }
-
-        inline void
-        setKernelDepth (int kernel_depth) { kernel_depth_ = kernel_depth; }
-
-        inline int
-        getKernelDepth () { return kernel_depth_; }
-
-        inline void
-        setNoResetSamples (bool no_reset_samples) { no_reset_samples_ = no_reset_samples; }
-
-        inline bool
-        getNoResetSamples () { return no_reset_samples_; }
-
-
-        inline void
-        setNoClipTree (bool no_clip_tree) { no_clip_tree_ = no_clip_tree; }
-
-        inline bool
-        getNoClipTree () { return no_clip_tree_; }
+        getDegree () { return degree_; }
 
 
       protected:
@@ -235,13 +210,12 @@ namespace pcl
         float scale_;
 
         template<int Degree> void
-        execute (poisson::CoredMeshData &mesh,
-                 poisson::Point3D<float> &translate);
+        execute (surface::poisson::CoredMeshData &mesh,
+                 surface::poisson::Point3D<float> &translate);
 
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       };
-  }
 }
 
 #endif  // PCL_SURFACE_POISSON_H_

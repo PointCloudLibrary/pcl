@@ -100,7 +100,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, PolygonMesh &output,
 
 	io::savePCDFileASCII ("cloud_clean.pcd", *cloud_clean);
 	*/
-  surface::Poisson<PointNormal> poisson;
+  Poisson<PointNormal> poisson;
   poisson.setDepth (10);
   poisson.setSolverDivide (8);
   poisson.setInputCloud (xyz_cloud);

@@ -151,7 +151,6 @@ OctNode<NodeData, Real>::initChildren (void)
   }
   if (!children)
   {
-    fprintf (stderr, "Failed to initialize children in OctNode::initChildren\n");
     exit (0);
     return 0;
   }
@@ -475,25 +474,6 @@ OctNode<NodeData, Real>::nextNode (OctNode* current)
   else
   {
     return nextBranch (current);
-  }
-}
-
-
-template<class NodeData, class Real> void
-OctNode<NodeData, Real>::printRange (void) const
-{
-  Point3D < Real > center;
-  Real width;
-  centerAndWidth (center, width);
-  for (int dim = 0; dim < DIMENSION; dim++)
-  {
-    printf ("%[%f,%f]", center.coords[dim] - width / 2, center.coords[dim] + width / 2);
-    if (dim < DIMENSION - 1)
-    {
-      printf ("x");
-    }
-    else
-      printf ("\n");
   }
 }
 

@@ -444,21 +444,6 @@ Polynomial<Degree>::shift (const double& t) const
 
 
 template<int Degree> void
-Polynomial<Degree>::printnl (void) const
-{
-  for (int j = 0; j <= Degree; j++)
-  {
-    printf ("%6.4f x^%d ", coefficients[j], j);
-    if (j < Degree && coefficients[j + 1] >= 0)
-    {
-      printf ("+");
-    }
-  }
-  printf ("\n");
-}
-
-
-template<int Degree> void
 Polynomial<Degree>::getSolutions (const double& c, std::vector<double>& roots, const double& EPS) const
 {
   double r[4][2];
@@ -479,15 +464,12 @@ Polynomial<Degree>::getSolutions (const double& c, std::vector<double>& roots, c
       //		rCount=Factor(coefficients[4],coefficients[3],coefficients[2],coefficients[1],coefficients[0]-c,r,EPS);
       //		break;
     default:
-      printf ("Can't solve polynomial of degree: %d\n", Degree);
+      break;
   }
   for (int i = 0; i < rCount; i++)
   {
     if (fabs (r[i][1]) <= EPS)
-    {
       roots.push_back (r[i][0]);
-      //printf("%d] %f\t%f\n",i,r[i][0],(*this)(r[i][0])-c);
-    }
   }
 }
 
