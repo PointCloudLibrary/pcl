@@ -25,8 +25,6 @@ namespace pcl
       getTransformation(0, 0, 0, M_PI, 0.5, 1.5, t);
 
       int correctly_matched = 0;
-      int hits = 0;
-      int misses = 0;
       for (unsigned int i = 0; i < query.keypoints->size(); i++)
       {
         std::vector<int> feature_indices;

@@ -140,9 +140,9 @@ DetectorVisualizer::timeoutSlot ()
     int num_y = 5;
     int num_z = 5;
 
-    double width = 0.2;
-    double height = 0.2;
-    double depth = 0.2;
+    //double width = 0.2;
+    //double height = 0.2;
+    //double depth = 0.2;
 
     for (int i = 0; i < num_x; i++)
     {

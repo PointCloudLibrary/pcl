@@ -48,6 +48,7 @@
 #include <hash_map>
 using namespace stdext;
 #else // !WIN32
+#define _GLIBCXX_PERMIT_BACKWARD_HASH
 #include <ext/hash_map>
 using namespace __gnu_cxx;
 

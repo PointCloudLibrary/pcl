@@ -853,7 +853,7 @@ TEST (PCL, PCDReaderWriterEigen)
   EXPECT_EQ ((uint32_t)cloud_eigen4.height, cloud.height);
   EXPECT_EQ ((bool)cloud_eigen4.is_dense, cloud.is_dense);
 
-  for (size_t i = 0; i < cloud_eigen4.points.rows (); ++i)
+  for (int i = 0; i < cloud_eigen4.points.rows (); ++i)
   {
     EXPECT_FLOAT_EQ (cloud_eigen4.points (i, 0), cloud.points[i].x);
     EXPECT_FLOAT_EQ (cloud_eigen4.points (i, 1), cloud.points[i].y);
@@ -869,7 +869,7 @@ TEST (PCL, PCDReaderWriterEigen)
   EXPECT_EQ ((uint32_t)cloud_eigen5.height, cloud.height);
   EXPECT_EQ ((bool)cloud_eigen5.is_dense, cloud.is_dense);
 
-  for (size_t i = 0; i < cloud_eigen5.points.rows (); ++i)
+  for (int i = 0; i < cloud_eigen5.points.rows (); ++i)
   {
     EXPECT_FLOAT_EQ (cloud_eigen5.points (i, 0), cloud.points[i].x);
     EXPECT_FLOAT_EQ (cloud_eigen5.points (i, 1), cloud.points[i].y);
