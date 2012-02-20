@@ -52,8 +52,8 @@ namespace pcl
       * \ingroup surface
       */
     template<typename PointNT>
-      class Poisson : public SurfaceReconstruction<PointNT>
-      {
+    class Poisson : public SurfaceReconstruction<PointNT>
+    {
       public:
         using SurfaceReconstruction<PointNT>::input_;
         using SurfaceReconstruction<PointNT>::tree_;
@@ -215,7 +215,7 @@ namespace pcl
 
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-      };
+    };
 }
 
 #endif  // PCL_SURFACE_POISSON_H_
