@@ -48,9 +48,7 @@ namespace pcl
   {
     namespace poisson
     {
-      ////////////
       // Square //
-      ////////////
       int
       Square::CornerIndex (const int& x, const int& y)
       {

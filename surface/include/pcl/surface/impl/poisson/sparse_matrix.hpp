@@ -44,26 +44,21 @@
 
 #include <float.h>
 
-///////////////////
-//  SparseMatrix //
-///////////////////
-///////////////////////////////////////////
-// Static Allocator Methods and Memebers //
-///////////////////////////////////////////
+// Static Allocator Methods and Memebers
 template<class T>
 int SparseMatrix<T>::UseAlloc = 0;
 template<class T>
 Allocator<MatrixEntry<T> > SparseMatrix<T>::Allocator;
 template<class T>
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
 SparseMatrix<T>::UseAllocator (void)
 {
-  return UseAlloc;
+  return (UseAlloc);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> void
 SparseMatrix<T>::SetAllocator (const int& blockSize)
 {
@@ -73,17 +68,11 @@ SparseMatrix<T>::SetAllocator (const int& blockSize)
     Allocator.set (blockSize);
   }
   else
-  {
     UseAlloc = 0;
-  }
 }
 
-
-
-///////////////////////////////////////
 // SparseMatrix Methods and Memebers //
-///////////////////////////////////////
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T>
 SparseMatrix<T>::SparseMatrix ()
 {
@@ -92,14 +81,14 @@ SparseMatrix<T>::SparseMatrix ()
   m_ppElements = NULL;
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T>
 SparseMatrix<T>::SparseMatrix (int rows)
 {
   Resize (rows);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T>
 SparseMatrix<T>::SparseMatrix (const SparseMatrix& M)
 {
@@ -108,25 +97,21 @@ SparseMatrix<T>::SparseMatrix (const SparseMatrix& M)
   {
     SetRowSize (i, M.rowSizes[i]);
     for (int j = 0; j < rowSizes[i]; j++)
-    {
       m_ppElements[i][j] = M.m_ppElements[i][j];
-    }
   }
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> int
 SparseMatrix<T>::Entries (void)
 {
   int e = 0;
   for (int i = 0; i < rows; i++)
-  {
     e += int (rowSizes[i]);
-  }
-  return e;
+  return (e);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> SparseMatrix<T>&
 SparseMatrix<T>::operator = (const SparseMatrix<T>& M)
 {
@@ -135,21 +120,19 @@ SparseMatrix<T>::operator = (const SparseMatrix<T>& M)
   {
     SetRowSize (i, M.rowSizes[i]);
     for (int j = 0; j < rowSizes[i]; j++)
-    {
       m_ppElements[i][j] = M.m_ppElements[i][j];
-    }
   }
-  return *this;
+  return (*this);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T>
 SparseMatrix<T>::~SparseMatrix ()
 {
   Resize (0);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> void
 SparseMatrix<T>::Resize (int r)
 {
@@ -157,17 +140,11 @@ SparseMatrix<T>::Resize (int r)
   if (rows > 0)
   {
     if (!UseAlloc)
-    {
       for (i = 0; i < rows; i++)
-      {
         if (rowSizes[i])
-        {
-          free( m_ppElements[i]);
-        }
-      }
-    }
-    free( m_ppElements);
-    free( rowSizes);
+          free (m_ppElements[i]);
+    free (m_ppElements);
+    free (rowSizes);
   }
   rows = r;
   if (r)
@@ -178,39 +155,33 @@ SparseMatrix<T>::Resize (int r)
   }
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> void
 SparseMatrix<T>::SetRowSize (int row, int count)
 {
   if (row >= 0 && row < rows)
   {
     if (UseAlloc)
-    {
       m_ppElements[row] = Allocator.newElements (count);
-    }
     else
     {
       if (rowSizes[row])
-      {
-        free( m_ppElements[row]);
-      }
+        free (m_ppElements[row]);
       if (count > 0)
-      {
         m_ppElements[row] = (MatrixEntry<T>*)malloc (sizeof(MatrixEntry<T> ) * count);
-      }
     }
     rowSizes[row] = count;
   }
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> void
 SparseMatrix<T>::SetZero ()
 {
   Resize (this->m_N, this->m_M);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> void
 SparseMatrix<T>::SetIdentity ()
 {
@@ -219,34 +190,30 @@ SparseMatrix<T>::SetIdentity ()
     (*this) (ij, ij) = T (1);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> SparseMatrix<T>
 SparseMatrix<T>::operator * (const T& V) const
 {
-  SparseMatrix < T > M (*this);
+  SparseMatrix<T> M (*this);
   M *= V;
-  return M;
+  return (M);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> SparseMatrix<T>&
 SparseMatrix<T>::operator *= (const T& V)
 {
   for (int i = 0; i < this->Rows (); i++)
-  {
     for (int ii = 0; ii < m_ppElements[i].size (); i++)
-    {
       m_ppElements[i][ii].Value *= V;
-    }
-  }
-  return *this;
+  return (*this);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> SparseMatrix<T>
 SparseMatrix<T>::Multiply (const SparseMatrix<T>& M) const
 {
-  SparseMatrix < T > R (this->Rows (), M.Columns ());
+  SparseMatrix<T> R (this->Rows (), M.Columns ());
   for (int i = 0; i < R.Rows (); i++)
   {
     for (int ii = 0; ii < m_ppElements[i].size (); ii++)
@@ -259,28 +226,26 @@ SparseMatrix<T>::Multiply (const SparseMatrix<T>& M) const
       }
     }
   }
-  return R;
+  return (R);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> template<class T2> Vector<T2>
 SparseMatrix<T>::Multiply (const Vector<T2>& V) const
 {
-  Vector < T2 > R (rows);
+  Vector<T2> R (rows);
 
   for (int i = 0; i < rows; i++)
   {
     T2 temp = T2 ();
     for (int ii = 0; ii < rowSizes[i]; ii++)
-    {
       temp += m_ppElements[i][ii].Value * V.m_pV[m_ppElements[i][ii].N];
-    }
     R (i) = temp;
   }
-  return R;
+  return (R);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> template<class T2> void
 SparseMatrix<T>::Multiply (const Vector<T2>& In, Vector<T2>& Out) const
 {
@@ -288,44 +253,38 @@ SparseMatrix<T>::Multiply (const Vector<T2>& In, Vector<T2>& Out) const
   {
     T2 temp = T2 ();
     for (int j = 0; j < rowSizes[i]; j++)
-    {
       temp += m_ppElements[i][j].Value * In.m_pV[m_ppElements[i][j].N];
-    }
     Out.m_pV[i] = temp;
   }
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> SparseMatrix<T>
 SparseMatrix<T>::operator * (const SparseMatrix<T>& M) const
 {
-  return Multiply (M);
+  return (Multiply (M));
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> template<class T2> Vector<T2>
 SparseMatrix<T>::operator * (const Vector<T2>& V) const
 {
-  return Multiply (V);
+  return (Multiply (V));
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> SparseMatrix<T>
 SparseMatrix<T>::Transpose () const
 {
   SparseMatrix < T > M (this->Columns (), this->Rows ());
 
   for (int i = 0; i < this->Rows (); i++)
-  {
     for (int ii = 0; ii < m_ppElements[i].size (); ii++)
-    {
       M (m_ppElements[i][ii].N, i) = m_ppElements[i][ii].Value;
-    }
-  }
-  return M;
+  return (M);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> template<class T2> int
 SparseMatrix<T>::SolveSymmetric (const SparseMatrix<T>& M, const Vector<T2>& b, const int& iters,
                                  Vector<T2>& solution, const T2 eps, const int& reset)
@@ -343,7 +302,7 @@ SparseMatrix<T>::SolveSymmetric (const SparseMatrix<T>& M, const Vector<T2>& b, 
   if (b.Dot (b) <= eps)
   {
     solution.SetZero ();
-    return 0;
+    return (0);
   }
 
   int i;
@@ -353,28 +312,23 @@ SparseMatrix<T>::SolveSymmetric (const SparseMatrix<T>& M, const Vector<T2>& b, 
     M.Multiply (d, Md);
     temp = d.Dot (Md);
     if (temp <= eps)
-    {
       break;
-    }
     alpha = rDotR / temp;
     r.SubtractScaled (Md, alpha);
     temp = r.Dot (r);
     if (temp / b.Dot (b) <= eps)
-    {
       break;
-    }
     beta = temp / rDotR;
     solution.AddScaled (d, alpha);
     if (beta <= eps)
-    {
       break;
-    }
     rDotR = temp;
     Vector<T2>::Add (d, beta, r, d);
   }
-  return i;
+  return (i);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Solve for x s.t. M(x)=b by solving for x s.t. M^tM(x)=M^t(b)
 template<class T> int
 SparseMatrix<T>::Solve (const SparseMatrix<T>& M, const Vector<T>& b, const int& iters, Vector<T>& solution,
@@ -404,15 +358,10 @@ SparseMatrix<T>::Solve (const SparseMatrix<T>& M, const Vector<T>& b, const int&
     rDotR = temp;
     d = r + d * beta;
   }
-  return i;
+  return (i);
 }
 
-
-
-////////////////////
 //  SparseNMatrix //
-////////////////////
-///////////////////////////////////////////
 // Static Allocator Methods and Memebers //
 ///////////////////////////////////////////
 template<class T, int Dim>
@@ -420,14 +369,14 @@ int SparseNMatrix<T, Dim>::UseAlloc = 0;
 template<class T, int Dim>
 Allocator<NMatrixEntry<T, Dim> > SparseNMatrix<T, Dim>::Allocator;
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T, int Dim> int
 SparseNMatrix<T, Dim>::UseAllocator (void)
 {
-  return UseAlloc;
+  return (UseAlloc);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T, int Dim> void
 SparseNMatrix<T, Dim>::SetAllocator (const int& blockSize)
 {
@@ -437,17 +386,11 @@ SparseNMatrix<T, Dim>::SetAllocator (const int& blockSize)
     Allocator.set (blockSize);
   }
   else
-  {
     UseAlloc = 0;
-  }
 }
 
-
-
-////////////////////////////////////////
 // SparseNMatrix Methods and Memebers //
-////////////////////////////////////////
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T, int Dim>
 SparseNMatrix<T, Dim>::SparseNMatrix ()
 {
@@ -456,14 +399,14 @@ SparseNMatrix<T, Dim>::SparseNMatrix ()
   m_ppElements = NULL;
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T, int Dim>
 SparseNMatrix<T, Dim>::SparseNMatrix (int rows)
 {
   Resize (rows);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T, int Dim>
 SparseNMatrix<T, Dim>::SparseNMatrix (const SparseNMatrix& M)
 {
@@ -472,25 +415,21 @@ SparseNMatrix<T, Dim>::SparseNMatrix (const SparseNMatrix& M)
   {
     SetRowSize (i, M.rowSizes[i]);
     for (int j = 0; j < rowSizes[i]; j++)
-    {
       m_ppElements[i][j] = M.m_ppElements[i][j];
-    }
   }
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T, int Dim> int
 SparseNMatrix<T, Dim>::Entries (void)
 {
   int e = 0;
   for (int i = 0; i < rows; i++)
-  {
     e += int (rowSizes[i]);
-  }
-  return e;
+  return (e);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T, int Dim> SparseNMatrix<T, Dim>&
 SparseNMatrix<T, Dim>::operator = (const SparseNMatrix<T, Dim>& M)
 {
@@ -499,21 +438,19 @@ SparseNMatrix<T, Dim>::operator = (const SparseNMatrix<T, Dim>& M)
   {
     SetRowSize (i, M.rowSizes[i]);
     for (int j = 0; j < rowSizes[i]; j++)
-    {
       m_ppElements[i][j] = M.m_ppElements[i][j];
-    }
   }
-  return *this;
+  return (*this);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T, int Dim>
 SparseNMatrix<T, Dim>::~SparseNMatrix ()
 {
   Resize (0);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T, int Dim> void
 SparseNMatrix<T, Dim>::Resize (int r)
 {
@@ -521,17 +458,11 @@ SparseNMatrix<T, Dim>::Resize (int r)
   if (rows > 0)
   {
     if (!UseAlloc)
-    {
       for (i = 0; i < rows; i++)
-      {
         if (rowSizes[i])
-        {
-          free( m_ppElements[i]);
-        }
-      }
-    }
-    free( m_ppElements);
-    free( rowSizes);
+          free (m_ppElements[i]);
+    free (m_ppElements);
+    free (rowSizes);
   }
   rows = r;
   if (r)
@@ -542,90 +473,70 @@ SparseNMatrix<T, Dim>::Resize (int r)
   }
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T, int Dim> void
 SparseNMatrix<T, Dim>::SetRowSize (int row, int count)
 {
   if (row >= 0 && row < rows)
   {
     if (UseAlloc)
-    {
       m_ppElements[row] = Allocator.newElements (count);
-    }
     else
     {
       if (rowSizes[row])
-      {
         free( m_ppElements[row]);
-      }
       if (count > 0)
-      {
         m_ppElements[row] = (NMatrixEntry<T, Dim>*)malloc (sizeof(NMatrixEntry<T, Dim> ) * count);
-      }
     }
     rowSizes[row] = count;
   }
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T, int Dim> SparseNMatrix<T, Dim>
 SparseNMatrix<T, Dim>::operator * (const T& V) const
 {
   SparseNMatrix < T, Dim > M (*this);
   M *= V;
-  return M;
+  return (M);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T, int Dim> SparseNMatrix<T, Dim>&
 SparseNMatrix<T, Dim>::operator *= (const T& V)
 {
   for (int i = 0; i < this->Rows (); i++)
-  {
     for (int ii = 0; ii < m_ppElements[i].size (); i++)
-    {
       for (int jj = 0; jj < Dim; jj++)
-      {
         m_ppElements[i][ii].Value[jj] *= V;
-      }
-    }
-  }
-  return *this;
+  return (*this);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T, int Dim> template<class T2> NVector<T2, Dim>
 SparseNMatrix<T, Dim>::operator * (const Vector<T2>& V) const
 {
-  NVector < T2, Dim > R (rows);
+  NVector<T2, Dim> R (rows);
 
   for (int i = 0; i < rows; i++)
   {
     T2 temp[Dim];
     for (int ii = 0; ii < Dim; ii++)
-    {
       temp[ii] = T2 ();
-    }
     for (int ii = 0; ii < rowSizes[i]; ii++)
-    {
       for (int jj = 0; jj < Dim; jj++)
-      {
         temp[jj] += m_ppElements[i][ii].Value[jj] * V.m_pV[m_ppElements[i][jj].N];
-      }
-    }
     for (int ii = 0; ii < Dim; ii++)
-    {
       R[i][ii] = temp[ii];
-    }
   }
-  return R;
+  return (R);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T, int Dim> template<class T2> Vector<T2>
 SparseNMatrix<T, Dim>::operator * (const NVector<T2, Dim>& V) const
 {
-  Vector < T2 > R (rows);
+  Vector<T2> R (rows);
 
   for (int i = 0; i < rows; i++)
   {
@@ -634,31 +545,26 @@ SparseNMatrix<T, Dim>::operator * (const NVector<T2, Dim>& V) const
     for (int ii = 0; ii < rowSizes[i]; ii++)
     {
       for (int jj = 0; jj < Dim; jj++)
-      {
         temp += m_ppElements[i][ii].Value[jj] * V.m_pV[m_ppElements[i][ii].N][jj];
-      }
     }
     R (i) = temp;
   }
-  return R;
+  return (R);
 }
 
-
-
-///////////////////////////
 // SparseSymmetricMatrix //
-///////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> template<class T2> Vector<T2>
 SparseSymmetricMatrix<T>::operator * (const Vector<T2>& V) const
 {
-  return Multiply (V);
+  return (Multiply (V));
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> template<class T2> Vector<T2>
 SparseSymmetricMatrix<T>::Multiply (const Vector<T2>& V) const
 {
-  Vector < T2 > R (this->rows);
+  Vector<T2> R (this->rows);
 
   for (int i = 0; i < this->rows; i++)
   {
@@ -669,10 +575,10 @@ SparseSymmetricMatrix<T>::Multiply (const Vector<T2>& V) const
       R (j) += this->m_ppElements[i][ii].Value * V.m_pV[i];
     }
   }
-  return R;
+  return (R);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> template<class T2> void
 SparseSymmetricMatrix<T>::Multiply (const Vector<T2>& In, Vector<T2>& Out) const
 {
@@ -694,7 +600,7 @@ SparseSymmetricMatrix<T>::Multiply (const Vector<T2>& In, Vector<T2>& Out) const
   }
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> template<class T2> int
 SparseSymmetricMatrix<T>::Solve (const SparseSymmetricMatrix<T>& M, const Vector<T2>& b, const int& iters,
                                  Vector<T2>& solution, const T2 eps, const int& reset)
@@ -713,7 +619,7 @@ SparseSymmetricMatrix<T>::Solve (const SparseSymmetricMatrix<T>& M, const Vector
   if (b.Dot (b) <= eps)
   {
     solution.SetZero ();
-    return 0;
+    return (0);
   }
   int i;
   for (i = 0; i < iters; i++)
@@ -722,29 +628,23 @@ SparseSymmetricMatrix<T>::Solve (const SparseSymmetricMatrix<T>& M, const Vector
     M.Multiply (d, Md);
     temp = d.Dot (Md);
     if (fabs (temp) <= eps)
-    {
       break;
-    }
     alpha = rDotR / temp;
     r.SubtractScaled (Md, alpha);
     temp = r.Dot (r);
     if (temp / bDotB <= eps)
-    {
       break;
-    }
     beta = temp / rDotR;
     solution.AddScaled (d, alpha);
     if (beta <= eps)
-    {
       break;
-    }
     rDotR = temp;
     Vector<T2>::Add (d, beta, r, d);
   }
-  return i;
+  return (i);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<class T> template<class T2> int
 SparseSymmetricMatrix<T>::Solve (const SparseSymmetricMatrix<T>& M, const Vector<T>& diagonal, const Vector<T2>& b,
                                  const int& iters, Vector<T2>& solution, const T2 eps, const int& reset)
@@ -762,11 +662,9 @@ SparseSymmetricMatrix<T>::Solve (const SparseSymmetricMatrix<T>& M, const Vector
     M.Multiply (solution, Md);
     r = b - Md;
     for (int j = 0; j < int (M.rows); j++)
-    {
       solution[j] += r[j] / diagonal[j];
-    }
   }
-  return iters;
+  return (iters);
 }
 
 

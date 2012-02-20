@@ -45,83 +45,65 @@
 
 #include "pcl/surface/poisson/factor.h"
 
-////////////////////////
-// StartingPolynomial //
-////////////////////////
+// StartingPolynomial
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> template<int Degree2> StartingPolynomial<Degree + Degree2>
 StartingPolynomial<Degree>::operator * (const StartingPolynomial<Degree2>& p) const
 {
-  StartingPolynomial < Degree + Degree2 > sp;
+  StartingPolynomial<Degree + Degree2> sp;
   if (start > p.start)
-  {
     sp.start = start;
-  }
   else
-  {
     sp.start = p.start;
-  }
   sp.p = this->p * p.p;
-  return sp;
+  return (sp);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> StartingPolynomial<Degree>
 StartingPolynomial<Degree>::scale (const double& s) const
 {
   StartingPolynomial q;
   q.start = start * s;
   q.p = p.scale (s);
-  return q;
+  return (q);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> StartingPolynomial<Degree>
 StartingPolynomial<Degree>::shift (const double& s) const
 {
   StartingPolynomial q;
   q.start = start + s;
   q.p = p.shift (s);
-  return q;
+  return (q);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> int
 StartingPolynomial<Degree>::operator < (const StartingPolynomial<Degree>& sp) const
 {
   if (start < sp.start)
-  {
-    return 1;
-  }
+    return (1);
   else
-  {
-    return 0;
-  }
+    return (0);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> int
 StartingPolynomial<Degree>::Compare (const void* v1, const void* v2)
 {
   double d = ((StartingPolynomial*)(v1))->start - ((StartingPolynomial*)(v2))->start;
   if (d < 0)
-  {
-    return -1;
-  }
+    return (-1);
   else if (d > 0)
-  {
-    return 1;
-  }
+    return (1);
   else
-  {
-    return 0;
-  }
+    return (0);
 }
 
-
-
-/////////////////
-// PPolynomial //
-/////////////////
+// PPolynomial
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree>
 PPolynomial<Degree>::PPolynomial (void)
 {
@@ -129,29 +111,27 @@ PPolynomial<Degree>::PPolynomial (void)
   polys = NULL;
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree>
 PPolynomial<Degree>::PPolynomial (const PPolynomial<Degree>& p)
 {
   polyCount = 0;
   polys = NULL;
   set (p.polyCount);
-  memcpy (polys, p.polys, sizeof(StartingPolynomial<Degree> ) * p.polyCount);
+  memcpy (polys, p.polys, sizeof(StartingPolynomial<Degree>) * p.polyCount);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree>
 PPolynomial<Degree>::~PPolynomial (void)
 {
   if (polyCount)
-  {
-    free( polys);
-  }
+    free (polys);
   polyCount = 0;
   polys = NULL;
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> void
 PPolynomial<Degree>::set (StartingPolynomial<Degree>* sps, const int& count)
 {
@@ -161,32 +141,26 @@ PPolynomial<Degree>::set (StartingPolynomial<Degree>* sps, const int& count)
   for (i = 0; i < count; i++)
   {
     if (!c || sps[i].start != polys[c - 1].start)
-    {
       polys[c++] = sps[i];
-    }
     else
-    {
       polys[c - 1].p += sps[i].p;
-    }
   }
   reset (c);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> int
 PPolynomial<Degree>::size (void) const
 {
-  return int (sizeof(StartingPolynomial<Degree> ) * polyCount);
+  return (int (sizeof(StartingPolynomial<Degree>) * polyCount));
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> void
 PPolynomial<Degree>::set (const size_t &size)
 {
   if (polyCount)
-  {
-    free( polys);
-  }
+    free (polys);
   polyCount = 0;
   polys = NULL;
   polyCount = size;
@@ -197,7 +171,7 @@ PPolynomial<Degree>::set (const size_t &size)
   }
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> void
 PPolynomial<Degree>::reset (const size_t& newSize)
 {
@@ -205,16 +179,16 @@ PPolynomial<Degree>::reset (const size_t& newSize)
   polys = (StartingPolynomial<Degree>*)realloc (polys, sizeof(StartingPolynomial<Degree> ) * newSize);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> PPolynomial<Degree>&
 PPolynomial<Degree>::operator = (const PPolynomial<Degree>& p)
 {
   set (p.polyCount);
   memcpy (polys, p.polys, sizeof(StartingPolynomial<Degree> ) * p.polyCount);
-  return *this;
+  return (*this);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> template<int Degree2> PPolynomial<Degree>&
 PPolynomial<Degree>::operator = (const PPolynomial<Degree2>& p)
 {
@@ -224,22 +198,20 @@ PPolynomial<Degree>::operator = (const PPolynomial<Degree2>& p)
     polys[i].start = p.polys[i].start;
     polys[i].p = p.polys[i].p;
   }
-  return *this;
+  return (*this);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> double
 PPolynomial<Degree>::operator () (const double& t) const
 {
   double v = 0;
   for (int i = 0; i < int (polyCount) && t > polys[i].start; i++)
-  {
     v += polys[i].p (t);
-  }
-  return v;
+  return (v);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> double
 PPolynomial<Degree>::integral (const double& tMin, const double& tMax) const
 {
@@ -256,26 +228,22 @@ PPolynomial<Degree>::integral (const double& tMin, const double& tMax) const
   for (int i = 0; i < int (polyCount) && polys[i].start < end; i++)
   {
     if (start < polys[i].start)
-    {
       s = polys[i].start;
-    }
     else
-    {
       s = start;
-    }
     v += polys[i].p.integral (s, end);
   }
-  return v * m;
+  return (v * m);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> double
 PPolynomial<Degree>::Integral (void) const
 {
-  return integral (polys[0].start, polys[polyCount - 1].start);
+  return (integral (polys[0].start, polys[polyCount - 1].start));
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> PPolynomial<Degree>
 PPolynomial<Degree>::operator + (const PPolynomial<Degree>& p) const
 {
@@ -288,29 +256,21 @@ PPolynomial<Degree>::operator + (const PPolynomial<Degree>& p) const
   while (idx < q.polyCount)
   {
     if (j >= int (p.polyCount) - 1)
-    {
       q.polys[idx] = polys[++i];
-    }
     else if (i >= int (polyCount) - 1)
-    {
       q.polys[idx] = p.polys[++j];
-    }
     else if (polys[i + 1].start < p.polys[j + 1].start)
-    {
       q.polys[idx] = polys[++i];
-    }
     else
-    {
       q.polys[idx] = p.polys[++j];
-    }
     //		if(idx && polys[idx].start==polys[idx-1].start)	{polys[idx-1].p+=polys[idx].p;}
     //		else{idx++;}
     idx++;
   }
-  return q;
+  return (q);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> PPolynomial<Degree>
 PPolynomial<Degree>::operator - (const PPolynomial<Degree>& p) const
 {
@@ -323,18 +283,14 @@ PPolynomial<Degree>::operator - (const PPolynomial<Degree>& p) const
   while (idx < q.polyCount)
   {
     if (j >= int (p.polyCount) - 1)
-    {
       q.polys[idx] = polys[++i];
-    }
     else if (i >= int (polyCount) - 1)
     {
       q.polys[idx].start = p.polys[++j].start;
       q.polys[idx].p = p.polys[j].p * (-1.0);
     }
     else if (polys[i + 1].start < p.polys[j + 1].start)
-    {
       q.polys[idx] = polys[++i];
-    }
     else
     {
       q.polys[idx].start = p.polys[++j].start;
@@ -344,10 +300,10 @@ PPolynomial<Degree>::operator - (const PPolynomial<Degree>& p) const
     //		else{idx++;}
     idx++;
   }
-  return q;
+  return (q);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> PPolynomial<Degree>&
 PPolynomial<Degree>::addScaled (const PPolynomial<Degree>& p, const double& scale)
 {
@@ -361,39 +317,31 @@ PPolynomial<Degree>::addScaled (const PPolynomial<Degree>& p, const double& scal
   while (cnt < polyCount)
   {
     if (j >= int (p.polyCount) - 1)
-    {
       polys[idx] = oldPolys[++i];
-    }
     else if (i >= int (oldPolyCount) - 1)
     {
       polys[idx].start = p.polys[++j].start;
       polys[idx].p = p.polys[j].p * scale;
     }
     else if (oldPolys[i + 1].start < p.polys[j + 1].start)
-    {
       polys[idx] = oldPolys[++i];
-    }
     else
     {
       polys[idx].start = p.polys[++j].start;
       polys[idx].p = p.polys[j].p * scale;
     }
     if (idx && polys[idx].start == polys[idx - 1].start)
-    {
       polys[idx - 1].p += polys[idx].p;
-    }
     else
-    {
       idx++;
-    }
     cnt++;
   }
-  free( oldPolys);
+  free (oldPolys);
   reset (idx);
-  return *this;
+  return (*this);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> template<int Degree2> PPolynomial<Degree + Degree2>
 PPolynomial<Degree>::operator * (const PPolynomial<Degree2>& p) const
 {
@@ -403,18 +351,14 @@ PPolynomial<Degree>::operator * (const PPolynomial<Degree2>& p) const
 
   sp = (StartingPolynomial<Degree + Degree2>*)malloc (sizeof(StartingPolynomial<Degree + Degree2> ) * spCount);
   for (i = 0; i < int (polyCount); i++)
-  {
     for (j = 0; j < int (p.polyCount); j++)
-    {
       sp[i * p.polyCount + j] = polys[i] * p.polys[j];
-    }
-  }
   q.set (sp, spCount);
-  free( sp);
-  return q;
+  free (sp);
+  return (q);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> template<int Degree2> PPolynomial<Degree + Degree2>
 PPolynomial<Degree>::operator * (const Polynomial<Degree2>& p) const
 {
@@ -425,55 +369,51 @@ PPolynomial<Degree>::operator * (const Polynomial<Degree2>& p) const
     q.polys[i].start = polys[i].start;
     q.polys[i].p = polys[i].p * p;
   }
-  return q;
+  return (q);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> PPolynomial<Degree>
 PPolynomial<Degree>::scale (const double& s) const
 {
   PPolynomial q;
   q.set (polyCount);
   for (size_t i = 0; i < polyCount; i++)
-  {
     q.polys[i] = polys[i].scale (s);
-  }
-  return q;
+  return (q);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> PPolynomial<Degree>
 PPolynomial<Degree>::shift (const double& s) const
 {
   PPolynomial q;
   q.set (polyCount);
   for (size_t i = 0; i < polyCount; i++)
-  {
     q.polys[i] = polys[i].shift (s);
-  }
-  return q;
+  return (q);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> PPolynomial<Degree - 1>
 PPolynomial<Degree>::derivative (void) const
 {
-  PPolynomial < Degree - 1 > q;
+  PPolynomial <Degree - 1> q;
   q.set (polyCount);
   for (size_t i = 0; i < polyCount; i++)
   {
     q.polys[i].start = polys[i].start;
     q.polys[i].p = polys[i].p.derivative ();
   }
-  return q;
+  return (q);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> PPolynomial<Degree + 1>
 PPolynomial<Degree>::integral (void) const
 {
   int i;
-  PPolynomial < Degree + 1 > q;
+  PPolynomial <Degree + 1> q;
   q.set (polyCount);
   for (i = 0; i < int (polyCount); i++)
   {
@@ -481,82 +421,78 @@ PPolynomial<Degree>::integral (void) const
     q.polys[i].p = polys[i].p.integral ();
     q.polys[i].p -= q.polys[i].p (q.polys[i].start);
   }
-  return q;
+  return (q);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> PPolynomial<Degree>&
 PPolynomial<Degree>::operator += (const double &s)
 {
   polys[0].p += s;
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> PPolynomial<Degree>&
 PPolynomial<Degree>::operator -= (const double &s)
 {
   polys[0].p -= s;
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> PPolynomial<Degree>&
 PPolynomial<Degree>::operator *= (const double &s)
 {
   for (int i = 0; i < int (polyCount); i++)
-  {
     polys[i].p *= s;
-  }
-  return *this;
+  return (*this);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> PPolynomial<Degree>&
 PPolynomial<Degree>::operator /= (const double &s)
 {
   for (size_t i = 0; i < polyCount; i++)
-  {
     polys[i].p /= s;
-  }
-  return *this;
+  return (*this);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> PPolynomial<Degree>
 PPolynomial<Degree>::operator + (const double& s) const
 {
   PPolynomial q = *this;
   q += s;
-  return q;
+  return (q);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> PPolynomial<Degree>
 PPolynomial<Degree>::operator - (const double& s) const
 {
   PPolynomial q = *this;
   q -= s;
-  return q;
+  return (q);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> PPolynomial<Degree>
 PPolynomial<Degree>::operator * (const double& s) const
 {
   PPolynomial q = *this;
   q *= s;
-  return q;
+  return (q);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> PPolynomial<Degree>
 PPolynomial<Degree>::operator / (const double& s) const
 {
   PPolynomial q = *this;
   q /= s;
-  return q;
+  return (q);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> PPolynomial<Degree>
 PPolynomial<Degree>::ConstantFunction (const double& radius)
 {
@@ -570,23 +506,24 @@ PPolynomial<Degree>::ConstantFunction (const double& radius)
 
   q.polys[0].p.coefficients[0] = 1.0;
   q.polys[1].p.coefficients[0] = -1.0;
-  return q;
+  return (q);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<> PPolynomial<0>
 PPolynomial<0>::GaussianApproximation (const double& width)
 {
-  return ConstantFunction (width);
+  return (ConstantFunction (width));
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> PPolynomial<Degree>
 PPolynomial<Degree>::GaussianApproximation (const double& width)
 {
-  return PPolynomial<Degree - 1>::GaussianApproximation ().MovingAverage (width);
+  return (PPolynomial<Degree - 1>::GaussianApproximation ().MovingAverage (width));
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> PPolynomial<Degree + 1>
 PPolynomial<Degree>::MovingAverage (const double& radius)
 {
@@ -605,11 +542,11 @@ PPolynomial<Degree>::MovingAverage (const double& radius)
     sps[2 * i + 1].p = p.shift (radius) * -1;
   }
   A.set (sps, int (polyCount * 2));
-  free( sps);
-  return A * 1.0 / (2 * radius);
+  free (sps);
+  return (A * 1.0 / (2 * radius));
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> void
 PPolynomial<Degree>::getSolutions (const double& c, std::vector<double>& roots, const double& EPS, const double& min,
                                    const double& max) const
@@ -622,27 +559,22 @@ PPolynomial<Degree>::getSolutions (const double& c, std::vector<double>& roots, 
   {
     p += polys[i].p;
     if (polys[i].start > max)
-    {
       break;
-    }
     if (i < polyCount - 1 && polys[i + 1].start < min)
-    {
       continue;
-    }
     p.getSolutions (c, tempRoots, EPS);
     for (size_t j = 0; j < tempRoots.size (); j++)
     {
       if (tempRoots[j] > polys[i].start && (i + 1 == polyCount || tempRoots[j] <= polys[i + 1].start))
       {
         if (tempRoots[j] > min && tempRoots[j] < max)
-        {
           roots.push_back (tempRoots[j]);
-        }
       }
     }
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<int Degree> void
 PPolynomial<Degree>::write (FILE* fp, const int& samples, const double& min, const double& max) const
 {
