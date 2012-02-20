@@ -72,8 +72,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::addPointsFromInputCloud (
     std::vector<int>::const_iterator current = indices_->begin ();
     while (current != indices_->end ())
     {
-      if ((input_->points[*current].x == input_->points[*current].x) && (input_->points[*current].y
-          == input_->points[*current].y) && (input_->points[*current].z == input_->points[*current].z))
+      if (isFinite (input_->points[*current]))
       {
         // add points to octree
         this->addPointIdx (*current);
@@ -85,8 +84,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::addPointsFromInputCloud (
   {
     for (i = 0; i < input_->points.size (); i++)
     {
-      if ((input_->points[i].x == input_->points[i].x) && (input_->points[i].y == input_->points[i].y)
-          && (input_->points[i].z == input_->points[i].z))
+      if (isFinite (input_->points[i]))
       {
         // add points to octree
         this->addPointIdx ((unsigned int)i);
