@@ -1,6 +1,6 @@
 set(SUBSYS_NAME segmentation)
 set(SUBSYS_DESC "Point cloud segmentation library")
-set(SUBSYS_DEPS common search sample_consensus kdtree octree)
+set(SUBSYS_DEPS common search sample_consensus kdtree octree features)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -14,6 +14,7 @@ if(build)
         src/sac_segmentation.cpp
         src/seeded_hue_segmentation.cpp
         src/segment_differences.cpp
+        src/region_growing.cpp
         )
 
     set(incs include/pcl/${SUBSYS_NAME}/extract_clusters.h
@@ -22,6 +23,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/sac_segmentation.h
         include/pcl/${SUBSYS_NAME}/seeded_hue_segmentation.h
         include/pcl/${SUBSYS_NAME}/segment_differences.h
+        include/pcl/${SUBSYS_NAME}/region_growing.h
         )
 
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/extract_clusters.hpp
@@ -30,6 +32,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/sac_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/seeded_hue_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/segment_differences.hpp
+        include/pcl/${SUBSYS_NAME}/impl/region_growing.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
