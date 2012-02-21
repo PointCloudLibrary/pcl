@@ -40,8 +40,13 @@ if(BUILD_CUDA)
         # Guess this macros will be included in cmake distributive
         include(${PCL_SOURCE_DIR}/cmake/CudaComputeTargetFlags.cmake)                  
         APPEND_TARGET_ARCH_FLAGS()
-        
-	string(REPLACE "-std=gnu++0x" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+        	
+		string(REPLACE "-std=gnu++0x" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+		foreach(config ${CMAKE_CONFIGURATION_TYPES})
+			string(TOUPPER ${config} CONFIG)
+			set(CONFIG_FLAGS "CMAKE_CXX_FLAGS_${CONFIG}")
+			string(REPLACE "-std=gnu++0x" "" CMAKE_CXX_FLAGS_${CONFIG} "${CONFIG_FLAGS}")				
+		endforeach(config)
 		
         collect_subproject_directory_names(${CMAKE_CURRENT_SOURCE_DIR} "CMakeLists.txt" PCL_CUDA_MODULES_NAMES PCL_CUDA_MODULES_DIRS)
         set(PCL_CUDA_MODULES_NAMES_UNSORTED ${PCL_CUDA_MODULES_NAMES})
