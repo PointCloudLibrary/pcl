@@ -30,7 +30,8 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *
+ *  $id$
+ *  @author: Koen Buys
  */
 
 #ifndef PCL_PEOPLE_CONVERSION_H_
@@ -41,6 +42,12 @@
 
 namespace pcl
 {
+  /** 
+   *  \brief This function adds a label to a PointCloudXYZRGB to output a PointCloudXYZRGBL
+   *  \param[in] cloud_in the PointcloudXYZRGB
+   *  \param[in] lmap vector with labels, needs to have same size as input PointCloud
+   *  \param[out] cloud_out the PointCloudXYZRGBL
+   **/
   void
   labelPointCloudfromArray (
                 const PointCloud<PointXYZRGB>&  cloud_in,
@@ -65,6 +72,12 @@ namespace pcl
       cloud_out.points.push_back(p);
     }
   }
+  /** 
+   *  \brief This function adds a label to a PointCloudXYZ to output a PointCloudXYZL
+   *  \param[in] cloud_in the PointcloudXYZ
+   *  \param[in] lmap vector with labels, needs to have same size as input PointCloud
+   *  \param[out] cloud_out the PointCloudXYZL
+   **/
   void
   labelPointCloudfromArray (
                 const PointCloud<PointXYZ>&  cloud_in,
