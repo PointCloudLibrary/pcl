@@ -189,7 +189,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
 
         do
           len++;
-        while (len < maxlen && ref[len] == ip[len]);
+        while (len < (unsigned int)maxlen && ref[len] == ip[len]);
 
         break;
       }
