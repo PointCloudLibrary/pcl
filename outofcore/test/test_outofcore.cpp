@@ -268,13 +268,12 @@ void point_test(octree_disk& t)
 
     //query the list
     std::vector<PointT> pointsinregion;
-    ///////////////////// AUTO IS NOT SUPPORTED!!!!
-    //
-/*    for(auto p : points)
+
+    for(vector<PointT>::iterator pointit = points.begin (); pointit != points.end (); ++pointit)
     {
-      if((query_box_min[0] <= p.x) && (p.x <= qboxmax[0]) && (query_box_min[1] <= p.y) && (p.y <= qboxmax[1]) && (query_box_min[2] <= p.z) && (p.z <= qboxmax[2]))
+      if((query_box_min[0] <= pointit->x) && (pointit->x <= qboxmax[0]) && (query_box_min[1] <= pointit->y) && (pointit->y <= qboxmax[1]) && (query_box_min[2] <= pointit->z) && (pointit->z <= qboxmax[2]))
       {
-        pointsinregion.push_back(p);
+        pointsinregion.push_back(*pointit);
       }
     }
 
@@ -297,7 +296,7 @@ void point_test(octree_disk& t)
       }
     }
 
-    ASSERT_TRUE(p_ot.empty());*/
+    ASSERT_TRUE(p_ot.empty());
   }
 }
 
