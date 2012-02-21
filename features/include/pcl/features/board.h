@@ -78,7 +78,7 @@ namespace pcl
 
       /** \brief Set the maximum distance of the points used to estimate the x_axis and y_axis of the BOARD Reference Frame for a given point.
        *
-       *  \param radius The search radius for x and y axes. If not set or set to 0 the parameter given with setRadiusSearch is used.
+       *  \param[in] radius The search radius for x and y axes. If not set or set to 0 the parameter given with setRadiusSearch is used.
        */
       inline void
       setTangentRadius (float radius)
@@ -99,7 +99,7 @@ namespace pcl
       /** \brief Sets whether holes in the margin of the support, for each point, are searched and accounted for in the estimation of the 
        *          Reference Frame or not.
        *
-       *  \param find_holes Enable/Disable the search for holes in the support.
+       *  \param[in] find_holes Enable/Disable the search for holes in the support.
        */
       inline void
       setFindHoles (bool find_holes)
@@ -120,7 +120,7 @@ namespace pcl
 
       /** \brief Sets the percentage of the search radius (or tangent radius if set) after which a point is considered part of the support margin.
        *
-       *  \param margin_thresh the percentage of the search radius after which a point is considered a margin point.
+       *  \param[in] margin_thresh the percentage of the search radius after which a point is considered a margin point.
        */
       inline void
       setMarginThresh (float margin_thresh)
@@ -140,7 +140,7 @@ namespace pcl
 
       /** \brief Sets the number of slices in which is divided the margin for the search of missing regions.
        *
-       *  \param size the number of margin slices.
+       *  \param[in] size the number of margin slices.
        */
       void
       setCheckMarginArraySize (int size)
@@ -176,7 +176,7 @@ namespace pcl
       /** \brief Given the angle width of a hole in the support margin, sets the minimum percentage of a circumference this angle 
        *         must cover to be considered a missing region in the support and hence used for the estimation of the Reference Frame.
        *
-       *  \param prob_thresh the minimum percentage of a circumference after which a hole is considered in the calculation
+       *  \param[in] prob_thresh the minimum percentage of a circumference after which a hole is considered in the calculation
        */
       inline void
       setHoleSizeProbThresh (float prob_thresh)
@@ -198,7 +198,7 @@ namespace pcl
       /** \brief Sets the minimum steepness that the normals of the points situated on the borders of the hole, with reference
        *         to the normal of the best point found by the algorithm, must have in order to be considered in the calculation of the Reference Frame.
        *
-       *  \param steep_thresh threshold that defines if a missing region contains a point with the most different normal.
+       *  \param[in] steep_thresh threshold that defines if a missing region contains a point with the most different normal.
        */
       inline void
       setSteepThresh (float steep_thresh)
@@ -262,9 +262,9 @@ namespace pcl
        *
        * axis must be normalized.
        *
-       * \param axis the axis
-       * \param axis_origin the axis_origin
-       * \param point the point towards which the resulting axis is directed
+       * \param[in] axis the axis
+       * \param[in] axis_origin the axis_origin
+       * \param[in] point the point towards which the resulting axis is directed
        * \param[out] directed_ortho_axis the directed orthogonal axis calculated
        */
       void
@@ -274,9 +274,9 @@ namespace pcl
       /*!
        * \brief return the angle (in radians) that rotate v1 to v2 with respect to axis .
        *
-       * \param v1 the first vector
-       * \param v2 the second vector
-       * \param axis the rotation axis. Axis must be normalized and orthogonal to plane defined by v1 and v2.
+       * \param[in] v1 the first vector
+       * \param[in] v2 the second vector
+       * \param[in] axis the rotation axis. Axis must be normalized and orthogonal to plane defined by v1 and v2.
        * \return angle
        */
       float
@@ -284,9 +284,9 @@ namespace pcl
 
       /** \brief Disambiguates a normal direction using adjacent normals
        * 
-       * \param normals_cloud a cloud of normals used for the calculation
-       * \param normal_indices the indices of the normals in the cloud that should to be used for the calculation
-       * \param normal the normal to disambiguate, the calculation is performed in place
+       * \param[in] normals_cloud a cloud of normals used for the calculation
+       * \param[in] normal_indices the indices of the normals in the cloud that should to be used for the calculation
+       * \param[in,out] normal the normal to disambiguate, the calculation is performed in place
        */
       void
       normalDisambiguation (pcl::PointCloud<PointNT> const &normals_cloud, std::vector<int> const &normal_indices,
@@ -295,9 +295,9 @@ namespace pcl
       /*!
        * \brief Compute Least Square Plane Fitting in a set of 3D points
        *
-       * \param points Matrix(nPoints,3) of 3D points coordinates
-       * \param center centroid of the distribution of points that belongs to the fitted plane
-       * \param norm normal to the fitted plane
+       * \param[in] points Matrix(nPoints,3) of 3D points coordinates
+       * \param[out] center centroid of the distribution of points that belongs to the fitted plane
+       * \param[out] norm normal to the fitted plane
        */
       void
       planeFitting (Eigen::Matrix<float, Eigen::Dynamic, 3> const &points, Eigen::Vector3f &center,
@@ -308,9 +308,9 @@ namespace pcl
        *
        * Equivalent to vtkPlane::ProjectPoint()
        *
-       * \param point the point to project
-       * \param origin_point a point belonging to the plane
-       * \param plane_normal normal of the plane
+       * \param[in] point the point to project
+       * \param[in] origin_point a point belonging to the plane
+       * \param[in] plane_normal normal of the plane
        * \param[out] projected_point the projection of the point on the plane
        */
       void
@@ -320,7 +320,7 @@ namespace pcl
       /*!
        * \brief Given an axis, return a random orthogonal axis
        *
-       * \param axis input axis
+       * \param[in] axis input axis
        * \param[out] rand_ortho_axis an axis orthogonal to the input axis and whose direction is random
        */
       void
@@ -329,8 +329,9 @@ namespace pcl
       /*!
        * \brief Check if val1 and val2 are equals.
        *
-       * \param val1 first number to check.
-       * \param val2 second number to check.
+       * \param[in] val1 first number to check.
+       * \param[in] val2 second number to check.
+       * \param[in] zero_float_eps epsilon
        * \return true if val1 is equal to val2, false otherwise.
        */
       inline bool
@@ -340,19 +341,23 @@ namespace pcl
       }
 
     private:
-      //////////////////////////////////////////////////////////////////////////////////////////////////////
-      //LRF parameters
+      /** \brief Radius used to find tangent axis. */
+      float tangent_radius_;
 
-      float tangent_radius_; ///< radius used to find tangent axis.
+      /** \brief If true, check if support is complete or has missing regions because it is too near to mesh borders. */
+      bool find_holes_;
 
-      bool find_holes_; ///< if true, check if support is complete or has missing regions because it is too near to mesh borders.
+      /** \brief Threshold that define if a support point is near the margins. */
+      float margin_thresh_; 
 
-      float margin_thresh_; ///< threshold that define if a support point is near the margins.
+      /** \brief Number of slices that divide the support in order to determine if a missing region is present. */
+      int check_margin_array_size_; 
 
-      int check_margin_array_size_; ///< number of slices that divide the support in order to determine if a missing region is present.
+      /** \brief Threshold used to determine a missing region */
+      float hole_size_prob_thresh_; 
 
-      float hole_size_prob_thresh_; ///< threshold used to determine a missing region
-      float steep_thresh_; ///< threshold that defines if a missing region contains a point with the most different normal.
+      /** \brief Threshold that defines if a missing region contains a point with the most different normal. */
+      float steep_thresh_; 
 
 
       std::vector<bool> check_margin_array_;
