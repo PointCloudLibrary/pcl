@@ -1057,9 +1057,19 @@ pcl::PCDReader::readEigen (const std::string &file_name, pcl::PointCloud<Eigen::
     if (data_type == 2)
       throw pcl::IOException ("[pcl::PCDReader::readEigen] PCD binary_compressed mode not implemented for Eigen::MatrixXf!");
     else
-      // Copy the data (assume row major)
-      // TODO: Check if matrix is row major when copying the data!
-      memcpy (&cloud.points.coeffRef (0), &map[0] + data_idx, cloud.points.cols () * cloud.points.rows () * sizeof (float));
+    {
+      // Is the given matrix row major?
+      if (cloud.points.Flags & Eigen::RowMajorBit)
+        memcpy (&cloud.points.coeffRef (0), &map[0] + data_idx, cloud.points.cols () * cloud.points.rows () * sizeof (float));
+      // Column major! We need to transpose-copy the data
+      else
+      {
+        Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> pts (cloud.points.rows (), cloud.points.cols ());
+        memcpy (&pts.coeffRef (0), &map[0] + data_idx, cloud.points.cols () * cloud.points.rows () * sizeof (float));
+        pts.transposeInPlace ();
+        memcpy (&cloud.points.coeffRef (0), &pts.coeffRef (0), cloud.points.cols () * cloud.points.rows () * sizeof (float));
+      }
+    }
 
     // Unmap the pages of memory
 #if _WIN32
@@ -1916,8 +1926,14 @@ pcl::PCDWriter::writeBinaryEigen (const std::string &file_name,
   // Copy the header
   memcpy (&map[0], oss.str ().c_str (), data_idx);
 
-  // Copy the data
-  memcpy (&map[0] + data_idx, (const char*)cloud.points.data (), data_size);
+  Eigen::MatrixXf pts;
+  // Transpose data if matrix is column major: we need its memory representation to be different
+  if (!(cloud.points.Flags & Eigen::RowMajorBit))
+    pts = cloud.points.transpose ();
+  else
+    pts = cloud.points;
+  // Copy the data (_always_ stored as ROW major in the file!)
+  memcpy (&map[0] + data_idx, (const char*)pts.data (), data_size);
 
   // If the user set the synchronization flag on, call msync
 #if !_WIN32
@@ -1978,10 +1994,14 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
   }
 #endif
 
+  Eigen::MatrixXf pts;
   // Check if the matrix is row or column major
-  // Transpose the matrix
-  Eigen::MatrixXf pts = cloud.points.transpose ();
- 
+  if (cloud.points.Flags & Eigen::RowMajorBit)
+    // Transpose data if matrix is column major
+    pts = cloud.points.transpose ();
+  else
+    pts = cloud.points;
+
   // Compute the size of data
   size_t data_size = cloud.points.rows () * cloud.points.cols () * sizeof (float);
   char* temp_buf = (char*)malloc (data_size * 1.5 + 8);

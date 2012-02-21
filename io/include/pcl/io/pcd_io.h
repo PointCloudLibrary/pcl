@@ -89,6 +89,9 @@ namespace pcl
         * and not the points themselves, from a given PCD file. Useful for fast
         * evaluation of the underlying data structure.
         *
+        * \attention The PCD data is \b always stored in ROW major format! The
+        * read/write PCD methods will detect column major input and automatically convert it.
+        *
         * Returns:
         *  * < 0 (-1) on error
         *  * > 0 on success
@@ -96,7 +99,7 @@ namespace pcl
         * \param[out] cloud the resultant point cloud dataset (only the header will be filled)
         * \param[out] origin the sensor acquisition origin (only for > PCD_V7 - null if not present)
         * \param[out] orientation the sensor acquisition orientation (only for > PCD_V7 - identity if not present)
-        * \param[out] pcd_version the PCD version of the file (either PCD_V6 or PCD_V7)
+        * \param[out] pcd_version the PCD version of the file (i.e., PCD_V6, PCD_V7)
         * \param[out] data_type the type of data (0 = ASCII, 1 = Binary, 2 = Binary compressed) 
         * \param[out] data_idx the offset of cloud data within the file
         */
@@ -111,7 +114,10 @@ namespace pcl
         * and not the points themselves, from a given PCD file. Useful for fast
         * evaluation of the underlying data structure.
         *
-        * Returns:
+        * \attention The PCD data is \b always stored in ROW major format! The
+        * read/write PCD methods will detect column major input and automatically convert it.
+        *
+         * Returns:
         *  * < 0 (-1) on error
         *  * > 0 on success
         * \param[in] file_name the name of the file to load
@@ -168,6 +174,9 @@ namespace pcl
       }
 
       /** \brief Read a point cloud data from any PCD file, and convert it to a pcl::PointCloud<Eigen::MatrixXf> format.
+        * \attention The PCD data is \b always stored in ROW major format! The
+        * read/write PCD methods will detect column major input and automatically convert it.
+        *
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] cloud the resultant PointCloud message read from disk
         */
@@ -240,6 +249,9 @@ namespace pcl
 
       /** \brief Generate the header of a PCD file format
         * \note This version is specialized for PointCloud<Eigen::MatrixXf> data types. 
+        * \attention The PCD data is \b always stored in ROW major format! The
+        * read/write PCD methods will detect column major input and automatically convert it.
+        *
         * \param[in] cloud the point cloud data message
         * \param[in] nr_points if given, use this to fill in WIDTH, HEIGHT (=1), and POINTS in the header
         * By default, nr_points is set to INTMAX, and the data in the header is used instead.
@@ -355,6 +367,9 @@ namespace pcl
 
       /** \brief Save point cloud data to a PCD file containing n-D points, in BINARY format
         * \note This version is specialized for PointCloud<Eigen::MatrixXf> data types. 
+        * \attention The PCD data is \b always stored in ROW major format! The
+        * read/write PCD methods will detect column major input and automatically convert it.
+        *
         * \param[in] file_name the output file name
         * \param[in] cloud the point cloud data
         */
@@ -372,6 +387,9 @@ namespace pcl
 
       /** \brief Save point cloud data to a binary comprssed PCD file.
         * \note This version is specialized for PointCloud<Eigen::MatrixXf> data types. 
+        * \attention The PCD data is \b always stored in ROW major format! The
+        * read/write PCD methods will detect column major input and automatically convert it.
+        *
         * \param[in] file_name the output file name
         * \param[in] cloud the point cloud data message
         */
@@ -401,6 +419,9 @@ namespace pcl
 
       /** \brief Save point cloud data to a PCD file containing n-D points, in ASCII format
         * \note This version is specialized for PointCloud<Eigen::MatrixXf> data types. 
+        * \attention The PCD data is \b always stored in ROW major format! The
+        * read/write PCD methods will detect column major input and automatically convert it.
+        *
         * \param[in] file_name the output file name
         * \param[in] cloud the point cloud data message
         * \param[in] precision the specified output numeric stream precision (default: 8)
