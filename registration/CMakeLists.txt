@@ -11,6 +11,7 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 if(build)
     set(incs 
         include/pcl/${SUBSYS_NAME}/correspondence_estimation.h
+        include/pcl/${SUBSYS_NAME}/correspondence_estimation_normal_shooting.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_distance.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_features.h
@@ -48,6 +49,7 @@ if(build)
 
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation.hpp
+        include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation_normal_shooting.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_distance.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_features.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_one_to_one.hpp
