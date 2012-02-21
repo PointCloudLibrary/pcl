@@ -850,7 +850,7 @@ TEST (PCL, Poisson)
 
   io::saveVTKFile ("bunny_poisson.vtk", mesh);
 
-  EXPECT_EQ (mesh.polygons.size (), 1574);
+  ASSERT_EQ (mesh.polygons.size (), 1574);
   // All polygons should be triangles
   for (size_t i = 0; i < mesh.polygons.size (); ++i)
     EXPECT_EQ (mesh.polygons[i].vertices.size (), 3);
