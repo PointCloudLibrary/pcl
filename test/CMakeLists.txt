@@ -34,6 +34,10 @@ if(build)
                  LINK_WITH pcl_filters pcl_io pcl_sample_consensus pcl_kdtree
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
     
+    PCL_ADD_TEST(correspondence_estimation test_correspondence_estimation
+                 FILES test_correspondence_estimation.cpp
+                 LINK_WITH pcl_registration) 
+
     PCL_ADD_TEST(a_feature_test test_feature
                  FILES test_feature.cpp
                  LINK_WITH pcl_features pcl_kdtree pcl_io
