@@ -141,7 +141,7 @@ namespace pcl
 
 } // namespace pcl
 
-#include "pcl/registration/impl/ndt.hpp"
+#include "pcl/registration/impl/ndt_2d.hpp"
 
 #endif // ndef PCL_NDT_H_
 
