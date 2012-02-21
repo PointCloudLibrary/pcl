@@ -15,7 +15,7 @@ endif(${CMAKE_VERSION} VERSION_LESS 2.8.5)
 set(Boost_NO_BOOST_CMAKE ON)
 
 # Required boost modules
-find_package(Boost 1.40.0 REQUIRED COMPONENTS system filesystem thread date_time iostreams program_options)
+find_package(Boost 1.40.0 REQUIRED COMPONENTS system filesystem thread date_time iostreams)
 
 if(Boost_FOUND)
   set(BOOST_FOUND TRUE)

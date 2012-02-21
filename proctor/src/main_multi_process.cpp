@@ -2,7 +2,7 @@
 #include <boost/format.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
-#include <boost/program_options.hpp>
+#include <pcl/console/parse.h>
 
 #include <QApplication>
 
@@ -42,7 +42,6 @@
 #include <sstream>
 
 using namespace pcl::proctor;
-namespace po = boost::program_options;
 
 struct run_proctor
 {
@@ -183,26 +182,9 @@ int main(int argc, char **argv)
   //std::cout << test2.feature_est_->name_ << std::endl;
   //std::cout << test2.keypoint_wrap_->name_ << std::endl;
   //exit(0);
+  //
+  bool is_manager = pcl::console::find_switch(argc, argv, "-m");
 
-  bool is_manager = false;
-  po::options_description desc("Allowed options");
-  desc.add_options()
-    ("manager,M", "run job manager")
-    ("help", "produce help message")
-    ;
-
-  po::variables_map var_map;
-  po::store(po::parse_command_line(argc, argv, desc), var_map);
-  po::notify(var_map);
-
-  if (var_map.count("help")) {
-    std::cout << desc << std::endl;
-    return 1;
-  }
-
-  if (var_map.count("manager")) {
-    is_manager = true;
-  }
 
   if (is_manager)
   {
