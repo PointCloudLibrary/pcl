@@ -104,7 +104,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
 
     getKNearestNeighborRecursive (p_q, k, this->rootNode_, key, 1, smallestDist, pointCandidates);
 
-    resultCount = pointCandidates.size ();
+    resultCount = (unsigned int)pointCandidates.size ();
 
     k_indices.resize (resultCount);
     k_sqr_distances.resize (resultCount);
@@ -115,7 +115,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
       k_sqr_distances [i] = pointCandidates [i].pointDistance_;
     }
 
-    return k_indices.size ();
+    return (int)k_indices.size ();
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -172,7 +172,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
     getNeighborsWithinRadiusRecursive (p_q, radius * radius, this->rootNode_, key, 1, k_indices, k_sqr_distances,
                                        max_nn);
 
-    return (k_indices.size ());
+    return ((int)k_indices.size ());
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -203,7 +203,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
 
     boxSearchRecursive (min_pt, max_pt, this->rootNode_, key, 1, k_indices);
 
-    return (k_indices.size ());
+    return ((int)k_indices.size ());
 
   }
 
@@ -246,7 +246,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
       }
       else
       {
-        searchEntryHeap[childIdx].pointDistance = numeric_limits<double>::infinity ();
+        searchEntryHeap[childIdx].pointDistance = numeric_limits<float>::infinity ();
       }
     }
 
@@ -275,7 +275,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
       {
         // we reached leaf node level
 
-        double squaredDist;
+        float squaredDist;
         size_t i;
         vector<int> decodedPointVector;
 
@@ -344,7 +344,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
 
       OctreeKey newKey;
       PointT voxelCenter;
-      double squaredDist;
+      float squaredDist;
 
       // generate new key for current branch voxel
       newKey.x = (key.x << 1) + (!!(childIdx & (1 << 2)));
@@ -496,14 +496,15 @@ template<typename PointT, typename LeafT, typename OctreeT>
           continue;
 
         result_index = decodedPointVector[i];
-        sqr_distance = smallestSquaredDist = squaredDist;
+		smallestSquaredDist = squaredDist;
+        sqr_distance = (float)squaredDist;
       }
     }
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT>
-  double
+  float
   pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::pointSquaredDist (const PointT & pointA,
                                                                                  const PointT & pointB) const
   {

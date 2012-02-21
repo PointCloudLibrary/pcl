@@ -110,7 +110,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::addPointToCloud (const Po
 
   cloud_arg->points.push_back (point_arg);
 
-  this->addPointIdx (cloud_arg->points.size () - 1);
+  this->addPointIdx ((const int)cloud_arg->points.size () - 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -123,7 +123,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::addPointToCloud (const Po
 
   cloud_arg->points.push_back (point_arg);
 
-  this->addPointFromCloud (cloud_arg->points.size () - 1, indices_arg);
+  this->addPointFromCloud ((const int)cloud_arg->points.size () - 1, indices_arg);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -212,7 +212,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getApproxIntersectedVoxel
   float norm = direction.norm ();
   direction.normalize ();
 
-  const float step_size = resolution_ * precision;
+  const float step_size = (const float)resolution_ * precision;
   // Ensure we get at least one step for the first voxel.
   const int nsteps = std::max (1, (int) (norm / step_size));
 
@@ -222,7 +222,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getApproxIntersectedVoxel
   // Walk along the line segment with small steps.
   for (int i = 0; i < nsteps; ++i)
   {
-    Eigen::Vector3f p = origin + (direction * step_size * i);
+    Eigen::Vector3f p = origin + (direction * step_size * (const float)i);
 
     PointT octree_p;
     octree_p.x = p.x ();
@@ -256,7 +256,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getApproxIntersectedVoxel
     voxel_center_list.push_back (center);
   }
 
-  return (voxel_center_list.size ());
+  return ((int)voxel_center_list.size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -275,7 +275,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
 
   pcl::getMinMax3D (*input_, min_pt, max_pt);
 
-  float minValue = std::numeric_limits<float>::epsilon () * 512.0;
+  float minValue = std::numeric_limits<float>::epsilon () * 512.0f;
 
   minX = min_pt.x;
   minY = min_pt.y;
@@ -564,9 +564,9 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getKeyBitSize ()
   const float minValue = std::numeric_limits<float>::epsilon();
 
   // find maximum key values for x, y, z
-  maxKeyX = (maxX_ - minX_) / resolution_;
-  maxKeyY = (maxY_ - minY_) / resolution_;
-  maxKeyZ = (maxZ_ - minZ_) / resolution_;
+  maxKeyX = (unsigned int)((maxX_ - minX_) / resolution_);
+  maxKeyY = (unsigned int)((maxY_ - minY_) / resolution_);
+  maxKeyZ = (unsigned int)((maxZ_ - minZ_) / resolution_);
 
   // find maximum amount of keys
   maxVoxels = max (max (max (maxKeyX, maxKeyY), maxKeyZ), (unsigned int)2);
@@ -630,9 +630,9 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::genOctreeKeyforPoint (
 {
   PointT tempPoint;
 
-  tempPoint.x = pointX_arg;
-  tempPoint.y = pointY_arg;
-  tempPoint.z = pointZ_arg;
+  tempPoint.x = (float)pointX_arg;
+  tempPoint.y = (float)pointY_arg;
+  tempPoint.z = (float)pointZ_arg;
 
   // generate key for point
   genOctreeKeyforPoint (tempPoint, key_arg);
@@ -655,9 +655,9 @@ template<typename PointT, typename LeafT, typename OctreeT> void
 pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::genLeafNodeCenterFromOctreeKey (const OctreeKey & key, PointT & point) const
 {
   // define point to leaf node voxel center
-  point.x = ((double)key.x + 0.5f) * this->resolution_ + this->minX_;
-  point.y = ((double)key.y + 0.5f) * this->resolution_ + this->minY_;
-  point.z = ((double)key.z + 0.5f) * this->resolution_ + this->minZ_;
+  point.x = (float)(((double)key.x + 0.5f) * this->resolution_ + this->minX_);
+  point.y = (float)(((double)key.y + 0.5f) * this->resolution_ + this->minY_);
+  point.z = (float)(((double)key.z + 0.5f) * this->resolution_ + this->minZ_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -668,12 +668,12 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::genVoxelCenterFromOctreeK
     PointT& point_arg) const
 {
   // generate point for voxel center defined by treedepth (bitLen) and key
-  point_arg.x = ((double)(key_arg.x) + 0.5f) * (this->resolution_ * (double)(1 << (this->octreeDepth_
-      - treeDepth_arg))) + this->minX_;
-  point_arg.y = ((double)(key_arg.y) + 0.5f) * (this->resolution_ * (double)(1 << (this->octreeDepth_
-      - treeDepth_arg))) + this->minY_;
-  point_arg.z = ((double)(key_arg.z) + 0.5f) * (this->resolution_ * (double)(1 << (this->octreeDepth_
-      - treeDepth_arg))) + this->minZ_;
+  point_arg.x = (float)(((double)(key_arg.x) + 0.5f) * (this->resolution_ * (double)(1 << (this->octreeDepth_
+      - treeDepth_arg))) + this->minX_);
+  point_arg.y = (float)(((double)(key_arg.y) + 0.5f) * (this->resolution_ * (double)(1 << (this->octreeDepth_
+      - treeDepth_arg))) + this->minY_);
+  point_arg.z = (float)(((double)(key_arg.z) + 0.5f) * (this->resolution_ * (double)(1 << (this->octreeDepth_
+      - treeDepth_arg))) + this->minZ_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -688,13 +688,13 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::genVoxelBoundsFromOctreeK
   double voxel_side_len = this->resolution_ * (double)(1 << (this->octreeDepth_ - treeDepth_arg));
 
   // calculate voxel bounds
-  min_pt (0) = (double)(key_arg.x) * voxel_side_len + this->minX_;
-  min_pt (1) = (double)(key_arg.y) * voxel_side_len + this->minY_;
-  min_pt (2) = (double)(key_arg.z) * voxel_side_len + this->minZ_;
+  min_pt (0) = (float)((double)(key_arg.x) * voxel_side_len + this->minX_);
+  min_pt (1) = (float)((double)(key_arg.y) * voxel_side_len + this->minY_);
+  min_pt (2) = (float)((double)(key_arg.z) * voxel_side_len + this->minZ_);
 
-  max_pt (0) = (double)(key_arg.x + 1) * voxel_side_len + this->minX_;
-  max_pt (1) = (double)(key_arg.y + 1) * voxel_side_len + this->minY_;
-  max_pt (2) = (double)(key_arg.z + 1) * voxel_side_len + this->minZ_;
+  max_pt (0) = (float)((double)(key_arg.x + 1) * voxel_side_len + this->minX_);
+  max_pt (1) = (float)((double)(key_arg.y + 1) * voxel_side_len + this->minY_);
+  max_pt (2) = (float)((double)(key_arg.z + 1) * voxel_side_len + this->minZ_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
