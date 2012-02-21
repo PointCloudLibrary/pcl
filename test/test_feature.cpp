@@ -662,25 +662,25 @@ TEST (PCL, BOARDLocalReferenceFrameEstimation)
   Eigen::Vector3f point_253_z (-0.425827f, -0.0919098f, 0.900124f);
 
   //Test Results
-  EXPECT_NEAR (point_15_conf,bunny_LRF.at (15).confidence, 1E-5);
-  EXPECT_NEAR_VECTORS (point_15_x, bunny_LRF.at (15).x_axis.getNormalVector3fMap (), 1E-5);
-  EXPECT_NEAR_VECTORS (point_15_y, bunny_LRF.at (15).y_axis.getNormalVector3fMap (), 1E-5);
-  EXPECT_NEAR_VECTORS (point_15_z, bunny_LRF.at (15).z_axis.getNormalVector3fMap (), 1E-5);
+  EXPECT_NEAR (point_15_conf,bunny_LRF.at (15).confidence, 1E-4);
+  EXPECT_NEAR_VECTORS (point_15_x, bunny_LRF.at (15).x_axis.getNormalVector3fMap (), 1E-4);
+  EXPECT_NEAR_VECTORS (point_15_y, bunny_LRF.at (15).y_axis.getNormalVector3fMap (), 1E-4);
+  EXPECT_NEAR_VECTORS (point_15_z, bunny_LRF.at (15).z_axis.getNormalVector3fMap (), 1E-4);
 
-  EXPECT_NEAR (point_45_conf, bunny_LRF.at (45).confidence, 1E-5);
-  EXPECT_NEAR_VECTORS (point_45_x, bunny_LRF.at (45).x_axis.getNormalVector3fMap (), 1E-5);
-  EXPECT_NEAR_VECTORS (point_45_y, bunny_LRF.at (45).y_axis.getNormalVector3fMap (), 1E-5);
-  EXPECT_NEAR_VECTORS (point_45_z, bunny_LRF.at (45).z_axis.getNormalVector3fMap (), 1E-5);
+  EXPECT_NEAR (point_45_conf, bunny_LRF.at (45).confidence, 1E-4);
+  EXPECT_NEAR_VECTORS (point_45_x, bunny_LRF.at (45).x_axis.getNormalVector3fMap (), 1E-4);
+  EXPECT_NEAR_VECTORS (point_45_y, bunny_LRF.at (45).y_axis.getNormalVector3fMap (), 1E-4);
+  EXPECT_NEAR_VECTORS (point_45_z, bunny_LRF.at (45).z_axis.getNormalVector3fMap (), 1E-4);
 
-  EXPECT_NEAR (point_163_conf, bunny_LRF.at (163).confidence, 1E-5);
-  EXPECT_NEAR_VECTORS (point_163_x, bunny_LRF.at (163).x_axis.getNormalVector3fMap (), 1E-5);
-  EXPECT_NEAR_VECTORS (point_163_y, bunny_LRF.at (163).y_axis.getNormalVector3fMap (), 1E-5);
-  EXPECT_NEAR_VECTORS (point_163_z, bunny_LRF.at (163).z_axis.getNormalVector3fMap (), 1E-5);
+  EXPECT_NEAR (point_163_conf, bunny_LRF.at (163).confidence, 1E-4);
+  EXPECT_NEAR_VECTORS (point_163_x, bunny_LRF.at (163).x_axis.getNormalVector3fMap (), 1E-4);
+  EXPECT_NEAR_VECTORS (point_163_y, bunny_LRF.at (163).y_axis.getNormalVector3fMap (), 1E-4);
+  EXPECT_NEAR_VECTORS (point_163_z, bunny_LRF.at (163).z_axis.getNormalVector3fMap (), 1E-4);
 
-  EXPECT_NEAR (point_253_conf, bunny_LRF.at (253).confidence, 1E-5);
-  EXPECT_NEAR_VECTORS (point_253_x, bunny_LRF.at (253).x_axis.getNormalVector3fMap (), 1E-5);
-  EXPECT_NEAR_VECTORS (point_253_y, bunny_LRF.at (253).y_axis.getNormalVector3fMap (), 1E-5);
-  EXPECT_NEAR_VECTORS (point_253_z, bunny_LRF.at (253).z_axis.getNormalVector3fMap (), 1E-5);  
+  EXPECT_NEAR (point_253_conf, bunny_LRF.at (253).confidence, 1E-4);
+  EXPECT_NEAR_VECTORS (point_253_x, bunny_LRF.at (253).x_axis.getNormalVector3fMap (), 1E-4);
+  EXPECT_NEAR_VECTORS (point_253_y, bunny_LRF.at (253).y_axis.getNormalVector3fMap (), 1E-4);
+  EXPECT_NEAR_VECTORS (point_253_z, bunny_LRF.at (253).z_axis.getNormalVector3fMap (), 1E-4);  
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
