@@ -46,7 +46,7 @@
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/common/time.h>
 #include <pcl/common/centroid.h>
-#if defined(HAVE_SSE_EXTENSIONS)
+#ifdef __SSE__
 #include <xmmintrin.h>
 #endif
 
@@ -99,7 +99,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::calculateNormalCovar (const
   unsigned count = 0;
   // indices        0   1   2   3   4   5   6   7
   // coefficients: xx  xy  xz  ??  yx  yy  yz  ??
-#ifdef HAVE_SSE_EXTENSIONS
+#ifdef __SSE__
   // accumulator for xx, xy, xz
   __m128 vec1 = _mm_setzero_ps();
   // accumulator for yy, yz, zz
