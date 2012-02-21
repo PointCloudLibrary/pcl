@@ -315,35 +315,45 @@ pcl::search::FlannSearch<PointT, FlannDistance>::convertInputToFlannMatrix ()
   index_mapping_.clear();
   identity_mapping_ = true;
 
-  input_flann_ = MatrixPtr (new flann::Matrix<float> (new float[original_no_of_points*point_representation_->getNumberOfDimensions ()], original_no_of_points, point_representation_->getNumberOfDimensions ()));
-
   //cloud_ = (float*)malloc (original_no_of_points * dim_ * sizeof (float));
-  float* cloud_ptr = input_flann_->ptr();
   //index_mapping_.reserve(original_no_of_points);
   //identity_mapping_ = true;
 
   if (!indices_ || indices_->empty ())
   {
-    // TODO: implement "no NaN check" option that just re-uses the cloud data in the flann matrix
-    for (int i = 0; i < original_no_of_points; ++i)
+    // best case: all points can be passed to flann without any conversions
+    if (input_->is_dense && point_representation_->isTrivial ())
     {
-      const PointT& point = (*input_)[i];
-      // Check if the point is invalid
-      if (!point_representation_->isValid (point))
+      // const cast is evil, but flann won't change the data
+      input_flann_ = MatrixPtr (new flann::Matrix<float> (const_cast<float*>(reinterpret_cast<const float*>(&(*input_) [0])), original_no_of_points, point_representation_->getNumberOfDimensions (),sizeof (PointT)));
+      input_copied_for_flann_ = false;
+    }
+    else
+    {
+      input_flann_ = MatrixPtr (new flann::Matrix<float> (new float[original_no_of_points*point_representation_->getNumberOfDimensions ()], original_no_of_points, point_representation_->getNumberOfDimensions ()));
+      float* cloud_ptr = input_flann_->ptr();
+      for (int i = 0; i < original_no_of_points; ++i)
       {
-        identity_mapping_ = false;
-        continue;
+        const PointT& point = (*input_)[i];
+        // Check if the point is invalid
+        if (!point_representation_->isValid (point))
+        {
+          identity_mapping_ = false;
+          continue;
+        }
+
+        index_mapping_.push_back (i);  // If the returned index should be for the indices vector
+
+        point_representation_->vectorize (point, cloud_ptr);
+        cloud_ptr += dim_;
       }
-
-      index_mapping_.push_back (i);  // If the returned index should be for the indices vector
-
-      point_representation_->vectorize (point, cloud_ptr);
-      cloud_ptr += dim_;
     }
 
   }
   else
   {
+    input_flann_ = MatrixPtr (new flann::Matrix<float> (new float[original_no_of_points*point_representation_->getNumberOfDimensions ()], original_no_of_points, point_representation_->getNumberOfDimensions ()));
+    float* cloud_ptr = input_flann_->ptr();
     for (int indices_index = 0; indices_index < original_no_of_points; ++indices_index)
     {
       int cloud_index = (*indices_)[indices_index];
@@ -361,7 +371,8 @@ pcl::search::FlannSearch<PointT, FlannDistance>::convertInputToFlannMatrix ()
       cloud_ptr += dim_;
     }
   }
-  input_flann_->rows = index_mapping_.size ();
+  if (input_copied_for_flann_)
+    input_flann_->rows = index_mapping_.size ();
 }
 
 #define PCL_INSTANTIATE_FlannSearch(T) template class PCL_EXPORTS pcl::search::FlannSearch<T>;
