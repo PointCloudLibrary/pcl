@@ -293,7 +293,7 @@ TexturedQuad::TexturedQuad (int width, int height) : width_(width), height_(heig
 {
   program_ = gllib::Program::load_program_from_file("single_texture.vert", "single_texture.frag");
   program_->use ();
-  Eigen::Matrix<float, 4, 4, Eigen::RowMajor> MVP;
+  Eigen::Matrix<float, 4, 4> MVP;
   MVP.setIdentity();
   program_->set_uniform("MVP", MVP);
   glUseProgram (0);
