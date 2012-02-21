@@ -25,6 +25,7 @@ if(build)
         src/approximate_voxel_grid.cpp
         src/bilateral.cpp
         src/crop_hull.cpp
+	src/voxel_grid_covariance.cpp
         )
 
     set(incs
@@ -46,6 +47,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/voxel_grid.h
         include/pcl/${SUBSYS_NAME}/approximate_voxel_grid.h
         include/pcl/${SUBSYS_NAME}/bilateral.h
+	include/pcl/${SUBSYS_NAME}/voxel_grid_covariance.h
         )
 
     set(impl_incs
@@ -66,6 +68,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/voxel_grid.hpp
         include/pcl/${SUBSYS_NAME}/impl/approximate_voxel_grid.hpp
         include/pcl/${SUBSYS_NAME}/impl/bilateral.hpp
+	include/pcl/${SUBSYS_NAME}/impl/voxel_grid_covariance.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
