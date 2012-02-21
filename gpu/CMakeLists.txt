@@ -42,12 +42,10 @@ if(BUILD_GPU)
         APPEND_TARGET_ARCH_FLAGS()
 		
 		string(REPLACE "-std=gnu++0x" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-		foreach(config ${CMAKE_CONFIGURATION_TYPES})
-			string(TOUPPER ${config} CONFIG)
-			set(CONFIG_FLAGS "CMAKE_CXX_FLAGS_${CONFIG}")
-			string(REPLACE "-std=gnu++0x" "" CMAKE_CXX_FLAGS_${CONFIG} "${CONFIG_FLAGS}")				
-		endforeach(config)
-		  
+		string(REPLACE "-std=gnu++0x" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+		string(REPLACE "-std=gnu++0x" "" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+		string(REPLACE "-std=gnu++0x" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+						 
         collect_subproject_directory_names(${CMAKE_CURRENT_SOURCE_DIR} "CMakeLists.txt" PCL_GPU_MODULES_NAMES PCL_GPU_MODULES_DIRS)
         set(PCL_GPU_MODULES_NAMES_UNSORTED ${PCL_GPU_MODULES_NAMES})
         topological_sort(PCL_GPU_MODULES_NAMES PCL_ _DEPENDS)
