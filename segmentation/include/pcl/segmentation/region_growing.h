@@ -2,6 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2009-2012, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -32,16 +33,14 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author : Sergey Ushakov
- * Email  : mine_all_mine@bk.ru
- *
  */
 
 #ifndef _REGIONGROWING_H_
 #define _REGIONGROWING_H_
 
 #include "pcl/search/search.h"
-#include "pcl/features/normal_3d.h"
+// We do not compute normals inside of segmentation. Please rewrite this piece of code:
+//#include "pcl/features/normal_3d.h"
 #include "pcl/point_cloud.h"
 #include "pcl/point_types.h"
 #include <list>
@@ -50,13 +49,17 @@
 
 namespace pcl
 {
-  /*! \brief
-   * Implements the well known Region Growing algorithm used for segmentation.
-   * Description can be found in the article
-   * "Segmentation of point clouds using smoothness constraint"
-   * by T. Rabbania, F. A. van den Heuvelb, G. Vosselmanc.
-   * In addition to residual test, the possibility to test curvature is added.
-   */
+  /** \brief Implements the well known Region Growing algorithm used for segmentation.
+    * 
+    * A description can be found in the article:
+    *
+    *  - "Segmentation of point clouds using smoothness constraint"
+    *     by T. Rabbania, F. A. van den Heuvelb, G. Vosselmanc.
+    * 
+    * In addition to residual test, the possibility to test curvature is added.
+    *
+    * \author : Sergey Ushakov (mine_all_mine@bk.ru)
+    */
   template <typename PointT>
   class RegionGrowing
   {
@@ -134,7 +137,7 @@ namespace pcl
       /*! \brief
        * Returns list of segments. Each segment is a list of indices of points.
        */
-      std::vector<std::list<int>>
+      std::vector<std::list<int> >
       getSegments () const;
 
       /*! \brief
@@ -233,7 +236,7 @@ namespace pcl
        * @param point initial point which will be the seed for growing a segment.
        */
       virtual std::list<int>
-      getSegmentFromPoint (typename PointT point);
+      getSegmentFromPoint (PointT point);
 
       /*! \brief
        * For a given point this function builds a segment to which it belongs and
@@ -334,7 +337,7 @@ namespace pcl
        * After the segmentation it will contain the list of segments, which in
        * turn are lists of indices.
 	   */
-      std::vector<std::list<int>> segments_;
+      std::vector<std::list<int> > segments_;
   };
 }
 

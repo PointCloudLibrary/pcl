@@ -9,12 +9,13 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
-    set(srcs src/extract_clusters.cpp
+    set(srcs 
+        src/extract_clusters.cpp
         src/extract_polygonal_prism_data.cpp
         src/sac_segmentation.cpp
         src/seeded_hue_segmentation.cpp
         src/segment_differences.cpp
-        src/region_growing.cpp
+        #src/region_growing.cpp
         )
 
     set(incs include/pcl/${SUBSYS_NAME}/extract_clusters.h
@@ -23,7 +24,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/sac_segmentation.h
         include/pcl/${SUBSYS_NAME}/seeded_hue_segmentation.h
         include/pcl/${SUBSYS_NAME}/segment_differences.h
-        include/pcl/${SUBSYS_NAME}/region_growing.h
+        #include/pcl/${SUBSYS_NAME}/region_growing.h
         )
 
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/extract_clusters.hpp
@@ -32,7 +33,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/sac_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/seeded_hue_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/segment_differences.hpp
-        include/pcl/${SUBSYS_NAME}/impl/region_growing.hpp
+        #include/pcl/${SUBSYS_NAME}/impl/region_growing.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})

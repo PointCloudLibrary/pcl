@@ -2,6 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2009-2012, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -32,9 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author : Sergey Ushakov
- * Email  : mine_all_mine@bk.ru
- *
  */
 
 #ifndef _REGIONGROWING_HPP_
@@ -43,10 +41,13 @@
 #include "pcl/segmentation/region_growing.h"
 
 #include "pcl/search/search.h"
-#include "pcl/features/normal_3d.h"
+// We do not compute normals inside of segmentation. Please rewrite this piece of code:
+//#include "pcl/features/normal_3d.h"
+#include "pcl/search/search.h"
+#include "pcl/search/kdtree.h"
 #include "pcl/point_cloud.h"
 #include "pcl/point_types.h"
-
+#include <queue>
 #include <list>
 #include <math.h>
 #include <time.h>
@@ -175,7 +176,7 @@ namespace pcl
     return (cloud_for_segmentation_);
   }
 
-  template <typename PointT> std::vector<std::list<int>>
+  template <typename PointT> std::vector<std::list<int> >
   RegionGrowing<PointT>::getSegments () const
   {
     return (segments_);
@@ -192,7 +193,7 @@ namespace pcl
 
     //first of all we need to find out if this point belongs to cloud
     bool point_was_found = false;
-    if (index < cloud_for_segmentation_->points.size() && index >= 0)
+    if (index < (int)cloud_for_segmentation_->points.size() && index >= 0)
     {
       point_was_found = true;
     }
@@ -203,7 +204,7 @@ namespace pcl
       {
         //if we have already made the segmentation, then find the segment
         //to which this point belongs
-        std::vector<std::list<int>>::iterator i_segment;
+        std::vector<std::list<int> >::iterator i_segment;
         for (i_segment = segments_.begin(); i_segment != segments_.end(); i_segment++)
         {
           bool segment_was_found = false;
@@ -235,7 +236,8 @@ namespace pcl
         search_->setInputCloud(cloud_for_segmentation_);
 
         //if user didn't set input normals then they need to be computed
-        if (normals_ == 0)
+/** We do not compute normals inside of segmentation. Please rewrite this piece of code:
+ * if (normals_ == 0)
         {
           normals_ = (new pcl::PointCloud<pcl::Normal>)->makeShared();
           pcl::NormalEstimation<PointT, pcl::Normal> normal_estimator;
@@ -243,7 +245,7 @@ namespace pcl
           normal_estimator.setKSearch(30);
           normal_estimator.compute(*normals_);
         }
-
+*/
         //if we haven't done the segmentation yet, then we need to grow the segment
         std::vector<int> point_is_used;
         point_is_used.resize(cloud_for_segmentation_->points.size(), 0);
@@ -255,7 +257,7 @@ namespace pcl
   }
 
   template <typename PointT> std::list<int>
-  RegionGrowing<PointT>::getSegmentFromPoint (typename PointT point)
+  RegionGrowing<PointT>::getSegmentFromPoint (PointT point)
   {
     std::list<int> result;
     if (cloud_for_segmentation_ == 0)
@@ -266,7 +268,7 @@ namespace pcl
     //first of all we need to find out if this point belongs to cloud
     bool point_was_found = false;
     int index = 0;
-    for (int i = 0; i < cloud_for_segmentation_->points.size(); i++)
+    for (size_t i = 0; i < cloud_for_segmentation_->points.size(); i++)
     {
       if (cloud_for_segmentation_->points[i].x != point.x) continue;
       if (cloud_for_segmentation_->points[i].x != point.x) continue;
@@ -283,7 +285,7 @@ namespace pcl
       {
         //if we have already made the segmentation, then find the segment
         //to which this point belongs
-        std::vector<std::list<int>>::iterator i_segment;
+        std::vector<std::list<int> >::iterator i_segment;
         for (i_segment = segments_.begin(); i_segment != segments_.end(); i_segment++)
         {
           bool segment_was_found = false;
@@ -315,6 +317,7 @@ namespace pcl
         search_->setInputCloud(cloud_for_segmentation_);
 
         //if user didn't set input normals then they need to be computed
+/** We do not compute normals inside of segmentation. Please rewrite this piece of code:
         if (normals_ == 0)
         {
           normals_ = (new pcl::PointCloud<pcl::Normal>)->makeShared();
@@ -323,7 +326,7 @@ namespace pcl
           normal_estimator.setKSearch(30);
           normal_estimator.compute(*normals_);
         }
-
+*/
         //if we haven't done the segmentation yet, then we need to grow the segment
         std::vector<int> point_is_used;
         point_is_used.resize(cloud_for_segmentation_->points.size(), 0);
@@ -345,7 +348,7 @@ namespace pcl
 
       srand(static_cast<unsigned int>(time(0)));
       std::vector<unsigned char> colors;
-      for (int i_segment = 0; i_segment < segments_.size(); i_segment++)
+      for (size_t i_segment = 0; i_segment < segments_.size(); i_segment++)
       {
         colors.push_back(rand() % 256);
         colors.push_back(rand() % 256);
@@ -355,7 +358,7 @@ namespace pcl
       colored_cloud->width = cloud_for_segmentation_->width;
       colored_cloud->height = cloud_for_segmentation_->height;
       colored_cloud->is_dense = cloud_for_segmentation_->is_dense;
-      for (int i_point = 0; i_point < cloud_for_segmentation_->points.size(); i_point++)
+      for (size_t i_point = 0; i_point < cloud_for_segmentation_->points.size(); i_point++)
       {
         pcl::PointXYZRGB point;
         point.x = *(cloud_for_segmentation_->points[i_point].data);
@@ -364,7 +367,7 @@ namespace pcl
         colored_cloud->points.push_back(point);
       }
 
-      std::vector<std::list<int>>::iterator i_segment;
+      std::vector<std::list<int> >::iterator i_segment;
       int next_color = 0;
       for (i_segment = segments_.begin(); i_segment != segments_.end(); i_segment++)
       {
@@ -468,6 +471,7 @@ namespace pcl
     search_->setInputCloud(cloud_for_segmentation_);
 
     //if user didn't set input normals then they need to be computed
+/** We do not compute normals inside of segmentation. Please rewrite this piece of code:
     if (normals_ == 0)
     {
       normals_ = (new pcl::PointCloud<pcl::Normal>)->makeShared();
@@ -476,7 +480,7 @@ namespace pcl
       normal_estimator.setKSearch(30);
       normal_estimator.compute(*normals_);
     }
-
+*/
     segments_.clear();
 
     int num_of_pts = static_cast<int>( cloud_for_segmentation_->points.size() );
@@ -487,7 +491,7 @@ namespace pcl
     std::vector<int> point_is_used;
     point_is_used.resize(num_of_pts, 0);
 
-    for (size_t i_point = 0; i_point < num_of_pts; i_point++)
+    for (int i_point = 0; i_point < num_of_pts; i_point++)
     {
       point_residual[i_point] = normals_->points[i_point].curvature;
     }
@@ -535,7 +539,7 @@ namespace pcl
       std::vector<float> nghbr_distances;
       search_->nearestKSearch(curr_seed, neighbour_number_, nghbr_indices, nghbr_distances);
 
-      for (int i_nghbr = 0; i_nghbr < nghbr_indices.size(); i_nghbr++)
+      for (size_t i_nghbr = 0; i_nghbr < nghbr_indices.size(); i_nghbr++)
       {
         int index = nghbr_indices[i_nghbr];
         if (point_is_used[index] == 1)
