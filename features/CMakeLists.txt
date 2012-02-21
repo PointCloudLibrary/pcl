@@ -12,6 +12,7 @@ if(build)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
     set(incs
+		include/pcl/${SUBSYS_NAME}/board.h
         include/pcl/${SUBSYS_NAME}/cvfh.h
         include/pcl/${SUBSYS_NAME}/feature.h
         include/pcl/${SUBSYS_NAME}/fpfh.h
@@ -55,6 +56,7 @@ if(build)
           )
 
     set(impl_incs
+		include/pcl/${SUBSYS_NAME}/impl/board.hpp
         include/pcl/${SUBSYS_NAME}/impl/cvfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/feature.hpp
         include/pcl/${SUBSYS_NAME}/impl/fpfh.hpp
@@ -93,6 +95,7 @@ if(build)
 
     set(srcs
         src/feature.cpp
+		src/board.cpp
         src/boundary.cpp
         src/cvfh.cpp
         src/fpfh.cpp

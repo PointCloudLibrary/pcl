@@ -87,6 +87,9 @@ namespace pcl
   struct Normal;
   // Members: float normal[3], curvature;
 
+  struct Axis;
+  // Members: float normal[3];
+
   struct PointNormal;
   // Members: float x, y, z; float normal[3], curvature;
 
@@ -121,6 +124,9 @@ namespace pcl
 
   struct SHOT;
   // Members: std::vector<float> descriptor, rf[9];
+
+  struct ReferenceFrame;
+  // Members: Axis x_axis, y_axis, z_axis; float confidence;
 
   struct ShapeContext;
   // Members: std::vector<float> descriptor, rf[9];
@@ -287,6 +293,12 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_Normal,
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::Normal, pcl::_Normal)
 
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Axis,
+    (float, normal_x, normal_x)
+    (float, normal_y, normal_y)
+    (float, normal_z, normal_z)
+)
+
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointNormal,
     (float, x, x)
     (float, y, y)
@@ -443,6 +455,13 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::PointSurfel,
     (float, radius, radius)
     (float, confidence, confidence)
     (float, curvature, curvature)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ReferenceFrame,
+    (float[3], x_axis, x_axis)
+    (float[3], y_axis, y_axis)
+    (float[3], z_axis, z_axis)
+    (float, confidence, confidence)
 )
 
 //POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::BorderDescription,

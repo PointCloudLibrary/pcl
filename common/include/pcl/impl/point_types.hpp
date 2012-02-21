@@ -50,6 +50,7 @@
   (pcl::PointXYZHSV)            \
   (pcl::PointXY)                \
   (pcl::InterestPoint)          \
+  (pcl::Axis)                   \
   (pcl::Normal)                 \
   (pcl::PointNormal)            \
   (pcl::PointXYZRGBNormal)      \
@@ -69,7 +70,8 @@
   (pcl::VFHSignature308)        \
   (pcl::Narf36)                 \
   (pcl::IntensityGradient)      \
-  (pcl::PointWithScale)
+  (pcl::PointWithScale)         \
+  (pcl::ReferenceFrame)
 
 // Define all point types that include XYZ data
 #define PCL_XYZ_POINT_TYPES   \
@@ -585,6 +587,29 @@ namespace pcl
     return (os);
   }
 
+  /** \brief A point structure representing an Axis using its normal coordinates. (SSE friendly)
+   *  \ingroup common
+   */
+  struct EIGEN_ALIGN16 Axis
+  {
+    PCL_ADD_NORMAL4D;
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    inline Axis ()
+    {
+      normal_x = normal_y = normal_z = data_n[3] = 0.0f;
+    }
+
+    inline Axis (float n_x, float n_y, float n_z)
+    { normal_x = n_x; normal_y = n_y; normal_z = n_z; data_n[3] = 0.0f; }
+  };
+
+  inline std::ostream& operator << (std::ostream& os, const Axis& p)
+  {
+    os << "(" << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << ")";
+    return os;
+  }
+
   /** \brief A point structure representing Euclidean xyz coordinates, together with normal coordinates and the surface curvature estimate. (SSE friendly)
    * \ingroup common
    */
@@ -932,6 +957,38 @@ namespace pcl
     os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
     for (size_t i = 0; i < p.descriptor.size (); ++i)
     os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < p.descriptor.size()-1 ? ", " : ")");
+    return (os);
+  }
+
+  /** \brief A structure representing the Local Reference Frame of a point.
+   *  \ingroup common
+   */
+  struct EIGEN_ALIGN16 ReferenceFrame
+  {
+    Axis x_axis;
+    Axis y_axis;
+    Axis z_axis;
+    union
+    {
+      struct
+      {
+        float confidence;
+      };
+      float data_c[4];
+    };
+
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    ReferenceFrame ()
+    { confidence = 0.; }
+
+    ReferenceFrame (Axis const &x, Axis const &y, Axis const &z, float c = 1.0)
+      : x_axis (x), y_axis (y), z_axis (z), confidence (c) {}
+  };
+
+  inline std::ostream& operator << (std::ostream& os, const ReferenceFrame& p)
+  {
+    os << "(" << p.x_axis << "," << p.y_axis << "," << p.z_axis << " - " << p.confidence << ")";
     return (os);
   }
 

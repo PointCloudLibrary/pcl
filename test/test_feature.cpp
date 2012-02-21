@@ -40,6 +40,7 @@
 #include <gtest/gtest.h>
 
 #include <pcl/point_types.h>
+#include <pcl/pcl_tests.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/feature.h>
 #include <pcl/features/normal_3d_omp.h>
@@ -61,10 +62,12 @@
 #include <pcl/features/rift.h>
 #include <pcl/features/3dsc.h>
 #include <pcl/features/usc.h>
+#include <pcl/features/board.h>
 #include <iostream>
 
 using namespace pcl;
 using namespace pcl::io;
+using namespace pcl::test;
 using namespace std;
 
 typedef search::KdTree<PointXYZ>::Ptr KdTreePtr;
@@ -593,6 +596,91 @@ TEST (PCL, MomentInvariantsEstimation)
     EXPECT_NEAR (moments->points[i].j2, 0.652063, 1e-4);
     EXPECT_NEAR (moments->points[i].j3, 0.053917, 1e-4);
   }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, BOARDLocalReferenceFrameEstimation)
+{
+  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
+  PointCloud<ReferenceFrame> bunny_LRF;
+
+  boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
+
+  //compute normals
+  NormalEstimation<PointXYZ, Normal> ne;
+
+  ne.setRadiusSearch (0.01);
+  ne.setViewPoint (1, 1, 10);
+  ne.setInputCloud (cloud.makeShared ());
+  ne.setSearchMethod (tree);
+  ne.setIndices (indicesptr);
+
+  ne.compute (*normals);
+
+  //compute BOARD LRF
+  BOARDLocalReferenceFrameEstimation<PointXYZ, Normal, ReferenceFrame> lrf_estimator;
+  
+  float meshRes = 0.001;
+
+  lrf_estimator.setFindHoles (true);
+  lrf_estimator.setRadiusSearch (15 * meshRes);
+  lrf_estimator.setTangentRadius (15 * meshRes);
+
+  lrf_estimator.setInputCloud (cloud.makeShared ());
+  lrf_estimator.setInputNormals (normals);
+  lrf_estimator.setSearchMethod (tree);
+  lrf_estimator.setIndices (indicesptr);
+
+  lrf_estimator.compute (bunny_LRF);
+
+  //TESTS
+  EXPECT_EQ (indices.size (), bunny_LRF.size ());
+
+  EXPECT_FALSE (bunny_LRF.is_dense);
+  EXPECT_EQ (numeric_limits<float>::max (), bunny_LRF.at (24).confidence);
+  EXPECT_TRUE (pcl_isnan (bunny_LRF.at (24).x_axis.normal_x));
+
+  //Expected Results
+  float point_15_conf = -9.06301;
+  Eigen::Vector3f point_15_x (-0.784923f, 0.208529f, 0.583448f);
+  Eigen::Vector3f point_15_y (0.334206f, -0.650436f, 0.682085f);
+  Eigen::Vector3f point_15_z (0.52173f, 0.730376f, 0.440851f);
+
+  float point_45_conf = -9.55398;
+  Eigen::Vector3f point_45_x (0.909111f, 0.30943f, 0.278874f);
+  Eigen::Vector3f point_45_y (-0.362239f, 0.917811f, 0.162501f);
+  Eigen::Vector3f point_45_z (-0.205671f, -0.248751f, 0.946479f);
+
+  float point_163_conf = -9.04891;
+  Eigen::Vector3f point_163_x (-0.443962f, -0.890073f, -0.103285f);
+  Eigen::Vector3f point_163_y (0.746929f, -0.30394f, -0.591369f);
+  Eigen::Vector3f point_163_z (0.494969f, -0.339693f, 0.799759f);
+
+  float point_253_conf = -9.09443;
+  Eigen::Vector3f point_253_x (-0.616855f, 0.757286f, -0.214495f);
+  Eigen::Vector3f point_253_y (-0.661937f, -0.646584f, -0.379168f);
+  Eigen::Vector3f point_253_z (-0.425827f, -0.0919098f, 0.900124f);
+
+  //Test Results
+  EXPECT_NEAR (point_15_conf,bunny_LRF.at (15).confidence, 1E-5);
+  EXPECT_NEAR_VECTORS (point_15_x, bunny_LRF.at (15).x_axis.getNormalVector3fMap (), 1E-5);
+  EXPECT_NEAR_VECTORS (point_15_y, bunny_LRF.at (15).y_axis.getNormalVector3fMap (), 1E-5);
+  EXPECT_NEAR_VECTORS (point_15_z, bunny_LRF.at (15).z_axis.getNormalVector3fMap (), 1E-5);
+
+  EXPECT_NEAR (point_45_conf, bunny_LRF.at (45).confidence, 1E-5);
+  EXPECT_NEAR_VECTORS (point_45_x, bunny_LRF.at (45).x_axis.getNormalVector3fMap (), 1E-5);
+  EXPECT_NEAR_VECTORS (point_45_y, bunny_LRF.at (45).y_axis.getNormalVector3fMap (), 1E-5);
+  EXPECT_NEAR_VECTORS (point_45_z, bunny_LRF.at (45).z_axis.getNormalVector3fMap (), 1E-5);
+
+  EXPECT_NEAR (point_163_conf, bunny_LRF.at (163).confidence, 1E-5);
+  EXPECT_NEAR_VECTORS (point_163_x, bunny_LRF.at (163).x_axis.getNormalVector3fMap (), 1E-5);
+  EXPECT_NEAR_VECTORS (point_163_y, bunny_LRF.at (163).y_axis.getNormalVector3fMap (), 1E-5);
+  EXPECT_NEAR_VECTORS (point_163_z, bunny_LRF.at (163).z_axis.getNormalVector3fMap (), 1E-5);
+
+  EXPECT_NEAR (point_253_conf, bunny_LRF.at (253).confidence, 1E-5);
+  EXPECT_NEAR_VECTORS (point_253_x, bunny_LRF.at (253).x_axis.getNormalVector3fMap (), 1E-5);
+  EXPECT_NEAR_VECTORS (point_253_y, bunny_LRF.at (253).y_axis.getNormalVector3fMap (), 1E-5);
+  EXPECT_NEAR_VECTORS (point_253_z, bunny_LRF.at (253).z_axis.getNormalVector3fMap (), 1E-5);  
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
