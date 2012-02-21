@@ -68,22 +68,22 @@ namespace pcl
          *
          */
         void
-        compute_likelihoods (float* reference,
-                             std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses,
-                             std::vector<float> & scores,
-                             float *depth_field,
-                             bool do_depth_field);
+        computeLikelihoods (float* reference,
+                            std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses,
+                            std::vector<float> & scores,
+                            float *depth_field,
+                            bool do_depth_field);
 
         /**
          * Set the basic camera intrinsic parameters
          */
         void
-        set_CameraIntrinsicsParameters(int camera_width_in,
-                                       int camera_height_in,
-                                       float camera_fx_in,
-                                       float camera_fy_in,
-                                       float camera_cx_in,
-                                       float camera_cy_in)
+        setCameraIntrinsicsParameters(int camera_width_in,
+                                      int camera_height_in,
+                                      float camera_fx_in,
+                                      float camera_fy_in,
+                                      float camera_cx_in,
+                                      float camera_cy_in)
         {
           camera_width_ = camera_width_in;
           camera_height_ = camera_height_in;
@@ -93,39 +93,39 @@ namespace pcl
           camera_cy_ = camera_cy_in;
         }
 
-        int rows() {return rows_;}
-        int cols() {return cols_;}
-        int row_height() {return row_height_;}
-        int col_width() {return col_width_;}
-        int width() {return width_;}
-        int height() {return height_;}
-        const float* depth_buffer() const {return depth_buffer_;}
-        const uint8_t* color_buffer() const {return color_buffer_;}
+        int getRows () {return rows_;}
+        int getCols () {return cols_;}
+        int getRowHeight () {return row_height_;}
+        int getColWidth () {return col_width_;}
+        int getWidth () {return width_;}
+        int getHeight () {return height_;}
+        const float* getDepthBuffer () const {return depth_buffer_;}
+        const uint8_t* getColorBuffer () const {return color_buffer_;}
 
         // Convenience function to return simulated RGB-D PointCloud
         // Two modes:
         // global=false - PointCloud is as would be captured by an RGB-D camera [default]
         // global=true  - PointCloud is transformed into the model/world frame using the camera pose
-        void getPointCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc,
+        void getPointCloud (pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc,
               bool make_global, const Eigen::Isometry3d & pose);
         // Convenience function to return RangeImagePlanar containing
         // simulated RGB-D:
-        void getRangeImagePlanar(pcl::RangeImagePlanar &rip);
+        void getRangeImagePlanar (pcl::RangeImagePlanar &rip);
 
         // Add various types of noise to simulated RGB-D data
-        void addNoise();
-        double sample_normal(double sigma = 1.0);
-        void compute_scores(int cols, int rows,
+        void addNoise ();
+        double sampleNormal (double sigma = 1.0);
+        void computeScores (int cols, int rows,
             int col_width, int row_height, float* reference, float* depth_buffer,
             std::vector<float> & scores, float* depth_field, bool do_depth_field);
 
       protected:
-        void draw_particles(std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses);
+        void draw_particles (std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses);
 
       // private:
-        void apply_camera_transform(const Eigen::Isometry3d & pose);
-        void apply_camera_transform(const Camera & camera);
-        void setup_projection_matrix();
+        void apply_camera_transform (const Eigen::Isometry3d & pose);
+        void apply_camera_transform (const Camera & camera);
+        void setup_projection_matrix ();
 
         Scene::Ptr scene_;
         int rows_;
@@ -197,24 +197,24 @@ namespace pcl
          *
          */
         void
-        compute_likelihoods (float* reference,
-                             std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses,
-                             std::vector<float> & scores,
-                             float *depth_field,
-                             bool do_depth_field );
+        computeLikelihoods (float* reference,
+                            std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses,
+                            std::vector<float> & scores,
+                            float *depth_field,
+                            bool do_depth_field );
 
         void
-        compute_scores_shader(int cols,
-                              int rows,
-                              int col_width,
-                              int row_height,
-                              float* reference,
-                              float* depth_buffer,
-                              std::vector<float> & scores,
-                              float *depth_field,
-                              bool do_depth_field );
+        computeScoresShader(int cols,
+                            int rows,
+                            int col_width,
+                            int row_height,
+                            float* reference,
+                            float* depth_buffer,
+                            std::vector<float> & scores,
+                            float *depth_field,
+                            bool do_depth_field );
 
-        const float* score_buffer() const {return score_buffer_;}
+        const float* getScoreBuffer() const {return score_buffer_;}
 
         void
         setComputeOnCPU(bool compute_on_cpu) { compute_likelihood_on_cpu_ = compute_on_cpu; }

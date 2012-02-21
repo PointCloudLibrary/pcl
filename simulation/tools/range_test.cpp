@@ -41,7 +41,6 @@ using namespace pcl::simulation;
 
 uint16_t t_gamma[2048];
 
-
 Scene::Ptr scene_;
 Camera::Ptr camera_;
 RangeLikelihood::Ptr range_likelihood_;
@@ -49,15 +48,13 @@ int window_width_;
 int window_height_;
 bool paused_;
 
-void apply_camera_transform(const Camera & camera)
+void apply_camera_transform (const Camera & camera)
 {
-  glRotatef(rad_to_deg(-camera.roll()),1.0,0.0,0.0);
-  glRotatef(rad_to_deg(-camera.pitch()),0.0,1.0,0.0);
-  glRotatef(rad_to_deg(-camera.yaw()),0.0,0.0,1.0);
-  glTranslatef(-camera.x(), -camera.y(), -camera.z());
+  glRotatef (rad_to_deg (-camera.roll ()),1.0,0.0,0.0);
+  glRotatef (rad_to_deg (-camera.pitch ()),0.0,1.0,0.0);
+  glRotatef (rad_to_deg (-camera.yaw ()),0.0,0.0,1.0);
+  glTranslatef (-camera.x (), -camera.y (), -camera.z ());
 }
-
-
 
 void draw_grid(int w, int h, double size)
 {

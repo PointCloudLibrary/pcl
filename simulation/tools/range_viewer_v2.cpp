@@ -72,18 +72,18 @@ namespace pcl
       //glViewport(range_likelihood_->width(), 0, range_likelihood_->width(), range_likelihood_->height());
   
 
-      float* reference = new float[range_likelihood_->row_height() * range_likelihood_->col_width()];
-      const float* depth_buffer = range_likelihood_->depth_buffer();
+      float* reference = new float[range_likelihood_->getRowHeight() * range_likelihood_->getColWidth()];
+      const float* depth_buffer = range_likelihood_->getDepthBuffer();
       // Copy one image from our last as a reference.
-      for (int i=0, n=0; i<range_likelihood_->row_height(); ++i) {
-	for (int j=0; j<range_likelihood_->col_width(); ++j) {
-	  reference[n++] = depth_buffer[i*range_likelihood_->width() + j];
+      for (int i=0, n=0; i<range_likelihood_->getRowHeight(); ++i) {
+	for (int j=0; j<range_likelihood_->getColWidth(); ++j) {
+	  reference[n++] = depth_buffer[i*range_likelihood_->getWidth() + j];
 	}
       }
 
       std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses;
       std::vector<float> scores;
-      int n = range_likelihood_->rows()*range_likelihood_->cols();
+      int n = range_likelihood_->getRows()*range_likelihood_->getCols();
       for (int i=0; i<n; ++i) {
 	Camera camera(*camera_);
 
@@ -107,7 +107,7 @@ namespace pcl
       
       float* depth_field =NULL;
       bool do_depth_field =false;
-      range_likelihood_->compute_likelihoods(reference, poses, scores,depth_field,do_depth_field);
+      range_likelihood_->computeLikelihoods(reference, poses, scores,depth_field,do_depth_field);
     //  range_likelihood_->compute_likelihoods(reference, poses, scores);
       delete [] reference;
       delete [] depth_field;
@@ -120,11 +120,11 @@ namespace pcl
       
       iviewer_.setWindowTitle ("Color Image");
       
-      iviewer_.showFloatImage 	( 	range_likelihood_->depth_buffer(),
+      iviewer_.showFloatImage 	( 	range_likelihood_->getDepthBuffer(),
  		640,480,0,1,true);
       iviewer_.setWindowTitle ("Color Image");		
 		
-      iviewer_color_.showRGBImage(range_likelihood_->color_buffer(),640,480);
+      iviewer_color_.showRGBImage(range_likelihood_->getColorBuffer(),640,480);
       
       
 //       // Draw the depth image
@@ -142,7 +142,7 @@ namespace pcl
 //       //glRasterPos2i(-1,-1);
 //       glDrawPixels(range_likelihood_->width(), range_likelihood_->height(), GL_LUMINANCE, GL_FLOAT, range_likelihood_->depth_buffer());
 	
-       display_depth_image(range_likelihood_->depth_buffer());
+       display_depth_image(range_likelihood_->getDepthBuffer());
 //       //glutSwapBuffers();      
 //       //cout << "after adding triangles\n";
        
@@ -152,7 +152,7 @@ namespace pcl
 
     void  OpenGLProp::display_depth_image(const float* depth_buffer)
     {
-      int npixels = range_likelihood_->width() * range_likelihood_->height();
+      int npixels = range_likelihood_->getWidth() * range_likelihood_->getHeight();
       uint8_t* depth_img = new uint8_t[npixels* 3];
       for (int i=0; i<npixels; i++) {
 		float zn = 0.7;
@@ -267,7 +267,7 @@ namespace pcl
       //range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, 480, 640, scene_));
       
       // Actually corresponds to default parameters:
-      prop_->range_likelihood_->set_CameraIntrinsicsParameters(640,480,576.09757860,
+      prop_->range_likelihood_->setCameraIntrinsicsParameters(640,480,576.09757860,
 	    576.09757860, 321.06398107,  242.97676897);
 
 //      string map_file = "/home/mfallon/data/models/stata_models/data/d2_ply_models/stata_03.ply";
@@ -382,9 +382,6 @@ RangeVisualization::spin ()
 {
   viewer_->spin ();
 }
-
-
-
 
 int
 main (int argc, char** argv)

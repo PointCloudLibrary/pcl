@@ -75,7 +75,7 @@ printHelp (int argc, char **argv)
 void
 display_score_image (const float* score_buffer)
 {
-  int npixels = range_likelihood_->width () * range_likelihood_->height ();
+  int npixels = range_likelihood_->getWidth () * range_likelihood_->getHeight ();
   uint8_t* score_img = new uint8_t[npixels * 3];
 
   float min_score = score_buffer[0];
@@ -175,26 +175,26 @@ void display_depth_image (const float* depth_buffer, int width, int height)
 void
 display ()
 {
-  float* reference = new float[range_likelihood_->row_height () * range_likelihood_->col_width ()];
-  const float* depth_buffer = range_likelihood_->depth_buffer ();
+  float* reference = new float[range_likelihood_->getRowHeight () * range_likelihood_->getColWidth ()];
+  const float* depth_buffer = range_likelihood_->getDepthBuffer ();
   // Copy one image from our last as a reference.
-  for (int i = 0, n = 0; i < range_likelihood_->row_height (); ++i)
+  for (int i = 0, n = 0; i < range_likelihood_->getRowHeight (); ++i)
   {
-    for (int j = 0; j < range_likelihood_->col_width (); ++j)
+    for (int j = 0; j < range_likelihood_->getColWidth (); ++j)
     {
-      reference[n++] = depth_buffer[ (i + range_likelihood_->rows () / 2) * range_likelihood_->width ()
-                                    + j + range_likelihood_->cols () / 2];
+      reference[n++] = depth_buffer[ (i + range_likelihood_->getRows () / 2) * range_likelihood_->getWidth ()
+                                    + j + range_likelihood_->getCols () / 2];
     }
   }
 
-  float* reference_vis = new float[range_likelihood_visualization_->row_height () * range_likelihood_visualization_->col_width ()];
-  const float* depth_buffer_vis = range_likelihood_visualization_->depth_buffer ();
+  float* reference_vis = new float[range_likelihood_visualization_->getRowHeight () * range_likelihood_visualization_->getColWidth ()];
+  const float* depth_buffer_vis = range_likelihood_visualization_->getDepthBuffer ();
   // Copy one image from our last as a reference.
-  for (int i = 0, n = 0; i < range_likelihood_visualization_->row_height (); ++i)
+  for (int i = 0, n = 0; i < range_likelihood_visualization_->getRowHeight (); ++i)
   {
-    for (int j = 0; j < range_likelihood_visualization_->col_width (); ++j)
+    for (int j = 0; j < range_likelihood_visualization_->getColWidth (); ++j)
     {
-      reference_vis[n++] = depth_buffer_vis[i*range_likelihood_visualization_->width () + j];
+      reference_vis[n++] = depth_buffer_vis[i*range_likelihood_visualization_->getWidth () + j];
     }
   }
 
@@ -206,23 +206,23 @@ display ()
   // Render a single pose for visualization
   poses.clear ();
   poses.push_back (camera_->pose ());
-  range_likelihood_visualization_->compute_likelihoods (reference_vis, poses, scores, depth_field, do_depth_field);
+  range_likelihood_visualization_->computeLikelihoods (reference_vis, poses, scores, depth_field, do_depth_field);
 
   poses.clear ();
-  for (int i = 0; i < range_likelihood_->rows (); ++i)
+  for (int i = 0; i < range_likelihood_->getRows (); ++i)
   {
-    for (int j = 0; j < range_likelihood_->cols (); ++j)
+    for (int j = 0; j < range_likelihood_->getCols (); ++j)
     {
       Camera camera (*camera_);
-      camera.move ((j - range_likelihood_->cols () / 2) * 0.1,
-                   (i - range_likelihood_->rows () / 2) * 0.1, 0.0);
+      camera.move ((j - range_likelihood_->getCols () / 2) * 0.1,
+                   (i - range_likelihood_->getRows () / 2) * 0.1, 0.0);
       poses.push_back (camera.pose ());
     }
   }
 
   TicToc tt;
   tt.tic();
-  range_likelihood_->compute_likelihoods (reference, poses, scores, depth_field, do_depth_field);
+  range_likelihood_->computeLikelihoods (reference, poses, scores, depth_field, do_depth_field);
   tt.toc();
   tt.toc_print();
 
@@ -249,8 +249,8 @@ display ()
   glReadBuffer (GL_BACK);
 
   // Draw the resulting images from the range_likelihood
-  glViewport (range_likelihood_visualization_->width (), 0,
-              range_likelihood_visualization_->width (), range_likelihood_visualization_->height ());
+  glViewport (range_likelihood_visualization_->getWidth (), 0,
+              range_likelihood_visualization_->getWidth (), range_likelihood_visualization_->getHeight ());
   glMatrixMode (GL_PROJECTION);
   glLoadIdentity ();
   glMatrixMode (GL_MODELVIEW);
@@ -264,30 +264,30 @@ display ()
   glDisable (GL_DEPTH_TEST);
 
   glRasterPos2i (-1,-1);
-  glDrawPixels (range_likelihood_visualization_->width (), range_likelihood_visualization_->height (),
-                GL_RGB, GL_UNSIGNED_BYTE, range_likelihood_visualization_->color_buffer ());
+  glDrawPixels (range_likelihood_visualization_->getWidth (), range_likelihood_visualization_->getHeight (),
+                GL_RGB, GL_UNSIGNED_BYTE, range_likelihood_visualization_->getColorBuffer ());
 
   // Draw the depth image
-  glViewport (0, 0, range_likelihood_visualization_->width (), range_likelihood_visualization_->height ());
+  glViewport (0, 0, range_likelihood_visualization_->getWidth (), range_likelihood_visualization_->getHeight ());
 
   glMatrixMode (GL_PROJECTION);
   glLoadIdentity ();
   glMatrixMode (GL_MODELVIEW);
   glLoadIdentity ();
-  display_depth_image (range_likelihood_visualization_->depth_buffer (),
-                       range_likelihood_visualization_->width (), range_likelihood_visualization_->height ());
+  display_depth_image (range_likelihood_visualization_->getDepthBuffer (),
+                       range_likelihood_visualization_->getWidth (), range_likelihood_visualization_->getHeight ());
 
   // Draw the score image for the particles
-  glViewport (0, range_likelihood_visualization_->height (),
-              range_likelihood_visualization_->width (), range_likelihood_visualization_->height ());
+  glViewport (0, range_likelihood_visualization_->getHeight (),
+              range_likelihood_visualization_->getWidth (), range_likelihood_visualization_->getHeight ());
 
-  display_score_image (range_likelihood_->score_buffer ());
+  display_score_image (range_likelihood_->getScoreBuffer ());
 
   // Draw the depth image for the particles
-  glViewport (range_likelihood_visualization_->width (), range_likelihood_visualization_->height (),
-              range_likelihood_visualization_->width (), range_likelihood_visualization_->height ());
+  glViewport (range_likelihood_visualization_->getWidth (), range_likelihood_visualization_->getHeight (),
+              range_likelihood_visualization_->getWidth (), range_likelihood_visualization_->getHeight ());
 
-  display_score_image (range_likelihood_->depth_buffer ());
+  display_score_image (range_likelihood_->getDepthBuffer ());
 
   glutSwapBuffers ();
 }
@@ -404,10 +404,10 @@ main (int argc, char** argv)
   window_width_ = width * 2;
   window_height_ = height * 2;
 
-  int cols = 20;
-  int rows = 20;
-  int col_width = 64; //0;
-  int row_height = 48; //0;
+  int cols = 3;
+  int rows = 3;
+  int col_width = 640;
+  int row_height = 480;
 
   print_info ("Range likelihood performance tests using pcl::simulation. For more information, use: %s -h\n", argv[0]);
 
@@ -454,18 +454,18 @@ main (int argc, char** argv)
   range_likelihood_ = RangeLikelihoodGLSL::Ptr (new RangeLikelihoodGLSL (rows, cols, row_height, col_width, scene_, 0));
 
   // Actually corresponds to default parameters:
-  range_likelihood_visualization_->set_CameraIntrinsicsParameters (640,480, 576.09757860,
+  range_likelihood_visualization_->setCameraIntrinsicsParameters (640,480, 576.09757860,
             576.09757860, 321.06398107, 242.97676897);
   range_likelihood_visualization_->setComputeOnCPU (false);
   range_likelihood_visualization_->setSumOnCPU (false);
 
-  range_likelihood_->set_CameraIntrinsicsParameters (640,480, 576.09757860,
+  range_likelihood_->setCameraIntrinsicsParameters (640,480, 576.09757860,
             576.09757860, 321.06398107, 242.97676897);
   range_likelihood_->setComputeOnCPU (false);
   range_likelihood_->setSumOnCPU (false);
 
-  textured_quad_ = TexturedQuad::Ptr (new TexturedQuad (range_likelihood_->width (),
-                                                        range_likelihood_->height ()));
+  textured_quad_ = TexturedQuad::Ptr (new TexturedQuad (range_likelihood_->getWidth (),
+                                                        range_likelihood_->getHeight ()));
 
   initialize (argc, argv);
 
