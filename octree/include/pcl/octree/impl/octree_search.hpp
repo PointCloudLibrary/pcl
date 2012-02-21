@@ -54,6 +54,11 @@ template<typename PointT, typename LeafT, typename OctreeT>
     OctreeKey key;
     bool b_success = false;
 
+    if (!isFiniteFast (point))
+    {
+      return false;
+    }
+
     // generate key
     this->genOctreeKeyforPoint (point, key);
 
@@ -102,6 +107,11 @@ template<typename PointT, typename LeafT, typename OctreeT>
     k_indices.clear ();
     k_sqr_distances.clear ();
 
+    if (!isFiniteFast (p_q) || k < 1)
+    {
+      return 0;
+    }
+
     getKNearestNeighborRecursive (p_q, k, this->rootNode_, key, 1, smallestDist, pointCandidates);
 
     resultCount = (unsigned int)pointCandidates.size ();
@@ -141,7 +151,13 @@ template<typename PointT, typename LeafT, typename OctreeT>
     OctreeKey key;
     key.x = key.y = key.z = 0;
 
-    approxNearestSearchRecursive (p_q, this->rootNode_, key, 1, result_index, sqr_distance);
+    if (isFiniteFast (p_q))
+    {
+      approxNearestSearchRecursive (p_q, this->rootNode_, key, 1, result_index, sqr_distance);
+    }
+
+    return;
+
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -168,6 +184,11 @@ template<typename PointT, typename LeafT, typename OctreeT>
 
     k_indices.clear ();
     k_sqr_distances.clear ();
+
+    if (!isFiniteFast (p_q))
+    {
+      return (0);
+    }
 
     getNeighborsWithinRadiusRecursive (p_q, radius * radius, this->rootNode_, key, 1, k_indices, k_sqr_distances,
                                        max_nn);
