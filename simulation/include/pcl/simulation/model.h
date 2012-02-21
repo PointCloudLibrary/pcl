@@ -14,6 +14,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include "pcl/PolygonMesh.h"
+#include "pcl/simulation/glsl_shader.h"
 
 //RWX support disabled due to libbot depencency
 //#include <bot_vis/bot_vis.h>
@@ -30,6 +31,27 @@ typedef struct _SinglePoly {
   size_t nvertices_;
 } SinglePoly;
 
+struct Vertex {
+  Vertex() {}
+  //Vertex(Eigen::Vector3f pos, Eigen::Vector3f norm) : pos(pos), norm(norm) {}
+  Vertex(Eigen::Vector3f pos, Eigen::Vector3f rgb) : pos(pos), rgb(rgb) {}
+  Eigen::Vector3f pos;
+  Eigen::Vector3f rgb;
+  //Eigen::Vector3f norm;
+  //Eigen::Vector2f tex;
+};
+
+struct Face {
+  // Index int to the index list
+  unsigned int index_offset;
+  // Number of vertices on face
+  unsigned int count;
+  // Normal of face
+  Eigen::Vector3f norm;
+};
+
+typedef std::vector<Vertex> Vertices;
+typedef std::vector<unsigned int> Indices;
   
 class Model
 {
@@ -38,6 +60,23 @@ public:
 
   typedef boost::shared_ptr<Model> Ptr;
   typedef boost::shared_ptr<const Model> ConstPtr;
+};
+
+class PCL_EXPORTS TriangleMeshModel : public Model
+{
+public:
+  TriangleMeshModel(pcl::PolygonMesh::Ptr plg);
+  virtual ~TriangleMeshModel();
+  virtual void draw();
+
+  typedef boost::shared_ptr<TriangleMeshModel> Ptr;
+  typedef boost::shared_ptr<const TriangleMeshModel> ConstPtr;
+private:
+  GLuint vbo_;
+  GLuint ibo_;
+  int size_;
+  //Vertices vertices_;
+  //Indices indices_;
 };
 
 class PCL_EXPORTS PolygonMeshModel : public Model
@@ -125,6 +164,28 @@ public:
 
 private:
   GLuint quad_vbo_;
+};
+
+class TexturedQuad
+{
+public:
+  typedef boost::shared_ptr<TexturedQuad> Ptr;
+  typedef boost::shared_ptr<const TexturedQuad> ConstPtr;
+
+  TexturedQuad (int width, int height);
+  ~TexturedQuad ();
+
+  void
+  set_texture (const uint8_t* data);
+
+  void
+  render ();
+private:
+  int width_;
+  int height_;
+  Quad quad_;
+  GLuint texture_;
+  gllib::Program::Ptr program_;
 };
 
 } // namespace - simulation

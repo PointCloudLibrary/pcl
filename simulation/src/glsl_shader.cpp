@@ -189,6 +189,47 @@ void print_program_info_log(GLuint program)
   delete [] info_log;
 }
 
+Program::Ptr
+Program::load_program_from_text(const std::string& vertex_shader_text, const std::string& fragment_shader_text)
+{
+  // Load shader
+  Program::Ptr program = gllib::Program::Ptr(new gllib::Program());
+  if (!program->add_shader_text(vertex_shader_text, gllib::VERTEX))
+  {
+    std::cerr << "Failed loading vertex shader" << std::endl;
+  }
+
+  // TODO: to remove file dependency include the shader source in the binary
+  if (!program->add_shader_file(fragment_shader_text, gllib::FRAGMENT))
+  {
+    std::cerr << "Failed loading fragment shader" << std::endl;
+  }
+
+  program->link();
+
+  return program;
+}
+
+Program::Ptr
+Program::load_program_from_file(const std::string& vertex_shader_file, const std::string& fragment_shader_file)
+{
+  // Load shader
+  Program::Ptr program = gllib::Program::Ptr(new gllib::Program());
+  if (!program->add_shader_file(vertex_shader_file, gllib::VERTEX))
+  {
+    std::cerr << "Failed loading vertex shader" << std::endl;
+  }
+
+  // TODO: to remove file dependency include the shader source in the binary
+  if (!program->add_shader_file(fragment_shader_file, gllib::FRAGMENT))
+  {
+    std::cerr << "Failed loading fragment shader" << std::endl;
+  }
+
+  program->link();
+
+  return program;
+}
 
 } // namespace - gllib
 } // namespace - simulation

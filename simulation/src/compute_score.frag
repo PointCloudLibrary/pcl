@@ -32,5 +32,4 @@ void main()
   if (reference_depth_val < 0.0) likelihood = 1.0;
   
   FragColor = vec4(likelihood, 0, 0, 0);
-  FragColor = vec4(depth_val, likelihood, likelihood, likelihood);
 }

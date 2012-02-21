@@ -6,7 +6,7 @@
 #include "pcl/simulation/range_likelihood.h"
 
 // For adding noise:
-static boost::minstd_rand generator(27u); // seed
+static boost::minstd_rand generator (27u); // seed
 
 //#define SIMULATION_DEBUG 1
 #define DO_TIMING 1
@@ -31,7 +31,7 @@ namespace pcl
   namespace simulation
   {
 
-  RangeLikelihood::RangeLikelihood(int rows, int cols, int row_height, int col_width, Scene::Ptr scene, int x_offset) :
+  RangeLikelihood::RangeLikelihood (int rows, int cols, int row_height, int col_width, Scene::Ptr scene, int x_offset) :
       scene_(scene), rows_(rows), cols_(cols), row_height_(row_height), col_width_(col_width), x_offset_(x_offset)
   {
     height_ = rows_ * row_height;
@@ -70,7 +70,7 @@ namespace pcl
   }
 
   void
-  RangeLikelihood::setup_projection_matrix()
+  RangeLikelihood::setup_projection_matrix ()
   {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();

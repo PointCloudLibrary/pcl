@@ -208,6 +208,14 @@ void display() {
   }
   std::cout << std::endl;
 
+  std::cout << "camera: " << camera_->x()
+       << " " << camera_->y()
+       << " " << camera_->z()
+       << " " << camera_->roll()
+       << " " << camera_->pitch()
+       << " " << camera_->yaw()
+       << std::endl;
+
   delete [] reference;
   delete [] depth_field;
 
@@ -244,14 +252,14 @@ void display() {
   glLoadIdentity();
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  display_score_image(range_likelihood_->score_buffer());
+  display_score_image (range_likelihood_->score_buffer ());
 
   glutSwapBuffers();
   
   if (write_file_){
-    range_likelihood_->addNoise();
+    range_likelihood_->addNoise ();
     pcl::RangeImagePlanar rangeImage;
-    range_likelihood_->getRangeImagePlanar(rangeImage);
+    range_likelihood_->getRangeImagePlanar (rangeImage);
 
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc_out (new pcl::PointCloud<pcl::PointXYZRGB>);
 
@@ -261,7 +269,7 @@ void display() {
     // Save in global frame - applying the camera frame:
     //range_likelihood_->getPointCloud(pc_out,true,camera_->pose());
     // Save in local frame
-    range_likelihood_->getPointCloud(pc_out,false,camera_->pose());
+    range_likelihood_->getPointCloud (pc_out,false,camera_->pose ());
     // TODO: what to do when there are more than one simulated view?
     
     pcl::PCDWriter writer;
@@ -290,8 +298,8 @@ void display() {
     t.tv_sec = 100;
     //t.tv_nsec = (time_t)(20000000); // short sleep
     t.tv_nsec = (time_t)(0);  // long sleep - normal speed
-    nanosleep(&t, NULL);
-    write_file_ =0;
+    nanosleep (&t, NULL);
+    write_file_ = 0;
   }
 }
 
@@ -401,7 +409,11 @@ void initialize(int argc, char** argv)
   std::cout << "OpenGL Version: " << version << std::endl;
 
   // works well for MIT CSAIL model 3rd floor:
-  camera_->set(4.04454, 44.9377, 1.1, 0.0, 0.0, -2.00352);
+  //camera_->set(4.04454, 44.9377, 1.1, 0.0, 0.0, -2.00352);
+
+  // works well for MIT CSAIL model 2nd floor:
+  camera_->set(27.4503, 37.383, 4.30908, 0.0, 0.0654498, -2.25802);
+
   // works for small files:
   //camera_->set(-5.0, 0.0, 1.0, 0.0, 0.0, 0.0);
   //camera_->set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);

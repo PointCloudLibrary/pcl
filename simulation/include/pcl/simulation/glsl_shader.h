@@ -30,6 +30,9 @@ namespace gllib
   class Program
   {
     public:
+      typedef boost::shared_ptr<Program> Ptr;
+      typedef boost::shared_ptr<const Program> ConstPtr;
+
       /**
        * Construct an empty shader program.
        */
@@ -83,8 +86,8 @@ namespace gllib
 
       GLuint program_id() { return program_id_; }
 
-      typedef boost::shared_ptr<Program> Ptr;
-      typedef boost::shared_ptr<const Program> ConstPtr;
+      static Ptr load_program_from_file(const std::string& vertex_shader_file, const std::string& fragment_shader_file);
+      static Ptr load_program_from_text(const std::string& vertex_shader_text, const std::string& fragment_shader_text);
 
     private:
       GLuint program_id_;

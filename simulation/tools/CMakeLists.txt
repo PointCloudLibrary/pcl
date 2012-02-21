@@ -21,6 +21,11 @@ if(GLEW_FOUND)
       pcl_simulation   pcl_common  pcl_io pcl_visualization
       ${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
 
+  PCL_ADD_EXECUTABLE(range_performance_test ${SUBSYS_NAME} range_performance_test.cpp)
+  target_link_libraries (range_performance_test 
+    ${VTK_IO_TARGET_LINK_LIBRARIES} 
+    pcl_simulation   pcl_common  pcl_io pcl_visualization
+    ${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
 
 #  PCL_ADD_EXECUTABLE(test_viewer ${SUBSYS_NAME} test_viewer.cpp)
 #  target_link_libraries (test_viewer
