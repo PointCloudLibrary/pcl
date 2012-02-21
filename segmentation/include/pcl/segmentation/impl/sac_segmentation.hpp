@@ -391,6 +391,11 @@ pcl::SACSegmentationFromNormals<PointT, PointNT>::initSACModel (const int model_
         PCL_DEBUG ("[pcl::%s::initSACModel] Setting normal distance weight to %f\n", getClassName ().c_str (), distance_weight_);
         model_normals->setNormalDistanceWeight (distance_weight_);
       }
+      if (distance_from_origin_ != model_normals->getDistanceFromOrigin ())
+      {
+        PCL_DEBUG ("[pcl::%s::initSACModel] Setting the distance to origin to %f\n", getClassName ().c_str (), distance_from_origin_);
+        model_normals->setDistanceFromOrigin (distance_from_origin_);
+      }
       if (axis_ != Eigen::Vector3f::Zero () && model_normals->getAxis () != axis_)
       {
         PCL_DEBUG ("[pcl::%s::initSACModel] Setting the axis to %f, %f, %f\n", getClassName ().c_str (), axis_[0], axis_[1], axis_[2]);
