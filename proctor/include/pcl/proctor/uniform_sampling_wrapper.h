@@ -34,6 +34,6 @@ namespace pcl
   }
 }
 
-BOOST_CLASS_EXPORT(pcl::proctor::UniformSamplingWrapper)
+//BOOST_CLASS_EXPORT(pcl::proctor::UniformSamplingWrapper)
 
 #endif

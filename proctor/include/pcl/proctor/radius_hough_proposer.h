@@ -35,6 +35,6 @@ namespace pcl
   }
 }
 
-BOOST_CLASS_EXPORT(pcl::proctor::RadiusHoughProposer)
+//BOOST_CLASS_EXPORT(pcl::proctor::RadiusHoughProposer)
 
 #endif

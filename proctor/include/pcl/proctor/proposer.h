@@ -63,6 +63,6 @@ namespace pcl
   }
 }
 
-BOOST_CLASS_EXPORT(pcl::proctor::Proposer)
+//BOOST_CLASS_EXPORT(pcl::proctor::Proposer)
 
 #endif

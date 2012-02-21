@@ -76,6 +76,6 @@ namespace pcl
   }
 }
 
-BOOST_CLASS_EXPORT(pcl::proctor::HoughProposer);
+//BOOST_CLASS_EXPORT(pcl::proctor::HoughProposer);
 
 #endif

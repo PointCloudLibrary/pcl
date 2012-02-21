@@ -46,6 +46,6 @@ namespace pcl
   }
 }
 
-BOOST_CLASS_EXPORT(pcl::proctor::FrameHoughProposer)
+//BOOST_CLASS_EXPORT(pcl::proctor::FrameHoughProposer)
 
 #endif

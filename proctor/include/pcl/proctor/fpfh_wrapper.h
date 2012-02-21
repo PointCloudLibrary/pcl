@@ -36,6 +36,6 @@ namespace pcl
   }
 }
 
-BOOST_CLASS_EXPORT(pcl::proctor::FPFHWrapper)
+//BOOST_CLASS_EXPORT(pcl::proctor::FPFHWrapper)
 
 #endif
