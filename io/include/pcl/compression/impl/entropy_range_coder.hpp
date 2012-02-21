@@ -75,7 +75,7 @@ namespace pcl
     unsigned int readPos;
     unsigned int input_size;
 
-    input_size = inputByteVector_arg.size ();
+    input_size = (unsigned) inputByteVector_arg.size ();
 
     // init output vector
     outputCharVector_.clear();
@@ -161,7 +161,7 @@ namespace pcl
     DWord code;
 
     unsigned int outputBufPos;
-    unsigned int output_size = outputByteVector_arg.size ();
+    unsigned int output_size = (unsigned) outputByteVector_arg.size ();
 
     unsigned long streamByteCount;
 
@@ -260,7 +260,7 @@ namespace pcl
     const uint64_t bottom = (uint64_t)1 << 48;
     const uint64_t maxRange = (uint64_t)1 << 48;
 
-    unsigned long input_size = inputIntVector_arg.size ();
+    unsigned long input_size = (unsigned) inputIntVector_arg.size ();
     uint64_t low, range;
 
     unsigned int inputSymbol;
@@ -288,7 +288,7 @@ namespace pcl
       if (inputSymbol + 1 >= frequencyTableSize)
       {
         // frequency table is to small -> adaptively extend it
-        unsigned long oldfrequencyTableSize;
+        uint64_t oldfrequencyTableSize;
         oldfrequencyTableSize = frequencyTableSize;
 
         do
@@ -332,7 +332,7 @@ namespace pcl
     }
 
     // calculate amount of bytes per frequency table entry
-    frequencyTableByteSize = (uint8_t)ceil (Log2 (cFreqTable_[frequencyTableSize - 1]) / 8.0);
+    frequencyTableByteSize = (uint8_t)ceil (Log2 ((double) cFreqTable_[frequencyTableSize - 1]) / 8.0);
 
     // write size of frequency table to output stream
     outputByteStream_arg.write ((const char *)&frequencyTableSize, sizeof(frequencyTableSize));
