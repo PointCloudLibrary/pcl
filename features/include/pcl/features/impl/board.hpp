@@ -448,7 +448,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
     }
   }
 
-  float steep_prob = 0.0;
+  //float steep_prob = 0.0;
   float max_hole_prob = -std::numeric_limits<float>::max ();
 
   //find holes
