@@ -37,7 +37,7 @@ if(build)
         src/time_trigger.cpp
         src/gaussian.cpp
         ${range_image_srcs}
-				)
+	)
 
     set(incs 
         include/pcl/correspondence.h
@@ -100,8 +100,8 @@ if(build)
         include/pcl/common/utils.h
         include/pcl/common/geometry.h
         include/pcl/common/gaussian.h
-#        include/pcl/common/spring.h
         include/pcl/common/point_operators.h
+#        include/pcl/common/spring.h
 #        include/pcl/common/convolution.h
         )
 
@@ -127,7 +127,7 @@ if(build)
 
     set(impl_incs include/pcl/impl/instantiate.hpp
         include/pcl/impl/point_types.hpp
-				)
+	)
 
     set(ros_incs include/pcl/ros/conversions.h
         include/pcl/ros/register_point_struct.h
