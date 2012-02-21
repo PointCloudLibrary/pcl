@@ -56,8 +56,8 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT (
   }
 
   // Determine the number of bins to use based on the size of rift_descriptor
-  int nr_distance_bins = rift_descriptor.cols ();
-  int nr_gradient_bins = rift_descriptor.rows ();
+  int nr_distance_bins = rift_descriptor.rows ();
+  int nr_gradient_bins = rift_descriptor.cols ();
 
   // Get the center point
   pcl::Vector3fMapConst p0 = cloud.points[p_idx].getVector3fMap ();
@@ -67,7 +67,6 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT (
   for (size_t idx = 0; idx < indices.size (); ++idx)
   {
     // Compute the gradient magnitude and orientation (relative to the center point)
-    ///Eigen::Map<Eigen::Vector3f> point (& (cloud.points[indices[idx]].x));
     pcl::Vector3fMapConst point = cloud.points[indices[idx]].getVector3fMap ();
     Eigen::Map<const Eigen::Vector3f> gradient_vector (& (gradient.points[indices[idx]].gradient[0]));
 
@@ -100,7 +99,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT (
         // To avoid boundary effects, use linear interpolation when updating each bin 
         float w = (1 - fabs (d - d_idx)) * (1 - fabs (g - g_idx));
 
-        rift_descriptor (g_idx_wrapped * nr_distance_bins + d_idx) += w * gradient_magnitude;
+        rift_descriptor (d_idx, g_idx_wrapped) += w * gradient_magnitude;
       }
     }
   }
@@ -152,13 +151,14 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
   }
   if (gradient_->points.size () != surface_->points.size ())
   {
-    PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the gradient!\n", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::computeFeature] ", getClassName ().c_str ());
+    PCL_ERROR ("The number of points in the input dataset differs from the number of points in the gradient!\n");
     output.width = output.height = 0;
     output.points.clear ();
     return;
   }
 
-  Eigen::MatrixXf rift_descriptor (nr_gradient_bins_, nr_distance_bins_);
+  Eigen::MatrixXf rift_descriptor (nr_distance_bins_, nr_gradient_bins_);
   std::vector<int> nn_indices;
   std::vector<float> nn_dist_sqr;
  
@@ -172,8 +172,10 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
     computeRIFT (*surface_, *gradient_, (*indices_)[idx], search_radius_, nn_indices, nn_dist_sqr, rift_descriptor);
 
     // Copy into the resultant cloud
-    for (int bin = 0; bin < rift_descriptor.size (); ++bin)
-      output.points[idx].histogram[bin] = rift_descriptor (bin);
+    int bin = 0;
+    for (int g_bin = 0; g_bin < rift_descriptor.cols (); ++g_bin)
+      for (int d_bin = 0; d_bin < rift_descriptor.rows (); ++d_bin)
+        output.points[idx].histogram[bin++] = rift_descriptor (d_bin, g_bin);
   }
 }
 
@@ -221,7 +223,8 @@ pcl::RIFTEstimation<PointInT, GradientT, Eigen::MatrixXf>::computeFeatureEigen (
     }
     if (gradient_->points.size () != surface_->points.size ())
     {
-      PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the gradient!\n", getClassName ().c_str ());
+      PCL_ERROR ("[pcl::%s::computeFeature] ", getClassName ().c_str ());
+      PCL_ERROR ("The number of points in the input dataset differs from the number of points in the gradient!\n");
       output.width = output.height = 0;
       output.points.resize (0, 0);
       return;
@@ -229,7 +232,7 @@ pcl::RIFTEstimation<PointInT, GradientT, Eigen::MatrixXf>::computeFeatureEigen (
   }
   
   output.points.resize (indices_->size (), nr_gradient_bins_ * nr_distance_bins_);
-  Eigen::MatrixXf rift_descriptor (nr_gradient_bins_, nr_distance_bins_);
+  Eigen::MatrixXf rift_descriptor (nr_distance_bins_, nr_gradient_bins_);
   std::vector<int> nn_indices;
   std::vector<float> nn_dist_sqr;
  
@@ -246,13 +249,15 @@ pcl::RIFTEstimation<PointInT, GradientT, Eigen::MatrixXf>::computeFeatureEigen (
     }
 
     // Compute the RIFT descriptor
-    this->computeRIFT (*surface_, *gradient_, (*indices_)[idx], search_radius_, nn_indices, nn_dist_sqr, rift_descriptor);
+    this->computeRIFT (*surface_, *gradient_, (*indices_)[idx], search_radius_, nn_indices, nn_dist_sqr, 
+                       rift_descriptor);
 
     // Copy into the resultant cloud
     int bin = 0;
-    for (int bin_i = 0; bin_i < rift_descriptor.rows (); ++bin_i)
-      for (int bin_j = 0; bin_j < rift_descriptor.cols (); ++bin_j)
-        output.points (idx, bin++) = rift_descriptor (bin_i, bin_j);
+    for (int g_bin = 0; g_bin < rift_descriptor.cols (); ++g_bin)
+      for (int d_bin = 0; d_bin < rift_descriptor.rows (); ++d_bin)
+        output.points (idx, bin++) = rift_descriptor (d_bin, g_bin);
+
   }
 }
 
