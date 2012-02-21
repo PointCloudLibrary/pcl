@@ -14,6 +14,15 @@ endif(${CMAKE_VERSION} VERSION_LESS 2.8.5)
 # Disable the config mode of find_package(Boost)
 set(Boost_NO_BOOST_CMAKE ON)
 
+# Optional boost modules
+find_package(Boost 1.40.0 QUIET COMPONENTS serialization mpi)
+if(Boost_MPI_FOUND)
+  set(BOOST_MPI_FOUND TRUE)
+endif(Boost_MPI_FOUND)
+if(Boost_SERIALIZATION_FOUND)
+  set(BOOST_SERIALIZATION_FOUND TRUE)
+endif(Boost_SERIALIZATION_FOUND)
+
 # Required boost modules
 find_package(Boost 1.40.0 REQUIRED COMPONENTS system filesystem thread date_time iostreams)
 
