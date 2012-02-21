@@ -12,7 +12,6 @@ string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/" ${CMAKE_MODULE_PATH})
 
 # ---[ Release/Debug specific flags
-add_definitions("-DEIGEN_DEFAULT_TO_ROW_MAJOR")   # see http://eigen.tuxfamily.org/api/TopicStorageOrders.html
 if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
   add_definitions("-DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG")
 endif()
