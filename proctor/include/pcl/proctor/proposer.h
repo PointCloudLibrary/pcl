@@ -8,7 +8,6 @@
 #include <boost/shared_ptr.hpp>
 #include <vector>
 #include <map>
-#include "proctor/detector.h"
 #include "proctor/database_entry.h"
 
 
@@ -17,6 +16,8 @@ namespace pcl
 
   namespace proctor
   {
+
+    class Detector;
 
     struct Candidate {
       std::string id;
@@ -44,7 +45,7 @@ namespace pcl
         getProposed(int max_num, Entry &query, std::vector<std::string> &input, std::vector<std::string> &output) = 0;
 
         virtual void
-        selectBestCandidates(int max_num, vector<Candidate> &ballot, std::vector<std::string> &output);
+        selectBestCandidates(int max_num, std::vector<Candidate> &ballot, std::vector<std::string> &output);
 
       protected:
         DatabasePtr database_;
@@ -62,6 +63,6 @@ namespace pcl
   }
 }
 
-BOOST_CLASS_EXPORT_GUID(pcl::proctor::Proposer, "Proposer")
+BOOST_CLASS_EXPORT(pcl::proctor::Proposer)
 
 #endif

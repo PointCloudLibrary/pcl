@@ -13,13 +13,13 @@ namespace pcl
     }
 
     void
-    Proposer::selectBestCandidates(int max_num, vector<Candidate> &ballot, std::vector<std::string> &output)
+    Proposer::selectBestCandidates(int max_num, std::vector<Candidate> &ballot, std::vector<std::string> &output)
     {
       sort(ballot.begin(), ballot.end());
 
       output.clear();
 
-      vector<Candidate>::iterator ballot_it;
+      std::vector<Candidate>::iterator ballot_it;
 
       int current_num = 0;
       for (ballot_it = ballot.begin(); ballot_it != ballot.end(); ballot_it++) {

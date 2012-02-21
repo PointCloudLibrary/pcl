@@ -49,7 +49,6 @@ if(build)
       include/pcl/${SUBSYS_NAME}/primitive_model_source.h
 
       include/pcl/${SUBSYS_NAME}/proctor.h
-      include/pcl/${SUBSYS_NAME}/proctor_mpi.h
       include/pcl/${SUBSYS_NAME}/scanner.h
       include/pcl/${SUBSYS_NAME}/timer.h
       include/pcl/${SUBSYS_NAME}/vtkLidarPoint.h
@@ -68,6 +67,7 @@ if(build)
       include/pcl/${SUBSYS_NAME}/radius_hough_proposer.h
 
       include/pcl/${SUBSYS_NAME}/feature_wrapper.h
+      include/pcl/${SUBSYS_NAME}/pfh_wrapper.h
       include/pcl/${SUBSYS_NAME}/fpfh_wrapper.h
       include/pcl/${SUBSYS_NAME}/shot_wrapper.h
       include/pcl/${SUBSYS_NAME}/si_wrapper.h
@@ -108,6 +108,7 @@ if(build)
         src/normal_hough_proposer.cpp
         src/radius_hough_proposer.cpp
 
+        src/pfh_wrapper.cpp
         src/fpfh_wrapper.cpp
         src/shot_wrapper.cpp
         src/si_wrapper.cpp

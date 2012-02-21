@@ -21,6 +21,7 @@
 #include "proctor/uniform_sampling_wrapper.h"
 #include "proctor/harris_wrapper.h"
 
+#include "proctor/pfh_wrapper.h"
 #include "proctor/fpfh_wrapper.h"
 #include "proctor/shot_wrapper.h"
 #include "proctor/si_wrapper.h"
@@ -57,12 +58,14 @@ struct run_proctor
     //pcl::console::setVerbosityLevel(pcl::console::L_ALWAYS);
 
     std::vector<FeatureWrapper::Ptr> features;
+    FeatureWrapper::Ptr pfh_wrap (new PFHWrapper);
+    //features.push_back(pfh_wrap);
     FeatureWrapper::Ptr fpfh_wrap (new FPFHWrapper);
-    //features.push_back(fpfh_wrap);
+    features.push_back(fpfh_wrap);
     FeatureWrapper::Ptr shot_wrap (new SHOTWrapper);
     //features.push_back(shot_wrap);
     FeatureWrapper::Ptr si_wrap (new SIWrapper);
-    features.push_back(si_wrap);
+    //features.push_back(si_wrap);
     FeatureWrapper::Ptr shape_context_wrapper (new ShapeContextWrapper);
     //features.push_back(shape_context_wrapper);
 
@@ -80,20 +83,20 @@ struct run_proctor
     //proposers.push_back(threshold_proposer);
     //proposers.push_back(RegistrationProposer::Ptr(new RegistrationProposer));
 
-    FrameHoughProposer::Ptr frame_hough(new FrameHoughProposer());
-    frame_hough->num_angles_ = 60;
-    frame_hough->bins_ = 10;
-    proposers.push_back(frame_hough);
+    //FrameHoughProposer::Ptr frame_hough(new FrameHoughProposer());
+    //frame_hough->num_angles_ = 60;
+    //frame_hough->bins_ = 10;
+    //proposers.push_back(frame_hough);
 
     //NormalHoughProposer::Ptr normal_hough(new NormalHoughProposer());
     //normal_hough->num_angles_ = 60;
     //normal_hough->bins_ = 10;
     //proposers.push_back(normal_hough);
 
-    //RadiusHoughProposer::Ptr radius_hough(new RadiusHoughProposer());
-    //radius_hough->num_angles_ = 20;
-    //radius_hough->bins_ = 10;
-    //proposers.push_back(radius_hough);
+    RadiusHoughProposer::Ptr radius_hough(new RadiusHoughProposer());
+    radius_hough->num_angles_ = 20;
+    radius_hough->bins_ = 10;
+    proposers.push_back(radius_hough);
 
     for (unsigned int i = 0; i < features.size(); i++)
     {
@@ -127,7 +130,7 @@ struct run_proctor
 
           // Configure Proctor
           Proctor proctor;
-          proctor.setNumModels(20);
+          proctor.setNumModels(4);
           proctor.setNumTrials(proctor.getNumModels());
 
           ScanningModelSource model_source("princeton", "/home/justin/Documents/benchmark");

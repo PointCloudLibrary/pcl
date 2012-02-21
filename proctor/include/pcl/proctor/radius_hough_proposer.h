@@ -22,9 +22,19 @@ namespace pcl
 
         virtual void
         houghVote(Entry &query, Entry &target, bin_t& bins);
+      private:
+        friend class boost::serialization::access;
+
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version)
+        {
+          ar & boost::serialization::base_object<HoughProposer>( *this );
+        }
     };
 
   }
 }
+
+BOOST_CLASS_EXPORT(pcl::proctor::RadiusHoughProposer)
 
 #endif

@@ -12,7 +12,7 @@ namespace pcl
     RegistrationProposer::getProposed(int max_num, Entry &query, std::vector<std::string> &input, std::vector<std::string> &output) {
       std::vector<std::string>::iterator database_it;
 
-      vector<Candidate> ballot;
+      std::vector<Candidate> ballot;
       for ( database_it = input.begin() ; database_it != input.end(); database_it++ ) {
         std::string target_id = (*database_it);
         Entry target = (*database_)[target_id];

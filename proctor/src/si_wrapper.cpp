@@ -15,7 +15,6 @@ namespace pcl
       search::KdTree<PointNormal>::Ptr kdt (new search::KdTree<PointNormal>());
       si.setSearchMethod(kdt);
       si.setRadiusSearch(0.08);
-
       si.setInputCloud(keypoints);
       si.setInputNormals(keypoints);
       si.setSearchSurface(cloud);

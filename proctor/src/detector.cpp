@@ -32,7 +32,7 @@ namespace pcl
         detector_vis_->addCloud(scene.id + "keypoints", keypoints);
         detector_vis_->addCloud(scene.id + "original", scene.cloud);
       }
-      PointCloud<Signature>::Ptr features = obtainFeatures(scene, keypoints, false);
+      PointCloud<Signature>::Ptr features = obtainFeatures(scene, keypoints, false, true);
 
       Entry e;
       e.cloud = scene.cloud;
@@ -180,24 +180,63 @@ namespace pcl
 
         if (ifstream(name)) {
           PointCloud<Signature>::Ptr features (new PointCloud<Signature>());
-          PointCloud<FPFHSignature33>::Ptr tmp (new PointCloud<FPFHSignature33>());
           PCDReader r;
           r.readEigen(std::string(name), *features);
           //*features = *tmp;
           //io::loadPCDFile(name, *features);
-          //if (features->points.size() != indices->size())
-          cout << "cloud: "  << features->points << endl;
-          cout << "test: "  << features->points.rows () << endl;
-          //cout << "got " << features->points.size() << " features from " << indices->size() << " points" << endl;
+          if (features->size() != keypoints->size())
+            assert(false);
+          cout << "got " << features->size() << " features from " << keypoints->size() << " points" << endl;
           return features;
         } else {
           PointCloud<Signature>::Ptr features = computeFeatures(scene.cloud, keypoints);
           PCDWriter w;
           w.writeASCIIEigen(std::string(name), *features);
-          //cout << "cloud: "  << features->points << endl;
           return features;
         }
       }
     }
+
+    //PointCloud<Signature>::Ptr
+    //Detector::obtainKeypoints(Scene &scene, PointCloud<PointNormal>::Ptr keypoints, bool is_test_phase, bool cache)
+    //{
+      //if (cache == false)
+      //{
+        //PointCloud<Signature>::Ptr features = computeFeatures(scene.cloud, keypoints);
+        //return features;
+      //}
+      //else
+      //{
+        //std::string name_str = std::string(feature_est_->name_) + scene.id;
+
+        //if (is_test_phase) {
+          //name_str += "_test";
+        //}
+        //else {
+          //name_str += "_train";
+        //}
+
+        //name_str += ".pcd";
+
+        //const char *name = name_str.c_str();
+
+        //if (ifstream(name)) {
+          //PointCloud<PointNormal>::Ptr features (new PointCloud<PointNormal>());
+          //PCDReader r;
+          //r.read(std::string(name), *features);
+          ///[>features = *tmp;
+          ////io::loadPCDFile(name, *features);
+          //if (features->size() != keypoints->size())
+            //assert(false);
+          ////cout << "got " << features->points.size() << " features from " << indices->size() << " points" << endl;
+          //return features;
+        //} else {
+          //PointCloud<PointNormal>::Ptr features = computeFeatures(scene.cloud, keypoints);
+          //PCDWriter w;
+          //w.writeASCII(std::string(name), *features);
+          //return features;
+        //}
+      //}
+    //}
   }
 }

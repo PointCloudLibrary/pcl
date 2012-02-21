@@ -2,11 +2,15 @@
 #define HOUGH_PROPOSER_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include "boost/multi_array.hpp"
+
 #include <vector>
+
 #include "proctor/detector.h"
 #include "proctor/proposer.h"
 
-#include "boost/multi_array.hpp"
 
 namespace pcl
 {
@@ -56,9 +60,22 @@ namespace pcl
 
       private:
         bool is_soft_vote_;
+
+        friend class boost::serialization::access;
+
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version)
+        {
+          ar & boost::serialization::base_object<Proposer>( *this );
+          ar & bins_;
+          ar & num_angles_;
+          ar & num_correspondences;
+        }
     };
 
   }
 }
+
+BOOST_CLASS_EXPORT(pcl::proctor::HoughProposer);
 
 #endif

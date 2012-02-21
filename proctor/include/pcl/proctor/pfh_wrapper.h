@@ -1,5 +1,5 @@
-#ifndef FPFH_WRAPPER_H
-#define FPFH_WRAPPER_H
+#ifndef PFH_WRAPPER_H
+#define PFH_WRAPPER_H
 
 #include "proctor/feature_wrapper.h"
 
@@ -14,10 +14,10 @@ namespace pcl
   namespace proctor
   {
 
-    class FPFHWrapper : public FeatureWrapper {
+    class PFHWrapper : public FeatureWrapper {
       public:
 
-        FPFHWrapper() : FeatureWrapper("fpfh")
+        PFHWrapper() : FeatureWrapper("pfh")
         {}
 
         void
@@ -36,6 +36,6 @@ namespace pcl
   }
 }
 
-BOOST_CLASS_EXPORT(pcl::proctor::FPFHWrapper)
+BOOST_CLASS_EXPORT(pcl::proctor::PFHWrapper)
 
 #endif

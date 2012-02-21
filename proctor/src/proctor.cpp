@@ -47,7 +47,7 @@ namespace pcl
 
       timer.start();
       const int num_model_ids = std::min((int) model_ids_.size(), num_models_);
-#pragma omp parallel for
+//#pragma omp parallel for
       for (int mi = 0; mi < num_model_ids; mi++) {
         std::string model_id = model_ids_[mi];
         cout << "Begin scanning model " << mi << " (" << model_id << ")" << endl;
@@ -73,19 +73,16 @@ namespace pcl
 
       source_->resetTestGenerator();
 
-      std::map<std::string, std::map<std::string, int> > guesses;
       ConfusionMatrix confusion_matrix;
 
       int num_model_ids = std::min((int) model_ids_.size(), num_models_);
       if (num_model_ids == 0)
         assert(false);
-#pragma omp parallel for
+//#pragma omp parallel for
       for (int ni = 0; ni < num_trials_; ni++) {
         cout << "[test " << ni << "]" << endl;
 
         std::string truth_id = model_ids_[ni % num_model_ids];
-
-        std::map<std::string, int>& guesses_for_id = guesses[truth_id];
 
         //timer.start();
         PointCloud<PointNormal>::Ptr test_cloud = source_->getTestModel(truth_id);
@@ -99,7 +96,6 @@ namespace pcl
           //std::string guessed_id = detector.query(test_scene, classifier[ni], registration[ni]);
           std::string guessed_id = detector.query(test_scene);
 
-          guesses_for_id[guessed_id] += 1;
           confusion_matrix.increment(truth_id, guessed_id);
           cout << "detector guessed " << guessed_id << endl;
         } catch (exception &e) {

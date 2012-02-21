@@ -11,6 +11,7 @@
 #include "proctor/database_entry.h"
 #include "proctor/keypoint_wrapper.h"
 #include "proctor/feature_wrapper.h"
+#include "proctor/proposer.h"
 #include <pcl/features/fpfh.h>
 
 #include <boost/archive/text_oarchive.hpp>
@@ -123,6 +124,7 @@ namespace pcl
           feature_est_ = feature_est;
         }
 
+
         DetectorVisualizer *detector_vis_;
 
       //private:
@@ -148,6 +150,11 @@ namespace pcl
           ar & proposers_;
         }
     };
+
+    inline std::ostream &operator<<(std::ostream & out, Detector const & v) {
+      out << "Detector:\n  - Feature: " << v.feature_est_->name_ << "\n  - Keypoint: " << v.keypoint_wrap_->name_;
+      return out;
+    }
   }
 }
 

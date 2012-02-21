@@ -2,12 +2,17 @@
 #include <boost/format.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
+#include <boost/program_options.hpp>
 
 #include <QApplication>
 
 #include "proctor/detector.h"
 #include "proctor/detector_visualizer.h"
+
 #include "proctor/proctor.h"
+#include "proctor/proctor_job_manager.h"
+#include "proctor/proctor_worker.h"
+
 #include "proctor/scanning_model_source.h"
 #include "proctor/primitive_model_source.h"
 
@@ -33,8 +38,11 @@
 #include <pcl/features/fpfh.h>
 
 #include <Eigen/Dense>
+#include <zmq.hpp>
+#include <sstream>
 
 using namespace pcl::proctor;
+namespace po = boost::program_options;
 
 struct run_proctor
 {
@@ -82,20 +90,20 @@ struct run_proctor
     //proposers.push_back(threshold_proposer);
     //proposers.push_back(RegistrationProposer::Ptr(new RegistrationProposer));
 
-    //FrameHoughProposer::Ptr frame_hough(new FrameHoughProposer());
-    //frame_hough->num_angles_ = 60;
-    //frame_hough->bins_ = 10;
-    //proposers.push_back(frame_hough);
+    FrameHoughProposer::Ptr frame_hough(new FrameHoughProposer());
+    frame_hough->num_angles_ = 60;
+    frame_hough->bins_ = 10;
+    proposers.push_back(frame_hough);
 
     //NormalHoughProposer::Ptr normal_hough(new NormalHoughProposer());
     //normal_hough->num_angles_ = 60;
     //normal_hough->bins_ = 10;
     //proposers.push_back(normal_hough);
 
-    RadiusHoughProposer::Ptr radius_hough(new RadiusHoughProposer());
-    radius_hough->num_angles_ = 20;
-    radius_hough->bins_ = 10;
-    proposers.push_back(radius_hough);
+    //RadiusHoughProposer::Ptr radius_hough(new RadiusHoughProposer());
+    //radius_hough->num_angles_ = 20;
+    //radius_hough->bins_ = 10;
+    //proposers.push_back(radius_hough);
 
     for (unsigned int i = 0; i < features.size(); i++)
     {
@@ -128,7 +136,7 @@ struct run_proctor
           detector.setFeatureEstimator(feature);
 
           // Configure Proctor
-          Proctor proctor;
+          ProctorJobManager proctor;
           proctor.setNumModels(10);
           proctor.setNumTrials(proctor.getNumModels() * 2);
 
@@ -150,52 +158,64 @@ struct run_proctor
 
 int main(int argc, char **argv)
 {
-  std::ofstream ofs("filename");
-  {
-    Detector d;
-    boost::archive::text_oarchive oa(ofs);
+  // Test serialization
+  //std::stringstream serialized;
+  //{
+    //Detector d;
+    //boost::archive::text_oarchive oa(serialized);
 
-    FeatureWrapper::Ptr fpfh_wrap (new FPFHWrapper);
-    d.setFeatureEstimator(fpfh_wrap);
+    //FeatureWrapper::Ptr fpfh_wrap (new FPFHWrapper);
+    //d.setFeatureEstimator(fpfh_wrap);
 
-    KeypointWrapper::Ptr us_wrap (new UniformSamplingWrapper);
-    d.setKeypointWrapper(us_wrap);
+    //KeypointWrapper::Ptr us_wrap (new UniformSamplingWrapper);
+    //d.setKeypointWrapper(us_wrap);
 
-    oa << d;
+    //oa << d;
+  //}
+
+  //std::cout << serialized.str() << std::endl;
+
+  //Detector test2;
+  //{
+    //boost::archive::text_iarchive ia(serialized);
+    //ia >> test2;
+  //}
+  //std::cout << test2.feature_est_->name_ << std::endl;
+  //std::cout << test2.keypoint_wrap_->name_ << std::endl;
+  //exit(0);
+
+  bool is_manager = false;
+  po::options_description desc("Allowed options");
+  desc.add_options()
+    ("manager,M", "run job manager")
+    ("help", "produce help message")
+    ;
+
+  po::variables_map var_map;
+  po::store(po::parse_command_line(argc, argv, desc), var_map);
+  po::notify(var_map);
+
+  if (var_map.count("help")) {
+    std::cout << desc << std::endl;
+    return 1;
   }
 
-  Detector test2;
-  {
-
-    std::ifstream ifs("filename");
-    boost::archive::text_iarchive ia(ifs);
-    ia >> test2;
+  if (var_map.count("manager")) {
+    is_manager = true;
   }
-  std::cout << test2.feature_est_->name_ << std::endl;
-  std::cout << test2.keypoint_wrap_->name_ << std::endl;
-  exit(0);
 
-
-  bool enable_vis = false;
-  if (enable_vis)
-  {
-    QApplication app (argc, argv);
-
-    DetectorVisualizer v;
-    v.show ();
-
-    run_proctor x(v);
-    boost::thread proctor_thread(x);
-
-    return (app.exec ());
-  }
-  else
+  if (is_manager)
   {
     run_proctor no_vis;
     boost::thread proctor_thread(no_vis);
     proctor_thread.join();
-
-    return 0;
   }
+  else
+  {
+    ProctorWorker worker;
+    worker.start();
+  }
+
+  return 0;
 }
 
