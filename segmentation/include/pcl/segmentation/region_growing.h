@@ -338,6 +338,4 @@ namespace pcl
   };
 }
 
-#include "impl\region_growing.hpp"
-
 #endif
