@@ -44,17 +44,17 @@
 #include <flann/flann.hpp>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-typename pcl::search::FlannSearch<PointT>::IndexPtr
-pcl::search::FlannSearch<PointT>::KdTreeIndexCreator::createIndex (MatrixConstPtr data)
+template <typename PointT, typename FlannDistance>
+typename pcl::search::FlannSearch<PointT, FlannDistance>::IndexPtr
+pcl::search::FlannSearch<PointT, FlannDistance>::KdTreeIndexCreator::createIndex (MatrixConstPtr data)
 {
-  return (IndexPtr (new flann::KDTreeSingleIndex<flann::L2<float> > (*data,flann::KDTreeSingleIndexParams (max_leaf_size_))));
+  return (IndexPtr (new flann::KDTreeSingleIndex<FlannDistance> (*data,flann::KDTreeSingleIndexParams (max_leaf_size_))));
 }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-pcl::search::FlannSearch<PointT>::FlannSearch(bool sorted, FlannIndexCreator *creator) : pcl::search::Search<PointT> ("FlannSearch",sorted),
+template <typename PointT, typename FlannDistance>
+pcl::search::FlannSearch<PointT, FlannDistance>::FlannSearch(bool sorted, FlannIndexCreator *creator) : pcl::search::Search<PointT> ("FlannSearch",sorted),
   creator_ (creator), eps_ (0), input_copied_for_flann_ (false)
 {
   point_representation_.reset (new DefaultPointRepresentation<PointT>);
@@ -62,8 +62,8 @@ pcl::search::FlannSearch<PointT>::FlannSearch(bool sorted, FlannIndexCreator *cr
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-pcl::search::FlannSearch<PointT>::~FlannSearch()
+template <typename PointT, typename FlannDistance>
+pcl::search::FlannSearch<PointT, FlannDistance>::~FlannSearch()
 {
   delete creator_;
   if (input_copied_for_flann_)
@@ -71,8 +71,8 @@ pcl::search::FlannSearch<PointT>::~FlannSearch()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::search::FlannSearch<PointT>::setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices)
+template <typename PointT, typename FlannDistance> void
+pcl::search::FlannSearch<PointT, FlannDistance>::setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices)
 {
   input_ = cloud;
   indices_ = indices;
@@ -82,8 +82,8 @@ pcl::search::FlannSearch<PointT>::setInputCloud (const PointCloudConstPtr& cloud
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> int
-pcl::search::FlannSearch<PointT>::nearestKSearch (const PointT &point, int k, std::vector<int> &indices, std::vector<float> &dists) const
+template <typename PointT, typename FlannDistance> int
+pcl::search::FlannSearch<PointT, FlannDistance>::nearestKSearch (const PointT &point, int k, std::vector<int> &indices, std::vector<float> &dists) const
 {
   bool can_cast = point_representation_->isTrivial ();
 
@@ -122,8 +122,8 @@ pcl::search::FlannSearch<PointT>::nearestKSearch (const PointT &point, int k, st
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::search::FlannSearch<PointT>::nearestKSearch (
+template <typename PointT, typename FlannDistance> void
+pcl::search::FlannSearch<PointT, FlannDistance>::nearestKSearch (
     const PointCloud& cloud, const std::vector<int>& indices, int k, std::vector< std::vector<int> >& k_indices,
     std::vector< std::vector<float> >& k_sqr_distances) const
 {
@@ -192,8 +192,8 @@ pcl::search::FlannSearch<PointT>::nearestKSearch (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> int
-pcl::search::FlannSearch<PointT>::radiusSearch (const PointT& point, double radius,
+template <typename PointT, typename FlannDistance> int
+pcl::search::FlannSearch<PointT, FlannDistance>::radiusSearch (const PointT& point, double radius,
     std::vector<int> &indices, std::vector<float> &distances,
     unsigned int max_nn) const
 {
@@ -233,8 +233,8 @@ pcl::search::FlannSearch<PointT>::radiusSearch (const PointT& point, double radi
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::search::FlannSearch<PointT>::radiusSearch (
+template <typename PointT, typename FlannDistance> void
+pcl::search::FlannSearch<PointT, FlannDistance>::radiusSearch (
     const PointCloud& cloud, const std::vector<int>& indices, double radius, std::vector< std::vector<int> >& k_indices,
     std::vector< std::vector<float> >& k_sqr_distances, unsigned int max_nn) const
 {
@@ -304,8 +304,8 @@ pcl::search::FlannSearch<PointT>::radiusSearch (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::search::FlannSearch<PointT>::convertInputToFlannMatrix ()
+template <typename PointT, typename FlannDistance> void
+pcl::search::FlannSearch<PointT, FlannDistance>::convertInputToFlannMatrix ()
 {
   int original_no_of_points = indices_ && !indices_->empty () ? indices_->size () : input_->size ();
 

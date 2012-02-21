@@ -48,6 +48,7 @@ namespace flann
 {
   template<typename T> class NNIndex;
   template<typename T> class L2;
+  template<typename T> class L2_Simple;
   template<typename T> class Matrix;
 }
 
@@ -63,7 +64,7 @@ namespace pcl
       * \author Andreas Muetzel
       * \ingroup search
       */
-    template<typename PointT>
+    template<typename PointT, typename FlannDistance=flann::L2_Simple <float> >
     class FlannSearch: public Search<PointT>
     {
       typedef typename Search<PointT>::PointCloud PointCloud;
@@ -71,8 +72,8 @@ namespace pcl
 
       typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
       typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
-      typedef flann::NNIndex< flann::L2<float> > Index;
-      typedef boost::shared_ptr<flann::NNIndex <flann::L2<float> > > IndexPtr;
+      typedef flann::NNIndex< FlannDistance > Index;
+      typedef boost::shared_ptr<flann::NNIndex <FlannDistance > > IndexPtr;
       typedef boost::shared_ptr<flann::Matrix <float> > MatrixPtr;
       typedef boost::shared_ptr<const flann::Matrix <float> > MatrixConstPtr;
 
@@ -124,7 +125,7 @@ namespace pcl
 
         FlannSearch (bool sorted = true, FlannIndexCreator* creator = new KdTreeIndexCreator());
 
-        /** \brief Destructor for KdTree. */
+        /** \brief Destructor for FlannSearch. */
         virtual
         ~FlannSearch ();
 
