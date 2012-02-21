@@ -364,8 +364,10 @@ namespace pcl
       inline Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> > 
       getMatrixXfMap (int dim, int stride, int offset)
       {
-        //return Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, dim, points.size(), Eigen::OuterStride<>(stride));
-        return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
+        if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
+          return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
+        else
+          return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, dim, points.size (), Eigen::OuterStride<> (stride)));
       }
 
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
@@ -386,7 +388,10 @@ namespace pcl
       inline const Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >
       getMatrixXfMap (int dim, int stride, int offset) const
       {
-        return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
+        if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
+          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
+        else
+          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, dim, points.size (), Eigen::OuterStride<> (stride)));                
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
