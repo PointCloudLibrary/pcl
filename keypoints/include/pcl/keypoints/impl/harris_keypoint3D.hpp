@@ -237,7 +237,11 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
     std::vector<int> nn_indices;
     std::vector<float> nn_dists;
 
-    #pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
+#if defined __GNUC__
+#  if __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#    pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
+#  endif
+#endif
     for (int idx = 0; idx < (int) response->points.size (); ++idx)
     {
       if (!isFinite (response->points[idx]) || response->points[idx].intensity < threshold_)
