@@ -41,6 +41,7 @@
 #include <pcl/search/pcl_search.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/common/distances.h>
 
 using namespace std;
 using namespace pcl;
