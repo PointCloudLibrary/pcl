@@ -33,28 +33,24 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: example_ScopeTime.cpp 4258 2012-02-05 15:06:20Z daviddoria $
+ * $Id: example_CheckIfPointIsValid.cpp 4258 2012-02-05 15:06:20Z daviddoria $
  *
  */
 
-
-
 #include <iostream>
+#include <limits>
 
-#include <pcl/common/time.h>
+#include <pcl/point_types.h>
 
 int
 main (int argc, char** argv)
 {
-  pcl::ScopeTime scope_time ("Test loop");
-  {
-    float total = 0.0f;
-    for (size_t i = 0; i < 1e4; ++i)
-    {
-      total += i;
-    }
-  }
-  std::cout << "Done." << std::endl;
+  pcl::PointXYZ p_valid; p_valid.x = 0; p_valid.y = 0; p_valid.z = 0;
+  std::cout << "Is p_valid valid? " << pcl::isFinite(p_valid) << std::endl;
+
+  // If any component is NaN, the point is not finite.
+  pcl::PointXYZ p_invalid; p_invalid.x = std::numeric_limits<float>::quiet_NaN(); p_invalid.y = 0; p_invalid.z = 0;
+  std::cout << "Is p_invalid valid? " << pcl::isFinite(p_invalid) << std::endl;
 
   return (0);
 }

@@ -130,7 +130,7 @@ class OpenNIVoxelGrid
       interface->stop ();
     }
 
-    pcl::ApproximateVoxelGrid<PointType> grid_;
+    pcl::VoxelGrid<PointType> grid_;
     pcl::visualization::CloudViewer viewer;
     std::string device_id_;
     boost::mutex mtx_;

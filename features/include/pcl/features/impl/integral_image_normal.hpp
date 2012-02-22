@@ -218,7 +218,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     covariance_matrix.coeffRef (5) = covariance_matrix.coeffRef (7) = so_elements [4];
     covariance_matrix.coeffRef (8) = so_elements [5];
     covariance_matrix -= (center * center.transpose ()) / count;
-    float eigen_value = -1;
+    float eigen_value;
     Eigen::Vector3f eigen_vector;
     pcl::eigen33 (covariance_matrix, eigen_value, eigen_vector);
     if (eigen_vector [2] < 0.0f)

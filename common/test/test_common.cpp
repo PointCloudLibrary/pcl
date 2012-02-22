@@ -183,30 +183,65 @@ TEST (PCL, PointCloud)
     cloud.points.push_back (PointXYZ (3 * i + 0, 3 * i + 1, 3 * i + 2));
 
   Eigen::MatrixXf mat_xyz1 = cloud.getMatrixXfMap ();
-  EXPECT_EQ (mat_xyz1.cols (), 4);
-  EXPECT_EQ (mat_xyz1.rows (), cloud.width);
-  EXPECT_EQ (mat_xyz1 (0, 0), 0);
-  EXPECT_EQ (mat_xyz1 (cloud.width - 1, 2), 3 * cloud.width - 1);   // = 29
-
   Eigen::MatrixXf mat_xyz = cloud.getMatrixXfMap(3,4,0);
-  EXPECT_EQ (mat_xyz.cols (), 3);
-  EXPECT_EQ (mat_xyz.rows (), cloud.width);
-  EXPECT_EQ (mat_xyz (0, 0), 0);
-  EXPECT_EQ (mat_xyz (cloud.width - 1, 2), 3 * cloud.width - 1);    // = 29
 
-#ifdef NDEBUG
-  Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap (2, 4, 1);
-  EXPECT_EQ (mat_yz.cols (), 2);
-  EXPECT_EQ (mat_yz.rows (), cloud.width);
-  EXPECT_EQ (mat_yz (0, 0), 1);
-  EXPECT_EQ (mat_yz (cloud.width - 1, 1), 3 * cloud.width - 1);
-  uint32_t j = 1;
-  for (uint32_t i = 1; i < cloud.width*cloud.height; i+=4, j+=3)
+  if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
   {
-    Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap (2, 4, i);
+    EXPECT_EQ (mat_xyz1.cols (), 4);
+    EXPECT_EQ (mat_xyz1.rows (), cloud.width);
+    EXPECT_EQ (mat_xyz1 (0, 0), 0);
+    EXPECT_EQ (mat_xyz1 (cloud.width - 1, 2), 3 * cloud.width - 1);   // = 29
+
+    EXPECT_EQ (mat_xyz.cols (), 3);
+    EXPECT_EQ (mat_xyz.rows (), cloud.width);
+    EXPECT_EQ (mat_xyz (0, 0), 0);
+    EXPECT_EQ (mat_xyz (cloud.width - 1, 2), 3 * cloud.width - 1);    // = 29
+  }
+  else
+  {
+    EXPECT_EQ (mat_xyz1.cols (), cloud.width);
+    EXPECT_EQ (mat_xyz1.rows (), 4);
+    EXPECT_EQ (mat_xyz1 (0, 0), 0);
+    EXPECT_EQ (mat_xyz1 (2, cloud.width - 1), 3 * cloud.width - 1);   // = 29
+
+    EXPECT_EQ (mat_xyz.cols (), cloud.width);
+    EXPECT_EQ (mat_xyz.rows (), 3);
+    EXPECT_EQ (mat_xyz (0, 0), 0);
+    EXPECT_EQ (mat_xyz (2, cloud.width - 1), 3 * cloud.width - 1);    // = 29
+  }
+  
+#ifdef NDEBUG
+  if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
+  {
+    Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap (2, 4, 1);
     EXPECT_EQ (mat_yz.cols (), 2);
     EXPECT_EQ (mat_yz.rows (), cloud.width);
-    EXPECT_EQ (mat_yz (0, 0), j);
+    EXPECT_EQ (mat_yz (0, 0), 1);
+    EXPECT_EQ (mat_yz (cloud.width - 1, 1), 3 * cloud.width - 1);
+    uint32_t j = 1;
+    for (uint32_t i = 1; i < cloud.width*cloud.height; i+=4, j+=3)
+    {
+      Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap (2, 4, i);
+      EXPECT_EQ (mat_yz.cols (), 2);
+      EXPECT_EQ (mat_yz.rows (), cloud.width);
+      EXPECT_EQ (mat_yz (0, 0), j);
+    }
+  }
+  else
+  {
+    Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap (2, 4, 1);
+    EXPECT_EQ (mat_yz.cols (), cloud.width);
+    EXPECT_EQ (mat_yz.rows (), 2);
+    EXPECT_EQ (mat_yz (0, 0), 1);
+    EXPECT_EQ (mat_yz (1, cloud.width - 1), 3 * cloud.width - 1);
+    uint32_t j = 1;
+    for (uint32_t i = 1; i < cloud.width*cloud.height; i+=4, j+=3)
+    {
+      Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap (2, 4, i);
+      EXPECT_EQ (mat_yz.cols (), cloud.width);
+      EXPECT_EQ (mat_yz.rows (), 2);
+      EXPECT_EQ (mat_yz (0, 0), j);
+    }
   }
 #endif
   cloud.clear ();
@@ -272,6 +307,7 @@ TEST (PCL, Intersections)
   //intersection: [ 3.06416e+08    15.2237     3.06416e+08       4.04468e-34 ]
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, compute3DCentroid)
 {
   std::vector<int> indices;
@@ -364,6 +400,7 @@ TEST (PCL, compute3DCentroid)
   EXPECT_EQ (centroid [2], 0.0);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, computeCovarianceMatrix)
 {
   PointCloud<PointXYZ> cloud;
@@ -479,6 +516,7 @@ TEST (PCL, computeCovarianceMatrix)
   EXPECT_EQ (covariance_matrix (2, 2), 4);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, computeCovarianceMatrixNormalized)
 {
   PointCloud<PointXYZ> cloud;
@@ -596,6 +634,7 @@ TEST (PCL, computeCovarianceMatrixNormalized)
   EXPECT_EQ (covariance_matrix (2, 2), 1);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, computeDemeanedCovariance)
 {
   PointCloud<PointXYZ> cloud;
@@ -701,6 +740,7 @@ TEST (PCL, computeDemeanedCovariance)
   EXPECT_EQ (covariance_matrix (2, 2), 1);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, computeMeanAndCovariance)
 {
   PointCloud<PointXYZ> cloud;
@@ -831,7 +871,59 @@ TEST (PCL, computeMeanAndCovariance)
   EXPECT_EQ (covariance_matrix (2, 2), 1);
 }
 
-/* ---[ */
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, CopyIfFieldExists)
+{
+  PointXYZRGBNormal p;
+
+  p.x = 1.0; p.y = 2;  p.z = 3.0;
+  p.r = 127; p.g = 64; p.b = 254;
+  p.normal_x = 1.0; p.normal_y = 0.0; p.normal_z = 0.0;
+
+  typedef pcl::traits::fieldList<PointXYZRGBNormal>::type FieldList;
+  bool is_x = false, is_y = false, is_z = false, is_rgb = false, 
+       is_normal_x = false, is_normal_y = false, is_normal_z = false;
+
+  float x_val, y_val, z_val, normal_x_val, normal_y_val, normal_z_val, rgb_val;
+  x_val = y_val = z_val = std::numeric_limits<float>::quiet_NaN ();
+  normal_x_val = normal_y_val = normal_z_val = std::numeric_limits<float>::quiet_NaN ();
+  rgb_val = std::numeric_limits<float>::quiet_NaN ();
+
+  pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "x", is_x, x_val));
+  EXPECT_EQ (is_x, true);
+  EXPECT_EQ (x_val, 1.0);
+  pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "y", is_y, y_val));
+  EXPECT_EQ (is_y, true);
+  EXPECT_EQ (y_val, 2.0);
+  pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "z", is_z, z_val));
+  EXPECT_EQ (is_z, true);
+  EXPECT_EQ (z_val, 3.0);
+  pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "rgb", is_rgb, rgb_val));
+  EXPECT_EQ (is_rgb, true);
+  int rgb = *reinterpret_cast<int*>(&rgb_val);
+  EXPECT_EQ (rgb, 8339710);
+  pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "normal_x", is_normal_x, normal_x_val));
+  EXPECT_EQ (is_normal_x, true);
+  EXPECT_EQ (normal_x_val, 1.0);
+  pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "normal_y", is_normal_y, normal_y_val));
+  EXPECT_EQ (is_normal_y, true);
+  EXPECT_EQ (normal_y_val, 0.0);
+  pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "normal_z", is_normal_z, normal_z_val));
+  EXPECT_EQ (is_normal_z, true);
+  EXPECT_EQ (normal_z_val, 0.0);
+  
+  pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "x", x_val));
+  EXPECT_EQ (x_val, 1.0);
+
+  float xx_val = -1.0;
+  pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "xx", xx_val));
+  EXPECT_EQ (xx_val, -1.0);
+  bool is_xx = true;
+  pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "xx", is_xx, xx_val));
+  EXPECT_EQ (is_xx, false);
+}
+
+//* ---[ */
 int
 main (int argc, char** argv)
 {

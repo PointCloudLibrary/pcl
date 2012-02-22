@@ -52,7 +52,7 @@ namespace pcl
   /** \brief Base exception class for I/O operations
     * \ingroup io
     */
-  class PCL_EXPORTS PCLIOException : public PCLException
+  class PCLIOException : public PCLException
   {
     public:
       /** \brief Constructor

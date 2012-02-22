@@ -33,9 +33,10 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: example_PrincipalCurvaturesEstimation.cpp 4258 2012-02-05 15:06:20Z daviddoria $
+ * $Id: example_spin_images.cpp 4516 2012-02-17 08:03:46Z nizar $
  *
  */
+
 
 
 #include <iostream>
@@ -44,60 +45,51 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/features/normal_3d.h>
-#include <pcl/features/principal_curvatures.h>
-
+#include <pcl/features/spin_image.h>
 
 int
 main (int argc, char** argv)
 {
   std::string filename = argv[1];
   std::cout << "Reading " << filename << std::endl;
-
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
-  if (pcl::io::loadPCDFile<pcl::PointXYZ> (filename, *cloud) == -1) //* load the file
+  if (pcl::io::loadPCDFile <pcl::PointXYZ> (filename.c_str (), *cloud) == -1)
+  // load the file
   {
     PCL_ERROR ("Couldn't read file");
     return (-1);
   }
-
   std::cout << "Loaded " << cloud->points.size () << " points." << std::endl;
 
   // Compute the normals
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normal_estimation;
   normal_estimation.setInputCloud (cloud);
 
-  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
-  normal_estimation.setSearchMethod (tree);
+  pcl::search::KdTree<pcl::PointXYZ>::Ptr kdtree (new pcl::search::KdTree<pcl::PointXYZ>);
+  normal_estimation.setSearchMethod (kdtree);
 
-  pcl::PointCloud<pcl::Normal>::Ptr cloud_with_normals (new pcl::PointCloud<pcl::Normal>);
-
+  pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud< pcl::Normal>);
   normal_estimation.setRadiusSearch (0.03);
+  normal_estimation.compute (*normals);
 
-  normal_estimation.compute (*cloud_with_normals);
-
-  // Setup the principal curvatures computation
-  pcl::PrincipalCurvaturesEstimation<pcl::PointXYZ, pcl::Normal, pcl::PrincipalCurvatures> principal_curvatures_estimation;
-
-  // Provide the original point cloud (without normals)
-  principal_curvatures_estimation.setInputCloud (cloud);
-
-  // Provide the point cloud with normals
-  principal_curvatures_estimation.setInputNormals (cloud_with_normals);
+  // Setup spin image computation
+  pcl::SpinImageEstimation<pcl::PointXYZ, pcl::Normal, pcl::Histogram<153> > spin_image_descriptor(8, 0.5, 16);
+  spin_image_descriptor.setInputCloud (cloud);
+  spin_image_descriptor.setInputNormals (normals);
 
   // Use the same KdTree from the normal estimation
-  principal_curvatures_estimation.setSearchMethod (tree);
-  principal_curvatures_estimation.setRadiusSearch (1.0);
+  spin_image_descriptor.setSearchMethod (kdtree);
+  pcl::PointCloud<pcl::Histogram<153> >::Ptr spin_images (new pcl::PointCloud<pcl::Histogram<153> >);
+  spin_image_descriptor.setRadiusSearch (0.2);
 
-  // Actually compute the principal curvatures
-  pcl::PointCloud<pcl::PrincipalCurvatures>::Ptr principal_curvatures (new pcl::PointCloud<pcl::PrincipalCurvatures> ());
-  principal_curvatures_estimation.compute (*principal_curvatures);
+  // Actually compute the spin images
+  spin_image_descriptor.compute (*spin_images);
+  std::cout << "SI output points.size (): " << spin_images->points.size () << std::endl;
 
-  std::cout << "output points.size (): " << principal_curvatures->points.size () << std::endl;
-
-  // Display and retrieve the shape context descriptor vector for the 0th point.
-  pcl::PrincipalCurvatures descriptor = principal_curvatures->points[0];
-  std::cout << descriptor << std::endl;
+  // Display and retrieve the spin image descriptor vector for the first point.
+  pcl::Histogram<153> first_descriptor = spin_images->points[0];
+  std::cout << first_descriptor << std::endl;
 
   return 0;
 }

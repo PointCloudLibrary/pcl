@@ -340,7 +340,7 @@ namespace pcl
       }
 
       /** \brief Get the minimum allowed number of k nearest neighbors points that a viable result must contain. */
-      inline float
+      inline int
       getMinPts ()
       {
         return (min_pts_);

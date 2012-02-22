@@ -395,13 +395,6 @@ namespace pcl
           }
         }
 
-        /** \brief Add vector of DataT objects to vector of octree keys.
-         *  \param key_vector_arg: vector of octree keys addressing leaf nodes.
-         *  \param data_vector_arg: DataT objects to be added.
-         * */
-        void
-        add (const std::vector<OctreeKey>& key_vector_arg, const std::vector<DataT>& data_vector_arg);
-
         /** \brief Find leaf node
          *  \param key_arg: octree key addressing a leaf node.
          *  \return pointer to leaf node. If leaf node is not found, this pointer returns 0.
@@ -483,7 +476,7 @@ namespace pcl
         branchHasChild (const OctreeBranch& branch_arg, const unsigned char childIdx_arg) const
         {
           // test occupancyByte for child existence
-          return (branch_arg.occupancyByte_ & (1 << childIdx_arg));
+          return ((branch_arg.occupancyByte_ & (1 << childIdx_arg)) != 0);
         }
 
         /** \brief Generate bit pattern reflecting the existence of child node pointers

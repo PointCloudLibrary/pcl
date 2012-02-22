@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: kdtree.h 3952 2012-01-20 23:44:10Z rusu $
+ * $Id: kdtree.h 4502 2012-02-17 00:44:05Z gedikli $
  */
 
 #ifndef PCL_SEARCH_KDTREE_H_
@@ -71,6 +71,7 @@ namespace pcl
         using pcl::search::Search<PointT>::getInputCloud;
         using pcl::search::Search<PointT>::nearestKSearch;
         using pcl::search::Search<PointT>::radiusSearch;
+        using pcl::search::Search<PointT>::sorted_results_;
 
         typedef boost::shared_ptr<KdTree<PointT> > Ptr;
         typedef boost::shared_ptr<const KdTree<PointT> > ConstPtr;
@@ -85,7 +86,7 @@ namespace pcl
           * query point
           *
           */
-        KdTree (bool sorted = true)
+        KdTree (bool sorted = true) : Search<PointT> ("KdTree", sorted)
         {
           tree_.reset (new pcl::KdTreeFLANN<PointT> (sorted));
         }
@@ -96,6 +97,14 @@ namespace pcl
         {
         }
 
+        /** \brief sets whether the results have to be sorted or not.
+          */
+        virtual void setSortedResults (bool sorted_results)
+        {
+          sorted_results_ = sorted_results;
+          tree_->setSortedResults (sorted_results);
+        }
+        
         /** \brief Set the search epsilon precision (error bound) for nearest neighbors searches.
           * \param eps precision (error bound) for nearest neighbors searches
           */

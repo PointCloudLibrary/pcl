@@ -40,16 +40,14 @@
 
 #include "pcl/filters/random_sample.h"
 
-double unifRand()
-{
-  return (rand () / double (RAND_MAX));
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
 pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
 {
   unsigned N = input_->size ();
+  float one_over_N = 1.0 / float (N);
+
   // If sample size is 0 or if the sample size is greater then input cloud size
   //   then return entire copy of cloud
   if (sample_ >= N)
@@ -73,22 +71,22 @@ pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
     // Algorithm A
     for (size_t n = sample_; n >= 2; n--)
     {
-      float V = unifRand ();
+      unsigned int V = unifRand ();
       unsigned S = 0;
-      float quot = float (top) / float (N);
+      float quot = float (top) * one_over_N;
       while (quot > V)
       {
         S++;
         top--;
         N--;
-        quot = quot * float (top) / float (N);
+        quot = quot * float (top) * one_over_N;
       }
       index += S;
       output.points[i++] = input_->points[index++];
       N--;
     }
 
-    index += unsigned (N * unifRand ());
+    index += (N * unifRand ());
     output.points[i++] = input_->points[index++];
   }
 }
@@ -99,6 +97,8 @@ void
 pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
 {
   unsigned N = input_->size ();
+  float one_over_N = 1.0 / float (N);
+
   // If sample size is 0 or if the sample size is greater then input cloud size
   //   then return all indices
   if (sample_ >= N)
@@ -120,22 +120,22 @@ pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
 
     for (size_t n = sample_; n >= 2; n--)
     {
-      float V = unifRand ();
+      unsigned int V = unifRand ();
       unsigned S = 0;
-      float quot = float (top) / float (N);
+      float quot = float (top) * one_over_N;
       while (quot > V)
       {
         S++;
         top--;
         N--;
-        quot = quot * float (top) / float (N);
+        quot = quot * float (top) * one_over_N;
       }
       index += S;
       indices[i++] = (*indices_)[index++];
       N--;
     }
 
-    index += unsigned (N * unifRand ());
+    index += (N * unifRand ());
     indices[i++] = (*indices_)[index++];
   }
 }

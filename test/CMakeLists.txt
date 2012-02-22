@@ -1,6 +1,6 @@
 set(SUBSYS_NAME global_tests)
 set(SUBSYS_DESC "Point cloud library global tests")
-set(SUBSYS_DEPS common sample_consensus io kdtree features range_image filters keypoints search surface registration segmentation octree)
+set(SUBSYS_DEPS common sample_consensus io kdtree features filters keypoints search surface registration segmentation octree)
 
 find_package(GTest)
 if(GTEST_FOUND)
@@ -29,6 +29,11 @@ if(build)
                    ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
     endif(QHULL_FOUND)
     
+    PCL_ADD_TEST(search test_search
+                 FILES test_search.cpp
+                 LINK_WITH pcl_search pcl_io pcl_kdtree
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd)
+
     PCL_ADD_TEST(filters_filters test_filters
                  FILES test_filters.cpp
                  LINK_WITH pcl_filters pcl_io pcl_sample_consensus pcl_kdtree
@@ -82,14 +87,14 @@ if(build)
                  FILES test_ii_normals.cpp
                  LINK_WITH pcl_io pcl_features
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd)
-                 
+
     PCL_ADD_TEST(test_non_linear test_non_linear
                  FILES test_non_linear.cpp
                  LINK_WITH pcl_common pcl_io pcl_sample_consensus pcl_segmentation
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/noisy_slice_displaced.pcd)
 
                 #Needs office1.pcd
-               #PCL_ADD_TEST(organized_index test_organized_index 
+               #PCL_ADD_TEST(organized_index test_organized_index
                #  FILES test_organized_index.cpp
                #  LINK_WITH pcl_search pcl_io pcl_filters)
     

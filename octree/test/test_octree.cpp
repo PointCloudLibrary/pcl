@@ -1223,7 +1223,7 @@ public:
 TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
 {
 
-  const unsigned int test_runs = 1;
+  const unsigned int test_runs = 10;
   unsigned int test_id;
 
   // instantiate point cloud
@@ -1252,10 +1252,11 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   {
     // define a random search point
 
-    PointXYZ searchPoint (10.0 * ((double)rand () / (double)RAND_MAX), 10.0 * ((double)rand () / (double)RAND_MAX),
+    PointXYZ searchPoint (10.0 * ((double)rand () / (double)RAND_MAX), 
+                          10.0 * ((double)rand () / (double)RAND_MAX),
                           10.0 * ((double)rand () / (double)RAND_MAX));
 
-    K = rand () % 10;
+    K = 1 + rand () % 10;
 
     // generate point cloud
     cloudIn->width = 1000;
@@ -1293,14 +1294,18 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
       pointCandidates.pop ();
 
     // copy results into vectors
+    unsigned idx = pointCandidates.size ();
+    k_indices_bruteforce.resize (idx);
+    k_sqr_distances_bruteforce.resize (idx);
     while (pointCandidates.size ())
     {
-      k_indices_bruteforce.push_back (pointCandidates.top ().pointIdx_);
-      k_sqr_distances_bruteforce.push_back (pointCandidates.top ().pointDistance_);
+      --idx;
+      k_indices_bruteforce [idx] = pointCandidates.top ().pointIdx_;
+      k_sqr_distances_bruteforce [idx] = pointCandidates.top ().pointDistance_;
 
       pointCandidates.pop ();
     }
-
+    
     // octree nearest neighbor search
     octree.deleteTree ();
     octree.addPointsFromInputCloud ();

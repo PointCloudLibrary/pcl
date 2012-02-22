@@ -1,6 +1,6 @@
 set(SUBSYS_NAME features)
 set(SUBSYS_DESC "Point cloud features library")
-set(SUBSYS_DEPS common search kdtree octree range_image)
+set(SUBSYS_DEPS common search kdtree octree)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -115,7 +115,7 @@ if(build)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
-    target_link_libraries(${LIB_NAME} pcl_range_image pcl_search pcl_kdtree pcl_octree)
+    target_link_libraries(${LIB_NAME} pcl_common pcl_search pcl_kdtree pcl_octree)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "" "" "" "")
     # Install headers
@@ -139,7 +139,7 @@ if(build)
 
     set(LIB_NAME pcl_range_image_border_extractor)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${border_srcs} ${border_incs} ${border_impl_incs})
-    target_link_libraries(${LIB_NAME} pcl_range_image pcl_search pcl_kdtree pcl_octree)
+    target_link_libraries(${LIB_NAME} pcl_common pcl_search pcl_kdtree pcl_octree)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME}
         "Point cloud range image border extractor library"
         "${SUBSYS_DEPS}" "" "" "" "")

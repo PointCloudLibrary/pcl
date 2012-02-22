@@ -69,7 +69,7 @@ pcl::solvePlaneParameters (const Eigen::Matrix3f &covariance_matrix,
 //      return;
 //    }
   // Extract the smallest eigenvalue and its eigenvector
-  EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value = -1;
+  EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value;
   EIGEN_ALIGN16 Eigen::Vector3f eigen_vector;
   pcl::eigen33 (covariance_matrix, eigen_value, eigen_vector);
 
@@ -244,9 +244,9 @@ pcl::Feature<PointInT, PointOutT>::computeEigen (pcl::PointCloud<Eigen::MatrixXf
   }
 
   // Copy the properties
-#ifndef USE_ROS
-  output.properties.acquisition_time = input_->header.stamp;
-#endif
+//#ifndef USE_ROS
+//  output.properties.acquisition_time = input_->header.stamp;
+//#endif
   output.properties.sensor_origin = input_->sensor_origin_;
   output.properties.sensor_orientation = input_->sensor_orientation_;
 

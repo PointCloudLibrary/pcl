@@ -313,7 +313,7 @@ pcl::GridProjection<PointNT>::getProjectionWithPlaneFit (const Eigen::Vector4f &
   computeMeanAndCovarianceMatrix (*data_, pt_union_indices, covariance_matrix, xyz_centroid);
 
   // Get the plane normal
-  EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value = -1;
+  EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value;
   EIGEN_ALIGN16 Eigen::Vector3f eigen_vector;
   pcl::eigen33 (covariance_matrix, eigen_value, eigen_vector);
 

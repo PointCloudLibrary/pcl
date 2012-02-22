@@ -230,10 +230,11 @@ namespace pcl
       /** \brief Allocate constructor from point cloud subset
         * \param[in] width_ the cloud width
         * \param[in] height_ the cloud height
+        * \param[in] value_ default value
         */
-      PointCloud (uint32_t width_, uint32_t height_)
+      PointCloud (uint32_t width_, uint32_t height_, const PointT& value_ = PointT ())
         : header ()
-        , points (width_ * height_)
+        , points (width_ * height_, value_)
         , width (width_)
         , height (height_)
         , is_dense (true)
@@ -318,7 +319,7 @@ namespace pcl
         * \param[in] row the row coordinate
         */
       inline const PointT&
-      operator () (int column, int row) const
+      operator () (size_t column, size_t row) const
       {
         return (points[row * this->width + column]);
       }
@@ -329,7 +330,7 @@ namespace pcl
         * \param[in] row the row coordinate
         */
       inline PointT&
-      operator () (int column, int row)
+      operator () (size_t column, size_t row)
       {
         return (points[row * this->width + column]);
       }
@@ -363,8 +364,10 @@ namespace pcl
       inline Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> > 
       getMatrixXfMap (int dim, int stride, int offset)
       {
-        //return Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, dim, points.size(), Eigen::OuterStride<>(stride));
-        return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
+        if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
+          return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
+        else
+          return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, dim, points.size (), Eigen::OuterStride<> (stride)));
       }
 
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
@@ -385,7 +388,10 @@ namespace pcl
       inline const Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >
       getMatrixXfMap (int dim, int stride, int offset) const
       {
-        return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
+        if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
+          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
+        else
+          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, dim, points.size (), Eigen::OuterStride<> (stride)));                
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
@@ -572,14 +578,7 @@ namespace pcl
         * \return shared pointer to the copy of the cloud
         */
       inline Ptr 
-      makeShared () { return Ptr (new PointCloud<PointT> (*this)); }
-
-      /** \brief Copy the cloud to the heap and return a constant smart pointer
-        * Note that deep copy is performed, so avoid using this function on non-empty clouds.
-        * \return const shared pointer to the copy of the cloud
-        */
-      inline ConstPtr 
-      makeShared () const { return ConstPtr (new PointCloud<PointT> (*this)); }
+      makeShared () const { return Ptr (new PointCloud<PointT> (*this)); }
 
     protected:
       // This is motivated by ROS integration. Users should not need to access mapping_.
@@ -696,7 +695,7 @@ namespace pcl
         properties (pc.properties), 
         points (Eigen::MatrixXf (indices.size (), pc.points.cols ())), 
         channels (pc.channels), 
-        width (indices.size ()), height (1), is_dense (pc.is_dense)
+        width ((uint32_t) indices.size ()), height (1), is_dense (pc.is_dense)
       {
         // Copy the obvious
         assert ((int)indices.size () <= pc.points.rows ());
@@ -748,7 +747,7 @@ namespace pcl
         properties.sensor_origin = Eigen::Vector4f::Zero ();
         properties.sensor_orientation = Eigen::Quaternionf::Identity ();
 
-        int nr_points = points.rows ();
+        int nr_points = (int) points.rows ();
         points.resize (nr_points + rhs.points.rows (), points.cols ());
         for (int i = nr_points; i < points.rows (); ++i)
           points.row (i) = rhs.points.row (i - nr_points);

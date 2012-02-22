@@ -86,8 +86,8 @@ namespace pcl
         pcl::KdTree<PointT> (sorted), 
         flann_index_ (NULL), cloud_ (NULL), 
         dim_ (0), total_nr_points_ (0),
-        param_k_ (flann::SearchParams (-1 ,epsilon_)),
-        param_radius_ (flann::SearchParams (-1, epsilon_, sorted))
+        param_k_ (flann::SearchParams (-1 , (float) epsilon_)),
+        param_radius_ (flann::SearchParams (-1, (float) epsilon_, sorted))
       {
       }
 
@@ -98,10 +98,17 @@ namespace pcl
       setEpsilon (double eps)
       {
         epsilon_ = eps;
+        param_k_ = flann::SearchParams (-1 , (float) epsilon_);
+        param_radius_ = flann::SearchParams (-1 , (float) epsilon_, sorted_);
+      }
+
+      inline void setSortedResults (bool sorted)
+      {
+        sorted_ = sorted;
         param_k_ = flann::SearchParams (-1 ,epsilon_);
         param_radius_ = flann::SearchParams (-1 ,epsilon_, sorted_);
       }
-
+      
       inline Ptr makeShared () { return Ptr (new KdTreeFLANN<PointT> (*this)); } 
 
       /** \brief Destructor for KdTreeFLANN. 
@@ -240,8 +247,8 @@ namespace pcl
       KdTreeFLANN (bool sorted = true) : 
         input_(), indices_(), epsilon_(0.0), sorted_(sorted), flann_index_(NULL), cloud_(NULL)
       {
-        param_k_ = flann::SearchParams (-1 ,epsilon_);
-        param_radius_ = flann::SearchParams (-1 ,epsilon_, sorted);
+        param_k_ = flann::SearchParams (-1, (float) epsilon_);
+        param_radius_ = flann::SearchParams (-1, (float) epsilon_, sorted);
         cleanup ();
       }
 
@@ -252,8 +259,8 @@ namespace pcl
       setEpsilon (double eps)
       {
         epsilon_ = eps;
-        param_k_ = flann::SearchParams (-1 ,epsilon_);
-        param_radius_ = flann::SearchParams (-1 ,epsilon_, sorted_);
+        param_k_ = flann::SearchParams (-1 , (float) epsilon_);
+        param_radius_ = flann::SearchParams (-1, (float) epsilon_, sorted_);
       }
 
       inline Ptr 
@@ -282,18 +289,18 @@ namespace pcl
         epsilon_ = 0.0;   // default error bound value
         input_   = cloud;
         indices_ = indices;
-        dim_ = cloud->points.cols (); // Number of dimensions = number of columns in the eigen matrix
+        dim_ = (int) cloud->points.cols (); // Number of dimensions = number of columns in the eigen matrix
         
         // Allocate enough data
         if (indices != NULL)
         {
-          total_nr_points_ = indices_->size ();
+          total_nr_points_ = (int) indices_->size ();
           convertCloudToArray (*input_, *indices_);
         }
         else
         {
           // get the number of points as the number of rows
-          total_nr_points_ = cloud->points.rows ();
+          total_nr_points_ = (int) cloud->points.rows ();
           convertCloudToArray (*input_);
         }
 
@@ -437,7 +444,7 @@ namespace pcl
           neighbors_in_radius = flann_index_->radiusSearch (flann::Matrix<float> (&query[0], 1, dim),
                                                             k_indices_mat,
                                                             k_distances_mat,
-                                                            radius * radius, 
+                                                            (float) (radius * radius), 
                                                             param_radius_);
         }
         else
@@ -451,7 +458,7 @@ namespace pcl
           neighbors_in_radius = flann_index_->radiusSearch (flann::Matrix<float> (&query[0], 1, dim),
                                                             indices_empty,
                                                             dists_empty,
-                                                            radius * radius, 
+                                                            (float) (radius * radius), 
                                                             param_radius_);
           neighbors_in_radius = std::min ((unsigned int)neighbors_in_radius, max_nn);
 
@@ -464,7 +471,7 @@ namespace pcl
             flann_index_->radiusSearch (flann::Matrix<float> (&query[0], 1, dim),
                                         k_indices_mat,
                                         k_distances_mat,
-                                        radius * radius, 
+                                        (float) (radius * radius), 
                                         param_radius_);
           }
         }
@@ -624,7 +631,7 @@ namespace pcl
           return;
         }
 
-        int original_no_of_points = indices.size ();
+        int original_no_of_points = (int) indices.size ();
 
         cloud_ = (float*)malloc (original_no_of_points * dim_ * sizeof (float));
         float* cloud_ptr = cloud_;

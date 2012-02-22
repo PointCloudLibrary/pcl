@@ -81,8 +81,9 @@ RangeImage::createLookupTables ()
   }
   
   cos_lookup_table.resize(lookup_table_size);
-  for (int i=0; i<lookup_table_size; ++i) {
-    float value = float(i)*2.0f*M_PI/float(lookup_table_size-1);
+  for (int i=0; i<lookup_table_size; ++i) 
+  {
+    float value = (float) (i*2.0f*M_PI/float(lookup_table_size-1));
     cos_lookup_table[i] = cosf(value);
     //std::cout << "cosf("<<value<<") = "<<cos_lookup_table[i]<<"\n";
   }
@@ -135,7 +136,7 @@ RangeImage::reset ()
   to_range_image_system_.setIdentity ();
   to_world_system_.setIdentity ();
   setAngularResolution (deg2rad (0.5f));
-  image_offset_x_ = image_offset_y_ = 0.0f;
+  image_offset_x_ = image_offset_y_ = 0;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -165,7 +166,7 @@ RangeImage::integrateFarRanges (const PointCloud<PointWithViewpoint>& far_ranges
   for (std::vector<PointWithViewpoint, Eigen::aligned_allocator<PointWithViewpoint> >::const_iterator it
        =far_ranges.points.begin (); it!=far_ranges.points.end (); ++it)
   {
-    //if (!hasValidXYZ (*it))  // Check for NAN etc
+    //if (!isFinite (*it))  // Check for NAN etc
       //continue;
     Vector3fMapConst current_point = it->getVector3fMap ();
     
@@ -295,7 +296,7 @@ RangeImage::recalculate3DPointPositions ()
     for (int x=0; x< (int)width; ++x) {
       PointWithRange& point = points[y*width + x];
       if (!pcl_isinf (point.range)) {
-        calculate3DPoint (x, y, point.range, point);
+        calculate3DPoint ((float) x, (float) y, point.range, point);
         //int x2,y2;
         //getImagePoint (point.x, point.y, point.z, x2, y2);
         //if (x2!=x || y2!=y)
@@ -1443,7 +1444,7 @@ RangeImage::getRangeImageWithSmoothedSurface (int radius, RangeImage& smoothed_r
   
   int step_size = (std::max) (1, radius/2);
   //cout << PVARN (step_size);
-  int no_of_nearest_neighbors = pow ( (double) (radius/step_size + 1), 2.0);
+  int no_of_nearest_neighbors = (int) pow ( (double) (radius/step_size + 1), 2.0);
   
   smoothed_range_image = *this;
   Eigen::Vector3f sensor_pos = getSensorPos ();
@@ -1463,7 +1464,7 @@ RangeImage::getRangeImageWithSmoothedSurface (int radius, RangeImage& smoothed_r
       Eigen::Vector3f viewing_direction = (point.getVector3fMap ()-sensor_pos).normalized ();
       float new_range = normal.dot (mean-sensor_pos) / normal.dot (viewing_direction);
       point.range = new_range;
-      calculate3DPoint (x, y, point.range, point);
+      calculate3DPoint ((float) x, (float) y, point.range, point);
       
       const PointWithRange& original_point = getPoint (x, y);
       float distance_squared = squaredEuclideanDistance (original_point, point);
@@ -1482,13 +1483,13 @@ RangeImage::extractFarRanges (const sensor_msgs::PointCloud2& point_cloud_data,
       vp_x_idx = -1, vp_y_idx = -1, vp_z_idx = -1, distance_idx = -1;
   for (size_t d = 0; d < point_cloud_data.fields.size (); ++d)
   {
-    if (point_cloud_data.fields[d].name == "x") x_idx = d;
-    if (point_cloud_data.fields[d].name == "y") y_idx = d;
-    if (point_cloud_data.fields[d].name == "z") z_idx = d;
-    if (point_cloud_data.fields[d].name == "vp_x") vp_x_idx = d;
-    if (point_cloud_data.fields[d].name == "vp_y") vp_y_idx = d;
-    if (point_cloud_data.fields[d].name == "vp_z") vp_z_idx = d;
-    if (point_cloud_data.fields[d].name == "distance") distance_idx = d;
+    if (point_cloud_data.fields[d].name == "x") x_idx = (int) d;
+    if (point_cloud_data.fields[d].name == "y") y_idx = (int) d;
+    if (point_cloud_data.fields[d].name == "z") z_idx = (int) d;
+    if (point_cloud_data.fields[d].name == "vp_x") vp_x_idx = (int) d;
+    if (point_cloud_data.fields[d].name == "vp_y") vp_y_idx = (int) d;
+    if (point_cloud_data.fields[d].name == "vp_z") vp_z_idx = (int) d;
+    if (point_cloud_data.fields[d].name == "distance") distance_idx = (int) d;
   }
   
   if (x_idx<0 || y_idx<0 || z_idx<0 || vp_x_idx<0 || vp_y_idx<0 || vp_z_idx<0 || distance_idx<0)
@@ -1527,7 +1528,7 @@ RangeImage::extractFarRanges (const sensor_msgs::PointCloud2& point_cloud_data,
       far_ranges.points.push_back (point);
     }
   }
-  far_ranges.width=far_ranges.points.size ();  far_ranges.height = 1;
+  far_ranges.width= (uint32_t) far_ranges.points.size ();  far_ranges.height = 1;
   far_ranges.is_dense = false;
 }
 

@@ -33,52 +33,68 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: example_NormalEstimation.cpp 4258 2012-02-05 15:06:20Z daviddoria $
+ * $Id: example_shape_contexts.cpp 4516 2012-02-17 08:03:46Z nizar $
  *
  */
 
 #include <iostream>
+#include <vector>
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
+#include <pcl/features/3dsc.h>
+#include <pcl/features/impl/3dsc.hpp>
 #include <pcl/features/normal_3d.h>
-#include <pcl/kdtree/kdtree_flann.h>
 
 int
 main (int argc, char** argv)
 {
   std::string filename = argv[1];
   std::cout << "Reading " << filename << std::endl;
-
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
-  if (pcl::io::loadPCDFile<pcl::PointXYZ> (filename, *cloud) == -1) // load the file
+  if (pcl::io::loadPCDFile <pcl::PointXYZ> (filename.c_str (), *cloud) == -1)
+  // load the file
   {
     PCL_ERROR ("Couldn't read file");
-    return -1;
+    return (-1);
   }
+  std::cout << "Loaded " << cloud->points.size () << " points." << std::endl;
 
-  std::cout << "points: " << cloud->points.size () << std::endl;
-
-  // Create the normal estimation class, and pass the input dataset to it
+  // Compute the normals
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normal_estimation;
   normal_estimation.setInputCloud (cloud);
 
-  // Create an empty kdtree representation, and pass it to the normal estimation object.
-  // Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
-  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
-  normal_estimation.setSearchMethod (tree);
+  pcl::search::KdTree<pcl::PointXYZ>::Ptr kdtree (new pcl::search::KdTree<pcl::PointXYZ>);
+  normal_estimation.setSearchMethod (kdtree);
 
-  // Output datasets
-  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
-
-  // Use all neighbors in a sphere of radius 3cm
+  pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud< pcl::Normal>);
   normal_estimation.setRadiusSearch (0.03);
+  normal_estimation.compute (*normals);
 
-  // Compute the features
-  normal_estimation.compute (*cloud_normals);
+  // Setup the shape context computation
+  pcl::ShapeContext3DEstimation<pcl::PointXYZ, pcl::Normal, pcl::ShapeContext> shape_context;
 
-  // cloud_normals->points.size () should have the same size as the input cloud->points.size ()
-  std::cout << "cloud_normals->points.size (): " << cloud_normals->points.size () << std::endl;
+  // Provide the point cloud
+  shape_context.setInputCloud (cloud);
+  // Provide normals
+  shape_context.setInputNormals (normals);
+  // Use the same KdTree from the normal estimation
+  shape_context.setSearchMethod (kdtree);
+  pcl::PointCloud<pcl::ShapeContext>::Ptr shape_context_features (new pcl::PointCloud<pcl::ShapeContext>);
+
+  // The minimal radius is generally set to approx. 1/10 of the search radius, while the pt. density radius is generally set to 1/5
+  shape_context.setRadiusSearch (0.2);
+  shape_context.setPointDensityRadius (0.04);
+  shape_context.setMinimalRadius (0.02);
+
+  // Actually compute the shape contexts
+  shape_context.compute (*shape_context_features);
+  std::cout << "3DSC output points.size (): " << shape_context_features->points.size () << std::endl;
+
+  // Display and retrieve the shape context descriptor vector for the 0th point.
+  std::cout << shape_context_features->points[0] << std::endl;
+  std::vector<float> first_descriptor = shape_context_features->points[0].descriptor;
+
   return 0;
 }

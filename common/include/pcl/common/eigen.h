@@ -67,7 +67,9 @@
 #ifndef PCL_EIGEN_H_
 #define PCL_EIGEN_H_
 
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 
 #include <Eigen/Core>
 #include <Eigen/Eigenvalues>
@@ -236,11 +238,46 @@ namespace pcl
     eigenvectors.coeffRef (3) = -eigenvectors.coeffRef (0);
   }
 
+  /** \brief determines the corresponding eigenvector to the given eigenvalue of the symmetric positive semi definite input matrix
+    * \param[in] mat symmetric positive semi definite input matrix
+    * \param[in] eigenvalue the eigenvalue which corresponding eigenvector is to be computed
+    * \param[out] eigenvector the corresponding eigenvector for the input eigenvalue
+    * \ingroup common
+    */
+  template<typename Matrix, typename Vector> inline void
+  computeCorrespondingEigenVector (const Matrix& mat, const typename Matrix::Scalar& eigenvalue, Vector& eigenvector)
+  {
+    typedef typename Matrix::Scalar Scalar;
+    // Scale the matrix so its entries are in [-1,1].  The scaling is applied
+    // only when at least one matrix entry has magnitude larger than 1.
+
+    Scalar scale = mat.cwiseAbs ().maxCoeff ();
+    if (scale <= std::numeric_limits<Scalar>::min ())
+      scale = Scalar (1.0);
+
+    Matrix scaledMat = mat / scale;
+
+    scaledMat.diagonal ().array () -= eigenvalue / scale;
+
+    Vector vec1 = scaledMat.row (0).cross (scaledMat.row (1));
+    Vector vec2 = scaledMat.row (0).cross (scaledMat.row (2));
+    Vector vec3 = scaledMat.row (1).cross (scaledMat.row (2));
+
+    Scalar len1 = vec1.squaredNorm ();
+    Scalar len2 = vec2.squaredNorm ();
+    Scalar len3 = vec3.squaredNorm ();
+
+    if (len1 >= len2 && len1 >= len3)
+      eigenvector = vec1 / Eigen::internal::sqrt (len1);
+    else if (len2 >= len1 && len2 >= len3)
+      eigenvector = vec2 / Eigen::internal::sqrt (len2);
+    else
+      eigenvector = vec3 / Eigen::internal::sqrt (len3);
+  }
+  
   /** \brief determines the eigenvector and eigenvalue of the smallest eigenvalue of the symmetric positive semi definite input matrix
     * \param[in] mat symmetric positive semi definite input matrix
-    * \param[in,out] eigenvalue extract the eigenvector for this eigenvalue.
-    * \note Note that if this value is negative, it will be replaced by the smallest eigenvalue of the input matrix and its corresponding
-    *       eigenvector will be determined.
+    * \param[out] eigenvalue smallest eigenvalue of the input matrix
     * \param[out] eigenvector the corresponding eigenvector for the input eigenvalue
     * \note if the smallest eigenvalue is not unique, this function may return any eigenvector that is consistent to the eigenvalue.
     * \ingroup common
@@ -256,22 +293,14 @@ namespace pcl
     if (scale <= std::numeric_limits<Scalar>::min ())
       scale = Scalar (1.0);
 
-    Scalar lambda;
     Matrix scaledMat = mat / scale;
-    if (eigenvalue < 0)
-    {
-      Vector eigenvalues;
-      computeRoots (scaledMat, eigenvalues);
 
-      lambda = eigenvalues (0);
-      eigenvalue = eigenvalues (0) * scale;
-    }
-    else
-    {
-      lambda = eigenvalue / scale;
-    }
+    Vector eigenvalues;
+    computeRoots (scaledMat, eigenvalues);
 
-    scaledMat.diagonal ().array () -= lambda;
+    eigenvalue = eigenvalues (0) * scale;
+
+    scaledMat.diagonal ().array () -= eigenvalues (0);
 
     Vector vec1 = scaledMat.row (0).cross (scaledMat.row (1));
     Vector vec2 = scaledMat.row (0).cross (scaledMat.row (2));
@@ -297,7 +326,14 @@ namespace pcl
   template<typename Matrix, typename Vector> inline void
   eigen33 (const Matrix& mat, Vector& evals)
   {
-    computeRoots (mat, evals);
+    typedef typename Matrix::Scalar Scalar;
+    Scalar scale = mat.cwiseAbs ().maxCoeff ();
+    if (scale <= std::numeric_limits<Scalar>::min ())
+      scale = Scalar (1.0);
+
+    Matrix scaledMat = mat / scale;
+    computeRoots (scaledMat, evals);
+    evals *= scale;
   }
 
   /** \brief determines the eigenvalues and corresponding eigenvectors of the symmetric positive semi definite input matrix
@@ -592,6 +628,15 @@ namespace pcl
     return det;
   }
 
+  template<typename Matrix> inline typename Matrix::Scalar
+  determinant3x3Matrix (const Matrix& matrix)
+  {
+    // result is independent of Row/Col Major storage!
+    return matrix.coeff (0) * (matrix.coeff (4) * matrix.coeff (8) - matrix.coeff (5) * matrix.coeff (7)) +
+           matrix.coeff (1) * (matrix.coeff (5) * matrix.coeff (6) - matrix.coeff (3) * matrix.coeff (8)) +
+           matrix.coeff (2) * (matrix.coeff (3) * matrix.coeff (7) - matrix.coeff (4) * matrix.coeff (6)) ;
+  }
+  
   /** \brief Get the unique 3D rotation that will rotate \a z_axis into (0,0,1) and \a y_direction into a vector
     * with x=0 (or into (0,1,0) should \a y_direction be orthogonal to \a z_axis)
     * \param[in] z_axis the z-axis

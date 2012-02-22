@@ -3,7 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
- * 
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -141,7 +141,7 @@ pcl::OpenNIGrabber::~OpenNIGrabber () throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::OpenNIGrabber::checkImageAndDepthSynchronizationRequired ()
 {
   // do we have anyone listening to images or color point clouds?
@@ -155,7 +155,7 @@ pcl::OpenNIGrabber::checkImageAndDepthSynchronizationRequired ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::OpenNIGrabber::checkImageStreamRequired ()
 {
   // do we have anyone listening to images or color point clouds?
@@ -170,7 +170,7 @@ pcl::OpenNIGrabber::checkImageStreamRequired ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::OpenNIGrabber::checkDepthStreamRequired ()
 {
   // do we have anyone listening to depth images or (color) point clouds?
@@ -188,7 +188,7 @@ pcl::OpenNIGrabber::checkDepthStreamRequired ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::OpenNIGrabber::checkIRStreamRequired ()
 {
   if (num_slots<sig_cb_openni_ir_image>       () > 0 ||
@@ -200,7 +200,7 @@ pcl::OpenNIGrabber::checkIRStreamRequired ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::OpenNIGrabber::start ()
 {
   try
@@ -241,7 +241,7 @@ pcl::OpenNIGrabber::start ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::OpenNIGrabber::stop ()
 {
   try
@@ -264,14 +264,14 @@ pcl::OpenNIGrabber::stop ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 pcl::OpenNIGrabber::isRunning () const
 {
   return (running_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::OpenNIGrabber::onInit (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode)
 {
   updateModeMaps (); // registering mapping from config modes to XnModes and vice versa
@@ -283,7 +283,7 @@ pcl::OpenNIGrabber::onInit (const std::string& device_id, const Mode& depth_mode
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::OpenNIGrabber::signalsChanged ()
 {
   // reevaluate which streams are required
@@ -299,14 +299,14 @@ pcl::OpenNIGrabber::signalsChanged ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-std::string 
+std::string
 pcl::OpenNIGrabber::getName () const
 {
   return std::string ("OpenNIGrabber");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode)
 {
   // Initialize the openni device
@@ -358,7 +358,7 @@ pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth
   catch (const pcl::PCLIOException& exception)
   {
     throw;
-  } 
+  }
   catch (...)
   {
     THROW_PCL_IO_EXCEPTION ("unknown error occured");
@@ -419,7 +419,7 @@ pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::OpenNIGrabber::startSynchronization ()
 {
   try
@@ -436,7 +436,7 @@ pcl::OpenNIGrabber::startSynchronization ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::OpenNIGrabber::stopSynchronization ()
 {
   try
@@ -451,7 +451,7 @@ pcl::OpenNIGrabber::stopSynchronization ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::OpenNIGrabber::imageCallback (boost::shared_ptr<openni_wrapper::Image> image, void* cookie)
 {
   if (num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
@@ -465,7 +465,7 @@ pcl::OpenNIGrabber::imageCallback (boost::shared_ptr<openni_wrapper::Image> imag
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::OpenNIGrabber::depthCallback (boost::shared_ptr<openni_wrapper::DepthImage> depth_image, void* cookie)
 {
   if (num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
@@ -486,7 +486,7 @@ pcl::OpenNIGrabber::depthCallback (boost::shared_ptr<openni_wrapper::DepthImage>
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::OpenNIGrabber::irCallback (boost::shared_ptr<openni_wrapper::IRImage> ir_image, void* cookie)
 {
   if (num_slots<sig_cb_openni_point_cloud_i>  () > 0 ||
@@ -498,8 +498,8 @@ pcl::OpenNIGrabber::irCallback (boost::shared_ptr<openni_wrapper::IRImage> ir_im
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
-pcl::OpenNIGrabber::imageDepthImageCallback (const boost::shared_ptr<openni_wrapper::Image> &image, 
+void
+pcl::OpenNIGrabber::imageDepthImageCallback (const boost::shared_ptr<openni_wrapper::Image> &image,
                                              const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image)
 {
   // check if we have color point cloud slots
@@ -524,8 +524,8 @@ pcl::OpenNIGrabber::imageDepthImageCallback (const boost::shared_ptr<openni_wrap
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
-pcl::OpenNIGrabber::irDepthImageCallback (const boost::shared_ptr<openni_wrapper::IRImage> &ir_image, 
+void
+pcl::OpenNIGrabber::irDepthImageCallback (const boost::shared_ptr<openni_wrapper::IRImage> &ir_image,
                                           const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image)
 {
   // check if we have color point cloud slots
@@ -540,7 +540,7 @@ pcl::OpenNIGrabber::irDepthImageCallback (const boost::shared_ptr<openni_wrapper
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::PointCloud<pcl::PointXYZ>::Ptr 
+pcl::PointCloud<pcl::PointXYZ>::Ptr
 pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image) const
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud <pcl::PointXYZ>);
@@ -603,7 +603,7 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapp
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::PointCloud<pcl::PointXYZRGB>::Ptr 
+pcl::PointCloud<pcl::PointXYZRGB>::Ptr
 pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
                                                const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const
 {
@@ -683,11 +683,16 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
       pt.rgb = color.float_value;
     }
   }
+  cloud->sensor_origin_.setZero ();
+  cloud->sensor_orientation_.w () = 0.0;
+  cloud->sensor_orientation_.x () = 1.0;
+  cloud->sensor_orientation_.y () = 0.0;
+  cloud->sensor_orientation_.z () = 0.0;
   return (cloud);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::PointCloud<pcl::PointXYZRGBA>::Ptr 
+pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
 pcl::OpenNIGrabber::convertToXYZRGBAPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
                                                 const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const
 {
@@ -771,7 +776,7 @@ pcl::OpenNIGrabber::convertToXYZRGBAPointCloud (const boost::shared_ptr<openni_w
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::PointCloud<Eigen::MatrixXf>::Ptr 
+pcl::PointCloud<Eigen::MatrixXf>::Ptr
 pcl::OpenNIGrabber::convertToEigenPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
                                               const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const
 {
@@ -864,7 +869,7 @@ pcl::OpenNIGrabber::convertToEigenPointCloud (const boost::shared_ptr<openni_wra
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::PointCloud<pcl::PointXYZI>::Ptr 
+pcl::PointCloud<pcl::PointXYZI>::Ptr
 pcl::OpenNIGrabber::convertToXYZIPointCloud (const boost::shared_ptr<openni_wrapper::IRImage> &ir_image,
                                              const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const
 {
@@ -936,7 +941,7 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud (const boost::shared_ptr<openni_wrap
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // TODO: delete me?
-void 
+void
 pcl::OpenNIGrabber::updateModeMaps ()
 {
   XnMapOutputMode output_mode;
@@ -989,7 +994,7 @@ pcl::OpenNIGrabber::mapConfigMode2XnMode (int mode, XnMapOutputMode &xnmode) con
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-std::vector<std::pair<int, XnMapOutputMode> > 
+std::vector<std::pair<int, XnMapOutputMode> >
 pcl::OpenNIGrabber::getAvailableDepthModes () const
 {
   XnMapOutputMode dummy;
@@ -1004,7 +1009,7 @@ pcl::OpenNIGrabber::getAvailableDepthModes () const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-std::vector<std::pair<int, XnMapOutputMode> > 
+std::vector<std::pair<int, XnMapOutputMode> >
 pcl::OpenNIGrabber::getAvailableImageModes () const
 {
   XnMapOutputMode dummy;
@@ -1019,7 +1024,7 @@ pcl::OpenNIGrabber::getAvailableImageModes () const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-float 
+float
 pcl::OpenNIGrabber::getFramesPerSecond () const
 {
   return ((float)(device_->getDepthOutputMode ().nFPS));

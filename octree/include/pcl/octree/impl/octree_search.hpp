@@ -51,6 +51,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
   pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::voxelSearch (const PointT& point,
                                                                             std::vector<int>& pointIdx_data)
   {
+    assert (isFinite (point) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
     OctreeKey key;
     bool b_success = false;
 
@@ -85,13 +86,20 @@ template<typename PointT, typename LeafT, typename OctreeT>
                                                                                std::vector<int> &k_indices,
                                                                                std::vector<float> &k_sqr_distances)
   {
+    assert(this->leafCount_>0);
+    assert (isFinite (p_q) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+
+    k_indices.clear ();
+    k_sqr_distances.clear ();
+
+    if (k < 1)
+      return 0;
+    
     unsigned int i;
     unsigned int resultCount;
 
     prioPointQueueEntry pointEntry;
     std::vector<prioPointQueueEntry> pointCandidates;
-
-    assert(this->leafCount_>0);
 
     OctreeKey key;
     key.x = key.y = key.z = 0;
@@ -99,25 +107,20 @@ template<typename PointT, typename LeafT, typename OctreeT>
     // initalize smallest point distance in search with high value
     double smallestDist = numeric_limits<double>::max ();
 
-    k_indices.clear ();
-    k_sqr_distances.clear ();
-
     getKNearestNeighborRecursive (p_q, k, this->rootNode_, key, 1, smallestDist, pointCandidates);
 
-    resultCount = pointCandidates.size ();
+    resultCount = (unsigned int)pointCandidates.size ();
 
-    for (i = 0; i < resultCount; i++)
+    k_indices.resize (resultCount);
+    k_sqr_distances.resize (resultCount);
+    
+    for (i = 0; i < resultCount; ++i)
     {
-      pointEntry = pointCandidates.back ();
-
-      k_indices.push_back (pointEntry.pointIdx_);
-      k_sqr_distances.push_back (pointEntry.pointDistance_);
-
-      pointCandidates.pop_back ();
+      k_indices [i] = pointCandidates [i].pointIdx_;
+      k_sqr_distances [i] = pointCandidates [i].pointDistance_;
     }
 
-    return k_indices.size ();
-
+    return (int)k_indices.size ();
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -139,11 +142,14 @@ template<typename PointT, typename LeafT, typename OctreeT>
                                                                                     float &sqr_distance)
   {
     assert(this->leafCount_>0);
-
+    assert (isFinite (p_q) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+    
     OctreeKey key;
     key.x = key.y = key.z = 0;
 
     approxNearestSearchRecursive (p_q, this->rootNode_, key, 1, result_index, sqr_distance);
+
+    return;
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -165,6 +171,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
                                                                              std::vector<float> &k_sqr_distances,
                                                                              unsigned int max_nn) const
   {
+    assert (isFinite (p_q) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
     OctreeKey key;
     key.x = key.y = key.z = 0;
 
@@ -174,7 +181,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
     getNeighborsWithinRadiusRecursive (p_q, radius * radius, this->rootNode_, key, 1, k_indices, k_sqr_distances,
                                        max_nn);
 
-    return (k_indices.size ());
+    return ((int)k_indices.size ());
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -205,7 +212,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
 
     boxSearchRecursive (min_pt, max_pt, this->rootNode_, key, 1, k_indices);
 
-    return (k_indices.size ());
+    return ((int)k_indices.size ());
 
   }
 
@@ -248,14 +255,14 @@ template<typename PointT, typename LeafT, typename OctreeT>
       }
       else
       {
-        searchEntryHeap[childIdx].pointDistance = numeric_limits<double>::infinity ();
+        searchEntryHeap[childIdx].pointDistance = numeric_limits<float>::infinity ();
       }
     }
 
     std::sort (searchEntryHeap.begin (), searchEntryHeap.end ());
 
     // iterate over all children in priority queue
-    // check if the distance to seach candidate is smaller than the best point distance (smallestSquaredDist)
+    // check if the distance to search candidate is smaller than the best point distance (smallestSquaredDist)
     while ((!searchEntryHeap.empty ())
         && (searchEntryHeap.back ().pointDistance
             < smallestSquaredDist + voxelSquaredDiameter / 4.0 + sqrt (smallestSquaredDist * voxelSquaredDiameter)
@@ -277,7 +284,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
       {
         // we reached leaf node level
 
-        double squaredDist;
+        float squaredDist;
         size_t i;
         vector<int> decodedPointVector;
 
@@ -346,7 +353,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
 
       OctreeKey newKey;
       PointT voxelCenter;
-      double squaredDist;
+      float squaredDist;
 
       // generate new key for current branch voxel
       newKey.x = (key.x << 1) + (!!(childIdx & (1 << 2)));
@@ -498,27 +505,19 @@ template<typename PointT, typename LeafT, typename OctreeT>
           continue;
 
         result_index = decodedPointVector[i];
-        sqr_distance = smallestSquaredDist = squaredDist;
+		smallestSquaredDist = squaredDist;
+        sqr_distance = (float)squaredDist;
       }
     }
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT, typename LeafT, typename OctreeT>
-  double
-  pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::pointSquaredDist (const PointT & pointA,
-                                                                                 const PointT & pointB) const
-  {
-    double distX, distY, distZ;
-
-    // distance between pointA and pointB for each axis
-    distX = pointA.x - pointB.x;
-    distY = pointA.y - pointB.y;
-    distZ = pointA.z - pointB.z;
-
-    // return squared absolute distance between pointA and pointB
-    return (distX * distX + distY * distY + distZ * distZ);
-  }
+template<typename PointT, typename LeafT, typename OctreeT> float
+pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::pointSquaredDist (const PointT & pointA,
+                                                                               const PointT & pointB) const
+{
+  return (pointA.getVector3fMap () - pointB.getVector3fMap ()).squaredNorm ();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT>
@@ -556,9 +555,9 @@ template<typename PointT, typename LeafT, typename OctreeT>
 
     // test if search region overlap with voxel space
 
-    if ( !( (lowerVoxelCorner (0) > max_pt (0)) || (min_pt (0)>upperVoxelCorner(0)) ||
-            (lowerVoxelCorner (1) > max_pt (1)) || (min_pt (1)>upperVoxelCorner(1)) ||
-            (lowerVoxelCorner (2) > max_pt (2)) || (min_pt (2)>upperVoxelCorner(2)) ) )
+    if ( !( (lowerVoxelCorner (0) > max_pt (0)) || (min_pt (0) > upperVoxelCorner(0)) ||
+            (lowerVoxelCorner (1) > max_pt (1)) || (min_pt (1) > upperVoxelCorner(1)) ||
+            (lowerVoxelCorner (2) > max_pt (2)) || (min_pt (2) > upperVoxelCorner(2)) ) )
     {
 
       if (treeDepth < this->octreeDepth_)

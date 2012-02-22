@@ -49,7 +49,7 @@ pcl::getMinMax (const sensor_msgs::PointCloud2 &cloud, int idx,
   int field_idx = -1;
   for (size_t d = 0; d < cloud.fields.size (); ++d)
     if (cloud.fields[d].name == field_name)
-      field_idx = d;
+      field_idx = (int) d;
 
   if (field_idx == -1)
   {

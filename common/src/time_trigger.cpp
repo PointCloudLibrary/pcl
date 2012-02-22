@@ -126,7 +126,7 @@ pcl::TimeTrigger::thread_function ()
     {
       callbacks_();
       double rest = interval_ + time - getTime ();
-      condition_.timed_wait (lock, boost::posix_time::microseconds (rest * 1000000.0));
+      condition_.timed_wait (lock, boost::posix_time::microseconds ((int64_t) (rest * 1000000)));
     }
   }
 }

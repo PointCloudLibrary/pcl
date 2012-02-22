@@ -48,10 +48,10 @@
 # define COMMON_LVB_REVERSE_VIDEO 0
 #endif
 
-DWORD 
+WORD 
 convertAttributesColor (int attribute, int fg, int bg=0)
 {
-  static DWORD wAttributes[7]  = { 0,                        // TT_RESET
+  static WORD wAttributes[7]  = { 0,                        // TT_RESET
                                    FOREGROUND_INTENSITY ,    // TT_BRIGHT
                                    0,                        // TT_DIM
                                    COMMON_LVB_UNDERSCORE,    // TT_UNDERLINE
@@ -59,7 +59,7 @@ convertAttributesColor (int attribute, int fg, int bg=0)
                                    COMMON_LVB_REVERSE_VIDEO, // TT_REVERSE
                                    0                         // TT_HIDDEN
                                  };
-  static DWORD wFgColors[8]  = { 0,                                                  // TT_BLACK
+  static WORD wFgColors[8]  = { 0,                                                  // TT_BLACK
                                  FOREGROUND_RED,                                     // TT_RED
                                  FOREGROUND_GREEN ,                                  // TT_GREEN
                                  FOREGROUND_GREEN | FOREGROUND_RED ,                 // TT_YELLOW
@@ -68,7 +68,7 @@ convertAttributesColor (int attribute, int fg, int bg=0)
                                  FOREGROUND_GREEN | FOREGROUND_BLUE,                 // TT_CYAN
                                  FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED // TT_WHITE
                                };
-  static DWORD wBgColors[8]  = { 0,                                                  // TT_BLACK
+  static WORD wBgColors[8]  = { 0,                                                  // TT_BLACK
                                  BACKGROUND_RED,                                     // TT_RED
                                  BACKGROUND_GREEN ,                                  // TT_GREEN
                                  BACKGROUND_GREEN | BACKGROUND_BLUE ,                // TT_YELLOW

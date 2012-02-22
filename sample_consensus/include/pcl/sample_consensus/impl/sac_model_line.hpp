@@ -210,7 +210,7 @@ pcl::SampleConsensusModelLine<PointT>::optimizeModelCoefficients (
   EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
   EIGEN_ALIGN16 Eigen::Vector3f eigen_vector;
   pcl::eigen33 (covariance_matrix, eigen_values);
-  pcl::eigen33 (covariance_matrix, eigen_values [2], eigen_vector);
+  pcl::computeCorrespondingEigenVector (covariance_matrix, eigen_values [2], eigen_vector);
   //pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
 
   optimized_coefficients.template tail<3> () = eigen_vector;

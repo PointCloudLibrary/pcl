@@ -282,7 +282,7 @@ namespace pcl
               * \param key octree key addressing voxel in octree structure
               * \param[in] pointDistance distance of query point to voxel center
               */
-            prioBranchQueueEntry (OctreeNode* node, OctreeKey& key, double pointDistance)
+            prioBranchQueueEntry (OctreeNode* node, OctreeKey& key, float pointDistance)
             {
               node = node;
               pointDistance = pointDistance;
@@ -302,7 +302,7 @@ namespace pcl
             const OctreeNode* node;
 
             /** \brief Distance to query point. */
-            double pointDistance;
+            float pointDistance;
 
             /** \brief Octree key. */
             OctreeKey key;
@@ -326,7 +326,7 @@ namespace pcl
               * \param pointIdx an index representing a point in the dataset given by \a setInputCloud
               * \param[in] pointDistance distance of query point to voxel center
               */
-            prioPointQueueEntry (unsigned int& pointIdx, double pointDistance)
+            prioPointQueueEntry (unsigned int& pointIdx, float pointDistance)
             {
               pointIdx_ = pointIdx;
               pointDistance_ = pointDistance;
@@ -345,7 +345,7 @@ namespace pcl
             int pointIdx_;
 
             /** \brief Distance to query point. */
-            double pointDistance_;
+            float pointDistance_;
         };
 
         /** \brief Helper function to calculate the squared distance between two points
@@ -353,7 +353,7 @@ namespace pcl
           * \param[in] pointB point B
           * \return squared distance between point A and point B
           */
-        double
+        float
         pointSquaredDist (const PointT& pointA, const PointT& pointB) const;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -476,7 +476,7 @@ namespace pcl
                               unsigned char &a) const
         {
           // Account for division by zero when direction vector is 0.0
-          const double epsilon = 1e-10;
+          const float epsilon = 1e-10;
           if (direction.x () == 0.0)
             direction.x () = epsilon;
           if (direction.y () == 0.0)
@@ -490,19 +490,19 @@ namespace pcl
           // Handle negative axis direction vector
           if (direction.x () < 0.0)
           {
-            origin.x () = this->minX_ + this->maxX_ - origin.x ();
+            origin.x () = (float)this->minX_ + (float)this->maxX_ - origin.x ();
             direction.x () = -direction.x ();
             a |= 4;
           }
           if (direction.y () < 0.0)
           {
-            origin.y () = this->minY_ + this->maxY_ - origin.y ();
+            origin.y () = (float)this->minY_ + (float)this->maxY_ - origin.y ();
             direction.y () = -direction.y ();
             a |= 2;
           }
           if (direction.z () < 0.0)
           {
-            origin.z () = this->minZ_ + this->maxZ_ - origin.z ();
+            origin.z () = (float)this->minZ_ + (float)this->maxZ_ - origin.z ();
             direction.z () = -direction.z ();
             a |= 1;
           }

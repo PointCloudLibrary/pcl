@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: organized.h 4163 2012-02-01 05:59:39Z rusu $
+ * $Id: organized.h 4504 2012-02-17 00:47:06Z gedikli $
  *
  */
 
@@ -43,6 +43,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/search/search.h>
+#include <pcl/common/eigen.h>
 
 #include <algorithm>
 #include <queue>
@@ -71,41 +72,50 @@ namespace pcl
         typedef boost::shared_ptr<pcl::search::OrganizedNeighbor<PointT> > Ptr;
         typedef boost::shared_ptr<const pcl::search::OrganizedNeighbor<PointT> > ConstPtr;
 
+        using pcl::search::Search<PointT>::indices_;
+        using pcl::search::Search<PointT>::sorted_results_;
+        using pcl::search::Search<PointT>::input_;
+
         /** \brief OrganizedNeighbor constructor. */
-        OrganizedNeighbor (bool recalculate_projection_matrix = true) 
-          : projection_matrix_ (Eigen::Matrix<float, 3, 4, Eigen::RowMajor>::Zero ())
-          , eps_ (1e-2)
+        OrganizedNeighbor (bool sorted_results = false)
+          : Search<PointT> ("OrganizedNeighbor", sorted_results)
+          , projection_matrix_ (Eigen::Matrix<float, 3, 4, Eigen::RowMajor>::Zero ())
+          , eps_ (1e-6)
         {
         }
 
         /** \brief Empty deconstructor. */
-        ~OrganizedNeighbor () {}
+        virtual ~OrganizedNeighbor () {}
 
-        /** \brief Provide a pointer to the input data set, if user has focal length he must set it before calling this
-          * \param[in] cloud the const boost shared pointer to a PointCloud message
+        /** \brief Test whether this search-object is valid (input is organized AND from projective device)
+          *        User should use this method after setting the input cloud, since setInput just prints an error 
+          *        if input is not organized or a projection matrix could not be determined.
+          * \return true if the input data is organized and from a projective device, false otherwise
           */
-        inline void
-        setInputCloud (const PointCloudConstPtr &cloud)
+        bool isValid () const
         {
-          if (input_ != cloud)
-          {
-            input_ = cloud;
-            estimateProjectionMatrix ();
-          }
+          // determinant (KR) = determinant (K) * determinant (R) = determinant (K) = f_x * f_y.
+          // If we expect at max an opening angle of 170degree in x-direction -> f_x = 2.0 * width / tan (85 degree);
+          // 2 * tan (85 degree) ~ 22.86
+          float min_f = 0.043744332 * input_->width;
+          //std::cout << "isValid: " << determinant3x3Matrix<Eigen::Matrix3f> (KR_ / sqrt (KR_KRT_.coeff (8))) << " >= " << (min_f * min_f) << std::endl;
+          return (determinant3x3Matrix<Eigen::Matrix3f> (KR_ / sqrt (KR_KRT_.coeff (8))) >= (min_f * min_f));
         }
-
+        
+        void computeCameraMatrix (Eigen::Matrix3f& camera_matrix) const;
         /** \brief Provide a pointer to the input data set, if user has focal length he must set it before calling this
           * \param[in] cloud the const boost shared pointer to a PointCloud message
           * \param[in] indices the const boost shared pointer to PointIndices
           */
-        inline void
-        setInputCloud (const PointCloudConstPtr &cloud, const IndicesConstPtr &indices)
+        virtual void
+        setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr &indices = IndicesConstPtr ())
         {
           bool input_changed = false;
           if (input_ != cloud)
           {
             input_ = cloud;
             input_changed = true;
+            mask_.resize (input_->size ());
           }
 
           if (indices_ != indices)
@@ -115,26 +125,19 @@ namespace pcl
           }
 
           if (input_changed)
-            estimateProjectionMatrix ();
-        }
+          {
+            if (indices_.get () != NULL && indices_->size () != 0)
+            {
+              mask_.assign (input_->size (), false);
+              for (std::vector<int>::const_iterator iIt = indices_->begin (); iIt != indices_->end (); ++iIt)
+                mask_[*iIt] = true;
+            }
+            else
+              mask_.assign (input_->size (), true);
 
-        /** \brief Search for all neighbors of query point that are within a given radius.
-          * \param[in] index index representing the query point in the dataset given by \a setInputCloud.
-          *        If indices were given in setInputCloud, index will be the position in the indices vector
-          * \param[in] radius radius of the sphere bounding all of p_q's neighbors
-          * \param[out] k_indices the resultant indices of the neighboring points
-          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
-          * \param[in] max_nn if given, bounds the maximum returned neighbors to this value. If \a max_nn is set to
-          * 0 or to a number higher than the number of points in the input cloud, all neighbors in \a radius will be
-          * returned.
-          * \return number of neighbors found in radius
-          */
-        int
-        radiusSearch (int index,
-                      const double radius,
-                      std::vector<int> &k_indices,
-                      std::vector<float> &k_sqr_distances,
-                      unsigned int max_nn = 0) const;
+            estimateProjectionMatrix ();
+          }
+        }
 
         /** \brief Search for all neighbors of query point that are within a given radius.
           * \param[in] p_q the given query point
@@ -170,39 +173,53 @@ namespace pcl
         nearestKSearch (const PointT &p_q,
                         int k,
                         std::vector<int> &k_indices,
-                        std::vector<float> &k_sqr_distances) const
-        {
-          PCL_ERROR ("[pcl::search::OrganizedNeighbor::approxNearestKSearch] Method not implemented!\n");
-          return (0);
-        }
-
-        /** \brief Search for the k-nearest neighbors for the given query point (zero-copy).
-          * \note limiting the maximum search radius (with setMaxDistance) can lead to a significant improvement in search speed
-          *
-          * \param[in] index the index representing the query point in the dataset (\ref setInputCloud must be given a-priori!)
-          * \param[in] k the number of neighbors to search for (used only if horizontal and vertical window not given already!)
-          * \param[out] k_indices the resultant point indices (must be resized to \a k beforehand!)
-          * \param[out] k_sqr_distances \note this function does not return distances
-          * \return number of neighbors found
-          */
-        int
-        nearestKSearch (int index, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const;
-
-        /** \brief Search for the k-nearest neighbors for a given query point.
-          * \note limiting the maximum search radius (with setMaxDistance) can lead to a significant improvement in search speed
-          * \param[in] cloud the point cloud data
-          * \param[in] index the index in \a cloud representing the query point
-          * \param[in] k the number of neighbors to search for (used only if horizontal and vertical window not given already!)
-          * \param[out] k_indices the resultant point indices (must be resized to \a k beforehand!)
-          * \param[out] k_sqr_distances \note this function does not return distances
-          * \return number of neighbors found
-          */
-        int
-        nearestKSearch (const pcl::PointCloud<PointT> &cloud, int index, int k,
-                        std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const;
+                        std::vector<float> &k_sqr_distances) const;
 
       protected:
 
+        struct Entry
+        {
+          Entry (int idx, float dist) : index (idx), distance (dist) {}
+          Entry () {}
+          unsigned index;
+          float distance;
+          bool operator < (const Entry& other) const
+          {
+            return distance < other.distance;
+          }
+        };
+
+        /** \brief test if point given by index is among the k NN in results to the query point.
+         *  \param query query point
+         *  \param k number of maximum nn interested in
+         *  \param queue priority queue with k NN
+         *  \param index index on point to be tested
+         *  \return wheter the top element changed or not.
+         */
+        inline bool testPoint (const PointT& query, unsigned k, std::priority_queue<Entry>& queue, unsigned index) const
+        {
+          const PointT& point = input_->points [index];
+          if (mask_ [index] && pcl_isfinite (point.x))
+          {
+            float squared_distance = (point.getVector3fMap () - query.getVector3fMap ()).squaredNorm ();
+            if (queue.size () < k)
+              queue.push (Entry (index, squared_distance));
+            else if (queue.top ().distance > squared_distance)
+            {
+              queue.pop ();
+              queue.push (Entry (index, squared_distance));
+              return true; // top element has changed!
+            }
+          }
+          return false;
+        }
+
+        inline void
+        clipRange (int& begin, int &end, int min, int max) const
+        {
+          begin = std::max (std::min (begin, max), min);
+          end   = std::min (std::max (end, min), max);
+        }
         /** \brief Obtain a search box in 2D from a sphere with a radius in 3D
           * \param[in] point the query point (sphere center)
           * \param[in] squared_radius the squared sphere radius
@@ -216,38 +233,24 @@ namespace pcl
                                      unsigned& maxX, unsigned& maxY) const;
 
 
-        /** \brief Class getName method. */
-        virtual std::string
-        getName () const { return ("Organized_Neighbor_Search"); }
-
         /** \brief copys upper or lower triangular part of the matrix to the other one */
         template <typename MatrixType> void
         makeSymmetric (MatrixType& matrix, bool use_upper_triangular = true) const;
 
-        /** \brief Pointer to input point cloud dataset. */
-        PointCloudConstPtr input_;
-
-        /** \brief Pointer to input indices. */
-        IndicesConstPtr indices_;
-
         /** \brief the projection matrix. Either set by user or calculated by the first / each input cloud */
         Eigen::Matrix<float, 3, 4, Eigen::RowMajor> projection_matrix_;
 
-        /** \brief where the origin of the projection is located*/
-        //Eigen::Vector3f origin_;
+        /** \brief inveser of the left 3x3 projection matrix which is K * R (with K being the camera matrix and R the rotation matrix)*/
+        Eigen::Matrix<float, 3, 3, Eigen::RowMajor> KR_;
 
         /** \brief inveser of the left 3x3 projection matrix which is K * R (with K being the camera matrix and R the rotation matrix)*/
-        //Eigen::Matrix3f KR_inv_;
-
-        /** \brief inveser of the left 3x3 projection matrix which is K * R (with K being the camera matrix and R the rotation matrix)*/
-        Eigen::Matrix3f KR_;
-
-        /** \brief inveser of the left 3x3 projection matrix which is K * R (with K being the camera matrix and R the rotation matrix)*/
-        Eigen::Matrix3f KR_KRT_;
+        Eigen::Matrix<float, 3, 3, Eigen::RowMajor> KR_KRT_;
 
         /** \brief epsilon value for the MSE of the projection matrix estimation*/
         float eps_;
 
+        /** \brief mask, indicating whether the point was in the indices list or not.*/
+        std::vector<bool> mask_;
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };

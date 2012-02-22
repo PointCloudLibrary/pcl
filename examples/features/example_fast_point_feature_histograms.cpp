@@ -33,68 +33,77 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: example_ShapeContexts.cpp 4258 2012-02-05 15:06:20Z daviddoria $
+ * $Id: example_fast_point_feature_histograms.cpp 4516 2012-02-17 08:03:46Z nizar $
  *
  */
+
 
 #include <iostream>
 #include <vector>
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
-#include <pcl/features/3dsc.h>
-#include <pcl/features/impl/3dsc.hpp>
+#include <pcl/features/fpfh.h>
 #include <pcl/features/normal_3d.h>
 
 int
 main (int argc, char** argv)
 {
-  std::string filename = argv[1];
-  std::cout << "Reading " << filename << std::endl;
+  if (argc < 2)
+  {
+    throw std::runtime_error ("Required arguments: filename.pcd");
+  }
+
+  std::string fileName = argv[1];
+  std::cout << "Reading " << fileName << std::endl;
+
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
-  if (pcl::io::loadPCDFile <pcl::PointXYZ> (filename.c_str (), *cloud) == -1)
-  // load the file
+  if (pcl::io::loadPCDFile<pcl::PointXYZ> (fileName, *cloud) == -1) // load the file
   {
     PCL_ERROR ("Couldn't read file");
     return (-1);
   }
+
   std::cout << "Loaded " << cloud->points.size () << " points." << std::endl;
 
   // Compute the normals
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normal_estimation;
   normal_estimation.setInputCloud (cloud);
 
-  pcl::search::KdTree<pcl::PointXYZ>::Ptr kdtree (new pcl::search::KdTree<pcl::PointXYZ>);
-  normal_estimation.setSearchMethod (kdtree);
+  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
+  normal_estimation.setSearchMethod (tree);
 
-  pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud< pcl::Normal>);
+  pcl::PointCloud<pcl::Normal>::Ptr cloud_with_normals (new pcl::PointCloud<pcl::Normal>);
+
   normal_estimation.setRadiusSearch (0.03);
-  normal_estimation.compute (*normals);
 
-  // Setup the shape context computation
-  pcl::ShapeContext3DEstimation<pcl::PointXYZ, pcl::Normal, pcl::ShapeContext> shape_context;
+  normal_estimation.compute (*cloud_with_normals);
 
-  // Provide the point cloud
-  shape_context.setInputCloud (cloud);
-  // Provide normals
-  shape_context.setInputNormals (normals);
+  // Setup the feature computation
+
+  pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::FPFHSignature33> fpfh_estimation;
+  // Provide the original point cloud (without normals)
+  fpfh_estimation.setInputCloud (cloud);
+  // Provide the point cloud with normals
+  fpfh_estimation.setInputNormals (cloud_with_normals);
+
+  // fpfhEstimation.setInputWithNormals(cloud, cloudWithNormals); PFHEstimation does not have this function
   // Use the same KdTree from the normal estimation
-  shape_context.setSearchMethod (kdtree);
-  pcl::PointCloud<pcl::ShapeContext>::Ptr shape_context_features (new pcl::PointCloud<pcl::ShapeContext>);
+  fpfh_estimation.setSearchMethod (tree);
 
-  // The minimal radius is generally set to approx. 1/10 of the search radius, while the pt. density radius is generally set to 1/5
-  shape_context.setRadiusSearch (0.2);
-  shape_context.setPointDensityRadius (0.04);
-  shape_context.setMinimalRadius (0.02);
+  pcl::PointCloud<pcl::FPFHSignature33>::Ptr pfh_features (new pcl::PointCloud<pcl::FPFHSignature33>);
 
-  // Actually compute the shape contexts
-  shape_context.compute (*shape_context_features);
-  std::cout << "3DSC output points.size (): " << shape_context_features->points.size () << std::endl;
+  fpfh_estimation.setRadiusSearch (0.2);
+
+  // Actually compute the spin images
+  fpfh_estimation.compute (*pfh_features);
+
+  std::cout << "output points.size (): " << pfh_features->points.size () << std::endl;
 
   // Display and retrieve the shape context descriptor vector for the 0th point.
-  std::cout << shape_context_features->points[0] << std::endl;
-  std::vector<float> first_descriptor = shape_context_features->points[0].descriptor;
+  pcl::FPFHSignature33 descriptor = pfh_features->points[0];
+  std::cout << descriptor << std::endl;
 
   return 0;
 }

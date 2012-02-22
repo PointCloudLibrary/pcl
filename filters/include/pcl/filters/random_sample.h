@@ -124,10 +124,17 @@ namespace pcl
       void
       applyFilter (std::vector<int> &indices);
 
-
+      /** \brief Return a random number fast using a LCG (Linear Congruential Generator) algorithm.
+        * See http://software.intel.com/en-us/articles/fast-random-number-generator-on-the-intel-pentiumr-4-processor/ for more information.
+        */
+      inline float
+      unifRand ()
+      {
+        return (rand () / double (RAND_MAX));
+        //return (((214013 * seed_ + 2531011) >> 16) & 0x7FFF);
+      }
   };
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b RandomSample applies a random sampling with uniform probability.
     * \author Justin Rosen
     * \ingroup filters
@@ -184,6 +191,12 @@ namespace pcl
       }
 
     protected:
+
+      /** \brief Number of indices that will be returned. */
+      unsigned int sample_;
+      /** \brief Random number seed. */
+      unsigned int seed_;
+
       /** \brief Sample of point indices into a separate PointCloud
         * \param output the resultant point cloud
         */
@@ -196,11 +209,16 @@ namespace pcl
       void
       applyFilter (std::vector<int> &indices);
 
-      /** \brief Number of indices that will be returned. */
-      unsigned int sample_;
-      /** \brief Random number seed. */
-      unsigned int seed_;
-  };
+      /** \brief Return a random number fast using a LCG (Linear Congruential Generator) algorithm.
+        * See http://software.intel.com/en-us/articles/fast-random-number-generator-on-the-intel-pentiumr-4-processor/ for more information.
+        */
+      inline float
+      unifRand ()
+      {
+        return (rand () / double (RAND_MAX));
+        //return (((214013 * seed_ + 2531011) >> 16) & 0x7FFF);
+      }
+   };
 }
 
 #endif  //#ifndef PCL_FILTERS_RANDOM_SUBSAMPLE_H_

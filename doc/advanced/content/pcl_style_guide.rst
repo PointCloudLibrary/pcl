@@ -320,7 +320,21 @@ Format**.
 You can find a config for `Uncrustify <http://uncrustify.sourceforge.net/>`_
 `here <http://dev.pointclouds.org/attachments/download/537/uncrustify.cfg>`_
 
-2.6.3 UniversalIndent
+2.6.3 Emacs
+"""""""""""
+You can use the following `PCL C/C++ style file
+<http://dev.pointclouds.org/attachments/download/748/pcl-c-style.el>`_,
+download it to some known location and then:
+
+* open .emacs 
+* add the following before any C/C++ custom hooks
+
+.. code-block:: lisp
+
+   (load-file "/location/to/pcl-c-style.el")
+   (add-hook 'c-mode-common-hook 'pcl-set-c-style)
+
+2.6.4 UniversalIndent
 """""""""""""""""""""
 
 TBD...

@@ -33,7 +33,7 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: example_FastPointFeatureHistograms.cpp 4258 2012-02-05 15:06:20Z daviddoria $
+ * $Id: example_principal_curvatures_estimation.cpp 4516 2012-02-17 08:03:46Z nizar $
  *
  */
 
@@ -43,23 +43,19 @@
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
-#include <pcl/features/fpfh.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/features/principal_curvatures.h>
+
 
 int
 main (int argc, char** argv)
 {
-  if (argc < 2)
-  {
-    throw std::runtime_error ("Required arguments: filename.pcd");
-  }
-
-  std::string fileName = argv[1];
-  std::cout << "Reading " << fileName << std::endl;
+  std::string filename = argv[1];
+  std::cout << "Reading " << filename << std::endl;
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
-  if (pcl::io::loadPCDFile<pcl::PointXYZ> (fileName, *cloud) == -1) // load the file
+  if (pcl::io::loadPCDFile<pcl::PointXYZ> (filename, *cloud) == -1) //* load the file
   {
     PCL_ERROR ("Couldn't read file");
     return (-1);
@@ -80,29 +76,27 @@ main (int argc, char** argv)
 
   normal_estimation.compute (*cloud_with_normals);
 
-  // Setup the feature computation
+  // Setup the principal curvatures computation
+  pcl::PrincipalCurvaturesEstimation<pcl::PointXYZ, pcl::Normal, pcl::PrincipalCurvatures> principal_curvatures_estimation;
 
-  pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::FPFHSignature33> fpfh_estimation;
   // Provide the original point cloud (without normals)
-  fpfh_estimation.setInputCloud (cloud);
+  principal_curvatures_estimation.setInputCloud (cloud);
+
   // Provide the point cloud with normals
-  fpfh_estimation.setInputNormals (cloud_with_normals);
+  principal_curvatures_estimation.setInputNormals (cloud_with_normals);
 
-  // fpfhEstimation.setInputWithNormals(cloud, cloudWithNormals); PFHEstimation does not have this function
   // Use the same KdTree from the normal estimation
-  fpfh_estimation.setSearchMethod (tree);
+  principal_curvatures_estimation.setSearchMethod (tree);
+  principal_curvatures_estimation.setRadiusSearch (1.0);
 
-  pcl::PointCloud<pcl::FPFHSignature33>::Ptr pfh_features (new pcl::PointCloud<pcl::FPFHSignature33>);
+  // Actually compute the principal curvatures
+  pcl::PointCloud<pcl::PrincipalCurvatures>::Ptr principal_curvatures (new pcl::PointCloud<pcl::PrincipalCurvatures> ());
+  principal_curvatures_estimation.compute (*principal_curvatures);
 
-  fpfh_estimation.setRadiusSearch (0.2);
-
-  // Actually compute the spin images
-  fpfh_estimation.compute (*pfh_features);
-
-  std::cout << "output points.size (): " << pfh_features->points.size () << std::endl;
+  std::cout << "output points.size (): " << principal_curvatures->points.size () << std::endl;
 
   // Display and retrieve the shape context descriptor vector for the 0th point.
-  pcl::FPFHSignature33 descriptor = pfh_features->points[0];
+  pcl::PrincipalCurvatures descriptor = principal_curvatures->points[0];
   std::cout << descriptor << std::endl;
 
   return 0;

@@ -62,7 +62,7 @@ TransformationFromCorrespondences::add (const Eigen::Vector3f& point, const Eige
   float alpha = weight/accumulated_weight_;
   
   Eigen::Vector3f diff1 = point - mean1_, diff2 = corresponding_point - mean2_;
-  covariance_ = (1.0-alpha)*(covariance_ + alpha * (diff2 * diff1.transpose()));
+  covariance_ = (1.0f-alpha)*(covariance_ + alpha * (diff2 * diff1.transpose()));
   
   mean1_ += alpha*(diff1);
   mean2_ += alpha*(diff2);

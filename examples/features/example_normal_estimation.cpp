@@ -33,17 +33,16 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: example_PointFeatureHistograms.cpp 4258 2012-02-05 15:06:20Z daviddoria $
+ * $Id: example_normal_estimation.cpp 4516 2012-02-17 08:03:46Z nizar $
  *
  */
 
 #include <iostream>
-#include <vector>
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
-#include <pcl/features/pfh.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/kdtree/kdtree_flann.h>
 
 int
 main (int argc, char** argv)
@@ -53,51 +52,33 @@ main (int argc, char** argv)
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
-  if (pcl::io::loadPCDFile<pcl::PointXYZ> (filename, *cloud) == -1) //* load the file
+  if (pcl::io::loadPCDFile<pcl::PointXYZ> (filename, *cloud) == -1) // load the file
   {
     PCL_ERROR ("Couldn't read file");
-    return (-1);
+    return -1;
   }
 
-  std::cout << "Loaded " << cloud->points.size () << " points." << std::endl;
+  std::cout << "points: " << cloud->points.size () << std::endl;
 
-  // Compute the normals
+  // Create the normal estimation class, and pass the input dataset to it
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normal_estimation;
   normal_estimation.setInputCloud (cloud);
 
+  // Create an empty kdtree representation, and pass it to the normal estimation object.
+  // Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
   pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
   normal_estimation.setSearchMethod (tree);
 
-  pcl::PointCloud<pcl::Normal>::Ptr cloud_with_normals (new pcl::PointCloud<pcl::Normal>);
+  // Output datasets
+  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
 
+  // Use all neighbors in a sphere of radius 3cm
   normal_estimation.setRadiusSearch (0.03);
 
-  normal_estimation.compute (*cloud_with_normals);
+  // Compute the features
+  normal_estimation.compute (*cloud_normals);
 
-  // Setup the feature computation
-
-  pcl::PFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::PFHSignature125> pfh_estimation;
-  // Provide the original point cloud (without normals)
-  pfh_estimation.setInputCloud (cloud);
-  // Provide the point cloud with normals
-  pfh_estimation.setInputNormals (cloud_with_normals);
-
-  // pfh_estimation.setInputWithNormals (cloud, cloud_with_normals); PFHEstimation does not have this function
-  // Use the same KdTree from the normal estimation
-  pfh_estimation.setSearchMethod (tree);
-
-  pcl::PointCloud<pcl::PFHSignature125>::Ptr pfh_features (new pcl::PointCloud<pcl::PFHSignature125>);
-
-  pfh_estimation.setRadiusSearch (0.2);
-
-  // Actually compute the spin images
-  pfh_estimation.compute (*pfh_features);
-
-  std::cout << "output points.size (): " << pfh_features->points.size () << std::endl;
-
-  // Display and retrieve the shape context descriptor vector for the 0th point.
-  pcl::PFHSignature125 descriptor = pfh_features->points[0];
-  std::cout << descriptor << std::endl;
-
+  // cloud_normals->points.size () should have the same size as the input cloud->points.size ()
+  std::cout << "cloud_normals->points.size (): " << cloud_normals->points.size () << std::endl;
   return 0;
 }

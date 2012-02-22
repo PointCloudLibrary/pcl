@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2009-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -34,7 +36,6 @@
  * $Id$
  *
  */
-/** \author Zoltan-Csaba Marton */
 
 #include <gtest/gtest.h>
 
@@ -50,6 +51,7 @@
 #include <pcl/surface/organized_fast_mesh.h>
 #include <pcl/surface/ear_clipping.h>
 #include <pcl/common/common.h>
+#include <boost/random.hpp>
 
 #include <pcl/io/obj_io.h>
 #include <pcl/TextureMesh.h>
@@ -568,6 +570,121 @@ TEST (PCL, ConvexHull_LTable)
     }
   }    
 
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, ConvexHull_2dsquare)
+{
+  //Generate data
+  pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
+  input_cloud->width = 1000000;
+  input_cloud->height = 1;
+  input_cloud->points.resize (input_cloud->width * input_cloud->height);
+  
+  //rng
+  boost::mt19937 rng_alg;
+  boost::uniform_01<boost::mt19937> rng (rng_alg);
+  rng.base ().seed (12345u);
+
+  for (size_t i = 0; i < input_cloud->points.size (); i++)
+  {
+    input_cloud->points[i].x = (2.0 * rng ())-1.0;
+    input_cloud->points[i].y = (2.0 *rng ())-1.0;
+    input_cloud->points[i].z = 1.0;
+  }
+
+  //Set up for creating a hull
+  pcl::PointCloud<pcl::PointXYZ> hull;
+  pcl::ConvexHull<pcl::PointXYZ> chull;
+  chull.setInputCloud (input_cloud);
+  //chull.setDim (2); //We'll skip this, so we can check auto-detection
+  chull.reconstruct (hull);
+
+  //Check that input was correctly detected as 2D input
+  ASSERT_EQ (2, chull.getDimension ());
+  
+  //Verify that all points lie within the plane we generated
+  //This plane has normal equal to the z-axis (parallel to the xy plane, 1m up)
+  Eigen::Vector4f plane_normal (0.0, 0.0, -1.0, 1.0);
+
+  //Make sure they're actually near some edge
+  std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > facets;
+  facets.push_back (Eigen::Vector4f (-1.0, 0.0, 0.0, 1.0));
+  facets.push_back (Eigen::Vector4f (-1.0, 0.0, 0.0, -1.0));
+  facets.push_back (Eigen::Vector4f (0.0, -1.0, 0.0, 1.0));
+  facets.push_back (Eigen::Vector4f (0.0, -1.0, 0.0, -1.0));
+
+  //Make sure they're in the plane
+  for (size_t i = 0; i < hull.points.size (); i++)
+  {
+    float dist = fabs (hull.points[i].getVector4fMap ().dot (plane_normal));
+    EXPECT_NEAR (dist, 0.0, 1e-2);
+
+    float min_dist = std::numeric_limits<float>::infinity ();
+    for (size_t j = 0; j < facets.size (); j++)
+    {
+      float d2 = fabs (hull.points[i].getVector4fMap ().dot (facets[j]));
+      
+      if (d2 < min_dist)
+        min_dist = d2;
+    }
+    EXPECT_NEAR (min_dist, 0.0, 1e-2);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, ConvexHull_3dcube)
+{
+  //Generate data
+  pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
+  input_cloud->width = 10000000;
+  input_cloud->height = 1;
+  input_cloud->points.resize (input_cloud->width * input_cloud->height);
+  
+  //rng
+  boost::mt19937 rng_alg;
+  boost::uniform_01<boost::mt19937> rng (rng_alg);
+  rng.base ().seed (12345u);
+
+  for (size_t i = 0; i < input_cloud->points.size (); i++)
+  {
+    input_cloud->points[i].x =  (2.0 * rng ())-1.0;
+    input_cloud->points[i].y =  (2.0 * rng ())-1.0;
+    input_cloud->points[i].z =  (2.0 * rng ())-1.0;
+  }
+
+  //Set up for creating a hull
+  pcl::PointCloud<pcl::PointXYZ> hull;
+  pcl::ConvexHull<pcl::PointXYZ> chull;
+  chull.setInputCloud (input_cloud);
+  //chull.setDim (3); //We'll skip this, so we can check auto-detection
+  chull.reconstruct (hull);
+
+  //Check that input was correctly detected as 3D input
+  ASSERT_EQ (3, chull.getDimension ());
+  
+  //Make sure they're actually near some edge
+  std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > facets;
+  facets.push_back (Eigen::Vector4f (-1.0, 0.0, 0.0, 1.0));
+  facets.push_back (Eigen::Vector4f (-1.0, 0.0, 0.0, -1.0));
+  facets.push_back (Eigen::Vector4f (0.0, -1.0, 0.0, 1.0));
+  facets.push_back (Eigen::Vector4f (0.0, -1.0, 0.0, -1.0));
+  facets.push_back (Eigen::Vector4f (0.0, 0.0, -1.0, 1.0));
+  facets.push_back (Eigen::Vector4f (0.0, 0.0, -1.0, -1.0));
+
+  //Make sure they're near a facet
+  for (size_t i = 0; i < hull.points.size (); i++)
+  {
+    float min_dist = std::numeric_limits<float>::infinity ();
+    for (size_t j = 0; j < facets.size (); j++)
+    {
+      float dist = fabs (hull.points[i].getVector4fMap ().dot (facets[j]));
+      
+      if (dist < min_dist)
+        min_dist = dist;
+    }
+    EXPECT_NEAR (min_dist, 0.0, 1e-2);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

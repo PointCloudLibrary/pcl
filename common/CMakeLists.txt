@@ -9,6 +9,21 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS eigen boost)
 PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
+    set(range_image_incs
+        include/pcl/range_image/range_image.h
+        include/pcl/range_image/range_image_planar.h
+        )
+  
+    set(range_image_incs_impl
+        include/pcl/range_image/impl/range_image.hpp
+        include/pcl/range_image/impl/range_image_planar.hpp
+        )
+
+    set(range_image_srcs
+        src/range_image.cpp
+        src/range_image_planar.cpp
+        )
+
     set(srcs 
         src/pcl_base.cpp
         src/io.cpp
@@ -21,7 +36,8 @@ if(build)
         src/print.cpp
         src/time_trigger.cpp
         src/gaussian.cpp
-        )
+        ${range_image_srcs}
+	)
 
     set(incs 
         include/pcl/correspondence.h
@@ -86,8 +102,8 @@ if(build)
         include/pcl/common/utils.h
         include/pcl/common/geometry.h
         include/pcl/common/gaussian.h
-#        include/pcl/common/spring.h
         include/pcl/common/point_operators.h
+#        include/pcl/common/spring.h
 #        include/pcl/common/convolution.h
         )
 
@@ -113,7 +129,7 @@ if(build)
 
     set(impl_incs include/pcl/impl/instantiate.hpp
         include/pcl/impl/point_types.hpp
-        )
+	)
 
     set(ros_incs include/pcl/ros/conversions.h
         include/pcl/ros/register_point_struct.h
@@ -125,10 +141,9 @@ if(build)
         include/pcl/console/time.h
         )
 
-
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${common_incs_impl} ${sensor_msg_incs} ${std_msg_incs})
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${common_incs_impl} ${sensor_msg_incs} ${std_msg_incs} ${range_image_incs} ${range_image_incs_impl})
     link_ros_libs (${LIB_NAME})
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" ""
         "" "" "")
@@ -144,6 +159,8 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} impl ${impl_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ros ${ros_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} console ${tools_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} range_image ${range_image_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} range_image/impl ${range_image_incs_impl})
 
     if(BUILD_TESTS)
        add_subdirectory(test)

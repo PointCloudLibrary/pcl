@@ -150,6 +150,23 @@ namespace pcl
       out.points.push_back (p);
     }
   }
+  /** \brief Convert a XYZRGB point cloud to a XYZI
+    * \param[in] in the input XYZRGB point cloud
+    * \param[out] out the output XYZI point cloud
+    */
+  void 
+  PointCloudXYZRGBtoXYZI (PointCloud<PointXYZRGB>& in,
+                          PointCloud<PointXYZI>& out)
+  {
+    out.width   = in.width;
+    out.height  = in.height;
+    for (size_t i = 0; i < in.points.size (); i++)
+    {
+      PointXYZI p;
+      PointXYZRGBtoXYZI (in.points[i], p);
+      out.points.push_back (p);
+    }
+  }
 }
 
 #endif //#ifndef PCL_TYPE_CONVERSIONS_H

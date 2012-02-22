@@ -58,6 +58,10 @@ if(APPLE)
   endif(EXISTS ${PACKAGE_MAKER_PROGRAM})
 endif()
 
+# By default, do not warn when built on machines using only VS Express:
+if(NOT DEFINED CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_NO_WARNINGS)
+  set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_NO_WARNINGS ON)
+endif()
 include(InstallRequiredSystemLibraries)
 
 set(PCL_CPACK_CFG_FILE "${PCL_BINARY_DIR}/cpack_options.cmake")

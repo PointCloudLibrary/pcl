@@ -2402,9 +2402,6 @@ TEST (PCL, IntensityGradientEstimation)
   {
     const PointXYZI &p = cloud_ptr->points[i];
 
-    // A pointer to the estimated gradient values
-    const float * g_est = gradient.points.row (i).data ();
-
     // Compute the surface normal analytically.
     float nx = -0.2 * p.x;
     float ny = -0.5;
@@ -2425,9 +2422,9 @@ TEST (PCL, IntensityGradientEstimation)
 
     // Compare the estimates to the derived values.
     const float tolerance = 0.11;
-    EXPECT_NEAR (g_est[0], gx, tolerance);
-    EXPECT_NEAR (g_est[1], gy, tolerance);
-    EXPECT_NEAR (g_est[2], gz, tolerance);
+    ASSERT_NEAR (gradient.points (i, 0), gx, tolerance);
+    ASSERT_NEAR (gradient.points (i, 1), gy, tolerance);
+    ASSERT_NEAR (gradient.points (i, 2), gz, tolerance);
   }
 }
 
@@ -2737,7 +2734,7 @@ TEST (PCL, RIFTEstimation)
                                                  0.0147, 0.1222, 0.3568, 0.4348, 0.0149, 0.0806, 0.2787, 0.6864};
   for (int i = 0; i < 32; ++i)
   {
-    EXPECT_NEAR (rift[i], correct_rift_feature_values[i], 1e-4);
+    ASSERT_NEAR (rift[i], correct_rift_feature_values[i], 1e-4);
   }
 }
 

@@ -245,7 +245,7 @@ pcl::SampleConsensusModelStick<PointT>::optimizeModelCoefficients (
   Eigen::Vector3f eigen_values;
   Eigen::Vector3f eigen_vector;
   pcl::eigen33 (covariance_matrix, eigen_values);
-  pcl::eigen33 (covariance_matrix, eigen_values [2], eigen_vector);
+  pcl::computeCorrespondingEigenVector (covariance_matrix, eigen_values [2], eigen_vector);
 
   optimized_coefficients.template segment<3> (3) = eigen_vector;
 }

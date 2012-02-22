@@ -207,6 +207,26 @@ namespace pcl
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
 
+  class UnhandledPointTypeException : public PCLException
+  {
+    public:
+    UnhandledPointTypeException (const std::string& error_description,
+                                 const std::string& file_name = "",
+                                 const std::string& function_name = "" ,
+                                 unsigned line_number = 0) throw ()
+      : pcl::PCLException (error_description, file_name, function_name, line_number) { }
+  };
+
+  class ComputeFailedException : public PCLException
+  {
+    public:
+    ComputeFailedException (const std::string& error_description,
+                            const std::string& file_name = "",
+                            const std::string& function_name = "" ,
+                            unsigned line_number = 0) throw ()
+      : pcl::PCLException (error_description, file_name, function_name, line_number) { }
+  };
+
 }
 
 /** PCL_THROW_EXCEPTION a helper macro to be used for throwing exceptions.

@@ -160,14 +160,15 @@ namespace pcl
   template <typename PointT>
   class VoxelGrid: public Filter<PointT>
   {
-    using Filter<PointT>::filter_name_;
-    using Filter<PointT>::getClassName;
-    using Filter<PointT>::input_;
-    using Filter<PointT>::indices_;
+    protected:
+      using Filter<PointT>::filter_name_;
+      using Filter<PointT>::getClassName;
+      using Filter<PointT>::input_;
+      using Filter<PointT>::indices_;
 
-    typedef typename Filter<PointT>::PointCloud PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      typedef typename Filter<PointT>::PointCloud PointCloud;
+      typedef typename PointCloud::Ptr PointCloudPtr;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
     public:
       /** \brief Empty constructor. */

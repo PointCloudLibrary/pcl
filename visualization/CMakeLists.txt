@@ -1,6 +1,6 @@
 set(SUBSYS_NAME visualization)
 set(SUBSYS_DESC "Point cloud visualization library")
-set(SUBSYS_DEPS common io kdtree range_image)
+set(SUBSYS_DEPS common io kdtree)
 
 if(NOT VTK_FOUND)
     set(DEFAULT FALSE)
@@ -80,8 +80,7 @@ if(build)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${common_impl_incs})
-     target_link_libraries(${LIB_NAME} pcl_io pcl_kdtree pcl_range_image 
-                                       vtkCommon vtkWidgets vtkHybrid)
+    target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_kdtree vtkCommon vtkWidgets vtkHybrid)
     set(EXT_DEPS "")
     if(OPENNI_FOUND)
       list(APPEND EXT_DEPS openni-dev)

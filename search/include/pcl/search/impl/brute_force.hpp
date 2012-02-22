@@ -39,16 +39,14 @@
 #define PCL_SEARCH_IMPL_BRUTE_FORCE_SEARCH_H_
 
 #include "pcl/search/brute_force.h"
-#include <algorithm>
+#include <queue>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> float
 pcl::search::BruteForce<PointT>::getDistSqr (
     const PointT& point1, const PointT& point2) const
 {
-  return ((point1.x - point2.x) * (point1.x - point2.x) +
-          (point1.y - point2.y) * (point1.y - point2.y) +
-          (point1.z - point2.z) * (point1.z - point2.z) ) ;
+  return (point1.getVector3fMap () - point2.getVector3fMap ()).squaredNorm ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,6 +54,13 @@ template <typename PointT> int
 pcl::search::BruteForce<PointT>::nearestKSearch (
     const PointT& point, int k, std::vector<int>& k_indices, std::vector<float>& k_distances) const
 {
+  assert (isFiniteFast (point) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+  
+  k_indices.clear ();
+  k_distances.clear ();
+  if (k < 1)
+    return 0;
+
   if (input_->is_dense)
     return denseKSearch (point, k, k_indices, k_distances);
   else
@@ -67,73 +72,67 @@ template <typename PointT> int
 pcl::search::BruteForce<PointT>::denseKSearch (
     const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_distances) const
 {
-  k_indices.clear ();
-  k_indices.reserve (k);
-  k_distances.clear ();
-  k_distances.reserve (k);
-
+  // container for first k elements -> O(1) for insertion, since order not required here
   std::vector<Entry> result;
-  result.reserve (k + 1);
-  const PointCloud& cloud = *input_;
+  result.reserve (k);
+  std::priority_queue<Entry> queue;
   if (indices_ != NULL)
   {
-    const std::vector<int>& indices = *indices_;
-    Entry entry;
-    // fill up queue with k elements
-    for (entry.index = 0; entry.index < std::min ((unsigned) k, (unsigned) indices.size ()); ++entry.index)
-    {
-      result.push_back (Entry (indices[entry.index], getDistSqr (cloud[indices[entry.index]], point)));
-    }
-    // sort them
-    std::sort (result.begin (), result.end ());
+    std::vector<int>::const_iterator iIt =indices_->begin ();
+    std::vector<int>::const_iterator iEnd = indices_->begin () + std::min ((unsigned) k, (unsigned) indices_->size ());
+    for (; iIt != iEnd; ++iIt)
+      result.push_back (Entry (*iIt, getDistSqr (input_->points[*iIt], point)));
+
+    queue = std::priority_queue<Entry> (result.begin (), result.end ());
 
     // add the rest
-    for (; entry.index < indices.size (); ++entry.index)
+    Entry entry;
+    for (; iIt != indices_->end (); ++iIt)
     {
-      entry.distance = getDistSqr (cloud[indices[entry.index]], point);
-      if (entry.distance >= result.back ().distance)
-        continue;
-      typename std::vector<Entry>::iterator it = std::upper_bound (result.begin (), result.end (), entry);
-      if (it != result.end ())
+      entry.distance = getDistSqr (input_->points[*iIt], point);
+      if (queue.top ().distance > entry.distance)
       {
-        result.insert ( it, entry );
-        result.pop_back (); // remove the largest element
+        entry.index = *iIt;
+        queue.pop ();
+        queue.push (entry);
       }
     }
   }
   else
   {
     Entry entry;
-    for (entry.index = 0; entry.index < std::min ((unsigned) k, (unsigned) cloud.size ()); ++entry.index)
+    for (entry.index = 0; entry.index < std::min ((unsigned) k, (unsigned) input_->size ()); ++entry.index)
     {
-      entry.distance = getDistSqr (cloud[entry.index], point);
+      entry.distance = getDistSqr (input_->points[entry.index], point);
       result.push_back (entry);
     }
-    // sort them
-    std::sort (result.begin (), result.end ());
+
+    queue = std::priority_queue<Entry> (result.begin (), result.end ());
 
     // add the rest
-    for (; entry.index < cloud.size (); ++entry.index)
+    for (; entry.index < input_->size (); ++entry.index)
     {
-      entry.distance = getDistSqr (cloud[entry.index], point);
-      if (entry.distance >= result.back ().distance)
-        continue;
-
-      typename std::vector<Entry>::iterator it = std::upper_bound (result.begin (), result.end (), entry);
-      if (it != result.end ())
+      entry.distance = getDistSqr (input_->points[entry.index], point);
+      if (queue.top ().distance > entry.distance)
       {
-        result.insert ( it, entry );
-        result.pop_back (); // remove the largest element
-      }
+        queue.pop ();
+        queue.push (entry);
+      }      
     }
   }
 
-  for (typename std::vector<Entry>::const_iterator rIt = result.begin (); rIt != result.end (); ++rIt)
+  k_indices.resize (queue.size ());
+  k_distances.resize (queue.size ());
+  int idx = queue.size () - 1;
+  while (!queue.empty ())
   {
-    k_indices.push_back (rIt->index);
-    k_distances.push_back (rIt->distance);
+    k_indices [idx] = queue.top ().index;
+    k_distances [idx] = queue.top ().distance;
+    queue.pop ();
+    --idx;
   }
-  return result.size ();
+  
+  return k_indices.size ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -141,88 +140,78 @@ template <typename PointT> int
 pcl::search::BruteForce<PointT>::sparseKSearch (
     const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_distances) const
 {
-  k_indices.clear ();
-  k_indices.reserve (k);
-  k_distances.clear ();
-  k_distances.reserve (k);
-
+  // result used to collect the first k neighbors -> unordered
   std::vector<Entry> result;
-  result.reserve (k + 1);
-  const PointCloud& cloud = *input_;
+  result.reserve (k);
+  
+  std::priority_queue<Entry> queue;
   if (indices_ != NULL)
   {
-    const std::vector<int>& indices = *indices_;
-    Entry entry;
-    // fill up queue with k elements
-    for (entry.index = 0; entry.index < indices.size (); ++entry.index)
+    std::vector<int>::const_iterator iIt =indices_->begin ();
+    for (; iIt != indices_->end () && result.size () < (unsigned) k; ++iIt)
     {
-      if (isFinite (cloud[indices[entry.index]]))
-      {
-        result.push_back (Entry (indices[entry.index], getDistSqr (cloud[indices[entry.index]], point)));
-        if (result.size () == (unsigned) k)
-          break;
-      }
+      if (pcl_isfinite (input_->points[*iIt].x))
+        result.push_back (Entry (*iIt, getDistSqr (input_->points[*iIt], point)));
     }
-    // sort them
-    std::sort (result.begin (), result.end ());
+    
+    queue = std::priority_queue<Entry> (result.begin (), result.end ());
 
     // either we have k elements, or there are none left to iterate >in either case we're fine
     // add the rest
-    for (; entry.index < indices.size (); ++entry.index)
+    Entry entry;
+    for (; iIt != indices_->end (); ++iIt)
     {
-      if (!isFinite (cloud[indices[entry.index]]))
+      if (!pcl_isfinite (input_->points[*iIt].x))
         continue;
 
-      entry.distance = getDistSqr (cloud[indices[entry.index]], point);
-      typename std::vector<Entry>::iterator it = std::upper_bound (result.begin (), result.end (), entry);
-      if (it != result.end ())
+      entry.distance = getDistSqr (input_->points[*iIt], point);
+      if (queue.top ().distance > entry.distance)
       {
-        result.insert ( it, entry );
-        result.pop_back (); // remove the largest element
+        entry.index = *iIt;
+        queue.pop ();
+        queue.push (entry);
       }
     }
   }
   else
   {
     Entry entry;
-    for (entry.index = 0; entry.index < cloud.size (); ++entry.index)
+    for (entry.index = 0; entry.index < input_->size () && result.size () < (unsigned)k; ++entry.index)
     {
-      if (isFinite (cloud[entry.index]))
+      if (pcl_isfinite (input_->points[entry.index].x))
       {
-        entry.distance = getDistSqr (cloud[entry.index], point);
+        entry.distance = getDistSqr (input_->points[entry.index], point);
         result.push_back (entry);
-        if (result.size () == (unsigned) k)
-          break;
       }
     }
-    // sort them
-    std::sort (result.begin (), result.end ());
-
+    queue = std::priority_queue<Entry> (result.begin (), result.end ());
+    
     // add the rest
-    for (; entry.index < cloud.size (); ++entry.index)
+    for (; entry.index < input_->size (); ++entry.index)
     {
-      if (!isFinite (cloud[entry.index]))
+      if (!pcl_isfinite (input_->points[entry.index].x))
         continue;
 
-      entry.distance = getDistSqr (cloud[entry.index], point);
-      if (entry.distance >= result.back ().distance)
-        continue;
-
-      typename std::vector<Entry>::iterator it = std::upper_bound (result.begin (), result.end (), entry);
-      if (it != result.end ())
+      entry.distance = getDistSqr (input_->points[entry.index], point);
+      if (queue.top ().distance > entry.distance)
       {
-        result.insert ( it, entry );
-        result.pop_back (); // remove the largest element
+        queue.pop ();
+        queue.push (entry);
       }
     }
   }
-
-  for (typename std::vector<Entry>::const_iterator rIt = result.begin (); rIt != result.end (); ++rIt)
+  
+  k_indices.resize (queue.size ());
+  k_distances.resize (queue.size ());
+  int idx = queue.size () - 1;
+  while (!queue.empty ())
   {
-    k_indices.push_back (rIt->index);
-    k_distances.push_back (rIt->distance);
+    k_indices [idx] = queue.top ().index;
+    k_distances [idx] = queue.top ().distance;
+    queue.pop ();
+    --idx;
   }
-  return result.size ();
+  return k_indices.size ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -231,10 +220,7 @@ pcl::search::BruteForce<PointT>::denseRadiusSearch (
     const PointT& point, double radius,
     std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
     unsigned int max_nn) const
-{
-  k_indices.clear ();
-  k_sqr_distances.clear ();
-
+{  
   radius *= radius;
 
   int reserve = max_nn;
@@ -247,51 +233,40 @@ pcl::search::BruteForce<PointT>::denseRadiusSearch (
   }
   k_indices.reserve (reserve);
   k_sqr_distances.reserve (reserve);
-
-  std::vector<Entry> result;
-  result.reserve (reserve);
-  const PointCloud& cloud = *input_;
+  float distance;
   if (indices_ != NULL)
   {
-    const std::vector<int>& indices = *indices_;
-    Entry entry;
-
-    // add the rest
-    for (entry.index = 0; entry.index < indices.size (); ++entry.index)
+    for (std::vector<int>::const_iterator iIt =indices_->begin (); iIt != indices_->end (); ++iIt)
     {
-      entry.distance = getDistSqr (cloud[indices[entry.index]], point);
-      if (entry.distance <= radius)
+      distance = getDistSqr (input_->points[*iIt], point);
+      if (distance <= radius)
       {
-        result.push_back (entry);
-        if (result.size () == max_nn) // never true if max_nn = -1
+        k_indices.push_back (*iIt);
+        k_sqr_distances.push_back (distance);
+        if (k_indices.size () == max_nn) // max_nn = 0 -> never true
           break;
       }
     }
-    std::sort (result.begin (), result.end ());
   }
   else
   {
-    Entry entry;
-
-    for (entry.index = 0; entry.index < cloud.size (); ++entry.index)
+    for (unsigned index = 0; index < input_->size (); ++index)
     {
-      entry.distance = getDistSqr (cloud[entry.index], point);
-      if (entry.distance < radius)
+      distance = getDistSqr (input_->points[index], point);
+      if (distance < radius)
       {
-        result.push_back (entry);
-        if (result.size () == max_nn) // never true if max_nn = -1
+        k_indices.push_back (index);
+        k_sqr_distances.push_back (distance);
+        if (k_indices.size () == max_nn) // never true if max_nn = 0
           break;
       }
     }
-    std::sort (result.begin (), result.end ());
   }
 
-  for (typename std::vector<Entry>::const_iterator rIt = result.begin (); rIt != result.end (); ++rIt)
-  {
-    k_indices.push_back (rIt->index);
-    k_sqr_distances.push_back (rIt->distance);
-  }
-  return result.size ();
+  if (sorted_results_)
+    this->sortResults (k_indices, k_sqr_distances);
+  
+  return k_indices.size ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -301,9 +276,6 @@ pcl::search::BruteForce<PointT>::sparseRadiusSearch (
     std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
     unsigned int max_nn) const
 {
-  k_indices.clear ();
-  k_sqr_distances.clear ();
-
   radius *= radius;
 
   int reserve = max_nn;
@@ -317,54 +289,45 @@ pcl::search::BruteForce<PointT>::sparseRadiusSearch (
   k_indices.reserve (reserve);
   k_sqr_distances.reserve (reserve);
 
-  std::vector<Entry> result;
-  result.reserve (reserve);
-  const PointCloud& cloud = *input_;
+  float distance;
   if (indices_ != NULL)
   {
-    const std::vector<int>& indices = *indices_;
-    Entry entry;
-
-    for (entry.index = 0; entry.index < indices.size (); ++entry.index)
+    for (std::vector<int>::const_iterator iIt =indices_->begin (); iIt != indices_->end (); ++iIt)
     {
-      if (!isFinite (cloud[indices[entry.index]]))
+      if (!pcl_isfinite (input_->points[*iIt].x))
         continue;
 
-      entry.distance = getDistSqr (cloud[indices[entry.index]], point);
-      if (entry.distance <= radius)
+      distance = getDistSqr (input_->points[*iIt], point);
+      if (distance <= radius)
       {
-        result.push_back (entry);
-        if (result.size () == max_nn) // never true if max_nn = -1
+        k_indices.push_back (*iIt);
+        k_sqr_distances.push_back (distance);
+        if (k_indices.size () == max_nn) // never true if max_nn = 0
           break;
       }
     }
-    std::sort (result.begin (), result.end ());
   }
   else
   {
-    Entry entry;
-
-    for (entry.index = 0; entry.index < cloud.size (); ++entry.index)
+    for (unsigned index = 0; index < input_->size (); ++index)
     {
-      if (!isFinite (cloud[entry.index]))
+      if (!pcl_isfinite (input_->points[index].x))
         continue;
-      entry.distance = getDistSqr (cloud[entry.index], point);
-      if (entry.distance < radius)
+      distance = getDistSqr (input_->points[index], point);
+      if (distance < radius)
       {
-        result.push_back (entry);
-        if (result.size () == max_nn) // never true if max_nn = -1
+        k_indices.push_back (index);
+        k_sqr_distances.push_back (distance);
+        if (k_indices.size () == max_nn) // never true if max_nn = 0
           break;
       }
     }
-    std::sort (result.begin (), result.end ());
   }
 
-  for (typename std::vector<Entry>::const_iterator rIt = result.begin (); rIt != result.end (); ++rIt)
-  {
-    k_indices.push_back (rIt->index);
-    k_sqr_distances.push_back (rIt->distance);
-  }
-  return result.size ();
+  if (sorted_results_)
+    this->sortResults (k_indices, k_sqr_distances);
+
+  return k_indices.size ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -373,6 +336,13 @@ pcl::search::BruteForce<PointT>::radiusSearch (
     const PointT& point, double radius, std::vector<int> &k_indices,
     std::vector<float> &k_sqr_distances, unsigned int max_nn) const
 {
+  assert (isFiniteFast (point) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+  
+  k_indices.clear ();
+  k_sqr_distances.clear ();
+  if (radius <= 0)
+    return 0;
+
   if (input_->is_dense)
     return denseRadiusSearch (point, radius, k_indices, k_sqr_distances, max_nn);
   else

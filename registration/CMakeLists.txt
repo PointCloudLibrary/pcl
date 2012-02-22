@@ -1,6 +1,6 @@
 set(SUBSYS_NAME registration)
 set(SUBSYS_DESC "Point cloud registration library")
-set(SUBSYS_DEPS common kdtree sample_consensus features)
+set(SUBSYS_DEPS common kdtree search sample_consensus features)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -24,7 +24,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/icp.h
         include/pcl/${SUBSYS_NAME}/icp_nl.h
         include/pcl/${SUBSYS_NAME}/elch.h
-        include/pcl/${SUBSYS_NAME}/ndt.h
         include/pcl/${SUBSYS_NAME}/ppf_registration.h
         include/pcl/${SUBSYS_NAME}/pyramid_feature_matching.h
         include/pcl/${SUBSYS_NAME}/registration.h
@@ -57,7 +56,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/icp.hpp
         include/pcl/${SUBSYS_NAME}/impl/icp_nl.hpp
         include/pcl/${SUBSYS_NAME}/impl/elch.hpp
-        include/pcl/${SUBSYS_NAME}/impl/ndt.hpp
         include/pcl/${SUBSYS_NAME}/impl/ppf_registration.hpp
         include/pcl/${SUBSYS_NAME}/impl/pyramid_feature_matching.hpp
         include/pcl/${SUBSYS_NAME}/impl/registration.hpp

@@ -80,7 +80,7 @@ pcl::console::parse_argument (int argc, char** argv, const char* str, bool &val)
   int index = find_argument (argc, argv, str) + 1;
 
   if (index > 0 && index < argc )
-    val = (bool)atoi (argv[index]);
+    val = atoi (argv[index]) == 1;
 
   return (index - 1);
 }
@@ -117,6 +117,18 @@ pcl::console::parse_argument (int argc, char** argv, const char* str, unsigned i
 
   if (index > 0 && index < argc )
     val = atoi (argv[index]);
+
+  return (index - 1);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+int
+pcl::console::parse_argument (int argc, char** argv, const char* str, char &val)
+{
+  int index = find_argument (argc, argv, str) + 1;
+
+  if (index > 0 && index < argc )
+    val = argv[index][0];
 
   return (index - 1);
 }

@@ -304,7 +304,7 @@ namespace pcl
       deserializeTreeRecursive (binaryTreeVectorIterator, rootNode_, depthMask_, newKey, dataVectorIterator,
                                 dataVectorEndIterator);
 
-      objectCount_ = dataVector_arg.size();
+      objectCount_ = (unsigned int)dataVector_arg.size();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -326,7 +326,7 @@ namespace pcl
       deserializeTreeAndOutputLeafDataRecursive (binaryTreeVectorIterator, rootNode_, depthMask_, newKey,
                                                  dataVector_arg);
 
-      objectCount_ = dataVector_arg.size();
+      objectCount_ = (unsigned int)dataVector_arg.size();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////

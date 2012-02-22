@@ -63,13 +63,13 @@ pcl::lineToLineSegment (const Eigen::VectorXf &line_a, const Eigen::VectorXf &li
   // c = x2 - x3 = line_a[1] - line_b[0]
   Eigen::Vector4f w = p2 - q1;
 
-  double a = u.dot (u);
-  double b = u.dot (v);
-  double c = v.dot (v);
-  double d = u.dot (w);
-  double e = v.dot (w);
-  double denominator = a*c - b*b;
-  double sc, tc;
+  float a = u.dot (u);
+  float b = u.dot (v);
+  float c = v.dot (v);
+  float d = u.dot (w);
+  float e = v.dot (w);
+  float denominator = a*c - b*b;
+  float sc, tc;
   // Compute the line parameters of the two closest points
   if (denominator < 1e-5)          // The lines are almost parallel
   {

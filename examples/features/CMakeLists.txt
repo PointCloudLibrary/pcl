@@ -1,17 +1,17 @@
-PCL_ADD_EXAMPLE(example_FastPointFeatureHistograms FILES example_FastPointFeatureHistograms.cpp
+PCL_ADD_EXAMPLE(example_fast_point_feature_histograms FILES example_fast_point_feature_histograms.cpp
                 LINK_WITH pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
 
-PCL_ADD_EXAMPLE(example_NormalEstimation FILES example_NormalEstimation.cpp
+PCL_ADD_EXAMPLE(example_normal_estimation FILES example_normal_estimation.cpp
                 LINK_WITH pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
 
-PCL_ADD_EXAMPLE(example_PointFeatureHistograms FILES example_PointFeatureHistograms.cpp
+PCL_ADD_EXAMPLE(example_point_feature_histograms FILES example_point_feature_histograms.cpp
                 LINK_WITH pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
 
-PCL_ADD_EXAMPLE(example_PrincipalCurvaturesEstimation FILES example_PrincipalCurvaturesEstimation.cpp
+PCL_ADD_EXAMPLE(example_principal_curvatures_estimation FILES example_principal_curvatures_estimation.cpp
                 LINK_WITH pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
 
-PCL_ADD_EXAMPLE(example_ShapeContexts FILES example_ShapeContexts.cpp
+PCL_ADD_EXAMPLE(example_shape_contexts FILES example_shape_contexts.cpp
                 LINK_WITH pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
 
-PCL_ADD_EXAMPLE(example_SpinImages FILES example_SpinImages.cpp
+PCL_ADD_EXAMPLE(example_spin_images FILES example_spin_images.cpp
                 LINK_WITH pcl_common pcl_kdtree pcl_search pcl_features pcl_io)

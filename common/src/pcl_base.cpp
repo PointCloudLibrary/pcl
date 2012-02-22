@@ -48,11 +48,11 @@ pcl::PCLBase<sensor_msgs::PointCloud2>::setInputCloud (const PointCloud2ConstPtr
   for (size_t d = 0; d < cloud->fields.size (); ++d)
   {
     if (cloud->fields[d].name == x_field_name_)
-      x_idx_ = d;
+      x_idx_ = (int) d;
     if (cloud->fields[d].name == y_field_name_)
-      y_idx_ = d;
+      y_idx_ = (int) d;
     if (cloud->fields[d].name == z_field_name_)
-      z_idx_ = d;
+      z_idx_ = (int) d;
   }
 
   // Obtain the size of all fields. Restrict to sizeof FLOAT32 for now
@@ -129,14 +129,14 @@ pcl::PCLBase<sensor_msgs::PointCloud2>::initCompute ()
     {
       PCL_ERROR ("[initCompute] Failed to allocate %lu indices.\n", (unsigned long) (input_->width * input_->height));
     }
-    for (size_t i = 0; i < indices_->size (); ++i) { (*indices_)[i] = i; }
+    for (size_t i = 0; i < indices_->size (); ++i) { (*indices_)[i] = (int) i; }
   }
   // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
   if (fake_indices_ && indices_->size () != (input_->width * input_->height))
   {
     size_t indices_size = indices_->size ();
     indices_->resize (input_->width * input_->height);
-    for (size_t i = indices_size; i < indices_->size (); ++i) { (*indices_)[i] = i; }
+    for (size_t i = indices_size; i < indices_->size (); ++i) { (*indices_)[i] = (int) i; }
   }
 
   return (true);

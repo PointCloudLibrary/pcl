@@ -333,7 +333,7 @@ namespace pcl
       resetTree_ = false;
       treeDirtyFlag_ = true;
 
-      objectCount_ = dataVector_arg.size();
+      objectCount_ = (unsigned int)dataVector_arg.size();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -359,7 +359,7 @@ namespace pcl
       resetTree_ = false;
       treeDirtyFlag_ = true;
 
-      objectCount_ = dataVector_arg.size();
+      objectCount_ = (unsigned int)dataVector_arg.size();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
