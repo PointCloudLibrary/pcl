@@ -44,7 +44,7 @@ namespace pcl
           int feature_index = feature_indices[j];
 
           Eigen::Vector3f query_keypoint = query.keypoints->at(i).getVector3fMap();
-          Eigen::Vector3f target_keypoint = target.keypoints->at(feature_index).getVector3fMap();
+          //Eigen::Vector3f target_keypoint = target.keypoints->at(feature_index).getVector3fMap();
 
           // Get corresponding target keypoint, and calculate its r to its centroid
           PointNormal correspondence = target.keypoints->at(feature_index); // Since features correspond to the keypoints
@@ -62,7 +62,7 @@ namespace pcl
               {
                 Eigen::Vector3f indices (x, y, z);
 
-                Eigen::Vector3f test = indices.array() * bin_size.array();
+                //Eigen::Vector3f test = indices.array() * bin_size.array();
 
                 Eigen::Vector3f world_coordinates = indices.array() * bin_size.array() + query_min.array();
 
