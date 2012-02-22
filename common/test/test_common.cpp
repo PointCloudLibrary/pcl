@@ -307,6 +307,7 @@ TEST (PCL, Intersections)
   //intersection: [ 3.06416e+08    15.2237     3.06416e+08       4.04468e-34 ]
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, compute3DCentroid)
 {
   std::vector<int> indices;
@@ -399,6 +400,7 @@ TEST (PCL, compute3DCentroid)
   EXPECT_EQ (centroid [2], 0.0);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, computeCovarianceMatrix)
 {
   PointCloud<PointXYZ> cloud;
@@ -514,6 +516,7 @@ TEST (PCL, computeCovarianceMatrix)
   EXPECT_EQ (covariance_matrix (2, 2), 4);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, computeCovarianceMatrixNormalized)
 {
   PointCloud<PointXYZ> cloud;
@@ -631,6 +634,7 @@ TEST (PCL, computeCovarianceMatrixNormalized)
   EXPECT_EQ (covariance_matrix (2, 2), 1);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, computeDemeanedCovariance)
 {
   PointCloud<PointXYZ> cloud;
@@ -736,6 +740,7 @@ TEST (PCL, computeDemeanedCovariance)
   EXPECT_EQ (covariance_matrix (2, 2), 1);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, computeMeanAndCovariance)
 {
   PointCloud<PointXYZ> cloud;
@@ -866,7 +871,59 @@ TEST (PCL, computeMeanAndCovariance)
   EXPECT_EQ (covariance_matrix (2, 2), 1);
 }
 
-/* ---[ */
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, CopyIfFieldExists)
+{
+  PointXYZRGBNormal p;
+
+  p.x = 1.0; p.y = 2;  p.z = 3.0;
+  p.r = 127; p.g = 64; p.b = 254;
+  p.normal_x = 1.0; p.normal_y = 0.0; p.normal_z = 0.0;
+
+  typedef typename pcl::traits::fieldList<PointXYZRGBNormal>::type FieldList;
+  bool is_x = false, is_y = false, is_z = false, is_rgb = false, 
+       is_normal_x = false, is_normal_y = false, is_normal_z = false;
+
+  float x_val, y_val, z_val, normal_x_val, normal_y_val, normal_z_val, rgb_val;
+  x_val = y_val = z_val = std::numeric_limits<float>::quiet_NaN ();
+  normal_x_val = normal_y_val = normal_z_val = std::numeric_limits<float>::quiet_NaN ();
+  rgb_val = std::numeric_limits<float>::quiet_NaN ();
+
+  pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "x", is_x, x_val));
+  EXPECT_EQ (is_x, true);
+  EXPECT_EQ (x_val, 1.0);
+  pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "y", is_y, y_val));
+  EXPECT_EQ (is_y, true);
+  EXPECT_EQ (y_val, 2.0);
+  pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "z", is_z, z_val));
+  EXPECT_EQ (is_z, true);
+  EXPECT_EQ (z_val, 3.0);
+  pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "rgb", is_rgb, rgb_val));
+  EXPECT_EQ (is_rgb, true);
+  int rgb = *reinterpret_cast<int*>(&rgb_val);
+  EXPECT_EQ (rgb, 8339710);
+  pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "normal_x", is_normal_x, normal_x_val));
+  EXPECT_EQ (is_normal_x, true);
+  EXPECT_EQ (normal_x_val, 1.0);
+  pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "normal_y", is_normal_y, normal_y_val));
+  EXPECT_EQ (is_normal_y, true);
+  EXPECT_EQ (normal_y_val, 0.0);
+  pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "normal_z", is_normal_z, normal_z_val));
+  EXPECT_EQ (is_normal_z, true);
+  EXPECT_EQ (normal_z_val, 0.0);
+  
+  pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "x", x_val));
+  EXPECT_EQ (x_val, 1.0);
+
+  float xx_val = -1.0;
+  pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "xx", xx_val));
+  EXPECT_EQ (xx_val, -1.0);
+  bool is_xx = true;
+  pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "xx", is_xx, xx_val));
+  EXPECT_EQ (is_xx, false);
+}
+
+//* ---[ */
 int
 main (int argc, char** argv)
 {

@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -152,6 +152,62 @@ namespace pcl
     };
 
   } //namespace traits
+
+
+  /** \brief A helper functor that can copy a specific value if the given field exists. */
+  template <typename PointInT, typename OutT>
+  struct CopyIfFieldExists 
+  {
+    typedef typename traits::POD<PointInT>::type Pod;
+
+    /** \brief Constructor.
+      * \param[in] pt the input point 
+      * \param[in] field the name of the field
+      * \param[out] exists set to true if the field exists, false otherwise
+      * \param[out] value the copied field value
+      */
+    CopyIfFieldExists (const PointInT &pt, 
+                       const std::string &field, 
+                       bool &exists, 
+                       OutT &value)
+      : pt_ (reinterpret_cast<const Pod&>(pt)), name_ (field), exists_ (exists), value_ (value)
+    {
+      exists_ = false;
+    }
+
+    /** \brief Constructor.
+      * \param[in] pt the input point 
+      * \param[in] field the name of the field
+      * \param[out] value the copied field value
+      */
+    CopyIfFieldExists (const PointInT &pt, 
+                       const std::string &field, 
+                       OutT &value)
+      : pt_ (reinterpret_cast<const Pod&>(pt)), name_ (field), exists_ (exists_tmp_), value_ (value)
+    {
+    }
+
+    /** \brief Operator. Data copy happens here. */
+    template <typename Key> inline void
+    operator() ()
+    {
+      if (name_ == pcl::traits::name<PointInT, Key>::value)
+      {
+        exists_ = true;
+        typedef typename pcl::traits::datatype<PointInT, Key>::type T;
+        const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&pt_) + pcl::traits::offset<PointInT, Key>::value;
+        value_ = *reinterpret_cast<const T*>(data_ptr);
+      }
+    }
+
+    private:
+      const Pod &pt_;
+      const std::string &name_;
+      bool &exists_;
+      // Bogus entry
+      bool exists_tmp_;
+      OutT &value_;
+  };
 }
 
 #endif  //#ifndef PCL_POINT_TRAITS_H_
