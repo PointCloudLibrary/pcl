@@ -110,7 +110,7 @@ namespace pcl
       bool isRepeatOn () const;
 
     private:
-      virtual void publish (const sensor_msgs::PointCloud2& blob) const = 0;
+      virtual void publish (const sensor_msgs::PointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const = 0;
 
       // to separate and hide the implementation from interface: PIMPL
       struct PCDGrabberImpl;
@@ -128,7 +128,7 @@ namespace pcl
       PCDGrabber (const std::string& pcd_path, float frames_per_second = 0, bool repeat = false);
       PCDGrabber (const std::vector<std::string>& pcd_files, float frames_per_second = 0, bool repeat = false);
     protected:
-      virtual void publish (const sensor_msgs::PointCloud2& blob) const;
+      virtual void publish (const sensor_msgs::PointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const;
       boost::signals2::signal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>* signal_;
   };
 
@@ -147,10 +147,12 @@ namespace pcl
   }
 
   template<typename PointT>
-  void PCDGrabber<PointT>::publish (const sensor_msgs::PointCloud2& blob) const
+  void PCDGrabber<PointT>::publish (const sensor_msgs::PointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const
   {
     typename pcl::PointCloud<PointT>::Ptr cloud( new pcl::PointCloud<PointT> () );
     pcl::fromROSMsg (blob, *cloud);
+    cloud->sensor_origin_ = origin;
+    cloud->sensor_orientation_ = orientation;
 
     signal_->operator () (cloud);
   }

@@ -58,6 +58,8 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
   TimeTrigger time_trigger_;
 
   sensor_msgs::PointCloud2 next_cloud_;
+  Eigen::Vector4f origin_;
+  Eigen::Quaternionf orientation_;
   bool valid_;
 };
 
@@ -95,9 +97,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::readAhead ()
   {
     PCDReader reader;
     int pcd_version;
-    Eigen::Vector4f origin;
-    Eigen::Quaternionf orientation;
-    valid_ = (reader.read (*pcd_iterator_, next_cloud_, origin, orientation, pcd_version) == 0);
+    valid_ = (reader.read (*pcd_iterator_, next_cloud_, origin_, orientation_, pcd_version) == 0);
 
     if (++pcd_iterator_ == pcd_files_.end () && repeat_)
       pcd_iterator_ = pcd_files_.begin ();
@@ -110,7 +110,7 @@ void
 pcl::PCDGrabberBase::PCDGrabberImpl::trigger ()
 {
   if (valid_)
-    grabber_.publish (next_cloud_);
+    grabber_.publish (next_cloud_,origin_,orientation_);
 
   // use remaining time, if there is time left!
   readAhead ();
