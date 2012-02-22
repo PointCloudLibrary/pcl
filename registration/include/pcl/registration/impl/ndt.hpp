@@ -584,19 +584,21 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::trialValueSelection
 template<typename PointSource, typename PointTarget> double
 pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengthMT (
     const Eigen::Matrix<double, 6, 1> &x, 
-    const Eigen::Matrix<double, 6, 1> &step_dir, 
+    const Eigen::Matrix<double, 6, 1> &step_dir_const, 
     double step_init, double step_max, double step_min, 
     double &score, 
     Eigen::Matrix<double, 6, 1> &score_gradient, 
     Eigen::Matrix<double, 6, 6> &hessian,
     PointCloudSource &trans_cloud)
 {
+  Eigen::Matrix<double, 6, 1> step_dir = step_dir_const;
+
   // Set the value of phi(0), Equation 1.3 [More, Thuente 1994]
   double _phi_0 = -score;
   // Set the value of phi'(0), Equation 1.3 [More, Thuente 1994]
   double _d_phi_0 = -(score_gradient.dot (step_dir));
 
-  Eigen::Matrix<double, 6, 1>  _x_t;
+  Eigen::Matrix<double, 6, 1> _x_t;
 
   // Direction if step, negative if step derection is not a decent direction
   double step_sign = 1;
