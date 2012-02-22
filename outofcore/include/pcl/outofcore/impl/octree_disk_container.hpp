@@ -151,6 +151,8 @@ octree_disk_container<PointT>::flush_writebuff (const bool forceCacheDeAlloc)
     size_t len = writebuff_.size () * sizeof(PointT);
     char* loc = (char*)&(writebuff_.front ());
     size_t w = fwrite (loc, 1, len, f);
+    if (w != len) ;
+      // error out?
     assert (w == len);
 
     //		int closeret = fclose(f);
@@ -220,7 +222,7 @@ octree_disk_container<PointT>::readRange (const boost::uint64_t start, const boo
     return;
   }
 
-  boost::uint64_t filestart;
+  boost::uint64_t filestart = 0;
   boost::uint64_t filecount;
 
   boost::int64_t buffstart = -1;
@@ -252,6 +254,8 @@ octree_disk_container<PointT>::readRange (const boost::uint64_t start, const boo
   FILE* f = fopen (fileback_name_->c_str (), "rb");
   assert (f != NULL);
   int seekret = _fseeki64 (f, filestart * static_cast<boost::uint64_t>(sizeof(PointT)), SEEK_SET);
+  if (seekret != 0) ;
+   // error out?
   assert (seekret == 0);
 
   //read at most 2 million elements at a time
@@ -261,12 +265,16 @@ octree_disk_container<PointT>::readRange (const boost::uint64_t start, const boo
     if ((pos + blocksize) < filecount)
     {
       size_t readlen = fread (loc, sizeof(PointT), blocksize, f);
+      if (readlen != blocksize) ;
+        // error out?
       assert (readlen == blocksize);
       loc += blocksize;
     }
     else
     {
       size_t readlen = fread (loc, sizeof(PointT), (size_t) (filecount - pos), f);
+      if (readlen != filecount - pos) ;
+        // error out?
       assert (readlen == filecount - pos);
       loc += filecount - pos;
     }
@@ -497,9 +505,15 @@ octree_disk_container<PointT>::insertRange (const PointT* start, const boost::ui
   {
     const PointT* loc = start + pos;
     if ((pos + blocksize) < count)
+    {
+      if (loc) ; //
       assert (fwrite (loc, sizeof(PointT), blocksize, f) == blocksize);
+    }
     else
+    {
+      if (loc) ; //
       assert (fwrite (loc, sizeof(PointT), (size_t) (count - pos), f) == count - pos);
+    }
   }
 
   //	int closeret = fclose(f);
