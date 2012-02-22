@@ -210,7 +210,7 @@ pcl::SampleConsensusModelLine<PointT>::optimizeModelCoefficients (
   EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
   EIGEN_ALIGN16 Eigen::Vector3f eigen_vector;
   pcl::eigen33 (covariance_matrix, eigen_values);
-  pcl::eigen33 (covariance_matrix, eigen_values [2], eigen_vector);
+  pcl::computeCorrespondingEigenVector (covariance_matrix, eigen_values [2], eigen_vector);
   //pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
 
   optimized_coefficients.template tail<3> () = eigen_vector;
@@ -254,6 +254,7 @@ pcl::SampleConsensusModelLine<PointT>::projectPoints (
       double k = (pt.dot (line_dir) - line_pt.dot (line_dir)) / line_dir.dot (line_dir);
 
       Eigen::Vector4f pp = line_pt + k * line_dir;
+      std::cout << pt << "\n:\n" << line_dir << "\nx\n" << line_pt << "\n->\n" << pp << std::endl;
       // Calculate the projection of the point on the line (pointProj = A + k * B)
       projected_points.points[inliers[i]].x = pp[0];
       projected_points.points[inliers[i]].y = pp[1];

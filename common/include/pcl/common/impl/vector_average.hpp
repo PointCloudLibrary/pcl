@@ -154,7 +154,7 @@ namespace pcl
   inline void VectorAverage<float, 3>::getEigenVector1(Eigen::Matrix<float, 3, 1>& eigen_vector1) const
   {
     //cout << "Using specialized 3x3 version of doPCA!\n";
-    Eigen::Vector3f::Scalar eigen_value = -1;
+    Eigen::Vector3f::Scalar eigen_value;
     Eigen::Vector3f eigen_vector;
     eigen33(covariance_, eigen_value, eigen_vector);
     eigen_vector1 = eigen_vector;
@@ -184,7 +184,7 @@ namespace pcl
   inline void VectorAverage<double, 3>::getEigenVector1(Eigen::Matrix<double, 3, 1>& eigen_vector1) const
   {
     //cout << "Using specialized 3x3 version of doPCA!\n";
-    Eigen::Vector3d::Scalar eigen_value = -1;
+    Eigen::Vector3d::Scalar eigen_value;
     Eigen::Vector3d eigen_vector;
     eigen33(covariance_, eigen_value, eigen_vector);
     eigen_vector1 = eigen_vector;

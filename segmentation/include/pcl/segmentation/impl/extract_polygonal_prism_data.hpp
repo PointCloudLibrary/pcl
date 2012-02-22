@@ -54,7 +54,7 @@ pcl::isPointIn2DPolygon (const PointT &point, const pcl::PointCloud<PointT> &pol
   computeMeanAndCovarianceMatrix (polygon, covariance_matrix, xyz_centroid);
 
   // Compute the model coefficients
-  EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value = -1;
+  EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value;
   EIGEN_ALIGN16 Eigen::Vector3f eigen_vector;
   eigen33 (covariance_matrix, eigen_value, eigen_vector);
 
@@ -168,7 +168,7 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
   computeMeanAndCovarianceMatrix (*planar_hull_, covariance_matrix, xyz_centroid);
 
   // Compute the model coefficients
-  EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value  = -1;
+  EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value;
   EIGEN_ALIGN16 Eigen::Vector3f eigen_vector;
   eigen33 (covariance_matrix, eigen_value, eigen_vector);
 

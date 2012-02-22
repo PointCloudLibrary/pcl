@@ -133,12 +133,12 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (int index,
 
   // Estimate the XYZ centroid
   pcl::compute3DCentroid (input, nn_indices, xyz_centroid);
+  //pcl::compute3DCentroid (input, nn_indices, xyz_centroid);
 
-  // Compute the 3x3 covariance matrix
   pcl::computeCovarianceMatrix (input, nn_indices, xyz_centroid, covariance_matrix);
+  // Compute the 3x3 covariance matrix
 
-  // Get the plane normal
-  EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value = -1;
+  EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value;
   EIGEN_ALIGN16 Eigen::Vector3f eigen_vector;
   Eigen::Vector4f model_coefficients;
   pcl::eigen33 (covariance_matrix, eigen_value, eigen_vector);

@@ -97,7 +97,7 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computePointPr
 
   // Extract the eigenvalues and eigenvectors
   pcl::eigen33 (covariance_matrix_, eigenvalues_);
-  pcl::eigen33 (covariance_matrix_, eigenvalues_ [2], eigenvector_);
+  pcl::computeCorrespondingEigenVector (covariance_matrix_, eigenvalues_ [2], eigenvector_);
 
   pcx = eigenvector_ [0];
   pcy = eigenvector_ [1];

@@ -84,8 +84,7 @@ pcl::ConvexHull<PointInT>::calculateInputDimension ()
   computeMeanAndCovarianceMatrix (*input_, *indices_, covariance_matrix, xyz_centroid);
 
   EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
-  EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
-  pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
+  pcl::eigen33 (covariance_matrix, eigen_values);
 
   if (eigen_values[0] / eigen_values[2] < 1.0e-3)
     dimension_ = 2;
@@ -126,7 +125,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   Eigen::Matrix3f normal_calc_covariance;
   pcl::computeMeanAndCovarianceMatrix (normal_calc_cloud, normal_calc_covariance, normal_calc_centroid);
   // Need to set -1 here. See eigen33 for explanations.
-  Eigen::Vector3f::Scalar eigen_value = -1;
+  Eigen::Vector3f::Scalar eigen_value;
   Eigen::Vector3f plane_params;
   pcl::eigen33 (normal_calc_covariance, eigen_value, plane_params);
   float theta_x =  fabs (plane_params.dot (x_axis_));
