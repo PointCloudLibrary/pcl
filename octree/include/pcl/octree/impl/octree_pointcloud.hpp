@@ -73,6 +73,8 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::addPointsFromInputCloud (
     {
       if (isFinite (input_->points[*current]))
       {
+        assert( (*current>=0) && (*current<(int)input_->points.size ()));
+
         // add points to octree
         this->addPointIdx (*current);
       }
@@ -523,16 +525,8 @@ template<typename PointT, typename LeafT, typename OctreeT> const PointT&
 pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getPointByIndex (const unsigned int index_arg) const
 {
   // retrieve point from input cloud
-  if (indices_ == 0)
-  {
-    assert (index_arg < (unsigned int)input_->points.size ());
-    return (this->input_->points[index_arg]);
-  }
-  else
-  {
-    assert (index_arg < (unsigned int)indices_->size ());
-    return (input_->points[(*indices_)[index_arg]]);
-  }
+  assert (index_arg < (unsigned int)input_->points.size ());
+  return (this->input_->points[index_arg]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
