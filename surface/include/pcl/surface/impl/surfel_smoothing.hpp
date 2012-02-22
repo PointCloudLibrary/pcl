@@ -39,6 +39,7 @@
 #define PCL_SURFACE_IMPL_SURFEL_SMOOTHING_H_
 
 #include "pcl/surface/surfel_smoothing.h"
+#include <pcl/common/distances.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool

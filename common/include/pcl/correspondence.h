@@ -75,6 +75,9 @@ namespace pcl
     inline Correspondence (int _index_query, int _index_match, float _distance) : 
       index_query (_index_query), index_match (_index_match), distance (_distance)
     {}
+
+    /** \brief Empty destructor. */
+    virtual ~Correspondence () {}
     
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
@@ -120,6 +123,9 @@ namespace pcl
     Eigen::Vector3f point1;  //!< The 3D position of the point in the first coordinate frame
     Eigen::Vector3f point2;  //!< The 3D position of the point in the second coordinate frame
 
+    /** \brief Empty destructor. */
+    virtual ~PointCorrespondence3D () {}
+    
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
   typedef std::vector<PointCorrespondence3D, Eigen::aligned_allocator<PointCorrespondence3D> > PointCorrespondences3DVector;
@@ -133,6 +139,9 @@ namespace pcl
   {
     Eigen::Affine3f transformation;  //!< The transformation to go from the coordinate system
                                         //!< of point2 to the coordinate system of point1
+    /** \brief Empty destructor. */
+    virtual ~PointCorrespondence6D () {}
+
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
   typedef std::vector<PointCorrespondence6D, Eigen::aligned_allocator<PointCorrespondence6D> > PointCorrespondences6DVector;

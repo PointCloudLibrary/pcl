@@ -164,6 +164,7 @@ namespace pcl
   struct _PointXYZ
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -1151,19 +1152,6 @@ namespace pcl
     return (os);
   }
 
-  template <typename PointType1, typename PointType2> inline float
-  squaredEuclideanDistance (const PointType1& p1, const PointType2& p2)
-  {
-    float diff_x = p2.x - p1.x, diff_y = p2.y - p1.y, diff_z = p2.z - p1.z;
-    return (diff_x*diff_x + diff_y*diff_y + diff_z*diff_z);
-  }
-
-  template <typename PointType1, typename PointType2> inline float
-  euclideanDistance (const PointType1& p1, const PointType2& p2)
-  {
-    return (sqrtf (squaredEuclideanDistance (p1, p2)));
-  }
-
   /** Tests if the 3D components of a point are all finite
     * param[in] pt point to be tested
     */
@@ -1196,5 +1184,8 @@ namespace pcl
     return (pcl_isfinite (n.normal_x));
   }
 } // End namespace
+
+// Preserve API for PCL users < 1.4
+#include <pcl/common/distances.h>
 
 #endif

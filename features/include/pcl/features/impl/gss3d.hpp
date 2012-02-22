@@ -40,6 +40,7 @@
 #define PCL_FEATURES_IMPL_GSS3D_H_
 
 #include "pcl/features/gss3d.h"
+#include <pcl/common/distances.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void

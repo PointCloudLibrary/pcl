@@ -984,7 +984,10 @@ int
 main (int argc, char** argv)
 {
   if (argc < 2)
+  {
     std::cout << "need path to table_scene_mug_stereo_textured.pcd file\n";
+    return (-1);
+  }
 
   std::cout << "loading " << argv [1] << std::endl;
   pcl::io::loadPCDFile (argv [1], *cloud);
