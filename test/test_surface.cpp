@@ -52,6 +52,7 @@
 #include <pcl/surface/ear_clipping.h>
 #include <pcl/surface/poisson.h>
 #include <pcl/common/common.h>
+#include <boost/random.hpp>
 
 #include <pcl/io/obj_io.h>
 #include <pcl/TextureMesh.h>
@@ -581,10 +582,15 @@ TEST (PCL, ConvexHull_2dsquare)
   input_cloud->height = 1;
   input_cloud->points.resize (input_cloud->width * input_cloud->height);
   
+  //rng
+  boost::mt19937 rng_alg;
+  boost::uniform_01<boost::mt19937> rng (rng_alg);
+  rng.base ().seed (12345u);
+
   for (size_t i = 0; i < input_cloud->points.size (); i++)
   {
-    input_cloud->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
-    input_cloud->points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
+    input_cloud->points[i].x = (2.0 * rng ())-1.0;
+    input_cloud->points[i].y = (2.0 *rng ())-1.0;
     input_cloud->points[i].z = 1.0;
   }
 
@@ -636,11 +642,16 @@ TEST (PCL, ConvexHull_3dcube)
   input_cloud->height = 1;
   input_cloud->points.resize (input_cloud->width * input_cloud->height);
   
+  //rng
+  boost::mt19937 rng_alg;
+  boost::uniform_01<boost::mt19937> rng (rng_alg);
+  rng.base ().seed (12345u);
+
   for (size_t i = 0; i < input_cloud->points.size (); i++)
   {
-    input_cloud->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
-    input_cloud->points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
-    input_cloud->points[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
+    input_cloud->points[i].x =  (2.0 * rng ())-1.0;
+    input_cloud->points[i].y =  (2.0 * rng ())-1.0;
+    input_cloud->points[i].z =  (2.0 * rng ())-1.0;
   }
 
   //Set up for creating a hull
