@@ -51,6 +51,9 @@ if(build)
     PCL_ADD_EXECUTABLE(surfel_smoothing_test ${SUBSYS_NAME} src/surfel_smoothing_test.cpp)
     target_link_libraries(surfel_smoothing_test pcl_common pcl_io pcl_surface pcl_filters pcl_features pcl_visualization)
     
+    PCL_ADD_EXECUTABLE(feature_matching ${SUBSYS_NAME} src/feature_matching.cpp)
+    target_link_libraries(feature_matching pcl_common pcl_io pcl_registration pcl_keypoints pcl_sample_consensus pcl_visualization pcl_search pcl_features pcl_kdtree pcl_surface pcl_segmentation)
+
 #    PCL_ADD_EXECUTABLE(convolve ${SUBSYS_NAME} src/convolve.cpp)
 #    target_link_libraries(convolve pcl_common pcl_io pcl_visualization)
 
