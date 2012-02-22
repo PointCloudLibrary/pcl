@@ -578,14 +578,7 @@ namespace pcl
         * \return shared pointer to the copy of the cloud
         */
       inline Ptr 
-      makeShared () { return Ptr (new PointCloud<PointT> (*this)); }
-
-      /** \brief Copy the cloud to the heap and return a constant smart pointer
-        * Note that deep copy is performed, so avoid using this function on non-empty clouds.
-        * \return const shared pointer to the copy of the cloud
-        */
-      inline ConstPtr 
-      makeShared () const { return ConstPtr (new PointCloud<PointT> (*this)); }
+      makeShared () const { return Ptr (new PointCloud<PointT> (*this)); }
 
     protected:
       // This is motivated by ROS integration. Users should not need to access mapping_.
