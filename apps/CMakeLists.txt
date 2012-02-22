@@ -51,6 +51,9 @@ if(build)
     PCL_ADD_EXECUTABLE(surfel_smoothing_test ${SUBSYS_NAME} src/surfel_smoothing_test.cpp)
     target_link_libraries(surfel_smoothing_test pcl_common pcl_io pcl_surface pcl_filters pcl_features pcl_visualization)
     
+    PCL_ADD_EXECUTABLE(feature_matching ${SUBSYS_NAME} src/feature_matching.cpp)
+    target_link_libraries(feature_matching pcl_common pcl_io pcl_registration pcl_keypoints pcl_sample_consensus pcl_visualization pcl_search pcl_features pcl_kdtree pcl_surface pcl_segmentation)
+ 
     if (OPENNI_FOUND AND BUILD_OPENNI)  
       PCL_ADD_EXECUTABLE(openni_fast_mesh ${SUBSYS_NAME} src/openni_fast_mesh.cpp)
       target_link_libraries(openni_fast_mesh pcl_common pcl_io pcl_visualization pcl_surface)
