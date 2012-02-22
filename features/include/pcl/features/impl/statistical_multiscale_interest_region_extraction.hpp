@@ -43,7 +43,7 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/property_map/property_map.hpp>
 #include <boost/graph/johnson_all_pairs_shortest.hpp>
-
+#include <pcl/common/distances.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

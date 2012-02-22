@@ -51,116 +51,192 @@
   * \ingroup common
   */
 
+// We're doing a lot of black magic with Boost here, so disable warnings in Maintainer mode, as we will never
+// be able to fix them anyway
+#ifdef BUILD_Maintainer
+#  if defined __GNUC__
+#    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#      pragma GCC diagnostic ignored "-Weffc++"
+#      pragma GCC diagnostic ignored "-pedantic"
+#    else
+#      pragma GCC system_header 
+#    endif
+#  elif defined _MSC_VER
+#    pragma warning(push, 1)
+#  endif
+#endif
+
 /** @{*/
 namespace pcl
 {
+  /** \brief Members: float x, y, z 
+    * \ingroup common
+    */
   struct PointXYZ;
-  // Members: float x, y, z;
 
+  /** \brief Members: float x, y, z, intensity 
+    * \ingroup common
+    */
   struct PointXYZI;
-  // Members: float x, y, z, intensity; 
 
+  /** \brief Members: float x, y, z, uin32_t label 
+    * \ingroup common
+    */
   struct PointXYZL;
-  // Members: float x, y, z, uin32_t label;
 
+  /** \brief Members: uint32_t label 
+    * \ingroup common
+    */
   struct Label;
-  // Members: uint32_t label;
 
+  /** \brief Members: float x, y, z; uint32_t rgba 
+    * \ingroup common
+    */
   struct PointXYZRGBA;
-  // Members: float x, y, z; uint32_t rgba;
 
+  /** \brief Members: float x, y, z, rgb 
+    * \ingroup common
+    */
   struct PointXYZRGB;
-  // Members: float x, y, z, rgb;
 
+  /** \brief Members: float x, y, z, rgb, uint32_t label 
+    * \ingroup common
+    */
   struct PointXYZRGBL;
-  // Members: float x, y, z, rgb, uint32_t label;
 
+  /** \brief Members: float x, y, z, h, s, v 
+    * \ingroup common
+    */
   struct PointXYZHSV;
-  // Members: float x, y, z, h, s, v;
 
+  /** \brief Members: float x, y 
+    * \ingroup common
+    */
   struct PointXY;
-  // Members: float x, y;
 
+  /** \brief Members: float x, y, z, strength 
+    * \ingroup common
+    */
   struct InterestPoint;
-  // Members: float x, y, z, strength;
 
+  /** \brief Members: float normal[3], curvature 
+    * \ingroup common
+    */
   struct Normal;
-  // Members: float normal[3], curvature;
 
+  /** \brief Members: float normal[3] 
+    * \ingroup common
+    */
+  struct Axis;
+
+  /** \brief Members: float x, y, z; float normal[3], curvature 
+    * \ingroup common
+    */
   struct PointNormal;
-  // Members: float x, y, z; float normal[3], curvature;
 
+  /** \brief Members: float x, y, z, rgb, normal[3], curvature 
+    * \ingroup common
+    */
   struct PointXYZRGBNormal;
-  // Members: float x, y, z, rgb, normal[3], curvature;
 
+  /** \brief Members: float x, y, z, intensity, normal[3], curvature 
+    * \ingroup common
+    */
   struct PointXYZINormal;
-  // Members: float x, y, z, intensity, normal[3], curvature;
 
+  /** \brief Members: float x, y, z (union with float point[4]), range 
+    * \ingroup common
+    */
   struct PointWithRange;
-  // Members: float x, y, z (union with float point[4]), range;
 
+  /** \brief Members: float x, y, z, vp_x, vp_y, vp_z 
+    * \ingroup common
+    */
   struct PointWithViewpoint;
-  // Members: float x, y, z, vp_x, vp_y, vp_z;
 
+  /** \brief Members: float j1, j2, j3 
+    * \ingroup common
+    */
   struct MomentInvariants;
-  // Members: float j1, j2, j3;
 
-  // TODO add point type for Radius-based Surface Descriptor (RSD) histograms, and let pcl::RSDEstimation return it if needed
-
+  /** \brief Members: float r_min, r_max 
+    * \ingroup common
+    */
   struct PrincipalRadiiRSD;
-  // Members: float r_min, r_max;
 
+  /** \brief Members: uint8_t boundary_point 
+    * \ingroup common
+    */
   struct Boundary;
-  // Members: uint8_t boundary_point;
 
+  /** \brief Members: float principal_curvature[3], pc1, pc2 
+    * \ingroup common
+    */
   struct PrincipalCurvatures;
-  // Members: float principal_curvature[3], pc1, pc2;
 
-  //struct SHOT352;
-  // Members: float descriptor[352], rf[9];
-
+  /** \brief Members: std::vector<float> descriptor, rf[9] 
+    * \ingroup common
+    */
   struct SHOT;
-  // Members: std::vector<float> descriptor, rf[9];
 
+  /** \brief Members: Axis x_axis, y_axis, z_axis; float confidence 
+    * \ingroup common
+    */
+  struct ReferenceFrame;
+
+  /** \brief Members: std::vector<float> descriptor, rf[9] 
+    * \ingroup common
+    */
   struct ShapeContext;
-  // Members: std::vector<float> descriptor, rf[9];
 
-  //struct SHOT1344;
-  // Members: float descriptor[1344], rf[9];
-
+  /** \brief Members: float pfh[125] 
+    * \ingroup common
+    */
   struct PFHSignature125;
-  // Members: float pfh[125];
 
+  /** \brief Members: float pfhrgb[250] 
+    * \ingroup common
+    */
   struct PFHRGBSignature250;
-  // Members: float pfhrgb[250];
 
+  /** \brief Members: float f1, f2, f3, f4, alpha_m 
+    * \ingroup common
+    */
   struct PPFSignature;
-  // Members: float f1, f2, f3, f4, alpha_m;
 
+  /** \brief Members: float f1, f2, f3, f4, r_ratio, g_ratio, b_ratio, alpha_m 
+    * \ingroup common
+    */
   struct PPFRGBSignature;
-  // Members: float f1, f2, f3, f4, r_ratio, g_ratio, b_ratio, alpha_m
 
+  /** \brief Members: float values[12] 
+    * \ingroup common
+    */
   struct NormalBasedSignature12;
-  // Members: float values[12];
 
+  /** \brief Members: float fpfh[33] 
+    * \ingroup common
+    */
   struct FPFHSignature33;
-  // Members: float fpfh[33];
 
+  /** \brief Members: float vfh[308] 
+    * \ingroup common
+    */
   struct VFHSignature308;
-  // Members: float vfh[308];
 
+  /** \brief Members: float x, y, z, roll, pitch, yaw; float descriptor[36] 
+    * \ingroup common
+    */
   struct Narf36;
-  // Members: float x, y, z, roll, pitch, yaw; float descriptor[36];
-
 
   /** \brief Data type to store extended information about a transition from foreground to backgroundSpecification of the fields for BorderDescription::traits. 
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   typedef std::bitset<32> BorderTraits;
 
   /** \brief Specification of the fields for BorderDescription::traits. 
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   enum BorderTrait
   {
     BORDER_TRAIT__OBSTACLE_BORDER, BORDER_TRAIT__SHADOW_BORDER, BORDER_TRAIT__VEIL_POINT,
@@ -170,32 +246,31 @@ namespace pcl
     BORDER_TRAIT__VEIL_POINT_RIGHT, BORDER_TRAIT__VEIL_POINT_BOTTOM, BORDER_TRAIT__VEIL_POINT_LEFT
   };
 
+  /** \brief Members: int x, y; BorderTraits traits
+    * \ingroup common
+    */ 
   struct BorderDescription;
-  // Members: int x, y; BorderTraits traits;
 
+  /** \brief Members: float gradient[3]
+    * \ingroup common
+    */  
   struct IntensityGradient;
-  // Members: float gradient[3];
 
+  /** \brief Members: float histogram[N]
+    * \ingroup common
+    */ 
   template<int N>
-    struct Histogram;
-  // Members: float histogram[N];
+  struct Histogram;
 
+  /** \brief Members: float x, y, z, scale
+    * \ingroup common
+    */ 
   struct PointWithScale;
-  // Members: float x, y, z, scale;
 
+  /** \brief Members: float x, y, z, normal[3], rgba, radius, confidence, curvature
+    * \ingroup common
+    */ 
   struct PointSurfel;
-  // Members: float x, y, z, normal[3], rgba, radius, confidence, curvature;
-
-  // -----Functions on points-----
-  //! Calculate the euclidean distance between the two given points.
-  template<typename PointType1, typename PointType2>
-    inline float
-    euclideanDistance (const PointType1& p1, const PointType2& p2);
-
-  //! Calculate the squared euclidean distance between the two given points.
-  template<typename PointType1, typename PointType2>
-    inline float
-    squaredEuclideanDistance (const PointType1& p1, const PointType2& p2);
 }
 
 /** @} */
@@ -260,12 +335,13 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::InterestPoint,
     (float, strength, strength)
 )
 
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXYZI,
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZI,
     (float, x, x)
     (float, y, y)
     (float, z, z)
     (float, intensity, intensity)
 )
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZI, pcl::_PointXYZI)
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXYZL,
     (float, x, x)
@@ -278,12 +354,20 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Label,
     (uint32_t, label, label)
 )
 
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Normal,
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_Normal,
     (float, normal_x, normal_x)
     (float, normal_y, normal_y)
     (float, normal_z, normal_z)
     (float, curvature, curvature)
 )
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::Normal, pcl::_Normal)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Axis,
+    (float, normal_x, normal_x)
+    (float, normal_y, normal_y)
+    (float, normal_z, normal_z)
+)
+
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointNormal,
     (float, x, x)
     (float, y, y)
@@ -442,11 +526,28 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::PointSurfel,
     (float, curvature, curvature)
 )
 
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ReferenceFrame,
+    (float[3], x_axis, x_axis)
+    (float[3], y_axis, y_axis)
+    (float[3], z_axis, z_axis)
+    (float, confidence, confidence)
+)
+
 //POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::BorderDescription,
 //                                  (int, x, x)
 //                                  (int, y, y)
 //                                  (uint32_t, traits, traits)
 //)
 
+#ifdef BUILD_Maintainer
+#  if defined __GNUC__
+#    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#      pragma GCC diagnostic warning "-Weffc++"
+#      pragma GCC diagnostic warning "-pedantic"
+#    endif
+#  elif defined _MSC_VER
+#    pragma warning(pop)
+#  endif
+#endif
 
 #endif  //#ifndef PCL_DATA_TYPES_H_

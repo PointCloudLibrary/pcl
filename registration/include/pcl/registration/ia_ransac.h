@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -43,10 +43,9 @@
 
 namespace pcl
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b SampleConsensusInitialAlignment is an implementation of the initial alignment algorithm described in
     *  section IV of "Fast Point Feature Histograms (FPFH) for 3D Registration," Rusu et al.
-    * \author Radu Bogdan Rusu, Michael Dixon
+    * \author Michael Dixon, Radu B. Rusu
     * \ingroup registration
     */
   template <typename PointSource, typename PointTarget, typename FeatureT>

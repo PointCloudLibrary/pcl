@@ -165,7 +165,27 @@ namespace pcl
     pmax = cloud.points[indices[i_max]];
     return (std::sqrt (max_dist));
   }
- }
+
+  /** \brief Calculate the squared euclidean distance between the two given points.
+    * \param[in] p1 the first point
+    * \param[in] p2 the second point
+    */
+  template<typename PointType1, typename PointType2> inline float
+  squaredEuclideanDistance (const PointType1& p1, const PointType2& p2)
+  {
+    float diff_x = p2.x - p1.x, diff_y = p2.y - p1.y, diff_z = p2.z - p1.z;
+    return (diff_x*diff_x + diff_y*diff_y + diff_z*diff_z);
+  }
+   /** \brief Calculate the euclidean distance between the two given points.
+    * \param[in] p1 the first point
+    * \param[in] p2 the second point
+    */
+  template<typename PointType1, typename PointType2> inline float
+  euclideanDistance (const PointType1& p1, const PointType2& p2)
+  {
+    return (sqrtf (squaredEuclideanDistance (p1, p2)));
+  }
+}
 /*@*/
 #endif  //#ifndef PCL_DISTANCES_H_
 

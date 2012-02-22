@@ -50,6 +50,7 @@
   (pcl::PointXYZHSV)            \
   (pcl::PointXY)                \
   (pcl::InterestPoint)          \
+  (pcl::Axis)                   \
   (pcl::Normal)                 \
   (pcl::PointNormal)            \
   (pcl::PointXYZRGBNormal)      \
@@ -69,7 +70,8 @@
   (pcl::VFHSignature308)        \
   (pcl::Narf36)                 \
   (pcl::IntensityGradient)      \
-  (pcl::PointWithScale)
+  (pcl::PointWithScale)         \
+  (pcl::ReferenceFrame)
 
 // Define all point types that include XYZ data
 #define PCL_XYZ_POINT_TYPES   \
@@ -162,6 +164,7 @@ namespace pcl
   struct _PointXYZ
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -231,7 +234,7 @@ namespace pcl
   /** \brief A point structure representing Euclidean xyz coordinates, and the intensity value.
     * \ingroup common
     */
-  struct EIGEN_ALIGN16 PointXYZI
+  struct EIGEN_ALIGN16 _PointXYZI
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     union
@@ -244,6 +247,23 @@ namespace pcl
     };
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
+
+  struct PointXYZI : public _PointXYZI
+  {
+    inline PointXYZI ()
+    {
+      x = y = z = 0.0f; 
+      data[3] = 1.0f;
+      intensity = 0.0f;
+    }
+    inline PointXYZI (float _intensity)
+    {
+      x = y = z = 0.0f; 
+      data[3] = 1.0f;
+      intensity = _intensity;
+    }
+  };
+
   inline std::ostream& operator << (std::ostream& os, const PointXYZI& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.intensity << ")";
@@ -406,10 +426,14 @@ namespace pcl
   {
     inline PointXYZRGB ()
     {
-      _unused = 0;
+      x = y = z = 0.0f; 
+      data[3] = 1.0f;
+      r = g = b = _unused = 0;
     }
     inline PointXYZRGB (uint8_t _r, uint8_t _g, uint8_t _b)
     {
+      x = y = z = 0.0f; 
+      data[3] = 1.0f;
       r = _r;
       g = _g;
       b = _b;
@@ -433,10 +457,15 @@ namespace pcl
   {
     inline PointXYZRGBL ()
     {
+      x = y = z = 0.0f; 
+      data[3] = 1.0f;
+      r = g = b = 0; 
       label = 255;
     }
     inline PointXYZRGBL (uint8_t _r, uint8_t _g, uint8_t _b, uint32_t _label)
     {
+      x = y = z = 0.0f; 
+      data[3] = 1.0f;
       r = _r;
       g = _g;
       b = _b;
@@ -470,7 +499,8 @@ namespace pcl
   {
     inline PointXYZHSV ()
     {
-      data_c[3] = 0;
+      x = y = z = 0.0f; data[3] = 1.0f;
+      h = s = v = data_c[3] = 0;
     }
     inline PointXYZHSV (float _h, float _v, float _s)
     {
@@ -525,7 +555,7 @@ namespace pcl
   /** \brief A point structure representing normal coordinates and the surface curvature estimate. (SSE friendly)
    * \ingroup common
    */
-  struct EIGEN_ALIGN16 Normal
+  struct EIGEN_ALIGN16 _Normal
   {
     PCL_ADD_NORMAL4D; // This adds the member normal[3] which can also be accessed using the point (which is float[4])
     union
@@ -538,10 +568,47 @@ namespace pcl
     };
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
+
+  struct Normal : public _Normal
+  {
+    inline Normal ()
+    {
+      normal_x = normal_y = normal_z = data_n[3] = 0.0f;
+    }
+
+    inline Normal (float n_x, float n_y, float n_z)
+    { normal_x = n_x; normal_y = n_y; normal_z = n_z; data_n[3] = 0.0f; }
+
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+
   inline std::ostream& operator << (std::ostream& os, const Normal& p)
   {
     os << "(" << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - " << p.curvature << ")";
     return (os);
+  }
+
+  /** \brief A point structure representing an Axis using its normal coordinates. (SSE friendly)
+   *  \ingroup common
+   */
+  struct EIGEN_ALIGN16 Axis
+  {
+    PCL_ADD_NORMAL4D;
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    inline Axis ()
+    {
+      normal_x = normal_y = normal_z = data_n[3] = 0.0f;
+    }
+
+    inline Axis (float n_x, float n_y, float n_z)
+    { normal_x = n_x; normal_y = n_y; normal_z = n_z; data_n[3] = 0.0f; }
+  };
+
+  inline std::ostream& operator << (std::ostream& os, const Axis& p)
+  {
+    os << "(" << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << ")";
+    return os;
   }
 
   /** \brief A point structure representing Euclidean xyz coordinates, together with normal coordinates and the surface curvature estimate. (SSE friendly)
@@ -627,9 +694,9 @@ namespace pcl
   {
     inline PointXYZRGBNormal ()
     {
-      _unused = 0;
-      data[3] = 1.0f;
-      data_n[3] = 0.0f;
+      x = y = z = 0.0f; data[3] = 1.0f;
+      r = g = b = _unused = 0;
+      normal_x = normal_y = normal_z = data_n[3] = 0.0f;
     }
 
     inline Eigen::Vector3i getRGBVector3i () { return (Eigen::Vector3i (r, g, b)); }
@@ -894,6 +961,38 @@ namespace pcl
     return (os);
   }
 
+  /** \brief A structure representing the Local Reference Frame of a point.
+   *  \ingroup common
+   */
+  struct EIGEN_ALIGN16 ReferenceFrame
+  {
+    Axis x_axis;
+    Axis y_axis;
+    Axis z_axis;
+    union
+    {
+      struct
+      {
+        float confidence;
+      };
+      float data_c[4];
+    };
+
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    ReferenceFrame ()
+    { confidence = 0.; }
+
+    ReferenceFrame (Axis const &x, Axis const &y, Axis const &z, float c = 1.0)
+      : x_axis (x), y_axis (y), z_axis (z), confidence (c) {}
+  };
+
+  inline std::ostream& operator << (std::ostream& os, const ReferenceFrame& p)
+  {
+    os << "(" << p.x_axis << "," << p.y_axis << "," << p.z_axis << " - " << p.confidence << ")";
+    return (os);
+  }
+
   /** \brief A point structure representing the Fast Point Feature Histogram (FPFH).
     * \ingroup common
     */
@@ -1053,19 +1152,6 @@ namespace pcl
     return (os);
   }
 
-  template <typename PointType1, typename PointType2> inline float
-  squaredEuclideanDistance (const PointType1& p1, const PointType2& p2)
-  {
-    float diff_x = p2.x - p1.x, diff_y = p2.y - p1.y, diff_z = p2.z - p1.z;
-    return (diff_x*diff_x + diff_y*diff_y + diff_z*diff_z);
-  }
-
-  template <typename PointType1, typename PointType2> inline float
-  euclideanDistance (const PointType1& p1, const PointType2& p2)
-  {
-    return (sqrtf (squaredEuclideanDistance (p1, p2)));
-  }
-
   /** Tests if the 3D components of a point are all finite
     * param[in] pt point to be tested
     */
@@ -1098,5 +1184,8 @@ namespace pcl
     return (pcl_isfinite (n.normal_x));
   }
 } // End namespace
+
+// Preserve API for PCL users < 1.4
+#include <pcl/common/distances.h>
 
 #endif

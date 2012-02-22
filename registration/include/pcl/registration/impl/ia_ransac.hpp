@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,7 +37,12 @@
  *
  */
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#ifndef IA_RANSAC_HPP_
+#define IA_RANSAC_HPP_
+
+#include <pcl/common/distances.h>
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename FeatureT> void 
 pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::setSourceFeatures (const FeatureCloudConstPtr &features)
 {
@@ -226,3 +233,6 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
   // Apply the final transformation
   transformPointCloud (*input_, output, final_transformation_);
 }
+
+#endif  //#ifndef IA_RANSAC_HPP_
+
