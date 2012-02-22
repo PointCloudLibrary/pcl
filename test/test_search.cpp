@@ -98,6 +98,7 @@ bool testUniqueness (const vector<int>& indices, const string& name)
   return uniqueness;
 }
 
+
 /** \brief tests whether the ordering of results is ascending on distances
   * \param distances resulting distances from a search
   * \param name name of the search method that returned these distances
@@ -469,9 +470,9 @@ TEST (PCL, Unorganized_Dense_View_KNN)
    KDTree.setSortedResults (true);
    search_methods.push_back (&KDTree);
    
-//   pcl::search::Octree<pcl::PointXYZ> octree (0.01);
-//   octree.setSortedResults (true);
-//   search_methods.push_back (&octree);
+   pcl::search::Octree<pcl::PointXYZ> octree (0.01);
+   octree.setSortedResults (true);
+   search_methods.push_back (&octree);
 
    vector<int> query_indices (size);
    for (unsigned idx = 0; idx < query_indices.size (); ++idx)
@@ -689,9 +690,9 @@ TEST (PCL, Unorganized_Dense_View_Radius)
    KDTree.setSortedResults (true);
    search_methods.push_back (&KDTree);
    
-//   pcl::search::Octree<pcl::PointXYZ> octree (0.01);
-//   octree.setSortedResults (true);
-//   search_methods.push_back (&octree);
+   pcl::search::Octree<pcl::PointXYZ> octree (0.01);
+   octree.setSortedResults (true);
+   search_methods.push_back (&octree);
    
    vector<int> query_indices (size);
    for (unsigned idx = 0; idx < query_indices.size (); ++idx)
@@ -863,9 +864,9 @@ TEST (PCL, Organized_Sparse_View_KNN)
    KDTree.setSortedResults (true);
    search_methods.push_back (&KDTree);
    
-//   pcl::search::Octree<pcl::PointXYZ> octree (0.1);
-//   octree.setSortedResults (true);
-//   search_methods.push_back (&octree);
+   pcl::search::Octree<pcl::PointXYZ> octree (0.1);
+   octree.setSortedResults (true);
+   search_methods.push_back (&octree);
    
    pcl::search::OrganizedNeighbor<pcl::PointXYZ> organized;
    organized.setSortedResults (true);
