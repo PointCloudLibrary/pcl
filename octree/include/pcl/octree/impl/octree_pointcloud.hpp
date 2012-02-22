@@ -69,14 +69,12 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::addPointsFromInputCloud (
   assert (this->leafCount_==0);
   if (indices_)
   {
-    std::vector<int>::const_iterator current = indices_->begin ();
-    while (current != indices_->end ())
+    for (std::vector<int>::const_iterator current = indices_->begin (); current != indices_->end (); ++current)
     {
       if (isFinite (input_->points[*current]))
       {
         // add points to octree
         this->addPointIdx (*current);
-        ++current;
       }
     }
   }

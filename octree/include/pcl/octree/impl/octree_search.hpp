@@ -51,13 +51,9 @@ template<typename PointT, typename LeafT, typename OctreeT>
   pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::voxelSearch (const PointT& point,
                                                                             std::vector<int>& pointIdx_data)
   {
+    assert (isFiniteFast (point) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
     OctreeKey key;
     bool b_success = false;
-
-    if (!isFiniteFast (point))
-    {
-      return false;
-    }
 
     // generate key
     this->genOctreeKeyforPoint (point, key);
@@ -90,27 +86,26 @@ template<typename PointT, typename LeafT, typename OctreeT>
                                                                                std::vector<int> &k_indices,
                                                                                std::vector<float> &k_sqr_distances)
   {
+    assert(this->leafCount_>0);
+    assert (isFiniteFast (p_q) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+
+    k_indices.clear ();
+    k_sqr_distances.clear ();
+
+    if (k < 1)
+      return 0;
+    
     unsigned int i;
     unsigned int resultCount;
 
     prioPointQueueEntry pointEntry;
     std::vector<prioPointQueueEntry> pointCandidates;
 
-    assert(this->leafCount_>0);
-
     OctreeKey key;
     key.x = key.y = key.z = 0;
 
     // initalize smallest point distance in search with high value
     double smallestDist = numeric_limits<double>::max ();
-
-    k_indices.clear ();
-    k_sqr_distances.clear ();
-
-    if (!isFiniteFast (p_q) || k < 1)
-    {
-      return 0;
-    }
 
     getKNearestNeighborRecursive (p_q, k, this->rootNode_, key, 1, smallestDist, pointCandidates);
 
@@ -147,17 +142,14 @@ template<typename PointT, typename LeafT, typename OctreeT>
                                                                                     float &sqr_distance)
   {
     assert(this->leafCount_>0);
-
+    assert (isFiniteFast (p_q) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+    
     OctreeKey key;
     key.x = key.y = key.z = 0;
 
-    if (isFiniteFast (p_q))
-    {
-      approxNearestSearchRecursive (p_q, this->rootNode_, key, 1, result_index, sqr_distance);
-    }
+    approxNearestSearchRecursive (p_q, this->rootNode_, key, 1, result_index, sqr_distance);
 
     return;
-
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -179,16 +171,12 @@ template<typename PointT, typename LeafT, typename OctreeT>
                                                                              std::vector<float> &k_sqr_distances,
                                                                              unsigned int max_nn) const
   {
+    assert (isFiniteFast (p_q) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
     OctreeKey key;
     key.x = key.y = key.z = 0;
 
     k_indices.clear ();
     k_sqr_distances.clear ();
-
-    if (!isFiniteFast (p_q))
-    {
-      return (0);
-    }
 
     getNeighborsWithinRadiusRecursive (p_q, radius * radius, this->rootNode_, key, 1, k_indices, k_sqr_distances,
                                        max_nn);
