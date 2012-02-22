@@ -266,7 +266,8 @@ pcl::UniqueShapeContext<PointInT, Eigen::MatrixXf>::computeFeatureEigen (pcl::Po
   for (size_t point_index = 0; point_index < indices_->size (); point_index++)
   {
     computePointRF (point_index, rf.data ());
-    output.points.row (point_index) = rf;
+    for (int j = 0; j < 9; ++j)
+      output.points (point_index, j) = rf[j];
     std::vector<float> descriptor (descriptor_length_);
     computePointDescriptor (point_index, rf.data (), descriptor);
     for (size_t j = 0; j < descriptor_length_; ++j)
