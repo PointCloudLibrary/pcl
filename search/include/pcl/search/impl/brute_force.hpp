@@ -54,9 +54,11 @@ template <typename PointT> int
 pcl::search::BruteForce<PointT>::nearestKSearch (
     const PointT& point, int k, std::vector<int>& k_indices, std::vector<float>& k_distances) const
 {
+  assert (isFiniteFast (point) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+  
   k_indices.clear ();
   k_distances.clear ();
-  if (!pcl_isfinite (point.x) || k < 1)
+  if (k < 1)
     return 0;
 
   if (input_->is_dense)
@@ -334,9 +336,11 @@ pcl::search::BruteForce<PointT>::radiusSearch (
     const PointT& point, double radius, std::vector<int> &k_indices,
     std::vector<float> &k_sqr_distances, unsigned int max_nn) const
 {
+  assert (isFiniteFast (point) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+  
   k_indices.clear ();
   k_sqr_distances.clear ();
-  if (!pcl_isfinite (point.x) || radius <= 0)
+  if (radius <= 0)
     return 0;
 
   if (input_->is_dense)
