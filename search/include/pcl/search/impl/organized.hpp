@@ -54,7 +54,7 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
                                                       unsigned int        max_nn) const
 {
   // NAN test
-  assert (isFiniteFast (query) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+  assert (isFinite (query) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
 
   // search window
   unsigned left, right, top, bottom;
@@ -114,7 +114,7 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
                                                         std::vector<int> &k_indices,
                                                         std::vector<float> &k_sqr_distances) const
 {
-  assert (isFiniteFast (query) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+  assert (isFinite (query) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
   if (k < 1)
   {
     k_indices.clear ();

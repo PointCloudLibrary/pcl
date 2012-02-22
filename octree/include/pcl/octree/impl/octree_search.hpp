@@ -51,7 +51,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
   pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::voxelSearch (const PointT& point,
                                                                             std::vector<int>& pointIdx_data)
   {
-    assert (isFiniteFast (point) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+    assert (isFinite (point) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
     OctreeKey key;
     bool b_success = false;
 
@@ -87,7 +87,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
                                                                                std::vector<float> &k_sqr_distances)
   {
     assert(this->leafCount_>0);
-    assert (isFiniteFast (p_q) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+    assert (isFinite (p_q) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
 
     k_indices.clear ();
     k_sqr_distances.clear ();
@@ -142,7 +142,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
                                                                                     float &sqr_distance)
   {
     assert(this->leafCount_>0);
-    assert (isFiniteFast (p_q) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+    assert (isFinite (p_q) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
     
     OctreeKey key;
     key.x = key.y = key.z = 0;
@@ -171,7 +171,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
                                                                              std::vector<float> &k_sqr_distances,
                                                                              unsigned int max_nn) const
   {
-    assert (isFiniteFast (p_q) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+    assert (isFinite (p_q) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
     OctreeKey key;
     key.x = key.y = key.z = 0;
 
