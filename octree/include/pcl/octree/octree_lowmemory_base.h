@@ -476,7 +476,7 @@ namespace pcl
         branchHasChild (const OctreeBranch& branch_arg, const unsigned char childIdx_arg) const
         {
           // test occupancyByte for child existence
-          return ((branch_arg.occupancyByte_ & (1 << childIdx_arg))!=0);
+          return ((branch_arg.occupancyByte_ & (1 << childIdx_arg)) != 0);
         }
 
         /** \brief Generate bit pattern reflecting the existence of child node pointers

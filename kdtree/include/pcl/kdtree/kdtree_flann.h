@@ -248,7 +248,7 @@ namespace pcl
         input_(), indices_(), epsilon_(0.0), sorted_(sorted), flann_index_(NULL), cloud_(NULL)
       {
         param_k_ = flann::SearchParams (-1, (float) epsilon_);
-        param_radius_ = flann::SearchParams (-1 , (float) epsilon_, sorted);
+        param_radius_ = flann::SearchParams (-1, (float) epsilon_, sorted);
         cleanup ();
       }
 
@@ -260,7 +260,7 @@ namespace pcl
       {
         epsilon_ = eps;
         param_k_ = flann::SearchParams (-1 , (float) epsilon_);
-        param_radius_ = flann::SearchParams (-1 , (float) epsilon_, sorted_);
+        param_radius_ = flann::SearchParams (-1, (float) epsilon_, sorted_);
       }
 
       inline Ptr 

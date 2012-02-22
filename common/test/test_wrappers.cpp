@@ -109,8 +109,8 @@ TEST (PointCloud, iterators)
 {
   EXPECT_EQ_VECTORS (cloud.begin ()->getVector3fMap (), 
                      cloud.points.begin ()->getVector3fMap ());
-  //EXPECT_EQ_VECTORS (cloud.end ()->getVector3fMap (), 
-  //                   cloud.points.end ()->getVector3fMap ());
+  EXPECT_EQ_VECTORS (cloud.end ()->getVector3fMap (), 
+                     cloud.points.end ()->getVector3fMap ());
   PointCloud<PointXYZ>::const_iterator pit = cloud.begin ();
   PointCloud<PointXYZ>::VectorType::const_iterator pit2 = cloud.points.begin ();
   for (; pit < cloud.end (); ++pit2, ++pit)

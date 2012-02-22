@@ -512,13 +512,12 @@ template<typename PointT, typename LeafT, typename OctreeT>
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT, typename LeafT, typename OctreeT>
-  float
-  pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::pointSquaredDist (const PointT & pointA,
-                                                                                 const PointT & pointB) const
-  {
-    return (pointA.getVector3fMap () - pointB.getVector3fMap ()).squaredNorm ();
-  }
+template<typename PointT, typename LeafT, typename OctreeT> float
+pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::pointSquaredDist (const PointT & pointA,
+                                                                               const PointT & pointB) const
+{
+  return (pointA.getVector3fMap () - pointB.getVector3fMap ()).squaredNorm ();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT>

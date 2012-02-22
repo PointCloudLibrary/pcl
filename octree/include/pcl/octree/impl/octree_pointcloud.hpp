@@ -260,9 +260,8 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getApproxIntersectedVoxel
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT, typename LeafT, typename OctreeT>
-  void
-  pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::defineBoundingBox ()
+template<typename PointT, typename LeafT, typename OctreeT> void
+pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::defineBoundingBox ()
 {
 
   double minX, minY, minZ, maxX, maxY, maxZ;
@@ -271,7 +270,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
   PointT max_pt;
 
   // bounding box cannot be changed once the octree contains elements
-  assert(this->leafCount_ == 0);
+  assert (this->leafCount_ == 0);
 
   pcl::getMinMax3D (*input_, min_pt, max_pt);
 
@@ -290,12 +289,11 @@ template<typename PointT, typename LeafT, typename OctreeT>
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT, typename LeafT, typename OctreeT>
-  void
-  pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::defineBoundingBox (const double minX_arg,
-                                                                            const double minY_arg,
-                                                                            const double minZ_arg,
-                                                                            const double maxX_arg,
+template<typename PointT, typename LeafT, typename OctreeT> void
+pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::defineBoundingBox (const double minX_arg,
+                                                                          const double minY_arg,
+                                                                          const double minZ_arg,
+                                                                          const double maxX_arg,
     const double maxY_arg, const double maxZ_arg)
 {
   // bounding box cannot be changed once the octree contains elements
@@ -600,13 +598,12 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getKeyBitSize ()
  // configure tree depth of octree
   this->setTreeDepth (this->octreeDepth_);
 
-  }
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT, typename LeafT, typename OctreeT>
-  void
-  pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::genOctreeKeyforPoint (const PointT& point_arg,
-                                                                               OctreeKey & key_arg) const
+template<typename PointT, typename LeafT, typename OctreeT> void
+pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::genOctreeKeyforPoint (const PointT& point_arg,
+                                                                             OctreeKey & key_arg) const
   {
     // calculate integer key for point coordinates
     key_arg.x = min ((unsigned int)((point_arg.x - this->minX_) / this->resolution_), maxKeys_ - 1);

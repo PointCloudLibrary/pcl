@@ -51,7 +51,9 @@ pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
   // If sample size is 0 or if the sample size is greater then input cloud size
   //   then return entire copy of cloud
   if (sample_ >= N)
+  {
     output = *input_;
+  }
   else
   {
     // Resize output cloud to sample size
@@ -100,7 +102,9 @@ pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
   // If sample size is 0 or if the sample size is greater then input cloud size
   //   then return all indices
   if (sample_ >= N)
+  {
     indices = *indices_;
+  }
   else
   {
     // Resize output indices to sample size
