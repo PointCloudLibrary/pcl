@@ -326,7 +326,14 @@ namespace pcl
   template<typename Matrix, typename Vector> inline void
   eigen33 (const Matrix& mat, Vector& evals)
   {
-    computeRoots (mat, evals);
+    typedef typename Matrix::Scalar Scalar;
+    Scalar scale = mat.cwiseAbs ().maxCoeff ();
+    if (scale <= std::numeric_limits<Scalar>::min ())
+      scale = Scalar (1.0);
+
+    Matrix scaledMat = mat / scale;
+    computeRoots (scaledMat, evals);
+    evals *= scale;
   }
 
   /** \brief determines the eigenvalues and corresponding eigenvectors of the symmetric positive semi definite input matrix
