@@ -580,10 +580,16 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::trialValueSelection
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointSource, typename PointTarget> double
-pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengthMT (Eigen::Matrix<double, 6, 1> x, Eigen::Matrix<double, 6, 1> step_dir, double step_init, double step_max,
-                                                                                  double step_min, double &score, Eigen::Matrix<double, 6, 1> &score_gradient, Eigen::Matrix<double, 6, 6> &hessian,
-                                                                                  PointCloudSource &trans_cloud)
+pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengthMT (
+    const Eigen::Matrix<double, 6, 1> &x, 
+    const Eigen::Matrix<double, 6, 1> &step_dir, 
+    double step_init, double step_max, double step_min, 
+    double &score, 
+    Eigen::Matrix<double, 6, 1> &score_gradient, 
+    Eigen::Matrix<double, 6, 6> &hessian,
+    PointCloudSource &trans_cloud)
 {
   // Set the value of phi(0), Equation 1.3 [More, Thuente 1994]
   double _phi_0 = -score;
