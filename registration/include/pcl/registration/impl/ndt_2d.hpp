@@ -34,8 +34,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_NDT_IMPL_H_
-#define PCL_NDT_IMPL_H_
+#ifndef PCL_NDT_2D_IMPL_H_
+#define PCL_NDT_2D_IMPL_H_
 #include <cmath>
 
 #include <boost/noncopyable.hpp>
@@ -45,7 +45,7 @@
 
 namespace pcl
 {
-  namespace ndt
+  namespace ndt2d
   {
     /** \brief Class to store vector value and first and second derivatives
       * (grad vector and hessian matrix), so they can be returned easily from
@@ -216,7 +216,7 @@ namespace pcl
     {
       typedef typename pcl::PointCloud<PointT> PointCloud;
       typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
-      typedef typename pcl::ndt::NormalDist<PointT> NormalDist;
+      typedef typename pcl::ndt2d::NormalDist<PointT> NormalDist;
 
       public:
         NDTSingleGrid (PointCloudConstPtr cloud,
@@ -299,7 +299,7 @@ namespace pcl
       * with the test (...) function.
       */
     template <typename PointT> 
-    class NDT: public boost::noncopyable
+    class NDT2D: public boost::noncopyable
     {
       typedef typename pcl::PointCloud<PointT> PointCloud;
       typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
@@ -312,7 +312,7 @@ namespace pcl
           * \param[in] extent Extent of grid for normal distributions model
           * \param[in] step Size of region that each normal distribution will model
           */
-        NDT (PointCloudConstPtr cloud,
+        NDT2D (PointCloudConstPtr cloud,
              const Eigen::Vector2f& about,
              const Eigen::Vector2f& extent,
              const Eigen::Vector2f& step)
@@ -343,7 +343,7 @@ namespace pcl
         boost::shared_ptr<SingleGrid> single_grids_[4];
     };
 
-  } // namespace ndt
+  } // namespace ndt2d
 } // namespace pcl
 
 
@@ -352,7 +352,7 @@ namespace Eigen
   /* This NumTraits specialisation is necessary because NormalDist is used as
    * the element type of an Eigen Matrix.
    */
-  template<typename PointT> struct NumTraits<pcl::ndt::NormalDist<PointT> >
+  template<typename PointT> struct NumTraits<pcl::ndt2d::NormalDist<PointT> >
   {
     typedef double Real;
     static Real dummy_precision () { return 1.0; }
@@ -370,7 +370,7 @@ namespace Eigen
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void
-pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess)
+pcl::NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess)
 {
   PointCloudSource intm_cloud = output;
 
@@ -381,7 +381,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
   } 
 
   // build Normal Distribution Transform of target cloud:
-  ndt::NDT<PointTarget> target_ndt (target_, grid_centre_, grid_extent_, grid_step_);
+  ndt2d::NDT2D<PointTarget> target_ndt (target_, grid_centre_, grid_extent_, grid_step_);
   
   // can't seem to use .block<> () member function on transformation_
   // directly... gcc bug? 
@@ -406,7 +406,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
     const double sin_theta = std::sin (xytheta_transformation[2]);
     previous_transformation_ = transformation;    
 
-    ndt::ValueAndDerivatives<3, double> score = ndt::ValueAndDerivatives<3, double>::Zero ();
+    ndt2d::ValueAndDerivatives<3, double> score = ndt2d::ValueAndDerivatives<3, double>::Zero ();
     for (size_t i = 0; i < intm_cloud.size (); i++)
       score += target_ndt.test (intm_cloud[i], cos_theta, sin_theta);
     
@@ -481,5 +481,5 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
   output = intm_cloud;
 }
 
-#endif    // PCL_NDT_IMPL_H_
+#endif    // PCL_NDT_2D_IMPL_H_
  

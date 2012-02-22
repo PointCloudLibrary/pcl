@@ -35,14 +35,14 @@
  *
  */
 
-#ifndef PCL_NDT_H_
-#define PCL_NDT_H_
+#ifndef PCL_NDT_2D_H_
+#define PCL_NDT_2D_H_
 
 #include "pcl/registration/registration.h"
 
 namespace pcl
 {
-  /** \brief @b NormalDistributionsTransform provides an implementation of the
+  /** \brief @b NormalDistributionsTransform2D provides an implementation of the
     * Normal Distributions Transform algorithm for scan matching.
     *
     * This implementation is intended to match the definition:
@@ -54,7 +54,7 @@ namespace pcl
     * \author James Crosby
     */
   template <typename PointSource, typename PointTarget>
-  class NormalDistributionsTransform : public Registration<PointSource, PointTarget>
+  class NormalDistributionsTransform2D : public Registration<PointSource, PointTarget>
   {
     typedef typename Registration<PointSource, PointTarget>::PointCloudSource PointCloudSource;
     typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
@@ -67,11 +67,11 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      NormalDistributionsTransform ()
+      NormalDistributionsTransform2D ()
         : Registration<PointSource,PointTarget> (),
           grid_centre_ (0,0), grid_step_ (1,1), grid_extent_ (20,20), newton_lambda_ (1,1,1)
       {
-        reg_name_ = "NormalDistributionsTransform";
+        reg_name_ = "NormalDistributionsTransform2D";
       }
  
       /** \brief centre of the ndt grid (target coordinate system)
@@ -143,5 +143,5 @@ namespace pcl
 
 #include "pcl/registration/impl/ndt_2d.hpp"
 
-#endif // ndef PCL_NDT_H_
+#endif // ndef PCL_NDT_2D_H_
 

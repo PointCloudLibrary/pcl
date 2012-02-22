@@ -72,7 +72,7 @@ selfTest ()
 
   pcl::console::setVerbosityLevel (pcl::console::L_DEBUG);  
   
-  pcl::NormalDistributionsTransform<PointType, PointType> ndt;
+  pcl::NormalDistributionsTransform2D<PointType, PointType> ndt;
 
   ndt.setMaximumIterations (40);
   ndt.setGridCentre (Eigen::Vector2f (0,0));
@@ -140,7 +140,7 @@ main (int argc, char **argv)
 
     //pcl::console::setVerbosityLevel(pcl::console::L_DEBUG);
 
-    pcl::NormalDistributionsTransform<PointType, PointType> ndt;
+    pcl::NormalDistributionsTransform2D<PointType, PointType> ndt;
 
     ndt.setMaximumIterations (iter);
     ndt.setGridCentre (Eigen::Vector2f (15,0));
