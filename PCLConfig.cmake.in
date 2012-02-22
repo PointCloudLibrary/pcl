@@ -118,7 +118,7 @@ macro(find_eigen)
     PATH_SUFFIXES eigen3 include/eigen3 include)
   find_package_handle_standard_args(eigen DEFAULT_MSG EIGEN_INCLUDE_DIRS)
   set(EIGEN_DEFINITIONS ${EIGEN_DEFINITIONS} -DEIGEN_USE_NEW_STDVECTOR 
-      -DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET -DEIGEN_DEFAULT_TO_ROW_MAJOR)
+      -DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
 endmacro(find_eigen)
 
 #remove this as soon as qhull is shipped with FindQhull.cmake
