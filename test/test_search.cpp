@@ -51,21 +51,21 @@ using namespace std;
 /** \brief if set to value other than 0 -> fine grained output */
 #define DEBUG_OUT 0
 
-#define TEST_UNORGANIZED_DENSE_COMPLETE_KNN 1
-#define TEST_UNORGANIZED_DENSE_VIEW_KNN 1
-#define TEST_UNORGANIZED_SPARSE_COMPLETE_KNN 1
-#define TEST_UNORGANIZED_SPARSE_VIEW_KNN 1
-#define TEST_UNORGANIZED_DENSE_COMPLETE_RADIUS 1
-#define TEST_UNORGANIZED_DENSE_VIEW_RADIUS 1
+#define TEST_UNORGANIZED_DENSE_COMPLETE_KNN     1
+#define TEST_UNORGANIZED_DENSE_VIEW_KNN         1
+#define TEST_UNORGANIZED_SPARSE_COMPLETE_KNN    1
+#define TEST_UNORGANIZED_SPARSE_VIEW_KNN        1
+#define TEST_UNORGANIZED_DENSE_COMPLETE_RADIUS  1
+#define TEST_UNORGANIZED_DENSE_VIEW_RADIUS      1
 #define TEST_UNORGANIZED_SPARSE_COMPLETE_RADIUS 1
-#define TEST_UNORGANIZED_SPARSE_VIEW_RADIUS 1
-#define TEST_ORGANIZED_SPARSE_COMPLETE_KNN 1
-#define TEST_ORGANIZED_SPARSE_VIEW_KNN 1
-#define TEST_ORGANIZED_SPARSE_COMPLETE_RADIUS 1
-#define TEST_ORGANIZED_SPARSE_VIEW_RADIUS 1
+#define TEST_UNORGANIZED_SPARSE_VIEW_RADIUS     1
+#define TEST_ORGANIZED_SPARSE_COMPLETE_KNN      1
+#define TEST_ORGANIZED_SPARSE_VIEW_KNN          1
+#define TEST_ORGANIZED_SPARSE_COMPLETE_RADIUS   1
+#define TEST_ORGANIZED_SPARSE_VIEW_RADIUS       1
 
 /** \brief number of points used for creating unordered point clouds */
-const unsigned int point_count = 1000;
+const unsigned int point_count = 1200;
 
 /** \brief number of search operations on ordered point clouds*/
 const unsigned int ordered_query_count = 100;
@@ -514,18 +514,21 @@ TEST (PCL, Unorganized_Sparse_Complete_KNN)
    brute_force.setSortedResults (true);
    search_methods.push_back (&brute_force);
    
-//   pcl::search::KdTree<pcl::PointXYZ> KDTree;
-//   KDTree.setSortedResults (true);
-//   search_methods.push_back (&KDTree);
+   pcl::search::KdTree<pcl::PointXYZ> KDTree;
+   KDTree.setSortedResults (true);
+   search_methods.push_back (&KDTree);
    
    pcl::search::Octree<pcl::PointXYZ> octree (0.01);
    octree.setSortedResults (true);
    search_methods.push_back (&octree);
    
-   vector<int> query_indices (size);
+   vector<int> query_indices;
+   query_indices.reserve (size);
    for (unsigned idx = 0; idx < query_indices.size (); ++idx)
-     query_indices [idx] = idx;
-   
+   {
+     if (isFiniteFast (unorganized->points [idx]))
+       query_indices.push_back (idx);
+   }
    testKNNSearch (unorganized, search_methods, query_indices);
 }
 #endif
@@ -578,17 +581,19 @@ TEST (PCL, Unorganized_Sparse_View_KNN)
    brute_force.setSortedResults (true);
    search_methods.push_back (&brute_force);
    
-//   pcl::search::KdTree<pcl::PointXYZ> KDTree;
-//   KDTree.setSortedResults (true);
-//   search_methods.push_back (&KDTree);
+   pcl::search::KdTree<pcl::PointXYZ> KDTree;
+   KDTree.setSortedResults (true);
+   search_methods.push_back (&KDTree);
    
-//   pcl::search::Octree<pcl::PointXYZ> octree (0.1);
-//   octree.setSortedResults (true);
-//   search_methods.push_back (&octree);
+   pcl::search::Octree<pcl::PointXYZ> octree (0.1);
+   octree.setSortedResults (true);
+   search_methods.push_back (&octree);
    
-   vector<int> query_indices (size);
+   vector<int> query_indices;
+   query_indices.reserve (size);
    for (unsigned idx = 0; idx < query_indices.size (); ++idx)
-     query_indices [idx] = idx;
+     if (isFiniteFast (unorganized->points [idx]))
+      query_indices.push_back (idx);
    
    testKNNSearch (unorganized, search_methods, query_indices, indices);
 }
@@ -680,9 +685,9 @@ TEST (PCL, Unorganized_Dense_View_Radius)
    brute_force.setSortedResults (true);
    search_methods.push_back (&brute_force);
 
-//   pcl::search::KdTree<pcl::PointXYZ> KDTree;
-//   KDTree.setSortedResults (true);
-//   search_methods.push_back (&KDTree);
+   pcl::search::KdTree<pcl::PointXYZ> KDTree;
+   KDTree.setSortedResults (true);
+   search_methods.push_back (&KDTree);
    
 //   pcl::search::Octree<pcl::PointXYZ> octree (0.01);
 //   octree.setSortedResults (true);
@@ -738,9 +743,10 @@ TEST (PCL, Unorganized_Sparse_Complete_Radius)
    octree.setSortedResults (true);
    search_methods.push_back (&octree);
    
-   vector<int> query_indices (size);
+   vector<int> query_indices;
    for (unsigned idx = 0; idx < query_indices.size (); ++idx)
-     query_indices [idx] = idx;
+     if (isFiniteFast (unorganized->points [idx]))
+      query_indices [idx] = idx;
    
    testRadiusSearch (unorganized, search_methods, query_indices);
 }
@@ -794,17 +800,18 @@ TEST (PCL, Unorganized_Sparse_View_Radius)
    brute_force.setSortedResults (true);
    search_methods.push_back (&brute_force);
 
-//   pcl::search::KdTree<pcl::PointXYZ> KDTree;
-//   KDTree.setSortedResults (true);
-//   search_methods.push_back (&KDTree);
+   pcl::search::KdTree<pcl::PointXYZ> KDTree;
+   KDTree.setSortedResults (true);
+   search_methods.push_back (&KDTree);
    
-//   pcl::search::Octree<pcl::PointXYZ> octree (0.1);
-//   octree.setSortedResults (true);
-//   search_methods.push_back (&octree);
+   pcl::search::Octree<pcl::PointXYZ> octree (0.1);
+   octree.setSortedResults (true);
+   search_methods.push_back (&octree);
    
-   vector<int> query_indices (size);
+   vector<int> query_indices;
    for (unsigned idx = 0; idx < query_indices.size (); ++idx)
-     query_indices [idx] = idx;
+     if (isFiniteFast (unorganized->points [idx]))
+      query_indices [idx] = idx;
    
    testRadiusSearch (unorganized, search_methods, query_indices, indices);
 }
@@ -836,8 +843,8 @@ TEST (PCL, Organized_Sparse_Complete_KNN)
    
    unsigned skip = cloud->size () / ordered_query_count;
    for (unsigned idx = 0; idx < cloud->size () && query_indices.size () < ordered_query_count; ++idx)
-     if ((rand () % skip) == 0)
-       query_indices.push_back (idx);
+     if ((rand () % skip) == 0 && isFiniteFast (cloud->points [idx]))
+        query_indices.push_back (idx);
    
    testKNNSearch (cloud, search_methods, query_indices);
 }
@@ -884,7 +891,7 @@ TEST (PCL, Organized_Sparse_View_KNN)
    
    unsigned skip = cloud->size () / ordered_query_count;
    for (unsigned idx = 0; idx < cloud->size () && query_indices.size () < ordered_query_count; ++idx)
-     if ((rand () % skip) == 0)
+     if ((rand () % skip) == 0 && isFiniteFast (cloud->points [idx]))
        query_indices.push_back (idx);
    
    testKNNSearch (cloud, search_methods, query_indices, input_indices);
@@ -917,7 +924,7 @@ TEST (PCL, Organized_Sparse_Complete_Radius)
    
    unsigned skip = cloud->size () / ordered_query_count;
    for (unsigned idx = 0; idx < cloud->size () && query_indices.size () < ordered_query_count; ++idx)
-     if ((rand () % skip) == 0)
+     if ((rand () % skip) == 0 && isFiniteFast (cloud->points [idx]))
        query_indices.push_back (idx);
    
    testRadiusSearch (cloud, search_methods, query_indices);
@@ -965,7 +972,7 @@ TEST (PCL, Organized_Sparse_View_Radius)
    
    unsigned skip = cloud->size () / ordered_query_count;
    for (unsigned idx = 0; idx < cloud->size () && query_indices.size () < ordered_query_count; ++idx)
-     if ((rand () % skip) == 0)
+     if ((rand () % skip) == 0 && isFiniteFast (cloud->points [idx]))
        query_indices.push_back (idx);
    
    testRadiusSearch (cloud, search_methods, query_indices, input_indices);
