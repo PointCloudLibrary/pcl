@@ -1,6 +1,6 @@
 set(SUBSYS_NAME registration)
 set(SUBSYS_DESC "Point cloud registration library")
-set(SUBSYS_DEPS common kdtree sample_consensus features)
+set(SUBSYS_DEPS common kdtree search sample_consensus features filters)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -26,6 +26,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/lum.h
         include/pcl/${SUBSYS_NAME}/elch.h
         #include/pcl/${SUBSYS_NAME}/incremental_registration.h
+        include/pcl/${SUBSYS_NAME}/ndt.h
         include/pcl/${SUBSYS_NAME}/ndt_2d.h
         include/pcl/${SUBSYS_NAME}/ppf_registration.h
         include/pcl/${SUBSYS_NAME}/pyramid_feature_matching.h
@@ -61,6 +62,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/icp_nl.hpp
         include/pcl/${SUBSYS_NAME}/impl/elch.hpp
         include/pcl/${SUBSYS_NAME}/impl/lum.hpp
+        include/pcl/${SUBSYS_NAME}/impl/ndt.hpp
         include/pcl/${SUBSYS_NAME}/impl/ndt_2d.hpp
         include/pcl/${SUBSYS_NAME}/impl/ppf_registration.hpp
         include/pcl/${SUBSYS_NAME}/impl/pyramid_feature_matching.hpp
@@ -75,12 +77,14 @@ if(build)
     set(srcs
         src/registration.cpp
         src/ppf_registration.cpp
-        src/pyramid_feature_matching.cpp)
+        src/pyramid_feature_matching.cpp
+        src/ndt.cpp
+        )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
-    target_link_libraries(${LIB_NAME} pcl_kdtree pcl_sample_consensus pcl_features)
+    target_link_libraries(${LIB_NAME} pcl_kdtree pcl_search pcl_sample_consensus pcl_features pcl_filters)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "" "" "" "")
     # Install include files
