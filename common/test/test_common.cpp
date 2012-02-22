@@ -880,7 +880,7 @@ TEST (PCL, CopyIfFieldExists)
   p.r = 127; p.g = 64; p.b = 254;
   p.normal_x = 1.0; p.normal_y = 0.0; p.normal_z = 0.0;
 
-  typedef typename pcl::traits::fieldList<PointXYZRGBNormal>::type FieldList;
+  typedef pcl::traits::fieldList<PointXYZRGBNormal>::type FieldList;
   bool is_x = false, is_y = false, is_z = false, is_rgb = false, 
        is_normal_x = false, is_normal_y = false, is_normal_z = false;
 
