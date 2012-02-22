@@ -841,7 +841,8 @@ TEST (PCL, EarClipping)
   }
 }
 
-TEST (PCL, Poisson)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*TEST (PCL, Poisson)
 {
   Poisson<PointNormal> poisson;
   poisson.setInputCloud (cloud_with_normals);
@@ -868,7 +869,7 @@ TEST (PCL, Poisson)
   EXPECT_EQ (mesh.polygons[1000].vertices[2], 6);
 }
 
-
+*/
 
 /* ---[ */
 int
