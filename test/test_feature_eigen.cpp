@@ -1287,25 +1287,25 @@ TEST (PCL, BOARDLocalReferenceFrameEstimationEigen)
   Eigen::Vector3f point_253_z (-0.425827f, -0.0919098f, 0.900124f);
 
   ////Test Results
-  EXPECT_NEAR (point_15_conf, bunny_LRF.points (15,0), 1E-5);
-  EXPECT_NEAR_VECTORS (point_15_x, bunny_LRF.points.block<1,3> (15, 1), 1E-5);
-  EXPECT_NEAR_VECTORS (point_15_y, bunny_LRF.points.block<1,3> (15, 4), 1E-5);
-  EXPECT_NEAR_VECTORS (point_15_z, bunny_LRF.points.block<1,3> (15, 7), 1E-5);
+  EXPECT_NEAR (point_15_conf, bunny_LRF.points (15,0), 1E-3);
+  EXPECT_NEAR_VECTORS (point_15_x, bunny_LRF.points.block<1,3> (15, 1), 1E-3);
+  EXPECT_NEAR_VECTORS (point_15_y, bunny_LRF.points.block<1,3> (15, 4), 1E-3);
+  EXPECT_NEAR_VECTORS (point_15_z, bunny_LRF.points.block<1,3> (15, 7), 1E-3);
 
-  EXPECT_NEAR (point_45_conf, bunny_LRF.points (45, 0), 1E-5);
-  EXPECT_NEAR_VECTORS (point_45_x, bunny_LRF.points.block<1,3> (45, 1), 1E-5);
-  EXPECT_NEAR_VECTORS (point_45_y, bunny_LRF.points.block<1,3> (45, 4), 1E-5);
-  EXPECT_NEAR_VECTORS (point_45_z, bunny_LRF.points.block<1,3> (45, 7), 1E-5);
+  EXPECT_NEAR (point_45_conf, bunny_LRF.points (45, 0), 1E-3);
+  EXPECT_NEAR_VECTORS (point_45_x, bunny_LRF.points.block<1,3> (45, 1), 1E-3);
+  EXPECT_NEAR_VECTORS (point_45_y, bunny_LRF.points.block<1,3> (45, 4), 1E-3);
+  EXPECT_NEAR_VECTORS (point_45_z, bunny_LRF.points.block<1,3> (45, 7), 1E-3);
 
-  EXPECT_NEAR (point_163_conf, bunny_LRF.points (163, 0), 1E-5);
-  EXPECT_NEAR_VECTORS (point_163_x, bunny_LRF.points.block<1,3> (163, 1), 1E-5);
-  EXPECT_NEAR_VECTORS (point_163_y, bunny_LRF.points.block<1,3> (163, 4), 1E-5);
-  EXPECT_NEAR_VECTORS (point_163_z, bunny_LRF.points.block<1,3> (163, 7), 1E-5);
+  EXPECT_NEAR (point_163_conf, bunny_LRF.points (163, 0), 1E-3);
+  EXPECT_NEAR_VECTORS (point_163_x, bunny_LRF.points.block<1,3> (163, 1), 1E-3);
+  EXPECT_NEAR_VECTORS (point_163_y, bunny_LRF.points.block<1,3> (163, 4), 1E-3);
+  EXPECT_NEAR_VECTORS (point_163_z, bunny_LRF.points.block<1,3> (163, 7), 1E-3);
 
-  EXPECT_NEAR (point_253_conf, bunny_LRF.points (253, 0), 1E-5);
-  EXPECT_NEAR_VECTORS (point_253_x, bunny_LRF.points.block<1,3> (253, 1), 1E-5);
-  EXPECT_NEAR_VECTORS (point_253_y, bunny_LRF.points.block<1,3> (253, 4), 1E-5);
-  EXPECT_NEAR_VECTORS (point_253_z, bunny_LRF.points.block<1,3> (253, 7), 1E-5);  
+  EXPECT_NEAR (point_253_conf, bunny_LRF.points (253, 0), 1E-3);
+  EXPECT_NEAR_VECTORS (point_253_x, bunny_LRF.points.block<1,3> (253, 1), 1E-3);
+  EXPECT_NEAR_VECTORS (point_253_y, bunny_LRF.points.block<1,3> (253, 4), 1E-3);
+  EXPECT_NEAR_VECTORS (point_253_z, bunny_LRF.points.block<1,3> (253, 7), 1E-3);  
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
