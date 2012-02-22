@@ -1167,22 +1167,6 @@ namespace pcl
   {
     return (pcl_isfinite (n.normal_x) && pcl_isfinite (n.normal_y) && pcl_isfinite (n.normal_z));
   }
-
-  /** Fast version of isFinite tests only the first component
-    * param[in] pt point to be tested
-    */
-  template <typename PointT> inline bool
-  isFiniteFast (const PointT& pt)
-  {
-    return (pcl_isfinite (pt.x));
-  }
-
-  // specification for pcl::Normal
-  template <> inline bool
-  isFiniteFast<pcl::Normal> (const pcl::Normal& n)
-  {
-    return (pcl_isfinite (n.normal_x));
-  }
 } // End namespace
 
 // Preserve API for PCL users < 1.4
