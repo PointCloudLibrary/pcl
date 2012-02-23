@@ -58,7 +58,7 @@ namespace pcl
         toc ()
         {
           toctoc = boost::posix_time::microsec_clock::local_time();
-          return (toctoc - tictic).total_milliseconds();
+          return ((double) (toctoc - tictic).total_milliseconds());
         };
         
         inline void 
