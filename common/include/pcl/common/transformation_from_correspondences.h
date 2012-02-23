@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -49,7 +51,12 @@ namespace pcl
      public:
         //-----CONSTRUCTOR&DESTRUCTOR-----
         /** Constructor - dimension gives the size of the vectors to work with. */
-        TransformationFromCorrespondences ()  { reset(); }
+        TransformationFromCorrespondences () : 
+          no_of_samples_ (0), accumulated_weight_ (0), 
+          mean1_ (Eigen::Vector3f::Identity ()),
+          mean2_ (Eigen::Vector3f::Identity ()),
+          covariance_ (Eigen::Matrix<float, 3, 3>::Identity ())
+        { reset (); }
 
         /** Destructor */
         ~TransformationFromCorrespondences () { };

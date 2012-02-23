@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,8 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Date: 31. March 2011
- * Author: Suat Gedikli (gedikli@willowgarage.com)
  *
  */
 
@@ -49,52 +49,50 @@
 
 namespace pcl
 {
-  /**
-   * @brief timer class that invokes registered callback methods periodically.
-   * @param interval_seconds interval in seconds
-   * @param callback callback to be invoked periodically
-   * \ingroup common
-   */
+  /** \brief Timer class that invokes registered callback methods periodically.
+    * \ingroup common
+    */
   class PCL_EXPORTS TimeTrigger
   {
     public:
       typedef boost::function<void() > callback_type;
-      /**
-       * @brief timer class that calls a callback method periodically. Due to possible blocking calls, only one callback method can be registered per instance.
-       * @param interval_seconds interval in seconds
-       * @param callback callback to be invoked periodically
-       */
+
+      /** \brief Timer class that calls a callback method periodically. Due to possible blocking calls, only one callback method can be registered per instance.
+        * \param[in] interval_seconds interval in seconds
+        * \param[in] callback callback to be invoked periodically
+        */
       TimeTrigger (double interval_seconds, const callback_type& callback);
-      /**
-       * @brief timer class that calls a callback method periodically. Due to possible blocking calls, only one callback method can be registered per instance.
-       * @param interval_seconds interval in seconds
-       */
+
+      /** \brief Timer class that calls a callback method periodically. Due to possible blocking calls, only one callback method can be registered per instance.
+        * \param[in] interval_seconds interval in seconds
+        */
       TimeTrigger (double interval_seconds = 1.0);
-      /**
-       * @brief desctructor
-       */
+
+      /** \brief Destructor. */
       ~TimeTrigger ();
-      /**
-       * @brief registeres a callback
-       * @param callback callback function to the list of callbacks. signature has to be boost::function<void()>
-       * @return connection the connection, which can be used to disable/enable and remove callback from list
-       */
+
+      /** \brief registeres a callback
+        * \param[in] callback callback function to the list of callbacks. signature has to be boost::function<void()>
+        * \return connection the connection, which can be used to disable/enable and remove callback from list
+        */
       boost::signals2::connection registerCallback (const callback_type& callback);
-      /**
-       * @brief resets the timer interval
-       * @param interval_seconds interval in seconds
-       */
-      void setInterval (double interval_seconds);
-      /**
-       * @brief start the Trigger
-       */
-      void start ();
-      /**
-       * @brief stop the Trigger
-       */
-      void stop ();
+
+      /** \brief Resets the timer interval
+        * \param[in] interval_seconds interval in seconds
+        */
+      void 
+      setInterval (double interval_seconds);
+
+      /** \brief Start the Trigger. */
+      void 
+      start ();
+
+      /** \brief Stop the Trigger. */
+      void 
+      stop ();
     private:
-      void thread_function ();
+      void 
+      thread_function ();
       boost::signals2::signal <void() > callbacks_;
 
       double interval_;

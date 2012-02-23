@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,7 +37,10 @@
 namespace pcl
 {
   template <typename real, int dimension>
-  VectorAverage<real, dimension>::VectorAverage()
+  VectorAverage<real, dimension>::VectorAverage () :
+    noOfSamples_ (0), accumulatedWeight_ (0), 
+    mean_ (Eigen::Matrix<real, dimension, 1>::Identity ()),
+    covariance_ (Eigen::Matrix<real, dimension, dimension>::Identity ())
   {
     reset();
   }

@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -48,7 +50,7 @@
 namespace pcl
 {
 
-  /** \brief @b RangeImage is derived from pcl/PointCloud and provides functionalities with focus on situations where
+  /** \brief RangeImage is derived from pcl/PointCloud and provides functionalities with focus on situations where
     *  a 3D scene was captured from a specific view point. 
     * \author Bastian Steder
     * \ingroup range_image
@@ -627,7 +629,20 @@ namespace pcl
       
 
       /** \brief Helper struct to return the results of a plane extraction */
-      struct ExtractedPlane {
+      struct ExtractedPlane 
+      {
+        ExtractedPlane () :
+          normal (Eigen::Vector3f::Identity ()),
+          d (0),
+          maximum_extensions (Eigen::Vector3f::Identity ()),
+          mean (Eigen::Vector3f::Identity ()),
+          eigen_values (Eigen::Vector3f::Identity ()),
+          eigen_vector1 (Eigen::Vector3f::Identity ()),
+          eigen_vector2 (Eigen::Vector3f::Identity ()),
+          eigen_vector3 (Eigen::Vector3f::Identity ()),
+          point_indices ()
+        {}
+
         Eigen::Vector3f normal;  //!< The normal vector of the plane
         float d;               //!< Distance of the plane to the origin. normal.dot(x)=d for every point x on the plane
         Eigen::Vector3f maximum_extensions; //!< Maximum extensions of the plane in the directions of the eigen vectors

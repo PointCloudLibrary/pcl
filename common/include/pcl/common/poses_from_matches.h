@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -66,10 +68,18 @@ namespace pcl
       //! A result of the pose estimation process
       struct PoseEstimate
       {
+        PoseEstimate () : 
+          transformation (Eigen::Affine3f::Identity ()),
+          score (0),
+          correspondence_indices (0) 
+        {}
+
         Eigen::Affine3f transformation;   //!< The estimated transformation between the two coordinate systems
         float score;                         //!< An estimate in [0,1], how good the estimated pose is 
         std::vector<int> correspondence_indices;  //!< The indices of the used correspondences
-        struct IsBetter {
+
+        struct IsBetter 
+        {
           bool operator()(const PoseEstimate& pe1, const PoseEstimate& pe2) const { return pe1.score>pe2.score;}
         };
         public:

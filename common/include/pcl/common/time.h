@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -58,10 +58,13 @@ namespace pcl
   class StopWatch
   {
     public:
-      StopWatch ()
+      /** \brief Constructor. */
+      StopWatch () : start_time_ (boost::posix_time::microsec_clock::local_time ())
       {
-        start_time_ = boost::posix_time::microsec_clock::local_time ();
       }
+
+      /** \brief Destructor. */
+      virtual ~StopWatch () {}
 
       /** \brief Retrieve the time in milliseconds spent since the last call to \a reset(). */
       inline double
@@ -107,13 +110,14 @@ namespace pcl
   class ScopeTime : public StopWatch
   {
     public:
-      inline ScopeTime (const char* title)
+      inline ScopeTime (const char* title) : 
+        title_ (std::string (title))
       {
-        title_ = std::string (title);
         start_time_ = boost::posix_time::microsec_clock::local_time ();
       }
 
-      inline ScopeTime ()
+      inline ScopeTime () :
+        title_ (std::string (""))
       {
         start_time_ = boost::posix_time::microsec_clock::local_time ();
       }
