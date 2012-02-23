@@ -87,7 +87,7 @@ namespace pcl
       //IndicesPtr model_subset = randomSubset(max_models, max_models);
 
       //for (int mi = 0; mi < ids.size(); mi++) {
-      for (auto it = ids.begin(); it != ids.end(); ++it)
+      for (int it = ids.begin(); it != ids.end(); ++it)
       {
         int id = *it;
         std::stringstream path;
