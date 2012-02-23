@@ -967,9 +967,9 @@ namespace pcl
   }
 
   /** \brief A structure representing the Local Reference Frame of a point.
-   *  \ingroup common
-   */
-  struct EIGEN_ALIGN16 ReferenceFrame
+    *  \ingroup common
+    */
+  struct EIGEN_ALIGN16 _ReferenceFrame
   {
     Axis x_axis;
     Axis y_axis;
@@ -984,12 +984,22 @@ namespace pcl
     };
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
 
+  struct EIGEN_ALIGN16 ReferenceFrame : public _ReferenceFrame
+  {
     ReferenceFrame ()
     { confidence = 0.; }
 
     ReferenceFrame (Axis const &x, Axis const &y, Axis const &z, float c = 1.0)
-      : x_axis (x), y_axis (y), z_axis (z), confidence (c) {}
+    {
+      x_axis = x;
+      y_axis = y;
+      z_axis = z;
+      confidence = c;
+    }
+    
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   inline std::ostream& operator << (std::ostream& os, const ReferenceFrame& p)
