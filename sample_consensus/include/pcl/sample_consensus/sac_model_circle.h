@@ -73,13 +73,17 @@ namespace pcl
       /** \brief Constructor for base SampleConsensusModelCircle2D.
         * \param[in] cloud the input point cloud dataset
         */
-      SampleConsensusModelCircle2D (const PointCloudConstPtr &cloud) : SampleConsensusModel<PointT> (cloud) {};
+      SampleConsensusModelCircle2D (const PointCloudConstPtr &cloud) : 
+        SampleConsensusModel<PointT> (cloud), tmp_inliers_ () 
+      {};
 
       /** \brief Constructor for base SampleConsensusModelCircle2D.
         * \param[in] cloud the input point cloud dataset
         * \param[in] indices a vector of point indices to be used from \a cloud
         */
-      SampleConsensusModelCircle2D (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : SampleConsensusModel<PointT> (cloud, indices) {};
+      SampleConsensusModelCircle2D (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : 
+        SampleConsensusModel<PointT> (cloud, indices), tmp_inliers_ ()
+      {};
 
       /** \brief Get 3 random non-collinear points as data samples and return them as point indices.
         * \param[out] iterations the internal number of iterations used by SAC methods

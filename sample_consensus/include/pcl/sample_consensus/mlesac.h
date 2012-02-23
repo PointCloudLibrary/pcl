@@ -68,38 +68,43 @@ namespace pcl
 
     public:
       /** \brief MLESAC (Maximum Likelihood Estimator SAmple Consensus) main constructor
-        * \param model a Sample Consensus model
+        * \param[in] model a Sample Consensus model
         */
-      MaximumLikelihoodSampleConsensus (const SampleConsensusModelPtr &model) : SampleConsensus<PointT> (model),
-                                                                                iterations_EM_ (3)  // Max number of EM (Expectation Maximization) iterations
+      MaximumLikelihoodSampleConsensus (const SampleConsensusModelPtr &model) : 
+        SampleConsensus<PointT> (model),
+        iterations_EM_ (3),      // Max number of EM (Expectation Maximization) iterations
+        sigma_ (0)
       {
-        // Maximum number of trials before we give up.
-        max_iterations_ = 10000;
+        max_iterations_ = 10000; // Maximum number of trials before we give up.
       }
 
       /** \brief MLESAC (Maximum Likelihood Estimator SAmple Consensus) main constructor
-        * \param model a Sample Consensus model
-        * \param threshold distance to model threshold
+        * \param[in] model a Sample Consensus model
+        * \param[in] threshold distance to model threshold
         */
-      MaximumLikelihoodSampleConsensus (const SampleConsensusModelPtr &model, double threshold) : SampleConsensus<PointT> (model, threshold),
-                                                                                                  iterations_EM_ (3)  // Max number of EM (Expectation Maximization) iterations
+      MaximumLikelihoodSampleConsensus (const SampleConsensusModelPtr &model, double threshold) : 
+        SampleConsensus<PointT> (model, threshold),
+        iterations_EM_ (3),      // Max number of EM (Expectation Maximization) iterations
+        sigma_ (0)
       {
-        // Maximum number of trials before we give up.
-        max_iterations_ = 10000;
+        max_iterations_ = 10000; // Maximum number of trials before we give up.
       }
 
       /** \brief Compute the actual model and find the inliers
-        * \param debug_verbosity_level enable/disable on-screen debug information and set the verbosity level
+        * \param[in] debug_verbosity_level enable/disable on-screen debug information and set the verbosity level
         */
-      bool computeModel (int debug_verbosity_level = 0);
+      bool 
+      computeModel (int debug_verbosity_level = 0);
 
       /** \brief Set the number of EM iterations.
-        * \param iterations the number of EM iterations
+        * \param[in] iterations the number of EM iterations
         */
-      inline void setEMIterations (int iterations) { iterations_EM_ = iterations; }
+      inline void 
+      setEMIterations (int iterations) { iterations_EM_ = iterations; }
 
       /** \brief Get the number of EM iterations. */
-      inline int getEMIterations () { return (iterations_EM_); }
+      inline int 
+      getEMIterations () const { return (iterations_EM_); }
 
 
     protected:
@@ -108,9 +113,9 @@ namespace pcl
         * MAD = \sigma * median_i (| Xi - median_j(Xj) |)
         * \f]
         * \note Sigma needs to be chosen carefully (a good starting sigma value is 1.4826)
-        * \param cloud the point cloud data message
-        * \param indices the set of point indices to use
-        * \param sigma the sigma value
+        * \param[in] cloud the point cloud data message
+        * \param[in] indices the set of point indices to use
+        * \param[in] sigma the sigma value
         */
       double 
       computeMedianAbsoluteDeviation (const PointCloudConstPtr &cloud, 
@@ -118,10 +123,10 @@ namespace pcl
                                       double sigma);
 
       /** \brief Determine the minimum and maximum 3D bounding box coordinates for a given set of points
-        * \param cloud the point cloud message
-        * \param indices the set of point indices to use
-        * \param min_p the resultant minimum bounding box coordinates
-        * \param max_p the resultant maximum bounding box coordinates
+        * \param[in] cloud the point cloud message
+        * \param[in] indices the set of point indices to use
+        * \param[out] min_p the resultant minimum bounding box coordinates
+        * \param[out] max_p the resultant maximum bounding box coordinates
         */
       void 
       getMinMax (const PointCloudConstPtr &cloud, 
@@ -130,9 +135,9 @@ namespace pcl
                  Eigen::Vector4f &max_p);
 
       /** \brief Compute the median value of a 3D point cloud using a given set point indices and return it as a Point32.
-        * \param cloud the point cloud data message
-        * \param indices the point indices
-        * \param median the resultant median value
+        * \param[in] cloud the point cloud data message
+        * \param[in] indices the point indices
+        * \param[out] median the resultant median value
         */
       void 
       computeMedian (const PointCloudConstPtr &cloud, 
