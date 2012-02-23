@@ -313,21 +313,13 @@ namespace pcl
             /** \brief Constructor for initializing child node pointer array. */
             OctreeBranch ()
             {
-              memset (this->subNodes_, 0, sizeof(this->subNodes_));
+              memset (this->subNodes_, 0, sizeof (this->subNodes_));
             }
 
             /** \brief Copy constructor. */
             OctreeBranch (const OctreeBranch &source)
             {
               *this = source;
-            }
-
-            /** \brief Copy operator. */
-            inline OctreeBranch&
-            operator = (const OctreeBranch &source)
-            {
-              *this = source;
-              return (*this);
             }
 
             /** \brief Empty deconstructor. */

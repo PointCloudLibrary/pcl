@@ -353,10 +353,8 @@ namespace pcl
           memset (subNodes_, 0, sizeof (subNodes_));
           // iterate over the 8 child nodes
           for (unsigned int i=0; i<8; i++)
-          {
             if (source.subNodes_[i] != 0)
               subNodes_[i] = source.subNodes_[i]->deepCopy ();
-          }
         }
 
         /** \brief Octree deep copy function */
@@ -370,9 +368,13 @@ namespace pcl
           * \param[in] o the octree branch to copy into this
           */
         inline OctreeBranch&
-        operator = (const OctreeBranch& o)
+        operator = (const OctreeBranch& source)
         {
-          *this = o;
+          memset (subNodes_, 0, sizeof (subNodes_));
+          // iterate over the 8 child nodes
+          for (unsigned int i=0; i<8; i++)
+            if (source.subNodes_[i] != 0)
+              subNodes_[i] = source.subNodes_[i]->deepCopy ();
           return (*this);
         }
 
@@ -383,7 +385,7 @@ namespace pcl
           * \return Returns BRANCH_NODE type.
           */
         inline virtual node_type_t
-        getNodeType () const {return BRANCH_NODE;}
+        getNodeType () const { return (BRANCH_NODE); }
 
         /** \brief access operator. 
           * \return const OctreeNode pointer

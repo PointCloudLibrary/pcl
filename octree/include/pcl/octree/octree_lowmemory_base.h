@@ -103,7 +103,12 @@ namespace pcl
         inline OctreeLowMemBase&
         operator = (const OctreeLowMemBase &source)
         {
-          *this = source;
+          leafCount_ = source.leafCount_;
+          branchCount_ = source.branchCount_;
+          objectCount_ = source.objectCount_;
+          rootNode_ = new (OctreeBranch) (*(source.rootNode_));
+          depthMask_ = source.depthMask_;
+          octreeDepth_ = source.octreeDepth_;
           return (*this);
         }
 
@@ -186,7 +191,7 @@ namespace pcl
         /** \brief Delete the octree structure and its leaf nodes.
          * */
         void
-        deleteTree ( );
+        deleteTree ();
 
         /** \brief Serialize octree into a binary output vector describing its branch node structure.
          *  \param binaryTreeOut_arg: reference to output vector for writing binary tree structure.
@@ -291,7 +296,8 @@ namespace pcl
             inline OctreeBranch&
             operator = (const OctreeBranch &source)
             {
-              *this = source;
+              occupancyByte_ = source.occupancyByte_;
+              subNodes_ = source.subNodes_;
               return (*this);
             }
 
