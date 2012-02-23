@@ -313,24 +313,28 @@ pcl::simulation::RangeLikelihood::computeScores (int cols, int rows,
         { // implicitly this caps the cost if there is a hole in the model
           lup = 300;
         }
-        float lhood = normal_sigma0x5_normal1x0_range0to3_step0x01[lup];
 
-        // add a ground floor:
-        // increasing this will mean that the likelihood is less peaked
-        // but you need more particles to do this...
-        // with ~90particles user 0.999, for example in the quad dataset
-        double ratio = 0.99;//was always 0.99; // ratio of uniform to normal
-        double r_min =0; // metres
-        double r_max = 3; // metres
-        lhood = ratio/(r_max -r_min)  + (1-ratio)*lhood ;
-        if (ref[col%col_width] < 0)
-        { // all images pixels with no range
-          lhood =1; // log(1) = 0 ---> has no effect
+	float lhood=1;
+	if (isnan(depth_val)){ // pixels with nan depth 
+	  lhood =1; // log(1) = 0 ---> has no effect
+	}else if(ref[col%col_width] < 0){ // all RGB pixels with no depth
+	  lhood =1; // log(1) = 0 ---> has no effect
+	}else{
+	  lhood = normal_sigma0x5_normal1x0_range0to3_step0x01[lup];
+          // add a ground floor:
+          // increasing this will mean that the likelihood is less peaked
+          // but you need more particles to do this...
+          // with ~90particles user 0.999, for example in the quad dataset
+   	  // ratio of uniform to	normal
+	  double ratio = 0.99;//was always 0.99; 
+          double r_min =0; // metres
+          double r_max = 3; // metres
+          lhood = ratio/(r_max -r_min)  + (1-ratio)*lhood ;
         }
-        if (do_depth_field)
-        {// do you want the image output to LCM?
-          depth_field[row*cols*col_width + col] =lhood ;// (*depth);
-        }
+
+	if (do_depth_field){// do you want the image output to LCM?
+	  depth_field[row*cols*col_width + col] =lhood ;// (*depth);
+	}
         scores[row/row_height * cols + col/col_width] += log (lhood);
       }
       else if(which_cost_function==3)
