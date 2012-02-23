@@ -326,13 +326,13 @@ namespace pcl
         * \return final step length
         */
       double
-      computeStepLengthMT (const Eigen::Matrix<double, 6, 1> &x, 
-                           const Eigen::Matrix<double, 6, 1> &step_dir, 
+      computeStepLengthMT (const Eigen::Matrix<double, 6, 1> &x,
+                           Eigen::Matrix<double, 6, 1> &step_dir,
                            double step_init,
-                           double step_max, double step_min, 
-                           double &score, 
+                           double step_max, double step_min,
+                           double &score,
                            Eigen::Matrix<double, 6, 1> &score_gradient,
-                           Eigen::Matrix<double, 6, 6> &hessian, 
+                           Eigen::Matrix<double, 6, 6> &hessian,
                            PointCloudSource &trans_cloud);
 
       /** \brief Update interval of possible step lengths for More-Thuente method, \f$ I \f$ in More-Thuente (1994)
