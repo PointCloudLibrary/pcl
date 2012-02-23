@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -85,10 +85,35 @@ namespace pcl
       KdTreeFLANN (bool sorted = true) : 
         pcl::KdTree<PointT> (sorted), 
         flann_index_ (NULL), cloud_ (NULL), 
+        index_mapping_ (), identity_mapping_ (false),
         dim_ (0), total_nr_points_ (0),
         param_k_ (flann::SearchParams (-1 , (float) epsilon_)),
         param_radius_ (flann::SearchParams (-1, (float) epsilon_, sorted))
       {
+      }
+
+      /** \brief Copy constructor
+        * \param[in] tree the tree to copy into this
+        */
+      KdTreeFLANN (const KdTreeFLANN<PointT> &k) : 
+        pcl::KdTree<PointT> (false), 
+        flann_index_ (NULL), cloud_ (NULL), 
+        index_mapping_ (), identity_mapping_ (false),
+        dim_ (0), total_nr_points_ (0),
+        param_k_ (flann::SearchParams (-1 , (float) epsilon_)),
+        param_radius_ (flann::SearchParams (-1, (float) epsilon_, false))
+      {
+        *this = k;
+      }
+
+      /** \brief Copy operator
+        * \param[in] tree the tree to copy into this
+        */ 
+      inline KdTreeFLANN<PointT>&
+      operator = (const KdTreeFLANN<PointT>& k)
+      {
+        *this = k;
+        return (*this);
       }
 
       /** \brief Set the search epsilon precision (error bound) for nearest neighbors searches.
@@ -245,11 +270,36 @@ namespace pcl
         * By setting sorted to false, the \ref radiusSearch operations will be faster.
         */
       KdTreeFLANN (bool sorted = true) : 
-        input_(), indices_(), epsilon_(0.0), sorted_(sorted), flann_index_(NULL), cloud_(NULL)
+        input_(), indices_(), epsilon_(0.0), sorted_(sorted), flann_index_(NULL), cloud_(NULL),
+        index_mapping_ (), identity_mapping_ (false), dim_ (0), 
+        param_k_ (flann::SearchParams (-1, (float) epsilon_)),
+        param_radius_ (flann::SearchParams (-1, (float) epsilon_, sorted)),
+        total_nr_points_ (0)
       {
-        param_k_ = flann::SearchParams (-1, (float) epsilon_);
-        param_radius_ = flann::SearchParams (-1, (float) epsilon_, sorted);
         cleanup ();
+      }
+
+      /** \brief Copy constructor
+        * \param[in] tree the tree to copy into this
+        */
+      KdTreeFLANN (const KdTreeFLANN<Eigen::MatrixXf> &k) : 
+        input_(), indices_(), epsilon_(0.0), sorted_(false), flann_index_(NULL), cloud_(NULL),
+        index_mapping_ (), identity_mapping_ (false), dim_ (0), 
+        param_k_ (flann::SearchParams (-1, (float) epsilon_)),
+        param_radius_ (flann::SearchParams (-1, (float) epsilon_, sorted_)),
+        total_nr_points_ (0)
+      {
+        *this = k;
+      }
+
+      /** \brief Copy operator
+        * \param[in] tree the tree to copy into this
+        */ 
+      inline KdTreeFLANN&
+      operator = (const KdTreeFLANN<Eigen::MatrixXf>& k)
+      {
+        *this = k;
+        return (*this);
       }
 
       /** \brief Set the search epsilon precision (error bound) for nearest neighbors searches.
@@ -699,7 +749,7 @@ namespace pcl
 
       /** \brief The total size of the data (either equal to the number of points in the input cloud or to the number of indices - if passed). */
       int total_nr_points_;
-    };
+  };
 }
 
 #endif
