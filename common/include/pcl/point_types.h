@@ -527,12 +527,13 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::PointSurfel,
     (float, curvature, curvature)
 )
 
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ReferenceFrame,
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_ReferenceFrame,
     (float[3], x_axis, x_axis)
     (float[3], y_axis, y_axis)
     (float[3], z_axis, z_axis)
     (float, confidence, confidence)
 )
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::ReferenceFrame, pcl::_ReferenceFrame)
 
 //POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::BorderDescription,
 //                                  (int, x, x)
