@@ -362,11 +362,12 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_Normal,
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::Normal, pcl::_Normal)
 
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Axis,
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_Axis,
     (float, normal_x, normal_x)
     (float, normal_y, normal_y)
     (float, normal_z, normal_z)
 )
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::Axis, pcl::_Axis)
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointNormal,
     (float, x, x)
