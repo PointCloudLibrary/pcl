@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,10 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-
-/**
-\author Bastian Steder
-**/
 
 #include <cstddef>
 #include <Eigen/StdVector>
@@ -113,7 +111,14 @@ RangeImage::getCoordinateFrameTransformation (RangeImage::CoordinateFrame coordi
 }
 
 /////////////////////////////////////////////////////////////////////////
-RangeImage::RangeImage () : RangeImage::BaseClass ()
+RangeImage::RangeImage () : 
+  RangeImage::BaseClass (), 
+  to_range_image_system_ (Eigen::Affine3f::Identity ()),
+  to_world_system_ (Eigen::Affine3f::Identity ()),
+  angular_resolution_ (0),
+  angular_resolution_reciprocal_ (0),
+  image_offset_x_ (0), image_offset_y_ (0),
+  unobserved_point ()
 {
   createLookupTables();
   reset ();

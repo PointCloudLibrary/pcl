@@ -184,7 +184,7 @@ namespace pcl
         * sensor_orientation_ to identity.
         */
       PointCloud () : 
-        header (), width (0), height (0), is_dense (true),
+        header (), points (), width (0), height (0), is_dense (true),
         sensor_origin_ (Eigen::Vector4f::Zero ()), sensor_orientation_ (Eigen::Quaternionf::Identity ()),
         mapping_ ()
       {}
@@ -193,7 +193,7 @@ namespace pcl
         * \param[in] pc the cloud to copy into this
         */
       PointCloud (PointCloud<PointT> &pc) : 
-        header (), width (0), height (0), is_dense (true), 
+        header (), points (), width (0), height (0), is_dense (true), 
         sensor_origin_ (Eigen::Vector4f::Zero ()), sensor_orientation_ (Eigen::Quaternionf::Identity ()),
         mapping_ ()
       {
@@ -204,7 +204,7 @@ namespace pcl
         * \param[in] pc the cloud to copy into this
         */
       PointCloud (const PointCloud<PointT> &pc) : 
-        header (), width (0), height (0), is_dense (true), 
+        header (), points (), width (0), height (0), is_dense (true), 
         sensor_origin_ (Eigen::Vector4f::Zero ()), sensor_orientation_ (Eigen::Quaternionf::Identity ()),
         mapping_ ()
       {
