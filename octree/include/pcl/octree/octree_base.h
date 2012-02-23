@@ -105,7 +105,12 @@ namespace pcl
         inline OctreeBase& 
         operator = (const OctreeBase &source)
         {
-          *this = source;
+          leafCount_ = source.leafCount_;
+          branchCount_ = source.branchCount_;
+          objectCount_ = source.objectCount_;
+          rootNode_ = new (OctreeBranch) (*(source.rootNode_));
+          depthMask_ = source.depthMask_;
+          octreeDepth_ = source.octreeDepth_;
           return (*this);
         }
 
