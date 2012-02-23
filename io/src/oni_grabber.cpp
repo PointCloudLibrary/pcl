@@ -406,7 +406,7 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr ONIGrabber::convertToXYZRGBPointCloud (
       color.Red = rgb_buffer[color_idx];
       color.Green = rgb_buffer[color_idx + 1];
       color.Blue = rgb_buffer[color_idx + 2];
-      pt.rgba = color.float_value;
+      pt.rgb = color.float_value;
     }
   }
   return (cloud);
