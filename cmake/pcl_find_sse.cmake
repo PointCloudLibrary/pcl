@@ -101,7 +101,7 @@ macro(PCL_CHECK_FOR_SSE)
     set(CMAKE_REQUIRED_FLAGS)
 
     if (NOT APPLE AND NOT MSVC)
-        SET(SSE_FLAGS "${SSE_FLAGS} -std=gnu++0x -march=native")
+        SET(SSE_FLAGS "${SSE_FLAGS} -march=native")
     elseif (APPLE)
         if (HAVE_SSE4_1_EXTENSIONS)
             SET(SSE_FLAGS "${SSE_FLAGS} -msse4.1 -mfpmath=sse")

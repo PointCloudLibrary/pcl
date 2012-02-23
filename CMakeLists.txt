@@ -25,10 +25,10 @@ if(WIN32)
 endif()
 
 # ---[ special maintainer mode
-SET(CMAKE_CXX_FLAGS_MAINTAINER "-pedantic -Wabi -Wextra -Weffc++" CACHE STRING
+SET(CMAKE_CXX_FLAGS_MAINTAINER "-pedantic -Wno-variadic-macros -Wabi -Wextra -Weffc++" CACHE STRING
     "Flags used by the C++ compiler during maintainer builds."
     FORCE)
-SET(CMAKE_C_FLAGS_MAINTAINER "-pedantic -Wabi -Wextra -Weffc++" CACHE STRING
+SET(CMAKE_C_FLAGS_MAINTAINER "-pedantic -Wno-variadic-macros -Wabi -Wextra -Weffc++" CACHE STRING
     "Flags used by the C compiler during maintainer builds."
     FORCE)
 SET(CMAKE_EXE_LINKER_FLAGS_MAINTAINER
@@ -87,7 +87,7 @@ if (__COMPILER_PATHSCALE)
 endif()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 endif()
 
 # ---[ Project folders
