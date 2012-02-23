@@ -45,6 +45,7 @@ namespace pcl
   /**
     * \brief Base class for 3D clipper objects
     * \author Suat Gedikli <gedikli@willowgarage.com>
+    * \ingroup filters
     */
   template<typename PointT>
   class Clipper3D

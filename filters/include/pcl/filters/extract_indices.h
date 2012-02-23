@@ -66,7 +66,7 @@ namespace pcl
         negative_ (false)
       {
         use_indices_ = true;
-        filter_name_ = "ProjectInliers";
+        filter_name_ = "ExtractIndices";
       }
 
       /** \brief Set whether the indices should be returned, or all points _except_ the indices.

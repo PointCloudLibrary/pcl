@@ -44,6 +44,7 @@ namespace pcl
   /**
    * @author Suat Gedikli <gedikli@willowgarage.com>
    * @brief Implementation of a plane clipper in 3D
+   * \ingroup filters
    */
   template<typename PointT>
   class PlaneClipper3D : public Clipper3D<PointT>

@@ -45,6 +45,7 @@ namespace pcl
     * \author Suat Gedikli <gedikli@willowgarage.com>
     * \brief Implementation of a box clipper in 3D. Actually it allows affine transformations, thus any parallelepiped in general pose.
     *        The affine transformation is used to transform the point before clipping it using the unit cube centered at origin and with an extend of -1 to +1 in each dimension
+    * \ingroup filters
     */
   template<typename PointT>
   class BoxClipper3D : public Clipper3D<PointT>
