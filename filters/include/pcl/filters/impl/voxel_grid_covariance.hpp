@@ -255,7 +255,8 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   if (searchable_)
     voxel_centroids_leaf_indices_.reserve (leaves_.size ());
   int cp = 0;
-  leaf_layout_.resize (div_b_[0] * div_b_[1] * div_b_[2], -1);
+  if (save_leaf_layout_)
+    leaf_layout_.resize (div_b_[0] * div_b_[1] * div_b_[2], -1);
 
   // Eigen values and vectors calculated to prevent near singluar matrices
   Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> eigensolver;

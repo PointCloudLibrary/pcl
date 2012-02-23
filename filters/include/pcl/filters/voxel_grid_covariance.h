@@ -196,7 +196,7 @@ public:
   VoxelGridCovariance ()
   {
     downsample_all_data_ = false;
-    save_leaf_layout_ = true;
+    save_leaf_layout_ = false;
     leaf_size_.setZero ();
     min_b_.setZero ();
     max_b_.setZero ();
