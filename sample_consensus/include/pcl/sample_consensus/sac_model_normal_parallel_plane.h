@@ -103,20 +103,24 @@ namespace pcl
       /** \brief Constructor for base SampleConsensusModelNormalParallelPlane.
         * \param[in] cloud the input point cloud dataset
         */
-      SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud) : SampleConsensusModelPlane<PointT> (cloud),
-                                                                          eps_angle_ (-1.0), cos_angle_ (-1.0), eps_dist_ (0.0)
+      SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud) : 
+        SampleConsensusModelPlane<PointT> (cloud),
+        axis_ (Eigen::Vector4f::Zero ()),
+        distance_from_origin_ (0),
+        eps_angle_ (-1.0), cos_angle_ (-1.0), eps_dist_ (0.0)
       {
-        axis_.setZero ();
       }
 
       /** \brief Constructor for base SampleConsensusModelNormalParallelPlane.
         * \param[in] cloud the input point cloud dataset
         * \param[in] indices a vector of point indices to be used from \a cloud
         */
-      SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : SampleConsensusModelPlane<PointT> (cloud, indices),
-                                                                                                           eps_angle_ (-1.0), cos_angle_ (-1.0), eps_dist_ (0.0)
+      SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : 
+        SampleConsensusModelPlane<PointT> (cloud, indices),
+        axis_ (Eigen::Vector4f::Zero ()),
+        distance_from_origin_ (0),
+        eps_angle_ (-1.0), cos_angle_ (-1.0), eps_dist_ (0.0)
       {
-        axis_.setZero ();
       }
 
       /** \brief Set the axis along which we need to search for a plane perpendicular to.

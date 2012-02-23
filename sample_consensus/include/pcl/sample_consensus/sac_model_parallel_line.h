@@ -71,20 +71,22 @@ namespace pcl
       /** \brief Constructor for base SampleConsensusModelParallelLine.
         * \param[in] cloud the input point cloud dataset
         */
-      SampleConsensusModelParallelLine (const PointCloudConstPtr &cloud) : SampleConsensusModelLine<PointT> (cloud),
-                                                                           eps_angle_ (0.0)
+      SampleConsensusModelParallelLine (const PointCloudConstPtr &cloud) : 
+        SampleConsensusModelLine<PointT> (cloud),
+        axis_ (Eigen::Vector3f::Zero ()),
+        eps_angle_ (0.0)
       {
-        axis_.setZero ();
       }
 
       /** \brief Constructor for base SampleConsensusModelParallelLine.
         * \param[in] cloud the input point cloud dataset
         * \param[in] indices a vector of point indices to be used from \a cloud
         */
-      SampleConsensusModelParallelLine (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : SampleConsensusModelLine<PointT> (cloud, indices),
-                                                                                                            eps_angle_ (0.0)
+      SampleConsensusModelParallelLine (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : 
+        SampleConsensusModelLine<PointT> (cloud, indices),
+        axis_ (Eigen::Vector3f::Zero ()),
+        eps_angle_ (0.0)
       {
-        axis_.setZero ();
       }
 
       /** \brief Set the axis along which we need to search for a plane perpendicular to.

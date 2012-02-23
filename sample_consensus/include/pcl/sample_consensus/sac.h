@@ -68,11 +68,19 @@ namespace pcl
         * \param[in] model a Sample Consensus model
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensus (const SampleConsensusModelPtr &model, bool random = false) : sac_model_(model), probability_ (0.99),
-                                                               iterations_ (0), threshold_ (DBL_MAX), max_iterations_ (1000)
+      SampleConsensus (const SampleConsensusModelPtr &model, bool random = false) : 
+        sac_model_ (model), 
+        model_ (), 
+        inliers_ (), 
+        model_coefficients_ (), 
+        probability_ (0.99), 
+        iterations_ (0), 
+        threshold_ (DBL_MAX), 
+        max_iterations_ (1000), 
+        rng_alg_ (), 
+        rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
       {
          // Create a random number generator object
-         rng_.reset (new boost::uniform_01<boost::mt19937> (rng_alg_));
          if (random)
            rng_->base ().seed (static_cast<unsigned> (std::time(0)));
          else
@@ -85,10 +93,18 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensus (const SampleConsensusModelPtr &model, double threshold, bool random = false) : 
-        sac_model_(model), probability_ (0.99), iterations_ (0), threshold_ (threshold), max_iterations_ (1000)
+        sac_model_ (model), 
+        model_ (), 
+        inliers_ (), 
+        model_coefficients_ (), 
+        probability_ (0.99), 
+        iterations_ (0), 
+        threshold_ (threshold), 
+        max_iterations_ (1000), 
+        rng_alg_ (), 
+        rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
       {
          // Create a random number generator object
-         rng_.reset (new boost::uniform_01<boost::mt19937> (rng_alg_));
          if (random)
            rng_->base ().seed (static_cast<unsigned> (std::time(0)));
          else

@@ -80,9 +80,10 @@ namespace pcl
         * \param[in] cloud the input point cloud dataset
         */
       SampleConsensusModelPerpendicularPlane (const PointCloudConstPtr &cloud) : 
-        SampleConsensusModelPlane<PointT> (cloud), eps_angle_ (0.0)
+        SampleConsensusModelPlane<PointT> (cloud), 
+        axis_ (Eigen::Vector3f::Zero ()),
+        eps_angle_ (0.0)
       {
-        axis_.setZero ();
       }
 
       /** \brief Constructor for base SampleConsensusModelPerpendicularPlane.
@@ -91,9 +92,10 @@ namespace pcl
         */
       SampleConsensusModelPerpendicularPlane (const PointCloudConstPtr &cloud, 
                                               const std::vector<int> &indices) : 
-        SampleConsensusModelPlane<PointT> (cloud, indices), eps_angle_ (0.0)
+        SampleConsensusModelPlane<PointT> (cloud, indices), 
+        axis_ (Eigen::Vector3f::Zero ()),
+        eps_angle_ (0.0)
       {
-        axis_.setZero ();
       }
 
       /** \brief Set the axis along which we need to search for a plane perpendicular to.

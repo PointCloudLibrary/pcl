@@ -74,7 +74,9 @@ namespace pcl
       /** \brief Empty constructor for base SampleConsensusModel.
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModel (bool random = false) : radius_min_ (-DBL_MAX), radius_max_ (DBL_MAX) 
+      SampleConsensusModel (bool random = false) : 
+        radius_min_ (-DBL_MAX), radius_max_ (DBL_MAX),
+        rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()))
       {
         // Create a random number generator object
         if (random)
@@ -82,7 +84,6 @@ namespace pcl
         else
           rng_alg_.seed (12345u);
 
-        rng_dist_.reset (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()));
         rng_gen_.reset (new boost::variate_generator<boost::mt19937&, boost::uniform_int<> > (rng_alg_, *rng_dist_)); 
        }
 
@@ -92,7 +93,13 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModel (const PointCloudConstPtr &cloud, bool random = false) : 
-        radius_min_ (-DBL_MAX), radius_max_ (DBL_MAX)
+        input_ (),
+        indices_ (),
+        radius_min_ (-DBL_MAX), radius_max_ (DBL_MAX),
+        shuffled_indices_ (),
+        rng_alg_ (),
+        rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ())),
+        rng_gen_ ()
       {
         if (random)
           rng_alg_.seed (static_cast<unsigned> (std::time(0)));
@@ -103,7 +110,6 @@ namespace pcl
         setInputCloud (cloud);
 
         // Create a random number generator object
-        rng_dist_.reset (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()));
         rng_gen_.reset (new boost::variate_generator<boost::mt19937&, boost::uniform_int<> > (rng_alg_, *rng_dist_)); 
        }
 
@@ -114,15 +120,18 @@ namespace pcl
         */
       SampleConsensusModel (const PointCloudConstPtr &cloud, const std::vector<int> &indices, bool random = false) :
                             input_ (cloud),
-                            radius_min_ (-DBL_MAX), radius_max_ (DBL_MAX) 
-    
+                            indices_ (new std::vector<int> (indices)),
+                            radius_min_ (-DBL_MAX), radius_max_ (DBL_MAX),
+                            shuffled_indices_ (),
+                            rng_alg_ (),
+                            rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ())),
+                            rng_gen_ ()
       {
         if (random)
           rng_alg_.seed (static_cast<unsigned> (std::time(0)));
         else
           rng_alg_.seed (12345u);
 
-        indices_.reset (new std::vector<int> (indices));
         if (indices_->size () > input_->points.size ())
         {
           PCL_ERROR ("[pcl::SampleConsensusModel] Invalid index vector given with size %lu while the input PointCloud has size %lu!\n", (unsigned long)indices_->size (), (unsigned long)input_->points.size ());
@@ -131,7 +140,6 @@ namespace pcl
         shuffled_indices_ = *indices_;
 
         // Create a random number generator object
-        rng_dist_.reset (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()));
         rng_gen_.reset (new boost::variate_generator<boost::mt19937&, boost::uniform_int<> > (rng_alg_, *rng_dist_)); 
        };
 
@@ -429,7 +437,10 @@ namespace pcl
       typedef boost::shared_ptr<const SampleConsensusModelFromNormals> ConstPtr;
 
       /** \brief Empty constructor for base SampleConsensusModelFromNormals. */
-      SampleConsensusModelFromNormals () : normal_distance_weight_ (0.0) {};
+      SampleConsensusModelFromNormals () : normal_distance_weight_ (0.0), normals_ () {};
+
+      /** \brief Destructor. */
+      virtual ~SampleConsensusModelFromNormals () {}
 
       /** \brief Set the normal angular distance weight.
         * \param[in] w the relative weight (between 0 and 1) to give to the angular
@@ -499,6 +510,8 @@ namespace pcl
       */
     Functor (int m_data_points) : m_data_points_ (m_data_points) {}
   
+    virtual ~Functor () {}
+
     /** \brief Get the number of values. */ 
     int
     values () const { return (m_data_points_); }
