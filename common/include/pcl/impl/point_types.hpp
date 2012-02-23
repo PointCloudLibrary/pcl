@@ -589,13 +589,16 @@ namespace pcl
   }
 
   /** \brief A point structure representing an Axis using its normal coordinates. (SSE friendly)
-   *  \ingroup common
-   */
-  struct EIGEN_ALIGN16 Axis
+    *  \ingroup common
+    */
+  struct EIGEN_ALIGN16 _Axis
   {
     PCL_ADD_NORMAL4D;
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
 
+  struct EIGEN_ALIGN16 Axis : public _Axis
+  {
     inline Axis ()
     {
       normal_x = normal_y = normal_z = data_n[3] = 0.0f;
@@ -603,6 +606,8 @@ namespace pcl
 
     inline Axis (float n_x, float n_y, float n_z)
     { normal_x = n_x; normal_y = n_y; normal_z = n_z; data_n[3] = 0.0f; }
+
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   inline std::ostream& operator << (std::ostream& os, const Axis& p)
