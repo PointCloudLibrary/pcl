@@ -62,10 +62,10 @@ namespace pcl
 
 
         bin_t *target_bin = bins_map[target_id];
-        auto max_votes_it = std::max_element(target_bin->data(), target_bin->data() + target_bin->num_elements());
+        double *max_votes_it = std::max_element(target_bin->data(), target_bin->data() + target_bin->num_elements());
 
         double sum = 0;
-        for (auto i =  target_bin->data(); i < target_bin->data() + target_bin->num_elements(); ++i)
+        for (double* i =  target_bin->data(); i < target_bin->data() + target_bin->num_elements(); ++i)
         {
           sum += *i;
         }
