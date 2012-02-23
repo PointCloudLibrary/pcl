@@ -249,25 +249,20 @@ pcl::KdTreeFLANN<PointT, Dist>::convertCloudToArray (const PointCloud &cloud, co
   cloud_ = (float*)malloc (original_no_of_points * dim_ * sizeof (float));
   float* cloud_ptr = cloud_;
   index_mapping_.reserve (original_no_of_points);
+  identity_mapping_ = true;
 
-  // true only identity: 
-  //     - indices size equals cloud size
-  //     - indices only contain values between 0 and cloud.size - 1
-  //     - no index is multiple times in the list
-  //     => index is complete
-  // But we can not guarantee that => identity_mapping_ = false
-  identity_mapping_ = false;
-  
-  for (std::vector<int>::const_iterator iIt = indices.begin (); iIt != indices.end (); ++iIt)
+  for (int indices_index = 0; indices_index < original_no_of_points; ++indices_index)
   {
     // Check if the point is invalid
-    if (!point_representation_->isValid (cloud.points[*iIt]))
+    if (!point_representation_->isValid (cloud.points[indices[indices_index]]))
+    {
+      identity_mapping_ = false;
       continue;
+    }
 
+    index_mapping_.push_back (indices_index);  // If the returned index should be for the indices vector
     
-    index_mapping_.push_back (*iIt);  // If the returned index should be for the indices vector
-    
-    point_representation_->vectorize (cloud.points[*iIt], cloud_ptr);
+    point_representation_->vectorize (cloud.points[indices[indices_index]], cloud_ptr);
     cloud_ptr += dim_;
   }
 }
