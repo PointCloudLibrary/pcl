@@ -415,7 +415,7 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     //cloud.header = cloud_->header;
     std::vector<pcl::uint8_t> data ((*range_grid_).size () * cloud.point_step);
     const static float f_nan = std::numeric_limits <float>::quiet_NaN ();
-    const static float d_nan = std::numeric_limits <double>::quiet_NaN ();
+    const static double d_nan = std::numeric_limits <double>::quiet_NaN ();
     for (size_t r = 0; r < r_size; ++r)
     {
       if ((*range_grid_)[r].size () == 0)
