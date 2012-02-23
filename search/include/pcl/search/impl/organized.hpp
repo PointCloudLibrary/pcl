@@ -54,7 +54,7 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
                                                       unsigned int        max_nn) const
 {
   // NAN test
-  assert (isFiniteFast (query) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+  assert (isFinite (query) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
 
   // search window
   unsigned left, right, top, bottom;
@@ -114,7 +114,7 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
                                                         std::vector<int> &k_indices,
                                                         std::vector<float> &k_sqr_distances) const
 {
-  assert (isFiniteFast (query) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+  assert (isFinite (query) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
   if (k < 1)
   {
     k_indices.clear ();
@@ -326,7 +326,7 @@ pcl::search::OrganizedNeighbor<PointT>::getProjectedRadiusSearchBox (const Point
 template<typename PointT> template <typename MatrixType> void
 pcl::search::OrganizedNeighbor<PointT>::makeSymmetric (MatrixType& matrix, bool use_upper_triangular) const
 {
-  if (use_upper_triangular)
+  if (use_upper_triangular && (MatrixType::Flags & Eigen::RowMajorBit) )
   {
     matrix.coeffRef (4) = matrix.coeff (1);
     matrix.coeffRef (8) = matrix.coeff (2);
@@ -387,11 +387,11 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
   }
   
   // we just want to use every 16th column and row -> skip = 2^4
-  const unsigned int skip = input_->width >> 4;
-  Eigen::Matrix<Scalar, 4, 4> A = Eigen::Matrix<Scalar, 4, 4>::Zero ();
-  Eigen::Matrix<Scalar, 4, 4> B = Eigen::Matrix<Scalar, 4, 4>::Zero ();
-  Eigen::Matrix<Scalar, 4, 4> C = Eigen::Matrix<Scalar, 4, 4>::Zero ();
-  Eigen::Matrix<Scalar, 4, 4> D = Eigen::Matrix<Scalar, 4, 4>::Zero ();
+  const unsigned int skip = input_->width >> 3;
+  Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> A = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
+  Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> B = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
+  Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> C = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
+  Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> D = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
 
   for (unsigned yIdx = 0, idx = 0; yIdx < input_->height; yIdx += skip, idx += input_->width * (skip-1))
   {
@@ -474,7 +474,7 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
   makeSymmetric(C);
   makeSymmetric(D);
 
-  Eigen::Matrix<Scalar, 12, 12> X = Eigen::Matrix<Scalar, 12, 12>::Zero ();
+  Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor> X = Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor>::Zero ();
   X.topLeftCorner<4,4> () = A;
   X.block<4,4> (0, 8) = B;
   X.block<4,4> (8, 0) = B;
@@ -483,8 +483,8 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
   X.block<4,4> (8, 4) = C;
   X.block<4,4> (8, 8) = D;
 
-  Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar, 12, 12> > ei_symm(X);
-  Eigen::Matrix<Scalar, 12, 12> eigen_vectors = ei_symm.eigenvectors();
+  Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor> > ei_symm(X);
+  Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor> eigen_vectors = ei_symm.eigenvectors();
 
   // check whether the residual MSE is low. If its high, the cloud was not captured from a projective device.
   Eigen::Matrix<Scalar, 1, 1> residual_sqr = eigen_vectors.col (0).transpose () * X *  eigen_vectors.col (0);
@@ -493,6 +493,7 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
     PCL_ERROR ("[pcl::%s::radiusSearch] Input dataset is not from a projective device!\nResidual (MSE) %f, using %d valid points\n", this->getName ().c_str (), residual_sqr.coeff (0) / A.coeff (15), (int)A.coeff (15));
     return;
   }
+
   projection_matrix_.coeffRef (0) = eigen_vectors.coeff (0);
   projection_matrix_.coeffRef (1) = eigen_vectors.coeff (12);
   projection_matrix_.coeffRef (2) = eigen_vectors.coeff (24);
@@ -514,7 +515,7 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
   KR_ = projection_matrix_.topLeftCorner <3, 3> ();
 
   // precalculate KR * KR^T needed by calculations during nn-search
-  KR_KRT_ = KR_ * KR_.transpose ();
+  KR_KRT_ = KR_ * KR_.transpose ();  
 }
 
 #define PCL_INSTANTIATE_OrganizedNeighbor(T) template class PCL_EXPORTS pcl::search::OrganizedNeighbor<T>;

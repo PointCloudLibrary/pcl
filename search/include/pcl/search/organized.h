@@ -80,7 +80,7 @@ namespace pcl
         OrganizedNeighbor (bool sorted_results = false)
           : Search<PointT> ("OrganizedNeighbor", sorted_results)
           , projection_matrix_ (Eigen::Matrix<float, 3, 4, Eigen::RowMajor>::Zero ())
-          , eps_ (1e-6)
+          , eps_ (1e-4)
         {
         }
 
