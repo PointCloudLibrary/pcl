@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -43,23 +43,21 @@ namespace pcl
 {
   namespace octree
   {
-
-    using namespace std;
-
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT>
-    Octree2BufBase<DataT, LeafT>::Octree2BufBase ()
+    Octree2BufBase<DataT, LeafT>::Octree2BufBase () :
+      leafCount_ (0), 
+      branchCount_ (1),
+      objectCount_ (0), 
+      rootNode_ (new OctreeBranch ()), 
+      depthMask_ (0), 
+      unusedBranchesPool_ (),
+      unusedLeafsPool_ (),
+      bufferSelector_ (0),
+      resetTree_ (false), 
+      treeDirtyFlag_ (false),
+      octreeDepth_ (0)
     {
-      // Initialization of globals
-      rootNode_ = new OctreeBranch ();
-      leafCount_ = 0;
-      branchCount_ = 1;
-      objectCount_ = 0;
-      depthMask_ = 0;
-      octreeDepth_ = 0;
-      bufferSelector_ = 0;
-      resetTree_ = false;
-      treeDirtyFlag_ = false;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -73,8 +71,7 @@ namespace pcl
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
-    void
+    template<typename DataT, typename LeafT> void
     Octree2BufBase<DataT, LeafT>::setMaxVoxelIndex (unsigned int maxVoxelIndex_arg)
     {
       unsigned int treeDepth;
@@ -82,8 +79,8 @@ namespace pcl
       assert (maxVoxelIndex_arg > 0);
 
       // tree depth == amount of bits of maxVoxels
-      treeDepth = max ((min ((unsigned int)OCT_MAXTREEDEPTH, (unsigned int)ceil (Log2 (maxVoxelIndex_arg)))),
-                       (unsigned int)0);
+      treeDepth = std::max ((std::min ((unsigned int)OCT_MAXTREEDEPTH, (unsigned int)std::ceil (Log2 (maxVoxelIndex_arg)))),
+                            (unsigned int)0);
 
       // define depthMask_ by setting a single bit to 1 at bit position == tree depth
       depthMask_ = (1 << (treeDepth - 1));
@@ -294,7 +291,7 @@ namespace pcl
       leafCount_ = 0;
 
       // iterator for binary tree structure vector
-      vector<char>::const_iterator binaryTreeVectorIterator = binaryTreeIn_arg.begin ();
+      std::vector<char>::const_iterator binaryTreeVectorIterator = binaryTreeIn_arg.begin ();
 
       deserializeTreeRecursive (binaryTreeVectorIterator, rootNode_, depthMask_, newKey, resetTree_, doXORDecoding_arg);
 
@@ -324,7 +321,7 @@ namespace pcl
       leafCount_ = 0;
 
       // iterator for binary tree structure vector
-      vector<char>::const_iterator binaryTreeVectorIterator = binaryTreeIn_arg.begin ();
+      std::vector<char>::const_iterator binaryTreeVectorIterator = binaryTreeIn_arg.begin ();
 
       deserializeTreeRecursive (binaryTreeVectorIterator, rootNode_, depthMask_, newKey, dataVectorIterator,
                                 dataVectorEndIterator, resetTree_, doXORDecoding_arg);
@@ -350,7 +347,7 @@ namespace pcl
       deleteTree ();
 
       // iterator for binary tree structure vector
-      vector<char>::const_iterator binaryTreeVectorIterator = binaryTreeIn_arg.begin ();
+      std::vector<char>::const_iterator binaryTreeVectorIterator = binaryTreeIn_arg.begin ();
 
       deserializeTreeAndOutputLeafDataRecursive (binaryTreeVectorIterator, rootNode_, depthMask_, newKey,
                                                  dataVector_arg, resetTree_, doXORDecoding_arg);
@@ -1295,29 +1292,32 @@ namespace pcl
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
-    void
-    Octree2BufBase<DataT, LeafT>::serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg)
+    template<typename DataT, typename LeafT> void
+    Octree2BufBase<DataT, LeafT>::serializeLeafCallback (OctreeLeaf &leaf_arg, const OctreeKey &key_arg)
     {
+      // Silence compiler warnings
+      (void)leaf_arg;
+      (void)key_arg;
       // nothing to do
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
-    void
-    Octree2BufBase<DataT, LeafT>::serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg,
-                                                         std::vector<DataT>& dataVector_arg)
+    template<typename DataT, typename LeafT> void
+    Octree2BufBase<DataT, LeafT>::serializeLeafCallback (OctreeLeaf &leaf_arg, const OctreeKey &key_arg,
+                                                         std::vector<DataT> &dataVector_arg)
     {
+      // Silence compiler warnings
+      (void)key_arg;
       leaf_arg.getData (dataVector_arg);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT>
-    void
+    template<typename DataT, typename LeafT> void
     Octree2BufBase<DataT, LeafT>::serializeNewLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg,
                                                             const int minPointsPerLeaf_arg,
                                                             std::vector<DataT>& dataVector_arg)
     {
+      (void)key_arg;    // Silence compiler warnings
       // we reached a leaf node
       std::vector<int> newPointIdx;
 

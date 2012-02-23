@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -54,26 +54,22 @@ namespace pcl
 {
   namespace octree
   {
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief @b Abstract octree iterator class
-     * \note Octree iterator base class
-     * \ingroup octree
-     * \author Julius Kammerl (julius@kammerl.de)
-     */
+      * \note Octree iterator base class
+      * \ingroup octree
+      * \author Julius Kammerl (julius@kammerl.de)
+      */
     template<typename DataT, typename LeafT, typename OctreeT>
-      class OctreeIteratorBase : public std::iterator<std::forward_iterator_tag, const OctreeNode, void,
-          const OctreeNode*, const OctreeNode&>
-      {
-
+    class OctreeIteratorBase : public std::iterator<std::forward_iterator_tag, const OctreeNode, void, const OctreeNode*, const OctreeNode&>
+    {
       public:
-
         // public typedefs
         typedef typename OctreeT::OctreeBranch OctreeBranch;
         typedef typename OctreeT::OctreeKey OctreeKey;
 
         /** \brief Constructor.
-         * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its root node.
-         */
+          * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its root node.
+          */
         explicit
         OctreeIteratorBase (const OctreeT& octree_arg) :
             octree_ (octree_arg), currentNode_ (NULL)
@@ -87,8 +83,7 @@ namespace pcl
         {
         }
 
-        /** \brief initialize iterator globals
-         */
+        /** \brief initialize iterator globals */
         inline void
         reset ()
         {
@@ -101,8 +96,8 @@ namespace pcl
         }
 
         /** \brief Get octree key for the current iterator octree node
-         * \return octree key of current node
-         */
+          * \return octree key of current node
+          */
         inline const OctreeKey&
         getCurrentOctreeKey () const
         {
@@ -110,8 +105,8 @@ namespace pcl
         }
 
         /** \brief Get the current depth level of octree
-         * \return depth level
-         */
+          * \return depth level
+          */
         inline unsigned int
         getCurrentOctreeDepth () const
         {
@@ -119,8 +114,8 @@ namespace pcl
         }
 
         /** \brief Get the current octree node
-         * \return pointer to current octree node
-         */
+          * \return pointer to current octree node
+          */
         inline const OctreeNode*
         getCurrentOctreeNode () const
         {
@@ -128,8 +123,8 @@ namespace pcl
         }
 
         /** \brief *operator.
-         * \return pointer to the current octree node
-         */
+          * \return pointer to the current octree node
+          */
         inline const OctreeNode*
         operator* () const
         { // return designated object
@@ -137,8 +132,8 @@ namespace pcl
         }
 
         /** \brief check if current node is a branch node
-         * \return true if current node is a branch node, false otherwise
-         */
+          * \return true if current node is a branch node, false otherwise
+          */
         inline bool
         isBranchNode () const
         {
@@ -146,8 +141,8 @@ namespace pcl
         }
 
         /** \brief check if current node is a branch node
-         * \return true if current node is a branch node, false otherwise
-         */
+          * \return true if current node is a branch node, false otherwise
+          */
         inline bool
         isLeafNode () const
         {
@@ -155,8 +150,8 @@ namespace pcl
         }
 
         /** \brief Get bit pattern of children configuration of current node
-         * \return bit pattern (byte) describing the existence of 8 children of the current node
-         */
+          * \return bit pattern (byte) describing the existence of 8 children of the current node
+          */
         inline char
         getNodeConfiguration () const
         {
@@ -178,8 +173,8 @@ namespace pcl
 
 
         /** \brief Method for retrieving a single DataT element from the octree leaf node
-         * \param[in] data_arg reference to return pointer of leaf node DataT element.
-         */
+          * \param[in] data_arg reference to return pointer of leaf node DataT element.
+          */
         virtual void
         getData (const DataT*& data_arg) const
         {
@@ -194,8 +189,8 @@ namespace pcl
         }
 
         /** \brief Method for retrieving a vector of DataT elements from the octree laef node
-         * \param[out] dataVector_arg reference to DataT vector that is extended with leaf node DataT elements.
-         */
+          * \param[out] dataVector_arg reference to DataT vector that is extended with leaf node DataT elements.
+          */
         virtual void
         getData (std::vector<DataT>& dataVector_arg) const
         {
@@ -207,8 +202,8 @@ namespace pcl
         }
 
         /** \brief get a integer identifier for current node (note: identifier depends on tree depth).
-         * \param[out] node id.
-         */
+          * \param[out] node id.
+          */
         virtual unsigned long
         getNodeID () const
         {
