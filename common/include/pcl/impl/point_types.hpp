@@ -616,6 +616,12 @@ namespace pcl
     return os;
   }
 
+  inline std::ostream& operator << (std::ostream& os, const _Axis& p)
+  {
+    os << "(" << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << ")";
+    return os;
+  }
+
   /** \brief A point structure representing Euclidean xyz coordinates, together with normal coordinates and the surface curvature estimate. (SSE friendly)
    * \ingroup common
    */
@@ -971,9 +977,9 @@ namespace pcl
     */
   struct EIGEN_ALIGN16 _ReferenceFrame
   {
-    Axis x_axis;
-    Axis y_axis;
-    Axis z_axis;
+    _Axis x_axis;
+    _Axis y_axis;
+    _Axis z_axis;
     union
     {
       struct
@@ -991,7 +997,7 @@ namespace pcl
     ReferenceFrame ()
     { confidence = 0.; }
 
-    ReferenceFrame (Axis const &x, Axis const &y, Axis const &z, float c = 1.0)
+    ReferenceFrame (_Axis const &x, _Axis const &y, _Axis const &z, float c = 1.0)
     {
       x_axis = x;
       y_axis = y;
