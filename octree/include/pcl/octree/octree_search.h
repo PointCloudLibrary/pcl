@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -273,27 +273,25 @@ namespace pcl
         {
           public:
             /** \brief Empty constructor  */
-            prioBranchQueueEntry ()
+            prioBranchQueueEntry () : node (), pointDistance (0), key ()
             {
             }
 
             /** \brief Constructor for initializing priority queue entry.
-              * \param node pointer to octree node
-              * \param key octree key addressing voxel in octree structure
-              * \param[in] pointDistance distance of query point to voxel center
+              * \param _node pointer to octree node
+              * \param _key octree key addressing voxel in octree structure
+              * \param[in] _point_distance distance of query point to voxel center
               */
-            prioBranchQueueEntry (OctreeNode* node, OctreeKey& key, float pointDistance)
+            prioBranchQueueEntry (OctreeNode* _node, OctreeKey& _key, float _point_distance) :
+              node (_node), pointDistance (_point_distance), key (_key)
             {
-              node = node;
-              pointDistance = pointDistance;
-              key = key;
             }
 
             /** \brief Operator< for comparing priority queue entries with each other. 
               * \param[in] rhs the priority queue to compare this against
               */
             bool
-            operator< (const prioBranchQueueEntry rhs) const
+            operator < (const prioBranchQueueEntry rhs) const
             {
               return (this->pointDistance > rhs.pointDistance);
             }
@@ -318,22 +316,22 @@ namespace pcl
           public:
 
             /** \brief Empty constructor  */
-            prioPointQueueEntry ()
+            prioPointQueueEntry () :
+              pointIdx_ (0), pointDistance_ (0)
             {
             }
 
             /** \brief Constructor for initializing priority queue entry.
-              * \param pointIdx an index representing a point in the dataset given by \a setInputCloud
+              * \param[in] pointIdx an index representing a point in the dataset given by \a setInputCloud
               * \param[in] pointDistance distance of query point to voxel center
               */
-            prioPointQueueEntry (unsigned int& pointIdx, float pointDistance)
+            prioPointQueueEntry (unsigned int& pointIdx, float pointDistance) :
+              pointIdx_ (pointIdx), pointDistance_ (pointDistance)
             {
-              pointIdx_ = pointIdx;
-              pointDistance_ = pointDistance;
             }
 
             /** \brief Operator< for comparing priority queue entries with each other.
-              * \param rhs priority queue to compare this against 
+              * \param[in] rhs priority queue to compare this against 
               */
             bool
             operator< (const prioPointQueueEntry& rhs) const

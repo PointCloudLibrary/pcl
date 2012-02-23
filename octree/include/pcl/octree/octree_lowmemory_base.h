@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -50,24 +50,21 @@ namespace pcl
 {
   namespace octree
   {
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Octree class
-     *  \note The tree depth defines the maximum amount of octree voxels / leaf nodes (should be initially defined).
-     *  \note All leaf nodes are addressed by integer indices.
-     *  \note Note: The tree depth equates to the bit length of the voxel indices.
-     *  \ingroup octree
-     *  \author Julius Kammerl (julius@kammerl.de)
-     */
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /** \brief Octree class
+      *  \note The tree depth defines the maximum amount of octree voxels / leaf nodes (should be initially defined).
+      *  \note All leaf nodes are addressed by integer indices.
+      *  \note Note: The tree depth equates to the bit length of the voxel indices.
+      *  \ingroup octree
+      *  \author Julius Kammerl (julius@kammerl.de)
+      */
     template<typename DataT, typename LeafT = OctreeLeafDataT<DataT> >
-      class OctreeLowMemBase
-      {
-
-        // iterators are friends
-        friend class OctreeIteratorBase<DataT, LeafT, OctreeLowMemBase> ;
-        friend class OctreeDepthFirstIterator<DataT, LeafT, OctreeLowMemBase> ;
-        friend class OctreeBreadthFirstIterator<DataT, LeafT, OctreeLowMemBase> ;
-        friend class OctreeLeafNodeIterator<DataT, LeafT, OctreeLowMemBase> ;
+    class OctreeLowMemBase
+    {
+      // iterators are friends
+      friend class OctreeIteratorBase<DataT, LeafT, OctreeLowMemBase> ;
+      friend class OctreeDepthFirstIterator<DataT, LeafT, OctreeLowMemBase> ;
+      friend class OctreeBreadthFirstIterator<DataT, LeafT, OctreeLowMemBase> ;
+      friend class OctreeLeafNodeIterator<DataT, LeafT, OctreeLowMemBase> ;
 
       public:
 
@@ -91,36 +88,44 @@ namespace pcl
         ~OctreeLowMemBase ();
 
         /** \brief copy constructor. */
-        OctreeLowMemBase (const OctreeLowMemBase& source)
+        OctreeLowMemBase (const OctreeLowMemBase& source) : 
+          leafCount_ (source.leafCount_),
+        	branchCount_ (source.branchCount_),
+        	objectCount_ (source.objectCount_),
+        	rootNode_ (new (OctreeBranch) (*(source.rootNode_))),
+        	depthMask_ (source.depthMask_),
+       	  octreeDepth_ (source.octreeDepth_),
+          unusedBranchesPool_ (), unusedLeafsPool_ ()
         {
-        	leafCount_ = source.leafCount_;
-        	branchCount_ = source.branchCount_;
-        	objectCount_ = source.objectCount_;
-        	rootNode_ = new (OctreeBranch) (*(source.rootNode_));
-        	depthMask_ = source.depthMask_;
-        	octreeDepth_ = source.octreeDepth_;
         }
 
+        /** \brief Copy operator. */
+        inline OctreeLowMemBase&
+        operator = (const OctreeLowMemBase &source)
+        {
+          *this = source;
+          return (*this);
+        }
 
         /** \brief Set the maximum amount of voxels per dimension.
-         *  \param maxVoxelIndex_arg: maximum amount of voxels per dimension
-         * */
+          * \param[in] maxVoxelIndex_arg maximum amount of voxels per dimension
+          */
         void
         setMaxVoxelIndex (unsigned int maxVoxelIndex_arg);
 
         /** \brief Set the maximum depth of the octree.
-         *  \param depth_arg: maximum depth of octree
-         * */
+          *  \param[in] depth_arg maximum depth of octree
+          */
         void
         setTreeDepth (unsigned int depth_arg);
 
         /** \brief Get the maximum depth of the octree.
-         *  \return depth_arg: maximum depth of octree
-         * */
+          * \return maximum depth of octree
+          */
         inline unsigned int
         getTreeDepth () const
         {
-          return this->octreeDepth_;
+          return (this->octreeDepth_);
         }
 
         /** \brief Add a const DataT element to leaf node at (idxX, idxY, idxZ). If leaf node does not exist, it is created and added to the octree.
@@ -237,91 +242,96 @@ namespace pcl
 
       protected:
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /** \brief @b Octree key class
-         *  \note Octree keys contain integer indices for each coordinate axis in order to address an octree leaf node.
-         *  \author Julius Kammerl (julius@kammerl.de)
-         */
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+          *  \note Octree keys contain integer indices for each coordinate axis in order to address an octree leaf node.
+          *  \author Julius Kammerl (julius@kammerl.de)
+          */
         class OctreeKey
         {
-        public:
+          public:
 
-          /** \brief Operator== for comparing octree keys with each other.
-           *  \return "true" if leaf node indices are identical; "false" otherwise.
-           * */
-          bool
-          operator == (const OctreeKey& b) const
-          {
-            return ((b.x == this->x) && (b.y == this->y) && (b.z == this->z));
-          }
+            /** \brief Operator== for comparing octree keys with each other.
+             *  \return "true" if leaf node indices are identical; "false" otherwise.
+             * */
+            bool
+            operator == (const OctreeKey& b) const
+            {
+              return ((b.x == this->x) && (b.y == this->y) && (b.z == this->z));
+            }
 
-          // Indices addressing a voxel at (X, Y, Z)
-          unsigned int x;
-          unsigned int y;
-          unsigned int z;
+            // Indices addressing a voxel at (X, Y, Z)
+            unsigned int x;
+            unsigned int y;
+            unsigned int z;
         };
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /**\brief @b Octree branch class.
-         * \note It stores 8 pointers to its child nodes.
-         * \author Julius Kammerl (julius@kammerl.de)
-         */
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /** \brief @b Octree branch class.
+          * \note It stores 8 pointers to its child nodes.
+          * \author Julius Kammerl (julius@kammerl.de)
+          */
         class OctreeBranch : public OctreeNode
         {
           // OctreeBase is a friend!
           friend class OctreeLowMemBase;
 
-        public:
+          public:
+            /** \brief Constructor for initializing child node pointer array. */
+            OctreeBranch () : occupancyByte_ (0), subNodes_ ()
+            {
+              this->reset ();
+            }
 
-          /** \brief Constructor for initializing child node pointer array. */
-          OctreeBranch ()
-          {
-            // initialize
-            occupancyByte_ = 0;
-            this->reset();
-          }
+            /** \brief Copy constructor. */
+            OctreeBranch (const OctreeBranch &source) : occupancyByte_ (0), subNodes_ ()
+            {
+              *this = source;
+            }
 
-          /** \brief Reset Octree Branch */
-          void
-          reset ()
-          {
-            // if pointers to childs exist, we delete them
-            if (occupancyByte_)
-              delete[] subNodes_;
+            /** \brief Copy operator. */
+            inline OctreeBranch&
+            operator = (const OctreeBranch &source)
+            {
+              *this = source;
+              return (*this);
+            }
 
-            // reset occupancy byte
-            occupancyByte_ = 0;
-          }
+            /** \brief Reset Octree Branch */
+            void
+            reset ()
+            {
+              // if pointers to childs exist, we delete them
+              if (occupancyByte_)
+                delete[] subNodes_;
 
-          /** \brief Empty deconstructor. */
-          virtual
-          ~OctreeBranch ()
-          {
-          }
+              // reset occupancy byte
+              occupancyByte_ = 0;
+            }
 
-    	  /** \brief deep copy function */
-    	  virtual OctreeNode *
-    	  deepCopy () const
-    	  {
-    		  return (OctreeNode*) new OctreeBranch (*this);
-    	  }
+            /** \brief Empty deconstructor. */
+            virtual
+            ~OctreeBranch ()
+            {
+            }
 
-          /** \brief Get the type of octree node. Returns BRANCH_NODE type
-           *  \return Returns BRANCH_NODE type.
-           * */
-          virtual node_type_t
-          getNodeType () const
-          {
-            return BRANCH_NODE;
-          }
+            /** \brief deep copy function */
+            virtual OctreeNode *
+            deepCopy () const
+            {
+              return ((OctreeNode*) new OctreeBranch (*this));
+            }
 
-        private:
+            /** \brief Get the type of octree node. Returns BRANCH_NODE type
+              * \return Returns BRANCH_NODE type.
+              */
+            virtual node_type_t
+            getNodeType () const
+            {
+              return (BRANCH_NODE);
+            }
 
-          unsigned char occupancyByte_;
-          OctreeNode** subNodes_;
-
+          private:
+            unsigned char occupancyByte_;
+            OctreeNode** subNodes_;
         };
 
         typedef LeafT OctreeLeaf;
@@ -343,30 +353,36 @@ namespace pcl
          *  \return "true" if octree could be generated based on DataT object; "false" otherwise
          * */
         virtual bool
-        genOctreeKeyForDataT (const DataT& data_arg, OctreeKey & key_arg) const
+        genOctreeKeyForDataT (const DataT &data_arg, OctreeKey &key_arg) const
         {
+          // Silence compiler warnings
+          (void)data_arg;
+          (void)key_arg;
           // this class cannot relate DataT objects to octree keys
-          return false;
+          return (false);
         }
 
         /** \brief Virtual method for initializing new leaf node during deserialization (in case no DataT information is provided)
-         *  \param key_arg: write generated octree key to this octree key reference
-         *  \param data_arg: generated DataT object
-         *  \return "true" if DataT object could be generated; "false" otherwise
-         * */
+          * \param[in] key_arg write generated octree key to this octree key reference
+          * \param[out] data_arg generated DataT object
+          * \return "true" if DataT object could be generated; "false" otherwise
+          */
         virtual bool
-        genDataTByOctreeKey (const OctreeKey & key_arg, DataT& data_arg) const
+        genDataTByOctreeKey (const OctreeKey &key_arg, DataT &data_arg) const
         {
+          // Silence compiler warnings
+          (void)key_arg;
+          (void)data_arg;
           // this class cannot relate DataT objects to octree keys
-          return false;
+          return (false);
         }
 
         /** \brief Generate an octree key
-         *  \param idxX_arg: index of leaf node in the X axis.
-         *  \param idxY_arg: index of leaf node in the Y axis.
-         *  \param idxZ_arg: index of leaf node in the Z axis.
-         *  \param key_arg: write new octree key to this reference.
-         * */
+          * \param[in] idxX_arg index of leaf node in the X axis.
+          * \param[in] idxY_arg index of leaf node in the Y axis.
+          * \param[in] idxZ_arg index of leaf node in the Z axis.
+          * \param[out] key_arg write new octree key to this reference.
+          */
         inline void
         genOctreeKeyByIntIdx (const unsigned int idxX_arg, const unsigned int idxY_arg, const unsigned int idxZ_arg,
                               OctreeKey & key_arg) const
@@ -697,7 +713,7 @@ namespace pcl
 
           // we need to create a new octree leaf class
           newLeafChild_arg = (OctreeLeaf*)new OctreeLeaf ();
-          newLeafChild_arg->reset();
+          newLeafChild_arg->reset ();
 
           setBranchChild (branch_arg, childIdx_arg, (OctreeNode*)newLeafChild_arg);
 
@@ -709,7 +725,7 @@ namespace pcl
         inline void
         branchReset (OctreeBranch& branch_arg)
         {
-          branch_arg.reset();
+          branch_arg.reset ();
         }
 
 

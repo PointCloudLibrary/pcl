@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -47,11 +47,11 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT>
 pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::OctreePointCloud (const double resolution) :
-    OctreeT (), epsilon_ (0), resolution_ (resolution), minX_ (0.0f), maxX_ (resolution), minY_ (0.0f),
+    OctreeT (), input_ (PointCloudConstPtr ()), indices_ (), 
+    epsilon_ (0), resolution_ (resolution), minX_ (0.0f), maxX_ (resolution), minY_ (0.0f),
     maxY_ (resolution), minZ_ (0.0f), maxZ_ (resolution), maxKeys_ (1), boundingBoxDefined_ (false)
 {
-  assert ( resolution > 0.0f );
-  input_ = PointCloudConstPtr ();
+  assert (resolution > 0.0f);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
