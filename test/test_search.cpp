@@ -49,7 +49,7 @@ using namespace pcl;
 using namespace std;
 
 /** \brief if set to value other than 0 -> fine grained output */
-#define DEBUG_OUT 0
+#define DEBUG_OUT 1
 
 #define TEST_UNORGANIZED_DENSE_COMPLETE_KNN     1
 #define TEST_UNORGANIZED_DENSE_VIEW_KNN         1
@@ -81,7 +81,7 @@ PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 bool testUniqueness (const vector<int>& indices, const string& name)
 {
   bool uniqueness = true;
-  for (unsigned idx1 = 1; idx1 < indices.size (); ++idx1)
+  for (unsigned idx1 = 1; idx1 < indices.size () && uniqueness; ++idx1)
   {
     // check whether resulting indices are unique
     for (unsigned idx2 = 0; idx2 < idx1; ++idx2)
@@ -92,6 +92,7 @@ bool testUniqueness (const vector<int>& indices, const string& name)
         std::cout << name << " search: index is twice at positions: " << idx1 << " (" << indices [idx1] << ") , " << idx2  << " (" << indices [idx2] << ")" << std::endl;
 #endif        
         uniqueness = false;
+        break;
       }
     }
   }
@@ -116,6 +117,7 @@ bool testOrder (const vector<float>& distances, const string& name)
                                                             << idx1     << "(" << distances [idx1]   << ")"<< std::endl;
 #endif      
       ordered = false;
+      break;
     }
   }
   
@@ -130,7 +132,7 @@ bool testOrder (const vector<float>& distances, const string& name)
  * @return true if result is valid, false otherwise
  */
 template<typename PointT> bool
-testResultValidity (const vector<bool>& indices_mask, const vector<bool>& nan_mask, const vector<int>& indices, const string& name)
+testResultValidity (const vector<bool>& indices_mask, const vector<bool>& nan_mask, const vector<int>& indices, const vector<int>& input_indices, const string& name)
 {
   bool validness = true;
   for (vector<int>::const_iterator iIt = indices.begin (); iIt != indices.end (); ++iIt)
@@ -145,6 +147,7 @@ testResultValidity (const vector<bool>& indices_mask, const vector<bool>& nan_ma
       cout << endl;
 #endif            
       validness = false;
+      break;
     }
     else if (!nan_mask [*iIt])
     {
@@ -154,6 +157,7 @@ testResultValidity (const vector<bool>& indices_mask, const vector<bool>& nan_ma
                                                                                    << cloud->points [*iIt].z << ")\n";
 #endif      
       validness = false;
+      break;
     }
   }
   
@@ -213,8 +217,8 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr cloud, vector<search::Searc
   vector< vector<float> >distances (search_methods.size ());
   vector<bool> passed (search_methods.size (), true);
   
-  vector<bool> indices_mask (cloud->size ());
-  vector<bool> nan_mask (cloud->size ());
+  vector<bool> indices_mask (cloud->size (), true);
+  vector<bool> nan_mask (cloud->size (), true);
   
   if (input_indices.size () != 0)
   {
@@ -246,41 +250,18 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr cloud, vector<search::Searc
       for (unsigned sIdx = 0; sIdx < search_methods.size (); ++sIdx)
       {
         search_methods [sIdx]->nearestKSearch (cloud->points[*qIt], knn, indices [sIdx], distances [sIdx]);
-        passed [sIdx] = testUniqueness (indices [sIdx], search_methods [sIdx]->getName ()) || passed [sIdx];
-        passed [sIdx] = testOrder (distances [sIdx], search_methods [sIdx]->getName ()) || passed [sIdx];
-        passed [sIdx] = testResultValidity<PointT>(indices_mask, nan_mask, indices [sIdx], search_methods [sIdx]->getName ()) || passed [sIdx];
+        passed [sIdx] = passed [sIdx] && testUniqueness (indices [sIdx], search_methods [sIdx]->getName ());
+        passed [sIdx] = passed [sIdx] && testOrder (distances [sIdx], search_methods [sIdx]->getName ());
+        passed [sIdx] = passed [sIdx] && testResultValidity<PointT>(indices_mask, nan_mask, indices [sIdx], input_indices, search_methods [sIdx]->getName ());
       }
       
       // compare results to each other
-      for (unsigned sIdx1 = 1; sIdx1 < search_methods.size (); ++sIdx1)
+      for (unsigned sIdx = 1; sIdx < search_methods.size (); ++sIdx)
       { 
-        compareResults (indices [0], distances [0], search_methods [0]->getName (),
-                        indices [sIdx1], distances [sIdx1], search_methods [sIdx1]->getName (), 1e-6 );
+        passed [sIdx] = passed [sIdx] && compareResults (indices [0],    distances [0],    search_methods [0]->getName (),
+                                                         indices [sIdx], distances [sIdx], search_methods [sIdx]->getName (), 1e-6 );
       }
     }
-//    // find nn for points out of the cloud
-//    PointT point;
-//    for (unsigned pIdx = 0; pIdx < query_indices.size (); ++pIdx)
-//    {
-//      point.x = 2.0 * (float)rand () / (float) RAND_MAX;
-//      point.y = 2.0 * (float)rand () / (float) RAND_MAX;
-//      point.z = 2.0 * (float)rand () / (float) RAND_MAX;
-//      
-//      for (unsigned sIdx = 0; sIdx < search_methods.size (); ++sIdx)
-//      {
-//        search_methods [sIdx]->nearestKSearch (point, knn, indices [sIdx], distances [sIdx]);
-//        passed [sIdx] = testUniqueness (indices [sIdx], search_methods [sIdx]->getName ()) || passed [sIdx];
-//        passed [sIdx] = testOrder (distances [sIdx], search_methods [sIdx]->getName ()) || passed [sIdx];
-//        passed [sIdx] = testResultValidity<PointT>(indices_mask, nan_mask, indices [sIdx], search_methods [sIdx]->getName ()) || passed [sIdx];
-//      }
-//      
-//      // compare results to each other
-//      for (unsigned sIdx1 = 1; sIdx1 < search_methods.size (); ++sIdx1)
-//      {
-//        compareResults (indices [0], distances [0], search_methods [0]->getName (),
-//                        indices [sIdx1], distances [sIdx1], search_methods [sIdx1]->getName (), 1e-6 );
-//      }
-//    }
   }
   for (unsigned sIdx = 0; sIdx < search_methods.size (); ++sIdx)
   {
@@ -302,8 +283,8 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr cloud, vector<search::Se
   vector< vector<int> >indices (search_methods.size ());
   vector< vector<float> >distances (search_methods.size ());
   vector <bool> passed (search_methods.size (), true);
-  vector<bool> indices_mask (cloud->size ());
-  vector<bool> nan_mask (cloud->size ());
+  vector<bool> indices_mask (cloud->size (), true);
+  vector<bool> nan_mask (cloud->size (), true);
   
   if (input_indices.size () != 0)
   {
@@ -336,42 +317,18 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr cloud, vector<search::Se
       for (unsigned sIdx = 0; sIdx < search_methods.size (); ++sIdx)
       {
         search_methods [sIdx]->radiusSearch (cloud->points[*qIt], radius, indices [sIdx], distances [sIdx], 0);
-        //cout << search_methods [sIdx]->getName () << " :: " << radius << " :: " << qIt - query_indices.begin () << " / " << query_indices.size () << " results: " << indices [sIdx].size () << endl;
-        passed [sIdx] = testUniqueness (indices [sIdx], search_methods [sIdx]->getName ()) || passed [sIdx];
-        passed [sIdx] = testOrder (distances [sIdx], search_methods [sIdx]->getName ()) || passed [sIdx];
-        passed [sIdx] = testResultValidity<PointT>(indices_mask, nan_mask, indices [sIdx], search_methods [sIdx]->getName ()) || passed [sIdx];
+        passed [sIdx] = passed [sIdx] && testUniqueness (indices [sIdx], search_methods [sIdx]->getName ());
+        passed [sIdx] = passed [sIdx] && testOrder (distances [sIdx], search_methods [sIdx]->getName ());
+        passed [sIdx] = passed [sIdx] && testResultValidity<PointT>(indices_mask, nan_mask, indices [sIdx], input_indices, search_methods [sIdx]->getName ());
       }
       
       // compare results to each other
-      for (unsigned sIdx1 = 1; sIdx1 < search_methods.size (); ++sIdx1)
+      for (unsigned sIdx = 1; sIdx < search_methods.size (); ++sIdx)
       {
-        compareResults (indices [0], distances [0], search_methods [0]->getName (),
-                        indices [sIdx1], distances [sIdx1], search_methods [sIdx1]->getName (), 1e-6 );
+        passed [sIdx] = passed [sIdx] && compareResults (indices [0],    distances [0],    search_methods [0]->getName (),
+                                                         indices [sIdx], distances [sIdx], search_methods [sIdx]->getName (), 1e-6 );
       }
     }
-    // find nn for points out of the cloud
-//    PointT point;
-//    for (unsigned pIdx = 0; pIdx < query_indices.size (); ++pIdx)
-//    {
-//      point.x = 2.0 * (float)rand () / (float) RAND_MAX;
-//      point.y = 2.0 * (float)rand () / (float) RAND_MAX;
-//      point.z = 2.0 * (float)rand () / (float) RAND_MAX;
-//      
-//      for (unsigned sIdx = 0; sIdx < search_methods.size (); ++sIdx)
-//      {
-//        search_methods [sIdx]->radiusSearch (point, radius, indices [sIdx], distances [sIdx], 0);
-//        passed [sIdx] = testUniqueness (indices [sIdx], search_methods [sIdx]->getName ()) || passed [sIdx];
-//        passed [sIdx] = testOrder (distances [sIdx], search_methods [sIdx]->getName ()) || passed [sIdx];
-//        passed [sIdx] = testResultValidity<PointT>(indices_mask, nan_mask, indices [sIdx], search_methods [sIdx]->getName ()) || passed [sIdx];
-//      }
-//      
-//      // compare results to each other
-//      for (unsigned sIdx1 = 1; sIdx1 < search_methods.size (); ++sIdx1)
-//      {
-//        compareResults (indices [0], distances [0], search_methods [0]->getName (),
-//                        indices [sIdx1], distances [sIdx1], search_methods [sIdx1]->getName (), 1e-6 );
-//      }
-//    }
   }
   for (unsigned sIdx = 0; sIdx < search_methods.size (); ++sIdx)
   {
@@ -945,9 +902,9 @@ TEST (PCL, Organized_Sparse_View_Radius)
    KDTree.setSortedResults (true);
    search_methods.push_back (&KDTree);
    
-//   pcl::search::Octree<pcl::PointXYZ> octree (0.1);
-//   octree.setSortedResults (true);
-//   search_methods.push_back (&octree);
+   pcl::search::Octree<pcl::PointXYZ> octree (0.1);
+   octree.setSortedResults (true);
+   search_methods.push_back (&octree);
    
    pcl::search::OrganizedNeighbor<pcl::PointXYZ> organized;
    organized.setSortedResults (true);
