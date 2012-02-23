@@ -90,7 +90,7 @@ bool testUniqueness (const vector<int>& indices, const string& name)
       {
 #if DEBUG_OUT
         std::cout << name << " search: index is twice at positions: " << idx1 << " (" << indices [idx1] << ") , " << idx2  << " (" << indices [idx2] << ")" << std::endl;
-#endif        
+#endif
         uniqueness = false;
         break;
       }
@@ -112,10 +112,10 @@ bool testOrder (const vector<float>& distances, const string& name)
   {
     if (distances [idx1-1] > distances [idx1])
     {
-#if DEBUG_OUT      
+#if DEBUG_OUT
       std::cout << name << " search: not properly sorted: " << idx1 - 1 << "(" << distances [idx1-1] << ") > " 
                                                             << idx1     << "(" << distances [idx1]   << ")"<< std::endl;
-#endif      
+#endif
       ordered = false;
       break;
     }
@@ -139,23 +139,23 @@ testResultValidity (const vector<bool>& indices_mask, const vector<bool>& nan_ma
   {
     if (!indices_mask [*iIt])
     {
-#if DEBUG_OUT      
+#if DEBUG_OUT
       cerr << name << ": result contains an invalid point: " << *iIt << " not in indices list.\n";
       
       for (vector<int>::const_iterator iIt2 = input_indices.begin (); iIt2 != input_indices.end (); ++iIt2)
         cout << *iIt2 << "  ";
       cout << endl;
-#endif            
+#endif
       validness = false;
       break;
     }
     else if (!nan_mask [*iIt])
     {
-#if DEBUG_OUT      
+#if DEBUG_OUT
       cerr << name << ": result contains an invalid point: " << *iIt << " = NaN (" << cloud->points [*iIt].x << " , " 
                                                                                    << cloud->points [*iIt].y << " , " 
                                                                                    << cloud->points [*iIt].z << ")\n";
-#endif      
+#endif
       validness = false;
       break;
     }
@@ -180,9 +180,9 @@ bool compareResults (const std::vector<int>& indices1, const::vector<float>& dis
   bool equal = true;
   if (indices1.size () != indices2.size ())
   {
-#if DEBUG_OUT    
+#if DEBUG_OUT
     cerr << "size of results between " << name1 << " search and " << name2 << " search do not match " <<indices1.size () << " vs. " << indices2.size () << endl;
-#endif    
+#endif
     equal = false;
   }
   else
@@ -191,12 +191,13 @@ bool compareResults (const std::vector<int>& indices1, const::vector<float>& dis
     {
       if (indices1[idx] != indices2[idx] && fabs (distances1[idx] - distances2[idx]) > eps)
       {
-#if DEBUG_OUT        
+#if DEBUG_OUT
         cerr << "results between " << name1 << " search and " << name2 << " search do not match: " << idx << " nearest neighbor: "
                 << indices1[idx] << " with distance: " << distances1[idx] << " vs. "
                 << indices2[idx] << " with distance: " << distances2[idx] << endl;
-#endif        
+#endif
         equal = false;
+        break;
       }
     }
   }
@@ -257,7 +258,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr cloud, vector<search::Searc
       
       // compare results to each other
       for (unsigned sIdx = 1; sIdx < search_methods.size (); ++sIdx)
-      { 
+      {
         passed [sIdx] = passed [sIdx] && compareResults (indices [0],    distances [0],    search_methods [0]->getName (),
                                                          indices [sIdx], distances [sIdx], search_methods [sIdx]->getName (), 1e-6 );
       }

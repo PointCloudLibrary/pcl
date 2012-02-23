@@ -386,8 +386,8 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
     return;
   }
   
-  // we just want to use every 16th column and row -> skip = 2^4
-  const unsigned int skip = input_->width >> 4;
+  // we just want to use every 8th column and row -> skip = 2^3
+  const unsigned int skip = input_->width >> 3;
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> A = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> B = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> C = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
@@ -516,9 +516,6 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
 
   // precalculate KR * KR^T needed by calculations during nn-search
   KR_KRT_ = KR_ * KR_.transpose ();
-  
-  Eigen::Matrix3f camera_matrix;
-  computeCameraMatrix (camera_matrix);
 }
 
 #define PCL_INSTANTIATE_OrganizedNeighbor(T) template class PCL_EXPORTS pcl::search::OrganizedNeighbor<T>;
