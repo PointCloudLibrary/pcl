@@ -1,8 +1,7 @@
 VERSION=5.6.1
+UNAME := $(shell uname -s)
 
-all: vtk
-		patch -p0 < cpack.patch
-		cd VTK && mkdir -p build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr .. -DCMAKE_BUILD_TYPE="Release" -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF && \
+all: patch
 		make package && \
 		if test -e *.exe; \
 		then cp *.exe ../../; \
@@ -21,5 +20,24 @@ vtk:
 		wget http://www.vtk.org/files/release/5.6/vtk-${VERSION}.tar.gz
 		tar -xvzf vtk-${VERSION}.tar.gz
 
+patch: vtk
+		patch -p0 < cpack.patch
+ifeq ($(UNAME),Darwin)
+		cd VTK && mkdir -p build && cd build && \
+		cmake .. -DCMAKE_INSTALL_PREFIX=/usr .. \
+		-DCMAKE_BUILD_TYPE="Release" \
+		-DBUILD_SHARED_LIBS=ON \
+		-DBUILD_TESTING=OFF \
+		-DVTK_USE_X=ON \
+		-DVTK_USE_COCOA=OFF
+else
+		cd VTK && mkdir -p build && cd build && \
+		cmake .. -DCMAKE_INSTALL_PREFIX=/usr .. \
+		-DCMAKE_BUILD_TYPE="Release" \
+		-DBUILD_SHARED_LIBS=ON \
+		-DBUILD_TESTING=OFF
+endif
+
 clean:
 		rm -rf vtk* VTK* *~
+
