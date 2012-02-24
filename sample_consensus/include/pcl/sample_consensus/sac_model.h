@@ -70,13 +70,18 @@ namespace pcl
       typedef boost::shared_ptr<SampleConsensusModel> Ptr;
       typedef boost::shared_ptr<const SampleConsensusModel> ConstPtr;
 
-    private:
+    protected:
       /** \brief Empty constructor for base SampleConsensusModel.
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModel (bool random = false) : 
+        input_ (),
+        indices_ (),
         radius_min_ (-DBL_MAX), radius_max_ (DBL_MAX),
-        rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()))
+        shuffled_indices_ (),
+        rng_alg_ (),
+        rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ())),
+        rng_gen_ ()
       {
         // Create a random number generator object
         if (random)

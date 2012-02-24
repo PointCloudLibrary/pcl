@@ -80,18 +80,49 @@ namespace pcl
       /** \brief Constructor for base SampleConsensusModelCylinder.
         * \param[in] cloud the input point cloud dataset
         */
-      SampleConsensusModelCylinder (const PointCloudConstPtr &cloud) : SampleConsensusModel<PointT> (cloud), eps_angle_ (0) 
+      SampleConsensusModelCylinder (const PointCloudConstPtr &cloud) : 
+        SampleConsensusModel<PointT> (cloud), 
+        axis_ (Eigen::Vector3f::Zero ()),
+        eps_angle_ (0),
+        tmp_inliers_ ()
       {
-        axis_.setZero ();
       }
 
       /** \brief Constructor for base SampleConsensusModelCylinder.
         * \param[in] cloud the input point cloud dataset
         * \param[in] indices a vector of point indices to be used from \a cloud
         */
-      SampleConsensusModelCylinder (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : SampleConsensusModel<PointT> (cloud, indices), eps_angle_ (0)
+      SampleConsensusModelCylinder (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : 
+        SampleConsensusModel<PointT> (cloud, indices), 
+        axis_ (Eigen::Vector3f::Zero ()),
+        eps_angle_ (0),
+        tmp_inliers_ ()
       {
-        axis_.setZero ();
+      }
+
+      /** \brief Copy constructor.
+        * \param[in] source the model to copy into this
+        */
+      SampleConsensusModelCylinder (const SampleConsensusModelCylinder &source) :
+        SampleConsensusModel<PointT> (),
+        axis_ (Eigen::Vector3f::Zero ()),
+        eps_angle_ (0),
+        tmp_inliers_ ()
+      {
+        *this = source;
+      }
+
+      /** \brief Copy constructor.
+        * \param[in] source the model to copy into this
+        */
+      inline SampleConsensusModelCylinder&
+      operator = (const SampleConsensusModelCylinder &source)
+      {
+        SampleConsensusModel<PointT>::operator=(source);
+        axis_ = source.axis_;
+        eps_angle_ = source.eps_angle_;
+        tmp_inliers_ = source.tmp_inliers_;
+        return (*this);
       }
 
       /** \brief Set the angle epsilon (delta) threshold.
@@ -272,6 +303,25 @@ namespace pcl
           */
         OptimizationFunctor (int m_data_points, pcl::SampleConsensusModelCylinder<PointT, PointNT> *model) : 
           pcl::Functor<float> (m_data_points), model_ (model) {}
+
+        /** \brief Functor copy constructor.
+          * \param[in] source the optimization functor to copy into this
+          */
+        OptimizationFunctor (const OptimizationFunctor &source) :
+          pcl::Functor<float>(), model_ ()
+        {
+          *this = source;
+        }
+
+        /** \brief Functor copy operator.
+          * \param[in] source the optimization functor to copy into this
+          */
+        inline OptimizationFunctor& 
+        operator = (const OptimizationFunctor &source)
+        {
+          model_ = source.model_;
+          return (*this);
+        }
 
         /** Cost function to be minimized
           * \param[in] x variables array

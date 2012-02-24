@@ -69,7 +69,12 @@ namespace pcl
       /** \brief Constructor for base SampleConsensusModelRegistration.
         * \param[in] cloud the input point cloud dataset
         */
-      SampleConsensusModelRegistration (const PointCloudConstPtr &cloud) : SampleConsensusModel<PointT> (cloud)
+      SampleConsensusModelRegistration (const PointCloudConstPtr &cloud) : 
+        SampleConsensusModel<PointT> (cloud),
+        target_ (),
+        indices_tgt_ (),
+        correspondences_ (),
+        sample_dist_thresh_ (0)
       {
         // Call our own setInputCloud
         setInputCloud (cloud);
@@ -81,7 +86,11 @@ namespace pcl
         */
       SampleConsensusModelRegistration (const PointCloudConstPtr &cloud,
                                         const std::vector<int> &indices) :
-        SampleConsensusModel<PointT> (cloud, indices)
+        SampleConsensusModel<PointT> (cloud, indices),
+        target_ (),
+        indices_tgt_ (),
+        correspondences_ (),
+        sample_dist_thresh_ (0)
       {
         computeOriginalIndexMapping ();
         computeSampleDistanceThreshold (cloud, indices);
@@ -177,14 +186,18 @@ namespace pcl
       projectPoints (const std::vector<int> &inliers,
                      const Eigen::VectorXf &model_coefficients,
                      PointCloud &projected_points, bool copy_data_fields = true)
-      {};
+      {
+        // Silence compiler warnings
+        (void)inliers; (void)model_coefficients; (void)projected_points; (void)copy_data_fields;
+      };
 
       bool
       doSamplesVerifyModel (const std::set<int> &indices,
                             const Eigen::VectorXf &model_coefficients,
                             const double threshold)
       {
-        //PCL_ERROR ("[pcl::SampleConsensusModelRegistration::doSamplesVerifyModel] called!\n");
+        // Silence compiler warnings
+        (void)indices; (void)model_coefficients; (void)threshold;
         return (false);
       }
 
