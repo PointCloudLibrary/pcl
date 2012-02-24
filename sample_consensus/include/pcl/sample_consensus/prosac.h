@@ -91,16 +91,6 @@ namespace pcl
         */
       bool 
       computeModel (int debug_verbosity_level = 0);
-
-      /** \brief Get a set of randomly selected indices.
-        * \param indices the input indices vector
-        * \param nr_samples the desired number of point indices to randomly select
-        * \param indices_subset the resultant output set of randomly selected indices
-        */
-      inline void 
-      getRandomSamples (const boost::shared_ptr <std::vector<int> > &indices, 
-                        size_t nr_samples, 
-                        std::set<int> &indices_subset);
   };
 }
 
