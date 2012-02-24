@@ -355,7 +355,7 @@ pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth
     else
       THROW_PCL_IO_EXCEPTION ("could not retrieve device. Reason %s", exception.what ());
   }
-  catch (const pcl::PCLIOException& exception)
+  catch (const pcl::PCLIOException&)
   {
     throw;
   }
@@ -594,7 +594,7 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapp
         pt.x = pt.y = pt.z = bad_point;
         continue;
       }
-      pt.z = depth_map[depth_idx] * 0.001;
+      pt.z = depth_map[depth_idx] * 0.001f;
       pt.x = u * pt.z * constant;
       pt.y = v * pt.z * constant;
     }

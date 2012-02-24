@@ -109,12 +109,12 @@ namespace pcl
 
         // initialize color encoding
         colorCoder_.initializeEncoding ();
-        colorCoder_.setPointCount (cloud_arg->points.size ());
+        colorCoder_.setPointCount ((unsigned int) cloud_arg->points.size ());
         colorCoder_.setVoxelCount (this->leafCount_);
 
         // initialize point encoding
         pointCoder_.initializeEncoding ();
-        pointCoder_.setPointCount (cloud_arg->points.size ());
+        pointCoder_.setPointCount ((unsigned int) cloud_arg->points.size ());
 
         // serialize octree
         if (iFrame_) {
@@ -219,7 +219,7 @@ namespace pcl
 
         // assign point cloud properties
         output_->height = 1;
-        output_->width = cloud_arg->points.size ();
+        output_->width = (uint32_t) cloud_arg->points.size ();
         output_->is_dense = false;
 
         if (bShowStatistics)
@@ -443,7 +443,7 @@ namespace pcl
 
       // sync to frame header
         unsigned int headerIdPos = 0;
-        while (headerIdPos < strlen(frameHeaderIdentifier_))
+        while (headerIdPos < strlen (frameHeaderIdentifier_))
         {
           char readChar;
           compressedTreeDataIn_arg.read ((char*)&readChar, sizeof(readChar));
@@ -486,8 +486,8 @@ namespace pcl
           this->defineBoundingBox (minX, minY, minZ, maxX, maxY, maxZ);
 
           // configure color & point coding
-          colorCoder_.setBitDepth(colorBitDepth);
-          pointCoder_.setPrecision(pointResolution);
+          colorCoder_.setBitDepth (colorBitDepth);
+          pointCoder_.setPrecision ((float) pointResolution);
 
         }
 

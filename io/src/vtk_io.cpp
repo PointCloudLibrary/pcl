@@ -59,14 +59,14 @@ pcl::io::saveVTKFile (const std::string &file_name,
   fs.precision (precision);
   fs.open (file_name.c_str ());
 
-  int nr_points  = triangles.cloud.width * triangles.cloud.height;
-  int point_size = triangles.cloud.data.size () / nr_points;
+  unsigned int nr_points  = triangles.cloud.width * triangles.cloud.height;
+  unsigned int point_size = (unsigned int) (triangles.cloud.data.size () / nr_points);
 
   // Write the header information
   fs << "# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET POLYDATA\nPOINTS " << nr_points << " float" << std::endl;
 
   // Iterate through the points
-  for (int i = 0; i < nr_points; ++i)
+  for (unsigned int i = 0; i < nr_points; ++i)
   {
     int xyz = 0;
     for (size_t d = 0; d < triangles.cloud.fields.size (); ++d)
@@ -98,13 +98,13 @@ pcl::io::saveVTKFile (const std::string &file_name,
 
   // Write vertices
   fs << "\nVERTICES " << nr_points << " " << 2*nr_points << std::endl;
-  for (int i = 0; i < nr_points; ++i)
+  for (unsigned int i = 0; i < nr_points; ++i)
     fs << "1 " << i << std::endl;
 
   // Write polygons
   // compute the correct number of values:
   size_t triangle_size = triangles.polygons.size ();
-  int correct_number = triangle_size;
+  size_t correct_number = triangle_size;
   for (size_t i = 0; i < triangle_size; ++i)
     correct_number += triangles.polygons[i].vertices.size ();
   fs << "\nPOLYGONS " << triangle_size << " " << correct_number << std::endl;
@@ -122,7 +122,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
   if (field_index != -1)
   {
     fs << "\nPOINT_DATA " << nr_points << "\nCOLOR_SCALARS scalars 3\n";
-    for (int i = 0; i < nr_points; ++i)
+    for (unsigned int i = 0; i < nr_points; ++i)
     {
       int count = triangles.cloud.fields[field_index].count;
       if (count == 0)
@@ -162,14 +162,14 @@ pcl::io::saveVTKFile (const std::string &file_name,
   fs.precision (precision);
   fs.open (file_name.c_str ());
 
-  int nr_points  = cloud.width * cloud.height;
-  int point_size = cloud.data.size () / nr_points;
+  unsigned int nr_points  = cloud.width * cloud.height;
+  unsigned int point_size = (unsigned int) (cloud.data.size () / nr_points);
 
   // Write the header information
   fs << "# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET POLYDATA\nPOINTS " << nr_points << " float" << std::endl;
 
   // Iterate through the points
-  for (int i = 0; i < nr_points; ++i)
+  for (unsigned int i = 0; i < nr_points; ++i)
   {
     int xyz = 0;
     for (size_t d = 0; d < cloud.fields.size (); ++d)
@@ -201,7 +201,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
 
   // Write vertices
   fs << "\nVERTICES " << nr_points << " " << 2*nr_points << std::endl;
-  for (int i = 0; i < nr_points; ++i)
+  for (unsigned int i = 0; i < nr_points; ++i)
     fs << "1 " << i << std::endl;
 
   // Write RGB values
@@ -209,7 +209,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
   if (field_index != -1)
   {
     fs << "\nPOINT_DATA " << nr_points << "\nCOLOR_SCALARS scalars 3\n";
-    for (int i = 0; i < nr_points; ++i)
+    for (unsigned int i = 0; i < nr_points; ++i)
     {
       int count = cloud.fields[field_index].count;
       if (count == 0)

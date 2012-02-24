@@ -46,6 +46,7 @@
 #include <typeinfo>
 #include <vector>
 #include <sstream>
+#include <pcl/pcl_macros.h>
 #include <pcl/io/pcl_io_exception.h>
 
 namespace pcl
@@ -55,7 +56,7 @@ namespace pcl
     * \author Suat Gedikli <gedikli@willowgarage.com>
     * \ingroup io
     */
-  class Grabber
+  class PCL_EXPORTS Grabber
   {
     public:
 
@@ -209,7 +210,7 @@ namespace pcl
     if (signal_it != signals_.end ())
     {
       Signal* signal = dynamic_cast<Signal*> (signal_it->second);
-      return (signal->num_slots ());
+      return ((int) signal->num_slots ());
     }
     return (0);
   }

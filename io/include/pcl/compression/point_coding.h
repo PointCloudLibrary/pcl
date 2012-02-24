@@ -189,7 +189,7 @@ namespace pcl
 
           assert (beginIdx_arg <= endIdx_arg);
 
-          pointCount = endIdx_arg - beginIdx_arg;
+          pointCount = (unsigned int) (endIdx_arg - beginIdx_arg);
 
           // iterate over points within current voxel
           for (i = 0; i < pointCount; i++)

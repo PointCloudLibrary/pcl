@@ -254,7 +254,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
       cloud_temp->points[i].g = point_color[1];
       cloud_temp->points[i].b = point_color[2];
     }
-    cloud_temp->width = cloud_temp->points.size ();
+    cloud_temp->width = (uint32_t) cloud_temp->points.size ();
     cloud_temp->height = 1;
     cloud_temp->is_dense = true;
 
@@ -272,7 +272,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
       cloud_temp->points[i].y = (float)(point_xyz[1]);
       cloud_temp->points[i].z = (float)(point_xyz[2]);
     }
-    cloud_temp->width = cloud_temp->points.size ();
+    cloud_temp->width = (uint32_t) cloud_temp->points.size ();
     cloud_temp->height = 1;
     cloud_temp->is_dense = true;
 
@@ -300,8 +300,8 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
 int
 pcl::io::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData>& poly_data)
 {
-  int nr_points = mesh.cloud.width * mesh.cloud.height;
-  int nr_polygons = mesh.polygons.size ();
+  unsigned int nr_points = mesh.cloud.width * mesh.cloud.height;
+  unsigned int nr_polygons = (unsigned int) mesh.polygons.size ();
 
   // reset vtkPolyData object
   poly_data = vtkSmartPointer<vtkPolyData>::New (); // OR poly_data->Reset();
@@ -311,7 +311,7 @@ pcl::io::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData>& p
 
   // get field indices for x, y, z (as well as rgb and/or rgba)
   int idx_x = -1, idx_y = -1, idx_z = -1, idx_rgb = -1, idx_rgba = -1, idx_normal_x = -1, idx_normal_y = -1, idx_normal_z = -1;
-  for (size_t d = 0; d < mesh.cloud.fields.size (); ++d)
+  for (int d = 0; d < (int) mesh.cloud.fields.size (); ++d)
   {
     if (mesh.cloud.fields[d].name == "x") idx_x = d;
     else if (mesh.cloud.fields[d].name == "y") idx_y = d;
@@ -343,9 +343,9 @@ pcl::io::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData>& p
   // copy polygon data
   if (nr_polygons > 0)
   {
-    for (int i = 0; i < nr_polygons; i++)
+    for (unsigned int i = 0; i < nr_polygons; i++)
     {
-      unsigned int nr_points_in_polygon = mesh.polygons[i].vertices.size ();
+      unsigned int nr_points_in_polygon = (unsigned int) mesh.polygons[i].vertices.size ();
       vtk_mesh_polygons->InsertNextCell (nr_points_in_polygon);
       for (unsigned int j = 0; j < nr_points_in_polygon; j++)
         vtk_mesh_polygons->InsertCellPoint (mesh.polygons[i].vertices[j]);

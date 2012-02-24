@@ -55,7 +55,7 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
   {
     cloud_->data.clear ();
     cloud_->fields.clear ();
-    cloud_->width = count;
+    cloud_->width = (uint32_t) count;
     cloud_->height = 1;
     cloud_->is_dense = false;
     cloud_->point_step = 0;
@@ -105,8 +105,8 @@ pcl::PLYReader::appendFloatProperty (const std::string& name, const size_t& size
   current_field.name = name;
   current_field.offset = cloud_->point_step;
   current_field.datatype = ::sensor_msgs::PointField::FLOAT32;
-  current_field.count = size;  
-  cloud_->point_step+= pcl::getFieldSize (::sensor_msgs::PointField::FLOAT32) * size;
+  current_field.count = (uint32_t) size;  
+  cloud_->point_step+= (uint32_t) (pcl::getFieldSize (::sensor_msgs::PointField::FLOAT32) * size);
 }
 
 namespace pcl
@@ -342,11 +342,11 @@ pcl::PLYReader::objInfoCallback (const std::string& line)
       else if (st[1] == "num_rows")
         cloudHeightCallback (atoi (st[2].c_str ()));
       else if (st[1] == "echo_rgb_offset_x")
-        originXCallback (atof (st[2].c_str ()));
+        originXCallback ((float) atof (st[2].c_str ()));
       else if (st[1] == "echo_rgb_offset_y")
-        originYCallback (atof (st[2].c_str ()));
+        originYCallback ((float) atof (st[2].c_str ()));
       else if (st[1] == "echo_rgb_offset_z")
-        originZCallback (atof (st[2].c_str ()));
+        originZCallback ((float) atof (st[2].c_str ()));
     }    
   }
 }
@@ -615,8 +615,8 @@ pcl::PLYWriter::writeASCII (const std::string &file_name,
     return (-1);
   }
 
-  int nr_points  = cloud.width * cloud.height;
-  int point_size = cloud.data.size () / nr_points;
+  unsigned int nr_points  = cloud.width * cloud.height;
+  unsigned int point_size = (unsigned int) (cloud.data.size () / nr_points);
 
   // Write the header information if available
   if (use_camera)
@@ -910,8 +910,8 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
     return (-1);
   }
 
-  int nr_points  = cloud.width * cloud.height;
-  int point_size = cloud.data.size () / nr_points;
+  unsigned int nr_points  = cloud.width * cloud.height;
+  unsigned int point_size = (unsigned int) (cloud.data.size () / nr_points);
 
   // Write the header information if available
   fs << generateHeader (cloud, origin, orientation, true, true, nr_points);
@@ -926,7 +926,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
   }
   // Unlike PCD format file, PLY doesn't like 
   // Iterate through the points
-  for (int i = 0; i < nr_points; ++i)
+  for (unsigned int i = 0; i < nr_points; ++i)
   {
     size_t total = 0;
     for (size_t d = 0; d < cloud.fields.size (); ++d)

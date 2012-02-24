@@ -197,9 +197,9 @@ namespace pcl
           // calculated average color information
           if (len > 1)
           {
-            avgRed /= len;
-            avgGreen /= len;
-            avgBlue /= len;
+            avgRed /= (unsigned int) len;
+            avgGreen /= (unsigned int) len;
+            avgBlue /= (unsigned int) len;
           }
 
           // remove least significant bits
@@ -253,9 +253,9 @@ namespace pcl
             unsigned char diffBlue;
 
             // calculated average color information
-            avgRed /= len;
-            avgGreen /= len;
-            avgBlue /= len;
+            avgRed /= (unsigned int) len;
+            avgGreen /= (unsigned int) len;
+            avgBlue /= (unsigned int) len;
 
             // iterate over points for differential encoding
             for (i = 0; i < len; i++)
@@ -309,7 +309,7 @@ namespace pcl
           assert (beginIdx_arg <= endIdx_arg);
 
           // amount of points to be decoded
-          pointCount = endIdx_arg - beginIdx_arg;
+          pointCount = (unsigned int) (endIdx_arg - beginIdx_arg);
 
           // get averaged color information for current voxel
           unsigned char avgRed = *(pointAvgColorDataVector_Iterator_++);
@@ -369,7 +369,7 @@ namespace pcl
           assert (beginIdx_arg <= endIdx_arg);
 
           // amount of points to be decoded
-          pointCount = endIdx_arg - beginIdx_arg;
+          pointCount = (unsigned int) (endIdx_arg - beginIdx_arg);
 
           // iterate over points
           for (i = 0; i < pointCount; i++)

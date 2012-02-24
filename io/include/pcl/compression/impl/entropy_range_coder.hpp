@@ -384,7 +384,7 @@ namespace pcl
     // write encoded data to stream
     outputByteStream_arg.write (&outputCharVector_[0], outputCharVector_.size());
 
-    streamByteCount += outputCharVector_.size();
+    streamByteCount += (unsigned long) outputCharVector_.size();
 
     return streamByteCount;
 
@@ -416,7 +416,7 @@ namespace pcl
     streamByteCount = 0;
 
     outputBufPos = 0;
-    output_size = outputIntVector_arg.size ();
+    output_size = (unsigned long) outputIntVector_arg.size ();
 
     // read size of cumulative frequency table from stream
     inputByteStream_arg.read ((char*)&frequencyTableSize, sizeof(frequencyTableSize));
@@ -471,7 +471,7 @@ namespace pcl
       }
 
       // write symbol to output stream
-      outputIntVector_arg[outputBufPos++] = symbol;
+      outputIntVector_arg[outputBufPos++] = (unsigned int) symbol;
 
       // map to range
       low += cFreqTable_[symbol] * range;
@@ -512,7 +512,7 @@ namespace pcl
     DWord low, range;
 
     unsigned int input_size;
-    input_size = inputByteVector_arg.size ();
+    input_size = (unsigned int) inputByteVector_arg.size ();
 
     unsigned int readPos;
 
@@ -598,7 +598,7 @@ namespace pcl
     // write encoded data to stream
     outputByteStream_arg.write (&outputCharVector_[0], outputCharVector_.size());
 
-    streamByteCount += outputCharVector_.size();
+    streamByteCount += (unsigned long) outputCharVector_.size();
 
     return streamByteCount;
 
@@ -627,7 +627,7 @@ namespace pcl
 
     streamByteCount = 0;
 
-    output_size = outputByteVector_arg.size ();
+    output_size = (unsigned int) outputByteVector_arg.size ();
 
     outputBufPos = 0;
 

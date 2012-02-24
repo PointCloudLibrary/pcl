@@ -92,7 +92,7 @@ unsigned OpenNIDriver::updateDeviceList ()
 
   for (xn::NodeInfoList::Iterator nodeIt = node_info_list.Begin (); nodeIt != node_info_list.End (); ++nodeIt)
   {
-    connection_string_map_[(*nodeIt).GetCreationInfo ()] = device_context_.size();
+    connection_string_map_[(*nodeIt).GetCreationInfo ()] = (unsigned int) device_context_.size();
     device_context_.push_back (DeviceContext (*nodeIt));
   }
 
@@ -205,7 +205,7 @@ unsigned OpenNIDriver::updateDeviceList ()
       strcpy ((char*)device_context_[deviceIdx].device_node.GetDescription().strName, "Xtion Pro");
     }
   }
-  return (device_context_.size ());
+  return ((unsigned int) device_context_.size ());
 }
 
 void OpenNIDriver::stopAll ()

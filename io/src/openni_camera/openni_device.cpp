@@ -288,7 +288,7 @@ openni_wrapper::OpenNIDevice::Init ()
     baseline_ = (float)(baseline * 0.01);
 
     //focal length from mm -> pixels (valid for 1280x1024)
-    depth_focal_length_SXGA_ = (float)depth_focal_length_SXGA / pixel_size;
+    depth_focal_length_SXGA_ = (float) (depth_focal_length_SXGA / pixel_size);
 
     depth_thread_ = boost::thread (&OpenNIDevice::DepthDataThreadFunction, this);
   }
@@ -449,7 +449,7 @@ bool
 openni_wrapper::OpenNIDevice::hasImageStream () const throw ()
 {
   lock_guard<mutex> lock (image_mutex_);
-  return (image_generator_.IsValid ());
+  return (image_generator_.IsValid () != 0);
   //return (available_image_modes_.size() != 0);
 }
 
@@ -458,7 +458,7 @@ bool
 openni_wrapper::OpenNIDevice::hasDepthStream () const throw ()
 {
   lock_guard<mutex> lock (depth_mutex_);
-  return (depth_generator_.IsValid ());
+  return (depth_generator_.IsValid () != 0);
   //return (available_depth_modes_.size() != 0);
 }
 
@@ -467,7 +467,7 @@ bool
 openni_wrapper::OpenNIDevice::hasIRStream () const throw ()
 {
   lock_guard<mutex> ir_lock (ir_mutex_);
-  return (ir_generator_.IsValid ());
+  return (ir_generator_.IsValid () != 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -512,7 +512,7 @@ openni_wrapper::OpenNIDevice::isDepthRegistered () const throw ()
 
     lock_guard<mutex> image_lock (image_mutex_);
     lock_guard<mutex> depth_lock (depth_mutex_);
-    return (depth_generator.GetAlternativeViewPointCap ().IsViewPointAs (image_generator));
+    return (depth_generator.GetAlternativeViewPointCap ().IsViewPointAs (image_generator) != 0);
   }
   return (false);
 }
@@ -600,7 +600,7 @@ openni_wrapper::OpenNIDevice::isDepthCropped () const
     if (status != XN_STATUS_OK)
       THROW_OPENNI_EXCEPTION ("could not read cropping information for depth stream. Reason: %s", xnGetStatusString (status));
 
-    return (cropping.bEnabled);
+    return (cropping.bEnabled != 0);
   }
   return (false);
 }

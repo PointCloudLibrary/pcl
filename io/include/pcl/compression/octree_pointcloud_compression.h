@@ -126,13 +126,13 @@ namespace pcl
             iFrameRate_ = selectedProfile.iFrameRate;
             doVoxelGridEnDecoding_ = selectedProfile.doVoxelGridDownSampling;
             this->setResolution (selectedProfile.octreeResolution);
-            pointCoder_.setPrecision (selectedProfile.pointResolution);
+            pointCoder_.setPrecision ((float) selectedProfile.pointResolution);
             doColorEncoding_ = selectedProfile.doColorEncoding;
             colorCoder_.setBitDepth (selectedProfile.colorBitResolution);
 
           } else {
             // configure point & color coder
-            pointCoder_.setPrecision (pointResolution_arg);
+            pointCoder_.setPrecision ((float) pointResolution_arg);
             colorCoder_.setBitDepth (colorBitResolution_arg);
           }
 

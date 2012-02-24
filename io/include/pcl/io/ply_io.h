@@ -485,7 +485,7 @@ namespace pcl
       write (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
              const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
              const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
-             bool binary = false)
+             const bool binary = false)
       {
         if (binary)
           return (this->writeBinary (file_name, cloud, origin, orientation));

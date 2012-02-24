@@ -275,11 +275,11 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr ONIGrabber::convertToXYZPointCloud(const boo
   cloud->width = depth_width_;
   cloud->is_dense = false;
 
-  cloud->points.resize(cloud->height * cloud->width);
+  cloud->points.resize (cloud->height * cloud->width);
 
-  register float constant = 1.0f / device_->getDepthFocalLength(depth_width_);
+  register float constant = 1.0f / device_->getDepthFocalLength (depth_width_);
 
-  if (device_->isDepthRegistered())
+  if (device_->isDepthRegistered ())
     cloud->header.frame_id = rgb_frame_id_;
   else
     cloud->header.frame_id = depth_frame_id_;
@@ -287,22 +287,22 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr ONIGrabber::convertToXYZPointCloud(const boo
   register int centerX = (cloud->width >> 1);
   int centerY = (cloud->height >> 1);
 
-  float bad_point = std::numeric_limits<float>::quiet_NaN();
+  float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
   // we have to use Data, since operator[] uses assert -> Debug-mode very slow!
-  register const unsigned short* depth_map = depth_image->getDepthMetaData().Data();
-  if (depth_image->getWidth() != depth_width_ || depth_image->getHeight() != depth_height_)
+  register const unsigned short* depth_map = depth_image->getDepthMetaData ().Data ();
+  if (depth_image->getWidth () != depth_width_ || depth_image->getHeight () != depth_height_)
   {
     static unsigned buffer_size = 0;
-    static boost::shared_array<unsigned short> depth_buffer(0);
+    static boost::shared_array<unsigned short> depth_buffer (0);
 
     if (buffer_size < depth_width_ * depth_height_)
     {
       buffer_size = depth_width_ * depth_height_;
-      depth_buffer.reset(new unsigned short [buffer_size]);
+      depth_buffer.reset (new unsigned short [buffer_size]);
     }
-    depth_image->fillDepthImageRaw(depth_width_, depth_height_, depth_buffer.get());
-    depth_map = depth_buffer.get();
+    depth_image->fillDepthImageRaw (depth_width_, depth_height_, depth_buffer.get ());
+    depth_map = depth_buffer.get ();
   }
 
   register int depth_idx = 0;
@@ -313,14 +313,14 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr ONIGrabber::convertToXYZPointCloud(const boo
       pcl::PointXYZ& pt = cloud->points[depth_idx];
       // Check for invalid measurements
       if (depth_map[depth_idx] == 0 ||
-          depth_map[depth_idx] == depth_image->getNoSampleValue() ||
-          depth_map[depth_idx] == depth_image->getShadowValue())
+          depth_map[depth_idx] == depth_image->getNoSampleValue () ||
+          depth_map[depth_idx] == depth_image->getShadowValue ())
       {
         // not valid
         pt.x = pt.y = pt.z = bad_point;
         continue;
       }
-      pt.z = depth_map[depth_idx] * 0.001;
+      pt.z = depth_map[depth_idx] * 0.001f;
       pt.x = u * pt.z * constant;
       pt.y = v * pt.z * constant;
     }
