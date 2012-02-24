@@ -89,7 +89,7 @@ namespace pcl
         * \param[in] source the model to copy into this
         */
       SampleConsensusModelSphere (const SampleConsensusModelSphere &source) :
-        SampleConsensusModel<PointT> (), tmp_inliers_ () 
+        tmp_inliers_ () 
       {
         *this = source;
       }
@@ -105,7 +105,7 @@ namespace pcl
         return (*this);
       }
 
-       /** \brief Get 4 random points (3 non-collinear) as data samples and return them as point indices.
+      /** \brief Get 4 random points (3 non-collinear) as data samples and return them as point indices.
         * \param[out] iterations the internal number of iterations used by SAC methods
         * \param[out] samples the resultant model samples
         * \note assumes unique points!
@@ -236,26 +236,7 @@ namespace pcl
         OptimizationFunctor (int m_data_points, pcl::SampleConsensusModelSphere<PointT> *model) : 
           pcl::Functor<float>(m_data_points), model_ (model) {}
 
-        /** \brief Functor copy constructor.
-          * \param[in] source the optimization functor to copy into this
-          */
-        OptimizationFunctor (const OptimizationFunctor &source) :
-          pcl::Functor<float>(), model_ ()
-        {
-          *this = source;
-        }
-
-        /** \brief Functor copy operator.
-          * \param[in] source the optimization functor to copy into this
-          */
-        inline OptimizationFunctor& 
-        operator = (const OptimizationFunctor &source)
-        {
-          model_ = source.model_;
-          return (*this);
-        }
-
-         /** Cost function to be minimized
+        /** Cost function to be minimized
           * \param[in] x the variables array
           * \param[out] fvec the resultant functions evaluations
           * \return 0
