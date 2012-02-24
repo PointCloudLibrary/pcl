@@ -213,7 +213,7 @@ namespace pcl
     PCL_EXPORTS void 
     print_value (FILE *stream, const char *format, ...);
 
-	/** \brief Print a message on stream
+    /** \brief Print a message on stream
       * \param level the verbosity level
       * \param stream the output stream (stdout, stderr, etc)
       * \param format the message
@@ -221,7 +221,7 @@ namespace pcl
     PCL_EXPORTS void 
     print (VERBOSITY_LEVEL level, FILE *stream, const char *format, ...);
 
-	/** \brief Print a message
+    /** \brief Print a message
       * \param level the verbosity level
       * \param format the message
       */
