@@ -44,9 +44,10 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool
-pcl::SampleConsensusModelCylinder<PointT, PointNT>::isSampleGood(const std::vector<int> &samples) const
+pcl::SampleConsensusModelCylinder<PointT, PointNT>::isSampleGood (const std::vector<int> &samples) const
 {
-  return true;
+  (void)samples;
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

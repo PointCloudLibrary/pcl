@@ -45,20 +45,8 @@
 template <typename PointT> bool
 pcl::SampleConsensusModelSphere<PointT>::isSampleGood (const std::vector<int> &samples) const
 {
-  // TODO: Vincent, please check this:
-  //
-  // Get the values at the two points
-  /*pcl::Array4fMapConst p0 = input_->points[samples[0]].getArray4fMap ();
-  pcl::Array4fMapConst p1 = input_->points[samples[1]].getArray4fMap ();
-  pcl::Array4fMapConst p2 = input_->points[samples[2]].getArray4fMap ();
-
-  // Compute the segment values (in 3d) between p1 and p0
-  Eigen::Array4f p1p0 = p1 - p0;
-  // Compute the segment values (in 3d) between p2 and p0
-  Eigen::Array4f p2p0 = p2 - p0;
-
-  Eigen::Array4f dy1dy2 = p1p0 / p2p0;*/
-
+  // Silence compiler warnings
+  (void)samples;
   return (true);
 }
 
@@ -273,6 +261,9 @@ pcl::SampleConsensusModelSphere<PointT>::projectPoints (
     return;
   }
 
+  // Silence compiler warnings
+  (void)inliers;
+  (void)copy_data_fields;
   // Allocate enough space and copy the basics
   projected_points.points.resize (input_->points.size ());
   projected_points.header   = input_->header;

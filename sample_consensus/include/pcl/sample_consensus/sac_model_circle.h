@@ -85,6 +85,26 @@ namespace pcl
         SampleConsensusModel<PointT> (cloud, indices), tmp_inliers_ ()
       {};
 
+      /** \brief Copy constructor.
+        * \param[in] source the model to copy into this
+        */
+      SampleConsensusModelCircle2D (const SampleConsensusModelCircle2D &source) :
+        SampleConsensusModel<PointT> (), tmp_inliers_ () 
+      {
+        *this = source;
+      }
+
+      /** \brief Copy constructor.
+        * \param[in] source the model to copy into this
+        */
+      inline SampleConsensusModelCircle2D&
+      operator = (const SampleConsensusModelCircle2D &source)
+      {
+        SampleConsensusModel<PointT>::operator=(source);
+        tmp_inliers_ = source.tmp_inliers_;
+        return (*this);
+      }
+
       /** \brief Get 3 random non-collinear points as data samples and return them as point indices.
         * \param[out] iterations the internal number of iterations used by SAC methods
         * \param[out] samples the resultant model samples
@@ -187,13 +207,32 @@ namespace pcl
       /** \brief Functor for the optimization function */
       struct OptimizationFunctor : pcl::Functor<float>
       {
-        /** Functor constructor
+        /** \brief Functor constructor
           * \param[in] m_data_points the number of data points to evaluate
           * \param[in] estimator pointer to the estimator object
           * \param[in] distance distance computation function pointer
           */
         OptimizationFunctor (int m_data_points, pcl::SampleConsensusModelCircle2D<PointT> *model) : 
           pcl::Functor<float>(m_data_points), model_ (model) {}
+
+        /** \brief Functor copy constructor.
+          * \param[in] source the optimization functor to copy into this
+          */
+        OptimizationFunctor (const OptimizationFunctor &source) :
+          pcl::Functor<float>(), model_ ()
+        {
+          *this = source;
+        }
+
+        /** \brief Functor copy operator.
+          * \param[in] source the optimization functor to copy into this
+          */
+        inline OptimizationFunctor& 
+        operator = (const OptimizationFunctor &source)
+        {
+          model_ = source.model_;
+          return (*this);
+        }
 
         /** Cost function to be minimized
           * \param[in] x the variables array
