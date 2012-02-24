@@ -21,8 +21,8 @@ vtk:
 		tar -xvzf vtk-${VERSION}.tar.gz
 
 patch: vtk
-		patch -p0 < cpack.patch
 ifeq ($(UNAME),Darwin)
+		patch -p0 < cpack.darwin.patch && \
 		cd VTK && mkdir -p build && cd build && \
 		cmake .. -DCMAKE_INSTALL_PREFIX=/usr .. \
 		-DCMAKE_BUILD_TYPE="Release" \
@@ -31,6 +31,7 @@ ifeq ($(UNAME),Darwin)
 		-DVTK_USE_X=ON \
 		-DVTK_USE_COCOA=OFF
 else
+		patch -p0 < cpack.patch
 		cd VTK && mkdir -p build && cd build && \
 		cmake .. -DCMAKE_INSTALL_PREFIX=/usr .. \
 		-DCMAKE_BUILD_TYPE="Release" \

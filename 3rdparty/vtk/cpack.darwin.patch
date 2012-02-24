@@ -1779,13 +1779,18 @@ diff -ru VTK/VTKCPack.cmake VTK/VTKCPack.cmake
 -    #
 -    IF(VTK_WRAP_TCL)
 +    #	 
-+		set(CPACK_GENERATOR DEB)
-+		set(CPACK_MONOLITHIC_INSTALL 1)
-+		set(CPACK_PACKAGE_CONTACT "pointclouds.org")
++    # define stuff for the PackageMaker packages
++      set(CPACK_OSX_PACKAGE_VERSION 10.5)
++      set(CPACK_PACKAGE_CONTACT "pcl-developers@pointclouds.org")
++      set(CPACK_SET_DESTDIR ON)
++      set(CPACK_PACKAGING_INSTALL_PREFIX /usr/local)
++      set(CPACK_GENERATOR PackageMaker)
++      set(CPACK_MONOLITHIC_INSTALL 1)
++      set(CPACK_PACKAGE_CONTACT "pointclouds.org")
        SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "VTK - The Visualization Toolkit")
        SET(CPACK_PACKAGE_VENDOR "Kitware, Inc.")
        SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/Copyright.txt")
-@@ -33,7 +35,6 @@
+@@ -33,7 +40,6 @@
        ENDIF(WIN32)
  
        INCLUDE(CPack)
