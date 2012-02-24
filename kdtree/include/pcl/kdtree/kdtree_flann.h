@@ -112,7 +112,14 @@ namespace pcl
       inline KdTreeFLANN<PointT>&
       operator = (const KdTreeFLANN<PointT>& k)
       {
-        *this = k;
+        flann_index_ = k.flann_index_;
+        cloud_ = k.cloud_;
+        index_mapping_ = k.index_mapping_;
+        identity_mapping_ = k.identity_mapping_;
+        dim_ = k.dim_;
+        total_nr_points_ = k.total_nr_points_;
+        param_k_ = k.param_k_;
+        param_radius_ = k.param_radius_;
         return (*this);
       }
 
