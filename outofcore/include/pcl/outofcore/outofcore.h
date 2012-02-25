@@ -3,7 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
- *  Copyright (c) 2009-2012, Urban Robotics, Inc.
+ *  Copyright (c) 2012, Urban Robotics, Inc.
  *
  *  All rights reserved.
  *
@@ -36,56 +36,13 @@
  *
  */
 
-/*
-  This code defines the point used for point storage at Urban Robotics. Please
-  contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions.
-  http://www.urbanrobotics.net/
-*/
+#ifndef OUTOFCORE_H_
+#define OUTOFCORE_H_
 
-// pointCloudTools.h
-//Stephen Bekefi
-//Urban Robotics 2009
+#include <pcl/outofcore/octree_base.h>
+#include <pcl/outofcore/octree_base_node.h>
 
-#ifndef PCL_OUTOFCORE_POINTCLOUDTOOLS_H_
-#define PCL_OUTOFCORE_POINTCLOUDTOOLS_H_
+#include <pcl/outofcore/octree_disk_container.h>
+#include <pcl/outofcore/octree_ram_container.h>
 
-namespace pcl
-{
-  namespace octree
-  {
-    namespace PointCloudTools
-    {
-      struct point
-      {
-        double x;
-        double y;
-        double z;
-        double nx;
-        double ny;
-        double nz;
-        double r;
-        double g;
-        double b;
-        double error;
-        unsigned int cameraCount;
-        unsigned int triadID;
-
-        bool operator==(const point& rhs) const
-          {
-            if (x == rhs.x && y == rhs.y && z == rhs.z &&
-                nx == rhs.nx && ny == rhs.ny && nz == rhs.nz &&
-                r == rhs.r && g == rhs.g && b == rhs.b &&
-                error == rhs.error &&
-                cameraCount == rhs.cameraCount &&
-                triadID == rhs.triadID)
-            {
-              return true;
-            }
-            return false;
-          }
-      };
-    }
-  }
-}
-
-#endif //PCL_OUTOFCORE_POINTCLOUDTOOLS_H_
+#endif // OUTOFCORE_H_

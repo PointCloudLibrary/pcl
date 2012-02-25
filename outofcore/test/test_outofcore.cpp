@@ -1,7 +1,9 @@
  /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2009-2012, Urban Robotics, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -50,15 +52,13 @@ using namespace std;
 #include <pcl/common/time.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
- 
+
 using namespace pcl;
 
-#include "pcl/outofcore/impl/octree_base.hpp"
-#include "pcl/outofcore/impl/octree_base_node.hpp"
+#include <pcl/outofcore/outofcore.h>
+#include <pcl/outofcore/outofcore_impl.h>
 
-#include "pcl/outofcore/pointCloudTools.h"
-#include "pcl/outofcore/impl/octree_disk_container.hpp"
-#include "pcl/outofcore/impl/octree_ram_container.hpp"
+using namespace pcl::outofcore;
 
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_real.hpp>
@@ -66,22 +66,6 @@ using namespace pcl;
 #include <boost/foreach.hpp>
 
 /** \brief Unit tests for UR out of core octree code which test public interface of octree_base 
- *
- * These need to be rewritten. I've written a thorough test for the
- * constructors, but they don't match the specified behavior
- * exactly. In particular, they don't always throw the exceptions that
- * they should in case there's an existing tree, or its trying to read
- * a non-existing tree. Accessors and mutators also should be tested
- * in these contexts.
- *
- * \note if you would like to see what the trees look like on-disk,
- * uncomment out the TearDown method in the test class. If you'd
- * like to see the LOD (which I haven't added to the test class yet),
- * uncomment out the SetUp method as well.
- * \note Unit tests fail right now :)
- * \todo Look into the cause of failure
- *
- * \note octree_disk is typedef'd in octree_base.hpp
  */
 
 // For doing exhaustive checks this is set low remove those, and this can be
@@ -98,9 +82,16 @@ const static boost::filesystem::path filename_otreeB_LOD = "treeB_LOD/tree_test.
 
 typedef pcl::PointXYZ PointT;
 
+// UR Typedefs
+typedef octree_base<octree_disk_container < PointT > , PointT > octree_disk;
+typedef octree_base_node<octree_disk_container < PointT > , PointT > octree_disk_node;
+
+typedef octree_base<octree_ram_container< PointT> , PointT> octree_ram;
+typedef octree_base_node< octree_ram_container<PointT> , PointT> octree_ram_node;
+
 std::vector<PointT> points;
 
-/** \brief helper function to compare two points. is there a templated function in pcl to do this?*/
+/** \brief helper function to compare two points. is there a templated function in pcl to do this for arbitrary point types?*/
 bool 
 compPt ( PointT p1, PointT p2 )
 {
@@ -110,7 +101,7 @@ compPt ( PointT p1, PointT p2 )
   return true;
 }
 
-TEST (PCL, Octree_Build)
+TEST (PCL, Outofcore_Octree_Build)
 {
 
   boost::filesystem::remove_all (filename_otreeA.parent_path ());
@@ -122,7 +113,6 @@ TEST (PCL, Octree_Build)
   // Build two trees using each constructor
   // depth of treeA will be same as B because 1/2^3 > .1 and 1/2^4 < .1
   // depth really affects performance
-  /// \todo benchmark performance based on depth
   octree_disk treeA (min, max, .1, filename_otreeA, "ECEF");
   octree_disk treeB (4, min, max, filename_otreeB, "ECEF");
 
@@ -164,7 +154,7 @@ TEST (PCL, Octree_Build)
 
 }
 
-TEST (PCL, Octree_Build_LOD)
+TEST (PCL, Outofcore_Octree_Build_LOD)
 {
 
   boost::filesystem::remove_all (filename_otreeA_LOD.parent_path ());
@@ -213,7 +203,7 @@ TEST (PCL, Octree_Build_LOD)
   treeB.addDataToLeaf_and_genLOD (points);
 }
 
-TEST(PCL, Bounding_Box)
+TEST(PCL, Outofcore_Bounding_Box)
 {
 
   double min[3] = {0, 0, 0};
@@ -300,7 +290,7 @@ void point_test(octree_disk& t)
   }
 }
 
-TEST (PCL, Point_Query)
+TEST (PCL, Outofcore_Point_Query)
 {
   octree_disk treeA(filename_otreeA, false);
   octree_disk treeB(filename_otreeB, false);
@@ -309,7 +299,7 @@ TEST (PCL, Point_Query)
   point_test(treeB);
 }
 
-TEST (PCL, Ram_Tree)
+TEST (PCL, Outofcore_Ram_Tree)
 {
   double min[3] = {0,0,0};
   double max[3] = {1,1,1};
@@ -400,17 +390,18 @@ class OutofcoreTest : public testing::Test
     virtual void SetUp ()
     {
       //clear existing trees from test path
-      boost::filesystem::remove_all (filename_otreeA.parent_path ());
-      boost::filesystem::remove_all (filename_otreeB.parent_path ());
-
-      boost::filesystem::remove_all (filename_otreeA_LOD.parent_path ());
-      boost::filesystem::remove_all (filename_otreeB_LOD.parent_path ());
+//    cleanUpFilesystem ();
       smallest_voxel_dim = 0.1f;
     }
 
     virtual void TearDown ()
     {
-      //remove the trees from disk because they can take a lot of space
+      // cleanUpFilesystem ();
+    }
+
+    void cleanUpFilesystem ()
+    {
+      //clear existing trees from test path
       boost::filesystem::remove_all (filename_otreeA.parent_path ());
       boost::filesystem::remove_all (filename_otreeB.parent_path ());
 
@@ -422,12 +413,8 @@ class OutofcoreTest : public testing::Test
 };
 
 
-/** \brief Thorough test of the constructors, including exceptions and specified behavior
- *
- * \note Currently, not everything passes. There seems to be unpredictable behavior when 
- * an octree is created where one already exists
- */
-TEST_F (OutofcoreTest, Constructors)
+/** \brief Thorough test of the constructors, including exceptions and specified behavior */
+TEST_F (OutofcoreTest, Outofcore_Constructors)
 {
   //Case 1: create octree on-disk by resolution
   //Case 2: create octree on-disk by depth
@@ -435,35 +422,33 @@ TEST_F (OutofcoreTest, Constructors)
   //Case 4: load existing octree from disk
   //Case 5: try to load non-existent octree from disk
 
+  cleanUpFilesystem ();
+
   //Specify the lower corner of the axis-aligned bounding box
-  static const double min[3] = { -1024, -1024, -1024 };
+  const double min[3] = { -1024, -1024, -1024 };
   //Specify the upper corner of the axis-aligned bounding box
-  static const double max[3] = { 1024, 1024, 1024 };
+  const double max[3] = { 1024, 1024, 1024 };
 
   vector<PointT> some_points;
   for(int i=0; i< 1000; i++)
     some_points.push_back (PointT (rand ()%1024, rand ()%1024, rand ()%1024));
 
   //(Case 1)
-  //Create Octree based on resolution of smallest voxel
+  //Create Octree based on resolution of smallest voxel, automatically computing depth
   octree_disk octreeA (min, max, smallest_voxel_dim, filename_otreeA, "ECEF");
   octreeA.addDataToLeaf (some_points);
   ASSERT_EQ ( octreeA.getNumPoints (octreeA.getDepth ()), some_points.size () );
   
-
   //(Case 2)
-  //create Octree by specifying depth
+  //create Octree by prespecified depth in constructor
   int depth = 4;
   octree_disk octreeB (depth, min, max, filename_otreeB, "ECEF");
   octreeB.addDataToLeaf (some_points);
   ASSERT_EQ ( octreeB.getNumPoints (octreeB.getDepth ()), some_points.size () );
-
 }
 
-
-TEST_F (OutofcoreTest, ConstructorSafety)
+TEST_F (OutofcoreTest, Outofcore_ConstructorSafety)
 {
-  //these could be global in the test class
   //Specify the lower corner of the axis-aligned bounding box
   const double min[3] = { -1024, -1024, -1024 };
   //Specify the upper corner of the axis-aligned bounding box
@@ -471,77 +456,69 @@ TEST_F (OutofcoreTest, ConstructorSafety)
 
   //(Case 3) Constructor Safety. These should throw OCT_CHILD_EXISTS exceptions and write an error
   //message of conflicting file path
-  OctreeException *C=0, *D=0;
-  try
-  {
-    octree_disk octreeC (min, max, smallest_voxel_dim, filename_otreeA, "ECEF");
-  }
-  catch(OctreeException& e)
-  {
-    *C = e;
-  }
-  catch(...)
-  {
-    FAIL () << "octreeC has thrown an unknown exception when there is an existing tree in the desired path\n";
-  }
+  EXPECT_TRUE (boost::filesystem::exists (filename_otreeA));
+  EXPECT_TRUE (boost::filesystem::exists (filename_otreeB));
 
-  //check that it threw the proper exception
-  // Not sure why this unit test fails.
-#if 0
-  if (C != 0)
-  {
-    ASSERT_EQ (OctreeException (OctreeException::OCT_CHILD_EXISTS).what (), C->what ()) << "OctreeC failing with: " << C->what () << ", a known but unexpected OctreeException." << endl;
-  }
-  else
-  {
-    FAIL () << "octreeC is probably overwriting an existing directory tree\n";
-  }
-#endif
-  //(Case 3) second type of constructor
-  try
-  {
-    octree_disk octreeD (4, min, max, filename_otreeB, "ECEF");
-  }
-  catch (OctreeException& e)
-  {
-    *D = e;
-  }
-  catch (...)
-  {
-    FAIL () << "octreeD has thrown an unknown exception when there is an existing tree in the desired path\n";
-  }
+  /**\todo behaviors of the two constructors don't match. the one with resolution in the constructor doesn't check if a tree is being overwritten. It should though   */
+  //  EXPECT_ANY_THROW ({
+  //      octree_disk octreeC (min, max, smallest_voxel_dim, filename_otreeA, "ECEF");
+  //    });
 
-  //check that it threw the proper exception
-  // Not sure why this unit test fails.
-#if 0
-  if ( D != 0 )
-  {
-    ASSERT_EQ (OctreeException (OctreeException::OCT_CHILD_EXISTS).what (), D->what ()) << "OctreeD failing with: " << D->what () << ", a known but unexpected OctreeException." << endl;
-  }
-  else
-  {
-    FAIL () << "octreeD is overwriting an existing directory tree\n";
-  }
+  EXPECT_ANY_THROW ({
+      octree_disk octreeD (4, min, max, filename_otreeB, "ECEF");
+    });
 
-  //Case 4: Load existing tree from disk
-  octree_disk octree_from_disk (filename_otreeA, false);
-  ASSERT_EQ ( octree_from_disk.getNumPoints (octree_from_disk.getDepth ()), 1000 );
+  //(Case 4): Load existing tree from disk
+  octree_disk octree_from_disk (filename_otreeB, true);
+  vector<uint64_t> numPoints = octree_from_disk.getNumPoints ();
   
-  //Case 5: Try to load non-existent tree from disk
-  //root node should be created at this point
-  /// \todo Shouldn't these complain (throw an exception) for bad path?
-  /// \note according to UR documentation, the rest will be generated on insertion or query
-  /// \note we might want to change the specification here
-  boost::filesystem::path bogus_path_name ("treeBogus/tree_bogus.oct_idx");
-  boost::filesystem::path bad_extension_path ("treeBadExtension/tree_bogus.bad_extension");
-  
-  octree_disk octree_bogus_path ( bogus_path_name, true );
-  octree_disk octree_bad_extension ( bad_extension_path, true );
-  ASSERT_TRUE (boost::filesystem::exists (bogus_path_name));
-  ASSERT_TRUE (boost::filesystem::exists (bad_extension_path));
-#endif
+  EXPECT_EQ ( octree_from_disk.getNumPoints (octree_from_disk.getDepth ()), 1000 ) << octree_from_disk.getDepth ();
 }
 
+TEST_F (OutofcoreTest, ConstructorBadPaths)
+{
+  //(Case 5): Try to load non-existent tree from disk
+  //root node should be created at this point
+  /// \todo Shouldn't these throw an exception for bad path?
+  boost::filesystem::path non_existent_path_name ("treeBogus/tree_bogus.oct_idx");
+  boost::filesystem::path bad_extension_path ("treeBadExtension/tree_bogus.bad_extension");
+
+  ASSERT_FALSE (boost::filesystem::exists (non_existent_path_name));
+  EXPECT_ANY_THROW ({octree_disk octree_bogus_path ( non_existent_path_name, true );});
+
+  ASSERT_FALSE (boost::filesystem::exists (bad_extension_path));
+  EXPECT_ANY_THROW ({octree_disk octree_bad_extension ( bad_extension_path, true );});
+
+  cleanUpFilesystem ();
+}
+
+//the methods called here are not yet implemented
+#if 0
+TEST_F (OutofcoreTest, Outofcore_PointcloudConstructor)
+{
+  //create a point cloud
+  PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> () );
+  
+  test_cloud->width = numPts;
+  test_cloud->height = 1;
+  test_cloud->resize (numPts);
+  
+  vector<PointT> some_points;
+  some_points.resize (numPts);
+
+  //generate some random points
+  for(size_t i=0; i < numPts; i++)
+  {
+    PointT tmp ( rand ()%1024, rand ()%1024, rand ()%1024 );
+    some_points[i] = test_cloud->points[i] = tmp;
+  }
+
+  octree_disk pcl_cloud(boost::filesystem::path ("point_cloud_octree/tree_test.oct_idx"),false);
+  pcl_cloud.setInputCloud (test_cloud);//, indices);
+  ASSERT_EQ ( some_points.size (), pcl_cloud.addPointsFromInputCloud () );
+  
+}
+#endif
 
 int
 main (int argc, char** argv)
