@@ -166,6 +166,7 @@ namespace pcl
         size_t len = writebuff_.size () * sizeof(PointT);
         char* loc = (char*)&(writebuff_.front ());
         size_t w = fwrite (loc, 1, len, f);
+        (void)w;
         assert (w == len);
 
         //		int closeret = fclose(f);
