@@ -281,12 +281,12 @@ namespace pcl
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.label << ")";
     return (os);
   }
-  
+
   struct Label
   {
-    uint32_t label;   
+    uint32_t label;
   };
-  
+
   inline std::ostream& operator << (std::ostream& os, const Label& p)
   {
     os << "(" << p.label << ")";
@@ -386,8 +386,8 @@ namespace pcl
         float rgb;
       };
       uint32_t rgba;
-      uint32_t label;
     };
+    uint32_t label;
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
