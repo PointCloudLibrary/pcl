@@ -128,10 +128,6 @@ namespace pcl
         inline void
         setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices = IndicesConstPtr ())
         {
-          // if same input and same indices or same input and empty indices do nothing
-          if ((getInputCloud () == cloud && indices == getIndices ()) || 
-              (getInputCloud () == cloud && indices->empty () && getIndices ()->empty ()))
-            return;
           tree_->setInputCloud (cloud, indices);
           input_ = cloud;
           indices_ = indices;

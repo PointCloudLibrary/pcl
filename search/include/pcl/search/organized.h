@@ -76,11 +76,19 @@ namespace pcl
         using pcl::search::Search<PointT>::sorted_results_;
         using pcl::search::Search<PointT>::input_;
 
-        /** \brief OrganizedNeighbor constructor. */
-        OrganizedNeighbor (bool sorted_results = false)
+        /** \brief Constructor
+          * \param sorted_results whether the results should be return sorted in ascending order on the distances or not.
+          *        This applies only for radius search, since knn always returns sorted resutls    
+          * \param eps the threshold for the mean-squared-error of the estimation of the projection matrix.
+          *            if the MSE is above this value, the point cloud is considered as not from a projective device,
+          *            thus organized neighbor search can not be applied on that cloud.
+          * \param pyramid_level the level of the down sampled point cloud to be used for projection matrix estimation
+          */
+        OrganizedNeighbor (bool sorted_results = false, float eps = 1e-4, unsigned pyramid_level = 5)
           : Search<PointT> ("OrganizedNeighbor", sorted_results)
           , projection_matrix_ (Eigen::Matrix<float, 3, 4, Eigen::RowMajor>::Zero ())
-          , eps_ (1e-4)
+          , eps_ (eps)
+          , pyramid_level_ (pyramid_level)
         {
         }
 
@@ -103,6 +111,7 @@ namespace pcl
         }
         
         void computeCameraMatrix (Eigen::Matrix3f& camera_matrix) const;
+        
         /** \brief Provide a pointer to the input data set, if user has focal length he must set it before calling this
           * \param[in] cloud the const boost shared pointer to a PointCloud message
           * \param[in] indices the const boost shared pointer to PointIndices
@@ -110,33 +119,22 @@ namespace pcl
         virtual void
         setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr &indices = IndicesConstPtr ())
         {
-          bool input_changed = false;
-          if (input_ != cloud)
-          {
-            input_ = cloud;
-            input_changed = true;
-            mask_.resize (input_->size ());
-          }
+          input_ = cloud;
+          
+          mask_.resize (input_->size ());
+          input_ = cloud;
+          indices_ = indices;
 
-          if (indices_ != indices)
+          if (indices_.get () != NULL && indices_->size () != 0)
           {
-            indices_ = indices;
-            input_changed = true;
+            mask_.assign (input_->size (), false);
+            for (std::vector<int>::const_iterator iIt = indices_->begin (); iIt != indices_->end (); ++iIt)
+              mask_[*iIt] = true;
           }
+          else
+            mask_.assign (input_->size (), true);
 
-          if (input_changed)
-          {
-            if (indices_.get () != NULL && indices_->size () != 0)
-            {
-              mask_.assign (input_->size (), false);
-              for (std::vector<int>::const_iterator iIt = indices_->begin (); iIt != indices_->end (); ++iIt)
-                mask_[*iIt] = true;
-            }
-            else
-              mask_.assign (input_->size (), true);
-
-            estimateProjectionMatrix ();
-          }
+          estimateProjectionMatrix ();
         }
 
         /** \brief Search for all neighbors of query point that are within a given radius.
@@ -247,8 +245,11 @@ namespace pcl
         Eigen::Matrix<float, 3, 3, Eigen::RowMajor> KR_KRT_;
 
         /** \brief epsilon value for the MSE of the projection matrix estimation*/
-        float eps_;
+        const float eps_;
 
+        /** \brief using only a subsample of points to calculate the projection matrix. pyramid_level_ = use down sampled cloud given by pyramid_level_*/
+        const unsigned pyramid_level_;
+        
         /** \brief mask, indicating whether the point was in the indices list or not.*/
         std::vector<bool> mask_;
       public:

@@ -59,7 +59,7 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
   // search window
   unsigned left, right, top, bottom;
   //unsigned x, y, idx;
-  float squared_distance, squared_radius;
+  double squared_distance, squared_radius;
 
   k_indices.clear ();
   k_sqr_distances.clear ();
@@ -386,16 +386,16 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
     return;
   }
   
-  // we just want to use every 8th column and row -> skip = 2^3
-  const unsigned int skip = input_->width >> 3;
+  const unsigned ySkip = (input_->height >> pyramid_level_);
+  const unsigned xSkip = (input_->width >> pyramid_level_);
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> A = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> B = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> C = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> D = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
 
-  for (unsigned yIdx = 0, idx = 0; yIdx < input_->height; yIdx += skip, idx += input_->width * (skip-1))
+  for (unsigned yIdx = 0, idx = 0; yIdx < input_->height; yIdx += ySkip, idx += input_->width * (ySkip - 1))
   {
-    for (unsigned xIdx = 0; xIdx < input_->width; xIdx += skip, idx += skip)
+    for (unsigned xIdx = 0; xIdx < input_->width; xIdx += xSkip, idx += xSkip)
     {
       if (!mask_ [idx])
         continue;

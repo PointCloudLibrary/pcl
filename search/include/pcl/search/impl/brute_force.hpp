@@ -253,7 +253,7 @@ pcl::search::BruteForce<PointT>::denseRadiusSearch (
     for (unsigned index = 0; index < input_->size (); ++index)
     {
       distance = getDistSqr (input_->points[index], point);
-      if (distance < radius)
+      if (distance <= radius)
       {
         k_indices.push_back (index);
         k_sqr_distances.push_back (distance);
@@ -314,7 +314,7 @@ pcl::search::BruteForce<PointT>::sparseRadiusSearch (
       if (!pcl_isfinite (input_->points[index].x))
         continue;
       distance = getDistSqr (input_->points[index], point);
-      if (distance < radius)
+      if (distance <= radius)
       {
         k_indices.push_back (index);
         k_sqr_distances.push_back (distance);

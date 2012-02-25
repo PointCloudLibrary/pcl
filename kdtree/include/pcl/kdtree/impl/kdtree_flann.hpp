@@ -84,10 +84,7 @@ pcl::KdTreeFLANN<PointT, Dist>::nearestKSearch (const PointT &point, int k,
   assert (point_representation_->isValid (point) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
 
   if (k > total_nr_points_)
-  {
-    PCL_ERROR ("[pcl::KdTreeFLANN::nearestKSearch] An invalid number of nearest neighbors was requested! (k = %d out of %d total points).\n", k, total_nr_points_);
     k = total_nr_points_;
-  }
 
   k_indices.resize (k);
   k_distances.resize (k);
