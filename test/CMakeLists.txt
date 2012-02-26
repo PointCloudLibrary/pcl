@@ -39,9 +39,15 @@ if(build)
                  LINK_WITH pcl_filters pcl_io pcl_sample_consensus pcl_kdtree
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
     
-    PCL_ADD_TEST(correspondence_estimation test_correspondence_estimation
-                 FILES test_correspondence_estimation.cpp
-                 LINK_WITH pcl_registration) 
+    PCL_ADD_TEST(a_feature_test test_feature
+                 FILES test_feature.cpp
+                 LINK_WITH pcl_features pcl_kdtree pcl_io
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
+
+    PCL_ADD_TEST(a_feature_test_eigen test_feature_eigen
+                 FILES test_feature_eigen.cpp
+                 LINK_WITH pcl_features pcl_kdtree pcl_io
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
 
     PCL_ADD_TEST(a_sample_consensus_test test_sample_consensus
                  FILES test_sample_consensus.cpp
@@ -55,8 +61,8 @@ if(build)
     
     PCL_ADD_TEST(a_segmentation_test test_segmentation
                  FILES test_segmentation.cpp
-                 LINK_WITH pcl_io pcl_segmentation
-                 ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
+                 LINK_WITH pcl_io pcl_segmentation pcl_features
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/bun4.pcd)
     
     PCL_ADD_TEST(a_registration_test test_registration
                  FILES test_registration.cpp
@@ -96,9 +102,7 @@ if(build)
                #     PCL_ADD_EXECUTABLE (evaluate_feature ${SUBSYS_NAME} evaluate_feature.cpp)
                #     target_link_libraries (evaluate_feature pcl_io pcl_features pcl_kdtree pcl_filters)
     
-#    PCL_ADD_EXECUTABLE (sample_feature_test ${SUBSYS_NAME} sample_feature_test.cpp)
-#    target_link_libraries (sample_feature_test pcl_io pcl_features pcl_search pcl_kdtree pcl_filters)
-
-  add_subdirectory(features)
+    PCL_ADD_EXECUTABLE (sample_feature_test ${SUBSYS_NAME} sample_feature_test.cpp)
+    target_link_libraries (sample_feature_test pcl_io pcl_features pcl_search pcl_kdtree pcl_filters)
 
 endif(build)
