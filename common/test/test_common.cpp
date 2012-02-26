@@ -923,6 +923,30 @@ TEST (PCL, CopyIfFieldExists)
   EXPECT_EQ (is_xx, false);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, SetIfFieldExists)
+{
+  PointXYZRGBNormal p;
+
+  p.x = p.y = p.z = 0.0;
+  p.r = p.g = p.b = 0;
+  p.normal_x = p.normal_y = p.normal_z = 0.0;
+
+  typedef pcl::traits::fieldList<PointXYZRGBNormal>::type FieldList;
+  pcl::for_each_type<FieldList> (SetIfFieldExists<PointXYZRGBNormal, float> (p, "x", 1.0));
+  EXPECT_EQ (p.x, 1.0);
+  pcl::for_each_type<FieldList> (SetIfFieldExists<PointXYZRGBNormal, float> (p, "y", 2.0));
+  EXPECT_EQ (p.y, 2.0);
+  pcl::for_each_type<FieldList> (SetIfFieldExists<PointXYZRGBNormal, float> (p, "z", 3.0));
+  EXPECT_EQ (p.z, 3.0);
+  pcl::for_each_type<FieldList> (SetIfFieldExists<PointXYZRGBNormal, float> (p, "normal_x", 1.0));
+  EXPECT_EQ (p.normal_x, 1.0);
+  pcl::for_each_type<FieldList> (SetIfFieldExists<PointXYZRGBNormal, float> (p, "normal_y", 0.0));
+  EXPECT_EQ (p.normal_y, 0.0);
+  pcl::for_each_type<FieldList> (SetIfFieldExists<PointXYZRGBNormal, float> (p, "normal_z", 0.0));
+  EXPECT_EQ (p.normal_z, 0.0);
+}
+
 //* ---[ */
 int
 main (int argc, char** argv)
