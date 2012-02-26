@@ -56,13 +56,18 @@ pcl::MovingLeastSquaresOMP<PointInT, NormalOutT>::performReconstruction (PointCl
   std::vector<int> nn_indices;
   std::vector<float> nn_sqr_dists;
 
-#pragma omp parallel for schedule (dynamic, threads_)
+//#pragma omp parallel for schedule (dynamic, threads_)
   // For all points
   for (int cp = 0; cp < (int)indices_->size (); ++cp)
   {
     // Get the initial estimates of point positions and their neighborhoods
-    if (!searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
-      continue;
+//    if (!searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
+//      continue;
+
+    printf ("search_radius_ %f", search_radius_);
+    printf ("index to search: %d --- %f %f %f\n", (*indices_)[cp], input_->points[(*indices_)[cp]].x, input_->points[(*indices_)[cp]].y, input_->points[(*indices_)[cp]].z);
+      if (!tree_->radiusSearch ((*indices_)[cp], search_radius_, nn_indices, nn_sqr_dists))
+        continue;
 
     // Check the number of nearest neighbors for normal estimation (and later
     // for polynomial fit as well)
@@ -72,6 +77,7 @@ pcl::MovingLeastSquaresOMP<PointInT, NormalOutT>::performReconstruction (PointCl
 
     PointCloudIn projected_points;
     NormalCloudOut projected_points_normals;
+
     // Get a plane approximating the local surface's tangent and project point onto it
     computeMLSPointNormal ((*indices_)[cp], *input_, nn_indices, nn_sqr_dists, projected_points, projected_points_normals);
 
@@ -80,21 +86,76 @@ pcl::MovingLeastSquaresOMP<PointInT, NormalOutT>::performReconstruction (PointCl
     normals_->insert (normals_->end (), projected_points_normals.begin (), projected_points_normals.end ());
   }
 
+
+  // For the voxel grid upsampling method, generate the voxel grid and dilate it
+  // Then, project the newly obtained points to the MLS surface
+  if (upsample_method_ == MovingLeastSquares<PointInT, NormalOutT>::VOXEL_GRID_DILATION)
+  {
+    MLSVoxelGrid voxel_grid (input_, indices_, voxel_size_);
+
+    for (int iteration = 0; iteration < dilation_iteration_num_; ++iteration)
+      voxel_grid.dilate ();
+
+// TODO: there seems no way of putting an OpenMP directive in front of BOOST_FOREACH ?
+    BOOST_FOREACH (typename MLSVoxelGrid::HashMap::value_type voxel, voxel_grid.voxel_grid_)
+    {
+      // Get 3D position of point
+      Eigen::Vector3f pos;
+      voxel_grid.getPosition (voxel.first, pos);
+
+      PointInT p;
+      p.x = pos[0];
+      p.y = pos[1];
+      p.z = pos[2];
+
+      std::vector<int> nn_indices;
+      std::vector<float> nn_dists;
+      tree_->nearestKSearch (p, 1, nn_indices, nn_dists);
+      int input_index = nn_indices.front ();
+
+      // If the closest point did not have a valid MLS fitting result
+      // OR if it is too far away from the sampled point
+      if (mls_results_[input_index].valid == false)
+        continue;
+
+      Eigen::Vector3f add_point = p.getVector3fMap (),
+                      input_point = input_->points[input_index].getVector3fMap ();
+
+      Eigen::Vector3d aux = mls_results_[input_index].u;
+      Eigen::Vector3f u = aux.cast<float> ();
+      aux = mls_results_[input_index].v;
+      Eigen::Vector3f v = aux.cast<float> ();
+
+      float u_disp = (add_point - input_point).dot (u),
+            v_disp = (add_point - input_point).dot (v);
+
+      PointInT result_point;
+      NormalOutT result_normal;
+      projectPointToMLSSurface (u_disp, v_disp,
+                                mls_results_[input_index].u, mls_results_[input_index].v,
+                                mls_results_[input_index].plane_normal,
+                                mls_results_[input_index].curvature,
+                                input_point,
+                                mls_results_[input_index].c_vec,
+                                mls_results_[input_index].num_neighbors,
+                                result_point, result_normal);
+
+      float d_before = (pos - input_point).norm (),
+            d_after = (result_point.getVector3fMap () - input_point). norm();
+      if (d_after > d_before)
+        continue;
+
+      output.push_back (result_point);
+      normals_->push_back (result_normal);
+    }
+  }
+
+
   // Set proper widths and heights for the clouds
-  if (upsample_method_ == MovingLeastSquares<PointInT, NormalOutT>::NONE && fake_indices_)
-  {
-    normals_->width = input_->width;
-    normals_->height = input_->height;
-    output.width = input_->width;
-    output.height = input_->height;
-  }
-  else
-  {
-    normals_->height = 1;
-    normals_->width = normals_->size ();
-    output.height = 1;
-    output.width = output.size ();
-  }
+  normals_->height = 1;
+  normals_->width = normals_->size ();
+  output.height = 1;
+  output.width = output.size ();
 }
 
 #define PCL_INSTANTIATE_MovingLeastSquaresOMP(T,OutT) template class PCL_EXPORTS pcl::MovingLeastSquaresOMP<T,OutT>;

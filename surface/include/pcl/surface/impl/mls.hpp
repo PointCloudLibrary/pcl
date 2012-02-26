@@ -467,7 +467,6 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
       // If the closest point did not have a valid MLS fitting result
       // OR if it is too far away from the sampled point
       if (mls_results_[input_index].valid == false)
- //         || nn_dists.front () > 4 * dilation_iteration_num_*dilation_iteration_num_*voxel_size_ * voxel_size_)
         continue;
       
       Eigen::Vector3f add_point = p.getVector3fMap (),
@@ -492,7 +491,6 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
                                 mls_results_[input_index].num_neighbors,
                                 result_point, result_normal);
       
-      /// TODO check if the distance between the query and sample point increased after projection - reject it if so
       float d_before = (pos - input_point).norm (),
             d_after = (result_point.getVector3fMap () - input_point). norm();
       if (d_after > d_before)
@@ -587,49 +585,6 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::MLSVoxelGrid::dilate ()
   }
   voxel_grid_ = new_voxel_grid;
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename NormalOutT> void
-pcl::MovingLeastSquares<PointInT, NormalOutT>::MLSVoxelGrid::getIndexIn1D (const Eigen::Vector3i &index,
-                                                                           uint64_t &index_1d) const
-{
-  index_1d = index[0] * data_size_ * data_size_ +
-      index[1] * data_size_ + index[2];
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename NormalOutT> void
-pcl::MovingLeastSquares<PointInT, NormalOutT>::MLSVoxelGrid::getIndexIn3D (uint64_t index_1d,
-                                                                           Eigen::Vector3i& index_3d) const
-{
-  index_3d[0] = index_1d / (data_size_ * data_size_);
-  index_1d -= index_3d[0] * data_size_ * data_size_;
-  index_3d[1] = index_1d / data_size_;
-  index_1d -= index_3d[1] * data_size_;
-  index_3d[2] = index_1d;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename NormalOutT> void
-pcl::MovingLeastSquares<PointInT, NormalOutT>::MLSVoxelGrid::getCellIndex (const Eigen::Vector3f &p,
-                                                                           Eigen::Vector3i& index) const
-{
-  for (int i = 0; i < 3; ++i)
-    index[i] = (p[i] - bounding_min_(i))/voxel_size_;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename NormalOutT> void
-pcl::MovingLeastSquares<PointInT, NormalOutT>::MLSVoxelGrid::getPosition (const uint64_t &index_1d,
-                                                                          Eigen::Vector3f &point) const
-{
-  Eigen::Vector3i index_3d;
-  getIndexIn3D (index_1d, index_3d);
-  for (int i = 0; i < 3; ++i)
-    point[i] = index_3d[i] * voxel_size_ + bounding_min_[i];
-}
-
-
 
 
 #define PCL_INSTANTIATE_MovingLeastSquares(T,OutT) template class PCL_EXPORTS pcl::MovingLeastSquares<T,OutT>;
