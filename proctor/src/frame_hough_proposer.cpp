@@ -70,7 +70,9 @@ namespace pcl
           Eigen::Matrix3f A = getTransformationBetweenFrames(world_x, world_y, target_normal, target_perp);
           Eigen::Matrix3f B = getTransformationBetweenFrames(world_x, world_y, query_normal, query_perp);
           Eigen::Matrix3f rot_transform = B.transpose() * A;
-          //Eigen::Matrix3f other = getTransformationBetweenFrames(target_normal, target_perp, query_normal, query_perp);
+#ifndef NDEBUG
+          Eigen::Matrix3f other = getTransformationBetweenFrames(target_normal, target_perp, query_normal, query_perp);
+#endif
 
           // Test that the target_normal goes to (1, 0, 0)
           assert((A * target_normal).isApprox(world_x, 0.01));
