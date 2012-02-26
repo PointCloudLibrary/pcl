@@ -37,7 +37,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/spin_image.h
         include/pcl/${SUBSYS_NAME}/principal_curvatures.h
         include/pcl/${SUBSYS_NAME}/rift.h
-        include/pcl/${SUBSYS_NAME}/rsd.h
+        #include/pcl/${SUBSYS_NAME}/rsd.h
         include/pcl/${SUBSYS_NAME}/statistical_multiscale_interest_region_extraction.h
         include/pcl/${SUBSYS_NAME}/vfh.h
         include/pcl/${SUBSYS_NAME}/3dsc.h
@@ -71,7 +71,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/spin_image.hpp
         include/pcl/${SUBSYS_NAME}/impl/principal_curvatures.hpp
         include/pcl/${SUBSYS_NAME}/impl/rift.hpp
-        include/pcl/${SUBSYS_NAME}/impl/rsd.hpp
+        #include/pcl/${SUBSYS_NAME}/impl/rsd.hpp
         include/pcl/${SUBSYS_NAME}/impl/statistical_multiscale_interest_region_extraction.hpp
         include/pcl/${SUBSYS_NAME}/impl/vfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/3dsc.hpp
@@ -81,7 +81,6 @@ if(build)
         )
 
     set(srcs
-        src/feature.cpp
         src/boundary.cpp
         src/cvfh.cpp
         src/fpfh.cpp
@@ -105,7 +104,7 @@ if(build)
         src/spin_image.cpp
         src/principal_curvatures.cpp
         src/rift.cpp
-        src/rsd.cpp
+        #src/rsd.cpp
         src/statistical_multiscale_interest_region_extraction.cpp
         src/vfh.cpp
         src/3dsc.cpp
