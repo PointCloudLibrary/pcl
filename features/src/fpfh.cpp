@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -41,6 +43,10 @@
 #include "pcl/features/impl/fpfh.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(FPFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::FPFHSignature33)))
-PCL_INSTANTIATE_PRODUCT(FPFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)))
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+  PCL_INSTANTIATE_PRODUCT(FPFHEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointNormal))((pcl::Normal)(pcl::PointNormal))((pcl::FPFHSignature33)))
+#else
+  PCL_INSTANTIATE_PRODUCT(FPFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::FPFHSignature33)))
+  PCL_INSTANTIATE_PRODUCT(FPFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)))
+#endif
 

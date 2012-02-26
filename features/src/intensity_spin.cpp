@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -41,6 +43,10 @@
 #include "pcl/features/impl/intensity_spin.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(IntensitySpinEstimation, ((pcl::PointXYZI)(pcl::PointXYZINormal))((pcl::Histogram<20>)))
-PCL_INSTANTIATE_PRODUCT(IntensitySpinEstimation, ((pcl::PointXYZI)(pcl::PointXYZINormal))((Eigen::MatrixXf)))
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+  PCL_INSTANTIATE_PRODUCT(IntensitySpinEstimation, ((pcl::PointXYZI))((pcl::Histogram<20>)))
+#else
+  PCL_INSTANTIATE_PRODUCT(IntensitySpinEstimation, ((pcl::PointXYZI)(pcl::PointXYZINormal))((pcl::Histogram<20>)))
+  PCL_INSTANTIATE_PRODUCT(IntensitySpinEstimation, ((pcl::PointXYZI)(pcl::PointXYZINormal))((Eigen::MatrixXf)))
+#endif
 

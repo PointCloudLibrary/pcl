@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -52,7 +54,7 @@ pcl::computePairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1,
 
   if (f4 == 0.0f)
   {
-    PCL_ERROR ("Euclidean distance between points is 0!\n");
+    PCL_DEBUG ("Euclidean distance between points is 0!\n");
     f1 = f2 = f3 = f4 = 0.0f;
     return (false);
   }
@@ -83,6 +85,7 @@ pcl::computePairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1,
   float v_norm = v.norm ();
   if (v_norm == 0.0f)
   {
+    PCL_DEBUG ("Norm of Delta x U is 0!\n");
     f1 = f2 = f3 = f4 = 0.0f;
     return (false);
   }
@@ -102,5 +105,9 @@ pcl::computePairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1,
 }
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(PFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::PFHSignature125)))
-PCL_INSTANTIATE_PRODUCT(PFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)))
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+  PCL_INSTANTIATE_PRODUCT(PFHEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::PFHSignature125)))
+#else
+  PCL_INSTANTIATE_PRODUCT(PFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::PFHSignature125)))
+  PCL_INSTANTIATE_PRODUCT(PFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)))
+#endif

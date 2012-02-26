@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,11 +34,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
-\author Bastian Steder
-**/
-
-
 #include <iostream>
 using std::cout;
 using std::cerr;
@@ -51,34 +48,36 @@ using std::cerr;
 #include <pcl/common/vector_average.h>
 #include <pcl/features/range_image_border_extractor.h>
 
-namespace pcl {
+namespace pcl 
+{
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 RangeImageBorderExtractor::RangeImageBorderExtractor(const RangeImage* range_image) : BaseClass(),
   range_image_(range_image), range_image_size_during_extraction_(0),
   border_scores_left_(NULL), border_scores_right_(NULL), border_scores_top_(NULL), border_scores_bottom_(NULL),
   surface_structure_(NULL), border_descriptions_(NULL), shadow_border_informations_(NULL), border_directions_(NULL),
   surface_change_scores_(NULL), surface_change_directions_(NULL)
 {
-  //cerr << __PRETTY_FUNCTION__<<" called (this="<<(void*)this<<").\n";
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 RangeImageBorderExtractor::~RangeImageBorderExtractor()
 {
-  //cerr << __PRETTY_FUNCTION__<<" called (this="<<(void*)this<<").\n";
-  clearData();
+  clearData ();
 }
 
-void RangeImageBorderExtractor::setRangeImage(const RangeImage* range_image)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+RangeImageBorderExtractor::setRangeImage (const RangeImage* range_image)
 {
-  //cerr << __PRETTY_FUNCTION__<<" called (this="<<(void*)this<<").\n";
-  clearData();
+  clearData ();
   range_image_ = range_image;
 }
 
-void RangeImageBorderExtractor::clearData()
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+RangeImageBorderExtractor::clearData ()
 {
-  //cerr << __PRETTY_FUNCTION__<<" called.\n";
-  
   delete[] border_scores_left_;    border_scores_left_   = NULL;
   delete[] border_scores_right_;   border_scores_right_  = NULL;
   delete[] border_scores_top_;     border_scores_top_    = NULL;
@@ -102,7 +101,9 @@ void RangeImageBorderExtractor::clearData()
   delete[] surface_change_directions_;  surface_change_directions_ = NULL;
 }
 
-void RangeImageBorderExtractor::extractLocalSurfaceStructure()
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+RangeImageBorderExtractor::extractLocalSurfaceStructure ()
 {
   if (surface_structure_ != NULL)
     return;
@@ -147,7 +148,9 @@ void RangeImageBorderExtractor::extractLocalSurfaceStructure()
   }
 }
 
-void RangeImageBorderExtractor::extractBorderScoreImages()
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+RangeImageBorderExtractor::extractBorderScoreImages ()
 {
   if (border_scores_left_ != NULL)
     return;
@@ -185,19 +188,21 @@ void RangeImageBorderExtractor::extractBorderScoreImages()
   }
 }
 
-float* RangeImageBorderExtractor::updatedScoresAccordingToNeighborValues(const float* border_scores) const
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+float* 
+RangeImageBorderExtractor::updatedScoresAccordingToNeighborValues (const float* border_scores) const
 {
   float* new_scores = new float[range_image_->width*range_image_->height];
   float* new_scores_ptr = new_scores;
-  for (int y=0; y<(int)range_image_->height; ++y) {
-    for (int x=0; x<(int)range_image_->width; ++x) {
+  for (int y=0; y<(int)range_image_->height; ++y) 
+    for (int x=0; x<(int)range_image_->width; ++x) 
       *(new_scores_ptr++) = updatedScoreAccordingToNeighborValues(x, y, border_scores);
-    }
-  }
-  return new_scores;
+  return (new_scores);
 }
 
-void RangeImageBorderExtractor::updateScoresAccordingToNeighborValues()
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+RangeImageBorderExtractor::updateScoresAccordingToNeighborValues ()
 {
   extractBorderScoreImages();
   
@@ -217,7 +222,9 @@ void RangeImageBorderExtractor::updateScoresAccordingToNeighborValues()
   border_scores_bottom_ = bottom_with_propagated_neighbors;
 }
  
-void RangeImageBorderExtractor::findAndEvaluateShadowBorders()
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+RangeImageBorderExtractor::findAndEvaluateShadowBorders ()
 {
   if (shadow_border_informations_ != NULL)
     return;
@@ -284,7 +291,9 @@ void RangeImageBorderExtractor::findAndEvaluateShadowBorders()
   }
 }
 
-float* RangeImageBorderExtractor::getAnglesImageForBorderDirections()
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+float* 
+RangeImageBorderExtractor::getAnglesImageForBorderDirections ()
 {
   //MEASURE_FUNCTION_TIME;
   
@@ -319,7 +328,9 @@ float* RangeImageBorderExtractor::getAnglesImageForBorderDirections()
   return angles_image;
 }
 
-float* RangeImageBorderExtractor::getAnglesImageForSurfaceChangeDirections()
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+float* 
+RangeImageBorderExtractor::getAnglesImageForSurfaceChangeDirections ()
 {
   //MEASURE_FUNCTION_TIME;
   
@@ -361,8 +372,9 @@ float* RangeImageBorderExtractor::getAnglesImageForSurfaceChangeDirections()
 }
 
 
-
-void RangeImageBorderExtractor::classifyBorders()
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+RangeImageBorderExtractor::classifyBorders ()
 {
   if (border_descriptions_ != NULL)
     return;
@@ -591,7 +603,9 @@ void RangeImageBorderExtractor::classifyBorders()
   //}
 }
 
-void RangeImageBorderExtractor::calculateBorderDirections()
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+RangeImageBorderExtractor::calculateBorderDirections ()
 {
   if (border_directions_!=NULL)
     return;
@@ -671,7 +685,9 @@ void RangeImageBorderExtractor::calculateBorderDirections()
   border_directions_ = average_border_directions;
 }
 
-void RangeImageBorderExtractor::calculateSurfaceChanges()
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+RangeImageBorderExtractor::calculateSurfaceChanges ()
 {
   if (surface_change_scores_!=NULL)
     return;
@@ -723,8 +739,9 @@ void RangeImageBorderExtractor::calculateSurfaceChanges()
   //blurSurfaceChanges();
 }
 
-
-void RangeImageBorderExtractor::blurSurfaceChanges()
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+RangeImageBorderExtractor::blurSurfaceChanges ()
 {
   //MEASURE_FUNCTION_TIME;
   
@@ -788,7 +805,9 @@ void RangeImageBorderExtractor::blurSurfaceChanges()
   surface_change_scores_ = blurred_scores;
 }
 
-void RangeImageBorderExtractor::computeFeature(PointCloudOut& output)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+RangeImageBorderExtractor::computeFeature (PointCloudOut& output)
 {
   //std::cout << __PRETTY_FUNCTION__ << " called.\n";
   
@@ -812,12 +831,14 @@ void RangeImageBorderExtractor::computeFeature(PointCloudOut& output)
     output.points.clear ();
     return;
   }
-  output = getBorderDescriptions();
+  output = getBorderDescriptions ();
 }
 
-void RangeImageBorderExtractor::compute(PointCloudOut& output)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+RangeImageBorderExtractor::compute (PointCloudOut& output)
 {
-  computeFeature(output);
+  computeFeature (output);
 }
 
 }  // namespace end

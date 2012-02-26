@@ -42,34 +42,6 @@
 
 namespace pcl
 {
-  /** \brief Simple rule-based labeling of the local surface type based on the principle curvatures
-    * \param min_radius smallest estimated surface radius
-    * \param max_radius largest estimated surface radius
-    * \param min_radius_plane radius above which a the labeled is "planar"==1
-    * \param max_radius_noise radius below which the label is "noise/corner"==0
-    * \param min_radius_cylinder radius above which the label is "cylinder/rim"==2
-    * \param max_min_radius_diff difference of the principal radii below which label is "sphere"==3 and above "edge"==4
-    * \ingroup features
-    */
-  inline int
-  getSimpleType (float min_radius, float max_radius,
-      double min_radius_plane = 0.100,
-      double max_radius_noise = 0.015,
-      double min_radius_cylinder = 0.175,
-      double max_min_radius_diff = 0.050)
-  {
-    if (min_radius > min_radius_plane)
-      return 1; // plane
-    else if (max_radius > min_radius_cylinder)
-      return 2; // cylinder (rim)
-    else if (min_radius < max_radius_noise)
-      return 0; // noise/corner
-    else if (max_radius - min_radius < max_min_radius_diff)
-      return 3; // sphere/corner
-    else
-      return 4; // edge
-  }
-
   /** \brief Transform a list of 2D matrices into a point cloud containing the values in a vector (Histogram<N>).
     * Can be used to transform the 2D histograms obtained in \ref RSDEstimation into a point cloud.
     * @note The template paramter N should be (greater or) equal to the product of the number of rows and columns.
@@ -78,7 +50,7 @@ namespace pcl
     * \ingroup features
     */
   template <int N> void
-  getFeaturePointCloud (const std::vector<Eigen::MatrixXf> &histograms2D, PointCloud<Histogram<N> > &histogramsPC)
+  getFeaturePointCloud (const std::vector<Eigen::MatrixXf, Eigen::aligned_allocator<Eigen::MatrixXf> > &histograms2D, PointCloud<Histogram<N> > &histogramsPC)
   {
     histogramsPC.points.resize (histograms2D.size ());
     histogramsPC.width    = histograms2D.size ();
@@ -180,7 +152,7 @@ namespace pcl
 
       /** \brief Get the number of subdivisions for the considered distance interval. */
       inline int 
-      getNrSubdivisions () { return (nr_subdiv_); }
+      getNrSubdivisions () const { return (nr_subdiv_); }
 
       /** \brief Set the maximum radius, above which everything can be considered planar.
         * \note the order of magnitude should be around 10-20 times the search radius (0.2 works well for typical datasets).
@@ -192,7 +164,7 @@ namespace pcl
 
       /** \brief Get the maximum radius, above which everything can be considered planar. */
       inline double 
-      getPlaneRadius () { return (plane_radius_); }
+      getPlaneRadius () const { return (plane_radius_); }
 
       /** \brief Disables the setting of the number of k nearest neighbors to use for the feature estimation. */
       inline void 
@@ -210,11 +182,11 @@ namespace pcl
 
       /** \brief Returns whether the full distance-angle histograms are being saved. */
       inline bool
-      getSaveHistograms () { return save_histograms_; }
+      getSaveHistograms () const { return (save_histograms_); }
 
       /** \brief Returns a pointer to the list of full distance-angle histograms for all points. */
-      inline boost::shared_ptr<std::vector<Eigen::MatrixXf> >
-      getHistograms () { return histograms_; }
+      inline boost::shared_ptr<std::vector<Eigen::MatrixXf, Eigen::aligned_allocator<Eigen::MatrixXf> > >
+      getHistograms () const { return (histograms_); }
 
     protected:
 
@@ -227,12 +199,9 @@ namespace pcl
       computeFeature (PointCloudOut &output);
 
       /** \brief The list of full distance-angle histograms for all points. */
-      boost::shared_ptr<std::vector<Eigen::MatrixXf> > histograms_;
+      boost::shared_ptr<std::vector<Eigen::MatrixXf, Eigen::aligned_allocator<Eigen::MatrixXf> > > histograms_;
 
     private:
-      /** \brief The upper bound for the considered distance interval. */
-      // TODO double max_dist_;
-
       /** \brief The number of subdivisions for the considered distance interval. */
       int nr_subdiv_;
 
@@ -247,6 +216,8 @@ namespace pcl
         */
       void 
       computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 
