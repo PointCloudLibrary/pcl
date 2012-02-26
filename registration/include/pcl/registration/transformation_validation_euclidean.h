@@ -79,6 +79,9 @@ namespace pcl
 
         typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
 
+        typedef typename TransformationValidation<PointSource, PointTarget>::PointCloudSourceConstPtr PointCloudSourceConstPtr;
+        typedef typename TransformationValidation<PointSource, PointTarget>::PointCloudTargetConstPtr PointCloudTargetConstPtr;
+
         /** \brief Constructor.
           * Sets the \a max_range parameter to double::max, and initializes the internal search \a tree
           * to a FLANN kd-tree.
@@ -87,8 +90,6 @@ namespace pcl
           max_range_ (std::numeric_limits<double>::max ()),
           tree_ (new pcl::KdTreeFLANN<PointTarget>)
         {
-          PointRepresentationConstPtr point_representation;
-          tree_->setPointRepresentation (point_representation);
         }
 
         virtual ~TransformationValidationEuclidean () {};
@@ -114,8 +115,8 @@ namespace pcl
           */
         double
         validateTransformation (
-            const pcl::PointCloud<PointSource> &cloud_src,
-            const pcl::PointCloud<PointTarget> &cloud_tgt,
+            const PointCloudSourceConstPtr &cloud_src,
+            const PointCloudTargetConstPtr &cloud_tgt,
             const Eigen::Matrix4f &transformation_matrix);
 
       protected:
@@ -126,6 +127,7 @@ namespace pcl
 
         /** \brief A pointer to the spatial search object. */
         KdTreePtr tree_;
+
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };

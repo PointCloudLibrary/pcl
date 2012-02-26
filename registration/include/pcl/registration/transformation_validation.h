@@ -66,6 +66,14 @@ namespace pcl
     class TransformationValidation
     {
       public:
+        typedef pcl::PointCloud<PointSource> PointCloudSource;
+        typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
+        typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
+
+        typedef pcl::PointCloud<PointTarget> PointCloudTarget;
+        typedef typename PointCloudTarget::Ptr PointCloudTargetPtr;
+        typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
+
         TransformationValidation () {};
         virtual ~TransformationValidation () {};
 
@@ -80,8 +88,8 @@ namespace pcl
           */
         virtual double
         validateTransformation (
-            const pcl::PointCloud<PointSource> &cloud_src,
-            const pcl::PointCloud<PointTarget> &cloud_tgt,
+            const PointCloudSourceConstPtr &cloud_src,
+            const PointCloudTargetConstPtr &cloud_tgt,
             const Eigen::Matrix4f &transformation_matrix) = 0;
 
 
