@@ -40,7 +40,7 @@
 #include "pcl/features/pfhrgb.h"
 #include "pcl/features/impl/pfhrgb.hpp"
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::computeRGBPairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1, const Eigen::Vector4i &colors1,
                              const Eigen::Vector4f &p2, const Eigen::Vector4f &n2, const Eigen::Vector4i &colors2,
@@ -52,7 +52,7 @@ pcl::computeRGBPairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n
 
   if (f4 == 0.0f)
   {
-    PCL_ERROR ("Euclidean distance between points is 0!\n");
+    PCL_DEBUG ("Euclidean distance between points is 0!\n");
     f1 = f2 = f3 = f4 = 0.0f;
     return (false);
   }
@@ -71,7 +71,7 @@ pcl::computeRGBPairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n
   float v_norm = v.norm ();
   if (v_norm == 0.0f)
   {
-    PCL_ERROR ("Norm of Delta x U is 0!\n");
+    PCL_DEBUG ("Norm of Delta x U is 0!\n");
     f1 = f2 = f3 = f4 = 0.0f;
     return (false);
   }
@@ -86,8 +86,6 @@ pcl::computeRGBPairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n
   w[3] = 0.0f;
   // Compute f1 = arctan (w * n2, u * n2) i.e. angle of n2 in the x=u, y=w coordinate system
   f1 = atan2f (w.dot (n2_copy), n1_copy.dot (n2_copy)); // @todo optimize this
-
-
 
   // everything before was standard 4D-Darboux frame feature pair
   // now, for the experimental color stuff
@@ -104,7 +102,12 @@ pcl::computeRGBPairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n
 }
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(PFHRGBEstimation, ((pcl::PointXYZRGB) (pcl::PointXYZRGBNormal))
-                        (PCL_NORMAL_POINT_TYPES)
-                        ((pcl::PFHRGBSignature250)))
-
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+  PCL_INSTANTIATE_PRODUCT(PFHRGBEstimation, ((pcl::PointXYZRGBA) (pcl::PointXYZRGBNormal))
+                          ((pcl::Normal)(pcl::PointXYZRGBNormal))
+                          ((pcl::PFHRGBSignature250)))
+#else
+  PCL_INSTANTIATE_PRODUCT(PFHRGBEstimation, ((pcl::PointXYZRGBA) (pcl::PointXYZRGBNormal))
+                          (PCL_NORMAL_POINT_TYPES)
+                          ((pcl::PFHRGBSignature250)))
+#endif

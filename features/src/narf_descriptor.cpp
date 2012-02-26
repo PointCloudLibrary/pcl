@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,11 +34,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
-\author Bastian Steder
-**/
-
-
 #include <iostream>
 using std::cout;
 using std::cerr;
@@ -45,18 +42,22 @@ using std::cerr;
 #include "pcl/features/narf.h"
 #include <pcl/range_image/range_image.h>
 
-namespace pcl {
-
+namespace pcl 
+{
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 NarfDescriptor::NarfDescriptor(const RangeImage* range_image, const std::vector<int>* indices) : BaseClass()
 {
   setRangeImage(range_image, indices);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 NarfDescriptor::~NarfDescriptor()
 {
 }
 
-void NarfDescriptor::setRangeImage(const RangeImage* range_image, const std::vector<int>* indices)
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+NarfDescriptor::setRangeImage(const RangeImage* range_image, const std::vector<int>* indices)
 {
   range_image_ = range_image;
   if (indices != NULL)
@@ -66,7 +67,9 @@ void NarfDescriptor::setRangeImage(const RangeImage* range_image, const std::vec
   }
 }
 
-void NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
 {
   //std::cout << __PRETTY_FUNCTION__ << " called.\n";
   
@@ -124,9 +127,10 @@ void NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
     delete feature_list[i];
 }
 
-void NarfDescriptor::compute(NarfDescriptor::PointCloudOut& output)
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+NarfDescriptor::compute(NarfDescriptor::PointCloudOut& output)
 {
   computeFeature(output);
 }
-
 }  // namespace end

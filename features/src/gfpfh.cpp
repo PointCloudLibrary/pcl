@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -41,7 +43,10 @@
 #include "pcl/features/impl/gfpfh.hpp"
 #include "pcl/octree/octree_impl.h"
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(GFPFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_XYZL_POINT_TYPES)((pcl::GFPFHSignature16)))
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+  PCL_INSTANTIATE_PRODUCT(GFPFHEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZL))((pcl::PointXYZL))((pcl::GFPFHSignature16)))
+#else
+  PCL_INSTANTIATE_PRODUCT(GFPFHEstimation, (PCL_XYZ_POINT_TYPES)(PCL_XYZL_POINT_TYPES)((pcl::GFPFHSignature16)))
+#endif
+

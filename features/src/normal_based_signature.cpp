@@ -41,6 +41,9 @@
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 
-
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(NormalBasedSignatureEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::NormalBasedSignature12)))
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+  PCL_INSTANTIATE_PRODUCT(NormalBasedSignatureEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::NormalBasedSignature12)))
+#else
+  PCL_INSTANTIATE_PRODUCT(NormalBasedSignatureEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::NormalBasedSignature12)))
+#endif

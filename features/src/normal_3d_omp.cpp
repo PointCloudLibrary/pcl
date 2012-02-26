@@ -43,6 +43,10 @@
 #include "pcl/features/impl/normal_3d_omp.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(NormalEstimationOMP, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
-PCL_INSTANTIATE_PRODUCT(NormalEstimationOMP, (PCL_XYZ_POINT_TYPES)((Eigen::MatrixXf)))
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+  PCL_INSTANTIATE_PRODUCT(NormalEstimationOMP, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::Normal)))
+#else
+  PCL_INSTANTIATE_PRODUCT(NormalEstimationOMP, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
+  PCL_INSTANTIATE_PRODUCT(NormalEstimationOMP, (PCL_XYZ_POINT_TYPES)((Eigen::MatrixXf)))
+#endif
 

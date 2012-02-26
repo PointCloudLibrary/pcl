@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -39,5 +41,9 @@
 #include "pcl/features/impl/board.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(BOARDLocalReferenceFrameEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::ReferenceFrame)))
-PCL_INSTANTIATE_PRODUCT(BOARDLocalReferenceFrameEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)))
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+  PCL_INSTANTIATE_PRODUCT(BOARDLocalReferenceFrameEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::ReferenceFrame)))
+#else
+  PCL_INSTANTIATE_PRODUCT(BOARDLocalReferenceFrameEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::ReferenceFrame)))
+  PCL_INSTANTIATE_PRODUCT(BOARDLocalReferenceFrameEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)))
+#endif

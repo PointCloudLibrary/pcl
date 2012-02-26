@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,10 +34,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
-\author Bastian Steder
-**/
-
 #include <pcl/features/narf.h>
 
 #include <iostream>
@@ -51,31 +49,38 @@ using Eigen::Vector3f;
 #include <pcl/common/vector_average.h>
 #include <pcl/common/common_headers.h>
 
-namespace pcl {
+namespace pcl 
+{
 int Narf::max_no_of_threads = 1;
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Narf::Narf() : surface_patch_(NULL), descriptor_(NULL)
 {
   reset();
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Narf::~Narf()
 {
   reset();
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Narf::Narf(const Narf& other) : surface_patch_(NULL), surface_patch_pixel_size_(0), descriptor_(NULL), descriptor_size_(0)
 {
   deepCopy(other);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const Narf& Narf::operator=(const Narf& other)
 {
   deepCopy(other);
   return *this;
 }
 
-void Narf::reset()
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+Narf::reset ()
 {
   delete[] descriptor_;
   descriptor_ = NULL;
@@ -87,7 +92,9 @@ void Narf::reset()
   surface_patch_rotation_ = 0.0f;
 }
 
-void Narf::deepCopy(const Narf& other)
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+Narf::deepCopy (const Narf& other)
 {
   //cout << __PRETTY_FUNCTION__<<" called.\n";
   if (&other == this)
@@ -115,8 +122,9 @@ void Narf::deepCopy(const Narf& other)
   memcpy(descriptor_, other.descriptor_, sizeof(*descriptor_)*descriptor_size_);
 }
 
-
-bool Narf::extractDescriptor(int descriptor_size)
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool 
+Narf::extractDescriptor(int descriptor_size)
 {
   float weight_for_first_point = 2.0f; // The weight for the last point is always 1.0f
   int no_of_beam_points = getNoOfBeamPoints();
@@ -197,8 +205,10 @@ bool Narf::extractDescriptor(int descriptor_size)
   return true;
 }
 
-bool Narf::extractFromRangeImage(const RangeImage& range_image, const Eigen::Affine3f& pose, int descriptor_size,
-                               float support_size, int surface_patch_pixel_size)
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool 
+Narf::extractFromRangeImage (const RangeImage& range_image, const Eigen::Affine3f& pose, int descriptor_size,
+                             float support_size, int surface_patch_pixel_size)
 {
   reset();
   position_ = pose.inverse ().translation ();
@@ -216,7 +226,9 @@ bool Narf::extractFromRangeImage(const RangeImage& range_image, const Eigen::Aff
   return true;
 }
 
-bool Narf::extractFromRangeImage(const RangeImage& range_image, float x, float y, int descriptor_size, float support_size)
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool 
+Narf::extractFromRangeImage (const RangeImage& range_image, float x, float y, int descriptor_size, float support_size)
 {
   if (!range_image.isValid(pcl_lrint(x), pcl_lrint(y)))
     return false;
@@ -226,20 +238,26 @@ bool Narf::extractFromRangeImage(const RangeImage& range_image, float x, float y
   return extractFromRangeImage(range_image, feature_pos, descriptor_size, support_size);
 }
 
-bool Narf::extractFromRangeImage(const RangeImage& range_image, const InterestPoint& interest_point, int descriptor_size, float support_size)
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool 
+Narf::extractFromRangeImage (const RangeImage& range_image, const InterestPoint& interest_point, int descriptor_size, float support_size)
 {
   return extractFromRangeImage(range_image, Eigen::Vector3f(interest_point.x, interest_point.y, interest_point.z), descriptor_size, support_size);
 }
 
-bool Narf::extractFromRangeImage(const RangeImage& range_image, const Eigen::Vector3f& interest_point, int descriptor_size, float support_size)
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool 
+Narf::extractFromRangeImage (const RangeImage& range_image, const Eigen::Vector3f& interest_point, int descriptor_size, float support_size)
 {
   if (!range_image.getNormalBasedUprightTransformation(interest_point, 0.5f*support_size, transformation_))
     return false;
   return extractFromRangeImage(range_image, transformation_, descriptor_size, support_size);
 }
 
-bool Narf::extractFromRangeImageWithBestRotation(const RangeImage& range_image, const Eigen::Vector3f& interest_point,
-                                                 int descriptor_size, float support_size)
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool 
+Narf::extractFromRangeImageWithBestRotation (const RangeImage& range_image, const Eigen::Vector3f& interest_point,
+                                             int descriptor_size, float support_size)
 {
   extractFromRangeImage(range_image, interest_point, descriptor_size, support_size);
   vector<float> rotations, strengths;
@@ -261,7 +279,9 @@ bool Narf::extractFromRangeImageWithBestRotation(const RangeImage& range_image, 
   return extractDescriptor(descriptor_size_);
 }
 
-float* Narf::getBlurredSurfacePatch(int new_pixel_size, int blur_radius) const
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+float* 
+Narf::getBlurredSurfacePatch (int new_pixel_size, int blur_radius) const
 {
   float new_to_old_factor = float(surface_patch_pixel_size_)/float(new_pixel_size);
   int new_size = new_pixel_size*new_pixel_size;
@@ -322,8 +342,10 @@ float* Narf::getBlurredSurfacePatch(int new_pixel_size, int blur_radius) const
   return new_surface_patch;
 }
 
-void Narf::extractFromRangeImageAndAddToList(const RangeImage& range_image, const Eigen::Vector3f& interest_point, int descriptor_size,
-                                            float support_size, bool rotation_invariant, std::vector<Narf*>& feature_list)
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+Narf::extractFromRangeImageAndAddToList (const RangeImage& range_image, const Eigen::Vector3f& interest_point, int descriptor_size,
+                                         float support_size, bool rotation_invariant, std::vector<Narf*>& feature_list)
 {
   Narf* feature = new Narf;
   if (!feature->extractFromRangeImage(range_image, interest_point, descriptor_size, support_size))
@@ -342,8 +364,10 @@ void Narf::extractFromRangeImageAndAddToList(const RangeImage& range_image, cons
   delete feature;
 }
 
-void Narf::extractFromRangeImageAndAddToList(const RangeImage& range_image, float image_x, float image_y, int descriptor_size,
-                                            float support_size, bool rotation_invariant, std::vector<Narf*>& feature_list)
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+Narf::extractFromRangeImageAndAddToList (const RangeImage& range_image, float image_x, float image_y, int descriptor_size,
+                                         float support_size, bool rotation_invariant, std::vector<Narf*>& feature_list)
 {
   if (!range_image.isValid(pcl_lrint(image_x), pcl_lrint(image_y)))
     return;
@@ -352,6 +376,7 @@ void Narf::extractFromRangeImageAndAddToList(const RangeImage& range_image, floa
   extractFromRangeImageAndAddToList(range_image, feature_pos, descriptor_size, support_size, rotation_invariant, feature_list);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
 Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<InterestPoint>& interest_points,
                                 int descriptor_size, float support_size, bool rotation_invariant, std::vector<Narf*>& feature_list)
@@ -403,8 +428,10 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
   }
 }
 
-void Narf::extractForEveryRangeImagePointAndAddToList(const RangeImage& range_image, int descriptor_size, float support_size,
-                                                     bool rotation_invariant, std::vector<Narf*>& feature_list)
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+Narf::extractForEveryRangeImagePointAndAddToList (const RangeImage& range_image, int descriptor_size, float support_size,
+                                                  bool rotation_invariant, std::vector<Narf*>& feature_list)
 {
   for (unsigned int y=0; y<range_image.height; ++y)
   {
@@ -416,6 +443,7 @@ void Narf::extractForEveryRangeImagePointAndAddToList(const RangeImage& range_im
   }
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
 Narf::getRotations (std::vector<float>& rotations, std::vector<float>& strengths) const
 {
@@ -473,15 +501,12 @@ Narf::getRotations (std::vector<float>& rotations, std::vector<float>& strengths
   }
 }
 
-void Narf::getRotatedVersions(const RangeImage& range_image, const std::vector<float>& rotations, std::vector<Narf*>& features) const
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+Narf::getRotatedVersions (const RangeImage& range_image, const std::vector<float>& rotations, std::vector<Narf*>& features) const
 {
-  //cout << __PRETTY_FUNCTION__ << " called.\n";
-  
   for (unsigned int i=0; i<rotations.size(); ++i)
   {
-
-    //cout << "Getting feature for rotation "<<i<<".\n";
-    //cout << PVARN(transformation_);
     float rotation = rotations[i];
     
     Narf* feature = new Narf(*this);  // Call copy constructor
@@ -496,12 +521,16 @@ void Narf::getRotatedVersions(const RangeImage& range_image, const std::vector<f
   }
 }
 
-void Narf::saveHeader(std::ostream& file) const
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+Narf::saveHeader (std::ostream& file) const
 {
   file << "\n"<<getHeaderKeyword()<<" "<<Narf::VERSION<<" ";
 }
 
-void Narf::saveBinary(std::ostream& file) const
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+Narf::saveBinary (std::ostream& file) const
 {
   saveHeader(file);
   pcl::saveBinary(position_.matrix(), file);
@@ -515,7 +544,9 @@ void Narf::saveBinary(std::ostream& file) const
   file.write(reinterpret_cast<const char*>(descriptor_), descriptor_size_*sizeof(*descriptor_));
 }
 
-void Narf::saveBinary(const std::string& filename) const
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+Narf::saveBinary (const std::string& filename) const
 {
   std::ofstream file;
   file.open(filename.c_str());
@@ -523,7 +554,9 @@ void Narf::saveBinary(const std::string& filename) const
   file.close();
 }
 
-int Narf::loadHeader(std::istream& file) const
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int 
+Narf::loadHeader(std::istream& file) const
 {
   size_t pos_in_file = file.tellg();
   file.width(getHeaderKeyword().size()+10); // limit maximum number of bytes to read
@@ -537,12 +570,14 @@ int Narf::loadHeader(std::istream& file) const
   }
   int version;
   file >> version;
-  file.ignore(1);  // Skip the space after the version number
+  file.ignore (1);  // Skip the space after the version number
   
-  return version;
+  return (version);
 }
 
-void Narf::loadBinary(std::istream& file)
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+Narf::loadBinary (std::istream& file)
 {
   reset();
   int version = loadHeader(file);
@@ -563,18 +598,17 @@ void Narf::loadBinary(std::istream& file)
   descriptor_ = new float[descriptor_size_];
   if (file.eof())
     cout << ":-(\n";
-  file.read(reinterpret_cast<char*>(descriptor_), descriptor_size_*sizeof(*descriptor_));
+  file.read (reinterpret_cast<char*>(descriptor_), descriptor_size_*sizeof(*descriptor_));
 }
 
-void Narf::loadBinary(const std::string& filename)
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+Narf::loadBinary (const std::string& filename)
 {
   std::ifstream file;
-  file.open(filename.c_str());
-  loadBinary(file);
-  file.close();
+  file.open (filename.c_str ());
+  loadBinary (file);
+  file.close ();
 }
-
-
 }  // namespace end
-
 
