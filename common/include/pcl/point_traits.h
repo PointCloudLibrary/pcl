@@ -223,6 +223,42 @@ namespace pcl
       bool exists_tmp_;
       OutT &value_;
   };
+  
+  /** \brief A helper functor that can set a specific value in a field if the field exists. */
+  template <typename PointOutT, typename InT>
+  struct SetIfFieldExists 
+  {
+    typedef typename traits::POD<PointOutT>::type Pod;
+
+    /** \brief Constructor.
+      * \param[in] pt the input point 
+      * \param[in] field the name of the field
+      * \param[out] value the value to set
+      */
+    SetIfFieldExists (PointOutT &pt, 
+                      const std::string &field, 
+                      const InT &value)
+      : pt_ (reinterpret_cast<Pod&>(pt)), name_ (field), value_ (value)
+    {
+    }
+
+    /** \brief Operator. Data copy happens here. */
+    template <typename Key> inline void
+    operator() ()
+    {
+      if (name_ == pcl::traits::name<PointOutT, Key>::value)
+      {
+        typedef typename pcl::traits::datatype<PointOutT, Key>::type T;
+        uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&pt_) + pcl::traits::offset<PointOutT, Key>::value;
+        *reinterpret_cast<T*>(data_ptr) = value_;
+      }
+    }
+
+    private:
+      Pod &pt_;
+      const std::string &name_;
+      const InT &value_;
+  };
 }
 
 #ifdef BUILD_Maintainer
