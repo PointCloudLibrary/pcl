@@ -209,7 +209,7 @@ TEST (PCL, SpinImageEstimation)
   EXPECT_NEAR (spin_images->points[100].histogram[24], 0.132139, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[36], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[48], 0, 1e-5);
-  EXPECT_NEAR (spin_images->points[100].histogram[60], 0.38800787925720215, 1e-5);
+  EXPECT_NEAR (spin_images->points[100].histogram[60], 0.388018399477005, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[72], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[84], 0, 1e-5);
   EXPECT_NEAR (spin_images->points[100].histogram[96], 0.468881, 1e-5);
