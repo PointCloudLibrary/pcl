@@ -40,6 +40,21 @@
 
 #include "pcl/ros/conversions.h"
 
+// We're doing a lot of black magic with Boost here, so disable warnings in Maintainer mode, as we will never
+// be able to fix them anyway
+#ifdef BUILD_Maintainer
+#  if defined __GNUC__
+#    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#      pragma GCC diagnostic ignored "-Weffc++"
+#      pragma GCC diagnostic ignored "-pedantic"
+#    else
+#      pragma GCC system_header 
+#    endif
+#  elif defined _MSC_VER
+#    pragma warning(push, 1)
+#  endif
+#endif
+
 namespace pcl
 {
   /** \brief Helper functor structure for concatenate. 
@@ -74,6 +89,17 @@ namespace pcl
       PodOut &p2_;
   };
 }
+
+#ifdef BUILD_Maintainer
+#  if defined __GNUC__
+#    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#      pragma GCC diagnostic warning "-Weffc++"
+#      pragma GCC diagnostic warning "-pedantic"
+#    endif
+#  elif defined _MSC_VER
+#    pragma warning(pop)
+#  endif
+#endif
 
 #endif // PCL_COMMON_CONCATENATE_H_
 
