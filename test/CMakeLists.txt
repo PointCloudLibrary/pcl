@@ -43,16 +43,6 @@ if(build)
                  FILES test_correspondence_estimation.cpp
                  LINK_WITH pcl_registration) 
 
-    PCL_ADD_TEST(a_feature_test test_feature
-                 FILES test_feature.cpp
-                 LINK_WITH pcl_features pcl_kdtree pcl_io
-                 ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
-
-    PCL_ADD_TEST(a_feature_test_eigen test_feature_eigen
-                 FILES test_feature_eigen.cpp
-                 LINK_WITH pcl_features pcl_kdtree pcl_io
-                 ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
-
     PCL_ADD_TEST(a_sample_consensus_test test_sample_consensus
                  FILES test_sample_consensus.cpp
                  LINK_WITH pcl_io pcl_sample_consensus pcl_kdtree pcl_features
@@ -97,5 +87,6 @@ if(build)
                #PCL_ADD_TEST(organized_index test_organized_index
                #  FILES test_organized_index.cpp
                #  LINK_WITH pcl_search pcl_io pcl_filters)
-    
+    add_subdirectory(features)
+  
 endif(build)
