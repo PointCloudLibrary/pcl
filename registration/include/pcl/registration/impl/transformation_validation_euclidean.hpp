@@ -44,15 +44,15 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> double
 pcl::registration::TransformationValidationEuclidean<PointSource, PointTarget>::validateTransformation (
-  const pcl::PointCloud<PointSource> &cloud_src,
-  const pcl::PointCloud<PointTarget> &cloud_tgt,
+  const PointCloudSourceConstPtr &cloud_src,
+  const PointCloudTargetConstPtr &cloud_tgt,
   const Eigen::Matrix4f &transformation_matrix)
 {
   double fitness_score = 0.0;
 
   // Transform the input dataset using the final transformation
   pcl::PointCloud<PointSource> input_transformed;
-  transformPointCloud (cloud_src, input_transformed, transformation_matrix);
+  transformPointCloud (*cloud_src, input_transformed, transformation_matrix);
 
   // Just in case
   if (!tree_)
@@ -78,9 +78,9 @@ pcl::registration::TransformationValidationEuclidean<PointSource, PointTarget>::
     Eigen::Vector4f p1 (input_transformed.points[i].x,
                         input_transformed.points[i].y,
                         input_transformed.points[i].z, 0);
-    Eigen::Vector4f p2 (cloud_tgt.points[nn_indices[0]].x,
-                        cloud_tgt.points[nn_indices[0]].y,
-                        cloud_tgt.points[nn_indices[0]].z, 0);
+    Eigen::Vector4f p2 (cloud_tgt->points[nn_indices[0]].x,
+                        cloud_tgt->points[nn_indices[0]].y,
+                        cloud_tgt->points[nn_indices[0]].z, 0);
     // Calculate the fitness score
     fitness_score += fabs ((p1-p2).squaredNorm ());
     nr++;
