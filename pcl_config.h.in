@@ -27,6 +27,9 @@
 #cmakedefine HAVE_POSIX_MEMALIGN
 #cmakedefine HAVE_MM_MALLOC
 
+/* Precompile for a minimal set of point types instead of all. */
+#cmakedefine PCL_ONLY_CORE_POINT_TYPES
+
 #ifdef DISABLE_OPENNI
 #undef HAVE_OPENNI
 #endif
