@@ -12,3 +12,8 @@ else(PCL_SHARED_LIBS)
   set(PCL_LIB_TYPE "STATIC")
 endif(PCL_SHARED_LIBS)
 mark_as_advanced(PCL_SHARED_LIBS)
+
+# Precompile for a minimal set of point types instead of all.
+option(PCL_ONLY_CORE_POINT_TYPES "Compile explicitly only for a small subset of point types (e.g., pcl::PointXYZ instead of PCL_XYZ_POINT_TYPES)." OFF)
+mark_as_advanced(PCL_ONLY_CORE_POINT_TYPES)
+
