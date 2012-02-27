@@ -103,7 +103,7 @@ if (build)
       target_link_libraries(pcl_registration_visualizer pcl_common pcl_io pcl_kdtree pcl_filters pcl_registration pcl_visualization)
 
       PCL_ADD_EXECUTABLE(pcl_octree_viewer ${SUBSYS_NAME} octree_viewer.cpp)
-      target_link_libraries(pcl_octree_viewer pcl_common pcl_io pcl_octree pcl_visualization pcl_kdtree)   
+      target_link_libraries(pcl_octree_viewer pcl_common pcl_io pcl_octree pcl_visualization pcl_kdtree pcl_filters)
 
       PCL_ADD_EXECUTABLE(pcl_mesh2pcd ${SUBSYS_NAME} mesh2pcd.cpp)
       target_link_libraries(pcl_mesh2pcd pcl_common pcl_io pcl_visualization pcl_filters vtkCommon)
