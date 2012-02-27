@@ -119,7 +119,7 @@ namespace pcl
 
         /** \brief NOT IMPLEMENTED*/
         inline void
-        flush (const bool forceCacheDeAlloc) { } //???
+        flush (const bool force_cache_dealloc) { } //???
 
         /** \brief clears the vector of points in this class */
         inline void

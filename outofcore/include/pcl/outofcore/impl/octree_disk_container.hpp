@@ -145,7 +145,7 @@ namespace pcl
     template<typename PointT>
     octree_disk_container<PointT>::~octree_disk_container ()
     {
-      flush_writebuff (true);
+      flushWritebuff (true);
       //fileback.flush();
       //fileback.close();
       //std::remove(persistant->c_str());
@@ -157,7 +157,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    octree_disk_container<PointT>::flush_writebuff (const bool forceCacheDeAlloc)
+    octree_disk_container<PointT>::flushWritebuff (const bool force_cache_dealloc)
     {
       if (writebuff_.size () > 0)
       {
@@ -177,7 +177,7 @@ namespace pcl
       }
 
       //if(forceCacheDeAlloc || (size() >= node<octree_disk_container<PointT>, PointT>::split_thresh))  //if told to dump cache, or if we have more nodes than the split threshold
-      if (forceCacheDeAlloc)//if told to dump cache, or if we have more nodes than the split threshold
+      if (force_cache_dealloc)//if told to dump cache, or if we have more nodes than the split threshold
       {
         //don't reserve anymore -- lets us have more nodes and be fairly
         //lazy about dumping the cache. but once it is dumped for the last
@@ -510,7 +510,7 @@ namespace pcl
       writebuff_.push_back (p);
       if (writebuff_.size () > writebuffmax)
       {
-        flush_writebuff (false);
+        flushWritebuff (false);
       }
     }
 ////////////////////////////////////////////////////////////////////////////////

@@ -75,7 +75,7 @@ namespace pcl
 // Constructors
 // ---------------------------------------------------------------------------
     template<typename Container, typename PointT>
-    octree_base<Container, PointT>::octree_base (const boost::filesystem::path& rootname, const bool loadAll)
+    octree_base<Container, PointT>::octree_base (const boost::filesystem::path& rootname, const bool load_all)
     {
       // Check file extension
       if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointT>::node_index_extension)
@@ -85,7 +85,7 @@ namespace pcl
       }
 
       // Create root_ node
-      root_ = new octree_base_node<Container, PointT> (rootname, NULL, loadAll);
+      root_ = new octree_base_node<Container, PointT> (rootname, NULL, load_all);
 
       // Set root_ nodes tree to the newly created tree
       root_->m_tree_ = this;
@@ -119,8 +119,8 @@ namespace pcl
       root_->m_tree_ = this;
       root_->saveIdx (false);
 
-      // maxDepth_ is set when creating the root_ node
-      lodPoints_.resize (maxDepth_ + 1);
+      // max_depth_ is set when creating the root_ node
+      lodPoints_.resize (max_depth_ + 1);
 
       // Set root_ nodes file path
       treepath_ = dir / (boost::filesystem::basename (rootname) + tree_extension_);
@@ -130,7 +130,7 @@ namespace pcl
 
 // todo: Both constructs share the same code except for a single line
     template<typename Container, typename PointT>
-    octree_base<Container, PointT>::octree_base (const int maxdepth, const double min[3], const double max[3], const boost::filesystem::path& rootname, const std::string& coord_sys)
+    octree_base<Container, PointT>::octree_base (const int max_depth, const double min[3], const double max[3], const boost::filesystem::path& rootname, const std::string& coord_sys)
     {
       // Check file extension
       if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointT>::node_index_extension)
@@ -162,11 +162,11 @@ namespace pcl
       }
 
       // Create root node
-      root_ = new octree_base_node<Container, PointT> (maxdepth, min, max, this, rootname);
+      root_ = new octree_base_node<Container, PointT> (max_depth, min, max, this, rootname);
       root_->saveIdx (false);
 
-      // maxDepth_ is set when creating the root_ node
-      lodPoints_.resize (maxDepth_ + 1);
+      // max_depth_ is set when creating the root_ node
+      lodPoints_.resize (max_depth_ + 1);
 
       // Set root nodes file path
       treepath_ = dir / (boost::filesystem::basename (rootname) + tree_extension_);
@@ -193,7 +193,7 @@ namespace pcl
       cJSON* name = cJSON_CreateString ("test");
       cJSON* version = cJSON_CreateNumber (2.0);
       cJSON* pointtype = cJSON_CreateString ("urp");
-      cJSON* lod = cJSON_CreateNumber (root_->m_tree_->maxDepth_);
+      cJSON* lod = cJSON_CreateNumber (root_->m_tree_->max_depth_);
 
       // cJSON does not allow 64 bit ints.  Have to put the points in a double to
       // use this api, will allow counts up to 2^52 points to be stored correctly
@@ -269,7 +269,7 @@ namespace pcl
         //cJSON doesn't have explicit 64bit int, have to use double, get up to 2^52
         lodPoints_[i] = boost::uint64_t (cJSON_GetArrayItem (numpts, i)->valuedouble);
       }
-      maxDepth_ = lod->valueint;
+      max_depth_ = lod->valueint;
       coord_system_ = coord->valuestring;
     }
 ////////////////////////////////////////////////////////////////////////////////

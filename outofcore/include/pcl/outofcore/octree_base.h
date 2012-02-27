@@ -95,14 +95,14 @@ namespace pcl
 
         /** \brief Load an existing tree
          *
-         * If loadAll is set, the BB and point count for every node is loaded,
+         * If load_all is set, the BB and point count for every node is loaded,
          * otherwise only the root node is actually created, and the rest will be
          * generated on insertion or query.
          *
          * \param rootname boost::filesystem::path to existing tree
-         * \param loadAll Load entire tree
+         * \param load_all Load entire tree
          */
-        octree_base (const boost::filesystem::path& rootname, const bool loadAll);
+        octree_base (const boost::filesystem::path& rootname, const bool load_all);
 
         /** \brief Create a new tree
          *
@@ -126,7 +126,7 @@ namespace pcl
          *
          * Create a new tree rootname with specified bounding box; will not overwrite an existing tree
          *
-         * \param maxdepth Specifies a fixed number of LODs to generate
+         * \param max_depth Specifies a fixed number of LODs to generate
          * \param min Bounding box min
          * \param max Bounding box max
          * \param rootname must end in ".oct_idx" (THIS SHOULD CHANGE)
@@ -134,7 +134,7 @@ namespace pcl
          * \throws OctreeException(OCT_CHILD_EXISTS) if the parent directory has existing children (detects an existing tree)
          * \throws OctreeException(OCT_BAD_PATH) if file extension is not ".oct_idx"
          */
-        octree_base (const int maxdepth, const double min[3], const double max[3], const boost::filesystem::path& rootname, const std::string& coord_sys);
+        octree_base (const int max_depth, const double min[3], const double max[3], const boost::filesystem::path& rootname, const std::string& coord_sys);
 
         ~octree_base ();
 
@@ -178,7 +178,7 @@ namespace pcl
         boost::uint64_t
         getDepth () const
         {
-          return maxDepth_;
+          return max_depth_;
         }
 
         /** \brief Assume fully balanced tree -- all nodes have same dim */
@@ -195,15 +195,15 @@ namespace pcl
           double y_len = root_->max[1] - root_->min[1];
           double x_len = root_->max[0] - root_->min[0];
 
-          y = y_len * pow (.5, double (root_->maxDepth_));
-          x = x_len * pow (.5, double (root_->maxDepth_));
+          y = y_len * pow (.5, double (root_->max_depth_));
+          x = x_len * pow (.5, double (root_->max_depth_));
 
           return true;
         }
 
         /** \brief Get coord system tag in the metadata */
         const std::string&
-        get_coord_system ()
+        getCoordSystem ()
         {
           return coord_system_;
         }
@@ -364,7 +364,7 @@ namespace pcl
         /** \brief vector indexed by depth containing number of points at each level of detail */
         std::vector<boost::uint64_t> lodPoints_;
         /** \brief the pre-set maximum depth of the tree */
-        boost::uint64_t maxDepth_;
+        boost::uint64_t max_depth_;
         /** \brief boost::filesystem::path to the location of the root of
          *  the tree on disk relative to execution directory*/
         boost::filesystem::path treepath_;

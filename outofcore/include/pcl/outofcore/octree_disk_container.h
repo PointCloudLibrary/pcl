@@ -186,7 +186,7 @@ namespace pcl
         void
         flush (const bool forceCacheDeAlloc)
         {
-          flush_writebuff (forceCacheDeAlloc);
+          flushWritebuff (forceCacheDeAlloc);
         }
 
         inline std::string&
@@ -260,7 +260,7 @@ namespace pcl
         operator= (const octree_disk_container& rval) { }
 
         void
-        flush_writebuff (const bool forceCacheDeAlloc);
+        flushWritebuff (const bool force_cache_dealloc);
     
         /** \brief elements [0,...,size()-1] map to [filelen, ..., filelen + size()-1] */
         std::vector<PointT, Eigen::aligned_allocator<PointT> > writebuff_;

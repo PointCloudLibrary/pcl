@@ -114,7 +114,7 @@ namespace pcl
           depth_ = 0;
 
           memset (children_, 0, 8 * sizeof(octree_base_node<Container, PointT>*));
-          numchild_ = 0;
+          num_child_ = 0;
       
           midx_ = 0;
           midy_ = 0;
@@ -125,10 +125,10 @@ namespace pcl
         }
 
         /** \brief Create root node and directory setting voxel size*/
-        octree_base_node (const double bbmin[3], const double bbmax[3], const double node_dim_meters, octree_base<Container, PointT> * const tree, const boost::filesystem::path& rootname);
+        octree_base_node (const double bb_min[3], const double bb_max[3], const double node_dim_meters, octree_base<Container, PointT> * const tree, const boost::filesystem::path& rootname);
 
         /** \brief Create root node and directory setting setting max depth*/
-        octree_base_node (const int maxdepth, const double bbmin[3], const double bbmax[3], octree_base<Container, PointT> * const tree, const boost::filesystem::path& rootname);
+        octree_base_node (const int max_depth, const double bb_min[3], const double bb_max[3], octree_base<Container, PointT> * const tree, const boost::filesystem::path& rootname);
 
         /** \brief Will recursively delete all children calling recFreeChildrein */
         ~octree_base_node ();
@@ -148,8 +148,8 @@ namespace pcl
         //point extraction
         /** \brief Recursively add points that fall into the queried bounding box up to the \b query_depth 
          *
-         *  \param[in] minbb the minimum corner of the bounding box, indexed by X,Y,Z coordinates
-         *  \param[in] maxbb the maximum corner of the bounding box, indexed by X,Y,Z coordinates
+         *  \param[in] min_bb the minimum corner of the bounding box, indexed by X,Y,Z coordinates
+         *  \param[in] max_bb the maximum corner of the bounding box, indexed by X,Y,Z coordinates
          *  \param[in] query_depth the maximum depth to query in the octree for points within the bounding box
          *  \param[out] v std::list of points returned by the query; 
          *  \todo question: why std::list?
@@ -157,19 +157,19 @@ namespace pcl
          *  \todo clean up the public interface
          */
         void
-        queryBBIncludes (const double minbb[3], const double maxbb[3], size_t query_depth, std::list<PointT>& v);
+        queryBBIncludes (const double min_bb[3], const double max_bb[3], size_t query_depth, std::list<PointT>& v);
 
         /** \brief Recursively add points that fall into the queried bounding box up to the \b query_depth 
          *
-         *  \param[in] minbb the minimum corner of the bounding box, indexed by X,Y,Z coordinates
-         *  \param[in] maxbb the maximum corner of the bounding box, indexed by X,Y,Z coordinates
+         *  \param[in] min_bb the minimum corner of the bounding box, indexed by X,Y,Z coordinates
+         *  \param[in] max_bb the maximum corner of the bounding box, indexed by X,Y,Z coordinates
          *  \param[in] query_depth
          *  \param[out] v std::list of points returned by the query
          *
          *  \todo clean up the interface and standardize the parameters to these functions
          */
         void
-        queryBBIncludes_subsample (const double minbb[3], const double maxbb[3], int query_depth, const double percent, std::list<PointT>& v);
+        queryBBIncludes_subsample (const double min_bb[3], const double max_bb[3], int query_depth, const double percent, std::list<PointT>& v);
 
         //bin extraction
         //query_depth == 0 is root
@@ -178,18 +178,18 @@ namespace pcl
          * boundaries of the bounding box, inclusively
          */
         void
-        queryBBIntersects (const double minbb[3], const double maxbb[3], const boost::uint32_t query_depth, std::list<std::string>& file_names);
+        queryBBIntersects (const double min_bb[3], const double max_bb[3], const boost::uint32_t query_depth, std::list<std::string>& file_names);
 
         //bb check
         //checks if 
         inline bool
-        intersectsWithBB (const double minbb[3], const double maxbb[3]) const;
+        intersectsWithBB (const double min_bb[3], const double max_bb[3]) const;
 
         inline bool
         withinBB (const double min[3], const double max[3]) const;
 
         static inline bool
-        pointWithinBB (const double minbb[3], const double maxbb[3], const PointT& p);
+        pointWithinBB (const double min_bb[3], const double max_bb[3], const PointT& p);
 
         /** \brief Check whether specified point is within bounds of current node */
         inline bool
@@ -206,10 +206,10 @@ namespace pcl
          *  \param[in] skipBBCheck 
          */
         boost::uint64_t
-        addDataToLeaf (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, const bool skipBBCheck);
+        addDataToLeaf (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, const bool skip_bb_check);
 
         boost::uint64_t
-        addDataToLeaf (const std::vector<const PointT*>& p, const bool skipBBCheck);
+        addDataToLeaf (const std::vector<const PointT*>& p, const bool skip_bb_check);
 
         /** \brief Add a single point to the octree
          * 
@@ -224,35 +224,35 @@ namespace pcl
          * \note rng_mutex_ lock occurs
          */
         boost::uint64_t
-        addDataToLeaf_and_genLOD (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, const bool skipBBCheck);
+        addDataToLeaf_and_genLOD (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, const bool skip_bb_check);
 
         /** \todo Do we need to support std::vector<PointT*>?
          *
          * boost::uint64_t
-         * addDataToLeaf_and_genLOD (const std::vector<PointT*>& p, const bool skipBBCheck);
+         * addDataToLeaf_and_genLOD (const std::vector<PointT*>& p, const bool skip_bb_check);
          */
 
         /** \brief Add data to the leaf when at max depth of tree. If
-         *   skipBBCheck is true, adds to the node regardless of the
+         *   skip_bb_check is true, adds to the node regardless of the
          *   bounding box it represents; otherwise only adds points that
          *   fall within the bounding box 
          *
          *  \param[in] p vector of points to attempt to add to the tree
-         *  \param[in] skipBBCheck if @b true, doesn't check that points
+         *  \param[in] skip_bb_check if @b true, doesn't check that points
          *  are in the proper bounding box; if @b false, only adds the
          *  points that fall into the bounding box to this node 
          *  \return number of points successfully added
          */
         boost::uint64_t
-        addDataAtMaxDepth (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, const bool skipBBChyeck);
+        addDataAtMaxDepth (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, const bool skip_bb_check);
 
         /** \brief Randomly sample point data */
         void
-        randomSample(const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, std::vector<PointT, Eigen::aligned_allocator<PointT> >& insertBuff, const bool skipBBCheck);
+        randomSample(const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, std::vector<PointT, Eigen::aligned_allocator<PointT> >& insertBuff, const bool skip_bb_check);
 
         /** \brief Subdivide points to pass to child nodes */
         void
-        subdividePoints (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, std::vector< std::vector<PointT, Eigen::aligned_allocator<PointT> > >& c, const bool skipBBCheck);
+        subdividePoints (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, std::vector< std::vector<PointT, Eigen::aligned_allocator<PointT> > >& c, const bool skip_bb_check);
 
         /** \brief Subdivide a single point into a spefici child node */
         void
@@ -280,14 +280,14 @@ namespace pcl
          * Initializes the root node and performs initial filesystem checks for the octree; 
          * throws OctreeException::OCT_BAD_PATH if root directory is an existing file
          *
-         * \param bbmin triple of x,y,z minima for bounding box
-         * \param bbmax triple of x,y,z maxima for bounding box
+         * \param bb_min triple of x,y,z minima for bounding box
+         * \param bb_max triple of x,y,z maxima for bounding box
          * \param tree adress of the tree data structure that will hold this initial root node
          * \param rootname Root directory for location of on-disk octree storage; if directory 
          * doesn't exist, it is created; if "rootname" is an existing file, throws 
          * OctreeException::OCT_BAD_PATH
          */
-        void init_root_node (const double bbmin[3], const double bbmax[3], octree_base<Container, PointT> * const tree, const boost::filesystem::path& rootname);
+        void init_root_node (const double bb_min[3], const double bb_max[3], octree_base<Container, PointT> * const tree, const boost::filesystem::path& rootname);
 
         void
         createChild (const int idx);
@@ -299,7 +299,7 @@ namespace pcl
         //createChildrenToDim(const double dim);//add empty children until their bounding box is less than dim meters on a side
 
         int
-        calcDepthForDim (const double minbb[3], const double maxbb[3], const double dim);
+        calcDepthForDim (const double min_bb[3], const double max_bb[3], const double dim);
 
         void
         freeChildren ();
@@ -316,9 +316,9 @@ namespace pcl
 
         /** \brief Number of children (0 or 8). */
         inline size_t
-        numchild_ren () const
+        num_child_ren () const
         {
-          return numchild_;
+          return num_child_;
         }
 
         /** \brief Flush payload's cache to disk */
@@ -351,7 +351,7 @@ namespace pcl
         operator= (const octree_base_node& rval);
 
         //empty node in tree
-        octree_base_node (const double bbmin[3], const double bbmax[3], const char* dir, octree_base_node<Container, PointT>* super);
+        octree_base_node (const double bb_min[3], const double bb_max[3], const char* dir, octree_base_node<Container, PointT>* super);
 
         void
         copyAllCurrentAndChildPointsRec (std::list<PointT>& v);
@@ -382,7 +382,7 @@ namespace pcl
         /** \brief The children of this node */
         octree_base_node* children_[8];
         /** \brief number of children this node has. Between 0 and 8 inclusive */
-        size_t numchild_;
+        size_t num_child_;
 
         /** \brief what holds the points. currently a custom class, but in theory
          * you could use an stl container if you rewrote some of this class. I used

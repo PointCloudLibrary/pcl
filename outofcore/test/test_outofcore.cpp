@@ -70,7 +70,7 @@ using namespace pcl::outofcore;
 
 // For doing exhaustive checks this is set low remove those, and this can be
 // set much higher
-const static int numPts = 1e4;
+const static uint64_t numPts = 1e4;
 
 const static boost::uint32_t rngseed = 0xAAFF33DD;
 
@@ -140,7 +140,7 @@ TEST (PCL, Outofcore_Octree_Build)
   // p.triadID = 0;
 
   // Radomize it's position in space
-  for(int i = 0; i < numPts; i++)
+  for(size_t i = 0; i < numPts; i++)
   {
     p.x = dist (rng);
     p.y = dist (rng);
@@ -190,7 +190,7 @@ TEST (PCL, Outofcore_Octree_Build_LOD)
   points.resize (numPts);
 
   // Radomize it's position in space
-  for(int i = 0; i < numPts; i++)
+  for(size_t i = 0; i < numPts; i++)
   {
     p.x = dist (rng);
     p.y = dist (rng);
@@ -321,7 +321,7 @@ TEST (PCL, Outofcore_Ram_Tree)
   p.triadID = 0;
 */
   points.resize(numPts);
-  for(int i = 0; i < numPts; i++)
+  for(size_t i = 0; i < numPts; i++)
   {
     p.x = dist(rng);
     p.y = dist(rng);
