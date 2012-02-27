@@ -132,37 +132,11 @@ if(build)
     set(LIB_NAME pcl_${SUBSYS_NAME})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
     target_link_libraries(${LIB_NAME} pcl_common pcl_search pcl_kdtree pcl_octree)
-    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-      "${SUBSYS_DEPS}" "" "" "" "")
+    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
     # Install headers
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/feature_evaluation ${feature_evaluation_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
-
-    set(border_srcs
-        src/boundary.cpp
-        src/range_image_border_extractor.cpp
-        )
-
-    set(border_incs
-        include/pcl/${SUBSYS_NAME}/boundary.h
-        include/pcl/${SUBSYS_NAME}/range_image_border_extractor.h
-        )
-
-    set(border_impl_incs
-        include/pcl/${SUBSYS_NAME}/impl/boundary.hpp
-        include/pcl/${SUBSYS_NAME}/impl/range_image_border_extractor.hpp
-        )
-
-    set(LIB_NAME pcl_range_image_border_extractor)
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${border_srcs} ${border_incs} ${border_impl_incs})
-    target_link_libraries(${LIB_NAME} pcl_common pcl_search pcl_kdtree pcl_octree)
-    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME}
-        "Point cloud range image border extractor library"
-        "${SUBSYS_DEPS}" "" "" "" "")
-    # Install headers
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${border_incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${border_impl_incs})
 
     if(BUILD_TESTS)
         add_subdirectory(test)
