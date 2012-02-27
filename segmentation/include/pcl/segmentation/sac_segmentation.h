@@ -313,6 +313,24 @@ namespace pcl
       inline double 
       getNormalDistanceWeight () const { return (distance_weight_); }
 
+      /** \brief Set the minimum opning angle for a cone model.
+        * \param oa the opening angle which we need minumum to validate a cone model.
+        */
+      inline void
+      setMinMaxOpeningAngle (const double &min_angle, const double &max_angle)
+      {
+        min_angle_ = min_angle;
+        max_angle_ = max_angle;
+      }
+ 
+      /** \brief Get the opening angle which we need minumum to validate a cone model. */
+      inline void
+      getMinMaxOpeningAngle (double &min_angle, double &max_angle)
+      {
+        min_angle = min_angle_;
+        max_angle = max_angle_;
+      }
+
       /** \brief Set the distance we expect a plane model to be from the origin
         * \param[in] d distance from the template plane modl to the origin
         */
@@ -334,6 +352,10 @@ namespace pcl
 
       /** \brief The distance from the template plane to the origin. */
       double distance_from_origin_;
+
+      /** \brief The minimum and maximum allowed opening angle of valid cone model. */
+      double min_angle_;
+      double max_angle_;
 
       /** \brief Initialize the Sample Consensus model and set its parameters.
         * \param[in] model_type the type of SAC model that is to be used
