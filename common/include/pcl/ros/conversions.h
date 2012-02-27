@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -81,17 +83,16 @@ namespace pcl
       {
       }
       
-      template<typename Tag> void operator() ()
+      template<typename Tag> void 
+      operator () ()
       {
         const char* name = traits::name<PointT, Tag>::value;
-        BOOST_FOREACH(const sensor_msgs::PointField& field, fields_)
+        BOOST_FOREACH (const sensor_msgs::PointField& field, fields_)
         {
           if (field.name == name)
           {
             typedef traits::datatype<PointT, Tag> Data;
             assert (Data::value == field.datatype);
-            //@todo: Talk to Patrick about this
-            //assert (Data::size  == field.count);
             
             FieldMapping mapping;
             mapping.serialized_offset = field.offset;
@@ -101,21 +102,22 @@ namespace pcl
             return;
           }
         }
-        // didn't find it...
-        std::stringstream ss;
-        ss << "Failed to find a field named: '" << name
-           << "'. Cannot convert message to PCL type.";
-        PCL_ERROR ("%s\n", ss.str().c_str());
-        throw pcl::InvalidConversionException(ss.str());
+        // Disable the above code per #595: http://dev.pointclouds.org/issues/595
+        //std::stringstream ss;
+        //ss << "Failed to find a field named: '" << name
+        //   << "'. Cannot convert message to PCL type.";
+        //PCL_WARN ("%s\n", ss.str().c_str());
+        //throw pcl::InvalidConversionException (ss.str ());
       }
 
       const std::vector<sensor_msgs::PointField>& fields_;
       std::vector<FieldMapping>& map_;
     };
 
-    inline bool fieldOrdering(const FieldMapping& a, const FieldMapping& b)
+    inline bool 
+    fieldOrdering (const FieldMapping& a, const FieldMapping& b)
     {
-      return a.serialized_offset < b.serialized_offset;
+      return (a.serialized_offset < b.serialized_offset);
     }
 
   } //namespace detail
