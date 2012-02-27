@@ -32,172 +32,367 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  *
- *  \author Nico Blodow (blodow@cs.tum.edu), Julius Kammerl (julius@kammerl.de)
+ *  \author Raphael Favier
  * */
 
-#include "pcl/octree/octree.h"
-#include <pcl/visualization/pcl_visualizer.h>
+#include <boost/thread/thread.hpp>
+
 #include <pcl/io/pcd_io.h>
-#include <iostream>
 
-#include <vtkCubeSource.h>
+#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/visualization/point_cloud_handlers.h>
+#include <pcl/visualization/common/common.h>
 
-/////////////////////////////////////////////////////////////////////////////
-// Create a vtkSmartPointer object containing a cube
-vtkSmartPointer<vtkPolyData>
-GetCuboid (double minX, double maxX, double minY, double maxY, double minZ, double maxZ)
+#include <pcl/octree/octree.h>
+#include <pcl/octree/octree_impl.h>
+
+#include <pcl/filters/filter.h>
+
+#include <omp.h>
+
+//=============================
+// Displaying cubes is very long!
+// so we limit their numbers.
+ const int MAX_DISPLAYED_CUBES(15000);
+//=============================
+
+
+class OctreeViewer
 {
-  vtkSmartPointer < vtkCubeSource > cube = vtkSmartPointer<vtkCubeSource>::New ();
-  cube->SetBounds (minX, maxX, minY, maxY, minZ, maxZ);
-  return cube->GetOutput ();
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// Create vtkActorCollection of vtkSmartPointers describing octree cubes
-void
-GetOctreeActors (std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ> >& voxelCenters, double voxelSideLen, vtkSmartPointer<vtkActorCollection> coll)
-{
-
-  vtkSmartPointer < vtkAppendPolyData > treeWireframe = vtkSmartPointer<vtkAppendPolyData>::New ();
-
-  size_t i;
-  double s = voxelSideLen/2.0;
-
-  for (i = 0; i < voxelCenters.size (); i++)
+public:
+  OctreeViewer(std::string &filename, double resolution) :
+    viz("Octree visualizator"), cloud(new pcl::PointCloud<pcl::PointXYZ>()),
+        displayCloud(new pcl::PointCloud<pcl::PointXYZ>()), octree(resolution), displayCubes(false),
+        showPointsWithCubes(false), wireframe(true)
   {
 
-    double x = voxelCenters[i].x;
-    double y = voxelCenters[i].y;
-    double z = voxelCenters[i].z;
+    //try to load the cloud
+    if (!loadCloud(filename))
+      return;
 
-    treeWireframe->AddInput (GetCuboid (x - s, x + s, y - s, y + s, z - s, z + s));
+    //register keyboard callbacks
+    viz.registerKeyboardCallback(&OctreeViewer::keyboardEventOccurred, *this, 0);
+
+    //key legends
+    viz.addText("Keys:", 0, 170, 0.0, 1.0, 0.0, "keys_t");
+    viz.addText("a -> Increment displayed depth", 10, 155, 0.0, 1.0, 0.0, "key_a_t");
+    viz.addText("z -> Decrement displayed depth", 10, 140, 0.0, 1.0, 0.0, "key_z_t");
+    viz.addText("d -> Toggle Point/Cube representation", 10, 125, 0.0, 1.0, 0.0, "key_d_t");
+    viz.addText("x -> Show/Hide original cloud", 10, 110, 0.0, 1.0, 0.0, "key_x_t");
+    viz.addText("s/w -> Surface/Wireframe representation", 10, 95, 0.0, 1.0, 0.0, "key_sw_t");
+
+    //set current level to half the maximum one
+    displayedDepth = floor(octree.getTreeDepth() / 2.0);
+    if (displayedDepth == 0)
+      displayedDepth = 1;
+
+    //show octree at default depth
+    extractPointsAtLevel(displayedDepth);
+
+    //reset camera
+    viz.resetCameraViewpoint("cloud");
+
+    //run main loop
+    run();
+
   }
 
-  vtkSmartPointer < vtkActor > treeActor = vtkSmartPointer<vtkActor>::New ();
+private:
+  //========================================================
+  // PRIVATE ATTRIBUTES
+  //========================================================
+  //visualizer
+  pcl::PointCloud<pcl::PointXYZ>::Ptr xyz;
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr xyz_rgb;
 
-  vtkSmartPointer < vtkDataSetMapper > mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
-  mapper->SetInput (treeWireframe->GetOutput ());
-  treeActor->SetMapper (mapper);
+  pcl::visualization::PCLVisualizer viz;
+  //original cloud
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
+  //displayed_cloud
+  pcl::PointCloud<pcl::PointXYZ>::Ptr displayCloud;
+  //octree
+  pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ> octree;
+  //level
+  int displayedDepth;
+  //bool to decide if we display points or cubes
+  bool displayCubes, showPointsWithCubes, wireframe;
+  //========================================================
 
-  treeActor->GetProperty ()->SetRepresentationToWireframe ();
-  treeActor->GetProperty ()->SetColor (0.0, 0.0, 1.0);
-  treeActor->GetProperty ()->SetLineWidth (2);
-  coll->AddItem (treeActor);
-}
-
-
-////////////////////////////////////////////////////////////////////////////////
-// Create a vtkPolyData object from a set of vtkPoints
-vtkDataSet*
-  createDataSetFromVTKPoints (vtkPoints *points)
-{
-  vtkCellArray *verts = vtkCellArray::New ();
-  vtkPolyData *data   = vtkPolyData::New  ();
-  // Iterate through the points
-  for (vtkIdType i = 0; i < points->GetNumberOfPoints (); i++)
-    verts->InsertNextCell ((vtkIdType)1, &i);
-  data->SetPoints (points);
-  data->SetVerts (verts);
-  return data;
-}
-
-
-
-/////////////////////////////////////////////////////////////////////////////
-// Create vtkActorCollection of vtkSmartPointers describing input points
-void
-  GetPointActors (pcl::PointCloud<pcl::PointXYZ>& cloud, vtkSmartPointer<vtkActorCollection> coll)
-{
-  vtkPolyData* points_poly;
-
-  size_t i;
-
-  vtkPoints *octreeLeafPoints = vtkPoints::New ();
-
-  // add all points from octree to vtkPoint object
-  for (i=0; i< cloud.points.size(); i++) {
-    octreeLeafPoints->InsertNextPoint (cloud.points[i].x, cloud.points[i].y, cloud.points[i].z);
-  }
-  points_poly = (vtkPolyData*)createDataSetFromVTKPoints(octreeLeafPoints);
-
-  vtkSmartPointer<vtkActor> pointsActor = vtkSmartPointer<vtkActor>::New ();
-
-  vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
-  mapper->SetInput (points_poly);
-  pointsActor->SetMapper (mapper);
-
-  pointsActor->GetProperty ()->SetColor (1.0, 0.0, 0.0);
-  pointsActor->GetProperty ()->SetPointSize (4);
-  coll->AddItem (pointsActor);
-
-}
-
-void
-printHelp (int argc, char **argv)
-{
-  std::cout << "Syntax is " << argv[0] << " <file_name.pcd> <octree resolution> \n";
-  std::cout << "Example: ./octree_viewer ../../test/bunny.pcd 0.02 \n";
-
-  exit(1);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// MAIN
-/* ---[ */
-int
-  main (int argc, char** argv)
-{
-
-  if (argc!=3) {
-    printHelp(argc, argv);
-  }
-
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::io::loadPCDFile (argv[1], *cloud);
-
-  vtkSmartPointer<vtkActorCollection> coll = vtkActorCollection::New ();
-
-  vtkRenderer* ren = vtkRenderer::New ();
-
-
-
-  // create octree from pointcloud
-  pcl::octree::OctreePointCloud<pcl::PointXYZ> octree (atof (argv[2]));
-  octree.setInputCloud (cloud);
-  octree.addPointsFromInputCloud ();
-
-  // get vector of voxel centers from octree
-  double voxelSideLen;
-  std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ> > voxelCenters;
-  octree.getOccupiedVoxelCenters (voxelCenters);
-  voxelSideLen = sqrt (octree.getVoxelSquaredSideLen ());
-
-  // delete octree
-  octree.deleteTree();
-
-  // generate voxel boxes
-  GetOctreeActors ( voxelCenters, voxelSideLen, coll);
-
-  // visualize point input
-  GetPointActors ( *cloud, coll);
-
-  vtkActor* a;
-  coll->InitTraversal ();
-  a = coll->GetNextActor ();
-  while(a!=0)
+  /* \brief Callback to interact with the keyboard
+   *
+   */
+  void keyboardEventOccurred(const pcl::visualization::KeyboardEvent &event, void * object_void)
   {
-    ren->AddActor (a);
-    a = coll->GetNextActor ();
+
+    if (event.getKeySym() == "a" && event.keyDown())
+    {
+      IncrementLevel();
+    }
+    else if (event.getKeySym() == "z" && event.keyDown())
+    {
+      DecrementLevel();
+    }
+    else if (event.getKeySym() == "d" && event.keyDown())
+    {
+      displayCubes = !displayCubes;
+      update();
+    }
+    else if (event.getKeySym() == "x" && event.keyDown())
+    {
+      showPointsWithCubes = !showPointsWithCubes;
+      update();
+    }
+    else if (event.getKeySym() == "w" && event.keyDown())
+    {
+      if(!wireframe)
+        wireframe=true;
+      update();
+    }
+    else if (event.getKeySym() == "s" && event.keyDown())
+    {
+      if(wireframe)
+        wireframe=false;
+      update();
+    }
   }
 
-  // Create Renderer and Interractor
-  ren->SetBackground (1.0, 1.0, 1.0);
+  /* \brief Graphic loop for the viewer
+   *
+   */
+  void run()
+  {
+    while (!viz.wasStopped())
+    {
+      //main loop of the visualizer
+      viz.spinOnce(100);
+      boost::this_thread::sleep(boost::posix_time::microseconds(100000));
+    }
+  }
 
-  vtkRenderWindowInteractor* iren = vtkRenderWindowInteractor::New ();
-  vtkSmartPointer<vtkRenderWindow> win = vtkSmartPointer<vtkRenderWindow>::New ();
-  win->AddRenderer (ren);
+  /* \brief Helper function that read a pointcloud file (returns false if pbl)
+   *  Also initialize the octree
+   *
+   */
+  bool loadCloud(std::string &filename)
+  {
+    std::cout << "Loading file " << filename.c_str() << std::endl;
+    //read cloud
+    if (pcl::io::loadPCDFile(filename, *cloud))
+    {
+      std::cerr << "ERROR: Cannot open file " << filename << "! Aborting..." << std::endl;
+      return false;
+    }
 
-  iren->SetRenderWindow (win);
-  win->Render ();
-  iren->Start ();
+    //remove NaN Points
+    std::vector<int> nanIndexes;
+    pcl::removeNaNFromPointCloud(*cloud, *cloud, nanIndexes);
+    std::cout << "Loaded " << cloud->points.size() << " points" << std::endl;
+
+    //create octree structure
+    octree.setInputCloud(cloud);
+    //update bounding box automatically
+    octree.defineBoundingBox();
+    //add points in the tree
+    octree.addPointsFromInputCloud();
+    return true;
+  }
+
+  /* \brief Helper function that draw info for the user on the viewer
+   *
+   */
+  void showLegend(bool showCubes)
+  {
+    char dataDisplay[256];
+    sprintf(dataDisplay, "Displaying data as %s", (showCubes) ? ("CUBES") : ("POINTS"));
+    viz.removeShape("disp_t");
+    viz.addText(dataDisplay, 0, 60, 1.0, 0.0, 0.0, "disp_t");
+
+    char level[256];
+    sprintf(level, "Displayed depth is %d on %d", displayedDepth, octree.getTreeDepth());
+    viz.removeShape("level_t1");
+    viz.addText(level, 0, 45, 1.0, 0.0, 0.0, "level_t1");
+
+    viz.removeShape("level_t2");
+    sprintf(level, "Voxel size: %.4fm [%zu voxels]", sqrt(octree.getVoxelSquaredSideLen(displayedDepth)),
+            displayCloud->points.size());
+    viz.addText(level, 0, 30, 1.0, 0.0, 0.0, "level_t2");
+
+    viz.removeShape("org_t");
+    if (showPointsWithCubes)
+      viz.addText("Displaying original cloud", 0, 15, 1.0, 0.0, 0.0, "org_t");
+  }
+
+  /* \brief Visual update. Create visualizations and add them to the viewer
+   *
+   */
+  void update()
+  {
+    //remove existing shapes from visualizer
+    clearView();
+
+    //prevent the display of too many cubes
+    bool displayCubeLegend = displayCubes && (int)displayCloud->points.size() <= MAX_DISPLAYED_CUBES;
+
+    showLegend(displayCubeLegend);
+
+    if (displayCubeLegend)
+    {
+      //show octree as cubes
+      showCubes(sqrt(octree.getVoxelSquaredSideLen(displayedDepth)));
+      if (showPointsWithCubes)
+      {
+        //add original cloud in visualizer
+        pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZ> color_handler(cloud, "z");
+        viz.addPointCloud(cloud, color_handler, "cloud");
+      }
+    }
+    else
+    {
+      //add current cloud in visualizer
+      pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZ> color_handler(displayCloud,"z");
+      viz.addPointCloud(displayCloud, color_handler, "cloud");
+    }
+  }
+
+  /* \brief remove dynamic objects from the viewer
+   *
+   */
+  void clearView()
+  {
+    //remove cubes if any
+    vtkRenderer *renderer = viz.getRenderWindow()->GetRenderers()->GetFirstRenderer();
+    while (renderer->GetActors()->GetNumberOfItems() > 0)
+      renderer->RemoveActor(renderer->GetActors()->GetLastActor());
+    //remove point clouds if any
+    viz.removePointCloud("cloud");
+  }
+
+  /* \brief Create a vtkSmartPointer object containing a cube
+   *
+   */
+  vtkSmartPointer<vtkPolyData> GetCuboid(double minX, double maxX, double minY, double maxY, double minZ, double maxZ)
+  {
+    vtkSmartPointer<vtkCubeSource> cube = vtkSmartPointer<vtkCubeSource>::New();
+    cube->SetBounds(minX, maxX, minY, maxY, minZ, maxZ);
+    return cube->GetOutput();
+  }
+
+  /* \brief display octree cubes via vtk-functions
+   *
+   */
+  void showCubes(double voxelSideLen)
+  {
+    //get the renderer of the visualizer object
+    vtkRenderer *renderer = viz.getRenderWindow()->GetRenderers()->GetFirstRenderer();
+
+    vtkSmartPointer<vtkAppendPolyData> treeWireframe = vtkSmartPointer<vtkAppendPolyData>::New();
+    size_t i;
+    double s = voxelSideLen / 2.0;
+    for (i = 0; i < displayCloud->points.size(); i++)
+    {
+
+      double x = displayCloud->points[i].x;
+      double y = displayCloud->points[i].y;
+      double z = displayCloud->points[i].z;
+
+      treeWireframe->AddInput(GetCuboid(x - s, x + s, y - s, y + s, z - s, z + s));
+    }
+
+    vtkSmartPointer<vtkActor> treeActor = vtkSmartPointer<vtkActor>::New();
+
+    vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New();
+    mapper->SetInput(treeWireframe->GetOutput());
+    treeActor->SetMapper(mapper);
+
+    treeActor->GetProperty()->SetColor(1.0, 1.0, 1.0);
+    treeActor->GetProperty()->SetLineWidth(2);
+    if(wireframe)
+    {
+      treeActor->GetProperty()->SetRepresentationToWireframe();
+      treeActor->GetProperty()->SetOpacity(0.35);
+    }
+    else
+      treeActor->GetProperty()->SetRepresentationToSurface();
+
+    renderer->AddActor(treeActor);
+  }
+
+  /* \brief Extracts all the points of depth = level from the octree
+   *
+   */
+  void extractPointsAtLevel(int depth)
+  {
+    displayCloud->points.clear();
+
+    pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::Iterator tree_it(octree);
+
+    pcl::PointXYZ pt;
+    std::cout << "===== Extracting data at depth " << depth << "... " << std::flush;
+    double start = omp_get_wtime();
+    while (*tree_it++)
+    {
+      if ((int)tree_it.getCurrentOctreeDepth() != depth)
+        continue;
+
+      Eigen::Vector3f voxel_min, voxel_max;
+      octree.getVoxelBounds(tree_it, voxel_min, voxel_max);
+
+      pt.x = (voxel_min.x() + voxel_max.x()) / 2.0;
+      pt.y = (voxel_min.y() + voxel_max.y()) / 2.0;
+      pt.z = (voxel_min.z() + voxel_max.z()) / 2.0;
+      displayCloud->points.push_back(pt);
+
+      //we are already the desired depth, there is no reason to go deeper.
+      tree_it.skipChildVoxels();
+    }
+
+    double end = omp_get_wtime();
+    printf("%zupts, %.4gs. %.4gs./pt. =====\n", displayCloud->points.size(), end - start,
+           (end - start) / displayCloud->points.size());
+
+    update();
+  }
+
+  /* \brief Helper function to increase the octree display level by one
+   *
+   */
+  bool IncrementLevel()
+  {
+    if (displayedDepth < (int)octree.getTreeDepth())
+    {
+      displayedDepth++;
+      extractPointsAtLevel(displayedDepth);
+      return true;
+    }
+    else
+      return false;
+  }
+
+  /* \brief Helper function to decrease the octree display level by one
+   *
+   */
+  bool DecrementLevel()
+  {
+    if (displayedDepth > 0)
+    {
+      displayedDepth--;
+      extractPointsAtLevel(displayedDepth);
+      return true;
+    }
+    return false;
+  }
+
+};
+
+int main(int argc, char ** argv)
+{
+  if (argc != 3)
+  {
+    std::cerr << "ERROR: Syntax is octreeVisu <pcd file> <resolution>" << std::endl;
+    std::cerr << "EXAMPLE: ./octreeVisu bun0.pcd 0.001" << std::endl;
+    return -1;
+  }
+
+  std::string cloud_path(argv[1]);
+  OctreeViewer v(cloud_path, atof(argv[2]));
 }
