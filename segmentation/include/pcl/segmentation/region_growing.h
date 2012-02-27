@@ -110,7 +110,7 @@ namespace pcl
       getCloud () const;
 
       /** \brief Returns list of segments. Each segment is a list of indices of points. */
-      std::vector<std::list<int>>
+      std::vector<std::list<int> >
       getSegments () const;
 
       /** \brief This function allows to turn on/off the smoothness constraint.
@@ -195,7 +195,7 @@ namespace pcl
         * \param[in] initial point which will be the seed for growing a segment.
         */
       virtual std::list<int>
-      getSegmentFromPoint (typename PointT point);
+      getSegmentFromPoint (const PointT &point);
 
       /** \brief For a given point this function builds a segment to which it belongs and returns this segment.
         * \param[in] index of the initial point which will be the seed for growing a segment.
@@ -278,7 +278,7 @@ namespace pcl
       typename pcl::PointCloud<PointT>::Ptr cloud_for_segmentation_;
 
       /** \brief After the segmentation it will contain the list of segments, which in turn are lists of indices. */
-      std::vector<std::list<int>> segments_;
+      std::vector<std::list<int> > segments_;
   };
 }
 

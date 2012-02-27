@@ -61,7 +61,7 @@ pcl::PointCloud<pcl::Normal>::Ptr normals_;
 pcl::PointCloud<pcl::Normal>::Ptr another_normals_;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (//gionGrowingTest, Segment)
+TEST (RegionGrowingTest, Segment)
 {
   pcl::RegionGrowing<pcl::PointXYZ> rg;
   rg.setCloud(cloud_);
@@ -70,7 +70,7 @@ TEST (//gionGrowingTest, Segment)
   int num_of_segments = rg.segmentPoints();
   EXPECT_NE(0, num_of_segments);
 
-  std::vector<std::list<int>> segments;
+  std::vector<std::list<int> > segments;
   segments = rg.getSegments();
   EXPECT_NE(0, segments.size());
 }
@@ -84,7 +84,7 @@ TEST (RegionGrowingTest, SegmentWithoutCloud)
   int num_of_segments = rg.segmentPoints();
   EXPECT_EQ(0, num_of_segments);
 
-  std::vector<std::list<int>> segments;
+  std::vector<std::list<int> > segments;
   segments = rg.getSegments();
   EXPECT_EQ(0, segments.size());
 }
@@ -98,7 +98,7 @@ TEST (RegionGrowingTest, SegmentWithoutNormals)
   int num_of_segments = rg.segmentPoints();
   EXPECT_EQ(0, num_of_segments);
 
-  std::vector<std::list<int>> segments;
+  std::vector<std::list<int> > segments;
   segments = rg.getSegments();
   EXPECT_EQ(0, segments.size());
 }
@@ -116,7 +116,7 @@ TEST (RegionGrowingTest, SegmentEmptyCloud)
   int num_of_segments = rg.segmentPoints();
   EXPECT_EQ(0, num_of_segments);
 
-  std::vector<std::list<int>> segments;
+  std::vector<std::list<int> > segments;
   segments = rg.getSegments();
   EXPECT_EQ(0, segments.size());
 }
@@ -135,7 +135,7 @@ TEST (RegionGrowingTest, SegmentWithDifferentNormalAndCloudSize)
   int num_of_segments = rg.segmentPoints();
   EXPECT_EQ(0, num_of_segments);
 
-  std::vector<std::list<int>> segments;
+  std::vector<std::list<int> > segments;
   segments = rg.getSegments();
   EXPECT_EQ(0, segments.size());
 
@@ -161,7 +161,7 @@ TEST (RegionGrowingTest, SegmentWithWrongThresholdParameters)
   int num_of_segments = rg.segmentPoints();
   EXPECT_EQ(0, num_of_segments);
 
-  std::vector<std::list<int>> segments;
+  std::vector<std::list<int> > segments;
   segments = rg.getSegments();
   EXPECT_EQ(0, segments.size());
 
@@ -176,7 +176,7 @@ TEST (RegionGrowingTest, SegmentWithWrongThresholdParameters)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-//TEST (RegionGrowingTest, SegmentFromPoint)
+TEST (RegionGrowingTest, SegmentFromPoint)
 {
   pcl::RegionGrowing<pcl::PointXYZ> rg;
 
@@ -242,7 +242,7 @@ TEST (ExtractPolygonalPrism, Segmentation)
 
 /* ---[ */
 int
-  main (int argc, char** argv)
+main (int argc, char** argv)
 {
   if (argc < 3)
   {
