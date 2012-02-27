@@ -263,8 +263,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   Eigen::Matrix3d eigen_val;
   Eigen::Vector3d pt_sum;
 
-  // Eigen values less than 100 times smaller than max eigen value are inflated to a hundreth of the max eigen value.
-  double min_covar_eigvalue_mult = 0.01;
+  // Eigen values less than a threshold of max eigen value are inflated to a set fraction of the max eigen value.
   double min_covar_eigvalue;
 
   for (typename boost::unordered_map<size_t, Leaf>::iterator it = leaves_.begin (); it != leaves_.end (); ++it)
@@ -280,9 +279,9 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
     // Normalize mean
     leaf.mean_ /= leaf.nr_points;
 
-    // If the voxel contains more than 5 points, its covariance is calculated and is added to the voxel centroids and output clouds.
-    // Points with 5 or less points will have a can not be accuratly approximated using a normal distribution.
-    if (leaf.nr_points > 5)
+    // If the voxel contains sufficient points, its covariance is calculated and is added to the voxel centroids and output clouds.
+    // Points with less than the minimum points will have a can not be accuratly approximated using a normal distribution.
+    if (leaf.nr_points >= min_points_per_voxel_)
     {
       if (save_leaf_layout_)
         leaf_layout_[it->first] = cp++;
@@ -330,7 +329,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
 
       // Avoids matrices near singularities (eq 6.11)[Magnusson 2009]
 
-      min_covar_eigvalue = min_covar_eigvalue_mult * eigen_val (2, 2);
+      min_covar_eigvalue = min_covar_eigvalue_mult_ * eigen_val (2, 2);
       if (eigen_val (0, 0) < min_covar_eigvalue)
       {
         eigen_val (0, 0) = min_covar_eigvalue;
@@ -378,7 +377,7 @@ pcl::VoxelGridCovariance<PointT>::getNeighborhoodAtPoint (const PointT& referenc
     if ((diff2min <= displacement.array ()).all () && (diff2max >= displacement.array ()).all ())
     {
       typename boost::unordered_map<size_t, Leaf>::iterator leaf_iter = leaves_.find (((ijk + displacement - min_b_).dot (divb_mul_)));
-      if (leaf_iter != leaves_.end () && leaf_iter->second.nr_points > 5)
+      if (leaf_iter != leaves_.end () && leaf_iter->second.nr_points >= min_points_per_voxel_)
       {
         LeafConstPtr leaf = &(leaf_iter->second);
         neighbors.push_back (leaf);
@@ -405,12 +404,12 @@ pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& ce
   Eigen::Vector3d rand_point;
   Eigen::Vector3d dist_point;
 
-  // Generate points for each occupied voxel with more than 5 points.
+  // Generate points for each occupied voxel with sufficient points.
   for (typename boost::unordered_map<size_t, Leaf>::iterator it = leaves_.begin (); it != leaves_.end (); ++it)
   {
     Leaf& leaf = it->second;
 
-    if (leaf.nr_points > 5)
+    if (leaf.nr_points >= min_points_per_voxel_)
     {
       cell_mean = leaf.mean_;
       llt_of_cov.compute (leaf.cov_);

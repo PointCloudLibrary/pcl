@@ -201,11 +201,57 @@ public:
     min_b_.setZero ();
     max_b_.setZero ();
     filter_name_ = "VoxelGridCovariance";
-    searchable_ = false;
+    min_points_per_voxel_ = 6;
+    min_covar_eigvalue_mult_ = 0.01;
+    searchable_ = true;
+  }
+
+  /** \brief Set the minimum number of points required for a cell to be used (must be 3 or greater for covariance calculation).
+    * \param[in] min_points_per_voxel the minimum number of points for required for a voxel to be used
+    */
+  inline void 
+  setMinPointPerVoxel (int min_points_per_voxel) 
+  {
+    if(min_points_per_voxel > 2)
+    {
+      min_points_per_voxel_ = min_points_per_voxel;
+    }
+    else
+    {
+      PCL_WARN ("%s: Covariance calculation requires at least 3 points, setting Min Point per Voxel to 3 ", this->getClassName ().c_str ());
+      min_points_per_voxel_ = 3;
+    }
+  }
+
+  /** \brief Get the minimum number of points required for a cell to be used.
+    * \return the minimum number of points for required for a voxel to be used
+    */
+  inline int 
+  getMinPointPerVoxel () 
+  {
+    return min_points_per_voxel_;
+  }
+
+  /** \brief Set the minimum allowable ratio between eigenvalues to prevent singular covariance matrices.
+    * \param[in] min_points_per_voxel the minimum allowable ratio between eigenvalues
+    */
+  inline void 
+  setCovEigValueInflationRatio (double min_covar_eigvalue_mult) 
+  {
+    min_covar_eigvalue_mult_ = min_covar_eigvalue_mult;
+  }
+
+  /** \brief Get the minimum allowable ratio between eigenvalues to prevent singular covariance matrices.
+    * \return the minimum allowable ratio between eigenvalues
+    */
+  inline double 
+  getCovEigValueInflationRatio () 
+  {
+    return min_covar_eigvalue_mult_;
   }
 
   /** \brief Filter cloud and initializes voxel structure.
-   * \param[out] output cloud containing centroids of voxels containing more than 5 points
+   * \param[out] output cloud containing centroids of voxels containing a sufficient number of points
    * \param[in] searchable flag if voxel structure is searchable, if true then kdtree is built
    */
   inline void
@@ -216,9 +262,9 @@ public:
 
     voxel_centroids_ = PointCloudPtr (new PointCloud (output));
 
-    if (searchable_)
+    if (searchable_ && voxel_centroids_->size() > 0)
     {
-      // Initiates kdtree of the centroids of voxels containing more than 5 points
+      // Initiates kdtree of the centroids of voxels containing a sufficient number of points
       kdtree_.setInputCloud (voxel_centroids_);
     }
   }
@@ -233,9 +279,9 @@ public:
     voxel_centroids_ = PointCloudPtr (new PointCloud);
     applyFilter (*voxel_centroids_);
 
-    if (searchable_)
+    if (searchable_ && voxel_centroids_->size() > 0)
     {
-      // Initiates kdtree of the centroids of voxels containing more than 5 points
+      // Initiates kdtree of the centroids of voxels containing a sufficient number of points
       kdtree_.setInputCloud (voxel_centroids_);
     }
   }
@@ -313,7 +359,7 @@ public:
   }
 
   /** \brief Get the voxels surrounding point p, not including the voxel contating point p.
-   * \note Only voxels containing more than 5 points are used (slower than radius search in practice).
+   * \note Only voxels containing a sufficient number of points are used (slower than radius search in practice).
    * \param[in] reference_point the point to get the leaf structure at
    * \param[out] neighbors
    * \return number of neighbors found
@@ -331,7 +377,7 @@ public:
   }
 
   /** \brief Get a pointcloud containing the voxel centroids
-   * \note Only voxels containing more than 5 points are used.
+   * \note Only voxels containing a sufficient number of points are used.
    * \return a map contataining all leaves
    */
   inline PointCloudPtr
@@ -348,7 +394,7 @@ public:
   getDisplayCloud (pcl::PointCloud<PointXYZ>& cell_cloud);
 
   /** \brief Search for the k-nearest occupied voxels for the given query point.
-   * \note Only voxels containing more than 5 points are used.
+   * \note Only voxels containing a sufficient number of points are used.
    * \param[in] point the given query point
    * \param[in] k the number of neighbors to search for
    * \param[out] k_leaves the resultant leaves of the neighboring points
@@ -382,7 +428,7 @@ public:
   }
 
   /** \brief Search for the k-nearest occupied voxels for the given query point.
-   * \note Only voxels containing more than 5 points are used.
+   * \note Only voxels containing a sufficient number of points are used.
    * \param[in] point the given query point
    * \param[in] k the number of neighbors to search for
    * \param[out] k_leaves the resultant leaves of the neighboring points
@@ -400,7 +446,7 @@ public:
 
 
   /** \brief Search for all the nearest occupied voxels of the query point in a given radius.
-   * \note Only voxels containing more than 5 points are used.
+   * \note Only voxels containing a sufficient number of points are used.
    * \param[in] point the given query point
    * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
    * \param[out] k_leaves the resultant leaves of the neighboring points
@@ -434,7 +480,7 @@ public:
   }
 
   /** \brief Search for all the nearest occupied voxels of the query point in a given radius.
-   * \note Only voxels containing more than 5 points are used.
+   * \note Only voxels containing a sufficient number of points are used.
    * \param[in] cloud the given query point
    * \param[in] index a valid index in cloud representing a valid (i.e., finite) query point
    * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
@@ -455,17 +501,23 @@ public:
 protected:
 
   /** \brief Filter cloud and initializes voxel structure.
-   * \param[out] output cloud containing centroids of voxels containing more than 5 points
+   * \param[out] output cloud containing centroids of voxels containing a sufficient number of points
    */
   void applyFilter (PointCloud &output);
 
   /** \brief Flag to determine if voxel structure is searchable. */
   bool searchable_;
 
-  /** \brief Voxel structure containing all leaf nodes (includes voxels with 5 or less points). */
+  /** \brief Minimum points contained with in a voxel to allow it to be useable. */
+  int min_points_per_voxel_;
+
+  /** \brief Minimum allowable ratio between eigenvalues to prevent singular covariance matrices. */
+  double min_covar_eigvalue_mult_;
+
+  /** \brief Voxel structure containing all leaf nodes (includes voxels with less than a sufficient number of points). */
   boost::unordered_map<size_t, Leaf> leaves_;
 
-  /** \brief Point cloud containing centroids of voxels containing more than 5 points. */
+  /** \brief Point cloud containing centroids of voxels containing atleast minimum number of points. */
   PointCloudPtr voxel_centroids_;
 
   /** \brief Indices of leaf structurs associated with each point in \ref voxel_centroids_ (used for searching). */
