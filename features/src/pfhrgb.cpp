@@ -107,7 +107,7 @@ pcl::computeRGBPairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n
                           ((pcl::Normal)(pcl::PointXYZRGBNormal))
                           ((pcl::PFHRGBSignature250)))
 #else
-  PCL_INSTANTIATE_PRODUCT(PFHRGBEstimation, ((pcl::PointXYZRGBA) (pcl::PointXYZRGBNormal))
+  PCL_INSTANTIATE_PRODUCT(PFHRGBEstimation, ((pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal))
                           (PCL_NORMAL_POINT_TYPES)
                           ((pcl::PFHRGBSignature250)))
 #endif
