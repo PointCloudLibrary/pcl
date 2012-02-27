@@ -57,7 +57,7 @@ namespace pcl
     * In addition to residual test, the possibility to test curvature is added.
     */
   template <typename PointT>
-  class RegionGrowing
+  class PCL_EXPORTS RegionGrowing
   {
     public:
 
@@ -279,7 +279,10 @@ namespace pcl
 
       /** \brief After the segmentation it will contain the list of segments, which in turn are lists of indices. */
       std::vector<std::list<int> > segments_;
-  };
+
+     public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+ };
 }
 
 #endif
