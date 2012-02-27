@@ -53,6 +53,7 @@
 #include "pcl/registration/pyramid_feature_matching.h"
 #include "pcl/features/ppf.h"
 #include "pcl/registration/ppf_registration.h"
+#include "pcl/registration/ndt.h"
 // We need Histogram<2> to function, so we'll explicitely add kdtree_flann.hpp here
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 //(pcl::Histogram<2>)
@@ -292,6 +293,32 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
   */
   EXPECT_LT (reg.getFitnessScore (), 0.001);
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, NormalDistributionsTransform)
+{
+  typedef PointNormal PointT;
+  PointCloud<PointT>::Ptr src (new PointCloud<PointT>);
+  copyPointCloud (cloud_source, *src);
+  PointCloud<PointT>::Ptr tgt (new PointCloud<PointT>);
+  copyPointCloud (cloud_target, *tgt);
+  PointCloud<PointT> output;
+
+  NormalDistributionsTransform<PointT, PointT> reg;
+  reg.setStepSize (0.05);
+  reg.setResolution (0.025);
+  reg.setInputCloud (src);
+  reg.setInputTarget (tgt);
+  reg.setMaximumIterations (50);
+  reg.setTransformationEpsilon (1e-8);
+
+  // Register
+  reg.align (output);
+  EXPECT_EQ ((int)output.points.size (), (int)cloud_source.points.size ());
+
+  EXPECT_LT (reg.getFitnessScore (), 0.001);
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, TransformationEstimationPointToPlaneLLS)
