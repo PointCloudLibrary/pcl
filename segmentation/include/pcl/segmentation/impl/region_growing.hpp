@@ -43,7 +43,6 @@
 #include "pcl/segmentation/region_growing.h"
 
 #include "pcl/search/search.h"
-#include "pcl/features/normal_3d.h"
 #include "pcl/point_cloud.h"
 #include "pcl/point_types.h"
 
