@@ -59,7 +59,7 @@ namespace pcl
 #if (defined (__powerpc) || defined (__powerpc__) || defined (__POWERPC__) || defined (__ppc__) || defined (_M_PPC) || defined (__ARCH_PPC))
 #  define PLY_BIG_ENDIAN
 #elif (defined (i386) || defined (__i386__) || defined (__i386) || defined (_M_IX86) || defined (_X86_) || defined (__THW_INTEL__) || defined (__I86__) || defined (__INTEL__)) \
-  || (defined (__amd64__) || defined (__amd64) || defined (__x86_64__) || defined (__x86_64) || defined (_M_X64))
+  || (defined (__amd64__) || defined (__amd64) || defined (__x86_64__) || defined (__x86_64) || defined (_M_X64) || defined (ANDROID))
 #  define PLY_LITTLE_ENDIAN
 #else
 #  error
