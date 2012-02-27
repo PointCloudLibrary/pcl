@@ -57,152 +57,155 @@ namespace pcl
   namespace nurbs
   {
 
-    class PCL_EXPORTS NurbsFitter
-    {
-    private:
-      //  TomGine::tgTomGineThread* m_dbgWin;
-      //  TomGine::tgEngine *m_engine;
-      //  bool m_quiet;
-
-    public:
-      struct Parameter
+    template<typename PointInT>
+      class PCL_EXPORTS NurbsFitter
       {
-        int order;
-        int refinement;
-        int iterationsQuad;
-        int iterationsBoundary;
-        int iterationsAdjust;
-        int iterationsInterior;
-        double forceBoundary;
-        double forceBoundaryInside;
-        double forceInterior;
-        double stiffnessBoundary;
-        double stiffnessInterior;
-        int resolution;
-        Parameter (int order = 3, int refinement = 1, int iterationsQuad = 5, int iterationsBoundary = 5,
-                   int iterationsAdjust = 5, int iterationsInterior = 2, double forceBoundary = 200.0,
-                   double forceBoundaryInside = 400.0, double forceInterior = 1.0, double stiffnessBoundary = 20.0,
-                   double stiffnessInterior = 0.1, int resolution = 16);
+      private:
+        //  TomGine::tgTomGineThread* m_dbgWin;
+        //  TomGine::tgEngine *m_engine;
+        //  bool m_quiet;
+
+      public:
+        struct Parameter
+        {
+          int order;
+          int refinement;
+          int iterationsQuad;
+          int iterationsBoundary;
+          int iterationsAdjust;
+          int iterationsInterior;
+          double forceBoundary;
+          double forceBoundaryInside;
+          double forceInterior;
+          double stiffnessBoundary;
+          double stiffnessInterior;
+          int resolution;
+          Parameter (int order = 3, int refinement = 1, int iterationsQuad = 5, int iterationsBoundary = 5,
+                     int iterationsAdjust = 5, int iterationsInterior = 2, double forceBoundary = 200.0,
+                     double forceBoundaryInside = 400.0, double forceInterior = 1.0, double stiffnessBoundary = 20.0,
+                     double stiffnessInterior = 0.1, int resolution = 16);
+        };
+
+        typedef pcl::PointCloud<PointInT> PointCloud;
+        typedef typename PointCloud::Ptr PointCloudPtr;
+
+      private:
+        Parameter m_params;
+
+        nurbs::NurbsData m_data;
+        nurbs::NurbsSurface m_nurbs;
+
+        nurbs::vec4 m_corners[4];
+        PointCloudPtr m_cloud;
+        pcl::PointIndices::Ptr m_boundary_indices;
+        pcl::PointIndices::Ptr m_interior_indices;
+
+        Eigen::Matrix4d m_intrinsic;
+        Eigen::Matrix4d m_extrinsic;
+
+        bool m_have_cloud;
+        bool m_have_corners;
+
+        int m_surf_id;
+
+        void
+        compute_quadfit ();
+        void
+        compute_refinement (nurbs::NurbsFitting* fitting);
+        void
+        compute_boundary (nurbs::NurbsFitting* fitting);
+        void
+        compute_interior (nurbs::NurbsFitting* fitting);
+
+        Eigen::Vector2d
+        project (const Eigen::Vector3d &pt);
+        bool
+        is_back_facing (const Eigen::Vector3d &v0, const Eigen::Vector3d &v1, const Eigen::Vector3d &v2,
+                        const Eigen::Vector3d &v3);
+
+      public:
+        //  NurbsFitter(Parameter p = Parameter(), bool quiet = true, TomGine::tgTomGineThread* dbgWin=NULL);
+        NurbsFitter (Parameter p = Parameter ());
+
+        inline void
+        setParams (const Parameter &p)
+        {
+          m_params = p;
+        }
+
+        /** Set input point cloud **/
+        void
+        setInputCloud (PointCloudPtr &pcl_cloud);
+
+        void
+        setBoundary (pcl::PointIndices::Ptr &pcl_cloud_indices);
+
+        void
+        setInterior (pcl::PointIndices::Ptr &pcl_cloud_indices);
+
+        void
+        setCorners (pcl::PointIndices::Ptr &corners, bool flip_on_demand = true);
+
+        void
+        setProjectionMatrix (Eigen::Matrix4d &intrinsic, Eigen::Matrix4d &extrinsic);
+
+        /** Compute point cloud and fit (multiple) models **/
+        nurbs::NurbsSurface
+        compute ();
+
+        nurbs::NurbsSurface
+        compute_boundary (const nurbs::NurbsSurface &nurbs);
+
+        nurbs::NurbsSurface
+        compute_interior (const nurbs::NurbsSurface &nurbs);
+
+        inline nurbs::NurbsSurface
+        getNurbs ()
+        {
+          return m_nurbs;
+        }
+
+        /** @brief Get error of each interior point (L2-norm of point to closest point on surface) and square-error */
+        void
+        getInteriorError (std::vector<double> &error);
+
+        /** @brief Get error of each boundary point (L2-norm of point to closest point on surface) and square-error */
+        void
+        getBoundaryError (std::vector<double> &error);
+
+        /** @brief Get parameter of each interior point */
+        void
+        getInteriorParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params);
+
+        /** @brief Get parameter of each boundary point */
+        void
+        getBoundaryParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params);
+
+        /** @brief get the normals to the interior points given by setInterior() */
+        void
+        getInteriorNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normal);
+
+        /** @brief get the normals to the boundary points given by setBoundary() */
+        void
+        getBoundaryNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normals);
+
+        /** @brief Get the closest point on a NURBS from a point pt in parameter space
+         *  @param nurbs  The NURBS surface
+         *  @param pt     A point in 3D from which the closest point is calculated
+         *  @param params The closest point on the NURBS in parameter space
+         *  @param maxSteps Maximum iteration steps
+         *  @param accuracy Accuracy below which the iterations stop */
+        static void
+        getClosestPointOnNurbs (nurbs::NurbsSurface nurbs, Eigen::Vector3d pt, Eigen::Vector2d& params,
+                                int maxSteps = 100, double accuracy = 1e-4);
+
+        nurbs::NurbsSurface
+        grow (float max_dist = 1.0f, float max_angle = M_PI_4, unsigned min_length = 0, unsigned max_length = 10);
+
+        static unsigned
+        PCL2Eigen (PointCloudPtr &pcl_cloud, const std::vector<int> &indices, nurbs::vector_vec3 &on_cloud);
+
       };
-
-    private:
-      Parameter m_params;
-
-      NurbsData m_data;
-      NurbsSurface m_nurbs;
-
-      vec4 m_corners[4];
-      pcl::PointCloud<pcl::PointXYZ>::Ptr m_cloud;
-      pcl::PointIndices::Ptr m_boundary_indices;
-      pcl::PointIndices::Ptr m_interior_indices;
-
-      Eigen::Matrix4d m_intrinsic;
-      Eigen::Matrix4d m_extrinsic;
-
-      bool m_have_cloud;
-      bool m_have_corners;
-
-      int m_surf_id;
-
-      void
-      compute_quadfit ();
-      void
-      compute_refinement (NurbsFitting* fitting);
-      void
-      compute_boundary (NurbsFitting* fitting);
-      void
-      compute_interior (NurbsFitting* fitting);
-
-      Eigen::Vector2d
-      project (const Eigen::Vector3d &pt);
-      bool
-      is_back_facing (const Eigen::Vector3d &v0, const Eigen::Vector3d &v1, const Eigen::Vector3d &v2,
-                      const Eigen::Vector3d &v3);
-
-    public:
-      //  NurbsFitter(Parameter p = Parameter(), bool quiet = true, TomGine::tgTomGineThread* dbgWin=NULL);
-      NurbsFitter (Parameter p = Parameter ());
-
-      inline void
-      setParams (const Parameter &p)
-      {
-        m_params = p;
-      }
-
-      /** Set input point cloud **/
-      void
-      setInputCloud (pcl::PointCloud<pcl::PointXYZ>::Ptr &pcl_cloud);
-
-      void
-      setBoundary (pcl::PointIndices::Ptr &pcl_cloud_indices);
-
-      void
-      setInterior (pcl::PointIndices::Ptr &pcl_cloud_indices);
-
-      void
-      setCorners (pcl::PointIndices::Ptr &corners, bool flip_on_demand = true);
-
-      void
-      setProjectionMatrix (Eigen::Matrix4d &intrinsic, Eigen::Matrix4d &extrinsic);
-
-      /** Compute point cloud and fit (multiple) models **/
-      NurbsSurface
-      compute ();
-
-      NurbsSurface
-      compute_boundary (const NurbsSurface &nurbs);
-
-      NurbsSurface
-      compute_interior (const NurbsSurface &nurbs);
-
-      inline NurbsSurface
-      getNurbs ()
-      {
-        return m_nurbs;
-      }
-
-      /** @brief Get error of each interior point (L2-norm of point to closest point on surface) and square-error */
-      void
-      getInteriorError (std::vector<double> &error);
-
-      /** @brief Get error of each boundary point (L2-norm of point to closest point on surface) and square-error */
-      void
-      getBoundaryError (std::vector<double> &error);
-
-      /** @brief Get parameter of each interior point */
-      void
-      getInteriorParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params);
-
-      /** @brief Get parameter of each boundary point */
-      void
-      getBoundaryParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params);
-
-      /** @brief get the normals to the interior points given by setInterior() */
-      void
-      getInteriorNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normal);
-
-      /** @brief get the normals to the boundary points given by setBoundary() */
-      void
-      getBoundaryNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normals);
-
-      /** @brief Get the closest point on a NURBS from a point pt in parameter space
-       *  @param nurbs  The NURBS surface
-       *  @param pt     A point in 3D from which the closest point is calculated
-       *  @param params The closest point on the NURBS in parameter space
-       *  @param maxSteps Maximum iteration steps
-       *  @param accuracy Accuracy below which the iterations stop */
-      static void
-      getClosestPointOnNurbs (NurbsSurface nurbs, Eigen::Vector3d pt, Eigen::Vector2d& params, int maxSteps = 100,
-                              double accuracy = 1e-4);
-
-      NurbsSurface
-      grow (float max_dist = 1.0f, float max_angle = M_PI_4, unsigned min_length = 0, unsigned max_length = 10);
-
-      static unsigned
-          PCL2Eigen (pcl::PointCloud<pcl::PointXYZ>::Ptr &pcl_cloud, const std::vector<int> &indices,
-                     vector_vec3 &on_cloud);
-
-    };
   }
 }
 

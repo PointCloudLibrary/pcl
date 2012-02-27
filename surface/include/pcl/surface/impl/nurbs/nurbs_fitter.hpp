@@ -36,11 +36,12 @@
 #include "pcl/surface/nurbs/nurbs_fitter.h"
 
 using namespace pcl;
+using namespace nurbs;
 using namespace Eigen;
 
 template<typename PointInT>
   NurbsFitter<PointInT>::Parameter::Parameter (int order, int refinement, int iterationsQuad, int iterationsBoundary,
-                                               int iterationsInterior, double forceBoundary,
+                                               int iterationsAdjust, int iterationsInterior, double forceBoundary,
                                                double forceBoundaryInside, double forceInterior,
                                                double stiffnessBoundary, double stiffnessInterior, int resolution)
   {
@@ -48,6 +49,7 @@ template<typename PointInT>
     this->refinement = refinement;
     this->iterationsQuad = iterationsQuad;
     this->iterationsBoundary = iterationsBoundary;
+    this->iterationsAdjust = iterationsAdjust;
     this->iterationsInterior = iterationsInterior;
     this->forceBoundary = forceBoundary;
     this->forceBoundaryInside = forceBoundaryInside;
@@ -58,10 +60,9 @@ template<typename PointInT>
   }
 
 template<typename PointInT>
-  NurbsFitter<PointInT>::NurbsFitter (Parameter p, bool quiet)
+  NurbsFitter<PointInT>::NurbsFitter (Parameter p)
   {
     this->m_params = p;
-    this->m_quiet = quiet;
     this->m_have_cloud = false;
     this->m_have_corners = false;
     this->m_surf_id = -1;
@@ -72,8 +73,6 @@ template<typename PointInT>
   NurbsFitter<PointInT>::compute_quadfit ()
   {
     NurbsFitting *fitting;
-    if (!m_quiet)
-      printf ("[NurbsFitter::compute_internal] initializing\n");
 
     if (m_have_corners)
     {
@@ -82,20 +81,25 @@ template<typename PointInT>
     else
     {
       fitting = new NurbsFitting (2, &m_data);
-      fitting->nurbs_patch_->GetCV (0, 0, m_corners[0]);
-      fitting->nurbs_patch_->GetCV (1, 0, m_corners[1]);
-      fitting->nurbs_patch_->GetCV (1, 1, m_corners[2]);
-      fitting->nurbs_patch_->GetCV (0, 1, m_corners[3]);
-      Eigen::Vector3d v0 (m_corners[0].x, m_corners[0].y, m_corners[0].z);
-      Eigen::Vector3d v1 (m_corners[1].x, m_corners[1].y, m_corners[1].z);
-      Eigen::Vector3d v2 (m_corners[2].x, m_corners[2].y, m_corners[2].z);
-      Eigen::Vector3d v3 (m_corners[3].x, m_corners[3].y, m_corners[3].z);
+      m_corners[0] = fitting->m_patch->GetCP (0, 0);
+      m_corners[1] = fitting->m_patch->GetCP (1, 0);
+      m_corners[2] = fitting->m_patch->GetCP (1, 1);
+      m_corners[3] = fitting->m_patch->GetCP (0, 1);
+      Eigen::Vector3d v0 (m_corners[0] (0), m_corners[0] (1), m_corners[0] (2));
+      Eigen::Vector3d v1 (m_corners[1] (0), m_corners[1] (1), m_corners[1] (2));
+      Eigen::Vector3d v2 (m_corners[2] (0), m_corners[2] (1), m_corners[2] (2));
+      Eigen::Vector3d v3 (m_corners[3] (0), m_corners[3] (1), m_corners[3] (2));
       if (is_back_facing (v0, v1, v2, v3))
       {
-        m_corners[3] = m_corners[0];
-        m_corners[2] = m_corners[1];
-        m_corners[1] = m_corners[2];
-        m_corners[0] = m_corners[3];
+        vec4 tmp[4];
+        tmp[0] = m_corners[0];
+        tmp[1] = m_corners[1];
+        tmp[2] = m_corners[2];
+        tmp[3] = m_corners[3];
+        m_corners[3] = tmp[0];
+        m_corners[2] = tmp[1];
+        m_corners[1] = tmp[2];
+        m_corners[0] = tmp[3];
         delete (fitting);
         fitting = new NurbsFitting (2, &m_data, m_corners[0], m_corners[1], m_corners[2], m_corners[3]);
       }
@@ -103,17 +107,17 @@ template<typename PointInT>
     }
 
     // Quad fitting
+    //  if( !m_quiet && m_dbgWin != NULL )
+    //    NurbsConvertion::Nurbs2TomGine(m_dbgWin, *fitting->m_patch, m_surf_id, m_params.resolution);
     for (int r = 0; r < m_params.iterationsQuad; r++)
     {
-      if (!m_quiet)
-        printf ("[NurbsFitter::compute_internal] fit quad: %d\n", r);
       fitting->assemble (0, 0, m_params.forceBoundary, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0);
       fitting->solve ();
     }
-    fitting->nurbs_patch_->GetCV (0, 0, m_corners[0]);
-    fitting->nurbs_patch_->GetCV (1, 0, m_corners[1]);
-    fitting->nurbs_patch_->GetCV (1, 1, m_corners[2]);
-    fitting->nurbs_patch_->GetCV (0, 1, m_corners[3]);
+    m_corners[0] = fitting->m_patch->GetCP (0, 0);
+    m_corners[1] = fitting->m_patch->GetCP (1, 0);
+    m_corners[2] = fitting->m_patch->GetCP (1, 1);
+    m_corners[3] = fitting->m_patch->GetCP (0, 1);
 
     delete (fitting);
   }
@@ -125,8 +129,6 @@ template<typename PointInT>
     // Refinement
     for (int r = 0; r < m_params.refinement; r++)
     {
-      if (!m_quiet)
-        printf ("[NurbsFitter::compute_internal] refinement: %d\n", r);
       fitting->assemble (0, 0, m_params.forceBoundary, 0.0, 0.0, 0.0, m_params.stiffnessBoundary, 1.0, 0.0);
       fitting->solve ();
       fitting->refine (0);
@@ -141,8 +143,6 @@ template<typename PointInT>
     // iterate boundary points
     for (int i = 0; i < m_params.iterationsBoundary; i++)
     {
-      if (!m_quiet)
-        printf ("[NurbsFitter::compute_internal] boundary iteration: %d\n", i);
       fitting->assemble (0, 0, m_params.forceBoundary, 0.0, 0.0, 0.0, m_params.stiffnessBoundary, 1.0, 0.0);
       fitting->solve ();
     }
@@ -152,11 +152,9 @@ template<typename PointInT>
   NurbsFitter<PointInT>::compute_interior (NurbsFitting* fitting)
   {
     // iterate interior points
-    std::vector<double> wInt (m_data.interior->size (), m_params.forceInterior);
+    //std::vector<double> wInt(m_data.interior.PointCount(), m_params.forceInterior);
     for (int i = 0; i < m_params.iterationsInterior; i++)
     {
-      if (!m_quiet)
-        printf ("[NurbsFitter::compute_internal] interior iteration: %d\n", i);
       fitting->assemble (0, 0, m_params.forceBoundary, m_params.forceInterior, 0.0, 0.0, m_params.stiffnessBoundary,
                          m_params.stiffnessInterior, 0.0);
       //    fitting->assemble(wBnd, wInt, m_params.stiffnessBoundary, m_params.stiffnessInterior);
@@ -184,9 +182,9 @@ template<typename PointInT>
   NurbsFitter<PointInT>::is_back_facing (const Eigen::Vector3d &v0, const Eigen::Vector3d &v1,
                                          const Eigen::Vector3d &v2, const Eigen::Vector3d &v3)
   {
-    Eigen::Vector3d e1, e2;
+    Eigen::Vector3d e1, e2, e3;
     e1 = v1 - v0;
-    e2 = v3 - v0;
+    e2 = v2 - v0;
 
     Eigen::Vector3d z (m_extrinsic (0, 2), m_extrinsic (1, 2), m_extrinsic (2, 2));
     if (z.dot (e1.cross (e2)) > 0.0)
@@ -200,23 +198,44 @@ template<typename PointInT>
 
 template<typename PointInT>
   void
+  NurbsFitter<PointInT>::setInputCloud (PointCloudPtr &pcl_cloud)
+  {
+    if (pcl_cloud.get () == 0 || pcl_cloud->points.size () == 0)
+      throw std::runtime_error ("[NurbsFitter::setInputCloud] Error: Empty or invalid pcl-point-cloud.\n");
+
+    m_cloud = pcl_cloud;
+    m_have_cloud = true;
+  }
+
+template<typename PointInT>
+  void
   NurbsFitter<PointInT>::setBoundary (pcl::PointIndices::Ptr &pcl_cloud_indexes)
   {
-    if (input_.get () == 0 || input_->points.size () == 0)
+    if (m_cloud.get () == 0 || m_cloud->points.size () == 0)
       throw std::runtime_error ("[NurbsFitter::setBoundary] Error: Empty or invalid pcl-point-cloud.\n");
 
     this->m_boundary_indices = pcl_cloud_indexes;
     m_data.clear_boundary ();
-//    unsigned n = pcl_2_on (input_, pcl_cloud_indexes->indices, m_data.boundary);
-//    if (!m_quiet)
-//      printf ("[NurbsFitter::setBoundary] %d points added\n", n);
+    PCL2Eigen (m_cloud, pcl_cloud_indexes->indices, m_data.boundary);
+  }
+
+template<typename PointInT>
+  void
+  NurbsFitter<PointInT>::setInterior (pcl::PointIndices::Ptr &pcl_cloud_indexes)
+  {
+    if (m_cloud.get () == 0 || m_cloud->points.size () == 0)
+      throw std::runtime_error ("[NurbsFitter::setIndices] Error: Empty or invalid pcl-point-cloud.\n");
+
+    this->m_interior_indices = pcl_cloud_indexes;
+    m_data.clear_interior ();
+    PCL2Eigen (m_cloud, pcl_cloud_indexes->indices, m_data.interior);
   }
 
 template<typename PointInT>
   void
   NurbsFitter<PointInT>::setCorners (pcl::PointIndices::Ptr &corners, bool flip_on_demand)
   {
-    if (input_.get () == 0 || input_->points.size () == 0)
+    if (m_cloud.get () == 0 || m_cloud->points.size () == 0)
       throw std::runtime_error ("[NurbsFitter::setCorners] Error: Empty or invalid pcl-point-cloud.\n");
 
     if (corners->indices.size () < 4)
@@ -226,10 +245,10 @@ template<typename PointInT>
       printf ("[NurbsFitter::setCorners] Warning: to many corners (>4)\n");
 
     bool flip = false;
-    PointInT pt0 = input_->at (corners->indices[0]);
-    PointInT pt1 = input_->at (corners->indices[1]);
-    PointInT pt2 = input_->at (corners->indices[2]);
-    PointInT pt3 = input_->at (corners->indices[3]);
+    PointInT &pt0 = m_cloud->at (corners->indices[0]);
+    PointInT &pt1 = m_cloud->at (corners->indices[1]);
+    PointInT &pt2 = m_cloud->at (corners->indices[2]);
+    PointInT &pt3 = m_cloud->at (corners->indices[3]);
 
     if (flip_on_demand)
     {
@@ -242,17 +261,17 @@ template<typename PointInT>
 
     if (flip)
     {
-      m_corners[3] = ON_3dPoint (pt0.x, pt0.y, pt0.z);
-      m_corners[2] = ON_3dPoint (pt1.x, pt1.y, pt1.z);
-      m_corners[1] = ON_3dPoint (pt2.x, pt2.y, pt2.z);
-      m_corners[0] = ON_3dPoint (pt3.x, pt3.y, pt3.z);
+      m_corners[3] = vec4 (pt0.x, pt0.y, pt0.z, 1.0);
+      m_corners[2] = vec4 (pt1.x, pt1.y, pt1.z, 1.0);
+      m_corners[1] = vec4 (pt2.x, pt2.y, pt2.z, 1.0);
+      m_corners[0] = vec4 (pt3.x, pt3.y, pt3.z, 1.0);
     }
     else
     {
-      m_corners[0] = ON_3dPoint (pt0.x, pt0.y, pt0.z);
-      m_corners[1] = ON_3dPoint (pt1.x, pt1.y, pt1.z);
-      m_corners[2] = ON_3dPoint (pt2.x, pt2.y, pt2.z);
-      m_corners[3] = ON_3dPoint (pt3.x, pt3.y, pt3.z);
+      m_corners[0] = vec4 (pt0.x, pt0.y, pt0.z, 1.0);
+      m_corners[1] = vec4 (pt1.x, pt1.y, pt1.z, 1.0);
+      m_corners[2] = vec4 (pt2.x, pt2.y, pt2.z, 1.0);
+      m_corners[3] = vec4 (pt3.x, pt3.y, pt3.z, 1.0);
     }
 
     m_have_corners = true;
@@ -267,12 +286,16 @@ template<typename PointInT>
   }
 
 template<typename PointInT>
-  ON_NurbsSurface
+  NurbsSurface
   NurbsFitter<PointInT>::compute ()
   {
     NurbsFitting* fitting;
 
-    if (m_data.boundary->size () > 0)
+    //  int surfid = -1;
+    //  TomGine::tgRenderModel nurbs;
+    //  TomGine::tgRenderModel box;
+
+    if (m_data.boundary.size () > 0)
     {
       //    throw std::runtime_error("[NurbsFitter::compute] Error: empty boundary point-cloud.\n");
 
@@ -293,43 +316,60 @@ template<typename PointInT>
       else
       {
         fitting = new NurbsFitting (m_params.order, &m_data);
-        Eigen::Vector3d v0 (m_corners[0].x, m_corners[0].y, m_corners[0].z);
-        Eigen::Vector3d v1 (m_corners[1].x, m_corners[1].y, m_corners[1].z);
-        Eigen::Vector3d v2 (m_corners[2].x, m_corners[2].y, m_corners[2].z);
-        Eigen::Vector3d v3 (m_corners[3].x, m_corners[3].y, m_corners[3].z);
+        int ncv0 = fitting->m_patch->CountCPU ();
+        int ncv1 = fitting->m_patch->CountCPV ();
+
+        m_corners[0] = fitting->m_patch->GetCP (0, 0);
+        m_corners[1] = fitting->m_patch->GetCP (ncv0 - 1, 0);
+        m_corners[2] = fitting->m_patch->GetCP (ncv0 - 1, ncv1 - 1);
+        m_corners[3] = fitting->m_patch->GetCP (0, ncv1 - 1);
+
+        Eigen::Vector3d v0 (m_corners[0] (0), m_corners[0] (1), m_corners[0] (2));
+        Eigen::Vector3d v1 (m_corners[1] (0), m_corners[1] (1), m_corners[1] (2));
+        Eigen::Vector3d v2 (m_corners[2] (0), m_corners[2] (1), m_corners[2] (2));
+        Eigen::Vector3d v3 (m_corners[3] (0), m_corners[3] (1), m_corners[3] (2));
+
         if (is_back_facing (v0, v1, v2, v3))
         {
-          m_corners[3] = m_corners[0];
-          m_corners[2] = m_corners[1];
-          m_corners[1] = m_corners[2];
-          m_corners[0] = m_corners[3];
+          vec4 tmp[4];
+          tmp[0] = m_corners[0];
+          tmp[1] = m_corners[1];
+          tmp[2] = m_corners[2];
+          tmp[3] = m_corners[3];
+          m_corners[3] = tmp[0];
+          m_corners[2] = tmp[1];
+          m_corners[1] = tmp[2];
+          m_corners[0] = tmp[3];
           delete (fitting);
-          fitting = new NurbsFitting (2, &m_data, m_corners[0], m_corners[1], m_corners[2], m_corners[3]);
+          fitting = new NurbsFitting (m_params.order, &m_data, m_corners[0], m_corners[1], m_corners[2], m_corners[3]);
+        }
+
+        for (int r = 0; r < m_params.refinement; r++)
+        {
+          fitting->refine (0);
+          fitting->refine (1);
         }
       }
     }
 
-    if (m_data.interior->size () > 0)
+    if (m_data.interior.size () > 0)
       compute_interior (fitting);
 
     // update error
     fitting->assemble (0, 0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
-    m_nurbs = *fitting->nurbs_patch_;
+    m_nurbs = *fitting->m_patch;
 
     delete (fitting);
-
-    if (!m_quiet)
-      printf ("[NurbsFitter::compute] done\n");
 
     return m_nurbs;
   }
 
 template<typename PointInT>
-  ON_NurbsSurface
-  NurbsFitter<PointInT>::computeBoundary (const ON_NurbsSurface &nurbs)
+  NurbsSurface
+  NurbsFitter<PointInT>::compute_boundary (const NurbsSurface &nurbs)
   {
-    if (m_data.boundary->size () <= 0)
+    if (m_data.boundary.size () <= 0)
     {
       printf ("[NurbsFitter::compute_boundary] Warning, no boundary points given: setBoundary()\n");
       return nurbs;
@@ -339,7 +379,7 @@ template<typename PointInT>
 
     this->compute_boundary (fitting);
 
-    m_nurbs = *fitting->nurbs_patch_;
+    m_nurbs = *fitting->m_patch;
 
     // update error
     fitting->assemble (0, 0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
@@ -350,10 +390,10 @@ template<typename PointInT>
   }
 
 template<typename PointInT>
-  ON_NurbsSurface
-  NurbsFitter<PointInT>::computeInterior (const ON_NurbsSurface &nurbs)
+  NurbsSurface
+  NurbsFitter<PointInT>::compute_interior (const NurbsSurface &nurbs)
   {
-    if (m_data.boundary->size () <= 0)
+    if (m_data.boundary.size () <= 0)
     {
       printf ("[NurbsFitter::compute_interior] Warning, no interior points given: setInterior()\n");
       return nurbs;
@@ -365,7 +405,7 @@ template<typename PointInT>
     // update error
     fitting->assemble (0, 0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
-    m_nurbs = *fitting->nurbs_patch_;
+    m_nurbs = *fitting->m_patch;
 
     delete (fitting);
 
@@ -387,7 +427,52 @@ template<typename PointInT>
   }
 
 template<typename PointInT>
-  ON_NurbsSurface
+  void
+  NurbsFitter<PointInT>::getInteriorParams (
+                                            std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params)
+  {
+    params = m_data.interior_param;
+  }
+
+template<typename PointInT>
+  void
+  NurbsFitter<PointInT>::getBoundaryParams (
+                                            std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params)
+  {
+    params = m_data.boundary_param;
+  }
+
+template<typename PointInT>
+  void
+  NurbsFitter<PointInT>::getInteriorNormals (
+                                             std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normals)
+  {
+    normals = m_data.interior_normals;
+  }
+
+template<typename PointInT>
+  void
+  NurbsFitter<PointInT>::getBoundaryNormals (
+                                             std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normals)
+  {
+    normals = m_data.boundary_normals;
+  }
+
+template<typename PointInT>
+  void
+  NurbsFitter<PointInT>::getClosestPointOnNurbs (NurbsSurface nurbs, Eigen::Vector3d pt, Eigen::Vector2d& params,
+                                                 int maxSteps, double accuracy)
+  {
+    NurbsTools ntools (&nurbs);
+
+    Eigen::Vector3d p, tu, tv;
+    double error;
+
+    params = ntools.inverseMapping (pt, NULL, error, p, tu, tv, maxSteps, accuracy);
+  }
+
+template<typename PointInT>
+  NurbsSurface
   NurbsFitter<PointInT>::grow (float max_dist, float max_angle, unsigned min_length, unsigned max_length)
   {
     unsigned num_bnd = this->m_data.boundary_param.size ();
@@ -395,9 +480,9 @@ template<typename PointInT>
     if (num_bnd == 0)
       throw std::runtime_error ("[NurbsFitter::grow] No boundary given.");
 
-    if ((unsigned)this->m_data.boundary->size () != num_bnd)
+    if ((unsigned)this->m_data.boundary.size () != num_bnd)
     {
-      printf ("[NurbsFitter::grow] %u %u\n", (unsigned)this->m_data.boundary->size (), num_bnd);
+      printf ("[NurbsFitter::grow] %u %u\n", (unsigned)this->m_data.boundary.size (), num_bnd);
       throw std::runtime_error ("[NurbsFitter::grow] size of boundary and boundary parameters do not match.");
     }
 
@@ -412,23 +497,12 @@ template<typename PointInT>
 
     for (unsigned i = 0; i < num_bnd; i++)
     {
-      Eigen::Vector3d r, tu, tv, n;
-      Eigen::Vector3d bn(0.0,0.0,0.0);
-      double pointAndTangents[9];
+      vec3 r (0.0, 0.0, 0.0), tu (0.0, 0.0, 0.0), tv (0.0, 0.0, 0.0), n (0.0, 0.0, 0.0), bn (0.0, 0.0, 0.0);
       double u = this->m_data.boundary_param[i] (0);
       double v = this->m_data.boundary_param[i] (1);
 
       // Evaluate point and tangents
-      m_nurbs.Evaluate (u, v, 1, 3, pointAndTangents);
-      r (0) = pointAndTangents[0];
-      r (1) = pointAndTangents[1];
-      r (2) = pointAndTangents[2];
-      tu (0) = pointAndTangents[3];
-      tu (1) = pointAndTangents[4];
-      tu (2) = pointAndTangents[5];
-      tv (0) = pointAndTangents[6];
-      tv (1) = pointAndTangents[7];
-      tv (2) = pointAndTangents[8];
+      m_nurbs.Evaluate (u, v, r, tu, tv);
 
       n = tu.cross (tv);
       n.normalize ();
@@ -458,27 +532,27 @@ template<typename PointInT>
       // search for valid points along boundary normal in image space
       float max_dist_sq = max_dist * max_dist;
       bool valid = false;
-      PointInT point = input_->at (this->m_boundary_indices->indices[i]);
+      PointInT point = m_cloud->at (this->m_boundary_indices->indices[i]);
       for (unsigned j = min_length; j < max_length; j++)
       {
         int col = ri (0) + bni (0) * j;
         int row = ri (1) + bni (1) * j;
 
-        if (row >= (int)input_->height || row < 0)
+        if (row >= (int)m_cloud->height || row < 0)
         {
           j = max_length;
           break;
         }
-        if (col >= (int)input_->width || col < 0)
+        if (col >= (int)m_cloud->width || col < 0)
         {
           j = max_length;
           break;
         }
 
-        unsigned idx = row * input_->width + col;
+        unsigned idx = row * m_cloud->width + col;
 
-        PointInT pt = input_->at (idx);
-        if (!isnan (pt.x) && !isnan (pt.y) && !isnan (pt.z))
+        PointInT &pt = m_cloud->at (idx);
+        if (!pcl_isnan (pt.x) && !pcl_isnan (pt.y) && !pcl_isnan (pt.z))
         {
 
           // distance requirement
@@ -498,18 +572,16 @@ template<typename PointInT>
       // if valid point found, add current boundary point to interior points and move boundary
       if (valid)
       {
-        this->m_data.interior->push_back(this->m_data.boundary->at(i));
-        this->m_data.boundary->at(i).x = point.x;
-        this->m_data.boundary->at(i).y = point.y;
-        this->m_data.boundary->at(i).z = point.z;
+        this->m_data.interior.push_back (this->m_data.boundary[i]);
+        this->m_data.boundary[i] (0) = point.x;
+        this->m_data.boundary[i] (1) = point.y;
+        this->m_data.boundary[i] (2) = point.z;
         bnd_moved++;
       }
 
     } // i
 
-    printf ("[NurbsFitter::grow] %d / %d boundary points moved\n", bnd_moved, num_bnd);
-
-    computeInterior (m_nurbs);
+    compute_interior (m_nurbs);
 
     double int_err (0.0);
     double div_err = 1.0 / m_data.interior_error.size ();
@@ -524,4 +596,26 @@ template<typename PointInT>
 
   }
 
-#define PCL_INSTANTIATE_NurbsFitter(T) template class PCL_EXPORTS pcl::NurbsFitter<T>;
+template<typename PointInT>
+  unsigned
+  NurbsFitter<PointInT>::PCL2Eigen (PointCloudPtr &pcl_cloud, const std::vector<int> &indices, vector_vec3 &on_cloud)
+  {
+    unsigned numPoints (0);
+
+    for (unsigned i = 0; i < indices.size (); i++)
+    {
+
+      PointInT &pt = pcl_cloud->at (indices[i]);
+
+      if (!pcl_isnan (pt.x) && !pcl_isnan (pt.y) && !pcl_isnan (pt.z))
+      {
+        on_cloud.push_back (vec3 (pt.x, pt.y, pt.z));
+        numPoints++;
+      }
+
+    }
+
+    return numPoints;
+  }
+
+#define PCL_INSTANTIATE_NurbsFitter(T) template class PCL_EXPORTS pcl::nurbs::NurbsFitter<T>;

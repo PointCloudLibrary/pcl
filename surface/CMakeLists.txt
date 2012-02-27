@@ -61,7 +61,7 @@ if(build)
         src/nurbs/nurbs_tools.cpp
         src/nurbs/nurbs_fitter.cpp
         )
-    set(NURBS_IMPL
+    set(NURBS_IMPLS
         include/pcl/${SUBSYS_NAME}/impl/nurbs/nurbs_fitter.hpp
         )
     ENDIF(BUILD_surface_nurbs)
@@ -136,6 +136,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/poisson.h
         ${HULL_INCLUDES}
         ${POISSON_INCLUDES}
+        ${NURBS_INCLUDES}
         )
 
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/gp3.hpp
@@ -151,12 +152,13 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/texture_mapping.hpp
         include/pcl/${SUBSYS_NAME}/impl/poisson.hpp
         ${HULL_IMPLS}
+        ${NURBS_IMPLS}
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${VTK_INCLUDE_DIRS})
     link_directories(${VTK_LIBRARY_DIRS})
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs} ${NURBS_INCLUDES} ${NURBS_IMPL})
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
     target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_search pcl_kdtree pcl_octree ${OpenCV_LIBS} ${VTK_SMOOTHING_TARGET_LINK_LIBRARIES})
     if(QHULL_FOUND)
       target_link_libraries(${LIB_NAME} ${QHULL_LIBRARIES})

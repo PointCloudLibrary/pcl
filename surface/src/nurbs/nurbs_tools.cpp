@@ -210,7 +210,7 @@ NurbsTools::inverseMapping (const vec3 &pt, const vec2 &hint, double &error, vec
   }
 
   if (!quiet)
-    std::cout << "ERROR: Method did not converge after maximum number of steps!" << std::endl;
+    std::cout << "[NurbsTools::inverseMapping] Warning: Method did not converge after maximum number of steps!" << std::endl;
 
   error = r.norm ();
 
@@ -376,7 +376,7 @@ NurbsTools::inverseMappingBoundary (const vec3 &pt, int side, double hint, doubl
 
         break;
       default:
-        throw std::runtime_error ("[PatchFitting::inverseMappingBoundary] ERROR: Specify a boundary!");
+        throw std::runtime_error ("[NurbsFitting::inverseMappingBoundary] Warning: Specify a boundary!");
 
     }
 
@@ -444,7 +444,7 @@ NurbsTools::inverseMappingBoundary (const vec3 &pt, int side, double hint, doubl
 
   error = r.norm ();
   if (!quiet)
-    printf ("ERROR: Method did not converge! (residual: %f, delta: %f, params: %f %f)\n", error, delta, params (0),
+    printf ("[NurbsTools::inverseMappingBoundary] Warning: Method did not converge! (residual: %f, delta: %f, params: %f %f)\n", error, delta, params (0),
             params (1));
 
   return params;
@@ -475,7 +475,7 @@ bool NurbsTools::solveSparseLinearSystem(cholmod_sparse* A, cholmod_dense* b, ch
   if( status != 0 )
   {
 
-    std::cout << "ERROR: something is wrong with input matrix!" << std::endl;
+    std::cout << "[NurbsTools::solveSparseLinearSystem] Warning: something is wrong with input matrix!" << std::endl;
     return 1;
 
   }
@@ -485,7 +485,7 @@ bool NurbsTools::solveSparseLinearSystem(cholmod_sparse* A, cholmod_dense* b, ch
   if( status != 0 )
   {
 
-    std::cout << "ERROR: ordering was ok but factorization failed!" << std::endl;
+    std::cout << "[NurbsTools::solveSparseLinearSystem] Warning: ordering was ok but factorization failed!" << std::endl;
     return 1;
 
   }
