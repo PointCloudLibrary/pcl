@@ -14,7 +14,7 @@ if(build)
         src/sac_segmentation.cpp
         src/seeded_hue_segmentation.cpp
         src/segment_differences.cpp
-        #src/region_growing.cpp
+        src/region_growing.cpp
         )
 
     set(incs include/pcl/${SUBSYS_NAME}/extract_clusters.h
