@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -248,5 +250,8 @@ pcl::ProjectInliers<sensor_msgs::PointCloud2>::initSACModel (int model_type)
 }
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(ProjectInliers, PCL_XYZ_POINT_TYPES)
-
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+  PCL_INSTANTIATE(ProjectInliers, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))
+#else
+  PCL_INSTANTIATE(ProjectInliers, PCL_XYZ_POINT_TYPES)
+#endif
