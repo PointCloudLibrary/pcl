@@ -45,13 +45,9 @@
 #define PCL_OUTOFCORE_RAM_CONTAINER_IMPL_H_
 
 // C++
-#include <vector>
 #include <sstream>
 
 // Boost
-#include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
-#include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_int.hpp>
 
 // PCL (Urban Robotics)
@@ -106,7 +102,7 @@ namespace pcl
     template<typename PointT> inline void
     octree_ram_container<PointT>::insertRange (const PointT* const * start, const boost::uint64_t count)
     {
-      std::vector<PointT> temp;
+      std::vector<PointT, Eigen::aligned_allocator<PointT> > temp;
       temp.resize (count);
       for (boost::uint64_t i = 0; i < count; i++)
       {
@@ -118,7 +114,7 @@ namespace pcl
 
     template<typename PointT> void
     octree_ram_container<PointT>::readRange (const boost::uint64_t start, const boost::uint64_t count,
-                                             std::vector<PointT>& v)
+                                             std::vector<PointT, Eigen::aligned_allocator<PointT> >& v)
     {
       /*
         v.resize(count);
@@ -141,7 +137,7 @@ namespace pcl
     octree_ram_container<PointT>::readRangeSubSample (const boost::uint64_t start, 
                                                       const boost::uint64_t count,
                                                       const double percent, 
-                                                      std::vector<PointT>& v)
+                                                      std::vector<PointT, Eigen::aligned_allocator<PointT> >& v)
     {
       boost::uint64_t samplesize = percent * static_cast<double> (count);
 

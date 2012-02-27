@@ -95,7 +95,7 @@ namespace pcl
          * \param[out] v Array of points read from the input range
          */
         void
-        readRange (const boost::uint64_t start, const boost::uint64_t count, std::vector<PointT>& v);
+        readRange (const boost::uint64_t start, const boost::uint64_t count, std::vector<PointT, Eigen::aligned_allocator<PointT> >& v);
 
         /** \brief grab percent*count random points. points are NOT
          *   guaranteed to be unique (could have multiple identical points!)
@@ -108,7 +108,7 @@ namespace pcl
          */
         void
         readRangeSubSample (const boost::uint64_t start, const boost::uint64_t count, const double percent,
-                            std::vector<PointT>& v);
+                            std::vector<PointT, Eigen::aligned_allocator<PointT> >& v);
 
         /** \brief returns the size of the vector of points stored in this class */
         inline boost::uint64_t
@@ -145,7 +145,7 @@ namespace pcl
         //std::deque<PointT> container;
 
         /** \brief linear container to hold the points */
-        std::vector<PointT> container_;
+        std::vector<PointT, Eigen::aligned_allocator<PointT> > container_;
 
         static boost::mutex rng_mutex_;
         static boost::mt19937 rand_gen_;

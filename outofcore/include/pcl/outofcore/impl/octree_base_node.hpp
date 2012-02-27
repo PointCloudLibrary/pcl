@@ -97,8 +97,8 @@ namespace pcl
 
         if (!boost::filesystem::exists (thisdir_))
         {
-          std::cerr << "could not find dir!" << thisdir_ << "\n";
-          throw(OctreeException::OCT_MISSING_DIR);
+          PCL_DEBUG ("Could not find dir %s\n",thisdir_.c_str ());
+          throw(OctreeException (OctreeException::OCT_MISSING_DIR));
         }
 
         thisnodeindex_ = path;
@@ -130,8 +130,8 @@ namespace pcl
 
         if (!loaded)
         {
-          std::cerr << "could not find index!\n";
-          throw(OctreeException::OCT_MISSING_IDX);
+          PCL_DEBUG ("Could not find index\n");
+          throw(OctreeException (OctreeException::OCT_MISSING_IDX));
         }
 
       }
@@ -177,7 +177,7 @@ namespace pcl
       {
         //boost::filesystem::remove_all(dir);
         //boost::filesystem::create_directory(dir);
-        std::cerr << "need empty dir structure! --- dir exists and is a file" << std::endl;
+        PCL_DEBUG ("Need empty directory structure. Dir %s exists and is a file.\n",dir.c_str ());
         throw(OctreeException::OCT_BAD_PATH);
       }
 
@@ -262,7 +262,7 @@ namespace pcl
           directories live on disk.  This just bails if anything is loaded? */
       if (numchild_ != 0)
       {
-        std::cerr << "Calling loadChildren on a node that already has loaded children! - skipping";
+        PCL_DEBUG ("Calling loadChildren on a node that already has loaded children! - skipping\n");
         return;
       }
 
@@ -301,7 +301,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> boost::uint64_t
-    octree_base_node<Container, PointT>::addDataToLeaf (const std::vector<PointT>& p, const bool skipBBCheck)
+    octree_base_node<Container, PointT>::addDataToLeaf (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, const bool skipBBCheck)
     {
       //quit if there are no points to add
       if (p.empty ())
@@ -558,10 +558,10 @@ namespace pcl
 /** todo: This seems like a lot of work to get a random uniform sample? */
 /** todo: Need to refactor this further as to not pass in a BBCheck */
     template<typename Container, typename PointT> void
-    octree_base_node<Container, PointT>::randomSample(const std::vector<PointT>& p, std::vector<PointT>& insertBuff, const bool skipBBCheck)
+    octree_base_node<Container, PointT>::randomSample(const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, std::vector<PointT, Eigen::aligned_allocator<PointT> >& insertBuff, const bool skipBBCheck)
     {
 //    std::cout << "randomSample" << std::endl;
-      std::vector<PointT> sampleBuff;
+      std::vector<PointT, Eigen::aligned_allocator<PointT> > sampleBuff;
       if (!skipBBCheck)
       {
         BOOST_FOREACH (const PointT& pt, p)
@@ -610,7 +610,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> boost::uint64_t
-    octree_base_node<Container, PointT>::addDataAtMaxDepth (const std::vector<PointT>& p, const bool skipBBCheck)
+    octree_base_node<Container, PointT>::addDataAtMaxDepth (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, const bool skipBBCheck)
     {
       // Trust me, just add the points
       if(skipBBCheck)
@@ -645,8 +645,9 @@ namespace pcl
 
 
     template<typename Container, typename PointT> void
-    octree_base_node<Container, PointT>::subdividePoints (const std::vector<PointT>& p,
-                                                          std::vector< std::vector<PointT> >& c,
+    octree_base_node<Container, PointT>::subdividePoints (const std::vector<PointT,
+                                                          Eigen::aligned_allocator<PointT> >& p,
+                                                          std::vector< std::vector<PointT, Eigen::aligned_allocator<PointT> > >& c,
                                                           const bool skipBBCheck)
     {
       // Reserve space for children nodes
@@ -670,7 +671,7 @@ namespace pcl
 
 
     template<typename Container, typename PointT> void
-    octree_base_node<Container, PointT>::subdividePoint (const PointT& pt, std::vector< std::vector<PointT> >& c)
+    octree_base_node<Container, PointT>::subdividePoint (const PointT& pt, std::vector< std::vector<PointT, Eigen::aligned_allocator<PointT> > >& c)
     {
       if((pt.z >= midz_))
       {
@@ -735,7 +736,7 @@ namespace pcl
 
 
     template<typename Container, typename PointT> boost::uint64_t
-    octree_base_node<Container, PointT>::addDataToLeaf_and_genLOD (const std::vector<PointT>& p, const bool skipBBCheck)
+    octree_base_node<Container, PointT>::addDataToLeaf_and_genLOD (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, const bool skipBBCheck)
     {
       // If there's no points return
       if (p.empty ())
@@ -753,7 +754,7 @@ namespace pcl
           loadChildren (false);
 
       // Randomly sample data
-      std::vector<PointT> insertBuff;
+      std::vector<PointT, Eigen::aligned_allocator<PointT> > insertBuff;
       randomSample(p, insertBuff, skipBBCheck);
 
       if(!insertBuff.empty())
@@ -765,7 +766,7 @@ namespace pcl
       }
 
       //subdivide vec to pass data down lower
-      std::vector< std::vector<PointT> > c;
+      std::vector< std::vector<PointT, Eigen::aligned_allocator<PointT> > > c;
       subdividePoints(p, c, skipBBCheck);
 
       /// \todo: Perhaps do a quick loop through the lists here and dealloc the reserved mem for empty lists
@@ -1293,7 +1294,7 @@ namespace pcl
           if (withinBB (minbb, maxbb))
           {
             //get all the points from the payload and return
-            std::vector<PointT> payload_cache;
+            std::vector<PointT, Eigen::aligned_allocator<PointT> > payload_cache;
             payload_->readRange (0, payload_->size (), payload_cache);
             v.insert (v.end (), payload_cache.begin (), payload_cache.end ());
             return;
@@ -1304,7 +1305,7 @@ namespace pcl
           else
           {
             //read _all_ the points in from the disk container
-            std::vector<PointT> payload_cache;
+            std::vector<PointT, Eigen::aligned_allocator<PointT> > payload_cache;
             payload_->readRange (0, payload_->size (), payload_cache);
         
             boost::uint64_t len = payload_->size ();
@@ -1359,7 +1360,7 @@ namespace pcl
           if (withinBB (minbb, maxbb))
           {
             //add a random sample of all the points
-            std::vector<PointT> payload_cache;
+            std::vector<PointT, Eigen::aligned_allocator<PointT> > payload_cache;
             payload_->readRangeSubSample (0, payload_->size (), percent, payload_cache);
             v.insert (v.end (), payload_cache.begin (), payload_cache.end ());
             return;
@@ -1368,9 +1369,9 @@ namespace pcl
           else
           {
             //brute force selection of all valid points
-            std::vector<PointT> payload_cache_within_region;
+            std::vector<PointT, Eigen::aligned_allocator<PointT> > payload_cache_within_region;
             {
-              std::vector<PointT> payload_cache;
+              std::vector<PointT, Eigen::aligned_allocator<PointT> > payload_cache;
               payload_->readRange (0, payload_->size (), payload_cache);
               for (size_t i = 0; i < payload_->size (); i++)
               {
@@ -1404,8 +1405,8 @@ namespace pcl
     {
       if (super == NULL)
       {
-        std::cerr << "super is null - don't make a root node this way!" << std::endl;
-        throw(OctreeException::OCT_BAD_PARENT);
+        PCL_DEBUG ( "super is null - don't make a root node this way!\n" );
+        throw(OctreeException (OctreeException::OCT_BAD_PARENT));
       }
 
       this->parent_ = super;
@@ -1455,7 +1456,7 @@ namespace pcl
         children_[i]->copyAllCurrentAndChildPointsRec (v);
       }
 
-      std::vector<PointT> payload_cache;
+      std::vector<PointT, Eigen::aligned_allocator<PointT> > payload_cache;
       payload_->readRange (0, payload_->size (), payload_cache);
 
       {
@@ -1640,18 +1641,18 @@ namespace pcl
       //Validate
       if (!((version) && (bbmin) && (bbmax) && (bin)))
       {
-        std::cerr << "index " << path << " failed to parse!" << std::endl;
-        throw OctreeException (OctreeException::OCT_PARSE_FAILURE);
+        PCL_DEBUG ( "index %s failed to parse!\n", path.c_str () );
+        throw (OctreeException (OctreeException::OCT_PARSE_FAILURE));
       }
       if ((version->type != cJSON_Number) || (bbmin->type != cJSON_Array) || (bbmax->type != cJSON_Array) || (bin->type != cJSON_String))
       {
-        std::cerr << "index " << path << " failed to parse!" << std::endl;
-        throw OctreeException (OctreeException::OCT_PARSE_FAILURE);
+        PCL_DEBUG ( "index %s failed to parse!\n", path.c_str () );
+        throw (OctreeException (OctreeException::OCT_PARSE_FAILURE));        
       }
       if (version->valuedouble != 2.0)
       {
-        std::cerr << "index " << path << " failed to parse!" << std::endl;
-        throw OctreeException (OctreeException::OCT_PARSE_FAILURE);
+        PCL_DEBUG ( "index %s failed to parse!\n", path.c_str () );
+        throw (OctreeException (OctreeException::OCT_PARSE_FAILURE));
       }
 
       //	version->valuedouble;
@@ -1723,8 +1724,9 @@ namespace pcl
 
         if (!boost::filesystem::exists (thisnode->thisdir_))
         {
-          std::cerr << "could not find dir!" << thisnode->thisdir_ << std::endl;
-          throw(OctreeException::OCT_BAD_PATH);
+          PCL_DEBUG ( "could not find dir %s\n",thisnode->thisdir_.c_str () );
+          throw (OctreeException (OctreeException::OCT_BAD_PATH));
+          
         }
 
         thisnode->thisnodeindex_ = path;
@@ -1761,8 +1763,8 @@ namespace pcl
 
         if (!loaded)
         {
-          std::cerr << "could not find index!\n";
-          throw(OctreeException::OCT_MISSING_IDX);
+          PCL_DEBUG ( "could not find index!\n");
+          throw (OctreeException (OctreeException::OCT_MISSING_IDX));
         }
 
       }

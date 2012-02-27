@@ -80,8 +80,8 @@ namespace pcl
       // Check file extension
       if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointT>::node_index_extension)
       {
-        std::cerr << "the tree must be have a root_ node ending in .oct_idx" << std::endl;
-        throw(OctreeException (OctreeException::OCT_BAD_EXTENTION));
+        PCL_DEBUG ( "the tree must be have a root_ node ending in .oct_idx\n" );
+        throw (OctreeException (OctreeException::OCT_BAD_EXTENTION));
       }
 
       // Create root_ node
@@ -103,8 +103,8 @@ namespace pcl
       // Check file extension
       if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointT>::node_index_extension)
       {
-        std::cerr << "the tree must be created with a root_ node ending in .oct_idx" << std::endl;
-        throw(OctreeException (OctreeException::OCT_BAD_EXTENTION));
+        PCL_DEBUG ( "the tree must be created with a root_ node ending in .oct_idx\n" );
+        throw (OctreeException (OctreeException::OCT_BAD_EXTENTION));
       }
 
       coord_system_ = coord_sys;
@@ -135,8 +135,8 @@ namespace pcl
       // Check file extension
       if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointT>::node_index_extension)
       {
-        std::cerr << "the tree must be created with a root_ node ending in .oct_idx" << std::endl;
-        throw(OctreeException::OCT_BAD_EXTENTION);
+        PCL_DEBUG ( "the tree must be created with a root_ node ending in .oct_idx\n" );
+        throw (OctreeException (OctreeException::OCT_BAD_EXTENTION));
       }
 
       coord_system_ = coord_sys;
@@ -156,9 +156,8 @@ namespace pcl
         boost::filesystem::path childdir = dir / boost::lexical_cast<std::string> (i);
         if (boost::filesystem::exists (childdir))
         {
-          std::cerr << "A dir named " << i
-                    << " exists under the root_ node. Overwriting an existant tree is not supported!";
-          throw(OctreeException (OctreeException::OCT_CHILD_EXISTS));
+          PCL_DEBUG ("A dir named %d exists under the root_ node. Overwriting an existant tree is not supported!\n", i);
+          throw (OctreeException (OctreeException::OCT_CHILD_EXISTS));
         }
       }
 
@@ -243,23 +242,23 @@ namespace pcl
       // Validate JSON
       if (!((name) && (version) && (pointtype) && (lod) && (numpts) && (coord)))
       {
-        std::cerr << "index " << treepath_ << " failed to parse!" << std::endl;
-        throw OctreeException (OctreeException::OCT_PARSE_FAILURE);
+        PCL_DEBUG ( "index %s failed to parse!\n", treepath_.c_str ());
+        throw (OctreeException (OctreeException::OCT_PARSE_FAILURE));
       }
       if ((name->type != cJSON_String) || (version->type != cJSON_Number) || (pointtype->type != cJSON_String)
           || (lod->type != cJSON_Number) || (numpts->type != cJSON_Array) || (coord->type != cJSON_String))
       {
-        std::cerr << "index " << treepath_ << " failed to parse!" << std::endl;
+        PCL_DEBUG ( "index failed to parse!\n",treepath_.c_str ());
         throw OctreeException (OctreeException::OCT_PARSE_FAILURE);
       }
       if (version->valuedouble != 2.0)
       {
-        std::cerr << "index " << treepath_ << " failed to parse!" << std::endl;
+        PCL_DEBUG ( "index failed to parse!\n",treepath_.c_str ());
         throw OctreeException (OctreeException::OCT_PARSE_FAILURE);
       }
       if ((lod->valueint + 1) != cJSON_GetArraySize (numpts))
       {
-        std::cerr << "index " << treepath_ << " failed to parse!" << std::endl;
+        PCL_DEBUG ( "index failed to parse!\n",treepath_.c_str ());
         throw OctreeException (OctreeException::OCT_PARSE_FAILURE);
       }
 
@@ -276,7 +275,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> boost::uint64_t
-    octree_base<Container, PointT>::addDataToLeaf (const std::vector<PointT>& p)
+    octree_base<Container, PointT>::addDataToLeaf (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p)
     {
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
       boost::uint64_t pt_added = root_->addDataToLeaf (p, false);
@@ -285,7 +284,27 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> boost::uint64_t
-    octree_base<Container, PointT>::addDataToLeaf_and_genLOD (const std::vector<PointT>& p)
+    octree_base<Container, PointT>::addPointCloud (PointCloudConstPtr point_cloud)
+    {
+      return addDataToLeaf (point_cloud->points);
+    }
+    
+
+
+////////////////////////////////////////////////////////////////////////////////
+#if 0
+    template<typename Container, typename PointT> void
+    octree_base<Container, PointT>::addPointToLeaf (const PointT& p)
+    {
+      boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
+      root_->addPointToLeaf (p, false);
+    }
+#endif    
+
+////////////////////////////////////////////////////////////////////////////////
+
+    template<typename Container, typename PointT> boost::uint64_t
+    octree_base<Container, PointT>::addDataToLeaf_and_genLOD (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p)
     {
       // Lock the tree while writing
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
@@ -396,7 +415,7 @@ namespace pcl
     {
       if (root_ == NULL)
       {
-        std::cerr << "root is null, aborting buildLOD" << std::endl;
+        PCL_DEBUG ( "root is null, aborting buildLOD\n" );
         return;
       }
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
@@ -441,7 +460,7 @@ namespace pcl
                                     double (current_dims - level));//each level up the chain gets sample_precent^l of the leaf's data
 
               //read in percent of node
-              std::vector<PointT> v;
+              std::vector<PointT, Eigen::aligned_allocator<PointT> > v;
               if ((startp + loadcount) < leaf_start_size)
               {
                 leaf->payload->readRangeSubSample (startp, loadcount, percent, v);

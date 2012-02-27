@@ -80,6 +80,9 @@ const static boost::filesystem::path filename_otreeB = "treeB/tree_test.oct_idx"
 const static boost::filesystem::path filename_otreeA_LOD = "treeA_LOD/tree_test.oct_idx";
 const static boost::filesystem::path filename_otreeB_LOD = "treeB_LOD/tree_test.oct_idx";
 
+const static  boost::filesystem::path outofcore_path ("point_cloud_octree/tree_test.oct_idx");
+
+
 typedef pcl::PointXYZ PointT;
 
 // UR Typedefs
@@ -89,7 +92,7 @@ typedef octree_base_node<octree_disk_container < PointT > , PointT > octree_disk
 typedef octree_base<octree_ram_container< PointT> , PointT> octree_ram;
 typedef octree_base_node< octree_ram_container<PointT> , PointT> octree_ram_node;
 
-std::vector<PointT> points;
+std::vector<PointT, Eigen::aligned_allocator<PointT> > points;
 
 /** \brief helper function to compare two points. is there a templated function in pcl to do this for arbitrary point types?*/
 bool 
@@ -257,9 +260,9 @@ void point_test(octree_disk& t)
     t.queryBBIncludes(query_box_min, qboxmax, t.getDepth(), p_ot);
 
     //query the list
-    std::vector<PointT> pointsinregion;
+    std::vector<PointT, Eigen::aligned_allocator<PointT> > pointsinregion;
 
-    for(vector<PointT>::iterator pointit = points.begin (); pointit != points.end (); ++pointit)
+    for(vector<PointT, Eigen::aligned_allocator<PointT> >::iterator pointit = points.begin (); pointit != points.end (); ++pointit)
     {
       if((query_box_min[0] <= pointit->x) && (pointit->x <= qboxmax[0]) && (query_box_min[1] <= pointit->y) && (pointit->y <= qboxmax[1]) && (query_box_min[2] <= pointit->z) && (pointit->z <= qboxmax[2]))
       {
@@ -351,7 +354,7 @@ TEST (PCL, Outofcore_Ram_Tree)
     t.queryBBIncludes(qboxmin, qboxmax, t.getDepth(), p_ot1);
 
     //query the list
-    std::vector<PointT> pointsinregion;
+    std::vector<PointT, Eigen::aligned_allocator<PointT> > pointsinregion;
     BOOST_FOREACH(const PointT& p, points)
     {
       if((qboxmin[0] <= p.x) && (p.x <= qboxmax[0]) && (qboxmin[1] <= p.y) && (p.y <= qboxmax[1]) && (qboxmin[2] <= p.z) && (p.z <= qboxmax[2]))
@@ -389,14 +392,12 @@ class OutofcoreTest : public testing::Test
 
     virtual void SetUp ()
     {
-      //clear existing trees from test path
-//    cleanUpFilesystem ();
       smallest_voxel_dim = 0.1f;
     }
 
     virtual void TearDown ()
     {
-      // cleanUpFilesystem ();
+
     }
 
     void cleanUpFilesystem ()
@@ -407,7 +408,10 @@ class OutofcoreTest : public testing::Test
 
       boost::filesystem::remove_all (filename_otreeA_LOD.parent_path ());
       boost::filesystem::remove_all (filename_otreeB_LOD.parent_path ());
+
+      boost::filesystem::remove_all (outofcore_path.parent_path ());
     }
+
     double smallest_voxel_dim;
 
 };
@@ -429,7 +433,7 @@ TEST_F (OutofcoreTest, Outofcore_Constructors)
   //Specify the upper corner of the axis-aligned bounding box
   const double max[3] = { 1024, 1024, 1024 };
 
-  vector<PointT> some_points;
+  vector<PointT, Eigen::aligned_allocator<PointT> > some_points;
   for(int i=0; i< 1000; i++)
     some_points.push_back (PointT (rand ()%1024, rand ()%1024, rand ()%1024));
 
@@ -459,7 +463,9 @@ TEST_F (OutofcoreTest, Outofcore_ConstructorSafety)
   EXPECT_TRUE (boost::filesystem::exists (filename_otreeA));
   EXPECT_TRUE (boost::filesystem::exists (filename_otreeB));
 
-  /**\todo behaviors of the two constructors don't match. the one with resolution in the constructor doesn't check if a tree is being overwritten. It should though   */
+  /**\todo behaviors of the two constructors don't match. the one with resolution in the constructor doesn't check if a tree is being overwritten.
+   */
+
   //  EXPECT_ANY_THROW ({
   //      octree_disk octreeC (min, max, smallest_voxel_dim, filename_otreeA, "ECEF");
   //    });
@@ -475,7 +481,7 @@ TEST_F (OutofcoreTest, Outofcore_ConstructorSafety)
   EXPECT_EQ ( octree_from_disk.getNumPoints (octree_from_disk.getDepth ()), 1000 ) << octree_from_disk.getDepth ();
 }
 
-TEST_F (OutofcoreTest, ConstructorBadPaths)
+TEST_F (OutofcoreTest, Outofcore_ConstructorBadPaths)
 {
   //(Case 5): Try to load non-existent tree from disk
   //root node should be created at this point
@@ -492,10 +498,17 @@ TEST_F (OutofcoreTest, ConstructorBadPaths)
   cleanUpFilesystem ();
 }
 
-//the methods called here are not yet implemented
-#if 0
+#if 1
 TEST_F (OutofcoreTest, Outofcore_PointcloudConstructor)
 {
+  cleanUpFilesystem ();
+  
+  //Specify the lower corner of the axis-aligned bounding box
+  const double min[3] = { -1, -1, -1 };
+  
+  //Specify the upper corner of the axis-aligned bounding box
+  const double max[3] = { 1024, 1024, 1024 };
+
   //create a point cloud
   PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> () );
   
@@ -503,23 +516,24 @@ TEST_F (OutofcoreTest, Outofcore_PointcloudConstructor)
   test_cloud->height = 1;
   test_cloud->resize (numPts);
   
-  vector<PointT> some_points;
-  some_points.resize (numPts);
-
   //generate some random points
   for(size_t i=0; i < numPts; i++)
   {
-    PointT tmp ( rand ()%1024, rand ()%1024, rand ()%1024 );
-    some_points[i] = test_cloud->points[i] = tmp;
+    PointT tmp ( i % 1024, i % 1024, i % 1024 );
+    test_cloud->points.push_back (tmp);
   }
 
-  octree_disk pcl_cloud(boost::filesystem::path ("point_cloud_octree/tree_test.oct_idx"),false);
-  pcl_cloud.setInputCloud (test_cloud);//, indices);
-  ASSERT_EQ ( some_points.size (), pcl_cloud.addPointsFromInputCloud () );
+  octree_disk pcl_cloud (min, max, 32.0, outofcore_path, "ECEF");
+
+  pcl_cloud.addPointCloud (test_cloud);
   
+  ASSERT_EQ ( test_cloud->points.size (), pcl_cloud.getNumPoints (pcl_cloud.getDepth ()));
+  
+  cleanUpFilesystem ();
 }
 #endif
 
+/* [--- */
 int
 main (int argc, char** argv)
 {

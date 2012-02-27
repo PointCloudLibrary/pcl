@@ -136,7 +136,7 @@ namespace pcl
          * \param[out] v std::vector as destination for points read from disk into memory
          */
         void
-        readRange (const boost::uint64_t start, const boost::uint64_t count, std::vector<PointT>& v);
+        readRange (const boost::uint64_t start, const boost::uint64_t count, std::vector<PointT, Eigen::aligned_allocator<PointT> >& v);
 
         /** \brief  grab percent*count random points. points are \b not guaranteed to be
          * unique (could have multiple identical points!)
@@ -152,7 +152,7 @@ namespace pcl
          */
         void
         readRangeSubSample (const boost::uint64_t start, const boost::uint64_t count, const double percent,
-                            std::vector<PointT>& v);
+                            std::vector<PointT, Eigen::aligned_allocator<PointT> >& v);
 
         /** \brief Use bernoulli trials to select points. All points selected will be unique.
          *
@@ -165,7 +165,7 @@ namespace pcl
          */
         void
         readRangeSubSample_bernoulli (const boost::uint64_t start, const boost::uint64_t count, 
-                                      const double percent, std::vector<PointT>& v);
+                                      const double percent, std::vector<PointT, Eigen::aligned_allocator<PointT> >& v);
 
         /** \brief Returns the total number of points for which this container is responsible, \ref filelen_ + points in \ref writebuff_ that have not yet been flushed to the disk
          */
@@ -263,7 +263,7 @@ namespace pcl
         flush_writebuff (const bool forceCacheDeAlloc);
     
         /** \brief elements [0,...,size()-1] map to [filelen, ..., filelen + size()-1] */
-        std::vector<PointT> writebuff_;
+        std::vector<PointT, Eigen::aligned_allocator<PointT> > writebuff_;
 
         //std::fstream fileback;//elements [0,...,filelen-1]
         std::string *fileback_name_;

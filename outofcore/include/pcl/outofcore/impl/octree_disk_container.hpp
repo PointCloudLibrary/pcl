@@ -232,7 +232,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    octree_disk_container<PointT>::readRange (const boost::uint64_t start, const boost::uint64_t count, std::vector<PointT>& v)
+    octree_disk_container<PointT>::readRange (const boost::uint64_t start, const boost::uint64_t count, std::vector<PointT, Eigen::aligned_allocator<PointT> >& v)
     {
       if ((start + count) > size ())
       {
@@ -308,8 +308,8 @@ namespace pcl
       //copy the extra
       if (buffstart != -1)
       {
-        typename std::vector<PointT>::const_iterator start = writebuff_.begin ();
-        typename std::vector<PointT>::const_iterator end = writebuff_.begin ();
+        typename std::vector<PointT, Eigen::aligned_allocator<PointT> >::const_iterator start = writebuff_.begin ();
+        typename std::vector<PointT, Eigen::aligned_allocator<PointT> >::const_iterator end = writebuff_.begin ();
 
         std::advance (start, buffstart);
         std::advance (end, buffstart + buffcount);
@@ -321,7 +321,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    octree_disk_container<PointT>::readRangeSubSample_bernoulli (const boost::uint64_t start, const boost::uint64_t count, const double percent, std::vector<PointT>& v)
+    octree_disk_container<PointT>::readRangeSubSample_bernoulli (const boost::uint64_t start, const boost::uint64_t count, const double percent, std::vector<PointT, Eigen::aligned_allocator<PointT> >& v)
     {
       if (count == 0)
       {
@@ -410,7 +410,7 @@ namespace pcl
 
 //change this to use a weighted coin flip, to allow sparse sampling of small clouds (eg the bernoulli above)
     template<typename PointT> void
-    octree_disk_container<PointT>::readRangeSubSample (const boost::uint64_t start, const boost::uint64_t count, const double percent, std::vector<PointT>& v)
+    octree_disk_container<PointT>::readRangeSubSample (const boost::uint64_t start, const boost::uint64_t count, const double percent, std::vector<PointT, Eigen::aligned_allocator<PointT> >& v)
     {
       if (count == 0)
       {

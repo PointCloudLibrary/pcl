@@ -220,7 +220,14 @@ namespace pcl
          *  \todo overload this to use shared point cloud pointer
          */
         boost::uint64_t
-        addDataToLeaf (const std::vector<PointT>& p);
+        addDataToLeaf (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p);
+
+        /** \brief Copies the points from the point_cloud falling within the bounding box of the octreeto the out-of-core octree; this is an interface to addDataToLeaf and can be used multiple times.
+         *  \param point_cloud Pointer to the point cloud data to copy to the outofcore octree; Assumes templated PointT matches for each.
+         *  \return Number of points successfully copied from the point cloud to the octree.
+         */
+        boost::uint64_t
+        addPointCloud (PointCloudConstPtr point_cloud);
 
         /** \brief Recursively add points to the tree subsampling LODs on the way.
          *
@@ -228,7 +235,7 @@ namespace pcl
          * \todo overload this to use shared point cloud pointer
          */
         boost::uint64_t
-        addDataToLeaf_and_genLOD (const std::vector<PointT>& p);
+        addDataToLeaf_and_genLOD (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p);
 
         // DB Access
         // -----------------------------------------------------------------------
