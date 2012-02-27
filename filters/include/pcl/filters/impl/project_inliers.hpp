@@ -127,6 +127,18 @@ pcl::ProjectInliers<PointT>::initSACModel (int model_type)
       sacmodel_.reset (new SampleConsensusModelNormalPlane<PointT, pcl::Normal> (input_));
       break;
     }
+    case SACMODEL_CONE:
+    {
+      //PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_CONE\n", getClassName ().c_str ());
+      sacmodel_.reset (new SampleConsensusModelCone<PointT, pcl::Normal> (input_));
+      break;
+    }
+    case SACMODEL_NORMAL_SPHERE:
+    {
+      //PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_NORMAL_SPHERE\n", getClassName ().c_str ());
+      sacmodel_.reset (new SampleConsensusModelNormalSphere<PointT, pcl::Normal> (input_));
+      break;
+    }
     case SACMODEL_NORMAL_PARALLEL_PLANE:
     {
       //PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_NORMAL_PARALLEL_PLANE\n", getClassName ().c_str ());

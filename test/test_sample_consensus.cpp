@@ -48,10 +48,12 @@
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/sample_consensus/sac_model_sphere.h>
+#include <pcl/sample_consensus/sac_model_cone.h>
 #include <pcl/sample_consensus/sac_model_cylinder.h>
 #include <pcl/sample_consensus/sac_model_circle.h>
 #include <pcl/sample_consensus/sac_model_line.h>
 #include <pcl/sample_consensus/sac_model_normal_plane.h>
+#include <pcl/sample_consensus/sac_model_normal_sphere.h>
 #include <pcl/sample_consensus/sac_model_parallel_plane.h>
 #include "pcl/sample_consensus/sac_model_normal_parallel_plane.h"
 #include <pcl/features/normal_3d.h>
@@ -65,9 +67,11 @@ typedef SampleConsensusModel<PointXYZ>::Ptr SampleConsensusModelPtr;
 typedef SampleConsensusModelPlane<PointXYZ>::Ptr SampleConsensusModelPlanePtr;
 typedef SampleConsensusModelSphere<PointXYZ>::Ptr SampleConsensusModelSpherePtr;
 typedef SampleConsensusModelCylinder<PointXYZ, Normal>::Ptr SampleConsensusModelCylinderPtr;
+typedef SampleConsensusModelCone<PointXYZ, Normal>::Ptr SampleConsensusModelConePtr;
 typedef SampleConsensusModelCircle2D<PointXYZ>::Ptr SampleConsensusModelCircle2DPtr;
 typedef SampleConsensusModelLine<PointXYZ>::Ptr SampleConsensusModelLinePtr;
 typedef SampleConsensusModelNormalPlane<PointXYZ, Normal>::Ptr SampleConsensusModelNormalPlanePtr;
+typedef SampleConsensusModelNormalSphere<PointXYZ, Normal>::Ptr SampleConsensusModelNormalSpherePtr;
 typedef SampleConsensusModelParallelPlane<PointXYZ>::Ptr SampleConsensusModelParallelPlanePtr;
 typedef SampleConsensusModelNormalParallelPlane<PointXYZ, Normal>::Ptr SampleConsensusModelNormalParallelPlanePtr;
 
@@ -371,6 +375,212 @@ TEST (RANSAC, SampleConsensusModelSphere)
   EXPECT_NEAR (coeff_refined[0]/coeff_refined[3], 2,  1e-2);
   EXPECT_NEAR (coeff_refined[1]/coeff_refined[3], 2,  1e-2);
   EXPECT_NEAR (coeff_refined[2]/coeff_refined[3], 2,  1e-2);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (RANSAC, SampleConsensusModelNormalSphere)
+{
+  srand (0);
+
+  // Use a custom point cloud for these tests until we need something better
+  PointCloud<PointXYZ> cloud;
+  PointCloud<Normal> normals;
+  cloud.points.resize (27); normals.points.resize (27);
+  cloud.points[0].x = -0.014695; cloud.points[0].y = 0.009549; cloud.points[0].z = 0.954775; 
+  cloud.points[1].x = 0.014695; cloud.points[1].y = 0.009549; cloud.points[1].z = 0.954775; 
+  cloud.points[2].x = -0.014695; cloud.points[2].y = 0.040451; cloud.points[2].z = 0.954775; 
+  cloud.points[3].x = 0.014695; cloud.points[3].y = 0.040451; cloud.points[3].z = 0.954775; 
+  cloud.points[4].x = -0.009082; cloud.points[4].y = -0.015451; cloud.points[4].z = 0.972049; 
+  cloud.points[5].x = 0.009082; cloud.points[5].y = -0.015451; cloud.points[5].z = 0.972049; 
+  cloud.points[6].x = -0.038471; cloud.points[6].y = 0.009549; cloud.points[6].z = 0.972049; 
+  cloud.points[7].x = 0.038471; cloud.points[7].y = 0.009549; cloud.points[7].z = 0.972049; 
+  cloud.points[8].x = -0.038471; cloud.points[8].y = 0.040451; cloud.points[8].z = 0.972049; 
+  cloud.points[9].x = 0.038471; cloud.points[9].y = 0.040451; cloud.points[9].z = 0.972049; 
+  cloud.points[10].x = -0.009082; cloud.points[10].y = 0.065451; cloud.points[10].z = 0.972049; 
+  cloud.points[11].x = 0.009082; cloud.points[11].y = 0.065451; cloud.points[11].z = 0.972049; 
+  cloud.points[12].x = -0.023776; cloud.points[12].y = -0.015451; cloud.points[12].z = 0.982725; 
+  cloud.points[13].x = 0.023776; cloud.points[13].y = -0.015451; cloud.points[13].z = 0.982725; 
+  cloud.points[14].x = -0.023776; cloud.points[14].y = 0.065451; cloud.points[14].z = 0.982725; 
+  cloud.points[15].x = 0.023776; cloud.points[15].y = 0.065451; cloud.points[15].z = 0.982725; 
+  cloud.points[16].x = -0.000000; cloud.points[16].y = -0.025000; cloud.points[16].z = 1.000000; 
+  cloud.points[17].x = 0.000000; cloud.points[17].y = -0.025000; cloud.points[17].z = 1.000000; 
+  cloud.points[18].x = -0.029389; cloud.points[18].y = -0.015451; cloud.points[18].z = 1.000000; 
+  cloud.points[19].x = 0.029389; cloud.points[19].y = -0.015451; cloud.points[19].z = 1.000000; 
+  cloud.points[20].x = -0.047553; cloud.points[20].y = 0.009549; cloud.points[20].z = 1.000000; 
+  cloud.points[21].x = 0.047553; cloud.points[21].y = 0.009549; cloud.points[21].z = 1.000000; 
+  cloud.points[22].x = -0.047553; cloud.points[22].y = 0.040451; cloud.points[22].z = 1.000000; 
+  cloud.points[23].x = 0.047553; cloud.points[23].y = 0.040451; cloud.points[23].z = 1.000000; 
+  cloud.points[24].x = -0.029389; cloud.points[24].y = 0.065451; cloud.points[24].z = 1.000000; 
+  cloud.points[25].x = 0.029389; cloud.points[25].y = 0.065451; cloud.points[25].z = 1.000000; 
+  cloud.points[26].x = 0.000000; cloud.points[26].y = 0.075000; cloud.points[26].z = 1.000000; 
+  
+  normals.points[0].normal[0] = -0.293893; normals.points[0].normal[1] =  -0.309017 ; normals.points[0].normal[2] =  -0.904509; 
+  normals.points[1].normal[0] = 0.293893; normals.points[1].normal[1] =  -0.309017 ; normals.points[1].normal[2] =  -0.904508; 
+  normals.points[2].normal[0] = -0.293893; normals.points[2].normal[1] =  0.309017 ; normals.points[2].normal[2] =  -0.904509; 
+  normals.points[3].normal[0] = 0.293893; normals.points[3].normal[1] =  0.309017 ; normals.points[3].normal[2] =  -0.904508; 
+  normals.points[4].normal[0] = -0.181636; normals.points[4].normal[1] =  -0.809017 ; normals.points[4].normal[2] =  -0.559017; 
+  normals.points[5].normal[0] = 0.181636; normals.points[5].normal[1] =  -0.809017 ; normals.points[5].normal[2] =  -0.559017; 
+  normals.points[6].normal[0] = -0.769421; normals.points[6].normal[1] =  -0.309017 ; normals.points[6].normal[2] =  -0.559017; 
+  normals.points[7].normal[0] = 0.769421; normals.points[7].normal[1] =  -0.309017 ; normals.points[7].normal[2] =  -0.559017; 
+  normals.points[8].normal[0] = -0.769421; normals.points[8].normal[1] =  0.309017 ; normals.points[8].normal[2] =  -0.559017; 
+  normals.points[9].normal[0] = 0.769421; normals.points[9].normal[1] =  0.309017 ; normals.points[9].normal[2] =  -0.559017; 
+  normals.points[10].normal[0] = -0.181636; normals.points[10].normal[1] =  0.809017 ; normals.points[10].normal[2] =  -0.559017; 
+  normals.points[11].normal[0] = 0.181636; normals.points[11].normal[1] =  0.809017 ; normals.points[11].normal[2] =  -0.559017; 
+  normals.points[12].normal[0] = -0.475528; normals.points[12].normal[1] =  -0.809017 ; normals.points[12].normal[2] =  -0.345491; 
+  normals.points[13].normal[0] = 0.475528; normals.points[13].normal[1] =  -0.809017 ; normals.points[13].normal[2] =  -0.345491; 
+  normals.points[14].normal[0] = -0.475528; normals.points[14].normal[1] =  0.809017 ; normals.points[14].normal[2] =  -0.345491; 
+  normals.points[15].normal[0] = 0.475528; normals.points[15].normal[1] =  0.809017 ; normals.points[15].normal[2] =  -0.345491; 
+  normals.points[16].normal[0] = -0.000000; normals.points[16].normal[1] =  -1.000000 ; normals.points[16].normal[2] =  0.000000; 
+  normals.points[17].normal[0] = 0.000000; normals.points[17].normal[1] =  -1.000000 ; normals.points[17].normal[2] =  0.000000; 
+  normals.points[18].normal[0] = -0.587785; normals.points[18].normal[1] =  -0.809017 ; normals.points[18].normal[2] =  0.000000; 
+  normals.points[19].normal[0] = 0.587785; normals.points[19].normal[1] =  -0.809017 ; normals.points[19].normal[2] =  0.000000; 
+  normals.points[20].normal[0] = -0.951057; normals.points[20].normal[1] =  -0.309017 ; normals.points[20].normal[2] =  0.000000; 
+  normals.points[21].normal[0] = 0.951057; normals.points[21].normal[1] =  -0.309017 ; normals.points[21].normal[2] =  0.000000; 
+  normals.points[22].normal[0] = -0.951057; normals.points[22].normal[1] =  0.309017 ; normals.points[22].normal[2] =  0.000000; 
+  normals.points[23].normal[0] = 0.951057; normals.points[23].normal[1] =  0.309017 ; normals.points[23].normal[2] =  0.000000; 
+  normals.points[24].normal[0] = -0.587785; normals.points[24].normal[1] =  0.809017 ; normals.points[24].normal[2] =  0.000000; 
+  normals.points[25].normal[0] = 0.587785; normals.points[25].normal[1] =  0.809017 ; normals.points[25].normal[2] =  0.000000; 
+  normals.points[26].normal[0] = 0.000000; normals.points[26].normal[1] =  1.000000 ; normals.points[26].normal[2] =  0.000000; 
+  
+  // Create a shared sphere model pointer directly
+  SampleConsensusModelNormalSpherePtr model (new SampleConsensusModelNormalSphere<PointXYZ, Normal> (cloud.makeShared ()));
+  model->setInputNormals(normals.makeShared ());
+
+  // Create the RANSAC object
+  RandomSampleConsensus<PointXYZ> sac (model, 0.03);
+
+  // Algorithm tests
+  bool result = sac.computeModel ();
+  ASSERT_EQ (result, true); 
+
+  std::vector<int> sample;
+  sac.getModel (sample);
+  EXPECT_EQ ((int)sample.size (), 4);
+
+  std::vector<int> inliers;
+  sac.getInliers (inliers);
+  EXPECT_EQ ((int)inliers.size (), 27);
+
+  Eigen::VectorXf coeff;
+  sac.getModelCoefficients (coeff);
+  EXPECT_EQ ((int)coeff.size (), 4);
+  EXPECT_NEAR (coeff[0], 0.0,   1e-2);
+  EXPECT_NEAR (coeff[1], 0.025, 1e-2);
+  EXPECT_NEAR (coeff[2], 1.0,   1e-2);
+  EXPECT_NEAR (coeff[3], 0.05,  1e-2);
+  Eigen::VectorXf coeff_refined;
+  model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
+  EXPECT_EQ ((int)coeff_refined.size (), 4);
+  EXPECT_NEAR (coeff_refined[0], 0.0,   1e-2);
+  EXPECT_NEAR (coeff_refined[1], 0.025, 1e-2);
+  EXPECT_NEAR (coeff_refined[2], 1.0,   1e-2);
+  EXPECT_NEAR (coeff_refined[3], 0.05,  1e-2);	 
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (RANSAC, SampleConsensusModelCone)
+{
+  srand (0);
+
+  // Use a custom point cloud for these tests until we need something better
+  PointCloud<PointXYZ> cloud;
+  PointCloud<Normal> normals;
+  cloud.points.resize (31); normals.points.resize (31);
+
+  cloud.points[0].x = -0.011247; cloud.points[0].y = 0.200000; cloud.points[0].z = 0.965384; 
+  cloud.points[1].x = 0.000000; cloud.points[1].y = 0.200000; cloud.points[1].z = 0.963603; 
+  cloud.points[2].x = 0.011247; cloud.points[2].y = 0.200000; cloud.points[2].z = 0.965384; 
+  cloud.points[3].x = -0.016045; cloud.points[3].y = 0.175000; cloud.points[3].z = 0.977916; 
+  cloud.points[4].x = -0.008435; cloud.points[4].y = 0.175000; cloud.points[4].z = 0.974038; 
+  cloud.points[5].x = 0.004218; cloud.points[5].y = 0.175000; cloud.points[5].z = 0.973370; 
+  cloud.points[6].x = 0.016045; cloud.points[6].y = 0.175000; cloud.points[6].z = 0.977916; 
+  cloud.points[7].x = -0.025420; cloud.points[7].y = 0.200000; cloud.points[7].z = 0.974580; 
+  cloud.points[8].x = 0.025420; cloud.points[8].y = 0.200000; cloud.points[8].z = 0.974580; 
+  cloud.points[9].x = -0.012710; cloud.points[9].y = 0.150000; cloud.points[9].z = 0.987290; 
+  cloud.points[10].x = -0.005624; cloud.points[10].y = 0.150000; cloud.points[10].z = 0.982692; 
+  cloud.points[11].x = 0.002812; cloud.points[11].y = 0.150000; cloud.points[11].z = 0.982247; 
+  cloud.points[12].x = 0.012710; cloud.points[12].y = 0.150000; cloud.points[12].z = 0.987290; 
+  cloud.points[13].x = -0.022084; cloud.points[13].y = 0.175000; cloud.points[13].z = 0.983955; 
+  cloud.points[14].x = 0.022084; cloud.points[14].y = 0.175000; cloud.points[14].z = 0.983955; 
+  cloud.points[15].x = -0.034616; cloud.points[15].y = 0.200000; cloud.points[15].z = 0.988753; 
+  cloud.points[16].x = 0.034616; cloud.points[16].y = 0.200000; cloud.points[16].z = 0.988753; 
+  cloud.points[17].x = -0.006044; cloud.points[17].y = 0.125000; cloud.points[17].z = 0.993956; 
+  cloud.points[18].x = 0.004835; cloud.points[18].y = 0.125000; cloud.points[18].z = 0.993345; 
+  cloud.points[19].x = -0.017308; cloud.points[19].y = 0.150000; cloud.points[19].z = 0.994376; 
+  cloud.points[20].x = 0.017308; cloud.points[20].y = 0.150000; cloud.points[20].z = 0.994376; 
+  cloud.points[21].x = -0.025962; cloud.points[21].y = 0.175000; cloud.points[21].z = 0.991565; 
+  cloud.points[22].x = 0.025962; cloud.points[22].y = 0.175000; cloud.points[22].z = 0.991565; 
+  cloud.points[23].x = -0.009099; cloud.points[23].y = 0.125000; cloud.points[23].z = 1.000000; 
+  cloud.points[24].x = 0.009099; cloud.points[24].y = 0.125000; cloud.points[24].z = 1.000000; 
+  cloud.points[25].x = -0.018199; cloud.points[25].y = 0.150000; cloud.points[25].z = 1.000000; 
+  cloud.points[26].x = 0.018199; cloud.points[26].y = 0.150000; cloud.points[26].z = 1.000000; 
+  cloud.points[27].x = -0.027298; cloud.points[27].y = 0.175000; cloud.points[27].z = 1.000000; 
+  cloud.points[28].x = 0.027298; cloud.points[28].y = 0.175000; cloud.points[28].z = 1.000000; 
+  cloud.points[29].x = -0.036397; cloud.points[29].y = 0.200000; cloud.points[29].z = 1.000000; 
+  cloud.points[30].x = 0.036397; cloud.points[30].y = 0.200000; cloud.points[30].z = 1.000000; 
+
+  normals.points[0].normal[0] = -0.290381; normals.points[0].normal[1] =  -0.342020 ; normals.points[0].normal[2] =  -0.893701; 
+  normals.points[1].normal[0] = 0.000000; normals.points[1].normal[1] =  -0.342020 ; normals.points[1].normal[2] =  -0.939693; 
+  normals.points[2].normal[0] = 0.290381; normals.points[2].normal[1] =  -0.342020 ; normals.points[2].normal[2] =  -0.893701; 
+  normals.points[3].normal[0] = -0.552338; normals.points[3].normal[1] =  -0.342020 ; normals.points[3].normal[2] =  -0.760227; 
+  normals.points[4].normal[0] = -0.290381; normals.points[4].normal[1] =  -0.342020 ; normals.points[4].normal[2] =  -0.893701; 
+  normals.points[5].normal[0] = 0.145191; normals.points[5].normal[1] =  -0.342020 ; normals.points[5].normal[2] =  -0.916697; 
+  normals.points[6].normal[0] = 0.552337; normals.points[6].normal[1] =  -0.342020 ; normals.points[6].normal[2] =  -0.760227; 
+  normals.points[7].normal[0] = -0.656282; normals.points[7].normal[1] =  -0.342020 ; normals.points[7].normal[2] =  -0.656283; 
+  normals.points[8].normal[0] = 0.656282; normals.points[8].normal[1] =  -0.342020 ; normals.points[8].normal[2] =  -0.656283; 
+  normals.points[9].normal[0] = -0.656283; normals.points[9].normal[1] =  -0.342020 ; normals.points[9].normal[2] =  -0.656282; 
+  normals.points[10].normal[0] = -0.290381; normals.points[10].normal[1] =  -0.342020 ; normals.points[10].normal[2] =  -0.893701; 
+  normals.points[11].normal[0] = 0.145191; normals.points[11].normal[1] =  -0.342020 ; normals.points[11].normal[2] =  -0.916697; 
+  normals.points[12].normal[0] = 0.656282; normals.points[12].normal[1] =  -0.342020 ; normals.points[12].normal[2] =  -0.656282; 
+  normals.points[13].normal[0] = -0.760228; normals.points[13].normal[1] =  -0.342020 ; normals.points[13].normal[2] =  -0.552337; 
+  normals.points[14].normal[0] = 0.760228; normals.points[14].normal[1] =  -0.342020 ; normals.points[14].normal[2] =  -0.552337; 
+  normals.points[15].normal[0] = -0.893701; normals.points[15].normal[1] =  -0.342020 ; normals.points[15].normal[2] =  -0.290380; 
+  normals.points[16].normal[0] = 0.893701; normals.points[16].normal[1] =  -0.342020 ; normals.points[16].normal[2] =  -0.290380; 
+  normals.points[17].normal[0] = -0.624162; normals.points[17].normal[1] =  -0.342020 ; normals.points[17].normal[2] =  -0.624162; 
+  normals.points[18].normal[0] = 0.499329; normals.points[18].normal[1] =  -0.342020 ; normals.points[18].normal[2] =  -0.687268; 
+  normals.points[19].normal[0] = -0.893701; normals.points[19].normal[1] =  -0.342020 ; normals.points[19].normal[2] =  -0.290380; 
+  normals.points[20].normal[0] = 0.893701; normals.points[20].normal[1] =  -0.342020 ; normals.points[20].normal[2] =  -0.290380; 
+  normals.points[21].normal[0] = -0.893701; normals.points[21].normal[1] =  -0.342020 ; normals.points[21].normal[2] =  -0.290381; 
+  normals.points[22].normal[0] = 0.893701; normals.points[22].normal[1] =  -0.342020 ; normals.points[22].normal[2] =  -0.290381; 
+  normals.points[23].normal[0] = -0.939693; normals.points[23].normal[1] =  -0.342020 ; normals.points[23].normal[2] =  0.000000; 
+  normals.points[24].normal[0] = 0.939693; normals.points[24].normal[1] =  -0.342020 ; normals.points[24].normal[2] =  0.000000; 
+  normals.points[25].normal[0] = -0.939693; normals.points[25].normal[1] =  -0.342020 ; normals.points[25].normal[2] =  0.000000; 
+  normals.points[26].normal[0] = 0.939693; normals.points[26].normal[1] =  -0.342020 ; normals.points[26].normal[2] =  0.000000; 
+  normals.points[27].normal[0] = -0.939693; normals.points[27].normal[1] =  -0.342020 ; normals.points[27].normal[2] =  0.000000; 
+  normals.points[28].normal[0] = 0.939693; normals.points[28].normal[1] =  -0.342020 ; normals.points[28].normal[2] =  0.000000; 
+  normals.points[29].normal[0] = -0.939693; normals.points[29].normal[1] =  -0.342020 ; normals.points[29].normal[2] =  0.000000; 
+  normals.points[30].normal[0] = 0.939693; normals.points[30].normal[1] =  -0.342020 ; normals.points[30].normal[2] =  0.000000; 
+
+
+  // Create a shared cylinder model pointer directly
+  SampleConsensusModelConePtr model (new SampleConsensusModelCone<PointXYZ, Normal> (cloud.makeShared ()));
+  model->setInputNormals (normals.makeShared ());
+
+  // Create the RANSAC object
+  RandomSampleConsensus<PointXYZ> sac (model, 0.03);
+
+  // Algorithm tests
+  bool result = sac.computeModel ();
+  ASSERT_EQ (result, true);
+
+  std::vector<int> sample;
+  sac.getModel (sample);
+  EXPECT_EQ ((int)sample.size (), 3);
+
+  std::vector<int> inliers;
+  sac.getInliers (inliers);
+  EXPECT_EQ ((int)inliers.size (), 31);
+
+  Eigen::VectorXf coeff;
+  sac.getModelCoefficients (coeff);
+  EXPECT_EQ ((int)coeff.size (), 7);
+  EXPECT_NEAR (coeff[0],  0, 1e-2);
+  EXPECT_NEAR (coeff[1],  0.1,  1e-2);
+  EXPECT_NEAR (coeff[6],  0.349066, 1e-2);
+
+  Eigen::VectorXf coeff_refined;
+  model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
+  EXPECT_EQ ((int)coeff_refined.size (), 7);
+  EXPECT_NEAR (coeff_refined[6], 0.349066 , 1e-2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

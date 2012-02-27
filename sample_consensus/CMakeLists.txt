@@ -18,10 +18,12 @@ if(build)
         src/rransac.cpp
         src/sac_model_circle.cpp
         src/sac_model_cylinder.cpp
+        src/sac_model_cone.cpp
         src/sac_model_line.cpp
         src/sac_model_stick.cpp
         src/sac_model_normal_parallel_plane.cpp
         src/sac_model_normal_plane.cpp
+        src/sac_model_normal_sphere.cpp
         src/sac_model_parallel_line.cpp
         src/sac_model_parallel_plane.cpp
         src/sac_model_perpendicular_plane.cpp
@@ -44,10 +46,12 @@ if(build)
         include/pcl/${SUBSYS_NAME}/sac_model.h
         include/pcl/${SUBSYS_NAME}/sac_model_circle.h
         include/pcl/${SUBSYS_NAME}/sac_model_cylinder.h
+        include/pcl/${SUBSYS_NAME}/sac_model_cone.h
         include/pcl/${SUBSYS_NAME}/sac_model_line.h
         include/pcl/${SUBSYS_NAME}/sac_model_stick.h
         include/pcl/${SUBSYS_NAME}/sac_model_normal_parallel_plane.h
         include/pcl/${SUBSYS_NAME}/sac_model_normal_plane.h
+        include/pcl/${SUBSYS_NAME}/sac_model_normal_sphere.h
         include/pcl/${SUBSYS_NAME}/sac_model_parallel_line.h
         include/pcl/${SUBSYS_NAME}/sac_model_parallel_plane.h
         include/pcl/${SUBSYS_NAME}/sac_model_perpendicular_plane.h
@@ -66,10 +70,12 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/rransac.hpp
         include/pcl/${SUBSYS_NAME}/impl/sac_model_circle.hpp
         include/pcl/${SUBSYS_NAME}/impl/sac_model_cylinder.hpp
+        include/pcl/${SUBSYS_NAME}/impl/sac_model_cone.hpp
         include/pcl/${SUBSYS_NAME}/impl/sac_model_line.hpp
         include/pcl/${SUBSYS_NAME}/impl/sac_model_stick.hpp
         include/pcl/${SUBSYS_NAME}/impl/sac_model_normal_parallel_plane.hpp
         include/pcl/${SUBSYS_NAME}/impl/sac_model_normal_plane.hpp
+        include/pcl/${SUBSYS_NAME}/impl/sac_model_normal_sphere.hpp
         include/pcl/${SUBSYS_NAME}/impl/sac_model_parallel_line.hpp
         include/pcl/${SUBSYS_NAME}/impl/sac_model_parallel_plane.hpp
         include/pcl/${SUBSYS_NAME}/impl/sac_model_perpendicular_plane.hpp
