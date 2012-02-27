@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2009-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -41,4 +43,8 @@
 #include "pcl/sample_consensus/impl/prosac.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(ProgressiveSampleConsensus, PCL_XYZ_POINT_TYPES)
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+  PCL_INSTANTIATE(ProgressiveSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
+#else
+ PCL_INSTANTIATE(ProgressiveSampleConsensus, PCL_XYZ_POINT_TYPES)
+#endif

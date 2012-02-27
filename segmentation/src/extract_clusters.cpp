@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -43,8 +45,15 @@
 #include "pcl/segmentation/impl/extract_labeled_clusters.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(EuclideanClusterExtraction, PCL_XYZ_POINT_TYPES)
-PCL_INSTANTIATE(extractEuclideanClusters, PCL_XYZ_POINT_TYPES);
-PCL_INSTANTIATE(extractEuclideanClusters_indices, PCL_XYZ_POINT_TYPES);
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+  PCL_INSTANTIATE(EuclideanClusterExtraction, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
+  PCL_INSTANTIATE(extractEuclideanClusters, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB));
+  PCL_INSTANTIATE(extractEuclideanClusters_indices, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB));
+#else
+  PCL_INSTANTIATE(EuclideanClusterExtraction, PCL_XYZ_POINT_TYPES)
+  PCL_INSTANTIATE(extractEuclideanClusters, PCL_XYZ_POINT_TYPES);
+  PCL_INSTANTIATE(extractEuclideanClusters_indices, PCL_XYZ_POINT_TYPES);
+#endif
 PCL_INSTANTIATE(LabeledEuclideanClusterExtraction, PCL_XYZL_POINT_TYPES);
 PCL_INSTANTIATE(extractLabeledEuclideanClusters, PCL_XYZL_POINT_TYPES);
+

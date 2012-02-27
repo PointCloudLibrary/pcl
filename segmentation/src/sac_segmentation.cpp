@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -41,6 +43,10 @@
 #include "pcl/segmentation/impl/sac_segmentation.hpp"
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(SACSegmentation, PCL_XYZ_POINT_TYPES)
-PCL_INSTANTIATE_PRODUCT(SACSegmentationFromNormals, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES));
-
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+  PCL_INSTANTIATE(SACSegmentation, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
+  PCL_INSTANTIATE_PRODUCT(SACSegmentationFromNormals, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))((pcl::Normal)));
+#else
+  PCL_INSTANTIATE(SACSegmentation, PCL_XYZ_POINT_TYPES)
+  PCL_INSTANTIATE_PRODUCT(SACSegmentationFromNormals, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES));
+#endif
