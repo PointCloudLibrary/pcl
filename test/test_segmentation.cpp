@@ -47,7 +47,7 @@
 
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
 #include <pcl/segmentation/segment_differences.h>
-//#include <pcl/segmentation/region_growing.h>
+#include <pcl/segmentation/region_growing.h>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -61,133 +61,133 @@ pcl::PointCloud<pcl::Normal>::Ptr normals_;
 pcl::PointCloud<pcl::Normal>::Ptr another_normals_;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-//TEST (//gionGrowingTest, Segment)
-//{
-//  pcl::RegionGrowing<pcl::PointXYZ> rg;
-//  rg.setCloud(cloud_);
-//  rg.setNormals(normals_);
-//
-//  int num_of_segments = rg.segmentPoints();
-//  EXPECT_NE(0, num_of_segments);
-//
-//  std::vector<std::list<int>> segments;
-//  segments = rg.getSegments();
-//  EXPECT_NE(0, segments.size());
-//}
-//
+TEST (//gionGrowingTest, Segment)
+{
+  pcl::RegionGrowing<pcl::PointXYZ> rg;
+  rg.setCloud(cloud_);
+  rg.setNormals(normals_);
+
+  int num_of_segments = rg.segmentPoints();
+  EXPECT_NE(0, num_of_segments);
+
+  std::vector<std::list<int>> segments;
+  segments = rg.getSegments();
+  EXPECT_NE(0, segments.size());
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
-//TEST (RegionGrowingTest, SegmentWithoutCloud)
-//{
-//  pcl::RegionGrowing<pcl::PointXYZ> rg;
-//  rg.setNormals(normals_);
-//
-//  int num_of_segments = rg.segmentPoints();
-//  EXPECT_EQ(0, num_of_segments);
-//
-//  std::vector<std::list<int>> segments;
-//  segments = rg.getSegments();
-//  EXPECT_EQ(0, segments.size());
-//}
-//
+TEST (RegionGrowingTest, SegmentWithoutCloud)
+{
+  pcl::RegionGrowing<pcl::PointXYZ> rg;
+  rg.setNormals(normals_);
+
+  int num_of_segments = rg.segmentPoints();
+  EXPECT_EQ(0, num_of_segments);
+
+  std::vector<std::list<int>> segments;
+  segments = rg.getSegments();
+  EXPECT_EQ(0, segments.size());
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
-//TEST (RegionGrowingTest, SegmentWithoutNormals)
-//{
-//  pcl::RegionGrowing<pcl::PointXYZ> rg;
-//  rg.setCloud(cloud_);
-//
-//  int num_of_segments = rg.segmentPoints();
-//  EXPECT_EQ(0, num_of_segments);
-//
-//  std::vector<std::list<int>> segments;
-//  segments = rg.getSegments();
-//  EXPECT_EQ(0, segments.size());
-//}
-//
+TEST (RegionGrowingTest, SegmentWithoutNormals)
+{
+  pcl::RegionGrowing<pcl::PointXYZ> rg;
+  rg.setCloud(cloud_);
+
+  int num_of_segments = rg.segmentPoints();
+  EXPECT_EQ(0, num_of_segments);
+
+  std::vector<std::list<int>> segments;
+  segments = rg.getSegments();
+  EXPECT_EQ(0, segments.size());
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
-//TEST (RegionGrowingTest, SegmentEmptyCloud)
-//{
-//  pcl::PointCloud<pcl::PointXYZ>::Ptr empty_cloud(new pcl::PointCloud<pcl::PointXYZ>);
-//  pcl::PointCloud<pcl::Normal>::Ptr empty_normals(new pcl::PointCloud<pcl::Normal>);
-//
-//  pcl::RegionGrowing<pcl::PointXYZ> rg;
-//  rg.setCloud(empty_cloud);
-//  rg.setNormals(empty_normals);
-//
-//  int num_of_segments = rg.segmentPoints();
-//  EXPECT_EQ(0, num_of_segments);
-//
-//  std::vector<std::list<int>> segments;
-//  segments = rg.getSegments();
-//  EXPECT_EQ(0, segments.size());
-//}
-//
+TEST (RegionGrowingTest, SegmentEmptyCloud)
+{
+  pcl::PointCloud<pcl::PointXYZ>::Ptr empty_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::Normal>::Ptr empty_normals(new pcl::PointCloud<pcl::Normal>);
+
+  pcl::RegionGrowing<pcl::PointXYZ> rg;
+  rg.setCloud(empty_cloud);
+  rg.setNormals(empty_normals);
+
+  int num_of_segments = rg.segmentPoints();
+  EXPECT_EQ(0, num_of_segments);
+
+  std::vector<std::list<int>> segments;
+  segments = rg.getSegments();
+  EXPECT_EQ(0, segments.size());
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
-//TEST (RegionGrowingTest, SegmentWithDifferentNormalAndCloudSize)
-//{
-//  pcl::RegionGrowing<pcl::PointXYZ> rg;
-//  rg.setCloud(another_cloud_);
-//  rg.setNormals(normals_);
-//
-//  int first_cloud_size = cloud_->points.size();
-//  int second_cloud_size = another_cloud_->points.size();
-//  ASSERT_NE(first_cloud_size, second_cloud_size);
-//
-//  int num_of_segments = rg.segmentPoints();
-//  EXPECT_EQ(0, num_of_segments);
-//
-//  std::vector<std::list<int>> segments;
-//  segments = rg.getSegments();
-//  EXPECT_EQ(0, segments.size());
-//
-//  rg.setCloud(cloud_);
-//  rg.setNormals(another_normals_);
-//
-//  num_of_segments = rg.segmentPoints();
-//  EXPECT_EQ(0, num_of_segments);
-//
-//  segments = rg.getSegments();
-//  EXPECT_EQ(0, segments.size());
-//}
-//
+TEST (RegionGrowingTest, SegmentWithDifferentNormalAndCloudSize)
+{
+  pcl::RegionGrowing<pcl::PointXYZ> rg;
+  rg.setCloud(another_cloud_);
+  rg.setNormals(normals_);
+
+  int first_cloud_size = cloud_->points.size();
+  int second_cloud_size = another_cloud_->points.size();
+  ASSERT_NE(first_cloud_size, second_cloud_size);
+
+  int num_of_segments = rg.segmentPoints();
+  EXPECT_EQ(0, num_of_segments);
+
+  std::vector<std::list<int>> segments;
+  segments = rg.getSegments();
+  EXPECT_EQ(0, segments.size());
+
+  rg.setCloud(cloud_);
+  rg.setNormals(another_normals_);
+
+  num_of_segments = rg.segmentPoints();
+  EXPECT_EQ(0, num_of_segments);
+
+  segments = rg.getSegments();
+  EXPECT_EQ(0, segments.size());
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
-//TEST (RegionGrowingTest, SegmentWithWrongThresholdParameters)
-//{
-//  pcl::RegionGrowing<pcl::PointXYZ> rg;
-//  rg.setCloud(cloud_);
-//  rg.setNormals(normals_);
-//
-//  rg.setNumberOfNeighbours(0);
-//
-//  int num_of_segments = rg.segmentPoints();
-//  EXPECT_EQ(0, num_of_segments);
-//
-//  std::vector<std::list<int>> segments;
-//  segments = rg.getSegments();
-//  EXPECT_EQ(0, segments.size());
-//
-//  rg.setNumberOfNeighbours(30);
-//  rg.setResidualThreshold(-10.0);
-//
-//  num_of_segments = rg.segmentPoints();
-//  EXPECT_EQ(0, num_of_segments);
-//
-//  segments = rg.getSegments();
-//  EXPECT_EQ(0, segments.size());
-//}
-//
+TEST (RegionGrowingTest, SegmentWithWrongThresholdParameters)
+{
+  pcl::RegionGrowing<pcl::PointXYZ> rg;
+  rg.setCloud(cloud_);
+  rg.setNormals(normals_);
+
+  rg.setNumberOfNeighbours(0);
+
+  int num_of_segments = rg.segmentPoints();
+  EXPECT_EQ(0, num_of_segments);
+
+  std::vector<std::list<int>> segments;
+  segments = rg.getSegments();
+  EXPECT_EQ(0, segments.size());
+
+  rg.setNumberOfNeighbours(30);
+  rg.setResidualThreshold(-10.0);
+
+  num_of_segments = rg.segmentPoints();
+  EXPECT_EQ(0, num_of_segments);
+
+  segments = rg.getSegments();
+  EXPECT_EQ(0, segments.size());
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 //TEST (RegionGrowingTest, SegmentFromPoint)
-//{
-//  pcl::RegionGrowing<pcl::PointXYZ> rg;
-//
-//  std::list<int> segment = rg.getSegmentFromPoint(0);
-//  EXPECT_EQ(0, segment.size());
-//
-//  rg.setCloud(cloud_);
-//  rg.setNormals(normals_);
-//  segment = rg.getSegmentFromPoint(0);
-//  EXPECT_NE(0, segment.size());
-//}
+{
+  pcl::RegionGrowing<pcl::PointXYZ> rg;
+
+  std::list<int> segment = rg.getSegmentFromPoint(0);
+  EXPECT_EQ(0, segment.size());
+
+  rg.setCloud(cloud_);
+  rg.setNormals(normals_);
+  segment = rg.getSegmentFromPoint(0);
+  EXPECT_NE(0, segment.size());
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 TEST (SegmentDifferences, Segmentation)
