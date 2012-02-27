@@ -463,7 +463,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::doSamplesVerifyModel (
 
     // Aproximate the distance from the point to the cone as the difference between
     // dist(point,cone_axis) and actual cone radius
-    if (fabs (static_cast<double>(pointToAxisDistance (pt, model_coefficients) - actual_cone_radius) > threshold))
+    if (fabs (static_cast<double>(pointToAxisDistance (pt, model_coefficients) - actual_cone_radius)) > threshold)
       return (false);
   }
 
