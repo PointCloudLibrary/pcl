@@ -165,7 +165,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::getDistancesToModel (
 
     // Calculate the actual radius of the cone at the level of the projected point
     Eigen::Vector4f height = apex - pt_proj;
-    double actual_cone_radius = tan(opening_angle) * height.norm ();
+    double actual_cone_radius = tan (opening_angle) * height.norm ();
     height.normalize ();
 
     // Calculate the cones perfect normals
@@ -459,11 +459,11 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::doSamplesVerifyModel (
 
     // Calculate the actual radius of the cone at the level of the projected point
     Eigen::Vector4f height = apex - pt_proj;
-    double actual_cone_radius = tan(openning_angle) * height.norm ();
+    double actual_cone_radius = tan (openning_angle) * height.norm ();
 
     // Aproximate the distance from the point to the cone as the difference between
     // dist(point,cone_axis) and actual cone radius
-    if (fabs (pointToAxisDistance (pt, model_coefficients) - actual_cone_radius > threshold))
+    if (fabs (static_cast<double>(pointToAxisDistance (pt, model_coefficients) - actual_cone_radius) > threshold))
       return (false);
   }
 
