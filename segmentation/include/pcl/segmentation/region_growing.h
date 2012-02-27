@@ -165,7 +165,7 @@ namespace pcl
     public:
 
       /** \brief This method simply launches the segmentation algorithm */
-      virtual unsigned int
+      unsigned int
       segmentPoints ();
 
       /** \brief This destructor destroys the cloud, normals and search method used for
@@ -179,7 +179,7 @@ namespace pcl
         * then residual test will be turned on automatically.
         * \param[in] new value for curvature test. If set to true then the test will be turned on
         */
-      virtual void
+      void
       setCurvatureTest (bool value);
 
       /** \brief
@@ -188,19 +188,19 @@ namespace pcl
         * then curvature test will be turned on automatically.
         * \param[in] new value for residual test. If set to true then the test will be turned on
         */
-      virtual void
+      void
       setResidualTest (bool value);
 
       /** \brief For a given point this function builds a segment to which it belongs and returns this segment.
         * \param[in] initial point which will be the seed for growing a segment.
         */
-      virtual std::list<int>
+      std::list<int>
       getSegmentFromPoint (const PointT &point);
 
       /** \brief For a given point this function builds a segment to which it belongs and returns this segment.
         * \param[in] index of the initial point which will be the seed for growing a segment.
         */
-      virtual std::list<int>
+      std::list<int>
       getSegmentFromPoint (int index);
 
       /** \brief If the cloud was successfully segmented, then function
@@ -209,7 +209,7 @@ namespace pcl
         * But this function doesn't guarantee that different segments will have different
         * color(it all depends on RNG).
         */
-      virtual pcl::PointCloud<pcl::PointXYZRGB>::Ptr
+      pcl::PointCloud<pcl::PointXYZRGB>::Ptr
       getColoredCloud ();
 
     protected:
@@ -217,7 +217,7 @@ namespace pcl
       /** \brief This method simply checks if it is possible to execute the segmentation algorithm with
         * the current settings. If it is possible then it returns true.
         */
-      virtual bool
+      bool
       prepareForSegmentation ();
 
       /** \brief This function implements the algorithm described in the article
@@ -242,7 +242,7 @@ namespace pcl
         * \param[in] nghbr index of the point that is neighbour of the current seed
         * \param[out] is_a_seed this value is set to true if the point with index 'nghbr' can serve as the seed
         */
-      virtual bool
+      bool
       validatePoint (int initial_seed, int point, int nghbr, bool& is_a_seed) const;
 
     protected:
