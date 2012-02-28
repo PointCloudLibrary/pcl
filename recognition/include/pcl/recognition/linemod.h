@@ -50,8 +50,13 @@ namespace pcl
   class EnergyMaps
   {
     public:
-      EnergyMaps () : width_ (-1), height_ (-1), numOfBins_ (-1) {};
-      virtual ~EnergyMaps () {};
+      EnergyMaps () : width_ (-1), height_ (-1), numOfBins_ (-1), maps_ () 
+      {
+      }
+
+      virtual ~EnergyMaps () 
+      {
+      }
 
       inline int 
       getWidth () const 
@@ -128,8 +133,13 @@ namespace pcl
   class LinearizedMaps
   {
     public:
-      LinearizedMaps () : width_ (-1), height_ (-1), memWidth_ (-1), memHeight_ (-1), stepSize_ (-1) {};
-      virtual ~LinearizedMaps () {};
+      LinearizedMaps () : width_ (-1), height_ (-1), memWidth_ (-1), memHeight_ (-1), stepSize_ (-1), maps_ ()
+      {
+      }
+      
+      virtual ~LinearizedMaps () 
+      {
+      }
 
       inline int 
       getWidth () const { return (width_); }

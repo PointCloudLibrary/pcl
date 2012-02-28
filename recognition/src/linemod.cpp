@@ -68,7 +68,7 @@ createAndAddTemplate (
       
   // select N features from every modality (N = 50, hardcoded; CHANGE this to a parameter!!!)
   const int numOfFeaturesPerModality = 50;
-  const int numOfModalities = modalities.size();
+  const size_t numOfModalities = modalities.size();
   for (int modalityIndex = 0; modalityIndex < numOfModalities; ++modalityIndex)
   {
     modalities[modalityIndex]->extractFeatures(*(masks[modalityIndex]), numOfFeaturesPerModality, modalityIndex, linemodTemplate.features);
@@ -78,7 +78,7 @@ createAndAddTemplate (
   //const int centerX = region.x+region.width/2;
   //const int centerY = region.y+region.height/2;
 
-  const int numOfFeatures = linemodTemplate.features.size();
+  const size_t numOfFeatures = linemodTemplate.features.size();
   for (int featureIndex = 0; featureIndex < numOfFeatures; ++featureIndex)
   {
     //linemodTemplate.features[featureIndex].x -= centerX;
@@ -98,7 +98,7 @@ createAndAddTemplate (
   // add template to template storage
   templates_.push_back(linemodTemplate);
 
-  return templates_.size ()-1;
+  return static_cast<int> (templates_.size () - 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -110,7 +110,7 @@ detectTemplates (
 {
   // create energy maps
   std::vector< EnergyMaps > modalityEnergyMaps;
-  const int numOfModalities = modalities.size();
+  const size_t numOfModalities = modalities.size();
   for (int modalityIndex = 0; modalityIndex < numOfModalities; ++modalityIndex)
   {
     QuantizedMap & quantizedMap = modalities[modalityIndex]->getSpreadedQuantizedMap ();
@@ -239,7 +239,7 @@ detectTemplates (
     LINEMODDetection detection;
     detection.x = maxColIndex;
     detection.y = maxRowIndex;
-    detection.templateID = templateIndex;
+    detection.templateID = static_cast<int> (templateIndex);
     detection.score = maxValue * invMaxScore;
 
     detections.push_back (detection);
