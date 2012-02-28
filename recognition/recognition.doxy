@@ -1,0 +1,14 @@
+/**
+  \addtogroup recognition Module recognition
+
+  \section secRecognitionPresentation Overview
+
+The PCL recognition module contains algorithms used for Object Recognition applications.
+
+
+  \section secRecognitionRequirements Requirements
+  - \ref common "common"
+  - \ref search "search"
+  - \ref features "features"
+
+*/
