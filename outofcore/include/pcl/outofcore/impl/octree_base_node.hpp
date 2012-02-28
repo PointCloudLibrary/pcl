@@ -1063,43 +1063,46 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
+    // todo: Does this refactor work?  createChildren isn't called anywhere...
     template<typename Container, typename PointT> void
     octree_base_node<Container, PointT>::createChildren ()
     {
-      const double zstart = min_[2];
-      const double ystart = min_[1];
-      const double xstart = min_[0];
-
-      const double zstep = (max_[2] - min_[2]) / double (2);
-      const double ystep = (max_[1] - min_[1]) / double (2);
-      const double xstep = (max_[0] - min_[0]) / double (2);
-
-      int i = 0;
-
-      double childbb_min[3];
-      double childbb_max[3];
-      for (int z = 0; z < 2; z++)
-      {
-        childbb_min[2] = zstart + double (z) * zstep;
-        childbb_max[2] = zstart + double (z + 1) * zstep;
-
-        for (int y = 0; y < 2; y++)
-        {
-          childbb_min[1] = ystart + double (y) * ystep;
-          childbb_max[1] = ystart + double (y + 1) * ystep;
-
-          for (int x = 0; x < 2; x++)
-          {
-            childbb_min[0] = xstart + double (x) * xstep;
-            childbb_max[0] = xstart + double (x + 1) * xstep;
-
-            boost::filesystem::path childdir = thisdir_ / boost::filesystem::path (boost::lexical_cast<std::string> (i));
-            children_[i] = new octree_base_node<Container, PointT> (childbb_min, childbb_max, childdir.string ().c_str (), this);
-            i++;
-          }
-        }
-      }
-      num_child_ = 8;
+      for (int idx=0; idx < 8; idx++)
+        createChild(idx);
+//      const double zstart = min_[2];
+//      const double ystart = min_[1];
+//      const double xstart = min_[0];
+//
+//      const double zstep = (max_[2] - min_[2]) / double (2);
+//      const double ystep = (max_[1] - min_[1]) / double (2);
+//      const double xstep = (max_[0] - min_[0]) / double (2);
+//
+//      int i = 0;
+//
+//      double childbb_min[3];
+//      double childbb_max[3];
+//      for (int z = 0; z < 2; z++)
+//      {
+//        childbb_min[2] = zstart + double (z) * zstep;
+//        childbb_max[2] = zstart + double (z + 1) * zstep;
+//
+//        for (int y = 0; y < 2; y++)
+//        {
+//          childbb_min[1] = ystart + double (y) * ystep;
+//          childbb_max[1] = ystart + double (y + 1) * ystep;
+//
+//          for (int x = 0; x < 2; x++)
+//          {
+//            childbb_min[0] = xstart + double (x) * xstep;
+//            childbb_max[0] = xstart + double (x + 1) * xstep;
+//
+//            boost::filesystem::path childdir = thisdir_ / boost::filesystem::path (boost::lexical_cast<std::string> (i));
+//            children_[i] = new octree_base_node<Container, PointT> (childbb_min, childbb_max, childdir.string ().c_str (), this);
+//            i++;
+//          }
+//        }
+//      }
+//      num_child_ = 8;
     }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1257,7 +1260,6 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-//read from lowest level
     template<typename Container, typename PointT> void
     octree_base_node<Container, PointT>::queryBBIncludes (const double min_bb[3], const double max_bb[3], size_t query_depth, std::list<PointT>& v)
     {

@@ -96,7 +96,7 @@ namespace pcl
         /** \brief flushes write buffer, then frees memory */
         ~octree_disk_container ();
 
-        /** \brief profides random access to points based on a linear index
+        /** \brief provides random access to points based on a linear index
          *  \todo benchmark this; compare to Julius' octree
          */
         inline PointT
@@ -108,7 +108,7 @@ namespace pcl
         void
         insertRange (const PointT* const * start, const boost::uint64_t count)
         {
-          //copy the handles to a continous block
+          //copy the handles to a continuous block
           PointT* arr = new PointT[count];
           for (size_t i = 0; i < count; i++)
           {

@@ -1,6 +1,6 @@
 set(SUBSYS_NAME outofcore)
 set(SUBSYS_DESC "Point cloud outofcore library")
-set(SUBSYS_DEPS common)
+set(SUBSYS_DEPS common io)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} OFF)
@@ -43,5 +43,7 @@ if(build)
     if(BUILD_TESTS)
         add_subdirectory(test)
     endif(BUILD_TESTS)
+    
+    add_subdirectory(tools)
     
 endif(build)

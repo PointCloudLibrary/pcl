@@ -1,0 +1,2 @@
+PCL_ADD_EXECUTABLE(pcl_outofcore_process ${SUBSYS_NAME} pcl_outofcore_process.cpp)
+target_link_libraries(pcl_outofcore_process pcl_common pcl_io pcl_outofcore)

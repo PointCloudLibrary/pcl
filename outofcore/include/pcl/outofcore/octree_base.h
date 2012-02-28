@@ -192,11 +192,11 @@ namespace pcl
             return false;
           }
 
-          double y_len = root_->max[1] - root_->min[1];
-          double x_len = root_->max[0] - root_->min[0];
+          double y_len = root_->max_[1] - root_->min_[1];
+          double x_len = root_->max_[0] - root_->min_[0];
 
-          y = y_len * pow (.5, double (root_->max_depth_));
-          x = x_len * pow (.5, double (root_->max_depth_));
+          y = y_len * pow (.5, double (max_depth_));
+          x = x_len * pow (.5, double (max_depth_));
 
           return true;
         }
@@ -222,12 +222,17 @@ namespace pcl
         boost::uint64_t
         addDataToLeaf (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p);
 
-        /** \brief Copies the points from the point_cloud falling within the bounding box of the octreeto the out-of-core octree; this is an interface to addDataToLeaf and can be used multiple times.
-         *  \param point_cloud Pointer to the point cloud data to copy to the outofcore octree; Assumes templated PointT matches for each.
+        /** \brief Copies the points from the point_cloud falling within the bounding box of the octree to the
+         *   out-of-core octree; this is an interface to addDataToLeaf and can be used multiple times.
+         *  \param point_cloud Pointer to the point cloud data to copy to the outofcore octree; Assumes templated
+         *   PointT matches for each.
          *  \return Number of points successfully copied from the point cloud to the octree.
          */
         boost::uint64_t
         addPointCloud (PointCloudConstPtr point_cloud);
+
+        boost::uint64_t
+        addPointCloud_and_genLOD (PointCloudConstPtr point_cloud);
 
         /** \brief Recursively add points to the tree subsampling LODs on the way.
          *

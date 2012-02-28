@@ -289,6 +289,14 @@ namespace pcl
       return addDataToLeaf (point_cloud->points);
     }
     
+////////////////////////////////////////////////////////////////////////////////
+
+    template<typename Container, typename PointT> boost::uint64_t
+    octree_base<Container, PointT>::addPointCloud_and_genLOD (PointCloudConstPtr point_cloud)
+    {
+      return addDataToLeaf_and_genLOD (point_cloud->points);
+    }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////

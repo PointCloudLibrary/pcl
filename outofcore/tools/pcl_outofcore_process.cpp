@@ -1,0 +1,214 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ * Point Cloud Library (PCL) - www.pointclouds.org
+ * Copyright (c) 2009-2011, Willow Garage, Inc.
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above
+ *   copyright notice, this list of conditions and the following
+ *   disclaimer in the documentation and/or other materials provided
+ *   with the distribution.
+ * * Neither the name of Willow Garage, Inc. nor the names of its
+ *   contributors may be used to endorse or promote products derived
+ *   from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+#include <pcl/common/time.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+
+#include <pcl/io/pcd_io.h>
+#include <pcl/pcl_macros.h>
+
+#include <pcl/console/print.h>
+#include <pcl/console/parse.h>
+
+#include <pcl/outofcore/outofcore.h>
+#include <pcl/outofcore/outofcore_impl.h>
+
+typedef pcl::PointXYZ PointT;
+
+using namespace pcl;
+using namespace pcl::outofcore;
+
+using pcl::console::parse_argument;
+using pcl::console::find_switch;
+using pcl::console::print_error;
+using pcl::console::print_warn;
+using pcl::console::print_info;
+
+typedef octree_base<octree_disk_container < PointT > , PointT > octree_disk;
+
+#define OCTREE_DEPTH 0
+#define OCTREE_RESOLUTION 1
+
+int
+pcl_outofcore_process (boost::filesystem::path pcd_path, boost::filesystem::path root_dir,
+                       int depth, double resolution, int build_octree_with, bool gen_lod, bool overwrite)
+{
+
+  // Read PCD file
+  PointCloud<PointT>::Ptr cloud (new PointCloud<PointT> ());
+
+  print_info ("Reading: %s\n", pcd_path.c_str ());
+
+  if (io::loadPCDFile<PointT> (pcd_path.string (), *cloud) == -1) //* load the file
+  {
+    PCL_ERROR ("Couldn't read file\n");
+    return (-1);
+  }
+
+  // Get bounding box
+  PointT min_pt, max_pt;
+  getMinMax3D (*cloud, min_pt, max_pt);
+
+  //the bounding box of the root node of the out-of-core octree must be specified
+  const double bounding_box_min[3] = { min_pt.x, min_pt.y, min_pt.z };
+  const double bounding_box_max[3] = { max_pt.x, max_pt.y, max_pt.z };
+
+  //specify the directory and the root node's meta data file with a
+  //".oct_idx" extension (currently it must be this extension)
+  boost::filesystem::path octree_path_on_disk (root_dir / "tree.oct_idx");
+
+  print_info ("Writing: %s\n", octree_path_on_disk.c_str ());
+  //make sure there isn't an octree there already
+  if(boost::filesystem::exists (octree_path_on_disk))
+  {
+    if (overwrite)
+    {
+      boost::filesystem::remove_all (root_dir);
+    }
+    else
+    {
+      PCL_ERROR ("There's already an octree in the default location. Check the tree directory\n");
+      return (-1);
+    }
+  }
+
+  octree_disk *outofcore_octree;
+
+  //create the out-of-core data structure (typedef'd above)
+  if (build_octree_with == OCTREE_DEPTH)
+  {
+    outofcore_octree = new octree_disk (depth, bounding_box_min, bounding_box_max, octree_path_on_disk, "ECEF");
+  }
+  else
+  {
+    outofcore_octree = new octree_disk (bounding_box_min, bounding_box_max, resolution, octree_path_on_disk, "ECEF");
+  }
+
+  //load the points into the outofcore octree
+  if (gen_lod)
+  {
+    print_info ("  Generating LODs\n");
+    outofcore_octree->addPointCloud_and_genLOD (cloud);
+  }
+  else
+  {
+    outofcore_octree->addPointCloud (cloud);
+  }
+
+  double x, y;
+  outofcore_octree->getBinDimension(x, y);
+
+  print_info ("  Depth: %i\n", outofcore_octree->getDepth ());
+  print_info ("  Resolution: [%f, %f]\n", x, y);
+
+  return 0;
+}
+
+void
+printHelp (int argc, char **argv)
+{
+  print_info ("This program is used to process pcd fiels into an outofcore data structure viewable by the");
+  print_info ("pcl_outofcore_viewer\n\n");
+  print_info ("%s <options> <input>.pcd <output_tree_dir>\n", argv[0]);
+  print_info ("\n");
+  print_info ("Options:\n");
+  print_info ("\t -depth <resolution>           \t Octree depth\n");
+  print_info ("\t -resolution <resolution>      \t Octree resolution\n");
+  print_info ("\t -gen_lod                      \t Generate octree LODs\n");
+  print_info ("\t -overwrite                    \t Overwrite existing octree\n");
+  print_info ("\t -h                            \t Display help\n");
+  print_info ("\n");
+}
+
+int main(int argc, char* argv[]) {
+
+  // Check for help (-h) flag
+  if(argc > 1)
+  {
+    if (find_switch(argc, argv, "-h"))
+    {
+        printHelp (argc, argv);
+        return (-1);
+    }
+  }
+
+  // If no arguments specified
+  if(argc-1 < 1)
+  {
+    printHelp (argc, argv);
+    return (-1);
+  }
+
+  // Defaults
+  int depth = 4;
+  double resolution = .1;
+  bool gen_lod = false;
+  bool overwrite = false;
+  int build_octree_with = OCTREE_DEPTH;
+
+  // If both depth and resolution specified
+  if (find_switch (argc, argv, "-depth") && find_switch (argc, argv, "-resolution"))
+  {
+    PCL_ERROR ("Both -depth and -resolution specified, please specify one (Mutually exclusive)\n");
+  }
+  // Just resolution specified (Update how we build the tree)
+  else if (find_switch (argc, argv, "-resolution"))
+  {
+    build_octree_with = OCTREE_RESOLUTION;
+  }
+
+  // Parse options
+  parse_argument (argc, argv, "-depth", depth);
+  parse_argument (argc, argv, "-resolution", resolution);
+  gen_lod = find_switch (argc, argv, "-gen_lod");
+  overwrite = find_switch (argc, argv, "-overwrite");
+
+  // Parse non-option arguments
+  boost::filesystem::path pcd_path (argv[argc-2]);
+  boost::filesystem::path root_dir(argv[argc-1]);
+
+  // Check if a root directory was specified, use directory of pcd file
+  if (pcd_path.extension () != ".pcd" && root_dir.extension () == ".pcd")
+  {
+    pcd_path = root_dir;
+    root_dir = pcd_path.parent_path () / "tree";
+  }
+
+  return pcl_outofcore_process(pcd_path, root_dir, depth, resolution, build_octree_with, gen_lod, overwrite);
+
+}

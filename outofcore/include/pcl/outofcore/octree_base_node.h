@@ -254,7 +254,7 @@ namespace pcl
         void
         subdividePoints (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, std::vector< std::vector<PointT, Eigen::aligned_allocator<PointT> > >& c, const bool skip_bb_check);
 
-        /** \brief Subdivide a single point into a spefici child node */
+        /** \brief Subdivide a single point into a specific child node */
         void
         subdividePoint (const PointT& pt, std::vector< std::vector<PointT, Eigen::aligned_allocator<PointT> > >& c);
 
