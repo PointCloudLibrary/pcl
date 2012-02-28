@@ -47,7 +47,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT>
 pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::OctreePointCloud (const double resolution) :
-    OctreeT (), input_ (PointCloudConstPtr ()), indices_ (), 
+    OctreeT (), input_ (PointCloudConstPtr ()), indices_ (IndicesConstPtr ()),
     epsilon_ (0), resolution_ (resolution), minX_ (0.0f), maxX_ (resolution), minY_ (0.0f),
     maxY_ (resolution), minZ_ (0.0f), maxZ_ (resolution), maxKeys_ (1), boundingBoxDefined_ (false)
 {

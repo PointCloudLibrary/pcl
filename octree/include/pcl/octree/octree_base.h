@@ -194,7 +194,7 @@ namespace pcl
          *  \param freeMemory_arg: if "true", allocated octree nodes are deleted, otherwise they are pushed to the octree node pool
          * */
         void
-        deleteTree ( bool freeMemory_arg = false );
+        deleteTree ( bool freeMemory_arg = true );
 
         /** \brief Serialize octree into a binary output vector describing its branch node structure.
          *  \param binaryTreeOut_arg: reference to output vector for writing binary tree structure.

@@ -136,11 +136,8 @@ namespace pcl
         {
           assert (this->leafCount_==0);
 
-          if ((input_ != cloud_arg) && (this->leafCount_ == 0))
-          {
-            input_ = cloud_arg;
-            indices_ = indices_arg;
-          }
+          input_ = cloud_arg;
+          indices_ = indices_arg;
         }
 
         /** \brief Get a pointer to the vector of indices used.
