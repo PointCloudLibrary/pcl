@@ -70,7 +70,7 @@ class OpenNIOrganizedMultiPlaneSegmentation
       boost::shared_ptr < pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Viewer"));
       viewer->setBackgroundColor (0, 0, 0);
       pcl::visualization::PointCloudColorHandlerCustom<PointT> single_color (cloud, 0, 255, 0);
-      viewer->addPointCloud < PointT > (cloud, single_color, "cloud");
+      viewer->addPointCloud<PointT> (cloud, single_color, "cloud");
       viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "cloud");
       viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.15, "cloud");
       viewer->addCoordinateSystem (1.0);
@@ -90,12 +90,25 @@ class OpenNIOrganizedMultiPlaneSegmentation
     }
 
     void
+    removePreviousDataFromScreen (size_t prev_models_size)
+    {
+      char name[1024];
+      for (size_t i = 0; i < prev_models_size; i++)
+      {
+        sprintf (name, "normal_%d", (unsigned)i);
+        viewer->removeShape (name);
+
+        sprintf (name, "plane_%02d", (int)i);
+        viewer->removePointCloud (name);
+      }
+    }
+
+    void
     run ()
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber ();
 
-      boost::function<void
-      (const pcl::PointCloud<PointT>::ConstPtr&)> f = boost::bind (&OpenNIOrganizedMultiPlaneSegmentation::cloud_cb_, this, _1);
+      boost::function<void(const pcl::PointCloud<PointT>::ConstPtr&)> f = boost::bind (&OpenNIOrganizedMultiPlaneSegmentation::cloud_cb_, this, _1);
 
       //make a viewer
       pcl::PointCloud<PointT>::Ptr init_cloud_ptr (new pcl::PointCloud<PointT>);
@@ -108,49 +121,49 @@ class OpenNIOrganizedMultiPlaneSegmentation
       unsigned char grn [6] = {  0, 255,   0, 255,   0, 255};
       unsigned char blu [6] = {  0,   0, 255,   0, 255, 255};
 
+      pcl::IntegralImageNormalEstimation<PointT, pcl::Normal> ne;
+      ne.setNormalEstimationMethod (ne.SIMPLE_3D_GRADIENT);
+      ne.setMaxDepthChangeFactor (0.02f);
+      ne.setNormalSmoothingSize (10.0f);
+
+      pcl::OrganizedMultiPlaneSegmentation<PointT, pcl::Normal, pcl::Label> mps;
+      mps.setMinInliers (10000);
+      mps.setAngularThreshold (0.017453 * 2.0); //3 degrees
+      mps.setDistanceThreshold (0.02); //2cm
+
+      std::vector<pcl::ModelCoefficients> plane_models;
+      std::vector<pcl::PointIndices> planes_inliers;
+
+      size_t prev_models_size = 0;
+      char name[1024];
+
       while (!viewer->wasStopped ())
       {
         viewer->spinOnce (100);
 
         if (prev_cloud && cloud_mutex.try_lock ())
         {
-          printf ("Computing normals...\n");
-          pcl::PointCloud < pcl::Normal > normal_cloud;
+          pcl::PointCloud<pcl::Normal>::Ptr normal_cloud (new pcl::PointCloud<pcl::Normal>);
           double normal_start = pcl::getTime ();
-          pcl::IntegralImageNormalEstimation<PointT, pcl::Normal> ne;
-          ne.setNormalEstimationMethod (ne.SIMPLE_3D_GRADIENT);
-          ne.setMaxDepthChangeFactor (0.02f);
-          ne.setNormalSmoothingSize (10.0f);
           ne.setInputCloud (prev_cloud);
-          ne.compute (normal_cloud);
+          ne.compute (*normal_cloud);
           double normal_end = pcl::getTime ();
           std::cout << "Normal Estimation took " << double (normal_end - normal_start) << std::endl;
 
-          printf ("Extracting planes...\n");
-          std::vector < pcl::ModelCoefficients > plane_models;
-          std::vector < pcl::PointIndices > planes_inliers;
-          pcl::PointCloud<pcl::Label> labels;
-          std::vector<pcl::PointIndices> label_indices;
           double plane_extract_start = pcl::getTime ();
-          pcl::OrganizedMultiPlaneSegmentation<PointT, pcl::Normal, pcl::Label> mps;
-          mps.setMinInliers (10000);
-          mps.setAngularThreshold (0.017453 * 2.0); //3 degrees
-          mps.setDistanceThreshold (0.02); //2cm
-          mps.setInputNormals (boost::make_shared < pcl::PointCloud<pcl::Normal> > (normal_cloud));
+          mps.setInputNormals (normal_cloud);
           mps.setInputCloud (prev_cloud);
-          mps.segment (plane_models, planes_inliers,labels,label_indices);
+          mps.segment (plane_models, planes_inliers);
           double plane_extract_end = pcl::getTime ();
           std::cout << "Plane extraction took " << double (plane_extract_end - plane_extract_start) << std::endl;
           std::cout << "Frame took " << double (plane_extract_end - normal_start) << std::endl;
 
-          char name [1024];
           pcl::PointCloud<PointT>::Ptr cluster (new pcl::PointCloud<PointT>);
-          viewer->removeAllPointClouds(0);
-          viewer->removeAllShapes ();
-          if(!viewer->updatePointCloud < PointT > (boost::make_shared < pcl::PointCloud<PointT> > (*prev_cloud),"cloud")){
-            viewer->addPointCloud < PointT > (boost::make_shared < pcl::PointCloud<PointT> > (*prev_cloud),"cloud");
-          }
 
+          if (!viewer->updatePointCloud<PointT> (prev_cloud, "cloud"))
+            viewer->addPointCloud<PointT> (prev_cloud, "cloud");
+
+          removePreviousDataFromScreen (prev_models_size);
           //Draw Visualization
           for (size_t i = 0; i < planes_inliers.size (); i++)
           {
@@ -163,12 +176,12 @@ class OpenNIOrganizedMultiPlaneSegmentation
             sprintf (name, "normal_%d", (unsigned)i);
             viewer->addArrow (pt2, pt1, 1.0, 0, 0, name);
 
-            pcl::copyPointCloud (*prev_cloud,planes_inliers[i],*cluster);
+            pcl::copyPointCloud (*prev_cloud, planes_inliers[i], *cluster);
             sprintf (name, "plane_%02d", (int)i);
             pcl::visualization::PointCloudColorHandlerCustom <PointT> color (cluster, red[i], grn[i], blu[i]);
             viewer->addPointCloud (cluster, color, name);
-          
           }
+          prev_models_size = planes_inliers.size ();
           cloud_mutex.unlock ();
         }
       }
