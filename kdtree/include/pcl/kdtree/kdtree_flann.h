@@ -135,7 +135,8 @@ namespace pcl
         param_radius_ = flann::SearchParams (-1 , (float) epsilon_, sorted_);
       }
 
-      inline void setSortedResults (bool sorted)
+      inline void 
+      setSortedResults (bool sorted)
       {
         sorted_ = sorted;
         param_k_ = flann::SearchParams (-1 ,epsilon_);
@@ -379,15 +380,15 @@ namespace pcl
       }
 
       /** \brief Get a pointer to the vector of indices used. */
-      inline IndicesConstPtr const
-      getIndices ()
+      inline IndicesConstPtr
+      getIndices () const
       {
         return (indices_);
       }
 
       /** \brief Get a pointer to the input point cloud dataset. */
       inline PointCloudConstPtr
-      getInputCloud ()
+      getInputCloud () const
       {
         return (input_);
       }
@@ -607,7 +608,7 @@ namespace pcl
 
       /** \brief Get the search epsilon precision (error bound) for nearest neighbors searches. */
       inline double
-      getEpsilon ()
+      getEpsilon () const
       {
         return (epsilon_);
       }
