@@ -74,6 +74,9 @@ if(build)
       PCL_ADD_EXECUTABLE(pcl_openni_floodfill_planar_segmentation ${SUBSYS_NAME} src/openni_floodfill_planar_segmentation.cpp)
       target_link_libraries(pcl_openni_floodfill_planar_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_features)
 
+      PCL_ADD_EXECUTABLE(pcl_openni_organized_multi_plane_segmentation ${SUBSYS_NAME} src/openni_organized_multi_plane_segmentation.cpp)
+      target_link_libraries(pcl_openni_organized_multi_plane_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_features)
+
       PCL_ADD_EXECUTABLE(pcl_openni_ii_normal_estimation ${SUBSYS_NAME} src/openni_ii_normal_estimation.cpp)
       target_link_libraries(pcl_openni_ii_normal_estimation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
       
