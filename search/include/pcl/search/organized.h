@@ -87,8 +87,11 @@ namespace pcl
         OrganizedNeighbor (bool sorted_results = false, float eps = 1e-4, unsigned pyramid_level = 5)
           : Search<PointT> ("OrganizedNeighbor", sorted_results)
           , projection_matrix_ (Eigen::Matrix<float, 3, 4, Eigen::RowMajor>::Zero ())
+          , KR_ (Eigen::Matrix<float, 3, 3, Eigen::RowMajor>::Zero ())
+          , KR_KRT_ (Eigen::Matrix<float, 3, 3, Eigen::RowMajor>::Zero ())
           , eps_ (eps)
           , pyramid_level_ (pyramid_level)
+          , mask_ ()
         {
         }
 
@@ -100,7 +103,8 @@ namespace pcl
           *        if input is not organized or a projection matrix could not be determined.
           * \return true if the input data is organized and from a projective device, false otherwise
           */
-        bool isValid () const
+        bool 
+        isValid () const
         {
           // determinant (KR) = determinant (K) * determinant (R) = determinant (K) = f_x * f_y.
           // If we expect at max an opening angle of 170degree in x-direction -> f_x = 2.0 * width / tan (85 degree);
@@ -178,12 +182,14 @@ namespace pcl
         struct Entry
         {
           Entry (int idx, float dist) : index (idx), distance (dist) {}
-          Entry () {}
+          Entry () : index (0), distance (0) {}
           unsigned index;
           float distance;
-          bool operator < (const Entry& other) const
+          
+          inline bool 
+          operator < (const Entry& other) const
           {
-            return distance < other.distance;
+            return (distance < other.distance);
           }
         };
 
