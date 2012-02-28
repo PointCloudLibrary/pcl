@@ -47,11 +47,13 @@
 
 namespace pcl
 {
-  /** \brief OrganizedMultiPlaneSegmentation finds all planes present in the input cloud, and outputs a vector of plane equations, as well as a vector of point clouds corresponding to the inliers of each detected plane.
-   * Only planes with more than min_inliers points are detected.
-   *
-   * \author Alex Trevor, Suat Gedikli
-   */
+  /** \brief OrganizedMultiPlaneSegmentation finds all planes present in the
+    * input cloud, and outputs a vector of plane equations, as well as a vector
+    * of point clouds corresponding to the inliers of each detected plane.  Only
+    * planes with more than min_inliers points are detected.
+    *
+    * \author Alex Trevor, Suat Gedikli
+    */
   template<typename PointT, typename PointNT, typename PointLT>
   class OrganizedMultiPlaneSegmentation : public PCLBase<PointT>
   {
@@ -154,7 +156,10 @@ namespace pcl
         * \param[out] label_indices a vector of PointIndices for each labeled component
         */
       virtual void
-      segment (std::vector<ModelCoefficients>& model_coefficients, std::vector<PointIndices>& inlier_indices, pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices);
+      segment (std::vector<ModelCoefficients>& model_coefficients, 
+               std::vector<PointIndices>& inlier_indices, 
+               pcl::PointCloud<PointLT>& labels, 
+               std::vector<pcl::PointIndices>& label_indices);
 
       /** \brief Segmentation of all planes in a point cloud given by setInputCloud(), setIndices()
         * \param[out] model_coefficients a vector of model_coefficients for each plane found in the input cloud
