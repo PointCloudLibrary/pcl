@@ -44,7 +44,7 @@
 #include <pcl/common/time.h>
 
 int
-main (int argc, char** argv)
+main ()
 {
   pcl::ScopeTime scope_time ("Test loop");
   {

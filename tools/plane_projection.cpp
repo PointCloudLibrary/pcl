@@ -55,6 +55,7 @@ Eigen::Quaternionf orientation;
 void
 printHelp (int argc, char **argv)
 {
+  (void)argc;
   print_error ("Syntax is: %s input.pcd output.pcd A B C D\n", argv[0]);
   print_info ("  where the plane is represented by the following equation:\n");
   print_info ("                     Ax + By + Cz + D = 0\n"); 

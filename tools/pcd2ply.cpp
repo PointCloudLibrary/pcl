@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -49,6 +50,7 @@ using namespace pcl::console;
 void
 printHelp (int argc, char **argv)
 {
+  (void)argc;
   print_error ("Syntax is: %s input.pcd output.ply\n", argv[0]);
 }
 

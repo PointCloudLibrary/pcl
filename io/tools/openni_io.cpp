@@ -70,7 +70,7 @@ class OpenNIIO
     typedef typename Cloud::ConstPtr CloudConstPtr;
 
     OpenNIIO (const std::string& device_id = "")
-      : device_id_ (device_id)
+      : device_id_ (device_id), mtx_ (), cloud_ (), interface_ (), writer_ ()
     {
     }
 

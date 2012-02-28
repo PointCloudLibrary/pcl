@@ -52,7 +52,7 @@ bool set_file_name = false;
 class OpenNIGrabFrame
 {
   public:
-    OpenNIGrabFrame () : no_frame (true)
+    OpenNIGrabFrame () : w (), no_frame (true), noend (false), file (), format ()
     {
     }
 

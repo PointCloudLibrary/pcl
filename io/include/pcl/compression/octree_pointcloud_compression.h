@@ -103,18 +103,22 @@ namespace pcl
                                bool doVoxelGridDownDownSampling_arg = false,
                                const unsigned int iFrameRate_arg = 30,
                                bool doColorEncoding_arg = true,
-                               const unsigned char colorBitResolution_arg = 6
-                               ) :
-
+                               const unsigned char colorBitResolution_arg = 6) :
           OctreePointCloud<PointT, LeafT, OctreeT> (octreeResolution_arg),
-              doVoxelGridEnDecoding_ (doVoxelGridDownDownSampling_arg), iFrameRate_ (iFrameRate_arg),
-              iFrameCounter_ (0), frameID_ (0), pointCount_ (0), iFrame_ (true),
-              doColorEncoding_ (doColorEncoding_arg), cloudWithColor_ (false), dataWithColor_ (false),
-              pointColorOffset_ (0), bShowStatistics (showStatistics_arg)
-
+          output_ (PointCloudPtr ()),
+          binaryTreeDataVector_ (),
+          binaryColorTreeVector_ (),
+          pointCountDataVector_ (),
+          pointCountDataVectorIterator_ (),
+          colorCoder_ (),
+          pointCoder_ (),
+          entropyCoder_ (),
+          doVoxelGridEnDecoding_ (doVoxelGridDownDownSampling_arg), iFrameRate_ (iFrameRate_arg),
+          iFrameCounter_ (0), frameID_ (0), pointCount_ (0), iFrame_ (true),
+          doColorEncoding_ (doColorEncoding_arg), cloudWithColor_ (false), dataWithColor_ (false),
+          pointColorOffset_ (0), bShowStatistics (showStatistics_arg), 
+          compressedPointDataLen_ (), compressedColorDataLen_ ()
         {
-          output_ = PointCloudPtr ();
-
           if (compressionProfile_arg != MANUAL_CONFIGURATION)
           {
             // apply selected compression profile
@@ -163,10 +167,10 @@ namespace pcl
         }
 
         /** \brief Get a pointer to the output point cloud dataset.
-         *  \return pointer to pointcloud output class.
-         * */
+          * \return pointer to pointcloud output class.
+          */
         inline PointCloudPtr
-        getOutputCloud ()
+        getOutputCloud () const
         {
           return (output_);
         }

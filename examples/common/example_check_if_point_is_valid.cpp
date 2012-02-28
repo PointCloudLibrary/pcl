@@ -43,7 +43,7 @@
 #include <pcl/point_types.h>
 
 int
-main (int argc, char** argv)
+main ()
 {
   pcl::PointXYZ p_valid; p_valid.x = 0; p_valid.y = 0; p_valid.z = 0;
   std::cout << "Is p_valid valid? " << pcl::isFinite(p_valid) << std::endl;

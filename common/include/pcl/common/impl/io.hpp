@@ -48,6 +48,21 @@ pcl::getFieldIndex (const pcl::PointCloud<PointT> &cloud,
                     const std::string &field_name, 
                     std::vector<sensor_msgs::PointField> &fields)
 {
+  (void)cloud;
+  fields.clear ();
+  // Get the fields list
+  pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
+  for (size_t d = 0; d < fields.size (); ++d)
+    if (fields[d].name == field_name)
+      return ((int) d);
+  return (-1);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> int
+pcl::getFieldIndex (const std::string &field_name, 
+                    std::vector<sensor_msgs::PointField> &fields)
+{
   fields.clear ();
   // Get the fields list
   pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
@@ -60,6 +75,16 @@ pcl::getFieldIndex (const pcl::PointCloud<PointT> &cloud,
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::getFields (const pcl::PointCloud<PointT> &cloud, std::vector<sensor_msgs::PointField> &fields)
+{
+  (void)cloud;
+  fields.clear ();
+  // Get the fields list
+  pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::getFields (std::vector<sensor_msgs::PointField> &fields)
 {
   fields.clear ();
   // Get the fields list

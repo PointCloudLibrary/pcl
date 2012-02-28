@@ -248,27 +248,32 @@ ply_to_ply_converter::scalar_property_callback(ScalarType scalar)
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename ScalarType> std::tr1::function<void (ScalarType)> 
-ply_to_ply_converter::scalar_property_definition_callback(const std::string& element_name, const std::string& property_name)
+ply_to_ply_converter::scalar_property_definition_callback (const std::string& element_name, const std::string& property_name)
 {
+  (void)element_name;
   (*ostream_) << "property " << pcl::io::ply::type_traits<ScalarType>::old_name() << " " << property_name << "\n";
   return std::tr1::bind(&ply_to_ply_converter::scalar_property_callback<ScalarType>, this, _1);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename SizeType, typename ScalarType> void
-ply_to_ply_converter::list_property_begin_callback(SizeType size)
+ply_to_ply_converter::list_property_begin_callback (SizeType size)
 {
-  if (output_format_ == pcl::io::ply::ascii_format) {
+  if (output_format_ == pcl::io::ply::ascii_format) 
+  {
     using namespace pcl::io::ply::io_operators;
-    if (bol_) {
+    if (bol_) 
+    {
       bol_ = false;
       (*ostream_) << size;
     }
-    else {
+    else 
       (*ostream_) << " " << size;
-    }
   }
-  else {
+  else 
+  {
     if (((pcl::io::ply::host_byte_order == pcl::io::ply::little_endian_byte_order) && (output_format_ == pcl::io::ply::binary_big_endian_format))
       || ((pcl::io::ply::host_byte_order == pcl::io::ply::big_endian_byte_order) && (output_format_ == pcl::io::ply::binary_little_endian_format))) {
       pcl::io::ply::swap_byte_order(size);
@@ -277,30 +282,36 @@ ply_to_ply_converter::list_property_begin_callback(SizeType size)
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename SizeType, typename ScalarType> void
-ply_to_ply_converter::list_property_element_callback(ScalarType scalar)
+ply_to_ply_converter::list_property_element_callback (ScalarType scalar)
 {
-  if (output_format_ == pcl::io::ply::ascii_format) {
+  if (output_format_ == pcl::io::ply::ascii_format) 
+  {
     using namespace pcl::io::ply::io_operators;
     (*ostream_) << " " << scalar;
   }
-  else {
-    if (((pcl::io::ply::host_byte_order == pcl::io::ply::little_endian_byte_order) && (output_format_ == pcl::io::ply::binary_big_endian_format))
-      || ((pcl::io::ply::host_byte_order == pcl::io::ply::big_endian_byte_order) && (output_format_ == pcl::io::ply::binary_little_endian_format))) {
+  else 
+  {
+    if (((pcl::io::ply::host_byte_order == pcl::io::ply::little_endian_byte_order) && (output_format_ == pcl::io::ply::binary_big_endian_format)) || 
+        ((pcl::io::ply::host_byte_order == pcl::io::ply::big_endian_byte_order) && (output_format_ == pcl::io::ply::binary_little_endian_format)))
       pcl::io::ply::swap_byte_order(scalar);
-    }
+
     ostream_->write(reinterpret_cast<char*>(&scalar), sizeof(scalar));
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename SizeType, typename ScalarType> void
 ply_to_ply_converter::list_property_end_callback() {}
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename SizeType, typename ScalarType> std::tr1::tuple<std::tr1::function<void (SizeType)>, 
                                                                   std::tr1::function<void (ScalarType)>, 
                                                                   std::tr1::function<void ()> > 
-ply_to_ply_converter::list_property_definition_callback(const std::string& element_name, const std::string& property_name)
+ply_to_ply_converter::list_property_definition_callback (const std::string& element_name, const std::string& property_name)
 {
+  (void)element_name;
   (*ostream_) << "property list " << pcl::io::ply::type_traits<SizeType>::old_name() << " " << pcl::io::ply::type_traits<ScalarType>::old_name() << " " << property_name << "\n";
   return std::tr1::tuple<std::tr1::function<void (SizeType)>, std::tr1::function<void (ScalarType)>, std::tr1::function<void ()> >(
     std::tr1::bind(&ply_to_ply_converter::list_property_begin_callback<SizeType, ScalarType>, this, _1),
@@ -309,18 +320,21 @@ ply_to_ply_converter::list_property_definition_callback(const std::string& eleme
   );
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 ply_to_ply_converter::comment_callback(const std::string& comment)
 {
   (*ostream_) << comment << "\n";
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 ply_to_ply_converter::obj_info_callback(const std::string& obj_info)
 {
   (*ostream_) << obj_info << "\n";
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool 
 ply_to_ply_converter::end_header_callback()
 {
@@ -328,9 +342,11 @@ ply_to_ply_converter::end_header_callback()
   return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-ply_to_ply_converter::convert(std::istream& istream, std::ostream& ostream)
+ply_to_ply_converter::convert (std::istream& istream, std::ostream& ostream)
 {
+  (void)istream;
   pcl::io::ply::ply_parser::flags_type ply_parser_flags = 0;
 
   pcl::io::ply::ply_parser ply_parser(ply_parser_flags);
@@ -397,7 +413,9 @@ ply_to_ply_converter::convert(std::istream& istream, std::ostream& ostream)
   return ply_parser.parse(ifilename);
 }
 
-int main(int argc, char* argv[])
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int 
+main(int argc, char* argv[])
 {
   ply_to_ply_converter::format_type ply_to_ply_converter_format = ply_to_ply_converter::same_format;
 

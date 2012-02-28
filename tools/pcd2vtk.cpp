@@ -49,6 +49,7 @@ using namespace pcl::console;
 void
 printHelp (int argc, char **argv)
 {
+  (void)argc;
   print_error ("Syntax is: %s input.pcd output.vtk\n", argv[0]);
 }
 

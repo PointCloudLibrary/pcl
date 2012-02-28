@@ -65,12 +65,17 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabber, const std::string& pcd_path, float frames_per_second, bool repeat)
-: grabber_ (grabber)
-, frames_per_second_ (frames_per_second)
-, repeat_ (repeat)
-, running_ (false)
-, time_trigger_ (1.0 / (double) std::max(frames_per_second, 0.001f), boost::bind (&PCDGrabberImpl::trigger, this))
-, valid_ (false)
+  : grabber_ (grabber)
+  , frames_per_second_ (frames_per_second)
+  , repeat_ (repeat)
+  , running_ (false)
+  , pcd_files_ ()
+  , pcd_iterator_ ()
+  , time_trigger_ (1.0 / (double) std::max(frames_per_second, 0.001f), boost::bind (&PCDGrabberImpl::trigger, this))
+  , next_cloud_ ()
+  , origin_ ()
+  , orientation_ ()
+  , valid_ (false)
 {
   pcd_files_.push_back (pcd_path);
   pcd_iterator_ = pcd_files_.begin ();
@@ -78,12 +83,17 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabber, const std::vector<std::string>& pcd_files, float frames_per_second, bool repeat)
-: grabber_ (grabber)
-, frames_per_second_ (frames_per_second)
-, repeat_ (repeat)
-, running_ (false)
-, time_trigger_ (1.0 / (double) std::max(frames_per_second, 0.001f), boost::bind (&PCDGrabberImpl::trigger, this))
-, valid_ (false)
+  : grabber_ (grabber)
+  , frames_per_second_ (frames_per_second)
+  , repeat_ (repeat)
+  , running_ (false)
+  , pcd_files_ ()
+  , pcd_iterator_ ()
+  , time_trigger_ (1.0 / (double) std::max(frames_per_second, 0.001f), boost::bind (&PCDGrabberImpl::trigger, this))
+  , next_cloud_ ()
+  , origin_ ()
+  , orientation_ ()
+  , valid_ (false)
 {
   pcd_files_ = pcd_files;
   pcd_iterator_ = pcd_files_.begin ();

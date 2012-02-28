@@ -45,7 +45,7 @@
 #include <pcl/point_types.h>
 
 int 
-main (int argc, char** argv)
+main ()
 {
   // Setup the cloud
   typedef pcl::PointXYZ PointType;
