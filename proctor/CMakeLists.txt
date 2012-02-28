@@ -25,7 +25,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk boost_serialization boost_mpi)
 
-if (ANDROID_NDK)
+if (ANDROID_NDK OR PCL_ONLY_CORE_POINT_TYPES)
   set (build FALSE)
 endif ()
 
