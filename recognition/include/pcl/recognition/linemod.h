@@ -35,154 +35,172 @@
  *
  */
 
-#ifndef PCL_FEATURES_LINEMOD
-#define PCL_FEATURES_LINEMOD
+#ifndef PCL_RECOGNITION_LINEMOD
+#define PCL_RECOGNITION_LINEMOD
 
 #include <vector>
-
+#include <cstddef>
+#include <string.h>
 #include "pcl/recognition/quantizable_modality.h"
 #include "pcl/recognition/region_xy.h"
 #include "pcl/recognition/sparse_quantized_multi_mod_template.h"
 
 namespace pcl
 {
-
   class EnergyMaps
   {
+    public:
+      EnergyMaps () : width_ (-1), height_ (-1), numOfBins_ (-1) {};
+      virtual ~EnergyMaps () {};
 
-  public:
-
-    EnergyMaps () : width_ (-1), height_ (-1), numOfBins_ (-1) {};
-    virtual ~EnergyMaps () {};
-
-    inline int getWidth () { return width_; }
-    inline int getHeight () { return height_; }
-    inline int getNumOfBins () { return numOfBins_; }
-
-    void initialize (const int width, const int height, const int numOfBins)
-    {
-      maps_.resize(numOfBins, NULL);
-      width_ = width;
-      height_ = height;
-      numOfBins_ = numOfBins;
-
-      const int mapsSize = width*height;
-
-      for (int mapIndex = 0; mapIndex < maps_.size (); ++mapIndex)
-      {
-        maps_[mapIndex] = new unsigned char[mapsSize];
-        memset (maps_[mapIndex], 0, mapsSize);
+      inline int 
+      getWidth () const 
+      { 
+        return (width_); 
       }
-    }
-
-    void releaseAll ()
-    {
-      for (int mapIndex = 0; mapIndex < maps_.size (); ++mapIndex)
-      {
-        if (maps_[mapIndex] != NULL) delete[] maps_[mapIndex];
+      
+      inline int 
+      getHeight () const 
+      { 
+        return (height_); 
+      }
+      
+      inline int 
+      getNumOfBins () const
+      { 
+        return (numOfBins_);
       }
 
-      maps_.clear ();
-      width_ = -1;
-      height_ = -1;
-      numOfBins_ = -1;
-    }
+      void 
+      initialize (const int width, const int height, const int numOfBins)
+      {
+        maps_.resize(numOfBins, NULL);
+        width_ = width;
+        height_ = height;
+        numOfBins_ = numOfBins;
 
-    inline unsigned char & operator() (const int binIndex, const int colIndex, const int rowIndex)
-    {
-      return maps_[binIndex][rowIndex*width_ + colIndex];
-    }
+        const int mapsSize = width*height;
 
-    inline unsigned char & operator() (const int binIndex, const int index)
-    {
-      return maps_[binIndex][index];
-    }
+        for (size_t mapIndex = 0; mapIndex < maps_.size (); ++mapIndex)
+        {
+          maps_[mapIndex] = new unsigned char[mapsSize];
+          memset (maps_[mapIndex], 0, mapsSize);
+        }
+      }
 
-    inline unsigned char * operator() (const int binIndex)
-    {
-      return maps_[binIndex];
-    }
+      void 
+      releaseAll ()
+      {
+        for (size_t mapIndex = 0; mapIndex < maps_.size (); ++mapIndex)
+          if (maps_[mapIndex] != NULL) delete[] maps_[mapIndex];
 
-  private:
+        maps_.clear ();
+        width_ = -1;
+        height_ = -1;
+        numOfBins_ = -1;
+      }
 
-    int width_;
-    int height_;
-    int numOfBins_;
-    std::vector< unsigned char* > maps_;
+      inline unsigned char& 
+      operator() (const int binIndex, const int colIndex, const int rowIndex)
+      {
+        return (maps_[binIndex][rowIndex*width_ + colIndex]);
+      }
 
+      inline unsigned char& 
+      operator() (const int binIndex, const int index)
+      {
+        return (maps_[binIndex][index]);
+      }
+
+      inline unsigned char* 
+      operator() (const int binIndex)
+      {
+        return (maps_[binIndex]);
+      }
+
+    private:
+      int width_;
+      int height_;
+      int numOfBins_;
+      std::vector<unsigned char*> maps_;
   };
 
   class LinearizedMaps
   {
+    public:
+      LinearizedMaps () : width_ (-1), height_ (-1), memWidth_ (-1), memHeight_ (-1), stepSize_ (-1) {};
+      virtual ~LinearizedMaps () {};
 
-  public:
+      inline int 
+      getWidth () const { return (width_); }
+      
+      inline int 
+      getHeight () const { return (height_); }
+      
+      inline int 
+      getStepSize () const { return (stepSize_); }
+      
+      inline int 
+      getMapMemorySize () const { return (memWidth_ * memHeight_); }
 
-    LinearizedMaps () : width_ (-1), height_ (-1), memWidth_ (-1), memHeight_ (-1), stepSize_ (-1) {};
-    virtual ~LinearizedMaps () {};
-
-    inline int getWidth () { return width_; }
-    inline int getHeight () { return height_; }
-    inline int getStepSize () { return stepSize_; }
-    inline int getMapMemorySize () { return memWidth_ * memHeight_; }
-
-    void initialize (const int width, const int height, const int stepSize)
-    {
-      maps_.resize(stepSize*stepSize, NULL);
-      width_ = width;
-      height_ = height;
-      memWidth_ = width / stepSize;
-      memHeight_ = height / stepSize;
-      stepSize_ = stepSize;
-
-      const int mapsSize = memWidth_ * memHeight_;
-
-      for (int mapIndex = 0; mapIndex < maps_.size (); ++mapIndex)
+      void 
+      initialize (const int width, const int height, const int stepSize)
       {
-        maps_[mapIndex] = new unsigned char[2*mapsSize];
-        memset (maps_[mapIndex], 0, 2*mapsSize);
-      }
-    }
+        maps_.resize(stepSize*stepSize, NULL);
+        width_ = width;
+        height_ = height;
+        memWidth_ = width / stepSize;
+        memHeight_ = height / stepSize;
+        stepSize_ = stepSize;
 
-    void releaseAll ()
-    {
-      for (int mapIndex = 0; mapIndex < maps_.size (); ++mapIndex)
+        const int mapsSize = memWidth_ * memHeight_;
+
+        for (size_t mapIndex = 0; mapIndex < maps_.size (); ++mapIndex)
+        {
+          maps_[mapIndex] = new unsigned char[2*mapsSize];
+          memset (maps_[mapIndex], 0, 2*mapsSize);
+        }
+      }
+
+      void 
+      releaseAll ()
       {
-        if (maps_[mapIndex] != NULL) delete[] maps_[mapIndex];
+        for (size_t mapIndex = 0; mapIndex < maps_.size (); ++mapIndex)
+          if (maps_[mapIndex] != NULL) delete[] maps_[mapIndex];
+
+        maps_.clear ();
+        width_ = -1;
+        height_ = -1;
+        memWidth_ = -1;
+        memHeight_ = -1;
+        stepSize_ = -1;
       }
 
-      maps_.clear ();
-      width_ = -1;
-      height_ = -1;
-      memWidth_ = -1;
-      memHeight_ = -1;
-      stepSize_ = -1;
-    }
+      inline unsigned char* 
+      operator() (const int colIndex, const int rowIndex)
+      {
+        return (maps_[rowIndex*stepSize_ + colIndex]);
+      }
 
-    inline unsigned char* operator() (const int colIndex, const int rowIndex)
-    {
-      return maps_[rowIndex*stepSize_ + colIndex];
-    }
+      inline unsigned char* 
+      getOffsetMap (const int colIndex, const int rowIndex)
+      {
+        const int mapCol = colIndex % stepSize_;
+        const int mapRow = rowIndex % stepSize_;
 
-    inline unsigned char* getOffsetMap (const int colIndex, const int rowIndex)
-    {
-      const int mapCol = colIndex % stepSize_;
-      const int mapRow = rowIndex % stepSize_;
+        const int mapMemColIndex = colIndex / stepSize_;
+        const int mapMemRowIndex = rowIndex / stepSize_;
 
-      const int mapMemColIndex = colIndex / stepSize_;
-      const int mapMemRowIndex = rowIndex / stepSize_;
+        return (maps_[mapRow*stepSize_ + mapCol] + mapMemRowIndex*memWidth_ + mapMemColIndex);
+      }
 
-      return maps_[mapRow*stepSize_ + mapCol] + mapMemRowIndex*memWidth_ + mapMemColIndex;
-    }
-
-  private:
-
-    int width_;
-    int height_;
-    int memWidth_;
-    int memHeight_;
-    int stepSize_;
-    std::vector< unsigned char* > maps_;
-
+    private:
+      int width_;
+      int height_;
+      int memWidth_;
+      int memHeight_;
+      int stepSize_;
+      std::vector<unsigned char*> maps_;
   };
 
   struct LINEMODDetection
@@ -199,38 +217,38 @@ namespace pcl
     */
   class LINEMOD
   {
-  
-  public:
+    public:
+      /** \brief Constructor */
+      LINEMOD ();
 
-    /** \brief Constructor */
-    LINEMOD();
+      /** \brief Destructor */
+      virtual ~LINEMOD ();
 
-    /** \brief Destructor */
-    virtual ~LINEMOD();
+      /** \brief Creates a template from the specified data and adds it to the matching queue. 
+        * \param 
+        * \param 
+        * \param 
+        */
+      int 
+      createAndAddTemplate (std::vector<QuantizableModality*> &modalities,
+                            std::vector<MaskMap*> &masks,
+                            RegionXY &region );
 
-    /** \brief Creates a template from the specified data and adds it to the matching queue. */
-    int 
-    createAndAddTemplate (
-      std::vector< QuantizableModality* > & modalities,
-      std::vector< MaskMap* > & masks,
-      RegionXY & region );
+      void
+      detectTemplates (std::vector<QuantizableModality*> &modalities,
+                       std::vector<LINEMODDetection>  &detections);
 
-    void
-    detectTemplates (
-      std::vector< QuantizableModality* > & modalities,
-      std::vector< LINEMODDetection > & detections );
+      inline SparseQuantizedMultiModTemplate&
+      getTemplate (const int templateID)
+      { 
+        return (templates_[templateID]);
+      }
 
-    inline SparseQuantizedMultiModTemplate &
-    getTemplate (
-    const int templateID ) { return templates_[templateID]; }
-
-  private:
-
-    /** template storage */
-    std::vector< SparseQuantizedMultiModTemplate > templates_;
-
+    private:
+      /** template storage */
+      std::vector<SparseQuantizedMultiModTemplate> templates_;
   };
 
 }
 
-#endif PCL_FEATURES_LINEMOD
+#endif    // PCL_RECOGNITION_LINEMOD

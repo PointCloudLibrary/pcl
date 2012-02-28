@@ -22,7 +22,6 @@ if(build)
         )
 
     set(srcs
-        src/recognition.cpp
         src/linemod.cpp
         src/quantizable_modality.cpp
         )

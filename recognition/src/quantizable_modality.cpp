@@ -36,7 +36,8 @@
  */
 
 #include "pcl/recognition/quantizable_modality.h"
-
+#include <cstddef>
+#include <string.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::QuantizableModality::

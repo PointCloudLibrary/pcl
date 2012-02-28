@@ -39,118 +39,114 @@
 #define PCL_FEATURES_QUANTIZABLE_MODALITY
 
 #include <vector>
-
 #include "pcl/recognition/region_xy.h"
 #include "pcl/recognition/sparse_quantized_multi_mod_template.h"
 
-
 namespace pcl
 {
-
   class MaskMap
   {
+    public:
+      MaskMap ();
+      virtual ~MaskMap ();
 
-  public:
+      inline int 
+      getWidth () { return (width_); }
+      
+      inline int 
+      getHeight () { return (height_); }
+      
+      inline unsigned char* 
+      getData () { return (data_); }
 
-    MaskMap ();
-    virtual ~MaskMap ();
+      inline unsigned char& 
+      operator() (const int x, const int y) 
+      { 
+        return (data_[y*width_+x]); 
+      }
 
-    inline int getWidth () { return width_; }
-    inline int getHeight () { return height_; }
-    inline unsigned char * getData () { return data_; }
+      void 
+      initialize (const int width, const int height);
 
-    inline unsigned char & operator() (
-      const int x,
-      const int y ) { return data_[y*width_+x]; }
+      void 
+      release ();
 
-    void initialize (
-      const int width,
-      const int height );
-    void release ();
-
-  private:
-
-    unsigned char * data_;
-    int width_;
-    int height_;  
-  
+    private:
+      unsigned char * data_;
+      int width_;
+      int height_;  
   };
 
   class QuantizedMap
   {
+    public:
 
-  public:
+      QuantizedMap ();
+      QuantizedMap (const int width, const int height);
 
-    QuantizedMap ();
-    QuantizedMap (
-      const int width,
-      const int height );
+      virtual ~QuantizedMap ();
 
-    virtual ~QuantizedMap ();
+      inline int 
+      getWidth () { return (width_); }
+      
+      inline int 
+      getHeight () { return (height_); }
+      
+      inline unsigned char* 
+      getData () { return (data_); }
 
-    inline int getWidth () { return width_; }
-    inline int getHeight () { return height_; }
-    inline unsigned char * getData () { return data_; }
+      void 
+      initialize (const int width, const int height);
 
-    void initialize (
-      const int width,
-      const int height );
+      inline unsigned char& 
+      operator() (const int x, const int y ) 
+      { 
+        return (data_[y*width_+x]); 
+      }
 
-    inline unsigned char & operator() (
-      const int x,
-      const int y ) { return data_[y*width_+x]; }
+      static void
+      spreadQuantizedMap (QuantizedMap & mapIn,
+                          QuantizedMap & mapOut,
+                          const int spreadingSize);
 
-    static void
-    spreadQuantizedMap (
-      QuantizedMap & mapIn,
-      QuantizedMap & mapOut,
-      const int spreadingSize );
-
-  private:
-
-    unsigned char * data_;
-    int width_;
-    int height_;  
-  
+    private:
+      unsigned char * data_;
+      int width_;
+      int height_;  
+    
   };
 
   class QuantizableModality
   {
-    
-  public:
+    public:
+      QuantizableModality ();
+      virtual ~QuantizableModality ();
 
-    QuantizableModality ();
-    virtual ~QuantizableModality ();
+      //inline int getWidth () { return width; }
+      //inline int getHeight () { return height; }
 
+      //inline unsigned char & operator() (
+      //  const int x,
+      //  const int y ) { return data[y*width+x]; }
 
-    //inline int getWidth () { return width; }
-    //inline int getHeight () { return height; }
+      virtual QuantizedMap &
+      getQuantizedMap () = 0;
 
-    //inline unsigned char & operator() (
-    //  const int x,
-    //  const int y ) { return data[y*width+x]; }
+      virtual QuantizedMap &
+      getSpreadedQuantizedMap () = 0;
 
-    virtual QuantizedMap &
-    getQuantizedMap () = 0;
+      virtual void 
+      extractFeatures (
+        MaskMap & mask,
+        const int numOfFeatures,
+        const int modalityIndex,
+        std::vector< QuantizedMultiModFeature > & features ) = 0;
 
-    virtual QuantizedMap &
-    getSpreadedQuantizedMap () = 0;
-
-    virtual void 
-    extractFeatures (
-      MaskMap & mask,
-      const int numOfFeatures,
-      const int modalityIndex,
-      std::vector< QuantizedMultiModFeature > & features ) = 0;
-
-  private:
-
-    //unsigned char * data;
-    //int width;
-    //int height;  
-
+    private:
+      //unsigned char * data;
+      //int width;
+      //int height;  
   };
-
 }
 
-#endif PCL_FEATURES_QUANTIZABLE_MODALITY
+#endif    // PCL_FEATURES_QUANTIZABLE_MODALITY

@@ -55,11 +55,11 @@ namespace pcl
 
   struct SparseQuantizedMultiModTemplate
   {
-    std::vector< QuantizedMultiModFeature > features;
+    std::vector<QuantizedMultiModFeature> features;
 
     RegionXY region;
   };
 
 }
 
-#endif PCL_FEATURES_SPARSE_QUANTIZED_MULTI_MOD_TEMPLATE
+#endif    // PCL_FEATURES_SPARSE_QUANTIZED_MULTI_MOD_TEMPLATE

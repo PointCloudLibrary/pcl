@@ -35,15 +35,11 @@
  *
  */
 
-#ifndef PCL_FEATURES_REGION_XY
-#define PCL_FEATURES_REGION_XY
-
-#include <vector>
-
+#ifndef PCL_FEATURES_REGION_XY_
+#define PCL_FEATURES_REGION_XY_
 
 namespace pcl
 {
-
   struct RegionXY
   {
     int x;
@@ -51,7 +47,6 @@ namespace pcl
     int width;
     int height;
   };
-
 }
 
-#endif PCL_FEATURES_REGION_XY
+#endif // PCL_FEATURES_REGION_XY_

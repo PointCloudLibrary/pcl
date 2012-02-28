@@ -61,8 +61,8 @@ createAndAddTemplate (
   pcl::RegionXY & region )
 {
   // assuming width and height is same for all modalities; should we check this??
-  const int width = modalities[0]->getQuantizedMap().getWidth ();
-  const int height = modalities[0]->getQuantizedMap().getHeight ();
+  //const int width = modalities[0]->getQuantizedMap().getWidth ();
+  //const int height = modalities[0]->getQuantizedMap().getHeight ();
 
   SparseQuantizedMultiModTemplate linemodTemplate;
       
@@ -75,8 +75,8 @@ createAndAddTemplate (
   }
 
   // up to now all features are relative to the input frame; make them relative to the region center
-  const int centerX = region.x+region.width/2;
-  const int centerY = region.y+region.height/2;
+  //const int centerX = region.x+region.width/2;
+  //const int centerY = region.y+region.height/2;
 
   const int numOfFeatures = linemodTemplate.features.size();
   for (int featureIndex = 0; featureIndex < numOfFeatures; ++featureIndex)
@@ -190,7 +190,7 @@ detectTemplates (
   // compute scores for templates
   const int width = modalityEnergyMaps[0].getWidth ();
   const int height = modalityEnergyMaps[0].getHeight ();
-  for (int templateIndex = 0; templateIndex < templates_.size (); ++templateIndex)
+  for (size_t templateIndex = 0; templateIndex < templates_.size (); ++templateIndex)
   {
     const int memWidth = width/stepSize;
     const int memHeight = height/stepSize;
@@ -200,11 +200,11 @@ detectTemplates (
     memset (scoreSums, 0, memSize);
 
     int maxScore = 0;
-    for (int featureIndex = 0; featureIndex < templates_[templateIndex].features.size (); ++featureIndex)
+    for (size_t featureIndex = 0; featureIndex < templates_[templateIndex].features.size (); ++featureIndex)
     {
       QuantizedMultiModFeature & feature = templates_[templateIndex].features[featureIndex];
 
-      feature.modalityIndex;
+      //feature.modalityIndex;
       for (int binIndex = 0; binIndex < 8; ++binIndex)
       {
         if ((feature.quantizedValue & (0x1<<binIndex)) != 0)
@@ -248,12 +248,10 @@ detectTemplates (
   }
 
   // release data
-  for (int modalityIndex = 0; modalityIndex < modalityLinearizedMaps.size (); ++modalityIndex)
+  for (size_t modalityIndex = 0; modalityIndex < modalityLinearizedMaps.size (); ++modalityIndex)
   {
     modalityEnergyMaps[modalityIndex].releaseAll ();
-    for (int binIndex = 0; binIndex < modalityLinearizedMaps[modalityIndex].size (); ++binIndex)
-    {
+    for (size_t binIndex = 0; binIndex < modalityLinearizedMaps[modalityIndex].size (); ++binIndex)
       modalityLinearizedMaps[modalityIndex][binIndex].releaseAll ();
-    }
   }
 }
