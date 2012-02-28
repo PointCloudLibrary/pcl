@@ -89,6 +89,8 @@ namespace pcl
         const char* name = traits::name<PointT, Tag>::value;
         BOOST_FOREACH (const sensor_msgs::PointField& field, fields_)
         {
+          //if (field.name == "_")
+          //  continue;
           if (field.name == name)
           {
             typedef traits::datatype<PointT, Tag> Data;
@@ -242,7 +244,7 @@ namespace pcl
     // Ease the user's burden on specifying width/height for unorganized datasets
     if (cloud.width == 0 && cloud.height == 0)
     {
-      msg.width  = (uint32_t) cloud.points.size ();
+      msg.width  = (uint32_t)cloud.points.size ();
       msg.height = 1;
     }
     else
@@ -259,7 +261,7 @@ namespace pcl
 
     // Fill fields metadata
     msg.fields.clear ();
-    for_each_type< typename traits::fieldList<PointT>::type > (detail::FieldAdder<PointT>(msg.fields));
+    for_each_type<typename traits::fieldList<PointT>::type> (detail::FieldAdder<PointT>(msg.fields));
 
     msg.header     = cloud.header;
     msg.point_step = sizeof (PointT);
@@ -275,30 +277,29 @@ namespace pcl
      * \note will throw std::runtime_error if there is a problem
      */
   template<typename CloudT> void
-  toROSMsg(const CloudT& cloud, sensor_msgs::Image& msg)
+  toROSMsg (const CloudT& cloud, sensor_msgs::Image& msg)
   {
     // Ease the user's burden on specifying width/height for unorganized datasets
     if (cloud.width == 0 && cloud.height == 0)
       throw std::runtime_error("Needs to be a dense like cloud!!");
     else
     {
-      if(cloud.points.size () != cloud.width * cloud.height){
+      if (cloud.points.size () != cloud.width * cloud.height)
         throw std::runtime_error("The width and height do not match the cloud size!");
-      }
       msg.height = cloud.height;
       msg.width = cloud.width;
     }
 
     // ensor_msgs::image_encodings::BGR8;
     msg.encoding = "bgr8";
-    msg.step = msg.width * sizeof(uint8_t) * 3;
-    msg.data.resize(msg.step * msg.height);
+    msg.step = msg.width * sizeof (uint8_t) * 3;
+    msg.data.resize (msg.step * msg.height);
     for (size_t y = 0; y < cloud.height; y++)
     {
       for (size_t x = 0; x < cloud.width; x++)
       {
         uint8_t * pixel = &(msg.data[y * msg.step + x * 3]);
-        memcpy(pixel, &cloud (x, y).rgb, 3 * sizeof(uint8_t));
+        memcpy (pixel, &cloud (x, y).rgb, 3 * sizeof(uint8_t));
       }
     }
   }
