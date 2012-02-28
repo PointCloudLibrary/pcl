@@ -304,12 +304,10 @@ namespace pcl
           unsigned int x;unsigned int y;unsigned int z;
         };
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /** \brief @b Octree branch class.
-         * \note It stores 8 pointers to its child nodes.
-         * \author Julius Kammerl (julius@kammerl.de)
-         */
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+          * \note It stores 8 pointers to its child nodes.
+          * \author Julius Kammerl (julius@kammerl.de)
+          */
         class OctreeBranch : public OctreeNode
         {
 
@@ -328,6 +326,16 @@ namespace pcl
             OctreeBranch (const OctreeBranch &source)
             {
               *this = source;
+            }
+
+            /** \brief Copy constructor. */
+            OctreeBranch&
+            operator = (const OctreeBranch &source)
+            {
+              for (int i = 0; i < 2; i++)
+                for (int j = 0; j < 8; j++)
+                  subNodes_[i][j] = source.subNodes_[i][j];
+              return (*this);
             }
 
             /** \brief Empty deconstructor. */
@@ -354,7 +362,7 @@ namespace pcl
 
           private:
             /** \brief Child node pointer array of size 2x8 for both octree structures.  */
-            const OctreeNode * subNodes_[2][8];
+            const OctreeNode *subNodes_[2][8];
         };
 
         typedef LeafT OctreeLeaf;

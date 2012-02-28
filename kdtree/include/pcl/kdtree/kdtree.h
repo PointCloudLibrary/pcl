@@ -92,15 +92,15 @@ namespace pcl
       }
 
       /** \brief Get a pointer to the vector of indices used. */
-      inline IndicesConstPtr const
-      getIndices ()
+      inline IndicesConstPtr
+      getIndices () const
       {
         return (indices_);
       }
 
       /** \brief Get a pointer to the input point cloud dataset. */
-      inline PointCloudConstPtr const
-      getInputCloud () 
+      inline PointCloudConstPtr
+      getInputCloud () const
       {
         return (input_);
       }
@@ -116,8 +116,8 @@ namespace pcl
       }
 
       /** \brief Get a pointer to the point representation used when converting points into k-D vectors. */
-      inline PointRepresentationConstPtr const
-      getPointRepresentation ()
+      inline PointRepresentationConstPtr
+      getPointRepresentation () const
       {
         return (point_representation_);
       }
@@ -325,7 +325,7 @@ namespace pcl
 
       /** \brief Get the search epsilon precision (error bound) for nearest neighbors searches. */
       inline double
-      getEpsilon ()
+      getEpsilon () const
       {
         return (epsilon_);
       }
@@ -341,7 +341,7 @@ namespace pcl
 
       /** \brief Get the minimum allowed number of k nearest neighbors points that a viable result must contain. */
       inline int
-      getMinPts ()
+      getMinPts () const
       {
         return (min_pts_);
       }
