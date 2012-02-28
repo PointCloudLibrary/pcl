@@ -152,43 +152,16 @@ NurbsFitting::NurbsFitting (int order, NurbsData *data, const vector_vec3 &cv)
   this->init ();
 }
 
-NurbsFitting::NurbsFitting (int order, NurbsData *data)
+NurbsFitting::NurbsFitting (int order, NurbsData *data, vec3 z)
 {
   if (order < 2)
     throw std::runtime_error ("[NurbsFitting::NurbsFitting] Error order to low (order<2).");
 
   this->data = data;
 
-  vec3 m_min;
-  vec3 m_max;
-  vec3 m_mid;
-
-  if (data->boundary.empty ())
-    GetBoundingBox (data->interior, m_min, m_max);
-  else
-    GetBoundingBox (data->boundary, m_min, m_max);
-
-  m_mid = m_min + (m_max - m_min) * 0.5;
-
-  double dcu = (m_max (0) - m_min (0)) / (order - 1); // image sizes are power of two
-  double dcv = (m_max (1) - m_min (1)) / (order - 1);
-
-  vector_vec4 cps;
-  vec4 cv (0.0, 0.0, 0.0, 1.0);
-  for (int j = 0; j < order; j++)
-  {
-    for (int i = 0; i < order; i++)
-    {
-      cv (0) = m_min (0) + dcu * i;
-      cv (1) = m_min (1) + dcv * j;
-      cv (2) = m_mid (2);
-      cv (3) = 1.0;
-      //      m_patch->SetCV(i, j, cv);
-      cps.push_back (cv);
-    }
-  }
-
+  vector_vec4 cps(order*order);
   m_patch = new NurbsSurface (order - 1, order, order, cps);
+  NurbsTools::initNurbsPCA(m_patch, data, z);
 
   this->init ();
 }

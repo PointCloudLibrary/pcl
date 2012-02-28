@@ -78,6 +78,10 @@ namespace pcl
       void
       InsertKnot (double xi);
 
+      unsigned Knots() const { return knots.size(); }
+
+      double Knot(unsigned i) const { return knots[i]; }
+
       /** @brief Cox-De-Boor recursion formula */
       void
       Cox (double xi, std::vector<double> &N) const;

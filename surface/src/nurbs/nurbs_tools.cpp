@@ -38,6 +38,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <stdio.h>
+#include <float.h>
 #include "pcl/surface/nurbs/nurbs_tools.h"
 
 #undef Success
@@ -50,6 +51,177 @@ using namespace Eigen;
 NurbsTools::NurbsTools (NurbsSurface* surf)
 {
   m_surf = surf;
+}
+
+void
+NurbsTools::initNurbsPCA (NurbsSurface *nurbs, NurbsData *data, Eigen::Vector3d z)
+{
+  Eigen::Vector3d mean;
+  Eigen::Matrix3d eigenvectors;
+  Eigen::Vector3d eigenvalues;
+
+  unsigned s = data->interior.size ();
+
+  NurbsTools::pca (data->interior, mean, eigenvectors, eigenvalues);
+
+  data->mean = mean;
+  data->eigenvectors = eigenvectors;
+
+  bool flip (false);
+  if (eigenvectors.col (2).dot (z) < 0.0)
+    flip = true;
+
+  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
+
+  Eigen::Vector3d sigma (sqrt (eigenvalues (0)), sqrt (eigenvalues (1)), sqrt (eigenvalues (2)));
+
+  // +- 2 sigma -> 95,45 % aller Messwerte
+  double dcu = (4.0 * sigma (0)) / (nurbs->DegreeU ());
+  double dcv = (4.0 * sigma (1)) / (nurbs->DegreeV ());
+
+  Eigen::Vector3d cv_t, cv;
+  for (unsigned i = 0; i < nurbs->DegreeU () + 1; i++)
+  {
+    for (unsigned j = 0; j < nurbs->DegreeV () + 1; j++)
+    {
+      flip ? cv (0) = 2.0 * sigma (0) - dcu * i : cv (0) = -2.0 * sigma (0) + dcu * i;
+      cv (1) = -2.0 * sigma (1) + dcv * j;
+      cv (2) = 0.0;
+      cv_t = eigenvectors * cv + mean;
+      nurbs->SetCP (i, j, vec4(cv_t(0), cv_t(1), cv_t(2), 1.0));
+    }
+  }
+}
+
+void
+NurbsTools::initNurbsPCABoundingBox (NurbsSurface *nurbs, NurbsData *data, Eigen::Vector3d z)
+{
+  Eigen::Vector3d mean;
+  Eigen::Matrix3d eigenvectors;
+  Eigen::Vector3d eigenvalues;
+
+  unsigned s = data->interior.size ();
+
+  NurbsTools::pca (data->interior, mean, eigenvectors, eigenvalues);
+
+  data->mean = mean;
+  data->eigenvectors = eigenvectors;
+
+  bool flip (false);
+  if (eigenvectors.col (2).dot (z) < 0.0)
+    flip = true;
+
+  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
+
+  Eigen::Vector3d sigma (sqrt (eigenvalues (0)), sqrt (eigenvalues (1)), sqrt (eigenvalues (2)));
+
+  Eigen::Vector3d v_max (0.0, 0.0, 0.0);
+  Eigen::Vector3d v_min (DBL_MAX, DBL_MAX, DBL_MAX);
+  for (unsigned i = 0; i < s; i++)
+  {
+    Eigen::Vector3d p = eigenvectors.inverse () * (data->interior[i] - mean);
+
+    if (p (0) > v_max (0))
+      v_max (0) = p (0);
+    if (p (1) > v_max (1))
+      v_max (1) = p (1);
+    if (p (2) > v_max (2))
+      v_max (2) = p (2);
+
+    if (p (0) < v_min (0))
+      v_min (0) = p (0);
+    if (p (1) < v_min (1))
+      v_min (1) = p (1);
+    if (p (2) < v_min (2))
+      v_min (2) = p (2);
+  }
+
+  double dcu = (v_max (0) - v_min (0)) / (nurbs->DegreeU ());
+  double dcv = (v_max (1) - v_min (1)) / (nurbs->DegreeV ());
+
+  Eigen::Vector3d cv_t, cv;
+  for (unsigned i = 0; i < nurbs->DegreeU () + 1; i++)
+  {
+    for (unsigned j = 0; j < nurbs->DegreeV () + 1; j++)
+    {
+      flip ? cv (0) = -v_min (0) - dcu * i : cv (0) = v_min (0) + dcu * i;
+      cv (1) = v_min (1) + dcv * j;
+      cv (2) = 0.0;
+      cv_t = eigenvectors * cv + mean;
+      nurbs->SetCP (i, j, vec4(cv_t(0), cv_t(1), cv_t(2), 1.0));
+    }
+  }
+}
+
+Eigen::Vector3d
+NurbsTools::computeMean (const vector_vec3d &data)
+{
+  Eigen::Vector3d u (0.0, 0.0, 0.0);
+
+  unsigned s = data.size ();
+  double ds = 1.0 / s;
+
+  for (unsigned i = 0; i < s; i++)
+    u += (data[i] * ds);
+
+  return u;
+}
+
+void
+NurbsTools::pca (const vector_vec3d &data, Eigen::Vector3d &mean, Eigen::Matrix3d &eigenvectors,
+                 Eigen::Vector3d &eigenvalues)
+{
+  if (data.empty ())
+  {
+    printf ("[NurbsTools::pca] Error, data is empty\n");
+    abort ();
+  }
+
+  mean = computeMean (data);
+
+  unsigned s = data.size ();
+
+  Eigen::MatrixXd Q (3, s);
+
+  for (unsigned i = 0; i < s; i++)
+    Q.col (i) << (data[i] - mean);
+
+  Eigen::Matrix3d C = Q * Q.transpose ();
+
+  Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> eigensolver (C);
+  if (eigensolver.info () != Success)
+  {
+    printf ("[nurbsfitting::NurbsTools::pca] Can not find eigenvalues.\n");
+    abort ();
+  }
+
+  for (int i = 0; i < 3; ++i)
+  {
+    eigenvalues (i) = eigensolver.eigenvalues () (2 - i);
+    if (i == 2)
+      eigenvectors.col (2) = eigenvectors.col (0).cross (eigenvectors.col (1));
+    else
+      eigenvectors.col (i) = eigensolver.eigenvectors ().col (2 - i);
+  }
+}
+
+void
+NurbsTools::downsample_random (vector_vec3d &data, unsigned size)
+{
+  if (data.size () <= size && size > 0)
+    return;
+
+  unsigned s = data.size ();
+
+  vector_vec3d data_tmp;
+
+  for (unsigned i = 0; i < size; i++)
+  {
+    unsigned rnd = unsigned (s * (double (rand ()) / RAND_MAX));
+    data_tmp.push_back (data[rnd]);
+  }
+
+  data = data_tmp;
 }
 
 vec3
@@ -135,10 +307,10 @@ vec2
 NurbsTools::inverseMapping (const vec3 &pt, const vec2 &hint, double &error, vec3 &p, vec3 &tu, vec3 &tv, int maxSteps,
                             double accuracy, bool quiet)
 {
-  vec2 current(0.0,0.0), delta(0.0,0.0);
+  vec2 current (0.0, 0.0), delta (0.0, 0.0);
   Matrix2d A;
-  vec2 b(0.0,0.0);
-  vec3 r(0.0,0.0,0.0);
+  vec2 b (0.0, 0.0);
+  vec3 r (0.0, 0.0, 0.0);
   std::vector<double> elementsU = getElementVector (0);
   std::vector<double> elementsV = getElementVector (1);
   double minU = elementsU[0];
@@ -210,7 +382,8 @@ NurbsTools::inverseMapping (const vec3 &pt, const vec2 &hint, double &error, vec
   }
 
   if (!quiet)
-    std::cout << "[NurbsTools::inverseMapping] Warning: Method did not converge after maximum number of steps!" << std::endl;
+    std::cout << "[NurbsTools::inverseMapping] Warning: Method did not converge after maximum number of steps!"
+        << std::endl;
 
   error = r.norm ();
 
@@ -233,7 +406,7 @@ NurbsTools::inverseMapping (const vec3 &pt, vec2* phint, double &error, vec3 &p,
 
   if (phint == NULL)
   {
-    double d_shortest(0.0);
+    double d_shortest (0.0);
     for (unsigned i = 0; i < elementsU.size () - 1; i++)
     {
       for (unsigned j = 0; j < elementsV.size () - 1; j++)
@@ -320,9 +493,9 @@ vec2
 NurbsTools::inverseMappingBoundary (const vec3 &pt, int side, double hint, double &error, vec3 &p, vec3 &tu, vec3 &tv,
                                     int maxSteps, double accuracy, bool quiet)
 {
-  double current(0.0), delta(0.0);
-  vec3 r(0.0,0.0,0.0), t(0.0,0.0,0.0);
-  vec2 params(0.0,0.0);
+  double current (0.0), delta (0.0);
+  vec3 r (0.0, 0.0, 0.0), t (0.0, 0.0, 0.0);
+  vec2 params (0.0, 0.0);
 
   current = hint;
 
@@ -444,8 +617,9 @@ NurbsTools::inverseMappingBoundary (const vec3 &pt, int side, double hint, doubl
 
   error = r.norm ();
   if (!quiet)
-    printf ("[NurbsTools::inverseMappingBoundary] Warning: Method did not converge! (residual: %f, delta: %f, params: %f %f)\n", error, delta, params (0),
-            params (1));
+    printf (
+            "[NurbsTools::inverseMappingBoundary] Warning: Method did not converge! (residual: %f, delta: %f, params: %f %f)\n",
+            error, delta, params (0), params (1));
 
   return params;
 }

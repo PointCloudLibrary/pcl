@@ -42,6 +42,7 @@
 
 #include <pcl/pcl_macros.h>
 #include "nurbs_surface.h"
+#include "nurbs_data.h"
 
 #ifdef USE_UMFPACK
 #include <suitesparse/cholmod.h>
@@ -77,6 +78,22 @@ namespace pcl
       };
 
       NurbsTools (NurbsSurface* surf);
+
+      static void
+      initNurbsPCA (NurbsSurface *nurbs, NurbsData *data, Eigen::Vector3d z=Eigen::Vector3d(0.0,0.0,1.0));
+
+      static void
+      initNurbsPCABoundingBox (NurbsSurface *nurbs, NurbsData *data, Eigen::Vector3d z);
+
+      static Eigen::Vector3d
+      computeMean (const vector_vec3d &data);
+
+      static void
+          pca (const vector_vec3d &data, Eigen::Vector3d &mean, Eigen::Matrix3d &eigenvectors,
+               Eigen::Vector3d &eigenvalues);
+
+      static void
+      downsample_random (vector_vec3d &data, unsigned size);
 
       // evaluations in the parameter domain
       vec3

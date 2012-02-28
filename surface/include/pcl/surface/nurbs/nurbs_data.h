@@ -48,6 +48,9 @@ namespace pcl
 
     struct NurbsData
     {
+      Eigen::Matrix3d eigenvectors;
+      Eigen::Vector3d mean;
+
       vector_vec3 interior; ///<<input
       std::vector<double> interior_error;
       vector_vec2 interior_param; ///>> output
