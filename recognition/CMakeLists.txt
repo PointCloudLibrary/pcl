@@ -10,6 +10,12 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
     set(incs 
+        include/pcl/${SUBSYS_NAME}/color_gradient_modality.h
+        include/pcl/${SUBSYS_NAME}/linemod.h
+        include/pcl/${SUBSYS_NAME}/quantizable_modality.h
+        include/pcl/${SUBSYS_NAME}/region_xy.h
+        include/pcl/${SUBSYS_NAME}/sparse_quantized_multi_mod_template.h
+        include/pcl/${SUBSYS_NAME}/surface_normal_modality.h
         )
 
     set(impl_incs 
@@ -17,6 +23,8 @@ if(build)
 
     set(srcs
         src/recognition.cpp
+        src/linemod.cpp
+        src/quantizable_modality.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
