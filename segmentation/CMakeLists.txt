@@ -15,6 +15,8 @@ if(build)
         src/seeded_hue_segmentation.cpp
         src/segment_differences.cpp
         src/region_growing.cpp
+	src/organized_connected_component_segmentation.cpp
+	src/organized_multi_plane_segmentation.cpp
         )
 
     set(incs include/pcl/${SUBSYS_NAME}/extract_clusters.h
@@ -24,6 +26,10 @@ if(build)
         include/pcl/${SUBSYS_NAME}/seeded_hue_segmentation.h
         include/pcl/${SUBSYS_NAME}/segment_differences.h
         include/pcl/${SUBSYS_NAME}/region_growing.h
+	include/pcl/${SUBSYS_NAME}/comparator.h
+	include/pcl/${SUBSYS_NAME}/plane_coefficient_comparator.h
+	include/pcl/${SUBSYS_NAME}/organized_connected_component_segmentation.h
+	include/pcl/${SUBSYS_NAME}/organized_multi_plane_segmentation.h
         )
 
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/extract_clusters.hpp
@@ -33,6 +39,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/seeded_hue_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/segment_differences.hpp
         include/pcl/${SUBSYS_NAME}/impl/region_growing.hpp
+        include/pcl/${SUBSYS_NAME}/impl/organized_connected_component_segmentation.hpp
+	include/pcl/${SUBSYS_NAME}/impl/organized_multi_plane_segmentation.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
