@@ -417,16 +417,7 @@ extractFeatures (
   DistanceMap distanceMaps[8];
   for (int mapIndex = 0; mapIndex < 8; ++mapIndex)
   {
-    //cv::Mat tmpDistMap;
-    //cv::distanceTransform(distanceMaps[mapIndex], tmpDistMap, CV_DIST_L2, 5);
-
-    //distanceMaps[mapIndex] = tmpDistMap;
-
     computeDistanceMap (maskMaps[mapIndex], distanceMaps[mapIndex]);
-
-    ::cv::Mat tmpMat (distanceMaps[mapIndex].getHeight(), distanceMaps[mapIndex].getWidth(), CV_32FC1, distanceMaps[mapIndex].getData());
-    ::cv::imshow("distmap", tmpMat);
-    ::cv::waitKey(-1);
   }
 
 
