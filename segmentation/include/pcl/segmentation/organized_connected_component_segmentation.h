@@ -76,11 +76,15 @@ namespace pcl
       typedef typename Comparator::Ptr ComparatorPtr;
       typedef typename Comparator::ConstPtr ComparatorConstPtr;
       
+      /** \brief Constructor for OrganizedConnectedComponentSegmentation
+        * \param[in] compare A pointer to the comparator to be used for segmentation.  Must be an instance of pcl::Comparator.
+        */
       OrganizedConnectedComponentSegmentation (const ComparatorConstPtr& compare)
         : compare_ (compare)
       {
       }
 
+      /** \brief Destructor for OrganizedConnectedComponentSegmentation. */
       virtual
       ~OrganizedConnectedComponentSegmentation ()
       {

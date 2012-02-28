@@ -62,11 +62,15 @@ namespace pcl
 
       using pcl::Comparator<PointT>::input_;
       
+      /** \brief Constructor for PlaneCoefficientComparator.
+        * \param[in] plane_coeff_d a reference to a vector of d coefficients of plane equations.  Must be the same size as the input cloud and input normals.  a, b, and c coefficients are in the input normals.
+        */
       PlaneCoefficientComparator (std::vector<float>& plane_coeff_d) 
         : plane_coeff_d_ (plane_coeff_d)
       {
       }
       
+      /** \brief Destructor for PlaneCoefficientComparator. */
       virtual
       ~PlaneCoefficientComparator ()
       {

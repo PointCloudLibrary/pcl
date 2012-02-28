@@ -60,10 +60,12 @@ namespace pcl
       typedef boost::shared_ptr<Comparator<PointT> > Ptr;
       typedef boost::shared_ptr<const Comparator<PointT> > ConstPtr;
 
+      /** \brief Empty constructor for comparator. */
       Comparator ()
       {
       }
       
+      /** \brief Empty destructor for comparator. */
       virtual
       ~Comparator ()
       {
