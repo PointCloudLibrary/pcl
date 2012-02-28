@@ -376,6 +376,7 @@ loadPolygonMeshModel (char* polygon_file)
   // Not sure if PolygonMesh assumes triangles if to
   // TODO: Ask a developer
   TriangleMeshModel::Ptr model = TriangleMeshModel::Ptr (new TriangleMeshModel (cloud));
+  //PolygonMeshModel::Ptr model = PolygonMeshModel::Ptr(new PolygonMeshModel(GL_POLYGON,cloud));
   scene_->add (model);
   
   std::cout << "Just read " << polygon_file << std::endl;
@@ -404,11 +405,17 @@ main (int argc, char** argv)
   window_width_ = width * 2;
   window_height_ = height * 2;
 
-  int cols = 3;
-  int rows = 3;
-  int col_width = 640;
-  int row_height = 480;
+//  int cols = 3;
+//  int rows = 3;
+//  int col_width = 640;
+//  int row_height = 480;
 
+  int cols = 10;
+  int rows = 10;
+  int col_width = 20;
+  int row_height = 15;
+  
+  
   print_info ("Range likelihood performance tests using pcl::simulation. For more information, use: %s -h\n", argv[0]);
 
   if (argc < 2)
@@ -462,7 +469,7 @@ main (int argc, char** argv)
   range_likelihood_->setCameraIntrinsicsParameters (640,480, 576.09757860,
             576.09757860, 321.06398107, 242.97676897);
   range_likelihood_->setComputeOnCPU (false);
-  range_likelihood_->setSumOnCPU (false);
+  range_likelihood_->setSumOnCPU (true);
 
   textured_quad_ = TexturedQuad::Ptr (new TexturedQuad (range_likelihood_->getWidth (),
                                                         range_likelihood_->getHeight ()));

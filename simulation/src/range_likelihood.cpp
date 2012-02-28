@@ -9,6 +9,8 @@
 static boost::minstd_rand generator (27u); // seed
 
 //#define SIMULATION_DEBUG 1
+#define DO_TIMING_PROFILE 1
+
 
 using namespace std;
 
@@ -313,10 +315,11 @@ pcl::simulation::RangeLikelihood::computeScores (int cols, int rows,
         { // implicitly this caps the cost if there is a hole in the model
           lup = 300;
         }
-
+        
 	float lhood=1;
 	if (isnan(depth_val)){ // pixels with nan depth 
 	  lhood =1; // log(1) = 0 ---> has no effect
+	  
 	}else if(ref[col%col_width] < 0){ // all RGB pixels with no depth
 	  lhood =1; // log(1) = 0 ---> has no effect
 	}else{
@@ -333,7 +336,9 @@ pcl::simulation::RangeLikelihood::computeScores (int cols, int rows,
         }
 
 	if (do_depth_field){// do you want the image output to LCM?
-	  depth_field[row*cols*col_width + col] =lhood ;// (*depth);
+	  //depth_field[row*cols*col_width + col] =  lhood ;// (*depth);
+	  depth_field[row*cols*col_width + col] =  depth_val;//lhood ;// (*depth);
+	  //depth_field[row*cols*col_width + col] =  lup;//lhood ;// (*depth);
 	}
         scores[row/row_height * cols + col/col_width] += log (lhood);
       }
@@ -570,6 +575,34 @@ max_level(int a, int b)
   }
 }
 
+
+// display_tic_toc: a helper function which accepts a set of 
+// timestamps and displays the elapsed time between them as 
+// a fraction and time used [for profiling]
+void display_tic_toc(vector<double> &tic_toc,const string &fun_name){
+  int tic_toc_size = tic_toc.size();
+  
+  double percent_tic_toc_last = 0;
+  double dtime = ((double) (tic_toc[tic_toc_size-1] - tic_toc[0]));
+  cout << "fraction_" << fun_name << ",";  
+  for (int i=0; i < tic_toc_size;i++){
+    double percent_tic_toc = (double) (tic_toc[i] - tic_toc[0])/(tic_toc[tic_toc_size-1] - tic_toc[0]);
+    cout <<  percent_tic_toc - percent_tic_toc_last << ", ";
+    percent_tic_toc_last = percent_tic_toc;
+  }
+  cout << "\ntime_" << fun_name << ",";
+  double time_tic_toc_last = 0;
+  for (int i=0; i < tic_toc_size;i++){
+    double percent_tic_toc = (double) (tic_toc[i] - tic_toc[0])/(tic_toc[tic_toc_size-1] - tic_toc[0]);
+    cout <<  percent_tic_toc*dtime - time_tic_toc_last << ", ";
+    time_tic_toc_last = percent_tic_toc*dtime;
+  }
+  cout << "\ntotal_time_" << fun_name << " " << dtime << "\n";  
+  
+}
+
+
+
 // Shader based rangelikelihood
 pcl::simulation::RangeLikelihoodGLSL::RangeLikelihoodGLSL(int rows,
                                                           int cols,
@@ -747,12 +780,28 @@ RangeLikelihoodGLSL::computeLikelihoods (float* reference,
                      float *depth_field,
                      bool do_depth_field )
 {
+  
+  #if DO_TIMING_PROFILE
+    vector<double> tic_toc;
+    tic_toc.push_back(getTime());
+  #endif  
+  
   scores.resize (cols_*rows_);
   std::fill (scores.begin (), scores.end (), 0);
 
+  
+  
   // Generate depth image for each particle
   render (poses);
+  
+  #if DO_TIMING_PROFILE
+    tic_toc.push_back(getTime());
+  #endif  
+  
 
+  #if DO_TIMING_PROFILE
+    tic_toc.push_back(getTime());
+  #endif  
   // The depth image is now in depth_texture_
 
   // Compute likelihoods
@@ -769,6 +818,11 @@ RangeLikelihoodGLSL::computeLikelihoods (float* reference,
                          col_width_, row_height_,
                          reference, depth_buffer_,
                          scores, depth_field, do_depth_field);
+    
+    //#if DO_TIMING_PROFILE
+    //  tic_toc.push_back(getTime());
+    //#endif  
+
 
     // The scores are in score_texture_
     bool get_score_texture = true;
@@ -818,6 +872,11 @@ RangeLikelihoodGLSL::computeLikelihoods (float* reference,
       delete [] score_sum;
     }
   }
+  
+  #if DO_TIMING_PROFILE
+    tic_toc.push_back(getTime());
+    display_tic_toc(tic_toc,"range_likelihood");
+  #endif    
 }
 
 // Computes the likelihood scores using a shader
@@ -947,12 +1006,12 @@ RangeLikelihoodGLSL::render (const std::vector<Eigen::Isometry3d, Eigen::aligned
   glPopAttrib ();
 
   glFlush ();
-
+  
   // Read depth
   glReadPixels (0, 0, width_, height_, GL_DEPTH_COMPONENT, GL_FLOAT, depth_buffer_);
 
   // Read Color
   glReadBuffer (GL_COLOR_ATTACHMENT0);
   glReadPixels (0, 0, width_, height_, GL_RGB, GL_UNSIGNED_BYTE, color_buffer_);
-  glBindFramebuffer (GL_FRAMEBUFFER, 0);
+  glBindFramebuffer (GL_FRAMEBUFFER, 0);  
 }
