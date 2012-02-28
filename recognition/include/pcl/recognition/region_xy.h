@@ -38,14 +38,75 @@
 #ifndef PCL_FEATURES_REGION_XY_
 #define PCL_FEATURES_REGION_XY_
 
+#include <fstream>
+
 namespace pcl
 {
+  template <class Type>
+  void read( 
+    std::istream & stream, 
+    Type & value )
+  {
+    stream.read(reinterpret_cast<char*>(&value),sizeof(value));
+  }
+
+  template <class Type>
+  void read( 
+    std::istream & stream, 
+    Type * value,
+    const int numOfValues )
+  {
+    for (int valueIndex = 0; valueIndex < numOfValues; ++valueIndex)
+    {
+      read(stream, value[valueIndex]);
+    }
+  }
+
+  template <class Type>
+  void write( 
+    std::ostream & stream, 
+    Type value )
+  {
+    stream.write(reinterpret_cast<char*>(&value),sizeof(value));
+  }
+
+  template <class Type>
+  void write( 
+    std::ostream & stream, 
+    Type * value,
+    const int numOfValues )
+  {
+    for (int valueIndex = 0; valueIndex < numOfValues; ++valueIndex)
+    {
+      write(stream, value[valueIndex]);
+    }
+  }
+
   struct RegionXY
   {
     int x;
     int y;
     int width;
     int height;
+
+    void 
+    serialize (::std::ostream & stream)
+    {
+      write (stream, x);
+      write (stream, y);
+      write (stream, width);
+      write (stream, height);
+    }
+
+    void 
+    deserialize (::std::istream & stream)
+    {
+      read (stream, x);
+      read (stream, y);
+      read (stream, width);
+      read (stream, height);
+    }
+
   };
 }
 

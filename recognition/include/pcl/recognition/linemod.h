@@ -254,6 +254,19 @@ namespace pcl
         return (templates_[templateID]);
       }
 
+      void
+      saveTemplates (const char* file_name);
+
+      void
+      loadTemplates (const char* file_name);
+
+      void 
+      serialize (::std::ostream & stream);
+
+      void 
+      deserialize (::std::istream & stream);
+
+
     private:
       /** template storage */
       std::vector<SparseQuantizedMultiModTemplate> templates_;

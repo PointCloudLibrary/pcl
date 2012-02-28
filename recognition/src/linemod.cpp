@@ -37,10 +37,13 @@
 
 #include "pcl/recognition/linemod.h"
 
+#include <fstream>
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::LINEMOD::
-LINEMOD()
+LINEMOD() :
+  templates_ ()
 {
 
 }
@@ -192,9 +195,9 @@ detectTemplates (
   const int height = modalityEnergyMaps[0].getHeight ();
   for (size_t templateIndex = 0; templateIndex < templates_.size (); ++templateIndex)
   {
-    const int memWidth = width/stepSize;
-    const int memHeight = height/stepSize;
-    const int memSize = memWidth*memHeight;
+    const int memWidth = width / stepSize;
+    const int memHeight = height / stepSize;
+    const int memSize = memWidth * memHeight;
 
     unsigned char * scoreSums = new unsigned char[memSize];
     memset (scoreSums, 0, memSize);
@@ -220,7 +223,7 @@ detectTemplates (
       }
     }
 
-    const float invMaxScore = 1.0f/maxScore;
+    const float invMaxScore = 1.0f / maxScore;
     
     int maxValue = 0;
     int maxIndex = 0;
@@ -253,5 +256,60 @@ detectTemplates (
     modalityEnergyMaps[modalityIndex].releaseAll ();
     for (size_t binIndex = 0; binIndex < modalityLinearizedMaps[modalityIndex].size (); ++binIndex)
       modalityLinearizedMaps[modalityIndex][binIndex].releaseAll ();
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::LINEMOD::
+saveTemplates (const char* file_name)
+{
+  std::ofstream file_stream;
+  file_stream.open (file_name, std::ofstream::out | std::ofstream::binary);
+
+  serialize (file_stream);
+
+  file_stream.close ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::LINEMOD::
+loadTemplates (const char* file_name)
+{
+  std::ifstream file_stream;
+  file_stream.open (file_name, std::ofstream::in | std::ofstream::binary);
+
+  deserialize (file_stream);
+
+  file_stream.close ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::LINEMOD::
+serialize (::std::ostream & stream)
+{
+  const int num_of_templates = static_cast<int> (templates_.size ());
+  write (stream, num_of_templates);
+  for (int template_index = 0; template_index < num_of_templates; ++template_index)
+  {
+    templates_[template_index].serialize (stream);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::LINEMOD::
+deserialize (::std::istream & stream)
+{
+  templates_.clear ();
+
+  int num_of_templates;
+  read (stream, num_of_templates);
+  templates_.resize (num_of_templates);
+  for (int template_index = 0; template_index < num_of_templates; ++template_index)
+  {
+    templates_[template_index].deserialize (stream);
   }
 }

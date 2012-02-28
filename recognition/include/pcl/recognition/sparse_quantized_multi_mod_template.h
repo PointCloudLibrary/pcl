@@ -51,6 +51,24 @@ namespace pcl
     int y;
     int modalityIndex;
     unsigned char quantizedValue;
+
+    void 
+    serialize (::std::ostream & stream)
+    {
+      write (stream, x);
+      write (stream, y);
+      write (stream, modalityIndex);
+      write (stream, quantizedValue);
+    }
+
+    void 
+    deserialize (::std::istream & stream)
+    {
+      read (stream, x);
+      read (stream, y);
+      read (stream, modalityIndex);
+      read (stream, quantizedValue);
+    }
   };
 
   struct SparseQuantizedMultiModTemplate
@@ -58,6 +76,35 @@ namespace pcl
     std::vector<QuantizedMultiModFeature> features;
 
     RegionXY region;
+
+    void 
+    serialize (::std::ostream & stream)
+    {
+      const int num_of_features = static_cast<int> (features.size ());
+      write (stream, num_of_features);
+      for (int feature_index = 0; feature_index < num_of_features; ++feature_index)
+      {
+        features[feature_index].serialize (stream);
+      }
+
+      region.serialize (stream);
+    }
+
+    void 
+    deserialize (::std::istream & stream)
+    {
+      features.clear ();
+
+      int num_of_features;
+      read (stream, num_of_features);
+      features.resize (num_of_features);
+      for (int feature_index = 0; feature_index < num_of_features; ++feature_index)
+      {
+        features[feature_index].deserialize (stream);
+      }
+
+      region.deserialize (stream);
+    }
   };
 
 }
