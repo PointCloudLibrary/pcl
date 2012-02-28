@@ -46,7 +46,12 @@
 
 namespace pcl
 {
-  /** \brief OrganizedConnectedComponentSegmentation allows connected components to be found within organized point cloud data, given a comparison function.  Given an input cloud and a comparator, it will output a PointCloud of labels, giving each connected component a unique id, along with a vector of PointIndices corresponding to each component.  See OrganizedMultiPlaneSegmentation for an example application.
+  /** \brief OrganizedConnectedComponentSegmentation allows connected
+    * components to be found within organized point cloud data, given a
+    * comparison function.  Given an input cloud and a comparator, it will
+    * output a PointCloud of labels, giving each connected component a unique
+    * id, along with a vector of PointIndices corresponding to each component.
+    * See OrganizedMultiPlaneSegmentation for an example application.
     *
     * \author Alex Trevor, Suat Gedikli
     */
