@@ -109,7 +109,7 @@ namespace pcl
           // determinant (KR) = determinant (K) * determinant (R) = determinant (K) = f_x * f_y.
           // If we expect at max an opening angle of 170degree in x-direction -> f_x = 2.0 * width / tan (85 degree);
           // 2 * tan (85 degree) ~ 22.86
-          float min_f = 0.043744332 * input_->width;
+          float min_f = 0.043744332f * input_->width;
           //std::cout << "isValid: " << determinant3x3Matrix<Eigen::Matrix3f> (KR_ / sqrt (KR_KRT_.coeff (8))) << " >= " << (min_f * min_f) << std::endl;
           return (determinant3x3Matrix<Eigen::Matrix3f> (KR_ / sqrt (KR_KRT_.coeff (8))) >= (min_f * min_f));
         }
@@ -153,7 +153,7 @@ namespace pcl
           */
         int
         radiusSearch (const PointT &p_q,
-                      const double radius,
+                      double radius,
                       std::vector<int> &k_indices,
                       std::vector<float> &k_sqr_distances,
                       unsigned int max_nn = 0) const;

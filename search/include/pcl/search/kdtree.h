@@ -111,18 +111,18 @@ namespace pcl
         /** \brief Set the search epsilon precision (error bound) for nearest neighbors searches.
           * \param[in] eps precision (error bound) for nearest neighbors searches
           */
-      	inline void
-      	setEpsilon (double eps)
-      	{
-       	  tree_->setEpsilon (eps);
-      	}
+        inline void
+        setEpsilon (float eps)
+        {
+          tree_->setEpsilon (eps);
+        }
 
-      	/** \brief Get the search epsilon precision (error bound) for nearest neighbors searches. */
-      	inline double
-      	getEpsilon () const
-      	{
-       	  return (tree_->getEpsilon ());
-      	}
+        /** \brief Get the search epsilon precision (error bound) for nearest neighbors searches. */
+        inline float
+        getEpsilon () const
+        {
+          return (tree_->getEpsilon ());
+        }
 
         /** \brief Provide a pointer to the input dataset.
           * \param[in] cloud the const boost shared pointer to a PointCloud message
@@ -161,7 +161,7 @@ namespace pcl
           * \return number of neighbors found in radius
           */
         inline int
-        radiusSearch (const PointT& point, const double radius, 
+        radiusSearch (const PointT& point, double radius, 
                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
                       unsigned int max_nn = 0) const
         {

@@ -102,7 +102,7 @@ namespace pcl
       range *= freq[ch + 1] - freq[ch];
 
       // check range limits
-      while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -low & (bottom - 1)), 1)))
+      while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -int (low) & (bottom - 1)), 1)))
       {
         out = low >> 24;
         range <<= 8;
@@ -212,7 +212,7 @@ namespace pcl
       range *= freq[symbol + 1] - freq[symbol];
 
       // decode range limits
-      while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -low & (bottom - 1)), 1)))
+      while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -int (low) & (bottom - 1)), 1)))
       {
         inputByteStream_arg.read ((char*)&ch, sizeof(char));
         streamByteCount += sizeof(char);
@@ -363,7 +363,7 @@ namespace pcl
       range *= cFreqTable_[inputsymbol + 1] - cFreqTable_[inputsymbol];
 
       // check range limits
-      while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -low & (bottom - 1)), 1)))
+      while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -int (low) & (bottom - 1)), 1)))
       {
         out = low >> 56;
         range <<= 8;
@@ -478,7 +478,7 @@ namespace pcl
       range *= cFreqTable_[symbol + 1] - cFreqTable_[symbol];
 
       // check range limits
-      while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -low & (bottom - 1)), 1)))
+      while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -int (low) & (bottom - 1)), 1)))
       {
         inputByteStream_arg.read ((char*)&ch, sizeof(char));
         streamByteCount += sizeof(char);
@@ -577,7 +577,7 @@ namespace pcl
       range *= freq[ch + 1] - freq[ch];
 
       // check range limits
-      while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -low & (bottom - 1)), 1)))
+      while ((low ^ (low + range)) < top || ((range < bottom) && ((range = - int(low) & (bottom - 1)), 1)))
       {
         out = low >> 24;
         range <<= 8;
@@ -672,7 +672,7 @@ namespace pcl
       range *= freq[symbol + 1] - freq[symbol];
 
       // check range limits
-      while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -low & (bottom - 1)), 1)))
+      while ((low ^ (low + range)) < top || ((range < bottom) && ((range = -int (low) & (bottom - 1)), 1)))
       {
         inputByteStream_arg.read ((char*)&ch, sizeof(char));
         streamByteCount += sizeof(char);

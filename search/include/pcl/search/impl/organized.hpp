@@ -59,18 +59,19 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
   // search window
   unsigned left, right, top, bottom;
   //unsigned x, y, idx;
-  double squared_distance, squared_radius;
+  float squared_distance;
+  double squared_radius;
 
   k_indices.clear ();
   k_sqr_distances.clear ();
 
   squared_radius = radius * radius;
 
-  this->getProjectedRadiusSearchBox (query, squared_radius, left, right, top, bottom);
+  this->getProjectedRadiusSearchBox (query, (float) squared_radius, left, right, top, bottom);
 
   // iterate over search box
   if (max_nn == 0 || max_nn >= (unsigned int)input_->points.size ())
-    max_nn = input_->points.size ();
+    max_nn = (unsigned int) input_->points.size ();
 
   k_indices.reserve (max_nn);
   k_sqr_distances.reserve (max_nn);
@@ -104,7 +105,7 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
   }
   if (sorted_results_)
     this->sortResults (k_indices, k_sqr_distances);  
-  return (k_indices.size ());
+  return ((int) k_indices.size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -244,7 +245,7 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
   
   k_indices.resize (results.size ());
   k_sqr_distances.resize (results.size ());
-  unsigned idx = results.size () - 1;
+  size_t idx = results.size () - 1;
   while (!results.empty ())
   {
     k_indices [idx] = results.top ().index;
@@ -253,7 +254,7 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
     --idx;
   }
   
-  return k_indices.size ();
+  return ((int) k_indices.size ());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -494,18 +495,18 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
     return;
   }
 
-  projection_matrix_.coeffRef (0) = eigen_vectors.coeff (0);
-  projection_matrix_.coeffRef (1) = eigen_vectors.coeff (12);
-  projection_matrix_.coeffRef (2) = eigen_vectors.coeff (24);
-  projection_matrix_.coeffRef (3) = eigen_vectors.coeff (36);
-  projection_matrix_.coeffRef (4) = eigen_vectors.coeff (48);
-  projection_matrix_.coeffRef (5) = eigen_vectors.coeff (60);
-  projection_matrix_.coeffRef (6) = eigen_vectors.coeff (72);
-  projection_matrix_.coeffRef (7) = eigen_vectors.coeff (84);
-  projection_matrix_.coeffRef (8) = eigen_vectors.coeff (96);
-  projection_matrix_.coeffRef (9) = eigen_vectors.coeff (108);
-  projection_matrix_.coeffRef (10) = eigen_vectors.coeff (120);
-  projection_matrix_.coeffRef (11) = eigen_vectors.coeff (132);
+  projection_matrix_.coeffRef (0) = (float) eigen_vectors.coeff (0);
+  projection_matrix_.coeffRef (1) = (float) eigen_vectors.coeff (12);
+  projection_matrix_.coeffRef (2) = (float) eigen_vectors.coeff (24);
+  projection_matrix_.coeffRef (3) = (float) eigen_vectors.coeff (36);
+  projection_matrix_.coeffRef (4) = (float) eigen_vectors.coeff (48);
+  projection_matrix_.coeffRef (5) = (float) eigen_vectors.coeff (60);
+  projection_matrix_.coeffRef (6) = (float) eigen_vectors.coeff (72);
+  projection_matrix_.coeffRef (7) = (float) eigen_vectors.coeff (84);
+  projection_matrix_.coeffRef (8) = (float) eigen_vectors.coeff (96);
+  projection_matrix_.coeffRef (9) = (float) eigen_vectors.coeff (108);
+  projection_matrix_.coeffRef (10) = (float) eigen_vectors.coeff (120);
+  projection_matrix_.coeffRef (11) = (float) eigen_vectors.coeff (132);
 
   if (projection_matrix_.coeff (0) < 0)
     projection_matrix_ *= -1.0;

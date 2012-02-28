@@ -47,7 +47,7 @@ pcl::KdTreeFLANN<PointT, Dist>::setInputCloud (const PointCloudConstPtr &cloud, 
 {
   cleanup ();   // Perform an automatic cleanup of structures
 
-  epsilon_ = 0.0;   // default error bound value
+  epsilon_ = 0.0f;   // default error bound value
   dim_ = point_representation_->getNumberOfDimensions (); // Number of dimensions - default is 3 = xyz
 
   input_   = cloud;

@@ -87,8 +87,8 @@ namespace pcl
         flann_index_ (NULL), cloud_ (NULL), 
         index_mapping_ (), identity_mapping_ (false),
         dim_ (0), total_nr_points_ (0),
-        param_k_ (flann::SearchParams (-1 , (float) epsilon_)),
-        param_radius_ (flann::SearchParams (-1, (float) epsilon_, sorted))
+        param_k_ (flann::SearchParams (-1 , epsilon_)),
+        param_radius_ (flann::SearchParams (-1, epsilon_, sorted))
       {
       }
 
@@ -100,8 +100,8 @@ namespace pcl
         flann_index_ (NULL), cloud_ (NULL), 
         index_mapping_ (), identity_mapping_ (false),
         dim_ (0), total_nr_points_ (0),
-        param_k_ (flann::SearchParams (-1 , (float) epsilon_)),
-        param_radius_ (flann::SearchParams (-1, (float) epsilon_, false))
+        param_k_ (flann::SearchParams (-1 , epsilon_)),
+        param_radius_ (flann::SearchParams (-1, epsilon_, false))
       {
         *this = k;
       }
@@ -128,19 +128,19 @@ namespace pcl
         * \param[in] eps precision (error bound) for nearest neighbors searches
         */
       inline void
-      setEpsilon (double eps)
+      setEpsilon (float eps)
       {
         epsilon_ = eps;
-        param_k_ = flann::SearchParams (-1 , (float) epsilon_);
-        param_radius_ = flann::SearchParams (-1 , (float) epsilon_, sorted_);
+        param_k_ = flann::SearchParams (-1 , epsilon_);
+        param_radius_ = flann::SearchParams (-1 , epsilon_, sorted_);
       }
 
       inline void 
       setSortedResults (bool sorted)
       {
         sorted_ = sorted;
-        param_k_ = flann::SearchParams (-1 ,epsilon_);
-        param_radius_ = flann::SearchParams (-1 ,epsilon_, sorted_);
+        param_k_ = flann::SearchParams (-1, epsilon_);
+        param_radius_ = flann::SearchParams (-1, epsilon_, sorted_);
       }
       
       inline Ptr makeShared () { return Ptr (new KdTreeFLANN<PointT> (*this)); } 
@@ -279,10 +279,10 @@ namespace pcl
         * By setting sorted to false, the \ref radiusSearch operations will be faster.
         */
       KdTreeFLANN (bool sorted = true) : 
-        input_(), indices_(), epsilon_(0.0), sorted_(sorted), flann_index_(NULL), cloud_(NULL),
+        input_(), indices_(), epsilon_(0.0f), sorted_(sorted), flann_index_(NULL), cloud_(NULL),
         index_mapping_ (), identity_mapping_ (false), dim_ (0), 
-        param_k_ (flann::SearchParams (-1, (float) epsilon_)),
-        param_radius_ (flann::SearchParams (-1, (float) epsilon_, sorted)),
+        param_k_ (flann::SearchParams (-1, epsilon_)),
+        param_radius_ (flann::SearchParams (-1, epsilon_, sorted)),
         total_nr_points_ (0)
       {
         cleanup ();
@@ -292,10 +292,10 @@ namespace pcl
         * \param[in] tree the tree to copy into this
         */
       KdTreeFLANN (const KdTreeFLANN<Eigen::MatrixXf> &k) : 
-        input_(), indices_(), epsilon_(0.0), sorted_(false), flann_index_(NULL), cloud_(NULL),
+        input_(), indices_(), epsilon_(0.0f), sorted_(false), flann_index_(NULL), cloud_(NULL),
         index_mapping_ (), identity_mapping_ (false), dim_ (0), 
-        param_k_ (flann::SearchParams (-1, (float) epsilon_)),
-        param_radius_ (flann::SearchParams (-1, (float) epsilon_, sorted_)),
+        param_k_ (flann::SearchParams (-1, epsilon_)),
+        param_radius_ (flann::SearchParams (-1, epsilon_, sorted_)),
         total_nr_points_ (0)
       {
         *this = k;
@@ -326,11 +326,11 @@ namespace pcl
         * \param[in] eps precision (error bound) for nearest neighbors searches
         */
       inline void
-      setEpsilon (double eps)
+      setEpsilon (float eps)
       {
         epsilon_ = eps;
-        param_k_ = flann::SearchParams (-1 , (float) epsilon_);
-        param_radius_ = flann::SearchParams (-1, (float) epsilon_, sorted_);
+        param_k_ = flann::SearchParams (-1 , epsilon_);
+        param_radius_ = flann::SearchParams (-1, epsilon_, sorted_);
       }
 
       inline Ptr 
@@ -356,7 +356,7 @@ namespace pcl
         if (cloud == NULL)
           return;
 
-        epsilon_ = 0.0;   // default error bound value
+        epsilon_ = 0.0f;   // default error bound value
         input_   = cloud;
         indices_ = indices;
         dim_ = (int) cloud->points.cols (); // Number of dimensions = number of columns in the eigen matrix
@@ -607,7 +607,7 @@ namespace pcl
       }
 
       /** \brief Get the search epsilon precision (error bound) for nearest neighbors searches. */
-      inline double
+      inline float
       getEpsilon () const
       {
         return (epsilon_);
@@ -660,7 +660,7 @@ namespace pcl
           return;
         }
 
-        int original_no_of_points = cloud.points.rows ();
+        int original_no_of_points = (int) cloud.points.rows ();
 
         cloud_ = (float*)malloc (original_no_of_points * dim_ * sizeof (float));
         float* cloud_ptr = cloud_;
@@ -736,7 +736,7 @@ namespace pcl
       IndicesConstPtr indices_;
 
       /** \brief Epsilon precision (error bound) for nearest neighbors searches. */
-      double epsilon_;
+      float epsilon_;
 
       /** \brief Return the radius search neighbours sorted **/
       bool sorted_;

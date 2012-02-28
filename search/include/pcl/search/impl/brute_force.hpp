@@ -123,7 +123,7 @@ pcl::search::BruteForce<PointT>::denseKSearch (
 
   k_indices.resize (queue.size ());
   k_distances.resize (queue.size ());
-  int idx = queue.size () - 1;
+  size_t idx = queue.size () - 1;
   while (!queue.empty ())
   {
     k_indices [idx] = queue.top ().index;
@@ -132,7 +132,7 @@ pcl::search::BruteForce<PointT>::denseKSearch (
     --idx;
   }
   
-  return k_indices.size ();
+  return ((int) k_indices.size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -203,7 +203,7 @@ pcl::search::BruteForce<PointT>::sparseKSearch (
   
   k_indices.resize (queue.size ());
   k_distances.resize (queue.size ());
-  int idx = queue.size () - 1;
+  size_t idx = queue.size () - 1;
   while (!queue.empty ())
   {
     k_indices [idx] = queue.top ().index;
@@ -211,7 +211,7 @@ pcl::search::BruteForce<PointT>::sparseKSearch (
     queue.pop ();
     --idx;
   }
-  return k_indices.size ();
+  return ((int) k_indices.size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -223,7 +223,7 @@ pcl::search::BruteForce<PointT>::denseRadiusSearch (
 {  
   radius *= radius;
 
-  int reserve = max_nn;
+  size_t reserve = max_nn;
   if (reserve == 0)
   {
     if (indices_ != NULL)
@@ -266,7 +266,7 @@ pcl::search::BruteForce<PointT>::denseRadiusSearch (
   if (sorted_results_)
     this->sortResults (k_indices, k_sqr_distances);
   
-  return k_indices.size ();
+  return ((int) k_indices.size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -278,7 +278,7 @@ pcl::search::BruteForce<PointT>::sparseRadiusSearch (
 {
   radius *= radius;
 
-  int reserve = max_nn;
+  size_t reserve = max_nn;
   if (reserve == 0)
   {
     if (indices_ != NULL)
@@ -327,7 +327,7 @@ pcl::search::BruteForce<PointT>::sparseRadiusSearch (
   if (sorted_results_)
     this->sortResults (k_indices, k_sqr_distances);
 
-  return k_indices.size ();
+  return ((int) k_indices.size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -505,7 +505,7 @@ namespace pcl
     {
       std::vector<int> order (indices.size ());
       for (size_t idx = 0; idx < order.size (); ++idx)
-        order [idx] = idx;
+        order [idx] = (int) idx;
 
       Compare compare (distances);
       sort (order.begin (), order.end (), compare);

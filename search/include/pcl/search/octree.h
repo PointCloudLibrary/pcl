@@ -193,7 +193,7 @@ namespace pcl
           tree_->radiusSearch (cloud, index, radius, k_indices, k_sqr_distances, max_nn);
           if (sorted_results_)
             this->sortResults (k_indices, k_sqr_distances);
-          return k_indices.size ();
+          return ((int) k_indices.size ());
         }
 
         /** \brief search for all neighbors of query point that are within a given radius.
@@ -206,7 +206,7 @@ namespace pcl
          */
         inline int
         radiusSearch (const PointT &p_q, 
-                      const double radius, 
+                      double radius, 
                       std::vector<int> &k_indices,
                       std::vector<float> &k_sqr_distances, 
                       unsigned int max_nn = 0) const
@@ -214,7 +214,7 @@ namespace pcl
           tree_->radiusSearch (p_q, radius, k_indices, k_sqr_distances, max_nn);
           if (sorted_results_)
             this->sortResults (k_indices, k_sqr_distances);
-          return k_indices.size ();          
+          return ((int) k_indices.size ());
         }
 
         /** \brief search for all neighbors of query point that are within a given radius.
@@ -227,13 +227,13 @@ namespace pcl
          * \return number of neighbors found in radius
          */
         inline int
-        radiusSearch (int index, const double radius, std::vector<int> &k_indices,
+        radiusSearch (int index, double radius, std::vector<int> &k_indices,
                       std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
         {
           tree_->radiusSearch (index, radius, k_indices, k_sqr_distances, max_nn);
           if (sorted_results_)
             this->sortResults (k_indices, k_sqr_distances);
-          return k_indices.size ();          
+          return ((int) k_indices.size ());
         }
 
 
