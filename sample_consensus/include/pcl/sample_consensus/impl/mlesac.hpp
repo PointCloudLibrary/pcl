@@ -215,7 +215,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeMedianAbsoluteDeviation (
   std::sort (distances.begin (), distances.end ());
 
   double result;
-  int mid = indices->size () / 2;
+  size_t mid = indices->size () / 2;
   // Do we have a "middle" point or should we "estimate" one ?
   if (indices->size () % 2 == 0)
     result = (sqrt (distances[mid-1]) + sqrt (distances[mid])) / 2;
@@ -269,7 +269,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeMedian (
   std::sort (y.begin (), y.end ());
   std::sort (z.begin (), z.end ());
 
-  int mid = indices->size () / 2;
+  size_t mid = indices->size () / 2;
   if (indices->size () % 2 == 0)
   {
     median[0] = (x[mid-1] + x[mid]) / 2;

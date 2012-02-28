@@ -41,6 +41,7 @@
 #include "pcl/point_types.h"
 #include "pcl/sample_consensus/sac_model_parallel_line.h"
 #include "pcl/sample_consensus/impl/sac_model_parallel_line.hpp"
+#include "pcl/sample_consensus/impl/sac_model_line.hpp"
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES

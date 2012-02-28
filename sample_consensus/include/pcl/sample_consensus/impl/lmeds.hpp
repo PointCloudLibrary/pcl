@@ -97,8 +97,8 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
 
     std::sort (distances.begin (), distances.end ());
     // d_cur_penalty = median (distances)
-    int mid = sac_model_->getIndices ()->size () / 2;
-    if (mid >= (int)distances.size ())
+    size_t mid = sac_model_->getIndices ()->size () / 2;
+    if (mid >= distances.size ())
     {
       //iterations_++;
       ++skipped_count;

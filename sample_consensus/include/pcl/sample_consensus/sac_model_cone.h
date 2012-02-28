@@ -140,14 +140,6 @@ namespace pcl
         max_angle = max_angle_;
       }
 
-      /** \brief Get 3 random points with their normals as data samples and return them as point indices.
-        * \param[in,out] iterations the internal number of iterations used by SAC methods
-        * \param[out] samples the resultant model samples
-        * \note assumes unique points!
-        */
-      void 
-      getSamples (int &iterations, std::vector<int> &samples);
-
       /** \brief Check whether the given index samples can form a valid cone model, compute the model coefficients
         * from these samples and store them in model_coefficients. The cone coefficients are: apex,
         * axis_direction, opening_angle.
@@ -286,10 +278,10 @@ namespace pcl
         {
           Eigen::Vector4f apex  (x[0], x[1], x[2], 0);
           Eigen::Vector4f axis_dir (x[3], x[4], x[5], 0);
-          double opening_angle = x[6];
+          float opening_angle = x[6];
 
-          double apexdotdir = apex.dot (axis_dir);
-          double dirdotdir = 1.0 / axis_dir.dot (axis_dir);
+          float apexdotdir = apex.dot (axis_dir);
+          float dirdotdir = 1.0f / axis_dir.dot (axis_dir);
 
           for (int i = 0; i < values (); ++i)
           {
@@ -299,14 +291,14 @@ namespace pcl
                                 model_->input_->points[(*model_->tmp_inliers_)[i]].z, 0);
 
             // Calculate the point's projection on the cone axis
-            double k = (pt.dot (axis_dir) - apexdotdir) * dirdotdir;
+            float k = (pt.dot (axis_dir) - apexdotdir) * dirdotdir;
             Eigen::Vector4f pt_proj = apex + k * axis_dir;
 
             // Calculate the actual radius of the cone at the level of the projected point
             Eigen::Vector4f height = apex-pt_proj;
-            double actual_cone_radius = tan(opening_angle) * height.norm ();
+            float actual_cone_radius = tan(opening_angle) * height.norm ();
 
-            fvec[i] = pcl::sqrPointToLineDistance (pt, apex, axis_dir) - actual_cone_radius * actual_cone_radius;
+            fvec[i] = static_cast<float> (pcl::sqrPointToLineDistance (pt, apex, axis_dir) - actual_cone_radius * actual_cone_radius);
           }
           return (0);
         }

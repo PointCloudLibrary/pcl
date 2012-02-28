@@ -116,10 +116,10 @@ namespace pcl
         target_ = target;
         indices_tgt_.reset (new std::vector<int>);
         // Cache the size and fill the target indices
-        unsigned int target_size = target->size ();
+        int target_size = static_cast<int> (target->size ());
         indices_tgt_->resize (target_size);
 
-        for (unsigned int i = 0; i < target_size; ++i)
+        for (int i = 0; i < target_size; ++i)
           (*indices_tgt_)[i] = i;
         computeOriginalIndexMapping ();
       }

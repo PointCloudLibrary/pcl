@@ -145,14 +145,6 @@ namespace pcl
       inline Eigen::Vector3f 
       getAxis ()  { return (axis_); }
 
-      /** \brief Get 2 random points with their normals as data samples and return them as point indices.
-        * \param[out] iterations the internal number of iterations used by SAC methods
-        * \param[out] samples the resultant model samples
-        * \note assumes unique points!
-        */
-      void 
-      getSamples (int &iterations, std::vector<int> &samples);
-
       /** \brief Check whether the given index samples can form a valid cylinder model, compute the model coefficients
         * from these samples and store them in model_coefficients. The cylinder coefficients are: point_on_axis,
         * axis_direction, cylinder_radius_R
@@ -249,7 +241,7 @@ namespace pcl
                           const Eigen::Vector4f &line_dir,
                           Eigen::Vector4f &pt_proj)
       {
-        double k = (pt.dot (line_dir) - line_pt.dot (line_dir)) / line_dir.dot (line_dir);
+        float k = (pt.dot (line_dir) - line_pt.dot (line_dir)) / line_dir.dot (line_dir);
         // Calculate the projection of the point on the line
         pt_proj = line_pt + k * line_dir;
       }
@@ -322,7 +314,7 @@ namespace pcl
                                 model_->input_->points[(*model_->tmp_inliers_)[i]].y,
                                 model_->input_->points[(*model_->tmp_inliers_)[i]].z, 0);
 
-            fvec[i] = pcl::sqrPointToLineDistance (pt, line_pt, line_dir) - x[6]*x[6];
+            fvec[i] = static_cast<float> (pcl::sqrPointToLineDistance (pt, line_pt, line_dir) - x[6]*x[6]);
           }
           return (0);
         }

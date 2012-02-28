@@ -41,6 +41,7 @@
 #include "pcl/impl/instantiate.hpp"
 #include "pcl/sample_consensus/sac_model_normal_sphere.h"
 #include "pcl/sample_consensus/impl/sac_model_normal_sphere.hpp"
+#include "pcl/sample_consensus/impl/sac_model_sphere.hpp"
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
