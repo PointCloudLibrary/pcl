@@ -60,6 +60,9 @@ namespace pcl
   {
     public:
 
+      /** \brief Constructor. */
+      Grabber () : signals_ (), connections_ (), shared_connections_ () {}
+
       /** \brief virtual desctructor. */
       virtual inline ~Grabber () throw ();
 

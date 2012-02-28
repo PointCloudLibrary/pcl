@@ -61,56 +61,71 @@ namespace pcl
         */
       PCDGrabberBase (const std::string& pcd_file, float frames_per_second, bool repeat);
 
-      /**
-       * @brief Constuctor taking a list of paths to PCD files, that are played in the order the appear in the list.
-       * @param pcd_files vector of paths to PCD files.
-       * @param frames_per_second frames per second. If 0, start() functions like a trigger, publishing the next PCD in the list.
-       * @param repeat whether to play PCD file in an endless loop or not.
-       */
+      /** \brief Constuctor taking a list of paths to PCD files, that are played in the order the appear in the list.
+        * \param[in] pcd_files vector of paths to PCD files.
+        * \param[in] frames_per_second frames per second. If 0, start() functions like a trigger, publishing the next PCD in the list.
+        * \param[in] repeat whether to play PCD file in an endless loop or not.
+        */
       PCDGrabberBase (const std::vector<std::string>& pcd_files, float frames_per_second, bool repeat);
-      /**
-       * @brief virtual destructor
-       */
+
+      /** \brief Copy constructor.
+        * \param[in] src the PCD Grabber base object to copy into this
+        */
+      PCDGrabberBase (const PCDGrabberBase &src) : impl_ ()
+      {
+        *this = src;
+      }
+
+      /** \brief Copy operator.
+        * \param[in] src the PCD Grabber base object to copy into this
+        */
+      PCDGrabberBase&
+      operator = (const PCDGrabberBase &src)
+      {
+        impl_ = src.impl_;
+        return (*this);
+      }
+
+      /** \brief Virtual destructor. */
       virtual ~PCDGrabberBase () throw ();
-      /**
-       * @brief starts playing the list of PCD files if frames_per_second is > 0. Otherwise it works as a trigger: publishes only the next PCD file in the list.
-       */
-      virtual void start ();
-      /**
-       * @brief stops playing the list of PCD files if frames_per_second is > 0. Otherwise the method has no effect.
-       */
-      virtual void stop ();
-      /**
-       * @brief triggers a callback with new data
-       */
-      virtual void trigger ();
-      /**
-       * @brief whether the grabber is started (publishing) or not.
-       * @return true only if publishing.
-       */
-      virtual bool isRunning () const;
-      /**
-       *
-       * @return name of the grabber
-       */
-      virtual std::string getName () const;
-      /**
-       * @brief rewinds to the first PCD file in the list.
-       */
-      virtual void rewind ();
 
-      /**
-       * @brief returns the frames_per_second. 0 if grabber is trigger-based
-       */
-      virtual float getFramesPerSecond () const;
+      /** \brief Starts playing the list of PCD files if frames_per_second is > 0. Otherwise it works as a trigger: publishes only the next PCD file in the list. */
+      virtual void 
+      start ();
+      
+      /** \brief Stops playing the list of PCD files if frames_per_second is > 0. Otherwise the method has no effect. */
+      virtual void 
+      stop ();
+      
+      /** \brief Triggers a callback with new data */
+      virtual void 
+      trigger ();
 
-      /**
-       * @brief returns whether the repeat flag is on
-       */
-      bool isRepeatOn () const;
+      /** \brief whether the grabber is started (publishing) or not.
+        * \return true only if publishing.
+        */
+      virtual bool 
+      isRunning () const;
+      
+      /** \return The name of the grabber */
+      virtual std::string 
+      getName () const;
+      
+      /** \brief Rewinds to the first PCD file in the list.*/
+      virtual void 
+      rewind ();
+
+      /** \brief Returns the frames_per_second. 0 if grabber is trigger-based */
+      virtual float 
+      getFramesPerSecond () const;
+
+      /** \brief Returns whether the repeat flag is on */
+      bool 
+      isRepeatOn () const;
 
     private:
-      virtual void publish (const sensor_msgs::PointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const = 0;
+      virtual void 
+      publish (const sensor_msgs::PointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const = 0;
 
       // to separate and hide the implementation from interface: PIMPL
       struct PCDGrabberImpl;

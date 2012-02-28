@@ -68,6 +68,19 @@
 #include <pcl/io/ply/io_operators.h>
 #include <pcl/pcl_macros.h>
 
+#ifdef BUILD_Maintainer
+#  if defined __GNUC__
+#    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#      pragma GCC diagnostic ignored "-Weffc++"
+#      pragma GCC diagnostic ignored "-pedantic"
+#    else
+#      pragma GCC system_header 
+#    endif
+#  elif defined _MSC_VER
+#    pragma warning(push, 1)
+#  endif
+#endif
+
 namespace pcl
 {
   namespace io
@@ -120,6 +133,7 @@ namespace pcl
               template <typename T>
               struct callbacks_element
               {
+//                callbacks_element () : callback ();
                 typedef T scalar_type;
                 typename scalar_property_definition_callback_type<scalar_type>::type callback;
               };
@@ -202,18 +216,11 @@ namespace pcl
             private:
               template <typename T> struct pair_with : boost::mpl::pair<T,boost::mpl::_> {};
               template<typename Sequence1, typename Sequence2>
-              struct sequence_product :
-                boost::mpl::fold<
-                Sequence1,
-                boost::mpl::vector0<>,
-                boost::mpl::joint_view<
-                boost::mpl::_1,
-                boost::mpl::transform<
-                Sequence2,
-                pair_with<boost::mpl::_2>
-                >
-                >
-                >
+          
+                struct sequence_product :
+                  boost::mpl::fold<Sequence1, boost::mpl::vector0<>,
+                    boost::mpl::joint_view<
+                      boost::mpl::_1,boost::mpl::transform<Sequence2, pair_with<boost::mpl::_2> > > >
                 {};
 
               template <typename T>
@@ -224,13 +231,7 @@ namespace pcl
                 typename list_property_definition_callback_type<size_type, scalar_type>::type callback;
               };
            
-              typedef boost::mpl::inherit_linearly<
-                sequence_product<size_types, scalar_types>::type,
-                boost::mpl::inherit<
-                boost::mpl::_1,
-                callbacks_element<boost::mpl::_2>
-                >
-                >::type callbacks;
+              typedef boost::mpl::inherit_linearly<sequence_product<size_types, scalar_types>::type, boost::mpl::inherit<boost::mpl::_1, callbacks_element<boost::mpl::_2> > >::type callbacks;
               callbacks callbacks_;
      
             public:
@@ -299,8 +300,10 @@ namespace pcl
           typedef int flags_type;
           enum flags { };
 
-          ply_parser (flags_type flags = 0)
-            : flags_ (flags) 
+          ply_parser (flags_type flags = 0) : 
+            flags_ (flags), 
+            comment_callback_ (), obj_info_callback_ (), end_header_callback_ (), 
+            line_number_ (0), current_element_ ()
           {}
               
           bool parse (const std::string& filename);
@@ -376,6 +379,7 @@ namespace pcl
               , count (count)
               , begin_element_callback (begin_element_callback)
               , end_element_callback (end_element_callback)
+              , properties ()
             {}
             std::string name;
             std::size_t count;
@@ -690,5 +694,16 @@ inline bool pcl::io::ply::ply_parser::parse_list_property (format_type format, s
     return (true);
   }
 }
+
+#ifdef BUILD_Maintainer
+#  if defined __GNUC__
+#    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#      pragma GCC diagnostic warning "-Weffc++"
+#      pragma GCC diagnostic warning "-pedantic"
+#    endif
+#  elif defined _MSC_VER
+#    pragma warning(pop)
+#  endif
+#endif
 
 #endif // PCL_IO_PLY_PLY_PARSER_H

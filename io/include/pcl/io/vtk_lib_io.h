@@ -40,6 +40,20 @@
 #ifndef PCL_IO_VTK_LIB_IO_H_
 #define PCL_IO_VTK_LIB_IO_H_
 
+#ifdef BUILD_Maintainer
+#  if defined __GNUC__
+#    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#      pragma GCC diagnostic ignored "-Weffc++"
+#      pragma GCC diagnostic ignored "-pedantic"
+#      pragma GCC diagnostic ignored "-Wlong-long"
+#    else
+#      pragma GCC system_header 
+#    endif
+#  elif defined _MSC_VER
+#    pragma warning(push, 1)
+#  endif
+#endif
+
 #include <vtkSmartPointer.h>
 #include <vtkPoints.h>
 #include <vtkPointData.h>
@@ -165,5 +179,17 @@ namespace pcl
 
   }
 }
+
+#ifdef BUILD_Maintainer
+#  if defined __GNUC__
+#    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#      pragma GCC diagnostic warning "-Weffc++"
+#      pragma GCC diagnostic warning "-pedantic"
+#      pragma GCC diagnostic warning "-Wlong-long"
+#    endif
+#  elif defined _MSC_VER
+#    pragma warning(pop)
+#  endif
+#endif
 
 #endif /* PLC_IO_VTK_LIB_IO_H_ */

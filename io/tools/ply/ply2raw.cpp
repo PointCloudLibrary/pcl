@@ -70,7 +70,36 @@ using namespace std::tr1::placeholders;
 class ply_to_raw_converter
 {
   public:
-    ply_to_raw_converter () {}
+    ply_to_raw_converter () : 
+      ostream_ (), vertex_x_ (0), vertex_y_ (0), vertex_z_ (0), 
+      face_vertex_indices_element_index_ (),
+      face_vertex_indices_first_element_ (), 
+      face_vertex_indices_previous_element_ (),
+      vertices_ ()
+    {}
+
+    ply_to_raw_converter (const ply_to_raw_converter &f) :
+      ostream_ (), vertex_x_ (0), vertex_y_ (0), vertex_z_ (0), 
+      face_vertex_indices_element_index_ (),
+      face_vertex_indices_first_element_ (), 
+      face_vertex_indices_previous_element_ (),
+      vertices_ ()
+    {
+      *this = f;
+    }
+
+    ply_to_raw_converter&
+    operator = (const ply_to_raw_converter &f)
+    {
+      ostream_ = f.ostream_;
+      vertex_x_ = f.vertex_x_;
+      vertex_y_ = f.vertex_y_;
+      vertex_z_ = f.vertex_z_;
+      face_vertex_indices_element_index_ = f.face_vertex_indices_element_index_;
+      face_vertex_indices_first_element_ = f.face_vertex_indices_first_element_;
+      face_vertex_indices_previous_element_ = f.face_vertex_indices_previous_element_;
+      return (*this);
+    }
 
     bool 
     convert (std::istream& istream, const std::string& istream_filename, std::ostream& ostream, const std::string& ostream_filename);
@@ -153,6 +182,7 @@ ply_to_raw_converter::error_callback (const std::string& filename, std::size_t l
 std::tr1::tuple<std::tr1::function<void ()>, std::tr1::function<void ()> > 
 ply_to_raw_converter::element_definition_callback (const std::string& element_name, std::size_t count)
 {
+  (void)count;
   if (element_name == "vertex") {
     return std::tr1::tuple<std::tr1::function<void ()>, std::tr1::function<void ()> > (
       std::tr1::bind (&ply_to_raw_converter::vertex_begin, this),
@@ -247,6 +277,7 @@ ply_to_raw_converter::face_begin () {}
 void
 ply_to_raw_converter::face_vertex_indices_begin (pcl::io::ply::uint8 size)
 {
+  (void)size;
   face_vertex_indices_element_index_ = 0;
 }
 
@@ -283,6 +314,7 @@ ply_to_raw_converter::face_end () {}
 bool 
 ply_to_raw_converter::convert (std::istream& istream, const std::string& istream_filename, std::ostream& ostream, const std::string& ostream_filename)
 {
+  (void)istream; (void)ostream_filename;
   pcl::io::ply::ply_parser::flags_type ply_parser_flags = 0;
   pcl::io::ply::ply_parser ply_parser (ply_parser_flags);
 

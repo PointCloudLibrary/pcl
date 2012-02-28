@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -48,17 +50,20 @@ namespace pcl
     class TicToc
     {
       public:
+
+        TicToc () : tictic (), toctoc () {}
+
         void 
         tic ()
         {
-          tictic = boost::posix_time::microsec_clock::local_time();
+          tictic = boost::posix_time::microsec_clock::local_time ();
         };
 
         inline double 
         toc ()
         {
-          toctoc = boost::posix_time::microsec_clock::local_time();
-          return ((double) (toctoc - tictic).total_milliseconds());
+          toctoc = boost::posix_time::microsec_clock::local_time ();
+          return ((double) (toctoc - tictic).total_milliseconds ());
         };
         
         inline void 

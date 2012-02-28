@@ -84,10 +84,43 @@ namespace pcl
       
       PLYReader ()
         : FileReader ()
+        , parser_ ()
         , origin_ (Eigen::Vector4f::Zero ())
         , orientation_ (Eigen::Matrix3f::Zero ())
+        , cloud_ ()
+        , vertex_count_ (0)
+        , vertex_properties_counter_ (0)
+        , vertex_offset_before_ (0)
         , range_grid_ (0)
+        , range_count_ (0)
+        , range_grid_vertex_indices_element_index_ (0)
+        , rgb_offset_before_ (0)
       {}
+
+      PLYReader (const PLYReader &p)
+        : parser_ ()
+        , origin_ (Eigen::Vector4f::Zero ())
+        , orientation_ (Eigen::Matrix3f::Zero ())
+        , cloud_ ()
+        , vertex_count_ (0)
+        , vertex_properties_counter_ (0)
+        , vertex_offset_before_ (0)
+        , range_grid_ (0)
+        , range_count_ (0)
+        , range_grid_vertex_indices_element_index_ (0)
+        , rgb_offset_before_ (0)
+      {
+        *this = p;
+      }
+
+      PLYReader&
+      operator = (const PLYReader &p)
+      {
+        origin_ = p.origin_;
+        orientation_ = p.orientation_;
+        range_grid_ = p.range_grid_;
+        return (*this);
+      }
 
       ~PLYReader () { delete range_grid_; }
       /** \brief Read a point cloud data header from a PLY file.
@@ -720,8 +753,7 @@ namespace pcl
       */
     PCL_EXPORTS int
     savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh, unsigned precision = 5);
-
-  };
+  }
 }
 
 #endif  //#ifndef PCL_IO_PLY_IO_H_

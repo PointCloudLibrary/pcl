@@ -536,69 +536,71 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafT, typename OctreeT>
-      void
-      PointCloudCompression<PointT, LeafT, OctreeT>::deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg)
+    template<typename PointT, typename LeafT, typename OctreeT> void
+    PointCloudCompression<PointT, LeafT, OctreeT>::deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg)
+    {
+      // Silence compiler warnings
+      (void)leaf_arg;
+
+      double lowerVoxelCorner[3];
+      std::size_t pointCount, i, cloudSize;
+      PointT newPoint;
+
+      pointCount = 1;
+
+      if (!doVoxelGridEnDecoding_)
       {
-        double lowerVoxelCorner[3];
-        std::size_t pointCount, i, cloudSize;
-        PointT newPoint;
+        // get current cloud size
+        cloudSize = this->output_->points.size ();
 
-        pointCount = 1;
+        // get amount of point to be decoded
+        pointCount = *pointCountDataVectorIterator_;
+        pointCountDataVectorIterator_++;
 
-        if (!doVoxelGridEnDecoding_)
+        // increase point cloud by amount of voxel points
+        for (i = 0; i < pointCount; i++)
         {
-          // get current cloud size
-          cloudSize = this->output_->points.size ();
+          this->output_->points.push_back (newPoint);
+        }
 
-          // get amount of point to be decoded
-          pointCount = *pointCountDataVectorIterator_;
-          pointCountDataVectorIterator_++;
+        // calculcate position of lower voxel corner
+        lowerVoxelCorner[0] = ((double)key_arg.x) * this->resolution_ + this->minX_;
+        lowerVoxelCorner[1] = ((double)key_arg.y) * this->resolution_ + this->minY_;
+        lowerVoxelCorner[2] = ((double)key_arg.z) * this->resolution_ + this->minZ_;
 
-          // increase point cloud by amount of voxel points
-          for (i = 0; i < pointCount; i++)
-          {
-            this->output_->points.push_back (newPoint);
-          }
+        // decode differentially encoded points
+        pointCoder_.decodePoints (this->output_, lowerVoxelCorner, cloudSize, cloudSize + pointCount);
 
-          // calculcate position of lower voxel corner
-          lowerVoxelCorner[0] = ((double)key_arg.x) * this->resolution_ + this->minX_;
-          lowerVoxelCorner[1] = ((double)key_arg.y) * this->resolution_ + this->minY_;
-          lowerVoxelCorner[2] = ((double)key_arg.z) * this->resolution_ + this->minZ_;
+      }
+      else
+      {
+        // calculcate center of lower voxel corner
+        newPoint.x = ((double)key_arg.x + 0.5) * this->resolution_ + this->minX_;
+        newPoint.y = ((double)key_arg.y + 0.5) * this->resolution_ + this->minY_;
+        newPoint.z = ((double)key_arg.z + 0.5) * this->resolution_ + this->minZ_;
 
-          // decode differentially encoded points
-          pointCoder_.decodePoints (this->output_, lowerVoxelCorner, cloudSize, cloudSize + pointCount);
+        // add point to point cloud
+        this->output_->points.push_back (newPoint);
 
+      }
+
+      if (cloudWithColor_)
+      {
+        if (dataWithColor_)
+        {
+          // decode color information
+          colorCoder_.decodePoints (this->output_, this->output_->points.size () - pointCount,
+                                    this->output_->points.size (), pointColorOffset_);
         }
         else
         {
-          // calculcate center of lower voxel corner
-          newPoint.x = ((double)key_arg.x + 0.5) * this->resolution_ + this->minX_;
-          newPoint.y = ((double)key_arg.y + 0.5) * this->resolution_ + this->minY_;
-          newPoint.z = ((double)key_arg.z + 0.5) * this->resolution_ + this->minZ_;
-
-          // add point to point cloud
-          this->output_->points.push_back (newPoint);
-
+          // set default color information
+          colorCoder_.setDefaultColor (this->output_, this->output_->points.size () - pointCount,
+                                       this->output_->points.size (), pointColorOffset_);
         }
-
-        if (cloudWithColor_)
-        {
-          if (dataWithColor_)
-          {
-            // decode color information
-            colorCoder_.decodePoints (this->output_, this->output_->points.size () - pointCount,
-                                      this->output_->points.size (), pointColorOffset_);
-          }
-          else
-          {
-            // set default color information
-            colorCoder_.setDefaultColor (this->output_, this->output_->points.size () - pointCount,
-                                         this->output_->points.size (), pointColorOffset_);
-          }
-        }
-
       }
+
+    }
   }
 }
 

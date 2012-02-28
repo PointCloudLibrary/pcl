@@ -51,31 +51,28 @@ namespace pcl
   {
     using namespace std;
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief @b PointCoding class
-     *  \note This class encodes 8-bit differential point information for octree-based point cloud compression.
-     *  \note
-     *  \note typename: PointT: type of point used in pointcloud
-     *  \author Julius Kammerl (julius@kammerl.de)
-     */
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      *  \note This class encodes 8-bit differential point information for octree-based point cloud compression.
+      *  \note
+      *  \note typename: PointT: type of point used in pointcloud
+      *  \author Julius Kammerl (julius@kammerl.de)
+      */
     template<typename PointT>
-      class PointCoding
-      {
+    class PointCoding
+    {
 
-      // public typedefs
+        // public typedefs
         typedef pcl::PointCloud<PointT> PointCloud;
         typedef boost::shared_ptr<PointCloud> PointCloudPtr;
         typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
 
       public:
 
-        /** \brief Constructor.
-         *
-         * */
-        PointCoding ()
+        /** \brief Constructor. */
+        PointCoding () :
+          output_ (), pointDiffDataVector_ (), pointDiffDataVectorIterator_ (), 
+          pointCompressionResolution_ (0.001) // 1mm
         {
-          pointCompressionResolution_ = 0.001; // 1mm
         }
 
         /** \brief Empty class constructor. */
@@ -223,13 +220,8 @@ namespace pcl
 
         /** \brief Precision of point coding*/
         float pointCompressionResolution_;
-
-
-
-      };
-
+    };
   }
-
 }
 
 #define PCL_INSTANTIATE_ColorCoding(T) template class PCL_EXPORTS pcl::octree::ColorCoding<T>;
