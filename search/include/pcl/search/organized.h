@@ -92,7 +92,8 @@ namespace pcl
           *        if input is not organized or a projection matrix could not be determined.
           * \return true if the input data is organized and from a projective device, false otherwise
           */
-        bool isValid () const
+        bool 
+        isValid () const
         {
           // determinant (KR) = determinant (K) * determinant (R) = determinant (K) = f_x * f_y.
           // If we expect at max an opening angle of 170degree in x-direction -> f_x = 2.0 * width / tan (85 degree);
@@ -180,12 +181,14 @@ namespace pcl
         struct Entry
         {
           Entry (int idx, float dist) : index (idx), distance (dist) {}
-          Entry () {}
+          Entry () : index (0), distance (0) {}
           unsigned index;
           float distance;
-          bool operator < (const Entry& other) const
+          
+          inline bool 
+          operator < (const Entry& other) const
           {
-            return distance < other.distance;
+            return (distance < other.distance);
           }
         };
 

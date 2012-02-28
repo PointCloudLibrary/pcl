@@ -86,9 +86,10 @@ namespace pcl
           * query point
           *
           */
-        KdTree (bool sorted = true) : Search<PointT> ("KdTree", sorted)
+        KdTree (bool sorted = true) 
+          : Search<PointT> ("KdTree", sorted)
+          , tree_ (new pcl::KdTreeFLANN<PointT> (sorted))
         {
-          tree_.reset (new pcl::KdTreeFLANN<PointT> (sorted));
         }
 
         /** \brief Destructor for KdTree. */
@@ -97,16 +98,18 @@ namespace pcl
         {
         }
 
-        /** \brief sets whether the results have to be sorted or not.
+        /** \brief Sets whether the results have to be sorted or not.
+          * \param[in] sorted_results set to true if the radius search results should be sorted
           */
-        virtual void setSortedResults (bool sorted_results)
+        virtual void 
+        setSortedResults (bool sorted_results)
         {
           sorted_results_ = sorted_results;
           tree_->setSortedResults (sorted_results);
         }
         
         /** \brief Set the search epsilon precision (error bound) for nearest neighbors searches.
-          * \param eps precision (error bound) for nearest neighbors searches
+          * \param[in] eps precision (error bound) for nearest neighbors searches
           */
       	inline void
       	setEpsilon (double eps)
@@ -116,7 +119,7 @@ namespace pcl
 
       	/** \brief Get the search epsilon precision (error bound) for nearest neighbors searches. */
       	inline double
-      	getEpsilon ()
+      	getEpsilon () const
       	{
        	  return (tree_->getEpsilon ());
       	}

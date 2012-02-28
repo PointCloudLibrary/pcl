@@ -64,16 +64,21 @@ namespace pcl
       struct Entry
       {
         Entry (int idx, float dist) : index (idx), distance (dist) {}
-        Entry () {}
+
+        Entry () : index (0), distance (0) {}
         unsigned index;
         float distance;
-        bool operator < (const Entry& other) const
+        
+        inline bool 
+        operator < (const Entry& other) const
         {
-          return distance < other.distance;
+          return (distance < other.distance);
         }
-        bool operator > (const Entry& other) const
+        
+        inline bool 
+        operator > (const Entry& other) const
         {
-          return distance > other.distance;
+          return (distance > other.distance);
         }
       };
 

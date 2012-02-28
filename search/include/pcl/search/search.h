@@ -85,7 +85,9 @@ namespace pcl
 
         /** Constructor. */
         Search (const std::string& name = "", bool sorted = false)
-          : sorted_results_ (sorted)
+          : input_ () 
+          , indices_ ()
+          , sorted_results_ (sorted)
           , name_ (name)
         {
         }
@@ -98,15 +100,18 @@ namespace pcl
 
         /** \brief returns the search method name
           */
-        virtual const std::string& getName () const
+        virtual const std::string& 
+        getName () const
         {
-          return name_;
+          return (name_);
         }
+
         /** \brief sets whether the results should be sorted (ascending in the distance) or not
-         *  \param sorted should be true if the results should be sorted by the distance in ascending order.
-         *         Otherwise the results may be returned in any order.
-         */
-        virtual void setSortedResults (bool sorted)
+          * \param[in] sorted should be true if the results should be sorted by the distance in ascending order.
+          * Otherwise the results may be returned in any order.
+          */
+        virtual void 
+        setSortedResults (bool sorted)
         {
           sorted_results_ = sorted;
         }
@@ -124,14 +129,14 @@ namespace pcl
 
         /** \brief Get a pointer to the input point cloud dataset. */
         virtual PointCloudConstPtr
-        getInputCloud ()
+        getInputCloud () const
         {
           return (input_);
         }
 
         /** \brief Get a pointer to the vector of indices used. */
-        virtual IndicesConstPtr const
-        getIndices ()
+        virtual IndicesConstPtr
+        getIndices () const
         {
           return (indices_);
         }

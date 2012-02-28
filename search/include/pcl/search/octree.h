@@ -88,9 +88,9 @@ namespace pcl
           * \param[in] resolution octree resolution at lowest octree level
           */
         Octree (const double resolution)
-        : Search<PointT> ("Octree")
+          : Search<PointT> ("Octree")
+          , tree_ (new pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, OctreeT> (resolution))
         {
-          tree_.reset (new pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, OctreeT> (resolution));
         }
 
         /** \brief Empty Destructor. */
@@ -248,13 +248,13 @@ namespace pcl
         approxNearestSearch (const PointCloudConstPtr &cloud, int query_index, int &result_index,
                              float &sqr_distance)
         {
-          return (tree_->approxNearestSearch (query_index, result_index, sqr_distance));
+          return (tree_->approxNearestSearch (cloud->points[query_index], result_index, sqr_distance));
         }
 
         /** \brief Search for approximate nearest neighbor at the query point.
-          * \param p_q the given query point
-          * \param result_index the resultant index of the neighbor point
-          * \param sqr_distance the resultant squared distance to the neighboring point
+          * \param[in] p_q the given query point
+          * \param[out] result_index the resultant index of the neighbor point
+          * \param[out] sqr_distance the resultant squared distance to the neighboring point
           */
         inline void
         approxNearestSearch (const PointT &p_q, int &result_index, float &sqr_distance)
