@@ -53,7 +53,7 @@ namespace pcl
       inline int 
       getWidth () const { return (width_); }
       
-      inline int 
+      inline int
       getHeight () const { return (height_); }
       
       inline unsigned char* 

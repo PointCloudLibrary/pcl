@@ -1,6 +1,6 @@
 set (SUBSYS_NAME tools)
 set (SUBSYS_DESC "Useful PCL-based command line tools")
-set (SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree registration visualization)
+set (SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree registration visualization recognition)
 set (DEFAULT ON)
 set (REASON "")
 
@@ -83,6 +83,9 @@ if (build)
   
   PCL_ADD_EXECUTABLE(pcl_poisson_reconstruction ${SUBSYS_NAME} poisson_reconstruction.cpp)
   target_link_libraries(pcl_poisson_reconstruction pcl_common pcl_io pcl_surface)
+
+  PCL_ADD_EXECUTABLE(pcl_train_linemod_template ${SUBSYS_NAME} train_linemod_template.cpp)
+  target_link_libraries(pcl_train_linemod_template pcl_common pcl_io pcl_recognition)
 
   if (QHULL_FOUND)
     PCL_ADD_EXECUTABLE(pcl_crop_to_hull ${SUBSYS_NAME} crop_to_hull.cpp)

@@ -66,7 +66,7 @@ namespace pcl
         return (height_); 
       }
     
-      inline float* 
+      inline float * 
       getData () 
       { 
         return (data_); 
@@ -139,7 +139,7 @@ namespace pcl
       size_x (-1), size_y (-1), size_z (-1), lut (NULL) 
     {}
 
-    //~QuantizedNormalLookUpTable() { if (lut != NULL) free16(lut); }
+    //~QuantizedNormalLookUpTable () { if (lut != NULL) free16(lut); }
     ~QuantizedNormalLookUpTable () 
     { 
       if (lut != NULL) 
@@ -299,7 +299,7 @@ namespace pcl
       }
 
       void 
-      extractFeatures (const MaskMap & mask, int nr_features, int modality_index,
+      extractFeatures (const MaskMap & mask, size_t nr_features, size_t modality_index,
                        std::vector<QuantizedMultiModFeature> & features);
 
       /** \brief Provide a pointer to the input dataset (overwrites the PCLBase::setInputCloud method)
@@ -382,8 +382,8 @@ pcl::SurfaceNormalModality<PointInT>::processInputData ()
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
 pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
-                                                       const int nr_features,
-                                                       const int modality_index,
+                                                       size_t nr_features,
+                                                       size_t modality_index,
                                                        std::vector<QuantizedMultiModFeature> & features)
 {
   const int width = mask.getWidth ();
@@ -492,10 +492,10 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
 
   list1.sort ();
 
-  if (list1.size() <= nr_features)
+  if (list1.size () <= nr_features)
   {
     features.reserve (list1.size ());
-    for (typename std::list<Candidate>::iterator iter = list1.begin(); iter != list1.end(); ++iter)
+    for (typename std::list<Candidate>::iterator iter = list1.begin (); iter != list1.end (); ++iter)
     {
       QuantizedMultiModFeature feature;
 
@@ -534,12 +534,12 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
       if (candidate_accepted)
         list2.push_back (*iter1);
 
-      if (list2.size() == nr_features) break;
+      if (list2.size () == nr_features) break;
     }
     --distance;
   }
 
-  for (typename std::list<Candidate>::iterator iter2 = list2.begin(); iter2 != list2.end(); ++iter2)
+  for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
   {
     QuantizedMultiModFeature feature;
 
@@ -678,9 +678,9 @@ pcl::SurfaceNormalModality<PointInT>::computeDistanceMap (const MaskMap & input,
 
   // compute distance map
   //float *distance_map = new float[input_->points.size ()];
-  unsigned char *mask_map = input.getData ();
-  float *distance_map = output.getData ();
-  for (size_t index = 0; index < width*height; ++index)
+  const unsigned char * mask_map = input.getData ();
+  float * distance_map = output.getData ();
+  for (int index = 0; index < width*height; ++index)
   {
     if (mask_map[index] == 0)
       distance_map[index] = 0.0f;
@@ -689,44 +689,44 @@ pcl::SurfaceNormalModality<PointInT>::computeDistanceMap (const MaskMap & input,
   }
 
   // first pass
-  float* previous_row = distance_map;
-  float* current_row = previous_row + width;
-  for (size_t ri = 1; ri < height; ++ri)
+  float * previous_row = distance_map;
+  float * current_row = previous_row + width;
+  for (int ri = 1; ri < height; ++ri)
   {
-    for (size_t ci = 1; ci < width; ++ci)
+    for (int ci = 1; ci < width; ++ci)
     {
       const float up_left  = previous_row [ci - 1] + 1.4f; //distance_map[(ri-1)*input_->width + ci-1] + 1.4f;
-      const float up      = previous_row [ci] + 1.0f;     //distance_map[(ri-1)*input_->width + ci] + 1.0f;
+      const float up       = previous_row [ci]     + 1.0f; //distance_map[(ri-1)*input_->width + ci] + 1.0f;
       const float up_right = previous_row [ci + 1] + 1.4f; //distance_map[(ri-1)*input_->width + ci+1] + 1.4f;
-      const float left    = current_row  [ci - 1] + 1.0f;  //distance_map[ri*input_->width + ci-1] + 1.0f;
-      const float center  = current_row  [ci];             //distance_map[ri*input_->width + ci];
+      const float left     = current_row  [ci - 1] + 1.0f; //distance_map[ri*input_->width + ci-1] + 1.0f;
+      const float center   = current_row  [ci];            //distance_map[ri*input_->width + ci];
 
       const float min_value = std::min (std::min (up_left, up), std::min (left, up_right));
 
       if (min_value < center)
-        current_row [ci] = min_value; //distance_map[ri * input_->width + ci] = min_value;
+        current_row[ci] = min_value; //distance_map[ri * input_->width + ci] = min_value;
     }
     previous_row = current_row;
     current_row += width;
   }
 
-  float* next_row    = distance_map + width * (height - 1);
-  current_row = next_row - width;
   // second pass
+  float * next_row = distance_map + width * (height - 1);
+  current_row = next_row - width;
   for (int ri = height-2; ri >= 0; --ri)
   {
     for (int ci = width-2; ci >= 0; --ci)
     {
-      const float lower_left  = next_row [ci - 1] + 1.4f;    //distance_map[(ri+1)*input_->width + ci-1] + 1.4f;
-      const float lower      = next_row [ci] + 1.0f;        //distance_map[(ri+1)*input_->width + ci] + 1.0f;
-      const float lower_right = next_row [ci + 1] + 1.4f;    //distance_map[(ri+1)*input_->width + ci+1] + 1.4f;
-      const float right      = current_row [ci + 1] + 1.0f; //distance_map[ri*input_->width + ci+1] + 1.0f;
-      const float center     = current_row [ci];            //distance_map[ri*input_->width + ci];
+      const float lower_left  = next_row    [ci - 1] + 1.4f; //distance_map[(ri+1)*input_->width + ci-1] + 1.4f;
+      const float lower       = next_row    [ci]     + 1.0f; //distance_map[(ri+1)*input_->width + ci] + 1.0f;
+      const float lower_right = next_row    [ci + 1] + 1.4f; //distance_map[(ri+1)*input_->width + ci+1] + 1.4f;
+      const float right       = current_row [ci + 1] + 1.0f; //distance_map[ri*input_->width + ci+1] + 1.0f;
+      const float center      = current_row [ci];            //distance_map[ri*input_->width + ci];
 
       const float min_value = std::min (std::min (lower_left, lower), std::min (right, lower_right));
 
       if (min_value < center)
-        current_row [ci] = min_value; //distance_map[ri*input_->width + ci] = min_value;
+        current_row[ci] = min_value; //distance_map[ri*input_->width + ci] = min_value;
     }
   }
 }

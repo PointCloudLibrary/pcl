@@ -69,7 +69,7 @@ createAndAddTemplate (const std::vector<pcl::QuantizableModality*> & modalities,
   SparseQuantizedMultiModTemplate linemod_template;
 
   // select N features from every modality (N = 50, hardcoded; CHANGE this to a parameter!!!)
-  const int nr_features_per_modality = 50;
+  const size_t nr_features_per_modality = 50;
   const size_t nr_modalities = modalities.size();
   for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
   {
