@@ -40,6 +40,9 @@
 #ifndef PCL_GEOMETRY_PLANAR_POLYGON_H_
 #define PCL_GEOMETRY_PLANAR_POLYGON_H_
 
+#include <Eigen/Core>
+#include <vector>
+
 namespace pcl
 {
   /** \brief PlanarPolygon represents a 2D planar polygon.

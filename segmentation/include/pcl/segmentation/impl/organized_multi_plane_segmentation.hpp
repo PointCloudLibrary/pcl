@@ -144,6 +144,12 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   deinitCompute ();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT, typename PointNT, typename PointLT> void
+pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::vector<PlanarPolygon<PointT> >& regions)
+{
+}
+
 #define PCL_INSTANTIATE_OrganizedMultiPlaneSegmentation(T,NT,LT) template class PCL_EXPORTS pcl::OrganizedMultiPlaneSegmentation<T,NT,LT>;
 
 #endif  // PCL_SEGMENTATION_IMPL_MULTI_PLANE_SEGMENTATION_H_

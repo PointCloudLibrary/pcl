@@ -1,6 +1,6 @@
 set(SUBSYS_NAME apps)
 set(SUBSYS_DESC "Application examples/samples that show how PCL works")
-set(SUBSYS_DEPS common io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search)
+set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search)
 
 # Find VTK 
 if(NOT VTK_FOUND)
@@ -30,7 +30,7 @@ if(build)
   include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include)
 
   PCL_ADD_EXECUTABLE(pcl_test_search_speed ${SUBSYS_NAME} src/test_search.cpp)
-  target_link_libraries(pcl_test_search_speed pcl_common pcl_io pcl_search pcl_kdtree)
+  target_link_libraries(pcl_test_search_speed pcl_common pcl_io pcl_search pcl_kdtree pcl_visualization)
   
   PCL_ADD_EXECUTABLE(pcl_nn_classification_example ${SUBSYS_NAME} src/nn_classification_example.cpp)
   target_link_libraries(pcl_nn_classification_example pcl_common pcl_io pcl_features pcl_kdtree)
@@ -44,10 +44,10 @@ if(build)
   if (VTK_FOUND)
     PCL_ADD_EXECUTABLE(pcl_ppf_object_recognition ${SUBSYS_NAME} src/ppf_object_recognition.cpp)
     target_link_libraries(pcl_ppf_object_recognition pcl_common pcl_io pcl_filters pcl_features pcl_registration pcl_visualization pcl_sample_consensus pcl_segmentation)  
-    
+   
     PCL_ADD_EXECUTABLE(pcl_multiscale_feature_persistence_example ${SUBSYS_NAME} src/multiscale_feature_persistence_example.cpp)
     target_link_libraries(pcl_multiscale_feature_persistence_example pcl_common pcl_io pcl_filters pcl_features pcl_visualization)
-    
+
     PCL_ADD_EXECUTABLE(pcl_surfel_smoothing_test ${SUBSYS_NAME} src/surfel_smoothing_test.cpp)
     target_link_libraries(pcl_surfel_smoothing_test pcl_common pcl_io pcl_surface pcl_filters pcl_features pcl_visualization)
     

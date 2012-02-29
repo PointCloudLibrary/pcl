@@ -75,7 +75,8 @@ if(build)
         set(std_msg_incs include/std_msgs/Header.h)
     endif(NOT USE_ROS)
     
-    set(common_incs include/pcl/common/angles.h
+    set(common_incs 
+        include/pcl/common/angles.h
         include/pcl/common/bivariate_polynomial.h
         include/pcl/common/centroid.h
         include/pcl/common/concatenate.h
