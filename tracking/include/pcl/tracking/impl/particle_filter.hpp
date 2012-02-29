@@ -163,10 +163,10 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeWeight ()
     }
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename StateT> void
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::cropInputPointCloud
-(const PointCloudInConstPtr &cloud, PointCloudIn &output)
+pcl::tracking::ParticleFilterTracker<PointInT, StateT>::cropInputPointCloud (
+    const PointCloudInConstPtr &, PointCloudIn &output)
 {
   double x_min, y_min, z_min, x_max, y_max, z_max;
   calcBoundingBox (x_min, x_max, y_min, y_max, z_min, z_max);
@@ -187,9 +187,10 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::cropInputPointCloud
   pass_z_.filter (output);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename StateT> void
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::calcBoundingBox
-(double &x_min, double &x_max, double &y_min, double &y_max, double &z_min, double &z_max)
+pcl::tracking::ParticleFilterTracker<PointInT, StateT>::calcBoundingBox (
+    double &x_min, double &x_max, double &y_min, double &y_max, double &z_min, double &z_max)
 {
   x_min = y_min = z_min = std::numeric_limits<double>::max ();
   x_max = y_max = z_max = - std::numeric_limits<double>::max ();
@@ -289,9 +290,14 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTransformedPointC
   pcl::transformPointCloud<PointInT> (*ref_, cloud, trans);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename StateT> void
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloudWithNormal
-(const StateT& hypothesis, std::vector<int>& indices, PointCloudIn &cloud)
+pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloudWithNormal (
+#ifdef PCL_TRACKING_NORMAL_SUPPORTED
+    const StateT& hypothesis, std::vector<int>& indices, PointCloudIn &cloud)
+#else
+    const StateT&, std::vector<int>&, PointCloudIn &)
+#endif
 {
 #ifdef PCL_TRACKING_NORMAL_SUPPORTED
   const Eigen::Affine3f trans = toEigenMatrix (hypothesis);

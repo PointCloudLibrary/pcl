@@ -41,6 +41,14 @@
 
 #include <Eigen/Dense>
 
+#ifdef BUILD_Maintainer
+#  if defined __GNUC__
+#      pragma GCC system_header 
+#  elif defined _MSC_VER
+#    pragma warning(push, 1)
+#  endif
+#endif
+
 namespace pcl
 {
   namespace tracking
@@ -58,16 +66,23 @@ namespace pcl
       long long_value;
     } RGBValue;
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /** \brief Convert a RGB tuple to an HSV one.
+      * \param[in] r the input Red component
+      * \param[in] g the input Green component
+      * \param[in] b the input Blue component
+      * \param[out] fh the output Hue component
+      * \param[out] fs the output Saturation component
+      * \param[out] fv the output Value component
+      */ 
     void 
     RGB2HSV (int r, int g, int b, float& fh, float& fs, float& fv)
     {
       // mostly copied from opencv-svn/modules/imgproc/src/color.cpp
       // revision is 4351
-      //int bidx = blueIdx, scn = srccn;
       const int hsv_shift = 12;
         
-      static const int div_table[] = {
+      static const int div_table[] = 
+      {
         0, 1044480, 522240, 348160, 261120, 208896, 174080, 149211,
         130560, 116053, 104448, 94953, 87040, 80345, 74606, 69632,
         65280, 61440, 58027, 54973, 52224, 49737, 47476, 45412,
@@ -101,7 +116,6 @@ namespace pcl
         4352, 4334, 4316, 4298, 4281, 4263, 4246, 4229,
         4212, 4195, 4178, 4161, 4145, 4128, 4112, 4096
       };
-      //int hr = hrange, hscale = hr == 180 ? 15 : 21;
       int hr = 180, hscale = 15;
       int h, s, v = b;
       int vmin = b, diff;
@@ -129,7 +143,7 @@ namespace pcl
       fv = v / 255.0;
     }
    
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename PointInT> double
     HSVColorCoherence<PointInT>::computeCoherence (PointInT &source, PointInT &target)
     {
@@ -161,5 +175,11 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_HSVColorCoherence(T) template class PCL_EXPORTS pcl::tracking::HSVColorCoherence<T>;
+
+#ifdef BUILD_Maintainer
+#  if defined _MSC_VER
+#    pragma warning(pop)
+#  endif
+#endif
 
 #endif

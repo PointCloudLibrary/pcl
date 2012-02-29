@@ -8,8 +8,8 @@ namespace pcl
   namespace tracking
   {
     template <typename PointInT> void
-    ApproxNearestPairPointCloudCoherence<PointInT>::computeCoherence
-    (const PointCloudInConstPtr &cloud, const IndicesConstPtr &indices, float &w)
+    ApproxNearestPairPointCloudCoherence<PointInT>::computeCoherence (
+        const PointCloudInConstPtr &cloud, const IndicesConstPtr &, float &w)
     {
       double val = 0.0;
       //for (size_t i = 0; i < indices->size (); i++)

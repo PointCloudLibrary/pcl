@@ -63,7 +63,10 @@ namespace pcl
       /** \brief Empty constructor. */
       KLDAdaptiveParticleFilterTracker ()
       : ParticleFilterTracker<PointInT, StateT> ()
+      , maximum_particle_number_ ()
+      , epsilon_ (0)
       , delta_ (0.99)
+      , bin_size_ ()
       {
         tracker_name_ = "KLDAdaptiveParticleFilterTracker";
       }
@@ -74,7 +77,7 @@ namespace pcl
       inline void setBinSize (const StateT& bin_size) { bin_size_ = bin_size; }
       
       /** \brief get the bin size. */
-      inline StateT getBinSize () { return bin_size_; }
+      inline StateT getBinSize () const { return (bin_size_); }
 
       /** \brief set the maximum number of the particles.
         * \param nr the maximum number of the particles.
@@ -82,7 +85,7 @@ namespace pcl
       inline void setMaximumParticleNum (unsigned int nr) { maximum_particle_number_ = nr; }
 
       /** \brief get the maximum number of the particles.*/
-      inline unsigned int getMaximumParticleNum () { return maximum_particle_number_; }
+      inline unsigned int getMaximumParticleNum () const { return (maximum_particle_number_); }
 
       /** \brief set epsilon to be used to calc K-L boundary.
         * \param eps epsilon
@@ -90,7 +93,7 @@ namespace pcl
       inline void setEpsilon (double eps) { epsilon_ = eps; }
 
       /** \brief get epsilon to be used to calc K-L boundary. */
-      inline double getEpsilon () { return epsilon_; }
+      inline double getEpsilon () const { return (epsilon_); }
 
       /** \brief set delta to be used in chi-squared distribution.
         * \param delta delta of chi-squared distribution.
@@ -98,7 +101,7 @@ namespace pcl
       inline void setDelta (double delta) { delta_ = delta; }
 
       /** \brief get delta to be used in chi-squared distribution.*/
-      inline double getDelta () { return delta_; }
+      inline double getDelta () const { return (delta_); }
       
     protected:
 
@@ -106,19 +109,21 @@ namespace pcl
         * \param a index of the bin
         * \param b index of the bin
         */
-      inline virtual bool equalBin (std::vector<int> a, std::vector<int> b)
+      virtual bool 
+      equalBin (std::vector<int> a, std::vector<int> b)
       {
         int dimension = StateT::stateDimension ();
         for (int i = 0; i < dimension; i++)
           if (a[i] != b[i])
-            return false;
-        return true;
+            return (false);
+        return (true);
       }
 
       /** \brief return upper quantile of standard normal distribution.
-        * \param u ratio of quantile.
+        * \param[in] u ratio of quantile.
         */
-      double normalQuantile(double u)
+      double 
+      normalQuantile (double u)
       {
         const double a[9] = {  1.24818987e-4, -1.075204047e-3, 5.198775019e-3,
                                -0.019198292004, 0.059054035642,-0.151968751364,
@@ -131,20 +136,20 @@ namespace pcl
         double w, y, z;
         int i;
 
-        if(u == 0.)
-          return 0.5;
+        if (u == 0.)
+          return (0.5);
         y = u / 2.0;
-        if(y < -6.)
-          return 0.0;
-        if(y > 6.)
-          return 1.0;
-        if(y < 0.0)
+        if (y < -6.)
+          return (0.0);
+        if (y > 6.)
+          return (1.0);
+        if (y < 0.0)
           y = - y;
-        if(y < 1.0)
+        if (y < 1.0)
         {
           w = y * y;
           z = a[0];
-          for(i = 1; i < 9; i++)
+          for (i = 1; i < 9; i++)
             z = z * w + a[i];
           z *= (y * 2.0);
         }
@@ -152,23 +157,24 @@ namespace pcl
         {
           y -= 2.0;
           z = b[0];
-          for(i = 1; i < 15; i++)
+          for (i = 1; i < 15; i++)
             z = z * y + b[i];
         }
 
-        if(u < 0.0)
-          return (1. - z) / 2.0;
-        return (1. + z) / 2.0;
+        if (u < 0.0)
+          return ((1. - z) / 2.0);
+        return ((1. + z) / 2.0);
       }
 
       /** \brief calculate K-L boundary. K-L boundary follows 1/2e*chi(k-1, 1-d)^2.
-        * \param k the number of bins and the first parameter of chi distribution.
+        * \param[in] k the number of bins and the first parameter of chi distribution.
         */
-      inline virtual double calcKLBound (int k)
+      virtual 
+      double calcKLBound (int k)
       {
         double z = normalQuantile (delta_);
         double chi = 1.0 - 2.0 / (9.0 * (k - 1)) + sqrt (2.0 / (9.0 * (k - 1))) * z;
-        return (k - 1.0) / (2.0 * epsilon_) * chi * chi * chi;
+        return ((k - 1.0) / (2.0 * epsilon_) * chi * chi * chi);
       }
 
       /** \brief insert a bin into the set of the bins. if that bin is already registered,
@@ -176,16 +182,19 @@ namespace pcl
         * \param bin a bin to be inserted.
         * \param B a set of the bins
         */
-      virtual bool insertIntoBins (std::vector<int> bin, std::vector<std::vector<int> > &B);
+      virtual bool 
+      insertIntoBins (std::vector<int> bin, std::vector<std::vector<int> > &B);
             
       /** \brief This method should get called before starting the actual computation. */
-      virtual bool initCompute ();
+      virtual bool 
+      initCompute ();
 
       /** \brief resampling phase of particle filter method.
           sampling the particles according to the weights calculated in weight method.
           in particular, "sample with replacement" is archieved by walker's alias method.
         */
-      virtual void resample ();
+      virtual void 
+      resample ();
 
       /** \brief the maximum number of the particles. */
       unsigned int maximum_particle_number_;
