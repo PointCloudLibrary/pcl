@@ -51,21 +51,24 @@ namespace pcl
       virtual ~MaskMap ();
 
       inline int 
-      getWidth () { return (width_); }
+      getWidth () const { return (width_); }
       
       inline int 
-      getHeight () { return (height_); }
+      getHeight () const { return (height_); }
       
       inline unsigned char* 
       getData () { return (data_); }
 
-      inline unsigned char& 
+      inline const unsigned char* 
+      getData () const { return (data_); }
+
+      inline unsigned char & 
       operator() (int x, int y) 
       { 
         return (data_[y*width_+x]); 
       }
 
-      inline const unsigned char& 
+      inline const unsigned char & 
       operator() (int x, int y) const
       { 
         return (data_[y*width_+x]); 
@@ -107,13 +110,13 @@ namespace pcl
       void 
       initialize (int width, int height);
 
-      inline unsigned char& 
+      inline unsigned char & 
       operator() (int x, int y) 
       { 
         return (data_[y*width_+x]); 
       }
 
-      inline const unsigned char& 
+      inline const unsigned char & 
       operator() (int x, int y) const
       { 
         return (data_[y*width_+x]); 
@@ -148,7 +151,7 @@ namespace pcl
       getSpreadedQuantizedMap () = 0;
 
       virtual void 
-      extractFeatures (const MaskMap & mask, int numOfFeatures, int modalityIndex, 
+      extractFeatures (const MaskMap & mask, size_t nr_features, size_t modality_index, 
                        std::vector<QuantizedMultiModFeature> & features) = 0;
 
     private:

@@ -43,7 +43,7 @@
 #include "pcl/pcl_base.h"
 #include "pcl/point_cloud.h"
 #include "pcl/point_types.h"
-
+#include "pcl/features/linear_least_squares_normal.h"
 
 namespace pcl
 {
@@ -99,13 +99,13 @@ namespace pcl
         height_ = -1;
       }
 
-      inline float& 
+      inline float & 
       operator() (int col_index, int row_index)
       {
         return (data_[row_index*width_ + col_index]);
       }
 
-      inline const float& 
+      inline const float & 
       operator() (int col_index, int row_index) const
       {
         return (data_[row_index*width_ + col_index]);
@@ -136,15 +136,15 @@ namespace pcl
     QuantizedNormalLookUpTable () : 
       range_x (-1), range_y (-1), range_z (-1), 
       offset_x (-1), offset_y (-1), offset_z (-1), 
-      size_x (-1), size_y (-1), size (-1), lut (NULL) 
-    {};
+      size_x (-1), size_y (-1), size_z (-1), lut (NULL) 
+    {}
 
-    //~QuantizedNormalLookUpTable() { if (lut != NULL) free16(lut); };
+    //~QuantizedNormalLookUpTable() { if (lut != NULL) free16(lut); }
     ~QuantizedNormalLookUpTable () 
     { 
       if (lut != NULL) 
         delete[] lut; 
-    };
+    }
 
     void 
     initializeLUT (const int range_x_arg, const int range_y_arg, const int range_z_arg)
@@ -167,18 +167,17 @@ namespace pcl
       lut = new unsigned char[size_x*size_y*size_z];
 
       const int nr_normals = 8;
-      // @todo: Needs to be changed
-      cv::Point3f ref_normals[nr_normals];
+      std::vector<PointXYZ> ref_normals (nr_normals);
       
-      const float normal0Angle = 40.0f * 3.14f / 180.0f;
-      ref_normals[0].x = cos (normal0Angle);
+      const float normal0_angle = 40.0f * 3.14f / 180.0f;
+      ref_normals[0].x = cos (normal0_angle);
       ref_normals[0].y = 0.0f;
-      ref_normals[0].z = -sin (normal0Angle);
+      ref_normals[0].z = -sin (normal0_angle);
 
-      const float invNumOfNormals = 1.0f/nr_normals;
+      const float inv_nr_normals = 1.0f/nr_normals;
       for (int normal_index = 1; normal_index < nr_normals; ++normal_index)
       {
-        const float angle = normal_index * 3.14f * 2.0f * invNumOfNormals;
+        const float angle = normal_index * 3.14f * 2.0f * inv_nr_normals;
 
         ref_normals[normal_index].x = cos(angle)*ref_normals[0].x - sin(angle)*ref_normals[0].y;
         ref_normals[normal_index].y = sin(angle)*ref_normals[0].x + cos(angle)*ref_normals[0].y;
@@ -206,8 +205,7 @@ namespace pcl
         {
           for (int x_index = 0; x_index < size_x; ++x_index)
           {
-            // @todo: Needs to be changed
-            cv::Point3f normal (x_index - range_x/2, y_index - range_y/2, z_index - range_z);
+            PointXYZ normal (x_index - range_x/2, y_index - range_y/2, z_index - range_z);
             const float length = sqrt(normal.x*normal.x + normal.y*normal.y + normal.z*normal.z);
             const float inv_length = 1.0f / (length + 0.00001f);
 
@@ -236,7 +234,7 @@ namespace pcl
           }
         }
       }
-    };
+    }
 
     inline unsigned char 
     operator() (const float x, const float y, const float z) const
@@ -248,7 +246,7 @@ namespace pcl
       const int index = z_index*size_y*size_x + y_index*size_x + x_index;
 
       return (lut[index]);
-    };
+    }
 
     inline unsigned char 
     operator() (const int index) const
@@ -261,8 +259,27 @@ namespace pcl
   template <typename PointInT>
   class SurfaceNormalModality : public QuantizableModality, public PCLBase<PointInT>
   {
-    public:
+    protected:
+      using PCLBase<PointInT>::input_;
 
+      struct Candidate
+      {
+        Normal normal;
+        float distance;
+
+        unsigned char bin_index;
+    
+        int x;
+        int y;	
+
+        bool 
+        operator< (const Candidate & rhs)
+        {
+          return (distance > rhs.distance);
+        }
+      };
+
+    public:
       typedef typename pcl::PointCloud<PointInT> PointCloudIn;
 
       SurfaceNormalModality ();
@@ -289,7 +306,7 @@ namespace pcl
         * \param[in] cloud the const boost shared pointer to a PointCloud message
         */
       virtual void 
-      setInputCloud (const typename PointCloudIn::ConstPtr &cloud) 
+      setInputCloud (const typename PointCloudIn::ConstPtr & cloud) 
       { 
         input_ = cloud; 
       }
@@ -374,23 +391,6 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
 
   //cv::Mat maskImage(height, width, CV_8U, mask.mask);
   //cv::erode(maskImage, maskImage
-
-  struct Candidate
-  {
-    Normal normal;
-    float distance;
-
-    unsigned char bin_index;
-    
-    int x;
-    int y;	
-
-    bool 
-    operator< (const Candidate & rhs)
-    {
-      return (distance > rhs.distance);
-    }
-  };
 
   // create distance maps for every quantization value
   //cv::Mat distance_maps[8];
@@ -487,7 +487,7 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
     }
   }
 
-  for (std::list<Candidate>::iterator iter = list1.begin (); iter != list1.end (); ++iter)
+  for (typename std::list<Candidate>::iterator iter = list1.begin (); iter != list1.end (); ++iter)
     iter->distance *= 1.0f / weights[iter->bin_index];
 
   list1.sort ();
@@ -495,7 +495,7 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
   if (list1.size() <= nr_features)
   {
     features.reserve (list1.size ());
-    for (std::list<Candidate>::iterator iter = list1.begin(); iter != list1.end(); ++iter)
+    for (typename std::list<Candidate>::iterator iter = list1.begin(); iter != list1.end(); ++iter)
     {
       QuantizedMultiModFeature feature;
 
@@ -514,11 +514,11 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
   while (list2.size () != nr_features)
   {
     const int sqr_distance = distance*distance;
-    for (std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
+    for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
     {
       bool candidate_accepted = true;
 
-      for (std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+      for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
       {
         const float dx = iter1->x - iter2->x;
         const float dy = iter1->y - iter2->y;
@@ -539,7 +539,7 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
     --distance;
   }
 
-  for (std::list<Candidate>::iterator iter2 = list2.begin(); iter2 != list2.end(); ++iter2)
+  for (typename std::list<Candidate>::iterator iter2 = list2.begin(); iter2 != list2.end(); ++iter2)
   {
     QuantizedMultiModFeature feature;
 
@@ -668,10 +668,8 @@ pcl::SurfaceNormalModality<PointInT>::filterQuantizedSurfaceNormals ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT>void
-pcl::SurfaceNormalModality<PointInT>::computeDistanceMap (
-  MaskMap & input,
-  DistanceMap & output)
+template <typename PointInT> void
+pcl::SurfaceNormalModality<PointInT>::computeDistanceMap (const MaskMap & input, DistanceMap & output)
 {
   const int width = input.getWidth ();
   const int height = input.getHeight ();

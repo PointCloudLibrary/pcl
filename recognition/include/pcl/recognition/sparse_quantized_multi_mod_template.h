@@ -49,7 +49,7 @@ namespace pcl
   {
     int x;
     int y;
-    int modality_index;
+    size_t modality_index;
     unsigned char quantized_value;
 
     void 

@@ -58,9 +58,9 @@ pcl::LINEMOD::
 //////////////////////////////////////////////////////////////////////////////////////////////
 int 
 pcl::LINEMOD::
-createAndAddTemplate (std::vector<pcl::QuantizableModality*> & modalities,
-                      std::vector<pcl::MaskMap*> & masks,
-                      pcl::RegionXY & region)
+createAndAddTemplate (const std::vector<pcl::QuantizableModality*> & modalities,
+                      const std::vector<pcl::MaskMap*> & masks,
+                      const pcl::RegionXY & region)
 {
   // assuming width and height is same for all modalities; should we check this??
   //const int width = modalities[0]->getQuantizedMap().getWidth ();

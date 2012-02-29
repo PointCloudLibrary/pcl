@@ -105,19 +105,19 @@ namespace pcl
         nr_bins_ = -1;
       }
 
-      inline unsigned char& 
+      inline unsigned char & 
       operator() (const int bin_index, const int col_index, const int row_index)
       {
         return (maps_[bin_index][row_index*width_ + col_index]);
       }
 
-      inline unsigned char& 
+      inline unsigned char & 
       operator() (const int bin_index, const int index)
       {
         return (maps_[bin_index][index]);
       }
 
-      inline unsigned char* 
+      inline unsigned char * 
       operator() (const int bin_index)
       {
         return (maps_[bin_index]);
@@ -240,14 +240,15 @@ namespace pcl
         * \param 
         */
       int 
-      createAndAddTemplate (std::vector<QuantizableModality*> &modalities,
-                            std::vector<MaskMap*> &masks, RegionXY &region);
+      createAndAddTemplate (const std::vector<QuantizableModality*> & modalities,
+                            const std::vector<MaskMap*> & masks,
+                            const RegionXY & region);
 
       void
-      detectTemplates (std::vector<QuantizableModality*> &modalities,
-                       std::vector<LINEMODDetection>  &detections);
+      detectTemplates (std::vector<QuantizableModality*> & modalities,
+                       std::vector<LINEMODDetection> & detections);
 
-      inline SparseQuantizedMultiModTemplate&
+      inline SparseQuantizedMultiModTemplate &
       getTemplate (int template_id)
       { 
         return (templates_[template_id]);
