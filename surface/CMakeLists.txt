@@ -76,7 +76,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/poisson/hash.h
         include/pcl/${SUBSYS_NAME}/poisson/marching_cubes_poisson.h
         include/pcl/${SUBSYS_NAME}/poisson/multi_grid_octree_data.h
-        include/pcl/${SUBSYS_NAME}/poisson/octree.h
+        include/pcl/${SUBSYS_NAME}/poisson/octree_poisson.h
         include/pcl/${SUBSYS_NAME}/poisson/polynomial.h
         include/pcl/${SUBSYS_NAME}/poisson/ppolynomial.h
         include/pcl/${SUBSYS_NAME}/poisson/sparse_matrix.h
@@ -86,7 +86,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/poisson/function_data.hpp
         include/pcl/${SUBSYS_NAME}/impl/poisson/geometry.hpp
         include/pcl/${SUBSYS_NAME}/impl/poisson/multi_grid_octree_data.hpp
-        include/pcl/${SUBSYS_NAME}/impl/poisson/octree.hpp
+        include/pcl/${SUBSYS_NAME}/impl/poisson/octree_poisson.hpp
         include/pcl/${SUBSYS_NAME}/impl/poisson/polynomial.hpp
         include/pcl/${SUBSYS_NAME}/impl/poisson/ppolynomial.hpp
         include/pcl/${SUBSYS_NAME}/impl/poisson/sparse_matrix.hpp
@@ -151,6 +151,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/surfel_smoothing.hpp
         include/pcl/${SUBSYS_NAME}/impl/texture_mapping.hpp
         include/pcl/${SUBSYS_NAME}/impl/poisson.hpp
+        ${POISSON_IMPLS}
         ${HULL_IMPLS}
         ${NURBS_IMPLS}
         )

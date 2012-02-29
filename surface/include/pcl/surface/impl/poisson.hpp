@@ -45,7 +45,7 @@
 #include <pcl/common/vector_average.h>
 #include <pcl/Vertices.h>
 
-#include "pcl/surface/poisson/octree.h"
+#include "pcl/surface/poisson/octree_poisson.h"
 #include "pcl/surface/poisson/sparse_matrix.h"
 #include "pcl/surface/poisson/function_data.h"
 #include "pcl/surface/poisson/ppolynomial.h"
@@ -56,25 +56,26 @@
 #include <stdarg.h>
 #include <string>
 
-using namespace pcl::surface::poisson;
+using namespace pcl;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
 pcl::Poisson<PointNT>::Poisson ()
-  : no_reset_samples_ (false),
-    no_clip_tree_ (false),
-    confidence_ (false),
-    manifold_ (false),
-    depth_ (10),
-    solver_divide_ (8),
-    iso_divide_ (8),
-    refine_ (3),
-    kernel_depth_ (8),
-    degree_ (2),
-    samples_per_node_ (1.0),
-    scale_ (1.25)
-{
-}
+: no_reset_samples_ (false),
+  no_clip_tree_ (false),
+  confidence_ (false),
+  manifold_ (false),
+  output_polygons_ (false),
+  depth_ (8),
+  solver_divide_ (8),
+  iso_divide_ (8),
+  refine_ (3),
+  kernel_depth_ (8),
+  degree_ (2),
+  samples_per_node_ (1.0),
+  scale_ (1.25)
+  {
+  }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
@@ -87,38 +88,62 @@ template <typename PointNT> template <int Degree> void
 pcl::Poisson<PointNT>::execute (CoredMeshData &mesh,
                                 Point3D<float> &center)
 {
-  float scale = 1;
+  float scale=1.0;
+  float isoValue=0;
   //////////////////////////////////
   // Fix courtesy of David Gallup //
-  // TreeNodeData::UseIndex = 1;  //
+  TreeNodeData::UseIndex = 1;     //
   //////////////////////////////////
   Octree<Degree> tree;
-  PPolynomial<Degree> ReconstructionFunction = PPolynomial<Degree>::GaussianApproximation ();
+  PPolynomial<Degree> ReconstructionFunction=PPolynomial<Degree>::GaussianApproximation();
 
-  center.coords[0] = center.coords[1] = center.coords[2] = 0;
+  center.coords[0]=center.coords[1]=center.coords[2]=0;
 
-  TreeOctNode::SetAllocator (MEMORY_ALLOCATOR_BLOCK_SIZE);
+  TreeOctNode::SetAllocator(MEMORY_ALLOCATOR_BLOCK_SIZE);
 
-  int kernel_depth=depth_-2;
-  tree.setFunctionData (ReconstructionFunction, depth_, 0, float (1.0) / (1<<depth_));
+  kernel_depth_ = depth_ - 2;
+//  if(KernelDepth.set){kernelDepth=KernelDepth.value;}
 
-  tree.setTree (input_, depth_, kernel_depth, float(samples_per_node_), scale_, center, scale, !no_reset_samples_, confidence_);
+  tree.setFunctionData(ReconstructionFunction,depth_, 0, Real(1.0)/(1<<depth_));
+  if(kernel_depth_>depth_){
+    fprintf(stderr,"KernelDepth can't be greater than Depth: %d <= %d\n",kernel_depth_,depth_);
+    return;
+  }
 
-  if (!no_clip_tree_)
-    tree.ClipTree ();
 
-  tree.finalize1 (refine_);
-  tree.SetLaplacianWeights ();
-  tree.finalize2 (refine_);
 
-  tree.LaplacianMatrixIteration (solver_divide_);
+  printf ("depth %d, kernel_depth %d, samples_per_node %f, scale %f, center %f %f %f, scale %f, no_reset_samples %d\n",
+            depth_, kernel_depth_, float(samples_per_node_), scale_, center.coords[0], center.coords[1], center.coords[2], scale, int(no_reset_samples_));
 
-  float isoValue=tree.GetIsoValue ();
 
-  if (iso_divide_)
-    tree.GetMCIsoTriangles (isoValue, iso_divide_, &mesh, 0, 1, manifold_);
+  tree.setTree (input_, depth_, kernel_depth_, float(samples_per_node_), scale_, center, scale, !no_reset_samples_, confidence_);
+  printf ("depth %d, kernel_depth %d, samples_per_node %f, scale %f, center %f %f %f, scale %f, no_reset_samples %d\n",
+          depth_, kernel_depth_, float(samples_per_node_), scale_, center.coords[0], center.coords[1], center.coords[2], scale, int(no_reset_samples_));
+
+  printf("Leaves/Nodes: %d/%d\n",tree.tree.leaves(),tree.tree.nodes());
+  printf("   Tree Size: %.3f MB\n",float(sizeof(TreeOctNode)*tree.tree.nodes())/(1<<20));
+
+  if(!no_clip_tree_){
+    tree.ClipTree();
+  }
+
+  tree.finalize1(refine_);
+
+  tree.maxMemoryUsage=0;
+  tree.SetLaplacianWeights();
+
+  tree.finalize2(refine_);
+
+  tree.maxMemoryUsage=0;
+  tree.LaplacianMatrixIteration(solver_divide_);
+
+  tree.maxMemoryUsage=0;
+  isoValue=tree.GetIsoValue();
+
+  if(iso_divide_)
+    tree.GetMCIsoTriangles( isoValue , iso_divide_ , &mesh , 0 , 1 , manifold_, output_polygons_);
   else
-    tree.GetMCIsoTriangles (isoValue, &mesh, 0, 1, manifold_);
+    tree.GetMCIsoTriangles( isoValue ,                   &mesh , 0 , 1 , manifold_ , output_polygons_);
 }
 
 
@@ -184,28 +209,23 @@ pcl::Poisson<PointNT>::performReconstruction (PolygonMesh &output)
     cloud.points[i].z = p.coords[2]*scale+center.coords[2];
   }
   pcl::toROSMsg (cloud, output.cloud);
-  output.polygons.resize (mesh.triangleCount ());
+  output.polygons.resize (mesh.polygonCount ());
 
   // Write faces
-  TriangleIndex tIndex;
-  int inCoreFlag;
-  for (int i = 0; i < mesh.triangleCount (); i++)
+  std::vector< CoredVertexIndex > polygon;
+  for (int p_i = 0; p_i < mesh.polygonCount (); p_i++)
   {
-    // Create and fill a struct that the ply code can handle
     pcl::Vertices v;
-    v.vertices.resize (3);
+    mesh.nextPolygon (polygon);
+    v.vertices.resize (polygon.size ());
 
-    mesh.nextTriangle (tIndex,inCoreFlag);
-    if (!(inCoreFlag & CoredMeshData::IN_CORE_FLAG[0]))
-      tIndex.idx[0] += int(mesh.inCorePoints.size ());
-    if (!(inCoreFlag & CoredMeshData::IN_CORE_FLAG[1]))
-      tIndex.idx[1] += int(mesh.inCorePoints.size ());
-    if (!(inCoreFlag & CoredMeshData::IN_CORE_FLAG[2]))
-      tIndex.idx[2] += int(mesh.inCorePoints.size ());
+    for (int i = 0; i < polygon.size (); ++i)
+      if (polygon[i].inCore )
+        v.vertices[i] = polygon[i].idx;
+      else
+        v.vertices[i] = polygon[i].idx + int( mesh.inCorePoints.size() );
 
-    for (int j = 0; j < 3; j++)
-      v.vertices[j] = tIndex.idx[j];
-    output.polygons[i] = v;
+    output.polygons[p_i] = v;
   }
 }
 
@@ -213,7 +233,7 @@ pcl::Poisson<PointNT>::performReconstruction (PolygonMesh &output)
 template <typename PointNT> void
 pcl::Poisson<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
                                               std::vector<pcl::Vertices> &polygons)
-{
+                                              {
   CoredVectorMeshData mesh;
   Point3D<float> center;
 
@@ -270,27 +290,25 @@ pcl::Poisson<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
     points.points[i].z = p.coords[2]*scale+center.coords[2];
   }
 
-  polygons.resize (mesh.triangleCount ());
+
+
+  polygons.resize (mesh.polygonCount ());
 
   // write faces
-  TriangleIndex tIndex;
-  int inCoreFlag;
-  for (int i = 0; i < mesh.triangleCount (); i++)
+  std::vector< CoredVertexIndex > polygon;
+  for (int p_i = 0; p_i < mesh.polygonCount (); p_i++)
   {
-    // create and fill a struct that the ply code can handle
     pcl::Vertices v;
-    v.vertices.resize (3);
- 
-    mesh.nextTriangle (tIndex,inCoreFlag);
-    if (!(inCoreFlag & CoredMeshData::IN_CORE_FLAG[0]))
-      tIndex.idx[0] += int(mesh.inCorePoints.size ());
-    if (!(inCoreFlag & CoredMeshData::IN_CORE_FLAG[1]))
-      tIndex.idx[1] += int(mesh.inCorePoints.size ());
-    if (!(inCoreFlag & CoredMeshData::IN_CORE_FLAG[2]))
-      tIndex.idx[2] += int(mesh.inCorePoints.size ());
-    for (int j = 0; j < 3; j++)
-      v.vertices[j] = tIndex.idx[j];
-    polygons[i] = v;
+    mesh.nextPolygon (polygon);
+    v.vertices.resize (polygon.size ());
+
+    for (int i = 0; i < polygon.size (); ++i)
+      if (polygon[i].inCore )
+        v.vertices[i] = polygon[i].idx;
+      else
+        v.vertices[i] = polygon[i].idx + int( mesh.inCorePoints.size() );
+
+    polygons[p_i] = v;
   }
 }
 

@@ -198,6 +198,7 @@ namespace pcl
         bool no_clip_tree_;
         bool confidence_;
         bool manifold_;
+        bool output_polygons_;
 
         int depth_;
         int solver_divide_;
@@ -210,8 +211,8 @@ namespace pcl
         float scale_;
 
         template<int Degree> void
-        execute (surface::poisson::CoredMeshData &mesh,
-                 surface::poisson::Point3D<float> &translate);
+        execute (CoredMeshData &mesh,
+                 Point3D<float> &translate);
 
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
