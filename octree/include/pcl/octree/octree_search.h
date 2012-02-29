@@ -244,7 +244,7 @@ namespace pcl
         /** \brief Get indices of all voxels that are intersected by a ray (origin, direction).
           * \param[in] origin ray origin
           * \param[in] direction ray direction vector
-          * \param[out] k_indices resulting indices
+          * \param[out] k_indices resulting point indices from intersected voxels
           * \return number of intersected voxels
           */
         int
