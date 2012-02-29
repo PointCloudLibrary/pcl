@@ -37,8 +37,8 @@
  *
  */
 
-#ifndef PCL_PLANAR_POLYGON_H_
-#define PCL_PLANAR_POLYGON_H_
+#ifndef PCL_GEOMETRY_PLANAR_POLYGON_H_
+#define PCL_GEOMETRY_PLANAR_POLYGON_H_
 
 namespace pcl
 {
@@ -58,5 +58,5 @@ namespace pcl
   };
 }
 
-#endif  //#ifndef PCL_PLANAR_POLYGON_H_
+#endif  //#ifndef PCL_GEOMETRY_PLANAR_POLYGON_H_
 

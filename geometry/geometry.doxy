@@ -1,0 +1,11 @@
+/**
+  \addtogroup geometry Module geometry
+
+  \section secGeometryPresentation Overview
+
+The PCL geometry library contains computational geometry data structures and algorithms.
+
+  \section secRecognitionRequirements Requirements
+  - \ref common "common"
+
+*/
