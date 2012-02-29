@@ -853,34 +853,35 @@ TEST (PCL, EarClipping)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*TEST (PCL, Poisson)
+TEST (PCL, Poisson)
 {
   Poisson<PointNormal> poisson;
   poisson.setInputCloud (cloud_with_normals);
   PolygonMesh mesh;
   poisson.reconstruct (mesh);
 
-  io::saveVTKFile ("bunny_poisson.vtk", mesh);
 
-  ASSERT_EQ (mesh.polygons.size (), 1574);
+//  io::saveVTKFile ("bunny_poisson.vtk", mesh);
+
+  ASSERT_EQ (mesh.polygons.size (), 1051);
   // All polygons should be triangles
   for (size_t i = 0; i < mesh.polygons.size (); ++i)
     EXPECT_EQ (mesh.polygons[i].vertices.size (), 3);
 
-  EXPECT_EQ (mesh.polygons[10].vertices[0], 259);
-  EXPECT_EQ (mesh.polygons[10].vertices[1], 25);
-  EXPECT_EQ (mesh.polygons[10].vertices[2], 256);
+  EXPECT_EQ (mesh.polygons[10].vertices[0], 121);
+  EXPECT_EQ (mesh.polygons[10].vertices[1], 120);
+  EXPECT_EQ (mesh.polygons[10].vertices[2], 23);
 
-  EXPECT_EQ (mesh.polygons[200].vertices[0], 321);
-  EXPECT_EQ (mesh.polygons[200].vertices[1], 319);
-  EXPECT_EQ (mesh.polygons[200].vertices[2], 316);
+  EXPECT_EQ (mesh.polygons[200].vertices[0], 130);
+  EXPECT_EQ (mesh.polygons[200].vertices[1], 119);
+  EXPECT_EQ (mesh.polygons[200].vertices[2], 131);
 
-  EXPECT_EQ (mesh.polygons[1000].vertices[0], 34);
-  EXPECT_EQ (mesh.polygons[1000].vertices[1], 602);
-  EXPECT_EQ (mesh.polygons[1000].vertices[2], 6);
+  EXPECT_EQ (mesh.polygons[1000].vertices[0], 521);
+  EXPECT_EQ (mesh.polygons[1000].vertices[1], 516);
+  EXPECT_EQ (mesh.polygons[1000].vertices[2], 517);
 }
 
-*/
+
 
 /* ---[ */
 int
