@@ -1,4 +1,4 @@
-set(SUBSYS_NAME recognition)
+set(SUBSYS_NAME geometry)
 set(SUBSYS_DESC "Point cloud geometry library")
 set(SUBSYS_DEPS common)
 
@@ -17,6 +17,7 @@ if(build)
         )
 
     set(srcs
+        src/geometry.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
