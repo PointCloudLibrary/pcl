@@ -72,7 +72,7 @@ if(build)
 	include/pcl/${SUBSYS_NAME}/ply/ply.h
 	include/pcl/${SUBSYS_NAME}/ply/ply_parser.h)
     PCL_ADD_LIBRARY(pcl_io_ply ${SUBSYS_NAME} ${PLY_SOURCES} ${PLY_INCLUDES})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ply ${PLY_INCLUDES})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/ply ${PLY_INCLUDES})
 
     set(srcs 
         src/pcd_grabber.cpp
