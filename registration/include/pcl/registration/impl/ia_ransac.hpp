@@ -191,7 +191,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
 
   if (!error_functor_)
   {
-    error_functor_.reset (new TruncatedError (min_sample_distance_));
+    error_functor_.reset (new TruncatedError (corr_dist_threshold_));
   }
 
   std::vector<int> sample_indices (nr_samples_);
