@@ -37,6 +37,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/ppfrgb.h
         include/pcl/${SUBSYS_NAME}/shot.h
         include/pcl/${SUBSYS_NAME}/shot_common.h
+		include/pcl/${SUBSYS_NAME}/shot_lrf.h
         include/pcl/${SUBSYS_NAME}/shot_omp.h
         include/pcl/${SUBSYS_NAME}/spin_image.h
         include/pcl/${SUBSYS_NAME}/principal_curvatures.h
@@ -80,6 +81,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/ppfrgb.hpp
         include/pcl/${SUBSYS_NAME}/impl/shot.hpp
         include/pcl/${SUBSYS_NAME}/impl/shot_common.hpp
+		include/pcl/${SUBSYS_NAME}/impl/shot_lrf.hpp
         include/pcl/${SUBSYS_NAME}/impl/shot_omp.hpp
         include/pcl/${SUBSYS_NAME}/impl/spin_image.hpp
         include/pcl/${SUBSYS_NAME}/impl/principal_curvatures.hpp
@@ -118,6 +120,7 @@ if(build)
         src/ppfrgb.cpp
         src/shot.cpp
         src/shot_omp.cpp
+		src/shot_lrf.cpp
         src/spin_image.cpp
         src/principal_curvatures.cpp
         src/rift.cpp
