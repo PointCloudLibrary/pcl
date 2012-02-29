@@ -39,12 +39,13 @@
 #define PCL_FEATURES_QUANTIZABLE_MODALITY
 
 #include <vector>
+#include <pcl/pcl_macros.h>
 #include "pcl/recognition/region_xy.h"
 #include "pcl/recognition/sparse_quantized_multi_mod_template.h"
 
 namespace pcl
 {
-  class MaskMap
+  class PCL_EXPORTS MaskMap
   {
     public:
       MaskMap ();
@@ -86,7 +87,7 @@ namespace pcl
       int height_;  
   };
 
-  class QuantizedMap
+  class PCL_EXPORTS QuantizedMap
   {
     public:
 
@@ -132,7 +133,7 @@ namespace pcl
     
   };
 
-  class QuantizableModality
+  class PCL_EXPORTS QuantizableModality
   {
     public:
       QuantizableModality ();
