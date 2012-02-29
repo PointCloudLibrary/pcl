@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,13 +33,20 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/point_types.h"
-#include "pcl/segmentation/seeded_hue_segmentation.h"
-#include "pcl/segmentation/impl/seeded_hue_segmentation.hpp"
+#ifndef PCL_SEGMENTATION_PLANAR_POLYGON_FUSION_HPP_
+#define PCL_SEGMENTATION_PLANAR_POLYGON_FUSION_HPP_
 
-// Instantiations of specific point types
+#include <pcl/segmentation/planar_polygon_fusion.h>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::PlanarPolygonFusion<PointT>::refine (std::vector<PlanarPolygon<PointT> > &output)
+{
+
+}
+
+#define PCL_INSTANTIATE_PlanarPolygonFusion(T) template class PCL_EXPORTS pcl::PlanarPolygonFusion<T>;
+
+#endif // PCL_SEGMENTATION_PLANAR_POLYGON_FUSION_HPP_

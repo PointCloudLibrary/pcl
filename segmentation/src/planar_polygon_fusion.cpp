@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,7 +39,13 @@
 
 #include "pcl/impl/instantiate.hpp"
 #include "pcl/point_types.h"
-#include "pcl/segmentation/seeded_hue_segmentation.h"
-#include "pcl/segmentation/impl/seeded_hue_segmentation.hpp"
+#include "pcl/segmentation/planar_polygon_fusion.h"
+#include "pcl/segmentation/impl/planar_polygon_fusion.hpp"
 
 // Instantiations of specific point types
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+  PCL_INSTANTIATE(PlanarPolygonFusion, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
+#else
+  PCL_INSTANTIATE(PlanarPolygonFusion, PCL_XYZ_POINT_TYPES)
+#endif
+

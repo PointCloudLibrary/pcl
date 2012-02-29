@@ -9,7 +9,8 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
-    set(srcs src/extract_clusters.cpp
+    set(srcs 
+        src/extract_clusters.cpp
         src/extract_polygonal_prism_data.cpp
         src/sac_segmentation.cpp
         src/seeded_hue_segmentation.cpp
@@ -17,9 +18,11 @@ if(build)
         src/region_growing.cpp
         src/organized_connected_component_segmentation.cpp
         src/organized_multi_plane_segmentation.cpp
+        src/planar_polygon_fusion.cpp
        )
 
-    set(incs include/pcl/${SUBSYS_NAME}/extract_clusters.h
+    set(incs 
+        include/pcl/${SUBSYS_NAME}/extract_clusters.h
         include/pcl/${SUBSYS_NAME}/extract_labeled_clusters.h
         include/pcl/${SUBSYS_NAME}/extract_polygonal_prism_data.h
         include/pcl/${SUBSYS_NAME}/sac_segmentation.h
@@ -30,9 +33,11 @@ if(build)
         include/pcl/${SUBSYS_NAME}/plane_coefficient_comparator.h
         include/pcl/${SUBSYS_NAME}/organized_connected_component_segmentation.h
         include/pcl/${SUBSYS_NAME}/organized_multi_plane_segmentation.h
+        include/pcl/${SUBSYS_NAME}/planar_polygon_fusion.h
         )
 
-    set(impl_incs include/pcl/${SUBSYS_NAME}/impl/extract_clusters.hpp
+    set(impl_incs 
+        include/pcl/${SUBSYS_NAME}/impl/extract_clusters.hpp
         include/pcl/${SUBSYS_NAME}/impl/extract_labeled_clusters.hpp
         include/pcl/${SUBSYS_NAME}/impl/extract_polygonal_prism_data.hpp
         include/pcl/${SUBSYS_NAME}/impl/sac_segmentation.hpp
@@ -41,6 +46,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/region_growing.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_connected_component_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_multi_plane_segmentation.hpp
+        include/pcl/${SUBSYS_NAME}/impl/planar_polygon_fusion.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
