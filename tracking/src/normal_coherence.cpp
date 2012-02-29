@@ -5,4 +5,4 @@
 #include "pcl/tracking/normal_coherence.h"
 #include "pcl/tracking/impl/normal_coherence.hpp"
 
-PCL_INSTANTIATE_PRODUCT(NormalCoherence, (PCL_NORMAL_POINT_TYPES));
+PCL_INSTANTIATE_PRODUCT(NormalCoherence, (PCL_NORMAL_POINT_TYPES))

@@ -5,4 +5,4 @@
 #include "pcl/tracking/distance_coherence.h"
 #include "pcl/tracking/impl/distance_coherence.hpp"
 
-PCL_INSTANTIATE_PRODUCT(DistanceCoherence, (PCL_XYZ_POINT_TYPES));
+PCL_INSTANTIATE_PRODUCT(DistanceCoherence, (PCL_XYZ_POINT_TYPES))

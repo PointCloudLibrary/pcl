@@ -28,8 +28,8 @@ namespace pcl
       using NearestPairPointCloudCoherence<PointInT>::getClassName;
       
       /** \brief empty constructor */
-      ApproxNearestPairPointCloudCoherence ()
-      : NearestPairPointCloudCoherence<PointInT> ()
+      ApproxNearestPairPointCloudCoherence () : 
+        NearestPairPointCloudCoherence<PointInT> (), search_ ()
       {
         coherence_name_ = "ApproxNearestPairPointCloudCoherence";
       }

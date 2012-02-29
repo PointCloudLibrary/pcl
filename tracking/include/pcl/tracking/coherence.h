@@ -22,10 +22,10 @@ namespace pcl
       
     public:
       /** \brief empty constructor */
-      PointCoherence () {}
+      PointCoherence () : coherence_name_ () {}
       
       /** \brief empty distructor */
-      ~PointCoherence () {}
+      virtual ~PointCoherence () {}
 
       /** \brief compute coherence from the source point to the target point.
         * \param source instance of source point.
@@ -40,10 +40,11 @@ namespace pcl
       std::string coherence_name_;
 
       /** \brief abstract method to calculate coherence.
-        * \param source instance of source point.
-        * \param target instance of target point.
+        * \param[in] source instance of source point.
+        * \param[in] target instance of target point.
         */
-      virtual double computeCoherence (PointInT &source, PointInT &target) = 0;
+      virtual double 
+      computeCoherence (PointInT &source, PointInT &target) = 0;
 
       /** \brief Get a string representation of the name of this class. */
       inline const std::string& 
@@ -67,8 +68,11 @@ namespace pcl
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
       
       typedef typename PointCoherence<PointInT>::Ptr PointCoherencePtr;
-      /** \brief empty constructor */
-      PointCloudCoherence () {}
+      /** \brief Constructor. */
+      PointCloudCoherence () : coherence_name_ (), target_input_ (), point_coherences_ () {}
+
+      /** \brief Destructor. */
+      virtual ~PointCloudCoherence () {}
 
       /** \brief compute coherence between two pointclouds. */
       inline void
