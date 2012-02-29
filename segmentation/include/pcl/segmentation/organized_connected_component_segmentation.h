@@ -99,7 +99,7 @@ namespace pcl
         compare_ = compare;
       }
       
-      /** \brief Get the comparator.*/ 
+      /** \brief Get the comparator.*/
       ComparatorConstPtr
       getComparator () const { return (compare_); }
 
@@ -110,12 +110,24 @@ namespace pcl
       void
       segment (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices);
       
+      /** \brief Find the boundary points / contour of a connected component
+        * \param[in] start_idx the first (lowest) index of the connected component for which a boundary shoudl be returned
+        * \param[in] labels the Label cloud produced by segmentation
+        * \param[out] boundary_indices the indices of the boundary points for the label corresponding to start_idx
+        */
+      static void
+      findLabeledRegionBoundary (int start_idx, PointCloudLPtr labels, pcl::PointIndices& boundary_indices);      
+      
+
     protected:
       ComparatorConstPtr compare_;
       
       unsigned
       findRoot (const std::vector<unsigned>& runs, unsigned index);
       
+      static void
+      getNextIdxs(int& p1, int& p2, int& p3, int curr_idx, int dir, int width);
+
   };
 }
 
