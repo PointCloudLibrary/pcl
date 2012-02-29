@@ -163,16 +163,16 @@ pcl::registration::ELCH<PointT>::initCompute ()
     return (false);
   }*/ //TODO
 
-  if (!loop_start_)
+  if (loop_start_ < 0)
   {
-    PCL_ERROR ("[pcl::registration::ELCH::initCompute] no start of loop defined is empty!\n");
+    PCL_ERROR ("[pcl::registration::ELCH::initCompute] no start of loop defined!\n");
     deinitCompute ();
     return (false);
   }
 
-  if (!loop_end_)
+  if (loop_end_ < 0)
   {
-    PCL_ERROR ("[pcl::registration::ELCH::initCompute] no end of loop defined is empty!\n");
+    PCL_ERROR ("[pcl::registration::ELCH::initCompute] no end of loop defined!\n");
     deinitCompute ();
     return (false);
   }
