@@ -49,25 +49,25 @@ namespace pcl
   {
     int x;
     int y;
-    int modalityIndex;
-    unsigned char quantizedValue;
+    int modality_index;
+    unsigned char quantized_value;
 
     void 
-    serialize (::std::ostream & stream)
+    serialize (std::ostream & stream) const
     {
       write (stream, x);
       write (stream, y);
-      write (stream, modalityIndex);
-      write (stream, quantizedValue);
+      write (stream, modality_index);
+      write (stream, quantized_value);
     }
 
     void 
-    deserialize (::std::istream & stream)
+    deserialize (std::istream & stream)
     {
       read (stream, x);
       read (stream, y);
-      read (stream, modalityIndex);
-      read (stream, quantizedValue);
+      read (stream, modality_index);
+      read (stream, quantized_value);
     }
   };
 
@@ -78,7 +78,7 @@ namespace pcl
     RegionXY region;
 
     void 
-    serialize (::std::ostream & stream)
+    serialize (std::ostream & stream) const
     {
       const int num_of_features = static_cast<int> (features.size ());
       write (stream, num_of_features);

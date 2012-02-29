@@ -67,9 +67,7 @@ pcl::MaskMap::
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::MaskMap::
-initialize (
-   const int width,
-   const int height )
+initialize (int width, int height)
 {
   if (data_ != NULL && (width_ != width || height_ != height))
   {
@@ -113,9 +111,7 @@ QuantizedMap ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::QuantizedMap::
-QuantizedMap (
-   const int width,
-   const int height )
+QuantizedMap (int width, int height)
 {
   initialize (width, height);
 }
@@ -130,9 +126,7 @@ pcl::QuantizedMap::
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::QuantizedMap::
-initialize (
-   const int width,
-   const int height )
+initialize (int width, int height)
 {
   if (data_ != NULL && (width_ != width || height_ != height))
   {
@@ -156,44 +150,41 @@ initialize (
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::QuantizedMap::
-spreadQuantizedMap (
-  QuantizedMap & inputMap,
-  QuantizedMap & outputMap,
-  const int spreadingSize )
+spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, int spreading_size)
 {
-  const int width = inputMap.getWidth ();
-  const int height = inputMap.getHeight ();
+  const int width = input_map.getWidth ();
+  const int height = input_map.getHeight ();
 
-  QuantizedMap tmpMap;
-  tmpMap.initialize(width, height);
+  QuantizedMap tmp_map;
+  tmp_map.initialize(width, height);
 
-  outputMap.initialize(width, height);
+  output_map.initialize(width, height);
 
-  for (int rowIndex = spreadingSize; rowIndex < height-spreadingSize-1; ++rowIndex)
+  for (int row_index = spreading_size; row_index < height-spreading_size-1; ++row_index)
   {
-    for (int colIndex = spreadingSize; colIndex < width-spreadingSize-1; ++colIndex)
+    for (int col_index = spreading_size; col_index < width-spreading_size-1; ++col_index)
     {
       unsigned char value = 0;
-      for (int colIndex2 = colIndex-spreadingSize; colIndex2 <= colIndex+spreadingSize; ++colIndex2)
+      for (int col_index2 = col_index-spreading_size; col_index2 <= col_index+spreading_size; ++col_index2)
       {
-        //if (rowIndex2 < 0 || rowIndex2 >= height || colIndex2 < 0 || colIndex2 >= width) continue;
-        value |= inputMap (colIndex2, rowIndex);
+        //if (row_index2 < 0 || row_index2 >= height || col_index2 < 0 || col_index2 >= width) continue;
+        value |= input_map (col_index2, row_index);
       }
-      tmpMap (colIndex, rowIndex) = value;
+      tmp_map (col_index, row_index) = value;
     }
   }
 
-  for (int rowIndex = spreadingSize; rowIndex < height-spreadingSize-1; ++rowIndex)
+  for (int row_index = spreading_size; row_index < height-spreading_size-1; ++row_index)
   {
-    for (int colIndex = spreadingSize; colIndex < width-spreadingSize-1; ++colIndex)
+    for (int col_index = spreading_size; col_index < width-spreading_size-1; ++col_index)
     {
       unsigned char value = 0;
-      for (int rowIndex2 = rowIndex-spreadingSize; rowIndex2 <= rowIndex+spreadingSize; ++rowIndex2)
+      for (int row_index2 = row_index-spreading_size; row_index2 <= row_index+spreading_size; ++row_index2)
       {
-        //if (rowIndex2 < 0 || rowIndex2 >= height || colIndex2 < 0 || colIndex2 >= width) continue;
-        value |= tmpMap (colIndex, rowIndex2);
+        //if (row_index2 < 0 || row_index2 >= height || col_index2 < 0 || col_index2 >= width) continue;
+        value |= tmp_map (col_index, row_index2);
       }
-      outputMap (colIndex, rowIndex) = value;
+      output_map (col_index, row_index) = value;
     }
   }
 }

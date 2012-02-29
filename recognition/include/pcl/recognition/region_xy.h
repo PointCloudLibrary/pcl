@@ -43,42 +43,32 @@
 namespace pcl
 {
   template <class Type>
-  void read( 
-    std::istream & stream, 
-    Type & value )
+  void read (std::istream & stream, Type & value)
   {
-    stream.read(reinterpret_cast<char*>(&value),sizeof(value));
+    stream.read (reinterpret_cast<char*> (&value), sizeof(value));
   }
 
   template <class Type>
-  void read( 
-    std::istream & stream, 
-    Type * value,
-    const int numOfValues )
+  void read (std::istream & stream, Type * value, int nr_values)
   {
-    for (int valueIndex = 0; valueIndex < numOfValues; ++valueIndex)
+    for (int value_index = 0; value_index < nr_values; ++value_index)
     {
-      read(stream, value[valueIndex]);
+      read (stream, value[value_index]);
     }
   }
 
   template <class Type>
-  void write( 
-    std::ostream & stream, 
-    Type value )
+  void write (std::ostream & stream, Type value)
   {
-    stream.write(reinterpret_cast<char*>(&value),sizeof(value));
+    stream.write (reinterpret_cast<char*> (&value), sizeof (value));
   }
 
   template <class Type>
-  void write( 
-    std::ostream & stream, 
-    Type * value,
-    const int numOfValues )
+  void write (std::ostream & stream, Type * value, int nr_values)
   {
-    for (int valueIndex = 0; valueIndex < numOfValues; ++valueIndex)
+    for (int value_index = 0; value_index < nr_values; ++value_index)
     {
-      write(stream, value[valueIndex]);
+      write (stream, value[value_index]);
     }
   }
 
@@ -89,8 +79,8 @@ namespace pcl
     int width;
     int height;
 
-    void 
-    serialize (::std::ostream & stream)
+    void
+    serialize (std::ostream & stream) const
     {
       write (stream, x);
       write (stream, y);

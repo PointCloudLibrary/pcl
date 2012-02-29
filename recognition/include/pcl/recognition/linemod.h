@@ -50,7 +50,7 @@ namespace pcl
   class EnergyMaps
   {
     public:
-      EnergyMaps () : width_ (-1), height_ (-1), numOfBins_ (-1), maps_ () 
+      EnergyMaps () : width_ (-1), height_ (-1), nr_bins_ (-1), maps_ () 
       {
       }
 
@@ -73,67 +73,67 @@ namespace pcl
       inline int 
       getNumOfBins () const
       { 
-        return (numOfBins_);
+        return (nr_bins_);
       }
 
       void 
-      initialize (const int width, const int height, const int numOfBins)
+      initialize (const int width, const int height, const int nr_bins)
       {
-        maps_.resize(numOfBins, NULL);
+        maps_.resize(nr_bins, NULL);
         width_ = width;
         height_ = height;
-        numOfBins_ = numOfBins;
+        nr_bins_ = nr_bins;
 
         const int mapsSize = width*height;
 
-        for (size_t mapIndex = 0; mapIndex < maps_.size (); ++mapIndex)
+        for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
         {
-          maps_[mapIndex] = new unsigned char[mapsSize];
-          memset (maps_[mapIndex], 0, mapsSize);
+          maps_[map_index] = new unsigned char[mapsSize];
+          memset (maps_[map_index], 0, mapsSize);
         }
       }
 
       void 
       releaseAll ()
       {
-        for (size_t mapIndex = 0; mapIndex < maps_.size (); ++mapIndex)
-          if (maps_[mapIndex] != NULL) delete[] maps_[mapIndex];
+        for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
+          if (maps_[map_index] != NULL) delete[] maps_[map_index];
 
         maps_.clear ();
         width_ = -1;
         height_ = -1;
-        numOfBins_ = -1;
+        nr_bins_ = -1;
       }
 
       inline unsigned char& 
-      operator() (const int binIndex, const int colIndex, const int rowIndex)
+      operator() (const int bin_index, const int col_index, const int row_index)
       {
-        return (maps_[binIndex][rowIndex*width_ + colIndex]);
+        return (maps_[bin_index][row_index*width_ + col_index]);
       }
 
       inline unsigned char& 
-      operator() (const int binIndex, const int index)
+      operator() (const int bin_index, const int index)
       {
-        return (maps_[binIndex][index]);
+        return (maps_[bin_index][index]);
       }
 
       inline unsigned char* 
-      operator() (const int binIndex)
+      operator() (const int bin_index)
       {
-        return (maps_[binIndex]);
+        return (maps_[bin_index]);
       }
 
     private:
       int width_;
       int height_;
-      int numOfBins_;
+      int nr_bins_;
       std::vector<unsigned char*> maps_;
   };
 
   class LinearizedMaps
   {
     public:
-      LinearizedMaps () : width_ (-1), height_ (-1), memWidth_ (-1), memHeight_ (-1), stepSize_ (-1), maps_ ()
+      LinearizedMaps () : width_ (-1), height_ (-1), mem_width_ (-1), mem_height_ (-1), step_size_ (-1), maps_ ()
       {
       }
       
@@ -148,68 +148,68 @@ namespace pcl
       getHeight () const { return (height_); }
       
       inline int 
-      getStepSize () const { return (stepSize_); }
+      getStepSize () const { return (step_size_); }
       
       inline int 
-      getMapMemorySize () const { return (memWidth_ * memHeight_); }
+      getMapMemorySize () const { return (mem_width_ * mem_height_); }
 
       void 
-      initialize (const int width, const int height, const int stepSize)
+      initialize (const int width, const int height, const int step_size)
       {
-        maps_.resize(stepSize*stepSize, NULL);
+        maps_.resize(step_size*step_size, NULL);
         width_ = width;
         height_ = height;
-        memWidth_ = width / stepSize;
-        memHeight_ = height / stepSize;
-        stepSize_ = stepSize;
+        mem_width_ = width / step_size;
+        mem_height_ = height / step_size;
+        step_size_ = step_size;
 
-        const int mapsSize = memWidth_ * memHeight_;
+        const int mapsSize = mem_width_ * mem_height_;
 
-        for (size_t mapIndex = 0; mapIndex < maps_.size (); ++mapIndex)
+        for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
         {
-          maps_[mapIndex] = new unsigned char[2*mapsSize];
-          memset (maps_[mapIndex], 0, 2*mapsSize);
+          maps_[map_index] = new unsigned char[2*mapsSize];
+          memset (maps_[map_index], 0, 2*mapsSize);
         }
       }
 
       void 
       releaseAll ()
       {
-        for (size_t mapIndex = 0; mapIndex < maps_.size (); ++mapIndex)
-          if (maps_[mapIndex] != NULL) delete[] maps_[mapIndex];
+        for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
+          if (maps_[map_index] != NULL) delete[] maps_[map_index];
 
         maps_.clear ();
         width_ = -1;
         height_ = -1;
-        memWidth_ = -1;
-        memHeight_ = -1;
-        stepSize_ = -1;
+        mem_width_ = -1;
+        mem_height_ = -1;
+        step_size_ = -1;
       }
 
       inline unsigned char* 
-      operator() (const int colIndex, const int rowIndex)
+      operator() (const int col_index, const int row_index)
       {
-        return (maps_[rowIndex*stepSize_ + colIndex]);
+        return (maps_[row_index*step_size_ + col_index]);
       }
 
       inline unsigned char* 
-      getOffsetMap (const int colIndex, const int rowIndex)
+      getOffsetMap (const int col_index, const int row_index)
       {
-        const int mapCol = colIndex % stepSize_;
-        const int mapRow = rowIndex % stepSize_;
+        const int map_col = col_index % step_size_;
+        const int map_row = row_index % step_size_;
 
-        const int mapMemColIndex = colIndex / stepSize_;
-        const int mapMemRowIndex = rowIndex / stepSize_;
+        const int map_mem_col_index = col_index / step_size_;
+        const int map_mem_row_index = row_index / step_size_;
 
-        return (maps_[mapRow*stepSize_ + mapCol] + mapMemRowIndex*memWidth_ + mapMemColIndex);
+        return (maps_[map_row*step_size_ + map_col] + map_mem_row_index*mem_width_ + map_mem_col_index);
       }
 
     private:
       int width_;
       int height_;
-      int memWidth_;
-      int memHeight_;
-      int stepSize_;
+      int mem_width_;
+      int mem_height_;
+      int step_size_;
       std::vector<unsigned char*> maps_;
   };
 
@@ -217,7 +217,7 @@ namespace pcl
   {
     int x;
     int y;
-    int templateID;
+    int template_id;
     float score;
   };
 
@@ -241,17 +241,16 @@ namespace pcl
         */
       int 
       createAndAddTemplate (std::vector<QuantizableModality*> &modalities,
-                            std::vector<MaskMap*> &masks,
-                            RegionXY &region );
+                            std::vector<MaskMap*> &masks, RegionXY &region);
 
       void
       detectTemplates (std::vector<QuantizableModality*> &modalities,
                        std::vector<LINEMODDetection>  &detections);
 
       inline SparseQuantizedMultiModTemplate&
-      getTemplate (const int templateID)
+      getTemplate (int template_id)
       { 
-        return (templates_[templateID]);
+        return (templates_[template_id]);
       }
 
       void
@@ -261,10 +260,10 @@ namespace pcl
       loadTemplates (const char* file_name);
 
       void 
-      serialize (::std::ostream & stream);
+      serialize (std::ostream & stream);
 
       void 
-      deserialize (::std::istream & stream);
+      deserialize (std::istream & stream);
 
 
     private:

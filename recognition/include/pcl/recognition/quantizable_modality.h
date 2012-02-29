@@ -60,13 +60,19 @@ namespace pcl
       getData () { return (data_); }
 
       inline unsigned char& 
-      operator() (const int x, const int y) 
+      operator() (int x, int y) 
+      { 
+        return (data_[y*width_+x]); 
+      }
+
+      inline const unsigned char& 
+      operator() (int x, int y) const
       { 
         return (data_[y*width_+x]); 
       }
 
       void 
-      initialize (const int width, const int height);
+      initialize (int width, int height);
 
       void 
       release ();
@@ -82,32 +88,39 @@ namespace pcl
     public:
 
       QuantizedMap ();
-      QuantizedMap (const int width, const int height);
+      QuantizedMap (int width, int height);
 
       virtual ~QuantizedMap ();
 
-      inline int 
-      getWidth () { return (width_); }
+      inline int
+      getWidth () const { return (width_); }
       
-      inline int 
-      getHeight () { return (height_); }
+      inline int
+      getHeight () const { return (height_); }
       
-      inline unsigned char* 
+      inline unsigned char*
       getData () { return (data_); }
 
+      inline const unsigned char*
+      getData () const { return (data_); }
+
       void 
-      initialize (const int width, const int height);
+      initialize (int width, int height);
 
       inline unsigned char& 
-      operator() (const int x, const int y ) 
+      operator() (int x, int y) 
+      { 
+        return (data_[y*width_+x]); 
+      }
+
+      inline const unsigned char& 
+      operator() (int x, int y) const
       { 
         return (data_[y*width_+x]); 
       }
 
       static void
-      spreadQuantizedMap (QuantizedMap & mapIn,
-                          QuantizedMap & mapOut,
-                          const int spreadingSize);
+      spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, int spreading_size);
 
     private:
       unsigned char * data_;
@@ -122,12 +135,11 @@ namespace pcl
       QuantizableModality ();
       virtual ~QuantizableModality ();
 
-      //inline int getWidth () { return width; }
-      //inline int getHeight () { return height; }
+      //inline int getWidth () const { return width; }
+      //inline int getHeight () const { return height; }
 
-      //inline unsigned char & operator() (
-      //  const int x,
-      //  const int y ) { return data[y*width+x]; }
+      //inline unsigned char & operator() (int x, int y) { return data[y*width+x]; }
+      //inline const unsigned char & operator() (int x, int y) const { return data[y*width+x]; }
 
       virtual QuantizedMap &
       getQuantizedMap () = 0;
@@ -136,16 +148,13 @@ namespace pcl
       getSpreadedQuantizedMap () = 0;
 
       virtual void 
-      extractFeatures (
-        MaskMap & mask,
-        const int numOfFeatures,
-        const int modalityIndex,
-        std::vector< QuantizedMultiModFeature > & features ) = 0;
+      extractFeatures (const MaskMap & mask, int numOfFeatures, int modalityIndex, 
+                       std::vector<QuantizedMultiModFeature> & features) = 0;
 
     private:
-      //unsigned char * data;
-      //int width;
-      //int height;  
+      //unsigned char * data_;
+      //int width_;
+      //int height_;  
   };
 }
 

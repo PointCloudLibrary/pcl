@@ -58,48 +58,48 @@ pcl::LINEMOD::
 //////////////////////////////////////////////////////////////////////////////////////////////
 int 
 pcl::LINEMOD::
-createAndAddTemplate (
-  std::vector< pcl::QuantizableModality* > & modalities,
-  std::vector< pcl::MaskMap* > & masks,
-  pcl::RegionXY & region )
+createAndAddTemplate (std::vector<pcl::QuantizableModality*> & modalities,
+                      std::vector<pcl::MaskMap*> & masks,
+                      pcl::RegionXY & region)
 {
   // assuming width and height is same for all modalities; should we check this??
   //const int width = modalities[0]->getQuantizedMap().getWidth ();
   //const int height = modalities[0]->getQuantizedMap().getHeight ();
 
-  SparseQuantizedMultiModTemplate linemodTemplate;
-      
+  SparseQuantizedMultiModTemplate linemod_template;
+
   // select N features from every modality (N = 50, hardcoded; CHANGE this to a parameter!!!)
-  const int numOfFeaturesPerModality = 50;
-  const size_t numOfModalities = modalities.size();
-  for (int modalityIndex = 0; modalityIndex < numOfModalities; ++modalityIndex)
+  const int nr_features_per_modality = 50;
+  const size_t nr_modalities = modalities.size();
+  for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
   {
-    modalities[modalityIndex]->extractFeatures(*(masks[modalityIndex]), numOfFeaturesPerModality, modalityIndex, linemodTemplate.features);
+    modalities[modality_index]->extractFeatures(*(masks[modality_index]), nr_features_per_modality, 
+                                                modality_index, linemod_template.features);
   }
 
   // up to now all features are relative to the input frame; make them relative to the region center
   //const int centerX = region.x+region.width/2;
   //const int centerY = region.y+region.height/2;
 
-  const size_t numOfFeatures = linemodTemplate.features.size();
-  for (int featureIndex = 0; featureIndex < numOfFeatures; ++featureIndex)
+  const size_t nr_features = linemod_template.features.size();
+  for (size_t feature_index = 0; feature_index < nr_features; ++feature_index)
   {
-    //linemodTemplate.features[featureIndex].x -= centerX;
-    //linemodTemplate.features[featureIndex].y -= centerY;
-    linemodTemplate.features[featureIndex].x -= region.x;
-    linemodTemplate.features[featureIndex].y -= region.y;
+    //linemod_template.features[feature_index].x -= centerX;
+    //linemod_template.features[feature_index].y -= centerY;
+    linemod_template.features[feature_index].x -= region.x;
+    linemod_template.features[feature_index].y -= region.y;
   }
 
   // set region relative to the center
-  linemodTemplate.region.x = region.x;
-  linemodTemplate.region.y = region.y;
-  //linemodTemplate.region.x = region.x - centerX;
-  //linemodTemplate.region.y = region.y - centerY;
-  linemodTemplate.region.width = region.width;
-  linemodTemplate.region.height = region.height;
+  linemod_template.region.x = region.x;
+  linemod_template.region.y = region.y;
+  //linemod_template.region.x = region.x - centerX;
+  //linemod_template.region.y = region.y - centerY;
+  linemod_template.region.width = region.width;
+  linemod_template.region.height = region.height;
 
   // add template to template storage
-  templates_.push_back(linemodTemplate);
+  templates_.push_back(linemod_template);
 
   return static_cast<int> (templates_.size () - 1);
 }
@@ -107,155 +107,153 @@ createAndAddTemplate (
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::LINEMOD::
-detectTemplates (
-  std::vector< QuantizableModality* > & modalities,
-  std::vector< LINEMODDetection > & detections )
+detectTemplates (std::vector<QuantizableModality*> & modalities, std::vector<LINEMODDetection> & detections)
 {
   // create energy maps
-  std::vector< EnergyMaps > modalityEnergyMaps;
-  const size_t numOfModalities = modalities.size();
-  for (int modalityIndex = 0; modalityIndex < numOfModalities; ++modalityIndex)
+  std::vector<EnergyMaps> modality_energy_maps;
+  const size_t nr_modalities = modalities.size();
+  for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
   {
-    QuantizedMap & quantizedMap = modalities[modalityIndex]->getSpreadedQuantizedMap ();
+    const QuantizedMap & quantized_map = modalities[modality_index]->getSpreadedQuantizedMap ();
 
-    const int width = quantizedMap.getWidth ();
-    const int height = quantizedMap.getHeight ();
+    const int width = quantized_map.getWidth ();
+    const int height = quantized_map.getHeight ();
 
-    unsigned char * quantizedData = quantizedMap.getData ();
+    const unsigned char * quantized_data = quantized_map.getData ();
 
-    const int numOfBins = 8;
-    EnergyMaps energyMaps;
-    energyMaps.initialize (width, height, numOfBins);
-    //std::vector< unsigned char* > energyMaps(numOfBins);
-    for (int binIndex = 0; binIndex < numOfBins; ++binIndex)
+    const int nr_bins = 8;
+    EnergyMaps energy_maps;
+    energy_maps.initialize (width, height, nr_bins);
+    //std::vector< unsigned char* > energy_maps(nr_bins);
+    for (int bin_index = 0; bin_index < nr_bins; ++bin_index)
     {
-      //energyMaps[binIndex] = new unsigned char[width*height];
-      //memset (energyMaps[binIndex], 0, width*height);
+      //energy_maps[bin_index] = new unsigned char[width*height];
+      //memset (energy_maps[bin_index], 0, width*height);
 
-      unsigned char val0 = 0x1 << binIndex; // e.g. 00100000
-      unsigned char val1 = (0x1 << (binIndex+1)%8) | (0x1 << (binIndex+9)%8); // e.g. 01010000
+      unsigned char val0 = 0x1 << bin_index; // e.g. 00100000
+      unsigned char val1 = (0x1 << (bin_index+1)%8) | (0x1 << (bin_index+9)%8); // e.g. 01010000
       for (int index = 0; index < width*height; ++index)
       {
-        if ((val0 & quantizedData[index]) != 0)
-          ++energyMaps (binIndex, index);
-        if ((val1 & quantizedData[index]) != 0)
-          ++energyMaps (binIndex, index);
+        if ((val0 & quantized_data[index]) != 0)
+          ++energy_maps (bin_index, index);
+        if ((val1 & quantized_data[index]) != 0)
+          ++energy_maps (bin_index, index);
       }
     }
 
-    modalityEnergyMaps.push_back (energyMaps);
+    modality_energy_maps.push_back (energy_maps);
   }
 
   // create linearized maps
-  const int stepSize = 8;
-  std::vector< std::vector< LinearizedMaps > > modalityLinearizedMaps;
-  for (int modalityIndex = 0; modalityIndex < numOfModalities; ++modalityIndex)
+  const int step_size = 8;
+  std::vector<std::vector<LinearizedMaps> > modality_linearized_maps;
+  for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
   {
-    const int width = modalityEnergyMaps[modalityIndex].getWidth ();
-    const int height = modalityEnergyMaps[modalityIndex].getHeight ();
+    const int width = modality_energy_maps[modality_index].getWidth ();
+    const int height = modality_energy_maps[modality_index].getHeight ();
 
-    std::vector< LinearizedMaps > linearizedMaps;
-    const int numOfBins = modalityEnergyMaps[modalityIndex].getNumOfBins ();
-    for (int binIndex = 0; binIndex < numOfBins; ++binIndex)
+    std::vector< LinearizedMaps > linearized_maps;
+    const int nr_bins = modality_energy_maps[modality_index].getNumOfBins ();
+    for (int bin_index = 0; bin_index < nr_bins; ++bin_index)
     {
-      unsigned char * energyMap = modalityEnergyMaps[modalityIndex] (binIndex);
+      unsigned char * energy_map = modality_energy_maps[modality_index] (bin_index);
 
       LinearizedMaps maps;
-      maps.initialize (width, height, stepSize);
-      for (int mapRow = 0; mapRow < stepSize; ++mapRow)
+      maps.initialize (width, height, step_size);
+      for (int map_row = 0; map_row < step_size; ++map_row)
       {
-        for (int mapCol = 0; mapCol < stepSize; ++mapCol)
+        for (int map_col = 0; map_col < step_size; ++map_col)
         {
-          unsigned char * linearizedMap = maps (mapCol, mapRow);
+          unsigned char * linearized_map = maps (map_col, map_row);
 
           // copy data from energy maps
-          const int linWidth = width/stepSize;
-          const int linHeight = height/stepSize;
-          for (int rowIndex = 0; rowIndex < linHeight; ++rowIndex)
+          const int lin_width = width/step_size;
+          const int lin_height = height/step_size;
+          for (int row_index = 0; row_index < lin_height; ++row_index)
           {
-            for (int colIndex = 0; colIndex < linWidth; ++colIndex)
+            for (int col_index = 0; col_index < lin_width; ++col_index)
             {
-              const int tmpColIndex = colIndex*stepSize + mapCol;
-              const int tmpRowIndex = rowIndex*stepSize + mapRow;
+              const int tmp_col_index = col_index*step_size + map_col;
+              const int tmp_row_index = row_index*step_size + map_row;
 
-              linearizedMap[rowIndex*linWidth + colIndex] = energyMap[tmpRowIndex*width + tmpColIndex];
+              linearized_map[row_index*lin_width + col_index] = energy_map[tmp_row_index*width + tmp_col_index];
             }
           }
         }
       }
 
-      linearizedMaps.push_back (maps);
+      linearized_maps.push_back (maps);
     }
 
-    modalityLinearizedMaps.push_back (linearizedMaps);
+    modality_linearized_maps.push_back (linearized_maps);
   }
 
   // compute scores for templates
-  const int width = modalityEnergyMaps[0].getWidth ();
-  const int height = modalityEnergyMaps[0].getHeight ();
-  for (size_t templateIndex = 0; templateIndex < templates_.size (); ++templateIndex)
+  const int width = modality_energy_maps[0].getWidth ();
+  const int height = modality_energy_maps[0].getHeight ();
+  for (size_t template_index = 0; template_index < templates_.size (); ++template_index)
   {
-    const int memWidth = width / stepSize;
-    const int memHeight = height / stepSize;
-    const int memSize = memWidth * memHeight;
+    const int mem_width = width / step_size;
+    const int mem_height = height / step_size;
+    const int mem_size = mem_width * mem_height;
 
-    unsigned char * scoreSums = new unsigned char[memSize];
-    memset (scoreSums, 0, memSize);
+    unsigned char * score_sums = new unsigned char[mem_size];
+    memset (score_sums, 0, mem_size);
 
-    int maxScore = 0;
-    for (size_t featureIndex = 0; featureIndex < templates_[templateIndex].features.size (); ++featureIndex)
+    int max_score = 0;
+    for (size_t feature_index = 0; feature_index < templates_[template_index].features.size (); ++feature_index)
     {
-      QuantizedMultiModFeature & feature = templates_[templateIndex].features[featureIndex];
+      const QuantizedMultiModFeature & feature = templates_[template_index].features[feature_index];
 
-      //feature.modalityIndex;
-      for (int binIndex = 0; binIndex < 8; ++binIndex)
+      //feature.modality_index;
+      for (int bin_index = 0; bin_index < 8; ++bin_index)
       {
-        if ((feature.quantizedValue & (0x1<<binIndex)) != 0)
+        if ((feature.quantized_value & (0x1<<bin_index)) != 0)
         {
-          maxScore += 2;
+          max_score += 2;
 
-          unsigned char * data = modalityLinearizedMaps[feature.modalityIndex][binIndex].getOffsetMap (feature.x, feature.y);
-          for (int memIndex = 0; memIndex < memSize; ++memIndex)
+          unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (feature.x, feature.y);
+          for (int mem_index = 0; mem_index < mem_size; ++mem_index)
           {
-            scoreSums[memIndex] += data[memIndex];
+            score_sums[mem_index] += data[mem_index];
           }
         }
       }
     }
 
-    const float invMaxScore = 1.0f / maxScore;
+    const float inv_max_score = 1.0f / max_score;
     
-    int maxValue = 0;
-    int maxIndex = 0;
-    for (int memIndex = 0; memIndex < memSize; ++memIndex)
+    int max_value = 0;
+    int max_index = 0;
+    for (int mem_index = 0; mem_index < mem_size; ++mem_index)
     {
-      if (scoreSums[memIndex] > maxValue) 
+      if (score_sums[mem_index] > max_value) 
       {
-        maxValue = scoreSums[memIndex];
-        maxIndex = memIndex;
+        max_value = score_sums[mem_index];
+        max_index = mem_index;
       }
     }
 
-    const int maxColIndex = (maxIndex % memWidth) * stepSize;
-    const int maxRowIndex = (maxIndex / memWidth) * stepSize;
+    const int max_col_index = (max_index % mem_width) * step_size;
+    const int max_row_index = (max_index / mem_width) * step_size;
 
     LINEMODDetection detection;
-    detection.x = maxColIndex;
-    detection.y = maxRowIndex;
-    detection.templateID = static_cast<int> (templateIndex);
-    detection.score = maxValue * invMaxScore;
+    detection.x = max_col_index;
+    detection.y = max_row_index;
+    detection.template_id = static_cast<int> (template_index);
+    detection.score = max_value * inv_max_score;
 
     detections.push_back (detection);
 
-    delete[] scoreSums;
+    delete[] score_sums;
   }
 
   // release data
-  for (size_t modalityIndex = 0; modalityIndex < modalityLinearizedMaps.size (); ++modalityIndex)
+  for (size_t modality_index = 0; modality_index < modality_linearized_maps.size (); ++modality_index)
   {
-    modalityEnergyMaps[modalityIndex].releaseAll ();
-    for (size_t binIndex = 0; binIndex < modalityLinearizedMaps[modalityIndex].size (); ++binIndex)
-      modalityLinearizedMaps[modalityIndex][binIndex].releaseAll ();
+    modality_energy_maps[modality_index].releaseAll ();
+    for (size_t bin_index = 0; bin_index < modality_linearized_maps[modality_index].size (); ++bin_index)
+      modality_linearized_maps[modality_index][bin_index].releaseAll ();
   }
 }
 
@@ -288,7 +286,7 @@ loadTemplates (const char* file_name)
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::LINEMOD::
-serialize (::std::ostream & stream)
+serialize (std::ostream & stream)
 {
   const int num_of_templates = static_cast<int> (templates_.size ());
   write (stream, num_of_templates);
@@ -301,7 +299,7 @@ serialize (::std::ostream & stream)
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::LINEMOD::
-deserialize (::std::istream & stream)
+deserialize (std::istream & stream)
 {
   templates_.clear ();
 
