@@ -107,6 +107,18 @@ namespace pcl
         inline bool
         getManifold () { return manifold_; }
 
+        /** \brief Enabling this flag tells the reconstructor to output a polygon mesh (rather than triangulating the
+          * results of Marching Cubes).
+          * \param[in] output_polygons the given flag
+          */
+        inline void
+        setOutputPolygons (bool output_polygons) { output_polygons_ = output_polygons; }
+
+        /** \brief Get whether the algorithm outputs a polygon mesh or a triangle mesh */
+        inline bool
+        getOutputPolygons () { return output_polygons_; }
+
+
         /** \brief Set the maximum depth of the tree that will be used for surface reconstruction.
           * \note Running at depth d corresponds to solving on a voxel grid whose resolution is no larger than
           * 2^d x 2^d x 2^d. Note that since the reconstructor adapts the octree to the sampling density, the specified
