@@ -42,6 +42,7 @@
 #include <pcl/filters/filter.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/voxel_grid_covariance.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/project_inliers.h>
 #include <pcl/filters/radius_outlier_removal.h>
@@ -767,6 +768,84 @@ TEST (VoxelGrid_RGB, Filters)
     EXPECT_NEAR (g, ave_g, 1.0);
     EXPECT_NEAR (b, ave_b, 1.0);
   }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (VoxelGridCovariance, Filters)
+{
+  // Test the PointCloud<PointT> method
+  PointCloud<PointXYZ> output;
+  VoxelGridCovariance<PointXYZ> grid;
+
+  grid.setLeafSize (0.02, 0.02, 0.02);
+  grid.setSaveLeafLayout(true);
+  grid.setInputCloud (cloud);
+  grid.filter (output, true);
+
+  EXPECT_EQ ((int)output.points.size (), 23);
+  EXPECT_EQ ((int)output.width, 23);
+  EXPECT_EQ ((int)output.height, 1);
+  EXPECT_EQ ((bool)output.is_dense, true);
+
+
+  EXPECT_NEAR (output.points[0].x, -0.0692412, 1e-4);
+  EXPECT_NEAR (output.points[0].y, 0.114566, 1e-4);
+  EXPECT_NEAR (output.points[0].z, 0.0475084, 1e-4);
+
+  EXPECT_NEAR (output.points[13].x, -0.0857542, 1e-4);
+  EXPECT_NEAR (output.points[13].y, 0.149493, 1e-4);
+  EXPECT_NEAR (output.points[13].z, 0.0286718, 1e-4);
+
+  // centroids should be identified correctly
+  EXPECT_EQ (grid.getCentroidIndex (output.points[0]), 0);
+  EXPECT_EQ (grid.getCentroidIndex (output.points[17]), 17);
+  EXPECT_EQ (grid.getCentroidIndexAt (grid.getGridCoordinates (-1,-1,-1)), -1);
+  //PCL_ERROR ("IGNORE PREVIOUS ERROR: testing it's functionality!\n");
+
+  // input point 38 [-0.066091, 0.11973, 0.050881]
+  int centroidIdx = grid.getCentroidIndex (cloud->points[38]);
+  EXPECT_NE (centroidIdx, -1);
+
+  // if getNeighborCentroidIndices works then the other helper functions work as well
+  EXPECT_EQ (grid.getNeighborCentroidIndices (output.points[0], Eigen::MatrixXi::Zero(3,1))[0], 0);
+  EXPECT_EQ (grid.getNeighborCentroidIndices (output.points[17], Eigen::MatrixXi::Zero(3,1))[0], 17);
+
+  // neighboring centroid should be in the right position
+  Eigen::MatrixXi directions = Eigen::Vector3i (0, 1, 0);
+  vector<int> neighbors = grid.getNeighborCentroidIndices (cloud->points[38], directions);
+  EXPECT_EQ (neighbors.size (), (size_t)directions.cols ());
+  EXPECT_NE (neighbors.at (0), -1);
+  EXPECT_LE (fabs (output.points[neighbors.at (0)].x - output.points[centroidIdx].x), 0.02);
+  EXPECT_LE (fabs (output.points[neighbors.at (0)].y - output.points[centroidIdx].y), 0.02);
+  EXPECT_LE ( output.points[neighbors.at (0)].z - output.points[centroidIdx].z, 0.02 * 2);
+
+  // testing k nearest neighbors search
+  vector<VoxelGridCovariance<pcl::PointXYZ>::LeafConstPtr> leaves;
+  vector<float> distances;
+  grid.nearestKSearch (PointXYZ(0,1,0), 1, leaves, distances);
+
+  EXPECT_EQ ((int)leaves.size (), 1);
+
+  EXPECT_NEAR (leaves[0]->getMean ()[0], -0.0284687, 1e-4);
+  EXPECT_NEAR (leaves[0]->getMean ()[1], 0.170919, 1e-4);
+  EXPECT_NEAR (leaves[0]->getMean ()[2], -0.00765753, 1e-4);
+
+  // testing radius search
+  grid.radiusSearch (PointXYZ (0,0,0), 0.075, leaves, distances);
+  
+  EXPECT_EQ (leaves.size (), 3);
+
+  EXPECT_NEAR (leaves[0]->getMean ()[0], 0.0322579, 1e-4);
+  EXPECT_NEAR (leaves[0]->getMean ()[1], 0.0469001, 1e-4);
+  EXPECT_NEAR (leaves[0]->getMean ()[2], 0.0328501, 1e-4);
+
+  EXPECT_NEAR (leaves[1]->getMean ()[0], 0.0124421, 1e-4);
+  EXPECT_NEAR (leaves[1]->getMean ()[1], 0.0524267, 1e-4);
+  EXPECT_NEAR (leaves[1]->getMean ()[2], 0.0488767, 1e-4);
+
+  EXPECT_NEAR (leaves[2]->getMean ()[0], -0.00936106, 1e-4);
+  EXPECT_NEAR (leaves[2]->getMean ()[1], 0.0516725, 1e-4);
+  EXPECT_NEAR (leaves[2]->getMean ()[2], 0.0508024, 1e-4);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
