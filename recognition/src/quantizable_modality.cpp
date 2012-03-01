@@ -54,9 +54,16 @@ pcl::QuantizableModality::
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::MaskMap::
 MaskMap ()
-: data_ (NULL), width_ (-1), height_ (-1)
+  : data_ (0), width_ (0), height_ (0)
 {
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::MaskMap::
+MaskMap (size_t width, size_t height)
+  : data_ (width*height), width_ (width), height_ (height)
+{
+}  
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::MaskMap::
@@ -67,84 +74,42 @@ pcl::MaskMap::
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::MaskMap::
-initialize (int width, int height)
+resize (size_t width, size_t height)
 {
-  if (data_ != NULL && (width_ != width || height_ != height))
-  {
-    delete[] data_;
-    data_ = NULL;
-    width_ = -1;
-    height_ = -1;
-
-  }
-
-  if (data_ == NULL)
-  {
-    data_ = new unsigned char[width*height];
-    memset (data_, 0, sizeof (unsigned char)*width*height);
-
-    width_ = width;
-    height_ = height;
-  }
+  data_.resize (width*height);
+  width_ = width;
+  height_ = height;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::MaskMap::
-release ()
-{
-  if (data_ != NULL) delete[] data_;
-
-  data_ = NULL;
-  width_ = -1;
-  height_ = -1;
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::QuantizedMap::
 QuantizedMap ()
+  : data_ (0), width_ (0), height_ (0)
 {
-  data_ = NULL;
-  width_ = -1;
-  height_ = -1;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::QuantizedMap::
-QuantizedMap (int width, int height)
+QuantizedMap (size_t width, size_t height)
+  : data_ (width*height), width_ (width), height_ (height)
 {
-  initialize (width, height);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::QuantizedMap::
 ~QuantizedMap ()
 {
-  delete[] data_;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::QuantizedMap::
-initialize (int width, int height)
+resize (size_t width, size_t height)
 {
-  if (data_ != NULL && (width_ != width || height_ != height))
-  {
-    delete[] data_;
-
-    width_ = -1;
-    height_ = -1;
-    data_ = NULL;
-  }
-  
-  if (data_ == NULL)
-  {
-    width_ = width;
-    height_ = height;
-    data_ = new unsigned char[width*height];
-  }
-
-  memset (data_, 0, sizeof (unsigned char)*width*height);
+  data_.resize (width*height);
+  width_ = width;
+  height_ = height;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -155,10 +120,9 @@ spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, i
   const int width = input_map.getWidth ();
   const int height = input_map.getHeight ();
 
-  QuantizedMap tmp_map;
-  tmp_map.initialize(width, height);
+  QuantizedMap tmp_map (width, height);
 
-  output_map.initialize(width, height);
+  output_map.resize (width, height);
 
   for (int row_index = spreading_size; row_index < height-spreading_size-1; ++row_index)
   {

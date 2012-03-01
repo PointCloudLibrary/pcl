@@ -156,9 +156,9 @@ namespace pcl
         return (spreaded_filtered_quantized_color_gradients_);
       }
   
-      void 
+      void
       extractFeatures (const MaskMap & mask, size_t nr_features, size_t modalityIndex,
-                       std::vector<QuantizedMultiModFeature> & features);
+                       std::vector<QuantizedMultiModFeature> & features) const;
   
       /** \brief Provide a pointer to the input dataset (overwrites the PCLBase::setInputCloud method)
         * \param cloud the const boost shared pointer to a PointCloud message
@@ -166,13 +166,14 @@ namespace pcl
       virtual void 
       setInputCloud (const typename PointCloudIn::ConstPtr & cloud) 
       { 
-        input_ = cloud; 
+        input_ = cloud;
+        processInputData ();
       }
-  
+
+    protected:
       virtual void
       processInputData ();
-  
-    protected: 
+
       void
       computeMaxColorGradients ();
   
@@ -235,17 +236,17 @@ processInputData ()
 template <typename PointInT>
 void pcl::ColorGradientModality<PointInT>::
 extractFeatures (const MaskMap & mask, size_t nr_features, size_t modality_index,
-                 std::vector<QuantizedMultiModFeature> & features)
+                 std::vector<QuantizedMultiModFeature> & features) const
 {
-  const int width = mask.getWidth ();
-  const int height = mask.getHeight ();
+  const size_t width = mask.getWidth ();
+  const size_t height = mask.getHeight ();
   
   std::list<Candidate> list1;
   std::list<Candidate> list2;
 
-  for (int row_index = 0; row_index < height; ++row_index)
+  for (size_t row_index = 0; row_index < height; ++row_index)
   {
-    for (int col_index = 0; col_index < width; ++col_index)
+    for (size_t col_index = 0; col_index < width; ++col_index)
     {
       if (mask (col_index, row_index) != 0)
       {
@@ -414,18 +415,18 @@ void
 pcl::ColorGradientModality<PointInT>::
 quantizeColorGradients ()
 {
-  const int width = input_->width;
-  const int height = input_->height;
+  const size_t width = input_->width;
+  const size_t height = input_->height;
 
-  quantized_color_gradients_.initialize (width, height);
+  quantized_color_gradients_.resize (width, height);
 
   //unsigned char quantization_map[16] = {0,1,2,3,4,5,6,7,0,1,2,3,4,5,6,7};
   unsigned char quantization_map[16] = {1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8};
 
   const float angleScale = 1.0f/22.6f;
-  for (int row_index = 0; row_index < height; ++row_index)
+  for (size_t row_index = 0; row_index < height; ++row_index)
   {
-    for (int col_index = 0; col_index < width; ++col_index)
+    for (size_t col_index = 0; col_index < width; ++col_index)
     {
       if (color_gradients_ (col_index, row_index).magnitude < gradient_magnitude_threshold_) 
       {
@@ -445,15 +446,15 @@ void
 pcl::ColorGradientModality<PointInT>::
 filterQuantizedColorGradients ()
 {
-  const int width = input_->width;
-  const int height = input_->height;
+  const size_t width = input_->width;
+  const size_t height = input_->height;
 
-  filtered_quantized_color_gradients_.initialize(width, height);
+  filtered_quantized_color_gradients_.resize (width, height);
 
   // filter data
-  for (int row_index = 1; row_index < height-1; ++row_index)
+  for (size_t row_index = 1; row_index < height-1; ++row_index)
   {
-    for (int col_index = 1; col_index < width-1; ++col_index)
+    for (size_t col_index = 1; col_index < width-1; ++col_index)
     {
       unsigned char histogram[9] = {0,0,0,0,0,0,0,0,0};
 

@@ -45,14 +45,12 @@ pcl::LINEMOD::
 LINEMOD() :
   templates_ ()
 {
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::LINEMOD::
 ~LINEMOD()
 {
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -73,8 +71,9 @@ createAndAddTemplate (const std::vector<pcl::QuantizableModality*> & modalities,
   const size_t nr_modalities = modalities.size();
   for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
   {
-    modalities[modality_index]->extractFeatures(*(masks[modality_index]), nr_features_per_modality, 
-                                                modality_index, linemod_template.features);
+    const MaskMap & mask = *(masks[modality_index]);
+    modalities[modality_index]->extractFeatures(mask, nr_features_per_modality, modality_index,
+                                                linemod_template.features);
   }
 
   // up to now all features are relative to the input frame; make them relative to the region center
@@ -288,12 +287,10 @@ void
 pcl::LINEMOD::
 serialize (std::ostream & stream)
 {
-  const int num_of_templates = static_cast<int> (templates_.size ());
-  write (stream, num_of_templates);
-  for (int template_index = 0; template_index < num_of_templates; ++template_index)
-  {
+  const int nr_templates = static_cast<int> (templates_.size ());
+  write (stream, nr_templates);
+  for (int template_index = 0; template_index < nr_templates; ++template_index)
     templates_[template_index].serialize (stream);
-  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -303,10 +300,10 @@ deserialize (std::istream & stream)
 {
   templates_.clear ();
 
-  int num_of_templates;
-  read (stream, num_of_templates);
-  templates_.resize (num_of_templates);
-  for (int template_index = 0; template_index < num_of_templates; ++template_index)
+  int nr_templates;
+  read (stream, nr_templates);
+  templates_.resize (nr_templates);
+  for (int template_index = 0; template_index < nr_templates; ++template_index)
   {
     templates_[template_index].deserialize (stream);
   }

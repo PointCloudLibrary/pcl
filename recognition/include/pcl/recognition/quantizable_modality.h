@@ -49,7 +49,11 @@ namespace pcl
   {
     public:
       MaskMap ();
+      MaskMap (size_t width, size_t height);
       virtual ~MaskMap ();
+
+      void
+      resize (size_t width, size_t height);
 
       inline int 
       getWidth () const { return (width_); }
@@ -58,10 +62,10 @@ namespace pcl
       getHeight () const { return (height_); }
       
       inline unsigned char* 
-      getData () { return (data_); }
+      getData () { return (&data_[0]); }
 
       inline const unsigned char* 
-      getData () const { return (data_); }
+      getData () const { return (&data_[0]); }
 
       inline unsigned char & 
       operator() (int x, int y) 
@@ -75,14 +79,9 @@ namespace pcl
         return (data_[y*width_+x]); 
       }
 
-      void 
-      initialize (int width, int height);
-
-      void 
-      release ();
-
     private:
-      unsigned char * data_;
+      //unsigned char * data_;
+      std::vector<unsigned char> data_;
       int width_;
       int height_;  
   };
@@ -92,7 +91,7 @@ namespace pcl
     public:
 
       QuantizedMap ();
-      QuantizedMap (int width, int height);
+      QuantizedMap (size_t width, size_t height);
 
       virtual ~QuantizedMap ();
 
@@ -103,13 +102,13 @@ namespace pcl
       getHeight () const { return (height_); }
       
       inline unsigned char*
-      getData () { return (data_); }
+      getData () { return (&data_[0]); }
 
       inline const unsigned char*
-      getData () const { return (data_); }
+      getData () const { return (&data_[0]); }
 
       void 
-      initialize (int width, int height);
+      resize (size_t width, size_t height);
 
       inline unsigned char & 
       operator() (int x, int y) 
@@ -127,9 +126,9 @@ namespace pcl
       spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, int spreading_size);
 
     private:
-      unsigned char * data_;
-      int width_;
-      int height_;  
+      std::vector<unsigned char> data_;
+      size_t width_;
+      size_t height_;  
     
   };
 
@@ -153,7 +152,7 @@ namespace pcl
 
       virtual void 
       extractFeatures (const MaskMap & mask, size_t nr_features, size_t modality_index, 
-                       std::vector<QuantizedMultiModFeature> & features) = 0;
+                       std::vector<QuantizedMultiModFeature> & features) const = 0;
 
     private:
       //unsigned char * data_;

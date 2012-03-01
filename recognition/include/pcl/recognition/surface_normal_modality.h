@@ -51,16 +51,16 @@ namespace pcl
   class DistanceMap
   {
     public:
-      DistanceMap () : width_ (-1), height_ (-1), data_ (NULL) {}
+      DistanceMap () : data_ (0), width_ (0), height_ (0) {}
       virtual ~DistanceMap () {}
 
-      inline int 
+      inline size_t 
       getWidth () const
       {
         return (width_); 
       }
 
-      inline int 
+      inline size_t 
       getHeight () const
       { 
         return (height_); 
@@ -69,52 +69,33 @@ namespace pcl
       inline float * 
       getData () 
       { 
-        return (data_); 
+        return (&data_[0]); 
       }
 
       void 
-      initialize (const int width, const int height)
+      resize (size_t width, size_t height)
       {
-        if (data_ != NULL && (width != width_ || height != height_))
-          release ();
-
-        if (data_ == NULL)
-        {
-          data_ = new float[width*height];
-          width_ = width;
-          height_ = height;
-        }
-
-        memset (data_, 0, width*height);
-      }
-
-      void 
-      release ()
-      {
-        if (data_ != NULL) 
-          delete[] data_;
-
-        data_ = NULL;
-        width_ = -1;
-        height_ = -1;
+        data_.resize (width*height);
+        width_ = width;
+        height_ = height;
       }
 
       inline float & 
-      operator() (int col_index, int row_index)
+      operator() (size_t col_index, size_t row_index)
       {
         return (data_[row_index*width_ + col_index]);
       }
 
       inline const float & 
-      operator() (int col_index, int row_index) const
+      operator() (size_t col_index, size_t row_index) const
       {
         return (data_[row_index*width_ + col_index]);
       }
 
     protected:
-      int width_;
-      int height_;
-      float * data_;
+      std::vector<float> data_;
+      size_t width_;
+      size_t height_;
   };
 
   struct QuantizedNormalLookUpTable
@@ -300,7 +281,7 @@ namespace pcl
 
       void 
       extractFeatures (const MaskMap & mask, size_t nr_features, size_t modality_index,
-                       std::vector<QuantizedMultiModFeature> & features);
+                       std::vector<QuantizedMultiModFeature> & features) const;
 
       /** \brief Provide a pointer to the input dataset (overwrites the PCLBase::setInputCloud method)
         * \param[in] cloud the const boost shared pointer to a PointCloud message
@@ -308,13 +289,13 @@ namespace pcl
       virtual void 
       setInputCloud (const typename PointCloudIn::ConstPtr & cloud) 
       { 
-        input_ = cloud; 
+        input_ = cloud;
+        processInputData ();
       }
 
+    protected:
       virtual void
       processInputData ();
-
-    protected:
 
       void
       quantizeSurfaceNormals ();
@@ -323,7 +304,7 @@ namespace pcl
       filterQuantizedSurfaceNormals ();
 
       void
-      computeDistanceMap (const MaskMap & input, DistanceMap & output);
+      computeDistanceMap (const MaskMap & input, DistanceMap & output) const;
 
     private:
 
@@ -384,10 +365,10 @@ template <typename PointInT> void
 pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
                                                        size_t nr_features,
                                                        size_t modality_index,
-                                                       std::vector<QuantizedMultiModFeature> & features)
+                                                       std::vector<QuantizedMultiModFeature> & features) const
 {
-  const int width = mask.getWidth ();
-  const int height = mask.getHeight ();
+  const size_t width = mask.getWidth ();
+  const size_t height = mask.getHeight ();
 
   //cv::Mat maskImage(height, width, CV_8U, mask.mask);
   //cv::erode(maskImage, maskImage
@@ -400,8 +381,8 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
   //}
 
   MaskMap mask_maps[8];
-  for (int map_index = 0; map_index < 8; ++map_index)
-    mask_maps[map_index].initialize (width, height);
+  for (size_t map_index = 0; map_index < 8; ++map_index)
+    mask_maps[map_index].resize (width, height);
 
   unsigned char map[255];
   memset(map, 0, 255);
@@ -415,13 +396,12 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
   map[0x1<<6] = 6;
   map[0x1<<7] = 7;
 
-  QuantizedMap distance_map_indices;
-  distance_map_indices.initialize (width, height);
+  QuantizedMap distance_map_indices (width, height);
   //memset (distance_map_indices.data, 0, sizeof (distance_map_indices.data[0])*width*height);
 
-  for (int row_index = 0; row_index < height; ++row_index)
+  for (size_t row_index = 0; row_index < height; ++row_index)
   {
-    for (int col_index = 0; col_index < width; ++col_index)
+    for (size_t col_index = 0; col_index < width; ++col_index)
     {
       if (mask (col_index, row_index) != 0)
       {
@@ -443,15 +423,15 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
   for (int map_index = 0; map_index < 8; ++map_index)
     computeDistanceMap (mask_maps[map_index], distance_maps[map_index]);
 
-	std::list<Candidate> list1;
-	std::list<Candidate> list2;
+  std::list<Candidate> list1;
+  std::list<Candidate> list2;
 
   float weights[8] = {0,0,0,0,0,0,0,0};
 
-  const int off = 4;
-  for (int row_index = off; row_index < height-off; ++row_index)
+  const size_t off = 4;
+  for (size_t row_index = off; row_index < height-off; ++row_index)
   {
-    for (int col_index = off; col_index < width-off; ++col_index)
+    for (size_t col_index = off; col_index < width-off; ++col_index)
     {
       if (mask (col_index, row_index) != 0)
       {
@@ -556,14 +536,14 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
 template <typename PointInT> void
 pcl::SurfaceNormalModality<PointInT>::quantizeSurfaceNormals ()
 {
-  const int width = input_->width;
-  const int height = input_->height;
+  const size_t width = input_->width;
+  const size_t height = input_->height;
 
-  quantized_surface_normals_.initialize (width, height);
+  quantized_surface_normals_.resize (width, height);
 
-  for (int row_index = 0; row_index < height; ++row_index)
+  for (size_t row_index = 0; row_index < height; ++row_index)
   {
-    for (int col_index = 0; col_index < width; ++col_index)
+    for (size_t col_index = 0; col_index < width; ++col_index)
     {
       const float normal_x = surface_normals_ (col_index, row_index).normal_x;
       const float normal_y = surface_normals_ (col_index, row_index).normal_y;
@@ -600,7 +580,7 @@ pcl::SurfaceNormalModality<PointInT>::filterQuantizedSurfaceNormals ()
   const int width = input_->width;
   const int height = input_->height;
 
-  filtered_quantized_surface_normals_.initialize(width, height);
+  filtered_quantized_surface_normals_.resize (width, height);
 
   // filter data
   for (int row_index = 1; row_index < height-1; ++row_index)
@@ -669,18 +649,18 @@ pcl::SurfaceNormalModality<PointInT>::filterQuantizedSurfaceNormals ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
-pcl::SurfaceNormalModality<PointInT>::computeDistanceMap (const MaskMap & input, DistanceMap & output)
+pcl::SurfaceNormalModality<PointInT>::computeDistanceMap (const MaskMap & input, DistanceMap & output) const
 {
-  const int width = input.getWidth ();
-  const int height = input.getHeight ();
+  const size_t width = input.getWidth ();
+  const size_t height = input.getHeight ();
 
-  output.initialize (width, height);
+  output.resize (width, height);
 
   // compute distance map
   //float *distance_map = new float[input_->points.size ()];
   const unsigned char * mask_map = input.getData ();
   float * distance_map = output.getData ();
-  for (int index = 0; index < width*height; ++index)
+  for (size_t index = 0; index < width*height; ++index)
   {
     if (mask_map[index] == 0)
       distance_map[index] = 0.0f;
@@ -691,9 +671,9 @@ pcl::SurfaceNormalModality<PointInT>::computeDistanceMap (const MaskMap & input,
   // first pass
   float * previous_row = distance_map;
   float * current_row = previous_row + width;
-  for (int ri = 1; ri < height; ++ri)
+  for (size_t ri = 1; ri < height; ++ri)
   {
-    for (int ci = 1; ci < width; ++ci)
+    for (size_t ci = 1; ci < width; ++ci)
     {
       const float up_left  = previous_row [ci - 1] + 1.4f; //distance_map[(ri-1)*input_->width + ci-1] + 1.4f;
       const float up       = previous_row [ci]     + 1.0f; //distance_map[(ri-1)*input_->width + ci] + 1.0f;
