@@ -53,7 +53,7 @@ double      default_filter_min = -std::numeric_limits<double>::max ();
 double      default_filter_max = std::numeric_limits<double>::max ();
 
 void
-printHelp (int argc, char **argv)
+printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
   print_info ("  where options are:\n");

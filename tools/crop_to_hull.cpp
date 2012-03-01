@@ -54,7 +54,7 @@ typedef PointCloud<PointT> CloudT;
 const static double default_alpha = 1e3f;
 
 static void
-printHelp (int argc, char **argv)
+printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s hull_cloud.pcd input.pcd output.pcd <options>\n", argv[0]);
   print_info ("  where options are:\n");
