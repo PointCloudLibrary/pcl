@@ -168,7 +168,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
           break;
 
         // If we find a better epsilon_n_star
-        float epsilon_possible_n_star = (float)I_possible_n_star / possible_n_star;
+        float epsilon_possible_n_star = static_cast<float>(I_possible_n_star) / static_cast<float>(possible_n_star);
         // Make sure we have a better epsilon_possible_n_star
         if ((epsilon_possible_n_star > epsilon_n_star) && (epsilon_possible_n_star > epsilon_possible_n_star_best))
         {

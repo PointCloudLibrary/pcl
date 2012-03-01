@@ -107,10 +107,10 @@ pcl::SampleConsensusModelSphere<PointT>::computeModelCoefficients (
   model_coefficients[1] = 0.5 * m13 / m11;
   model_coefficients[2] = 0.5 * m14 / m11;
   // Radius
-  model_coefficients[3] = sqrt (
-                                model_coefficients[0] * model_coefficients[0] +
-                                model_coefficients[1] * model_coefficients[1] +
-                                model_coefficients[2] * model_coefficients[2] - m15 / m11);
+  model_coefficients[3] = sqrtf (
+                                 model_coefficients[0] * model_coefficients[0] +
+                                 model_coefficients[1] * model_coefficients[1] +
+                                 model_coefficients[2] * model_coefficients[2] - m15 / m11);
 
   return (true);
 }
@@ -132,7 +132,7 @@ pcl::SampleConsensusModelSphere<PointT>::getDistancesToModel (
   for (size_t i = 0; i < indices_->size (); ++i)
     // Calculate the distance from the point to the sphere as the difference between
     //dist(point,sphere_origin) and sphere_radius
-    distances[i] = fabs (sqrt (
+    distances[i] = fabs (sqrtf (
                                ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) *
                                ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) +
 
@@ -141,7 +141,7 @@ pcl::SampleConsensusModelSphere<PointT>::getDistancesToModel (
 
                                ( input_->points[(*indices_)[i]].z - model_coefficients[2] ) *
                                ( input_->points[(*indices_)[i]].z - model_coefficients[2] )
-                              ) - model_coefficients[3]);
+                               ) - model_coefficients[3]);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -164,7 +164,7 @@ pcl::SampleConsensusModelSphere<PointT>::selectWithinDistance (
   {
     // Calculate the distance from the point to the sphere as the difference between
     // dist(point,sphere_origin) and sphere_radius
-    if (fabs (sqrt (
+    if (fabs (sqrtf (
                     ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) *
                     ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) +
 
@@ -173,7 +173,7 @@ pcl::SampleConsensusModelSphere<PointT>::selectWithinDistance (
 
                     ( input_->points[(*indices_)[i]].z - model_coefficients[2] ) *
                     ( input_->points[(*indices_)[i]].z - model_coefficients[2] )
-                   ) - model_coefficients[3]) < threshold)
+                    ) - model_coefficients[3]) < threshold)
     {
       // Returns the indices of the points whose distances are smaller than the threshold
       inliers[nr_p] = (*indices_)[i];
@@ -199,7 +199,7 @@ pcl::SampleConsensusModelSphere<PointT>::countWithinDistance (
   {
     // Calculate the distance from the point to the sphere as the difference between
     // dist(point,sphere_origin) and sphere_radius
-    if (fabs (sqrt (
+    if (fabs (sqrtf (
                     ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) *
                     ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) +
 
@@ -208,7 +208,7 @@ pcl::SampleConsensusModelSphere<PointT>::countWithinDistance (
 
                     ( input_->points[(*indices_)[i]].z - model_coefficients[2] ) *
                     ( input_->points[(*indices_)[i]].z - model_coefficients[2] )
-                   ) - model_coefficients[3]) < threshold)
+                    ) - model_coefficients[3]) < threshold)
       nr_p++;
   }
   return (nr_p);

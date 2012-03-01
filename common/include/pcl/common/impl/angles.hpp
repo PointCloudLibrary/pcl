@@ -33,7 +33,7 @@
  *
  */
 
-#include <float.h>
+#include <cmath>
 
 namespace pcl
 {

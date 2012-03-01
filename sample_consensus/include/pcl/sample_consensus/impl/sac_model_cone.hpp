@@ -224,7 +224,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::selectWithinDistance (
     height.normalize ();
 
     // Calculate the cones perfect normals
-    Eigen::Vector4f cone_normal = sin(opening_angle) * height + cos(opening_angle) * pp_pt_dir;
+    Eigen::Vector4f cone_normal = sinf (opening_angle) * height + cosf (opening_angle) * pp_pt_dir;
 
     // Aproximate the distance from the point to the cone as the difference between
     // dist(point,cone_axis) and actual cone radius
@@ -282,7 +282,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::countWithinDistance (
     height.normalize ();
 
     // Calculate the cones perfect normals
-    Eigen::Vector4f cone_normal = sin(opening_angle) * height + cos(opening_angle) * pp_pt_dir;
+    Eigen::Vector4f cone_normal = sinf (opening_angle) * height + cosf (opening_angle) * pp_pt_dir;
 
     // Aproximate the distance from the point to the cone as the difference between
     // dist(point,cone_axis) and actual cone radius
