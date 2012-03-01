@@ -62,7 +62,7 @@ differenceType ();
 // badConversion ();
 
 int
-main (int argc, char** argv)
+main ()
 {
   sameType();
   differenceType();

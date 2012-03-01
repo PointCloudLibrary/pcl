@@ -51,9 +51,8 @@ using namespace pcl::console;
 double default_standard_deviation = 0.01;
 
 void
-printHelp (int argc, char **argv)
+printHelp (int, char **argv)
 {
-  (void)argc;
   print_error ("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
   print_info ("  where options are:\n");
   print_info ("                     -sd X = the standard deviation for the normal distribution (default: ");
