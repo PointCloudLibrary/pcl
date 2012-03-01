@@ -91,7 +91,8 @@ namespace pcl
   /** \author Khai Tran */
   struct TextureMesh
   {
-    TextureMesh () {}
+    TextureMesh () : 
+      header (), cloud (), tex_polygons (), tex_coordinates (), tex_materials () {}
 
     std_msgs::Header          header;
     sensor_msgs::PointCloud2  cloud;

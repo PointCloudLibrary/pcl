@@ -85,11 +85,10 @@ namespace pcl
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
       /** \brief Empty constructor. */
-      ConvexHull () : total_area_ (0), total_volume_ (0), dimension_ (0), 
+      ConvexHull () : compute_area_ (false), total_area_ (0), total_volume_ (0), dimension_ (0), 
                       projection_angle_thresh_ (cos (0.174532925) ), qhull_flags ("qhull "),
                       x_axis_ (1.0, 0.0, 0.0), y_axis_ (0.0, 1.0, 0.0), z_axis_ (0.0, 0.0, 1.0)
       {
-        compute_area_ = false;
       };
 
       /** \brief Compute a convex hull for all points given 

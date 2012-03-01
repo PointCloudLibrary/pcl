@@ -581,7 +581,7 @@ pcl::GridProjection<PointNT>::storeVectAndSurfacePoint (int index_1d,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
-pcl::GridProjection<PointNT>::storeVectAndSurfacePointKNN (int index_1d, const Eigen::Vector3i &index_3d,
+pcl::GridProjection<PointNT>::storeVectAndSurfacePointKNN (int index_1d, const Eigen::Vector3i &,
                                                            const Leaf &cell_data)
 {
   Eigen::Vector4f cell_center = cell_data.pt_on_surface;

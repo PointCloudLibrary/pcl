@@ -89,6 +89,8 @@ namespace pcl
 
       /** \brief Empty constructor. */
       MovingLeastSquares () : PCLBase<PointInT> (),
+                              normals_ (),
+                              search_method_ (),
                               tree_ (),
                               order_ (2),
                               polynomial_fit_ (true),
@@ -97,9 +99,12 @@ namespace pcl
                               upsample_method_ (NONE),
                               upsampling_radius_ (0.0),
                               upsampling_step_ (0.0),
+                              rng_uniform_distribution_ (),
                               desired_num_points_in_radius_ (0),
+                              mls_results_ (),
                               voxel_size_ (1.0),
-                              dilation_iteration_num_ (0)
+                              dilation_iteration_num_ (0),
+                              nr_coeff_ ()
                               {};
 
       /** \brief Provide a pointer to a point cloud where normal information should be saved
@@ -169,7 +174,7 @@ namespace pcl
 
       /** \brief Get the parameter for distance based weighting of neighbors. */
       inline double 
-      getSqrGaussParam () { return (sqr_gauss_param_); }
+      getSqrGaussParam () const { return (sqr_gauss_param_); }
 
       /** \brief Set the upsampling method to be used
         * \note Options are: * NONE - no upsampling will be done, only the input points will be projected to their own
