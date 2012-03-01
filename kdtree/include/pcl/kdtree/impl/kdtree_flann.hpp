@@ -61,14 +61,13 @@ pcl::KdTreeFLANN<PointT, Dist>::setInputCloud (const PointCloudConstPtr &cloud, 
   }
   if (indices != NULL)
   {
-    total_nr_points_ = (int) indices_->size ();
     convertCloudToArray (*input_, *indices_);
   }
   else
   {
-    total_nr_points_ = (int) input_->points.size ();
     convertCloudToArray (*input_);
   }
+  total_nr_points_ = (int) index_mapping_.size ();
 
   flann_index_ = new FLANNIndex (flann::Matrix<float> (cloud_, index_mapping_.size (), dim_),
                                  flann::KDTreeSingleIndexParams (15)); // max 15 points/leaf
