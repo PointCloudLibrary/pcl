@@ -157,7 +157,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::isEntireBinSampled (boost::dynamic_bi
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename NormalT> unsigned int 
-pcl::NormalSpaceSampling<PointT, NormalT>::findBin (float *normal, unsigned int nbins)
+pcl::NormalSpaceSampling<PointT, NormalT>::findBin (float *normal, unsigned int)
 {
   unsigned int bin_number = 0;
   // holds the bin numbers for direction cosines in x,y,z directions

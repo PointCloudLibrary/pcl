@@ -83,9 +83,11 @@ namespace pcl
         * \param[in] extract_removed_indices set to true if the filtered data indices should be saved in a 
         * separate list. Default: false.
         */
-      Filter (bool extract_removed_indices = false) : extract_removed_indices_ (extract_removed_indices)
+      Filter (bool extract_removed_indices = false) : 
+        removed_indices_ (new std::vector<int>),
+        filter_name_ (),
+        extract_removed_indices_ (extract_removed_indices)
       {
-        removed_indices_ = boost::make_shared<std::vector<int> > ();
       }
 
       /** \brief Get the point indices being removed */
@@ -167,9 +169,11 @@ namespace pcl
         * \param[in] extract_removed_indices set to true if the filtered data indices should be saved in a 
         * separate list. Default: false.
         */
-      Filter (bool extract_removed_indices = false) : extract_removed_indices_ (extract_removed_indices)
+      Filter (bool extract_removed_indices = false) : 
+        removed_indices_ (new std::vector<int>),
+        extract_removed_indices_ (extract_removed_indices),
+        filter_name_ ()
       {
-        removed_indices_ = boost::make_shared<std::vector<int> > ();
       }
 
       /** \brief Get the point indices being removed */

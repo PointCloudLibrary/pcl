@@ -70,11 +70,11 @@ namespace pcl
       CropBox () :
         min_pt_ (Eigen::Vector4f (-1, -1, -1, 1)),
         max_pt_ (Eigen::Vector4f (1, 1, 1, 1)),
+        rotation_ (Eigen::Vector3f::Zero ()),
+        translation_ (Eigen::Vector3f::Zero ()),
         transform_ (Eigen::Affine3f::Identity ())
       {
         filter_name_ = "CropBox";
-        rotation_ = Eigen::Vector3f::Zero ();
-        translation_ = Eigen::Vector3f::Zero ();
       }
 
       /** \brief Set the minimum point of the box
@@ -90,7 +90,7 @@ namespace pcl
         * \return the value of the internal \a min_pt parameter.
         */
       inline Eigen::Vector4f
-      getMin ()
+      getMin () const
       {
         return (min_pt_);
       }
@@ -108,7 +108,7 @@ namespace pcl
         * \return the value of the internal \a max_pt parameter.
         */
       inline Eigen::Vector4f
-      getMax ()
+      getMax () const
       {
         return (max_pt_);
       }
@@ -124,7 +124,7 @@ namespace pcl
 
       /** \brief Get the value of the box translation parameter as set by the user. */
       Eigen::Vector3f
-      getTranslation ()
+      getTranslation () const
       {
         return (translation_);
       }
@@ -140,7 +140,7 @@ namespace pcl
 
       /** \brief Get the value of the box rotatation parameter, as set by the user. */
       inline Eigen::Vector3f
-      getRotation ()
+      getRotation () const
       {
         return (rotation_);
       }
@@ -156,7 +156,7 @@ namespace pcl
 
       /** \brief Get the value of the transformation parameter, as set by the user. */
       inline Eigen::Affine3f
-      getTransform ()
+      getTransform () const
       {
         return (transform_);
       }
@@ -179,10 +179,10 @@ namespace pcl
       Eigen::Vector4f min_pt_;
       /** \brief The maximum point of the box. */
       Eigen::Vector4f max_pt_;
-      /** \brief The 3D translation for the box. */
-      Eigen::Vector3f translation_;
       /** \brief The 3D rotation for the box. */
       Eigen::Vector3f rotation_;
+      /** \brief The 3D translation for the box. */
+      Eigen::Vector3f translation_;
       /** \brief The affine transform applied to the cloud. */
       Eigen::Affine3f transform_;
   };
@@ -209,11 +209,11 @@ namespace pcl
       CropBox () :
         min_pt_(Eigen::Vector4f (-1, -1, -1, 1)),
         max_pt_(Eigen::Vector4f (1, 1, 1, 1)),
+        translation_ (Eigen::Vector3f::Zero ()),
+        rotation_ (Eigen::Vector3f::Zero ()),
         transform_(Eigen::Affine3f::Identity ())
       {
         filter_name_ = "CropBox";
-        rotation_ = Eigen::Vector3f::Zero ();
-        translation_ = Eigen::Vector3f::Zero ();
       }
 
       /** \brief Set the minimum point of the box
@@ -229,7 +229,7 @@ namespace pcl
         * \return the value of the internal \a min_pt parameter.
         */
       inline Eigen::Vector4f
-      getMin ()
+      getMin () const
       {
         return (min_pt_);
       }
@@ -247,7 +247,7 @@ namespace pcl
         * \return the value of the internal \a max_pt parameter.
         */
       inline Eigen::Vector4f
-      getMax ()
+      getMax () const
       {
         return (max_pt_);
       }
@@ -263,7 +263,7 @@ namespace pcl
 
       /** \brief Get the value of the box translation parameter as set by the user. */
       inline Eigen::Vector3f
-      getTranslation ()
+      getTranslation () const
       {
         return (translation_);
       }
@@ -279,7 +279,7 @@ namespace pcl
 
       /** \brief Get the value of the box rotatation parameter, as set by the user. */
       inline Eigen::Vector3f
-      getRotation ()
+      getRotation () const
       {
         return (rotation_);
       }
@@ -295,7 +295,7 @@ namespace pcl
 
       /** \brief Get the value of the transformation parameter, as set by the user. */
       inline Eigen::Affine3f
-      getTransform ()
+      getTransform () const
       {
         return (transform_);
       }

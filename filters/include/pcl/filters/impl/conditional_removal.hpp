@@ -48,7 +48,7 @@
 template <typename PointT>
 pcl::FieldComparison<PointT>::FieldComparison (
     std::string field_name, ComparisonOps::CompareOp op, double compare_val) :
-      compare_val_(compare_val), point_data_(NULL)
+      compare_val_ (compare_val), point_data_ (NULL)
 {
   field_name_ = field_name;
   op_ = op;
@@ -137,7 +137,8 @@ pcl::FieldComparison<PointT>::evaluate (const PointT &point) const
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 pcl::PackedRGBComparison<PointT>::PackedRGBComparison (
-    std::string component_name, ComparisonOps::CompareOp op, double compare_val)
+    std::string component_name, ComparisonOps::CompareOp op, double compare_val) :
+  component_name_ (component_name), component_offset_ (), compare_val_ (compare_val)
 {
   // get all the fields
   std::vector<sensor_msgs::PointField> point_fields;
@@ -189,12 +190,10 @@ pcl::PackedRGBComparison<PointT>::PackedRGBComparison (
     capable_ = false;
     return;
   }
-  component_name_ = component_name;
 
   // save the rest of the context
   capable_ = true;
   op_ = op;
-  compare_val_ = compare_val;
 }
 
 
@@ -230,7 +229,8 @@ pcl::PackedRGBComparison<PointT>::evaluate (const PointT &point) const
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 pcl::PackedHSIComparison<PointT>::PackedHSIComparison (
-    std::string component_name, ComparisonOps::CompareOp op, double compare_val)
+    std::string component_name, ComparisonOps::CompareOp op, double compare_val) : 
+  component_name_ (component_name), component_id_ (), compare_val_ (compare_val), rgb_offset_ ()
 {
   // Get all the fields
   std::vector<sensor_msgs::PointField> point_fields; 
@@ -290,12 +290,10 @@ pcl::PackedHSIComparison<PointT>::PackedHSIComparison (
     capable_ = false;
     return;
   }
-  component_name_ = component_name;
 
   // Save the context
   capable_ = true;
   op_ = op;
-  compare_val_ = compare_val;
 }
 
 //////////////////////////////////////////////////////////////////////////

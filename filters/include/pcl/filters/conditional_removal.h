@@ -79,9 +79,7 @@ namespace pcl
       /** \brief The data offset. */
       uint32_t offset_;
     private:
-      PointDataAtOffset ()
-      {
-      }
+      PointDataAtOffset () : datatype_ (), offset_ () {}
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -92,6 +90,12 @@ namespace pcl
     public:
       typedef boost::shared_ptr<ComparisonBase<PointT> > Ptr;
       typedef boost::shared_ptr<const ComparisonBase<PointT> > ConstPtr;
+
+      /** \brief Constructor. */
+      ComparisonBase () : capable_ (false), field_name_ (), offset_ (), op_ () {}
+
+      /** \brief Destructor. */
+      virtual ~ComparisonBase () {}
 
       /** \brief Return if the comparison is capable. */
       inline bool
@@ -138,6 +142,25 @@ namespace pcl
         */
       FieldComparison (std::string field_name, ComparisonOps::CompareOp op, double compare_val);
 
+      /** \brief Copy constructor.
+        * \param[in] src the field comparison object to copy into this
+        */
+      FieldComparison (const FieldComparison &src) :
+        compare_val_ (src.compare_val_), point_data_ (src.point_data_)
+      {
+      }
+
+      /** \brief Copy operator.
+        * \param[in] src the field comparison object to copy into this
+        */
+      inline FieldComparison&
+      operator = (const FieldComparison &src)
+      {
+        compare_val_ = src.compare_val_;
+        point_data_  = src.point_data_;
+        return (*this);
+      }
+
       /** \brief Destructor. */
       virtual ~FieldComparison ();
 
@@ -156,7 +179,8 @@ namespace pcl
       PointDataAtOffset<PointT>* point_data_;
 
     private:
-      FieldComparison ()
+      FieldComparison () :
+        compare_val_ (), point_data_ ()
       {
       } // not allowed
   };
@@ -177,6 +201,9 @@ namespace pcl
         */
       PackedRGBComparison (std::string component_name, ComparisonOps::CompareOp op, double compare_val);
 
+      /** \brief Destructor. */
+      virtual ~PackedRGBComparison () {}
+
       /** \brief Determine the result of this comparison.  
         * \param point the point to evaluate
         * \return the result of this comparison.
@@ -195,7 +222,8 @@ namespace pcl
       double compare_val_;
 
     private:
-      PackedRGBComparison ()
+      PackedRGBComparison () :
+        component_name_ (), component_offset_ (), compare_val_ ()
       {
       } // not allowed
 
@@ -216,6 +244,9 @@ namespace pcl
         * \param compare_val the constant value to compare the component value too
         */
       PackedHSIComparison (std::string component_name, ComparisonOps::CompareOp op, double compare_val);
+
+      /** \brief Destructor. */
+      virtual ~PackedHSIComparison () {}
 
       /** \brief Determine the result of this comparison.  
         * \param point the point to evaluate
@@ -245,7 +276,8 @@ namespace pcl
       uint32_t rgb_offset_;
 
     private:
-      PackedHSIComparison ()
+      PackedHSIComparison () :
+        component_name_ (), component_id_ (), compare_val_ (), rgb_offset_ ()
       {
       } // not allowed
   };
@@ -264,7 +296,7 @@ namespace pcl
       typedef boost::shared_ptr<const ConditionBase<PointT> > ConstPtr;
 
       /** \brief Constructor. */
-      ConditionBase () : capable_ (true)
+      ConditionBase () : capable_ (true), comparisons_ (), conditions_ ()
       {
       }
 
@@ -427,7 +459,7 @@ namespace pcl
         * \param extract_removed_indices extract filtered indices from indices vector
         */
       ConditionalRemoval (int extract_removed_indices = false) :
-        Filter<PointT>::Filter (extract_removed_indices), keep_organized_ (false), condition_ (),
+        Filter<PointT>::Filter (extract_removed_indices), capable_ (false), keep_organized_ (false), condition_ (),
         user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
       {
         filter_name_ = "ConditionalRemoval";
@@ -439,7 +471,7 @@ namespace pcl
         * \param extract_removed_indices extract filtered indices from indices vector
         */
       ConditionalRemoval (ConditionBasePtr condition, bool extract_removed_indices = false) :
-        Filter<PointT>::Filter (extract_removed_indices), keep_organized_ (false), condition_ (),
+        Filter<PointT>::Filter (extract_removed_indices), capable_ (false), keep_organized_ (false), condition_ (),
         user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
       {
         filter_name_ = "ConditionalRemoval";
@@ -461,7 +493,7 @@ namespace pcl
       }
 
       inline bool
-      getKeepOrganized ()
+      getKeepOrganized () const
       {
         return (keep_organized_);
       }
