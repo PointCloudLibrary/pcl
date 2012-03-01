@@ -40,7 +40,7 @@
 #ifndef PCL_SEGMENTATION_ORGANIZED_MULTI_PLANE_SEGMENTATION_H_
 #define PCL_SEGMENTATION_ORGANIZED_MULTI_PLANE_SEGMENTATION_H_
 
-#include <pcl/geometry/planar_polygon.h>
+#include <pcl/segmentation/planar_region.h>
 #include <pcl/pcl_base.h>
 #include <pcl/PointIndices.h>
 #include <pcl/ModelCoefficients.h>
@@ -155,12 +155,16 @@ namespace pcl
       /** \brief Segmentation of all planes in a point cloud given by setInputCloud(), setIndices()
         * \param[out] model_coefficients a vector of model_coefficients for each plane found in the input cloud
         * \param[out] inlier_indices a vector of inliers for each detected plane
+        * \param[out] centroids a vector of centroids for each plane
+        * \param[out] covariances a vector of covariance matricies for the inliers of each plane
         * \param[out] labels a point cloud for the connected component labels of each pixel
         * \param[out] label_indices a vector of PointIndices for each labeled component
         */
       void
       segment (std::vector<ModelCoefficients>& model_coefficients, 
-               std::vector<PointIndices>& inlier_indices, 
+               std::vector<PointIndices>& inlier_indices,
+               std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> >& centroids,
+               std::vector <Eigen::Matrix3f, Eigen::aligned_allocator<Eigen::Matrix3f> >& covariances,
                pcl::PointCloud<PointLT>& labels, 
                std::vector<pcl::PointIndices>& label_indices);
 
@@ -176,7 +180,10 @@ namespace pcl
         * \param[out] regions a list of resultant planar polygonal regions
         */
       void
-      segment (std::vector<PlanarPolygon<PointT> >& regions);
+      segment (std::vector<PlanarRegion<PointT> >& regions);
+      
+      //void
+      //segment (std::vector<PlanarPolygon<PointT> >& regions);
 
     protected:
 

@@ -33,6 +33,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/plane_coefficient_comparator.h
         include/pcl/${SUBSYS_NAME}/organized_connected_component_segmentation.h
         include/pcl/${SUBSYS_NAME}/organized_multi_plane_segmentation.h
+	include/pcl/${SUBSYS_NAME}/region_3d.h
+	include/pcl/${SUBSYS_NAME}/planar_region.h
         include/pcl/${SUBSYS_NAME}/planar_polygon_fusion.h
         )
 

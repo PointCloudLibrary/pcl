@@ -40,7 +40,7 @@
 
 #include <Eigen/Core>
 #include <vector>
-#include <pcl/geometry/planar_polygon.h>
+#include <pcl/segmentation/planar_region.h>
 
 namespace pcl
 {
@@ -53,7 +53,7 @@ namespace pcl
   {
     public:
       /** \brief Constructor */
-      PlanarPolygonFusion () : states_ () {}
+      PlanarPolygonFusion () : regions_ () {}
      
       /** \brief Destructor */
       virtual ~PlanarPolygonFusion () {}
@@ -62,76 +62,30 @@ namespace pcl
       void 
       reset ()
       {
-        states_.clear ();
+        regions_.clear ();
       }
       
       /** \brief Set the list of 2D planar polygons to refine.
         * \param[in] input the list of 2D planar polygons to refine
         */
       void
-      setInputPolygons (const std::vector<PlanarPolygon<PointT> > &input)
+      addInputPolygons (const std::vector<PlanarRegion<PointT> > &input)
       {
-        int statesize = states_.size ();
-        states_.reserve (statesize + input.size ());
-        for (size_t i = 0; i < input.size (); ++i)
-        {
-          states_[statesize].plane_coefficients = input[i].coefficients;
-          states_[statesize].covariance = Eigen::Matrix4f::Identity ();
-          states_[statesize].contour.resize (input[i].contour.size ());
-          for (size_t j = 0; j < input[i].contour.size (); ++j)
-          {
-            states_[statesize].contour[j].first = input[i].contour[j];
-            states_[statesize].contour[j].second = false;
-          }
-        }
-      }
-
-      /** \brief Set the list of 2D planar polygons to refine together with their covariance matrices
-        * \param[in] input the list of 2D planar polygons to refine
-        */
-      void
-      setInputPolygons (const std::vector<std::pair<PlanarPolygon<PointT>, Eigen::Matrix4f> > &input)
-      {
-        int statesize = states_.size ();
-        states_.reserve (statesize + input.size ());
-        for (size_t i = 0; i < input.size (); ++i)
-        {
-          states_[statesize].plane_coefficients = input[i].first.coefficients;
-          states_[statesize].covariance = input[i].second;
-          states_[statesize].contour.resize (input[i].first.contour.size ());
-          for (size_t j = 0; j < input[i].first.contour.size (); ++j)
-          {
-            states_[statesize].contour[j].first = input[i].first.contour[j];
-            states_[statesize].contour[j].second = false;
-          }
-        }
+        int start = regions_.size ();
+        regions_.resize (regions_.size () + input.size ());
+        for(size_t i = 0; i < input.size (); i++)
+          regions_[start+i] = input[i];
       }
 
       /** \brief Refine the given input polygons based on the given comparators.
         * \param[out] output the resultant set of merged polygons 
         */ 
       void
-      refine (std::vector<PlanarPolygon<PointT> > &output);
+      refine (std::vector<PlanarRegion<PointT> > &output);
 
     protected:
-      /** \brief This class represents the state of a polygonal plane internally. */
-      struct PlaneState
-      {
-        /** \brief Plane parameters: normal.x, normal.y, normal.z, distance */
-        Eigen::Vector4f plane_coefficients;
-        
-        /** \brief The polygon vertices with labels that tell whether the next line segment is a real plane 
-          * boundary or just unobserved. */
-        std::vector<std::pair<PointT, bool> > contour;
-        
-        /** \brief The covariance matrix (how certain are we about this model) for this plane. */
-        Eigen::Matrix4f covariance;
-
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-      };
-     
       /** \brief Internal list of planar states. */
-      std::vector<PlaneState> states_;
+      std::vector<pcl::PlanarRegion<PointT> > regions_;
   };
 }
 

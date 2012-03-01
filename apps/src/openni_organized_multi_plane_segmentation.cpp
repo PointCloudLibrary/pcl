@@ -43,6 +43,7 @@
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/ModelCoefficients.h>
+#include <pcl/segmentation/planar_region.h>
 #include <pcl/segmentation/organized_multi_plane_segmentation.h>
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 #include <pcl/filters/extract_indices.h>
@@ -132,11 +133,8 @@ class OpenNIOrganizedMultiPlaneSegmentation
       mps.setAngularThreshold (0.017453 * 2.0); //3 degrees
       mps.setDistanceThreshold (0.02); //2cm
 
-      std::vector<pcl::ModelCoefficients> plane_models;
-      std::vector<pcl::PointIndices> planes_inliers;
-      pcl::PointCloud<pcl::Label>::Ptr labels (new pcl::PointCloud<pcl::Label>);
-      std::vector<pcl::PointIndices> label_indices;
-
+      std::vector<pcl::PlanarRegion<PointT> > regions;
+      pcl::PointCloud<PointT>::Ptr contour (new pcl::PointCloud<PointT>);
       size_t prev_models_size = 0;
       char name[1024];
 
@@ -146,10 +144,7 @@ class OpenNIOrganizedMultiPlaneSegmentation
 
         if (prev_cloud && cloud_mutex.try_lock ())
         {
-          planes_inliers.clear ();
-          plane_models.clear ();
-          label_indices.clear ();
-          labels->resize (0);
+          regions.clear ();
           pcl::PointCloud<pcl::Normal>::Ptr normal_cloud (new pcl::PointCloud<pcl::Normal>);
           double normal_start = pcl::getTime ();
           ne.setInputCloud (prev_cloud);
@@ -160,7 +155,7 @@ class OpenNIOrganizedMultiPlaneSegmentation
           double plane_extract_start = pcl::getTime ();
           mps.setInputNormals (normal_cloud);
           mps.setInputCloud (prev_cloud);
-          mps.segment (plane_models, planes_inliers,*labels,label_indices);
+          mps.segment (regions);
           double plane_extract_end = pcl::getTime ();
           std::cout << "Plane extraction took " << double (plane_extract_end - plane_extract_start) << std::endl;
           std::cout << "Frame took " << double (plane_extract_end - normal_start) << std::endl;
@@ -172,26 +167,23 @@ class OpenNIOrganizedMultiPlaneSegmentation
 
           removePreviousDataFromScreen (prev_models_size);
           //Draw Visualization
-          for (size_t i = 0; i < planes_inliers.size (); i++)
+          for (size_t i = 0; i < regions.size (); i++)
           {
-            Eigen::Vector4f centroid;
-            pcl::compute3DCentroid (*prev_cloud, planes_inliers[i], centroid);
+            Eigen::Vector3f centroid = regions[i].getCentroid ();
+            Eigen::Vector4f model = regions[i].getCoefficients ();
             pcl::PointXYZ pt1 = pcl::PointXYZ (centroid[0], centroid[1], centroid[2]);
-            pcl::PointXYZ pt2 = pcl::PointXYZ (centroid[0] + (0.5 * plane_models[i].values[0]),
-                                               centroid[1] + (0.5 * plane_models[i].values[1]),
-                                               centroid[2] + (0.5 * plane_models[i].values[2]));
+            pcl::PointXYZ pt2 = pcl::PointXYZ (centroid[0] + (0.5 * model[0]),
+                                               centroid[1] + (0.5 * model[1]),
+                                               centroid[2] + (0.5 * model[2]));
             sprintf (name, "normal_%d", (unsigned)i);
             viewer->addArrow (pt2, pt1, 1.0, 0, 0, name);
 
-            pcl::PointIndices boundary_indices;
-            pcl::PointCloud<PointT> boundary_cloud;
-            pcl::OrganizedConnectedComponentSegmentation<PointT,pcl::Label>::findLabeledRegionBoundary (planes_inliers[i].indices[0],labels,boundary_indices);
-            pcl::copyPointCloud (*prev_cloud, boundary_indices, *cluster);
+            contour->points = regions[i].getContour ();
             sprintf (name, "plane_%02d", (int)i);
-            pcl::visualization::PointCloudColorHandlerCustom <PointT> color (cluster, red[i], grn[i], blu[i]);
-            viewer->addPointCloud (cluster, color, name);
+            pcl::visualization::PointCloudColorHandlerCustom <PointT> color (contour, red[i], grn[i], blu[i]);
+            viewer->addPointCloud (contour, color, name);
           }
-          prev_models_size = planes_inliers.size ();
+          prev_models_size = regions.size ();
           cloud_mutex.unlock ();
         }
       }
