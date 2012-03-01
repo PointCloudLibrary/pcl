@@ -50,7 +50,9 @@
 #include "pcl/range_image/range_image_planar.h"
 
 // Ignore warnings in the above headers
+#ifdef __GNUC__
 #pragma GCC system_header 
+#endif
 #include <vtkSmartPointer.h>
 #include <vtkPoints.h>
 #include <vtkPointData.h>
