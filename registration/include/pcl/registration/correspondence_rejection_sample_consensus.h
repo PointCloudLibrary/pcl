@@ -66,10 +66,14 @@ namespace pcl
       public:
 
         /** \brief Empty constructor. */
-        CorrespondenceRejectorSampleConsensus ()
+        CorrespondenceRejectorSampleConsensus () :
+          inlier_threshold_ (0.05),
+          max_iterations_ (0),
+          input_ (),
+          target_ (),
+          best_transformation_ ()
         {
           rejection_name_ = "CorrespondenceRejectorSampleConsensus";
-          inlier_threshold_ = 0.05;
         }
 
         /** \brief Get a list of valid correspondences after rejection from the original set of correspondences.
