@@ -34,6 +34,7 @@
  */
 
 #include <cmath>
+#include <pcl/pcl_macros.h>
 
 namespace pcl
 {
