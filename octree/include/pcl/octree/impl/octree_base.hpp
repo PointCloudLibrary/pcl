@@ -822,21 +822,16 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT, typename BranchT> void
-    OctreeBase<DataT, LeafT, BranchT>::serializeLeafCallback (OctreeLeaf &leaf_arg, const OctreeKey &key_arg)
+    OctreeBase<DataT, LeafT, BranchT>::serializeLeafCallback (OctreeLeaf &, const OctreeKey &)
     {
-      // Silence compiler warnings
-      (void)leaf_arg;
-      (void)key_arg;
       // nothing to do
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT, typename BranchT> void
-    OctreeBase<DataT, LeafT, BranchT>::serializeLeafCallback (OctreeLeaf &leaf_arg, const OctreeKey &key_arg,
+    OctreeBase<DataT, LeafT, BranchT>::serializeLeafCallback (OctreeLeaf &leaf_arg, const OctreeKey &,
                                                               std::vector<DataT>& dataVector_arg)
     {
-      // Silence compiler warnings
-      (void)key_arg;
       leaf_arg.getData (dataVector_arg);
     }
 

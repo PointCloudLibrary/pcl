@@ -191,9 +191,8 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT> void
     OctreeLowMemBase<DataT, LeafT>::serializeTree (std::vector<char>& binaryTreeOut_arg,
-                                                   bool doXOREncoding_arg)
+                                                   bool)
     {
-      (void)doXOREncoding_arg;    // Silence compiler warning
       OctreeKey newKey;
       newKey.x = newKey.y = newKey.z = 0;
 
@@ -207,9 +206,8 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT> void
     OctreeLowMemBase<DataT, LeafT>::serializeTree (std::vector<char>& binaryTreeOut_arg,
-                                                   std::vector<DataT>& dataVector_arg, bool doXOREncoding_arg)
+                                                   std::vector<DataT>& dataVector_arg, bool)
     {
-      (void)doXOREncoding_arg;    // Silence compiler warning
       OctreeKey newKey;
       newKey.x = newKey.y = newKey.z = 0;
 
@@ -241,9 +239,8 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT> void
     OctreeLowMemBase<DataT, LeafT>::deserializeTree (std::vector<char>& binaryTreeIn_arg,
-                                                     bool doXORDecoding_arg)
+                                                     bool)
     {
-      (void)doXORDecoding_arg;    // Silence compiler warning
       OctreeKey newKey;
       newKey.x = newKey.y = newKey.z = 0;
 
@@ -262,9 +259,8 @@ namespace pcl
     template<typename DataT, typename LeafT> void
     OctreeLowMemBase<DataT, LeafT>::deserializeTree (std::vector<char>& binaryTreeIn_arg,
                                                      std::vector<DataT>& dataVector_arg,
-                                                     bool doXORDecoding_arg)
+                                                     bool)
     {
-      (void)doXORDecoding_arg;    // Silence compiler warning
       OctreeKey newKey;
       newKey.x = newKey.y = newKey.z = 0;
 
@@ -824,21 +820,16 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT> void
-    OctreeLowMemBase<DataT, LeafT>::serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg)
+    OctreeLowMemBase<DataT, LeafT>::serializeLeafCallback (OctreeLeaf&, const OctreeKey&)
     {
-      // Silence compiler warnings
-      (void)leaf_arg;
-      (void)key_arg;
       // nothing to do
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT> void
-    OctreeLowMemBase<DataT, LeafT>::serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg,
+    OctreeLowMemBase<DataT, LeafT>::serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey&,
                                                            std::vector<DataT>& dataVector_arg)
     {
-      // Silence compiler warnings
-      (void)key_arg;
       leaf_arg.getData (dataVector_arg);
     }
 
