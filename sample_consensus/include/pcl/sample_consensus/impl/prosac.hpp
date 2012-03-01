@@ -66,8 +66,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
 
   // Define the n_Start coefficients from Section 2.2
   float n_star = static_cast<float> (N);
-  unsigned int I_n_star = 0;
-  float epsilon_n_star = 0.0f;
+  float epsilon_n_star = 0.0;
   size_t k_n_star = T_N;
 
   // Compute the I_n_star_min of Equation 8

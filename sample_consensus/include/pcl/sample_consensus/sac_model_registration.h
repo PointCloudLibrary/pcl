@@ -183,21 +183,17 @@ namespace pcl
                                  Eigen::VectorXf &optimized_coefficients);
 
       void
-      projectPoints (const std::vector<int> &inliers,
-                     const Eigen::VectorXf &model_coefficients,
-                     PointCloud &projected_points, bool copy_data_fields = true)
+      projectPoints (const std::vector<int> &,
+                     const Eigen::VectorXf &,
+                     PointCloud &, bool = true)
       {
-        // Silence compiler warnings
-        (void)inliers; (void)model_coefficients; (void)projected_points; (void)copy_data_fields;
       };
 
       bool
-      doSamplesVerifyModel (const std::set<int> &indices,
-                            const Eigen::VectorXf &model_coefficients,
-                            const double threshold)
+      doSamplesVerifyModel (const std::set<int> &,
+                            const Eigen::VectorXf &,
+                            const double)
       {
-        // Silence compiler warnings
-        (void)indices; (void)model_coefficients; (void)threshold;
         return (false);
       }
 

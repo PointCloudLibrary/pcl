@@ -196,6 +196,9 @@ namespace pcl
       /** \brief Temporary pointer to a list of given indices for optimizeModelCoefficients () */
       const std::vector<int> *tmp_inliers_;
 
+#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif
       /** \brief Functor for the optimization function */
       struct OptimizationFunctor : pcl::Functor<float>
       {
@@ -229,6 +232,9 @@ namespace pcl
 
         pcl::SampleConsensusModelCircle2D<PointT> *model_;
       };
+#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#pragma GCC diagnostic warning "-Weffc++"
+#endif
   };
 }
 

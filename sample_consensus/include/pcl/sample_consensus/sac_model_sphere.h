@@ -90,7 +90,7 @@ namespace pcl
         * \param[in] source the model to copy into this
         */
       SampleConsensusModelSphere (const SampleConsensusModelSphere &source) :
-        tmp_inliers_ () 
+        SampleConsensusModel<PointT> (), tmp_inliers_ () 
       {
         *this = source;
       }
@@ -214,6 +214,9 @@ namespace pcl
       /** \brief Temporary pointer to a list of given indices for optimizeModelCoefficients () */
       const std::vector<int> *tmp_inliers_;
 
+#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif
       struct OptimizationFunctor : pcl::Functor<float>
       {
         /** Functor constructor
@@ -249,7 +252,10 @@ namespace pcl
         
         pcl::SampleConsensusModelSphere<PointT> *model_;
       };
-  };
+#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#pragma GCC diagnostic warning "-Weffc++"
+#endif
+   };
 }
 
 #endif  //#ifndef PCL_SAMPLE_CONSENSUS_MODEL_SPHERE_H_
