@@ -167,7 +167,7 @@ namespace pcl
       lut = new unsigned char[size_x*size_y*size_z];
 
       const int nr_normals = 8;
-      std::vector<PointXYZ> ref_normals (nr_normals);
+      std::vector<PointXYZ, Eigen::aligned_allocator<PointXYZ> > ref_normals (nr_normals);
       
       const float normal0_angle = 40.0f * 3.14f / 180.0f;
       ref_normals[0].x = cos (normal0_angle);
