@@ -359,11 +359,8 @@ namespace pcl
          *  \return "true" if octree could be generated based on DataT object; "false" otherwise
          * */
         virtual bool
-        genOctreeKeyForDataT (const DataT &data_arg, OctreeKey &key_arg) const
+        genOctreeKeyForDataT (const DataT &, OctreeKey &) const
         {
-          // Silence compiler warnings
-          (void)data_arg;
-          (void)key_arg;
           // this class cannot relate DataT objects to octree keys
           return (false);
         }
@@ -374,11 +371,8 @@ namespace pcl
           * \return "true" if DataT object could be generated; "false" otherwise
           */
         virtual bool
-        genDataTByOctreeKey (const OctreeKey &key_arg, DataT &data_arg) const
+        genDataTByOctreeKey (const OctreeKey &, DataT &) const
         {
-          // Silence compiler warnings
-          (void)key_arg;
-          (void)data_arg;
           // this class cannot relate DataT objects to octree keys
           return (false);
         }

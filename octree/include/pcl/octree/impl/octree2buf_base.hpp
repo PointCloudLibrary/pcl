@@ -1293,31 +1293,25 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT> void
-    Octree2BufBase<DataT, LeafT>::serializeLeafCallback (OctreeLeaf &leaf_arg, const OctreeKey &key_arg)
+    Octree2BufBase<DataT, LeafT>::serializeLeafCallback (OctreeLeaf &, const OctreeKey &)
     {
-      // Silence compiler warnings
-      (void)leaf_arg;
-      (void)key_arg;
       // nothing to do
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT> void
-    Octree2BufBase<DataT, LeafT>::serializeLeafCallback (OctreeLeaf &leaf_arg, const OctreeKey &key_arg,
+    Octree2BufBase<DataT, LeafT>::serializeLeafCallback (OctreeLeaf &leaf_arg, const OctreeKey &,
                                                          std::vector<DataT> &dataVector_arg)
     {
-      // Silence compiler warnings
-      (void)key_arg;
       leaf_arg.getData (dataVector_arg);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT> void
-    Octree2BufBase<DataT, LeafT>::serializeNewLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg,
+    Octree2BufBase<DataT, LeafT>::serializeNewLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey&,
                                                             const int minPointsPerLeaf_arg,
                                                             std::vector<DataT>& dataVector_arg)
     {
-      (void)key_arg;    // Silence compiler warnings
       // we reached a leaf node
       std::vector<int> newPointIdx;
 
