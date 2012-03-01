@@ -136,7 +136,11 @@ class ply_to_obj_converter
 };
 
 ply_to_obj_converter::ply_to_obj_converter (flags_type flags)
-  : flags_ (flags)
+  : flags_ (flags), ostream_ (), 
+  vertex_x_ (0), vertex_y_ (0), vertex_z_ (0),
+  face_vertex_indices_element_index_ (), 
+  face_vertex_indices_first_element_ (),
+  face_vertex_indices_previous_element_ ()
 {
 }
 
@@ -159,15 +163,17 @@ ply_to_obj_converter::error_callback (const std::string& filename, std::size_t l
 }
 
 std::tr1::tuple<std::tr1::function<void ()>, std::tr1::function<void ()> > 
-ply_to_obj_converter::element_definition_callback (const std::string& element_name, std::size_t count)
+ply_to_obj_converter::element_definition_callback (const std::string& element_name, std::size_t)
 {
-  if (element_name == "vertex") {
+  if (element_name == "vertex") 
+  {
     return std::tr1::tuple<std::tr1::function<void ()>, std::tr1::function<void ()> > (
       std::tr1::bind (&ply_to_obj_converter::vertex_begin, this),
       std::tr1::bind (&ply_to_obj_converter::vertex_end, this)
     );
   }
-  else if (element_name == "face") {
+  else if (element_name == "face") 
+  {
     return std::tr1::tuple<std::tr1::function<void ()>, std::tr1::function<void ()> > (
       std::tr1::bind (&ply_to_obj_converter::face_begin, this),
       std::tr1::bind (&ply_to_obj_converter::face_end, this)
@@ -253,7 +259,7 @@ ply_to_obj_converter::face_begin ()
 }
 
 void 
-ply_to_obj_converter::face_vertex_indices_begin (pcl::io::ply::uint8 size)
+ply_to_obj_converter::face_vertex_indices_begin (pcl::io::ply::uint8)
 {
   face_vertex_indices_element_index_ = 0;
 }
@@ -293,7 +299,7 @@ ply_to_obj_converter::face_end ()
 }
 
 bool 
-ply_to_obj_converter::convert (std::istream& istream, const std::string& istream_filename, std::ostream& ostream, const std::string& ostream_filename)
+ply_to_obj_converter::convert (std::istream&, const std::string& istream_filename, std::ostream& ostream, const std::string&)
 {
   pcl::io::ply::ply_parser::flags_type ply_parser_flags = 0;
   pcl::io::ply::ply_parser ply_parser (ply_parser_flags);

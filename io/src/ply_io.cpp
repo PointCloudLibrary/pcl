@@ -380,11 +380,10 @@ pcl::PLYReader::parse (const std::string& istream_filename)
 ////////////////////////////////////////////////////////////////////////////////////////
 int 
 pcl::PLYReader::readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
-                            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
-                            int &ply_version, int &data_type, int &data_idx)
+                            Eigen::Vector4f &, Eigen::Quaternionf &,
+                            int &, int &, int &)
 {
   // Silence compiler warnings
-  (void)origin; (void)orientation; (void)ply_version; (void)data_type; (void)data_idx;
   cloud_ = &cloud;
   range_grid_ = new std::vector<std::vector<int> >;
   if (!parse (file_name))
@@ -451,14 +450,11 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
 std::string
 pcl::PLYWriter::generateHeader (const sensor_msgs::PointCloud2 &cloud, 
                                 const Eigen::Vector4f &origin, 
-                                const Eigen::Quaternionf &orientation,
+                                const Eigen::Quaternionf &,
                                 bool binary, 
                                 bool use_camera,
                                 int valid_points)
 {
-  // Silence compiler warnings
-  (void)orientation;
-
   std::ostringstream oss;
   // Begin header
   oss << "ply";

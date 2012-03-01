@@ -40,20 +40,17 @@
 #ifndef PCL_IO_VTK_LIB_IO_H_
 #define PCL_IO_VTK_LIB_IO_H_
 
-#ifdef BUILD_Maintainer
-#  if defined __GNUC__
-#    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#      pragma GCC diagnostic ignored "-Weffc++"
-#      pragma GCC diagnostic ignored "-pedantic"
-#      pragma GCC diagnostic ignored "-Wlong-long"
-#    else
-#      pragma GCC system_header 
-#    endif
-#  elif defined _MSC_VER
-#    pragma warning(push, 1)
-#  endif
-#endif
+#include <boost/filesystem.hpp>
+#include "pcl/point_types.h"
+#include "pcl/point_cloud.h"
+#include "pcl/PolygonMesh.h"
+#include "pcl/pcl_macros.h"
+#include "pcl/ros/conversions.h"
+#include "pcl/io/pcd_io.h"
+#include "pcl/range_image/range_image_planar.h"
 
+// Ignore warnings in the above headers
+#pragma GCC system_header 
 #include <vtkSmartPointer.h>
 #include <vtkPoints.h>
 #include <vtkPointData.h>
@@ -67,15 +64,6 @@
 #include <vtkOBJReader.h>
 #include <vtkSTLReader.h>
 #include <vtkSTLWriter.h>
-#include <boost/filesystem.hpp>
-
-#include "pcl/point_types.h"
-#include "pcl/point_cloud.h"
-#include "pcl/PolygonMesh.h"
-#include "pcl/pcl_macros.h"
-#include "pcl/ros/conversions.h"
-#include "pcl/io/pcd_io.h"
-#include "pcl/range_image/range_image_planar.h"
 
 namespace pcl
 {
@@ -179,17 +167,5 @@ namespace pcl
 
   }
 }
-
-#ifdef BUILD_Maintainer
-#  if defined __GNUC__
-#    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#      pragma GCC diagnostic warning "-Weffc++"
-#      pragma GCC diagnostic warning "-pedantic"
-#      pragma GCC diagnostic warning "-Wlong-long"
-#    endif
-#  elif defined _MSC_VER
-#    pragma warning(pop)
-#  endif
-#endif
 
 #endif /* PLC_IO_VTK_LIB_IO_H_ */

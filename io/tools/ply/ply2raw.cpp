@@ -180,9 +180,8 @@ ply_to_raw_converter::error_callback (const std::string& filename, std::size_t l
 }
 
 std::tr1::tuple<std::tr1::function<void ()>, std::tr1::function<void ()> > 
-ply_to_raw_converter::element_definition_callback (const std::string& element_name, std::size_t count)
+ply_to_raw_converter::element_definition_callback (const std::string& element_name, std::size_t)
 {
-  (void)count;
   if (element_name == "vertex") {
     return std::tr1::tuple<std::tr1::function<void ()>, std::tr1::function<void ()> > (
       std::tr1::bind (&ply_to_raw_converter::vertex_begin, this),
@@ -275,9 +274,8 @@ void
 ply_to_raw_converter::face_begin () {}
 
 void
-ply_to_raw_converter::face_vertex_indices_begin (pcl::io::ply::uint8 size)
+ply_to_raw_converter::face_vertex_indices_begin (pcl::io::ply::uint8)
 {
-  (void)size;
   face_vertex_indices_element_index_ = 0;
 }
 
@@ -312,9 +310,8 @@ void
 ply_to_raw_converter::face_end () {}
 
 bool 
-ply_to_raw_converter::convert (std::istream& istream, const std::string& istream_filename, std::ostream& ostream, const std::string& ostream_filename)
+ply_to_raw_converter::convert (std::istream&, const std::string& istream_filename, std::ostream& ostream, const std::string&)
 {
-  (void)istream; (void)ostream_filename;
   pcl::io::ply::ply_parser::flags_type ply_parser_flags = 0;
   pcl::io::ply::ply_parser ply_parser (ply_parser_flags);
 

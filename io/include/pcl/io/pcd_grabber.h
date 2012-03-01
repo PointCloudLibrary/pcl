@@ -156,7 +156,7 @@ namespace pcl
 
   template<typename PointT>
   PCDGrabber<PointT>::PCDGrabber (const std::vector<std::string>& pcd_files, float frames_per_second, bool repeat)
-  : PCDGrabberBase ( pcd_files, frames_per_second, repeat)
+    : PCDGrabberBase (pcd_files, frames_per_second, repeat), signal_ ()
   {
     signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
   }
