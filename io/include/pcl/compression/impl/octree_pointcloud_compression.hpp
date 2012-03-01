@@ -537,11 +537,8 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT, typename OctreeT> void
-    PointCloudCompression<PointT, LeafT, OctreeT>::deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg)
+    PointCloudCompression<PointT, LeafT, OctreeT>::deserializeLeafCallback (OctreeLeaf&, const OctreeKey& key_arg)
     {
-      // Silence compiler warnings
-      (void)leaf_arg;
-
       double lowerVoxelCorner[3];
       std::size_t pointCount, i, cloudSize;
       PointT newPoint;

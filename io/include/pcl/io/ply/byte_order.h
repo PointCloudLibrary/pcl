@@ -86,7 +86,7 @@ namespace pcl
       void swap_byte_order (char* bytes);
 
       template <>
-      inline void swap_byte_order<1> (char* bytes) { (void)bytes; }
+      inline void swap_byte_order<1> (char*) {}
 
       template <>
       inline void swap_byte_order<2> (char* bytes)

@@ -69,7 +69,17 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      Keypoint () : BaseClass(), surface_ (), tree_ (), search_parameter_ (0), search_radius_ (0), k_ (0) {};
+      Keypoint () : 
+        BaseClass (), 
+        name_ (),
+        search_method_ (),
+        search_method_surface_ (),
+        surface_ (), 
+        tree_ (), 
+        search_parameter_ (0), 
+        search_radius_ (0), 
+        k_ (0) 
+      {};
 
       /** \brief Provide a pointer to the input dataset that we need to estimate features at every point for.
         * \param cloud the const boost shared pointer to a PointCloud message
