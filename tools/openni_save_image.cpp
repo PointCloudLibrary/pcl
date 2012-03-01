@@ -47,6 +47,7 @@
 #include <vtkBMPWriter.h>
 #include <vtkPNGWriter.h>
 #include <vtkTIFFWriter.h>
+#include <vtkImageFlip.h>
 #include <vector>
 #include <string>
 
@@ -83,13 +84,15 @@ class SimpleOpenNIViewer
       : grabber_ (grabber),
         importer_ (vtkSmartPointer<vtkImageImport>::New ()),
         depth_importer_ (vtkSmartPointer<vtkImageImport>::New ()),
-        writer_ (vtkSmartPointer<vtkTIFFWriter>::New ())
+        writer_ (vtkSmartPointer<vtkTIFFWriter>::New ()),
+        flipper_ (vtkSmartPointer<vtkImageFlip>::New ())
     {
       importer_->SetNumberOfScalarComponents (3);
       importer_->SetDataScalarTypeToUnsignedChar ();
       depth_importer_->SetNumberOfScalarComponents (1);
       depth_importer_->SetDataScalarTypeToUnsignedShort ();
       writer_->SetCompressionToPackBits ();
+      flipper_->SetFilteredAxes (1);
     }
 
     void
@@ -148,8 +151,10 @@ class SimpleOpenNIViewer
           ss << "frame_" + time + "_rgb.tiff";
           importer_->SetImportVoidPointer (data, 1);
           importer_->Update ();
+          flipper_->SetInputConnection (importer_->GetOutputPort ());
+          flipper_->Update ();
           writer_->SetFileName (ss.str ().c_str ());
-          writer_->SetInputConnection (importer_->GetOutputPort ());
+          writer_->SetInputConnection (flipper_->GetOutputPort ());
           writer_->Write ();
         }
 
@@ -165,8 +170,10 @@ class SimpleOpenNIViewer
           depth_importer_->SetDataExtentToWholeExtent ();
           depth_importer_->SetImportVoidPointer ((void*)depth_image->getDepthMetaData ().Data (), 1);
           depth_importer_->Update ();
+          flipper_->SetInputConnection (depth_importer_->GetOutputPort ());
+          flipper_->Update ();
           writer_->SetFileName (ss.str ().c_str ());
-          writer_->SetInputConnection (depth_importer_->GetOutputPort ());
+          writer_->SetInputConnection (flipper_->GetOutputPort ());
           writer_->Write ();
         }
       }
@@ -185,6 +192,7 @@ class SimpleOpenNIViewer
     boost::shared_ptr<openni_wrapper::DepthImage> depth_image_;
     vtkSmartPointer<vtkImageImport> importer_, depth_importer_;
     vtkSmartPointer<vtkTIFFWriter> writer_;
+    vtkSmartPointer<vtkImageFlip> flipper_;
 };
 
 void
