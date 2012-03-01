@@ -83,8 +83,20 @@ loadCloud (const std::string & filename, PointCloudXYZRGB & cloud)
 }
 
 void
+maskForegroundPoints (const PointCloudXYZRGB::ConstPtr & input,
+                      std::vector<bool> & foreground_mask)
+{
+  foreground_mask.resize (input->size ());
+  for (size_t i = 0; i < foreground_mask.size (); ++i)
+    foreground_mask[i] = true;
+}
+
+void
 compute (const PointCloudXYZRGB::ConstPtr & input)
 {
+  std::vector<bool> foreground_mask;
+  maskForegroundPoints (input, foreground_mask);
+
   pcl::ColorGradientModality<pcl::PointXYZRGB> color_grad_mod;
   color_grad_mod.setInputCloud (input);
   pcl::SurfaceNormalModality<pcl::PointXYZRGB> surface_norm_mod;
@@ -93,16 +105,20 @@ compute (const PointCloudXYZRGB::ConstPtr & input)
   modalities[0] = &color_grad_mod;
   modalities[1] = &surface_norm_mod;
 
-  pcl::MaskMap mask_map;
-  std::vector<pcl::MaskMap*> masks (1);
+  pcl::MaskMap mask_map (input->width, input->height);
+  for (size_t j = 0; j < input->height; ++j)
+    for (size_t i = 0; i < input->width; ++i)
+      mask_map (i,j) = foreground_mask[j*input->width+i];
+  std::vector<pcl::MaskMap*> masks (2);
   masks[0] = &mask_map;
+  masks[1] = &mask_map;
 
   pcl::RegionXY region;
   region.x = 0;
   region.y = 0;
   region.width = 100;
   region.height = 100;
-  
+
   pcl::LINEMOD linemod;  
   linemod.createAndAddTemplate (modalities, masks, region);
 
@@ -114,7 +130,7 @@ main (int argc, char** argv)
 {
   print_info ("Train a linemod template. For more information, use: %s -h\n", argv[0]);
 
-  if (argc < 1)
+  if (argc < 2)
   {
     printHelp (argc, argv);
     return (-1);
@@ -124,6 +140,8 @@ main (int argc, char** argv)
   PointCloudXYZRGB::Ptr cloud (new PointCloudXYZRGB);
   if (!loadCloud (argv[1], *cloud)) 
     return (-1);
+
+  compute (cloud);
 
 }
 
