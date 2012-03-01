@@ -115,8 +115,8 @@ detectTemplates (std::vector<QuantizableModality*> & modalities, std::vector<LIN
   {
     const QuantizedMap & quantized_map = modalities[modality_index]->getSpreadedQuantizedMap ();
 
-    const int width = quantized_map.getWidth ();
-    const int height = quantized_map.getHeight ();
+    const size_t width = quantized_map.getWidth ();
+    const size_t height = quantized_map.getHeight ();
 
     const unsigned char * quantized_data = quantized_map.getData ();
 
@@ -148,11 +148,11 @@ detectTemplates (std::vector<QuantizableModality*> & modalities, std::vector<LIN
   std::vector<std::vector<LinearizedMaps> > modality_linearized_maps;
   for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
   {
-    const int width = modality_energy_maps[modality_index].getWidth ();
-    const int height = modality_energy_maps[modality_index].getHeight ();
+    const size_t width = modality_energy_maps[modality_index].getWidth ();
+    const size_t height = modality_energy_maps[modality_index].getHeight ();
 
     std::vector< LinearizedMaps > linearized_maps;
-    const int nr_bins = modality_energy_maps[modality_index].getNumOfBins ();
+    const size_t nr_bins = modality_energy_maps[modality_index].getNumOfBins ();
     for (int bin_index = 0; bin_index < nr_bins; ++bin_index)
     {
       unsigned char * energy_map = modality_energy_maps[modality_index] (bin_index);
@@ -166,8 +166,8 @@ detectTemplates (std::vector<QuantizableModality*> & modalities, std::vector<LIN
           unsigned char * linearized_map = maps (map_col, map_row);
 
           // copy data from energy maps
-          const int lin_width = width/step_size;
-          const int lin_height = height/step_size;
+          const size_t lin_width = width/step_size;
+          const size_t lin_height = height/step_size;
           for (int row_index = 0; row_index < lin_height; ++row_index)
           {
             for (int col_index = 0; col_index < lin_width; ++col_index)
@@ -188,13 +188,13 @@ detectTemplates (std::vector<QuantizableModality*> & modalities, std::vector<LIN
   }
 
   // compute scores for templates
-  const int width = modality_energy_maps[0].getWidth ();
-  const int height = modality_energy_maps[0].getHeight ();
+  const size_t width = modality_energy_maps[0].getWidth ();
+  const size_t height = modality_energy_maps[0].getHeight ();
   for (size_t template_index = 0; template_index < templates_.size (); ++template_index)
   {
-    const int mem_width = width / step_size;
-    const int mem_height = height / step_size;
-    const int mem_size = mem_width * mem_height;
+    const size_t mem_width = width / step_size;
+    const size_t mem_height = height / step_size;
+    const size_t mem_size = mem_width * mem_height;
 
     unsigned char * score_sums = new unsigned char[mem_size];
     memset (score_sums, 0, mem_size);
@@ -233,12 +233,12 @@ detectTemplates (std::vector<QuantizableModality*> & modalities, std::vector<LIN
       }
     }
 
-    const int max_col_index = (max_index % mem_width) * step_size;
-    const int max_row_index = (max_index / mem_width) * step_size;
+    const size_t max_col_index = (max_index % mem_width) * step_size;
+    const size_t max_row_index = (max_index / mem_width) * step_size;
 
     LINEMODDetection detection;
-    detection.x = max_col_index;
-    detection.y = max_row_index;
+    detection.x = static_cast<int> (max_col_index);
+    detection.y = static_cast<int> (max_row_index);
     detection.template_id = static_cast<int> (template_index);
     detection.score = max_value * inv_max_score;
 

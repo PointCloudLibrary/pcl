@@ -51,7 +51,7 @@ namespace pcl
   class EnergyMaps
   {
     public:
-      EnergyMaps () : width_ (-1), height_ (-1), nr_bins_ (-1), maps_ () 
+      EnergyMaps () : width_ (0), height_ (0), nr_bins_ (0), maps_ () 
       {
       }
 
@@ -59,33 +59,33 @@ namespace pcl
       {
       }
 
-      inline int 
+      inline size_t 
       getWidth () const 
       { 
         return (width_); 
       }
       
-      inline int 
+      inline size_t 
       getHeight () const 
       { 
         return (height_); 
       }
       
-      inline int 
+      inline size_t 
       getNumOfBins () const
       { 
         return (nr_bins_);
       }
 
       void 
-      initialize (const int width, const int height, const int nr_bins)
+      initialize (const size_t width, const size_t height, const size_t nr_bins)
       {
         maps_.resize(nr_bins, NULL);
         width_ = width;
         height_ = height;
         nr_bins_ = nr_bins;
 
-        const int mapsSize = width*height;
+        const size_t mapsSize = width*height;
 
         for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
         {
@@ -101,9 +101,9 @@ namespace pcl
           if (maps_[map_index] != NULL) delete[] maps_[map_index];
 
         maps_.clear ();
-        width_ = -1;
-        height_ = -1;
-        nr_bins_ = -1;
+        width_ = 0;
+        height_ = 0;
+        nr_bins_ = 0;
       }
 
       inline unsigned char & 
@@ -125,16 +125,16 @@ namespace pcl
       }
 
     private:
-      int width_;
-      int height_;
-      int nr_bins_;
+      size_t width_;
+      size_t height_;
+      size_t nr_bins_;
       std::vector<unsigned char*> maps_;
   };
 
   class LinearizedMaps
   {
     public:
-      LinearizedMaps () : width_ (-1), height_ (-1), mem_width_ (-1), mem_height_ (-1), step_size_ (-1), maps_ ()
+      LinearizedMaps () : width_ (0), height_ (0), mem_width_ (0), mem_height_ (0), step_size_ (0), maps_ ()
       {
       }
       
@@ -142,20 +142,20 @@ namespace pcl
       {
       }
 
-      inline int 
+      inline size_t 
       getWidth () const { return (width_); }
       
-      inline int 
+      inline size_t 
       getHeight () const { return (height_); }
       
-      inline int 
+      inline size_t 
       getStepSize () const { return (step_size_); }
       
-      inline int 
+      inline size_t 
       getMapMemorySize () const { return (mem_width_ * mem_height_); }
 
       void 
-      initialize (const int width, const int height, const int step_size)
+      initialize (const size_t width, const size_t height, const size_t step_size)
       {
         maps_.resize(step_size*step_size, NULL);
         width_ = width;
@@ -164,7 +164,7 @@ namespace pcl
         mem_height_ = height / step_size;
         step_size_ = step_size;
 
-        const int mapsSize = mem_width_ * mem_height_;
+        const size_t mapsSize = mem_width_ * mem_height_;
 
         for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
         {
@@ -180,11 +180,11 @@ namespace pcl
           if (maps_[map_index] != NULL) delete[] maps_[map_index];
 
         maps_.clear ();
-        width_ = -1;
-        height_ = -1;
-        mem_width_ = -1;
-        mem_height_ = -1;
-        step_size_ = -1;
+        width_ = 0;
+        height_ = 0;
+        mem_width_ = 0;
+        mem_height_ = 0;
+        step_size_ = 0;
       }
 
       inline unsigned char* 
@@ -196,21 +196,21 @@ namespace pcl
       inline unsigned char* 
       getOffsetMap (const int col_index, const int row_index)
       {
-        const int map_col = col_index % step_size_;
-        const int map_row = row_index % step_size_;
+        const size_t map_col = col_index % step_size_;
+        const size_t map_row = row_index % step_size_;
 
-        const int map_mem_col_index = col_index / step_size_;
-        const int map_mem_row_index = row_index / step_size_;
+        const size_t map_mem_col_index = col_index / step_size_;
+        const size_t map_mem_row_index = row_index / step_size_;
 
         return (maps_[map_row*step_size_ + map_col] + map_mem_row_index*mem_width_ + map_mem_col_index);
       }
 
     private:
-      int width_;
-      int height_;
-      int mem_width_;
-      int mem_height_;
-      int step_size_;
+      size_t width_;
+      size_t height_;
+      size_t mem_width_;
+      size_t mem_height_;
+      size_t step_size_;
       std::vector<unsigned char*> maps_;
   };
 

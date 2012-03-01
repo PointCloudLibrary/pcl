@@ -60,7 +60,7 @@ MaskMap ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::MaskMap::
-MaskMap (size_t width, size_t height)
+MaskMap (const size_t width, const size_t height)
   : data_ (width*height), width_ (width), height_ (height)
 {
 }  
@@ -74,7 +74,7 @@ pcl::MaskMap::
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::MaskMap::
-resize (size_t width, size_t height)
+resize (const size_t width, const size_t height)
 {
   data_.resize (width*height);
   width_ = width;
@@ -91,7 +91,7 @@ QuantizedMap ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::QuantizedMap::
-QuantizedMap (size_t width, size_t height)
+QuantizedMap (const size_t width, const size_t height)
   : data_ (width*height), width_ (width), height_ (height)
 {
 }
@@ -105,7 +105,7 @@ pcl::QuantizedMap::
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::QuantizedMap::
-resize (size_t width, size_t height)
+resize (const size_t width, const size_t height)
 {
   data_.resize (width*height);
   width_ = width;
@@ -115,10 +115,10 @@ resize (size_t width, size_t height)
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::QuantizedMap::
-spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, int spreading_size)
+spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, const int spreading_size)
 {
-  const int width = input_map.getWidth ();
-  const int height = input_map.getHeight ();
+  const size_t width = input_map.getWidth ();
+  const size_t height = input_map.getHeight ();
 
   QuantizedMap tmp_map (width, height);
 
