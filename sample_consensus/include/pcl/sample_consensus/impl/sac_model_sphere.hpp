@@ -43,10 +43,8 @@
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::SampleConsensusModelSphere<PointT>::isSampleGood (const std::vector<int> &samples) const
+pcl::SampleConsensusModelSphere<PointT>::isSampleGood (const std::vector<int> &) const
 {
-  // Silence compiler warnings
-  (void)samples;
   return (true);
 }
 
@@ -252,7 +250,7 @@ pcl::SampleConsensusModelSphere<PointT>::optimizeModelCoefficients (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelSphere<PointT>::projectPoints (
-      const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields)
+      const std::vector<int> &, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool)
 {
   // Needs a valid model coefficients
   if (model_coefficients.size () != 4)
@@ -261,9 +259,6 @@ pcl::SampleConsensusModelSphere<PointT>::projectPoints (
     return;
   }
 
-  // Silence compiler warnings
-  (void)inliers;
-  (void)copy_data_fields;
   // Allocate enough space and copy the basics
   projected_points.points.resize (input_->points.size ());
   projected_points.header   = input_->header;

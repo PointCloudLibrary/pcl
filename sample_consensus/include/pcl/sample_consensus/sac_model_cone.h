@@ -83,7 +83,8 @@ namespace pcl
         * \param[in] cloud the input point cloud dataset
         */
       SampleConsensusModelCone (const PointCloudConstPtr &cloud) : 
-        SampleConsensusModel<PointT> (cloud), axis_ (Eigen::Vector3f::Zero ()), eps_angle_ (0), min_angle_ (-DBL_MAX), max_angle_ (DBL_MAX)
+        SampleConsensusModel<PointT> (cloud), axis_ (Eigen::Vector3f::Zero ()), eps_angle_ (0), min_angle_ (-DBL_MAX), max_angle_ (DBL_MAX),
+        tmp_inliers_ ()
       {
       }
 
@@ -93,8 +94,33 @@ namespace pcl
         */
       SampleConsensusModelCone (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : 
         SampleConsensusModel<PointT> (cloud, indices),
-        axis_ (Eigen::Vector3f::Zero ()), eps_angle_ (0), min_angle_ (-DBL_MAX), max_angle_ (DBL_MAX)
+        axis_ (Eigen::Vector3f::Zero ()), eps_angle_ (0), min_angle_ (-DBL_MAX), max_angle_ (DBL_MAX),
+        tmp_inliers_ ()
       {
+      }
+
+      /** \brief Copy constructor.
+        * \param[in] source the model to copy into this
+        */
+      SampleConsensusModelCone (const SampleConsensusModelCone &source) :
+        SampleConsensusModel<PointT> (), axis_ (), eps_angle_ (), min_angle_ (), max_angle_ (), tmp_inliers_ ()
+      {
+        *this = source;
+      }
+
+      /** \brief Copy constructor.
+        * \param[in] source the model to copy into this
+        */
+      inline SampleConsensusModelCone&
+      operator = (const SampleConsensusModelCone &source)
+      {
+        SampleConsensusModel<PointT>::operator=(source);
+        axis_ = source.axis_;
+        eps_angle_ = source.eps_angle_;
+        min_angle_ = source.min_angle_;
+        max_angle_ = source.max_angle_;
+        tmp_inliers_ = source.tmp_inliers_;
+        return (*this);
       }
 
       /** \brief Set the angle epsilon (delta) threshold.
@@ -115,7 +141,7 @@ namespace pcl
 
       /** \brief Get the axis along which we need to search for a cone direction. */
       inline Eigen::Vector3f 
-      getAxis ()  const { return (axis_); }
+      getAxis () const { return (axis_); }
 
       /** \brief Set the minimum and maximum allowable opening angle for a cone model
         * given from a user.
@@ -265,6 +291,9 @@ namespace pcl
       /** \brief temporary pointer to a list of given indices for optimizeModelCoefficients () */
       const std::vector<int> *tmp_inliers_;
 
+#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif
       /** \brief Functor for the optimization function */
       struct OptimizationFunctor : pcl::Functor<float>
       {
@@ -313,6 +342,9 @@ namespace pcl
 
         pcl::SampleConsensusModelCone<PointT, PointNT> *model_;
       };
+#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#pragma GCC diagnostic warning "-Weffc++"
+#endif
   };
 }
 
