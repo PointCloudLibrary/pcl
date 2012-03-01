@@ -304,15 +304,6 @@ namespace pcl
       inline const PointWithRange&
       getPoint (int index) const;
 
-      /** Return the 3d point with range at the given image point.
-        * Additionally, if the given point is not an observed point if there
-        * might be a wrap around, e.g., we left the ride side of thed image and
-        * reentered on the left side (which might be the case in a 360deg 3D
-        * scan when we look at the local neighborhood of a point) 
-        */
-      inline const PointWithRange&
-      getPointConsideringWrapAround (int image_x, int image_y) const;
-      
       /** Calculate the 3D point according to the given image point and range */
       inline void
       calculate3DPoint (float image_x, float image_y, float range, PointWithRange& point) const;
@@ -611,63 +602,6 @@ namespace pcl
       inline void
       get1dPointAverage (int x, int y, int delta_x, int delta_y, int no_of_points,
                          PointWithRange& average_point) const;
-      
-      /** Perform ICP (Iterative closest point) on the given data */
-      PCL_EXPORTS Eigen::Affine3f
-      doIcp (const VectorOfEigenVector3f& points,
-             const Eigen::Affine3f& initial_guess, int search_radius,
-             float max_distance_start, float max_distance_end, int num_iterations) const;
-      
-      /** Perform ICP (Iterative closest point) on the given data
-       *  pixel_step_start, pixel_step_end can be used to improve performance by starting with low
-       *  resolution and going to higher resolution with later iterations (not used for default values) */
-      PCL_EXPORTS Eigen::Affine3f
-      doIcp (const RangeImage& other_range_image,
-             const Eigen::Affine3f& initial_guess, int search_radius,
-             float max_distance_start, float max_distance_end,
-             int num_iterations, int pixel_step_start=1, int pixel_step_end=1) const;
-      
-
-      /** \brief Helper struct to return the results of a plane extraction */
-      struct ExtractedPlane 
-      {
-        ExtractedPlane () :
-          normal (Eigen::Vector3f::Identity ()),
-          d (0),
-          maximum_extensions (Eigen::Vector3f::Identity ()),
-          mean (Eigen::Vector3f::Identity ()),
-          eigen_values (Eigen::Vector3f::Identity ()),
-          eigen_vector1 (Eigen::Vector3f::Identity ()),
-          eigen_vector2 (Eigen::Vector3f::Identity ()),
-          eigen_vector3 (Eigen::Vector3f::Identity ()),
-          point_indices ()
-        {}
-
-        Eigen::Vector3f normal;  //!< The normal vector of the plane
-        float d;               //!< Distance of the plane to the origin. normal.dot(x)=d for every point x on the plane
-        Eigen::Vector3f maximum_extensions; //!< Maximum extensions of the plane in the directions of the eigen vectors
-        Eigen::Vector3f mean;            //!< The mean of the points
-        Eigen::Vector3f eigen_values;    //!< The eigen_values of the covariance matrix of the points
-        Eigen::Vector3f eigen_vector1,   //!< The eigen_vector corresponding to the smallest eigen value
-                        eigen_vector2,   //!< The eigen_vector corresponding to the middle eigen value
-                        eigen_vector3;   //!< The eigen_vector corresponding to the largest eigen value
-        std::vector<int> point_indices;  //!< The indices of the points lying on the plane
-      };
-
-      /** \brief Extracts planes from the range image using a region growing approach.
-        * \param initial_max_plane_error the maximum error that a point is allowed to have regarding the current
-        *        plane estimate. This value is used only in the initial plane estimate, which will later on be
-        *        refined, allowing only a maximum error of 3 sigma.
-        * \param planes the found planes. The vector contains the individual found planes.
-        */
-      PCL_EXPORTS void
-      extractPlanes (float initial_max_plane_error, std::vector<ExtractedPlane>& planes) const;
-      
-      /** \brief Comparator to enable us to sort a vector of Planes regarding their size using
-       *         std::sort(begin(), end(), RangeImage::isLargerPlane); */
-      static inline bool
-      isLargerPlane (const ExtractedPlane& p1, const ExtractedPlane& p2)
-                    { return p1.maximum_extensions[2] > p2.maximum_extensions[2]; }
       
       /** Calculates the overlap of two range images given the relative transformation
        *  (from the given image to *this) */

@@ -45,49 +45,42 @@ namespace pcl
 inline float
 RangeImage::asinLookUp (float value)
 {
-  float ret = asin_lookup_table[pcl_lrintf ((lookup_table_size/2)*value) + lookup_table_size/2];
-  //std::cout << ret << "==" << asinf(value)<<"\n";
-  return ret;
+  return (asin_lookup_table[
+      static_cast<int>(
+        static_cast<float>(pcl_lrintf ((static_cast<float>(lookup_table_size) / 2.0f) * value)) + 
+        static_cast<float>(lookup_table_size) / 2.0f)]);
 }
 
 /////////////////////////////////////////////////////////////////////////
 inline float
 RangeImage::atan2LookUp (float y, float x)
 {
-  //float ret = asin_lookup_table[pcl_lrintf((lookup_table_size/2)*value) + lookup_table_size/2];
-  
   float ret;
-  if(fabsf(x) < fabsf(y)) {
-    ret = atan_lookup_table[pcl_lrintf ((lookup_table_size/2)*(x/y)) + lookup_table_size/2];
+  if(fabsf(x) < fabsf(y)) 
+  {
+    ret = atan_lookup_table[
+      static_cast<int>(
+          static_cast<float>(pcl_lrintf ((static_cast<float>(lookup_table_size) / 2.0f) * (x / y))) + 
+          static_cast<float>(lookup_table_size) / 2.0f)];
     ret = (float) (x*y > 0 ? M_PI/2-ret : -M_PI/2-ret);
-    //if (fabsf(ret-atanf(y/x)) > 1e-3)
-      //std::cout << "atanf("<<y<<"/"<<x<<")"<<" = "<<ret<<" = "<<atanf(y/x)<<"\n";
   }
-  else {
-    ret = atan_lookup_table[pcl_lrintf ((lookup_table_size/2)*(y/x)) + lookup_table_size/2];
-  }
+  else
+    ret = atan_lookup_table[
+      static_cast<int>(
+          static_cast<float>(pcl_lrintf ((static_cast<float>(lookup_table_size) / 2.0f) * (y / x))) + 
+          static_cast<float>(lookup_table_size)/2.0f)];
   if (x < 0)
     ret = (float) (y < 0 ? ret-M_PI : ret+M_PI);
   
-  //if (fabsf(ret-atan2f(y,x)) > 1e-3)
-    //std::cout << "atan2f("<<y<<","<<x<<")"<<" = "<<ret<<" = "<<atan2f(y,x)<<"\n";
-  
-  return ret;
+  return (ret);
 }
 
 /////////////////////////////////////////////////////////////////////////
 inline float
 RangeImage::cosLookUp (float value)
 {
-  int cell_idx = pcl_lrintf ((lookup_table_size-1)*fabsf(value)/(2.0f*M_PI));
-  //if (cell_idx<0 || cell_idx>=int(cos_lookup_table.size()))
-  //{
-    //std::cout << PVARC(value)<<PVARN(cell_idx);
-    //return 0.0f;
-  //}
-  float ret = cos_lookup_table[cell_idx];
-  //std::cout << ret << "==" << cos(value)<<"\n";
-  return ret;
+  int cell_idx = static_cast<int>(pcl_lrintf ((static_cast<float>(lookup_table_size)-1) * fabsf (value) / (2.0f * M_PI)));
+  return (cos_lookup_table[cell_idx]);
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -96,11 +89,6 @@ RangeImage::createFromPointCloud(const PointCloudType& point_cloud, float angula
                                  const Eigen::Affine3f& sensor_pose, RangeImage::CoordinateFrame coordinate_frame,
                                  float noise_level, float min_range, int border_size)
 {
-  //MEASURE_FUNCTION_TIME;
-  
-  
-  //std::cout << "Starting to create range image from "<<point_cloud.points.size()<<" points.\n";
-  
   angular_resolution_ = angular_resolution;
   angular_resolution_reciprocal_ = 1.0f / angular_resolution_;
   
@@ -171,9 +159,6 @@ RangeImage::createFromPointCloudWithKnownSize(const PointCloudType& point_cloud,
   getImagePoint(point_cloud_center, center_pixel_x, center_pixel_y);
   image_offset_x_ = (std::max)(0, center_pixel_x-pixel_radius);
   image_offset_y_ = (std::max)(0, center_pixel_y-pixel_radius);
-  //std::cout << PVARC(image_offset_x_)<<PVARN(image_offset_y_);
-  //std::cout << PVARC(width)<<PVARN(height);
-  //std::cout << PVARAN(angular_resolution_);
 
   points.clear();
   points.resize(width*height, unobserved_point);
@@ -385,15 +370,16 @@ RangeImage::getRangeDifference(const Eigen::Vector3f& point) const
 void 
 RangeImage::getImagePointFromAngles(float angle_x, float angle_y, float& image_x, float& image_y) const
 {
-  image_x = (angle_x*cosLookUp(angle_y) + float(M_PI))*angular_resolution_reciprocal_ - image_offset_x_;
-  image_y = (angle_y + 0.5f*float(M_PI))*angular_resolution_reciprocal_ - image_offset_y_;
+  image_x = (angle_x*cosLookUp(angle_y) + static_cast<float>(M_PI))*angular_resolution_reciprocal_ - static_cast<float>(image_offset_x_);
+  image_y = (angle_y + 0.5f*static_cast<float>(M_PI))*angular_resolution_reciprocal_ - static_cast<float>(image_offset_y_);
 }
 
 /////////////////////////////////////////////////////////////////////////
 void 
-RangeImage::real2DToInt2D(float x, float y, int& xInt, int& yInt) const
+RangeImage::real2DToInt2D (float x, float y, int& xInt, int& yInt) const
 {
-  xInt = pcl_lrint(x); yInt = pcl_lrint(y);
+  xInt = static_cast<int>(pcl_lrintf (x)); 
+  yInt = static_cast<int>(pcl_lrintf (y));
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -432,27 +418,6 @@ RangeImage::isMaxRange(int x, int y) const
 {
   float range = getPoint(x,y).range;
   return pcl_isinf(range) && range>0.0f;
-}
-
-/////////////////////////////////////////////////////////////////////////
-const PointWithRange& 
-RangeImage::getPointConsideringWrapAround(int image_x, int image_y) const
-{
-  if (!isObserved(image_x, image_y))
-  {
-    float angle_x, angle_y, image_x_f, image_y_f;
-    getAnglesFromImagePoint((float) image_x, (float) image_y, angle_x, angle_y);
-    angle_x = normAngle(angle_x);  angle_y = normAngle(angle_y);
-    getImagePointFromAngles(angle_x, angle_y, image_x_f, image_y_f);
-    int new_image_x, new_image_y;
-    real2DToInt2D(image_x_f, image_y_f, new_image_x, new_image_y);
-    //if (image_x!=new_image_x || image_y!=new_image_y)
-      //std::cout << image_x<<","<<image_y << " was change to "<<new_image_x<<","<<new_image_y<<"\n";
-    if (!isInImage(new_image_x, new_image_y))
-      return unobserved_point;
-    image_x=new_image_x; image_y=new_image_y;
-  }
-  return points[image_y*width + image_x];
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -582,9 +547,9 @@ RangeImage::calculate3DPoint(float image_x, float image_y, PointWithRange& point
 void 
 RangeImage::getAnglesFromImagePoint(float image_x, float image_y, float& angle_x, float& angle_y) const 
 {
-  angle_y = (image_y+image_offset_y_)*angular_resolution_ - 0.5f*float(M_PI);
+  angle_y = (image_y+static_cast<float>(image_offset_y_))*angular_resolution_ - 0.5f*static_cast<float>(M_PI);
   float cos_angle_y = cosf(angle_y);
-  angle_x = (cos_angle_y==0.0f ? 0.0f : ((image_x+image_offset_x_)*angular_resolution_ - float(M_PI))/cos_angle_y);
+  angle_x = (cos_angle_y==0.0f ? 0.0f : ((image_x+ static_cast<float>(image_offset_x_))*angular_resolution_ - static_cast<float>(M_PI))/cos_angle_y);
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -756,7 +721,7 @@ RangeImage::getSurfaceAngleChange(int x, int y, int radius, float& angle_change_
   //float cos_surface_change = (d1_squared + d2_squared - d3_squared)/(2.0f*d1*d2),
         //surface_change = acosf(cos_surface_change);
   //if (pcl_isnan(surface_change))
-    //surface_change = float(M_PI);
+    //surface_change = static_cast<float>(M_PI);
   ////std::cout << PVARN(point)<<PVARN(neighbor1)<<PVARN(neighbor2)<<PVARN(cos_surface_change)<<PVARN(surface_change)<<PVARN(d1)<<PVARN(d2)<<PVARN(d1_squared)<<PVARN(d2_squared)<<PVARN(d3_squared);
 
   //return surface_change;

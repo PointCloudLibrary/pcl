@@ -239,9 +239,9 @@ namespace pcl
           }
           catch (std::bad_alloc)
           {
-            PCL_ERROR ("[initCompute] Failed to allocate %lu indices.\n", (unsigned long)input_->points.size ());
+            PCL_ERROR ("[initCompute] Failed to allocate %zu indices.\n", input_->points.size ());
           }
-          for (size_t i = 0; i < indices_->size (); ++i) { (*indices_)[i] = (int) i; }
+          for (size_t i = 0; i < indices_->size (); ++i) { (*indices_)[i] = static_cast<int>(i); }
         }
 
         // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
@@ -249,7 +249,7 @@ namespace pcl
         {
           size_t indices_size = indices_->size ();
           indices_->resize (input_->points.size ());
-          for (size_t i = indices_size; i < indices_->size (); ++i) { (*indices_)[i] = (int) i; }
+          for (size_t i = indices_size; i < indices_->size (); ++i) { (*indices_)[i] = static_cast<int>(i); }
         }
 
         return (true);

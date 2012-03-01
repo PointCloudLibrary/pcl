@@ -62,7 +62,7 @@ namespace pcl
 
 std::string getFilenameWithoutPath(const std::string& input)
 {
-  size_t filename_start = input.find_last_of('/', (size_t)-1) + 1;
+  size_t filename_start = input.find_last_of('/', static_cast<size_t>(-1)) + 1;
   return input.substr(filename_start, input.size()-filename_start);
 }
 

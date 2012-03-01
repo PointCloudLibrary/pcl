@@ -48,8 +48,9 @@ pcl::GaussianKernel::compute (float sigma,
   static const float factor = 0.01f;
   static const float max_gauss = 1.0f;
   const int hw = kernel_width / 2;
+  float sigma_sqr = 1.0f / (2.0f * sigma * sigma);
   for (int i = -hw, j = 0, k = kernel_width - 1; i < 0 ; i++, j++, k--)
-    kernel[k] = kernel[j] = float (exp (-i*i / (2*sigma*sigma)));
+    kernel[k] = kernel[j] = expf (-static_cast<float>(i) * static_cast<float>(i) * sigma_sqr);
   kernel[hw] = 1;
   unsigned g_width = kernel_width;
   for (unsigned i = 0; fabs (kernel[i]/max_gauss) < factor; i++, g_width-= 2);
@@ -84,10 +85,12 @@ pcl::GaussianKernel::compute (float sigma,
   const float factor = 0.01f;
   float max_gauss = 1.0f, max_deriv = float (sigma * exp (-0.5));
   int hw = kernel_width / 2;
+
+  float sigma_sqr = 1.0f / (2.0f * sigma * sigma);
   for (int i = -hw, j = 0, k = kernel_width - 1; i < 0 ; i++, j++, k--)
   {
-    kernel[k] = kernel[j] = float (exp (-i*i / (2*sigma*sigma)));
-    derivative[j] = -i * kernel[j];
+    kernel[k] = kernel[j] = expf (-static_cast<float>(i) * static_cast<float>(i) * sigma_sqr);
+    derivative[j] = -static_cast<float>(i) * kernel[j];
     derivative[k] = -derivative[j];
   }
   kernel[hw] = 1;
@@ -123,7 +126,7 @@ pcl::GaussianKernel::compute (float sigma,
   hw = d_width / 2;
   float den = 0;
   for (int i = -hw ; i <= hw ; i++)
-    den -=  i*derivative[i+hw];
+    den -=  static_cast<float>(i) * derivative[i+hw];
   derivative/= den;
 }
 

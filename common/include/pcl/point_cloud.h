@@ -263,7 +263,7 @@ namespace pcl
         for (size_t i = nr_points; i < points.size (); ++i)
           points[i] = rhs.points[i - nr_points];
 
-        width    = (uint32_t) points.size ();
+        width    = static_cast<uint32_t>(points.size ());
         height   = 1;
         if (rhs.is_dense && is_dense)
           is_dense = true;
@@ -365,9 +365,9 @@ namespace pcl
       getMatrixXfMap (int dim, int stride, int offset)
       {
         if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
-          return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
+          return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
         else
-          return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, dim, points.size (), Eigen::OuterStride<> (stride)));
+          return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(&points[0])+offset, dim, points.size (), Eigen::OuterStride<> (stride)));
       }
 
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
@@ -389,9 +389,9 @@ namespace pcl
       getMatrixXfMap (int dim, int stride, int offset) const
       {
         if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
-          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
+          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
         else
-          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >((float*)(&points[0])+offset, dim, points.size (), Eigen::OuterStride<> (stride)));                
+          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(&points[0])+offset, dim, points.size (), Eigen::OuterStride<> (stride)));                
       }
 
       ////////////////////////////////////////////////////////////////////////////////////////
@@ -695,10 +695,10 @@ namespace pcl
         properties (pc.properties), 
         points (Eigen::MatrixXf (indices.size (), pc.points.cols ())), 
         channels (pc.channels), 
-        width ((uint32_t) indices.size ()), height (1), is_dense (pc.is_dense)
+        width (static_cast<uint32_t> (indices.size ())), height (1), is_dense (pc.is_dense)
       {
         // Copy the obvious
-        assert ((int)indices.size () <= pc.points.rows ());
+        assert (static_cast<int>(indices.size ()) <= pc.points.rows ());
         for (size_t i = 0; i < indices.size (); i++)
           points.row (i) = pc.points.row (indices[i]);
       }
@@ -747,13 +747,13 @@ namespace pcl
         properties.sensor_origin = Eigen::Vector4f::Zero ();
         properties.sensor_orientation = Eigen::Quaternionf::Identity ();
 
-        int nr_points = (int) points.rows ();
+        int nr_points = static_cast<int>(points.rows ());
         points.resize (nr_points + rhs.points.rows (), points.cols ());
         for (int i = nr_points; i < points.rows (); ++i)
           points.row (i) = rhs.points.row (i - nr_points);
 
         channels = rhs.channels;
-        width    = (uint32_t) points.rows ();
+        width    = static_cast<uint32_t>(points.rows ());
         height   = 1;
         if (rhs.is_dense && is_dense)
           is_dense = true;

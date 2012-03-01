@@ -33,33 +33,44 @@
  *
  */
 
-#include <cmath>
+#include <float.h>
 
 namespace pcl
 {
-  template <typename real>
-  inline real normAngle(real alpha)
+  inline float
+  normAngle (float alpha)
   {
-    return (alpha >= 0  ?  fmod(alpha+real(M_PI), real(2.0f*M_PI))-real(M_PI) : -(fmod(real(M_PI)-alpha, real(2.0f*M_PI))-real(M_PI)));
+    return (alpha >= 0  ? 
+        fmodf (alpha + static_cast<float>(M_PI), 
+               2.0f * static_cast<float>(M_PI)) 
+        - static_cast<float>(M_PI) 
+        : 
+        -(fmodf (static_cast<float>(M_PI) - alpha, 
+                 2.0f * static_cast<float>(M_PI)) 
+        - static_cast<float>(M_PI)));
   }
 
-  inline float rad2deg(float alpha)
+  inline float 
+  rad2deg (float alpha)
   {
-    return alpha*57.29578f;
+    return (alpha * 57.29578f);
   }
 
-  inline float deg2rad(float alpha)
+  inline float 
+  deg2rad (float alpha)
   {
-    return alpha*0.017453293f;
+    return (alpha * 0.017453293f);
   }
 
-  inline double rad2deg(double alpha)
+  inline double 
+  rad2deg (double alpha)
   {
-    return alpha*57.29578;
+    return (alpha * 57.29578);
   }
 
-  inline double deg2rad(double alpha)
+  inline double 
+  deg2rad (double alpha)
   {
-    return alpha*0.017453293;
+    return (alpha * 0.017453293);
   }
 }

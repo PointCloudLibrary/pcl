@@ -53,7 +53,7 @@ pcl::getFieldIndex (const pcl::PointCloud<PointT> &,
   pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
   for (size_t d = 0; d < fields.size (); ++d)
     if (fields[d].name == field_name)
-      return ((int) d);
+      return (static_cast<int>(d));
   return (-1);
 }
 
@@ -67,7 +67,7 @@ pcl::getFieldIndex (const std::string &field_name,
   pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
   for (size_t d = 0; d < fields.size (); ++d)
     if (fields[d].name == field_name)
-      return ((int) d);
+      return (static_cast<int>(d));
   return (-1);
 }
 

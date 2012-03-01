@@ -301,7 +301,7 @@ pcl::getEigenAsPointCloud (Eigen::MatrixXf &in, sensor_msgs::PointCloud2 &out)
     return (false);
   }
 
-  if (in.cols () != (int)(out.width * out.height))
+  if (in.cols () != static_cast<int>(out.width * out.height))
   {
     PCL_ERROR ("Number of points in the point cloud differs from the Eigen matrix. Cannot continue.\n");
     return (false);
@@ -333,7 +333,7 @@ pcl::copyPointCloud (
 {
   cloud_out.header       = cloud_in.header;
   cloud_out.height       = 1;
-  cloud_out.width        = (uint32_t) indices.size (); 
+  cloud_out.width        = static_cast<uint32_t> (indices.size ()); 
   cloud_out.fields       = cloud_in.fields;
   cloud_out.is_bigendian = cloud_in.is_bigendian;
   cloud_out.point_step   = cloud_in.point_step;

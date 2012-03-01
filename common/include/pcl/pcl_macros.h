@@ -147,16 +147,16 @@ pcl_isnan (T &val)
 __inline double
 pcl_round (double number)
 {
-  return (number < 0.0 ? ceil(number - 0.5) : floor(number + 0.5));
+  return (number < 0.0 ? ceil (number - 0.5) : floor (number + 0.5));
 }
 __inline float
 pcl_round (float number)
 {
-  return (number < 0.0f ? ceil(number - 0.5f) : floor(number + 0.5f));
+  return (number < 0.0f ? ceilf (number - 0.5f) : floorf (number + 0.5f));
 }
 
-#define pcl_lrint(x) ((long int) pcl_round(x))
-#define pcl_lrintf(x) ((long int) pcl_round(x))
+#define pcl_lrint(x) (static_cast<long int>(pcl_round(x)))
+#define pcl_lrintf(x) (static_cast<long int>(pcl_round(x)))
 
 #ifdef WIN32
 #define pcl_sleep(x) Sleep(1000*(x))
