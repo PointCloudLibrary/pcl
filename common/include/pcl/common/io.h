@@ -60,7 +60,7 @@ namespace pcl
     // Get the index we need
     for (size_t d = 0; d < cloud.fields.size (); ++d)
       if (cloud.fields[d].name == field_name)
-        return ((int) d);
+        return (static_cast<int>(d));
     return (-1);
   }
 

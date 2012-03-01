@@ -40,7 +40,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl::getMinMax (const sensor_msgs::PointCloud2 &cloud, int idx, 
+pcl::getMinMax (const sensor_msgs::PointCloud2 &cloud, int, 
                 const std::string &field_name, float &min_p, float &max_p)
 {
   min_p = FLT_MAX;
@@ -49,7 +49,7 @@ pcl::getMinMax (const sensor_msgs::PointCloud2 &cloud, int idx,
   int field_idx = -1;
   for (size_t d = 0; d < cloud.fields.size (); ++d)
     if (cloud.fields[d].name == field_name)
-      field_idx = (int) d;
+      field_idx = static_cast<int>(d);
 
   if (field_idx == -1)
   {
@@ -78,8 +78,8 @@ pcl::getMeanStdDev (const std::vector<float> &values, double &mean, double &stdd
     sum += values[i];
     sq_sum += values[i] * values[i];
   }
-  mean = sum / values.size ();
-  double variance = (double)(sq_sum - sum * sum / values.size ()) / (values.size () - 1);
+  mean = sum / static_cast<double>(values.size ());
+  double variance = (sq_sum - sum * sum / static_cast<double>(values.size ())) / (static_cast<double>(values.size ()) - 1);
   stddev = sqrt (variance);
 }
 

@@ -340,10 +340,15 @@ namespace pcl
     inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, 0)); }
   };
 
-  inline std::ostream& operator << (std::ostream& os, const PointXYZRGBA& p)
+  inline std::ostream& 
+  operator << (std::ostream& os, const PointXYZRGBA& p)
   {
-    unsigned char* rgba_ptr = (unsigned char*)&p.rgba;
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " << (int)(*rgba_ptr) << "," << (int)(*(rgba_ptr+1)) << "," << (int)(*(rgba_ptr+2)) << "," <<(int)(*(rgba_ptr+3)) << ")";
+    const unsigned char* rgba_ptr = reinterpret_cast<const unsigned char*>(&p.rgba);
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " 
+      << static_cast<int>(*rgba_ptr) << "," 
+      << static_cast<int>(*(rgba_ptr+1)) << "," 
+      << static_cast<int>(*(rgba_ptr+2)) << "," 
+      << static_cast<int>(*(rgba_ptr+3)) << ")";
     return (os);
   }
 
@@ -449,7 +454,10 @@ namespace pcl
   };
   inline std::ostream& operator << (std::ostream& os, const PointXYZRGB& p)
   {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " << (int) p.r << "," << (int) p.g << "," << (int) p.b << ")";
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " 
+      << static_cast<int>(p.r) << "," 
+      << static_cast<int>(p.g) << "," 
+      << static_cast<int>(p.b) << ")";
     return (os);
   }
 
@@ -758,7 +766,7 @@ namespace pcl
         float range;
       };
       float data_c[4];
-    };
+    };  
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
   inline std::ostream& operator << (std::ostream& os, const PointWithRange& p)
@@ -1164,11 +1172,14 @@ namespace pcl
   };
   inline std::ostream& operator << (std::ostream& os, const PointSurfel& p)
   {
-    unsigned char* rgba_ptr = (unsigned char*)&p.rgba;
+    const unsigned char* rgba_ptr = reinterpret_cast<const unsigned char*>(&p.rgba);
     os <<
     "(" << p.x << "," << p.y << "," << p.z << " - " <<
-    p.normal_x << "," << p.normal_y << "," << p.normal_z << " - " <<
-    (int)(*rgba_ptr) << "," << (int)(*(rgba_ptr+1)) << "," << (int)(*(rgba_ptr+2)) << "," <<(int)(*(rgba_ptr+3)) << " - " <<
+    p.normal_x << "," << p.normal_y << "," << p.normal_z << " - " 
+    << static_cast<int>(*rgba_ptr) << "," 
+    << static_cast<int>(*(rgba_ptr+1)) << "," 
+    << static_cast<int>(*(rgba_ptr+2)) << "," 
+    << static_cast<int>(*(rgba_ptr+3)) << " - " <<
     p.radius << " - " << p.confidence << " - " << p.curvature << ")";
     return (os);
   }

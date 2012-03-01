@@ -244,7 +244,7 @@ namespace pcl
     // Ease the user's burden on specifying width/height for unorganized datasets
     if (cloud.width == 0 && cloud.height == 0)
     {
-      msg.width  = (uint32_t)cloud.points.size ();
+      msg.width  = static_cast<uint32_t>(cloud.points.size ());
       msg.height = 1;
     }
     else
@@ -317,7 +317,7 @@ namespace pcl
     for (size_t d = 0; d < cloud.fields.size (); ++d)
       if (cloud.fields[d].name == "rgb")
       {
-        rgb_index = (int) d;
+        rgb_index = static_cast<int>(d);
         break;
       }
 
@@ -335,7 +335,7 @@ namespace pcl
 
     // sensor_msgs::image_encodings::BGR8;
     msg.encoding = "bgr8";
-    msg.step = msg.width * sizeof(uint8_t) * 3;
+    msg.step = static_cast<uint32_t>(msg.width * sizeof (uint8_t) * 3);
     msg.data.resize (msg.step * msg.height);
 
     for (size_t y = 0; y < cloud.height; y++)
