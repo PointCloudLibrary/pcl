@@ -79,8 +79,8 @@ namespace pcl
     * \param alpha the input angle (in radians)
     * \ingroup common
     */
-  template <typename real> inline real 
-  normAngle (real alpha);
+  inline float
+  normAngle (float alpha);
 }
 /*@}*/
 #include "pcl/common/impl/angles.hpp"
