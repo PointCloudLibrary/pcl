@@ -113,10 +113,13 @@ namespace pcl
       /** \brief Constructor for an Integral Image
         * \param[in] compute_second_order_integral_images set to true if we want to compute a second order image
         */
-      IntegralImage2D (bool compute_second_order_integral_images)
-        : width_ (1)
-        , height_ (1)
-        , compute_second_order_integral_images_ (compute_second_order_integral_images)
+      IntegralImage2D (bool compute_second_order_integral_images) :
+        first_order_integral_image_ (),
+        second_order_integral_image_ (),
+        finite_values_integral_image_ (),
+        width_ (1), 
+        height_ (1), 
+        compute_second_order_integral_images_ (compute_second_order_integral_images)
       {
       }
 
@@ -205,8 +208,12 @@ namespace pcl
       /** \brief Constructor for an Integral Image
         * \param[in] compute_second_order_integral_images set to true if we want to compute a second order image
         */
-      IntegralImage2D (bool compute_second_order_integral_images)
-        : width_ (1), height_ (1), compute_second_order_integral_images_ (compute_second_order_integral_images)
+      IntegralImage2D (bool compute_second_order_integral_images) : 
+        first_order_integral_image_ (),
+        second_order_integral_image_ (),
+        finite_values_integral_image_ (),
+        width_ (1), height_ (1), 
+        compute_second_order_integral_images_ (compute_second_order_integral_images)
       {
       }
 

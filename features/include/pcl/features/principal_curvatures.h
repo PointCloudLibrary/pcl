@@ -74,7 +74,13 @@ namespace pcl
       typedef pcl::PointCloud<PointInT> PointCloudIn;
 
       /** \brief Empty constructor. */
-      PrincipalCurvaturesEstimation ()
+      PrincipalCurvaturesEstimation () : 
+        projected_normals_ (), 
+        xyz_centroid_ (Eigen::Vector3f::Zero ()), 
+        demean_ (Eigen::Vector3f::Zero ()),
+        covariance_matrix_ (Eigen::Matrix3f::Zero ()),
+        eigenvector_ (Eigen::Vector3f::Zero ()),
+        eigenvalues_ (Eigen::Vector3f::Zero ())
       {
         feature_name_ = "PrincipalCurvaturesEstimation";
       };
@@ -128,7 +134,7 @@ namespace pcl
         * \param[out] output the output point cloud
         */
       void
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
   };
 
   /** \brief PrincipalCurvaturesEstimation estimates the directions (eigenvectors) and magnitudes (eigenvalues) of
@@ -165,7 +171,7 @@ namespace pcl
         * \param[out] output the output point cloud
         */
       void
-      compute (pcl::PointCloud<pcl::Normal> &output) {}
+      compute (pcl::PointCloud<pcl::Normal> &) {}
   };
 }
 

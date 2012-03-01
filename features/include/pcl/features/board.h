@@ -59,17 +59,20 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      BOARDLocalReferenceFrameEstimation ()
+      BOARDLocalReferenceFrameEstimation () :
+        tangent_radius_ (0.0f),
+        find_holes_ (false),
+        margin_thresh_ (0.85f),
+        check_margin_array_size_ (24),
+        hole_size_prob_thresh_ (0.2f),
+        steep_thresh_ (0.1f),
+        check_margin_array_ (),
+        margin_array_min_angle_ (),
+        margin_array_max_angle_ (),
+        margin_array_min_angle_normal_ (),
+        margin_array_max_angle_normal_ ()
       {
         feature_name_ = "BOARDLocalReferenceFrameEstimation";
-        tangent_radius_ = 0.0f;
-        find_holes_ = false;
-
-        margin_thresh_ = 0.85f;
-        steep_thresh_ = 0.1f;
-        hole_size_prob_thresh_ = 0.2f;
-
-        check_margin_array_size_ = 24;
         setCheckMarginArraySize (check_margin_array_size_);
       }
 
@@ -252,9 +255,7 @@ namespace pcl
         * \param[out] output the resultant features
         */
       virtual void
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
-      {
-      }
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
 
       /** \brief Given an axis (with origin axis_origin), return the orthogonal axis directed to point.
         *
@@ -357,7 +358,6 @@ namespace pcl
       std::vector<float> margin_array_max_angle_;
       std::vector<float> margin_array_min_angle_normal_;
       std::vector<float> margin_array_max_angle_normal_;
-      ////////////////////////////////////////////////////////////////////////////////////////////////////
   };
 
   /** \brief BOARDLocalReferenceFrameEstimation implements the BOrder Aware Repeatable Directions algorithm
@@ -387,7 +387,7 @@ namespace pcl
         * \param[out] output the resultant features
         */
       virtual void
-      computeFeature (pcl::PointCloud<pcl::ReferenceFrame> &output) {}
+      computeFeature (pcl::PointCloud<pcl::ReferenceFrame> &) {}
 
       /** \brief Abstract feature estimation method.
         * \param[out] output the resultant features

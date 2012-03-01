@@ -66,7 +66,7 @@ namespace pcl
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
       /** \brief Empty constructor. */
-      MomentInvariantsEstimation () 
+      MomentInvariantsEstimation () : xyz_centroid_ (), temp_pt_ ()
       {
         feature_name_ = "MomentInvariantsEstimation";
       };
@@ -113,7 +113,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
   };
 
   /** \brief MomentInvariantsEstimation estimates the 3 moment invariants (j1, j2, j3) at each 3D point.
@@ -146,7 +146,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      compute (pcl::PointCloud<pcl::Normal> &output) {}
+      compute (pcl::PointCloud<pcl::Normal> &) {}
   };
 }
 

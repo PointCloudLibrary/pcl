@@ -85,7 +85,9 @@ namespace pcl
         */
       SHOTEstimationBase (int nr_shape_bins = 10) :
         nr_shape_bins_ (nr_shape_bins),
+        shot_ (),
         rf_ (3),                    // Initialize the placeholder for the point's RF
+        sqradius_ (0), radius3_4_ (0), radius1_4_ (0), radius1_2_ (0),
         nr_grid_sector_ (32),
         maxAngularSectors_ (28),
         descLength_ (0)
@@ -199,7 +201,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
   };
 
   /** \brief SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for 
@@ -267,7 +269,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      compute (pcl::PointCloud<pcl::SHOT> &output) {}
+      compute (pcl::PointCloud<pcl::SHOT> &) {}
   };
 
   /** \brief SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for 

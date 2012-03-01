@@ -43,10 +43,12 @@
 #include "pcl/features/feature.h"
 #include "pcl/features/integral_image2D.h"
 
+#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif
 namespace pcl
 {
-  /**
-    * \brief Surface normal estimation on dense data using integral images.
+  /** \brief Surface normal estimation on dense data using integral images.
     * \author Stefan Holzer
     */
   template <typename PointInT, typename PointOutT>
@@ -72,26 +74,29 @@ namespace pcl
 
       /** \brief Constructor */
       IntegralImageNormalEstimation ()
-      : normal_estimation_method_(AVERAGE_3D_GRADIENT)
-      , integral_image_DX_(false)
-      , integral_image_DY_(false)
-      , integral_image_depth_ (false)
-      , integral_image_XYZ_ (true)
-      , diff_x_(NULL)
-      , diff_y_(NULL)
-      , depth_data_(NULL)
-      , use_depth_dependent_smoothing_(false)
-      , max_depth_change_factor_(20.0f*0.001f)
-      , normal_smoothing_size_(10.0f)
-      , init_covariance_matrix_(false)
-      , init_average_3d_gradient_(false)
-      , init_depth_change_(false)
+        : normal_estimation_method_(AVERAGE_3D_GRADIENT)
+        , rect_width_ (0), rect_width_2_ (0), rect_width_4_ (0)
+        , rect_height_ (0), rect_height_2_ (0), rect_height_4_ (0)
+        , distance_threshold_ (0)
+        , integral_image_DX_(false)
+        , integral_image_DY_(false)
+        , integral_image_depth_ (false)
+        , integral_image_XYZ_ (true)
+        , diff_x_(NULL)
+        , diff_y_(NULL)
+        , depth_data_(NULL)
+        , use_depth_dependent_smoothing_(false)
+        , max_depth_change_factor_(20.0f*0.001f)
+        , normal_smoothing_size_(10.0f)
+        , init_covariance_matrix_(false)
+        , init_average_3d_gradient_(false)
+        , init_simple_3d_gradient_ (false)
+        , init_depth_change_(false)
       {
         feature_name_ = "IntegralImagesNormalEstimation";
         tree_.reset ();
         k_ = 1;
       }
-
 
       /** \brief Destructor **/
       virtual ~IntegralImageNormalEstimation ();
@@ -274,11 +279,15 @@ namespace pcl
         * \param[out] output the output point cloud
         */
       void
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
+#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#pragma GCC diagnostic warning "-Weffc++"
+#endif
+
 
 #endif
 

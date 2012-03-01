@@ -38,6 +38,9 @@
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
 
+#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif
 namespace pcl
 {
   // FORWARD DECLARATIONS:
@@ -60,6 +63,10 @@ namespace pcl
       //! Stores some information extracted from the neighborhood of a point
       struct LocalSurface
       {
+        LocalSurface () : 
+          normal (), neighborhood_mean (), eigen_values (), normal_no_jumps (), 
+          neighborhood_mean_no_jumps (), eigen_values_no_jumps (), max_neighbor_distance_squared () {}
+
         Eigen::Vector3f normal;
         Eigen::Vector3f neighborhood_mean;
         Eigen::Vector3f eigen_values;
@@ -70,7 +77,8 @@ namespace pcl
       };
       
       //! Stores the indices of the shadow border corresponding to obstacle borders
-      struct ShadowBorderIndices {
+      struct ShadowBorderIndices 
+      {
         ShadowBorderIndices () : left (-1), right (-1), top (-1), bottom (-1) {}
         int left, right, top, bottom;
       };
@@ -130,7 +138,7 @@ namespace pcl
       
       // =====GETTER=====
       Parameters&
-      getParameters () { return parameters_; }
+      getParameters () { return (parameters_); }
 
       bool
       hasRangeImage () const { return range_image_ != NULL; }
@@ -345,9 +353,12 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf>&) {}
   };
 }  // namespace end
+#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#pragma GCC diagnostic warning "-Weffc++"
+#endif
 
 #include <pcl/features/impl/range_image_border_extractor.hpp>  // Definitions of templated and inline functions
 

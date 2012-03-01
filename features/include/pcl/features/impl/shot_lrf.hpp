@@ -234,7 +234,7 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::computeFeature (Poi
     std::vector<int> neighbours_indices;
     std::vector<float> neighbours_sqr_distances;
 
-    int num_neighbors = searchForNeighbors (current_point_idx, search_parameter_, neighbours_indices, neighbours_sqr_distances);
+    searchForNeighbors (current_point_idx, search_parameter_, neighbours_indices, neighbours_sqr_distances);
 
     // point result
     Eigen::Matrix3f rf;
@@ -273,7 +273,7 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::computeFeatureEigen
     std::vector<int> neighbours_indices;
     std::vector<float> neighbours_sqr_distances;
 
-    int num_neighbors = searchForNeighbors (current_point_idx, search_parameter_, neighbours_indices, neighbours_sqr_distances);
+    searchForNeighbors (current_point_idx, search_parameter_, neighbours_indices, neighbours_sqr_distances);
 
     // point result
     Eigen::Matrix3f rf;

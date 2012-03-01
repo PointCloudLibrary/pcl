@@ -126,7 +126,11 @@ namespace pcl
     
     public:
       /** \brief Empty constructor. */
-      Feature () : surface_(), tree_(), search_parameter_(0), search_radius_(0), k_(0), fake_surface_(false)
+      Feature () : 
+        feature_name_ (), search_method_ (), search_method_surface_ (),
+        surface_(), tree_(), 
+        search_parameter_(0), search_radius_(0), k_(0), 
+        fake_surface_(false)
       {}
 
       /** \brief Provide a pointer to a dataset to add additional information
@@ -146,7 +150,10 @@ namespace pcl
 
       /** \brief Get a pointer to the surface point cloud dataset. */
       inline PointCloudInConstPtr 
-      getSearchSurface () { return (surface_); }
+      getSearchSurface () const 
+      { 
+        return (surface_); 
+      }
 
       /** \brief Provide a pointer to the search object.
         * \param[in] tree a pointer to the spatial search object.
@@ -156,11 +163,17 @@ namespace pcl
 
       /** \brief Get a pointer to the search method used. */
       inline KdTreePtr 
-      getSearchMethod () { return (tree_); }
+      getSearchMethod () const 
+      { 
+        return (tree_); 
+      }
 
       /** \brief Get the internal search parameter. */
       inline double 
-      getSearchParameter () { return (search_parameter_); }
+      getSearchParameter () const 
+      { 
+        return (search_parameter_); 
+      }
 
       /** \brief Set the number of k nearest neighbors to use for the feature estimation.
         * \param[in] k the number of k-nearest neighbors
@@ -170,18 +183,27 @@ namespace pcl
 
       /** \brief get the number of k nearest neighbors used for the feature estimation. */
       inline int 
-      getKSearch () { return (k_); }
+      getKSearch () const 
+      { 
+        return (k_); 
+      }
 
       /** \brief Set the sphere radius that is to be used for determining the nearest neighbors used for the feature
         * estimation.
         * \param[in] radius the sphere radius used as the maximum distance to consider a point a neighbor
         */
       inline void 
-      setRadiusSearch (double radius) { search_radius_ = radius; }
+      setRadiusSearch (double radius) 
+      { 
+        search_radius_ = radius; 
+      }
 
       /** \brief Get the sphere radius used for determining the neighbors. */
       inline double 
-      getRadiusSearch () { return (search_radius_); }
+      getRadiusSearch () const 
+      { 
+        return (search_radius_); 
+      }
 
       /** \brief Base method for feature estimation for all points given in 
         * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () 
@@ -198,44 +220,6 @@ namespace pcl
         */
       void 
       computeEigen (pcl::PointCloud<Eigen::MatrixXf> &output);
-
-      /** \brief Search for k-nearest neighbors using the spatial locator from 
-        * \a setSearchmethod, and the given surface from \a setSearchSurface.
-        * \param[in] index the index of the query point
-        * \param[in] parameter the search parameter (either k or radius)
-        * \param[out] indices the resultant vector of indices representing the k-nearest neighbors
-        * \param[out] distances the resultant vector of distances representing the distances from the query point to the
-        * k-nearest neighbors
-        *
-        * \return the number of neighbors found. If no neighbors are found or an error occurred, return 0.
-        */
-      inline int
-      searchForNeighbors (size_t index, double parameter, 
-                          std::vector<int> &indices, std::vector<float> &distances) const
-      {
-        if (surface_ == input_)       // if the two surfaces are the same
-          return (search_method_ (index, parameter, indices, distances));
-        else
-          return (search_method_surface_ (*input_, index, parameter, indices, distances));
-      }
-
-      /** \brief Search for k-nearest neighbors using the spatial locator from 
-        * \a setSearchmethod, and the given surface from \a setSearchSurface.
-        * \param[in] cloud the query point cloud
-        * \param[in] index the index of the query point in \a cloud
-        * \param[in] parameter the search parameter (either k or radius)
-        * \param[out] indices the resultant vector of indices representing the k-nearest neighbors
-        * \param[out] distances the resultant vector of distances representing the distances from the query point to the
-        * k-nearest neighbors
-        *
-        * \return the number of neighbors found. If no neighbors are found or an error occurred, return 0.
-        */
-      inline int
-      searchForNeighbors (const PointCloudIn &cloud, size_t index, double parameter, 
-                          std::vector<int> &indices, std::vector<float> &distances) const
-      {
-        return (search_method_surface_ (cloud, index, parameter, indices, distances));
-      }
 
     protected:
       /** \brief The feature name. */
@@ -278,6 +262,44 @@ namespace pcl
 
       /** \brief If no surface is given, we use the input PointCloud as the surface. */
       bool fake_surface_;
+
+      /** \brief Search for k-nearest neighbors using the spatial locator from 
+        * \a setSearchmethod, and the given surface from \a setSearchSurface.
+        * \param[in] index the index of the query point
+        * \param[in] parameter the search parameter (either k or radius)
+        * \param[out] indices the resultant vector of indices representing the k-nearest neighbors
+        * \param[out] distances the resultant vector of distances representing the distances from the query point to the
+        * k-nearest neighbors
+        *
+        * \return the number of neighbors found. If no neighbors are found or an error occurred, return 0.
+        */
+      inline int
+      searchForNeighbors (size_t index, double parameter, 
+                          std::vector<int> &indices, std::vector<float> &distances) const
+      {
+        if (surface_ == input_)       // if the two surfaces are the same
+          return (search_method_ (index, parameter, indices, distances));
+        else
+          return (search_method_surface_ (*input_, index, parameter, indices, distances));
+      }
+
+      /** \brief Search for k-nearest neighbors using the spatial locator from 
+        * \a setSearchmethod, and the given surface from \a setSearchSurface.
+        * \param[in] cloud the query point cloud
+        * \param[in] index the index of the query point in \a cloud
+        * \param[in] parameter the search parameter (either k or radius)
+        * \param[out] indices the resultant vector of indices representing the k-nearest neighbors
+        * \param[out] distances the resultant vector of distances representing the distances from the query point to the
+        * k-nearest neighbors
+        *
+        * \return the number of neighbors found. If no neighbors are found or an error occurred, return 0.
+        */
+      inline int
+      searchForNeighbors (const PointCloudIn &cloud, size_t index, double parameter, 
+                          std::vector<int> &indices, std::vector<float> &distances) const
+      {
+        return (search_method_surface_ (cloud, index, parameter, indices, distances));
+      }
 
     private:
       /** \brief Abstract feature estimation method. 
@@ -322,7 +344,7 @@ namespace pcl
       using Feature<PointInT, PointOutT>::getClassName;
 
       /** \brief Empty constructor. */
-      FeatureFromNormals () {}
+      FeatureFromNormals () : normals_ () {}
 
       /** \brief Provide a pointer to the input dataset that contains the point normals of 
         * the XYZ dataset.
@@ -336,7 +358,7 @@ namespace pcl
 
       /** \brief Get a pointer to the normals of the input XYZ point cloud dataset. */
       inline PointCloudNConstPtr 
-      getInputNormals () { return (normals_); }
+      getInputNormals () const { return (normals_); }
 
     protected:     
       /** \brief A pointer to the input dataset that contains the point normals of the XYZ 
@@ -379,7 +401,7 @@ namespace pcl
       using Feature<PointInT, PointOutT>::k_;
 
       /** \brief Empty constructor. */
-      FeatureFromLabels ()
+      FeatureFromLabels () : labels_ ()
       {
         k_ = 1; // Search tree is not always used here.
       }
@@ -391,11 +413,17 @@ namespace pcl
         * \param[in] labels the const boost shared pointer to a PointCloud of labels.
         */
       inline void
-      setInputLabels (const PointCloudLConstPtr &labels) { labels_ = labels; }
+      setInputLabels (const PointCloudLConstPtr &labels) 
+      { 
+        labels_ = labels; 
+      }
 
       /** \brief Get a pointer to the labels of the input XYZ point cloud dataset. */
       inline PointCloudLConstPtr
-      getInputLabels () { return (labels_); }
+      getInputLabels () const 
+      { 
+        return (labels_); 
+      }
 
     protected:
       /** \brief A pointer to the input dataset that contains the point labels of the XYZ

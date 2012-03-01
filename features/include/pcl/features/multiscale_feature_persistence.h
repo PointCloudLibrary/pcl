@@ -182,16 +182,16 @@ namespace pcl
       /** \brief the feature estimator that will be used to determine the feature set at each scale level */
       FeatureEstimatorPtr feature_estimator_;
 
-      std::vector<FeatureCloudPtr> features_at_scale;
-      std::vector<std::vector<std::vector<float> > > features_at_scale_vectorized;
-      std::vector<float> mean_feature;
+      std::vector<FeatureCloudPtr> features_at_scale_;
+      std::vector<std::vector<std::vector<float> > > features_at_scale_vectorized_;
+      std::vector<float> mean_feature_;
       FeatureRepresentationConstPtr feature_representation_;
 
       /** \brief Two structures in which to hold the results of the unique feature extraction process.
        * They are superfluous with respect to each other, but improve the time performance of the algorithm
        */
-      std::vector<std::list<size_t> > unique_features_indices;
-      std::vector<std::vector<bool> > unique_features_table;
+      std::vector<std::list<size_t> > unique_features_indices_;
+      std::vector<std::vector<bool> > unique_features_table_;
   };
 }
 

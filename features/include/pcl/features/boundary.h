@@ -179,7 +179,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
   };
 
   /** \brief BoundaryEstimation estimates whether a set of points is lying on surface boundaries using an angle
@@ -222,7 +222,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      compute (pcl::PointCloud<pcl::Boundary> &output) {}
+      compute (pcl::PointCloud<pcl::Boundary> &) {}
   };
 }
 

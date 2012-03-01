@@ -76,11 +76,12 @@ namespace pcl
       typedef typename Feature<PointInT, PointOutT>::PointCloudIn  PointCloudIn;
 
       /** \brief Empty constructor. */
-      GFPFHEstimation () : octree_leaf_size_(0.01)
+      GFPFHEstimation () : 
+        octree_leaf_size_ (0.01),
+        number_of_classes_ (16),
+        descriptor_size_ (PointOutT::descriptorSize ())
       {
         feature_name_ = "GFPFHEstimation";
-        number_of_classes_ = 16;
-        descriptor_size_ = PointOutT::descriptorSize();
       }
 
       /** \brief Set the size of the octree leaves.
@@ -162,7 +163,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
    };
 }
 

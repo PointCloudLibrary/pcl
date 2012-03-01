@@ -54,7 +54,10 @@ namespace pcl
 int Narf::max_no_of_threads = 1;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Narf::Narf() : surface_patch_(NULL), descriptor_(NULL)
+Narf::Narf() : 
+  position_ (), transformation_ (), surface_patch_ (NULL), 
+  surface_patch_pixel_size_ (0), surface_patch_world_size_ (), 
+  surface_patch_rotation_ (), descriptor_ (NULL), descriptor_size_ (0)
 {
   reset();
 }
@@ -66,16 +69,20 @@ Narf::~Narf()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Narf::Narf(const Narf& other) : surface_patch_(NULL), surface_patch_pixel_size_(0), descriptor_(NULL), descriptor_size_(0)
+Narf::Narf (const Narf& other) : 
+  position_ (), transformation_ (), surface_patch_ (NULL), 
+  surface_patch_pixel_size_ (0), surface_patch_world_size_ (), 
+  surface_patch_rotation_ (), descriptor_ (NULL), descriptor_size_ (0)
 {
-  deepCopy(other);
+  deepCopy (other);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const Narf& Narf::operator=(const Narf& other)
+const Narf& 
+Narf::operator= (const Narf& other)
 {
-  deepCopy(other);
-  return *this;
+  deepCopy (other);
+  return (*this);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -503,7 +510,7 @@ Narf::getRotations (std::vector<float>& rotations, std::vector<float>& strengths
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
-Narf::getRotatedVersions (const RangeImage& range_image, const std::vector<float>& rotations, std::vector<Narf*>& features) const
+Narf::getRotatedVersions (const RangeImage&, const std::vector<float>& rotations, std::vector<Narf*>& features) const
 {
   for (unsigned int i=0; i<rotations.size(); ++i)
   {

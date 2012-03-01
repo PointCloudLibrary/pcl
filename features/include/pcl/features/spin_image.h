@@ -272,14 +272,11 @@ namespace pcl
       double support_angle_cos_;
       unsigned int min_pts_neighb_;
 
-
-      static const double PI;
-
       /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
   };
 
   /** \brief Estimates spin-image descriptors in the  given input points. 
@@ -349,7 +346,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      compute (pcl::PointCloud<pcl::Normal> &output) {}
+      compute (pcl::PointCloud<pcl::Normal> &) {}
   };
 }
 

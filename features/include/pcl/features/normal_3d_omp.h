@@ -74,7 +74,7 @@ namespace pcl
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
         */
-      NormalEstimationOMP (unsigned int nr_threads)
+      NormalEstimationOMP (unsigned int nr_threads) : threads_ (1)
       {
         setNumberOfThreads (nr_threads);
         feature_name_ = "NormalEstimationOMP";
@@ -108,7 +108,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
   };
 
   /** \brief NormalEstimationOMP estimates local surface properties at each 3D point, such as surface normals and
@@ -150,7 +150,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      compute (pcl::PointCloud<pcl::Normal> &output) {}
+      compute (pcl::PointCloud<pcl::Normal> &) {}
     };
 }
 

@@ -86,7 +86,7 @@ namespace pcl
       typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
 
       /** \brief Empty constructor. */
-      SHOTEstimationOMP (unsigned int nr_threads = - 1) : SHOTEstimation<PointInT, PointNT, PointOutT> ()
+      SHOTEstimationOMP (unsigned int nr_threads = - 1) : SHOTEstimation<PointInT, PointNT, PointOutT> (), threads_ ()
       {
         setNumberOfThreads (nr_threads);
       }
@@ -147,7 +147,7 @@ namespace pcl
       SHOTEstimationOMP (bool describeShape = true, 
                          bool describeColor = false, 
                          unsigned int nr_threads = - 1) 
-        : SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT> (describeShape, describeColor)
+        : SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT> (describeShape, describeColor), threads_ ()
       {
         setNumberOfThreads (nr_threads);
       }

@@ -82,11 +82,10 @@ namespace pcl
        UniqueShapeContext () :
          radii_interval_(0), theta_divisions_(0), phi_divisions_(0), volume_lut_(0),
          azimuth_bins_(12), elevation_bins_(11), radius_bins_(15), 
-         min_radius_(0.1), point_density_radius_(0.2)
+         min_radius_(0.1), point_density_radius_(0.2), descriptor_length_ (), local_radius_ (2.5)
        {
          feature_name_ = "UniqueShapeContext";
          search_radius_ = 2.5;
-         local_radius_ = 2.5;
        }
 
       virtual ~UniqueShapeContext() { }
@@ -99,7 +98,7 @@ namespace pcl
 
       /** \return The number of bins along the azimuth. */
       inline size_t 
-      getAzimuthBins (size_t bins) { return (azimuth_bins_); } 
+      getAzimuthBins () const { return (azimuth_bins_); } 
 
       /** \brief Set the number of bins along the elevation
         * \param[in] bins the number of bins along the elevation
@@ -109,7 +108,7 @@ namespace pcl
 
       /** \return The number of bins along the elevation */
       inline size_t 
-      getElevationBins (size_t bins) { return (elevation_bins_); } 
+      getElevationBins () const { return (elevation_bins_); } 
 
       /** \brief Set the number of bins along the radii
         * \param[in] bins the number of bins along the radii
@@ -119,7 +118,7 @@ namespace pcl
 
       /** \return The number of bins along the radii direction. */
       inline size_t 
-      getRadiusBins (size_t bins) { return (radius_bins_); } 
+      getRadiusBins () const { return (radius_bins_); } 
 
       /** The minimal radius value for the search sphere (rmin) in the original paper 
         * \param[in] radius the desired minimal radius
@@ -129,7 +128,7 @@ namespace pcl
 
       /** \return The minimal sphere radius. */
       inline float 
-      getMinimalRadius () { return (min_radius_); }
+      getMinimalRadius () const { return (min_radius_); }
 
       /** This radius is used to compute local point density 
         * density = number of points within this radius
@@ -140,7 +139,7 @@ namespace pcl
       
       /** \return The point density search radius. */
       inline double 
-      getPointDensityRadius () { return (point_density_radius_); }
+      getPointDensityRadius () const { return (point_density_radius_); }
 
       /** Set the local RF radius value
         * \param[in] radius the desired local RF radius
@@ -150,7 +149,7 @@ namespace pcl
 
       /** \return The local RF radius. */
       inline float 
-      getLocalRadius () { return (local_radius_); }
+      getLocalRadius () const { return (local_radius_); }
       
     protected:
       /** Compute 3D shape context feature descriptor
@@ -216,7 +215,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
   };
 
   /** \brief UniqueShapeContext implements the Unique Shape Descriptor
@@ -257,7 +256,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      compute (pcl::PointCloud<pcl::SHOT> &output) {}
+      compute (pcl::PointCloud<pcl::SHOT> &) {}
   };
 }
 
