@@ -79,9 +79,9 @@ namespace pcl
       , triangle_pixel_size_ (1)
       , triangulation_type_ (QUAD_MESH)
       , store_shadowed_faces_ (false)
+      , cos_angle_tolerance_ (fabs (cos (pcl::deg2rad (12.5f))))
       {
         check_tree_ = false;
-        cos_angle_tolerance_ = fabs (cos (pcl::deg2rad (12.5f)));
       };
 
       /** \brief Destructor. */

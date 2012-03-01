@@ -151,7 +151,7 @@ namespace pcl
 
       /** \brief Get the parameter for distance based weighting of neighbors. */
       inline double 
-      getSqrGaussParam () { return (sqr_gauss_param_); }
+      getSqrGaussParam () const { return (sqr_gauss_param_); }
 
       /** \brief Base method for surface reconstruction for all points given in <setInputCloud (), setIndices ()>
         * \param[out] output the resultant reconstructed surface model

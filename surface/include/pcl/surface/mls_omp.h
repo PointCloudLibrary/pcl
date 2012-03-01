@@ -72,7 +72,7 @@ namespace pcl
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
         */
-      MovingLeastSquaresOMP (unsigned int nr_threads)
+      MovingLeastSquaresOMP (unsigned int nr_threads) : threads_ (0)
       {
         setNumberOfThreads (nr_threads);
       }
