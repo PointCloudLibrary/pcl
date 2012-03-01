@@ -116,7 +116,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
       gamma = 0;
       for (size_t i = 0; i < indices_size; ++i)
         gamma += p_inlier_prob [i] / (p_inlier_prob[i] + p_outlier_prob);
-      gamma /= sac_model_->getIndices ()->size ();
+      gamma /= static_cast<double>(sac_model_->getIndices ()->size ());
     }
 
     // Find the log likelihood of the model -L = -sum [log (pInlierProb + pOutlierProb)]

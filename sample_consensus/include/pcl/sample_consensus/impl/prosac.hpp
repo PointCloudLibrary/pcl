@@ -101,8 +101,8 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
       index_pool.push_back (sac_model_->indices_->at(static_cast<unsigned int> (n - 1)));
       // Update other variables
       float T_n_minus_1 = T_n;
-      T_n *= (n + 1.0f) / (n + 1.0f - m);
-      T_prime_n += ceil(T_n - T_n_minus_1);
+      T_n *= (static_cast<float>(n) + 1.0f) / (static_cast<float>(n) + 1.0f - static_cast<float>(m));
+      T_prime_n += ceilf (T_n - T_n_minus_1);
     }
 
     // Step 2
@@ -153,7 +153,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
       // Try to find a better n_star
       // We minimize k_n_star and therefore maximize epsilon_n_star = I_n_star / n_star
       size_t possible_n_star_best = N, I_possible_n_star_best = I_N;
-      float epsilon_possible_n_star_best = (float)I_possible_n_star_best / possible_n_star_best;
+      float epsilon_possible_n_star_best = static_cast<float>(I_possible_n_star_best) / static_cast<float>(possible_n_star_best);
 
       // We only need to compute possible better epsilon_n_star for when _n is just about to be removed an inlier
       size_t I_possible_n_star = I_N;
@@ -168,7 +168,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
           break;
 
         // If we find a better epsilon_n_star
-        float epsilon_possible_n_star = (float)I_possible_n_star / possible_n_star;
+        float epsilon_possible_n_star = static_cast<float>(I_possible_n_star) / static_cast<float>(possible_n_star);
         // Make sure we have a better epsilon_possible_n_star
         if ((epsilon_possible_n_star > epsilon_n_star) && (epsilon_possible_n_star > epsilon_possible_n_star_best))
         {

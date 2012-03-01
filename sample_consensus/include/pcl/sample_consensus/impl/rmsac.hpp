@@ -67,7 +67,7 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
   const unsigned max_skip = max_iterations_ * 10;
   
   // Number of samples to try randomly
-  size_t fraction_nr_points = pcl_lrint (sac_model_->getIndices ()->size () * fraction_nr_pretest_ / 100.0);
+  size_t fraction_nr_points = pcl_lrint (static_cast<double>(sac_model_->getIndices ()->size ()) * fraction_nr_pretest_ / 100.0);
 
   // Iterate
   while (iterations_ < k && skipped_count < max_skip)

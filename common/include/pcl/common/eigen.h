@@ -77,9 +77,30 @@
 
 namespace pcl
 {
+  template <typename Scalar> inline Scalar
+  sqrt (const Scalar &val)
+  {
+  }
 
-  /**
-    * \brief Compute the roots of a quadratic polynom x^2 + b*x + c = 0
+  template<> inline double
+  sqrt<double> (const double &val)
+  {
+    return (::sqrt (val));
+  }
+
+  template<> inline float
+  sqrt<float> (const float &val)
+  {
+    return (::sqrtf (val));
+  }
+
+  template<> inline long double
+  sqrt<long double> (const long double &val)
+  {
+    return (::sqrtl (val));
+  }
+
+  /** \brief Compute the roots of a quadratic polynom x^2 + b*x + c = 0
     * \param[in] b linear parameter
     * \param[in] c constant parameter
     * \param[out] roots solutions of x^2 + b*x + c = 0

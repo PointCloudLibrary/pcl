@@ -325,7 +325,7 @@ namespace pcl
 
             // Calculate the actual radius of the cone at the level of the projected point
             Eigen::Vector4f height = apex-pt_proj;
-            float actual_cone_radius = tan(opening_angle) * height.norm ();
+            float actual_cone_radius = tanf (opening_angle) * height.norm ();
 
             fvec[i] = static_cast<float> (pcl::sqrPointToLineDistance (pt, apex, axis_dir) - actual_cone_radius * actual_cone_radius);
           }

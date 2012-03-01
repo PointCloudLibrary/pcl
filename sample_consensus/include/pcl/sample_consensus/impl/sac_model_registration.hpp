@@ -201,7 +201,7 @@ pcl::SampleConsensusModelRegistration<PointT>::countWithinDistance (
     Eigen::Vector4f pt_tgt = target_->points[(*indices_tgt_)[i]].getVector4fMap ();
     pt_tgt[3] = 1;
 
-    Eigen::Vector4f p_tr  = transform * pt_src;
+    Eigen::Vector4f p_tr = transform * pt_src;
     // Calculate the distance from the transformed point to its correspondence
     if ((p_tr - pt_tgt).squaredNorm () < thresh)
       nr_p++;
