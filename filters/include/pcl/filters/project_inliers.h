@@ -80,7 +80,7 @@ namespace pcl
     typedef typename SampleConsensusModel<PointT>::Ptr SampleConsensusModelPtr;
     public:
       /** \brief Empty constructor. */
-      ProjectInliers () : copy_all_data_ (false)
+      ProjectInliers () : model_ (), sacmodel_ (), model_type_ (), copy_all_data_ (false)
       {
         filter_name_ = "ProjectInliers";
       }
@@ -181,13 +181,13 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      ProjectInliers () : copy_all_data_ (false), copy_all_fields_ (true)
+      ProjectInliers () : model_type_ (), copy_all_data_ (false), copy_all_fields_ (true), model_ (), sacmodel_ ()
       {
         filter_name_ = "ProjectInliers";
       }
 
       /** \brief The type of model to use (user given parameter).
-        * \param model the model type (check \a model_types.h)
+        * \param[in] model the model type (check \a model_types.h)
         */
       inline void
       setModelType (int model)
@@ -197,13 +197,13 @@ namespace pcl
 
       /** \brief Get the type of SAC model used. */
       inline int
-      getModelType ()
+      getModelType () const
       {
         return (model_type_);
       }
 
       /** \brief Provide a pointer to the model coefficients.
-        * \param model a pointer to the model coefficients
+        * \param[in] model a pointer to the model coefficients
         */
       inline void
       setModelCoefficients (const ModelCoefficientsConstPtr &model)
@@ -213,13 +213,13 @@ namespace pcl
 
       /** \brief Get a pointer to the model coefficients. */
       inline ModelCoefficientsConstPtr
-      getModelCoefficients ()
+      getModelCoefficients () const
       {
         return (model_);
       }
 
       /** \brief Set whether all fields should be copied, or only the XYZ.
-        * \param val true if all fields will be returned, false if only XYZ
+        * \param[in] val true if all fields will be returned, false if only XYZ
         */
       inline void
       setCopyAllFields (bool val)
@@ -229,13 +229,13 @@ namespace pcl
 
       /** \brief Get whether all fields are being copied (true), or only XYZ (false). */
       inline bool
-      getCopyAllFields ()
+      getCopyAllFields () const
       {
         return (copy_all_fields_);
       }
 
       /** \brief Set whether all data will be returned, or only the projected inliers.
-        * \param val true if all data should be returned, false if only the projected inliers
+        * \param[in] val true if all data should be returned, false if only the projected inliers
         */
       inline void
       setCopyAllData (bool val)
@@ -245,7 +245,7 @@ namespace pcl
 
       /** \brief Get whether all data is being copied (true), or only the projected inliers (false). */
       inline bool
-      getCopyAllData ()
+      getCopyAllData () const
       {
         return (copy_all_data_);
       }

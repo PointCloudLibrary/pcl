@@ -42,4 +42,4 @@
 #include <pcl/filters/impl/voxel_grid_covariance.hpp>
 
 // Instantiations of specific point types
-PCL_INSTANTIATE (VoxelGridCovariance, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE (VoxelGridCovariance, PCL_XYZ_POINT_TYPES)

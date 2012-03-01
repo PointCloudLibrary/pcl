@@ -173,14 +173,20 @@ namespace pcl
     public:
       /** \brief Empty constructor. */
       VoxelGrid () : 
-        downsample_all_data_ (true), save_leaf_layout_ (false),
+        leaf_size_ (Eigen::Vector4f::Zero ()),
+        inverse_leaf_size_ (Eigen::Array4f::Zero ()),
+        downsample_all_data_ (true), 
+        save_leaf_layout_ (false),
+        leaf_layout_ (),
+        min_b_ (Eigen::Vector4i::Zero ()),
+        max_b_ (Eigen::Vector4i::Zero ()),
+        div_b_ (Eigen::Vector4i::Zero ()),
+        divb_mul_ (Eigen::Vector4i::Zero ()),
         filter_field_name_ (""), 
-        filter_limit_min_ (-FLT_MAX), filter_limit_max_ (FLT_MAX),
+        filter_limit_min_ (-FLT_MAX), 
+        filter_limit_max_ (FLT_MAX),
         filter_limit_negative_ (false)
       {
-        leaf_size_.setZero ();
-        min_b_.setZero ();
-        max_b_.setZero ();
         filter_name_ = "VoxelGrid";
       }
 
@@ -473,13 +479,20 @@ namespace pcl
     public:
       /** \brief Empty constructor. */
       VoxelGrid () : 
-        downsample_all_data_ (true), save_leaf_layout_ (false),
-        filter_field_name_ (""), filter_limit_min_ (-FLT_MAX), filter_limit_max_ (FLT_MAX),
+        leaf_size_ (Eigen::Vector4f::Zero ()),
+        inverse_leaf_size_ (Eigen::Array4f::Zero ()),
+        downsample_all_data_ (true), 
+        save_leaf_layout_ (false),
+        leaf_layout_ (),
+        min_b_ (Eigen::Vector4i::Zero ()),
+        max_b_ (Eigen::Vector4i::Zero ()),
+        div_b_ (Eigen::Vector4i::Zero ()),
+        divb_mul_ (Eigen::Vector4i::Zero ()),
+        filter_field_name_ (""), 
+        filter_limit_min_ (-FLT_MAX), 
+        filter_limit_max_ (FLT_MAX),
         filter_limit_negative_ (false)
       {
-        leaf_size_.setZero ();
-        min_b_.setZero ();
-        max_b_.setZero ();
         filter_name_ = "VoxelGrid";
       }
 

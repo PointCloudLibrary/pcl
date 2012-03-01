@@ -43,13 +43,6 @@
 
 namespace pcl
 {
-  struct he 
-  {
-    int ix, iy, iz;
-    int count;
-    Eigen::VectorXf centroid;
-  };
-
   /** \brief Helper functor structure for copying data between an Eigen::VectorXf and a PointT. */
   template <typename PointT>
   struct xNdCopyEigenPointFunctor
@@ -115,22 +108,61 @@ namespace pcl
     typedef typename PointCloud::Ptr PointCloudPtr;
     typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
+    private:
+      struct he
+      {
+        he () : ix (), iy (), iz (), count (0), centroid () {}
+        int ix, iy, iz;
+        int count;
+        Eigen::VectorXf centroid;
+      };
+
     public:
       /** \brief Empty constructor. */
-      ApproximateVoxelGrid () : downsample_all_data_ (true), histsize_ (512)
+      ApproximateVoxelGrid () : 
+        pcl::Filter<PointT> (),
+        leaf_size_ (Eigen::Vector3f::Ones ()),
+        inverse_leaf_size_ (Eigen::Array3f::Ones ()),
+        downsample_all_data_ (true), histsize_ (512),
+        history_ (new he[histsize_])
       {
-        setLeafSize (1, 1, 1);
         filter_name_ = "ApproximateVoxelGrid";
-        history_ = new he[histsize_];
       }
 
-      /** \brief Destructor. */
-      virtual ~ApproximateVoxelGrid ()
+      /** \brief Copy constructor. 
+        * \param[in] src the approximate voxel grid to copy into this. 
+        */
+      ApproximateVoxelGrid (const ApproximateVoxelGrid &src) : 
+        pcl::Filter<PointT> (),
+        leaf_size_ (src.leaf_size_),
+        inverse_leaf_size_ (src.inverse_leaf_size_),
+        downsample_all_data_ (src.downsample_all_data_), 
+        histsize_ (src.histsize_),
+        history_ ()
       {
+        history_ = new he[histsize_];
+        for (size_t i = 0; i < histsize_; i++)
+          history_[i] = src.history_[i];
+      }
+
+      /** \brief Copy operator. 
+        * \param[in] src the approximate voxel grid to copy into this. 
+        */
+      inline ApproximateVoxelGrid& 
+      operator = (const ApproximateVoxelGrid &src)
+      {
+        leaf_size_ = src.leaf_size_;
+        inverse_leaf_size_ = src.inverse_leaf_size_;
+        downsample_all_data_ = src.downsample_all_data_;
+        histsize_ = src.histsize_;
+        history_ = new he[histsize_];
+        for (size_t i = 0; i < histsize_; i++)
+          history_[i] = src.history_[i];
+        return (*this);
       }
 
       /** \brief Set the voxel grid leaf size.
-        * \param leaf_size the voxel grid leaf size
+        * \param[in] leaf_size the voxel grid leaf size
         */
       inline void 
       setLeafSize (const Eigen::Vector3f &leaf_size) 
@@ -140,19 +172,19 @@ namespace pcl
       }
 
       /** \brief Set the voxel grid leaf size.
-        * \param lx the leaf size for X
-        * \param ly the leaf size for Y
-        * \param lz the leaf size for Z
+        * \param[in] lx the leaf size for X
+        * \param[in] ly the leaf size for Y
+        * \param[in] lz the leaf size for Z
         */
       inline void
       setLeafSize (float lx, float ly, float lz)
       {
-        setLeafSize(Eigen::Vector3f(lx, ly, lz));
+        setLeafSize (Eigen::Vector3f (lx, ly, lz));
       }
 
       /** \brief Get the voxel grid leaf size. */
       inline Eigen::Vector3f 
-      getLeafSize () { return leaf_size_; }
+      getLeafSize () const { return (leaf_size_); }
 
       /** \brief Set to true if all fields need to be downsampled, or false if just XYZ.
         * \param downsample the new value (true/false)
@@ -164,7 +196,7 @@ namespace pcl
         * all fields need to be downsampled, false if just XYZ). 
         */
       inline bool 
-      getDownsampleAllData () { return (downsample_all_data_); }
+      getDownsampleAllData () const { return (downsample_all_data_); }
 
     protected:
       /** \brief The size of a leaf. */
@@ -180,7 +212,7 @@ namespace pcl
       size_t histsize_;
 
       /** \brief history buffer */
-      struct he *history_;
+      struct he* history_;
 
       typedef typename pcl::traits::fieldList<PointT>::type FieldList;
 
@@ -192,7 +224,8 @@ namespace pcl
 
       /** \brief Write a single point from the hash to the output cloud
         */
-      void flush(PointCloud &output, size_t op, he *hhe, int rgba_index, int centroid_size);
+      void 
+      flush(PointCloud &output, size_t op, he *hhe, int rgba_index, int centroid_size);
   };
 }
 
