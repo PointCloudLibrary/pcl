@@ -54,16 +54,19 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::RegionGrowing<PointT>::RegionGrowing ()
+pcl::RegionGrowing<PointT>::RegionGrowing () :
+  curvature_flag_ (true),
+  smooth_mode_ (true),
+  residual_flag_ (false),
+  theta_threshold_ (30.0 / 180.0 * M_PI),
+  residual_threshold_ (0.05),
+  curvature_threshold_ (0.05),
+  neighbour_number_ (30),
+  search_ (),
+  normals_ (),
+  cloud_for_segmentation_ (),
+  segments_ (0)
 {
-  theta_threshold_ = 30.0 / 180.0 * M_PI;
-  residual_threshold_ = 0.05;
-  curvature_threshold_ = 0.05;
-  neighbour_number_ = 30;
-  curvature_flag_ = true;
-  residual_flag_ = false;
-  smooth_mode_ = true;
-  segments_.clear ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

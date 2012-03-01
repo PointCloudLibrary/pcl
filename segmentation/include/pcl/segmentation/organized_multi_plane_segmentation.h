@@ -78,7 +78,7 @@ namespace pcl
 
       /** \brief Constructor for OrganizedMultiPlaneSegmentation. */
       OrganizedMultiPlaneSegmentation () :
-        min_inliers_ (1000), angular_threshold_ (3.0 * 0.017453), distance_threshold_ (0.02)
+        normals_ (), min_inliers_ (1000), angular_threshold_ (3.0 * 0.017453), distance_threshold_ (0.02)
       {
       }
 

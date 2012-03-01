@@ -108,7 +108,7 @@ namespace pcl
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Empty constructor. */
-      SeededHueSegmentation () : tree_ (), delta_hue_(0.0)
+      SeededHueSegmentation () : tree_ (), cluster_tolerance_ (0), delta_hue_ (0.0)
       {};
 
       /** \brief Provide a pointer to the search object.
@@ -119,7 +119,7 @@ namespace pcl
 
       /** \brief Get a pointer to the search method used. */
       inline KdTreePtr 
-      getSearchMethod () { return (tree_); }
+      getSearchMethod () const { return (tree_); }
 
       /** \brief Set the spatial cluster tolerance as a measure in the L2 Euclidean space
         * \param[in] tolerance the spatial cluster tolerance as a measure in the L2 Euclidean space
@@ -129,7 +129,7 @@ namespace pcl
 
       /** \brief Get the spatial cluster tolerance as a measure in the L2 Euclidean space. */
       inline double 
-      getClusterTolerance () { return (cluster_tolerance_); }
+      getClusterTolerance () const { return (cluster_tolerance_); }
 
       /** \brief Set the tollerance on the hue
         * \param[in] delta_hue the new delta hue
@@ -139,7 +139,7 @@ namespace pcl
 
       /** \brief Get the tolerance on the hue */
       inline float 
-      getDeltaHue () { return (delta_hue_); }
+      getDeltaHue () const { return (delta_hue_); }
 
       /** \brief Cluster extraction in a PointCloud given by <setInputCloud (), setIndices ()>
         * \param[in] indices_in

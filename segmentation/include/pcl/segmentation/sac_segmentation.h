@@ -77,11 +77,11 @@ namespace pcl
       typedef typename SampleConsensusModel<PointT>::Ptr SampleConsensusModelPtr;
 
       /** \brief Empty constructor. */
-      SACSegmentation () :  model_type_ (-1), method_type_ (0), optimize_coefficients_ (true), 
+      SACSegmentation () :  model_ (), sac_ (), model_type_ (-1), method_type_ (0), 
+                            threshold_ (0), optimize_coefficients_ (true), 
                             radius_min_ (-DBL_MAX), radius_max_ (DBL_MAX), eps_angle_ (0.0),
-                            max_iterations_ (50), probability_ (0.99)
+                            axis_ (Eigen::Vector3f::Zero ()), max_iterations_ (50), probability_ (0.99)
       {
-        axis_.setZero ();
         //srand ((unsigned)time (0)); // set a random seed
       }
 
@@ -288,7 +288,13 @@ namespace pcl
       typedef typename SampleConsensusModelFromNormals<PointT, PointNT>::Ptr SampleConsensusModelFromNormalsPtr;
 
       /** \brief Empty constructor. */
-      SACSegmentationFromNormals () : distance_weight_ (0.1) {};
+      SACSegmentationFromNormals () : 
+        normals_ (), 
+        distance_weight_ (0.1), 
+        distance_from_origin_ (0), 
+        min_angle_ (), 
+        max_angle_ ()
+      {};
 
       /** \brief Provide a pointer to the input dataset that contains the point normals of 
         * the XYZ dataset.

@@ -45,7 +45,7 @@
 template <typename PointT> void
 pcl::getPointCloudDifference (
     const pcl::PointCloud<PointT> &src, 
-    const pcl::PointCloud<PointT> &tgt, 
+    const pcl::PointCloud<PointT> &, 
     double threshold, const boost::shared_ptr<pcl::search::Search<PointT> > &tree,
     pcl::PointCloud<PointT> &output)
 {

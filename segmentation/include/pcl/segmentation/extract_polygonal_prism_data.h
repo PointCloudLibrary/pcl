@@ -96,26 +96,26 @@ namespace pcl
       typedef PointIndices::ConstPtr PointIndicesConstPtr;
 
       /** \brief Empty constructor. */
-      ExtractPolygonalPrismData () : min_pts_hull_ (3), 
+      ExtractPolygonalPrismData () : planar_hull_ (), min_pts_hull_ (3), 
                                      height_limit_min_ (0), height_limit_max_ (FLT_MAX),
                                      vpx_ (0), vpy_ (0), vpz_ (0)
       {};
 
       /** \brief Provide a pointer to the input planar hull dataset.
-        * \param hull the input planar hull dataset
+        * \param[in] hull the input planar hull dataset
         */
       inline void 
       setInputPlanarHull (const PointCloudConstPtr &hull) { planar_hull_ = hull; }
 
       /** \brief Get a pointer the input planar hull dataset. */
       inline PointCloudConstPtr 
-      getInputPlanarHull () { return (planar_hull_); }
+      getInputPlanarHull () const { return (planar_hull_); }
 
       /** \brief Set the height limits. All points having distances to the
         * model outside this interval will be discarded.
         *
-        * \param height_min the minimum allowed distance to the plane model value
-        * \param height_max the maximum allowed distance to the plane model value
+        * \param[in] height_min the minimum allowed distance to the plane model value
+        * \param[in] height_max the maximum allowed distance to the plane model value
         */
       inline void
       setHeightLimits (double height_min, double height_max)
@@ -126,20 +126,20 @@ namespace pcl
 
       /** \brief Get the height limits (min/max) as set by the user. The
         * default values are -FLT_MAX, FLT_MAX. 
-        * \param height_min the resultant min height limit
-        * \param height_max the resultant max height limit
+        * \param[out] height_min the resultant min height limit
+        * \param[out] height_max the resultant max height limit
         */
       inline void
-      getHeightLimits (double &height_min, double &height_max)
+      getHeightLimits (double &height_min, double &height_max) const
       {
         height_min = height_limit_min_;
         height_max = height_limit_max_;
       }
 
       /** \brief Set the viewpoint.
-        * \param vpx the X coordinate of the viewpoint
-        * \param vpy the Y coordinate of the viewpoint
-        * \param vpz the Z coordinate of the viewpoint
+        * \param[in] vpx the X coordinate of the viewpoint
+        * \param[in] vpy the Y coordinate of the viewpoint
+        * \param[in] vpz the Z coordinate of the viewpoint
         */
       inline void
       setViewPoint (float vpx, float vpy, float vpz)
@@ -151,7 +151,7 @@ namespace pcl
 
       /** \brief Get the viewpoint. */
       inline void
-      getViewPoint (float &vpx, float &vpy, float &vpz)
+      getViewPoint (float &vpx, float &vpy, float &vpz) const
       {
         vpx = vpx_;
         vpy = vpy_;
@@ -159,7 +159,7 @@ namespace pcl
       }
 
       /** \brief Cluster extraction in a PointCloud given by <setInputCloud (), setIndices ()>
-        * \param output the resultant point indices that support the model found (inliers)
+        * \param[out] output the resultant point indices that support the model found (inliers)
         */
       void 
       segment (PointIndices &output);

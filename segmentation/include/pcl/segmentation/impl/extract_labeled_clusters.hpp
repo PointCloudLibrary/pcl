@@ -47,7 +47,7 @@ pcl::extractLabeledEuclideanClusters (const PointCloud<PointT> &cloud,
                                       std::vector<std::vector<PointIndices> > &labeled_clusters,
                                       unsigned int min_pts_per_cluster, 
                                       unsigned int max_pts_per_cluster,
-                                      unsigned int max_label)
+                                      unsigned int)
 {
   if (tree->getInputCloud ()->points.size () != cloud.points.size ())
   {

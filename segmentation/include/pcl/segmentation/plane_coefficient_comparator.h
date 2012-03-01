@@ -66,7 +66,7 @@ namespace pcl
         * \param[in] plane_coeff_d a reference to a vector of d coefficients of plane equations.  Must be the same size as the input cloud and input normals.  a, b, and c coefficients are in the input normals.
         */
       PlaneCoefficientComparator (std::vector<float>& plane_coeff_d) 
-        : plane_coeff_d_ (plane_coeff_d)
+        : normals_ (), plane_coeff_d_ (plane_coeff_d), angular_threshold_ (0), distance_threshold_ (0)
       {
       }
       

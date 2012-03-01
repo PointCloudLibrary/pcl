@@ -61,7 +61,7 @@ namespace pcl
       typedef boost::shared_ptr<const Comparator<PointT> > ConstPtr;
 
       /** \brief Empty constructor for comparator. */
-      Comparator ()
+      Comparator () : input_ ()
       {
       }
       

@@ -85,9 +85,12 @@ namespace pcl
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Empty constructor. */
-      LabeledEuclideanClusterExtraction () : tree_ (), min_pts_per_cluster_ (1), 
-                                      max_pts_per_cluster_ (std::numeric_limits<int>::max ()),
-                                      max_label_ (std::numeric_limits<int>::max ())
+      LabeledEuclideanClusterExtraction () : 
+        tree_ (), 
+        cluster_tolerance_ (0),
+        min_pts_per_cluster_ (1), 
+        max_pts_per_cluster_ (std::numeric_limits<int>::max ()),
+        max_label_ (std::numeric_limits<int>::max ())
       {};
 
       /** \brief Provide a pointer to the search object.
@@ -98,7 +101,7 @@ namespace pcl
 
       /** \brief Get a pointer to the search method used. */
       inline KdTreePtr 
-      getSearchMethod () { return (tree_); }
+      getSearchMethod () const { return (tree_); }
 
       /** \brief Set the spatial cluster tolerance as a measure in the L2 Euclidean space
         * \param[in] tolerance the spatial cluster tolerance as a measure in the L2 Euclidean space
@@ -108,7 +111,7 @@ namespace pcl
 
       /** \brief Get the spatial cluster tolerance as a measure in the L2 Euclidean space. */
       inline double 
-      getClusterTolerance () { return (cluster_tolerance_); }
+      getClusterTolerance () const { return (cluster_tolerance_); }
 
       /** \brief Set the minimum number of points that a cluster needs to contain in order to be considered valid.
         * \param[in] min_cluster_size the minimum cluster size
@@ -118,7 +121,7 @@ namespace pcl
 
       /** \brief Get the minimum number of points that a cluster needs to contain in order to be considered valid. */
       inline int 
-      getMinClusterSize () { return (min_pts_per_cluster_); }
+      getMinClusterSize () const { return (min_pts_per_cluster_); }
 
       /** \brief Set the maximum number of points that a cluster needs to contain in order to be considered valid.
         * \param[in] max_cluster_size the maximum cluster size
@@ -128,7 +131,7 @@ namespace pcl
 
       /** \brief Get the maximum number of points that a cluster needs to contain in order to be considered valid. */
       inline int 
-      getMaxClusterSize () { return (max_pts_per_cluster_); }
+      getMaxClusterSize () const { return (max_pts_per_cluster_); }
 
       /** \brief Set the maximum number of labels in the cloud.
         * \param[in] max_label the maximum
@@ -138,7 +141,7 @@ namespace pcl
 
       /** \brief Get the maximum number of labels */
       inline unsigned int 
-      getMaxLabels () { return (max_label_); }
+      getMaxLabels () const { return (max_label_); }
 
       /** \brief Cluster extraction in a PointCloud given by <setInputCloud (), setIndices ()>
         * \param[out] labeled_clusters the resultant point clusters
