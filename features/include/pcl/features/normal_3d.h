@@ -189,7 +189,7 @@ namespace pcl
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
       /** \brief Empty constructor. */
-      NormalEstimation () : vpx_ (0), vpy_ (0), vpz_ (0)
+      NormalEstimation () : vpx_ (0), vpy_ (0), vpz_ (0), covariance_matrix_ (), xyz_centroid_ ()
       {
         feature_name_ = "NormalEstimation";
       };
@@ -289,7 +289,7 @@ namespace pcl
         * \param[out] output the output point cloud
         */
       void
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
    };
 
   /** \brief NormalEstimation estimates local surface properties at each 3D point, such as surface normals and
@@ -328,7 +328,7 @@ namespace pcl
         * \param[out] output the output point cloud
         */
       void
-      compute (pcl::PointCloud<pcl::Normal> &output) {}
+      compute (pcl::PointCloud<pcl::Normal> &) {}
   };
 }
 

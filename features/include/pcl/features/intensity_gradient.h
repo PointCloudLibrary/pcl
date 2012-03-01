@@ -96,7 +96,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
   };
 
   /** \brief IntensityGradientEstimation estimates the intensity gradient for a point cloud that contains position
@@ -130,7 +130,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      compute (pcl::PointCloud<pcl::Normal> &output) {}
+      compute (pcl::PointCloud<pcl::Normal> &) {}
   };
 }
 

@@ -44,9 +44,9 @@
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(PrincipalCurvaturesEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::PrincipalCurvatures)));
+  PCL_INSTANTIATE_PRODUCT(PrincipalCurvaturesEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::PrincipalCurvatures)))
 #else
-  PCL_INSTANTIATE_PRODUCT(PrincipalCurvaturesEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::PrincipalCurvatures)));
-  PCL_INSTANTIATE_PRODUCT(PrincipalCurvaturesEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)));
+  PCL_INSTANTIATE_PRODUCT(PrincipalCurvaturesEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::PrincipalCurvatures)))
+  PCL_INSTANTIATE_PRODUCT(PrincipalCurvaturesEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)))
 #endif
 

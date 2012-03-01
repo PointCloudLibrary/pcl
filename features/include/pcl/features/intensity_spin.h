@@ -145,7 +145,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
   };
 
   /** \brief IntensitySpinEstimation estimates the intensity-domain spin image descriptors for a given point cloud 
@@ -185,7 +185,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      compute (pcl::PointCloud<pcl::Normal> &output) {}
+      compute (pcl::PointCloud<pcl::Normal> &) {}
   };
 }
 

@@ -72,6 +72,7 @@ namespace pcl
         */
       NormalBasedSignatureEstimation ()
         : FeatureFromNormals<PointT, PointNT, PointFeature> (),
+          scale_h_ (),
           N_ (36),
           M_ (8),
           N_prime_ (4),
@@ -154,7 +155,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
   };
 }
 

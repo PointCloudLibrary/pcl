@@ -95,15 +95,23 @@ namespace pcl
          * set to 12345 prior to computing the descriptor (used to select X axis)
          */
        ShapeContext3DEstimation (bool random = false) :
-         radii_interval_(0), theta_divisions_(0), phi_divisions_(0), volume_lut_(0),
-         azimuth_bins_(12), elevation_bins_(11), radius_bins_(15), 
-         min_radius_(0.1), point_density_radius_(0.2)
+         radii_interval_(0), 
+         theta_divisions_(0), 
+         phi_divisions_(0), 
+         volume_lut_(0),
+         azimuth_bins_(12), 
+         elevation_bins_(11), 
+         radius_bins_(15), 
+         min_radius_(0.1), 
+         point_density_radius_(0.2),
+         descriptor_length_ (),
+         rng_alg_ (),
+         rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
        {
          feature_name_ = "ShapeContext3DEstimation";
          search_radius_ = 2.5;
 
          // Create a random number generator object
-         rng_.reset (new boost::uniform_01<boost::mt19937> (rng_alg_));
          if (random)
            rng_->base ().seed (static_cast<unsigned> (std::time(0)));
          else
@@ -240,7 +248,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
   };
 
   /** \brief ShapeContext3DEstimation implements the 3D shape context descriptor as
@@ -290,7 +298,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      compute (pcl::PointCloud<pcl::SHOT> &output) {}
+      compute (pcl::PointCloud<pcl::SHOT> &) {}
   };
 }
 

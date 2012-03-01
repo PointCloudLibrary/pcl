@@ -82,8 +82,12 @@ namespace pcl
 
       /** \brief Empty constructor. */
       VFHEstimation () :
-        nr_bins_f1_ (45), nr_bins_f2_ (45), nr_bins_f3_ (45), nr_bins_f4_ (45), nr_bins_vp_ (128), vpx_ (0), vpy_ (0),
-            vpz_ (0), d_pi_ (1.0 / (2.0 * M_PI))
+        nr_bins_f1_ (45), nr_bins_f2_ (45), nr_bins_f3_ (45), nr_bins_f4_ (45), nr_bins_vp_ (128), 
+        vpx_ (0), vpy_ (0), vpz_ (0), 
+        hist_f1_ (), hist_f2_ (), hist_f3_ (), hist_f4_ (), hist_vp_ (),
+        normal_to_use_ (), centroid_to_use_ (), use_given_normal_ (false), use_given_centroid_ (false),
+        normalize_bins_ (true), normalize_distances_ (false), size_component_ (false),
+        d_pi_ (1.0 / (2.0 * M_PI))
       {
         hist_f1_.setZero (nr_bins_f1_);
         hist_f2_.setZero (nr_bins_f2_);
@@ -92,13 +96,6 @@ namespace pcl
         search_radius_ = 0;
         k_ = 0;
         feature_name_ = "VFHEstimation";
-
-        //default parameters to compute VFH
-        use_given_normal_ = false;
-        use_given_centroid_ = false;
-        normalize_bins_ = true;
-        normalize_distances_ = false;
-        size_component_ = false;
       }
 
       /** \brief Estimate the SPFH (Simple Point Feature Histograms) signatures of the angular
@@ -263,7 +260,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
   };
 
   /** \brief VFHEstimation estimates the <b>Viewpoint Feature Histogram (VFH)</b> descriptor for a given point cloud

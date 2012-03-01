@@ -91,7 +91,10 @@ namespace pcl
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
       /** \brief Empty constructor. */
-      FPFHEstimation () : nr_bins_f1_ (11), nr_bins_f2_ (11), nr_bins_f3_ (11), d_pi_ ((float)(1.0 / (2.0 * M_PI)))
+      FPFHEstimation () : 
+        nr_bins_f1_ (11), nr_bins_f2_ (11), nr_bins_f3_ (11), 
+        hist_f1_ (), hist_f2_ (), hist_f3_ (), fpfh_histogram_ (),
+        d_pi_ ((float)(1.0 / (2.0 * M_PI)))
       {
         feature_name_ = "FPFHEstimation";
       };
@@ -216,7 +219,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
   };
 
   /** \brief FPFHEstimation estimates the <b>Fast Point Feature Histogram (FPFH)</b> descriptor for a given point 
@@ -277,7 +280,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      compute (pcl::PointCloud<pcl::FPFHSignature33> &output) {}
+      compute (pcl::PointCloud<pcl::FPFHSignature33> &) {}
   };
 }
 

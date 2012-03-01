@@ -46,18 +46,16 @@
 #include <pcl/exceptions.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/features/spin_image.h>
-
-
-template <typename PointInT, typename PointNT, typename PointOutT>
-const double pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::PI = 4.0 * std::atan2(1.0, 1.0);
+#include <cmath>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT>
 pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::SpinImageEstimation (
-  unsigned int image_width, double support_angle_cos, unsigned int min_pts_neighb):
-    is_angular_(false), use_custom_axis_(false), use_custom_axes_cloud_(false), 
-    is_radial_(false),
-    image_width_(image_width), support_angle_cos_(support_angle_cos), min_pts_neighb_(min_pts_neighb)
+  unsigned int image_width, double support_angle_cos, unsigned int min_pts_neighb) :
+  input_normals_ (), rotation_axes_cloud_ (), 
+  is_angular_ (false), rotation_axis_ (), use_custom_axis_(false), use_custom_axes_cloud_ (false), 
+  is_radial_ (false), image_width_ (image_width), support_angle_cos_ (support_angle_cos), 
+  min_pts_neighb_ (min_pts_neighb)
 {
   assert (support_angle_cos_ <= 1.0 && support_angle_cos_ >= 0.0); // may be permit negative cosine?
 
@@ -181,7 +179,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
 
 
     // bilinear interpolation
-    double beta_bin_size = is_radial_ ? (PI / 2 / image_width_) : bin_size;
+    double beta_bin_size = is_radial_ ? (M_PI / 2 / image_width_) : bin_size;
     int beta_bin = int(std::floor (beta / beta_bin_size)) + int(image_width_);
     assert (0 <= beta_bin && beta_bin < m_matrix.cols ());
     int alpha_bin = int(std::floor (alpha / bin_size));

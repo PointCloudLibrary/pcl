@@ -76,7 +76,7 @@ namespace pcl
       typedef typename PointCloudGradient::ConstPtr PointCloudGradientConstPtr;
 
       /** \brief Empty constructor. */
-      RIFTEstimation () : nr_distance_bins_ (4), nr_gradient_bins_ (8)
+      RIFTEstimation () : gradient_ (), nr_distance_bins_ (4), nr_gradient_bins_ (8)
       {
         feature_name_ = "RIFTEstimation";
       };
@@ -152,7 +152,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf>&) {}
   };
 
   /** \brief RIFTEstimation estimates the Rotation Invariant Feature Transform descriptors for a given point cloud 
@@ -193,7 +193,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      compute (pcl::PointCloud<pcl::Normal> &output) {}
+      compute (pcl::PointCloud<pcl::Normal>&) {}
   };
 }
 

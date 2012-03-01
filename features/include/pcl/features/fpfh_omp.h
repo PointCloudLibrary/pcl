@@ -96,7 +96,7 @@ namespace pcl
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param[in] nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
         */
-      FPFHEstimationOMP (unsigned int nr_threads) : nr_bins_f1_ (11), nr_bins_f2_ (11), nr_bins_f3_ (11)
+      FPFHEstimationOMP (unsigned int nr_threads) : nr_bins_f1_ (11), nr_bins_f2_ (11), nr_bins_f3_ (11), threads_ (0)
       {
         setNumberOfThreads (nr_threads);
       }
@@ -132,7 +132,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
   };
 }
 

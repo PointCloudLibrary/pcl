@@ -45,19 +45,20 @@ using std::cerr;
 namespace pcl 
 {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-NarfDescriptor::NarfDescriptor(const RangeImage* range_image, const std::vector<int>* indices) : BaseClass()
+NarfDescriptor::NarfDescriptor (const RangeImage* range_image, const std::vector<int>* indices) : 
+  BaseClass (), range_image_ (), parameters_ ()
 {
-  setRangeImage(range_image, indices);
+  setRangeImage (range_image, indices);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-NarfDescriptor::~NarfDescriptor()
+NarfDescriptor::~NarfDescriptor ()
 {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
-NarfDescriptor::setRangeImage(const RangeImage* range_image, const std::vector<int>* indices)
+NarfDescriptor::setRangeImage (const RangeImage* range_image, const std::vector<int>* indices)
 {
   range_image_ = range_image;
   if (indices != NULL)

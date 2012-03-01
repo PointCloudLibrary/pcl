@@ -38,6 +38,9 @@
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
 
+#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#pragma GCC diagnostic ignored "-Weffc++"
+#endif
 namespace pcl
 {
   // Forward declarations
@@ -95,9 +98,13 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf>&) {}
   };
 
 }  // namespace end
+#if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#pragma GCC diagnostic warning "-Weffc++"
+#endif
+
 
 #endif  //#ifndef PCL_NARF_DESCRIPTOR_H_

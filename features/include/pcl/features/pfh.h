@@ -116,12 +116,18 @@ namespace pcl
       /** \brief Empty constructor. 
         * Sets \a use_cache_ to false, \a nr_subdiv_ to 5, and the internal maximum cache size to 1GB.
         */
-      PFHEstimation () : nr_subdiv_ (5), d_pi_ (1.0 / (2.0 * M_PI)), use_cache_ (false)
+      PFHEstimation () : 
+        nr_subdiv_ (5), 
+        pfh_histogram_ (),
+        pfh_tuple_ (),
+        d_pi_ (1.0 / (2.0 * M_PI)), 
+        feature_map_ (),
+        key_list_ (),
+        // Default 1GB memory size. Need to set it to something more conservative.
+        max_cache_size_ ((1ul*1024ul*1024ul*1024ul) / sizeof (std::pair<std::pair<int, int>, Eigen::Vector4f>)),
+        use_cache_ (false)
       {
         feature_name_ = "PFHEstimation";
-
-        // Default 1GB memory size. Need to set it to something more conservative.
-        max_cache_size_ = (1ul*1024ul*1024ul*1024ul) / sizeof (std::pair<std::pair<int, int>, Eigen::Vector4f>);
       };
 
       /** \brief Set the maximum internal cache size. Defaults to 2GB worth of entries.
@@ -234,7 +240,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {}
+      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
   };
 
   /** \brief PFHEstimation estimates the Point Feature Histogram (PFH) descriptor for a given point cloud dataset
@@ -295,7 +301,7 @@ namespace pcl
         * \param[out] output the output point cloud 
         */
       void 
-      compute (pcl::PointCloud<pcl::PFHSignature125> &output) {}
+      compute (pcl::PointCloud<pcl::PFHSignature125> &) {}
    };
 }
 

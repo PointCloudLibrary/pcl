@@ -68,7 +68,8 @@ namespace pcl
       typedef boost::shared_ptr <std::vector<int> > IndicesPtr;
 
       /** \brief Empty constructor */
-      StatisticalMultiscaleInterestRegionExtraction ()
+      StatisticalMultiscaleInterestRegionExtraction () :
+        scale_values_ (), geodesic_distances_ (), F_scales_ ()
       {};
 
       /** \brief Method that generates the underlying nearest neighbor graph based on the
