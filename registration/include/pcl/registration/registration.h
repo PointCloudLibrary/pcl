@@ -87,8 +87,11 @@ namespace pcl
       typedef typename TransformationEstimation::ConstPtr TransformationEstimationConstPtr;
 
       /** \brief Empty constructor. */
-      Registration () : nr_iterations_(0),
+      Registration () : reg_name_ (),
+                        tree_ (new pcl::KdTreeFLANN<PointTarget>),
+                        nr_iterations_(0),
                         max_iterations_(10),
+                        ransac_iterations_ (0),
                         target_ (),
                         final_transformation_ (Eigen::Matrix4f::Identity ()),
                         transformation_ (Eigen::Matrix4f::Identity ()),
@@ -97,12 +100,13 @@ namespace pcl
                         euclidean_fitness_epsilon_ (-std::numeric_limits<double>::max ()),
                         corr_dist_threshold_ (std::sqrt (std::numeric_limits<double>::max ())),
                         inlier_threshold_ (0.05),
-                        converged_ (false), min_number_correspondences_ (3), 
+                        converged_ (false), 
+                        min_number_correspondences_ (3), 
+                        correspondence_distances_ (),
                         transformation_estimation_ (),
+                        update_visualizer_ (NULL),
                         point_representation_ ()
       {
-        tree_.reset (new pcl::KdTreeFLANN<PointTarget>);     // ANN tree for nearest neighbor search
-        update_visualizer_ = NULL;
       }
 
       /** \brief destructor. */

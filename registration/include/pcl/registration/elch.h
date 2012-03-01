@@ -73,6 +73,7 @@ namespace pcl
 
         struct Vertex
         {
+          Vertex () : cloud () {}
           PointCloudPtr cloud;
         };
 
@@ -90,7 +91,14 @@ namespace pcl
         typedef typename Registration::ConstPtr RegistrationConstPtr;
 
         /** \brief Empty constructor. */
-        ELCH () : loop_graph_ (new LoopGraph), loop_start_ (-1), loop_end_ (-1), reg_ (new pcl::IterativeClosestPoint<PointT, PointT>), compute_loop_ (true)
+        ELCH () : 
+          loop_graph_ (new LoopGraph), 
+          loop_start_ (0), 
+          loop_end_ (0), 
+          reg_ (new pcl::IterativeClosestPoint<PointT, PointT>), 
+          loop_transform_ (),
+          compute_loop_ (true),
+          vd_ ()
         {};
 
         /** \brief Add a new point cloud to the internal graph.
