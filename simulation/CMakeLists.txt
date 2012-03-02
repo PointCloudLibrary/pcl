@@ -3,7 +3,7 @@ set(SUBSYS_DESC "Point Cloud Library Simulation")
 set(SUBSYS_DEPS common io surface kdtree features search octree visualization filters)
 
 set(build TRUE)
-PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
+PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} OFF)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk gl)
 find_package(OpenGL)
 
