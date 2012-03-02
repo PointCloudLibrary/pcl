@@ -145,8 +145,8 @@ void
 pcl::OpenNIGrabber::checkImageAndDepthSynchronizationRequired ()
 {
   // do we have anyone listening to images or color point clouds?
-  if (num_slots<sig_cb_openni_point_cloud_rgb> ()   > 0 ||
-      num_slots<sig_cb_openni_point_cloud_rgba> () > 0 ||
+  if (num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
+      num_slots<sig_cb_openni_point_cloud_rgba>  () > 0 ||
       num_slots<sig_cb_openni_point_cloud_eigen> () > 0 ||
       num_slots<sig_cb_openni_image_depth_image> () > 0)
     sync_required_ = true;
@@ -162,7 +162,7 @@ pcl::OpenNIGrabber::checkImageStreamRequired ()
   if (num_slots<sig_cb_openni_image>             () > 0 ||
       num_slots<sig_cb_openni_image_depth_image> () > 0 ||
       num_slots<sig_cb_openni_point_cloud_eigen> () > 0 ||
-      num_slots<sig_cb_openni_point_cloud_rgba> () > 0 ||
+      num_slots<sig_cb_openni_point_cloud_rgba>  () > 0 ||
       num_slots<sig_cb_openni_point_cloud_rgb>   () > 0)
     image_required_ = true;
   else
@@ -179,7 +179,7 @@ pcl::OpenNIGrabber::checkDepthStreamRequired ()
       num_slots<sig_cb_openni_ir_depth_image>    () > 0 ||
       num_slots<sig_cb_openni_point_cloud_eigen> () > 0 ||
       num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
-      num_slots<sig_cb_openni_point_cloud_rgba>   () > 0 ||
+      num_slots<sig_cb_openni_point_cloud_rgba>  () > 0 ||
       num_slots<sig_cb_openni_point_cloud>       () > 0 ||
       num_slots<sig_cb_openni_point_cloud_i>     () > 0 )
     depth_required_ = true;
@@ -363,36 +363,33 @@ pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth
   {
     THROW_PCL_IO_EXCEPTION ("unknown error occured");
   }
-  //printf("[%s] Opened '%s' on bus %d:%d with serial number '%s'\n", getName().c_str(),
-  //device_->getProductName(), device_->getBus(), device_->getAddress(), device_->getSerialNumber());
 
+  XnMapOutputMode depth_md;
   // Set the selected output mode
   if (depth_mode != OpenNI_Default_Mode)
   {
-    XnMapOutputMode depth_md, actual_depth_md;
+    XnMapOutputMode actual_depth_md;
     if (!mapConfigMode2XnMode (depth_mode, depth_md) || !device_->findCompatibleDepthMode (depth_md, actual_depth_md))
       THROW_PCL_IO_EXCEPTION ("could not find compatible depth stream mode %d", (int) depth_mode);
 
     XnMapOutputMode current_depth_md =  device_->getDepthOutputMode ();
     if (current_depth_md.nXRes != actual_depth_md.nXRes || current_depth_md.nYRes != actual_depth_md.nYRes)
       device_->setDepthOutputMode (actual_depth_md);
-
-    depth_width_ = depth_md.nXRes;
-    depth_height_ = depth_md.nYRes;
   }
   else
   {
-    XnMapOutputMode depth_md = device_->getDefaultDepthMode ();
-    depth_width_ = depth_md.nXRes;
-    depth_height_ = depth_md.nYRes;
+    depth_md = device_->getDefaultDepthMode ();
   }
 
+  depth_width_ = depth_md.nXRes;
+  depth_height_ = depth_md.nYRes;
+  
   if (device_->hasImageStream ())
   {
-    XnMapOutputMode actual_image_md;
+    XnMapOutputMode image_md;
     if (image_mode != OpenNI_Default_Mode)
     {
-      XnMapOutputMode image_md;
+      XnMapOutputMode actual_image_md;
       if (!mapConfigMode2XnMode (image_mode, image_md) || !device_->findCompatibleImageMode (image_md, actual_image_md))
         THROW_PCL_IO_EXCEPTION ("could not find compatible image stream mode %d", (int) image_mode);
 
@@ -402,19 +399,11 @@ pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth
     }
     else
     {
-      actual_image_md = device_->getDefaultImageMode ();
+      image_md = device_->getDefaultImageMode ();
     }
 
-    if (actual_image_md.nXRes < depth_width_ || actual_image_md.nYRes < depth_height_)
-      THROW_PCL_IO_EXCEPTION ("image size may not be smaller than depth image size (%dx%d) < (%dx%d)", actual_image_md.nXRes, actual_image_md.nYRes, depth_width_, depth_height_);
-
-    // get smallest possible image that is at least as big as depth
-    // e.g. 1280x1024 -> 640x512 > 640x480
-    unsigned scaleX = actual_image_md.nXRes / depth_width_;
-    unsigned scaleY = actual_image_md.nYRes / depth_height_;
-
-    image_width_ = actual_image_md.nXRes / scaleX;
-    image_height_ = actual_image_md.nYRes / scaleY;
+    image_width_  = image_md.nXRes;
+    image_height_ = image_md.nYRes;
   }
 }
 
@@ -455,7 +444,7 @@ void
 pcl::OpenNIGrabber::imageCallback (boost::shared_ptr<openni_wrapper::Image> image, void* cookie)
 {
   if (num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
-      num_slots<sig_cb_openni_point_cloud_rgba> () > 0 ||
+      num_slots<sig_cb_openni_point_cloud_rgba>  () > 0 ||
       num_slots<sig_cb_openni_point_cloud_eigen> () > 0 ||
       num_slots<sig_cb_openni_image_depth_image> () > 0)
     rgb_sync_.add0 (image, image->getTimeStamp ());
@@ -469,7 +458,7 @@ void
 pcl::OpenNIGrabber::depthCallback (boost::shared_ptr<openni_wrapper::DepthImage> depth_image, void* cookie)
 {
   if (num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
-      num_slots<sig_cb_openni_point_cloud_rgba> () > 0 ||
+      num_slots<sig_cb_openni_point_cloud_rgba>  () > 0 ||
       num_slots<sig_cb_openni_point_cloud_eigen> () > 0 ||
       num_slots<sig_cb_openni_image_depth_image> () > 0)
     rgb_sync_.add1 (depth_image, depth_image->getTimeStamp ());
@@ -506,11 +495,11 @@ pcl::OpenNIGrabber::imageDepthImageCallback (const boost::shared_ptr<openni_wrap
   if (point_cloud_rgb_signal_->num_slots () > 0)
   {
     PCL_WARN ("PointXYZRGB callbacks deprecated. Use PointXYZRGBA instead.\n");
-    point_cloud_rgb_signal_->operator()(convertToXYZRGBPointCloud (image, depth_image));
+    point_cloud_rgb_signal_->operator()(convertToXYZRGBPointCloud<pcl::PointXYZRGB> (image, depth_image));
   }
 
   if (point_cloud_rgba_signal_->num_slots () > 0)
-    point_cloud_rgba_signal_->operator()(convertToXYZRGBAPointCloud (image, depth_image));
+    point_cloud_rgba_signal_->operator()(convertToXYZRGBPointCloud<pcl::PointXYZRGBA> (image, depth_image));
 
   // check if we have color point cloud slots
   if (point_cloud_eigen_signal_->num_slots () > 0)
@@ -599,11 +588,16 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapp
       pt.y = v * pt.z * constant;
     }
   }
+  cloud->sensor_origin_.setZero ();
+  cloud->sensor_orientation_.w () = 0.0;
+  cloud->sensor_orientation_.x () = 1.0;
+  cloud->sensor_orientation_.y () = 0.0;
+  cloud->sensor_orientation_.z () = 0.0;  
   return (cloud);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::PointCloud<pcl::PointXYZRGB>::Ptr
+template <typename PointT> typename pcl::PointCloud<PointT>::Ptr
 pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
                                                const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const
 {
@@ -611,18 +605,18 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
   static boost::shared_array<unsigned char> rgb_array (0);
   static unsigned char* rgb_buffer = 0;
 
-  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> > cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
+  boost::shared_ptr<pcl::PointCloud<PointT> > cloud (new pcl::PointCloud<PointT>);
 
   cloud->header.frame_id = rgb_frame_id_;
-  cloud->height = depth_height_;
-  cloud->width = depth_width_;
+  cloud->height = std::max (image_height_, depth_height_);
+  cloud->width = std::max (image_width_, depth_width_);
   cloud->is_dense = false;
 
   cloud->points.resize (cloud->height * cloud->width);
 
-  float constant = 1.0f / device_->getImageFocalLength (cloud->width);
-  register int centerX = (cloud->width >> 1);
-  int centerY = (cloud->height >> 1);
+  float constant = 1.0f / device_->getImageFocalLength (depth_width_);
+  register int centerX = (depth_width_ >> 1);
+  int centerY = (depth_height_ >> 1);
 
   register const XnDepthPixel* depth_map = depth_image->getDepthMetaData ().Data ();
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight() != depth_height_)
@@ -648,39 +642,63 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
     rgb_buffer = rgb_array.get ();
   }
   image->fillRGB (image_width_, image_height_, rgb_buffer, image_width_ * 3);
-
-  // depth_image already has the desired dimensions, but rgb_msg may be higher res.
-  register int color_idx = 0, depth_idx = 0;
-  RGBValue color;
-  color.Alpha = 0;
-
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-  for (int v = -centerY; v < centerY; ++v)
+  // set xyz to Nan and rgb to 0 (black)  
+  if (image_width_ != depth_width_)
   {
-    for (register int u = -centerX; u < centerX; ++u, color_idx += 3, ++depth_idx)
+    PointT pt;
+    pt.x = pt.y = pt.z = bad_point;
+    pt.b = pt.g = pt.r = 0;
+    pt._unused = 255; // point has no color info -> alpha = max => transparent 
+    cloud->points.assign (cloud->points.size (), pt);
+  }
+  
+  // fill in XYZ values
+  unsigned step = cloud->width / depth_width_;
+  unsigned skip = cloud->width * step - cloud->width;
+  
+  int value_idx = 0;
+  int point_idx = 0;
+  for (int v = -centerY; v < centerY; ++v, point_idx += skip)
+  {
+    for (register int u = -centerX; u < centerX; ++u, ++value_idx, point_idx += step)
     {
-      pcl::PointXYZRGB& pt = cloud->points[depth_idx];
+      PointT& pt = cloud->points[point_idx];
       /// @todo Different values for these cases
       // Check for invalid measurements
-      if (depth_map[depth_idx] == 0 ||
-          depth_map[depth_idx] == depth_image->getNoSampleValue () ||
-          depth_map[depth_idx] == depth_image->getShadowValue ())
+
+      if (depth_map[value_idx] != 0 &&
+          depth_map[value_idx] != depth_image->getNoSampleValue () &&
+          depth_map[value_idx] != depth_image->getShadowValue ())
       {
-        pt.x = pt.y = pt.z = bad_point;
-      }
-      else
-      {
-        pt.z = depth_map[depth_idx] * 0.001f;
+        pt.z = depth_map[value_idx] * 0.001f;
         pt.x = u * pt.z * constant;
         pt.y = v * pt.z * constant;
       }
+    }
+  }
 
-      // Fill in color
-      color.Red = rgb_buffer[color_idx];
-      color.Green = rgb_buffer[color_idx + 1];
-      color.Blue = rgb_buffer[color_idx + 2];
-      pt.rgb = color.float_value;
+  // fill in the RGB values
+  step = cloud->width / image_width_;
+  skip = cloud->width * step - cloud->width;
+  
+  value_idx = 0;
+  point_idx = 0;
+  RGBValue color;
+  color.Alpha = 0;
+
+  for (unsigned yIdx = 0; yIdx < image_height_; ++yIdx, point_idx += skip)
+  {
+    for (unsigned xIdx = 0; xIdx < image_width_; ++xIdx, point_idx += step, value_idx += 3)
+    {
+      PointT& pt = cloud->points[point_idx];
+      
+      color.Red   = rgb_buffer[value_idx];
+      color.Green = rgb_buffer[value_idx + 1];
+      color.Blue  = rgb_buffer[value_idx + 2];
+      
+      pt.rgba = color.long_value;
     }
   }
   cloud->sensor_origin_.setZero ();
@@ -688,90 +706,6 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
   cloud->sensor_orientation_.x () = 1.0;
   cloud->sensor_orientation_.y () = 0.0;
   cloud->sensor_orientation_.z () = 0.0;
-  return (cloud);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
-pcl::OpenNIGrabber::convertToXYZRGBAPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
-                                                const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const
-{
-  static unsigned rgb_array_size = 0;
-  static boost::shared_array<unsigned char> rgb_array (0);
-  static unsigned char* rgb_buffer = 0;
-
-  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGBA> > cloud (new pcl::PointCloud<pcl::PointXYZRGBA>);
-
-  cloud->header.frame_id = rgb_frame_id_;
-  cloud->height = depth_height_;
-  cloud->width = depth_width_;
-  cloud->is_dense = false;
-
-  cloud->points.resize (cloud->height * cloud->width);
-
-  float constant = 1.0f / device_->getImageFocalLength (cloud->width);
-  register int centerX = (cloud->width >> 1);
-  int centerY = (cloud->height >> 1);
-
-  register const XnDepthPixel* depth_map = depth_image->getDepthMetaData ().Data ();
-  if (depth_image->getWidth () != depth_width_ || depth_image->getHeight() != depth_height_)
-  {
-    static unsigned buffer_size = 0;
-    static boost::shared_array<unsigned short> depth_buffer (0);
-
-    if (buffer_size < depth_width_ * depth_height_)
-    {
-      buffer_size = depth_width_ * depth_height_;
-      depth_buffer.reset (new unsigned short [buffer_size]);
-    }
-
-    depth_image->fillDepthImageRaw (depth_width_, depth_height_, depth_buffer.get ());
-    depth_map = depth_buffer.get ();
-  }
-
-  // here we need exact the size of the point cloud for a one-one correspondence!
-  if (rgb_array_size < image_width_ * image_height_ * 3)
-  {
-    rgb_array_size = image_width_ * image_height_ * 3;
-    rgb_array.reset (new unsigned char [rgb_array_size]);
-    rgb_buffer = rgb_array.get ();
-  }
-  image->fillRGB (image_width_, image_height_, rgb_buffer, image_width_ * 3);
-
-  // depth_image already has the desired dimensions, but rgb_msg may be higher res.
-  register int color_idx = 0, depth_idx = 0;
-  RGBValue color;
-  color.Alpha = 0;
-
-  float bad_point = std::numeric_limits<float>::quiet_NaN ();
-
-  for (int v = -centerY; v < centerY; ++v)
-  {
-    for (register int u = -centerX; u < centerX; ++u, color_idx += 3, ++depth_idx)
-    {
-      pcl::PointXYZRGBA& pt = cloud->points[depth_idx];
-      /// @todo Different values for these cases
-      // Check for invalid measurements
-      if (depth_map[depth_idx] == 0 ||
-          depth_map[depth_idx] == depth_image->getNoSampleValue () ||
-          depth_map[depth_idx] == depth_image->getShadowValue ())
-      {
-        pt.x = pt.y = pt.z = bad_point;
-      }
-      else
-      {
-        pt.z = depth_map[depth_idx] * 0.001f;
-        pt.x = u * pt.z * constant;
-        pt.y = v * pt.z * constant;
-      }
-
-      // Fill in color
-      color.Red = rgb_buffer[color_idx];
-      color.Green = rgb_buffer[color_idx + 1];
-      color.Blue = rgb_buffer[color_idx + 2];
-      pt.rgba = color.long_value;
-    }
-  }
   return (cloud);
 }
 

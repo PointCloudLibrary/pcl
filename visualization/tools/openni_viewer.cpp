@@ -69,13 +69,6 @@ do \
 }while(false)
 #endif
 
-// disable imageviewer
-//#undef VTK_MAJOR_VERSION
-//#define VTK_MAJOR_VERSION 5
-//
-//#undef VTK_MINOR_VERSION
-//#define VTK_MINOR_VERSION 3
-
 void
 printHelp (int argc, char **argv)
 {
@@ -90,7 +83,7 @@ printHelp (int argc, char **argv)
   print_info ("\t\t<device_id> may be \"#1\", \"#2\", ... for the first, second etc device in the list\n");
 #ifndef _WIN32
   print_info ("\t\t                   bus@address for the device connected to a specific usb-bus / address combination\n");
-  print_info ("\t\t                    <serial-number>\n");
+  print_info ("\t\t                   <serial-number>\n");
 #endif
   print_info ("\n\nexamples:\n");
   print_info ("%s \"#1\"\n", argv [0]);
@@ -223,7 +216,6 @@ class OpenNIViewer
           FPS_CALC ("drawing cloud");
           //the call to get() sets the cloud_ to null;
           CloudConstPtr cloud = getLatestCloud ();
-          //pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBA> handler (cloud);
           if (!visualizer_->updatePointCloud (cloud, "OpenNICloud"))
           {
             visualizer_->addPointCloud (cloud, "OpenNICloud");
@@ -363,7 +355,7 @@ main (int argc, char** argv)
   
   pcl::Grabber* grabber = new pcl::OpenNIGrabber(device_id, depth_mode, image_mode);
   
-  if (xyz || !grabber->providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ()) // only if xyz flag is set, since grabber provides at least XYZ and XYZI pointclouds
+  if (xyz || !grabber->providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
   {
     OpenNIViewer<pcl::PointXYZ> openni_viewer (*grabber);
     openni_viewer.run ();
