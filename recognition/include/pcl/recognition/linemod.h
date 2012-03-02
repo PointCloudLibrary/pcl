@@ -247,22 +247,22 @@ namespace pcl
 
       void
       detectTemplates (std::vector<QuantizableModality*> & modalities,
-                       std::vector<LINEMODDetection> & detections);
+                       std::vector<LINEMODDetection> & detections) const;
 
-      inline SparseQuantizedMultiModTemplate &
-      getTemplate (int template_id)
+      inline const SparseQuantizedMultiModTemplate &
+      getTemplate (int template_id) const
       { 
         return (templates_[template_id]);
       }
 
       void
-      saveTemplates (const char* file_name);
+      saveTemplates (const char* file_name) const;
 
       void
       loadTemplates (const char* file_name);
 
       void 
-      serialize (std::ostream & stream);
+      serialize (std::ostream & stream) const;
 
       void 
       deserialize (std::istream & stream);
