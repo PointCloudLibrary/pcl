@@ -155,7 +155,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   Eigen::Affine3f transform1;
   transform1.setIdentity ();
   int dim = 3;
-  if (eigen_values[0] / eigen_values[2] < 1.0e-5)
+  if (eigen_values[0] / eigen_values[2] < 1.0e-3)
   {
     // we have points laying on a plane, using 2d convex hull
     // compute transformation bring eigen_vectors.col(i) to z-axis
