@@ -339,6 +339,7 @@ computeMaxColorGradients ()
   color_gradients_.width = width;
   color_gradients_.height = height;
 
+  const float pi = tan(1.0f)*4;
   for (int row_index = 0; row_index < height-2; ++row_index)
   {
     for (int col_index = 0; col_index < width-2; ++col_index)
@@ -376,33 +377,36 @@ computeMaxColorGradients ()
       if (sqr_mag_r > sqr_mag_g && sqr_mag_r > sqr_mag_b)
       {
         GradientXY gradient;
-        gradient.magnitude = sqrt(sqr_mag_r);
-        gradient.angle = atan2(r_dy, r_dx)*180.0f/3.14f;
+        gradient.magnitude = sqrt (sqr_mag_r);
+        gradient.angle = atan2 (r_dy, r_dx) * 180.0f / pi;
         gradient.x = col_index;
         gradient.y = row_index;
 
-        color_gradients_(col_index+1, row_index+1) = gradient;
+        color_gradients_ (col_index+1, row_index+1) = gradient;
       }
       else if (sqr_mag_g > sqr_mag_b)
       {
         GradientXY gradient;
         gradient.magnitude = sqrt (sqr_mag_g);
-        gradient.angle = atan2 (g_dy, g_dx) * 180.0f / 3.14f;
+        gradient.angle = atan2 (g_dy, g_dx) * 180.0f / pi;
         gradient.x = col_index;
         gradient.y = row_index;
 
-        color_gradients_(col_index+1, row_index+1) = gradient;
+        color_gradients_ (col_index+1, row_index+1) = gradient;
       }
       else
       {
         GradientXY gradient;
         gradient.magnitude = sqrt (sqr_mag_b);
-        gradient.angle = atan2 (b_dy, b_dx) * 180.0f / 3.14f;
+        gradient.angle = atan2 (b_dy, b_dx) * 180.0f / pi;
         gradient.x = col_index;
         gradient.y = row_index;
 
-        color_gradients_(col_index+1, row_index+1) = gradient;
+        color_gradients_ (col_index+1, row_index+1) = gradient;
       }
+
+      assert (color_gradients_ (col_index+1, row_index+1).angle >= -180 &&
+              color_gradients_ (col_index+1, row_index+1).angle <=  180);
     }
   }
 
@@ -434,7 +438,8 @@ quantizeColorGradients ()
         continue;
       }
 
-      const int quantized_value = static_cast<int> (color_gradients_ (col_index, row_index).angle * angleScale);
+      const int quantized_value = static_cast<int> (color_gradients_ (col_index, row_index).angle * angleScale) + 8;
+      assert (0 <= quantized_value && quantized_value < 16);
       quantized_color_gradients_ (col_index, row_index) = quantization_map[quantized_value];
     }
   }
@@ -460,18 +465,27 @@ filterQuantizedColorGradients ()
 
       {
         const unsigned char * data_ptr = quantized_color_gradients_.getData () + (row_index-1)*width+col_index-1;
+        assert (0 <= data_ptr[0] && data_ptr[0] < 9 && 
+                0 <= data_ptr[1] && data_ptr[1] < 9 && 
+                0 <= data_ptr[2] && data_ptr[2] < 9);
         ++histogram[data_ptr[0]];
         ++histogram[data_ptr[1]];
         ++histogram[data_ptr[2]];
       }
       {
         const unsigned char * data_ptr = quantized_color_gradients_.getData () + row_index*width+col_index-1;
+        assert (0 <= data_ptr[0] && data_ptr[0] < 9 && 
+                0 <= data_ptr[1] && data_ptr[1] < 9 && 
+                0 <= data_ptr[2] && data_ptr[2] < 9);
         ++histogram[data_ptr[0]];
         ++histogram[data_ptr[1]];
         ++histogram[data_ptr[2]];
       }
       {
         const unsigned char * data_ptr = quantized_color_gradients_.getData () + (row_index+1)*width+col_index-1;
+        assert (0 <= data_ptr[0] && data_ptr[0] < 9 && 
+                0 <= data_ptr[1] && data_ptr[1] < 9 && 
+                0 <= data_ptr[2] && data_ptr[2] < 9);
         ++histogram[data_ptr[0]];
         ++histogram[data_ptr[1]];
         ++histogram[data_ptr[2]];
