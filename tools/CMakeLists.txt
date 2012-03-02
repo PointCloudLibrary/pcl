@@ -85,7 +85,10 @@ if (build)
   target_link_libraries(pcl_poisson_reconstruction pcl_common pcl_io pcl_surface)
 
   PCL_ADD_EXECUTABLE(pcl_train_linemod_template ${SUBSYS_NAME} train_linemod_template.cpp)
-  target_link_libraries(pcl_train_linemod_template pcl_common pcl_io pcl_recognition)
+  target_link_libraries(pcl_train_linemod_template pcl_common pcl_io pcl_segmentation pcl_recognition)
+
+  PCL_ADD_EXECUTABLE(pcl_match_linemod_template ${SUBSYS_NAME} match_linemod_template.cpp)
+  target_link_libraries(pcl_match_linemod_template pcl_common pcl_io pcl_recognition)
 
   if (QHULL_FOUND)
     PCL_ADD_EXECUTABLE(pcl_crop_to_hull ${SUBSYS_NAME} crop_to_hull.cpp)
