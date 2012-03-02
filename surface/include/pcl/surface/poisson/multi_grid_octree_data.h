@@ -39,242 +39,250 @@
  *
  */
 
-#ifndef MULTI_GRID_OCTREE_DATA_INCLUDED
-#define MULTI_GRID_OCTREE_DATA_INCLUDED
+#ifndef PCL_POISSON_MULTI_GRID_OCTREE_DATA_H_
+#define PCL_POISSON_MULTI_GRID_OCTREE_DATA_H_
 
 #include "hash.h"
 
-typedef float Real;
-typedef float FunctionDataReal;
-typedef OctNode<class TreeNodeData,Real> TreeOctNode;
+namespace pcl {
+  namespace poisson {
 
-class RootInfo{
-public:
-	const TreeOctNode* node;
-	int edgeIndex;
-	long long key;
-};
+    typedef float Real;
+    typedef float FunctionDataReal;
+    typedef OctNode<class TreeNodeData,Real> TreeOctNode;
 
-class VertexData{
-public:
-	static long long EdgeIndex(const TreeOctNode* node,const int& eIndex,const int& maxDepth,int index[DIMENSION]);
-	static long long EdgeIndex(const TreeOctNode* node,const int& eIndex,const int& maxDepth);
-	static long long FaceIndex(const TreeOctNode* node,const int& fIndex,const int& maxDepth,int index[DIMENSION]);
-	static long long FaceIndex(const TreeOctNode* node,const int& fIndex,const int& maxDepth);
-	static long long CornerIndex(const int& depth,const int offSet[DIMENSION],const int& cIndex,const int& maxDepth,int index[DIMENSION]);
-	static long long CornerIndex(const TreeOctNode* node,const int& cIndex,const int& maxDepth,int index[DIMENSION]);
-	static long long CornerIndex(const TreeOctNode* node,const int& cIndex,const int& maxDepth);
-	static long long CenterIndex(const int& depth,const int offSet[DIMENSION],const int& maxDepth,int index[DIMENSION]);
-	static long long CenterIndex(const TreeOctNode* node,const int& maxDepth,int index[DIMENSION]);
-	static long long CenterIndex(const TreeOctNode* node,const int& maxDepth);
-};
-class SortedTreeNodes{
-public:
-	TreeOctNode** treeNodes;
-	int *nodeCount;
-	int maxDepth;
-	SortedTreeNodes(void);
-	~SortedTreeNodes(void);
-	void set(TreeOctNode& root,const int& setIndex);
-};
+    class RootInfo{
+    public:
+      const TreeOctNode* node;
+      int edgeIndex;
+      long long key;
+    };
 
-class TreeNodeData{
-public:
-	static int UseIndex;
-	union{
-		int mcIndex;
-		struct{
-			int nodeIndex;
-			Real centerWeightContribution;
-		};
-	};
-	Real value;
+    class VertexData{
+    public:
+      static long long EdgeIndex(const TreeOctNode* node,const int& eIndex,const int& maxDepth,int index[DIMENSION]);
+      static long long EdgeIndex(const TreeOctNode* node,const int& eIndex,const int& maxDepth);
+      static long long FaceIndex(const TreeOctNode* node,const int& fIndex,const int& maxDepth,int index[DIMENSION]);
+      static long long FaceIndex(const TreeOctNode* node,const int& fIndex,const int& maxDepth);
+      static long long CornerIndex(const int& depth,const int offSet[DIMENSION],const int& cIndex,const int& maxDepth,int index[DIMENSION]);
+      static long long CornerIndex(const TreeOctNode* node,const int& cIndex,const int& maxDepth,int index[DIMENSION]);
+      static long long CornerIndex(const TreeOctNode* node,const int& cIndex,const int& maxDepth);
+      static long long CenterIndex(const int& depth,const int offSet[DIMENSION],const int& maxDepth,int index[DIMENSION]);
+      static long long CenterIndex(const TreeOctNode* node,const int& maxDepth,int index[DIMENSION]);
+      static long long CenterIndex(const TreeOctNode* node,const int& maxDepth);
+    };
+    class SortedTreeNodes{
+    public:
+      TreeOctNode** treeNodes;
+      int *nodeCount;
+      int maxDepth;
+      SortedTreeNodes(void);
+      ~SortedTreeNodes(void);
+      void set(TreeOctNode& root,const int& setIndex);
+    };
 
-	TreeNodeData(void);
-	~TreeNodeData(void);
-};
+    class TreeNodeData{
+    public:
+      static int UseIndex;
+      union{
+        int mcIndex;
+        struct{
+          int nodeIndex;
+          Real centerWeightContribution;
+        };
+      };
+      Real value;
 
-template<int Degree>
-class Octree{
-	TreeOctNode::NeighborKey neighborKey;	
-	TreeOctNode::NeighborKey2 neighborKey2;
+      TreeNodeData(void);
+      ~TreeNodeData(void);
+    };
 
-	Real radius;
-	int width;
-	void setNodeIndices(TreeOctNode& tree,int& idx);
-	Real GetDotProduct(const int index[DIMENSION]) const;
-	Real GetLaplacian(const int index[DIMENSION]) const;
-	Real GetDivergence(const int index[DIMENSION],const Point3D<Real>& normal) const;
+    template<int Degree>
+    class Octree{
+      TreeOctNode::NeighborKey neighborKey;
+      TreeOctNode::NeighborKey2 neighborKey2;
 
-	class DivergenceFunction{
-	public:
-		Point3D<Real> normal;
-		Octree<Degree>* ot;
-		int index[DIMENSION],scratch[DIMENSION];
-		void Function(TreeOctNode* node1,const TreeOctNode* node2);
-	};
+      Real radius;
+      int width;
+      void setNodeIndices(TreeOctNode& tree,int& idx);
+      Real GetDotProduct(const int index[DIMENSION]) const;
+      Real GetLaplacian(const int index[DIMENSION]) const;
+      Real GetDivergence(const int index[DIMENSION],const Point3D<Real>& normal) const;
 
-	class LaplacianProjectionFunction{
-	public:
-		double value;
-		Octree<Degree>* ot;
-		int index[DIMENSION],scratch[DIMENSION];
-		void Function(TreeOctNode* node1,const TreeOctNode* node2);
-	};
-	class LaplacianMatrixFunction{
-	public:
-		int x2,y2,z2,d2;
-		Octree<Degree>* ot;
-		int index[DIMENSION],scratch[DIMENSION];
-		int elementCount,offset;
-		MatrixEntry<float>* rowElements;
-		int Function(const TreeOctNode* node1,const TreeOctNode* node2);
-	};
-	class RestrictedLaplacianMatrixFunction{
-	public:
-		int depth,offset[3];
-		Octree<Degree>* ot;
-		Real radius;
-		int index[DIMENSION],scratch[DIMENSION];
-		int elementCount;
-		MatrixEntry<float>* rowElements;
-		int Function(const TreeOctNode* node1,const TreeOctNode* node2);
-	};
+      class DivergenceFunction{
+      public:
+        Point3D<Real> normal;
+        Octree<Degree>* ot;
+        int index[DIMENSION],scratch[DIMENSION];
+        void Function(TreeOctNode* node1,const TreeOctNode* node2);
+      };
 
-	///////////////////////////
-	// Evaluation Functions  //
-	///////////////////////////
-	class PointIndexValueFunction{
-	public:
-		int res2;
-		FunctionDataReal* valueTables;
-		int index[DIMENSION];
-		Real value;
-		void Function(const TreeOctNode* node);
-	};
-	class PointIndexValueAndNormalFunction{
-	public:
-		int res2;
-		FunctionDataReal* valueTables;
-		FunctionDataReal* dValueTables;
-		Real value;
-		Point3D<Real> normal;
-		int index[DIMENSION];
-		void Function(const TreeOctNode* node);
-	};
+      class LaplacianProjectionFunction{
+      public:
+        double value;
+        Octree<Degree>* ot;
+        int index[DIMENSION],scratch[DIMENSION];
+        void Function(TreeOctNode* node1,const TreeOctNode* node2);
+      };
+      class LaplacianMatrixFunction{
+      public:
+        int x2,y2,z2,d2;
+        Octree<Degree>* ot;
+        int index[DIMENSION],scratch[DIMENSION];
+        int elementCount,offset;
+        MatrixEntry<float>* rowElements;
+        int Function(const TreeOctNode* node1,const TreeOctNode* node2);
+      };
+      class RestrictedLaplacianMatrixFunction{
+      public:
+        int depth,offset[3];
+        Octree<Degree>* ot;
+        Real radius;
+        int index[DIMENSION],scratch[DIMENSION];
+        int elementCount;
+        MatrixEntry<float>* rowElements;
+        int Function(const TreeOctNode* node1,const TreeOctNode* node2);
+      };
 
-	class AdjacencyCountFunction{
-	public:
-		int adjacencyCount;
-		void Function(const TreeOctNode* node1,const TreeOctNode* node2);
-	};
-	class AdjacencySetFunction{
-	public:
-		int *adjacencies,adjacencyCount;
-		void Function(const TreeOctNode* node1,const TreeOctNode* node2);
-	};
+      ///////////////////////////
+      // Evaluation Functions  //
+      ///////////////////////////
+      class PointIndexValueFunction{
+      public:
+        int res2;
+        FunctionDataReal* valueTables;
+        int index[DIMENSION];
+        Real value;
+        void Function(const TreeOctNode* node);
+      };
+      class PointIndexValueAndNormalFunction{
+      public:
+        int res2;
+        FunctionDataReal* valueTables;
+        FunctionDataReal* dValueTables;
+        Real value;
+        Point3D<Real> normal;
+        int index[DIMENSION];
+        void Function(const TreeOctNode* node);
+      };
 
-	class RefineFunction{
-	public:
-		int depth;
-		void Function(TreeOctNode* node1,const TreeOctNode* node2);
-	};
-	class FaceEdgesFunction{
-	public:
-		int fIndex,maxDepth;
-		std::vector<std::pair<long long,long long> >* edges;
-		hash_map<long long,std::pair<RootInfo,int> >* vertexCount;
-		void Function(const TreeOctNode* node1,const TreeOctNode* node2);
-	};
+      class AdjacencyCountFunction{
+      public:
+        int adjacencyCount;
+        void Function(const TreeOctNode* node1,const TreeOctNode* node2);
+      };
+      class AdjacencySetFunction{
+      public:
+        int *adjacencies,adjacencyCount;
+        void Function(const TreeOctNode* node1,const TreeOctNode* node2);
+      };
 
-	int SolveFixedDepthMatrix(const int& depth,const SortedTreeNodes& sNodes);
-	int SolveFixedDepthMatrix(const int& depth,const int& startingDepth,const SortedTreeNodes& sNodes);
+      class RefineFunction{
+      public:
+        int depth;
+        void Function(TreeOctNode* node1,const TreeOctNode* node2);
+      };
+      class FaceEdgesFunction{
+      public:
+        int fIndex,maxDepth;
+        std::vector<std::pair<long long,long long> >* edges;
+        hash_map<long long,std::pair<RootInfo,int> >* vertexCount;
+        void Function(const TreeOctNode* node1,const TreeOctNode* node2);
+      };
 
-	int GetFixedDepthLaplacian(SparseSymmetricMatrix<float>& matrix,const int& depth,const SortedTreeNodes& sNodes);
-	int GetRestrictedFixedDepthLaplacian(SparseSymmetricMatrix<float>& matrix,const int& depth,const int* entries,const int& entryCount,const TreeOctNode* rNode,const Real& radius,const SortedTreeNodes& sNodes);
+      int SolveFixedDepthMatrix(const int& depth,const SortedTreeNodes& sNodes);
+      int SolveFixedDepthMatrix(const int& depth,const int& startingDepth,const SortedTreeNodes& sNodes);
 
-	void SetIsoSurfaceCorners(const Real& isoValue,const int& subdivisionDepth,const int& fullDepthIso);
-	static int IsBoundaryFace(const TreeOctNode* node,const int& faceIndex,const int& subdivideDepth);
-	static int IsBoundaryEdge(const TreeOctNode* node,const int& edgeIndex,const int& subdivideDepth);
-	static int IsBoundaryEdge(const TreeOctNode* node,const int& dir,const int& x,const int& y,const int& subidivideDepth);
-	void PreValidate(const Real& isoValue,const int& maxDepth,const int& subdivideDepth);
-	void PreValidate(TreeOctNode* node,const Real& isoValue,const int& maxDepth,const int& subdivideDepth);
-	void Validate(TreeOctNode* node,const Real& isoValue,const int& maxDepth,const int& fullDepthIso,const int& subdivideDepth);
-	void Validate(TreeOctNode* node,const Real& isoValue,const int& maxDepth,const int& fullDepthIso);
-	void Subdivide(TreeOctNode* node,const Real& isoValue,const int& maxDepth);
+      int GetFixedDepthLaplacian(SparseSymmetricMatrix<float>& matrix,const int& depth,const SortedTreeNodes& sNodes);
+      int GetRestrictedFixedDepthLaplacian(SparseSymmetricMatrix<float>& matrix,const int& depth,const int* entries,const int& entryCount,const TreeOctNode* rNode,const Real& radius,const SortedTreeNodes& sNodes);
 
-	int SetBoundaryMCRootPositions(const int& sDepth,const Real& isoValue,
-		hash_map<long long,int>& boundaryRoots,hash_map<long long,std::pair<Real,Point3D<Real> > >& boundaryNormalHash,CoredMeshData* mesh,const int& nonLinearFit);
-	int SetMCRootPositions(TreeOctNode* node,const int& sDepth,const Real& isoValue,
-		hash_map<long long,int>& boundaryRoots,hash_map<long long,int>* interiorRoots,
-		hash_map<long long,std::pair<Real,Point3D<Real> > >& boundaryNormalHash,hash_map<long long,std::pair<Real,Point3D<Real> > >* interiorNormalHash,
-		std::vector<Point3D<float> >* interiorPositions,
-		CoredMeshData* mesh,const int& nonLinearFit);
+      void SetIsoSurfaceCorners(const Real& isoValue,const int& subdivisionDepth,const int& fullDepthIso);
+      static int IsBoundaryFace(const TreeOctNode* node,const int& faceIndex,const int& subdivideDepth);
+      static int IsBoundaryEdge(const TreeOctNode* node,const int& edgeIndex,const int& subdivideDepth);
+      static int IsBoundaryEdge(const TreeOctNode* node,const int& dir,const int& x,const int& y,const int& subidivideDepth);
+      void PreValidate(const Real& isoValue,const int& maxDepth,const int& subdivideDepth);
+      void PreValidate(TreeOctNode* node,const Real& isoValue,const int& maxDepth,const int& subdivideDepth);
+      void Validate(TreeOctNode* node,const Real& isoValue,const int& maxDepth,const int& fullDepthIso,const int& subdivideDepth);
+      void Validate(TreeOctNode* node,const Real& isoValue,const int& maxDepth,const int& fullDepthIso);
+      void Subdivide(TreeOctNode* node,const Real& isoValue,const int& maxDepth);
 
-	int GetMCIsoTriangles(TreeOctNode* node,CoredMeshData* mesh,hash_map<long long,int>& boundaryRoots,
-		hash_map<long long,int>* interiorRoots,std::vector<Point3D<float> >* interiorPositions,const int& offSet,const int& sDepth , bool addBarycenter , bool polygonMesh );
+      int SetBoundaryMCRootPositions(const int& sDepth,const Real& isoValue,
+                                     hash_map<long long,int>& boundaryRoots,hash_map<long long,std::pair<Real,Point3D<Real> > >& boundaryNormalHash,CoredMeshData* mesh,const int& nonLinearFit);
+      int SetMCRootPositions(TreeOctNode* node,const int& sDepth,const Real& isoValue,
+                             hash_map<long long,int>& boundaryRoots,hash_map<long long,int>* interiorRoots,
+                             hash_map<long long,std::pair<Real,Point3D<Real> > >& boundaryNormalHash,hash_map<long long,std::pair<Real,Point3D<Real> > >* interiorNormalHash,
+                             std::vector<Point3D<float> >* interiorPositions,
+                             CoredMeshData* mesh,const int& nonLinearFit);
 
-	static int AddTriangles( CoredMeshData* mesh , std::vector<CoredPointIndex> edges[3] , std::vector<Point3D<float> >* interiorPositions , const int& offSet );
-	static int AddTriangles( CoredMeshData* mesh , std::vector<CoredPointIndex>& edges , std::vector<Point3D<float> >* interiorPositions , const int& offSet , bool addBarycenter , bool polygonMesh );
-	void GetMCIsoEdges(TreeOctNode* node,hash_map<long long,int>& boundaryRoots,hash_map<long long,int>* interiorRoots,const int& sDepth,
-		std::vector<std::pair<long long,long long> >& edges );
-	static int GetEdgeLoops(std::vector<std::pair<long long,long long> >& edges,std::vector<std::vector<std::pair<long long,long long> > >& loops);
-	static int InteriorFaceRootCount(const TreeOctNode* node,const int &faceIndex,const int& maxDepth);
-	static int EdgeRootCount(const TreeOctNode* node,const int& edgeIndex,const int& maxDepth);
-	int GetRoot(const RootInfo& ri,const Real& isoValue,const int& maxDepth,Point3D<Real> & position,hash_map<long long,std::pair<Real,Point3D<Real> > >& normalHash,
-		Point3D<Real>* normal,const int& nonLinearFit);
-	int GetRoot(const RootInfo& ri,const Real& isoValue,Point3D<Real> & position,hash_map<long long,std::pair<Real,Point3D<Real> > >& normalHash,const int& nonLinearFit);
-	static int GetRootIndex(const TreeOctNode* node,const int& edgeIndex,const int& maxDepth,RootInfo& ri);
-	static int GetRootIndex(const TreeOctNode* node,const int& edgeIndex,const int& maxDepth,const int& sDepth,RootInfo& ri);
-	static int GetRootIndex(const long long& key,hash_map<long long,int>& boundaryRoots,hash_map<long long,int>* interiorRoots,CoredPointIndex& index);
-	static int GetRootPair(const RootInfo& root,const int& maxDepth,RootInfo& pair);
+      int GetMCIsoTriangles(TreeOctNode* node,CoredMeshData* mesh,hash_map<long long,int>& boundaryRoots,
+                            hash_map<long long,int>* interiorRoots,std::vector<Point3D<float> >* interiorPositions,const int& offSet,const int& sDepth , bool addBarycenter , bool polygonMesh );
 
-	int NonLinearUpdateWeightContribution(TreeOctNode* node,const Point3D<Real>& position,const Real& weight=Real(1.0));
-	Real NonLinearGetSampleWeight(TreeOctNode* node,const Point3D<Real>& position);
-	void NonLinearGetSampleDepthAndWeight(TreeOctNode* node,const Point3D<Real>& position,const Real& samplesPerNode,Real& depth,Real& weight);
-	int NonLinearSplatOrientedPoint(TreeOctNode* node,const Point3D<Real>& point,const Point3D<Real>& normal);
-	void NonLinearSplatOrientedPoint(const Point3D<Real>& point,const Point3D<Real>& normal,const int& kernelDepth,const Real& samplesPerNode,const int& minDepth,const int& maxDepth);
+      static int AddTriangles( CoredMeshData* mesh , std::vector<CoredPointIndex> edges[3] , std::vector<Point3D<float> >* interiorPositions , const int& offSet );
+      static int AddTriangles( CoredMeshData* mesh , std::vector<CoredPointIndex>& edges , std::vector<Point3D<float> >* interiorPositions , const int& offSet , bool addBarycenter , bool polygonMesh );
+      void GetMCIsoEdges(TreeOctNode* node,hash_map<long long,int>& boundaryRoots,hash_map<long long,int>* interiorRoots,const int& sDepth,
+                         std::vector<std::pair<long long,long long> >& edges );
+      static int GetEdgeLoops(std::vector<std::pair<long long,long long> >& edges,std::vector<std::vector<std::pair<long long,long long> > >& loops);
+      static int InteriorFaceRootCount(const TreeOctNode* node,const int &faceIndex,const int& maxDepth);
+      static int EdgeRootCount(const TreeOctNode* node,const int& edgeIndex,const int& maxDepth);
+      int GetRoot(const RootInfo& ri,const Real& isoValue,const int& maxDepth,Point3D<Real> & position,hash_map<long long,std::pair<Real,Point3D<Real> > >& normalHash,
+                  Point3D<Real>* normal,const int& nonLinearFit);
+      int GetRoot(const RootInfo& ri,const Real& isoValue,Point3D<Real> & position,hash_map<long long,std::pair<Real,Point3D<Real> > >& normalHash,const int& nonLinearFit);
+      static int GetRootIndex(const TreeOctNode* node,const int& edgeIndex,const int& maxDepth,RootInfo& ri);
+      static int GetRootIndex(const TreeOctNode* node,const int& edgeIndex,const int& maxDepth,const int& sDepth,RootInfo& ri);
+      static int GetRootIndex(const long long& key,hash_map<long long,int>& boundaryRoots,hash_map<long long,int>* interiorRoots,CoredPointIndex& index);
+      static int GetRootPair(const RootInfo& root,const int& maxDepth,RootInfo& pair);
 
-	int HasNormals(TreeOctNode* node,const Real& epsilon);
+      int NonLinearUpdateWeightContribution(TreeOctNode* node,const Point3D<Real>& position,const Real& weight=Real(1.0));
+      Real NonLinearGetSampleWeight(TreeOctNode* node,const Point3D<Real>& position);
+      void NonLinearGetSampleDepthAndWeight(TreeOctNode* node,const Point3D<Real>& position,const Real& samplesPerNode,Real& depth,Real& weight);
+      int NonLinearSplatOrientedPoint(TreeOctNode* node,const Point3D<Real>& point,const Point3D<Real>& normal);
+      void NonLinearSplatOrientedPoint(const Point3D<Real>& point,const Point3D<Real>& normal,const int& kernelDepth,const Real& samplesPerNode,const int& minDepth,const int& maxDepth);
 
-	Real getCenterValue(const TreeOctNode* node);
-	Real getCornerValue(const TreeOctNode* node,const int& corner);
-	void getCornerValueAndNormal(const TreeOctNode* node,const int& corner,Real& value,Point3D<Real>& normal);
-public:
-	static double maxMemoryUsage;
-	static double MemoryUsage(void);
-	std::vector< Point3D<Real> >* normals;
-	Real postNormalSmooth;
-	TreeOctNode tree;
-	FunctionData<Degree,FunctionDataReal> fData;
-	Octree(void);
+      int HasNormals(TreeOctNode* node,const Real& epsilon);
 
-	void setFunctionData(const PPolynomial<Degree>& ReconstructionFunction,const int& maxDepth,const int& normalize,const Real& normalSmooth=-1);
-	void finalize1(const int& refineNeighbors=-1);
-	void finalize2(const int& refineNeighbors=-1);
-	//int setTree(char* fileName,const int& maxDepth,const int& binary,const int& kernelDepth,const Real& samplesPerNode,
-	//	const Real& scaleFactor,Point3D<Real>& center,Real& scale,const int& resetSampleDepths,const int& useConfidence);
+      Real getCenterValue(const TreeOctNode* node);
+      Real getCornerValue(const TreeOctNode* node,const int& corner);
+      void getCornerValueAndNormal(const TreeOctNode* node,const int& corner,Real& value,Point3D<Real>& normal);
+    public:
+      static double maxMemoryUsage;
+      static double MemoryUsage(void);
+      std::vector< Point3D<Real> >* normals;
+      Real postNormalSmooth;
+      TreeOctNode tree;
+      FunctionData<Degree,FunctionDataReal> fData;
+      Octree(void);
 
-	template<typename PointNT> int
-	setTree (boost::shared_ptr<const pcl::PointCloud<PointNT> > input_,
-	         const int& maxDepth,
-	         const int& kernelDepth,
-	         const Real& samplesPerNode,
-	         const Real& scaleFactor,
-	         Point3D<Real>& center,
-	         Real& scale,
-	         const int& resetSamples,
-	         const int& useConfidence);
+      void setFunctionData(const PPolynomial<Degree>& ReconstructionFunction,const int& maxDepth,const int& normalize,const Real& normalSmooth=-1);
+      void finalize1(const int& refineNeighbors=-1);
+      void finalize2(const int& refineNeighbors=-1);
+      //int setTree(char* fileName,const int& maxDepth,const int& binary,const int& kernelDepth,const Real& samplesPerNode,
+      //	const Real& scaleFactor,Point3D<Real>& center,Real& scale,const int& resetSampleDepths,const int& useConfidence);
+
+      template<typename PointNT> int
+      setTree (boost::shared_ptr<const pcl::PointCloud<PointNT> > input_,
+               const int& maxDepth,
+               const int& kernelDepth,
+               const Real& samplesPerNode,
+               const Real& scaleFactor,
+               Point3D<Real>& center,
+               Real& scale,
+               const int& resetSamples,
+               const int& useConfidence);
 
 
-	void SetLaplacianWeights(void);
-	void ClipTree(void);
-	int LaplacianMatrixIteration(const int& subdivideDepth);
+      void SetLaplacianWeights(void);
+      void ClipTree(void);
+      int LaplacianMatrixIteration(const int& subdivideDepth);
 
-	Real GetIsoValue(void);
-	void GetMCIsoTriangles(const Real& isoValue,CoredMeshData* mesh,const int& fullDepthIso=0,const int& nonLinearFit=1 , bool addBarycenter=false , bool polygonMesh=false );
-	void GetMCIsoTriangles(const Real& isoValue,const int& subdivideDepth,CoredMeshData* mesh,const int& fullDepthIso=0,const int& nonLinearFit=1 , bool addBarycenter=false , bool polygonMesh=false );
-};
+      Real GetIsoValue(void);
+      void GetMCIsoTriangles(const Real& isoValue,CoredMeshData* mesh,const int& fullDepthIso=0,const int& nonLinearFit=1 , bool addBarycenter=false , bool polygonMesh=false );
+      void GetMCIsoTriangles(const Real& isoValue,const int& subdivideDepth,CoredMeshData* mesh,const int& fullDepthIso=0,const int& nonLinearFit=1 , bool addBarycenter=false , bool polygonMesh=false );
+    };
+
+
+  }
+}
+
 
 #include "pcl/surface/impl/poisson/multi_grid_octree_data.hpp"
-#endif // MULTI_GRID_OCTREE_DATA_INCLUDED
+#endif /* PCL_POISSON_MULTI_GRID_OCTREE_DATA_H_ */

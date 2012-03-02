@@ -223,8 +223,8 @@ namespace pcl
         float scale_;
 
         template<int Degree> void
-        execute (CoredMeshData &mesh,
-                 Point3D<float> &translate);
+        execute (poisson::CoredMeshData &mesh,
+                 poisson::Point3D<float> &translate);
 
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW

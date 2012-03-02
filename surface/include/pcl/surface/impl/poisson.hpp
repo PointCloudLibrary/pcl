@@ -85,26 +85,26 @@ pcl::Poisson<PointNT>::~Poisson ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> template <int Degree> void
-pcl::Poisson<PointNT>::execute (CoredMeshData &mesh,
-                                Point3D<float> &center)
+pcl::Poisson<PointNT>::execute (poisson::CoredMeshData &mesh,
+                                poisson::Point3D<float> &center)
 {
   float scale=1.0;
   float isoValue=0;
   //////////////////////////////////
   // Fix courtesy of David Gallup //
-  TreeNodeData::UseIndex = 1;     //
+  poisson::TreeNodeData::UseIndex = 1;     //
   //////////////////////////////////
-  Octree<Degree> tree;
-  PPolynomial<Degree> ReconstructionFunction=PPolynomial<Degree>::GaussianApproximation();
+  poisson::Octree<Degree> tree;
+  poisson::PPolynomial<Degree> ReconstructionFunction = poisson::PPolynomial<Degree>::GaussianApproximation();
 
   center.coords[0]=center.coords[1]=center.coords[2]=0;
 
-  TreeOctNode::SetAllocator(MEMORY_ALLOCATOR_BLOCK_SIZE);
+  poisson::TreeOctNode::SetAllocator(MEMORY_ALLOCATOR_BLOCK_SIZE);
 
   kernel_depth_ = depth_ - 2;
 //  if(KernelDepth.set){kernelDepth=KernelDepth.value;}
 
-  tree.setFunctionData(ReconstructionFunction,depth_, 0, Real(1.0)/(1<<depth_));
+  tree.setFunctionData(ReconstructionFunction,depth_, 0, poisson::Real(1.0)/(1<<depth_));
   if(kernel_depth_>depth_){
     fprintf(stderr,"KernelDepth can't be greater than Depth: %d <= %d\n",kernel_depth_,depth_);
     return;
@@ -112,16 +112,10 @@ pcl::Poisson<PointNT>::execute (CoredMeshData &mesh,
 
 
 
-  printf ("depth %d, kernel_depth %d, samples_per_node %f, scale %f, center %f %f %f, scale %f, no_reset_samples %d\n",
-            depth_, kernel_depth_, float(samples_per_node_), scale_, center.coords[0], center.coords[1], center.coords[2], scale, int(no_reset_samples_));
-
-
   tree.setTree (input_, depth_, kernel_depth_, float(samples_per_node_), scale_, center, scale, !no_reset_samples_, confidence_);
-  printf ("depth %d, kernel_depth %d, samples_per_node %f, scale %f, center %f %f %f, scale %f, no_reset_samples %d\n",
-          depth_, kernel_depth_, float(samples_per_node_), scale_, center.coords[0], center.coords[1], center.coords[2], scale, int(no_reset_samples_));
 
-  printf("Leaves/Nodes: %d/%d\n",tree.tree.leaves(),tree.tree.nodes());
-  printf("   Tree Size: %.3f MB\n",float(sizeof(TreeOctNode)*tree.tree.nodes())/(1<<20));
+//  printf("Leaves/Nodes: %d/%d\n",tree.tree.leaves(),tree.tree.nodes());
+//  printf("   Tree Size: %.3f MB\n",float(sizeof(TreeOctNode)*tree.tree.nodes())/(1<<20));
 
   if(!no_clip_tree_){
     tree.ClipTree();
@@ -151,8 +145,8 @@ pcl::Poisson<PointNT>::execute (CoredMeshData &mesh,
 template <typename PointNT> void
 pcl::Poisson<PointNT>::performReconstruction (PolygonMesh &output)
 {
-  CoredVectorMeshData mesh;
-  Point3D<float> center;
+  poisson::CoredVectorMeshData mesh;
+  poisson::Point3D<float> center;
 
   switch (degree_)
   {
@@ -193,7 +187,7 @@ pcl::Poisson<PointNT>::performReconstruction (PolygonMesh &output)
   // write vertices
   pcl::PointCloud < pcl::PointXYZ > cloud;
   cloud.points.resize (int (mesh.outOfCorePointCount () + mesh.inCorePoints.size ()));
-  Point3D<float> p;
+  poisson::Point3D<float> p;
   for (int i = 0; i < int (mesh.inCorePoints.size ()); i++)
   {
     p = mesh.inCorePoints[i];
@@ -212,7 +206,7 @@ pcl::Poisson<PointNT>::performReconstruction (PolygonMesh &output)
   output.polygons.resize (mesh.polygonCount ());
 
   // Write faces
-  std::vector< CoredVertexIndex > polygon;
+  std::vector<poisson::CoredVertexIndex> polygon;
   for (int p_i = 0; p_i < mesh.polygonCount (); p_i++)
   {
     pcl::Vertices v;
@@ -233,9 +227,9 @@ pcl::Poisson<PointNT>::performReconstruction (PolygonMesh &output)
 template <typename PointNT> void
 pcl::Poisson<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
                                               std::vector<pcl::Vertices> &polygons)
-                                              {
-  CoredVectorMeshData mesh;
-  Point3D<float> center;
+{
+  poisson::CoredVectorMeshData mesh;
+  poisson::Point3D<float> center;
 
   switch (degree_)
   {
@@ -274,7 +268,7 @@ pcl::Poisson<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
   float scale = 1;
   // write vertices
   points.points.resize (int (mesh.outOfCorePointCount () + mesh.inCorePoints.size ()));
-  Point3D<float> p;
+  poisson::Point3D<float> p;
   for (int i = 0; i < int(mesh.inCorePoints.size ()); i++)
   {
     p = mesh.inCorePoints[i];
@@ -295,7 +289,7 @@ pcl::Poisson<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
   polygons.resize (mesh.polygonCount ());
 
   // write faces
-  std::vector< CoredVertexIndex > polygon;
+  std::vector<poisson::CoredVertexIndex> polygon;
   for (int p_i = 0; p_i < mesh.polygonCount (); p_i++)
   {
     pcl::Vertices v;
