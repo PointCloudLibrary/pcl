@@ -49,11 +49,11 @@ namespace pcl
   {
     public:
       MaskMap ();
-      MaskMap (const size_t width, const size_t height);
+      MaskMap (size_t width, size_t height);
       virtual ~MaskMap ();
 
       void
-      resize (const size_t width, const size_t height);
+      resize (size_t width, size_t height);
 
       inline size_t 
       getWidth () const { return (width_); }
@@ -68,13 +68,13 @@ namespace pcl
       getData () const { return (&data_[0]); }
 
       inline unsigned char & 
-      operator() (int x, int y) 
+      operator() (const int x, const int y) 
       { 
         return (data_[y*width_+x]); 
       }
 
       inline const unsigned char & 
-      operator() (int x, int y) const
+      operator() (const int x, const int y) const
       { 
         return (data_[y*width_+x]); 
       }
@@ -91,7 +91,7 @@ namespace pcl
     public:
 
       QuantizedMap ();
-      QuantizedMap (const size_t width, const size_t height);
+      QuantizedMap (size_t width, size_t height);
 
       virtual ~QuantizedMap ();
 
@@ -108,7 +108,7 @@ namespace pcl
       getData () const { return (&data_[0]); }
 
       void 
-      resize (const size_t width, const size_t height);
+      resize (size_t width, size_t height);
 
       inline unsigned char & 
       operator() (const int x, const int y) 
@@ -123,7 +123,7 @@ namespace pcl
       }
 
       static void
-      spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, const int spreading_size);
+      spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, int spreading_size);
 
     private:
       std::vector<unsigned char> data_;

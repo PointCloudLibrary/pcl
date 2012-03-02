@@ -91,7 +91,7 @@ namespace pcl
     }
 
     void 
-    deserialize (::std::istream & stream)
+    deserialize (std::istream & stream)
     {
       features.clear ();
 

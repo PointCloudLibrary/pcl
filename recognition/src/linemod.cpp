@@ -106,7 +106,7 @@ createAndAddTemplate (const std::vector<pcl::QuantizableModality*> & modalities,
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::LINEMOD::
-detectTemplates (std::vector<QuantizableModality*> & modalities, std::vector<LINEMODDetection> & detections) const
+detectTemplates (const std::vector<QuantizableModality*> & modalities, std::vector<LINEMODDetection> & detections) const
 {
   // create energy maps
   std::vector<EnergyMaps> modality_energy_maps;
@@ -131,7 +131,7 @@ detectTemplates (std::vector<QuantizableModality*> & modalities, std::vector<LIN
 
       unsigned char val0 = 0x1 << bin_index; // e.g. 00100000
       unsigned char val1 = (0x1 << (bin_index+1)%8) | (0x1 << (bin_index+9)%8); // e.g. 01010000
-      for (int index = 0; index < width*height; ++index)
+      for (size_t index = 0; index < width*height; ++index)
       {
         if ((val0 & quantized_data[index]) != 0)
           ++energy_maps (bin_index, index);
@@ -144,33 +144,33 @@ detectTemplates (std::vector<QuantizableModality*> & modalities, std::vector<LIN
   }
 
   // create linearized maps
-  const int step_size = 8;
+  const size_t step_size = 8;
   std::vector<std::vector<LinearizedMaps> > modality_linearized_maps;
   for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
   {
     const size_t width = modality_energy_maps[modality_index].getWidth ();
     const size_t height = modality_energy_maps[modality_index].getHeight ();
 
-    std::vector< LinearizedMaps > linearized_maps;
+    std::vector<LinearizedMaps> linearized_maps;
     const size_t nr_bins = modality_energy_maps[modality_index].getNumOfBins ();
-    for (int bin_index = 0; bin_index < nr_bins; ++bin_index)
+    for (size_t bin_index = 0; bin_index < nr_bins; ++bin_index)
     {
       unsigned char * energy_map = modality_energy_maps[modality_index] (bin_index);
 
       LinearizedMaps maps;
       maps.initialize (width, height, step_size);
-      for (int map_row = 0; map_row < step_size; ++map_row)
+      for (size_t map_row = 0; map_row < step_size; ++map_row)
       {
-        for (int map_col = 0; map_col < step_size; ++map_col)
+        for (size_t map_col = 0; map_col < step_size; ++map_col)
         {
           unsigned char * linearized_map = maps (map_col, map_row);
 
           // copy data from energy maps
           const size_t lin_width = width/step_size;
           const size_t lin_height = height/step_size;
-          for (int row_index = 0; row_index < lin_height; ++row_index)
+          for (size_t row_index = 0; row_index < lin_height; ++row_index)
           {
-            for (int col_index = 0; col_index < lin_width; ++col_index)
+            for (size_t col_index = 0; col_index < lin_width; ++col_index)
             {
               const int tmp_col_index = col_index*step_size + map_col;
               const int tmp_row_index = row_index*step_size + map_row;
@@ -205,14 +205,14 @@ detectTemplates (std::vector<QuantizableModality*> & modalities, std::vector<LIN
       const QuantizedMultiModFeature & feature = templates_[template_index].features[feature_index];
 
       //feature.modality_index;
-      for (int bin_index = 0; bin_index < 8; ++bin_index)
+      for (size_t bin_index = 0; bin_index < 8; ++bin_index)
       {
         if ((feature.quantized_value & (0x1<<bin_index)) != 0)
         {
           max_score += 2;
 
           unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (feature.x, feature.y);
-          for (int mem_index = 0; mem_index < mem_size; ++mem_index)
+          for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
           {
             score_sums[mem_index] += data[mem_index];
           }
@@ -224,7 +224,7 @@ detectTemplates (std::vector<QuantizableModality*> & modalities, std::vector<LIN
     
     int max_value = 0;
     int max_index = 0;
-    for (int mem_index = 0; mem_index < mem_size; ++mem_index)
+    for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
     {
       if (score_sums[mem_index] > max_value) 
       {
@@ -259,7 +259,7 @@ detectTemplates (std::vector<QuantizableModality*> & modalities, std::vector<LIN
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::LINEMOD::
-saveTemplates (const char* file_name) const
+saveTemplates (const char * file_name) const
 {
   std::ofstream file_stream;
   file_stream.open (file_name, std::ofstream::out | std::ofstream::binary);
@@ -272,7 +272,7 @@ saveTemplates (const char* file_name) const
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::LINEMOD::
-loadTemplates (const char* file_name)
+loadTemplates (const char * file_name)
 {
   std::ifstream file_stream;
   file_stream.open (file_name, std::ofstream::in | std::ofstream::binary);
@@ -304,7 +304,5 @@ deserialize (std::istream & stream)
   read (stream, nr_templates);
   templates_.resize (nr_templates);
   for (int template_index = 0; template_index < nr_templates; ++template_index)
-  {
     templates_[template_index].deserialize (stream);
-  }
 }

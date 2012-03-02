@@ -73,7 +73,7 @@ namespace pcl
       }
 
       void 
-      resize (size_t width, size_t height)
+      resize (const size_t width, const size_t height)
       {
         data_.resize (width*height);
         width_ = width;
@@ -81,13 +81,13 @@ namespace pcl
       }
 
       inline float & 
-      operator() (size_t col_index, size_t row_index)
+      operator() (const size_t col_index, const size_t row_index)
       {
         return (data_[row_index*width_ + col_index]);
       }
 
       inline const float & 
-      operator() (size_t col_index, size_t row_index) const
+      operator() (const size_t col_index, const size_t row_index) const
       {
         return (data_[row_index*width_ + col_index]);
       }
@@ -363,8 +363,8 @@ pcl::SurfaceNormalModality<PointInT>::processInputData ()
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
 pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
-                                                       size_t nr_features,
-                                                       size_t modality_index,
+                                                       const size_t nr_features,
+                                                       const size_t modality_index,
                                                        std::vector<QuantizedMultiModFeature> & features) const
 {
   const size_t width = mask.getWidth ();

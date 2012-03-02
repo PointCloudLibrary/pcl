@@ -139,7 +139,7 @@ namespace pcl
       virtual ~ColorGradientModality ();
   
       inline void
-      setGradientMagnitudeThreshold (float threshold)
+      setGradientMagnitudeThreshold (const float threshold)
       {
         gradient_magnitude_threshold_ = threshold;
       }
@@ -235,7 +235,7 @@ processInputData ()
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void pcl::ColorGradientModality<PointInT>::
-extractFeatures (const MaskMap & mask, size_t nr_features, size_t modality_index,
+extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t modality_index,
                  std::vector<QuantizedMultiModFeature> & features) const
 {
   const size_t width = mask.getWidth ();
@@ -316,7 +316,7 @@ extractFeatures (const MaskMap & mask, size_t nr_features, size_t modality_index
   for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
   {
     QuantizedMultiModFeature feature;
-          
+    
     feature.x = iter2->x;
     feature.y = iter2->y;
     feature.modality_index = modality_index;

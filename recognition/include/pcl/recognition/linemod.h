@@ -187,13 +187,13 @@ namespace pcl
         step_size_ = 0;
       }
 
-      inline unsigned char* 
+      inline unsigned char * 
       operator() (const int col_index, const int row_index)
       {
         return (maps_[row_index*step_size_ + col_index]);
       }
 
-      inline unsigned char* 
+      inline unsigned char * 
       getOffsetMap (const int col_index, const int row_index)
       {
         const size_t map_col = col_index % step_size_;
@@ -246,7 +246,7 @@ namespace pcl
                             const RegionXY & region);
 
       void
-      detectTemplates (std::vector<QuantizableModality*> & modalities,
+      detectTemplates (const std::vector<QuantizableModality*> & modalities,
                        std::vector<LINEMODDetection> & detections) const;
 
       inline const SparseQuantizedMultiModTemplate &
@@ -256,10 +256,10 @@ namespace pcl
       }
 
       void
-      saveTemplates (const char* file_name) const;
+      saveTemplates (const char * file_name) const;
 
       void
-      loadTemplates (const char* file_name);
+      loadTemplates (const char * file_name);
 
       void 
       serialize (std::ostream & stream) const;

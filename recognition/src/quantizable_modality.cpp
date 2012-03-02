@@ -124,12 +124,12 @@ spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, c
 
   output_map.resize (width, height);
 
-  for (int row_index = spreading_size; row_index < height-spreading_size-1; ++row_index)
+  for (size_t row_index = spreading_size; row_index < height-spreading_size-1; ++row_index)
   {
-    for (int col_index = spreading_size; col_index < width-spreading_size-1; ++col_index)
+    for (size_t col_index = spreading_size; col_index < width-spreading_size-1; ++col_index)
     {
       unsigned char value = 0;
-      for (int col_index2 = col_index-spreading_size; col_index2 <= col_index+spreading_size; ++col_index2)
+      for (size_t col_index2 = col_index-spreading_size; col_index2 <= col_index+spreading_size; ++col_index2)
       {
         //if (row_index2 < 0 || row_index2 >= height || col_index2 < 0 || col_index2 >= width) continue;
         value |= input_map (col_index2, row_index);
@@ -138,12 +138,12 @@ spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, c
     }
   }
 
-  for (int row_index = spreading_size; row_index < height-spreading_size-1; ++row_index)
+  for (size_t row_index = spreading_size; row_index < height-spreading_size-1; ++row_index)
   {
-    for (int col_index = spreading_size; col_index < width-spreading_size-1; ++col_index)
+    for (size_t col_index = spreading_size; col_index < width-spreading_size-1; ++col_index)
     {
       unsigned char value = 0;
-      for (int row_index2 = row_index-spreading_size; row_index2 <= row_index+spreading_size; ++row_index2)
+      for (size_t row_index2 = row_index-spreading_size; row_index2 <= row_index+spreading_size; ++row_index2)
       {
         //if (row_index2 < 0 || row_index2 >= height || col_index2 < 0 || col_index2 >= width) continue;
         value |= tmp_map (col_index, row_index2);
