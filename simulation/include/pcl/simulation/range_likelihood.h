@@ -8,6 +8,7 @@
 #include <boost/random/linear_congruential.hpp>
 #include <boost/random/normal_distribution.hpp>
 #include <boost/random/variate_generator.hpp>
+#include <boost/math/distributions/normal.hpp> // for normal_distribution
 
 //#include <math.h>
 #include <Eigen/StdVector>
@@ -92,6 +93,14 @@ namespace pcl
           camera_cx_ = camera_cx_in;
           camera_cy_ = camera_cy_in;
         }
+        
+        /**
+         * Set the cost function to be used - one of 4 hard coded currently
+         */
+        void setCostFunction (int which_cost_function_in){  which_cost_function_ = which_cost_function_in;}
+        void setSigma (double sigma_in){  sigma_ = sigma_in;	}
+        void setFloorProportion (double floor_proportion_in){  floor_proportion_ = floor_proportion_in;}
+        
 
         int getRows () {return rows_;}
         int getCols () {return cols_;}
@@ -115,6 +124,20 @@ namespace pcl
         // Add various types of noise to simulated RGB-D data
         void addNoise ();
         double sampleNormal (double sigma = 1.0);
+	
+        /**
+         * Evaluate the likelihood/score for a set of particles
+         *
+         * @param rows - number of rows to use in the render buffer.
+         * @param cols - number of columns to use in the render buffer.
+         * @param row_height - height of the image for a single particle.
+         * @param col_width  - width of the image for a single particle.
+         * @param reference - input Measurement depth image (raw data)
+	 * @param depth_buffer - input OpenGL produced model depths (lattic array of many views)
+	 * @param scores - output score
+	 * @param depth_field - pointer to array which can store raw likelihood per pixel
+	 * @param do_depth_field - compute depth_field or not
+         */	
         void computeScores (int cols, int rows,
             int col_width, int row_height, float* reference, float* depth_buffer,
             std::vector<float> & scores, float* depth_field, bool do_depth_field);
@@ -152,6 +175,11 @@ namespace pcl
         // everything outside this doesnt appear in depth images
         float z_near_;
         float z_far_;
+	
+	//
+	int which_cost_function_;
+	double floor_proportion_;
+	double sigma_;
     };
 
 

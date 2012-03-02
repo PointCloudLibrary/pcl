@@ -9,7 +9,7 @@
 static boost::minstd_rand generator (27u); // seed
 
 //#define SIMULATION_DEBUG 1
-#define DO_TIMING_PROFILE 1
+#define DO_TIMING_PROFILE 0
 
 
 using namespace std;
@@ -110,6 +110,13 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
 
   z_near_ = 0.7;
   z_far_ = 20.0;
+  
+  which_cost_function_ = 2; // default to commonly used meter based function
+  
+  // default lhood parameters - these should always be set by the user
+  // so might want to add to constructor eventually:
+  sigma_ = 0.1;
+  floor_proportion_ = 0.9; 
 }
 
 pcl::simulation::RangeLikelihood::~RangeLikelihood()
@@ -235,6 +242,148 @@ pcl::simulation::RangeLikelihood::draw_particles(std::vector<Eigen::Isometry3d, 
   }
 }
 
+
+/////////////////////////////////////////////////////////////////
+// Below are 4 previously used cost functions:
+// 0 original scoring method
+float costFunction0(float ref_val,float depth_val){
+  return  (sqr(ref_val - depth_val));
+}
+
+// 1st working cost function:
+// Empirical reverse mapping between depthbuffer and true depth:
+// Version 0: [25 aug 2011]
+// TRUEDEPTH =  1/(1.33 -(DEPTHBUFFER)*1.29)
+//float cost = sqr(ref[col%col_width] - 1/(1.33 -(*depth)*1.29));
+// Version 1: [29 aug 2011] Exact version using correct mappings:
+float costFunction1(float ref_val,float depth_val){
+  float cost = sqr (ref_val - 1/(1.4285 -(depth_val)*1.3788));
+  if (ref_val < 0){ // all images pixels with no range
+    cost =1;
+  }
+  if (cost > 10){ // required to lessen the effect of modelpixel with no range (ie holes in the model)
+    cost =10;
+  }
+  return log (cost);
+}
+
+
+// 1st working likelihood function (by far most commonly used)
+float costFunction2(float ref_val,float depth_val){
+  float min_dist = abs(ref_val - 1/(1.4285 -(depth_val)*1.3788));
+  int lup = (int) ceil (min_dist*100); // has resolution of 0.01m
+  if (lup > 300){ // implicitly this caps the cost if there is a hole in the model
+    lup = 300;
+  }
+  
+  float lhood=1;
+  if (isnan(depth_val)){ // pixels with nan depth - for openNI null points
+    lhood =1; // log(1) = 0 ---> has no effect
+  }else if(ref_val < 0){ // all RGB pixels with no depth - for freenect null points
+    lhood =1; // log(1) = 0 ---> has no effect
+  }else{
+    lhood = normal_sigma0x5_normal1x0_range0to3_step0x01[lup];
+    // add a ground floor:
+    // increasing this will mean that the likelihood is less peaked
+    // but you need more particles to do this...
+    // with ~90particles user 0.999, for example in the quad dataset
+    // ratio of uniform to	normal
+    double ratio = 0.99;//was always 0.99; 
+    double r_min =0; // metres
+    double r_max = 3; // metres
+    lhood = ratio/(r_max -r_min)  + (1-ratio)*lhood ;
+  }
+  return log(lhood);
+}
+
+
+float costFunction3(float ref_val,float depth_val){
+  float log_lhood=0;
+  // log(1) = 0 ---> has no effect
+  if (ref_val < 0){
+    // all images pixels with no range
+  }  else if (ref_val > 7){
+    // ignore long ranges... for now
+  }else{ // working range
+    float min_dist = abs (ref_val - 0.7253/(1.0360 - (depth_val)));
+
+    int lup = (int) ceil (min_dist*100); // has resulution of 0.01m
+    if (lup > 300)
+    { // implicitly this caps the cost if there is a hole in the model
+      lup = 300;
+    }
+    log_lhood= hard_coded_log_lhood[lup];
+  }
+  return  log_lhood;
+}
+
+float costFunction4(float ref_val,float depth_val){
+  float disparity_diff = abs( ( -0.7253/ref_val +1.0360 ) -  depth_val );
+
+  int top_lup = (int) ceil (disparity_diff*300); // has resulution of 0.001m
+  if (top_lup > 300)
+  {
+    top_lup =300;
+  }
+  float top = top_lookup[top_lup];// round( abs(x-mu) *1000+1) );
+
+  // bottom:
+  //bottom = bottom_lookup(   round(mu*1000+1));
+  int bottom_lup = (int) ceil( (depth_val) *300 ); // has resulution of 0.001m
+  if (bottom_lup > 300){
+    bottom_lup =300;
+  }
+  float bottom = bottom_lookup[bottom_lup];// round( abs(x-mu) *1000+1) );
+
+  float proportion = 0.999;
+  float lhood = proportion + (1-proportion)*(top/bottom);
+
+  // safety fix thats seems to be required due to opengl ayschronizate
+  // ask hordur about this
+  if (bottom == 0){
+    lhood = proportion;
+  }
+
+  if (ref_val< 0){ // all images pixels with no range
+    lhood =1; // log(1) = 0 ---> has no effect
+  }
+  return log(lhood);
+}
+
+
+
+// TODO: WHEN WE'RE HAPPY THIS SHOULD BE "THE" LIKELIHOOD FUNCTION
+// add these global variables into the class
+// abd use sigma and floor_proportion directly from class also
+using boost::math::normal; // typedef provides default type is double.
+normal unit_norm_dist(0,1); // (default mean = zero, and standard deviation = unity)
+double costFunction5(double measured_depth,double model_disp, double sigma, double floor_proportion){
+
+  // NEED TO CONVERT MEASURED TO DISPARITY
+  double measured_disp =  ( -0.7253/measured_depth +1.0360 );
+  
+  // measured_depth = ref_val  [m]
+  // model_disp = depth_val [0-1]
+  // upper and lower bound on depth buffer:
+  double lower_bound =0;
+  double upper_bound =1;
+
+  double gaussian_part = pdf(unit_norm_dist, (measured_disp-model_disp)/sigma)/sigma;
+  double truncation = 1/cdf(unit_norm_dist,(upper_bound-model_disp)/sigma) -   cdf(unit_norm_dist, (lower_bound-model_disp)/sigma);
+	
+  double trunc_gaussian_part = truncation*gaussian_part;
+
+  double lhood= (floor_proportion/(upper_bound-lower_bound) + (1-floor_proportion)*trunc_gaussian_part);
+  if (measured_depth< 0){ // all images pixels with no range
+    lhood =1; // log(1) = 0 ---> has no effect
+  }
+ 
+  
+  return log(lhood);
+}
+
+
+
 void
 pcl::simulation::RangeLikelihood::computeScores (int cols, int rows,
     int col_width, int row_height, float* reference, float* depth_buffer,
@@ -249,172 +398,43 @@ pcl::simulation::RangeLikelihood::computeScores (int cols, int rows,
   // near_range = n = 0.7m   | far_range = f = 20m
   // disparity can be found as a linear function of the depth_buffer (d = [0,1] )
   // disparity =  1/n   - (f-n)*d / (n*f)
-  //
-  // Below we compare range-versus-range using this mapping
+  // Below We compare range-versus-range using this mapping
   //
   // TODO: remove usage of 'depth' and 'depth_buffer_' as variable names as it implies
   // that that is was held by these variables
 
-  // 0 original scoring method
-  // 1 1st working cost function
-  // 2 1st working likelihood function
-  int which_cost_function = 2;
+  // ref[col%col_width] - z/depth value in metres,   0-> ~20
+  // depth_val - contents of depth buffer [0->1]
+  
+  // for row across each image in a row of model images
   for (int row = 0; row < rows*row_height; row++)
   {
-    // for row across each image in a row of model images
     float* ref = reference + col_width*(row % row_height);
-
+    // for each column: across each image in a column of model images
     for (int col=0; col<cols*col_width;col++)
     {
-      // for each column: across each image in a column of model images
-
-      // cout << *depth << ", ";
-      // cout << ref[col%col_width] << ", ";
-      // cout << sqr(ref[col%col_width] - *depth) << ", ";
-      // scores[row/row_height * cols + col/col_width] += sqr(ref[col%col_width]);
-      // scores[row/row_height * cols + col/col_width] += sqr(*depth);
-      // scores[row/row_height * cols + col/col_width] += sqr(ref[col%col_width] - ((*depth++)*19.3 +  0.7) );
-      // cout << (*depth) << ", ";
       float depth_val = (*depth++); // added jan 2012 - check this is not a breaking fix later mfallon
-
-
-      if (which_cost_function == 0)
-      { // Original Cost Function:
-        scores[row/row_height * cols + col/col_width] += sqr (ref[col%col_width] - *depth);
+      float score =0;
+      if (which_cost_function_ == 0){
+        score = costFunction0(ref[col%col_width],depth_val);
+      }else if (which_cost_function_ == 1) { 
+	score = costFunction1(ref[col%col_width],depth_val);
+      }else if (which_cost_function_ == 2){ 
+        score = costFunction2(ref[col%col_width],depth_val);
+      }else if(which_cost_function_==3){
+	score = costFunction3(ref[col%col_width],depth_val);
+      }else if (which_cost_function_ == 4){
+        score = costFunction4(ref[col%col_width],depth_val);
+      }else if (which_cost_function_ == 5){
+	
+	//double sigma = 0.025;
+	//double floor_proportion_ = 0.999;
+        score = costFunction5(ref[col%col_width],depth_val,sigma_,floor_proportion_);	
       }
-      else if (which_cost_function == 1)
-      { // 1st working cost function:
-        // Empirical reverse mapping between depthbuffer and true depth:
-        // Version 0: [25 aug 2011]
-        // TRUEDEPTH =  1/(1.33 -(DEPTHBUFFER)*1.29)
-        //float cost = sqr(ref[col%col_width] - 1/(1.33 -(*depth)*1.29));
-
-        // Version 1: [29 aug 2011] Exact version using correct mappings:
-        float cost = sqr (ref[col%col_width] - 1/(1.4285 -(depth_val)*1.3788));
-
-        if (ref[col%col_width] < 0)
-        { // all images pixels with no range
-          cost =1;
-        }
-        if (cost > 10)
-        { // required to lessen the effect of modelpixel with no range (ie holes in the model)
-          cost =10;
-        }
-        if (do_depth_field)
-        {// do you want the image output to LCM?
-          depth_field[row*cols*col_width + col] =cost ;// (*depth);
-        }
-        scores[row/row_height * cols + col/col_width] += log (cost);
+      scores[row/row_height * cols + col/col_width] += score;
+      if (do_depth_field){// do you want the cost image as output?
+	  depth_field[row*cols*col_width + col] =  score;
       }
-      else if (which_cost_function == 2)
-      { // 1st likelihood version:
-        float min_dist = abs(ref[col%col_width] - 1/(1.4285 -(depth_val)*1.3788));
-
-        int lup = (int) ceil (min_dist*100); // has resolution of 0.01m
-        if (lup > 300)
-        { // implicitly this caps the cost if there is a hole in the model
-          lup = 300;
-        }
-        
-	float lhood=1;
-	if (isnan(depth_val)){ // pixels with nan depth 
-	  lhood =1; // log(1) = 0 ---> has no effect
-	  
-	}else if(ref[col%col_width] < 0){ // all RGB pixels with no depth
-	  lhood =1; // log(1) = 0 ---> has no effect
-	}else{
-	  lhood = normal_sigma0x5_normal1x0_range0to3_step0x01[lup];
-          // add a ground floor:
-          // increasing this will mean that the likelihood is less peaked
-          // but you need more particles to do this...
-          // with ~90particles user 0.999, for example in the quad dataset
-   	  // ratio of uniform to	normal
-	  double ratio = 0.99;//was always 0.99; 
-          double r_min =0; // metres
-          double r_max = 3; // metres
-          lhood = ratio/(r_max -r_min)  + (1-ratio)*lhood ;
-        }
-
-	if (do_depth_field){// do you want the image output to LCM?
-	  //depth_field[row*cols*col_width + col] =  lhood ;// (*depth);
-	  depth_field[row*cols*col_width + col] =  depth_val;//lhood ;// (*depth);
-	  //depth_field[row*cols*col_width + col] =  lup;//lhood ;// (*depth);
-	}
-        scores[row/row_height * cols + col/col_width] += log (lhood);
-      }
-      else if(which_cost_function==3)
-      {
-        float log_lhood=0;
-        // log(1) = 0 ---> has no effect
-        if (ref[col%col_width] < 0)
-        {
-          // all images pixels with no range
-        }
-        else if (ref[col%col_width] > 7)
-        {
-          // ignore long ranges... for now
-        }
-        else
-        { // working range
-          float min_dist = abs (ref[col%col_width] - 0.7253/(1.0360 - (depth_val)));
-
-          int lup = (int) ceil (min_dist*100); // has resulution of 0.01m
-          if (lup > 300)
-          { // implicitly this caps the cost if there is a hole in the model
-            lup = 300;
-          }
-          log_lhood= hard_coded_log_lhood[lup];
-
-        }
-        if (do_depth_field)
-        {// do you want the image output to LCM?
-            depth_field[row*cols*col_width + col] = exp (log_lhood) ;// (*depth);
-        }
-        scores[row/row_height * cols + col/col_width] += log_lhood;
-      }
-      else if (which_cost_function == 4)
-      {
-        float disparity_diff = abs( ( -0.7253/ref[col%col_width] +1.0360 ) -  depth_val );
-
-        int top_lup = (int) ceil (disparity_diff*300); // has resulution of 0.001m
-        if (top_lup > 300)
-        {
-          top_lup =300;
-        }
-        float top = top_lookup[top_lup];// round( abs(x-mu) *1000+1) );
-
-        // bottom:
-        //bottom = bottom_lookup(   round(mu*1000+1));
-        int bottom_lup = (int) ceil( (depth_val) *300 ); // has resulution of 0.001m
-        if (bottom_lup > 300)
-        {
-          bottom_lup =300;
-        }
-        float bottom = bottom_lookup[bottom_lup];// round( abs(x-mu) *1000+1) );
-
-        float proportion = 0.999;
-
-        float lhood = proportion + (1-proportion)*(top/bottom);
-
-        // safety fix thats seems to be required due to opengl ayschronizate
-        // ask hordur about this
-        if (bottom == 0)
-        {
-          lhood = proportion;
-        }
-
-        if (ref[col%col_width] < 0)
-        { // all images pixels with no range
-          lhood =1; // log(1) = 0 ---> has no effect
-        }
-        if (do_depth_field)
-        {// do you want the image output to LCM?
-          depth_field[row*cols*col_width + col] = lhood ;// (*depth);
-        }
-        scores[row/row_height * cols + col/col_width] += log (lhood);
-      }
-
-    //was pre-jan 2012: *depth++;
     }
   }
 }
@@ -624,6 +644,7 @@ pcl::simulation::RangeLikelihoodGLSL::RangeLikelihoodGLSL(int rows,
   use_color_ (true),
   sum_reduce_ (cols * col_width, rows * row_height, max_level (col_width, row_height))
 {
+  
   int height = rows * row_height;
   int width = cols * col_width;
 
@@ -729,7 +750,7 @@ pcl::simulation::RangeLikelihoodGLSL::RangeLikelihoodGLSL(int rows,
     std::cout << "Failed loading vertex shader" << std::endl;
     exit (-1);
   }
-
+  
   if (!likelihood_program_->add_shader_file ("compute_score.frag", gllib::FRAGMENT))
   {
     std::cout << "Failed loading fragment shader" << std::endl;
