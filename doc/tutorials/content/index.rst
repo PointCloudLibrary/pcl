@@ -654,6 +654,21 @@ Registration
      .. |re_3| image:: images/iterative_closest_point.gif
                :height: 100px
 
+  * :ref:`normal_distributions_transform`
+
+     ======  ======
+     |re_4|  Title: **How to use the Normal Distributions Transform algorithm**
+
+             Author: *Brian Okorn*
+
+             Compatibility: > PCL 1.5
+
+             This document demonstrates using the Normal Distributions Transform algorithm to register two large point clouds.
+     ======  ======
+
+     .. |re_4| image:: images/normal_distributions_transform.gif
+               :height: 100px
+
 .. _sample_consensus:
 
 Sample Consensus

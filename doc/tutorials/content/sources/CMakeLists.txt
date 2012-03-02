@@ -45,6 +45,7 @@ foreach(subdir
           template_alignment
           vfh_recognition
           voxel_grid
+          normal_distributions_transform
           # Additional/Complex tutorials presented at PCL events
           iros2011
           iccv2011
