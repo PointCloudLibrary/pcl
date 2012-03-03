@@ -71,7 +71,7 @@ uint16_t t_gamma[2048];
 
 Scene::Ptr scene_;
 Camera::Ptr camera_;
-RangeLikelihoodGLSL::Ptr range_likelihood_;
+RangeLikelihood::Ptr range_likelihood_;
 
 int window_width_;
 int window_height_;
@@ -213,9 +213,7 @@ void display ()
     //camera.move(0.0,i*0.02,0.0);
     poses.push_back (camera.pose ());
   }
-  float* depth_field = NULL;
-  bool do_depth_field = false;
-  range_likelihood_->computeLikelihoods (reference, poses, scores, depth_field, do_depth_field);
+  range_likelihood_->computeLikelihoods (reference, poses, scores);
   std::cout << "score: ";
   for (size_t i = 0; i<scores.size (); ++i)
   {
@@ -232,7 +230,6 @@ void display ()
        << std::endl;
 
   delete [] reference;
-  delete [] depth_field;
 
   glDrawBuffer (GL_BACK);
   glReadBuffer (GL_BACK);
@@ -500,11 +497,8 @@ main (int argc, char** argv)
   camera_ = Camera::Ptr (new Camera ());
   scene_ = Scene::Ptr (new Scene ());
 
-  //range_likelihood_ = RangeLikelihoodGLSL::Ptr(new RangeLikelihoodGLSL(1, 1, height, width, scene_, 0));
-
-  range_likelihood_ = RangeLikelihoodGLSL::Ptr (new RangeLikelihoodGLSL (2, 2, height/2, width/2, scene_, 0));
-  // range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(10, 10, 96, 96, scene_));
-  // range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, 480, 640, scene_));
+  //range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, height, width, scene_));
+  range_likelihood_ = RangeLikelihood::Ptr (new RangeLikelihood (2, 2, height/2, width/2, scene_));
 
   // Actually corresponds to default parameters:
   range_likelihood_->setCameraIntrinsicsParameters (640,480, 576.09757860,

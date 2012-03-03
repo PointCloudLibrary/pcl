@@ -13,8 +13,6 @@ void Camera::move(double vx, double vy, double vz)
   x_ = pose_.translation().x();
   y_ = pose_.translation().y();
   z_ = pose_.translation().z();
-  
-  
 }
 
 void Camera::update_pose() {

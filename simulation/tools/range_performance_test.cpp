@@ -53,9 +53,9 @@ uint16_t t_gamma[2048];
 
 Scene::Ptr scene_;
 Camera::Ptr camera_;
-RangeLikelihoodGLSL::Ptr range_likelihood_;
+RangeLikelihood::Ptr range_likelihood_;
 // This is only used for displaying
-RangeLikelihoodGLSL::Ptr range_likelihood_visualization_;
+RangeLikelihood::Ptr range_likelihood_visualization_;
 
 int cols_;
 int rows_;
@@ -182,8 +182,8 @@ display ()
   {
     for (int j = 0; j < range_likelihood_->getColWidth (); ++j)
     {
-      reference[n++] = depth_buffer[ (i + range_likelihood_->getRows () / 2) * range_likelihood_->getWidth ()
-                                    + j + range_likelihood_->getCols () / 2];
+      reference[n++] = depth_buffer[ (i + range_likelihood_->getRowHeight () * range_likelihood_->getRows () / 2) * range_likelihood_->getWidth ()
+                                    + j + range_likelihood_->getColWidth () * range_likelihood_->getCols () / 2];
     }
   }
 
@@ -200,50 +200,11 @@ display ()
 
   std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses;
   std::vector<float> scores;
-  float* depth_field = NULL;
-  bool do_depth_field = false;
 
   // Render a single pose for visualization
   poses.clear ();
   poses.push_back (camera_->pose ());
-  range_likelihood_visualization_->computeLikelihoods (reference_vis, poses, scores, depth_field, do_depth_field);
-
-  poses.clear ();
-  for (int i = 0; i < range_likelihood_->getRows (); ++i)
-  {
-    for (int j = 0; j < range_likelihood_->getCols (); ++j)
-    {
-      Camera camera (*camera_);
-      camera.move ((j - range_likelihood_->getCols () / 2) * 0.1,
-                   (i - range_likelihood_->getRows () / 2) * 0.1, 0.0);
-      poses.push_back (camera.pose ());
-    }
-  }
-
-  TicToc tt;
-  tt.tic();
-  range_likelihood_->computeLikelihoods (reference, poses, scores, depth_field, do_depth_field);
-  tt.toc();
-  tt.toc_print();
-
-  std::cout << "score: ";
-  for (size_t i = 0; i < scores.size (); ++i)
-  {
-    std::cout << " " << scores[i];
-  }
-  std::cout << std::endl;
-
-  std::cout << "camera: " << camera_->x ()
-       << " " << camera_->y ()
-       << " " << camera_->z ()
-       << " " << camera_->roll ()
-       << " " << camera_->pitch ()
-       << " " << camera_->yaw ()
-       << std::endl;
-
-  delete [] reference_vis;
-  delete [] reference;
-  delete [] depth_field;
+  range_likelihood_visualization_->computeLikelihoods (reference_vis, poses, scores);
 
   glDrawBuffer (GL_BACK);
   glReadBuffer (GL_BACK);
@@ -277,9 +238,86 @@ display ()
   display_depth_image (range_likelihood_visualization_->getDepthBuffer (),
                        range_likelihood_visualization_->getWidth (), range_likelihood_visualization_->getHeight ());
 
+
+  poses.clear ();
+  for (int i = 0; i < range_likelihood_->getRows (); ++i)
+  {
+    for (int j = 0; j < range_likelihood_->getCols (); ++j)
+    {
+      Camera camera (*camera_);
+      camera.move ((j - range_likelihood_->getCols () / 2.0) * 0.1,
+                   (i - range_likelihood_->getRows () / 2.0) * 0.1,
+                   0.0);
+      poses.push_back (camera.pose ());
+    }
+  }
+  std::cout << std::endl;
+
+  TicToc tt;
+  tt.tic();
+  range_likelihood_->computeLikelihoods (reference, poses, scores);
+  tt.toc();
+  tt.toc_print();
+
+  if (gllib::get_gl_error () != GL_NO_ERROR)
+  {
+    std::cerr << "GL Error: RangeLikelihood::computeLikelihoods: finished" << std::endl;
+  }
+
+#if 0
+  std::cout << "score: ";
+  for (size_t i = 0; i < scores.size (); ++i)
+  {
+    std::cout << " " << scores[i];
+  }
+  std::cout << std::endl;
+#endif
+
+  std::cout << "camera: " << camera_->x ()
+       << " " << camera_->y ()
+       << " " << camera_->z ()
+       << " " << camera_->roll ()
+       << " " << camera_->pitch ()
+       << " " << camera_->yaw ()
+       << std::endl;
+
+  delete [] reference_vis;
+  delete [] reference;
+
+  if (gllib::get_gl_error () != GL_NO_ERROR)
+  {
+    std::cerr << "GL Error: before buffers" << std::endl;
+  }
+
+  glBindFramebuffer (GL_FRAMEBUFFER, 0);
+  glDrawBuffer (GL_BACK);
+  glReadBuffer (GL_BACK);
+
+  if (gllib::get_gl_error () != GL_NO_ERROR)
+  {
+    std::cerr << "GL Error: after buffers" << std::endl;
+  }
+
+
+  glMatrixMode (GL_PROJECTION);
+  glLoadIdentity ();
+  glMatrixMode (GL_MODELVIEW);
+  glLoadIdentity ();
+
+  if (gllib::get_gl_error () != GL_NO_ERROR)
+  {
+    std::cerr << "GL Error: before viewport" << std::endl;
+  }
+
   // Draw the score image for the particles
   glViewport (0, range_likelihood_visualization_->getHeight (),
               range_likelihood_visualization_->getWidth (), range_likelihood_visualization_->getHeight ());
+
+
+  if (gllib::get_gl_error () != GL_NO_ERROR)
+  {
+    std::cerr << "GL Error: after viewport" << std::endl;
+  }
 
   display_score_image (range_likelihood_->getScoreBuffer ());
 
@@ -296,15 +334,8 @@ display ()
 void
 on_keyboard (unsigned char key, int x, int y)
 {
-//  double speed = 0.1;
-
   if (key == 27)
     exit (0);
-//  else if (key == 'w' || key == 'W')
-//    camera_->move (speed,0,0);
-  
-  // Use glutGetModifiers for modifiers
-  // GLUT_ACTIVE_SHIFT, GLUT_ACTIVE_CTRL, GLUT_ACTIVE_ALT
 }
 
 // Handle special keys, e.g. F1, F2, ...
@@ -319,52 +350,6 @@ on_special (int key, int x, int y)
   }
 }
 
-void
-on_reshape (int w, int h)
-{
-  // Window size changed
-  window_width_ = w;
-  window_height_ = h;
-}
-
-void
-on_mouse (int button, int state, int x, int y)
-{
-  // button:
-  // GLUT_LEFT_BUTTON
-  // GLUT_MIDDLE_BUTTON
-  // GLUT_RIGHT_BUTTON
-  //
-  // state:
-  // GLUT_UP
-  // GLUT_DOWN
-}
-
-void
-on_motion (int x, int y)
-{
-}
-
-void
-on_passive_motion (int x, int y)
-{
-//  if (paused_) return;
-
-//  double pitch = -(0.5-(double)y/window_height_)*M_PI * 4; // in window coordinates positive y-axis is down
-//  double yaw =    (0.5-(double)x/window_width_)*M_PI*2 * 4;
-
-//  camera_->set_pitch (pitch);
-//  camera_->set_yaw (yaw);
-}
-
-void
-on_entry (int state)
-{
-  // state:
-  // GLUT_LEFT
-  // GLUT_ENTERED
-}
-
 // Read in a 3D model
 void
 loadPolygonMeshModel (char* polygon_file)
@@ -373,10 +358,7 @@ loadPolygonMeshModel (char* polygon_file)
   pcl::io::loadPolygonFile (polygon_file, mesh);
   pcl::PolygonMesh::Ptr cloud (new pcl::PolygonMesh (mesh));
   
-  // Not sure if PolygonMesh assumes triangles if to
-  // TODO: Ask a developer
   TriangleMeshModel::Ptr model = TriangleMeshModel::Ptr (new TriangleMeshModel (cloud));
-  //PolygonMeshModel::Ptr model = PolygonMeshModel::Ptr(new PolygonMeshModel(GL_POLYGON,cloud));
   scene_->add (model);
   
   std::cout << "Just read " << polygon_file << std::endl;
@@ -405,16 +387,10 @@ main (int argc, char** argv)
   window_width_ = width * 2;
   window_height_ = height * 2;
 
-//  int cols = 3;
-//  int rows = 3;
-//  int col_width = 640;
-//  int row_height = 480;
-
-  int cols = 10;
-  int rows = 10;
+  int cols = 30;
+  int rows = 30;
   int col_width = 20;
   int row_height = 15;
-  
   
   print_info ("Range likelihood performance tests using pcl::simulation. For more information, use: %s -h\n", argv[0]);
 
@@ -454,35 +430,34 @@ main (int argc, char** argv)
     exit (1);
   }
 
+  std::cout << "GL_MAX_VIEWPORTS: " << GL_MAX_VIEWPORTS << std::endl;
+
   camera_ = Camera::Ptr (new Camera ());
   scene_ = Scene::Ptr (new Scene ());
 
-  range_likelihood_visualization_ = RangeLikelihoodGLSL::Ptr (new RangeLikelihoodGLSL (1, 1, height, width, scene_, 0));
-  range_likelihood_ = RangeLikelihoodGLSL::Ptr (new RangeLikelihoodGLSL (rows, cols, row_height, col_width, scene_, 0));
+  range_likelihood_visualization_ = RangeLikelihood::Ptr (new RangeLikelihood (1, 1, height, width, scene_));
+  range_likelihood_ = RangeLikelihood::Ptr (new RangeLikelihood (rows, cols, row_height, col_width, scene_));
 
   // Actually corresponds to default parameters:
-  range_likelihood_visualization_->setCameraIntrinsicsParameters (640,480, 576.09757860,
+  range_likelihood_visualization_->setCameraIntrinsicsParameters (640, 480, 576.09757860,
             576.09757860, 321.06398107, 242.97676897);
   range_likelihood_visualization_->setComputeOnCPU (false);
   range_likelihood_visualization_->setSumOnCPU (false);
+  range_likelihood_visualization_->setUseColor (true);
 
-  range_likelihood_->setCameraIntrinsicsParameters (640,480, 576.09757860,
+  range_likelihood_->setCameraIntrinsicsParameters (640, 480, 576.09757860,
             576.09757860, 321.06398107, 242.97676897);
   range_likelihood_->setComputeOnCPU (false);
-  range_likelihood_->setSumOnCPU (true);
+  range_likelihood_->setSumOnCPU (false);
+  range_likelihood_->setUseColor (false);
 
   textured_quad_ = TexturedQuad::Ptr (new TexturedQuad (range_likelihood_->getWidth (),
                                                         range_likelihood_->getHeight ()));
 
   initialize (argc, argv);
 
-  glutReshapeFunc (on_reshape);
   glutDisplayFunc (display);
   glutIdleFunc (display);
   glutKeyboardFunc (on_keyboard);
-  glutMouseFunc (on_mouse);
-  glutMotionFunc (on_motion);
-  glutPassiveMotionFunc (on_passive_motion);
-  glutEntryFunc (on_entry);
   glutMainLoop ();
 }

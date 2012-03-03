@@ -103,14 +103,9 @@ namespace pcl
 	      << ", " << this_pose.translation().z() << "\n";
 
       }
-      
-      
-      float* depth_field =NULL;
-      bool do_depth_field =false;
-      range_likelihood_->computeLikelihoods(reference, poses, scores,depth_field,do_depth_field);
-    //  range_likelihood_->compute_likelihoods(reference, poses, scores);
+
+      range_likelihood_->computeLikelihoods(reference, poses, scores);
       delete [] reference;
-      delete [] depth_field;
 
       std::cout << "score: ";
       for (size_t i=0; i<scores.size(); ++i) {
@@ -262,9 +257,7 @@ namespace pcl
       camera_ = Camera::Ptr(new Camera());
       
       prop_->scene_ = Scene::Ptr(new Scene());
-      prop_->range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, 480, 640, prop_->scene_, 0));
-      //  range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(10, 10, 96, 96, scene_));
-      //range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, 480, 640, scene_));
+      prop_->range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, 480, 640, prop_->scene_));
       
       // Actually corresponds to default parameters:
       prop_->range_likelihood_->setCameraIntrinsicsParameters(640,480,576.09757860,

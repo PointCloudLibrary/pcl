@@ -11,7 +11,6 @@ static boost::minstd_rand generator (27u); // seed
 //#define SIMULATION_DEBUG 1
 #define DO_TIMING_PROFILE 0
 
-
 using namespace std;
 
 // 301 values, 0.0 uniform  1.0 normal. properly truncated/normalized
@@ -89,8 +88,67 @@ float bottom_lookup[]={0.5, 0.55304, 0.60514, 0.65542, 0.7031, 0.74751, 0.78814,
 
 using namespace pcl::simulation;
 
-pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_height, int col_width, Scene::Ptr scene, int x_offset) :
-      scene_(scene), rows_(rows), cols_(cols), row_height_(row_height), col_width_(col_width), x_offset_(x_offset)
+// Finds the maximum level n so a and b are still
+// divisible by 2^n
+int
+max_level (int a, int b)
+{
+  int level = 0;
+  while (true)
+  {
+    if (a%2 || b%2) return level;
+    a = a / 2;
+    b = b / 2;
+    level++;
+  }
+}
+
+// display_tic_toc: a helper function which accepts a set of
+// timestamps and displays the elapsed time between them as
+// a fraction and time used [for profiling]
+void
+display_tic_toc (vector<double> &tic_toc,const string &fun_name)
+{
+  int tic_toc_size = tic_toc.size ();
+
+  double percent_tic_toc_last = 0;
+  double dtime = ((double) (tic_toc[tic_toc_size-1] - tic_toc[0]));
+  cout << "fraction_" << fun_name << ",";
+  for (int i = 0; i < tic_toc_size; i++)
+  {
+    double percent_tic_toc = (double) (tic_toc[i] - tic_toc[0])/(tic_toc[tic_toc_size-1] - tic_toc[0]);
+    cout <<  percent_tic_toc - percent_tic_toc_last << ", ";
+    percent_tic_toc_last = percent_tic_toc;
+  }
+  cout << "\ntime_" << fun_name << ",";
+  double time_tic_toc_last = 0;
+  for (int i=0; i < tic_toc_size;i++)
+  {
+    double percent_tic_toc = (double) (tic_toc[i] - tic_toc[0])/(tic_toc[tic_toc_size-1] - tic_toc[0]);
+    cout <<  percent_tic_toc*dtime - time_tic_toc_last << ", ";
+    time_tic_toc_last = percent_tic_toc*dtime;
+  }
+  cout << "\ntotal_time_" << fun_name << " " << dtime << "\n";
+}
+
+pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_height, int col_width, Scene::Ptr scene) :
+      scene_(scene), rows_(rows), cols_(cols), row_height_(row_height), col_width_(col_width),
+      depth_buffer_dirty_(true),
+      color_buffer_dirty_(true),
+      score_buffer_dirty_(true),
+      fbo_ (0),
+      depth_render_buffer_ (0),
+      color_render_buffer_ (0),
+      depth_texture_ (0),
+      score_texture_ (0),
+      score_summarized_texture_ (0),
+      sensor_texture_ (0),
+      likelihood_texture_ (0),
+      compute_likelihood_on_cpu_ (false),
+      aggregate_on_cpu_ (false),
+      use_instancing_ (false),
+      use_color_ (true),
+      sum_reduce_ (cols * col_width, rows * row_height, max_level (col_width, row_height))
 {
   height_ = rows_ * row_height;
   width_ = cols_ * col_width;
@@ -117,12 +175,157 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
   // so might want to add to constructor eventually:
   sigma_ = 0.1;
   floor_proportion_ = 0.9; 
+
+  int height = rows * row_height;
+  int width = cols * col_width;
+
+  // For now we only support a limited size texture
+  assert (height >0 && height <= 8192 && width > 0 && width <= 8192);
+  // throw std::runtime_error "
+
+  // Allocate framebuffer
+  glGenRenderbuffers (1, &depth_render_buffer_);
+  glBindRenderbuffer (GL_RENDERBUFFER, depth_render_buffer_);
+  glRenderbufferStorage (GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, width, height);
+
+  glGenRenderbuffers (1, &color_render_buffer_);
+  glBindRenderbuffer (GL_RENDERBUFFER, color_render_buffer_);
+  glRenderbufferStorage (GL_RENDERBUFFER, GL_RGB8UI, width, height);
+
+  // Setup texture to store depth image
+  glGenTextures (1, &depth_texture_);
+  glBindTexture (GL_TEXTURE_2D, depth_texture_);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+  glBindTexture (GL_TEXTURE_2D, 0);
+
+  glGenTextures (1, &color_texture_);
+  glBindTexture (GL_TEXTURE_2D, color_texture_);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+  glBindTexture (GL_TEXTURE_2D, 0);
+
+  // Setup texture for incoming image
+  glGenTextures (1, &sensor_texture_);
+  glBindTexture (GL_TEXTURE_2D, sensor_texture_);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_R32F, col_width, row_height, 0, GL_RED, GL_FLOAT, NULL);
+  glBindTexture (GL_TEXTURE_2D, 0);
+
+  // Texture for to score on each pixel
+  glGenTextures (1, &score_texture_);
+  glBindTexture (GL_TEXTURE_2D, score_texture_);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_R32F, width_, height_, 0, GL_RED, GL_FLOAT, NULL);
+  glBindTexture (GL_TEXTURE_2D, 0);
+
+  // Setup texture for likelihood function
+  // size of likelihood texture
+  int likelihood_size = 301;
+  glActiveTexture (GL_TEXTURE2);
+  glGenTextures (1, &likelihood_texture_);
+  glBindTexture (GL_TEXTURE_2D, likelihood_texture_);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_R32F, likelihood_size, 1, 0, GL_RED, GL_FLOAT, normal_sigma0x5_normal1x0_range0to3_step0x01);
+  glBindTexture (GL_TEXTURE_2D, 0);
+
+  // Setup the framebuffer object for rendering
+  glGenFramebuffers (1, &fbo_);
+  glBindFramebuffer (GL_FRAMEBUFFER, fbo_);
+  glFramebufferTexture2D (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth_texture_, 0);
+  glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_texture_, 0);
+
+  if (gllib::get_gl_error() != GL_NO_ERROR)
+  {
+    std::cerr << "RangeLikelihoodGLSL::RangeLikelihoodGLSL: Failed initializing OpenGL buffers" << std::endl;
+    exit(-1);
+  }
+
+  glGenFramebuffers (1, &score_fbo_);
+  glBindFramebuffer (GL_FRAMEBUFFER, score_fbo_);
+  glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0);
+  glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, score_texture_, 0);
+
+  // Load shader
+  likelihood_program_ = gllib::Program::Ptr (new gllib::Program ());
+  // TODO: to remove file dependency include the shader source in the binary
+  if (!likelihood_program_->add_shader_file ("compute_score.vert", gllib::VERTEX))
+  {
+    std::cout << "Failed loading vertex shader" << std::endl;
+    exit (-1);
+  }
+
+  if (!likelihood_program_->add_shader_file ("compute_score.frag", gllib::FRAGMENT))
+  {
+    std::cout << "Failed loading fragment shader" << std::endl;
+    exit (-1);
+  }
+
+  likelihood_program_->link ();
+
+  vertices_.push_back (Eigen::Vector3f (-1.0,  1.0, 0.0));
+  vertices_.push_back (Eigen::Vector3f ( 1.0,  1.0, 0.0));
+  vertices_.push_back (Eigen::Vector3f ( 1.0, -1.0, 0.0));
+  vertices_.push_back (Eigen::Vector3f (-1.0, -1.0, 0.0));
+
+  glGenBuffers (1, &quad_vbo_);
+  glBindBuffer (GL_ARRAY_BUFFER, quad_vbo_);
+  glBufferData (GL_ARRAY_BUFFER, sizeof (Eigen::Vector3f) * vertices_.size (), &(vertices_[0]), GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  gllib::get_gl_error ();
+
+  // Go back to the default pipeline
+  glUseProgram (0);
+
+  score_buffer_ = new float[width_*height_];
+
 }
 
 pcl::simulation::RangeLikelihood::~RangeLikelihood()
 {
+  glDeleteBuffers (1, &quad_vbo_);
+  glDeleteTextures (1, &depth_texture_);
+  glDeleteTextures (1, &color_texture_);
+  glDeleteTextures (1, &score_texture_);
+  glDeleteTextures (1, &score_summarized_texture_);
+  glDeleteTextures (1, &sensor_texture_);
+  glDeleteTextures (1, &likelihood_texture_);
+  glDeleteFramebuffers (1, &fbo_);
+  glDeleteFramebuffers (1, &score_fbo_);
+  glDeleteRenderbuffers (1, &depth_render_buffer_);
+  glDeleteRenderbuffers (1, &color_render_buffer_);
+
   delete [] depth_buffer_;
   delete [] color_buffer_;
+  delete [] score_buffer_;
 }
 
 double
@@ -160,46 +363,6 @@ pcl::simulation::RangeLikelihood::setup_projection_matrix ()
 }
 
 void
-pcl::simulation::RangeLikelihood::computeLikelihoods(float* reference,
-  std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses, std::vector<float> & scores,
-  float* depth_field, bool do_depth_field)
-{
-  glPushAttrib (GL_ALL_ATTRIB_BITS);
-  glEnable (GL_COLOR_MATERIAL);
-  glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
-  glClearDepth (1.0);
-  glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  // We do not need the color. Though it doesn't seem to affect the performance.
-  //glClear(GL_DEPTH_BUFFER_BIT);
-  //glColorMask(false, false, false, false);
-
-  // Setup projection matrix
-  setup_projection_matrix ();
-
-  // camera view
-  glMatrixMode (GL_MODELVIEW);
-  glLoadIdentity ();
-
-  glEnable (GL_DEPTH_TEST);
-  glDepthMask (GL_TRUE);
-  glCullFace (GL_FRONT);
-  draw_particles (poses);
-
-  glReadBuffer (GL_BACK);
-  glFlush ();
-  glReadPixels (x_offset_, 0, width_, height_, GL_DEPTH_COMPONENT, GL_FLOAT, depth_buffer_);
-  glReadPixels (x_offset_, 0, width_, height_, GL_RGB, GL_UNSIGNED_BYTE, color_buffer_);
-
-  scores.resize (cols_*rows_);
-
-  computeScores (cols_, rows_, col_width_, row_height_,
-                  reference, depth_buffer_, scores, depth_field,do_depth_field);
-
-  glPopAttrib ();
-}
-
-void
 pcl::simulation::RangeLikelihood::apply_camera_transform(const Eigen::Isometry3d & pose)
 {
   float T[16];
@@ -222,7 +385,7 @@ pcl::simulation::RangeLikelihood::draw_particles(std::vector<Eigen::Isometry3d, 
       glMatrixMode(GL_MODELVIEW);
       glLoadIdentity();
 
-      glViewport(x_offset_ + j*col_width_, i*row_height_, col_width_, row_height_);
+      glViewport(j*col_width_, i*row_height_, col_width_, row_height_);
 
       // Go from Z-up, X-forward coordinate frame
       // to OpenGL Z-out,Y-up [both Right Handed]
@@ -296,7 +459,6 @@ float costFunction2(float ref_val,float depth_val){
   return log(lhood);
 }
 
-
 float costFunction3(float ref_val,float depth_val){
   float log_lhood=0;
   // log(1) = 0 ---> has no effect
@@ -350,15 +512,13 @@ float costFunction4(float ref_val,float depth_val){
   return log(lhood);
 }
 
-
-
 // TODO: WHEN WE'RE HAPPY THIS SHOULD BE "THE" LIKELIHOOD FUNCTION
 // add these global variables into the class
 // abd use sigma and floor_proportion directly from class also
 using boost::math::normal; // typedef provides default type is double.
 normal unit_norm_dist(0,1); // (default mean = zero, and standard deviation = unity)
-double costFunction5(double measured_depth,double model_disp, double sigma, double floor_proportion){
-
+double costFunction5(double measured_depth,double model_disp, double sigma, double floor_proportion)
+{
   // NEED TO CONVERT MEASURED TO DISPARITY
   double measured_disp =  ( -0.7253/measured_depth +1.0360 );
   
@@ -377,19 +537,15 @@ double costFunction5(double measured_depth,double model_disp, double sigma, doub
   if (measured_depth< 0){ // all images pixels with no range
     lhood =1; // log(1) = 0 ---> has no effect
   }
- 
-  
+
   return log(lhood);
 }
 
-
-
 void
-pcl::simulation::RangeLikelihood::computeScores (int cols, int rows,
-    int col_width, int row_height, float* reference, float* depth_buffer,
-    std::vector<float> & scores, float* depth_field, bool do_depth_field)
+pcl::simulation::RangeLikelihood::computeScores (float* reference,
+                                                 std::vector<float> & scores)
 {
-  float* depth = depth_buffer;
+  const float* depth = getDepthBuffer();
   // Mapping between disparity and range:
   // range or depth = 1/disparity
   //
@@ -407,36 +563,34 @@ pcl::simulation::RangeLikelihood::computeScores (int cols, int rows,
   // depth_val - contents of depth buffer [0->1]
   
   // for row across each image in a row of model images
-  for (int row = 0; row < rows*row_height; row++)
+  for (int row = 0; row < rows_*row_height_; row++)
   {
-    float* ref = reference + col_width*(row % row_height);
+    float* ref = reference + col_width_*(row % row_height_);
     // for each column: across each image in a column of model images
-    for (int col=0; col<cols*col_width;col++)
+    for (int col = 0; col < cols_*col_width_; col++)
     {
       float depth_val = (*depth++); // added jan 2012 - check this is not a breaking fix later mfallon
-      float score =0;
+      float score = 0;
       if (which_cost_function_ == 0){
-        score = costFunction0(ref[col%col_width],depth_val);
+        score = costFunction0(ref[col%col_width_],depth_val);
       }else if (which_cost_function_ == 1) { 
-	score = costFunction1(ref[col%col_width],depth_val);
+	score = costFunction1(ref[col%col_width_],depth_val);
       }else if (which_cost_function_ == 2){ 
-        score = costFunction2(ref[col%col_width],depth_val);
+        score = costFunction2(ref[col%col_width_],depth_val);
       }else if(which_cost_function_==3){
-	score = costFunction3(ref[col%col_width],depth_val);
+	score = costFunction3(ref[col%col_width_],depth_val);
       }else if (which_cost_function_ == 4){
-        score = costFunction4(ref[col%col_width],depth_val);
+        score = costFunction4(ref[col%col_width_],depth_val);
       }else if (which_cost_function_ == 5){
-	
 	//double sigma = 0.025;
 	//double floor_proportion_ = 0.999;
-        score = costFunction5(ref[col%col_width],depth_val,sigma_,floor_proportion_);	
+        score = costFunction5(ref[col%col_width_],depth_val,sigma_,floor_proportion_);
       }
-      scores[row/row_height * cols + col/col_width] += score;
-      if (do_depth_field){// do you want the cost image as output?
-	  depth_field[row*cols*col_width + col] =  score;
-      }
+      scores[row/row_height_ * cols_ + col/col_width_] += score;
+      score_buffer_[row*cols_*col_width_ + col] =  score;
     }
   }
+  score_buffer_dirty_ = false;
 }
 
 void
@@ -580,228 +734,11 @@ pcl::simulation::RangeLikelihood::addNoise ()
   cout << "in add noise\n";
 }
 
-// Finds the maximum level n so a and b are still
-// divisible by 2^n
-int
-max_level(int a, int b)
-{
-  int level = 0;
-  while (true)
-  {
-    if (a%2 || b%2) return level;
-    a = a / 2;
-    b = b / 2;
-    level++;
-  }
-}
-
-
-// display_tic_toc: a helper function which accepts a set of 
-// timestamps and displays the elapsed time between them as 
-// a fraction and time used [for profiling]
-void display_tic_toc(vector<double> &tic_toc,const string &fun_name){
-  int tic_toc_size = tic_toc.size();
-  
-  double percent_tic_toc_last = 0;
-  double dtime = ((double) (tic_toc[tic_toc_size-1] - tic_toc[0]));
-  cout << "fraction_" << fun_name << ",";  
-  for (int i=0; i < tic_toc_size;i++){
-    double percent_tic_toc = (double) (tic_toc[i] - tic_toc[0])/(tic_toc[tic_toc_size-1] - tic_toc[0]);
-    cout <<  percent_tic_toc - percent_tic_toc_last << ", ";
-    percent_tic_toc_last = percent_tic_toc;
-  }
-  cout << "\ntime_" << fun_name << ",";
-  double time_tic_toc_last = 0;
-  for (int i=0; i < tic_toc_size;i++){
-    double percent_tic_toc = (double) (tic_toc[i] - tic_toc[0])/(tic_toc[tic_toc_size-1] - tic_toc[0]);
-    cout <<  percent_tic_toc*dtime - time_tic_toc_last << ", ";
-    time_tic_toc_last = percent_tic_toc*dtime;
-  }
-  cout << "\ntotal_time_" << fun_name << " " << dtime << "\n";  
-  
-}
-
-
-
-// Shader based rangelikelihood
-pcl::simulation::RangeLikelihoodGLSL::RangeLikelihoodGLSL(int rows,
-                                                          int cols,
-                                                          int row_height,
-                                                          int col_width,
-                                                          Scene::Ptr scene,
-                                                          int x_offset) : pcl::simulation::RangeLikelihood (rows, cols, row_height, col_width, scene, x_offset),
-  fbo_ (0),
-  depth_render_buffer_ (0),
-  color_render_buffer_ (0),
-  depth_texture_ (0),
-  score_texture_ (0),
-  score_summarized_texture_ (0),
-  sensor_texture_ (0),
-  likelihood_texture_ (0),
-  compute_likelihood_on_cpu_ (false),
-  aggregate_on_cpu_ (false),
-  use_instancing_ (false),
-  use_color_ (true),
-  sum_reduce_ (cols * col_width, rows * row_height, max_level (col_width, row_height))
-{
-  
-  int height = rows * row_height;
-  int width = cols * col_width;
-
-  // For now we only support a limited size texture
-  assert(height >0 && height <= 8192 && width > 0 && width <= 8192 );
-  // throw std::runtime_error "
-
-  // Allocate framebuffer
-  glGenRenderbuffers (1, &depth_render_buffer_);
-  glBindRenderbuffer (GL_RENDERBUFFER, depth_render_buffer_);
-  glRenderbufferStorage (GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, width, height);
-
-  glGenRenderbuffers (1, &color_render_buffer_);
-  glBindRenderbuffer (GL_RENDERBUFFER, color_render_buffer_);
-  glRenderbufferStorage (GL_RENDERBUFFER, GL_RGB8UI, width, height);
-
-  // Setup texture to store depth image
-  glGenTextures (1, &depth_texture_);
-  glBindTexture (GL_TEXTURE_2D, depth_texture_);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-  glBindTexture (GL_TEXTURE_2D, 0);
-
-  glGenTextures (1, &color_texture_);
-  glBindTexture (GL_TEXTURE_2D, color_texture_);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-  glBindTexture (GL_TEXTURE_2D, 0);
-
-  // Setup texture for incoming image
-  glGenTextures (1, &sensor_texture_);
-  glBindTexture (GL_TEXTURE_2D, sensor_texture_);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_R32F, col_width, row_height, 0, GL_RED, GL_FLOAT, NULL);
-  glBindTexture (GL_TEXTURE_2D, 0);
-
-  // Texture for to score on each pixel
-  glGenTextures (1, &score_texture_);
-  glBindTexture (GL_TEXTURE_2D, score_texture_);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_R32F, width_, height_, 0, GL_RED, GL_FLOAT, NULL);
-  glBindTexture (GL_TEXTURE_2D, 0);
-
-  // Setup texture for likelihood function
-  // size of likelihood texture
-  int likelihood_size = 301;
-  glActiveTexture (GL_TEXTURE2);
-  glGenTextures (1, &likelihood_texture_);
-  glBindTexture (GL_TEXTURE_2D, likelihood_texture_);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_R32F, likelihood_size, 1, 0, GL_RED, GL_FLOAT, normal_sigma0x5_normal1x0_range0to3_step0x01);
-  glBindTexture (GL_TEXTURE_2D, 0);
-
-  // Setup the framebuffer object for rendering
-  glGenFramebuffers (1, &fbo_);
-  glBindFramebuffer (GL_FRAMEBUFFER, fbo_);
-  glFramebufferTexture2D (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth_texture_, 0);
-  glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_texture_, 0);
-
-  if (gllib::get_gl_error() != GL_NO_ERROR)
-  {
-    std::cerr << "RangeLikelihoodGLSL::RangeLikelihoodGLSL: Failed initializing OpenGL buffers" << std::endl;
-    exit(-1);
-  }
-
-  glGenFramebuffers (1, &score_fbo_);
-  glBindFramebuffer (GL_FRAMEBUFFER, score_fbo_);
-  glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0);
-  glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, score_texture_, 0);
-
-  // Load shader
-  likelihood_program_ = gllib::Program::Ptr (new gllib::Program ());
-  // TODO: to remove file dependency include the shader source in the binary
-  if (!likelihood_program_->add_shader_file ("compute_score.vert", gllib::VERTEX))
-  {
-    std::cout << "Failed loading vertex shader" << std::endl;
-    exit (-1);
-  }
-  
-  if (!likelihood_program_->add_shader_file ("compute_score.frag", gllib::FRAGMENT))
-  {
-    std::cout << "Failed loading fragment shader" << std::endl;
-    exit (-1);
-  }
-
-  likelihood_program_->link ();
-
-  vertices_.push_back (Eigen::Vector3f (-1.0,  1.0, 0.0));
-  vertices_.push_back (Eigen::Vector3f ( 1.0,  1.0, 0.0));
-  vertices_.push_back (Eigen::Vector3f ( 1.0, -1.0, 0.0));
-  vertices_.push_back (Eigen::Vector3f (-1.0, -1.0, 0.0));
-
-  glGenBuffers (1, &quad_vbo_);
-  glBindBuffer (GL_ARRAY_BUFFER, quad_vbo_);
-  glBufferData (GL_ARRAY_BUFFER, sizeof (Eigen::Vector3f) * vertices_.size (), &(vertices_[0]), GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-  gllib::get_gl_error ();
-
-  // Go back to the default pipeline
-  glUseProgram (0);
-
-  score_buffer_ = new float[width_*height_];
-}
-
-pcl::simulation::RangeLikelihoodGLSL::~RangeLikelihoodGLSL ()
-{
-  glDeleteBuffers (1, &quad_vbo_);
-  glDeleteTextures (1, &depth_texture_);
-  glDeleteTextures (1, &color_texture_);
-  glDeleteTextures (1, &score_texture_);
-  glDeleteTextures (1, &score_summarized_texture_);
-  glDeleteTextures (1, &sensor_texture_);
-  glDeleteTextures (1, &likelihood_texture_);
-  glDeleteFramebuffers (1, &fbo_);
-  glDeleteFramebuffers (1, &score_fbo_);
-  glDeleteRenderbuffers (1, &depth_render_buffer_);
-  glDeleteRenderbuffers (1, &color_render_buffer_);
-
-  delete [] score_buffer_;
-}
-
 void
-RangeLikelihoodGLSL::computeLikelihoods (float* reference,
-                     std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses,
-                     std::vector<float> & scores,
-                     float *depth_field,
-                     bool do_depth_field )
+RangeLikelihood::computeLikelihoods (float* reference,
+                                     std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses,
+                                     std::vector<float> & scores)
 {
-  
   #if DO_TIMING_PROFILE
     vector<double> tic_toc;
     tic_toc.push_back(getTime());
@@ -809,69 +746,40 @@ RangeLikelihoodGLSL::computeLikelihoods (float* reference,
   
   scores.resize (cols_*rows_);
   std::fill (scores.begin (), scores.end (), 0);
-
-  
   
   // Generate depth image for each particle
   render (poses);
   
   #if DO_TIMING_PROFILE
-    tic_toc.push_back(getTime());
-  #endif  
-  
+    tic_toc.push_back (getTime ());
+  #endif
 
   #if DO_TIMING_PROFILE
-    tic_toc.push_back(getTime());
+    tic_toc.push_back (getTime ());
   #endif  
   // The depth image is now in depth_texture_
 
   // Compute likelihoods
   if (compute_likelihood_on_cpu_)
   {
-    computeScores (cols_, rows_,
-                   col_width_, row_height_,
-                   reference, depth_buffer_,
-                   scores, depth_field, do_depth_field);
+    computeScores (reference, scores);
   }
   else
   {
-    computeScoresShader (cols_, rows_,
-                         col_width_, row_height_,
-                         reference, depth_buffer_,
-                         scores, depth_field, do_depth_field);
+    computeScoresShader (reference, scores);
     
-    //#if DO_TIMING_PROFILE
-    //  tic_toc.push_back(getTime());
-    //#endif  
-
-
-    // The scores are in score_texture_
-    bool get_score_texture = true;
-    if (aggregate_on_cpu_ || get_score_texture)
-    {
-      glActiveTexture (GL_TEXTURE0);
-      glBindTexture (GL_TEXTURE_2D, score_texture_);
-      glGetTexImage (GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, score_buffer_);
-      glBindTexture (GL_TEXTURE_2D, 0);
-    }
-
     // Aggregate results (we do not use GPU to sum cpu scores)
     if (aggregate_on_cpu_)
     {
-      glActiveTexture (GL_TEXTURE0);
-      glBindTexture (GL_TEXTURE_2D, score_texture_);
-      glGetTexImage (GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, score_buffer_);
-      glBindTexture (GL_TEXTURE_2D, 0);
+      const float* score_buffer = getScoreBuffer();
 
       for (int n = 0, row = 0; row < height_; ++row)
       {
         for (int col = 0; col < width_; ++col, ++n)
         {
-          scores[row/row_height_ * cols_ + col/col_width_] += score_buffer_[n];
+          scores[row/row_height_ * cols_ + col/col_width_] += score_buffer[n];
         }
       }
-      glActiveTexture (GL_TEXTURE0);
-      glBindTexture (GL_TEXTURE_2D, 0);
     }
     else
     {
@@ -895,26 +803,19 @@ RangeLikelihoodGLSL::computeLikelihoods (float* reference,
   }
   
   #if DO_TIMING_PROFILE
-    tic_toc.push_back(getTime());
-    display_tic_toc(tic_toc,"range_likelihood");
+    tic_toc.push_back (getTime ());
+    display_tic_toc (tic_toc, "range_likelihood");
   #endif    
 }
 
 // Computes the likelihood scores using a shader
 void
-pcl::simulation::RangeLikelihoodGLSL::computeScoresShader(int cols,
-                                                            int rows,
-                                                            int col_width,
-                                                            int row_height,
-                                                            float* reference,
-                                                            float* depth_buffer,
-                                                            std::vector<float> & scores,
-                                                            float* depth_field,
-                                                            bool do_depth_field)
+pcl::simulation::RangeLikelihood::computeScoresShader(float* reference,
+                                                      std::vector<float> & scores)
 {
   if (gllib::get_gl_error () != GL_NO_ERROR)
   {
-    std::cout << "GL error: RangeLikelihoodGLSL::compute_scores_shader - enter" << std::endl;
+    std::cout << "GL error: RangeLikelihood::compute_scores_shader - enter" << std::endl;
   }
 
 #ifdef SIMULATION_DEBUG
@@ -945,6 +846,7 @@ pcl::simulation::RangeLikelihoodGLSL::computeScoresShader(int cols,
 
   glBindFramebuffer (GL_FRAMEBUFFER, score_fbo_);
   glDrawBuffer (GL_COLOR_ATTACHMENT0);
+
   glReadBuffer (GL_NONE);
   glDisable (GL_DEPTH_TEST);
   glViewport (0, 0, width_, height_);
@@ -955,7 +857,7 @@ pcl::simulation::RangeLikelihoodGLSL::computeScoresShader(int cols,
 
   glActiveTexture (GL_TEXTURE1);
   glBindTexture (GL_TEXTURE_2D, sensor_texture_);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_R32F, col_width, row_height, 0, GL_RED, GL_FLOAT, reference);
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_R32F, col_width_, row_height_, 0, GL_RED, GL_FLOAT, reference);
 
   glActiveTexture (GL_TEXTURE2);
   glBindTexture (GL_TEXTURE_2D, likelihood_texture_);
@@ -965,21 +867,26 @@ pcl::simulation::RangeLikelihoodGLSL::computeScoresShader(int cols,
 
   glBindFramebuffer (GL_FRAMEBUFFER, 0);
 
-  // Unbind all texture that were used
+  // Unbind all textures that were used
   glActiveTexture (GL_TEXTURE0);
   glBindTexture (GL_TEXTURE_2D, 0);
   glActiveTexture (GL_TEXTURE1);
   glBindTexture (GL_TEXTURE_2D, 0);
   glActiveTexture (GL_TEXTURE2);
   glBindTexture (GL_TEXTURE_2D, 0);
+
+  if (gllib::get_gl_error () != GL_NO_ERROR)
+  {
+    std::cout << "GL error: RangeLikelihood::compute_scores_shader - exit" << std::endl;
+  }
 }
 
 void
-RangeLikelihoodGLSL::render (const std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > & poses)
+RangeLikelihood::render (const std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > & poses)
 {
   if (gllib::get_gl_error () != GL_NO_ERROR)
   {
-    std::cerr << "GL Error: RangeLikelihoodGLSL::render" << std::endl;
+    std::cerr << "GL Error: RangeLikelihood::render" << std::endl;
   }
 
   glBindFramebuffer (GL_FRAMEBUFFER, fbo_);
@@ -1004,7 +911,7 @@ RangeLikelihoodGLSL::render (const std::vector<Eigen::Isometry3d, Eigen::aligned
     }
     default:
     {
-      std::cout << "Framebuffer failed" << std::endl;
+      std::cout << "RangeLikelihood::render: Framebuffer failed" << std::endl;
       exit (-1);
     }
   }
@@ -1028,11 +935,71 @@ RangeLikelihoodGLSL::render (const std::vector<Eigen::Isometry3d, Eigen::aligned
 
   glFlush ();
   
-  // Read depth
-  glReadPixels (0, 0, width_, height_, GL_DEPTH_COMPONENT, GL_FLOAT, depth_buffer_);
+  color_buffer_dirty_ = true;
+  depth_buffer_dirty_ = true;
+  score_buffer_dirty_ = true;
+}
 
-  // Read Color
-  glReadBuffer (GL_COLOR_ATTACHMENT0);
-  glReadPixels (0, 0, width_, height_, GL_RGB, GL_UNSIGNED_BYTE, color_buffer_);
-  glBindFramebuffer (GL_FRAMEBUFFER, 0);  
+const float*
+RangeLikelihood::getDepthBuffer ()
+{
+  if (depth_buffer_dirty_)
+  {
+    // Read depth
+    glBindFramebuffer (GL_FRAMEBUFFER, fbo_);
+    glReadPixels (0, 0, width_, height_, GL_DEPTH_COMPONENT, GL_FLOAT, depth_buffer_);
+    glBindFramebuffer (GL_FRAMEBUFFER, 0);
+
+    if (gllib::get_gl_error () != GL_NO_ERROR)
+    {
+      std::cerr << "GL Error: RangeLikelihoodGLSL::getDepthBuffer" << std::endl;
+    }
+
+    depth_buffer_dirty_ = false;
+  }
+  return depth_buffer_;
+}
+
+const uint8_t*
+RangeLikelihood::getColorBuffer ()
+{
+  // It's only possible to read the color buffer if it
+  // was rendered in the first place.
+  assert(use_color_);
+
+  if (color_buffer_dirty_)
+  {
+    // Read Color
+    glBindFramebuffer (GL_FRAMEBUFFER, fbo_);
+    glReadBuffer (GL_COLOR_ATTACHMENT0);
+    glReadPixels (0, 0, width_, height_, GL_RGB, GL_UNSIGNED_BYTE, color_buffer_);
+    glBindFramebuffer (GL_FRAMEBUFFER, 0);
+
+    if (gllib::get_gl_error () != GL_NO_ERROR)
+    {
+      std::cerr << "GL Error: RangeLikelihood::getColorBuffer" << std::endl;
+    }
+
+    color_buffer_dirty_ = false;
+  }
+  return color_buffer_;
+}
+
+// The scores are in score_texture_
+const float*
+RangeLikelihood::getScoreBuffer ()
+{
+  if (score_buffer_dirty_ && !compute_likelihood_on_cpu_)
+  {
+    glActiveTexture (GL_TEXTURE0);
+    glBindTexture (GL_TEXTURE_2D, score_texture_);
+    glGetTexImage (GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, score_buffer_);
+    glBindTexture (GL_TEXTURE_2D, 0);
+    if (gllib::get_gl_error () != GL_NO_ERROR)
+    {
+      std::cerr << "GL Error: RangeLikelihood::getScoreBuffer" << std::endl;
+    }
+    score_buffer_dirty_ = false;
+  }
+  return score_buffer_;
 }

@@ -52,8 +52,7 @@ namespace pcl
                          int cols,
                          int row_height,
                          int col_width,
-                         Scene::Ptr scene,
-                         int x_offset = 0);
+                         Scene::Ptr scene);
 
         /**
          * Destroy the RangeLikelihood object and release any memory allocated.
@@ -71,15 +70,13 @@ namespace pcl
         void
         computeLikelihoods (float* reference,
                             std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses,
-                            std::vector<float> & scores,
-                            float *depth_field,
-                            bool do_depth_field);
+                            std::vector<float> & scores);
 
         /**
          * Set the basic camera intrinsic parameters
          */
         void
-        setCameraIntrinsicsParameters(int camera_width_in,
+        setCameraIntrinsicsParameters (int camera_width_in,
                                       int camera_height_in,
                                       float camera_fx_in,
                                       float camera_fy_in,
@@ -100,7 +97,6 @@ namespace pcl
         void setCostFunction (int which_cost_function_in){  which_cost_function_ = which_cost_function_in;}
         void setSigma (double sigma_in){  sigma_ = sigma_in;	}
         void setFloorProportion (double floor_proportion_in){  floor_proportion_ = floor_proportion_in;}
-        
 
         int getRows () {return rows_;}
         int getCols () {return cols_;}
@@ -108,8 +104,6 @@ namespace pcl
         int getColWidth () {return col_width_;}
         int getWidth () {return width_;}
         int getHeight () {return height_;}
-        const float* getDepthBuffer () const {return depth_buffer_;}
-        const uint8_t* getColorBuffer () const {return color_buffer_;}
 
         // Convenience function to return simulated RGB-D PointCloud
         // Two modes:
@@ -117,6 +111,7 @@ namespace pcl
         // global=true  - PointCloud is transformed into the model/world frame using the camera pose
         void getPointCloud (pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc,
               bool make_global, const Eigen::Isometry3d & pose);
+
         // Convenience function to return RangeImagePlanar containing
         // simulated RGB-D:
         void getRangeImagePlanar (pcl::RangeImagePlanar &rip);
@@ -125,30 +120,53 @@ namespace pcl
         void addNoise ();
         double sampleNormal (double sigma = 1.0);
 	
+        void
+        setComputeOnCPU(bool compute_on_cpu) { compute_likelihood_on_cpu_ = compute_on_cpu; }
+
+        void
+        setSumOnCPU(bool sum_on_cpu) { aggregate_on_cpu_ = sum_on_cpu; }
+
+        void
+        setUseColor(bool use_color) { use_color_ = use_color; }
+
+        const uint8_t*
+        getColorBuffer ();
+
+        const float*
+        getDepthBuffer ();
+
+        const float*
+        getScoreBuffer ();
+
+      private:
         /**
          * Evaluate the likelihood/score for a set of particles
          *
-         * @param rows - number of rows to use in the render buffer.
-         * @param cols - number of columns to use in the render buffer.
-         * @param row_height - height of the image for a single particle.
-         * @param col_width  - width of the image for a single particle.
-         * @param reference - input Measurement depth image (raw data)
-	 * @param depth_buffer - input OpenGL produced model depths (lattic array of many views)
-	 * @param scores - output score
-	 * @param depth_field - pointer to array which can store raw likelihood per pixel
-	 * @param do_depth_field - compute depth_field or not
-         */	
-        void computeScores (int cols, int rows,
-            int col_width, int row_height, float* reference, float* depth_buffer,
-            std::vector<float> & scores, float* depth_field, bool do_depth_field);
+         * @param[in] reference - input Measurement depth image (raw data)
+         * @param[out] scores - output score
+         */
+        void
+        computeScores (float* reference,
+                       std::vector<float> & scores);
 
-      protected:
-        void draw_particles (std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses);
+        void
+        computeScoresShader (float* reference,
+                             std::vector<float> & scores);
 
-      // private:
-        void apply_camera_transform (const Eigen::Isometry3d & pose);
-        void apply_camera_transform (const Camera & camera);
-        void setup_projection_matrix ();
+        void
+        render (const std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > & poses);
+
+        void
+        draw_particles (std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses);
+
+        void
+        apply_camera_transform (const Eigen::Isometry3d & pose);
+
+        void
+        apply_camera_transform (const Camera & camera);
+
+        void
+        setup_projection_matrix ();
 
         Scene::Ptr scene_;
         int rows_;
@@ -159,9 +177,6 @@ namespace pcl
         int height_;
         float* depth_buffer_;
         uint8_t* color_buffer_;
-
-        // Offset for visualization, for operation will be zero
-        int x_offset_;
 
         // Camera Intrinsic Parameters
         int camera_width_;
@@ -175,86 +190,15 @@ namespace pcl
         // everything outside this doesnt appear in depth images
         float z_near_;
         float z_far_;
+
+        bool depth_buffer_dirty_;
+        bool color_buffer_dirty_;
+        bool score_buffer_dirty_;
 	
-	//
 	int which_cost_function_;
 	double floor_proportion_;
 	double sigma_;
-    };
 
-
-    class PCL_EXPORTS RangeLikelihoodGLSL : public RangeLikelihood
-    {
-      public:
-        typedef boost::shared_ptr<RangeLikelihoodGLSL> Ptr;
-        typedef boost::shared_ptr<const RangeLikelihoodGLSL> ConstPtr;
-
-        /**
-         * Create a new object to compute range image likelihoods.
-         *
-         * OpenGL is used to render the images. It is assumed that
-         * render buffers have already been setup. The area used is
-         * from 0,0 to cols*col_width,rows*row_height.
-         *
-         * @param rows - number of rows to use in the render buffer.
-         * @param cols - number of columns to use in the render buffer.
-         * @param row_height - height of the image for a single particle.
-         * @param col_width  - width of the image for a single particle.
-         * @param scene - a pointer to the scene that should be rendered when
-         *                computing likelihoods.
-         *
-         */
-        RangeLikelihoodGLSL (int rows,
-                             int cols,
-                             int row_height,
-                             int col_width,
-                             Scene::Ptr scene,
-                             int x_offset = 0);
-
-        /**
-         * Destroy the RangeLikelihood object and release any memory allocated.
-         */
-        ~RangeLikelihoodGLSL ();
-
-        /**
-         * Computes the likelihood of reference for each of the provided poses.
-         *
-         * @param reference is a depth image.
-         * @param poses is a vector of the poses to test.
-         * @param scores is an output argument. The resulting log likelihoods will be written in score.
-         *
-         */
-        void
-        computeLikelihoods (float* reference,
-                            std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses,
-                            std::vector<float> & scores,
-                            float *depth_field,
-                            bool do_depth_field );
-
-        void
-        computeScoresShader(int cols,
-                            int rows,
-                            int col_width,
-                            int row_height,
-                            float* reference,
-                            float* depth_buffer,
-                            std::vector<float> & scores,
-                            float *depth_field,
-                            bool do_depth_field );
-
-        const float* getScoreBuffer() const {return score_buffer_;}
-
-        void
-        setComputeOnCPU(bool compute_on_cpu) { compute_likelihood_on_cpu_ = compute_on_cpu; }
-
-        void
-        setSumOnCPU(bool sum_on_cpu) { aggregate_on_cpu_ = sum_on_cpu; }
-
-      private:
-        void
-        render (const std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > & poses);
-
-      private:
         GLuint fbo_;
         GLuint score_fbo_;
 
