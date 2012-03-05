@@ -42,6 +42,7 @@
 
 #include "pcl/io/file_io.h"
 #include "pcl/io/ply/ply_parser.h"
+#include <boost/bind.hpp>
 #include <pcl/PolygonMesh.h>
 #include <sstream>
 
@@ -237,7 +238,7 @@ namespace pcl
         * \param[in] element_name element name
         * \param[in] count number of instances
         */
-      std::tr1::tuple<std::tr1::function<void ()>, std::tr1::function<void ()> > 
+      boost::tuple<boost::function<void ()>, boost::function<void ()> > 
       elementDefinitionCallback (const std::string& element_name, std::size_t count);
       
       bool
@@ -247,7 +248,7 @@ namespace pcl
         * \param[in] element_name element name to which the property belongs
         * \param[in] property_name property name
         */
-      template <typename ScalarType> std::tr1::function<void (ScalarType)> 
+      template <typename ScalarType> boost::function<void (ScalarType)> 
       scalarPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name);
 
       /** \brief function called when a list property is parsed
@@ -255,7 +256,7 @@ namespace pcl
         * \param[in] property_name list property name
         */
       template <typename SizeType, typename ScalarType> 
-      std::tr1::tuple<std::tr1::function<void (SizeType)>, std::tr1::function<void (ScalarType)>, std::tr1::function<void ()> > 
+      boost::tuple<boost::function<void (SizeType)>, boost::function<void (ScalarType)>, boost::function<void ()> > 
       listPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name);
       
       /** Callback function for an anonymous vertex float property.
