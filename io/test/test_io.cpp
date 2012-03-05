@@ -985,8 +985,8 @@ TEST (PCL, ExtendedIO)
   EXPECT_EQ (cloud.points[1].x, 2); EXPECT_EQ (cloud.points[1].y, 2); EXPECT_EQ (cloud.points[1].z, 2);
   for (int i = 0; i < 33; ++i)
   {
-    EXPECT_EQ (cloud.points[0].histogram[i], i);
-    EXPECT_EQ (cloud.points[1].histogram[i], 33-i);
+    ASSERT_EQ (cloud.points[0].histogram[i], i);
+    ASSERT_EQ (cloud.points[1].histogram[i], 33-i);
   }
 }
 
@@ -1111,9 +1111,9 @@ TEST (PCL, LZF)
 
   for (size_t i = 0; i < cloud2.points.size (); ++i)
   {
-    EXPECT_EQ (cloud2.points[i].x, cloud.points[i].x);
-    EXPECT_EQ (cloud2.points[i].y, cloud.points[i].y);
-    EXPECT_EQ (cloud2.points[i].z, cloud.points[i].z);
+    ASSERT_EQ (cloud2.points[i].x, cloud.points[i].x);
+    ASSERT_EQ (cloud2.points[i].y, cloud.points[i].y);
+    ASSERT_EQ (cloud2.points[i].z, cloud.points[i].z);
   }
 
   sensor_msgs::PointCloud2 blob;
@@ -1253,9 +1253,9 @@ TEST (PCL, Locale)
     EXPECT_TRUE (pcl_isnan(cloud2.points[0].z));
     for (size_t i = 1; i < cloud2.points.size (); ++i)
     {
-      EXPECT_FLOAT_EQ (cloud2.points[i].x, cloud.points[i].x);
-      EXPECT_FLOAT_EQ (cloud2.points[i].y, cloud.points[i].y);
-      EXPECT_FLOAT_EQ (cloud2.points[i].z, cloud.points[i].z);
+      ASSERT_FLOAT_EQ (cloud2.points[i].x, cloud.points[i].x);
+      ASSERT_FLOAT_EQ (cloud2.points[i].y, cloud.points[i].y);
+      ASSERT_FLOAT_EQ (cloud2.points[i].z, cloud.points[i].z);
     }
   }
   catch(std::exception& e)

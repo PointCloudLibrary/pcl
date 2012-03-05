@@ -71,7 +71,7 @@ main (int argc, char **argv)
       output << "nan";
     else
       output << str;
-    next = input.peek ();
+    next = static_cast<char> (input.peek ());
     if (next == '\n' || next == '\r')
       output << "\n";
     else

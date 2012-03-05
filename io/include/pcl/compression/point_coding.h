@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2011-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,7 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Julius Kammerl (julius@kammerl.de)
  */
 
 #ifndef POINT_COMPRESSION_H
@@ -49,29 +50,24 @@ namespace pcl
 {
   namespace octree
   {
-    using namespace std;
-
     /** \brief @b PointCoding class
-      *  \note This class encodes 8-bit differential point information for octree-based point cloud compression.
-      *  \note
-      *  \note typename: PointT: type of point used in pointcloud
-      *  \author Julius Kammerl (julius@kammerl.de)
+      * \note This class encodes 8-bit differential point information for octree-based point cloud compression.
+      * \note typename: PointT: type of point used in pointcloud
+      * \author Julius Kammerl (julius@kammerl.de)
       */
     template<typename PointT>
     class PointCoding
     {
-
         // public typedefs
         typedef pcl::PointCloud<PointT> PointCloud;
         typedef boost::shared_ptr<PointCloud> PointCloudPtr;
         typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
 
       public:
-
         /** \brief Constructor. */
         PointCoding () :
           output_ (), pointDiffDataVector_ (), pointDiffDataVectorIterator_ (), 
-          pointCompressionResolution_ (0.001) // 1mm
+          pointCompressionResolution_ (0.001f) // 1mm
         {
         }
 
@@ -82,64 +78,58 @@ namespace pcl
         }
 
         /** \brief Define precision of point information
-         *  \param precision_arg: precision
-         * */
-        inline
-        void
+          * \param precision_arg: precision
+          */
+        inline void
         setPrecision (float precision_arg)
         {
           pointCompressionResolution_ = precision_arg;
         }
 
         /** \brief Retrieve precision of point information
-         *  \return precision
-         * */
-        inline
-        float
+          * \return precision
+          */
+        inline float
         getPrecision ()
         {
-          return pointCompressionResolution_;
+          return (pointCompressionResolution_);
         }
 
         /** \brief Set amount of points within point cloud to be encoded and reserve memory
-         *  \param pointCount_arg: amounts of points within point cloud
-         * */
-        inline
-        void
+          * \param pointCount_arg: amounts of points within point cloud
+          */
+        inline void
         setPointCount (unsigned int pointCount_arg)
         {
           pointDiffDataVector_.reserve (pointCount_arg * 3);
         }
 
-        /** \brief Initialize encoding of differential point
-         * */
+        /** \brief Initialize encoding of differential point */
         void
         initializeEncoding ()
         {
           pointDiffDataVector_.clear ();
         }
 
-        /** \brief Initialize decoding of differential point
-         * */
+        /** \brief Initialize decoding of differential point */
         void
         initializeDecoding ()
         {
           pointDiffDataVectorIterator_ = pointDiffDataVector_.begin ();
         }
 
-        /** \brief Get reference to vector containing differential color data
-         * */
+        /** \brief Get reference to vector containing differential color data */
         std::vector<char>&
         getDifferentialDataVector ()
         {
-          return pointDiffDataVector_;
+          return (pointDiffDataVector_);
         }
 
         /** \brief Encode differential point information for a subset of points from point cloud
-         * \param indexVector_arg indices defining a subset of points from points cloud
-         * \param referencePoint_arg coordinates of reference point
-         * \param inputCloud_arg input point cloud
-         * */
+          * \param indexVector_arg indices defining a subset of points from points cloud
+          * \param referencePoint_arg coordinates of reference point
+          * \param inputCloud_arg input point cloud
+          */
         void
         encodePoints (const typename std::vector<int>& indexVector_arg, const double* referencePoint_arg,
                       PointCloudConstPtr inputCloud_arg)
@@ -158,25 +148,23 @@ namespace pcl
             const PointT& idxPoint = inputCloud_arg->points[idx];
 
             // differentially encode point coordinates and truncate overflow
-            diffX = (unsigned char) max(-127, min<int>(127, (int)((idxPoint.x - referencePoint_arg[0])  / pointCompressionResolution_)));
-            diffY = (unsigned char) max(-127, min<int>(127, (int)((idxPoint.y - referencePoint_arg[1])  / pointCompressionResolution_)));
-            diffZ = (unsigned char) max(-127, min<int>(127, (int)((idxPoint.z - referencePoint_arg[2])  / pointCompressionResolution_)));
+            diffX = static_cast<unsigned char> (max (-127, min<int>(127, static_cast<int> ((idxPoint.x - referencePoint_arg[0])  / pointCompressionResolution_))));
+            diffY = static_cast<unsigned char> (max (-127, min<int>(127, static_cast<int> ((idxPoint.y - referencePoint_arg[1])  / pointCompressionResolution_))));
+            diffZ = static_cast<unsigned char> (max (-127, min<int>(127, static_cast<int> ((idxPoint.z - referencePoint_arg[2])  / pointCompressionResolution_))));
 
             // store information in differential point vector
-            pointDiffDataVector_.push_back ( diffX );
-            pointDiffDataVector_.push_back ( diffY );
-            pointDiffDataVector_.push_back ( diffZ );
-
+            pointDiffDataVector_.push_back (diffX);
+            pointDiffDataVector_.push_back (diffY);
+            pointDiffDataVector_.push_back (diffZ);
           }
-
         }
 
         /** \brief Decode differential point information
-         * \param outputCloud_arg output point cloud
-         * \param referencePoint_arg coordinates of reference point
-         * \param beginIdx_arg index indicating first point to be assiged with color information
-         * \param endIdx_arg index indicating last point to be assiged with color information
-         * */
+          * \param outputCloud_arg output point cloud
+          * \param referencePoint_arg coordinates of reference point
+          * \param beginIdx_arg index indicating first point to be assiged with color information
+          * \param endIdx_arg index indicating last point to be assiged with color information
+          */
         void
         decodePoints (PointCloudPtr outputCloud_arg, const double* referencePoint_arg, std::size_t beginIdx_arg,
                       std::size_t endIdx_arg)
@@ -186,29 +174,27 @@ namespace pcl
 
           assert (beginIdx_arg <= endIdx_arg);
 
-          pointCount = endIdx_arg - beginIdx_arg;
+          pointCount = static_cast<unsigned int> (endIdx_arg - beginIdx_arg);
 
           // iterate over points within current voxel
           for (i = 0; i < pointCount; i++)
           {
             // retrieve differential point information
-            const unsigned char& diffX = (unsigned char)*(pointDiffDataVectorIterator_++);
-            const unsigned char& diffY = (unsigned char)*(pointDiffDataVectorIterator_++);
-            const unsigned char& diffZ = (unsigned char)*(pointDiffDataVectorIterator_++);
+            const unsigned char& diffX = static_cast<unsigned char> (*(pointDiffDataVectorIterator_++));
+            const unsigned char& diffY = static_cast<unsigned char> (*(pointDiffDataVectorIterator_++));
+            const unsigned char& diffZ = static_cast<unsigned char> (*(pointDiffDataVectorIterator_++));
 
             // retrieve point from point cloud
             PointT& point = outputCloud_arg->points[beginIdx_arg + i];
 
             // decode point position
-            point.x = referencePoint_arg[0] + (((float)diffX) * pointCompressionResolution_);
-            point.y = referencePoint_arg[1] + (((float)diffY) * pointCompressionResolution_);
-            point.z = referencePoint_arg[2] + (((float)diffZ) * pointCompressionResolution_);
+            point.x = referencePoint_arg[0] + ((static_cast<float> (diffX)) * pointCompressionResolution_);
+            point.y = referencePoint_arg[1] + ((static_cast<float> (diffY)) * pointCompressionResolution_);
+            point.z = referencePoint_arg[2] + ((static_cast<float> (diffZ)) * pointCompressionResolution_);
           }
-
         }
 
       protected:
-
         /** \brief Pointer to output point cloud dataset. */
         PointCloudPtr output_;
 

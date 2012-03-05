@@ -66,7 +66,6 @@
 #include <vtkOBJReader.h>
 #include <vtkSTLReader.h>
 #include <vtkSTLWriter.h>
-#include <boost/filesystem.hpp>
 
 namespace pcl
 {
@@ -150,6 +149,14 @@ namespace pcl
       */
     PCL_EXPORTS int
     savePolygonFileSTL (const std::string &file_name, const pcl::PolygonMesh& mesh);
+
+    /** \brief Write a \ref RangeImagePlanar object to a PNG file
+      * \param[in] file_name the name of the file to save the data to
+      * \param[in] range_image the object that contains the data
+      */
+    PCL_EXPORTS void
+    saveRangeImagePlanarFilePNG (const std::string &file_name,
+    const pcl::RangeImagePlanar& range_image);
 
     /**
      * TO DO proper building the library (depending on whether or not vtk was found)
