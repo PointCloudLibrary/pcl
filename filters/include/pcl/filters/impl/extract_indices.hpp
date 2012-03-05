@@ -76,7 +76,7 @@ pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
   {
     // Prepare a vector holding all indices
     std::vector<int> all_indices (input_->points.size ());
-    for (size_t i = 0; i < all_indices.size (); ++i)
+    for (int i = 0; i < static_cast<int>(all_indices.size ()); ++i)
       all_indices[i] = i;
 
     std::vector<int> indices = *indices_;

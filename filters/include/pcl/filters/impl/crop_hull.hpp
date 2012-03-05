@@ -241,7 +241,7 @@ pcl::CropHull<PointT>::isPointIn2DPolyWithVertIndices (
   bool in_poly = false;
   double x1, x2, y1, y2;
 
-  const int nr_poly_points = verts.vertices.size ();
+  const int nr_poly_points = static_cast<const int>(verts.vertices.size ());
   double xold = cloud[verts.vertices[nr_poly_points - 1]].getVector3fMap ()[PlaneDim1];
   double yold = cloud[verts.vertices[nr_poly_points - 1]].getVector3fMap ()[PlaneDim2];
   for (int i = 0; i < nr_poly_points; i++)
