@@ -94,7 +94,7 @@ TEST (ExtractIndicesSelf, Filters)
   EXPECT_EQ (cloud->points[cloud->points.size () - 1].y, output->points[1].y);
   EXPECT_EQ (cloud->points[cloud->points.size () - 1].z, output->points[1].z);
 }
-  
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (ExtractIndices, Filters)
 {
@@ -778,9 +778,8 @@ TEST (VoxelGridCovariance, Filters)
   VoxelGridCovariance<PointXYZ> grid;
 
   grid.setLeafSize (0.02, 0.02, 0.02);
-  grid.setSaveLeafLayout(true);
   grid.setInputCloud (cloud);
-  grid.filter (output, true);
+  grid.filter (output);
 
   EXPECT_EQ ((int)output.points.size (), 23);
   EXPECT_EQ ((int)output.width, 23);
@@ -795,6 +794,9 @@ TEST (VoxelGridCovariance, Filters)
   EXPECT_NEAR (output.points[13].x, -0.0857542, 1e-4);
   EXPECT_NEAR (output.points[13].y, 0.149493, 1e-4);
   EXPECT_NEAR (output.points[13].z, 0.0286718, 1e-4);
+
+  grid.setSaveLeafLayout (true);
+  grid.filter (output);
 
   // centroids should be identified correctly
   EXPECT_EQ (grid.getCentroidIndex (output.points[0]), 0);
@@ -819,6 +821,10 @@ TEST (VoxelGridCovariance, Filters)
   EXPECT_LE (fabs (output.points[neighbors.at (0)].y - output.points[centroidIdx].y), 0.02);
   EXPECT_LE ( output.points[neighbors.at (0)].z - output.points[centroidIdx].z, 0.02 * 2);
 
+  // testing seach functions
+  grid.setSaveLeafLayout (false);
+  grid.filter (output, true);
+
   // testing k nearest neighbors search
   vector<VoxelGridCovariance<pcl::PointXYZ>::LeafConstPtr> leaves;
   vector<float> distances;
@@ -832,7 +838,7 @@ TEST (VoxelGridCovariance, Filters)
 
   // testing radius search
   grid.radiusSearch (PointXYZ (0,0,0), 0.075, leaves, distances);
-  
+
   EXPECT_EQ (leaves.size (), 3);
 
   EXPECT_NEAR (leaves[0]->getMean ()[0], 0.0322579, 1e-4);

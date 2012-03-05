@@ -63,6 +63,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   // Copy the header (and thus the frame_id) + allocate enough space for points
   output.height = 1;                          // downsampling breaks the organized structure
   output.is_dense = true;                     // we filter out invalid points
+  output.points.clear ();
 
   Eigen::Vector4f min_p, max_p;
   // Get the minimum and maximum dimensions
@@ -143,13 +144,13 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
           continue;
       }
 
-      Eigen::Vector4i ijk = Eigen::Vector4i::Zero ();
-      ijk[0] = (int)(floor (input_->points[cp].x * inverse_leaf_size_[0]));
-      ijk[1] = (int)(floor (input_->points[cp].y * inverse_leaf_size_[1]));
-      ijk[2] = (int)(floor (input_->points[cp].z * inverse_leaf_size_[2]));
+      int ijk0 = (int)(floor (input_->points[cp].x * inverse_leaf_size_[0])) - min_b_[0];
+      int ijk1 = (int)(floor (input_->points[cp].y * inverse_leaf_size_[1])) - min_b_[1];
+      int ijk2 = (int)(floor (input_->points[cp].z * inverse_leaf_size_[2])) - min_b_[2];
 
       // Compute the centroid leaf index
-      int idx = (ijk - min_b_).dot (divb_mul_);
+      int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
+
       Leaf& leaf = leaves_[idx];
       if (leaf.nr_points == 0)
       {
@@ -202,13 +203,13 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
             !pcl_isfinite (input_->points[cp].z))
           continue;
 
-      Eigen::Vector4i ijk = Eigen::Vector4i::Zero ();
-      ijk[0] = (int)(floor (input_->points[cp].x * inverse_leaf_size_[0]));
-      ijk[1] = (int)(floor (input_->points[cp].y * inverse_leaf_size_[1]));
-      ijk[2] = (int)(floor (input_->points[cp].z * inverse_leaf_size_[2]));
+      int ijk0 = (int)(floor (input_->points[cp].x * inverse_leaf_size_[0])) - min_b_[0];
+      int ijk1 = (int)(floor (input_->points[cp].y * inverse_leaf_size_[1])) - min_b_[1];
+      int ijk2 = (int)(floor (input_->points[cp].z * inverse_leaf_size_[2])) - min_b_[2];
 
       // Compute the centroid leaf index
-      int idx = (ijk - min_b_).dot (divb_mul_);
+      int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
+
       //int idx = (((input_->points[cp].getArray4fMap () * inverse_leaf_size_).template cast<int> ()).matrix () - min_b_).dot (divb_mul_);
       Leaf& leaf = leaves_[idx];
       if (leaf.nr_points == 0)
@@ -395,7 +396,7 @@ pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& ce
 
   int pnt_per_cell = 1000;
   boost::mt19937 rng;
-  boost::normal_distribution<> nd (0.0, 1.0);
+  boost::normal_distribution<> nd (0.0, leaf_size_.head (3).norm ());
   boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor (rng, nd);
 
   Eigen::LLT<Eigen::Matrix3d> llt_of_cov;

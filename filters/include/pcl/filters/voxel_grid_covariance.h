@@ -85,14 +85,14 @@ namespace pcl
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
     public:
-      /** \brief Simple structure to hold a centroid, covarince and the number of points in a leaf.  
+      /** \brief Simple structure to hold a centroid, covarince and the number of points in a leaf.
         * Inverse covariance, eigen vectors and engen values are precomputed. */
       struct Leaf
       {
         /** \brief Constructor.
          * Sets \ref nr_points, \ref icov_, \ref mean_ and \ref evals_ to 0 and \ref cov_ and \ref evecs_ to the identity matrix
          */
-        Leaf () : 
+        Leaf () :
           nr_points (0),
           mean_ (Eigen::Vector3d::Zero ()),
           centroid (),
@@ -215,8 +215,8 @@ namespace pcl
       /** \brief Set the minimum number of points required for a cell to be used (must be 3 or greater for covariance calculation).
         * \param[in] min_points_per_voxel the minimum number of points for required for a voxel to be used
         */
-      inline void 
-      setMinPointPerVoxel (int min_points_per_voxel) 
+      inline void
+      setMinPointPerVoxel (int min_points_per_voxel)
       {
         if(min_points_per_voxel > 2)
         {
@@ -232,8 +232,8 @@ namespace pcl
       /** \brief Get the minimum number of points required for a cell to be used.
         * \return the minimum number of points for required for a voxel to be used
         */
-      inline int 
-      getMinPointPerVoxel () 
+      inline int
+      getMinPointPerVoxel ()
       {
         return min_points_per_voxel_;
       }
@@ -241,8 +241,8 @@ namespace pcl
       /** \brief Set the minimum allowable ratio between eigenvalues to prevent singular covariance matrices.
         * \param[in] min_points_per_voxel the minimum allowable ratio between eigenvalues
         */
-      inline void 
-      setCovEigValueInflationRatio (double min_covar_eigvalue_mult) 
+      inline void
+      setCovEigValueInflationRatio (double min_covar_eigvalue_mult)
       {
         min_covar_eigvalue_mult_ = min_covar_eigvalue_mult;
       }
@@ -250,8 +250,8 @@ namespace pcl
       /** \brief Get the minimum allowable ratio between eigenvalues to prevent singular covariance matrices.
         * \return the minimum allowable ratio between eigenvalues
         */
-      inline double 
-      getCovEigValueInflationRatio () 
+      inline double
+      getCovEigValueInflationRatio ()
       {
         return min_covar_eigvalue_mult_;
       }
@@ -317,12 +317,12 @@ namespace pcl
       getLeaf (PointT &p)
       {
         // Generate index associated with p
-        Eigen::Vector4i ijk = Eigen::Vector4i::Zero ();
-        ijk[0] = (int)(floor (p.x * inverse_leaf_size_[0]));
-        ijk[1] = (int)(floor (p.y * inverse_leaf_size_[1]));
-        ijk[2] = (int)(floor (p.z * inverse_leaf_size_[2]));
+        int ijk0 = (int)(floor (p.x * inverse_leaf_size_[0])) - min_b_[0];
+        int ijk1 = (int)(floor (p.y * inverse_leaf_size_[1])) - min_b_[1];
+        int ijk2 = (int)(floor (p.z * inverse_leaf_size_[2])) - min_b_[2];
 
-        int idx = (ijk - this->min_b_).dot (this->divb_mul_);
+        // Compute the centroid leaf index
+        int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
 
         // Find leaf associated with index
         typename boost::unordered_map<size_t, Leaf>::iterator leaf_iter = leaves_.find (idx);
@@ -344,12 +344,12 @@ namespace pcl
       getLeaf (Eigen::Vector3f &p)
       {
         // Generate index associated with p
-        Eigen::Vector4i ijk = Eigen::Vector4i::Zero ();
-        ijk[0] = (int)(floor (p[0] * inverse_leaf_size_[0]));
-        ijk[1] = (int)(floor (p[1] * inverse_leaf_size_[1]));
-        ijk[2] = (int)(floor (p[2] * inverse_leaf_size_[2]));
+        int ijk0 = (int)(floor (p[0] * inverse_leaf_size_[0])) - min_b_[0];
+        int ijk1 = (int)(floor (p[1] * inverse_leaf_size_[1])) - min_b_[1];
+        int ijk2 = (int)(floor (p[2] * inverse_leaf_size_[2])) - min_b_[2];
 
-        int idx = (ijk - min_b_).dot (divb_mul_);
+        // Compute the centroid leaf index
+        int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
 
         // Find leaf associated with index
         typename boost::unordered_map<size_t, Leaf>::iterator leaf_iter = leaves_.find (idx);
@@ -461,7 +461,7 @@ namespace pcl
        */
       int
       radiusSearch (const PointT &point, double radius, std::vector<LeafConstPtr> &k_leaves,
-                    std::vector<float> &k_sqr_distances, int max_nn = -1)
+                    std::vector<float> &k_sqr_distances, unsigned int max_nn = 0)
       {
         k_leaves.clear ();
 
@@ -497,7 +497,7 @@ namespace pcl
       inline int
       radiusSearch (const PointCloud &cloud, int index, double radius,
                     std::vector<LeafConstPtr> &k_leaves, std::vector<float> &k_sqr_distances,
-                    int max_nn = -1)
+                    unsigned int max_nn = 0)
       {
         if (index >= (int)cloud.points.size () || index < 0)
           return (0);
