@@ -79,7 +79,7 @@ pcl::search::BruteForce<PointT>::denseKSearch (
   if (indices_ != NULL)
   {
     std::vector<int>::const_iterator iIt =indices_->begin ();
-    std::vector<int>::const_iterator iEnd = indices_->begin () + std::min ((unsigned) k, (unsigned) indices_->size ());
+    std::vector<int>::const_iterator iEnd = indices_->begin () + std::min (static_cast<unsigned> (k), static_cast<unsigned> (indices_->size ()));
     for (; iIt != iEnd; ++iIt)
       result.push_back (Entry (*iIt, getDistSqr (input_->points[*iIt], point)));
 
@@ -101,7 +101,7 @@ pcl::search::BruteForce<PointT>::denseKSearch (
   else
   {
     Entry entry;
-    for (entry.index = 0; entry.index < std::min ((unsigned) k, (unsigned) input_->size ()); ++entry.index)
+    for (entry.index = 0; entry.index < std::min (static_cast<unsigned> (k), static_cast<unsigned> (input_->size ())); ++entry.index)
     {
       entry.distance = getDistSqr (input_->points[entry.index], point);
       result.push_back (entry);
@@ -148,7 +148,7 @@ pcl::search::BruteForce<PointT>::sparseKSearch (
   if (indices_ != NULL)
   {
     std::vector<int>::const_iterator iIt =indices_->begin ();
-    for (; iIt != indices_->end () && result.size () < (unsigned) k; ++iIt)
+    for (; iIt != indices_->end () && result.size () < static_cast<unsigned> (k); ++iIt)
     {
       if (pcl_isfinite (input_->points[*iIt].x))
         result.push_back (Entry (*iIt, getDistSqr (input_->points[*iIt], point)));
@@ -176,7 +176,7 @@ pcl::search::BruteForce<PointT>::sparseKSearch (
   else
   {
     Entry entry;
-    for (entry.index = 0; entry.index < input_->size () && result.size () < (unsigned)k; ++entry.index)
+    for (entry.index = 0; entry.index < input_->size () && result.size () < static_cast<unsigned> (k); ++entry.index)
     {
       if (pcl_isfinite (input_->points[entry.index].x))
       {

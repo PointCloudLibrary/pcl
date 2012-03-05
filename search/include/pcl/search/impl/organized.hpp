@@ -54,23 +54,24 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
                                                       unsigned int        max_nn) const
 {
   // NAN test
-  assert (isFiniteFast (query) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+  assert (isFinite (query) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
 
   // search window
   unsigned left, right, top, bottom;
   //unsigned x, y, idx;
-  float squared_distance, squared_radius;
+  float squared_distance;
+  double squared_radius;
 
   k_indices.clear ();
   k_sqr_distances.clear ();
 
   squared_radius = radius * radius;
 
-  this->getProjectedRadiusSearchBox (query, squared_radius, left, right, top, bottom);
+  this->getProjectedRadiusSearchBox (query, static_cast<float> (squared_radius), left, right, top, bottom);
 
   // iterate over search box
-  if (max_nn == 0 || max_nn >= (unsigned int)input_->points.size ())
-    max_nn = input_->points.size ();
+  if (max_nn == 0 || max_nn >= static_cast<unsigned int> (input_->points.size ()))
+    max_nn = static_cast<unsigned int> (input_->points.size ());
 
   k_indices.reserve (max_nn);
   k_sqr_distances.reserve (max_nn);
@@ -104,7 +105,7 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
   }
   if (sorted_results_)
     this->sortResults (k_indices, k_sqr_distances);  
-  return (k_indices.size ());
+  return (static_cast<int> (k_indices.size ()));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,7 +115,7 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
                                                         std::vector<int> &k_indices,
                                                         std::vector<float> &k_sqr_distances) const
 {
-  assert (isFiniteFast (query) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
+  assert (isFinite (query) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
   if (k < 1)
   {
     k_indices.clear ();
@@ -139,7 +140,10 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
   //std::vector<Entry> k_results;
   //k_results.reserve (k);
   // add point laying on the projection of the query point.
-  if (xBegin >= 0 && xBegin < (int)input_->width && yBegin >= 0 && yBegin < (int)input_->height )
+  if (xBegin >= 0 && 
+      xBegin < static_cast<int> (input_->width) && 
+      yBegin >= 0 && 
+      yBegin < static_cast<int> (input_->height))
     testPoint (query, k, results, yBegin * input_->width + xBegin);
   else // point lys
   {
@@ -148,13 +152,13 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
 
     if (xBegin < 0)
       dist = -xBegin;
-    else if (xBegin >= (int)input_->width)
-      dist = xBegin - (int)input_->width;
+    else if (xBegin >= static_cast<int> (input_->width))
+      dist = xBegin - static_cast<int> (input_->width);
 
     if (yBegin < 0)
       dist = std::min (dist, -yBegin);
-    else if (yBegin >= (int)input_->height)
-      dist = std::min (dist, yBegin - (int)input_->height);
+    else if (yBegin >= static_cast<int> (input_->height))
+      dist = std::min (dist, yBegin - static_cast<int> (input_->height));
 
     xBegin -= dist;
     xEnd   += dist;
@@ -183,7 +187,7 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
     if (xTo > xFrom)
     {
       // if upper line of the rectangle is visible and x-extend is not 0
-      if (yBegin >= 0 && yBegin < (int)input_->height)
+      if (yBegin >= 0 && yBegin < static_cast<int> (input_->height))
       {
         int idx   = yBegin * input_->width + xFrom;
         int idxTo = idx + xTo - xFrom;
@@ -194,7 +198,7 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
 
       // the row yEnd does NOT belong to the box -> last row = yEnd - 1
       // if lower line of the rectangle is visible
-      if (yEnd > 0 && yEnd <= (int)input_->height)
+      if (yEnd > 0 && yEnd <= static_cast<int> (input_->height))
       {
         int idx   = (yEnd - 1) * input_->width + xFrom;
         int idxTo = idx + xTo - xFrom;
@@ -211,7 +215,7 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
       // if we have lines in between that are also visible
       if (yFrom < yTo)
       {
-        if (xBegin >= 0 && xBegin < (int)input_->width)
+        if (xBegin >= 0 && xBegin < static_cast<int> (input_->width))
         {
           int idx   = yFrom * input_->width + xBegin;
           int idxTo = yTo * input_->width + xBegin;
@@ -220,7 +224,7 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
             stop = testPoint (query, k, results, idx) || stop;
         }
         
-        if (xEnd > 0 && xEnd <= (int)input_->width)
+        if (xEnd > 0 && xEnd <= static_cast<int> (input_->width))
         {
           int idx   = yFrom * input_->width + xEnd - 1;
           int idxTo = yTo * input_->width + xEnd - 1;
@@ -236,15 +240,17 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
       
     }
     // now we use it as stop flag -> if bounding box is completely within the already examined search box were done!
-    stop = ((int)left >= xBegin && (int)left < xEnd && (int)right  >= xBegin && (int)right  < xEnd &&
-            (int)top  >= yBegin && (int)top  < yEnd && (int)bottom >= yBegin && (int)bottom < yEnd);
+    stop = (static_cast<int> (left)   >= xBegin && static_cast<int> (left)   < xEnd && 
+            static_cast<int> (right)  >= xBegin && static_cast<int> (right)  < xEnd &&
+            static_cast<int> (top)    >= yBegin && static_cast<int> (top)    < yEnd && 
+            static_cast<int> (bottom) >= yBegin && static_cast<int> (bottom) < yEnd);
     
   } while (!stop);
 
   
   k_indices.resize (results.size ());
   k_sqr_distances.resize (results.size ());
-  unsigned idx = results.size () - 1;
+  size_t idx = results.size () - 1;
   while (!results.empty ())
   {
     k_indices [idx] = results.top ().index;
@@ -253,17 +259,17 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
     --idx;
   }
   
-  return k_indices.size ();
+  return (static_cast<int> (k_indices.size ()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
 pcl::search::OrganizedNeighbor<PointT>::getProjectedRadiusSearchBox (const PointT& point,
-                                                                      float squared_radius,
-                                                                      unsigned &minX,
-                                                                      unsigned &maxX,
-                                                                      unsigned &minY,
-                                                                      unsigned &maxY) const
+                                                                     float squared_radius,
+                                                                     unsigned &minX,
+                                                                     unsigned &maxX,
+                                                                     unsigned &minY,
+                                                                     unsigned &maxY) const
 {
   Eigen::Vector3f q = KR_ * point.getVector3fMap () + projection_matrix_.block <3, 1> (0, 3);
 
@@ -283,16 +289,10 @@ pcl::search::OrganizedNeighbor<PointT>::getProjectedRadiusSearchBox (const Point
     float y1 = (b - sqrt (det)) / a;
     float y2 = (b + sqrt (det)) / a;
 
-//    min = (int)std::floor (std::min (y1, y2));
-//    max = (int)std::ceil  (std::max (y1, y2));
-//
-//    minY = (unsigned) std::min ((int) input_->height - 1, std::max (0, min));
-//    maxY = (unsigned) std::max (std::min ((int) input_->height - 1, max), 0);
-
-    min = std::min ((int) floor (y1), (int) floor (y2));
-    max = std::max ((int) ceil (y1), (int) ceil (y2));
-    minY = (unsigned) std::min ((int) input_->height - 1, std::max (0, min));
-    maxY = (unsigned) std::max (std::min ((int) input_->height - 1, max), 0);
+    min = std::min (static_cast<int> (floor (y1)), static_cast<int> (floor (y2)));
+    max = std::max (static_cast<int> (ceil (y1)), static_cast<int> (ceil (y2)));
+    minY = static_cast<unsigned> (std::min (static_cast<int> (input_->height) - 1, std::max (0, min)));
+    maxY = static_cast<unsigned> (std::max (std::min (static_cast<int> (input_->height) - 1, max), 0));
   }
 
   b = squared_radius * KR_KRT_.coeff (6) - q [0] * q [2];
@@ -308,17 +308,11 @@ pcl::search::OrganizedNeighbor<PointT>::getProjectedRadiusSearchBox (const Point
   {
     float x1 = (b - sqrt (det)) / a;
     float x2 = (b + sqrt (det)) / a;
-//
-//    min = (int)std::floor (std::min (x1, x2));
-//    max = (int)std::ceil  (std::max (x1, x2));
-//
-//    minX = (unsigned) std::min ((int) input_->width - 1, std::max (0, min));
-//    maxX = (unsigned) std::max (std::min ((int) input_->width - 1, max), 0);
 
-    min = std::min ((int) floor (x1), (int) floor (x2));
-    max = std::max ((int) ceil (x1), (int) ceil (x2));
-    minX = (unsigned) std::min ((int)input_->width - 1, std::max (0, min));
-    maxX = (unsigned) std::max (std::min ((int)input_->width - 1, max), 0);
+    min = std::min (static_cast<int> (floor (x1)), static_cast<int> (floor (x2)));
+    max = std::max (static_cast<int> (ceil (x1)), static_cast<int> (ceil (x2)));
+    minX = static_cast<unsigned> (std::min (static_cast<int> (input_->width)- 1, std::max (0, min)));
+    maxX = static_cast<unsigned> (std::max (std::min (static_cast<int> (input_->width) - 1, max), 0));
   }
 }
 
@@ -326,7 +320,7 @@ pcl::search::OrganizedNeighbor<PointT>::getProjectedRadiusSearchBox (const Point
 template<typename PointT> template <typename MatrixType> void
 pcl::search::OrganizedNeighbor<PointT>::makeSymmetric (MatrixType& matrix, bool use_upper_triangular) const
 {
-  if (use_upper_triangular)
+  if (use_upper_triangular && (MatrixType::Flags & Eigen::RowMajorBit) )
   {
     matrix.coeffRef (4) = matrix.coeff (1);
     matrix.coeffRef (8) = matrix.coeff (2);
@@ -386,16 +380,16 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
     return;
   }
   
-  // we just want to use every 16th column and row -> skip = 2^4
-  const unsigned int skip = input_->width >> 4;
-  Eigen::Matrix<Scalar, 4, 4> A = Eigen::Matrix<Scalar, 4, 4>::Zero ();
-  Eigen::Matrix<Scalar, 4, 4> B = Eigen::Matrix<Scalar, 4, 4>::Zero ();
-  Eigen::Matrix<Scalar, 4, 4> C = Eigen::Matrix<Scalar, 4, 4>::Zero ();
-  Eigen::Matrix<Scalar, 4, 4> D = Eigen::Matrix<Scalar, 4, 4>::Zero ();
+  const unsigned ySkip = (input_->height >> pyramid_level_);
+  const unsigned xSkip = (input_->width >> pyramid_level_);
+  Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> A = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
+  Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> B = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
+  Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> C = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
+  Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> D = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
 
-  for (unsigned yIdx = 0, idx = 0; yIdx < input_->height; yIdx += skip, idx += input_->width * (skip-1))
+  for (unsigned yIdx = 0, idx = 0; yIdx < input_->height; yIdx += ySkip, idx += input_->width * (ySkip - 1))
   {
-    for (unsigned xIdx = 0; xIdx < input_->width; xIdx += skip, idx += skip)
+    for (unsigned xIdx = 0; xIdx < input_->width; xIdx += xSkip, idx += xSkip)
     {
       if (!mask_ [idx])
         continue;
@@ -427,28 +421,28 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
         B.coeffRef (0) -= xx * xIdx;
         B.coeffRef (1) -= xy * xIdx;
         B.coeffRef (2) -= xz * xIdx;
-        B.coeffRef (3) -= point.x * xIdx;
+        B.coeffRef (3) -= point.x * static_cast<double>(xIdx);
 
         B.coeffRef (5) -= yy * xIdx;
         B.coeffRef (6) -= yz * xIdx;
-        B.coeffRef (7) -= point.y * xIdx;
+        B.coeffRef (7) -= point.y * static_cast<double>(xIdx);
 
         B.coeffRef (10) -= zz * xIdx;
-        B.coeffRef (11) -= point.z * xIdx;
+        B.coeffRef (11) -= point.z * static_cast<double>(xIdx);
 
         B.coeffRef (15) -= xIdx;
 
         C.coeffRef (0) -= xx * yIdx;
         C.coeffRef (1) -= xy * yIdx;
         C.coeffRef (2) -= xz * yIdx;
-        C.coeffRef (3) -= point.x * yIdx;
+        C.coeffRef (3) -= point.x * static_cast<double>(yIdx);
 
         C.coeffRef (5) -= yy * yIdx;
         C.coeffRef (6) -= yz * yIdx;
-        C.coeffRef (7) -= point.y * yIdx;
+        C.coeffRef (7) -= point.y * static_cast<double>(yIdx);
 
         C.coeffRef (10) -= zz * yIdx;
-        C.coeffRef (11) -= point.z * yIdx;
+        C.coeffRef (11) -= point.z * static_cast<double>(yIdx);
 
         C.coeffRef (15) -= yIdx;
 
@@ -474,7 +468,7 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
   makeSymmetric(C);
   makeSymmetric(D);
 
-  Eigen::Matrix<Scalar, 12, 12> X = Eigen::Matrix<Scalar, 12, 12>::Zero ();
+  Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor> X = Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor>::Zero ();
   X.topLeftCorner<4,4> () = A;
   X.block<4,4> (0, 8) = B;
   X.block<4,4> (8, 0) = B;
@@ -483,28 +477,29 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
   X.block<4,4> (8, 4) = C;
   X.block<4,4> (8, 8) = D;
 
-  Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar, 12, 12> > ei_symm(X);
-  Eigen::Matrix<Scalar, 12, 12> eigen_vectors = ei_symm.eigenvectors();
+  Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor> > ei_symm(X);
+  Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor> eigen_vectors = ei_symm.eigenvectors();
 
   // check whether the residual MSE is low. If its high, the cloud was not captured from a projective device.
   Eigen::Matrix<Scalar, 1, 1> residual_sqr = eigen_vectors.col (0).transpose () * X *  eigen_vectors.col (0);
   if ( fabs (residual_sqr.coeff (0)) > eps_ * A.coeff (15))
   {
-    PCL_ERROR ("[pcl::%s::radiusSearch] Input dataset is not from a projective device!\nResidual (MSE) %f, using %d valid points\n", this->getName ().c_str (), residual_sqr.coeff (0) / A.coeff (15), (int)A.coeff (15));
+    PCL_ERROR ("[pcl::%s::radiusSearch] Input dataset is not from a projective device!\nResidual (MSE) %f, using %d valid points\n", this->getName ().c_str (), residual_sqr.coeff (0) / A.coeff (15), static_cast<int> (A.coeff (15)));
     return;
   }
-  projection_matrix_.coeffRef (0) = eigen_vectors.coeff (0);
-  projection_matrix_.coeffRef (1) = eigen_vectors.coeff (12);
-  projection_matrix_.coeffRef (2) = eigen_vectors.coeff (24);
-  projection_matrix_.coeffRef (3) = eigen_vectors.coeff (36);
-  projection_matrix_.coeffRef (4) = eigen_vectors.coeff (48);
-  projection_matrix_.coeffRef (5) = eigen_vectors.coeff (60);
-  projection_matrix_.coeffRef (6) = eigen_vectors.coeff (72);
-  projection_matrix_.coeffRef (7) = eigen_vectors.coeff (84);
-  projection_matrix_.coeffRef (8) = eigen_vectors.coeff (96);
-  projection_matrix_.coeffRef (9) = eigen_vectors.coeff (108);
-  projection_matrix_.coeffRef (10) = eigen_vectors.coeff (120);
-  projection_matrix_.coeffRef (11) = eigen_vectors.coeff (132);
+
+  projection_matrix_.coeffRef (0) = static_cast <float> (eigen_vectors.coeff (0));
+  projection_matrix_.coeffRef (1) = static_cast <float> (eigen_vectors.coeff (12));
+  projection_matrix_.coeffRef (2) = static_cast <float> (eigen_vectors.coeff (24));
+  projection_matrix_.coeffRef (3) = static_cast <float> (eigen_vectors.coeff (36));
+  projection_matrix_.coeffRef (4) = static_cast <float> (eigen_vectors.coeff (48));
+  projection_matrix_.coeffRef (5) = static_cast <float> (eigen_vectors.coeff (60));
+  projection_matrix_.coeffRef (6) = static_cast <float> (eigen_vectors.coeff (72));
+  projection_matrix_.coeffRef (7) = static_cast <float> (eigen_vectors.coeff (84));
+  projection_matrix_.coeffRef (8) = static_cast <float> (eigen_vectors.coeff (96));
+  projection_matrix_.coeffRef (9) = static_cast <float> (eigen_vectors.coeff (108));
+  projection_matrix_.coeffRef (10) = static_cast <float> (eigen_vectors.coeff (120));
+  projection_matrix_.coeffRef (11) = static_cast <float> (eigen_vectors.coeff (132));
 
   if (projection_matrix_.coeff (0) < 0)
     projection_matrix_ *= -1.0;

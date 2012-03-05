@@ -74,7 +74,7 @@ namespace pcl
       virtual OctreeNode *
       deepCopy () const
       {
-        return (OctreeNode*) new OctreePointCloudDensityLeaf (*this);
+        return (static_cast<OctreeNode*> (new OctreePointCloudDensityLeaf (*this)));
       }
 
       /** \brief Read input data. Only an internal counter is increased.

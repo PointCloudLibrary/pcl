@@ -73,7 +73,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::addPointsFromInputCloud (
     {
       if (isFinite (input_->points[*current]))
       {
-        assert( (*current>=0) && (*current<(int)input_->points.size ()));
+        assert( (*current>=0) && (*current < static_cast<int> (input_->points.size ())));
 
         // add points to octree
         this->addPointIdx (*current);
@@ -87,7 +87,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::addPointsFromInputCloud (
       if (isFinite (input_->points[i]))
       {
         // add points to octree
-        this->addPointIdx ((unsigned int)i);
+        this->addPointIdx (static_cast<unsigned int> (i));
       }
     }
   }
@@ -110,7 +110,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::addPointToCloud (const Po
 
   cloud_arg->points.push_back (point_arg);
 
-  this->addPointIdx ((const int)cloud_arg->points.size () - 1);
+  this->addPointIdx (static_cast<const int> (cloud_arg->points.size ()) - 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -123,7 +123,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::addPointToCloud (const Po
 
   cloud_arg->points.push_back (point_arg);
 
-  this->addPointFromCloud ((const int)cloud_arg->points.size () - 1, indices_arg);
+  this->addPointFromCloud (static_cast<const int> (cloud_arg->points.size ()) - 1, indices_arg);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -212,9 +212,9 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getApproxIntersectedVoxel
   float norm = direction.norm ();
   direction.normalize ();
 
-  const float step_size = (const float)resolution_ * precision;
+  const float step_size = static_cast<const float> (resolution_) * precision;
   // Ensure we get at least one step for the first voxel.
-  const int nsteps = std::max (1, (int) (norm / step_size));
+  const int nsteps = std::max (1, static_cast<int> (norm / step_size));
 
   OctreeKey prev_key;
   prev_key.x = prev_key.y = prev_key.z = -1;
@@ -222,7 +222,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getApproxIntersectedVoxel
   // Walk along the line segment with small steps.
   for (int i = 0; i < nsteps; ++i)
   {
-    Eigen::Vector3f p = origin + (direction * step_size * (const float)i);
+    Eigen::Vector3f p = origin + (direction * step_size * static_cast<const float> (i));
 
     PointT octree_p;
     octree_p.x = p.x ();
@@ -256,7 +256,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getApproxIntersectedVoxel
     voxel_center_list.push_back (center);
   }
 
-  return ((int)voxel_center_list.size ());
+  return (static_cast<int> (voxel_center_list.size ()));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -294,7 +294,8 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::defineBoundingBox (const 
                                                                           const double minY_arg,
                                                                           const double minZ_arg,
                                                                           const double maxX_arg,
-    const double maxY_arg, const double maxZ_arg)
+                                                                          const double maxY_arg, 
+                                                                          const double maxZ_arg)
 {
   // bounding box cannot be changed once the octree contains elements
   assert (this->leafCount_ == 0);
@@ -437,7 +438,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
       if (this->leafCount_ > 0)
       {
         // octree not empty - we add another tree level and thus increase its size by a factor of 2*2*2
-        childIdx = ((!bUpperBoundViolationX) << 2) | ((!bUpperBoundViolationY) << 1) | ((!bUpperBoundViolationZ));
+        childIdx = static_cast<unsigned char> (((!bUpperBoundViolationX) << 2) | ((!bUpperBoundViolationY) << 1) | ((!bUpperBoundViolationZ)));
 
         OctreeBranch* newRootBranch;
 
@@ -448,7 +449,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
 
         this->rootNode_ = newRootBranch;
 
-        octreeSideLen = (double)maxKeys_ * resolution_ ;
+        octreeSideLen = static_cast<double> (maxKeys_) * resolution_ ;
 
         if (!bUpperBoundViolationX)
           minX_ -= octreeSideLen;
@@ -465,7 +466,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
         maxKeys_ = (1 << this->octreeDepth_);
 
         // recalculate bounding box width
-        octreeSideLen = (double)maxKeys_ * resolution_ - minValue;
+        octreeSideLen = static_cast<double> (maxKeys_) * resolution_ - minValue;
 
         // increase octree bounding box
         maxX_ = minX_ + octreeSideLen;
@@ -493,9 +494,6 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
       // no bound violations anymore - leave while loop
       break;
   }
-  
-  
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -504,7 +502,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::addPointIdx (const int po
 {
   OctreeKey key;
 
-  assert (pointIdx_arg < (int) input_->points.size());
+  assert (pointIdx_arg < static_cast<int> (input_->points.size ()));
 
   const PointT& point = input_->points[pointIdx_arg];
 
@@ -523,7 +521,7 @@ template<typename PointT, typename LeafT, typename OctreeT> const PointT&
 pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getPointByIndex (const unsigned int index_arg) const
 {
   // retrieve point from input cloud
-  assert (index_arg < (unsigned int)input_->points.size ());
+  assert (index_arg < static_cast<unsigned int> (input_->points.size ()));
   return (this->input_->points[index_arg]);
 }
 
@@ -554,21 +552,21 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getKeyBitSize ()
   const float minValue = std::numeric_limits<float>::epsilon();
 
   // find maximum key values for x, y, z
-  maxKeyX = (unsigned int)((maxX_ - minX_) / resolution_);
-  maxKeyY = (unsigned int)((maxY_ - minY_) / resolution_);
-  maxKeyZ = (unsigned int)((maxZ_ - minZ_) / resolution_);
+  maxKeyX = static_cast<unsigned int> ((maxX_ - minX_) / resolution_);
+  maxKeyY = static_cast<unsigned int> ((maxY_ - minY_) / resolution_);
+  maxKeyZ = static_cast<unsigned int> ((maxZ_ - minZ_) / resolution_);
 
   // find maximum amount of keys
-  maxVoxels = max (max (max (maxKeyX, maxKeyY), maxKeyZ), (unsigned int)2);
+  maxVoxels = max (max (max (maxKeyX, maxKeyY), maxKeyZ), static_cast<unsigned int> (2));
 
 
   // tree depth == amount of bits of maxVoxels
-  this->octreeDepth_ = max ((min ((unsigned int)OCT_MAXTREEDEPTH, (unsigned int)ceil (this->Log2 (maxVoxels)-minValue))),
-                            (unsigned int)0);
+  this->octreeDepth_ = max ((min (static_cast<unsigned int> (OCT_MAXTREEDEPTH), static_cast<unsigned int> (ceil (this->Log2 (maxVoxels)-minValue)))),
+                                  static_cast<unsigned int> (0));
 
   maxKeys_ = (1 << this->octreeDepth_);
 
-  octreeSideLen = (double)maxKeys_ * resolution_-minValue;
+  octreeSideLen = static_cast<double> (maxKeys_) * resolution_-minValue;
 
   if (this->leafCount_ == 0)
   {
@@ -606,9 +604,9 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::genOctreeKeyforPoint (con
                                                                              OctreeKey & key_arg) const
   {
     // calculate integer key for point coordinates
-    key_arg.x = min ((unsigned int)((point_arg.x - this->minX_) / this->resolution_), maxKeys_ - 1);
-    key_arg.y = min ((unsigned int)((point_arg.y - this->minY_) / this->resolution_), maxKeys_ - 1);
-    key_arg.z = min ((unsigned int)((point_arg.z - this->minZ_) / this->resolution_), maxKeys_ - 1);
+    key_arg.x = min (static_cast<unsigned int> ((point_arg.x - this->minX_) / this->resolution_), maxKeys_ - 1);
+    key_arg.y = min (static_cast<unsigned int> ((point_arg.y - this->minY_) / this->resolution_), maxKeys_ - 1);
+    key_arg.z = min (static_cast<unsigned int> ((point_arg.z - this->minZ_) / this->resolution_), maxKeys_ - 1);
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -619,9 +617,9 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::genOctreeKeyforPoint (
 {
   PointT tempPoint;
 
-  tempPoint.x = (float)pointX_arg;
-  tempPoint.y = (float)pointY_arg;
-  tempPoint.z = (float)pointZ_arg;
+  tempPoint.x = static_cast<float> (pointX_arg);
+  tempPoint.y = static_cast<float> (pointY_arg);
+  tempPoint.z = static_cast<float> (pointZ_arg);
 
   // generate key for point
   genOctreeKeyforPoint (tempPoint, key_arg);
@@ -644,9 +642,9 @@ template<typename PointT, typename LeafT, typename OctreeT> void
 pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::genLeafNodeCenterFromOctreeKey (const OctreeKey & key, PointT & point) const
 {
   // define point to leaf node voxel center
-  point.x = (float)(((double)key.x + 0.5f) * this->resolution_ + this->minX_);
-  point.y = (float)(((double)key.y + 0.5f) * this->resolution_ + this->minY_);
-  point.z = (float)(((double)key.z + 0.5f) * this->resolution_ + this->minZ_);
+  point.x = static_cast<float> ((static_cast<double> (key.x) + 0.5f) * this->resolution_ + this->minX_);
+  point.y = static_cast<float> ((static_cast<double> (key.y) + 0.5f) * this->resolution_ + this->minY_);
+  point.z = static_cast<float> ((static_cast<double> (key.z) + 0.5f) * this->resolution_ + this->minZ_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -657,12 +655,9 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::genVoxelCenterFromOctreeK
     PointT& point_arg) const
 {
   // generate point for voxel center defined by treedepth (bitLen) and key
-  point_arg.x = (float)(((double)(key_arg.x) + 0.5f) * (this->resolution_ * (double)(1 << (this->octreeDepth_
-      - treeDepth_arg))) + this->minX_);
-  point_arg.y = (float)(((double)(key_arg.y) + 0.5f) * (this->resolution_ * (double)(1 << (this->octreeDepth_
-      - treeDepth_arg))) + this->minY_);
-  point_arg.z = (float)(((double)(key_arg.z) + 0.5f) * (this->resolution_ * (double)(1 << (this->octreeDepth_
-      - treeDepth_arg))) + this->minZ_);
+  point_arg.x = static_cast<float> ((static_cast <double> (key_arg.x) + 0.5f) * (this->resolution_ * static_cast<double> (1 << (this->octreeDepth_ - treeDepth_arg))) + this->minX_);
+  point_arg.y = static_cast<float> ((static_cast <double> (key_arg.y) + 0.5f) * (this->resolution_ * static_cast<double> (1 << (this->octreeDepth_ - treeDepth_arg))) + this->minY_);
+  point_arg.z = static_cast<float> ((static_cast <double> (key_arg.z) + 0.5f) * (this->resolution_ * static_cast<double> (1 << (this->octreeDepth_ - treeDepth_arg))) + this->minZ_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -674,16 +669,16 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::genVoxelBoundsFromOctreeK
     Eigen::Vector3f &max_pt) const
 {
   // calculate voxel size of current tree depth
-  double voxel_side_len = this->resolution_ * (double)(1 << (this->octreeDepth_ - treeDepth_arg));
+  double voxel_side_len = this->resolution_ * static_cast<double> (1 << (this->octreeDepth_ - treeDepth_arg));
 
   // calculate voxel bounds
-  min_pt (0) = (float)((double)(key_arg.x) * voxel_side_len + this->minX_);
-  min_pt (1) = (float)((double)(key_arg.y) * voxel_side_len + this->minY_);
-  min_pt (2) = (float)((double)(key_arg.z) * voxel_side_len + this->minZ_);
+  min_pt (0) = static_cast<float> (static_cast<double> (key_arg.x) * voxel_side_len + this->minX_);
+  min_pt (1) = static_cast<float> (static_cast<double> (key_arg.y) * voxel_side_len + this->minY_);
+  min_pt (2) = static_cast<float> (static_cast<double> (key_arg.z) * voxel_side_len + this->minZ_);
 
-  max_pt (0) = (float)((double)(key_arg.x + 1) * voxel_side_len + this->minX_);
-  max_pt (1) = (float)((double)(key_arg.y + 1) * voxel_side_len + this->minY_);
-  max_pt (2) = (float)((double)(key_arg.z + 1) * voxel_side_len + this->minZ_);
+  max_pt (0) = static_cast<float> (static_cast<double> (key_arg.x + 1) * voxel_side_len + this->minX_);
+  max_pt (1) = static_cast<float> (static_cast<double> (key_arg.y + 1) * voxel_side_len + this->minY_);
+  max_pt (2) = static_cast<float> (static_cast<double> (key_arg.z + 1) * voxel_side_len + this->minZ_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -693,7 +688,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getVoxelSquaredSideLen (u
   double sideLen;
 
   // side length of the voxel cube increases exponentially with the octree depth
-  sideLen = this->resolution_ * (double)(1 << (this->octreeDepth_ - treeDepth_arg));
+  sideLen = this->resolution_ * static_cast<double>(1 << (this->octreeDepth_ - treeDepth_arg));
 
   // squared voxel side length
   sideLen *= sideLen;
@@ -742,7 +737,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getOccupiedVoxelCentersRe
       case BRANCH_NODE:
       {
         // recursively proceed with indexed child branch
-        voxelCount += getOccupiedVoxelCentersRecursive ((OctreeBranch*)childNode, newKey, voxelCenterList_arg);
+        voxelCount += getOccupiedVoxelCentersRecursive (static_cast<const OctreeBranch*> (childNode), newKey, voxelCenterList_arg);
         break;
       }
       case LEAF_NODE:
@@ -756,7 +751,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getOccupiedVoxelCentersRe
         break;
       }
       default:
-	break;
+        break;
     }
   }
   return (voxelCount);

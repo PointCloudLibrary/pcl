@@ -151,38 +151,38 @@ namespace pcl
       virtual OctreeNode *
       deepCopy () const
       {
-        return (OctreeNode*) new OctreeLeafEmpty (*this);
+        return (static_cast<OctreeNode*> (new OctreeLeafEmpty (*this)));
       }
 
       /** \brief Empty setData data implementation. This leaf node does not store any data.
-       *  \param data_arg: reference to dummy DataT element to be stored.
-       */
+        * \param[in] data_arg reference to dummy DataT element to be stored.
+        */
 
       virtual void
-        setData (const DataT& data_arg)
+      setData (const DataT& data_arg)
       {
       }
 
       /** \brief Returns a null pointer as this leaf node does not store any data.
-       *  \param data_arg: reference to return pointer of leaf node DataT element (will be set to 0).
-       */
+        * \param[in] data_arg reference to return pointer of leaf node DataT element (will be set to 0).
+        */
       virtual void
-        getData (const DataT*& data_arg) const
+      getData (const DataT*& data_arg) const
       {
         data_arg = 0;
       }
 
       /** \brief Empty getData data vector implementation as this leaf node does not store any data. \
-       *  \param dataVector_arg: reference to dummy DataT vector that is extended with leaf node DataT elements.
-       */
+        * \param[out] dataVector_arg reference to dummy DataT vector that is extended with leaf node DataT elements.
+        */
       virtual void
-        getData (std::vector<DataT>& dataVector_arg) const
+      getData (std::vector<DataT>& dataVector_arg) const
       {
       }
 
       /** \brief Empty reset leaf node implementation as this leaf node does not store any data. */
       virtual void
-        reset ()
+      reset ()
       {
       }
     };
@@ -210,7 +210,7 @@ namespace pcl
         virtual OctreeNode*
         deepCopy () const
         {
-          return (OctreeNode*) new OctreeLeafDataT (*this);
+          return (static_cast<OctreeNode*> (new OctreeLeafDataT (*this)));
         }
 
         /** \brief Copies a DataT element to leaf node memorye.
@@ -274,7 +274,7 @@ namespace pcl
         virtual OctreeNode *
         deepCopy () const
         {
-          return ((OctreeNode*) new OctreeLeafDataTVector (*this));
+          return (static_cast<OctreeNode*> (new OctreeLeafDataTVector (*this)));
         }
 
         /** \brief Pushes a DataT element to internal DataT vector.
@@ -292,10 +292,10 @@ namespace pcl
         virtual void
         getData (const DataT*& data_arg) const
         {
-          DataT* result = 0;
+          const DataT* result = 0;
 
           if (leafDataTVector_.size () > 0)
-            result = (DataT*)&leafDataTVector_.back ();
+            result = reinterpret_cast<const DataT*> (&leafDataTVector_.back ());
 
           data_arg = result;
         }
@@ -339,7 +339,7 @@ namespace pcl
     class OctreeBranch : public OctreeNode
     {
       public:
-        typedef const OctreeNode *octree_node_ptr;
+        typedef OctreeNode *octree_node_ptr;
 
         /** \brief Constructor for initializing child node pointer array. */
         OctreeBranch ()
@@ -361,7 +361,7 @@ namespace pcl
         virtual OctreeNode*
         deepCopy () const
         {
-          return ((OctreeNode*) new OctreeBranch (*this));
+          return (static_cast<OctreeNode*> (new OctreeBranch (*this)));
         }
 
         /** \brief Copy operator

@@ -376,25 +376,25 @@ namespace pcl
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         /** \brief Retrieve a const child node pointer for child node at childIdx.
-         *  \param branch_arg: reference to octree branch class
-         *  \param childIdx_arg: index to child node
-         *  \return const pointer to octree child node class
-         * */
+          * \param[in] branch_arg reference to octree branch class
+          * \param[in] childIdx_arg index to child node
+          * \return const pointer to octree child node class
+          */
+        inline OctreeNode*
+        getBranchChild (OctreeBranch& branch_arg, const unsigned char childIdx_arg) const
+        {
+          return (branch_arg[childIdx_arg]);
+        }
+
+        /** \brief Retrieve a const child node pointer for child node at childIdx.
+          * \param[in] branch_arg reference to octree branch class
+          * \param[in] childIdx_arg index to child node
+          * \return const pointer to octree child node class
+          */
         inline const OctreeNode*
         getBranchChild (const OctreeBranch& branch_arg, const unsigned char childIdx_arg) const
         {
-          return branch_arg[childIdx_arg];
-        }
-
-        /** \brief Retrieve a child node pointer for child node at childIdx.
-         *  \param branch_arg: reference to octree branch class
-         *  \param childIdx_arg: index to child node
-         *  \return pointer to octree child node class
-         * */
-        inline OctreeBranch*
-        getBranchChild (const OctreeBranch& branch_arg, const unsigned char childIdx_arg)
-        {
-          return (OctreeBranch*)branch_arg[childIdx_arg];
+          return (branch_arg[childIdx_arg]);
         }
 
         /** \brief Check if branch is pointing to a particular child node
@@ -421,11 +421,9 @@ namespace pcl
           // create bit pattern
           nodeBits = 0;
           for (i = 0; i < 8; i++)
-          {
-            nodeBits |= (!!branch_arg[i]) << i;
-          }
+            nodeBits |= static_cast<char> ((!!branch_arg[i]) << i);
 
-          return nodeBits;
+          return (nodeBits);
         }
          
         /** \brief Assign new child node to branch
@@ -434,7 +432,7 @@ namespace pcl
          *  \param newChild_arg: pointer to new child node
          * */
         inline void
-        setBranchChild (OctreeBranch& branch_arg, const unsigned char childIdx_arg, const OctreeNode * newChild_arg)
+        setBranchChild (OctreeBranch& branch_arg, const unsigned char childIdx_arg, OctreeNode *newChild_arg)
         {
           branch_arg[childIdx_arg] = newChild_arg;
         }
@@ -448,25 +446,25 @@ namespace pcl
         {
           if (branchHasChild (branch_arg, childIdx_arg))
           {
-            const OctreeNode* branchChild;
-            branchChild = getBranchChild (branch_arg, childIdx_arg);
+            OctreeNode* branchChild = getBranchChild (branch_arg, childIdx_arg);
             
             switch (branchChild->getNodeType ())
             {
               case BRANCH_NODE:
               {
                 // free child branch recursively
-                deleteBranch (*(OctreeBranch*)branchChild);
+                deleteBranch (*static_cast<OctreeBranch*> (branchChild));
                 // push unused branch to branch pool
-                unusedBranchesPool_.push_back ((OctreeBranch*)branchChild);
+                unusedBranchesPool_.push_back (static_cast<OctreeBranch*> (branchChild));
               }
               break;
 
               case LEAF_NODE:
+              {
                 // push unused leaf to branch pool
-                unusedLeafsPool_.push_back ((OctreeLeaf*)branchChild);
+                unusedLeafsPool_.push_back (static_cast<OctreeLeaf*> (branchChild));
                 break;
-                
+              } 
               default:
                 break;
             }
@@ -486,9 +484,7 @@ namespace pcl
 
           // delete all branch node children
           for (i = 0; i < 8; i++)
-          {
             deleteBranchChild (branch_arg, i);
-          }
         }
 
         /** \brief Create a new branch class and receive a pointer to it
@@ -501,7 +497,7 @@ namespace pcl
           {
             // branch pool is empty
             // we need to create a new octree branch class
-            newBranchChild_arg = (OctreeBranch*)new OctreeBranch ();
+            newBranchChild_arg = static_cast<OctreeBranch*> (new OctreeBranch ());
           }
           else
           {
@@ -521,8 +517,8 @@ namespace pcl
         createBranchChild (OctreeBranch& branch_arg, const unsigned char childIdx_arg,
                            OctreeBranch*& newBranchChild_arg)
         {
-          createBranch ( newBranchChild_arg );
-          setBranchChild (branch_arg, childIdx_arg, (OctreeNode*)newBranchChild_arg);
+          createBranch (newBranchChild_arg);
+          setBranchChild (branch_arg, childIdx_arg, static_cast<OctreeNode*> (newBranchChild_arg));
         }
 
         /** \brief Create and add a new leaf child to a branch class
@@ -538,7 +534,7 @@ namespace pcl
           {
             // leaf pool is empty
             // we need to create a new octree leaf class
-            newLeafChild_arg = (OctreeLeaf*)new OctreeLeaf ();
+            newLeafChild_arg = static_cast<OctreeLeaf*> (new OctreeLeaf ());
           }
           else
           {
@@ -549,7 +545,7 @@ namespace pcl
 
           newLeafChild_arg->reset ();
 
-          setBranchChild (branch_arg, childIdx_arg, (OctreeNode*)newLeafChild_arg);
+          setBranchChild (branch_arg, childIdx_arg, static_cast<OctreeNode*> (newLeafChild_arg));
         }
 
         /** \brief Reset branch class
@@ -686,7 +682,7 @@ namespace pcl
          *  \param key_arg: octree key of new leaf node
          **/
         virtual void
-        serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg);
+        serializeLeafCallback (const OctreeLeaf& leaf_arg, const OctreeKey& key_arg);
 
         /** \brief Decode leaf node data during serialization
          *  \param leaf_arg: reference to new leaf node
@@ -694,7 +690,7 @@ namespace pcl
          *  \param dataVector_arg: DataT objects from leaf are pushed to this DataT vector
          **/
         virtual void
-        serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg, std::vector<DataT>& dataVector_arg);
+        serializeLeafCallback (const OctreeLeaf& leaf_arg, const OctreeKey& key_arg, std::vector<DataT>& dataVector_arg);
 
         /** \brief Initialize leaf nodes during deserialization
          *  \param leaf_arg: reference to new leaf node

@@ -157,7 +157,7 @@ namespace pcl
       nearestKSearch (const PointCloud &cloud, int index, int k, 
                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
       {
-        assert (index >= 0 && index < (int)cloud.points.size () && "Out-of-bounds error in nearestKSearch!");
+        assert (index >= 0 && index < static_cast<int> (cloud.points.size ()) && "Out-of-bounds error in nearestKSearch!");
         return (nearestKSearch (cloud.points[index], k, k_indices, k_sqr_distances));
       }
 
@@ -206,12 +206,12 @@ namespace pcl
       {
         if (indices_ == NULL)
         {
-          assert (index >= 0 && index < (int)input_->points.size () && "Out-of-bounds error in nearestKSearch!");
+          assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in nearestKSearch!");
           return (nearestKSearch (input_->points[index], k, k_indices, k_sqr_distances));
         }
         else
         {
-          assert (index >= 0 && index < (int)indices_->size () && "Out-of-bounds error in nearestKSearch!");
+          assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in nearestKSearch!");
           return (nearestKSearch (input_->points[(*indices_)[index]], k, k_indices, k_sqr_distances));
         }
       }
@@ -252,7 +252,7 @@ namespace pcl
                     std::vector<int> &k_indices, std::vector<float> &k_sqr_distances, 
                     unsigned int max_nn = 0) const
       {
-        assert (index >= 0 && index < (int)cloud.points.size () && "Out-of-bounds error in radiusSearch!");
+        assert (index >= 0 && index < static_cast<int> (cloud.points.size ()) && "Out-of-bounds error in radiusSearch!");
         return (radiusSearch(cloud.points[index], radius, k_indices, k_sqr_distances, max_nn));
       }
 
@@ -304,12 +304,12 @@ namespace pcl
       {
         if (indices_ == NULL)
         {
-          assert (index >= 0 && index < (int)input_->points.size () && "Out-of-bounds error in radiusSearch!");
+          assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in radiusSearch!");
           return (radiusSearch (input_->points[index], radius, k_indices, k_sqr_distances, max_nn));
         }
         else
         {
-          assert (index >= 0 && index < (int)indices_->size () && "Out-of-bounds error in radiusSearch!");
+          assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in radiusSearch!");
           return (radiusSearch (input_->points[(*indices_)[index]], radius, k_indices, k_sqr_distances, max_nn));
         }
       }

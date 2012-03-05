@@ -474,7 +474,7 @@ namespace pcl
                               unsigned char &a) const
         {
           // Account for division by zero when direction vector is 0.0
-          const float epsilon = 1e-10;
+          const float epsilon = 1e-10f;
           if (direction.x () == 0.0)
             direction.x () = epsilon;
           if (direction.y () == 0.0)
@@ -488,19 +488,19 @@ namespace pcl
           // Handle negative axis direction vector
           if (direction.x () < 0.0)
           {
-            origin.x () = (float)this->minX_ + (float)this->maxX_ - origin.x ();
+            origin.x () = static_cast<float> (this->minX_) + static_cast<float> (this->maxX_) - origin.x ();
             direction.x () = -direction.x ();
             a |= 4;
           }
           if (direction.y () < 0.0)
           {
-            origin.y () = (float)this->minY_ + (float)this->maxY_ - origin.y ();
+            origin.y () = static_cast<float> (this->minY_) + static_cast<float> (this->maxY_) - origin.y ();
             direction.y () = -direction.y ();
             a |= 2;
           }
           if (direction.z () < 0.0)
           {
-            origin.z () = (float)this->minZ_ + (float)this->maxZ_ - origin.z ();
+            origin.z () = static_cast<float> (this->minZ_) + static_cast<float> (this->maxZ_) - origin.z ();
             direction.z () = -direction.z ();
             a |= 1;
           }
