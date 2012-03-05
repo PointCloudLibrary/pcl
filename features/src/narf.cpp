@@ -138,13 +138,6 @@ Narf::extractDescriptor(int descriptor_size)
   float weight_factor = -2.0f*(weight_for_first_point-1.0f) / ((weight_for_first_point+1.0f)*float(no_of_beam_points-1)),
         weight_offset = 2.0f*weight_for_first_point / (weight_for_first_point+1.0f);
 
-  // Test for weight formulae correctness (Summ should be 1.0):
-  //float weight_sum=0.0f;
-  //for (int beam_value_idx=0; beam_value_idx<no_of_beam_points; ++beam_value_idx)
-    //weight_sum += weight_factor*float(beam_value_idx) + weight_offset;
-  //cout << PVARN(weight_sum);
-
-  //MEASURE_FUNCTION_TIME;
   if (descriptor_size != descriptor_size_)
   {
     descriptor_size_ = descriptor_size;
@@ -178,7 +171,7 @@ Narf::extractDescriptor(int descriptor_size)
             beam_point_y = beam_point_factor_y * beam_point_idx;
       float beam_point_cell_x = cell_factor * (beam_point_x+cell_offset),
             beam_point_cell_y = cell_factor * (beam_point_y+cell_offset);
-      //cout << PVARC(beam_point_idx)<<PVARC(beam_point_x)<<PVARC(beam_point_y)<<PVARC(beam_point_cell_x)<<PVARN(beam_point_cell_y);
+
       int cell_x=pcl_lrint(beam_point_cell_x), cell_y=pcl_lrint(beam_point_cell_y);
       beam_value = surface_patch_[cell_y*surface_patch_pixel_size_ + cell_x];
       if (!pcl_isfinite(beam_value))
@@ -193,20 +186,13 @@ Narf::extractDescriptor(int descriptor_size)
     {
       float beam_value1=beam_values[beam_value_idx],
             beam_value2=beam_values[beam_value_idx+1];
-      //if (!pcl_isfinite(beam_value1) || !pcl_isfinite(beam_value2))
-      //continue; 
 
       float current_weight = weight_factor*float(beam_value_idx) + weight_offset;
       float diff = beam_value2-beam_value1;
-      //cout << "Point "<<beam_value_idx<<" with value "<<diff<<" has weight "<<current_weight<<" for angle "<<rad2deg(angle)<<".\n";
       current_cell += current_weight * diff;
     }
     // Scaling for easy descriptor distances:
     current_cell = atan2(current_cell, max_dist)/deg2rad(180.0f);  // Scales the result to [-0.5, 0.5]
-    //cout << "Direction: "<<sinf(angle)<<","<<-cosf(angle)<<". "<<PVARAC(angle)<<PVARN(current_cell);
-    //descriptor_value = pow(fabsf(current_cell), 0.8f) / descriptor_size_;
-    //if (current_cell < 0.0f)
-      //descriptor_value = -descriptor_value;
     descriptor_value = current_cell;
   }
   return true;
@@ -302,7 +288,6 @@ Narf::getBlurredSurfacePatch (int new_pixel_size, int blur_radius) const
       float& integral_pixel = *(integral_image_ptr++);
       int old_x = pcl_lrint(floor(new_to_old_factor * float(x))),
           old_y = pcl_lrint(floor(new_to_old_factor * float(y)));
-      //cout << "Old: "<<surface_patch_pixel_size_<<", new: "<<new_pixel_size<<". "<<x<<","<<y<<" -> "<<old_x<<","<<old_y<<"\n";
       integral_pixel = surface_patch_[old_y*surface_patch_pixel_size_ + old_x];
       if (pcl_isinf(integral_pixel))
         integral_pixel = 0.5f*surface_patch_world_size_;
@@ -454,9 +439,6 @@ Narf::extractForEveryRangeImagePointAndAddToList (const RangeImage& range_image,
 void 
 Narf::getRotations (std::vector<float>& rotations, std::vector<float>& strengths) const
 {
-  //cout << __PRETTY_FUNCTION__ << " called.\n";
-  //MEASURE_FUNCTION_TIME;
-  
   int angle_steps_no = (std::max) (descriptor_size_, 36);
   float min_angle_dist_between_rotations = deg2rad(70.0f);
   float angle_step_size1 = deg2rad(360.0f)/float(angle_steps_no);

@@ -171,12 +171,43 @@ namespace pcl
       };
     
       /** \brief Empty constructor. */
-      GreedyProjectionTriangulation () : mu_ (0), search_radius_ (0), // must be set by user
-                                         nnn_ (100),
-                                         minimum_angle_ (M_PI/18), // 10 degrees
-                                         maximum_angle_ (2*M_PI/3), // 120 degrees
-                                         eps_angle_(M_PI/4), //45 degrees,
-                                         consistent_(false), consistent_ordering_ (false)
+      GreedyProjectionTriangulation () : 
+        mu_ (0), 
+        search_radius_ (0), // must be set by user
+        nnn_ (100),
+        minimum_angle_ (M_PI/18), // 10 degrees
+        maximum_angle_ (2*M_PI/3), // 120 degrees
+        eps_angle_(M_PI/4), //45 degrees,
+        consistent_(false), 
+        consistent_ordering_ (false),
+        triangle_ (),
+        coords_ (),
+        angles_ (),
+        R_ (),
+        state_ (),
+        source_ (),
+        ffn_ (),
+        sfn_ (),
+        part_ (),
+        fringe_queue_ (),
+        is_current_free_ (false),
+        current_index_ (),
+        prev_is_ffn_ (false),
+        prev_is_sfn_ (false),
+        next_is_ffn_ (false),
+        next_is_sfn_ (false),
+        changed_1st_fn_ (false),
+        changed_2nd_fn_ (false),
+        new2boundary_ (),
+        already_connected_ (false),
+        proj_qp_ (),
+        u_ (),
+        v_ (),
+        uvn_ffn_ (),
+        uvn_sfn_ (),
+        uvn_next_ffn_ (),
+        uvn_next_sfn_ (),
+        tmp_ ()
       {};
 
       /** \brief Set the multiplier of the nearest neighbor distance to obtain the final search radius for each point
@@ -332,6 +363,7 @@ namespace pcl
       /** \brief Struct for storing the edges starting from a fringe point **/
       struct doubleEdge
       {
+        doubleEdge () : index (0), first (), second () {}
         int index;
         Eigen::Vector2f first;
         Eigen::Vector2f second;

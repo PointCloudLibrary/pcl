@@ -40,6 +40,7 @@
 #ifndef PCL_SURFACE_IMPL_MLS_H_
 #define PCL_SURFACE_IMPL_MLS_H_
 
+#include <pcl/point_traits.h>
 #include "pcl/surface/mls.h"
 #include <pcl/common/io.h>
 #include <pcl/common/centroid.h>
@@ -149,11 +150,11 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (PointInT &
   float curvature = covariance_matrix.trace ();
   // Compute the curvature surface change
   if (curvature != 0)
-    curvature = fabs (eigen_value / curvature);
+    curvature = fabsf (eigen_value / curvature);
 
   // Perform polynomial fit to update point and normal
   ////////////////////////////////////////////////////
-  if (polynomial_fit_ && (int)nn_indices.size () >= nr_coeff_)
+  if (polynomial_fit_ && static_cast<int> (nn_indices.size ()) >= nr_coeff_)
   {
     // Get a copy of the plane normal easy access
     Eigen::Vector3d plane_normal = model_coefficients.head<3> ().cast<double> ();
@@ -166,7 +167,7 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (PointInT &
       de_meaned[ni][0] = input_->points[nn_indices[ni]].x - point[0];
       de_meaned[ni][1] = input_->points[nn_indices[ni]].y - point[1];
       de_meaned[ni][2] = input_->points[nn_indices[ni]].z - point[2];
-      nn_sqr_dists[ni] = de_meaned[ni].dot (de_meaned[ni]);
+      nn_sqr_dists[ni] = static_cast<float> (de_meaned[ni].dot (de_meaned[ni]));
     }
 
     // Allocate matrices and vectors to hold the data used for the polynomial fit

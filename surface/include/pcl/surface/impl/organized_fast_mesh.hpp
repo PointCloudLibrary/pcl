@@ -240,8 +240,8 @@ pcl::OrganizedFastMesh<PointInT>::makeAdaptiveCutMesh (std::vector<pcl::Vertices
 
       if (right_cut_upper && right_cut_lower && left_cut_upper && left_cut_lower)
       {
-        float dist_right_cut = fabs (input_->points[index_down].z - input_->points[index_right].z);
-        float dist_left_cut = fabs (input_->points[i].z - input_->points[index_down_right].z);
+        float dist_right_cut = fabsf (input_->points[index_down].z - input_->points[index_right].z);
+        float dist_left_cut = fabsf (input_->points[i].z - input_->points[index_down_right].z);
         if (dist_right_cut >= dist_left_cut)
         {
           if (store_shadowed_faces_ || !isShadowedTriangle (i, index_down_right, index_right))

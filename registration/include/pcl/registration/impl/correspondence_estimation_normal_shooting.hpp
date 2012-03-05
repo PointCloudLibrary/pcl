@@ -93,9 +93,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
       }
     }
     if (min_dist > max_distance)
-    {
       continue;
-    }
     corr.index_query = i;
     corr.index_match = min_index;
     corr.distance = min_dist;
