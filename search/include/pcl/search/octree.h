@@ -193,7 +193,7 @@ namespace pcl
           tree_->radiusSearch (cloud, index, radius, k_indices, k_sqr_distances, max_nn);
           if (sorted_results_)
             this->sortResults (k_indices, k_sqr_distances);
-          return ((int) k_indices.size ());
+          return (static_cast<int> (k_indices.size ()));
         }
 
         /** \brief search for all neighbors of query point that are within a given radius.
@@ -214,7 +214,7 @@ namespace pcl
           tree_->radiusSearch (p_q, radius, k_indices, k_sqr_distances, max_nn);
           if (sorted_results_)
             this->sortResults (k_indices, k_sqr_distances);
-          return ((int) k_indices.size ());
+          return (static_cast<int> (k_indices.size ()));
         }
 
         /** \brief search for all neighbors of query point that are within a given radius.
@@ -233,7 +233,7 @@ namespace pcl
           tree_->radiusSearch (index, radius, k_indices, k_sqr_distances, max_nn);
           if (sorted_results_)
             this->sortResults (k_indices, k_sqr_distances);
-          return ((int) k_indices.size ());
+          return (static_cast<int> (k_indices.size ()));
         }
 
 

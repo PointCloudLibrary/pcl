@@ -134,7 +134,7 @@ namespace pcl
           if (this->currentNode_->getNodeType () == BRANCH_NODE)
           {
             // current node is a branch node
-            const OctreeBranch* currentBranch = (const OctreeBranch*)this->currentNode_;
+            const OctreeBranch* currentBranch = static_cast<const OctreeBranch*> (this->currentNode_);
 
             // find next existing child node
             while ((currentChildIdx_ < 8) && !(itNode = this->octree_.getBranchChild (*currentBranch, currentChildIdx_)))
@@ -245,9 +245,9 @@ namespace pcl
           for (i = 0; i < 8; i++)
           {
             // current node is a branch node
-            const OctreeBranch* currentBranch = (const OctreeBranch*)this->currentNode_;
+            const OctreeBranch* currentBranch = static_cast<const OctreeBranch*> (this->currentNode_);
 
-            const OctreeNode* itNode = (const OctreeNode*)this->octree_.getBranchChild (*currentBranch, i);
+            const OctreeNode* itNode = static_cast<const OctreeNode*> (this->octree_.getBranchChild (*currentBranch, i));
 
             // if node exist, push it to FIFO
             if (itNode)
@@ -272,52 +272,47 @@ namespace pcl
       }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT, typename OctreeT>
-      void
-      OctreeBreadthFirstIterator<DataT, LeafT, OctreeT>::reset ()
-      {
-        OctreeIteratorBase<DataT, LeafT, OctreeT>::reset ();
+    template<typename DataT, typename LeafT, typename OctreeT> void
+    OctreeBreadthFirstIterator<DataT, LeafT, OctreeT>::reset ()
+    {
+      OctreeIteratorBase<DataT, LeafT, OctreeT>::reset ();
 
-        // init FIFO
-        FIFO_.clear ();
-
-      }
+      // init FIFO
+      FIFO_.clear ();
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT, typename OctreeT>
-      OctreeBreadthFirstIterator<DataT, LeafT, OctreeT>&
-      OctreeBreadthFirstIterator<DataT, LeafT, OctreeT>::operator++ ()
+    template<typename DataT, typename LeafT, typename OctreeT> OctreeBreadthFirstIterator<DataT, LeafT, OctreeT>&
+    OctreeBreadthFirstIterator<DataT, LeafT, OctreeT>::operator++ ()
+    {
+      if (this->currentNode_)
       {
-        if (this->currentNode_)
+
+        // add childs of current node to FIFO
+        addChildNodesToFIFO (this->currentNode_);
+
+        if (FIFO_.size () > 0)
         {
+          FIFOElement FIFOElement;
 
-          // add childs of current node to FIFO
-          addChildNodesToFIFO (this->currentNode_);
+          // get FIFO front element
+          FIFOElement = FIFO_.front ();
+          FIFO_.pop_front ();
 
-          if (FIFO_.size () > 0)
-          {
-            FIFOElement FIFOElement;
-
-            // get FIFO front element
-            FIFOElement = FIFO_.front ();
-            FIFO_.pop_front ();
-
-            // update iterator variables
-            this->currentNode_ = FIFOElement.node;
-            this->currentOctreeKey_ = FIFOElement.key;
-            this->currentOctreeDepth_ = FIFOElement.depth;
-
-          }
-          else
-          {
-            // last node reached
-            this->currentNode_ = NULL;
-          }
-
+          // update iterator variables
+          this->currentNode_ = FIFOElement.node;
+          this->currentOctreeKey_ = FIFOElement.key;
+          this->currentOctreeDepth_ = FIFOElement.depth;
         }
-
-        return (*this);
+        else
+        {
+          // last node reached
+          this->currentNode_ = NULL;
+        }
       }
+
+      return (*this);
+    }
   }
 }
 

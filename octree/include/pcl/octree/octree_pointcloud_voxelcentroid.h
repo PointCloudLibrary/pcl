@@ -131,9 +131,9 @@ namespace pcl
               // voxel key did change - calculate centroid and push it to result vector
               if (pointCounter > 0)
               {
-                meanPoint.x /= (float)pointCounter;
-                meanPoint.y /= (float)pointCounter;
-                meanPoint.z /= (float)pointCounter;
+                meanPoint.x /= static_cast<float> (pointCounter);
+                meanPoint.y /= static_cast<float> (pointCounter);
+                meanPoint.z /= static_cast<float> (pointCounter);
 
                 voxelCentroidList_arg.push_back (meanPoint);
               }
@@ -151,15 +151,15 @@ namespace pcl
           // push last centroid to result vector if necessary
           if (pointCounter > 0)
           {
-            meanPoint.x /= (float)pointCounter;
-            meanPoint.y /= (float)pointCounter;
-            meanPoint.z /= (float)pointCounter;
+            meanPoint.x /= static_cast<float> (pointCounter);
+            meanPoint.y /= static_cast<float> (pointCounter);
+            meanPoint.z /= static_cast<float> (pointCounter);
 
             voxelCentroidList_arg.push_back (meanPoint);
           }
 
           // return size of centroid vector
-          return voxelCentroidList_arg.size ();
+          return (voxelCentroidList_arg.size ());
         }
 
         /** \brief Get centroid for a single voxel addressed by a PointT point.
@@ -200,12 +200,12 @@ namespace pcl
             }
 
             // calculate centroid
-            voxelCentroid_arg.x = meanPoint.x / (float)pointCounter;
-            voxelCentroid_arg.y = meanPoint.y / (float)pointCounter;
-            voxelCentroid_arg.z = meanPoint.z / (float)pointCounter;
+            voxelCentroid_arg.x = meanPoint.x / static_cast<float> (pointCounter);
+            voxelCentroid_arg.y = meanPoint.y / static_cast<float> (pointCounter);
+            voxelCentroid_arg.z = meanPoint.z / static_cast<float> (pointCounter);
           }
 
-          return bResult;
+          return (bResult);
         }
 
         /** \brief Get centroid for a single voxel addressed by a PointT point from input cloud.

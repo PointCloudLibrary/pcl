@@ -50,6 +50,11 @@
 
 #include <iterator>
 
+// Ignore warnings in the above headers
+#ifdef __GNUC__
+#pragma GCC system_header 
+#endif
+
 namespace pcl
 {
   namespace octree
@@ -77,6 +82,30 @@ namespace pcl
           reset ();
         }
 
+        /** \brief Copy constructor.
+          * \param[in] src the iterator to copy into this
+          */
+        OctreeIteratorBase (const OctreeIteratorBase& src) :
+            octree_ (src.octree_), 
+            currentNode_ (src.currentNode_), 
+            currentOctreeDepth_ (src.currentOctreeDepth_),
+            currentOctreeKey_ (src.currentOctreeKey_)
+        {
+        }
+
+        /** \brief Copy operator.
+          * \param[in] src the iterator to copy into this
+          */
+        inline OctreeIteratorBase&
+        operator = (const OctreeIteratorBase& src)
+        {
+          octree_ = src.octree_;
+          currentNode_ = src.currentNode_;
+          currentOctreeDepth_ = src.currentOctreeDepth_;
+          currentOctreeKey_ = src.currentOctreeKey_;
+          return (*this);
+        }
+
         /** \brief Empty deconstructor. */
         virtual
         ~OctreeIteratorBase ()
@@ -88,7 +117,7 @@ namespace pcl
         reset ()
         {
           // initialize iterator globals
-          currentNode_ = (OctreeNode*)octree_.getRootNode ();
+          currentNode_ = static_cast<const OctreeNode*> (octree_.getRootNode ());
           currentOctreeDepth_ = 0;
 
           // reset octree key
@@ -161,14 +190,14 @@ namespace pcl
           {
 
             // current node is a branch node
-            const OctreeBranch* currentBranch = (const OctreeBranch*)this->currentNode_;
+            const OctreeBranch* currentBranch = static_cast<const OctreeBranch*> (this->currentNode_);
 
             // get child configuration bit pattern
             ret = octree_.getBranchBitPattern (*currentBranch);
 
           }
 
-          return ret;
+          return (ret);
         }
 
 
@@ -182,7 +211,7 @@ namespace pcl
 
           if (this->currentNode_ && (this->currentNode_->getNodeType () == LEAF_NODE))
           {
-            const LeafT* leafNode = (const LeafT*)this->currentNode_;
+            const LeafT* leafNode = static_cast<const LeafT*> (this->currentNode_);
             leafNode->getData (result);
           }
           data_arg = result;
@@ -196,7 +225,7 @@ namespace pcl
         {
           if (this->currentNode_ && (this->currentNode_->getNodeType () == LEAF_NODE))
           {
-            const LeafT* leafNode = (const LeafT*)this->currentNode_;
+            const LeafT* leafNode = static_cast<const LeafT*> (this->currentNode_);
             leafNode->getData (dataVector_arg);
           }
         }
@@ -427,7 +456,7 @@ namespace pcl
           const LeafT* ret = NULL;
 
           if (this->currentNode_ && (this->currentNode_->getNodeType () == LEAF_NODE))
-            ret = (const LeafT*)this->currentNode_;
+            ret = static_cast<const LeafT*> (this->currentNode_);
           return (ret);
         }
       };

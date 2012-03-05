@@ -87,17 +87,13 @@ namespace pcl
          * \return number of point indices
          */
         int
-        getPointIndicesFromNewVoxels ( std::vector<int> &indicesVector_arg, const int minPointsPerLeaf_arg = 0 )
+        getPointIndicesFromNewVoxels (std::vector<int> &indicesVector_arg, const int minPointsPerLeaf_arg = 0)
         {
           this->serializeNewLeafs (indicesVector_arg, minPointsPerLeaf_arg);
-
-          return (int) indicesVector_arg.size();
+          return (static_cast<int> (indicesVector_arg.size ()));
         }
-
-
-      };
+    };
   }
-
 }
 
 #define PCL_INSTANTIATE_OctreePointCloudChangeDetector(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudChangeDetector<T>;

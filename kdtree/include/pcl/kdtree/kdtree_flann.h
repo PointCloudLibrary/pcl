@@ -359,18 +359,18 @@ namespace pcl
         epsilon_ = 0.0f;   // default error bound value
         input_   = cloud;
         indices_ = indices;
-        dim_ = (int) cloud->points.cols (); // Number of dimensions = number of columns in the eigen matrix
+        dim_ = static_cast<int> (cloud->points.cols ()); // Number of dimensions = number of columns in the eigen matrix
         
         // Allocate enough data
         if (indices != NULL)
         {
-          total_nr_points_ = (int) indices_->size ();
+          total_nr_points_ = static_cast<int> (indices_->size ());
           convertCloudToArray (*input_, *indices_);
         }
         else
         {
           // get the number of points as the number of rows
-          total_nr_points_ = (int) cloud->points.rows ();
+          total_nr_points_ = static_cast<int> (cloud->points.rows ());
           convertCloudToArray (*input_);
         }
 
@@ -431,7 +431,7 @@ namespace pcl
         // Do mapping to original point cloud
         if (!identity_mapping_) 
         {
-          for (size_t i = 0; i < (size_t)k; ++i)
+          for (size_t i = 0; i < static_cast<size_t> (k); ++i)
           {
             int& neighbor_index = k_indices[i];
             neighbor_index = index_mapping_[neighbor_index];
@@ -454,7 +454,7 @@ namespace pcl
       nearestKSearch (const PointCloud &cloud, int index, int k, 
                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
       {
-        assert (index >= 0 && index < (int)cloud.points.size () && "Out-of-bounds error in nearestKSearch!");
+        assert (index >= 0 && index < static_cast<int> (cloud.points.size ()) && "Out-of-bounds error in nearestKSearch!");
         return (nearestKSearch (cloud.points.row (index), k, k_indices, k_sqr_distances));
       }
 
@@ -473,12 +473,12 @@ namespace pcl
       {
         if (indices_ == NULL)
         {
-          assert (index >= 0 && index < (int)input_->points.size () && "Out-of-bounds error in nearestKSearch!");
+          assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in nearestKSearch!");
           return (nearestKSearch (input_->points.row (index), k, k_indices, k_sqr_distances));
         }
         else
         {
-          assert (index >= 0 && index < (int)indices_->size () && "Out-of-bounds error in nearestKSearch!");
+          assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in nearestKSearch!");
           return (nearestKSearch (input_->points.row ((*indices_)[index]), k, k_indices, k_sqr_distances));
         }
       }
@@ -507,20 +507,21 @@ namespace pcl
         int neighbors_in_radius = 0;
 
         // If the user pre-allocated the arrays, we are only going to 
-        if (k_indices.size () == (size_t)total_nr_points_ && k_sqr_dists.size () == (size_t)total_nr_points_)
+        if (k_indices.size () == static_cast<size_t> (total_nr_points_) && 
+            k_sqr_dists.size () == static_cast<size_t> (total_nr_points_))
         {
           flann::Matrix<int> k_indices_mat (&k_indices[0], 1, k_indices.size ());
           flann::Matrix<float> k_distances_mat (&k_sqr_dists[0], 1, k_sqr_dists.size ());
           neighbors_in_radius = flann_index_->radiusSearch (flann::Matrix<float> (&query[0], 1, dim),
                                                             k_indices_mat,
                                                             k_distances_mat,
-                                                            (float) (radius * radius), 
+                                                            static_cast<float> (radius * radius), 
                                                             param_radius_);
         }
         else
         {
           // Has max_nn been set properly?
-          if (max_nn == 0 || max_nn > (unsigned int)total_nr_points_)
+          if (max_nn == 0 || max_nn > static_cast<unsigned int> (total_nr_points_))
             max_nn = total_nr_points_;
 
           static flann::Matrix<int> indices_empty;
@@ -528,9 +529,9 @@ namespace pcl
           neighbors_in_radius = flann_index_->radiusSearch (flann::Matrix<float> (&query[0], 1, dim),
                                                             indices_empty,
                                                             dists_empty,
-                                                            (float) (radius * radius), 
+                                                            static_cast<float> (radius * radius), 
                                                             param_radius_);
-          neighbors_in_radius = std::min ((unsigned int)neighbors_in_radius, max_nn);
+          neighbors_in_radius = std::min (static_cast<unsigned int> (neighbors_in_radius), max_nn);
 
           k_indices.resize (neighbors_in_radius);
           k_sqr_dists.resize (neighbors_in_radius);
@@ -541,7 +542,7 @@ namespace pcl
             flann_index_->radiusSearch (flann::Matrix<float> (&query[0], 1, dim),
                                         k_indices_mat,
                                         k_distances_mat,
-                                        (float) (radius * radius), 
+                                        static_cast<float> (radius * radius), 
                                         param_radius_);
           }
         }
@@ -575,7 +576,7 @@ namespace pcl
                     std::vector<int> &k_indices, std::vector<float> &k_sqr_distances, 
                     unsigned int max_nn = 0) const
       {
-        assert (index >= 0 && index < (int)cloud.points.size () && "Out-of-bounds error in radiusSearch!");
+        assert (index >= 0 && index < static_cast<int> (cloud.points.size ()) && "Out-of-bounds error in radiusSearch!");
         return (radiusSearch (cloud.points.row (index), radius, k_indices, k_sqr_distances, max_nn));
       }
 
@@ -596,12 +597,12 @@ namespace pcl
       {
         if (indices_ == NULL)
         {
-          assert (index >= 0 && index < (int)input_->points.size () && "Out-of-bounds error in radiusSearch!");
+          assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in radiusSearch!");
           return (radiusSearch (input_->points.row (index), radius, k_indices, k_sqr_distances, max_nn));
         }
         else
         {
-          assert (index >= 0 && index < (int)indices_->size () && "Out-of-bounds error in radiusSearch!");
+          assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in radiusSearch!");
           return (radiusSearch (input_->points.row ((*indices_)[index]), radius, k_indices, k_sqr_distances, max_nn));
         }
       }
@@ -639,7 +640,7 @@ namespace pcl
       template <typename Expr> bool
       isRowValid (const Expr &pt) const
       {
-        for (size_t i = 0; i < (size_t)pt.size (); ++i)
+        for (size_t i = 0; i < static_cast<size_t> (pt.size ()); ++i)
           if (!pcl_isfinite (pt[i]))
            return (false);
 
@@ -660,9 +661,9 @@ namespace pcl
           return;
         }
 
-        int original_no_of_points = (int) cloud.points.rows ();
+        int original_no_of_points = static_cast<int> (cloud.points.rows ());
 
-        cloud_ = (float*)malloc (original_no_of_points * dim_ * sizeof (float));
+        cloud_ = static_cast<float*> (malloc (original_no_of_points * dim_ * sizeof (float)));
         float* cloud_ptr = cloud_;
         index_mapping_.reserve (original_no_of_points);
         identity_mapping_ = true;
@@ -678,7 +679,7 @@ namespace pcl
 
           index_mapping_.push_back (cloud_index);
 
-          for (size_t i = 0; i < (size_t)dim_; ++i)
+          for (size_t i = 0; i < static_cast<size_t> (dim_); ++i)
           {
             *cloud_ptr = cloud.points.coeffRef (cloud_index, i);
             cloud_ptr++;
@@ -701,9 +702,9 @@ namespace pcl
           return;
         }
 
-        int original_no_of_points = (int) indices.size ();
+        int original_no_of_points = static_cast<int> (indices.size ());
 
-        cloud_ = (float*)malloc (original_no_of_points * dim_ * sizeof (float));
+        cloud_ = static_cast<float*> (malloc (original_no_of_points * dim_ * sizeof (float)));
         float* cloud_ptr = cloud_;
         index_mapping_.reserve (original_no_of_points);
         identity_mapping_ = true;
@@ -720,7 +721,7 @@ namespace pcl
 
           index_mapping_.push_back (indices_index);  // If the returned index should be for the indices vector
 
-          for (size_t i = 0; i < (size_t)dim_; ++i)
+          for (size_t i = 0; i < static_cast<size_t> (dim_); ++i)
           {
             *cloud_ptr = cloud.points.coeffRef (cloud_index, i);
             cloud_ptr++;

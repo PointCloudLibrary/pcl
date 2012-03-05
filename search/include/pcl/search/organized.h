@@ -84,7 +84,7 @@ namespace pcl
           *            thus organized neighbor search can not be applied on that cloud.
           * \param pyramid_level the level of the down sampled point cloud to be used for projection matrix estimation
           */
-        OrganizedNeighbor (bool sorted_results = false, float eps = 1e-4, unsigned pyramid_level = 5)
+        OrganizedNeighbor (bool sorted_results = false, float eps = 1e-4f, unsigned pyramid_level = 5)
           : Search<PointT> ("OrganizedNeighbor", sorted_results)
           , projection_matrix_ (Eigen::Matrix<float, 3, 4, Eigen::RowMajor>::Zero ())
           , KR_ (Eigen::Matrix<float, 3, 3, Eigen::RowMajor>::Zero ())
@@ -109,7 +109,7 @@ namespace pcl
           // determinant (KR) = determinant (K) * determinant (R) = determinant (K) = f_x * f_y.
           // If we expect at max an opening angle of 170degree in x-direction -> f_x = 2.0 * width / tan (85 degree);
           // 2 * tan (85 degree) ~ 22.86
-          float min_f = 0.043744332f * input_->width;
+          float min_f = 0.043744332f * static_cast<float>(input_->width);
           //std::cout << "isValid: " << determinant3x3Matrix<Eigen::Matrix3f> (KR_ / sqrt (KR_KRT_.coeff (8))) << " >= " << (min_f * min_f) << std::endl;
           return (determinant3x3Matrix<Eigen::Matrix3f> (KR_ / sqrt (KR_KRT_.coeff (8))) >= (min_f * min_f));
         }
