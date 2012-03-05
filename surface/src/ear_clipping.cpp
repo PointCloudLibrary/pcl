@@ -58,7 +58,7 @@ pcl::EarClipping::performProcessing (PolygonMesh& output)
 {
   output.polygons.clear ();
   output.cloud = input_mesh_->cloud;
-  for (int i = 0; i < (int) input_mesh_->polygons.size (); ++i)
+  for (int i = 0; i < static_cast<int> (input_mesh_->polygons.size ()); ++i)
     triangulate (input_mesh_->polygons[i], output);
 }
 
@@ -66,7 +66,7 @@ pcl::EarClipping::performProcessing (PolygonMesh& output)
 void
 pcl::EarClipping::triangulate (const Vertices& vertices, PolygonMesh& output)
 {
-  const int n_vertices = vertices.vertices.size ();
+  const int n_vertices = static_cast<const int> (vertices.vertices.size ());
 
   if (n_vertices <= 3)
     return;
@@ -83,12 +83,12 @@ pcl::EarClipping::triangulate (const Vertices& vertices, PolygonMesh& output)
     remaining_vertices.erase (remaining_vertices.end () - 1);
 
   // null_iterations avoids infinite loops if the polygon is not simple.
-  for (int u = remaining_vertices.size () - 1, null_iterations = 0;
-      remaining_vertices.size () > 2 && null_iterations < (int)(remaining_vertices.size()*2);
-      ++null_iterations, u = (u+1) % remaining_vertices.size ())
+  for (int u = static_cast<int> (remaining_vertices.size ()) - 1, null_iterations = 0;
+      remaining_vertices.size () > 2 && null_iterations < static_cast<int >(remaining_vertices.size () * 2);
+      ++null_iterations, u = (u+1) % static_cast<int> (remaining_vertices.size ()))
   {
-    int v = (u + 1) % remaining_vertices.size ();
-    int w = (u + 2) % remaining_vertices.size ();
+    int v = (u + 1) % static_cast<int> (remaining_vertices.size ());
+    int w = (u + 2) % static_cast<int> (remaining_vertices.size ());
 
     if (isEar (u, v, w, remaining_vertices))
     {
@@ -109,7 +109,7 @@ pcl::EarClipping::triangulate (const Vertices& vertices, PolygonMesh& output)
 float
 pcl::EarClipping::area (const std::vector<uint32_t>& vertices)
 {
-  int n = vertices.size ();
+  int n = static_cast<int> (vertices.size ());
   float area = 0.0f;
   Eigen::Vector2f prev_p, cur_p;
   for (int prev = n - 1, cur = 0; cur < n; prev = cur++)
@@ -139,7 +139,7 @@ pcl::EarClipping::isEar (int u, int v, int w, const std::vector<uint32_t>& verti
 
   // Avoid flat triangles.
   // FIXME: triangulation would fail if all the triangles are flat in the X-Y axis
-  const float eps = 1e-15;
+  const float eps = 1e-15f;
   Eigen::Vector2f p_uv, p_uw;
   p_uv = p_v - p_u;
   p_uw = p_w - p_u;
@@ -148,7 +148,7 @@ pcl::EarClipping::isEar (int u, int v, int w, const std::vector<uint32_t>& verti
 
   Eigen::Vector2f p;
   // Check if any other vertex is inside the triangle.
-  for (int k = 0; k < (int)vertices.size (); k++)
+  for (int k = 0; k < static_cast<int> (vertices.size ()); k++)
   {
     if ((k == u) || (k == v) || (k == w))
       continue;

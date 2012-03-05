@@ -323,13 +323,15 @@ namespace pcl
         */
       struct MLSResult
       {
-        MLSResult () { valid = false; }
+        MLSResult () : plane_normal (), u (), v (), c_vec (), num_neighbors (),  curvature (), valid (false) {}
+
         MLSResult (Eigen::Vector3d &a_plane_normal,
                    Eigen::Vector3d &a_u,
                    Eigen::Vector3d &a_v,
                    Eigen::VectorXd a_c_vec,
                    int a_num_neighbors,
                    float &a_curvature);
+
         Eigen::Vector3d plane_normal, u, v;
         Eigen::VectorXd c_vec;
         int num_neighbors;
@@ -349,7 +351,7 @@ namespace pcl
       class MLSVoxelGrid
       {
         public:
-          struct Leaf { Leaf () { valid = true; } bool valid; };
+          struct Leaf { Leaf () : valid (true) {} bool valid; };
 
           MLSVoxelGrid (PointCloudInConstPtr& cloud,
                         IndicesPtr &indices,
@@ -368,18 +370,18 @@ namespace pcl
           inline void
           getIndexIn3D (uint64_t index_1d, Eigen::Vector3i& index_3d) const
           {
-            index_3d[0] = index_1d / (data_size_ * data_size_);
+            index_3d[0] = static_cast<Eigen::Vector3i::Scalar> (index_1d / (data_size_ * data_size_));
             index_1d -= index_3d[0] * data_size_ * data_size_;
-            index_3d[1] = index_1d / data_size_;
+            index_3d[1] = static_cast<Eigen::Vector3i::Scalar> (index_1d / data_size_);
             index_1d -= index_3d[1] * data_size_;
-            index_3d[2] = index_1d;
+            index_3d[2] = static_cast<Eigen::Vector3i::Scalar> (index_1d);
           }
 
           inline void
           getCellIndex (const Eigen::Vector3f &p, Eigen::Vector3i& index) const
           {
             for (int i = 0; i < 3; ++i)
-              index[i] = (p[i] - bounding_min_(i))/voxel_size_;
+              index[i] = static_cast<Eigen::Vector3i::Scalar> ((p[i] - bounding_min_(i)) / voxel_size_);
           }
 
           inline void
@@ -388,7 +390,7 @@ namespace pcl
             Eigen::Vector3i index_3d;
             getIndexIn3D (index_1d, index_3d);
             for (int i = 0; i < 3; ++i)
-              point[i] = index_3d[i] * voxel_size_ + bounding_min_[i];
+              point[i] = static_cast<Eigen::Vector3f::Scalar> (index_3d[i]) * voxel_size_ + bounding_min_[i];
           }
 
           typedef boost::unordered_map<uint64_t, Leaf, boost::hash<uint64_t>, std::equal_to<uint64_t>, Eigen::aligned_allocator<uint64_t> > HashMap;

@@ -57,6 +57,9 @@ namespace pcl
       /** \brief Constructor. */
       MeshProcessing () : input_mesh_ () {};
 
+      /** \brief Destructor. */
+      virtual ~MeshProcessing () {}
+
       /** \brief Set the input mesh that we want to process
         * \param[in] input the input polygonal mesh
         */

@@ -80,8 +80,8 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
   }
   const double sqr_mu = mu_*mu_;
   const double sqr_max_edge = search_radius_*search_radius_;
-  if (nnn_ > (int)indices_->size ())
-    nnn_ = indices_->size ();
+  if (nnn_ > static_cast<int> (indices_->size ()))
+    nnn_ = static_cast<int> (indices_->size ());
 
   // Variables to hold the results of nearest neighbor searches
   std::vector<int> nnIdx (nnn_);
@@ -128,7 +128,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
   coords_.clear ();
   coords_.reserve (indices_->size ());
   std::vector<int> point2index (input_->points.size (), -1);
-  for (size_t cp = 0; cp < indices_->size (); ++cp)
+  for (int cp = 0; cp < static_cast<int> (indices_->size ()); ++cp)
   {
     coords_.push_back(input_->points[(*indices_)[cp]].getVector3fMap());
     point2index[(*indices_)[cp]] = cp;
@@ -172,7 +172,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
       u_ = nc.cross (v_);
 
       // Projecting point onto the surface 
-      double dist = nc.dot(coords_[R_]);
+      double dist = nc.dot (coords_[R_]);
       proj_qp_ = coords_[R_] - dist * nc;
 
       // Converting coords, calculating angles and saving the projected near boundary edges
@@ -290,7 +290,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
     {
       is_fringe = false;
 
-      int fqSize = fringe_queue_.size();
+      int fqSize = static_cast<int> (fringe_queue_.size ());
       while ((fqIdx < fqSize) && (state_[fringe_queue_[fqIdx]] != FRINGE))
         fqIdx++;
 
@@ -848,7 +848,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
             else
             {
               std::vector<int>::iterator prev_it;
-              int erased_idx = to_erase.size()-1;
+              int erased_idx = static_cast<int> (to_erase.size ()) -1;
               for (prev_it = it-1; (erased_idx != -1) && (it != angleIdx.begin()); it--)
                 if (*it == to_erase[erased_idx])
                   erased_idx--;
@@ -1039,7 +1039,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
       }
     }
   }
-  PCL_DEBUG ("Number of triangles: %d\n", (int)polygons.size());
+  PCL_DEBUG ("Number of triangles: %zu\n", polygons.size());
   PCL_DEBUG ("Number of unconnected parts: %d\n", nr_parts);
   if (increase_nnn4fn > 0)
     PCL_WARN ("Number of neighborhood size increase requests for fringe neighbors: %d\n", increase_nnn4fn);
@@ -1051,7 +1051,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
   // sorting and removing doubles from fringe queue 
   std::sort (fringe_queue_.begin (), fringe_queue_.end ());
   fringe_queue_.erase (std::unique (fringe_queue_.begin (), fringe_queue_.end ()), fringe_queue_.end ());
-  PCL_DEBUG ("Number of processed points: %d / %d\n", (int)fringe_queue_.size(), (int)indices_->size ());
+  PCL_DEBUG ("Number of processed points: %zu / %zu\n", fringe_queue_.size(), indices_->size ());
   return (true);
 }
 
@@ -1728,7 +1728,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::removeOverlapTriangles (
     kdtree.nearestKSearch (center_point, 1, nnIdx, sqrDists);
 
     // remove the triangle if we can
-    if (nnIdx[0] >= (int)point_size1 && triangleList2[nnIdx[0]].size() > 0)
+    if (nnIdx[0] >= static_cast<int> (point_size1) && triangleList2[nnIdx[0]].size() > 0)
     { // remove triangle
       for (int j = 0; j < 3; ++j)
       {

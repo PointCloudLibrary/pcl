@@ -90,7 +90,7 @@ namespace pcl
         /** \brief Get the normals of the input point cloud
           */
         inline NormalsPtr
-        getSourceNormals () { return source_normals_; }
+        getSourceNormals () const { return (source_normals_); }
 
         /** \brief Determine the correspondences between input and target cloud.
           * \param[out] correspondences the found correspondences (index of query point, index of target point, distance)
@@ -110,7 +110,7 @@ namespace pcl
         /** \brief Get the number of nearest neighbours considered in the target point cloud for computing correspondence
           */
         inline void
-        getKSearch () { return k_; }
+        getKSearch () const { return (k_); }
 
       protected:
 

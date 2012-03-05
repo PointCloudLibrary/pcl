@@ -266,27 +266,6 @@ RangeImageBorderExtractor::findAndEvaluateShadowBorders ()
         shadow_border_indices = (shadow_border_indices==NULL ? new ShadowBorderIndices : shadow_border_indices);
         shadow_border_indices->bottom = shadow_border_idx;
       }
-      
-      //if (checkPotentialBorder(x, y, -1, 0, border_scores_left_, border_scores_right_, shadow_border_idx))
-      //{
-        //shadow_border_indices = (shadow_border_indices==NULL ? new ShadowBorderIndices : shadow_border_indices);
-        //shadow_border_indices->left = shadow_border_idx;
-      //}
-      //if (checkPotentialBorder(x, y, 1, 0, border_scores_right_, border_scores_left_, shadow_border_idx))
-      //{
-        //shadow_border_indices = (shadow_border_indices==NULL ? new ShadowBorderIndices : shadow_border_indices);
-        //shadow_border_indices->right = shadow_border_idx;
-      //}
-      //if (checkPotentialBorder(x, y, 0, -1, border_scores_top_, border_scores_bottom_, shadow_border_idx))
-      //{
-        //shadow_border_indices = (shadow_border_indices==NULL ? new ShadowBorderIndices : shadow_border_indices);
-        //shadow_border_indices->top = shadow_border_idx;
-      //}
-      //if (checkPotentialBorder(x, y, 0, 1, border_scores_bottom_, border_scores_top_, shadow_border_idx))
-      //{
-        //shadow_border_indices = (shadow_border_indices==NULL ? new ShadowBorderIndices : shadow_border_indices);
-        //shadow_border_indices->bottom = shadow_border_idx;
-      //}
     }
   }
 }
@@ -295,8 +274,6 @@ RangeImageBorderExtractor::findAndEvaluateShadowBorders ()
 float* 
 RangeImageBorderExtractor::getAnglesImageForBorderDirections ()
 {
-  //MEASURE_FUNCTION_TIME;
-  
   calculateBorderDirections();
   
   int width  = range_image_->width,
@@ -391,8 +368,6 @@ RangeImageBorderExtractor::classifyBorders ()
   // Change border score according to the existence of a shadow border
   findAndEvaluateShadowBorders();
   
-  //MEASURE_FUNCTION_TIME;
-  
   int width  = range_image_->width,
       height = range_image_->height,
       size   = width*height;
@@ -405,7 +380,6 @@ RangeImageBorderExtractor::classifyBorders ()
   border_descriptions_->is_dense = true;
   border_descriptions_->points.resize(size, initial_border_description);
   
-  //std::vector<BorderDescription*> border_points;
   for (int y=0; y<(int)height; ++y) {
     for (int x=0; x<(int)width; ++x) {
       int index = y*width+x;
@@ -478,129 +452,6 @@ RangeImageBorderExtractor::classifyBorders ()
       //}
     }
   }
-  
-  //-----Find out connectivity between border cells-----
-  //for (unsigned int i=0; i<border_points.size(); ++i)
-  //{
-    //BorderDescription& border_description = *border_points[i];
-    //BorderTraits& border_traits = border_description.traits;
-    //int x=border_description.x, y=border_description.y;
-    //int index = y*width + x;
-    //float angle = getObstacleBorderAngle(border_traits);
-    
-    //for (int y2=y-1; y2<=y+1; ++y2)
-    //{
-      //for (int x2=x-1; x2<=x+1; ++x2)
-      //{
-        //if (!range_image_->isInImage(x2, y2) || (x2==x&&y2==y))
-          //continue;
-        //int index2 = y2*width + x2;
-        //BorderDescription& neighbor_border_description = border_descriptions_->points[index2];
-        //BorderTraits& neighbor_border_traits = neighbor_border_description.traits;
-        //if (!neighbor_border_traits[BORDER_TRAIT__OBSTACLE_BORDER])
-          //continue;
-        //float neighbor_angle = getObstacleBorderAngle(neighbor_border_traits);
-        //float anglesDiff = fabs(normAngle(angle-neighbor_angle));
-        //if (anglesDiff > 0.5f*M_PI)
-          //continue;
-        //float border_between_points_score = getNeighborDistanceChangeScore(*surface_structure_[index], x, y, x2-x,  y2-y, 1);
-        //if (fabsf(border_between_points_score) >= 0.95f*parameters_.minimum_border_probability)
-          //continue;
-        
-        //border_description.neighbors.push_back(&neighbor_border_description);
-      //}
-    //}
-    //// Point without any neighbor => no border
-    //if (border_description.neighbors.empty())
-    //{
-      //border_traits[BORDER_TRAIT__OBSTACLE_BORDER] = false;
-      //if (border_traits[BORDER_TRAIT__OBSTACLE_BORDER_LEFT])
-      //{
-        //border_traits[BORDER_TRAIT__OBSTACLE_BORDER_LEFT] = false;
-        //BorderTraits& shadow_border = border_descriptions_->points[shadow_border_informations_[index]->left].traits;
-        //shadow_border[BORDER_TRAIT__SHADOW_BORDER_RIGHT] = false;
-        //shadow_border[BORDER_TRAIT__SHADOW_BORDER] = shadow_border[BORDER_TRAIT__SHADOW_BORDER_LEFT]   ||
-                                                     //shadow_border[BORDER_TRAIT__SHADOW_BORDER_TOP]    ||
-                                                     //shadow_border[BORDER_TRAIT__SHADOW_BORDER_BOTTOM];
-      //}
-      //if (border_traits[BORDER_TRAIT__OBSTACLE_BORDER_RIGHT])
-      //{
-        //border_traits[BORDER_TRAIT__OBSTACLE_BORDER_RIGHT] = false;
-        //BorderTraits& shadow_border = border_descriptions_->points[shadow_border_informations_[index]->right].traits;
-        //shadow_border[BORDER_TRAIT__SHADOW_BORDER_LEFT] = false;
-        //shadow_border[BORDER_TRAIT__SHADOW_BORDER] = shadow_border[BORDER_TRAIT__SHADOW_BORDER_RIGHT] ||
-                                                     //shadow_border[BORDER_TRAIT__SHADOW_BORDER_TOP]   ||
-                                                     //shadow_border[BORDER_TRAIT__SHADOW_BORDER_BOTTOM];
-      //}
-      //if (border_traits[BORDER_TRAIT__OBSTACLE_BORDER_TOP])
-      //{
-        //border_traits[BORDER_TRAIT__OBSTACLE_BORDER_TOP] = false;
-        //BorderTraits& shadow_border = border_descriptions_->points[shadow_border_informations_[index]->top].traits;
-        //shadow_border[BORDER_TRAIT__SHADOW_BORDER_BOTTOM] = false;
-        //shadow_border[BORDER_TRAIT__SHADOW_BORDER] = shadow_border[BORDER_TRAIT__SHADOW_BORDER_LEFT]  ||
-                                                     //shadow_border[BORDER_TRAIT__SHADOW_BORDER_RIGHT] ||
-                                                     //shadow_border[BORDER_TRAIT__SHADOW_BORDER_TOP];
-      //}
-      //if (border_traits[BORDER_TRAIT__OBSTACLE_BORDER_BOTTOM])
-      //{
-        //border_traits[BORDER_TRAIT__OBSTACLE_BORDER_BOTTOM] = false;
-        //BorderTraits& shadow_border = border_descriptions_->points[shadow_border_informations_[index]->bottom].traits;
-        //shadow_border[BORDER_TRAIT__SHADOW_BORDER_TOP] = false;
-        //shadow_border[BORDER_TRAIT__SHADOW_BORDER] = shadow_border[BORDER_TRAIT__SHADOW_BORDER_LEFT]   ||
-                                                     //shadow_border[BORDER_TRAIT__SHADOW_BORDER_RIGHT]  ||
-                                                     //shadow_border[BORDER_TRAIT__SHADOW_BORDER_BOTTOM];
-      //}
-    //}
-    //else
-    //{
-      //if (border_traits[BORDER_TRAIT__OBSTACLE_BORDER_LEFT])
-      //{
-        //int shadow_border_index = shadow_border_informations_[index]->left;
-        ////if (!border_descriptions_->points[shadow_border_index].traits[BORDER_TRAIT__SHADOW_BORDER])
-          ////std::cout << "Left: "<<shadow_border_index-index<<".\n";
-        //for (int index3=index-1; index3>shadow_border_index; --index3)
-        //{
-          //BorderTraits& veil_point = border_descriptions_->points[index3].traits;
-          //veil_point[BORDER_TRAIT__VEIL_POINT] = veil_point[BORDER_TRAIT__VEIL_POINT_RIGHT] = true;
-        //}
-      //}
-      //if (border_traits[BORDER_TRAIT__OBSTACLE_BORDER_RIGHT])
-      //{
-        //int shadow_border_index = shadow_border_informations_[index]->right;
-        ////if (!border_descriptions_->points[shadow_border_index].traits[BORDER_TRAIT__SHADOW_BORDER])
-          ////std::cout << "Right: "<<shadow_border_index-index<<".\n";
-        //for (int index3=index+1; index3<shadow_border_index; ++index3)
-        //{
-          //BorderTraits& veil_point = border_descriptions_->points[index3].traits;
-          //veil_point[BORDER_TRAIT__VEIL_POINT] = veil_point[BORDER_TRAIT__VEIL_POINT_LEFT] = true;
-        //}
-      //}
-      //if (border_traits[BORDER_TRAIT__OBSTACLE_BORDER_TOP])
-      //{
-        //int shadow_border_index = shadow_border_informations_[index]->top;
-        ////if (!border_descriptions_->points[shadow_border_index].traits[BORDER_TRAIT__SHADOW_BORDER])
-          ////std::cout << "Top: "<<(shadow_border_index-index)/float(width)<<".\n";
-        //for (int index3=index-width; index3>shadow_border_index; index3-=width)
-        //{
-          ////cout << "Adding veil point at "<<(index3-index)%width<<","<<(index3-index)/width<<".\n";
-          //BorderTraits& veil_point = border_descriptions_->points[index3].traits;
-          //veil_point[BORDER_TRAIT__VEIL_POINT] = veil_point[BORDER_TRAIT__VEIL_POINT_BOTTOM] = true;
-        //}
-      //}
-      //if (border_traits[BORDER_TRAIT__OBSTACLE_BORDER_BOTTOM])
-      //{
-        //int shadow_border_index = shadow_border_informations_[index]->bottom;
-        ////if (!border_descriptions_->points[shadow_border_index].traits[BORDER_TRAIT__SHADOW_BORDER])
-          ////std::cout << "Bottom: "<<(shadow_border_index-index)/float(width)<<".\n";
-        //for (int index3=index+width; index3<shadow_border_index; index3+=width)
-        //{
-          ////cout << "Adding veil point at "<<(index3-index)%width<<","<<(index3-index)/width<<".\n";
-          //BorderTraits& veil_point = border_descriptions_->points[index3].traits;
-          //veil_point[BORDER_TRAIT__VEIL_POINT] = veil_point[BORDER_TRAIT__VEIL_POINT_TOP] = true;
-        //}
-      //}
-    //}
-  //}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -719,11 +570,6 @@ RangeImageBorderExtractor::calculateSurfaceChanges ()
       {
         surface_change_score = 1.0f;
         surface_change_direction = *border_directions_[index];
-        //if (fabsf(surface_change_direction.norm()-1.0f) > 0.001)
-          //cerr << surface_change_direction[0]<<","<<surface_change_direction[1]<<","<<surface_change_direction[2]
-          //     <<" has norm "<<surface_change_direction.norm()<<"\n";
-        //else
-          //cerr<<"OK";
       }
       else
       {
@@ -743,9 +589,6 @@ RangeImageBorderExtractor::calculateSurfaceChanges ()
 void 
 RangeImageBorderExtractor::blurSurfaceChanges ()
 {
-  //MEASURE_FUNCTION_TIME;
-  
-  //int blur_radius = parameters_.interest_image_blur_size;
   int blur_radius = 1;
   if (blur_radius==0)
     return;
@@ -809,8 +652,6 @@ RangeImageBorderExtractor::blurSurfaceChanges ()
 void 
 RangeImageBorderExtractor::computeFeature (PointCloudOut& output)
 {
-  //std::cout << __PRETTY_FUNCTION__ << " called.\n";
-  
   output.points.clear();
   
   if (indices_)

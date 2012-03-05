@@ -153,9 +153,9 @@ pcl::MovingLeastSquaresOMP<PointInT, NormalOutT>::performReconstruction (PointCl
 
   // Set proper widths and heights for the clouds
   normals_->height = 1;
-  normals_->width = normals_->size ();
+  normals_->width = static_cast<uint32_t> (normals_->size ());
   output.height = 1;
-  output.width = output.size ();
+  output.width = static_cast<uint32_t> (output.size ());
 }
 
 #define PCL_INSTANTIATE_MovingLeastSquaresOMP(T,OutT) template class PCL_EXPORTS pcl::MovingLeastSquaresOMP<T,OutT>;
