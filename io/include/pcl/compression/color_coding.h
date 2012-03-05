@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,7 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Julius Kammerl (julius@kammerl.de)
  */
 
 #ifndef COLOR_COMPRESSION_H
@@ -86,31 +87,29 @@ namespace pcl
         }
 
         /** \brief Define color bit depth of encoded color information.
-         *  \param bitDepth_arg: amounts of bits for representing one color component
-         * */
+          * \param bitDepth_arg: amounts of bits for representing one color component
+          */
         inline
         void
         setBitDepth (unsigned char bitDepth_arg)
         {
           assert (bitDepth_arg <= bitDepth_arg);
-          colorBitReduction_ = 8 - bitDepth_arg;
+          colorBitReduction_ = static_cast<unsigned char> (8 - bitDepth_arg);
         }
 
         /** \brief Retrieve color bit depth of encoded color information.
-         *  \return amounts of bits for representing one color component
-         * */
-        inline
-        unsigned char
+          * \return amounts of bits for representing one color component
+          */
+        inline unsigned char
         getBitDepth ()
         {
-          return 8 - colorBitReduction_;
+          return (static_cast<unsigned char> (8 - colorBitReduction_));
         }
 
         /** \brief Set amount of voxels containing point color information and reserve memory
-         *  \param voxelCount_arg: amounts of voxels
-         * */
-        inline
-        void
+          * \param voxelCount_arg: amounts of voxels
+          */
+        inline void
         setVoxelCount (unsigned int voxelCount_arg)
         {
           pointAvgColorDataVector_.reserve (voxelCount_arg * 3);
@@ -185,7 +184,7 @@ namespace pcl
           {
             // get color information from points
             const int& idx = indexVector_arg[i];
-            const char* idxPointPtr = (const char*) &inputCloud_arg->points[idx];
+            const char* idxPointPtr = reinterpret_cast<const char*> (&inputCloud_arg->points[idx]);
             const int& colorInt = *reinterpret_cast<const int*> (idxPointPtr+rgba_offset_arg);
 
             // add color information
@@ -198,9 +197,9 @@ namespace pcl
           // calculated average color information
           if (len > 1)
           {
-            avgRed /= (unsigned int) len;
-            avgGreen /= (unsigned int) len;
-            avgBlue /= (unsigned int) len;
+            avgRed   /= static_cast<unsigned int> (len);
+            avgGreen /= static_cast<unsigned int> (len);
+            avgBlue  /= static_cast<unsigned int> (len);
           }
 
           // remove least significant bits
@@ -209,9 +208,9 @@ namespace pcl
           avgBlue >>= colorBitReduction_;
 
           // add to average color vector
-          pointAvgColorDataVector_.push_back ((char)avgRed);
-          pointAvgColorDataVector_.push_back ((char)avgGreen);
-          pointAvgColorDataVector_.push_back ((char)avgBlue);
+          pointAvgColorDataVector_.push_back (static_cast<char> (avgRed));
+          pointAvgColorDataVector_.push_back (static_cast<char> (avgGreen));
+          pointAvgColorDataVector_.push_back (static_cast<char> (avgBlue));
         }
 
         /** \brief Encode color information of a subset of points from point cloud
@@ -237,7 +236,7 @@ namespace pcl
           {
             // get color information from point
             const int& idx = indexVector_arg[i];
-            const char* idxPointPtr = (const char*) &inputCloud_arg->points[idx];
+            const char* idxPointPtr = reinterpret_cast<const char*> (&inputCloud_arg->points[idx]);
             const int& colorInt = *reinterpret_cast<const int*> (idxPointPtr+rgba_offset_arg);
 
             // add color information
@@ -254,21 +253,21 @@ namespace pcl
             unsigned char diffBlue;
 
             // calculated average color information
-            avgRed /= (unsigned int) len;
-            avgGreen /= (unsigned int) len;
-            avgBlue /= (unsigned int) len;
+            avgRed   /= static_cast<unsigned int> (len);
+            avgGreen /= static_cast<unsigned int> (len);
+            avgBlue  /= static_cast<unsigned int> (len);
 
             // iterate over points for differential encoding
             for (i = 0; i < len; i++)
             {
               const int& idx = indexVector_arg[i];
-              const char* idxPointPtr = (const char*) &inputCloud_arg->points[idx];
+              const char* idxPointPtr = reinterpret_cast<const char*> (&inputCloud_arg->points[idx]);
               const int& colorInt = *reinterpret_cast<const int*> (idxPointPtr+rgba_offset_arg);
 
               // extract color components and do XOR encoding with predicted average color
-              diffRed = ((unsigned char)avgRed) ^ (unsigned char)((colorInt >> 0) & 0xFF);
-              diffGreen = ((unsigned char)avgGreen) ^ (unsigned char)((colorInt >> 8) & 0xFF);
-              diffBlue = ((unsigned char)avgBlue) ^ (unsigned char)((colorInt >> 16) & 0xFF);
+              diffRed = (static_cast<unsigned char> (avgRed)) ^ static_cast<unsigned char> (((colorInt >> 0) & 0xFF));
+              diffGreen = (static_cast<unsigned char> (avgGreen)) ^ static_cast<unsigned char> (((colorInt >> 8) & 0xFF));
+              diffBlue = (static_cast<unsigned char> (avgBlue)) ^ static_cast<unsigned char> (((colorInt >> 16) & 0xFF));
 
               // remove least significant bits
               diffRed   >>= colorBitReduction_;
@@ -276,9 +275,9 @@ namespace pcl
               diffBlue  >>= colorBitReduction_;
 
               // add to differential color vector
-              pointDiffColorDataVector_.push_back ((char)diffRed);
-              pointDiffColorDataVector_.push_back ((char)diffGreen);
-              pointDiffColorDataVector_.push_back ((char)diffBlue);
+              pointDiffColorDataVector_.push_back (static_cast<char> (diffRed));
+              pointDiffColorDataVector_.push_back (static_cast<char> (diffGreen));
+              pointDiffColorDataVector_.push_back (static_cast<char> (diffBlue));
             }
           }
 
@@ -288,18 +287,18 @@ namespace pcl
           avgBlue  >>= colorBitReduction_;
 
           // add to differential color vector
-          pointAvgColorDataVector_.push_back ((char)avgRed);
-          pointAvgColorDataVector_.push_back ((char)avgGreen);
-          pointAvgColorDataVector_.push_back ((char)avgBlue);
+          pointAvgColorDataVector_.push_back (static_cast<char> (avgRed));
+          pointAvgColorDataVector_.push_back (static_cast<char> (avgGreen));
+          pointAvgColorDataVector_.push_back (static_cast<char> (avgBlue));
 
         }
 
         /** \brief Decode color information
-         * \param outputCloud_arg output point cloud
-         * \param beginIdx_arg index indicating first point to be assiged with color information
-         * \param endIdx_arg index indicating last point to be assiged with color information
-         * \param rgba_offset_arg offset to color information
-         * */
+          * \param outputCloud_arg output point cloud
+          * \param beginIdx_arg index indicating first point to be assiged with color information
+          * \param endIdx_arg index indicating last point to be assiged with color information
+          * \param rgba_offset_arg offset to color information
+          */
         void
         decodePoints (PointCloudPtr outputCloud_arg, std::size_t beginIdx_arg, std::size_t endIdx_arg, unsigned char rgba_offset_arg)
         {
@@ -310,7 +309,7 @@ namespace pcl
           assert (beginIdx_arg <= endIdx_arg);
 
           // amount of points to be decoded
-          pointCount = (unsigned int) (endIdx_arg - beginIdx_arg);
+          pointCount = static_cast<unsigned int> (endIdx_arg - beginIdx_arg);
 
           // get averaged color information for current voxel
           unsigned char avgRed = *(pointAvgColorDataVector_Iterator_++);
@@ -318,9 +317,9 @@ namespace pcl
           unsigned char avgBlue = *(pointAvgColorDataVector_Iterator_++);
 
           // invert bit shifts during encoding
-          avgRed <<= colorBitReduction_;
+          avgRed   <<= colorBitReduction_;
           avgGreen <<= colorBitReduction_;
-          avgBlue <<= colorBitReduction_;
+          avgBlue  <<= colorBitReduction_;
 
           // iterate over points
           for (i = 0; i < pointCount; i++)
@@ -328,14 +327,14 @@ namespace pcl
             if (pointCount > 1)
             {
               // get differential color information from input vector
-              unsigned char diffRed = (unsigned char)*(pointDiffColorDataVector_Iterator_++);
-              unsigned char diffGreen = (unsigned char)*(pointDiffColorDataVector_Iterator_++);
-              unsigned char diffBlue = (unsigned char)*(pointDiffColorDataVector_Iterator_++);
+              unsigned char diffRed   = static_cast<unsigned char> (*(pointDiffColorDataVector_Iterator_++));
+              unsigned char diffGreen = static_cast<unsigned char> (*(pointDiffColorDataVector_Iterator_++));
+              unsigned char diffBlue  = static_cast<unsigned char> (*(pointDiffColorDataVector_Iterator_++));
 
               // invert bit shifts during encoding
-              diffRed <<= colorBitReduction_;
+              diffRed   <<= colorBitReduction_;
               diffGreen <<= colorBitReduction_;
-              diffBlue <<= colorBitReduction_;
+              diffBlue  <<= colorBitReduction_;
 
               // decode color information
               colorInt = ((avgRed ^ diffRed) << 0) |
@@ -348,7 +347,7 @@ namespace pcl
               colorInt = (avgRed << 0) | (avgGreen << 8) | (avgBlue << 16);
             }
 
-            char* idxPointPtr = (char*) &outputCloud_arg->points[beginIdx_arg + i];
+            char* idxPointPtr = reinterpret_cast<char*> (&outputCloud_arg->points[beginIdx_arg + i]);
             int& pointColor = *reinterpret_cast<int*> (idxPointPtr+rgba_offset_arg);
             // assign color to point from point cloud
             pointColor=colorInt;
@@ -370,16 +369,15 @@ namespace pcl
           assert (beginIdx_arg <= endIdx_arg);
 
           // amount of points to be decoded
-          pointCount = (unsigned int) (endIdx_arg - beginIdx_arg);
+          pointCount = static_cast<unsigned int> (endIdx_arg - beginIdx_arg);
 
           // iterate over points
           for (i = 0; i < pointCount; i++)
           {
-            char* idxPointPtr = (char*) &outputCloud_arg->points[beginIdx_arg + i];
+            char* idxPointPtr = reinterpret_cast<char*> (&outputCloud_arg->points[beginIdx_arg + i]);
             int& pointColor = *reinterpret_cast<int*> (idxPointPtr+rgba_offset_arg);
             // assign color to point from point cloud
-            pointColor=defaultColor_;
-
+            pointColor = defaultColor_;
           }
         }
 
@@ -416,7 +414,6 @@ namespace pcl
                                                    ((255) << 16);
 
   }
-
 }
 
 #define PCL_INSTANTIATE_ColorCoding(T) template class PCL_EXPORTS pcl::octree::ColorCoding<T>;

@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2009-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,7 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Julius Kammerl (julius@kammerl.de)
  */
 
 #ifndef OCTREE_COMPRESSION_H
@@ -58,24 +59,18 @@ namespace pcl
 {
   namespace octree
   {
-    using namespace std;
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief @b Octree pointcloud compression class
      *  \note This class enables compression and decompression of point cloud data based on octree data structures.
      *  \note
      *  \note typename: PointT: type of point used in pointcloud
      *  \author Julius Kammerl (julius@kammerl.de)
      */
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT = OctreeLeafDataTVector<int> , typename OctreeT = Octree2BufBase<int,
         OctreeLeafDataTVector<int> > >
-      class PointCloudCompression : public OctreePointCloud<PointT, LeafT, OctreeT>
-      {
+    class PointCloudCompression : public OctreePointCloud<PointT, LeafT, OctreeT>
+    {
       public:
-
         // public typedefs
-
         typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::PointCloud PointCloud;
         typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::PointCloudPtr PointCloudPtr;
         typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::PointCloudConstPtr PointCloudConstPtr;
@@ -87,15 +82,15 @@ namespace pcl
         typedef PointCloudCompression<PointT, LeafT, OctreeLowMemBase<int, LeafT> > SinglePointCloudCompressionLowMemory;
 
         /** \brief Constructor
-         *  \param compressionProfile_arg:  define compression profile
-         *  \param octreeResolution_arg:  octree resolution at lowest octree level
-         *  \param pointResolution_arg:  precision of point coordinates
-         *  \param doVoxelGridDownDownSampling_arg:  voxel grid filtering
-         *  \param iFrameRate_arg:  i-frame encoding rate
-         *  \param doColorEncoding_arg:  enable/disable color coding
-         *  \param colorBitResolution_arg:  color bit depth
-         *  \param showStatistics_arg:  output compression statistics
-         * */
+          * \param compressionProfile_arg:  define compression profile
+          * \param octreeResolution_arg:  octree resolution at lowest octree level
+          * \param pointResolution_arg:  precision of point coordinates
+          * \param doVoxelGridDownDownSampling_arg:  voxel grid filtering
+          * \param iFrameRate_arg:  i-frame encoding rate
+          * \param doColorEncoding_arg:  enable/disable color coding
+          * \param colorBitResolution_arg:  color bit depth
+          * \param showStatistics_arg:  output compression statistics
+          */
         PointCloudCompression (compression_Profiles_e compressionProfile_arg = MED_RES_ONLINE_COMPRESSION_WITH_COLOR,
                                bool showStatistics_arg = false,
                                const double pointResolution_arg = 0.001,
@@ -130,21 +125,21 @@ namespace pcl
             iFrameRate_ = selectedProfile.iFrameRate;
             doVoxelGridEnDecoding_ = selectedProfile.doVoxelGridDownSampling;
             this->setResolution (selectedProfile.octreeResolution);
-            pointCoder_.setPrecision ((float) selectedProfile.pointResolution);
+            pointCoder_.setPrecision (static_cast<float> (selectedProfile.pointResolution));
             doColorEncoding_ = selectedProfile.doColorEncoding;
             colorCoder_.setBitDepth (selectedProfile.colorBitResolution);
 
-          } else {
+          }
+          else 
+          {
             // configure point & color coder
-            pointCoder_.setPrecision ((float) pointResolution_arg);
+            pointCoder_.setPrecision (static_cast<float> (pointResolution_arg));
             colorCoder_.setBitDepth (colorBitResolution_arg);
           }
 
-          if ( pointCoder_.getPrecision() == this->getResolution() )
-          {
+          if (pointCoder_.getPrecision () == this->getResolution ())
             //disable differential point colding
             doVoxelGridEnDecoding_ = true;
-          }
 
         }
 
@@ -155,8 +150,8 @@ namespace pcl
         }
 
         /** \brief Provide a pointer to the output data set.
-         *  \param cloud_arg: the boost shared pointer to a PointCloud message
-         */
+          * \param cloud_arg: the boost shared pointer to a PointCloud message
+          */
         inline void
         setOutputCloud (const PointCloudPtr &cloud_arg)
         {
@@ -176,56 +171,56 @@ namespace pcl
         }
 
         /** \brief Encode point cloud to output stream
-         *  \param cloud_arg:  point cloud to be compressed
-         *  \param compressedTreeDataOut_arg:  binary output stream containing compressed data
-         * */
+          * \param cloud_arg:  point cloud to be compressed
+          * \param compressedTreeDataOut_arg:  binary output stream containing compressed data
+          */
         void
         encodePointCloud (const PointCloudConstPtr &cloud_arg, std::ostream& compressedTreeDataOut_arg);
 
         /** \brief Decode point cloud from input stream
-         *  \param compressedTreeDataIn_arg: binary input stream containing compressed data
-         *  \param cloud_arg: reference to decoded point cloud
-         * */
+          * \param compressedTreeDataIn_arg: binary input stream containing compressed data
+          * \param cloud_arg: reference to decoded point cloud
+          */
         void
         decodePointCloud (std::istream& compressedTreeDataIn_arg, PointCloudPtr &cloud_arg);
 
       protected:
 
         /** \brief Write frame information to output stream
-         *  \param compressedTreeDataOut_arg: binary output stream
-         * */
+          * \param compressedTreeDataOut_arg: binary output stream
+          */
         void
         writeFrameHeader (std::ostream& compressedTreeDataOut_arg);
 
         /** \brief Read frame information to output stream
-         *  \param compressedTreeDataIn_arg: binary input stream
-         * */
+          * \param compressedTreeDataIn_arg: binary input stream
+          */
         void
         readFrameHeader (std::istream& compressedTreeDataIn_arg);
 
         /** \brief Apply entropy encoding to encoded information and output to binary stream
-         *  \param compressedTreeDataOut_arg: binary output stream
-         * */
+          * \param compressedTreeDataOut_arg: binary output stream
+          */
         void
         entropyEncoding (std::ostream& compressedTreeDataOut_arg);
 
         /** \brief Entropy decoding of input binary stream and output to information vectors
-         *  \param compressedTreeDataIn_arg: binary input stream
-         * */
+          * \param compressedTreeDataIn_arg: binary input stream
+          */
         void
         entropyDecoding (std::istream& compressedTreeDataIn_arg);
 
         /** \brief Encode leaf node information during serialization
-         *  \param leaf_arg: reference to new leaf node
-         *  \param key_arg: octree key of new leaf node
-         **/
+          * \param leaf_arg: reference to new leaf node
+          * \param key_arg: octree key of new leaf node
+          */
         virtual void
         serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg);
 
         /** \brief Decode leaf nodes information during deserialization
-         *  \param leaf_arg: reference to new leaf node
-         *  \param key_arg: octree key of new leaf node
-         **/
+          * \param leaf_arg: reference to new leaf node
+          * \param key_arg: octree key of new leaf node
+          */
         virtual void
         deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg);
 

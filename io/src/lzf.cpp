@@ -85,8 +85,8 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
                   void *out_data, unsigned int out_len)
 {
   LZF_STATE htab;
-  const unsigned char *ip = (const unsigned char *)in_data;
-        unsigned char *op = (unsigned char *)out_data;
+  const unsigned char *ip = static_cast<const unsigned char *> (in_data);
+        unsigned char *op = static_cast<unsigned char *> (out_data);
   const unsigned char *in_end  = ip + in_len;
         unsigned char *out_end = op + out_len;
   const unsigned char *ref;
@@ -125,19 +125,19 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
 
     hval = (hval << 8) | ip[2];
     hslot = htab + IDX (hval);
-    ref = *hslot + ((const unsigned char*)in_data); 
-    *hslot = (unsigned int) (ip - ((const unsigned char*)in_data));
+    ref = *hslot + (static_cast<const unsigned char*> (in_data)); 
+    *hslot = static_cast<unsigned int> (ip - (static_cast<const unsigned char*> (in_data)));
 
     if (
         // The next test will actually take care of this, but this is faster if htab is initialized
         ref < ip 
         && (off = ip - ref - 1) < (1 << 13)
-        && ref > (unsigned char *)in_data
+        && ref > static_cast<const unsigned char *> (in_data)
         && ref[2] == ip[2]
 #if STRICT_ALIGN
         && ((ref[1] << 8) | ref[0]) == ((ip[1] << 8) | ip[0])
 #else
-        && *(u16 *)ref == *(u16 *)ip
+        && *reinterpret_cast<const u16 *> (ref) == *reinterpret_cast<const u16 *> (ip)
 #endif
       )
     {
@@ -158,7 +158,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
       }
 
       // Stop run
-      op [- lit - 1] = lit - 1;
+      op [- lit - 1] = static_cast<unsigned char>(lit - 1);
       // Undo run if length is zero
       op -= !lit;
 
@@ -189,7 +189,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
 
         do
           len++;
-        while (len < (unsigned int)maxlen && ref[len] == ip[len]);
+        while (len < static_cast<unsigned int> (maxlen) && ref[len] == ip[len]);
 
         break;
       }
@@ -200,15 +200,15 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
 
       if (len < 7)
       {
-        *op++ = (unsigned char) ((off >> 8) + (len << 5));
+        *op++ = static_cast<unsigned char> ((off >> 8) + (len << 5));
       }
       else
       {
-        *op++ = (unsigned char) ((off >> 8) + (  7 << 5));
-        *op++ = len - 7;
+        *op++ = static_cast<unsigned char> ((off >> 8) + (  7 << 5));
+        *op++ = static_cast<unsigned char> (len - 7);
       }
 
-      *op++ = (unsigned char) off;
+      *op++ = static_cast<unsigned char> (off);
 
       // Start run
       lit = 0; op++;
@@ -222,7 +222,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
       hval = (ip[0] << 8) | ip[1];
 
       hval = (hval << 8) | ip[2];
-      htab[IDX (hval)] = (unsigned int) (ip - ((const unsigned char *)in_data));
+      htab[IDX (hval)] = static_cast<unsigned int> (ip - (static_cast<const unsigned char *> (in_data)));
       ip++;
     }
     else
@@ -239,7 +239,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
       if (lit == (1 <<  5))
       {
         // Stop run
-        op [- lit - 1] = lit - 1;
+        op [- lit - 1] = static_cast<unsigned char> (lit - 1);
         // Start run
         lit = 0; op++;
       }
@@ -257,18 +257,18 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
     if (lit == (1 <<  5))
     {
       // Stop run
-      op [- lit - 1] = lit - 1;
+      op [- lit - 1] = static_cast<unsigned char> (lit - 1);
       // Start run
       lit = 0; op++;
     }
   }
 
   // End run
-  op [- lit - 1] = lit - 1;
+  op [- lit - 1] = static_cast<unsigned char> (lit - 1);
   // Undo run if length is zero
   op -= !lit;
 
-  return ((unsigned int) (op - (unsigned char *)out_data));
+  return (static_cast<unsigned int> (op - static_cast<unsigned char *> (out_data)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -276,8 +276,8 @@ unsigned int
 pcl::lzfDecompress (const void *const in_data,  unsigned int in_len,
                     void             *out_data, unsigned int out_len)
 {
-  unsigned char const *ip = (const unsigned char *)in_data;
-  unsigned char       *op = (unsigned char *)out_data;
+  unsigned char const *ip = static_cast<const unsigned char *> (in_data);
+  unsigned char       *op = static_cast<unsigned char *> (out_data);
   unsigned char const *const in_end  = ip + in_len;
   unsigned char       *const out_end = op + out_len;
 
@@ -345,7 +345,7 @@ pcl::lzfDecompress (const void *const in_data,  unsigned int in_len,
         return (0);
       }
 
-      if (ref < (unsigned char *)out_data)
+      if (ref < static_cast<unsigned char *> (out_data))
       {
         errno = EINVAL;
         return (0);
@@ -389,6 +389,6 @@ pcl::lzfDecompress (const void *const in_data,  unsigned int in_len,
   }
   while (ip < in_end);
 
-  return ((unsigned int) (op - (unsigned char*)out_data));
+  return (static_cast<unsigned int> (op - static_cast<unsigned char*> (out_data)));
 }
 

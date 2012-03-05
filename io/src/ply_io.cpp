@@ -55,7 +55,7 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
   {
     cloud_->data.clear ();
     cloud_->fields.clear ();
-    cloud_->width = (uint32_t) count;
+    cloud_->width = static_cast<uint32_t> (count);
     cloud_->height = 1;
     cloud_->is_dense = false;
     cloud_->point_step = 0;
@@ -105,8 +105,8 @@ pcl::PLYReader::appendFloatProperty (const std::string& name, const size_t& size
   current_field.name = name;
   current_field.offset = cloud_->point_step;
   current_field.datatype = ::sensor_msgs::PointField::FLOAT32;
-  current_field.count = (uint32_t) size;  
-  cloud_->point_step+= (uint32_t) (pcl::getFieldSize (::sensor_msgs::PointField::FLOAT32) * size);
+  current_field.count = static_cast<uint32_t> (size);  
+  cloud_->point_step += static_cast<uint32_t> (pcl::getFieldSize (::sensor_msgs::PointField::FLOAT32) * size);
 }
 
 namespace pcl
@@ -256,7 +256,7 @@ pcl::PLYReader::vertexFloatPropertyCallback (pcl::io::ply::float32 value)
   memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_], 
           &value,
           sizeof (pcl::io::ply::float32));
-  vertex_offset_before_+= sizeof (pcl::io::ply::float32);
+  vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::float32));
 }
 
 void 
@@ -279,7 +279,7 @@ pcl::PLYReader::vertexColorCallback (const std::string& color_name, pcl::io::ply
     memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_],
             &rgb,
             sizeof (int32_t));
-    vertex_offset_before_+= sizeof (int32_t);
+    vertex_offset_before_ += static_cast<int> (sizeof (int32_t));
   }
 }
 
@@ -290,7 +290,7 @@ pcl::PLYReader::vertexIntensityCallback (pcl::io::ply::uint8 intensity)
   memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_], 
           &intensity_,
           sizeof (pcl::io::ply::float32));
-  vertex_offset_before_+= sizeof (pcl::io::ply::float32);
+  vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::float32));
 }
 
 void 
@@ -342,11 +342,11 @@ pcl::PLYReader::objInfoCallback (const std::string& line)
       else if (st[1] == "num_rows")
         cloudHeightCallback (atoi (st[2].c_str ()));
       else if (st[1] == "echo_rgb_offset_x")
-        originXCallback ((float) atof (st[2].c_str ()));
+        originXCallback (static_cast<float> (atof (st[2].c_str ())));
       else if (st[1] == "echo_rgb_offset_y")
-        originYCallback ((float) atof (st[2].c_str ()));
+        originYCallback (static_cast<float> (atof (st[2].c_str ())));
       else if (st[1] == "echo_rgb_offset_z")
-        originZCallback ((float) atof (st[2].c_str ()));
+        originZCallback (static_cast<float> (atof (st[2].c_str ())));
     }    
   }
 }
@@ -424,10 +424,10 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
         for (size_t f = 0; f < cloud_->fields.size (); ++f)
           if (cloud_->fields[f].datatype == ::sensor_msgs::PointField::FLOAT32)
             memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset + cloud_->fields[f].count * sizeof (float)],
-                    (char*)&f_nan, sizeof (float));
+                    reinterpret_cast<const char*> (&f_nan), sizeof (float));
           else if (cloud_->fields[f].datatype == ::sensor_msgs::PointField::FLOAT64)
             memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset + cloud_->fields[f].count * sizeof (double)], 
-                    (char*)&d_nan, sizeof (double));
+                    reinterpret_cast<const char*> (&d_nan), sizeof (double));
           else
             memset (&data[r * cloud_->point_step + cloud_->fields[f].offset], 0,
                     pcl::getFieldSize (cloud_->fields[f].datatype) * cloud_->fields[f].count);
@@ -617,7 +617,7 @@ pcl::PLYWriter::writeASCII (const std::string &file_name,
   }
 
   unsigned int nr_points  = cloud.width * cloud.height;
-  unsigned int point_size = (unsigned int) (cloud.data.size () / nr_points);
+  unsigned int point_size = static_cast<unsigned int> (cloud.data.size () / nr_points);
 
   // Write the header information if available
   if (use_camera)
@@ -733,7 +733,7 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
             break;
         }
 
-        if (d < cloud.fields.size () - 1 || c < (int)cloud.fields[d].count - 1)
+        if (d < cloud.fields.size () - 1 || c < static_cast<int> (cloud.fields[d].count) - 1)
           fs << " ";
       }
     }
@@ -864,7 +864,7 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
             break;
         }
 
-        if (d < cloud.fields.size () - 1 || c < (int)cloud.fields[d].count - 1)
+        if (d < cloud.fields.size () - 1 || c < static_cast<int> (cloud.fields[d].count) - 1)
           line << " ";
       }
     }
@@ -912,7 +912,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
   }
 
   unsigned int nr_points  = cloud.width * cloud.height;
-  unsigned int point_size = (unsigned int) (cloud.data.size () / nr_points);
+  unsigned int point_size = static_cast<unsigned int> (cloud.data.size () / nr_points);
 
   // Write the header information if available
   fs << generateHeader (cloud, origin, orientation, true, true, nr_points);
@@ -950,42 +950,42 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
           {
             char value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (char)], sizeof (char));
-            fpout.write ((const char *) &value,sizeof (char));
+            fpout.write (reinterpret_cast<const char*> (&value), sizeof (char));
             break;
           }
           case sensor_msgs::PointField::UINT8:
           {
             unsigned char value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (unsigned char)], sizeof (unsigned char));
-            fpout.write ((const char *) &value,sizeof (unsigned char));
+            fpout.write (reinterpret_cast<const char*> (&value), sizeof (unsigned char));
             break;
           }
           case sensor_msgs::PointField::INT16:
           {
             short value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (short)], sizeof (short));
-            fpout.write ((const char *) &value,sizeof (short));
+            fpout.write (reinterpret_cast<const char*> (&value), sizeof (short));
             break;
           }
           case sensor_msgs::PointField::UINT16:
           {
             unsigned short value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (unsigned short)], sizeof (unsigned short));
-            fpout.write ((const char *) &value,sizeof (unsigned short));
+            fpout.write (reinterpret_cast<const char*> (&value), sizeof (unsigned short));
             break;
           }
           case sensor_msgs::PointField::INT32:
           {
             int value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (int)], sizeof (int));
-            fpout.write ((const char *) &value,sizeof (int));
+            fpout.write (reinterpret_cast<const char*> (&value), sizeof (int));
             break;
           }
           case sensor_msgs::PointField::UINT32:
           {
             unsigned int value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (unsigned int)], sizeof (unsigned int));
-            fpout.write ((const char *) &value,sizeof (unsigned int));
+            fpout.write (reinterpret_cast<const char*> (&value), sizeof (unsigned int));
             break;
           }
           case sensor_msgs::PointField::FLOAT32:
@@ -994,7 +994,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
             {
               float value;
               memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (float)], sizeof (float));
-              fpout.write ((const char *) &value,sizeof (float));
+              fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
             }
             else
             {
@@ -1003,9 +1003,9 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
               unsigned char r = color.r;
               unsigned char g = color.g;
               unsigned char b = color.b;
-              fpout.write ((const char *) &r,sizeof (unsigned char));
-              fpout.write ((const char *) &g,sizeof (unsigned char));
-              fpout.write ((const char *) &b,sizeof (unsigned char));
+              fpout.write (reinterpret_cast<const char*> (&r), sizeof (unsigned char));
+              fpout.write (reinterpret_cast<const char*> (&g), sizeof (unsigned char));
+              fpout.write (reinterpret_cast<const char*> (&b), sizeof (unsigned char));
             }
             break;
           }
@@ -1013,7 +1013,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
           {
             double value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (double)], sizeof (double));
-            fpout.write ((const char *) &value,sizeof (double));
+            fpout.write (reinterpret_cast<const char*> (&value), sizeof (double));
             break;
           }
           default:
@@ -1031,13 +1031,13 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
       t = origin[i]/origin[3];
     else
       t = origin[i];
-    fpout.write ((const char *) &t,sizeof (float));
+    fpout.write (reinterpret_cast<const char*> (&t), sizeof (float));
   }
   Eigen::Matrix3f R = orientation.toRotationMatrix ();
   for (int i = 0; i < 3; ++i)
     for (int j = 0; j < 3; ++j)
   {
-    fpout.write ((const char *) &R(i,j),sizeof (float));
+    fpout.write (reinterpret_cast<const char*> (&R (i, j)),sizeof (float));
   }
 
 /////////////////////////////////////////////////////
@@ -1056,17 +1056,17 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
 
   const float zerof = 0;
   for (int i = 0; i < 5; ++i)
-    fpout.write ((const char *) &zerof,sizeof (float));
+    fpout.write (reinterpret_cast<const char*> (&zerof), sizeof (float));
 
   // width and height
   int width = cloud.width;
-  fpout.write ((const char *) &width, sizeof (int));
+  fpout.write (reinterpret_cast<const char*> (&width), sizeof (int));
 
   int height = cloud.height;
-  fpout.write ((const char *) &height, sizeof (int));
+  fpout.write (reinterpret_cast<const char*> (&height), sizeof (int));
 
   for (int i = 0; i < 2; ++i)
-    fpout.write ((const char *) &zerof,sizeof (float));
+    fpout.write (reinterpret_cast<const char*> (&zerof), sizeof (float));
 
   // Close file
   fpout.close ();              

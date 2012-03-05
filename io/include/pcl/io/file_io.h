@@ -310,7 +310,7 @@ namespace pcl
 
     memcpy (&cloud.data[point_index * cloud.point_step + 
                         cloud.fields[field_idx].offset + 
-                        fields_count * sizeof (Type)], (char*)&value, sizeof (Type));
+                        fields_count * sizeof (Type)], reinterpret_cast<char*> (&value), sizeof (Type));
   }
 
   template <> inline void
@@ -320,7 +320,7 @@ namespace pcl
     int8_t value;
     if (st == "nan")
     {
-      value = std::numeric_limits<int>::quiet_NaN ();
+      value = static_cast<int8_t> (std::numeric_limits<int>::quiet_NaN ());
       cloud.is_dense = false;
     }
     else
@@ -329,12 +329,12 @@ namespace pcl
       std::istringstream is (st);
       is.imbue (std::locale::classic ());
       is >> val;
-      value = val;
+      value = static_cast<int8_t> (val);
     }
 
     memcpy (&cloud.data[point_index * cloud.point_step + 
                         cloud.fields[field_idx].offset + 
-                        fields_count * sizeof (int8_t)], (char*)&value, sizeof (int8_t));
+                        fields_count * sizeof (int8_t)], reinterpret_cast<char*> (&value), sizeof (int8_t));
   }
 
   template <> inline void
@@ -344,7 +344,7 @@ namespace pcl
     uint8_t value;
     if (st == "nan")
     {
-      value = std::numeric_limits<int>::quiet_NaN ();
+      value = static_cast<uint8_t> (std::numeric_limits<int>::quiet_NaN ());
       cloud.is_dense = false;
     }
     else
@@ -353,12 +353,12 @@ namespace pcl
       std::istringstream is (st);
       is.imbue (std::locale::classic ());
       is >> val;
-      value = val;
+      value = static_cast<uint8_t> (val);
     }
 
     memcpy (&cloud.data[point_index * cloud.point_step + 
                         cloud.fields[field_idx].offset + 
-                        fields_count * sizeof (uint8_t)], (char*)&value, sizeof (uint8_t));
+                        fields_count * sizeof (uint8_t)], reinterpret_cast<char*> (&value), sizeof (uint8_t));
   }
 }
 

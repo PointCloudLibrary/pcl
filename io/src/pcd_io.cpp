@@ -140,7 +140,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
       // Get the field indices (check for COLUMNS too for backwards compatibility)
       if ( (line_type.substr (0, 6) == "FIELDS") || (line_type.substr (0, 7) == "COLUMNS") )
       {
-        specified_channel_count = (int) (st.size () - 1);
+        specified_channel_count = static_cast<int> (st.size () - 1);
 
         // Allocate enough memory to accommodate all fields
         cloud.fields.resize (specified_channel_count);
@@ -165,10 +165,10 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
       // Get the field sizes
       if (line_type.substr (0, 4) == "SIZE")
       {
-        specified_channel_count = (int) (st.size () - 1);
+        specified_channel_count = static_cast<int> (st.size () - 1);
 
         // Allocate enough memory to accommodate all fields
-        if (specified_channel_count != (int)cloud.fields.size ())
+        if (specified_channel_count != static_cast<int> (cloud.fields.size ()))
           throw "The number of elements in <SIZE> differs than the number of elements in <FIELDS>!";
 
         // Resize to accommodate the number of values
@@ -195,10 +195,10 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
         if (field_sizes.empty ())
           throw "TYPE of FIELDS specified before SIZE in header!";
 
-        specified_channel_count = (int) (st.size () - 1);
+        specified_channel_count = static_cast<int> (st.size () - 1);
 
         // Allocate enough memory to accommodate all fields
-        if (specified_channel_count != (int)cloud.fields.size ())
+        if (specified_channel_count != static_cast<int> (cloud.fields.size ()))
           throw "The number of elements in <TYPE> differs than the number of elements in <FIELDS>!";
 
         // Resize to accommodate the number of values
@@ -207,7 +207,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
         for (int i = 0; i < specified_channel_count; ++i)
         {
           field_types[i] = st.at (i + 1).c_str ()[0];
-          cloud.fields[i].datatype = getFieldType (field_sizes[i], field_types[i]);
+          cloud.fields[i].datatype = static_cast<uint8_t> (getFieldType (field_sizes[i], field_types[i]));
         }
         continue;
       }
@@ -218,10 +218,10 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
         if (field_sizes.empty () || field_types.empty ())
           throw "COUNT of FIELDS specified before SIZE or TYPE in header!";
 
-        specified_channel_count = (int) (st.size () - 1);
+        specified_channel_count = static_cast<int> (st.size () - 1);
 
         // Allocate enough memory to accommodate all fields
-        if (specified_channel_count != (int)cloud.fields.size ())
+        if (specified_channel_count != static_cast<int> (cloud.fields.size ()))
           throw "The number of elements in <COUNT> differs than the number of elements in <FIELDS>!";
 
         field_counts.resize (specified_channel_count);
@@ -283,7 +283,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
       // Read the header + comments line by line until we get to <DATA>
       if (line_type.substr (0, 4) == "DATA")
       {
-        data_idx = (int) fs.tellg ();
+        data_idx = static_cast<int> (fs.tellg ());
         if (st.at (1).substr (0, 17) == "binary_compressed")
          data_type = 2;
         else
@@ -415,7 +415,7 @@ pcl::PCDReader::readHeaderEigen (const std::string &file_name, pcl::PointCloud<E
       // Get the field indices (check for COLUMNS too for backwards compatibility)
       if ( (line_type.substr (0, 6) == "FIELDS") || (line_type.substr (0, 7) == "COLUMNS") )
       {
-        specified_channel_count = (int) (st.size () - 1);
+        specified_channel_count = static_cast<int> (st.size () - 1);
 
         // Allocate enough memory to accommodate all fields
         channels.resize (specified_channel_count);
@@ -434,10 +434,10 @@ pcl::PCDReader::readHeaderEigen (const std::string &file_name, pcl::PointCloud<E
       // Get the field sizes
       if (line_type.substr (0, 4) == "SIZE")
       {
-        specified_channel_count = (int) (st.size () - 1);
+        specified_channel_count = static_cast<int> (st.size () - 1);
 
         // Allocate enough memory to accommodate all fields
-        if (specified_channel_count != (int)channels.size ())
+        if (specified_channel_count != static_cast<int> (channels.size ()))
           throw "The number of elements in <SIZE> differs than the number of elements in <FIELDS>!";
 
         for (int i = 0; i < specified_channel_count; ++i)
@@ -453,10 +453,10 @@ pcl::PCDReader::readHeaderEigen (const std::string &file_name, pcl::PointCloud<E
       // Get the field types
       if (line_type.substr (0, 4) == "TYPE")
       {
-        specified_channel_count = (int) (st.size () - 1);
+        specified_channel_count = static_cast<int> (st.size () - 1);
 
         // Allocate enough memory to accommodate all fields
-        if (specified_channel_count != (int)channels.size ())
+        if (specified_channel_count != static_cast<int> (channels.size ()))
           throw "The number of elements in <TYPE> differs than the number of elements in <FIELDS>!";
 
         for (int i = 0; i < specified_channel_count; ++i)
@@ -471,10 +471,10 @@ pcl::PCDReader::readHeaderEigen (const std::string &file_name, pcl::PointCloud<E
       // Get the field counts
       if (line_type.substr (0, 5) == "COUNT")
       {
-        specified_channel_count = (int) (st.size () - 1);
+        specified_channel_count = static_cast<int> (st.size () - 1);
 
         // Allocate enough memory to accommodate all fields
-        if (specified_channel_count != (int)channels.size ())
+        if (specified_channel_count != static_cast<int> (channels.size ()))
           throw "The number of elements in <COUNT> differs than the number of elements in <FIELDS>!";
 
         field_counts.resize (specified_channel_count);
@@ -540,7 +540,7 @@ pcl::PCDReader::readHeaderEigen (const std::string &file_name, pcl::PointCloud<E
       // Read the header + comments line by line until we get to <DATA>
       if (line_type.substr (0, 4) == "DATA")
       {
-        data_idx = (int) fs.tellg ();
+        data_idx = static_cast<int> (fs.tellg ());
         if (st.at (1).substr (0, 17) == "binary_compressed")
          data_type = 2;
         else
@@ -657,7 +657,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
 
         size_t total = 0;
         // Copy data
-        for (unsigned int d = 0; d < (unsigned int) cloud.fields.size (); ++d)
+        for (unsigned int d = 0; d < static_cast<unsigned int> (cloud.fields.size ()); ++d)
         {
           // Ignore invalid padded dimensions that are inherited from binary data
           if (cloud.fields[d].name == "_")
@@ -763,7 +763,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
       return (-1);
     }
 #else
-    char *map = (char*)mmap (0, data_size, PROT_READ, MAP_SHARED, fd, 0);
+    char *map = static_cast<char*> (mmap (0, data_size, PROT_READ, MAP_SHARED, fd, 0));
     if (map == MAP_FAILED)
     {
       pcl_close (fd);
@@ -778,7 +778,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
       unsigned int compressed_size, uncompressed_size;
       memcpy (&compressed_size, &map[data_idx + 0], sizeof (unsigned int));
       memcpy (&uncompressed_size, &map[data_idx + 4], sizeof (unsigned int));
-      PCL_DEBUG ("[pcl::PCDReader::read] Read a binary compressed file with %lu bytes compressed and %lu original.\n", (unsigned long) compressed_size, (unsigned long) uncompressed_size);
+      PCL_DEBUG ("[pcl::PCDReader::read] Read a binary compressed file with %u bytes compressed and %u original.\n", compressed_size, uncompressed_size);
       // For all those weird situations where the compressed data is actually LARGER than the uncompressed one
       // (we really ought to check this in the compressor and copy the original data in those cases)
       if (data_size < compressed_size)
@@ -790,20 +790,20 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
 #else
         munmap (map, data_size);
         data_size = compressed_size;
-        map = (char*)mmap (0, data_size, PROT_READ, MAP_SHARED, fd, 0);
+        map = static_cast<char*> (mmap (0, data_size, PROT_READ, MAP_SHARED, fd, 0));
 #endif
       }
 
       if (uncompressed_size != cloud.data.size ())
       {
-        PCL_WARN ("[pcl::PCDReader::read] The estimated cloud.data size (%lu) is different than the saved uncompressed value (%lu)! Data corruption?\n", 
-                  (unsigned long) cloud.data.size (), (unsigned long) uncompressed_size);
+        PCL_WARN ("[pcl::PCDReader::read] The estimated cloud.data size (%u) is different than the saved uncompressed value (%u)! Data corruption?\n", 
+                  cloud.data.size (), uncompressed_size);
         cloud.data.resize (uncompressed_size);
       }
 
-      char *buf = (char*)malloc (data_size);
+      char *buf = static_cast<char*> (malloc (data_size));
       // The size of the uncompressed data better be the same as what we stored in the header
-      if (pcl::lzfDecompress (&map[data_idx + 8], compressed_size, buf, (unsigned int) data_size) != uncompressed_size)
+      if (pcl::lzfDecompress (&map[data_idx + 8], compressed_size, buf, static_cast<unsigned int> (data_size)) != uncompressed_size)
       {
         free (buf);
         pcl_close (fd);
@@ -876,11 +876,11 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
   if (data_type == 0)
     return (0);
 
-  int point_size = (int) (cloud.data.size () / (cloud.height * cloud.width));
+  int point_size = static_cast<int> (cloud.data.size () / (cloud.height * cloud.width));
   // Once copied, we need to go over each field and check if it has NaN/Inf values and assign cloud.is_dense to true or false
   for (uint32_t i = 0; i < cloud.width * cloud.height; ++i)
   {
-    for (unsigned int d = 0; d < (unsigned int) cloud.fields.size (); ++d)
+    for (unsigned int d = 0; d < static_cast<unsigned int> (cloud.fields.size ()); ++d)
     {
       for (uint32_t c = 0; c < cloud.fields[d].count; ++c)
       {
@@ -1045,7 +1045,7 @@ pcl::PCDReader::readEigen (const std::string &file_name, pcl::PointCloud<Eigen::
       return (-1);
     }
 #else
-    char *map = (char*)mmap (0, data_size, PROT_READ, MAP_SHARED, fd, 0);
+    char *map = static_cast<char*> (mmap (0, data_size, PROT_READ, MAP_SHARED, fd, 0));
     if (map == MAP_FAILED)
     {
       pcl_close (fd);
@@ -1198,7 +1198,7 @@ pcl::PCDWriter::generateHeaderASCII (const sensor_msgs::PointCloud2 &cloud,
     // Ignore invalid padded dimensions that are inherited from binary data
     if (cloud.fields[d].name == "_")
       continue;
-    int count = abs ((int)cloud.fields[d].count);
+    int count = abs (static_cast<int> (cloud.fields[d].count));
     if (count == 0) 
       count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
   
@@ -1207,7 +1207,7 @@ pcl::PCDWriter::generateHeaderASCII (const sensor_msgs::PointCloud2 &cloud,
   // Ignore invalid padded dimensions that are inherited from binary data
   if (cloud.fields[cloud.fields.size () - 1].name != "_")
   {
-    int count = abs ((int)cloud.fields[cloud.fields.size () - 1].count);
+    int count = abs (static_cast<int> (cloud.fields[cloud.fields.size () - 1].count));
     if (count == 0)
       count = 1;
 
@@ -1282,7 +1282,7 @@ pcl::PCDWriter::generateHeaderBinary (const sensor_msgs::PointCloud2 &cloud,
     field_names << " " << cloud.fields[i].name;
     field_sizes << " " << pcl::getFieldSize (cloud.fields[i].datatype);
     field_types << " " << pcl::getFieldType (cloud.fields[i].datatype);
-    int count = abs ((int)cloud.fields[i].count);
+    int count = abs (static_cast<int> (cloud.fields[i].count));
     if (count == 0) count = 1;  // check for 0 counts (coming from older converter code)
     field_counts << " " << count;
   }
@@ -1343,7 +1343,7 @@ pcl::PCDWriter::generateHeaderBinaryCompressed (const sensor_msgs::PointCloud2 &
     field_names << " " << cloud.fields[i].name;
     field_sizes << " " << pcl::getFieldSize (cloud.fields[i].datatype);
     field_types << " " << pcl::getFieldType (cloud.fields[i].datatype);
-    int count = abs ((int)cloud.fields[i].count);
+    int count = abs (static_cast<int> (cloud.fields[i].count));
     if (count == 0) count = 1;  // check for 0 counts (coming from older converter code)
     field_counts << " " << count;
   }
@@ -1384,7 +1384,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const sensor_msgs::Poi
   }
 
   int nr_points  = cloud.width * cloud.height;
-  int point_size = (int) (cloud.data.size () / nr_points);
+  int point_size = static_cast<int> (cloud.data.size () / nr_points);
 
   // Write the header information
   fs << generateHeaderASCII (cloud, origin, orientation) << "DATA ascii\n";
@@ -1396,7 +1396,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const sensor_msgs::Poi
   // Iterate through the points
   for (int i = 0; i < nr_points; ++i)
   {
-    for (unsigned int d = 0; d < (unsigned int) cloud.fields.size (); ++d)
+    for (unsigned int d = 0; d < static_cast<unsigned int> (cloud.fields.size ()); ++d)
     {
       // Ignore invalid padded dimensions that are inherited from binary data
       if (cloud.fields[d].name == "_")
@@ -1455,7 +1455,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const sensor_msgs::Poi
             break;
         }
 
-        if (d < cloud.fields.size () - 1 || c < (int)cloud.fields[d].count - 1)
+        if (d < cloud.fields.size () - 1 || c < static_cast<int> (cloud.fields[d].count) - 1)
           stream << " ";
       }
     }
@@ -1485,7 +1485,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
 
   oss << generateHeaderBinary (cloud, origin, orientation) << "DATA binary\n";
   oss.flush();
-  data_idx = (unsigned int) oss.tellp ();
+  data_idx = static_cast<unsigned int> (oss.tellp ());
 
 #if _WIN32
   HANDLE h_native_file = CreateFile (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -1495,14 +1495,14 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
     return (-1);
   }
 #else
-  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, (mode_t)0600);
+  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, static_cast<mode_t> (0600));
   if (fd < 0)
   {
     PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during open (%s)!\n", file_name.c_str());
     return (-1);
   }
   // Stretch the file size to the size of the data
-  int result = pcl_lseek (fd, getpagesize () + cloud.data.size () - 1, SEEK_SET);
+  int result = static_cast<int> (pcl_lseek (fd, getpagesize () + cloud.data.size () - 1, SEEK_SET));
   if (result < 0)
   {
     pcl_close (fd);
@@ -1510,7 +1510,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
     return (-1);
   }
   // Write a bogus entry so that the new file size comes in effect
-  result = ::write (fd, "", 1);
+  result = static_cast<int> (::write (fd, "", 1));
   if (result != 1)
   {
     pcl_close (fd);
@@ -1525,7 +1525,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   CloseHandle (fm);
 
 #else
-  char *map = (char*)mmap (0, data_idx + cloud.data.size (), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+  char *map = static_cast<char*> (mmap (0, data_idx + cloud.data.size (), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0));
   if (map == MAP_FAILED)
   {
     pcl_close (fd);
@@ -1592,7 +1592,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
     return (-1);
   }
 #else
-  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, (mode_t)0600);
+  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, static_cast<mode_t> (0600));
   if (fd < 0)
   {
     PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during open (%s)!\n", file_name.c_str());
@@ -1627,7 +1627,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
   // data_size = nr_points * point_size 
   //           = nr_points * (sizeof_field_1 + sizeof_field_2 + ... sizeof_field_n)
   //           = sizeof_field_1 * nr_points + sizeof_field_2 * nr_points + ... sizeof_field_n * nr_points
-  char *only_valid_data = (char*)malloc (data_size);
+  char *only_valid_data = static_cast<char*> (malloc (data_size));
 
   // Convert the XYZRGBXYZRGB structure to XXYYZZRGBRGB to aid compression. For
   // this, we need a vector of fields.size () (4 in this case), which points to
@@ -1656,9 +1656,12 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
     }
   }
 
-  char* temp_buf = (char*)malloc ((size_t) (data_size * 1.5 + 8));
+  char* temp_buf = static_cast<char*> (malloc (static_cast<size_t> (static_cast<float> (data_size) * 1.5f + 8.0f)));
   // Compress the valid data
-  unsigned int compressed_size = pcl::lzfCompress (only_valid_data, (unsigned int) data_size, &temp_buf[8], (unsigned int) (data_size * 1.5));
+  unsigned int compressed_size = pcl::lzfCompress (only_valid_data, 
+                                                   static_cast<unsigned int> (data_size), 
+                                                   &temp_buf[8], 
+                                                   static_cast<unsigned int> (static_cast<float> (data_size) * 1.5f));
   unsigned int compressed_final_size = 0;
   // Was the compression successful?
   if (compressed_size)
@@ -1667,7 +1670,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
     memcpy (&header[0], &compressed_size, sizeof (unsigned int));
     memcpy (&header[4], &data_size, sizeof (unsigned int));
     data_size = compressed_size + 8;
-    compressed_final_size = (unsigned int) (data_size + data_idx);
+    compressed_final_size = static_cast<unsigned int> (data_size + data_idx);
   }
   else
   {
@@ -1680,7 +1683,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
 
 #if !_WIN32
   // Stretch the file size to the size of the data
-  int result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
+  int result = static_cast<int> (pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET));
   if (result < 0)
   {
     pcl_close (fd);
@@ -1688,7 +1691,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
     return (-1);
   }
   // Write a bogus entry so that the new file size comes in effect
-  result = ::write (fd, "", 1);
+  result = static_cast<int> (::write (fd, "", 1));
   if (result != 1)
   {
     pcl_close (fd);
@@ -1700,11 +1703,11 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
   // Prepare the map
 #ifdef _WIN32
   HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, compressed_final_size, NULL);
-  char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, compressed_final_size));
+  char *map = static_cast<char*> (MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, compressed_final_size));
   CloseHandle (fm);
 
 #else
-  char *map = (char*)mmap (0, compressed_final_size, PROT_WRITE, MAP_SHARED, fd, 0);
+  char *map = static_cast<char*> (mmap (0, compressed_final_size, PROT_WRITE, MAP_SHARED, fd, 0));
   if (map == MAP_FAILED)
   {
     pcl_close (fd);
@@ -1770,7 +1773,7 @@ pcl::PCDWriter::generateHeaderEigen (const pcl::PointCloud<Eigen::MatrixXf> &clo
     field_names << " " << it->second.name;
     field_sizes << " " << pcl::getFieldSize (it->second.datatype);
     field_types << " " << pcl::getFieldType (it->second.datatype);
-    int count = abs ((int)it->second.count);
+    int count = abs (static_cast<int> (it->second.count));
     if (count == 0) count = 1;  // check for 0 counts (coming from older converter code)
     field_counts << " " << count;
   }
@@ -1812,7 +1815,7 @@ pcl::PCDWriter::writeASCIIEigen (const std::string &file_name, const pcl::PointC
     return (-1);
   }
 
-  if (static_cast<int>(cloud.width * cloud.height) != cloud.points.rows ())
+  if (static_cast<int> (cloud.width * cloud.height) != cloud.points.rows ())
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Number of points different than width * height!");
     return (-1);
@@ -1870,7 +1873,7 @@ pcl::PCDWriter::writeBinaryEigen (const std::string &file_name,
   std::ostringstream oss;
   oss << generateHeaderEigen (cloud) << "DATA binary\n";
   oss.flush ();
-  data_idx = (int) oss.tellp ();
+  data_idx = static_cast<int> (oss.tellp ());
 
 #if _WIN32
   HANDLE h_native_file = CreateFileA (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -1880,7 +1883,7 @@ pcl::PCDWriter::writeBinaryEigen (const std::string &file_name,
     return (-1);
   }
 #else
-  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, (mode_t)0600);
+  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, static_cast<mode_t> (0600));
   if (fd < 0)
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during open!");
@@ -1893,12 +1896,12 @@ pcl::PCDWriter::writeBinaryEigen (const std::string &file_name,
   // Prepare the map
 #if _WIN32
   HANDLE fm = CreateFileMappingA (h_native_file, NULL, PAGE_READWRITE, 0, (DWORD) (data_idx + data_size), NULL);
-  char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + data_size));
+  char *map = static_cast<char*> (MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + data_size));
   CloseHandle (fm);
 
 #else
   // Stretch the file size to the size of the data
-  int result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
+  int result = static_cast<int> (pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET));
   if (result < 0)
   {
     pcl_close (fd);
@@ -1906,7 +1909,7 @@ pcl::PCDWriter::writeBinaryEigen (const std::string &file_name,
     return (-1);
   }
   // Write a bogus entry so that the new file size comes in effect
-  result = ::write (fd, "", 1);
+  result = static_cast<int>(::write (fd, "", 1));
   if (result != 1)
   {
     pcl_close (fd);
@@ -1914,7 +1917,7 @@ pcl::PCDWriter::writeBinaryEigen (const std::string &file_name,
     return (-1);
   }
 
-  char *map = (char*)mmap (0, data_idx + data_size, PROT_WRITE, MAP_SHARED, fd, 0);
+  char *map = static_cast<char*> (mmap (0, data_idx + data_size, PROT_WRITE, MAP_SHARED, fd, 0));
   if (map == MAP_FAILED)
   {
     pcl_close (fd);
@@ -1933,7 +1936,7 @@ pcl::PCDWriter::writeBinaryEigen (const std::string &file_name,
   else
     pts = cloud.points;
   // Copy the data (_always_ stored as ROW major in the file!)
-  memcpy (&map[0] + data_idx, (const char*)pts.data (), data_size);
+  memcpy (&map[0] + data_idx, reinterpret_cast<const char*> (pts.data ()), data_size);
 
   // If the user set the synchronization flag on, call msync
 #if !_WIN32
@@ -1986,7 +1989,7 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
     return (-1);
   }
 #else
-  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, (mode_t)0600);
+  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, static_cast<mode_t> (0600));
   if (fd < 0)
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during open!");
@@ -2004,9 +2007,12 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
 
   // Compute the size of data
   size_t data_size = cloud.points.rows () * cloud.points.cols () * sizeof (float);
-  char* temp_buf = (char*)malloc ((size_t) (data_size * 1.5 + 8));
+  char* temp_buf = static_cast<char*> (malloc (static_cast<size_t> (static_cast<float> (data_size) * 1.5f + 8.0f)));
   // Compress the valid data
-  unsigned int compressed_size = pcl::lzfCompress ((char*)pts.data (), (unsigned int) data_size, &temp_buf[8], (unsigned int) (data_size * 1.5));
+  unsigned int compressed_size = pcl::lzfCompress (reinterpret_cast<char*> (pts.data ()), 
+                                                   static_cast<unsigned int> (data_size), 
+                                                   &temp_buf[8], 
+                                                   static_cast<unsigned int> (static_cast<float> (data_size) * 1.5f));
   unsigned int compressed_final_size = 0;
   // Was the compression successful?
   if (compressed_size)
@@ -2015,7 +2021,7 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
     memcpy (&header[0], &compressed_size, sizeof (unsigned int));
     memcpy (&header[4], &data_size, sizeof (unsigned int));
     data_size = compressed_size + 8;
-    compressed_final_size = (unsigned int) (data_size + data_idx);
+    compressed_final_size = static_cast<unsigned int> (data_size + data_idx);
   }
   else
   {
@@ -2028,7 +2034,7 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
 
 #if !_WIN32
   // Stretch the file size to the size of the data
-  int result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
+  int result = static_cast<int> (pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET));
   if (result < 0)
   {
     pcl_close (fd);
@@ -2036,7 +2042,7 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
     return (-1);
   }
   // Write a bogus entry so that the new file size comes in effect
-  result = ::write (fd, "", 1);
+  result = static_cast<int> (::write (fd, "", 1));
   if (result != 1)
   {
     pcl_close (fd);
@@ -2048,11 +2054,11 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
   // Prepare the map
 #if _WIN32
   HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, compressed_final_size, NULL);
-  char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, compressed_final_size));
+  char *map = static_cast<char*> (MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, compressed_final_size));
   CloseHandle (fm);
 
 #else
-  char *map = (char*)mmap (0, compressed_final_size, PROT_WRITE, MAP_SHARED, fd, 0);
+  char *map = static_cast<char*> (mmap (0, compressed_final_size, PROT_WRITE, MAP_SHARED, fd, 0));
   if (map == MAP_FAILED)
   {
     pcl_close (fd);
