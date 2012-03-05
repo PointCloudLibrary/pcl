@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
-project(concatenate_points)
+project(openni_grabber)
 
 find_package(PCL 1.2 REQUIRED)
 
