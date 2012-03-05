@@ -456,14 +456,14 @@ namespace pcl
       inline bool empty () const { return points.empty (); }
 
       //element access
-      inline const PointT& operator[] (size_t n) const { return points[n]; }
-      inline PointT& operator[] (size_t n) { return points[n]; }
-      inline const PointT& at (size_t n) const { return points.at (n); }
-      inline PointT& at (size_t n) { return points.at (n); }
-      inline const PointT& front () const { return points.front (); }
-      inline PointT& front () { return points.front (); }
-      inline const PointT& back () const { return points.back (); }
-      inline PointT& back () { return points.back (); }
+      inline const PointT& operator[] (size_t n) const { return (points[n]); }
+      inline PointT& operator[] (size_t n) { return (points[n]); }
+      inline const PointT& at (size_t n) const { return (points.at (n)); }
+      inline PointT& at (size_t n) { return (points.at (n)); }
+      inline const PointT& front () const { return (points.front ()); }
+      inline PointT& front () { return (points.front ()); }
+      inline const PointT& back () const { return (points.back ()); }
+      inline PointT& back () { return (points.back ()); }
 
       /** \brief Insert a new point in the cloud, at the end of the container.
         * \note This breaks the organized structure of the cloud by setting the height to 1!
@@ -473,7 +473,7 @@ namespace pcl
       push_back (const PointT& pt)
       {
         points.push_back (pt);
-        width = points.size ();
+        width = static_cast<uint32_t> (points.size ());
         height = 1;
       }
 
@@ -487,7 +487,7 @@ namespace pcl
       insert (iterator position, const PointT& pt)
       {
         iterator it = points.insert (position, pt);
-        width = points.size ();
+        width = static_cast<uint32_t> (points.size ());
         height = 1;
         return (it);
       }
@@ -516,7 +516,7 @@ namespace pcl
       insert (iterator position, InputIterator first, InputIterator last)
       {
         points.insert (position, first, last);
-        width = points.size ();
+        width = static_cast<uint32_t> (points.size ());
         height = 1;
       }
 
@@ -529,7 +529,7 @@ namespace pcl
       erase (iterator position)
       {
         iterator it = points.erase (position); 
-        width = points.size ();
+        width = static_cast<uint32_t> (points.size ());
         height = 1;
         return (it);
       }
@@ -544,7 +544,7 @@ namespace pcl
       erase (iterator first, iterator last)
       {
         iterator it = points.erase (first, last);
-        width = points.size ();
+        width = static_cast<uint32_t> (points.size ());
         height = 1;
         return (it);
       }
