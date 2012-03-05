@@ -78,7 +78,7 @@ pcl::SampleConsensusModelRegistration<PointT>::getDistancesToModel (const Eigen:
 {
   if (indices_->size () != indices_tgt_->size ())
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::getDistancesToModel] Number of source indices (%lu) differs than number of target indices (%lu)!\n", (unsigned long)indices_->size (), (unsigned long)indices_tgt_->size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::getDistancesToModel] Number of source indices (%zu) differs than number of target indices (%zu)!\n", indices_->size (), indices_tgt_->size ());
     distances.clear ();
     return;
   }
@@ -109,7 +109,7 @@ pcl::SampleConsensusModelRegistration<PointT>::getDistancesToModel (const Eigen:
     Eigen::Vector4f pt_tgt = target_->points[(*indices_tgt_)[i]].getVector4fMap ();
     pt_tgt[3] = 1;
 
-    Eigen::Vector4f p_tr = transform * pt_src;
+    Eigen::Vector4f p_tr (transform * pt_src);
     // Calculate the distance from the transformed point to its correspondence
     // need to compute the real norm here to keep MSAC and friends general
     distances[i] = (p_tr - pt_tgt).norm ();
@@ -122,7 +122,7 @@ pcl::SampleConsensusModelRegistration<PointT>::selectWithinDistance (const Eigen
 {
   if (indices_->size () != indices_tgt_->size ())
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::selectWithinDistance] Number of source indices (%lu) differs than number of target indices (%lu)!\n", (unsigned long)indices_->size (), (unsigned long)indices_tgt_->size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::selectWithinDistance] Number of source indices (%zu) differs than number of target indices (%zu)!\n", indices_->size (), indices_tgt_->size ());
     inliers.clear ();
     return;
   }
@@ -157,7 +157,7 @@ pcl::SampleConsensusModelRegistration<PointT>::selectWithinDistance (const Eigen
     Eigen::Vector4f pt_tgt = target_->points[(*indices_tgt_)[i]].getVector4fMap ();
     pt_tgt[3] = 1;
 
-    Eigen::Vector4f p_tr  = transform * pt_src;
+    Eigen::Vector4f p_tr (transform * pt_src);
     // Calculate the distance from the transformed point to its correspondence
     if ((p_tr - pt_tgt).squaredNorm () < thresh)
       inliers[nr_p++] = (*indices_)[i];
@@ -172,7 +172,7 @@ pcl::SampleConsensusModelRegistration<PointT>::countWithinDistance (
 {
   if (indices_->size () != indices_tgt_->size ())
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::countWithinDistance] Number of source indices (%lu) differs than number of target indices (%lu)!\n", (unsigned long)indices_->size (), (unsigned long)indices_tgt_->size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::countWithinDistance] Number of source indices (%zu) differs than number of target indices (%zu)!\n", indices_->size (), indices_tgt_->size ());
     return (0);
   }
   if (!target_)
@@ -201,7 +201,7 @@ pcl::SampleConsensusModelRegistration<PointT>::countWithinDistance (
     Eigen::Vector4f pt_tgt = target_->points[(*indices_tgt_)[i]].getVector4fMap ();
     pt_tgt[3] = 1;
 
-    Eigen::Vector4f p_tr = transform * pt_src;
+    Eigen::Vector4f p_tr (transform * pt_src);
     // Calculate the distance from the transformed point to its correspondence
     if ((p_tr - pt_tgt).squaredNorm () < thresh)
       nr_p++;
@@ -215,7 +215,7 @@ pcl::SampleConsensusModelRegistration<PointT>::optimizeModelCoefficients (const 
 {
   if (indices_->size () != indices_tgt_->size ())
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::optimizeModelCoefficients] Number of source indices (%lu) differs than number of target indices (%lu)!\n", (unsigned long)indices_->size (), (unsigned long)indices_tgt_->size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::optimizeModelCoefficients] Number of source indices (%zu) differs than number of target indices (%zu)!\n", indices_->size (), indices_tgt_->size ());
     optimized_coefficients = model_coefficients;
     return;
   }

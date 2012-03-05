@@ -86,7 +86,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
     index_pool.push_back (sac_model_->indices_->operator[](i));
 
   // Iterate
-  while ((unsigned int)iterations_ < k_n_star)
+  while (static_cast<unsigned int> (iterations_) < k_n_star)
   {
     // Choose the samples
 
@@ -175,7 +175,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
           using namespace boost::math;
           // Typo in Equation 7, not (n-m choose i-m) but (n choose i-m)
           size_t I_possible_n_star_min = m
-                           + (size_t) ceil (quantile (complement (binomial_distribution<float>(static_cast<float> (possible_n_star), 0.1f), 0.05)));
+                           + static_cast<size_t> (ceil (quantile (complement (binomial_distribution<float>(static_cast<float> (possible_n_star), 0.1f), 0.05))));
           // If Equation 9 is not verified, exit
           if (I_possible_n_star < I_possible_n_star_min)
             break;
@@ -199,7 +199,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
         else if (bottom_log == 1)
           k_n_star = T_N;
         else
-          k_n_star = (int)ceil (log(0.05) / log (bottom_log));
+          k_n_star = static_cast<int> (ceil (log (0.05) / log (bottom_log)));
         // It seems weird to have very few iterations, so do have a few (totally empirical)
         k_n_star = (std::max)(k_n_star, 2 * m);
       }
@@ -217,7 +217,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
   }
 
   if (debug_verbosity_level > 0)
-    PCL_DEBUG ("[pcl::ProgressiveSampleConsensus::computeModel] Model: %lu size, %d inliers.\n", (unsigned long)model_.size (), I_N_best);
+    PCL_DEBUG ("[pcl::ProgressiveSampleConsensus::computeModel] Model: %zu size, %d inliers.\n", model_.size (), I_N_best);
 
   if (model_.empty ())
   {

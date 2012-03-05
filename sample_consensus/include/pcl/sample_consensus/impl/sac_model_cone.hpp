@@ -57,7 +57,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::computeModelCoefficients (
   // Need 3 samples
   if (samples.size () != 3)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelCone::computeModelCoefficients] Invalid set of samples given (%lu)!\n", (unsigned long)samples.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCone::computeModelCoefficients] Invalid set of samples given (%zu)!\n", samples.size ());
     return (false);
   }
 
@@ -308,7 +308,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::optimizeModelCoefficients (
   // Needs a set of valid model coefficients
   if (model_coefficients.size () != 7)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelCone::optimizeModelCoefficients] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCone::optimizeModelCoefficients] Invalid number of model coefficients given (%zu)!\n", model_coefficients.size ());
     return;
   }
 
@@ -339,7 +339,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::projectPoints (
   // Needs a valid set of model coefficients
   if (model_coefficients.size () != 7)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelCone::projectPoints] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCone::projectPoints] Invalid number of model coefficients given (%zu)!\n", model_coefficients.size ());
     return;
   }
 
@@ -435,7 +435,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::doSamplesVerifyModel (
   // Needs a valid model coefficients
   if (model_coefficients.size () != 7)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelCone::doSamplesVerifyModel] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCone::doSamplesVerifyModel] Invalid number of model coefficients given (%zu)!\n", model_coefficients.size ());
     return (false);
   }
 
@@ -487,7 +487,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::isModelValid (const Eigen::Vecto
   // Needs a valid model coefficients
   if (model_coefficients.size () != 7)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelCone::isModelValid] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCone::isModelValid] Invalid number of model coefficients given (%zu)!\n", model_coefficients.size ());
     return (false);
   }
  

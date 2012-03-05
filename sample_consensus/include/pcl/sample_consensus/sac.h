@@ -162,7 +162,7 @@ namespace pcl
         indices_subset.clear ();
         while (indices_subset.size () < nr_samples)
           //indices_subset.insert ((*indices)[(int) (indices->size () * (rand () / (RAND_MAX + 1.0)))]);
-          indices_subset.insert ((*indices)[(int) (indices->size () * rnd ())]);
+          indices_subset.insert ((*indices)[static_cast<int> (static_cast<double>(indices->size ()) * rnd ())]);
       }
 
       /** \brief Return the best model found so far. 
