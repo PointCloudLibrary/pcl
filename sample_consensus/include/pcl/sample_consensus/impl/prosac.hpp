@@ -54,20 +54,20 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
   }
 
   // Initialize some PROSAC constants
-  float T_N = 200000;
-  unsigned int N = sac_model_->indices_->size ();
-  unsigned int m = sac_model_->getSampleSize ();
-  float T_n = T_N;
+  const int T_N = 200000;
+  const size_t N = sac_model_->indices_->size ();
+  const size_t m = sac_model_->getSampleSize ();
+  float T_n = static_cast<float> (T_N);
   for (unsigned int i = 0; i < m; ++i)
-    T_n *= (float)(m - i) / (float)(N - i);
-  float T_prime_n = 1;
-  unsigned int I_N_best = 0;
-  float n = m;
+    T_n *= static_cast<float> (m - i) / static_cast<float> (N - i);
+  float T_prime_n = 1.0f;
+  size_t I_N_best = 0;
+  float n = static_cast<float> (m);
 
   // Define the n_Start coefficients from Section 2.2
-  float n_star = N;
+  float n_star = static_cast<float> (N);
   float epsilon_n_star = 0.0;
-  unsigned int k_n_star = T_N;
+  size_t k_n_star = T_N;
 
   // Compute the I_n_star_min of Equation 8
   std::vector<unsigned int> I_n_star_min (N);
@@ -86,7 +86,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
     index_pool.push_back (sac_model_->indices_->operator[](i));
 
   // Iterate
-  while ((unsigned int)iterations_ < k_n_star)
+  while (static_cast<unsigned int> (iterations_) < k_n_star)
   {
     // Choose the samples
 
@@ -98,11 +98,11 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
       ++n;
       if (n >= N)
         break;
-      index_pool.push_back (sac_model_->indices_->at(n - 1));
+      index_pool.push_back (sac_model_->indices_->at(static_cast<unsigned int> (n - 1)));
       // Update other variables
       float T_n_minus_1 = T_n;
-      T_n *= (float)(n + 1) / (float)(n + 1 - m);
-      T_prime_n += ceil(T_n - T_n_minus_1);
+      T_n *= (static_cast<float>(n) + 1.0f) / (static_cast<float>(n) + 1.0f - static_cast<float>(m));
+      T_prime_n += ceilf (T_n - T_n_minus_1);
     }
 
     // Step 2
@@ -112,7 +112,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
     if (T_prime_n < iterations_)
     {
       selection.pop_back ();
-      selection.push_back (sac_model_->indices_->at(n - 1));
+      selection.push_back (sac_model_->indices_->at(static_cast<unsigned int> (n - 1)));
     }
 
     // Make sure we use the right indices for testing
@@ -135,7 +135,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
     inliers.clear ();
     sac_model_->selectWithinDistance (model_coefficients, threshold_, inliers);
 
-    unsigned int I_N = inliers.size ();
+    size_t I_N = inliers.size ();
 
     // If we find more inliers than before
     if (I_N > I_N_best)
@@ -152,11 +152,11 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
 
       // Try to find a better n_star
       // We minimize k_n_star and therefore maximize epsilon_n_star = I_n_star / n_star
-      unsigned int possible_n_star_best = N, I_possible_n_star_best = I_N;
-      float epsilon_possible_n_star_best = (float)I_possible_n_star_best / possible_n_star_best;
+      size_t possible_n_star_best = N, I_possible_n_star_best = I_N;
+      float epsilon_possible_n_star_best = static_cast<float>(I_possible_n_star_best) / static_cast<float>(possible_n_star_best);
 
       // We only need to compute possible better epsilon_n_star for when _n is just about to be removed an inlier
-      unsigned int I_possible_n_star = I_N;
+      size_t I_possible_n_star = I_N;
       for (std::vector<int>::const_reverse_iterator last_inlier = inliers.rbegin (), 
                                                     inliers_end = inliers.rend (); 
            last_inlier != inliers_end; 
@@ -174,9 +174,8 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
         {
           using namespace boost::math;
           // Typo in Equation 7, not (n-m choose i-m) but (n choose i-m)
-          unsigned int
-                       I_possible_n_star_min = m
-                           + ceil (quantile (complement (binomial_distribution<float>(possible_n_star, 0.1), 0.05)));
+          size_t I_possible_n_star_min = m
+                           + static_cast<size_t> (ceil (quantile (complement (binomial_distribution<float>(static_cast<float> (possible_n_star), 0.1f), 0.05))));
           // If Equation 9 is not verified, exit
           if (I_possible_n_star < I_possible_n_star_min)
             break;
@@ -200,7 +199,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
         else if (bottom_log == 1)
           k_n_star = T_N;
         else
-          k_n_star = (int)ceil (log(0.05) / log (bottom_log));
+          k_n_star = static_cast<int> (ceil (log (0.05) / log (bottom_log)));
         // It seems weird to have very few iterations, so do have a few (totally empirical)
         k_n_star = (std::max)(k_n_star, 2 * m);
       }
@@ -218,7 +217,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
   }
 
   if (debug_verbosity_level > 0)
-    PCL_DEBUG ("[pcl::ProgressiveSampleConsensus::computeModel] Model: %lu size, %d inliers.\n", (unsigned long)model_.size (), I_N_best);
+    PCL_DEBUG ("[pcl::ProgressiveSampleConsensus::computeModel] Model: %zu size, %d inliers.\n", model_.size (), I_N_best);
 
   if (model_.empty ())
   {

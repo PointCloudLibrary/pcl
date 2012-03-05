@@ -176,7 +176,7 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::isModelValid (const Eigen
   // Needs a valid model coefficients
   if (model_coefficients.size () != 4)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelNormalPlane::selectWithinDistance] Invalid number of model coefficients given (%lu)!\n", (unsigned long)model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelNormalPlane::selectWithinDistance] Invalid number of model coefficients given (%zu)!\n", model_coefficients.size ());
     return (false);
   }
 

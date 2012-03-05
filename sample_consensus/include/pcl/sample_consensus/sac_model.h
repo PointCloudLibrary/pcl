@@ -139,7 +139,7 @@ namespace pcl
 
         if (indices_->size () > input_->points.size ())
         {
-          PCL_ERROR ("[pcl::SampleConsensusModel] Invalid index vector given with size %lu while the input PointCloud has size %lu!\n", (unsigned long)indices_->size (), (unsigned long)input_->points.size ());
+          PCL_ERROR ("[pcl::SampleConsensusModel] Invalid index vector given with size %zu while the input PointCloud has size %zu!\n", indices_->size (), input_->points.size ());
           indices_->clear ();
         }
         shuffled_indices_ = *indices_;
@@ -162,8 +162,8 @@ namespace pcl
         // We're assuming that indices_ have already been set in the constructor
         if (indices_->size () < getSampleSize ())
         {
-          PCL_ERROR ("[pcl::SampleConsensusModel::getSamples] Can not select %lu unique points out of %lu!\n",
-                     (unsigned long)samples.size (), (unsigned long)indices_->size ());
+          PCL_ERROR ("[pcl::SampleConsensusModel::getSamples] Can not select %zu unique points out of %zu!\n",
+                     samples.size (), indices_->size ());
           // one of these will make it stop :)
           samples.clear ();
           iterations = INT_MAX - 1;
@@ -287,7 +287,7 @@ namespace pcl
           // Prepare a set of indices to be used (entire cloud)
           indices_->resize (cloud->points.size ());
           for (size_t i = 0; i < cloud->points.size (); ++i) 
-            (*indices_)[i] = (int) i;
+            (*indices_)[i] = static_cast<int> (i);
         }
         shuffled_indices_ = *indices_;
        }

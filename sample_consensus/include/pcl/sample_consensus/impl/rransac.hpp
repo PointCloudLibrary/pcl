@@ -109,8 +109,8 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
       model_coefficients_ = model_coefficients;
 
       // Compute the k parameter (k=log(z)/log(1-w^n))
-      double w = (double)((double)n_inliers_count / (double)sac_model_->getIndices ()->size ());
-      double p_no_outliers = 1 - pow (w, (double)selection.size ());
+      double w = static_cast<double> (n_inliers_count) / static_cast<double> (sac_model_->getIndices ()->size ());
+      double p_no_outliers = 1 - pow (w, static_cast<double> (selection.size ()));
       p_no_outliers = (std::max) (std::numeric_limits<double>::epsilon (), p_no_outliers);       // Avoid division by -Inf
       p_no_outliers = (std::min) (1 - std::numeric_limits<double>::epsilon (), p_no_outliers);   // Avoid division by 0.
       k = log (1 - probability_) / log (p_no_outliers);
@@ -119,7 +119,7 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
     ++iterations_;
 
     if (debug_verbosity_level > 1)
-      PCL_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] Trial %d out of %d: %d inliers (best is: %d so far).\n", iterations_, (int)ceil (k), n_inliers_count, n_best_inliers_count);
+      PCL_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] Trial %d out of %d: %d inliers (best is: %d so far).\n", iterations_, static_cast<int> (ceil (k)), n_inliers_count, n_best_inliers_count);
     if (iterations_ > max_iterations_)
     {
       if (debug_verbosity_level > 0)
@@ -129,7 +129,7 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
   }
 
   if (debug_verbosity_level > 0)
-    PCL_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] Model: %lu size, %d inliers.\n", (unsigned long)model_.size (), n_best_inliers_count);
+    PCL_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] Model: %zu size, %d inliers.\n", model_.size (), n_best_inliers_count);
 
   if (model_.empty ())
   {

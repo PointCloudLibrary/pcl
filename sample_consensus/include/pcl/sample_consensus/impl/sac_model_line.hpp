@@ -65,7 +65,7 @@ pcl::SampleConsensusModelLine<PointT>::computeModelCoefficients (
   // Need 2 samples
   if (samples.size () != 2)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelLine::computeModelCoefficients] Invalid set of samples given (%lu)!\n", (unsigned long)samples.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::computeModelCoefficients] Invalid set of samples given (%zu)!\n", samples.size ());
     return (false);
   }
 
@@ -190,7 +190,7 @@ pcl::SampleConsensusModelLine<PointT>::optimizeModelCoefficients (
   // Need at least 2 points to estimate a line
   if (inliers.size () <= 2)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelLine::optimizeModelCoefficients] Not enough inliers found to support a model (%lu)! Returning the same coefficients.\n", (unsigned long)inliers.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::optimizeModelCoefficients] Not enough inliers found to support a model (%zu)! Returning the same coefficients.\n", inliers.size ());
     optimized_coefficients = model_coefficients;
     return;
   }
