@@ -53,6 +53,8 @@
 
 // We're doing a lot of black magic with Boost here, so disable warnings in Maintainer mode, as we will never
 // be able to fix them anyway
+#pragma warning(disable: 4201)
+//#pragma warning(push, 1)
 #ifdef BUILD_Maintainer
 #  if defined __GNUC__
 #    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
@@ -61,8 +63,7 @@
 #    else
 #      pragma GCC system_header 
 #    endif
-#  elif defined _MSC_VER
-#    pragma warning(push, 1)
+//#  elif defined _MSC_VER
 #  endif
 #endif
 
@@ -541,14 +542,15 @@ POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::ReferenceFrame, pcl::_ReferenceFrame)
 //                                  (uint32_t, traits, traits)
 //)
 
+#pragma warning(default: 4201) 
+//#pragma warning(pop)
 #ifdef BUILD_Maintainer
 #  if defined __GNUC__
 #    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
 #      pragma GCC diagnostic warning "-Weffc++"
 #      pragma GCC diagnostic warning "-pedantic"
 #    endif
-#  elif defined _MSC_VER
-#    pragma warning(pop)
+//#  elif defined _MSC_VER
 #  endif
 #endif
 

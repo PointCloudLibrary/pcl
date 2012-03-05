@@ -71,7 +71,7 @@ namespace pcl
       getTime ()
       {
         boost::posix_time::ptime end_time = boost::posix_time::microsec_clock::local_time ();
-        return ((double) ((end_time - start_time_).total_milliseconds ()));
+        return (static_cast<double> (((end_time - start_time_).total_milliseconds ())));
       }
 
       /** \brief Retrieve the time in seconds spent since the last call to \a reset(). */

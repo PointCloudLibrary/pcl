@@ -189,7 +189,7 @@ namespace pcl
         field_map[0].struct_offset == 0 &&
         msg.point_step == sizeof(PointT))
     {
-      uint32_t cloud_row_step = sizeof(PointT) * cloud.width;
+      uint32_t cloud_row_step = static_cast<uint32_t> (sizeof (PointT) * cloud.width);
       const uint8_t* msg_data = &msg.data[0];
       // Should usually be able to copy all rows at once
       if (msg.row_step == cloud_row_step)
@@ -265,7 +265,7 @@ namespace pcl
 
     msg.header     = cloud.header;
     msg.point_step = sizeof (PointT);
-    msg.row_step   = sizeof (PointT) * msg.width;
+    msg.row_step   = static_cast<uint32_t> (sizeof (PointT) * msg.width);
     msg.is_dense   = cloud.is_dense;
     /// @todo msg.is_bigendian = ?;
   }

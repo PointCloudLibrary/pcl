@@ -58,9 +58,9 @@ pcl::PosesFromMatches::estimatePosesUsing1Correspondence (const pcl::PointCorres
                                                           pcl::PosesFromMatches::PoseEstimatesVector& pose_estimates) const
 {
   if (max_no_of_results < 0)
-    max_no_of_results = (int) correspondences.size ();
+    max_no_of_results = static_cast<int> (correspondences.size ());
   else
-    max_no_of_results = std::min (max_no_of_results, (int)correspondences.size ());
+    max_no_of_results = std::min (max_no_of_results, static_cast<int> (correspondences.size ()));
   
   for (int correspondence_idx = 0; correspondence_idx < max_no_of_results; ++correspondence_idx)
   {
@@ -84,7 +84,7 @@ pcl::PosesFromMatches::estimatePosesUsing2Correspondences (const pcl::PointCorre
                         y_direction (0.0f, 1.0f, 0.0f),
                         z_direction (0.0f, 0.0f, 1.0f);
   
-  int max_correspondence_idx = (int) correspondences.size ();
+  int max_correspondence_idx = static_cast<int> (correspondences.size ());
   int counter_for_tested_combinations = 0,
       counter_for_added_pose_estimates = 0;
   float max_distance_quotient = 1.0f+parameters_.max_correspondence_distance_error,
@@ -198,7 +198,7 @@ pcl::PosesFromMatches::estimatePosesUsing3Correspondences (const PointCorrespond
                         y_direction (0.0f, 1.0f, 0.0f),
                         z_direction (0.0f, 0.0f, 1.0f);
   
-  int max_correspondence_idx = (int) correspondences.size ();
+  int max_correspondence_idx = static_cast<int> (correspondences.size ());
   int counter_for_tested_combinations = 0,
       counter_for_added_pose_estimates = 0;
   float max_distance_quotient = 1.0f+parameters_.max_correspondence_distance_error,

@@ -120,41 +120,36 @@ Eigen::Affine3f pcl::getTransformation(float x, float y, float z, float roll, fl
   return t;
 }
 
-template <typename Derived>
-void pcl::saveBinary(const Eigen::MatrixBase<Derived>& matrix, std::ostream& file)
+template <typename Derived> void 
+pcl::saveBinary (const Eigen::MatrixBase<Derived>& matrix, std::ostream& file)
 {
-  uint32_t rows=matrix.rows(), cols=matrix.cols();
-  file.write((char*) &rows, sizeof(rows));
-  file.write((char*) &cols, sizeof(cols));
-  for (uint32_t i=0; i<rows; ++i)
-    for (uint32_t j=0; j<cols; ++j)
+  uint32_t rows = matrix.rows(), cols = matrix.cols();
+  file.write (reinterpret_cast<char*> (&rows), sizeof (rows));
+  file.write (reinterpret_cast<char*> (&cols), sizeof (cols));
+  for (uint32_t i = 0; i < rows; ++i)
+    for (uint32_t j = 0; j < cols; ++j)
     {
       typename Derived::Scalar tmp = matrix(i,j);
-      file.write((char*) &tmp, sizeof(tmp));
+      file.write (reinterpret_cast<const char*> (&tmp), sizeof (tmp));
     }
 }
 
-template <typename Derived>
-void pcl::loadBinary(Eigen::MatrixBase<Derived> const & matrix_, std::istream& file)
+template <typename Derived> void 
+pcl::loadBinary (Eigen::MatrixBase<Derived> const & matrix_, std::istream& file)
 {
   Eigen::MatrixBase<Derived> &matrix = const_cast<Eigen::MatrixBase<Derived> &> (matrix_);
 
   uint32_t rows, cols;
-  file.read((char*) &rows, sizeof(rows));
-  file.read((char*) &cols, sizeof(cols));
-  //std::cout << rows <<" rows and "<<cols<<" cols.\n";
-  if (matrix.rows()!=(int)rows || matrix.cols()!=(int)cols)
-  {
-    //std::cerr << __PRETTY_FUNCTION__ << ": matrix size does not fit!\n";
+  file.read (reinterpret_cast<char*> (&rows), sizeof (rows));
+  file.read (reinterpret_cast<char*> (&cols), sizeof (cols));
+  if (matrix.rows () != static_cast<int>(rows) || matrix.cols () != static_cast<int>(cols))
     matrix.derived().resize(rows, cols);
-    // matrix = Eigen::Matrix<Derived, Eigen::Dynamic, Eigen::Dynamic> (rows, cols);
-  }
   
-  for (uint32_t i=0; i<rows; ++i)
-    for (uint32_t j=0; j<cols; ++j)
+  for (uint32_t i = 0; i < rows; ++i)
+    for (uint32_t j = 0; j < cols; ++j)
     {
       typename Derived::Scalar tmp;
-      file.read((char*) &tmp, sizeof(tmp));
-      matrix(i,j) = tmp;
+      file.read (reinterpret_cast<char*> (&tmp), sizeof (tmp));
+      matrix (i, j) = tmp;
     }
 }

@@ -51,6 +51,8 @@
 #include <boost/mpl/aux_/unwrap.hpp>
 #include <boost/type_traits/is_same.hpp>
 
+#pragma GCC system_header 
+
 namespace pcl 
 {
   //////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,13 +85,13 @@ namespace pcl
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////
-  template<typename Sequence, typename F>
-  inline void for_each_type (F f)
+  template<typename Sequence, typename F> inline void 
+  for_each_type (F f)
   {
     BOOST_MPL_ASSERT (( boost::mpl::is_sequence<Sequence> ));
     typedef typename boost::mpl::begin<Sequence>::type first;
     typedef typename boost::mpl::end<Sequence>::type last;
-    for_each_type_impl< boost::is_same<first, last>::value >::template execute<first, last, F> (f);
+    for_each_type_impl<boost::is_same<first, last>::value>::template execute<first, last, F> (f);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////

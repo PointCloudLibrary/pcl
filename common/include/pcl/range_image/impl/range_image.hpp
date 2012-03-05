@@ -62,7 +62,7 @@ RangeImage::atan2LookUp (float y, float x)
       static_cast<int>(
           static_cast<float>(pcl_lrintf ((static_cast<float>(lookup_table_size) / 2.0f) * (x / y))) + 
           static_cast<float>(lookup_table_size) / 2.0f)];
-    ret = (float) (x*y > 0 ? M_PI/2-ret : -M_PI/2-ret);
+    ret = static_cast<float> (x*y > 0 ? M_PI/2-ret : -M_PI/2-ret);
   }
   else
     ret = atan_lookup_table[
@@ -70,7 +70,7 @@ RangeImage::atan2LookUp (float y, float x)
           static_cast<float>(pcl_lrintf ((static_cast<float>(lookup_table_size) / 2.0f) * (y / x))) + 
           static_cast<float>(lookup_table_size)/2.0f)];
   if (x < 0)
-    ret = (float) (y < 0 ? ret-M_PI : ret+M_PI);
+    ret = static_cast<float> (y < 0 ? ret-M_PI : ret+M_PI);
   
   return (ret);
 }
@@ -122,11 +122,11 @@ RangeImage::createFromPointCloudWithViewpoints(const PointCloudTypeWithViewpoint
                                                float max_angle_width, float max_angle_height, RangeImage::CoordinateFrame coordinate_frame,
                                                float noise_level, float min_range, int border_size)
 {
-  Eigen::Vector3f average_viewpoint = getAverageViewPoint(point_cloud);
+  Eigen::Vector3f average_viewpoint = getAverageViewPoint (point_cloud);
   
-  Eigen::Affine3f sensor_pose = (Eigen::Affine3f)Eigen::Translation3f(average_viewpoint);
+  Eigen::Affine3f sensor_pose = static_cast<Eigen::Affine3f> (Eigen::Translation3f (average_viewpoint));
 
-  createFromPointCloud(point_cloud, angular_resolution, max_angle_width, max_angle_height, sensor_pose, coordinate_frame, noise_level, min_range, border_size);
+  createFromPointCloud (point_cloud, angular_resolution, max_angle_width, max_angle_height, sensor_pose, coordinate_frame, noise_level, min_range, border_size);
   
   //change3dPointsToLocalCoordinateFrame();
 }
@@ -386,7 +386,7 @@ RangeImage::real2DToInt2D (float x, float y, int& xInt, int& yInt) const
 bool 
 RangeImage::isInImage(int x, int y) const
 {
-  return x>=0 && x<(int)width && y>=0 && y<(int)height;
+  return (x >= 0 && x < static_cast<int> (width) && y >= 0 && y < static_cast<int> (height));
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -569,13 +569,15 @@ RangeImage::getImpactAngle(const PointWithRange& point1, const PointWithRange& p
   
   float r1 = (std::min)(point1.range, point2.range),
         r2 = (std::max)(point1.range, point2.range);
-  float impact_angle = (float) (0.5f*M_PI);
+  float impact_angle = static_cast<float> (0.5f * M_PI);
   
-  if (pcl_isinf(r2)) {
+  if (pcl_isinf(r2)) 
+  {
     if (r2 > 0.0f && !pcl_isinf(r1))
       impact_angle = 0.0f;
   }
-  else if (!pcl_isinf(r1)) {
+  else if (!pcl_isinf(r1)) 
+  {
     float r1Sqr = r1*r1,
           r2Sqr = r2*r2,
           dSqr  = squaredEuclideanDistance(point1, point2),
@@ -831,7 +833,7 @@ RangeImage::getImpactAngleBasedOnLocalNormal(int x, int y, int radius) const
   if (!isValid(x,y))
     return -std::numeric_limits<float>::infinity ();
   const PointWithRange& point = getPoint(x, y);
-  int no_of_nearest_neighbors = (int) pow((double)(radius+1), 2.0);
+  int no_of_nearest_neighbors = static_cast<int> (pow (static_cast<double> ((radius + 1.0)), 2.0));
   Eigen::Vector3f normal;
   if (!getNormalForClosestNeighbors(x, y, radius, point, no_of_nearest_neighbors, normal, 1))
     return -std::numeric_limits<float>::infinity ();
@@ -872,7 +874,7 @@ RangeImage::getNormalBasedAcutenessValue(int x, int y, int radius) const
   float impact_angle = getImpactAngleBasedOnLocalNormal(x, y, radius);
   if (pcl_isinf(impact_angle))
     return -std::numeric_limits<float>::infinity ();
-  float ret = 1.0f - (float) (impact_angle/(0.5f*M_PI));
+  float ret = 1.0f - static_cast<float> ((impact_angle / (0.5f * M_PI)));
   //std::cout << PVARAC(impact_angle)<<PVARN(ret);
   return ret;
 }
@@ -891,7 +893,7 @@ RangeImage::getNormalForClosestNeighbors(int x, int y, Eigen::Vector3f& normal, 
 {
   if (!isValid(x,y))
     return false;
-  int no_of_nearest_neighbors = (int) pow ((double)(radius+1), 2.0);
+  int no_of_nearest_neighbors = static_cast<int> (pow (static_cast<double> (radius + 1.0), 2.0));
   return getNormalForClosestNeighbors(x, y, radius, getPoint(x,y).getVector3fMap(), no_of_nearest_neighbors, normal);
 }
 
@@ -922,7 +924,7 @@ RangeImage::getSurfaceInformation (int x, int y, int radius, const Eigen::Vector
   if (eigen_values_all_neighbors!=NULL)
     eigen_values_all_neighbors->setZero();
   
-  int blocksize = (int) pow ((double)(2*radius+1), 2.0);
+  int blocksize = static_cast<int> (pow (static_cast<double>((2.0 * radius + 1.0)), 2.0));
   
   PointWithRange given_point;
   given_point.x=point[0];  given_point.y=point[1];  given_point.z=point[2];
@@ -999,7 +1001,7 @@ RangeImage::getSquaredDistanceOfNthNeighbor(int x, int y, int radius, int n, int
   if (!pcl_isfinite(point.range))
     return -std::numeric_limits<float>::infinity ();
   
-  int blocksize = (int) pow ((double)(2*radius+1), 2.0);
+  int blocksize = static_cast<int> (pow (static_cast<double> (2.0 * radius + 1.0), 2.0));
   std::vector<float> neighbor_distances (blocksize);
   int neighbor_counter = 0;
   for (int y2=y-radius; y2<=y+radius; y2+=step_size)

@@ -177,7 +177,7 @@ pcl::console::parse_2x_arguments (int argc, char** argv, const char* str, double
       boost::split (values, argv[i], boost::is_any_of (","), boost::token_compress_on);
       if (values.size () != 2 && debug)
       {
-        print_error ("[parse_2x_arguments] Number of values for %s (%d) different than 2!\n", str, (int)values.size ());
+        print_error ("[parse_2x_arguments] Number of values for %s (%zu) different than 2!\n", str, values.size ());
         return (-2);
       }
       f = atof (values.at (0).c_str ());
@@ -202,7 +202,7 @@ pcl::console::parse_2x_arguments (int argc, char** argv, const char* str, int &f
       boost::split (values, argv[i], boost::is_any_of (","), boost::token_compress_on);
       if (values.size () != 2 && debug)
       {
-        print_error ("[parse_2x_arguments] Number of values for %s (%d) different than 2!\n", str, (int)values.size ());
+        print_error ("[parse_2x_arguments] Number of values for %s (%zu) different than 2!\n", str, values.size ());
         return (-2);
       }
       f = atoi (values.at (0).c_str ());
@@ -227,7 +227,7 @@ pcl::console::parse_3x_arguments (int argc, char** argv, const char* str, double
       boost::split (values, argv[i], boost::is_any_of (","), boost::token_compress_on);
       if (values.size () != 3 && debug)
       {
-        print_error ("[parse_3x_arguments] Number of values for %s (%d) different than 3!\n", str, (int)values.size ());
+        print_error ("[parse_3x_arguments] Number of values for %s (%zu) different than 3!\n", str, values.size ());
         return (-2);
       }
       f = atof (values.at (0).c_str ());
@@ -253,7 +253,7 @@ pcl::console::parse_3x_arguments (int argc, char** argv, const char* str, int &f
       boost::split (values, argv[i], boost::is_any_of (","), boost::token_compress_on);
       if (values.size () != 3 && debug)
       {
-        print_error ("[parse_3x_arguments] Number of values for %s (%d) different than 3!\n", str, (int)values.size ());
+        print_error ("[parse_3x_arguments] Number of values for %s (%zu) different than 3!\n", str, values.size ());
         return (-2);
       }
       f = atoi (values.at (0).c_str ());
@@ -382,7 +382,7 @@ pcl::console::parse_multiple_2x_arguments (int argc, char** argv, const char* st
       boost::split (values, argv[i], boost::is_any_of (","), boost::token_compress_on);
       if (values.size () != 2)
       {
-        print_error ("[parse_multiple_2x_arguments] Number of values for %s (%d) different than 2!\n", str, (int)values.size ());
+        print_error ("[parse_multiple_2x_arguments] Number of values for %s (%zu) different than 2!\n", str, values.size ());
         return (false);
       }
       f = atof (values.at (0).c_str ());
@@ -415,7 +415,7 @@ pcl::console::parse_multiple_3x_arguments (int argc, char** argv, const char* st
       boost::split (values, argv[i], boost::is_any_of (","), boost::token_compress_on);
       if (values.size () != 3)
       {
-        print_error ("[parse_multiple_3x_arguments] Number of values for %s (%d) different than 3!\n", str, (int)values.size ());
+        print_error ("[parse_multiple_3x_arguments] Number of values for %s (%zu) different than 3!\n", str, values.size ());
         return (false);
       }
       f = atof (values.at (0).c_str ());

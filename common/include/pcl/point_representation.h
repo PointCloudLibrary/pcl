@@ -207,7 +207,7 @@ namespace pcl
       copyToFloatArray (const PointDefault &p, float * out) const
       {
         // If point type is unknown, treat it as a struct/array of floats
-        const float * ptr = (float *)&p;
+        const float* ptr = reinterpret_cast<const float*> (&p);
         for (int i = 0; i < nr_dimensions_; ++i)
           out[i] = ptr[i];
       }
@@ -481,7 +481,7 @@ namespace pcl
       copyToFloatArray (const PointDefault &p, float *out) const
       {
         // If point type is unknown, treat it as a struct/array of floats
-        const float *ptr = ((float*)&p) + start_dim_;
+        const float *ptr = (reinterpret_cast<const float*> (&p)) + start_dim_;
         for (int i = 0; i < nr_dimensions_; ++i)
           out[i] = ptr[i];
       }
