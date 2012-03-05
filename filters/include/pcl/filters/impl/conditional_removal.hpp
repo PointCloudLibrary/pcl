@@ -202,7 +202,7 @@ template <typename PointT> bool
 pcl::PackedRGBComparison<PointT>::evaluate (const PointT &point) const
 {
   // extract the component value
-  uint8_t* pt_data = (uint8_t*)&point;
+  const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&point);
   uint8_t my_val = *(pt_data + component_offset_);
 
   // now do the comparison
@@ -310,31 +310,31 @@ pcl::PackedHSIComparison<PointT>::evaluate (const PointT &point) const
   static uint8_t i_ = 0;
 
   // We know that rgb data is 32 bit aligned (verified in the ctor) so...
-  uint8_t* pt_data = (uint8_t*)&point;
-  uint32_t* rgb_data = (uint32_t*)(pt_data + rgb_offset_);
+  const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&point);
+  const uint32_t* rgb_data = reinterpret_cast<const uint32_t*> (pt_data + rgb_offset_);
   uint32_t new_rgb_val = *rgb_data;
 
   if (rgb_val_ != new_rgb_val) 
   { // avoid having to redo this calc, if possible
     rgb_val_ = new_rgb_val;
     // extract r,g,b
-    r_ = (uint8_t)(rgb_val_ >> 16); 
-    g_ = (uint8_t)(rgb_val_ >> 8);
-    b_ = (uint8_t)(rgb_val_);
+    r_ = static_cast <uint8_t> (rgb_val_ >> 16); 
+    g_ = static_cast <uint8_t> (rgb_val_ >> 8);
+    b_ = static_cast <uint8_t> (rgb_val_);
 
     // definitions taken from http://en.wikipedia.org/wiki/HSL_and_HSI
-    float hx = (2*r_ - g_ - b_)/4.0;  // hue x component -127 to 127
-    float hy = (g_ - b_) * 111.0 / 255.0; // hue y component -111 to 111
-    h_ = (int8_t) (atan2(hy, hx) * 128.0 / M_PI);
+    float hx = (2.0f * r_ - g_ - b_) / 4.0f;  // hue x component -127 to 127
+    float hy = static_cast<float> (g_ - b_) * 111.0f / 255.0f; // hue y component -111 to 111
+    h_ = static_cast<int8_t> (atan2(hy, hx) * 128.0f / M_PI);
 
     int32_t i = (r_+g_+b_)/3; // 0 to 255
-    i_ = i;
+    i_ = static_cast<uint8_t> (i);
 
     int32_t m;  // min(r,g,b)
     m = (r_ < g_) ? r_ : g_;
     m = (m < b_) ? m : b_;
 
-    s_ = (i == 0) ? 0 : 255 - (m*255)/i; // saturation 0 to 255
+    s_ = static_cast<uint8_t> ((i == 0) ? 0 : 255 - (m * 255) / i); // saturation 0 to 255
   }
 
   float my_val = 0;
@@ -342,13 +342,13 @@ pcl::PackedHSIComparison<PointT>::evaluate (const PointT &point) const
   switch (component_id_) 
   {
     case H:
-      my_val = (float)h_;
+      my_val = static_cast <float> (h_);
       break;
     case S:
-      my_val = (float)s_;
+      my_val = static_cast <float> (s_);
       break;
     case I:
-      my_val = (float)i_;
+      my_val = static_cast <float> (i_);
       break;
     default:
       assert (false);
@@ -384,57 +384,57 @@ pcl::PointDataAtOffset<PointT>::compare (const PointT& p, const double& val)
   // if p(data) == val return 0
   // if p(data) < val return -1 
   
-  uint8_t* pt_data = (uint8_t*)&p;
+  const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&p);
 
   switch (datatype_) 
   {
     case sensor_msgs::PointField::INT8 : 
     {
       int8_t pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof(int8_t));
-      return ( pt_val > (int8_t)val ) - ( pt_val < (int8_t)val );
+      memcpy (&pt_val, pt_data + this->offset_, sizeof (int8_t));
+      return (pt_val > static_cast<int8_t>(val)) - (pt_val < static_cast<int8_t> (val));
     }
     case sensor_msgs::PointField::UINT8 : 
     {
       uint8_t pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof(uint8_t));
-      return ( pt_val > (uint8_t)val ) - ( pt_val < (uint8_t)val );
+      memcpy (&pt_val, pt_data + this->offset_, sizeof (uint8_t));
+      return (pt_val > static_cast<uint8_t>(val)) - (pt_val < static_cast<uint8_t> (val));
     }
-    case sensor_msgs::PointField::INT16 : 
+    case sensor_msgs::PointField::INT16 :
     {
       int16_t pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof(int16_t));
-      return ( pt_val > (int16_t)val ) - ( pt_val < (int16_t)val );
+      memcpy (&pt_val, pt_data + this->offset_, sizeof (int16_t));
+      return (pt_val > static_cast<int16_t>(val)) - (pt_val < static_cast<int16_t> (val));
     }
     case sensor_msgs::PointField::UINT16 : 
     {
       uint16_t pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof(uint16_t));
-      return ( pt_val > (uint16_t)val ) - ( pt_val < (uint16_t)val );
+      memcpy (&pt_val, pt_data + this->offset_, sizeof (uint16_t));
+      return (pt_val > static_cast<uint16_t> (val)) - (pt_val < static_cast<uint16_t> (val));
     }
     case sensor_msgs::PointField::INT32 : 
     {
       int32_t pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof(int32_t));
-      return ( pt_val > (int32_t)val ) - ( pt_val < (int32_t)val );
+      memcpy (&pt_val, pt_data + this->offset_, sizeof (int32_t));
+      return (pt_val > static_cast<int32_t> (val)) - (pt_val < static_cast<int32_t> (val));
     }
     case sensor_msgs::PointField::UINT32 : 
     {
       uint32_t pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof(uint32_t));
-      return ( pt_val > (uint32_t)val ) - ( pt_val < (uint32_t)val );
+      memcpy (&pt_val, pt_data + this->offset_, sizeof (uint32_t));
+      return (pt_val > static_cast<uint32_t> (val)) - (pt_val < static_cast<uint32_t> (val));
     }
     case sensor_msgs::PointField::FLOAT32 : 
     {
       float pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof(float));
-      return ( pt_val > (float)val ) - ( pt_val < (float)val );
+      memcpy (&pt_val, pt_data + this->offset_, sizeof (float));
+      return (pt_val > static_cast<float> (val)) - (pt_val < static_cast<float> (val));
     }
     case sensor_msgs::PointField::FLOAT64 : 
     {
       double pt_val;
-      memcpy (&pt_val, pt_data + this->offset_, sizeof(double));
-      return ( pt_val > val ) - ( pt_val < val );
+      memcpy (&pt_val, pt_data + this->offset_, sizeof (double));
+      return (pt_val > val) - (pt_val < val);
     }
     default : 
       PCL_WARN ("[pcl::pcl::PointDataAtOffset::compare] unknown data_type!\n");
@@ -551,7 +551,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
 
   if (!keep_organized_)
   {
-    for (size_t cp = 0; cp < input_->points.size (); ++cp)
+    for (int cp = 0; cp < static_cast<int> (input_->points.size ()); ++cp)
     {
       // Check if the point is invalid
       if (!pcl_isfinite (input_->points[cp].x) || 
@@ -586,7 +586,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
   } 
   else 
   {
-    for (size_t cp = 0; cp < input_->points.size (); ++cp)
+    for (int cp = 0; cp < static_cast<int> (input_->points.size ()); ++cp)
     {
       // copy all the fields
       pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (input_->points[cp], output.points[cp]));
@@ -596,7 +596,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
 
         if (extract_removed_indices_)
         {
-          (*removed_indices_)[nr_removed_p]=cp;
+          (*removed_indices_)[nr_removed_p] = cp;
           nr_removed_p++;
         }
       }

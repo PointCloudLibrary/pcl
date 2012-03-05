@@ -61,7 +61,7 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::Poin
     cloud_out.points = cloud_in.points;
     for (j = 0; j < cloud_out.points.size (); ++j)
     {
-      index[j] = j;
+      index[j] = static_cast<int>(j);
     }
   }
   else
@@ -73,7 +73,7 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::Poin
           !pcl_isfinite (cloud_in.points[i].z))
         continue;
       cloud_out.points[j] = cloud_in.points[i];
-      index[j] = i;
+      index[j] = static_cast<int>(i);
       j++;
     }
     if (j != cloud_in.points.size ())
@@ -82,7 +82,7 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::Poin
       cloud_out.points.resize (j);
       index.resize (j);
       cloud_out.height = 1;
-      cloud_out.width  = j;
+      cloud_out.width  = static_cast<uint32_t>(j);
     }
     // Removing bad points => dense (note: 'dense' doesn't mean 'organized')
     cloud_out.is_dense = true;

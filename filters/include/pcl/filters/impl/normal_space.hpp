@@ -170,7 +170,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::findBin (float *normal, unsigned int)
   float max_cos = 1.0;
   float min_cos = -1.0;
 
-  dcos = cos(normal[0]);
+  dcos = cosf (normal[0]);
   bin_size = (max_cos - min_cos) / binsx_;
 
   // finding bin number for direction cosine in x direction

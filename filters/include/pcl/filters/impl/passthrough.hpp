@@ -82,7 +82,7 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
   output.points.resize (input_->points.size ());
   removed_indices_->resize (input_->points.size ());
 
-  int nr_p = 0;
+  size_t nr_p = 0;
   int nr_removed_p = 0;
 
   // If we don't want to process the entire cloud, but rather filter points far away from the viewpoint first...
@@ -101,7 +101,7 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
 
     if (keep_organized_)
     {
-      for (size_t cp = 0; cp < input_->points.size (); ++cp)
+      for (int cp = 0; cp < static_cast<int>(input_->points.size ()); ++cp)
       {
         if (pcl_isnan (input_->points[cp].x) ||
             pcl_isnan (input_->points[cp].y) ||
@@ -112,10 +112,10 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
         }
 
         // Copy the point
-        pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (input_->points[cp], output.points[cp]));
+        pcl::for_each_type<FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (input_->points[cp], output.points[cp]));
 
         // Filter it. Get the distance value
-        uint8_t* pt_data = (uint8_t*)&input_->points[cp];
+        const uint8_t* pt_data = reinterpret_cast<const uint8_t*>(&input_->points[cp]);
         float distance_value = 0;
         memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
@@ -131,7 +131,7 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
           {
             if (extract_removed_indices_)
             {
-              (*removed_indices_)[nr_removed_p]=cp;
+              (*removed_indices_)[nr_removed_p] = cp;
               nr_removed_p++;
             }
           }
@@ -160,7 +160,7 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
     else
     {
       // Go over all points
-      for (size_t cp = 0; cp < input_->points.size (); ++cp)
+      for (int cp = 0; cp < static_cast<int>(input_->points.size ()); ++cp)
       {
         // Check if the point is invalid
         if (!pcl_isfinite (input_->points[cp].x) || !pcl_isfinite (input_->points[cp].y) || !pcl_isfinite (input_->points[cp].z))
@@ -174,7 +174,7 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
         }
 
         // Get the distance value
-        uint8_t* pt_data = (uint8_t*)&input_->points[cp];
+        const uint8_t* pt_data = reinterpret_cast<const uint8_t*>(&input_->points[cp]);
         float distance_value = 0;
         memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
@@ -208,14 +208,14 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
         pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (input_->points[cp], output.points[nr_p]));
         nr_p++;
       }
-      output.width = nr_p;
+      output.width = static_cast<uint32_t>(nr_p);
     } // !keep_organized_
   }
   // No distance filtering, process all data. No need to check for is_organized here as we did it above
   else
   {
     // First pass: go over all points and insert them into the right leaf
-    for (size_t cp = 0; cp < input_->points.size (); ++cp)
+    for (int cp = 0; cp < static_cast<int>(input_->points.size ()); ++cp)
     {
       // Check if the point is invalid
       if (!pcl_isfinite (input_->points[cp].x) || !pcl_isfinite (input_->points[cp].y) || !pcl_isfinite (input_->points[cp].z))
@@ -231,7 +231,7 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
       pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (input_->points[cp], output.points[nr_p]));
       nr_p++;
     }
-    output.width = nr_p;
+    output.width = static_cast<uint32_t>(nr_p);
   }
 
   output.points.resize (output.width * output.height);
