@@ -3,7 +3,7 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/common/time.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 # define sleep(x) Sleep((x)*1000) 
 #endif
 
