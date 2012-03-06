@@ -35,6 +35,10 @@
  *
  */
 
+#ifdef WIN32
+#pragma optimize("g", off)
+#endif WIN32
+
 #include "pcl/impl/instantiate.hpp"
 #include "pcl/point_types.h"
 #include "pcl/surface/poisson.h"
