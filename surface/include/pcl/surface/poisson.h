@@ -48,7 +48,7 @@ namespace pcl
       * \note Based on the paper:
       *       * Michael Kazhdan, Matthew Bolitho, Hugues Hoppe, "Poisson surface reconstruction",
       *         SGP '06 Proceedings of the fourth Eurographics symposium on Geometry processing
-      * \author Alexandru-Eugen Ichim, Gregory Long
+      * \author Alexandru-Eugen Ichim
       * \ingroup surface
       */
     template<typename PointNT>
@@ -224,7 +224,8 @@ namespace pcl
 
         template<int Degree> void
         execute (poisson::CoredMeshData &mesh,
-                 poisson::Point3D<float> &translate);
+                 poisson::Point3D<float> &translate,
+                 float &scale);
 
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
