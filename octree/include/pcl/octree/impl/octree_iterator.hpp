@@ -192,7 +192,7 @@ namespace pcl
 
             // assign current node and child index to stack entry
             newStackEntry.first = this->currentNode_;
-            newStackEntry.second = currentChildIdx_ + 1;
+            newStackEntry.second = static_cast<unsigned char> (currentChildIdx_ + 1);
 
             // push stack entry to stack
             stack_.push_back (newStackEntry);

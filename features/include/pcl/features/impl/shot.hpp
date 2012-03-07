@@ -89,16 +89,16 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::RGB2CIELAB (unsigned
   {
     for (int i = 0; i < 256; i++)
     {
-      float f = i / 255.0f;
+      float f = static_cast<float> (i) / 255.0f;
       if (f > 0.04045)
-        sRGB_LUT[i] = static_cast<float> (pow ((f + 0.055) / 1.055, 2.4));
+        sRGB_LUT[i] = powf ((f + 0.055f) / 1.055f, 2.4f);
       else
         sRGB_LUT[i] = f / 12.92f;
     }
 
     for (int i = 0; i < 4000; i++)
     {
-      float f = i / 4000.0f;
+      float f = static_cast<float> (i) / 4000.0f;
       if (f > 0.008856)
         sXYZ_LUT[i] = static_cast<float> (powf (f, 0.3333f));
       else
@@ -231,7 +231,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
 
 
     unsigned char bit4 = ((yInFeatRef > 0) || ((yInFeatRef == 0.0) && (xInFeatRef < 0))) ? 1 : 0;
-    unsigned char bit3 = ((xInFeatRef > 0) || ((xInFeatRef == 0.0) && (yInFeatRef > 0))) ? !bit4 : bit4;
+    unsigned char bit3 = static_cast<unsigned char> (((xInFeatRef > 0) || ((xInFeatRef == 0.0) && (yInFeatRef > 0))) ? !bit4 : bit4);
 
     assert (bit3 == 0 || bit3 == 1);
 
@@ -406,7 +406,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
       zInFeatRef  = 0;
 
     unsigned char bit4 = ((yInFeatRef > 0) || ((yInFeatRef == 0.0) && (xInFeatRef < 0))) ? 1 : 0;
-    unsigned char bit3 = ((xInFeatRef > 0) || ((xInFeatRef == 0.0) && (yInFeatRef > 0))) ? !bit4 : bit4;
+    unsigned char bit3 = static_cast<unsigned char> (((xInFeatRef > 0) || ((xInFeatRef == 0.0) && (yInFeatRef > 0))) ? !bit4 : bit4);
 
     assert (bit3 == 0 || bit3 == 1);
 
@@ -588,7 +588,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
   shot.setZero ();
   std::vector<double> binDistanceShape;
   std::vector<double> binDistanceColor;
-  int nNeighbors = indices.size ();
+  size_t nNeighbors = indices.size ();
   //Skip the current feature if the number of its neighbors is not sufficient for its description
   if (nNeighbors < 5)
   {
@@ -632,9 +632,9 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
     float LRef, aRef, bRef;
 
     RGB2CIELAB (redRef, greenRef, blueRef, LRef, aRef, bRef);
-    LRef /= 100.0;
-    aRef /= 120.0;
-    bRef /= 120.0;    //normalized LAB components (0<L<1, -1<a<1, -1<b<1)
+    LRef /= 100.0f;
+    aRef /= 120.0f;
+    bRef /= 120.0f;    //normalized LAB components (0<L<1, -1<a<1, -1<b<1)
 
     for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
     {
@@ -645,9 +645,9 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computePointSHOT (
       float L, a, b;
 
       RGB2CIELAB (red, green, blue, L, a, b);
-      L /= 100.0;
-      a /= 120.0;
-      b /= 120.0;   //normalized LAB components (0<L<1, -1<a<1, -1<b<1)
+      L /= 100.0f;
+      a /= 120.0f;
+      b /= 120.0f;   //normalized LAB components (0<L<1, -1<a<1, -1<b<1)
 
       double colorDistance = (fabs (LRef - L) + ((fabs (aRef - a) + fabs (bRef - b)) / 2)) /3;
 
