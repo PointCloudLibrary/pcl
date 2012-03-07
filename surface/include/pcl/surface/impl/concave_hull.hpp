@@ -284,9 +284,9 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
 
         if (voronoi_centers_)
         {
-          voronoi_centers_->points[non_upper].x = facet->center[0];
-          voronoi_centers_->points[non_upper].y = facet->center[1];
-          voronoi_centers_->points[non_upper].z = facet->center[2];
+          voronoi_centers_->points[non_upper].x = (float)facet->center[0];
+          voronoi_centers_->points[non_upper].y = (float)facet->center[1];
+          voronoi_centers_->points[non_upper].z = (float)facet->center[2];
         }
 
         non_upper++;
@@ -369,9 +369,9 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
         {
           if (!added_vertices[vertex->id])
           {
-            alpha_shape.points[vertices].x = vertex->point[0];
-            alpha_shape.points[vertices].y = vertex->point[1];
-            alpha_shape.points[vertices].z = vertex->point[2];
+            alpha_shape.points[vertices].x = (float)vertex->point[0];
+            alpha_shape.points[vertices].y = (float)vertex->point[1];
+            alpha_shape.points[vertices].z = (float)vertex->point[2];
 
             qhid_to_pcidx[vertex->id] = vertices;   //map the vertex id of qhull to the point cloud index
             added_vertices[vertex->id] = true;
@@ -422,9 +422,9 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
 
           if (voronoi_centers_)
           {
-            voronoi_centers_->points[dd].x = facet->center[0];
-            voronoi_centers_->points[dd].y = facet->center[1];
-            voronoi_centers_->points[dd].z = 0;
+            voronoi_centers_->points[dd].x = (float)facet->center[0];
+            voronoi_centers_->points[dd].y = (float)facet->center[1];
+            voronoi_centers_->points[dd].z = (float)0;
           }
 
           ++dd;
@@ -452,11 +452,11 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
         {
           if (!added_vertices[vertex->id])
           {
-            alpha_shape.points[vertices].x = vertex->point[0];
-            alpha_shape.points[vertices].y = vertex->point[1];
+            alpha_shape.points[vertices].x = (float)vertex->point[0];
+            alpha_shape.points[vertices].y = (float)vertex->point[1];
 
             if (dim > 2)
-              alpha_shape.points[vertices].z = vertex->point[2];
+              alpha_shape.points[vertices].z = (float)vertex->point[2];
             else
               alpha_shape.points[vertices].z = 0;
 
