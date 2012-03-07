@@ -142,7 +142,7 @@ namespace pcl
         * k-nearest neighbors
         */
       inline int
-      searchForNeighbors (int index, double parameter, std::vector<int> &indices, std::vector<float> &distances)
+      searchForNeighbors (int index, double parameter, std::vector<int> &indices, std::vector<float> &distances) const
       {
         if (surface_ == input_)       // if the two surfaces are the same
           return (search_method_ (index, parameter, indices, distances));
