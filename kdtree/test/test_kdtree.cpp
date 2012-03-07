@@ -62,22 +62,22 @@ PointCloud<Eigen::MatrixXf> cloud_eigen;
 void 
 init ()
 {
-  float resolution = 0.1;
+  float resolution = 0.1f;
   for (float z = -0.5f; z <= 0.5f; z += resolution)
     for (float y = -0.5f; y <= 0.5f; y += resolution)
       for (float x = -0.5f; x <= 0.5f; x += resolution)
         cloud.points.push_back (MyPoint (x, y, z));
-  cloud.width  = cloud.points.size ();
+  cloud.width  = static_cast<uint32_t> (cloud.points.size ());
   cloud.height = 1;
 
   cloud_big.width  = 640;
   cloud_big.height = 480;
-  srand (time (NULL));
+  srand (static_cast<unsigned int> (time (NULL)));
   // Randomly create a new point cloud
   for (size_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
-    cloud_big.points.push_back (MyPoint (1024 * rand () / (RAND_MAX + 1.0),
-                                         1024 * rand () / (RAND_MAX + 1.0),
-                                         1024 * rand () / (RAND_MAX + 1.0)));
+    cloud_big.points.push_back (MyPoint (static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
+                                         static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
+                                         static_cast<float> (1024 * rand () / (RAND_MAX + 1.0))));
 }
 
 void 
@@ -86,13 +86,13 @@ initEigen ()
   cloud_eigen.width  = 640;
   cloud_eigen.height = 480;
   cloud_eigen.points.resize (cloud_eigen.width * cloud_eigen.height, 3);
-  srand (time (NULL));
+  srand (static_cast<unsigned int> (time (NULL)));
   // Randomly create a new point cloud
   for (int i = 0; i < cloud_eigen.points.rows (); ++i)
   {
-    cloud_eigen.points (i, 0) = 1024 * rand () / (RAND_MAX + 1.0);
-    cloud_eigen.points (i, 1) = 1024 * rand () / (RAND_MAX + 1.0);
-    cloud_eigen.points (i, 2) = 1024 * rand () / (RAND_MAX + 1.0);
+    cloud_eigen.points (i, 0) = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud_eigen.points (i, 1) = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud_eigen.points (i, 2) = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
   }
 }
 
@@ -226,7 +226,7 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   for (size_t i = 0; i < cloud.points.size (); ++i)
   {
     float distance = euclideanDistance (cloud.points[i], test_point);
-    sorted_brute_force_result.insert (make_pair (distance, (int) i));
+    sorted_brute_force_result.insert (make_pair (distance, static_cast<int> (i)));
   }
   float max_dist = 0.0f;
   unsigned int counter = 0;
@@ -276,7 +276,7 @@ TEST (PCL, KdTreeFLANN_nearestKSearchEigen)
   for (int i = 0; i < cloud_eigen.points.rows (); ++i)
   {
     float distance = (cloud_eigen.points.row (i) - test_point.transpose ()).norm ();
-    sorted_brute_force_result.insert (make_pair (distance, (int) i));
+    sorted_brute_force_result.insert (make_pair (distance, static_cast<int> (i)));
   }
   float max_dist = 0.0f;
   unsigned int counter = 0;
@@ -334,16 +334,16 @@ public:
 TEST (PCL, KdTreeFLANN_setPointRepresentation)
 {
   PointCloud<MyPoint>::Ptr random_cloud (new PointCloud<MyPoint> ());
-  random_cloud->points.push_back (MyPoint (86.6, 42.1, 92.4));
-  random_cloud->points.push_back (MyPoint (63.1, 18.4, 22.3));
-  random_cloud->points.push_back (MyPoint (35.5, 72.5, 37.3));
-  random_cloud->points.push_back (MyPoint (99.7, 37.0,  8.7));
-  random_cloud->points.push_back (MyPoint (22.4, 84.1, 64.0));
-  random_cloud->points.push_back (MyPoint (65.2, 73.4, 18.0));
-  random_cloud->points.push_back (MyPoint (60.4, 57.1,  4.5));
-  random_cloud->points.push_back (MyPoint (38.7, 17.6, 72.3));
-  random_cloud->points.push_back (MyPoint (14.2, 95.7, 34.7));
-  random_cloud->points.push_back (MyPoint ( 2.5, 26.5, 66.0));
+  random_cloud->points.push_back (MyPoint (86.6f, 42.1f, 92.4f));
+  random_cloud->points.push_back (MyPoint (63.1f, 18.4f, 22.3f));
+  random_cloud->points.push_back (MyPoint (35.5f, 72.5f, 37.3f));
+  random_cloud->points.push_back (MyPoint (99.7f, 37.0f,  8.7f));
+  random_cloud->points.push_back (MyPoint (22.4f, 84.1f, 64.0f));
+  random_cloud->points.push_back (MyPoint (65.2f, 73.4f, 18.0f));
+  random_cloud->points.push_back (MyPoint (60.4f, 57.1f,  4.5f));
+  random_cloud->points.push_back (MyPoint (38.7f, 17.6f, 72.3f));
+  random_cloud->points.push_back (MyPoint (14.2f, 95.7f, 34.7f));
+  random_cloud->points.push_back (MyPoint ( 2.5f, 26.5f, 66.0f));
 
   KdTreeFLANN<MyPoint> kdtree;
   kdtree.setInputCloud (random_cloud);
