@@ -43,7 +43,7 @@
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/features/normal_3d.h>
-#include <pcl/features/fast_intensity_gradient.h>
+//#include <pcl/features/fast_intensity_gradient.h>
 #include <pcl/features/intensity_gradient.h>
 #include <pcl/features/integral_image_normal.h>
 
