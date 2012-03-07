@@ -139,8 +139,7 @@ main (int argc, char** argv)
   }
 
   // Command line parsing
-  double min = default_min,
-      max = default_max;
+  double min = default_min, max = default_max;
   bool inside = default_inside;
   std::string field_name = default_field_name;
   parse_argument (argc, argv, "-min", min);

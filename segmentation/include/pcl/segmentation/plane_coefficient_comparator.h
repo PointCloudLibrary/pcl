@@ -114,7 +114,7 @@ namespace pcl
       inline void
       setAngularThreshold (float angular_threshold)
       {
-        angular_threshold_ = cos (angular_threshold);
+        angular_threshold_ = cosf (angular_threshold);
       }
       
       /** \brief Get the angular threshold in radians for difference in normal direction between neighboring points, to be considered part of the same plane. */

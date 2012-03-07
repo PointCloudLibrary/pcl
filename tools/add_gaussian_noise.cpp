@@ -93,7 +93,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   xyz_cloud_filtered->height = xyz_cloud->height;
 
 
-  boost::mt19937 rng; rng.seed (time (0));
+  boost::mt19937 rng; rng.seed (static_cast<unsigned int> (time (0)));
   boost::normal_distribution<> nd (0, standard_deviation);
   boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor (rng, nd);
 

@@ -140,7 +140,7 @@ pcl_outofcore_process (boost::filesystem::path pcd_path, boost::filesystem::path
 }
 
 void
-printHelp (int argc, char **argv)
+printHelp (int, char **argv)
 {
   print_info ("This program is used to process pcd fiels into an outofcore data structure viewable by the");
   print_info ("pcl_outofcore_viewer\n\n");
@@ -155,12 +155,13 @@ printHelp (int argc, char **argv)
   print_info ("\n");
 }
 
-int main(int argc, char* argv[]) {
-
+int 
+main(int argc, char* argv[]) 
+{
   // Check for help (-h) flag
-  if(argc > 1)
+  if (argc > 1)
   {
-    if (find_switch(argc, argv, "-h"))
+    if (find_switch (argc, argv, "-h"))
     {
         printHelp (argc, argv);
         return (-1);
@@ -168,7 +169,7 @@ int main(int argc, char* argv[]) {
   }
 
   // If no arguments specified
-  if(argc-1 < 1)
+  if (argc-1 < 1)
   {
     printHelp (argc, argv);
     return (-1);

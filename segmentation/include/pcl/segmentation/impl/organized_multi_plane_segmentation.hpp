@@ -71,11 +71,11 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
     return;
 
   // Check that we got the same number of points and normals
-  if ((int)normals_->points.size () != (int)input_->points.size ())
+  if (static_cast<int> (normals_->points.size ()) != static_cast<int> (input_->points.size ()))
   {
-    PCL_ERROR ("[pcl::%s::segment] Number of points in input cloud (%lu) and normal cloud (%lu) do not match!\n",
-               getClassName ().c_str (), (unsigned long)input_->points.size (),
-               (unsigned long)normals_->points.size ());
+    PCL_ERROR ("[pcl::%s::segment] Number of points in input cloud (%zu) and normal cloud (%zu) do not match!\n",
+               getClassName ().c_str (), input_->points.size (),
+               normals_->points.size ());
     return;
   }
 
@@ -97,8 +97,8 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   PlaneCoefficientComparator<PointT,PointNT> plane_comparator (plane_d);
   plane_comparator.setInputCloud (input_);
   plane_comparator.setInputNormals (normals_);
-  plane_comparator.setAngularThreshold (angular_threshold_);
-  plane_comparator.setDistanceThreshold (distance_threshold_);
+  plane_comparator.setAngularThreshold (static_cast<float> (angular_threshold_));
+  plane_comparator.setDistanceThreshold (static_cast<float> (distance_threshold_));
 
   // Set up the output
   OrganizedConnectedComponentSegmentation<PointT,pcl::Label> connected_component (boost::make_shared<PlaneCoefficientComparator<PointT,PointNT> >(plane_comparator));
@@ -114,7 +114,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   // Fit Planes to each cluster
   for (size_t i = 0; i < label_indices.size (); i++)
   {
-    if ((int) label_indices[i].indices.size () > min_inliers_)
+    if (static_cast<int> (label_indices[i].indices.size ()) > min_inliers_)
     {
       pcl::computeMeanAndCovarianceMatrix (*input_, label_indices[i].indices, clust_cov, clust_centroid);
       Eigen::Vector4f plane_params;
@@ -181,7 +181,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
                                              model_coefficients[i].values[3]);
     regions[i] = PlanarRegion<PointT> (centroid,
                                        covariances[i], 
-                                       inlier_indices[i].indices.size (),
+                                       static_cast<unsigned int> (inlier_indices[i].indices.size ()),
                                        boundary_cloud.points,
                                        model);
     

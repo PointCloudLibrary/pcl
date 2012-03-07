@@ -62,7 +62,7 @@ pcl::getPointCloudDifference (
     // Search for the closest point in the target data set (number of neighbors to find = 1)
     if (!tree->nearestKSearch (src.points[i], 1, nn_indices, nn_distances))
     {
-      PCL_WARN ("No neighbor found for point %lu (%f %f %f)!\n", (unsigned long)i, src.points[i].x, src.points[i].y, src.points[i].z);
+      PCL_WARN ("No neighbor found for point %zu (%f %f %f)!\n", i, src.points[i].x, src.points[i].y, src.points[i].z);
       continue;
     }
 
@@ -73,7 +73,7 @@ pcl::getPointCloudDifference (
   // Allocate enough space and copy the basics
   output.points.resize (src_indices.size ());
   output.header   = src.header;
-  output.width    = src_indices.size ();
+  output.width    = static_cast<uint32_t> (src_indices.size ());
   output.height   = 1;
   if (src.is_dense)
     output.is_dense = true;

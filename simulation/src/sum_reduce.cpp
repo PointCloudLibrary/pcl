@@ -91,8 +91,8 @@ SumReduce::sum(GLuint input_array, float* output_array)
 
     glViewport(0, 0, width/2, height/2);
 
-    float step_x = 1.0/width;
-    float step_y = 1.0/height;
+    float step_x = 1.0f / width;
+    float step_y = 1.0f / height;
     sum_program_->set_uniform("step_x", step_x);
     sum_program_->set_uniform("step_y", step_y);
 
