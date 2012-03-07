@@ -10,10 +10,16 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
     set(incs 
+        include/pcl/${SUBSYS_NAME}/color_gradient_dot_modality.h
         include/pcl/${SUBSYS_NAME}/color_gradient_modality.h
         include/pcl/${SUBSYS_NAME}/linemod.h
+        include/pcl/${SUBSYS_NAME}/dotmod.h
         include/pcl/${SUBSYS_NAME}/quantizable_modality.h
+        include/pcl/${SUBSYS_NAME}/quantized_map.h
+        include/pcl/${SUBSYS_NAME}/dot_modality.h
         include/pcl/${SUBSYS_NAME}/region_xy.h
+        include/pcl/${SUBSYS_NAME}/mask_map.h
+        include/pcl/${SUBSYS_NAME}/dense_quantized_multi_mod_template.h
         include/pcl/${SUBSYS_NAME}/sparse_quantized_multi_mod_template.h
         include/pcl/${SUBSYS_NAME}/surface_normal_modality.h
         )
@@ -24,6 +30,8 @@ if(build)
     set(srcs
         src/linemod.cpp
         src/quantizable_modality.cpp
+        src/dotmod.cpp
+        src/mask_map.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})

@@ -107,19 +107,19 @@ namespace pcl
       }
 
       inline unsigned char & 
-      operator() (const int bin_index, const int col_index, const int row_index)
+      operator() (const size_t bin_index, const size_t col_index, const size_t row_index)
       {
         return (maps_[bin_index][row_index*width_ + col_index]);
       }
 
       inline unsigned char & 
-      operator() (const int bin_index, const int index)
+      operator() (const size_t bin_index, const size_t index)
       {
         return (maps_[bin_index][index]);
       }
 
       inline unsigned char * 
-      operator() (const int bin_index)
+      operator() (const size_t bin_index)
       {
         return (maps_[bin_index]);
       }
@@ -188,13 +188,13 @@ namespace pcl
       }
 
       inline unsigned char * 
-      operator() (const int col_index, const int row_index)
+      operator() (const size_t col_index, const size_t row_index)
       {
         return (maps_[row_index*step_size_ + col_index]);
       }
 
       inline unsigned char * 
-      getOffsetMap (const int col_index, const int row_index)
+      getOffsetMap (const size_t col_index, const size_t row_index)
       {
         const size_t map_col = col_index % step_size_;
         const size_t map_row = row_index % step_size_;

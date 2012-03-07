@@ -35,84 +35,30 @@
  *
  */
 
-#include <pcl/recognition/quantizable_modality.h>
-#include <cstddef>
-#include <string.h>
+#include <pcl/recognition/mask_map.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::QuantizableModality::QuantizableModality ()
-{
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-pcl::QuantizableModality::~QuantizableModality ()
-{
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-pcl::QuantizedMap::QuantizedMap ()
+pcl::MaskMap::MaskMap ()
   : data_ (0), width_ (0), height_ (0)
 {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::QuantizedMap::QuantizedMap (const size_t width, const size_t height)
+pcl::MaskMap::MaskMap (const size_t width, const size_t height)
   : data_ (width*height), width_ (width), height_ (height)
 {
-}
+}  
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::QuantizedMap::~QuantizedMap ()
+pcl::MaskMap::~MaskMap ()
 {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::QuantizedMap::
-resize (const size_t width, const size_t height)
+pcl::MaskMap::resize (const size_t width, const size_t height)
 {
   data_.resize (width*height);
   width_ = width;
   height_ = height;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::QuantizedMap::
-spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, const size_t spreading_size)
-{
-  const size_t width = input_map.getWidth ();
-  const size_t height = input_map.getHeight ();
-
-  QuantizedMap tmp_map (width, height);
-
-  output_map.resize (width, height);
-
-  for (size_t row_index = spreading_size; row_index < height-spreading_size-1; ++row_index)
-  {
-    for (size_t col_index = spreading_size; col_index < width-spreading_size-1; ++col_index)
-    {
-      unsigned char value = 0;
-      for (size_t col_index2 = col_index-spreading_size; col_index2 <= col_index+spreading_size; ++col_index2)
-      {
-        //if (row_index2 < 0 || row_index2 >= height || col_index2 < 0 || col_index2 >= width) continue;
-        value |= input_map (col_index2, row_index);
-      }
-      tmp_map (col_index, row_index) = value;
-    }
-  }
-
-  for (size_t row_index = spreading_size; row_index < height-spreading_size-1; ++row_index)
-  {
-    for (size_t col_index = spreading_size; col_index < width-spreading_size-1; ++col_index)
-    {
-      unsigned char value = 0;
-      for (size_t row_index2 = row_index-spreading_size; row_index2 <= row_index+spreading_size; ++row_index2)
-      {
-        //if (row_index2 < 0 || row_index2 >= height || col_index2 < 0 || col_index2 >= width) continue;
-        value |= tmp_map (col_index, row_index2);
-      }
-      output_map (col_index, row_index) = value;
-    }
-  }
 }

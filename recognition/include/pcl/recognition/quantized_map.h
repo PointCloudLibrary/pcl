@@ -35,45 +35,78 @@
  *
  */
 
-#ifndef PCL_FEATURES_QUANTIZABLE_MODALITY
-#define PCL_FEATURES_QUANTIZABLE_MODALITY
+#ifndef PCL_FEATURES_QUANTIZED_MAP
+#define PCL_FEATURES_QUANTIZED_MAP
 
 #include <vector>
 #include <pcl/pcl_macros.h>
-#include <pcl/recognition/mask_map.h>
-#include <pcl/recognition/quantized_map.h>
-#include <pcl/recognition/region_xy.h>
-#include <pcl/recognition/sparse_quantized_multi_mod_template.h>
 
 namespace pcl
 {
-  class PCL_EXPORTS QuantizableModality
+  class PCL_EXPORTS QuantizedMap
   {
     public:
-      QuantizableModality ();
-      virtual ~QuantizableModality ();
 
-      //inline int getWidth () const { return width; }
-      //inline int getHeight () const { return height; }
+      QuantizedMap ();
+      QuantizedMap (size_t width, size_t height);
 
-      //inline unsigned char & operator() (int x, int y) { return data[y*width+x]; }
-      //inline const unsigned char & operator() (int x, int y) const { return data[y*width+x]; }
+      virtual ~QuantizedMap ();
 
-      virtual QuantizedMap &
-      getQuantizedMap () = 0;
+      inline size_t
+      getWidth () const { return (width_); }
+      
+      inline size_t
+      getHeight () const { return (height_); }
+      
+      inline unsigned char*
+      getData () { return (&data_[0]); }
 
-      virtual QuantizedMap &
-      getSpreadedQuantizedMap () = 0;
+      inline const unsigned char*
+      getData () const { return (&data_[0]); }
 
-      virtual void 
-      extractFeatures (const MaskMap & mask, size_t nr_features, size_t modality_index, 
-                       std::vector<QuantizedMultiModFeature> & features) const = 0;
+      inline QuantizedMap
+      getSubMap (size_t x,
+                 size_t y,
+                 size_t width,
+                 size_t height) const
+      {
+        QuantizedMap subMap(width, height);
+
+        for (size_t row_index = 0; row_index < height; ++row_index)
+        {
+          for (size_t col_index = 0; col_index < width; ++col_index)
+          {
+            subMap (col_index, row_index) = (*this) (col_index + x, row_index + y);
+          }
+        }
+
+        return subMap;
+      }
+
+      void 
+      resize (size_t width, size_t height);
+
+      inline unsigned char & 
+      operator() (const size_t x, const size_t y) 
+      { 
+        return (data_[y*width_+x]); 
+      }
+
+      inline const unsigned char & 
+      operator() (const size_t x, const size_t y) const
+      { 
+        return (data_[y*width_+x]); 
+      }
+
+      static void
+      spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, size_t spreading_size);
 
     private:
-      //unsigned char * data_;
-      //int width_;
-      //int height_;  
+      std::vector<unsigned char> data_;
+      size_t width_;
+      size_t height_;  
+    
   };
 }
 
-#endif
+#endif   

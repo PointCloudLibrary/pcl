@@ -172,8 +172,8 @@ detectTemplates (const std::vector<QuantizableModality*> & modalities, std::vect
           {
             for (size_t col_index = 0; col_index < lin_width; ++col_index)
             {
-              const int tmp_col_index = col_index*step_size + map_col;
-              const int tmp_row_index = row_index*step_size + map_row;
+              const size_t tmp_col_index = col_index*step_size + map_col;
+              const size_t tmp_row_index = row_index*step_size + map_row;
 
               linearized_map[row_index*lin_width + col_index] = energy_map[tmp_row_index*width + tmp_col_index];
             }
@@ -223,7 +223,7 @@ detectTemplates (const std::vector<QuantizableModality*> & modalities, std::vect
     const float inv_max_score = 1.0f / max_score;
     
     int max_value = 0;
-    int max_index = 0;
+    size_t max_index = 0;
     for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
     {
       if (score_sums[mem_index] > max_value) 

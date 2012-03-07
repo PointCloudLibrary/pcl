@@ -40,40 +40,29 @@
 
 #include <vector>
 #include <pcl/pcl_macros.h>
-#include <pcl/recognition/mask_map.h>
 #include <pcl/recognition/quantized_map.h>
+#include <pcl/recognition/mask_map.h>
 #include <pcl/recognition/region_xy.h>
-#include <pcl/recognition/sparse_quantized_multi_mod_template.h>
 
 namespace pcl
 {
-  class PCL_EXPORTS QuantizableModality
+  class PCL_EXPORTS DOTModality
   {
     public:
-      QuantizableModality ();
-      virtual ~QuantizableModality ();
+      DOTModality ();
+      virtual ~DOTModality () {};
 
-      //inline int getWidth () const { return width; }
-      //inline int getHeight () const { return height; }
-
-      //inline unsigned char & operator() (int x, int y) { return data[y*width+x]; }
-      //inline const unsigned char & operator() (int x, int y) const { return data[y*width+x]; }
+      //virtual QuantizedMap &
+      //getDominantQuantizedMap () = 0;
 
       virtual QuantizedMap &
-      getQuantizedMap () = 0;
+      getDominantQuantizedMap () = 0;
 
-      virtual QuantizedMap &
-      getSpreadedQuantizedMap () = 0;
+      virtual QuantizedMap
+      computeInvariantQuantizedMap (const MaskMap & mask,
+                                    const RegionXY & region) = 0;
 
-      virtual void 
-      extractFeatures (const MaskMap & mask, size_t nr_features, size_t modality_index, 
-                       std::vector<QuantizedMultiModFeature> & features) const = 0;
-
-    private:
-      //unsigned char * data_;
-      //int width_;
-      //int height_;  
   };
 }
 
-#endif
+#endif    // PCL_FEATURES_DOT_MODALITY
