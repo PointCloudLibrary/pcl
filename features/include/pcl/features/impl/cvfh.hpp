@@ -135,6 +135,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSmoot
 template<typename PointInT, typename PointNT, typename PointOutT> void
 pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::filterNormalsWithHighCurvature (
     const pcl::PointCloud<PointNT> & cloud,
+    std::vector<int> &indices_to_use,
     std::vector<int> &indices_out,
     std::vector<int> &indices_in,
     float threshold)
@@ -145,16 +146,16 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::filterNormalsWithHighCurvatur
   size_t in, out;
   in = out = 0;
 
-  for (int i = 0; i < static_cast<int> (cloud.points.size ()); i++)
+  for (int i = 0; i < static_cast<int> (indices_to_use.size ()); i++)
   {
-    if (cloud.points[i].curvature > threshold)
+    if (cloud.points[indices_to_use[i]].curvature > threshold)
     {
-      indices_out[out] = i;
+      indices_out[out] = indices_to_use[i];
       out++;
     }
     else
     {
-      indices_in[in] = i;
+      indices_in[in] = indices_to_use[i];
       in++;
     }
   }
@@ -186,66 +187,23 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   centroids_dominant_orientations_.clear ();
 
   // ---[ Step 0: remove normals with high curvature
-  float curv_threshold = curv_threshold_;
   std::vector<int> indices_out;
   std::vector<int> indices_in;
-  filterNormalsWithHighCurvature (*normals_, indices_out, indices_in, curv_threshold);
+  filterNormalsWithHighCurvature (*normals_, *indices_, indices_out, indices_in, curv_threshold_);
 
-  pcl::PointCloud<pcl::PointNormal>::Ptr filtered (new pcl::PointCloud<pcl::PointNormal> ());
-
-  filtered->width = static_cast<uint32_t> (indices_in.size ());
-  filtered->height = 1;
-  filtered->points.resize (filtered->width);
+  pcl::PointCloud<pcl::PointNormal>::Ptr normals_filtered_cloud (new pcl::PointCloud<pcl::PointNormal> ());
+  normals_filtered_cloud->width = static_cast<uint32_t> (indices_in.size ());
+  normals_filtered_cloud->height = 1;
+  normals_filtered_cloud->points.resize (normals_filtered_cloud->width);
 
   for (size_t i = 0; i < indices_in.size (); ++i)
   {
-    filtered->points[i].x = surface_->points[indices_in[i]].x;
-    filtered->points[i].y = surface_->points[indices_in[i]].y;
-    filtered->points[i].z = surface_->points[indices_in[i]].z;
-
-    filtered->points[i].normal[0] = normals_->points[indices_in[i]].normal[0];
-    filtered->points[i].normal[1] = normals_->points[indices_in[i]].normal[1];
-    filtered->points[i].normal[2] = normals_->points[indices_in[i]].normal[2];
+    normals_filtered_cloud->points[i].x = surface_->points[indices_in[i]].x;
+    normals_filtered_cloud->points[i].y = surface_->points[indices_in[i]].y;
+    normals_filtered_cloud->points[i].z = surface_->points[indices_in[i]].z;
   }
 
-  // ---[ Step 1a : compute clustering
-  pcl::PointCloud<pcl::PointNormal>::Ptr normals_filtered_cloud (new pcl::PointCloud<pcl::PointNormal> ());
-  if (indices_in.size () >= 100) //TODO: parameter
-  {
-    normals_filtered_cloud->width = static_cast<uint32_t> (indices_in.size ());
-    normals_filtered_cloud->height = 1;
-    normals_filtered_cloud->points.resize (normals_filtered_cloud->width);
-
-    for (size_t i = 0; i < indices_in.size (); ++i)
-    {
-      normals_filtered_cloud->points[i].x = surface_->points[indices_in[i]].x;
-      normals_filtered_cloud->points[i].y = surface_->points[indices_in[i]].y;
-      normals_filtered_cloud->points[i].z = surface_->points[indices_in[i]].z;
-
-      normals_filtered_cloud->points[i].normal[0] = normals_->points[indices_in[i]].normal[0];
-      normals_filtered_cloud->points[i].normal[1] = normals_->points[indices_in[i]].normal[1];
-      normals_filtered_cloud->points[i].normal[2] = normals_->points[indices_in[i]].normal[2];
-    }
-  }
-  else
-  {
-    normals_filtered_cloud->width = static_cast<uint32_t> (surface_->size ());
-    normals_filtered_cloud->height = 1;
-    normals_filtered_cloud->points.resize (normals_filtered_cloud->width);
-
-    for (size_t i = 0; i < surface_->size (); ++i)
-    {
-      normals_filtered_cloud->points[i].x = surface_->points[i].x;
-      normals_filtered_cloud->points[i].y = surface_->points[i].y;
-      normals_filtered_cloud->points[i].z = surface_->points[i].z;
-
-      normals_filtered_cloud->points[i].normal[0] = normals_->points[i].normal[0];
-      normals_filtered_cloud->points[i].normal[1] = normals_->points[i].normal[1];
-      normals_filtered_cloud->points[i].normal[2] = normals_->points[i].normal[2];
-    }
-  }
-
-  //recompute normals normals and use them for clustering!
+  //recompute normals and use them for clustering
   KdTreePtr normals_tree_filtered (new pcl::search::KdTree<pcl::PointNormal> (false));
   normals_tree_filtered->setInputCloud (normals_filtered_cloud);
 
@@ -270,6 +228,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   VFHEstimator vfh;
   vfh.setInputCloud (surface_);
   vfh.setInputNormals (normals_);
+  vfh.setIndices(indices_);
   vfh.setSearchMethod (this->tree_);
   vfh.setUseGivenNormal (true);
   vfh.setUseGivenCentroid (true);

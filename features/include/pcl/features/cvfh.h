@@ -103,7 +103,7 @@ namespace pcl
         * \param[in] threshold threshold value for curvature
         */
       void
-      filterNormalsWithHighCurvature (const pcl::PointCloud<PointNT> & cloud, std::vector<int> &indices_out,
+      filterNormalsWithHighCurvature (const pcl::PointCloud<PointNT> & cloud, std::vector<int> & indices_to_use, std::vector<int> &indices_out,
                                       std::vector<int> &indices_in, float threshold);
 
       /** \brief Set the viewpoint.
