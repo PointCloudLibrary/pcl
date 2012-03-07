@@ -103,6 +103,10 @@ macro(PCL_ADD_LIBRARY _name _component)
     add_library(${_name} ${PCL_LIB_TYPE} ${ARGN})
     # must link explicitly against boost.
     target_link_libraries(${_name} ${Boost_LIBRARIES})
+	
+	if(MSVC90 OR MSVC10)
+	  target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
+	endif()
     #
     # Only link if needed
     if(WIN32 AND MSVC)
