@@ -68,7 +68,7 @@
 int
 pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, 
                             Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, 
-                            int &pcd_version, int &data_type, int &data_idx)
+                            int &pcd_version, int &data_type, unsigned int &data_idx, const int offset)
 {
   // Default values
   data_idx = 0;
@@ -99,8 +99,12 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
   if (!fs.is_open () || fs.fail ())
   {
     PCL_ERROR ("[pcl::PCDReader::readHeader] Could not open file '%s'! Error : %s\n", file_name.c_str (), strerror(errno)); 
+    fs.close ();
     return (-1);
   }
+
+  // Seek at the given offset
+  fs.seekg (offset, std::ios::beg);
 
   // field_sizes represents the size of one element in a field (e.g., float = 4, char = 1)
   // field_counts represents the number of elements in a field (e.g., x = 1, normal_x = 1, fpfh = 33)
@@ -297,8 +301,13 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
   catch (const char *exception)
   {
     PCL_ERROR ("[pcl::PCDReader::readHeader] %s\n", exception);
+    fs.close ();
     return (-1);
   }
+
+  // Exit early: if no points have been given, there's no sense to read or check anything anymore
+  if (nr_points == 0)
+    return (-1);
 
   // Compatibility with older PCD file versions
   if (cloud.width == 0 && cloud.height == 0)
@@ -319,16 +328,18 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
   }
   else
   {
-    if (cloud.width == 0)
+    if (cloud.width == 0 && nr_points != 0)
     {
       PCL_ERROR ("[pcl::PCDReader::readHeader] HEIGHT given (%d) but no WIDTH!\n", cloud.height);
+      fs.close ();
       return (-1);
     }
   }
 
-  if (int(cloud.width * cloud.height) != nr_points)
+  if (int (cloud.width * cloud.height) != nr_points)
   {
     PCL_ERROR ("[pcl::PCDReader::readHeader] HEIGHT (%d) x WIDTH (%d) != number of points (%d)\n", cloud.height, cloud.width, nr_points);
+    fs.close ();
     return (-1);
   }
 
@@ -341,7 +352,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
 ///////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::PCDReader::readHeaderEigen (const std::string &file_name, pcl::PointCloud<Eigen::MatrixXf> &cloud, 
-                                 int &pcd_version, int &data_type, int &data_idx)
+                                 int &pcd_version, int &data_type, unsigned int &data_idx, const int offset)
 {
   // Default values
   data_idx = 0;
@@ -374,6 +385,9 @@ pcl::PCDReader::readHeaderEigen (const std::string &file_name, pcl::PointCloud<E
     PCL_ERROR ("[pcl::PCDReader::readHeader] Could not open file '%s'! Error : %s\n", file_name.c_str (), strerror(errno)); 
     return (-1);
   }
+
+  // Seek at the given offset
+  fs.seekg (offset, std::ios::beg);
 
   // field_sizes represents the size of one element in a field (e.g., float = 4, char = 1)
   // field_counts represents the number of elements in a field (e.g., x = 1, normal_x = 1, fpfh = 33)
@@ -554,6 +568,7 @@ pcl::PCDReader::readHeaderEigen (const std::string &file_name, pcl::PointCloud<E
   catch (const char *exception)
   {
     PCL_ERROR ("[pcl::PCDReader::readHeader] %s\n", exception);
+    fs.close ();
     return (-1);
   }
 
@@ -575,16 +590,18 @@ pcl::PCDReader::readHeaderEigen (const std::string &file_name, pcl::PointCloud<E
   }
   else
   {
-    if (cloud.width == 0)
+    if (cloud.width == 0 && nr_points != 0)
     {
       PCL_ERROR ("[pcl::PCDReader::readHeader] HEIGHT given (%d) but no WIDTH!\n", cloud.height);
+      fs.close ();
       return (-1);
     }
   }
 
-  if (int(cloud.width * cloud.height) != nr_points)
+  if (int (cloud.width * cloud.height) != nr_points)
   {
     PCL_ERROR ("[pcl::PCDReader::readHeader] HEIGHT (%d) x WIDTH (%d) != number of points (%d)\n", cloud.height, cloud.width, nr_points);
+    fs.close ();
     return (-1);
   }
 
@@ -594,15 +611,16 @@ pcl::PCDReader::readHeaderEigen (const std::string &file_name, pcl::PointCloud<E
   return (0);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
-                      Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version)
+                      Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version, 
+                      const int offset)
 {
   int data_type;
-  int data_idx;
+  unsigned int data_idx;
 
-  int res = readHeader (file_name, cloud, origin, orientation, pcd_version, data_type, data_idx);
+  int res = readHeader (file_name, cloud, origin, orientation, pcd_version, data_type, data_idx, offset);
 
   if (res < 0)
     return (res);
@@ -635,7 +653,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     // Read the rest of the file
     try
     {
-      while (!fs.eof ())
+      while (idx < nr_points && !fs.eof ())
       {
         getline (fs, line);
         // Ignore empty lines
@@ -646,14 +664,11 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
         boost::trim (line);
         boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
         
-        // We must have points then
-        // Convert the first token to float and use it as the first point coordinate
         if (idx >= nr_points)
         {
-          PCL_WARN ("[pcl::PCDReader::read] input file %s has more points than advertised (%d)!\n", file_name.c_str (), nr_points);
+          PCL_WARN ("[pcl::PCDReader::read] input file %s has more points (%d) than advertised (%d)!\n", file_name.c_str (), idx, nr_points);
           break;
         }
-
 
         size_t total = 0;
         // Copy data
@@ -746,6 +761,15 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     if (fd == -1)
       return (-1);
 
+    // Seek at the given offset
+    int result = static_cast<int> (pcl_lseek (fd, offset, SEEK_SET));
+    if (result < 0)
+    {
+      pcl_close (fd);
+      PCL_ERROR ("[pcl::PCDReader::read] Error during lseek ()!\n");
+      return (-1);
+    }
+    
     size_t data_size = data_idx + cloud.data.size ();
     // Prepare the map
 #ifdef _WIN32
@@ -942,12 +966,13 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
   return (0);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::PCDReader::readEigen (const std::string &file_name, pcl::PointCloud<Eigen::MatrixXf> &cloud)
+pcl::PCDReader::readEigen (const std::string &file_name, pcl::PointCloud<Eigen::MatrixXf> &cloud, 
+                           const int offset)
 {
   int data_type;
-  int data_idx;
+  unsigned int data_idx;
   int pcd_version;
   int res = readHeaderEigen (file_name, cloud, pcd_version, data_type, data_idx);
 
@@ -982,7 +1007,7 @@ pcl::PCDReader::readEigen (const std::string &file_name, pcl::PointCloud<Eigen::
     // Read the rest of the file
     try
     {
-      while (!fs.eof ())
+      while (idx < nr_points && !fs.eof ())
       {
         getline (fs, line);
         // Ignore empty lines
@@ -996,8 +1021,6 @@ pcl::PCDReader::readEigen (const std::string &file_name, pcl::PointCloud<Eigen::
         std::stringstream sstream (line);
         sstream.imbue (std::locale::classic ());
 
-        // We must have points then
-        // Convert the first token to float and use it as the first point coordinate
         if (idx >= nr_points)
         {
           PCL_WARN ("[pcl::PCDReader::read] input file %s has more points than advertised (%d)!\n", file_name.c_str (), nr_points);
@@ -1027,6 +1050,15 @@ pcl::PCDReader::readEigen (const std::string &file_name, pcl::PointCloud<Eigen::
     int fd = pcl_open (file_name.c_str (), O_RDONLY);
     if (fd == -1)
       return (-1);
+
+    // Seek at the given offset
+    int result = static_cast<int> (pcl_lseek (fd, offset, SEEK_SET));
+    if (result < 0)
+    {
+      pcl_close (fd);
+      PCL_ERROR ("[pcl::PCDReader::readEigen] Error during lseek ()!\n");
+      return (-1);
+    }
 
     size_t data_size = data_idx + cloud.points.rows () * cloud.points.cols () * sizeof (float);
     // Prepare the map
@@ -1111,20 +1143,20 @@ pcl::PCDReader::readEigen (const std::string &file_name, pcl::PointCloud<Eigen::
   return (0);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud)
+pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, const int offset)
 {
   int pcd_version;
   Eigen::Vector4f origin;
   Eigen::Quaternionf orientation;
   // Load the data
-  int res = read (file_name, cloud, origin, orientation, pcd_version);
+  int res = read (file_name, cloud, origin, orientation, pcd_version, offset);
 
   if (res < 0)
     return (res);
 
-  return 0;
+  return (0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

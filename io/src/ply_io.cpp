@@ -381,7 +381,7 @@ pcl::PLYReader::parse (const std::string& istream_filename)
 int 
 pcl::PLYReader::readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
                             Eigen::Vector4f &, Eigen::Quaternionf &,
-                            int &, int &, int &)
+                            int &, int &, unsigned int &, const int)
 {
   // Silence compiler warnings
   cloud_ = &cloud;
@@ -398,10 +398,11 @@ pcl::PLYReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
 ////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
-                      Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &ply_version)
+                      Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &ply_version, const int)
 {
   // kept only for backward compatibility
-  int data_type, data_idx;
+  int data_type;
+  unsigned int data_idx;
 
   if (this->readHeader (file_name, cloud, origin, orientation, ply_version, data_type, data_idx))
   {

@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -41,6 +41,19 @@
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 
+#ifdef _WIN32
+# include <io.h>
+# include <windows.h>
+# define pcl_open                    _open
+# define pcl_close(fd)               _close(fd)
+# define pcl_lseek(fd,offset,origin) _lseek(fd,offset,origin)
+#else
+# include <sys/mman.h>
+# define pcl_open                    open
+# define pcl_close(fd)               close(fd)
+# define pcl_lseek(fd,offset,origin) lseek(fd,offset,origin)
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////// GrabberImplementation //////////////////////
 struct pcl::PCDGrabberBase::PCDGrabberImpl
@@ -49,6 +62,12 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
   PCDGrabberImpl (pcl::PCDGrabberBase& grabber, const std::vector<std::string>& pcd_files, float frames_per_second, bool repeat);
   void trigger ();
   void readAhead ();
+  
+  // TAR reading I/O
+  int openTARFile (const std::string &file_name);
+  void closeTARFile ();
+  bool readTARHeader ();
+
   pcl::PCDGrabberBase& grabber_;
   float frames_per_second_;
   bool repeat_;
@@ -61,6 +80,46 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
   Eigen::Vector4f origin_;
   Eigen::Quaternionf orientation_;
   bool valid_;
+
+  // TAR reading I/O
+  int tar_fd_;
+  int tar_offset_;
+  std::string tar_file_;
+  /** \brief A TAR file's header, as described on http://en.wikipedia.org/wiki/Tar_%28file_format%29. */
+  struct TARHeader
+  {
+    char file_name[100];
+    char file_mode[8];
+    char uid[8];
+    char gid[8];
+    char file_size[12];
+    char mtime[12];
+    char chksum[8];
+    char file_type[1];
+    char link_file_name[100];
+    char ustar[6];
+    char ustar_version[2];
+    char uname[32];
+    char gname[32];
+    char dev_major[8];
+    char dev_minor[8];
+    char file_name_prefix[155];
+    char _padding[12];
+
+    unsigned int 
+    getFileSize ()
+    {
+      unsigned int output = 0;
+      char *str = file_size;
+      for (int i = 0; i < 11; i++)
+      {
+        output = output * 8 + *str - '0';
+        str++;
+      }
+      return (output);
+    }
+  };
+  TARHeader tar_header_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -76,6 +135,9 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
   , origin_ ()
   , orientation_ ()
   , valid_ (false)
+  , tar_fd_ (-1)
+  , tar_offset_ (0)
+  , tar_file_ ()
 {
   pcd_files_.push_back (pcd_path);
   pcd_iterator_ = pcd_files_.begin ();
@@ -94,6 +156,9 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
   , origin_ ()
   , orientation_ ()
   , valid_ (false)
+  , tar_fd_ (-1)
+  , tar_offset_ (0)
+  , tar_file_ ()
 {
   pcd_files_ = pcd_files;
   pcd_iterator_ = pcd_files_.begin ();
@@ -103,19 +168,123 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
 void 
 pcl::PCDGrabberBase::PCDGrabberImpl::readAhead ()
 {
-  if (pcd_iterator_ != pcd_files_.end ())
-  {
-    PCDReader reader;
-    int pcd_version;
-    valid_ = (reader.read (*pcd_iterator_, next_cloud_, origin_, orientation_, pcd_version) == 0);
+  PCDReader reader;
+  int pcd_version;
 
-    if (++pcd_iterator_ == pcd_files_.end () && repeat_)
-      pcd_iterator_ = pcd_files_.begin ();
+  // Check if we're still reading files from a TAR file
+  if (tar_fd_ != -1)
+  {
+    if (!readTARHeader ())
+      closeTARFile ();
+    valid_ = (reader.read (tar_file_, next_cloud_, origin_, orientation_, pcd_version, tar_offset_) == 0);
+    if (!valid_)
+      closeTARFile ();
+    else
+    {
+      tar_offset_ += (tar_header_.getFileSize ()) + (512 - tar_header_.getFileSize () % 512);
+      int result = static_cast<int> (pcl_lseek (tar_fd_, tar_offset_, SEEK_SET));
+      if (result < 0)
+        closeTARFile ();
+    }
   }
+  // We're not still reading from a TAR file, so check if there are other PCD/TAR files in the list
   else
-    valid_ = false;
+  {
+    if (pcd_iterator_ != pcd_files_.end ())
+    {
+      // Try to read in the file as a PCD first
+      valid_ = (reader.read (*pcd_iterator_, next_cloud_, origin_, orientation_, pcd_version) == 0);
+
+      // Has an error occured? Check if we can interpret the file as a TAR file first before going onto the next
+      if (!valid_)
+      {
+        if (openTARFile (*pcd_iterator_) >= 0)
+        {
+          if (!readTARHeader ())
+            closeTARFile ();
+          tar_file_ = *pcd_iterator_;
+          valid_ = (reader.read (tar_file_, next_cloud_, origin_, orientation_, pcd_version, tar_offset_) == 0);
+          if (!valid_)
+            closeTARFile ();
+          else
+          {
+            tar_offset_ += (tar_header_.getFileSize ()) + (512 - tar_header_.getFileSize () % 512);
+            int result = static_cast<int> (pcl_lseek (tar_fd_, tar_offset_, SEEK_SET));
+            if (result < 0)
+              closeTARFile ();
+          }
+        }
+      }
+
+      if (++pcd_iterator_ == pcd_files_.end () && repeat_)
+        pcd_iterator_ = pcd_files_.begin ();
+    }
+    else
+      valid_ = false;
+  }
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::PCDGrabberBase::PCDGrabberImpl::readTARHeader ()
+{
+  // Read in the header
+  int result = static_cast<int> (::read (tar_fd_, reinterpret_cast<char*> (&tar_header_), 512));
+  if (result == -1)
+  {
+    closeTARFile ();
+    return (false);
+  }
+
+  // We only support regular files for now. 
+  // Addional file types in TAR include: hard links, symbolic links, device/special files, block devices, 
+  // directories, and named pipes.
+  if (tar_header_.file_type[0] != '0' && tar_header_.file_type[0] != '\0')
+  {
+    closeTARFile ();
+    return (false);
+  }
+
+  // We only support USTAR version 0 files for now
+  if (std::string (tar_header_.ustar).substr (0, 5) != "ustar")
+  {
+    closeTARFile ();
+    return (false);
+  }
+
+  if (tar_header_.getFileSize () == 0)
+  {
+    closeTARFile ();
+    return (false);
+  }
+
+  tar_offset_ += 512;
+
+  return (true);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::PCDGrabberBase::PCDGrabberImpl::closeTARFile ()
+{
+  pcl_close (tar_fd_);
+  tar_fd_ = -1;
+  tar_offset_ = 0;
+  memset (&tar_header_.file_name[0], 0, 512);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::PCDGrabberBase::PCDGrabberImpl::openTARFile (const std::string &file_name)
+{
+  tar_fd_ = pcl_open (file_name.c_str (), O_RDONLY);
+  if (tar_fd_ == -1)
+    return (-1);
+
+  return (0);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::PCDGrabberBase::PCDGrabberImpl::trigger ()
 {
@@ -129,13 +298,13 @@ pcl::PCDGrabberBase::PCDGrabberImpl::trigger ()
 ///////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////// GrabberBase //////////////////////
 pcl::PCDGrabberBase::PCDGrabberBase (const std::string& pcd_path, float frames_per_second, bool repeat)
-: impl_( new PCDGrabberImpl (*this, pcd_path, frames_per_second, repeat ) )
+: impl_ (new PCDGrabberImpl (*this, pcd_path, frames_per_second, repeat))
 {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 pcl::PCDGrabberBase::PCDGrabberBase (const std::vector<std::string>& pcd_files, float frames_per_second, bool repeat)
-: impl_( new PCDGrabberImpl (*this, pcd_files, frames_per_second, repeat) )
+: impl_ (new PCDGrabberImpl (*this, pcd_files, frames_per_second, repeat))
 {
 }
 

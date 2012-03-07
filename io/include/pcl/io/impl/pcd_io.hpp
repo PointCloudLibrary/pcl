@@ -181,7 +181,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 
 #else
   // Stretch the file size to the size of the data
-  int result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
+  int result = static_cast<int> (pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET));
   if (result < 0)
   {
     pcl_close (fd);
@@ -189,7 +189,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
     return (-1);
   }
   // Write a bogus entry so that the new file size comes in effect
-  result = ::write (fd, "", 1);
+  result = static_cast<int> (::write (fd, "", 1));
   if (result != 1)
   {
     pcl_close (fd);
@@ -598,9 +598,9 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   }
   int data_idx = 0;
   std::ostringstream oss;
-  oss << generateHeader<PointT> (cloud, indices.size ()) << "DATA binary\n";
+  oss << generateHeader<PointT> (cloud, static_cast<int> (indices.size ())) << "DATA binary\n";
   oss.flush ();
-  data_idx = oss.tellp ();
+  data_idx = static_cast<int> (oss.tellp ());
 
 #if _WIN32
   HANDLE h_native_file = CreateFileA (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -647,7 +647,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 
 #else
   // Stretch the file size to the size of the data
-  int result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
+  int result = static_cast<int> (pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET));
   if (result < 0)
   {
     pcl_close (fd);
@@ -655,7 +655,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
     return (-1);
   }
   // Write a bogus entry so that the new file size comes in effect
-  result = ::write (fd, "", 1);
+  result = static_cast<int> (::write (fd, "", 1));
   if (result != 1)
   {
     pcl_close (fd);
@@ -746,7 +746,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
   pcl::getFields (cloud, fields);
 
   // Write the header information
-  fs << generateHeader<PointT> (cloud, indices.size ()) << "DATA ascii\n";
+  fs << generateHeader<PointT> (cloud, static_cast<int> (indices.size ())) << "DATA ascii\n";
 
   std::ostringstream stream;
   stream.precision (precision);

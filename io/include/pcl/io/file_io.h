@@ -74,11 +74,16 @@ namespace pcl
         * \param[out] file_version the FILE version of the file (either FILE_V6 or FILE_V7)
         * \param[out] data_type the type of data (binary data=1, ascii=0, etc)
         * \param[out] data_idx the offset of cloud data within the file
+        * \param[in] offset the offset in the file where to expect the true header to begin.
+        * One usage example for setting the offset parameter is for reading
+        * data from a TAR "archive containing multiple files: TAR files always
+        * add a 512 byte header in front of the actual file, so set the offset
+        * to the next byte after the header (e.g., 513).
         */
       virtual int 
       readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, 
                   Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, 
-                  int &file_version, int &data_type, int &data_idx) = 0;
+                  int &file_version, int &data_type, unsigned int &data_idx, const int offset = 0) = 0;
 
       /** \brief Read a point cloud data from a FILE file and store it into a sensor_msgs/PointCloud2.
         * \param[in] file_name the name of the file containing the actual PointCloud data
@@ -86,10 +91,16 @@ namespace pcl
         * \param[out] origin the sensor acquisition origin (only for > FILE_V7 - null if not present)
         * \param[out] orientation the sensor acquisition orientation (only for > FILE_V7 - identity if not present)
         * \param[out] file_version the FILE version of the file (either FILE_V6 or FILE_V7)
+        * \param[in] offset the offset in the file where to expect the true header to begin.
+        * One usage example for setting the offset parameter is for reading
+        * data from a TAR "archive containing multiple files: TAR files always
+        * add a 512 byte header in front of the actual file, so set the offset
+        * to the next byte after the header (e.g., 513).
         */
       virtual int 
       read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, 
-            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &file_version) = 0;
+            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &file_version, 
+            const int offset = 0) = 0;
 
       /** \brief Read a point cloud data from a FILE file (FILE_V6 only!) and store it into a sensor_msgs/PointCloud2.
         * 
@@ -100,33 +111,44 @@ namespace pcl
         *
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] cloud the resultant PointCloud message read from disk
+        *
+        * \param[in] offset the offset in the file where to expect the true header to begin.
+        * One usage example for setting the offset parameter is for reading
+        * data from a TAR "archive containing multiple files: TAR files always
+        * add a 512 byte header in front of the actual file, so set the offset
+        * to the next byte after the header (e.g., 513).
         */
       int 
-      read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud)
+      read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, const int offset = 0)
       {
         Eigen::Vector4f origin;
         Eigen::Quaternionf orientation;
         int file_version;
-        return read(file_name, cloud, origin, orientation, file_version);
+        return (read (file_name, cloud, origin, orientation, file_version, offset));
       }
 
       /** \brief Read a point cloud data from any FILE file, and convert it to the given template format.
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] cloud the resultant PointCloud message read from disk
+        * \param[in] offset the offset in the file where to expect the true header to begin.
+        * One usage example for setting the offset parameter is for reading
+        * data from a TAR "archive containing multiple files: TAR files always
+        * add a 512 byte header in front of the actual file, so set the offset
+        * to the next byte after the header (e.g., 513).
         */
       template<typename PointT> inline int
-      read (const std::string &file_name, pcl::PointCloud<PointT> &cloud)
+      read (const std::string &file_name, pcl::PointCloud<PointT> &cloud, const int offset  =0)
       {
         sensor_msgs::PointCloud2 blob;
         int file_version;
         int res = read (file_name, blob, cloud.sensor_origin_, cloud.sensor_orientation_, 
-                        file_version);
+                        file_version, offset);
 
         // Exit in case of error
         if (res < 0)
           return res;
         pcl::fromROSMsg (blob, cloud);
-        return 0;
+        return (0);
       }
   };
 

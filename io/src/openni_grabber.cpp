@@ -452,7 +452,7 @@ pcl::OpenNIGrabber::stopSynchronization ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::OpenNIGrabber::imageCallback (boost::shared_ptr<openni_wrapper::Image> image, void* cookie)
+pcl::OpenNIGrabber::imageCallback (boost::shared_ptr<openni_wrapper::Image> image, void*)
 {
   if (num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
       num_slots<sig_cb_openni_point_cloud_rgba> () > 0 ||

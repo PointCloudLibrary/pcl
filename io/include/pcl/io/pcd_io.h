@@ -92,9 +92,6 @@ namespace pcl
         * \attention The PCD data is \b always stored in ROW major format! The
         * read/write PCD methods will detect column major input and automatically convert it.
         *
-        * Returns:
-        *  * < 0 (-1) on error
-        *  * > 0 on success
         * \param[in] file_name the name of the file to load
         * \param[out] cloud the resultant point cloud dataset (only the header will be filled)
         * \param[out] origin the sensor acquisition origin (only for > PCD_V7 - null if not present)
@@ -102,11 +99,21 @@ namespace pcl
         * \param[out] pcd_version the PCD version of the file (i.e., PCD_V6, PCD_V7)
         * \param[out] data_type the type of data (0 = ASCII, 1 = Binary, 2 = Binary compressed) 
         * \param[out] data_idx the offset of cloud data within the file
+        * \param[in] offset the offset of where to expect the PCD Header in the
+        * file (optional parameter). One usage example for setting the offset
+        * parameter is for reading data from a TAR "archive containing multiple
+        * PCD files: TAR files always add a 512 byte header in front of the
+        * actual file, so set the offset to the next byte after the header
+        * (e.g., 513).
+        *
+        * \return
+        *  * < 0 (-1) on error
+        *  * > 0 on success
         */
       int 
       readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, 
                   Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version,
-                  int &data_type, int &data_idx);
+                  int &data_type, unsigned int &data_idx, const int offset = 0);
 
       /** \brief Read a point cloud data header from a PCD file. 
         *
@@ -117,18 +124,26 @@ namespace pcl
         * \attention The PCD data is \b always stored in ROW major format! The
         * read/write PCD methods will detect column major input and automatically convert it.
         *
-         * Returns:
-        *  * < 0 (-1) on error
-        *  * > 0 on success
         * \param[in] file_name the name of the file to load
         * \param[out] cloud the resultant point cloud dataset (only the properties will be filled)
         * \param[out] pcd_version the PCD version of the file (either PCD_V6 or PCD_V7)
         * \param[out] data_type the type of data (0 = ASCII, 1 = Binary, 2 = Binary compressed) 
         * \param[out] data_idx the offset of cloud data within the file
+        * \param[in] offset the offset of where to expect the PCD Header in the
+        * file (optional parameter). One usage example for setting the offset
+        * parameter is for reading data from a TAR "archive containing multiple
+        * PCD files: TAR files always add a 512 byte header in front of the
+        * actual file, so set the offset to the next byte after the header
+        * (e.g., 513).
+        *
+        * \return
+        *  * < 0 (-1) on error
+        *  * > 0 on success
+        *
         */
       int 
       readHeaderEigen (const std::string &file_name, pcl::PointCloud<Eigen::MatrixXf> &cloud,
-                       int &pcd_version, int &data_type, int &data_idx);
+                       int &pcd_version, int &data_type, unsigned int &data_idx, const int offset = 0);
 
       /** \brief Read a point cloud data from a PCD file and store it into a sensor_msgs/PointCloud2.
         * \param[in] file_name the name of the file containing the actual PointCloud data
@@ -136,10 +151,20 @@ namespace pcl
         * \param[out] origin the sensor acquisition origin (only for > PCD_V7 - null if not present)
         * \param[out] orientation the sensor acquisition orientation (only for > PCD_V7 - identity if not present)
         * \param[out] pcd_version the PCD version of the file (either PCD_V6 or PCD_V7)
+        * \param[in] offset the offset of where to expect the PCD Header in the
+        * file (optional parameter). One usage example for setting the offset
+        * parameter is for reading data from a TAR "archive containing multiple
+        * PCD files: TAR files always add a 512 byte header in front of the
+        * actual file, so set the offset to the next byte after the header
+        * (e.g., 513).
+        *
+        * \return
+        *  * < 0 (-1) on error
+        *  * > 0 on success
         */
       int 
       read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, 
-            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version);
+            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version, const int offset = 0);
 
       /** \brief Read a point cloud data from a PCD (PCD_V6) and store it into a sensor_msgs/PointCloud2.
         * 
@@ -150,27 +175,46 @@ namespace pcl
         *
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] cloud the resultant PointCloud message read from disk
+        * \param[in] offset the offset of where to expect the PCD Header in the
+        * file (optional parameter). One usage example for setting the offset
+        * parameter is for reading data from a TAR "archive containing multiple
+        * PCD files: TAR files always add a 512 byte header in front of the
+        * actual file, so set the offset to the next byte after the header
+        * (e.g., 513).
+        *
+        * \return
+        *  * < 0 (-1) on error
+        *  * > 0 on success
         */
       int 
-      read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud);
+      read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, const int offset = 0);
 
       /** \brief Read a point cloud data from any PCD file, and convert it to the given template format.
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] cloud the resultant PointCloud message read from disk
+        * \param[in] offset the offset of where to expect the PCD Header in the
+        * file (optional parameter). One usage example for setting the offset
+        * parameter is for reading data from a TAR "archive containing multiple
+        * PCD files: TAR files always add a 512 byte header in front of the
+        * actual file, so set the offset to the next byte after the header
+        * (e.g., 513).
+        *
+        * \return
+        *  * < 0 (-1) on error
+        *  * > 0 on success
         */
       template<typename PointT> int
-      read (const std::string &file_name, pcl::PointCloud<PointT> &cloud)
+      read (const std::string &file_name, pcl::PointCloud<PointT> &cloud, const int offset = 0)
       {
         sensor_msgs::PointCloud2 blob;
         int pcd_version;
         int res = read (file_name, blob, cloud.sensor_origin_, cloud.sensor_orientation_, 
-                        pcd_version);
+                        pcd_version, offset);
 
-        // Exit in case of error
-        if (res < 0)
-          return (res);
-        pcl::fromROSMsg (blob, cloud);
-        return (0);
+        // If no error, convert the data
+        if (res == 0)
+          pcl::fromROSMsg (blob, cloud);
+        return (res);
       }
 
       /** \brief Read a point cloud data from any PCD file, and convert it to a pcl::PointCloud<Eigen::MatrixXf> format.
@@ -179,9 +223,19 @@ namespace pcl
         *
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] cloud the resultant PointCloud message read from disk
+        * \param[in] offset the offset of where to expect the PCD Header in the
+        * file (optional parameter). One usage example for setting the offset
+        * parameter is for reading data from a TAR "archive containing multiple
+        * PCD files: TAR files always add a 512 byte header in front of the
+        * actual file, so set the offset to the next byte after the header
+        * (e.g., 513).
+        *
+        * \return
+        *  * < 0 (-1) on error
+        *  * > 0 on success
         */
       int
-      readEigen (const std::string &file_name, pcl::PointCloud<Eigen::MatrixXf> &cloud);
+      readEigen (const std::string &file_name, pcl::PointCloud<Eigen::MatrixXf> &cloud, const int offset = 0);
   };
 
   /** \brief Point Cloud Data (PCD) file format writer.
