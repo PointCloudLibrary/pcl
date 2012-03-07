@@ -219,7 +219,7 @@ namespace pcl
 
             boost::uint64_t num = size ();
             PointT p;
-            char* loc = (char*)&p;
+            char* loc = static_cast<char*> ( &p );
             for (boost::uint64_t i = 0; i < num; i++)
             {
               int seekret = _fseeki64 (f, i * sizeof(PointT), SEEK_SET);

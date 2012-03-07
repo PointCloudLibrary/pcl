@@ -385,7 +385,7 @@ namespace pcl
          * 
          *  \note this might change
          */
-        const static std::string tree_extension_;
+        const static std::string TREE_EXTENSION_;
 
         ////////////////////////////////////////////////////////////////////////////////
         //New Globals

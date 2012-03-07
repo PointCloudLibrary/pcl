@@ -575,7 +575,7 @@ namespace pcl
 
       // Derive percentage from specified sample_precent and tree depth
       const double percent = pow(sample_precent, double((root_->m_tree_->max_depth_ - depth_)));
-      const boost::uint64_t samplesize = (boost::uint64_t)(percent * double(sampleBuff.size()));
+      const boost::uint64_t samplesize = static_cast<boost::uint64_t>(percent * static_cast<double>(sampleBuff.size()));
       const boost::uint64_t inputsize = sampleBuff.size();
 
       if(samplesize > 0)

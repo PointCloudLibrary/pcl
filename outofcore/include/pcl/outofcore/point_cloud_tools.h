@@ -51,7 +51,7 @@
 
 namespace pcl
 {
-  namespace octree
+  namespace outofcore
   {
     namespace PointCloudTools
     {

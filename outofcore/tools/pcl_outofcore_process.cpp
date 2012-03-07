@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  * Point Cloud Library (PCL) - www.pointclouds.org
- * Copyright (c) 2009-2011, Willow Garage, Inc.
+ * Copyright (c) 2009-2012, Willow Garage, Inc.
  *
  * All rights reserved.
  *
@@ -61,8 +61,8 @@ using pcl::console::print_info;
 
 typedef octree_base<octree_disk_container < PointT > , PointT > octree_disk;
 
-#define OCTREE_DEPTH 0
-#define OCTREE_RESOLUTION 1
+const int OCTREE_DEPTH (0);
+const int OCTREE_RESOLUTION (1);
 
 int
 pcl_outofcore_process (boost::filesystem::path pcd_path, boost::filesystem::path root_dir,

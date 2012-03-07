@@ -70,7 +70,7 @@ namespace pcl
   {
 
     template<typename Container, typename PointT>
-    const std::string octree_base<Container, PointT>::tree_extension_ = ".octree";
+    const std::string octree_base<Container, PointT>::TREE_EXTENSION_ = ".octree";
 
 // Constructors
 // ---------------------------------------------------------------------------
@@ -91,7 +91,7 @@ namespace pcl
       root_->m_tree_ = this;
 
       // Set root_ nodes file path
-      treepath_ = rootname.parent_path () / (boost::filesystem::basename (rootname) + tree_extension_);
+      treepath_ = rootname.parent_path () / (boost::filesystem::basename (rootname) + TREE_EXTENSION_);
 
       loadFromFile ();
     }
@@ -123,7 +123,7 @@ namespace pcl
       lodPoints_.resize (max_depth_ + 1);
 
       // Set root_ nodes file path
-      treepath_ = dir / (boost::filesystem::basename (rootname) + tree_extension_);
+      treepath_ = dir / (boost::filesystem::basename (rootname) + TREE_EXTENSION_);
       saveToFile ();
     }
 ////////////////////////////////////////////////////////////////////////////////
@@ -169,7 +169,7 @@ namespace pcl
       lodPoints_.resize (max_depth_ + 1);
 
       // Set root nodes file path
-      treepath_ = dir / (boost::filesystem::basename (rootname) + tree_extension_);
+      treepath_ = dir / (boost::filesystem::basename (rootname) + TREE_EXTENSION_);
       saveToFile ();
     }
 ////////////////////////////////////////////////////////////////////////////////
@@ -193,13 +193,13 @@ namespace pcl
       cJSON* name = cJSON_CreateString ("test");
       cJSON* version = cJSON_CreateNumber (2.0);
       cJSON* pointtype = cJSON_CreateString ("urp");
-      cJSON* lod = cJSON_CreateNumber (root_->m_tree_->max_depth_);
+      cJSON* lod = cJSON_CreateNumber (static_cast<double>(root_->m_tree_->max_depth_));
 
       // cJSON does not allow 64 bit ints.  Have to put the points in a double to
       // use this api, will allow counts up to 2^52 points to be stored correctly
       std::vector<double> lodPoints_db;
       lodPoints_db.insert (lodPoints_db.begin (), lodPoints_.begin (), lodPoints_.end ());
-      cJSON* numpts = cJSON_CreateDoubleArray (&(lodPoints_db.front ()), lodPoints_db.size ());
+      cJSON* numpts = cJSON_CreateDoubleArray (&(lodPoints_db.front ()), static_cast<int> (lodPoints_db.size ()));
 
       cJSON_AddItemToObject (idx.get (), "name", name);
       cJSON_AddItemToObject (idx.get (), "version", version);

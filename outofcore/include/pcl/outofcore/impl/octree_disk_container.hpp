@@ -76,7 +76,7 @@ namespace pcl
     boost::mutex octree_disk_container<PointT>::rng_mutex_;
 
     template<typename PointT> boost::mt19937
-    octree_disk_container<PointT>::rand_gen_ (std::time( NULL));
+    octree_disk_container<PointT>::rand_gen_ ( static_cast<unsigned int> ( std::time( NULL ) ) );
 
     template<typename PointT>
     boost::uuids::random_generator octree_disk_container<PointT>::uuid_gen_ (&rand_gen_);
@@ -164,7 +164,8 @@ namespace pcl
         FILE* f = fopen (fileback_name_->c_str (), "a+b");
 
         size_t len = writebuff_.size () * sizeof(PointT);
-        char* loc = (char*)&(writebuff_.front ());
+        /** \todo study and optimize the serialization to disk */
+        char* loc = reinterpret_cast<char*> ( & (writebuff_.front ()) );
         size_t w = fwrite (loc, 1, len, f);
         (void)w;
         assert (w == len);
@@ -269,14 +270,17 @@ namespace pcl
 
       //resize
       PointT* loc = NULL;
-      v.resize ((unsigned int)count);
+      v.resize (static_cast<unsigned int>(count));
       loc = &(v.front ());
 
       //do the read
       FILE* f = fopen (fileback_name_->c_str (), "rb");
       assert (f != NULL);
       int seekret = _fseeki64 (f, filestart * static_cast<boost::uint64_t>(sizeof(PointT)), SEEK_SET);
-      if (seekret != 0) ;
+      if (seekret != 0)
+      {
+        //suppressed warning. empty if statement?
+      }
       // error out?
       assert (seekret == 0);
 
@@ -287,15 +291,21 @@ namespace pcl
         if ((pos + blocksize) < filecount)
         {
           size_t readlen = fread (loc, sizeof(PointT), blocksize, f);
-          if (readlen != blocksize) ;
+          if (readlen != blocksize) 
+          {
+            //suppressed warning. empty if statement; error?
+          }
           // error out?
           assert (readlen == blocksize);
           loc += blocksize;
         }
         else
         {
-          size_t readlen = fread (loc, sizeof(PointT), (size_t) (filecount - pos), f);
-          if (readlen != filecount - pos) ;
+          size_t readlen = fread (loc, sizeof(PointT), static_cast<size_t>(filecount - pos), f);
+          if (readlen != filecount - pos)
+          {
+            //suppressed warning. empty if statement; error?
+          }
           // error out?
           assert (readlen == filecount - pos);
           loc += filecount - pos;
@@ -392,7 +402,8 @@ namespace pcl
         FILE* f = fopen (fileback_name_->c_str (), "rb");
         assert (f != NULL);
         PointT p;
-        char* loc = (char*)&p;
+        char* loc = static_cast<char*> ( &p );
+        
         boost::uint64_t filesamp = offsets.size ();
         for (boost::uint64_t i = 0; i < filesamp; i++)
         {
@@ -489,7 +500,7 @@ namespace pcl
         FILE* f = fopen (fileback_name_->c_str (), "rb");
         assert (f != NULL);
         PointT p;
-        char* loc = (char*)&p;
+        char* loc = static_cast<char*> ( &p );
         for (boost::uint64_t i = 0; i < filesamp; i++)
         {
           int seekret = _fseeki64 (f, offsets[i] * static_cast<boost::uint64_t> (sizeof(PointT)), SEEK_SET);
@@ -521,20 +532,27 @@ namespace pcl
       FILE* f = fopen (fileback_name_->c_str (), "a+b");
 
       //write at most 2 million elements at a ime
-      const static size_t blocksize = (size_t)2e6;
+      const static size_t blocksize = static_cast<size_t> ( 2e6 );
 
       for (boost::uint64_t pos = 0; pos < count; pos += blocksize)
       {
         const PointT* loc = start + pos;
         if ((pos + blocksize) < count)
         {
-          if (loc) ; //
+          if (loc)
+          {
+            //suppressed warning. empty if statement; error?
+          }
           assert (fwrite (loc, sizeof(PointT), blocksize, f) == blocksize);
         }
         else
         {
-          if (loc) ; //
-          assert (fwrite (loc, sizeof(PointT), (size_t) (count - pos), f) == count - pos);
+          if (loc)
+          {
+            //suppressed warning. empty if statement; error?
+          }
+          
+          assert (fwrite (loc, sizeof(PointT), static_cast<size_t> (count - pos), f) == count - pos);
         }
       }
 

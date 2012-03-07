@@ -126,7 +126,7 @@ TEST (PCL, Outofcore_Octree_Build)
   //boost::uniform_real<double> dist(0,1);
 
   // For testing less sparse
-  boost::normal_distribution<double> dist (0.5, .1);
+  boost::normal_distribution<float> dist ( 0.5f, .1f );
 
   // Create a point
   PointT p;
@@ -142,9 +142,9 @@ TEST (PCL, Outofcore_Octree_Build)
   // Radomize it's position in space
   for(size_t i = 0; i < numPts; i++)
   {
-    p.x = dist (rng);
-    p.y = dist (rng);
-    p.z = dist (rng);
+    p.x = dist ( rng );
+    p.y = dist ( rng );
+    p.z = dist ( rng );
 
     points[i] = p;
   }
@@ -175,7 +175,7 @@ TEST (PCL, Outofcore_Octree_Build_LOD)
   // For testing sparse
   //boost::uniform_real<double> dist(0,1);
   // For testing less sparse
-  boost::normal_distribution<double> dist (0.5, .1);
+  boost::normal_distribution<float> dist (0.5f, .1f);
 
   // Create a point
   PointT p;
@@ -236,7 +236,7 @@ TEST(PCL, Outofcore_Bounding_Box)
 void point_test(octree_disk& t)
 {
   boost::mt19937 rng(rngseed);
-  boost::uniform_real<double> dist(0,1);
+  boost::uniform_real<float> dist(0,1);
 
   double query_box_min[3];
   double qboxmax[3];
@@ -311,7 +311,7 @@ TEST (PCL, Outofcore_Ram_Tree)
 
   boost::mt19937 rng(rngseed);
   //boost::uniform_real<double> dist(0,1);//for testing sparse
-  boost::normal_distribution<double> dist(0.5, .1);//for testing less sparse
+  boost::normal_distribution<float> dist(0.5f, .1f);//for testing less sparse
   PointT p;
 /*
   p.r = p.g = p.b = 0;
@@ -435,7 +435,8 @@ TEST_F (OutofcoreTest, Outofcore_Constructors)
 
   vector<PointT, Eigen::aligned_allocator<PointT> > some_points;
   for(int i=0; i< 1000; i++)
-    some_points.push_back (PointT (rand ()%1024, rand ()%1024, rand ()%1024));
+    some_points.push_back (PointT (static_cast<float>( rand () % 1024 ), static_cast<float>( rand () % 1024 ), static_cast<float>( rand () % 1024 ) ));
+  
 
   //(Case 1)
   //Create Octree based on resolution of smallest voxel, automatically computing depth
@@ -519,7 +520,10 @@ TEST_F (OutofcoreTest, Outofcore_PointcloudConstructor)
   //generate some random points
   for(size_t i=0; i < numPts; i++)
   {
-    PointT tmp ( i % 1024, i % 1024, i % 1024 );
+    PointT tmp ( static_cast<float> (i % 1024), 
+                 static_cast<float> (i % 1024), 
+                 static_cast<float> (i % 1024));
+    
     test_cloud->points.push_back (tmp);
   }
 
