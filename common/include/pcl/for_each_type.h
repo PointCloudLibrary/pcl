@@ -51,7 +51,9 @@
 #include <boost/mpl/aux_/unwrap.hpp>
 #include <boost/type_traits/is_same.hpp>
 
+#ifdef __GNUC__
 #pragma GCC system_header 
+#endif
 
 namespace pcl 
 {
