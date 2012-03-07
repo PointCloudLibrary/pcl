@@ -48,28 +48,26 @@ typedef pcl::PointCloud<Point> PointCloud;
 
 PointCloud cloud;
 
-void init () {
-
-  for (int x=-20; x<20; x++) {
-    for (int y=-20; y<20; y++) {
-      for (int z=-20; z<20; z++) {
-        cloud.push_back( Point((float) x, (float) y, (float) z) );
-      }
-    }
-  }
-
+void 
+init () 
+{
+  for (int x=-20; x<20; x++) 
+    for (int y=-20; y<20; y++) 
+      for (int z=-20; z<20; z++) 
+        cloud.push_back (Point (static_cast<float> (x), static_cast<float> (y), static_cast<float> (z)));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-TEST (PCL, Iterators) {
-
+TEST (PCL, Iterators) 
+{
   Point mean (0,0,0);
 
-  for (PointCloud::iterator it = cloud.begin(); it != cloud.end(); ++it) {
+  for (PointCloud::iterator it = cloud.begin(); it != cloud.end(); ++it) 
+  {
     for (int i=0;i<3;i++) mean.data[i] += it->data[i];
   }
-  for (int i=0;i<3;i++) mean.data[i] /= (double) cloud.size();
+  for (int i=0;i<3;i++) mean.data[i] /= static_cast<float> (cloud.size ());
 
   EXPECT_NEAR (mean.x, -0.5, 1e-4);
 }
@@ -77,7 +75,7 @@ TEST (PCL, Iterators) {
 
 /* ---[ */
 int
-  main (int argc, char** argv)
+main (int argc, char** argv)
 {
   testing::InitGoogleTest (&argc, argv);
   init();

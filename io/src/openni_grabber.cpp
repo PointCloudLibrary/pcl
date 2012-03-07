@@ -441,7 +441,7 @@ pcl::OpenNIGrabber::stopSynchronization ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::OpenNIGrabber::imageCallback (boost::shared_ptr<openni_wrapper::Image> image, void* cookie)
+pcl::OpenNIGrabber::imageCallback (boost::shared_ptr<openni_wrapper::Image> image, void*)
 {
   if (num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
       num_slots<sig_cb_openni_point_cloud_rgba>  () > 0 ||
@@ -673,8 +673,8 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
           depth_map[value_idx] != depth_image->getShadowValue ())
       {
         pt.z = depth_map[value_idx] * 0.001f;
-        pt.x = u * pt.z * constant;
-        pt.y = v * pt.z * constant;
+        pt.x = static_cast<float> (u) * pt.z * constant;
+        pt.y = static_cast<float> (v) * pt.z * constant;
       }
     }
   }

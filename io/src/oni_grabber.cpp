@@ -184,7 +184,7 @@ std::string ONIGrabber::getName() const
 float ONIGrabber::getFramesPerSecond () const
 {
   if (device_->isStreaming())
-    return (float)device_->getDepthOutputMode().nFPS;
+    return static_cast<float> (device_->getDepthOutputMode ().nFPS);
   else
     return 0;
 }

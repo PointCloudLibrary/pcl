@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -37,8 +37,8 @@
 
 #include "pcl/pcl_config.h"
 
-#ifndef __PCL_IO_PCD_GRABBER__
-#define __PCL_IO_PCD_GRABBER__
+#ifndef PCL_IO_PCD_GRABBER_H_
+#define PCL_IO_PCD_GRABBER_H_
 
 #include <pcl/io/grabber.h>
 #include <pcl/common/time_trigger.h>
@@ -54,14 +54,14 @@ namespace pcl
   class PCL_EXPORTS PCDGrabberBase : public Grabber
   {
     public:
-      /** \brief Constructor taking just one PCD file.
+      /** \brief Constructor taking just one PCD file or one TAR file containing multiple PCD files.
         * \param[in] pcd_file path to the PCD file
         * \param[in] frames_per_second frames per second. If 0, start() functions like a trigger, publishing the next PCD in the list.
         * \param[in] repeat whether to play PCD file in an endless loop or not.
         */
       PCDGrabberBase (const std::string& pcd_file, float frames_per_second, bool repeat);
 
-      /** \brief Constuctor taking a list of paths to PCD files, that are played in the order the appear in the list.
+      /** \brief Constructor taking a list of paths to PCD files, that are played in the order they appear in the list.
         * \param[in] pcd_files vector of paths to PCD files.
         * \param[in] frames_per_second frames per second. If 0, start() functions like a trigger, publishing the next PCD in the list.
         * \param[in] repeat whether to play PCD file in an endless loop or not.
@@ -132,28 +132,28 @@ namespace pcl
       PCDGrabberImpl* impl_;
   };
 
-  /**
-   * @ingroup io
-   */
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename T> class PointCloud;
-  //class sensor_msgs::PointCloud2;
   template <typename PointT> class PCDGrabber : public PCDGrabberBase
   {
     public:
       PCDGrabber (const std::string& pcd_path, float frames_per_second = 0, bool repeat = false);
       PCDGrabber (const std::vector<std::string>& pcd_files, float frames_per_second = 0, bool repeat = false);
     protected:
-      virtual void publish (const sensor_msgs::PointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const;
+      virtual void 
+      publish (const sensor_msgs::PointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const;
       boost::signals2::signal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>* signal_;
   };
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template<typename PointT>
   PCDGrabber<PointT>::PCDGrabber (const std::string& pcd_path, float frames_per_second, bool repeat)
-  : PCDGrabberBase ( pcd_path, frames_per_second, repeat)
+  : PCDGrabberBase (pcd_path, frames_per_second, repeat)
   {
     signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
   }
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template<typename PointT>
   PCDGrabber<PointT>::PCDGrabber (const std::vector<std::string>& pcd_files, float frames_per_second, bool repeat)
     : PCDGrabberBase (pcd_files, frames_per_second, repeat), signal_ ()
@@ -161,10 +161,11 @@ namespace pcl
     signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
   }
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template<typename PointT>
   void PCDGrabber<PointT>::publish (const sensor_msgs::PointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const
   {
-    typename pcl::PointCloud<PointT>::Ptr cloud( new pcl::PointCloud<PointT> () );
+    typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
     pcl::fromROSMsg (blob, *cloud);
     cloud->sensor_origin_ = origin;
     cloud->sensor_orientation_ = orientation;
