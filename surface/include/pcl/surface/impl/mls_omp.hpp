@@ -44,8 +44,8 @@
 #include <pcl/surface/mls_omp.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename NormalOutT> void
-pcl::MovingLeastSquaresOMP<PointInT, NormalOutT>::performReconstruction (PointCloudIn &output)
+template <typename PointInT, typename PointOutT> void
+pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOut &output)
 {
   typedef std::size_t size_t;
   // Compute the number of coefficients
@@ -75,21 +75,22 @@ pcl::MovingLeastSquaresOMP<PointInT, NormalOutT>::performReconstruction (PointCl
       continue;
 
 
-    PointCloudIn projected_points;
-    NormalCloudOut projected_points_normals;
+    PointCloudOut projected_points;
+    NormalCloud projected_points_normals;
 
     // Get a plane approximating the local surface's tangent and project point onto it
     computeMLSPointNormal ((*indices_)[cp], *input_, nn_indices, nn_sqr_dists, projected_points, projected_points_normals);
 
     // Append projected points to output
     output.insert (output.end (), projected_points.begin (), projected_points.end ());
-    normals_->insert (normals_->end (), projected_points_normals.begin (), projected_points_normals.end ());
+    if (compute_normals_)
+      normals_->insert (normals_->end (), projected_points_normals.begin (), projected_points_normals.end ());
   }
 
 
   // For the voxel grid upsampling method, generate the voxel grid and dilate it
   // Then, project the newly obtained points to the MLS surface
-  if (upsample_method_ == MovingLeastSquares<PointInT, NormalOutT>::VOXEL_GRID_DILATION)
+  if (upsample_method_ == MovingLeastSquares<PointInT, PointOutT>::VOXEL_GRID_DILATION)
   {
     MLSVoxelGrid voxel_grid (input_, indices_, voxel_size_);
 
@@ -129,8 +130,8 @@ pcl::MovingLeastSquaresOMP<PointInT, NormalOutT>::performReconstruction (PointCl
       float u_disp = (add_point - input_point).dot (u),
             v_disp = (add_point - input_point).dot (v);
 
-      PointInT result_point;
-      NormalOutT result_normal;
+      PointOutT result_point;
+      pcl::Normal result_normal;
       projectPointToMLSSurface (u_disp, v_disp,
                                 mls_results_[input_index].u, mls_results_[input_index].v,
                                 mls_results_[input_index].plane_normal,
@@ -146,16 +147,10 @@ pcl::MovingLeastSquaresOMP<PointInT, NormalOutT>::performReconstruction (PointCl
         continue;
 
       output.push_back (result_point);
-      normals_->push_back (result_normal);
+      if (compute_normals_)
+        normals_->push_back (result_normal);
     }
   }
-
-
-  // Set proper widths and heights for the clouds
-  normals_->height = 1;
-  normals_->width = static_cast<uint32_t> (normals_->size ());
-  output.height = 1;
-  output.width = static_cast<uint32_t> (output.size ());
 }
 
 #define PCL_INSTANTIATE_MovingLeastSquaresOMP(T,OutT) template class PCL_EXPORTS pcl::MovingLeastSquaresOMP<T,OutT>;

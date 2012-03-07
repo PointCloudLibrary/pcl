@@ -148,6 +148,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/mls_omp.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_fast_mesh.hpp
         include/pcl/${SUBSYS_NAME}/impl/reconstruction.hpp
+        include/pcl/${SUBSYS_NAME}/impl/processing.hpp
         include/pcl/${SUBSYS_NAME}/impl/surfel_smoothing.hpp
         include/pcl/${SUBSYS_NAME}/impl/texture_mapping.hpp
         include/pcl/${SUBSYS_NAME}/impl/poisson.hpp

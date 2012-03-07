@@ -106,9 +106,6 @@ class OpenNISmoothing
 
       typename pcl::search::KdTree<PointType>::Ptr tree (new typename pcl::search::KdTree<PointType> ());
       smoother_.setSearchMethod (tree);
-      pcl::PointCloud<pcl::Normal>::Ptr smoother_normals (new pcl::PointCloud<pcl::Normal> ());
-      smoother_.setOutputNormals (smoother_normals);
-
 
       viewer.createViewPort (0.0, 0.0, 0.5, 1.0, viewport_input_);
       viewer.setBackgroundColor (0, 0, 0, viewport_input_);
@@ -129,7 +126,7 @@ class OpenNISmoothing
       if (! *stop_computing_)
       {
         smoother_.setInputCloud (cloud);
-        smoother_.reconstruct (*cloud_smoothed_);
+        smoother_.process (*cloud_smoothed_);
       }
       cloud_ = cloud;
       mtx_.unlock ();
@@ -168,7 +165,7 @@ class OpenNISmoothing
       interface->stop ();
     }
 
-    pcl::MovingLeastSquaresOMP<PointType, pcl::Normal> smoother_;
+    pcl::MovingLeastSquaresOMP<PointType, PointType> smoother_;
     pcl::visualization::PCLVisualizer viewer;
     std::string device_id_;
     boost::mutex mtx_;

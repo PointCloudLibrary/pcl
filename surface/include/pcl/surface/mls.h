@@ -45,11 +45,11 @@
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 #include <boost/random.hpp>
+#include <boost/unordered_map.hpp>
 #include <pcl/search/pcl_search.h>
 #include <pcl/common/common.h>
+#include <pcl/surface/processing.h>
 
-
-#include <boost/unordered_map.hpp>
 
 
 
@@ -58,12 +58,13 @@
 namespace pcl
 {
   /** \brief MovingLeastSquares represent an implementation of the MLS (Moving Least Squares) algorithm for data
-    * smoothing and improved normal estimation.
-    * \author Zoltan Csaba Marton, Radu B. Rusu, Alexandru-Eugen Ichim, Suat Gedikli
+    * smoothing and improved normal estimation. It also contains methods for upsampling the resulting cloud based
+    * on the parametric fit.
+    * \author Zoltan Csaba Marton, Radu B. Rusu, Alexandru E. Ichim, Suat Gedikli
     * \ingroup surface
     */
-  template <typename PointInT, typename NormalOutT>
-  class MovingLeastSquares: public PCLBase<PointInT>
+  template <typename PointInT, typename PointOutT>
+  class MovingLeastSquares: public CloudSurfaceProcessing<PointInT, PointOutT>
   {
     public:
       using PCLBase<PointInT>::input_;
@@ -74,10 +75,12 @@ namespace pcl
 
       typedef typename pcl::search::Search<PointInT> KdTree;
       typedef typename pcl::search::Search<PointInT>::Ptr KdTreePtr;
+      typedef pcl::PointCloud<pcl::Normal> NormalCloud;
+      typedef pcl::PointCloud<pcl::Normal>::Ptr NormalCloudPtr;
 
-      typedef pcl::PointCloud<NormalOutT> NormalCloudOut;
-      typedef typename NormalCloudOut::Ptr NormalCloudOutPtr;
-      typedef typename NormalCloudOut::ConstPtr NormalCloudOutConstPtr;
+      typedef pcl::PointCloud<PointOutT> PointCloudOut;
+      typedef typename PointCloudOut::Ptr PointCloudOutPtr;
+      typedef typename PointCloudOut::ConstPtr PointCloudOutConstPtr;
 
       typedef pcl::PointCloud<PointInT> PointCloudIn;
       typedef typename PointCloudIn::Ptr PointCloudInPtr;
@@ -88,7 +91,7 @@ namespace pcl
       enum UpsamplingMethod { NONE, SAMPLE_LOCAL_PLANE, RANDOM_UNIFORM_DENSITY, VOXEL_GRID_DILATION };
 
       /** \brief Empty constructor. */
-      MovingLeastSquares () : PCLBase<PointInT> (),
+      MovingLeastSquares () : CloudSurfaceProcessing<PointInT, PointOutT> (),
                               normals_ (),
                               search_method_ (),
                               tree_ (),
@@ -96,6 +99,7 @@ namespace pcl
                               polynomial_fit_ (true),
                               search_radius_ (0.0),
                               sqr_gauss_param_ (0.0),
+                              compute_normals_ (false),
                               upsample_method_ (NONE),
                               upsampling_radius_ (0.0),
                               upsampling_step_ (0.0),
@@ -108,15 +112,21 @@ namespace pcl
                               {};
 
       /** \brief Provide a pointer to a point cloud where normal information should be saved
-        * \note This is optional, it can be the same as the parameter to the reconstruction method, but no normals are estimated if it is not set.
+        * \note This is optional, it can be the same as the parameter to the reconstruction method,
+        * but no normals are estimated if it is not set.
         * \param[in] cloud the const boost shared pointer to a point cloud with normal
         */
-      inline void 
-      setOutputNormals (NormalCloudOutPtr cloud) { normals_ = cloud; }
+//      inline void
+//      setOutputNormals (NormalCloudOutPtr cloud) { normals_ = cloud; }
+      /// REPLACING THE ABOVE
+      inline void
+      setComputeNormals (bool compute_normals) { compute_normals_ = compute_normals; }
+
 
       /** \brief Returns a pointer to the point cloud where normal information was saved during reconstruction */
-      inline NormalCloudOutPtr 
-      getOutputNormals () { return normals_; }
+//      inline NormalCloudOutPtr
+//      getOutputNormals () { return normals_; }
+
 
       /** \brief Provide a pointer to the search object.
         * \param[in] tree a pointer to the spatial search object.
@@ -269,11 +279,11 @@ namespace pcl
         * \param[out] output the resultant reconstructed surface model
         */
       void 
-      reconstruct (PointCloudIn &output);
+      process (PointCloudOut &output);
 
     protected:
       /** \brief The point cloud that will hold the estimated normals, if set. */
-      NormalCloudOutPtr normals_;
+      NormalCloudPtr normals_;
 
       /** \brief The search method template for indices. */
       SearchMethod search_method_;
@@ -293,6 +303,8 @@ namespace pcl
       /** \brief Parameter for distance based weighting of neighbors (search_radius_ * search_radius_ works fine) */
       double sqr_gauss_param_;
 
+      /** \brief Parameter that specifies whether the normals should be computed for the input cloud or not */
+      bool compute_normals_;
 
       /** \brief Parameter that specifies the upsampling method to be used */
       UpsamplingMethod upsample_method_;
@@ -436,8 +448,8 @@ namespace pcl
                              const PointCloudIn &input,
                              const std::vector<int> &nn_indices,
                              std::vector<float> &nn_sqr_dists,
-                             PointCloudIn &projected_points,
-                             NormalCloudOut &projected_points_normals);
+                             PointCloudOut &projected_points,
+                             NormalCloud &projected_points_normals);
 
       /** \brief Fits a point (sample point) given in the local plane coordinates of an input point (query point) to
         * the MLS surface of the input point
@@ -461,14 +473,14 @@ namespace pcl
                                 Eigen::Vector3f &query_point,
                                 Eigen::VectorXd &c_vec,
                                 int num_neighbors,
-                                PointInT &result_point,
-                                NormalOutT &result_normal);
+                                PointOutT &result_point,
+                                pcl::Normal &result_normal);
 
     private:
       /** \brief Abstract surface reconstruction method. 
         * \param[out] output the result of the reconstruction 
         */
-      virtual void performReconstruction (PointCloudIn &output);
+      virtual void performProcessing (PointCloudOut &output);
 
       /** \brief Abstract class get name method. */
       std::string getClassName () const { return ("MovingLeastSquares"); }

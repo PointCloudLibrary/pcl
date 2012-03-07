@@ -44,6 +44,7 @@
 #include <pcl/io/vtk_io.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/surface/mls.h>
+#include <pcl/surface/mls_omp.h>
 #include <pcl/surface/gp3.h>
 #include <pcl/surface/grid_projection.h>
 #include <pcl/surface/convex_hull.h>
@@ -77,23 +78,43 @@ TEST (PCL, MovingLeastSquares)
 {
   // Init objects
   PointCloud<PointXYZ> mls_points;
-  PointCloud<Normal>::Ptr mls_normals (new PointCloud<Normal> ());
-  MovingLeastSquares<PointXYZ, Normal> mls;
+  PointCloud<PointNormal>::Ptr mls_normals (new PointCloud<PointNormal> ());
+  MovingLeastSquares<PointXYZ, PointNormal> mls;
 
   // Set parameters
   mls.setInputCloud (cloud);
-  mls.setOutputNormals (mls_normals);
-  //mls.setIndices (indices);
+  mls.setComputeNormals (true);
   mls.setPolynomialFit (true);
   mls.setSearchMethod (tree);
   mls.setSearchRadius (0.03);
 
   // Reconstruct
-  mls.reconstruct (mls_points);
+  mls.process (*mls_normals);
 
-  EXPECT_NEAR (mls_points.points[0].x, 0.005417, 1e-3);
-  EXPECT_NEAR (mls_points.points[0].y, 0.113463, 1e-3);
-  EXPECT_NEAR (mls_points.points[0].z, 0.040715, 1e-3);
+  EXPECT_NEAR (mls_normals->points[0].x, 0.005417, 1e-3);
+  EXPECT_NEAR (mls_normals->points[0].y, 0.113463, 1e-3);
+  EXPECT_NEAR (mls_normals->points[0].z, 0.040715, 1e-3);
+  EXPECT_NEAR (fabs (mls_normals->points[0].normal[0]), 0.111894, 1e-3);
+  EXPECT_NEAR (fabs (mls_normals->points[0].normal[1]), 0.594906, 1e-3);
+  EXPECT_NEAR (fabs (mls_normals->points[0].normal[2]), 0.795969, 1e-3);
+  EXPECT_NEAR (mls_normals->points[0].curvature, 0.012019, 1e-3);
+
+
+  MovingLeastSquaresOMP<PointXYZ, PointNormal> mls_omp;
+
+  mls_omp.setInputCloud (cloud);
+  mls_omp.setComputeNormals (true);
+  mls_omp.setPolynomialFit (true);
+  mls_omp.setSearchMethod (tree);
+  mls_omp.setSearchRadius (0.03);
+  mls_omp.setNumberOfThreads (4);
+
+  // Reconstruct
+  mls_omp.process (*mls_normals);
+
+  EXPECT_NEAR (mls_normals->points[0].x, 0.005417, 1e-3);
+  EXPECT_NEAR (mls_normals->points[0].y, 0.113463, 1e-3);
+  EXPECT_NEAR (mls_normals->points[0].z, 0.040715, 1e-3);
   EXPECT_NEAR (fabs (mls_normals->points[0].normal[0]), 0.111894, 1e-3);
   EXPECT_NEAR (fabs (mls_normals->points[0].normal[1]), 0.594906, 1e-3);
   EXPECT_NEAR (fabs (mls_normals->points[0].normal[2]), 0.795969, 1e-3);

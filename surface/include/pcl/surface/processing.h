@@ -45,8 +45,37 @@
 
 namespace pcl
 {
+  /** \brief @b CloudSurfaceProcessing represents the base class for algorithms that take a point cloud as an input and
+    * produce a new output cloud that has been modified towards a better surface representation. These types of
+    * algorithms include surface smoothing, hole filling, cloud upsampling etc.
+    *
+    * \author Alexandru E. Ichim
+    * \ingroup surface
+    */
+  template <typename PointInT, typename PointOutT>
+  class CloudSurfaceProcessing : public PCLBase<PointInT>
+  {
+    public:
+      /** \brief Constructor. */
+      CloudSurfaceProcessing () : PCLBase<PointInT> ()
+      {};
+
+      /** \brief Process the input cloud and store the results
+        * \param[out] output the cloud where the results will be stored
+        */
+      void
+      process (PointCloud<PointOutT> &output);
+
+    protected:
+      /** \brief Abstract cloud processing method */
+      virtual void
+      performProcessing (PointCloud<PointOutT> &output) = 0;
+
+  };
+
+
   /** \brief @b MeshProcessing represents the base class for mesh processing algorithms.
-    * \author Alexandru Eugen Ichim
+    * \author Alexandru E. Ichim
     * \ingroup surface
     */
   class PCL_EXPORTS MeshProcessing

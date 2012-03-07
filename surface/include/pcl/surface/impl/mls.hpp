@@ -48,18 +48,20 @@
 #include <pcl/common/geometry.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename NormalOutT> void
-pcl::MovingLeastSquares<PointInT, NormalOutT>::reconstruct (PointCloudIn &output)
+template <typename PointInT, typename PointOutT> void
+pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
 {
-  // check if normals have to be computed/saved
-  if (normals_)
+  // Check if normals have to be computed/saved
+  if (compute_normals_)
   {
+    normals_.reset (new NormalCloud);
     // Copy the header
     normals_->header = input_->header;
     // Clear the fields in case the method exits before computation
     normals_->width = normals_->height = 0;
     normals_->points.clear ();
   }
+
 
   // Copy the header
   output.header = input_->header;
@@ -114,19 +116,40 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::reconstruct (PointCloudIn &output
   }
 
   // Perform the actual surface reconstruction
-  performReconstruction (output);
- 
+  performProcessing (output);
+
+  if (compute_normals_)
+  {
+    normals_->height = 1;
+    normals_->width = static_cast<uint32_t> (normals_->size ());
+
+    // TODO!!! MODIFY TO PER-CLOUD COPYING - much faster than per-point
+    for (unsigned int i = 0; i < output.size (); ++i)
+    {
+      typedef typename pcl::traits::fieldList<PointOutT>::type FieldList;
+      pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output.points[i], "normal_x", normals_->points[i].normal_x));
+      pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output.points[i], "normal_y", normals_->points[i].normal_y));
+      pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output.points[i], "normal_z", normals_->points[i].normal_z));
+      pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output.points[i], "curvature", normals_->points[i].curvature));
+    }
+
+  }
+
+  // Set proper widths and heights for the clouds
+  output.height = 1;
+  output.width = static_cast<uint32_t> (output.size ());
+
   deinitCompute ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename NormalOutT> void
-pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (int index,
-                                                                      const PointCloudIn &input,
-                                                                      const std::vector<int> &nn_indices,
-                                                                      std::vector<float> &nn_sqr_dists,
-                                                                      PointCloudIn &projected_points,
-                                                                      NormalCloudOut &projected_points_normals)
+template <typename PointInT, typename PointOutT> void
+pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
+                                                                     const PointCloudIn &input,
+                                                                     const std::vector<int> &nn_indices,
+                                                                     std::vector<float> &nn_sqr_dists,
+                                                                     PointCloudOut &projected_points,
+                                                                     NormalCloud &projected_points_normals)
 {
   // Compute the plane coefficients
   //pcl::computePointNormal<PointInT> (*input_, nn_indices, model_coefficients, curvature);
@@ -239,22 +262,25 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (int index,
         point += (c_vec[0] * plane_normal).cast<float> ();
 
         // Compute tangent vectors using the partial derivates evaluated at (0,0) which is c_vec[order_+1] and c_vec[1]
-        if (normals_)
+        if (compute_normals_)
           normal = plane_normal - c_vec[order_ + 1] * u - c_vec[1] * v;
       }
 
-      PointInT aux;
+      PointOutT aux;
       aux.x = point[0];
       aux.y = point[1];
       aux.z = point[2];
       projected_points.push_back (aux);
 
-      NormalOutT aux_normal;
-      aux_normal.normal_x = static_cast<float> (normal[0]);
-      aux_normal.normal_y = normal[1];
-      aux_normal.normal_z = normal[2];
-      aux_normal.curvature = curvature;
-      projected_points_normals.push_back (aux_normal);
+      if (compute_normals_)
+      {
+        pcl::Normal aux_normal;
+        aux_normal.normal_x = static_cast<float> (normal[0]);
+        aux_normal.normal_y = normal[1];
+        aux_normal.normal_z = normal[2];
+        aux_normal.curvature = curvature;
+        projected_points_normals.push_back (aux_normal);
+      }
 
       break;
     }
@@ -266,14 +292,15 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (int index,
         for (float v_disp = -static_cast<float> (upsampling_radius_); v_disp <= upsampling_radius_; v_disp += static_cast<float> (upsampling_step_))
           if (u_disp*u_disp + v_disp*v_disp < upsampling_radius_*upsampling_radius_)
           {
-            PointInT projected_point;
-            NormalOutT projected_normal;
+            PointOutT projected_point;
+            pcl::Normal projected_normal;
             projectPointToMLSSurface (u_disp, v_disp, u, v, plane_normal, curvature, point, c_vec, 
                                       static_cast<int> (nn_indices.size ()),
                                       projected_point, projected_normal);
 
             projected_points.push_back (projected_point);
-            projected_points_normals.push_back (projected_normal);
+            if (compute_normals_)
+              projected_points_normals.push_back (projected_normal);
           }
       break;
     }
@@ -293,21 +320,24 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (int index,
           // Projection onto MLS surface along Darboux normal to the height at (0,0)
           point += (c_vec[0] * plane_normal).cast<float> ();
           // Compute tangent vectors using the partial derivates evaluated at (0,0) which is c_vec[order_+1] and c_vec[1]
-          if (normals_)
+          if (compute_normals_)
             normal = plane_normal - c_vec[order_ + 1] * u - c_vec[1] * v;
         }
-        PointInT aux;
+        PointOutT aux;
         aux.x = point[0];
         aux.y = point[1];
         aux.z = point[2];
         projected_points.push_back (aux);
 
-        NormalOutT aux_normal;
-        aux_normal.normal_x = normal[0];
-        aux_normal.normal_y = normal[1];
-        aux_normal.normal_z = normal[2];
-        aux_normal.curvature = curvature;
-        projected_points_normals.push_back (aux_normal);
+        if (compute_normals_)
+        {
+          pcl::Normal aux_normal;
+          aux_normal.normal_x = normal[0];
+          aux_normal.normal_y = normal[1];
+          aux_normal.normal_z = normal[2];
+          aux_normal.curvature = curvature;
+          projected_points_normals.push_back (aux_normal);
+        }
       }
       else
       {
@@ -321,14 +351,15 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (int index,
             continue;
 
 
-          PointInT projected_point;
-          NormalOutT projected_normal;
+          PointOutT projected_point;
+          pcl::Normal projected_normal;
           projectPointToMLSSurface (u_disp, v_disp, u, v, plane_normal, curvature, point, c_vec, 
                                     static_cast<int> (nn_indices.size ()),
                                     projected_point, projected_normal);
 
           projected_points.push_back (projected_point);
-          projected_points_normals.push_back (projected_normal);
+          if (compute_normals_)
+            projected_points_normals.push_back (projected_normal);
 
           num_added ++;
         }
@@ -349,16 +380,16 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::computeMLSPointNormal (int index,
 
 
 
-template <typename PointInT, typename NormalOutT> void
-pcl::MovingLeastSquares<PointInT, NormalOutT>::projectPointToMLSSurface (float &u_disp, float &v_disp,
-                                                                         Eigen::Vector3d &u, Eigen::Vector3d &v,
-                                                                         Eigen::Vector3d &plane_normal,
-                                                                         float &curvature,
-                                                                         Eigen::Vector3f &query_point,
-                                                                         Eigen::VectorXd &c_vec,
-                                                                         int num_neighbors,
-                                                                         PointInT &result_point,
-                                                                         NormalOutT &result_normal)
+template <typename PointInT, typename PointOutT> void
+pcl::MovingLeastSquares<PointInT, PointOutT>::projectPointToMLSSurface (float &u_disp, float &v_disp,
+                                                                        Eigen::Vector3d &u, Eigen::Vector3d &v,
+                                                                        Eigen::Vector3d &plane_normal,
+                                                                        float &curvature,
+                                                                        Eigen::Vector3f &query_point,
+                                                                        Eigen::VectorXd &c_vec,
+                                                                        int num_neighbors,
+                                                                        PointOutT &result_point,
+                                                                        pcl::Normal &result_normal)
 {
   double n_disp = 0.0f;
   double d_u = 0.0f, d_v = 0.0f;
@@ -406,8 +437,8 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::projectPointToMLSSurface (float &
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename NormalOutT> void
-pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloudIn &output)
+template <typename PointInT, typename PointOutT> void
+pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &output)
 {
   // Compute the number of coefficients
   nr_coeff_ = (order_ + 1) * (order_ + 2) / 2;
@@ -430,14 +461,15 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
       continue;
 
 
-    PointCloudIn projected_points;
-    NormalCloudOut projected_points_normals;
+    PointCloudOut projected_points;
+    NormalCloud projected_points_normals;
     // Get a plane approximating the local surface's tangent and project point onto it
     computeMLSPointNormal ((*indices_)[cp], *input_, nn_indices, nn_sqr_dists, projected_points, projected_points_normals);
 
     // Append projected points to output
     output.insert (output.end (), projected_points.begin (), projected_points.end ());
-    normals_->insert (normals_->end (), projected_points_normals.begin (), projected_points_normals.end ());
+    if (compute_normals_)
+      normals_->insert (normals_->end (), projected_points_normals.begin (), projected_points_normals.end ());
   }
 
  
@@ -484,8 +516,8 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
       float u_disp = (add_point - input_point).dot (u),
             v_disp = (add_point - input_point).dot (v);
       
-      PointInT result_point;
-      NormalOutT result_normal;
+      PointOutT result_point;
+      pcl::Normal result_normal;
       projectPointToMLSSurface (u_disp, v_disp,
                                 mls_results_[input_index].u, mls_results_[input_index].v,
                                 mls_results_[input_index].plane_normal,
@@ -501,16 +533,10 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
         continue;
 
       output.push_back (result_point);
-      normals_->push_back (result_normal);
+      if (compute_normals_)
+        normals_->push_back (result_normal);
     }
   }
-  
-  
-  // Set proper widths and heights for the clouds
-  normals_->height = 1;
-  normals_->width = static_cast<uint32_t> (normals_->size ());
-  output.height = 1;
-  output.width = static_cast<uint32_t> (output.size ());
 }
 
 
@@ -519,23 +545,23 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::performReconstruction (PointCloud
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename NormalOutT>
-pcl::MovingLeastSquares<PointInT, NormalOutT>::MLSResult::MLSResult (Eigen::Vector3d &a_plane_normal,
-                                                                     Eigen::Vector3d &a_u,
-                                                                     Eigen::Vector3d &a_v,
-                                                                     Eigen::VectorXd a_c_vec,
-                                                                     int a_num_neighbors,
-                                                                     float &a_curvature) :
+template <typename PointInT, typename PointOutT>
+pcl::MovingLeastSquares<PointInT, PointOutT>::MLSResult::MLSResult (Eigen::Vector3d &a_plane_normal,
+                                                                    Eigen::Vector3d &a_u,
+                                                                    Eigen::Vector3d &a_v,
+                                                                    Eigen::VectorXd a_c_vec,
+                                                                    int a_num_neighbors,
+                                                                    float &a_curvature) :
   plane_normal (a_plane_normal), u (a_u), v (a_v), c_vec (a_c_vec), num_neighbors (a_num_neighbors), 
   curvature (a_curvature), valid (true)
 {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename NormalOutT>
-pcl::MovingLeastSquares<PointInT, NormalOutT>::MLSVoxelGrid::MLSVoxelGrid (PointCloudInConstPtr& cloud,
-                                                                           IndicesPtr &indices,
-                                                                           float voxel_size) :
+template <typename PointInT, typename PointOutT>
+pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::MLSVoxelGrid (PointCloudInConstPtr& cloud,
+                                                                          IndicesPtr &indices,
+                                                                          float voxel_size) :
   voxel_grid_ (), bounding_min_ (), bounding_max_ (), data_size_ (), voxel_size_ (voxel_size)
 {
   pcl::getMinMax3D (*cloud, *indices, bounding_min_, bounding_max_);
@@ -558,8 +584,8 @@ pcl::MovingLeastSquares<PointInT, NormalOutT>::MLSVoxelGrid::MLSVoxelGrid (Point
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename NormalOutT> void
-pcl::MovingLeastSquares<PointInT, NormalOutT>::MLSVoxelGrid::dilate ()
+template <typename PointInT, typename PointOutT> void
+pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::dilate ()
 {
   HashMap new_voxel_grid = voxel_grid_;
   BOOST_FOREACH (typename HashMap::value_type voxel, voxel_grid_)

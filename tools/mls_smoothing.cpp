@@ -42,6 +42,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/surface/mls.h>
+#include <pcl/surface/mls_omp.h>
 #include <pcl/filters/voxel_grid.h>
 
 using namespace pcl;
@@ -105,47 +106,37 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   
   
 
-//  io::savePCDFile ("test.pcd", *xyz_cloud);
+  PointCloud<PointNormal>::Ptr xyz_cloud_smoothed (new PointCloud<PointNormal> ());
 
-  PointCloud<PointXYZ>::Ptr xyz_cloud_smoothed (new PointCloud<PointXYZ> ());
-
-  MovingLeastSquares<PointXYZ, Normal> mls;
+  MovingLeastSquaresOMP<PointXYZ, PointNormal> mls;
   mls.setInputCloud (xyz_cloud);
   mls.setSearchRadius (search_radius);
   if (sqr_gauss_param_set) mls.setSqrGaussParam (sqr_gauss_param);
   mls.setPolynomialFit (use_polynomial_fit);
   mls.setPolynomialOrder (polynomial_order);
 
-  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, Normal>::SAMPLE_LOCAL_PLANE);
-//  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, Normal>::RANDOM_UNIFORM_DENSITY);
-//  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, Normal>::VOXEL_GRID_DILATION);
-//  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, Normal>::NONE);
-  mls.setPointDensity (50000*search_radius); // 300 points in a 5 cm radius
+//  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, PointNormal>::SAMPLE_LOCAL_PLANE);
+//  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, PointNormal>::RANDOM_UNIFORM_DENSITY);
+//  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, PointNormal>::VOXEL_GRID_DILATION);
+  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, PointNormal>::NONE);
+  mls.setPointDensity (60000*search_radius); // 300 points in a 5 cm radius
   mls.setUpsamplingRadius (0.025);
   mls.setUpsamplingStepSize (0.015);
   mls.setDilationIterations (2);
-  mls.setDilationVoxelSize (0.005);
+  mls.setDilationVoxelSize (0.01);
 
   search::KdTree<PointXYZ>::Ptr tree (new search::KdTree<PointXYZ> ());
   mls.setSearchMethod (tree);
-  PointCloud<Normal>::Ptr mls_normals (new PointCloud<Normal> ());
-  mls.setOutputNormals (mls_normals);
+  mls.setComputeNormals (true);
 
   PCL_INFO ("Computing smoothed surface and normals with search_radius %f , sqr_gaussian_param %f, polynomial fitting %d, polynomial order %d\n",
             mls.getSearchRadius(), mls.getSqrGaussParam(), mls.getPolynomialFit(), mls.getPolynomialOrder());
   TicToc tt;
   tt.tic ();
-  mls.reconstruct (*xyz_cloud_smoothed);
-  pcl::io::savePCDFile ("out_temp.pcd", *xyz_cloud_smoothed);
+  mls.process (*xyz_cloud_smoothed);
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", xyz_cloud_smoothed->width * xyz_cloud_smoothed->height); print_info (" points]\n");
 
-  sensor_msgs::PointCloud2 output_positions, output_normals;
-//  printf ("sizes: %d %d   %d\n", xyz_cloud_smoothed->width, xyz_cloud_smoothed->height, xyz_cloud_smoothed->size ());
-  toROSMsg (*xyz_cloud_smoothed, output_positions);
-  toROSMsg (*mls_normals, output_normals);
-
-  concatenateFields (output_positions, output_normals, output);
-
+  toROSMsg (*xyz_cloud_smoothed, output);
 }
 
 void
