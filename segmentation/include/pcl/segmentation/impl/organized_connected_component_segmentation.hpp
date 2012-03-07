@@ -144,7 +144,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
   unsigned int clust_id = 0;
   
   // First row
-  for (size_t colIdx = 1; colIdx < input_->width; ++colIdx)
+  for (int colIdx = 1; colIdx < static_cast<int> (input_->width); ++colIdx)
   {
     if (!pcl_isfinite (input_->points[colIdx].x))
       continue;
@@ -179,7 +179,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
     }
     
     // Rest of row
-    for (size_t colIdx = 1; colIdx < input_->width; ++colIdx)
+    for (int colIdx = 1; colIdx < static_cast<int> (input_->width); ++colIdx)
     {
       if (pcl_isfinite (input_->points[current_row + colIdx].x))
       {
