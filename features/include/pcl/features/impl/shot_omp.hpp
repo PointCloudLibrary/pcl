@@ -53,11 +53,11 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   radius1_4_ = search_radius_ / 4;
   radius1_2_ = search_radius_ / 2;
 
-	if (output.points[0].descriptor.size () != (size_t)descLength_)
+	if (output.points[0].descriptor.size () != static_cast<size_t> (descLength_))
 		for (size_t idx = 0; idx < indices_->size (); ++idx)
 			output.points[idx].descriptor.resize (descLength_);
 
-  int data_size = indices_->size ();
+  int data_size = static_cast<int> (indices_->size ());
   Eigen::VectorXf *shot = new Eigen::VectorXf[threads_];
   std::vector<std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > > rfs (threads_);
   for (size_t i = 0; i < rfs.size (); ++i)
@@ -109,11 +109,11 @@ pcl::SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (P
   radius1_4_ = search_radius_ / 4;
   radius1_2_ = search_radius_ / 2;
 
-  if (output.points[0].descriptor.size () != (size_t)descLength_)
+  if (output.points[0].descriptor.size () != static_cast<size_t> (descLength_))
     for (size_t idx = 0; idx < indices_->size (); ++idx)
       output.points[idx].descriptor.resize (descLength_);
 
-  int data_size = indices_->size ();
+  int data_size = static_cast<int> (indices_->size ());
   Eigen::VectorXf *shot = new Eigen::VectorXf[threads_];
   std::vector<std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > > rfs (threads_);
   for (size_t i = 0; i < rfs.size (); ++i)

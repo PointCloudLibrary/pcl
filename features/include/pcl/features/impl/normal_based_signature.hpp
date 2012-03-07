@@ -98,7 +98,9 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
         }
         normal_v = normal.cross3 (normal_u);
 
-        Eigen::Vector4f zeta_point = 2.0f * (l+1) * scale_h_ / M_ * (cos (2.0f * M_PI * (k+1) / N_) * normal_u + sin (2.0f * M_PI * (k+1) / N_) * normal_v);
+        Eigen::Vector4f zeta_point = 2.0f * static_cast<float> (l + 1) * scale_h_ / static_cast<float> (M_) * 
+            (cosf (2.0f * static_cast<float> (M_PI) * static_cast<float> ((k + 1) / N_)) * normal_u + 
+             sinf (2.0f * static_cast<float> (M_PI) * static_cast<float> ((k + 1) / N_)) * normal_v);
 
         // Compute normal by using the neighbors
         Eigen::Vector4f zeta_point_plus_center = zeta_point + center_point;

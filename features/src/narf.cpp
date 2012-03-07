@@ -172,7 +172,7 @@ Narf::extractDescriptor (int descriptor_size)
       float beam_point_cell_x = cell_factor * (beam_point_x + cell_offset),
             beam_point_cell_y = cell_factor * (beam_point_y + cell_offset);
 
-      int cell_x=pcl_lrint(beam_point_cell_x), cell_y=pcl_lrint(beam_point_cell_y);
+      int cell_x = static_cast<int> (pcl_lrint (beam_point_cell_x)), cell_y = static_cast<int> (pcl_lrint (beam_point_cell_y));
       beam_value = surface_patch_[cell_y*surface_patch_pixel_size_ + cell_x];
       if (!pcl_isfinite(beam_value))
       {
@@ -192,7 +192,7 @@ Narf::extractDescriptor (int descriptor_size)
       current_cell += current_weight * diff;
     }
     // Scaling for easy descriptor distances:
-    current_cell = atan2(current_cell, max_dist)/deg2rad(180.0f);  // Scales the result to [-0.5, 0.5]
+    current_cell = atan2f (current_cell, max_dist) / deg2rad(180.0f);  // Scales the result to [-0.5, 0.5]
     descriptor_value = current_cell;
   }
   return true;
@@ -223,12 +223,12 @@ Narf::extractFromRangeImage (const RangeImage& range_image, const Eigen::Affine3
 bool 
 Narf::extractFromRangeImage (const RangeImage& range_image, float x, float y, int descriptor_size, float support_size)
 {
-  if (!range_image.isValid(pcl_lrint(x), pcl_lrint(y)))
-    return false;
+  if (!range_image.isValid (static_cast<int> (pcl_lrint (x)), static_cast<int> (pcl_lrint (y))))
+    return (false);
   Eigen::Vector3f feature_pos;
   range_image.calculate3DPoint(x, y, feature_pos);
   
-  return extractFromRangeImage(range_image, feature_pos, descriptor_size, support_size);
+  return (extractFromRangeImage (range_image, feature_pos, descriptor_size, support_size));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -286,8 +286,8 @@ Narf::getBlurredSurfacePatch (int new_pixel_size, int blur_radius) const
     for (int x=0; x<new_pixel_size; ++x)
     {
       float& integral_pixel = *(integral_image_ptr++);
-      int old_x = pcl_lrint (floor (new_to_old_factor * float (x))),
-          old_y = pcl_lrint (floor (new_to_old_factor * float (y)));
+      int old_x = static_cast<int> (pcl_lrint (floor (new_to_old_factor * float (x)))),
+          old_y = static_cast<int> (pcl_lrint (floor (new_to_old_factor * float (y))));
       integral_pixel = surface_patch_[old_y*surface_patch_pixel_size_ + old_x];
       if (pcl_isinf(integral_pixel))
         integral_pixel = 0.5f*surface_patch_world_size_;
@@ -316,7 +316,7 @@ Narf::getBlurredSurfacePatch (int new_pixel_size, int blur_radius) const
       
       int top = (std::max) (-1, y-blur_radius-1), right=(std::min) (new_pixel_size-1, x+blur_radius), bottom = (std::min) (new_pixel_size-1, y+blur_radius), left=(std::max) (-1, x-blur_radius-1),
           pixelSum = (right-left)*(bottom-top);
-      float normalizationFactor = 1.0f / pixelSum;
+      float normalizationFactor = 1.0f / static_cast<float> (pixelSum);
       
       float top_left_value=0, top_right_value=0, bottom_right_value=integral_image[bottom*new_pixel_size+right], bottom_left_value=0;
       if (left>=0)
@@ -361,7 +361,7 @@ void
 Narf::extractFromRangeImageAndAddToList (const RangeImage& range_image, float image_x, float image_y, int descriptor_size,
                                          float support_size, bool rotation_invariant, std::vector<Narf*>& feature_list)
 {
-  if (!range_image.isValid(pcl_lrint(image_x), pcl_lrint(image_y)))
+  if (!range_image.isValid (static_cast<int> (pcl_lrint (image_x)), static_cast<int> (pcl_lrint (image_y))))
     return;
   Eigen::Vector3f feature_pos;
   range_image.calculate3DPoint(image_x, image_y, feature_pos);
@@ -429,7 +429,7 @@ Narf::extractForEveryRangeImagePointAndAddToList (const RangeImage& range_image,
   {
     for (unsigned int x=0; x<range_image.width; ++x)
     {
-      extractFromRangeImageAndAddToList(range_image, x, y, descriptor_size, support_size,
+      extractFromRangeImageAndAddToList(range_image, static_cast<float> (x), static_cast<float> (y), descriptor_size, support_size,
                                         rotation_invariant, feature_list);
     }
   }
@@ -441,22 +441,22 @@ Narf::getRotations (std::vector<float>& rotations, std::vector<float>& strengths
 {
   int angle_steps_no = (std::max) (descriptor_size_, 36);
   float min_angle_dist_between_rotations = deg2rad(70.0f);
-  float angle_step_size1 = deg2rad(360.0f)/float(angle_steps_no);
-  float angle_step_size2 = deg2rad(360.0f)/descriptor_size_;
+  float angle_step_size1 = deg2rad (360.0f) / static_cast<float> (angle_steps_no);
+  float angle_step_size2 = deg2rad (360.0f) / static_cast<float> (descriptor_size_);
   
-  float score_normalization = 1.0f / float(descriptor_size_);
+  float score_normalization = 1.0f / static_cast<float> (descriptor_size_);
   
   std::multimap<float, float> scored_orientations;
   for (int step=0; step<angle_steps_no; ++step)
   {
-    float angle = step*angle_step_size1;
+    float angle = static_cast<float> (step) * angle_step_size1;
     float score = 0.0f;
     
     for (int descriptor_value_idx=0; descriptor_value_idx<descriptor_size_; ++descriptor_value_idx)
     {
       float value = descriptor_[descriptor_value_idx];
-      float angle2 = descriptor_value_idx*angle_step_size2;
-      float distance_weight = powf (1.0f - fabs (normAngle (angle-angle2)) / deg2rad(180.0f), 2.0f);
+      float angle2 = static_cast<float> (descriptor_value_idx) * angle_step_size2;
+      float distance_weight = powf (1.0f - fabsf (normAngle (angle - angle2)) / deg2rad (180.0f), 2.0f);
       
       score += value * distance_weight;
     }

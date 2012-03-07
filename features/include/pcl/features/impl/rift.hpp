@@ -83,10 +83,10 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT (
     float g = nr_gradient_bins * gradient_angle_from_center / (M_PI + eps);
 
     // Compute the bin indices that need to be updated
-    int d_idx_min = (std::max)((int) ceil (d - 1), 0);
-    int d_idx_max = (std::min)((int) floor (d + 1), nr_distance_bins - 1);
-    int g_idx_min = (int) ceil (g - 1);
-    int g_idx_max = (int) floor (g + 1);
+    int d_idx_min = (std::max)(static_cast<int> (ceil (d - 1)), 0);
+    int d_idx_max = (std::min)(static_cast<int> (floor (d + 1)), nr_distance_bins - 1);
+    int g_idx_min = static_cast<int> (ceil (g - 1));
+    int g_idx_max = static_cast<int> (floor (g + 1));
 
     // Update the appropriate bins of the histogram 
     for (int g_idx = g_idx_min; g_idx <= g_idx_max; ++g_idx)  

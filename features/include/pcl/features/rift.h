@@ -89,29 +89,27 @@ namespace pcl
 
       /** \brief Returns a shared pointer to the input gradient data */
       inline PointCloudGradientConstPtr 
-      getInputGradient () { return (gradient_); };
-
+      getInputGradient () const { return (gradient_); };
 
       /** \brief Set the number of bins to use in the distance dimension of the RIFT descriptor
         * \param[in] nr_distance_bins the number of bins to use in the distance dimension of the RIFT descriptor
         */
       inline void 
-      setNrDistanceBins (size_t nr_distance_bins) { nr_distance_bins_ = (int) nr_distance_bins; };
+      setNrDistanceBins (int nr_distance_bins) { nr_distance_bins_ = nr_distance_bins; };
 
       /** \brief Returns the number of bins in the distance dimension of the RIFT descriptor. */
       inline int 
-      getNrDistanceBins () { return (nr_distance_bins_); };
-
+      getNrDistanceBins () const { return (nr_distance_bins_); };
 
       /** \brief Set the number of bins to use in the gradient orientation dimension of the RIFT descriptor
         * \param[in] nr_gradient_bins the number of bins to use in the gradient orientation dimension of the RIFT descriptor
         */
       inline void 
-      setNrGradientBins (size_t nr_gradient_bins) { nr_gradient_bins_ = (int) nr_gradient_bins; };
+      setNrGradientBins (int nr_gradient_bins) { nr_gradient_bins_ = nr_gradient_bins; };
 
       /** \brief Returns the number of bins in the gradient orientation dimension of the RIFT descriptor. */
       inline int 
-      getNrGradientBins () { return (nr_gradient_bins_); };
+      getNrGradientBins () const { return (nr_gradient_bins_); };
 
       /** \brief Estimate the Rotation Invariant Feature Transform (RIFT) descriptor for a given point based on its 
         * spatial neighborhood of 3D points and the corresponding intensity gradient vector field

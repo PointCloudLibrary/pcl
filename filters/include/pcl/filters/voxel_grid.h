@@ -344,7 +344,7 @@ namespace pcl
       getCentroidIndexAt (const Eigen::Vector3i &ijk)
       {
         int idx = ((Eigen::Vector4i() << ijk, 0).finished() - min_b_).dot (divb_mul_);
-        if (idx < 0 || idx >= (int)leaf_layout_.size ()) // this checks also if leaf_layout_.size () == 0 i.e. everything was computed as needed
+        if (idx < 0 || idx >= static_cast<int> (leaf_layout_.size ())) // this checks also if leaf_layout_.size () == 0 i.e. everything was computed as needed
         {
           //if (verbose)
           //  PCL_ERROR ("[pcl::%s::getCentroidIndexAt] Specified coordinate is outside grid bounds, or leaf layout is not saved, make sure to call setSaveLeafLayout(true) and filter(output) first!\n", getClassName ().c_str ());
@@ -597,7 +597,11 @@ namespace pcl
       inline int 
       getCentroidIndex (float x, float y, float z)
       {
-        return (leaf_layout_.at ((Eigen::Vector4i ((int) floor (x / leaf_size_[0]), (int) floor (y / leaf_size_[1]), (int) floor (z / leaf_size_[2]), 0) - min_b_).dot (divb_mul_)));
+        return (leaf_layout_.at ((Eigen::Vector4i (static_cast<int> (floor (x / leaf_size_[0])), 
+                                                   static_cast<int> (floor (y / leaf_size_[1])), 
+                                                   static_cast<int> (floor (z / leaf_size_[2])), 
+                                                   0) 
+                - min_b_).dot (divb_mul_)));
       }
 
       /** \brief Returns the indices in the resulting downsampled cloud of the points at the specified grid coordinates,
@@ -662,7 +666,9 @@ namespace pcl
       inline Eigen::Vector3i 
       getGridCoordinates (float x, float y, float z) 
       { 
-        return (Eigen::Vector3i (static_cast<int> (floor (x / leaf_size_[0])), static_cast<int> (floor (y / leaf_size_[1])), static_cast<int> (floor (z / leaf_size_[2])))); 
+        return (Eigen::Vector3i (static_cast<int> (floor (x / leaf_size_[0])), 
+                                 static_cast<int> (floor (y / leaf_size_[1])), 
+                                 static_cast<int> (floor (z / leaf_size_[2])))); 
       }
 
       /** \brief Returns the index in the downsampled cloud corresponding to a given set of coordinates.
@@ -672,7 +678,7 @@ namespace pcl
       getCentroidIndexAt (const Eigen::Vector3i &ijk)
       {
         int idx = ((Eigen::Vector4i() << ijk, 0).finished() - min_b_).dot (divb_mul_);
-        if (idx < 0 || idx >= (int)leaf_layout_.size ()) // this checks also if leaf_layout_.size () == 0 i.e. everything was computed as needed
+        if (idx < 0 || idx >= static_cast<int> (leaf_layout_.size ())) // this checks also if leaf_layout_.size () == 0 i.e. everything was computed as needed
         {
           //if (verbose)
           //  PCL_ERROR ("[pcl::%s::getCentroidIndexAt] Specified coordinate is outside grid bounds, or leaf layout is not saved, make sure to call setSaveLeafLayout(true) and filter(output) first!\n", getClassName ().c_str ());

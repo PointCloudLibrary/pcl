@@ -91,7 +91,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initSimple3DGradientMet
   // number of DataType entries per row (equal or bigger than element_stride number of elements per row)
   int row_stride     = element_stride * input_->width;
 
-  float *data_ = reinterpret_cast<float*>((PointInT*)(&(input_->points[0])));
+  const float *data_ = reinterpret_cast<const float*> (&input_->points[0]);
 
   integral_image_XYZ_.setSecondOrderComputation (false);
   integral_image_XYZ_.setInput (data_, input_->width, input_->height, element_stride, row_stride);
@@ -109,7 +109,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initCovarianceMatrixMet
   // number of DataType entries per row (equal or bigger than element_stride number of elements per row)
   int row_stride     = element_stride * input_->width;
 
-  float *data_ = reinterpret_cast<float*>((PointInT*)(&(input_->points[0])));
+  const float *data_ = reinterpret_cast<const float*> (&input_->points[0]);
 
   integral_image_XYZ_.setSecondOrderComputation (true);
   integral_image_XYZ_.setInput (data_, input_->width, input_->height, element_stride, row_stride);
@@ -176,7 +176,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initAverageDepthChangeM
   // number of DataType entries per row (equal or bigger than element_stride number of elements per row)
   int row_stride     = element_stride * input_->width;
 
-  float *data_ = reinterpret_cast<float*>((PointInT*)(&(input_->points[0])));
+  const float *data_ = reinterpret_cast<const float*> (&input_->points[0]);
 
   // integral image over the z - value
   integral_image_depth_.setInput (&(data_[2]), input_->width, input_->height, element_stride, row_stride);
@@ -258,10 +258,10 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
       return;
     }
 
-    normal_vector /= sqrt(normal_length);
-    normal.normal_x = normal_vector [0];
-    normal.normal_y = normal_vector [1];
-    normal.normal_z = normal_vector [2];
+    normal_vector /= sqrt (normal_length);
+    normal.normal_x = static_cast<float> (normal_vector [0]);
+    normal.normal_y = static_cast<float> (normal_vector [1]);
+    normal.normal_z = static_cast<float> (normal_vector [2]);
     normal.curvature = bad_point;
     return;
   }
@@ -354,9 +354,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     }
 
     normal_vector /= sqrt (normal_length);
-    normal.normal_x = normal_vector [0];
-    normal.normal_y = normal_vector [1];
-    normal.normal_z = normal_vector [2];
+    normal.normal_x = static_cast<float> (normal_vector [0]);
+    normal.normal_y = static_cast<float> (normal_vector [1]);
+    normal.normal_z = static_cast<float> (normal_vector [2]);
     normal.curvature = bad_point;
     return;
   }
