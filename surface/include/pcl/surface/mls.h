@@ -111,22 +111,12 @@ namespace pcl
                               nr_coeff_ ()
                               {};
 
-      /** \brief Provide a pointer to a point cloud where normal information should be saved
-        * \note This is optional, it can be the same as the parameter to the reconstruction method,
-        * but no normals are estimated if it is not set.
-        * \param[in] cloud the const boost shared pointer to a point cloud with normal
+
+      /** \brief Set whether the algorithm should also store the normals computed
+        * \note This is optional, but need a proper output cloud type
         */
-//      inline void
-//      setOutputNormals (NormalCloudOutPtr cloud) { normals_ = cloud; }
-      /// REPLACING THE ABOVE
       inline void
       setComputeNormals (bool compute_normals) { compute_normals_ = compute_normals; }
-
-
-      /** \brief Returns a pointer to the point cloud where normal information was saved during reconstruction */
-//      inline NormalCloudOutPtr
-//      getOutputNormals () { return normals_; }
-
 
       /** \brief Provide a pointer to the search object.
         * \param[in] tree a pointer to the spatial search object.
