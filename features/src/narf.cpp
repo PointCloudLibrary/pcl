@@ -131,7 +131,7 @@ Narf::deepCopy (const Narf& other)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-Narf::extractDescriptor(int descriptor_size)
+Narf::extractDescriptor (int descriptor_size)
 {
   float weight_for_first_point = 2.0f; // The weight for the last point is always 1.0f
   int no_of_beam_points = getNoOfBeamPoints();
@@ -144,22 +144,22 @@ Narf::extractDescriptor(int descriptor_size)
     delete descriptor_;
     descriptor_ = new float[descriptor_size_];
   }
-  float angle_step_size = deg2rad(360.0f)/descriptor_size_;
+  float angle_step_size = deg2rad (360.0f) / static_cast<float> (descriptor_size_);
   //cout << PVARN(no_of_beam_points)<<PVARN(surface_patch_pixel_size_);
 
   float cell_size = surface_patch_world_size_/float(surface_patch_pixel_size_),
         cell_factor = 1.0f/cell_size,
         cell_offset = 0.5f*(surface_patch_world_size_ - cell_size),
         max_dist = 0.5f*surface_patch_world_size_,
-        beam_point_factor = (max_dist-0.5f*cell_size) / no_of_beam_points;
+        beam_point_factor = (max_dist-0.5f*cell_size) / static_cast<float> (no_of_beam_points);
 
   for (int descriptor_value_idx=0; descriptor_value_idx<descriptor_size_; ++descriptor_value_idx)
   {
     float& descriptor_value = descriptor_[descriptor_value_idx];
     descriptor_value = 0.0f;
-    float angle = descriptor_value_idx*angle_step_size + surface_patch_rotation_,
-          beam_point_factor_x = sinf(angle)*beam_point_factor,
-          beam_point_factor_y = -cosf(angle)*beam_point_factor;
+    float angle = static_cast<float> (descriptor_value_idx) * angle_step_size + surface_patch_rotation_,
+          beam_point_factor_x = sinf(angle) * beam_point_factor,
+          beam_point_factor_y = -cosf (angle) * beam_point_factor;
      
     std::vector<float> beam_values (no_of_beam_points + 1);
     float current_cell = 0.0f;
@@ -167,10 +167,10 @@ Narf::extractDescriptor(int descriptor_size)
     {
       float& beam_value = beam_values[beam_point_idx];
 
-      float beam_point_x = beam_point_factor_x * beam_point_idx,
-            beam_point_y = beam_point_factor_y * beam_point_idx;
-      float beam_point_cell_x = cell_factor * (beam_point_x+cell_offset),
-            beam_point_cell_y = cell_factor * (beam_point_y+cell_offset);
+      float beam_point_x = beam_point_factor_x * static_cast<float> (beam_point_idx),
+            beam_point_y = beam_point_factor_y * static_cast<float> (beam_point_idx);
+      float beam_point_cell_x = cell_factor * (beam_point_x + cell_offset),
+            beam_point_cell_y = cell_factor * (beam_point_y + cell_offset);
 
       int cell_x=pcl_lrint(beam_point_cell_x), cell_y=pcl_lrint(beam_point_cell_y);
       beam_value = surface_patch_[cell_y*surface_patch_pixel_size_ + cell_x];
@@ -286,8 +286,8 @@ Narf::getBlurredSurfacePatch (int new_pixel_size, int blur_radius) const
     for (int x=0; x<new_pixel_size; ++x)
     {
       float& integral_pixel = *(integral_image_ptr++);
-      int old_x = pcl_lrint(floor(new_to_old_factor * float(x))),
-          old_y = pcl_lrint(floor(new_to_old_factor * float(y)));
+      int old_x = pcl_lrint (floor (new_to_old_factor * float (x))),
+          old_y = pcl_lrint (floor (new_to_old_factor * float (y)));
       integral_pixel = surface_patch_[old_y*surface_patch_pixel_size_ + old_x];
       if (pcl_isinf(integral_pixel))
         integral_pixel = 0.5f*surface_patch_world_size_;
@@ -456,7 +456,7 @@ Narf::getRotations (std::vector<float>& rotations, std::vector<float>& strengths
     {
       float value = descriptor_[descriptor_value_idx];
       float angle2 = descriptor_value_idx*angle_step_size2;
-      float distance_weight = powf(1.0f - fabs(normAngle(angle-angle2))/deg2rad(180.0f), 2);
+      float distance_weight = powf (1.0f - fabs (normAngle (angle-angle2)) / deg2rad(180.0f), 2.0f);
       
       score += value * distance_weight;
     }

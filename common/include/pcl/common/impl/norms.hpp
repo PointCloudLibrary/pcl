@@ -137,7 +137,7 @@ B_Norm (FloatVectorT a, FloatVectorT b, int dim)
     norm += sqrtf (a[i] * b[i]);
 
   if (norm > 0)
-    result = -log (norm);
+    result = -logf (norm);
   else
     result = 0;
 
@@ -178,7 +178,7 @@ Div_Norm (FloatVectorT a, FloatVectorT b, int dim)
 
   for (int i = 0; i < dim; ++i)
     if ((a[i] / b[i]) > 0)
-      norm += (a[i] - b[i]) * log (a[i] / b[i]);
+      norm += (a[i] - b[i]) * logf (a[i] / b[i]);
     else
       norm += 0;
   return norm;
@@ -214,7 +214,7 @@ KL_Norm (FloatVectorT a, FloatVectorT b, int dim)
 
   for (int i = 0; i < dim; ++i)
     if ( (b[i] != 0) && ((a[i] / b[i]) > 0) )
-      norm += a[i] * log (a[i] / b[i]);
+      norm += a[i] * logf (a[i] / b[i]);
     else
       norm += 0;
   return norm;

@@ -94,9 +94,9 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
   // Factorization constant
   float hist_incr;
   if (normalize_bins_)
-    hist_incr = 100.0 / (float)(indices.size () - 1);
+    hist_incr = 100.0f / static_cast<float> (indices.size () - 1);
   else
-    hist_incr = 1.0;
+    hist_incr = 1.0f;
 
   float hist_incr_size_component;
   if (size_component_)
@@ -114,21 +114,21 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
       continue;
 
     // Normalize the f1, f2, f3, f4 features and push them in the histogram
-    int h_index = floor (nr_bins_f1_ * ((pfh_tuple[0] + M_PI) * d_pi_));
+    int h_index = static_cast<int> (floor (nr_bins_f1_ * ((pfh_tuple[0] + M_PI) * d_pi_)));
     if (h_index < 0)
       h_index = 0;
     if (h_index >= nr_bins_f1_)
       h_index = nr_bins_f1_ - 1;
     hist_f1_ (h_index) += hist_incr;
 
-    h_index = floor (nr_bins_f2_ * ((pfh_tuple[1] + 1.0) * 0.5));
+    h_index = static_cast<int> (floor (nr_bins_f2_ * ((pfh_tuple[1] + 1.0) * 0.5)));
     if (h_index < 0)
       h_index = 0;
     if (h_index >= nr_bins_f2_)
       h_index = nr_bins_f2_ - 1;
     hist_f2_ (h_index) += hist_incr;
 
-    h_index = floor (nr_bins_f3_ * ((pfh_tuple[2] + 1.0) * 0.5));
+    h_index = static_cast<int> (floor (nr_bins_f3_ * ((pfh_tuple[2] + 1.0) * 0.5)));
     if (h_index < 0)
       h_index = 0;
     if (h_index >= nr_bins_f3_)
@@ -136,9 +136,9 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
     hist_f3_ (h_index) += hist_incr;
 
     if (normalize_distances_)
-      h_index = floor (nr_bins_f4_ * (pfh_tuple[3] / distance_normalization_factor));
+      h_index = static_cast<int> (floor (nr_bins_f4_ * (pfh_tuple[3] / distance_normalization_factor)));
     else
-      h_index = pcl_round (pfh_tuple[3] * 100);
+      h_index = static_cast<int> (pcl_round (pfh_tuple[3] * 100));
 
     if (h_index < 0)
       h_index = 0;
@@ -192,7 +192,7 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
         cp++;
       }
     }
-    normal_centroid /= cp;
+    normal_centroid /= static_cast<float> (cp);
   }
 
   // Compute the direction of view from the viewpoint to the centroid
@@ -229,7 +229,7 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   double hist_incr;
   if (normalize_bins_)
-    hist_incr = 100.0 / (double)(indices_->size ());
+    hist_incr = 100.0 / static_cast<double> (indices_->size ());
   else
     hist_incr = 1.0;
 
@@ -240,13 +240,13 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
                             normals_->points[(*indices_)[i]].normal[2], 0);
     // Normalize
     double alpha = (normal.dot (d_vp_p) + 1.0) * 0.5;
-    int fi = floor (alpha * hist_vp_.size ());
+    int fi = static_cast<int> (floor (alpha * static_cast<double> (hist_vp_.size ())));
     if (fi < 0)
       fi = 0;
-    if (fi > ((int)hist_vp_.size () - 1))
-      fi = hist_vp_.size () - 1;
+    if (fi > (static_cast<int> (hist_vp_.size ()) - 1))
+      fi = static_cast<int> (hist_vp_.size ()) - 1;
     // Bin into the histogram
-    hist_vp_ [fi] += hist_incr;
+    hist_vp_ [fi] += static_cast<float> (hist_incr);
   }
   data_size += hist_f4_.size ();
   // Copy the resultant signature

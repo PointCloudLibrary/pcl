@@ -126,7 +126,7 @@ template <typename PointSource, typename PointFeature> float
 pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::distanceBetweenFeatures (const std::vector<float> &a,
                                                                                        const std::vector<float> &b)
 {
-  return pcl::selectNorm<std::vector<float> > (a, b, a.size (), distance_metric_);
+  return (pcl::selectNorm<std::vector<float> > (a, b, static_cast<int> (a.size ()), distance_metric_));
 }
 
 
@@ -140,7 +140,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::calculateMeanFeatu
 
   float normalization_factor = 0.0f;
   for (std::vector<std::vector<std::vector<float> > >::iterator scale_it = features_at_scale_vectorized_.begin (); scale_it != features_at_scale_vectorized_.end(); ++scale_it) {
-    normalization_factor += scale_it->size ();
+    normalization_factor += static_cast<float> (scale_it->size ());
     for (std::vector<std::vector<float> >::iterator feature_it = scale_it->begin (); feature_it != scale_it->end (); ++feature_it)
       for (int dim_i = 0; dim_i < feature_representation_->getNumberOfDimensions (); ++dim_i)
         mean_feature_[dim_i] += (*feature_it)[dim_i];
@@ -168,10 +168,8 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::extractUniqueFeatu
       standard_dev += diff * diff;
       diff_vector[point_i] = diff;
     }
-    standard_dev = sqrt (standard_dev / features_at_scale_vectorized_[scale_i].size ());
+    standard_dev = sqrtf (standard_dev / static_cast<float> (features_at_scale_vectorized_[scale_i].size ()));
     PCL_DEBUG ("[pcl::MultiscaleFeaturePersistence::extractUniqueFeatures] Standard deviation for scale %f is %f\n", scale_values_[scale_i], standard_dev);
-
-
 
     // Select only points outside (mean +/- alpha * standard_dev)
     std::list<size_t> indices_per_scale;
@@ -242,7 +240,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::determinePersisten
   // Consider that output cloud is unorganized
   output_features.header = feature_estimator_->getInputCloud ()->header;
   output_features.is_dense = feature_estimator_->getInputCloud ()->is_dense;
-  output_features.width = output_features.points.size ();
+  output_features.width = static_cast<uint32_t> (output_features.points.size ());
   output_features.height = 1;
 }
 

@@ -274,7 +274,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   polygons.resize (1);
   polygons[0].vertices.resize (hull.points.size () + 1);  
 
-  for (size_t j = 0; j < hull.points.size (); j++)
+  for (int j = 0; j < static_cast<int> (hull.points.size ()); j++)
   {
     hull.points[j] = input_->points[idx_points[j].first];
     polygons[0].vertices[j] = j;

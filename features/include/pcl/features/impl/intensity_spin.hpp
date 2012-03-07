@@ -48,11 +48,12 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeIntensitySpinImage (
       const PointCloudIn &cloud, float radius, float sigma, 
       int k,
       const std::vector<int> &indices, 
-      const std::vector<float> &squared_distances, Eigen::MatrixXf &intensity_spin_image)
+      const std::vector<float> &squared_distances, 
+      Eigen::MatrixXf &intensity_spin_image)
 {
   // Determine the number of bins to use based on the size of intensity_spin_image
-  int nr_distance_bins = intensity_spin_image.cols ();
-  int nr_intensity_bins = intensity_spin_image.rows ();
+  int nr_distance_bins = static_cast<int> (intensity_spin_image.cols ());
+  int nr_intensity_bins = static_cast<int> (intensity_spin_image.rows ());
 
   // Find the min and max intensity values in the given neighborhood
   float min_intensity = std::numeric_limits<float>::max ();
@@ -63,39 +64,39 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeIntensitySpinImage (
     max_intensity = (std::max) (max_intensity, cloud.points[indices[idx]].intensity);
   }
 
+  float constant = 1.0f / (2.0f * sigma_ * sigma_);
   // Compute the intensity spin image
   intensity_spin_image.setZero ();
   for (int idx = 0; idx < k; ++idx)
   {
     // Normalize distance and intensity values to: 0.0 <= d,i < nr_distance_bins,nr_intensity_bins
     const float eps = std::numeric_limits<float>::epsilon ();
-    float d = nr_distance_bins * sqrt (squared_distances[idx]) / (radius + eps);
-    float i = nr_intensity_bins * 
-      (cloud.points[indices[idx]].intensity - min_intensity) / (max_intensity - min_intensity + eps);
+    float d = static_cast<float> (nr_distance_bins) * sqrtf (squared_distances[idx]) / (radius + eps);
+    float i = static_cast<float> (nr_intensity_bins) * 
+              (cloud.points[indices[idx]].intensity - min_intensity) / (max_intensity - min_intensity + eps);
 
     if (sigma == 0)
     {
       // If sigma is zero, update the histogram with no smoothing kernel
-      int d_idx = (int) d;
-      int i_idx = (int) i;
+      int d_idx = static_cast<int> (d);
+      int i_idx = static_cast<int> (i);
       intensity_spin_image (i_idx, d_idx) += 1;
     }
     else
     {
       // Compute the bin indices that need to be updated (+/- 3 standard deviations)
-      int d_idx_min = (std::max)((int) floor (d - 3*sigma), 0);
-      int d_idx_max = (std::min)((int) ceil  (d + 3*sigma), nr_distance_bins - 1);
-      int i_idx_min = (std::max)((int) floor (i - 3*sigma), 0);
-      int i_idx_max = (std::min)((int) ceil  (i + 3*sigma), nr_intensity_bins - 1);
-    
+      int d_idx_min = (std::max)(static_cast<int> (floor (d - 3*sigma)), 0);
+      int d_idx_max = (std::min)(static_cast<int> (ceil  (d + 3*sigma)), nr_distance_bins - 1);
+      int i_idx_min = (std::max)(static_cast<int> (floor (i - 3*sigma)), 0);
+      int i_idx_max = (std::min)(static_cast<int> (ceil  (i + 3*sigma)), nr_intensity_bins - 1);
+   
       // Update the appropriate bins of the histogram 
       for (int i_idx = i_idx_min; i_idx <= i_idx_max; ++i_idx)  
       {
         for (int d_idx = d_idx_min; d_idx <= d_idx_max; ++d_idx)
         {
           // Compute a "soft" update weight based on the distance between the point and the bin
-          float w = exp (-pow (d - d_idx, 2) / (2.0*sigma_*sigma_) 
-                         -pow (i - i_idx, 2) / (2.0*sigma_*sigma_));
+          float w = expf (-powf (d - static_cast<float> (d_idx), 2.0f) * constant - powf (i - static_cast<float> (i_idx), 2.0f) * constant);
           intensity_spin_image (i_idx, d_idx) += w;
         }
       }
@@ -156,7 +157,7 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut
     }
 
     // Compute the intensity spin image
-    computeIntensitySpinImage (*surface_, search_radius_, sigma_, k, nn_indices, nn_dist_sqr, intensity_spin_image);
+    computeIntensitySpinImage (*surface_, static_cast<float> (search_radius_), sigma_, k, nn_indices, nn_dist_sqr, intensity_spin_image);
 
     // Copy into the resultant cloud
     int bin = 0;
@@ -221,7 +222,7 @@ pcl::IntensitySpinEstimation<PointInT, Eigen::MatrixXf>::computeFeatureEigen (pc
     }
 
     // Compute the intensity spin image
-    this->computeIntensitySpinImage (*surface_, search_radius_, sigma_, k, nn_indices, nn_dist_sqr, intensity_spin_image);
+    this->computeIntensitySpinImage (*surface_, static_cast<float> (search_radius_), sigma_, k, nn_indices, nn_dist_sqr, intensity_spin_image);
 
     // Copy into the resultant cloud
     int bin = 0;

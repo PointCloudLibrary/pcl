@@ -80,11 +80,11 @@ namespace pcl
       /** \brief Empty constructor. */
       CVFHEstimation () :
         vpx_ (0), vpy_ (0), vpz_ (0), 
-        leaf_size_ (0.005), 
+        leaf_size_ (0.005f), 
         normalize_bins_ (false),
-        curv_threshold_ (0.03), 
+        curv_threshold_ (0.03f), 
         cluster_tolerance_ (leaf_size_ * 3), 
-        eps_angle_threshold_ (0.125), 
+        eps_angle_threshold_ (0.125f), 
         min_points_ (50),
         radius_normals_ (leaf_size_ * 3),
         centroids_dominant_orientations_ (),

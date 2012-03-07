@@ -49,7 +49,7 @@ TEST(MACROS, expect_eq_vectors_macro)
 {
   for (size_t i = 0; i < 3; i++)
   {
-    float val = i * 1.5;
+    float val = static_cast<float> (i) * 1.5f;
     v1.push_back (val);
     v2.push_back (val);
     ev1[i] = val;
@@ -67,10 +67,10 @@ TEST(MACROS, expect_near_vectors_macro)
 {
   v1.clear ();
   v2.clear ();
-  const static float epsilon = 1e-5;
+  const static float epsilon = 1e-5f;
   for (size_t i = 0; i < 3; i++)
   {
-    float val = i * 1.5;
+    float val = static_cast<float> (i) * 1.5f;
     v1.push_back (val);
     v2.push_back (val + epsilon);
     ev1[i] = val;

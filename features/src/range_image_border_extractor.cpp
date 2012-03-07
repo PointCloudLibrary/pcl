@@ -117,7 +117,7 @@ RangeImageBorderExtractor::extractLocalSurfaceStructure ()
   surface_structure_ = new LocalSurface*[array_size];
   int step_size = (std::max)(1, parameters_.pixel_radius_plane_extraction/2);
   //cout << PVARN(step_size);
-  int no_of_nearest_neighbors = pow ((double)(parameters_.pixel_radius_plane_extraction/step_size + 1), 2.0);
+  int no_of_nearest_neighbors = static_cast<int> (pow (static_cast<double> (parameters_.pixel_radius_plane_extraction/step_size + 1), 2.0));
   
 # pragma omp parallel for num_threads(parameters_.max_no_of_threads) default(shared) schedule(dynamic, 10)
   for (int y=0; y<height; ++y)

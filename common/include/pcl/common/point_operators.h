@@ -256,7 +256,7 @@ namespace pcl
       {
         pcl::PointXYZI result;
         result.x = p.x; result.y = p.y; result.z = p.z;
-        result.intensity = (299*p.r + 587*p.g + 114*p.b)/1000.0f;
+        result.intensity = static_cast<float> (299*p.r + 587*p.g + 114*p.b)/1000.0f;
         return (result);
       }
       

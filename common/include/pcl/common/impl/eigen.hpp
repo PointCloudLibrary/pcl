@@ -123,7 +123,7 @@ Eigen::Affine3f pcl::getTransformation(float x, float y, float z, float roll, fl
 template <typename Derived> void 
 pcl::saveBinary (const Eigen::MatrixBase<Derived>& matrix, std::ostream& file)
 {
-  uint32_t rows = matrix.rows(), cols = matrix.cols();
+  uint32_t rows = static_cast<uint32_t> (matrix.rows ()), cols = static_cast<uint32_t> (matrix.cols ());
   file.write (reinterpret_cast<char*> (&rows), sizeof (rows));
   file.write (reinterpret_cast<char*> (&cols), sizeof (cols));
   for (uint32_t i = 0; i < rows; ++i)

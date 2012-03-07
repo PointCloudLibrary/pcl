@@ -33,7 +33,6 @@
  *
  *
  */
-/** \author Bastian Steder */
 
 #include <iostream> 
 #include <sstream> 

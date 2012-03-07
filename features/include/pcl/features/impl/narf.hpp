@@ -39,12 +39,13 @@
 
 namespace pcl {
 
-inline float Narf::getDescriptorDistance(const Narf& other) const
+inline float 
+Narf::getDescriptorDistance(const Narf& other) const
 {
   float ret = L1_Norm(descriptor_, other.descriptor_, descriptor_size_);
   //float ret = Sublinear_Norm(descriptor_, other.descriptor_, descriptor_size_);
-  ret /= descriptor_size_;
-  return ret;
+  ret /= static_cast<float> (descriptor_size_);
+  return (ret);
 }
 
 inline void Narf::copyToNarf36(Narf36& narf36) const

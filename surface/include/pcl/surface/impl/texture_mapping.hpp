@@ -200,7 +200,7 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV (pcl::TextureMesh &tex_mesh){
 
   // mesh information
   int nr_points  = tex_mesh.cloud.width * tex_mesh.cloud.height;
-  int point_size = tex_mesh.cloud.data.size () / nr_points;
+  int point_size = static_cast<int> (tex_mesh.cloud.data.size ()) / nr_points;
 
   float x_lowest = 100000;
   float x_highest = 0 ;

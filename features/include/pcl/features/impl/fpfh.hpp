@@ -64,12 +64,12 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (
 {
   Eigen::Vector4f pfh_tuple;
   // Get the number of bins from the histograms size
-  int nr_bins_f1 = hist_f1.cols ();
-  int nr_bins_f2 = hist_f2.cols ();
-  int nr_bins_f3 = hist_f3.cols ();
+  int nr_bins_f1 = static_cast<int> (hist_f1.cols ());
+  int nr_bins_f2 = static_cast<int> (hist_f2.cols ());
+  int nr_bins_f3 = static_cast<int> (hist_f3.cols ());
 
   // Factorization constant
-  float hist_incr = 100.0 / (float)(indices.size () - 1);
+  float hist_incr = 100.0f / static_cast<float>(indices.size () - 1);
 
   // Iterate over all the points in the neighborhood
   for (size_t idx = 0; idx < indices.size (); ++idx)
@@ -83,17 +83,17 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (
         continue;
 
     // Normalize the f1, f2, f3 features and push them in the histogram
-    int h_index = floor (nr_bins_f1 * ((pfh_tuple[0] + M_PI) * d_pi_));
+    int h_index = static_cast<int> (floor (nr_bins_f1 * ((pfh_tuple[0] + M_PI) * d_pi_)));
     if (h_index < 0)           h_index = 0;
     if (h_index >= nr_bins_f1) h_index = nr_bins_f1 - 1;
     hist_f1 (row, h_index) += hist_incr;
 
-    h_index = floor (nr_bins_f2 * ((pfh_tuple[1] + 1.0) * 0.5));
+    h_index = static_cast<int> (floor (nr_bins_f2 * ((pfh_tuple[1] + 1.0) * 0.5)));
     if (h_index < 0)           h_index = 0;
     if (h_index >= nr_bins_f2) h_index = nr_bins_f2 - 1;
     hist_f2 (row, h_index) += hist_incr;
 
-    h_index = floor (nr_bins_f3 * ((pfh_tuple[2] + 1.0) * 0.5));
+    h_index = static_cast<int> (floor (nr_bins_f3 * ((pfh_tuple[2] + 1.0) * 0.5)));
     if (h_index < 0)           h_index = 0;
     if (h_index >= nr_bins_f3) h_index = nr_bins_f3 - 1;
     hist_f3 (row, h_index) += hist_incr;
@@ -111,9 +111,9 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::weightPointSPFHSignature (
   float weight = 0.0, val_f1, val_f2, val_f3;
 
   // Get the number of bins from the histograms size
-  int nr_bins_f1 = hist_f1.cols ();
-  int nr_bins_f2 = hist_f2.cols ();
-  int nr_bins_f3 = hist_f3.cols ();
+  int nr_bins_f1 = static_cast<int> (hist_f1.cols ());
+  int nr_bins_f2 = static_cast<int> (hist_f2.cols ());
+  int nr_bins_f3 = static_cast<int> (hist_f3.cols ());
   int nr_bins_f12 = nr_bins_f1 + nr_bins_f2;
 
   // Clear the histogram
@@ -127,7 +127,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::weightPointSPFHSignature (
       continue;
 
     // Standard weighting function used
-    weight = 1.0 / dists[idx];
+    weight = 1.0f / dists[idx];
 
     // Weight the SPFH of the query point with the SPFH of its neighbors
     for (int f1_i = 0; f1_i < nr_bins_f1; ++f1_i)
@@ -161,11 +161,11 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::weightPointSPFHSignature (
 
   // Adjust final FPFH values
   for (int f1_i = 0; f1_i < nr_bins_f1; ++f1_i)
-    fpfh_histogram[f1_i] *= sum_f1;
+    fpfh_histogram[f1_i] *= static_cast<float> (sum_f1);
   for (int f2_i = 0; f2_i < nr_bins_f2; ++f2_i)
-    fpfh_histogram[f2_i + nr_bins_f1] *= sum_f2;
+    fpfh_histogram[f2_i + nr_bins_f1] *= static_cast<float> (sum_f2);
   for (int f3_i = 0; f3_i < nr_bins_f3; ++f3_i)
-    fpfh_histogram[f3_i + nr_bins_f12] *= sum_f3;
+    fpfh_histogram[f3_i + nr_bins_f12] *= static_cast<float> (sum_f3);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -199,7 +199,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeSPFHSignatures (std::v
   {
     // Special case: When a feature must be computed at every point, there is no need for a neighborhood search
     for (size_t idx = 0; idx < indices_->size (); ++idx)
-      spfh_indices.insert ((int) idx);
+      spfh_indices.insert (static_cast<int> (idx));
   }
 
   // Initialize the arrays that will store the SPFH signatures
@@ -210,7 +210,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeSPFHSignatures (std::v
 
   // Compute SPFH signatures for every point that needs them
   std::set<int>::iterator spfh_indices_itr = spfh_indices.begin ();
-  for (size_t i = 0; i < spfh_indices.size (); ++i)
+  for (int i = 0; i < static_cast<int> (spfh_indices.size ()); ++i)
   {
     // Get the next point index
     int p_idx = *spfh_indices_itr;

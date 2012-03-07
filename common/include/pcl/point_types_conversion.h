@@ -120,7 +120,7 @@ namespace pcl
       case 0:
         out.r = in.v; out.g = t; out.b = p; break;
       case 1:
-        out.r = q; out.g = in.v; out.b = p; break;
+        out.r = static_cast<uint8_t> (q); out.g = in.v; out.b = static_cast<uint8_t> (p); break;
       case 2:
         out.r = p; out.g = in.v; out.b = t; break;
       case 3:

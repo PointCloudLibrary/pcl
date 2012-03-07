@@ -87,7 +87,7 @@ namespace pcl
         hist_f1_ (), hist_f2_ (), hist_f3_ (), hist_f4_ (), hist_vp_ (),
         normal_to_use_ (), centroid_to_use_ (), use_given_normal_ (false), use_given_centroid_ (false),
         normalize_bins_ (true), normalize_distances_ (false), size_component_ (false),
-        d_pi_ (1.0 / (2.0 * M_PI))
+        d_pi_ (1.0f / (2.0f * static_cast<float> (M_PI)))
       {
         hist_f1_.setZero (nr_bins_f1_);
         hist_f2_.setZero (nr_bins_f2_);

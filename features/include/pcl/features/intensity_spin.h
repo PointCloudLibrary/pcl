@@ -97,7 +97,7 @@ namespace pcl
         * \param[in] nr_distance_bins the number of bins to use in the distance dimension of the spin image
         */
       inline void 
-      setNrDistanceBins (size_t nr_distance_bins) { nr_distance_bins_ = (int) nr_distance_bins; };
+      setNrDistanceBins (size_t nr_distance_bins) { nr_distance_bins_ = static_cast<int> (nr_distance_bins); };
 
       /** \brief Returns the number of bins in the distance dimension of the spin image. */
       inline int 
@@ -107,7 +107,7 @@ namespace pcl
         * \param[in] nr_intensity_bins the number of bins to use in the intensity dimension of the spin image
         */
       inline void 
-      setNrIntensityBins (size_t nr_intensity_bins) { nr_intensity_bins_ = (int) nr_intensity_bins; };
+      setNrIntensityBins (size_t nr_intensity_bins) { nr_intensity_bins_ = static_cast<int> (nr_intensity_bins); };
 
       /** \brief Returns the number of bins in the intensity dimension of the spin image. */
       inline int 

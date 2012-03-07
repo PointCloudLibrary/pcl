@@ -57,9 +57,9 @@ pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud, Eigen::Vector4f &c
     for (size_t i = 0; i < cloud.points.size (); ++i)
       centroid += cloud.points[i].getVector4fMap ();
     centroid[3] = 0;
-    centroid /= cloud.points.size ();
+    centroid /= static_cast<float> (cloud.points.size ());
 
-    return (cloud.points.size ());
+    return (static_cast<unsigned int> (cloud.points.size ()));
   }
   // NaN or Inf values could exist => check for them
   else
@@ -75,7 +75,7 @@ pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud, Eigen::Vector4f &c
       ++cp;
     }
     centroid[3] = 0;
-    centroid /= cp;
+    centroid /= static_cast<float> (cp);
 
     return (cp);
   }
@@ -143,7 +143,7 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
-    point_count = cloud.size ();
+    point_count = static_cast<unsigned> (cloud.size ());
     // For each point in the cloud
     for (size_t i = 0; i < point_count; ++i)
     {
@@ -200,7 +200,7 @@ pcl::computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud,
 {
   unsigned point_count = pcl::computeCovarianceMatrix (cloud, centroid, covariance_matrix);
   if (point_count != 0)
-    covariance_matrix /= point_count;
+    covariance_matrix /= static_cast<float> (point_count);
   return (point_count);
 }
 
@@ -288,9 +288,9 @@ pcl::computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud,
 {
   unsigned point_count = pcl::computeCovarianceMatrix (cloud, indices, centroid, covariance_matrix);
   if (point_count != 0)
-    covariance_matrix /= point_count;
+    covariance_matrix /= static_cast<float> (point_count);
 
-  return point_count;
+  return (point_count);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -318,7 +318,7 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   unsigned int point_count;
   if (cloud.is_dense)
   {
-    point_count = cloud.size ();
+    point_count = static_cast<unsigned int> (cloud.size ());
     // For each point in the cloud
     for (size_t i = 0; i < point_count; ++i)
     {
@@ -364,15 +364,15 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> inline unsigned int
 pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                         const std::vector<int> &indices,
-                         Eigen::Matrix3f &covariance_matrix)
+                              const std::vector<int> &indices,
+                              Eigen::Matrix3f &covariance_matrix)
 {
   Eigen::Matrix<float, 1, 6, Eigen::RowMajor> accu = Eigen::Matrix<float, 1, 6, Eigen::RowMajor>::Zero ();
 
   unsigned int point_count;
   if (cloud.is_dense)
   {
-    point_count = indices.size ();
+    point_count = static_cast<unsigned int> (indices.size ());
     for (std::vector<int>::const_iterator iIt = indices.begin (); iIt != indices.end (); ++iIt)
     {
       //const PointT& point = cloud[*iIt];

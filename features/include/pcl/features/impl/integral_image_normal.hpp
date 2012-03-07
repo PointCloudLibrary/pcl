@@ -211,13 +211,13 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     center = integral_image_XYZ_.getFirstOrderSum(pos_x - rect_width_2_, pos_y - rect_height_2_, rect_width_, rect_height_).cast<float> ();
     so_elements = integral_image_XYZ_.getSecondOrderSum(pos_x - rect_width_2_, pos_y - rect_height_2_, rect_width_, rect_height_);
 
-    covariance_matrix.coeffRef (0) = so_elements [0];
-    covariance_matrix.coeffRef (1) = covariance_matrix.coeffRef (3) = so_elements [1];
-    covariance_matrix.coeffRef (2) = covariance_matrix.coeffRef (6) = so_elements [2];
-    covariance_matrix.coeffRef (4) = so_elements [3];
-    covariance_matrix.coeffRef (5) = covariance_matrix.coeffRef (7) = so_elements [4];
-    covariance_matrix.coeffRef (8) = so_elements [5];
-    covariance_matrix -= (center * center.transpose ()) / count;
+    covariance_matrix.coeffRef (0) = static_cast<float> (so_elements [0]);
+    covariance_matrix.coeffRef (1) = covariance_matrix.coeffRef (3) = static_cast<float> (so_elements [1]);
+    covariance_matrix.coeffRef (2) = covariance_matrix.coeffRef (6) = static_cast<float> (so_elements [2]);
+    covariance_matrix.coeffRef (4) = static_cast<float> (so_elements [3]);
+    covariance_matrix.coeffRef (5) = covariance_matrix.coeffRef (7) = static_cast<float> (so_elements [4]);
+    covariance_matrix.coeffRef (8) = static_cast<float> (so_elements [5]);
+    covariance_matrix -= (center * center.transpose ()) / static_cast<float> (count);
     float eigen_value;
     Eigen::Vector3f eigen_vector;
     pcl::eigen33 (covariance_matrix, eigen_value, eigen_vector);
@@ -228,7 +228,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
 
     // Compute the curvature surface change
     if (eigen_value > 0.0)
-      normal.curvature = fabs ( eigen_value / (covariance_matrix.coeff (0) + covariance_matrix.coeff (4) + covariance_matrix.coeff (8)) );
+      normal.curvature = fabsf (eigen_value / (covariance_matrix.coeff (0) + covariance_matrix.coeff (4) + covariance_matrix.coeff (8)));
     else
       normal.curvature = 0;
 
@@ -293,10 +293,10 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
       return;
     }
 
-    float mean_L_z = integral_image_depth_.getFirstOrderSum (pos_x - rect_width_2_, pos_y - rect_height_4_, rect_width_2_, rect_height_2_) / count_L_z;
-    float mean_R_z = integral_image_depth_.getFirstOrderSum (pos_x + 1            , pos_y - rect_height_4_, rect_width_2_, rect_height_2_) / count_R_z;
-    float mean_U_z = integral_image_depth_.getFirstOrderSum (pos_x - rect_width_4_, pos_y - rect_height_2_, rect_width_2_, rect_height_2_) / count_U_z;
-    float mean_D_z = integral_image_depth_.getFirstOrderSum (pos_x - rect_width_4_, pos_y + 1             , rect_width_2_, rect_height_2_) / count_D_z;
+    float mean_L_z = static_cast<float> (integral_image_depth_.getFirstOrderSum (pos_x - rect_width_2_, pos_y - rect_height_4_, rect_width_2_, rect_height_2_) / count_L_z);
+    float mean_R_z = static_cast<float> (integral_image_depth_.getFirstOrderSum (pos_x + 1            , pos_y - rect_height_4_, rect_width_2_, rect_height_2_) / count_R_z);
+    float mean_U_z = static_cast<float> (integral_image_depth_.getFirstOrderSum (pos_x - rect_width_4_, pos_y - rect_height_2_, rect_width_2_, rect_height_2_) / count_U_z);
+    float mean_D_z = static_cast<float> (integral_image_depth_.getFirstOrderSum (pos_x - rect_width_4_, pos_y + 1             , rect_width_2_, rect_height_2_) / count_D_z);
 
     PointInT pointL = input_->points[point_index - rect_width_4_ - 1];
     PointInT pointR = input_->points[point_index + rect_width_4_ + 1];
@@ -353,7 +353,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
       return;
     }
 
-    normal_vector /= sqrt(normal_length);
+    normal_vector /= sqrt (normal_length);
     normal.normal_x = normal_vector [0];
     normal.normal_y = normal_vector [1];
     normal.normal_z = normal_vector [2];
@@ -390,15 +390,15 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
       const float depthD = input_->points [index + input_->width].z;
 
       //const float depthDependendDepthChange = (max_depth_change_factor_ * (fabs(depth)+1.0f))/(500.0f*0.001f);
-      const float depthDependendDepthChange = (max_depth_change_factor_ * (fabs (depth) + 1.0f) * 2.0f);
+      const float depthDependendDepthChange = (max_depth_change_factor_ * (fabsf (depth) + 1.0f) * 2.0f);
 
-      if (abs (depth - depthR) > depthDependendDepthChange
+      if (fabs (depth - depthR) > depthDependendDepthChange
         || !pcl_isfinite (depth) || !pcl_isfinite (depthR))
       {
         depthChangeMap[index] = 0;
         depthChangeMap[index] = 0;
       }
-      if (abs (depth - depthD) > depthDependendDepthChange
+      if (fabs (depth - depthD) > depthDependendDepthChange
         || !pcl_isfinite (depth) || !pcl_isfinite (depthD))
       {
         depthChangeMap[index] = 0;
@@ -414,7 +414,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
     if (depthChangeMap[index] == 0)
       distanceMap[index] = 0.0f;
     else
-      distanceMap[index] = input_->width + input_->height;
+      distanceMap[index] = static_cast<float> (input_->width + input_->height);
   }
 
   // first pass
@@ -508,7 +508,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
 
         if (smoothing > 2.0f)
         {
-          setRectSize (smoothing, smoothing);
+          setRectSize (static_cast<int> (smoothing), static_cast<int> (smoothing));
           computePointNormal (ci, ri, index, output [index]);
         }
         else
@@ -540,7 +540,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
 
         if (smoothing > 2.0f)
         {
-          setRectSize (smoothing, smoothing);
+          setRectSize (static_cast<int> (smoothing), static_cast<int> (smoothing));
           computePointNormal (ci, ri, index, output [index]);
         }
         else

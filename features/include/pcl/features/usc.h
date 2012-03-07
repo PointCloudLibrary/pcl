@@ -124,10 +124,10 @@ namespace pcl
         * \param[in] radius the desired minimal radius
         */
       inline void 
-      setMinimalRadius (float radius) { min_radius_ = radius; }
+      setMinimalRadius (double radius) { min_radius_ = radius; }
 
       /** \return The minimal sphere radius. */
-      inline float 
+      inline double
       getMinimalRadius () const { return (min_radius_); }
 
       /** This radius is used to compute local point density 

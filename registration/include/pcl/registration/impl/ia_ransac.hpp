@@ -121,7 +121,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::select
       PCL_WARN ("No valid sample found after %d iterations. Relaxing min_sample_distance_ to %f\n",
                 iterations_without_a_sample, 0.5*min_sample_distance);
 
-      min_sample_distance_ *= 0.5;
+      min_sample_distance_ *= 0.5f;
       min_sample_distance = min_sample_distance_;
       iterations_without_a_sample = 0;
     }
@@ -153,7 +153,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::findSi
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename FeatureT> float 
 pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::computeErrorMetric (
-    const PointCloudSource &cloud, float threshold)
+    const PointCloudSource &cloud, float)
 {
   std::vector<int> nn_index (1);
   std::vector<float> nn_distance (1);

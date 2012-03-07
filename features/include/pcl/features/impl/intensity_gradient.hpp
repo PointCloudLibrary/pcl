@@ -175,7 +175,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT>::computeFeature (
       ++valid_neighbor_count;
     }
 
-    mean_intensity /= (float)valid_neighbor_count;
+    mean_intensity /= static_cast<float> (valid_neighbor_count);
 
     Eigen::Vector3f normal = Eigen::Vector3f::Map (normals_->points[idx].normal);
     Eigen::Vector3f gradient;
@@ -225,7 +225,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFea
       ++valid_neighbor_count;
     }
 
-    mean_intensity /= (float)valid_neighbor_count;
+    mean_intensity /= static_cast<float> (valid_neighbor_count);
 
     Eigen::Vector3f normal = Eigen::Vector3f::Map (normals_->points[idx].normal);
     Eigen::Vector3f gradient;
