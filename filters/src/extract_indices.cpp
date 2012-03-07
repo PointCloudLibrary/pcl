@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -40,10 +42,11 @@
 #include "pcl/filters/extract_indices.h"
 #include "pcl/filters/impl/extract_indices.hpp"
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::ExtractIndices<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 {
+  // TODO: the PointCloud2 implementation is not yet using the keep_organized_ system -FF
   if (indices_->empty () || (input_->width * input_->height == 0))
   {
     output.width = output.height = 0;
@@ -104,6 +107,45 @@ pcl::ExtractIndices<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
       memcpy (&output.data[i * output.point_step], &input_->data[(*indices_)[i] * output.point_step], output.point_step);
   }
   output.row_step = output.point_step * output.width;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::ExtractIndices<sensor_msgs::PointCloud2>::applyFilter (std::vector<int> &indices)
+{
+  if (negative_)
+  {
+    // If the subset is the full set
+    if (indices_->size () == (input_->width * input_->height))
+    {
+      // Empty set copy
+      indices.clear ();
+      return;
+    }
+
+    // Set up the full indices set
+    std::vector<int> indices_fullset (input_->width * input_->height);
+    for (int p_it = 0; p_it < static_cast<int> (indices_fullset.size ()); ++p_it)
+      indices_fullset[p_it] = p_it;
+
+    // If the subset is the empty set
+    if (indices_->empty () || (input_->width * input_->height == 0))
+    {
+      // Full set copy
+      indices = indices_fullset;
+      return;
+    }
+
+    // If the subset is a proper subset
+    // Set up the subset input indices
+    std::vector<int> indices_subset = *indices_;
+    std::sort (indices_subset.begin (), indices_subset.end ());
+
+    // Get the difference
+    set_difference (indices_fullset.begin (), indices_fullset.end (), indices_subset.begin (), indices_subset.end (), inserter (indices, indices.begin ()));
+  }
+  else
+    indices = *indices_;
 }
 
 #ifdef PCL_ONLY_CORE_POINT_TYPES

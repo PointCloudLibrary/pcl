@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,118 +37,132 @@
  *
  */
 
-#ifndef PCL_FILTERS_EXTRACTINDICES_H_
-#define PCL_FILTERS_EXTRACTINDICES_H_
+#ifndef PCL_FILTERS_EXTRACT_INDICES_H_
+#define PCL_FILTERS_EXTRACT_INDICES_H_
 
-#include "pcl/filters/filter.h"
+#include <pcl/filters/filter_indices.h>
 
 namespace pcl
 {
-  /** \brief @b ExtractIndices extracts a set of indices from a PointCloud as a separate PointCloud.
-    * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
+  /** \brief @b ExtractIndices extracts a set of indices from a point cloud.
+    * <br>
+    * Usage examples:
+    * \code
+    * pcl::ExtractIndices<PointType> filter;
+    * filter.setInputCloud (cloud_in);
+    * filter.setIndices (indices_in);
+    * // Extract the points in cloud_in referenced by indices_in as a separate point cloud:
+    * filter.filter (*cloud_out);
+    * // Retrieve indices to all points in cloud_in except those referenced by indices_in:
+    * filter.setNegative (true);
+    * filter.filter (*indices_out);
+    * // The resulting cloud_out is identical to cloud_in, but all points referenced by indices_in are made NaN:
+    * filter.setNegative (true);
+    * filter.setKeepOrganized (true);
+    * filter.filter (*cloud_out);
+    * \endcode
+    * \note Does not inherently remove NaNs from results, hence the \a extract_removed_indices_ system is not used.
     * \author Radu Bogdan Rusu
     * \ingroup filters
     */
   template<typename PointT>
-  class ExtractIndices : public Filter<PointT>
+  class ExtractIndices : public FilterIndices<PointT>
   {
-    using Filter<PointT>::filter_name_;
-    using Filter<PointT>::getClassName;
-    using Filter<PointT>::use_indices_;
-    using Filter<PointT>::indices_;
-    using Filter<PointT>::input_;
-
-    typedef typename Filter<PointT>::PointCloud PointCloud;
-    typedef typename PointCloud::Ptr PointCloudPtr;
-    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-
     public:
+      typedef typename Filter<PointT>::PointCloud PointCloud;
+      typedef typename PointCloud::Ptr PointCloudPtr;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+
       /** \brief Empty constructor. */
-      ExtractIndices () :
-        negative_ (false)
+      ExtractIndices ()
       {
         use_indices_ = true;
         filter_name_ = "ExtractIndices";
       }
 
-      /** \brief Set whether the indices should be returned, or all points _except_ the indices.
-        * \param negative true if all points _except_ the input indices will be returned, false otherwise
-        */
-      inline void
-      setNegative (bool negative)
-      {
-        negative_ = negative;
-      }
-
-      /** \brief Get the value of the internal \a negative parameter. If true, all points _except_ the input indices
-        * will be returned. 
-        */
-      inline bool
-      getNegative ()
-      {
-        return (negative_);
-      }
-
     protected:
+      using PCLBase<PointT>::input_;
+      using PCLBase<PointT>::indices_;
+      using PCLBase<PointT>::use_indices_;
+      using Filter<PointT>::filter_name_;
+      using Filter<PointT>::getClassName;
+      using FilterIndices<PointT>::negative_;
+      using FilterIndices<PointT>::keep_organized_;
+      using FilterIndices<PointT>::user_filter_value_;
+
       /** \brief Extract point indices into a separate PointCloud
-        * \param output the resultant point cloud message
+        * \param[out] output the resultant point cloud
         */
       void
       applyFilter (PointCloud &output);
 
-      /** \brief If true, all the points _except_ the input indices will be returned. False by default. */
-      bool negative_;
+      /** \brief Extract point indices
+        * \param indices the resultant indices
+        */
+      void
+      applyFilter (std::vector<int> &indices);
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief @b ExtractIndices extracts a set of indices from a PointCloud as a separate PointCloud.
-    * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
+  /** \brief @b ExtractIndices extracts a set of indices from a point cloud.
+    * <br>
+    * Usage examples:
+    * \code
+    * pcl::ExtractIndices<PointType> filter;
+    * filter.setInputCloud (cloud_in);
+    * filter.setIndices (indices_in);
+    * // Extract the points in cloud_in referenced by indices_in as a separate point cloud:
+    * filter.filter (*cloud_out);
+    * // Retrieve indices to all points in cloud_in except those referenced by indices_in:
+    * filter.setNegative (true);
+    * filter.filter (*indices_out);
+    * // The resulting cloud_out is identical to cloud_in, but all points referenced by indices_in are made NaN:
+    * filter.setNegative (true);
+    * filter.setKeepOrganized (true);
+    * filter.filter (*cloud_out);
+    * \endcode
+    * \note Does not inherently remove NaNs from results, hence the \a extract_removed_indices_ system is not used.
     * \author Radu Bogdan Rusu
     * \ingroup filters
     */
   template<>
-  class PCL_EXPORTS ExtractIndices<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
+  class PCL_EXPORTS ExtractIndices<sensor_msgs::PointCloud2> : public FilterIndices<sensor_msgs::PointCloud2>
   {
-    using Filter<sensor_msgs::PointCloud2>::filter_name_;
-    using Filter<sensor_msgs::PointCloud2>::getClassName;
-
-    typedef sensor_msgs::PointCloud2 PointCloud2;
-    typedef PointCloud2::Ptr PointCloud2Ptr;
-    typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
-
     public:
+      typedef sensor_msgs::PointCloud2 PointCloud2;
+      typedef PointCloud2::Ptr PointCloud2Ptr;
+      typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
+
       /** \brief Empty constructor. */
-      ExtractIndices () : negative_ (false)
+      ExtractIndices ()
       {
         use_indices_ = true;
-        filter_name_ = "ProjectInliers";
-      }
-
-      /** \brief Set whether the indices should be returned, or all points _except_ the indices.
-        * \param negative true if all points _except_ the input indices will be returned, false otherwise
-        */
-      inline void
-      setNegative (bool negative)
-      {
-        negative_ = negative;
-      }
-
-      /** \brief Get the value of the internal \a negative parameter. If true, all points _except_ the input indices
-        * will be returned. 
-        */
-      inline bool
-      getNegative ()
-      {
-        return (negative_);
+        filter_name_ = "ExtractIndices";
       }
 
     protected:
+      using PCLBase<PointCloud2>::input_;
+      using PCLBase<PointCloud2>::indices_;
+      using PCLBase<PointCloud2>::use_indices_;
+      using Filter<PointCloud2>::filter_name_;
+      using Filter<PointCloud2>::getClassName;
+      using FilterIndices<PointCloud2>::negative_;
+      using FilterIndices<PointCloud2>::keep_organized_;
+      using FilterIndices<PointCloud2>::user_filter_value_;
+
+      /** \brief Extract point indices into a separate PointCloud
+        * \param[out] output the resultant point cloud
+        */
       void
       applyFilter (PointCloud2 &output);
 
-      /** \brief If true, all the points _except_ the input indices will be returned. False by default. */
-      bool negative_;
+      /** \brief Extract point indices
+        * \param indices the resultant indices
+        */
+      void
+      applyFilter (std::vector<int> &indices);
   };
 }
 
-#endif  //#ifndef PCL_FILTERS_EXTRACTINDICES_H_
+#endif  //#ifndef PCL_FILTERS_EXTRACT_INDICES_H_
+

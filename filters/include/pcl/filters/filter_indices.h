@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,45 +33,46 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: filter.h 1370 2011-06-19 01:06:01Z jspricke $
+ * $Id: filter_indices.h 4707 2012-02-23 10:34:17Z florentinus $
  *
  */
 
-#ifndef PCL_FILTER_INDICES_H_
-#define PCL_FILTER_INDICES_H_
+#ifndef PCL_FILTERS_FILTER_INDICES_H_
+#define PCL_FILTERS_FILTER_INDICES_H_
 
 #include <pcl/filters/filter.h>
-//#include "filter.h"
 
 namespace pcl
 {
   /** \brief Removes points with x, y, or z equal to NaN
-   * \param cloud_in the input point cloud
-   * \param index the mapping (ordered): cloud_out.points[i] = cloud_in.points[index[i]]
-   * \note The density of the point cloud is lost.
-   * \note Can be called with cloud_in == cloud_out
-   * \ingroup filters
-   */
-  template<typename PointT>
-    void
-    removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in, std::vector<int> &index);
+    * \param cloud_in the input point cloud
+    * \param index the mapping (ordered): cloud_out.points[i] = cloud_in.points[index[i]]
+    * \note The density of the point cloud is lost.
+    * \note Can be called with cloud_in == cloud_out
+    * \ingroup filters
+    */
+  template<typename PointT> void
+  removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in, std::vector<int> &index);
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b FilterIndices represents the base class for filters that are about binary point removal.
-   * <br>
-   * All derived classes have to implement the \a filter (PointCloud &output) and the \a filter (std::vector<int> &indices) methods.
-   * Ideally they also make use of the \a negative_, \a keep_organized_ and \a extract_removed_indices_ systems.
-   * \author Justin Rosen
-   * \ingroup filters
-   */
+    * <br>
+    * All derived classes have to implement the \a filter (PointCloud &output) and the \a filter (std::vector<int> &indices) methods.
+    * Ideally they also make use of the \a negative_, \a keep_organized_ and \a extract_removed_indices_ systems.
+    * The distinguishment between the \a negative_ and \a extract_removed_indices_ systems only makes sense if the class automatically
+    * filters non-finite entries in the filtering methods (recommended).
+    * \author Justin Rosen
+    * \ingroup filters
+    */
   template<typename PointT>
-    class FilterIndices : public Filter<PointT>
-    {
+  class FilterIndices : public Filter<PointT>
+  {
     public:
       typedef pcl::PointCloud<PointT> PointCloud;
 
       /** \brief Constructor.
-       * \param[in] extract_removed_indices Set to true if you want to extract the indices of points being removed (default = false).
-       */
+        * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
+        */
       FilterIndices (bool extract_removed_indices = false) :
           negative_ (false), keep_organized_ (false), extract_removed_indices_ (extract_removed_indices), user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
       {
@@ -89,8 +92,8 @@ namespace pcl
       }
 
       /** \brief Calls the filtering method and returns the filtered point cloud indices.
-       * \param[out] indices the resultant filtered point cloud indices
-       */
+        * \param[out] indices the resultant filtered point cloud indices
+        */
       inline void
       filter (std::vector<int> &indices)
       {
@@ -104,8 +107,8 @@ namespace pcl
       }
 
       /** \brief Set whether the regular conditions for points filtering should apply, or the inverted conditions.
-       * \param[in] negative false = normal filter behavior (default), true = inverted behavior.
-       */
+        * \param[in] negative false = normal filter behavior (default), true = inverted behavior.
+        */
       inline void
       setNegative (bool negative)
       {
@@ -113,8 +116,8 @@ namespace pcl
       }
 
       /** \brief Get whether the regular conditions for points filtering should apply, or the inverted conditions.
-       * \return The value of the internal \a negative_ parameter; false = normal filter behavior (default), true = inverted behavior.
-       */
+        * \return The value of the internal \a negative_ parameter; false = normal filter behavior (default), true = inverted behavior.
+        */
       inline bool
       getNegative ()
       {
@@ -122,9 +125,9 @@ namespace pcl
       }
 
       /** \brief Set whether the filtered points should be kept and set to the value given through \a setUserFilterValue (default: NaN),
-       * or removed from the PointCloud, thus potentially breaking its organized structure.
-       * \param[in] keep_organized false = remove points (default), true = redefine points, keep structure.
-       */
+        * or removed from the PointCloud, thus potentially breaking its organized structure.
+        * \param[in] keep_organized false = remove points (default), true = redefine points, keep structure.
+        */
       inline void
       setKeepOrganized (bool keep_organized)
       {
@@ -132,9 +135,9 @@ namespace pcl
       }
 
       /** \brief Get whether the filtered points should be kept and set to the value given through \a setUserFilterValue (default = NaN),
-       * or removed from the PointCloud, thus potentially breaking its organized structure.
-       * \return The value of the internal \a keep_organized_ parameter; false = remove points (default), true = redefine points, keep structure.
-       */
+        * or removed from the PointCloud, thus potentially breaking its organized structure.
+        * \return The value of the internal \a keep_organized_ parameter; false = remove points (default), true = redefine points, keep structure.
+        */
       inline bool
       getKeepOrganized ()
       {
@@ -142,9 +145,9 @@ namespace pcl
       }
 
       /** \brief Provide a value that the filtered points should be set to instead of removing them.
-       * Used in conjunction with \a setKeepOrganized ().
-       * \param[in] value the user given value that the filtered point dimensions should be set to (default = NaN).
-       */
+        * Used in conjunction with \a setKeepOrganized ().
+        * \param[in] value the user given value that the filtered point dimensions should be set to (default = NaN).
+        */
       inline void
       setUserFilterValue (float value)
       {
@@ -152,8 +155,8 @@ namespace pcl
       }
 
       /** \brief Get the point indices being removed
-       * \return The value of the internal \a negative_ parameter; false = normal filter behavior (default), true = inverted behavior.
-       */
+        * \return The value of the internal \a negative_ parameter; false = normal filter behavior (default), true = inverted behavior.
+        */
       inline IndicesConstPtr const
       getRemovedIndices ()
       {
@@ -182,24 +185,27 @@ namespace pcl
       /** \brief Abstract filter method for point cloud indices. */
       virtual void
       applyFilter (std::vector<int> &indices) = 0;
-    };
+  };
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b FilterIndices represents the base class for filters that are about binary point removal.
-   * <br>
-   * All derived classes have to implement the \a filter (PointCloud &output) and the \a filter (std::vector<int> &indices) methods.
-   * Ideally they also make use of the \a negative_, \a keep_organized_ and \a extract_removed_indices_ systems.
-   * \author Justin Rosen
-   * \ingroup filters
-   */
+    * <br>
+    * All derived classes have to implement the \a filter (PointCloud &output) and the \a filter (std::vector<int> &indices) methods.
+    * Ideally they also make use of the \a negative_, \a keep_organized_ and \a extract_removed_indices_ systems.
+    * The distinguishment between the \a negative_ and \a extract_removed_indices_ systems only makes sense if the class automatically
+    * filters non-finite entries in the filtering methods (recommended).
+    * \author Justin Rosen
+    * \ingroup filters
+    */
   template<>
-    class PCL_EXPORTS FilterIndices<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
-    {
+  class PCL_EXPORTS FilterIndices<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
+  {
     public:
       typedef sensor_msgs::PointCloud2 PointCloud2;
 
       /** \brief Constructor.
-       * \param[in] extract_removed_indices Set to true if you want to extract the indices of points being removed (default = false).
-       */
+        * \param[in] extract_removed_indices Set to true if you want to extract the indices of points being removed (default = false).
+        */
       FilterIndices (bool extract_removed_indices = false) :
           negative_ (false), keep_organized_ (false), extract_removed_indices_ (extract_removed_indices), user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
       {
@@ -219,14 +225,14 @@ namespace pcl
       }
 
       /** \brief Calls the filtering method and returns the filtered point cloud indices.
-       * \param[out] indices the resultant filtered point cloud indices
-       */
+        * \param[out] indices the resultant filtered point cloud indices
+        */
       void
       filter (std::vector<int> &indices);
 
       /** \brief Set whether the regular conditions for points filtering should apply, or the inverted conditions.
-       * \param[in] negative false = normal filter behavior (default), true = inverted behavior.
-       */
+        * \param[in] negative false = normal filter behavior (default), true = inverted behavior.
+        */
       inline void
       setNegative (bool negative)
       {
@@ -234,8 +240,8 @@ namespace pcl
       }
 
       /** \brief Get whether the regular conditions for points filtering should apply, or the inverted conditions.
-       * \return The value of the internal \a negative_ parameter; false = normal filter behavior (default), true = inverted behavior.
-       */
+        * \return The value of the internal \a negative_ parameter; false = normal filter behavior (default), true = inverted behavior.
+        */
       inline bool
       getNegative ()
       {
@@ -243,9 +249,9 @@ namespace pcl
       }
 
       /** \brief Set whether the filtered points should be kept and set to the value given through \a setUserFilterValue (default: NaN),
-       * or removed from the PointCloud, thus potentially breaking its organized structure.
-       * \param[in] keep_organized false = remove points (default), true = redefine points, keep structure.
-       */
+        * or removed from the PointCloud, thus potentially breaking its organized structure.
+        * \param[in] keep_organized false = remove points (default), true = redefine points, keep structure.
+        */
       inline void
       setKeepOrganized (bool keep_organized)
       {
@@ -253,9 +259,9 @@ namespace pcl
       }
 
       /** \brief Get whether the filtered points should be kept and set to the value given through \a setUserFilterValue (default = NaN),
-       * or removed from the PointCloud, thus potentially breaking its organized structure.
-       * \return The value of the internal \a keep_organized_ parameter; false = remove points (default), true = redefine points, keep structure.
-       */
+        * or removed from the PointCloud, thus potentially breaking its organized structure.
+        * \return The value of the internal \a keep_organized_ parameter; false = remove points (default), true = redefine points, keep structure.
+        */
       inline bool
       getKeepOrganized ()
       {
@@ -263,9 +269,9 @@ namespace pcl
       }
 
       /** \brief Provide a value that the filtered points should be set to instead of removing them.
-       * Used in conjunction with \a setKeepOrganized ().
-       * \param[in] value the user given value that the filtered point dimensions should be set to (default = NaN).
-       */
+        * Used in conjunction with \a setKeepOrganized ().
+        * \param[in] value the user given value that the filtered point dimensions should be set to (default = NaN).
+        */
       inline void
       setUserFilterValue (float value)
       {
@@ -273,8 +279,8 @@ namespace pcl
       }
 
       /** \brief Get the point indices being removed
-       * \return The value of the internal \a negative_ parameter; false = normal filter behavior (default), true = inverted behavior.
-       */
+        * \return The value of the internal \a negative_ parameter; false = normal filter behavior (default), true = inverted behavior.
+        */
       inline IndicesConstPtr const
       getRemovedIndices ()
       {
@@ -300,7 +306,8 @@ namespace pcl
       /** \brief Abstract filter method for point cloud indices. */
       virtual void
       applyFilter (std::vector<int> &indices) = 0;
-    };
+  };
 }
 
-#endif  //#ifndef PCL_FILTER_INDICES_H_
+#endif  //#ifndef PCL_FILTERS_FILTER_INDICES_H_
+
