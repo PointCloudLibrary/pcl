@@ -41,13 +41,7 @@
 #include <pcl/segmentation/planar_polygon_fusion.h>
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::PlanarPolygonFusion<PointT>::refine (std::vector<PlanarRegion<PointT> > &output)
-{
-  
-}
 
 #define PCL_INSTANTIATE_PlanarPolygonFusion(T) template class PCL_EXPORTS pcl::PlanarPolygonFusion<T>;
 

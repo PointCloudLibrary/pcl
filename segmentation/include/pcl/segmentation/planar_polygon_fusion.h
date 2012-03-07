@@ -71,17 +71,11 @@ namespace pcl
       void
       addInputPolygons (const std::vector<PlanarRegion<PointT> > &input)
       {
-        int start = regions_.size ();
+        int start = static_cast<int> (regions_.size ());
         regions_.resize (regions_.size () + input.size ());
         for(size_t i = 0; i < input.size (); i++)
           regions_[start+i] = input[i];
       }
-
-      /** \brief Refine the given input polygons based on the given comparators.
-        * \param[out] output the resultant set of merged polygons 
-        */ 
-      void
-      refine (std::vector<PlanarRegion<PointT> > &output);
 
     protected:
       /** \brief Internal list of planar states. */

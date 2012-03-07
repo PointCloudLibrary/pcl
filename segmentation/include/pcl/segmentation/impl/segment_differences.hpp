@@ -57,7 +57,7 @@ pcl::getPointCloudDifference (
   std::vector<int> src_indices;
 
   // Iterate through the source data set
-  for (size_t i = 0; i < src.points.size (); ++i)
+  for (int i = 0; i < static_cast<int> (src.points.size ()); ++i)
   {
     if (!isFinite (src.points[i]))
       continue;

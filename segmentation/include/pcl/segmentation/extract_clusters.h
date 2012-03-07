@@ -105,12 +105,12 @@ namespace pcl
   {
     if (tree->getInputCloud ()->points.size () != cloud.points.size ())
     {
-      PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", (unsigned long)tree->getInputCloud ()->points.size (), (unsigned long)cloud.points.size ());
+      PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%zu) than the input cloud (%zu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
       return;
     }
     if (cloud.points.size () != normals.points.size ())
     {
-      PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%lu) different than normals (%lu)!\n", (unsigned long)cloud.points.size (), (unsigned long)normals.points.size ());
+      PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%zu) different than normals (%zu)!\n", cloud.points.size (), normals.points.size ());
       return;
     }
 
@@ -131,7 +131,7 @@ namespace pcl
 
       processed[i] = true;
 
-      while (sq_idx < (int)seed_queue.size ())
+      while (sq_idx < static_cast<int> (seed_queue.size ()))
       {
         // Search for sq_idx
         if (!tree->radiusSearch (seed_queue[sq_idx], tolerance, nn_indices, nn_distances))
@@ -205,17 +205,17 @@ namespace pcl
     //and indices[i]
     if (tree->getInputCloud ()->points.size () != cloud.points.size ())
     {
-      PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", (unsigned long)tree->getInputCloud ()->points.size (), (unsigned long)cloud.points.size ());
+      PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%zu) than the input cloud (%zu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
       return;
     }
     if (tree->getIndices ()->size () != indices.size ())
     {
-      PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different set of indices (%lu) than the input set (%lu)!\n", (unsigned long)tree->getIndices ()->size (), (unsigned long)indices.size ());
+      PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different set of indices (%zu) than the input set (%zu)!\n", tree->getIndices ()->size (), indices.size ());
       return;
     }
     if (cloud.points.size () != normals.points.size ())
     {
-      PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%lu) different than normals (%lu)!\n", (unsigned long)cloud.points.size (), (unsigned long)normals.points.size ());
+      PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%zu) different than normals (%zu)!\n", cloud.points.size (), normals.points.size ());
       return;
     }
     // Create a bool vector of processed point indices, and initialize it to false
@@ -235,7 +235,7 @@ namespace pcl
 
       processed[i] = true;
 
-      while (sq_idx < (int)seed_queue.size ())
+      while (sq_idx < static_cast<int> (seed_queue.size ()))
       {
         // Search for sq_idx
         if (!tree->radiusSearch (seed_queue[sq_idx], tolerance, nn_indices, nn_distances))
