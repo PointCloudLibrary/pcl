@@ -152,7 +152,7 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &ou
   }
 
   output.header = input_->header;
-  output.width = output.points.size ();
+  output.width = static_cast<uint32_t> (output.points.size ());
   output.height = 1;
 
   // debug stuff

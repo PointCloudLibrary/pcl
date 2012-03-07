@@ -81,7 +81,7 @@ namespace pcl
        * /param point_arg: input point - this argument is ignored
        *  */
       virtual void
-      setData (const DataT& point_arg)
+      setData (const DataT&)
       {
         pointCounter_++;
       }
@@ -99,7 +99,7 @@ namespace pcl
        *  \param dataVector_arg: reference to dummy DataT vector that is extended with leaf node DataT elements.
        */
       virtual void
-      getData (std::vector<DataT>& dataVector_arg) const
+      getData (std::vector<DataT>&) const
       {
       }
 

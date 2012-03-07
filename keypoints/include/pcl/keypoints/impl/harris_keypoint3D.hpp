@@ -242,7 +242,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
 #    pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
 #  endif
 #endif
-    for (int idx = 0; idx < (int) response->points.size (); ++idx)
+    for (int idx = 0; idx < static_cast<int> (response->points.size ()); ++idx)
     {
       if (!isFinite (response->points[idx]) || response->points[idx].intensity < threshold_)
         continue;
@@ -285,7 +285,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseHarris (PointCloudO
 #    pragma omp parallel for shared (output) private (covar, nn_indices, nn_dists) num_threads(threads_)
 #  endif
 #endif
-  for (int pIdx = 0; pIdx < (int) input_->size (); ++pIdx)
+  for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
   {
     const PointInT& pointIn = input_->points [pIdx];
     output [pIdx].intensity = 0.0; //std::numeric_limits<float>::quiet_NaN ();
@@ -475,7 +475,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
 #  endif
 #endif
   //for (typename PointCloudOut::iterator cornerIt = corners.begin(); cornerIt != corners.end(); ++cornerIt)
-  for (int cIdx = 0; cIdx < (int) corners.size (); ++cIdx)
+  for (int cIdx = 0; cIdx < static_cast<int> (corners.size ()); ++cIdx)
   {
     unsigned iterations = 0;
     do {

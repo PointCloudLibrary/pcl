@@ -159,7 +159,7 @@ namespace pcl
         */
 
       virtual void
-      setData (const DataT& data_arg)
+      setData (const DataT&)
       {
       }
 
@@ -176,7 +176,7 @@ namespace pcl
         * \param[out] dataVector_arg reference to dummy DataT vector that is extended with leaf node DataT elements.
         */
       virtual void
-      getData (std::vector<DataT>& dataVector_arg) const
+      getData (std::vector<DataT>&) const
       {
       }
 
