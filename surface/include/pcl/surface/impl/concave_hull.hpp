@@ -99,7 +99,7 @@ pcl::ConcaveHull<PointInT>::reconstruct (PointCloud &output)
   std::vector<pcl::Vertices> polygons;
   performReconstruction (output, polygons);
 
-  output.width = output.points.size ();
+  output.width = static_cast<uint32_t> (output.points.size ());
   output.height = 1;
   output.is_dense = true;
 
@@ -127,7 +127,7 @@ pcl::ConcaveHull<PointInT>::reconstruct (PointCloud &output, std::vector<pcl::Ve
   // Perform the actual surface reconstruction
   performReconstruction (output, polygons);
 
-  output.width = output.points.size ();
+  output.width = static_cast<uint32_t> (output.points.size ());
   output.height = 1;
   output.is_dense = true;
 
@@ -195,23 +195,23 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   int exitcode;
 
   // Array of coordinates for each point
-  coordT *points = (coordT*)calloc (cloud_transformed.points.size () * dim, sizeof(coordT));
+  coordT *points = reinterpret_cast<coordT*> (calloc (cloud_transformed.points.size () * dim, sizeof(coordT)));
 
   for (size_t i = 0; i < cloud_transformed.points.size (); ++i)
   {
-    points[i * dim + 0] = (coordT)cloud_transformed.points[i].x;
-    points[i * dim + 1] = (coordT)cloud_transformed.points[i].y;
+    points[i * dim + 0] = static_cast<coordT> (cloud_transformed.points[i].x);
+    points[i * dim + 1] = static_cast<coordT> (cloud_transformed.points[i].y);
 
     if (dim > 2)
-      points[i * dim + 2] = (coordT)cloud_transformed.points[i].z;
+      points[i * dim + 2] = static_cast<coordT> (cloud_transformed.points[i].z);
   }
 
   // Compute concave hull
-  exitcode = qh_new_qhull (dim, cloud_transformed.points.size (), points, ismalloc, flags, outfile, errfile);
+  exitcode = qh_new_qhull (dim, static_cast<int> (cloud_transformed.points.size ()), points, ismalloc, flags, outfile, errfile);
 
   if (exitcode != 0)
   {
-    PCL_ERROR ("[pcl::%s::performReconstrution] ERROR: qhull was unable to compute a concave hull for the given point cloud (%lu)!\n", getClassName ().c_str (), (unsigned long) cloud_transformed.points.size ());
+    PCL_ERROR ("[pcl::%s::performReconstrution] ERROR: qhull was unable to compute a concave hull for the given point cloud (%zu)!\n", getClassName ().c_str (), cloud_transformed.points.size ());
 
     //check if it fails because of NaN values...
     if (!cloud_transformed.is_dense)
@@ -253,7 +253,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   int max_vertex_id = - 1;
   FORALLvertices
   {
-    if ((int)vertex->id > max_vertex_id)
+    if (vertex->id > max_vertex_id)
       max_vertex_id = vertex->id;
   }
 
@@ -277,16 +277,16 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
       // Facets are tetrahedrons (3d)
       if (!facet->upperdelaunay)
       {
-        vertexT *anyVertex = (vertexT*)(facet->vertices->e[0].p);
+        vertexT *anyVertex = static_cast<vertexT*> (facet->vertices->e[0].p);
         double *center = facet->center;
         double r = qh_pointdist (anyVertex->point,center,dim);
         facetT *neighb;
 
         if (voronoi_centers_)
         {
-          voronoi_centers_->points[non_upper].x = (float)facet->center[0];
-          voronoi_centers_->points[non_upper].y = (float)facet->center[1];
-          voronoi_centers_->points[non_upper].z = (float)facet->center[2];
+          voronoi_centers_->points[non_upper].x = static_cast<float> (facet->center[0]);
+          voronoi_centers_->points[non_upper].y = static_cast<float> (facet->center[1]);
+          voronoi_centers_->points[non_upper].z = static_cast<float> (facet->center[2]);
         }
 
         non_upper++;
@@ -321,15 +321,15 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
               // check if individual triangle is good and add it to triangles_set
 
               PointInT a, b, c;
-              a.x = ((vertexT*)(ridge->vertices->e[0].p))->point[0];
-              a.y = ((vertexT*)(ridge->vertices->e[0].p))->point[1];
-              a.z = ((vertexT*)(ridge->vertices->e[0].p))->point[2];
-              b.x = ((vertexT*)(ridge->vertices->e[1].p))->point[0];
-              b.y = ((vertexT*)(ridge->vertices->e[1].p))->point[1];
-              b.z = ((vertexT*)(ridge->vertices->e[1].p))->point[2];
-              c.x = ((vertexT*)(ridge->vertices->e[2].p))->point[0];
-              c.y = ((vertexT*)(ridge->vertices->e[2].p))->point[1];
-              c.z = ((vertexT*)(ridge->vertices->e[2].p))->point[2];
+              a.x = static_cast<float> ((static_cast<vertexT*>(ridge->vertices->e[0].p))->point[0]);
+              a.y = static_cast<float> ((static_cast<vertexT*>(ridge->vertices->e[0].p))->point[1]);
+              a.z = static_cast<float> ((static_cast<vertexT*>(ridge->vertices->e[0].p))->point[2]);
+              b.x = static_cast<float> ((static_cast<vertexT*>(ridge->vertices->e[1].p))->point[0]);
+              b.y = static_cast<float> ((static_cast<vertexT*>(ridge->vertices->e[1].p))->point[1]);
+              b.z = static_cast<float> ((static_cast<vertexT*>(ridge->vertices->e[1].p))->point[2]);
+              c.x = static_cast<float> ((static_cast<vertexT*>(ridge->vertices->e[2].p))->point[0]);
+              c.y = static_cast<float> ((static_cast<vertexT*>(ridge->vertices->e[2].p))->point[1]);
+              c.z = static_cast<float> ((static_cast<vertexT*>(ridge->vertices->e[2].p))->point[2]);
 
               double r = pcl::getCircumcircleRadius (a, b, c);
               if (r <= alpha_)
@@ -369,9 +369,9 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
         {
           if (!added_vertices[vertex->id])
           {
-            alpha_shape.points[vertices].x = (float)vertex->point[0];
-            alpha_shape.points[vertices].y = (float)vertex->point[1];
-            alpha_shape.points[vertices].z = (float)vertex->point[2];
+            alpha_shape.points[vertices].x = static_cast<float> (vertex->point[0]);
+            alpha_shape.points[vertices].y = static_cast<float> (vertex->point[1]);
+            alpha_shape.points[vertices].z = static_cast<float> (vertex->point[2]);
 
             qhid_to_pcidx[vertex->id] = vertices;   //map the vertex id of qhull to the point cloud index
             added_vertices[vertex->id] = true;
@@ -387,7 +387,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     }
 
     alpha_shape.points.resize (vertices);
-    alpha_shape.width = alpha_shape.points.size ();
+    alpha_shape.width = static_cast<uint32_t> (alpha_shape.points.size ());
     alpha_shape.height = 1;
   }
   else
@@ -405,7 +405,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
       {
         // Check if the distance from any vertex to the facet->center
         // (center of the voronoi cell) is smaller than alpha
-        vertexT *anyVertex = (vertexT*)(facet->vertices->e[0].p);
+        vertexT *anyVertex = static_cast<vertexT*>(facet->vertices->e[0].p);
         double r = (sqrt ((anyVertex->point[0] - facet->center[0]) *
                           (anyVertex->point[0] - facet->center[0]) +
                           (anyVertex->point[1] - facet->center[1]) *
@@ -422,9 +422,9 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
 
           if (voronoi_centers_)
           {
-            voronoi_centers_->points[dd].x = (float)facet->center[0];
-            voronoi_centers_->points[dd].y = (float)facet->center[1];
-            voronoi_centers_->points[dd].z = (float)0;
+            voronoi_centers_->points[dd].x = static_cast<float> (facet->center[0]);
+            voronoi_centers_->points[dd].y = static_cast<float> (facet->center[1]);
+            voronoi_centers_->points[dd].z = 0.0f;
           }
 
           ++dd;
@@ -452,11 +452,11 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
         {
           if (!added_vertices[vertex->id])
           {
-            alpha_shape.points[vertices].x = (float)vertex->point[0];
-            alpha_shape.points[vertices].y = (float)vertex->point[1];
+            alpha_shape.points[vertices].x = static_cast<float> (vertex->point[0]);
+            alpha_shape.points[vertices].y = static_cast<float> (vertex->point[1]);
 
             if (dim > 2)
-              alpha_shape.points[vertices].z = (float)vertex->point[2];
+              alpha_shape.points[vertices].z = static_cast<float> (vertex->point[2]);
             else
               alpha_shape.points[vertices].z = 0;
 
@@ -536,7 +536,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     {
       polygons[poly_id].vertices.resize (pcd_idx_start_polygons[poly_id + 1] - pcd_idx_start_polygons[poly_id] + 1);
       // populate points in the corresponding polygon
-      for (size_t j = (size_t)pcd_idx_start_polygons[poly_id]; j < (size_t)pcd_idx_start_polygons[poly_id + 1]; ++j)
+      for (int j = pcd_idx_start_polygons[poly_id]; j < pcd_idx_start_polygons[poly_id + 1]; ++j)
         polygons[poly_id].vertices[j - pcd_idx_start_polygons[poly_id]] = j;
 
       polygons[poly_id].vertices[polygons[poly_id].vertices.size () - 1] = pcd_idx_start_polygons[poly_id];
