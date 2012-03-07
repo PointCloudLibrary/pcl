@@ -159,14 +159,14 @@ namespace pcl
           }
 
           // return size of centroid vector
-          return (voxelCentroidList_arg.size ());
+          return (static_cast<unsigned int> (voxelCentroidList_arg.size ()));
         }
 
         /** \brief Get centroid for a single voxel addressed by a PointT point.
-         * \param point_arg: point addressing a voxel in octree
-         * \param voxelCentroid_arg: centroid is written to this PointT reference
-         * \return "true" if voxel is found; "false" otherwise
-         */
+          * \param point_arg: point addressing a voxel in octree
+          * \param voxelCentroid_arg: centroid is written to this PointT reference
+          * \return "true" if voxel is found; "false" otherwise
+          */
         bool
         getVoxelCentroidAtPoint (const PointT& point_arg, PointT& voxelCentroid_arg)
         {

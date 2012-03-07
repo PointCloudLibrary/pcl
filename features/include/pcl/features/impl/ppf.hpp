@@ -61,7 +61,7 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   // Initialize output container - overwrite the sizes done by Feature::initCompute ()
   output.points.resize (indices_->size () * input_->points.size ());
   output.height = 1;
-  output.width = output.points.size ();
+  output.width = static_cast<uint32_t> (output.points.size ());
   output.is_dense = true;
 
   // Compute point pair features for every pair of points in the cloud

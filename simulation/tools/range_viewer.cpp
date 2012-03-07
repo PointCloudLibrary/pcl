@@ -142,11 +142,11 @@ RangeVisualization::spin ()
 }
 
 int
-main (int argc, char** argv)
+main (int, char**)
 {
   RangeVisualization range_viz;
   range_viz.spin ();
 
-  return 0;
+  return (0);
 }
 

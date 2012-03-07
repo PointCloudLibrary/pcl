@@ -144,7 +144,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
     Eigen::Vector3f scene_reference_point = target_->points[scene_reference_index].getVector3fMap (),
         scene_reference_normal = target_->points[scene_reference_index].getNormalVector3fMap ();
 
-    Eigen::AngleAxisf rotation_sg (acos (scene_reference_normal.dot (Eigen::Vector3f::UnitX ())),
+    Eigen::AngleAxisf rotation_sg (acosf (scene_reference_normal.dot (Eigen::Vector3f::UnitX ())),
                                    scene_reference_normal.cross (Eigen::Vector3f::UnitX ()). normalized());
     Eigen::Affine3f transform_sg = Eigen::Translation3f ( rotation_sg* ((-1)*scene_reference_point)) * rotation_sg;
 
@@ -315,7 +315,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::posesWithinErrorBounds (Eigen::A
   float position_diff = (pose1.translation () - pose2.translation ()).norm ();
   Eigen::AngleAxisf rotation_diff_mat (pose1.rotation ().inverse () * pose2.rotation ());
 
-  float rotation_diff_angle = fabs (rotation_diff_mat.angle ());
+  float rotation_diff_angle = fabsf (rotation_diff_mat.angle ());
 
   if (position_diff < clustering_position_diff_threshold_ && rotation_diff_angle < clustering_rotation_diff_threshold_)
     return true;
