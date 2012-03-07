@@ -847,7 +847,7 @@ pcl::demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   }
   else
   {
-    cloud_out.width    = indices.size ();
+    cloud_out.width    = static_cast<uint32_t> (indices.size ());
     cloud_out.height   = 1;
   }
   cloud_out.points.resize (indices.size ());
