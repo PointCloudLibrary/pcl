@@ -692,8 +692,6 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute (std::vector<CloudPtr, 
   {
     clusters[i] = (CloudPtr)(new Cloud ());
     pcl::copyPointCloud (*cloud_downsampled_, clusters2[i].indices, *clusters[i]);
-    indices_clusters_.push_back(clusters2[i]);
-
   }
 }
 
@@ -855,7 +853,6 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_full (std::vector<Cloud
   {
     clusters[i] = (CloudPtr)(new Cloud ());
     pcl::copyPointCloud (*cloud_filtered_, clusters2[i].indices, *clusters[i]);
-    indices_clusters_.push_back(clusters2[i]);
   }
 }
 

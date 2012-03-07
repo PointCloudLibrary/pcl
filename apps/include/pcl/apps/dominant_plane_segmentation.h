@@ -209,6 +209,7 @@ namespace pcl
         }
 
         /* \brief Returns the indices of the clusters found by the segmentation
+         * NOTE: This function returns only valid indices if the compute_fast method is used
          * \param indices indices of the clusters
          */
         void getIndicesClusters(std::vector<pcl::PointIndices> & indices) {
