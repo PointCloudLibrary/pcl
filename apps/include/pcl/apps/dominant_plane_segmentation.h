@@ -208,6 +208,13 @@ namespace pcl
          wsize_ = w;
         }
 
+        /* \brief Returns the indices of the clusters found by the segmentation
+         * \param indices indices of the clusters
+         */
+        void getIndicesClusters(std::vector<pcl::PointIndices> & indices) {
+          indices = indices_clusters_;
+        }
+
       private:
 
         int
@@ -263,6 +270,9 @@ namespace pcl
         double object_cluster_min_size_;
         /** \brief Window size in pixels for CC in compute_fast method */
         int wsize_;
+        /** \brief Indices of the clusters to the main cloud found by the segmentation */
+        std::vector<pcl::PointIndices> indices_clusters_;
+
       };
   }
 }

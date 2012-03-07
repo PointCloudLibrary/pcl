@@ -321,10 +321,10 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<Cloud
 
   {
 
-    size_t wsize = wsize_;
-    for (size_t i = 0; i < binary_cloud->width; i++)
+    int wsize = wsize_;
+    for (int i = 0; i < (int)binary_cloud->width; i++)
     {
-      for (size_t j = 0; j < binary_cloud->height; j++)
+      for (int j = 0; j < (int)binary_cloud->height; j++)
       {
         if (binary_cloud->at (i, j).intensity != 0)
         {
@@ -347,7 +347,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<Cloud
                 //Nothing found on the left, check bigger window
 
                 bool found = false;
-                for (size_t kk = 2; kk < wsize && !found; kk++)
+                for (int kk = 2; kk < wsize && !found; kk++)
                 {
                   if ((i - kk) < 0)
                     continue;
@@ -376,7 +376,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<Cloud
                 if (top)
                 {
                   bool found = false;
-                  for (size_t kk = 2; kk < wsize && !found; kk++)
+                  for (int kk = 2; kk < wsize && !found; kk++)
                   {
                     if ((j - kk) < 0)
                       continue;
@@ -428,7 +428,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<Cloud
                   //if none had labels, increment c_intensity
                   //search first on bigger window
                   bool found = false;
-                  for (size_t dist = 2; dist < wsize && !found; dist++)
+                  for (int dist = 2; dist < wsize && !found; dist++)
                   {
                     if (((i - dist) < 0) || ((j - dist) < 0))
                       continue;
@@ -524,6 +524,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<Cloud
       clusters[k] = (CloudPtr)(new Cloud ());
       pcl::copyPointCloud (*input_, (*it_indices).second.indices, *clusters[k]);
       k++;
+      indices_clusters_.push_back((*it_indices).second);
     }
   }
 
@@ -691,6 +692,8 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute (std::vector<CloudPtr, 
   {
     clusters[i] = (CloudPtr)(new Cloud ());
     pcl::copyPointCloud (*cloud_downsampled_, clusters2[i].indices, *clusters[i]);
+    indices_clusters_.push_back(clusters2[i]);
+
   }
 }
 
@@ -852,6 +855,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_full (std::vector<Cloud
   {
     clusters[i] = (CloudPtr)(new Cloud ());
     pcl::copyPointCloud (*cloud_filtered_, clusters2[i].indices, *clusters[i]);
+    indices_clusters_.push_back(clusters2[i]);
   }
 }
 
