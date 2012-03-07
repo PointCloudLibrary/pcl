@@ -347,7 +347,7 @@ TEST (PCL, KdTreeFLANN_setPointRepresentation)
 
   KdTreeFLANN<MyPoint> kdtree;
   kdtree.setInputCloud (random_cloud);
-  MyPoint p (50.0, 50.0, 50.0);
+  MyPoint p (50.0f, 50.0f, 50.0f);
   
   // Find k nearest neighbors
   const int k = 10;
@@ -359,7 +359,7 @@ TEST (PCL, KdTreeFLANN_setPointRepresentation)
     // Compare to ground truth values, computed independently
     static const int gt_indices[10] = {2, 7, 5, 1, 4, 6, 9, 0, 8, 3};
     static const float gt_distances[10] = 
-      {877.8, 1674.7, 1802.6, 1937.5, 2120.6, 2228.8, 3064.5, 3199.7, 3604.2, 4344.8};
+      {877.8f, 1674.7f, 1802.6f, 1937.5f, 2120.6f, 2228.8f, 3064.5f, 3199.7f, 3604.2f, 4344.8f};
     EXPECT_EQ (k_indices[i], gt_indices[i]);
     EXPECT_NEAR (k_distances[i], gt_distances[i], 0.1);
   }
@@ -373,14 +373,14 @@ TEST (PCL, KdTreeFLANN_setPointRepresentation)
     // Compare to ground truth values, computed independently
     static const int gt_indices[10] = {6, 2, 5, 1, 7, 0, 4, 3, 9, 8};
     static const float gt_distances[10] = 
-      {158.6, 716.5, 778.6, 1170.2, 1177.5, 1402.0, 1924.6, 2639.1, 2808.5, 3370.1};
+      {158.6f, 716.5f, 778.6f, 1170.2f, 1177.5f, 1402.0f, 1924.6f, 2639.1f, 2808.5f, 3370.1f};
     EXPECT_EQ (k_indices[i], gt_indices[i]);
     EXPECT_NEAR (k_distances[i], gt_distances[i], 0.1);
   }
 
   // Go back to the default, this time with the values rescaled
   DefaultPointRepresentation<MyPoint> point_rep;
-  float alpha[3] = {1.0, 2.0, 3.0};
+  float alpha[3] = {1.0f, 2.0f, 3.0f};
   point_rep.setRescaleValues(alpha);
   kdtree.setPointRepresentation (point_rep.makeShared ());
   kdtree.nearestKSearch (p, k, k_indices, k_distances);
@@ -389,7 +389,7 @@ TEST (PCL, KdTreeFLANN_setPointRepresentation)
     // Compare to ground truth values, computed independently
     static const int gt_indices[10] =  {2, 9, 4, 7, 1, 5, 8, 0, 3, 6};
     static const float gt_distances[10] = 
-      {3686.9, 6769.2, 7177.0, 8802.3, 11071.5, 11637.3, 11742.4, 17769.0, 18497.3, 18942.0};
+      {3686.9f, 6769.2f, 7177.0f, 8802.3f, 11071.5f, 11637.3f, 11742.4f, 17769.0f, 18497.3f, 18942.0f};
     EXPECT_EQ (k_indices[i], gt_indices[i]);
     EXPECT_NEAR (k_distances[i], gt_distances[i], 0.1);
   }

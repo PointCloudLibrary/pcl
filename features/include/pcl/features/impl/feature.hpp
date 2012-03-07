@@ -80,7 +80,7 @@ pcl::solvePlaneParameters (const Eigen::Matrix3f &covariance_matrix,
   // Compute the curvature surface change
   float eig_sum = covariance_matrix.coeff (0) + covariance_matrix.coeff (4) + covariance_matrix.coeff (8);
   if (eig_sum != 0)
-    curvature = fabs ( eigen_value / eig_sum );
+    curvature = fabsf (eigen_value / eig_sum);
   else
     curvature = 0;
 }
@@ -216,7 +216,7 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
   // Check if the output will be computed for all points or only a subset
   if (indices_->size () != input_->points.size ())
   {
-    output.width = (int) indices_->size ();
+    output.width = static_cast<int> (indices_->size ());
     output.height = 1;
   }
   else
@@ -253,7 +253,7 @@ pcl::Feature<PointInT, PointOutT>::computeEigen (pcl::PointCloud<Eigen::MatrixXf
   // Check if the output will be computed for all points or only a subset
   if (indices_->size () != input_->points.size ())
   {
-    output.width = (int) indices_->size ();
+    output.width = static_cast<int> (indices_->size ());
     output.height = 1;
   }
   else

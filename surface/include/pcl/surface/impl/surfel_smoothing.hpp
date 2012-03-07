@@ -164,9 +164,9 @@ pcl::SurfelSmoothing<PointT, PointNT>::smoothPoint (size_t &point_index,
   result_point(3) = 0.0f;
 
   // @todo parameter
-  float error_residual_threshold_ = 1e-3;
+  float error_residual_threshold_ = 1e-3f;
   float error_residual = error_residual_threshold_ + 1;
-  float last_error_residual = error_residual + 100;
+  float last_error_residual = error_residual + 100.0f;
 
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;

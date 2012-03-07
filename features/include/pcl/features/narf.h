@@ -141,7 +141,7 @@ namespace pcl
       
       //! How many points on each beam of the gradient star are used to calculate the descriptor?
       inline int 
-      getNoOfBeamPoints () const { return pcl_lrint(ceil(0.5f*float(surface_patch_pixel_size_))); }
+      getNoOfBeamPoints () const { return (static_cast<int> (pcl_lrint (ceil (0.5f * float (surface_patch_pixel_size_))))); }
       
       //! Copy the descriptor and pose to the point struct Narf36
       inline void 

@@ -138,7 +138,7 @@ bool RangeImageBorderExtractor::get3dDirection(const BorderDescription& border_d
   int x=border_description.x, y=border_description.y;
   const PointWithRange& point = range_image_->getPoint(x, y);
   Eigen::Vector3f neighbor_point;
-  range_image_->calculate3DPoint((float) (x+delta_x), (float) (y+delta_y), point.range, neighbor_point);
+  range_image_->calculate3DPoint(static_cast<float> (x+delta_x), static_cast<float> (y+delta_y), point.range, neighbor_point);
   //cout << "Neighborhood point is "<<neighbor_point[0]<<", "<<neighbor_point[1]<<", "<<neighbor_point[2]<<".\n";
   
   if (local_surface!=NULL)

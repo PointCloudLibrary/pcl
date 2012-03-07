@@ -73,7 +73,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   {
     // Special case: When a feature must be computed at every point, there is no need for a neighborhood search
     spfh_indices_vec.resize (indices_->size ());
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
       spfh_indices_vec[idx] = idx;
   }
 
@@ -86,7 +86,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   // Compute SPFH signatures for every point that needs them
   
 #pragma omp parallel for schedule (dynamic, threads_)
-  for (int i = 0; i < (int) spfh_indices_vec.size (); ++i)
+  for (int i = 0; i < static_cast<int> (spfh_indices_vec.size ()); ++i)
   {
     // Get the next point index
     int p_idx = spfh_indices_vec[i];
@@ -109,7 +109,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
   // Iterate over the entire index vector
 #pragma omp parallel for schedule (dynamic, threads_)
-  for (int idx = 0; idx < (int) indices_->size (); ++idx)
+  for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
   {
     // Find the indices of point idx's neighbors...
     std::vector<int> nn_indices (k_); // \note These resizes are irrelevant for a radiusSearch ().

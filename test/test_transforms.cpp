@@ -33,8 +33,6 @@
  *
  *
  */
-/** \author Romain Thibaux, Radu Bogdan Rusu */
-
 #include <gtest/gtest.h>
 
 #include <iostream>  // For debug
@@ -51,8 +49,8 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace std;
 
-const float PI = 3.14159265;
-const float rho = sqrt (2.0) / 2;  // cos(PI/4) == sin(PI/4)
+const float PI = 3.14159265f;
+const float rho = sqrtf (2.0f) / 2.0f;  // cos(PI/4) == sin(PI/4)
 
 class MyPointXYZ : public PointXYZ 
 {

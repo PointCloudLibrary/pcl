@@ -286,7 +286,9 @@ namespace pcl
       inline int 
       getCentroidIndex (const PointT &p)
       {
-        return leaf_layout_.at ((Eigen::Vector4i (floor (p.x / leaf_size_[0]), floor (p.y / leaf_size_[1]), floor (p.z / leaf_size_[2]), 0) - min_b_).dot (divb_mul_));
+        return (leaf_layout_.at ((Eigen::Vector4i (static_cast<int> (floor (p.x / leaf_size_[0])), 
+                                                   static_cast<int> (floor (p.y / leaf_size_[1])), 
+                                                   static_cast<int> (floor (p.z / leaf_size_[2])), 0) - min_b_).dot (divb_mul_)));
       }
 
       /** \brief Returns the indices in the resulting downsampled cloud of the points at the specified grid coordinates,
@@ -298,7 +300,9 @@ namespace pcl
       inline std::vector<int> 
       getNeighborCentroidIndices (const PointT &reference_point, const Eigen::MatrixXi &relative_coordinates)
       {
-        Eigen::Vector4i ijk (floor (reference_point.x / leaf_size_[0]), floor (reference_point.y / leaf_size_[1]), floor (reference_point.z / leaf_size_[2]), 0);
+        Eigen::Vector4i ijk (static_cast<int> (floor (reference_point.x / leaf_size_[0])), 
+                             static_cast<int> (floor (reference_point.y / leaf_size_[1])), 
+                             static_cast<int> (floor (reference_point.z / leaf_size_[2])), 0);
         Eigen::Array4i diff2min = min_b_ - ijk;
         Eigen::Array4i diff2max = max_b_ - ijk;
         std::vector<int> neighbors (relative_coordinates.cols());
@@ -328,7 +332,9 @@ namespace pcl
       inline Eigen::Vector3i 
       getGridCoordinates (float x, float y, float z) 
       { 
-        return (Eigen::Vector3i (floor (x / leaf_size_[0]), floor (y / leaf_size_[1]), floor (z / leaf_size_[2]))); 
+        return (Eigen::Vector3i (static_cast<int> (floor (x / leaf_size_[0])), 
+                                 static_cast<int> (floor (y / leaf_size_[1])), 
+                                 static_cast<int> (floor (z / leaf_size_[2])))); 
       }
 
       /** \brief Returns the index in the downsampled cloud corresponding to a given set of coordinates.
@@ -605,7 +611,9 @@ namespace pcl
       inline std::vector<int> 
       getNeighborCentroidIndices (float x, float y, float z, const Eigen::MatrixXi &relative_coordinates)
       {
-        Eigen::Vector4i ijk ((int) floor (x / leaf_size_[0]), (int) floor (y / leaf_size_[1]), (int) floor (z / leaf_size_[2]), 0);
+        Eigen::Vector4i ijk (static_cast<int> (floor (x / leaf_size_[0])), 
+                             static_cast<int> (floor (y / leaf_size_[1])), 
+                             static_cast<int> (floor (z / leaf_size_[2])), 0);
         Eigen::Array4i diff2min = min_b_ - ijk;
         Eigen::Array4i diff2max = max_b_ - ijk;
         std::vector<int> neighbors (relative_coordinates.cols());
@@ -632,7 +640,7 @@ namespace pcl
       inline std::vector<int> 
       getNeighborCentroidIndices (float x, float y, float z, const std::vector<Eigen::Vector3i> &relative_coordinates)
       {
-        Eigen::Vector4i ijk ((int) floor (x / leaf_size_[0]), (int) floor (y / leaf_size_[1]), (int) floor (z / leaf_size_[2]), 0);
+        Eigen::Vector4i ijk (static_cast<int> (floorf (x / leaf_size_[0])), static_cast<int> (floorf (y / leaf_size_[1])), static_cast<int> (floorf (z / leaf_size_[2])), 0);
         std::vector<int> neighbors;
         neighbors.reserve (relative_coordinates.size ());
         for (std::vector<Eigen::Vector3i>::const_iterator it = relative_coordinates.begin (); it != relative_coordinates.end (); it++)
@@ -654,7 +662,7 @@ namespace pcl
       inline Eigen::Vector3i 
       getGridCoordinates (float x, float y, float z) 
       { 
-        return (Eigen::Vector3i ((int) floor (x / leaf_size_[0]), (int) floor (y / leaf_size_[1]), (int) floor (z / leaf_size_[2]))); 
+        return (Eigen::Vector3i (static_cast<int> (floor (x / leaf_size_[0])), static_cast<int> (floor (y / leaf_size_[1])), static_cast<int> (floor (z / leaf_size_[2])))); 
       }
 
       /** \brief Returns the index in the downsampled cloud corresponding to a given set of coordinates.

@@ -82,7 +82,7 @@ pcl::PCA<PointT>::initCompute ()
   demeanPointCloud (*input_, *indices_, mean_, cloud_demean);
   assert (cloud_demean.cols () == int (indices_->size ()));
   // Compute the product cloud_demean * cloud_demean^T
-  Eigen::Matrix3f alpha = cloud_demean.topRows<3> () * cloud_demean.topRows<3> ().transpose ();
+  Eigen::Matrix3f alpha = static_cast<Eigen::Matrix3f> (cloud_demean.topRows<3> () * cloud_demean.topRows<3> ().transpose ());
   
   // Compute eigen vectors and values
   Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> evd (alpha);

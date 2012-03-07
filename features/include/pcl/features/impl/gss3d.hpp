@@ -291,7 +291,7 @@ pcl::GSS3DEstimation<PointInT, PointNT, PointOutT>::computeGeodesicDistance (siz
                                                                              size_t x1, size_t y1)
 {
   // Based on the Bresenham's algorithm: http://en.wikipedia.org/wiki/Bresenham's_line_algorithm
-  bool steep = abs ((long) (y1 - y0)) > abs ((long) (x1 - x0));
+  bool steep = abs (static_cast<long> (y1 - y0)) > abs (static_cast<long> (x1 - x0));
   size_t aux;
   if (steep)
   {
@@ -316,7 +316,7 @@ pcl::GSS3DEstimation<PointInT, PointNT, PointOutT>::computeGeodesicDistance (siz
   }
 
   size_t delta_x = x1 - x0,
-      delta_y = abs ((long) (y1 - y0));
+      delta_y = abs (static_cast<long> (y1 - y0));
   float error = 0.0f;
   float delta_error = float (delta_y) / delta_x;
   int ystep;

@@ -91,7 +91,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::RGB2CIELAB (unsigned
     {
       float f = i / 255.0f;
       if (f > 0.04045)
-        sRGB_LUT[i] = (float)pow ((f + 0.055) / 1.055, 2.4);
+        sRGB_LUT[i] = static_cast<float> (pow ((f + 0.055) / 1.055, 2.4));
       else
         sRGB_LUT[i] = f / 12.92;
     }
@@ -100,7 +100,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::RGB2CIELAB (unsigned
     {
       float f = i / 4000.0f;
       if (f > 0.008856)
-        sXYZ_LUT[i] = pow (f, (float)0.3333);
+        sXYZ_LUT[i] = pow (f, 0.3333);
       else
         sXYZ_LUT[i] = (7.787 * f) + (16.0 / 116.0);
     }
@@ -111,33 +111,33 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::RGB2CIELAB (unsigned
   float fb = sRGB_LUT[B];
 
   // Use white = D65
-  const float x = fr * 0.412453 + fg * 0.357580 + fb * 0.180423;
-  const float y = fr * 0.212671 + fg * 0.715160 + fb * 0.072169;
-  const float z = fr * 0.019334 + fg * 0.119193 + fb * 0.950227;
+  const float x = fr * 0.412453f + fg * 0.357580f + fb * 0.180423f;
+  const float y = fr * 0.212671f + fg * 0.715160f + fb * 0.072169f;
+  const float z = fr * 0.019334f + fg * 0.119193f + fb * 0.950227f;
 
-  float vx = x / 0.95047;
+  float vx = x / 0.95047f;
   float vy = y;
-  float vz = z / 1.08883;
+  float vz = z / 1.08883f;
 
   vx = sXYZ_LUT[int(vx*4000)];
   vy = sXYZ_LUT[int(vy*4000)];
   vz = sXYZ_LUT[int(vz*4000)];
 
-  L = 116.0 * vy - 16.0;
-  if (L>100)
-    L=100;
+  L = 116.0f * vy - 16.0f;
+  if (L > 100)
+    L = 100.0f;
 
-  A = 500.0 * (vx - vy);
-  if (A>120)
-    A=120;
-  else if (A<- 120)
-    A=- 120;
+  A = 500.0f * (vx - vy);
+  if (A > 120)
+    A = 120.0f;
+  else if (A <- 120)
+    A = -120.0f;
 
-  B2 = 200.0 * (vy - vz);
-  if (B2>120)
-    B2=120;
+  B2 = 200.0f * (vy - vz);
+  if (B2 > 120)
+    B2 = 120.0f;
   else if (B2<- 120)
-    B2=- 120;
+    B2 = -120.0f;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -752,7 +752,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (Poin
   rf_[1].setZero ();
   rf_[2].setZero ();
 
-  if (output.points[0].descriptor.size () != (size_t)descLength_)
+  if (output.points[0].descriptor.size () != static_cast<size_t> (descLength_))
     for (size_t idx = 0; idx < indices_->size (); ++idx)
       output.points[idx].descriptor.resize (descLength_);
 //  if (output.points[0].size != (size_t)descLength_)
@@ -878,7 +878,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::computeFeature (pcl::Poin
   rf_[1].setZero ();
   rf_[2].setZero ();
 
-  if (output.points[0].descriptor.size () != (size_t)descLength_)
+  if (output.points[0].descriptor.size () != static_cast<size_t> (descLength_))
     for (size_t idx = 0; idx < indices_->size (); ++idx)
       output.points[idx].descriptor.resize (descLength_);
 //  if (output.points[0].size != (size_t)descLength_)

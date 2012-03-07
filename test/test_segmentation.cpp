@@ -202,19 +202,19 @@ TEST (SegmentDifferences, Segmentation)
   PointCloud<PointXYZ> output;
   sd.segment (output);
 
-  EXPECT_EQ ((int)output.points.size (), 0);
+  EXPECT_EQ (static_cast<int> (output.points.size ()), 0);
   
   // Set a different target
   sd.setTargetCloud (cloud_t_);
   sd.segment (output);
-  EXPECT_EQ ((int)output.points.size (), 126);
+  EXPECT_EQ (static_cast<int> (output.points.size ()), 126);
   //savePCDFile ("./test/0-t.pcd", output);
 
   // Reverse
   sd.setInputCloud (cloud_t_);
   sd.setTargetCloud (cloud_);
   sd.segment (output);
-  EXPECT_EQ ((int)output.points.size (), 127);
+  EXPECT_EQ (static_cast<int> (output.points.size ()), 127);
   //savePCDFile ("./test/t-0.pcd", output);
 }
 
@@ -237,7 +237,7 @@ TEST (ExtractPolygonalPrism, Segmentation)
   PointIndices output;
   ex.segment (output);
 
-  EXPECT_EQ ((int)output.indices.size (), 0);
+  EXPECT_EQ (static_cast<int> (output.indices.size ()), 0);
 }
 
 /* ---[ */

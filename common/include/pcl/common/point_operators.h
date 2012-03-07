@@ -89,7 +89,7 @@ namespace pcl
       operator() (const float& val = 0) { return (val); }
       
       inline float 
-      operator() (const pcl::PointXYZRGB& p) { return ((299*p.r + 587*p.g + 114*p.b)/1000.0f); }
+      operator() (const pcl::PointXYZRGB& p) { return (static_cast<float> (299*p.r + 587*p.g + 114*p.b)/1000.0f); }
     };
 
     /// Converts a PointXYZRGB to PointXYZI
@@ -112,7 +112,7 @@ namespace pcl
       {
         pcl::PointXYZI result;
         result.x = p.x; result.y = p.y; result.z = p.z;
-        result.intensity = (299*p.r + 587*p.g + 114*p.b)/1000.0f;
+        result.intensity = static_cast<float> (299*p.r + 587*p.g + 114*p.b)/1000.0f;
         return (result);
       }
     };
@@ -228,7 +228,9 @@ namespace pcl
       pcl::PointXYZRGB result;
       result.getVector3fMap () = lhs.getVector3fMap ();
       result.getVector3fMap () += rhs.getVector3fMap ();
-      result.r = lhs.r + rhs.r; result.g = lhs.g + rhs.g; result.b = lhs.b + rhs.b;
+      result.r = static_cast<uint8_t> (lhs.r + rhs.r); 
+      result.g = static_cast<uint8_t> (lhs.g + rhs.g);
+      result.b = static_cast<uint8_t> (lhs.b + rhs.b);
       return (result);
     }
     ///substraction operator for PointXYZRGB
@@ -238,7 +240,9 @@ namespace pcl
       pcl::PointXYZRGB result;
       result.getVector3fMap () = lhs.getVector3fMap ();
       result.getVector3fMap () -= rhs.getVector3fMap ();
-      result.r = lhs.r - rhs.r; result.g = lhs.g - rhs.g; result.b = lhs.b - rhs.b;
+      result.r = static_cast<uint8_t> (lhs.r - rhs.r); 
+      result.g = static_cast<uint8_t> (lhs.g - rhs.g); 
+      result.b = static_cast<uint8_t> (lhs.b - rhs.b);
       return (result);
     }
 
@@ -248,7 +252,9 @@ namespace pcl
       pcl::PointXYZRGB result;
       result.getVector3fMap () = p.getVector3fMap ();
       result.getVector3fMap () *= scalar;
-      result.r = scalar * p.r; result.g = scalar * p.g; result.b = scalar * p.b;
+      result.r = static_cast<uint8_t> (scalar * p.r); 
+      result.g = static_cast<uint8_t> (scalar * p.g); 
+      result.b = static_cast<uint8_t> (scalar * p.b);
       return (result);
     }
 
@@ -258,7 +264,9 @@ namespace pcl
       pcl::PointXYZRGB result;
       result.getVector3fMap () = p.getVector3fMap ();
       result.getVector3fMap () *= scalar;
-      result.r = scalar * p.r; result.g = scalar * p.g; result.b = scalar * p.b;
+      result.r = static_cast<uint8_t> (scalar * p.r); 
+      result.g = static_cast<uint8_t> (scalar * p.g); 
+      result.b = static_cast<uint8_t> (scalar * p.b);
       return (result);
     }
 
@@ -266,7 +274,9 @@ namespace pcl
     operator+= (pcl::PointXYZRGB& lhs, const pcl::PointXYZRGB& rhs)
     {
       lhs.getVector3fMap () += rhs.getVector3fMap ();
-      lhs.r+= rhs.r; lhs.g+= rhs.g; lhs.b+= rhs.b;
+      lhs.r += rhs.r; 
+      lhs.g += rhs.g; 
+      lhs.b += rhs.b;
       return (lhs);
     }
 
@@ -274,7 +284,9 @@ namespace pcl
     operator-= (pcl::PointXYZRGB& lhs, const pcl::PointXYZRGB& rhs)
     {
       lhs.getVector3fMap () -= rhs.getVector3fMap ();
-      lhs.r-= rhs.r; lhs.g-= rhs.g; lhs.b-= rhs.b;
+      lhs.r -= rhs.r; 
+      lhs.g -= rhs.g; 
+      lhs.b -= rhs.b;
       return (lhs);
     }
 

@@ -53,7 +53,9 @@ TEST (PCL, PointXYZRGB)
   PointXYZRGB p;
 
   uint8_t r = 127, g = 64, b = 254;
-  uint32_t rgb = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
+  uint32_t rgb = (static_cast<uint32_t> (r) << 16 | 
+                  static_cast<uint32_t> (g) << 8 | 
+                  static_cast<uint32_t> (b));
   p.rgb = *reinterpret_cast<float*>(&rgb);
 
   rgb = *reinterpret_cast<int*>(&p.rgb);
@@ -85,7 +87,9 @@ TEST (PCL, PointXYZRGBNormal)
   PointXYZRGBNormal p;
 
   uint8_t r = 127, g = 64, b = 254;
-  uint32_t rgb = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
+  uint32_t rgb = (static_cast<uint32_t> (r) << 16 | 
+                  static_cast<uint32_t> (g) << 8 | 
+                  static_cast<uint32_t> (b));
   p.rgb = *reinterpret_cast<float*>(&rgb);
 
   rgb = *reinterpret_cast<int*>(&p.rgb);
@@ -141,7 +145,7 @@ TEST (PCL, Common)
 TEST (PCL, Eigen)
 {
   Eigen::Matrix3f mat, vec;
-  mat << 0.000536227, -1.56178e-05, -9.47391e-05, -1.56178e-05, 0.000297322, -0.000148785, -9.47391e-05, -0.000148785, 9.7827e-05;
+  mat << 0.000536227f, -1.56178e-05f, -9.47391e-05f, -1.56178e-05f, 0.000297322f, -0.000148785f, -9.47391e-05f, -0.000148785f, 9.7827e-05f;
   Eigen::Vector3f val;
 
   eigen33 (mat, vec, val);
@@ -180,10 +184,13 @@ TEST (PCL, PointCloud)
 
   cloud.width = 10;
   for (uint32_t i = 0; i < cloud.width*cloud.height; ++i)
-    cloud.points.push_back (PointXYZ (3 * i + 0, 3 * i + 1, 3 * i + 2));
+  {
+    float j = static_cast<float> (i);
+    cloud.points.push_back (PointXYZ (3.0f * j + 0.0f, 3.0f * j + 1.0f, 3.0f * j + 2.0f));
+  }
 
   Eigen::MatrixXf mat_xyz1 = cloud.getMatrixXfMap ();
-  Eigen::MatrixXf mat_xyz = cloud.getMatrixXfMap(3,4,0);
+  Eigen::MatrixXf mat_xyz = cloud.getMatrixXfMap (3, 4, 0);
 
   if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
   {
@@ -291,8 +298,8 @@ TEST (PCL, PointTypes)
 TEST (PCL, Intersections)
 {
   Eigen::VectorXf zline (6), yline (6);
-  zline[0] = 0.543892; zline[1] = -0.515623; zline[2] = 1.321;   zline[3] = 0.0266191; zline[4] = 0.600215;  zline[5] = -0.0387667;
-  yline[0] = 0.493479; yline[1] = 0.169246;  yline[2] = 1.22677; yline[3] = 0.5992;    yline[4] = 0.0505085; yline[5] = 0.405749;
+  zline[0] = 0.543892f; zline[1] = -0.515623f; zline[2] = 1.321f;   zline[3] = 0.0266191f; zline[4] = 0.600215f;  zline[5] = -0.0387667f;
+  yline[0] = 0.493479f; yline[1] = 0.169246f;  yline[2] = 1.22677f; yline[3] = 0.5992f;    yline[4] = 0.0505085f; yline[5] = 0.405749f;
 
   Eigen::Vector4f pt;
   EXPECT_EQ ((pcl::lineWithLineIntersection (zline, yline, pt)), true);
@@ -301,8 +308,8 @@ TEST (PCL, Intersections)
   EXPECT_NEAR (pt[2], 1.27636,  1e-3);
   EXPECT_EQ (pt[3], 0);
 
-  zline << 0.545203, -0.514419, 1.31967, 0.0243372, 0.597946, -0.0413579;
-  yline << 0.492706,  0.164196, 1.23192, 0.598704,  0.0442014, 0.411328;
+  zline << 0.545203f, -0.514419f, 1.31967f, 0.0243372f, 0.597946f, -0.0413579f;
+  yline << 0.492706f,  0.164196f, 1.23192f, 0.598704f,  0.0442014f, 0.411328f;
   EXPECT_EQ ((pcl::lineWithLineIntersection (zline, yline, pt)), false);
   //intersection: [ 3.06416e+08    15.2237     3.06416e+08       4.04468e-34 ]
 }

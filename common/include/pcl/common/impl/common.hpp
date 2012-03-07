@@ -159,7 +159,7 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const std::vector<int
                      const Eigen::Vector4f &pivot_pt, Eigen::Vector4f &max_pt)
 {
   float max_dist = -FLT_MAX;
-  float max_idx = -1;
+  int max_idx = -1;
   float dist;
 
   // If the data is dense, we don't need to check for NaN
@@ -171,7 +171,7 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const std::vector<int
       dist = (pivot_pt - pt).norm ();
       if (dist > max_dist)
       {
-        max_idx = i;
+        max_idx = static_cast<int> (i);
         max_dist = dist;
       }
     }
@@ -191,7 +191,7 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const std::vector<int
       dist = (pivot_pt - pt).norm ();
       if (dist > max_dist)
       {
-        max_idx = i;
+        max_idx = static_cast<int> (i);
         max_dist = dist;
       }
     }

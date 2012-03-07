@@ -58,16 +58,16 @@ pcl::MovingLeastSquaresOMP<PointInT, NormalOutT>::performReconstruction (PointCl
 
 //#pragma omp parallel for schedule (dynamic, threads_)
   // For all points
-  for (int cp = 0; cp < (int)indices_->size (); ++cp)
+  for (int cp = 0; cp < static_cast<int> (indices_->size ()); ++cp)
   {
     // Get the initial estimates of point positions and their neighborhoods
 //    if (!searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
 //      continue;
 
-    printf ("search_radius_ %f", search_radius_);
-    printf ("index to search: %d --- %f %f %f\n", (*indices_)[cp], input_->points[(*indices_)[cp]].x, input_->points[(*indices_)[cp]].y, input_->points[(*indices_)[cp]].z);
-      if (!tree_->radiusSearch ((*indices_)[cp], search_radius_, nn_indices, nn_sqr_dists))
-        continue;
+    //printf ("search_radius_ %f", search_radius_);
+    //printf ("index to search: %d --- %f %f %f\n", (*indices_)[cp], input_->points[(*indices_)[cp]].x, input_->points[(*indices_)[cp]].y, input_->points[(*indices_)[cp]].z);
+    if (!tree_->radiusSearch ((*indices_)[cp], search_radius_, nn_indices, nn_sqr_dists))
+      continue;
 
     // Check the number of nearest neighbors for normal estimation (and later
     // for polynomial fit as well)

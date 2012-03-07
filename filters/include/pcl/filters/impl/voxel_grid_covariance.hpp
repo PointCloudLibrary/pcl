@@ -68,7 +68,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   Eigen::Vector4f min_p, max_p;
   // Get the minimum and maximum dimensions
   if (!filter_field_name_.empty ()) // If we don't want to process the entire cloud...
-    getMinMax3D<PointT>(input_, filter_field_name_, filter_limit_min_, filter_limit_max_, min_p, max_p, filter_limit_negative_);
+    getMinMax3D<PointT>(input_, filter_field_name_, static_cast<float> (filter_limit_min_), static_cast<float> (filter_limit_max_), min_p, max_p, filter_limit_negative_);
   else
     getMinMax3D<PointT>(*input_, min_p, max_p);
 
@@ -180,9 +180,9 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
           // fill r/g/b data
           int rgb;
           memcpy (&rgb, ((char *)&(input_->points[cp])) + rgba_index, sizeof (int));
-          centroid[centroid_size - 3] = (rgb >> 16) & 0x0000ff;
-          centroid[centroid_size - 2] = (rgb >> 8) & 0x0000ff;
-          centroid[centroid_size - 1] = (rgb) & 0x0000ff;
+          centroid[centroid_size - 3] = static_cast<float> ((rgb >> 16) & 0x0000ff);
+          centroid[centroid_size - 2] = static_cast<float> ((rgb >> 8) & 0x0000ff);
+          centroid[centroid_size - 1] = static_cast<float> ((rgb) & 0x0000ff);
         }
         pcl::for_each_type<FieldList> (NdCopyPointEigenFunctor<PointT> (input_->points[cp], centroid));
         leaf.centroid += centroid;
@@ -240,9 +240,9 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
           // Fill r/g/b data, assuming that the order is BGRA
           int rgb;
           memcpy (&rgb, ((char *)&(input_->points[cp])) + rgba_index, sizeof (int));
-          centroid[centroid_size - 3] = (rgb >> 16) & 0x0000ff;
-          centroid[centroid_size - 2] = (rgb >> 8) & 0x0000ff;
-          centroid[centroid_size - 1] = (rgb) & 0x0000ff;
+          centroid[centroid_size - 3] = static_cast<float> ((rgb >> 16) & 0x0000ff);
+          centroid[centroid_size - 2] = static_cast<float> ((rgb >> 8) & 0x0000ff);
+          centroid[centroid_size - 1] = static_cast<float> ((rgb) & 0x0000ff);
         }
         pcl::for_each_type<FieldList> (NdCopyPointEigenFunctor<PointT> (input_->points[cp], centroid));
         leaf.centroid += centroid;
@@ -364,7 +364,9 @@ pcl::VoxelGridCovariance<PointT>::getNeighborhoodAtPoint (const PointT& referenc
 
   // Find displacement coordinates
   Eigen::MatrixXi relative_coordinates = pcl::getAllNeighborCellIndices ();
-  Eigen::Vector4i ijk (floor (reference_point.x / leaf_size_[0]), floor (reference_point.y / leaf_size_[1]), floor (reference_point.z / leaf_size_[2]), 0);
+  Eigen::Vector4i ijk (static_cast<int> (floor (reference_point.x / leaf_size_[0])), 
+                       static_cast<int> (floor (reference_point.y / leaf_size_[1])), 
+                       static_cast<int> (floor (reference_point.z / leaf_size_[2])), 0);
   Eigen::Array4i diff2min = min_b_ - ijk;
   Eigen::Array4i diff2max = max_b_ - ijk;
   neighbors.reserve (relative_coordinates.cols ());
@@ -421,7 +423,7 @@ pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& ce
       {
         rand_point = Eigen::Vector3d (var_nor (), var_nor (), var_nor ());
         dist_point = cell_mean + cholesky_decomp * rand_point;
-        cell_cloud.push_back (PointXYZ (dist_point (0), dist_point (1), dist_point (2)));
+        cell_cloud.push_back (PointXYZ (static_cast<float> (dist_point (0)), static_cast<float> (dist_point (1)), static_cast<float> (dist_point (2))));
       }
     }
   }

@@ -93,7 +93,7 @@ namespace pcl
       //boost::fusion::at_key<Key> (p2_) = p1_[f_idx_++];
       typedef typename pcl::traits::datatype<PointOutT, Key>::type T;
       uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&p2_) + pcl::traits::offset<PointOutT, Key>::value;
-      *reinterpret_cast<T*>(data_ptr) = p1_[f_idx_++];
+      *reinterpret_cast<T*>(data_ptr) = static_cast<T> (p1_[f_idx_++]);
     }
 
     private:
@@ -125,7 +125,7 @@ namespace pcl
       //p2_[f_idx_++] = boost::fusion::at_key<Key> (p1_);
       typedef typename pcl::traits::datatype<PointInT, Key>::type T;
       const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&p1_) + pcl::traits::offset<PointInT, Key>::value;
-      p2_[f_idx_++] = *reinterpret_cast<const T*>(data_ptr);
+      p2_[f_idx_++] = static_cast<float> (*reinterpret_cast<const T*>(data_ptr));
     }
 
     private:
@@ -502,7 +502,7 @@ namespace pcl
       insert (iterator position, size_t n, const PointT& pt)
       {
         points.insert (position, n, pt);
-        width = points.size ();
+        width = static_cast<uint32_t> (points.size ());
         height = 1;
       }
 
@@ -967,7 +967,7 @@ namespace pcl
           std::string name = pcl::traits::name<T, U>::value;
           channels_[name].name     = name;
           channels_[name].offset   = pcl::traits::offset<T, U>::value;
-          int datatype = pcl::traits::datatype<T, U>::value;
+          uint8_t datatype = pcl::traits::datatype<T, U>::value;
           channels_[name].datatype = datatype;
           int count = pcl::traits::datatype<T, U>::size;
           channels_[name].count    = count;

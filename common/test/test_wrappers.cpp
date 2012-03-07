@@ -89,7 +89,7 @@ TEST (PointCloud, constructor_with_allocation)
 
 TEST (PointCloud, constructor_with_allocation_valued)
 {
-  PointXYZ nan_point (0.1, 0.2, 0.3);  
+  PointXYZ nan_point (0.1f, 0.2f, 0.3f);  
   PointCloud<PointXYZ> cloud2 (5, 80, nan_point);
   EXPECT_EQ (cloud2.width, 5);
   EXPECT_EQ (cloud2.height, 80);
@@ -121,9 +121,9 @@ TEST (PointCloud, insert_range)
 {
   PointCloud<PointXYZ> cloud2 (10, 1);
   for (uint32_t i = 0; i < 10; ++i)
-    cloud2[i] = PointXYZ (5*i+0,5*i+1,5*i+2);
+    cloud2[i] = PointXYZ (5.0f * static_cast<float>(i) + 0, 5.0f * static_cast<float> (i) + 1, 5.0f * static_cast<float> (i) + 2);
 
-  uint32_t old_size = cloud.size ();
+  uint32_t old_size = static_cast<uint32_t> (cloud.size ());
   cloud.insert (cloud.begin (), cloud2.begin (), cloud2.end ());
   EXPECT_EQ (cloud.width, cloud.size ());
   EXPECT_EQ (cloud.height, 1);
@@ -140,7 +140,7 @@ main (int argc, char** argv)
   cloud.width = 10;
   cloud.height = 480;
   for (uint32_t i = 0; i < size; ++i)
-    cloud.points.push_back (PointXYZ (3*i+0,3*i+1,3*i+2));
+    cloud.points.push_back (PointXYZ (3.0f * static_cast<float>(i) + 0, 3.0f * static_cast<float> (i) + 1, 3.0f * static_cast<float> (i) + 2));
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());

@@ -87,9 +87,9 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::getAngleB
 {
   Eigen::Vector3f angle_orientation;
   angle_orientation = v1.cross (v2);
-  float angle_radians = acos (std::max (-1.0f, std::min (1.0f, v1.dot (v2))));
+  float angle_radians = acosf (std::max (-1.0f, std::min (1.0f, v1.dot (v2))));
 
-  angle_radians = angle_orientation.dot (axis) < 0.f ? (2 * (float)M_PI - angle_radians) : angle_radians;
+  angle_radians = angle_orientation.dot (axis) < 0.f ? (2 * static_cast<float> (M_PI) - angle_radians) : angle_radians;
 
   return (angle_radians);
 }
@@ -102,20 +102,20 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::randomOrt
 {
   if (!areEquals (axis.z (), 0.0f))
   {
-    rand_ortho_axis.x () = ((float)rand () / (float)RAND_MAX) * 2.0f - 1.0f;
-    rand_ortho_axis.y () = ((float)rand () / (float)RAND_MAX) * 2.0f - 1.0f;
+    rand_ortho_axis.x () = (static_cast<float> (rand ()) / static_cast<float> (RAND_MAX)) * 2.0f - 1.0f;
+    rand_ortho_axis.y () = (static_cast<float> (rand ()) / static_cast<float> (RAND_MAX)) * 2.0f - 1.0f;
     rand_ortho_axis.z () = -(axis.x () * rand_ortho_axis.x () + axis.y () * rand_ortho_axis.y ()) / axis.z ();
   }
   else if (!areEquals (axis.y (), 0.0f))
   {
-    rand_ortho_axis.x () = ((float)rand () / (float)RAND_MAX) * 2.0f - 1.0f;
-    rand_ortho_axis.z () = ((float)rand () / (float)RAND_MAX) * 2.0f - 1.0f;
+    rand_ortho_axis.x () = (static_cast<float> (rand ()) / static_cast<float> (RAND_MAX)) * 2.0f - 1.0f;
+    rand_ortho_axis.z () = (static_cast<float> (rand ()) / static_cast<float> (RAND_MAX)) * 2.0f - 1.0f;
     rand_ortho_axis.y () = -(axis.x () * rand_ortho_axis.x () + axis.z () * rand_ortho_axis.z ()) / axis.y ();
   }
   else if (!areEquals (axis.x (), 0.0f))
   {
-    rand_ortho_axis.y () = ((float)rand () / (float)RAND_MAX) * 2.0f - 1.0f;
-    rand_ortho_axis.z () = ((float)rand () / (float)RAND_MAX) * 2.0f - 1.0f;
+    rand_ortho_axis.y () = (static_cast<float> (rand ()) / static_cast<float> (RAND_MAX)) * 2.0f - 1.0f;
+    rand_ortho_axis.z () = (static_cast<float> (rand ()) / static_cast<float> (RAND_MAX)) * 2.0f - 1.0f;
     rand_ortho_axis.x () = -(axis.y () * rand_ortho_axis.y () + axis.z () * rand_ortho_axis.z ()) / axis.x ();
   }
 
@@ -137,7 +137,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::planeFitt
   // Plane Fitting using Singular Value Decomposition (SVD)
   // -----------------------------------------------------
 
-  int n_points = points.rows ();
+  int n_points = static_cast<int> (points.rows ());
   if (n_points == 0)
   {
     return;
@@ -151,7 +151,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::planeFitt
     center += points.row (i);
   }
 
-  center /= (float)n_points;
+  center /= static_cast<float> (n_points);
 
   //copy points - average (center)
   Eigen::Matrix<float, Eigen::Dynamic, 3> A (n_points, 3); //PointData
@@ -273,7 +273,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
       margin_array_min_angle_normal_[i] = -1.0;
       margin_array_max_angle_normal_[i] = -1.0;
     }
-    max_boundary_angle = (2 * (float)M_PI) / (float)check_margin_array_size_;
+    max_boundary_angle = (2 * static_cast<float> (M_PI)) / static_cast<float> (check_margin_array_size_);
   }
 
   for (int curr_neigh = 0; curr_neigh < n_neighbours; ++curr_neigh)
@@ -306,7 +306,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
                               surface_->at (curr_neigh_idx).getVector3fMap (), indicating_normal_vect);
       float angle = getAngleBetweenUnitVectors (x_axis, indicating_normal_vect, fitted_normal);
 
-      int check_margin_array_idx = std::min ((int)floor (angle / max_boundary_angle), check_margin_array_size_ - 1);
+      int check_margin_array_idx = std::min (static_cast<int> (floor (angle / max_boundary_angle)), check_margin_array_size_ - 1);
       check_margin_array_[check_margin_array_idx] = true;
 
       if (angle < margin_array_min_angle_[check_margin_array_idx])
@@ -332,9 +332,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
       float neigh_distance_sqr = neighbours_distances.at (curr_neigh);
 
       if (neigh_distance_sqr > margin_distance2)
-      {
         continue;
-      }
 
       Eigen::Vector3f normal_mean = normals_->at (curr_neigh_idx).getNormalVector3fMap ();
 
@@ -484,14 +482,14 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
         float hole_width = 0.0f;
         if (following_hole < previous_hole)
         {
-          hole_width = margin_array_min_angle_[following_hole] + 2 * (float)M_PI
+          hole_width = margin_array_min_angle_[following_hole] + 2 * static_cast<float> (M_PI)
               - margin_array_max_angle_[previous_hole];
         }
         else
         {
           hole_width = margin_array_min_angle_[following_hole] - margin_array_max_angle_[previous_hole];
         }
-        float hole_prob = hole_width / (2 * (float)M_PI);
+        float hole_prob = hole_width / (2 * static_cast<float> (M_PI));
 
         //evaluate P(zmin|Hole)
         float steep_prob = (normal_end + normal_begin) / 2.0f;
@@ -510,7 +508,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
               if (following_hole < previous_hole)
               {
                 angle = margin_array_max_angle_[previous_hole] + (margin_array_min_angle_[following_hole] + 2
-                    * (float)M_PI - margin_array_max_angle_[previous_hole]) * angle_weight;
+                    * static_cast<float> (M_PI) - margin_array_max_angle_[previous_hole]) * angle_weight;
               }
               else
               {

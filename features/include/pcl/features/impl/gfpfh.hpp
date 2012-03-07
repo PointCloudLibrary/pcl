@@ -134,14 +134,14 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeTransitionHistograms 
 
     // Build a one-dimension histogram out of it.
     int flat_index = 0;
-    for (int m = 0; m < (int) transitions.size (); ++m)
-      for (int n = m; n < (int) transitions[m].size (); ++n)
+    for (int m = 0; m < static_cast<int> (transitions.size ()); ++m)
+      for (int n = m; n < static_cast<int> (transitions[m].size ()); ++n)
       {
         transition_histograms[i][flat_index] = transitions[m][n];
         ++flat_index;
       }
 
-    assert (flat_index == (int) transition_histograms[i].size ());
+    assert (flat_index == static_cast<int> (transition_histograms[i].size ()));
   }
 }
 
@@ -182,7 +182,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeDistanceHistogram (co
   for (size_t i = 0; i < distances.size (); ++i)
   {
     const float raw_bin = descriptorSize() * (distances[i] - min_value) / range;
-    int bin = std::min (max_bin, (int) floor(raw_bin));
+    int bin = std::min (max_bin, static_cast<int> (floor (raw_bin)));
     histogram[bin] += 1;
   }
 }
@@ -197,10 +197,10 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeMeanHistogram (const 
   mean_histogram.resize (histograms[0].size (), 0);
   for (size_t i = 0; i < histograms.size (); ++i)
     for (size_t j = 0; j < histograms[i].size (); ++j)
-      mean_histogram[j] += histograms[i][j];
+      mean_histogram[j] += static_cast<float> (histograms[i][j]);
 
   for (size_t i = 0; i < mean_histogram.size (); ++i)
-    mean_histogram[i] /= (float) histograms.size ();
+    mean_histogram[i] /= static_cast<float> (histograms.size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -212,9 +212,9 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeHIKDistance (const st
 
   float norm = 0.f;
   for (size_t i = 0; i < histogram.size (); ++i)
-    norm += std::min ((float) histogram[i], mean_histogram[i]);
+    norm += std::min (static_cast<float> (histogram[i]), mean_histogram[i]);
 
-  norm /= histogram.size ();
+  norm /= static_cast<float> (histogram.size ());
   return (norm);
 }
 
@@ -234,7 +234,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::getDominantLabel (const std:
   if (max_it == counts.end ())
     return (emptyLabel ());
 
-  return (max_it - counts.begin ());
+  return (static_cast<uint32_t> (max_it - counts.begin ()));
 }
 
 #define PCL_INSTANTIATE_GFPFHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::GFPFHEstimation<T,NT,OutT>;

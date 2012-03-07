@@ -114,7 +114,7 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilter (PointCloud &output)
   int nr_p = 0;
   int nr_removed_p = 0;
   
-  for (size_t cp = 0; cp < indices_->size (); ++cp)
+  for (int cp = 0; cp < static_cast<int> (indices_->size ()); ++cp)
   {
     if (negative_)
     {

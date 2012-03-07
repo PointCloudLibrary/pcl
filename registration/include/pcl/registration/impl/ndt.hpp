@@ -216,7 +216,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeAngleDerivat
 {
   // Simplified math for near 0 angles
   double cx, cy, cz, sx, sy, sz;
-  if (fabsf (p (3)) < 10e-5)
+  if (fabs (p (3)) < 10e-5)
   {
     //p(3) = 0;
     cx = 1.0;
@@ -227,7 +227,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeAngleDerivat
     cx = cos (p (3));
     sx = sin (p (3));
   }
-  if (fabsf (p (4)) < 10e-5)
+  if (fabs (p (4)) < 10e-5)
   {
     //p(4) = 0;
     cy = 1.0;
@@ -239,7 +239,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeAngleDerivat
     sy = sin (p (4));
   }
 
-  if (fabsf (p (5)) < 10e-5)
+  if (fabs (p (5)) < 10e-5)
   {
     //p(5) = 0;
     cz = 1.0;
@@ -376,7 +376,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::updateDerivatives (
 
 template<typename PointSource, typename PointTarget> void
 pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeHessian (Eigen::Matrix<double, 6, 6> &hessian,
-                                                                             PointCloudSource &trans_cloud, Eigen::Matrix<double, 6, 1> &p)
+                                                                             PointCloudSource &trans_cloud, Eigen::Matrix<double, 6, 1> &)
 {
   // Original Point and Transformed Point
   PointSource x_pt, x_trans_pt;

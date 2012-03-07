@@ -112,16 +112,16 @@ pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::Pol
     for (vtkIdType i = 0; i < mesh_points->GetNumberOfPoints (); ++i)
     {
       mesh_points->GetPoint (i, &point_xyz[0]);
-      cloud_temp->points[i].x = (float)(point_xyz[0]);
-      cloud_temp->points[i].y = (float)(point_xyz[1]);
-      cloud_temp->points[i].z = (float)(point_xyz[2]);
+      cloud_temp->points[i].x = static_cast<float> (point_xyz[0]);
+      cloud_temp->points[i].y = static_cast<float> (point_xyz[1]);
+      cloud_temp->points[i].z = static_cast<float> (point_xyz[2]);
 
       poly_colors->GetTupleValue (i, &point_color[0]);
       cloud_temp->points[i].r = point_color[0];
       cloud_temp->points[i].g = point_color[1];
       cloud_temp->points[i].b = point_color[2];
     }
-    cloud_temp->width = cloud_temp->points.size ();
+    cloud_temp->width = static_cast<uint32_t> (cloud_temp->points.size ());
     cloud_temp->height = 1;
     cloud_temp->is_dense = true;
 
@@ -135,11 +135,11 @@ pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::Pol
     for (vtkIdType i = 0; i < mesh_points->GetNumberOfPoints (); ++i)
     {
       mesh_points->GetPoint (i, &point_xyz[0]);
-      cloud_temp->points[i].x = (float)(point_xyz[0]);
-      cloud_temp->points[i].y = (float)(point_xyz[1]);
-      cloud_temp->points[i].z = (float)(point_xyz[2]);
+      cloud_temp->points[i].x = static_cast<float> (point_xyz[0]);
+      cloud_temp->points[i].y = static_cast<float> (point_xyz[1]);
+      cloud_temp->points[i].z = static_cast<float> (point_xyz[2]);
     }
-    cloud_temp->width = cloud_temp->points.size ();
+    cloud_temp->width = static_cast<uint32_t> (cloud_temp->points.size ());
     cloud_temp->height = 1;
     cloud_temp->is_dense = true;
 
@@ -256,7 +256,7 @@ pcl::VTKUtils::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyDa
 
   if (poly_data->GetPoints() == NULL)
     return (0);
-  return ((int)(poly_data->GetPoints()->GetNumberOfPoints ()));
+  return (static_cast<int> (poly_data->GetPoints()->GetNumberOfPoints ()));
 }
 
 

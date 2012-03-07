@@ -98,7 +98,7 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::isBoundaryPoint (
       max_dif = dif;
   }
   // Get the angle difference between the last and the first
-  dif = 2 * M_PI - angles[angles.size () - 1] + angles[0];
+  dif = 2 * static_cast<float> (M_PI) - angles[angles.size () - 1] + angles[0];
   if (max_dif < dif)
     max_dif = dif;
 

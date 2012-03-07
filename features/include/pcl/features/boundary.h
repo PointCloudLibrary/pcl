@@ -97,7 +97,7 @@ namespace pcl
       /** \brief Empty constructor. 
         * The angular threshold \a angle_threshold_ is set to M_PI / 2.0
         */
-      BoundaryEstimation () : angle_threshold_ (M_PI/2.0) 
+      BoundaryEstimation () : angle_threshold_ (static_cast<float> (M_PI) / 2.0f) 
       {
         feature_name_ = "BoundaryEstimation";
       };

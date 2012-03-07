@@ -79,7 +79,7 @@ namespace pcl
       , triangle_pixel_size_ (1)
       , triangulation_type_ (QUAD_MESH)
       , store_shadowed_faces_ (false)
-      , cos_angle_tolerance_ (fabsf (cos (pcl::deg2rad (12.5f))))
+      , cos_angle_tolerance_ (fabsf (cosf (pcl::deg2rad (12.5f))))
       {
         check_tree_ = false;
       };

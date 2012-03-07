@@ -236,7 +236,7 @@ namespace pcl
     }
 
     // 0.5 to optimize further calculations
-    typename Matrix::Scalar trace = 0.5 * (mat.coeff (0) + mat.coeff (3));
+    typename Matrix::Scalar trace = static_cast<typename Matrix::Scalar> (0.5) * (mat.coeff (0) + mat.coeff (3));
     typename Matrix::Scalar determinant = mat.coeff (0) * mat.coeff (3) - mat.coeff (1) * mat.coeff (1);
 
     typename Matrix::Scalar temp = trace * trace - determinant;
@@ -252,7 +252,8 @@ namespace pcl
     // either this is in a row or column depending on RowMajor or ColumnMajor
     eigenvectors.coeffRef (0) = - mat.coeff (1);
     eigenvectors.coeffRef (2) = mat.coeff (0) - eigenvalues.coeff (0);
-    typename Matrix::Scalar norm = 1.0 / sqrt (eigenvectors.coeffRef (0) * eigenvectors.coeffRef (0) + eigenvectors.coeffRef (2) * eigenvectors.coeffRef (2));
+    typename Matrix::Scalar norm = static_cast<typename Matrix::Scalar> (1.0) / 
+                                   static_cast<typename Matrix::Scalar> (sqrt (eigenvectors.coeffRef (0) * eigenvectors.coeffRef (0) + eigenvectors.coeffRef (2) * eigenvectors.coeffRef (2)));
     eigenvectors.coeffRef (0) *= norm;
     eigenvectors.coeffRef (2) *= norm;
     eigenvectors.coeffRef (1) = eigenvectors.coeffRef (2);
