@@ -109,7 +109,7 @@ pcl::isXYPointIn2DXYPolygon (const PointT &point, const pcl::PointCloud<PointT> 
   bool in_poly = false;
   double x1, x2, y1, y2;
 
-  int nr_poly_points = polygon.points.size ();
+  int nr_poly_points = static_cast<int> (polygon.points.size ());
   double xold = polygon.points[nr_poly_points - 1].x;
   double yold = polygon.points[nr_poly_points - 1].y;
   for (int i = 0; i < nr_poly_points; i++)
@@ -153,9 +153,9 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
     return;
   }
 
-  if ((int)planar_hull_->points.size () < min_pts_hull_)
+  if (static_cast<int> (planar_hull_->points.size ()) < min_pts_hull_)
   {
-    PCL_ERROR ("[pcl::%s::segment] Not enough points (%lu) in the hull!\n", getClassName ().c_str (), (unsigned long)planar_hull_->points.size ());
+    PCL_ERROR ("[pcl::%s::segment] Not enough points (%zu) in the hull!\n", getClassName ().c_str (), planar_hull_->points.size ());
     output.indices.clear ();
     return;
   }

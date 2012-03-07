@@ -55,7 +55,7 @@ namespace pcl
                      PointXYZI&    out)
   {
     out.x = in.x; out.y = in.y; out.z = in.z;
-    out.intensity = 0.299 * in.r + 0.587 * in.g + 0.114 * in.b;
+    out.intensity = 0.299f * in.r + 0.587f * in.g + 0.114f * in.b;
   }
 
   
@@ -84,11 +84,11 @@ namespace pcl
     }
 
     if (in.r == out.v)
-      out.h = (in.g - in.b) / (out.v - min);
+      out.h = static_cast<float> (in.g - in.b) / (out.v - min);
     else if (in.g == out.v)
-      out.h = 2 + (in.b - in.r) / (out.v - min);
+      out.h = static_cast<float> (2 + (in.b - in.r)) / (out.v - min);
     else 
-      out.h = 4 + (in.r - in.g) / (out.v - min);
+      out.h = static_cast<float> (4 + (in.r - in.g)) / (out.v - min);
     out.h *= 60;
     if (out.h < 0)
       out.h += 360;
@@ -105,12 +105,12 @@ namespace pcl
   {
     if (in.s == 0)
     {
-      out.r = out.g = out.b = in.v;
+      out.r = out.g = out.b = static_cast<uint8_t> (in.v);
       return;
     } 
     float a = in.h / 60;
-    int   i = floor (a);
-    float f = a - i;
+    int   i = static_cast<int> (floorf (a));
+    float f = a - static_cast<float> (i);
     float p = in.v * (1 - in.s);
     float q = in.v * (1 - in.s * f);
     float t = in.v * (1 - in.s * (1 - f));
@@ -118,17 +118,47 @@ namespace pcl
     switch (i)
     {
       case 0:
-        out.r = in.v; out.g = t; out.b = p; break;
+      {
+        out.r = static_cast<uint8_t> (in.v);
+        out.g = static_cast<uint8_t> (t);
+        out.b = static_cast<uint8_t> (p);
+        break;
+      }
       case 1:
-        out.r = static_cast<uint8_t> (q); out.g = in.v; out.b = static_cast<uint8_t> (p); break;
+      {
+        out.r = static_cast<uint8_t> (q); 
+        out.g = static_cast<uint8_t> (in.v); 
+        out.b = static_cast<uint8_t> (p); 
+        break;
+      }
       case 2:
-        out.r = p; out.g = in.v; out.b = t; break;
+      {
+        out.r = static_cast<uint8_t> (p);
+        out.g = static_cast<uint8_t> (in.v);
+        out.b = static_cast<uint8_t> (t);
+        break;
+      }
       case 3:
-        out.r = p; out.g = q; out.b = in.v; break;
+      {
+        out.r = static_cast<uint8_t> (p);
+        out.g = static_cast<uint8_t> (q);
+        out.b = static_cast<uint8_t> (in.v);
+        break;
+      }
       case 4:
-        out.r = t; out.g = p; out.b = in.v; break;
+      {
+        out.r = static_cast<uint8_t> (t);
+        out.g = static_cast<uint8_t> (p); 
+        out.b = static_cast<uint8_t> (in.v); 
+        break;
+      }
       default:
-        out.r = in.v; out.g = p; out.b = q; break;
+      {
+        out.r = static_cast<uint8_t> (in.v); 
+        out.g = static_cast<uint8_t> (p); 
+        out.b = static_cast<uint8_t> (q);
+        break;
+      }      
     }
   }
 

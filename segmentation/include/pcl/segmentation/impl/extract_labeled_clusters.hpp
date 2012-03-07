@@ -51,7 +51,7 @@ pcl::extractLabeledEuclideanClusters (const PointCloud<PointT> &cloud,
 {
   if (tree->getInputCloud ()->points.size () != cloud.points.size ())
   {
-    PCL_ERROR ("[pcl::extractLabeledEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", (unsigned long)tree->getInputCloud ()->points.size (), (unsigned long)cloud.points.size ());
+    PCL_ERROR ("[pcl::extractLabeledEuclideanClusters] Tree built for a different point cloud dataset (%zu) than the input cloud (%zu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
     return;
   }
   // Create a bool vector of processed point indices, and initialize it to false
@@ -61,7 +61,7 @@ pcl::extractLabeledEuclideanClusters (const PointCloud<PointT> &cloud,
   std::vector<float> nn_distances;
 
   // Process all points in the indices vector
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (int i = 0; i < static_cast<int> (cloud.points.size ()); ++i)
   {
     if (processed[i])
       continue;
@@ -72,7 +72,7 @@ pcl::extractLabeledEuclideanClusters (const PointCloud<PointT> &cloud,
 
     processed[i] = true;
 
-    while (sq_idx < (int)seed_queue.size ())
+    while (sq_idx < static_cast<int> (seed_queue.size ()))
     {
       // Search for sq_idx
       int ret = tree->radiusSearch (seed_queue[sq_idx], tolerance, nn_indices, nn_distances, std::numeric_limits<int>::max());
@@ -141,10 +141,10 @@ pcl::LabeledEuclideanClusterExtraction<PointT>::extract (std::vector<std::vector
 
   // Send the input dataset to the spatial locator
   tree_->setInputCloud (input_);
-  extractLabeledEuclideanClusters (*input_, tree_, cluster_tolerance_, labeled_clusters, min_pts_per_cluster_, max_pts_per_cluster_, max_label_);
+  extractLabeledEuclideanClusters (*input_, tree_, static_cast<float> (cluster_tolerance_), labeled_clusters, min_pts_per_cluster_, max_pts_per_cluster_, max_label_);
 
   // Sort the clusters based on their size (largest one first)
-  for(unsigned int i = 0; i < labeled_clusters.size(); i++)
+  for (int i = 0; i < static_cast<int> (labeled_clusters.size ()); i++)
     std::sort (labeled_clusters[i].rbegin (), labeled_clusters[i].rend (), comparePointClusters);
 
   deinitCompute ();
