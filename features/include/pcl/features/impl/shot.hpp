@@ -93,16 +93,16 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::RGB2CIELAB (unsigned
       if (f > 0.04045)
         sRGB_LUT[i] = static_cast<float> (pow ((f + 0.055) / 1.055, 2.4));
       else
-        sRGB_LUT[i] = f / 12.92;
+        sRGB_LUT[i] = f / 12.92f;
     }
 
     for (int i = 0; i < 4000; i++)
     {
       float f = i / 4000.0f;
       if (f > 0.008856)
-        sXYZ_LUT[i] = pow (f, 0.3333);
+        sXYZ_LUT[i] = static_cast<float> (powf (f, 0.3333f));
       else
-        sXYZ_LUT[i] = (7.787 * f) + (16.0 / 116.0);
+        sXYZ_LUT[i] = static_cast<float>((7.787 * f) + (16.0 / 116.0));
     }
   }
 
@@ -186,7 +186,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::normalizeHistogram (
     acc_norm += shot[j] * shot[j];
   acc_norm = sqrt (acc_norm);
   for (int j = 0; j < desc_length; j++)
-    shot[j] /= acc_norm;
+    shot[j] /= static_cast<float> (acc_norm);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -257,9 +257,9 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
     double intWeight = (1- fabs (binDistance[i_idx]));
 
     if (binDistance[i_idx] > 0)
-      shot[volume_index + ((step_index+1) % nr_bins)] += binDistance[i_idx];
+      shot[volume_index + ((step_index+1) % nr_bins)] += static_cast<float> (binDistance[i_idx]);
     else
-      shot[volume_index + ((step_index - 1 + nr_bins) % nr_bins)] += - binDistance[i_idx];
+      shot[volume_index + ((step_index - 1 + nr_bins) % nr_bins)] += - static_cast<float> (binDistance[i_idx]);
 
     //Interpolation on the distance (adjacent husks)
    
@@ -272,7 +272,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
       else  //3/4 of radius, votes also for the internal sphere
       {
         intWeight += 1 + radiusDistance;
-        shot[(desc_index - 2) * (nr_bins+1) + step_index] -= radiusDistance;
+        shot[(desc_index - 2) * (nr_bins+1) + step_index] -= static_cast<float> (radiusDistance);
       }
     }
     else    //internal sphere
@@ -284,7 +284,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
       else  //3/4 of radius, votes also for the external sphere
       {
         intWeight += 1 - radiusDistance;
-        shot[(desc_index + 2) * (nr_bins+1) + step_index] += radiusDistance;
+        shot[(desc_index + 2) * (nr_bins+1) + step_index] += static_cast<float> (radiusDistance);
       }
     }
 
@@ -308,7 +308,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
       {
         intWeight += 1 + inclinationDistance;
         assert ((desc_index + 1) * (nr_bins+1) + step_index >= 0 && (desc_index + 1) * (nr_bins+1) + step_index < descLength_);
-        shot[(desc_index + 1) * (nr_bins+1) + step_index] -= inclinationDistance;
+        shot[(desc_index + 1) * (nr_bins+1) + step_index] -= static_cast<float> (inclinationDistance);
       }
     }
     else
@@ -320,7 +320,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
       {
         intWeight += 1 - inclinationDistance;
         assert ((desc_index - 1) * (nr_bins+1) + step_index >= 0 && (desc_index - 1) * (nr_bins+1) + step_index < descLength_);
-        shot[(desc_index - 1) * (nr_bins+1) + step_index] += inclinationDistance;
+        shot[(desc_index - 1) * (nr_bins+1) + step_index] += static_cast<float> (inclinationDistance);
       }
     }
 
@@ -344,20 +344,20 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT>::interpolateSingleChannel 
         intWeight += 1 - azimuthDistance;
         int interp_index = (desc_index + 4) % maxAngularSectors_;
         assert (interp_index * (nr_bins+1) + step_index >= 0 && interp_index * (nr_bins+1) + step_index < descLength_);
-        shot[interp_index * (nr_bins+1) + step_index] += azimuthDistance;
+        shot[interp_index * (nr_bins+1) + step_index] += static_cast<float> (azimuthDistance);
       }
       else
       {
         int interp_index = (desc_index - 4 + maxAngularSectors_) % maxAngularSectors_;
         assert (interp_index * (nr_bins+1) + step_index >= 0 && interp_index * (nr_bins+1) + step_index < descLength_);
         intWeight += 1 + azimuthDistance;
-        shot[interp_index * (nr_bins+1) + step_index] -= azimuthDistance;
+        shot[interp_index * (nr_bins+1) + step_index] -= static_cast<float> (azimuthDistance);
       }
 
     }
 
     assert (volume_index + step_index >= 0 &&  volume_index + step_index < descLength_);
-    shot[volume_index + step_index] += intWeight;
+    shot[volume_index + step_index] += static_cast<float> (intWeight);
   }
 }
 
@@ -438,14 +438,14 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
     double intWeightColor = (1- fabs (binDistanceColor[i_idx]));
 
     if (binDistanceShape[i_idx] > 0)
-      shot[volume_index_shape + ((step_index_shape + 1) % nr_bins_shape)] += binDistanceShape[i_idx];
+      shot[volume_index_shape + ((step_index_shape + 1) % nr_bins_shape)] += static_cast<float> (binDistanceShape[i_idx]);
     else
-      shot[volume_index_shape + ((step_index_shape - 1 + nr_bins_shape) % nr_bins_shape)] -= binDistanceShape[i_idx];
+      shot[volume_index_shape + ((step_index_shape - 1 + nr_bins_shape) % nr_bins_shape)] -= static_cast<float> (binDistanceShape[i_idx]);
 
     if (binDistanceColor[i_idx] > 0)
-      shot[volume_index_color + ((step_index_color+1) % nr_bins_color)] += binDistanceColor[i_idx];
+      shot[volume_index_color + ((step_index_color+1) % nr_bins_color)] += static_cast<float> (binDistanceColor[i_idx]);
     else
-      shot[volume_index_color + ((step_index_color - 1 + nr_bins_color) % nr_bins_color)] -= binDistanceColor[i_idx];
+      shot[volume_index_color + ((step_index_color - 1 + nr_bins_color) % nr_bins_color)] -= static_cast<float> (binDistanceColor[i_idx]);
 
     //Interpolation on the distance (adjacent husks)
    
@@ -462,8 +462,8 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
       {
         intWeightShape += 1 + radiusDistance;
         intWeightColor += 1 + radiusDistance;
-        shot[(desc_index - 2) * (nr_bins_shape+1) + step_index_shape] -= radiusDistance;
-        shot[shapeToColorStride + (desc_index - 2) * (nr_bins_color+1) + step_index_color] -= radiusDistance;
+        shot[(desc_index - 2) * (nr_bins_shape+1) + step_index_shape] -= static_cast<float> (radiusDistance);
+        shot[shapeToColorStride + (desc_index - 2) * (nr_bins_color+1) + step_index_color] -= static_cast<float> (radiusDistance);
       }
     }
     else    //internal sphere
@@ -479,8 +479,8 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
       {
         intWeightShape += 1 - radiusDistance; //weight=1-d
         intWeightColor += 1 - radiusDistance; //weight=1-d
-        shot[(desc_index + 2) * (nr_bins_shape+1) + step_index_shape] += radiusDistance;
-        shot[shapeToColorStride + (desc_index + 2) * (nr_bins_color+1) + step_index_color] += radiusDistance;
+        shot[(desc_index + 2) * (nr_bins_shape+1) + step_index_shape] += static_cast<float> (radiusDistance);
+        shot[shapeToColorStride + (desc_index + 2) * (nr_bins_color+1) + step_index_color] += static_cast<float> (radiusDistance);
       }
     }
 
@@ -509,8 +509,8 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
         intWeightColor += 1 + inclinationDistance;
         assert ((desc_index + 1) * (nr_bins_shape+1) + step_index_shape >= 0 && (desc_index + 1) * (nr_bins_shape+1) + step_index_shape < descLength_);
         assert (shapeToColorStride + (desc_index + 1) * (nr_bins_color+ 1) + step_index_color >= 0 && shapeToColorStride + (desc_index + 1) * (nr_bins_color+1) + step_index_color < descLength_);
-        shot[(desc_index + 1) * (nr_bins_shape+1) + step_index_shape] -= inclinationDistance;
-        shot[shapeToColorStride + (desc_index + 1) * (nr_bins_color+1) + step_index_color] -= inclinationDistance;
+        shot[(desc_index + 1) * (nr_bins_shape+1) + step_index_shape] -= static_cast<float> (inclinationDistance);
+        shot[shapeToColorStride + (desc_index + 1) * (nr_bins_color+1) + step_index_color] -= static_cast<float> (inclinationDistance);
       }
     }
     else
@@ -527,8 +527,8 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
         intWeightColor += 1 - inclinationDistance;
         assert ((desc_index - 1) * (nr_bins_shape+1) + step_index_shape >= 0 && (desc_index - 1) * (nr_bins_shape+1) + step_index_shape < descLength_);
         assert (shapeToColorStride + (desc_index - 1) * (nr_bins_color+ 1) + step_index_color >= 0 && shapeToColorStride + (desc_index - 1) * (nr_bins_color+1) + step_index_color < descLength_);
-        shot[(desc_index - 1) * (nr_bins_shape+1) + step_index_shape] += inclinationDistance;
-        shot[shapeToColorStride + (desc_index - 1) * (nr_bins_color+1) + step_index_color] += inclinationDistance;
+        shot[(desc_index - 1) * (nr_bins_shape+1) + step_index_shape] += static_cast<float> (inclinationDistance);
+        shot[shapeToColorStride + (desc_index - 1) * (nr_bins_color+1) + step_index_color] += static_cast<float> (inclinationDistance);
       }
     }
 
@@ -552,8 +552,8 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
         int interp_index = (desc_index + 4) % maxAngularSectors_;
         assert (interp_index * (nr_bins_shape+1) + step_index_shape >= 0 && interp_index * (nr_bins_shape+1) + step_index_shape < descLength_);
         assert (shapeToColorStride + interp_index * (nr_bins_color+1) + step_index_color >= 0 && shapeToColorStride + interp_index * (nr_bins_color+1) + step_index_color < descLength_);
-        shot[interp_index * (nr_bins_shape+1) + step_index_shape] += azimuthDistance;
-        shot[shapeToColorStride + interp_index * (nr_bins_color+1) + step_index_color] += azimuthDistance;
+        shot[interp_index * (nr_bins_shape+1) + step_index_shape] += static_cast<float> (azimuthDistance);
+        shot[shapeToColorStride + interp_index * (nr_bins_color+1) + step_index_color] += static_cast<float> (azimuthDistance);
       }
       else
       {
@@ -562,15 +562,15 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::interpolateDoubleCha
         intWeightColor += 1 + azimuthDistance;
         assert (interp_index * (nr_bins_shape+1) + step_index_shape >= 0 && interp_index * (nr_bins_shape+1) + step_index_shape < descLength_);
         assert (shapeToColorStride + interp_index * (nr_bins_color+1) + step_index_color >= 0 && shapeToColorStride + interp_index * (nr_bins_color+1) + step_index_color < descLength_);
-        shot[interp_index * (nr_bins_shape+1) + step_index_shape] -= azimuthDistance;
-        shot[shapeToColorStride + interp_index * (nr_bins_color+1) + step_index_color] -= azimuthDistance;
+        shot[interp_index * (nr_bins_shape+1) + step_index_shape] -= static_cast<float> (azimuthDistance);
+        shot[shapeToColorStride + interp_index * (nr_bins_color+1) + step_index_color] -= static_cast<float> (azimuthDistance);
       }
     }
 
     assert (volume_index_shape + step_index_shape >= 0 &&  volume_index_shape + step_index_shape < descLength_);
     assert (volume_index_color + step_index_color >= 0 &&  volume_index_color + step_index_color < descLength_);
-    shot[volume_index_shape + step_index_shape] += intWeightShape;
-    shot[volume_index_color + step_index_color] += intWeightColor;
+    shot[volume_index_shape + step_index_shape] += static_cast<float> (intWeightShape);
+    shot[volume_index_color + step_index_color] += static_cast<float> (intWeightColor);
   }
 }
 
