@@ -25,10 +25,10 @@ if(WIN32)
 endif()
 
 # ---[ special maintainer mode
-SET(CMAKE_CXX_FLAGS_MAINTAINER "-pedantic -Wno-variadic-macros -Wabi -Wextra -Weffc++" CACHE STRING
+SET(CMAKE_CXX_FLAGS_MAINTAINER "-pedantic -Wno-variadic-macros -Weffc++" CACHE STRING
     "Flags used by the C++ compiler during maintainer builds."
     FORCE)
-SET(CMAKE_C_FLAGS_MAINTAINER "-pedantic -Wno-variadic-macros -Wabi -Wextra -Weffc++" CACHE STRING
+SET(CMAKE_C_FLAGS_MAINTAINER "-pedantic -Wno-variadic-macros -Weffc++" CACHE STRING
     "Flags used by the C compiler during maintainer builds."
     FORCE)
 SET(CMAKE_EXE_LINKER_FLAGS_MAINTAINER
@@ -60,7 +60,7 @@ include(${PCL_SOURCE_DIR}/cmake/pcl_options.cmake)
 
 # ---[ Unix/Darwin/Windows specific flags
 if(CMAKE_COMPILER_IS_GNUCXX)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-unknown-pragmas -fno-strict-aliasing")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wabi -Wno-unknown-pragmas -Wconversion -Wold-style-cast -fno-strict-aliasing")
   if(NOT ANDROID_NDK)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
   endif(NOT ANDROID_NDK)
