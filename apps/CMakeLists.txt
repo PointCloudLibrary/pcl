@@ -102,6 +102,9 @@ if(build)
         PCL_ADD_EXECUTABLE(pcl_openni_passthrough ${SUBSYS_NAME} ${openni_passthrough_ui} ${openni_passthrough_moc} src/openni_passthrough.cpp)
         target_link_libraries(pcl_openni_passthrough pcl_common pcl_io pcl_filters pcl_visualization QVTK ${QT_LIBRARIES})
       endif ()
+      
+      set(incs include/pcl/${SUBSYS_NAME}/render_views_tesselated_sphere.h)  
+      set(srcs src/render_views_tesselated_sphere.cpp)
 
       if (QHULL_FOUND)
         PCL_ADD_EXECUTABLE(pcl_openni_3d_convex_hull ${SUBSYS_NAME} src/openni_3d_convex_hull.cpp)
@@ -112,22 +115,23 @@ if(build)
       
         PCL_ADD_EXECUTABLE(pcl_openni_tracking ${SUBSYS_NAME} src/openni_tracking.cpp)
         target_link_libraries(pcl_openni_tracking pcl_common pcl_io pcl_surface pcl_visualization pcl_filters pcl_features pcl_segmentation pcl_tracking pcl_search)
-                
-        set(incs include/pcl/${SUBSYS_NAME}/dominant_plane_segmentation.h)  
+
+        set(incs include/pcl/${SUBSYS_NAME}/dominant_plane_segmentation.h ${incs})  
         set(impl_incs include/pcl/${SUBSYS_NAME}/impl/dominant_plane_segmentation.hpp)
-        set(srcs src/dominant_plane_segmentation.cpp)
-         
-        # Install include files
-        PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-        PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
-          
-        set(LIB_NAME pcl_${SUBSYS_NAME})
-        PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${impl_incs} ${incs})
-        target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search)
-            
-        PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" "" "" "" "")
-           
+        set(srcs src/dominant_plane_segmentation.cpp ${srcs})
+                                   
       endif() # QHULL_FOUND
+      
+      # Install include files
+      PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
+      PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
+        
+      set(LIB_NAME pcl_${SUBSYS_NAME})
+      PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${impl_incs} ${incs})
+      target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search)
+          
+      PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" "" "" "" "")
+    
       
       PCL_ADD_EXECUTABLE(pcl_openni_planar_convex_hull ${SUBSYS_NAME} src/openni_planar_convex_hull.cpp)
       target_link_libraries(pcl_openni_planar_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface)
