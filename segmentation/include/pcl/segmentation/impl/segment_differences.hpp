@@ -59,6 +59,8 @@ pcl::getPointCloudDifference (
   // Iterate through the source data set
   for (size_t i = 0; i < src.points.size (); ++i)
   {
+    if (!isFinite (src.points[i]))
+      continue;
     // Search for the closest point in the target data set (number of neighbors to find = 1)
     if (!tree->nearestKSearch (src.points[i], 1, nn_indices, nn_distances))
     {
@@ -75,12 +77,12 @@ pcl::getPointCloudDifference (
   output.header   = src.header;
   output.width    = static_cast<uint32_t> (src_indices.size ());
   output.height   = 1;
-  if (src.is_dense)
+  //if (src.is_dense)
     output.is_dense = true;
-  else
+  //else
     // It's not necessarily true that is_dense is false if cloud_in.is_dense is false
     // To verify this, we would need to iterate over all points and check for NaNs
-    output.is_dense = false;
+    //output.is_dense = false;
 
   // Copy all the data fields from the input cloud to the output one
   typedef typename pcl::traits::fieldList<PointT>::type FieldList;
