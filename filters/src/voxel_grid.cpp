@@ -217,17 +217,19 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
   Eigen::Vector4f min_p, max_p;
   // Get the minimum and maximum dimensions
   if (!filter_field_name_.empty ()) // If we don't want to process the entire cloud...
-    getMinMax3D (input_, x_idx_, y_idx_, z_idx_, filter_field_name_, filter_limit_min_, filter_limit_max_, min_p, max_p, filter_limit_negative_);
+    getMinMax3D (input_, x_idx_, y_idx_, z_idx_, filter_field_name_, 
+                 static_cast<float> (filter_limit_min_), 
+                 static_cast<float> (filter_limit_max_), min_p, max_p, filter_limit_negative_);
   else
     getMinMax3D (input_, x_idx_, y_idx_, z_idx_, min_p, max_p);
 
   // Compute the minimum and maximum bounding box values
-  min_b_[0] = (int)(floor (min_p[0] * inverse_leaf_size_[0]));
-  max_b_[0] = (int)(floor (max_p[0] * inverse_leaf_size_[0]));
-  min_b_[1] = (int)(floor (min_p[1] * inverse_leaf_size_[1]));
-  max_b_[1] = (int)(floor (max_p[1] * inverse_leaf_size_[1]));
-  min_b_[2] = (int)(floor (min_p[2] * inverse_leaf_size_[2]));
-  max_b_[2] = (int)(floor (max_p[2] * inverse_leaf_size_[2]));
+  min_b_[0] = static_cast<int> (floor (min_p[0] * inverse_leaf_size_[0]));
+  max_b_[0] = static_cast<int> (floor (max_p[0] * inverse_leaf_size_[0]));
+  min_b_[1] = static_cast<int> (floor (min_p[1] * inverse_leaf_size_[1]));
+  max_b_[1] = static_cast<int> (floor (max_p[1] * inverse_leaf_size_[1]));
+  min_b_[2] = static_cast<int> (floor (min_p[2] * inverse_leaf_size_[2]));
+  max_b_[2] = static_cast<int> (floor (max_p[2] * inverse_leaf_size_[2]));
 
   // Compute the number of divisions needed along all axis
   div_b_ = max_b_ - min_b_ + Eigen::Vector4i::Ones ();
@@ -246,7 +248,7 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 
   int centroid_size = 4;
   if (downsample_all_data_)
-    centroid_size = input_->fields.size ();
+    centroid_size = static_cast<int> (input_->fields.size ());
 
   int rgba_index = -1;
 
@@ -320,9 +322,9 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
         continue;
       }
 
-      int ijk0 = (int)(floor (pt[0] * inverse_leaf_size_[0])) - min_b_[0];
-      int ijk1 = (int)(floor (pt[1] * inverse_leaf_size_[1])) - min_b_[1];
-      int ijk2 = (int)(floor (pt[2] * inverse_leaf_size_[2])) - min_b_[2];
+      int ijk0 = static_cast<int> (floor (pt[0] * inverse_leaf_size_[0]) - min_b_[0]);
+      int ijk1 = static_cast<int> (floor (pt[1] * inverse_leaf_size_[1]) - min_b_[1]);
+      int ijk2 = static_cast<int> (floor (pt[2] * inverse_leaf_size_[2]) - min_b_[2]);
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
       index_vector.push_back (cloud_point_index_idx (idx, cp));
@@ -350,9 +352,9 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
         continue;
       }
 
-      int ijk0 = (int)(floor (pt[0] * inverse_leaf_size_[0])) - min_b_[0];
-      int ijk1 = (int)(floor (pt[1] * inverse_leaf_size_[1])) - min_b_[1];
-      int ijk2 = (int)(floor (pt[2] * inverse_leaf_size_[2])) - min_b_[2];
+      int ijk0 = static_cast<int> (floor (pt[0] * inverse_leaf_size_[0]) - min_b_[0]);
+      int ijk1 = static_cast<int> (floor (pt[1] * inverse_leaf_size_[1]) - min_b_[1]);
+      int ijk2 = static_cast<int> (floor (pt[2] * inverse_leaf_size_[2]) - min_b_[2]);
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
       index_vector.push_back (cloud_point_index_idx (idx, cp));
@@ -468,7 +470,7 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
       leaf_layout_[index_vector[cp].idx] = index;
 
     // Normalize the centroid
-    centroid /= (i - cp);
+    centroid /= static_cast<float> (i - cp);
 
     // Do we need to process all the fields?
     if (!downsample_all_data_)
@@ -491,7 +493,7 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
       if (rgba_index >= 0) 
       {
         float r = centroid[centroid_size-3], g = centroid[centroid_size-2], b = centroid[centroid_size-1];
-        int rgb = ((int)r) << 16 | ((int)g) << 8 | ((int)b);
+        int rgb = (static_cast<int> (r) << 16) | (static_cast<int> (g) << 8) | static_cast<int> (b);
         memcpy (&output.data[point_offset + output.fields[rgba_index].offset], &rgb, sizeof (float));
       }
     }

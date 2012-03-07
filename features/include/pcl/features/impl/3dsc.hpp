@@ -167,9 +167,9 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
   normal = normals[minIndex].getNormalVector3fMap ();
 
   // Compute and store the RF direction
-  x_axis[0] = (float)rnd ();
-  x_axis[1] = (float)rnd ();
-  x_axis[2] = (float)rnd ();
+  x_axis[0] = static_cast<float> (rnd ());
+  x_axis[1] = static_cast<float> (rnd ());
+  x_axis[2] = static_cast<float> (rnd ());
   if (!pcl::utils::equal (normal[2], 0.0f))
     x_axis[2] = - (normal[0]*x_axis[0] + normal[1]*x_axis[1]) / normal[2];
   else if (!pcl::utils::equal (normal[1], 0.0f))

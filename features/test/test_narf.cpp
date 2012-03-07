@@ -50,7 +50,7 @@ TEST (PCL, Narf_save_load)
   narf.getSurfacePatchPixelSize() = 10;
   narf.setSurfacePatch(new float[narf.getSurfacePatchPixelSize()*narf.getSurfacePatchPixelSize()]);
   for (int i=0; i<narf.getSurfacePatchPixelSize()*narf.getSurfacePatchPixelSize(); ++i)
-    narf.getSurfacePatch()[i] = i;
+    narf.getSurfacePatch()[i] = static_cast<float> (i);
   narf.getSurfacePatchWorldSize() = 0.5f;
   narf.getSurfacePatchRotation() = deg2rad(10.0f);
   narf.extractDescriptor(36);

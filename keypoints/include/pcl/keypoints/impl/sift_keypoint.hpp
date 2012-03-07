@@ -181,7 +181,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
       keypoint.x = input.points[keypoint_index].x;
       keypoint.y = input.points[keypoint_index].y;
       keypoint.z = input.points[keypoint_index].z;
-      memcpy (((char*)&keypoint) + out_fields_[scale_idx_].offset, &scales[extrema_scales[i_keypoint]], sizeof (float));
+      memcpy (reinterpret_cast<char*> (&keypoint) + out_fields_[scale_idx_].offset, &scales[extrema_scales[i_keypoint]], sizeof (float));
       output.points.push_back (keypoint); 
     }
   }

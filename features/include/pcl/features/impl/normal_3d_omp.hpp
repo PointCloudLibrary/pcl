@@ -58,7 +58,7 @@ pcl::NormalEstimationOMP<PointInT, Eigen::MatrixXf>::computeFeatureEigen (pcl::P
 #pragma omp parallel for schedule (dynamic, threads_)
 #endif
   // Iterating over the entire index vector
-  for (int idx = 0; idx < (int)indices_->size (); ++idx)
+  for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
   {
     // Allocate enough space to hold the results
     // \note This resize is irrelevant for a radiusSearch ().
@@ -102,7 +102,7 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
   output.is_dense = true;
   // Iterating over the entire index vector
 #pragma omp parallel for schedule (dynamic, threads_)
-  for (int idx = 0; idx < (int)indices_->size (); ++idx)
+  for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
   {
     // Allocate enough space to hold the results
     // \note This resize is irrelevant for a radiusSearch ().

@@ -194,8 +194,8 @@ RangeImageBorderExtractor::updatedScoresAccordingToNeighborValues (const float* 
 {
   float* new_scores = new float[range_image_->width*range_image_->height];
   float* new_scores_ptr = new_scores;
-  for (int y=0; y<(int)range_image_->height; ++y) 
-    for (int x=0; x<(int)range_image_->width; ++x) 
+  for (int y=0; y < static_cast<int> (range_image_->height); ++y) 
+    for (int x=0; x < static_cast<int> (range_image_->width); ++x) 
       *(new_scores_ptr++) = updatedScoreAccordingToNeighborValues(x, y, border_scores);
   return (new_scores);
 }
@@ -239,8 +239,10 @@ RangeImageBorderExtractor::findAndEvaluateShadowBorders ()
   int width  = range_image_->width,
       height = range_image_->height;
   shadow_border_informations_ = new ShadowBorderIndices*[width*height];
-  for (int y=0; y<(int)height; ++y) {
-    for (int x=0; x<(int)width; ++x) {
+  for (int y = 0; y < static_cast<int> (height); ++y) 
+  {
+    for (int x = 0; x < static_cast<int> (width); ++x) 
+    {
       int index = y*width+x;
       ShadowBorderIndices*& shadow_border_indices = shadow_border_informations_[index];
       shadow_border_indices = NULL;
@@ -298,8 +300,8 @@ RangeImageBorderExtractor::getAnglesImageForBorderDirections ()
       float tmp_factor = point.range*range_image_->getAngularResolution();
       range_image_->getImagePoint(point.x+tmp_factor*border_direction[0], point.y+tmp_factor*border_direction[1], point.z+tmp_factor*border_direction[2],
                                 border_direction_in_image_x, border_direction_in_image_y);
-      border_direction_in_image_x -= x;  border_direction_in_image_y -= y;
-      angle = atan2(border_direction_in_image_y, border_direction_in_image_x);
+      border_direction_in_image_x -= static_cast<float> (x);  border_direction_in_image_y -= static_cast<float> (y);
+      angle = atan2f (border_direction_in_image_y, border_direction_in_image_x);
     }
   }
   return angles_image;
@@ -335,17 +337,15 @@ RangeImageBorderExtractor::getAnglesImageForSurfaceChangeDirections ()
       float tmp_factor = point.range*range_image_->getAngularResolution();
       range_image_->getImagePoint(point.x+tmp_factor*direction[0], point.y+tmp_factor*direction[1], point.z+tmp_factor*direction[2],
                                 border_direction_in_image_x, border_direction_in_image_y);
-      border_direction_in_image_x -= x;  border_direction_in_image_y -= y;
-      angle = atan2(border_direction_in_image_y, border_direction_in_image_x);
-      //if (!pcl_isfinite(angle))
-        //cerr << PVARC(direction) << PVARC(point) << PVARC(border_direction_in_image_x) << PVARN(border_direction_in_image_y);
-      if (angle <= deg2rad(-90.0f))
-        angle += M_PI;
-      else if (angle > deg2rad(90.0f))
-        angle -= M_PI;
+      border_direction_in_image_x -= static_cast<float> (x);  border_direction_in_image_y -= static_cast<float> (y);
+      angle = atan2f (border_direction_in_image_y, border_direction_in_image_x);
+      if (angle <= deg2rad (-90.0f))
+        angle += static_cast<float> (M_PI);
+      else if (angle > deg2rad (90.0f))
+        angle -= static_cast<float> (M_PI);
     }
   }
-  return angles_image;
+  return (angles_image);
 }
 
 
@@ -380,8 +380,10 @@ RangeImageBorderExtractor::classifyBorders ()
   border_descriptions_->is_dense = true;
   border_descriptions_->points.resize(size, initial_border_description);
   
-  for (int y=0; y<(int)height; ++y) {
-    for (int x=0; x<(int)width; ++x) {
+  for (int y = 0; y < static_cast<int> (height); ++y) 
+  {
+    for (int x = 0; x < static_cast<int> (width); ++x) 
+    {
       int index = y*width+x;
       BorderDescription& border_description = border_descriptions_->points[index];
       border_description.x = x;

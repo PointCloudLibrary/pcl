@@ -101,7 +101,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
   std::vector<int> nn_indices;
   std::vector<float> nn_sqr_dists;
   const int neighb_cnt = this->searchForNeighbors (index, search_radius_, nn_indices, nn_sqr_dists);
-  if (neighb_cnt < (int)min_pts_neighb_)
+  if (neighb_cnt < static_cast<int> (min_pts_neighb_))
   {
     throw PCLException (
       "Too few points for spin image, use setMinPointCountInNeighbourhood() to decrease the threshold or use larger feature radius",
@@ -185,7 +185,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
     int alpha_bin = int(std::floor (alpha / bin_size));
     assert (0 <= alpha_bin && alpha_bin < m_matrix.rows ());
 
-    if (alpha_bin == (int)image_width_)  // border points
+    if (alpha_bin == static_cast<int> (image_width_))  // border points
     {
       alpha_bin--;
       // HACK: to prevent a > 1
@@ -322,7 +322,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::initCompute ()
 template <typename PointInT, typename PointNT, typename PointOutT> void 
 pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 { 
-  for (int i_input = 0; i_input < (int)indices_->size (); ++i_input)
+  for (int i_input = 0; i_input < static_cast<int> (indices_->size ()); ++i_input)
   {
     Eigen::ArrayXXd res = computeSiForPoint (indices_->at (i_input));
 
@@ -331,7 +331,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClo
     {
       for (int iCol = 0; iCol < res.cols () ; iCol++)
       {
-        output.points[i_input].histogram[ iRow*res.cols () + iCol ] = (float)res(iRow, iCol);
+        output.points[i_input].histogram[ iRow*res.cols () + iCol ] = static_cast<float> (res (iRow, iCol));
       }
     }   
   } 
@@ -349,7 +349,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEige
   output.channels["spin_image"].datatype = sensor_msgs::PointField::FLOAT32;
 
   output.points.resize (indices_->size (), 153);
-  for (int i_input = 0; i_input < (int)indices_->size (); ++i_input)
+  for (int i_input = 0; i_input < static_cast<int> (indices_->size ()); ++i_input)
   {
     Eigen::ArrayXXd res = this->computeSiForPoint (indices_->at (i_input));
 
@@ -358,7 +358,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEige
     {
       for (int iCol = 0; iCol < res.cols () ; iCol++)
       {
-        output.points (i_input, iRow*res.cols () + iCol) = (float)res(iRow, iCol);
+        output.points (i_input, iRow*res.cols () + iCol) = static_cast<float> (res (iRow, iCol));
       }
     }   
   } 

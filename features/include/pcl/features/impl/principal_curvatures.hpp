@@ -67,7 +67,7 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computePointPr
   }
 
   // Estimate the XYZ centroid
-  xyz_centroid_ /= (float)indices.size ();
+  xyz_centroid_ /= static_cast<float> (indices.size ());
 
   // Initialize to 0
   covariance_matrix_.setZero ();
@@ -83,15 +83,15 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computePointPr
     demean_yz = demean_[1] * demean_[2];
 
     covariance_matrix_(0, 0) += demean_[0] * demean_[0];
-    covariance_matrix_(0, 1) += (float)demean_xy;
-    covariance_matrix_(0, 2) += (float)demean_xz;
+    covariance_matrix_(0, 1) += static_cast<float> (demean_xy);
+    covariance_matrix_(0, 2) += static_cast<float> (demean_xz);
 
-    covariance_matrix_(1, 0) += (float)demean_xy;
+    covariance_matrix_(1, 0) += static_cast<float> (demean_xy);
     covariance_matrix_(1, 1) += demean_[1] * demean_[1];
-    covariance_matrix_(1, 2) += (float)demean_yz;
+    covariance_matrix_(1, 2) += static_cast<float> (demean_yz);
 
-    covariance_matrix_(2, 0) += (float)demean_xz;
-    covariance_matrix_(2, 1) += (float)demean_yz;
+    covariance_matrix_(2, 0) += static_cast<float> (demean_xz);
+    covariance_matrix_(2, 1) += static_cast<float> (demean_yz);
     covariance_matrix_(2, 2) += demean_[2] * demean_[2];
   }
 
@@ -102,7 +102,7 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computePointPr
   pcx = eigenvector_ [0];
   pcy = eigenvector_ [1];
   pcz = eigenvector_ [2];
-  float indices_size = 1.0f / indices.size ();
+  float indices_size = 1.0f / static_cast<float> (indices.size ());
   pc1 = eigenvalues_ [2] * indices_size;
   pc2 = eigenvalues_ [1] * indices_size;
 }

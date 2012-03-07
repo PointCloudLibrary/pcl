@@ -98,7 +98,9 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
         }
         normal_v = normal.cross3 (normal_u);
 
-        Eigen::Vector4f zeta_point = 2.0f * (l+1) * scale_h_ / M_ * (cos (2.0f * M_PI * (k+1) / N_) * normal_u + sin (2.0f * M_PI * (k+1) / N_) * normal_v);
+        Eigen::Vector4f zeta_point = 2.0f * static_cast<float> (l + 1) * scale_h_ / static_cast<float> (M_) * 
+            (cosf (2.0f * static_cast<float> (M_PI) * static_cast<float> ((k + 1) / N_)) * normal_u + 
+             sinf (2.0f * static_cast<float> (M_PI) * static_cast<float> ((k + 1) / N_)) * normal_v);
 
         // Compute normal by using the neighbors
         Eigen::Vector4f zeta_point_plus_center = zeta_point + center_point;
@@ -142,7 +144,7 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
       {
         float Xk = 0.0f;
         for (int n = 0; n < s_row.size (); ++n)
-          Xk += (float)(s_row[n] * cos (M_PI / M_ * (n + 0.5f) * k));
+          Xk += static_cast<float> (s_row[n] * cos (M_PI / (static_cast<double> (M_ * n) + 0.5) * static_cast<double> (k)));
         dct_row[m] = Xk;
       }
       s_row = dct_row;
@@ -159,8 +161,8 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
         float Xk_real = 0.0f, Xk_imag = 0.0f;
         for (size_t n = 0; n < N_; ++n)
         {
-          Xk_real += (float)(s_matrix(n, column_i) * cos (2.0f * M_PI / N_ * k * n));
-          Xk_imag += (float)(s_matrix(n, column_i) * sin (2.0f * M_PI / N_ * k * n));
+          Xk_real += static_cast<float> (s_matrix (n, column_i) * cos (2.0f * M_PI / static_cast<double> (N_ * k * n)));
+          Xk_imag += static_cast<float> (s_matrix (n, column_i) * sin (2.0f * M_PI / static_cast<double> (N_ * k * n)));
         }
         dft_col[k] = sqrt (Xk_real*Xk_real + Xk_imag*Xk_imag);
       }

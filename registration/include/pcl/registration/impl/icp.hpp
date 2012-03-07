@@ -149,7 +149,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
     }
 
     // Check whether we have enough correspondences
-    cnt = (int)source_indices_good.size ();
+    cnt = static_cast<int> (source_indices_good.size ());
     if (cnt < min_number_correspondences_)
     {
       PCL_ERROR ("[pcl::%s::computeTransformation] Not enough correspondences found. Relax your threshold parameters.\n", getClassName ().c_str ());
@@ -157,7 +157,13 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
       return;
     }
 
-    PCL_DEBUG ("[pcl::%s::computeTransformation] Number of correspondences %d [%f%%] out of %zu points [100.0%%], RANSAC rejected: %zu [%f%%].\n", getClassName ().c_str (), cnt, (cnt * 100.0f) / indices_->size (), indices_->size (), source_indices.size () - cnt, (source_indices.size () - cnt) * 100.0f / source_indices.size ());
+    PCL_DEBUG ("[pcl::%s::computeTransformation] Number of correspondences %d [%f%%] out of %zu points [100.0%%], RANSAC rejected: %zu [%f%%].\n", 
+        getClassName ().c_str (), 
+        cnt, 
+        (static_cast<float> (cnt) * 100.0f) / static_cast<float> (indices_->size ()), 
+        indices_->size (), 
+        source_indices.size () - cnt, 
+        static_cast<float> (source_indices.size () - cnt) * 100.0f / static_cast<float> (source_indices.size ()));
   
     // Estimate the transform
     //rigid_transformation_estimation_(output, source_indices_good, *target_, target_indices_good, transformation_);

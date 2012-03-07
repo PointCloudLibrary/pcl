@@ -100,7 +100,7 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
     {
       int point_index = (*indices_)[indices_idx];
       int y=point_index/range_image_->width, x=point_index - y*range_image_->width;
-      Narf::extractFromRangeImageAndAddToList(*range_image_, x, y, 36, parameters_.support_size,
+      Narf::extractFromRangeImageAndAddToList(*range_image_, static_cast<float> (x), static_cast<float> (y), 36, parameters_.support_size,
                                               parameters_.rotation_invariant, feature_list);
     }
   }
@@ -110,7 +110,7 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
     {
       for (unsigned int x=0; x<range_image_->width; ++x)
       {
-        Narf::extractFromRangeImageAndAddToList(*range_image_, x, y, 36, parameters_.support_size,
+        Narf::extractFromRangeImageAndAddToList(*range_image_, static_cast<float> (x), static_cast<float> (y), 36, parameters_.support_size,
                                                 parameters_.rotation_invariant, feature_list);
       }
     }

@@ -66,7 +66,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
   pfh_histogram.setZero ();
 
   // Factorization constant
-  float hist_incr = 100.0 / (indices.size () * (indices.size () - 1) / 2);
+  float hist_incr = 100.0f / static_cast<float> (indices.size () * (indices.size () - 1) / 2);
 
   std::pair<int, int> key;
   // Iterate over all the points in the neighborhood
@@ -112,15 +112,15 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
           continue;
 
       // Normalize the f1, f2, f3 features and push them in the histogram
-      f_index_[0] = (int)floor (nr_split * ((pfh_tuple_[0] + M_PI) * d_pi_));
+      f_index_[0] = static_cast<int> (floor (nr_split * ((pfh_tuple_[0] + M_PI) * d_pi_)));
       if (f_index_[0] < 0)         f_index_[0] = 0;
       if (f_index_[0] >= nr_split) f_index_[0] = nr_split - 1;
 
-      f_index_[1] = (int)floor (nr_split * ((pfh_tuple_[1] + 1.0) * 0.5));
+      f_index_[1] = static_cast<int> (floor (nr_split * ((pfh_tuple_[1] + 1.0) * 0.5)));
       if (f_index_[1] < 0)         f_index_[1] = 0;
       if (f_index_[1] >= nr_split) f_index_[1] = nr_split - 1;
 
-      f_index_[2] = (int)floor (nr_split * ((pfh_tuple_[2] + 1.0) * 0.5));
+      f_index_[2] = static_cast<int> (floor (nr_split * ((pfh_tuple_[2] + 1.0) * 0.5)));
       if (f_index_[2] < 0)         f_index_[2] = 0;
       if (f_index_[2] >= nr_split) f_index_[2] = nr_split - 1;
 

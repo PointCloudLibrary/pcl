@@ -62,10 +62,10 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::generateCloudGraph (
   {
     std::vector<int> k_indices (16);
     std::vector<float> k_distances (16);
-    kdtree.nearestKSearch (point_i, 16, k_indices, k_distances);
+    kdtree.nearestKSearch (static_cast<int> (point_i), 16, k_indices, k_distances);
 
-    for (size_t k_i = 0; k_i < k_indices.size (); ++k_i)
-      add_edge (point_i, k_indices[k_i], Weight (sqrt (k_distances[k_i])), cloud_graph);
+    for (int k_i = 0; k_i < static_cast<int> (k_indices.size ()); ++k_i)
+      add_edge (point_i, k_indices[k_i], Weight (sqrtf (k_distances[k_i])), cloud_graph);
   }
 
   const size_t E = num_edges (cloud_graph),
@@ -90,15 +90,15 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::initCompute ()
   if (!PCLBase<PointT>::initCompute ())
   {
     PCL_ERROR ("[pcl::StatisticalMultiscaleInterestRegionExtraction::initCompute] PCLBase::initCompute () failed - no input cloud was given.\n");
-    return false;
+    return (false);
   }
   if (scale_values_.empty ())
   {
     PCL_ERROR ("[pcl::StatisticalMultiscaleInterestRegionExtraction::initCompute] No scale values were given\n");
-    return false;
+    return (false);
   }
 
-  return true;
+  return (true);
 }
 
 
@@ -110,7 +110,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::geodesicFixedRadiusS
 {
   for (size_t i = 0; i < geodesic_distances_[query_index].size (); ++i)
     if (i != query_index && geodesic_distances_[query_index][i] < radius)
-      result_indices.push_back (i);
+      result_indices.push_back (static_cast<int> (i));
 }
 
 
@@ -156,7 +156,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeF ()
       for (size_t point_j = 0; point_j < input_->points.size (); ++point_j)
       {
         float d_g = geodesic_distances_[point_i][point_j];
-        float phi_i_j = 1.0 / sqrt(2.0 * M_PI * scale_squared) * exp( (-1) * d_g*d_g / (2.0*scale_squared));
+        float phi_i_j = 1.0f / sqrtf (2.0f * static_cast<float> (M_PI) * scale_squared) * expf ( (-1) * d_g*d_g / (2.0f * scale_squared));
 
         point_density_i += phi_i_j;
         phi_row[point_j] = phi_i_j;
@@ -183,8 +183,8 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeF ()
       A_hat.x /= A_hat_normalization; A_hat.y /= A_hat_normalization; A_hat.z /= A_hat_normalization;
 
       // compute the invariant F
-      float aux = 2.0 / scale_values_[scale_i] * euclideanDistance<PointT, PointT> (A_hat, input_->points[point_i]);
-      F[point_i] = aux * exp (-aux);
+      float aux = 2.0f / scale_values_[scale_i] * euclideanDistance<PointT, PointT> (A_hat, input_->points[point_i]);
+      F[point_i] = aux * expf (-aux);
     }
 
     F_scales_[scale_i] = F;
@@ -231,8 +231,8 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::extractExtrema (std:
           (is_max[scale_i - 1][point_i] && is_max[scale_i][point_i] && is_max[scale_i + 1][point_i]))
         {
         // add the point to the result vector
-        IndicesPtr region (new std::vector<int> ());
-        region->push_back (point_i);
+        IndicesPtr region (new std::vector<int>);
+        region->push_back (static_cast<int> (point_i));
 
         // and also add its scale-sized geodesic neighborhood
         std::vector<int> nn_indices;
