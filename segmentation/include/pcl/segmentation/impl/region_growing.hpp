@@ -58,9 +58,9 @@ pcl::RegionGrowing<PointT>::RegionGrowing () :
   curvature_flag_ (true),
   smooth_mode_ (true),
   residual_flag_ (false),
-  theta_threshold_ (30.0 / 180.0 * M_PI),
-  residual_threshold_ (0.05),
-  curvature_threshold_ (0.05),
+  theta_threshold_ (30.0f / 180.0f * static_cast<float> (M_PI)),
+  residual_threshold_ (0.05f),
+  curvature_threshold_ (0.05f),
   neighbour_number_ (30),
   search_ (),
   normals_ (),
@@ -199,7 +199,7 @@ pcl::RegionGrowing<PointT>::getSegmentFromPoint (int index)
 
   // first of all we need to find out if this point belongs to cloud
   bool point_was_found = false;
-  if (index < (int)cloud_for_segmentation_->points.size () && index >= 0)
+  if (index < static_cast<int> (cloud_for_segmentation_->points.size ()) && index >= 0)
     point_was_found = true;
 
   if (point_was_found)
@@ -264,7 +264,7 @@ pcl::RegionGrowing<PointT>::getSegmentFromPoint (const PointT &point)
     if (cloud_for_segmentation_->points[i].x != point.x) continue;
 
     point_was_found = true;
-    index = i;
+    index = static_cast<int> (i);
     break;
   }
 
@@ -318,17 +318,17 @@ pcl::RegionGrowing<PointT>::getColoredCloud ()
 {
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud;
 
-  if (!segments_.empty())
+  if (!segments_.empty ())
   {
-    colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGB>)->makeShared();
+    colored_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGB>);
 
-    srand(static_cast<unsigned int>(time(0)));
+    srand (static_cast<unsigned int>(time(0)));
     std::vector<unsigned char> colors;
-    for (size_t i_segment = 0; i_segment < segments_.size(); i_segment++)
+    for (size_t i_segment = 0; i_segment < segments_.size (); i_segment++)
     {
-      colors.push_back(rand() % 256);
-      colors.push_back(rand() % 256);
-      colors.push_back(rand() % 256);
+      colors.push_back (static_cast<unsigned char> (rand () % 256));
+      colors.push_back (static_cast<unsigned char> (rand () % 256));
+      colors.push_back (static_cast<unsigned char> (rand () % 256));
     }
 
     colored_cloud->width = cloud_for_segmentation_->width;
@@ -560,15 +560,15 @@ pcl::RegionGrowing<PointT>::validatePoint (int initial_seed, int point, int nghb
 {
   is_a_seed = true;
 
-  float cosine_threshold = cos(theta_threshold_);
-  Eigen::Map<Eigen::Vector3f> initial_point( (float*)cloud_for_segmentation_->points[point].data );
-  Eigen::Map<Eigen::Vector3f> initial_normal( (float*)normals_->points[point].normal );
+  float cosine_threshold = cosf (theta_threshold_);
+  Eigen::Map<Eigen::Vector3f> initial_point (reinterpret_cast<float*> (cloud_for_segmentation_->points[point].data));
+  Eigen::Map<Eigen::Vector3f> initial_normal (reinterpret_cast<float*> (normals_->points[point].normal));
 
   //check the angle between normals
   if (smooth_mode_ == true)
   {
-    Eigen::Map<Eigen::Vector3f> nghbr_normal( (float*)normals_->points[nghbr].normal );
-    float dot_product = fabs( nghbr_normal.dot(initial_normal) );
+    Eigen::Map<Eigen::Vector3f> nghbr_normal (reinterpret_cast<float*> (normals_->points[nghbr].normal));
+    float dot_product = fabsf (nghbr_normal.dot (initial_normal));
     if (dot_product < cosine_threshold)
     {
       return (false);
@@ -576,9 +576,9 @@ pcl::RegionGrowing<PointT>::validatePoint (int initial_seed, int point, int nghb
   }
   else
   {
-    Eigen::Map<Eigen::Vector3f> nghbr_normal( (float*)normals_->points[nghbr].normal );
-    Eigen::Map<Eigen::Vector3f> initial_seed_normal( (float*)normals_->points[initial_seed].normal );
-    float dot_product = fabs( nghbr_normal.dot(initial_seed_normal) );
+    Eigen::Map<Eigen::Vector3f> nghbr_normal (reinterpret_cast<float*> (normals_->points[nghbr].normal));
+    Eigen::Map<Eigen::Vector3f> initial_seed_normal (reinterpret_cast<float*> (normals_->points[initial_seed].normal));
+    float dot_product = fabsf (nghbr_normal.dot (initial_seed_normal));
     if (dot_product < cosine_threshold)
       return (false);
   }
@@ -590,8 +590,8 @@ pcl::RegionGrowing<PointT>::validatePoint (int initial_seed, int point, int nghb
   }
 
   // check the residual if needed
-  Eigen::Map<Eigen::Vector3f> nghbr_point( (float*)cloud_for_segmentation_->points[nghbr].data );
-  float residual = fabs( initial_normal.dot(initial_point - nghbr_point) );
+  Eigen::Map<Eigen::Vector3f> nghbr_point (reinterpret_cast<float*> (cloud_for_segmentation_->points[nghbr].data));
+  float residual = fabsf (initial_normal.dot (initial_point - nghbr_point));
   if (residual_flag_ && residual > residual_threshold_)
     is_a_seed = false;
 
