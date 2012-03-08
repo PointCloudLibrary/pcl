@@ -383,7 +383,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::projectPointToMLSSurface (float &u
                                                                         float &curvature,
                                                                         Eigen::Vector3f &query_point,
                                                                         Eigen::VectorXd &c_vec,
-                                                                        size_t num_neighbors,
+                                                                        int num_neighbors,
                                                                         PointOutT &result_point,
                                                                         pcl::Normal &result_normal)
 {
@@ -546,7 +546,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::MLSResult::MLSResult (Eigen::Vecto
                                                                     Eigen::Vector3d &a_u,
                                                                     Eigen::Vector3d &a_v,
                                                                     Eigen::VectorXd a_c_vec,
-                                                                    size_t a_num_neighbors,
+                                                                    int a_num_neighbors,
                                                                     float &a_curvature) :
   plane_normal (a_plane_normal), u (a_u), v (a_v), c_vec (a_c_vec), num_neighbors (a_num_neighbors), 
   curvature (a_curvature), valid (true)
