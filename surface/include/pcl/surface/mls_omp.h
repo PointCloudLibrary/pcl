@@ -67,18 +67,11 @@ namespace pcl
     using MovingLeastSquares<PointInT, PointOutT>::mls_results_;
     using MovingLeastSquares<PointInT, PointOutT>::search_radius_;
     using MovingLeastSquares<PointInT, PointOutT>::compute_normals_;
-    using MovingLeastSquares<PointInT, PointOutT>::normals_;
-
-
-
-
       
     typedef typename MovingLeastSquares<PointInT, PointOutT>::PointCloudIn PointCloudIn;
     typedef typename MovingLeastSquares<PointInT, PointOutT>::PointCloudOut PointCloudOut;
     typedef typename MovingLeastSquares<PointInT, PointOutT>::NormalCloud NormalCloud;
     typedef typename MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid MLSVoxelGrid;
-
-
 
     public:
       /** \brief Empty constructor. */
