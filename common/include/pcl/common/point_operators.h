@@ -274,9 +274,9 @@ namespace pcl
     operator+= (pcl::PointXYZRGB& lhs, const pcl::PointXYZRGB& rhs)
     {
       lhs.getVector3fMap () += rhs.getVector3fMap ();
-      lhs.r += rhs.r; 
-      lhs.g += rhs.g; 
-      lhs.b += rhs.b;
+      lhs.r = static_cast<uint8_t> (lhs.r + rhs.r);
+      lhs.g = static_cast<uint8_t> (lhs.g + rhs.g);
+      lhs.b = static_cast<uint8_t> (lhs.b + rhs.b);
       return (lhs);
     }
 
@@ -284,9 +284,9 @@ namespace pcl
     operator-= (pcl::PointXYZRGB& lhs, const pcl::PointXYZRGB& rhs)
     {
       lhs.getVector3fMap () -= rhs.getVector3fMap ();
-      lhs.r -= rhs.r; 
-      lhs.g -= rhs.g; 
-      lhs.b -= rhs.b;
+      lhs.r = static_cast<uint8_t> (lhs.r - rhs.r);
+      lhs.g = static_cast<uint8_t> (lhs.g - rhs.g);
+      lhs.b = static_cast<uint8_t> (lhs.b - rhs.b);
       return (lhs);
     }
 

@@ -138,9 +138,9 @@ namespace pcl
           (1 << (hsv_shift + 6))) >> (7 + hsv_shift);
                 
       h += h < 0 ? hr : 0;
-      fh = h / 180.0;
-      fs = s / 255.0;
-      fv = v / 255.0;
+      fh = static_cast<float> (h) / 180.0f;
+      fs = static_cast<float> (s) / 255.0f;
+      fv = static_cast<float> (v) / 255.0f;
     }
    
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -149,8 +149,8 @@ namespace pcl
     {
       // convert color space from RGB to HSV
       RGBValue source_rgb, target_rgb;
-      source_rgb.float_value = source.rgba;
-      target_rgb.float_value = target.rgba;
+      source_rgb.float_value = static_cast<float> (source.rgba);
+      target_rgb.float_value = static_cast<float> (target.rgba);
 
       float source_h, source_s, source_v, target_h, target_s, target_v;
       RGB2HSV (source_rgb.Red, source_rgb.Blue, source_rgb.Green,
@@ -158,15 +158,15 @@ namespace pcl
       RGB2HSV (target_rgb.Red, target_rgb.Blue, target_rgb.Green,
                target_h, target_s, target_v);
       // hue value is in 0 ~ 2pi, but circulated.
-      const float _h_diff = fabs (source_h - target_h);
+      const float _h_diff = fabsf (source_h - target_h);
       float h_diff;
-      if (_h_diff > 0.5)
-        h_diff = h_weight_ * (_h_diff - 0.5) * (_h_diff - 0.5);
+      if (_h_diff > 0.5f)
+        h_diff = static_cast<float> (h_weight_) * (_h_diff - 0.5f) * (_h_diff - 0.5f);
       else
-        h_diff = h_weight_ * _h_diff * _h_diff;
+        h_diff = static_cast<float> (h_weight_) * _h_diff * _h_diff;
 
-      const float s_diff = s_weight_ * (source_s - target_s) * (source_s - target_s);
-      const float v_diff = v_weight_ * (source_v - target_v) * (source_v - target_v);
+      const float s_diff = static_cast<float> (s_weight_) * (source_s - target_s) * (source_s - target_s);
+      const float v_diff = static_cast<float> (v_weight_) * (source_v - target_v) * (source_v - target_v);
       const float diff2 = h_diff + s_diff + v_diff;
       
       return (1.0 / (1.0 + weight_ * diff2));

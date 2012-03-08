@@ -94,7 +94,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (PointCloud &output)
   unsigned int prev_index = start_index[0];
   for (unsigned int i = 1; i < normals_hg.size (); i++)
   {
-    start_index[i] = prev_index + normals_hg[i-1].size ();
+    start_index[i] = prev_index + static_cast<unsigned int> (normals_hg[i-1].size ());
     prev_index = start_index[i];
   }
 
@@ -108,7 +108,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (PointCloud &output)
     // iterating through every bin and picking one point at random, until the required number of points are sampled..
     for (unsigned int j = 0; j < normals_hg.size (); j++)
     {
-      unsigned int M = normals_hg[j].size ();
+      unsigned int M = static_cast<unsigned int> (normals_hg[j].size ());
       if (M == 0 || bin_empty_flag.test (j))// bin_empty_flag(i) is set if all points in that bin are sampled..
       {
         continue;
@@ -126,7 +126,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (PointCloud &output)
       is_sampled_flag.flip (start_index[j] + random_index);
 
       // checking if all points in bin j are sampled..
-      if (isEntireBinSampled (is_sampled_flag, start_index[j], normals_hg[j].size ()))
+      if (isEntireBinSampled (is_sampled_flag, start_index[j], static_cast<unsigned int> (normals_hg[j].size ())))
       {
         bin_empty_flag.flip (j);
       }
@@ -171,7 +171,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::findBin (float *normal, unsigned int)
   float min_cos = -1.0;
 
   dcos = cosf (normal[0]);
-  bin_size = (max_cos - min_cos) / binsx_;
+  bin_size = (max_cos - min_cos) / static_cast<float> (binsx_);
 
   // finding bin number for direction cosine in x direction
   unsigned int k = 0;
@@ -184,8 +184,8 @@ pcl::NormalSpaceSampling<PointT, NormalT>::findBin (float *normal, unsigned int)
   }
   t[0] = k;
 
-  dcos = cos(normal[1]);
-  bin_size = (max_cos - min_cos) / binsy_;
+  dcos = cosf (normal[1]);
+  bin_size = (max_cos - min_cos) / static_cast<float> (binsy_);
 
   // finding bin number for direction cosine in y direction
   k = 0;
@@ -198,8 +198,8 @@ pcl::NormalSpaceSampling<PointT, NormalT>::findBin (float *normal, unsigned int)
   }
   t[1] = k;
     
-  dcos = cos(normal[2]);
-  bin_size = (max_cos - min_cos) / binsz_;
+  dcos = cosf (normal[2]);
+  bin_size = (max_cos - min_cos) / static_cast<float> (binsz_);
 
   // finding bin number for direction cosine in z direction
   k = 0;
@@ -266,7 +266,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
   unsigned int prev_index = start_index[0];
   for (unsigned int i = 1; i < normals_hg.size (); i++)
   {
-    start_index[i] = prev_index + normals_hg[i-1].size ();
+    start_index[i] = prev_index + static_cast<unsigned int> (normals_hg[i-1].size ());
     prev_index = start_index[i];
   }
 
@@ -280,7 +280,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
     // iterating through every bin and picking one point at random, until the required number of points are sampled..
     for (unsigned int j = 0; j < normals_hg.size (); j++)
     {
-      unsigned int M = normals_hg[j].size();
+      unsigned int M = static_cast<unsigned int> (normals_hg[j].size ());
       if (M==0 || bin_empty_flag.test (j)) // bin_empty_flag(i) is set if all points in that bin are sampled..
       {
         continue;
@@ -299,7 +299,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
       is_sampled_flag.flip (start_index[j] + random_index);
 
       // checking if all points in bin j are sampled..
-      if (isEntireBinSampled (is_sampled_flag, start_index[j], normals_hg[j].size ())) 
+      if (isEntireBinSampled (is_sampled_flag, start_index[j], static_cast<unsigned int> (normals_hg[j].size ()))) 
       {
 	bin_empty_flag.flip (j);
       }

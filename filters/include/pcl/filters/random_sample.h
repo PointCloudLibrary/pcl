@@ -66,7 +66,7 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      RandomSample () : sample_ (UINT_MAX), seed_ (time (NULL))
+      RandomSample () : sample_ (UINT_MAX), seed_ (static_cast<unsigned int> (time (NULL)))
       {
         filter_name_ = "RandomSample";
       }
@@ -151,7 +151,7 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      RandomSample () : sample_ (UINT_MAX), seed_ (time (NULL))
+      RandomSample () : sample_ (UINT_MAX), seed_ (static_cast<unsigned int> (time (NULL)))
       {
         filter_name_ = "RandomSample";
       }
@@ -215,7 +215,7 @@ namespace pcl
       inline float
       unifRand ()
       {
-        return (rand () / double (RAND_MAX));
+        return (static_cast<float> (rand () / double (RAND_MAX)));
         //return (((214013 * seed_ + 2531011) >> 16) & 0x7FFF);
       }
    };

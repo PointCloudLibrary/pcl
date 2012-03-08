@@ -317,9 +317,9 @@ namespace pcl
       getLeaf (PointT &p)
       {
         // Generate index associated with p
-        int ijk0 = (int)(floor (p.x * inverse_leaf_size_[0])) - min_b_[0];
-        int ijk1 = (int)(floor (p.y * inverse_leaf_size_[1])) - min_b_[1];
-        int ijk2 = (int)(floor (p.z * inverse_leaf_size_[2])) - min_b_[2];
+        int ijk0 = static_cast<int> (floor (p.x * inverse_leaf_size_[0]) - min_b_[0]);
+        int ijk1 = static_cast<int> (floor (p.y * inverse_leaf_size_[1]) - min_b_[1]);
+        int ijk2 = static_cast<int> (floor (p.z * inverse_leaf_size_[2]) - min_b_[2]);
 
         // Compute the centroid leaf index
         int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
@@ -344,9 +344,9 @@ namespace pcl
       getLeaf (Eigen::Vector3f &p)
       {
         // Generate index associated with p
-        int ijk0 = (int)(floor (p[0] * inverse_leaf_size_[0])) - min_b_[0];
-        int ijk1 = (int)(floor (p[1] * inverse_leaf_size_[1])) - min_b_[1];
-        int ijk2 = (int)(floor (p[2] * inverse_leaf_size_[2])) - min_b_[2];
+        int ijk0 = static_cast<int> (floor (p[0] * inverse_leaf_size_[0]) - min_b_[0]);
+        int ijk1 = static_cast<int> (floor (p[1] * inverse_leaf_size_[1]) - min_b_[1]);
+        int ijk2 = static_cast<int> (floor (p[2] * inverse_leaf_size_[2]) - min_b_[2]);
 
         // Compute the centroid leaf index
         int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
@@ -445,7 +445,7 @@ namespace pcl
       nearestKSearch (const PointCloud &cloud, int index, int k,
                       std::vector<LeafConstPtr> &k_leaves, std::vector<float> &k_sqr_distances)
       {
-        if (index >= (int)cloud.points.size () || index < 0)
+        if (index >= static_cast<int> (cloud.points.size ()) || index < 0)
           return (0);
         return (nearestKSearch (cloud.points[index], k, k_leaves, k_sqr_distances));
       }
@@ -499,7 +499,7 @@ namespace pcl
                     std::vector<LeafConstPtr> &k_leaves, std::vector<float> &k_sqr_distances,
                     unsigned int max_nn = 0)
       {
-        if (index >= (int)cloud.points.size () || index < 0)
+        if (index >= static_cast<int> (cloud.points.size ()) || index < 0)
           return (0);
         return (radiusSearch (cloud.points[index], radius, k_leaves, k_sqr_distances, max_nn));
       }

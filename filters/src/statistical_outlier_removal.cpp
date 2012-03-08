@@ -104,7 +104,7 @@ pcl::StatisticalOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointClou
     double dist_sum = 0;
     for (int j = 1; j < mean_k_; ++j)
       dist_sum += sqrt (nn_dists[j]);
-    distances[cp] = dist_sum / (mean_k_ - 1);
+    distances[cp] = static_cast<float> (dist_sum / (mean_k_ - 1));
   }
 
   // Estimate the mean and the standard deviation of the distance vector
@@ -123,7 +123,7 @@ pcl::StatisticalOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointClou
   // Build a new cloud by neglecting outliers
   int nr_p = 0;
   int nr_removed_p = 0;
-  for (size_t cp = 0; cp < indices_->size (); ++cp)
+  for (int cp = 0; cp < static_cast<int> (indices_->size ()); ++cp)
   {
     if (negative_)
     {

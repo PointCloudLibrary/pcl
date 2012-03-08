@@ -391,7 +391,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<sear
     for (vector<int>::const_iterator qIt = query_indices.begin (); qIt != query_indices.end (); ++qIt)
     {
       #pragma omp parallel for
-      for (int sIdx = 0; sIdx < (int) search_methods.size (); ++sIdx)
+      for (int sIdx = 0; sIdx < static_cast<int> (search_methods.size ()); ++sIdx)
       {
         search_methods [sIdx]->radiusSearch (point_cloud->points[*qIt], radius, indices [sIdx], distances [sIdx], 0);
         passed [sIdx] = passed [sIdx] && testUniqueness (indices [sIdx], search_methods [sIdx]->getName ());
@@ -401,7 +401,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<sear
       
       // compare results to each other
       #pragma omp parallel for
-      for (int sIdx = 1; sIdx < (int) search_methods.size (); ++sIdx)
+      for (int sIdx = 1; sIdx < static_cast<int> (search_methods.size ()); ++sIdx)
       {
         passed [sIdx] = passed [sIdx] && compareResults (indices [0],    distances [0],    search_methods [0]->getName (),
                                                          indices [sIdx], distances [sIdx], search_methods [sIdx]->getName (), 1e-6 );

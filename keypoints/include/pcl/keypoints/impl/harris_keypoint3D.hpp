@@ -297,7 +297,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseHarris (PointCloudO
       float trace = covar [0] + covar [5] + covar [7];
       if (trace != 0)
       {
-        float det = covar [0] * covar [5] * covar [7] + 2.0 * covar [1] * covar [2] * covar [6]
+        float det = covar [0] * covar [5] * covar [7] + 2.0f * covar [1] * covar [2] * covar [6]
                   - covar [2] * covar [2] * covar [5]
                   - covar [1] * covar [1] * covar [7]
                   - covar [6] * covar [6] * covar [0];
@@ -326,7 +326,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseNoble (PointCloudOu
 #    pragma omp parallel for shared (output) private (covar, nn_indices, nn_dists) num_threads(threads_)
 #  endif
 #endif
-  for (int pIdx = 0; pIdx < (int) input_->size (); ++pIdx)
+  for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
   {
     const PointInT& pointIn = input_->points [pIdx];
     output [pIdx].intensity = 0.0;
@@ -337,7 +337,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseNoble (PointCloudOu
       float trace = covar [0] + covar [5] + covar [7];
       if (trace != 0)
       {
-        float det = covar [0] * covar [5] * covar [7] + 2.0 * covar [1] * covar [2] * covar [6]
+        float det = covar [0] * covar [5] * covar [7] + 2.0f * covar [1] * covar [2] * covar [6]
                   - covar [2] * covar [2] * covar [5]
                   - covar [1] * covar [1] * covar [7]
                   - covar [6] * covar [6] * covar [0];
@@ -366,7 +366,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseLowe (PointCloudOut
 #    pragma omp parallel for shared (output) private (covar, nn_indices, nn_dists) num_threads(threads_)
 #  endif
 #endif
-  for (int pIdx = 0; pIdx < (int) input_->size (); ++pIdx)
+  for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
   {
     const PointInT& pointIn = input_->points [pIdx];
     output [pIdx].intensity = 0.0;
@@ -377,7 +377,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseLowe (PointCloudOut
       float trace = covar [0] + covar [5] + covar [7];
       if (trace != 0)
       {
-        float det = covar [0] * covar [5] * covar [7] + 2.0 * covar [1] * covar [2] * covar [6]
+        float det = covar [0] * covar [5] * covar [7] + 2.0f * covar [1] * covar [2] * covar [6]
                   - covar [2] * covar [2] * covar [5]
                   - covar [1] * covar [1] * covar [7]
                   - covar [6] * covar [6] * covar [0];
@@ -425,7 +425,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
 #    pragma omp parallel for shared (output) private (covar, nn_indices, nn_dists, covariance_matrix) num_threads(threads_)
 #  endif
 #endif
-  for (int pIdx = 0; pIdx < (int) input_->size (); ++pIdx)
+  for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
   {
     const PointInT& pointIn = input_->points [pIdx];
     output [pIdx].intensity = 0.0;

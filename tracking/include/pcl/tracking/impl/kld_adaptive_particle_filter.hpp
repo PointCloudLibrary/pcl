@@ -66,14 +66,14 @@ pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::resample ()
     x_t.sample (zero_mean, step_noise_covariance_);
     
     // motion
-    if ((double)rand () / RAND_MAX < motion_ratio_)
+    if (rand () / double (RAND_MAX) < motion_ratio_)
       x_t = x_t + motion_;
     
     S->points.push_back (x_t);
     // calc bin
     std::vector<int> bin (StateT::stateDimension ());
     for (int i = 0; i < StateT::stateDimension (); i++)
-      bin[i] = (int)((x_t[i] / bin_size_[i]));
+      bin[i] = static_cast<int> (x_t[i] / bin_size_[i]);
     
     // calc bin index... how?
     if (insertIntoBins (bin, B))

@@ -41,11 +41,11 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::sampleWithReplacement
 (const std::vector<int>& a, const std::vector<double>& q)
 {
   using namespace boost;
-  static mt19937 gen (static_cast<unsigned long>(time (0)));
+  static mt19937 gen (static_cast<unsigned int>(time (0)));
   uniform_real<> dst (0.0, 1.0);
   variate_generator<mt19937&, uniform_real<> > rand (gen, dst);
-  double rU = rand () * particles_->points.size ();
-  int k = (int)rU;
+  double rU = rand () * static_cast<double> (particles_->points.size ());
+  int k = static_cast<int> (rU);
   rU -= k;    /* rU - [rU] */
   if ( rU < q[k] )
     return k;
@@ -63,15 +63,15 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::genAliasTable (std::vect
   std::vector<int>::iterator L = HL.end () - 1;
   size_t num = particles->points.size ();
   for ( size_t i = 0; i < num; i++ )
-    q[i] = particles->points[i].weight * num;
+    q[i] = particles->points[i].weight * static_cast<float> (num);
   for ( size_t i = 0; i < num; i++ )
-    a[i] = i;
+    a[i] = static_cast<int> (i);
   // setup H and L
   for ( size_t i = 0; i < num; i++ )
     if ( q[i] >= 1.0 )
-      *H++ = i;
+      *H++ = static_cast<int> (i);
     else
-      *L-- = i;
+      *L-- = static_cast<int> (i);
             
   while ( H != HL.begin() && L != HL.end() - 1 )
   {
@@ -91,7 +91,6 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::genAliasTable (std::vect
 template <typename PointInT, typename StateT> void
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initParticles (bool reset)
 {
-  PCL_INFO ("[pcl::%s::initParticles] initializing...\n", getClassName ().c_str ());
   particles_.reset (new PointCloudState ());
   std::vector<double> initial_noise_mean;
   if (reset)
@@ -99,7 +98,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initParticles (bool rese
     representative_state_.zero ();
     StateT offset = StateT::toState (trans_);
     representative_state_ = offset;
-    representative_state_.weight = 1.0 / particle_num_;
+    representative_state_.weight = 1.0f / static_cast<float> (particle_num_);
   }
 
   // sampling...
@@ -109,7 +108,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initParticles (bool rese
     p.zero ();
     p.sample (initial_noise_mean_, initial_noise_covariance_);
     p = p + representative_state_;
-    p.weight = 1.0 / particle_num_;
+    p.weight = 1.0f / static_cast<float> (particle_num_);
     particles_->points.push_back (p); // update
   }
 }
@@ -142,7 +141,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeWeight ()
     else
     {
       for ( size_t i = 0; i < particles_->points.size (); i++ )
-        particles_->points[i].weight = 1.0 / particles_->points.size ();
+        particles_->points[i].weight = 1.0f / static_cast<float> (particles_->points.size ());
     }
     
     double sum = 0.0;
@@ -154,12 +153,12 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeWeight ()
     if (sum != 0.0)
     {
       for ( size_t i = 0; i < particles_->points.size (); i++ )
-        particles_->points[i].weight =  particles_->points[i].weight / sum;
+        particles_->points[i].weight =  particles_->points[i].weight / static_cast<float> (sum);
     }
     else
     {
       for ( size_t i = 0; i < particles_->points.size (); i++ )
-        particles_->points[i].weight = 1.0 / particles_->points.size ();
+        particles_->points[i].weight = 1.0f / static_cast<float> (particles_->points.size ());
     }
 }
 
@@ -344,7 +343,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::resampleWithReplacement 
   particles_->points.push_back (p);
   
   // with motion
-  int motion_num = (int)(particles_->points.size () * motion_ratio_);
+  int motion_num = static_cast<int> (particles_->points.size ()) * static_cast<int> (motion_ratio_);
   for ( int i = 1; i < motion_num; i++ )
   {
     int target_particle_index = sampleWithReplacement (a, q);
@@ -378,7 +377,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::update ()
     StateT p = particles_->points[i];
     representative_state_ = representative_state_ + p * p.weight;
   }
-  representative_state_.weight = 1.0 / particles_->points.size ();
+  representative_state_.weight = 1.0f / static_cast<float> (particles_->points.size ());
   motion_ = representative_state_ - orig_representative;
 }
 

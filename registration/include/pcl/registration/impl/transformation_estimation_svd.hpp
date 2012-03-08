@@ -73,7 +73,7 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::estima
 {
   if (indices_src.size () != cloud_tgt.points.size ())
   {
-    PCL_ERROR ("[pcl::TransformationSVD::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", (unsigned long)indices_src.size (), (unsigned long)cloud_tgt.points.size ());
+    PCL_ERROR ("[pcl::TransformationSVD::estimateRigidTransformation] Number or points in source (%zu) differs than target (%zu)!\n", indices_src.size (), cloud_tgt.points.size ());
     return;
   }
 
@@ -107,7 +107,7 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::estima
 {
   if (indices_src.size () != indices_tgt.size ())
   {
-    PCL_ERROR ("[pcl::TransformationEstimationSVD::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", (unsigned long)indices_src.size (), (unsigned long)indices_tgt.size ());
+    PCL_ERROR ("[pcl::TransformationEstimationSVD::estimateRigidTransformation] Number or points in source (%zu) differs than target (%zu)!\n", indices_src.size (), indices_tgt.size ());
     return;
   }
 
@@ -187,7 +187,7 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::getTra
 
   // Return the correct transformation
   transformation_matrix.topLeftCorner<3, 3> () = R;
-  Eigen::Vector3f Rc = R * centroid_src.head<3> ();
+  const Eigen::Vector3f Rc = R * centroid_src.head<3> ();
   transformation_matrix.block <3, 1> (0, 3) = centroid_tgt.head<3> () - Rc;
 }
 

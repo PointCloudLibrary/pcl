@@ -99,60 +99,70 @@ namespace pcl
 
     /** \brief Parse for a specific given command line argument. Returns the value
       * sent as a string.
-      * \param argc the number of command line arguments
-      * \param argv the command line arguments
-      * \param str the string value to search for
-      * \param val the resultant value
+      * \param[in] argc the number of command line arguments
+      * \param[in] argv the command line arguments
+      * \param[in] str the string value to search for
+      * \param[out] val the resultant value
       */
     PCL_EXPORTS int
     parse_argument (int argc, char** argv, const char* str, std::string &val);
 
     /** \brief Parse for a specific given command line argument. Returns the value
       * sent as a boolean.
-      * \param argc the number of command line arguments
-      * \param argv the command line arguments
-      * \param str the string value to search for
-      * \param val the resultant value
+      * \param[in] argc the number of command line arguments
+      * \param[in] argv the command line arguments
+      * \param[in] str the string value to search for
+      * \param[out] val the resultant value
       */
     PCL_EXPORTS int
     parse_argument (int argc, char** argv, const char* str, bool &val);
 
     /** \brief Parse for a specific given command line argument. Returns the value
       * sent as a double.
-      * \param argc the number of command line arguments
-      * \param argv the command line arguments
-      * \param str the string value to search for
-      * \param val the resultant value
+      * \param[in] argc the number of command line arguments
+      * \param[in] argv the command line arguments
+      * \param[in] str the string value to search for
+      * \param[out] val the resultant value
+      */
+    PCL_EXPORTS int
+    parse_argument (int argc, char** argv, const char* str, float &val);
+    
+    /** \brief Parse for a specific given command line argument. Returns the value
+      * sent as a double.
+      * \param[in] argc the number of command line arguments
+      * \param[in] argv the command line arguments
+      * \param[in] str the string value to search for
+      * \param[out] val the resultant value
       */
     PCL_EXPORTS int
     parse_argument (int argc, char** argv, const char* str, double &val);
 
     /** \brief Parse for a specific given command line argument. Returns the value
       * sent as an int.
-      * \param argc the number of command line arguments
-      * \param argv the command line arguments
-      * \param str the string value to search for
-      * \param val the resultant value
+      * \param[in] argc the number of command line arguments
+      * \param[in] argv the command line arguments
+      * \param[in] str the string value to search for
+      * \param[out] val the resultant value
       */
     PCL_EXPORTS int
     parse_argument (int argc, char** argv, const char* str, int &val);
 
     /** \brief Parse for a specific given command line argument. Returns the value
       * sent as an unsigned int.
-      * \param argc the number of command line arguments
-      * \param argv the command line arguments
-      * \param str the string value to search for
-      * \param val the resultant value
+      * \param[in] argc the number of command line arguments
+      * \param[in] argv the command line arguments
+      * \param[in] str the string value to search for
+      * \param[out] val the resultant value
       */
     PCL_EXPORTS int
     parse_argument (int argc, char** argv, const char* str, unsigned int &val);
 
     /** \brief Parse for a specific given command line argument. Returns the value
       * sent as an int.
-      * \param argc the number of command line arguments
-      * \param argv the command line arguments
-      * \param str the string value to search for
-      * \param val the resultant value
+      * \param[in] argc the number of command line arguments
+      * \param[in] argv the command line arguments
+      * \param[in] str the string value to search for
+      * \param[out] val the resultant value
       */
     PCL_EXPORTS int
     parse_argument (int argc, char** argv, const char* str, char &val);

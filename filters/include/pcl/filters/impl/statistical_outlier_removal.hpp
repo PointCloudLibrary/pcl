@@ -99,7 +99,7 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilter (PointCloud &output)
     double dist_sum = 0;
     for (int j = 1; j < mean_k_; ++j)
       dist_sum += sqrt (nn_dists[j]);
-    distances[cp] = dist_sum / (mean_k_-1);
+    distances[cp] = static_cast<float> (dist_sum / (mean_k_ - 1));
   }
 
   // Estimate the mean and the standard deviation of the distance vector

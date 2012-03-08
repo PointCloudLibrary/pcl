@@ -55,15 +55,15 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
   if (cloud_src.points.size () != cloud_tgt.points.size ())
   {
     PCL_ERROR ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation] ");
-    PCL_ERROR ("Number or points in source (%lu) differs than target (%lu)!\n", 
-               (unsigned long)cloud_src.points.size (), (unsigned long)cloud_tgt.points.size ());
+    PCL_ERROR ("Number or points in source (%zu) differs than target (%zu)!\n", 
+               cloud_src.points.size (), cloud_tgt.points.size ());
     return;
   }
   if (cloud_src.points.size () < 4)     // need at least 4 samples
   {
     PCL_ERROR ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation] ");
-    PCL_ERROR ("Need at least 4 points to estimate a transform! Source and target have %lu points!\n", 
-               (unsigned long)cloud_src.points.size ());
+    PCL_ERROR ("Need at least 4 points to estimate a transform! Source and target have %zu points!\n", 
+               cloud_src.points.size ());
     return;
   }
 
@@ -79,7 +79,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
   tmp_src_ = &cloud_src;
   tmp_tgt_ = &cloud_tgt;
 
-  OptimizationFunctor functor (cloud_src.points.size (), this);
+  OptimizationFunctor functor (static_cast<int> (cloud_src.points.size ()), this);
   Eigen::NumericalDiff<OptimizationFunctor> num_diff (functor);
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, double> lm (num_diff);
   int info = lm.minimize (x);
@@ -111,14 +111,14 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
 {
   if (indices_src.size () != cloud_tgt.points.size ())
   {
-    PCL_ERROR ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", (unsigned long)indices_src.size (), (unsigned long)cloud_tgt.points.size ());
+    PCL_ERROR ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation] Number or points in source (%zu) differs than target (%zu)!\n", indices_src.size (), cloud_tgt.points.size ());
     return;
   }
 
   // <cloud_src,cloud_src> is the source dataset
   transformation_matrix.setIdentity ();
 
-  const int nr_correspondences = (int)cloud_tgt.points.size ();
+  const int nr_correspondences = static_cast<const int> (cloud_tgt.points.size ());
   std::vector<int> indices_tgt;
   indices_tgt.resize(nr_correspondences);
   for (int i = 0; i < nr_correspondences; ++i)
@@ -138,15 +138,15 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
 {
   if (indices_src.size () != indices_tgt.size ())
   {
-    PCL_ERROR ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", (unsigned long)indices_src.size (), (unsigned long)indices_tgt.size ());
+    PCL_ERROR ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation] Number or points in source (%zu) differs than target (%zu)!\n", indices_src.size (), indices_tgt.size ());
     return;
   }
 
   if (indices_src.size () < 4)     // need at least 4 samples
   {
     PCL_ERROR ("[pcl::IterativeClosestPointNonLinear::estimateRigidTransformationLM] ");
-    PCL_ERROR ("Need at least 4 points to estimate a transform! Source and target have %lu points!",
-               (unsigned long)indices_src.size ());
+    PCL_ERROR ("Need at least 4 points to estimate a transform! Source and target have %zu points!",
+               indices_src.size ());
     return;
   }
 
@@ -164,7 +164,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
   tmp_idx_src_ = &indices_src;
   tmp_idx_tgt_ = &indices_tgt;
 
-  OptimizationFunctorWithIndices functor (indices_src.size (), this);
+  OptimizationFunctorWithIndices functor (static_cast<int> (indices_src.size ()), this);
   Eigen::NumericalDiff<OptimizationFunctorWithIndices> num_diff (functor);
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctorWithIndices> > lm (num_diff);
   int info = lm.minimize (x);
@@ -195,7 +195,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
     const pcl::Correspondences &correspondences,
     Eigen::Matrix4f &transformation_matrix)
 {
-  const int nr_correspondences = (int)correspondences.size();
+  const int nr_correspondences = static_cast<const int> (correspondences.size ());
   std::vector<int> indices_src(nr_correspondences);
   std::vector<int> indices_tgt(nr_correspondences);
   for (int i = 0; i < nr_correspondences; ++i)

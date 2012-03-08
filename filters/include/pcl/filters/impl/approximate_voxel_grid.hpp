@@ -45,7 +45,7 @@
 template <typename PointT> void
 pcl::ApproximateVoxelGrid<PointT>::flush (PointCloud &output, size_t op, he *hhe, int rgba_index, int centroid_size)
 {
-  hhe->centroid /= hhe->count;
+  hhe->centroid /= static_cast<float> (hhe->count);
   pcl::for_each_type <FieldList> (pcl::xNdCopyEigenPointFunctor <PointT> (hhe->centroid, output.points[op]));
   // ---[ RGB special case
   if (rgba_index >= 0)
@@ -54,8 +54,8 @@ pcl::ApproximateVoxelGrid<PointT>::flush (PointCloud &output, size_t op, he *hhe
     float r = hhe->centroid[centroid_size-3], 
           g = hhe->centroid[centroid_size-2], 
           b = hhe->centroid[centroid_size-1];
-    int rgb = ((int)r) << 16 | ((int)g) << 8 | ((int)b);
-    memcpy (((char *)&output.points[op]) + rgba_index, &rgb, sizeof (float));
+    int rgb = (static_cast<int> (r)) << 16 | (static_cast<int> (g)) << 8 | (static_cast<int> (b));
+    memcpy (reinterpret_cast<char*> (&output.points[op]) + rgba_index, &rgb, sizeof (float));
   }
 }
 
@@ -90,10 +90,10 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
   size_t op = 0;    // output pointer
   for (size_t cp = 0; cp < input_->points.size (); ++cp) 
   {
-    int ix = (int)floor (input_->points[cp].x * inverse_leaf_size_[0]);
-    int iy = (int)floor (input_->points[cp].y * inverse_leaf_size_[1]);
-    int iz = (int)floor (input_->points[cp].z * inverse_leaf_size_[2]);
-    unsigned int hash = (ix * 7171 + iy * 3079 + iz * 4231) & (histsize_ - 1);
+    int ix = static_cast<int> (floor (input_->points[cp].x * inverse_leaf_size_[0]));
+    int iy = static_cast<int> (floor (input_->points[cp].y * inverse_leaf_size_[1]));
+    int iz = static_cast<int> (floor (input_->points[cp].z * inverse_leaf_size_[2]));
+    unsigned int hash = static_cast<unsigned int> ((ix * 7171 + iy * 3079 + iz * 4231) & (histsize_ - 1));
     he *hhe = &history_[hash];
     if (hhe->count && ((ix != hhe->ix) || (iy != hhe->iy) || (iz != hhe->iz))) 
     {
@@ -112,7 +112,7 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
     {
       // fill r/g/b data
       pcl::RGB rgb;
-      memcpy (&rgb, ((char *)&(input_->points[cp])) + rgba_index, sizeof (RGB));
+      memcpy (&rgb, (reinterpret_cast<const char *> (&input_->points[cp])) + rgba_index, sizeof (RGB));
       scratch[centroid_size-3] = rgb.r;
       scratch[centroid_size-2] = rgb.g;
       scratch[centroid_size-1] = rgb.b;
@@ -127,7 +127,7 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
       flush (output, op++, hhe, rgba_index, centroid_size);
   }
   output.points.resize (op);
-  output.width = output.points.size ();
+  output.width = static_cast<uint32_t> (output.points.size ());
   output.height       = 1;                    // downsampling breaks the organized structure
   output.is_dense     = false;                 // we filter out invalid points
 }

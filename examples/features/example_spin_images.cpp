@@ -48,7 +48,7 @@
 #include <pcl/features/spin_image.h>
 
 int
-main (int argc, char** argv)
+main (int, char** argv)
 {
   std::string filename = argv[1];
   std::cout << "Reading " << filename << std::endl;

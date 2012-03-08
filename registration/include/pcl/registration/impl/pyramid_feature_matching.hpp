@@ -81,9 +81,9 @@ pcl::PyramidFeatureHistogram<PointFeature>::comparePyramidFeatureHistograms (con
   for (size_t bin_i = 0; bin_i < pyramid_a->hist_levels[0].hist.size (); ++bin_i)
   {
     if (pyramid_a->hist_levels[0].hist[bin_i] < pyramid_b->hist_levels[0].hist[bin_i])
-      match_count_level += pyramid_a->hist_levels[0].hist[bin_i];
+      match_count_level += static_cast<float> (pyramid_a->hist_levels[0].hist[bin_i]);
     else
-      match_count_level += pyramid_b->hist_levels[0].hist[bin_i];
+      match_count_level += static_cast<float> (pyramid_b->hist_levels[0].hist[bin_i]);
   }
 
 
@@ -101,21 +101,21 @@ pcl::PyramidFeatureHistogram<PointFeature>::comparePyramidFeatureHistograms (con
     for (size_t bin_i = 0; bin_i < pyramid_a->hist_levels[level_i].hist.size (); ++bin_i)
     {
       if (pyramid_a->hist_levels[level_i].hist[bin_i] < pyramid_b->hist_levels[level_i].hist[bin_i])
-        match_count_level += pyramid_a->hist_levels[level_i].hist[bin_i];
+        match_count_level += static_cast<float> (pyramid_a->hist_levels[level_i].hist[bin_i]);
       else
-        match_count_level += pyramid_b->hist_levels[level_i].hist[bin_i];
+        match_count_level += static_cast<float> (pyramid_b->hist_levels[level_i].hist[bin_i]);
     }
 
-    float level_normalization_factor = pow(2.0f, (int) level_i);
+    float level_normalization_factor = powf (2.0f, static_cast<float> (level_i));
     match_count += (match_count_level - match_count_prev_level) / level_normalization_factor;
   }
 
 
   // include self-similarity factors
-  float self_similarity_a = pyramid_a->nr_features,
-      self_similarity_b = pyramid_b->nr_features;
+  float self_similarity_a = static_cast<float> (pyramid_a->nr_features),
+        self_similarity_b = static_cast<float> (pyramid_b->nr_features);
   PCL_DEBUG ("[pcl::PyramidFeatureMatching::comparePyramidFeatureHistograms] Self similarity measures: %f, %f\n", self_similarity_a, self_similarity_b);
-  match_count /= sqrt (self_similarity_a * self_similarity_b);
+  match_count /= sqrtf (self_similarity_a * self_similarity_b);
 
   return match_count;
 }
@@ -183,8 +183,8 @@ pcl::PyramidFeatureHistogram<PointFeature>::initializeHistogram ()
     float aux = range_it->first - range_it->second;
     D += aux * aux;
   }
-  D = sqrt (D);
-  nr_levels = ceil (Log2 (D));
+  D = sqrtf (D);
+  nr_levels = static_cast<size_t> (ceilf (log2f (D)));
   PCL_DEBUG ("[pcl::PyramidFeatureHistogram::initializeHistogram] Pyramid will have %u levels with a hyper-parallelepiped diagonal size of %f\n", nr_levels, D);
 
 
@@ -193,9 +193,11 @@ pcl::PyramidFeatureHistogram<PointFeature>::initializeHistogram ()
   {
     std::vector<size_t> bins_per_dimension (nr_dimensions);
     std::vector<float> bin_step (nr_dimensions);
-    for (size_t dim_i = 0; dim_i < nr_dimensions; ++dim_i) {
-      bins_per_dimension[dim_i] = ceil ( (dimension_range_target_[dim_i].second - dimension_range_target_[dim_i].first) / (pow (2.0f, (int) level_i) * sqrt ((float) nr_dimensions)));
-      bin_step[dim_i] = pow (2.0f, (int) level_i) * sqrt ((float) nr_dimensions);
+    for (size_t dim_i = 0; dim_i < nr_dimensions; ++dim_i) 
+    {
+      bins_per_dimension[dim_i] = 
+        static_cast<size_t> (ceilf ((dimension_range_target_[dim_i].second - dimension_range_target_[dim_i].first) / (powf (2.0f, static_cast<float> (level_i)) * sqrtf (static_cast<float> (nr_dimensions)))));
+      bin_step[dim_i] = powf (2.0f, static_cast<float> (level_i)) * sqrtf (static_cast<float> (nr_dimensions));
     }
     hist_levels[level_i] = PyramidFeatureHistogramLevel (bins_per_dimension, bin_step);
 
@@ -228,7 +230,7 @@ pcl::PyramidFeatureHistogram<PointFeature>::at (std::vector<size_t> &access,
   size_t vector_position = 0;
   size_t dim_accumulator = 1;
 
-  for (int i = access.size ()-1; i >= 0; --i)
+  for (int i = static_cast<int> (access.size ()) - 1; i >= 0; --i)
   {
     vector_position += access[i] * dim_accumulator;
     dim_accumulator *= hist_levels[level].bins_per_dimension[i];
@@ -256,7 +258,7 @@ pcl::PyramidFeatureHistogram<PointFeature>::at (std::vector<float> &feature,
 
   std::vector<size_t> access;
   for (size_t dim_i = 0; dim_i < nr_dimensions; ++dim_i)
-    access.push_back ( floor ((feature[dim_i] - dimension_range_target_[dim_i].first) / hist_levels[level].bin_step[dim_i]));
+    access.push_back (static_cast<size_t> (floor ((feature[dim_i] - dimension_range_target_[dim_i].first) / hist_levels[level].bin_step[dim_i])));
 
   return at (access, level);
 }

@@ -87,7 +87,7 @@ pcl::ProjectInliers<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 
     // Get the distance field index
     int x_idx = -1, y_idx = -1, z_idx = -1;
-    for (size_t d = 0; d < output.fields.size (); ++d)
+    for (int d = 0; d < static_cast<int> (output.fields.size ()); ++d)
     {
       if (output.fields[d].name == "x") x_idx = d;
       if (output.fields[d].name == "y") y_idx = d;
@@ -119,7 +119,7 @@ pcl::ProjectInliers<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
     {
       // Copy everything
       output.height       = 1;
-      output.width        = indices_->size ();
+      output.width        = static_cast<uint32_t> (indices_->size ());
       output.point_step   = input_->point_step;
       output.data.resize (output.width * output.point_step);
       output.is_bigendian = input_->is_bigendian;
@@ -129,7 +129,7 @@ pcl::ProjectInliers<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 
       // Get the distance field index
       int x_idx = -1, y_idx = -1, z_idx = -1;
-      for (size_t d = 0; d < output.fields.size (); ++d)
+      for (int d = 0; d < static_cast<int> (output.fields.size ()); ++d)
       {
         if (output.fields[d].name == "x") x_idx = d;
         if (output.fields[d].name == "y") y_idx = d;

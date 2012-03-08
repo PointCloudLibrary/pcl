@@ -213,7 +213,7 @@ namespace pcl
     if (signal_it != signals_.end ())
     {
       Signal* signal = dynamic_cast<Signal*> (signal_it->second);
-      return ((int) signal->num_slots ());
+      return (static_cast<int> (signal->num_slots ()));
     }
     return (0);
   }

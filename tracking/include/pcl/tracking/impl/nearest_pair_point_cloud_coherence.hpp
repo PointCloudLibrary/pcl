@@ -37,7 +37,7 @@ namespace pcl
           val += coherence_val;
         }
       }
-      w = - (float)val;
+      w = - static_cast<float> (val);
     }
     
     template <typename PointInT> bool
