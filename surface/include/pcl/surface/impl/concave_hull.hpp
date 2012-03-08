@@ -250,11 +250,11 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
 
   vertexT *vertex;
   // Max vertex id
-  int max_vertex_id = - 1;
+  unsigned max_vertex_id = 0;
   FORALLvertices
   {
-    if (vertex->id > max_vertex_id)
-      max_vertex_id = vertex->id;
+    if (vertex->id + 1 > max_vertex_id)
+      max_vertex_id = vertex->id + 1;
   }
 
   facetT *facet;    // set by FORALLfacets
@@ -537,7 +537,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
       polygons[poly_id].vertices.resize (pcd_idx_start_polygons[poly_id + 1] - pcd_idx_start_polygons[poly_id] + 1);
       // populate points in the corresponding polygon
       for (int j = pcd_idx_start_polygons[poly_id]; j < pcd_idx_start_polygons[poly_id + 1]; ++j)
-        polygons[poly_id].vertices[j - pcd_idx_start_polygons[poly_id]] = j;
+        polygons[poly_id].vertices[j - pcd_idx_start_polygons[poly_id]] = static_cast<uint32_t> (j);
 
       polygons[poly_id].vertices[polygons[poly_id].vertices.size () - 1] = pcd_idx_start_polygons[poly_id];
     }

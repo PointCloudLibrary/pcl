@@ -277,7 +277,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   for (int j = 0; j < static_cast<int> (hull.points.size ()); j++)
   {
     hull.points[j] = input_->points[idx_points[j].first];
-    polygons[0].vertices[j] = j;
+    polygons[0].vertices[j] = static_cast<unsigned int> (j);
   }
   polygons[0].vertices[hull.points.size ()] = 0;
     
@@ -323,7 +323,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   }
 
   // Compute convex hull
-  int exitcode = qh_new_qhull (dimension, static_cast<uint32_t> (input_->points.size ()), points, ismalloc, const_cast<char*> (flags), outfile, errfile);
+  int exitcode = qh_new_qhull (dimension, static_cast<int> (input_->points.size ()), points, ismalloc, const_cast<char*> (flags), outfile, errfile);
 
   // 0 if no error from qhull
   if (exitcode != 0)
@@ -355,11 +355,11 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   vertexT * vertex;
   int i = 0;
   // Max vertex id
-  int max_vertex_id = -1;
+  unsigned max_vertex_id = 0;
   FORALLvertices
   {
-    if (vertex->id > max_vertex_id)
-      max_vertex_id = vertex->id;
+    if (vertex->id + 1 > max_vertex_id)
+      max_vertex_id = vertex->id + 1;
   }
 
   ++max_vertex_id;
