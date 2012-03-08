@@ -29,7 +29,7 @@ loadHist (const boost::filesystem::path &path, vfh_model &vfh)
     Eigen::Vector4f origin;
     Eigen::Quaternionf orientation;
     pcl::PCDReader r;
-    unsigned int type; int idx;
+    int type; unsigned int idx;
     r.readHeader (path.string (), cloud, origin, orientation, version, type, idx);
 
     vfh_idx = pcl::getFieldIndex (cloud, "vfh");
