@@ -41,6 +41,7 @@
 #define PCL_MESH_PROCESSING_H_
 
 #include <pcl/pcl_base.h>
+#include <pcl/point_cloud.h>
 #include <pcl/PolygonMesh.h>
 
 namespace pcl
@@ -64,12 +65,12 @@ namespace pcl
         * \param[out] output the cloud where the results will be stored
         */
       void
-      process (PointCloud<PointOutT> &output);
+      process (pcl::PointCloud<PointOutT> &output);
 
     protected:
       /** \brief Abstract cloud processing method */
       virtual void
-      performProcessing (PointCloud<PointOutT> &output) = 0;
+      performProcessing (pcl::PointCloud<PointOutT> &output) = 0;
 
   };
 
