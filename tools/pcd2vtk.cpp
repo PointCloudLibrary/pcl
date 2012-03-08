@@ -32,7 +32,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: voxel_grid.cpp 1032 2011-05-18 22:43:27Z marton $
+ * $Id$
  *
  */
 

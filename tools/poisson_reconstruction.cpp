@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: marching_cubes_reconstruction.cpp 4315 2012-02-08 12:45:30Z aichim $
+ * $Id$
  *
  */
 

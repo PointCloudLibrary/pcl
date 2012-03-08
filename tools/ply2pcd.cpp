@@ -50,7 +50,7 @@ using namespace pcl::console;
 void
 printHelp (int, char **argv)
 {
-  print_error ("Syntax is: %s input.pcd output.ply\n", argv[0]);
+  print_error ("Syntax is: %s input.ply output.pcd\n", argv[0]);
 }
 
 bool
@@ -59,8 +59,9 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
 
+  pcl::PLYReader reader;
   tt.tic ();
-  if (loadPCDFile (filename, cloud) < 0)
+  if (reader.read (filename, cloud) < 0)
     return (false);
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
   print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (cloud).c_str ());
@@ -69,15 +70,15 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 }
 
 void
-saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &cloud)
+saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &cloud, bool format)
 {
   TicToc tt;
   tt.tic ();
 
   print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
   
-  pcl::PLYWriter writer;
-  writer.write (filename, cloud, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), true, true);
+  pcl::PCDWriter writer;
+  writer.write (filename, cloud, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), format);
   
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
 }
@@ -86,7 +87,7 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &cloud)
 int
 main (int argc, char** argv)
 {
-  print_info ("Convert a PCD file to PLY format. For more information, use: %s -h\n", argv[0]);
+  print_info ("Convert a PLY file to PCD format. For more information, use: %s -h\n", argv[0]);
 
   if (argc < 3)
   {
@@ -99,21 +100,21 @@ main (int argc, char** argv)
   std::vector<int> ply_file_indices = parse_file_extension_argument (argc, argv, ".ply");
   if (pcd_file_indices.size () != 1 || ply_file_indices.size () != 1)
   {
-    print_error ("Need one input PCD file and one output PLY file.\n");
+    print_error ("Need one input PLY file and one output PCD file.\n");
     return (-1);
   }
 
   // Command line parsing
-  int format = 0;
+  bool format = 0;
   parse_argument (argc, argv, "-format", format);
-  print_info ("PLY output format: "); print_value ("%d\n", format);
+  print_info ("PCD output format: "); print_value ("%s\n", (format ? "binary" : "asci"));
 
   // Load the first file
   sensor_msgs::PointCloud2 cloud;
-  if (!loadCloud (argv[pcd_file_indices[0]], cloud)) 
+  if (!loadCloud (argv[ply_file_indices[0]], cloud)) 
     return (-1);
 
   // Convert to PLY and save
-  saveCloud (argv[ply_file_indices[0]], cloud);
+  saveCloud (argv[pcd_file_indices[0]], cloud, format);
 }
 

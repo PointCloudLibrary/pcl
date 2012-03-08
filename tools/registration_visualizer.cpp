@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: registration_visualizer.cpp 2011-07-24 01:06:01Z georgeLisca $
+ * $Id$
  *
  */
 

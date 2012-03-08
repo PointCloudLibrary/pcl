@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: transform_point_cloud.cpp 1032 2011-05-18 22:43:27Z mdixon $
+ * $Id$
  *
  */
 
