@@ -175,7 +175,7 @@ namespace pcl
           training_features_->points.insert (training_features_->points.end (), training_features->points.begin (), training_features->points.end ());
           training_features_->header = training_features->header;
           training_features_->height = 1;
-          training_features_->width  = training_features_->points.size ();
+          training_features_->width  = static_cast<uint32_t> (training_features_->points.size ());
           training_features_->is_dense &= training_features->is_dense;
           training_features_->sensor_origin_ = training_features->sensor_origin_;
           training_features_->sensor_orientation_ = training_features->sensor_orientation_;
