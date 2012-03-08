@@ -194,10 +194,15 @@ main (int argc, char ** argv)
   viewer->createViewPort (0, 0, 0.5, 1, viewport_source);
   viewer->createViewPort (0.5, 0, 1, 1, viewport_convolved);
   viewer->setBackgroundColor (0, 0, 0);
-	pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> color_handler (convolved);
-  viewer->addPointCloud<pcl::PointXYZRGB> (cloud, color_handler, "source", viewport_source);
+
+  // Source
+  pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> color_handler_source (cloud);
+  viewer->addPointCloud<pcl::PointXYZRGB> (cloud, color_handler_source, "source", viewport_source);
   viewer->addText ("source", 10, 10, "source_label", viewport_source);
-  viewer->addPointCloud<pcl::PointXYZRGB> (convolved, color_handler, "convolved", viewport_convolved);
+
+  // Convolved
+	pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> color_handler_convolved (convolved);
+  viewer->addPointCloud<pcl::PointXYZRGB> (convolved, color_handler_convolved, "convolved", viewport_convolved);
   viewer->addText (convolved_label.str (), 10, 10, "convolved_label", viewport_convolved);
 	viewer->spin ();
 }
