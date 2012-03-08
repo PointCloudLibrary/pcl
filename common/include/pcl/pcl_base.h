@@ -180,7 +180,7 @@ namespace pcl
         indices_->reserve (nb_cols * nb_rows);
         for(size_t i = row_start; i < row_end; i++)
           for(size_t j = col_start; j < col_end; j++)
-            indices_->push_back ((i * input_->width) + j);
+            indices_->push_back (static_cast<int> ((i * input_->width) + j));
         fake_indices_ = false;
         use_indices_  = true;
       }

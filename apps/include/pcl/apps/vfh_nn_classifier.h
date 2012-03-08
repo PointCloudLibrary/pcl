@@ -175,7 +175,7 @@ namespace pcl
           training_features_->points.insert (training_features_->points.end (), training_features->points.begin (), training_features->points.end ());
           training_features_->header = training_features->header;
           training_features_->height = 1;
-          training_features_->width  = training_features_->points.size ();
+          training_features_->width  = static_cast<uint32_t> (training_features_->points.size ());
           training_features_->is_dense &= training_features->is_dense;
           training_features_->sensor_origin_ = training_features->sensor_origin_;
           training_features_->sensor_orientation_ = training_features->sensor_orientation_;
@@ -247,7 +247,7 @@ namespace pcl
         // compute the VFH feature for this point cloud
         FeatureCloudPtr vfhs = computeFeature (testing_data);
         // compute gaussian parameter producing the desired minimum score (around 50 for the default values)
-        double gaussian_param = -radius / log (min_score);
+        float gaussian_param = - static_cast<float> (radius / log (min_score));
         // TODO accept result to be filled in by reference
         return classifier_.classify(vfhs->points.at (0), radius, gaussian_param);
       }

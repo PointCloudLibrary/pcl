@@ -505,7 +505,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<Cloud
             clusters_map[binary_cloud->at (i, j).intensity] = indices;
           }
 
-          clusters_map[binary_cloud->at (i, j).intensity].indices.push_back (j * binary_cloud->width + i);
+          clusters_map[binary_cloud->at (i, j).intensity].indices.push_back (static_cast<int> (j * binary_cloud->width + i));
         }
       }
     }

@@ -261,8 +261,8 @@ void pcl::apps::RenderViewsTesselatedSphere::generateViews() {
     Eigen::Matrix4f backToRealScale_eigen;
     backToRealScale_eigen.setIdentity ();
 
-    for (size_t x = 0; x < 4; x++)
-      for (size_t y = 0; y < 4; y++)
+    for (int x = 0; x < 4; x++)
+      for (int y = 0; y < 4; y++)
         backToRealScale_eigen (x, y) = backToRealScale->GetMatrix ()->GetElement (x, y);
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);

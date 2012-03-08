@@ -69,7 +69,7 @@ TEST(PCA, copy_constructor)
       for(size_t j = 0; j < 3; ++j)
         EXPECT_EQ (eigen_vectors (i,j), eigen_vectors_copy (i,j));
   }
-  catch (pcl::InitFailedException &e)
+  catch (pcl::InitFailedException &/*e*/)
   {
     std::cerr << "something wrong" << std::endl;
   }
@@ -89,7 +89,7 @@ TEST(PCA, cloud_projection)
                            cloud_reconstructed[i].getVector3fMap (),
                            2.5e-4);
   }
-  catch (pcl::InitFailedException &e)
+  catch (pcl::InitFailedException &/*e*/)
   {
     std::cerr << "something wrong" << std::endl;
   }
