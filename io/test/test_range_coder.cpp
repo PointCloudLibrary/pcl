@@ -59,7 +59,7 @@ TEST (PCL, Adaptive_Range_Coder_Test)
   unsigned long readByteLen;
 
   // vector size
-  const unsigned int vectorSize = 1000;
+  const unsigned int vectorSize = 10000;
 
   inputData.resize(vectorSize);
   outputData.resize(vectorSize);
@@ -67,7 +67,7 @@ TEST (PCL, Adaptive_Range_Coder_Test)
   // fill vector with random data
   for (i=0; i<vectorSize; i++)
   {
-    inputData[i] = (char)rand() & 0xFF;
+    inputData[i] = static_cast<char>(rand() & 0xFF);
   }
 
   // initialize adaptive range coder
@@ -109,7 +109,7 @@ TEST (PCL, Static_Range_Coder_Test)
   unsigned long readByteLen;
 
   // vector size
-  const unsigned int vectorSize = 1000;
+  const unsigned int vectorSize = 10000;
 
   inputCharData.resize(vectorSize);
   outputCharData.resize(vectorSize);
@@ -120,8 +120,8 @@ TEST (PCL, Static_Range_Coder_Test)
   // fill vectors with random data
   for (i=0; i<vectorSize; i++)
   {
-    inputCharData[i] = (char)rand() & 0xFF;
-    inputIntData[i]  = (unsigned int)rand() & 0xFFFF;
+    inputCharData[i] = static_cast<char> (rand () & 0xFF);
+    inputIntData[i] = static_cast<unsigned int> (rand () & 0xFFFF);
   }
 
   // initialize static range coder

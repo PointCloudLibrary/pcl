@@ -133,22 +133,22 @@ namespace pcl
         float bytesPerXYZ = static_cast<float> (compressedPointDataLen_) / static_cast<float> (pointCount_);
         float bytesPerColor = static_cast<float> (compressedColorDataLen_) / static_cast<float> (pointCount_);
 
-        PCL_DEBUG ("*** POINTCLOUD ENCODING ***\n");
-        PCL_DEBUG ("Frame ID: %d\n", frameID_);
+        PCL_INFO ("*** POINTCLOUD ENCODING ***\n");
+        PCL_INFO ("Frame ID: %d\n", frameID_);
         if (iFrame_)
-          PCL_DEBUG ("Encoding Frame: Intra frame\n");
+          PCL_INFO ("Encoding Frame: Intra frame\n");
         else
-          PCL_DEBUG ("Encoding Frame: Prediction frame\n");
-        PCL_DEBUG ("Number of encoded points: %ld\n", pointCount_);
-        PCL_DEBUG ("XYZ compression percentage: %f%%\n", bytesPerXYZ / (3.0f * sizeof(float)) * 100.0f);
-        PCL_DEBUG ("XYZ bytes per point: %d bytes\n", static_cast<int> (bytesPerXYZ));
-        PCL_DEBUG ("Color compression percentage: %f%%\n", bytesPerColor / (sizeof (int)) * 100.0f);
-        PCL_DEBUG ("Color bytes per point: %d bytes\n", static_cast<int> (bytesPerColor));
-        PCL_DEBUG ("Size of uncompressed point cloud: %f kBytes\n", static_cast<float> (pointCount_) * (sizeof (int) + 3.0f  * sizeof (float)) / 1024);
-        PCL_DEBUG ("Size of compressed point cloud: %f kBytes\n", (compressedPointDataLen_ + compressedColorDataLen_) / (1024));
-        PCL_DEBUG ("Total bytes per point: %d\n", static_cast<int> (bytesPerXYZ + bytesPerColor));
-        PCL_DEBUG ("Total compression percentage: %f\n", (bytesPerXYZ + bytesPerColor) / (sizeof (int) + 3.0f * sizeof(float)) * 100.0f);
-        PCL_DEBUG ("Compression ratio: %f\n\n", static_cast<float> (sizeof (int) + 3.0f * sizeof (float)) / static_cast<float> (bytesPerXYZ + bytesPerColor));
+          PCL_INFO ("Encoding Frame: Prediction frame\n");
+        PCL_INFO ("Number of encoded points: %ld\n", pointCount_);
+        PCL_INFO ("XYZ compression percentage: %f%%\n", bytesPerXYZ / (3.0f * sizeof(float)) * 100.0f);
+        PCL_INFO ("XYZ bytes per point: %f bytes\n", bytesPerXYZ);
+        PCL_INFO ("Color compression percentage: %f%%\n", bytesPerColor / (sizeof (int)) * 100.0f);
+        PCL_INFO ("Color bytes per point: %f bytes\n", bytesPerColor);
+        PCL_INFO ("Size of uncompressed point cloud: %f kBytes\n", static_cast<float> (pointCount_) * (sizeof (int) + 3.0f  * sizeof (float)) / 1024);
+        PCL_INFO ("Size of compressed point cloud: %d kBytes\n", (compressedPointDataLen_ + compressedColorDataLen_) / (1024));
+        PCL_INFO ("Total bytes per point: %f\n", bytesPerXYZ + bytesPerColor);
+        PCL_INFO ("Total compression percentage: %f\n", (bytesPerXYZ + bytesPerColor) / (sizeof (int) + 3.0f * sizeof(float)) * 100.0f);
+        PCL_INFO ("Compression ratio: %f\n\n", static_cast<float> (sizeof (int) + 3.0f * sizeof (float)) / static_cast<float> (bytesPerXYZ + bytesPerColor));
       }
     }
 
@@ -187,7 +187,7 @@ namespace pcl
 
       // initialize output cloud
       output_->points.clear ();
-      output_->points.reserve (pointCount_);
+      output_->points.reserve (static_cast<std::size_t> (pointCount_));
 
       if (iFrame_)
         // i-frame decoding - decode tree structure without referencing previous buffer
@@ -206,22 +206,22 @@ namespace pcl
         float bytesPerXYZ = static_cast<float> (compressedPointDataLen_) / static_cast<float> (pointCount_);
         float bytesPerColor = static_cast<float> (compressedColorDataLen_) / static_cast<float> (pointCount_);
 
-        PCL_DEBUG ("*** POINTCLOUD DECODING ***\n");
-        PCL_DEBUG ("Frame ID: %d\n", frameID_);
+        PCL_INFO ("*** POINTCLOUD DECODING ***\n");
+        PCL_INFO ("Frame ID: %d\n", frameID_);
         if (iFrame_)
-          PCL_DEBUG ("Encoding Frame: Intra frame\n");
+          PCL_INFO ("Encoding Frame: Intra frame\n");
         else
-          PCL_DEBUG ("Encoding Frame: Prediction frame\n");
-        PCL_DEBUG ("Number of encoded points: %ld\n", pointCount_);
-        PCL_DEBUG ("XYZ compression percentage: %f%%\n", bytesPerXYZ / (3.0f * sizeof (float)) * 100.0f);
-        PCL_DEBUG ("XYZ bytes per point: %f bytes\n", bytesPerXYZ);
-        PCL_DEBUG ("Color compression percentage: %f%%\n", bytesPerColor / (sizeof (int)) * 100.0f);
-        PCL_DEBUG ("Color bytes per point: %f bytes\n", bytesPerColor);
-        PCL_DEBUG ("Size of uncompressed point cloud: %f kBytes\n", static_cast<float> (pointCount_) * (sizeof (int) + 3.0f * sizeof (float)) / 1024.0f);
-        PCL_DEBUG ("Size of compressed point cloud: %f kBytes\n", static_cast<float> (compressedPointDataLen_ + compressedColorDataLen_) / 1024.0f);
-        PCL_DEBUG ("Total bytes per point: %d bytes\n", static_cast<int> (bytesPerXYZ + bytesPerColor));
-        PCL_DEBUG ("Total compression percentage: %f%%\n", (bytesPerXYZ + bytesPerColor) / (sizeof (int) + 3.0f * sizeof (float)) * 100.0f);
-        PCL_DEBUG ("Compression ratio: %f\n\n", static_cast<float> (sizeof (int) + 3.0f * sizeof (float)) / static_cast<float> (bytesPerXYZ + bytesPerColor));
+          PCL_INFO ("Encoding Frame: Prediction frame\n");
+        PCL_INFO ("Number of encoded points: %ld\n", pointCount_);
+        PCL_INFO ("XYZ compression percentage: %f%%\n", bytesPerXYZ / (3.0f * sizeof (float)) * 100.0f);
+        PCL_INFO ("XYZ bytes per point: %f bytes\n", bytesPerXYZ);
+        PCL_INFO ("Color compression percentage: %f%%\n", bytesPerColor / (sizeof (int)) * 100.0f);
+        PCL_INFO ("Color bytes per point: %f bytes\n", bytesPerColor);
+        PCL_INFO ("Size of uncompressed point cloud: %f kBytes\n", static_cast<float> (pointCount_) * (sizeof (int) + 3.0f * sizeof (float)) / 1024.0f);
+        PCL_INFO ("Size of compressed point cloud: %f kBytes\n", static_cast<float> (compressedPointDataLen_ + compressedColorDataLen_) / 1024.0f);
+        PCL_INFO ("Total bytes per point: %d bytes\n", static_cast<int> (bytesPerXYZ + bytesPerColor));
+        PCL_INFO ("Total compression percentage: %f%%\n", (bytesPerXYZ + bytesPerColor) / (sizeof (int) + 3.0f * sizeof (float)) * 100.0f);
+        PCL_INFO ("Compression ratio: %f\n\n", static_cast<float> (sizeof (int) + 3.0f * sizeof (float)) / static_cast<float> (bytesPerXYZ + bytesPerColor));
       }
     }
 
@@ -297,7 +297,7 @@ namespace pcl
 
       // decode binary octree structure
       compressedTreeDataIn_arg.read (reinterpret_cast<char*> (&binaryTreeDataVector_size), sizeof (binaryTreeDataVector_size));
-      binaryTreeDataVector_.resize (binaryTreeDataVector_size);
+      binaryTreeDataVector_.resize (static_cast<std::size_t> (binaryTreeDataVector_size));
       compressedPointDataLen_ += entropyCoder_.decodeStreamToCharVector (compressedTreeDataIn_arg,
                                                                          binaryTreeDataVector_);
 
@@ -306,7 +306,7 @@ namespace pcl
         // decode averaged voxel color information
         std::vector<char>& pointAvgColorDataVector = colorCoder_.getAverageDataVector ();
         compressedTreeDataIn_arg.read (reinterpret_cast<char*> (&pointAvgColorDataVector_size), sizeof (pointAvgColorDataVector_size));
-        pointAvgColorDataVector.resize (pointAvgColorDataVector_size);
+        pointAvgColorDataVector.resize (static_cast<std::size_t> (pointAvgColorDataVector_size));
         compressedColorDataLen_ += entropyCoder_.decodeStreamToCharVector (compressedTreeDataIn_arg,
                                                                            pointAvgColorDataVector);
       }
@@ -319,14 +319,14 @@ namespace pcl
 
         // decode amount of points per voxel
         compressedTreeDataIn_arg.read (reinterpret_cast<char*> (&pointCountDataVector_size), sizeof (pointCountDataVector_size));
-        pointCountDataVector_.resize (pointCountDataVector_size);
+        pointCountDataVector_.resize (static_cast<std::size_t> (pointCountDataVector_size));
         compressedPointDataLen_ += entropyCoder_.decodeStreamToIntVector (compressedTreeDataIn_arg, pointCountDataVector_);
         pointCountDataVectorIterator_ = pointCountDataVector_.begin ();
 
         // decode differential point information
         std::vector<char>& pointDiffDataVector = pointCoder_.getDifferentialDataVector ();
         compressedTreeDataIn_arg.read (reinterpret_cast<char*> (&pointDiffDataVector_size), sizeof (pointDiffDataVector_size));
-        pointDiffDataVector.resize (pointDiffDataVector_size);
+        pointDiffDataVector.resize (static_cast<std::size_t> (pointDiffDataVector_size));
         compressedPointDataLen_ += entropyCoder_.decodeStreamToCharVector (compressedTreeDataIn_arg,
                                                                            pointDiffDataVector);
 
@@ -335,7 +335,7 @@ namespace pcl
           // decode differential color information
           std::vector<char>& pointDiffColorDataVector = colorCoder_.getDifferentialDataVector ();
           compressedTreeDataIn_arg.read (reinterpret_cast<char*> (&pointDiffColorDataVector_size), sizeof (pointDiffColorDataVector_size));
-          pointDiffColorDataVector.resize (pointDiffColorDataVector_size);
+          pointDiffColorDataVector.resize (static_cast<std::size_t> (pointDiffColorDataVector_size));
           compressedColorDataLen_ += entropyCoder_.decodeStreamToCharVector (compressedTreeDataIn_arg,
                                                                              pointDiffColorDataVector);
         }
@@ -508,9 +508,9 @@ namespace pcl
       else
       {
         // calculate center of lower voxel corner
-        newPoint.x = (static_cast<double> (key_arg.x) + 0.5) * this->resolution_ + this->minX_;
-        newPoint.y = (static_cast<double> (key_arg.y) + 0.5) * this->resolution_ + this->minY_;
-        newPoint.z = (static_cast<double> (key_arg.z) + 0.5) * this->resolution_ + this->minZ_;
+        newPoint.x = static_cast<float> ((static_cast<double> (key_arg.x) + 0.5) * this->resolution_ + this->minX_);
+        newPoint.y = static_cast<float> ((static_cast<double> (key_arg.y) + 0.5) * this->resolution_ + this->minY_);
+        newPoint.z = static_cast<float> ((static_cast<double> (key_arg.z) + 0.5) * this->resolution_ + this->minZ_);
 
         // add point to point cloud
         output_->points.push_back (newPoint);

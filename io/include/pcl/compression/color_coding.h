@@ -270,9 +270,9 @@ namespace pcl
               diffBlue = (static_cast<unsigned char> (avgBlue)) ^ static_cast<unsigned char> (((colorInt >> 16) & 0xFF));
 
               // remove least significant bits
-              diffRed   >>= colorBitReduction_;
-              diffGreen >>= colorBitReduction_;
-              diffBlue  >>= colorBitReduction_;
+              diffRed = static_cast<unsigned char> (diffRed >> colorBitReduction_);
+              diffGreen = static_cast<unsigned char> (diffGreen >> colorBitReduction_);
+              diffBlue = static_cast<unsigned char> (diffBlue >> colorBitReduction_);
 
               // add to differential color vector
               pointDiffColorDataVector_.push_back (static_cast<char> (diffRed));
@@ -317,9 +317,9 @@ namespace pcl
           unsigned char avgBlue = *(pointAvgColorDataVector_Iterator_++);
 
           // invert bit shifts during encoding
-          avgRed   <<= colorBitReduction_;
-          avgGreen <<= colorBitReduction_;
-          avgBlue  <<= colorBitReduction_;
+          avgRed = static_cast<unsigned char> (avgRed << colorBitReduction_);
+          avgGreen = static_cast<unsigned char> (avgGreen << colorBitReduction_);
+          avgBlue = static_cast<unsigned char> (avgBlue << colorBitReduction_);
 
           // iterate over points
           for (i = 0; i < pointCount; i++)
@@ -332,9 +332,9 @@ namespace pcl
               unsigned char diffBlue  = static_cast<unsigned char> (*(pointDiffColorDataVector_Iterator_++));
 
               // invert bit shifts during encoding
-              diffRed   <<= colorBitReduction_;
-              diffGreen <<= colorBitReduction_;
-              diffBlue  <<= colorBitReduction_;
+              diffRed = static_cast<unsigned char> (diffRed << colorBitReduction_);
+              diffGreen = static_cast<unsigned char> (diffGreen << colorBitReduction_);
+              diffBlue = static_cast<unsigned char> (diffBlue << colorBitReduction_);
 
               // decode color information
               colorInt = ((avgRed ^ diffRed) << 0) |
