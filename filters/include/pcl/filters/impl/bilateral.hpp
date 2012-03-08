@@ -51,9 +51,9 @@ pcl::BilateralFilter<PointT>::computePointWeight (const int pid,
   // For each neighbor
   for (size_t n_id = 0; n_id < indices.size (); ++n_id)
   {
-    double id = indices[n_id];
+    int id = indices[n_id];
     // Compute the difference in intensity
-    double intensity_dist = abs (input_->points[pid].intensity - input_->points[id].intensity);
+    double intensity_dist = fabs (input_->points[pid].intensity - input_->points[id].intensity);
 
     // Compute the Gaussian intensity weights both in Euclidean and in intensity space
     double dist = std::sqrt (distances[n_id]);

@@ -54,12 +54,12 @@ namespace pcl
       void
       sample (const std::vector<double>& mean, const std::vector<double>& cov)
       {
-        x += sampleNormal (mean[0], cov[0]);
-        y += sampleNormal (mean[1], cov[1]);
-        z += sampleNormal (mean[2], cov[2]);
-        roll += sampleNormal (mean[3], cov[3]);
-        pitch += sampleNormal (mean[4], cov[4]);
-        yaw += sampleNormal (mean[5], cov[5]);
+        x     += static_cast<float> (sampleNormal (mean[0], cov[0]));
+        y     += static_cast<float> (sampleNormal (mean[1], cov[1]));
+        z     += static_cast<float> (sampleNormal (mean[2], cov[2]));
+        roll  += static_cast<float> (sampleNormal (mean[3], cov[3]));
+        pitch += static_cast<float> (sampleNormal (mean[4], cov[4]));
+        yaw   += static_cast<float> (sampleNormal (mean[5], cov[5]));
       }
 
       void
@@ -118,12 +118,12 @@ namespace pcl
     inline pcl::tracking::ParticleXYZRPY operator * (const ParticleXYZRPY& p, double val)
     {
       pcl::tracking::ParticleXYZRPY newp;
-      newp.x = p.x * val;
-      newp.y = p.y * val;
-      newp.z = p.z * val;
-      newp.roll = p.roll * val;
-      newp.pitch = p.pitch * val;
-      newp.yaw = p.yaw * val;
+      newp.x     = static_cast<float> (p.x * val);
+      newp.y     = static_cast<float> (p.y * val);
+      newp.z     = static_cast<float> (p.z * val);
+      newp.roll  = static_cast<float> (p.roll * val);
+      newp.pitch = static_cast<float> (p.pitch * val);
+      newp.yaw   = static_cast<float> (p.yaw * val);
       return (newp);
     }
     

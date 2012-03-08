@@ -90,7 +90,7 @@ pcl::ExtractIndices<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
                     inserter (remaining_indices, remaining_indices.begin ()));
 
     // Prepare the output and copy the data
-    output.width = remaining_indices.size ();
+    output.width = static_cast<uint32_t> (remaining_indices.size ());
     output.data.resize (remaining_indices.size () * output.point_step);
     for (size_t i = 0; i < remaining_indices.size (); ++i)
       memcpy (&output.data[i * output.point_step], &input_->data[remaining_indices[i] * output.point_step], output.point_step);
@@ -98,7 +98,7 @@ pcl::ExtractIndices<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
   else
   {
     // Prepare the output and copy the data
-    output.width = indices_->size ();
+    output.width = static_cast<uint32_t> (indices_->size ());
     output.data.resize (indices_->size () * output.point_step);
     for (size_t i = 0; i < indices_->size (); ++i)
       memcpy (&output.data[i * output.point_step], &input_->data[(*indices_)[i] * output.point_step], output.point_step);

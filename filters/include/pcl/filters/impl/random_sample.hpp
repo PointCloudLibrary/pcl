@@ -45,8 +45,8 @@
 template<typename PointT> void
 pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
 {
-  unsigned N = input_->size ();
-  float one_over_N = 1.0 / float (N);
+  unsigned N = static_cast<unsigned> (input_->size ());
+  float one_over_N = 1.0f / float (N);
 
   // If sample size is 0 or if the sample size is greater then input cloud size
   //   then return entire copy of cloud
@@ -86,7 +86,7 @@ pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
       N--;
     }
 
-    index += static_cast<unsigned> (N * unifRand ());
+    index += N * static_cast<unsigned> (unifRand ());
     output.points[i++] = input_->points[index++];
   }
 }
@@ -96,8 +96,8 @@ template<typename PointT>
 void
 pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
 {
-  unsigned N = input_->size ();
-  float one_over_N = 1.0 / float (N);
+  unsigned N = static_cast<unsigned> (input_->size ());
+  float one_over_N = 1.0f / float (N);
 
   // If sample size is 0 or if the sample size is greater then input cloud size
   //   then return all indices
@@ -135,7 +135,7 @@ pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
       N--;
     }
 
-    index += static_cast<unsigned> (N * unifRand ());
+    index += N * static_cast<unsigned> (unifRand ());
     indices[i++] = (*indices_)[index++];
   }
 }

@@ -788,7 +788,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     }
 #else
     char *map = static_cast<char*> (mmap (0, data_size, PROT_READ, MAP_SHARED, fd, 0));
-    if (map == MAP_FAILED)
+    if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
     {
       pcl_close (fd);
       return (-1);
@@ -1078,7 +1078,7 @@ pcl::PCDReader::readEigen (const std::string &file_name, pcl::PointCloud<Eigen::
     }
 #else
     char *map = static_cast<char*> (mmap (0, data_size, PROT_READ, MAP_SHARED, fd, 0));
-    if (map == MAP_FAILED)
+    if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
     {
       pcl_close (fd);
       return (-1);
@@ -1558,7 +1558,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
 
 #else
   char *map = static_cast<char*> (mmap (0, data_idx + cloud.data.size (), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0));
-  if (map == MAP_FAILED)
+  if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
   {
     pcl_close (fd);
     PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during mmap ()!\n");
@@ -1737,7 +1737,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
 
 #else
   char *map = static_cast<char*> (mmap (0, compressed_final_size, PROT_WRITE, MAP_SHARED, fd, 0));
-  if (map == MAP_FAILED)
+  if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
   {
     pcl_close (fd);
     PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during mmap ()!\n");
@@ -1947,7 +1947,7 @@ pcl::PCDWriter::writeBinaryEigen (const std::string &file_name,
   }
 
   char *map = static_cast<char*> (mmap (0, data_idx + data_size, PROT_WRITE, MAP_SHARED, fd, 0));
-  if (map == MAP_FAILED)
+  if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
   {
     pcl_close (fd);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during mmap ()!");
@@ -2085,7 +2085,7 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
 
 #else
   char *map = static_cast<char*> (mmap (0, compressed_final_size, PROT_WRITE, MAP_SHARED, fd, 0));
-  if (map == MAP_FAILED)
+  if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
   {
     pcl_close (fd);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during mmap ()!");

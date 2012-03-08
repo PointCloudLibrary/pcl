@@ -189,9 +189,9 @@ pcl::CropHull<PointT>::applyFilter3D (PointCloud &output)
     size_t crossings[3] = {0,0,0};
     Eigen::Vector3f rays[3] = 
     {
-      Eigen::Vector3f (0.264882,  0.688399, 0.675237),
-      Eigen::Vector3f (0.0145419, 0.732901, 0.68018),
-      Eigen::Vector3f (0.856514,  0.508771, 0.0868081)
+      Eigen::Vector3f (0.264882f,  0.688399f, 0.675237f),
+      Eigen::Vector3f (0.0145419f, 0.732901f, 0.68018f),
+      Eigen::Vector3f (0.856514f,  0.508771f, 0.0868081f)
     };
 
     for (size_t poly = 0; poly < hull_polygons_.size (); poly++)
@@ -216,9 +216,9 @@ pcl::CropHull<PointT>::applyFilter3D (std::vector<int> &indices)
     size_t crossings[3] = {0,0,0};
     Eigen::Vector3f rays[3] = 
     {
-      Eigen::Vector3f(0.264882,  0.688399, 0.675237),
-      Eigen::Vector3f(0.0145419, 0.732901, 0.68018),
-      Eigen::Vector3f(0.856514,  0.508771, 0.0868081)
+      Eigen::Vector3f(0.264882f,  0.688399f, 0.675237f),
+      Eigen::Vector3f(0.0145419f, 0.732901f, 0.68018f),
+      Eigen::Vector3f(0.856514f,  0.508771f, 0.0868081f)
     };
 
     for (size_t poly = 0; poly < hull_polygons_.size (); poly++)

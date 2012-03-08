@@ -198,7 +198,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   }
 
   char *map = static_cast<char*> (mmap (0, data_idx + data_size, PROT_WRITE, MAP_SHARED, fd, 0));
-  if (map == MAP_FAILED)
+  if (map == reinterpret_cast<char*> (-1)) //MAP_FAILED)
   {
     pcl_close (fd);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during mmap ()!");
@@ -388,7 +388,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
 
 #else
   char *map = static_cast<char*> (mmap (0, compressed_final_size, PROT_WRITE, MAP_SHARED, fd, 0));
-  if (map == MAP_FAILED)
+  if (map == reinterpret_cast<char*> (-1)) //MAP_FAILED)
   {
     pcl_close (fd);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during mmap ()!");
@@ -664,7 +664,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   }
 
   char *map = static_cast<char*> (mmap (0, data_idx + data_size, PROT_WRITE, MAP_SHARED, fd, 0));
-  if (map == MAP_FAILED)
+  if (map == reinterpret_cast<char*> (-1)) //MAP_FAILED)
   {
     pcl_close (fd);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during mmap ()!");

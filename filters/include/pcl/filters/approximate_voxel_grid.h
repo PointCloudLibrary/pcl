@@ -59,7 +59,7 @@ namespace pcl
       //boost::fusion::at_key<Key> (p2_) = p1_[f_idx_++];
       typedef typename pcl::traits::datatype<PointT, Key>::type T;
       uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&p2_) + pcl::traits::offset<PointT, Key>::value;
-      *reinterpret_cast<T*>(data_ptr) = p1_[f_idx_++];
+      *reinterpret_cast<T*>(data_ptr) = static_cast<T> (p1_[f_idx_++]);
     }
 
     private:
@@ -82,7 +82,7 @@ namespace pcl
       //p2_[f_idx_++] = boost::fusion::at_key<Key> (p1_);
       typedef typename pcl::traits::datatype<PointT, Key>::type T;
       const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&p1_) + pcl::traits::offset<PointT, Key>::value;
-      p2_[f_idx_++] = *reinterpret_cast<const T*>(data_ptr);
+      p2_[f_idx_++] = static_cast<float> (*reinterpret_cast<const T*>(data_ptr));
     }
 
     private:

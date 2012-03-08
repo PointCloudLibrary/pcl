@@ -65,7 +65,7 @@ namespace pcl
     public:
       /** \brief Empty constructor. */
       NormalSpaceSampling () : 
-        sample_ (UINT_MAX), seed_ (time(NULL)), binsx_ (), binsy_ (), binsz_ (), input_normals_ ()
+        sample_ (UINT_MAX), seed_ (static_cast<unsigned int> (time (NULL))), binsx_ (), binsy_ (), binsz_ (), input_normals_ ()
       {
         filter_name_ = "NormalSpaceSampling";
       }

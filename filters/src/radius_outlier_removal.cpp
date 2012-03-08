@@ -91,7 +91,7 @@ pcl::RadiusOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &o
   int nr_p = 0;
   int nr_removed_p = 0;
   // Go over all the points and check which doesn't have enough neighbors
-  for (size_t cp = 0; cp < indices_->size (); ++cp)
+  for (int cp = 0; cp < static_cast<int> (indices_->size ()); ++cp)
   {
     int k = tree_->radiusSearch ((*indices_)[cp], search_radius_, nn_indices, nn_dists);
     // Check if the number of neighbors is larger than the user imposed limit
