@@ -295,7 +295,7 @@ namespace pcl
           const DataT* result = 0;
 
           if (leafDataTVector_.size () > 0)
-            result = reinterpret_cast<const DataT*> (&leafDataTVector_.back ());
+            result = &leafDataTVector_.back ();
 
           data_arg = result;
         }

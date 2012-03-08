@@ -760,14 +760,9 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
   if (node->getNodeType () == LEAF_NODE)
   {
     const OctreeLeaf* leaf = static_cast<const OctreeLeaf*> (node);
-    vector<int> indices;
 
-    // decode leaf node into decodedPointVector
-    leaf->getData (indices);
-    for (size_t i = 0; i < indices.size (); i++)
-    {
-      k_indices.push_back (indices[i]);
-    }
+    // decode leaf node into k_indices
+    leaf->getData (k_indices);
 
     return (1);
   }
