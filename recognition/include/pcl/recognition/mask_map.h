@@ -66,13 +66,13 @@ namespace pcl
       getData () const { return (&data_[0]); }
 
       inline unsigned char & 
-      operator() (const int x, const int y) 
+      operator() (const size_t x, const size_t y) 
       { 
         return (data_[y*width_+x]); 
       }
 
       inline const unsigned char & 
-      operator() (const int x, const int y) const
+      operator() (const size_t x, const size_t y) const
       { 
         return (data_[y*width_+x]); 
       }

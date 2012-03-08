@@ -186,8 +186,10 @@ namespace pcl
         {
           for (int x_index = 0; x_index < size_x; ++x_index)
           {
-            PointXYZ normal (x_index - range_x/2, y_index - range_y/2, z_index - range_z);
-            const float length = sqrt(normal.x*normal.x + normal.y*normal.y + normal.z*normal.z);
+            PointXYZ normal (static_cast<float> (x_index - range_x/2), 
+                             static_cast<float> (y_index - range_y/2), 
+                             static_cast<float> (z_index - range_z));
+            const float length = sqrt (normal.x*normal.x + normal.y*normal.y + normal.z*normal.z);
             const float inv_length = 1.0f / (length + 0.00001f);
 
             normal.x *= inv_length;
@@ -220,11 +222,11 @@ namespace pcl
     inline unsigned char 
     operator() (const float x, const float y, const float z) const
     {
-      const int x_index = x*offset_x + offset_x;
-      const int y_index = y*offset_y + offset_y;
-      const int z_index = z*range_z + range_z;
+      const size_t x_index = static_cast<size_t> (x*offset_x + offset_x);
+      const size_t y_index = static_cast<size_t> (y*offset_y + offset_y);
+      const size_t z_index = static_cast<size_t> (z*range_z + range_z);
 
-      const int index = z_index*size_y*size_x + y_index*size_x + x_index;
+      const size_t index = z_index*size_y*size_x + y_index*size_x + x_index;
 
       return (lut[index]);
     }
@@ -250,8 +252,8 @@ namespace pcl
 
         unsigned char bin_index;
     
-        int x;
-        int y;	
+        size_t x;
+        size_t y;	
 
         bool 
         operator< (const Candidate & rhs)
@@ -479,8 +481,8 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
     {
       QuantizedMultiModFeature feature;
 
-      feature.x = iter->x;
-      feature.y = iter->y;
+      feature.x = static_cast<int> (iter->x);
+      feature.y = static_cast<int> (iter->y);
       feature.modality_index = modality_index;
       feature.quantized_value = filtered_quantized_surface_normals_ (iter->x, iter->y);
 
@@ -490,7 +492,7 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
     return;
   }
 
-  int distance = list1.size () / nr_features + 1; // ???  @todo:!:!:!:!:!:!
+  int distance = static_cast<int> (list1.size () / nr_features + 1); // ???  @todo:!:!:!:!:!:!
   while (list2.size () != nr_features)
   {
     const int sqr_distance = distance*distance;
@@ -500,9 +502,9 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
 
       for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
       {
-        const float dx = iter1->x - iter2->x;
-        const float dy = iter1->y - iter2->y;
-        const float tmp_distance = dx*dx + dy*dy;
+        const int dx = static_cast<int> (iter1->x) - static_cast<int> (iter2->x);
+        const int dy = static_cast<int> (iter1->y) - static_cast<int> (iter2->y);
+        const int tmp_distance = dx*dx + dy*dy;
 
         if (tmp_distance < sqr_distance)
         {
@@ -523,8 +525,8 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
   {
     QuantizedMultiModFeature feature;
 
-    feature.x = iter2->x;
-    feature.y = iter2->y;
+    feature.x = static_cast<int> (iter2->x);
+    feature.y = static_cast<int> (iter2->y);
     feature.modality_index = modality_index;
     feature.quantized_value = filtered_quantized_surface_normals_ (iter2->x, iter2->y);
 
@@ -665,7 +667,7 @@ pcl::SurfaceNormalModality<PointInT>::computeDistanceMap (const MaskMap & input,
     if (mask_map[index] == 0)
       distance_map[index] = 0.0f;
     else
-      distance_map[index] = width + height;
+      distance_map[index] = static_cast<float> (width + height);
   }
 
   // first pass
@@ -693,9 +695,9 @@ pcl::SurfaceNormalModality<PointInT>::computeDistanceMap (const MaskMap & input,
   // second pass
   float * next_row = distance_map + width * (height - 1);
   current_row = next_row - width;
-  for (int ri = height-2; ri >= 0; --ri)
+  for (size_t ri = height-2; ri >= 0; --ri)
   {
-    for (int ci = width-2; ci >= 0; --ci)
+    for (size_t ci = width-2; ci >= 0; --ci)
     {
       const float lower_left  = next_row    [ci - 1] + 1.4f; //distance_map[(ri+1)*input_->width + ci-1] + 1.4f;
       const float lower       = next_row    [ci]     + 1.0f; //distance_map[(ri+1)*input_->width + ci] + 1.0f;

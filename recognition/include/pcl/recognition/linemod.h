@@ -249,6 +249,10 @@ namespace pcl
       detectTemplates (const std::vector<QuantizableModality*> & modalities,
                        std::vector<LINEMODDetection> & detections) const;
 
+      void
+      matchTemplates (const std::vector<QuantizableModality*> & modalities,
+                      std::vector<LINEMODDetection> & detections) const;
+
       inline const SparseQuantizedMultiModTemplate &
       getTemplate (int template_id) const
       { 
@@ -269,6 +273,8 @@ namespace pcl
 
 
     private:
+      /** template response threshold */
+      float template_threshold_;
       /** template storage */
       std::vector<SparseQuantizedMultiModTemplate> templates_;
   };

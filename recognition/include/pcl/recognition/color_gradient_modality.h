@@ -292,9 +292,9 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
 
       for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
       {
-        const float dx = iter1->x - iter2->x;
-        const float dy = iter1->y - iter2->y;
-        const float tmp_distance = dx*dx + dy*dy;
+        const int dx = iter1->x - iter2->x;
+        const int dy = iter1->y - iter2->y;
+        const int tmp_distance = dx*dx + dy*dy;
 
         //if (tmp_distance < distance) 
         if (tmp_distance < sqr_distance) /// \todo Ask Stefan if this fix is correct
@@ -379,8 +379,8 @@ computeMaxColorGradients ()
         GradientXY gradient;
         gradient.magnitude = sqrt (sqr_mag_r);
         gradient.angle = atan2 (r_dy, r_dx) * 180.0f / pi;
-        gradient.x = col_index;
-        gradient.y = row_index;
+        gradient.x = static_cast<float> (col_index);
+        gradient.y = static_cast<float> (row_index);
 
         color_gradients_ (col_index+1, row_index+1) = gradient;
       }
@@ -389,8 +389,8 @@ computeMaxColorGradients ()
         GradientXY gradient;
         gradient.magnitude = sqrt (sqr_mag_g);
         gradient.angle = atan2 (g_dy, g_dx) * 180.0f / pi;
-        gradient.x = col_index;
-        gradient.y = row_index;
+        gradient.x = static_cast<float> (col_index);
+        gradient.y = static_cast<float> (row_index);
 
         color_gradients_ (col_index+1, row_index+1) = gradient;
       }
@@ -399,8 +399,8 @@ computeMaxColorGradients ()
         GradientXY gradient;
         gradient.magnitude = sqrt (sqr_mag_b);
         gradient.angle = atan2 (b_dy, b_dx) * 180.0f / pi;
-        gradient.x = col_index;
-        gradient.y = row_index;
+        gradient.x = static_cast<float> (col_index);
+        gradient.y = static_cast<float> (row_index);
 
         color_gradients_ (col_index+1, row_index+1) = gradient;
       }
