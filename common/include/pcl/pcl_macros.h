@@ -64,6 +64,8 @@ namespace pcl
 #include <iostream>
 #include <stdarg.h>
 #include <stdio.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 // MSCV doesn't have std::{isnan,isfinite}
 #if defined _WIN32 && defined _MSC_VER
@@ -115,23 +117,6 @@ pcl_isnan (T &val)
 
 #endif
 
-// Windows doesn't like M_PI.
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
-
-#ifndef M_PI_4
-#define M_PI_4 0.785398163397448309616
-#endif
-
-#ifndef M_E
-#define M_E 2.7182818284590452354
-#endif
-
-#ifndef M_LN2
-#define M_LN2 0.693147180559945309417
-#endif
-
 #ifndef DEG2RAD
 #define DEG2RAD(x) ((x)*0.017453293)
 #endif
@@ -143,7 +128,7 @@ pcl_isnan (T &val)
 /** Win32 doesn't seem to have rounding functions.
   * Therefore implement our own versions of these functions here.
   */
-#include <math.h>
+
 __inline double
 pcl_round (double number)
 {
@@ -157,6 +142,14 @@ pcl_round (float number)
 
 #define pcl_lrint(x) (static_cast<long int>(pcl_round(x)))
 #define pcl_lrintf(x) (static_cast<long int>(pcl_round(x)))
+
+#ifdef _WIN32
+__inline float 
+log2f (float x)
+{
+  return (static_cast<float> (logf (x) * M_LOG2E));
+}
+#endif
 
 #ifdef WIN32
 #define pcl_sleep(x) Sleep(1000*(x))
