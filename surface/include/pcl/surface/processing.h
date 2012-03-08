@@ -57,6 +57,10 @@ namespace pcl
   class CloudSurfaceProcessing : public PCLBase<PointInT>
   {
     public:
+      using PCLBase<PointInT>::input_;
+      using PCLBase<PointInT>::indices_;
+
+    public:
       /** \brief Constructor. */
       CloudSurfaceProcessing () : PCLBase<PointInT> ()
       {};
