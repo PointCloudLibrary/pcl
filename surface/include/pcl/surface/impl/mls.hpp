@@ -65,21 +65,17 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
 
   // Copy the header
   output.header = input_->header;
+  output.width = output.height = 0;
+  output.points.clear ();
 
   if (search_radius_ <= 0 || sqr_gauss_param_ <= 0)
   {
     PCL_ERROR ("[pcl::%s::reconstruct] Invalid search radius (%f) or Gaussian parameter (%f)!\n", getClassName ().c_str (), search_radius_, sqr_gauss_param_);
-    output.width = output.height = 0;
-    output.points.clear ();
     return;
   }
 
   if (!initCompute ())
-  {
-    output.width = output.height = 0;
-    output.points.clear ();
     return;
-  }
 
   // Initialize the spatial locator
   if (!tree_)
@@ -387,7 +383,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::projectPointToMLSSurface (float &u
                                                                         float &curvature,
                                                                         Eigen::Vector3f &query_point,
                                                                         Eigen::VectorXd &c_vec,
-                                                                        int num_neighbors,
+                                                                        size_t num_neighbors,
                                                                         PointOutT &result_point,
                                                                         pcl::Normal &result_normal)
 {
@@ -550,7 +546,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::MLSResult::MLSResult (Eigen::Vecto
                                                                     Eigen::Vector3d &a_u,
                                                                     Eigen::Vector3d &a_v,
                                                                     Eigen::VectorXd a_c_vec,
-                                                                    int a_num_neighbors,
+                                                                    size_t a_num_neighbors,
                                                                     float &a_curvature) :
   plane_normal (a_plane_normal), u (a_u), v (a_v), c_vec (a_c_vec), num_neighbors (a_num_neighbors), 
   curvature (a_curvature), valid (true)
