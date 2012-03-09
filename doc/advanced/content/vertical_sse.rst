@@ -79,31 +79,33 @@ Horizontal or vertical?
 Both representations have pros and cons.
 
 **Horizontal**
- * Pros
 
-   * More intuitive, easier to write code for
-   * Handling indexed subsets is simple - can still use aligned loads
-   * Handling NaNs also simple
+* Pros
 
- * Cons
+  * More intuitive, easier to write code for
+  * Handling indexed subsets is simple - can still use aligned loads
+  * Handling NaNs also simple
 
-   * Clearly slower at dense processing
-   * Waste space and computation on padding elements
+* Cons
+
+  * Clearly slower at dense processing
+  * Waste space and computation on padding elements
 
 **Vertical**
- * Pros
 
-   * Clearly faster at dense processing
-   * No wasted space - only 3/4 as many loads required
-   * No wasted computation
-   * May have less loop overhead, since you process 4 points per iteration
+* Pros
+
+  * Clearly faster at dense processing
+  * No wasted space - only 3/4 as many loads required
+  * No wasted computation
+  * May have less loop overhead, since you process 4 points per iteration
      instead of 1
 
- * Cons
+* Cons
 
-   * Less intuitive
-   * Indexed subsets require gathering data for non-adjacent points
-   * Handling NaNs is complicated
+  * Less intuitive
+  * Indexed subsets require gathering data for non-adjacent points
+  * Handling NaNs is complicated
 
 Data structures
 ===============
@@ -134,13 +136,15 @@ Computations considered
 =======================
 
 We benchmark two basic operations:
- * Compute the dot product of every point in a cloud with a given point
- * Compute the centroid of a point cloud
+
+* Compute the dot product of every point in a cloud with a given point
+* Compute the centroid of a point cloud
 
 For both operations, we implemented several versions covering the space of:
- * Horizontal (AoS) or vertical (SoA)
- * Dense or indexed
- * SSE instruction set
+
+* Horizontal (AoS) or vertical (SoA)
+* Dense or indexed
+* SSE instruction set
 
 Representative examples are listed below.
 
@@ -460,9 +464,9 @@ Abstracting point iteration
 We are still left with three distinct cases for processing point clouds,
 requiring different methods of iterating over point data:
 
- * Dense (no NaNs)
- * Indexed
- * Organized (contains NaNs)
+* Dense (no NaNs)
+* Indexed
+* Organized (contains NaNs)
 
 Writing and maintaining three copies of each PCL algorithm is a huge burden.
 The RLE for organized data in particular imposes a relatively complicated
@@ -472,10 +476,10 @@ an algorithm only once, and have it work efficiently in each of the three cases.
 Currently PCL does not meet this goal. In fact, core algorithms tend to have
 four near-identical implementations:
 
- * Dense
- * Dense indexed
- * Organized
- * Organized indexed
+* Dense
+* Dense indexed
+* Organized
+* Organized indexed
 
 I think it's unnecessary to distinguish between "dense indexed" and "organized
 indexed", if we require that indices point to valid data.
@@ -672,9 +676,10 @@ Finally, we compare ``CentroidKernel`` + applicator to
 clouds.
 
 The point clouds used are:
- * `capture000X.pcd <http://dev.pointclouds.org/attachments/download/742/pairwise_incremental_registration_tutorial_data.tar.gz>`_
- * `table_scene_mug_stereo_textured.pcd <http://dev.pointclouds.org/attachments/download/158/table_scene_mug_stereo_textured.pcd>`_
- * `table_scene_lms400.pcd <http://dev.pointclouds.org/attachments/download/157/table_scene_lms400.pcd>`_
+
+* `capture000X.pcd <http://dev.pointclouds.org/attachments/download/742/pairwise_incremental_registration_tutorial_data.tar.gz>`_
+* `table_scene_mug_stereo_textured.pcd <http://dev.pointclouds.org/attachments/download/158/table_scene_mug_stereo_textured.pcd>`_
+* `table_scene_lms400.pcd <http://dev.pointclouds.org/attachments/download/157/table_scene_lms400.pcd>`_
 
 ``capture0001.pcd`` (organized, 640x480, 57553 NaNs)::
 
