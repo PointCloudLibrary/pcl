@@ -40,6 +40,7 @@
 #define __OPENNI_IMAGE__
 
 #include <XnCppWrapper.h>
+#include <pcl/pcl_exports.h>
 #include "openni_exception.h"
 #include <boost/shared_ptr.hpp>
 
@@ -54,7 +55,7 @@ namespace openni_wrapper
    * @param[in] image_meta_data
    * @ingroup io
    */
-  class Image
+  class PCL_EXPORTS Image
   {
   public:
     typedef boost::shared_ptr<Image> Ptr;
@@ -165,15 +166,11 @@ namespace openni_wrapper
 
   protected:
     boost::shared_ptr<xn::ImageMetaData> image_md_;
-    unsigned char* raw_data_;
   } ;
 
   Image::Image (boost::shared_ptr<xn::ImageMetaData> image_meta_data) throw ()
-  : image_md_ (image_meta_data),
-    raw_data_ (new unsigned char [image_md_->DataSize ()])
+  : image_md_ (image_meta_data)
   {
-    // copy the data
-    memcpy (raw_data_, image_md_->Data (), image_md_->DataSize ());
   }
 
   Image::~Image () throw () { }

@@ -45,7 +45,6 @@
 #include <utility>
 #include "openni_exception.h"
 #include <XnCppWrapper.h>
-#include <boost/noncopyable.hpp>
 #include <boost/function.hpp>
 #include <boost/thread.hpp>
 #include <boost/thread/condition.hpp>
@@ -68,7 +67,7 @@ namespace openni_wrapper
     * \author Suat Gedikli
     * \ingroup io
     */
-  class PCL_EXPORTS OpenNIDevice : public boost::noncopyable
+  class PCL_EXPORTS OpenNIDevice
   {
   public:
     typedef boost::function<void(boost::shared_ptr<Image>, void* cookie) > ImageCallbackFunction;
@@ -403,7 +402,10 @@ namespace openni_wrapper
     {
       depth_focal_length_SXGA_ = focal_length;
     }
+  private:
 
+    OpenNIDevice (OpenNIDevice const &);
+    OpenNIDevice& operator=(OpenNIDevice const &);
   protected:
     typedef boost::function<void(boost::shared_ptr<Image>) > ActualImageCallbackFunction;
     typedef boost::function<void(boost::shared_ptr<DepthImage>) > ActualDepthImageCallbackFunction;

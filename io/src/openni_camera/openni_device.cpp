@@ -288,7 +288,7 @@ openni_wrapper::OpenNIDevice::Init ()
     baseline_ = (float)(baseline * 0.01);
 
     //focal length from mm -> pixels (valid for 1280x1024)
-    depth_focal_length_SXGA_ = (float)depth_focal_length_SXGA / pixel_size;
+    depth_focal_length_SXGA_ = (float) (depth_focal_length_SXGA / pixel_size);
 
     depth_thread_ = boost::thread (&OpenNIDevice::DepthDataThreadFunction, this);
   }
@@ -449,7 +449,7 @@ bool
 openni_wrapper::OpenNIDevice::hasImageStream () const throw ()
 {
   lock_guard<mutex> lock (image_mutex_);
-  return (image_generator_.IsValid ());
+  return (image_generator_.IsValid () != 0);
   //return (available_image_modes_.size() != 0);
 }
 
@@ -458,7 +458,7 @@ bool
 openni_wrapper::OpenNIDevice::hasDepthStream () const throw ()
 {
   lock_guard<mutex> lock (depth_mutex_);
-  return (depth_generator_.IsValid ());
+  return (depth_generator_.IsValid () != 0);
   //return (available_depth_modes_.size() != 0);
 }
 
@@ -467,7 +467,7 @@ bool
 openni_wrapper::OpenNIDevice::hasIRStream () const throw ()
 {
   lock_guard<mutex> ir_lock (ir_mutex_);
-  return (ir_generator_.IsValid ());
+  return (ir_generator_.IsValid () != 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -512,7 +512,7 @@ openni_wrapper::OpenNIDevice::isDepthRegistered () const throw ()
 
     lock_guard<mutex> image_lock (image_mutex_);
     lock_guard<mutex> depth_lock (depth_mutex_);
-    return (depth_generator.GetAlternativeViewPointCap ().IsViewPointAs (image_generator));
+    return (depth_generator.GetAlternativeViewPointCap ().IsViewPointAs (image_generator) != 0);
   }
   return (false);
 }
@@ -600,7 +600,7 @@ openni_wrapper::OpenNIDevice::isDepthCropped () const
     if (status != XN_STATUS_OK)
       THROW_OPENNI_EXCEPTION ("could not read cropping information for depth stream. Reason: %s", xnGetStatusString (status));
 
-    return (cropping.bEnabled);
+    return (cropping.bEnabled != 0);
   }
   return (false);
 }
@@ -645,7 +645,7 @@ openni_wrapper::OpenNIDevice::ImageDataThreadFunction ()
     //xn::ImageMetaData* image_data = boost::shared_ptr<xn::ImageMetaData>;
     boost::shared_ptr<xn::ImageMetaData> image_data (new xn::ImageMetaData);
     image_generator_.GetMetaData (*image_data);
-
+    image_data->MakeDataWritable ();
     image_lock.unlock ();
 
     boost::shared_ptr<Image> image = getCurrentImage (image_data);
@@ -673,6 +673,7 @@ openni_wrapper::OpenNIDevice::DepthDataThreadFunction ()
     depth_generator_.WaitAndUpdateData ();
     boost::shared_ptr<xn::DepthMetaData> depth_data (new xn::DepthMetaData);
     depth_generator_.GetMetaData (*depth_data);
+    depth_data->MakeDataWritable ();
     depth_lock.unlock ();
 
     boost::shared_ptr<DepthImage> depth_image ( new DepthImage (depth_data, baseline_, getDepthFocalLength (), shadow_value_, no_sample_value_) );
@@ -702,6 +703,7 @@ openni_wrapper::OpenNIDevice::IRDataThreadFunction ()
     ir_generator_.WaitAndUpdateData ();
     boost::shared_ptr<xn::IRMetaData> ir_data (new xn::IRMetaData);
     ir_generator_.GetMetaData (*ir_data);
+    ir_data->MakeDataWritable ();
     ir_lock.unlock ();
 
     boost::shared_ptr<IRImage> ir_image ( new IRImage (ir_data) );
