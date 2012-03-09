@@ -59,10 +59,10 @@ pcl::PPFHashMapSearch::setInputFeatureCloud (PointCloud<PPFSignature>::ConstPtr 
     std::vector <float> alpha_m_row (n);
     for (size_t j = 0; j < n; ++j)
     {
-      d1 = floor (feature_cloud->points[i*n+j].f1 / angle_discretization_step_);
-      d2 = floor (feature_cloud->points[i*n+j].f2 / angle_discretization_step_);
-      d3 = floor (feature_cloud->points[i*n+j].f3 / angle_discretization_step_);
-      d4 = floor (feature_cloud->points[i*n+j].f4 / distance_discretization_step_);
+      d1 = static_cast<int> (floor (feature_cloud->points[i*n+j].f1 / angle_discretization_step_));
+      d2 = static_cast<int> (floor (feature_cloud->points[i*n+j].f2 / angle_discretization_step_));
+      d3 = static_cast<int> (floor (feature_cloud->points[i*n+j].f3 / angle_discretization_step_));
+      d4 = static_cast<int> (floor (feature_cloud->points[i*n+j].f4 / distance_discretization_step_));
       feature_hash_map_->insert (std::pair<HashKeyStruct, std::pair<size_t, size_t> > (HashKeyStruct (d1, d2, d3, d4), std::pair<size_t, size_t> (i, j)));
       alpha_m_row [j] = feature_cloud->points[i*n + j].alpha_m;
 
@@ -87,10 +87,10 @@ pcl::PPFHashMapSearch::nearestNeighborSearch (float &f1, float &f2, float &f3, f
     return;
   }
 
-  int d1 = floor (f1 / angle_discretization_step_),
-      d2 = floor (f2 / angle_discretization_step_),
-      d3 = floor (f3 / angle_discretization_step_),
-      d4 = floor (f4 / distance_discretization_step_);
+  int d1 = static_cast<int> (floor (f1 / angle_discretization_step_)),
+      d2 = static_cast<int> (floor (f2 / angle_discretization_step_)),
+      d3 = static_cast<int> (floor (f3 / angle_discretization_step_)),
+      d4 = static_cast<int> (floor (f4 / distance_discretization_step_));
 
   indices.clear ();
   HashKeyStruct key = HashKeyStruct (d1, d2, d3, d4);
@@ -200,7 +200,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
             accumulator_array[model_reference_index][alpha_discretized] ++;
           }
         }
-        else PCL_ERROR ("[pcl::PPFRegistration::computeTransformation] Computing pair feature vector between points %lu and %lu went wrong.\n", (unsigned long) scene_reference_index, (unsigned long) scene_point_index);
+        else PCL_ERROR ("[pcl::PPFRegistration::computeTransformation] Computing pair feature vector between points %zu and %zu went wrong.\n", scene_reference_index, scene_point_index);
       }
     }
 

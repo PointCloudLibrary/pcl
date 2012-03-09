@@ -226,15 +226,15 @@ constructTransformationMatrix (const float & alpha, const float & beta, const fl
 
   // Construct the transformation matrix from rotation and translation 
   transformation_matrix = Eigen::Matrix4f::Zero ();
-  transformation_matrix (0, 0) =  cos(gamma)*cos(beta);
-  transformation_matrix (0, 1) = -sin(gamma)*cos(alpha) + cos(gamma)*sin(beta)*sin(alpha);
-  transformation_matrix (0, 2) =  sin(gamma)*sin(alpha) + cos(gamma)*sin(beta)*cos(alpha);
-  transformation_matrix (1, 0) =  sin(gamma)*cos(beta);
-  transformation_matrix (1, 1) =  cos(gamma)*cos(alpha) + sin(gamma)*sin(beta)*sin(alpha);
-  transformation_matrix (1, 2) = -cos(gamma)*sin(alpha) + sin(gamma)*sin(beta)*cos(alpha);
-  transformation_matrix (2, 0) = -sin(beta);
-  transformation_matrix (2, 1) =  cos(beta)*sin(alpha);
-  transformation_matrix (2, 2) =  cos(beta)*cos(alpha);
+  transformation_matrix (0, 0) =  cosf (gamma) * cosf (beta);
+  transformation_matrix (0, 1) = -sinf (gamma) * cosf (alpha) + cosf (gamma) * sinf (beta) * sinf (alpha);
+  transformation_matrix (0, 2) =  sinf (gamma) * sinf (alpha) + cosf (gamma) * sinf (beta) * cosf (alpha);
+  transformation_matrix (1, 0) =  sinf (gamma) * cosf (beta);
+  transformation_matrix (1, 1) =  cosf (gamma) * cosf (alpha) + sinf (gamma) * sinf (beta) * sinf (alpha);
+  transformation_matrix (1, 2) = -cosf (gamma) * sinf (alpha) + sinf (gamma) * sinf (beta) * cosf (alpha);
+  transformation_matrix (2, 0) = -sinf (beta);
+  transformation_matrix (2, 1) =  cosf (beta) * sinf (alpha);
+  transformation_matrix (2, 2) =  cosf (beta) * cosf (alpha);
 
   transformation_matrix (0, 3) = tx;
   transformation_matrix (1, 3) = ty;

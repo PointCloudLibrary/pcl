@@ -136,9 +136,9 @@ main (int argc, char** argv)
   }
 
   // Command line parsing
-  double leaf_x = default_leaf_size,
-         leaf_y = default_leaf_size,
-         leaf_z = default_leaf_size;
+  float leaf_x = default_leaf_size,
+        leaf_y = default_leaf_size,
+        leaf_z = default_leaf_size;
 
   std::vector<double> values;
   parse_x_arguments (argc, argv, "-leaf", values);

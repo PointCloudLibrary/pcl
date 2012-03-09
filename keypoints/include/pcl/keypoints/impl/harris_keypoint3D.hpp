@@ -265,7 +265,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
       refineCorners (output);
 
     output.height = 1;
-    output.width = output.points.size();
+    output.width = static_cast<uint32_t> (output.points.size());
   }
 
   // we don not change the denseness
@@ -302,7 +302,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseHarris (PointCloudO
                   - covar [1] * covar [1] * covar [7]
                   - covar [6] * covar [6] * covar [0];
 
-        output [pIdx].intensity = 0.04 + det - 0.04 * trace * trace;
+        output [pIdx].intensity = 0.04f + det - 0.04f * trace * trace;
       }
     }
     output [pIdx].x = pointIn.x;
