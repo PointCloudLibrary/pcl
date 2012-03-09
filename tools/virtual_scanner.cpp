@@ -81,7 +81,7 @@ struct ScanParameters
   * \param file_name the name of the file containing the PLY dataset
   */
 vtkPolyData*
-  loadPLYAsDataSet (const char* file_name)
+loadPLYAsDataSet (const char* file_name)
 {
   vtkPLYReader* reader = vtkPLYReader::New ();
   reader->SetFileName (file_name);
@@ -90,16 +90,16 @@ vtkPolyData*
 }
 
 int
-  main (int argc, char** argv)
+main (int argc, char** argv)
 {
   if (argc < 3)
-    {
-    PCL_INFO ("Usage %s -single_view <0|1> -view_point <x,y,z> -target_point <x,y,z> <model.ply | model.vtk>\n", argv[0]);
-    return -1;
-    }
+  {
+    PCL_INFO ("Usage %s -single_view <0|1> -view_point <x,y,z> -organized <0/1> -target_point <x,y,z> <model.ply | model.vtk>\n", argv[0]);
+    return (-1);
+  }
   std::string filename;
   // Parse the command line arguments for .vtk or .ply files
-//  std::vector<int> p_file_indices_vtk = console::parse_file_extension_argument (argc, argv, ".vtk");
+  std::vector<int> p_file_indices_vtk = console::parse_file_extension_argument (argc, argv, ".vtk");
   std::vector<int> p_file_indices_ply = console::parse_file_extension_argument (argc, argv, ".ply");
   bool object_coordinates = true;
   console::parse_argument (argc, argv, "-object_coordinates", object_coordinates);
@@ -109,6 +109,8 @@ int
   console::parse_3x_arguments (argc, argv, "-view_point", vx, vy, vz);
   double tx = 0, ty = 0, tz = 0;
   console::parse_3x_arguments (argc, argv, "-target_point", tx, ty, tz);
+  int organized;
+  console::parse_argument (argc, argv, "-organized", organized);
 
   vtkSmartPointer<vtkPolyData> data;
   // Loading PLY file
@@ -140,9 +142,9 @@ int
   char seq[256];
 
   // Compute start/stop for vertical and horizontal
-  double vert_start = - ((double)(sp.nr_scans-1) / 2.0) * sp.vert_res;
+  double vert_start = - (static_cast<double> (sp.nr_scans - 1) / 2.0) * sp.vert_res;
   double vert_end   = + ((sp.nr_scans-1) * sp.vert_res) + vert_start;
-  double hor_start  = - ((double)(sp.nr_points_in_scans-1) / 2.0) * sp.hor_res;
+  double hor_start  = - (static_cast<double> (sp.nr_points_in_scans - 1) / 2.0) * sp.hor_res;
   double hor_end    = + ((sp.nr_points_in_scans-1) * sp.hor_res) + hor_start;
 
   // Prepare the point cloud data
@@ -156,11 +158,6 @@ int
   boost::mt19937 rng (static_cast<unsigned int>(std::time(0)));
   boost::normal_distribution<float> normal_distrib (0.0f, noise_std * noise_std);
   boost::variate_generator<boost::mt19937&, boost::normal_distribution<float> > gaussian_rng (rng, normal_distrib);
-
-//  itpp::RNG_randomize ();
-  // Create random noise distributions with mean <0> and standard deviation <std>
-//  itpp::Normal_RNG    n_rng   (0.0, noise_std*noise_std);
-//  itpp::Laplace_RNG   lap_rng (0.0, noise_std*noise_std);
 
   std::vector<std::string> st;
   // Virtual camera parameters
@@ -188,8 +185,8 @@ int
   // Get camera positions
   vtkPolyData *sphere = subdivide->GetOutput ();
   sphere->Update ();
-  if(!single_view)
-    PCL_INFO ("Created %d camera position points.", (int)sphere->GetNumberOfPoints ());
+  if (!single_view)
+    PCL_INFO ("Created %ld camera position points.", sphere->GetNumberOfPoints ());
 
   // Build a spatial locator for our dataset
   vtkSmartPointer<vtkCellLocator> tree = vtkSmartPointer<vtkCellLocator>::New ();
@@ -327,8 +324,16 @@ int
             pt.z = -right[2]*x[1] + up[2]*x[2] + viewray[2]*x[0] + eye[2];
             pt.vp_x = pt.vp_y = pt.vp_z = 0.0;
           }
-          cloud.points.push_back(pt);
+          cloud.points.push_back (pt);
         }
+        else
+          if (organized)
+          {
+            pcl::PointWithViewpoint pt;
+            pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
+            pt.vp_x = eye[0]; pt.vp_y = eye[1]; pt.vp_z = eye[2];
+            cloud.points.push_back (pt);
+          }
       } // Horizontal
     } // Vertical
 
@@ -341,8 +346,6 @@ int
       {
         // Gaussian
         case 1: { cloud.points[cp].x += gaussian_rng (); cloud.points[cp].y += gaussian_rng (); cloud.points[cp].z += gaussian_rng (); break; }
-//        // Laplace
-//        case 2: { cloud.points[cp].x += lap_rng (); cloud.points[cp].y += lap_rng (); cloud.points[cp].z += lap_rng (); break; }
       }
     }
 
@@ -370,9 +373,19 @@ int
     }
 
     fname = st.at (st.size () - 1) + seq + ".pcd";
-    PCL_INFO ("Writing %d points to %s", (int)cloud.points.size (), fname.c_str ());
-    cloud.width = cloud.points.size ();
-    cloud.height = 1;
+    PCL_INFO ("Writing %zu points to %s", cloud.points.size (), fname.c_str ());
+
+    if (organized)
+    {
+      cloud.width = 1 + (vert_end - vert_start) / sp.vert_res;
+      cloud.height = 1 + (hor_end - hor_start) / sp.hor_res;
+    }
+    else
+    {
+      cloud.width = cloud.points.size ();
+      cloud.height = 1;
+    }
+
     printf ("width %d height %d\n", cloud.width, cloud.height);
     pcl::io::savePCDFile (fname.c_str (), cloud);
   } // sphere
