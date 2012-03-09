@@ -355,7 +355,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   vertexT * vertex;
   int i = 0;
   // Max vertex id
-  unsigned max_vertex_id = 0;
+  int max_vertex_id = 0;
   FORALLvertices
   {
     if (vertex->id + 1 > max_vertex_id)

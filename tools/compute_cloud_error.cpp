@@ -52,7 +52,7 @@ using namespace pcl::console;
 std::string default_correspondence_type = "index";
 
 void
-printHelp (int argc, char **argv)
+printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s source.pcd target.pcd output_intensity.pcd <options>\n", argv[0]);
   print_info ("  where options are:\n");
@@ -125,7 +125,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &cloud_source, const sensor_ms
       output_xyzi->points[point_i].z = xyz_source->points[point_i].z;
       output_xyzi->points[point_i].intensity = dist;
     }
-    rmse = sqrt (rmse / xyz_source->points.size ());
+    rmse = sqrtf (rmse / static_cast<float> (xyz_source->points.size ()));
   }
   else if (correspondence_type == "nn")
   {
@@ -153,7 +153,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &cloud_source, const sensor_ms
       output_xyzi->points[point_i].z = xyz_source->points[point_i].z;
       output_xyzi->points[point_i].intensity = dist;
     }
-    rmse = sqrt (rmse / xyz_source->points.size ());
+    rmse = sqrtf (rmse / static_cast<float> (xyz_source->points.size ()));
 
   }
   else if (correspondence_type == "nnplane")
@@ -189,7 +189,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &cloud_source, const sensor_ms
       output_xyzi->points[point_i].z = xyz_source->points[point_i].z;
       output_xyzi->points[point_i].intensity = dist * dist;
     }
-    rmse = sqrt (rmse / xyz_source->points.size ());
+    rmse = sqrtf (rmse / static_cast<float> (xyz_source->points.size ()));
   }
   else
   {

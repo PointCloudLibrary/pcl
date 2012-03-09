@@ -49,13 +49,13 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
 
-double default_min = 0.0f,
-    default_max = 1.0f;
+float default_min = 0.0f,
+      default_max = 1.0f;
 bool default_inside = true;
 std::string default_field_name = "z";
 
 void
-printHelp (int argc, char **argv)
+printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
   print_info ("  where options are:\n");
@@ -139,7 +139,7 @@ main (int argc, char** argv)
   }
 
   // Command line parsing
-  double min = default_min, max = default_max;
+  float min = default_min, max = default_max;
   bool inside = default_inside;
   std::string field_name = default_field_name;
   parse_argument (argc, argv, "-min", min);

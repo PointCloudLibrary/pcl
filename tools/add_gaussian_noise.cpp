@@ -99,9 +99,9 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
 
   for (size_t point_i = 0; point_i < xyz_cloud->points.size (); ++point_i)
   {
-    xyz_cloud_filtered->points[point_i].x = xyz_cloud->points[point_i].x + var_nor ();
-    xyz_cloud_filtered->points[point_i].y = xyz_cloud->points[point_i].y + var_nor ();
-    xyz_cloud_filtered->points[point_i].z = xyz_cloud->points[point_i].z + var_nor ();
+    xyz_cloud_filtered->points[point_i].x = xyz_cloud->points[point_i].x + static_cast<float> (var_nor ());
+    xyz_cloud_filtered->points[point_i].y = xyz_cloud->points[point_i].y + static_cast<float> (var_nor ());
+    xyz_cloud_filtered->points[point_i].z = xyz_cloud->points[point_i].z + static_cast<float> (var_nor ());
   }
 
   sensor_msgs::PointCloud2 input_xyz_filtered;

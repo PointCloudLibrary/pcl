@@ -97,7 +97,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
       }
 
       // Save the nn_dists[0] to a global vector of distances
-      correspondence_distances_[(*indices_)[idx]] = std::min (nn_dists[0], (float)dist_threshold);
+      correspondence_distances_[(*indices_)[idx]] = std::min (nn_dists[0], static_cast<float> (dist_threshold));
     }
     if (cnt < min_number_correspondences_)
     {

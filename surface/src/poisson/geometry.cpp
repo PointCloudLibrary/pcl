@@ -83,7 +83,7 @@ namespace pcl {
       {
         std::vector< int >& polygon = polygons[ polygonIndex++ ];
         vertices.resize( polygon.size() );
-        for( int i=0 ; i<polygon.size() ; i++ )
+        for( int i=0 ; i < static_cast<int> (polygon.size ()); i++ )
           if( polygon[i]<0 ) vertices[i].idx = -polygon[i]-1 , vertices[i].inCore = false;
           else               vertices[i].idx =  polygon[i]   , vertices[i].inCore = true;
         return 1;

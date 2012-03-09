@@ -166,7 +166,7 @@ main (int argc, char **argv)
   // Parse command line arguments
   int SAMPLE_POINTS_ = default_number_samples;
   parse_argument (argc, argv, "-n_samples", SAMPLE_POINTS_);
-  double leaf_size = default_leaf_size;
+  float leaf_size = default_leaf_size;
   parse_argument (argc, argv, "-leaf_size", leaf_size);
 
   // Parse the command line arguments for .ply and PCD files
