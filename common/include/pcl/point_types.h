@@ -61,7 +61,7 @@
 #      pragma GCC diagnostic ignored "-Weffc++"
 #      pragma GCC diagnostic ignored "-pedantic"
 #    else
-#      pragma GCC system_header 
+#      pragma GCC system_header
 #    endif
 //#  elif defined _MSC_VER
 #  endif
@@ -70,172 +70,172 @@
 /** @{*/
 namespace pcl
 {
-  /** \brief Members: float x, y, z 
+  /** \brief Members: float x, y, z
     * \ingroup common
     */
   struct PointXYZ;
 
-  /** \brief Members: float x, y, z, intensity 
+  /** \brief Members: float x, y, z, intensity
     * \ingroup common
     */
   struct PointXYZI;
 
-  /** \brief Members: float x, y, z, uin32_t label 
+  /** \brief Members: float x, y, z, uin32_t label
     * \ingroup common
     */
   struct PointXYZL;
 
-  /** \brief Members: uint32_t label 
+  /** \brief Members: uint32_t label
     * \ingroup common
     */
   struct Label;
 
-  /** \brief Members: float x, y, z; uint32_t rgba 
+  /** \brief Members: float x, y, z; uint32_t rgba
     * \ingroup common
     */
   struct PointXYZRGBA;
 
-  /** \brief Members: float x, y, z, rgb 
+  /** \brief Members: float x, y, z, rgb
     * \ingroup common
     */
   struct PointXYZRGB;
 
-  /** \brief Members: float x, y, z, rgb, uint32_t label 
+  /** \brief Members: float x, y, z, rgb, uint32_t label
     * \ingroup common
     */
   struct PointXYZRGBL;
 
-  /** \brief Members: float x, y, z, h, s, v 
+  /** \brief Members: float x, y, z, h, s, v
     * \ingroup common
     */
   struct PointXYZHSV;
 
-  /** \brief Members: float x, y 
+  /** \brief Members: float x, y
     * \ingroup common
     */
   struct PointXY;
 
-  /** \brief Members: float x, y, z, strength 
+  /** \brief Members: float x, y, z, strength
     * \ingroup common
     */
   struct InterestPoint;
 
-  /** \brief Members: float normal[3], curvature 
+  /** \brief Members: float normal[3], curvature
     * \ingroup common
     */
   struct Normal;
 
-  /** \brief Members: float normal[3] 
+  /** \brief Members: float normal[3]
     * \ingroup common
     */
   struct Axis;
 
-  /** \brief Members: float x, y, z; float normal[3], curvature 
+  /** \brief Members: float x, y, z; float normal[3], curvature
     * \ingroup common
     */
   struct PointNormal;
 
-  /** \brief Members: float x, y, z, rgb, normal[3], curvature 
+  /** \brief Members: float x, y, z, rgb, normal[3], curvature
     * \ingroup common
     */
   struct PointXYZRGBNormal;
 
-  /** \brief Members: float x, y, z, intensity, normal[3], curvature 
+  /** \brief Members: float x, y, z, intensity, normal[3], curvature
     * \ingroup common
     */
   struct PointXYZINormal;
 
-  /** \brief Members: float x, y, z (union with float point[4]), range 
+  /** \brief Members: float x, y, z (union with float point[4]), range
     * \ingroup common
     */
   struct PointWithRange;
 
-  /** \brief Members: float x, y, z, vp_x, vp_y, vp_z 
+  /** \brief Members: float x, y, z, vp_x, vp_y, vp_z
     * \ingroup common
     */
   struct PointWithViewpoint;
 
-  /** \brief Members: float j1, j2, j3 
+  /** \brief Members: float j1, j2, j3
     * \ingroup common
     */
   struct MomentInvariants;
 
-  /** \brief Members: float r_min, r_max 
+  /** \brief Members: float r_min, r_max
     * \ingroup common
     */
   struct PrincipalRadiiRSD;
 
-  /** \brief Members: uint8_t boundary_point 
+  /** \brief Members: uint8_t boundary_point
     * \ingroup common
     */
   struct Boundary;
 
-  /** \brief Members: float principal_curvature[3], pc1, pc2 
+  /** \brief Members: float principal_curvature[3], pc1, pc2
     * \ingroup common
     */
   struct PrincipalCurvatures;
 
-  /** \brief Members: std::vector<float> descriptor, rf[9] 
+  /** \brief Members: std::vector<float> descriptor, rf[9]
     * \ingroup common
     */
   struct SHOT;
 
-  /** \brief Members: Axis x_axis, y_axis, z_axis; float confidence 
+  /** \brief Members: Axis x_axis, y_axis, z_axis
     * \ingroup common
     */
   struct ReferenceFrame;
 
-  /** \brief Members: std::vector<float> descriptor, rf[9] 
+  /** \brief Members: std::vector<float> descriptor, rf[9]
     * \ingroup common
     */
   struct ShapeContext;
 
-  /** \brief Members: float pfh[125] 
+  /** \brief Members: float pfh[125]
     * \ingroup common
     */
   struct PFHSignature125;
 
-  /** \brief Members: float pfhrgb[250] 
+  /** \brief Members: float pfhrgb[250]
     * \ingroup common
     */
   struct PFHRGBSignature250;
 
-  /** \brief Members: float f1, f2, f3, f4, alpha_m 
+  /** \brief Members: float f1, f2, f3, f4, alpha_m
     * \ingroup common
     */
   struct PPFSignature;
 
-  /** \brief Members: float f1, f2, f3, f4, r_ratio, g_ratio, b_ratio, alpha_m 
+  /** \brief Members: float f1, f2, f3, f4, r_ratio, g_ratio, b_ratio, alpha_m
     * \ingroup common
     */
   struct PPFRGBSignature;
 
-  /** \brief Members: float values[12] 
+  /** \brief Members: float values[12]
     * \ingroup common
     */
   struct NormalBasedSignature12;
 
-  /** \brief Members: float fpfh[33] 
+  /** \brief Members: float fpfh[33]
     * \ingroup common
     */
   struct FPFHSignature33;
 
-  /** \brief Members: float vfh[308] 
+  /** \brief Members: float vfh[308]
     * \ingroup common
     */
   struct VFHSignature308;
 
-  /** \brief Members: float x, y, z, roll, pitch, yaw; float descriptor[36] 
+  /** \brief Members: float x, y, z, roll, pitch, yaw; float descriptor[36]
     * \ingroup common
     */
   struct Narf36;
 
-  /** \brief Data type to store extended information about a transition from foreground to backgroundSpecification of the fields for BorderDescription::traits. 
+  /** \brief Data type to store extended information about a transition from foreground to backgroundSpecification of the fields for BorderDescription::traits.
     * \ingroup common
     */
   typedef std::bitset<32> BorderTraits;
 
-  /** \brief Specification of the fields for BorderDescription::traits. 
+  /** \brief Specification of the fields for BorderDescription::traits.
     * \ingroup common
     */
   enum BorderTrait
@@ -249,28 +249,28 @@ namespace pcl
 
   /** \brief Members: int x, y; BorderTraits traits
     * \ingroup common
-    */ 
+    */
   struct BorderDescription;
 
   /** \brief Members: float gradient[3]
     * \ingroup common
-    */  
+    */
   struct IntensityGradient;
 
   /** \brief Members: float histogram[N]
     * \ingroup common
-    */ 
+    */
   template<int N>
   struct Histogram;
 
   /** \brief Members: float x, y, z, scale
     * \ingroup common
-    */ 
+    */
   struct PointWithScale;
 
   /** \brief Members: float x, y, z, normal[3], rgba, radius, confidence, curvature
     * \ingroup common
-    */ 
+    */
   struct PointSurfel;
 }
 
@@ -532,7 +532,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_ReferenceFrame,
     (float[3], x_axis, x_axis)
     (float[3], y_axis, y_axis)
     (float[3], z_axis, z_axis)
-    (float, confidence, confidence)
+    //(float, confidence, confidence)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::ReferenceFrame, pcl::_ReferenceFrame)
 
@@ -542,7 +542,7 @@ POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::ReferenceFrame, pcl::_ReferenceFrame)
 //                                  (uint32_t, traits, traits)
 //)
 
-#pragma warning(default: 4201) 
+#pragma warning(default: 4201)
 //#pragma warning(pop)
 #ifdef BUILD_Maintainer
 #  if defined __GNUC__

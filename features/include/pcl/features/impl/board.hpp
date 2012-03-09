@@ -178,7 +178,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::normalDis
 
   for (size_t i = 0; i < normal_indices.size (); ++i)
   {
-    PointNT curPt = normal_cloud.at (normal_indices.at (i));
+    const PointNT& curPt = normal_cloud[normal_indices[i]];
 
     normal_mean += curPt.getNormalVector3fMap ();
   }
@@ -220,7 +220,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
   Eigen::Matrix<float, Eigen::Dynamic, 3> neigh_points_mat (n_neighbours, 3);
   for (int i = 0; i < n_neighbours; ++i)
   {
-    neigh_points_mat.row (i) = surface_->at (neighbours_indices.at (i)).getVector3fMap ();
+    neigh_points_mat.row (i) = (*surface_)[neighbours_indices[i]].getVector3fMap ();
   }
 
   Eigen::Vector3f x_axis, y_axis;
@@ -278,8 +278,8 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
 
   for (int curr_neigh = 0; curr_neigh < n_neighbours; ++curr_neigh)
   {
-    int curr_neigh_idx = neighbours_indices.at (curr_neigh);
-    float neigh_distance_sqr = neighbours_distances.at (curr_neigh);
+    const int& curr_neigh_idx = neighbours_indices[curr_neigh];
+    const float& neigh_distance_sqr = neighbours_distances[curr_neigh];
     if (neigh_distance_sqr <= margin_distance2)
     {
       continue;
@@ -328,8 +328,8 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
     //find among points with neighDistance <= marginThresh*radius
     for (int curr_neigh = 0; curr_neigh < n_neighbours; curr_neigh++)
     {
-      int curr_neigh_idx = neighbours_indices.at (curr_neigh);
-      float neigh_distance_sqr = neighbours_distances.at (curr_neigh);
+      const int& curr_neigh_idx = neighbours_indices[curr_neigh];
+      const float& neigh_distance_sqr = neighbours_distances[curr_neigh];
 
       if (neigh_distance_sqr > margin_distance2)
         continue;
@@ -580,10 +580,11 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computeFe
   for (size_t point_idx = 0; point_idx < indices_->size (); ++point_idx)
   {
     Eigen::Matrix3f currentLrf;
-    PointOutT &rf = output.at (point_idx);
+    PointOutT &rf = output[point_idx];
 
-    rf.confidence = computePointLRF (indices_->at (point_idx), currentLrf);
-    if (rf.confidence == std::numeric_limits<float>::max ())
+    //rf.confidence = computePointLRF (*indices_[point_idx], currentLrf);
+    //if (rf.confidence == std::numeric_limits<float>::max ())
+    if (computePointLRF ((*indices_)[point_idx], currentLrf) == std::numeric_limits<float>::max ())
     {
       output.is_dense = false;
     }
@@ -610,21 +611,21 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, Eigen::MatrixXf>::com
   }
 
   this->resetData ();
-  output.points.resize (indices_->size (), 10);
+  //output.points.resize (indices_->size (), 10);
+  output.points.resize (indices_->size (), 9);
   for (size_t point_idx = 0; point_idx < indices_->size (); ++point_idx)
   {
     Eigen::Matrix3f currentLrf;
-    float confidence = computePointLRF (indices_->at (point_idx), currentLrf);
-
-    output.points (point_idx, 0) = confidence;
-    if (confidence == std::numeric_limits<float>::max ())
+    //output.points (point_idx, 9) = computePointLRF (*indices_[point_idx], currentLrf);
+    //if (output.points (point_idx, 9) == std::numeric_limits<float>::max ())
+    if (computePointLRF ((*indices_)[point_idx], currentLrf) == std::numeric_limits<float>::max ())
     {
       output.is_dense = false;
     }
 
-    output.points.block<1, 3> (point_idx, 1) = currentLrf.row (0);
-    output.points.block<1, 3> (point_idx, 4) = currentLrf.row (1);
-    output.points.block<1, 3> (point_idx, 7) = currentLrf.row (2);
+    output.points.block<1, 3> (point_idx, 0) = currentLrf.row (0);
+    output.points.block<1, 3> (point_idx, 3) = currentLrf.row (1);
+    output.points.block<1, 3> (point_idx, 6) = currentLrf.row (2);
   }
 }
 

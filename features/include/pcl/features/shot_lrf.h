@@ -92,13 +92,8 @@ namespace pcl
         * \param[in] dists the squared distances to the neighbours
         * \param[out] rf reference frame to compute
         */
-      static float 
-      getLocalRF (const pcl::PointCloud<PointInT> &cloud,
-                  const double search_radius, 
-                  const Eigen::Vector4f & central_point, 
-                  const std::vector<int> &indices, 
-                  const std::vector<float> &dists, 
-                  Eigen::Matrix3f &rf);
+      float
+      getLocalRF (const int &index, Eigen::Matrix3f &rf);
 
       /** \brief Feature estimation method.
         * \param[out] output the resultant features

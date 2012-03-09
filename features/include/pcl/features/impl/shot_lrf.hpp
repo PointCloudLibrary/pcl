@@ -43,14 +43,15 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Compute a local Reference Frame for a 3D feature; the output is stored in the "rf" matrix
 template<typename PointInT, typename PointOutT> float
-pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF (const pcl::PointCloud<PointInT> &cloud, 
-                                                                         const double search_radius, 
-                                                                         const Eigen::Vector4f & central_point, 
-                                                                         const std::vector<int> &indices, 
-                                                                         const std::vector<float> &dists, 
-                                                                         Eigen::Matrix3f &rf)
+pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF (const int& current_point_idx, Eigen::Matrix3f &rf)
 {
-  Eigen::Matrix<double, Eigen::Dynamic, 4> vij (indices.size (), 4);
+  const Eigen::Vector4f& central_point = (*input_)[current_point_idx].getVector4fMap ();
+  std::vector<int> n_indices;
+  std::vector<float> n_sqr_distances;
+
+  searchForNeighbors (current_point_idx, search_parameter_, n_indices, n_sqr_distances);
+
+  Eigen::Matrix<double, Eigen::Dynamic, 4> vij (n_indices.size (), 4);
 
   Eigen::Matrix3d cov_m = Eigen::Matrix3d::Zero ();
 
@@ -59,22 +60,17 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF (const p
 
   int valid_nn_points = 0;
 
-  for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
+  for (size_t i_idx = 0; i_idx < n_indices.size (); ++i_idx)
   {
-    /*if (indices[i_idx] == index)
-      continue;*/
-
-    Eigen::Vector4f pt = cloud.points[indices[i_idx]].getVector4fMap (); 
-    pt[3] = 0;
-
-	  if (pt == central_point)
+    Eigen::Vector4f pt = surface_->points[n_indices[i_idx]].getVector4fMap ();
+    if (pt.head<3> () == central_point.head<3> ())
 		  continue;
 
     // Difference between current point and origin
     vij.row (valid_nn_points) = (pt - central_point).cast<double> ();
     vij (valid_nn_points, 3) = 0;
 
-    distance = search_radius - sqrt (dists[i_idx]);
+    distance = search_parameter_ - sqrt (n_sqr_distances[i_idx]);
 
     // Multiply vij * vij'
     cov_m += distance * (vij.row (valid_nn_points).head<3> ().transpose () * vij.row (valid_nn_points).head<3> ());
@@ -86,7 +82,6 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF (const p
   if (valid_nn_points < 5)
   {
     PCL_ERROR ("[pcl::%s::getLocalRF] Warning! Neighborhood has less than 5 vertexes. Aborting Local RF computation of feature point (%lf, %lf, %lf)\n", "SHOTLocalReferenceFrameEstimation", central_point[0], central_point[1], central_point[2]);
-    //rf.setIdentity ();
     rf.setConstant (std::numeric_limits<float>::quiet_NaN ());
 
     return (std::numeric_limits<float>::max ());
@@ -96,62 +91,23 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF (const p
 
   Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> solver (cov_m);
 
-  // Disambiguation
- 
-  Eigen::Vector3d v1c = solver.eigenvectors ().col (0);
-  Eigen::Vector3d v2c = solver.eigenvectors ().col (1);
-  Eigen::Vector3d v3c = solver.eigenvectors ().col (2);
-
-  double e1c = solver.eigenvalues ()[0];
-  double e2c = solver.eigenvalues ()[1];
-  double e3c = solver.eigenvalues ()[2];
+  const double& e1c = solver.eigenvalues ()[0];
+  const double& e2c = solver.eigenvalues ()[1];
+  const double& e3c = solver.eigenvalues ()[2];
 
   if (!pcl_isfinite (e1c) || !pcl_isfinite (e2c) || !pcl_isfinite (e3c))
   {
     PCL_ERROR ("[pcl::%s::getLocalRF] Warning! Eigenvectors are NaN. Aborting Local RF computation of feature point (%lf, %lf, %lf)\n", "SHOTLocalReferenceFrameEstimation", central_point[0], central_point[1], central_point[2]);
-    //rf.setIdentity ();
     rf.setConstant (std::numeric_limits<float>::quiet_NaN ());
 
     return (std::numeric_limits<float>::max ());
   }
 
+  // Disambiguation
   Eigen::Vector4d v1 = Eigen::Vector4d::Zero ();
   Eigen::Vector4d v3 = Eigen::Vector4d::Zero ();
-
-  if (e1c > e2c)
-  {
-    if (e1c > e3c) // v1c > max(v2c,v3c)
-    {
-      v1.head<3> () = v1c;
-
-      if (e2c > e3c)  // v1c > v2c > v3c
-        v3.head<3> () = v3c;
-      else // v1c > v3c > v2c
-        v3.head<3> () = v2c;
-    }
-    else // v3c > v1c > v2c
-    {
-      v1.head<3> () = v3c;
-      v3.head<3> () = v2c;
-    }
-  }
-  else
-  {
-    if (e2c > e3c) // v2c > max(v1c,v3c)
-    {
-      v1.head<3> () = v2c;
-
-      if (e1c > e3c)  // v2c > v1c > v3c
-        v3.head<3> () = v3c;
-      else // v2c > v3c > v1c
-        v3.head<3> () = v1c;
-    }
-    else // v3c > v2c > v1c
-    {
-      v1.head<3> () = v3c;
-      v3.head<3> () = v1c;
-    }
-  }
+  v1.head<3> () = solver.eigenvectors ().col (2);
+  v3.head<3> () = solver.eigenvectors ().col (0);
 
   int plusNormal = 0, plusTangentDirection1=0;
   for (int ne = 0; ne < valid_nn_points; ne++)
@@ -166,50 +122,39 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF (const p
   }
 
   //TANGENT
-  if (abs ( plusTangentDirection1 - valid_nn_points + plusTangentDirection1 )  > 0 ) 
+  plusTangentDirection1 = 2*plusTangentDirection1 - valid_nn_points;
+  if (plusTangentDirection1 == 0)
   {
-	  if (plusTangentDirection1 < valid_nn_points - plusTangentDirection1)
-		  v1 *= - 1;
-  }
-  else
-  {
-    plusTangentDirection1=0;
-		int points = 5; ///std::min(valid_nn_points*2/2+1, 11);
+		int points = 5; //std::min(valid_nn_points*2/2+1, 11);
 		int medianIndex = valid_nn_points/2;
 
 		for (int i = -points/2; i <= points/2; i++)
 			if ( vij.row (medianIndex - i).dot (v1) > 0)
-				plusTangentDirection1 ++;	
-		
+				plusTangentDirection1 ++;
+
 		if (plusTangentDirection1 < points/2+1)
 			v1 *= - 1;
-	}
+	} else if (plusTangentDirection1 < 0)
+    v1 *= - 1;
 
   //Normal
-	if( abs ( plusNormal - valid_nn_points + plusNormal )  > 0 ) 
+  plusNormal = 2*plusNormal - valid_nn_points;
+  if (plusNormal == 0)
   {
-		if (plusNormal < valid_nn_points - plusNormal)
-			v3 *= - 1;
-	}
-	else 
-  {
-		plusNormal = 0;
 		int points = 5; //std::min(valid_nn_points*2/2+1, 11);
-		//std::cout << points << std::endl;
 		int medianIndex = valid_nn_points/2;
 
 		for (int i = -points/2; i <= points/2; i++)
 			if ( vij.row (medianIndex - i).dot (v3) > 0)
-				plusNormal ++;	
-	
+				plusNormal ++;
+
 		if (plusNormal < points/2+1)
 			v3 *= - 1;
-	}
+	} else if (plusNormal < 0)
+    v3 *= - 1;
 
-
-
-  rf.row (0) = v1.cast<float> ().head<3> ();
-  rf.row (2) = v3.cast<float> ().head<3> ();
+  rf.row (0) = v1.head<3> ().cast<float> ();
+  rf.row (2) = v3.head<3> ().cast<float> ();
   rf.row (1) = rf.row (2).cross (rf.row (0));
 
   return (0.0f);
@@ -226,26 +171,21 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::computeFeature (Poi
       getClassName().c_str ());
     return;
   }
+  tree_->setSortedResults (true);
 
   for (size_t i = 0; i < indices_->size (); ++i)
   {
-    int current_point_idx = indices_->at (i);
-    Eigen::Vector4f current_point = input_->at (current_point_idx).getVector4fMap ();
-    std::vector<int> neighbours_indices;
-    std::vector<float> neighbours_sqr_distances;
-
-    searchForNeighbors (current_point_idx, search_parameter_, neighbours_indices, neighbours_sqr_distances);
-
     // point result
     Eigen::Matrix3f rf;
-    PointOutT& output_rf = output.at (i);
+    PointOutT& output_rf = output[i];
 
-    output_rf.confidence = getLocalRF (*surface_, search_parameter_, current_point, neighbours_indices, neighbours_sqr_distances, rf);
-    if (output_rf.confidence == std::numeric_limits<float>::max ())
+    //output_rf.confidence = getLocalRF ((*indices_)[i], rf);
+    //if (output_rf.confidence == std::numeric_limits<float>::max ())
+    if (getLocalRF ((*indices_)[i], rf) == std::numeric_limits<float>::max ())
     {
       output.is_dense = false;
     }
-    
+
     output_rf.x_axis.getNormalVector3fMap () = rf.row (0);
     output_rf.y_axis.getNormalVector3fMap () = rf.row (1);
     output_rf.z_axis.getNormalVector3fMap () = rf.row (2);
@@ -264,30 +204,25 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::computeFeatureEigen
       getClassName().c_str ());
     return;
   }
+  tree_->setSortedResults (true);
 
-  output.points.resize (indices_->size (), 10);
+  //output.points.resize (indices_->size (), 10);
+  output.points.resize (indices_->size (), 9);
   for (size_t i = 0; i < indices_->size (); ++i)
   {
-    int current_point_idx = indices_->at (i);
-    Eigen::Vector4f current_point = input_->at (current_point_idx).getVector4fMap ();
-    std::vector<int> neighbours_indices;
-    std::vector<float> neighbours_sqr_distances;
-
-    searchForNeighbors (current_point_idx, search_parameter_, neighbours_indices, neighbours_sqr_distances);
-
     // point result
     Eigen::Matrix3f rf;
 
-    output.points (i, 0) = getLocalRF (*surface_, search_parameter_, current_point, neighbours_indices, neighbours_sqr_distances, rf);
-    if (output.points (i, 0) == std::numeric_limits<float>::max ())
+    //output.points (i, 9) = getLocalRF ((*indices_)[i], rf);
+    //if (output.points (i, 9) == std::numeric_limits<float>::max ())
+    if (getLocalRF ((*indices_)[i], rf) == std::numeric_limits<float>::max ())
     {
       output.is_dense = false;
     }
-    
 
-    output.points.block<1, 3> (i, 1) = rf.row (0);
-    output.points.block<1, 3> (i, 4) = rf.row (1);
-    output.points.block<1, 3> (i, 7) = rf.row (2);
+    output.points.block<1, 3> (i, 0) = rf.row (0);
+    output.points.block<1, 3> (i, 3) = rf.row (1);
+    output.points.block<1, 3> (i, 6) = rf.row (2);
   }
 
 }

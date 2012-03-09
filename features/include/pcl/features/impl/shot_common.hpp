@@ -54,11 +54,11 @@ const float zeroFloatEps8 = 1E-8f;
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Compute a local Reference Frame for a 3D feature; the output is stored in the "rf" vector
 template <typename PointInT> float
-pcl::getLocalRF (const pcl::PointCloud<PointInT> &cloud, 
-                 const double search_radius, 
-                 const Eigen::Vector4f & central_point, 
-                 const std::vector<int> &indices, 
-                 const std::vector<float> &dists, 
+pcl::getLocalRF (const pcl::PointCloud<PointInT> &cloud,
+                 const double search_radius,
+                 const Eigen::Vector4f & central_point,
+                 const std::vector<int> &indices,
+                 const std::vector<float> &dists,
   std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf)
 {
   if (rf.size () != 3)
@@ -79,11 +79,11 @@ pcl::getLocalRF (const pcl::PointCloud<PointInT> &cloud,
     /*if (indices[i_idx] == index)
       continue;*/
 
-    Eigen::Vector4f pt = cloud.points[indices[i_idx]].getVector4fMap (); 
+    Eigen::Vector4f pt = cloud.points[indices[i_idx]].getVector4fMap ();
     pt[3] = 0;
 
-	if (pt == central_point)
-		continue;
+    if (pt.head<3> () == central_point.head<3> ())
+      continue;
 
     // Difference between current point and origin
     vij[valid_nn_points] = (pt - central_point).cast<double> ();
@@ -119,7 +119,7 @@ pcl::getLocalRF (const pcl::PointCloud<PointInT> &cloud,
   Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> solver (cov_m);
 
   // Disambiguation
- 
+
   Eigen::Vector3d v1c = solver.eigenvectors ().col (0);
   Eigen::Vector3d v2c = solver.eigenvectors ().col (1);
   Eigen::Vector3d v3c = solver.eigenvectors ().col (2);
@@ -194,7 +194,7 @@ pcl::getLocalRF (const pcl::PointCloud<PointInT> &cloud,
   }
 
   //TANGENT
-  if( abs ( plusTangentDirection1 - valid_nn_points + plusTangentDirection1 )  > 0 ) 
+  if( abs ( plusTangentDirection1 - valid_nn_points + plusTangentDirection1 )  > 0 )
   {
 	  if (plusTangentDirection1 < valid_nn_points - plusTangentDirection1)
 		  v1 *= - 1;
@@ -207,19 +207,19 @@ pcl::getLocalRF (const pcl::PointCloud<PointInT> &cloud,
 
 		for (int i = -points/2; i <= points/2; i++)
 			if ( vij[medianIndex- i ].dot (v1) > 0)
-				plusTangentDirection1 ++;	
-		
+				plusTangentDirection1 ++;
+
 		if (plusTangentDirection1 < points/2+1)
 			v1 *= - 1;
 	}
 
   //Normal
-	if( abs ( plusNormal - valid_nn_points + plusNormal )  > 0 ) 
+	if( abs ( plusNormal - valid_nn_points + plusNormal )  > 0 )
   {
 		if (plusNormal < valid_nn_points - plusNormal)
 			v3 *= - 1;
 	}
-	else 
+	else
   {
 		plusNormal = 0;
 		int points = 5; //std::min(valid_nn_points*2/2+1, 11);
@@ -228,8 +228,8 @@ pcl::getLocalRF (const pcl::PointCloud<PointInT> &cloud,
 
 		for (int i = -points/2; i <= points/2; i++)
 			if ( vij[medianIndex- i ].dot (v3) > 0)
-				plusNormal ++;	
-	
+				plusNormal ++;
+
 		if (plusNormal < points/2+1)
 			v3 *= - 1;
 	}

@@ -93,7 +93,7 @@
 // Define all point types with XYZ and label
 #define PCL_XYZL_POINT_TYPES  \
   (pcl::PointXYZL)            \
-  (pcl::PointXYZRGBL)       
+  (pcl::PointXYZRGBL)
 
 
 // Define all point types that include normal[3] data
@@ -164,7 +164,7 @@ namespace pcl
   struct _PointXYZ
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
-    
+
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -252,13 +252,13 @@ namespace pcl
   {
     inline PointXYZI ()
     {
-      x = y = z = 0.0f; 
+      x = y = z = 0.0f;
       data[3] = 1.0f;
       intensity = 0.0f;
     }
     inline PointXYZI (float _intensity)
     {
-      x = y = z = 0.0f; 
+      x = y = z = 0.0f;
       data[3] = 1.0f;
       intensity = _intensity;
     }
@@ -340,14 +340,14 @@ namespace pcl
     inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, 0)); }
   };
 
-  inline std::ostream& 
+  inline std::ostream&
   operator << (std::ostream& os, const PointXYZRGBA& p)
   {
     const unsigned char* rgba_ptr = reinterpret_cast<const unsigned char*>(&p.rgba);
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " 
-      << static_cast<int>(*rgba_ptr) << "," 
-      << static_cast<int>(*(rgba_ptr+1)) << "," 
-      << static_cast<int>(*(rgba_ptr+2)) << "," 
+    os << "(" << p.x << "," << p.y << "," << p.z << " - "
+      << static_cast<int>(*rgba_ptr) << ","
+      << static_cast<int>(*(rgba_ptr+1)) << ","
+      << static_cast<int>(*(rgba_ptr+2)) << ","
       << static_cast<int>(*(rgba_ptr+3)) << ")";
     return (os);
   }
@@ -431,13 +431,13 @@ namespace pcl
   {
     inline PointXYZRGB ()
     {
-      x = y = z = 0.0f; 
+      x = y = z = 0.0f;
       data[3] = 1.0f;
       r = g = b = _unused = 0;
     }
     inline PointXYZRGB (uint8_t _r, uint8_t _g, uint8_t _b)
     {
-      x = y = z = 0.0f; 
+      x = y = z = 0.0f;
       data[3] = 1.0f;
       r = _r;
       g = _g;
@@ -454,9 +454,9 @@ namespace pcl
   };
   inline std::ostream& operator << (std::ostream& os, const PointXYZRGB& p)
   {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " 
-      << static_cast<int>(p.r) << "," 
-      << static_cast<int>(p.g) << "," 
+    os << "(" << p.x << "," << p.y << "," << p.z << " - "
+      << static_cast<int>(p.r) << ","
+      << static_cast<int>(p.g) << ","
       << static_cast<int>(p.b) << ")";
     return (os);
   }
@@ -465,14 +465,14 @@ namespace pcl
   {
     inline PointXYZRGBL ()
     {
-      x = y = z = 0.0f; 
+      x = y = z = 0.0f;
       data[3] = 1.0f;
-      r = g = b = 0; 
+      r = g = b = 0;
       label = 255;
     }
     inline PointXYZRGBL (uint8_t _r, uint8_t _g, uint8_t _b, uint32_t _label)
     {
-      x = y = z = 0.0f; 
+      x = y = z = 0.0f;
       data[3] = 1.0f;
       r = _r;
       g = _g;
@@ -766,7 +766,7 @@ namespace pcl
         float range;
       };
       float data_c[4];
-    };  
+    };
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
   inline std::ostream& operator << (std::ostream& os, const PointWithRange& p)
@@ -943,7 +943,7 @@ namespace pcl
     os << (i == 0 ? "(" : "") << p.values[i] << (i < 11 ? ", " : ")");
     return (os);
   }
-  
+
   /** \brief A point structure representing a Shape Context.
     * \ingroup common
     */
@@ -988,14 +988,14 @@ namespace pcl
     _Axis x_axis;
     _Axis y_axis;
     _Axis z_axis;
-    union
-    {
-      struct
-      {
-        float confidence;
-      };
-      float data_c[4];
-    };
+    //union
+    //{
+      //struct
+      //{
+        //float confidence;
+      //};
+      //float data_c[4];
+    //};
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
@@ -1003,22 +1003,22 @@ namespace pcl
   struct EIGEN_ALIGN16 ReferenceFrame : public _ReferenceFrame
   {
     ReferenceFrame ()
-    { confidence = 0.; }
+    { /*confidence = 0.;*/ }
 
-    ReferenceFrame (_Axis const &x, _Axis const &y, _Axis const &z, float c = 1.0)
+    ReferenceFrame (_Axis const &x, _Axis const &y, _Axis const &z/*, float c = 1.0*/)
     {
       x_axis = x;
       y_axis = y;
       z_axis = z;
-      confidence = c;
+      //confidence = c;
     }
-    
+
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   inline std::ostream& operator << (std::ostream& os, const ReferenceFrame& p)
   {
-    os << "(" << p.x_axis << "," << p.y_axis << "," << p.z_axis << " - " << p.confidence << ")";
+    os << "(" << p.x_axis << "," << p.y_axis << "," << p.z_axis /*<< " - " << p.confidence*/ << ")";
     return (os);
   }
 
@@ -1175,10 +1175,10 @@ namespace pcl
     const unsigned char* rgba_ptr = reinterpret_cast<const unsigned char*>(&p.rgba);
     os <<
     "(" << p.x << "," << p.y << "," << p.z << " - " <<
-    p.normal_x << "," << p.normal_y << "," << p.normal_z << " - " 
-    << static_cast<int>(*rgba_ptr) << "," 
-    << static_cast<int>(*(rgba_ptr+1)) << "," 
-    << static_cast<int>(*(rgba_ptr+2)) << "," 
+    p.normal_x << "," << p.normal_y << "," << p.normal_z << " - "
+    << static_cast<int>(*rgba_ptr) << ","
+    << static_cast<int>(*(rgba_ptr+1)) << ","
+    << static_cast<int>(*(rgba_ptr+2)) << ","
     << static_cast<int>(*(rgba_ptr+3)) << " - " <<
     p.radius << " - " << p.confidence << " - " << p.curvature << ")";
     return (os);
