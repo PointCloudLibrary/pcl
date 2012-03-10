@@ -64,7 +64,7 @@ namespace pcl {
     int CoredVectorMeshData::addPolygon( const std::vector< CoredVertexIndex >& vertices )
     {
       std::vector< int > polygon( vertices.size() );
-      for( int i=0 ; i<vertices.size() ; i++ )
+      for( unsigned i=0 ; i<vertices.size() ; i++ )
         if( vertices[i].inCore ) polygon[i] =  vertices[i].idx;
         else                     polygon[i] = -vertices[i].idx-1;
       polygons.push_back( polygon );
@@ -83,7 +83,7 @@ namespace pcl {
       {
         std::vector< int >& polygon = polygons[ polygonIndex++ ];
         vertices.resize( polygon.size() );
-        for( int i=0 ; i < static_cast<int> (polygon.size ()); i++ )
+        for( unsigned i=0 ; i<polygon.size() ; i++ )
           if( polygon[i]<0 ) vertices[i].idx = -polygon[i]-1 , vertices[i].inCore = false;
           else               vertices[i].idx =  polygon[i]   , vertices[i].inCore = true;
         return 1;

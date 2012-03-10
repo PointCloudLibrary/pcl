@@ -172,11 +172,11 @@ static const char *parse_string(cJSON *item,const char *str)
 					len=3;if (uc<0x80) len=1;else if (uc<0x800) len=2;ptr2+=len;
 					
 					switch (len) {
-						case 3: *--ptr2 =(( (uc) | 0x80) & 0xBF ); 
+						case 3: *--ptr2 = static_cast<char>(( (uc) | 0x80) & 0xBF ); 
               uc >>= 6;
-						case 2: *--ptr2 =(( (uc) | 0x80) & 0xBF );
+						case 2: *--ptr2 = static_cast<char>(( (uc) | 0x80) & 0xBF );
               uc >>= 6;
-						case 1: *--ptr2 =( (uc) | firstByteMark[len] );
+						case 1: *--ptr2 = static_cast<char>( (uc) | firstByteMark[len] );
 					}
 					ptr2+=len;ptr+=4;
 					break;

@@ -54,7 +54,7 @@ namespace pcl
     {
       const size_t num_of_features = static_cast<size_t> (features.size ());
       write (stream, num_of_features);
-      for (int feature_index = 0; feature_index < num_of_features; ++feature_index)
+      for (size_t feature_index = 0; feature_index < num_of_features; ++feature_index)
       {
         write (stream, features[feature_index]);
       }
