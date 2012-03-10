@@ -137,7 +137,7 @@ int default_number_samples = 100000;
 float default_leaf_size = 0.01;
 
 void
-printHelp (int argc, char **argv)
+printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s input.{ply,obj} output.pcd <options>\n", argv[0]);
   print_info ("  where options are:\n");

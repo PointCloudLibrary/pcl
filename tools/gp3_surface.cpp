@@ -52,7 +52,7 @@ double default_mu = 0.0;
 double default_radius = 0.0;
 
 void
-printHelp (int argc, char **argv)
+printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s input.pcd output.vtk <options>\n", argv[0]);
   print_info ("  where options are:\n");

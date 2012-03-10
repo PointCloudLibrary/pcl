@@ -55,7 +55,7 @@ using namespace pcl::console;
 typedef pcl::PointCloud<pcl::PointXYZRGBA> PointCloudXYZRGBA;
 
 void
-printHelp (int argc, char **argv)
+printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s input_cloud.pcd input_template.lmt\n", argv[0]);
 }

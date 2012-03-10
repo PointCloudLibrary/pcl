@@ -53,7 +53,7 @@ double      default_iso_level = 0;
 int        default_use_dot = 1;
 
 void
-printHelp (int argc, char **argv)
+printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s input.pcd output.vtk <options>\n", argv[0]);
   print_info ("  where options are:\n");

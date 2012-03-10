@@ -59,7 +59,7 @@ using namespace pcl::console;
 typedef pcl::PointCloud<pcl::PointXYZRGBA> PointCloudXYZRGBA;
 
 void
-printHelp (int argc, char **argv)
+printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s input.pcd  min_depth  max_depth  max_height  output_template.lmt\n", argv[0]);
   print_info ("  where options are:\n");
