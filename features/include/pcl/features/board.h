@@ -54,7 +54,7 @@ namespace pcl
     * \author Alioscia Petrelli (original), Tommaso Cavallari (PCL port)
     * \ingroup features
     */
-  template<typename PointInT, typename PointNT, typename PointOutT>
+  template<typename PointInT, typename PointNT, typename PointOutT = ReferenceFrame>
   class BOARDLocalReferenceFrameEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:

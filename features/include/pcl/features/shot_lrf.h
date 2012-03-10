@@ -61,7 +61,7 @@ namespace pcl
     * \author Samuele Salti, Federico Tombari
     * \ingroup features
     */
-  template<typename PointInT, typename PointOutT>
+  template<typename PointInT, typename PointOutT = ReferenceFrame>
   class SHOTLocalReferenceFrameEstimation : public Feature<PointInT, PointOutT>
   {
     public:

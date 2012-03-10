@@ -334,5 +334,43 @@ pcl::FeatureFromLabels<PointInT, PointLT, PointOutT>::initCompute ()
   return (true);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointRFT> bool
+pcl::FeatureWithLocalReferenceFrames<PointInT, PointRFT>::initLocalReferenceFrames (const PointCloudInConstPtr& input,
+                                                                                    const LRFEstimationPtr& lrf_estimation)
+{
+  // Check if input frames are set
+  if (!frames_)
+  {
+    if (!lrf_estimation)
+    {
+      PCL_ERROR ("[initLocalReferenceFrames] No input dataset containing reference frames was given!\n");
+      return (false);
+    } else
+    {
+      PCL_WARN ("[initLocalReferenceFrames] No input dataset containing reference frames was given! Default computation with %s\n", lrf_estimation->getClassName ());
+      lrf_estimation->compute (*frames_);
+    }
+  }
+
+  // Check if the size of frames is the same as the size of the input cloud
+  if (frames_->points.size () != input->points.size ())
+  {
+    if (!lrf_estimation)
+    {
+      PCL_ERROR ("[initLocalReferenceFrames] The number of points in the input dataset differs from the number of points in the dataset containing the reference frames!\n");
+      return (false);
+    } else
+    {
+      PCL_WARN ("[initLocalReferenceFrames] The number of points in the input dataset differs from the number of points in the dataset containing the reference frames! Default computation with %s\n", lrf_estimation->getClassName ());
+      lrf_estimation->compute (*frames_);
+    }
+  }
+
+  return (true);
+}
+
 #endif  //#ifndef PCL_FEATURES_IMPL_FEATURE_H_
 
