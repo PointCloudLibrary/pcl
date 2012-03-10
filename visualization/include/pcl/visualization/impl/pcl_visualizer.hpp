@@ -946,7 +946,7 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
+pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCloud<PointT>::ConstPtr &,
                                                      const PointCloudGeometryHandler<PointT> &geometry_handler,
                                                      const std::string &id)
 {

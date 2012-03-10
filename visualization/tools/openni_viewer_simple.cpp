@@ -205,7 +205,7 @@ class SimpleOpenNIViewer
         if (image_)
         {
           boost::shared_ptr<openni_wrapper::Image> image = getLatestImage ();
-
+          
           if (image->getEncoding() == openni_wrapper::Image::RGB)
           {
             image_viewer_.showRGBImage(image->getMetaData().Data(), image->getWidth(), image->getHeight());
@@ -223,10 +223,8 @@ class SimpleOpenNIViewer
           // This will crash: image_viewer_.spinOnce (10);
         }
 #endif        
-        std::cout << __LINE__ << std::endl;
       }
 
-      std::cout << __LINE__ << std::endl;
       grabber_.stop();
       
       cloud_connection.disconnect();

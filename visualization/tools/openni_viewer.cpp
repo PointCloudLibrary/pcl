@@ -70,7 +70,7 @@ do \
 #endif
 
 void
-printHelp (int argc, char **argv)
+printHelp (int, char **argv)
 {
   using pcl::console::print_error;
   using pcl::console::print_info;
@@ -147,7 +147,7 @@ class OpenNIViewer
 #endif
     
     void 
-    keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
+    keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
     {
       if (event.getKeyCode())
         cout << "the key \'" << event.getKeyCode() << "\' (" << (int)event.getKeyCode() << ") was";
@@ -159,7 +159,7 @@ class OpenNIViewer
         cout << " released" << endl;
     }
     
-    void mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
+    void mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void*)
     {
       if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton)
       {

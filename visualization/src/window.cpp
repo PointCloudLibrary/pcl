@@ -265,7 +265,7 @@ pcl::visualization::Window::emitKeyboardEvent (unsigned long event_id)
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl::visualization::Window::MouseCallback(vtkObject*, unsigned long eid, void* clientdata, void* calldata)
+pcl::visualization::Window::MouseCallback(vtkObject*, unsigned long eid, void* clientdata, void*)
 {
   Window* window = reinterpret_cast<Window*> (clientdata);
   window->emitMouseEvent (eid);
@@ -273,7 +273,7 @@ pcl::visualization::Window::MouseCallback(vtkObject*, unsigned long eid, void* c
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl::visualization::Window::KeyboardCallback(vtkObject*, unsigned long eid, void* clientdata, void* calldata)
+pcl::visualization::Window::KeyboardCallback(vtkObject*, unsigned long eid, void* clientdata, void*)
 {
   Window* window = reinterpret_cast<Window*> (clientdata);
   window->emitKeyboardEvent (eid);

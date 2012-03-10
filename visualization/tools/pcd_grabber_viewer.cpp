@@ -55,7 +55,7 @@ boost::shared_ptr<pcl::PCDGrabber<pcl::PointXYZRGBA> > grabber;
 pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud_;
 
 void
-printHelp (int argc, char **argv)
+printHelp (int, char **argv)
 {
   //print_error ("Syntax is: %s <file_name 1..N>.pcd <options>\n", argv[0]);
   print_error ("Syntax is: %s <options>\n", argv[0]);
@@ -92,7 +92,7 @@ struct EventHelper
 };
 
 void 
-keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
+keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
 {
   /// If SPACE is pressed, trigger new cloud callback (only works if framerate is set to 0)
   if (event.getKeyCode() == ' ' && grabber)

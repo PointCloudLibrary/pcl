@@ -83,7 +83,7 @@ isMultiDimensionalFeatureField (const sensor_msgs::PointField &field)
 }
 
 void
-printHelp (int argc, char **argv)
+printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s <file_name 1..N>.<pcd or vtk> <options>\n", argv[0]);
   print_info ("  where options are:\n");

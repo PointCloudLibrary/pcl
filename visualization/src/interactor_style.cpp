@@ -695,29 +695,29 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       }
 
       vtkSmartPointer<vtkCamera> cam = CurrentRenderer->GetActiveCamera ();
-      static CloudActorMap::iterator it = actors_->begin ();
-      if (actors_->size () > 0)
-      {
-        if (it == actors_->end ())
-          it = actors_->begin ();
-
-        const CloudActor& actor = it->second;
-
-        cam->SetPosition (actor.viewpoint_transformation_->GetElement (0, 3),
-                          actor.viewpoint_transformation_->GetElement (1, 3),
-                          actor.viewpoint_transformation_->GetElement (2, 3));
-
-        cam->SetFocalPoint (actor.viewpoint_transformation_->GetElement (0, 3) - actor.viewpoint_transformation_->GetElement (0, 2),
-                            actor.viewpoint_transformation_->GetElement (1, 3) - actor.viewpoint_transformation_->GetElement (1, 2),
-                            actor.viewpoint_transformation_->GetElement (2, 3) - actor.viewpoint_transformation_->GetElement (2, 2));
-
-        cam->SetViewUp (actor.viewpoint_transformation_->GetElement (0, 1),
-                        actor.viewpoint_transformation_->GetElement (1, 1),
-                        actor.viewpoint_transformation_->GetElement (2, 1));
-
-        ++it;
-      }
-      else
+//      static CloudActorMap::iterator it = actors_->begin ();
+//      if (actors_->size () > 0)
+//      {
+//        if (it == actors_->end ())
+//          it = actors_->begin ();
+//
+//        const CloudActor& actor = it->second;
+//
+//        cam->SetPosition (actor.viewpoint_transformation_->GetElement (0, 3),
+//                          actor.viewpoint_transformation_->GetElement (1, 3),
+//                          actor.viewpoint_transformation_->GetElement (2, 3));
+//
+//        cam->SetFocalPoint (actor.viewpoint_transformation_->GetElement (0, 3) - actor.viewpoint_transformation_->GetElement (0, 2),
+//                            actor.viewpoint_transformation_->GetElement (1, 3) - actor.viewpoint_transformation_->GetElement (1, 2),
+//                            actor.viewpoint_transformation_->GetElement (2, 3) - actor.viewpoint_transformation_->GetElement (2, 2));
+//
+//        cam->SetViewUp (actor.viewpoint_transformation_->GetElement (0, 1),
+//                        actor.viewpoint_transformation_->GetElement (1, 1),
+//                        actor.viewpoint_transformation_->GetElement (2, 1));
+//
+//        ++it;
+//      }
+//      else
       {
         cam->SetPosition (0, 0, 0);
         cam->SetFocalPoint (0, 0, 1);

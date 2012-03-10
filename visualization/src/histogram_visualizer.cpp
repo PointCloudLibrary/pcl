@@ -176,7 +176,7 @@ pcl::visualization::PCLHistogramVisualizer::spin ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl::visualization::PCLHistogramVisualizer::setBackgroundColor (const double &r, const double &g, const double &b, int viewport)
+pcl::visualization::PCLHistogramVisualizer::setBackgroundColor (const double &, const double &, const double &, int)
 {
 /*  rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;

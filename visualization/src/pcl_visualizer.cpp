@@ -869,7 +869,7 @@ pcl::visualization::PCLVisualizer::setBackgroundColor (
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
-    int property, double val1, double val2, double val3, const std::string &id, int viewport)
+    int property, double val1, double val2, double val3, const std::string &id, int)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
@@ -944,7 +944,7 @@ pcl::visualization::PCLVisualizer::getPointCloudRenderingProperties (int propert
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
-    int property, double value, const std::string &id, int viewport)
+    int property, double value, const std::string &id, int)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
@@ -1000,7 +1000,7 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
-    int property, double val1, double val2, double val3, const std::string &id, int viewport)
+    int property, double val1, double val2, double val3, const std::string &id, int)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
@@ -1044,7 +1044,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
-    int property, double value, const std::string &id, int viewport)
+    int property, double value, const std::string &id, int)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
@@ -2864,7 +2864,7 @@ pcl::visualization::PCLVisualizer::convertToVtkMatrix (
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::addPointCloud (
-    const sensor_msgs::PointCloud2::ConstPtr &cloud,
+    const sensor_msgs::PointCloud2::ConstPtr &,
     const GeometryHandlerConstPtr &geometry_handler,
     const ColorHandlerConstPtr &color_handler,
     const Eigen::Vector4f& sensor_origin,

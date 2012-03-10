@@ -271,7 +271,7 @@ namespace pcl
             return (new ExitCallback);
           }
           virtual void 
-          Execute (vtkObject* caller, unsigned long event_id, void* call_data)
+          Execute (vtkObject*, unsigned long event_id, void*)
           {
             if (event_id != vtkCommand::ExitEvent)
               return;

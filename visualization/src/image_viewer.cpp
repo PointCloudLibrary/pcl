@@ -284,7 +284,7 @@ pcl::visualization::ImageViewer::spin ()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::ImageViewer::spinOnce (int time, bool force_redraw)
+pcl::visualization::ImageViewer::spinOnce (int time, bool)
 {
   resetStoppedFlag ();
 
@@ -421,7 +421,7 @@ pcl::visualization::ImageViewer::emitKeyboardEvent (unsigned long event_id)
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl::visualization::ImageViewer::MouseCallback (vtkObject*, unsigned long eid, void* clientdata, void* calldata)
+pcl::visualization::ImageViewer::MouseCallback (vtkObject*, unsigned long eid, void* clientdata, void*)
 {
   ImageViewer* window = reinterpret_cast<ImageViewer*> (clientdata);
   window->emitMouseEvent (eid);
@@ -429,7 +429,7 @@ pcl::visualization::ImageViewer::MouseCallback (vtkObject*, unsigned long eid, v
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl::visualization::ImageViewer::KeyboardCallback (vtkObject*, unsigned long eid, void* clientdata, void* calldata)
+pcl::visualization::ImageViewer::KeyboardCallback (vtkObject*, unsigned long eid, void* clientdata, void*)
 {
   ImageViewer* window = reinterpret_cast<ImageViewer*> (clientdata);
   window->emitKeyboardEvent (eid);
