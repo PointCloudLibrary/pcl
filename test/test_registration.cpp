@@ -68,7 +68,7 @@ template <typename PointSource, typename PointTarget>
 class RegistrationWrapper : public Registration<PointSource, PointTarget>
 {
 public:
-  void computeTransformation (pcl::PointCloud<PointSource> &foo, const Eigen::Matrix4f& guess) { }
+  void computeTransformation (pcl::PointCloud<PointSource> &, const Eigen::Matrix4f&) { }
 
   bool hasValidFeaturesTest ()
   {

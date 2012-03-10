@@ -190,7 +190,7 @@ bool testOrder (const vector<float>& distances, const string& name)
  * @return true if result is valid, false otherwise
  */
 template<typename PointT> bool
-testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, const vector<bool>& indices_mask, const vector<bool>& nan_mask, const vector<int>& indices, const vector<int>& input_indices, const string& name)
+testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, const vector<bool>& indices_mask, const vector<bool>& nan_mask, const vector<int>& indices, const vector<int>& /*input_indices*/, const string& name)
 {
   bool validness = true;
   for (vector<int>::const_iterator iIt = indices.begin (); iIt != indices.end (); ++iIt)
