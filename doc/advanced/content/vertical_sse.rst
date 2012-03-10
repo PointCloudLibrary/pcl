@@ -99,7 +99,7 @@ Both representations have pros and cons.
   * No wasted space - only 3/4 as many loads required
   * No wasted computation
   * May have less loop overhead, since you process 4 points per iteration
-     instead of 1
+    instead of 1
 
 * Cons
 
