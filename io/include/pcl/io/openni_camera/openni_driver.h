@@ -246,7 +246,7 @@ namespace openni_wrapper
   unsigned
   OpenNIDriver::getNumberDevices () const throw ()
   {
-    return (unsigned) device_context_.size ();
+    return static_cast<unsigned> (device_context_.size ());
   }
 } // namespace
 #endif

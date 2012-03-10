@@ -95,7 +95,7 @@ unsigned IRImage::getFrameID () const throw ()
 
 unsigned long IRImage::getTimeStamp () const throw ()
 {
-  return (unsigned long) ir_md_->Timestamp ();
+  return static_cast<unsigned long> (ir_md_->Timestamp ());
 }
 
 const xn::IRMetaData& IRImage::getMetaData () const throw ()

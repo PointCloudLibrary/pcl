@@ -196,7 +196,7 @@ namespace openni_wrapper
   unsigned long
   Image::getTimeStamp () const throw ()
   {
-    return (unsigned long) image_md_->Timestamp ();
+    return static_cast<unsigned long> (image_md_->Timestamp ());
   }
 
   const xn::ImageMetaData&

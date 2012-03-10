@@ -181,21 +181,21 @@ void DeviceONI::PlayerThreadFunction()
     player_.ReadNext();
 }
 
-void __stdcall DeviceONI::NewONIDepthDataAvailable (xn::ProductionNode& node, void* cookie) throw ()
+void __stdcall DeviceONI::NewONIDepthDataAvailable (xn::ProductionNode&, void* cookie) throw ()
 {
   DeviceONI* device = reinterpret_cast<DeviceONI*>(cookie);
   if (device->depth_stream_running_)
     device->depth_condition_.notify_all ();
 }
 
-void __stdcall DeviceONI::NewONIImageDataAvailable (xn::ProductionNode& node, void* cookie) throw ()
+void __stdcall DeviceONI::NewONIImageDataAvailable (xn::ProductionNode&, void* cookie) throw ()
 {
   DeviceONI* device = reinterpret_cast<DeviceONI*>(cookie);
   if (device->image_stream_running_)
     device->image_condition_.notify_all ();
 }
 
-void __stdcall DeviceONI::NewONIIRDataAvailable (xn::ProductionNode& node, void* cookie) throw ()
+void __stdcall DeviceONI::NewONIIRDataAvailable (xn::ProductionNode&, void* cookie) throw ()
 {
   DeviceONI* device = reinterpret_cast<DeviceONI*>(cookie);
   if (device->ir_stream_running_)

@@ -455,7 +455,7 @@ pcl::OpenNIGrabber::imageCallback (boost::shared_ptr<openni_wrapper::Image> imag
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::OpenNIGrabber::depthCallback (boost::shared_ptr<openni_wrapper::DepthImage> depth_image, void* cookie)
+pcl::OpenNIGrabber::depthCallback (boost::shared_ptr<openni_wrapper::DepthImage> depth_image, void*)
 {
   if (num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
       num_slots<sig_cb_openni_point_cloud_rgba>  () > 0 ||
@@ -476,7 +476,7 @@ pcl::OpenNIGrabber::depthCallback (boost::shared_ptr<openni_wrapper::DepthImage>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::OpenNIGrabber::irCallback (boost::shared_ptr<openni_wrapper::IRImage> ir_image, void* cookie)
+pcl::OpenNIGrabber::irCallback (boost::shared_ptr<openni_wrapper::IRImage> ir_image, void*)
 {
   if (num_slots<sig_cb_openni_point_cloud_i>  () > 0 ||
       num_slots<sig_cb_openni_ir_depth_image> () > 0)
