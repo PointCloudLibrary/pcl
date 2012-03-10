@@ -134,7 +134,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::calculateCombinedCovar (con
     coefficients[17] *= norm;
     coefficients[18] *= norm;
     coefficients[19] *= norm;
-    coefficients[10] *= norm;
+    coefficients[20] *= norm;
   }
 }
 
@@ -142,14 +142,11 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::calculateCombinedCovar (con
 template <typename PointInT, typename PointOutT, typename NormalT> void
 pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut &output)
 {
-  //double start = pcl::getTime ();
-  //double stop;
   if (normals_->empty ())
   {
     normals_->reserve (surface_->size ());
     if (input_->height == 1 ) // not organized
     {
-      //start = pcl::getTime ();
       pcl::NormalEstimation<PointInT, NormalT> normal_estimation;
       normal_estimation.setInputCloud(surface_);
       normal_estimation.setRadiusSearch(search_radius_);
@@ -160,19 +157,17 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
       IntegralImageNormalEstimation<PointInT, NormalT> normal_estimation;
       normal_estimation.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointInT, NormalT>::SIMPLE_3D_GRADIENT);
 
-      //double start2 = pcl::getTime ();
       normal_estimation.setInputCloud(surface_);
       normal_estimation.setNormalSmoothingSize (5.0);
       normal_estimation.compute (*normals_);
-      //double stop2 = pcl::getTime ();
-      //std::cout << "ii normal estimation: " << (stop2 - start2) * 1000.0 << "ms\n";
     }
-    //stop = pcl::getTime ();
-    //std::cout << "normal estimation: " << (stop - start) * 1000.0 << "ms\n";
   }
 
   pcl::PointCloud<pcl::PointXYZI>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZI>);
   cloud->resize (surface_->size ());
+#ifdef HAVE_OPENMP
+  #pragma omp parallel for num_threads(threads_) default(shared)
+#endif  
   for (unsigned idx = 0; idx < surface_->size (); ++idx)
   {
     cloud->points [idx].x = surface_->points [idx].x;
@@ -181,9 +176,6 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
     //grayscale = 0.2989 * R + 0.5870 * G + 0.1140 * B
 
     cloud->points [idx].intensity = 0.00390625 * (0.114 * float(surface_->points [idx].b) + 0.5870 * float(surface_->points [idx].g) + 0.2989 * float(surface_->points [idx].r));
-    //if (cloud->points [idx].intensity > 1.0)
-      //std::cout << "intensity :" << cloud->points [idx].intensity << std::endl;
-    //cloud->points [idx].intensity = 0.0;
   }
   pcl::copyPointCloud (*surface_, *cloud);
 
@@ -192,35 +184,20 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
   grad_est.setInputNormals (normals_);
   grad_est.setRadiusSearch (search_radius_);
   grad_est.compute (*intensity_gradients_);
-  /*
-  float mean = 0;
+  
+#ifdef HAVE_OPENMP
+  #pragma omp parallel for num_threads(threads_) default (shared)
+#endif    
   for (unsigned idx = 0; idx < intensity_gradients_->size (); ++idx)
   {
     float len = intensity_gradients_->points [idx].gradient_x * intensity_gradients_->points [idx].gradient_x +
                 intensity_gradients_->points [idx].gradient_y * intensity_gradients_->points [idx].gradient_y +
                 intensity_gradients_->points [idx].gradient_z * intensity_gradients_->points [idx].gradient_z ;
 
-    if (!pcl_isfinite (len))
-      continue;
-
-    mean += sqrt (len);
-  }
-
-  mean /= intensity_gradients_->size ();
-  */
-//  float max_len = 0;
-  for (unsigned idx = 0; idx < intensity_gradients_->size (); ++idx)
-  {
-    float len = intensity_gradients_->points [idx].gradient_x * intensity_gradients_->points [idx].gradient_x +
-                intensity_gradients_->points [idx].gradient_y * intensity_gradients_->points [idx].gradient_y +
-                intensity_gradients_->points [idx].gradient_z * intensity_gradients_->points [idx].gradient_z ;
-
-//    if (len > max_len)
-//      max_len = len;
-    if (len > 200.0) //mean * 0.2)
+    // Suat: ToDo: remove this magic number or expose using set/get
+    if (len > 200.0)
     {
       len = 1.0 / sqrt (len);
-      //len = 0.05;
       intensity_gradients_->points [idx].gradient_x *= len;
       intensity_gradients_->points [idx].gradient_y *= len;
       intensity_gradients_->points [idx].gradient_z *= len;
@@ -232,14 +209,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
       intensity_gradients_->points [idx].gradient_z = 0;
     }
   }
-//  std::cout << "gradient length: " << sqrt(max_len) << std::endl;
 
-//  FastIntensityGradientEstimation<pcl::PointXYZI, pcl::IntensityGradient> gradient_estimation;
-//  gradient_estimation.setInputCloud (cloud);
-//  gradient_estimation.setInputCloud (cloud);
-//  gradient_estimation.setRadiusSearch (search_radius_);
-//  gradient_estimation.compute (*intensity_gradients_);
-  //start = pcl::getTime ();
   boost::shared_ptr<pcl::PointCloud<PointOutT> > response (new pcl::PointCloud<PointOutT> ());
   response->points.reserve (input_->points.size());
   responseTomasi(*response);
@@ -254,7 +224,9 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
     std::vector<int> nn_indices;
     std::vector<float> nn_dists;
 
-    //#pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(8)
+#ifdef HAVE_OPENMP
+  #pragma omp parallel for num_threads(threads_) default(shared) private (nn_indices, nn_dists)
+#endif  
     for (size_t idx = 0; idx < response->points.size (); ++idx)
     {
       if (!isFinite (response->points[idx]) || response->points[idx].intensity < threshold_)
@@ -270,7 +242,9 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
         }
       }
       if (is_maxima)
+#ifdef HAVE_OPENMP
         #pragma omp critical
+#endif
         output.points.push_back (response->points[idx]);
     }
     if (refine_)
@@ -293,7 +267,10 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
   std::vector<float> nn_dists;
   Eigen::SelfAdjointEigenSolver <Eigen::Matrix<float, 6, 6> > solver;
   Eigen::Matrix<float, 6, 6> covariance;
-  #pragma omp parallel for shared (output) private (pointOut, covar, covariance, nn_indices, nn_dists, solver)
+
+#ifdef HAVE_OPENMP
+  #pragma omp parallel for default (shared) private (pointOut, covar, covariance, nn_indices, nn_dists, solver) num_threads(threads_)
+#endif  
   for (unsigned pIdx = 0; pIdx < input_->size (); ++pIdx)
   {
     const PointInT& pointIn = input_->points [pIdx];
@@ -355,18 +332,16 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
 
         solver.compute (covariance);
         pointOut.intensity = solver.eigenvalues () [3];
-//        std::cout << "eigenvalues: \n" << solver.eigenvalues () [2] << " , "
-//                                       << solver.eigenvalues () [3] << " , "
-//                                       << solver.eigenvalues () [4] << std::endl;
-        //std::cout << "covariance matrix:\n" << covariance << std::endl;
-        //std::cout << "eigenvalues: \n" << solver.eigenvalues () << std::endl;
       }
     }
 
     pointOut.x = pointIn.x;
     pointOut.y = pointIn.y;
     pointOut.z = pointIn.z;
+#ifdef HAVE_OPENMP
     #pragma omp critical
+#endif
+
     output.points.push_back(pointOut);
   }
   output.height = input_->height;
