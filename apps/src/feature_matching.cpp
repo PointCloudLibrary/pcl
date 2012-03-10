@@ -388,7 +388,7 @@ void ICCVTutorial<FeatureType>::run()
 }
 
 template<typename FeatureType>
-void ICCVTutorial<FeatureType>::keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
+void ICCVTutorial<FeatureType>::keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
 {
   if (event.keyUp())
   {

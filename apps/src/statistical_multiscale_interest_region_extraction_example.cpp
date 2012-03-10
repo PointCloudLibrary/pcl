@@ -12,7 +12,7 @@ const float base_scale = 0.005;
 
 
 int
-main (int argc, char **argv)
+main (int, char **argv)
 {
   PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ> ());
 

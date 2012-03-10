@@ -219,7 +219,7 @@ namespace pcl
       private:
 
         int
-        check (pcl::PointXYZI & p1, pcl::PointXYZI & p2, float c_intensity, float max_dist)
+        check (pcl::PointXYZI & p1, pcl::PointXYZI & p2, float, float max_dist)
         {
           if (p1.intensity == 0) //new label
             return 1;

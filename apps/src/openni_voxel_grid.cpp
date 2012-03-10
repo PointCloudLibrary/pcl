@@ -70,7 +70,7 @@ class OpenNIVoxelGrid
     typedef typename Cloud::ConstPtr CloudConstPtr;
 
     OpenNIVoxelGrid (const std::string& device_id = "", 
-                     const std::string& field_name = "z", float min_v = 0, float max_v = 5.0,
+                     const std::string& = "z", float = 0, float = 5.0,
                      float leaf_size_x = 0.01, float leaf_size_y = 0.01, float leaf_size_z = 0.01)
     : viewer ("PCL OpenNI VoxelGrid Viewer")
     , device_id_(device_id)

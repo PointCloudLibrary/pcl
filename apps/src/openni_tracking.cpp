@@ -382,7 +382,7 @@ public:
   }
 
   void convexHull (const CloudConstPtr &cloud,
-                   Cloud &result,
+                   Cloud &,
                    std::vector<pcl::Vertices> &hull_vertices)
   {
     FPS_CALC_BEGIN;
