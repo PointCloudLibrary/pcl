@@ -86,12 +86,12 @@ pcl::PPFRGBRegionEstimation<PointInT, PointNT, PointOutT>::computeFeature (Point
 {
   PCL_INFO ("before computing output size: %u\n", output.size ());
   output.resize (indices_->size ());
-  for (size_t index_i = 0; index_i < indices_->size (); ++index_i)
+  for (int index_i = 0; index_i < static_cast<int> (indices_->size ()); ++index_i)
   {
     size_t i = (*indices_)[index_i];
     std::vector<int> nn_indices;
     std::vector<float> nn_distances;
-    tree_->radiusSearch (i, search_radius_, nn_indices, nn_distances);
+    tree_->radiusSearch (i, static_cast<float> (search_radius_), nn_indices, nn_distances);
 
     PointOutT average_feature_nn;
     average_feature_nn.alpha_m = 0;
@@ -124,7 +124,7 @@ pcl::PPFRGBRegionEstimation<PointInT, PointNT, PointOutT>::computeFeature (Point
       }
     }
 
-    float normalization_factor = nn_indices.size ();
+    float normalization_factor = static_cast<float> (nn_indices.size ());
     average_feature_nn.f1 /= normalization_factor;
     average_feature_nn.f2 /= normalization_factor;
     average_feature_nn.f3 /= normalization_factor;

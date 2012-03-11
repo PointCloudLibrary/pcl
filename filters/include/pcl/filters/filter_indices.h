@@ -74,9 +74,12 @@ namespace pcl
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
         */
       FilterIndices (bool extract_removed_indices = false) :
-          negative_ (false), keep_organized_ (false), extract_removed_indices_ (extract_removed_indices), user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
+          negative_ (false), 
+          keep_organized_ (false), 
+          extract_removed_indices_ (extract_removed_indices), 
+          user_filter_value_ (std::numeric_limits<float>::quiet_NaN ()),
+          removed_indices_ (new std::vector<int> ())
       {
-        removed_indices_ = boost::make_shared<std::vector<int> > ();
       }
 
       /** \brief Empty virtual destructor. */
@@ -207,9 +210,12 @@ namespace pcl
         * \param[in] extract_removed_indices Set to true if you want to extract the indices of points being removed (default = false).
         */
       FilterIndices (bool extract_removed_indices = false) :
-          negative_ (false), keep_organized_ (false), extract_removed_indices_ (extract_removed_indices), user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
+          negative_ (false), 
+          keep_organized_ (false), 
+          extract_removed_indices_ (extract_removed_indices), 
+          user_filter_value_ (std::numeric_limits<float>::quiet_NaN ()),
+          removed_indices_ (new std::vector<int>)
       {
-        removed_indices_ = boost::make_shared<std::vector<int> > ();
       }
 
       /** \brief Empty virtual destructor. */

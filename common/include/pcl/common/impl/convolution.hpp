@@ -41,7 +41,7 @@
 #define PCL_COMMON_CONVOLUTION_IMPL_HPP
 
 template <typename PointIn, typename PointOut> void
-pcl::common::AbstractConvolution<PointIn, PointOut>::initCompute (PointCloudOut& output)
+pcl::common::AbstractConvolution<PointIn, PointOut>::initCompute (PointCloudOut&)
 {
   if (borders_policy_ != IGNORE && borders_policy_ != MIRROR && borders_policy_ != DUPLICATE)
     PCL_THROW_EXCEPTION (InitFailedException,

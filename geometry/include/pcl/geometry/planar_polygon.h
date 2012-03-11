@@ -53,7 +53,7 @@ namespace pcl
   {
     public:
       /** \brief Empty constructor for PlanarPolygon */
-      PlanarPolygon ()
+      PlanarPolygon () : contour_ (), coefficients_ ()
       {}
       
       /** \brief Constructor for PlanarPolygon

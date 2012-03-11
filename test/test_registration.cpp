@@ -1,41 +1,41 @@
 /*
- * Software License Agreement (BSD License)
- *
- *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
- *
- *  All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
- *
- * $Id$
- *
- */
+* Software License Agreement (BSD License)
+*
+*  Point Cloud Library (PCL) - www.pointclouds.org
+*  Copyright (c) 2010-2011, Willow Garage, Inc.
+*
+*  All rights reserved.
+*
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions
+*  are met:
+*
+*   * Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
+*   * Redistributions in binary form must reproduce the above
+*     copyright notice, this list of conditions and the following
+*     disclaimer in the documentation and/or other materials provided
+*     with the distribution.
+*   * Neither the name of Willow Garage, Inc. nor the names of its
+*     contributors may be used to endorse or promote products derived
+*     from this software without specific prior written permission.
+*
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+*  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+*  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+*  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+*  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+*  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+*  POSSIBILITY OF SUCH DAMAGE.
+*
+* $Id$
+*
+*/
 
 #include <gtest/gtest.h>
 
@@ -93,9 +93,9 @@ TEST (PCL, findFeatureCorrespondences)
   feature0.height = feature1.height = feature2.height = feature3.height = 1;
   feature0.is_dense = feature1.is_dense = feature2.is_dense = feature3.is_dense = true;
 
-  for (float x = -5.0; x <= 5.0; x += 0.2)
+  for (float x = -5.0f; x <= 5.0f; x += 0.2f)
   {
-    for (float y = -5.0; y <= 5.0; y += 0.2)
+    for (float y = -5.0f; y <= 5.0f; y += 0.2f)
     {
       FeatureT f;
       f.histogram[0] = x;
@@ -103,15 +103,15 @@ TEST (PCL, findFeatureCorrespondences)
       feature0.points.push_back (f);
 
       f.histogram[0] = x;
-      f.histogram[1] = y - 2.5;
+      f.histogram[1] = y - 2.5f;
       feature1.points.push_back (f);
 
-      f.histogram[0] = x - 2.0;
-      f.histogram[1] = y + 1.5;
+      f.histogram[0] = x - 2.0f;
+      f.histogram[1] = y + 1.5f;
       feature2.points.push_back (f);
 
-      f.histogram[0] = x + 2.0;
-      f.histogram[1] = y + 1.5;
+      f.histogram[0] = x + 2.0f;
+      f.histogram[1] = y + 1.5f;
       feature3.points.push_back (f);
     }
   }
@@ -465,9 +465,9 @@ TEST (PCL, PyramidFeatureHistogram)
 
 
   vector<pair<float, float> > dim_range_input, dim_range_target;
-  for (size_t i = 0; i < 3; ++i) dim_range_input.push_back (pair<float, float> ((float) -M_PI, (float) M_PI));
+  for (size_t i = 0; i < 3; ++i) dim_range_input.push_back (pair<float, float> (static_cast<float> (-M_PI), static_cast<float> (M_PI)));
   dim_range_input.push_back (pair<float, float> (0.0f, 1.0f));
-  for (size_t i = 0; i < 3; ++i) dim_range_target.push_back (pair<float, float> ((float) -M_PI * 10.0f, (float) M_PI * 10.0f));
+  for (size_t i = 0; i < 3; ++i) dim_range_target.push_back (pair<float, float> (static_cast<float> (-M_PI) * 10.0f, static_cast<float> (M_PI) * 10.0f));
   dim_range_target.push_back (pair<float, float> (0.0f, 50.0f));
 
 
@@ -487,7 +487,7 @@ TEST (PCL, PyramidFeatureHistogram)
   EXPECT_NEAR (similarity_value, 0.74101555347442627, 1e-4);
 
   vector<pair<float, float> > dim_range_target2;
-  for (size_t i = 0; i < 3; ++i) dim_range_target2.push_back (pair<float, float> ((float) -M_PI * 5.0f, (float) M_PI * 5.0f));
+  for (size_t i = 0; i < 3; ++i) dim_range_target2.push_back (pair<float, float> (static_cast<float> (-M_PI) * 5.0f, static_cast<float> (M_PI) * 5.0f));
     dim_range_target2.push_back (pair<float, float> (0.0f, 20.0f));
 
   pyramid_source->setTargetDimensionRange (dim_range_target2);
@@ -501,7 +501,7 @@ TEST (PCL, PyramidFeatureHistogram)
 
 
   vector<pair<float, float> > dim_range_target3;
-  for (size_t i = 0; i < 3; ++i) dim_range_target3.push_back (pair<float, float> ((float) -M_PI * 2.0f, (float) M_PI * 2.0f));
+  for (size_t i = 0; i < 3; ++i) dim_range_target3.push_back (pair<float, float> (static_cast<float> (-M_PI) * 2.0f, static_cast<float> (M_PI) * 2.0f));
   dim_range_target3.push_back (pair<float, float> (0.0f, 10.0f));
 
   pyramid_source->setTargetDimensionRange (dim_range_target3);
