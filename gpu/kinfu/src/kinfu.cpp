@@ -300,8 +300,8 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
         Mat33&  device_Rcurr = device_cast<Mat33> (Rcurr);
         float3& device_tcurr = device_cast<float3>(tcurr);
 
-        Eigen::Matrix<float, 6, 6, Eigen::RowMajor> A;
-        Eigen::Matrix<float, 6, 1> b;
+        Eigen::Matrix<double, 6, 6, Eigen::RowMajor> A;
+        Eigen::Matrix<double, 6, 1> b;
 #if 0
         device::tranformMaps(vmap_curr, nmap_curr, device_Rcurr, device_tcurr, vmap_g_curr, nmap_g_curr);
         findCoresp(vmap_g_curr, nmap_g_curr, device_Rprev_inv, device_tprev, intr(level_index), vmap_g_prev, nmap_g_prev, distThres_, angleThres_, coresp);
@@ -316,18 +316,18 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
                           vmap_g_prev, nmap_g_prev, distThres_, angleThres_, gbuf_, sumbuf_, A.data (), b.data ());
 #endif
         //checking nullspace
-        float det = A.determinant ();
+        double det = A.determinant ();
 
-        if (fabs (det) < 1e-15 || !pcl::device::valid_host (det))
+		if (fabs (det) < 1e-15 || pcl_isnan (det))
         {
-          if (!valid_host (det)) cout << "qnan" << endl;
+          if (pcl_isnan (det)) cout << "qnan" << endl;
 
           reset ();
           return (false);
         }
         //float maxc = A.maxCoeff();
 
-        Eigen::Matrix<float, 6, 1> result = A.llt ().solve (b);
+        Eigen::Matrix<float, 6, 1> result = A.llt ().solve (b).cast<float>();
         //Eigen::Matrix<float, 6, 1> result = A.jacobiSvd(ComputeThinU | ComputeThinV).solve(b);
 
         float alpha = result (0);
@@ -350,7 +350,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
   ///////////////////////////////////////////////////////////////////////////////////////////
   // Integration check - We do not integrate volume if camera does not move.  
   float rnorm = rodrigues2(Rcurr.inverse() * Rprev).norm();
-  float tnorm = (tcurr - tprev).norm();
+  float tnorm = (tcurr - tprev).norm();  
   const float alpha = 1.f;
   bool integrate = (rnorm + alpha * tnorm)/2 >= integration_metric_threshold_;  
 

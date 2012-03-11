@@ -43,6 +43,8 @@ namespace pcl
 {
   namespace device
   {
+    typedef double float_type;
+
     struct Combined
     {
       enum
@@ -55,7 +57,7 @@ namespace pcl
       struct plus
       {
         __forceinline__ __device__ float
-        operator () (const float &lhs, const volatile float& rhs) const 
+        operator () (const float_type &lhs, const volatile float_type& rhs) const 
         {
           return (lhs + rhs);
         }
@@ -81,7 +83,7 @@ namespace pcl
       int cols;
       int rows;
 
-      mutable PtrStep<float> gbuf;
+      mutable PtrStep<float_type> gbuf;
 
       __device__ __forceinline__ bool
       search (int x, int y, float3& n, float3& d, float3& s) const
@@ -164,13 +166,13 @@ namespace pcl
         else
           row[0] = row[1] = row[2] = row[3] = row[4] = row[5] = row[6] = 0.f;
 
-        __shared__ float smem[CTA_SIZE];
+        __shared__ float_type smem[CTA_SIZE];
         int tid = Block::flattenedThreadId ();
 
         int shift = 0;
         for (int i = 0; i < 6; ++i)        //rows
         {
-                    #pragma unroll
+          #pragma unroll
           for (int j = i; j < 7; ++j)          // cols + b
           {
             __syncthreads ();
@@ -206,37 +208,28 @@ namespace pcl
         GRID_X = TOTAL
       };
 
-      struct plus
-      {
-        __forceinline__ __device__ float
-        operator () (const float &lhs, const volatile float& rhs) const 
-        {
-          return lhs + rhs;
-        }
-      };
-
-      PtrStep<float> gbuf;
+      PtrStep<float_type> gbuf;
       int length;
-      mutable float* output;
+      mutable float_type* output;
 
       __device__ __forceinline__ void
       operator () () const
       {
-        const float *beg = gbuf.ptr (blockIdx.x);
-        const float *end = beg + length;
+        const float_type *beg = gbuf.ptr (blockIdx.x);
+        const float_type *end = beg + length;
 
         int tid = threadIdx.x;
 
-        float sum = 0.f;
-        for (const float *t = beg + tid; t < end; t += STRIDE)
+        float_type sum = 0.f;
+        for (const float_type *t = beg + tid; t < end; t += STRIDE)
           sum += *t;
 
-        __shared__ float smem[CTA_SIZE];
+        __shared__ float_type smem[CTA_SIZE];
 
         smem[tid] = sum;
         __syncthreads ();
 
-        Block::reduce<CTA_SIZE>(smem, plus ());
+		Block::reduce<CTA_SIZE>(smem, Combined::plus ());
 
         if (tid == 0)
           output[blockIdx.x] = smem[0];
@@ -259,8 +252,8 @@ pcl::device::estimateCombined (const Mat33& Rcurr, const float3& tcurr,
                                const Mat33& Rprev_inv, const float3& tprev, const Intr& intr,
                                const MapArr& vmap_g_prev, const MapArr& nmap_g_prev, 
                                float distThres, float angleThres,
-                               DeviceArray2D<float>& gbuf, DeviceArray<float>& mbuf, 
-                               float* matrixA_host, float* vectorB_host)
+                               DeviceArray2D<float_type>& gbuf, DeviceArray<float_type>& mbuf, 
+                               float_type* matrixA_host, float_type* vectorB_host)
 {
   int cols = vmap_curr.cols ();
   int rows = vmap_curr.rows () / 3;
@@ -315,14 +308,14 @@ pcl::device::estimateCombined (const Mat33& Rcurr, const float3& tcurr,
   cudaSafeCall (cudaGetLastError ());
   cudaSafeCall (cudaDeviceSynchronize ());
 
-  float host_data[TranformReduction::TOTAL];
+  float_type host_data[TranformReduction::TOTAL];
   mbuf.download (host_data);
 
   int shift = 0;
   for (int i = 0; i < 6; ++i)  //rows
     for (int j = i; j < 7; ++j)    // cols + b
     {
-      float value = host_data[shift++];
+      float_type value = host_data[shift++];
       if (j == 6)       // vector b
         vectorB_host[i] = value;
       else
