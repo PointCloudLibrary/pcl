@@ -40,7 +40,7 @@ The code
 --------
 
 First, download the dataset `table_scene_lms400.pcd
-<http://dev.pointclouds.org/attachments/download/157/table_scene_lms400.pcd>`_
+<http://svn.pointclouds.org/data/tutorials/table_scene_lms400.pcd>`_
 and save it somewhere to disk.
 
 Then, create a file, let's say, ``statistical_removal.cpp`` in your favorite
