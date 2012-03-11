@@ -105,6 +105,7 @@ if(build)
         src/marching_cubes.cpp
         src/marching_cubes_greedy.cpp
         src/marching_cubes_greedy_dot.cpp
+        src/bilateral_upsampling.cpp
         src/mls.cpp
         src/mls_omp.cpp
         src/organized_fast_mesh.cpp
@@ -124,6 +125,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/marching_cubes.h
         include/pcl/${SUBSYS_NAME}/marching_cubes_greedy.h
         include/pcl/${SUBSYS_NAME}/marching_cubes_greedy_dot.h
+        include/pcl/${SUBSYS_NAME}/bilateral_upsampling.h
         include/pcl/${SUBSYS_NAME}/mls.h
         include/pcl/${SUBSYS_NAME}/mls_omp.h
         include/pcl/${SUBSYS_NAME}/organized_fast_mesh.h
@@ -144,6 +146,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes.hpp
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes_greedy.hpp
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes_greedy_dot.hpp
+        include/pcl/${SUBSYS_NAME}/impl/bilateral_upsampling.hpp
         include/pcl/${SUBSYS_NAME}/impl/mls.hpp
         include/pcl/${SUBSYS_NAME}/impl/mls_omp.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_fast_mesh.hpp

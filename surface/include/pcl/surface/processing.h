@@ -59,6 +59,8 @@ namespace pcl
     public:
       using PCLBase<PointInT>::input_;
       using PCLBase<PointInT>::indices_;
+      using PCLBase<PointInT>::initCompute;
+      using PCLBase<PointInT>::deinitCompute;
 
     public:
       /** \brief Constructor. */
@@ -68,7 +70,7 @@ namespace pcl
       /** \brief Process the input cloud and store the results
         * \param[out] output the cloud where the results will be stored
         */
-      void
+      virtual void
       process (pcl::PointCloud<PointOutT> &output);
 
     protected:
@@ -130,6 +132,8 @@ namespace pcl
       pcl::PolygonMeshConstPtr input_mesh_;
   };
 }
+
+#include "pcl/surface/impl/processing.hpp"
 
 #endif  /* PCL_MESH_PROCESSING_H_ */
 

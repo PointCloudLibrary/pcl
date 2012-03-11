@@ -11,7 +11,7 @@
  * are met:
  *
  * * Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
+ * notice, this list of conditions and the following disclaimer.
  * * Redistributions in binary form must reproduce the above
  *   copyright notice, this list of conditions and the following
  *   disclaimer in the documentation and/or other materials provided
@@ -38,22 +38,12 @@
  */
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointOutT> void
-pcl::CloudSurfaceProcessing<PointInT, PointOutT>::process (pcl::PointCloud<PointOutT> &output)
-{
-  // Copy the header
-  output.header = input_->header;
+#include "pcl/impl/instantiate.hpp"
+#include "pcl/point_types.h"
+#include "pcl/surface/bilateral_upsampling.h"
+#include "pcl/surface/impl/bilateral_upsampling.hpp"
 
-  if (!initCompute ())
-  {
-    output.width = output.height = 0;
-    output.points.clear ();
-    return;
-  }
 
-  // Perform the actual surface reconstruction
-  performProcessing (output);
-
-  deinitCompute ();
-}
+// Instantiations of specific point types
+PCL_INSTANTIATE_PRODUCT(BilateralUpsampling, ((pcl::PointXYZRGB)(pcl::PointXYZRGBA))
+                                             ((pcl::PointXYZRGB)(pcl::PointXYZRGBA)))
