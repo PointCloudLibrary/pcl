@@ -350,8 +350,10 @@ pcl::FeatureWithLocalReferenceFrames<PointInT, PointRFT>::initLocalReferenceFram
       return (false);
     } else
     {
-      PCL_WARN ("[initLocalReferenceFrames] No input dataset containing reference frames was given! Default computation with %s\n", lrf_estimation->getClassName ());
-      lrf_estimation->compute (*frames_);
+      PCL_WARN ("[initLocalReferenceFrames] No input dataset containing reference frames was given! Proceed using default\n");
+      PointCloudLRFPtr default_frames (new PointCloudLRF());
+      lrf_estimation->compute (*default_frames);
+      frames_ = default_frames;
     }
   }
 
@@ -364,8 +366,10 @@ pcl::FeatureWithLocalReferenceFrames<PointInT, PointRFT>::initLocalReferenceFram
       return (false);
     } else
     {
-      PCL_WARN ("[initLocalReferenceFrames] The number of points in the input dataset differs from the number of points in the dataset containing the reference frames! Default computation with %s\n", lrf_estimation->getClassName ());
-      lrf_estimation->compute (*frames_);
+      PCL_WARN ("[initLocalReferenceFrames] The number of points in the input dataset differs from the number of points in the dataset containing the reference frames! Proceed using default\n");
+      PointCloudLRFPtr default_frames (new PointCloudLRF());
+      lrf_estimation->compute (*default_frames);
+      frames_ = default_frames;
     }
   }
 
