@@ -9,8 +9,8 @@ The code
 --------
 
 First, download the datasets `room_scan1.pcd
-<http://dev.pointclouds.org/attachments/download/801/room_scan1.pcd>`_ and `room_scan2.pcd
-<http://dev.pointclouds.org/attachments/download/802/room_scan2.pcd>`_ and save them to your disk.  These point clouds contain 360 degree scans of the same room from different perspectives.
+<http://svn.pointclouds.org/data/tutorials/room_scan1.pcd>`_ and `room_scan2.pcd
+<http://svn.pointclouds.org/data/tutorials/room_scan2.pcd>`_ and save them to your disk.  These point clouds contain 360 degree scans of the same room from different perspectives.
 
 Then, create a file in your favorite editor and place the following inside.  I used ``normal_distributions_transform.cpp`` for this tutorial.
 
