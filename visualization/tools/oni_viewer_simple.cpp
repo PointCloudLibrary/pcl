@@ -80,6 +80,8 @@ public:
   SimpleONIViewer(pcl::ONIGrabber& grabber)
     : viewer("PCL OpenNI Viewer")
     , grabber_(grabber)
+    , mtx_ ()
+    , cloud_ ()
   {
   }
 
@@ -187,7 +189,7 @@ main(int argc, char ** argv)
   else
   {
     grabber = new  pcl::ONIGrabber(arg, true, false);
-    trigger.setInterval (1.0 / (double) frame_rate);
+    trigger.setInterval (1.0 / static_cast<double> (frame_rate));
     trigger.registerCallback (boost::bind(&pcl::ONIGrabber::start, grabber));
     trigger.start();
   }
