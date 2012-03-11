@@ -78,7 +78,7 @@ int
 pcl::visualization::PointPickingCallback::performSinglePick (vtkRenderWindowInteractor *iren)
 {
   int mouse_x, mouse_y;
-  vtkPointPicker *picker = (vtkPointPicker*)iren->GetPicker ();
+  vtkPointPicker *picker = reinterpret_cast<vtkPointPicker*> (iren->GetPicker ());
   //iren->GetMousePosition (&mouse_x, &mouse_y);
   mouse_x = iren->GetEventPosition ()[0];
   mouse_y = iren->GetEventPosition ()[1];
