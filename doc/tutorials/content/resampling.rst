@@ -8,6 +8,7 @@ method can be used to smooth and resample noisy data. Please see an example in
 the video below:
 
 .. raw:: html
+
    <iframe title="Smoothing and normal estimation based on polynomial reconstruction" width="480" height="390" src="http://www.youtube.com/embed/FqHroDuo_I8?rel=0" frameborder="0" allowfullscreen></iframe>
 
 
@@ -38,6 +39,7 @@ To approximate the surface defined by a local neighborhood of points
 defined on a on a robustly computed reference plane. 
 
 .. raw:: html
+
    <iframe title="Removing noisy data through resampling" width="480" height="390" src="http://www.youtube.com/embed/N5AgC0KEcw0?rel=0" frameborder="0" allowfullscreen></iframe>
 
 The code

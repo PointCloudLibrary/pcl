@@ -10,7 +10,7 @@ to incrementally register a series of point clouds two by two.
 | This is done by finding the best transform between each consecutive cloud, and accumulating these transforms over the whole set of clouds.
 
 | Your data set should consist of clouds that have been roughly pre-aligned in a common frame (e.g. in a robot's odometry or map frame) and overlap with one another.
-| We provide a set of clouds at `pairwise_incremental_registration_tutorial_data.tar.gz <http://dev.pointclouds.org/attachments/download/742/pairwise_incremental_registration_tutorial_data.tar.gz>`_.
+| We provide a set of clouds at `svn.pointclouds.org/data/tutorials/pairwise/ <http://svn.pointclouds.org/data/tutorials/pairwise/>`_.
 
 
 The code
@@ -185,7 +185,8 @@ is usefull only on 32-bit systems, that would (sometimes) trigger the following 
 
 
 
-Copy the files from `pairwise_incremental_registration_tutorial_data.tar.gz <http://dev.pointclouds.org/attachments/download/742/pairwise_incremental_registration_tutorial_data.tar.gz>`_  in your working folder.
+Copy the files from `svn.pointclouds.org/data/tutorials/pairwise
+<http://svn.pointclouds.org/data/tutorials/pairwise/>`_ in your working folder.
   
 
 After you have made the executable (cmake ., make), you can run it. Simply do::

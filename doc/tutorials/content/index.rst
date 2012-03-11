@@ -130,7 +130,7 @@ Basic Usage
   * :ref:`installing_homebrew`
 
      ======  ======
-     |mi_5|  Title: **Installing on Mac OS X using Homebrew**
+     |mi_6|  Title: **Installing on Mac OS X using Homebrew**
 
              Author: *Geoffrey Biggs*
 
@@ -139,7 +139,7 @@ Basic Usage
              This tutorial explains how to install the Point Cloud Library on Mac OS X using Homebrew. Both direct installation and compiling PCL from source are explained.
      ======  ======
 
-     .. |mi_5| image:: images/macosx_logo.png
+     .. |mi_6| image:: images/macosx_logo.png
                :height: 100px
 
 .. _advanced_usage:
