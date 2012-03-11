@@ -166,9 +166,9 @@ pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::ge
         continue;
 
       int rgb = *reinterpret_cast<int*>(&rgb_data);
-      colors[j * 3 + 0] = ((rgb >> 16) & 0xff);
-      colors[j * 3 + 1] = ((rgb >> 8) & 0xff);
-      colors[j * 3 + 2] = (rgb & 0xff);
+      colors[j * 3 + 0] = static_cast<unsigned char> ((rgb >> 16) & 0xff);
+      colors[j * 3 + 1] = static_cast<unsigned char> ((rgb >> 8) & 0xff);
+      colors[j * 3 + 2] = static_cast<unsigned char> (rgb & 0xff);
       j++;
     }
   }
@@ -185,9 +185,9 @@ pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::ge
         continue;
 
       int rgb = *reinterpret_cast<int*>(&rgb_data);
-      colors[j * 3 + 0] = ((rgb >> 16) & 0xff);
-      colors[j * 3 + 1] = ((rgb >> 8) & 0xff);
-      colors[j * 3 + 2] = (rgb & 0xff);
+      colors[j * 3 + 0] = static_cast<unsigned char> ((rgb >> 16) & 0xff);
+      colors[j * 3 + 1] = static_cast<unsigned char> ((rgb >> 8) & 0xff);
+      colors[j * 3 + 2] = static_cast<unsigned char> (rgb & 0xff);
       j++;
     }
   }
@@ -198,7 +198,8 @@ pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::ge
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>::PointCloudColorHandlerHSVField (
     const pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudConstPtr &cloud) : 
-  pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudColorHandler (cloud)
+  pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudColorHandler (cloud),
+  s_field_idx_ (-1), v_field_idx_ (-1)
 {
   // Check for the presence of the "H" field
   field_idx_ = pcl::getFieldIndex (*cloud, "h");
@@ -294,17 +295,47 @@ pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>::ge
       switch (i) 
       {
         case 0:
-          colors[idx] = v_data; colors[idx+1] = t; colors[idx+2] = p; break;
+        {
+          colors[idx]   = static_cast<unsigned char> (v_data);
+          colors[idx+1] = static_cast<unsigned char> (t);
+          colors[idx+2] = static_cast<unsigned char> (p);
+          break;
+        }
         case 1:
-          colors[idx] = q; colors[idx+1] = v_data; colors[idx+2] = p; break;
+        {
+          colors[idx]   = static_cast<unsigned char> (q);
+          colors[idx+1] = static_cast<unsigned char> (v_data);
+          colors[idx+2] = static_cast<unsigned char> (p);
+          break;
+        }
         case 2:
-          colors[idx] = p; colors[idx+1] = v_data; colors[idx+2] = t; break;
+        {
+          colors[idx]   = static_cast<unsigned char> (p);
+          colors[idx+1] = static_cast<unsigned char> (v_data);
+          colors[idx+2] = static_cast<unsigned char> (t);
+          break;
+        }
         case 3:
-          colors[idx] = p; colors[idx+1] = q; colors[idx+2] = v_data; break;
+        {
+          colors[idx]   = static_cast<unsigned char> (p);
+          colors[idx+1] = static_cast<unsigned char> (q);
+          colors[idx+2] = static_cast<unsigned char> (v_data);
+          break;
+        }
         case 4:
-          colors[idx] = t; colors[idx+1] = p; colors[idx+2] = v_data; break;
+        {
+          colors[idx]   = static_cast<unsigned char> (t);
+          colors[idx+1] = static_cast<unsigned char> (p);
+          colors[idx+2] = static_cast<unsigned char> (v_data);
+          break;
+        }
         default:
-          colors[idx] = v_data; colors[idx+1] = p; colors[idx+2] = q; break;
+        {
+          colors[idx]   = static_cast<unsigned char> (v_data);
+          colors[idx+1] = static_cast<unsigned char> (p);
+          colors[idx+2] = static_cast<unsigned char> (q);
+          break;
+        }
       }
       j++;
     }
@@ -340,17 +371,47 @@ pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>::ge
       switch (i) 
       {
         case 0:
-          colors[idx] = v_data; colors[idx+1] = t; colors[idx+2] = p; break;
+        {
+          colors[idx]   = static_cast<unsigned char> (v_data);
+          colors[idx+1] = static_cast<unsigned char> (t);
+          colors[idx+2] = static_cast<unsigned char> (p);
+          break;
+        }
         case 1:
-          colors[idx] = q; colors[idx+1] = v_data; colors[idx+2] = p; break;
+        {
+          colors[idx]   = static_cast<unsigned char> (q);
+          colors[idx+1] = static_cast<unsigned char> (v_data);
+          colors[idx+2] = static_cast<unsigned char> (p);
+          break;
+        }
         case 2:
-          colors[idx] = p; colors[idx+1] = v_data; colors[idx+2] = t; break;
+        {
+          colors[idx]   = static_cast<unsigned char> (p);
+          colors[idx+1] = static_cast<unsigned char> (v_data);
+          colors[idx+2] = static_cast<unsigned char> (t);
+          break;
+        }
         case 3:
-          colors[idx] = p; colors[idx+1] = q; colors[idx+2] = v_data; break;
+        {
+          colors[idx]   = static_cast<unsigned char> (p);
+          colors[idx+1] = static_cast<unsigned char> (q);
+          colors[idx+2] = static_cast<unsigned char> (v_data);
+          break;
+        }
         case 4:
-          colors[idx] = t; colors[idx+1] = p; colors[idx+2] = v_data; break;
+        {
+          colors[idx]   = static_cast<unsigned char> (t);
+          colors[idx+1] = static_cast<unsigned char> (p);
+          colors[idx+2] = static_cast<unsigned char> (v_data);
+          break;
+        }
         default:
-          colors[idx] = v_data; colors[idx+1] = p; colors[idx+2] = q; break;
+        {
+          colors[idx]   = static_cast<unsigned char> (v_data);
+          colors[idx+1] = static_cast<unsigned char> (p);
+          colors[idx+2] = static_cast<unsigned char> (q);
+          break;
+        }
       }
       j++;
     }
@@ -362,9 +423,10 @@ pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>::ge
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>::PointCloudColorHandlerGenericField (
     const pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudConstPtr &cloud, 
-    const std::string &field_name) : pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudColorHandler (cloud)
+    const std::string &field_name) : 
+  pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudColorHandler (cloud),
+  field_name_ (field_name)
 {
-  field_name_ = field_name;
   field_idx_  = pcl::getFieldIndex (*cloud, field_name);
   if (field_idx_ != -1)
     capable_ = true;
