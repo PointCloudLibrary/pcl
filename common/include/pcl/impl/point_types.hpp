@@ -985,9 +985,16 @@ namespace pcl
     */
   struct EIGEN_ALIGN16 _ReferenceFrame
   {
-    _Axis x_axis;
-    _Axis y_axis;
-    _Axis z_axis;
+    union
+    {
+      struct
+      {
+        _Axis x_axis;
+        _Axis y_axis;
+        _Axis z_axis;
+      };
+      float rf[12];
+    };
     //union
     //{
       //struct
@@ -1003,9 +1010,12 @@ namespace pcl
   struct EIGEN_ALIGN16 ReferenceFrame : public _ReferenceFrame
   {
     ReferenceFrame ()
-    { /*confidence = 0.;*/ }
+    {
+      x_axis = y_axis = z_axis = Axis();
+      //confidence = 0.;
+    }
 
-    ReferenceFrame (_Axis const &x, _Axis const &y, _Axis const &z/*, float c = 1.0*/)
+    ReferenceFrame (Axis const &x, Axis const &y, Axis const &z/*, float c = 1.0*/)
     {
       x_axis = x;
       y_axis = y;
