@@ -49,7 +49,7 @@
 // be able to fix them anyway
 #ifdef BUILD_Maintainer
 #  if defined __GNUC__
-#    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#    if __GNUC_PREREQ(4, 3)
 #      pragma GCC diagnostic ignored "-Weffc++"
 #      pragma GCC diagnostic ignored "-pedantic"
 #    else
@@ -211,7 +211,7 @@ namespace pcl
         exists_ = true;
         typedef typename pcl::traits::datatype<PointInT, Key>::type T;
         const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&pt_) + pcl::traits::offset<PointInT, Key>::value;
-        value_ = *reinterpret_cast<const T*>(data_ptr);
+        value_ = static_cast<OutT> (*reinterpret_cast<const T*>(data_ptr));
       }
     }
 
@@ -250,7 +250,7 @@ namespace pcl
       {
         typedef typename pcl::traits::datatype<PointOutT, Key>::type T;
         uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&pt_) + pcl::traits::offset<PointOutT, Key>::value;
-        *reinterpret_cast<T*>(data_ptr) = value_;
+        *reinterpret_cast<T*>(data_ptr) = static_cast<T> (value_);
       }
     }
 
@@ -263,7 +263,7 @@ namespace pcl
 
 #ifdef BUILD_Maintainer
 #  if defined __GNUC__
-#    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#    if __GNUC_PREREQ(4, 3)
 #      pragma GCC diagnostic warning "-Weffc++"
 #      pragma GCC diagnostic warning "-pedantic"
 #    endif

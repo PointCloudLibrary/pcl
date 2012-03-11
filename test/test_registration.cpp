@@ -67,7 +67,7 @@ template <typename PointSource, typename PointTarget>
 class RegistrationWrapper : public Registration<PointSource, PointTarget>
 {
 public:
-  void computeTransformation (pcl::PointCloud<PointSource> &foo, const Eigen::Matrix4f& guess) { }
+  void computeTransformation (pcl::PointCloud<PointSource> &, const Eigen::Matrix4f& ) { }
 
   bool hasValidFeaturesTest ()
   {
@@ -92,9 +92,9 @@ TEST (PCL, findFeatureCorrespondences)
   feature0.height = feature1.height = feature2.height = feature3.height = 1;
   feature0.is_dense = feature1.is_dense = feature2.is_dense = feature3.is_dense = true;
 
-  for (float x = -5.0; x <= 5.0; x += 0.2)
+  for (float x = -5.0f; x <= 5.0f; x += 0.2f)
   {
-    for (float y = -5.0; y <= 5.0; y += 0.2)
+    for (float y = -5.0f; y <= 5.0f; y += 0.2f)
     {
       FeatureT f;
       f.histogram[0] = x;
@@ -102,15 +102,15 @@ TEST (PCL, findFeatureCorrespondences)
       feature0.points.push_back (f);
 
       f.histogram[0] = x;
-      f.histogram[1] = y - 2.5;
+      f.histogram[1] = y - 2.5f;
       feature1.points.push_back (f);
 
-      f.histogram[0] = x - 2.0;
-      f.histogram[1] = y + 1.5;
+      f.histogram[0] = x - 2.0f;
+      f.histogram[1] = y + 1.5f;
       feature2.points.push_back (f);
 
-      f.histogram[0] = x + 2.0;
-      f.histogram[1] = y + 1.5;
+      f.histogram[0] = x + 2.0f;
+      f.histogram[1] = y + 1.5f;
       feature3.points.push_back (f);
     }
   }
@@ -438,9 +438,9 @@ TEST (PCL, PyramidFeatureHistogram)
 
 
   vector<pair<float, float> > dim_range_input, dim_range_target;
-  for (size_t i = 0; i < 3; ++i) dim_range_input.push_back (pair<float, float> ((float) -M_PI, (float) M_PI));
+  for (size_t i = 0; i < 3; ++i) dim_range_input.push_back (pair<float, float> (static_cast<float> (-M_PI), static_cast<float> (M_PI)));
   dim_range_input.push_back (pair<float, float> (0.0f, 1.0f));
-  for (size_t i = 0; i < 3; ++i) dim_range_target.push_back (pair<float, float> ((float) -M_PI * 10.0f, (float) M_PI * 10.0f));
+  for (size_t i = 0; i < 3; ++i) dim_range_target.push_back (pair<float, float> (static_cast<float> (-M_PI) * 10.0f, static_cast<float> (M_PI) * 10.0f));
   dim_range_target.push_back (pair<float, float> (0.0f, 50.0f));
 
 
@@ -460,7 +460,7 @@ TEST (PCL, PyramidFeatureHistogram)
   EXPECT_NEAR (similarity_value, 0.74101555347442627, 1e-4);
 
   vector<pair<float, float> > dim_range_target2;
-  for (size_t i = 0; i < 3; ++i) dim_range_target2.push_back (pair<float, float> ((float) -M_PI * 5.0f, (float) M_PI * 5.0f));
+  for (size_t i = 0; i < 3; ++i) dim_range_target2.push_back (pair<float, float> (static_cast<float> (-M_PI) * 5.0f, static_cast<float> (M_PI) * 5.0f));
     dim_range_target2.push_back (pair<float, float> (0.0f, 20.0f));
 
   pyramid_source->setTargetDimensionRange (dim_range_target2);
@@ -474,7 +474,7 @@ TEST (PCL, PyramidFeatureHistogram)
 
 
   vector<pair<float, float> > dim_range_target3;
-  for (size_t i = 0; i < 3; ++i) dim_range_target3.push_back (pair<float, float> ((float) -M_PI * 2.0f, (float) M_PI * 2.0f));
+  for (size_t i = 0; i < 3; ++i) dim_range_target3.push_back (pair<float, float> (static_cast<float> (-M_PI) * 2.0f, static_cast<float> (M_PI) * 2.0f));
   dim_range_target3.push_back (pair<float, float> (0.0f, 10.0f));
 
   pyramid_source->setTargetDimensionRange (dim_range_target3);

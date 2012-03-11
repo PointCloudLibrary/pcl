@@ -45,7 +45,7 @@
 #include <pcl/filters/extract_indices.h>
 
 int
-main (int argc, char** argv)
+main (int, char**)
 {
   typedef pcl::PointXYZ PointType;
   typedef pcl::PointCloud<PointType> CloudType;

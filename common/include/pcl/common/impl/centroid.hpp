@@ -587,7 +587,8 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   accu /= static_cast<float> (point_count);
   if (point_count != 0)
   {
-    centroid.head<3> () = accu.tail<3> ();
+    //centroid.head<3> () = accu.tail<3> ();    -- does not compile with Clang 3.0
+    centroid[0] = accu[6]; centroid[1] = accu[7]; centroid[2] = accu[8];
     centroid[3] = 0;
     covariance_matrix.coeffRef (0) = accu [0] - accu [6] * accu [6];
     covariance_matrix.coeffRef (1) = accu [1] - accu [6] * accu [7];
@@ -651,8 +652,10 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   }
 
   accu /= static_cast<float> (point_count);
-  Eigen::Vector3f vec = accu.tail<3> ();
-  centroid.head<3> () = vec;//= accu.tail<3> ();
+  //Eigen::Vector3f vec = accu.tail<3> ();
+  //centroid.head<3> () = vec;//= accu.tail<3> ();
+  //centroid.head<3> () = accu.tail<3> ();    -- does not compile with Clang 3.0
+  centroid[0] = accu[6]; centroid[1] = accu[7]; centroid[2] = accu[8];
   centroid[3] = 0;
   covariance_matrix.coeffRef (0) = accu [0] - accu [6] * accu [6];
   covariance_matrix.coeffRef (1) = accu [1] - accu [6] * accu [7];

@@ -47,7 +47,7 @@
 #include <pcl/filters/filter.h>
 
 int
-main (int argc, char** argv)
+main (int, char**)
 {
   typedef pcl::PointCloud<pcl::PointXYZ> CloudType;
   CloudType::Ptr cloud (new CloudType);
