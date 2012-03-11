@@ -36,8 +36,8 @@ which parts of PCL are installed.
 .. note::
 
    The PCL formula is currently in development. It will be submitted to
-   Homebrew shortly. Until then, you can download it 
-   `here <http://dev.pointclouds.org/attachments/download/604/pcl.rb>`_. To prepare it,
+   Homebrew shortly. Until then, you can download it from
+   `PCL.RB <http://dev.pointclouds.org/attachments/download/604/pcl.rb>`_. To prepare it,
    follow these steps:
 
 
@@ -200,7 +200,7 @@ Install VTK
 '''''''''''
 
 To install VTK with X11 support, you need a modified Homebrew formula for VTK. Please
-download it from `here <http://dev.pointclouds.org/attachments/600/vtk.rb>`_.
+download it from `VTK.RB <http://dev.pointclouds.org/attachments/600/vtk.rb>`_.
 
 ::
 

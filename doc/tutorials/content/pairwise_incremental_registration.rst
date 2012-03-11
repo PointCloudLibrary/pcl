@@ -1,7 +1,7 @@
 .. _pairwise_incremental_registration:
 
 How to incrementally register pairs of clouds
---------------------------------------------
+---------------------------------------------
 
 This document demonstrates using the Iterative Closest Point algorithm in order
 to incrementally register a series of point clouds two by two.

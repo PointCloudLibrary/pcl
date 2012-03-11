@@ -65,14 +65,13 @@ Subversion is a version control system similar to CVS which allows developers to
 The download operation of the most recent source from the main development line, known as trunk, is called `checkout`.
 
 .. note::
-	
-	In this tutorial, we will build the svn trunk of PCL. If you want, you can build a PCL branch instead. 
+    In this tutorial, we will build the svn trunk of PCL. If you want, you can build a PCL branch instead. 
     You can also build an official release using the source archive from http://pointclouds.org/downloads/.	
-	You can grab PCL branches using Tortoise SVN from :
-	
-	- pcl-1.x branch from http://svn.pointclouds.org/pcl/branches/pcl-1.x
-	
-	- pcl-1.3.x branch from http://svn.pointclouds.org/pcl/branches/pcl-1.3.x
+    You can grab PCL branches using Tortoise SVN from :
+    
+    - pcl-1.x branch from http://svn.pointclouds.org/pcl/branches/pcl-1.x
+    
+    - pcl-1.3.x branch from http://svn.pointclouds.org/pcl/branches/pcl-1.3.x
 
 First create a folder that will holds PCL source code and binaries. In the remaining of this tutorial we will be using C:\\PCL.
 To checkout PCL source code, navigate to the C:\\PCL folder using Windows file manager. Then right click and choose
