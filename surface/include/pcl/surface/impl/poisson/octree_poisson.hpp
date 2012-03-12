@@ -63,9 +63,9 @@ namespace pcl
     template<class NodeData, class Real> int OctNode<NodeData, Real>::UseAlloc = 0;
     template<class NodeData, class Real> Allocator<OctNode<NodeData, Real> > OctNode<NodeData, Real>::AllocatorOctNode;
 
-    template<class NodeData, class Real>
-    void OctNode<NodeData, Real>
-    ::SetAllocator (int blockSize)
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    template<class NodeData, class Real> void 
+    OctNode<NodeData, Real>::SetAllocator (int blockSize)
     {
       if (blockSize > 0)
       {
@@ -73,29 +73,26 @@ namespace pcl
         AllocatorOctNode.set (blockSize);
       }
       else
-      {
         UseAlloc = 0;
-      }
     }
 
-    template<class NodeData, class Real>
-    int OctNode<NodeData, Real>
-    ::UseAllocator (void)
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    template<class NodeData, class Real> int 
+    OctNode<NodeData, Real>::UseAllocator (void)
     {
-      return UseAlloc;
+      return (UseAlloc);
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template <class NodeData, class Real>
-    OctNode<NodeData, Real>
-    ::OctNode (void)
+    OctNode<NodeData, Real>::OctNode () : parent (NULL), children (NULL), d (0), off (), nodeData ()
     {
-      parent = children = NULL;
-      d = off[0] = off[1] = off[2] = 0;
+      off[0] = off[1] = off[2] = 0;
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template <class NodeData, class Real>
-    OctNode<NodeData, Real>
-    ::~OctNode (void)
+    OctNode<NodeData, Real>::~OctNode ()
     {
       if (!UseAlloc)
       {
@@ -107,9 +104,9 @@ namespace pcl
       parent = children = NULL;
     }
 
-    template <class NodeData, class Real>
-    void OctNode<NodeData, Real>
-    ::setFullDepth (const int& maxDepth)
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    template <class NodeData, class Real> void 
+    OctNode<NodeData, Real>::setFullDepth (const int& maxDepth)
     {
       if (maxDepth)
       {
@@ -1552,53 +1549,47 @@ namespace pcl
       return *this;
     }
 
-    template <class NodeData, class Real>
-    int OctNode<NodeData, Real>
-    ::CompareForwardDepths (const void* v1, const void* v2)
+    template <class NodeData, class Real> int 
+    OctNode<NodeData, Real>::CompareForwardDepths (const void* v1, const void* v2)
     {
-      return ((const OctNode<NodeData, Real>*)v1)->depth - ((const OctNode<NodeData, Real>*)v2)->depth;
+      return (reinterpret_cast<const OctNode<NodeData, Real>*> (v1))->depth - (reinterpret_cast<const OctNode<NodeData, Real>*> (v2))->depth;
     }
 
-    template <class NodeData, class Real>
-    int OctNode<NodeData, Real>
-    ::CompareForwardPointerDepths (const void* v1, const void* v2)
+    template <class NodeData, class Real> int 
+    OctNode<NodeData, Real>::CompareForwardPointerDepths (const void* v1, const void* v2)
     {
-      const OctNode<NodeData, Real> *n1, *n2;
-      n1 = (*(const OctNode<NodeData, Real>**)v1);
-      n2 = (*(const OctNode<NodeData, Real>**)v2);
+      const OctNode<NodeData, Real> *n1 = (*(const OctNode<NodeData, Real>**) v1);
+      const OctNode<NodeData, Real> *n2 = (*(const OctNode<NodeData, Real>**) v2);
+      //const OctNode<NodeData, Real> *n2 = *reinterpret_cast<const OctNode<NodeData, Real>**> (v2);
+
       if (n1->d != n2->d)
-      {
-        return int(n1->d) - int(n2->d);
-      }
+        return (int (n1->d) - int (n2->d));
+
       while (n1->parent != n2->parent)
       {
         n1 = n1->parent;
         n2 = n2->parent;
       }
       if (n1->off[0] != n2->off[0])
-      {
-        return int(n1->off[0]) - int(n2->off[0]);
-      }
+        return (int (n1->off[0]) - int (n2->off[0]));
+
       if (n1->off[1] != n2->off[1])
-      {
-        return int(n1->off[1]) - int(n2->off[1]);
-      }
-      return int(n1->off[2]) - int(n2->off[2]);
-      return 0;
+        return (int (n1->off[1]) - int(n2->off[1]));
+      
+      return (int (n1->off[2]) - int(n2->off[2]));
     }
 
-    template <class NodeData, class Real>
-    int OctNode<NodeData, Real>
-    ::CompareBackwardDepths (const void* v1, const void* v2)
+    template <class NodeData, class Real> int 
+    OctNode<NodeData, Real>::CompareBackwardDepths (const void* v1, const void* v2)
     {
-      return ((const OctNode<NodeData, Real>*)v2)->depth - ((const OctNode<NodeData, Real>*)v1)->depth;
+      return (reinterpret_cast<const OctNode<NodeData, Real>*> (v2))->depth - (reinterpret_cast<const OctNode<NodeData, Real>*>(v1))->depth;
     }
 
     template <class NodeData, class Real>
     int OctNode<NodeData, Real>
     ::CompareBackwardPointerDepths (const void* v1, const void* v2)
     {
-      return (*(const OctNode<NodeData, Real>**)v2)->depth ()-(*(const OctNode<NodeData, Real>**)v1)->depth ();
+      return (*reinterpret_cast<const OctNode<NodeData, Real>**>(v2))->depth ()-(*reinterpret_cast<const OctNode<NodeData, Real>**> (v1))->depth ();
     }
 
     template <class NodeData, class Real>
@@ -1606,7 +1597,7 @@ namespace pcl
     ::Overlap2 (const int &depth1, const int offSet1[DIMENSION], const Real& multiplier1, const int &depth2, const int offSet2[DIMENSION], const Real& multiplier2)
     {
       int d = depth2 - depth1;
-      Real w = multiplier2 + multiplier1 * (1 << d);
+      Real w = multiplier2 + multiplier1 * static_cast<Real> (1 << d);
       Real w2 = Real ((1 << (d - 1)) - 0.5);
       if (
           fabs (Real (offSet2[0]-(offSet1[0] << d)) - w2) >= w ||
@@ -1902,7 +1893,7 @@ namespace pcl
       }
       else if (aIndex == 0)
       { // Agree on all bits
-        const OctNode* temp = ((const OctNode*) parent)->cornerNeighbor (cornerIndex);
+        const OctNode* temp = (reinterpret_cast<const OctNode*> (parent))->cornerNeighbor (cornerIndex);
         if (!temp || !temp->children)
         {
           return temp;
@@ -1914,7 +1905,7 @@ namespace pcl
       }
       else if (aIndex == 6)
       { // Agree on face 0
-        const OctNode* temp = ((const OctNode*) parent)->__faceNeighbor (0, cornerIndex & 1);
+        const OctNode* temp = (reinterpret_cast<const OctNode*> (parent))->__faceNeighbor (0, cornerIndex & 1);
         if (!temp || !temp->children)
         {
           return NULL;
@@ -1926,7 +1917,7 @@ namespace pcl
       }
       else if (aIndex == 5)
       { // Agree on face 1
-        const OctNode* temp = ((const OctNode*) parent)->__faceNeighbor (1, (cornerIndex & 2) >> 1);
+        const OctNode* temp = (reinterpret_cast<const OctNode*> (parent))->__faceNeighbor (1, (cornerIndex & 2) >> 1);
         if (!temp || !temp->children)
         {
           return NULL;
@@ -1938,7 +1929,7 @@ namespace pcl
       }
       else if (aIndex == 3)
       { // Agree on face 2
-        const OctNode* temp = ((const OctNode*) parent)->__faceNeighbor (2, (cornerIndex & 4) >> 2);
+        const OctNode* temp = (reinterpret_cast<const OctNode*> (parent))->__faceNeighbor (2, (cornerIndex & 4) >> 2);
         if (!temp || !temp->children)
         {
           return NULL;
@@ -1950,7 +1941,7 @@ namespace pcl
       }
       else if (aIndex == 4)
       { // Agree on edge 2
-        const OctNode* temp = ((const OctNode*) parent)->edgeNeighbor (8 | (cornerIndex & 1) | (cornerIndex & 2));
+        const OctNode* temp = (reinterpret_cast<const OctNode*> (parent))->edgeNeighbor (8 | (cornerIndex & 1) | (cornerIndex & 2));
         if (!temp || !temp->children)
         {
           return NULL;
@@ -1962,7 +1953,7 @@ namespace pcl
       }
       else if (aIndex == 2)
       { // Agree on edge 1
-        const OctNode* temp = ((const OctNode*) parent)->edgeNeighbor (4 | (cornerIndex & 1) | ((cornerIndex & 4) >> 1));
+        const OctNode* temp = (reinterpret_cast<const OctNode*> (parent))->edgeNeighbor (4 | (cornerIndex & 1) | ((cornerIndex & 4) >> 1));
         if (!temp || !temp->children)
         {
           return NULL;
@@ -1974,7 +1965,7 @@ namespace pcl
       }
       else if (aIndex == 1)
       { // Agree on edge 0
-        const OctNode* temp = ((const OctNode*) parent)->edgeNeighbor (((cornerIndex & 2) | (cornerIndex & 4)) >> 1);
+        const OctNode* temp = (reinterpret_cast<const OctNode*> (parent))->edgeNeighbor (((cornerIndex & 2) | (cornerIndex & 4)) >> 1);
         if (!temp || !temp->children)
         {
           return NULL;
@@ -1990,134 +1981,100 @@ namespace pcl
       }
     }
 
-    template <class NodeData, class Real>
-    OctNode<NodeData, Real>* OctNode<NodeData, Real>
-    ::cornerNeighbor (const int& cornerIndex, const int& forceChildren)
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    template <class NodeData, class Real> OctNode<NodeData, Real>* 
+    OctNode<NodeData, Real> ::cornerNeighbor (const int& cornerIndex, const int& forceChildren)
     {
       int pIndex, aIndex = 0;
       if (!parent)
-      {
-        return NULL;
-      }
+        return (NULL);
 
       pIndex = int(this-parent->children);
       aIndex = (cornerIndex ^ pIndex); // The disagreement bits
       pIndex = (~pIndex)&7; // The antipodal point
       if (aIndex == 7)
       { // Agree on no bits
-        return &parent->children[pIndex];
+        return (&parent->children[pIndex]);
       }
       else if (aIndex == 0)
       { // Agree on all bits
-        OctNode* temp = ((OctNode*) parent)->cornerNeighbor (cornerIndex, forceChildren);
+        OctNode* temp = (static_cast<OctNode*> (parent))->cornerNeighbor (cornerIndex, forceChildren);
         if (!temp)
-        {
-          return NULL;
-        }
+          return (NULL);
         if (!temp->children)
         {
           if (forceChildren)
-          {
             temp->initChildren ();
-          }
           else
-          {
-            return temp;
-          }
+            return (temp);
         }
-        return &temp->children[pIndex];
+        return (&temp->children[pIndex]);
       }
       else if (aIndex == 6)
       { // Agree on face 0
-        OctNode* temp = ((OctNode*) parent)->__faceNeighbor (0, cornerIndex & 1, 0);
+        OctNode* temp = (static_cast<OctNode*> (parent))->__faceNeighbor (0, cornerIndex & 1, 0);
         if (!temp || !temp->children)
-        {
-          return NULL;
-        }
+          return (NULL);
         else
-        {
-          return & temp->children[pIndex];
-        }
+          return (&temp->children[pIndex]);
       }
       else if (aIndex == 5)
       { // Agree on face 1
-        OctNode* temp = ((OctNode*) parent)->__faceNeighbor (1, (cornerIndex & 2) >> 1, 0);
+        OctNode* temp = (static_cast<OctNode*> (parent))->__faceNeighbor (1, (cornerIndex & 2) >> 1, 0);
         if (!temp || !temp->children)
-        {
-          return NULL;
-        }
+          return (NULL);
         else
-        {
-          return & temp->children[pIndex];
-        }
+          return (&temp->children[pIndex]);
       }
       else if (aIndex == 3)
       { // Agree on face 2
-        OctNode* temp = ((OctNode*) parent)->__faceNeighbor (2, (cornerIndex & 4) >> 2, 0);
+        OctNode* temp = (static_cast<OctNode*> (parent))->__faceNeighbor (2, (cornerIndex & 4) >> 2, 0);
         if (!temp || !temp->children)
-        {
-          return NULL;
-        }
+          return (NULL);
         else
-        {
-          return & temp->children[pIndex];
-        }
+          return (&temp->children[pIndex]);
       }
       else if (aIndex == 4)
       { // Agree on edge 2
-        OctNode* temp = ((OctNode*) parent)->edgeNeighbor (8 | (cornerIndex & 1) | (cornerIndex & 2));
+        OctNode* temp = (static_cast<OctNode*> (parent))->edgeNeighbor (8 | (cornerIndex & 1) | (cornerIndex & 2));
         if (!temp || !temp->children)
-        {
-          return NULL;
-        }
+          return (NULL);
         else
-        {
-          return & temp->children[pIndex];
-        }
+          return (&temp->children[pIndex]);
       }
       else if (aIndex == 2)
       { // Agree on edge 1
-        OctNode* temp = ((OctNode*) parent)->edgeNeighbor (4 | (cornerIndex & 1) | ((cornerIndex & 4) >> 1));
+        OctNode* temp = (static_cast<OctNode*> (parent))->edgeNeighbor (4 | (cornerIndex & 1) | ((cornerIndex & 4) >> 1));
         if (!temp || !temp->children)
-        {
-          return NULL;
-        }
+          return (NULL);
         else
-        {
-          return & temp->children[pIndex];
-        }
+          return (&temp->children[pIndex]);
       }
       else if (aIndex == 1)
       { // Agree on edge 0
-        OctNode* temp = ((OctNode*) parent)->edgeNeighbor (((cornerIndex & 2) | (cornerIndex & 4)) >> 1);
+        OctNode* temp = (static_cast<OctNode*> (parent))->edgeNeighbor (((cornerIndex & 2) | (cornerIndex & 4)) >> 1);
         if (!temp || !temp->children)
-        {
-          return NULL;
-        }
+          return (NULL);
         else
-        {
-          return & temp->children[pIndex];
-        }
+          return (&temp->children[pIndex]);
       }
       else
-      {
-        return NULL;
-      }
+        return (NULL);
     }
     ////////////////////////
     // OctNodeNeighborKey //
     ////////////////////////
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template<class NodeData, class Real>
-    OctNode<NodeData, Real>
-    ::Neighbors::Neighbors (void)
+    OctNode<NodeData, Real>::Neighbors::Neighbors ()
     {
       clear ();
     }
 
-    template<class NodeData, class Real>
-    void OctNode<NodeData, Real>
-    ::Neighbors::clear (void)
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    template<class NodeData, class Real> void 
+    OctNode<NodeData, Real>::Neighbors::clear ()
     {
       for (int i = 0; i < 3; i++)
       {
@@ -2131,27 +2088,24 @@ namespace pcl
       }
     }
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template<class NodeData, class Real>
-    OctNode<NodeData, Real>
-    ::NeighborKey::NeighborKey (void)
+    OctNode<NodeData, Real>::NeighborKey::NeighborKey () : neighbors (NULL)
     {
-      neighbors = NULL;
     }
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template<class NodeData, class Real>
-    OctNode<NodeData, Real>
-    ::NeighborKey::~NeighborKey (void)
+    OctNode<NodeData, Real>::NeighborKey::~NeighborKey ()
     {
       if (neighbors)
-      {
         delete[] neighbors;
-      }
       neighbors = NULL;
     }
 
-    template<class NodeData, class Real>
-    void OctNode<NodeData, Real>
-    ::NeighborKey::set (const int& d)
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    template<class NodeData, class Real> void 
+    OctNode<NodeData, Real>::NeighborKey::set (const int& d)
     {
       if (neighbors)
       {
@@ -2413,16 +2367,16 @@ namespace pcl
     // OctNodeNeighborKey2 //
     /////////////////////////
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template<class NodeData, class Real>
-    OctNode<NodeData, Real>
-    ::Neighbors2::Neighbors2 (void)
+    OctNode<NodeData, Real>::Neighbors2::Neighbors2 ()
     {
       clear ();
     }
 
-    template<class NodeData, class Real>
-    void OctNode<NodeData, Real>
-    ::Neighbors2::clear (void)
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    template<class NodeData, class Real> void 
+    OctNode<NodeData, Real>::Neighbors2::clear ()
     {
       for (int i = 0; i < 3; i++)
       {
@@ -2436,16 +2390,15 @@ namespace pcl
       }
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template<class NodeData, class Real>
-    OctNode<NodeData, Real>
-    ::NeighborKey2::NeighborKey2 (void)
+    OctNode<NodeData, Real>::NeighborKey2::NeighborKey2 () : neighbors (NULL)
     {
-      neighbors = NULL;
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template<class NodeData, class Real>
-    OctNode<NodeData, Real>
-    ::NeighborKey2::~NeighborKey2 (void)
+    OctNode<NodeData, Real>::NeighborKey2::~NeighborKey2 ()
     {
       if (neighbors)
       {
@@ -2454,9 +2407,9 @@ namespace pcl
       neighbors = NULL;
     }
 
-    template<class NodeData, class Real>
-    void OctNode<NodeData, Real>
-    ::NeighborKey2::set (const int& d)
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    template<class NodeData, class Real> void 
+    OctNode<NodeData, Real>::NeighborKey2::set (const int& d)
     {
       if (neighbors)
       {

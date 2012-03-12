@@ -61,7 +61,8 @@ using namespace pcl;
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
 pcl::Poisson<PointNT>::Poisson ()
-: no_reset_samples_ (false),
+: data_ (),
+  no_reset_samples_ (false),
   no_clip_tree_ (false),
   confidence_ (false),
   manifold_ (false),
@@ -74,8 +75,8 @@ pcl::Poisson<PointNT>::Poisson ()
   degree_ (2),
   samples_per_node_ (1.0),
   scale_ (1.25)
-  {
-  }
+{
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
@@ -104,7 +105,7 @@ pcl::Poisson<PointNT>::execute (poisson::CoredMeshData &mesh,
   kernel_depth_ = depth_ - 2;
 //  if(KernelDepth.set){kernelDepth=KernelDepth.value;}
 
-  tree.setFunctionData (ReconstructionFunction,depth_, 0, poisson::Real(1.0)/(1<<depth_));
+  tree.setFunctionData (ReconstructionFunction, depth_, 0, poisson::Real (1.0f) / poisson::Real (1 << depth_));
 //  if (kernel_depth_>depth_)
 //  {
 //    fprintf(stderr,"KernelDepth can't be greater than Depth: %d <= %d\n",kernel_depth_,depth_);
@@ -211,11 +212,11 @@ pcl::Poisson<PointNT>::performReconstruction (PolygonMesh &output)
     mesh.nextPolygon (polygon);
     v.vertices.resize (polygon.size ());
 
-    for (int i = 0; i < (int)polygon.size (); ++i)
+    for (int i = 0; i < static_cast<int> (polygon.size ()); ++i)
       if (polygon[i].inCore )
         v.vertices[polygon.size ()-1-i] = polygon[i].idx;
       else
-        v.vertices[polygon.size ()-1-i] = polygon[i].idx + int( mesh.inCorePoints.size() );
+        v.vertices[polygon.size ()-1-i] = polygon[i].idx + int (mesh.inCorePoints.size ());
 
     output.polygons[p_i] = v;
   }
@@ -294,11 +295,11 @@ pcl::Poisson<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
     mesh.nextPolygon (polygon);
     v.vertices.resize (polygon.size ());
 
-    for (int i = 0; i < (int)polygon.size (); ++i)
+    for (int i = 0; i < static_cast<int> (polygon.size ()); ++i)
       if (polygon[i].inCore )
         v.vertices[polygon.size ()-1-i] = polygon[i].idx;
       else
-        v.vertices[polygon.size ()-1-i] = polygon[i].idx + int( mesh.inCorePoints.size() );
+        v.vertices[polygon.size ()-1-i] = polygon[i].idx + int (mesh.inCorePoints.size ());
 
     polygons[p_i] = v;
   }

@@ -65,6 +65,9 @@ namespace pcl
         : contour_ (contour), coefficients_ (coefficients)
       {}
       
+      /** \brief Destructor. */
+      virtual ~PlanarPolygon () {}
+
       /** \brief Getter for the contour / boundary */
       std::vector<PointT, Eigen::aligned_allocator<PointT> >
       getContour ()

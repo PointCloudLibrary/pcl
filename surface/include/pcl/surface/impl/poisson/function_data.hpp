@@ -40,9 +40,10 @@
  */
 
 
-namespace pcl {
-  namespace poisson {
-
+namespace pcl 
+{
+  namespace poisson 
+  {
     template<int Degree, class Real>
     const int FunctionData<Degree, Real>::DOT_FLAG  =  1;
     template<int Degree, class Real>
@@ -56,13 +57,13 @@ namespace pcl {
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<int Degree, class Real>
-    FunctionData<Degree, Real>::FunctionData()
+    FunctionData<Degree, Real>::FunctionData () :
+      useDotRatios (), normalize (), depth (), res (0), res2 (), 
+      dotTable (NULL), dDotTable (NULL), d2DotTable (NULL),
+      valueTables (NULL), dValueTables (NULL),
+      baseFunction (), dBaseFunction (), baseFunctions ()
     {
-      dotTable = dDotTable = d2DotTable = NULL;
-      valueTables = dValueTables = NULL;
-      res = 0;
     }
-
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<int Degree, class Real>
@@ -88,8 +89,12 @@ namespace pcl {
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<int Degree, class Real>
-    void FunctionData<Degree, Real>::set(const int& maxDepth,const PPolynomial<Degree>& F,const int& normalize,const int& useDotRatios)
+    template<int Degree, class Real> void 
+    FunctionData<Degree, Real>::set (
+        const int& maxDepth,
+        const PPolynomial<Degree>& F,
+        const int& normalize,
+        const int& useDotRatios)
     {
       this->normalize = normalize;
       this->useDotRatios = useDotRatios;

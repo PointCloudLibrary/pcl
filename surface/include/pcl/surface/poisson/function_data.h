@@ -45,47 +45,50 @@
 
 #include "ppolynomial.h"
 
-namespace pcl {
-  namespace poisson {
-
+namespace pcl 
+{
+  namespace poisson 
+  {
+   
     template<int Degree,class Real>
-    class FunctionData{
+    class FunctionData
+    {
       int useDotRatios;
       int normalize;
-    public:
-      const static int     DOT_FLAG;
-      const static int   D_DOT_FLAG;
-      const static int  D2_DOT_FLAG;
-      const static int   VALUE_FLAG;
-      const static int D_VALUE_FLAG;
 
-      int depth,res,res2;
-      Real *dotTable,*dDotTable,*d2DotTable;
-      Real *valueTables,*dValueTables;
-      PPolynomial<Degree> baseFunction;
-      PPolynomial<Degree-1> dBaseFunction;
-      PPolynomial<Degree+1>* baseFunctions;
+      public:
+        const static int     DOT_FLAG;
+        const static int   D_DOT_FLAG;
+        const static int  D2_DOT_FLAG;
+        const static int   VALUE_FLAG;
+        const static int D_VALUE_FLAG;
 
-      FunctionData(void);
-      ~FunctionData(void);
+        int depth, res, res2;
+        Real *dotTable,*dDotTable,*d2DotTable;
+        Real *valueTables,*dValueTables;
+        PPolynomial<Degree> baseFunction;
+        PPolynomial<Degree-1> dBaseFunction;
+        PPolynomial<Degree+1>* baseFunctions;
 
-      virtual void   setDotTables(const int& flags);
-      virtual void clearDotTables(const int& flags);
+        FunctionData (void);
+        ~FunctionData (void);
 
-      virtual void   setValueTables(const int& flags,const double& smooth=0);
-      virtual void   setValueTables(const int& flags,const double& valueSmooth,const double& normalSmooth);
-      virtual void clearValueTables(void);
+        virtual void   setDotTables(const int& flags);
+        virtual void clearDotTables(const int& flags);
 
-      void set(const int& maxDepth,const PPolynomial<Degree>& F,const int& normalize,const int& useDotRatios=1);
+        virtual void   setValueTables(const int& flags,const double& smooth=0);
+        virtual void   setValueTables(const int& flags,const double& valueSmooth,const double& normalSmooth);
+        virtual void clearValueTables(void);
 
-      Real   dotProduct(const double& center1,const double& width1,const double& center2,const double& width2) const;
-      Real  dDotProduct(const double& center1,const double& width1,const double& center2,const double& width2) const;
-      Real d2DotProduct(const double& center1,const double& width1,const double& center2,const double& width2) const;
+        void set(const int& maxDepth,const PPolynomial<Degree>& F,const int& normalize,const int& useDotRatios=1);
 
-      static inline int SymmetricIndex(const int& i1,const int& i2);
-      static inline int SymmetricIndex(const int& i1,const int& i2,int& index);
+        Real   dotProduct(const double& center1,const double& width1,const double& center2,const double& width2) const;
+        Real  dDotProduct(const double& center1,const double& width1,const double& center2,const double& width2) const;
+        Real d2DotProduct(const double& center1,const double& width1,const double& center2,const double& width2) const;
+
+        static inline int SymmetricIndex(const int& i1,const int& i2);
+        static inline int SymmetricIndex(const int& i1,const int& i2,int& index);
     };
-
   }
 }
 

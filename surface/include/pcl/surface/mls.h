@@ -50,9 +50,6 @@
 #include <pcl/common/common.h>
 #include <pcl/surface/processing.h>
 
-
-
-
 #include <Eigen/SVD>
 
 namespace pcl

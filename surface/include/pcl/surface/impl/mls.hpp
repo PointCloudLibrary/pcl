@@ -272,8 +272,8 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
       {
         pcl::Normal aux_normal;
         aux_normal.normal_x = static_cast<float> (normal[0]);
-        aux_normal.normal_y = normal[1];
-        aux_normal.normal_z = normal[2];
+        aux_normal.normal_y = static_cast<float> (normal[1]);
+        aux_normal.normal_z = static_cast<float> (normal[2]);
         aux_normal.curvature = curvature;
         projected_points_normals.push_back (aux_normal);
       }
@@ -328,9 +328,9 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
         if (compute_normals_)
         {
           pcl::Normal aux_normal;
-          aux_normal.normal_x = normal[0];
-          aux_normal.normal_y = normal[1];
-          aux_normal.normal_z = normal[2];
+          aux_normal.normal_x = static_cast<float> (normal[0]);
+          aux_normal.normal_y = static_cast<float> (normal[1]);
+          aux_normal.normal_z = static_cast<float> (normal[2]);
           aux_normal.curvature = curvature;
           projected_points_normals.push_back (aux_normal);
         }
@@ -421,13 +421,13 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::projectPointToMLSSurface (float &u
 
   Eigen::Vector3d normal = plane_normal - d_u * u - d_v * v;
   normal.normalize ();
-  result_point.x = query_point[0] + u[0] * u_disp + v[0] * v_disp + normal[0] * n_disp;
-  result_point.y = query_point[1] + u[1] * u_disp + v[1] * v_disp + normal[1] * n_disp;
-  result_point.z = query_point[2] + u[2] * u_disp + v[2] * v_disp + normal[2] * n_disp;
+  result_point.x = static_cast<float> (query_point[0] + u[0] * u_disp + v[0] * v_disp + normal[0] * n_disp);
+  result_point.y = static_cast<float> (query_point[1] + u[1] * u_disp + v[1] * v_disp + normal[1] * n_disp);
+  result_point.z = static_cast<float> (query_point[2] + u[2] * u_disp + v[2] * v_disp + normal[2] * n_disp);
 
-  result_normal.normal_x = normal[0];
-  result_normal.normal_y = normal[1];
-  result_normal.normal_z = normal[2];
+  result_normal.normal_x = static_cast<float> (normal[0]);
+  result_normal.normal_y = static_cast<float> (normal[1]);
+  result_normal.normal_z = static_cast<float> (normal[2]);
   result_normal.curvature = curvature;
 }
 

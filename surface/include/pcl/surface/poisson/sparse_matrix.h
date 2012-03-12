@@ -45,131 +45,134 @@
 #include "vector.h"
 #include "allocator.h"
 
-namespace pcl {
-  namespace poisson {
-
+namespace pcl 
+{
+  namespace poisson 
+  {
     template <class T>
     struct MatrixEntry
     {
-      MatrixEntry( void )		{ N =-1; Value = 0; }
-      MatrixEntry( int i )	{ N = i; Value = 0; }
+      MatrixEntry () : N (-1), Value (0) {}
+      MatrixEntry (int i) : N (i), Value (0) {}
       int N;
       T Value;
     };
+
     template <class T,int Dim>
     struct NMatrixEntry
     {
-      NMatrixEntry( void )		{ N =-1; memset(Value,0,sizeof(T)*Dim); }
-      NMatrixEntry( int i )	{ N = i; memset(Value,0,sizeof(T)*Dim); }
+      NMatrixEntry () : N (-1), Value () { memset (Value, 0, sizeof (T) * Dim); }
+      NMatrixEntry (int i) : N (i), Value () { memset (Value, 0, sizeof (T) * Dim); }
       int N;
       T Value[Dim];
     };
 
     template<class T> class SparseMatrix
     {
-    private:
-      static int UseAlloc;
-    public:
-      static Allocator<MatrixEntry<T> > AllocatorMatrixEntry;
-      static int UseAllocator(void);
-      static void SetAllocator(const int& blockSize);
+      private:
+        static int UseAlloc;
+      public:
+        static Allocator<MatrixEntry<T> > AllocatorMatrixEntry;
+        static int UseAllocator(void);
+        static void SetAllocator(const int& blockSize);
 
-      int rows;
-      int* rowSizes;
-      MatrixEntry<T>** m_ppElements;
+        int rows;
+        int* rowSizes;
+        MatrixEntry<T>** m_ppElements;
 
-      SparseMatrix();
-      SparseMatrix( int rows );
-      void Resize( int rows );
-      void SetRowSize( int row , int count );
-      int Entries(void);
+        SparseMatrix();
+        SparseMatrix( int rows );
+        void Resize( int rows );
+        void SetRowSize( int row , int count );
+        int Entries(void);
 
-      SparseMatrix( const SparseMatrix& M );
-      ~SparseMatrix();
+        SparseMatrix (const SparseMatrix& M);
+        virtual ~SparseMatrix();
 
-      void SetZero();
-      void SetIdentity();
+        void SetZero();
+        void SetIdentity();
 
-      SparseMatrix<T>& operator = (const SparseMatrix<T>& M);
+        SparseMatrix<T>& operator = (const SparseMatrix<T>& M);
 
-      SparseMatrix<T> operator * (const T& V) const;
-      SparseMatrix<T>& operator *= (const T& V);
-
-
-      SparseMatrix<T> operator * (const SparseMatrix<T>& M) const;
-      SparseMatrix<T> Multiply( const SparseMatrix<T>& M ) const;
-      SparseMatrix<T> MultiplyTranspose( const SparseMatrix<T>& Mt ) const;
-
-      template<class T2>
-      Vector<T2> operator * (const Vector<T2>& V) const;
-      template<class T2>
-      Vector<T2> Multiply( const Vector<T2>& V ) const;
-      template<class T2>
-      void Multiply( const Vector<T2>& In, Vector<T2>& Out ) const;
+        SparseMatrix<T> operator * (const T& V) const;
+        SparseMatrix<T>& operator *= (const T& V);
 
 
-      SparseMatrix<T> Transpose() const;
+        SparseMatrix<T> operator * (const SparseMatrix<T>& M) const;
+        SparseMatrix<T> Multiply( const SparseMatrix<T>& M ) const;
+        SparseMatrix<T> MultiplyTranspose( const SparseMatrix<T>& Mt ) const;
 
-      static int Solve			(const SparseMatrix<T>& M,const Vector<T>& b,const int& iters,Vector<T>& solution,const T eps=1e-8);
+        template<class T2>
+        Vector<T2> operator * (const Vector<T2>& V) const;
+        template<class T2>
+        Vector<T2> Multiply( const Vector<T2>& V ) const;
+        template<class T2>
+        void Multiply( const Vector<T2>& In, Vector<T2>& Out ) const;
 
-      template<class T2>
-      static int SolveSymmetric	(const SparseMatrix<T>& M,const Vector<T2>& b,const int& iters,Vector<T2>& solution,const T2 eps=1e-8,const int& reset=1);
+
+        SparseMatrix<T> Transpose() const;
+
+        static int Solve			(const SparseMatrix<T>& M,const Vector<T>& b,const int& iters,Vector<T>& solution,const T eps=1e-8);
+
+        template<class T2>
+        static int SolveSymmetric	(const SparseMatrix<T>& M,const Vector<T2>& b,const int& iters,Vector<T2>& solution,const T2 eps=1e-8,const int& reset=1);
 
     };
+
     template<class T,int Dim> class SparseNMatrix
     {
-    private:
-      static int UseAlloc;
-    public:
-      static Allocator<NMatrixEntry<T,Dim> > AllocatorNMatrixEntry;
-      static int UseAllocator(void);
-      static void SetAllocator(const int& blockSize);
+      private:
+        static int UseAlloc;
+      public:
+        static Allocator<NMatrixEntry<T,Dim> > AllocatorNMatrixEntry;
+        static int UseAllocator(void);
+        static void SetAllocator(const int& blockSize);
 
-      int rows;
-      int* rowSizes;
-      NMatrixEntry<T,Dim>** m_ppElements;
+        int rows;
+        int* rowSizes;
+        NMatrixEntry<T,Dim>** m_ppElements;
 
-      SparseNMatrix();
-      SparseNMatrix( int rows );
-      void Resize( int rows );
-      void SetRowSize( int row , int count );
-      int Entries(void);
+        SparseNMatrix ();
+        SparseNMatrix (int rows);
+        void Resize (int rows);
+        void SetRowSize (int row, int count);
+        int Entries ();
 
-      SparseNMatrix( const SparseNMatrix& M );
-      ~SparseNMatrix();
+        SparseNMatrix (const SparseNMatrix& M);
+        ~SparseNMatrix();
 
-      SparseNMatrix& operator = (const SparseNMatrix& M);
+        SparseNMatrix& operator = (const SparseNMatrix& M);
 
-      SparseNMatrix  operator *  (const T& V) const;
-      SparseNMatrix& operator *= (const T& V);
+        SparseNMatrix  operator *  (const T& V) const;
+        SparseNMatrix& operator *= (const T& V);
 
-      template<class T2>
-      NVector<T2,Dim> operator * (const Vector<T2>& V) const;
-      template<class T2>
-      Vector<T2> operator * (const NVector<T2,Dim>& V) const;
+        template<class T2>
+        NVector<T2,Dim> operator * (const Vector<T2>& V) const;
+        template<class T2>
+        Vector<T2> operator * (const NVector<T2,Dim>& V) const;
     };
-
-
 
     template <class T>
-    class SparseSymmetricMatrix : public SparseMatrix<T>{
-    public:
+    class SparseSymmetricMatrix : public SparseMatrix<T>
+    {
+      public:
+        virtual ~SparseSymmetricMatrix () {}
 
-      template<class T2>
-      Vector<T2> operator * (const Vector<T2>& V) const;
-      template<class T2>
-      Vector<T2> Multiply( const Vector<T2>& V ) const;
-      template<class T2>
-      void Multiply( const Vector<T2>& In, Vector<T2>& Out ) const;
+        template<class T2>
+        Vector<T2> operator * (const Vector<T2>& V) const;
 
-      template<class T2>
-      static int Solve(const SparseSymmetricMatrix<T>& M,const Vector<T2>& b,const int& iters,Vector<T2>& solution,const T2 eps=1e-8,const int& reset=1);
+        template<class T2>
+        Vector<T2> Multiply( const Vector<T2>& V ) const;
 
-      template<class T2>
-      static int Solve(const SparseSymmetricMatrix<T>& M,const Vector<T>& diagonal,const Vector<T2>& b,const int& iters,Vector<T2>& solution,const T2 eps=1e-8,const int& reset=1);
+        template<class T2> void 
+        Multiply( const Vector<T2>& In, Vector<T2>& Out ) const;
+
+        template<class T2> static int 
+        Solve (const SparseSymmetricMatrix<T>& M,const Vector<T2>& b,const int& iters,Vector<T2>& solution,const T2 eps=1e-8,const int& reset=1);
+
+        template<class T2> static int 
+        Solve (const SparseSymmetricMatrix<T>& M,const Vector<T>& diagonal,const Vector<T2>& b,const int& iters,Vector<T2>& solution,const T2 eps=1e-8,const int& reset=1);
     };
-
-
   }
 }
 

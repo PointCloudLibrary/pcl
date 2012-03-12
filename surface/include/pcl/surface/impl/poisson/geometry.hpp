@@ -405,18 +405,18 @@ namespace pcl {
     long long Triangulation<Real>::EdgeIndex(const int& p1,const int& p2)
     {
       if (p1>p2)
-        return ((long long)(p1)<<32) | ((long long)(p2));
+        return (static_cast <long long> (p1)<<32) | (static_cast<long long> (p2));
       else
-        return ((long long)(p2)<<32) | ((long long)(p1));
+        return (static_cast<long long> (p2)<<32) | (static_cast<long long> (p1));
     }
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<class Real>
-    int Triangulation<Real>::factor(const int& tIndex,int& p1,int& p2,int & p3)
+    template<class Real> int 
+    Triangulation<Real>::factor (const int& tIndex, int& p1, int& p2, int& p3)
     {
       if (triangles[tIndex].eIndex[0]<0 || triangles[tIndex].eIndex[1]<0 || triangles[tIndex].eIndex[2]<0)
-        return 0;
+        return (0);
 
       if (edges[triangles[tIndex].eIndex[0]].tIndex[0] == tIndex)
         p1 = edges[triangles[tIndex].eIndex[0]].pIndex[0];
@@ -431,7 +431,7 @@ namespace pcl {
         p3 = edges[triangles[tIndex].eIndex[2]].pIndex[0];
       else
         p3 = edges[triangles[tIndex].eIndex[2]].pIndex[1];
-      return 1;
+      return (1);
     }
 
 

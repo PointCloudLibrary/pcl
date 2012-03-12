@@ -51,7 +51,7 @@ namespace pcl
   {
     public:
       /** \brief Empty constructor for Region3D. */
-      Region3D ()
+      Region3D () : centroid_ (Eigen::Vector3f::Zero ()), covariance_ (Eigen::Matrix3f::Identity ()), count_ (0)
       {
       }
       
@@ -64,7 +64,10 @@ namespace pcl
         : centroid_ (centroid), covariance_ (covariance), count_ (count)
       {
       }
-      
+     
+      /** \brief Destructor. */
+      virtual ~Region3D () {}
+
       /** \brief Get the centroid of the region. */
       inline Eigen::Vector3f 
       getCentroid ()
