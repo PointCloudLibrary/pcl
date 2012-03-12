@@ -135,12 +135,12 @@ pcl::Registration<PointSource, PointTarget>::align (PointCloudSource &output, co
   // Check if the output will be computed for all points or only a subset
   if (indices_->size () != input_->points.size ())
   {
-    output.width    = (int) indices_->size ();
+    output.width    = static_cast<uint32_t> (indices_->size ());
     output.height   = 1;
   }
   else
   {
-    output.width    = input_->width;
+    output.width    = static_cast<uint32_t> (input_->width);
     output.height   = input_->height;
   }
   output.is_dense = input_->is_dense;

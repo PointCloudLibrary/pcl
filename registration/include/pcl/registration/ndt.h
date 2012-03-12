@@ -102,7 +102,7 @@ namespace pcl
         * \param[in] resolution side length of voxels
         */
       inline void
-      setResolution (double resolution)
+      setResolution (float resolution)
       {
         // Prevents unnessary voxel initiations
         if (resolution_ != resolution)
@@ -116,7 +116,7 @@ namespace pcl
       /** \brief Get voxel grid resolution.
         * \return side length of voxels
         */
-      inline double
+      inline float
       getResolution () const
       {
         return (resolution_);
@@ -409,7 +409,7 @@ namespace pcl
       //double fitness_epsilon_;
 
       /** \brief The side length of voxels. */
-      double resolution_;
+      float resolution_;
 
       /** \brief The maximum step length. */
       double step_size_;

@@ -42,7 +42,7 @@
 #include <iostream>
 
 #define AVG(a,b) static_cast<unsigned char>((int(a) + int(b)) >> 1)
-#define AVG3(a,b,c) static_cast<unsigned char>((int(a) + int(b) + (int)(c)) / 3)
+#define AVG3(a,b,c) static_cast<unsigned char>((int(a) + int(b) + int(c)) / 3)
 #define AVG4(a,b,c,d) static_cast<unsigned char>((int(a) + int(b) + int(c) + int(d)) >> 2)
 #define WAVG4(a,b,c,d,x,y) static_cast<unsigned char>( ( (int(a) + int(b)) * int(x) + (int(c) + int(d)) * int(y) ) / ( (int(x) + (int(y))) << 1 ) )
 using namespace std;
@@ -263,7 +263,7 @@ void ImageBayerGRBG::fillGrayscale (unsigned width, unsigned height, unsigned ch
       }
     }
     else
-      THROW_OPENNI_EXCEPTION ("Unknown Debayering method: %d", (int)debayering_method_);
+      THROW_OPENNI_EXCEPTION ("Unknown Debayering method: %d", debayering_method_);
 
   }
   else // downsampling
@@ -1395,7 +1395,7 @@ void ImageBayerGRBG::fillRGB (unsigned width, unsigned height, unsigned char* rg
       //rgb_pixel[rgb_line_step + 5] = bayer_pixel[line_step];
     }
     else
-      THROW_OPENNI_EXCEPTION ("Unknwon debayering method: %d", (int)debayering_method_);
+      THROW_OPENNI_EXCEPTION ("Unknwon debayering method: %d", debayering_method_);
   }
   else
   {

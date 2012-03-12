@@ -2,13 +2,13 @@
 # Date:   4. April 2011
 
 debian : ../openni_drivers
-	cd ../openni_drivers && make debian_openni && make debian_engine && cd -
+	cd ../openni_drivers && VERBOSE=1 make debian_openni && VERBOSE=1 make debian_engine && cd -
 	cp ../openni_drivers/*openni*.deb .
 	cp ../openni_drivers/*ps_engine*.deb .
 	rename "s|ros-||" ros-*
 
 ../openni_drivers:
-	hg clone https://kforge.ros.org/openni/drivers ../openni_drivers -r 295
+	hg clone https://kforge.ros.org/openni/drivers ../openni_drivers
 	
 clean:
 	rm -rf *.deb
