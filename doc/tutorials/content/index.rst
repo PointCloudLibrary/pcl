@@ -82,31 +82,31 @@ Basic Usage
      .. |mi_2| image:: images/pcl_ccmake.png
                :height: 100px
 
-  * :ref:`compiling_pcl_windows`
+  * :ref:`compiling_pcl_dependencies_windows`
 
      ======  ======
-     |mi_3|  Title: **Compiling PCL and its dependencies from source in Windows**
+     |mi_3|  Title: **Compiling PCL's dependencies from source on Windows**
 
-             Author: *Alessio Placitelli*
+             Authors: *Alessio Placitelli* and *Mourad Boufarguine*
 
              Compatibility: > PCL 1.0
              
-             In this tutorial, we will explain how to compile PCL and all its 3rd party dependencies from source in Microsoft Windows.
+             In this tutorial, we will explain how to compile PCL's 3rd party dependencies from source on Microsoft Windows.
      ======  ======
 
      .. |mi_3| image:: images/windows_logo.png
                :height: 100px
 
-  * :ref:`compiling_pcl_windows_3rdparty_installers`
+  * :ref:`compiling_pcl_windows`
 
      ======  ======
-     |mi_4|  Title: **Compiling PCL in Windows using the provided 3rd Party installers**
+     |mi_4|  Title: **Compiling PCL on Windows**
 
              Author: *Mourad Boufarguine*
 
              Compatibility: > PCL 1.0 
              
-             In this tutorial, we will explain how to compile PCL in Microsoft Windows using the provided 3rd Party installers.
+             In this tutorial, we will explain how to compile PCL on Microsoft Windows.
      ======  ======
 
      .. |mi_4| image:: images/windows_logo.png
