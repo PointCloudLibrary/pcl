@@ -43,7 +43,8 @@ namespace pcl
   template<typename PointT>
   struct SIFTKeypointFieldSelector
   {
-    inline float operator ()(const PointT & p) const
+    inline float
+    operator () (const PointT & p) const
     {
       return p.intensity;
     }
@@ -51,7 +52,8 @@ namespace pcl
   template<>
   struct SIFTKeypointFieldSelector<PointNormal>
   {
-    inline float operator ()(const PointNormal & p) const
+    inline float
+    operator () (const PointNormal & p) const
     {
       return p.curvature;
     }
@@ -59,8 +61,8 @@ namespace pcl
   template<>
   struct SIFTKeypointFieldSelector<PointXYZRGB>
   {
-    inline float 
-    operator ()(const PointXYZRGB & p) const
+    inline float
+    operator () (const PointXYZRGB & p) const
     {
       return (static_cast<float> (299*p.r + 587*p.g + 114*p.b) / 1000.0f);
     }
@@ -68,8 +70,8 @@ namespace pcl
   template<>
   struct SIFTKeypointFieldSelector<PointXYZRGBA>
   {
-    inline float 
-    operator ()(const PointXYZRGBA & p) const
+    inline float
+    operator () (const PointXYZRGBA & p) const
     {
       return (static_cast<float> (299*p.r + 587*p.g + 114*p.b) / 1000.0f);
     }
