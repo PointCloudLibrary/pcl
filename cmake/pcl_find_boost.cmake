@@ -8,7 +8,7 @@ endif(NOT PCL_SHARED_LIBS OR WIN32)
 if(${CMAKE_VERSION} VERSION_LESS 2.8.5)
   SET(Boost_ADDITIONAL_VERSIONS "1.43" "1.43.0" "1.44" "1.44.0" "1.45" "1.45.0" "1.46.1" "1.46.0" "1.46" "1.47" "1.47.0")
 else(${CMAKE_VERSION} VERSION_LESS 2.8.5)
-  SET(Boost_ADDITIONAL_VERSIONS "1.47" "1.47.0")
+  SET(Boost_ADDITIONAL_VERSIONS "1.47" "1.47.0" "1.48" "1.48.0" "1.49" "1.49.0")
 endif(${CMAKE_VERSION} VERSION_LESS 2.8.5)
 
 # Disable the config mode of find_package(Boost)
