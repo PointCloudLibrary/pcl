@@ -47,13 +47,17 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
 pcl::GridProjection<PointNT>::GridProjection () :
-  leaf_size_(0.001), data_size_(0), max_binary_search_level_(10), k_(50), padding_size_(3), data_()
+  cell_hash_map_ (), min_p_ (), max_p_ (), leaf_size_ (0.001), gaussian_scale_ (),
+  data_size_ (0), max_binary_search_level_ (10), k_ (50), padding_size_ (3), data_ (),
+  vector_at_data_point_ (), surface_ (), occupied_cell_list_ ()
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
 pcl::GridProjection<PointNT>::GridProjection (double resolution) :
-  leaf_size_(resolution), data_size_(0), max_binary_search_level_(10), k_(50), padding_size_(3), data_()
+  cell_hash_map_ (), min_p_ (), max_p_ (), leaf_size_ (resolution), gaussian_scale_ (),
+  data_size_ (0), max_binary_search_level_ (10), k_ (50), padding_size_ (3), data_ (),
+  vector_at_data_point_ (), surface_ (), occupied_cell_list_ ()
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -71,10 +71,15 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      UniformSampling ()
+      UniformSampling () :
+        leaves_ (),
+        leaf_size_ (Eigen::Vector4f::Zero ()),
+        inverse_leaf_size_ (Eigen::Vector4f::Zero ()),
+        min_b_ (Eigen::Vector4i::Zero ()),
+        max_b_ (Eigen::Vector4i::Zero ()),
+        div_b_ (Eigen::Vector4i::Zero ()),
+        divb_mul_ (Eigen::Vector4i::Zero ())
       {
-        min_b_.setZero ();
-        max_b_.setZero ();
         name_ = "UniformSampling";
       }
 

@@ -384,9 +384,23 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
   output.row_step = output.point_step * output.width;
   output.data.resize (output.width * output.point_step);
 
-  if (save_leaf_layout_)
-    leaf_layout_.resize (div_b_[0] * div_b_[1] * div_b_[2], -1);
-
+  if (save_leaf_layout_) {
+    try
+    {
+      leaf_layout_.resize (div_b_[0]*div_b_[1]*div_b_[2], -1);
+    }
+    catch (std::bad_alloc&)
+    {
+      throw PCLException("VoxelGrid bin size is too low; impossible to allocate memory for layout", 
+        "voxel_grid.cpp", "applyFilter");	
+    }
+	catch (std::length_error&)
+    {
+      throw PCLException("VoxelGrid bin size is too low; impossible to allocate memory for layout", 
+        "voxel_grid.cpp", "applyFilter");	
+    }
+  }
+  
   // If we downsample each field, the {x,y,z}_idx_ offsets should correspond in input_ and output
   if (downsample_all_data_)
     xyz_offset = Eigen::Array4i (output.fields[x_idx_].offset,

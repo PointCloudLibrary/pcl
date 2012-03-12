@@ -70,7 +70,13 @@ namespace pcl
       SmoothedSurfacesKeypoint ()
         : Keypoint<PointT, PointT> (),
           neighborhood_constant_ (0.5f),
-          normals_ ()
+          clouds_ (),
+          cloud_normals_ (),
+          cloud_trees_ (),
+          normals_ (),
+          scales_ (),
+          input_scale_ (0.0f),
+          input_index_ ()
       {
         name_ = "SmoothedSurfacesKeypoint";
 

@@ -121,7 +121,7 @@ pcl::PPFEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen (pcl
   // Initialize output container - overwrite the sizes done by Feature::initCompute ()
   output.points.resize (indices_->size () * input_->points.size (), 5);
   output.height = 1;
-  output.width = indices_->size () * input_->points.size ();
+  output.width = static_cast<uint32_t> (indices_->size () * input_->points.size ());
 
   output.is_dense = true;
   // Compute point pair features for every pair of points in the cloud
@@ -144,7 +144,7 @@ pcl::PPFEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen (pcl
           Eigen::Vector3f model_reference_point = input_->points[i].getVector3fMap (),
                           model_reference_normal = normals_->points[i].getNormalVector3fMap (),
                           model_point = input_->points[j].getVector3fMap ();
-          Eigen::AngleAxisf rotation_mg (acos (model_reference_normal.dot (Eigen::Vector3f::UnitX ())),
+          Eigen::AngleAxisf rotation_mg (acosf (model_reference_normal.dot (Eigen::Vector3f::UnitX ())),
                                          model_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
           Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg;
 

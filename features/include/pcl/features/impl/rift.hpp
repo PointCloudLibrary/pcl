@@ -56,8 +56,8 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT (
   }
 
   // Determine the number of bins to use based on the size of rift_descriptor
-  int nr_distance_bins = rift_descriptor.rows ();
-  int nr_gradient_bins = rift_descriptor.cols ();
+  int nr_distance_bins = static_cast<int> (rift_descriptor.rows ());
+  int nr_gradient_bins = static_cast<int> (rift_descriptor.cols ());
 
   // Get the center point
   pcl::Vector3fMapConst p0 = cloud.points[p_idx].getVector3fMap ();
@@ -71,16 +71,14 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT (
     Eigen::Map<const Eigen::Vector3f> gradient_vector (& (gradient.points[indices[idx]].gradient[0]));
 
     float gradient_magnitude = gradient_vector.norm ();
-    float gradient_angle_from_center = acos (gradient_vector.dot ((point - p0).normalized ()) / gradient_magnitude);
+    float gradient_angle_from_center = acosf (gradient_vector.dot ((point - p0).normalized ()) / gradient_magnitude);
     if (!pcl_isfinite (gradient_angle_from_center))
-    {
       gradient_angle_from_center = 0.0;
-    }
 
     // Normalize distance and angle values to: 0.0 <= d,g < nr_distances_bins,nr_gradient_bins
     const float eps = std::numeric_limits<float>::epsilon ();
-    float d = nr_distance_bins * sqrt (sqr_distances[idx]) / (radius + eps);
-    float g = nr_gradient_bins * gradient_angle_from_center / (M_PI + eps);
+    float d = static_cast<float> (nr_distance_bins) * sqrtf (sqr_distances[idx]) / (radius + eps);
+    float g = static_cast<float> (nr_gradient_bins) * gradient_angle_from_center / (static_cast<float> (M_PI) + eps);
 
     // Compute the bin indices that need to be updated
     int d_idx_min = (std::max)(static_cast<int> (ceil (d - 1)), 0);
@@ -97,7 +95,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT (
       for (int d_idx = d_idx_min; d_idx <= d_idx_max; ++d_idx)
       {
         // To avoid boundary effects, use linear interpolation when updating each bin 
-        float w = (1 - fabs (d - d_idx)) * (1 - fabs (g - g_idx));
+        float w = (1.0f - fabsf (d - static_cast<float> (d_idx))) * (1.0f - fabsf (g - static_cast<float> (g_idx)));
 
         rift_descriptor (d_idx, g_idx_wrapped) += w * gradient_magnitude;
       }
@@ -169,7 +167,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
     tree_->radiusSearch ((*indices_)[idx], search_radius_, nn_indices, nn_dist_sqr);
 
     // Compute the RIFT descriptor
-    computeRIFT (*surface_, *gradient_, (*indices_)[idx], search_radius_, nn_indices, nn_dist_sqr, rift_descriptor);
+    computeRIFT (*surface_, *gradient_, (*indices_)[idx], static_cast<float> (search_radius_), nn_indices, nn_dist_sqr, rift_descriptor);
 
     // Copy into the resultant cloud
     int bin = 0;

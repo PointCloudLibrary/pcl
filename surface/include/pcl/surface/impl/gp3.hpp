@@ -172,7 +172,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
       u_ = nc.cross (v_);
 
       // Projecting point onto the surface 
-      double dist = nc.dot (coords_[R_]);
+      float dist = nc.dot (coords_[R_]);
       proj_qp_ = coords_[R_] - dist * nc;
 
       // Converting coords, calculating angles and saving the projected near boundary edges
@@ -350,7 +350,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
       u_ = nc.cross (v_);
 
       // Projecting point onto the surface
-      double dist = nc.dot(coords_[R_]);
+      float dist = nc.dot (coords_[R_]);
       proj_qp_ = coords_[R_] - dist * nc;
 
       // Converting coords, calculating angles and saving the projected near boundary edges

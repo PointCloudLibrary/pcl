@@ -172,7 +172,7 @@ namespace pcl
       inline void
       addTriangle (int a, int b, int c, int idx, std::vector<pcl::Vertices>& polygons)
       {
-        assert (idx < (int)polygons.size ());
+        assert (idx < static_cast<int> (polygons.size ()));
         polygons[idx].vertices.resize (3);
         polygons[idx].vertices[0] = a;
         polygons[idx].vertices[1] = b;
@@ -190,7 +190,7 @@ namespace pcl
       inline void
       addQuad (int a, int b, int c, int d, int idx, std::vector<pcl::Vertices>& polygons)
       {
-        assert (idx < (int)polygons.size ());
+        assert (idx < static_cast<int> (polygons.size ()));
         polygons[idx].vertices.resize (4);
         polygons[idx].vertices[0] = a;
         polygons[idx].vertices[1] = b;

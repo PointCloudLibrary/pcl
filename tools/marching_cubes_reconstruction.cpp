@@ -48,9 +48,9 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
 
-double      default_leaf_size = 0.01;
-double      default_iso_level = 0;
-int        default_use_dot = 1;
+float default_leaf_size = 0.01f;
+float default_iso_level = 0.0f;
+int   default_use_dot = 1;
 
 void
 printHelp (int, char **argv)
