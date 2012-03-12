@@ -36,8 +36,8 @@
 #ifndef PCL_CUDA_FILTERS_VOXELGRID_H_
 #define PCL_CUDA_FILTERS_VOXELGRID_H_
 
-#include "pcl_cuda/filters/filter.h"
-#include "pcl_cuda/filters/passthrough.h"
+#include <pcl_cuda/filters/filter.h>
+#include <pcl_cuda/filters/passthrough.h>
 #include <thrust/count.h>
 #include <thrust/remove.h>
 #include <vector_types.h>

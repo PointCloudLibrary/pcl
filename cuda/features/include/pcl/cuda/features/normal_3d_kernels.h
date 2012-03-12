@@ -40,7 +40,7 @@
 
 #include <pcl/pcl_exports.h>
 
-#include "pcl/cuda/common/eigen.h"
+#include <pcl/cuda/common/eigen.h>
 
 namespace pcl
 {

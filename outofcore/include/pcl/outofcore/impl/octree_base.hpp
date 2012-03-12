@@ -45,11 +45,11 @@
 #define PCL_OUTOFCORE_OCTREE_BASE_IMPL_H_
 
 // PCL (Urban Robotics)
-#include "pcl/outofcore/octree_base.h"
-#include "pcl/outofcore/octree_exceptions.h"
+#include <pcl/outofcore/octree_base.h>
+#include <pcl/outofcore/octree_exceptions.h>
 
 // JSON
-#include "pcl/outofcore/cJSON.h"
+#include <pcl/outofcore/cJSON.h>
 
 // C++
 #include <iostream>

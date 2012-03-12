@@ -38,7 +38,7 @@
 #ifndef PCL_CUDA_CLOUD_TO_PCL_H_
 #define PCL_CUDA_CLOUD_TO_PCL_H_
 
-#include "pcl/cuda/point_cloud.h"
+#include <pcl/cuda/point_cloud.h>
 
 #include <pcl/pcl_exports.h>
 

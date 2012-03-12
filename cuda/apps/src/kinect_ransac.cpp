@@ -37,9 +37,9 @@
 
 #include <pcl_cuda/time_cpu.h>
 #include <pcl_cuda/time_gpu.h>
-#include "pcl_cuda/io/cloud_to_pcl.h"
-#include "pcl_cuda/io/extract_indices.h"
-#include "pcl_cuda/io/disparity_to_cloud.h"
+#include <pcl_cuda/io/cloud_to_pcl.h>
+#include <pcl_cuda/io/extract_indices.h>
+#include <pcl_cuda/io/disparity_to_cloud.h>
 #include <pcl_cuda/io/host_device.h>
 
 #include <pcl/io/openni_grabber.h>
@@ -49,8 +49,8 @@
 #include <boost/shared_ptr.hpp>
 #include <pcl/visualization/cloud_viewer.h>
 #include <iostream>
-#include "pcl_cuda/sample_consensus/sac_model_1point_plane.h"
-#include "pcl_cuda/sample_consensus/ransac.h"
+#include <pcl_cuda/sample_consensus/sac_model_1point_plane.h>
+#include <pcl_cuda/sample_consensus/ransac.h>
 
 using namespace pcl_cuda;
 

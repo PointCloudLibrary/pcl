@@ -38,7 +38,7 @@
 #ifndef PCL_CUDA_POINT_CLOUD_H_
 #define PCL_CUDA_POINT_CLOUD_H_
 
-#include "pcl/cuda/point_types.h"
+#include <pcl/cuda/point_types.h>
 
 #include <thrust/host_vector.h>
 #include <thrust/device_vector.h>

@@ -56,8 +56,8 @@
 #include <boost/filesystem.hpp>
 
 // PCL (Urban Robotics)
-#include "pcl/outofcore/octree_base_node.h"
-#include "pcl/outofcore/octree_exceptions.h"
+#include <pcl/outofcore/octree_base_node.h>
+#include <pcl/outofcore/octree_exceptions.h>
 
 // JSON
 #include <pcl/outofcore/cJSON.h>

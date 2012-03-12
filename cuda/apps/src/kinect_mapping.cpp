@@ -43,9 +43,9 @@
 
 #include <pcl_cuda/time_cpu.h>
 #include <pcl_cuda/time_gpu.h>
-#include "pcl_cuda/io/cloud_to_pcl.h"
-#include "pcl_cuda/io/extract_indices.h"
-#include "pcl_cuda/io/disparity_to_cloud.h"
+#include <pcl_cuda/io/cloud_to_pcl.h>
+#include <pcl_cuda/io/extract_indices.h>
+#include <pcl_cuda/io/disparity_to_cloud.h>
 
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_grabber.h>
@@ -57,9 +57,9 @@
 
 #include <iostream>
 
-#include "pcl_cuda/sample_consensus/sac_model_1point_plane.h"
-#include "pcl_cuda/sample_consensus/multi_ransac.h"
-#include "pcl_cuda/segmentation/connected_components.h"
+#include <pcl_cuda/sample_consensus/sac_model_1point_plane.h>
+#include <pcl_cuda/sample_consensus/multi_ransac.h>
+#include <pcl_cuda/segmentation/connected_components.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>

@@ -50,9 +50,9 @@
 #include <boost/thread.hpp>
 
 // PCL (Urban Robotics)
-#include "pcl/outofcore/octree_base_node.h"
-#include "pcl/outofcore/octree_disk_container.h"
-#include "pcl/outofcore/octree_ram_container.h"
+#include <pcl/outofcore/octree_base_node.h>
+#include <pcl/outofcore/octree_disk_container.h>
+#include <pcl/outofcore/octree_ram_container.h>
 
 /** 
  *  \todo Add support for an array of input clouds or locations of pcd files on disk

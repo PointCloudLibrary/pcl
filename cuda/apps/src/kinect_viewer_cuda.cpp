@@ -35,8 +35,8 @@
  *
  */
 
-#include "pcl/cuda/io/cloud_to_pcl.h"
-#include "pcl/cuda/io/disparity_to_cloud.h"
+#include <pcl/cuda/io/cloud_to_pcl.h>
+#include <pcl/cuda/io/disparity_to_cloud.h>
 
 #include <pcl/io/openni_grabber.h>
 #include <pcl/point_cloud.h>

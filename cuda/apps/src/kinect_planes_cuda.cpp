@@ -49,15 +49,15 @@
 #include <pcl/visualization/pcl_visualizer.h>
 
 // pcl::cuda includes
-#include "pcl/cuda/time_cpu.h"
-#include "pcl/cuda/time_gpu.h"
-#include "pcl/cuda/io/cloud_to_pcl.h"
-#include "pcl/cuda/io/extract_indices.h"
-#include "pcl/cuda/io/disparity_to_cloud.h"
-#include "pcl/cuda/sample_consensus/sac_model_1point_plane.h"
-#include "pcl/cuda/sample_consensus/multi_ransac.h"
-#include "pcl/cuda/segmentation/connected_components.h"
-#include "pcl/cuda/features/normal_3d.h"
+#include <pcl/cuda/time_cpu.h>
+#include <pcl/cuda/time_gpu.h>
+#include <pcl/cuda/io/cloud_to_pcl.h>
+#include <pcl/cuda/io/extract_indices.h>
+#include <pcl/cuda/io/disparity_to_cloud.h>
+#include <pcl/cuda/sample_consensus/sac_model_1point_plane.h>
+#include <pcl/cuda/sample_consensus/multi_ransac.h>
+#include <pcl/cuda/segmentation/connected_components.h>
+#include <pcl/cuda/features/normal_3d.h>
 
 #include <iostream>
 

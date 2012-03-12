@@ -51,7 +51,7 @@
 #include <boost/random/uniform_int.hpp>
 
 // PCL (Urban Robotics)
-#include "pcl/outofcore/octree_ram_container.h"
+#include <pcl/outofcore/octree_ram_container.h>
 
 //todo - Consider using per-node RNG (it is currently a shared static rng,
 //       which is mutexed. I did i this way to be sure that node of the nodes

@@ -44,7 +44,7 @@
 //
 //M*/
 
-#include "pcl/cuda/segmentation/mssegmentation.h"
+#include <pcl/cuda/segmentation/mssegmentation.h>
 
 using namespace std;
 

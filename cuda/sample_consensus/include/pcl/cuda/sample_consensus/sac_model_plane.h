@@ -38,7 +38,7 @@
 #ifndef PCL_CUDA_SAMPLE_CONSENSUS_MODEL_PLANE_H_
 #define PCL_CUDA_SAMPLE_CONSENSUS_MODEL_PLANE_H_
 
-#include "pcl/cuda/sample_consensus/sac_model.h"
+#include <pcl/cuda/sample_consensus/sac_model.h>
 
 #include <thrust/random.h>
 

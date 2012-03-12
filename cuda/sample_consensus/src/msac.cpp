@@ -35,8 +35,8 @@
  *
  */
 
-#include "pcl_cuda/sample_consensus/multi_ransac.h"
-#include "pcl_cuda/time_gpu.h"
+#include <pcl_cuda/sample_consensus/multi_ransac.h>
+#include <pcl_cuda/time_gpu.h>
 #include <stdio.h>
 //CUPRINTF #include "cuPrintf.cu"
 

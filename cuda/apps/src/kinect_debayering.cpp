@@ -35,8 +35,8 @@
  *
  */
 
-#include "pcl_cuda/io/cloud_to_pcl.h"
-#include "pcl_cuda/io/debayering.h"
+#include <pcl_cuda/io/cloud_to_pcl.h>
+#include <pcl_cuda/io/debayering.h>
 
 #include <pcl/io/kinect_grabber.h>
 #include <boost/shared_ptr.hpp>

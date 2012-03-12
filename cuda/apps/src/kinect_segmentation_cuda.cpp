@@ -52,8 +52,8 @@
 #include <pcl/cuda/io/extract_indices.h>
 #include <pcl/cuda/io/disparity_to_cloud.h>
 #include <pcl/cuda/io/host_device.h>
-#include "pcl/cuda/sample_consensus/sac_model_1point_plane.h"
-#include "pcl/cuda/sample_consensus/multi_ransac.h"
+#include <pcl/cuda/sample_consensus/sac_model_1point_plane.h>
+#include <pcl/cuda/sample_consensus/multi_ransac.h>
 #include <pcl/cuda/segmentation/connected_components.h>
 
 #include <pcl/io/openni_grabber.h>

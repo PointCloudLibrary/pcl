@@ -36,7 +36,7 @@
 #define PCL_CUDA_PCL_CUDA_BASE_H_
 
 #include <boost/shared_ptr.hpp>
-#include "pcl/cuda/point_cloud.h"
+#include <pcl/cuda/point_cloud.h>
 
 namespace pcl
 {

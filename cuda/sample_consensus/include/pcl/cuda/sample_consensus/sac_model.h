@@ -42,7 +42,7 @@
 #include <thrust/sequence.h>
 #include <thrust/count.h>
 #include <thrust/remove.h>
-#include "pcl/cuda/point_cloud.h"
+#include <pcl/cuda/point_cloud.h>
 #include <thrust/random/linear_congruential_engine.h>
 
 #include <pcl/pcl_exports.h>

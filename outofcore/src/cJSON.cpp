@@ -30,7 +30,7 @@
 #include <float.h>
 #include <limits.h>
 #include <ctype.h>
-#include "pcl/outofcore/cJSON.h"
+#include <pcl/outofcore/cJSON.h>
 
 static const char *ep;
 
