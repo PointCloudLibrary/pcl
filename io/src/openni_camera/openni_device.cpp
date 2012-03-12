@@ -127,11 +127,11 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::Node
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating IR generator instance failed. Reason: %s", xnGetStatusString (status));
 #endif // (XN_MINOR_VERSION >= 3)
-  ir_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewIRDataAvailable, this, ir_callback_handle_);
+  ir_generator_.RegisterToNewDataAvailable (static_cast<xn::StateChangedHandler> (NewIRDataAvailable), this, ir_callback_handle_);
 #endif // __APPLE__
 
-  depth_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewDepthDataAvailable, this, depth_callback_handle_);
-  image_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewImageDataAvailable, this, image_callback_handle_);
+  depth_generator_.RegisterToNewDataAvailable (static_cast<xn::StateChangedHandler> (NewDepthDataAvailable), this, depth_callback_handle_);
+  image_generator_.RegisterToNewDataAvailable (static_cast<xn::StateChangedHandler> (NewImageDataAvailable), this, image_callback_handle_);
 
   Init ();
 }
@@ -645,7 +645,6 @@ openni_wrapper::OpenNIDevice::ImageDataThreadFunction ()
     //xn::ImageMetaData* image_data = boost::shared_ptr<xn::ImageMetaData>;
     boost::shared_ptr<xn::ImageMetaData> image_data (new xn::ImageMetaData);
     image_generator_.GetMetaData (*image_data);
-    image_data->MakeDataWritable ();
     image_lock.unlock ();
 
     boost::shared_ptr<Image> image = getCurrentImage (image_data);
@@ -673,7 +672,6 @@ openni_wrapper::OpenNIDevice::DepthDataThreadFunction ()
     depth_generator_.WaitAndUpdateData ();
     boost::shared_ptr<xn::DepthMetaData> depth_data (new xn::DepthMetaData);
     depth_generator_.GetMetaData (*depth_data);
-    depth_data->MakeDataWritable ();
     depth_lock.unlock ();
 
     boost::shared_ptr<DepthImage> depth_image ( new DepthImage (depth_data, baseline_, getDepthFocalLength (), shadow_value_, no_sample_value_) );
@@ -703,7 +701,6 @@ openni_wrapper::OpenNIDevice::IRDataThreadFunction ()
     ir_generator_.WaitAndUpdateData ();
     boost::shared_ptr<xn::IRMetaData> ir_data (new xn::IRMetaData);
     ir_generator_.GetMetaData (*ir_data);
-    ir_data->MakeDataWritable ();
     ir_lock.unlock ();
 
     boost::shared_ptr<IRImage> ir_image ( new IRImage (ir_data) );
