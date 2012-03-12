@@ -72,38 +72,38 @@ TEST (PCL, SIFTKeypoint)
   SIFTKeypoint<PointXYZI, KeypointT> sift_detector;
 	search::KdTree<PointXYZI>::Ptr tree (new search::KdTree<PointXYZI>);
   sift_detector.setSearchMethod (tree);
-  sift_detector.setScales (0.02, 5, 3);
-  sift_detector.setMinimumContrast (0.03);
+  sift_detector.setScales (0.02f, 5, 3);
+  sift_detector.setMinimumContrast (0.03f);
 
   sift_detector.setInputCloud (cloud_xyzi);
   sift_detector.compute (keypoints);
 
   ASSERT_EQ (keypoints.width, keypoints.points.size ());
   ASSERT_EQ (keypoints.height, 1);
-  EXPECT_EQ ((int)keypoints.points.size (), 169);
+  EXPECT_EQ (keypoints.points.size (), static_cast<size_t> (169));
 
   // Change the values and re-compute
-  sift_detector.setScales (0.05, 5, 3);
-  sift_detector.setMinimumContrast (0.06);
+  sift_detector.setScales (0.05f, 5, 3);
+  sift_detector.setMinimumContrast (0.06f);
   sift_detector.compute (keypoints);
 
   ASSERT_EQ (keypoints.width, keypoints.points.size ());
   ASSERT_EQ (keypoints.height, 1);
 
   // Compare to previously validated output
-  const int correct_nr_keypoints = 5;
+  const size_t correct_nr_keypoints = 5;
   const float correct_keypoints[correct_nr_keypoints][4] = 
     { 
       // { x,  y,  z,  scale }
-      {-0.9425, -0.6381,  1.6445,  0.0794},
-      {-0.5083, -0.5587,  1.8519,  0.0500},
-      { 1.0265,  0.0500,  1.7154,  0.1000},
-      { 0.3005, -0.3007,  1.9526,  0.2000},
-      {-0.1002, -0.1002,  1.9933,  0.3175}
+      {-0.9425f, -0.6381f,  1.6445f,  0.0794f},
+      {-0.5083f, -0.5587f,  1.8519f,  0.0500f},
+      { 1.0265f,  0.0500f,  1.7154f,  0.1000f},
+      { 0.3005f, -0.3007f,  1.9526f,  0.2000f},
+      {-0.1002f, -0.1002f,  1.9933f,  0.3175f}
     };
 
-  ASSERT_EQ ((int)keypoints.points.size (), correct_nr_keypoints);
-  for (int i = 0; i < correct_nr_keypoints; ++i)
+  ASSERT_EQ (keypoints.points.size (), correct_nr_keypoints);
+  for (size_t i = 0; i < correct_nr_keypoints; ++i)
   {
     EXPECT_NEAR (keypoints.points[i].x, correct_keypoints[i][0], 1e-4);
     EXPECT_NEAR (keypoints.points[i].y, correct_keypoints[i][1], 1e-4);
@@ -115,14 +115,14 @@ TEST (PCL, SIFTKeypoint)
 
 TEST (PCL, SIFTKeypoint_radiusSearch)
 {
-  int nr_scales_per_octave = 3;
-  float scale = 0.02;
+  const int nr_scales_per_octave = 3;
+  const float scale = 0.02f;
 
   KdTreeFLANN<PointXYZI>::Ptr tree_ (new KdTreeFLANN<PointXYZI>);
   boost::shared_ptr<pcl::PointCloud<PointXYZI> > cloud = cloud_xyzi->makeShared ();
 
   ApproximateVoxelGrid<PointXYZI> voxel_grid;
-  float s = 1.0 * scale; 
+  const float s = 1.0 * scale;
   voxel_grid.setLeafSize (s, s, s);
   voxel_grid.setInputCloud (cloud);
   voxel_grid.filter (*cloud);
@@ -130,12 +130,12 @@ TEST (PCL, SIFTKeypoint_radiusSearch)
   
   const PointCloud<PointXYZI> & input = *cloud;
   KdTreeFLANN<PointXYZI> & tree = *tree_;
-  float base_scale = scale;
+  const float base_scale = scale;
 
   std::vector<float> scales (nr_scales_per_octave + 3);
   for (int i_scale = 0; i_scale <= nr_scales_per_octave + 2; ++i_scale)
   {
-    scales[i_scale] = base_scale * pow (2.0, (1.0 * i_scale - 1) / nr_scales_per_octave);
+    scales[i_scale] = base_scale * pow (2.0f, static_cast<float> (i_scale-1) / nr_scales_per_octave);
   }
   Eigen::MatrixXf diff_of_gauss;
 
@@ -143,9 +143,9 @@ TEST (PCL, SIFTKeypoint_radiusSearch)
   std::vector<float> nn_dist;
   diff_of_gauss.resize (input.size (), scales.size () - 1);
 
-  const float max_radius = 0.10;
+  const float max_radius = 0.10f;
 
-  size_t i_point = 500;
+  const size_t i_point = 500;
   tree.radiusSearch (i_point, max_radius, nn_indices, nn_dist);
 
   // Are they all unique?
