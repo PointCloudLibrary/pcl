@@ -417,9 +417,26 @@ namespace pcl
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template <>
-  class DefaultPointRepresentation <NormalBasedSignature12> : 
-    public DefaultFeatureRepresentation <NormalBasedSignature12>
+  class DefaultPointRepresentation<NormalBasedSignature12> : public DefaultFeatureRepresentation <NormalBasedSignature12> 
   {};
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  template <> 
+  class DefaultPointRepresentation<ShapeContext> : public PointRepresentation<ShapeContext>
+  { 
+    public: 
+      DefaultPointRepresentation () 
+      { 
+        nr_dimensions_ = 1980; 
+      } 
+
+      virtual void 
+      copyToFloatArray (const ShapeContext &p, float * out) const 
+      { 
+        for (int i = 0; i < nr_dimensions_; ++i) 
+          out[i] = p.descriptor[i]; 
+      } 
+  }; 
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template <>
