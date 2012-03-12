@@ -38,11 +38,11 @@
 #ifndef PCL_FEATURES_COLOR_GRADIENT_MODALITY
 #define PCL_FEATURES_COLOR_GRADIENT_MODALITY
 
-#include "pcl/recognition/quantizable_modality.h"
+#include <pcl/recognition/quantizable_modality.h>
 
-#include "pcl/pcl_base.h"
-#include "pcl/point_cloud.h"
-#include "pcl/point_types.h"
+#include <pcl/pcl_base.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 
 
 namespace pcl

@@ -35,7 +35,7 @@
  *
  */
 
-#include "pcl/recognition/linemod.h"
+#include <pcl/recognition/linemod.h>
 
 #include <fstream>
 

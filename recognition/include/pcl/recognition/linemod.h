@@ -42,9 +42,9 @@
 #include <cstddef>
 #include <string.h>
 #include <pcl/pcl_macros.h>
-#include "pcl/recognition/quantizable_modality.h"
-#include "pcl/recognition/region_xy.h"
-#include "pcl/recognition/sparse_quantized_multi_mod_template.h"
+#include <pcl/recognition/quantizable_modality.h>
+#include <pcl/recognition/region_xy.h>
+#include <pcl/recognition/sparse_quantized_multi_mod_template.h>
 
 namespace pcl
 {

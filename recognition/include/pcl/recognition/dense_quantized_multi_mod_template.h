@@ -40,7 +40,7 @@
 
 #include <vector>
 
-#include "pcl/recognition/region_xy.h"
+#include <pcl/recognition/region_xy.h>
 
 namespace pcl
 {

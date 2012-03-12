@@ -1,7 +1,7 @@
 #include "proctor/uniform_sampling_wrapper.h"
 
-#include "pcl/keypoints/uniform_sampling.h"
-#include "pcl/common/io.h"
+#include <pcl/keypoints/uniform_sampling.h>
+#include <pcl/common/io.h>
 #include <vector>
 
 namespace pcl

@@ -38,12 +38,12 @@
 #ifndef PCL_FEATURES_SURFACE_NORMAL_MODALITY
 #define PCL_FEATURES_SURFACE_NORMAL_MODALITY
 
-#include "pcl/recognition/quantizable_modality.h"
+#include <pcl/recognition/quantizable_modality.h>
 
-#include "pcl/pcl_base.h"
-#include "pcl/point_cloud.h"
-#include "pcl/point_types.h"
-#include "pcl/features/linear_least_squares_normal.h"
+#include <pcl/pcl_base.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/features/linear_least_squares_normal.h>
 
 namespace pcl
 {

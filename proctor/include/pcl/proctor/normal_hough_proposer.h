@@ -3,9 +3,9 @@
 
 #include "proctor/hough_proposer.h"
 
-#include "pcl/common/centroid.h"
-#include "pcl/common/common.h"
-#include "pcl/features/principal_curvatures.h"
+#include <pcl/common/centroid.h>
+#include <pcl/common/common.h>
+#include <pcl/features/principal_curvatures.h>
 
 namespace pcl
 {

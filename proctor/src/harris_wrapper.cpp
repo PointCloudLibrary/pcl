@@ -1,7 +1,7 @@
 #include "proctor/harris_wrapper.h"
 
-#include "pcl/keypoints/harris_keypoint3D.h"
-#include "pcl/common/io.h"
+#include <pcl/keypoints/harris_keypoint3D.h>
+#include <pcl/common/io.h>
 #include <vector>
 
 namespace pcl

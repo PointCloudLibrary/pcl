@@ -1,6 +1,6 @@
 #include "proctor/hough_proposer.h"
 
-#include "pcl/common/common.h"
+#include <pcl/common/common.h>
 
 #include <assert.h>
 #include <algorithm>

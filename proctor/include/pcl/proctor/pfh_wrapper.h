@@ -3,8 +3,8 @@
 
 #include "proctor/feature_wrapper.h"
 
-#include "pcl/point_types.h"
-#include "pcl/point_cloud.h"
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/export.hpp>
