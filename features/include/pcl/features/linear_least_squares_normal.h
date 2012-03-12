@@ -40,7 +40,7 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include "pcl/features/feature.h"
+#include <pcl/features/feature.h>
 
 namespace pcl
 {

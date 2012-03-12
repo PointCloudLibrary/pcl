@@ -35,10 +35,10 @@
  *  $Id$
  */
 
-#include "pcl/point_types.h"
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/features/pfhrgb.h"
-#include "pcl/features/impl/pfhrgb.hpp"
+#include <pcl/point_types.h>
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/features/pfhrgb.h>
+#include <pcl/features/impl/pfhrgb.hpp>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool

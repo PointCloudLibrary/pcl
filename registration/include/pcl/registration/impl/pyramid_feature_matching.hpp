@@ -40,7 +40,7 @@
 
 #include <pcl/pcl_macros.h>
 
-#include "pcl/registration/pyramid_feature_matching.h"
+#include <pcl/registration/pyramid_feature_matching.h>
 
 /** \brief Helper function to calculate the binary logarithm
  * \param n_arg: some value

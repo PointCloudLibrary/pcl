@@ -38,7 +38,7 @@
  * $Id$
  *
  */
-#include "pcl/surface/poisson/octree_poisson.h"
+#include <pcl/surface/poisson/octree_poisson.h>
 
 #define ITERATION_POWER 1.0/3
 #define MEMORY_ALLOCATOR_BLOCK_SIZE 1<<12

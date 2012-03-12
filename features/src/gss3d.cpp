@@ -36,10 +36,10 @@
  * $Id$
  */
 
-#include "pcl/point_types.h"
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/features/gss3d.h"
-#include "pcl/features/impl/gss3d.hpp"
+#include <pcl/point_types.h>
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/features/gss3d.h>
+#include <pcl/features/impl/gss3d.hpp>
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES

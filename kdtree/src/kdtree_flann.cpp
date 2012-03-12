@@ -35,10 +35,10 @@
  *
  */
 
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/point_types.h"
-#include "pcl/kdtree/kdtree_flann.h"
-#include "pcl/kdtree/impl/kdtree_flann.hpp"
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
+#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/kdtree/impl/kdtree_flann.hpp>
 
 // Instantiations of specific point types
 PCL_INSTANTIATE(KdTreeFLANN, PCL_POINT_TYPES)

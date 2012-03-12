@@ -38,10 +38,10 @@
 #ifndef PCL_FILTERS_STATISTICALOUTLIERREMOVAL_H_
 #define PCL_FILTERS_STATISTICALOUTLIERREMOVAL_H_
 
-#include "pcl/point_types.h"
-#include "pcl/filters/filter.h"
-#include "pcl/search/pcl_search.h"
-#include "pcl/common/common.h"
+#include <pcl/point_types.h>
+#include <pcl/filters/filter.h>
+#include <pcl/search/pcl_search.h>
+#include <pcl/common/common.h>
 
 namespace pcl
 {

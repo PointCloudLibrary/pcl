@@ -35,7 +35,7 @@
  *
  */
 
-#include "pcl/surface/nurbs/nurbs_curve.h"
+#include <pcl/surface/nurbs/nurbs_curve.h>
 #include <stdio.h>
 
 using namespace pcl;

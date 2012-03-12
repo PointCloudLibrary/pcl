@@ -38,7 +38,7 @@
 #ifndef PCL_FILTERS_IMPL_PROJECT_INLIERS_H_
 #define PCL_FILTERS_IMPL_PROJECT_INLIERS_H_
 
-#include "pcl/filters/project_inliers.h"
+#include <pcl/filters/project_inliers.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

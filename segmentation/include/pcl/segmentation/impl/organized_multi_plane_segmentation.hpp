@@ -40,10 +40,10 @@
 #ifndef PCL_SEGMENTATION_IMPL_ORGANIZED_MULTI_PLANE_SEGMENTATION_H_
 #define PCL_SEGMENTATION_IMPL_ORGANIZED_MULTI_PLANE_SEGMENTATION_H_
 
-#include "pcl/segmentation/organized_connected_component_segmentation.h"
-#include "pcl/segmentation/organized_multi_plane_segmentation.h"
-#include "pcl/common/centroid.h"
-#include "pcl/common/eigen.h"
+#include <pcl/segmentation/organized_connected_component_segmentation.h>
+#include <pcl/segmentation/organized_multi_plane_segmentation.h>
+#include <pcl/common/centroid.h>
+#include <pcl/common/eigen.h>
 #include <boost/make_shared.hpp>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

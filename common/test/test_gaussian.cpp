@@ -36,7 +36,7 @@
 /** \author Nizar Sallem */
 
 #include <gtest/gtest.h>
-#include "pcl/common/gaussian.h"
+#include <pcl/common/gaussian.h>
 
 TEST(PCL, GaussianKernel)
 {

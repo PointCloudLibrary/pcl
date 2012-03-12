@@ -40,9 +40,9 @@
 #include <string>
 #include <map>
 #include <stdlib.h>
-#include "pcl/point_types.h"
-#include "pcl/common/io.h"
-#include "pcl/io/ply_io.h"
+#include <pcl/point_types.h>
+#include <pcl/common/io.h>
+#include <pcl/io/ply_io.h>
 #include <sstream>
 #include <boost/algorithm/string.hpp>
 

@@ -38,7 +38,7 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_RMSAC_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_RMSAC_H_
 
-#include "pcl/sample_consensus/rmsac.h"
+#include <pcl/sample_consensus/rmsac.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool

@@ -35,7 +35,7 @@
  *
  */
 
-#include "pcl/common/intersections.h"
+#include <pcl/common/intersections.h>
 
 bool
 pcl::lineWithLineIntersection (const Eigen::VectorXf &line_a, 

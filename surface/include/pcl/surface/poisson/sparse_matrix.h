@@ -173,7 +173,7 @@ namespace pcl {
   }
 }
 
-#include "pcl/surface/impl/poisson/sparse_matrix.hpp"
+#include <pcl/surface/impl/poisson/sparse_matrix.hpp>
 
 #endif /* PCL_POISSON_SPARSE_MATRIX_H_ */
 

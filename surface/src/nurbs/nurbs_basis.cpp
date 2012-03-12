@@ -37,7 +37,7 @@
 
 // [1] Isogeometric Analysis, Toward Integration of CAD and FEA; J.Austin Cottrell, Thomas J.R. Hughes, Yuri Bazilevs
 
-#include "pcl/surface/nurbs/nurbs_basis.h"
+#include <pcl/surface/nurbs/nurbs_basis.h>
 
 #include <stdio.h>
 

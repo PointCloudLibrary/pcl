@@ -35,8 +35,8 @@
  * $Id: ppf.cpp 4092 2012-01-31 04:53:25Z rusu $
  */
 
-#include "pcl/features/ppfrgb.h"
-#include "pcl/features/impl/ppfrgb.hpp"
+#include <pcl/features/ppfrgb.h>
+#include <pcl/features/impl/ppfrgb.hpp>
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 

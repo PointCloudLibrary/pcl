@@ -39,9 +39,9 @@
 #ifndef PCL_FEATURES_IMPL_BOARD_H_
 #define PCL_FEATURES_IMPL_BOARD_H_
 
-#include "pcl/features/board.h"
+#include <pcl/features/board.h>
 #include <utility>
-#include "pcl/common/transforms.h"
+#include <pcl/common/transforms.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT> void

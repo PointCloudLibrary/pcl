@@ -37,10 +37,10 @@
  *
  */
 
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/point_types.h"
-#include "pcl/segmentation/planar_polygon_fusion.h"
-#include "pcl/segmentation/impl/planar_polygon_fusion.hpp"
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
+#include <pcl/segmentation/planar_polygon_fusion.h>
+#include <pcl/segmentation/impl/planar_polygon_fusion.hpp>
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES

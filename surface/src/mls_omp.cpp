@@ -37,10 +37,10 @@
  *
  */
 
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/point_types.h"
-#include "pcl/surface/mls_omp.h"
-#include "pcl/surface/impl/mls_omp.hpp"
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
+#include <pcl/surface/mls_omp.h>
+#include <pcl/surface/impl/mls_omp.hpp>
 
 
 // Instantiations of specific point types

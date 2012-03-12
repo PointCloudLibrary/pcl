@@ -42,7 +42,7 @@
 #ifndef __PCL_IO_RANGECODING__HPP
 #define __PCL_IO_RANGECODING__HPP
 
-#include "pcl/compression/entropy_range_coder.h"
+#include <pcl/compression/entropy_range_coder.h>
 #include <map>
 #include <iostream>
 #include <vector>

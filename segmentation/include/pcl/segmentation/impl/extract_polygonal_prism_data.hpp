@@ -38,9 +38,9 @@
 #ifndef PCL_SEGMENTATION_IMPL_EXTRACT_POLYGONAL_PRISM_DATA_H_
 #define PCL_SEGMENTATION_IMPL_EXTRACT_POLYGONAL_PRISM_DATA_H_
 
-#include "pcl/segmentation/extract_polygonal_prism_data.h"
-#include "pcl/common/centroid.h"
-#include "pcl/common/eigen.h"
+#include <pcl/segmentation/extract_polygonal_prism_data.h>
+#include <pcl/common/centroid.h>
+#include <pcl/common/eigen.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool

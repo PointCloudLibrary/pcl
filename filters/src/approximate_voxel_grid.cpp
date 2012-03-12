@@ -36,11 +36,11 @@
  */
 
 #include <iostream>
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/point_types.h"
-#include "pcl/common/io.h"
-#include "pcl/filters/approximate_voxel_grid.h"
-#include "pcl/filters/impl/approximate_voxel_grid.hpp"
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
+#include <pcl/common/io.h>
+#include <pcl/filters/approximate_voxel_grid.h>
+#include <pcl/filters/impl/approximate_voxel_grid.hpp>
 
 // Instantiations of specific point types
 PCL_INSTANTIATE(ApproximateVoxelGrid, PCL_XYZ_POINT_TYPES)

@@ -37,7 +37,7 @@
 #ifndef PCL_SEGMENTATION_IMPL_EXTRACT_LABELED_CLUSTERS_H_
 #define PCL_SEGMENTATION_IMPL_EXTRACT_LABELED_CLUSTERS_H_
 
-#include "pcl/segmentation/extract_labeled_clusters.h"
+#include <pcl/segmentation/extract_labeled_clusters.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

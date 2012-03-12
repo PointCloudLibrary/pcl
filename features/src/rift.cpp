@@ -37,10 +37,10 @@
  *
  */
 
-#include "pcl/point_types.h"
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/features/rift.h"
-#include "pcl/features/impl/rift.hpp"
+#include <pcl/point_types.h>
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/features/rift.h>
+#include <pcl/features/impl/rift.hpp>
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES

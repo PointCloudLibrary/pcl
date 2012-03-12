@@ -40,8 +40,8 @@
 #ifndef PCL_IO_PLY_IO_H_
 #define PCL_IO_PLY_IO_H_
 
-#include "pcl/io/file_io.h"
-#include "pcl/io/ply/ply_parser.h"
+#include <pcl/io/file_io.h>
+#include <pcl/io/ply/ply_parser.h>
 #include <boost/bind.hpp>
 #include <pcl/PolygonMesh.h>
 #include <sstream>

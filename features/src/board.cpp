@@ -35,10 +35,10 @@
  *
  *
  */
-#include "pcl/point_types.h"
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/features/board.h"
-#include "pcl/features/impl/board.hpp"
+#include <pcl/point_types.h>
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/features/board.h>
+#include <pcl/features/impl/board.hpp>
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES

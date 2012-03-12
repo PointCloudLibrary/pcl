@@ -40,7 +40,7 @@
 #ifndef PCL_FEATURES_IMPL_RIFT_H_
 #define PCL_FEATURES_IMPL_RIFT_H_
 
-#include "pcl/features/rift.h"
+#include <pcl/features/rift.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename GradientT, typename PointOutT> void

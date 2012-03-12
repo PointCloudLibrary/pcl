@@ -35,8 +35,8 @@
  * $Id: uniform_sampling.cpp 2414 2011-09-07 07:01:06Z svn $
  */
 
-#include "pcl/keypoints/sift_keypoint.h"
-#include "pcl/keypoints/impl/sift_keypoint.hpp"
+#include <pcl/keypoints/sift_keypoint.h>
+#include <pcl/keypoints/impl/sift_keypoint.hpp>
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 

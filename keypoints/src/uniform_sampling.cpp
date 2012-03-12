@@ -35,8 +35,8 @@
  * $Id$
  */
 
-#include "pcl/keypoints/uniform_sampling.h"
-#include "pcl/keypoints/impl/uniform_sampling.hpp"
+#include <pcl/keypoints/uniform_sampling.h>
+#include <pcl/keypoints/impl/uniform_sampling.hpp>
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 

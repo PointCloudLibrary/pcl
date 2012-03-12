@@ -36,17 +36,17 @@
  * Author: Julius Kammerl (julius@kammerl.de)
  */
 
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/point_types.h"
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
 
-#include "pcl/octree/octree.h"
-#include "pcl/octree/octree_impl.h"
+#include <pcl/octree/octree.h>
+#include <pcl/octree/octree_impl.h>
 
-#include "pcl/compression/entropy_range_coder.h"
-#include "pcl/compression/impl/entropy_range_coder.hpp"
+#include <pcl/compression/entropy_range_coder.h>
+#include <pcl/compression/impl/entropy_range_coder.hpp>
 
-#include "pcl/compression/octree_pointcloud_compression.h"
-#include "pcl/compression/impl/octree_pointcloud_compression.hpp"
+#include <pcl/compression/octree_pointcloud_compression.h>
+#include <pcl/compression/impl/octree_pointcloud_compression.hpp>
 
 template class PCL_EXPORTS pcl::octree::PointCloudCompression<pcl::PointXYZ>;
 template class PCL_EXPORTS pcl::octree::PointCloudCompression<pcl::PointXYZRGB>;

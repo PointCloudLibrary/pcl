@@ -454,6 +454,6 @@ namespace pcl
 
 }
 
-#include "pcl/registration/impl/ndt.hpp"
+#include <pcl/registration/impl/ndt.hpp>
 
 #endif // PCL_REGISTRATION_NDT_H_

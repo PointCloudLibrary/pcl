@@ -76,6 +76,6 @@ namespace pcl
 
 }  // end namespace pcl
 
-#include "pcl/common/impl/piecewise_linear_function.hpp"
+#include <pcl/common/impl/piecewise_linear_function.hpp>
 
 #endif  //#ifndef PCL_PIECEWISE_LINEAR_FUNCTION_H_

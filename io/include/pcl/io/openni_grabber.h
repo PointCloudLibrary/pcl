@@ -35,7 +35,7 @@
  *
  */
 
-#include "pcl/pcl_config.h"
+#include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
 #ifndef __PCL_IO_OPENNI_GRABBER__

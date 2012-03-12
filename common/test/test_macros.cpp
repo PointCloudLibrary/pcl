@@ -36,7 +36,7 @@
 
 #include <gtest/gtest.h>
 #include <pcl/pcl_config.h>
-#include "pcl/pcl_tests.h"
+#include <pcl/pcl_tests.h>
 #include <Eigen/Core>
 #include <vector>
 

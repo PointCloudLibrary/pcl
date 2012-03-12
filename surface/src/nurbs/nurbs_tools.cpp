@@ -39,7 +39,7 @@
 #include <stdexcept>
 #include <stdio.h>
 #include <float.h>
-#include "pcl/surface/nurbs/nurbs_tools.h"
+#include <pcl/surface/nurbs/nurbs_tools.h>
 
 #undef Success
 #include <Eigen/Dense>

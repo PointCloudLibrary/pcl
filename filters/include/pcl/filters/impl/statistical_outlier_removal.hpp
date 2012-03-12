@@ -38,7 +38,7 @@
 #ifndef PCL_FILTERS_IMPL_STATISTICAL_OUTLIER_REMOVAL_H_
 #define PCL_FILTERS_IMPL_STATISTICAL_OUTLIER_REMOVAL_H_
 
-#include "pcl/filters/statistical_outlier_removal.h"
+#include <pcl/filters/statistical_outlier_removal.h>
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////

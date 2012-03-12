@@ -35,7 +35,7 @@
  *
  */
 
-#include "pcl/surface/ear_clipping.h"
+#include <pcl/surface/ear_clipping.h>
 #include <pcl/ros/conversions.h>
 #include <pcl/pcl_config.h>
 

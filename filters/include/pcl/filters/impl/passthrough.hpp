@@ -38,8 +38,8 @@
 #ifndef PCL_FILTERS_IMPL_PASSTHROUGH_H_
 #define PCL_FILTERS_IMPL_PASSTHROUGH_H_
 
-#include "pcl/filters/passthrough.h"
-#include "pcl/common/io.h"
+#include <pcl/filters/passthrough.h>
+#include <pcl/common/io.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

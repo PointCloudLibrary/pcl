@@ -38,7 +38,7 @@
 #ifndef PCL_SURFACE_IMPL_TEXTURE_MAPPING_HPP_
 #define PCL_SURFACE_IMPL_TEXTURE_MAPPING_HPP_
 
-#include "pcl/surface/texture_mapping.h"
+#include <pcl/surface/texture_mapping.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> float

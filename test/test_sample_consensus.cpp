@@ -55,7 +55,7 @@
 #include <pcl/sample_consensus/sac_model_normal_plane.h>
 #include <pcl/sample_consensus/sac_model_normal_sphere.h>
 #include <pcl/sample_consensus/sac_model_parallel_plane.h>
-#include "pcl/sample_consensus/sac_model_normal_parallel_plane.h"
+#include <pcl/sample_consensus/sac_model_normal_parallel_plane.h>
 #include <pcl/features/normal_3d.h>
 #include <boost/thread.hpp>
 

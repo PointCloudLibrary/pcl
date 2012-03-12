@@ -41,10 +41,10 @@
 #define PCL_GP3_H_
 
 // PCL includes
-#include "pcl/surface/reconstruction.h"
+#include <pcl/surface/reconstruction.h>
 
-#include "pcl/ros/conversions.h"
-#include "pcl/kdtree/kdtree.h"
+#include <pcl/ros/conversions.h>
+#include <pcl/kdtree/kdtree.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/PolygonMesh.h>
 #include <pcl/TextureMesh.h>

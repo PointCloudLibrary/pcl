@@ -40,7 +40,7 @@
 #ifndef PCL_FEATURES_IMPL_FPFH_OMP_H_
 #define PCL_FEATURES_IMPL_FPFH_OMP_H_
 
-#include "pcl/features/fpfh_omp.h"
+#include <pcl/features/fpfh_omp.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void

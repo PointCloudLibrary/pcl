@@ -191,7 +191,7 @@ namespace pcl
   };
 }
 
-#include "pcl/keypoints/impl/sift_keypoint.hpp"
+#include <pcl/keypoints/impl/sift_keypoint.hpp>
 
 #endif // #ifndef PCL_SIFT_KEYPOINT_H_
 

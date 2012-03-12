@@ -39,7 +39,7 @@
 #define PCL_SAMPLE_CONSENSUS_IMPL_PROSAC_H_
 
 #include <boost/math/distributions/binomial.hpp>
-#include "pcl/sample_consensus/prosac.h"
+#include <pcl/sample_consensus/prosac.h>
 
 //////////////////////////////////////////////////////////////////////////
 // Variable naming uses capital letters to make the comparison with the original paper easier

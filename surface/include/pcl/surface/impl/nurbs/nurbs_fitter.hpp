@@ -33,7 +33,7 @@
  *
  */
 
-#include "pcl/surface/nurbs/nurbs_fitter.h"
+#include <pcl/surface/nurbs/nurbs_fitter.h>
 
 using namespace pcl;
 using namespace nurbs;

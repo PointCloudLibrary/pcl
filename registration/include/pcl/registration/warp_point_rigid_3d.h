@@ -39,7 +39,7 @@
 #ifndef PCL_WARP_POINT_RIGID_3D_H_
 #define PCL_WARP_POINT_RIGID_3D_H_
 
-#include "pcl/registration/warp_point_rigid.h"
+#include <pcl/registration/warp_point_rigid.h>
 #include <Eigen/Geometry>
 
 namespace pcl

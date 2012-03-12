@@ -38,8 +38,8 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CONE_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CONE_H_
 
-#include "pcl/sample_consensus/sac_model_cone.h"
-#include "pcl/common/concatenate.h"
+#include <pcl/sample_consensus/sac_model_cone.h>
+#include <pcl/common/concatenate.h>
 #include <unsupported/Eigen/NonLinearOptimization>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -43,7 +43,7 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
-#include "pcl/common/centroid.h"
+#include <pcl/common/centroid.h>
 
 using namespace pcl;
 
@@ -952,6 +952,12 @@ TEST (PCL, SetIfFieldExists)
   EXPECT_EQ (p.normal_y, 0.0);
   pcl::for_each_type<FieldList> (SetIfFieldExists<PointXYZRGBNormal, float> (p, "normal_z", 0.0));
   EXPECT_EQ (p.normal_z, 0.0);
+
+//  pcl::PointXY p1;
+//  pcl::for_each_type<pcl::traits::fieldList<pcl::PointXY>::type> (pcl::SetIfFieldExists<pcl::PointXY, float> (p1, "intensity", 3.0));
+//
+//  pcl::PFHSignature125 p2;
+//  pcl::for_each_type<pcl::traits::fieldList<pcl::PFHSignature125>::type> (pcl::SetIfFieldExists<pcl::PFHSignature125, float*> (p2, "intensity", 3.0));
 }
 
 //* ---[ */

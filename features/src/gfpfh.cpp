@@ -37,11 +37,11 @@
  *
  */
 
-#include "pcl/point_types.h"
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/features/gfpfh.h"
-#include "pcl/features/impl/gfpfh.hpp"
-#include "pcl/octree/octree_impl.h"
+#include <pcl/point_types.h>
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/features/gfpfh.h>
+#include <pcl/features/impl/gfpfh.hpp>
+#include <pcl/octree/octree_impl.h>
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES

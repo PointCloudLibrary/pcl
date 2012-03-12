@@ -113,7 +113,7 @@ namespace pcl
   typedef VectorAverage<float, 4> VectorAverage4f;
 }  // END namespace
 
-#include "pcl/common/impl/vector_average.hpp"
+#include <pcl/common/impl/vector_average.hpp>
 
 #endif  // #ifndef PCL_VECTOR_AVERAGE_H
 

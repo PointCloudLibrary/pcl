@@ -42,9 +42,9 @@
 
 #include <string>
 #include <boost/fusion/sequence/intrinsic/at_key.hpp>
-#include "pcl/pcl_base.h"
-#include "pcl/PointIndices.h"
-#include "pcl/ros/conversions.h"
+#include <pcl/pcl_base.h>
+#include <pcl/PointIndices.h>
+#include <pcl/ros/conversions.h>
 #include <locale>
 
 namespace pcl
@@ -446,7 +446,7 @@ namespace pcl
   }
 }
 
-#include "pcl/common/impl/io.hpp"
+#include <pcl/common/impl/io.hpp>
 
 #endif  //#ifndef PCL_COMMON_IO_H_
 

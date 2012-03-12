@@ -193,6 +193,6 @@ namespace pcl
   HIK_Norm (FloatVectorT A, FloatVectorT B, int dim);
 }
 /*@}*/
-#include "pcl/common/impl/norms.hpp"
+#include <pcl/common/impl/norms.hpp>
 
 #endif  //#ifndef PCL_NORMS_H_

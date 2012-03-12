@@ -40,7 +40,7 @@
 #ifndef PCL_REGISTER_POINT_STRUCT_H_
 #define PCL_REGISTER_POINT_STRUCT_H_
 
-#include "pcl/point_traits.h"
+#include <pcl/point_traits.h>
 
 #include <boost/mpl/vector.hpp>
 #include <boost/mpl/for_each.hpp>

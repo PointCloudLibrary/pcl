@@ -37,10 +37,10 @@
  *
  */
 
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/point_types.h"
-#include "pcl/segmentation/organized_connected_component_segmentation.h"
-#include "pcl/segmentation/impl/organized_connected_component_segmentation.hpp"
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
+#include <pcl/segmentation/organized_connected_component_segmentation.h>
+#include <pcl/segmentation/impl/organized_connected_component_segmentation.hpp>
 
 PCL_INSTANTIATE_PRODUCT(OrganizedConnectedComponentSegmentation, (PCL_XYZ_POINT_TYPES)((pcl::Label)))
 

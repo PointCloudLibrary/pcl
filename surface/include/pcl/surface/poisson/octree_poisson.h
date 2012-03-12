@@ -234,6 +234,6 @@ namespace pcl {
 }
 
 
-#include "pcl/surface/impl/poisson/octree_poisson.hpp"
+#include <pcl/surface/impl/poisson/octree_poisson.hpp>
 
 #endif /* PCL_POISSON_OCTREE_POISSON_H_ */

@@ -37,10 +37,10 @@
 
 #include <pcl/pcl_config.h>
 
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/point_types.h"
-#include "pcl/surface/nurbs/nurbs_fitter.h"
-#include "pcl/surface/impl/nurbs/nurbs_fitter.hpp"
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
+#include <pcl/surface/nurbs/nurbs_fitter.h>
+#include <pcl/surface/impl/nurbs/nurbs_fitter.hpp>
 
 // Instantiations of specific point types
 PCL_INSTANTIATE(NurbsFitter, PCL_XYZ_POINT_TYPES)

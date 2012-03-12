@@ -284,5 +284,5 @@ namespace pcl {
 }
 
 
-#include "pcl/surface/impl/poisson/multi_grid_octree_data.hpp"
+#include <pcl/surface/impl/poisson/multi_grid_octree_data.hpp>
 #endif /* PCL_POISSON_MULTI_GRID_OCTREE_DATA_H_ */

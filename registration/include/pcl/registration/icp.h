@@ -41,8 +41,8 @@
 // PCL includes
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/sac_model_registration.h>
-#include "pcl/registration/registration.h"
-#include "pcl/registration/transformation_estimation_svd.h"
+#include <pcl/registration/registration.h>
+#include <pcl/registration/transformation_estimation_svd.h>
 
 namespace pcl
 {
@@ -135,6 +135,6 @@ namespace pcl
   };
 }
 
-#include "pcl/registration/impl/icp.hpp"
+#include <pcl/registration/impl/icp.hpp>
 
 #endif  //#ifndef PCL_ICP_H_

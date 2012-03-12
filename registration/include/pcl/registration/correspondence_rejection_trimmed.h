@@ -130,6 +130,6 @@ namespace pcl
   }
 }
 
-#include "pcl/registration/impl/correspondence_rejection_trimmed.hpp"
+#include <pcl/registration/impl/correspondence_rejection_trimmed.hpp>
 
 #endif /* PCL_REGISTRATION_CORRESPONDENCE_REJECTION_TRIMMED_H_ */

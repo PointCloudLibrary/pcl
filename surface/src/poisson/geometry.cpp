@@ -39,7 +39,7 @@
  *
  */
 
-#include "pcl/surface/poisson/geometry.h"
+#include <pcl/surface/poisson/geometry.h>
 
 
 namespace pcl {

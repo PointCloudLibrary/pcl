@@ -38,7 +38,7 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_MSAC_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_MSAC_H_
 
-#include "pcl/sample_consensus/msac.h"
+#include <pcl/sample_consensus/msac.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool

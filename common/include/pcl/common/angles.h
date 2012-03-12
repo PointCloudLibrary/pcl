@@ -83,6 +83,6 @@ namespace pcl
   normAngle (float alpha);
 }
 /*@}*/
-#include "pcl/common/impl/angles.hpp"
+#include <pcl/common/impl/angles.hpp>
 
 #endif  //#ifndef PCL_NORMS_H_

@@ -240,6 +240,6 @@ namespace pcl {
   }
 }
 
-#include "pcl/surface/impl/poisson/geometry.hpp"
+#include <pcl/surface/impl/poisson/geometry.hpp>
 
 #endif /* PCL_POISSON_GEOMETRY_H_ */

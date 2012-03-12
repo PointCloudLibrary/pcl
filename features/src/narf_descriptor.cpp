@@ -38,8 +38,8 @@
 using std::cout;
 using std::cerr;
 
-#include "pcl/features/narf_descriptor.h"
-#include "pcl/features/narf.h"
+#include <pcl/features/narf_descriptor.h>
+#include <pcl/features/narf.h>
 #include <pcl/range_image/range_image.h>
 
 namespace pcl 

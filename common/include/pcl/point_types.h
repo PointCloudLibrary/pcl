@@ -276,7 +276,7 @@ namespace pcl
 
 /** @} */
 
-#include "pcl/impl/point_types.hpp"  // Include struct definitions
+#include <pcl/impl/point_types.hpp>  // Include struct definitions
 
 // ==============================
 // =====POINT_CLOUD_REGISTER=====

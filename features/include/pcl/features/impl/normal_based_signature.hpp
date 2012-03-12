@@ -38,7 +38,7 @@
 #ifndef PCL_FEATURES_IMPL_NORMAL_BASED_SIGNATURE_H_
 #define PCL_FEATURES_IMPL_NORMAL_BASED_SIGNATURE_H_
 
-#include "pcl/features/normal_based_signature.h"
+#include <pcl/features/normal_based_signature.h>
 
 template <typename PointT, typename PointNT, typename PointFeature> void
 pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeature (FeatureCloud &output)

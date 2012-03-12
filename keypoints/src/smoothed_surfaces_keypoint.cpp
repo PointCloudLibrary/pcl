@@ -35,8 +35,8 @@
  * $Id$
  */
 
-#include "pcl/keypoints/smoothed_surfaces_keypoint.h"
-#include "pcl/keypoints/impl/smoothed_surfaces_keypoint.hpp"
+#include <pcl/keypoints/smoothed_surfaces_keypoint.h>
+#include <pcl/keypoints/impl/smoothed_surfaces_keypoint.hpp>
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 

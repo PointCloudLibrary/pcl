@@ -33,10 +33,10 @@
  *
  */
 
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/point_types.h"
-#include "pcl/surface/marching_cubes_greedy_dot.h"
-#include "pcl/surface/impl/marching_cubes_greedy_dot.hpp"
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
+#include <pcl/surface/marching_cubes_greedy_dot.h>
+#include <pcl/surface/impl/marching_cubes_greedy_dot.hpp>
 
 // Instantiations of specific point types
 PCL_INSTANTIATE(MarchingCubesGreedyDot, (pcl::PointNormal)(pcl::PointXYZRGBNormal)(pcl::PointXYZINormal))

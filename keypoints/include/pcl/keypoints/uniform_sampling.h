@@ -40,7 +40,7 @@
 #ifndef PCL_KEYPOINTS_UNIFORM_SAMPLING_H_
 #define PCL_KEYPOINTS_UNIFORM_SAMPLING_H_
 
-#include "pcl/keypoints/keypoint.h"
+#include <pcl/keypoints/keypoint.h>
 #include <boost/unordered_map.hpp>
 
 namespace pcl

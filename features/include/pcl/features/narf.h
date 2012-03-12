@@ -281,6 +281,6 @@ namespace pcl
 
 }  // end namespace pcl
 
-#include "pcl/features/impl/narf.hpp"
+#include <pcl/features/impl/narf.hpp>
 
 #endif  //#ifndef PCL_NARF_H_

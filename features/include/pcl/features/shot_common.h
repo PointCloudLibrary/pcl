@@ -61,7 +61,7 @@ namespace pcl
 
 }
 
-#include "pcl/features/impl/shot_common.hpp"
+#include <pcl/features/impl/shot_common.hpp>
 
 #endif    // PCL_FEATURES_SHOT_COMMON_H_
 

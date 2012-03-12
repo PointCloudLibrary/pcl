@@ -43,7 +43,7 @@
 #ifndef PCL_CONCAVE_HULL_H
 #define PCL_CONCAVE_HULL_H
 
-#include "pcl/surface/convex_hull.h"
+#include <pcl/surface/convex_hull.h>
 
 namespace pcl
 {

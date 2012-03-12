@@ -232,7 +232,7 @@ namespace pcl
   };
 }
 
-#include "pcl/surface/impl/reconstruction.hpp"
+#include <pcl/surface/impl/reconstruction.hpp>
 
 #endif  // PCL_SURFACE_RECONSTRUCTION_H_
 

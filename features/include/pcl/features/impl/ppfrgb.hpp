@@ -1,8 +1,8 @@
 #ifndef PCL_FEATURES_IMPL_PPFRGB_H_
 #define PCL_FEATURES_IMPL_PPFRGB_H_
 
-#include "pcl/features/ppfrgb.h"
-#include "pcl/features/pfhrgb.h"
+#include <pcl/features/ppfrgb.h>
+#include <pcl/features/pfhrgb.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT>

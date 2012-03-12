@@ -40,9 +40,9 @@
 #ifndef PCL_SEGMENTATION_ORGANIZED_CONNECTED_COMPONENT_SEGMENTATION_H_
 #define PCL_SEGMENTATION_ORGANIZED_CONNECTED_COMPONENT_SEGMENTATION_H_
 
-#include "pcl/pcl_base.h"
-#include "pcl/PointIndices.h"
-#include "pcl/segmentation/comparator.h"
+#include <pcl/pcl_base.h>
+#include <pcl/PointIndices.h>
+#include <pcl/segmentation/comparator.h>
 
 namespace pcl
 {

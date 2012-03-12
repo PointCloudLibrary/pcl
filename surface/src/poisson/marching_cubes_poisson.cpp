@@ -40,7 +40,7 @@
  */
 
 #include <math.h>
-#include "pcl/surface/poisson/marching_cubes_poisson.h"
+#include <pcl/surface/poisson/marching_cubes_poisson.h>
 
 
 namespace pcl {

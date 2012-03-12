@@ -89,6 +89,6 @@ namespace pcl
   }
 }
 
-#include "pcl/registration/impl/correspondence_rejection_one_to_one.hpp"
+#include <pcl/registration/impl/correspondence_rejection_one_to_one.hpp>
 
 #endif /* PCL_REGISTRATION_CORRESPONDENCE_REJECTION_ONE_TO_ONE_H_ */

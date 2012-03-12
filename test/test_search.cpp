@@ -47,7 +47,7 @@
 #include <boost/random/uniform_real.hpp>
 #include <boost/random/variate_generator.hpp>
 
-#include "pcl/common/time.h"
+#include <pcl/common/time.h>
 
 using namespace pcl;
 using namespace std;

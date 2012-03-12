@@ -44,7 +44,7 @@
 #include <pcl/pcl_base.h>
 #include <pcl/PointIndices.h>
 #include <pcl/ModelCoefficients.h>
-#include "pcl/segmentation/plane_coefficient_comparator.h"
+#include <pcl/segmentation/plane_coefficient_comparator.h>
 
 namespace pcl
 {

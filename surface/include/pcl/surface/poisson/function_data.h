@@ -89,5 +89,5 @@ namespace pcl {
   }
 }
 
-#include "pcl/surface/impl/poisson/function_data.hpp"
+#include <pcl/surface/impl/poisson/function_data.hpp>
 #endif /* PCL_POISSON_FUNCTION_DATA_H_ */

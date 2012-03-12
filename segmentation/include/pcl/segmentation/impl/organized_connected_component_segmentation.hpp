@@ -40,7 +40,7 @@
 #ifndef PCL_SEGMENTATION_IMPL_ORGANIZED_CONNECTED_COMPONENT_SEGMENTATION_H_
 #define PCL_SEGMENTATION_IMPL_ORGANIZED_CONNECTED_COMPONENT_SEGMENTATION_H_
 
-#include "pcl/segmentation/organized_connected_component_segmentation.h"
+#include <pcl/segmentation/organized_connected_component_segmentation.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointLT> void

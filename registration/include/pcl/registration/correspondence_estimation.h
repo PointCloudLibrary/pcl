@@ -142,6 +142,6 @@ namespace pcl
   }
 }
 
-#include "pcl/registration/impl/correspondence_estimation.hpp"
+#include <pcl/registration/impl/correspondence_estimation.hpp>
 
 #endif /* PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_H_ */

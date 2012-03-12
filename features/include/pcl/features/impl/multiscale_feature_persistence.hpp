@@ -38,7 +38,7 @@
 #ifndef PCL_FEATURES_IMPL_MULTISCALE_FEATURE_PERSISTENCE_H_
 #define PCL_FEATURES_IMPL_MULTISCALE_FEATURE_PERSISTENCE_H_
 
-#include "pcl/features/multiscale_feature_persistence.h"
+#include <pcl/features/multiscale_feature_persistence.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointFeature>

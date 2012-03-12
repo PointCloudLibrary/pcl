@@ -39,7 +39,7 @@
 #ifndef PCL_SEGMENTATION_IMPL_SEEDED_HUE_SEGMENTATION_H_
 #define PCL_SEGMENTATION_IMPL_SEEDED_HUE_SEGMENTATION_H_
 
-#include "pcl/segmentation/seeded_hue_segmentation.h"
+#include <pcl/segmentation/seeded_hue_segmentation.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void

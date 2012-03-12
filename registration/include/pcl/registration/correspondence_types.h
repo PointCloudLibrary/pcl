@@ -70,6 +70,6 @@ namespace pcl
   }
 }
 
-#include "pcl/registration/impl/correspondence_types.hpp"
+#include <pcl/registration/impl/correspondence_types.hpp>
 
 #endif /* PCL_REGISTRATION_CORRESPONDENCE_TYPES_H_ */

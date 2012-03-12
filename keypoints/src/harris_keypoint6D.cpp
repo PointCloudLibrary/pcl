@@ -34,7 +34,7 @@
  *
  */
 
-#include "pcl/keypoints/impl/harris_keypoint6D.hpp"
+#include <pcl/keypoints/impl/harris_keypoint6D.hpp>
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 

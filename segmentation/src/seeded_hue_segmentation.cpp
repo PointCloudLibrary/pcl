@@ -35,9 +35,9 @@
  *
  */
 
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/point_types.h"
-#include "pcl/segmentation/seeded_hue_segmentation.h"
-#include "pcl/segmentation/impl/seeded_hue_segmentation.hpp"
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
+#include <pcl/segmentation/seeded_hue_segmentation.h>
+#include <pcl/segmentation/impl/seeded_hue_segmentation.hpp>
 
 // Instantiations of specific point types

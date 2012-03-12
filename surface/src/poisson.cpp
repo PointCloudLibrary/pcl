@@ -39,10 +39,10 @@
 #pragma optimize("g", off)
 #endif //WIN32
 
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/point_types.h"
-#include "pcl/surface/poisson.h"
-#include "pcl/surface/impl/poisson.hpp"
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
+#include <pcl/surface/poisson.h>
+#include <pcl/surface/impl/poisson.hpp>
 
 // Instantiations of specific point types
 PCL_INSTANTIATE(Poisson, (pcl::PointNormal)(pcl::PointXYZRGBNormal)(pcl::PointXYZINormal));

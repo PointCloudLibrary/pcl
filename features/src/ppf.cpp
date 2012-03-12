@@ -35,8 +35,8 @@
  * $Id$
  */
 
-#include "pcl/features/ppf.h"
-#include "pcl/features/impl/ppf.hpp"
+#include <pcl/features/ppf.h>
+#include <pcl/features/impl/ppf.hpp>
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 

@@ -37,10 +37,10 @@
  *
  */
 
-#include "pcl/sample_consensus/sac_model_cone.h"
-#include "pcl/sample_consensus/impl/sac_model_cone.hpp"
-#include "pcl/point_types.h"
-#include "pcl/impl/instantiate.hpp"
+#include <pcl/sample_consensus/sac_model_cone.h>
+#include <pcl/sample_consensus/impl/sac_model_cone.hpp>
+#include <pcl/point_types.h>
+#include <pcl/impl/instantiate.hpp>
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES

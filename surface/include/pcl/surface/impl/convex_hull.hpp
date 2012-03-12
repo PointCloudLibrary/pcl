@@ -43,7 +43,7 @@
 #ifndef PCL_SURFACE_IMPL_CONVEX_HULL_H_
 #define PCL_SURFACE_IMPL_CONVEX_HULL_H_
 
-#include "pcl/surface/convex_hull.h"
+#include <pcl/surface/convex_hull.h>
 #include <pcl/common/common.h>
 #include <pcl/common/eigen.h>
 #include <pcl/common/transforms.h>

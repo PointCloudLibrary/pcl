@@ -33,10 +33,10 @@
  *
  *
  */
-#include "pcl/point_types.h"
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/features/shot_lrf.h"
-#include "pcl/features/impl/shot_lrf.hpp"
+#include <pcl/point_types.h>
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/features/shot_lrf.h>
+#include <pcl/features/impl/shot_lrf.hpp>
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES

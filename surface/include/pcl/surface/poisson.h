@@ -39,7 +39,7 @@
 #define PCL_SURFACE_POISSON_H_
 
 #include <pcl/surface/reconstruction.h>
-#include "pcl/surface/poisson/geometry.h"
+#include <pcl/surface/poisson/geometry.h>
 
 namespace pcl
 {

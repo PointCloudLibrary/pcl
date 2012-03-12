@@ -38,8 +38,8 @@
 #ifndef PCL_KEYPOINTS_UNIFORM_SAMPLING_IMPL_H_
 #define PCL_KEYPOINTS_UNIFORM_SAMPLING_IMPL_H_
 
-#include "pcl/common/common.h"
-#include "pcl/keypoints/uniform_sampling.h"
+#include <pcl/common/common.h>
+#include <pcl/keypoints/uniform_sampling.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void

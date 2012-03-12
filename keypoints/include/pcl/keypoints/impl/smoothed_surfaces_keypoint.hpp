@@ -38,7 +38,7 @@
 #ifndef PCL_KEYPOINTS_IMPL_SMOOTHEDSURFACESKEYPOINT_H_
 #define PCL_KEYPOINTS_IMPL_SMOOTHEDSURFACESKEYPOINT_H_
 
-#include "pcl/keypoints/smoothed_surfaces_keypoint.h"
+#include <pcl/keypoints/smoothed_surfaces_keypoint.h>
 #include <pcl/kdtree/kdtree_flann.h>
 
 //#include <pcl/io/pcd_io.h>

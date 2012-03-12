@@ -36,7 +36,7 @@
 #ifndef PCL_SURFACE_IMPL_MARCHING_CUBES_GREEDY_H_
 #define PCL_SURFACE_IMPL_MARCHING_CUBES_GREEDY_H_
 
-#include "pcl/surface/marching_cubes_greedy.h"
+#include <pcl/surface/marching_cubes_greedy.h>
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
 pcl::MarchingCubesGreedy<PointNT>::MarchingCubesGreedy ()

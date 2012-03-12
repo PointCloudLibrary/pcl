@@ -38,9 +38,9 @@
 #define PCL_RANGE_IMAGE_H_
 
 #include <pcl/point_cloud.h>
-#include "pcl/pcl_macros.h"
-#include "pcl/point_types.h"
-#include "pcl/common/common_headers.h"
+#include <pcl/pcl_macros.h>
+#include <pcl/point_types.h>
+#include <pcl/common/common_headers.h>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <pcl/common/vector_average.h>
@@ -705,6 +705,6 @@ namespace pcl
 }  // namespace end
 
 
-#include "pcl/range_image/impl/range_image.hpp"  // Definitions of templated and inline functions
+#include <pcl/range_image/impl/range_image.hpp>  // Definitions of templated and inline functions
 
 #endif  //#ifndef PCL_RANGE_IMAGE_H_

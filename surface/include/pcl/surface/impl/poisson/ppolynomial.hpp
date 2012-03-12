@@ -39,7 +39,7 @@
  *
  */
 
-#include "pcl/surface/poisson/factor.h"
+#include <pcl/surface/poisson/factor.h>
 
 namespace pcl {
   namespace poisson {

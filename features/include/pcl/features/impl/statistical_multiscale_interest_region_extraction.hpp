@@ -38,7 +38,7 @@
 #ifndef PCL_FEATURES_IMPL_STATISTICAL_MULTISCALE_INTEREST_REGION_EXTRACTION_H_
 #define PCL_FEATURES_IMPL_STATISTICAL_MULTISCALE_INTEREST_REGION_EXTRACTION_H_
 
-#include "pcl/features/statistical_multiscale_interest_region_extraction.h"
+#include <pcl/features/statistical_multiscale_interest_region_extraction.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/property_map/property_map.hpp>

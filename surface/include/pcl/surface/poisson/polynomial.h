@@ -107,5 +107,5 @@ namespace pcl {
 }
 
 
-#include "pcl/surface/impl/poisson/polynomial.hpp"
+#include <pcl/surface/impl/poisson/polynomial.hpp>
 #endif /* PCL_POISSON_POLYNOMIAL_H_ */

@@ -35,7 +35,7 @@
 #ifndef PCL_FILTERS_IMPL_BOX_CLIPPER3D_HPP
 #define PCL_FILTERS_IMPL_BOX_CLIPPER3D_HPP
 
-#include "pcl/filters/box_clipper3D.h"
+#include <pcl/filters/box_clipper3D.h>
 
 template<typename PointT>
 pcl::BoxClipper3D<PointT>::BoxClipper3D (const Eigen::Affine3f& transformation)

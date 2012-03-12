@@ -38,7 +38,7 @@
 #ifndef PCL_COMMON_IMPL_CENTROID_H_
 #define PCL_COMMON_IMPL_CENTROID_H_
 
-#include "pcl/ros/conversions.h"
+#include <pcl/ros/conversions.h>
 #include <boost/mpl/size.hpp>
 
 /////////////////////////////////////////////////////////////////////////////////////////////

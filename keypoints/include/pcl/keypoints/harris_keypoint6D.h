@@ -138,7 +138,7 @@ namespace pcl
   } ;
 }
 
-#include "pcl/keypoints/impl/harris_keypoint6D.hpp"
+#include <pcl/keypoints/impl/harris_keypoint6D.hpp>
 
 #endif // #ifndef PCL_HARRIS_KEYPOINT_6D_H_
 
