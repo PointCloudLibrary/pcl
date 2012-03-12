@@ -132,6 +132,16 @@ Return statements should have their values in parentheses, e.g.:
   }
 
 
+1.8 Includes
+^^^^^^^^^^^^
+
+Include statements are made with quotes only if the header file is in the same directory, in any other case the include statement is
+made as:
+
+.. code-block:: cpp
+
+  #include <pcl/library/file.h>
+  #incluce <pcl/library/impl_file.hpp>
 
 Chapter 2 - Indentation and Formatting
 ======================================
