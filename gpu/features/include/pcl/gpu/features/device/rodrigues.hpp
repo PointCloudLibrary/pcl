@@ -38,7 +38,7 @@
 #ifndef PCL_GPU_DEVICE_RODRIGUES_HPP_
 #define PCL_GPU_DEVICE_RODRIGUES_HPP_
 
-#include "pcl/gpu/utils/device/vector_math.hpp"
+#include <pcl/gpu/utils/device/vector_math.hpp>
 
 namespace pcl
 {

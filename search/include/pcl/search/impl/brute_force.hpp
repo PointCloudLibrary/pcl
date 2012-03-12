@@ -38,7 +38,7 @@
 #ifndef PCL_SEARCH_IMPL_BRUTE_FORCE_SEARCH_H_
 #define PCL_SEARCH_IMPL_BRUTE_FORCE_SEARCH_H_
 
-#include "pcl/search/brute_force.h"
+#include <pcl/search/brute_force.h>
 #include <queue>
 
 //////////////////////////////////////////////////////////////////////////////////////////////

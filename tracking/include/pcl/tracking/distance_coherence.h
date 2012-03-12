@@ -1,7 +1,7 @@
 #ifndef PCL_TRACKING_DISTANCE_COHERENCE_H_
 #define PCL_TRACKING_DISTANCE_COHERENCE_H_
 
-#include "pcl/tracking/coherence.h"
+#include <pcl/tracking/coherence.h>
 
 namespace pcl
 {
@@ -45,6 +45,6 @@ namespace pcl
   }
 }
 
-// #include "pcl/tracking/impl/distance_coherence.hpp"
+// #include <pcl/tracking/impl/distance_coherence.hpp>
 
 #endif

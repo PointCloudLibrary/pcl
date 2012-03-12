@@ -37,8 +37,8 @@
 #ifndef PCL_GPU_FEATURS_DEVICE_VECTOR_OPERATIONS_HPP_
 #define PCL_GPU_FEATURS_DEVICE_VECTOR_OPERATIONS_HPP_
 
-#include "pcl/gpu/features/device/rodrigues.hpp"
-#include "pcl/gpu/utils/device/vector_math.hpp"
+#include <pcl/gpu/features/device/rodrigues.hpp>
+#include <pcl/gpu/utils/device/vector_math.hpp>
 
 namespace pcl
 {

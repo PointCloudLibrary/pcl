@@ -33,10 +33,10 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/point_types.h"
-#include "pcl/search/brute_force.h"
-#include "pcl/search/impl/brute_force.hpp"
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
+#include <pcl/search/brute_force.h>
+#include <pcl/search/impl/brute_force.hpp>
 
 // Instantiations of specific point types
 PCL_INSTANTIATE (BruteForce, PCL_XYZ_POINT_TYPES)

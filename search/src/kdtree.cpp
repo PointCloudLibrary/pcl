@@ -36,9 +36,9 @@
  * $Id$
  *
  */
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/point_types.h"
-#include "pcl/search/kdtree.h"
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
+#include <pcl/search/kdtree.h>
 
 // Instantiations of specific point types
 PCL_INSTANTIATE(KdTree, PCL_POINT_TYPES)

@@ -37,9 +37,9 @@
 #include "gtest/gtest.h"
 
 #include <pcl/point_types.h>
-#include "pcl/features/spin_image.h"
-#include "pcl/gpu/features/features.hpp"
-#include "pcl/common/time.h"
+#include <pcl/features/spin_image.h>
+#include <pcl/gpu/features/features.hpp>
+#include <pcl/common/time.h>
 
 #include "data_source.hpp"
 

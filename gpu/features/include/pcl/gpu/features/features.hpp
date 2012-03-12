@@ -37,11 +37,11 @@
 #ifndef _PCL_GPU_FEATURES_HPP_
 #define _PCL_GPU_FEATURES_HPP_
 
-#include "pcl/pcl_macros.h"
-#include "pcl/point_types.h"
-#include "pcl/gpu/containers/device_array.h"
-#include "pcl/gpu/octree/device_format.hpp"
-#include "pcl/gpu/octree/octree.hpp"
+#include <pcl/pcl_macros.h>
+#include <pcl/point_types.h>
+#include <pcl/gpu/containers/device_array.h>
+#include <pcl/gpu/octree/device_format.hpp>
+#include <pcl/gpu/octree/octree.hpp>
 
 namespace pcl
 {

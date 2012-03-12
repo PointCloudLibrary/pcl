@@ -37,10 +37,10 @@
 #ifndef __PCL_GPU_UTILS_REPACKS_HPP__
 #define __PCL_GPU_UTILS_REPACKS_HPP__
 
-#include "pcl/pcl_macros.h"
-#include "pcl/point_types.h"
+#include <pcl/pcl_macros.h>
+#include <pcl/point_types.h>
 
-#include "pcl/gpu/containers/device_array.h"
+#include <pcl/gpu/containers/device_array.h>
 
 namespace pcl
 {

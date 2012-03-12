@@ -1,5 +1,5 @@
-#include "pcl/gpu/octree/octree.hpp"
-#include "pcl/gpu/containers/device_array.hpp"
+#include <pcl/gpu/octree/octree.hpp>
+#include <pcl/gpu/containers/device_array.hpp>
 
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_io.h>

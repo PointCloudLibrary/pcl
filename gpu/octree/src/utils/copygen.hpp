@@ -37,7 +37,7 @@
 #ifndef PCL_GPU_OCTREE_COPYGE_HPP
 #define PCL_GPU_OCTREE_COPYGE_HPP
 
-#include "pcl/gpu/utils/device/warp.hpp"
+#include <pcl/gpu/utils/device/warp.hpp>
 
 namespace pcl
 {

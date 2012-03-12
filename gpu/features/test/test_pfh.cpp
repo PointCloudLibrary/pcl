@@ -37,12 +37,12 @@
 #include "gtest/gtest.h"
 
 #include <pcl/point_types.h>
-#include "pcl/features/pfh.h"
-#include "pcl/features/pfhrgb.h"
-#include "pcl/features/normal_3d.h"
-#include "pcl/io/pcd_io.h"
-#include "pcl/common/common.h"
-#include "pcl/gpu/features/features.hpp"
+#include <pcl/features/pfh.h>
+#include <pcl/features/pfhrgb.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/common/common.h>
+#include <pcl/gpu/features/features.hpp>
 #include "data_source.hpp"
 #include <pcl/search/search.h>
 

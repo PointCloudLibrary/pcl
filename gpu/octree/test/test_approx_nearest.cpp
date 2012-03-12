@@ -47,9 +47,9 @@
 #include <pcl/octree/octree.h>
 #pragma warning (default: 4521)
 
-#include "pcl/gpu/octree/octree.hpp"
-#include "pcl/gpu/containers/device_array.h"
-#include "pcl/gpu/utils/safe_call.hpp"
+#include <pcl/gpu/octree/octree.hpp>
+#include <pcl/gpu/containers/device_array.h>
+#include <pcl/gpu/utils/safe_call.hpp>
 
 #include "data_source.hpp"
 

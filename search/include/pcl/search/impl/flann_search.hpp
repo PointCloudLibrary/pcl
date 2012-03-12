@@ -40,7 +40,7 @@
 #ifndef PCL_SEARCH_IMPL_FLANN_SEARCH_H_
 #define PCL_SEARCH_IMPL_FLANN_SEARCH_H_
 
-#include "pcl/search/flann_search.h"
+#include <pcl/search/flann_search.h>
 #include <flann/flann.hpp>
 
 //////////////////////////////////////////////////////////////////////////////////////////////

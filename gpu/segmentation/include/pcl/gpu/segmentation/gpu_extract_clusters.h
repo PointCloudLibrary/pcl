@@ -40,12 +40,12 @@
 #ifndef PCL_GPU_EXTRACT_CLUSTERS_H_
 #define PCL_GPU_EXTRACT_CLUSTERS_H_
 
-#include "pcl/point_types.h"
-#include "pcl/point_cloud.h"
-#include "pcl/PointIndices.h"
-#include "pcl/pcl_macros.h"
-#include "pcl/gpu/octree/octree.hpp"
-#include "pcl/gpu/containers/device_array.h"
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+#include <pcl/PointIndices.h>
+#include <pcl/pcl_macros.h>
+#include <pcl/gpu/octree/octree.hpp>
+#include <pcl/gpu/containers/device_array.h>
 
 namespace pcl
 {

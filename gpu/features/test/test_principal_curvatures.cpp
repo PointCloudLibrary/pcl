@@ -37,8 +37,8 @@
 #include "gtest/gtest.h"
 
 #include <pcl/point_types.h>
-#include "pcl/features/principal_curvatures.h"
-#include "pcl/gpu/features/features.hpp"
+#include <pcl/features/principal_curvatures.h>
+#include <pcl/gpu/features/features.hpp>
 
 #include "data_source.hpp"
 

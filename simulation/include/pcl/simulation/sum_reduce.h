@@ -10,8 +10,8 @@
 
 #include <GL/glew.h>
 #include <GL/gl.h>
-#include "pcl/simulation/glsl_shader.h"
-#include "pcl/simulation/model.h"
+#include <pcl/simulation/glsl_shader.h>
+#include <pcl/simulation/model.h>
 
 namespace pcl
 {

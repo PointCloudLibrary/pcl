@@ -39,7 +39,7 @@
 #ifndef PCL_GPU_SEGMENTATION_IMPL_EXTRACT_LABELED_CLUSTERS_H_
 #define PCL_GPU_SEGMENTATION_IMPL_EXTRACT_LABELED_CLUSTERS_H_
 
-#include "pcl/gpu/segmentation/gpu_extract_labeled_clusters.h"
+#include <pcl/gpu/segmentation/gpu_extract_labeled_clusters.h>
 
 template <typename PointT> void
 pcl::gpu::extractLabeledEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<PointT> >  &host_cloud_,

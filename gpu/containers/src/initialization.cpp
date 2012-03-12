@@ -34,14 +34,14 @@
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
 
-#include "pcl/gpu/containers/initialization.h"
-#include "pcl/gpu/utils/safe_call.hpp"
+#include <pcl/gpu/containers/initialization.h>
+#include <pcl/gpu/utils/safe_call.hpp>
 
 #include "cuda.h"
 #include <stdio.h>
 
 #define HAVE_CUDA
-//#include "pcl_config.h"
+//#include <pcl_config.h>
 
 
 #if !defined(HAVE_CUDA)

@@ -37,7 +37,7 @@
 #ifndef PCL_GPU_CONTAINERS_DEVICE_MEMORY_HPP_
 #define PCL_GPU_CONTAINERS_DEVICE_MEMORY_HPP_
 
-#include "pcl/pcl_exports.h"
+#include <pcl/pcl_exports.h>
 #include <pcl/gpu/containers/kernel_containers.h>
 
 namespace pcl
@@ -255,6 +255,6 @@ namespace pcl
     }
 }
 
-#include "pcl/gpu/containers/impl/device_memory.hpp"
+#include <pcl/gpu/containers/impl/device_memory.hpp>
 
 #endif /* PCL_GPU_CONTAINERS_DEVICE_MEMORY_HPP_ */

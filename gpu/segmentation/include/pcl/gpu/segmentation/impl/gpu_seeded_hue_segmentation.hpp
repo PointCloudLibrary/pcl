@@ -39,7 +39,7 @@
 #ifndef PCL_GPU_SEGMENTATION_IMPL_SEEDED_HUE_SEGMENTATION_H_
 #define PCL_GPU_SEGMENTATION_IMPL_SEEDED_HUE_SEGMENTATION_H_
 
-#include "pcl/gpu/segmentation/gpu_seeded_hue_segmentation.h"
+#include <pcl/gpu/segmentation/gpu_seeded_hue_segmentation.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void

@@ -37,7 +37,7 @@
 #ifndef PCL_GPU_DEVICE_EMULATION_HPP_
 #define PCL_GPU_DEVICE_EMULATION_HPP_
 
-#include "pcl/gpu/device/warp_reduce.hpp"
+#include <pcl/gpu/device/warp_reduce.hpp>
 
 namespace pcl
 {

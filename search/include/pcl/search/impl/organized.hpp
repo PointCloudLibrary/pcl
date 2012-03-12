@@ -40,9 +40,9 @@
 #ifndef PCL_SEARCH_IMPL_ORGANIZED_NEIGHBOR_SEARCH_H_
 #define PCL_SEARCH_IMPL_ORGANIZED_NEIGHBOR_SEARCH_H_
 
-#include "pcl/search/organized.h"
+#include <pcl/search/organized.h>
 #include <pcl/common/eigen.h>
-#include "pcl/common/time.h"
+#include <pcl/common/time.h>
 #include <Eigen/Eigenvalues>
 
 //////////////////////////////////////////////////////////////////////////////////////////////

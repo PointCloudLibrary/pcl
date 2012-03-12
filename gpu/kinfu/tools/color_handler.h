@@ -38,8 +38,8 @@
 #define COLOR_HANDLER_H_
 
 #include <pcl/point_types.h>
-#include "pcl/point_cloud.h"
-#include "pcl/visualization/point_cloud_handlers.h"
+#include <pcl/point_cloud.h>
+#include <pcl/visualization/point_cloud_handlers.h>
 
 namespace pcl
 {

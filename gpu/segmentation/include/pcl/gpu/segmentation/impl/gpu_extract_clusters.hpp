@@ -39,7 +39,7 @@
 #ifndef PCL_GPU_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_
 #define PCL_GPU_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_
 
-#include "pcl/gpu/segmentation/gpu_extract_clusters.h"
+#include <pcl/gpu/segmentation/gpu_extract_clusters.h>
 
 void
 pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> >  &host_cloud_,

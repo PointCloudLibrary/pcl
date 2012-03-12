@@ -39,10 +39,10 @@
 
 #include <vector>
 
-#include "pcl/point_types.h"
-#include "pcl/pcl_macros.h"
-#include "pcl/gpu/containers/device_array.h"
-#include "pcl/gpu/octree/device_format.hpp"
+#include <pcl/point_types.h>
+#include <pcl/pcl_macros.h>
+#include <pcl/gpu/containers/device_array.h>
+#include <pcl/gpu/octree/device_format.hpp>
 
 namespace pcl
 {

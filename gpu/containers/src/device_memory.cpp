@@ -34,14 +34,14 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#include "pcl/gpu/containers/device_memory.h"
-#include "pcl/gpu/utils/safe_call.hpp"
+#include <pcl/gpu/containers/device_memory.h>
+#include <pcl/gpu/utils/safe_call.hpp>
 
 #include "cuda_runtime_api.h"
 #include "assert.h"
 
 #define HAVE_CUDA
-//#include "pcl_config.h"
+//#include <pcl_config.h>
 
 #if !defined(HAVE_CUDA)
 

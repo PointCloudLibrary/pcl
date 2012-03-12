@@ -20,8 +20,8 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 
-#include "pcl/common/common.h"
-#include "pcl/common/transforms.h"
+#include <pcl/common/common.h>
+#include <pcl/common/transforms.h>
 
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
@@ -33,10 +33,10 @@
 #define VTK_EXCLUDE_STRSTREAM_HEADERS
 #include <pcl/io/vtk_lib_io.h>
 
-#include "pcl/simulation/camera.h"
-#include "pcl/simulation/model.h"
-#include "pcl/simulation/scene.h"
-#include "pcl/simulation/range_likelihood.h"
+#include <pcl/simulation/camera.h>
+#include <pcl/simulation/model.h>
+#include <pcl/simulation/scene.h>
+#include <pcl/simulation/range_likelihood.h>
 
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>

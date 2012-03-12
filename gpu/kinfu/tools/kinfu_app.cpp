@@ -40,16 +40,16 @@
 
 #include <pcl/console/parse.h>
 
-#include "pcl/gpu/kinfu/kinfu.h"
-#include "pcl/gpu/kinfu/raycaster.h"
-#include "pcl/gpu/kinfu/marching_cubes.h"
-#include "pcl/gpu/containers/initialization.h"
+#include <pcl/gpu/kinfu/kinfu.h>
+#include <pcl/gpu/kinfu/raycaster.h>
+#include <pcl/gpu/kinfu/marching_cubes.h>
+#include <pcl/gpu/containers/initialization.h>
 
 #include <pcl/common/time.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/visualization/image_viewer.h>
-#include "pcl/visualization/pcl_visualizer.h"
+#include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/io/vtk_io.h>
@@ -58,7 +58,7 @@
 #include "color_handler.h"
 #include "evaluation.h"
 
-#include "pcl/common/angles.h"
+#include <pcl/common/angles.h>
 
 #include "tsdf_volume.h"
 #include "tsdf_volume.hpp"
@@ -66,7 +66,7 @@
 #ifdef HAVE_OPENCV  
   #include <opencv2/highgui/highgui.hpp>
   #include <opencv2/imgproc/imgproc.hpp>
-  #include "pcl/gpu/utils/timers_opencv.hpp"
+  #include <pcl/gpu/utils/timers_opencv.hpp>
 //#include "video_recorder.h"
 typedef pcl::gpu::ScopeTimerCV ScopeTimeT;
 #else

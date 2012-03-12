@@ -90,9 +90,9 @@
 #ifndef PCL_GPU_FEATURES_EIGEN_HPP_
 #define PCL_GPU_FEATURES_EIGEN_HPP_
 
-#include "pcl/gpu/utils/device/limits.hpp"
-#include "pcl/gpu/utils/device/algorithm.hpp"
-#include "pcl/gpu/utils/device/vector_math.hpp"
+#include <pcl/gpu/utils/device/limits.hpp>
+#include <pcl/gpu/utils/device/algorithm.hpp>
+#include <pcl/gpu/utils/device/vector_math.hpp>
 
 namespace pcl
 {

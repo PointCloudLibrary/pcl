@@ -37,7 +37,7 @@
 #ifndef _PCL_GPU_OCTREE_DEVICE_FORMAT_HPP_
 #define _PCL_GPU_OCTREE_DEVICE_FORMAT_HPP_
 
-#include "pcl/gpu/containers/device_array.h"
+#include <pcl/gpu/containers/device_array.h>
 
 namespace pcl
 {

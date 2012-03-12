@@ -38,7 +38,7 @@
 #define __PCL_CUDA_SAFE_CALL_HPP__
 
 #include "cuda_runtime_api.h"
-#include "pcl/gpu/containers/initialization.h"
+#include <pcl/gpu/containers/initialization.h>
 
 #if defined(__GNUC__)
     #define cudaSafeCall(expr)  pcl::gpu::___cudaSafeCall(expr, __FILE__, __LINE__, __func__)

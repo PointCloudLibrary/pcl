@@ -37,7 +37,7 @@
 #ifndef PCL_GPU_CONTAINERS_INITIALISATION_H_
 #define PCL_GPU_CONTAINERS_INITIALISATION_H_
 
-#include "pcl/pcl_exports.h"
+#include <pcl/pcl_exports.h>
 #include <string>
 
 namespace pcl

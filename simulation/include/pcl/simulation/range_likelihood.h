@@ -16,11 +16,11 @@
 #include <pcl/pcl_macros.h>
 //#include <pcl/win32_macros.h>
 #include <pcl/range_image/range_image_planar.h>
-#include "pcl/common/transforms.h"
-#include "pcl/simulation/camera.h"
-#include "pcl/simulation/scene.h"
-#include "pcl/simulation/glsl_shader.h"
-#include "pcl/simulation/sum_reduce.h"
+#include <pcl/common/transforms.h>
+#include <pcl/simulation/camera.h>
+#include <pcl/simulation/scene.h>
+#include <pcl/simulation/glsl_shader.h>
+#include <pcl/simulation/sum_reduce.h>
 
 namespace pcl
 {

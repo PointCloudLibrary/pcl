@@ -42,7 +42,7 @@
 #include <boost/shared_ptr.hpp>
 #include <string>
 
-#include "pcl/gpu/kinfu/kinfu.h"
+#include <pcl/gpu/kinfu/kinfu.h>
 
 namespace pcl
 {

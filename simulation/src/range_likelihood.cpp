@@ -3,7 +3,7 @@
 #include <GL/glu.h>
 
 #include <pcl/common/time.h>
-#include "pcl/simulation/range_likelihood.h"
+#include <pcl/simulation/range_likelihood.h>
 
 // For adding noise:
 static boost::minstd_rand generator (27u); // seed

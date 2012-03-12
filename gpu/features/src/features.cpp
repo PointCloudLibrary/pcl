@@ -34,13 +34,13 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#include "pcl/gpu/containers/initialization.h"
-#include "pcl/gpu/features/features.hpp"
-#include "pcl/gpu/utils/device/static_check.hpp"
+#include <pcl/gpu/containers/initialization.h>
+#include <pcl/gpu/features/features.hpp>
+#include <pcl/gpu/utils/device/static_check.hpp>
 #include "internal.hpp"
 
-#include "pcl/exceptions.h"
-#include "pcl/console/print.h"
+#include <pcl/exceptions.h>
+#include <pcl/console/print.h>
 
 using namespace pcl::device;
 

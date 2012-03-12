@@ -34,14 +34,14 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#include "pcl/gpu/octree/octree.hpp"
-#include "pcl/gpu/utils/timers_cuda.hpp"
-#include "pcl/gpu/utils/safe_call.hpp"
+#include <pcl/gpu/octree/octree.hpp>
+#include <pcl/gpu/utils/timers_cuda.hpp>
+#include <pcl/gpu/utils/safe_call.hpp>
 
 #include "internal.hpp"
 #include "cuda_runtime.h"
-#include "pcl/gpu/utils/device/static_check.hpp"
-#include "pcl/exceptions.h"
+#include <pcl/gpu/utils/device/static_check.hpp>
+#include <pcl/exceptions.h>
 
 #include<assert.h>
 

@@ -38,8 +38,8 @@
 #ifndef PCL_GPU_KINFU_DEVICE_HPP_
 #define PCL_GPU_KINFU_DEVICE_HPP_
 
-#include "pcl/gpu/utils/device/limits.hpp"
-#include "pcl/gpu/utils/device/vector_math.hpp"
+#include <pcl/gpu/utils/device/limits.hpp>
+#include <pcl/gpu/utils/device/vector_math.hpp>
 
 #include "internal.h"
 

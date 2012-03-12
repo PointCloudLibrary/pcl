@@ -1,4 +1,4 @@
-#include "pcl/simulation/sum_reduce.h"
+#include <pcl/simulation/sum_reduce.h>
 
 namespace pcl
 {
