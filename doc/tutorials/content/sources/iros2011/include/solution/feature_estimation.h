@@ -3,12 +3,12 @@
 
 #include "typedefs.h"
 
-#include "pcl/io/io.h"
-#include "pcl/features/normal_3d.h"
-#include "pcl/keypoints/sift_keypoint.h"
-#include "pcl/features/fpfh.h"
-#include "pcl/features/vfh.h"
-#include "pcl/search/kdtree.h"
+#include <pcl/io/io.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/keypoints/sift_keypoint.h>
+#include <pcl/features/fpfh.h>
+#include <pcl/features/vfh.h>
+#include <pcl/search/kdtree.h>
 
 /* Use NormalEstimation to estimate a cloud's surface normals 
  * Inputs:
