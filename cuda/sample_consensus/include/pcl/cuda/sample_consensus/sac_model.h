@@ -311,7 +311,7 @@ namespace pcl
           * \todo change this to set limits on the entire model
           */
         inline void
-        setRadiusLimits (const float &min_radius, const float &max_radius)
+        setRadiusLimits (float min_radius, float max_radius)
         {
           radius_min_ = min_radius;
           radius_max_ = max_radius;
