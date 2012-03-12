@@ -38,7 +38,9 @@
 
 #include <pcl/point_types.h>
 #include <pcl/features/ppf.h>
+#include <pcl/features/impl/ppf.hpp>
 #include <pcl/features/ppfrgb.h>
+#include <pcl/features/impl/ppfrgb.hpp>
 #include <pcl/gpu/features/features.hpp>
 
 #include "data_source.hpp"

@@ -44,8 +44,8 @@
 **/
 
 #include <iostream>
-#include "pcl/io/pcd_io.h"
-#include "pcl/point_types.h"
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 /** \brief Parse command line arguments for file names. 
