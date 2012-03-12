@@ -262,6 +262,6 @@ namespace pcl
   };
 }
 
-#include "pcl/common/impl/gaussian.hpp"
+#include <pcl/common/impl/gaussian.hpp>
 
 #endif // PCL_GAUSSIAN_KERNEL

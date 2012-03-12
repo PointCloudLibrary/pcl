@@ -40,7 +40,7 @@
 #ifndef PCL_FEATURES_IMPL_BOUNDARY_H_
 #define PCL_FEATURES_IMPL_BOUNDARY_H_
 
-#include "pcl/features/boundary.h"
+#include <pcl/features/boundary.h>
 #include <cfloat>
 
 //////////////////////////////////////////////////////////////////////////////////////////////

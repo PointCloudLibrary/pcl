@@ -38,7 +38,7 @@
 #ifndef PCL_FILTER_INDICES_H_
 #define PCL_FILTER_INDICES_H_
 
-#include "pcl/filters/filter.h"
+#include <pcl/filters/filter.h>
 
 namespace pcl
 {

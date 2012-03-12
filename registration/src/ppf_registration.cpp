@@ -36,10 +36,10 @@
  */
 
 /** Re-enable these once all of registration is separated into H/HPP correctly. */
-//#include "pcl/point_types.h"
-//#include "pcl/impl/instantiate.hpp"
-//#include "pcl/registration/ppf_registration.h"
-//#include "pcl/registration/impl/ppf_registration.hpp"
+//#include <pcl/point_types.h>
+//#include <pcl/impl/instantiate.hpp>
+//#include <pcl/registration/ppf_registration.h>
+//#include <pcl/registration/impl/ppf_registration.hpp>
 //
 //PCL_INSTANTIATE_PRODUCT(PPFRegistration, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES));
 //

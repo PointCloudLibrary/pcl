@@ -536,6 +536,6 @@ namespace pcl
 
 }
 /*@}*/
-#include "pcl/common/impl/centroid.hpp"
+#include <pcl/common/impl/centroid.hpp>
 
 #endif  //#ifndef PCL_COMMON_CENTROID_H_

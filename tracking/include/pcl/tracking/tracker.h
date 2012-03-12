@@ -40,7 +40,7 @@
 #ifndef PCL_TRACKING_TRACKER_H_
 #define PCL_TRACKING_TRACKER_H_
 
-#include "pcl/tracking/tracking.h"
+#include <pcl/tracking/tracking.h>
 #include <pcl/search/search.h>
 
 namespace pcl
@@ -130,6 +130,6 @@ namespace pcl
   }
 }
 
-#include "pcl/tracking/impl/tracker.hpp"
+#include <pcl/tracking/impl/tracker.hpp>
 
 #endif

@@ -1,9 +1,9 @@
 #ifndef PCL_TRACKING_PARTICLE_FILTER_OMP_H_
 #define PCL_TRACKING_PARTICLE_FILTER_OMP_H_
 
-#include "pcl/tracking/tracking.h"
-#include "pcl/tracking/particle_filter.h"
-#include "pcl/tracking/coherence.h"
+#include <pcl/tracking/tracking.h>
+#include <pcl/tracking/particle_filter.h>
+#include <pcl/tracking/coherence.h>
 
 namespace pcl
 {
@@ -101,6 +101,6 @@ namespace pcl
   }
 }
 
-//#include "pcl/tracking/impl/particle_filter_omp.hpp"
+//#include <pcl/tracking/impl/particle_filter_omp.hpp>
 
 #endif

@@ -37,7 +37,7 @@
 #define PCL_EXTRACT_LABELED_CLUSTERS_H_
 
 #include <pcl/pcl_base.h>
-#include "pcl/search/pcl_search.h"
+#include <pcl/search/pcl_search.h>
 
 namespace pcl
 {

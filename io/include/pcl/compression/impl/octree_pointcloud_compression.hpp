@@ -38,8 +38,8 @@
 #ifndef OCTREE_COMPRESSION_HPP
 #define OCTREE_COMPRESSION_HPP
 
-#include "pcl/octree/octree_pointcloud.h"
-#include "pcl/compression/entropy_range_coder.h"
+#include <pcl/octree/octree_pointcloud.h>
+#include <pcl/compression/entropy_range_coder.h>
 
 #include <iterator>
 #include <iostream>

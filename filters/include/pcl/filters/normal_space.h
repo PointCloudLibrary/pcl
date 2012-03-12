@@ -38,7 +38,7 @@
 #ifndef PCL_FILTERS_NORMAL_SUBSAMPLE_H_
 #define PCL_FILTERS_NORMAL_SUBSAMPLE_H_
 
-#include "pcl/filters/filter_indices.h"
+#include <pcl/filters/filter_indices.h>
 #include <time.h>
 #include <limits.h>
 

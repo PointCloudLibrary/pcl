@@ -40,7 +40,7 @@
 #ifndef PCL_FEATURES_IMPL_NORMAL_3D_OMP_H_
 #define PCL_FEATURES_IMPL_NORMAL_3D_OMP_H_
 
-#include "pcl/features/normal_3d_omp.h"
+#include <pcl/features/normal_3d_omp.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void

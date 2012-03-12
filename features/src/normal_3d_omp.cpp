@@ -37,10 +37,10 @@
  *
  */
 
-#include "pcl/point_types.h"
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/features/normal_3d_omp.h"
-#include "pcl/features/impl/normal_3d_omp.hpp"
+#include <pcl/point_types.h>
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/features/normal_3d_omp.h>
+#include <pcl/features/impl/normal_3d_omp.hpp>
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES

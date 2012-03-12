@@ -36,7 +36,7 @@
  * $Id: distances.cpp 527 2011-04-17 23:57:26Z rusu $
  *
  */
-#include "pcl/common/common.h"
+#include <pcl/common/common.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void 

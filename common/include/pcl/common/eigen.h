@@ -801,6 +801,6 @@ namespace pcl
   loadBinary (Eigen::MatrixBase<Derived> const& matrix, std::istream& file);
 }
 
-#include "pcl/common/impl/eigen.hpp"
+#include <pcl/common/impl/eigen.hpp>
 
 #endif  //#ifndef PCL_EIGEN_H_

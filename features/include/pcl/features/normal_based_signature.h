@@ -38,7 +38,7 @@
 #ifndef PCL_NORMAL_BASED_SIGNATURE_H_
 #define PCL_NORMAL_BASED_SIGNATURE_H_
 
-#include "pcl/features/feature.h"
+#include <pcl/features/feature.h>
 
 namespace pcl
 {

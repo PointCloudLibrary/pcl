@@ -43,7 +43,7 @@
 #include <pcl/io/pcd_io.h>
 #include <boost/smart_ptr/shared_array.hpp>
 
-#include "pcl/common/time.h"
+#include <pcl/common/time.h>
 
 using namespace pcl;
 using namespace std;

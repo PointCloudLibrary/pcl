@@ -35,8 +35,8 @@
  * $Id: uniform_sampling.cpp 2414 2011-09-07 07:01:06Z svn $
  */
 
-#include "pcl/keypoints/uniform_sampling.h"
-#include "pcl/keypoints/impl/uniform_sampling.hpp"
+#include <pcl/keypoints/uniform_sampling.h>
+#include <pcl/keypoints/impl/uniform_sampling.hpp>
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 

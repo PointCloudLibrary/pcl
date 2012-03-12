@@ -40,7 +40,7 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_NORMAL_SPHERE_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_NORMAL_SPHERE_H_
 
-#include "pcl/sample_consensus/sac_model_normal_sphere.h"
+#include <pcl/sample_consensus/sac_model_normal_sphere.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void

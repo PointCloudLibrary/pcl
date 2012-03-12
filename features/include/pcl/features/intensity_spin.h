@@ -39,7 +39,7 @@
 #ifndef PCL_INTENSITY_SPIN_H_
 #define PCL_INTENSITY_SPIN_H_
 
-#include "pcl/features/feature.h"
+#include <pcl/features/feature.h>
 
 namespace pcl
 {

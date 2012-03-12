@@ -38,7 +38,7 @@
 #ifndef PCL_FILTERS_IMPL_RANDOM_SAMPLE_H_
 #define PCL_FILTERS_IMPL_RANDOM_SAMPLE_H_
 
-#include "pcl/filters/random_sample.h"
+#include <pcl/filters/random_sample.h>
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -35,10 +35,10 @@
  *
  */
 
-#include "pcl/point_types.h"
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/features/integral_image_normal.h"
-#include "pcl/features/impl/integral_image_normal.hpp"
+#include <pcl/point_types.h>
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/features/integral_image_normal.h>
+#include <pcl/features/impl/integral_image_normal.hpp>
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES

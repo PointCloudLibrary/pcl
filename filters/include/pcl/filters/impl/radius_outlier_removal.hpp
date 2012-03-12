@@ -38,7 +38,7 @@
 #ifndef PCL_FILTERS_IMPL_RADIUS_OUTLIER_REMOVAL_H_
 #define PCL_FILTERS_IMPL_RADIUS_OUTLIER_REMOVAL_H_
 
-#include "pcl/filters/radius_outlier_removal.h"
+#include <pcl/filters/radius_outlier_removal.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

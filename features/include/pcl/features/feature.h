@@ -440,6 +440,6 @@ namespace pcl
   };
 }
 
-#include "pcl/features/impl/feature.hpp"
+#include <pcl/features/impl/feature.hpp>
 
 #endif  //#ifndef PCL_FEATURE_H_

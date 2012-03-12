@@ -138,6 +138,6 @@ namespace pcl
 
 }  // end namespace
 
-#include "pcl/common/impl/bivariate_polynomial.hpp"
+#include <pcl/common/impl/bivariate_polynomial.hpp>
 
 #endif

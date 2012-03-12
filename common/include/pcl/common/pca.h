@@ -239,7 +239,7 @@ namespace pcl
   }; // class PCA
 } // namespace pcl
 
-#include "pcl/common/impl/pca.hpp"
+#include <pcl/common/impl/pca.hpp>
 
 #endif // PCL_PCA_H
 

@@ -1,7 +1,7 @@
 #ifndef PCL_TRACKING_HSV_COLOR_COHERENCE_H_
 #define PCL_TRACKING_HSV_COLOR_COHERENCE_H_
 
-#include "pcl/tracking/coherence.h"
+#include <pcl/tracking/coherence.h>
 
 namespace pcl
 {
@@ -95,7 +95,7 @@ namespace pcl
   }
 }
 
-// #include "pcl/tracking/impl/hsv_color_coherence.hpp"
+// #include <pcl/tracking/impl/hsv_color_coherence.hpp>
 
 
 #endif

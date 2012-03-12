@@ -40,7 +40,7 @@
 #ifndef PCL_RIFT_H_
 #define PCL_RIFT_H_
 
-#include "pcl/features/feature.h"
+#include <pcl/features/feature.h>
 
 namespace pcl
 {

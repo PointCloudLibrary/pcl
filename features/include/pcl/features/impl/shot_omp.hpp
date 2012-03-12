@@ -37,7 +37,7 @@
 #ifndef PCL_FEATURES_IMPL_SHOT_OMP_H_
 #define PCL_FEATURES_IMPL_SHOT_OMP_H_
 
-#include "pcl/features/shot_omp.h"
+#include <pcl/features/shot_omp.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT> void

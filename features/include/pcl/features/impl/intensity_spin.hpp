@@ -40,7 +40,7 @@
 #ifndef PCL_FEATURES_IMPL_INTENSITY_SPIN_H_
 #define PCL_FEATURES_IMPL_INTENSITY_SPIN_H_
 
-#include "pcl/features/intensity_spin.h"
+#include <pcl/features/intensity_spin.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void

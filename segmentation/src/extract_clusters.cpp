@@ -37,12 +37,12 @@
  *
  */
 
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/point_types.h"
-#include "pcl/segmentation/extract_clusters.h"
-#include "pcl/segmentation/impl/extract_clusters.hpp"
-#include "pcl/segmentation/extract_labeled_clusters.h"
-#include "pcl/segmentation/impl/extract_labeled_clusters.hpp"
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
+#include <pcl/segmentation/extract_clusters.h>
+#include <pcl/segmentation/impl/extract_clusters.hpp>
+#include <pcl/segmentation/extract_labeled_clusters.h>
+#include <pcl/segmentation/impl/extract_labeled_clusters.hpp>
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES

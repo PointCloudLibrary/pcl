@@ -35,10 +35,10 @@
  *
  */
 
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/point_types.h"
-#include "pcl/filters/passthrough.h"
-#include "pcl/filters/impl/passthrough.hpp"
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
+#include <pcl/filters/passthrough.h>
+#include <pcl/filters/impl/passthrough.hpp>
 
 //////////////////////////////////////////////////////////////////////////
 void

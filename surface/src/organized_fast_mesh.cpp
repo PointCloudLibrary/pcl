@@ -35,9 +35,9 @@
  *
  */
 
-#include "pcl/surface/impl/organized_fast_mesh.hpp"
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/point_types.h"
+#include <pcl/surface/impl/organized_fast_mesh.hpp>
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
 
 // Instantiations of specific point types
 PCL_INSTANTIATE(OrganizedFastMesh, (pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))

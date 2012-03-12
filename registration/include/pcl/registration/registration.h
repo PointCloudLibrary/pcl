@@ -48,7 +48,7 @@
 #include <pcl/common/transforms.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/kdtree/kdtree_flann.h>
-#include "pcl/registration/transformation_estimation.h"
+#include <pcl/registration/transformation_estimation.h>
 
 namespace pcl
 {
@@ -382,6 +382,6 @@ namespace pcl
    };
 }
 
-#include "pcl/registration/impl/registration.hpp"
+#include <pcl/registration/impl/registration.hpp>
 
 #endif  //#ifndef PCL_REGISTRATION_H_

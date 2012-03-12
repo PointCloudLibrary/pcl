@@ -37,10 +37,10 @@
  *
  */
 
-#include "pcl/point_types.h"
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/features/pfh.h"
-#include "pcl/features/impl/pfh.hpp"
+#include <pcl/point_types.h>
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/features/pfh.h>
+#include <pcl/features/impl/pfh.hpp>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool

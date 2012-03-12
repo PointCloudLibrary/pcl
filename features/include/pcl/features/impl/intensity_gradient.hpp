@@ -40,7 +40,7 @@
 #ifndef PCL_FEATURES_IMPL_INTENSITY_GRADIENT_H_
 #define PCL_FEATURES_IMPL_INTENSITY_GRADIENT_H_
 
-#include "pcl/features/intensity_gradient.h"
+#include <pcl/features/intensity_gradient.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void

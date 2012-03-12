@@ -35,7 +35,7 @@
 #ifndef PCL_FILTERS_IMPL_PLANE_CLIPPER3D_HPP
 #define PCL_FILTERS_IMPL_PLANE_CLIPPER3D_HPP
 
-#include "pcl/filters/plane_clipper3D.h"
+#include <pcl/filters/plane_clipper3D.h>
 
 template<typename PointT>
 pcl::PlaneClipper3D<PointT>::PlaneClipper3D (const Eigen::Vector4f& plane_params)

@@ -42,7 +42,7 @@
 #include <vector>
 #include <assert.h>
 
-#include "pcl/common/common.h"
+#include <pcl/common/common.h>
 
 namespace pcl
 {

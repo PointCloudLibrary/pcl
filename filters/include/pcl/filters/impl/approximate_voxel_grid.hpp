@@ -38,8 +38,8 @@
 #ifndef PCL_FILTERS_IMPL_FAST_VOXEL_GRID_H_
 #define PCL_FILTERS_IMPL_FAST_VOXEL_GRID_H_
 
-#include "pcl/common/common.h"
-#include "pcl/filters/approximate_voxel_grid.h"
+#include <pcl/common/common.h>
+#include <pcl/filters/approximate_voxel_grid.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

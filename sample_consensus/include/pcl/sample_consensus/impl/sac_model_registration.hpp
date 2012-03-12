@@ -40,7 +40,7 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_REGISTRATION_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_REGISTRATION_H_
 
-#include "pcl/sample_consensus/sac_model_registration.h"
+#include <pcl/sample_consensus/sac_model_registration.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool

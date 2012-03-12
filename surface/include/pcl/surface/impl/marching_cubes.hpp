@@ -36,7 +36,7 @@
 #ifndef PCL_SURFACE_IMPL_MARCHING_CUBES_H_
 #define PCL_SURFACE_IMPL_MARCHING_CUBES_H_
 
-#include "pcl/surface/marching_cubes.h"
+#include <pcl/surface/marching_cubes.h>
 #include <pcl/common/common.h>
 #include <pcl/common/vector_average.h>
 #include <pcl/Vertices.h>

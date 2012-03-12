@@ -35,8 +35,8 @@
  *  $Id$
  */
 
-#include "pcl/features/normal_based_signature.h"
-#include "pcl/features/impl/normal_based_signature.hpp"
+#include <pcl/features/normal_based_signature.h>
+#include <pcl/features/impl/normal_based_signature.hpp>
 
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>

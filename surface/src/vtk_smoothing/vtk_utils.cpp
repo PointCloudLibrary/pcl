@@ -37,7 +37,7 @@
  */
 
 
-#include "pcl/surface/vtk_smoothing/vtk_utils.h"
+#include <pcl/surface/vtk_smoothing/vtk_utils.h>
 
 #include <pcl/ros/conversions.h>
 #include <pcl/common/common.h>

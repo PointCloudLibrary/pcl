@@ -8,7 +8,7 @@
 // Include the correct Header path here
 #include "std_msgs/Header.h"
 #include "sensor_msgs/PointCloud2.h"
-#include "pcl/Vertices.h"
+#include <pcl/Vertices.h>
 
 namespace pcl
 {

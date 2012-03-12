@@ -39,8 +39,8 @@
 #ifndef PCL_FEATURES_IMPL_SHOT_H_
 #define PCL_FEATURES_IMPL_SHOT_H_
 
-#include "pcl/features/shot.h"
-#include "pcl/features/shot_common.h"
+#include <pcl/features/shot.h>
+#include <pcl/features/shot_common.h>
 #include <utility>
 
 //////////////////////////////////////////////////////////////////////////////////////////////

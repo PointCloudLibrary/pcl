@@ -40,7 +40,7 @@
 #ifndef PCL_FEATURES_IMPL_PRINCIPAL_CURVATURES_H_
 #define PCL_FEATURES_IMPL_PRINCIPAL_CURVATURES_H_
 
-#include "pcl/features/principal_curvatures.h"
+#include <pcl/features/principal_curvatures.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void

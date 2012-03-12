@@ -43,7 +43,7 @@
 #include <pcl/common/time.h>
 #include <pcl/filters/passthrough.h>
 
-#include "pcl/compression/octree_pointcloud_compression.h"
+#include <pcl/compression/octree_pointcloud_compression.h>
 
 #include <iostream>
 #include <vector>

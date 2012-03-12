@@ -35,8 +35,8 @@
  *  $Id$
  */
 
-#include "pcl/features/statistical_multiscale_interest_region_extraction.h"
-#include "pcl/features/impl/statistical_multiscale_interest_region_extraction.hpp"
+#include <pcl/features/statistical_multiscale_interest_region_extraction.h>
+#include <pcl/features/impl/statistical_multiscale_interest_region_extraction.hpp>
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 

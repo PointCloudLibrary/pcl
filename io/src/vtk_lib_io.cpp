@@ -35,7 +35,7 @@
  *
  */
 
-#include "pcl/io/vtk_lib_io.h"
+#include <pcl/io/vtk_lib_io.h>
 
 #include <vtkImageData.h>
 #include <vtkImageShiftScale.h>

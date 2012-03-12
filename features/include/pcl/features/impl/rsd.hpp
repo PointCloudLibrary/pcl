@@ -39,7 +39,7 @@
 #define PCL_FEATURES_IMPL_RSD_H_
 
 #include <cfloat>
-#include "pcl/features/rsd.h"
+#include <pcl/features/rsd.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> Eigen::MatrixXf

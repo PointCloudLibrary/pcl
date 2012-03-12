@@ -35,8 +35,8 @@
  * $Id$
  */
 
-#include "pcl/features/ppfrgb.h"
-#include "pcl/features/impl/ppfrgb.hpp"
+#include <pcl/features/ppfrgb.h>
+#include <pcl/features/impl/ppfrgb.hpp>
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 

@@ -43,7 +43,7 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
-#include "pcl/common/centroid.h"
+#include <pcl/common/centroid.h>
 
 using namespace pcl;
 

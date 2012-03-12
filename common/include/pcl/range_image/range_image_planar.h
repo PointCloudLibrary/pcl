@@ -190,6 +190,6 @@ namespace pcl
 }  // namespace end
 
 
-#include "pcl/range_image/impl/range_image_planar.hpp"  // Definitions of templated and inline functions
+#include <pcl/range_image/impl/range_image_planar.hpp>  // Definitions of templated and inline functions
 
 #endif  //#ifndef PCL_RANGE_IMAGE_H_

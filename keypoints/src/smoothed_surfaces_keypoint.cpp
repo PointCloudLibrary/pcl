@@ -35,8 +35,8 @@
  * $Id: smoothed_surfaces_keypoint.cpp 2008 2011-08-10 19:34:52Z aichim $
  */
 
-#include "pcl/keypoints/smoothed_surfaces_keypoint.h"
-#include "pcl/keypoints/impl/smoothed_surfaces_keypoint.hpp"
+#include <pcl/keypoints/smoothed_surfaces_keypoint.h>
+#include <pcl/keypoints/impl/smoothed_surfaces_keypoint.hpp>
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 

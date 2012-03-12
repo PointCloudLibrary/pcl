@@ -40,8 +40,8 @@
 #ifndef PCL_FEATURES_IMPL_VFH_H_
 #define PCL_FEATURES_IMPL_VFH_H_
 
-#include "pcl/features/vfh.h"
-#include "pcl/features/pfh.h"
+#include <pcl/features/vfh.h>
+#include <pcl/features/pfh.h>
 #include <pcl/common/common.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -38,7 +38,7 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_LMEDS_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_LMEDS_H_
 
-#include "pcl/sample_consensus/lmeds.h"
+#include <pcl/sample_consensus/lmeds.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool

@@ -1,7 +1,7 @@
 #ifndef PCL_TRACKING_COHERENCE_H_
 #define PCL_TRACKING_COHERENCE_H_
 
-#include "pcl/pcl_base.h"
+#include <pcl/pcl_base.h>
 
 namespace pcl
 {
@@ -130,7 +130,7 @@ namespace pcl
 }
 
 
-#include "pcl/tracking/impl/coherence.hpp"
+#include <pcl/tracking/impl/coherence.hpp>
 
 
 #endif

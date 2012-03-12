@@ -1,7 +1,7 @@
 #ifndef PCL_TRACKING_NORMAL_COHERENCE_H_
 #define PCL_TRACKING_NORMAL_COHERENCE_H_
 
-#include "pcl/tracking/coherence.h"
+#include <pcl/tracking/coherence.h>
 namespace pcl
 {
   namespace tracking
@@ -45,6 +45,6 @@ namespace pcl
   }
 }
 
-// #include "pcl/tracking/impl/normal_coherence.hpp"
+// #include <pcl/tracking/impl/normal_coherence.hpp>
 
 #endif

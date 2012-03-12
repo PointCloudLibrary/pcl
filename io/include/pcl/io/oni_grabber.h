@@ -32,7 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "pcl/pcl_config.h"
+#include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
 #ifndef __PCL_IO_ONI_PLAYER__

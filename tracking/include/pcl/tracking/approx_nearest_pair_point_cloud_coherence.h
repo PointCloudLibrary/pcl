@@ -3,7 +3,7 @@
 
 #include <pcl/search/search.h>
 #include <pcl/search/octree.h>
-#include "pcl/tracking/nearest_pair_point_cloud_coherence.h"
+#include <pcl/tracking/nearest_pair_point_cloud_coherence.h>
 namespace pcl
 {
   namespace tracking

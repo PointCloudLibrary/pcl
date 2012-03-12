@@ -38,7 +38,7 @@
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
-#include "pcl/common/bivariate_polynomial.h"
+#include <pcl/common/bivariate_polynomial.h>
 
 namespace pcl 
 {
@@ -130,6 +130,6 @@ namespace pcl
 
 }  // end namespace
 
-#include "pcl/common/impl/polynomial_calculations.hpp"
+#include <pcl/common/impl/polynomial_calculations.hpp>
 
 #endif

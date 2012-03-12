@@ -40,8 +40,8 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include "pcl/features/feature.h"
-#include "pcl/features/integral_image2D.h"
+#include <pcl/features/feature.h>
+#include <pcl/features/integral_image2D.h>
 
 #if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
 #pragma GCC diagnostic ignored "-Weffc++"

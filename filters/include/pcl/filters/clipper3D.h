@@ -37,7 +37,7 @@
 
 #ifndef PCL_CLIPPER3D_H_
 #define PCL_CLIPPER3D_H_
-#include "pcl/point_cloud.h"
+#include <pcl/point_cloud.h>
 #include <vector>
 
 namespace pcl

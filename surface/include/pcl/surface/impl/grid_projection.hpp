@@ -38,7 +38,7 @@
 #ifndef PCL_SURFACE_IMPL_GRID_PROJECTION_H_
 #define PCL_SURFACE_IMPL_GRID_PROJECTION_H_
 
-#include "pcl/surface/grid_projection.h"
+#include <pcl/surface/grid_projection.h>
 #include <pcl/common/common.h>
 #include <pcl/common/centroid.h>
 #include <pcl/common/vector_average.h>

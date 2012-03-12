@@ -38,7 +38,7 @@
 #ifndef PCL_SMOOTHEDSURFACESKEYPOINT_H_
 #define PCL_SMOOTHEDSURFACESKEYPOINT_H_
 
-#include "pcl/keypoints/keypoint.h"
+#include <pcl/keypoints/keypoint.h>
 
 namespace pcl
 {

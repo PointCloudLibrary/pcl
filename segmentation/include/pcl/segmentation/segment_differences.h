@@ -39,7 +39,7 @@
 #define PCL_SEGMENT_DIFFERENCES_H_
 
 #include <pcl/pcl_base.h>
-#include "pcl/search/pcl_search.h"
+#include <pcl/search/pcl_search.h>
 
 namespace pcl
 {

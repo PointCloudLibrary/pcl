@@ -38,8 +38,8 @@
 #ifndef PCL_GICP_H_
 #define PCL_GICP_H_
 
-#include "pcl/registration/icp.h"
-#include "pcl/registration/bfgs.h"
+#include <pcl/registration/icp.h>
+#include <pcl/registration/bfgs.h>
 
 namespace pcl
 {
@@ -335,6 +335,6 @@ namespace pcl
   };
 }
 
-#include "pcl/registration/impl/gicp.hpp"
+#include <pcl/registration/impl/gicp.hpp>
 
 #endif  //#ifndef PCL_GICP_H_

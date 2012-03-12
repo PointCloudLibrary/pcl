@@ -41,8 +41,8 @@
 #define PCL_ICP_NL_H_
 
 // PCL includes
-#include "pcl/registration/icp.h"
-#include "pcl/registration/transformation_estimation_lm.h"
+#include <pcl/registration/icp.h>
+#include <pcl/registration/transformation_estimation_lm.h>
 
 namespace pcl
 {
@@ -83,6 +83,6 @@ namespace pcl
   };
 }
 
-#include "pcl/registration/impl/icp_nl.hpp"
+#include <pcl/registration/impl/icp_nl.hpp>
 
 #endif  //#ifndef PCL_ICP_NL_H_

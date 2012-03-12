@@ -152,6 +152,6 @@ namespace pcl
   }
 }
 
-#include "pcl/registration/impl/correspondence_rejection_sample_consensus.hpp"
+#include <pcl/registration/impl/correspondence_rejection_sample_consensus.hpp>
 
 #endif /* PCL_REGISTRATION_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_H_ */

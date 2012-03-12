@@ -38,10 +38,10 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PLANE_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PLANE_H_
 
-#include "pcl/sample_consensus/sac_model_plane.h"
-#include "pcl/common/centroid.h"
-#include "pcl/common/eigen.h"
-#include "pcl/common/concatenate.h"
+#include <pcl/sample_consensus/sac_model_plane.h>
+#include <pcl/common/centroid.h>
+#include <pcl/common/eigen.h>
+#include <pcl/common/concatenate.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool

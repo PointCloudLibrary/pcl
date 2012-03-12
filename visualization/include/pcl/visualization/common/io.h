@@ -37,7 +37,7 @@
 #ifndef PCL_PCL_VISUALIZER_COMMON_IO_H_
 #define PCL_PCL_VISUALIZER_COMMON_IO_H_
 
-#include "pcl/visualization/common/actor_map.h"
+#include <pcl/visualization/common/actor_map.h>
 
 #include <vtkSmartPointer.h>
 #include <vtkAppendPolyData.h>

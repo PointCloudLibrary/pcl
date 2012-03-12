@@ -36,8 +36,8 @@
  *
  */
 
-#include "pcl/surface/vtk_smoothing/vtk_mesh_smoothing_laplacian.h"
-#include "pcl/surface/vtk_smoothing/vtk_utils.h"
+#include <pcl/surface/vtk_smoothing/vtk_mesh_smoothing_laplacian.h>
+#include <pcl/surface/vtk_smoothing/vtk_utils.h>
 
 #include <vtkSmoothPolyDataFilter.h>
 

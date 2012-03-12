@@ -38,7 +38,7 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PERPENDICULAR_PLANE_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PERPENDICULAR_PLANE_H_
 
-#include "pcl/sample_consensus/sac_model_perpendicular_plane.h"
+#include <pcl/sample_consensus/sac_model_perpendicular_plane.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

@@ -40,7 +40,7 @@
 #ifndef PCL_IO_IMPL_IO_HPP_
 #define PCL_IO_IMPL_IO_HPP_
 
-#include "pcl/common/concatenate.h"
+#include <pcl/common/concatenate.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int

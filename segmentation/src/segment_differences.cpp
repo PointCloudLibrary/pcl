@@ -35,10 +35,10 @@
  *
  */
 
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/point_types.h"
-#include "pcl/segmentation/segment_differences.h"
-#include "pcl/segmentation/impl/segment_differences.hpp"
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
+#include <pcl/segmentation/segment_differences.h>
+#include <pcl/segmentation/impl/segment_differences.hpp>
 
 // Instantiations of specific point types
 PCL_INSTANTIATE(SegmentDifferences, PCL_XYZ_POINT_TYPES)

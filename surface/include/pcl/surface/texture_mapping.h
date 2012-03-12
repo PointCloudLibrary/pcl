@@ -40,7 +40,7 @@
 #ifndef PCL_SURFACE_TEXTURE_MAPPING_H_
 #define PCL_SURFACE_TEXTURE_MAPPING_H_
 
-#include "pcl/surface/reconstruction.h"
+#include <pcl/surface/reconstruction.h>
 #include <pcl/TextureMesh.h>
 
 namespace pcl

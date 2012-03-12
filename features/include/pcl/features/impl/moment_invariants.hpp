@@ -40,7 +40,7 @@
 #ifndef PCL_FEATURES_IMPL_MOMENT_INVARIANTS_H_
 #define PCL_FEATURES_IMPL_MOMENT_INVARIANTS_H_
 
-#include "pcl/features/moment_invariants.h"
+#include <pcl/features/moment_invariants.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void

@@ -935,6 +935,6 @@ namespace pcl
   }
 }
 
-#include "pcl/visualization/impl/point_cloud_handlers.hpp"
+#include <pcl/visualization/impl/point_cloud_handlers.hpp>
 
 #endif

@@ -38,7 +38,7 @@
 #ifndef PCL_SIFT_KEYPOINT_IMPL_H_
 #define PCL_SIFT_KEYPOINT_IMPL_H_
 
-#include "pcl/keypoints/sift_keypoint.h"
+#include <pcl/keypoints/sift_keypoint.h>
 #include <pcl/common/io.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/approximate_voxel_grid.h>

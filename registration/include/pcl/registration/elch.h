@@ -252,6 +252,6 @@ namespace pcl
   }
 }
 
-#include "pcl/registration/impl/elch.hpp"
+#include <pcl/registration/impl/elch.hpp>
 
 #endif // PCL_ELCH_H_

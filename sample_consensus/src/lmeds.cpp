@@ -37,10 +37,10 @@
  *
  */
 
-#include "pcl/impl/instantiate.hpp"
-#include "pcl/point_types.h"
-#include "pcl/sample_consensus/lmeds.h"
-#include "pcl/sample_consensus/impl/lmeds.hpp"
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
+#include <pcl/sample_consensus/lmeds.h>
+#include <pcl/sample_consensus/impl/lmeds.hpp>
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES

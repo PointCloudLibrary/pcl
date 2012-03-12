@@ -40,7 +40,7 @@
 #ifndef PCL_FILTERS_PASSTHROUGH_H_
 #define PCL_FILTERS_PASSTHROUGH_H_
 
-#include "pcl/filters/filter.h"
+#include <pcl/filters/filter.h>
 
 namespace pcl
 {

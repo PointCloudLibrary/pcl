@@ -38,8 +38,8 @@
 #ifndef PCL_SEGMENTATION_IMPL_SEGMENT_DIFFERENCES_H_
 #define PCL_SEGMENTATION_IMPL_SEGMENT_DIFFERENCES_H_
 
-#include "pcl/segmentation/segment_differences.h"
-#include "pcl/common/concatenate.h"
+#include <pcl/segmentation/segment_differences.h>
+#include <pcl/common/concatenate.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

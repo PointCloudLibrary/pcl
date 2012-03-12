@@ -32,7 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "pcl/pcl_config.h"
+#include <pcl/pcl_config.h>
 
 #ifndef __PCL_IO_GRABBER__
 #define __PCL_IO_GRABBER__

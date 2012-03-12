@@ -38,8 +38,8 @@
 #ifndef PCL_SURFACE_IMPL_GP3_H_
 #define PCL_SURFACE_IMPL_GP3_H_
 
-#include "pcl/surface/gp3.h"
-#include "pcl/kdtree/impl/kdtree_flann.hpp"
+#include <pcl/surface/gp3.h>
+#include <pcl/kdtree/impl/kdtree_flann.hpp>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void

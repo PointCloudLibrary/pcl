@@ -38,7 +38,7 @@
 #ifndef PCL_FILTERS_IMPL_CROP_HULL_H_
 #define PCL_FILTERS_IMPL_CROP_HULL_H_
 
-#include "pcl/filters/crop_hull.h"
+#include <pcl/filters/crop_hull.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void

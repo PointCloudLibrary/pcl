@@ -287,6 +287,6 @@ namespace pcl
   }
 }
 
-#include "pcl/registration/impl/correspondence_rejection_features.hpp"
+#include <pcl/registration/impl/correspondence_rejection_features.hpp>
 
 #endif /* PCL_REGISTRATION_CORRESPONDENCE_REJECTION_FEATURES_H_ */

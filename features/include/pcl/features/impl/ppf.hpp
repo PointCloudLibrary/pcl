@@ -39,8 +39,8 @@
 #ifndef PCL_FEATURES_IMPL_PPF_H_
 #define PCL_FEATURES_IMPL_PPF_H_
 
-#include "pcl/features/ppf.h"
-#include "pcl/features/pfh.h"
+#include <pcl/features/ppf.h>
+#include <pcl/features/pfh.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT>

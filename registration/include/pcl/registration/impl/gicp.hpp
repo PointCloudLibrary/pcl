@@ -36,7 +36,7 @@
  */
 
 #include <boost/unordered_map.hpp>
-#include "pcl/registration/exceptions.h"
+#include <pcl/registration/exceptions.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> 

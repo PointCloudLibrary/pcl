@@ -183,6 +183,6 @@ namespace pcl
 
 }
 /*@}*/
-#include "pcl/common/impl/common.hpp"
+#include <pcl/common/impl/common.hpp>
 
 #endif  //#ifndef PCL_COMMON_H_

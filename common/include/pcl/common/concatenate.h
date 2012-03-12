@@ -38,7 +38,7 @@
 #ifndef PCL_COMMON_CONCATENATE_H_
 #define PCL_COMMON_CONCATENATE_H_
 
-#include "pcl/ros/conversions.h"
+#include <pcl/ros/conversions.h>
 
 // We're doing a lot of black magic with Boost here, so disable warnings in Maintainer mode, as we will never
 // be able to fix them anyway

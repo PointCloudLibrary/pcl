@@ -38,7 +38,7 @@
 #ifndef OCTREE_TREE_BASE_STATE_H
 #define OCTREE_TREE_BASE_STATE_H
 
-#include "pcl/octree/octree_base.h"
+#include <pcl/octree/octree_base.h>
 
 namespace pcl
 {
