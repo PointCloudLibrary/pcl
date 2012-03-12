@@ -40,6 +40,10 @@ used in `kdtree` for fast approximate nearest neighbors search. **mandatory**
 
 used in `visualization` for 3D point cloud rendering and visualization. **mandatory**
 
+- **Qt** 
+
+used for applications with a graphical user interface (GUI) **optional**
+
 - **QHULL** 
 
 used for convex/concave hull decompositions in `surface`. **optional**
@@ -65,14 +69,13 @@ Subversion is a version control system similar to CVS which allows developers to
 The download operation of the most recent source from the main development line, known as trunk, is called `checkout`.
 
 .. note::
-	
-	In this tutorial, we will build the svn trunk of PCL. If you want, you can build a PCL branch instead. 
+    In this tutorial, we will build the svn trunk of PCL. If you want, you can build a PCL branch instead. 
     You can also build an official release using the source archive from http://pointclouds.org/downloads/.	
-	You can grab PCL branches using Tortoise SVN from :
-	
-	- pcl-1.x branch from http://svn.pointclouds.org/pcl/branches/pcl-1.x
-	
-	- pcl-1.3.x branch from http://svn.pointclouds.org/pcl/branches/pcl-1.3.x
+    You can grab PCL branches using Tortoise SVN from :
+    
+    - pcl-1.x branch from http://svn.pointclouds.org/pcl/branches/pcl-1.x
+    
+    - pcl-1.3.x branch from http://svn.pointclouds.org/pcl/branches/pcl-1.3.x
 
 First create a folder that will holds PCL source code and binaries. In the remaining of this tutorial we will be using C:\\PCL.
 To checkout PCL source code, navigate to the C:\\PCL folder using Windows file manager. Then right click and choose
@@ -184,6 +187,14 @@ Let's check whether CMake did actually find the needed third party dependencies 
 		
 		In recent PCL, the **FLANN_IS_STATIC** checkbox no longer exists.
 		
+- **Qt** :
+
+    It is highly recommended to install Qt to the default path suggested by the installer. You need then to define an 
+	environment variable named **QTDIR** to point to Qt installation path (e.g. `C:\\Qt\\4.8.0`). Also, you need to
+	append the bin folder to the **PATH** environment variable. Once you modify the environment variables, you need to
+	restart CMake and click "Configure" again. If Qt is not found, you need at least to fill **QT_QMAKE_EXECUTABLE**
+	CMake entry with the path of `qmake.exe` (e.g. C:\\Qt\\4.8.0\\bin\qmake.exe), then click "Configure".
+	
 - **VTK** :
 
 	CMake did not find my VTK installation. There is only one VTK related CMake variable called **VTK_DIR**. We have to set it

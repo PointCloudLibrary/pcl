@@ -46,6 +46,10 @@ compile a series of 3rd party library dependencies:
 
     used to grab point clouds from OpenNI compliant devices. **optional**
 
+	- **Qt** version >= 4.6 (http://qt.nokia.com/)
+
+    used for developing applications with a graphical user interface (GUI) **optional**
+
 .. note::
   
    Though not a dependency per se, don't forget that you also need the CMake
@@ -79,98 +83,158 @@ like::
 	C:/PCL_dependencies/gtest-1.6.0
 	C:/PCL_dependencies/qhull
 	C:/PCL_dependencies/VTK
+
+- **Boost** : 
 	
-Let's start with `Boost`, which does not use CMake. To build Boost, open the
-command prompt and navigate to the Boost folder::
+    Let's start with `Boost`, which does not use CMake. To build Boost, open the
+    command prompt and navigate to the Boost folder::
 
-	prompt> cd c:\PCL_dependencies\boost_1_46_1
-	prompt> bootstrap
+	    prompt> cd c:\PCL_dependencies\boost_1_46_1
+	    prompt> bootstrap
 	
-Depending on the compilation toolchain you intend to use to build PCL, you need
-to change the following `--toolset` argument to msvc-8.0, msvc-9.0 (Visual
-Studio 2008) or msvc-10.0 (Visual Studio 2010). A comprehensive list of supported
-compilers can be found on the Boost manual (http://www.boost.org/doc/libs/1_46_0/more/getting_started/windows.html#identify-your-toolset).
-To make Boost build system produce 64 bit libraries instead of 32 bit ones, change
-the `address-model` option to 64. 
+    Depending on the compilation toolchain you intend to use to build PCL, you need
+    to change the following `--toolset` argument to msvc-8.0, msvc-9.0 (Visual
+    Studio 2008) or msvc-10.0 (Visual Studio 2010). A comprehensive list of supported
+    compilers can be found on the Boost manual (http://www.boost.org/doc/libs/1_46_0/more/getting_started/windows.html#identify-your-toolset).
+    To make Boost build system produce 64 bit libraries instead of 32 bit ones, change
+    the `address-model` option to 64. 
 
-	prompt> bjam --toolset=msvc-9.0 link=static address-model=32 --with-thread --with-system --with-filesystem --with-date_time --with-iostreams --build-type=complete stage
+	    prompt> bjam --toolset=msvc-9.0 link=static address-model=32 --with-thread --with-system --with-filesystem --with-date_time --with-iostreams --build-type=complete stage
 
-The previous command line will build 32 bit static libraries using Visual Studio 2008
-Hit enter and grab some coffee because this will take some time. 
+    The previous command line will build 32 bit static libraries using Visual Studio 2008
+    Hit enter and grab some coffee because this will take some time. 
 
-Let's move on to `FLANN`. Then open CMake-gui and fill in the fields::
+- **Flann** : 
+	
+    Let's move on to `FLANN`. Then open CMake-gui and fill in the fields::
 
-  Where is my source code: C:/PCL_dependencies/flann-1.6.11-src
-  Where to build binaries: C:/PCL_dependencies/flann-1.6.11-src/bin32
+        Where is my source code: C:/PCL_dependencies/flann-1.6.11-src
+        Where to build binaries: C:/PCL_dependencies/flann-1.6.11-src/bin32
 
-  .. note::
+    .. note::
   
-  If you are building 64 bit libraries, I suggest you to choose as binaries output folder bin64 
-  instead of bin32. This way, in case you need to build the 32 bit version too, they can both
-  coexist under C:/PCL_dependencies/flann-1.6.11-src
+        If you are building 64 bit libraries, I suggest you to choose as binaries output folder bin64 
+        instead of bin32. This way, in case you need to build the 32 bit version too, they can both
+        coexist under C:/PCL_dependencies/flann-1.6.11-src
 
-Hit the "Configure" button and CMake will tell that the binaries folder doesn't exist yet 
-(e.g., *C:/PCL_dependencies/flann-1.6.11-src/bin32*) and it will ask for a confirmation.
+    Hit the "Configure" button and CMake will tell that the binaries folder doesn't exist yet 
+    (e.g., *C:/PCL_dependencies/flann-1.6.11-src/bin32*) and it will ask for a confirmation.
   
-Proceed and be sure to choose the correct "Generator" on the next window. So,
-if you've built Boost using the Visual Studio 2008 toolset you would choose the
-same generator here.  
+    Proceed and be sure to choose the correct "Generator" on the next window. So,
+    if you've built Boost using the Visual Studio 2008 toolset you would choose the
+    same generator here.  
 
-.. image:: images/cmake_cminpack_3.png
-   :alt: CMake generator selection
-   :align: center  
+    .. image:: images/cmake_cminpack_3.png
+       :alt: CMake generator selection
+       :align: center  
 
-.. note::
+    .. note::
   
-  Don't forget that all the dependencies must be compiled using the same
-  compiler options and architecture specifications, i.e. you can't mix 32 bit
-  libraries with 64 bit libraries.
+      Don't forget that all the dependencies must be compiled using the same
+      compiler options and architecture specifications, i.e. you can't mix 32 bit
+      libraries with 64 bit libraries.
 
-Now, on my machine I had to manually set the `BUILD_PYTHON_BINDINGS`
-and `BUILD_MATLAB_BINDINGS` to OFF otherwise it would not continue to the next
-step as it is complaining about unable to find Python and Matlab. Click on
-"Advanced mode" and find them, or alternatively, add those entries by clicking
-on the "Add Entry" button in the top right of the CMake-gui window.  Add one
-entry named "BUILD_PYTHON_BINDINGS", set its type to "Bool" and its value to
-unchecked. Do the same with the "BUILD_MATLAB_BINDINGS" entry. 
+    Now, on my machine I had to manually set the `BUILD_PYTHON_BINDINGS`
+    and `BUILD_MATLAB_BINDINGS` to OFF otherwise it would not continue to the next
+    step as it is complaining about unable to find Python and Matlab. Click on
+    "Advanced mode" and find them, or alternatively, add those entries by clicking
+    on the "Add Entry" button in the top right of the CMake-gui window.  Add one
+    entry named "BUILD_PYTHON_BINDINGS", set its type to "Bool" and its value to
+    unchecked. Do the same with the "BUILD_MATLAB_BINDINGS" entry. 
 
-Now hit the "Configure" button and it should work. Go for the "Generate" This will generate
-the required project files/makefiles to build the library. Now you can simply
-go to `C:/PCL_dependencies/flann-1.6.11-src/bin32` and proceed with the compilation using
-your toolchain. In case you use Visual Studio, you will find the Visual Studio
-Solution file in that folder: be sure to build the whole solution by choosing the
-Build Solution command of the Build menu, both in debug and release configurations. 
+    Now hit the "Configure" button and it should work. Go for the "Generate" This will generate
+    the required project files/makefiles to build the library. Now you can simply
+    go to `C:/PCL_dependencies/flann-1.6.11-src/bin32` and proceed with the compilation using
+    your toolchain. In case you use Visual Studio, you will find the Visual Studio
+    Solution file in that folder: be sure to build the whole solution by choosing the
+    Build Solution command of the Build menu, both in debug and release configurations. 
 
-.. note::
+    .. note::
   
-  If you don't have a Python interpreter installed CMake would probably not allow you
-  to generate the project files. To solve this problem you can install the Python interpreter
-  (http://www.python.org/download/windows/) or comment the `add_subdirectory( test )` line 
-  from C:/PCL_dependencies/flann-1.6.11-src/CMakeLists.txt .
-  
-In case you want PCL tests, you need to compile the `googletest` library (GTest). 
-Setup the CMake fields as usual::
+      If you don't have a Python interpreter installed CMake would probably not allow you
+      to generate the project files. To solve this problem you can install the Python interpreter
+      (http://www.python.org/download/windows/) or comment the `add_subdirectory( test )` line 
+      from C:/PCL_dependencies/flann-1.6.11-src/CMakeLists.txt .
 
-  Where is my source code: C:/PCL_dependencies/gtest-1.6.0
-  Where to build binaries: C:/PCL_dependencies/gtest-1.6.0/bin32
+- **GTest** : 
+	  
+    In case you want PCL tests, you need to compile the `googletest` library (GTest). 
+    Setup the CMake fields as usual::
 
-Hit "Configure" and set the following options::
+      Where is my source code: C:/PCL_dependencies/gtest-1.6.0
+      Where to build binaries: C:/PCL_dependencies/gtest-1.6.0/bin32
 
- BUILD_SHARED_LIBS                OFF
- gtest_force_shared_crt           ON
+    Hit "Configure" and set the following options::
+
+     BUILD_SHARED_LIBS                OFF
+     gtest_force_shared_crt           ON
  
-Generate and build the resulting project.
- 
-Setup the CMake fields with the `qhull` paths::
+    Generate and build the resulting project.
 
-  Where is my source code: C:/PCL_dependencies/qhull
-  Where to build binaries: C:/PCL_dependencies/qhull/bin32
+- **QHull** : 
+
+    Setup the CMake fields with the `qhull` paths::
+
+      Where is my source code: C:/PCL_dependencies/qhull
+      Where to build binaries: C:/PCL_dependencies/qhull/bin32
   
-Then hit "Configure" twice and "Generate". Compile the generated project files.
+    Then hit "Configure" twice and "Generate". Compile the generated project files.
 
-The procedure is virtually the same for `VTK` so I won't show it again here.
+- **VTK** : 
 
-That's it, we're done with the dependencies!
+    .. note::
+
+      If you want to build PCL GUI tools, you need to build VTK with Qt support, so obviously, you need to build/install Qt before VTK.
+
+    To build Qt from sources, download the source archive from Qt website. Unpack it some where on your disk (C:\\Qt\\4.8.0 e.g. for Qt 4.8.0).
+    Then open a `Visual Studio Command Prompt` :
+
+    Click **Start**, point to **All Programs**, point to **Microsoft Visual Studio 20XX**, point to **Visual Studio Tools**, 
+    and then click **Visual Studio Command Prompt** if you are building in 32bit, or **Visual Studio x64 Win64 Command Prompt** 
+    if you are building in 64bit.  
+
+    In the command prompt, **cd** to Qt directory::
+
+	  prompt> cd c:\Qt\4.8.0
+	
+    We configure a minimal build of Qt using the Open Source licence. If you need a custom build, adjust the options as needed::
+
+      prompt> configure -opensource -confirm-license -fast -debug-and-release -nomake examples -nomake demos -no-qt3support -no-xmlpatterns -no-multimedia -no-phonon -no-accessibility -no-openvg -no-webkit -no-script -no-scripttools -no-dbus -no-declarative
+	
+    Now, let's build Qt::
+
+      prompt> nmake
+	
+    Now, we can clear all the intermediate files to free some disk space::
+
+      prompt> nmake clean
+
+    We're done with Qt! But before building VTK, we need to set an environment variable::
+
+      QtDir = C:\Qt\4.8.0
+  
+    and then, append `%QtDir%\\bin` to your PATH environment variable.
+
+    Now, configure VTK using CMake (make sure to restart CMake after setting the environment variables). 
+    First, setup the CMake fields with the `VTK` paths, e.g.::
+
+      Where is my source code: C:/PCL_dependencies/VTK
+      Where to build binaries: C:/PCL_dependencies/VTK/bin32
+  
+    Then hit "Configure". Check this checkbox and click "Configure"::
+
+      VTK_USE_QT
+    
+    Make sure CMake did find Qt by looking at `QT_QMAKE_EXECUTABLE` CMake entry. If not, set it to the path of `qmake.exe`, 
+	e.g. `C:\\Qt\\4.8.0\\bin\\qmake.exe`, then click "Configure".
+
+	If Qt is found, then check this checkbox and click "Configure"::
+
+      VTK_USE_QVTK_QTOPENGL
+
+    Then, click "Generate", open the generated solution file, and build it in debug and release.
+
+    That's it, we're done with the dependencies!
 
 Environment variables
 ---------------------
@@ -282,7 +346,7 @@ Using PCL
 
 We finally managed to compile the Point Cloud Library (PCL) as binaries for
 Windows. You can start using them in your project by following the
-:ref:`using_pcl` tutorial. 
+:ref:`using_pcl_pcl_config` tutorial. 
 
 .. note::
     Please remember that if you are using the static version of the Point Cloud
