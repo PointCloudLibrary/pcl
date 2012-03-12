@@ -327,5 +327,5 @@ Using PCL
 ---------
 
 Now that PCL in installed, you can start using the library in your own
-projects by following the :ref:`using_pcl` tutorial.
+projects by following the :ref:`using_pcl_pcl_config` tutorial.
 
