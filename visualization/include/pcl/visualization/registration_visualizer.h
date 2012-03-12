@@ -198,6 +198,6 @@ namespace pcl
     };
 }
 
-#include "pcl/visualization/impl/registration_visualizer.hpp"
+#include <pcl/visualization/impl/registration_visualizer.hpp>
 
 #endif  //#ifndef PCL_REGISTRATION_VISUALIZER_H_
