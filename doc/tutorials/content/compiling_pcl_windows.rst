@@ -1,12 +1,24 @@
+
 .. _compiling_pcl_windows:
 
-Compiling PCL and its dependencies from source in Windows
----------------------------------------------------------
+Compiling PCL from source on Windows
+------------------------------------
 
 This tutorial explains how to build the Point Cloud Library **from source** on
-Microsoft Windows platforms, and tries to guide you through the download and
-the compilation *of all the required dependencies*. The illustrated compilation
-process produces a static library. 
+Microsoft Windows platforms. In this tutorial, we assume that you have built and installed
+all the required dependencies, or that you have installed them using the dependencies
+installers provided on the `downloads page <http://www.pointclouds.org/downloads/windows.html>`_. 
+
+.. note::
+
+   If you installed PCL using one of the **all-in-one** provided installers, then this tutorial is not for you.
+   The **all-in-one** installer already contains prebuilt PCL binaries which are ready to be used without any compilation step.
+   
+.. note::
+
+   If there is no installers for your compiler, it is recommended that you build the dependencies
+   out of source. The :ref:`compiling_pcl_dependencies_windows` tutorial should guide you through the download 
+   and the compilation of all the required dependencies.
 
 .. image:: images/windows_logo.png
    :alt: Microsoft Windows logo
@@ -15,340 +27,330 @@ process produces a static library.
 Requirements
 -------------
 
-In order to compile every component of the PCL library we need to download and
-compile a series of 3rd party library dependencies:
+we assume that you have built and installed all the required dependencies, or that you have installed 
+them using the dependencies installers provided on the `downloads page <http://www.pointclouds.org/downloads/windows.html>`_.
+Installing them to the default locations will make configuring PCL easier.
 
-	- **Boost** version >= 1.46.1 (http://www.boost.org/)
+- **Boost** 
 
-    used for shared pointers, and threading. **mandatory**
+used for shared pointers, and threading. **mandatory**
 
-	- **Eigen** version >= 3.0.0 (http://eigen.tuxfamily.org/)
+- **Eigen** 
 
-    used as the matrix backend for SSE optimized math. **mandatory**
+used as the matrix backend for SSE optimized math. **mandatory**
 
-	- **FLANN** version >= 1.6.8 (http://www.cs.ubc.ca/~mariusm/index.php/FLANN/FLANN)
+- **FLANN** 
 
-    used in `kdtree` for fast approximate nearest neighbors search. **mandatory**
+used in `kdtree` for fast approximate nearest neighbors search. **mandatory**
 
-	- **Visualization ToolKit (VTK)** version >= 5.6.1 (http://www.vtk.org/)
+- **Visualization ToolKit (VTK)** 
 
-    used in `visualization` for 3D point cloud rendering and visualization. **mandatory**
-	
-	- **googletest** version >= 1.6.0 (http://code.google.com/p/googletest/)
+used in `visualization` for 3D point cloud rendering and visualization. **mandatory**
 
-    used to build test units. **optional**
+- **Qt** 
 
-	- **QHULL** version >= 2011.1 (http://www.qhull.org/)
+used for applications with a graphical user interface (GUI) **optional**
 
-    used for convex/concave hull decompositions in `surface`. **optional**
+- **QHULL** 
 
-	- **OpenNI** version >= 1.1.0.25 (http://www.openni.org/)
+used for convex/concave hull decompositions in `surface`. **optional**
 
-    used to grab point clouds from OpenNI compliant devices. **optional**
+- **OpenNI** and patched **Sensor Module** 
 
-	- **Qt** version >= 4.6 (http://qt.nokia.com/)
+used to grab point clouds from OpenNI compliant devices. **optional**
 
-    used for developing applications with a graphical user interface (GUI) **optional**
+- **GTest** version >= 1.6.0 (http://code.google.com/p/googletest/)
+
+is needed only to build PCL tests. We do not provide GTest installers. **optional**
 
 .. note::
   
    Though not a dependency per se, don't forget that you also need the CMake
-   build system (http://www.cmake.org/), at least version **2.8.3**. A Subversion client for Windows, i.e. TortoiseSVN 
-   (http://tortoisesvn.tigris.org/), is also required to download the PCL source code.
+   build system (http://www.cmake.org/), at least version **2.8.7**. A Subversion client 
+   for Windows, i.e. TortoiseSVN (http://tortoisesvn.tigris.org/), is also required 
+   to download the PCL source code.
 
 Downloading PCL source code
 ---------------------------
+
+To build the current official release, download the source archive from 
+http://pointclouds.org/downloads/ and extract it somewhere on your disk, say C:\\PCL\\PCL-1.5.1-Source. 
+In this case, you can go directly to Configuring PCL section, and pay attention to adjust the 
+paths accordingly.
+
+Or, you might want to build an experimental verision
+of PCL to test some new features not yet available in the official releases. For this,
+you will need Tortoise SVN to download sources from PCL svn server.
+
 Subversion is a version control system similar to CVS which allows developers to simultaneously work on PCL. 
 The download operation of the most recent source from the main development line, known as trunk, is called `checkout`.
 
-To checkout PCL source code, navigate to the C:/ folder using Windows file manager. Then right click and choose
-`SVN Checkout...` from the contextual menu. Set "URL of repository" to http://svn.pointclouds.org/pcl/trunk and
-"Checkout directory" to C:/PCL.
+.. note::
+    In this tutorial, we will build the svn trunk of PCL. If you want, you can build a PCL branch instead. 
+    You can also build an official release using the source archive from http://pointclouds.org/downloads/.	
+    You can grab PCL branches using Tortoise SVN from :
+    
+    - pcl-1.x branch from http://svn.pointclouds.org/pcl/branches/pcl-1.x
+    
+    - pcl-1.5.x branch from http://svn.pointclouds.org/pcl/branches/pcl-1.5.x
 
-.. image:: images/SVNCheckout.png
+First create a folder that will holds PCL source code and binaries. In the remaining of this tutorial we will be using C:\\PCL.
+To checkout PCL source code, navigate to the C:\\PCL folder using Windows file manager. Then right click and choose
+`SVN Checkout...` from the contextual menu. Set "URL of repository" to http://svn.pointclouds.org/pcl/trunk and
+"Checkout directory" to C:\\PCL\\trunk.
+
+.. image:: images/windows/SVNCheckout_pcl_trunk.png
    :alt: SVN Checkout dialog
    :align: center
    
-Click "OK" and the download should start. At the end of this process, you will have PCL source code in C:\PCL.
+Click "OK" and the download should start. At the end of this process, you will have PCL source code in C:\\PCL\\trunk.
    
-Building dependencies
----------------------
-Let's unpack all our libraries in C:/PCL_dependencies so that it would like
-like::
+Configuring PCL
+---------------
 
-	C:/PCL_dependencies
-	C:/PCL_dependencies/boost_1_46_1
-	C:/PCL_dependencies/eigen
-	C:/PCL_dependencies/flann-1.6.11-src
-	C:/PCL_dependencies/gtest-1.6.0
-	C:/PCL_dependencies/qhull
-	C:/PCL_dependencies/VTK
+On Windows, we recommend to build **shared** PCL libraries with **static** dependencies. In this tutorial, we will use 
+static dependencies when possible to build shared PCL. You can easily switch to using shared dependencies. Then, you need 
+to make sure you put the dependencies' dlls either in your `PATH` or in the same folder as PCL dlls and executables.
+You can also build static PCL libraries if you want.
+
+Run the CMake-gui application and fill in the fields::
+
+  Where is the source code   : C:/PCL/trunk
+  Where to build the binaries: C:/PCL
+
+Now hit the "Configure" button. You will be asked for a `generator`. A generator is simply a compiler. 
+
+.. note::
+	
+	In this tutorial, we will be using Microsoft Visual C++ 2010 compiler. If you want to build 32bit PCL, then pick the
+	"**Visual Studio 10**" generator. If you want to build 64bit PCL, then pick the "**Visual Studio 10 Win64**".
+
+	Make sure you have installed the right third party dependencies. You cannot mix 32bit and 64bit code, and it is 
+	highly recommanded to not mix codes compiled with different compilers.
+	
+.. image:: images/windows/cmake_generator.png
+    :alt: Choosing a generator
+    :align: center
+	
+In the remaining of this tutorial, we will be using "**Visual Studio 10 Win64**" generator. Once you picked your generator,
+hit finish to close the dialog window. CMake will start configuring PCL and looking for its dependencies. For example, we 
+can get this output :
+
+.. image:: images/windows/cmake_configure_noerror.png
+    :alt: CMake configure result
+    :align: center
+
+The upper part of CMake window contains a list of CMake variables and its respective values. The lower part contains some logging
+output that can help figure out what is happening. We can see, for example, that VTK was not found, thus, the visualization module 
+will not get built.
+
+Before solving the VTK issue, let's organize the CMake variables in groups by checking the `Grouped` checkbox in the top right of 
+CMake window. Let's check also the `Advanced` checkbox to show some advanced CMake variables. Now, if we want to look for a specific
+variable value, we can either browse the CMake variables to look for it, or we can use the `Search:` field to type the variable name.
+
+.. image:: images/windows/cmake_grouped_advanced.png
+    :alt: CMake groupped and advanced variables
+    :align: center
+	
+Let's check whether CMake did actually find the needed third party dependencies or not :
 
 - **Boost** : 
+
+	CMake was not able to find boost automatically. No problem, we will help it find it :) . If CMake has found your
+	boost installation, then skip to the next bullet item.
+
+	.. image:: images/windows/cmake_boost.png
+		:alt: Boost
+		:align: center	
 	
-    Let's start with `Boost`, which does not use CMake. To build Boost, open the
-    command prompt and navigate to the Boost folder::
+	Let's tell CMake where boost headers are by specifiying the headers path in **Boost_INCLUDE_DIR** variable. For example, my boost 
+	headers are in C:\\Program Files\\PCL-Boost\\include (C:\\Program Files\\Boost\\include for newer installers). 
+	Then, let's hit `configure` again ! Hopefully, CMake is now able to find all the other items (the libraries).
 
-	    prompt> cd c:\PCL_dependencies\boost_1_46_1
-	    prompt> bootstrap
+	.. image:: images/windows/cmake_boost_found.png
+		:alt: Boost
+		:align: center	
+
+	.. note::
+		
+		This behaviour is not common for all libraries. Generally, if CMake is not able to find a specific library or package, we have to
+		manually set the values of all the CMake related variables. Hopefully, the CMake script responsible of finding boost
+		is able to find libraries using the headers path.
+
+- **Eigen** : 
+
+	Eigen is a header-only library, thus, we need only **EIGEN_INCLUDE_DIR** to be set. Hopefully, CMake did fing Eigen.
+
+	.. image:: images/windows/cmake_eigen_include_dir.png
+		:alt: Eigen include dir
+		:align: center	
+
+- **FLANN** :
+
+	CMake was able to find my FLANN installation. By default on windows, PCL will pick the static FLANN libraries
+	with `_s` suffix. Thus, the **FLANN_IS_STATIC** checkbox is checked by default.
 	
-    Depending on the compilation toolchain you intend to use to build PCL, you need
-    to change the following `--toolset` argument to msvc-8.0, msvc-9.0 (Visual
-    Studio 2008) or msvc-10.0 (Visual Studio 2010). A comprehensive list of supported
-    compilers can be found on the Boost manual (http://www.boost.org/doc/libs/1_46_0/more/getting_started/windows.html#identify-your-toolset).
-    To make Boost build system produce 64 bit libraries instead of 32 bit ones, change
-    the `address-model` option to 64. 
+	.. image:: images/windows/cmake_flann.png
+		:alt: FLANN
+		:align: center	
 
-	    prompt> bjam --toolset=msvc-9.0 link=static address-model=32 --with-thread --with-system --with-filesystem --with-date_time --with-iostreams --build-type=complete stage
+	.. note::
+		
+		If you rather want to use the **shared** FLANN libraries (those without the `_s` suffix), you need to manually edit the 
+		**FLANN_LIBRARY** and **FLANN_LIBRARY_DEBUG** variables to remove the `_s` suffix and do not forget to uncheck 
+		**FLANN_IS_STATIC**. Make sure the FLANN dlls are either in your PATH or in the same folder as your executables.
 
-    The previous command line will build 32 bit static libraries using Visual Studio 2008
-    Hit enter and grab some coffee because this will take some time. 
+	.. note::
+		
+		In recent PCL, the **FLANN_IS_STATIC** checkbox no longer exists.
+		
+- **Qt** :
 
-- **Flann** : 
+    It is highly recommended to install Qt to the default path suggested by the installer. You need then to define an 
+	environment variable named **QTDIR** to point to Qt installation path (e.g. `C:\\Qt\\4.8.0`). Also, you need to
+	append the bin folder to the **PATH** environment variable. Once you modify the environment variables, you need to
+	restart CMake and click "Configure" again. If Qt is not found, you need at least to fill **QT_QMAKE_EXECUTABLE**
+	CMake entry with the path of `qmake.exe` (e.g. C:\\Qt\\4.8.0\\bin\qmake.exe), then click "Configure".
 	
-    Let's move on to `FLANN`. Then open CMake-gui and fill in the fields::
+- **VTK** :
 
-        Where is my source code: C:/PCL_dependencies/flann-1.6.11-src
-        Where to build binaries: C:/PCL_dependencies/flann-1.6.11-src/bin32
-
-    .. note::
-  
-        If you are building 64 bit libraries, I suggest you to choose as binaries output folder bin64 
-        instead of bin32. This way, in case you need to build the 32 bit version too, they can both
-        coexist under C:/PCL_dependencies/flann-1.6.11-src
-
-    Hit the "Configure" button and CMake will tell that the binaries folder doesn't exist yet 
-    (e.g., *C:/PCL_dependencies/flann-1.6.11-src/bin32*) and it will ask for a confirmation.
-  
-    Proceed and be sure to choose the correct "Generator" on the next window. So,
-    if you've built Boost using the Visual Studio 2008 toolset you would choose the
-    same generator here.  
-
-    .. image:: images/cmake_cminpack_3.png
-       :alt: CMake generator selection
-       :align: center  
-
-    .. note::
-  
-      Don't forget that all the dependencies must be compiled using the same
-      compiler options and architecture specifications, i.e. you can't mix 32 bit
-      libraries with 64 bit libraries.
-
-    Now, on my machine I had to manually set the `BUILD_PYTHON_BINDINGS`
-    and `BUILD_MATLAB_BINDINGS` to OFF otherwise it would not continue to the next
-    step as it is complaining about unable to find Python and Matlab. Click on
-    "Advanced mode" and find them, or alternatively, add those entries by clicking
-    on the "Add Entry" button in the top right of the CMake-gui window.  Add one
-    entry named "BUILD_PYTHON_BINDINGS", set its type to "Bool" and its value to
-    unchecked. Do the same with the "BUILD_MATLAB_BINDINGS" entry. 
-
-    Now hit the "Configure" button and it should work. Go for the "Generate" This will generate
-    the required project files/makefiles to build the library. Now you can simply
-    go to `C:/PCL_dependencies/flann-1.6.11-src/bin32` and proceed with the compilation using
-    your toolchain. In case you use Visual Studio, you will find the Visual Studio
-    Solution file in that folder: be sure to build the whole solution by choosing the
-    Build Solution command of the Build menu, both in debug and release configurations. 
-
-    .. note::
-  
-      If you don't have a Python interpreter installed CMake would probably not allow you
-      to generate the project files. To solve this problem you can install the Python interpreter
-      (http://www.python.org/download/windows/) or comment the `add_subdirectory( test )` line 
-      from C:/PCL_dependencies/flann-1.6.11-src/CMakeLists.txt .
-
-- **GTest** : 
-	  
-    In case you want PCL tests, you need to compile the `googletest` library (GTest). 
-    Setup the CMake fields as usual::
-
-      Where is my source code: C:/PCL_dependencies/gtest-1.6.0
-      Where to build binaries: C:/PCL_dependencies/gtest-1.6.0/bin32
-
-    Hit "Configure" and set the following options::
-
-     BUILD_SHARED_LIBS                OFF
-     gtest_force_shared_crt           ON
- 
-    Generate and build the resulting project.
-
-- **QHull** : 
-
-    Setup the CMake fields with the `qhull` paths::
-
-      Where is my source code: C:/PCL_dependencies/qhull
-      Where to build binaries: C:/PCL_dependencies/qhull/bin32
-  
-    Then hit "Configure" twice and "Generate". Compile the generated project files.
-
-- **VTK** : 
-
-    .. note::
-
-      If you want to build PCL GUI tools, you need to build VTK with Qt support, so obviously, you need to build/install Qt before VTK.
-
-    To build Qt from sources, download the source archive from Qt website. Unpack it some where on your disk (C:\\Qt\\4.8.0 e.g. for Qt 4.8.0).
-    Then open a `Visual Studio Command Prompt` :
-
-    Click **Start**, point to **All Programs**, point to **Microsoft Visual Studio 20XX**, point to **Visual Studio Tools**, 
-    and then click **Visual Studio Command Prompt** if you are building in 32bit, or **Visual Studio x64 Win64 Command Prompt** 
-    if you are building in 64bit.  
-
-    In the command prompt, **cd** to Qt directory::
-
-	  prompt> cd c:\Qt\4.8.0
+	CMake did not find my VTK installation. There is only one VTK related CMake variable called **VTK_DIR**. We have to set it
+	to the path of the folder containing **VTKConfig.cmake**, which is in my case : C:\\Program Files\\VTK 5.6\\lib\\vtk-5.6 
+	(C:\\Program Files\\VTK 5.8.0\\lib\\vtk-5.8 for VTK 5.8).
+	After you set **VTK_DIR**, hit `configure` again.
 	
-    We configure a minimal build of Qt using the Open Source licence. If you need a custom build, adjust the options as needed::
-
-      prompt> configure -opensource -confirm-license -fast -debug-and-release -nomake examples -nomake demos -no-qt3support -no-xmlpatterns -no-multimedia -no-phonon -no-accessibility -no-openvg -no-webkit -no-script -no-scripttools -no-dbus -no-declarative
+	.. image:: images/windows/cmake_vtk_configure.png
+		:alt: VTK
+		:align: center	
+		
+	After clicking `configure`, in the logging window, we can see that VTK is found, but the `visualization` module is still
+	disabled `manually`. We have then to enable it by checking the **BUILD_visualization** checkbox. You can also do the same thing
+	with the `apps` module. Then, hit `configure` again.
 	
-    Now, let's build Qt::
+	.. image:: images/windows/cmake_vtk_found_enable_visualization.png
+		:alt: VTK found, enable visualization
+		:align: center	
 
-      prompt> nmake
+- **QHull** :
+
+	CMake was able to find my QHull installation. By default on windows, PCL will pick the static QHull libraries
+	with `static` suffix.
 	
-    Now, we can clear all the intermediate files to free some disk space::
+	.. image:: images/windows/cmake_qhull.png
+		:alt: QHull
+		:align: center	
 
-      prompt> nmake clean
+- **OpenNI** :
 
-    We're done with Qt! But before building VTK, we need to set an environment variable::
+	CMake was able to find my OpenNI installation. 
+	
+	.. image:: images/windows/cmake_openni.png
+		:alt: OpenNI
+		:align: center	
+	
+	.. note::
+		
+		CMake do not look for the installed OpenNI Sensor module. It is needed at runtime.
+		
+- **GTest** :
 
-      QtDir = C:\Qt\4.8.0
-  
-    and then, append `%QtDir%\\bin` to your PATH environment variable.
+	If you want to build PCL tests, you need to download GTest and build it yourself. In this tutorial, we will not build tests.
+	
+Once CMake has found all the needed dependencies, let's see the PCL specific CMake variables :
 
-    Now, configure VTK using CMake (make sure to restart CMake after setting the environment variables). 
-    First, setup the CMake fields with the `VTK` paths, e.g.::
+.. image:: images/windows/cmake_pcl.png
+	:alt: PCL
+	:align: center
+	
+- **PCL_SHARED_LIBS** is checked by default. Uncheck it if you want static PCL libs (not recommanded).
 
-      Where is my source code: C:/PCL_dependencies/VTK
-      Where to build binaries: C:/PCL_dependencies/VTK/bin32
-  
-    Then hit "Configure". Check this checkbox and click "Configure"::
+- **CMAKE_INSTALL_PREFIX** is where PCL will be installed after building it (more information on this later).
+	
+If you have the Pro version of Microsoft Visual Studio, you can check **USE_PROJECT_FOLDERS** checkbox to organize PCL
+projects in folders within the PCL solution. If you have an express edition, it is recommended to keep it unchecked, as in
+express editions, project folders are disabled.
 
-      VTK_USE_QT
-    
-    Make sure CMake did find Qt by looking at `QT_QMAKE_EXECUTABLE` CMake entry. If not, set it to the path of `qmake.exe`, 
-	e.g. `C:\\Qt\\4.8.0\\bin\\qmake.exe`, then click "Configure".
+Once PCL configuration is ok, hit the `Generate` button. CMake will then generate Visual Studio project files (vcproj files) 
+and the main solution file (PCL.sln) in C:\\PCL directory.
 
-	If Qt is found, then check this checkbox and click "Configure"::
-
-      VTK_USE_QVTK_QTOPENGL
-
-    Then, click "Generate", open the generated solution file, and build it in debug and release.
-
-    That's it, we're done with the dependencies!
-
-Environment variables
----------------------
-
-To make it easier for CMake to find the compiled 3rd party libraries you can define the following
-environment variables:
-
-* **BOOST_ROOT**: `C:/PCL_dependencies/boost_1_46_1`  
-* **QHULL_ROOT**: `C:/PCL_dependencies/qhull`  
-* **FLANN_ROOT**: `C:/PCL_dependencies/flann-1.6.11-src`  
-* **EIGEN_ROOT**: `C:/PCL_dependencies/eigen`  
-
-.. note::
-  
-   Please make sure that CMake-Gui is not running when setting environment variables otherwise
-   it may not be able to detect them.
-   
 Building PCL
-------------
-
-Let's assume that the PCL source code is in C:/PCL. Run the CMake-gui
-application and fill in the fields::
-
-  Where is my source code: C:/PCL
-  Where to build binaries: C:/PCL/bin32
-
-Now hit the "Configure" button. As for the dependencies, choose the correct
-Generator and continue.
-
-Because CMake is unable to find all the 3rd party libraries you installed by
-itself, it will prompt you to input their paths manually. 
-
-Because this tutorial is exemplifying the process of compiling PCL as a
-**static** library, the first thing you have to do is to uncheck the
-**PCL->PCL_SHARED_LIBS** checkbox. Also uncheck **BUILD->BUILD_TESTS** and
-**BUILD->BUILD_global_tests** unless you plan to run the unit tests as a
-developer.
-
-Now examine the CMake-gui log window. You should see some red colored error
-stating that CMake could not find library XXX. The GUI will also highlight in
-red the items which need to be modified. In my case the first time it couldn't
-find the EIGEN library, so it said::
-
-	Could NOT find Eigen (missing: EIGEN_INCLUDE_DIR)
-
-Simply modify the **EIGEN_INCLUDE_DIR** key to point to the correct Eigen include
-directory (C:/PCL_dependencies/eigen in our case). 
-
-Now hit the "Configure" button again. Like before, look for the error in the
-log area and sort it out by modifying the related key above the "Configure"
-button. Repeat the process until you've done with the errors.
-
-A little trick: when it comes to BOOST errors, just set the
-**Boost_INCLUDE_DIR** element to the appropriate paths. The CMake build system
-will figure out the other related paths automatically.
-
-Once all the reported errors are sorted out the "Generate" button becomes
-available. Hit it and a project will be generated in C:/PCL/bin32.
-
-During the CMake configuration for the PCL project, the following options were set::
-
-  Boost_INCLUDE_DIR             "C:/PCL_dependencies/boost_1_46_1"
-  EIGEN_INCLUDE_DIR             "C:/PCL_dependencies/eigen" 
-  FLANN_INCLUDE_DIR             "C:/PCL_dependencies/flann-1.6.11-src/src/cpp" 
-  FLANN_LIBRARY                 "C:/PCL_dependencies/flann-1.6.11-src/lib/Release/flann_cpp_s.lib" 
-  FLANN_LIBRARY_DEBUG           "C:/PCL_dependencies/flann-1.6.11-src/lib/Debug/flann_cpp_s.lib" 
-  GTEST_INCLUDE_DIR             "C:/PCL_dependencies/gtest-1.6.0/include" 
-  GTEST_LIBRARY                 "C:/PCL_dependencies/gtest-1.6.0/bin32/Release/gtest.lib" 
-  GTEST_LIBRARY_DEBUG           "C:/PCL_dependencies/gtest-1.6.0/bin32/Debug/gtest.lib" 
-  GTEST_MAIN_LIBRARY            "C:/PCL_dependencies/gtest-1.6.0/bin32/Release/gtest_main.lib" 
-  GTEST_MAIN_LIBRARY_DEBUG      "C:/PCL_dependencies/gtest-1.6.0/bin32/Debug/gtest_main.lib" 
-  OPENNI_INCLUDE_DIR            "C:/Program Files (x86)/OpenNI/Include"
-  OPENNI_LIBRARY                "C:/Program Files (x86)/OpenNI/Lib/openNI.lib"
-  PCL_SHARED_LIBS               (OFF if you want PCL to be a static library, ON if you want PCL to be a shared library/DLL)
-  BUILD_TESTS                   (ON if you are interested in building software testing units)
-  BUILD_global_tests            (ON if you are interested in building software testing units)
-  BUILD_visualization           (ON if you want to build the optional visualization component) 
-  QHULL_LIBRARY                 "C:/PCL_dependencies/qhull/bin32/src/Release/qhull.lib" 
-  QHULL_INCLUDE_DIR             "C:/PCL_dependencies/qhull/src" 
-  QHULL_LIBRARY_DEBUG           "C:/PCL_dependencies/qhull/bin32/src/Debug/qhull.lib" 
-  VTK_DIR                       "C:/PCL_dependencies/vtk-5.6.1-mod/bin32"  
-
-.. note::
+--------------
   
-  In order to correctly link against the FLANN library, you have to use the flann_cpp_s library file. The use
-  of other files will result in undefined symbols and various linking time errors.
-  
-Open that folder and use the generated project (PCL.sln for instance) to finally build the PCL libraries
-using the toolchain of your choice. Building the "ALL_BUILD" project will build everything. 
-Make sure to build the "ALL_BUILD" project in both debug and release mode.
+Open that generated solution file (PCL.sln) to finally build the PCL libraries. This is how your solution will look like
+whether you enabled **USE_PROJECT_FOLDERS** (left) or not (right).
 
-.. image:: images/msvc_build_build_all.jpg
+.. image:: images/windows/pcl_solution_with_projects_folder.png
+   :alt: PCL solution with project folders
+   :align: center  
+   
+Building the "ALL_BUILD" project will build everything. 
+
+.. image:: images/windows/msvc_build_build_all.jpg
    :alt: Build ALL_BUILD project
    :align: center  
 
+.. note::
+	Make sure to build the "ALL_BUILD" project in both **debug** and **release** mode.
+	
 Installing PCL
 --------------
 
-To install the built libraries and executbles, you need to build the "INSTALL" project in the solution explorer.
-This utility project will copy PCL headers, libraries and executable to the directory defined by the CMAKE_INSTALL_PREFIX 
-cmake variable. Make sure to build the "INSTALL" project in both debug and release mode.
- 
-.. image:: images/msvc_build_install.jpg
+To install the built libraries and executbles, you need to build the "INSTALL" project in the solution explorer. 
+This utility project will copy PCL headers, libraries and executable to the directory defined by the **CMAKE_INSTALL_PREFIX** 
+CMake variable.
+
+.. image:: images/windows/msvc_build_install.jpg
    :alt: Build INSTALL project
    :align: center  
 
+.. note::
+	Make sure to build the "INSTALL" project in both **debug** and **release** mode.
+
+.. note::
+
+	It is highly recommanded to add the bin folder in PCL installation tree (e.g. C:\\Program Files\\PCL\\bin)
+	to your **PATH** environment variable.
+
+Advanced topics
+---------------
+
+- **Building PCL Tests** :
+
+	If you want to build PCL tests, you need to download `GTest` 1.6 (http://code.google.com/p/googletest/) and build it yourself. 
+	Make sure, when you configure GTest via CMake to check the **gtest_force_shared_crt** checkbox. You need, as usual, to build
+	`GTest` in both **release** and **debug**.
+	
+	Back to PCL's CMake settings, you have to fill the **GTEST_*** CMake entries (include directory, gtest libraries (debug and release)
+	and gtestmain libraries (debug and release)). Then, you have to check **BUILD_TEST** and **BUILD_global_tests** CMake checkboxes,
+	and hit `Configure` and `Generate`.
+	
+- **Building the documentation** :
+ 
+	You can build the doxygen documentation of PCL in order to have a local up-to-date api documentation. For this, you need
+	Doxygen (http://www.doxygen.org). You will need also the Graph Visualization Software (GraphViz, http://www.graphviz.org/)
+	to get the doxygen graphics, specifically the `dot` executable.
+	
+	Once you installed these two packages, hit `Configure`. Three CMake variables should be set (if CMake cannot find them, 
+	you can fill them manually) :
+	
+	* *DOXYGEN_EXECUTABLE* : path to `doxygen.exe` (e.g. C:/Program Files (x86)/doxygen/bin/doxygen.exe)
+	* *DOXYGEN_DOT_EXECUTABLE* : path to `dot.exe` from GraphViz (e.g. C:/Program Files (x86)/Graphviz2.26.3/bin/dot.exe)
+	* *DOXYGEN_DOT_PATH* : path of the folder containing `dot.exe` from GraphViz (e.g. C:/Program Files (x86)/Graphviz2.26.3/bin)
+	
+	Then, you need to enable the `documentation` project in Visual Studio by checking the **BUILD_DOCUMENTATION** checkbox in CMake.
+	
+	You can also build one single CHM file that will gather all the generated html files into one file. You need the `Microsoft
+	HTML HELP Workshop <http://www.microsoft.com/downloads/en/details.aspx?familyid=00535334-c8a6-452f-9aa0-d597d16580cc&displaylang=en>`_.
+	After you install the `Microsoft HTML HELP Workshop`, hit `Configure`. If CMake is not able to find **HTML_HEL_COMPILER**, then fill
+	it manually with the path to `hhc.exe` (e.g. C:/Program Files (x86)/HTML Help Workshop/hhc.exe), then click `Configure` and `Generate`.
+	
+	Now, in PCL Visual Studio solution, you will have a new project called `doc`. To generate the documentation files, right click on it, 
+	and choose `Build`. Then, you can build the `INSTALL` project so that the generated documentation files get copied to 
+	**CMAKE_INSTALL_PREFIX**/PCL/share/doc/pcl/html folder (e.g. C:\\Program Files\\PCL\\share\\doc\\pcl\\html).
+	
 Using PCL
 ---------
 
 We finally managed to compile the Point Cloud Library (PCL) as binaries for
 Windows. You can start using them in your project by following the
 :ref:`using_pcl_pcl_config` tutorial. 
-
-.. note::
-    Please remember that if you are using the static version of the Point Cloud
-    Library in your project you will have to manually link the static version of the
-    required dependencies.
