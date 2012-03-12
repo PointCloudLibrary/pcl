@@ -265,7 +265,7 @@ Using PCL
 =========
 
 We finally managed to compile the Point Cloud Library (PCL) for Mac OS X. You
-can start using them in your project by following the :ref:`using_pcl` tutorial.
+can start using them in your project by following the :ref:`using_pcl_pcl_config` tutorial.
 
 
 .. _macosx_advanced:
