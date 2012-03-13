@@ -10,6 +10,12 @@ PCL_ADD_TEST(feature_pfh_estimation test_pfh_estimation
              FILES test_pfh_estimation.cpp
              LINK_WITH pcl_features pcl_io
              ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
+
+PCL_ADD_TEST(feature_cvfh_estimation test_cvfh_estimation
+             FILES test_cvfh_estimation.cpp
+             LINK_WITH pcl_features pcl_io pcl_filters
+             ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
+
 PCL_ADD_TEST(feature_ppf_estimation test_ppf_estimation
              FILES test_ppf_estimation.cpp
              LINK_WITH pcl_features pcl_io
