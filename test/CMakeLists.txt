@@ -21,7 +21,8 @@ if(build)
     enable_testing()
     include_directories(${GTEST_INCLUDE_DIRS})
     include_directories(${PCL_INCLUDE_DIRS})
-
+    add_subdirectory(features)
+    
     if(QHULL_FOUND)
       PCL_ADD_TEST(a_surface_test test_surface
                    FILES test_surface.cpp
