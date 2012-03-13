@@ -457,6 +457,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
       if (minValue < center)
         current_row [ci] = minValue; //distanceMap[ri*input_->width + ci] = minValue;
     }
+    next_row = current_row;
+    current_row -= input_->width;
   }
 
   // Set all normals that we do not touch to NaN
@@ -521,7 +523,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
   }
   else
   {
-    float smoothing_constant = normal_smoothing_size_ * 2.0f;
+    float smoothing_constant = normal_smoothing_size_;
 
     index = border + input_->width * border;
     unsigned skip = (border << 1);

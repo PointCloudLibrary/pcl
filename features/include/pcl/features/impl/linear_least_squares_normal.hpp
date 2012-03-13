@@ -127,7 +127,7 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computePointNormal
 
   const float length = nx * nx + ny * ny + nz * nz;
 
-  if (length <= 0.0f)
+  if (length <= 0.01f)
   {
     normal.normal_x = bad_point;
     normal.normal_y = bad_point;
