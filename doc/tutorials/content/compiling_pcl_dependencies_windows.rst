@@ -142,7 +142,7 @@ like::
     then fill the **BUILD_PROJECTS** CMake entry (which is set to `ALL` by default) with a semicolon-seperated 
     list of boost modules::
     
-      BUILD_PROJECTS : system;filesystem;date_time;thread;tr1;serialization;mpi
+      BUILD_PROJECTS : system;filesystem;date_time;thread;iostreams;tr1;serialization;mpi
       
     Also, uncheck the **ENABLE_STATIC_RUNTIME** checkbox. Then, click "Configure" again. If you get some 
     errors related to Python, then uncheck **WITH_PYTHON** checkbox, and click "Configure" again. 
