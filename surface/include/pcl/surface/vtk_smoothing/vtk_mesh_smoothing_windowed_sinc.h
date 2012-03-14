@@ -40,17 +40,15 @@
 #define VTK_MESH_SMOOTHING_WINDOWED_SINC_H_
 
 #include <pcl/surface/processing.h>
-#include <vtkPolyData.h>
-#include <vtkSmartPointer.h>
-
+#include <pcl/surface/vtk_smoothing/vtk.h>
 
 namespace pcl
 {
   /** \brief PCL mesh smoothing based on the vtkWindowedSincPolyDataFilter algorithm from the VTK library.
-   *  Please check out the original documentation for more details on the inner workings of the algorithm
-   *  Warning: This wrapper does two fairly computationally expensive conversions from the PCL PolygonMesh
-   *  data structure to the vtkPolyData data structure and back.
-   */
+    * Please check out the original documentation for more details on the inner workings of the algorithm
+    * Warning: This wrapper does two fairly computationally expensive conversions from the PCL PolygonMesh
+    * data structure to the vtkPolyData data structure and back.
+    */
   class PCL_EXPORTS MeshSmoothingWindowedSincVTK : public MeshProcessing
   {
     public:
@@ -65,8 +63,6 @@ namespace pcl
           boundary_smoothing_ (true),
           normalize_coordinates_ (false)
       {};
-
-
 
       /** \brief Set the number of iterations for the smoothing filter.
         * \param[in] num_iter the number of iterations

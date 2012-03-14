@@ -67,18 +67,21 @@ namespace pcl
       public:
 
         /** \brief Empty constructor. */
-        CorrespondenceRejectorTrimmed () : overlap_ratio_(1.0f)
+        CorrespondenceRejectorTrimmed () : 
+          overlap_ratio_ (0.5f),
+          nr_min_correspondences_ (0)
         {
           rejection_name_ = "CorrespondenceRejectorTrimmed";
-          overlap_ratio_ = 0.5;
-          nr_min_correspondences_ = 0;
         }
 
+        /** \brief Destructor. */
+        virtual ~CorrespondenceRejectorTrimmed () {}
+
         /** \brief Set the expected ratio of overlap between point clouds (in
-         * terms of correspondences).
-         * \param[in] ratio ratio of overlap between 0 (no overlap, no
-         * correspondences) and 1 (full overlap, all correspondences)
-         */
+          * terms of correspondences).
+          * \param[in] ratio ratio of overlap between 0 (no overlap, no
+          * correspondences) and 1 (full overlap, all correspondences)
+          */
         virtual inline void 
         setOverlapRadio (float ratio) { overlap_ratio_ = std::min (1.0f, std::max (0.0f, ratio)); };
 

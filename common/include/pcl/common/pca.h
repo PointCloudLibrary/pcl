@@ -88,6 +88,10 @@ namespace pcl
         : Base ()
         , compute_done_ (false)
         , basis_only_ (basis_only) 
+        , eigenvectors_ ()
+        , coefficients_ ()
+        , mean_ ()
+        , eigenvalues_  ()
       {}
       
       /** \brief Constructor with direct computation
@@ -102,6 +106,8 @@ namespace pcl
         */
       PCA (PCA const & pca) 
         : Base (pca)
+        , compute_done_ (pca.compute_done_)
+        , basis_only_ (pca.basis_only_) 
         , eigenvectors_ (pca.eigenvectors_)
         , coefficients_ (pca.coefficients_)
         , mean_ (pca.mean_)
@@ -109,9 +115,10 @@ namespace pcl
       {}
 
       /** Assignment operator
-        * \param pca PCA object
+        * \param[in] pca PCA object
         */
-      inline PCA& operator= (PCA const & pca) 
+      inline PCA& 
+      operator= (PCA const & pca) 
       {
         eigenvectors_ = pca.eigenvectors;
         coefficients_ = pca.coefficients;

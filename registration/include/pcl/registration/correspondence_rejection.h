@@ -51,12 +51,14 @@ namespace pcl
       * \author Dirk Holz
       * \ingroup registration
       */
-    class CorrespondenceRejector /*: public PCLBase<PointSource> */
+    class CorrespondenceRejector
     {
       public:
-
         /** \brief Empty constructor. */
-        CorrespondenceRejector () : input_correspondences_() {};
+        CorrespondenceRejector () : rejection_name_ (), input_correspondences_ () {};
+
+        /** \brief Empty destructor. */
+        virtual ~CorrespondenceRejector () {}
 
         /** \brief Provide a pointer to the vector of the input correspondences.
           * \param[in] correspondences the const boost shared pointer to a correspondence vector

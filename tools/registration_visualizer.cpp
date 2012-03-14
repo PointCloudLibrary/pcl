@@ -77,7 +77,7 @@ main (int argc, char** argv)
 
   pcl::VoxelGrid<pcl::PointXYZ> sor;
 //  sor.setLeafSize (0.01, 0.01, 0.01);
-  sor.setLeafSize (0.02, 0.02, 0.02);
+  sor.setLeafSize (0.02f, 0.02f, 0.02f);
 //  sor.setLeafSize (0.05, 0.05, 0.05);
 //  sor.setLeafSize (0.1, 0.1, 0.1);
 //  sor.setLeafSize (0.4, 0.4, 0.4);

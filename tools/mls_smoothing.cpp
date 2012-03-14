@@ -101,7 +101,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
       xyz_cloud->push_back (xyz_cloud_pre->points[i]);
   xyz_cloud->header = xyz_cloud_pre->header;
   xyz_cloud->height = 1;
-  xyz_cloud->width = xyz_cloud->size ();
+  xyz_cloud->width = static_cast<uint32_t> (xyz_cloud->size ());
   xyz_cloud->is_dense = false;
   
   

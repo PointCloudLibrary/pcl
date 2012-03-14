@@ -41,8 +41,7 @@
 
 #include <pcl/pcl_macros.h>
 #include <pcl/PolygonMesh.h>
-#include <vtkPolyData.h>
-#include <vtkSmartPointer.h>
+#include <pcl/surface/vtk_smoothing/vtk.h>
 
 namespace pcl
 {

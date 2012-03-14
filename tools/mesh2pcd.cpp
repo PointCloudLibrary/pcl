@@ -88,7 +88,7 @@ main (int argc, char **argv)
   parse_argument (argc, argv, "-level", tesselated_sphere_level);
   int resolution = default_resolution;
   parse_argument (argc, argv, "-resolution", resolution);
-  double leaf_size = default_leaf_size;
+  float leaf_size = default_leaf_size;
   parse_argument (argc, argv, "-leaf_size", leaf_size);
 
   // Parse the command line arguments for .ply and PCD files

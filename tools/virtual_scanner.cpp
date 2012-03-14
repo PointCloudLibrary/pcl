@@ -50,15 +50,7 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/point_types.h>
 #include <pcl/console/parse.h>
-
-#include <vtkMath.h>
-#include <vtkGeneralTransform.h>
-#include <vtkPlatonicSolidSource.h>
-#include <vtkLoopSubdivisionFilter.h>
-#include <vtkPLYReader.h>
-#include <vtkSmartPointer.h>
-#include <vtkCellLocator.h>
-#include <vtkPolyData.h>
+#include <pcl/visualization/vtk.h>
 #include <boost/random.hpp>
 
 using namespace pcl;

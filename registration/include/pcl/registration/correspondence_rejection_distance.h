@@ -135,6 +135,7 @@ namespace pcl
 
         class DataContainerInterface
         {
+          virtual ~DataContainerInterface () {}
           public:
             virtual double getCorrespondenceScore (int index) = 0;
             virtual double getCorrespondenceScore (const pcl::Correspondence &) = 0;

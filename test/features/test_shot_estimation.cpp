@@ -64,7 +64,7 @@ shotCopyPointCloud (const PointCloud<SHOT> &cloud_in, const std::vector<int> &in
   // Allocate enough space and copy the basics
   cloud_out.points.resize (indices.size ());
   cloud_out.header   = cloud_in.header;
-  cloud_out.width    = indices.size ();
+  cloud_out.width    = static_cast<uint32_t> (indices.size ());
   cloud_out.height   = 1;
   if (cloud_in.is_dense)
     cloud_out.is_dense = true;
@@ -113,10 +113,10 @@ createSHOTDesc (const typename PointCloud<NormalT>::Ptr & normals,
 template <> ShapeContext3DEstimation<PointXYZ, Normal, SHOT>
 createSHOTDesc<ShapeContext3DEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> (
     const PointCloud<Normal>::Ptr & normals,
-    const int nr_shape_bins,
-    const int nr_color_bins,
-    const bool describe_shape,
-    const bool describe_color)
+    const int,
+    const int,
+    const bool, 
+    const bool)
 {
   ShapeContext3DEstimation<PointXYZ, Normal, SHOT> sc3d;
   sc3d.setAzimuthBins (4);
@@ -131,11 +131,11 @@ createSHOTDesc<ShapeContext3DEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Norma
 ///////////////////////////////////////////////////////////////////////////////////
 template <> UniqueShapeContext<PointXYZ, SHOT>
 createSHOTDesc<UniqueShapeContext<PointXYZ, SHOT>, PointXYZ, Normal, SHOT> (
-    const PointCloud<Normal>::Ptr & normals,
-    const int nr_shape_bins,
-    const int nr_color_bins,
-    const bool describe_shape,
-    const bool describe_color)
+    const PointCloud<Normal>::Ptr &,
+    const int,
+    const int,
+    const bool,
+    const bool)
 {
   UniqueShapeContext<PointXYZ, SHOT> usc;
   usc.setAzimuthBins (4);
@@ -143,7 +143,7 @@ createSHOTDesc<UniqueShapeContext<PointXYZ, SHOT>, PointXYZ, Normal, SHOT> (
   usc.setRadiusBins (4);
   usc.setMinimalRadius (0.004);
   usc.setPointDensityRadius (0.008);
-  usc.setLocalRadius (0.04);
+  usc.setLocalRadius (0.04f);
   return (usc);
 }
 
@@ -209,7 +209,7 @@ testSHOTIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points
 
   boost::shared_ptr<vector<int> > indices2 (new vector<int> (0));
   for (size_t i = 0; i < (indices->size ()/2); ++i)
-    indices2->push_back (i);
+    indices2->push_back (static_cast<int> (i));
 
   // Compute with all points as search surface + the specified sub-cloud as "input" but for only a subset of indices
   FeatureEstimation est3 = createSHOTDesc<FeatureEstimation, PointT, NormalT, OutputT>(normals, nr_shape_bins,nr_color_bins,describe_shape,describe_color);
@@ -289,7 +289,7 @@ TEST (PCL, SHOTShapeEstimation)
 
   boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
   for (size_t i = 0; i < cloud.size (); i+=3)
-    test_indices->push_back (i);
+    test_indices->push_back (static_cast<int> (i));
 
   testSHOTIndicesAndSearchSurface<SHOTEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices);
 }
@@ -344,7 +344,7 @@ TEST (PCL, GenericSHOTShapeEstimation)
   // Test results when setIndices and/or setSearchSurface are used
   boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
   for (size_t i = 0; i < cloud.size (); i+=3)
-    test_indices->push_back (i);
+    test_indices->push_back (static_cast<int> (i));
 
   testSHOTIndicesAndSearchSurface<SHOTEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices, shapeStep_);
 }
@@ -376,7 +376,7 @@ TEST (PCL, SHOTShapeAndColorEstimation)
 
   // Create fake point cloud with colors
   PointCloud<PointXYZRGBA> cloudWithColors;
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (int i = 0; i < static_cast<int> (cloud.points.size ()); ++i)
   {
     PointXYZRGBA p;
     p.x = cloud.points[i].x;
@@ -423,7 +423,7 @@ TEST (PCL, SHOTShapeAndColorEstimation)
   // Test results when setIndices and/or setSearchSurface are used
   boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
   for (size_t i = 0; i < cloud.size (); i+=3)
-    test_indices->push_back (i);
+    test_indices->push_back (static_cast<int> (i));
 
   testSHOTIndicesAndSearchSurface<SHOTEstimation<PointXYZRGBA, Normal, SHOT>, PointXYZRGBA, Normal, SHOT> (cloudWithColors.makeShared (), normals, test_indices);
 }
@@ -475,7 +475,7 @@ TEST (PCL, SHOTShapeEstimationOpenMP)
   // Test results when setIndices and/or setSearchSurface are used
   boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
   for (size_t i = 0; i < cloud.size (); i+=3)
-    test_indices->push_back (i);
+    test_indices->push_back (static_cast<int> (i));
 
   testSHOTIndicesAndSearchSurface<SHOTEstimationOMP<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices);
 }
@@ -509,7 +509,7 @@ TEST (PCL,SHOTShapeAndColorEstimationOpenMP)
 
   // Create fake point cloud with colors
   PointCloud<PointXYZRGBA> cloudWithColors;
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (int i = 0; i < static_cast<int> (cloud.points.size ()); ++i)
   {
     PointXYZRGBA p;
     p.x = cloud.points[i].x;
@@ -557,7 +557,7 @@ TEST (PCL,SHOTShapeAndColorEstimationOpenMP)
   // Test results when setIndices and/or setSearchSurface are used
   boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
   for (size_t i = 0; i < cloud.size (); i+=3)
-    test_indices->push_back (i);
+    test_indices->push_back (static_cast<int> (i));
 
   testSHOTIndicesAndSearchSurface<SHOTEstimationOMP<PointXYZRGBA, Normal, SHOT>, PointXYZRGBA, Normal, SHOT> (cloudWithColors.makeShared (), normals, test_indices);
 }
@@ -565,13 +565,13 @@ TEST (PCL,SHOTShapeAndColorEstimationOpenMP)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, 3DSCEstimation)
 {
-  float meshRes = 0.002;
+  float meshRes = 0.002f;
   size_t nBinsL = 4;
   size_t nBinsK = 4;
   size_t nBinsJ = 4;
-  float radius = 20.0 * meshRes;
-  float rmin = radius / 10.0;
-  float ptDensityRad = radius / 5.0;
+  float radius = 20.0f * meshRes;
+  float rmin = radius / 10.0f;
+  float ptDensityRad = radius / 5.0f;
 
   PointCloud<PointXYZ>::Ptr cloudptr = cloud.makeShared ();
 
@@ -642,7 +642,7 @@ TEST (PCL, 3DSCEstimation)
   // Test results when setIndices and/or setSearchSurface are used
   boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
   for (size_t i = 0; i < cloud.size (); i++)
-    test_indices->push_back (i);
+    test_indices->push_back (static_cast<int> (i));
 
   testSHOTIndicesAndSearchSurface<ShapeContext3DEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> (cloudptr, normals, test_indices);
 }
@@ -650,13 +650,13 @@ TEST (PCL, 3DSCEstimation)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, USCEstimation)
 {
-  float meshRes = 0.002;
+  float meshRes = 0.002f;
   size_t nBinsL = 4;
   size_t nBinsK = 4;
   size_t nBinsJ = 4;
-  float radius = 20.0 * meshRes;
-  float rmin = radius / 10.0;
-  float ptDensityRad = radius / 5.0;
+  float radius = 20.0f * meshRes;
+  float rmin = radius / 10.0f;
+  float ptDensityRad = radius / 5.0f;
 
   // estimate
   UniqueShapeContext<PointXYZ, SHOT> uscd;
@@ -705,7 +705,7 @@ TEST (PCL, USCEstimation)
   // Test results when setIndices and/or setSearchSurface are used
   boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
   for (size_t i = 0; i < cloud.size (); i+=3)
-    test_indices->push_back (i);
+    test_indices->push_back (static_cast<int> (i));
 
   PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
   testSHOTIndicesAndSearchSurface<UniqueShapeContext<PointXYZ, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices);
@@ -715,11 +715,11 @@ TEST (PCL, USCEstimation)
   ///////////////////////////////////////////////////////////////////////////////////
   template <> UniqueShapeContext<PointXYZ, Eigen::MatrixXf>
   createSHOTDesc<UniqueShapeContext<PointXYZ, Eigen::MatrixXf>, PointXYZ, Normal, Eigen::MatrixXf> (
-      const PointCloud<Normal>::Ptr & normals,
-      const int nr_shape_bins,
-      const int nr_color_bins,
-      const bool describe_shape,
-      const bool describe_color)
+      const PointCloud<Normal>::Ptr &,
+      const int,
+      const int,
+      const bool,
+      const bool)
   {
     UniqueShapeContext<PointXYZ, Eigen::MatrixXf> usc;
     usc.setAzimuthBins (4);
@@ -727,7 +727,7 @@ TEST (PCL, USCEstimation)
     usc.setRadiusBins (4);
     usc.setMinimalRadius (0.004);
     usc.setPointDensityRadius (0.008);
-    usc.setLocalRadius (0.04);
+    usc.setLocalRadius (0.04f);
     return (usc);
   }
 
@@ -735,10 +735,10 @@ TEST (PCL, USCEstimation)
   template <> ShapeContext3DEstimation<PointXYZ, Normal, Eigen::MatrixXf>
   createSHOTDesc<ShapeContext3DEstimation<PointXYZ, Normal, Eigen::MatrixXf>, PointXYZ, Normal, Eigen::MatrixXf> (
       const PointCloud<Normal>::Ptr & normals,
-      const int nr_shape_bins,
-      const int nr_color_bins,
-      const bool describe_shape,
-      const bool describe_color)
+      const int,
+      const int,
+      const bool,
+      const bool)
   {
     ShapeContext3DEstimation<PointXYZ, Normal, Eigen::MatrixXf> sc3d;
     sc3d.setAzimuthBins (4);
@@ -812,7 +812,7 @@ TEST (PCL, USCEstimation)
 
     boost::shared_ptr<vector<int> > indices2 (new vector<int> (0));
     for (size_t i = 0; i < (indices->size ()/2); ++i)
-      indices2->push_back (i);
+      indices2->push_back (static_cast<int> (i));
 
     // Compute with all points as search surface + the specified sub-cloud as "input" but for only a subset of indices
     FeatureEstimation est3 = createSHOTDesc<FeatureEstimation, PointT, NormalT, Eigen::MatrixXf>(normals, nr_shape_bins,nr_color_bins,describe_shape,describe_color);
@@ -890,7 +890,7 @@ TEST (PCL, USCEstimation)
     // Test results when setIndices and/or setSearchSurface are used
     boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
     for (size_t i = 0; i < cloud.points.size (); i+=3)
-      test_indices->push_back (i);
+      test_indices->push_back (static_cast<int> (i));
 
     testSHOTIndicesAndSearchSurfaceEigen<SHOTEstimation<PointXYZ, Normal, Eigen::MatrixXf>, PointXYZ, Normal> (cloud.makeShared (), normals, test_indices);
 
@@ -946,7 +946,7 @@ TEST (PCL, USCEstimation)
     // Test results when setIndices and/or setSearchSurface are used
     boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
     for (size_t i = 0; i < cloud.size (); i+=3)
-      test_indices->push_back (i);
+      test_indices->push_back (static_cast<int> (i));
 
     testSHOTIndicesAndSearchSurfaceEigen<SHOTEstimation<PointXYZ, Normal, Eigen::MatrixXf>, PointXYZ, Normal> (cloud.makeShared (), normals, test_indices, shapeStep_);
   }
@@ -978,7 +978,7 @@ TEST (PCL, USCEstimation)
 
     // Create fake point cloud with colors
     PointCloud<PointXYZRGBA> cloudWithColors;
-    for (size_t i = 0; i < cloud.points.size (); ++i)
+    for (int i = 0; i < static_cast<int> (cloud.points.size ()); ++i)
     {
       PointXYZRGBA p;
       p.x = cloud.points[i].x;
@@ -1025,7 +1025,7 @@ TEST (PCL, USCEstimation)
     // Test results when setIndices and/or setSearchSurface are used
     boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
     for (size_t i = 0; i < cloud.size (); i+=3)
-      test_indices->push_back (i);
+      test_indices->push_back (static_cast<int> (i));
 
     testSHOTIndicesAndSearchSurfaceEigen<SHOTEstimation<PointXYZRGBA, Normal, Eigen::MatrixXf>, PointXYZRGBA, Normal> (cloudWithColors.makeShared (), normals, test_indices);
   }
@@ -1033,13 +1033,13 @@ TEST (PCL, USCEstimation)
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   TEST (PCL, 3DSCEstimationEigen)
   {
-    float meshRes = 0.002;
+    float meshRes = 0.002f;
     size_t nBinsL = 4;
     size_t nBinsK = 4;
     size_t nBinsJ = 4;
-    float radius = 20.0 * meshRes;
-    float rmin = radius / 10.0;
-    float ptDensityRad = radius / 5.0;
+    float radius = 20.0f * meshRes;
+    float rmin = radius / 10.0f;
+    float ptDensityRad = radius / 5.0f;
 
     PointCloud<PointXYZ>::Ptr cloudptr = cloud.makeShared ();
 
@@ -1112,7 +1112,7 @@ TEST (PCL, USCEstimation)
     // Test results when setIndices and/or setSearchSurface are used
     boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
     for (size_t i = 0; i < cloud.size (); i++)
-      test_indices->push_back (i);
+      test_indices->push_back (static_cast<int> (i));
 
     testSHOTIndicesAndSearchSurfaceEigen<ShapeContext3DEstimation<PointXYZ, Normal, Eigen::MatrixXf>, PointXYZ, Normal> (cloudptr, normals, test_indices);
   }
@@ -1120,13 +1120,13 @@ TEST (PCL, USCEstimation)
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   TEST (PCL, USCEstimationEigen)
   {
-    float meshRes = 0.002;
+    float meshRes = 0.002f;
     size_t nBinsL = 4;
     size_t nBinsK = 4;
     size_t nBinsJ = 4;
-    float radius = 20.0 * meshRes;
-    float rmin = radius / 10.0;
-    float ptDensityRad = radius / 5.0;
+    float radius = 20.0f * meshRes;
+    float rmin = radius / 10.0f;
+    float ptDensityRad = radius / 5.0f;
 
     // estimate
     UniqueShapeContext<PointXYZ, Eigen::MatrixXf> uscd;
@@ -1175,7 +1175,7 @@ TEST (PCL, USCEstimation)
     // Test results when setIndices and/or setSearchSurface are used
     boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
     for (size_t i = 0; i < cloud.size (); i+=3)
-      test_indices->push_back (i);
+      test_indices->push_back (static_cast<int> (i));
 
     PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
     testSHOTIndicesAndSearchSurfaceEigen<UniqueShapeContext<PointXYZ, Eigen::MatrixXf>, PointXYZ, Normal> (cloud.makeShared (), normals, test_indices);
@@ -1200,9 +1200,7 @@ main (int argc, char** argv)
 
   indices.resize (cloud.points.size ());
   for (size_t i = 0; i < indices.size (); ++i)
-  {
-    indices[i] = i;
-  }
+    indices[i] = static_cast<int> (i);
 
   tree.reset (new search::KdTree<PointXYZ> (false));
   tree->setInputCloud (cloud.makeShared ());

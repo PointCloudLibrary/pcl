@@ -144,7 +144,7 @@ pcl::TextureMapping<PointInT>::mapTexture2Mesh (pcl::TextureMesh &tex_mesh)
 {
   // mesh information
   int nr_points  = tex_mesh.cloud.width * tex_mesh.cloud.height;
-  int point_size = tex_mesh.cloud.data.size () / nr_points;
+  int point_size = static_cast<int> (tex_mesh.cloud.data.size ()) / nr_points;
 
   // temporary PointXYZ
   float x, y, z;

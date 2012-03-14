@@ -299,7 +299,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
   
   // remove also Nans
   #pragma omp parallel for
-  for (int pIdx = 0; pIdx < (int) point_cloud->size (); ++pIdx)
+  for (int pIdx = 0; pIdx < static_cast<int> (point_cloud->size ()); ++pIdx)
   {
     if (!isFinite (point_cloud->points [pIdx]))
       nan_mask [pIdx] = false;
@@ -310,7 +310,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
     input_indices_.reset (new vector<int> (input_indices));
   
   #pragma omp parallel for
-  for (int sIdx = 0; sIdx < (int) search_methods.size (); ++sIdx)
+  for (int sIdx = 0; sIdx < static_cast<int> (search_methods.size ()); ++sIdx)
     search_methods [sIdx]->setInputCloud (point_cloud, input_indices_);
 
   // test knn values from 1, 8, 64, 512
@@ -320,7 +320,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
     for (vector<int>::const_iterator qIt = query_indices.begin (); qIt != query_indices.end (); ++qIt)
     {
       #pragma omp parallel for
-      for (int sIdx = 0; sIdx < (int) search_methods.size (); ++sIdx)
+      for (int sIdx = 0; sIdx < static_cast<int> (search_methods.size ()); ++sIdx)
       {
         search_methods [sIdx]->nearestKSearch (point_cloud->points[*qIt], knn, indices [sIdx], distances [sIdx]);
         passed [sIdx] = passed [sIdx] && testUniqueness (indices [sIdx], search_methods [sIdx]->getName ());
@@ -330,10 +330,10 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
       
       // compare results to each other
       #pragma omp parallel for
-      for (int sIdx = 1; sIdx < (int) search_methods.size (); ++sIdx)
+      for (int sIdx = 1; sIdx < static_cast<int> (search_methods.size ()); ++sIdx)
       {
         passed [sIdx] = passed [sIdx] && compareResults (indices [0],    distances [0],    search_methods [0]->getName (),
-                                                         indices [sIdx], distances [sIdx], search_methods [sIdx]->getName (), 1e-6 );
+                                                         indices [sIdx], distances [sIdx], search_methods [sIdx]->getName (), 1e-6f);
       }
     }
   }
@@ -369,7 +369,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<sear
   
   // remove also Nans
   #pragma omp parallel for
-  for (int pIdx = 0; pIdx < (int) point_cloud->size (); ++pIdx)
+  for (int pIdx = 0; pIdx < static_cast<int> (point_cloud->size ()); ++pIdx)
   {
     if (!isFinite (point_cloud->points [pIdx]))
       nan_mask [pIdx] = false;
@@ -380,11 +380,11 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<sear
     input_indices_.reset (new vector<int> (input_indices));
   
   #pragma omp parallel for
-  for (int sIdx = 0; sIdx < (int) search_methods.size (); ++sIdx)
+  for (int sIdx = 0; sIdx < static_cast<int> (search_methods.size ()); ++sIdx)
     search_methods [sIdx]->setInputCloud (point_cloud, input_indices_);
 
   // test radii 0.01, 0.02, 0.04, 0.08
-  for (float radius = 0.01; radius < 0.1; radius *= 2.0)
+  for (float radius = 0.01f; radius < 0.1f; radius *= 2.0f)
   {
     //cout << radius << endl;
     // find nn for each point in the cloud
@@ -404,7 +404,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<sear
       for (int sIdx = 1; sIdx < static_cast<int> (search_methods.size ()); ++sIdx)
       {
         passed [sIdx] = passed [sIdx] && compareResults (indices [0],    distances [0],    search_methods [0]->getName (),
-                                                         indices [sIdx], distances [sIdx], search_methods [sIdx]->getName (), 1e-6 );
+                                                         indices [sIdx], distances [sIdx], search_methods [sIdx]->getName (), 1e-6f);
       }
     }
   }
@@ -461,7 +461,7 @@ TEST (PCL, unorganized_grid_cloud_Complete_Radius)
   vector<int> query_indices;
   query_indices.reserve (query_count);
   
-  unsigned skip = unorganized_grid_cloud->size () / query_count;
+  unsigned skip = static_cast<unsigned> (unorganized_grid_cloud->size ()) / query_count;
   for (unsigned idx = 0; idx < unorganized_grid_cloud->size () && query_indices.size () < query_count; ++idx)
      if ((rand () % skip) == 0 && isFinite (unorganized_grid_cloud->points [idx]))
        query_indices.push_back (idx);
@@ -531,7 +531,7 @@ void createQueryIndices (std::vector<int>& query_indices, PointCloud<PointXYZ>::
   query_indices.clear ();
   query_indices.reserve (query_count);
   
-  unsigned skip = point_cloud->size () / query_count;
+  unsigned skip = static_cast<unsigned> (point_cloud->size ()) / query_count;
   for (unsigned idx = 0; idx < point_cloud->size () && query_indices.size () < query_count; ++idx)
      if ((rand () % skip) == 0 && isFinite (point_cloud->points [idx]))
        query_indices.push_back (idx);
@@ -548,7 +548,7 @@ void createIndices (std::vector<int>& indices, unsigned max_index)
     if (rand_uint () == 0)
       indices.push_back (idx);
    
-  boost::variate_generator< boost::mt19937, boost::uniform_int<> > rand_indices(boost::mt19937 (), boost::uniform_int<> (0, indices.size () - 1));
+  boost::variate_generator< boost::mt19937, boost::uniform_int<> > rand_indices(boost::mt19937 (), boost::uniform_int<> (0, static_cast<int> (indices.size ()) - 1));
   // shuffle indices -> not ascending index list
   for (unsigned idx = 0; idx < max_index; ++idx)
   {
@@ -609,15 +609,15 @@ main (int argc, char** argv)
     {
       for (unsigned zIdx = 0; zIdx < 10; ++zIdx)
       {
-        point.x = 0.1 * float(xIdx);
-        point.y = 0.1 * float(yIdx);
-        point.z = 0.1 * float(zIdx);
+        point.x = 0.1f * float (xIdx);
+        point.y = 0.1f * float (yIdx);
+        point.z = 0.1f * float (zIdx);
         unorganized_grid_cloud->push_back (point);
       }
     }
   }
   
-  createIndices (organized_input_indices, organized_sparse_cloud->size () - 1);
+  createIndices (organized_input_indices, static_cast<int> (organized_sparse_cloud->size ()) - 1);
   createIndices (unorganized_input_indices, unorganized_point_count - 1);
   
   brute_force.setSortedResults (true);

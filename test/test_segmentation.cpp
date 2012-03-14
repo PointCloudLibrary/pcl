@@ -128,8 +128,8 @@ TEST (RegionGrowingTest, SegmentWithDifferentNormalAndCloudSize)
   rg.setCloud(another_cloud_);
   rg.setNormals(normals_);
 
-  int first_cloud_size = cloud_->points.size();
-  int second_cloud_size = another_cloud_->points.size();
+  int first_cloud_size = static_cast<int> (cloud_->points.size());
+  int second_cloud_size = static_cast<int> (another_cloud_->points.size ());
   ASSERT_NE(first_cloud_size, second_cloud_size);
 
   int num_of_segments = rg.segmentPoints();
@@ -226,8 +226,8 @@ TEST (ExtractPolygonalPrism, Segmentation)
 
   for (size_t i = 0; i < hull->points.size (); ++i)
   {
-    hull->points[i].x = hull->points[i].y = i;
-    hull->points[i].z = 0;
+    hull->points[i].x = hull->points[i].y = static_cast<float> (i);
+    hull->points[i].z = 0.0f;
   }
 
   ExtractPolygonalPrismData<PointXYZ> ex;
@@ -267,7 +267,7 @@ main (int argc, char** argv)
   // Tranpose the cloud
   cloud_t = cloud;
   for (size_t i = 0; i < cloud.points.size (); ++i)
-    cloud_t.points[i].x += 0.01;
+    cloud_t.points[i].x += 0.01f;
 
   cloud_   = cloud.makeShared ();
   cloud_t_ = cloud_t.makeShared ();

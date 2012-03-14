@@ -121,10 +121,13 @@ namespace pcl
 
       typedef typename KdTreeFLANN<FeatureT>::Ptr FeatureKdTreePtr; 
       /** \brief Constructor. */
-      SampleConsensusInitialAlignment () : nr_samples_(3), min_sample_distance_ (0), k_correspondences_ (10)
+      SampleConsensusInitialAlignment () : 
+        input_features_ (), target_features_ (), 
+        nr_samples_(3), min_sample_distance_ (0.0f), k_correspondences_ (10), 
+        feature_tree_ (new pcl::KdTreeFLANN<FeatureT>),
+        error_functor_ ()
       {
         reg_name_ = "SampleConsensusInitialAlignment";
-        feature_tree_.reset (new pcl::KdTreeFLANN<FeatureT>);
         max_iterations_ = 1000;
         transformation_estimation_.reset (new pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>);
       };

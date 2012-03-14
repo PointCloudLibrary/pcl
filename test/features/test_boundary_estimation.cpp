@@ -67,7 +67,7 @@ TEST (PCL, BoundaryEstimation)
   boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
   n.setIndices (indicesptr);
   n.setSearchMethod (tree);
-  n.setKSearch (indices.size ());
+  n.setKSearch (static_cast<int> (indices.size ()));
   // estimate
   n.compute (*normals);
 
@@ -87,24 +87,24 @@ TEST (PCL, BoundaryEstimation)
 
   // isBoundaryPoint (indices)
   bool pt = false;
-  pt = b.isBoundaryPoint (cloud, 0, indices, u, v, M_PI / 2.0);
+  pt = b.isBoundaryPoint (cloud, 0, indices, u, v, float (M_PI) / 2.0);
   EXPECT_EQ (pt, false);
-  pt = b.isBoundaryPoint (cloud, indices.size () / 3, indices, u, v, M_PI / 2.0);
+  pt = b.isBoundaryPoint (cloud, static_cast<int> (indices.size ()) / 3, indices, u, v, float (M_PI) / 2.0);
   EXPECT_EQ (pt, false);
-  pt = b.isBoundaryPoint (cloud, indices.size () / 2, indices, u, v, M_PI / 2.0);
+  pt = b.isBoundaryPoint (cloud, static_cast<int> (indices.size ()) / 2, indices, u, v, float (M_PI) / 2.0);
   EXPECT_EQ (pt, false);
-  pt = b.isBoundaryPoint (cloud, indices.size () - 1, indices, u, v, M_PI / 2.0);
+  pt = b.isBoundaryPoint (cloud, static_cast<int> (indices.size ()) - 1, indices, u, v, float (M_PI) / 2.0);
   EXPECT_EQ (pt, true);
 
   // isBoundaryPoint (points)
   pt = false;
-  pt = b.isBoundaryPoint (cloud, cloud.points[0], indices, u, v, M_PI / 2.0);
+  pt = b.isBoundaryPoint (cloud, cloud.points[0], indices, u, v, float (M_PI) / 2.0);
   EXPECT_EQ (pt, false);
-  pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () / 3], indices, u, v, M_PI / 2.0);
+  pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () / 3], indices, u, v, float (M_PI) / 2.0);
   EXPECT_EQ (pt, false);
-  pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () / 2], indices, u, v, M_PI / 2.0);
+  pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () / 2], indices, u, v, float (M_PI) / 2.0);
   EXPECT_EQ (pt, false);
-  pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () - 1], indices, u, v, M_PI / 2.0);
+  pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () - 1], indices, u, v, float (M_PI) / 2.0);
   EXPECT_EQ (pt, true);
 
   // Object
@@ -114,7 +114,7 @@ TEST (PCL, BoundaryEstimation)
   b.setInputCloud (cloud.makeShared ());
   b.setIndices (indicesptr);
   b.setSearchMethod (tree);
-  b.setKSearch (indices.size ());
+  b.setKSearch (static_cast<int> (indices.size ()));
 
   // estimate
   b.compute (*bps);
@@ -145,7 +145,7 @@ TEST (PCL, BoundaryEstimation)
     boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
     n.setIndices (indicesptr);
     n.setSearchMethod (tree);
-    n.setKSearch (indices.size ());
+    n.setKSearch (static_cast<int> (indices.size ()));
     // estimate
     n.compute (*normals);
 
@@ -165,24 +165,24 @@ TEST (PCL, BoundaryEstimation)
 
     // isBoundaryPoint (indices)
     bool pt = false;
-    pt = b.isBoundaryPoint (cloud, 0, indices, u, v, M_PI / 2.0);
+    pt = b.isBoundaryPoint (cloud, 0, indices, u, v, float (M_PI) / 2.0);
     EXPECT_EQ (pt, false);
-    pt = b.isBoundaryPoint (cloud, indices.size () / 3, indices, u, v, M_PI / 2.0);
+    pt = b.isBoundaryPoint (cloud, static_cast<int> (indices.size () / 3), indices, u, v, float (M_PI) / 2.0);
     EXPECT_EQ (pt, false);
-    pt = b.isBoundaryPoint (cloud, indices.size () / 2, indices, u, v, M_PI / 2.0);
+    pt = b.isBoundaryPoint (cloud, static_cast<int> (indices.size () / 2), indices, u, v, float (M_PI) / 2.0);
     EXPECT_EQ (pt, false);
-    pt = b.isBoundaryPoint (cloud, indices.size () - 1, indices, u, v, M_PI / 2.0);
+    pt = b.isBoundaryPoint (cloud, static_cast<int> (indices.size () - 1), indices, u, v, float (M_PI) / 2.0);
     EXPECT_EQ (pt, true);
 
     // isBoundaryPoint (points)
     pt = false;
-    pt = b.isBoundaryPoint (cloud, cloud.points[0], indices, u, v, M_PI / 2.0);
+    pt = b.isBoundaryPoint (cloud, cloud.points[0], indices, u, v, float (M_PI) / 2.0);
     EXPECT_EQ (pt, false);
-    pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () / 3], indices, u, v, M_PI / 2.0);
+    pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () / 3], indices, u, v, float (M_PI) / 2.0);
     EXPECT_EQ (pt, false);
-    pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () / 2], indices, u, v, M_PI / 2.0);
+    pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () / 2], indices, u, v, float (M_PI) / 2.0);
     EXPECT_EQ (pt, false);
-    pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () - 1], indices, u, v, M_PI / 2.0);
+    pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () - 1], indices, u, v, float (M_PI) / 2.0);
     EXPECT_EQ (pt, true);
 
     // Object
@@ -192,7 +192,7 @@ TEST (PCL, BoundaryEstimation)
     b.setInputCloud (cloud.makeShared ());
     b.setIndices (indicesptr);
     b.setSearchMethod (tree);
-    b.setKSearch (indices.size ());
+    b.setKSearch (static_cast<int> (indices.size ()));
 
     // estimate
     b.computeEigen (*bps);
@@ -227,9 +227,7 @@ main (int argc, char** argv)
 
   indices.resize (cloud.points.size ());
   for (size_t i = 0; i < indices.size (); ++i)
-  {
-    indices[i] = i;
-  }
+    indices[i] = static_cast<int> (i);
 
   tree.reset (new search::KdTree<PointXYZ> (false));
   tree->setInputCloud (cloud.makeShared ());

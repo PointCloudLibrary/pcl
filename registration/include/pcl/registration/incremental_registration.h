@@ -237,7 +237,9 @@ namespace pcl
       {
         PointCloud cloud_temp;
         sor_.setInputCloud(cloud_model_ptr_);
-        sor_.setLeafSize(downsampling_leaf_size_model_, downsampling_leaf_size_model_, downsampling_leaf_size_model_);
+        sor_.setLeafSize (static_cast<float> (downsampling_leaf_size_model_), 
+                          static_cast<float> (downsampling_leaf_size_model_), 
+                          static_cast<float> (downsampling_leaf_size_model_));
         sor_.filter(cloud_temp);
         cloud_model_ = cloud_temp;
         cloud_model_ptr_ = cloud_model_.makeShared();

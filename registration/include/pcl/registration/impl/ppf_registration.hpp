@@ -50,7 +50,7 @@ pcl::PPFHashMapSearch::setInputFeatureCloud (PointCloud<PPFSignature>::ConstPtr 
 {
   // Discretize the feature cloud and insert it in the hash map
   feature_hash_map_->clear ();
-  unsigned int n = sqrt ((float)feature_cloud->points.size ());
+  unsigned int n = static_cast<unsigned int> (sqrt (static_cast<float> (feature_cloud->points.size ())));
   int d1, d2, d3, d4;
   max_dist_ = -1.0;
   alpha_m_.resize (n);
@@ -132,7 +132,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
   accumulator_array.resize (input_->points.size ());
   for (size_t i = 0; i < input_->points.size (); ++i)
   {
-    std::vector <unsigned int> aux ((size_t)floor(2*M_PI / search_method_->getAngleDiscretizationStep ()), 0);
+    std::vector <unsigned int> aux (static_cast<size_t> (floor(2*M_PI / search_method_->getAngleDiscretizationStep ()), 0));
     accumulator_array[i] = aux;
   }
   PCL_INFO ("Accumulator array size: %u x %u.\n", accumulator_array.size (), accumulator_array.back ().size ());
@@ -173,7 +173,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
 
           // Compute alpha_s angle
           Eigen::Vector3f scene_point = target_->points[scene_point_index].getVector3fMap ();
-          Eigen::AngleAxisf rotation_sg (acos (scene_reference_normal.dot (Eigen::Vector3f::UnitX ())),
+          Eigen::AngleAxisf rotation_sg (acosf (scene_reference_normal.dot (Eigen::Vector3f::UnitX ())),
                                          scene_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
           Eigen::Affine3f transform_sg = Eigen::Translation3f ( rotation_sg * ((-1) * scene_reference_point)) * rotation_sg;
 //          float alpha_s = acos (Eigen::Vector3f::UnitY ().dot ((transform_sg * scene_point).normalized ()));

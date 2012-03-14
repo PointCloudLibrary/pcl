@@ -56,14 +56,13 @@
  const int MAX_DISPLAYED_CUBES(15000);
 //=============================
 
-
 class OctreeViewer
 {
 public:
-  OctreeViewer(std::string &filename, double resolution) :
-    viz("Octree visualizator"), cloud(new pcl::PointCloud<pcl::PointXYZ>()),
-        displayCloud(new pcl::PointCloud<pcl::PointXYZ>()), octree(resolution), displayCubes(false),
-        showPointsWithCubes(false), wireframe(true)
+  OctreeViewer (std::string &filename, double resolution) :
+    viz ("Octree visualizator"), cloud (new pcl::PointCloud<pcl::PointXYZ>()),
+        displayCloud (new pcl::PointCloud<pcl::PointXYZ>()), octree (resolution), displayCubes(false),
+        showPointsWithCubes (false), wireframe (true)
   {
 
     //try to load the cloud
@@ -231,7 +230,7 @@ private:
     clearView();
 
     //prevent the display of too many cubes
-    bool displayCubeLegend = displayCubes && (int)displayCloud->points.size() <= MAX_DISPLAYED_CUBES;
+    bool displayCubeLegend = displayCubes && static_cast<int> (displayCloud->points.size ()) <= MAX_DISPLAYED_CUBES;
 
     showLegend(displayCubeLegend);
 
@@ -331,15 +330,15 @@ private:
     double start = omp_get_wtime();
     while (*tree_it++)
     {
-      if ((int)tree_it.getCurrentOctreeDepth() != depth)
+      if (static_cast<int> (tree_it.getCurrentOctreeDepth ()) != depth)
         continue;
 
       Eigen::Vector3f voxel_min, voxel_max;
       octree.getVoxelBounds(tree_it, voxel_min, voxel_max);
 
-      pt.x = (voxel_min.x() + voxel_max.x()) / 2.0;
-      pt.y = (voxel_min.y() + voxel_max.y()) / 2.0;
-      pt.z = (voxel_min.z() + voxel_max.z()) / 2.0;
+      pt.x = (voxel_min.x() + voxel_max.x()) / 2.0f;
+      pt.y = (voxel_min.y() + voxel_max.y()) / 2.0f;
+      pt.z = (voxel_min.z() + voxel_max.z()) / 2.0f;
       displayCloud->points.push_back(pt);
 
       //we are already the desired depth, there is no reason to go deeper.
@@ -347,8 +346,8 @@ private:
     }
 
     double end = omp_get_wtime();
-    printf("%zupts, %.4gs. %.4gs./pt. =====\n", displayCloud->points.size(), end - start,
-           (end - start) / displayCloud->points.size());
+    printf("%zu pts, %.4gs. %.4gs./pt. =====\n", displayCloud->points.size (), end - start,
+           (end - start) / static_cast<double> (displayCloud->points.size ()));
 
     update();
   }
@@ -358,7 +357,7 @@ private:
    */
   bool IncrementLevel()
   {
-    if (displayedDepth < (int)octree.getTreeDepth())
+    if (displayedDepth < static_cast<int> (octree.getTreeDepth ()))
     {
       displayedDepth++;
       extractPointsAtLevel(displayedDepth);

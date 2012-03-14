@@ -108,7 +108,7 @@ TEST (PCL, DeMean)
   EXPECT_NEAR (cloud_demean.points[cloud_demean.points.size () - 1].z, -0.071702, 1e-4);
 
   vector<int> indices (cloud.points.size ());
-  for (size_t i = 0; i < indices.size (); ++i) { indices[i] = i; }
+  for (int i = 0; i < static_cast<int> (indices.size ()); ++i) { indices[i] = i; }
 
   // Check standard demean w/ indices
   demeanPointCloud (cloud, indices, centroid, cloud_demean);
@@ -128,7 +128,7 @@ TEST (PCL, DeMean)
   // Check eigen demean
   Eigen::MatrixXf mat_demean;
   demeanPointCloud (cloud, centroid, mat_demean);
-  EXPECT_EQ (mat_demean.cols (), (int)cloud.points.size ());
+  EXPECT_EQ (mat_demean.cols (), int (cloud.points.size ()));
   EXPECT_EQ (mat_demean.rows (), 4);
 
   EXPECT_NEAR (mat_demean (0, 0), 0.034503, 1e-4);
@@ -141,7 +141,7 @@ TEST (PCL, DeMean)
 
   // Check eigen demean + indices
   demeanPointCloud (cloud, indices, centroid, mat_demean);
-  EXPECT_EQ (mat_demean.cols (), (int)cloud.points.size ());
+  EXPECT_EQ (mat_demean.cols (), int (cloud.points.size ()));
   EXPECT_EQ (mat_demean.rows (), 4);
 
   EXPECT_NEAR (mat_demean (0, 0), 0.034503, 1e-4);

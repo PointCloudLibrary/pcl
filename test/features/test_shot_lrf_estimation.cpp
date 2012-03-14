@@ -91,20 +91,20 @@ TEST (PCL, SHOTLocalReferenceFrameEstimation)
   Eigen::Vector3f point_15_z (-0.451055f, -0.719497f, -0.528084f);
 
   //float point_45_conf = 0;
-  Eigen::Vector3f point_45_x (0.950556f, 0.0673042f, 0.303171);
-  Eigen::Vector3f point_45_y (0.156242f, -0.947328f, -0.279569);
-  Eigen::Vector3f point_45_z (0.268386f, 0.313114f, -0.911004);
+  Eigen::Vector3f point_45_x (0.950556f, 0.0673042f, 0.303171f);
+  Eigen::Vector3f point_45_y (0.156242f, -0.947328f, -0.279569f);
+  Eigen::Vector3f point_45_z (0.268386f, 0.313114f, -0.911004f);
 
   //float point_163_conf = 0;
-  Eigen::Vector3f point_163_x (0.816369f, 0.309943f, -0.487317);
-  Eigen::Vector3f point_163_y (0.235273f, -0.949082f, -0.209498);
-  Eigen::Vector3f point_163_z (-0.527436f, 0.0563754f, -0.847722);
+  Eigen::Vector3f point_163_x (0.816369f, 0.309943f, -0.487317f);
+  Eigen::Vector3f point_163_y (0.235273f, -0.949082f, -0.209498f);
+  Eigen::Vector3f point_163_z (-0.527436f, 0.0563754f, -0.847722f);
 
   // point 311: normal disambiguation
   //float point_311_conf = 0;
-  Eigen::Vector3f point_311_x (0.77608663, -0.60673451, 0.17193851);
-  Eigen::Vector3f point_311_y (0.49546647, 0.75532055, 0.42895663);
-  Eigen::Vector3f point_311_z (-0.39013144, -0.24771771, 0.88681078);
+  Eigen::Vector3f point_311_x (0.77608663f, -0.60673451f, 0.17193851f);
+  Eigen::Vector3f point_311_y (0.49546647f, 0.75532055f, 0.42895663f);
+  Eigen::Vector3f point_311_z (-0.39013144f, -0.24771771f, 0.88681078f);
 
   //Test Results
   //EXPECT_NEAR (point_15_conf,bunny_LRF.at (15).confidence, 1E-3);
@@ -165,20 +165,20 @@ TEST (PCL, SHOTLocalReferenceFrameEstimation)
     Eigen::Vector3f point_15_z (-0.451055f, -0.719497f, -0.528084f);
 
     //float point_45_conf = 0;
-    Eigen::Vector3f point_45_x (0.950556f, 0.0673042f, 0.303171);
-    Eigen::Vector3f point_45_y (0.156242f, -0.947328f, -0.279569);
-    Eigen::Vector3f point_45_z (0.268386f, 0.313114f, -0.911004);
+    Eigen::Vector3f point_45_x (0.950556f, 0.0673042f, 0.303171f);
+    Eigen::Vector3f point_45_y (0.156242f, -0.947328f, -0.279569f);
+    Eigen::Vector3f point_45_z (0.268386f, 0.313114f, -0.911004f);
 
     //float point_163_conf = 0;
-    Eigen::Vector3f point_163_x (0.816369f, 0.309943f, -0.487317);
-    Eigen::Vector3f point_163_y (0.235273f, -0.949082f, -0.209498);
-    Eigen::Vector3f point_163_z (-0.527436f, 0.0563754f, -0.847722);
+    Eigen::Vector3f point_163_x (0.816369f, 0.309943f, -0.487317f);
+    Eigen::Vector3f point_163_y (0.235273f, -0.949082f, -0.209498f);
+    Eigen::Vector3f point_163_z (-0.527436f, 0.0563754f, -0.847722f);
 
     // point 311: normal disambiguation
     //float point_311_conf = 0;
-    Eigen::Vector3f point_311_x (0.77608663, -0.60673451, 0.17193851);
-    Eigen::Vector3f point_311_y (0.49546647, 0.75532055, 0.42895663);
-    Eigen::Vector3f point_311_z (-0.39013144, -0.24771771, 0.88681078);
+    Eigen::Vector3f point_311_x (0.77608663f, -0.60673451f, 0.17193851f);
+    Eigen::Vector3f point_311_y (0.49546647f, 0.75532055f, 0.42895663f);
+    Eigen::Vector3f point_311_z (-0.39013144f, -0.24771771f, 0.88681078f);
 
     ////Test Results
     EXPECT_NEAR_VECTORS (point_15_x, bunny_LRF.points.block<1,3> (15, 0), 1E-3);
@@ -221,9 +221,7 @@ main (int argc, char** argv)
 
   indices.resize (cloud.points.size ());
   for (size_t i = 0; i < indices.size (); ++i)
-  {
-    indices[i] = i;
-  }
+    indices[i] = static_cast<int> (i);
 
   tree.reset (new search::KdTree<PointXYZ> (true));
   tree->setInputCloud (cloud.makeShared ());

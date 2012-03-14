@@ -69,7 +69,7 @@ TEST(PCL, IntegralImage1D)
   {
     for(unsigned xIdx = 0; xIdx < width; ++xIdx)
     {
-      data[width * yIdx + xIdx] = xIdx;
+      data[width * yIdx + xIdx] = static_cast<float> (xIdx);
     }
   }
 
@@ -109,7 +109,7 @@ TEST(PCL, IntegralImage1D)
   {
     for(unsigned xIdx = 0; xIdx < row_stride; xIdx += element_stride)
     {
-      data[row_stride * yIdx + xIdx] = xIdx >> 1;
+      data[row_stride * yIdx + xIdx] = static_cast<float> (xIdx >> 1);
       data[row_stride * yIdx + xIdx + 1] = -1;
     }
   }
@@ -141,13 +141,13 @@ TEST(PCL, IntegralImage1D)
   element_stride = 3;
   row_stride = width * element_stride + 1; // +1 to enforce a non-zero modulo
   data = new float[row_stride * height];
-  for(unsigned yIdx = 0; yIdx < height; ++yIdx)
+  for (unsigned yIdx = 0; yIdx < height; ++yIdx)
   {
-    for(unsigned xIdx = 0; xIdx < width; ++xIdx)
+    for (unsigned xIdx = 0; xIdx < width; ++xIdx)
     {
-      data[row_stride * yIdx + element_stride * xIdx] = 1;
-      data[row_stride * yIdx + element_stride * xIdx + 1] = 2;
-      data[row_stride * yIdx + element_stride * xIdx + 2] = xIdx;
+      data[row_stride * yIdx + element_stride * xIdx] = 1.0f;
+      data[row_stride * yIdx + element_stride * xIdx + 1] = 2.0f;
+      data[row_stride * yIdx + element_stride * xIdx + 2] = static_cast<float> (xIdx);
     }
   }
   integral_image1.setInput (data, width, height, element_stride, row_stride);
@@ -234,9 +234,9 @@ TEST(PCL, IntegralImage1D)
       }
       else
       {
-        data[row_stride * yIdx + element_stride * xIdx] = 3;
-        data[row_stride * yIdx + element_stride * xIdx + 1] = 2;
-        data[row_stride * yIdx + element_stride * xIdx + 2] = xIdx;
+        data[row_stride * yIdx + element_stride * xIdx] = 3.0f;
+        data[row_stride * yIdx + element_stride * xIdx + 1] = 2.0f;
+        data[row_stride * yIdx + element_stride * xIdx + 2] = static_cast<float> (xIdx);
       }
     }
   }
@@ -281,10 +281,10 @@ TEST(PCL, IntegralImage3D)
   {
     for(unsigned xIdx = 0; xIdx < width; ++xIdx)
     {
-      data[row_stride * yIdx + xIdx * element_stride] = xIdx;
-      data[row_stride * yIdx + xIdx * element_stride + 1] = yIdx;
-      data[row_stride * yIdx + xIdx * element_stride + 2] = xIdx + yIdx;
-      data[row_stride * yIdx + xIdx * element_stride + 3] = -1000;
+      data[row_stride * yIdx + xIdx * element_stride] = static_cast<float> (xIdx);
+      data[row_stride * yIdx + xIdx * element_stride + 1] = static_cast<float> (yIdx);
+      data[row_stride * yIdx + xIdx * element_stride + 2] = static_cast<float> (xIdx + yIdx);
+      data[row_stride * yIdx + xIdx * element_stride + 3] = -1000.0f;
     }
   }
   integral_image3.setInput (data, width, height, element_stride, row_stride);
@@ -518,9 +518,9 @@ main (int argc, char** argv)
   {
     for (size_t u = 0; u < cloud.width; ++u)
     {
-      cloud (u, v).x = u;
-      cloud (u, v).y = v;
-      cloud (u, v).z = 10;
+      cloud (u, v).x = static_cast<float> (u);
+      cloud (u, v).y = static_cast<float> (v);
+      cloud (u, v).z = 10.0f;
     }
   }
 

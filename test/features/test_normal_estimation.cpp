@@ -234,7 +234,7 @@ TEST (PCL, NormalEstimationOpenMP)
     EXPECT_EQ (n.getIndices (), indicesptr);
     n.setSearchMethod (tree);
     EXPECT_EQ (n.getSearchMethod (), tree);
-    n.setKSearch (indices.size ());
+    n.setKSearch (static_cast<int> (indices.size ()));
 
     // estimate
     n.computeEigen (*normals);
@@ -285,7 +285,7 @@ TEST (PCL, NormalEstimationOpenMP)
     EXPECT_EQ (n.getIndices (), indicesptr);
     n.setSearchMethod (tree);
     EXPECT_EQ (n.getSearchMethod (), tree);
-    n.setKSearch (indices.size ());
+    n.setKSearch (static_cast<int> (indices.size ()));
 
     // estimate
     n.computeEigen (*normals);

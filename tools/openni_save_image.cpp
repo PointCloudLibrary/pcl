@@ -41,16 +41,11 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
-#include <vtkImageViewer.h>
-#include <vtkImageImport.h>
-#include <vtkJPEGWriter.h>
-#include <vtkBMPWriter.h>
-#include <vtkPNGWriter.h>
-#include <vtkTIFFWriter.h>
-#include <vtkImageFlip.h>
+
 #include <vector>
 #include <string>
 
+#include <pcl/visualization/vtk.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
 #define SHOW_FPS 1

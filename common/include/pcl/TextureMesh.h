@@ -52,6 +52,8 @@ namespace pcl
   /** \author Khai Tran */
   struct TexMaterial
   {
+    TexMaterial () : tex_name (), tex_file (), tex_Ka (), tex_Kd (), tex_Ks (), tex_d (), tex_Ns (), tex_illum () {}
+
     struct RGB
     {
       float r;

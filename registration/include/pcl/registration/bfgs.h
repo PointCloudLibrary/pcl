@@ -1,8 +1,13 @@
+#ifndef PCL_FOR_EIGEN_BFGS_H
+#define PCL_FOR_EIGEN_BFGS_H
+
 #include <Eigen/Core>
 #include <unsupported/Eigen/Polynomials>
 
-#ifndef PCL_FOR_EIGEN_BFGS_H
-#define PCL_FOR_EIGEN_BFGS_H
+#if defined __GNUC__
+#  pragma GCC system_header 
+#endif
+
 namespace Eigen
 {
   template< typename _Scalar >
@@ -13,6 +18,9 @@ namespace Eigen
       EIGEN_POLYNOMIAL_SOLVER_BASE_INHERITED_TYPES( PS_Base )
         
     public:
+
+      virtual ~PolynomialSolver () {}
+
       template< typename OtherPolynomial >
       inline PolynomialSolver( const OtherPolynomial& poly, bool& hasRealRoot )
       {
@@ -608,3 +616,4 @@ BFGS<FunctorType>::lineSearch(Scalar rho, Scalar sigma,
   return BFGSSpace::Success;
 }
 #endif // PCL_FOR_EIGEN_BFGS_H
+

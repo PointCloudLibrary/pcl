@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2009-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -34,52 +36,15 @@
  * $Id$
  *
  */
+#ifndef PCL_SURFACE_VTK_H_
+#define PCL_SURFACE_VTK_H_
 
-#ifndef PCL_WARP_POINT_RIGID_H_
-#define PCL_WARP_POINT_RIGID_H_
-
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-
-namespace pcl
-{
-  template <class PointSourceT, class PointTargetT>
-  class WarpPointRigid
-  {
-  public:
-
-    WarpPointRigid (int nr_dim): nr_dim_ (nr_dim), transform_matrix_ (Eigen::Matrix4f::Zero ())
-    {
-      transform_matrix_ (3,3) = 1.0;
-    };
-
-    virtual ~WarpPointRigid () {};
-
-    virtual void 
-    setParam (const Eigen::VectorXf& p) = 0;
-
-    void 
-    warpPoint (const PointSourceT& pnt_in, PointSourceT& pnt_out) const
-    {
-      pnt_out.getVector3fMap () = transform_matrix_.topLeftCorner<3, 3> () * pnt_in.getVector3fMap() + 
-        transform_matrix_.block<3,1> (0, 3);
-      pnt_out.data [3] = pnt_in.data [3];
-    }
-
-    int 
-    getDimension () const {return nr_dim_;}
-
-    const Eigen::Matrix4f& 
-    getTransform () const { return transform_matrix_; }
-    
-  public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
-  protected:
-    int nr_dim_;
-    Eigen::Matrix4f transform_matrix_;
-  };
-
-}
-
+#if defined __GNUC__
+#  pragma GCC system_header 
 #endif
+
+#include <vtkPolyData.h>
+#include <vtkSmartPointer.h>
+
+#endif    // PCL_SURFACE_VTK_H_
+

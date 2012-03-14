@@ -81,10 +81,12 @@ namespace pcl
         typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
 
         /** \brief Empty constructor. */
-        CorrespondenceEstimation () : target_ (),
-            point_representation_ ()
+        CorrespondenceEstimation () : 
+          corr_name_ (),
+          tree_ (new pcl::KdTreeFLANN<PointTarget>),
+          target_ (),
+          point_representation_ ()
         {
-          tree_.reset (new pcl::KdTreeFLANN<PointTarget>);     // FLANN tree for nearest neighbor search
         }
 
         /** \brief Provide a pointer to the input target (e.g., the point cloud that we want to align the 

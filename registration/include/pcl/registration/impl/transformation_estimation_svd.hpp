@@ -187,7 +187,7 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::getTra
 
   // Return the correct transformation
   transformation_matrix.topLeftCorner<3, 3> () = R;
-  const Eigen::Vector3f Rc = R * centroid_src.head<3> ();
+  const Eigen::Vector3f Rc (R * centroid_src.head<3> ());
   transformation_matrix.block <3, 1> (0, 3) = centroid_tgt.head<3> () - Rc;
 }
 

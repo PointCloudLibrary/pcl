@@ -208,6 +208,9 @@ namespace pcl
             */
           Functor (int m_data_points) : m_data_points_ (m_data_points) {}
         
+          /** \brief Destructor. */
+          virtual ~Functor () {}
+
           /** \brief Get the number of values. */ 
           int
           values () const { return (m_data_points_); }
@@ -226,6 +229,9 @@ namespace pcl
             */
           OptimizationFunctor (int m_data_points, TransformationEstimationLM<PointSource, PointTarget> *estimator) : 
             Functor<double> (m_data_points), estimator_ (estimator) {}
+
+          /** \brief Destructor. */
+          virtual ~OptimizationFunctor () {}
 
           /** Fill fvec from x. For the current state vector x fill the f values
             * \param[in] x state vector
@@ -247,6 +253,9 @@ namespace pcl
             */
           OptimizationFunctorWithIndices (int m_data_points, TransformationEstimationLM *estimator) :
             Functor<double> (m_data_points), estimator_ (estimator) {}
+
+          /** \brief Destructor. */
+          virtual ~OptimizationFunctorWithIndices () {}
 
           /** Fill fvec from x. For the current state vector x fill the f values
             * \param[in] x state vector

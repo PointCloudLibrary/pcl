@@ -67,8 +67,8 @@ TEST (PCL, CorrespondenceEstimation)
   corr_est.determineCorrespondences (*correspondences);
 
   // check for correct order and number of matches
-  EXPECT_EQ((int)correspondences->size(), nr_original_correspondences);
-  if ((int)correspondences->size() == nr_original_correspondences)
+  EXPECT_EQ (int (correspondences->size ()), nr_original_correspondences);
+  if (int (correspondences->size ()) == nr_original_correspondences)
   {
     for (int i = 0; i < nr_original_correspondences; ++i)
       EXPECT_EQ ((*correspondences)[i].index_query, i);
@@ -92,8 +92,8 @@ TEST (PCL, CorrespondenceEstimationReciprocal)
   corr_est.determineReciprocalCorrespondences (*correspondences);
 
   // check for correct matches and number of matches
-  EXPECT_EQ((int)correspondences->size(), nr_reciprocal_correspondences);
-  if ((int)correspondences->size() == nr_reciprocal_correspondences)
+  EXPECT_EQ (int (correspondences->size ()), nr_reciprocal_correspondences);
+  if (int (correspondences->size ()) == nr_reciprocal_correspondences)
     for (int i = 0; i < nr_reciprocal_correspondences; ++i)
       EXPECT_EQ ((*correspondences)[i].index_match, correspondences_reciprocal[i][1]);
 }
@@ -118,8 +118,8 @@ TEST (PCL, CorrespondenceRejectorDistance)
   corr_rej_dist.getCorrespondences(*correspondences_result_rej_dist);
 
   // check for correct matches and number of matches
-  EXPECT_EQ((int)correspondences_result_rej_dist->size(), nr_correspondences_result_rej_dist);
-  if ((int)correspondences_result_rej_dist->size() == nr_correspondences_result_rej_dist)
+  EXPECT_EQ (int (correspondences_result_rej_dist->size ()), nr_correspondences_result_rej_dist);
+  if (int (correspondences_result_rej_dist->size ()) == nr_correspondences_result_rej_dist)
     for (int i = 0; i < nr_correspondences_result_rej_dist; ++i)
       EXPECT_EQ ((*correspondences_result_rej_dist)[i].index_match, correspondences_dist[i][1]);
 }
@@ -143,8 +143,8 @@ TEST (PCL, CorrespondenceRejectorOneToOne)
   corr_rej_one_to_one.getCorrespondences(*correspondences_result_rej_one_to_one);
 
   // check for correct matches and number of matches
-  EXPECT_EQ((int)correspondences_result_rej_one_to_one->size(), nr_correspondences_result_rej_one_to_one);
-  if ((int)correspondences_result_rej_one_to_one->size() == nr_correspondences_result_rej_one_to_one)
+  EXPECT_EQ (int (correspondences_result_rej_one_to_one->size ()), nr_correspondences_result_rej_one_to_one);
+  if (int (correspondences_result_rej_one_to_one->size ()) == nr_correspondences_result_rej_one_to_one)
     for (int i = 0; i < nr_correspondences_result_rej_one_to_one; ++i)
       EXPECT_EQ ((*correspondences_result_rej_one_to_one)[i].index_match, correspondences_one_to_one[i][1]);
 }
@@ -161,7 +161,7 @@ TEST (PCL, CorrespondenceRejectorSampleConsensus)
   corr_est.setInputCloud (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
-  EXPECT_EQ ((int)correspondences->size (), nr_original_correspondences);
+  EXPECT_EQ (int (correspondences->size ()), nr_original_correspondences);
 
   boost::shared_ptr<pcl::Correspondences> correspondences_result_rej_sac (new pcl::Correspondences);
   pcl::registration::CorrespondenceRejectorSampleConsensus<pcl::PointXYZ> corr_rej_sac;
@@ -174,8 +174,8 @@ TEST (PCL, CorrespondenceRejectorSampleConsensus)
   Eigen::Matrix4f transform_res_from_SAC = corr_rej_sac.getBestTransformation ();
 
   // check for correct matches and number of matches
-  EXPECT_EQ((int)correspondences_result_rej_sac->size (), nr_correspondences_result_rej_sac);
-  if ((int)correspondences_result_rej_sac->size () == nr_correspondences_result_rej_sac)
+  EXPECT_EQ (int (correspondences_result_rej_sac->size ()), nr_correspondences_result_rej_sac);
+  if (int (correspondences_result_rej_sac->size ()) == nr_correspondences_result_rej_sac)
     for (int i = 0; i < nr_correspondences_result_rej_sac; ++i)
       EXPECT_EQ ((*correspondences_result_rej_sac)[i].index_match, correspondences_sac[i][1]);
 
@@ -205,8 +205,8 @@ TEST (PCL, CorrespondenceRejectorTrimmed)
   corr_rej_trimmed.getCorrespondences(*correspondences_result_rej_trimmed);
 
   // check for correct matches, number of matches, and for sorting (correspondences should be sorted w.r.t. distance)
-  EXPECT_EQ((int)correspondences_result_rej_trimmed->size(), nr_correspondences_result_rej_trimmed);
-  if ((int)correspondences_result_rej_trimmed->size() == nr_correspondences_result_rej_trimmed)
+  EXPECT_EQ (int (correspondences_result_rej_trimmed->size ()), nr_correspondences_result_rej_trimmed);
+  if (int (correspondences_result_rej_trimmed->size ()) == nr_correspondences_result_rej_trimmed)
   {
     for (int i = 0; i < nr_correspondences_result_rej_trimmed; ++i)
       EXPECT_EQ ((*correspondences_result_rej_trimmed)[i].index_query, correspondences_trimmed[i][0]);
@@ -260,7 +260,7 @@ TEST (PCL, TransformationEstimationLM)
                                            transform_res_from_LM);
 
   // check for correct matches and number of matches
-  EXPECT_EQ((int)correspondences->size(), nr_reciprocal_correspondences);
+  EXPECT_EQ (int (correspondences->size ()), nr_reciprocal_correspondences);
   for (int i = 0; i < nr_reciprocal_correspondences; ++i)
   {
     EXPECT_EQ ((*correspondences)[i].index_query, correspondences_reciprocal[i][0]);

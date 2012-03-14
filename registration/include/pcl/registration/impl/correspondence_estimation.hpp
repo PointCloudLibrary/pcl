@@ -90,7 +90,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
     {
       if (distance[0] <= max_dist_sqr)
       {
-        corr.index_query = i;
+        corr.index_query = static_cast<int> (i);
         corr.index_match = index[0];
         corr.distance = distance[0];
         correspondences[i] = corr;

@@ -40,18 +40,16 @@
 #define VTK_MESH_SUBDIVISION_H_
 
 #include <pcl/surface/processing.h>
-#include <vtkPolyData.h>
-#include <vtkSmartPointer.h>
+#include <pcl/surface/vtk_smoothing/vtk.h>
 
 namespace pcl
 {
-
   /** \brief PCL mesh smoothing based on the vtkLinearSubdivisionFilter, vtkLoopSubdivisionFilter, vtkButterflySubdivisionFilter
-   *  depending on the selected MeshSubdivisionVTKFilterType algorithm from the VTK library.
-   *  Please check out the original documentation for more details on the inner workings of the algorithm
-   *  Warning: This wrapper does two fairly computationally expensive conversions from the PCL PolygonMesh
-   *  data structure to the vtkPolyData data structure and back.
-   */
+    * depending on the selected MeshSubdivisionVTKFilterType algorithm from the VTK library.
+    * Please check out the original documentation for more details on the inner workings of the algorithm
+    * Warning: This wrapper does two fairly computationally expensive conversions from the PCL PolygonMesh
+    * data structure to the vtkPolyData data structure and back.
+    */
   class PCL_EXPORTS MeshSubdivisionVTK : public MeshProcessing
   {
     public:

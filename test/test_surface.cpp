@@ -144,24 +144,24 @@ TEST (PCL, GreedyProjectionTriangulation)
   //saveVTKFile ("./test/bun0-gp3.vtk", triangles);
   EXPECT_EQ (triangles.cloud.width, cloud_with_normals->width);
   EXPECT_EQ (triangles.cloud.height, cloud_with_normals->height);
-  EXPECT_NEAR ((int)triangles.polygons.size(), 685, 5);
+  EXPECT_NEAR (int (triangles.polygons.size ()), 685, 5);
 
   // Check triangles
-  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.size(), 3);
-  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(0), 0);
-  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(1), 12);
-  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(2), 198);
-  EXPECT_EQ ((int)triangles.polygons.at(684).vertices.size(), 3);
-  EXPECT_EQ ((int)triangles.polygons.at(684).vertices.at(0), 393);
-  EXPECT_EQ ((int)triangles.polygons.at(684).vertices.at(1), 394);
-  EXPECT_EQ ((int)triangles.polygons.at(684).vertices.at(2), 395);
+  EXPECT_EQ (int (triangles.polygons.at (0).vertices.size ()), 3);
+  EXPECT_EQ (int (triangles.polygons.at (0).vertices.at (0)), 0);
+  EXPECT_EQ (int (triangles.polygons.at (0).vertices.at (1)), 12);
+  EXPECT_EQ (int (triangles.polygons.at (0).vertices.at (2)), 198);
+  EXPECT_EQ (int (triangles.polygons.at (684).vertices.size ()), 3);
+  EXPECT_EQ (int (triangles.polygons.at (684).vertices.at (0)), 393);
+  EXPECT_EQ (int (triangles.polygons.at (684).vertices.at (1)), 394);
+  EXPECT_EQ (int (triangles.polygons.at (684).vertices.at (2)), 395);
 
   // Additional vertex information
   std::vector<int> parts = gp3.getPartIDs();
   std::vector<int> states = gp3.getPointStates();
   int nr_points = cloud_with_normals->width * cloud_with_normals->height;
-  EXPECT_EQ ((int)parts.size (), nr_points);
-  EXPECT_EQ ((int)states.size (), nr_points);
+  EXPECT_EQ (int (parts.size ()), nr_points);
+  EXPECT_EQ (int (states.size ()), nr_points);
   EXPECT_EQ (parts[0], 0);
   EXPECT_EQ (states[0], gp3.COMPLETED);
   EXPECT_EQ (parts[393], 5);
@@ -247,7 +247,7 @@ TEST (PCL, UpdateMesh_With_TextureMapping)
 
     EXPECT_EQ (triangles.cloud.width, cloud_with_normals->width);
     EXPECT_EQ (triangles.cloud.height, cloud_with_normals->height);
-    EXPECT_EQ ((int)triangles.polygons.size(), 685);
+    EXPECT_EQ (int (triangles.polygons.size ()), 685);
 
     // update with texture mapping
     // set 2 texture for 2 mesh
@@ -322,9 +322,9 @@ TEST (PCL, Organized)
   {
     for (size_t j = 0; j < cloud_organized->width; j++)
     {
-      cloud_organized->points[npoints].x = i;
-      cloud_organized->points[npoints].y = j;
-      cloud_organized->points[npoints].z = cloud_organized->points.size (); // to avoid shadowing
+      cloud_organized->points[npoints].x = static_cast<float> (i);
+      cloud_organized->points[npoints].y = static_cast<float> (j);
+      cloud_organized->points[npoints].z = static_cast<float> (cloud_organized->points.size ()); // to avoid shadowing
       npoints++;
     }
   }
@@ -350,11 +350,11 @@ TEST (PCL, Organized)
   // Check triangles
   EXPECT_EQ (triangles.cloud.width, cloud_organized->width);
   EXPECT_EQ (triangles.cloud.height, cloud_organized->height);
-  EXPECT_EQ ((int)triangles.polygons.size(), 2*(triangles.cloud.width-1)*(triangles.cloud.height-1) - 4);
-  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.size(), 3);
-  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(0), 0);
-  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(1), triangles.cloud.width+1);
-  EXPECT_EQ ((int)triangles.polygons.at(0).vertices.at(2), 1);
+  EXPECT_EQ (int (triangles.polygons.size ()), 2*(triangles.cloud.width-1)*(triangles.cloud.height-1) - 4);
+  EXPECT_EQ (int (triangles.polygons.at (0).vertices.size ()), 3);
+  EXPECT_EQ (int (triangles.polygons.at (0).vertices.at (0)), 0);
+  EXPECT_EQ (int (triangles.polygons.at (0).vertices.at (1)), triangles.cloud.width+1);
+  EXPECT_EQ (int (triangles.polygons.at (0).vertices.at (2)), 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -374,9 +374,9 @@ TEST (PCL, GridProjection)
   gp.reconstruct (grid);
   //saveVTKFile ("./test/bun0-grid.vtk", grid);
   EXPECT_GE (grid.cloud.width, 5180);
-  EXPECT_GE ((int)grid.polygons.size(), 1295);
-  EXPECT_EQ ((int)grid.polygons.at(0).vertices.size(), 4);
-  EXPECT_EQ ((int)grid.polygons.at(0).vertices.at(0), 0);
+  EXPECT_GE (int (grid.polygons.size ()), 1295);
+  EXPECT_EQ (int (grid.polygons.at (0).vertices.size ()), 4);
+  EXPECT_EQ (int (grid.polygons.at (0).vertices.at (0)), 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -477,9 +477,9 @@ TEST (PCL, ConvexHull_LTable)
   {
     for (size_t j = 0; j <= 2; j++)
     {
-      cloud_out_ltable.points[npoints].x = (double)(i)*0.5;
-      cloud_out_ltable.points[npoints].y = -(double)(j)*0.5;
-      cloud_out_ltable.points[npoints].z = 0;
+      cloud_out_ltable.points[npoints].x = float (i) * 0.5f;
+      cloud_out_ltable.points[npoints].y = -float (j) * 0.5f;
+      cloud_out_ltable.points[npoints].z = 0.f;
       npoints++;
     }
   }
@@ -488,37 +488,37 @@ TEST (PCL, ConvexHull_LTable)
   {
     for (size_t j = 3; j < 8; j++)
     {
-      cloud_out_ltable.points[npoints].x = (double)(i)*0.5;
-      cloud_out_ltable.points[npoints].y = -(double)(j)*0.5;
-      cloud_out_ltable.points[npoints].z = 0;
+      cloud_out_ltable.points[npoints].x = float (i) * 0.5f;
+      cloud_out_ltable.points[npoints].y = -float (j) * 0.5f;
+      cloud_out_ltable.points[npoints].z = 0.f;
       npoints++;
     }
   }
 
   // add the five points on the hull
-  cloud_out_ltable.points[npoints].x = -0.5;
-  cloud_out_ltable.points[npoints].y = 0.5;
-  cloud_out_ltable.points[npoints].z = 0;
+  cloud_out_ltable.points[npoints].x = -0.5f;
+  cloud_out_ltable.points[npoints].y = 0.5f;
+  cloud_out_ltable.points[npoints].z = 0.f;
   npoints++;
 
-  cloud_out_ltable.points[npoints].x = 4.5;
-  cloud_out_ltable.points[npoints].y = 0.5;
-  cloud_out_ltable.points[npoints].z = 0;
+  cloud_out_ltable.points[npoints].x = 4.5f;
+  cloud_out_ltable.points[npoints].y = 0.5f;
+  cloud_out_ltable.points[npoints].z = 0.f;
   npoints++;
 
-  cloud_out_ltable.points[npoints].x = 4.5;
-  cloud_out_ltable.points[npoints].y = -1.0;
-  cloud_out_ltable.points[npoints].z = 0;
+  cloud_out_ltable.points[npoints].x = 4.5f;
+  cloud_out_ltable.points[npoints].y = -1.0f;
+  cloud_out_ltable.points[npoints].z = 0.f;
   npoints++;
 
-  cloud_out_ltable.points[npoints].x = 1.0;
-  cloud_out_ltable.points[npoints].y = -4.5;
-  cloud_out_ltable.points[npoints].z = 0;
+  cloud_out_ltable.points[npoints].x = 1.0f;
+  cloud_out_ltable.points[npoints].y = -4.5f;
+  cloud_out_ltable.points[npoints].z = 0.f;
   npoints++;
 
-  cloud_out_ltable.points[npoints].x = -0.5;
-  cloud_out_ltable.points[npoints].y = -4.5;
-  cloud_out_ltable.points[npoints].z = 0;
+  cloud_out_ltable.points[npoints].x = -0.5f;
+  cloud_out_ltable.points[npoints].y = -4.5f;
+  cloud_out_ltable.points[npoints].z = 0.f;
   npoints++;
 
   cloud_out_ltable.points.resize (npoints);
@@ -610,9 +610,9 @@ TEST (PCL, ConvexHull_2dsquare)
 
   for (size_t i = 0; i < input_cloud->points.size (); i++)
   {
-    input_cloud->points[i].x = (2.0 * rng ())-1.0;
-    input_cloud->points[i].y = (2.0 *rng ())-1.0;
-    input_cloud->points[i].z = 1.0;
+    input_cloud->points[i].x = (2.0f * float (rng ()))-1.0f;
+    input_cloud->points[i].y = (2.0f * float (rng ()))-1.0f;
+    input_cloud->points[i].z = 1.0f;
   }
 
   //Set up for creating a hull
@@ -670,9 +670,9 @@ TEST (PCL, ConvexHull_3dcube)
 
   for (size_t i = 0; i < input_cloud->points.size (); i++)
   {
-    input_cloud->points[i].x =  (2.0 * rng ())-1.0;
-    input_cloud->points[i].y =  (2.0 * rng ())-1.0;
-    input_cloud->points[i].z =  (2.0 * rng ())-1.0;
+    input_cloud->points[i].x =  (2.0f * float (rng ()))-1.0f;
+    input_cloud->points[i].y =  (2.0f * float (rng ()))-1.0f;
+    input_cloud->points[i].z =  (2.0f * float (rng ()))-1.0f;
   }
 
   //Set up for creating a hull
@@ -687,12 +687,12 @@ TEST (PCL, ConvexHull_3dcube)
   
   //Make sure they're actually near some edge
   std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > facets;
-  facets.push_back (Eigen::Vector4f (-1.0, 0.0, 0.0, 1.0));
-  facets.push_back (Eigen::Vector4f (-1.0, 0.0, 0.0, -1.0));
-  facets.push_back (Eigen::Vector4f (0.0, -1.0, 0.0, 1.0));
-  facets.push_back (Eigen::Vector4f (0.0, -1.0, 0.0, -1.0));
-  facets.push_back (Eigen::Vector4f (0.0, 0.0, -1.0, 1.0));
-  facets.push_back (Eigen::Vector4f (0.0, 0.0, -1.0, -1.0));
+  facets.push_back (Eigen::Vector4f (-1.0f, 0.0f, 0.0f, 1.0f));
+  facets.push_back (Eigen::Vector4f (-1.0f, 0.0f, 0.0f, -1.0f));
+  facets.push_back (Eigen::Vector4f (0.0f, -1.0f, 0.0f, 1.0f));
+  facets.push_back (Eigen::Vector4f (0.0f, -1.0f, 0.0f, -1.0f));
+  facets.push_back (Eigen::Vector4f (0.0f, 0.0f, -1.0f, 1.0f));
+  facets.push_back (Eigen::Vector4f (0.0f, 0.0f, -1.0f, -1.0f));
 
   //Make sure they're near a facet
   for (size_t i = 0; i < hull.points.size (); i++)
@@ -770,9 +770,9 @@ TEST (PCL, ConcaveHull_LTable)
   {
     for (size_t j = 0; j <= 2; j++)
     {
-      cloud_out_ltable.points[npoints].x = (double)(i)*0.5;
-      cloud_out_ltable.points[npoints].y = -(double)(j)*0.5;
-      cloud_out_ltable.points[npoints].z = 0;
+      cloud_out_ltable.points[npoints].x = float (i) * 0.5f;
+      cloud_out_ltable.points[npoints].y = -float (j) * 0.5f;
+      cloud_out_ltable.points[npoints].z = 0.f;
       npoints++;
     }
   }
@@ -781,9 +781,9 @@ TEST (PCL, ConcaveHull_LTable)
   {
     for(size_t j = 3; j < 8; j++)
     {
-      cloud_out_ltable.points[npoints].x = (double)(i)*0.5;
-      cloud_out_ltable.points[npoints].y = -(double)(j)*0.5;
-      cloud_out_ltable.points[npoints].z = 0;
+      cloud_out_ltable.points[npoints].x = float (i) * 0.5f;
+      cloud_out_ltable.points[npoints].y = -float (j) * 0.5f;
+      cloud_out_ltable.points[npoints].z = 0.f;
       npoints++;
     }
   }
@@ -833,17 +833,17 @@ TEST (PCL, EarClipping)
 {
   PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>());
   cloud->height = 1;
-  cloud->points.push_back (PointXYZ ( 0, 0, 0.5));
-  cloud->points.push_back (PointXYZ ( 5, 0, 0.6));
-  cloud->points.push_back (PointXYZ ( 9, 4, 0.5));
-  cloud->points.push_back (PointXYZ ( 4, 7, 0.5));
-  cloud->points.push_back (PointXYZ ( 2, 5, 0.5));
-  cloud->points.push_back (PointXYZ (-1, 8, 0.5));
-  cloud->width = cloud->points.size();
+  cloud->points.push_back (PointXYZ ( 0.f, 0.f, 0.5f));
+  cloud->points.push_back (PointXYZ ( 5.f, 0.f, 0.6f));
+  cloud->points.push_back (PointXYZ ( 9.f, 4.f, 0.5f));
+  cloud->points.push_back (PointXYZ ( 4.f, 7.f, 0.5f));
+  cloud->points.push_back (PointXYZ ( 2.f, 5.f, 0.5f));
+  cloud->points.push_back (PointXYZ (-1.f, 8.f, 0.5f));
+  cloud->width = static_cast<uint32_t> (cloud->points.size ());
 
   Vertices vertices;
   vertices.vertices.resize (cloud->points.size ());
-  for (int i = 0; i < (int) vertices.vertices.size (); ++i)
+  for (int i = 0; i < static_cast<int> (vertices.vertices.size ()); ++i)
     vertices.vertices[i] = i;
 
   PolygonMesh::Ptr mesh (new PolygonMesh);
@@ -858,7 +858,7 @@ TEST (PCL, EarClipping)
   clipper.process (triangulated_mesh);
 
   EXPECT_EQ (triangulated_mesh.polygons.size (), 4);
-  for (int i = 0; i < (int)triangulated_mesh.polygons.size (); ++i)
+  for (int i = 0; i < static_cast<int> (triangulated_mesh.polygons.size ()); ++i)
     EXPECT_EQ (triangulated_mesh.polygons[i].vertices.size (), 3);
 
   const int truth[][3] = { {5, 0, 1},
@@ -866,7 +866,7 @@ TEST (PCL, EarClipping)
                            {4, 5, 1},
                            {1, 2, 4} };
 
-  for (int pi = 0; pi < (int) triangulated_mesh.polygons.size (); ++pi)
+  for (int pi = 0; pi < static_cast<int> (triangulated_mesh.polygons.size ()); ++pi)
   for (int vi = 0; vi < 3; ++vi)
   {
     EXPECT_EQ (triangulated_mesh.polygons[pi].vertices[vi], truth[pi][vi]);
