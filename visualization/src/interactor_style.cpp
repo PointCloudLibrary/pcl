@@ -726,7 +726,6 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         cam->SetFocalPoint (0, 0, 1);
         cam->SetViewUp (0, -1, 0);
       }
-      //cam->SetViewAngle (100);
       CurrentRenderer->SetActiveCamera (cam);
       CurrentRenderer->ResetCameraClippingRange ();
       CurrentRenderer->Render ();
@@ -874,6 +873,25 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnMouseWheelForward ()
   mouse_signal_ (event);
   if (Interactor->GetRepeatCount ())
     mouse_signal_ (event);
+  
+  if (Interactor->GetAltKey ())
+  {
+    // zoom
+    vtkSmartPointer<vtkCamera> cam = CurrentRenderer->GetActiveCamera ();
+    double opening_angle = cam->GetViewAngle ();
+    if (opening_angle > 15.0)
+      opening_angle -= 1.0;
+    
+    cam->SetViewAngle (opening_angle);
+    cam->Modified ();
+    CurrentRenderer->SetActiveCamera (cam);
+    CurrentRenderer->ResetCameraClippingRange ();
+    CurrentRenderer->Modified ();    
+    CurrentRenderer->Render ();
+    rens_->Render ();
+    Interactor->Render ();
+  }
+  else
   Superclass::OnMouseWheelForward ();
 }
 
@@ -887,7 +905,26 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnMouseWheelBackward ()
   mouse_signal_ (event);
   if (Interactor->GetRepeatCount ())
     mouse_signal_ (event);
-  Superclass::OnMouseWheelBackward ();
+  
+  if (Interactor->GetAltKey ())
+  {
+    // zoom
+    vtkSmartPointer<vtkCamera> cam = CurrentRenderer->GetActiveCamera ();
+    double opening_angle = cam->GetViewAngle ();
+    if (opening_angle < 170.0)
+      opening_angle += 1.0;
+    
+    cam->SetViewAngle (opening_angle);
+    cam->Modified ();
+    CurrentRenderer->SetActiveCamera (cam);
+    CurrentRenderer->ResetCameraClippingRange ();
+    CurrentRenderer->Modified ();
+    CurrentRenderer->Render ();
+    rens_->Render ();
+    Interactor->Render ();
+  }
+  else
+    Superclass::OnMouseWheelBackward ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
