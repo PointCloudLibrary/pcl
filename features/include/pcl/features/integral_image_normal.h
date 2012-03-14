@@ -78,20 +78,21 @@ namespace pcl
         , rect_width_ (0), rect_width_2_ (0), rect_width_4_ (0)
         , rect_height_ (0), rect_height_2_ (0), rect_height_4_ (0)
         , distance_threshold_ (0)
-        , integral_image_DX_(false)
-        , integral_image_DY_(false)
+        , integral_image_DX_ (false)
+        , integral_image_DY_ (false)
         , integral_image_depth_ (false)
         , integral_image_XYZ_ (true)
-        , diff_x_(NULL)
-        , diff_y_(NULL)
-        , depth_data_(NULL)
-        , use_depth_dependent_smoothing_(false)
-        , max_depth_change_factor_(20.0f*0.001f)
-        , normal_smoothing_size_(10.0f)
-        , init_covariance_matrix_(false)
-        , init_average_3d_gradient_(false)
+        , diff_x_ (NULL)
+        , diff_y_ (NULL)
+        , depth_data_ (NULL)
+        , distance_map_ (NULL)
+        , use_depth_dependent_smoothing_ (false)
+        , max_depth_change_factor_ (20.0f*0.001f)
+        , normal_smoothing_size_ (10.0f)
+        , init_covariance_matrix_ (false)
+        , init_average_3d_gradient_ (false)
         , init_simple_3d_gradient_ (false)
-        , init_depth_change_(false)
+        , init_depth_change_ (false)
       {
         feature_name_ = "IntegralImagesNormalEstimation";
         tree_.reset ();
@@ -183,6 +184,15 @@ namespace pcl
         initData ();
       }
 
+      /** \brief Returns a pointer to the distance map which was computed internally
+        */
+      inline float*
+      getDistanceMap ()
+      {
+        return (distance_map_);
+      }
+
+
     protected:
 
       /** \brief Computes the normal for the complete cloud.
@@ -232,6 +242,9 @@ namespace pcl
 
       /** depth data */
       float *depth_data_;
+
+      /** distance map */
+      float *distance_map_;
 
       /** \brief Smooth data based on depth (true/false). */
       bool use_depth_dependent_smoothing_;

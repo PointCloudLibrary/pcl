@@ -45,6 +45,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::~IntegralImageNormalEst
   if (diff_x_ != NULL) delete diff_x_;
   if (diff_y_ != NULL) delete diff_y_;
   if (depth_data_ != NULL) delete depth_data_;
+  if (distance_map_ != NULL) delete distance_map_;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -55,9 +56,11 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initData ()
   if (diff_x_ != NULL) delete diff_x_;
   if (diff_y_ != NULL) delete diff_y_;
   if (depth_data_ != NULL) delete depth_data_;
+  if (distance_map_ != NULL) delete distance_map_;
   diff_x_ = NULL;
   diff_y_ = NULL;
   depth_data_ = NULL;
+  distance_map_ = NULL;
 
   if (normal_estimation_method_ == COVARIANCE_MATRIX)
     initCovarianceMatrixMethod ();
@@ -396,7 +399,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
         || !pcl_isfinite (depth) || !pcl_isfinite (depthR))
       {
         depthChangeMap[index] = 0;
-        depthChangeMap[index] = 0;
+        depthChangeMap[index+1] = 0;
       }
       if (fabs (depth - depthD) > depthDependendDepthChange
         || !pcl_isfinite (depth) || !pcl_isfinite (depthD))
@@ -408,7 +411,10 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
   }
 
   // compute distance map
-  float *distanceMap = new float[input_->points.size ()];
+  //float *distanceMap = new float[input_->points.size ()];
+  if (distance_map_ != NULL) delete distance_map_;
+  distance_map_ = new float[input_->points.size ()];
+  float *distanceMap = distance_map_;
   for (size_t index = 0; index < input_->points.size (); ++index)
   {
     if (depthChangeMap[index] == 0)
@@ -555,7 +561,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
   }
 
   delete[] depthChangeMap;
-  delete[] distanceMap;
+  //delete[] distanceMap;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
