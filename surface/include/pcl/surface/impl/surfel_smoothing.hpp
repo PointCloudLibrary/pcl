@@ -109,7 +109,7 @@ pcl::SurfelSmoothing<PointT, PointNT>::smoothCloudIteration (PointCloudInPtr &ou
     for (size_t nn_index_i = 0; nn_index_i < nn_indices.size (); ++nn_index_i)
     {
       float dist = pcl::squaredEuclideanDistance (interm_cloud_->points[i], input_->points[nn_indices[nn_index_i]]);//interm_cloud_->points[nn_indices[nn_index_i]]);
-      float theta_i = exp ( (-1) * dist / scale_squared_);
+      float theta_i = expf ( (-1) * dist / scale_squared_);
       theta_normalization_factor += theta_i;
 
       smoothed_normal += theta_i * interm_normals_->points[nn_indices[nn_index_i]].getNormalVector4fMap ();
@@ -187,7 +187,7 @@ pcl::SurfelSmoothing<PointT, PointNT>::smoothPoint (size_t &point_index,
     for (size_t nn_index_i = 0; nn_index_i < nn_indices.size (); ++nn_index_i)
     {
       float dist = nn_distances[nn_index_i];
-      float theta_i = exp ( (-1) * dist / scale_squared_);
+      float theta_i = expf ( (-1) * dist / scale_squared_);
       theta_normalization_factor += theta_i;
 
       average_normal += theta_i * normals_->points[nn_indices[nn_index_i]].getNormalVector4fMap ();
@@ -290,7 +290,7 @@ pcl::SurfelSmoothing<PointT, PointNT>::extractSalientFeaturesBetweenScales (Poin
   std::vector<float> nn_distances;
 
   output_features->resize (cloud2->points.size ());
-  for (size_t point_i = 0; point_i < cloud2->points.size (); ++point_i)
+  for (int point_i = 0; point_i < static_cast<int> (cloud2->points.size ()); ++point_i)
   {
     // Get neighbors
     tree_->radiusSearch (point_i, scale_, nn_indices, nn_distances);

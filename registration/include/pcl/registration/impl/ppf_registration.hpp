@@ -196,7 +196,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
                 model_point_index = v_it->second;
             // Calculate angle alpha = alpha_m - alpha_s
             float alpha = search_method_->alpha_m_[model_reference_index][model_point_index] - alpha_s;
-            unsigned int alpha_discretized = floor(alpha) + floor(M_PI / search_method_->getAngleDiscretizationStep ());
+            unsigned int alpha_discretized = static_cast<unsigned int> (floor (alpha) + floor (M_PI / search_method_->getAngleDiscretizationStep ()));
             accumulator_array[model_reference_index][alpha_discretized] ++;
           }
         }
@@ -222,13 +222,13 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
 
     Eigen::Vector3f model_reference_point = input_->points[max_votes_i].getVector3fMap (),
         model_reference_normal = input_->points[max_votes_i].getNormalVector3fMap ();
-    Eigen::AngleAxisf rotation_mg (acos (model_reference_normal.dot (Eigen::Vector3f::UnitX ())), model_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
+    Eigen::AngleAxisf rotation_mg (acosf (model_reference_normal.dot (Eigen::Vector3f::UnitX ())), model_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
     Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg;
-    Eigen::Affine3f max_transform = transform_sg.inverse () * Eigen::AngleAxisf ( (max_votes_j - floor(M_PI / search_method_->getAngleDiscretizationStep ())) * search_method_->getAngleDiscretizationStep (), Eigen::Vector3f::UnitX ()) * transform_mg;
+    Eigen::Affine3f max_transform = transform_sg.inverse () * Eigen::AngleAxisf ( (max_votes_j - floor (M_PI / search_method_->getAngleDiscretizationStep ())) * search_method_->getAngleDiscretizationStep (), Eigen::Vector3f::UnitX ()) * transform_mg;
 
     voted_poses.push_back (PoseWithVotes (max_transform, max_votes));
   }
-  PCL_INFO ("Done with the Hough Transform ...\n");
+  PCL_DEBUG ("Done with the Hough Transform ...\n");
 
   // Cluster poses for filtering out outliers and obtaining more precise results
   PoseWithVotesList results;

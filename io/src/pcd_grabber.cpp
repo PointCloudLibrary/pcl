@@ -138,6 +138,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
   , tar_fd_ (-1)
   , tar_offset_ (0)
   , tar_file_ ()
+  , tar_header_ ()
 {
   pcd_files_.push_back (pcd_path);
   pcd_iterator_ = pcd_files_.begin ();
@@ -159,6 +160,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
   , tar_fd_ (-1)
   , tar_offset_ (0)
   , tar_file_ ()
+  , tar_header_ ()
 {
   pcd_files_ = pcd_files;
   pcd_iterator_ = pcd_files_.begin ();

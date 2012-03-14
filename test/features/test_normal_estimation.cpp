@@ -110,7 +110,7 @@ TEST (PCL, NormalEstimation)
   EXPECT_EQ (n.getIndices (), indicesptr);
   n.setSearchMethod (tree);
   EXPECT_EQ (n.getSearchMethod (), tree);
-  n.setKSearch (indices.size ());
+  n.setKSearch (static_cast<int> (indices.size ()));
 
   // estimate
   n.compute (*normals);
@@ -161,7 +161,7 @@ TEST (PCL, NormalEstimationOpenMP)
   EXPECT_EQ (n.getIndices (), indicesptr);
   n.setSearchMethod (tree);
   EXPECT_EQ (n.getSearchMethod (), tree);
-  n.setKSearch (indices.size ());
+  n.setKSearch (static_cast<int> (indices.size ()));
 
   // estimate
   n.compute (*normals);
@@ -318,10 +318,8 @@ main (int argc, char** argv)
   }
 
   indices.resize (cloud.points.size ());
-  for (size_t i = 0; i < indices.size (); ++i)
-  {
+  for (int i = 0; i < static_cast<int> (indices.size ()); ++i)
     indices[i] = i;
-  }
 
   tree.reset (new search::KdTree<PointXYZ> (false));
   tree->setInputCloud (cloud.makeShared ());

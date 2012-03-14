@@ -1,3 +1,39 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2011-2012, Willow Garage, Inc.
+ *
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ */
+
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
@@ -12,31 +48,42 @@
 
 namespace pcl
 {
-typedef union
-{
-
-  struct /*anonymous*/
+  typedef union
   {
-    unsigned char Blue;
-    unsigned char Green;
-    unsigned char Red;
-    unsigned char Alpha;
-  };
-  float float_value;
-  long long_value;
-} RGBValue;
+    struct /*anonymous*/
+    {
+      unsigned char Blue;
+      unsigned char Green;
+      unsigned char Red;
+      unsigned char Alpha;
+    };
+    float float_value;
+    long long_value;
+  } RGBValue;
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ONIGrabber::ONIGrabber (const std::string& file_name, bool repeat, bool stream)
-: running_(false)
+  : rgb_sync_ ()
+  , ir_sync_ ()
+  , device_ ()
+  , rgb_frame_id_ ("/openni_rgb_optical_frame")
+  , depth_frame_id_ ("/openni_depth_optical_frame")
+  , running_ (false)
+  , image_width_ ()
+  , image_height_ ()
+  , depth_width_ ()
+  , depth_height_ ()
+  , depth_callback_handle ()
+  , image_callback_handle ()
+  , ir_callback_handle ()
+  , image_signal_ (), depth_image_signal_ (), ir_image_signal_ (), image_depth_image_signal_ ()
+  , ir_depth_image_signal_ (), point_cloud_signal_ (), point_cloud_i_signal_ (), point_cloud_rgb_signal_ ()
+  , point_cloud_rgba_signal_ ()
 {
-  rgb_frame_id_ = "/openni_rgb_optical_frame";
-  depth_frame_id_ = "/openni_depth_optical_frame";
+  openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
+  device_ = boost::dynamic_pointer_cast< openni_wrapper::DeviceONI> (driver.createVirtualDevice (file_name, repeat, stream));
 
-  openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
-  device_ = boost::dynamic_pointer_cast< openni_wrapper::DeviceONI> (driver.createVirtualDevice(file_name, repeat, stream));
-
-  if (!device_->hasDepthStream())
+  if (!device_->hasDepthStream ())
     THROW_PCL_IO_EXCEPTION("Device does not provide 3D information.");
 
   XnMapOutputMode depth_mode = device_->getDepthOutputMode();
@@ -46,16 +93,16 @@ ONIGrabber::ONIGrabber (const std::string& file_name, bool repeat, bool stream)
   depth_image_signal_ = createSignal <sig_cb_openni_depth_image > ();
   point_cloud_signal_ = createSignal <sig_cb_openni_point_cloud > ();
 
-  if (device_->hasIRStream())
+  if (device_->hasIRStream ())
   {
     ir_image_signal_        = createSignal <sig_cb_openni_ir_image > ();
     point_cloud_i_signal_   = createSignal <sig_cb_openni_point_cloud_i > ();
     ir_depth_image_signal_  = createSignal <sig_cb_openni_ir_depth_image > ();
   }
 
-  if (device_->hasImageStream())
+  if (device_->hasImageStream ())
   {
-    XnMapOutputMode depth_mode = device_->getImageOutputMode();
+    XnMapOutputMode depth_mode = device_->getImageOutputMode ();
     image_width_ = depth_mode.nXRes;
     image_height_ = depth_mode.nYRes;
 
@@ -63,28 +110,29 @@ ONIGrabber::ONIGrabber (const std::string& file_name, bool repeat, bool stream)
     image_depth_image_signal_ = createSignal <sig_cb_openni_image_depth_image> ();
     point_cloud_rgb_signal_   = createSignal <sig_cb_openni_point_cloud_rgb> ();
     point_cloud_rgba_signal_   = createSignal <sig_cb_openni_point_cloud_rgba> ();
-    rgb_sync_.addCallback(boost::bind(&ONIGrabber::imageDepthImageCallback, this, _1, _2));
+    rgb_sync_.addCallback (boost::bind(&ONIGrabber::imageDepthImageCallback, this, _1, _2));
   }
 
-  image_callback_handle = device_->registerImageCallback(&ONIGrabber::imageCallback, *this);
-  depth_callback_handle = device_->registerDepthCallback(&ONIGrabber::depthCallback, *this);
-  ir_callback_handle    = device_->registerIRCallback(&ONIGrabber::irCallback, *this);
+  image_callback_handle = device_->registerImageCallback (&ONIGrabber::imageCallback, *this);
+  depth_callback_handle = device_->registerDepthCallback (&ONIGrabber::depthCallback, *this);
+  ir_callback_handle    = device_->registerIRCallback (&ONIGrabber::irCallback, *this);
 
   // if in trigger mode -> publish these topics
   if (!stream)
   {
     // check if we need to start/stop any stream
-    if (device_->hasImageStream() && !device_->isImageStreamRunning())
-      device_->startImageStream();
+    if (device_->hasImageStream () && !device_->isImageStreamRunning ())
+      device_->startImageStream ();
 
-    if (device_->hasDepthStream() && !device_->isDepthStreamRunning())
-      device_->startDepthStream();
+    if (device_->hasDepthStream () && !device_->isDepthStreamRunning ())
+      device_->startDepthStream ();
 
-    if (device_->hasIRStream() && !device_->isIRStreamRunning())
-      device_->startIRStream();
+    if (device_->hasIRStream () && !device_->isIRStreamRunning ())
+      device_->startIRStream ();
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ONIGrabber::~ONIGrabber() throw ()
 {
   try
@@ -111,9 +159,11 @@ ONIGrabber::~ONIGrabber() throw ()
   }
 }
 
-void ONIGrabber::start()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+ONIGrabber::start ()
 {
-  if (device_->isStreaming())
+  if (device_->isStreaming ())
   {
     try
     {
@@ -136,20 +186,22 @@ void ONIGrabber::start()
   }
   else
   {
-    if (device_->hasImageStream())
-      device_->trigger();
+    if (device_->hasImageStream ())
+      device_->trigger ();
 
-    if (device_->hasDepthStream())
-      device_->trigger();
+    if (device_->hasDepthStream ())
+      device_->trigger ();
 
-    if (device_->hasIRStream())
-      device_->trigger();
+    if (device_->hasIRStream ())
+      device_->trigger ();
   }
 }
 
-void ONIGrabber::stop()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+ONIGrabber::stop ()
 {
-  if (device_->isStreaming())
+  if (device_->isStreaming ())
   {
     try
     {
@@ -234,7 +286,9 @@ void ONIGrabber::irCallback(boost::shared_ptr<openni_wrapper::IRImage> ir_image,
   return;
 }
 
-void ONIGrabber::imageDepthImageCallback(const boost::shared_ptr<openni_wrapper::Image> &image, const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+ONIGrabber::imageDepthImageCallback(const boost::shared_ptr<openni_wrapper::Image> &image, const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image)
 {
   // check if we have color point cloud slots
   if (point_cloud_rgb_signal_->num_slots () > 0)
@@ -253,7 +307,9 @@ void ONIGrabber::imageDepthImageCallback(const boost::shared_ptr<openni_wrapper:
   }
 }
 
-void ONIGrabber::irDepthImageCallback(const boost::shared_ptr<openni_wrapper::IRImage> &ir_image, const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+ONIGrabber::irDepthImageCallback(const boost::shared_ptr<openni_wrapper::IRImage> &ir_image, const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image)
 {
   // check if we have color point cloud slots
   if (point_cloud_i_signal_->num_slots() > 0)
@@ -266,7 +322,9 @@ void ONIGrabber::irDepthImageCallback(const boost::shared_ptr<openni_wrapper::IR
   }
 }
 
-pcl::PointCloud<pcl::PointXYZ>::Ptr ONIGrabber::convertToXYZPointCloud(const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image) const
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+pcl::PointCloud<pcl::PointXYZ>::Ptr 
+ONIGrabber::convertToXYZPointCloud(const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image) const
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud <pcl::PointXYZ>);
 
@@ -359,11 +417,11 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr ONIGrabber::convertToXYZRGBPointCloud (
     if (buffer_size < depth_width_ * depth_height_)
     {
       buffer_size = depth_width_ * depth_height_;
-      depth_buffer.reset(new unsigned short [buffer_size]);
+      depth_buffer.reset (new unsigned short [buffer_size]);
     }
 
-    depth_image->fillDepthImageRaw(depth_width_, depth_height_, depth_buffer.get());
-    depth_map = depth_buffer.get();
+    depth_image->fillDepthImageRaw (depth_width_, depth_height_, depth_buffer.get());
+    depth_map = depth_buffer.get ();
   }
 
   // here we need exact the size of the point cloud for a one-one correspondence!
@@ -398,8 +456,8 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr ONIGrabber::convertToXYZRGBPointCloud (
       else
       {
         pt.z = depth_map[depth_idx] * 0.001f;
-        pt.x = u * pt.z * constant;
-        pt.y = v * pt.z * constant;
+        pt.x = static_cast<float> (u) * pt.z * constant;
+        pt.y = static_cast<float> (v) * pt.z * constant;
       }
 
       // Fill in color
@@ -412,7 +470,7 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr ONIGrabber::convertToXYZRGBPointCloud (
   return (cloud);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::PointCloud<pcl::PointXYZRGBA>::Ptr ONIGrabber::convertToXYZRGBAPointCloud (
     const boost::shared_ptr<openni_wrapper::Image> &image, 
     const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const
@@ -454,7 +512,7 @@ pcl::PointCloud<pcl::PointXYZRGBA>::Ptr ONIGrabber::convertToXYZRGBAPointCloud (
   if (rgb_array_size < image_width_ * image_height_ * 3)
   {
     rgb_array_size = image_width_ * image_height_ * 3;
-    rgb_array.reset(new unsigned char [rgb_array_size]);
+    rgb_array.reset (new unsigned char [rgb_array_size]);
     rgb_buffer = rgb_array.get();
   }
   image->fillRGB(image_width_, image_height_, rgb_buffer, image_width_ * 3);
@@ -482,21 +540,21 @@ pcl::PointCloud<pcl::PointXYZRGBA>::Ptr ONIGrabber::convertToXYZRGBAPointCloud (
       else
       {
         pt.z = depth_map[depth_idx] * 0.001f;
-        pt.x = u * pt.z * constant;
-        pt.y = v * pt.z * constant;
+        pt.x = static_cast<float> (u) * pt.z * constant;
+        pt.y = static_cast<float> (v) * pt.z * constant;
       }
 
       // Fill in color
       color.Red = rgb_buffer[color_idx];
       color.Green = rgb_buffer[color_idx + 1];
       color.Blue = rgb_buffer[color_idx + 2];
-      pt.rgba = color.long_value;
+      pt.rgba = static_cast<uint32_t> (color.long_value);
     }
   }
   return (cloud);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::PointCloud<pcl::PointXYZI>::Ptr ONIGrabber::convertToXYZIPointCloud(const boost::shared_ptr<openni_wrapper::IRImage> &ir_image,
   const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const
 {
@@ -555,12 +613,12 @@ pcl::PointCloud<pcl::PointXYZI>::Ptr ONIGrabber::convertToXYZIPointCloud(const b
       else
       {
         pt.z = depth_map[depth_idx] * 0.001f;
-        pt.x = u * pt.z * constant;
-        pt.y = v * pt.z * constant;
+        pt.x = static_cast<float> (u) * pt.z * constant;
+        pt.y = static_cast<float> (v) * pt.z * constant;
       }
 
       pt.data_c[0] = pt.data_c[1] = pt.data_c[2] = pt.data_c[3] = 0;
-      pt.intensity = (float) ir_map[depth_idx];
+      pt.intensity = static_cast<float> (ir_map[depth_idx]);
     }
   }
   return (cloud);

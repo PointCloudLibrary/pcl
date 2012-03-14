@@ -52,13 +52,39 @@ using namespace std;
 using namespace boost;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node) 
-  : context_ (context),
-    device_node_info_ (device_node)
+openni_wrapper::OpenNIDevice::OpenNIDevice (
+    xn::Context& context, 
+    const xn::NodeInfo& device_node, 
+    const xn::NodeInfo& image_node, 
+    const xn::NodeInfo& depth_node, 
+    const xn::NodeInfo& ir_node) 
+  : image_callback_ (),
+    depth_callback_ (),
+    ir_callback_ (),
+    available_image_modes_ (),
+    available_depth_modes_ (),
+    context_ (context),
+    device_node_info_ (device_node),
+    depth_generator_ (),
+    image_generator_ (),
+    ir_generator_ (),
+    depth_callback_handle_ (),
+    image_callback_handle_ (),
+    ir_callback_handle_ (),
+    depth_focal_length_SXGA_ (),
+    baseline_ (),
+    // This magic value is taken from a calibration routine.
+    rgb_focal_length_SXGA_ (1050),
+    shadow_value_ (),
+    no_sample_value_ (),
+    image_callback_handle_counter_ (),
+    depth_callback_handle_counter_ (),
+    ir_callback_handle_counter_ (),
+    quit_ (),
+    image_mutex_ (), depth_mutex_ (), ir_mutex_ (),
+    image_condition_ (), depth_condition_ (), ir_condition_ (), 
+    image_thread_ (), depth_thread_ (), ir_thread_ ()
 {
-  // This magic value is taken from a calibration routine.
-  rgb_focal_length_SXGA_  = 1050;
-
 // workaround for MAC from Alex Ichim
 #ifdef __APPLE__
   XnStatus rc;
@@ -138,12 +164,33 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::Node
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node)
-  : context_ (context),
-    device_node_info_ (device_node)
+  : image_callback_ (),
+    depth_callback_ (),
+    ir_callback_ (),
+    available_image_modes_ (),
+    available_depth_modes_ (),
+    context_ (context),
+    device_node_info_ (device_node),
+    depth_generator_ (),
+    image_generator_ (),
+    ir_generator_ (),
+    depth_callback_handle_ (),
+    image_callback_handle_ (),
+    ir_callback_handle_ (),
+    depth_focal_length_SXGA_ (),
+    baseline_ (),
+    // This magic value is taken from a calibration routine.
+    rgb_focal_length_SXGA_ (1050),
+    shadow_value_ (),
+    no_sample_value_ (),
+    image_callback_handle_counter_ (),
+    depth_callback_handle_counter_ (),
+    ir_callback_handle_counter_ (),
+    quit_ (),
+    image_mutex_ (), depth_mutex_ (), ir_mutex_ (),
+    image_condition_ (), depth_condition_ (), ir_condition_ (), 
+    image_thread_ (), depth_thread_ (), ir_thread_ ()
 {
-  // This magic value is taken from a calibration routine.
-  rgb_focal_length_SXGA_  = 1050;
-
 // workaround for MAC from Alex Ichim
 #ifdef __APPLE__
   cerr << "Creating OpenNIDevice" << endl;
@@ -208,11 +255,33 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::Node
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // For ONI Player devices
 openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context)
-  : context_ (context),
-    device_node_info_ (0)
+  : image_callback_ (),
+    depth_callback_ (),
+    ir_callback_ (),
+    available_image_modes_ (),
+    available_depth_modes_ (),
+    context_ (context),
+    device_node_info_ (0),
+    depth_generator_ (),
+    image_generator_ (),
+    ir_generator_ (),
+    depth_callback_handle_ (),
+    image_callback_handle_ (),
+    ir_callback_handle_ (),
+    depth_focal_length_SXGA_ (),
+    baseline_ (),
+    // This magic value is taken from a calibration routine.
+    rgb_focal_length_SXGA_ (1050),
+    shadow_value_ (),
+    no_sample_value_ (),
+    image_callback_handle_counter_ (),
+    depth_callback_handle_counter_ (),
+    ir_callback_handle_counter_ (),
+    quit_ (),
+    image_mutex_ (), depth_mutex_ (), ir_mutex_ (),
+    image_condition_ (), depth_condition_ (), ir_condition_ (), 
+    image_thread_ (), depth_thread_ (), ir_thread_ ()
 {
-  // This magic value is taken from a calibration routine.
-  rgb_focal_length_SXGA_  = 1050;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -285,10 +354,10 @@ openni_wrapper::OpenNIDevice::Init ()
       THROW_OPENNI_EXCEPTION ("reading the value for pixels with no depth estimation failed. Reason: %s", xnGetStatusString (status));
 
     // baseline from cm -> meters
-    baseline_ = (float)(baseline * 0.01);
+    baseline_ = static_cast<float> (baseline * 0.01);
 
     //focal length from mm -> pixels (valid for 1280x1024)
-    depth_focal_length_SXGA_ = (float) (depth_focal_length_SXGA / pixel_size);
+    depth_focal_length_SXGA_ = static_cast<float> (depth_focal_length_SXGA / pixel_size);
 
     depth_thread_ = boost::thread (&OpenNIDevice::DepthDataThreadFunction, this);
   }
@@ -613,10 +682,10 @@ openni_wrapper::OpenNIDevice::setDepthCropping (unsigned x, unsigned y, unsigned
   {
     lock_guard<mutex> depth_lock (depth_mutex_);
     XnCropping cropping;
-    cropping.nXOffset = x;
-    cropping.nYOffset = y;
-    cropping.nXSize   = width;
-    cropping.nYSize   = height;
+    cropping.nXOffset = static_cast<XnUInt16> (x);
+    cropping.nYOffset = static_cast<XnUInt16> (y);
+    cropping.nXSize   = static_cast<XnUInt16> (width);
+    cropping.nYSize   = static_cast<XnUInt16> (height);
 
     cropping.bEnabled = (width != 0 && height != 0);
     XnStatus status = depth_generator_.GetCroppingCap ().SetCropping (cropping);
@@ -715,7 +784,7 @@ openni_wrapper::OpenNIDevice::IRDataThreadFunction ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void __stdcall 
-openni_wrapper::OpenNIDevice::NewDepthDataAvailable (xn::ProductionNode& node, void* cookie) throw ()
+openni_wrapper::OpenNIDevice::NewDepthDataAvailable (xn::ProductionNode&, void* cookie) throw ()
 {
   OpenNIDevice* device = reinterpret_cast<OpenNIDevice*>(cookie);
   device->depth_condition_.notify_all ();
@@ -723,7 +792,7 @@ openni_wrapper::OpenNIDevice::NewDepthDataAvailable (xn::ProductionNode& node, v
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void __stdcall 
-openni_wrapper::OpenNIDevice::NewImageDataAvailable (xn::ProductionNode& node, void* cookie) throw ()
+openni_wrapper::OpenNIDevice::NewImageDataAvailable (xn::ProductionNode&, void* cookie) throw ()
 {
   OpenNIDevice* device = reinterpret_cast<OpenNIDevice*>(cookie);
   device->image_condition_.notify_all ();
@@ -731,7 +800,7 @@ openni_wrapper::OpenNIDevice::NewImageDataAvailable (xn::ProductionNode& node, v
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void __stdcall 
-openni_wrapper::OpenNIDevice::NewIRDataAvailable (xn::ProductionNode& node, void* cookie) throw ()
+openni_wrapper::OpenNIDevice::NewIRDataAvailable (xn::ProductionNode&, void* cookie) throw ()
 {
   OpenNIDevice* device = reinterpret_cast<OpenNIDevice*>(cookie);
   device->ir_condition_.notify_all ();

@@ -69,7 +69,7 @@ pcl::MarchingCubes<PointNT>::getBoundingBox ()
     (std::max) ((std::max)(bounding_box_size.x (), bounding_box_size.y ()),
                 bounding_box_size.z ());
 
-  data_size_ = max_size / leaf_size_;
+  data_size_ = static_cast<uint64_t> (max_size / leaf_size_);
   PCL_DEBUG ("[pcl::MarchingCubes::getBoundingBox] Lower left point is [%f, %f, %f]\n",
       min_p_.x (), min_p_.y (), min_p_.z ());
   PCL_DEBUG ("[pcl::MarchingCubes::getBoundingBox] Upper left point is [%f, %f, %f]\n",
@@ -132,19 +132,19 @@ pcl::MarchingCubes<PointNT>::createSurface (Leaf leaf_node,
   {
     Eigen::Vector3f point;
     if(i & 0x4)
-      point[1] = center[1] + leaf_size_/2;
+      point[1] = static_cast<float> (center[1] + leaf_size_/2);
     else
-      point[1] = center[1] - leaf_size_/2;
+      point[1] = static_cast<float> (center[1] - leaf_size_/2);
 
     if(i & 0x2)
-      point[2] = center[2] + leaf_size_/2;
+      point[2] = static_cast<float> (center[2] + leaf_size_/2);
     else
-      point[2] = center[2] - leaf_size_/2;
+      point[2] = static_cast<float> (center[2] - leaf_size_/2);
 
     if((i & 0x1) ^ ((i >> 1) & 0x1))
-      point[0] = center[0] + leaf_size_/2;
+      point[0] = static_cast<float> (center[0] + leaf_size_/2);
     else
-      point[0] = center[0] - leaf_size_/2;
+      point[0] = static_cast<float> (center[0] - leaf_size_/2);
 
     p[i] = point;
   }
@@ -313,7 +313,7 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PolygonMesh &output)
     pcl::Vertices v;
     v.vertices.resize (3);
     for (int j = 0; j < 3; ++j)
-      v.vertices[j] = i*3+j;
+      v.vertices[j] = static_cast<int> (i) * 3 + j;
      output.polygons[i] = v;
   }
 }
@@ -363,7 +363,7 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
     pcl::Vertices v;
     v.vertices.resize (3);
     for (int j = 0; j < 3; ++j)
-      v.vertices[j] = i*3+j;
+      v.vertices[j] = static_cast<int> (i) * 3 + j;
      polygons[i] = v;
   }
 }

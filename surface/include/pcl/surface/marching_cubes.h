@@ -409,7 +409,7 @@ namespace pcl
       getCellIndex (const Eigen::Vector4f &p, Eigen::Vector3i& index) const
       {
         for (int i = 0; i < 3; ++i)
-          index[i] = (p[i] - min_p_(i))/leaf_size_;
+          index[i] = static_cast<Eigen::Vector3i::Scalar> ((p[i] - min_p_(i)) / leaf_size_);
       }
 
       /** \brief Given an index (x, y, z) in 3d, translate it into the index
@@ -433,11 +433,11 @@ namespace pcl
       getIndexIn3D (uint64_t index_1d, Eigen::Vector3i& index_3d) const
       {
         //assert(data_size_ > 0);
-        index_3d[0] = index_1d / (data_size_ * data_size_);
+        index_3d[0] = static_cast<Eigen::Vector3i::Scalar> (index_1d / (data_size_ * data_size_));
         index_1d -= index_3d[0] * data_size_ * data_size_;
-        index_3d[1] = index_1d / data_size_;
+        index_3d[1] = static_cast<Eigen::Vector3i::Scalar> (index_1d / data_size_);
         index_1d -= index_3d[1] * data_size_;
-        index_3d[2] = index_1d;
+        index_3d[2] = static_cast<Eigen::Vector3i::Scalar> (index_1d);
       }
 
       /** \brief Given a voxel index, get all the neighbors indexes in 1D

@@ -66,7 +66,24 @@ namespace pcl
       typedef PointIndices::ConstPtr PointIndicesConstPtr;
 
       public:
-        TransformationEstimationLM () {};
+        /** \brief Constructor. */
+        TransformationEstimationLM () : 
+          weights_ (), tmp_src_ (), tmp_tgt_ (), tmp_idx_src_ (), tmp_idx_tgt_ (), warp_point_ ()
+        {};
+
+        /** \brief Copy constructor. 
+          * \param[in] src the TransformationEstimationLM object to copy into this 
+          */
+        TransformationEstimationLM (const TransformationEstimationLM &src) : 
+          weights_ (src.weights_), 
+          tmp_src_ (src.tmp_src_), 
+          tmp_tgt_ (src.tmp_tgt_), 
+          tmp_idx_src_ (src.tmp_idx_src_), 
+          tmp_idx_tgt_ (src.tmp_idx_tgt_), 
+          warp_point_ (src.warp_point_)
+        {};
+
+         /** \brief Destructor. */
         virtual ~TransformationEstimationLM () {};
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using LM.
@@ -174,7 +191,8 @@ namespace pcl
         struct Functor
         {
           typedef _Scalar Scalar;
-          enum {
+          enum 
+          {
             InputsAtCompileTime = NX,
             ValuesAtCompileTime = NY
           };

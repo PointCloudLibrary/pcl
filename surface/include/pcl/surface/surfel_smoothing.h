@@ -58,12 +58,14 @@ namespace pcl
       typedef typename pcl::search::Search<PointT>::Ptr CloudKdTreePtr;
 
       SurfelSmoothing (float a_scale = 0.01)
-        : PCLBase<PointT> (),
-          scale_ (a_scale),
-          normals_ (),
-          tree_ ()
+        : PCLBase<PointT> ()
+        , scale_ (a_scale)
+        , scale_squared_ (a_scale * a_scale)
+        , normals_ ()
+        , interm_cloud_ ()
+        , interm_normals_ ()
+        , tree_ ()
       {
-        scale_squared_ = scale_ * scale_;
       }
 
       void

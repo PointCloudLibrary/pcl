@@ -58,7 +58,7 @@ namespace openni_wrapper
       THROW_OPENNI_EXCEPTION ("downsampling only supported for integer scale: %d x %d -> %d x %d", depth_md_->XRes (), depth_md_->YRes (), width, height);
 
     if (line_step == 0)
-      line_step = width * sizeof (unsigned short);
+      line_step = width * unsigned (sizeof (unsigned short));
 
     // special case no sclaing, no padding => memcopy!
     if (width == depth_md_->XRes () && height == depth_md_->YRes () && (line_step == width * sizeof (unsigned short)))
@@ -68,7 +68,7 @@ namespace openni_wrapper
     }
 
     // padding skip for destination image
-    unsigned bufferSkip = line_step - width * sizeof (unsigned short);
+    unsigned bufferSkip = line_step - width * unsigned (sizeof (unsigned short));
 
     // step and padding skip for source image
     unsigned xStep = depth_md_->XRes () / width;
@@ -89,7 +89,7 @@ namespace openni_wrapper
           *depth_buffer = bad_point;
         else
         {
-          *depth_buffer = (unsigned short) (*depth_md_)[depthIdx];
+          *depth_buffer = static_cast<unsigned short> ((*depth_md_)[depthIdx]);
         }
       }
       // if we have padding
@@ -111,10 +111,10 @@ namespace openni_wrapper
       THROW_OPENNI_EXCEPTION ("downsampling only supported for integer scale: %d x %d -> %d x %d", depth_md_->XRes (), depth_md_->YRes (), width, height);
 
     if (line_step == 0)
-      line_step = width * sizeof (float);
+      line_step = width * unsigned (sizeof (float));
 
     // padding skip for destination image
-    unsigned bufferSkip = line_step - width * sizeof (float);
+    unsigned bufferSkip = line_step - width * unsigned (sizeof (float));
 
     // step and padding skip for source image
     unsigned xStep = depth_md_->XRes () / width;
@@ -135,7 +135,7 @@ namespace openni_wrapper
           *depth_buffer = bad_point;
         else
         {
-          *depth_buffer = (float) (*depth_md_)[depthIdx] * 0.001f;
+          *depth_buffer = static_cast<float> ((*depth_md_)[depthIdx]) * 0.001f;
         }
       }
       // if we have padding
@@ -157,17 +157,17 @@ namespace openni_wrapper
       THROW_OPENNI_EXCEPTION ("downsampling only supported for integer scale: %d x %d -> %d x %d", depth_md_->XRes (), depth_md_->YRes (), width, height);
 
     if (line_step == 0)
-      line_step = width * sizeof (float);
+      line_step = width * unsigned (sizeof (float));
 
     unsigned xStep = depth_md_->XRes () / width;
     unsigned ySkip = (depth_md_->YRes () / height - 1) * depth_md_->XRes ();
 
-    unsigned bufferSkip = line_step - width * sizeof (float);
+    unsigned bufferSkip = line_step - width * unsigned (sizeof (float));
 
     // Fill in the depth image data
     // iterate over all elements and fill disparity matrix: disp[x,y] = f * b / z_distance[x,y];
     // focal length is for the native image resolution -> focal_length = focal_length_ / xStep;
-    float constant = focal_length_ * baseline_ * 1000.0f / (float) xStep;
+    float constant = focal_length_ * baseline_ * 1000.0f / static_cast<float> (xStep);
 
     for (unsigned yIdx = 0, depthIdx = 0; yIdx < height; ++yIdx, depthIdx += ySkip)
     {
@@ -178,7 +178,7 @@ namespace openni_wrapper
             (*depth_md_)[depthIdx] == shadow_value_)
           *disparity_buffer = 0.0;
         else
-          *disparity_buffer = constant / (float) (*depth_md_)[depthIdx];
+          *disparity_buffer = constant / static_cast<float> ((*depth_md_)[depthIdx]);
       }
 
       // if we have padding

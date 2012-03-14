@@ -110,7 +110,7 @@ class SimpleOpenNIProcessor
       char key;
       do
       {
-        key = getchar ();
+        key = static_cast<char> (getchar ());
         switch (key)
         {
           case ' ':
