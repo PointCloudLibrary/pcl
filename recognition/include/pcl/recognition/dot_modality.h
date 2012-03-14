@@ -49,7 +49,7 @@ namespace pcl
   class PCL_EXPORTS DOTModality
   {
     public:
-      DOTModality ();
+
       virtual ~DOTModality () {};
 
       //virtual QuantizedMap &

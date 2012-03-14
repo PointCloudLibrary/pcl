@@ -87,12 +87,19 @@ namespace pcl
       void
       detectTemplates (const std::vector<DOTModality*> & modalities,
                        float template_response_threshold,
-                       std::vector<DOTMODDetection> & detections) const;
+                       std::vector<DOTMODDetection> & detections,
+                       const size_t bin_size) const;
 
       inline const DenseQuantizedMultiModTemplate &
       getTemplate (size_t template_id) const
       { 
         return (templates_[template_id]);
+      }
+
+      inline const size_t
+      getNumOfTemplates ()
+      {
+        return (templates_.size ());
       }
 
       void

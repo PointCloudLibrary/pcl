@@ -56,6 +56,13 @@ pcl::QuantizedMap::QuantizedMap ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+pcl::QuantizedMap::QuantizedMap (const QuantizedMap & copy_me)
+  : data_ (0), width_ (copy_me.width_), height_ (copy_me.height_)
+{
+  data_.insert (data_.begin (), copy_me.data_.begin (), copy_me.data_.end ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 pcl::QuantizedMap::QuantizedMap (const size_t width, const size_t height)
   : data_ (width*height), width_ (width), height_ (height)
 {

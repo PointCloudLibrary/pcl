@@ -112,33 +112,59 @@ void
 pcl::DOTMOD::
 detectTemplates (const std::vector<DOTModality*> & modalities, 
                  const float template_response_threshold,
-                 std::vector<DOTMODDetection> & detections) const
+                 std::vector<DOTMODDetection> & detections,
+                 const size_t bin_size ) const
 {
-  std::vector<QuantizedMap*> maps;
+  //std::cerr << ">> detectTemplates (...)" << std::endl;
+
+  std::vector<QuantizedMap> maps;
   const size_t nr_modalities = modalities.size ();
+
+  //std::cerr << "nr_modalities: " << nr_modalities << std::endl;
+
   for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
   {
-    QuantizedMap & map = modalities[modality_index]->getDominantQuantizedMap ();
-    maps.push_back(&map);
+    QuantizedMap &map = modalities[modality_index]->getDominantQuantizedMap ();
+    maps.push_back(map);
   }
+
+  //std::cerr << "1" << std::endl;
   
-  const size_t width = maps[0]->getWidth ();
-  const size_t height = maps[0]->getHeight ();
+  
+  const size_t width = maps[0].getWidth ();
+  const size_t height = maps[0].getHeight ();
   const size_t nr_templates = templates_.size ();
-  for (size_t row_index = 0; row_index < (height - template_height_); ++row_index)
+
+  const size_t nr_template_horizontal_bins = template_width_ / bin_size;
+  const size_t nr_template_vertical_bins = template_height_ / bin_size;
+
+  std::cerr << "---------------------------------------------------" << std::endl;
+  std::cerr << "width:                       " << width << std::endl;
+  std::cerr << "height:                      " << height << std::endl;
+  std::cerr << "nr_templates:                " << nr_templates << std::endl;
+  std::cerr << "nr_template_horizontal_bins: " << nr_template_horizontal_bins << std::endl;
+  std::cerr << "nr_template_vertical_bins:   " << nr_template_vertical_bins << std::endl;
+  std::cerr << "template_width_:             " << template_width_ << std::endl;
+  std::cerr << "template_height_:            " << template_height_ << std::endl;
+
+  //std::cerr << "2" << std::endl;
+
+  float best_response = 0.0f;
+  for (size_t row_index = 0; row_index < (height - nr_template_vertical_bins); ++row_index)
   {
-    for (size_t col_index = 0; col_index < (width - template_width_); ++col_index)
+    for (size_t col_index = 0; col_index < (width - nr_template_horizontal_bins); ++col_index)
     {
       std::vector<float> responses (nr_templates, 0.0f);
+
       for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
       {
-        const QuantizedMap & map = maps[modality_index]->getSubMap (col_index, row_index, template_width_, template_height_);
+        const QuantizedMap map = maps[modality_index].getSubMap (col_index, row_index, nr_template_horizontal_bins, nr_template_vertical_bins);
 
         const unsigned char * image_data = map.getData ();
         for (size_t template_index = 0; template_index < nr_templates; ++template_index)
         {
           const unsigned char * template_data = &(templates_[template_index].modalities[modality_index].features[0]);
-          for (size_t data_index = 0; data_index < (template_width_*template_height_); ++data_index)
+          for (size_t data_index = 0; data_index < (nr_template_horizontal_bins*nr_template_vertical_bins); ++data_index)
           {
             if ((image_data[data_index] & template_data[data_index]) != 0)
               responses[template_index] += 1.0f;
@@ -147,7 +173,7 @@ detectTemplates (const std::vector<DOTModality*> & modalities,
       }
 
       // find templates with response over threshold
-      const float scaling_factor = 1.0f / (template_width_ * template_height_);
+      const float scaling_factor = 1.0f / (nr_template_horizontal_bins * nr_template_vertical_bins);
       for (size_t template_index = 0; template_index < nr_templates; ++template_index)
       {
         const float response = responses[template_index] * scaling_factor;
@@ -162,9 +188,16 @@ detectTemplates (const std::vector<DOTModality*> & modalities,
 
           detections.push_back (detection);
         }
+
+        if (response > best_response)
+          best_response = response;
       }
     }
   }
+
+  std::cerr << "best_response: " << best_response << std::endl;
+  
+  //std::cerr << "<< detectTemplates (...)" << std::endl;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -49,6 +49,7 @@ namespace pcl
 
       QuantizedMap ();
       QuantizedMap (size_t width, size_t height);
+      QuantizedMap (const QuantizedMap & copy_me);
 
       virtual ~QuantizedMap ();
 
@@ -68,7 +69,7 @@ namespace pcl
       getSubMap (size_t x,
                  size_t y,
                  size_t width,
-                 size_t height) const
+                 size_t height)
       {
         QuantizedMap subMap(width, height);
 
@@ -76,6 +77,9 @@ namespace pcl
         {
           for (size_t col_index = 0; col_index < width; ++col_index)
           {
+            //const size_t index = (row_index+y)*width_ + (col_index+x);
+            //const unsigned char value = data_[index];
+            //subMap.data_[row_index*width + col_index] = value;//data_[(row_index+y)*width_ + (col_index+x)];
             subMap (col_index, row_index) = (*this) (col_index + x, row_index + y);
           }
         }
@@ -101,7 +105,7 @@ namespace pcl
       static void
       spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, size_t spreading_size);
 
-    private:
+    //private:
       std::vector<unsigned char> data_;
       size_t width_;
       size_t height_;  
