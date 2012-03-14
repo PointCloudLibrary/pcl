@@ -695,9 +695,9 @@ pcl::SurfaceNormalModality<PointInT>::computeDistanceMap (const MaskMap & input,
   // second pass
   float * next_row = distance_map + width * (height - 1);
   current_row = next_row - width;
-  for (size_t ri = height-2; ri >= 0; --ri)
+  for (int ri = static_cast<int> (height)-2; ri >= 0; --ri)
   {
-    for (size_t ci = width-2; ci >= 0; --ci)
+    for (int ci = static_cast<int> (width)-2; ci >= 0; --ci)
     {
       const float lower_left  = next_row    [ci - 1] + 1.4f; //distance_map[(ri+1)*input_->width + ci-1] + 1.4f;
       const float lower       = next_row    [ci]     + 1.0f; //distance_map[(ri+1)*input_->width + ci] + 1.0f;
@@ -710,6 +710,9 @@ pcl::SurfaceNormalModality<PointInT>::computeDistanceMap (const MaskMap & input,
       if (min_value < center)
         current_row[ci] = min_value; //distance_map[ri*input_->width + ci] = min_value;
     }
+
+    next_row = current_row;
+    current_row -= width;
   }
 }
 
