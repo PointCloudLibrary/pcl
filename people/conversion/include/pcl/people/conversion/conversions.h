@@ -120,15 +120,15 @@ namespace pcl
           p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
           p.label = lmap[i];
           // Check if label is not larger then our LUT
-          if(p.label > LUT_color_label_length)
+          if(p.label > LUT_COLOR_LABEL_LENGTH)
           {
             p.b = 0; p.r = 0; p.g = 0;
           }
           else
           {
-            p.b = LUT_color_label[3 * p.label + 2];
-            p.g = LUT_color_label[3 * p.label + 1];
-            p.r = LUT_color_label[3 * p.label + 0];
+            p.b = LUT_COLOR_LABEL[3 * p.label + 2];
+            p.g = LUT_COLOR_LABEL[3 * p.label + 1];
+            p.r = LUT_COLOR_LABEL[3 * p.label + 0];
           }
           cloud_out.points.push_back(p);
         }
@@ -155,9 +155,9 @@ namespace pcl
           PointXYZRGBL p;
           p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
           p.label = lmap[i];
-          p.b = LUT_color_label[3 * p.label + 2];
-          p.g = LUT_color_label[3 * p.label + 1];
-          p.r = LUT_color_label[3 * p.label + 0];
+          p.b = LUT_COLOR_LABEL[3 * p.label + 2];
+          p.g = LUT_COLOR_LABEL[3 * p.label + 1];
+          p.r = LUT_COLOR_LABEL[3 * p.label + 0];
           cloud_out.points.push_back(p);
         }
       }
