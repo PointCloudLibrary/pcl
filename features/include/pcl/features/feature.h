@@ -457,10 +457,6 @@ namespace pcl
   class FeatureWithLocalReferenceFrames
   {
     public:
-      typedef pcl::PointCloud<PointInT> PointCloudIn;
-      typedef typename PointCloudIn::Ptr PointCloudInPtr;
-      typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
-
       typedef pcl::PointCloud<PointRFT> PointCloudLRF;
       typedef typename PointCloudLRF::Ptr PointCloudLRFPtr;
       typedef typename PointCloudLRF::ConstPtr PointCloudLRFConstPtr;
@@ -495,7 +491,7 @@ namespace pcl
         */
       typedef typename Feature<PointInT, PointRFT>::Ptr LRFEstimationPtr;
       virtual bool
-      initLocalReferenceFrames (const PointCloudInConstPtr& input,
+      initLocalReferenceFrames (const size_t& indices_size,
                                 const LRFEstimationPtr& lrf_estimation = LRFEstimationPtr());
   };
 }

@@ -44,8 +44,8 @@
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::SHOT)))
+  PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::SHOT))((pcl::ReferenceFrame)))
 #else
-  PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, (PCL_XYZ_POINT_TYPES)((pcl::SHOT)))
-  PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, (PCL_XYZ_POINT_TYPES)((Eigen::MatrixXf)))
+  PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, (PCL_XYZ_POINT_TYPES)((pcl::SHOT))((pcl::ReferenceFrame)))
+  PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, (PCL_XYZ_POINT_TYPES)((Eigen::MatrixXf))((pcl::ReferenceFrame)))
 #endif

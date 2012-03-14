@@ -61,8 +61,8 @@ namespace pcl
     * \ingroup features
     */
 
-  template <typename PointInT, typename PointNT, typename PointOutT> 
-  class SHOTEstimationOMP : public SHOTEstimation<PointInT, PointNT, PointOutT>
+  template <typename PointInT, typename PointNT, typename PointOutT = pcl::SHOT, typename PointRFT = pcl::ReferenceFrame>
+  class SHOTEstimationOMP : public SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>
   {
     public:
       using Feature<PointInT, PointOutT>::feature_name_;
@@ -73,20 +73,20 @@ namespace pcl
       using Feature<PointInT, PointOutT>::search_radius_;
       using Feature<PointInT, PointOutT>::surface_;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
-      using SHOTEstimation<PointInT, PointNT, PointOutT>::descLength_;
-      using SHOTEstimation<PointInT, PointNT, PointOutT>::nr_grid_sector_;
-      using SHOTEstimation<PointInT, PointNT, PointOutT>::nr_shape_bins_;
-      using SHOTEstimation<PointInT, PointNT, PointOutT>::sqradius_;
-      using SHOTEstimation<PointInT, PointNT, PointOutT>::radius3_4_;
-      using SHOTEstimation<PointInT, PointNT, PointOutT>::radius1_4_;
-      using SHOTEstimation<PointInT, PointNT, PointOutT>::radius1_2_;
-      using SHOTEstimation<PointInT, PointNT, PointOutT>::rf_;
+      using FeatureWithLocalReferenceFrames<PointInT, PointRFT>::frames_;
+      using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::descLength_;
+      using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::nr_grid_sector_;
+      using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::nr_shape_bins_;
+      using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::sqradius_;
+      using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::radius3_4_;
+      using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::radius1_4_;
+      using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::radius1_2_;
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
       typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
 
       /** \brief Empty constructor. */
-      SHOTEstimationOMP (unsigned int nr_threads = - 1) : SHOTEstimation<PointInT, PointNT, PointOutT> (), threads_ ()
+      SHOTEstimationOMP (unsigned int nr_threads = - 1) : SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> (), threads_ ()
       {
         setNumberOfThreads (nr_threads);
       }
@@ -109,15 +109,15 @@ namespace pcl
         * setSearchMethod ()
         * \param output the resultant point cloud model dataset that contains the SHOT feature estimates
         */
-      void 
+      void
       computeFeature (PointCloudOut &output);
 
       /** \brief The number of threads the scheduler should use. */
       int threads_;
   };
 
-  template <typename PointNT, typename PointOutT> 
-  class SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT> : public SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>
+  template <typename PointNT, typename PointOutT, typename PointRFT>
+  class SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT> : public SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT>
   {
     public:
       using Feature<pcl::PointXYZRGBA, PointOutT>::feature_name_;
@@ -128,26 +128,26 @@ namespace pcl
       using Feature<pcl::PointXYZRGBA, PointOutT>::search_radius_;
       using Feature<pcl::PointXYZRGBA, PointOutT>::surface_;
       using FeatureFromNormals<pcl::PointXYZRGBA, PointNT, PointOutT>::normals_;
-      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::descLength_;
-      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::nr_grid_sector_;
-      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::nr_shape_bins_;
-      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::sqradius_;
-      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::radius3_4_;
-      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::radius1_4_;
-      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::radius1_2_;
-      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::rf_;
-      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::b_describe_shape_;
-      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::b_describe_color_;
-      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT>::nr_color_bins_;
+      using FeatureWithLocalReferenceFrames<pcl::PointXYZRGBA, PointRFT>::frames_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT>::descLength_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT>::nr_grid_sector_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT>::nr_shape_bins_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT>::sqradius_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT>::radius3_4_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT>::radius1_4_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT>::radius1_2_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT>::b_describe_shape_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT>::b_describe_color_;
+      using SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT>::nr_color_bins_;
 
       typedef typename Feature<pcl::PointXYZRGBA, PointOutT>::PointCloudOut PointCloudOut;
       typedef typename Feature<pcl::PointXYZRGBA, PointOutT>::PointCloudIn PointCloudIn;
 
       /** \brief Empty constructor. */
-      SHOTEstimationOMP (bool describeShape = true, 
-                         bool describeColor = false, 
-                         unsigned int nr_threads = - 1) 
-        : SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT> (describeShape, describeColor), threads_ ()
+      SHOTEstimationOMP (bool describeShape = true,
+                         bool describeColor = false,
+                         unsigned int nr_threads = - 1)
+        : SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT> (describeShape, describeColor), threads_ ()
       {
         setNumberOfThreads (nr_threads);
       }
@@ -170,7 +170,7 @@ namespace pcl
         * setSearchMethod ()
         * \param output the resultant point cloud model dataset that contains the SHOT feature estimates
         */
-      void 
+      void
       computeFeature (PointCloudOut &output);
 
       /** \brief The number of threads the scheduler should use. */

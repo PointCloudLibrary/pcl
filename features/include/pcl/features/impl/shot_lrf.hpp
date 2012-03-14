@@ -200,11 +200,18 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::computeFeatureEigen
   if (this->getKSearch () != 0)
   {
     PCL_ERROR(
-      "[pcl::%s::computeFeature] Error! Search method set to k-neighborhood. Call setKSearch(0) and setRadiusSearch( radius ) to use this class.\n",
+      "[pcl::%s::computeFeatureEigen] Error! Search method set to k-neighborhood. Call setKSearch(0) and setRadiusSearch( radius ) to use this class.\n",
       getClassName().c_str ());
     return;
   }
   tree_->setSortedResults (true);
+
+  // Set up the output channels
+  output.channels["shot_lrf"].name     = "shot_lrf";
+  output.channels["shot_lrf"].offset   = 0;
+  output.channels["shot_lrf"].size     = 4;
+  output.channels["shot_lrf"].count    = 9;
+  output.channels["shot_lrf"].datatype = sensor_msgs::PointField::FLOAT32;
 
   //output.points.resize (indices_->size (), 10);
   output.points.resize (indices_->size (), 9);

@@ -40,8 +40,8 @@
 #include <pcl/features/shot_omp.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointInT, typename PointNT, typename PointOutT> void
-pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
+template<typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> void
+pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (PointCloudOut &output)
 {
   if (threads_ < 0)
     threads_ = 1;
@@ -59,9 +59,6 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
   int data_size = static_cast<int> (indices_->size ());
   Eigen::VectorXf *shot = new Eigen::VectorXf[threads_];
-  std::vector<std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > > rfs (threads_);
-  for (size_t i = 0; i < rfs.size (); ++i)
-    rfs[i].resize (3);
 
   for (int i = 0; i < threads_; i++)
     shot[i].setZero (descLength_);
@@ -83,20 +80,20 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 #else
     int tid = 0;
 #endif
-	this->computePointSHOT ((*indices_)[idx], nn_indices, nn_dists, shot[tid], rfs[tid]);
+    this->computePointSHOT (idx, nn_indices, nn_dists, shot[tid]);
 
 	// Copy into the resultant cloud
     for (int d = 0; d < shot[tid].size (); ++d)
       output.points[idx].descriptor[d] = shot[tid][d];
     for (int d = 0; d < 9; ++d)
-      output.points[idx].rf[d] = rfs[tid][d/3][d % 3];
+      output.points[idx].rf[d] = frames_->points[idx].rf[ (4*(d/3) + (d%3)) ];
   }
   delete[] shot;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointNT, typename PointOutT> void
-pcl::SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
+template<typename PointNT, typename PointOutT, typename PointRFT> void
+pcl::SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT>::computeFeature (PointCloudOut &output)
 {
   if (threads_ < 0)
     threads_ = 1;
@@ -115,9 +112,6 @@ pcl::SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (P
 
   int data_size = static_cast<int> (indices_->size ());
   Eigen::VectorXf *shot = new Eigen::VectorXf[threads_];
-  std::vector<std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > > rfs (threads_);
-  for (size_t i = 0; i < rfs.size (); ++i)
-    rfs[i].resize (3);
 
   for (int i = 0; i < threads_; i++)
     shot[i].setZero (descLength_);
@@ -139,18 +133,18 @@ pcl::SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT>::computeFeature (P
 #else
     int tid = 0;
 #endif
-    this->computePointSHOT ((*indices_)[idx], nn_indices, nn_dists, shot[tid], rfs[tid]);
+    this->computePointSHOT (idx, nn_indices, nn_dists, shot[tid]);
 
     // Copy into the resultant cloud
     for (int d = 0; d < shot[tid].size (); ++d)
       output.points[idx].descriptor[d] = shot[tid][d];
     for (int d = 0; d < 9; ++d)
-      output.points[idx].rf[d] = rfs[tid][d / 3][d % 3];
+      output.points[idx].rf[d] = frames_->points[idx].rf[ (4*(d/3) + (d%3)) ];
   }
 
   delete[] shot;
 }
 
-#define PCL_INSTANTIATE_SHOTEstimationOMP(T,NT,OutT) template class PCL_EXPORTS pcl::SHOTEstimationOMP<T,NT,OutT>;
+#define PCL_INSTANTIATE_SHOTEstimationOMP(T,NT,OutT,RFT) template class PCL_EXPORTS pcl::SHOTEstimationOMP<T,NT,OutT,RFT>;
 
 #endif    // PCL_FEATURES_IMPL_SHOT_OMP_H_

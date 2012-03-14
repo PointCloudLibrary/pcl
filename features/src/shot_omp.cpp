@@ -42,7 +42,7 @@
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(SHOTEstimationOMP, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::SHOT)))
+  PCL_INSTANTIATE_PRODUCT(SHOTEstimationOMP, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::SHOT))((pcl::ReferenceFrame)))
 #else
-  PCL_INSTANTIATE_PRODUCT(SHOTEstimationOMP, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT)))
+  PCL_INSTANTIATE_PRODUCT(SHOTEstimationOMP, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT))((pcl::ReferenceFrame)))
 #endif

@@ -338,7 +338,7 @@ pcl::FeatureFromLabels<PointInT, PointLT, PointOutT>::initCompute ()
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointRFT> bool
-pcl::FeatureWithLocalReferenceFrames<PointInT, PointRFT>::initLocalReferenceFrames (const PointCloudInConstPtr& input,
+pcl::FeatureWithLocalReferenceFrames<PointInT, PointRFT>::initLocalReferenceFrames (const size_t& indices_size,
                                                                                     const LRFEstimationPtr& lrf_estimation)
 {
   // Check if input frames are set
@@ -358,7 +358,7 @@ pcl::FeatureWithLocalReferenceFrames<PointInT, PointRFT>::initLocalReferenceFram
   }
 
   // Check if the size of frames is the same as the size of the input cloud
-  if (frames_->points.size () != input->points.size ())
+  if (frames_->points.size () != indices_size)
   {
     if (!lrf_estimation)
     {

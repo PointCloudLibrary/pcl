@@ -4,7 +4,7 @@
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *
- *  All rights reserved. 
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -47,23 +47,24 @@ namespace pcl
 {
   /** \brief UniqueShapeContext implements the Unique Shape Descriptor
     * described here:
-    * 
-    *   - F. Tombari, S. Salti, L. Di Stefano, 
-    *     "Unique Shape Context for 3D data description", 
-    *     International Workshop on 3D Object Retrieval (3DOR 10) - 
+    *
+    *   - F. Tombari, S. Salti, L. Di Stefano,
+    *     "Unique Shape Context for 3D data description",
+    *     International Workshop on 3D Object Retrieval (3DOR 10) -
     *     in conjuction with ACM Multimedia 2010
     *
     * The USC computed feature has the following structure:
     *   - rf float[9] = x_axis | y_axis | normal and represents the local frame
     *   - desc std::vector<float> which size is determined by the number of bins
-    *     radius_bins_, elevation_bins_ and azimuth_bins_. 
-    * 
+    *     radius_bins_, elevation_bins_ and azimuth_bins_.
+    *
     * \author Alessandro Franchi, Federico Tombari, Samuele Salti (original code)
     * \author Nizar Sallem (port to PCL)
     * \ingroup features
     */
-  template <typename PointInT, typename PointOutT> 
-  class UniqueShapeContext : public Feature<PointInT, PointOutT>
+  template <typename PointInT, typename PointOutT, typename PointRFT = pcl::ReferenceFrame>
+  class UniqueShapeContext : public Feature<PointInT, PointOutT>,
+                             public FeatureWithLocalReferenceFrames<PointInT, PointRFT>
   {
     public:
        using Feature<PointInT, PointOutT>::feature_name_;
@@ -72,16 +73,18 @@ namespace pcl
        using Feature<PointInT, PointOutT>::search_parameter_;
        using Feature<PointInT, PointOutT>::search_radius_;
        using Feature<PointInT, PointOutT>::surface_;
+       using Feature<PointInT, PointOutT>::fake_surface_;
        using Feature<PointInT, PointOutT>::input_;
        using Feature<PointInT, PointOutT>::searchForNeighbors;
-       
+       using FeatureWithLocalReferenceFrames<PointInT, PointRFT>::frames_;
+
        typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
        typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
-       
+
        /** \brief Constructor. */
        UniqueShapeContext () :
          radii_interval_(0), theta_divisions_(0), phi_divisions_(0), volume_lut_(0),
-         azimuth_bins_(12), elevation_bins_(11), radius_bins_(15), 
+         azimuth_bins_(12), elevation_bins_(11), radius_bins_(15),
          min_radius_(0.1), point_density_radius_(0.2), descriptor_length_ (), local_radius_ (2.5)
        {
          feature_name_ = "UniqueShapeContext";
@@ -93,75 +96,74 @@ namespace pcl
       /** \brief Set the number of bins along the azimuth
         * \param[in] bins the number of bins along the azimuth
         */
-      inline void 
+      inline void
       setAzimuthBins (size_t bins) { azimuth_bins_ = bins; }
 
       /** \return The number of bins along the azimuth. */
-      inline size_t 
-      getAzimuthBins () const { return (azimuth_bins_); } 
+      inline size_t
+      getAzimuthBins () const { return (azimuth_bins_); }
 
       /** \brief Set the number of bins along the elevation
         * \param[in] bins the number of bins along the elevation
         */
-      inline void 
+      inline void
       setElevationBins (size_t bins) { elevation_bins_ = bins; }
 
       /** \return The number of bins along the elevation */
-      inline size_t 
-      getElevationBins () const { return (elevation_bins_); } 
+      inline size_t
+      getElevationBins () const { return (elevation_bins_); }
 
       /** \brief Set the number of bins along the radii
         * \param[in] bins the number of bins along the radii
         */
-      inline void 
+      inline void
       setRadiusBins (size_t bins) { radius_bins_ = bins; }
 
       /** \return The number of bins along the radii direction. */
-      inline size_t 
-      getRadiusBins () const { return (radius_bins_); } 
+      inline size_t
+      getRadiusBins () const { return (radius_bins_); }
 
-      /** The minimal radius value for the search sphere (rmin) in the original paper 
+      /** The minimal radius value for the search sphere (rmin) in the original paper
         * \param[in] radius the desired minimal radius
         */
-      inline void 
+      inline void
       setMinimalRadius (double radius) { min_radius_ = radius; }
 
       /** \return The minimal sphere radius. */
       inline double
       getMinimalRadius () const { return (min_radius_); }
 
-      /** This radius is used to compute local point density 
+      /** This radius is used to compute local point density
         * density = number of points within this radius
         * \param[in] radius Value of the point density search radius
         */
-      inline void 
+      inline void
       setPointDensityRadius (double radius) { point_density_radius_ = radius; }
-      
+
       /** \return The point density search radius. */
-      inline double 
+      inline double
       getPointDensityRadius () const { return (point_density_radius_); }
 
       /** Set the local RF radius value
         * \param[in] radius the desired local RF radius
         */
-      inline void 
-      setLocalRadius (float radius) { local_radius_ = radius; }
+      inline void
+      setLocalRadius (double radius) { local_radius_ = radius; }
 
       /** \return The local RF radius. */
-      inline float 
+      inline double
       getLocalRadius () const { return (local_radius_); }
-      
+
     protected:
       /** Compute 3D shape context feature descriptor
         * \param[in] index point index in input_
-        * \param[in] rf reference frame
         * \param[out] desc descriptor to compute
         */
       void
-      computePointDescriptor (size_t index, float rf[9], std::vector<float> &desc);
-      
+      computePointDescriptor (size_t index, std::vector<float> &desc);
+
       /** \brief Initialize computation by allocating all the intervals and the volume lookup table. */
-      virtual bool 
+      virtual bool
       initCompute ();
 
       /** \brief The actual feature computation.
@@ -169,14 +171,6 @@ namespace pcl
         */
       virtual void
       computeFeature (PointCloudOut &output);
-
-      /** Compute 3D shape context feature local Reference Frame
-        * \param[in] index point index in input_
-        * \param[out] rf reference frame to compute
-        * \return true if the computation of the local Reference Frame was succesful
-        */
-      bool
-      computePointRF (size_t index, float rf[9]);
 
       /** \brief values of the radii interval. */
       std::vector<float> radii_interval_;
@@ -189,19 +183,19 @@ namespace pcl
 
       /** \brief Volumes look up table. */
       std::vector<float> volume_lut_;
-      
+
       /** \brief Bins along the azimuth dimension. */
       size_t azimuth_bins_;
-      
+
       /** \brief Bins along the elevation dimension. */
       size_t elevation_bins_;
 
       /** \brief Bins along the radius dimension. */
       size_t radius_bins_;
-      
+
       /** \brief Minimal radius value. */
       double min_radius_;
-      
+
       /** \brief Point density radius. */
       double point_density_radius_;
 
@@ -209,41 +203,41 @@ namespace pcl
       size_t descriptor_length_;
 
       /** \brief Radius to compute local RF. */
-      float local_radius_;
+      double local_radius_;
    private:
       /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
-        * \param[out] output the output point cloud 
+        * \param[out] output the output point cloud
         */
-      void 
+      void
       computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
   };
 
   /** \brief UniqueShapeContext implements the Unique Shape Descriptor
     * described here:
-    * 
-    *   - F. Tombari, S. Salti, L. Di Stefano, 
-    *     "Unique Shape Context for 3D data description", 
-    *     International Workshop on 3D Object Retrieval (3DOR 10) - 
+    *
+    *   - F. Tombari, S. Salti, L. Di Stefano,
+    *     "Unique Shape Context for 3D data description",
+    *     International Workshop on 3D Object Retrieval (3DOR 10) -
     *     in conjuction with ACM Multimedia 2010
     *
     * The USC computed feature has the following structure:
-    *   - rf float[9] = x_axis | y_axis | normal and represents the local frame 
+    *   - rf float[9] = x_axis | y_axis | normal and represents the local frame
     *     desc std::vector<float> which size is determined by the number of bins
-    *     radius_bins_, elevation_bins_ and azimuth_bins_. 
-    * 
+    *     radius_bins_, elevation_bins_ and azimuth_bins_.
+    *
     * \author Alessandro Franchi, Federico Tombari, Samuele Salti (original code)
     * \author Nizar Sallem (port to PCL)
     * \ingroup features
     */
-  template <typename PointInT> 
-  class UniqueShapeContext<PointInT, Eigen::MatrixXf> : public UniqueShapeContext<PointInT, pcl::SHOT>
+  template <typename PointInT, typename PointRFT>
+  class UniqueShapeContext<PointInT, Eigen::MatrixXf, PointRFT> : public UniqueShapeContext<PointInT, pcl::SHOT, PointRFT>
   {
     public:
-       using UniqueShapeContext<PointInT, pcl::SHOT>::indices_;
-       using UniqueShapeContext<PointInT, pcl::SHOT>::descriptor_length_;
-       using UniqueShapeContext<PointInT, pcl::SHOT>::compute;
-       using UniqueShapeContext<PointInT, pcl::SHOT>::computePointRF;
-       using UniqueShapeContext<PointInT, pcl::SHOT>::computePointDescriptor;
+      using FeatureWithLocalReferenceFrames<PointInT, PointRFT>::frames_;
+      using UniqueShapeContext<PointInT, pcl::SHOT, PointRFT>::indices_;
+      using UniqueShapeContext<PointInT, pcl::SHOT, PointRFT>::descriptor_length_;
+      using UniqueShapeContext<PointInT, pcl::SHOT, PointRFT>::compute;
+      using UniqueShapeContext<PointInT, pcl::SHOT, PointRFT>::computePointDescriptor;
 
     private:
       /** \brief The actual feature computation.
@@ -253,9 +247,9 @@ namespace pcl
       computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output);
 
       /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
-        * \param[out] output the output point cloud 
+        * \param[out] output the output point cloud
         */
-      void 
+      void
       compute (pcl::PointCloud<pcl::SHOT> &) {}
   };
 }

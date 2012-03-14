@@ -605,12 +605,20 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, Eigen::MatrixXf>::com
   if (this->getKSearch () != 0)
   {
     PCL_ERROR(
-        "[pcl::%s::computeFeature] Error! Search method set to k-neighborhood. Call setKSearch(0) and setRadiusSearch( radius ) to use this class.\n",
+        "[pcl::%s::computeFeatureEigen] Error! Search method set to k-neighborhood. Call setKSearch(0) and setRadiusSearch( radius ) to use this class.\n",
         getClassName().c_str());
     return;
   }
 
   this->resetData ();
+
+  // Set up the output channels
+  output.channels["board"].name     = "board";
+  output.channels["board"].offset   = 0;
+  output.channels["board"].size     = 4;
+  output.channels["board"].count    = 9;
+  output.channels["board"].datatype = sensor_msgs::PointField::FLOAT32;
+
   //output.points.resize (indices_->size (), 10);
   output.points.resize (indices_->size (), 9);
   for (size_t point_idx = 0; point_idx < indices_->size (); ++point_idx)

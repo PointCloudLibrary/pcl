@@ -43,6 +43,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/shot.h>
 #include <pcl/features/shot_omp.h>
+#include "pcl/features/shot_lrf.h"
 #include <pcl/features/3dsc.h>
 #include <pcl/features/usc.h>
 
@@ -115,7 +116,7 @@ createSHOTDesc<ShapeContext3DEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Norma
     const PointCloud<Normal>::Ptr & normals,
     const int,
     const int,
-    const bool, 
+    const bool,
     const bool)
 {
   ShapeContext3DEstimation<PointXYZ, Normal, SHOT> sc3d;
@@ -143,7 +144,7 @@ createSHOTDesc<UniqueShapeContext<PointXYZ, SHOT>, PointXYZ, Normal, SHOT> (
   usc.setRadiusBins (4);
   usc.setMinimalRadius (0.004);
   usc.setPointDensityRadius (0.008);
-  usc.setLocalRadius (0.04f);
+  usc.setLocalRadius (0.04);
   return (usc);
 }
 
@@ -214,7 +215,7 @@ testSHOTIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points
   // Compute with all points as search surface + the specified sub-cloud as "input" but for only a subset of indices
   FeatureEstimation est3 = createSHOTDesc<FeatureEstimation, PointT, NormalT, OutputT>(normals, nr_shape_bins,nr_color_bins,describe_shape,describe_color);
   est3.setSearchMethod (typename search::KdTree<PointT>::Ptr (new search::KdTree<PointT>));
-  est3.setRadiusSearch (0.04);
+  est3.setRadiusSearch (radius);
   est3.setSearchSurface (points);
   est3.setInputCloud (subpoints);
   est3.setIndices (indices2);
@@ -228,6 +229,75 @@ testSHOTIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points
   for (size_t i = 0; i < output3.size (); ++i)
     for (size_t j = 0; j < output3.points[i].descriptor.size (); ++j)
       ASSERT_EQ (output3.points[i].descriptor[j], output4.points[i].descriptor[j]);
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+template <typename FeatureEstimation, typename PointT, typename NormalT, typename OutputT> void
+testSHOTLocalReferenceFrame (const typename PointCloud<PointT>::Ptr & points,
+                             const typename PointCloud<NormalT>::Ptr & normals,
+                             const boost::shared_ptr<vector<int> > & indices,
+                             const int nr_shape_bins = 10,
+                             const int nr_color_bins = 30,
+                             const bool describe_shape = true,
+                             const bool describe_color = false)
+{
+  double radius = 0.04;
+
+  typename PointCloud<PointT>::Ptr subpoints (new PointCloud<PointT> ());
+  copyPointCloud (*points, *indices, *subpoints);
+
+  boost::shared_ptr<vector<int> > indices2 (new vector<int> (0));
+  for (size_t i = 0; i < (indices->size ()/2); ++i)
+    indices2->push_back (i);
+  //
+  // Test an external computation for the local reference frames
+  //
+  PointCloud<ReferenceFrame>::Ptr frames (new PointCloud<ReferenceFrame> ());
+  SHOTLocalReferenceFrameEstimation<PointT, pcl::ReferenceFrame> lrf_estimator;
+  lrf_estimator.setRadiusSearch (radius);
+  lrf_estimator.setInputCloud (subpoints);
+  lrf_estimator.setIndices (indices2);
+  lrf_estimator.setSearchSurface(points);
+  lrf_estimator.compute (*frames);
+
+  PointCloud<OutputT> output, output2;
+
+  FeatureEstimation est = createSHOTDesc<FeatureEstimation, PointT, NormalT, OutputT>(normals, nr_shape_bins,nr_color_bins,describe_shape,describe_color);
+  est.setSearchMethod (typename search::KdTree<PointT>::Ptr (new search::KdTree<PointT>));
+  est.setRadiusSearch (radius);
+  est.setSearchSurface (points);
+  est.setInputCloud (subpoints);
+  est.setIndices (indices2);
+  est.compute (output);
+
+  FeatureEstimation est2 = createSHOTDesc<FeatureEstimation, PointT, NormalT, OutputT>(normals, nr_shape_bins,nr_color_bins,describe_shape,describe_color);
+  est2.setSearchMethod (typename search::KdTree<PointT>::Ptr (new search::KdTree<PointT>));
+  est2.setRadiusSearch (radius);
+  est2.setSearchSurface (points);
+  est2.setInputCloud (subpoints);
+  est2.setIndices (indices2);
+  est2.setInputReferenceFrames (frames);
+  est2.compute (output2);
+
+  // Check frames
+  pcl::PointCloud<pcl::ReferenceFrame>::ConstPtr f = est.getInputReferenceFrames ();
+  pcl::PointCloud<pcl::ReferenceFrame>::ConstPtr f2 = est2.getInputReferenceFrames ();
+  ASSERT_EQ (frames->points.size (), f->points.size ());
+  ASSERT_EQ (f2->points.size (), f->points.size ());
+  for (int i = 0; i < frames->points.size (); ++i)
+  {
+    for (unsigned j = 0; j < 12; ++j)
+      ASSERT_EQ (frames->points[i].rf[j], f->points[i].rf[j]);
+
+    for (unsigned j = 0; j < 12; ++j)
+      ASSERT_EQ (frames->points[i].rf[j], f2->points[i].rf[j]);
+  }
+
+  // The two cases above should produce equivalent results
+  ASSERT_EQ (output.size (), output2.size ());
+  for (size_t i = 0; i < output.size (); ++i)
+    for (size_t j = 0; j < output.points[i].descriptor.size (); ++j)
+      ASSERT_EQ (output.points[i].descriptor[j], output2.points[i].descriptor[j]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -292,6 +362,7 @@ TEST (PCL, SHOTShapeEstimation)
     test_indices->push_back (static_cast<int> (i));
 
   testSHOTIndicesAndSearchSurface<SHOTEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices);
+  testSHOTLocalReferenceFrame<SHOTEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -347,6 +418,7 @@ TEST (PCL, GenericSHOTShapeEstimation)
     test_indices->push_back (static_cast<int> (i));
 
   testSHOTIndicesAndSearchSurface<SHOTEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices, shapeStep_);
+  testSHOTLocalReferenceFrame<SHOTEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices, shapeStep_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -426,6 +498,7 @@ TEST (PCL, SHOTShapeAndColorEstimation)
     test_indices->push_back (static_cast<int> (i));
 
   testSHOTIndicesAndSearchSurface<SHOTEstimation<PointXYZRGBA, Normal, SHOT>, PointXYZRGBA, Normal, SHOT> (cloudWithColors.makeShared (), normals, test_indices);
+  testSHOTLocalReferenceFrame<SHOTEstimation<PointXYZRGBA, Normal, SHOT>, PointXYZRGBA, Normal, SHOT> (cloudWithColors.makeShared (), normals, test_indices);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -478,6 +551,7 @@ TEST (PCL, SHOTShapeEstimationOpenMP)
     test_indices->push_back (static_cast<int> (i));
 
   testSHOTIndicesAndSearchSurface<SHOTEstimationOMP<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices);
+  testSHOTLocalReferenceFrame<SHOTEstimationOMP<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -560,10 +634,11 @@ TEST (PCL,SHOTShapeAndColorEstimationOpenMP)
     test_indices->push_back (static_cast<int> (i));
 
   testSHOTIndicesAndSearchSurface<SHOTEstimationOMP<PointXYZRGBA, Normal, SHOT>, PointXYZRGBA, Normal, SHOT> (cloudWithColors.makeShared (), normals, test_indices);
+  testSHOTLocalReferenceFrame<SHOTEstimationOMP<PointXYZRGBA, Normal, SHOT>, PointXYZRGBA, Normal, SHOT> (cloudWithColors.makeShared (), normals, test_indices);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, 3DSCEstimation)
+TEST (PCL,3DSCEstimation)
 {
   float meshRes = 0.002f;
   size_t nBinsL = 4;
@@ -709,6 +784,7 @@ TEST (PCL, USCEstimation)
 
   PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
   testSHOTIndicesAndSearchSurface<UniqueShapeContext<PointXYZ, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices);
+  testSHOTLocalReferenceFrame<UniqueShapeContext<PointXYZ, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices);
 }
 
 #ifndef PCL_ONLY_CORE_POINT_TYPES
@@ -727,7 +803,7 @@ TEST (PCL, USCEstimation)
     usc.setRadiusBins (4);
     usc.setMinimalRadius (0.004);
     usc.setPointDensityRadius (0.008);
-    usc.setLocalRadius (0.04f);
+    usc.setLocalRadius (0.04);
     return (usc);
   }
 
@@ -833,6 +909,75 @@ TEST (PCL, USCEstimation)
         ASSERT_EQ (output3.points (i, j), output4.points (i, j));
   }
 
+  ///////////////////////////////////////////////////////////////////////////////////
+  template <typename FeatureEstimation, typename PointT, typename NormalT> void
+  testSHOTLocalReferenceFrameEigen (const typename PointCloud<PointT>::Ptr & points,
+                                    const typename PointCloud<NormalT>::Ptr & normals,
+                                    const boost::shared_ptr<vector<int> > & indices,
+                                    const int nr_shape_bins = 10,
+                                    const int nr_color_bins = 30,
+                                    const bool describe_shape = true,
+                                    const bool describe_color = false)
+  {
+    double radius = 0.04;
+
+    typename PointCloud<PointT>::Ptr subpoints (new PointCloud<PointT> ());
+    copyPointCloud (*points, *indices, *subpoints);
+
+    boost::shared_ptr<vector<int> > indices2 (new vector<int> (0));
+    for (size_t i = 0; i < (indices->size ()/2); ++i)
+      indices2->push_back (i);
+    //
+    // Test an external computation for the local reference frames
+    //
+    PointCloud<ReferenceFrame>::Ptr frames (new PointCloud<ReferenceFrame> ());
+    SHOTLocalReferenceFrameEstimation<PointT, pcl::ReferenceFrame> lrf_estimator;
+    lrf_estimator.setRadiusSearch (radius);
+    lrf_estimator.setInputCloud (subpoints);
+    lrf_estimator.setIndices (indices2);
+    lrf_estimator.setSearchSurface(points);
+    lrf_estimator.compute (*frames);
+
+    PointCloud<Eigen::MatrixXf> output, output2;
+
+    FeatureEstimation est = createSHOTDesc<FeatureEstimation, PointT, NormalT, Eigen::MatrixXf>(normals, nr_shape_bins,nr_color_bins,describe_shape,describe_color);
+    est.setSearchMethod (typename search::KdTree<PointT>::Ptr (new search::KdTree<PointT>));
+    est.setRadiusSearch (radius);
+    est.setSearchSurface (points);
+    est.setInputCloud (subpoints);
+    est.setIndices (indices2);
+    est.computeEigen (output);
+
+    FeatureEstimation est2 = createSHOTDesc<FeatureEstimation, PointT, NormalT, Eigen::MatrixXf>(normals, nr_shape_bins,nr_color_bins,describe_shape,describe_color);
+    est2.setSearchMethod (typename search::KdTree<PointT>::Ptr (new search::KdTree<PointT>));
+    est2.setRadiusSearch (radius);
+    est2.setSearchSurface (points);
+    est2.setInputCloud (subpoints);
+    est2.setIndices (indices2);
+    est2.setInputReferenceFrames (frames);
+    est2.computeEigen (output2);
+
+    // Check frames
+    pcl::PointCloud<pcl::ReferenceFrame>::ConstPtr f = est.getInputReferenceFrames ();
+    pcl::PointCloud<pcl::ReferenceFrame>::ConstPtr f2 = est2.getInputReferenceFrames ();
+    ASSERT_EQ (frames->points.size (), f->points.size ());
+    ASSERT_EQ (f2->points.size (), f->points.size ());
+    for (int i = 0; i < frames->points.size (); ++i)
+    {
+      for (unsigned j = 0; j < 12; ++j)
+        ASSERT_EQ (frames->points[i].rf[j], f->points[i].rf[j]);
+
+      for (unsigned j = 0; j < 12; ++j)
+        ASSERT_EQ (frames->points[i].rf[j], f2->points[i].rf[j]);
+    }
+
+    // The two cases above should produce equivalent results
+    ASSERT_EQ (output.points.rows (), output2.points.rows ());
+    for (int i = 0; i < output.points.rows (); ++i)
+      for (int j = 0; j < output.points.cols (); ++j)
+        ASSERT_EQ (output.points (i, j), output2.points (i, j));
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   TEST (PCL, SHOTShapeEstimationEigen)
   {
@@ -893,7 +1038,7 @@ TEST (PCL, USCEstimation)
       test_indices->push_back (static_cast<int> (i));
 
     testSHOTIndicesAndSearchSurfaceEigen<SHOTEstimation<PointXYZ, Normal, Eigen::MatrixXf>, PointXYZ, Normal> (cloud.makeShared (), normals, test_indices);
-
+    testSHOTLocalReferenceFrameEigen<SHOTEstimation<PointXYZ, Normal, Eigen::MatrixXf>, PointXYZ, Normal> (cloud.makeShared (), normals, test_indices);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -949,6 +1094,7 @@ TEST (PCL, USCEstimation)
       test_indices->push_back (static_cast<int> (i));
 
     testSHOTIndicesAndSearchSurfaceEigen<SHOTEstimation<PointXYZ, Normal, Eigen::MatrixXf>, PointXYZ, Normal> (cloud.makeShared (), normals, test_indices, shapeStep_);
+    testSHOTLocalReferenceFrameEigen<SHOTEstimation<PointXYZ, Normal, Eigen::MatrixXf>, PointXYZ, Normal> (cloud.makeShared (), normals, test_indices, shapeStep_);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1028,10 +1174,11 @@ TEST (PCL, USCEstimation)
       test_indices->push_back (static_cast<int> (i));
 
     testSHOTIndicesAndSearchSurfaceEigen<SHOTEstimation<PointXYZRGBA, Normal, Eigen::MatrixXf>, PointXYZRGBA, Normal> (cloudWithColors.makeShared (), normals, test_indices);
+    testSHOTLocalReferenceFrameEigen<SHOTEstimation<PointXYZRGBA, Normal, Eigen::MatrixXf>, PointXYZRGBA, Normal> (cloudWithColors.makeShared (), normals, test_indices);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  TEST (PCL, 3DSCEstimationEigen)
+  TEST (PCL,3DSCEstimationEigen)
   {
     float meshRes = 0.002f;
     size_t nBinsL = 4;
@@ -1179,6 +1326,7 @@ TEST (PCL, USCEstimation)
 
     PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
     testSHOTIndicesAndSearchSurfaceEigen<UniqueShapeContext<PointXYZ, Eigen::MatrixXf>, PointXYZ, Normal> (cloud.makeShared (), normals, test_indices);
+    testSHOTLocalReferenceFrameEigen<UniqueShapeContext<PointXYZ, Eigen::MatrixXf>, PointXYZ, Normal> (cloud.makeShared (), normals, test_indices);
   }
 #endif
 
