@@ -86,7 +86,7 @@ pcl::visualization::PointPickingCallback::performSinglePick (vtkRenderWindowInte
   
   vtkRenderer *ren = iren->FindPokedRenderer (iren->GetEventPosition ()[0], iren->GetEventPosition ()[1]);
   picker->Pick (mouse_x, mouse_y, 0.0, ren);
-  return ((int)picker->GetPointId ());
+  return (static_cast<int> (picker->GetPointId ()));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,7 +96,7 @@ pcl::visualization::PointPickingCallback::performSinglePick (
     float &x, float &y, float &z)
 {
   int mouse_x, mouse_y;
-  vtkPointPicker *picker = (vtkPointPicker*)iren->GetPicker ();
+  vtkPointPicker *picker = reinterpret_cast<vtkPointPicker*> (iren->GetPicker ());
   //iren->GetMousePosition (&mouse_x, &mouse_y);
   mouse_x = iren->GetEventPosition ()[0];
   mouse_y = iren->GetEventPosition ()[1];
@@ -105,12 +105,12 @@ pcl::visualization::PointPickingCallback::performSinglePick (
   vtkRenderer *ren = iren->FindPokedRenderer (iren->GetEventPosition ()[0], iren->GetEventPosition ()[1]);
   picker->Pick (mouse_x, mouse_y, 0.0, ren);
 
-  int idx = picker->GetPointId ();
+  int idx = static_cast<int> (picker->GetPointId ());
   if (picker->GetDataSet () != NULL)
   {
     double p[3];
     picker->GetDataSet ()->GetPoint (idx, p);
-    x = p[0]; y = p[1]; z = p[2];
+    x = float(p[0]); y = float(p[1]); z = float(p[2]);
   }
   return (idx);
 }

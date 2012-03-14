@@ -47,9 +47,9 @@ pcl::visualization::getRandomColors (double &r, double &g, double &b, double min
   do
   {
     sum = 0;
-    r = (rand () % stepRGBA) / (double)stepRGBA;
-    while ((g = (rand () % stepRGBA) / (double)stepRGBA) == r) {}
-    while (((b = (rand () % stepRGBA) / (double)stepRGBA) == r) && (b == g)) {}
+    r = (rand () % stepRGBA) / double (stepRGBA);
+    while ((g = (rand () % stepRGBA) / double (stepRGBA)) == r) {}
+    while (((b = (rand () % stepRGBA) / double (stepRGBA)) == r) && (b == g)) {}
     sum = r + g + b;
   }
   while (sum <= min || sum >= max);
@@ -83,16 +83,16 @@ pcl::visualization::Camera::computeViewMatrix(Eigen::Matrix4d& view_mat) const
 void
 pcl::visualization::Camera::computeProjectionMatrix(Eigen::Matrix4d& proj) const
 {
-  float top    = clip[0] * tan(0.5 * fovy);
-  float left   = -top * window_size[0] / window_size[1];
+  float top    = static_cast<float> (clip[0] * tan(0.5 * fovy));
+  float left   = -top * float (window_size[0] / window_size[1]);
   float right  = -left;
   float bottom = -top;
 
   float temp1, temp2, temp3, temp4;
-	temp1 = 2.0 * clip[0];
-	temp2 = 1.0 / (right - left);
-	temp3 = 1.0 / (top - bottom);
-	temp4 = 1.0 / (clip[1] - clip[0]);
+	temp1 = 2.0f * static_cast<float> (clip[0]);
+	temp2 = 1.0f / static_cast<float> (right - left);
+	temp3 = 1.0f / static_cast<float> (top - bottom);
+	temp4 = 1.0f / static_cast<float> (clip[1] - clip[0]);
 
   proj.setZero ();
 

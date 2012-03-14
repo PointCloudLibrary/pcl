@@ -109,7 +109,7 @@ void DeviceXtionPro::enumAvailableModes () throw ()
 
 boost::shared_ptr<Image> DeviceXtionPro::getCurrentImage (boost::shared_ptr<xn::ImageMetaData>) const throw ()
 {
-  return boost::shared_ptr<Image> ((Image*)0);
+  return boost::shared_ptr<Image> (reinterpret_cast<Image*> (0));
 }
 
 void DeviceXtionPro::startDepthStream ()

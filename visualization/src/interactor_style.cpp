@@ -312,8 +312,8 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
 
         // Set the vertices
         vtkSmartPointer<vtkCellArray> vertices = vtkSmartPointer<vtkCellArray>::New ();
-        for (vtkIdType i = 0; i < (int)points->GetNumberOfPoints (); ++i)
-          vertices->InsertNextCell ((vtkIdType)1, &i);
+        for (vtkIdType i = 0; i < static_cast<vtkIdType> (points->GetNumberOfPoints ()); ++i)
+          vertices->InsertNextCell (static_cast<vtkIdType>(1), &i);
 
         // Create the data
         vtkSmartPointer<vtkPolyData> data = vtkSmartPointer<vtkPolyData>::New ();
@@ -333,7 +333,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       {
         CloudActor *act = &(*it).second;
         // Check for out of bounds
-        if (index >= (int)act->color_handlers.size ())
+        if (index >= static_cast<int> (act->color_handlers.size ()))
           continue;
 
         // Save the color handler index for later usage
@@ -451,7 +451,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       {
         for (actor->InitPathTraversal (); vtkAssemblyPath* path = actor->GetNextPath (); )
         {
-          vtkSmartPointer<vtkActor> apart = (vtkActor*)path->GetLastNode ()->GetViewProp ();
+          vtkSmartPointer<vtkActor> apart = reinterpret_cast <vtkActor*> (path->GetLastNode ()->GetViewProp ());
           apart->GetProperty ()->SetRepresentationToPoints ();
         }
       }
@@ -461,7 +461,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     case 'j': case 'J':
     {
       char cam_fn[80], snapshot_fn[80];
-      unsigned t = time (0);
+      unsigned t = static_cast<unsigned> (time (0));
       sprintf (snapshot_fn, "screenshot-%d.png" , t);
       saveScreenshot (snapshot_fn);
 
@@ -519,10 +519,10 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         {
           for (actor->InitPathTraversal (); vtkAssemblyPath* path = actor->GetNextPath (); )
           {
-            vtkSmartPointer<vtkActor> apart = (vtkActor*)path->GetLastNode ()->GetViewProp ();
-            int psize = apart->GetProperty ()->GetPointSize ();
-            if (psize < 63)
-              apart->GetProperty ()->SetPointSize (psize + 1);
+            vtkSmartPointer<vtkActor> apart = reinterpret_cast <vtkActor*> (path->GetLastNode ()->GetViewProp ());
+            float psize = apart->GetProperty ()->GetPointSize ();
+            if (psize < 63.0f)
+              apart->GetProperty ()->SetPointSize (psize + 1.0f);
           }
         }
       }
@@ -541,9 +541,9 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
           for (actor->InitPathTraversal (); vtkAssemblyPath* path = actor->GetNextPath (); )
           {
             vtkSmartPointer<vtkActor> apart = (vtkActor*)path->GetLastNode ()->GetViewProp ();
-            int psize = apart->GetProperty ()->GetPointSize ();
-            if (psize > 1)
-              apart->GetProperty ()->SetPointSize (psize - 1);
+            float psize = apart->GetProperty ()->GetPointSize ();
+            if (psize > 1.0f)
+              apart->GetProperty ()->SetPointSize (psize - 1.0f);
           }
         }
       }

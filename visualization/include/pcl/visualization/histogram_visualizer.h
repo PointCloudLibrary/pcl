@@ -244,7 +244,7 @@ namespace pcl
           {
             if (event_id != vtkCommand::TimerEvent)
               return;
-            int timer_id = *(int*)call_data;
+            int timer_id = *(reinterpret_cast<int*> (call_data));
 
             if (timer_id != right_timer_id)
               return;

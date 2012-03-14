@@ -358,7 +358,7 @@ pcl::visualization::PointCloudColorHandlerGenericField<PointT>::getColor (vtkSma
       if (!pcl_isfinite (cloud_->points[cp].x) || !pcl_isfinite (cloud_->points[cp].y) || !pcl_isfinite (cloud_->points[cp].z))
         continue;
 
-      uint8_t* pt_data = (uint8_t*)&cloud_->points[cp];
+      const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&cloud_->points[cp]);
       memcpy (&field_data, pt_data + fields_[field_idx_].offset, pcl::getFieldSize (fields_[field_idx_].datatype));
 
       colors[j] = field_data;
@@ -370,7 +370,7 @@ pcl::visualization::PointCloudColorHandlerGenericField<PointT>::getColor (vtkSma
     // Color every point
     for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {
-      uint8_t* pt_data = (uint8_t*)&cloud_->points[cp];
+      const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&cloud_->points[cp]);
       memcpy (&field_data, pt_data + fields_[field_idx_].offset, pcl::getFieldSize (fields_[field_idx_].datatype));
 
       if (!pcl_isfinite (field_data))
@@ -482,7 +482,7 @@ pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<PointT>::getGeometry 
 
   // Add all points
   double p[3];
-  for (vtkIdType i = 0; i < (int)cloud_->points.size (); ++i)
+  for (vtkIdType i = 0; i < static_cast<vtkIdType> (cloud_->points.size ()); ++i)
   {
     p[0] = cloud_->points[i].normal[0];
     p[1] = cloud_->points[i].normal[1];
@@ -525,10 +525,10 @@ pcl::visualization::PointCloudGeometryHandlerCustom<PointT>::getGeometry (vtkSma
   float data;
   // Add all points
   double p[3];
-  for (vtkIdType i = 0; i < (int)cloud_->points.size (); ++i)
+  for (vtkIdType i = 0; i < static_cast<vtkIdType> (cloud_->points.size ()); ++i)
   {
     // Copy the value at the specified field
-    uint8_t* pt_data = (uint8_t*)&cloud_->points[i];
+    uint8_t* pt_data = reinterpret_cast<uint8_t*> (&cloud_->points[i]);
     memcpy (&data, pt_data + fields_[field_x_idx_].offset, sizeof (float));
     p[0] = data;
 

@@ -455,7 +455,7 @@ namespace pcl
       getCellCenterFromIndex (const Eigen::Vector3i &index, Eigen::Vector4f &center) const
       {
         for (int i = 0; i < 3; ++i)
-          center[i] = min_p_[i] + index[i] * leaf_size_ + leaf_size_/2;
+          center[i] = min_p_[i] + float (index[i] * leaf_size_ + leaf_size_ * 0.5);
       }
 
      protected:

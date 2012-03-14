@@ -60,9 +60,9 @@ pcl::visualization::PointCloudColorHandlerCustom<sensor_msgs::PointCloud2>::getC
   // Color every point
   for (vtkIdType cp = 0; cp < nr_points; ++cp)
   {
-    colors[cp * 3 + 0] = r_;
-    colors[cp * 3 + 1] = g_;
-    colors[cp * 3 + 2] = b_;
+    colors[cp * 3 + 0] = static_cast<unsigned char> (r_);
+    colors[cp * 3 + 1] = static_cast<unsigned char> (g_);
+    colors[cp * 3 + 2] = static_cast<unsigned char> (b_);
   }
   reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, 3 * nr_points, 0);
 }
@@ -86,14 +86,14 @@ pcl::visualization::PointCloudColorHandlerRandom<sensor_msgs::PointCloud2>::getC
   double r, g, b;
   pcl::visualization::getRandomColors (r, g, b);
 
-  int r_ = pcl_lrint (r * 255.0), g_ = pcl_lrint (g * 255.0), b_ = pcl_lrint (b * 255.0);
+  long r_ = pcl_lrint (r * 255.0), g_ = pcl_lrint (g * 255.0), b_ = pcl_lrint (b * 255.0);
 
   // Color every point
   for (vtkIdType cp = 0; cp < nr_points; ++cp)
   {
-    colors[cp * 3 + 0] = r_;
-    colors[cp * 3 + 1] = g_;
-    colors[cp * 3 + 2] = b_;
+    colors[cp * 3 + 0] = static_cast<unsigned char> (r_);
+    colors[cp * 3 + 1] = static_cast<unsigned char> (g_);
+    colors[cp * 3 + 2] = static_cast<unsigned char> (b_);
   }
   reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, 3 * nr_points, 0);
 }
@@ -282,12 +282,12 @@ pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>::ge
       // Fill color data with HSV here:
       if (s_data == 0)
       {
-        colors[idx] = colors[idx+1] = colors[idx+2] = v_data;
+        colors[idx] = colors[idx+1] = colors[idx+2] = static_cast<unsigned char> (v_data);
         return;
       } 
       float a = h_data / 60;
-      int   i = floor (a);
-      float f = a - i;
+      int   i = static_cast<int> (floor (a));
+      float f = a - float(i);
       float p = v_data * (1 - s_data);
       float q = v_data * (1 - s_data * f);
       float t = v_data * (1 - s_data * (1 - f));
@@ -358,12 +358,12 @@ pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>::ge
       // Fill color data with HSV here:
       if (s_data == 0)
       {
-        colors[idx] = colors[idx+1] = colors[idx+2] = v_data;
+        colors[idx] = colors[idx+1] = colors[idx+2] = static_cast<unsigned char> (v_data);
         return;
       } 
       float a = h_data / 60;
-      int   i = floor (a);
-      float f = a - i;
+      int   i = static_cast<int> (floor (a));
+      float f = a - float(i);
       float p = v_data * (1 - s_data);
       float q = v_data * (1 - s_data * f);
       float t = v_data * (1 - s_data * (1 - f));
