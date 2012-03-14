@@ -134,6 +134,9 @@ pcl::OpenNIGrabber::~OpenNIGrabber () throw ()
     if (device_->hasIRStream ())
       device_->unregisterIRCallback (image_callback_handle);
 
+    // release the pointer to the device object
+    device_.reset ();
+    
     // disconnect all listeners
     disconnect_all_slots<sig_cb_openni_image> ();
     disconnect_all_slots<sig_cb_openni_depth_image> ();
@@ -349,7 +352,7 @@ pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth
       unsigned bus = atoi (device_id.substr (0, pos).c_str ());
       unsigned address = atoi (device_id.substr (pos + 1, device_id.length () - pos - 1).c_str ());
       //printf("[%s] searching for device with bus@address = %d@%d\n", getName().c_str(), bus, address);
-      device_ = driver.getDeviceByAddress (bus, address);
+      device_ = driver.getDeviceByAddress (static_cast<unsigned char>(bus), static_cast<unsigned char>(address) );
     }
 #endif
     else if (!device_id.empty ())
@@ -384,7 +387,7 @@ pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth
   {
     XnMapOutputMode actual_depth_md;
     if (!mapConfigMode2XnMode (depth_mode, depth_md) || !device_->findCompatibleDepthMode (depth_md, actual_depth_md))
-      THROW_PCL_IO_EXCEPTION ("could not find compatible depth stream mode %d", (int) depth_mode);
+      THROW_PCL_IO_EXCEPTION ("could not find compatible depth stream mode %d", static_cast<int> (depth_mode) );
 
     XnMapOutputMode current_depth_md =  device_->getDepthOutputMode ();
     if (current_depth_md.nXRes != actual_depth_md.nXRes || current_depth_md.nYRes != actual_depth_md.nYRes)
@@ -405,7 +408,7 @@ pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth
     {
       XnMapOutputMode actual_image_md;
       if (!mapConfigMode2XnMode (image_mode, image_md) || !device_->findCompatibleImageMode (image_md, actual_image_md))
-        THROW_PCL_IO_EXCEPTION ("could not find compatible image stream mode %d", (int) image_mode);
+        THROW_PCL_IO_EXCEPTION ("could not find compatible image stream mode %d", static_cast<int> (image_mode) );
 
       XnMapOutputMode current_image_md =  device_->getImageOutputMode ();
       if (current_image_md.nXRes != actual_image_md.nXRes || current_image_md.nYRes != actual_image_md.nYRes)

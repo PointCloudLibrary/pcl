@@ -56,7 +56,7 @@ void IRImage::fillRaw (unsigned width, unsigned height, unsigned short* ir_buffe
     THROW_OPENNI_EXCEPTION ("downsampling only supported for integer scale: %d x %d -> %d x %d", ir_md_->XRes (), ir_md_->YRes (), width, height);
 
   if (line_step == 0)
-    line_step = width * unsigned (sizeof (unsigned short));
+    line_step = width * static_cast<unsigned> (sizeof (unsigned short));
 
   // special case no sclaing, no padding => memcopy!
   if (width == ir_md_->XRes () && height == ir_md_->YRes () && (line_step == width * sizeof (unsigned short)))
@@ -66,7 +66,7 @@ void IRImage::fillRaw (unsigned width, unsigned height, unsigned short* ir_buffe
   }
 
   // padding skip for destination image
-  unsigned bufferSkip = line_step - width * unsigned (sizeof (unsigned short));
+  unsigned bufferSkip = line_step - width * static_cast<unsigned> (sizeof (unsigned short));
 
   // step and padding skip for source image
   unsigned xStep = ir_md_->XRes () / width;
@@ -77,7 +77,7 @@ void IRImage::fillRaw (unsigned width, unsigned height, unsigned short* ir_buffe
   for (unsigned yIdx = 0; yIdx < height; ++yIdx, irIdx += ySkip)
   {
     for (unsigned xIdx = 0; xIdx < width; ++xIdx, irIdx += xStep, ++ir_buffer)
-      *ir_buffer = static_cast<unsigned short> (ir_md_->Data ()[irIdx]);
+      *ir_buffer = static_cast<unsigned short> (ir_md_->Data()[irIdx]);
 
     // if we have padding
     if (bufferSkip > 0)
