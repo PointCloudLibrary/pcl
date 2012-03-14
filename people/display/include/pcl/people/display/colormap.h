@@ -1,4 +1,4 @@
-static const unsigned char LUT_color_label[] = {
+static const unsigned char LUT_COLOR_LABEL[] = {
  50, 34, 22,
  24,247,196,
  33,207,189,
@@ -32,4 +32,4 @@ static const unsigned char LUT_color_label[] = {
 189,115,117,
  80, 57,150 };
 
-static const unsigned int LUT_color_label_length = 32;
+static const unsigned int LUT_COLOR_LABEL_LENGTH = 32;
