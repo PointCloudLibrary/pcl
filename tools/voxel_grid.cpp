@@ -144,15 +144,15 @@ main (int argc, char** argv)
   parse_x_arguments (argc, argv, "-leaf", values);
   if (values.size () == 1)
   {
-    leaf_x = values[0];
-    leaf_y = values[0];
-    leaf_z = values[0];
+    leaf_x = static_cast<float> (values[0]);
+    leaf_y = static_cast<float> (values[0]);
+    leaf_z = static_cast<float> (values[0]);
   }
   else if (values.size () == 3)
   {
-    leaf_x = values[0];
-    leaf_y = values[1];
-    leaf_z = values[2];
+    leaf_x = static_cast<float> (values[0]);
+    leaf_y = static_cast<float> (values[1]);
+    leaf_z = static_cast<float> (values[2]);
   }
   else
   {

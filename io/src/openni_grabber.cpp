@@ -67,9 +67,23 @@ namespace pcl
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode)
-  : image_required_ (false)
+  : rgb_sync_ ()
+  , ir_sync_ ()
+  , device_ ()
+  , rgb_frame_id_ ()
+  , depth_frame_id_ ()
+  , image_width_ ()
+  , image_height_ ()
+  , depth_width_ ()
+  , depth_height_ ()
+  , image_required_ (false)
   , depth_required_ (false)
+  , ir_required_ (false)
   , sync_required_ (false)
+  , image_signal_ (), depth_image_signal_ (), ir_image_signal_ (), image_depth_image_signal_ ()
+  , ir_depth_image_signal_ (), point_cloud_signal_ (), point_cloud_i_signal_ ()
+  , point_cloud_rgb_signal_ (), point_cloud_rgba_signal_ (), point_cloud_eigen_signal_ ()
+  , config2xn_map_ (), depth_callback_handle (), image_callback_handle (), ir_callback_handle ()
   , running_ (false)
 {
   // initialize driver
@@ -584,15 +598,15 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapp
         continue;
       }
       pt.z = depth_map[depth_idx] * 0.001f;
-      pt.x = u * pt.z * constant;
-      pt.y = v * pt.z * constant;
+      pt.x = static_cast<float> (u) * pt.z * constant;
+      pt.y = static_cast<float> (v) * pt.z * constant;
     }
   }
   cloud->sensor_origin_.setZero ();
-  cloud->sensor_orientation_.w () = 0.0;
-  cloud->sensor_orientation_.x () = 1.0;
-  cloud->sensor_orientation_.y () = 0.0;
-  cloud->sensor_orientation_.z () = 0.0;  
+  cloud->sensor_orientation_.w () = 0.0f;
+  cloud->sensor_orientation_.x () = 1.0f;
+  cloud->sensor_orientation_.y () = 0.0f;
+  cloud->sensor_orientation_.z () = 0.0f;  
   return (cloud);
 }
 
@@ -788,8 +802,8 @@ pcl::OpenNIGrabber::convertToEigenPointCloud (const boost::shared_ptr<openni_wra
       else
       {
         cloud->points (depth_idx, 3) = depth_map[depth_idx] * 0.001f;
-        cloud->points (depth_idx, 1) = u * cloud->points (depth_idx, 3) * constant;
-        cloud->points (depth_idx, 2) = v * cloud->points (depth_idx, 3) * constant;
+        cloud->points (depth_idx, 1) = static_cast<float> (u) * cloud->points (depth_idx, 3) * constant;
+        cloud->points (depth_idx, 2) = static_cast<float> (v) * cloud->points (depth_idx, 3) * constant;
       }
 
       // Fill in color
@@ -862,12 +876,12 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud (const boost::shared_ptr<openni_wrap
       else
       {
         pt.z = depth_map[depth_idx] * 0.001f;
-        pt.x = u * pt.z * constant;
-        pt.y = v * pt.z * constant;
+        pt.x = static_cast<float> (u) * pt.z * constant;
+        pt.y = static_cast<float> (v) * pt.z * constant;
       }
 
       pt.data_c[0] = pt.data_c[1] = pt.data_c[2] = pt.data_c[3] = 0;
-      pt.intensity = (float) ir_map[depth_idx];
+      pt.intensity = static_cast<float> (ir_map[depth_idx]);
     }
   }
   return (cloud);
@@ -961,7 +975,7 @@ pcl::OpenNIGrabber::getAvailableImageModes () const
 float
 pcl::OpenNIGrabber::getFramesPerSecond () const
 {
-  return ((float)(device_->getDepthOutputMode ().nFPS));
+  return (static_cast<float> (device_->getDepthOutputMode ().nFPS));
 }
 
 #endif

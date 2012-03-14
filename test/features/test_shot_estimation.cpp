@@ -87,9 +87,9 @@ shotCopyPointCloud (const PointCloud<SHOT> &cloud_in, const std::vector<int> &in
 template <typename FeatureEstimation, typename PointT, typename NormalT, typename OutputT> FeatureEstimation
 createSHOTDesc (const typename PointCloud<NormalT>::Ptr & normals,
                 const int nr_shape_bins = 10,
-                const int nr_color_bins = 30,
-                const bool describe_shape = true,
-                const bool describe_color = false)
+                const int = 30,
+                const bool = true,
+                const bool = false)
 {
   FeatureEstimation f (nr_shape_bins);
   f.setInputNormals (normals);

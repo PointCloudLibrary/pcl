@@ -41,7 +41,7 @@
 #include <sstream>
 #include <iostream>
 
-#define CLIP_CHAR(c) ((c)>255?255:(c)<0?0:(c))
+#define CLIP_CHAR(c) static_cast<unsigned char> ((c)>255?255:(c)<0?0:(c))
 
 using namespace std;
 namespace openni_wrapper

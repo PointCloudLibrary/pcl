@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2011-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -59,6 +61,9 @@ namespace pcl
   struct PointXYZI;
   template <typename T> class PointCloud;
 
+  /** \brief A simple ONI grabber.
+    * \author Suat Gedikli
+    */
   class PCL_EXPORTS ONIGrabber : public Grabber
   {
     public:
@@ -73,50 +78,43 @@ namespace pcl
       typedef void (sig_cb_openni_point_cloud_rgba) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> >&);
       typedef void (sig_cb_openni_point_cloud_i) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&);
 
-      /**
-       * @brief constuctor
-       * @param[in] file_name the path to the ONI file
-       * @param[in] repeat whether the play back should be in an infinite loop or not
-       * @param[in] stream whether the playback should be in streaming mode or in triggered mode.
-       */
+      /** \brief constuctor
+        * \param[in] file_name the path to the ONI file
+        * \param[in] repeat whether the play back should be in an infinite loop or not
+        * \param[in] stream whether the playback should be in streaming mode or in triggered mode.
+        */
       ONIGrabber (const std::string& file_name, bool repeat, bool stream);
 
-      /**
-       * @brief destructor never throws an exception
-       */
+      /** \brief destructor never throws an exception */
       virtual ~ONIGrabber () throw ();
 
-      /**
-       * @brief For devices that are streaming, the streams are started by calling this method.
-       *        Trigger-based devices, just trigger the device once for each call of start.
-       * @author Suat Gedikli
-       */
-      virtual void start ();
+      /** \brief For devices that are streaming, the streams are started by calling this method.
+        *        Trigger-based devices, just trigger the device once for each call of start.
+        */
+      virtual void 
+      start ();
 
-      /**
-       * @brief For devices that are streaming, the streams are stopped.
-       *        This method has no effect for triggered devices.
-       * @author Suat Gedikli
-       */
-      virtual void stop ();
+      /** \brief For devices that are streaming, the streams are stopped.
+        *        This method has no effect for triggered devices.
+        */
+      virtual void 
+      stop ();
 
-      /**
-       * @brief returns the name of the concrete subclass.
-       * @return the name of the concrete driver.
-       * @author Suat Gedikli
-       */
-      virtual std::string getName () const;
+      /** \brief returns the name of the concrete subclass.
+        * \return the name of the concrete driver.
+        */
+      virtual std::string 
+      getName () const;
 
-      /**
-       * @brief Indicates whether the grabber is streaming or not. This value is not defined for triggered devices.
-       * @return true if grabber is running / streaming. False otherwise.
-       */
-      virtual bool isRunning () const;
+      /** \brief Indicates whether the grabber is streaming or not. This value is not defined for triggered devices.
+        * \return true if grabber is running / streaming. False otherwise.
+        */
+      virtual bool 
+      isRunning () const;
 
-      /**
-       * @brief returns the frames pre second. 0 if it is trigger based.
-       */
-      virtual float getFramesPerSecond () const;
+      /** \brief returns the frames pre second. 0 if it is trigger based. */
+      virtual float 
+      getFramesPerSecond () const;
 
     protected:
       /** \brief internal OpenNI (openni_wrapper) callback that handles image streams */

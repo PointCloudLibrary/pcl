@@ -85,22 +85,22 @@ SumReduce::sum(GLuint input_array, float* output_array)
     std::cout << "SumReduce::sum  set sampler" << std::endl;
   }
 
-  for (int i=0; i < levels_; ++i) {
+  for (int i=0; i < levels_; ++i) 
+  {
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, arrays_[i], 0);
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
     glViewport(0, 0, width/2, height/2);
 
-    float step_x = 1.0f / width;
-    float step_y = 1.0f / height;
-    sum_program_->set_uniform("step_x", step_x);
-    sum_program_->set_uniform("step_y", step_y);
+    float step_x = 1.0f / static_cast<float> (width);
+    float step_y = 1.0f / static_cast<float> (height);
+    sum_program_->set_uniform ("step_x", step_x);
+    sum_program_->set_uniform ("step_y", step_y);
 
-    quad_.render();
+    quad_.render ();
 
-    if (gllib::get_gl_error() != GL_NO_ERROR) {
+    if (gllib::get_gl_error() != GL_NO_ERROR) 
       std::cout << "SumReduce::sum  render" << std::endl;
-    }
 
     width = width / 2;
     height = height / 2;
