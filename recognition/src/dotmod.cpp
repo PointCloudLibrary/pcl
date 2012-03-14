@@ -138,14 +138,14 @@ detectTemplates (const std::vector<DOTModality*> & modalities,
   const size_t nr_template_horizontal_bins = template_width_ / bin_size;
   const size_t nr_template_vertical_bins = template_height_ / bin_size;
 
-  std::cerr << "---------------------------------------------------" << std::endl;
-  std::cerr << "width:                       " << width << std::endl;
-  std::cerr << "height:                      " << height << std::endl;
-  std::cerr << "nr_templates:                " << nr_templates << std::endl;
-  std::cerr << "nr_template_horizontal_bins: " << nr_template_horizontal_bins << std::endl;
-  std::cerr << "nr_template_vertical_bins:   " << nr_template_vertical_bins << std::endl;
-  std::cerr << "template_width_:             " << template_width_ << std::endl;
-  std::cerr << "template_height_:            " << template_height_ << std::endl;
+  //std::cerr << "---------------------------------------------------" << std::endl;
+  //std::cerr << "width:                       " << width << std::endl;
+  //std::cerr << "height:                      " << height << std::endl;
+  //std::cerr << "nr_templates:                " << nr_templates << std::endl;
+  //std::cerr << "nr_template_horizontal_bins: " << nr_template_horizontal_bins << std::endl;
+  //std::cerr << "nr_template_vertical_bins:   " << nr_template_vertical_bins << std::endl;
+  //std::cerr << "template_width_:             " << template_width_ << std::endl;
+  //std::cerr << "template_height_:            " << template_height_ << std::endl;
 
   //std::cerr << "2" << std::endl;
 
@@ -195,7 +195,7 @@ detectTemplates (const std::vector<DOTModality*> & modalities,
     }
   }
 
-  std::cerr << "best_response: " << best_response << std::endl;
+  //std::cerr << "best_response: " << best_response << std::endl;
   
   //std::cerr << "<< detectTemplates (...)" << std::endl;
 }
