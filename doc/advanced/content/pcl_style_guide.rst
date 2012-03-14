@@ -152,6 +152,10 @@ Ifdef statements on top of header files should be made as follows:
   <your very good code>
   #endif // PCL_LIBRARYNAME_FILENAME_H_
 
+1.9 Macros
+^^^^^^^^^^
+Macros should all be **ALL_CAPITALS**.
+
 Chapter 2 - Indentation and Formatting
 ======================================
 
