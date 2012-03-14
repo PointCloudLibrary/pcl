@@ -50,8 +50,8 @@
 #include <vtkPlanes.h>
 #include <vtkPointPicker.h>
 #include <vtkMatrix4x4.h>
-#include <vtk-5.6/vtkInteractorObserver.h>
-#include <vtk-5.6/vtkCamera.h>
+#include <vtkInteractorObserver.h>
+#include <vtkCamera.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
