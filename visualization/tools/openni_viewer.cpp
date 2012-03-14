@@ -353,19 +353,19 @@ main (int argc, char** argv)
   if (pcl::console::find_argument(argc, argv, "-xyz") != -1)
     xyz = true;
   
-  pcl::Grabber* grabber = new pcl::OpenNIGrabber(device_id, depth_mode, image_mode);
+  pcl::OpenNIGrabber grabber(device_id, depth_mode, image_mode);
   
-  if (xyz || !grabber->providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
+  if (xyz || !grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
   {
-    OpenNIViewer<pcl::PointXYZ> openni_viewer (*grabber);
+    OpenNIViewer<pcl::PointXYZ> openni_viewer (grabber);
     openni_viewer.run ();
   }
   else
   {
-    OpenNIViewer<pcl::PointXYZRGBA> openni_viewer (*grabber);
+    OpenNIViewer<pcl::PointXYZRGBA> openni_viewer (grabber);
     openni_viewer.run ();
   }
-
+  
   return (0);
 }
 /* ]--- */

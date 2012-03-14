@@ -50,6 +50,8 @@
 #include <vtkPlanes.h>
 #include <vtkPointPicker.h>
 #include <vtkMatrix4x4.h>
+#include <vtk-5.6/vtkInteractorObserver.h>
+#include <vtk-5.6/vtkCamera.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -295,7 +297,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       for (it = actors_->begin (); it != actors_->end (); ++it)
       {
         CloudActor *act = &(*it).second;
-        if (index >= (int)act->geometry_handlers.size ())
+        if (index >= static_cast<int> (act->geometry_handlers.size ()))
           continue;
 
         // Save the geometry handler index for later usage
@@ -695,35 +697,38 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       }
 
       vtkSmartPointer<vtkCamera> cam = CurrentRenderer->GetActiveCamera ();
-//      static CloudActorMap::iterator it = actors_->begin ();
-//      if (actors_->size () > 0)
-//      {
-//        if (it == actors_->end ())
-//          it = actors_->begin ();
-//
-//        const CloudActor& actor = it->second;
-//
-//        cam->SetPosition (actor.viewpoint_transformation_->GetElement (0, 3),
-//                          actor.viewpoint_transformation_->GetElement (1, 3),
-//                          actor.viewpoint_transformation_->GetElement (2, 3));
-//
-//        cam->SetFocalPoint (actor.viewpoint_transformation_->GetElement (0, 3) - actor.viewpoint_transformation_->GetElement (0, 2),
-//                            actor.viewpoint_transformation_->GetElement (1, 3) - actor.viewpoint_transformation_->GetElement (1, 2),
-//                            actor.viewpoint_transformation_->GetElement (2, 3) - actor.viewpoint_transformation_->GetElement (2, 2));
-//
-//        cam->SetViewUp (actor.viewpoint_transformation_->GetElement (0, 1),
-//                        actor.viewpoint_transformation_->GetElement (1, 1),
-//                        actor.viewpoint_transformation_->GetElement (2, 1));
-//
-//        ++it;
-//      }
-//      else
+      
+      static CloudActorMap::iterator it = actors_->begin ();
+      if (actors_->size () > 0)
+      {
+        if (it == actors_->end ())
+          it = actors_->begin ();
+
+        const CloudActor& actor = it->second;
+
+        cam->SetPosition (actor.viewpoint_transformation_->GetElement (0, 3),
+                          actor.viewpoint_transformation_->GetElement (1, 3),
+                          actor.viewpoint_transformation_->GetElement (2, 3));
+
+        cam->SetFocalPoint (actor.viewpoint_transformation_->GetElement (0, 3) - actor.viewpoint_transformation_->GetElement (0, 2),
+                            actor.viewpoint_transformation_->GetElement (1, 3) - actor.viewpoint_transformation_->GetElement (1, 2),
+                            actor.viewpoint_transformation_->GetElement (2, 3) - actor.viewpoint_transformation_->GetElement (2, 2));
+
+        cam->SetViewUp (actor.viewpoint_transformation_->GetElement (0, 1),
+                        actor.viewpoint_transformation_->GetElement (1, 1),
+                        actor.viewpoint_transformation_->GetElement (2, 1));
+
+        ++it;
+      }
+      else
       {
         cam->SetPosition (0, 0, 0);
         cam->SetFocalPoint (0, 0, 1);
         cam->SetViewUp (0, -1, 0);
       }
+      //cam->SetViewAngle (100);
       CurrentRenderer->SetActiveCamera (cam);
+      CurrentRenderer->ResetCameraClippingRange ();
       CurrentRenderer->Render ();
       break;
     }
