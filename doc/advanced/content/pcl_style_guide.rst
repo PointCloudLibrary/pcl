@@ -143,6 +143,15 @@ made as:
   #include <pcl/library/file.h>
   #incluce <pcl/library/impl_file.hpp>
 
+Ifdef statements on top of header files should be made as follows:
+
+.. code-block:: cpp
+
+  #ifdef PCL_LIBRARYNAME_FILENAME_H_
+  #define PCL_LIBRARYNAME_FILENAME_H_
+  <your very good code>
+  #ifdef // PCL_LIBRARYNAME_FILENAME_H_
+
 Chapter 2 - Indentation and Formatting
 ======================================
 
