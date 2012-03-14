@@ -76,6 +76,9 @@ namespace pcl
           rejection_name_ = "CorrespondenceRejectorSampleConsensus";
         }
 
+        /** \brief Empty destructor. */
+        virtual ~CorrespondenceRejectorSampleConsensus () {}
+
         /** \brief Get a list of valid correspondences after rejection from the original set of correspondences.
           * \param[in] original_correspondences the set of initial correspondences given
           * \param[out] remaining_correspondences the resultant filtered set of remaining correspondences

@@ -53,20 +53,20 @@ TEST (PCL, IntensityGradientEstimation)
   PointCloud<PointXYZI> cloud_xyzi;
   cloud_xyzi.height = 1;
   cloud_xyzi.is_dense = true;
-  for (float x = -5.0; x <= 5.0; x += 0.1)
+  for (float x = -5.0f; x <= 5.0f; x += 0.1f)
   {
-    for (float y = -5.0; y <= 5.0; y += 0.1)
+    for (float y = -5.0f; y <= 5.0f; y += 0.1f)
     {
       PointXYZI p;
       p.x = x;
       p.y = y;
-      p.z = 0.1 * pow (x, 2) + 0.5 * y + 1.0;
-      p.intensity = 0.1 * pow (x, 3) + 0.2 * pow (y, 2) + 1.0 * p.z + 20000.0;
+      p.z = 0.1f * powf (x, 2.0f) + 0.5f * y + 1.0f;
+      p.intensity = 0.1f * powf (x, 3.0f) + 0.2f * powf (y, 2.0f) + 1.0f * p.z + 20000.0f;
 
       cloud_xyzi.points.push_back (p);
     }
   }
-  cloud_xyzi.width = cloud_xyzi.points.size ();
+  cloud_xyzi.width = static_cast<uint32_t> (cloud_xyzi.points.size ());
   PointCloud<PointXYZI>::ConstPtr cloud_ptr = cloud_xyzi.makeShared ();
 
   // Estimate surface normals
@@ -97,25 +97,25 @@ TEST (PCL, IntensityGradientEstimation)
     const float * g_est = gradient.points[i].gradient;
 
     // Compute the surface normal analytically.
-    float nx = -0.2 * p.x;
-    float ny = -0.5;
-    float nz = 1.0;
-    float magnitude = sqrt (nx * nx + ny * ny + nz * nz);
+    float nx = -0.2f * p.x;
+    float ny = -0.5f;
+    float nz = 1.0f;
+    float magnitude = sqrtf (nx * nx + ny * ny + nz * nz);
     nx /= magnitude;
     ny /= magnitude;
     nz /= magnitude;
 
     // Compute the intensity gradient analytically...
-    float tmpx = (0.3 * pow (p.x, 2));
-    float tmpy = (0.4 * p.y);
-    float tmpz = (1.0);
+    float tmpx = 0.3f * powf (p.x, 2.0f);
+    float tmpy = 0.4f * p.y;
+    float tmpz = 1.0f;
     // ...and project the 3-D gradient vector onto the surface's tangent plane.
     float gx = (1 - nx * nx) * tmpx + (-nx * ny) * tmpy + (-nx * nz) * tmpz;
     float gy = (-ny * nx) * tmpx + (1 - ny * ny) * tmpy + (-ny * nz) * tmpz;
     float gz = (-nz * nx) * tmpx + (-nz * ny) * tmpy + (1 - nz * nz) * tmpz;
 
     // Compare the estimates to the derived values.
-    const float tolerance = 0.11;
+    const float tolerance = 0.11f;
     EXPECT_NEAR (g_est[0], gx, tolerance);
     EXPECT_NEAR (g_est[1], gy, tolerance);
     EXPECT_NEAR (g_est[2], gz, tolerance);
@@ -130,20 +130,20 @@ TEST (PCL, IntensityGradientEstimation)
     PointCloud<PointXYZI> cloud_xyzi;
     cloud_xyzi.height = 1;
     cloud_xyzi.is_dense = true;
-    for (float x = -5.0; x <= 5.0; x += 0.1)
+    for (float x = -5.0f; x <= 5.0f; x += 0.1f)
     {
-      for (float y = -5.0; y <= 5.0; y += 0.1)
+      for (float y = -5.0f; y <= 5.0f; y += 0.1f)
       {
         PointXYZI p;
         p.x = x;
         p.y = y;
-        p.z = 0.1 * pow (x, 2) + 0.5 * y + 1.0;
-        p.intensity = 0.1 * pow (x, 3) + 0.2 * pow (y, 2) + 1.0 * p.z + 20000.0;
+        p.z = 0.1f * powf (x, 2.0f) + 0.5f * y + 1.0f;
+        p.intensity = 0.1f * powf (x, 3.0f) + 0.2f * powf (y, 2.0f) + 1.0f * p.z + 20000.0f;
 
         cloud_xyzi.points.push_back (p);
       }
     }
-    cloud_xyzi.width = cloud_xyzi.points.size ();
+    cloud_xyzi.width = static_cast<uint32_t> (cloud_xyzi.points.size ());
     PointCloud<PointXYZI>::ConstPtr cloud_ptr = cloud_xyzi.makeShared ();
 
     // Estimate surface normals
@@ -171,25 +171,25 @@ TEST (PCL, IntensityGradientEstimation)
       const PointXYZI &p = cloud_ptr->points[i];
 
       // Compute the surface normal analytically.
-      float nx = -0.2 * p.x;
-      float ny = -0.5;
-      float nz = 1.0;
-      float magnitude = sqrt (nx * nx + ny * ny + nz * nz);
+      float nx = -0.2f * p.x;
+      float ny = -0.5f;
+      float nz = 1.0f;
+      float magnitude = sqrtf (nx * nx + ny * ny + nz * nz);
       nx /= magnitude;
       ny /= magnitude;
       nz /= magnitude;
 
       // Compute the intensity gradient analytically...
-      float tmpx = (0.3 * pow (p.x, 2));
-      float tmpy = (0.4 * p.y);
-      float tmpz = (1.0);
+      float tmpx = 0.3f * powf (p.x, 2.0f);
+      float tmpy = 0.4f * p.y;
+      float tmpz = 1.0f;
       // ...and project the 3-D gradient vector onto the surface's tangent plane.
       float gx = (1 - nx * nx) * tmpx + (-nx * ny) * tmpy + (-nx * nz) * tmpz;
       float gy = (-ny * nx) * tmpx + (1 - ny * ny) * tmpy + (-ny * nz) * tmpz;
       float gz = (-nz * nx) * tmpx + (-nz * ny) * tmpy + (1 - nz * nz) * tmpz;
 
       // Compare the estimates to the derived values.
-      const float tolerance = 0.11;
+      const float tolerance = 0.11f;
       ASSERT_NEAR (gradient.points (i, 0), gx, tolerance);
       ASSERT_NEAR (gradient.points (i, 1), gy, tolerance);
       ASSERT_NEAR (gradient.points (i, 2), gz, tolerance);

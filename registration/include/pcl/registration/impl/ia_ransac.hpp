@@ -73,22 +73,22 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::select
     const PointCloudSource &cloud, int nr_samples, float min_sample_distance, 
     std::vector<int> &sample_indices)
 {
-  if (nr_samples > (int) cloud.points.size ())
+  if (nr_samples > static_cast<int> (cloud.points.size ()))
   {
     PCL_ERROR ("[pcl::%s::selectSamples] ", getClassName ().c_str ());
-    PCL_ERROR ("The number of samples (%d) must not be greater than the number of points (%d)!\n",
-               nr_samples, (int) cloud.points.size ());
+    PCL_ERROR ("The number of samples (%d) must not be greater than the number of points (%zu)!\n",
+               nr_samples, cloud.points.size ());
     return;
   }
 
   // Iteratively draw random samples until nr_samples is reached
   int iterations_without_a_sample = 0;
-  int max_iterations_without_a_sample = (int) (3 * cloud.points.size ());
+  int max_iterations_without_a_sample = static_cast<int> (3 * cloud.points.size ());
   sample_indices.clear ();
-  while ((int) sample_indices.size () < nr_samples)
+  while (static_cast<int> (sample_indices.size ()) < nr_samples)
   {
     // Choose a sample at random
-    int sample_index = getRandomIndex ((int) cloud.points.size ());
+    int sample_index = getRandomIndex (static_cast<int> (cloud.points.size ()));
 
     // Check to see if the sample is 1) unique and 2) far away from the other samples
     bool valid_sample = true;
@@ -161,10 +161,10 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
   const ErrorFunctor & compute_error = *error_functor_;
   float error = 0;
 
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (int i = 0; i < static_cast<int> (cloud.points.size ()); ++i)
   {
     // Find the distance between cloud.points[i] and its nearest neighbor in the target point cloud
-    tree_->nearestKSearch (cloud, (int) i, 1, nn_index, nn_distance);
+    tree_->nearestKSearch (cloud, i, 1, nn_index, nn_distance);
 
     // Compute the error
     error += compute_error (nn_distance[0]);
@@ -221,7 +221,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
 
     // Tranform the data and compute the error
     transformPointCloud (*input_, input_transformed, transformation_);
-    error = computeErrorMetric (input_transformed, (float) corr_dist_threshold_);
+    error = computeErrorMetric (input_transformed, static_cast<float> (corr_dist_threshold_));
 
     // If the new error is lower, update the final transformation
     if (i_iter == 0 || error < lowest_error)

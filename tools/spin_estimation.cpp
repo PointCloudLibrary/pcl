@@ -116,7 +116,7 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
 int
 main (int argc, char** argv)
 {
-  print_info ("Estimate spin-image descriptors using pcl::FPFHEstimation. For more information, use: %s -h\n", argv[0]);
+  print_info ("Estimate spin-image descriptors using pcl::SpinEstimation. For more information, use: %s -h\n", argv[0]);
   bool help = false;
   parse_argument (argc, argv, "-h", help);
   if (argc < 3 || help)
@@ -141,12 +141,8 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-width", image_width);
   double support_angle = default_support_angle;
   parse_argument (argc, argv, "-suppangle", support_angle);
-  double min_neigh = default_min_neigh;
+  int min_neigh = default_min_neigh;
   parse_argument (argc, argv, "-neigh", min_neigh);
-
-
-
-  // COMPUTE
 
   // Load the first file
   sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
@@ -167,8 +163,7 @@ main (int argc, char** argv)
   print_highlight (stderr, "Computing ");
 
   typedef Histogram<153> SpinImage;
-  SpinImageEstimation<PointNormal, PointNormal, SpinImage> spin_est (
-    image_width, support_angle, min_neigh); 
+  SpinImageEstimation<PointNormal, PointNormal, SpinImage> spin_est (image_width, support_angle, min_neigh); 
   //spin_est.setInputWithNormals (xyznormals, xyznormals);
   spin_est.setInputCloud (xyznormals);
   spin_est.setInputNormals (xyznormals);

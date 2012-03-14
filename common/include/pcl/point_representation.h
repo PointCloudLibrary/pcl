@@ -478,7 +478,7 @@ namespace pcl
         : max_dim_(max_dim), start_dim_(start_dim)
       {
         // If point type is unknown, assume it's a struct/array of floats, and compute the number of dimensions
-        nr_dimensions_ = sizeof (PointDefault) / sizeof (float) - start_dim_;
+        nr_dimensions_ = static_cast<int> (sizeof (PointDefault) / sizeof (float)) - start_dim_;
         // Limit the default representation to the first 3 elements
         if (nr_dimensions_ > max_dim_) 
           nr_dimensions_ = max_dim_;

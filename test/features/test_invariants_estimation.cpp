@@ -121,7 +121,7 @@ TEST (PCL, MomentInvariantsEstimation)
     boost::shared_ptr<vector<int> > indicesptr (new vector<int> (indices));
     mi.setIndices (indicesptr);
     mi.setSearchMethod (tree);
-    mi.setKSearch (indices.size ());
+    mi.setKSearch (static_cast<int> (indices.size ()));
 
     // estimate
     mi.computeEigen (*moments);

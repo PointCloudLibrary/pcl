@@ -29,10 +29,13 @@ if(build)
         set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
         include (${VTK_USE_FILE})
         
-        set(VTK_SMOOTHING_INCLUDES include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_utils.h
-                                   include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_subdivision.h
-                                   include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_smoothing_laplacian.h
-                                   include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.h)
+        set(VTK_SMOOTHING_INCLUDES 
+            include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk.h
+            include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_utils.h
+            include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_subdivision.h
+            include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_smoothing_laplacian.h
+            include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.h)
+
         set(VTK_SMOOTHING_SOURCE src/vtk_smoothing/vtk_utils.cpp
                                  src/vtk_smoothing/vtk_mesh_subdivision.cpp
                                  src/vtk_smoothing/vtk_mesh_smoothing_laplacian.cpp

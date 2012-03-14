@@ -93,7 +93,9 @@ randPSurface (vtkPolyData * polydata, std::vector<double> * cumulativeAreas, dou
   polydata->GetPoint (ptIds[0], A);
   polydata->GetPoint (ptIds[1], B);
   polydata->GetPoint (ptIds[2], C);
-  randomPointTriangle (A[0], A[1], A[2], B[0], B[1], B[2], C[0], C[1], C[2], p);
+  randomPointTriangle (float (A[0]), float (A[1]), float (A[2]), 
+                       float (B[0]), float (B[1]), float (B[2]), 
+                       float (C[0]), float (C[1]), float (C[2]), p);
 }
 
 void
@@ -134,7 +136,7 @@ using namespace pcl::io;
 using namespace pcl::console;
 
 int default_number_samples = 100000;
-float default_leaf_size = 0.01;
+float default_leaf_size = 0.01f;
 
 void
 printHelp (int argc, char **argv)

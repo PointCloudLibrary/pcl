@@ -920,13 +920,13 @@ pcl::computeNDCentroid (const pcl::PointCloud<PointT> &cloud, Eigen::VectorXf &c
   if (cloud.points.empty ())
     return;
   // Iterate over each point
-  int size = cloud.points.size ();
+  int size = static_cast<int> (cloud.points.size ());
   for (int i = 0; i < size; ++i)
   {
     // Iterate over each dimension
     pcl::for_each_type <FieldList> (NdCentroidFunctor <PointT> (cloud.points[i], centroid));
   }
-  centroid /= size;
+  centroid /= static_cast<float> (size);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -942,13 +942,13 @@ pcl::computeNDCentroid (const pcl::PointCloud<PointT> &cloud, const std::vector<
   if (indices.empty ())
     return;
   // Iterate over each point
-  int nr_points = indices.size ();
+  int nr_points = static_cast<int> (indices.size ());
   for (int i = 0; i < nr_points; ++i)
   {
     // Iterate over each dimension
     pcl::for_each_type <FieldList> (NdCentroidFunctor <PointT> (cloud.points[indices[i]], centroid));
   }
-  centroid /= nr_points;
+  centroid /= static_cast<float> (nr_points);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

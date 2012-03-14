@@ -90,8 +90,8 @@ TEST (ExtractPolygonalPrism, Segmentation)
 
   for (size_t i = 0; i < hull->points.size (); ++i)
   {
-    hull->points[i].x = hull->points[i].y = i;
-    hull->points[i].z = 0;
+    hull->points[i].x = hull->points[i].y = static_cast<float> (i);
+    hull->points[i].z = 0.0f;
   }
 
   ExtractPolygonalPrismData<PointXYZ> ex;
@@ -125,7 +125,7 @@ int
   // Tranpose the cloud
   cloud_t = cloud;
   for (size_t i = 0; i < cloud.points.size (); ++i)
-    cloud_t.points[i].x += 0.01;
+    cloud_t.points[i].x += 0.01f;
 
   cloud_   = cloud.makeShared ();
   cloud_t_ = cloud_t.makeShared ();

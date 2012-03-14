@@ -115,7 +115,7 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
 
   boost::shared_ptr<vector<int> > indices2 (new vector<int> (0));
   for (size_t i = 0; i < (indices->size ()/2); ++i)
-    indices2->push_back (i);
+    indices2->push_back (static_cast<int> (i));
 
   // Compute with all points as search surface + the specified sub-cloud as "input" but for only a subset of indices
   FeatureEstimation est3;
@@ -212,7 +212,7 @@ TEST (PCL, PFHEstimation)
   pfh.setInputCloud (cloud.makeShared ());
   pfh.setIndices (indicesptr);
   pfh.setSearchMethod (tree);
-  pfh.setKSearch (indices.size ());
+  pfh.setKSearch (static_cast<int> (indices.size ()));
 
   // estimate
   pfh.compute (*pfhs);
@@ -255,7 +255,7 @@ TEST (PCL, PFHEstimation)
 
   boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
   for (size_t i = 0; i < cloud.size (); i+=3)
-    test_indices->push_back (i);
+    test_indices->push_back (static_cast<int> (i));
 
   testIndicesAndSearchSurface<PFHEstimation<PointXYZ, Normal, PFHSignature125>, PointXYZ, Normal, PFHSignature125>
   (cloud.makeShared (), normals, test_indices, 125);
@@ -284,7 +284,7 @@ TEST (PCL, FPFHEstimation)
   int nr_subdiv = 11; // use the same number of bins for all three angular features
   Eigen::MatrixXf hist_f1 (indices.size (), nr_subdiv), hist_f2 (indices.size (), nr_subdiv), hist_f3 (indices.size (), nr_subdiv);
   hist_f1.setZero (); hist_f2.setZero (); hist_f3.setZero ();
-  for (size_t i = 0; i < indices.size (); ++i)
+  for (int i = 0; i < static_cast<int> (indices.size ()); ++i)
     fpfh.computePointSPFHSignature (cloud, *normals, i, i, indices, hist_f1, hist_f2, hist_f3);
 
   EXPECT_NEAR (hist_f1 (0, 0), 0.757576, 1e-4);
@@ -327,7 +327,7 @@ TEST (PCL, FPFHEstimation)
   Eigen::VectorXf fpfh_histogram (nr_subdiv + nr_subdiv + nr_subdiv);
   fpfh_histogram.setZero ();
   vector<float> dists (indices.size ());
-  for (size_t i = 0; i < dists.size (); ++i) dists[i] = i;
+  for (size_t i = 0; i < dists.size (); ++i) dists[i] = static_cast<float> (i);
   fpfh.weightPointSPFHSignature (hist_f1, hist_f2, hist_f3, indices, dists, fpfh_histogram);
 
   EXPECT_NEAR (fpfh_histogram[0],  1.9798 ,  1e-2);
@@ -372,7 +372,7 @@ TEST (PCL, FPFHEstimation)
   fpfh.setNrSubdivisions (11, 11, 11);
   fpfh.setIndices (indicesptr);
   fpfh.setSearchMethod (tree);
-  fpfh.setKSearch (indices.size ());
+  fpfh.setKSearch (static_cast<int> (indices.size ()));
 
   // estimate
   fpfh.compute (*fpfhs);
@@ -416,7 +416,7 @@ TEST (PCL, FPFHEstimation)
 
   boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
   for (size_t i = 0; i < cloud.size (); i+=3)
-    test_indices->push_back (i);
+    test_indices->push_back (static_cast<int> (i));
 
   testIndicesAndSearchSurface<FPFHEstimation<PointXYZ, Normal, FPFHSignature33>, PointXYZ, Normal, FPFHSignature33>
   (cloud.makeShared (), normals, test_indices, 33);
@@ -448,7 +448,7 @@ TEST (PCL, FPFHEstimationOpenMP)
   fpfh.setNrSubdivisions (11, 11, 11);
   fpfh.setIndices (indicesptr);
   fpfh.setSearchMethod (tree);
-  fpfh.setKSearch (indices.size ());
+  fpfh.setKSearch (static_cast<int> (indices.size ()));
 
   // estimate
   fpfh.compute (*fpfhs);
@@ -492,7 +492,7 @@ TEST (PCL, FPFHEstimationOpenMP)
 
   boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
   for (size_t i = 0; i < cloud.size (); i+=3)
-    test_indices->push_back (i);
+    test_indices->push_back (static_cast<int> (i));
 
   testIndicesAndSearchSurface<FPFHEstimationOMP<PointXYZ, Normal, FPFHSignature33>, PointXYZ, Normal, FPFHSignature33>
   (cloud.makeShared (), normals, test_indices, 33);
@@ -529,7 +529,7 @@ TEST (PCL, VFHEstimation)
 
   // estimate
   vfh.compute (*vfhs);
-  EXPECT_EQ ((int)vfhs->points.size (), 1);
+  EXPECT_EQ (int (vfhs->points.size ()), 1);
 
   //for (size_t d = 0; d < 308; ++d)
   //  std::cerr << vfhs.points[0].histogram[d] << std::endl;
@@ -596,7 +596,7 @@ TEST (PCL, VFHEstimation)
 
     boost::shared_ptr<vector<int> > indices2 (new vector<int> (0));
     for (size_t i = 0; i < (indices->size ()/2); ++i)
-      indices2->push_back (i);
+      indices2->push_back (static_cast<int> (i));
 
     // Compute with all points as search surface + the specified sub-cloud as "input" but for only a subset of indices
     FeatureEstimation est3;
@@ -693,7 +693,7 @@ TEST (PCL, VFHEstimation)
     pfh.setInputCloud (cloud.makeShared ());
     pfh.setIndices (indicesptr);
     pfh.setSearchMethod (tree);
-    pfh.setKSearch (indices.size ());
+    pfh.setKSearch (static_cast<int> (indices.size ()));
 
     // estimate
     pfh.computeEigen (*pfhs);
@@ -735,7 +735,7 @@ TEST (PCL, VFHEstimation)
 
     boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
     for (size_t i = 0; i < cloud.size (); i+=3)
-      test_indices->push_back (i);
+      test_indices->push_back (static_cast<int> (i));
 
     testIndicesAndSearchSurfaceEigen<PFHEstimation<PointXYZ, Normal, Eigen::MatrixXf>, PointXYZ, Normal>
     (cloud.makeShared (), normals, test_indices, 125);
@@ -765,7 +765,7 @@ TEST (PCL, VFHEstimation)
     int nr_subdiv = 11; // use the same number of bins for all three angular features
     Eigen::MatrixXf hist_f1 (indices.size (), nr_subdiv), hist_f2 (indices.size (), nr_subdiv), hist_f3 (indices.size (), nr_subdiv);
     hist_f1.setZero (); hist_f2.setZero (); hist_f3.setZero ();
-    for (size_t i = 0; i < indices.size (); ++i)
+    for (int i = 0; i < static_cast<int> (indices.size ()); ++i)
       fpfh.computePointSPFHSignature (cloud, *normals, i, i, indices, hist_f1, hist_f2, hist_f3);
 
     EXPECT_NEAR (hist_f1 (0, 0), 0.757576, 1e-4);
@@ -808,7 +808,7 @@ TEST (PCL, VFHEstimation)
     Eigen::VectorXf fpfh_histogram (nr_subdiv + nr_subdiv + nr_subdiv);
     fpfh_histogram.setZero ();
     vector<float> dists (indices.size ());
-    for (size_t i = 0; i < dists.size (); ++i) dists[i] = i;
+    for (size_t i = 0; i < dists.size (); ++i) dists[i] = static_cast<float> (i);
     fpfh.weightPointSPFHSignature (hist_f1, hist_f2, hist_f3, indices, dists, fpfh_histogram);
 
     EXPECT_NEAR (fpfh_histogram[0],  1.9798 ,  1e-2);
@@ -853,7 +853,7 @@ TEST (PCL, VFHEstimation)
     fpfh.setNrSubdivisions (11, 11, 11);
     fpfh.setIndices (indicesptr);
     fpfh.setSearchMethod (tree);
-    fpfh.setKSearch (indices.size ());
+    fpfh.setKSearch (static_cast<int> (indices.size ()));
 
     // estimate
     fpfh.computeEigen (*fpfhs);
@@ -896,7 +896,7 @@ TEST (PCL, VFHEstimation)
     // Test results when setIndices and/or setSearchSurface are used
     boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
     for (size_t i = 0; i < cloud.size (); i+=3)
-      test_indices->push_back (i);
+      test_indices->push_back (static_cast<int> (i));
 
     testIndicesAndSearchSurfaceEigen <FPFHEstimation<PointXYZ, Normal, Eigen::MatrixXf>, PointXYZ, Normal>
     (cloud.makeShared (), normals, test_indices, 33);
@@ -921,9 +921,7 @@ main (int argc, char** argv)
 
   indices.resize (cloud.points.size ());
   for (size_t i = 0; i < indices.size (); ++i)
-  {
-    indices[i] = i;
-  }
+    indices[i] = static_cast<int> (i);
 
   tree.reset (new search::KdTree<PointXYZ> (false));
   tree->setInputCloud (cloud.makeShared ());

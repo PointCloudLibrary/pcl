@@ -106,7 +106,8 @@ namespace pcl
 
       /** \brief Empty constructor. */
       SIFTKeypoint () : min_scale_ (0.0), nr_octaves_ (0), nr_scales_per_octave_ (0), 
-        min_contrast_ (-std::numeric_limits<float>::max ()), scale_idx_ (-1)
+        min_contrast_ (-std::numeric_limits<float>::max ()), scale_idx_ (-1), 
+        out_fields_ (), getFieldValue_ ()
       {
         name_ = "SIFTKeypoint";
       }

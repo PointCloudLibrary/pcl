@@ -33,9 +33,6 @@
  *
  *
  */
-/** \author Julius Kammerl (julius@kammerl.de),
- Christian Potthast (potthast@usc.edu*/
-
 #include <gtest/gtest.h>
 
 #include <vector>
@@ -1200,14 +1197,14 @@ TEST (PCL, Octree_Pointcloud_Voxel_Centroid_Test)
 class prioPointQueueEntry
 {
 public:
-  prioPointQueueEntry ()
+  prioPointQueueEntry () : point_ (), pointDistance_ (), pointIdx_ ()
   {
   }
-  prioPointQueueEntry (PointXYZ& point_arg, double pointDistance_arg, int pointIdx_arg)
+  prioPointQueueEntry (PointXYZ& point_arg, double pointDistance_arg, int pointIdx_arg) :
+    point_ (point_arg),
+    pointDistance_ (pointDistance_arg),
+    pointIdx_ (pointIdx_arg)
   {
-    point_ = point_arg;
-    pointDistance_ = pointDistance_arg;
-    pointIdx_ = pointIdx_arg;
   }
 
   bool

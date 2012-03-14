@@ -169,9 +169,7 @@ main (int argc, char** argv)
 
   indices.resize (cloud.points.size ());
   for (size_t i = 0; i < indices.size (); ++i)
-  {
-    indices[i] = i;
-  }
+    indices[i] = static_cast<int> (i);
 
   tree.reset (new search::KdTree<PointXYZ> (false));
   tree->setInputCloud (cloud.makeShared ());

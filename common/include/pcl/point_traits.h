@@ -49,6 +49,7 @@
 // be able to fix them anyway
 #ifdef BUILD_Maintainer
 #  if defined __GNUC__
+#    include <features.h>
 #    if __GNUC_PREREQ(4, 3)
 #      pragma GCC diagnostic ignored "-Weffc++"
 #      pragma GCC diagnostic ignored "-pedantic"

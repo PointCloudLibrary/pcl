@@ -76,7 +76,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 }
 
 void
-project (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointCloud2 &output, double a, double b, double c, double d)
+project (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointCloud2 &output, float a, float b, float c, float d)
 {
   Eigen::Vector4f coeffs;
   coeffs << a, b, c, d;
@@ -161,10 +161,10 @@ main (int argc, char** argv)
   }
 
   // Command line parsing
-  double a = atof(argv[3]);
-  double b = atof(argv[4]);
-  double c = atof(argv[5]);
-  double d = atof(argv[6]);
+  float a = static_cast<float> (atof (argv[3]));
+  float b = static_cast<float> (atof (argv[4]));
+  float c = static_cast<float> (atof (argv[5]));
+  float d = static_cast<float> (atof (argv[6]));
 
   // Load the first file
   sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);

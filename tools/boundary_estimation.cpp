@@ -108,7 +108,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   ne.setInputNormals (xyznormals);
   //ne.setSearchMethod (pcl::KdTreeFLANN<pcl::PointNormal>::Ptr (new pcl::KdTreeFLANN<pcl::PointNormal>));
   ne.setKSearch (k);
-  ne.setAngleThreshold (angle);
+  ne.setAngleThreshold (static_cast<float> (angle));
   ne.setRadiusSearch (radius);
   
   PointCloud<Boundary> boundaries;

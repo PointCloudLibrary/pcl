@@ -57,7 +57,8 @@
 //#pragma warning(push, 1)
 #ifdef BUILD_Maintainer
 #  if defined __GNUC__
-#    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#    include <features.h>
+#    if __GNUC_PREREQ(4, 3)
 #      pragma GCC diagnostic ignored "-Weffc++"
 #      pragma GCC diagnostic ignored "-pedantic"
 #    else
@@ -546,7 +547,7 @@ POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::ReferenceFrame, pcl::_ReferenceFrame)
 //#pragma warning(pop)
 #ifdef BUILD_Maintainer
 #  if defined __GNUC__
-#    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
+#    if __GNUC_PREREQ(4, 3)
 #      pragma GCC diagnostic warning "-Weffc++"
 #      pragma GCC diagnostic warning "-pedantic"
 #    endif

@@ -46,7 +46,7 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
     const pcl::Correspondences& original_correspondences, 
     pcl::Correspondences& remaining_correspondences)
 {
-  int nr_correspondences = (int)original_correspondences.size ();
+  int nr_correspondences = static_cast<int> (original_correspondences.size ());
   std::vector<int> source_indices (nr_correspondences);
   std::vector<int> target_indices (nr_correspondences);
 

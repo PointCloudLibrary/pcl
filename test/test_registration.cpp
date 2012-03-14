@@ -114,10 +114,10 @@ TEST (PCL, findFeatureCorrespondences)
       feature3.points.push_back (f);
     }
   }
-  feature0.width = feature0.points.size ();
-  feature1.width = feature1.points.size ();
-  feature2.width = feature2.points.size ();
-  feature3.width = feature3.points.size ();
+  feature0.width = static_cast<uint32_t> (feature0.points.size ());
+  feature1.width = static_cast<uint32_t> (feature1.points.size ());
+  feature2.width = static_cast<uint32_t> (feature2.points.size ());
+  feature3.width = static_cast<uint32_t> (feature3.points.size ());
 
   KdTreeFLANN<FeatureT> tree;
 
@@ -161,7 +161,7 @@ TEST (PCL, IterativeClosestPoint)
 
   // Register
   reg.align (cloud_reg);
-  EXPECT_EQ ((int)cloud_reg.points.size (), (int)cloud_source.points.size ());
+  EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
 
   Eigen::Matrix4f transformation = reg.getFinalTransformation ();
 
@@ -204,7 +204,7 @@ TEST (PCL, IterativeClosestPointNonLinear)
 
   // Register
   reg.align (output);
-  EXPECT_EQ ((int)output.points.size (), (int)cloud_source.points.size ());
+  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
 
   // We get different results on 32 vs 64-bit systems.  To address this, we've removed the explicit output test
   // on the transformation matrix.  Instead, we're testing to make sure the algorithm converges to a sufficiently
@@ -262,7 +262,7 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
 
   // Register
   reg.align (output);
-  EXPECT_EQ ((int)output.points.size (), (int)cloud_source.points.size ());
+  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
 
   // We get different results on 32 vs 64-bit systems.  To address this, we've removed the explicit output test
   // on the transformation matrix.  Instead, we're testing to make sure the algorithm converges to a sufficiently
@@ -302,22 +302,22 @@ TEST (PCL, TransformationEstimationPointToPlaneLLS)
   PointCloud<PointNormal>::Ptr src (new PointCloud<PointNormal>);
   src->height = 1;
   src->is_dense = true;
-  for (float x = -5.0; x <= 5.0; x += 0.5)
+  for (float x = -5.0f; x <= 5.0f; x += 0.5f)
   {
-    for (float y = -5.0; y <= 5.0; y += 0.5)
+    for (float y = -5.0f; y <= 5.0f; y += 0.5f)
     {
       PointNormal p;
       p.x = x;
       p.y = y;
-      p.z = 0.1 * pow (x, 2) + 0.2*p.x*p.y - 0.3 * y + 1.0;
+      p.z = 0.1f * powf (x, 2.0f) + 0.2f * p.x * p.y - 0.3f * y + 1.0f;
       float & nx = p.normal[0];
       float & ny = p.normal[1];
       float & nz = p.normal[2];
-      nx = -0.2*p.x - 0.2;
-      ny = 0.6*p.y - 0.2;
-      nz = 1.0;
+      nx = -0.2f * p.x - 0.2f;
+      ny = 0.6f * p.y - 0.2f;
+      nz = 1.0f;
 
-      float magnitude = sqrt (nx * nx + ny * ny + nz * nz);
+      float magnitude = sqrtf (nx * nx + ny * ny + nz * nz);
       nx /= magnitude;
       ny /= magnitude;
       nz /= magnitude;
@@ -329,10 +329,10 @@ TEST (PCL, TransformationEstimationPointToPlaneLLS)
 
   // Create a test matrix
   Eigen::Matrix4f ground_truth_tform = Eigen::Matrix4f::Identity ();
-  ground_truth_tform.row (0) <<  0.9938,  0.0988,  0.0517,  0.1000;
-  ground_truth_tform.row (1) << -0.0997,  0.9949,  0.0149, -0.2000;
-  ground_truth_tform.row (2) << -0.0500, -0.0200,  0.9986,  0.3000;
-  ground_truth_tform.row (3) <<  0.0000,  0.0000,  0.0000,  1.0000;
+  ground_truth_tform.row (0) <<  0.9938f,  0.0988f,  0.0517f,  0.1000f;
+  ground_truth_tform.row (1) << -0.0997f,  0.9949f,  0.0149f, -0.2000f;
+  ground_truth_tform.row (2) << -0.0500f, -0.0200f,  0.9986f,  0.3000f;
+  ground_truth_tform.row (3) <<  0.0000f,  0.0000f,  0.0000f,  1.0000f;
 
   PointCloud<PointNormal>::Ptr tgt (new PointCloud<PointNormal>);
 
@@ -351,7 +351,7 @@ TEST (PCL, SampleConsensusInitialAlignment)
 {
   // Transform the source cloud by a large amount
   Eigen::Vector3f initial_offset (100, 0, 0);
-  float angle = M_PI/2;
+  float angle = static_cast<float> (M_PI) / 2.0f;
   Eigen::Quaternionf initial_rotation (cos (angle / 2), 0, 0, sin (angle / 2));
   PointCloud<PointXYZ> cloud_source_transformed;
   transformPointCloud (cloud_source, cloud_source_transformed, initial_offset, initial_rotation);
@@ -390,7 +390,7 @@ TEST (PCL, SampleConsensusInitialAlignment)
 
   // Initialize Sample Consensus Initial Alignment (SAC-IA)
   SampleConsensusInitialAlignment<PointXYZ, PointXYZ, FPFHSignature33> reg;
-  reg.setMinSampleDistance (0.05);
+  reg.setMinSampleDistance (0.05f);
   reg.setMaxCorrespondenceDistance (0.2);
   reg.setMaximumIterations (1000);
 
@@ -401,7 +401,7 @@ TEST (PCL, SampleConsensusInitialAlignment)
 
   // Register
   reg.align (cloud_reg);
-  EXPECT_EQ ((int)cloud_reg.points.size (), (int)cloud_source.points.size ());
+  EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
   EXPECT_EQ (reg.getFitnessScore () < 0.0005, true);
 }
 
