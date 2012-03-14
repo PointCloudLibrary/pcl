@@ -8,9 +8,9 @@
 #ifndef PCL_PEOPLE_TREES_TRUN_H_DEFINED
 #define PCL_PEOPLE_TREES_TRUN_H_DEFINED
 
-#include "Tree.h"
-#include "Tree_io.h"
-#include "TexFetch.h"
+#include "tree.h"
+#include "tree_io.h"
+#include "tex_fetch.h"
 #include <fstream>
 #include <limits>
 #include <iostream>

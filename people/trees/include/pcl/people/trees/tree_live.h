@@ -7,6 +7,7 @@
 #include <iostream>
 #include <boost/noncopyable.hpp>
 #include <opencv2/opencv.hpp>
+
 namespace pcl
 {
   namespace people

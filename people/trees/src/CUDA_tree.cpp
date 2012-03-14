@@ -5,7 +5,7 @@
  * Author : Cedric Cagniart 
  * ************************************************* */
 
-#include "CUDATree.h"
+#include "CUDA_tree.h"
 // CUDA
 #include <cuda_runtime_api.h>
 // general

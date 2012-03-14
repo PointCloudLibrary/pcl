@@ -3,7 +3,7 @@
  */
 
 #include <pcl/people/trees/Tree.h>
-#include "CUDA_runMultiTree.h"
+#include "CUDA_run_multi_tree.h"
 #include <cuda.h>
 #include <assert.h>
 
