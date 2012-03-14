@@ -34,132 +34,133 @@
  *  @author: Koen Buys
  */
 
-#ifndef PCL_PEOPLE_CONVERSION_H_
-#define PCL_PEOPLE_CONVERSION_H_
+#ifndef PCL_PEOPLE_DISPLAY_CONVERSION_H_
+#define PCL_PEOPLE_DISPLAY_CONVERSION_H_
 
 #include <pcl/pcl_base.h>
-#include <pcl/people/colormap.h>
+#include <pcl/people/display/colormap.h>
 
 namespace pcl
 {
-  /** 
-   *  \brief This function adds a label to a PointCloudXYZRGB to output a PointCloudXYZRGBL
-   *  \param[in] cloud_in the PointcloudXYZRGB
-   *  \param[in] lmap vector with labels, needs to have same size as input PointCloud
-   *  \param[out] cloud_out the PointCloudXYZRGBL
-   **/
-  void
-  labelPointCloudfromArray (
-                const PointCloud<PointXYZRGB>&  cloud_in,
-                const uint8_t*                  lmap,
-                PointCloud<PointXYZRGBL>&       cloud_out)
+  namespace people
   {
-    assert(cloud_in.isOrganized());
-
-    int width = cloud_in.width;
-    int height = cloud_in.height;
-
-    cloud_out.width = width;
-    cloud_out.height = height;
-
-    for(size_t i = 0; i < cloud_in.points.size(); i++)
+    namespace conversion
     {
-      PointXYZRGBL p;
-      p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
-      p.r = cloud_in.points[i].r; p.g = cloud_in.points[i].g; p.b = cloud_in.points[i].b;
-
-      p.label = lmap[i];
-      cloud_out.points.push_back(p);
-    }
-  }
-  /** 
-   *  \brief This function adds a label to a PointCloudXYZ to output a PointCloudXYZL
-   *  \param[in] cloud_in the PointcloudXYZ
-   *  \param[in] lmap vector with labels, needs to have same size as input PointCloud
-   *  \param[out] cloud_out the PointCloudXYZL
-   **/
-  void
-  labelPointCloudfromArray (
-                const PointCloud<PointXYZ>&  cloud_in,
-                const uint8_t*               lmap,
-                PointCloud<PointXYZL>&       cloud_out)
-  {
-    assert(cloud_in.isOrganized());
-
-    int width = cloud_in.width;
-    int height = cloud_in.height;
-
-    cloud_out.width = width;
-    cloud_out.height = height;
-
-    for(size_t i = 0; i < cloud_in.points.size(); i++)
-    {
-      PointXYZL p;
-      p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
-
-      p.label = lmap[i];
-      cloud_out.points.push_back(p);
-    }
-  }
-  /**
-   *
-   **/
-  void
-  colorLabelPointCloudfromArray (
-                const PointCloud<PointXYZRGB>&  cloud_in,
-                const uint8_t*                  lmap,
-                PointCloud<PointXYZRGBL>&       cloud_out)
-  {
-    assert(cloud_in.isOrganized());
-
-    int width = cloud_in.width;
-    int height = cloud_in.height;
-
-    cloud_out.width = width;
-    cloud_out.height = height;
-
-    for(size_t i = 0; i < cloud_in.points.size(); i++)
-    {
-      PointXYZRGBL p;
-      p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
-      p.label = lmap[i];
-      // Check if label is not larger then our LUT
-      if(p.label > LUT_color_label_length)
+      /**
+       *  \brief This function adds a label to a PointCloudXYZRGB to output a PointCloudXYZRGBL
+       *  \param[in] cloud_in the PointcloudXYZRGB
+       *  \param[in] lmap vector with labels, needs to have same size as input PointCloud
+       *  \param[out] cloud_out the PointCloudXYZRGBL
+       **/
+      void
+      labelPointCloudFromArray (
+                    const PointCloud<PointXYZRGB>&  cloud_in,
+                    const uint8_t*                  lmap,
+                    PointCloud<PointXYZRGBL>&       cloud_out)
       {
-        p.b = 0; p.r = 0; p.g = 0;
+        assert(cloud_in.isOrganized());
+        int width = cloud_in.width;
+        int height = cloud_in.height;
+        cloud_out.width = width;
+        cloud_out.height = height;
+        for(size_t i = 0; i < cloud_in.points.size(); i++)
+        {
+          PointXYZRGBL p;
+          p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
+          p.r = cloud_in.points[i].r; p.g = cloud_in.points[i].g; p.b = cloud_in.points[i].b;
+          p.label = lmap[i];
+          cloud_out.points.push_back(p);
+        }
       }
-      else
+      /**
+       *  \brief This function adds a label to a PointCloudXYZ to output a PointCloudXYZL
+       *  \param[in] cloud_in the PointcloudXYZ
+       *  \param[in] lmap vector with labels, needs to have same size as input PointCloud
+       *  \param[out] cloud_out the PointCloudXYZL
+       **/
+      void
+      labelPointCloudFromArray (
+                    const PointCloud<PointXYZ>&  cloud_in,
+                    const uint8_t*               lmap,
+                    PointCloud<PointXYZL>&       cloud_out)
       {
-        p.b = LUT_color_label[3 * p.label + 2];
-        p.g = LUT_color_label[3 * p.label + 1];
-        p.r = LUT_color_label[3 * p.label + 0];
+        assert(cloud_in.isOrganized());
+        int width = cloud_in.width;
+        int height = cloud_in.height;
+        cloud_out.width = width;
+        cloud_out.height = height;
+        for(size_t i = 0; i < cloud_in.points.size(); i++)
+        {
+          PointXYZL p;
+          p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
+          p.label = lmap[i];
+          cloud_out.points.push_back(p);
+        }
       }
-      cloud_out.points.push_back(p);
-    }
-  }
-  void
-  colorLabelPointCloudfromArray (
-                const PointCloud<PointXYZ>&     cloud_in,
-                const uint8_t*                  lmap,
-                PointCloud<PointXYZRGBL>&       cloud_out)
-  {
-    assert(cloud_in.isOrganized());
-
-    int width = cloud_in.width;
-    int height = cloud_in.height;
-
-    cloud_out.width = width;
-    cloud_out.height = height;
-
-    for(size_t i = 0; i < cloud_in.points.size(); i++)
-    {
-      PointXYZRGBL p;
-      p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
-      p.label = lmap[i];
-      p.b = LUT_color_label[3 * p.label + 2];
-      p.g = LUT_color_label[3 * p.label + 1];
-      p.r = LUT_color_label[3 * p.label + 0];
-      cloud_out.points.push_back(p);
+      /**
+       *  \brief This function adds a label and color to a PointCloudXYZRGB to output a PointCloudXYZRGBL
+       *  \param[in] cloud_in the PointcloudXYZ
+       *  \param[in] lmap vector with labels, needs to have same size as input PointCloud
+       *  \param[out] cloud_out the PointCloudXYZRGBL
+       **/
+      void
+      colorLabelPointCloudFromArray (
+                    const PointCloud<PointXYZRGB>&  cloud_in,
+                    const uint8_t*                  lmap,
+                    PointCloud<PointXYZRGBL>&       cloud_out)
+      {
+        assert(cloud_in.isOrganized());
+        int width = cloud_in.width;
+        int height = cloud_in.height;
+        cloud_out.width = width;
+        cloud_out.height = height;
+        for(size_t i = 0; i < cloud_in.points.size(); i++)
+        {
+          PointXYZRGBL p;
+          p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
+          p.label = lmap[i];
+          // Check if label is not larger then our LUT
+          if(p.label > LUT_color_label_length)
+          {
+            p.b = 0; p.r = 0; p.g = 0;
+          }
+          else
+          {
+            p.b = LUT_color_label[3 * p.label + 2];
+            p.g = LUT_color_label[3 * p.label + 1];
+            p.r = LUT_color_label[3 * p.label + 0];
+          }
+          cloud_out.points.push_back(p);
+        }
+      }
+      /**
+       *  \brief This function adds a label and color to a PointCloudXYZ to output a PointCloudXYZRGBL
+       *  \param[in] cloud_in the PointcloudXYZ
+       *  \param[in] lmap vector with labels, needs to have same size as input PointCloud
+       *  \param[out] cloud_out the PointCloudXYZRGBL
+       **/
+      void
+      colorLabelPointCloudFromArray (
+                    const PointCloud<PointXYZ>&     cloud_in,
+                    const uint8_t*                  lmap,
+                    PointCloud<PointXYZRGBL>&       cloud_out)
+      {
+        assert(cloud_in.isOrganized());
+        int width = cloud_in.width;
+        int height = cloud_in.height;
+        cloud_out.width = width;
+        cloud_out.height = height;
+        for(size_t i = 0; i < cloud_in.points.size(); i++)
+        {
+          PointXYZRGBL p;
+          p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
+          p.label = lmap[i];
+          p.b = LUT_color_label[3 * p.label + 2];
+          p.g = LUT_color_label[3 * p.label + 1];
+          p.r = LUT_color_label[3 * p.label + 0];
+          cloud_out.points.push_back(p);
+        }
+      }
     }
   }
 }

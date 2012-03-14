@@ -36,7 +36,7 @@
 
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
-#include <pcl/people/conversions/conversions.h>
+#include <pcl/people/conversion/conversions.h>
 
 // Instantiations still need to happen here
 // PCL_INSTANTIATE();
