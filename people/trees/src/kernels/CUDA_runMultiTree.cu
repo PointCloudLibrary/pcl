@@ -1,15 +1,16 @@
-#include "commonTrees/Tree.h"
+/**
+ * @authors: Cedric Cagniart, Koen Buys
+ */
+
+#include <pcl/people/trees/Tree.h>
 #include "CUDA_runMultiTree.h"
 #include <cuda.h>
 #include <assert.h>
 
-
-using Tree::Node;
-using Tree::Label;
-using Tree::AttribLocation;
-using Tree::NUMLABELS;
-
-
+using pcl::people::trees::Node;
+using pcl::people::trees::Label;
+using pcl::people::trees::AttribLocation;
+using pcl::people::trees::NUMLABELS;
 
 texture<unsigned short, 2, cudaReadModeElementType> depthTex;
 texture<char4, 2, cudaReadModeElementType>          multilabelTex;
@@ -24,37 +25,34 @@ __global__ void KernelCUDA_MultiTreePass( const int    treeId,
                                           const Label* leaves,
                                           Label*       multiLabels)
 {
-	uint u = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-	uint v = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
+  uint u = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  uint v = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
 
-	if( u >=W ) return;
-	if( v >=H ) return;
+  if( u >=W ) return;
+  if( v >=H ) return;
 
+  // init
+  int    depth = tex2D(depthTex, u,v );
+  float  scale = f/float(depth);
 
-	// init
-	int    depth = tex2D(depthTex, u,v );
-	float  scale = f/float(depth);
+  // go down the tree
+  int nid = 0;
+  for(int nodeDepth=0;nodeDepth<treeHeight;++nodeDepth)
+  {
+    const Node& node = nodes[nid];
+    const AttribLocation& loc = node.loc;
+    int d1 = tex2D(depthTex, u+float(loc.du1)*scale, v+float(loc.dv1)*scale);
+    int d2 = tex2D(depthTex, u+float(loc.du2)*scale, v+float(loc.dv2)*scale);
+    int delta = d1-d2;
+    bool test = delta > int(node.thresh);
+    if( test ) nid = nid*2+2;
+    else       nid = nid*2+1;
+  }
 
-	// go down the tree
-	int nid = 0;
-	for(int nodeDepth=0;nodeDepth<treeHeight;++nodeDepth)
-	{
-		const Node& node = nodes[nid];
-		const AttribLocation& loc = node.loc;
-		int d1 = tex2D(depthTex, u+float(loc.du1)*scale, v+float(loc.dv1)*scale);
-		int d2 = tex2D(depthTex, u+float(loc.du2)*scale, v+float(loc.dv2)*scale);
-		int delta = d1-d2;
-		bool test = delta > int(node.thresh);
-		if( test ) nid = nid*2+2;
-		else       nid = nid*2+1;
-	}
-
-	// we try to synchronize the write
-	__syncthreads();
-	multiLabels[(v*W+u)*4+treeId] = leaves[nid-numNodes];
+  // we try to synchronize the write
+  __syncthreads();
+  multiLabels[(v*W+u)*4+treeId] = leaves[nid-numNodes];
 }
-
-
 
 __global__ void KernelCUDA_MultiTreePassFG( const int    treeId,
                                           const int    FGThresh,
@@ -67,118 +65,109 @@ __global__ void KernelCUDA_MultiTreePassFG( const int    treeId,
                                           const Label* leaves,
                                           Label*       multiLabels)
 {
-	uint u = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-	uint v = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
+  uint u = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  uint v = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
 
-	if( u >=W ) return;
-	if( v >=H ) return;
+  if( u >=W ) return;
+  if( v >=H ) return;
 
+  // init
+  int    depth = tex2D(depthTex, u,v );
+  float  scale = f/float(depth);
 
-	// init
-	int    depth = tex2D(depthTex, u,v );
-	float  scale = f/float(depth);
+  // go down the tree
+  int nid = 0;
+  for(int nodeDepth=0;nodeDepth<treeHeight;++nodeDepth)
+  {
+    const Node& node = nodes[nid];
+    const AttribLocation& loc = node.loc;
+    int d1 = tex2D(depthTex, u+float(loc.du1)*scale, v+float(loc.dv1)*scale);
+    int d2 = tex2D(depthTex, u+float(loc.du2)*scale, v+float(loc.dv2)*scale);
+    if( d1 - depth > FGThresh ) d1 = 32767; 
+    if( d2 - depth > FGThresh ) d2 = 32767;
+    int delta = d1-d2;
+    bool test = delta > int(node.thresh);
+    if( test ) nid = nid*2+2;
+    else       nid = nid*2+1;
+  }
 
-	// go down the tree
-	int nid = 0;
-	for(int nodeDepth=0;nodeDepth<treeHeight;++nodeDepth)
-	{
-		const Node& node = nodes[nid];
-		const AttribLocation& loc = node.loc;
-		int d1 = tex2D(depthTex, u+float(loc.du1)*scale, v+float(loc.dv1)*scale);
-		int d2 = tex2D(depthTex, u+float(loc.du2)*scale, v+float(loc.dv2)*scale);
-		if( d1 - depth > FGThresh ) d1 = 32767; 
-		if( d2 - depth > FGThresh ) d2 = 32767;
-		int delta = d1-d2;
-		bool test = delta > int(node.thresh);
-		if( test ) nid = nid*2+2;
-		else       nid = nid*2+1;
-	}
-
-	// we try to synchronize the write
-	__syncthreads();
-	multiLabels[(v*W+u)*4+treeId] = leaves[nid-numNodes];
+  // we try to synchronize the write
+  __syncthreads();
+  multiLabels[(v*W+u)*4+treeId] = leaves[nid-numNodes];
 }
-
-
 
 __device__ int findMaxId( int numBins, char* bins ) {
-	// HACK .. not testing against numBins = 0
-	int maxId   = 0;
-	char maxVal = bins[0];
-	for(int i=1;i<numBins;++i) {
-		char val = bins[i];
-		if( val > maxVal ) { maxId = i; maxVal = val; }
-	}
-	return maxId;
+  // HACK .. not testing against numBins = 0
+  int maxId   = 0;
+  char maxVal = bins[0];
+  for(int i=1;i<numBins;++i) {
+    char val = bins[i];
+    if( val > maxVal ) { maxId = i; maxVal = val; }
+  }
+  return maxId;
 }
-
 
 //this will find the max Index but return -1 if there is a tie
 __device__ int findMaxId_testTie(int numBins, char* bins) {
-	int maxId = 0;
-	int maxId_other = -1;
-	char maxVal = bins[0];
+  int maxId = 0;
+  int maxId_other = -1;
+  char maxVal = bins[0];
 
-	for(int i=1;i<numBins;++i) {
-		char val = bins[i];
-		if( val == maxVal ) { maxId_other = i; }
-		if( val > maxVal ) { maxId = i; maxId_other = -1; maxVal = val; }
-	}
+  for(int i=1;i<numBins;++i) {
+    char val = bins[i];
+    if( val == maxVal ) { maxId_other = i; }
+    if( val > maxVal ) { maxId = i; maxId_other = -1; maxVal = val; }
+  }
 
-	if( maxId_other != -1) return -1;
-	else                   return maxId;
+  if( maxId_other != -1) return -1;
+  else                   return maxId;
 }
-
-
 
 __global__ void KernelCUDA_MultiTreeMerge( const int    numTrees,
                                            const int    W,
                                            const int    H,
                                            Label*       labels )
 {
-	uint u = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-	uint v = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
+  uint u = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  uint v = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
 
-	if( u >=W ) return;
-	if( v >=H ) return;
+  if( u >=W ) return;
+  if( v >=H ) return;
 
-	// reset the bins
-	char bins[NUMLABELS];
-	for(int li=0;li<NUMLABELS;++li) { bins[li] = 0; }
+  // reset the bins
+  char bins[NUMLABELS];
+  for(int li=0;li<NUMLABELS;++li) { bins[li] = 0; }
 
-	// find a consensus with the current trees
-	{
-		char4 pixlabels = tex2D(multilabelTex, u ,v);
-		char* bob = (char*)&pixlabels; //horrible but char4's have xyzw members
-		for(int ti=0;ti<numTrees;++ti) {
-			bins[ bob[ti] ]++;
-		}
-	}
+  // find a consensus with the current trees
+  {
+    char4 pixlabels = tex2D(multilabelTex, u ,v);
+    char* bob = (char*)&pixlabels; //horrible but char4's have xyzw members
+    for(int ti=0;ti<numTrees;++ti) {
+      bins[ bob[ti] ]++;
+    }
+  }
 
-	int res = findMaxId_testTie(NUMLABELS, bins);
+  int res = findMaxId_testTie(NUMLABELS, bins);
 
-	// if this fails... find a consensus in a 1 neighbourhood
-	if( res < 0 ) {
-		int depth = tex2D(depthTex, u,v);
-		for(int i=-1;i<=1;++i) {
-			for(int j=-1;j<=1;++j) {
-				int   depth_neighbor  = tex2D(depthTex,u+i,v+j);
-				char4 labels_neighbor = tex2D(multilabelTex, u+i,v+j); 
-				char* bob = (char*)&labels_neighbor; //horrible but char4's have xyzw members
-				int weight = abs(depth-depth_neighbor) < 50 ? 1:0; // 5cms
-				for(int ti=0;ti<numTrees;++ti) {
-					bins[ bob[ti] ] += weight;
-				}
-			}
-		}
-		res = findMaxId( NUMLABELS, bins );
-	}
-
-
-	__syncthreads();
-	labels[v*W+u] = res;
+  // if this fails... find a consensus in a 1 neighbourhood
+  if( res < 0 ) {
+    int depth = tex2D(depthTex, u,v);
+    for(int i=-1;i<=1;++i) {
+      for(int j=-1;j<=1;++j) {
+        int   depth_neighbor  = tex2D(depthTex,u+i,v+j);
+        char4 labels_neighbor = tex2D(multilabelTex, u+i,v+j); 
+        char* bob = (char*)&labels_neighbor; //horrible but char4's have xyzw members
+        int weight = abs(depth-depth_neighbor) < 50 ? 1:0; // 5cms
+        for(int ti=0;ti<numTrees;++ti) {
+          bins[ bob[ti] ] += weight;
+        }
+      }
+    }
+    res = findMaxId( NUMLABELS, bins );
+  }
+  __syncthreads();
+  labels[v*W+u] = res;
 }
-
 
 void CUDA_runMultiTreePassFG( int          treeId,
                             const int    FGThresh,
@@ -192,27 +181,24 @@ void CUDA_runMultiTreePassFG( int          treeId,
                             const void*  depth_in_device,
                             void*        multilabel_device )
 {
-	assert( treeId >= 0 );
-	assert( treeId < 4 );
+  assert( treeId >= 0 );
+  assert( treeId < 4 );
 
-	cudaChannelFormatDesc channeldesc = cudaCreateChannelDesc<unsigned short>();
-	depthTex.addressMode[0] = cudaAddressModeClamp;
-	cudaBindTexture2D(0, depthTex, depth_in_device, channeldesc,
-	                                            W, H, W*sizeof(unsigned short));
+  cudaChannelFormatDesc channeldesc = cudaCreateChannelDesc<unsigned short>();
+  depthTex.addressMode[0] = cudaAddressModeClamp;
+  cudaBindTexture2D(0, depthTex, depth_in_device, channeldesc,
+                                              W, H, W*sizeof(unsigned short));
 
-	dim3 gridSize((W+16-1)/16, (H+16-1)/16);
-	dim3 blockSize(16,16);
+  dim3 gridSize((W+16-1)/16, (H+16-1)/16);
+  dim3 blockSize(16,16);
 
-	KernelCUDA_MultiTreePassFG<<< gridSize, blockSize >>>( treeId, FGThresh, W, H, focal, treeHeight, numNodes, 
+  KernelCUDA_MultiTreePassFG<<< gridSize, blockSize >>>( treeId, FGThresh, W, H, focal, treeHeight, numNodes, 
                                                         (const Node*)  nodes_device, 
                                                         (const Label*) leaves_device, 
                                                         (Label*)       multilabel_device);
 
-
-	cudaUnbindTexture(depthTex);
+  cudaUnbindTexture(depthTex);
 }
-
-
 
 void CUDA_runMultiTreePass( int          treeId,
                             const int    W,
@@ -225,25 +211,24 @@ void CUDA_runMultiTreePass( int          treeId,
                             const void*  depth_in_device,
                             void*        multilabel_device )
 {
-	assert( treeId >= 0 );
-	assert( treeId < 4 );
+  assert( treeId >= 0 );
+  assert( treeId < 4 );
 
-	cudaChannelFormatDesc channeldesc = cudaCreateChannelDesc<unsigned short>();
-	depthTex.addressMode[0] = cudaAddressModeClamp;
-	cudaBindTexture2D(0, depthTex, depth_in_device, channeldesc,
-	                                            W, H, W*sizeof(unsigned short));
+  cudaChannelFormatDesc channeldesc = cudaCreateChannelDesc<unsigned short>();
+  depthTex.addressMode[0] = cudaAddressModeClamp;
+  cudaBindTexture2D(0, depthTex, depth_in_device, channeldesc,
+                                              W, H, W*sizeof(unsigned short));
 
-	dim3 gridSize((W+16-1)/16, (H+16-1)/16);
-	dim3 blockSize(16,16);
+  dim3 gridSize((W+16-1)/16, (H+16-1)/16);
+  dim3 blockSize(16,16);
 
-	KernelCUDA_MultiTreePass<<< gridSize, blockSize >>>( treeId, W, H, focal, treeHeight, numNodes, 
+  KernelCUDA_MultiTreePass<<< gridSize, blockSize >>>( treeId, W, H, focal, treeHeight, numNodes, 
                                                         (const Node*)  nodes_device, 
                                                         (const Label*) leaves_device, 
                                                         (Label*)       multilabel_device);
 
-	cudaUnbindTexture(depthTex);
+  cudaUnbindTexture(depthTex);
 }
-
 
 void CUDA_runMultiTreeMerge( int          numTrees,
                              const int    W,
@@ -252,31 +237,27 @@ void CUDA_runMultiTreeMerge( int          numTrees,
                              void*        multilabel_device, 
                              void*        label_out_device)
 {
-	assert( numTrees <= 4 );
+  assert( numTrees <= 4 );
 
-	{
-		cudaChannelFormatDesc channeldesc = cudaCreateChannelDesc<unsigned short>();
-		depthTex.addressMode[0] = cudaAddressModeClamp;
-		cudaBindTexture2D(0, depthTex, depth_in_device, channeldesc,
-	                                            W, H, W*sizeof(unsigned short));
-	}
-	{
-		cudaChannelFormatDesc channeldesc = cudaCreateChannelDesc<char4>();
-		multilabelTex.addressMode[0] = cudaAddressModeClamp;
-		cudaBindTexture2D(0, multilabelTex, multilabel_device, channeldesc,
-	                                                     W, H, W*sizeof(char4));
-	}
+  {
+    cudaChannelFormatDesc channeldesc = cudaCreateChannelDesc<unsigned short>();
+    depthTex.addressMode[0] = cudaAddressModeClamp;
+    cudaBindTexture2D(0, depthTex, depth_in_device, channeldesc,
+                                              W, H, W*sizeof(unsigned short));
+  }
+  {
+    cudaChannelFormatDesc channeldesc = cudaCreateChannelDesc<char4>();
+    multilabelTex.addressMode[0] = cudaAddressModeClamp;
+    cudaBindTexture2D(0, multilabelTex, multilabel_device, channeldesc,
+                                                       W, H, W*sizeof(char4));
+  }
 
+  dim3 gridSize((W+16-1)/16, (H+16-1)/16);
+  dim3 blockSize(16,16);
 
-	dim3 gridSize((W+16-1)/16, (H+16-1)/16);
-	dim3 blockSize(16,16);
-
-	KernelCUDA_MultiTreeMerge<<< gridSize, blockSize >>>( numTrees, W, H,  
+  KernelCUDA_MultiTreeMerge<<< gridSize, blockSize >>>( numTrees, W, H,  
                                                          (Label*) label_out_device );
 
-	cudaUnbindTexture(depthTex);
-	cudaUnbindTexture(multilabelTex);
+  cudaUnbindTexture(depthTex);
+  cudaUnbindTexture(multilabelTex);
 }
-
-
-
