@@ -106,7 +106,7 @@ pcl::visualization::ImageViewer::showRGBImage (const unsigned char* rgb_data, un
   importer->SetDataScalarTypeToUnsignedChar ();
   importer->SetDataExtentToWholeExtent ();
 
-  void* data = const_cast<void*> ((const void*)rgb_data);
+  void* data = const_cast<void*> (reinterpret_cast<const void*> (rgb_data));
   importer->SetImportVoidPointer (data, 1);
   importer->Update ();
 
@@ -142,7 +142,7 @@ pcl::visualization::ImageViewer::showMonoImage (const unsigned char* rgb_data, u
   importer->SetDataScalarTypeToUnsignedChar ();
   importer->SetDataExtentToWholeExtent ();
 
-  void* data = const_cast<void*> ((const void*)rgb_data);
+  void* data = const_cast<void*> (reinterpret_cast<const void*> (rgb_data));
   importer->SetImportVoidPointer (data, 1);
   importer->Update ();
 
@@ -180,7 +180,7 @@ pcl::visualization::ImageViewer::showRGBImage (const pcl::PointCloud<pcl::PointX
 
   for (size_t i = 0; i < cloud.points.size (); ++i)
   {
-    memcpy (&data_[i * 3], (unsigned char*)&cloud.points[i].rgb, sizeof (unsigned char) * 3);
+    memcpy (&data_[i * 3], reinterpret_cast<const unsigned char*> (&cloud.points[i].rgb), sizeof (unsigned char) * 3);
     /// Convert from BGR to RGB
     unsigned char aux = data_[i*3];
     data_[i*3] = data_[i*3+2];
@@ -201,7 +201,7 @@ pcl::visualization::ImageViewer::showRGBImage (const pcl::PointCloud<pcl::PointX
 
   for (size_t i = 0; i < cloud.points.size (); ++i)
   {
-    memcpy (&data_[i * 3], (unsigned char*)&cloud.points[i].rgba, sizeof (unsigned char) * 3);
+    memcpy (&data_[i * 3], reinterpret_cast<const unsigned char*> (&cloud.points[i].rgba), sizeof (unsigned char) * 3);
     /// Convert from BGR to RGB
     unsigned char aux = data_[i*3];
     data_[i*3] = data_[i*3+2];
@@ -254,16 +254,15 @@ pcl::visualization::ImageViewer::showShortImage (const unsigned short* short_ima
 void
 pcl::visualization::ImageViewer::markPoint (size_t u, size_t v, Vector3ub fg_color, Vector3ub bg_color, float radius)
 {
-  vtkSmartPointer<vtkImageCanvasSource2D> drawing = 
-    vtkSmartPointer<vtkImageCanvasSource2D>::New ();
+  vtkSmartPointer<vtkImageCanvasSource2D> drawing = vtkSmartPointer<vtkImageCanvasSource2D>::New ();
   drawing->SetNumberOfScalarComponents (3);
   drawing->SetScalarTypeToUnsignedChar ();
   vtkImageData* image_data = image_viewer_->GetInput ();
   drawing->SetExtent (image_data->GetExtent ());
   drawing->SetDrawColor (fg_color[0], fg_color[1], fg_color[2]);
-  drawing->DrawPoint (u, v);
+  drawing->DrawPoint (static_cast<int> (u), static_cast<int> (v));
   drawing->SetDrawColor (bg_color[0], bg_color[1], bg_color[2]);
-  drawing->DrawCircle (u, v, radius);
+  drawing->DrawCircle (static_cast<int> (u), static_cast<int> (v), radius);
   vtkSmartPointer<vtkImageBlend> blend = vtkSmartPointer<vtkImageBlend>::New();
   blend->AddInput (image_data);
   blend->AddInput (drawing->GetOutput ());
@@ -286,8 +285,6 @@ pcl::visualization::ImageViewer::spin ()
 void
 pcl::visualization::ImageViewer::spinOnce (int time, bool)
 {
-  resetStoppedFlag ();
-
   if (time <= 0)
     time = 1;
   
