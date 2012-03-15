@@ -47,20 +47,21 @@ namespace pcl
 {
 
   /**
-   * \brief Abstract class for hypotheses verification methods
+   * \brief hypothesis verification method proposed in
+   * "An Efficient RANSAC for 3D Object Recognition in Noisy and Occluded Scenes", C. Papazov and D. Burschka, ACCV 2010
    * \author Aitor Aldoma, Federico Tombari
    */
 
   template<typename ModelT, typename SceneT>
-  class PCL_EXPORTS PapazovHV : public HypothesesVerification<ModelT, SceneT>
+  class PCL_EXPORTS PapazovHV : public HypothesisVerification<ModelT, SceneT>
   {
-    using HypothesesVerification<ModelT, SceneT>::mask_;
-    using HypothesesVerification<ModelT, SceneT>::scene_cloud_downsampled_;
-    using HypothesesVerification<ModelT, SceneT>::scene_downsampled_tree_;
-    using HypothesesVerification<ModelT, SceneT>::visible_models_;
-    using HypothesesVerification<ModelT, SceneT>::complete_models_;
-    using HypothesesVerification<ModelT, SceneT>::resolution_;
-    using HypothesesVerification<ModelT, SceneT>::inliers_threshold_;
+    using HypothesisVerification<ModelT, SceneT>::mask_;
+    using HypothesisVerification<ModelT, SceneT>::scene_cloud_downsampled_;
+    using HypothesisVerification<ModelT, SceneT>::scene_downsampled_tree_;
+    using HypothesisVerification<ModelT, SceneT>::visible_models_;
+    using HypothesisVerification<ModelT, SceneT>::complete_models_;
+    using HypothesisVerification<ModelT, SceneT>::resolution_;
+    using HypothesisVerification<ModelT, SceneT>::inliers_threshold_;
 
     float conflict_threshold_size_;
     float penalty_threshold_;
@@ -91,7 +92,7 @@ namespace pcl
     void initialize();
 
     public:
-      PapazovHV() : HypothesesVerification<ModelT,SceneT>() {
+      PapazovHV() : HypothesisVerification<ModelT,SceneT>() {
         support_threshold_ = 0.1f;
         penalty_threshold_ = 0.1f;
         conflict_threshold_size_ = 0.02f;

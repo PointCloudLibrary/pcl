@@ -34,8 +34,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_RECOGNITION_HYPOTHESES_VERIFICATION_H_
-#define PCL_RECOGNITION_HYPOTHESES_VERIFICATION_H_
+#ifndef PCL_RECOGNITION_HYPOTHESIS_VERIFICATION_H_
+#define PCL_RECOGNITION_HYPOTHESIS_VERIFICATION_H_
 
 #include <pcl/pcl_macros.h>
 #include "occlusion_reasoning.h"
@@ -52,12 +52,12 @@ namespace pcl
    */
 
   template<typename ModelT, typename SceneT>
-  class PCL_EXPORTS HypothesesVerification
+  class PCL_EXPORTS HypothesisVerification
   {
 
   protected:
     /*
-     * \brief Boolean vector indicating if a hypothesis is accepted/rejected
+     * \brief Boolean vector indicating if a hypothesis is accepted/rejected (output of HV stage)
      */
     std::vector<bool> mask_;
     /*
@@ -76,7 +76,9 @@ namespace pcl
     typename pcl::search::KdTree<SceneT>::Ptr scene_downsampled_tree_;
 
     /*
-     * \brief Vector of point clouds representing the 3D models after reasoning about occlusions (in same coordinates as the scene cloud)
+     * \brief Vector of point clouds representing the 3D models after occlusion reasoning
+	 * the 3D models are pruned of occluded points, and only visible points are left. 
+	 * the coordinate system is that of the scene cloud
      */
     typename std::vector<typename pcl::PointCloud<ModelT>::Ptr> visible_models_;
     /*
@@ -103,7 +105,7 @@ namespace pcl
 
   public:
 
-    HypothesesVerification ()
+    HypothesisVerification ()
     {
       zbuffer_scene_resolution_ = 100;
       zbuffer_self_occlusion_resolution_ = 150;
@@ -232,4 +234,4 @@ namespace pcl
 
 }
 
-#endif /* PCL_RECOGNITION_HYPOTHESES_VERIFICATION_H_ */
+#endif /* PCL_RECOGNITION_HYPOTHESIS_VERIFICATION_H_ */
