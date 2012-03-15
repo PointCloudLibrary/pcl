@@ -6,8 +6,9 @@
  * ************************************************* */
 
 //#include <opencv2/opencv.hpp>
-#include <pcl/people/trees/TreeLive.h>
-#include <pcl/people/trees/Tree.h>
+#include <pcl/point_types.h>
+#include <pcl/people/trees/tree_live.h>
+#include <pcl/people/trees/tree.h>
 #include <pcl/people/display/colormap.h>
 
 namespace pcl
@@ -20,28 +21,27 @@ namespace pcl
       // @todo: delete this function
       cv::Scalar getLColor ( const uint8_t l)
       {
-        const unsigned char* c = LUT_color_label + 3*l;
+        const unsigned char* c = LUT_COLOR_LABEL + 3*l;
         return cv::Scalar( c[0], c[1], c[2] );
       }
-      // @todo start using this function if PointRGB is build
-      pcl::PointRGB getLColor (const uint8_t l)
+*/
+      pcl::RGB getLColor (const uint8_t l)
       {
-        pcl::PointRGB p;
-        const unsigned char* c = LUT + 3*l;
+        pcl::RGB p;
+        const unsigned char* c = LUT_COLOR_LABEL + 3*l;
         p.r = c[0];
         p.g = c[1];
         p.b = c[2];
         return p;
       }
-*/
 
       void colorLMap ( int W, int H,
-                       const Tree::Label* l,
+                       const pcl::people::trees::Label* l,
                        unsigned char* c )
       {
         int numPix = W*H;
         for(int pi=0;pi<numPix;++pi) {
-          const unsigned char* color = LUT_color_label + 3*l[pi];
+          const unsigned char* color = LUT_COLOR_LABEL + 3*l[pi];
           c[3*pi+0] = color[0];
           c[3*pi+1] = color[1];
           c[3*pi+2] = color[2];

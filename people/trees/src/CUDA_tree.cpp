@@ -1,8 +1,8 @@
 /* *************************************************
  *
- * Copyright (2011) Willow Garage
+ * @copyright (2011) Willow Garage
  *
- * Author : Cedric Cagniart 
+ * @author : Cedric Cagniart, Koen Buys
  * ************************************************* */
 
 #include "CUDA_tree.h"
@@ -13,7 +13,7 @@
 #include <cassert>
 #include <iostream>
 
-#include <pcl/people/trees/HandleError.h>
+#include <pcl/people/trees/handle_error.h>
 
 namespace pcl
 {
@@ -25,8 +25,8 @@ namespace pcl
       using pcl::people::trees::Label;
 
       CUDATree::CUDATree(int                             treeHeight, 
-                         const std::vector<Tree::Node>&  nodes,
-                         const std::vector<Tree::Label>& leaves ):
+                         const std::vector<pcl::people::trees::Node>&  nodes,
+                         const std::vector<pcl::people::trees::Label>& leaves ):
       m_treeHeight(treeHeight)
       {
         m_numNodes = pow(2, treeHeight) - 1;

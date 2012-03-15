@@ -2,7 +2,7 @@
  * @authors: Cedric Cagniart, Koen Buys
  */
 //#include <cutil.h>
-#include <pcl/people/trees/Tree.h>
+#include <pcl/people/trees/tree.h>
 #include <stdio.h>
 #include <cuda.h>
 

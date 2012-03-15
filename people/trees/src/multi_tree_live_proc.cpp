@@ -1,13 +1,13 @@
 /**
  * @authors: Cedric Cagniart, Koen Buys
  */
-#include "pcl/people/trees/TRun.h"
-#include "pcl/people/trees/HandleError.h"
-#include <pcl/people/trees/TreeLive.h>
+#include <pcl/people/trees/tree_run.h>
+#include <pcl/people/trees/handle_error.h>
+#include <pcl/people/trees/tree_live.h>
 
 #include <cuda_runtime_api.h>
-#include "kernels/CUDA_runMultiTree.h"
-#include "CUDATree.h"
+#include "kernels/CUDA_run_multi_tree.h"
+#include "CUDA_tree.h"
 
 #include <iostream>
 
@@ -68,7 +68,7 @@ namespace pcl
         void MultiTreeLiveProc::process(const cv::Mat& dmap,
                                         cv::Mat&       lmap )
         {
-          process( dmap, lmap, std::numeric_limits<Tree::Attrib>::max() );
+          process( dmap, lmap, std::numeric_limits<pcl::people::trees::Attrib>::max() );
         }
 
         void MultiTreeLiveProc::process(const cv::Mat& dmap,
@@ -92,7 +92,7 @@ namespace pcl
           int numTrees = m_trees.size();
           for(int ti=0; ti<numTrees; ++ti ) {
             CUDATree* t = m_trees[ti];
-            if( FGThresh == std::numeric_limits<Tree::Attrib>::max() ) {
+            if( FGThresh == std::numeric_limits<pcl::people::trees::Attrib>::max() ) {
               CUDA_runMultiTreePass( ti, 640,480, focal,  
                                                        t->treeHeight(), t->numNodes(),
                                                 t->nodes_device(), t->leaves_device(),

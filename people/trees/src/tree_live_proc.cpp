@@ -1,11 +1,11 @@
 /** @authors: Cedric Cagniart, Koen Buys */
 
-#include <pcl/people/trees/TRun.h>
-#include <pcl/people/trees/TreeLive.h>
+#include <pcl/people/trees/tree_run.h>
+#include <pcl/people/trees/tree_live.h>
 #include <cuda_runtime_api.h>
 
-#include "kernels/CUDA_runTree.h"
-#include "CUDATree.h"
+#include "kernels/CUDA_run_tree.h"
+#include "CUDA_tree.h"
 
 using pcl::people::trees::Node;
 using pcl::people::trees::Label;

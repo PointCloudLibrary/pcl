@@ -5,7 +5,7 @@
 #define PCL_PEOPLE_TREES_CUDATREE_H_
 
 #include <vector>
-#include "commonTrees/Tree.h"
+#include <pcl/people/trees/tree.h>
 #include <boost/noncopyable.hpp>
 
 namespace pcl
@@ -18,8 +18,8 @@ namespace pcl
       {
         public :
           CUDATree (int                             treeHeight, 
-                    const std::vector<Tree::Node>&  nodes,
-                    const std::vector<Tree::Label>& leaves );
+                    const std::vector<pcl::people::trees::Node>&  nodes,
+                    const std::vector<pcl::people::trees::Label>& leaves );
           ~CUDATree ();
 
           inline int         treeHeight ()    const { return m_treeHeight; }

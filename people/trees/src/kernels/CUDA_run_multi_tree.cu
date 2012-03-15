@@ -2,7 +2,7 @@
  * @authors: Cedric Cagniart, Koen Buys
  */
 
-#include <pcl/people/trees/Tree.h>
+#include <pcl/people/trees/tree.h>
 #include "CUDA_run_multi_tree.h"
 #include <cuda.h>
 #include <assert.h>
