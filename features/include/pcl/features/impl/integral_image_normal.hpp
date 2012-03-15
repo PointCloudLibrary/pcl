@@ -37,6 +37,7 @@
 #define PCL_FEATURES_INTEGRALIMAGE_BASED_IMPL_NORMAL_ESTIMATOR_H_
 
 #include <pcl/features/integral_image_normal.h>
+#include <pcl/features/normal_3d.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
@@ -224,10 +225,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     float eigen_value;
     Eigen::Vector3f eigen_vector;
     pcl::eigen33 (covariance_matrix, eigen_value, eigen_vector);
-    if (eigen_vector [2] < 0.0f)
-      normal.getNormalVector4fMap () = Eigen::Vector4f (eigen_vector [0], eigen_vector [1], eigen_vector [2], 0);
-    else
-      normal.getNormalVector4fMap () = Eigen::Vector4f (-eigen_vector [0], -eigen_vector [1], -eigen_vector [2], 0);
+    pcl::flipNormalTowardsViewpoint (input_->points[point_index], vpx_, vpy_, vpz_, eigen_vector);
+    normal.getNormalVector3fMap () = eigen_vector;
 
     // Compute the curvature surface change
     if (eigen_value > 0.0)
@@ -262,6 +261,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     }
 
     normal_vector /= sqrt (normal_length);
+    pcl::flipNormalTowardsViewpoint (input_->points[point_index], vpx_, vpy_, vpz_, normal_vector);
+
     normal.normal_x = static_cast<float> (normal_vector [0]);
     normal.normal_y = static_cast<float> (normal_vector [1]);
     normal.normal_z = static_cast<float> (normal_vector [2]);
@@ -314,9 +315,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     const float mean_y_x = pointD.x - pointU.x;
     const float mean_y_y = pointD.y - pointU.y;
 
-    const float normal_x = mean_x_y * mean_y_z - mean_x_z * mean_y_y;
-    const float normal_y = mean_x_z * mean_y_x - mean_x_x * mean_y_z;
-    const float normal_z = mean_x_x * mean_y_y - mean_x_y * mean_y_x;
+    float normal_x = mean_x_y * mean_y_z - mean_x_z * mean_y_y;
+    float normal_y = mean_x_z * mean_y_x - mean_x_x * mean_y_z;
+    float normal_z = mean_x_x * mean_y_y - mean_x_y * mean_y_x;
 
     const float normal_length = (normal_x * normal_x + normal_y * normal_y + normal_z * normal_z);
 
@@ -327,7 +328,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
       return;
     }
 
-    const float scale = -1.0f / sqrt (normal_length);
+    pcl::flipNormalTowardsViewpoint (input_->points[point_index], vpx_, vpy_, vpz_, normal_x, normal_y, normal_z);
+    
+    const float scale = 1.0f / sqrt (normal_length);
 
     normal.normal_x = normal_x * scale;
     normal.normal_y = normal_y * scale;
@@ -357,6 +360,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     }
 
     normal_vector /= sqrt (normal_length);
+    pcl::flipNormalTowardsViewpoint (input_->points[point_index], vpx_, vpy_, vpz_, normal_vector);
+    
     normal.normal_x = static_cast<float> (normal_vector [0]);
     normal.normal_y = static_cast<float> (normal_vector [1]);
     normal.normal_z = static_cast<float> (normal_vector [2]);

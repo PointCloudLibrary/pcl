@@ -48,7 +48,7 @@
 #endif
 namespace pcl
 {
-  /** \brief Surface normal estimation on dense data using integral images.
+  /** \brief Surface normal estimation on organized data using integral images.
     * \author Stefan Holzer
     */
   template <typename PointInT, typename PointOutT>
@@ -179,6 +179,13 @@ namespace pcl
         }
 
         init_covariance_matrix_ = init_average_3d_gradient_ = init_depth_change_ = false;
+        
+        if (use_sensor_origin_)
+        {
+          vpx_ = input_->sensor_origin_.coeff (0);
+          vpy_ = input_->sensor_origin_.coeff (1);
+          vpz_ = input_->sensor_origin_.coeff (2);
+        }
 
         // Initialize the correct data structure based on the normal estimation method chosen
         initData ();
@@ -192,7 +199,58 @@ namespace pcl
         return (distance_map_);
       }
 
+      /** \brief Set the viewpoint.
+        * \param vpx the X coordinate of the viewpoint
+        * \param vpy the Y coordinate of the viewpoint
+        * \param vpz the Z coordinate of the viewpoint
+        */
+      inline void
+      setViewPoint (float vpx, float vpy, float vpz)
+      {
+        vpx_ = vpx;
+        vpy_ = vpy;
+        vpz_ = vpz;
+        use_sensor_origin_ = false;
+      }
 
+      /** \brief Get the viewpoint.
+        * \param [out] vpx x-coordinate of the view point
+        * \param [out] vpy y-coordinate of the view point
+        * \param [out] vpz z-coordinate of the view point
+        * \note this method returns the currently used viewpoint for normal flipping.
+        * If the viewpoint is set manually using the setViewPoint method, this method will return the set view point coordinates.
+        * If an input cloud is set, it will return the sensor origin otherwise it will return the origin (0, 0, 0)
+        */
+      inline void
+      getViewPoint (float &vpx, float &vpy, float &vpz)
+      {
+        vpx = vpx_;
+        vpy = vpy_;
+        vpz = vpz_;
+      }
+
+      /** \brief sets whether the sensor origin or a user given viewpoint should be used. After this method, the 
+        * normal estimation method uses the sensor origin of the input cloud.
+        * to use a user defined view point, use the method setViewPoint
+        */
+      inline void
+      useSensorOriginAsViewPoint ()
+      {
+        use_sensor_origin_ = true;
+        if (input_)
+        {
+          vpx_ = input_->sensor_origin_.coeff (0);
+          vpy_ = input_->sensor_origin_.coeff (1);
+          vpz_ = input_->sensor_origin_.coeff (2);
+        }
+        else
+        {
+          vpx_ = 0;
+          vpy_ = 0;
+          vpz_ = 0;
+        }
+      }
+      
     protected:
 
       /** \brief Computes the normal for the complete cloud.
@@ -267,6 +325,13 @@ namespace pcl
       /** \brief True when a dataset has been received and the depth change data has been initialized. */
       bool init_depth_change_;
 
+      /** \brief Values describing the viewpoint ("pinhole" camera model assumed). For per point viewpoints, inherit
+        * from NormalEstimation and provide your own computeFeature (). By default, the viewpoint is set to 0,0,0. */
+      float vpx_, vpy_, vpz_;
+
+      /** whether the sensor origin of the input cloud or a user given viewpoint should be used.*/
+      bool use_sensor_origin_;
+      
       /** \brief This method should get called before starting the actual computation. */
       bool
       initCompute ();
