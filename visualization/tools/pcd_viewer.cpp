@@ -505,7 +505,8 @@ main (int argc, char** argv)
   }
 
   // Clean up the memory used by the binary blob
-  cloud.reset ();
+  // Note: avoid resetting the cloud, otherwise the PointPicking callback will fail
+  //cloud.reset ();
 
   if (ph)
   {
