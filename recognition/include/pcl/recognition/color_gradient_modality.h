@@ -35,79 +35,19 @@
  *
  */
 
-#ifndef PCL_FEATURES_COLOR_GRADIENT_MODALITY
-#define PCL_FEATURES_COLOR_GRADIENT_MODALITY
+#ifndef PCL_RECOGNITION_COLOR_GRADIENT_MODALITY
+#define PCL_RECOGNITION_COLOR_GRADIENT_MODALITY
 
 #include <pcl/recognition/quantizable_modality.h>
 
 #include <pcl/pcl_base.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/recognition/point_types.h>
 
 
 namespace pcl
 {
-
-  /** \brief A point structure for representing RGB color
-    * \ingroup common
-    */
-  struct EIGEN_ALIGN16 PointRGB
-  {
-    union
-    {
-      union
-      {
-        struct
-        {
-          uint8_t b;
-          uint8_t g;
-          uint8_t r;
-          uint8_t _unused;
-        };
-        float rgb;
-      };
-      uint32_t rgba;
-    };
-
-    inline PointRGB ()
-    {}
-
-    inline PointRGB (const uint8_t b, const uint8_t g, const uint8_t r)
-      : b (b), g (g), r (r), _unused (0)
-    {}
-
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  };
-
-
-  /** \brief A point structure representing Euclidean xyz coordinates, and the intensity value.
-    * \ingroup common
-    */
-  struct EIGEN_ALIGN16 GradientXY
-  {
-    union
-    {
-      struct
-      {
-        float x;
-        float y;
-        float angle;
-        float magnitude;
-      };
-      float data[4];
-    };
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
-    inline bool operator< (const GradientXY & rhs)
-    {
-      return (magnitude > rhs.magnitude);
-    }
-  };
-  inline std::ostream & operator << (std::ostream & os, const GradientXY & p)
-  {
-    os << "(" << p.x << "," << p.y << " - " << p.magnitude << ")";
-    return (os);
-  }
 
   // --------------------------------------------------------------------------
 
@@ -167,7 +107,6 @@ namespace pcl
       setInputCloud (const typename PointCloudIn::ConstPtr & cloud) 
       { 
         input_ = cloud;
-        processInputData ();
       }
 
     protected:
@@ -255,8 +194,8 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
         {
           Candidate candidate;
           candidate.gradient = gradient;
-          candidate.x = col_index;
-          candidate.y = row_index;
+          candidate.x = static_cast<int> (col_index);
+          candidate.y = static_cast<int> (row_index);
 
           list1.push_back (candidate);
         }
@@ -282,7 +221,7 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
     return;
   }
 
-  int distance = list1.size () / nr_features + 1; // ??? 
+  size_t distance = list1.size () / nr_features + 1; // ??? 
   while (list2.size () != nr_features)
   {
     const int sqr_distance = distance*distance;
@@ -521,4 +460,4 @@ filterQuantizedColorGradients ()
   }
 }
 
-#endif // PCL_FEATURES_COLOR_GRADIENT_MODALITY
+#endif 

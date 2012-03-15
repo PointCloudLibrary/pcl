@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_SURFACE_NORMAL_MODALITY
-#define PCL_RECOGNITION_SURFACE_NORMAL_MODALITY
+#ifndef PCL_RECOGNITION_COLOR_MODALITY
+#define PCL_RECOGNITION_COLOR_MODALITY
 
 #include <pcl/recognition/quantizable_modality.h>
 #include <pcl/recognition/distance_map.h>
@@ -44,161 +44,23 @@
 #include <pcl/pcl_base.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/features/linear_least_squares_normal.h>
+#include <pcl/recognition/point_types.h>
+
 
 namespace pcl
 {
 
-  struct QuantizedNormalLookUpTable
-  {
-    int range_x;
-    int range_y;
-    int range_z;
-
-    int offset_x;
-    int offset_y;
-    int offset_z;
-
-    int size_x;
-    int size_y;
-    int size_z;
-
-    unsigned char * lut;
-
-    QuantizedNormalLookUpTable () : 
-      range_x (-1), range_y (-1), range_z (-1), 
-      offset_x (-1), offset_y (-1), offset_z (-1), 
-      size_x (-1), size_y (-1), size_z (-1), lut (NULL) 
-    {}
-
-    //~QuantizedNormalLookUpTable () { if (lut != NULL) free16(lut); }
-    ~QuantizedNormalLookUpTable () 
-    { 
-      if (lut != NULL) 
-        delete[] lut; 
-    }
-
-    void 
-    initializeLUT (const int range_x_arg, const int range_y_arg, const int range_z_arg)
-    {
-      range_x = range_x_arg;
-      range_y = range_y_arg;
-      range_z = range_z_arg;
-      size_x = range_x_arg+1;
-      size_y = range_y_arg+1;
-      size_z = range_z_arg+1;
-      offset_x = range_x_arg/2;
-      offset_y = range_y_arg/2;
-      offset_z = range_z_arg;
-
-      //if (lut != NULL) free16(lut);
-      //lut = malloc16(size_x*size_y*size_z);
-
-      if (lut != NULL) 
-        delete[] lut;
-      lut = new unsigned char[size_x*size_y*size_z];
-
-      const int nr_normals = 8;
-      std::vector<PointXYZ, Eigen::aligned_allocator<PointXYZ> > ref_normals (nr_normals);
-      
-      const float normal0_angle = 40.0f * 3.14f / 180.0f;
-      ref_normals[0].x = cos (normal0_angle);
-      ref_normals[0].y = 0.0f;
-      ref_normals[0].z = -sin (normal0_angle);
-
-      const float inv_nr_normals = 1.0f/nr_normals;
-      for (int normal_index = 1; normal_index < nr_normals; ++normal_index)
-      {
-        const float angle = normal_index * 3.14f * 2.0f * inv_nr_normals;
-
-        ref_normals[normal_index].x = cos(angle)*ref_normals[0].x - sin(angle)*ref_normals[0].y;
-        ref_normals[normal_index].y = sin(angle)*ref_normals[0].x + cos(angle)*ref_normals[0].y;
-        ref_normals[normal_index].z = ref_normals[0].z;
-      }
-
-      // normalize normals
-      for (int normal_index = 0; normal_index < nr_normals; ++normal_index)
-      {
-        const float length = sqrt (ref_normals[normal_index].x * ref_normals[normal_index].x +
-                                   ref_normals[normal_index].y * ref_normals[normal_index].y +
-                                   ref_normals[normal_index].z * ref_normals[normal_index].z);
-
-        const float inv_length = 1.0f / length;
-
-        ref_normals[normal_index].x *= inv_length;
-        ref_normals[normal_index].y *= inv_length;
-        ref_normals[normal_index].z *= inv_length;
-      }
-
-      // set LUT
-      for (int z_index = 0; z_index < size_z; ++z_index)
-      {
-        for (int y_index = 0; y_index < size_y; ++y_index)
-        {
-          for (int x_index = 0; x_index < size_x; ++x_index)
-          {
-            PointXYZ normal (static_cast<float> (x_index - range_x/2), 
-                             static_cast<float> (y_index - range_y/2), 
-                             static_cast<float> (z_index - range_z));
-            const float length = sqrt (normal.x*normal.x + normal.y*normal.y + normal.z*normal.z);
-            const float inv_length = 1.0f / (length + 0.00001f);
-
-            normal.x *= inv_length;
-            normal.y *= inv_length;
-            normal.z *= inv_length;
-
-            float max_response = -1.0f;
-            int max_index = -1;
-
-            for (int normal_index = 0; normal_index < nr_normals; ++normal_index)
-            {
-              const float response = normal.x * ref_normals[normal_index].x +
-                                     normal.y * ref_normals[normal_index].y +
-                                     normal.z * ref_normals[normal_index].z;
-
-              const float abs_response = fabs (response);
-              if (max_response < abs_response)
-              {
-                max_response = abs_response;
-                max_index = normal_index;
-              }
-
-              lut[z_index*size_y*size_x + y_index*size_x + x_index] = 0x1 << max_index;
-            }
-          }
-        }
-      }
-    }
-
-    inline unsigned char 
-    operator() (const float x, const float y, const float z) const
-    {
-      const size_t x_index = static_cast<size_t> (x*offset_x + offset_x);
-      const size_t y_index = static_cast<size_t> (y*offset_y + offset_y);
-      const size_t z_index = static_cast<size_t> (z*range_z + range_z);
-
-      const size_t index = z_index*size_y*size_x + y_index*size_x + x_index;
-
-      return (lut[index]);
-    }
-
-    inline unsigned char 
-    operator() (const int index) const
-    {
-      return (lut[index]);
-    }
-  };
-
+  // --------------------------------------------------------------------------
 
   template <typename PointInT>
-  class SurfaceNormalModality : public QuantizableModality, public PCLBase<PointInT>
+  class ColorModality
+    : public QuantizableModality, public PCLBase<PointInT>
   {
     protected:
       using PCLBase<PointInT>::input_;
 
       struct Candidate
       {
-        Normal normal;
         float distance;
 
         unsigned char bin_index;
@@ -216,28 +78,28 @@ namespace pcl
     public:
       typedef typename pcl::PointCloud<PointInT> PointCloudIn;
 
-      SurfaceNormalModality ();
-
-      virtual ~SurfaceNormalModality ();
-
+      ColorModality ();
+  
+      virtual ~ColorModality ();
+  
       inline QuantizedMap &
       getQuantizedMap () 
       { 
-        return (filtered_quantized_surface_normals_); 
+        return (filtered_quantized_color_gradients_);
       }
-
+  
       inline QuantizedMap &
       getSpreadedQuantizedMap () 
       { 
-        return (spreaded_quantized_surface_normals_); 
+        return (spreaded_filtered_quantized_color_gradients_);
       }
-
-      void 
-      extractFeatures (const MaskMap & mask, size_t nr_features, size_t modality_index,
+  
+      void
+      extractFeatures (const MaskMap & mask, size_t nr_features, size_t modalityIndex,
                        std::vector<QuantizedMultiModFeature> & features) const;
-
+  
       /** \brief Provide a pointer to the input dataset (overwrites the PCLBase::setInputCloud method)
-        * \param[in] cloud the const boost shared pointer to a PointCloud message
+        * \param cloud the const boost shared pointer to a PointCloud message
         */
       virtual void 
       setInputCloud (const typename PointCloudIn::ConstPtr & cloud) 
@@ -250,87 +112,68 @@ namespace pcl
       processInputData ();
 
       void
-      quantizeSurfaceNormals ();
-
+      quantizeColors ();
+  
       void
-      filterQuantizedSurfaceNormals ();
+      filterQuantizedColors ();
 
+      static inline unsigned char
+      quantizeColorOnRGBExtrema (const float r,
+                                 const float g,
+                                 const float b);
+  
       void
       computeDistanceMap (const MaskMap & input, DistanceMap & output) const;
 
     private:
-
-      float feature_distance_threshold_;
-
-      QuantizedNormalLookUpTable normal_lookup_;
-
-      pcl::PointCloud<pcl::Normal> surface_normals_;
-      pcl::QuantizedMap quantized_surface_normals_;
-      pcl::QuantizedMap filtered_quantized_surface_normals_;
-      pcl::QuantizedMap spreaded_quantized_surface_normals_;
-
+      pcl::QuantizedMap quantized_color_gradients_;
+      pcl::QuantizedMap filtered_quantized_color_gradients_;
+      pcl::QuantizedMap spreaded_filtered_quantized_color_gradients_;
+  
   };
 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
-pcl::SurfaceNormalModality<PointInT>::
-SurfaceNormalModality ()
-: feature_distance_threshold_ (1.0f)
+pcl::ColorModality<PointInT>::ColorModality ()
+  : quantized_color_gradients_ (), filtered_quantized_color_gradients_ (), spreaded_filtered_quantized_color_gradients_ ()
 {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
-pcl::SurfaceNormalModality<PointInT>::~SurfaceNormalModality ()
+pcl::ColorModality<PointInT>::~ColorModality ()
 {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT> void
-pcl::SurfaceNormalModality<PointInT>::processInputData ()
+template <typename PointInT>
+void
+pcl::ColorModality<PointInT>::processInputData ()
 {
-  // compute surface normals
-  pcl::LinearLeastSquaresNormalEstimation<PointInT, pcl::Normal> ne;
-  //ne.setMaxDepthChangeFactor(1.0f);
-  //ne.setNormalSmoothingSize(9.0f);
-  //ne.setDepthDependentSmoothing(true);
-  ne.setInputCloud (input_);
-  ne.compute (surface_normals_);
+  // quantize gradients
+  quantizeColorGradients ();
 
-  // quantize surface normals
-  quantizeSurfaceNormals ();
+  // filter quantized gradients to get only dominants one + thresholding
+  filterQuantizedColorGradients ();
 
-  // filter quantized surface normals
-  filterQuantizedSurfaceNormals ();
-
-  // spread quantized surface normals
+  // spread filtered quantized gradients
+  //spreadFilteredQunatizedColorGradients ();
   const int spreading_size = 8;
-  pcl::QuantizedMap::spreadQuantizedMap (filtered_quantized_surface_normals_,
-                                         spreaded_quantized_surface_normals_,
-                                         spreading_size);
+  pcl::QuantizedMap::spreadQuantizedMap (filtered_quantized_color_gradients_,
+                                         spreaded_filtered_quantized_color_gradients_, spreading_size);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT> void
-pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
-                                                       const size_t nr_features,
-                                                       const size_t modality_index,
-                                                       std::vector<QuantizedMultiModFeature> & features) const
+template <typename PointInT>
+void pcl::ColorModality<PointInT>::extractFeatures (const MaskMap & mask, 
+                                                    const size_t nr_features, 
+                                                    const size_t modality_index,
+                                                    std::vector<QuantizedMultiModFeature> & features) const
 {
   const size_t width = mask.getWidth ();
   const size_t height = mask.getHeight ();
-
-  //cv::Mat maskImage(height, width, CV_8U, mask.mask);
-  //cv::erode(maskImage, maskImage
-
-  // create distance maps for every quantization value
-  //cv::Mat distance_maps[8];
-  //for (int map_index = 0; map_index < 8; ++map_index)
-  //{
-  //  distance_maps[map_index] = ::cv::Mat::zeros(height, width, CV_8U);
-  //}
 
   MaskMap mask_maps[8];
   for (size_t map_index = 0; map_index < 8; ++map_index)
@@ -485,123 +328,160 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT> void
-pcl::SurfaceNormalModality<PointInT>::quantizeSurfaceNormals ()
+template <typename PointInT>
+void
+pcl::ColorModality<PointInT>::quantizeColors ()
 {
   const size_t width = input_->width;
   const size_t height = input_->height;
 
-  quantized_surface_normals_.resize (width, height);
+  quantized_color_gradients_.resize (width, height);
 
   for (size_t row_index = 0; row_index < height; ++row_index)
   {
     for (size_t col_index = 0; col_index < width; ++col_index)
     {
-      const float normal_x = surface_normals_ (col_index, row_index).normal_x;
-      const float normal_y = surface_normals_ (col_index, row_index).normal_y;
-      const float normal_z = surface_normals_ (col_index, row_index).normal_z;
+      const float r = static_cast<float> ((*input_) (col_index, row_index).r);
+      const float g = static_cast<float> ((*input_) (col_index, row_index).g);
+      const float b = static_cast<float> ((*input_) (col_index, row_index).b);
 
-      if (pcl_isnan(normal_x) || pcl_isnan(normal_y) || pcl_isnan(normal_z) || normal_z > 0)
-      {
-        quantized_surface_normals_ (col_index, row_index) = 0;
-        continue;
-      }
-
-      //quantized_surface_normals_.data[row_index*width+col_index] =
-      //  normal_lookup_(normal_x, normal_y, normal_z);
-
-      float angle = atan2 (normal_y, normal_x)*180.0f/3.14f;
-
-      if (angle < 0.0f) angle += 360.0f;
-      if (angle >= 360.0f) angle -= 360.0f;
-
-      int bin_index = static_cast<int> (angle*8.0f/360.0f);
-
-      //quantized_surface_normals_.data[row_index*width+col_index] = 0x1 << bin_index;
-      quantized_surface_normals_ (col_index, row_index) = bin_index;
+      quantized_color_gradients_ (col_index, row_index) = quantizeColorOnRGBExtrema (r, g, b);
     }
   }
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT> void
-pcl::SurfaceNormalModality<PointInT>::filterQuantizedSurfaceNormals ()
+template <typename PointInT>
+void
+pcl::ColorModality<PointInT>::filterQuantizedColorGradients ()
 {
-  const int width = input_->width;
-  const int height = input_->height;
+  const size_t width = input_->width;
+  const size_t height = input_->height;
 
-  filtered_quantized_surface_normals_.resize (width, height);
+  filtered_quantized_color_gradients_.resize (width, height);
 
   // filter data
-  for (int row_index = 1; row_index < height-1; ++row_index)
+  for (size_t row_index = 1; row_index < height-1; ++row_index)
   {
-    for (int col_index = 1; col_index < width-1; ++col_index)
+    for (size_t col_index = 1; col_index < width-1; ++col_index)
     {
-      unsigned char histogram[9] = {0,0,0,0,0,0,0,0,0};
+      unsigned char histogram[8] = {0,0,0,0,0,0,0,0};
 
       {
-        unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index-1)*width+col_index-1;
-        ++histogram[dataPtr[0]];
-        ++histogram[dataPtr[1]];
-        ++histogram[dataPtr[2]];
+        const unsigned char * data_ptr = quantized_color_gradients_.getData () + (row_index-1)*width+col_index-1;
+        assert (0 <= data_ptr[0] && data_ptr[0] < 9 && 
+                0 <= data_ptr[1] && data_ptr[1] < 9 && 
+                0 <= data_ptr[2] && data_ptr[2] < 9);
+        ++histogram[data_ptr[0]];
+        ++histogram[data_ptr[1]];
+        ++histogram[data_ptr[2]];
       }
       {
-        unsigned char * dataPtr = quantized_surface_normals_.getData () + row_index*width+col_index-1;
-        ++histogram[dataPtr[0]];
-        ++histogram[dataPtr[1]];
-        ++histogram[dataPtr[2]];
+        const unsigned char * data_ptr = quantized_color_gradients_.getData () + row_index*width+col_index-1;
+        assert (0 <= data_ptr[0] && data_ptr[0] < 9 && 
+                0 <= data_ptr[1] && data_ptr[1] < 9 && 
+                0 <= data_ptr[2] && data_ptr[2] < 9);
+        ++histogram[data_ptr[0]];
+        ++histogram[data_ptr[1]];
+        ++histogram[data_ptr[2]];
       }
       {
-        unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index+1)*width+col_index-1;
-        ++histogram[dataPtr[0]];
-        ++histogram[dataPtr[1]];
-        ++histogram[dataPtr[2]];
+        const unsigned char * data_ptr = quantized_color_gradients_.getData () + (row_index+1)*width+col_index-1;
+        assert (0 <= data_ptr[0] && data_ptr[0] < 9 && 
+                0 <= data_ptr[1] && data_ptr[1] < 9 && 
+                0 <= data_ptr[2] && data_ptr[2] < 9);
+        ++histogram[data_ptr[0]];
+        ++histogram[data_ptr[1]];
+        ++histogram[data_ptr[2]];
       }
 
       unsigned char max_hist_value = 0;
       int max_hist_index = -1;
 
-      if (max_hist_value < histogram[1]) {max_hist_index = 0; max_hist_value = histogram[1];}
-      if (max_hist_value < histogram[2]) {max_hist_index = 1; max_hist_value = histogram[2];}
-      if (max_hist_value < histogram[3]) {max_hist_index = 2; max_hist_value = histogram[3];}
-      if (max_hist_value < histogram[4]) {max_hist_index = 3; max_hist_value = histogram[4];}
-      if (max_hist_value < histogram[5]) {max_hist_index = 4; max_hist_value = histogram[5];}
-      if (max_hist_value < histogram[6]) {max_hist_index = 5; max_hist_value = histogram[6];}
-      if (max_hist_value < histogram[7]) {max_hist_index = 6; max_hist_value = histogram[7];}
-      if (max_hist_value < histogram[8]) {max_hist_index = 7; max_hist_value = histogram[8];}
+      // for (int i = 0; i < 8; ++i)
+      // {
+      //   if (max_hist_value < histogram[i+1])
+      //   {
+      //     max_hist_index = i;
+      //     max_hist_value = histogram[i+1]
+      //   }
+      // }
+      // Unrolled for performance optimization:
+      if (max_hist_value < histogram[0]) {max_hist_index = 0; max_hist_value = histogram[0];}
+      if (max_hist_value < histogram[1]) {max_hist_index = 1; max_hist_value = histogram[1];}
+      if (max_hist_value < histogram[2]) {max_hist_index = 2; max_hist_value = histogram[2];}
+      if (max_hist_value < histogram[3]) {max_hist_index = 3; max_hist_value = histogram[3];}
+      if (max_hist_value < histogram[4]) {max_hist_index = 4; max_hist_value = histogram[4];}
+      if (max_hist_value < histogram[5]) {max_hist_index = 5; max_hist_value = histogram[5];}
+      if (max_hist_value < histogram[6]) {max_hist_index = 6; max_hist_value = histogram[6];}
+      if (max_hist_value < histogram[7]) {max_hist_index = 7; max_hist_value = histogram[7];}
 
-      if (max_hist_index != -1 && max_hist_value >= 1)
-      {
-        filtered_quantized_surface_normals_ (col_index, row_index) = 0x1 << max_hist_index;
-      }
-      else
-      {
-        filtered_quantized_surface_normals_ (col_index, row_index) = 0;
-      }
+      //if (max_hist_index != -1 && max_hist_value >= 5)
+        filtered_quantized_color_gradients_ (col_index, row_index) = 0x1 << max_hist_index;
+      //else
+      //  filtered_quantized_color_gradients_ (col_index, row_index) = 0;
 
-      //filtered_quantized_color_gradients_.data[row_index*width+col_index] = quantized_color_gradients_.data[row_index*width+col_index];
     }
   }
+}
 
-  //cv::Mat data1(quantized_surface_normals_.height, quantized_surface_normals_.width, CV_8U, quantized_surface_normals_.data);
-  //cv::Mat data2(filtered_quantized_surface_normals_.height, filtered_quantized_surface_normals_.width, CV_8U, filtered_quantized_surface_normals_.data);
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT>
+void
+pcl::ColorModality<PointInT>::quantizeColorOnRGBExtrema (const float r,
+                                                         const float g,
+                                                         const float b)
+{
+  const float r_inv = 255.0f-r;
+  const float g_inv = 255.0f-g;
+  const float b_inv = 255.0f-b;
 
-  //cv::medianBlur(data1, data2, 3);
+  const float dist_0 = (r*r + g*g + b*b)*2.0f;
+  const float dist_1 = r*r + g*g + b_inv*b_inv;
+  const float dist_2 = r*r + g_inv*g_inv+ b*b;
+  const float dist_3 = r*r + g_inv*g_inv + b_inv*b_inv;
+  const float dist_4 = r_inv*r_inv + g*g + b*b;
+  const float dist_5 = r_inv*r_inv + g*g + b_inv*b_inv;
+  const float dist_6 = r_inv*r_inv + g_inv*g_inv+ b*b;
+  const float dist_7 = (r_inv*r_inv + g_inv*g_inv + b_inv*b_inv)*1.5f;
 
-  //for (int row_index = 0; row_index < height; ++row_index)
-  //{
-  //  for (int col_index = 0; col_index < width; ++col_index)
-  //  {
-  //    filtered_quantized_surface_normals_.data[row_index*width+col_index] = 0x1 << filtered_quantized_surface_normals_.data[row_index*width+col_index];
-  //  }
-  //}
+  const float min_dist = std::min (std::min (std::min (dist_0, dist_1), std::min (dist_2, dist_3)), std::min (std::min (dist_4, dist_5), std::min (dist_6, dist_7)));
+
+  if (min_dist == dist_0)
+  {
+    return 0;
+  }
+  if (min_dist == dist_1)
+  {
+    return 1;
+  }
+  if (min_dist == dist_2)
+  {
+    return 2;
+  }
+  if (min_dist == dist_3)
+  {
+    return 3;
+  }
+  if (min_dist == dist_4)
+  {
+    return 4;
+  }
+  if (min_dist == dist_5)
+  {
+    return 5;
+  }
+  if (min_dist == dist_6)
+  {
+    return 6;
+  }
+  return 7;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
-pcl::SurfaceNormalModality<PointInT>::computeDistanceMap (const MaskMap & input, DistanceMap & output) const
+pcl::ColorModality<PointInT>::computeDistanceMap (const MaskMap & input, 
+                                                  DistanceMap & output) const
 {
   const size_t width = input.getWidth ();
   const size_t height = input.getHeight ();
