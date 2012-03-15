@@ -1,0 +1,142 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ */
+
+#ifndef PCL_RECOGNITION_HYPOTHESES_VERIFICATION_H_
+#define PCL_RECOGNITION_HYPOTHESES_VERIFICATION_H_
+
+#include <pcl/pcl_macros.h>
+#include "occlusion_reasoning.h"
+#include <pcl/common/common.h>
+
+namespace pcl
+{
+
+/**
+ * \brief Abstract class for hypotheses verification methods
+ * \author Aitor Aldoma, Federico Tombari
+ */
+
+template<typename ModelT, typename SceneT>
+class PCL_EXPORTS HypothesesVerification
+{
+
+protected:
+  std::vector<bool> mask_;
+  typename pcl::PointCloud<SceneT>::Ptr scene_cloud_;
+  typename std::vector<typename pcl::PointCloud<ModelT>::Ptr> models_;
+  int zbuffer_scene_resolution_;
+  int zbuffer_self_occlusion_resolution_;
+
+public:
+
+  HypothesesVerification() {
+    zbuffer_scene_resolution_ = 100;
+    zbuffer_self_occlusion_resolution_ = 150;
+  }
+  /*
+   *  \brief Returns a vector of booleans representing which hypotheses have been accepted/rejected (true/false)
+   *  mask vector of booleans
+   */
+
+  void
+  getMask (std::vector<bool> & mask)
+  {
+    mask = mask_;
+  }
+
+  /*
+   *  \brief Sets the models (recognition hypotheses) - requires the scene_cloud_ to be set first if reasoning about occlusions
+   *  mask models Vector of point clouds representing the models (in same coordinates as the scene_cloud_)
+   */
+  void
+  addModels (std::vector<const typename pcl::PointCloud<ModelT>::Ptr> & models, bool occlusion_reasoning=false)
+  {
+    if(!occlusion_reasoning)
+      models_ = models;
+    else {
+      //we need to reason about occlusions before setting the model
+      if(scene_cloud_ == 0) {
+        PCL_ERROR("setSceneCloud should be called before adding the model if reasoning about occlusions...");
+      }
+
+      pcl::ZBuffering<ModelT, SceneT> zbuffer_scene(zbuffer_scene_resolution_,zbuffer_scene_resolution_,1.f);
+      if(!scene_cloud_->isOrganized()) {
+        zbuffer_scene.computeDepthMap(scene_cloud_,true);
+      }
+
+      for(size_t i=0; i < models.size(); i++) {
+
+        //self-occlusions
+        typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
+        typename pcl::ZBuffering<ModelT, SceneT> zbuffer_self_occlusion(150,150,1.f);
+        zbuffer_self_occlusion.computeDepthMap(models[i],true);
+        zbuffer_self_occlusion.filter(models[i],filtered,0.005);
+
+        //scene-occlusions
+        if(scene_cloud_->isOrganized()) {
+          filtered = pcl::occlusion_reasoning::filter (scene_cloud_, filtered, 525.f, 0.01f);
+        } else {
+          zbuffer_scene.filter(filtered,filtered,0.01);
+        }
+
+        models_.push_back(filtered);
+      }
+    }
+  }
+
+  /*
+   *  \brief Sets the scene cloud
+   *  mask scene_cloud Point cloud representing the scene
+   */
+
+  void
+  setSceneCloud (const typename pcl::PointCloud<SceneT>::Ptr & scene_cloud)
+  {
+    scene_cloud_ = scene_cloud;
+  }
+
+  /*
+   *  \brief Function that performs the hypotheses verification, needs to be implemented in the subclasses
+   *  This function modifies the values of mask_ and needs to be called after both scene and model have been added
+   */
+
+  virtual void verify ()=0;
+
+};
+
+}
+
+#endif /* PCL_RECOGNITION_HYPOTHESES_VERIFICATION_H_ */

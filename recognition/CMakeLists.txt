@@ -1,6 +1,6 @@
 set(SUBSYS_NAME recognition)
 set(SUBSYS_DESC "Point cloud recognition library")
-set(SUBSYS_DEPS common search kdtree features)
+set(SUBSYS_DEPS common search kdtree features io)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -22,9 +22,12 @@ if(build)
         include/pcl/${SUBSYS_NAME}/dense_quantized_multi_mod_template.h
         include/pcl/${SUBSYS_NAME}/sparse_quantized_multi_mod_template.h
         include/pcl/${SUBSYS_NAME}/surface_normal_modality.h
+        include/pcl/${SUBSYS_NAME}/hv/occlusion_reasoning.h
+        
         )
 
     set(impl_incs 
+        include/pcl/${SUBSYS_NAME}/impl/hv/occlusion_reasoning.hpp
         )
 
     set(srcs
@@ -32,6 +35,7 @@ if(build)
         src/quantizable_modality.cpp
         src/dotmod.cpp
         src/mask_map.cpp
+        src/hv/occlusion_reasoning.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
