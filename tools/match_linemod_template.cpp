@@ -88,16 +88,18 @@ matchTemplates (const PointCloudXYZRGBA::ConstPtr & input, const pcl::LINEMOD & 
 {  
   pcl::ColorGradientModality<pcl::PointXYZRGBA> color_grad_mod;
   color_grad_mod.setInputCloud (input);
+  color_grad_mod.processInputData ();
 
   pcl::SurfaceNormalModality<pcl::PointXYZRGBA> surface_norm_mod;
   surface_norm_mod.setInputCloud (input);
+  surface_norm_mod.processInputData ();
 
   std::vector<pcl::QuantizableModality*> modalities (2);
   modalities[0] = &color_grad_mod;
   modalities[1] = &surface_norm_mod;
 
   std::vector<pcl::LINEMODDetection> detections;
-  linemod.detectTemplates (modalities, detections);
+  linemod.matchTemplates (modalities, detections);
 
   return (detections);
 }
@@ -120,7 +122,7 @@ compute (const PointCloudXYZRGBA::ConstPtr & input, const char * templates_filen
     printf ("%zu: %d %d %d %f\n", i, d.x, d.y, d.template_id, d.score);
   }
 
-  /* Visualization code for testing purposes (requires libpng++)
+  /*// Visualization code for testing purposes (requires libpng++)
   int i = 0;
   png::image<png::rgb_pixel> image (640, 480);
   for (size_t y = 0; y < image.get_height (); ++y)

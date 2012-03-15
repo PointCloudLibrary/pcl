@@ -166,12 +166,13 @@ void
 trainTemplate (const PointCloudXYZRGBA::ConstPtr & input, const std::vector<bool> &foreground_mask, 
                pcl::LINEMOD & linemod)
 {
-  
   pcl::ColorGradientModality<pcl::PointXYZRGBA> color_grad_mod;
   color_grad_mod.setInputCloud (input);
-
+  color_grad_mod.processInputData ();
+  
   pcl::SurfaceNormalModality<pcl::PointXYZRGBA> surface_norm_mod;
   surface_norm_mod.setInputCloud (input);
+  surface_norm_mod.processInputData ();
 
   std::vector<pcl::QuantizableModality*> modalities (2);
   modalities[0] = &color_grad_mod;
