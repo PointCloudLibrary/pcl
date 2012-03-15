@@ -62,12 +62,13 @@ pcl::ZBuffering<ModelT, SceneT>::~ZBuffering ()
 
 template<typename ModelT, typename SceneT>
 void
-pcl::ZBuffering<ModelT, SceneT>::filter (typename pcl::PointCloud<ModelT>::Ptr & model, typename pcl::PointCloud<ModelT>::Ptr & filtered, float thres)
+pcl::ZBuffering<ModelT, SceneT>::filter (typename pcl::PointCloud<ModelT>::Ptr & model, typename pcl::PointCloud<ModelT>::Ptr & filtered,
+                                         float thres)
 {
 
   float cx, cy;
-  cx = static_cast<float>(cx_) / 2.f - 0.5f;
-  cy = static_cast<float>(cy_) / 2.f - 0.5f;
+  cx = static_cast<float> (cx_) / 2.f - 0.5f;
+  cy = static_cast<float> (cy_) / 2.f - 0.5f;
 
   std::vector<int> indices_to_keep;
   indices_to_keep.resize (model->points.size ());
@@ -77,8 +78,8 @@ pcl::ZBuffering<ModelT, SceneT>::filter (typename pcl::PointCloud<ModelT>::Ptr &
     float x = model->points[i].x;
     float y = model->points[i].y;
     float z = model->points[i].z;
-    int u = static_cast<int>(f_ * x / z + cx);
-    int v = static_cast<int>(f_ * y / z + cy);
+    int u = static_cast<int> (f_ * x / z + cx);
+    int v = static_cast<int> (f_ * y / z + cy);
 
     if (u >= cx_ || v >= cy_ || u < 0 || v < 0)
       continue;
@@ -87,7 +88,7 @@ pcl::ZBuffering<ModelT, SceneT>::filter (typename pcl::PointCloud<ModelT>::Ptr &
     if ((z - thres) > depth_[u * cy_ + v] || !pcl_isfinite(depth_[u * cy_ + v]))
       continue;
 
-    indices_to_keep[keep] = static_cast<int>(i);
+    indices_to_keep[keep] = static_cast<int> (i);
     keep++;
   }
 
@@ -114,12 +115,12 @@ pcl::ZBuffering<ModelT, SceneT>::computeDepthMap (typename pcl::PointCloud<Scene
         max_b = max_by;
     }
 
-    f_ = (static_cast<float>(std::max (cx_, cy_)) / 2.f - 0.5f) / max_b;
+    f_ = (static_cast<float> (std::max (cx_, cy_)) / 2.f - 0.5f) / max_b;
   }
 
   float cx, cy;
-  cx = static_cast<float>(cx_) / 2.f - 0.5f;
-  cy = static_cast<float>(cy_) / 2.f - 0.5f;
+  cx = static_cast<float> (cx_) / 2.f - 0.5f;
+  cy = static_cast<float> (cy_) / 2.f - 0.5f;
 
   depth_ = new float[cx_ * cy_];
   for (int i = 0; i < (cx_ * cy_); i++)
@@ -130,8 +131,8 @@ pcl::ZBuffering<ModelT, SceneT>::computeDepthMap (typename pcl::PointCloud<Scene
     float x = scene->points[i].x;
     float y = scene->points[i].y;
     float z = scene->points[i].z;
-    int u = static_cast<int>(f_ * x / z + cx);
-    int v = static_cast<int>(f_ * y / z + cy);
+    int u = static_cast<int> (f_ * x / z + cx);
+    int v = static_cast<int> (f_ * y / z + cy);
 
     if (u >= cx_ || v >= cy_ || u < 0 || v < 0)
       continue;
@@ -141,48 +142,53 @@ pcl::ZBuffering<ModelT, SceneT>::computeDepthMap (typename pcl::PointCloud<Scene
   }
 }
 
-namespace pcl {
-  namespace occlusion_reasoning {
-      template<typename ModelT, typename SceneT> typename pcl::PointCloud<ModelT>::Ptr
-      filter (typename pcl::PointCloud<SceneT>::Ptr & organized_cloud, typename pcl::PointCloud<ModelT>::Ptr & to_be_filtered, float f, float threshold)
+namespace pcl
+{
+  namespace occlusion_reasoning
+  {
+    template<typename ModelT, typename SceneT>
+    typename pcl::PointCloud<ModelT>::Ptr
+    filter (typename pcl::PointCloud<SceneT>::Ptr & organized_cloud, typename pcl::PointCloud<ModelT>::Ptr & to_be_filtered, float f,
+            float threshold)
+    {
+      float cx = (static_cast<float> (organized_cloud->width) / 2.f - 0.5f);
+      float cy = (static_cast<float> (organized_cloud->height) / 2.f - 0.5f);
+      typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
+
+      std::vector<int> indices_to_keep;
+      indices_to_keep.resize (to_be_filtered->points.size ());
+
+      int keep = 0;
+      for (size_t i = 0; i < to_be_filtered->points.size (); i++)
       {
-        float cx = (static_cast<float>(organized_cloud->width) / 2.f - 0.5f);
-        float cy = (static_cast<float>(organized_cloud->height) / 2.f - 0.5f);
-        typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
+        float x = to_be_filtered->points[i].x;
+        float y = to_be_filtered->points[i].y;
+        float z = to_be_filtered->points[i].z;
+        int u = static_cast<int> (f * x / z + cx);
+        int v = static_cast<int> (f * y / z + cy);
 
-        std::vector<int> indices_to_keep;
-        indices_to_keep.resize (to_be_filtered->points.size ());
+        //Not out of bounds
+        if (u >= static_cast<int> (organized_cloud->width) || v >= static_cast<int> (organized_cloud->height))
+          continue;
 
-        int keep = 0;
-        for (size_t i = 0; i < to_be_filtered->points.size (); i++)
-        {
-          float x = to_be_filtered->points[i].x;
-          float y = to_be_filtered->points[i].y;
-          float z = to_be_filtered->points[i].z;
-          int u = static_cast<int>(f * x / z + cx);
-          int v = static_cast<int>(f * y / z + cy);
+        //Check for invalid depth
+        if (!pcl_isfinite (organized_cloud->at (u, v).x) || !pcl_isfinite (organized_cloud->at (u, v).y)
+            || !pcl_isfinite (organized_cloud->at (u, v).z))
+          continue;
 
-          //Not out of bounds
-          if (u >= static_cast<int>(organized_cloud->width) || v >= static_cast<int>(organized_cloud->height))
-            continue;
+        float z_oc = organized_cloud->at (u, v).z;
 
-          //Check for invalid depth
-          if (!pcl_isfinite (organized_cloud->at (u, v).x) || !pcl_isfinite (organized_cloud->at (u, v).y) || !pcl_isfinite (organized_cloud->at (u, v).z))
-            continue;
+        //Check if point depth (distance to camera) is greater than the (u,v)
+        if ((z - z_oc) > threshold)
+          continue;
 
-          float z_oc = organized_cloud->at (u, v).z;
-
-          //Check if point depth (distance to camera) is greater than the (u,v)
-          if ((z - z_oc) > threshold)
-            continue;
-
-          indices_to_keep[keep] = static_cast<int>(i);
-          keep++;
-        }
-
-        pcl::copyPointCloud (*to_be_filtered, indices_to_keep, *filtered);
-        return filtered;
+        indices_to_keep[keep] = static_cast<int> (i);
+        keep++;
       }
+
+      pcl::copyPointCloud (*to_be_filtered, indices_to_keep, *filtered);
+      return filtered;
+    }
   }
 }
 
