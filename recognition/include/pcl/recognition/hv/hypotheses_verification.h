@@ -40,6 +40,8 @@
 #include <pcl/pcl_macros.h>
 #include "occlusion_reasoning.h"
 #include <pcl/common/common.h>
+#include <pcl/search/kdtree.h>
+#include <pcl/filters/voxel_grid.h>
 
 namespace pcl
 {
@@ -62,6 +64,17 @@ namespace pcl
      * \brief Scene point cloud
      */
     typename pcl::PointCloud<SceneT>::Ptr scene_cloud_;
+
+    /*
+     * \brief Downsampled scene point cloud
+     */
+     typename pcl::PointCloud<SceneT>::Ptr scene_cloud_downsampled_;
+
+    /*
+     * \brief Scene tree of the downsampled cloud
+     */
+    typename pcl::search::KdTree<SceneT>::Ptr scene_downsampled_tree_;
+
     /*
      * \brief Vector of point clouds representing the 3D models after reasoning about occlusions (in same coordinates as the scene cloud)
      */
@@ -83,14 +96,39 @@ namespace pcl
      */
     float resolution_;
 
+    /*
+     * \brief Threshold for inliers
+     */
+    float inliers_threshold_;
+
   public:
 
     HypothesesVerification ()
     {
       zbuffer_scene_resolution_ = 100;
       zbuffer_self_occlusion_resolution_ = 150;
-      resolution_ = 0.005;
+      resolution_ = 0.005f;
+      inliers_threshold_ = static_cast<float>(resolution_);
     }
+
+    /*
+     *  \brief Sets the resolution of scene cloud and models used to verify hypotheses
+     *  mask r resolution
+     */
+    void
+    setResolution(float r) {
+      resolution_ = r;
+    }
+
+    /*
+     *  \brief Sets the resolution of scene cloud and models used to verify hypotheses
+     *  mask r resolution
+     */
+    void
+    setInlierThreshold(float r) {
+      inliers_threshold_ = r;
+    }
+
     /*
      *  \brief Returns a vector of booleans representing which hypotheses have been accepted/rejected (true/false)
      *  mask vector of booleans
@@ -172,6 +210,15 @@ namespace pcl
     setSceneCloud (const typename pcl::PointCloud<SceneT>::Ptr & scene_cloud)
     {
       scene_cloud_ = scene_cloud;
+
+      pcl::VoxelGrid<SceneT> voxel_grid;
+      voxel_grid.setInputCloud (scene_cloud);
+      voxel_grid.setLeafSize (resolution_, resolution_, resolution_);
+      voxel_grid.filter (*scene_cloud_downsampled_);
+
+      //initialize kdtree for search
+      scene_downsampled_tree_.reset (new pcl::search::KdTree<SceneT>);
+      scene_downsampled_tree_->setInputCloud(scene_cloud_downsampled_);
     }
 
     /*
@@ -181,6 +228,13 @@ namespace pcl
 
     virtual void
     verify ()=0;
+
+    /*
+     *  \brief Initialize the model used for hypotheses verification, needs to be implemented in the subclasses
+     */
+
+    virtual void
+    initialize ()=0;
 
   };
 
