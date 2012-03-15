@@ -92,7 +92,7 @@ class SimpleOpenNIViewer
 
     void
     image_callback (const boost::shared_ptr<openni_wrapper::Image> &image, 
-                    const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image, float constant)
+                    const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image, float)
     {
       FPS_CALC ("image callback");
       boost::mutex::scoped_lock lock (image_mutex_);
@@ -103,10 +103,10 @@ class SimpleOpenNIViewer
     void 
     keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
     {
-      string* message = (string*)cookie;
+      string* message = static_cast<string*> (cookie);
       cout << (*message) << " :: ";
       if (event.getKeyCode ())
-        cout << "the key \'" << event.getKeyCode () << "\' (" << (int)event.getKeyCode () << ") was";
+        cout << "the key \'" << event.getKeyCode () << "\' (" << event.getKeyCode () << ") was";
       else
         cout << "the special key \'" << event.getKeySym () << "\' was";
       if (event.keyDown ())
@@ -118,7 +118,7 @@ class SimpleOpenNIViewer
     void 
     mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
     {
-      string* message = (string*) cookie;
+      string* message = static_cast<string*> (cookie);
       if (mouse_event.getType () == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton () == pcl::visualization::MouseEvent::LeftButton)
       {
         cout << (*message) << " :: " << mouse_event.getX () << " , " << mouse_event.getY () << endl;
@@ -131,10 +131,10 @@ class SimpleOpenNIViewer
       string mouseMsg2D ("Mouse coordinates in image viewer");
       string keyMsg2D ("Key event for image viewer");
 
-      image_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg2D));
-      image_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg2D));
-      depth_image_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg2D));
-      depth_image_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg2D));
+      image_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, static_cast<void*> (&mouseMsg2D));
+      image_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, static_cast<void*> (&keyMsg2D));
+      depth_image_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, static_cast<void*> (&mouseMsg2D));
+      depth_image_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, static_cast<void*> (&keyMsg2D));
         
       boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float) > image_cb = boost::bind (&SimpleOpenNIViewer::image_callback, this, _1, _2, _3);
       boost::signals2::connection image_connection = grabber_.registerCallback (image_cb);
@@ -144,7 +144,7 @@ class SimpleOpenNIViewer
       unsigned char* rgb_data = 0;
       unsigned rgb_data_size = 0;
       
-      while (true)
+      while (!image_viewer_.wasStopped () && !depth_image_viewer_.wasStopped ())
       {
         boost::mutex::scoped_lock lock (image_mutex_);
         if (image_)
@@ -164,6 +164,8 @@ class SimpleOpenNIViewer
           {
             if (rgb_data_size < image->getWidth () * image->getHeight ())
             {
+              if (rgb_data)
+                delete [] rgb_data;
               rgb_data_size = image->getWidth () * image->getHeight ();
               rgb_data = new unsigned char [rgb_data_size * 3];
             }
@@ -182,7 +184,7 @@ class SimpleOpenNIViewer
             depth_image_cld_init_ = !depth_image_cld_init_;
           }
 
-          depth_image_viewer_.showShortImage ((unsigned short*)depth_image->getDepthMetaData ().Data (), 
+          depth_image_viewer_.showShortImage (reinterpret_cast<const unsigned short*> (depth_image->getDepthMetaData ().Data ()), 
                                               depth_image->getWidth (), depth_image->getHeight (),
                                               std::numeric_limits<unsigned short>::min (), 
                                               // Scale so that the colors look brigher on screen
@@ -283,7 +285,7 @@ main (int argc, char ** argv)
           for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices (); ++deviceIdx)
           {
             cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
-              << ", connected: " << (int) driver.getBus (deviceIdx) << " @ " << (int) driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << endl;
+              << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << endl;
           }
 
         }
@@ -304,7 +306,7 @@ main (int argc, char ** argv)
   
   unsigned mode;
   if (pcl::console::parse (argc, argv, "-imagemode", mode) != -1)
-    image_mode = (pcl::OpenNIGrabber::Mode) mode;
+    image_mode = static_cast<pcl::OpenNIGrabber::Mode> (mode);
   
   pcl::OpenNIGrabber grabber (device_id, pcl::OpenNIGrabber::OpenNI_Default_Mode, image_mode);
   SimpleOpenNIViewer v (grabber);

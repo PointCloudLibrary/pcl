@@ -38,18 +38,12 @@
 #ifndef PCL_VISUALIZATION_IMAGE_VISUALIZER_H__
 #define	PCL_VISUALIZATION_IMAGE_VISUALIZER_H__
 
-#include <vtkImageViewer.h>
-#include <vtkImageViewer2.h>
-#include <vtkInteractorStyle.h>
 #include <boost/shared_array.hpp>
 #include <pcl/pcl_macros.h>
 #include <pcl/console/print.h>
-#include <vtkRenderWindow.h>
-#include <vtkRenderWindowInteractor.h>
-#include <vtkSmartPointer.h>
 #include <boost/signals2.hpp>
-#include <vtkCallbackCommand.h>
 #include <pcl/visualization/interactor_style.h>
+#include <pcl/visualization/vtk.h>
 
 namespace pcl
 {
@@ -248,10 +242,25 @@ namespace pcl
         {
           image_viewer_->SetPosition (x, y);
         }
-      protected: // methods
-        /** \brief Set the stopped flag back to false. */
-        void 
-        resetStoppedFlag () { stopped_ = false; }
+
+        /** \brief Set the window size in screen coordinates.
+          * \param[in] xw window size in horizontal (pixels)
+          * \param[in] yw window size in vertical (pixels)
+          */
+        void
+        setSize (int xw, int yw)
+        {
+          image_viewer_->SetSize (xw, yw);
+        }
+
+        /** \brief Returns true when the user tried to close the window */
+        bool
+        wasStopped () const { if (image_viewer_) return (stopped_); else return (true); }
+
+      protected:
+        /** \brief Set the stopped flag back to false */
+        void
+        resetStoppedFlag () { if (image_viewer_) stopped_ = false; }
 
         /** \brief Fire up a mouse event with a specified event ID
           * \param[int] event_id the id of the event
@@ -274,6 +283,8 @@ namespace pcl
       protected: // types
         struct ExitMainLoopTimerCallback : public vtkCommand
         {
+          ExitMainLoopTimerCallback () : right_timer_id (), window () {}
+
           static ExitMainLoopTimerCallback* New ()
           {
             return (new ExitMainLoopTimerCallback);
@@ -283,7 +294,7 @@ namespace pcl
           {
             if (event_id != vtkCommand::TimerEvent)
               return;
-            int timer_id = *(int*)call_data;
+            int timer_id = *reinterpret_cast<int*> (call_data);
             if (timer_id != right_timer_id)
               return;
             window->interactor_->TerminateApp ();
@@ -293,6 +304,8 @@ namespace pcl
         };
         struct ExitCallback : public vtkCommand
         {
+          ExitCallback () : window () {}
+
           static ExitCallback* New ()
           {
             return (new ExitCallback);
