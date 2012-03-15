@@ -253,27 +253,54 @@ namespace pcl
           */
         class OctreeKey
         {
-          public:
+        public:
 
-            /** \brief Operator== for comparing octree keys with each other.
-             *  \return "true" if leaf node indices are identical; "false" otherwise.
-             * */
-            bool
-            operator == (const OctreeKey& b) const
-            {
-              return ((b.x == this->x) && (b.y == this->y) && (b.z == this->z));
-            }
+          /** \brief Empty constructor. */
+          OctreeKey () :
+              x (0), y (0), z (0)
+          {
+          }
 
-            // Indices addressing a voxel at (X, Y, Z)
-            unsigned int x;
-            unsigned int y;
-            unsigned int z;
+          /** \brief Constructor for key initialization. */
+          OctreeKey (unsigned int keyX, unsigned int keyY, unsigned int keyZ) :
+              x (keyX), y (keyY), z (keyZ)
+          {
+          }
+
+          /** \brief Copy constructor. */
+          OctreeKey (const OctreeKey& source) :
+              x (source.x), y (source.y), z (source.z)
+          {
+          }
+
+          /** \brief Operator== for comparing octree keys with each other.
+           *  \return "true" if leaf node indices are identical; "false" otherwise.
+           * */
+          bool
+          operator == (const OctreeKey& b) const
+          {
+            return ((b.x == this->x) && (b.y == this->y) && (b.z == this->z));
+          }
+
+          /** \brief Operator<= for comparing octree keys with each other.
+           *  \return "true" if key indices are not greater than the key indices of b  ; "false" otherwise.
+           * */
+          bool
+          operator <= (const OctreeKey& b) const
+          {
+            return ((b.x >= this->x) && (b.y >= this->y) && (b.z >= this->z));
+          }
+
+          // Indices addressing a voxel at (X, Y, Z)
+          unsigned int x;
+          unsigned int y;
+          unsigned int z;
         };
 
         /** \brief @b Octree branch class.
-          * \note It stores 8 pointers to its child nodes.
-          * \author Julius Kammerl (julius@kammerl.de)
-          */
+         * \note It stores 8 pointers to its child nodes.
+         * \author Julius Kammerl (julius@kammerl.de)
+         */
         class OctreeBranch : public OctreeNode
         {
           // OctreeBase is a friend!
@@ -439,7 +466,7 @@ namespace pcl
         inline bool
         existLeaf (const OctreeKey& key_arg) const
         {
-          return (findLeafRecursive (key_arg, depthMask_, rootNode_) != 0);
+          return ((key_arg <= keyRange_) && (findLeafRecursive (key_arg, depthMask_, rootNode_) != 0));
         }
 
         /** \brief Remove leaf node from octree
@@ -448,7 +475,8 @@ namespace pcl
         inline void
         removeLeaf (const OctreeKey& key_arg)
         {
-          deleteLeafRecursive (key_arg, depthMask_, rootNode_);
+          if (key_arg <= keyRange_)
+            deleteLeafRecursive (key_arg, depthMask_, rootNode_);
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -938,6 +966,9 @@ namespace pcl
 
         /** \brief Octree depth */
         unsigned int octreeDepth_;
+
+        /** \brief key range */
+        OctreeKey keyRange_;
 
         /** \brief Vector pools of unused branch nodes   **/
         std::vector<OctreeBranch*> unusedBranchesPool_;

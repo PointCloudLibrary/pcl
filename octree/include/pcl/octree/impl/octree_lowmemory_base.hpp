@@ -102,6 +102,9 @@ namespace pcl
 
       // define depthMask_ by setting a single bit to 1 at bit position == tree depth
       depthMask_ = (1 << (depth_arg - 1));
+
+      // define max. keys
+      keyRange_.x = keyRange_.y = keyRange_.z = (1 << depth_arg) - 1;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////

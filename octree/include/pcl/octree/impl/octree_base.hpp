@@ -91,16 +91,20 @@ namespace pcl
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT, typename BranchT> void
+    template<typename DataT, typename LeafT, typename BranchT>
+    void
     OctreeBase<DataT, LeafT, BranchT>::setTreeDepth (unsigned int depth_arg)
     {
-      assert (depth_arg>0);
+      assert(depth_arg>0);
 
       // set octree depth
       octreeDepth_ = depth_arg;
 
       // define depthMask_ by setting a single bit to 1 at bit position == tree depth
       depthMask_ = (1 << (depth_arg - 1));
+
+      // define max. keys
+      keyRange_.x = keyRange_.y = keyRange_.z = (1 << depth_arg) - 1;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -155,7 +159,7 @@ namespace pcl
       this->genOctreeKeyByIntIdx (idxX_arg, idxY_arg, idxZ_arg, key);
 
       // check if key exist in octree
-      return (existLeaf (key));
+      return ( existLeaf (key));
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
