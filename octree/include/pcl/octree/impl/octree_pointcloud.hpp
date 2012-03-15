@@ -604,9 +604,9 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::genOctreeKeyforPoint (con
                                                                              OctreeKey & key_arg) const
   {
     // calculate integer key for point coordinates
-    key_arg.x = min (static_cast<unsigned int> ((point_arg.x - this->minX_) / this->resolution_), maxKeys_ - 1);
-    key_arg.y = min (static_cast<unsigned int> ((point_arg.y - this->minY_) / this->resolution_), maxKeys_ - 1);
-    key_arg.z = min (static_cast<unsigned int> ((point_arg.z - this->minZ_) / this->resolution_), maxKeys_ - 1);
+    key_arg.x = static_cast<unsigned int> ((point_arg.x - this->minX_) / this->resolution_);
+    key_arg.y = static_cast<unsigned int> ((point_arg.y - this->minY_) / this->resolution_);
+    key_arg.z = static_cast<unsigned int> ((point_arg.z - this->minZ_) / this->resolution_);
   }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
