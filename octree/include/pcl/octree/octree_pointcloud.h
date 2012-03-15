@@ -440,6 +440,17 @@ namespace pcl
         void
         adoptBoundingBoxToPoint (const PointT& pointIdx_arg);
 
+        /** \brief Checks if given point is within the bounding box of the octree
+         * \param[in] pointIdx_arg point to be checked for bounding box violations
+         * \return "true" - no bound violation
+         */
+        inline bool
+        isPointWithinBoundingBox (const PointT& pointIdx_arg) const
+        {
+          return (!((pointIdx_arg.x <  minX_) || (pointIdx_arg.y <  minY_) || (pointIdx_arg.z <  minZ_)
+                ||  (pointIdx_arg.x >= maxX_) || (pointIdx_arg.y >= maxY_) || (pointIdx_arg.z >= maxZ_)));
+        }
+
         /** \brief Generate octree key for voxel at a given point
           * \param[in] point_arg the point addressing a voxel
           * \param[out] key_arg write octree key to this reference

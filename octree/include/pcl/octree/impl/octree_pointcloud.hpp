@@ -136,7 +136,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::isVoxelOccupiedAtPoint (c
   this->genOctreeKeyforPoint (point_arg, key);
 
   // search for key in octree
-  return (this->existLeaf (key));
+  return (isPointWithinBoundingBox (point_arg) && this->existLeaf (key));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
