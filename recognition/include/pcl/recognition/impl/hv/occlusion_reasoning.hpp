@@ -143,12 +143,12 @@ pcl::ZBuffering<ModelT, SceneT>::computeDepthMap (typename pcl::PointCloud<Scene
 
 namespace pcl {
   namespace occlusion_reasoning {
-      pcl::PointCloud<pcl::PointXYZ>::Ptr
-      filter (pcl::PointCloud<pcl::PointXYZ>::Ptr & organized_cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr & to_be_filtered, float f, float threshold)
+      template<typename ModelT, typename SceneT> typename pcl::PointCloud<ModelT>::Ptr
+      filter (typename pcl::PointCloud<SceneT>::Ptr & organized_cloud, typename pcl::PointCloud<ModelT>::Ptr & to_be_filtered, float f, float threshold)
       {
         float cx = (static_cast<float>(organized_cloud->width) / 2.f - 0.5f);
         float cy = (static_cast<float>(organized_cloud->height) / 2.f - 0.5f);
-        typename pcl::PointCloud<pcl::PointXYZ>::Ptr filtered (new pcl::PointCloud<pcl::PointXYZ> ());
+        typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
 
         std::vector<int> indices_to_keep;
         indices_to_keep.resize (to_be_filtered->points.size ());

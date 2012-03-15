@@ -119,7 +119,7 @@ public:
 
   /*
    *  \brief Sets the scene cloud
-   *  mask scene_cloud Point cloud representing the scene
+   *  scene_cloud Point cloud representing the scene
    */
 
   void
