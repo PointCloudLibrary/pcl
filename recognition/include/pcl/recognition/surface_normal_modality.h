@@ -245,9 +245,10 @@ namespace pcl
         input_ = cloud;
       }
 
-    protected:
       virtual void
       processInputData ();
+
+    protected:
 
       void
       quantizeSurfaceNormals ();

@@ -91,8 +91,8 @@ createAndAddTemplate (const std::vector<pcl::QuantizableModality*> & modalities,
   }
 
   // set region relative to the center
-  linemod_template.region.x = region.x;
-  linemod_template.region.y = region.y;
+  linemod_template.region.x = 0;
+  linemod_template.region.y = 0;
   //linemod_template.region.x = region.x - centerX;
   //linemod_template.region.y = region.y - centerY;
   linemod_template.region.width = region.width;
