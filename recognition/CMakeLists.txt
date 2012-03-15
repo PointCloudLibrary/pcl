@@ -30,6 +30,8 @@ if(build)
 
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/hv/occlusion_reasoning.hpp
+        include/pcl/${SUBSYS_NAME}/impl/hv/hv_papazov.hpp
+        
         )
 
     set(srcs
