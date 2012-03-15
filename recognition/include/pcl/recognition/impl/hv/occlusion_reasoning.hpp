@@ -36,7 +36,7 @@
 
 #include <pcl/recognition/hv/occlusion_reasoning.h>
 #include <pcl/common/transforms.h>
-#include <pcl/io/io.h>
+#include <pcl/common/io.h>
 
 template<typename ModelT, typename SceneT>
 pcl::ZBuffering<ModelT, SceneT>::ZBuffering (int resx, int resy, float f)
