@@ -440,7 +440,7 @@ float costFunction2(float ref_val,float depth_val){
   }
   
   float lhood=1;
-  if (isnan(depth_val)){ // pixels with nan depth - for openNI null points
+  if (pcl_isnan(depth_val)){ // pixels with nan depth - for openNI null points
     lhood =1; // log(1) = 0 ---> has no effect
   }else if(ref_val < 0){ // all RGB pixels with no depth - for freenect null points
     lhood =1; // log(1) = 0 ---> has no effect
