@@ -228,14 +228,6 @@ namespace pcl
 
     virtual void
     verify ()=0;
-
-    /*
-     *  \brief Initialize the model used for hypotheses verification, needs to be implemented in the subclasses
-     */
-
-    virtual void
-    initialize ()=0;
-
   };
 
 }

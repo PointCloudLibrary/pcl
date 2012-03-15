@@ -83,8 +83,12 @@ namespace pcl
     typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, boost::shared_ptr<RecognitionModel> > Graph;
     Graph conflict_graph_;
 
+    //builds the conflict_graph
     void buildConflictGraph();
+    //non-maxima suppresion on the conflict graph
     void nonMaximaSuppresion();
+    //create recognition models
+    void initialize();
 
     public:
       PapazovHV() : HypothesesVerification<ModelT,SceneT>() {
@@ -104,9 +108,6 @@ namespace pcl
       void setPenaltyThreshold(float t) {
         penalty_threshold_ = t;
       }
-
-      //create recognition models
-      void initialize();
 
       //build conflict graph
       //non-maxima supression

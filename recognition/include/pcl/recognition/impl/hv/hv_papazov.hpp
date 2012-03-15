@@ -211,6 +211,7 @@ template<typename ModelT, typename SceneT>
 void
 pcl::PapazovHV<ModelT, SceneT>::verify ()
 {
+  initialize();
   buildConflictGraph ();
   nonMaximaSuppresion ();
 }
