@@ -144,14 +144,12 @@ class SimpleOpenNIViewer
       unsigned char* rgb_data = 0;
       unsigned rgb_data_size = 0;
       
-      boost::shared_ptr<openni_wrapper::Image> image;
-      boost::shared_ptr<openni_wrapper::DepthImage> depth_image;
-
-      while (true)
+      while (!image_viewer_.wasStopped () && !depth_image_viewer_.wasStopped ())
       {
         boost::mutex::scoped_lock lock (image_mutex_);
         if (image_)
         {
+          boost::shared_ptr<openni_wrapper::Image> image;
           image.swap (image_);
 
           if (!image_cld_init_)
@@ -177,6 +175,7 @@ class SimpleOpenNIViewer
         }
         if (depth_image_)
         {
+          boost::shared_ptr<openni_wrapper::DepthImage> depth_image;
           depth_image.swap (depth_image_);
 
           if (!depth_image_cld_init_)
