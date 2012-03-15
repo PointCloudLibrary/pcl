@@ -44,98 +44,145 @@
 namespace pcl
 {
 
-/**
- * \brief Abstract class for hypotheses verification methods
- * \author Aitor Aldoma, Federico Tombari
- */
-
-template<typename ModelT, typename SceneT>
-class PCL_EXPORTS HypothesesVerification
-{
-
-protected:
-  std::vector<bool> mask_;
-  typename pcl::PointCloud<SceneT>::Ptr scene_cloud_;
-  typename std::vector<typename pcl::PointCloud<ModelT>::Ptr> models_;
-  int zbuffer_scene_resolution_;
-  int zbuffer_self_occlusion_resolution_;
-
-public:
-
-  HypothesesVerification() {
-    zbuffer_scene_resolution_ = 100;
-    zbuffer_self_occlusion_resolution_ = 150;
-  }
-  /*
-   *  \brief Returns a vector of booleans representing which hypotheses have been accepted/rejected (true/false)
-   *  mask vector of booleans
+  /**
+   * \brief Abstract class for hypotheses verification methods
+   * \author Aitor Aldoma, Federico Tombari
    */
 
-  void
-  getMask (std::vector<bool> & mask)
+  template<typename ModelT, typename SceneT>
+  class PCL_EXPORTS HypothesesVerification
   {
-    mask = mask_;
-  }
 
-  /*
-   *  \brief Sets the models (recognition hypotheses) - requires the scene_cloud_ to be set first if reasoning about occlusions
-   *  mask models Vector of point clouds representing the models (in same coordinates as the scene_cloud_)
-   */
-  void
-  addModels (std::vector<const typename pcl::PointCloud<ModelT>::Ptr> & models, bool occlusion_reasoning=false)
-  {
-    if(!occlusion_reasoning)
-      models_ = models;
-    else {
-      //we need to reason about occlusions before setting the model
-      if(scene_cloud_ == 0) {
-        PCL_ERROR("setSceneCloud should be called before adding the model if reasoning about occlusions...");
-      }
+  protected:
+    /*
+     * \brief Boolean vector indicating if a hypothesis is accepted/rejected
+     */
+    std::vector<bool> mask_;
+    /*
+     * \brief Scene point cloud
+     */
+    typename pcl::PointCloud<SceneT>::Ptr scene_cloud_;
+    /*
+     * \brief Vector of point clouds representing the 3D models after reasoning about occlusions (in same coordinates as the scene cloud)
+     */
+    typename std::vector<typename pcl::PointCloud<ModelT>::Ptr> visible_models_;
+    /*
+     * \brief Vector of point clouds representing the complete 3D model (in same coordinates as the scene cloud)
+     */
+    typename std::vector<typename pcl::PointCloud<ModelT>::Ptr> complete_models_;
+    /*
+     * \brief Resolutions in pixel for the depth scene buffer
+     */
+    int zbuffer_scene_resolution_;
+    /*
+     * \brief Resolutions in pixel for the depth model self-occlusion buffer
+     */
+    int zbuffer_self_occlusion_resolution_;
+    /*
+     * \brief The resolution of models and scene used to verify hypotheses (in meters)
+     */
+    float resolution_;
 
-      pcl::ZBuffering<ModelT, SceneT> zbuffer_scene(zbuffer_scene_resolution_,zbuffer_scene_resolution_,1.f);
-      if(!scene_cloud_->isOrganized()) {
-        zbuffer_scene.computeDepthMap(scene_cloud_,true);
-      }
+  public:
 
-      for(size_t i=0; i < models.size(); i++) {
+    HypothesesVerification ()
+    {
+      zbuffer_scene_resolution_ = 100;
+      zbuffer_self_occlusion_resolution_ = 150;
+      resolution_ = 0.005;
+    }
+    /*
+     *  \brief Returns a vector of booleans representing which hypotheses have been accepted/rejected (true/false)
+     *  mask vector of booleans
+     */
 
-        //self-occlusions
-        typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
-        typename pcl::ZBuffering<ModelT, SceneT> zbuffer_self_occlusion(150,150,1.f);
-        zbuffer_self_occlusion.computeDepthMap(models[i],true);
-        zbuffer_self_occlusion.filter(models[i],filtered,0.005);
+    void
+    getMask (std::vector<bool> & mask)
+    {
+      mask = mask_;
+    }
 
-        //scene-occlusions
-        if(scene_cloud_->isOrganized()) {
-          filtered = pcl::occlusion_reasoning::filter (scene_cloud_, filtered, 525.f, 0.01f);
-        } else {
-          zbuffer_scene.filter(filtered,filtered,0.01);
+    /*
+     *  \brief Sets the 3D complete models. NOTE: If addModels is called with occlusion_reasoning=true, then
+     *  there is no need to call this function.
+     *  mask models Vector of point clouds representing the models (in same coordinates as the scene_cloud_)
+     */
+
+    void
+    addCompleteModels (std::vector<const typename pcl::PointCloud<ModelT>::Ptr> & complete_models)
+    {
+      complete_models_ = complete_models;
+    }
+
+    /*
+     *  \brief Sets the models (recognition hypotheses) - requires the scene_cloud_ to be set first if reasoning about occlusions
+     *  mask models Vector of point clouds representing the models (in same coordinates as the scene_cloud_)
+     */
+    void
+    addModels (std::vector<const typename pcl::PointCloud<ModelT>::Ptr> & models, bool occlusion_reasoning = false)
+    {
+      if (!occlusion_reasoning)
+        visible_models_ = models;
+      else
+      {
+        //we need to reason about occlusions before setting the model
+        if (scene_cloud_ == 0)
+        {
+          PCL_ERROR("setSceneCloud should be called before adding the model if reasoning about occlusions...");
         }
 
-        models_.push_back(filtered);
+        pcl::ZBuffering<ModelT, SceneT> zbuffer_scene (zbuffer_scene_resolution_, zbuffer_scene_resolution_, 1.f);
+        if (!scene_cloud_->isOrganized ())
+        {
+          zbuffer_scene.computeDepthMap (scene_cloud_, true);
+        }
+
+        for (size_t i = 0; i < models.size (); i++)
+        {
+
+          //self-occlusions
+          typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
+          typename pcl::ZBuffering<ModelT, SceneT> zbuffer_self_occlusion (150, 150, 1.f);
+          zbuffer_self_occlusion.computeDepthMap (models[i], true);
+          zbuffer_self_occlusion.filter (models[i], filtered, 0.005);
+
+          //scene-occlusions
+          if (scene_cloud_->isOrganized ())
+          {
+            filtered = pcl::occlusion_reasoning::filter (scene_cloud_, filtered, 525.f, 0.01f);
+          }
+          else
+          {
+            zbuffer_scene.filter (filtered, filtered, 0.01);
+          }
+
+          visible_models_.push_back (filtered);
+        }
+
+        complete_models_ = models;
       }
     }
-  }
 
-  /*
-   *  \brief Sets the scene cloud
-   *  scene_cloud Point cloud representing the scene
-   */
+    /*
+     *  \brief Sets the scene cloud
+     *  scene_cloud Point cloud representing the scene
+     */
 
-  void
-  setSceneCloud (const typename pcl::PointCloud<SceneT>::Ptr & scene_cloud)
-  {
-    scene_cloud_ = scene_cloud;
-  }
+    void
+    setSceneCloud (const typename pcl::PointCloud<SceneT>::Ptr & scene_cloud)
+    {
+      scene_cloud_ = scene_cloud;
+    }
 
-  /*
-   *  \brief Function that performs the hypotheses verification, needs to be implemented in the subclasses
-   *  This function modifies the values of mask_ and needs to be called after both scene and model have been added
-   */
+    /*
+     *  \brief Function that performs the hypotheses verification, needs to be implemented in the subclasses
+     *  This function modifies the values of mask_ and needs to be called after both scene and model have been added
+     */
 
-  virtual void verify ()=0;
+    virtual void
+    verify ()=0;
 
-};
+  };
 
 }
 
