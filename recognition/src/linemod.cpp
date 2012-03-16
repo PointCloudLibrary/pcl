@@ -132,18 +132,18 @@ matchTemplates (const std::vector<QuantizableModality*> & modalities, std::vecto
 
       unsigned char val0 = 0x1 << bin_index; // e.g. 00100000
       unsigned char val1 = val0 | (0x1 << (bin_index+1)%8) | (0x1 << (bin_index+7)%8); // e.g. 01110000
-      //unsigned char val2 = val1 | (0x1 << (bin_index+2)%8) | (0x1 << (bin_index+6)%8); // e.g. 11111000
-      //unsigned char val3 = val2 | (0x1 << (bin_index+3)%8) | (0x1 << (bin_index+5)%8); // e.g. 11111101
+      unsigned char val2 = val1 | (0x1 << (bin_index+2)%8) | (0x1 << (bin_index+6)%8); // e.g. 11111000
+      unsigned char val3 = val2 | (0x1 << (bin_index+3)%8) | (0x1 << (bin_index+5)%8); // e.g. 11111101
       for (size_t index = 0; index < width*height; ++index)
       {
         if ((val0 & quantized_data[index]) != 0)
           ++energy_maps (bin_index, index);
         if ((val1 & quantized_data[index]) != 0)
           ++energy_maps (bin_index, index);
-        //if ((val2 & quantized_data[index]) != 0)
-        //  ++energy_maps (bin_index, index);
-        //if ((val3 & quantized_data[index]) != 0)
-        //  ++energy_maps (bin_index, index);
+        if ((val2 & quantized_data[index]) != 0)
+          ++energy_maps (bin_index, index);
+        if ((val3 & quantized_data[index]) != 0)
+          ++energy_maps (bin_index, index);
       }
     }
 
@@ -203,8 +203,9 @@ matchTemplates (const std::vector<QuantizableModality*> & modalities, std::vecto
     const size_t mem_height = height / step_size;
     const size_t mem_size = mem_width * mem_height;
 
-    unsigned char * score_sums = new unsigned char[mem_size];
-    memset (score_sums, 0, mem_size);
+    unsigned short * score_sums = new unsigned short[mem_size];
+    //unsigned char * score_sums = new unsigned char[mem_size];
+    memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
 
     int max_score = 0;
     for (size_t feature_index = 0; feature_index < templates_[template_index].features.size (); ++feature_index)
@@ -291,18 +292,18 @@ detectTemplates (const std::vector<QuantizableModality*> & modalities, std::vect
 
       unsigned char val0 = 0x1 << bin_index; // e.g. 00100000
       unsigned char val1 = val0 | (0x1 << ((bin_index+1)%8)) | (0x1 << ((bin_index+7)%8)); // e.g. 01110000
-      //unsigned char val2 = val1 | (0x1 << ((bin_index+2)%8)) | (0x1 << ((bin_index+6)%8)); // e.g. 11111000
-      //unsigned char val3 = val2 | (0x1 << ((bin_index+3)%8)) | (0x1 << ((bin_index+5)%8)); // e.g. 11111101
+      unsigned char val2 = val1 | (0x1 << ((bin_index+2)%8)) | (0x1 << ((bin_index+6)%8)); // e.g. 11111000
+      unsigned char val3 = val2 | (0x1 << ((bin_index+3)%8)) | (0x1 << ((bin_index+5)%8)); // e.g. 11111101
       for (size_t index = 0; index < width*height; ++index)
       {
         if ((val0 & quantized_data[index]) != 0)
           ++energy_maps (bin_index, index);
         if ((val1 & quantized_data[index]) != 0)
           ++energy_maps (bin_index, index);
-        //if ((val2 & quantized_data[index]) != 0)
-        //  ++energy_maps (bin_index, index);
-        //if ((val3 & quantized_data[index]) != 0)
-        //  ++energy_maps (bin_index, index);
+        if ((val2 & quantized_data[index]) != 0)
+          ++energy_maps (bin_index, index);
+        if ((val3 & quantized_data[index]) != 0)
+          ++energy_maps (bin_index, index);
       }
     }
 
@@ -362,8 +363,9 @@ detectTemplates (const std::vector<QuantizableModality*> & modalities, std::vect
     const size_t mem_height = height / step_size;
     const size_t mem_size = mem_width * mem_height;
 
-    unsigned char * score_sums = new unsigned char[mem_size];
-    memset (score_sums, 0, mem_size);
+    unsigned short * score_sums = new unsigned short[mem_size];
+    //unsigned char * score_sums = new unsigned char[mem_size];
+    memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
 
     int max_score = 0;
     for (size_t feature_index = 0; feature_index < templates_[template_index].features.size (); ++feature_index)
@@ -375,7 +377,7 @@ detectTemplates (const std::vector<QuantizableModality*> & modalities, std::vect
       {
         if ((feature.quantized_value & (0x1<<bin_index)) != 0)
         {
-          max_score += 2;
+          max_score += 4;
 
           unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (feature.x, feature.y);
           for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
@@ -388,6 +390,9 @@ detectTemplates (const std::vector<QuantizableModality*> & modalities, std::vect
 
     const float inv_max_score = 1.0f / max_score;
     
+
+    std::cerr << max_score << " ";
+
     const float raw_threshold = (max_score/2.0f + template_threshold_*(max_score/2.0f));
 
     int max_value = 0;
