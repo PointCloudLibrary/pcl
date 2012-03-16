@@ -132,8 +132,8 @@ matchTemplates (const std::vector<QuantizableModality*> & modalities, std::vecto
 
       unsigned char val0 = 0x1 << bin_index; // e.g. 00100000
       unsigned char val1 = val0 | (0x1 << (bin_index+1)%8) | (0x1 << (bin_index+7)%8); // e.g. 01110000
-      unsigned char val2 = val1 | (0x1 << (bin_index+2)%8) | (0x1 << (bin_index+6)%8); // e.g. 11111000
-      unsigned char val3 = val2 | (0x1 << (bin_index+3)%8) | (0x1 << (bin_index+5)%8); // e.g. 11111101
+      //unsigned char val2 = val1 | (0x1 << (bin_index+2)%8) | (0x1 << (bin_index+6)%8); // e.g. 11111000
+      //unsigned char val3 = val2 | (0x1 << (bin_index+3)%8) | (0x1 << (bin_index+5)%8); // e.g. 11111101
       for (size_t index = 0; index < width*height; ++index)
       {
         if ((val0 & quantized_data[index]) != 0)
@@ -144,159 +144,6 @@ matchTemplates (const std::vector<QuantizableModality*> & modalities, std::vecto
         //  ++energy_maps (bin_index, index);
         //if ((val3 & quantized_data[index]) != 0)
         //  ++energy_maps (bin_index, index);
-      }
-    }
-
-    modality_energy_maps.push_back (energy_maps);
-  }
-
-  // create linearized maps
-  const size_t step_size = 8;
-  std::vector<std::vector<LinearizedMaps> > modality_linearized_maps;
-  for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
-  {
-    const size_t width = modality_energy_maps[modality_index].getWidth ();
-    const size_t height = modality_energy_maps[modality_index].getHeight ();
-
-    std::vector<LinearizedMaps> linearized_maps;
-    const size_t nr_bins = modality_energy_maps[modality_index].getNumOfBins ();
-    for (size_t bin_index = 0; bin_index < nr_bins; ++bin_index)
-    {
-      unsigned char * energy_map = modality_energy_maps[modality_index] (bin_index);
-
-      LinearizedMaps maps;
-      maps.initialize (width, height, step_size);
-      for (size_t map_row = 0; map_row < step_size; ++map_row)
-      {
-        for (size_t map_col = 0; map_col < step_size; ++map_col)
-        {
-          unsigned char * linearized_map = maps (map_col, map_row);
-
-          // copy data from energy maps
-          const size_t lin_width = width/step_size;
-          const size_t lin_height = height/step_size;
-          for (size_t row_index = 0; row_index < lin_height; ++row_index)
-          {
-            for (size_t col_index = 0; col_index < lin_width; ++col_index)
-            {
-              const size_t tmp_col_index = col_index*step_size + map_col;
-              const size_t tmp_row_index = row_index*step_size + map_row;
-
-              linearized_map[row_index*lin_width + col_index] = energy_map[tmp_row_index*width + tmp_col_index];
-            }
-          }
-        }
-      }
-
-      linearized_maps.push_back (maps);
-    }
-
-    modality_linearized_maps.push_back (linearized_maps);
-  }
-
-  // compute scores for templates
-  const size_t width = modality_energy_maps[0].getWidth ();
-  const size_t height = modality_energy_maps[0].getHeight ();
-  for (size_t template_index = 0; template_index < templates_.size (); ++template_index)
-  {
-    const size_t mem_width = width / step_size;
-    const size_t mem_height = height / step_size;
-    const size_t mem_size = mem_width * mem_height;
-
-    unsigned char * score_sums = new unsigned char[mem_size];
-    memset (score_sums, 0, mem_size);
-
-    int max_score = 0;
-    for (size_t feature_index = 0; feature_index < templates_[template_index].features.size (); ++feature_index)
-    {
-      const QuantizedMultiModFeature & feature = templates_[template_index].features[feature_index];
-
-      //feature.modality_index;
-      for (size_t bin_index = 0; bin_index < 8; ++bin_index)
-      {
-        if ((feature.quantized_value & (0x1<<bin_index)) != 0)
-        {
-          max_score += 4;
-
-          unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (feature.x, feature.y);
-          for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
-          {
-            score_sums[mem_index] += data[mem_index];
-          }
-        }
-      }
-    }
-
-    const float inv_max_score = 1.0f / max_score;
-    
-    int max_value = 0;
-    size_t max_index = 0;
-    for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
-    {
-      if (score_sums[mem_index] > max_value) 
-      {
-        max_value = score_sums[mem_index];
-        max_index = mem_index;
-      }
-    }
-
-    const size_t max_col_index = (max_index % mem_width) * step_size;
-    const size_t max_row_index = (max_index / mem_width) * step_size;
-
-    LINEMODDetection detection;
-    detection.x = static_cast<int> (max_col_index);
-    detection.y = static_cast<int> (max_row_index);
-    detection.template_id = static_cast<int> (template_index);
-    detection.score = max_value * inv_max_score;
-
-    detections.push_back (detection);
-
-    delete[] score_sums;
-  }
-
-  // release data
-  for (size_t modality_index = 0; modality_index < modality_linearized_maps.size (); ++modality_index)
-  {
-    modality_energy_maps[modality_index].releaseAll ();
-    for (size_t bin_index = 0; bin_index < modality_linearized_maps[modality_index].size (); ++bin_index)
-      modality_linearized_maps[modality_index][bin_index].releaseAll ();
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::LINEMOD::
-detectTemplates (const std::vector<QuantizableModality*> & modalities, std::vector<LINEMODDetection> & detections) const
-{
-  // create energy maps
-  std::vector<EnergyMaps> modality_energy_maps;
-  const size_t nr_modalities = modalities.size();
-  for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
-  {
-    const QuantizedMap & quantized_map = modalities[modality_index]->getSpreadedQuantizedMap ();
-
-    const size_t width = quantized_map.getWidth ();
-    const size_t height = quantized_map.getHeight ();
-
-    const unsigned char * quantized_data = quantized_map.getData ();
-
-    const int nr_bins = 8;
-    EnergyMaps energy_maps;
-    energy_maps.initialize (width, height, nr_bins);
-    //std::vector< unsigned char* > energy_maps(nr_bins);
-    for (int bin_index = 0; bin_index < nr_bins; ++bin_index)
-    {
-      //energy_maps[bin_index] = new unsigned char[width*height];
-      //memset (energy_maps[bin_index], 0, width*height);
-
-      unsigned char val0 = 0x1 << bin_index; // e.g. 00100000
-      unsigned char val1 = (0x1 << (bin_index+1)%8) | (0x1 << (bin_index+9)%8); // e.g. 01010000
-      for (size_t index = 0; index < width*height; ++index)
-      {
-        if ((val0 & quantized_data[index]) != 0)
-          ++energy_maps (bin_index, index);
-        if ((val1 & quantized_data[index]) != 0)
-          ++energy_maps (bin_index, index);
       }
     }
 
@@ -386,9 +233,171 @@ detectTemplates (const std::vector<QuantizableModality*> & modalities, std::vect
     size_t max_index = 0;
     for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
     {
+      if (score_sums[mem_index] > max_value) 
+      {
+        max_value = score_sums[mem_index];
+        max_index = mem_index;
+      }
+    }
+
+    const size_t max_col_index = (max_index % mem_width) * step_size;
+    const size_t max_row_index = (max_index / mem_width) * step_size;
+
+    LINEMODDetection detection;
+    detection.x = static_cast<int> (max_col_index);
+    detection.y = static_cast<int> (max_row_index);
+    detection.template_id = static_cast<int> (template_index);
+    detection.score = max_value * inv_max_score;
+
+    detections.push_back (detection);
+
+    delete[] score_sums;
+  }
+
+  // release data
+  for (size_t modality_index = 0; modality_index < modality_linearized_maps.size (); ++modality_index)
+  {
+    modality_energy_maps[modality_index].releaseAll ();
+    for (size_t bin_index = 0; bin_index < modality_linearized_maps[modality_index].size (); ++bin_index)
+      modality_linearized_maps[modality_index][bin_index].releaseAll ();
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::LINEMOD::
+detectTemplates (const std::vector<QuantizableModality*> & modalities, std::vector<LINEMODDetection> & detections) const
+{
+  // create energy maps
+  std::vector<EnergyMaps> modality_energy_maps;
+  const size_t nr_modalities = modalities.size();
+  for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
+  {
+    const QuantizedMap & quantized_map = modalities[modality_index]->getSpreadedQuantizedMap ();
+
+    const size_t width = quantized_map.getWidth ();
+    const size_t height = quantized_map.getHeight ();
+
+    const unsigned char * quantized_data = quantized_map.getData ();
+
+    const int nr_bins = 8;
+    EnergyMaps energy_maps;
+    energy_maps.initialize (width, height, nr_bins);
+    //std::vector< unsigned char* > energy_maps(nr_bins);
+    for (int bin_index = 0; bin_index < nr_bins; ++bin_index)
+    {
+      //energy_maps[bin_index] = new unsigned char[width*height];
+      //memset (energy_maps[bin_index], 0, width*height);
+
+      unsigned char val0 = 0x1 << bin_index; // e.g. 00100000
+      unsigned char val1 = val0 | (0x1 << ((bin_index+1)%8)) | (0x1 << ((bin_index+7)%8)); // e.g. 01110000
+      //unsigned char val2 = val1 | (0x1 << ((bin_index+2)%8)) | (0x1 << ((bin_index+6)%8)); // e.g. 11111000
+      //unsigned char val3 = val2 | (0x1 << ((bin_index+3)%8)) | (0x1 << ((bin_index+5)%8)); // e.g. 11111101
+      for (size_t index = 0; index < width*height; ++index)
+      {
+        if ((val0 & quantized_data[index]) != 0)
+          ++energy_maps (bin_index, index);
+        if ((val1 & quantized_data[index]) != 0)
+          ++energy_maps (bin_index, index);
+        //if ((val2 & quantized_data[index]) != 0)
+        //  ++energy_maps (bin_index, index);
+        //if ((val3 & quantized_data[index]) != 0)
+        //  ++energy_maps (bin_index, index);
+      }
+    }
+
+    modality_energy_maps.push_back (energy_maps);
+  }
+
+  // create linearized maps
+  const size_t step_size = 8;
+  std::vector<std::vector<LinearizedMaps> > modality_linearized_maps;
+  for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
+  {
+    const size_t width = modality_energy_maps[modality_index].getWidth ();
+    const size_t height = modality_energy_maps[modality_index].getHeight ();
+
+    std::vector<LinearizedMaps> linearized_maps;
+    const size_t nr_bins = modality_energy_maps[modality_index].getNumOfBins ();
+    for (size_t bin_index = 0; bin_index < nr_bins; ++bin_index)
+    {
+      unsigned char * energy_map = modality_energy_maps[modality_index] (bin_index);
+
+      LinearizedMaps maps;
+      maps.initialize (width, height, step_size);
+      for (size_t map_row = 0; map_row < step_size; ++map_row)
+      {
+        for (size_t map_col = 0; map_col < step_size; ++map_col)
+        {
+          unsigned char * linearized_map = maps (map_col, map_row);
+
+          // copy data from energy maps
+          const size_t lin_width = width/step_size;
+          const size_t lin_height = height/step_size;
+          for (size_t row_index = 0; row_index < lin_height; ++row_index)
+          {
+            for (size_t col_index = 0; col_index < lin_width; ++col_index)
+            {
+              const size_t tmp_col_index = col_index*step_size + map_col;
+              const size_t tmp_row_index = row_index*step_size + map_row;
+
+              linearized_map[row_index*lin_width + col_index] = energy_map[tmp_row_index*width + tmp_col_index];
+            }
+          }
+        }
+      }
+
+      linearized_maps.push_back (maps);
+    }
+
+    modality_linearized_maps.push_back (linearized_maps);
+  }
+
+  // compute scores for templates
+  const size_t width = modality_energy_maps[0].getWidth ();
+  const size_t height = modality_energy_maps[0].getHeight ();
+  for (size_t template_index = 0; template_index < templates_.size (); ++template_index)
+  {
+    const size_t mem_width = width / step_size;
+    const size_t mem_height = height / step_size;
+    const size_t mem_size = mem_width * mem_height;
+
+    unsigned char * score_sums = new unsigned char[mem_size];
+    memset (score_sums, 0, mem_size);
+
+    int max_score = 0;
+    for (size_t feature_index = 0; feature_index < templates_[template_index].features.size (); ++feature_index)
+    {
+      const QuantizedMultiModFeature & feature = templates_[template_index].features[feature_index];
+
+      //feature.modality_index;
+      for (size_t bin_index = 0; bin_index < 8; ++bin_index)
+      {
+        if ((feature.quantized_value & (0x1<<bin_index)) != 0)
+        {
+          max_score += 2;
+
+          unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (feature.x, feature.y);
+          for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
+          {
+            score_sums[mem_index] += data[mem_index];
+          }
+        }
+      }
+    }
+
+    const float inv_max_score = 1.0f / max_score;
+    
+    const float raw_threshold = (max_score/2.0f + template_threshold_*(max_score/2.0f));
+
+    int max_value = 0;
+    size_t max_index = 0;
+    for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
+    {
       const float score = score_sums[mem_index] * inv_max_score;
 
-      if (score > template_threshold_) 
+      //if (score > template_threshold_) 
+      if (score_sums[mem_index] > raw_threshold) 
       {
         const size_t detection_col_index = (mem_index % mem_width) * step_size;
         const size_t detection_row_index = (mem_index / mem_width) * step_size;
