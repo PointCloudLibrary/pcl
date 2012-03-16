@@ -1,8 +1,8 @@
 # cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
-# project(openni_grabber)
+# project(pcl_people_tracking)
 
-# #find_package(PCL 1.2 REQUIRED)
+# #find_package(PCL 1.5 REQUIRED)
 
 # include_directories(${PCL_INCLUDE_DIRS})
 # link_directories(${PCL_LIBRARY_DIRS})
