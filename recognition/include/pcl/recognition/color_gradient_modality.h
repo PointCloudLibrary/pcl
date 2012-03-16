@@ -478,7 +478,7 @@ quantizeColorGradients ()
   quantized_color_gradients_.resize (width, height);
 
   //unsigned char quantization_map[16] = {0,1,2,3,4,5,6,7,0,1,2,3,4,5,6,7};
-  unsigned char quantization_map[16] = {1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8};
+  //unsigned char quantization_map[16] = {1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8};
 
   const float angleScale = 1.0f/22.6f;
   for (size_t row_index = 0; row_index < height; ++row_index)
@@ -493,7 +493,8 @@ quantizeColorGradients ()
 
       const int quantized_value = static_cast<int> (color_gradients_ (col_index, row_index).angle * angleScale) + 8;
       assert (0 <= quantized_value && quantized_value < 16);
-      quantized_color_gradients_ (col_index, row_index) = quantization_map[quantized_value];
+      //quantized_color_gradients_ (col_index, row_index) = quantization_map[quantized_value];
+      quantized_color_gradients_ (col_index, row_index) = (quantized_value & 7) + 1; // = (quantized_value % 8) + 1
     }
   }
 }
