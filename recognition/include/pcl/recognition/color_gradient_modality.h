@@ -101,6 +101,12 @@ namespace pcl
       { 
         return (spreaded_filtered_quantized_color_gradients_);
       }
+
+      inline pcl::PointCloud<pcl::GradientXY> &
+      getMaxColorGradients ()
+      {
+        return (color_gradients_);
+      }
   
       void
       extractFeatures (const MaskMap & mask, size_t nr_features, size_t modalityIndex,
@@ -234,36 +240,75 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
     return;
   }
 
-  size_t distance = list1.size () / nr_features + 1; // ??? 
+  list2.push_back (*(list1.begin ()));
   while (list2.size () != nr_features)
   {
-    const size_t sqr_distance = distance*distance;
+    float best_score = 0.0f;
+    typename std::list<Candidate>::iterator best_iter = list1.end ();
     for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
     {
-      bool candidate_accepted = true;
-
+      // find smallest distance
+      float smallest_distance = std::numeric_limits<float>::max ();
       for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
       {
-        const int dx = iter1->x - iter2->x;
-        const int dy = iter1->y - iter2->y;
-        const int tmp_distance = dx*dx + dy*dy;
+        const float dx = iter1->x - iter2->x;
+        const float dy = iter1->y - iter2->y;
 
-        //if (tmp_distance < distance) 
-        if (tmp_distance < sqr_distance) /// \todo Ask Stefan if this fix is correct
+        const float distance = dx*dx + dy*dy;
+
+        if (distance < smallest_distance)
         {
-          candidate_accepted = false;
-          break;
+          smallest_distance = distance;
         }
       }
 
-      if (candidate_accepted)
-        list2.push_back (*iter1);
+      const float score = smallest_distance * iter1->gradient.magnitude;
 
-      if (list2.size () == nr_features)
-        break;
+      if (score > best_score)
+      {
+        best_score = score;
+        best_iter = iter1;
+      }
     }
-    --distance;
-  }
+
+    if (best_iter != list1.end ())
+    {
+      list2.push_back (*best_iter);
+    }
+  }  
+
+
+
+  //size_t distance = list1.size () / nr_features + 1; // ??? 
+  //while (list2.size () != nr_features)
+  //{
+  //  const size_t sqr_distance = distance*distance;
+  //  for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
+  //  {
+  //    bool candidate_accepted = true;
+
+  //    for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+  //    {
+  //      const int dx = iter1->x - iter2->x;
+  //      const int dy = iter1->y - iter2->y;
+  //      const int tmp_distance = dx*dx + dy*dy;
+
+  //      //if (tmp_distance < distance) 
+  //      if (tmp_distance < sqr_distance) /// \todo Ask Stefan if this fix is correct
+  //      {
+  //        candidate_accepted = false;
+  //        break;
+  //      }
+  //    }
+
+  //    if (candidate_accepted)
+  //      list2.push_back (*iter1);
+
+  //    if (list2.size () == nr_features)
+  //      break;
+  //  }
+  //  --distance;
+  //}
 
   for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
   {
