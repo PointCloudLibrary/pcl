@@ -51,7 +51,7 @@ using namespace pcl::console;
 
 int default_tesselated_sphere_level = 2;
 int default_resolution = 100;
-float default_leaf_size = 0.01;
+float default_leaf_size = 0.01f;
 
 void
 printHelp (int, char **argv)

@@ -182,22 +182,11 @@ TEST (PCL, GreedyProjectionTriangulation_Merge2Meshes)
 
 
     // Reconstruct
-    gp3.reconstruct (triangles);
+    //gp3.reconstruct (triangles);
+    //saveVTKFile ("bun01.vtk", triangles);
 
-    saveVTKFile ("bun01.vtk", triangles);
-
-    gp31.reconstruct (triangles1);
-    saveVTKFile ("bun02.vtk", triangles1);
-
-    gp3.removeOverlapTriangles(triangles, triangles1);
-    gp31.removeOverlapTriangles(triangles1, triangles);
-
-    std::vector<int> states1 = gp31.getPointStates();
-    std::vector<int> sfn1 = gp31.getSFN();
-    std::vector<int> ffn1 = gp31.getFFN();
-
-    //gp3.merge2Meshes(triangles, triangles1, states1, sfn1, ffn1);
-    //saveVTKFile ("bun_merged.vtk", triangles);
+    //gp31.reconstruct (triangles1);
+    //saveVTKFile ("bun02.vtk", triangles1);
   }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

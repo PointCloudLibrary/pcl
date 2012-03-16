@@ -325,7 +325,7 @@ TEST (PCL, TransformationEstimationPointToPlaneLLS)
       src->points.push_back (p);
     }
   }
-  src->width = src->points.size ();
+  src->width = static_cast<uint32_t> (src->points.size ());
 
   // Create a test matrix
   Eigen::Matrix4f ground_truth_tform = Eigen::Matrix4f::Identity ();
@@ -567,9 +567,10 @@ TEST (PCL, PPFRegistration)
   EXPECT_NEAR (transformation(3, 3), 1.000000, 1e-4);
 }
 #endif
+
 /* ---[ */
 int
-  main (int argc, char** argv)
+main (int argc, char** argv)
 {
   if (argc < 3)
   {

@@ -52,27 +52,16 @@ using namespace std;
 const float PI = 3.14159265f;
 const float rho = sqrtf (2.0f) / 2.0f;  // cos(PI/4) == sin(PI/4)
 
-class MyPointXYZ : public PointXYZ 
-{
-  public:
-    MyPointXYZ (float X, float Y, float Z) 
-    {
-      x = X;
-      y = Y;
-      z = Z;
-    }
-};
-
 PointCloud<PointXYZ> cloud;
 sensor_msgs::PointCloud2 cloud_blob;
 
 void 
-  init ()
+init ()
 {
-  MyPointXYZ p0 (0, 0, 0);
-  MyPointXYZ p1 (1, 0, 0);
-  MyPointXYZ p2 (0, 1, 0);
-  MyPointXYZ p3 (0, 0, 1);
+  PointXYZ p0 (0, 0, 0);
+  PointXYZ p1 (1, 0, 0);
+  PointXYZ p2 (0, 1, 0);
+  PointXYZ p3 (0, 0, 1);
   cloud.points.push_back (p0);
   cloud.points.push_back (p1);
   cloud.points.push_back (p2);

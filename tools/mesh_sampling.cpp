@@ -58,9 +58,9 @@ inline void
 randomPointTriangle (float a1, float a2, float a3, float b1, float b2, float b3, float c1, float c2, float c3,
                      Eigen::Vector4f& p)
 {
-  float r1 = uniform_deviate (rand ());
-  float r2 = uniform_deviate (rand ());
-  float r1sqr = sqrt (r1);
+  float r1 = static_cast<float> (uniform_deviate (rand ()));
+  float r2 = static_cast<float> (uniform_deviate (rand ()));
+  float r1sqr = sqrtf (r1);
   float OneMinR1Sqr = (1 - r1sqr);
   float OneMinR2 = (1 - r2);
   a1 *= OneMinR1Sqr;
@@ -81,10 +81,10 @@ randomPointTriangle (float a1, float a2, float a3, float b1, float b2, float b3,
 inline void
 randPSurface (vtkPolyData * polydata, std::vector<double> * cumulativeAreas, double totalArea, Eigen::Vector4f& p)
 {
-  float r = uniform_deviate (rand ()) * totalArea;
+  float r = static_cast<float> (uniform_deviate (rand ()) * totalArea);
 
   std::vector<double>::iterator low = std::lower_bound (cumulativeAreas->begin (), cumulativeAreas->end (), r);
-  vtkIdType el = (vtkIdType)(low - cumulativeAreas->begin ());
+  vtkIdType el = vtkIdType (low - cumulativeAreas->begin ());
 
   double A[3], B[3], C[3];
   vtkIdType npts = 0;
@@ -118,7 +118,7 @@ uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, size_t n_samples, pcl::
   }
 
   cloud_out.points.resize (n_samples);
-  cloud_out.width = n_samples;
+  cloud_out.width = static_cast<uint32_t> (n_samples);
   cloud_out.height = 1;
 
   for (i = 0; i < n_samples; i++)

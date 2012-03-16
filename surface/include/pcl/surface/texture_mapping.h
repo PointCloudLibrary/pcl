@@ -54,10 +54,10 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      TextureMapping (){};
+      TextureMapping () : f_ (), vector_field_ (), tex_files_ (), tex_material_ () {};
 
       /** \brief Destructor. */
-      ~TextureMapping (){};
+      ~TextureMapping () {};
 
       /** \brief Set mesh scale control
         * \param[in] f 
