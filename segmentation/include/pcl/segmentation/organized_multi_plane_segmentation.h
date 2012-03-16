@@ -76,9 +76,13 @@ namespace pcl
       typedef typename PointCloudL::Ptr PointCloudLPtr;
       typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
 
+      typedef typename pcl::PlaneCoefficientComparator<PointT, PointNT> PlaneComparator;
+      typedef typename PlaneComparator::Ptr PlaneComparatorPtr;
+      typedef typename PlaneComparator::ConstPtr PlaneComparatorConstPtr;
+
       /** \brief Constructor for OrganizedMultiPlaneSegmentation. */
       OrganizedMultiPlaneSegmentation () :
-        normals_ (), min_inliers_ (1000), angular_threshold_ (3.0 * 0.017453), distance_threshold_ (0.02)
+        normals_ (), min_inliers_ (1000), angular_threshold_ (3.0 * 0.017453), distance_threshold_ (0.02), compare_ (new PlaneComparator ())
       {
       }
 
@@ -152,6 +156,16 @@ namespace pcl
         return (distance_threshold_);
       }
 
+      /** \brief Provide a pointer to the comparator to be used for segmentation.
+        * \param[in] compare A pointer to the comparator to be used for segmentation.
+        */
+      void
+      setComparator (const PlaneComparatorPtr& compare)
+      {
+        printf ("Setting comparator!\n");
+        compare_ = compare;
+      }
+      
       /** \brief Segmentation of all planes in a point cloud given by setInputCloud(), setIndices()
         * \param[out] model_coefficients a vector of model_coefficients for each plane found in the input cloud
         * \param[out] inlier_indices a vector of inliers for each detected plane
@@ -182,8 +196,18 @@ namespace pcl
       void
       segment (std::vector<PlanarRegion<PointT> >& regions);
       
-      //void
-      //segment (std::vector<PlanarPolygon<PointT> >& regions);
+      /** \brief Perform a segmentation, as well as an additional refinement step.  This helsp with including points whose normals may not match neighboring points well, but may match the planar model well.
+       */
+      void
+      segmentAndRefine (std::vector<PlanarRegion<PointT> >& regions);
+      
+      void
+      refine (std::vector<ModelCoefficients>& model_coefficients, 
+              std::vector<PointIndices>& inlier_indices,
+              std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> >& centroids,
+              std::vector <Eigen::Matrix3f, Eigen::aligned_allocator<Eigen::Matrix3f> >& covariances,
+              pcl::PointCloud<PointLT>& labels,
+              std::vector<pcl::PointIndices>& label_indices);
 
     protected:
 
@@ -198,6 +222,10 @@ namespace pcl
 
       /** \brief The tolerance in meters for difference in perpendicular distance (d component of plane equation) to the plane between neighboring points, to be considered part of the same plane. */
       double distance_threshold_;
+
+      /** \brief A comparator for comparing neighboring pixels' plane equations. */
+      PlaneComparatorPtr compare_;
+      
 
       /** \brief Class getName method. */
       virtual std::string

@@ -128,6 +128,9 @@ namespace pcl
       static void
       getNextIdxs(int& p1, int& p2, int& p3, int curr_idx, int dir, int width);
 
+      static bool
+      isIndexValid (int curr_idx, int test_idx, int width, int max);
+
   };
 }
 

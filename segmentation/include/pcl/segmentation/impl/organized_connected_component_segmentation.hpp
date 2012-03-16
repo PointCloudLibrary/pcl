@@ -65,6 +65,20 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::getNextIdxs(int& 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT, typename PointLT> bool
+pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::isIndexValid (int curr_idx, int test_idx, int width, int max)
+{
+  if (test_idx < 0)
+    return (false);
+  else if (test_idx >= max)
+    return (false);
+  // else if ((abs(curr_idx - test_idx) == 1) && (curr_idx / width) != (test_idx % width))
+  //  return (false);
+  
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointLT> void
 pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::findLabeledRegionBoundary (int start_idx, PointCloudLPtr labels, pcl::PointIndices& boundary_indices)
 {
@@ -74,22 +88,23 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::findLabeledRegion
   int p1, p2, p3 = 0;
   int dir = 0;
   unsigned label = labels->points[start_idx].label;
-  
+  int max_idx = labels->points.size ();
+
   while (!first_done)
   {
     getNextIdxs(p1,p2,p3,curr_idx,dir,labels->width);
-    if(labels->points[p1].label == label){
+    if( isIndexValid (curr_idx, p1, labels->width, max_idx) && labels->points[p1].label == label){
       boundary_indices.indices.push_back(p1);
       curr_idx = p1;
       first_done = true;
       dir = (dir-1);
       if(dir == -1)
         dir = 3;
-    } else if(labels->points[p2].label == label){
+    } else if( isIndexValid (curr_idx, p2, labels->width, max_idx) && labels->points[p2].label == label){
       boundary_indices.indices.push_back(p2);
       curr_idx = p2;
       first_done = true;
-    } else if(labels->points[p3].label == label){
+    } else if( isIndexValid (curr_idx, p3, labels->width, max_idx) && labels->points[p3].label == label){
       boundary_indices.indices.push_back(p3);
       curr_idx = p3;
       first_done = true;
@@ -98,18 +113,18 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::findLabeledRegion
     } 
   }
 
-  while((curr_idx != start_idx)){
-    getNextIdxs(p1,p2,p3,curr_idx,dir,labels->width);   
-    if(labels->points[p1].label == label){
+  while ((curr_idx != start_idx)){
+    getNextIdxs(p1, p2, p3, curr_idx, dir, labels->width);   
+    if (isIndexValid (curr_idx, p1, labels->width, max_idx) && labels->points[p1].label == label){
       boundary_indices.indices.push_back(p1);
       curr_idx = p1;
       dir = (dir-1);// % 4;
       if(dir == -1)
         dir=3;
-    } else if(labels->points[p2].label == label){
+    } else if (isIndexValid (curr_idx, p2, labels->width, max_idx) && labels->points[p2].label == label){
       boundary_indices.indices.push_back(p2);
       curr_idx = p2;
-    } else if(labels->points[p3].label == label){
+    } else if (isIndexValid (curr_idx, p3, labels->width, max_idx) && labels->points[p3].label == label){
       boundary_indices.indices.push_back(p3);
       curr_idx = p3;
     } else {

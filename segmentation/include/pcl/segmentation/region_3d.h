@@ -70,21 +70,21 @@ namespace pcl
 
       /** \brief Get the centroid of the region. */
       inline Eigen::Vector3f 
-      getCentroid ()
+      getCentroid () const
       {
         return (centroid_);
       }
       
       /** \brief Get the covariance of the region. */
       inline Eigen::Matrix3f
-      getCovariance ()
+      getCovariance () const
       {
         return (covariance_);
       }
       
       /** \brief Get the number of points in the region. */
       unsigned
-      getCount ()
+      getCount () const
       {
         return (count_);
       }

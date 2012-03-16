@@ -41,6 +41,7 @@
 #define PCL_SEGMENTATION_PLANE_COEFFICIENT_COMPARATOR_H_
 
 #include <pcl/segmentation/comparator.h>
+#include <boost/make_shared.hpp>
 
 namespace pcl
 {
@@ -59,13 +60,22 @@ namespace pcl
       typedef typename pcl::PointCloud<PointNT> PointCloudN;
       typedef typename PointCloudN::Ptr PointCloudNPtr;
       typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+      
+      typedef boost::shared_ptr<PlaneCoefficientComparator<PointT, PointNT> > Ptr;
+      typedef boost::shared_ptr<const PlaneCoefficientComparator<PointT, PointNT> > ConstPtr;
 
       using pcl::Comparator<PointT>::input_;
       
+      /** \brief Empty constructor for PlaneCoefficientComparator. */
+      PlaneCoefficientComparator ()
+        : normals_ (), plane_coeff_d_ (), angular_threshold_ (0), distance_threshold_ (0)
+      {
+      }
+
       /** \brief Constructor for PlaneCoefficientComparator.
         * \param[in] plane_coeff_d a reference to a vector of d coefficients of plane equations.  Must be the same size as the input cloud and input normals.  a, b, and c coefficients are in the input normals.
         */
-      PlaneCoefficientComparator (std::vector<float>& plane_coeff_d) 
+      PlaneCoefficientComparator (boost::shared_ptr<std::vector<float> >& plane_coeff_d) 
         : normals_ (), plane_coeff_d_ (plane_coeff_d), angular_threshold_ (0), distance_threshold_ (0)
       {
       }
@@ -96,9 +106,18 @@ namespace pcl
         * \param[in] plane_coeff_d a pointer to the plane coefficients.
         */
       void
-      setPlaneCoeffD (std::vector<float>& plane_coeff_d)
+      setPlaneCoeffD (boost::shared_ptr<std::vector<float> >& plane_coeff_d)
       {
         plane_coeff_d_ = plane_coeff_d;
+      }
+
+      /** \brief Provide a pointer to a vector of the d-coefficient of the planes' hessian normal form.  a, b, and c are provided by the normal cloud.
+        * \param[in] plane_coeff_d a pointer to the plane coefficients.
+        */
+      void
+      setPlaneCoeffD (std::vector<float>& plane_coeff_d)
+      {
+        plane_coeff_d_ = boost::make_shared<std::vector<float> >(plane_coeff_d);
       }
       
       /** \brief Get a pointer to the vector of the d-coefficient of the planes' hessian normal form. */
@@ -111,9 +130,10 @@ namespace pcl
       /** \brief Set the tolerance in radians for difference in normal direction between neighboring points, to be considered part of the same plane.
         * \param[in] angular_threshold the tolerance in radians
         */
-      inline void
+      virtual inline void
       setAngularThreshold (float angular_threshold)
       {
+        printf ("base class set angular threshold!\n");
         angular_threshold_ = cosf (angular_threshold);
       }
       
@@ -140,16 +160,17 @@ namespace pcl
         return (distance_threshold_);
       }
       
-      inline bool
+      virtual bool
       compare (int idx1, int idx2) const
       {
-        return ( (fabs (plane_coeff_d_[idx1] - plane_coeff_d_[idx2]) < distance_threshold_)
+        return ( (fabs ((*plane_coeff_d_)[idx1] - (*plane_coeff_d_)[idx2]) < distance_threshold_)
                  && (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ ) );
       }
       
     protected:
       PointCloudNConstPtr normals_;
-      std::vector<float>& plane_coeff_d_;
+      boost::shared_ptr<std::vector<float> > plane_coeff_d_;
+      //std::vector<float> plane_coeff_d_;
       float angular_threshold_;
       float distance_threshold_;
 
