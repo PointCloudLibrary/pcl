@@ -45,9 +45,9 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovarian
                                                                                     const typename pcl::KdTree<PointT>::Ptr kdtree,
                                                                                     std::vector<Eigen::Matrix3d>& cloud_covariances)
 {
-  if((size_t)k_correspondences_ > cloud->size ())
+  if (k_correspondences_ > int (cloud->size ()))
   {
-    PCL_ERROR ("[pcl::GeneralizedIterativeClosestPoint::computeCovariances] Number or points in cloud (%lu) is less than k_correspondences_ (%lu)!\n", (unsigned long)cloud->size (), (unsigned long)k_correspondences_);
+    PCL_ERROR ("[pcl::GeneralizedIterativeClosestPoint::computeCovariances] Number or points in cloud (%zu) is less than k_correspondences_ (%zu)!\n", cloud->size (), k_correspondences_);
     return;
   }
 
@@ -92,12 +92,12 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovarian
       cov(2,2) += pt.z*pt.z;    
     }
   
-    mean/= (double)k_correspondences_;
+    mean /= static_cast<double> (k_correspondences_);
     // Get the actual covariance
-    for(int k = 0; k < 3; k++)
-      for(int l = 0; l <= k; l++) 
+    for (int k = 0; k < 3; k++)
+      for (int l = 0; l <= k; l++) 
       {
-        cov(k,l) /= (double)k_correspondences_;
+        cov(k,l) /= static_cast<double> (k_correspondences_);
         cov(k,l) -= mean[k]*mean[l];
         cov(l,k) = cov(k,l);
       }

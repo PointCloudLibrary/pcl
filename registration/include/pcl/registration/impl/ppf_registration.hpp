@@ -224,7 +224,10 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
         model_reference_normal = input_->points[max_votes_i].getNormalVector3fMap ();
     Eigen::AngleAxisf rotation_mg (acosf (model_reference_normal.dot (Eigen::Vector3f::UnitX ())), model_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
     Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg;
-    Eigen::Affine3f max_transform = transform_sg.inverse () * Eigen::AngleAxisf ( (max_votes_j - floor (M_PI / search_method_->getAngleDiscretizationStep ())) * search_method_->getAngleDiscretizationStep (), Eigen::Vector3f::UnitX ()) * transform_mg;
+    Eigen::Affine3f max_transform = 
+      transform_sg.inverse () * 
+      Eigen::AngleAxisf ((static_cast<float> (max_votes_j) - floorf (static_cast<float> (M_PI) / search_method_->getAngleDiscretizationStep ())) * search_method_->getAngleDiscretizationStep (), Eigen::Vector3f::UnitX ()) * 
+      transform_mg;
 
     voted_poses.push_back (PoseWithVotes (max_transform, max_votes));
   }
@@ -295,8 +298,8 @@ pcl::PPFRegistration<PointSource, PointTarget>::clusterPoses (typename pcl::PPFR
       rotation_average += Eigen::Quaternionf (v_it->pose.rotation ()).coeffs ();
     }
 
-    translation_average /= clusters[cluster_votes[cluster_i].first].size ();
-    rotation_average /= clusters[cluster_votes[cluster_i].first].size ();
+    translation_average /= static_cast<float> (clusters[cluster_votes[cluster_i].first].size ());
+    rotation_average /= static_cast<float> (clusters[cluster_votes[cluster_i].first].size ());
 
     Eigen::Affine3f transform_average;
     transform_average.translation () = translation_average;
