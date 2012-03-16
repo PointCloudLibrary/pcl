@@ -461,6 +461,12 @@ namespace pcl
       typedef typename PointCloudLRF::Ptr PointCloudLRFPtr;
       typedef typename PointCloudLRF::ConstPtr PointCloudLRFConstPtr;
 
+      /** \brief Empty constructor. */
+      FeatureWithLocalReferenceFrames () : frames_ () {}
+
+       /** \brief Empty destructor. */
+      virtual ~FeatureWithLocalReferenceFrames () {}
+
       /** \brief Provide a pointer to the input dataset that contains the local
         * reference frames of the XYZ dataset.
         * In case of search surface is set to be different from the input cloud,

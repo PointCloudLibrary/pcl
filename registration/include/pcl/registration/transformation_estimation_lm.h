@@ -83,6 +83,20 @@ namespace pcl
           warp_point_ (src.warp_point_)
         {};
 
+        /** \brief Copy operator. 
+          * \param[in] src the TransformationEstimationLM object to copy into this 
+          */
+        TransformationEstimationLM&
+        operator = (const TransformationEstimationLM &src)
+        {
+          weights_ = src.weights_;
+          tmp_src_ = src.tmp_src_; 
+          tmp_tgt_ = src.tmp_tgt_; 
+          tmp_idx_src_ = src.tmp_idx_src_;
+          tmp_idx_tgt_ = src.tmp_idx_tgt_; 
+          warp_point_ = src.warp_point_;
+        }
+
          /** \brief Destructor. */
         virtual ~TransformationEstimationLM () {};
 
@@ -216,7 +230,7 @@ namespace pcl
           values () const { return (m_data_points_); }
 
           private:
-            const int m_data_points_;
+            int m_data_points_;
         };
 
         struct OptimizationFunctor : public Functor<double>
@@ -229,6 +243,17 @@ namespace pcl
             */
           OptimizationFunctor (int m_data_points, TransformationEstimationLM<PointSource, PointTarget> *estimator) : 
             Functor<double> (m_data_points), estimator_ (estimator) {}
+
+          /** Copy constructor
+            * \param[in] the optimization functor to copy into this
+            */
+          OptimizationFunctor (const OptimizationFunctor &src) : 
+            Functor<double> (), estimator_ (src.estimator_) {}
+
+          /** Copy operator
+            * \param[in] the optimization functor to copy into this
+            */
+          OptimizationFunctor& operator = (const OptimizationFunctor &src) { estimator_ = src.estimator; return (*this); }
 
           /** \brief Destructor. */
           virtual ~OptimizationFunctor () {}
@@ -253,6 +278,17 @@ namespace pcl
             */
           OptimizationFunctorWithIndices (int m_data_points, TransformationEstimationLM *estimator) :
             Functor<double> (m_data_points), estimator_ (estimator) {}
+
+          /** Copy constructor
+            * \param[in] the optimization functor to copy into this
+            */
+          OptimizationFunctorWithIndices (const OptimizationFunctorWithIndices &src) : 
+            Functor<double> (), estimator_ (src.estimator_) {}
+
+          /** Copy operator
+            * \param[in] the optimization functor to copy into this
+            */
+          OptimizationFunctorWithIndices& operator = (const OptimizationFunctorWithIndices &src) { estimator_ = src.estimator; return (*this); }
 
           /** \brief Destructor. */
           virtual ~OptimizationFunctorWithIndices () {}

@@ -52,26 +52,22 @@ namespace pcl
       inline void
       align(PointCloud &output, bool use_vanilla_ICP = false)
       {
-
-        /// INIT /////////////////////////////////////////////////////////////
-        if ( !initCompute() )
+        if (!initCompute ())
           return;
-
-
-        /// DOWNSAMPLING /////////////////////////////////////////////////////
-        if ( downsample_input_cloud )
+        if (downsample_input_cloud)
         {
-          sor_.setInputCloud(input_);
-          sor_.setIndices(indices_);
-          sor_.setLeafSize(downsampling_leaf_size_input_, downsampling_leaf_size_input_, downsampling_leaf_size_input_);
-          sor_.filter(cloud_input_);
-          cloud_input_ptr_ = cloud_input_.makeShared();
+          sor_.setInputCloud (input_);
+          sor_.setIndices (indices_);
+          sor_.setLeafSize (static_cast<float> (downsampling_leaf_size_input_), 
+                            static_cast<float> (downsampling_leaf_size_input_), 
+                            static_cast<float> (downsampling_leaf_size_input_));
+          sor_.filter (cloud_input_);
+          cloud_input_ptr_ = cloud_input_.makeShared ();
         }
         else
         {
           cloud_input_ = *input_;
           cloud_input_ptr_ = cloud_input_.makeShared();
-//          cloud_input_ptr_ = input_;
         }
 
         /// REGISTRATION /////////////////////////////////////////////////////
@@ -115,7 +111,7 @@ namespace pcl
             registration_successful = true;
             while ( ( n_iter++ < max_iterations ) && registration_successful )
             {
-              float max_dist = registration_distance_threshold_;
+              float max_dist = static_cast<float> (registration_distance_threshold_);
 
               bool use_linear_distance_threshold = true;
               if ( use_linear_distance_threshold )
@@ -123,7 +119,7 @@ namespace pcl
                 float dist_start = registration_distance_threshold_;
                 float dist_stop = 1.5f * downsampling_leaf_size_model_;
                 if ( n_iter < n_iter_linear )
-                  max_dist = dist_start - n_iter * (dist_start - dist_stop) / (float)(max_iterations);
+                  max_dist = dist_start - n_iter * (dist_start - dist_stop) / static_cast<float> (max_iterations);
                 else
                   max_dist = dist_stop;
               }
@@ -209,9 +205,9 @@ namespace pcl
       inline void getDownsamplingLeafSizeModel() { return downsampling_leaf_size_model_; };
 
       /** set the distance threshold for the ICP-based registration */
-      inline void setRegistrationDistanceThreshold(double threshold) { registration_distance_threshold_ = threshold; };
+      inline void setRegistrationDistanceThreshold (float threshold) { registration_distance_threshold_ = threshold; };
       /** get the distance threshold for the ICP-based registration */
-      inline void getRegistrationDistanceThreshold() { return registration_distance_threshold_; };
+      inline float getRegistrationDistanceThreshold () { return (registration_distance_threshold_); };
 
       /** enable downsampling of the input cloud. The leaf size is set using \a setDownsamplingLeafSizeInput */
       inline void downsampleInputCloud(bool enable) { downsample_input_cloud = enable; };
@@ -249,7 +245,7 @@ namespace pcl
       bool downsample_model_cloud;
       double downsampling_leaf_size_input_;
       double downsampling_leaf_size_model_;
-      double registration_distance_threshold_;
+      float registration_distance_threshold_;
 
       unsigned int number_clouds_processed_;
 

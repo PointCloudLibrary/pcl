@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Copyright (c) 2011-2012, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -54,6 +54,8 @@ namespace pcl
     template<unsigned N=3, typename T=double>
     struct ValueAndDerivatives
     {
+      ValueAndDerivatives () : hessian (), grad (), value () {}
+
       Eigen::Matrix<T, N, N> hessian;
       Eigen::Matrix<T, N, 1>    grad;
       T value;
@@ -131,14 +133,14 @@ namespace pcl
 
           if (n_ >= min_n_)
           {
-            mean_ = sx / n_;
+            mean_ = sx / static_cast<double> (n_);
             // Using maximum likelihood estimation as in the original paper
-            Eigen::Matrix2d covar = (sxx - 2 * (sx * mean_.transpose ())) / n_ + mean_ * mean_.transpose ();
+            Eigen::Matrix2d covar = (sxx - 2 * (sx * mean_.transpose ())) / static_cast<double> (n_) + mean_ * mean_.transpose ();
 
             Eigen::SelfAdjointEigenSolver<Eigen::Matrix2d> solver (covar);
             if (solver.eigenvalues ()[0] < min_covar_eigvalue_mult * solver.eigenvalues ()[1])
             {
-              PCL_DEBUG ("NDT normal fit: adjusting eigenvalue %f\n", solver.eigenvalues ()[0]);
+              PCL_DEBUG ("[pcl::NormalDist::estimateParams] NDT normal fit: adjusting eigenvalue %f\n", solver.eigenvalues ()[0]);
               Eigen::Matrix2d l = solver.eigenvalues ().asDiagonal ();
               Eigen::Matrix2d q = solver.eigenvectors ();
               // set minimum smallest eigenvalue:
@@ -169,7 +171,7 @@ namespace pcl
           const double y = transformed_pt.y;
           const Eigen::Vector2d p_xy (transformed_pt.x, transformed_pt.y);
           const Eigen::Vector2d q = p_xy - mean_;
-          const Eigen::RowVector2d qt_cvi = q.transpose () * covar_inv_;
+          const Eigen::RowVector2d qt_cvi (q.transpose () * covar_inv_);
           const double exp_qt_cvi_q = std::exp (-0.5 * double (qt_cvi * q));
           r.value = -exp_qt_cvi_q;
 
@@ -232,13 +234,13 @@ namespace pcl
           NormalDist* n;
           size_t used_points = 0;
           for (size_t i = 0; i < cloud->size (); i++)
-            if ((n = normalDistForPoint (cloud->at (i))))
-            {
-              n->addIdx (i);
-              used_points++;
-            }
+          if ((n = normalDistForPoint (cloud->at (i))))
+          {
+            n->addIdx (i);
+            used_points++;
+          }
 
-          PCL_DEBUG ("NDT single grid %dx%d using %d/%d points\n", cells_[0], cells_[1], used_points, cloud->size ());
+          PCL_DEBUG ("[pcl::NDTSingleGrid] NDT single grid %dx%d using %d/%d points\n", cells_[0], cells_[1], used_points, cloud->size ());
 
           // then bake the distributions such that they approximate the
           // points (and throw away memory of the points)
@@ -410,13 +412,10 @@ pcl::NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransforma
     for (size_t i = 0; i < intm_cloud.size (); i++)
       score += target_ndt.test (intm_cloud[i], cos_theta, sin_theta);
     
-    PCL_DEBUG ("NDT score %f (x=%f,y=%f,r=%f)\n",
+    PCL_DEBUG ("[pcl::NormalDistributionsTransform2D::computeTransformation] NDT score %f (x=%f,y=%f,r=%f)\n",
       float (score.value), xytheta_transformation[0], xytheta_transformation[1], xytheta_transformation[2]
     );
 
-    //std::cout << "grad:\n"    << score.grad << std::endl;
-    //std::cout << "hessian:\n" << score.hessian << std::endl;
-    
     if (score.value != 0)
     {
       // test for positive definiteness, and adjust to ensure it if necessary:
@@ -434,7 +433,7 @@ pcl::NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransforma
         double lambda = 1.1 * min_eigenvalue - 1;
         score.hessian += Eigen::Vector3d (-lambda, -lambda, -lambda).asDiagonal ();
         solver.compute (score.hessian, false);
-        PCL_DEBUG ("adjust hessian: %f: new eigenvalues:%f %f %f\n",
+        PCL_DEBUG ("[pcl::NormalDistributionsTransform2D::computeTransformation] adjust hessian: %f: new eigenvalues:%f %f %f\n",
             float (lambda),
             solver.eigenvalues ()[0].real (),
             solver.eigenvalues ()[1].real (),
@@ -445,20 +444,20 @@ pcl::NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransforma
               solver.eigenvalues ()[1].real () >= 0 &&
               solver.eigenvalues ()[2].real () >= 0);
       
-      Eigen::Vector3d delta_transformation = -score.hessian.inverse () * score.grad;
+      Eigen::Vector3d delta_transformation (-score.hessian.inverse () * score.grad);
       Eigen::Vector3d new_transformation = xytheta_transformation + newton_lambda_.cwiseProduct (delta_transformation);
 
       xytheta_transformation = new_transformation;
       
       // update transformation matrix from x, y, theta:
-      transformation.block<3,3> (0,0) = Eigen::Matrix3f (Eigen::AngleAxisf (xytheta_transformation[2], Eigen::Vector3f::UnitZ ()));
-      transformation.block<3,1> (0,3) = Eigen::Vector3f (xytheta_transformation[0], xytheta_transformation[1], 0);
+      transformation.block<3,3> (0,0) = Eigen::Matrix3f (Eigen::AngleAxisf (static_cast<float> (xytheta_transformation[2]), Eigen::Vector3f::UnitZ ()));
+      transformation.block<3,1> (0,3) = Eigen::Vector3f (static_cast<float> (xytheta_transformation[0]), static_cast<float> (xytheta_transformation[1]), 0.0f);
 
       //std::cout << "new transformation:\n" << transformation << std::endl;
     }
     else
     {
-      PCL_ERROR ("no overlap: try increasing the size or reducing the step of the grid\n");
+      PCL_ERROR ("[pcl::NormalDistributionsTransform2D::computeTransformation] no overlap: try increasing the size or reducing the step of the grid\n");
       break;
     }
     

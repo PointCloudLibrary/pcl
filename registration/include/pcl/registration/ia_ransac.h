@@ -82,6 +82,7 @@ namespace pcl
       class ErrorFunctor
       {
         public:
+          virtual ~ErrorFunctor () {}
           virtual float operator () (float d) const = 0;
       };
 
@@ -107,6 +108,8 @@ namespace pcl
         private:
           TruncatedError () {}
         public:
+          virtual ~TruncatedError () {}
+
           TruncatedError (float threshold) : threshold_ (threshold) {}
           virtual float operator () (float e) const
           { 

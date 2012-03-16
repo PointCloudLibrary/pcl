@@ -796,7 +796,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT>::computeFea
     }
 
     // Compute the SHOT descriptor for the current 3D feature
-    computePointSHOT (idx, nn_indices, nn_dists, shot_);
+    computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot_);
 
     // Copy into the resultant cloud
     for (int d = 0; d < shot_.size (); ++d)
@@ -852,7 +852,7 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, Eigen::MatrixXf, PointRFT>::comp
      }
 
     // Compute the SHOT descriptor for the current 3D feature
-    this->computePointSHOT (idx, nn_indices, nn_dists, shot_);
+    this->computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot_);
 
     // Copy into the resultant cloud
     for (int d = 0; d < shot_.size (); ++d)
@@ -910,7 +910,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::computeFeature 
      }
 
     // Estimate the SHOT at each patch
-    computePointSHOT (idx, nn_indices, nn_dists, shot_);
+    computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot_);
 
     // Copy into the resultant cloud
     for (int d = 0; d < shot_.size (); ++d)
@@ -963,7 +963,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf, PointRFT>::computeFe
      }
 
     // Estimate the SHOT at each patch
-    this->computePointSHOT (idx, nn_indices, nn_dists, shot_);
+    this->computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot_);
 
     // Copy into the resultant cloud
     for (int d = 0; d < shot_.size (); ++d)
