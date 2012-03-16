@@ -196,6 +196,19 @@ namespace pcl
       * \param argc the number of command line arguments
       * \param argv the command line arguments
       * \param str the command line argument to search for
+      * \param[out] f the first output value
+      * \param[out] s the second output value
+      * \param[out] t the third output value
+      * \param debug whether to print debug info or not
+      */
+    PCL_EXPORTS int
+    parse_3x_arguments (int argc, char** argv, const char* str, float &f, float &s, float &t, bool debug = true);
+
+    /** \brief Parse for specific given command line arguments (3x values comma
+      * separated). Returns the values sent as doubles.
+      * \param argc the number of command line arguments
+      * \param argv the command line arguments
+      * \param str the command line argument to search for
       * \param f the first output value
       * \param s the second output value
       * \param t the third output value
