@@ -277,7 +277,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::ge
   pcl::registration::getQueryIndices (corrs, model_indices);
   pcl::registration::getMatchIndices (corrs, scene_indices);
 
-  pcl::SampleConsensusModelRegistration<PointModelT>::Ptr model (new pcl::SampleConsensusModelRegistration<PointModelT> (input_, model_indices));
+  typename pcl::SampleConsensusModelRegistration<PointModelT>::Ptr model (new pcl::SampleConsensusModelRegistration<PointModelT> (input_, model_indices));
   model->setInputTarget (scene_cloud, scene_indices);
 
   pcl::RandomSampleConsensus<PointModelT> ransac (model);
@@ -303,7 +303,7 @@ template<typename PointModelT, typename PointSceneT, typename PointModelRfT, typ
 pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::recognize (std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > &transformations)
 {
   transformations.clear ();
-  if (!initCompute ())
+  if (!this->initCompute ())
   {
     PCL_ERROR(
       "[pcl::Hough3DGrouping::recognize()] Error! Model cloud or Scene cloud not set, please set them before calling again this function.\n");
@@ -314,7 +314,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::re
   clusterCorrespondences (model_instances);
 
   //temp copy of scene cloud with the type cast to ModelT in order to use Ransac
-  PointCloudPtr temp_scene_cloud_ptr (new PointCloud ());
+  PointCloudPtr temp_scene_cloud_ptr (new PointCloud<PointModelT> ());
   pcl::copyPointCloud<PointSceneT, PointModelT> (*scene_, *temp_scene_cloud_ptr);
 
   for (size_t i = 0; i < model_instances.size (); ++i)
@@ -324,7 +324,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::re
       transformations.push_back (curr_transf);
   }
 
-  deinitCompute ();
+  this->deinitCompute ();
   return (true);
 }
 

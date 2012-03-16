@@ -142,7 +142,7 @@ namespace pcl
       inline bool
       initCompute ()
       {
-        if (!PCLBase::initCompute ())
+        if (!PCLBase<PointModelT>::initCompute ())
         {
           return (false);
         }

@@ -155,14 +155,17 @@ namespace pcl
       typedef pcl::PointCloud<PointSceneRfT> SceneRfCloud;
       typedef typename SceneRfCloud::Ptr SceneRfCloudPtr;
       typedef typename SceneRfCloud::ConstPtr SceneRfCloudConstPtr;
+      typedef typename pcl::PCLBase<PointModelT>::PointCloudConstPtr PointCloudConstPtr;
+      typedef typename pcl::PCLBase<PointModelT>::PointCloudPtr PointCloudPtr;
+      typedef typename pcl::CorrespondenceGrouping<PointModelT, PointSceneT>::SceneCloudConstPtr SceneCloudConstPtr;
 
       /** \brief Constructor */
       Hough3DGrouping() : needs_training_ (true),
-                           local_rf_search_radius_ (0.0),
                            hough_threshold_ (-1),
                            hough_bin_size_ (1.0),
                            use_interpolation_ (true),
                            use_distance_weight_ (false),
+                           local_rf_search_radius_ (0.0),              
                            hough_space_initialized_ (false)
       {}
 
@@ -172,7 +175,7 @@ namespace pcl
       inline void
       setInputCloud (const PointCloudConstPtr &cloud)
       {
-        PCLBase::setInputCloud (cloud);
+        PCLBase<PointModelT>::setInputCloud (cloud);
         needs_training_ = true;
         hough_space_initialized_ = false;
       }
