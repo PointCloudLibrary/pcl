@@ -5,7 +5,7 @@ if(OPENNI_FOUND)
   target_link_libraries(pcl_openni_grab_frame pcl_common pcl_io)
 
   PCL_ADD_EXECUTABLE(pcl_openni_io ${SUBSYS_NAME} openni_io.cpp)
-	target_link_libraries(pcl_openni_io pcl_common pcl_io)
+  target_link_libraries(pcl_openni_io pcl_common pcl_io)
 endif(OPENNI_FOUND)
 
 PCL_ADD_EXECUTABLE(pcl_pcd_convert_NaN_nan ${SUBSYS_NAME} pcd_convert_NaN_nan.cpp)
