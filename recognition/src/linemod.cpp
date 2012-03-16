@@ -43,7 +43,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::LINEMOD::
 LINEMOD() :
-  template_threshold_ (0.8f),
+  template_threshold_ (0.75f),
   templates_ ()
 {
 }
@@ -68,7 +68,7 @@ createAndAddTemplate (const std::vector<pcl::QuantizableModality*> & modalities,
   SparseQuantizedMultiModTemplate linemod_template;
 
   // select N features from every modality (N = 50, hardcoded; CHANGE this to a parameter!!!)
-  const size_t nr_features_per_modality = 50;
+  const size_t nr_features_per_modality = 63;
   const size_t nr_modalities = modalities.size();
   for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
   {
@@ -131,13 +131,19 @@ matchTemplates (const std::vector<QuantizableModality*> & modalities, std::vecto
       //memset (energy_maps[bin_index], 0, width*height);
 
       unsigned char val0 = 0x1 << bin_index; // e.g. 00100000
-      unsigned char val1 = (0x1 << (bin_index+1)%8) | (0x1 << (bin_index+9)%8); // e.g. 01010000
+      unsigned char val1 = val0 | (0x1 << (bin_index+1)%8) | (0x1 << (bin_index+7)%8); // e.g. 01110000
+      unsigned char val2 = val1 | (0x1 << (bin_index+2)%8) | (0x1 << (bin_index+6)%8); // e.g. 11111000
+      unsigned char val3 = val2 | (0x1 << (bin_index+3)%8) | (0x1 << (bin_index+5)%8); // e.g. 11111101
       for (size_t index = 0; index < width*height; ++index)
       {
         if ((val0 & quantized_data[index]) != 0)
           ++energy_maps (bin_index, index);
         if ((val1 & quantized_data[index]) != 0)
           ++energy_maps (bin_index, index);
+        //if ((val2 & quantized_data[index]) != 0)
+        //  ++energy_maps (bin_index, index);
+        //if ((val3 & quantized_data[index]) != 0)
+        //  ++energy_maps (bin_index, index);
       }
     }
 
@@ -210,7 +216,7 @@ matchTemplates (const std::vector<QuantizableModality*> & modalities, std::vecto
       {
         if ((feature.quantized_value & (0x1<<bin_index)) != 0)
         {
-          max_score += 2;
+          max_score += 4;
 
           unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (feature.x, feature.y);
           for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)

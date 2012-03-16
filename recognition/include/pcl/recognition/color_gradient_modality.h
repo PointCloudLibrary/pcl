@@ -83,6 +83,12 @@ namespace pcl
       {
         gradient_magnitude_threshold_ = threshold;
       }
+
+      inline void
+      setGradientMagnitudeThresholdForFeatureExtraction (const float threshold)
+      {
+        gradient_magnitude_threshold_feature_extraction_ = threshold;
+      }
   
       inline QuantizedMap &
       getQuantizedMap () 
@@ -116,6 +122,9 @@ namespace pcl
 
       void
       computeMaxColorGradients ();
+
+      void
+      computeMaxColorGradientsSobel ();
   
       void
       quantizeColorGradients ();
@@ -125,6 +134,7 @@ namespace pcl
   
     private:
       float gradient_magnitude_threshold_;
+      float gradient_magnitude_threshold_feature_extraction_;
       pcl::PointCloud<pcl::GradientXY> color_gradients_;
   
       pcl::QuantizedMap quantized_color_gradients_;
@@ -139,7 +149,8 @@ namespace pcl
 template <typename PointInT>
 pcl::ColorGradientModality<PointInT>::
 ColorGradientModality ()
-  : gradient_magnitude_threshold_ (80.0f)
+  : gradient_magnitude_threshold_ (10.0f),
+    gradient_magnitude_threshold_feature_extraction_ (55.0f)
 {
 }
 
@@ -157,7 +168,7 @@ pcl::ColorGradientModality<PointInT>::
 processInputData ()
 {
   // extract color gradients
-  computeMaxColorGradients ();
+  computeMaxColorGradientsSobel ();
 
   // quantize gradients
   quantizeColorGradients ();
@@ -191,7 +202,7 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
       if (mask (col_index, row_index) != 0)
       {
         const GradientXY & gradient = color_gradients_ (col_index, row_index);
-        if (gradient.magnitude > gradient_magnitude_threshold_)
+        if (gradient.magnitude > gradient_magnitude_threshold_feature_extraction_)
         {
           Candidate candidate;
           candidate.gradient = gradient;
@@ -225,7 +236,7 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
   size_t distance = list1.size () / nr_features + 1; // ??? 
   while (list2.size () != nr_features)
   {
-    const int sqr_distance = distance*distance;
+    const size_t sqr_distance = distance*distance;
     for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
     {
       bool candidate_accepted = true;
@@ -339,6 +350,107 @@ computeMaxColorGradients ()
         GradientXY gradient;
         gradient.magnitude = sqrt (sqr_mag_b);
         gradient.angle = atan2 (b_dy, b_dx) * 180.0f / pi;
+        gradient.x = static_cast<float> (col_index);
+        gradient.y = static_cast<float> (row_index);
+
+        color_gradients_ (col_index+1, row_index+1) = gradient;
+      }
+
+      assert (color_gradients_ (col_index+1, row_index+1).angle >= -180 &&
+              color_gradients_ (col_index+1, row_index+1).angle <=  180);
+    }
+  }
+
+  return;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT>
+void
+pcl::ColorGradientModality<PointInT>::
+computeMaxColorGradientsSobel ()
+{
+  const int width = input_->width;
+  const int height = input_->height;
+
+  color_gradients_.points.resize (width*height);
+  color_gradients_.width = width;
+  color_gradients_.height = height;
+
+  const float pi = tan(1.0f)*4;
+  for (int row_index = 1; row_index < height-1; ++row_index)
+  {
+    for (int col_index = 1; col_index < width-1; ++col_index)
+    {
+      const int r7 = static_cast<int> (input_->points[(row_index-1)*width + (col_index-1)].r);
+      const int g7 = static_cast<int> (input_->points[(row_index-1)*width + (col_index-1)].g);
+      const int b7 = static_cast<int> (input_->points[(row_index-1)*width + (col_index-1)].b);
+      const int r8 = static_cast<int> (input_->points[(row_index-1)*width + (col_index)].r);
+      const int g8 = static_cast<int> (input_->points[(row_index-1)*width + (col_index)].g);
+      const int b8 = static_cast<int> (input_->points[(row_index-1)*width + (col_index)].b);
+      const int r9 = static_cast<int> (input_->points[(row_index-1)*width + (col_index+1)].r);
+      const int g9 = static_cast<int> (input_->points[(row_index-1)*width + (col_index+1)].g);
+      const int b9 = static_cast<int> (input_->points[(row_index-1)*width + (col_index+1)].b);
+      const int r4 = static_cast<int> (input_->points[(row_index)*width + (col_index-1)].r);
+      const int g4 = static_cast<int> (input_->points[(row_index)*width + (col_index-1)].g);
+      const int b4 = static_cast<int> (input_->points[(row_index)*width + (col_index-1)].b);
+      const int r6 = static_cast<int> (input_->points[(row_index)*width + (col_index+1)].r);
+      const int g6 = static_cast<int> (input_->points[(row_index)*width + (col_index+1)].g);
+      const int b6 = static_cast<int> (input_->points[(row_index)*width + (col_index+1)].b);
+      const int r1 = static_cast<int> (input_->points[(row_index+1)*width + (col_index-1)].r);
+      const int g1 = static_cast<int> (input_->points[(row_index+1)*width + (col_index-1)].g);
+      const int b1 = static_cast<int> (input_->points[(row_index+1)*width + (col_index-1)].b);
+      const int r2 = static_cast<int> (input_->points[(row_index+1)*width + (col_index)].r);
+      const int g2 = static_cast<int> (input_->points[(row_index+1)*width + (col_index)].g);
+      const int b2 = static_cast<int> (input_->points[(row_index+1)*width + (col_index)].b);
+      const int r3 = static_cast<int> (input_->points[(row_index+1)*width + (col_index+1)].r);
+      const int g3 = static_cast<int> (input_->points[(row_index+1)*width + (col_index+1)].g);
+      const int b3 = static_cast<int> (input_->points[(row_index+1)*width + (col_index+1)].b);
+
+      const int r_tmp1 = - r7 + r3;
+      const int r_tmp2 = - r1 + r9;
+      const int g_tmp1 = - g7 + g3;
+      const int g_tmp2 = - g1 + g9;
+      const int b_tmp1 = - b7 + b3;
+      const int b_tmp2 = - b1 + b9;
+      //const int gx = - r7 - (r4<<2) - r1 + r3 + (r6<<2) + r9;
+      //const int gy = - r7 - (r8<<2) - r9 + r1 + (r2<<2) + r3;
+      const int r_dx = r_tmp1 + r_tmp2 - (r4<<2) + (r6<<2);
+      const int r_dy = r_tmp1 - r_tmp2 - (r8<<2) + (r2<<2);
+      const int g_dx = g_tmp1 + g_tmp2 - (g4<<2) + (g6<<2);
+      const int g_dy = g_tmp1 - g_tmp2 - (g8<<2) + (g2<<2);
+      const int b_dx = b_tmp1 + b_tmp2 - (b4<<2) + (b6<<2);
+      const int b_dy = b_tmp1 - b_tmp2 - (b8<<2) + (b2<<2);
+
+      const int sqr_mag_r = r_dx*r_dx + r_dy*r_dy;
+      const int sqr_mag_g = g_dx*g_dx + g_dy*g_dy;
+      const int sqr_mag_b = b_dx*b_dx + b_dy*b_dy;
+
+      if (sqr_mag_r > sqr_mag_g && sqr_mag_r > sqr_mag_b)
+      {
+        GradientXY gradient;
+        gradient.magnitude = sqrt (static_cast<float> (sqr_mag_r));
+        gradient.angle = atan2 (static_cast<float> (r_dy), static_cast<float> (r_dx)) * 180.0f / pi;
+        gradient.x = static_cast<float> (col_index);
+        gradient.y = static_cast<float> (row_index);
+
+        color_gradients_ (col_index+1, row_index+1) = gradient;
+      }
+      else if (sqr_mag_g > sqr_mag_b)
+      {
+        GradientXY gradient;
+        gradient.magnitude = sqrt (static_cast<float> (sqr_mag_g));
+        gradient.angle = atan2 (static_cast<float> (g_dy), static_cast<float> (g_dx)) * 180.0f / pi;
+        gradient.x = static_cast<float> (col_index);
+        gradient.y = static_cast<float> (row_index);
+
+        color_gradients_ (col_index+1, row_index+1) = gradient;
+      }
+      else
+      {
+        GradientXY gradient;
+        gradient.magnitude = sqrt (static_cast<float> (sqr_mag_b));
+        gradient.angle = atan2 (static_cast<float> (b_dy), static_cast<float> (b_dx)) * 180.0f / pi;
         gradient.x = static_cast<float> (col_index);
         gradient.y = static_cast<float> (row_index);
 
