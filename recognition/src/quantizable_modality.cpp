@@ -88,6 +88,7 @@ void
 pcl::QuantizedMap::
 spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, const size_t spreading_size)
 {
+  // TODO: implement differently (as in opencv)
   const size_t width = input_map.getWidth ();
   const size_t height = input_map.getHeight ();
 
@@ -100,7 +101,7 @@ spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, c
     for (size_t col_index = spreading_size; col_index < width-spreading_size-1; ++col_index)
     {
       unsigned char value = 0;
-      for (size_t col_index2 = col_index-spreading_size; col_index2 <= col_index+spreading_size; ++col_index2)
+      for (size_t col_index2 = col_index-spreading_size/2; col_index2 <= col_index+spreading_size/2; ++col_index2)
       {
         //if (row_index2 < 0 || row_index2 >= height || col_index2 < 0 || col_index2 >= width) continue;
         value |= input_map (col_index2, row_index);
@@ -114,7 +115,7 @@ spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, c
     for (size_t col_index = spreading_size; col_index < width-spreading_size-1; ++col_index)
     {
       unsigned char value = 0;
-      for (size_t row_index2 = row_index-spreading_size; row_index2 <= row_index+spreading_size; ++row_index2)
+      for (size_t row_index2 = row_index-spreading_size/2; row_index2 <= row_index+spreading_size/2; ++row_index2)
       {
         //if (row_index2 < 0 || row_index2 >= height || col_index2 < 0 || col_index2 >= width) continue;
         value |= tmp_map (col_index, row_index2);

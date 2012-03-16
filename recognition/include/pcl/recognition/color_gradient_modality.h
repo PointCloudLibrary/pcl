@@ -180,7 +180,8 @@ processInputData ()
   //spreadFilteredQunatizedColorGradients ();
   const int spreading_size = 8;
   pcl::QuantizedMap::spreadQuantizedMap (filtered_quantized_color_gradients_,
-                                         spreaded_filtered_quantized_color_gradients_, spreading_size);
+                                         spreaded_filtered_quantized_color_gradients_, 
+                                         spreading_size);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
