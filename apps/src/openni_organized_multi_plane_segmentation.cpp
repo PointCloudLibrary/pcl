@@ -155,7 +155,7 @@ class OpenNIOrganizedMultiPlaneSegmentation
           double plane_extract_start = pcl::getTime ();
           mps.setInputNormals (normal_cloud);
           mps.setInputCloud (prev_cloud);
-          mps.segment (regions);
+          mps.segmentAndRefine (regions);
           double plane_extract_end = pcl::getTime ();
           std::cout << "Plane extraction took " << double (plane_extract_end - plane_extract_start) << std::endl;
           std::cout << "Frame took " << double (plane_extract_end - normal_start) << std::endl;
