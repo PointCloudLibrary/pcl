@@ -54,6 +54,9 @@ if(build)
     PCL_ADD_EXECUTABLE(pcl_feature_matching ${SUBSYS_NAME} src/feature_matching.cpp)
     target_link_libraries(pcl_feature_matching pcl_common pcl_io pcl_registration pcl_keypoints pcl_sample_consensus pcl_visualization pcl_search pcl_features pcl_kdtree pcl_surface pcl_segmentation)
 
+    PCL_ADD_EXECUTABLE(pcl_pcd_organized_multi_plane_segmentation ${SUBSYS_NAME} src/pcd_organized_multi_plane_segmentation.cpp)
+    target_link_libraries(pcl_pcd_organized_multi_plane_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_features)
+
 #    PCL_ADD_EXECUTABLE(pcl_convolve ${SUBSYS_NAME} src/convolve.cpp)
 #    target_link_libraries(pcl_convolve pcl_common pcl_io pcl_visualization)
 
