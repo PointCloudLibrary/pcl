@@ -42,95 +42,76 @@
 
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT, typename PointLT> void
-pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::getNextIdxs(int& p1, int& p2, int& p3, int curr_idx, int dir, int width){
-  if(dir == 0){
-    p2 = (curr_idx - width);
-    p1 = p2 - 1;
-    p3 = p2 + 1;
-  } else if(dir == 1){
-    p1 = (curr_idx - width) + 1;
-    p2 = curr_idx + 1;
-    p3 = (curr_idx + width) + 1;
-  } else if(dir == 2){
-    p2 = (curr_idx + width);
-    p1 = p2 + 1;
-    p3 = p2 - 1;
-  } else if(dir == 3){
-    p1 = (curr_idx + width) - 1;
-    p2 = curr_idx - 1;
-    p3 = (curr_idx - width) - 1;
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT, typename PointLT> bool
-pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::isIndexValid (int curr_idx, int test_idx, int width, int max)
-{
-  if (test_idx < 0)
-    return (false);
-  else if (test_idx >= max)
-    return (false);
-  // else if ((abs(curr_idx - test_idx) == 1) && (curr_idx / width) != (test_idx % width))
-  //  return (false);
-  
-  return (true);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ *  Directions: 1 2 3
+ *              0 x 4
+ *              7 6 5
+ * e.g. direction y means we came from pixel with label y to the center pixel x
+ */
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointLT> void
 pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::findLabeledRegionBoundary (int start_idx, PointCloudLPtr labels, pcl::PointIndices& boundary_indices)
 {
-  bool first_done = false;
   boundary_indices.indices.push_back (start_idx);
   int curr_idx = start_idx;
-  int p1, p2, p3 = 0;
-  int dir = 0;
+  int curr_x   = start_idx % labels->width;
+  int curr_y   = start_idx / labels->width;
   unsigned label = labels->points[start_idx].label;
-  int max_idx = labels->points.size ();
-
-  while (!first_done)
+  
+  // fill lookup table for next points to visit
+  Neighbor directions [8] = {Neighbor(-1,  0,                 -1),
+                             Neighbor(-1, -1, -labels->width - 1), 
+                             Neighbor( 0, -1, -labels->width    ),
+                             Neighbor( 1, -1, -labels->width + 1),
+                             Neighbor( 1,  0,                  1),
+                             Neighbor( 1,  1,  labels->width + 1),
+                             Neighbor( 0,  1,  labels->width    ),
+                             Neighbor(-1,  1,  labels->width - 1)};
+  
+  // find one pixel with other label in the neighborhood -> assume thats the one we came from
+  int direction = -1;
+  int x;
+  int y;
+  int index;
+  for (unsigned dIdx = 0; dIdx < 8; ++dIdx)
   {
-    getNextIdxs(p1,p2,p3,curr_idx,dir,labels->width);
-    if( isIndexValid (curr_idx, p1, labels->width, max_idx) && labels->points[p1].label == label){
-      boundary_indices.indices.push_back(p1);
-      curr_idx = p1;
-      first_done = true;
-      dir = (dir-1);
-      if(dir == -1)
-        dir = 3;
-    } else if( isIndexValid (curr_idx, p2, labels->width, max_idx) && labels->points[p2].label == label){
-      boundary_indices.indices.push_back(p2);
-      curr_idx = p2;
-      first_done = true;
-    } else if( isIndexValid (curr_idx, p3, labels->width, max_idx) && labels->points[p3].label == label){
-      boundary_indices.indices.push_back(p3);
-      curr_idx = p3;
-      first_done = true;
-    } else {
-      dir = (dir+1) % 4;
-    } 
+    x = curr_x + directions [dIdx].d_x;
+    y = curr_y + directions [dIdx].d_y;
+    index = curr_idx + directions [dIdx].d_index;
+    if (x >= 0 && x < int(labels->width) && y >= 0 && y < int(labels->height) && labels->points[index].label != label)
+    {
+      direction = dIdx;
+      break;
+    }
   }
-
-  while ((curr_idx != start_idx)){
-    getNextIdxs(p1, p2, p3, curr_idx, dir, labels->width);   
-    if (isIndexValid (curr_idx, p1, labels->width, max_idx) && labels->points[p1].label == label){
-      boundary_indices.indices.push_back(p1);
-      curr_idx = p1;
-      dir = (dir-1);// % 4;
-      if(dir == -1)
-        dir=3;
-    } else if (isIndexValid (curr_idx, p2, labels->width, max_idx) && labels->points[p2].label == label){
-      boundary_indices.indices.push_back(p2);
-      curr_idx = p2;
-    } else if (isIndexValid (curr_idx, p3, labels->width, max_idx) && labels->points[p3].label == label){
-      boundary_indices.indices.push_back(p3);
-      curr_idx = p3;
-    } else {
-      dir = (dir+1) % 4;
-    } 
-  }
+  
+  //std::cout << "found initial direction at: " << direction << std::endl;
+  
+  // region with single pixel
+  if (direction == -1)
+    return;
+  
+  do {
+    unsigned nIdx;
+    for (unsigned dIdx = 1; dIdx <= 8; ++dIdx)
+    {
+      nIdx = (direction + dIdx) & 7;
+      
+      x = curr_x + directions [nIdx].d_x;
+      y = curr_y + directions [nIdx].d_y;
+      index = curr_idx + directions [nIdx].d_index;
+      if (x >= 0 && y < int(labels->width) && y >= 0 && y < int(labels->height) && labels->points[index].label == label)
+        break;
+    }
+    
+    // update the direction
+    direction = (nIdx + 4) & 7;
+    curr_idx += directions [nIdx].d_index;
+    curr_x   += directions [nIdx].d_x;
+    curr_y   += directions [nIdx].d_y;
+    boundary_indices.indices.push_back(curr_idx);
+    //std::cout << "add point: " << curr_idx << " :: " << curr_x << " , " << curr_y << std::endl;
+  } while ( curr_idx != start_idx);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -232,15 +213,19 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
   unsigned max_id = 0;
   for (unsigned runIdx = 0; runIdx < run_ids.size (); ++runIdx)
   {
+    // if it is its own root -> new region
     if (run_ids[runIdx] == runIdx)
       map[runIdx] = max_id++;
+    else // assign this sub-segment to the region (root) it belongs
+      map [runIdx] = map [findRoot (run_ids, runIdx)];
   }
+
   label_indices.resize (max_id + 1);
   for (unsigned idx = 0; idx < input_->points.size (); idx++)
   {
     if (labels[idx].label != invalid_label)
     {
-      labels[idx].label = map[findRoot (run_ids, labels[idx].label)];
+      labels[idx].label = map[labels[idx].label];
       label_indices[labels[idx].label].indices.push_back (idx);
     }
   }

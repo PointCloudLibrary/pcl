@@ -128,9 +128,19 @@ namespace pcl
       static void
       getNextIdxs(int& p1, int& p2, int& p3, int curr_idx, int dir, int width);
 
-      static bool
-      isIndexValid (int curr_idx, int test_idx, int width, int max);
-
+    private:
+      struct Neighbor
+      {
+        Neighbor (int dx, int dy, int didx)
+        : d_x (dx)
+        , d_y (dy)
+        , d_index (didx)
+        {}
+        
+        int d_x;
+        int d_y;
+        int d_index; // = dy * width + dx: pre-calculated
+      };
   };
 }
 

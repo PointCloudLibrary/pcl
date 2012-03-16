@@ -86,6 +86,14 @@ namespace pcl
       {
       }
 
+      virtual void 
+      setInputCloud (const PointCloudConstPtr& cloud)
+      {
+        input_ = cloud;
+        Eigen::Matrix3f rot = input_->sensor_orientation_.toRotationMatrix ();
+        z_axis_ = rot.col (2);
+      }
+      
       /** \brief Provide a pointer to the input normals.
         * \param[in] normals the input normal cloud
         */
@@ -133,7 +141,6 @@ namespace pcl
       virtual inline void
       setAngularThreshold (float angular_threshold)
       {
-        printf ("base class set angular threshold!\n");
         angular_threshold_ = cosf (angular_threshold);
       }
       
@@ -148,9 +155,10 @@ namespace pcl
         * \param[in] distance_threshold the tolerance in meters
         */
       inline void
-      setDistanceThreshold (float distance_threshold)
+      setDistanceThreshold (float distance_threshold, bool depth_dependent)
       {
         distance_threshold_ = distance_threshold;
+        depth_dependent_ = depth_dependent;
       }
 
       /** \brief Get the distance threshold in meters (d component of plane equation) between neighboring points, to be considered part of the same plane. */
@@ -163,7 +171,16 @@ namespace pcl
       virtual bool
       compare (int idx1, int idx2) const
       {
-        return ( (fabs ((*plane_coeff_d_)[idx1] - (*plane_coeff_d_)[idx2]) < distance_threshold_)
+        float threshold = distance_threshold_;
+        if (depth_dependent_)
+        {
+          Eigen::Vector4f origin = input_->sensor_origin_;
+          Eigen::Vector3f vec = input_->points[idx1].getVector3fMap () - origin.head<3> ();
+          
+          float z = vec.dot (z_axis_);
+          threshold *= z * z;
+        }
+        return ( (fabs ((*plane_coeff_d_)[idx1] - (*plane_coeff_d_)[idx2]) < threshold)
                  && (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ ) );
       }
       
@@ -173,7 +190,8 @@ namespace pcl
       //std::vector<float> plane_coeff_d_;
       float angular_threshold_;
       float distance_threshold_;
-
+      bool depth_dependent_;
+      Eigen::Vector3f z_axis_;
   };
 }
 

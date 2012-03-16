@@ -112,13 +112,13 @@ namespace pcl
         * \param[in] min_inliers the minimum number of inliers required per plane
         */
       inline void
-      setMinInliers (int min_inliers)
+      setMinInliers (unsigned min_inliers)
       {
         min_inliers_ = min_inliers;
       }
 
       /** \brief Get the minimum number of inliers required per plane. */
-      inline int
+      inline unsigned
       getMinInliers () const
       {
         return (min_inliers_);
@@ -215,7 +215,7 @@ namespace pcl
       PointCloudNConstPtr normals_;
 
       /** \brief The minimum number of inliers required for each plane. */
-      int min_inliers_;
+      unsigned min_inliers_;
 
       /** \brief The tolerance in radians for difference in normal direction between neighboring points, to be considered part of the same plane. */
       double angular_threshold_;

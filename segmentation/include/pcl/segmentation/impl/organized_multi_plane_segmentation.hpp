@@ -99,7 +99,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   compare_->setInputCloud (input_);
   compare_->setInputNormals (normals_);
   compare_->setAngularThreshold (static_cast<float> (angular_threshold_));
-  compare_->setDistanceThreshold (static_cast<float> (distance_threshold_));
+  compare_->setDistanceThreshold (static_cast<float> (distance_threshold_), true);
 
   // Set up the output
   OrganizedConnectedComponentSegmentation<PointT,pcl::Label> connected_component (compare_);
@@ -115,7 +115,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   // Fit Planes to each cluster
   for (size_t i = 0; i < label_indices.size (); i++)
   {
-    if (static_cast<int> (label_indices[i].indices.size ()) > min_inliers_)
+    if (static_cast<unsigned> (label_indices[i].indices.size ()) > min_inliers_)
     {
       pcl::computeMeanAndCovarianceMatrix (*input_, label_indices[i].indices, clust_cov, clust_centroid);
       Eigen::Vector4f plane_params;
@@ -231,8 +231,8 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
 template<typename PointT, typename PointNT, typename PointLT> void
 pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vector<ModelCoefficients>& model_coefficients, 
                                                                         std::vector<PointIndices>& inlier_indices,
-                                                                        std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> >& centroids,
-                                                                        std::vector <Eigen::Matrix3f, Eigen::aligned_allocator<Eigen::Matrix3f> >& covariances,
+                                                                        std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> >& /*centroids*/,
+                                                                        std::vector <Eigen::Matrix3f, Eigen::aligned_allocator<Eigen::Matrix3f> >& /*covariances*/,
                                                                         pcl::PointCloud<PointLT>& labels,
                                                                         std::vector<pcl::PointIndices>& label_indices)
 {
@@ -263,7 +263,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
   unsigned int next_row = labels.width;
   for(size_t rowIdx = 0; rowIdx < labels.height - 1; ++rowIdx, current_row = next_row, next_row += labels.width)
   {
-    for (int colIdx = 0; colIdx < labels.width - 1; ++colIdx)
+    for (unsigned colIdx = 0; colIdx < labels.width - 1; ++colIdx)
     {
       int current_label = labels[current_row+colIdx].label;
       if (current_label == -1)
