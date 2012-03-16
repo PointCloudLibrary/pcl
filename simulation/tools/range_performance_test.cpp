@@ -66,7 +66,7 @@ int window_height_;
 TexturedQuad::Ptr textured_quad_;
 
 void
-printHelp (int argc, char **argv)
+printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s <filename>\n", argv[0]);
   print_info ("acceptable filenames include vtk, obj and ply. ply can support color\n");
@@ -89,7 +89,7 @@ display_score_image (const float* score_buffer)
   {
     float d = (score_buffer[i]-min_score)/(max_score-min_score);
     score_img[3*i+0] = 0;
-    score_img[3*i+1] = d*255;
+    score_img[3*i+1] = static_cast<unsigned char> (d)*255;
     score_img[3*i+2] = 0;
   }
   textured_quad_->set_texture (score_img);
@@ -113,12 +113,12 @@ void display_depth_image (const float* depth_buffer, int width, int height)
 
   for (int i = 0; i < npixels; ++i)
   {
-    float zn = 0.7;
-    float zf = 20.0;
+    float zn = 0.7f;
+    float zf = 20.0f;
     float d = depth_buffer[i];
     float z = -zf*zn/((zf-zn)*(d - zf/(zf-zn)));
-    float b = 0.075;
-    float f = 580.0;
+    float b = 0.075f;
+    float f = 580.0f;
     uint16_t kd = static_cast<uint16_t>(1090 - b*f/z*8);
     if (kd < 0) kd = 0;
     else if (kd > 2047) kd = 2047;
@@ -332,7 +332,7 @@ display ()
 
 // Handle normal keys
 void
-on_keyboard (unsigned char key, int x, int y)
+on_keyboard (unsigned char key, int, int)
 {
   if (key == 27)
     exit (0);
@@ -439,14 +439,14 @@ main (int argc, char** argv)
   range_likelihood_ = RangeLikelihood::Ptr (new RangeLikelihood (rows, cols, row_height, col_width, scene_));
 
   // Actually corresponds to default parameters:
-  range_likelihood_visualization_->setCameraIntrinsicsParameters (640, 480, 576.09757860,
-            576.09757860, 321.06398107, 242.97676897);
+  range_likelihood_visualization_->setCameraIntrinsicsParameters (
+      640, 480, 576.09757860f, 576.09757860f, 321.06398107f, 242.97676897f);
   range_likelihood_visualization_->setComputeOnCPU (false);
   range_likelihood_visualization_->setSumOnCPU (false);
   range_likelihood_visualization_->setUseColor (true);
 
-  range_likelihood_->setCameraIntrinsicsParameters (640, 480, 576.09757860,
-            576.09757860, 321.06398107, 242.97676897);
+  range_likelihood_->setCameraIntrinsicsParameters (
+      640, 480, 576.09757860f, 576.09757860f, 321.06398107f, 242.97676897f);
   range_likelihood_->setComputeOnCPU (false);
   range_likelihood_->setSumOnCPU (false);
   range_likelihood_->setUseColor (false);

@@ -227,6 +227,32 @@ pcl::console::parse_2x_arguments (int argc, char** argv, const char* str, int &f
 
 ////////////////////////////////////////////////////////////////////////////////
 int
+pcl::console::parse_3x_arguments (int argc, char** argv, const char* str, float &f, float &s, float &t, bool debug)
+{
+  for (int i = 1; i < argc; ++i)
+  {
+    // Search for the string
+    if ((strcmp (argv[i], str) == 0) && (++i < argc))
+    {
+      // look for ',' as a separator
+      std::vector<std::string> values;
+      boost::split (values, argv[i], boost::is_any_of (","), boost::token_compress_on);
+      if (values.size () != 3 && debug)
+      {
+        print_error ("[parse_3x_arguments] Number of values for %s (%zu) different than 3!\n", str, values.size ());
+        return (-2);
+      }
+      f = static_cast<float> (atof (values.at (0).c_str ()));
+      s = static_cast<float> (atof (values.at (1).c_str ()));
+      t = static_cast<float> (atof (values.at (2).c_str ()));
+      return (i - 1);
+    }
+  }
+  return (-1);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+int
 pcl::console::parse_3x_arguments (int argc, char** argv, const char* str, double &f, double &s, double &t, bool debug)
 {
   for (int i = 1; i < argc; ++i)
