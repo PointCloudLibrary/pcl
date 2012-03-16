@@ -85,13 +85,13 @@ namespace pcl
       inline QuantizedMap &
       getQuantizedMap () 
       { 
-        return (filtered_quantized_color_gradients_);
+        return (filtered_quantized_colors_);
       }
   
       inline QuantizedMap &
       getSpreadedQuantizedMap () 
       { 
-        return (spreaded_filtered_quantized_color_gradients_);
+        return (spreaded_filtered_quantized_colors_);
       }
   
       void
@@ -118,7 +118,7 @@ namespace pcl
       void
       filterQuantizedColors ();
 
-      static inline unsigned char
+      static inline int
       quantizeColorOnRGBExtrema (const float r,
                                  const float g,
                                  const float b);
@@ -127,9 +127,11 @@ namespace pcl
       computeDistanceMap (const MaskMap & input, DistanceMap & output) const;
 
     private:
-      pcl::QuantizedMap quantized_color_gradients_;
-      pcl::QuantizedMap filtered_quantized_color_gradients_;
-      pcl::QuantizedMap spreaded_filtered_quantized_color_gradients_;
+      float feature_distance_threshold_;
+      
+      pcl::QuantizedMap quantized_colors_;
+      pcl::QuantizedMap filtered_quantized_colors_;
+      pcl::QuantizedMap spreaded_filtered_quantized_colors_;
   
   };
 
@@ -138,7 +140,7 @@ namespace pcl
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 pcl::ColorModality<PointInT>::ColorModality ()
-  : quantized_color_gradients_ (), filtered_quantized_color_gradients_ (), spreaded_filtered_quantized_color_gradients_ ()
+  : feature_distance_threshold_ (1.0f), quantized_colors_ (), filtered_quantized_colors_ (), spreaded_filtered_quantized_colors_ ()
 {
 }
 
@@ -154,16 +156,16 @@ void
 pcl::ColorModality<PointInT>::processInputData ()
 {
   // quantize gradients
-  quantizeColorGradients ();
+  quantizeColors ();
 
   // filter quantized gradients to get only dominants one + thresholding
-  filterQuantizedColorGradients ();
+  filterQuantizedColors ();
 
   // spread filtered quantized gradients
   //spreadFilteredQunatizedColorGradients ();
   const int spreading_size = 8;
-  pcl::QuantizedMap::spreadQuantizedMap (filtered_quantized_color_gradients_,
-                                         spreaded_filtered_quantized_color_gradients_, spreading_size);
+  pcl::QuantizedMap::spreadQuantizedMap (filtered_quantized_colors_,
+                                         spreaded_filtered_quantized_colors_, spreading_size);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -202,7 +204,7 @@ void pcl::ColorModality<PointInT>::extractFeatures (const MaskMap & mask,
       if (mask (col_index, row_index) != 0)
       {
         //const unsigned char quantized_value = quantized_surface_normals_ (row_index, col_index);
-        const unsigned char quantized_value = filtered_quantized_surface_normals_ (col_index, row_index);
+        const unsigned char quantized_value = filtered_quantized_colors_ (col_index, row_index);
 
         if (quantized_value == 0) 
           continue;
@@ -232,13 +234,13 @@ void pcl::ColorModality<PointInT>::extractFeatures (const MaskMap & mask,
       if (mask (col_index, row_index) != 0)
       {
         //const unsigned char quantized_value = quantized_surface_normals_ (row_index, col_index);
-        const unsigned char quantized_value = filtered_quantized_surface_normals_ (col_index, row_index);
+        const unsigned char quantized_value = filtered_quantized_colors_ (col_index, row_index);
 
-        const float nx = surface_normals_ (col_index, row_index).normal_x;
-        const float ny = surface_normals_ (col_index, row_index).normal_y;
-        const float nz = surface_normals_ (col_index, row_index).normal_z;
+        //const float nx = surface_normals_ (col_index, row_index).normal_x;
+        //const float ny = surface_normals_ (col_index, row_index).normal_y;
+        //const float nz = surface_normals_ (col_index, row_index).normal_z;
 
-        if (quantized_value != 0 && !(pcl_isnan (nx) || pcl_isnan (ny) || pcl_isnan (nz)))
+        if (quantized_value != 0)
         {
           const int distance_map_index = map[quantized_value];
 
@@ -278,7 +280,7 @@ void pcl::ColorModality<PointInT>::extractFeatures (const MaskMap & mask,
       feature.x = static_cast<int> (iter->x);
       feature.y = static_cast<int> (iter->y);
       feature.modality_index = modality_index;
-      feature.quantized_value = filtered_quantized_surface_normals_ (iter->x, iter->y);
+      feature.quantized_value = filtered_quantized_colors_ (iter->x, iter->y);
 
       features.push_back (feature);
     }
@@ -322,7 +324,7 @@ void pcl::ColorModality<PointInT>::extractFeatures (const MaskMap & mask,
     feature.x = static_cast<int> (iter2->x);
     feature.y = static_cast<int> (iter2->y);
     feature.modality_index = modality_index;
-    feature.quantized_value = filtered_quantized_surface_normals_ (iter2->x, iter2->y);
+    feature.quantized_value = filtered_quantized_colors_ (iter2->x, iter2->y);
 
     features.push_back (feature);
   }
@@ -336,7 +338,7 @@ pcl::ColorModality<PointInT>::quantizeColors ()
   const size_t width = input_->width;
   const size_t height = input_->height;
 
-  quantized_color_gradients_.resize (width, height);
+  quantized_colors_.resize (width, height);
 
   for (size_t row_index = 0; row_index < height; ++row_index)
   {
@@ -346,7 +348,7 @@ pcl::ColorModality<PointInT>::quantizeColors ()
       const float g = static_cast<float> ((*input_) (col_index, row_index).g);
       const float b = static_cast<float> ((*input_) (col_index, row_index).b);
 
-      quantized_color_gradients_ (col_index, row_index) = quantizeColorOnRGBExtrema (r, g, b);
+      quantized_colors_ (col_index, row_index) = quantizeColorOnRGBExtrema (r, g, b);
     }
   }
 }
@@ -354,12 +356,12 @@ pcl::ColorModality<PointInT>::quantizeColors ()
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void
-pcl::ColorModality<PointInT>::filterQuantizedColorGradients ()
+pcl::ColorModality<PointInT>::filterQuantizedColors ()
 {
   const size_t width = input_->width;
   const size_t height = input_->height;
 
-  filtered_quantized_color_gradients_.resize (width, height);
+  filtered_quantized_colors_.resize (width, height);
 
   // filter data
   for (size_t row_index = 1; row_index < height-1; ++row_index)
@@ -369,7 +371,7 @@ pcl::ColorModality<PointInT>::filterQuantizedColorGradients ()
       unsigned char histogram[8] = {0,0,0,0,0,0,0,0};
 
       {
-        const unsigned char * data_ptr = quantized_color_gradients_.getData () + (row_index-1)*width+col_index-1;
+        const unsigned char * data_ptr = quantized_colors_.getData () + (row_index-1)*width+col_index-1;
         assert (0 <= data_ptr[0] && data_ptr[0] < 9 && 
                 0 <= data_ptr[1] && data_ptr[1] < 9 && 
                 0 <= data_ptr[2] && data_ptr[2] < 9);
@@ -378,7 +380,7 @@ pcl::ColorModality<PointInT>::filterQuantizedColorGradients ()
         ++histogram[data_ptr[2]];
       }
       {
-        const unsigned char * data_ptr = quantized_color_gradients_.getData () + row_index*width+col_index-1;
+        const unsigned char * data_ptr = quantized_colors_.getData () + row_index*width+col_index-1;
         assert (0 <= data_ptr[0] && data_ptr[0] < 9 && 
                 0 <= data_ptr[1] && data_ptr[1] < 9 && 
                 0 <= data_ptr[2] && data_ptr[2] < 9);
@@ -387,7 +389,7 @@ pcl::ColorModality<PointInT>::filterQuantizedColorGradients ()
         ++histogram[data_ptr[2]];
       }
       {
-        const unsigned char * data_ptr = quantized_color_gradients_.getData () + (row_index+1)*width+col_index-1;
+        const unsigned char * data_ptr = quantized_colors_.getData () + (row_index+1)*width+col_index-1;
         assert (0 <= data_ptr[0] && data_ptr[0] < 9 && 
                 0 <= data_ptr[1] && data_ptr[1] < 9 && 
                 0 <= data_ptr[2] && data_ptr[2] < 9);
@@ -418,7 +420,7 @@ pcl::ColorModality<PointInT>::filterQuantizedColorGradients ()
       if (max_hist_value < histogram[7]) {max_hist_index = 7; max_hist_value = histogram[7];}
 
       //if (max_hist_index != -1 && max_hist_value >= 5)
-        filtered_quantized_color_gradients_ (col_index, row_index) = 0x1 << max_hist_index;
+        filtered_quantized_colors_ (col_index, row_index) = 0x1 << max_hist_index;
       //else
       //  filtered_quantized_color_gradients_ (col_index, row_index) = 0;
 
@@ -428,7 +430,7 @@ pcl::ColorModality<PointInT>::filterQuantizedColorGradients ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
-void
+int
 pcl::ColorModality<PointInT>::quantizeColorOnRGBExtrema (const float r,
                                                          const float g,
                                                          const float b)
