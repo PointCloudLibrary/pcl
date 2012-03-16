@@ -184,7 +184,9 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (Po
       //float depthDependentSmoothingSize = smoothingSize + pz / 10.0f;
 
       float smoothingSize = normal_smoothing_size_;
-      if (use_depth_dependent_smoothing_) smoothingSize *= pz;
+      //if (use_depth_dependent_smoothing_) smoothingSize *= pz;
+      //if (use_depth_dependent_smoothing_) smoothingSize += pz*5;
+      //if (smoothingSize < 1.0f) smoothingSize += 1.0f;
 
       const int smoothingSizeInt = static_cast<int>(smoothingSize);
 
@@ -210,11 +212,14 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (Po
           if (pcl_isnan(qx)) continue;
 
           const float delta = qz - pz;
-          float i = qx - px;
-          float j = qy - py;
+          const float i = qx - px;
+          const float j = qy - py;
+
+          const float depthDependendDepthChange = (max_depth_change_factor_ * (fabsf (pz) + 1.0f) * 2.0f);
+          const float f = fabs(delta) > depthDependendDepthChange ? 0 : 1;
 
           //float f = fabs(delta) > (pz * 0.05f - 0.3f) ? 0 : 1;
-          float f = fabs(delta) > (pz*pz * 0.05f * max_depth_change_factor_) ? 0 : 1;
+          //const float f = fabs(delta) > (pz*pz * 0.05f * max_depth_change_factor_) ? 0 : 1;
           //float f = Math.Abs(delta) > (depth * Math.Log(depth + 1.0) * 0.02f - 0.2f) ? 0 : 1;
 
           matA0 += f * i * i;
