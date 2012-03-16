@@ -625,6 +625,81 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename GradientT> bool
+pcl::visualization::PCLVisualizer::addPointCloudIntensityGradients (
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
+    const typename pcl::PointCloud<GradientT>::ConstPtr &gradients,
+    int level, double scale,
+    const std::string &id, int viewport)
+{
+  if (gradients->points.size () != cloud->points.size ())
+  {
+    PCL_ERROR ("[addPointCloudGradients] The number of points differs from the number of gradients!\n");
+    return (false);
+  }
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
+
+  if (am_it != cloud_actor_map_->end ())
+  {
+    PCL_WARN ("[addPointCloudGradients] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    return (false);
+  }
+
+  vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+  vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();
+
+  points->SetDataTypeToFloat ();
+  vtkSmartPointer<vtkFloatArray> data = vtkSmartPointer<vtkFloatArray>::New ();
+  data->SetNumberOfComponents (3);
+
+  vtkIdType nr_gradients = (cloud->points.size () - 1) / level + 1 ;
+  float* pts = new float[2 * nr_gradients * 3];
+
+  for (vtkIdType i = 0, j = 0; j < nr_gradients; j++, i = j * level)
+  {
+    PointT p = cloud->points[i];
+    p.x += gradients->points[i].gradient[0] * scale;
+    p.y += gradients->points[i].gradient[1] * scale;
+    p.z += gradients->points[i].gradient[2] * scale;
+
+    pts[2 * j * 3 + 0] = cloud->points[i].x;
+    pts[2 * j * 3 + 1] = cloud->points[i].y;
+    pts[2 * j * 3 + 2] = cloud->points[i].z;
+    pts[2 * j * 3 + 3] = p.x;
+    pts[2 * j * 3 + 4] = p.y;
+    pts[2 * j * 3 + 5] = p.z;
+
+    lines->InsertNextCell(2);
+    lines->InsertCellPoint(2*j);
+    lines->InsertCellPoint(2*j+1);
+  }
+
+  data->SetArray (&pts[0], 2 * nr_gradients * 3, 0);
+  points->SetData (data);
+
+  vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
+  polyData->SetPoints(points);
+  polyData->SetLines(lines);
+
+  vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
+  mapper->SetInput (polyData);
+  mapper->SetColorModeToMapScalars();
+  mapper->SetScalarModeToUsePointData();
+
+  // create actor
+  vtkSmartPointer<vtkLODActor> actor = vtkSmartPointer<vtkLODActor>::New ();
+  actor->SetMapper (mapper);
+
+  // Add it to all renderers
+  addActorToRenderer (actor, viewport);
+
+  // Save the pointer/ID pair to the global actor map
+  (*cloud_actor_map_)[id].actor = actor;
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addCorrespondences (
    const typename pcl::PointCloud<PointT>::ConstPtr &source_points,

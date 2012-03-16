@@ -452,6 +452,20 @@ namespace pcl
             int level = 100, double scale = 1.0,
             const std::string &id = "cloud", int viewport = 0);
 
+        /** \brief Add the estimated surface intensity gradients of a Point Cloud to screen.
+          * \param[in] cloud the input point cloud dataset containing the XYZ data
+          * \param[in] gradients the input point cloud dataset containing the intensity gradient data
+          * \param[in] level display only every level'th point (default: 100)
+          * \param[in] scale the intensity gradient arrow scale (default: 1e-6m)
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] viewport the view port where the Point Cloud should be added (default: all)
+          */
+        template <typename PointT, typename GradientT> bool
+        addPointCloudIntensityGradients (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
+                                         const typename pcl::PointCloud<GradientT>::ConstPtr &gradients,
+                                         int level = 100, double scale = 1e-6,
+                                         const std::string &id = "cloud", int viewport = 0);
+
         /** \brief Add a Point Cloud (templated) to screen.
           * \param[in] cloud the input point cloud dataset
           * \param[in] id the point cloud object id (default: cloud)
