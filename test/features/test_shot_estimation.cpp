@@ -248,7 +248,7 @@ testSHOTLocalReferenceFrame (const typename PointCloud<PointT>::Ptr & points,
 
   boost::shared_ptr<vector<int> > indices2 (new vector<int> (0));
   for (size_t i = 0; i < (indices->size ()/2); ++i)
-    indices2->push_back (i);
+    indices2->push_back (static_cast<int> (i));
   //
   // Test an external computation for the local reference frames
   //
@@ -284,7 +284,7 @@ testSHOTLocalReferenceFrame (const typename PointCloud<PointT>::Ptr & points,
   pcl::PointCloud<pcl::ReferenceFrame>::ConstPtr f2 = est2.getInputReferenceFrames ();
   ASSERT_EQ (frames->points.size (), f->points.size ());
   ASSERT_EQ (f2->points.size (), f->points.size ());
-  for (int i = 0; i < frames->points.size (); ++i)
+  for (int i = 0; i < static_cast<int> (frames->points.size ()); ++i)
   {
     for (unsigned j = 0; j < 12; ++j)
       ASSERT_EQ (frames->points[i].rf[j], f->points[i].rf[j]);
@@ -926,7 +926,7 @@ TEST (PCL, USCEstimation)
 
     boost::shared_ptr<vector<int> > indices2 (new vector<int> (0));
     for (size_t i = 0; i < (indices->size ()/2); ++i)
-      indices2->push_back (i);
+      indices2->push_back (int (i));
     //
     // Test an external computation for the local reference frames
     //
@@ -962,7 +962,7 @@ TEST (PCL, USCEstimation)
     pcl::PointCloud<pcl::ReferenceFrame>::ConstPtr f2 = est2.getInputReferenceFrames ();
     ASSERT_EQ (frames->points.size (), f->points.size ());
     ASSERT_EQ (f2->points.size (), f->points.size ());
-    for (int i = 0; i < frames->points.size (); ++i)
+    for (int i = 0; i < static_cast<int> (frames->points.size ()); ++i)
     {
       for (unsigned j = 0; j < 12; ++j)
         ASSERT_EQ (frames->points[i].rf[j], f->points[i].rf[j]);

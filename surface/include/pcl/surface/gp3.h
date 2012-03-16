@@ -60,12 +60,6 @@
 
 namespace pcl
 {
-  // add by ktran for Kdtree_flaan search
-  struct SearchPoint : public PointXYZ
-  {
-    SearchPoint(float x, float y, float z) {this->x=x; this->y=y; this->z=z;}
-  };
-
   /** \brief Returns if a point X is visible from point R (or the origin)
     * when taking into account the segment between the points S1 and S2
     * \param X 2D coordinate of the point
@@ -317,13 +311,6 @@ namespace pcl
       /** \brief Get the ffn list. */
       inline std::vector<int>
       getFFN () { return (ffn_); }
-
-     /** \brief Remove the triangles from the 1st mesh that have neighbors in the 2nd mesh
-       * \param[in,out] mesh1 the first polygon mesh
-       * \param[in,out] mesh2 the second polygon mesh
-       */
-      void
-      removeOverlapTriangles (pcl::PolygonMesh &mesh1, pcl::PolygonMesh &mesh2);
 
     protected:
       /** \brief The nearest neighbor distance multiplier to obtain the final search radius. */

@@ -119,11 +119,11 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
 //  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, PointNormal>::RANDOM_UNIFORM_DENSITY);
 //  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, PointNormal>::VOXEL_GRID_DILATION);
   mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, PointNormal>::NONE);
-  mls.setPointDensity (60000*search_radius); // 300 points in a 5 cm radius
+  mls.setPointDensity (60000 * int (search_radius)); // 300 points in a 5 cm radius
   mls.setUpsamplingRadius (0.025);
   mls.setUpsamplingStepSize (0.015);
   mls.setDilationIterations (2);
-  mls.setDilationVoxelSize (0.01);
+  mls.setDilationVoxelSize (0.01f);
 
   search::KdTree<PointXYZ>::Ptr tree (new search::KdTree<PointXYZ> ());
   mls.setSearchMethod (tree);

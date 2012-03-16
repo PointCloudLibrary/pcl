@@ -14,6 +14,7 @@ if(build)
         set(HULL_INCLUDES
             include/pcl/${SUBSYS_NAME}/concave_hull.h
             include/pcl/${SUBSYS_NAME}/convex_hull.h
+            include/pcl/${SUBSYS_NAME}/qhull.h
             )
         set(HULL_IMPLS
             include/pcl/${SUBSYS_NAME}/impl/concave_hull.hpp
@@ -171,8 +172,7 @@ if(build)
     if(QHULL_FOUND)
       target_link_libraries(${LIB_NAME} ${QHULL_LIBRARIES})
     endif(QHULL_FOUND)
-    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-      "${SUBSYS_DEPS}" "" "" "" "")
+    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})

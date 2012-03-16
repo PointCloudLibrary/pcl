@@ -86,23 +86,23 @@ pcl::TextureMapping<PointInT>::mapTexture2Face (Eigen::Vector3f  &p1, Eigen::Vec
   tp1[0] = 0.0;
   tp1[1] = 0.0;
 
-  tp2[0] = e3;
+  tp2[0] = static_cast<float> (e3);
   tp2[1] = 0.0;
 
   // determine texture coordinate tp3;
   double cos_p1 = (e2*e2+e3*e3-e1*e1)/(2*e2*e3);
   double sin_p1 = sqrt(1-(cos_p1*cos_p1));
 
-  tp3[0] = (float)(cos_p1*e2);
-  tp3[1] = (float)(sin_p1*e2);
+  tp3[0] = static_cast<float> (cos_p1*e2);
+  tp3[1] = static_cast<float> (sin_p1*e2);
 
   // rotating by alpha (angle between V and pp1 & pp2)
   Eigen::Vector2f r_tp2, r_tp3;
-  r_tp2[0] = (float)(tp2[0]*std::cos(alpha) - tp2[1]*std::sin(alpha));
-  r_tp2[1] = (float)(tp2[0]*std::sin(alpha) + tp2[1]*std::cos(alpha));
+  r_tp2[0] = static_cast<float> (tp2[0]*std::cos(alpha) - tp2[1]*std::sin(alpha));
+  r_tp2[1] = static_cast<float> (tp2[0]*std::sin(alpha) + tp2[1]*std::cos(alpha));
 
-  r_tp3[0] = (float)(tp3[0]*std::cos(alpha) - tp3[1]*std::sin(alpha));
-  r_tp3[1] = (float)(tp3[0]*std::sin(alpha) + tp3[1]*std::cos(alpha));
+  r_tp3[0] = static_cast<float> (tp3[0]*std::cos(alpha) - tp3[1]*std::sin(alpha));
+  r_tp3[1] = static_cast<float> (tp3[0]*std::sin(alpha) + tp3[1]*std::cos(alpha));
 
   // shifting
   tp1[0] = tp1[0];

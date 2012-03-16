@@ -110,7 +110,7 @@ class SimpleOpenNIViewer
       
       unsigned char* rgb_data = 0;
       unsigned rgb_data_size = 0;
-      void* data;
+      const void* data;
        
       while (true)
       {
@@ -125,7 +125,7 @@ class SimpleOpenNIViewer
 
           if (image->getEncoding() == openni_wrapper::Image::RGB)
           {
-            data = (void*)image->getMetaData ().Data ();
+            data = reinterpret_cast<const void*> (image->getMetaData ().Data ());
             importer_->SetWholeExtent (0, image->getWidth () - 1, 0, image->getHeight () - 1, 0, 0);
             importer_->SetDataExtentToWholeExtent ();
           }
@@ -139,12 +139,12 @@ class SimpleOpenNIViewer
               importer_->SetDataExtentToWholeExtent ();
             }
             image->fillRGB (image->getWidth (), image->getHeight (), rgb_data);
-            data = (void*)rgb_data;
+            data = reinterpret_cast<const void*> (rgb_data);
           }
 
           std::stringstream ss;
           ss << "frame_" + time + "_rgb.tiff";
-          importer_->SetImportVoidPointer (data, 1);
+          importer_->SetImportVoidPointer (const_cast<void*>(data), 1);
           importer_->Update ();
           flipper_->SetInputConnection (importer_->GetOutputPort ());
           flipper_->Update ();
@@ -163,7 +163,7 @@ class SimpleOpenNIViewer
 
           depth_importer_->SetWholeExtent (0, depth_image->getWidth () - 1, 0, depth_image->getHeight () - 1, 0, 0);
           depth_importer_->SetDataExtentToWholeExtent ();
-          depth_importer_->SetImportVoidPointer ((void*)depth_image->getDepthMetaData ().Data (), 1);
+          depth_importer_->SetImportVoidPointer (const_cast<void*> (reinterpret_cast<const void*> (depth_image->getDepthMetaData ().Data ())), 1);
           depth_importer_->Update ();
           flipper_->SetInputConnection (depth_importer_->GetOutputPort ());
           flipper_->Update ();
@@ -264,7 +264,7 @@ main(int argc, char ** argv)
           for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices (); ++deviceIdx)
           {
             cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
-              << ", connected: " << (int) driver.getBus (deviceIdx) << " @ " << (int) driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << endl;
+              << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << endl;
           }
 
         }
@@ -285,7 +285,7 @@ main(int argc, char ** argv)
   
   unsigned mode;
   if (pcl::console::parse (argc, argv, "-imagemode", mode) != -1)
-    image_mode = (pcl::OpenNIGrabber::Mode) mode;
+    image_mode = pcl::OpenNIGrabber::Mode (mode);
   
   pcl::OpenNIGrabber grabber (device_id, pcl::OpenNIGrabber::OpenNI_Default_Mode, image_mode);
   SimpleOpenNIViewer v (grabber);

@@ -93,7 +93,7 @@ compute (const PointCloud<PointNormal>::Ptr &input, pcl::PolygonMesh &output,
     if (pcl_isfinite (input->points[i].x))
       cloud->push_back (input->points[i]);
 
-  cloud->width = cloud->size ();
+  cloud->width = static_cast<uint32_t> (cloud->size ());
   cloud->height = 1;
   cloud->is_dense = false;
 

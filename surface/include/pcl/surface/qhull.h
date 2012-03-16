@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2009-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,13 +33,43 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: texture_mapping.cpp 1006 2011-07-13 13:07:00 ktran $
+ * $Id: concave_hull.h 5027 2012-03-12 03:10:45Z rusu $
  *
  */
-#include <pcl/impl/instantiate.hpp>
-#include <pcl/point_types.h>
-#include <pcl/surface/texture_mapping.h>
-#include <pcl/surface/impl/texture_mapping.hpp>
 
-// Instantiations of specific point types
-PCL_INSTANTIATE(TextureMapping, (pcl::PointXYZ))
+#include <pcl/pcl_config.h>
+#ifdef HAVE_QHULL
+
+#ifndef PCL_QHULL_H
+#define PCL_QHULL_H
+
+#if defined __GNUC__
+#  pragma GCC system_header 
+#endif
+
+extern "C"
+{
+#ifdef HAVE_QHULL_2011
+#  include "libqhull/libqhull.h"
+#  include "libqhull/mem.h"
+#  include "libqhull/qset.h"
+#  include "libqhull/geom.h"
+#  include "libqhull/merge.h"
+#  include "libqhull/poly.h"
+#  include "libqhull/io.h"
+#  include "libqhull/stat.h"
+#else
+#  include "qhull/qhull.h"
+#  include "qhull/mem.h"
+#  include "qhull/qset.h"
+#  include "qhull/geom.h"
+#  include "qhull/merge.h"
+#  include "qhull/poly.h"
+#  include "qhull/io.h"
+#  include "qhull/stat.h"
+#endif
+}
+
+#endif      // PCL_QHULL_H
+#endif
+
