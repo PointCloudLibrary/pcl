@@ -47,7 +47,7 @@ namespace pcl
 {
   /** \brief Abstract base class for Correspondence Grouping algorithms.
     *
-    * \author Tommaso Cavallari
+    * \author Tommaso Cavallari, Federico Tombari, Aitor Aldoma
     * \ingroup recognition
     */
   template <typename PointModelT, typename PointSceneT>
@@ -89,7 +89,7 @@ namespace pcl
       }
 
       /** \brief Provide a pointer to the precomputed correspondences between points in the input dataset and 
-        * points in the scene dataset. The correspondences are going to be clustered into different model instances
+        * points in the scene dataset. The correspondences are going to be clustered into different model hypotheses
         * by the algorithm.
         * 
         * \param[in] corrs the correspondences between the model and the scene.

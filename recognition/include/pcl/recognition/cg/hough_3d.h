@@ -49,9 +49,7 @@ namespace pcl
 {
   namespace recognition
   {
-    /** \brief HoughSpace3D is a class used to model a three dimensional Hough Space in which one can cast votes used for 3DOF recognition of models 
-      * employing Hough voting algorithms.
-      *
+    /** \brief HoughSpace3D is a 3D voting space. Cast votes can be interpolated in order to better deal with approximations introduced by bin quantization. A weight can also be associated with each vote. 
       * \author Federico Tombari (original), Tommaso Cavallari (PCL port)
       * \ingroup recognition
       */
@@ -64,39 +62,39 @@ namespace pcl
       
         /** \brief Constructor
           *
-          * \param[in] min_coord minimum coordinate used to cast votes.
-          * \param[in] bin_size  size of each bin in the 3D space.
-          * \param[in] max_coord maximum coordinate used to cast votes.
+          * \param[in] min_coord minimum (x,y,z) coordinates of the Hough space 
+          * \param[in] bin_size  size of each bing of the Hough space.
+          * \param[in] max_coord maximum (x,y,z) coordinates of the Hough space.
           */
         HoughSpace3D (const Eigen::Vector3d &min_coord, const Eigen::Vector3d &bin_size, const Eigen::Vector3d &max_coord);
 
-        /** \brief Reset already cast votes. */
+        /** \brief Reset all cast votes. */
         void
         reset ();
 
-        /** \brief Vote for a given position in the 3D space.
+        /** \brief Casting a vote for a given position in the Hough space.
           * 
-          * \param[in] single_vote_coord coordinates of the point in which the vote is to be cast.
-          * \param[in] weight the numeric value of the vote.
-          * \param[in] voter_id the numeric id of the voter, returned by findMaxima if the bin in which the vote is cast becomes one of the maximum of the entire Hough Space.
-          * \return the index of the bin in which the vote had been cast.
+          * \param[in] single_vote_coord coordinates of the vote being cast (in absolute coordinates)
+          * \param[in] weight weight associated with the vote.
+          * \param[in] voter_id the numeric id of the voter. Useful to trace back the voting correspondence, if the vote is returned by findMaxima as part of a maximum of the Hough Space.
+          * \return the index of the bin in which the vote has been cast.
           */
         int
         vote (const Eigen::Vector3d &single_vote_coord, double weight, int voter_id);
 
         /** \brief Vote for a given position in the 3D space. The weight is interpolated between the bin pointed by single_vote_coord and its neighbors.
           * 
-          * \param[in] single_vote_coord coordinates of the point in which the vote is to be cast.
-          * \param[in] weight the numeric value of the vote.
-          * \param[in] voter_id the numeric id of the voter, returned by findMaxima if the bin in which the vote is cast becomes one of the maximum of the entire Hough Space.
-          * \return the index of the bin in which the vote had been cast.
+          * \param[in] single_vote_coord coordinates of the vote being cast.
+          * \param[in] weight weight associated with the vote.
+          * \param[in] voter_id the numeric id of the voter. Useful to trace back the voting correspondence, if the vote is returned by findMaxima as a part of a maximum of the Hough Space.
+          * \return the index of the bin in which the vote has been cast.
           */
         int
         voteInt (const Eigen::Vector3d &single_vote_coord, double weight, int voter_id);
 
-        /** \brief Find the most voted bins.
+        /** \brief Find the bins with most votes.
           * 
-          * \param[in] min_threshold the minimum value a bin has to have in order to have its value returned. 
+          * \param[in] min_threshold the minimum number of votes to be included in a bin in order to have its value returned. 
           * If set to a value between -1 and 0 the Hough space maximum_vote is found and the returned values are all the votes greater than -min_threshold * maximum_vote.
           * \param[out] maxima_values the list of Hough Space bin values greater than min_threshold.
           * \param[out] maxima_voter_ids for each value returned, a list of the voter ids who cast a vote in that position. 
@@ -131,12 +129,12 @@ namespace pcl
     };
   };
 
-  /** \brief Class implementing an object recognition algorithm that can distinguish between multiple instances of a model template
-    * found into a given scene.
-    * 
+  /** \brief Class implementing a 3D correspondence grouping algorithm that can deal with multiple instances of a model template
+    * found into a given scene. Each correspondence casts a vote for a reference point in a 3D Hough Space.
+	* The remaining 3 DOF are taken into account by associating each correspondence with a local Reference Frame. 
     * The suggested PointModelRfT is pcl::ReferenceFrame
     * 
-    * \note If you use this code in any academic work, please cite:
+    * \note If you use this code in any academic work, please cite the original paper:
     *   - F. Tombari, L. Di Stefano:
     *     Object recognition in 3D scenes with occlusions and clutter by Hough voting.
     *     2010, Fourth Pacific-Rim Symposium on Image and Video Technology
@@ -258,10 +256,8 @@ namespace pcl
       /** \brief Sets the minimum number of votes in the Hough space needed to infer the presence of a model instance into the scene cloud.
         * 
         * \param[in] threshold the threshold for the Hough space voting, if set between -1 and 0 the maximum vote in the entire space is automatically
-        * calculated and -threshold * the maximum value is used as a threshold. This means that an instance is always found even if not 
-        * really present into the scene. Use this operating mode only if you are confident that a model instance is actually present into the scene or 
-        * you can filter that false positive later.
-        */
+        * calculated and -threshold 
+		* the maximum value is used as a threshold. This means that a value between -1 and 0 should be used only if at least one instance of the model is always present in the scene, or if this false positive can be filtered later        */
       inline void
       setHoughThreshold (double threshold)
       {
@@ -371,7 +367,7 @@ namespace pcl
         return (local_rf_search_radius_);
       }
 
-      /** \brief Call this function after setting the input, the input_rf and the hough_bin_size parameters to perform an off line training of the algorithm.
+      /** \brief Call this function after setting the input, the input_rf and the hough_bin_size parameters to perform an off line training of the algorithm. This might be useful if one wants to perform once and for all a pre-computation of votes that only concern the models, increasing the on-line efficiency of the grouping algorithm. 
         * The algorithm is automatically trained on the first invocation of the recognize method or the cluster method if this training function has not been manually invoked.
         * 
         * \return true if the training had been successful or false if errors have occurred.
