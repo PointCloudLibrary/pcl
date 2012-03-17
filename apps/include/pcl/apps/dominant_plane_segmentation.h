@@ -77,11 +77,11 @@ namespace pcl
           max_z_bounds_ = 1.5;
           object_min_height_ = 0.01;
           object_max_height_ = 0.7;
-          object_cluster_tolerance_ = 0.05;
+          object_cluster_tolerance_ = 0.05f;
           object_cluster_min_size_ = 500;
           k_ = 50;
           sac_distance_threshold_ = 0.01;
-          downsample_leaf_ = 0.005;
+          downsample_leaf_ = 0.005f;
           wsize_ = 5;
         }
 
@@ -134,14 +134,17 @@ namespace pcl
          * \param d distance (in meters)
          */
         void
-        setDistanceBetweenClusters(double d) {
+        setDistanceBetweenClusters (float d) 
+        {
           object_cluster_tolerance_ = d;
         }
 
         /* \brief Sets minimum size of the clusters.
          * \param size number of points
          */
-        void setMinClusterSize(int size) {
+        void 
+        setMinClusterSize (int size) 
+        {
           object_cluster_min_size_ = size;
         }
 
@@ -197,7 +200,9 @@ namespace pcl
         /* \brief Set downsampling resolution.
          * \param d resolution (in meters)
          */
-        void setDownsamplingSize(double d) {
+        void 
+        setDownsamplingSize (float d) 
+        {
           downsample_leaf_ = d;
         }
 
@@ -252,7 +257,7 @@ namespace pcl
         /** \brief Table coefficients (a,b,c,d) */
         Eigen::Vector4f table_coeffs_;
         /** \brief Downsampling resolution. */
-        double downsample_leaf_;
+        float downsample_leaf_;
         /** \brief Number of neighbors for normal estimation */
         int k_;
         /** \brief Keep points farther away than min_z_bounds */
@@ -266,9 +271,9 @@ namespace pcl
         /** \brief Max height from the table plane */
         double object_max_height_;
         /** \brief Tolerance between different clusters */
-        double object_cluster_tolerance_;
+        float object_cluster_tolerance_;
         /** \brief Minimum size for a cluster, clusters smaller than this won't be returned */
-        double object_cluster_min_size_;
+        int object_cluster_min_size_;
         /** \brief Window size in pixels for CC in compute_fast method */
         int wsize_;
         /** \brief Indices of the clusters to the main cloud found by the segmentation */
