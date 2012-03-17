@@ -46,17 +46,17 @@ pcl::visualization::PointCloudColorHandlerCustom<sensor_msgs::PointCloud2>::getC
 {
   if (!capable_)
     return;
-
+  
   if (!scalars)
     scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
   scalars->SetNumberOfComponents (3);
   
   vtkIdType nr_points = cloud_->width * cloud_->height;
   reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
-
+  
   // Get a random color
   unsigned char* colors = new unsigned char[nr_points * 3];
-
+  
   // Color every point
   for (vtkIdType cp = 0; cp < nr_points; ++cp)
   {
@@ -600,7 +600,7 @@ pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<sensor_msgs::PointClo
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PointCloudGeometryHandlerCustom<sensor_msgs::PointCloud2>::PointCloudGeometryHandlerCustom (
     const PointCloudConstPtr &cloud, const std::string &x_field_name, const std::string &y_field_name, const std::string &z_field_name) 
-: pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2>::PointCloudGeometryHandler (cloud)
+: pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2>::PointCloudGeometryHandler (cloud), field_name_ ()
 {
   field_x_idx_ = pcl::getFieldIndex (*cloud, x_field_name);
   if (field_x_idx_ == -1)
