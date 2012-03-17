@@ -59,7 +59,9 @@ namespace pcl
 
         RenWinInteract () : xy_plot_ (vtkSmartPointer<vtkXYPlotActor>::New ()), 
                             ren_ (vtkSmartPointer<vtkRenderer>::New ()), 
-                            win_ (vtkSmartPointer<vtkRenderWindow>::New ())
+                            win_ (vtkSmartPointer<vtkRenderWindow>::New ()),
+                            interactor_ (),
+                            style_ ()
         {}
 
         /** \brief The XY plot actor holding the actual data. */
