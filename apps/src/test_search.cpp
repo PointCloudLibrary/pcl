@@ -46,9 +46,9 @@ main (int argc, char ** argv)
     cloud->resize (1000000);
     for (unsigned idx = 0; idx < cloud->size (); ++idx)
     {
-      (*cloud)[idx].x = static_cast<float> (rand ()) / RAND_MAX;
-      (*cloud)[idx].y = static_cast<float> (rand ()) / RAND_MAX;
-      (*cloud)[idx].z = static_cast<float> (rand ()) / RAND_MAX;
+      (*cloud)[idx].x = static_cast<float> (rand () / RAND_MAX);
+      (*cloud)[idx].y = static_cast<float> (rand () / RAND_MAX);
+      (*cloud)[idx].z = static_cast<float> (rand () / RAND_MAX);
     }
   }
 

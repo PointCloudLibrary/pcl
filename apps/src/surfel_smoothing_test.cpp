@@ -20,8 +20,8 @@ main (int argc, char **argv)
   reader.read (argv[3], *cloud);
   PCL_INFO ("Cloud read: %s\n", argv[3]);
 
-  float normal_search_radius = atof (argv[1]);
-  float surfel_scale = atof (argv[2]);
+  float normal_search_radius = static_cast<float> (atof (argv[1]));
+  float surfel_scale = static_cast<float> (atof (argv[2]));
 
 
   NormalEstimation<PointXYZ, Normal> normal_estimation;

@@ -114,7 +114,7 @@ namespace pcl
         // Save the mapping from labels to indices in the class list
         std::map<std::string, int> label2idx;
         for (std::vector<std::string>::const_iterator it = classes_.begin (); it != classes_.end (); it++)
-          label2idx[*it] = it - classes_.begin ();
+          label2idx[*it] = int (it - classes_.begin ());
 
         // Create a list holding the class index of each label
         labels_idx_.reserve (labels.size ());

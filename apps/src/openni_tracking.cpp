@@ -130,12 +130,12 @@ public:
       tracker->setDelta (0.99);
       tracker->setEpsilon (0.2);
       ParticleT bin_size;
-      bin_size.x = 0.1;
-      bin_size.y = 0.1;
-      bin_size.z = 0.1;
-      bin_size.roll = 0.1;
-      bin_size.pitch = 0.1;
-      bin_size.yaw = 0.1;
+      bin_size.x = 0.1f;
+      bin_size.y = 0.1f;
+      bin_size.z = 0.1f;
+      bin_size.roll = 0.1f;
+      bin_size.pitch = 0.1f;
+      bin_size.yaw = 0.1f;
       tracker->setBinSize (bin_size);
       tracker_ = tracker;
     }
@@ -212,7 +212,7 @@ public:
     ParticleXYZRPY result = tracker_->getResult ();
     Eigen::Affine3f transformation = tracker_->toEigenMatrix (result);
     // move a little bit for better visualization
-    transformation.translation () += Eigen::Vector3f (0.0, 0.0, -0.005);
+    transformation.translation () += Eigen::Vector3f (0.0f, 0.0f, -0.005f);
     RefCloudPtr result_cloud (new RefCloud ());
 
     if (!visualize_non_downsample_)
@@ -328,7 +328,7 @@ public:
     double start = pcl::getTime ();
     pcl::VoxelGrid<PointType> grid;
     //pcl::ApproximateVoxelGrid<PointType> grid;
-    grid.setLeafSize (leaf_size, leaf_size, leaf_size);
+    grid.setLeafSize (float (leaf_size), float (leaf_size), float (leaf_size));
     grid.setInputCloud (cloud);
     grid.filter (result);
     //result = *cloud;
@@ -343,7 +343,7 @@ public:
     double start = pcl::getTime ();
     //pcl::VoxelGrid<PointType> grid;
     pcl::ApproximateVoxelGrid<PointType> grid;
-    grid.setLeafSize (leaf_size, leaf_size, leaf_size);
+    grid.setLeafSize (static_cast<float> (leaf_size), static_cast<float> (leaf_size), static_cast<float> (leaf_size));
     grid.setInputCloud (cloud);
     grid.filter (result);
     //result = *cloud;
@@ -467,7 +467,7 @@ public:
         result.points.push_back(point);
     }
 
-    result.width = result.points.size ();
+    result.width = static_cast<uint32_t> (result.points.size ());
     result.height = 1;
     result.is_dense = true;
   }
@@ -584,7 +584,7 @@ public:
           tracker_->setReferenceCloud (transed_ref_downsampled);
           tracker_->setTrans (trans);
           reference_ = transed_ref;
-          tracker_->setMinIndices (ref_cloud->points.size () / 2);
+          tracker_->setMinIndices (int (ref_cloud->points.size ()) / 2);
         }
         else
         {
