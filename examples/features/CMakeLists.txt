@@ -15,3 +15,6 @@ PCL_ADD_EXAMPLE(pcl_example_shape_contexts FILES example_shape_contexts.cpp
 
 PCL_ADD_EXAMPLE(pcl_example_spin_images FILES example_spin_images.cpp
                 LINK_WITH pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
+
+PCL_ADD_EXAMPLE(pcl_example_rift_estimation FILES example_rift_estimation.cpp
+                LINK_WITH pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
