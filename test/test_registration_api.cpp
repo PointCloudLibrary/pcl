@@ -255,9 +255,9 @@ TEST (PCL, TransformationEstimationLM)
 
   Eigen::Matrix4f transform_res_from_LM;
   pcl::registration::TransformationEstimationLM<pcl::PointXYZ, pcl::PointXYZ> trans_est_lm;
-  trans_est_lm.estimateRigidTransformation(*source, *target,
-                                           *correspondences,
-                                           transform_res_from_LM);
+  trans_est_lm.estimateRigidTransformation (*source, *target,
+                                            *correspondences,
+                                            transform_res_from_LM);
 
   // check for correct matches and number of matches
   EXPECT_EQ (int (correspondences->size ()), nr_reciprocal_correspondences);
