@@ -80,13 +80,13 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::performProcessing (PointCloudOut 
 {
   output.resize (input_->size ());
 
-  for (int x = 0; x < input_->width; ++x)
-    for (int y = 0; y < input_->height; ++y)
+  for (int x = 0; x < static_cast<int> (input_->width); ++x)
+    for (int y = 0; y < static_cast<int> (input_->height); ++y)
     {
       int start_window_x = std::max (x - window_size_, 0),
           start_window_y = std::max (y - window_size_, 0),
-          end_window_x = std::min (x + window_size_, int (input_->width)),
-          end_window_y = std::min (y + window_size_, int (input_->height));
+          end_window_x = std::min (x + window_size_, static_cast<int> (input_->width)),
+          end_window_y = std::min (y + window_size_, static_cast<int> (input_->height));
 
       float sum = 0.0f,
             norm_sum = 0.0f;
@@ -94,14 +94,15 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::performProcessing (PointCloudOut 
       for (int x_w = start_window_x; x_w < end_window_x; ++ x_w)
         for (int y_w = start_window_y; y_w < end_window_y; ++ y_w)
         {
-          float dx = x - x_w,
-                dy = y - y_w;
+          float dx = float (x - x_w),
+                dy = float (y - y_w);
 
-          float val_exp_depth = exp (- (dx*dx + dy*dy) / (2*sigma_depth_ * sigma_depth_));
+          float val_exp_depth = expf (- (dx*dx + dy*dy) / (2.0f * static_cast<float> (sigma_depth_ * sigma_depth_)));
 
-          float d_color = abs (input_->points[y_w*input_->width + x_w].r - input_->points[y*input_->width + x].r) +
-                          abs (input_->points[y_w*input_->width + x_w].g - input_->points[y*input_->width + x].g) +
-                          abs (input_->points[y_w*input_->width + x_w].b - input_->points[y*input_->width + x].b);
+          float d_color = static_cast<float> (
+                          abs (input_->points[y_w * input_->width + x_w].r - input_->points[y * input_->width + x].r) +
+                          abs (input_->points[y_w * input_->width + x_w].g - input_->points[y * input_->width + x].g) +
+                          abs (input_->points[y_w * input_->width + x_w].b - input_->points[y * input_->width + x].b));
           double val_exp_rgb = exp (- d_color * d_color / (2*sigma_color_ * sigma_color_));
 
           if (pcl_isfinite (input_->points[y_w*input_->width + x_w].z))
@@ -118,12 +119,11 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::performProcessing (PointCloudOut 
       if (norm_sum != 0.0f)
       {
         float depth = sum / norm_sum;
-        Eigen::Vector3f pc (y *depth, x *depth, depth);
-        Eigen::Vector3f pw = unprojection_matrix_ * pc;
+        Eigen::Vector3f pc (static_cast<float> (y) * depth, static_cast<float> (x) * depth, depth);
+        Eigen::Vector3f pw (unprojection_matrix_ * pc);
         output.points[y*input_->width + x].y = pw[0];
         output.points[y*input_->width + x].x = pw[1];
         output.points[y*input_->width + x].z = pw[2];
-//        printf ("Depth %f   Before %f %f %f  ----> After %f %f %f\n", depth, input_->points[y*input_->width + x].x, input_->points[y*input_->width + x].y, input_->points[y*input_->width + x].z, output.points[y*input_->width + x].x, output.points[y*input_->width + x].y, output.points[y*input_->width + x].z);
       }
     }
 

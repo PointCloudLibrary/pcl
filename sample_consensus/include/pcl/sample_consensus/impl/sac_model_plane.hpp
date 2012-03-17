@@ -291,6 +291,7 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
       float distance_to_plane = tmp_mc.dot (p);
 
       pcl::Vector4fMap pp = projected_points.points[inliers[i]].getVector4fMap ();
+      assert (mc[3] == 0);
       pp = p - mc * distance_to_plane;        // mc[3] = 0, therefore the 3rd coordinate is safe
     }
   }
@@ -319,6 +320,7 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
       float distance_to_plane = tmp_mc.dot (p);
 
       pcl::Vector4fMap pp = projected_points.points[i].getVector4fMap ();
+      assert (mc[3] == 0);
       pp = p - mc * distance_to_plane;        // mc[3] = 0, therefore the 3rd coordinate is safe
     }
   }

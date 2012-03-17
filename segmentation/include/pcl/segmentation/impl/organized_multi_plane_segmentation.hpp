@@ -208,7 +208,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
   for (size_t i = 0; i < model_coefficients.size (); i++)
   {
     boundary_cloud.resize (0);
-    int max_inlier_idx = inlier_indices[i].indices.size ()-1;
+    int max_inlier_idx = static_cast<int> (inlier_indices[i].indices.size ()) - 1;
     pcl::OrganizedConnectedComponentSegmentation<PointT,PointLT>::findLabeledRegionBoundary (inlier_indices[i].indices[max_inlier_idx], labels, boundary_indices[i]);
     boundary_cloud.points.resize (boundary_indices[i].indices.size ());
     for (unsigned j = 0; j < boundary_indices[i].indices.size (); j++)
@@ -231,13 +231,11 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
 template<typename PointT, typename PointNT, typename PointLT> void
 pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vector<ModelCoefficients>& model_coefficients, 
                                                                         std::vector<PointIndices>& inlier_indices,
-                                                                        std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> >& centroids,
-                                                                        std::vector <Eigen::Matrix3f, Eigen::aligned_allocator<Eigen::Matrix3f> >& covariances,
+                                                                        std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> >&,
+                                                                        std::vector <Eigen::Matrix3f, Eigen::aligned_allocator<Eigen::Matrix3f> >&,
                                                                         PointCloudLPtr& labels,
                                                                         std::vector<pcl::PointIndices>& label_indices)
 {
-  double point_to_plane_dist_thresh = 0.005;
-
   //List of lables to grow, and index of model corresponding to each label
   std::vector<bool> grow_labels;
   std::vector<int> label_to_model;
@@ -254,10 +252,10 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
   for (size_t i = 0; i < model_coefficients.size (); i++)
   {
     int model_label = (*labels)[inlier_indices[i].indices[0]].label;
-    label_to_model[model_label] = i;
+    label_to_model[model_label] = static_cast<int> (i);
   }
   
-  refinement_compare_->setDistanceThreshold (0.005);
+  refinement_compare_->setDistanceThreshold (0.005f);
   refinement_compare_->setInputCloud (input_);
   refinement_compare_->setLabels (labels);
   refinement_compare_->setModelCoefficients (model_coefficients);

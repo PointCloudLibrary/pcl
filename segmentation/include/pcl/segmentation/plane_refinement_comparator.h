@@ -74,13 +74,25 @@ namespace pcl
 
       /** \brief Empty constructor for PlaneCoefficientComparator. */
      PlaneRefinementComparator ()
-        : angular_threshold_ (0), distance_threshold_ (0.02)
+        : distance_map_ ()
+        , angular_threshold_ (0.0f)
+        , distance_threshold_ (0.02f)
+        , models_ ()
+        , labels_ ()
+        , refine_labels_ ()
+        , label_to_model_ ()
       {
       }
 
       PlaneRefinementComparator (boost::shared_ptr<std::vector<pcl::ModelCoefficients> >& models,
                                  boost::shared_ptr<std::vector<bool> >& refine_labels)
-        : angular_threshold_ (0), distance_threshold_ (0.02), models_ (models), refine_labels_ (refine_labels)
+        : distance_map_ ()
+        , angular_threshold_ (0.0f)
+        , distance_threshold_ (0.02f)
+        , models_ (models)
+        , labels_ ()
+        , refine_labels_ (refine_labels)
+        , label_to_model_ ()
       {
       }
 
@@ -145,7 +157,7 @@ namespace pcl
       setAngularThreshold (float angular_threshold)
       {
         printf ("euclidean set angular threshold!\n");
-        angular_threshold_ = cos (angular_threshold);
+        angular_threshold_ = cosf (angular_threshold);
       }
       
       /** \brief Get the angular threshold in radians for difference in normal direction between neighboring points, to be considered part of the same plane. */
@@ -266,10 +278,10 @@ namespace pcl
                                 model_coeff.values[2] * pt.z +
                                 model_coeff.values[3]);
 
-        float dx = input_->points[idx1].x - input_->points[idx2].x;
-        float dy = input_->points[idx1].y - input_->points[idx2].y;
-        float dz = input_->points[idx1].z - input_->points[idx2].z;
-        float dist = sqrt (dx*dx + dy*dy + dz*dz);
+        //float dx = input_->points[idx1].x - input_->points[idx2].x;
+        //float dy = input_->points[idx1].y - input_->points[idx2].y;
+        //float dz = input_->points[idx1].z - input_->points[idx2].z;
+        //float dist = sqrt (dx*dx + dy*dy + dz*dz);
 
         //bool dist_ok = (dist < distance_threshold_);
         //bool curvature_ok = normals_->points[idx1].curvature < 0.04;

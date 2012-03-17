@@ -51,6 +51,7 @@ namespace pcl
       objectCount_ (0), 
       rootNode_ (new OctreeBranch ()), 
       depthMask_ (0), 
+      keyRange_ (),
       unusedBranchesPool_ (),
       unusedLeafsPool_ (),
       bufferSelector_ (0),

@@ -201,8 +201,10 @@ namespace pcl
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT, typename OctreeT> OctreeBreadthFirstIterator<DataT, LeafT, OctreeT>::OctreeBreadthFirstIterator (const OctreeT& octree_arg) :
-        OctreeIteratorBase<DataT, LeafT, OctreeT> (octree_arg)
+    template<typename DataT, typename LeafT, typename OctreeT> 
+    OctreeBreadthFirstIterator<DataT, LeafT, OctreeT>::OctreeBreadthFirstIterator (const OctreeT& octree_arg) :
+        OctreeIteratorBase<DataT, LeafT, OctreeT> (octree_arg),
+        FIFO_ ()
     {
       OctreeIteratorBase<DataT, LeafT, OctreeT>::reset ();
 

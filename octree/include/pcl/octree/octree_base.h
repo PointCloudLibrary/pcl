@@ -95,6 +95,7 @@ namespace pcl
           objectCount_ (source.objectCount_),
           rootNode_ (new (OctreeBranch) (*(source.rootNode_))),
           depthMask_ (source.depthMask_),
+          keyRange_ (source.keyRange_),
           octreeDepth_ (source.octreeDepth_),
           unusedBranchesPool_ (),
           unusedLeafsPool_ ()
@@ -110,6 +111,7 @@ namespace pcl
           objectCount_ = source.objectCount_;
           rootNode_ = new (OctreeBranch) (*(source.rootNode_));
           depthMask_ = source.depthMask_;
+          keyRange_ = source.keyRange_;
           octreeDepth_ = source.octreeDepth_;
           return (*this);
         }
