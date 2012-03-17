@@ -124,6 +124,7 @@ namespace pcl
     if (cos_theta < 0)
     {
       normal *= -1;
+      normal[3] = 0.0f;
       // Hessian form (D = nc . p_plane (centroid here) + p)
       normal[3] = -1 * normal.dot (point.getVector4fMap ());
     }
