@@ -46,6 +46,7 @@
 namespace pcl
 {
 
+  /** \brief ... */
   template <typename PointInT, typename PointOutT>
   class BilateralUpsampling: public CloudSurfaceProcessing<PointInT, PointOutT>
   {
@@ -60,11 +61,10 @@ namespace pcl
 
       Eigen::Matrix3f KinectVGAProjectionMatrix, KinectSXGAProjectionMatrix;
 
-
       /** \brief Constructor. */
       BilateralUpsampling () : window_size_ (5),
-                               sigma_color_ (15),
-                               sigma_depth_ (0.5)
+                               sigma_color_ (15.0f),
+                               sigma_depth_ (0.5f)
       {
         KinectVGAProjectionMatrix << 575.0f, 0.0f, 320.0f,
                                      0.0f, 575.0f, 240.0f,
@@ -74,46 +74,54 @@ namespace pcl
                                       0.0f, 0.0f, 1.0f;
       };
 
-
+      /** \brief ... */
       inline void
       setWindowSize (int window_size) { window_size_ = window_size; }
 
+      /** \brief ... */
       inline int
-      getWindowSize () { return window_size_; }
+      getWindowSize () const { return (window_size_); }
 
-
+      /** \brief ... */
       inline void
-      setSigmaColor (double &sigma_color) { sigma_color_ = sigma_color; }
+      setSigmaColor (const float &sigma_color) { sigma_color_ = sigma_color; }
 
-      inline double
-      getSigmaColor () { return sigma_color_; }
+      /** \brief ... */
+      inline float
+      getSigmaColor () const { return (sigma_color_); }
 
-
+      /** \brief ... */
       inline void
-      setSigmaDepth (double &sigma_depth) { sigma_depth_ = sigma_depth; }
+      setSigmaDepth (const float &sigma_depth) { sigma_depth_ = sigma_depth; }
 
-      inline double
-      getSigmaDepth () { return sigma_depth_; }
+      /** \brief ... */
+      inline float
+      getSigmaDepth () const { return (sigma_depth_); }
 
-
+      /** \brief ... */
       inline void
-      setProjectionMatrix (Eigen::Matrix3f &projection_matrix) { projection_matrix_ = projection_matrix; }
+      setProjectionMatrix (const Eigen::Matrix3f &projection_matrix) { projection_matrix_ = projection_matrix; }
 
+      /** \brief ... */
       inline Eigen::Matrix3f
-      getProjectionMatrix () { return projection_matrix_; }
+      getProjectionMatrix () const { return (projection_matrix_); }
 
+      /** \brief ... */
       void
       process (pcl::PointCloud<PointOutT> &output);
 
     protected:
+      /** \brief ... */
       void
       performProcessing (pcl::PointCloud<PointOutT> &output);
 
     private:
+      /** \brief ... */
       int window_size_;
-      double sigma_color_, sigma_depth_;
+      /** \brief ... */
+      float sigma_color_, sigma_depth_;
+      /** \brief ... */
       Eigen::Matrix3f projection_matrix_, unprojection_matrix_;
-
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
