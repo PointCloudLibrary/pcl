@@ -45,11 +45,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/common/io.h>
 // VTK includes
-#include <vtkSmartPointer.h>
-#include <vtkDataArray.h>
-#include <vtkUnsignedCharArray.h>
-#include <vtkFloatArray.h>
-#include <vtkPoints.h>
+#include <pcl/visualization/vtk.h>
 
 namespace pcl
 {
@@ -71,8 +67,13 @@ namespace pcl
 
         /** \brief Constructor. */
         PointCloudGeometryHandler (const PointCloudConstPtr &cloud) :
-          cloud_ (cloud), capable_ (false)
+          cloud_ (cloud), capable_ (false),
+          field_x_idx_ (-1), field_y_idx_ (-1), field_z_idx_ (-1),
+          fields_ ()
         {}
+
+        /** \brief Destructor. */
+        virtual ~PointCloudGeometryHandler () {}
 
         /** \brief Abstract getName method.
           * \return the name of the class/object.
@@ -134,6 +135,9 @@ namespace pcl
 
         /** \brief Constructor. */
         PointCloudGeometryHandlerXYZ (const PointCloudConstPtr &cloud);
+
+        /** \brief Destructor. */
+        virtual ~PointCloudGeometryHandlerXYZ () {};
 
         /** \brief Class getName method. */
         virtual inline std::string
@@ -270,11 +274,17 @@ namespace pcl
 
         /** \brief Constructor. */
         PointCloudGeometryHandler (const PointCloudConstPtr &cloud, const Eigen::Vector4f & = Eigen::Vector4f::Zero ())
-        : cloud_ (cloud)
-        , capable_ (false)
+          : cloud_ (cloud)
+          , capable_ (false)
+          , field_x_idx_ (-1)
+          , field_y_idx_ (-1)
+          , field_z_idx_ (-1)
+          , fields_ (cloud_->fields)
         {
-          fields_ = cloud_->fields;
         }
+
+        /** \brief Destructor. */
+        virtual ~PointCloudGeometryHandler () {}
 
         /** \brief Abstract getName method. */
         virtual std::string
@@ -335,6 +345,9 @@ namespace pcl
         /** \brief Constructor. */
         PointCloudGeometryHandlerXYZ (const PointCloudConstPtr &cloud);
 
+        /** \brief Destructor. */
+        virtual ~PointCloudGeometryHandlerXYZ () {}
+
         /** \brief Class getName method. */
         virtual inline
         std::string getName () const { return ("PointCloudGeometryHandlerXYZ"); }
@@ -393,6 +406,9 @@ namespace pcl
                                          const std::string &y_field_name,
                                          const std::string &z_field_name);
 
+        /** \brief Destructor. */
+        virtual ~PointCloudGeometryHandlerCustom () {}
+
         /** \brief Class getName method. */
         virtual inline std::string
         getName () const { return ("PointCloudGeometryHandlerCustom"); }
@@ -423,8 +439,11 @@ namespace pcl
 
         /** \brief Constructor. */
         PointCloudColorHandler (const PointCloudConstPtr &cloud) :
-          cloud_ (cloud), capable_ (false)
+          cloud_ (cloud), capable_ (false), field_idx_ (-1), fields_ ()
         {}
+
+        /** \brief Destructor. */
+        virtual ~PointCloudColorHandler () {}
 
         /** \brief Check if this handler is capable of handling the input data or not. */
         inline bool
@@ -522,12 +541,15 @@ namespace pcl
         PointCloudColorHandlerCustom (const PointCloudConstPtr &cloud,
                                       double r, double g, double b)
           : PointCloudColorHandler<PointT> (cloud)
+          , r_ (r)
+          , g_ (g)
+          , b_ (b)
         {
           capable_ = true;
-          r_ = r;
-          g_ = g;
-          b_ = b;
         }
+
+        /** \brief Destructor. */
+        virtual ~PointCloudColorHandlerCustom () {};
 
         /** \brief Abstract getName method. */
         virtual inline std::string
@@ -570,6 +592,9 @@ namespace pcl
 
         /** \brief Constructor. */
         PointCloudColorHandlerRGBField (const PointCloudConstPtr &cloud);
+
+        /** \brief Destructor. */
+        virtual ~PointCloudColorHandlerRGBField () {}
 
         /** \brief Get the name of the field used. */
         virtual std::string
@@ -661,6 +686,9 @@ namespace pcl
         PointCloudColorHandlerGenericField (const PointCloudConstPtr &cloud,
                                             const std::string &field_name);
 
+        /** \brief Destructor. */
+        virtual ~PointCloudColorHandlerGenericField () {}
+
         /** \brief Get the name of the field used. */
         virtual std::string getFieldName () const { return (field_name_); }
 
@@ -702,8 +730,11 @@ namespace pcl
 
         /** \brief Constructor. */
         PointCloudColorHandler (const PointCloudConstPtr &cloud) :
-          cloud_ (cloud), capable_ (false)
+          cloud_ (cloud), capable_ (false), field_idx_ ()
         {}
+        
+        /** \brief Destructor. */
+        virtual ~PointCloudColorHandler () {}
 
         /** \brief Return whether this handler is capable of handling the input data or not. */
         inline bool
@@ -789,12 +820,10 @@ namespace pcl
         /** \brief Constructor. */
         PointCloudColorHandlerCustom (const PointCloudConstPtr &cloud,
                                       double r, double g, double b) :
-          PointCloudColorHandler<sensor_msgs::PointCloud2> (cloud)
+          PointCloudColorHandler<sensor_msgs::PointCloud2> (cloud),
+          r_ (r), g_ (g), b_ (b)
         {
           capable_ = true;
-          r_ = r;
-          g_ = g;
-          b_ = b;
         }
 
         /** \brief Get the name of the class. */
@@ -935,6 +964,6 @@ namespace pcl
   }
 }
 
-#include "pcl/visualization/impl/point_cloud_handlers.hpp"
+#include <pcl/visualization/impl/point_cloud_handlers.hpp>
 
 #endif
