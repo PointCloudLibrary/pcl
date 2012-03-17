@@ -168,6 +168,11 @@ namespace pcl
         return (distance_threshold_);
       }
       
+      /** \brief Compare points at two indices by their plane equations.  True if the angle between the normals is less than the angular threshold,
+        * and the difference between the d component of the normals is less than distance threshold, else false
+        * \param idx1 The first index for the comparison
+        * \param idx2 The second index for the comparison
+        */
       virtual bool
       compare (int idx1, int idx2) const
       {
@@ -187,7 +192,6 @@ namespace pcl
     protected:
       PointCloudNConstPtr normals_;
       boost::shared_ptr<std::vector<float> > plane_coeff_d_;
-      //std::vector<float> plane_coeff_d_;
       float angular_threshold_;
       float distance_threshold_;
       bool depth_dependent_;

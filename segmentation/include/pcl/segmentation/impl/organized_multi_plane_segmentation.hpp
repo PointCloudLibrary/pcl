@@ -201,7 +201,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
   std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > centroids;
   std::vector <Eigen::Matrix3f, Eigen::aligned_allocator<Eigen::Matrix3f> > covariances;
   segment (model_coefficients, inlier_indices, centroids, covariances, *labels, label_indices);
-  refine (model_coefficients, inlier_indices, centroids, covariances, *labels, label_indices);
+  refine (model_coefficients, inlier_indices, centroids, covariances, labels, label_indices);
   regions.resize (model_coefficients.size ());
   boundary_indices.resize (model_coefficients.size ());
 
@@ -231,19 +231,18 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
 template<typename PointT, typename PointNT, typename PointLT> void
 pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vector<ModelCoefficients>& model_coefficients, 
                                                                         std::vector<PointIndices>& inlier_indices,
-                                                                        std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> >& /*centroids*/,
-                                                                        std::vector <Eigen::Matrix3f, Eigen::aligned_allocator<Eigen::Matrix3f> >& /*covariances*/,
-                                                                        pcl::PointCloud<PointLT>& labels,
+                                                                        std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> >& centroids,
+                                                                        std::vector <Eigen::Matrix3f, Eigen::aligned_allocator<Eigen::Matrix3f> >& covariances,
+                                                                        PointCloudLPtr& labels,
                                                                         std::vector<pcl::PointIndices>& label_indices)
 {
-  double point_to_plane_dist_thresh = 1.0;//0.005;
-  //printf ("Starting refinement!\n");
-  
+  double point_to_plane_dist_thresh = 0.005;
+
   //List of lables to grow, and index of model corresponding to each label
   std::vector<bool> grow_labels;
   std::vector<int> label_to_model;
-  grow_labels.resize (label_indices.size (),false);
-  label_to_model.resize (label_indices.size (),0);
+  grow_labels.resize (label_indices.size (), false);
+  label_to_model.resize (label_indices.size (), 0);
   for (size_t i = 0; i < label_indices.size (); i++)
   {
     if (label_indices[i].indices.size () > min_inliers_)
@@ -254,23 +253,45 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
 
   for (size_t i = 0; i < model_coefficients.size (); i++)
   {
-    int model_label = labels[inlier_indices[i].indices[0]].label;
+    int model_label = (*labels)[inlier_indices[i].indices[0]].label;
     label_to_model[model_label] = i;
   }
   
+  refinement_compare_->setDistanceThreshold (0.005);
+  refinement_compare_->setInputCloud (input_);
+  refinement_compare_->setLabels (labels);
+  refinement_compare_->setModelCoefficients (model_coefficients);
+  refinement_compare_->setRefineLabels (grow_labels);
+  refinement_compare_->setLabelToModel (label_to_model);
+
   //Do a first pass over the image, top to bottom, left to right
   unsigned int current_row = 0;
-  unsigned int next_row = labels.width;
-  for(size_t rowIdx = 0; rowIdx < labels.height - 1; ++rowIdx, current_row = next_row, next_row += labels.width)
+  unsigned int next_row = labels->width;
+  for (size_t rowIdx = 0; rowIdx < labels->height - 1; ++rowIdx, current_row = next_row, next_row += labels->width)
   {
-    for (unsigned colIdx = 0; colIdx < labels.width - 1; ++colIdx)
+
+    for (unsigned colIdx = 0; colIdx < labels->width - 1; ++colIdx)
     {
-      int current_label = labels[current_row+colIdx].label;
+      int current_label = (*labels)[current_row+colIdx].label;
       if (current_label == -1)
         continue;
-
+      
       //Check right
-      if (grow_labels[current_label] && !grow_labels[labels[current_row+colIdx+1].label])
+      //bool test1 = false;
+      if (refinement_compare_->compare (current_row+colIdx, current_row+colIdx+1))
+      {
+        //test1 = true;
+        labels->points[current_row+colIdx+1].label = current_label;
+        label_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx+1);
+        inlier_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx+1);
+      }
+      
+      /*
+      //bool test2 = false;
+      //printf ("first idx1: %d first idx2: %d\n",current_row+colIdx,current_row+colIdx+1);
+      
+      //printf ("first L1: %d first L2: %d\n",current_label, labels[current_row+colIdx+1].label);
+      if (grow_labels[current_label] && !grow_labels[(*labels)[current_row+colIdx+1].label])
       { 
         //Check neighbor against this label's model
         pcl::ModelCoefficients model_coeff = model_coefficients[label_to_model[current_label]];
@@ -283,106 +304,62 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
                                            model_coeff.values[1] * pt.y + 
                                            model_coeff.values[2] * pt.z +
                                            model_coeff.values[3]);
-
+        //printf ("first ptp dist: %lf\n",point_to_plane_dist);
+        
         if (point_to_plane_dist < (point_to_plane_dist_thresh * pt.z))//TODO: Make a thresh, and better comparisons
         {
-          labels.points[current_row+colIdx+1].label = current_label;
-          label_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx+1);
-          inlier_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx+1);
+          //test2 = true;
+          //labels->points[current_row+colIdx+1].label = current_label;
+          //label_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx+1);
+          //inlier_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx+1);
         }
         
       }
+      //if (test1 != test2)
+      //  printf ("ERR: %d %d\n", test1, test2);
+      //else if (test1 && test2)
+      //  printf ("Both growing!\n");
+      */      
 
       //Check down
-      if (grow_labels[current_label] && !grow_labels[labels[next_row+colIdx].label])
+      if (refinement_compare_->compare (current_row+colIdx, next_row+colIdx))
       {
-        //Check neighbor against this label's model
-        pcl::ModelCoefficients model_coeff = model_coefficients[label_to_model[current_label]];
-        
-        //Check color?
-        //Check normal?
-        //Check point-to-plane distance
-        PointT pt = input_->points[next_row+colIdx];
-        double point_to_plane_dist = fabs (model_coeff.values[0] * pt.x + 
-                                           model_coeff.values[1] * pt.y + 
-                                           model_coeff.values[2] * pt.z +
-                                           model_coeff.values[3]);
-
-        if (point_to_plane_dist < (point_to_plane_dist_thresh * pt.z))//TODO: Make a thresh, and better comparisons
-        {
-          labels.points[next_row+colIdx].label = current_label;
-          label_indices[label_to_model[current_label]].indices.push_back (next_row+colIdx);
-          inlier_indices[label_to_model[current_label]].indices.push_back (next_row+colIdx);
-        }
-        
-      }      
+        labels->points[next_row+colIdx].label = current_label;
+        label_indices[label_to_model[current_label]].indices.push_back (next_row+colIdx);
+        inlier_indices[label_to_model[current_label]].indices.push_back (next_row+colIdx);
+      }
 
     }//col
   }//row
 
   //Do a second pass over the image
-  current_row = labels.width * (labels.height - 1);
-  unsigned int prev_row = current_row - labels.width;
-  for(size_t rowIdx = 0; rowIdx < labels.height - 1; ++rowIdx, current_row = prev_row, prev_row -= labels.width)
+  current_row = labels->width * (labels->height - 1);
+  unsigned int prev_row = current_row - labels->width;
+  for (size_t rowIdx = 0; rowIdx < labels->height - 1; ++rowIdx, current_row = prev_row, prev_row -= labels->width)
   {
-    for (int colIdx = labels.width - 1; colIdx >= 0; --colIdx)
+    for (int colIdx = labels->width - 1; colIdx >= 0; --colIdx)
     {
-      int current_label = labels[current_row+colIdx].label;
+      int current_label = (*labels)[current_row+colIdx].label;
       if (current_label == -1)
         continue;
 
       //Check left
-      if (grow_labels[current_label] && !grow_labels[labels[current_row+colIdx-1].label])
-      { 
-        //Check neighbor against this label's model
-        pcl::ModelCoefficients model_coeff = model_coefficients[label_to_model[current_label]];
-        
-        //Check color?
-        //Check normal? 
-        //Check point-to-plane distance
-        PointT pt = input_->points[current_row+colIdx-1];
-        double point_to_plane_dist = fabs (model_coeff.values[0] * pt.x + 
-                                           model_coeff.values[1] * pt.y + 
-                                           model_coeff.values[2] * pt.z +
-                                           model_coeff.values[3]);
-
-        if (point_to_plane_dist < (point_to_plane_dist_thresh * pt.z))//TODO: Make a thresh, and better comparisons
-        {
-          labels.points[current_row+colIdx-1].label = current_label;
-          label_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx-1);
-          inlier_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx-1);
-        }
-        
-      }
-
-      //Check up
-      if (grow_labels[current_label] && !grow_labels[labels[prev_row+colIdx].label])
+      if (refinement_compare_->compare (current_row+colIdx, current_row+colIdx-1))
       {
-        //Check neighbor against this label's model
-        pcl::ModelCoefficients model_coeff = model_coefficients[label_to_model[current_label]];
-        
-        //Check color?
-        //Check normal?
-        //Check point-to-plane distance
-        PointT pt = input_->points[prev_row+colIdx];
-        double point_to_plane_dist = fabs (model_coeff.values[0] * pt.x + 
-                                           model_coeff.values[1] * pt.y + 
-                                           model_coeff.values[2] * pt.z +
-                                           model_coeff.values[3]);
-
-        if (point_to_plane_dist < (point_to_plane_dist_thresh * pt.z))//TODO: Make a thresh, and better comparisons
-        {
-          labels.points[prev_row+colIdx].label = current_label;
-          label_indices[label_to_model[current_label]].indices.push_back (prev_row+colIdx);
-          inlier_indices[label_to_model[current_label]].indices.push_back (prev_row+colIdx);
-        }
-        
-      }      
-
+        labels->points[current_row+colIdx-1].label = current_label;
+        label_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx-1);
+        inlier_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx-1);
+      }
+      
+      //Check up
+      if (refinement_compare_->compare (current_row+colIdx, prev_row+colIdx))
+      {
+        labels->points[prev_row+colIdx].label = current_label;
+        label_indices[label_to_model[current_label]].indices.push_back (prev_row+colIdx);
+        inlier_indices[label_to_model[current_label]].indices.push_back (prev_row+colIdx);
+      }
     }//col
   }//row
-  
-
 }
 
 #define PCL_INSTANTIATE_OrganizedMultiPlaneSegmentation(T,NT,LT) template class PCL_EXPORTS pcl::OrganizedMultiPlaneSegmentation<T,NT,LT>;

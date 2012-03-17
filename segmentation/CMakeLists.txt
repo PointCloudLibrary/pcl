@@ -34,6 +34,10 @@ if(build)
         include/pcl/${SUBSYS_NAME}/region_growing.h
         include/pcl/${SUBSYS_NAME}/comparator.h
         include/pcl/${SUBSYS_NAME}/plane_coefficient_comparator.h
+	#include/pcl/${SUBSYS_NAME}/euclidean_plane_coefficient_comparator.h
+	#include/pcl/${SUBSYS_NAME}/edge_aware_plane_comparator.h
+	#include/pcl/${SUBSYS_NAME}/rgb_plane_coefficient_comparator.h
+	include/pcl/${SUBSYS_NAME}/plane_refinement_comparator.h
         include/pcl/${SUBSYS_NAME}/organized_connected_component_segmentation.h
         include/pcl/${SUBSYS_NAME}/organized_multi_plane_segmentation.h
 	include/pcl/${SUBSYS_NAME}/region_3d.h
