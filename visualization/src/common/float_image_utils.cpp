@@ -65,45 +65,45 @@ pcl::visualization::FloatImageUtils::getColorForFloat (float value, unsigned cha
   value *= 10;
   if (value <= 1.0) 
   {  // black -> purple
-    b = pcl_lrint(value*200);
-    r = pcl_lrint(value*120);
+    b = static_cast<unsigned char> (pcl_lrint(value*200));
+    r = static_cast<unsigned char> (pcl_lrint(value*120));
   }
   else if (value <= 2.0) 
   {  // purple -> blue
-    b = 200 + pcl_lrint((value-1.0)*55);
-    r = 120 - pcl_lrint((value-1.0)*120);
+    b = static_cast<unsigned char> (200 + pcl_lrint((value-1.0)*55));
+    r = static_cast<unsigned char> (120 - pcl_lrint((value-1.0)*120));
   }
   else if (value <= 3.0) 
   {  // blue -> turquoise
-    b = 255 - pcl_lrint((value-2.0)*55);
-    g = pcl_lrint((value-2.0)*200);
+    b = static_cast<unsigned char> (255 - pcl_lrint((value-2.0)*55));
+    g = static_cast<unsigned char> (pcl_lrint((value-2.0)*200));
   }
   else if (value <= 4.0) 
   {  // turquoise -> green
-    b = 200 - pcl_lrint((value-3.0)*200);
-    g = 200 + pcl_lrint((value-3.0)*55);
+    b = static_cast<unsigned char> (200 - pcl_lrint((value-3.0)*200));
+    g = static_cast<unsigned char> (200 + pcl_lrint((value-3.0)*55));
   }
   else if (value <= 5.0) 
   {  // green -> greyish green
-    g = 255 - pcl_lrint((value-4.0)*100);
-    r = pcl_lrint((value-4.0)*120);
+    g = static_cast<unsigned char> (255 - pcl_lrint((value-4.0)*100));
+    r = static_cast<unsigned char> (pcl_lrint((value-4.0)*120));
   }
   else if (value <= 6.0) 
   { // greyish green -> red
-    r = 100 + pcl_lrint((value-5.0)*155);
-    g = 120 - pcl_lrint((value-5.0)*120);
-    b = 120 - pcl_lrint((value-5.0)*120);
+    r = static_cast<unsigned char> (100 + pcl_lrint((value-5.0)*155));
+    g = static_cast<unsigned char> (120 - pcl_lrint((value-5.0)*120));
+    b = static_cast<unsigned char> (120 - pcl_lrint((value-5.0)*120));
   }
   else if (value <= 7.0) 
   {  // red -> yellow
     r = 255;
-    g = pcl_lrint((value-6.0)*255);
+    g = static_cast<unsigned char> (pcl_lrint((value-6.0)*255));
   }
   else 
   {  // yellow -> white
     r = 255;
     g = 255;
-    b = pcl_lrint((value-7.0)*255.0/3.0);
+    b = static_cast<unsigned char> (pcl_lrint((value-7.0)*255.0/3.0));
   }
 }
 
@@ -129,21 +129,21 @@ pcl::visualization::FloatImageUtils::getColorForAngle (float value, unsigned cha
   r = g = b = 0;
   if (value < -M_PI/2.0f) 
   {  // black -> blue
-    b = (pcl_lrint(255*(value+float(M_PI))/(float(M_PI)/2.0f)));
+    b = static_cast<unsigned char> (pcl_lrint(255*(value+float(M_PI))/(float(M_PI)/2.0f)));
   }
   else if (value <= 0.0f) 
   {  // blue -> white
     b = 255;
-    r = g = (pcl_lrint(255*(value+float(M_PI/2))/(float(M_PI)/2.0f)));
+    r = g = static_cast<unsigned char> (pcl_lrint(255*(value+float(M_PI/2))/(float(M_PI)/2.0f)));
   }
   else if (value <= M_PI/2.0f) 
   {  // white -> green
     g = 255;
-    r = b = (255-pcl_lrint(255*(value)/(float(M_PI)/2.0f)));
+    r = b = static_cast<unsigned char> (255-pcl_lrint(255*(value)/(float(M_PI)/2.0f)));
   }
   else 
   {  // green -> black
-    g = (255-pcl_lrint(255*(value-M_PI/2.0f)/(float(M_PI)/2.0f)));
+    g = static_cast<unsigned char> (255-pcl_lrint(255*(value-M_PI/2.0f)/(float(M_PI)/2.0f)));
   }
   //cout << 180.0f*value/M_PI<<"deg => "<<(int)r<<", "<<(int)g<<", "<<(int)b<<"\n";
 }
@@ -181,7 +181,7 @@ pcl::visualization::FloatImageUtils::getVisualImage (const float* float_image, i
     }
   }
   //cout << "min_value is "<<min_value<<" and max_value is "<<max_value<<".\n";
-  float factor = 1.0 / (max_value-min_value), offset = -min_value;
+  float factor = 1.0f / (max_value-min_value), offset = -min_value;
   
   for (int i=0; i<size; ++i) 
   {
@@ -200,7 +200,7 @@ pcl::visualization::FloatImageUtils::getVisualImage (const float* float_image, i
     // Get a color from the value in [0, 1]
     if (gray_scale) 
     {
-      r = g = b = pcl_lrint(value*255);
+      r = g = b = static_cast<unsigned char> (pcl_lrint (value * 255));
     }
     else 
     {
@@ -225,7 +225,7 @@ pcl::visualization::FloatImageUtils::getVisualImage (const unsigned short* short
   unsigned char* data = new unsigned char[arraySize];
   unsigned char* dataPtr = data;
   
-  float factor = 1.0f / float(max_value-min_value), offset = -min_value;
+  float factor = 1.0f / float (max_value - min_value), offset = float (-min_value);
   
   for (int i=0; i<size; ++i) 
   {
@@ -238,7 +238,7 @@ pcl::visualization::FloatImageUtils::getVisualImage (const unsigned short* short
     // Get a color from the value in [0, 1]
     if (gray_scale) 
     {
-      r = g = b = pcl_lrint(value*255);
+      r = g = b = static_cast<unsigned char> (pcl_lrint(value*255));
     }
     else 
     {

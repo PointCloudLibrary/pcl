@@ -37,13 +37,13 @@ namespace pcl
     const float Scanner::theta_step = 0.0f;
     const int Scanner::theta_count = 1;
     const float Scanner::phi_start = 0.0f;
-    const float Scanner::phi_step = M_PI / 6;
+    const float Scanner::phi_step = float (M_PI) / 6.0f;
     const int Scanner::phi_count = 12;
 
     const float Scanner::theta_min = 0.0f;
-    const float Scanner::theta_max = M_PI / 6;
+    const float Scanner::theta_max = float (M_PI) / 6;
     const float Scanner::phi_min = 0.0f;
-    const float Scanner::phi_max = M_PI * 2;
+    const float Scanner::phi_max = float (M_PI) * 2.0f;
 
     /** convert radians to degrees. thanks a lot, vtk */
     template <typename T>

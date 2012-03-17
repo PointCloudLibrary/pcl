@@ -149,8 +149,8 @@ class OpenNIViewer
     void 
     keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
     {
-      if (event.getKeyCode())
-        cout << "the key \'" << event.getKeyCode() << "\' (" << (int)event.getKeyCode() << ") was";
+      if (event.getKeyCode ())
+        cout << "the key \'" << event.getKeyCode() << "\' (" << event.getKeyCode() << ") was";
       else
         cout << "the special key \'" << event.getKeySym() << "\' was";
       if (event.keyDown())
@@ -159,7 +159,8 @@ class OpenNIViewer
         cout << " released" << endl;
     }
     
-    void mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void*)
+    void 
+    mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void*)
     {
       if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton)
       {
@@ -324,7 +325,7 @@ main (int argc, char** argv)
           for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices(); ++deviceIdx)
           {
             cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName(deviceIdx) << ", product: " << driver.getProductName(deviceIdx)
-              << ", connected: " << (int) driver.getBus(deviceIdx) << " @ " << (int) driver.getAddress(deviceIdx) << ", serial number: \'" << driver.getSerialNumber(deviceIdx) << "\'" << endl;
+              << ", connected: " << driver.getBus(deviceIdx) << " @ " << driver.getAddress(deviceIdx) << ", serial number: \'" << driver.getSerialNumber(deviceIdx) << "\'" << endl;
           }
 
         }
@@ -345,15 +346,15 @@ main (int argc, char** argv)
   
   unsigned mode;
   if (pcl::console::parse(argc, argv, "-depthmode", mode) != -1)
-    depth_mode = (pcl::OpenNIGrabber::Mode) mode;
+    depth_mode = pcl::OpenNIGrabber::Mode (mode);
 
   if (pcl::console::parse(argc, argv, "-imagemode", mode) != -1)
-    image_mode = (pcl::OpenNIGrabber::Mode) mode;
+    image_mode = pcl::OpenNIGrabber::Mode (mode);
   
-  if (pcl::console::find_argument(argc, argv, "-xyz") != -1)
+  if (pcl::console::find_argument (argc, argv, "-xyz") != -1)
     xyz = true;
   
-  pcl::OpenNIGrabber grabber(device_id, depth_mode, image_mode);
+  pcl::OpenNIGrabber grabber (device_id, depth_mode, image_mode);
   
   if (xyz || !grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
   {

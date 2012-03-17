@@ -77,12 +77,12 @@ namespace pcl
         using pcl::search::Search<PointT>::input_;
 
         /** \brief Constructor
-          * \param sorted_results whether the results should be return sorted in ascending order on the distances or not.
+          * \param[in] sorted_results whether the results should be return sorted in ascending order on the distances or not.
           *        This applies only for radius search, since knn always returns sorted resutls    
-          * \param eps the threshold for the mean-squared-error of the estimation of the projection matrix.
+          * \param[in] eps the threshold for the mean-squared-error of the estimation of the projection matrix.
           *            if the MSE is above this value, the point cloud is considered as not from a projective device,
           *            thus organized neighbor search can not be applied on that cloud.
-          * \param pyramid_level the level of the down sampled point cloud to be used for projection matrix estimation
+          * \param[in] pyramid_level the level of the down sampled point cloud to be used for projection matrix estimation
           */
         OrganizedNeighbor (bool sorted_results = false, float eps = 1e-4f, unsigned pyramid_level = 5)
           : Search<PointT> ("OrganizedNeighbor", sorted_results)
@@ -114,7 +114,11 @@ namespace pcl
           return (determinant3x3Matrix<Eigen::Matrix3f> (KR_ / sqrt (KR_KRT_.coeff (8))) >= (min_f * min_f));
         }
         
-        void computeCameraMatrix (Eigen::Matrix3f& camera_matrix) const;
+        /** \brief Compute the camera matrix
+          * \param[out] camera_matrix the resultant computed camera matrix 
+          */
+        void 
+        computeCameraMatrix (Eigen::Matrix3f& camera_matrix) const;
         
         /** \brief Provide a pointer to the input data set, if user has focal length he must set it before calling this
           * \param[in] cloud the const boost shared pointer to a PointCloud message
@@ -158,9 +162,9 @@ namespace pcl
                       std::vector<float> &k_sqr_distances,
                       unsigned int max_nn = 0) const;
 
-        /** \brief estimated the projection matrix from the input cloud
-         */
-        void estimateProjectionMatrix ();
+        /** \brief estimated the projection matrix from the input cloud. */
+        void 
+        estimateProjectionMatrix ();
 
          /** \brief Search for the k-nearest neighbors for a given query point.
            * \note limiting the maximum search radius (with setMaxDistance) can lead to a significant improvement in search speed
@@ -194,13 +198,14 @@ namespace pcl
         };
 
         /** \brief test if point given by index is among the k NN in results to the query point.
-         *  \param query query point
-         *  \param k number of maximum nn interested in
-         *  \param queue priority queue with k NN
-         *  \param index index on point to be tested
-         *  \return wheter the top element changed or not.
-         */
-        inline bool testPoint (const PointT& query, unsigned k, std::priority_queue<Entry>& queue, unsigned index) const
+          * \param[in] query query point
+          * \param[in] k number of maximum nn interested in
+          * \param[in] queue priority queue with k NN
+          * \param[in] index index on point to be tested
+          * \return wheter the top element changed or not.
+          */
+        inline bool 
+        testPoint (const PointT& query, unsigned k, std::priority_queue<Entry>& queue, unsigned index) const
         {
           const PointT& point = input_->points [index];
           if (mask_ [index] && pcl_isfinite (point.x))
@@ -224,6 +229,7 @@ namespace pcl
           begin = std::max (std::min (begin, max), min);
           end   = std::min (std::max (end, min), max);
         }
+
         /** \brief Obtain a search box in 2D from a sphere with a radius in 3D
           * \param[in] point the query point (sphere center)
           * \param[in] squared_radius the squared sphere radius
