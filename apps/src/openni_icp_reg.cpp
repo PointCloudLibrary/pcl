@@ -238,7 +238,7 @@ main(int argc, char ** argv)
           for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices(); ++deviceIdx)
           {
             cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName(deviceIdx) << ", product: " << driver.getProductName(deviceIdx)
-              << ", connected: " << (int) driver.getBus(deviceIdx) << " @ " << (int) driver.getAddress(deviceIdx) << ", serial number: \'" << driver.getSerialNumber(deviceIdx) << "\'" << endl;
+              << ", connected: " << driver.getBus(deviceIdx) << " @ " << driver.getAddress(deviceIdx) << ", serial number: \'" << driver.getSerialNumber(deviceIdx) << "\'" << endl;
           }
 
         }
@@ -252,10 +252,10 @@ main(int argc, char ** argv)
 
     if (argc >= 3)
     {
-      depth_mode = (pcl::OpenNIGrabber::Mode) atoi(argv[2]);
+      depth_mode = pcl::OpenNIGrabber::Mode (atoi(argv[2]));
       if (argc == 4)
       {
-        image_mode = (pcl::OpenNIGrabber::Mode) atoi(argv[3]);
+        image_mode = pcl::OpenNIGrabber::Mode (atoi(argv[3]));
       }
     }
   }

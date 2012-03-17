@@ -152,7 +152,7 @@ usage (char ** argv)
     for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices (); ++deviceIdx)
     {
       cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
-              << ", connected: " << (int)driver.getBus (deviceIdx) << " @ " << (int)driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << endl;
+              << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << endl;
       cout << "device_id may be #1, #2, ... for the first second etc device in the list or" << endl
            << "                 bus@address for the device connected to a specific usb-bus / address combination (works only in Linux) or" << endl
            << "                 <serial-number> (only in Linux and for devices which provide serial numbers)"  << endl;
@@ -168,12 +168,12 @@ main (int argc, char ** argv)
   if (pcl::console::find_argument (argc, argv, "-h") != -1)
     usage (argv);
 
-  double min_v = 0, max_v = 5.0;
+  float min_v = 0.0f, max_v = 5.0f;
   pcl::console::parse_2x_arguments (argc, argv, "-minmax", min_v, max_v, false);
   std::string field_name ("z");
   pcl::console::parse_argument (argc, argv, "-field", field_name);
   PCL_INFO ("Filtering data on %s between %f -> %f.\n", field_name.c_str (), min_v, max_v);
-  double leaf_x = 0.01, leaf_y = 0.01, leaf_z = 0.01;
+  float leaf_x = 0.01f, leaf_y = 0.01f, leaf_z = 0.01f;
   pcl::console::parse_3x_arguments (argc, argv, "-leaf", leaf_x, leaf_y, leaf_z, false);
   PCL_INFO ("Using %f, %f, %f as a leaf size for VoxelGrid.\n", leaf_x, leaf_y, leaf_z);
 

@@ -62,15 +62,11 @@ template<typename PointInT> bool
 comparePoints (PointInT p1, PointInT p2, double p1_d, double p2_d, float ang_thresh, float dist_thresh)
 {
   float dot_p = p1.normal[0] * p2.normal[0] + p1.normal[1] * p2.normal[1] + p1.normal[2] * p2.normal[2];
-  float dist = fabs (p1_d - p2_d);
+  float dist = fabsf (float (p1_d - p2_d));
   if ((dot_p > ang_thresh) && (dist < dist_thresh))
-  {
-    return true;
-  }
+    return (true);
   else
-  {
-    return false;
-  }
+    return (false);
 }
 
 
@@ -80,9 +76,15 @@ comparePoints (PointInT p1, PointInT p2, double p1_d, double p2_d, float ang_thr
  * \author Alexander J. B. Trevor
  */
 template<typename PointInT, typename PointOutT> void
-extractPlanesByFloodFill (const pcl::PointCloud<PointInT> & cloud_in, std::vector<pcl::ModelCoefficients>& normals_out, std::vector<pcl::PointCloud<PointOutT> >& inliers, unsigned min_inliers, double ang_thresh, double dist_thresh)
+extractPlanesByFloodFill (
+    const pcl::PointCloud<PointInT> & cloud_in, 
+    std::vector<pcl::ModelCoefficients>& normals_out, 
+    std::vector<pcl::PointCloud<PointOutT> >& inliers, 
+    unsigned min_inliers, 
+    float ang_thresh, 
+    float dist_thresh)
 {
-  ang_thresh = cos (ang_thresh);
+  ang_thresh = cosf (ang_thresh);
 
   pcl::PointCloud<PointOutT> normal_cloud;
   pcl::copyPointCloud (cloud_in, normal_cloud);
@@ -140,8 +142,8 @@ extractPlanesByFloodFill (const pcl::PointCloud<PointInT> & cloud_in, std::vecto
   for (size_t ri = 1; ri < normal_cloud.height; ++ri)
   {
 
-    index = ri * normal_cloud.width;
-    last_row_idx = (ri - 1) * normal_cloud.width;
+    index = unsigned (ri) * normal_cloud.width;
+    last_row_idx = unsigned (ri - 1) * normal_cloud.width;
 
     //First pixel
     if (comparePoints (normal_cloud[index], normal_cloud[last_row_idx], plane_d[index], plane_d[last_row_idx], ang_thresh, dist_thresh))
@@ -197,7 +199,7 @@ extractPlanesByFloodFill (const pcl::PointCloud<PointInT> & cloud_in, std::vecto
     for (unsigned int ci = 0; ci < normal_cloud.width; ++ci, ++index)
     {
       clusts[index] = ds.find_set (clusts[index]);
-      if (clusts[index] >= (int)clust_inds.size ())
+      if (clusts[index] >= int (clust_inds.size ()))
       {
         clust_inds.resize (clusts[index] * 2, pcl::PointIndices ());
       }
@@ -255,12 +257,12 @@ extractEuclideanClustersModified (
 {
   if (tree->getInputCloud ()->points.size () != cloud.points.size ())
   {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", (unsigned long)tree->getInputCloud ()->points.size (), (unsigned long)cloud.points.size ());
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%zu) than the input cloud (%zu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
     return;
   }
   if (cloud.points.size () != normals.points.size ())
   {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%lu) different than normals (%lu)!\n", (unsigned long)cloud.points.size (), (unsigned long)normals.points.size ());
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%zu) different than normals (%zu)!\n", cloud.points.size (), normals.points.size ());
     return;
   }
 
@@ -284,7 +286,7 @@ extractEuclideanClustersModified (
 
     processed[i] = true;
 
-    while (sq_idx < (int)seed_queue.size ())
+    while (sq_idx < int (seed_queue.size ()))
     {
       // Search for sq_idx
       if (!tree->radiusSearch (seed_queue[sq_idx], tolerance, nn_indices, nn_distances))
@@ -373,7 +375,7 @@ extractPlanesByClustering (const pcl::PointCloud<PointInT> & cloud_in, std::vect
   std::vector<pcl::PointIndices> clusters;
   typename pcl::search::KdTree<PointOutT>::Ptr tree (new pcl::search::KdTree<PointOutT>());
   tree->setInputCloud (boost::make_shared<pcl::PointCloud<PointOutT> >(downsampled_cloud));
-  extractEuclideanClustersModified (downsampled_cloud, downsampled_cloud, dist_thresh, tree, clusters, ang_thresh, (unsigned int)min_inliers, (unsigned int)400000);
+  extractEuclideanClustersModified (downsampled_cloud, downsampled_cloud, dist_thresh, tree, clusters, ang_thresh, min_inliers, 400000);
   double cluster_end = pcl::getTime ();
   std::cout << "Clustering took: " << double(cluster_end - cluster_start) << std::endl;
 
@@ -474,7 +476,7 @@ run ()
 
       double start = pcl::getTime ();
       //extractPlanesByClustering(*prev_cloud,plane_normals,plane_inliers,1000,0.174,0.04);
-      extractPlanesByFloodFill (*prev_cloud, plane_normals, plane_inliers, 10000, 0.017453 * 3.0, 0.02);
+      extractPlanesByFloodFill (*prev_cloud, plane_normals, plane_inliers, 10000, 0.017453f * 3.0f, 0.02f);
       double end = pcl::getTime ();
       std::cout << "Full Plane Extraction using Flood Fill for frame took: " << double(end - start) << std::endl << std::endl;
 
@@ -484,7 +486,7 @@ run ()
 
       //Display cloud
       pcl::PointCloud<pcl::PointXYZ> downsampled_cloud;
-      double grid_size = 0.01;
+      float grid_size = 0.01f;
       pcl::VoxelGrid<pcl::PointXYZ> grid;
       grid.setInputCloud (prev_cloud);
       grid.setLeafSize (grid_size, grid_size, grid_size);
@@ -500,7 +502,7 @@ run ()
       ne.setRadiusSearch (0.05); //(0.1);//0.5
       ne.compute (normals);
 
-      viewer->addPointCloudNormals<pcl::PointXYZ, pcl::Normal>(boost::make_shared<pcl::PointCloud<pcl::PointXYZ> >(downsampled_cloud), boost::make_shared<pcl::PointCloud<pcl::Normal> >(normals), 10, 0.05, "normals");
+      viewer->addPointCloudNormals<pcl::PointXYZ, pcl::Normal>(boost::make_shared<pcl::PointCloud<pcl::PointXYZ> >(downsampled_cloud), boost::make_shared<pcl::PointCloud<pcl::Normal> >(normals), 10, 0.05f, "normals");
 
       viewer->removeAllShapes ();
 
@@ -510,11 +512,11 @@ run ()
         Eigen::Vector4f centroid;
         pcl::compute3DCentroid (plane_inliers[i], centroid);
         pcl::PointXYZ pt1 = pcl::PointXYZ (centroid[0], centroid[1], centroid[2]);
-        pcl::PointXYZ pt2 = pcl::PointXYZ (centroid[0] + (0.5 * plane_normals[i].values[0]),
-                                           centroid[1] + (0.5 * plane_normals[i].values[1]),
-                                           centroid[2] + (0.5 * plane_normals[i].values[2]));
+        pcl::PointXYZ pt2 = pcl::PointXYZ (centroid[0] + (0.5f * plane_normals[i].values[0]),
+                                           centroid[1] + (0.5f * plane_normals[i].values[1]),
+                                           centroid[2] + (0.5f * plane_normals[i].values[2]));
         char normal_name[500];
-        sprintf (normal_name, "normal_%d", (unsigned)i);
+        sprintf (normal_name, "normal_%d", unsigned (i));
         viewer->addArrow (pt2, pt1, 1.0, 0, 0, normal_name);
       }
 

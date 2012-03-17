@@ -144,7 +144,7 @@ main (int argc, char ** argv)
   {
     threshold = 0.001;
   }
-  convolution.setDistanceThreshold ((float)threshold);  
+  convolution.setDistanceThreshold (static_cast<float> (threshold));  
 
   // all set
   // we have file name and convolving direction

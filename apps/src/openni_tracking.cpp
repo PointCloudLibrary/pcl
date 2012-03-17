@@ -483,7 +483,7 @@ public:
       PointType point = cloud->points[segmented_indices.indices[i]];
       result.points.push_back (point);
     }
-    result.width = result.points.size ();
+    result.width = uint32_t (result.points.size ());
     result.height = 1;
     result.is_dense = true;
   }
@@ -551,12 +551,12 @@ public:
           for (size_t i = 1; i < cluster_indices.size (); i++)
           {
             temp_cloud.reset (new Cloud);
-            extractSegmentCluster (target_cloud, cluster_indices, i, *temp_cloud);
+            extractSegmentCluster (target_cloud, cluster_indices, int (i), *temp_cloud);
             pcl::compute3DCentroid<RefPointType> (*temp_cloud, c);
             double distance = c[0] * c[0] + c[1] * c[1];
             if (distance < segment_distance)
             {
-              segment_index = i;
+              segment_index = int (i);
               segment_distance = distance;
             }
           }

@@ -73,7 +73,7 @@ class OpenNIOrganizedMultiPlaneSegmentation
       viewer->setBackgroundColor (0, 0, 0);
       pcl::visualization::PointCloudColorHandlerCustom<PointT> single_color (cloud, 0, 255, 0);
       viewer->addPointCloud<PointT> (cloud, single_color, "cloud");
-      viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "cloud");
+      viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "cloud");
       viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.15, "cloud");
       viewer->addCoordinateSystem (1.0);
       viewer->initCameraParameters ();
@@ -97,10 +97,10 @@ class OpenNIOrganizedMultiPlaneSegmentation
       char name[1024];
       for (size_t i = 0; i < prev_models_size; i++)
       {
-        sprintf (name, "normal_%d", (unsigned)i);
+        sprintf (name, "normal_%zu", i);
         viewer->removeShape (name);
 
-        sprintf (name, "plane_%02d", (int)i);
+        sprintf (name, "plane_%02zu", i);
         viewer->removePointCloud (name);
       }
     }
@@ -124,9 +124,9 @@ class OpenNIOrganizedMultiPlaneSegmentation
       unsigned char blu [6] = {  0,   0, 255,   0, 255, 255};
 
       pcl::IntegralImageNormalEstimation<PointT, pcl::Normal> ne;
-      ne.setNormalEstimationMethod (ne.SIMPLE_3D_GRADIENT);
-      ne.setMaxDepthChangeFactor (0.02f);
-      ne.setNormalSmoothingSize (10.0f);
+      ne.setNormalEstimationMethod (ne.COVARIANCE_MATRIX);
+      ne.setMaxDepthChangeFactor (0.03f);
+      ne.setNormalSmoothingSize (20.0f);
 
       pcl::OrganizedMultiPlaneSegmentation<PointT, pcl::Normal, pcl::Label> mps;
       mps.setMinInliers (10000);
@@ -172,16 +172,17 @@ class OpenNIOrganizedMultiPlaneSegmentation
             Eigen::Vector3f centroid = regions[i].getCentroid ();
             Eigen::Vector4f model = regions[i].getCoefficients ();
             pcl::PointXYZ pt1 = pcl::PointXYZ (centroid[0], centroid[1], centroid[2]);
-            pcl::PointXYZ pt2 = pcl::PointXYZ (centroid[0] + (0.5 * model[0]),
-                                               centroid[1] + (0.5 * model[1]),
-                                               centroid[2] + (0.5 * model[2]));
-            sprintf (name, "normal_%d", (unsigned)i);
+            pcl::PointXYZ pt2 = pcl::PointXYZ (centroid[0] + (0.5f * model[0]),
+                                               centroid[1] + (0.5f * model[1]),
+                                               centroid[2] + (0.5f * model[2]));
+            sprintf (name, "normal_%zu", i);
             viewer->addArrow (pt2, pt1, 1.0, 0, 0, name);
 
             contour->points = regions[i].getContour ();
-            sprintf (name, "plane_%02d", (int)i);
+            sprintf (name, "plane_%02zu", i);
             pcl::visualization::PointCloudColorHandlerCustom <PointT> color (contour, red[i], grn[i], blu[i]);
             viewer->addPointCloud (contour, color, name);
+            viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 4, name);
           }
           prev_models_size = regions.size ();
           cloud_mutex.unlock ();

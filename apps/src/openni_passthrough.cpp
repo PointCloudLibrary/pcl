@@ -45,15 +45,21 @@
 #include <pcl/console/parse.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-OpenNIPassthrough::OpenNIPassthrough (pcl::OpenNIGrabber& grabber) : grabber_(grabber), cloud_pass_()
+OpenNIPassthrough::OpenNIPassthrough (pcl::OpenNIGrabber& grabber) 
+  : vis_ ()
+  , grabber_(grabber)
+  , device_id_ ()
+  , cloud_pass_()
+  , pass_ ()
+  , mtx_ ()
+  , ui_ (new Ui::MainWindow)
+  , vis_timer_ (new QTimer (this))
 {
   // Create a timer and fire it up every 5ms
-  vis_timer_ = new QTimer (this);
   vis_timer_->start (5);
 
   connect (vis_timer_, SIGNAL (timeout ()), this, SLOT (timeoutSlot ()));
 
-  ui_ = new Ui::MainWindow;
   ui_->setupUi (this);
 
   this->setWindowTitle ("PCL OpenNI PassThrough Viewer");

@@ -109,14 +109,14 @@ class PCDOrganizedMultiPlaneSegmentation
         Eigen::Vector3f centroid = regions[i].getCentroid ();
         Eigen::Vector4f model = regions[i].getCoefficients ();
         pcl::PointXYZ pt1 = pcl::PointXYZ (centroid[0], centroid[1], centroid[2]);
-        pcl::PointXYZ pt2 = pcl::PointXYZ (centroid[0] + (0.5 * model[0]),
-                                           centroid[1] + (0.5 * model[1]),
-                                           centroid[2] + (0.5 * model[2]));
-        sprintf (name, "normal_%d", (unsigned)i);
+        pcl::PointXYZ pt2 = pcl::PointXYZ (centroid[0] + (0.5f * model[0]),
+                                           centroid[1] + (0.5f * model[1]),
+                                           centroid[2] + (0.5f * model[2]));
+        sprintf (name, "normal_%d", unsigned (i));
         viewer.addArrow (pt2, pt1, 1.0, 0, 0, name);
 
         contour->points = regions[i].getContour ();
-        sprintf (name, "plane_%02d", (int)i);
+        sprintf (name, "plane_%02d", int (i));
         pcl::visualization::PointCloudColorHandlerCustom <PointT> color (contour, red[i], grn[i], blu[i]);
         viewer.addPointCloud (contour, color, name);
       }

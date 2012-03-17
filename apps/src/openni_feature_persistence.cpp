@@ -68,11 +68,11 @@ do \
     } \
 }while(false)
 
-const double default_subsampling_leaf_size = 0.02;
-const double default_normal_search_radius = 0.041;
+const float default_subsampling_leaf_size = 0.02f;
+const float default_normal_search_radius = 0.041f;
 const double aux [] = {0.21, 0.32};
 const std::vector<double> default_scales_vector (aux, aux + 2);
-const double default_alpha = 1.2;
+const float default_alpha = 1.2f;
 
 template <typename PointType>
 class OpenNIFeaturePersistence
@@ -85,7 +85,7 @@ class OpenNIFeaturePersistence
     OpenNIFeaturePersistence (float &subsampling_leaf_size,
                               double &normal_search_radius,
                               std::vector<float> &scales_vector,
-                              double &alpha,
+                              float &alpha,
                               const std::string& device_id = "")
       : viewer ("PCL OpenNI Feature Persistence Viewer")
     , device_id_(device_id)
@@ -272,9 +272,9 @@ main (int argc, char **argv)
   std::vector<double> scales_vector_double = default_scales_vector;
   pcl::console::parse_multiple_arguments (argc, argv, "-scales", scales_vector_double);
   std::vector<float> scales_vector (scales_vector_double.size ());
-  for (size_t i = 0; i < scales_vector_double.size (); ++i) scales_vector[i] = scales_vector_double[i];
+  for (size_t i = 0; i < scales_vector_double.size (); ++i) scales_vector[i] = float (scales_vector_double[i]);
 
-  double alpha = default_alpha;
+  float alpha = default_alpha;
   pcl::console::parse_argument (argc, argv, "-persistence_alpha", alpha);
 
 

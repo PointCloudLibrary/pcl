@@ -9,8 +9,8 @@ using namespace pcl;
 #include <iostream>
 using namespace std;
 
-const Eigen::Vector4f subsampling_leaf_size (0.02, 0.02, 0.02, 0.0);
-const float normal_estimation_search_radius = 0.05;
+const Eigen::Vector4f subsampling_leaf_size (0.02f, 0.02f, 0.02f, 0.0f);
+const float normal_estimation_search_radius = 0.05f;
 
 //const Eigen::Vector4f subsampling_leaf_size (5, 5, 5, 0.0);
 //const float normal_estimation_search_radius = 11;
@@ -83,9 +83,9 @@ main (int argc, char **argv)
 
   PCL_INFO ("Finished calculating the features ...\n");
   vector<pair<float, float> > dim_range_input, dim_range_target;
-  for (size_t i = 0; i < 3; ++i) dim_range_input.push_back (pair<float, float> ((float) -M_PI, (float) M_PI));
+  for (size_t i = 0; i < 3; ++i) dim_range_input.push_back (pair<float, float> (float (-M_PI), float (M_PI)));
   dim_range_input.push_back (pair<float, float> (0.0f, 1.0f));
-  for (size_t i = 0; i < 3; ++i) dim_range_target.push_back (pair<float, float> ((float) -M_PI * 10.0f, (float) M_PI * 10.0f));
+  for (size_t i = 0; i < 3; ++i) dim_range_target.push_back (pair<float, float> (float (-M_PI) * 10.0f, float (M_PI) * 10.0f));
   dim_range_target.push_back (pair<float, float> (0.0f, 50.0f));
 
 
