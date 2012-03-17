@@ -36,7 +36,7 @@
 
 #include <pcl/visualization/range_image_visualizer.h>
 
-pcl::visualization::RangeImageVisualizer::RangeImageVisualizer (const std::string& name) : ImageViewer (name)
+pcl::visualization::RangeImageVisualizer::RangeImageVisualizer (const std::string& name) : ImageViewer (name), name_ ()
 {
 }
 
@@ -144,7 +144,7 @@ pcl::visualization::RangeImageVisualizer::getInterestPointsWidget (
     const pcl::InterestPoint& interest_point = interest_points.points[i];
     float image_x, image_y;
     range_image.getImagePoint (interest_point.x, interest_point.y, interest_point.z, image_x, image_y);
-    widget->markPoint (image_x, image_y, green_color, red_color);
+    widget->markPoint (static_cast<size_t> (image_x), static_cast<size_t> (image_y), green_color, red_color);
     //cout << "Marking point "<<image_x<<","<<image_y<<"\n";
   }
   return widget;

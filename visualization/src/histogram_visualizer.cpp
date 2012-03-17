@@ -47,8 +47,12 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLHistogramVisualizer::PCLHistogramVisualizer () : 
+  wins_ (),
   exit_main_loop_timer_callback_ (vtkSmartPointer<ExitMainLoopTimerCallback>::New ()), 
   exit_callback_ (vtkSmartPointer<ExitCallback>::New ())
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+  , stopped_ ()
+#endif
 {
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
   resetStoppedFlag ();
@@ -299,7 +303,7 @@ pcl::visualization::PCLHistogramVisualizer::createActor (
 
   renwinint.xy_plot_->SetYTitle (""); renwinint.xy_plot_->SetXTitle ("");
   renwinint.xy_plot_->SetYRange (min_max[0], min_max[1]); 
-  renwinint.xy_plot_->SetXRange (0, double (xy_array->GetNumberOfTuples () - 1));
+  renwinint.xy_plot_->SetXRange (0, static_cast<double> (xy_array->GetNumberOfTuples () - 1));
 
   //renwinint.xy_plot_->SetTitle (id.c_str ());
   renwinint.xy_plot_->GetProperty ()->SetColor (0, 0, 0);
@@ -407,7 +411,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
     const int index,
     const std::string &id, int win_width, int win_height)
 {
-  if (index < 0 || index >= int(cloud.width * cloud.height))
+  if (index < 0 || index >= static_cast<int> (cloud.width * cloud.height))
   {
     PCL_ERROR ("[addFeatureHistogram] Invalid point index (%d) given!\n", index);
     return (false);
@@ -506,7 +510,7 @@ pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
     const int index,
     const std::string &id)
 {
-  if (index < 0 || index >= int(cloud.width * cloud.height))
+  if (index < 0 || index >= static_cast<int> (cloud.width * cloud.height))
   {
     PCL_ERROR ("[updateFeatureHistogram] Invalid point index (%d) given!\n", index);
     return (false);
