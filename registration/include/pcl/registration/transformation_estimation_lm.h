@@ -229,7 +229,7 @@ namespace pcl
           int
           values () const { return (m_data_points_); }
 
-          private:
+          protected:
             int m_data_points_;
         };
 
@@ -247,13 +247,22 @@ namespace pcl
           /** Copy constructor
             * \param[in] the optimization functor to copy into this
             */
-          OptimizationFunctor (const OptimizationFunctor &src) : 
-            Functor<double> (), estimator_ (src.estimator_) {}
+          inline OptimizationFunctor (const OptimizationFunctor &src) : 
+            Functor<double> (src.m_data_points_), estimator_ ()
+          {
+            *this = src;
+          }
 
           /** Copy operator
             * \param[in] the optimization functor to copy into this
             */
-          OptimizationFunctor& operator = (const OptimizationFunctor &src) { estimator_ = src.estimator; return (*this); }
+          inline OptimizationFunctor& 
+          operator = (const OptimizationFunctor &src) 
+          { 
+            Functor<double>::operator=(src);
+            estimator_ = src.estimator_; 
+            return (*this); 
+          }
 
           /** \brief Destructor. */
           virtual ~OptimizationFunctor () {}
@@ -282,13 +291,22 @@ namespace pcl
           /** Copy constructor
             * \param[in] the optimization functor to copy into this
             */
-          OptimizationFunctorWithIndices (const OptimizationFunctorWithIndices &src) : 
-            Functor<double> (), estimator_ (src.estimator_) {}
+          inline OptimizationFunctorWithIndices (const OptimizationFunctorWithIndices &src) : 
+            Functor<double> (src.m_data_points_), estimator_ ()
+          {
+            *this = src;
+          }
 
           /** Copy operator
             * \param[in] the optimization functor to copy into this
             */
-          OptimizationFunctorWithIndices& operator = (const OptimizationFunctorWithIndices &src) { estimator_ = src.estimator; return (*this); }
+          inline OptimizationFunctorWithIndices& 
+          operator = (const OptimizationFunctorWithIndices &src) 
+          { 
+            Functor<double>::operator=(src);
+            estimator_ = src.estimator_; 
+            return (*this); 
+          }
 
           /** \brief Destructor. */
           virtual ~OptimizationFunctorWithIndices () {}

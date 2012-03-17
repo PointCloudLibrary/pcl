@@ -158,12 +158,12 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::ho
 
   if (!model_scene_corrs_)
   {
-    PCL_ERROR(
+    PCL_ERROR (
       "[pcl::Hough3DGrouping::recognizeModelInstances()] Error! Correspondences not set, please set them before calling again this function.\n");
     return (false);
   }
 
-  int n_matches = model_scene_corrs_->size ();
+  int n_matches = static_cast<int> (model_scene_corrs_->size ());
   if (n_matches == 0)
   {
     return (true);
@@ -299,8 +299,9 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::ge
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointModelT, typename PointSceneT, typename PointModelRfT, typename PointSceneRfT> bool
-pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::recognize (std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > &transformations)
+template <typename PointModelT, typename PointSceneT, typename PointModelRfT, typename PointSceneRfT> bool
+pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::recognize (
+    std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > &transformations)
 {
   transformations.clear ();
   if (!this->initCompute ())
@@ -314,7 +315,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::re
   clusterCorrespondences (model_instances);
 
   //temp copy of scene cloud with the type cast to ModelT in order to use Ransac
-  PointCloudPtr temp_scene_cloud_ptr (new PointCloud<PointModelT> ());
+  PointCloudPtr temp_scene_cloud_ptr (new PointCloud);
   pcl::copyPointCloud<PointSceneT, PointModelT> (*scene_, *temp_scene_cloud_ptr);
 
   for (size_t i = 0; i < model_instances.size (); ++i)

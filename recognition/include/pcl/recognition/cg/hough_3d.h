@@ -127,7 +127,7 @@ namespace pcl
         /** \brief List of voters for each bin. */
         boost::unordered_map<int, std::vector<int> > voter_ids_;
     };
-  };
+  }
 
   /** \brief Class implementing a 3D correspondence grouping algorithm that can deal with multiple instances of a model template
     * found into a given scene. Each correspondence casts a vote for a reference point in a 3D Hough Space.
@@ -153,18 +153,26 @@ namespace pcl
       typedef pcl::PointCloud<PointSceneRfT> SceneRfCloud;
       typedef typename SceneRfCloud::Ptr SceneRfCloudPtr;
       typedef typename SceneRfCloud::ConstPtr SceneRfCloudConstPtr;
-      typedef typename pcl::PCLBase<PointModelT>::PointCloudConstPtr PointCloudConstPtr;
-      typedef typename pcl::PCLBase<PointModelT>::PointCloudPtr PointCloudPtr;
+
+      typedef pcl::PointCloud<PointModelT> PointCloud;
+      typedef typename PointCloud::Ptr PointCloudPtr;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+
       typedef typename pcl::CorrespondenceGrouping<PointModelT, PointSceneT>::SceneCloudConstPtr SceneCloudConstPtr;
 
       /** \brief Constructor */
-      Hough3DGrouping() : needs_training_ (true),
-                           hough_threshold_ (-1),
-                           hough_bin_size_ (1.0),
-                           use_interpolation_ (true),
-                           use_distance_weight_ (false),
-                           local_rf_search_radius_ (0.0),              
-                           hough_space_initialized_ (false)
+      Hough3DGrouping () 
+        : input_rf_ ()
+        , scene_rf_ ()
+        , needs_training_ (true)
+        , model_votes_ ()
+        , hough_threshold_ (-1)
+        , hough_bin_size_ (1.0)
+        , use_interpolation_ (true)
+        , use_distance_weight_ (false)
+        , local_rf_search_radius_ (0.0f)
+        , hough_space_ ()
+        , hough_space_initialized_ (false)
       {}
 
       /** \brief Provide a pointer to the input dataset.

@@ -34,25 +34,34 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef PCL_RECOGNITION_OCCLUSION_REASONING_HPP_
+#define PCL_RECOGNITION_OCCLUSION_REASONING_HPP_
+
 #include <pcl/recognition/hv/occlusion_reasoning.h>
 #include <pcl/common/transforms.h>
 #include <pcl/common/io.h>
 
+///////////////////////////////////////////////////////////////////////////////////////////
 template<typename ModelT, typename SceneT>
 pcl::ZBuffering<ModelT, SceneT>::ZBuffering (int resx, int resy, float f)
+  : f_ (f)
+  , cx_ (resx)
+  , cy_ (resy)
+  , depth_ (NULL)
 {
-  cx_ = resx;
-  cy_ = resy;
-  f_ = f;
-  depth_ = NULL;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
 template<typename ModelT, typename SceneT>
 pcl::ZBuffering<ModelT, SceneT>::ZBuffering ()
+  : f_ ()
+  , cx_ ()
+  , cy_ ()
+  , depth_ (NULL)
 {
-  depth_ = NULL;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
 template<typename ModelT, typename SceneT>
 pcl::ZBuffering<ModelT, SceneT>::~ZBuffering ()
 {
@@ -60,8 +69,8 @@ pcl::ZBuffering<ModelT, SceneT>::~ZBuffering ()
     delete[] depth_;
 }
 
-template<typename ModelT, typename SceneT>
-void
+///////////////////////////////////////////////////////////////////////////////////////////
+template<typename ModelT, typename SceneT> void
 pcl::ZBuffering<ModelT, SceneT>::filter (typename pcl::PointCloud<ModelT>::Ptr & model, typename pcl::PointCloud<ModelT>::Ptr & filtered,
                                          float thres)
 {
@@ -96,8 +105,8 @@ pcl::ZBuffering<ModelT, SceneT>::filter (typename pcl::PointCloud<ModelT>::Ptr &
   pcl::copyPointCloud (*model, indices_to_keep, *filtered);
 }
 
-template<typename ModelT, typename SceneT>
-void
+///////////////////////////////////////////////////////////////////////////////////////////
+template<typename ModelT, typename SceneT> void
 pcl::ZBuffering<ModelT, SceneT>::computeDepthMap (typename pcl::PointCloud<SceneT>::Ptr & scene, bool compute_focal)
 {
   //compute the focal length
@@ -191,4 +200,6 @@ namespace pcl
     }
   }
 }
+
+#endif    // PCL_RECOGNITION_OCCLUSION_REASONING_HPP_
 

@@ -243,12 +243,13 @@ boost::shared_ptr<OpenNIDevice> OpenNIDriver::createVirtualDevice (const string&
   return boost::shared_ptr<OpenNIDevice> (new DeviceONI (context_, path, repeat, stream));
 }
 
-boost::shared_ptr<OpenNIDevice> OpenNIDriver::getDeviceByIndex (unsigned index) const
+boost::shared_ptr<OpenNIDevice> 
+OpenNIDriver::getDeviceByIndex (unsigned index) const
 {
   using namespace std;
 
   if (index >= device_context_.size ())
-    THROW_OPENNI_EXCEPTION ("device index out of range. only %d devices connected but device %d requested.", device_context_.size (), index);
+    THROW_OPENNI_EXCEPTION ("Device index out of range. Only %d devices connected but device %d requested.", device_context_.size (), index);
   boost::shared_ptr<OpenNIDevice> device = device_context_[index].device.lock ();
   if (!device)
   {
@@ -258,25 +259,31 @@ boost::shared_ptr<OpenNIDevice> OpenNIDriver::getDeviceByIndex (unsigned index) 
 
     if (vendor_id == 0x45e)
     {
-      device = boost::shared_ptr<OpenNIDevice > (new DeviceKinect (context_, device_context_[index].device_node,
-                                                                   *device_context_[index].image_node, *device_context_[index].depth_node,
-                                                                   *device_context_[index].ir_node));
+      device.reset (new DeviceKinect (context_, 
+                                      device_context_[index].device_node,
+                                      *device_context_[index].image_node, 
+                                      *device_context_[index].depth_node,
+                                      *device_context_[index].ir_node));
       device_context_[index].device = device;
     }
     else if (vendor_id == 0x1d27)
     {
       if (device_context_[index].image_node.get())
-        device = boost::shared_ptr<OpenNIDevice > (new DevicePrimesense (context_, device_context_[index].device_node,
-                                                                         *device_context_[index].image_node, *device_context_[index].depth_node,
-                                                                         *device_context_[index].ir_node));
+        device.reset (new DevicePrimesense (context_, 
+                                            device_context_[index].device_node, 
+                                            *device_context_[index].image_node, 
+                                            *device_context_[index].depth_node,
+                                            *device_context_[index].ir_node));
       else
-        device = boost::shared_ptr<OpenNIDevice > (new DeviceXtionPro (context_, device_context_[index].device_node,
-                                                                       *device_context_[index].depth_node, *device_context_[index].ir_node));
+        device.reset (new DeviceXtionPro (context_, 
+                                          device_context_[index].device_node, 
+                                          *device_context_[index].depth_node, 
+                                          *device_context_[index].ir_node));
       device_context_[index].device = device;
     }
     else
     {
-      THROW_OPENNI_EXCEPTION ("vendor %s (%s) known by primesense driver, but not by ros driver. Contact maintainer of the ros driver.",
+      THROW_OPENNI_EXCEPTION ("Vendor %s (%s) unknown!",
                               getVendorName (index), vendor_id);
     }
   }

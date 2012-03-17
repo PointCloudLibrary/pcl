@@ -89,6 +89,10 @@ namespace pcl
         AbstractConvolution ()
           : borders_policy_ (IGNORE)
           , distance_threshold_ (std::numeric_limits<float>::infinity ())
+          , input_ ()
+          , kernel_ ()
+          , half_width_ ()
+          , kernel_width_ ()
         {}
         /// Empty destructor
         virtual ~AbstractConvolution () {}

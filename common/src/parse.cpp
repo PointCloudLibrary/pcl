@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -177,6 +179,31 @@ pcl::console::parse_file_extension_argument (int argc, char** argv, const std::s
 
 ////////////////////////////////////////////////////////////////////////////////
 int
+pcl::console::parse_2x_arguments (int argc, char** argv, const char* str, float &f, float &s, bool debug)
+{
+  for (int i = 1; i < argc; ++i)
+  {
+    // Search for the string
+    if ((strcmp (argv[i], str) == 0) && (++i < argc))
+    {
+      // look for ',' as a separator
+      std::vector<std::string> values;
+      boost::split (values, argv[i], boost::is_any_of (","), boost::token_compress_on);
+      if (values.size () != 2 && debug)
+      {
+        print_error ("[parse_2x_arguments] Number of values for %s (%zu) different than 2!\n", str, values.size ());
+        return (-2);
+      }
+      f = static_cast<float> (atof (values.at (0).c_str ()));
+      s = static_cast<float> (atof (values.at (1).c_str ()));
+      return (i - 1);
+    }
+  }
+  return (-1);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+int
 pcl::console::parse_2x_arguments (int argc, char** argv, const char* str, double &f, double &s, bool debug)
 {
   for (int i = 1; i < argc; ++i)
@@ -328,6 +355,29 @@ pcl::console::parse_x_arguments (int argc, char** argv, const char* str, std::ve
 
 ////////////////////////////////////////////////////////////////////////////////
 int
+pcl::console::parse_x_arguments (int argc, char** argv, const char* str, std::vector<float>& v)
+{
+  for (int i = 1; i < argc; ++i)
+  {
+    // Search for the string
+    if ((strcmp (argv[i], str) == 0) && (++i < argc))
+    {
+      // look for ',' as a separator
+      std::vector<std::string> values;
+      boost::split (values, argv[i], boost::is_any_of (","), boost::token_compress_on);
+
+      v.resize (values.size ());
+      for (size_t j = 0; j < v.size (); ++j)
+        v[j] = static_cast<float> (atof (values.at (j).c_str ()));
+
+      return (i - 1);
+    }
+  }
+  return (-1);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+int
 pcl::console::parse_x_arguments (int argc, char** argv, const char* str, std::vector<int>& v)
 {
   for (int i = 1; i < argc; ++i)
@@ -378,6 +428,25 @@ pcl::console::parse_multiple_arguments (int argc, char** argv, const char* str, 
     if ((strcmp (argv[i], str) == 0) && (++i < argc))
     {
       double val = atof (argv[i]);
+      values.push_back (val);
+    }
+  }
+  if (values.size () == 0)
+    return (false);
+  else
+    return (true);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::console::parse_multiple_arguments (int argc, char** argv, const char* str, std::vector<float> &values)
+{
+  for (int i = 1; i < argc; ++i)
+  {
+    // Search for the string
+    if ((strcmp (argv[i], str) == 0) && (++i < argc))
+    {
+      float val = static_cast<float> (atof (argv[i]));
       values.push_back (val);
     }
   }
