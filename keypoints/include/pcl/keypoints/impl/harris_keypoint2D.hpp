@@ -49,9 +49,9 @@
 #include <pcl/common/time.h>
 #include <pcl/common/centroid.h>
 
-#ifdef __SSE__
-#include <xmmintrin.h>
-#endif
+// #ifdef __SSE__
+// #include <xmmintrin.h>
+// #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
@@ -106,6 +106,9 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT>::setSkippedPixels (int skipped_pixels
 template <typename PointInT, typename PointOutT> void
 pcl::HarrisKeypoint2D<PointInT, PointOutT>::calculateIntensityCovar (std::size_t index, float* coefficients) const
 {
+  static const int width = static_cast<int> (input_->width);
+  static const int height = static_cast<int> (input_->height);
+  
   int x = static_cast<int> (index % input_->width);
   int y = static_cast<int> (index / input_->width);
   unsigned count = 0;
@@ -113,8 +116,8 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT>::calculateIntensityCovar (std::size_t
   // coefficients: ixix  ixiy  iyiy
   memset (coefficients, 0, sizeof (float) * 3);
 
-  int endx = std::min ((int)input_->width, x + half_window_width_);
-  int endy = std::min ((int)input_->height, y + half_window_height_);
+  int endx = std::min (width, x + half_window_width_);
+  int endy = std::min (height, y + half_window_height_);
   for (int xx = std::max (0, x - half_window_width_); xx < endx; ++xx)
     for (int yy = std::max (0, y - half_window_height_); yy < endy; ++yy)
     {
@@ -236,13 +239,6 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &outp
   derivatives_rows_(w,h) = (intensity_ ((*input_) (w,h)) - intensity_ ((*input_) (w-1,h))) * 0.5;
   derivatives_cols_(w,h) = (intensity_ ((*input_) (w,h)) - intensity_ ((*input_) (w,h-1))) * 0.5;
 
-  // std::ofstream out_cols ("derivatives_cols.dat");
-  // out_cols << derivatives_cols_;
-  // out_cols.close ();
-  
-  // std::ofstream out_rows ("derivatives_rows.dat");
-  // out_rows << derivatives_rows_;
-  // out_rows.close ();
   float highest_response_;
   
   switch (method_)
@@ -355,9 +351,9 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT>::responseNoble (PointCloudOut &output
   PCL_ALIGN (16) float covar [3];
   output.resize (input_->size ());
 
-// #ifdef HAVE_OPENMP
-// #pragma omp parallel for shared (output, highest_response) private (covar) num_threads(threads_)
-// #endif
+#ifdef HAVE_OPENMP
+#pragma omp parallel for shared (output, highest_response) private (covar) num_threads(threads_)
+#endif
 
   for (size_t index = 0; index < output.size (); ++index)
   {
@@ -392,9 +388,9 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT>::responseLowe (PointCloudOut &output,
   PCL_ALIGN (16) float covar [3];
   output.resize (input_->size ());
 
-// #ifdef HAVE_OPENMP
-// #pragma omp parallel for shared (output, highest_response) private (covar) num_threads(threads_)
-// #endif
+#ifdef HAVE_OPENMP
+#pragma omp parallel for shared (output, highest_response) private (covar) num_threads(threads_)
+#endif
   for (size_t index = 0; index < output.size (); ++index)      
   {
     PointOutT &out_point = output.points [index];
@@ -428,9 +424,9 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT>::responseTomasi (PointCloudOut &outpu
   PCL_ALIGN (16) float covar [3];
   output.resize (input_->size ());
 
-// #ifdef HAVE_OPENMP
-// #pragma omp parallel for shared (output, highest_response) private (covar) num_threads(threads_)
-// #endif
+#ifdef HAVE_OPENMP
+#pragma omp parallel for shared (output, highest_response) private (covar) num_threads(threads_)
+#endif
   for (size_t index = 0; index < output.size (); ++index)
   {
     PointOutT &out_point = output.points [index];
