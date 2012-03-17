@@ -38,13 +38,7 @@
 #define PCL_PCL_VISUALIZER_COMMON_IO_H_
 
 #include <pcl/visualization/common/actor_map.h>
-
-#include <vtkSmartPointer.h>
-#include <vtkAppendPolyData.h>
-#include <vtkPolyData.h>
-#include <vtkPolyDataWriter.h>
-#include <vtkCleanPolyData.h>
-
+#include <pcl/visualization/vtk.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/console/print.h>
 

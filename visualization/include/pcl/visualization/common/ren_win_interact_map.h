@@ -37,16 +37,7 @@
 #ifndef PCL_PCL_VISUALIZER_REN_WIN_INTERACT_MAP_H_
 #define PCL_PCL_VISUALIZER_REN_WIN_INTERACT_MAP_H_
 
-#include <vtkSmartPointer.h>
-#include <vtkXYPlotActor.h>
-#include <vtkRenderer.h>
-#include <vtkRenderWindow.h>
-#include <vtkInteractorStyleTrackballCamera.h>
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-#include "pcl/visualization/interactor.h"
-#else
-#include <vtkRenderWindowInteractor.h>
-#endif
+#include <pcl/visualization/vtk.h>
 #include <map>
 
 namespace pcl
@@ -59,7 +50,9 @@ namespace pcl
 
         RenWinInteract () : xy_plot_ (vtkSmartPointer<vtkXYPlotActor>::New ()), 
                             ren_ (vtkSmartPointer<vtkRenderer>::New ()), 
-                            win_ (vtkSmartPointer<vtkRenderWindow>::New ())
+                            win_ (vtkSmartPointer<vtkRenderWindow>::New ()),
+                            interactor_ (),
+                            style_ ()
         {}
 
         /** \brief The XY plot actor holding the actual data. */

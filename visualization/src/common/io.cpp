@@ -53,7 +53,9 @@ pcl::visualization::getCorrespondingPointCloud (vtkPolyData *src,
   {
     double p[3];
     src->GetPoint (i, p);
-    cloud.points[i].x = float (p[0]); cloud.points[i].y = float (p[1]); cloud.points[i].z = float (p[2]);
+    cloud.points[i].x = static_cast<float> (p[0]); 
+    cloud.points[i].y = static_cast<float> (p[1]); 
+    cloud.points[i].z = static_cast<float> (p[2]);
   }
 
   // Compute a kd-tree for tgt
@@ -91,7 +93,7 @@ pcl::visualization::savePointData (vtkPolyData* data, const std::string &out_fil
   // If we pruned any points, print the number of points pruned to screen
   if (cleaner->GetOutput ()->GetNumberOfPoints () != data->GetNumberOfPoints ())
   {
-    int nr_pts_pruned = int (data->GetNumberOfPoints () - cleaner->GetOutput ()->GetNumberOfPoints ());
+    int nr_pts_pruned = static_cast<int> (data->GetNumberOfPoints () - cleaner->GetOutput ()->GetNumberOfPoints ());
     pcl::console::print_highlight ("Number of points pruned: "); pcl::console::print_value ("%d\n", nr_pts_pruned);
   }
 

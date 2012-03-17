@@ -110,7 +110,7 @@ pcl::visualization::PointPickingCallback::performSinglePick (
   {
     double p[3];
     picker->GetDataSet ()->GetPoint (idx, p);
-    x = float(p[0]); y = float(p[1]); z = float(p[2]);
+    x = float (p[0]); y = float (p[1]); z = float (p[2]);
   }
   return (idx);
 }

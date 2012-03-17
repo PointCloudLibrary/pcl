@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: registration_visualizer.h 2011-07-23 01:06:01Z georgeLisca $
+ * $Id$
  *
  */
 
@@ -57,13 +57,25 @@ namespace pcl
    * \ingroup visualization
    */
   template<typename PointSource, typename PointTarget>
-    class RegistrationVisualizer
-    {
+  class RegistrationVisualizer
+  {
 
     public:
       /** \brief Empty constructor. */
-      RegistrationVisualizer () : maximum_displayed_correspondences_ (0)
-      {  }
+      RegistrationVisualizer () : 
+        viewer_ (),
+        viewer_thread_ (),
+        registration_method_name_ (),
+        update_visualizer_ (),
+        first_update_flag_ (),
+        cloud_source_ (),
+        cloud_target_ (),
+        visualizer_updating_mutex_ (),
+        cloud_intermediate_ (),
+        cloud_intermediate_indices_ (),
+        cloud_target_indices_ (),
+        maximum_displayed_correspondences_ (0)
+      {}
 
       /** \brief Set the registration algorithm whose intermediate steps will be rendered.
        * The method creates the local callback function pcl::RegistrationVisualizer::update_visualizer_ and

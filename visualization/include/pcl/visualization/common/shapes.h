@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2009-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,23 +39,10 @@
 #ifndef PCL_PCL_VISUALIZER_SHAPES_H_
 #define PCL_PCL_VISUALIZER_SHAPES_H_
 
-#include <pcl/point_cloud.h>
-#include <pcl/ModelCoefficients.h>
-#include <vtkSmartPointer.h>
-#include <vtkDataSet.h>
-#include <vtkPolyData.h>
-#include <vtkPolygon.h>
-#include <vtkUnstructuredGrid.h>
-#include <vtkConeSource.h>
-#include <vtkDiskSource.h>
-#include <vtkPlaneSource.h>
-#include <vtkSphereSource.h>
-#include <vtkTransform.h>
-#include <vtkTransformPolyDataFilter.h>
-#include <vtkLineSource.h>
-#include <vtkTubeFilter.h>
-#include <vtkCubeSource.h>
 #include <Eigen/Geometry>
+#include <pcl/ModelCoefficients.h>
+#include <pcl/point_cloud.h>
+#include <pcl/visualization/vtk.h>
 
 /**
   * \file pcl/visualization/common/shapes.h
