@@ -299,7 +299,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
   
   // remove also Nans
   #pragma omp parallel for
-  for (size_t pIdx = 0; pIdx < point_cloud->size (); ++pIdx)
+  for (int pIdx = 0; pIdx < int (point_cloud->size ()); ++pIdx)
   {
     if (!isFinite (point_cloud->points [pIdx]))
       nan_mask [pIdx] = false;
@@ -310,7 +310,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
     input_indices_.reset (new vector<int> (input_indices));
   
   #pragma omp parallel for
-  for (size_t sIdx = 0; sIdx < search_methods.size (); ++sIdx)
+  for (int sIdx = 0; sIdx < int (search_methods.size ()); ++sIdx)
     search_methods [sIdx]->setInputCloud (point_cloud, input_indices_);
 
   // test knn values from 1, 8, 64, 512
@@ -320,7 +320,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
     for (vector<int>::const_iterator qIt = query_indices.begin (); qIt != query_indices.end (); ++qIt)
     {
       #pragma omp parallel for
-      for (size_t sIdx = 0; sIdx < search_methods.size (); ++sIdx)
+      for (int sIdx = 0; sIdx < int (search_methods.size ()); ++sIdx)
       {
         search_methods [sIdx]->nearestKSearch (point_cloud->points[*qIt], knn, indices [sIdx], distances [sIdx]);
         passed [sIdx] = passed [sIdx] && testUniqueness (indices [sIdx], search_methods [sIdx]->getName ());
@@ -330,7 +330,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
       
       // compare results to each other
       #pragma omp parallel for
-      for (size_t sIdx = 1; sIdx < search_methods.size (); ++sIdx)
+      for (int sIdx = 1; sIdx < int (search_methods.size ()); ++sIdx)
       {
         passed [sIdx] = passed [sIdx] && compareResults (indices [0],    distances [0],    search_methods [0]->getName (),
                                                          indices [sIdx], distances [sIdx], search_methods [sIdx]->getName (), 1e-6f);
@@ -369,7 +369,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<sear
   
   // remove also Nans
   #pragma omp parallel for
-  for (size_t pIdx = 0; pIdx < point_cloud->size (); ++pIdx)
+  for (int pIdx = 0; pIdx < int (point_cloud->size ()); ++pIdx)
   {
     if (!isFinite (point_cloud->points [pIdx]))
       nan_mask [pIdx] = false;
@@ -380,7 +380,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<sear
     input_indices_.reset (new vector<int> (input_indices));
   
   #pragma omp parallel for
-  for (size_t sIdx = 0; sIdx < search_methods.size (); ++sIdx)
+  for (int sIdx = 0; sIdx < int (search_methods.size ()); ++sIdx)
     search_methods [sIdx]->setInputCloud (point_cloud, input_indices_);
 
   // test radii 0.01, 0.02, 0.04, 0.08

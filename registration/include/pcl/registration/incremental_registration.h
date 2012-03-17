@@ -117,9 +117,9 @@ namespace pcl
               if ( use_linear_distance_threshold )
               {
                 float dist_start = registration_distance_threshold_;
-                float dist_stop = 1.5f * downsampling_leaf_size_model_;
+                float dist_stop = 1.5f * float (downsampling_leaf_size_model_);
                 if ( n_iter < n_iter_linear )
-                  max_dist = dist_start - n_iter * (dist_start - dist_stop) / static_cast<float> (max_iterations);
+                  max_dist = dist_start - float (n_iter) * (dist_start - dist_stop) / static_cast<float> (max_iterations);
                 else
                   max_dist = dist_stop;
               }
