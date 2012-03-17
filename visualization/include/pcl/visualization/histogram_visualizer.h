@@ -40,19 +40,9 @@
 #define PCL_PCL_HISTOGRAM_VISUALIZER_H_
 
 #include <pcl/visualization/interactor_style.h>
+#include <pcl/visualization/vtk.h>
 #include <pcl/visualization/common/common.h>
 #include <pcl/visualization/common/ren_win_interact_map.h>
-#include <vtkCommand.h>
-#include <vtkXYPlotActor.h>
-#include <vtkTextProperty.h>
-#include <vtkProperty2D.h>
-#include <vtkFieldData.h>
-#include <vtkDoubleArray.h>
-#if ((VTK_MAJOR_VERSION) == 5 && (VTK_MINOR_VERSION <= 4))
-#include <pcl/visualization/interactor.h>
-#else
-#include <vtkRenderWindowInteractor.h>
-#endif
 
 namespace pcl
 {

@@ -109,11 +109,20 @@
 #include <vtkProperty2D.h>
 #include <vtkFieldData.h>
 #include <vtkDoubleArray.h>
+#include <vtkLODActor.h>
 #include <vtkActor.h>
 #include <vtkPolyDataWriter.h>
 #include <vtkTextActor.h>
 #include <vtkCleanPolyData.h>
 #include <vtkRenderer.h>
+#include <vtkObject.h>
+#include <vtkOrientationMarkerWidget.h>
+#include <vtkAxesActor.h>
+#include <vtkImageReslice.h>
+#include <vtkImageChangeInformation.h>
+#include <vtkImageCanvasSource2D.h>
+#include <vtkImageBlend.h>
+#include <vtkImageStencilData.h>
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
 #  include <pcl/visualization/interactor.h>
 #else
