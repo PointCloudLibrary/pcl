@@ -57,8 +57,8 @@ template <typename PointT> void
 pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm (LOAGraph &g, double *weights)
 {
   std::list<int> crossings, branches;
-  crossings.push_back (loop_start_);
-  crossings.push_back (loop_end_);
+  crossings.push_back (static_cast<int> (loop_start_));
+  crossings.push_back (static_cast<int> (loop_end_));
   weights[loop_start_] = 0;
   weights[loop_end_] = 1;
 
@@ -100,7 +100,7 @@ pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm (LOAGraph &g, double *we
       // vertex starts a branch
       if (dist < 0)
       {
-        branches.push_back (*crossings_it);
+        branches.push_back (static_cast<int> (*crossings_it));
         crossings_it = crossings.erase (crossings_it);
       }
       else
@@ -147,7 +147,7 @@ pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm (LOAGraph &g, double *we
     {
       weights[*adjacent_it] = weights[s];
       if (degree (*adjacent_it, g) > 1)
-        branches.push_back (*adjacent_it);
+        branches.push_back (static_cast<int> (*adjacent_it));
     }
     clear_vertex (s, g);
   }
@@ -258,9 +258,9 @@ pcl::registration::ELCH<PointT>::compute ()
   for (size_t i = 0; i < num_vertices (*loop_graph_); i++)
   {
     Eigen::Vector3f t2;
-    t2[0] = loop_transform_ (0, 3) * weights[0][i];
-    t2[1] = loop_transform_ (1, 3) * weights[1][i];
-    t2[2] = loop_transform_ (2, 3) * weights[2][i];
+    t2[0] = loop_transform_ (0, 3) * static_cast<float> (weights[0][i]);
+    t2[1] = loop_transform_ (1, 3) * static_cast<float> (weights[1][i]);
+    t2[2] = loop_transform_ (2, 3) * static_cast<float> (weights[2][i]);
 
     Eigen::Affine3f bl (loop_transform_);
     Eigen::Quaternionf q (bl.rotation ());

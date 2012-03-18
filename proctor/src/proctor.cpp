@@ -46,7 +46,7 @@ namespace pcl
       cout << "[models]" << endl;
 
       timer.start();
-      const int num_model_ids = std::min((int) model_ids_.size(), num_models_);
+      const int num_model_ids = std::min (int (model_ids_.size ()), num_models_);
 //#pragma omp parallel for
       for (int mi = 0; mi < num_model_ids; mi++) {
         std::string model_id = model_ids_[mi];
@@ -75,7 +75,7 @@ namespace pcl
 
       ConfusionMatrix confusion_matrix;
 
-      int num_model_ids = std::min((int) model_ids_.size(), num_models_);
+      int num_model_ids = std::min (int (model_ids_.size ()), num_models_);
       if (num_model_ids == 0)
         assert(false);
 //#pragma omp parallel for
@@ -216,7 +216,7 @@ namespace pcl
     {
       // correct percentage
       printf("[overview]\n");
-      printf("%d of %d correct (%.2f%%)\n", matrix.trace(), matrix.total(), float(matrix.trace()) / matrix.total() * 100);
+      printf("%d of %d correct (%.2f%%)\n", matrix.trace (), matrix.total (), float (matrix.trace () / matrix.total ()) * 100.0f);
 
       cout << endl;
 

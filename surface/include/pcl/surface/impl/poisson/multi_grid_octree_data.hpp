@@ -264,7 +264,7 @@ namespace pcl
 
       int topDepth = int (ceil (newDepth));
 
-      dx = 1.0 - static_cast<Real> (topDepth) - newDepth;
+      dx = 1.0 - (topDepth - newDepth);
       if (topDepth <= minDepth)
       {
         topDepth = minDepth;
@@ -940,7 +940,7 @@ namespace pcl
       }
 
       myRadius = 2 * radius - Real (0.5);
-      myRadius = Real (int (myRadius - ROUND_EPS)) + ROUND_EPS;
+      myRadius = static_cast<Real> (int (myRadius - ROUND_EPS)) + ROUND_EPS;
       myRadius2 = Real (radius + ROUND_EPS - 0.5);
       d = depth - startingDepth;
       for (i = sNodes.nodeCount[d]; i < sNodes.nodeCount[d + 1]; i++)
@@ -1088,9 +1088,9 @@ namespace pcl
                 x2 = int (node2->off[0]);
                 y2 = int (node2->off[1]);
                 z2 = int (node2->off[2]);
-                dx = Real (x1 - x2) / static_cast<Real> (1 << depth);
-                dy = Real (y1 - y2) / static_cast<Real> (1 << depth);
-                dz = Real (z1 - z2) / static_cast<Real> (1 << depth);
+                dx = Real (x1 - x2) / (1 << depth);
+                dy = Real (y1 - y2) / (1 << depth);
+                dz = Real (z1 - z2) / (1 << depth);
                 if (fabs (dx) < myRadius2 && fabs (dy) < myRadius2 && fabs (dz) < myRadius2)
                   node2->processNodeNodes (node1, &lpf, 0);
                 else
@@ -3131,9 +3131,9 @@ namespace pcl
       return AddTriangles (mesh, e, interiorPositions, offSet);
     }
 
-    template<int Degree>
-    int Octree<Degree>
-    ::AddTriangles (CoredMeshData* mesh, std::vector<CoredPointIndex>& edges, std::vector<Point3D<float> >* interiorPositions, const int& offSet, bool addBarycenter, bool polygonMesh)
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    template<int Degree> int 
+    Octree<Degree>::AddTriangles (CoredMeshData* mesh, std::vector<CoredPointIndex>& edges, std::vector<Point3D<float> >* interiorPositions, const int& offSet, bool addBarycenter, bool polygonMesh)
     {
       if (polygonMesh)
       {
@@ -3176,9 +3176,9 @@ namespace pcl
             else for (int j = 0; j < 3; j++) p.coords[j] = (*interiorPositions)[edges[i].index - offSet].coords[j];
             c.coords[0] += p.coords[0], c.coords[1] += p.coords[1], c.coords[2] += p.coords[2];
           }
-          c.coords[0] /= static_cast<float> (edges.size ());
-          c.coords[1] /= static_cast<float> (edges.size ()); 
-          c.coords[2] /= static_cast<float> (edges.size ());
+          c.coords[0] /= static_cast<Real> (edges.size ());
+          c.coords[1] /= static_cast<Real> (edges.size ()); 
+          c.coords[2] /= static_cast<Real> (edges.size ());
           int cIdx = mesh->addOutOfCorePoint (c);
           for (int i = 0; i<int (edges.size ()); i++)
           {

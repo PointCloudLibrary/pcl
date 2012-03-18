@@ -137,7 +137,7 @@ pcl::recognition::HoughSpace3D::voteInt (const Eigen::Vector3d &single_vote_coor
     central_bin_index += partial_bin_products_[d] * central_bin_coord[d];
 
     // compute coordinates of the centroid of the bin
-    bin_centroid[d] = static_cast<float> ((2 * central_bin_coord[d] * bin_size_[d] + bin_size_[d]) / 2.0 );
+    bin_centroid[d] = static_cast<float> ((2 * static_cast<double> (central_bin_coord[d]) * bin_size_[d] + bin_size_[d]) / 2.0 );
 
     // compute interpolated weight for each coordinate of the central bin
     central_bin_weight[d] = static_cast<float> (1 - (abs (single_vote_coord[d] - min_coord_[d] - bin_centroid[d]) / bin_size_[d] ) );

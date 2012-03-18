@@ -108,7 +108,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::tr
   {
     centroid += input_->at (i).getVector3fMap ();
   }
-  centroid /= (float)input_->size ();
+  centroid /= static_cast<float> (input_->size ());
 
   // compute model votes
   for (size_t i = 0; i < input_->size (); ++i)

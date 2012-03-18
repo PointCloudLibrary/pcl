@@ -81,7 +81,7 @@ public:
     viz.addText("s/w -> Surface/Wireframe representation", 10, 95, 0.0, 1.0, 0.0, "key_sw_t");
 
     //set current level to half the maximum one
-    displayedDepth = floor(octree.getTreeDepth() / 2.0);
+    displayedDepth = static_cast<int> (floor (octree.getTreeDepth() / 2.0));
     if (displayedDepth == 0)
       displayedDepth = 1;
 

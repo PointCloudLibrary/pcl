@@ -208,8 +208,8 @@ main (int argc, char** argv)
   tform.setIdentity ();
 
   // Command line parsing
-  double dx, dy, dz;
-  std::vector<double> values;
+  float dx, dy, dz;
+  std::vector<float> values;
 
   if (parse_3x_arguments (argc, argv, "-trans", dx, dy, dz) > -1)
   {
@@ -222,10 +222,10 @@ main (int argc, char** argv)
   {
     if (values.size () == 4)
     {
-      const double & x = values[0];
-      const double & y = values[1];
-      const double & z = values[2];
-      const double & w = values[3];
+      const float& x = values[0];
+      const float& y = values[1];
+      const float& z = values[2];
+      const float& w = values[3];
       tform.topLeftCorner (3, 3) = Eigen::Matrix3f (Eigen::Quaternionf (w, x, y, z));
     }
     else
@@ -239,10 +239,10 @@ main (int argc, char** argv)
   {
     if (values.size () == 4)
     {
-      const double & ax = values[0];
-      const double & ay = values[1];
-      const double & az = values[2];
-      const double & theta = values[3];
+      const float& ax = values[0];
+      const float& ay = values[1];
+      const float& az = values[2];
+      const float& theta = values[3];
       tform.topLeftCorner (3, 3) = Eigen::Matrix3f (Eigen::AngleAxisf (theta, Eigen::Vector3f (ax, ay, az)));
     }
     else
