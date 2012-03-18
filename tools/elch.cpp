@@ -91,7 +91,7 @@ loopDetection (int end, const CloudVector &clouds, double dist, int &first, int 
     }
   }
   //std::cout << "min_dist: " << min_dist << " state: " << state << " first: " << first << " end: " << end << std::endl;
-  if (min_dist > 0 && (state < 2 || end == (int)clouds.size () - 1)) //TODO
+  if (min_dist > 0 && (state < 2 || end == int (clouds.size ()) - 1)) //TODO
   {
     min_dist = -1;
     return true;
@@ -124,7 +124,7 @@ main (int argc, char **argv)
   for (size_t i = 0; i < clouds.size (); i++)
   {
 
-    if (loopDetection (i, clouds, 3.0, first, last))
+    if (loopDetection (int (i), clouds, 3.0, first, last))
     {
       std::cout << "Loop between " << first << " (" << clouds[first].first << ") and " << last << " (" << clouds[last].first << ")" << std::endl;
       elch.setLoopStart (first);

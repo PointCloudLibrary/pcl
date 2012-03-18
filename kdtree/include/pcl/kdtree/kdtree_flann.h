@@ -42,8 +42,8 @@
 
 #include <cstdio>
 #include <pcl/point_representation.h>
-#include <flann/flann.hpp>
 #include <pcl/kdtree/kdtree.h>
+#include <pcl/kdtree/flann.h>
 
 namespace pcl
 {
