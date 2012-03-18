@@ -14,7 +14,7 @@ namespace pcl
     {
       HarrisKeypoint3D<PointInT, PointXYZI> keypoint_est;
       keypoint_est.setMethod (HarrisKeypoint3D<PointInT, PointXYZI>::LOWE);
-      keypoint_est.setRadius (0.01);
+      keypoint_est.setRadius (0.01f);
       //keypoint_est.setRadiusSearch (0.0001);
       keypoint_est.setKSearch(10);
       //keypoint_est.setNonMaxSupression (true);

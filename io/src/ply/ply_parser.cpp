@@ -562,7 +562,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
   // binary
   else
   {
-    size_t data_start = istream.tellg ();
+    size_t data_start = static_cast<uint32_t> (istream.tellg ());
     istream.close ();
     istream.open (filename.c_str (), std::ios::binary);
     istream.seekg (data_start);

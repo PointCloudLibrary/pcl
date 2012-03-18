@@ -62,7 +62,7 @@ namespace pcl
           Eigen::Vector3f axis = target_normal.normalized().cross(query_normal.normalized());
           axis.normalize();
           Eigen::Affine3f rot_transform;
-          rot_transform = Eigen::AngleAxisf(angle, axis);
+          rot_transform = Eigen::AngleAxisf (angle, axis);
 
           // Check that the rotation matrix is correct
           Eigen::Vector3f projected = rot_transform * target_normal;
@@ -73,7 +73,7 @@ namespace pcl
 
           for (int k = 0; k < num_angles_; k++)
           {
-            float query_angle = (float(k) / num_angles_) * 2 * M_PI;
+            float query_angle = (float(k) / num_angles_) * 2.0f * float (M_PI);
             Eigen::Affine3f query_rot;
             query_rot = Eigen::AngleAxisf(query_angle, query_normal.normalized());
 
@@ -82,7 +82,7 @@ namespace pcl
             Eigen::Vector3f centroid_est = query.keypoints->at(i).getVector3fMap() - guess_r;
 
             Eigen::Vector3f region = query_max - query_min;
-            Eigen::Vector3f bin_size = region / bins_;
+            Eigen::Vector3f bin_size = region / float (bins_);
             Eigen::Vector3f diff = (centroid_est - query_min);
             Eigen::Vector3f indices = diff.cwiseQuotient(bin_size);
 

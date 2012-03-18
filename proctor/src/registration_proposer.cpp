@@ -32,7 +32,7 @@ namespace pcl
       // TODO Filtering the source cloud makes it much faster when computing the
       // error metric, but may not be as good
       SampleConsensusInitialAlignment<PointNormal, PointNormal, Signature> ia_ransac;
-      ia_ransac.setMinSampleDistance (0.05);
+      ia_ransac.setMinSampleDistance (0.05f);
       ia_ransac.setMaxCorrespondenceDistance (0.5);
       ia_ransac.setMaximumIterations (1000);
       ia_ransac.setInputCloud ((source.keypoints));

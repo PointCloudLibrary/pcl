@@ -79,7 +79,7 @@ namespace pcl
     std::vector<int> explained_by_RM_; //represents the points of scene_cloud_ that are explained by the recognition models
     std::vector< boost::shared_ptr<RecognitionModel> > recognition_models_;
     std::vector< std::vector <boost::shared_ptr<RecognitionModel> > > points_explained_by_rm_; //if inner size > 1, conflict
-    std::map < int, boost::shared_ptr<RecognitionModel> > graph_id_model_map_;
+    std::map<int, boost::shared_ptr<RecognitionModel> > graph_id_model_map_;
 
     typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, boost::shared_ptr<RecognitionModel> > Graph;
     Graph conflict_graph_;

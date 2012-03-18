@@ -265,7 +265,7 @@ pcl::registration::ELCH<PointT>::compute ()
     Eigen::Affine3f bl (loop_transform_);
     Eigen::Quaternionf q (bl.rotation ());
     Eigen::Quaternionf q2;
-    q2 = Eigen::Quaternionf::Identity ().slerp (weights[3][i], q);
+    q2 = Eigen::Quaternionf::Identity ().slerp (static_cast<float> (weights[3][i]), q);
 
     //TODO use rotation from branch start
     Eigen::Translation3f t3 (t2);

@@ -30,7 +30,7 @@ namespace pcl
     }
 
     void
-    BasicProposer::preGetProposed(Entry &query, std::vector<std::string> &input)
+    BasicProposer::preGetProposed (Entry &, std::vector<std::string> &)
     {
     }
 

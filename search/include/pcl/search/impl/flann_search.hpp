@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: $
+ * $Id$
  *
  */
 
@@ -41,7 +41,7 @@
 #define PCL_SEARCH_IMPL_FLANN_SEARCH_H_
 
 #include <pcl/search/flann_search.h>
-#include <flann/flann.hpp>
+#include <pcl/kdtree/flann.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename FlannDistance>

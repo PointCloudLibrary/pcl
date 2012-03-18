@@ -547,8 +547,8 @@ Narf::saveBinary (const std::string& filename) const
 int 
 Narf::loadHeader(std::istream& file) const
 {
-  size_t pos_in_file = file.tellg();
-  file.width(getHeaderKeyword().size()+10); // limit maximum number of bytes to read
+  size_t pos_in_file = static_cast<size_t> (file.tellg ());
+  file.width (getHeaderKeyword ().size()+10); // limit maximum number of bytes to read
   std::string header;
   file >> header;
   file.width(0); // remove limit

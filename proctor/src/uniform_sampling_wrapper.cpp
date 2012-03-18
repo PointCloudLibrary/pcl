@@ -12,7 +12,7 @@ namespace pcl
     void
     UniformSamplingWrapper::compute(PointCloudInPtr input, PointCloudOut &output)
     {
-      float keypoint_separation = 0.01;
+      float keypoint_separation = 0.01f;
 
       IndicesPtr indices (new std::vector<int>());
       PointCloud<int> leaves;

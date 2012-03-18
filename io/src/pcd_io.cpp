@@ -1557,7 +1557,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   CloseHandle (fm);
 
 #else
-  char *map = static_cast<char*> (mmap (0, data_idx + cloud.data.size (), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0));
+  char *map = static_cast<char*> (mmap (0, static_cast<size_t> (data_idx + cloud.data.size ()), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0));
   if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
   {
     pcl_close (fd);
@@ -1567,7 +1567,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
 #endif
 
   // copy header
-  memcpy (&map[0], oss.str().c_str(), data_idx);
+  memcpy (&map[0], oss.str().c_str (), static_cast<size_t> (data_idx));
 
   // Copy the data
   memcpy (&map[0] + data_idx, &cloud.data[0], cloud.data.size ());
@@ -1575,14 +1575,14 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
 #if !_WIN32
   // If the user set the synchronization flag on, call msync
   if (map_synchronization_)
-    msync (map, data_idx + cloud.data.size (), MS_SYNC);
+    msync (map, static_cast<size_t> (data_idx + cloud.data.size ()), MS_SYNC);
 #endif
 
   // Unmap the pages of memory
 #if _WIN32
     UnmapViewOfFile (map);
 #else
-  if (munmap (map, (data_idx + cloud.data.size ())) == -1)
+  if (munmap (map, static_cast<size_t> (data_idx + cloud.data.size ())) == -1)
   {
     pcl_close (fd);
     PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during munmap ()!\n");
@@ -1749,7 +1749,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
 #endif
 
   // copy header
-  memcpy (&map[0], oss.str ().c_str (), data_idx);
+  memcpy (&map[0], oss.str ().c_str (), static_cast<size_t> (data_idx));
   // Copy the compressed data
   memcpy (&map[data_idx], temp_buf, data_size);
 
@@ -2100,9 +2100,9 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
 #endif
 
   // Copy the header
-  memcpy (&map[0], oss.str ().c_str (), data_idx);
+  memcpy (&map[0], oss.str ().c_str (), static_cast<size_t> (data_idx));
   // Copy the compressed data
-  memcpy (&map[data_idx], temp_buf, data_size);
+  memcpy (&map[data_idx], temp_buf, static_cast<size_t> (data_size));
 
 #if !_WIN32
   // If the user set the synchronization flag on, call msync

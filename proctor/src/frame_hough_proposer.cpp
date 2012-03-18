@@ -69,7 +69,7 @@ namespace pcl
           Eigen::Vector3f world_z(0, 0, 1);
           Eigen::Matrix3f A = getTransformationBetweenFrames(world_x, world_y, target_normal, target_perp);
           Eigen::Matrix3f B = getTransformationBetweenFrames(world_x, world_y, query_normal, query_perp);
-          Eigen::Matrix3f rot_transform = B.transpose() * A;
+          Eigen::Matrix3f rot_transform (B.transpose() * A);
 #ifndef NDEBUG
           Eigen::Matrix3f other = getTransformationBetweenFrames(target_normal, target_perp, query_normal, query_perp);
 #endif
@@ -92,12 +92,12 @@ namespace pcl
           assert(query_perp.isApprox(rot_transform * target_perp, 0.01));
 
           // Transform r based on the difference between the normals
-          Eigen::Vector3f transformed_r = rot_transform * r;
+          Eigen::Vector3f transformed_r (rot_transform * r);
 
           Eigen::Vector3f centroid_est = query.keypoints->at(i).getVector3fMap() - transformed_r;
 
           Eigen::Vector3f region = query_max - query_min;
-          Eigen::Vector3f bin_size = region / bins_;
+          Eigen::Vector3f bin_size = region / float (bins_);
           Eigen::Vector3f diff = (centroid_est - query_min);
           Eigen::Vector3f indices = diff.cwiseQuotient(bin_size);
 

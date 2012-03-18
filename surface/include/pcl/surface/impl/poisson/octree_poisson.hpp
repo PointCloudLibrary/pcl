@@ -1546,21 +1546,22 @@ namespace pcl
           children[i] = node.children[i];
         }
       }
-      return *this;
+      return (*this);
     }
 
     template <class NodeData, class Real> int 
     OctNode<NodeData, Real>::CompareForwardDepths (const void* v1, const void* v2)
     {
-      return (reinterpret_cast<const OctNode<NodeData, Real>*> (v1))->depth - (reinterpret_cast<const OctNode<NodeData, Real>*> (v2))->depth;
+      return (static_cast<const OctNode<NodeData, Real>*> (v1))->depth - (static_cast<const OctNode<NodeData, Real>*> (v2))->depth;
     }
 
     template <class NodeData, class Real> int 
     OctNode<NodeData, Real>::CompareForwardPointerDepths (const void* v1, const void* v2)
     {
-      const OctNode<NodeData, Real> *n1 = (*(const OctNode<NodeData, Real>**) v1);
-      const OctNode<NodeData, Real> *n2 = (*(const OctNode<NodeData, Real>**) v2);
-      //const OctNode<NodeData, Real> *n2 = *reinterpret_cast<const OctNode<NodeData, Real>**> (v2);
+      typedef const OctNode<NodeData, Real> Ty;
+      typedef Ty** Tyy;
+      Ty *n1 = *Tyy (v1);
+      Ty *n2 = *Tyy (v2);
 
       if (n1->d != n2->d)
         return (int (n1->d) - int (n2->d));
@@ -1582,7 +1583,7 @@ namespace pcl
     template <class NodeData, class Real> int 
     OctNode<NodeData, Real>::CompareBackwardDepths (const void* v1, const void* v2)
     {
-      return (reinterpret_cast<const OctNode<NodeData, Real>*> (v2))->depth - (reinterpret_cast<const OctNode<NodeData, Real>*>(v1))->depth;
+      return ((static_cast<const OctNode<NodeData, Real>*> (v2))->depth - (static_cast<const OctNode<NodeData, Real>*>(v1))->depth);
     }
 
     template <class NodeData, class Real>

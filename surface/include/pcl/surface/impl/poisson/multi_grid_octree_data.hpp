@@ -264,7 +264,8 @@ namespace pcl
 
       int topDepth = int (ceil (newDepth));
 
-      dx = 1.0 - (topDepth - newDepth);
+      //dx = static_cast<Real> (static_cast<Real> (1.0 - topDepth) - newDepth);
+      dx = 1.0 - topDepth + newDepth;
       if (topDepth <= minDepth)
       {
         topDepth = minDepth;
@@ -733,7 +734,7 @@ namespace pcl
       mf.ot = this;
       mf.offset = sNodes.nodeCount[depth];
       matrix.Resize (sNodes.nodeCount[depth + 1] - sNodes.nodeCount[depth]);
-      mf.rowElements = (MatrixEntry<float>*)malloc (sizeof (MatrixEntry<float>) * matrix.rows);
+      mf.rowElements = reinterpret_cast<MatrixEntry<float>*> (malloc (sizeof (MatrixEntry<float>) * matrix.rows));
       for (int i = sNodes.nodeCount[depth]; i < sNodes.nodeCount[depth + 1]; i++)
       {
         mf.elementCount = 0;
@@ -769,7 +770,7 @@ namespace pcl
       mf.radius = radius;
       rNode->depthAndOffset (mf.depth, mf.offset);
       matrix.Resize (entryCount);
-      mf.rowElements = (MatrixEntry<float>*)malloc (sizeof (MatrixEntry<float>) * matrix.rows);
+      mf.rowElements = reinterpret_cast<MatrixEntry<float>*> (malloc (sizeof (MatrixEntry<float>) * matrix.rows));
 
       for (i = 0; i < entryCount; i++)
         sNodes.treeNodes[entries[i]]->nodeData.nodeIndex = i;
@@ -1088,9 +1089,9 @@ namespace pcl
                 x2 = int (node2->off[0]);
                 y2 = int (node2->off[1]);
                 z2 = int (node2->off[2]);
-                dx = Real (x1 - x2) / (1 << depth);
-                dy = Real (y1 - y2) / (1 << depth);
-                dz = Real (z1 - z2) / (1 << depth);
+                dx = Real (x1 - x2) / static_cast<Real> (1 << depth);
+                dy = Real (y1 - y2) / static_cast<Real> (1 << depth);
+                dz = Real (z1 - z2) / static_cast<Real> (1 << depth);
                 if (fabs (dx) < myRadius2 && fabs (dy) < myRadius2 && fabs (dz) < myRadius2)
                   node2->processNodeNodes (node1, &lpf, 0);
                 else
@@ -1557,7 +1558,7 @@ namespace pcl
           }
         }
       }
-      return value;
+      return (static_cast<Real> (value));
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2640,7 +2641,7 @@ namespace pcl
             eIndex[1] = BinaryNode<Real>::CornerIndex (maxDepth + 1, d, off[1], i2);
             break;
         }
-        ri.key = (long long) (o) | (long long) (eIndex[0]) << 5 | (long long) (eIndex[1]) << 25 | (long long) (offset) << 45;
+        ri.key = static_cast<long long> (o) | static_cast<long long> (eIndex[0]) << 5 | static_cast<long long> (eIndex[1]) << 25 | static_cast<long long> (offset) << 45;
         return 1;
       }
     }
@@ -2735,8 +2736,8 @@ namespace pcl
             eIndex[1] = BinaryNode<Real>::CornerIndex (maxDepth + 1, d, off[1], i2);
             break;
         }
-        ri.key = (long long) (o) | (long long) (eIndex[0]) << 5 | (long long) (eIndex[1]) << 25 | (long long) (offset) << 45;
-        return 1;
+        ri.key = static_cast<long long> (o) | static_cast<long long> (eIndex[0]) << 5 | static_cast<long long> (eIndex[1]) << 25 | static_cast<long long> (offset) << 45;
+        return (1);
       }
     }
 
@@ -2965,7 +2966,7 @@ namespace pcl
                 }
                 else
                 {
-                  fprintf (stderr, "Bad Edge 1: %d %d\n", (int) ri1.key, (int) ri2.key);
+                  fprintf (stderr, "Bad Edge 1: %d %d\n", int (ri1.key), int (ri2.key));
                 }
               }
             }
@@ -3285,7 +3286,7 @@ namespace pcl
       {
         idx[i] = BinaryNode<Real>::CornerIndex (maxDepth + 1, d + 1, o[i] << 1, 1);
       }
-      return (long long) (idx[0]) | (long long) (idx[1]) << 15 | (long long) (idx[2]) << 30;
+      return (static_cast<long long> (idx[0]) | static_cast<long long> (idx[1]) << 15 | static_cast<long long> (idx[2]) << 30);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3296,7 +3297,7 @@ namespace pcl
       {
         idx[i] = BinaryNode<Real>::CornerIndex (maxDepth + 1, depth + 1, offSet[i] << 1, 1);
       }
-      return (long long) (idx[0]) | (long long) (idx[1]) << 15 | (long long) (idx[2]) << 30;
+      return (static_cast<long long> (idx[0]) | static_cast<long long> (idx[1]) << 15 | static_cast<long long> (idx[2]) << 30);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3319,7 +3320,7 @@ namespace pcl
       {
         idx[i] = BinaryNode<Real>::CornerIndex (maxDepth + 1, d, o[i], x[i]);
       }
-      return (long long) (idx[0]) | (long long) (idx[1]) << 15 | (long long) (idx[2]) << 30;
+      return (static_cast<long long> (idx[0]) | static_cast<long long> (idx[1]) << 15 | static_cast<long long> (idx[2]) << 30);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3332,7 +3333,7 @@ namespace pcl
       {
         idx[i] = BinaryNode<Real>::CornerIndex (maxDepth + 1, depth, offSet[i], x[i]);
       }
-      return (long long) (idx[0]) | (long long) (idx[1]) << 15 | (long long) (idx[2]) << 30;
+      return (static_cast<long long> (idx[0]) | static_cast<long long> (idx[1]) << 15 | static_cast<long long> (idx[2]) << 30);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3356,7 +3357,7 @@ namespace pcl
         idx[i] = BinaryNode<Real>::CornerIndex (maxDepth + 1, d + 1, o[i] << 1, 1);
       }
       idx[dir] = BinaryNode<Real>::CornerIndex (maxDepth + 1, d, o[dir], offset);
-      return (long long) (idx[0]) | (long long) (idx[1]) << 15 | (long long) (idx[2]) << 30;
+      return (static_cast<long long> (idx[0]) | static_cast<long long> (idx[1]) << 15 | static_cast<long long> (idx[2]) << 30);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3394,7 +3395,7 @@ namespace pcl
           idx[1] = BinaryNode<Real>::CornerIndex (maxDepth + 1, d, off[1], i2);
           break;
       };
-      return (long long) (idx[0]) | (long long) (idx[1]) << 15 | (long long) (idx[2]) << 30;
+      return (static_cast<long long> (idx[0]) | static_cast<long long> (idx[1]) << 15 | static_cast<long long> (idx[2]) << 30);
     }
   }
 }

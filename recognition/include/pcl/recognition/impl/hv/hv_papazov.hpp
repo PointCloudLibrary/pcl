@@ -36,23 +36,22 @@
 
 #include <pcl/recognition/hv/hv_papazov.h>
 
-template<typename ModelT, typename SceneT>
-void
+///////////////////////////////////////////////////////////////////////////////////////////////////
+template<typename ModelT, typename SceneT> void
 pcl::PapazovHV<ModelT, SceneT>::initialize ()
 {
-
-  //initialize mask...
+  // initialize mask...
   mask_.resize (complete_models_.size ());
   for (size_t i = 0; i < complete_models_.size (); i++)
     mask_[i] = true;
 
-  //initalize model
+  // initalize model
   for (size_t m = 0; m < complete_models_.size (); m++)
   {
-    boost::shared_ptr < RecognitionModel > recog_model (new RecognitionModel ());
-    //voxelize model cloud
-    recog_model->cloud_.reset (new pcl::PointCloud<ModelT> ());
-    recog_model->complete_cloud_.reset (new pcl::PointCloud<ModelT> ());
+    boost::shared_ptr <RecognitionModel> recog_model (new RecognitionModel);
+    // voxelize model cloud
+    recog_model->cloud_.reset (new pcl::PointCloud<ModelT>);
+    recog_model->complete_cloud_.reset (new pcl::PointCloud<ModelT>);
     recog_model->id_ = static_cast<int> (m);
 
     pcl::VoxelGrid<ModelT> voxel_grid;
@@ -95,11 +94,10 @@ pcl::PapazovHV<ModelT, SceneT>::initialize ()
         <= penalty_threshold_ && (static_cast<float> (explained_indices.size ())
         / static_cast<float> (recog_model->complete_cloud_->points.size ())) >= support_threshold_)
     {
-
       recog_model->explained_ = explained_indices;
       recognition_models_.push_back (recog_model);
 
-      //update explained_by_RM_, add 1
+      // update explained_by_RM_, add 1
       for (size_t i = 0; i < explained_indices.size (); i++)
       {
         explained_by_RM_[explained_indices[i]]++;
@@ -108,16 +106,16 @@ pcl::PapazovHV<ModelT, SceneT>::initialize ()
     }
     else
     {
-      mask_[m] = false; //the model didnt survive the sequential check...
+      mask_[m] = false; // the model didnt survive the sequential check...
     }
   }
 }
 
-template<typename ModelT, typename SceneT>
-void
+///////////////////////////////////////////////////////////////////////////////////////////////////
+template<typename ModelT, typename SceneT> void
 pcl::PapazovHV<ModelT, SceneT>::nonMaximaSuppresion ()
 {
-  //iterate over all vertices of the graph and check if they have a better neighbour, then remove that vertex
+  // iterate over all vertices of the graph and check if they have a better neighbour, then remove that vertex
   typedef typename boost::graph_traits<Graph>::vertex_iterator VertexIterator;
   VertexIterator vi, vi_end, next;
   boost::tie (vi, vi_end) = boost::vertices (conflict_graph_);
@@ -128,12 +126,12 @@ pcl::PapazovHV<ModelT, SceneT>::nonMaximaSuppresion ()
     typename boost::graph_traits<Graph>::adjacency_iterator ai;
     typename boost::graph_traits<Graph>::adjacency_iterator ai_end;
 
-    boost::shared_ptr < RecognitionModel > current = static_cast<boost::shared_ptr<RecognitionModel> > (graph_id_model_map_[v]);
+    boost::shared_ptr<RecognitionModel> current = static_cast<boost::shared_ptr<RecognitionModel> > (graph_id_model_map_[int (v)]);
 
     bool a_better_one = false;
     for (tie (ai, ai_end) = boost::adjacent_vertices (v, conflict_graph_); (ai != ai_end) && !a_better_one; ++ai)
     {
-      boost::shared_ptr < RecognitionModel > neighbour = graph_id_model_map_[*ai];
+      boost::shared_ptr<RecognitionModel> neighbour = static_cast<boost::shared_ptr<RecognitionModel> > (graph_id_model_map_[int (*ai)]);
       if (neighbour->explained_.size () >= current->explained_.size () && mask_[neighbour->id_])
       {
         a_better_one = true;
@@ -147,19 +145,18 @@ pcl::PapazovHV<ModelT, SceneT>::nonMaximaSuppresion ()
   }
 }
 
-template<typename ModelT, typename SceneT>
-void
+///////////////////////////////////////////////////////////////////////////////////////////////////
+template<typename ModelT, typename SceneT> void
 pcl::PapazovHV<ModelT, SceneT>::buildConflictGraph ()
 {
-
-  //create vertices for the graph
+  // create vertices for the graph
   for (size_t i = 0; i < (recognition_models_.size ()); i++)
   {
     const typename Graph::vertex_descriptor v = boost::add_vertex (recognition_models_[i], conflict_graph_);
-    graph_id_model_map_[v] = recognition_models_[i];
+    graph_id_model_map_[int (v)] = static_cast<boost::shared_ptr<RecognitionModel> > (recognition_models_[i]);
   }
 
-  //iterate over the remaining models and check for each one if there is a conflict with another one
+  // iterate over the remaining models and check for each one if there is a conflict with another one
   for (size_t i = 0; i < recognition_models_.size (); i++)
   {
     for (size_t j = i; j < recognition_models_.size (); j++)
@@ -167,12 +164,12 @@ pcl::PapazovHV<ModelT, SceneT>::buildConflictGraph ()
       if (i != j)
       {
         float n_conflicts = 0.f;
-        //count scene points explained by both models
+        // count scene points explained by both models
         for (size_t k = 0; k < explained_by_RM_.size (); k++)
         {
           if (explained_by_RM_[k] > 1)
           {
-            //this point could be a conflict
+            // this point could be a conflict
             bool i_found = false;
             bool j_found = false;
             bool both_found = false;
@@ -193,7 +190,7 @@ pcl::PapazovHV<ModelT, SceneT>::buildConflictGraph ()
           }
         }
 
-        //check if number of points is big enough to create a conflict
+        // check if number of points is big enough to create a conflict
         bool add_conflict = false;
         add_conflict = ((n_conflicts / static_cast<float> (recognition_models_[i]->complete_cloud_->points.size ())) > conflict_threshold_size_)
             || ((n_conflicts / static_cast<float> (recognition_models_[j]->complete_cloud_->points.size ())) > conflict_threshold_size_);
@@ -207,11 +204,12 @@ pcl::PapazovHV<ModelT, SceneT>::buildConflictGraph ()
   }
 }
 
-template<typename ModelT, typename SceneT>
-void
+///////////////////////////////////////////////////////////////////////////////////////////////////
+template<typename ModelT, typename SceneT> void
 pcl::PapazovHV<ModelT, SceneT>::verify ()
 {
   initialize();
   buildConflictGraph ();
   nonMaximaSuppresion ();
 }
+

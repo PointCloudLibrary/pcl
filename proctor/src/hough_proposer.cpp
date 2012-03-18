@@ -95,13 +95,13 @@ namespace pcl
     bool
     HoughProposer::softCastVotes(Eigen::Vector3f& indices, bin_t& bins)
     {
-      if ((indices.array() >= 0).all() && (indices.array() < bins_).all())
+      if ((indices.array() >= float (0)).all() && (indices.array() < float (bins_)).all())
       {
         Eigen::Vector3i indices_i = indices.cast<int>();
 
         Eigen::Vector3f unit_distance = indices - indices_i.cast<float>();
 
-        float vote = 1.0 / num_angles_;
+        float vote = 1.0f / float (num_angles_);
 
         bins[indices_i[0]][indices_i[1]][indices_i[2]] += vote;
 
@@ -145,11 +145,11 @@ namespace pcl
     bool
     HoughProposer::hardCastVotes(Eigen::Vector3f& indices, bin_t& bins)
     {
-      if ((indices.array() >= 0).all() && (indices.array() < bins_).all())
+      if ((indices.array() >= float (0)).all() && (indices.array() < float (bins_)).all())
       {
         Eigen::Vector3i indices_i = indices.cast<int>();
 
-        float vote = 1.0 / num_angles_;
+        float vote = 1.0f / float (num_angles_);
 
         bins[indices_i[0]][indices_i[1]][indices_i[2]] += vote;
 

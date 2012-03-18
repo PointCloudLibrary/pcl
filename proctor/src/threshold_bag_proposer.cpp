@@ -6,7 +6,7 @@ namespace pcl
   namespace proctor
   {
     void
-    ThresholdBagProposer::preGetProposed(Entry &query, std::vector<std::string> &input)
+    ThresholdBagProposer::preGetProposed (Entry &, std::vector<std::string> &)
     {
       //std::vector<std::string>::iterator database_it;
 
@@ -69,7 +69,7 @@ namespace pcl
         vector<int> indices;
         vector<float> distances;
 
-        int num_found = match.tree->nearestKSearch(*query.features, pi, max_votes, indices, distances);
+        int num_found = match.tree->nearestKSearch (*query.features, pi, int (max_votes), indices, distances);
 
         for (int ri = 0; ri < num_found; ri++) {
           /* Assuming that a distance of 0 is an error */
@@ -85,7 +85,7 @@ namespace pcl
           votes += 1;
         }
       }
-      votes /= feature_distances.size();
+      votes /= double (feature_distances.size ());
 
       return votes;
     }

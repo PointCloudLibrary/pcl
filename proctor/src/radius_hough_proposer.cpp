@@ -26,7 +26,7 @@ namespace pcl
       Eigen::Vector3f query_max(query_max4[0], query_max4[1], query_max4[2]);
 
       Eigen::Vector3f region = query_max - query_min;
-      Eigen::Vector3f bin_size = region / bins_;
+      Eigen::Vector3f bin_size = region / float (bins_);
 
       for (unsigned int i = 0; i < query.keypoints->size(); i++)
       {
@@ -60,7 +60,7 @@ namespace pcl
             {
               for (int z = 0; z < bins_; z++)
               {
-                Eigen::Vector3f indices (x, y, z);
+                Eigen::Vector3f indices (static_cast<float> (x), static_cast<float> (y), static_cast<float> (z));
 
                 //Eigen::Vector3f test = indices.array() * bin_size.array();
 

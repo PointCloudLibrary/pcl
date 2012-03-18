@@ -2,9 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2009-2012, Willow Garage, Inc.
- *  Copyright (c) 2006, Michael Kazhdan and Matthew Bolitho,
- *                      Johns Hopkins University
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -35,65 +33,27 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: kdtree_flann.h 36261 2011-02-26 01:34:42Z mariusm $
  *
  */
 
-#ifndef PCL_POISSON_HASH_H_
-#define PCL_POISSON_HASH_H_
+#ifndef PCL_KDTREE_FLANN_H_
+#define PCL_KDTREE_FLANN_H_
 
+#if defined __GNUC__
+#  pragma GCC system_header 
+#endif
 
-#ifdef WIN32
-#include <hash_map>
-using namespace stdext;
-#else // !WIN32
-#define _GLIBCXX_PERMIT_BACKWARD_HASH
-#include <ext/hash_map>
-using namespace __gnu_cxx;
+#if defined _MSC_VER
+#  pragma warning(disable: 4267)
+#endif
 
-namespace __gnu_cxx
-{
-  template<>
-  struct hash<long long>
-  {
-    size_t
-    operator() (long long __x) const
-    {
-      return (static_cast<size_t> (__x));
-    }
-  };
+#include <flann/flann.hpp>
 
-  template<>
-  struct hash<const long long>
-  {
-    size_t
-    operator() (const long long __x) const
-    {
-      return (static_cast<size_t> (__x));
-    }
-  };
+#if defined _MSC_VER
+#  pragma warning(default: 4267)
+#endif
 
-  template<>
-  struct hash<unsigned long long>
-  {
-    size_t
-    operator() (unsigned long long __x) const
-    {
-      return (static_cast<size_t> (__x));
-    }
-  };
+#endif    // PCL_KDTREE_FLANN_H_
 
-  template<>
-  struct hash<const unsigned long long>
-  {
-    size_t
-    operator() (const unsigned long long __x) const
-    {
-      return (static_cast<size_t> (__x));
-    }
-  };
-}
-#endif // WIN32
-
-#endif /* PCL_POISSON_HASH_H_ */
 

@@ -230,7 +230,7 @@ main (int argc, char** argv)
     }
     else
     {
-      print_error ("Wrong number of values given (%lu): ", (unsigned long) values.size ());
+      print_error ("Wrong number of values given (%zu): ", values.size ());
       print_error ("The quaternion specified with -quat must contain 4 elements (w,x,y,z).\n");
     }
   }
@@ -247,7 +247,7 @@ main (int argc, char** argv)
     }
     else
     {
-      print_error ("Wrong number of values given (%lu): ", (unsigned long) values.size ());
+      print_error ("Wrong number of values given (%zu): ", values.size ());
       print_error ("The rotation specified with -axisangle must contain 4 elements (ax,ay,az,theta).\n");
     }
   }
@@ -263,7 +263,7 @@ main (int argc, char** argv)
     }
     else
     {
-      print_error ("Wrong number of values given (%lu): ", (unsigned long) values.size ());
+      print_error ("Wrong number of values given (%zu): ", values.size ());
       print_error ("The transformation specified with -matrix must be 3x3 (9) or 4x4 (16).\n");
     }
   }

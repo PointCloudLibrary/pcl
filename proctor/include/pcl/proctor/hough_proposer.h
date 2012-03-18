@@ -46,9 +46,9 @@ namespace pcl
         angleBetween(Eigen::Vector3f a, Eigen::Vector3f b);
 
         void
-        setSoftVote(bool is_soft_vote)
+        setSoftVote (bool is_soft_vote)
         {
-          is_soft_vote_ = is_soft_vote_;
+          is_soft_vote_ = is_soft_vote;
         }
 
       public:

@@ -331,7 +331,7 @@ pcl::io::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData>& p
   {
     Eigen::Vector4f pt = Eigen::Vector4f::Zero ();
     Eigen::Array4i xyz_offset (mesh.cloud.fields[idx_x].offset, mesh.cloud.fields[idx_y].offset, mesh.cloud.fields[idx_z].offset, 0);
-    for (vtkIdType cp = 0; cp < nr_points; ++cp, xyz_offset += mesh.cloud.point_step)
+    for (vtkIdType cp = 0; cp < static_cast<vtkIdType> (nr_points); ++cp, xyz_offset += mesh.cloud.point_step)
     {
       memcpy(&pt[0], &mesh.cloud.data[xyz_offset[0]], sizeof (float));
       memcpy(&pt[1], &mesh.cloud.data[xyz_offset[1]], sizeof (float));

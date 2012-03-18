@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: $
+ * $Id$
  */
 
 #ifndef PCL_SEARCH_FLANN_SEARCH_H_
@@ -42,7 +42,6 @@
 #include <pcl/search/search.h>
 #include <pcl/common/time.h>
 #include <pcl/point_representation.h>
-//#include <flann/util/matrix.h>
 
 namespace flann
 {
