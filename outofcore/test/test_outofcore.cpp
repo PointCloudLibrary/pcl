@@ -390,6 +390,8 @@ class OutofcoreTest : public testing::Test
 {
   protected:
 
+    OutofcoreTest () : smallest_voxel_dim () {}
+
     virtual void SetUp ()
     {
       smallest_voxel_dim = 0.1f;

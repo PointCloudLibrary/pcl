@@ -64,6 +64,7 @@ namespace pcl
           };
 
         OctreeException (const OCTREE_ERRORS e)
+          : m_msg ()
         {
           switch (e)
           {
@@ -92,8 +93,8 @@ namespace pcl
         }
 
         OctreeException (const std::string& msg)
+          : m_msg (msg)
         {
-          m_msg = msg;
         }
 
         ~OctreeException () throw () { }

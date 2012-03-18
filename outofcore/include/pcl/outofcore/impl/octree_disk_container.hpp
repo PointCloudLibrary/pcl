@@ -109,6 +109,9 @@ namespace pcl
 
     template<typename PointT>
     octree_disk_container<PointT>::octree_disk_container (const boost::filesystem::path& path)
+      : writebuff_ ()
+      , fileback_name_ ()
+      , filelen_ ()
     {
       if (boost::filesystem::exists (path))
       {

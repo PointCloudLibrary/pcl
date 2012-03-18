@@ -76,6 +76,15 @@ namespace pcl
 // ---------------------------------------------------------------------------
     template<typename Container, typename PointT>
     octree_base<Container, PointT>::octree_base (const boost::filesystem::path& rootname, const bool load_all)
+      : root_ ()
+      , read_write_mutex_ ()
+      , lodPoints_ ()
+      , max_depth_ ()
+      , treepath_ ()
+      , coord_system_ ()
+      , input_ ()
+      , resolution_ ()
+      , indices_ ()
     {
       // Check file extension
       if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointT>::node_index_extension)
@@ -99,6 +108,15 @@ namespace pcl
 
     template<typename Container, typename PointT>
     octree_base<Container, PointT>::octree_base (const double min[3], const double max[3], const double node_dim_meters, const boost::filesystem::path& rootname, const std::string& coord_sys)
+      : root_ ()
+      , read_write_mutex_ ()
+      , lodPoints_ ()
+      , max_depth_ ()
+      , treepath_ ()
+      , coord_system_ ()
+      , input_ ()
+      , resolution_ ()
+      , indices_ ()
     {
       // Check file extension
       if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointT>::node_index_extension)
@@ -131,6 +149,15 @@ namespace pcl
 // todo: Both constructs share the same code except for a single line
     template<typename Container, typename PointT>
     octree_base<Container, PointT>::octree_base (const int max_depth, const double min[3], const double max[3], const boost::filesystem::path& rootname, const std::string& coord_sys)
+      : root_ ()
+      , read_write_mutex_ ()
+      , lodPoints_ ()
+      , max_depth_ ()
+      , treepath_ ()
+      , coord_system_ ()
+      , input_ ()
+      , resolution_ ()
+      , indices_ ()
     {
       // Check file extension
       if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointT>::node_index_extension)

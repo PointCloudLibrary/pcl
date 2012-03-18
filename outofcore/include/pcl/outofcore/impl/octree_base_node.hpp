@@ -90,6 +90,21 @@ namespace pcl
 
     template<typename Container, typename PointT>
     octree_base_node<Container, PointT>::octree_base_node (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super, bool loadAll)
+      : thisdir_ ()
+      , thisnodeindex_ ()
+      , thisnodestorage_ ()
+      , m_tree_ ()
+      , root_ ()
+      , parent_ ()
+      , depth_ ()
+      , children_ ()
+      , num_child_ ()
+      , payload_ ()
+      , min_ ()
+      , max_ ()
+      , midx_ ()
+      , midy_ ()
+      , midz_ ()
     {
       if (super == NULL)
       {
@@ -203,6 +218,21 @@ namespace pcl
                                                            const double node_dim_meters,
                                                            octree_base<Container, PointT> * const tree,
                                                            const boost::filesystem::path& rootname)
+      : thisdir_ ()
+      , thisnodeindex_ ()
+      , thisnodestorage_ ()
+      , m_tree_ ()
+      , root_ ()
+      , parent_ ()
+      , depth_ ()
+      , children_ ()
+      , num_child_ ()
+      , payload_ ()
+      , min_ ()
+      , max_ ()
+      , midx_ ()
+      , midy_ ()
+      , midz_ ()
     {
       init_root_node(bb_min, bb_max, tree, rootname);
 
@@ -215,6 +245,21 @@ namespace pcl
 
     template<typename Container, typename PointT>
     octree_base_node<Container, PointT>::octree_base_node (const int max_depth, const double bb_min[3], const double bb_max[3], octree_base<Container, PointT> * const tree, const boost::filesystem::path& rootname)
+      : thisdir_ ()
+      , thisnodeindex_ ()
+      , thisnodestorage_ ()
+      , m_tree_ ()
+      , root_ ()
+      , parent_ ()
+      , depth_ ()
+      , children_ ()
+      , num_child_ ()
+      , payload_ ()
+      , min_ ()
+      , max_ ()
+      , midx_ ()
+      , midy_ ()
+      , midz_ ()
     {
       init_root_node(bb_min, bb_max, tree, rootname);
 
@@ -1403,6 +1448,21 @@ namespace pcl
 //dir is current level. we put this nodes files into it
     template<typename Container, typename PointT>
     octree_base_node<Container, PointT>::octree_base_node (const double bb_min[3], const double bb_max[3], const char* dir, octree_base_node<Container,PointT>* super)
+      : thisdir_ ()
+      , thisnodeindex_ ()
+      , thisnodestorage_ ()
+      , m_tree_ ()
+      , root_ ()
+      , parent_ ()
+      , depth_ ()
+      , children_ ()
+      , num_child_ ()
+      , payload_ ()
+      , min_ ()
+      , max_ ()
+      , midx_ ()
+      , midy_ ()
+      , midz_ ()
     {
       if (super == NULL)
       {

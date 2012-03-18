@@ -72,7 +72,7 @@ namespace pcl
 
         /** \brief empty contructor (with a path parameter?)
          */
-        octree_ram_container (const boost::filesystem::path&) { }
+        octree_ram_container (const boost::filesystem::path&) : container_ () { }
         
         /** \brief inserts "count" number of points into container; uses the container_ type's insert 
          *  function
