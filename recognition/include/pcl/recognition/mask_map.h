@@ -40,6 +40,7 @@
 
 #include <vector>
 #include <pcl/pcl_macros.h>
+#include <cstring>
 
 namespace pcl
 {
