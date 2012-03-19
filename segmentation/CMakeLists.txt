@@ -17,7 +17,7 @@ if(build)
         src/seeded_hue_segmentation.cpp
         src/segment_differences.cpp
         src/region_growing.cpp
-	src/region_growing_rgb.cpp
+#        src/region_growing_rgb.cpp
         src/organized_connected_component_segmentation.cpp
         src/organized_multi_plane_segmentation.cpp
         src/planar_polygon_fusion.cpp
@@ -33,17 +33,17 @@ if(build)
         include/pcl/${SUBSYS_NAME}/seeded_hue_segmentation.h
         include/pcl/${SUBSYS_NAME}/segment_differences.h
         include/pcl/${SUBSYS_NAME}/region_growing.h
-	include/pcl/${SUBSYS_NAME}/region_growing_rgb.h
+#        include/pcl/${SUBSYS_NAME}/region_growing_rgb.h
         include/pcl/${SUBSYS_NAME}/comparator.h
         include/pcl/${SUBSYS_NAME}/plane_coefficient_comparator.h
-	#include/pcl/${SUBSYS_NAME}/euclidean_plane_coefficient_comparator.h
-	#include/pcl/${SUBSYS_NAME}/edge_aware_plane_comparator.h
-	#include/pcl/${SUBSYS_NAME}/rgb_plane_coefficient_comparator.h
-	include/pcl/${SUBSYS_NAME}/plane_refinement_comparator.h
+        #include/pcl/${SUBSYS_NAME}/euclidean_plane_coefficient_comparator.h
+        #include/pcl/${SUBSYS_NAME}/edge_aware_plane_comparator.h
+        #include/pcl/${SUBSYS_NAME}/rgb_plane_coefficient_comparator.h
+        include/pcl/${SUBSYS_NAME}/plane_refinement_comparator.h
         include/pcl/${SUBSYS_NAME}/organized_connected_component_segmentation.h
         include/pcl/${SUBSYS_NAME}/organized_multi_plane_segmentation.h
-	include/pcl/${SUBSYS_NAME}/region_3d.h
-	include/pcl/${SUBSYS_NAME}/planar_region.h
+        include/pcl/${SUBSYS_NAME}/region_3d.h
+        include/pcl/${SUBSYS_NAME}/planar_region.h
         include/pcl/${SUBSYS_NAME}/planar_polygon_fusion.h
         )
 
@@ -56,7 +56,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/seeded_hue_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/segment_differences.hpp
         include/pcl/${SUBSYS_NAME}/impl/region_growing.hpp
-	include/pcl/${SUBSYS_NAME}/impl/region_growing_rgb.hpp
+#        include/pcl/${SUBSYS_NAME}/impl/region_growing_rgb.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_connected_component_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_multi_plane_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/planar_polygon_fusion.hpp
