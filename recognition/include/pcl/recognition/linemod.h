@@ -89,7 +89,8 @@ namespace pcl
 
         for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
         {
-          maps_[map_index] = new unsigned char[mapsSize];
+          //maps_[map_index] = new unsigned char[mapsSize];
+          maps_[map_index] = reinterpret_cast<unsigned char*> (aligned_malloc (mapsSize));
           memset (maps_[map_index], 0, mapsSize);
         }
       }
@@ -98,7 +99,8 @@ namespace pcl
       releaseAll ()
       {
         for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
-          if (maps_[map_index] != NULL) delete[] maps_[map_index];
+          //if (maps_[map_index] != NULL) delete[] maps_[map_index];
+          if (maps_[map_index] != NULL) aligned_free (maps_[map_index]);
 
         maps_.clear ();
         width_ = 0;
@@ -168,7 +170,8 @@ namespace pcl
 
         for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
         {
-          maps_[map_index] = new unsigned char[2*mapsSize];
+          //maps_[map_index] = new unsigned char[2*mapsSize];
+          maps_[map_index] = reinterpret_cast<unsigned char*> (aligned_malloc (2*mapsSize));
           memset (maps_[map_index], 0, 2*mapsSize);
         }
       }
@@ -177,7 +180,8 @@ namespace pcl
       releaseAll ()
       {
         for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
-          if (maps_[map_index] != NULL) delete[] maps_[map_index];
+          //if (maps_[map_index] != NULL) delete[] maps_[map_index];
+          if (maps_[map_index] != NULL) aligned_free (maps_[map_index]);
 
         maps_.clear ();
         width_ = 0;
@@ -244,6 +248,9 @@ namespace pcl
       createAndAddTemplate (const std::vector<QuantizableModality*> & modalities,
                             const std::vector<MaskMap*> & masks,
                             const RegionXY & region);
+
+      int
+      addTemplate (const SparseQuantizedMultiModTemplate & linemod_template);
 
       void
       detectTemplates (const std::vector<QuantizableModality*> & modalities,

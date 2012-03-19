@@ -105,6 +105,17 @@ createAndAddTemplate (const std::vector<pcl::QuantizableModality*> & modalities,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+int 
+pcl::LINEMOD::
+addTemplate (const SparseQuantizedMultiModTemplate & linemod_template)
+{
+  // add template to template storage
+  templates_.push_back(linemod_template);
+
+  return static_cast<int> (templates_.size () - 1);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::LINEMOD::
 matchTemplates (const std::vector<QuantizableModality*> & modalities, std::vector<LINEMODDetection> & detections) const
@@ -203,6 +214,94 @@ matchTemplates (const std::vector<QuantizableModality*> & modalities, std::vecto
     const size_t mem_height = height / step_size;
     const size_t mem_size = mem_width * mem_height;
 
+#define USE_OPTIMIZED_LINEMOD
+#ifdef USE_OPTIMIZED_LINEMOD
+    unsigned short * score_sums = reinterpret_cast<unsigned short*> (aligned_malloc (mem_size*sizeof(unsigned short)));
+    unsigned char * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
+    memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
+    memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
+
+    __m128i * score_sums_m128i = reinterpret_cast<__m128i*> (score_sums);
+    __m128i * tmp_score_sums_m128i = reinterpret_cast<__m128i*> (tmp_score_sums);
+
+    const size_t mem_size_16 = mem_size / 16;
+    const size_t mem_size_mod_16 = mem_size & 15;
+    const size_t mem_size_mod_16_base = mem_size_16 * 16;
+
+    int max_score = 0;
+    size_t copy_back_counter = 0;
+    for (size_t feature_index = 0; feature_index < templates_[template_index].features.size (); ++feature_index)
+    {
+      const QuantizedMultiModFeature & feature = templates_[template_index].features[feature_index];
+
+      for (size_t bin_index = 0; bin_index < 8; ++bin_index)
+      {
+        if ((feature.quantized_value & (0x1<<bin_index)) != 0)
+        {
+          max_score += 4;
+
+          unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (feature.x, feature.y);
+          __m128i * data_m128i = reinterpret_cast<__m128i*> (data);
+
+          std::cerr << "test";
+
+          for (size_t mem_index = 0; mem_index < mem_size_16; ++mem_index)
+          {
+            __m128i aligned_data_m128i = _mm_loadu_si128 (reinterpret_cast<const __m128i*> (data_m128i + mem_index)); // SSE2
+            //__m128i aligned_data_m128i = _mm_lddqu_si128 (reinterpret_cast<const __m128i*> (data_m128i + mem_index)); // SSE3
+            tmp_score_sums_m128i[mem_index] = _mm_add_epi8 (tmp_score_sums_m128i[mem_index], aligned_data_m128i);
+          }
+          for (size_t mem_index = mem_size_mod_16_base; mem_index < mem_size; ++mem_index)
+          {
+            tmp_score_sums[mem_index] += data[mem_index];
+          }
+        }
+      }
+
+      ++copy_back_counter;
+
+      //if ((feature_index & 7) == 7)
+      //if ((feature_index & 63) == 63)
+      if (copy_back_counter > 63) // only valid if each feature has only one bit set..
+      {
+        copy_back_counter = 0;
+
+        for (size_t mem_index = 0; mem_index < mem_size; mem_index += 16)
+        {
+          score_sums[mem_index+0] += tmp_score_sums[mem_index+0];
+          score_sums[mem_index+1] += tmp_score_sums[mem_index+1];
+          score_sums[mem_index+2] += tmp_score_sums[mem_index+2];
+          score_sums[mem_index+3] += tmp_score_sums[mem_index+3];
+          score_sums[mem_index+4] += tmp_score_sums[mem_index+4];
+          score_sums[mem_index+5] += tmp_score_sums[mem_index+5];
+          score_sums[mem_index+6] += tmp_score_sums[mem_index+6];
+          score_sums[mem_index+7] += tmp_score_sums[mem_index+7];
+          score_sums[mem_index+8] += tmp_score_sums[mem_index+8];
+          score_sums[mem_index+9] += tmp_score_sums[mem_index+9];
+          score_sums[mem_index+10] += tmp_score_sums[mem_index+10];
+          score_sums[mem_index+11] += tmp_score_sums[mem_index+11];
+          score_sums[mem_index+12] += tmp_score_sums[mem_index+12];
+          score_sums[mem_index+13] += tmp_score_sums[mem_index+13];
+          score_sums[mem_index+14] += tmp_score_sums[mem_index+14];
+          score_sums[mem_index+15] += tmp_score_sums[mem_index+15];
+        }
+        for (size_t mem_index = mem_size_mod_16_base; mem_index < mem_size; ++mem_index)
+        {
+          score_sums[mem_index] += tmp_score_sums[mem_index];
+        }
+
+        memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
+      }
+    }
+    {
+      for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
+      {
+        score_sums[mem_index] += tmp_score_sums[mem_index];
+      }
+        
+      memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
+    }
+#else
     unsigned short * score_sums = new unsigned short[mem_size];
     //unsigned char * score_sums = new unsigned char[mem_size];
     memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
@@ -217,7 +316,7 @@ matchTemplates (const std::vector<QuantizableModality*> & modalities, std::vecto
       {
         if ((feature.quantized_value & (0x1<<bin_index)) != 0)
         {
-          max_score += 2;
+          max_score += 4;
 
           unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (feature.x, feature.y);
           for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
@@ -227,6 +326,7 @@ matchTemplates (const std::vector<QuantizableModality*> & modalities, std::vecto
         }
       }
     }
+#endif
 
     const float inv_max_score = 1.0f / max_score;
     
@@ -363,6 +463,92 @@ detectTemplates (const std::vector<QuantizableModality*> & modalities, std::vect
     const size_t mem_height = height / step_size;
     const size_t mem_size = mem_width * mem_height;
 
+#define USE_OPTIMIZED_LINEMOD
+#ifdef USE_OPTIMIZED_LINEMOD
+    unsigned short * score_sums = reinterpret_cast<unsigned short*> (aligned_malloc (mem_size*sizeof(unsigned short)));
+    unsigned char * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
+    memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
+    memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
+
+    __m128i * score_sums_m128i = reinterpret_cast<__m128i*> (score_sums);
+    __m128i * tmp_score_sums_m128i = reinterpret_cast<__m128i*> (tmp_score_sums);
+
+    const size_t mem_size_16 = mem_size / 16;
+    const size_t mem_size_mod_16 = mem_size & 15;
+    const size_t mem_size_mod_16_base = mem_size_16 * 16;
+
+    int max_score = 0;
+    size_t copy_back_counter = 0;
+    for (size_t feature_index = 0; feature_index < templates_[template_index].features.size (); ++feature_index)
+    {
+      const QuantizedMultiModFeature & feature = templates_[template_index].features[feature_index];
+
+      for (size_t bin_index = 0; bin_index < 8; ++bin_index)
+      {
+        if ((feature.quantized_value & (0x1<<bin_index)) != 0)
+        {
+          max_score += 4;
+
+          unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (feature.x, feature.y);
+          __m128i * data_m128i = reinterpret_cast<__m128i*> (data);
+
+          for (size_t mem_index = 0; mem_index < mem_size_16; ++mem_index)
+          {
+            __m128i aligned_data_m128i = _mm_loadu_si128 (reinterpret_cast<const __m128i*> (data_m128i + mem_index)); // SSE2
+            //__m128i aligned_data_m128i = _mm_lddqu_si128 (reinterpret_cast<const __m128i*> (data_m128i + mem_index)); // SSE3
+            tmp_score_sums_m128i[mem_index] = _mm_add_epi8 (tmp_score_sums_m128i[mem_index], aligned_data_m128i);
+          }
+          for (size_t mem_index = mem_size_mod_16_base; mem_index < mem_size; ++mem_index)
+          {
+            tmp_score_sums[mem_index] += data[mem_index];
+          }
+        }
+      }
+
+      ++copy_back_counter;
+
+      //if ((feature_index & 7) == 7)
+      //if ((feature_index & 63) == 63)
+      if (copy_back_counter > 63) // only valid if each feature has only one bit set..
+      {
+        copy_back_counter = 0;
+
+        for (size_t mem_index = 0; mem_index < mem_size; mem_index += 16)
+        {
+          score_sums[mem_index+0] += tmp_score_sums[mem_index+0];
+          score_sums[mem_index+1] += tmp_score_sums[mem_index+1];
+          score_sums[mem_index+2] += tmp_score_sums[mem_index+2];
+          score_sums[mem_index+3] += tmp_score_sums[mem_index+3];
+          score_sums[mem_index+4] += tmp_score_sums[mem_index+4];
+          score_sums[mem_index+5] += tmp_score_sums[mem_index+5];
+          score_sums[mem_index+6] += tmp_score_sums[mem_index+6];
+          score_sums[mem_index+7] += tmp_score_sums[mem_index+7];
+          score_sums[mem_index+8] += tmp_score_sums[mem_index+8];
+          score_sums[mem_index+9] += tmp_score_sums[mem_index+9];
+          score_sums[mem_index+10] += tmp_score_sums[mem_index+10];
+          score_sums[mem_index+11] += tmp_score_sums[mem_index+11];
+          score_sums[mem_index+12] += tmp_score_sums[mem_index+12];
+          score_sums[mem_index+13] += tmp_score_sums[mem_index+13];
+          score_sums[mem_index+14] += tmp_score_sums[mem_index+14];
+          score_sums[mem_index+15] += tmp_score_sums[mem_index+15];
+        }
+        for (size_t mem_index = mem_size_mod_16_base; mem_index < mem_size; ++mem_index)
+        {
+          score_sums[mem_index] += tmp_score_sums[mem_index];
+        }
+
+        memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
+      }
+    }
+    {
+      for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
+      {
+        score_sums[mem_index] += tmp_score_sums[mem_index];
+      }
+        
+      memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
+    }
+#else
     unsigned short * score_sums = new unsigned short[mem_size];
     //unsigned char * score_sums = new unsigned char[mem_size];
     memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
@@ -387,11 +573,12 @@ detectTemplates (const std::vector<QuantizableModality*> & modalities, std::vect
         }
       }
     }
+#endif
 
     const float inv_max_score = 1.0f / max_score;
     
 
-    std::cerr << max_score << " ";
+    //std::cerr << max_score << " ";
 
     const float raw_threshold = (max_score/2.0f + template_threshold_*(max_score/2.0f));
 
