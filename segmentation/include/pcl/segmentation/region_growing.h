@@ -37,8 +37,8 @@
  *
  */
 
-#ifndef _REGIONGROWING_H_
-#define _REGIONGROWING_H_
+#ifndef PCL_REGION_GROWING_H_
+#define PCL_REGION_GROWING_H_
 
 #include <pcl/search/search.h>
 #include <pcl/point_cloud.h>
@@ -110,54 +110,54 @@ namespace pcl
       getCloud () const;
 
       /** \brief Returns list of segments. Each segment is a list of indices of points. */
-      std::vector<std::list<int> >
+      std::vector<std::vector<int> >
       getSegments () const;
 
       /** \brief This function allows to turn on/off the smoothness constraint.
-        * \param[in] new mode value, if set to true then the smooth version will be used.
+        * \param[in] value new mode value, if set to true then the smooth version will be used.
         */
       void
       setSmoothMode (bool value);
 
       /** \brief Allows to set smoothness threshold used for testing the points.
-        * \param[in] new threshold value for the angle between normals
+        * \param[in] theta new threshold value for the angle between normals
         */
       void
       setSmoothnessThreshold (float theta);
 
       /** \brief Allows to set residual threshold used for testing the points.
-        * \param[in] new threshold value for residual testing
+        * \param[in] residual new threshold value for residual testing
         */
       void
       setResidualThreshold (float residual);
 
       /** \brief Allows to set curvature threshold used for testing the points.
-        * \param[in] new threshold value for curvature testing
+        * \param[in] curvature new threshold value for curvature testing
         */
       void
       setCurvatureThreshold (float curvature);
 
       /** \brief Allows to set the number of neighbours. For more information check the article.
-        * \param[in] number of neighbours to use
+        * \param[in] neighbour_number number of neighbours to use
         */
       void
       setNumberOfNeighbours (unsigned int neighbour_number);
 
       /** \brief Allows to set search method that will be used for finding KNN.
-        * \param[in] search method to use
+        * \param[in] search search method to use
         */
       void
       setNeighbourSearchMethod (typename pcl::search::Search<PointT>::Ptr search);
 
       /** \brief This method sets the normals. They are needed for the algorithm, so if
         * no normals will be set, the algorithm would not be able to segment the points.
-        * \param[in] normals that will be used in the algorithm
+        * \param[in] normals normals that will be used in the algorithm
         */
       void
       setNormals (pcl::PointCloud<pcl::Normal>::Ptr normals);
 
       /** \brief This method sets the cloud that must be segmented.
-        * \param[in] point cloud that must be segmented
+        * \param[in] input_cloud point cloud that must be segmented
         */
       void
       setCloud (typename pcl::PointCloud<PointT>::Ptr input_cloud);
@@ -165,7 +165,7 @@ namespace pcl
     public:
 
       /** \brief This method simply launches the segmentation algorithm */
-      unsigned int
+      virtual unsigned int
       segmentPoints ();
 
       /** \brief This destructor destroys the cloud, normals and search method used for
@@ -177,30 +177,30 @@ namespace pcl
       /** \brief Allows to turn on/off the curvature test. Note that at least one test
         * (residual or curvature) must be turned on. If you are turning curvature test off
         * then residual test will be turned on automatically.
-        * \param[in] new value for curvature test. If set to true then the test will be turned on
+        * \param[in] value new value for curvature test. If set to true then the test will be turned on
         */
-      void
+      virtual void
       setCurvatureTest (bool value);
 
       /** \brief
         * Allows to turn on/off the residual test. Note that at least one test
         * (residual or curvature) must be turned on. If you are turning residual test off
         * then curvature test will be turned on automatically.
-        * \param[in] new value for residual test. If set to true then the test will be turned on
+        * \param[in] value new value for residual test. If set to true then the test will be turned on
         */
-      void
+      virtual void
       setResidualTest (bool value);
 
       /** \brief For a given point this function builds a segment to which it belongs and returns this segment.
-        * \param[in] initial point which will be the seed for growing a segment.
+        * \param[in] point initial point which will be the seed for growing a segment.
         */
-      std::list<int>
+      virtual std::vector<int>
       getSegmentFromPoint (const PointT &point);
 
       /** \brief For a given point this function builds a segment to which it belongs and returns this segment.
-        * \param[in] index of the initial point which will be the seed for growing a segment.
+        * \param[in] index index of the initial point which will be the seed for growing a segment.
         */
-      std::list<int>
+      virtual std::vector<int>
       getSegmentFromPoint (int index);
 
       /** \brief If the cloud was successfully segmented, then function
@@ -217,7 +217,7 @@ namespace pcl
       /** \brief This method simply checks if it is possible to execute the segmentation algorithm with
         * the current settings. If it is possible then it returns true.
         */
-      bool
+      virtual bool
       prepareForSegmentation ();
 
       /** \brief This function implements the algorithm described in the article
@@ -228,12 +228,11 @@ namespace pcl
       applySmoothRegionGrowingAlgorithm ();
 
       /** \brief This method grows a segment for the given seed point. And returns the number of its points.
-        * \param[in] index of the point that will serve as the seed point
-        * \param[in] array that indicates which points are already segmented
-        * \param[out] list of indices of the points that belong to the new grown segment
+        * \param[in] initial_seed index of the point that will serve as the seed point
+        * \param[in] segment_number indicates which number this segment will have
         */
       int
-      growRegion (int initial_seed, std::vector<int>& point_is_used, std::list<int>& out_new_segment);
+      growRegion (int initial_seed, int segment_number);
 
       /** \brief This function is checking if the point with index 'nghbr' belongs to the segment.
         * If so, then it returns true. It also checks if this point can serve as the seed.
@@ -242,10 +241,23 @@ namespace pcl
         * \param[in] nghbr index of the point that is neighbour of the current seed
         * \param[out] is_a_seed this value is set to true if the point with index 'nghbr' can serve as the seed
         */
-      bool
+      virtual bool
       validatePoint (int initial_seed, int point, int nghbr, bool& is_a_seed) const;
 
+      /** \brief This function simply assembles the regions from list of point labels. */
+      void
+      assembleRegions ();
+
+      /** \brief This method finds KNN for each point and saves them to the array
+        * because the algorithm needs to find KNN a few times.
+        */
+      virtual void
+      findPointNeighbours ();
+
     protected:
+
+      /** \brief If set to true then normal/smoothness test will be done during segmentation. */
+      bool normal_flag_;
 
       /** \brief If set to true then curvature test will be done during segmentation. */
       bool curvature_flag_;
@@ -278,11 +290,27 @@ namespace pcl
       typename pcl::PointCloud<PointT>::Ptr cloud_for_segmentation_;
 
       /** \brief After the segmentation it will contain the list of segments, which in turn are lists of indices. */
-      std::vector<std::list<int> > segments_;
+      std::vector< std::vector<int> > segments_;
 
-     public:
+      /** \brief Point labels that tells to which segment each point belongs. */
+      std::vector<int> point_labels_;
+
+      /** \brief Tells how much points each segment contains. Used for reserving memory. */
+      std::vector<int> num_pts_in_segment_;
+
+      /** \brief Contains neighbours of each point. */
+      std::vector< std::vector<int> > point_neighbours_;
+
+      /** \brief Stores the number of segments. */
+      int number_of_segments_;
+
+    public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
  };
+
+ /** \brief This function is used as a comparator for sorting. */
+ bool
+ comparePair (std::pair<float, int>i, std::pair<float, int> j);
 }
 
 #endif
