@@ -37,6 +37,8 @@
 
 #include <pcl/recognition/mask_map.h>
 
+#include <assert.h>
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::MaskMap::MaskMap ()
   : data_ (0), width_ (0), height_ (0)
@@ -61,4 +63,59 @@ pcl::MaskMap::resize (const size_t width, const size_t height)
   data_.resize (width*height);
   width_ = width;
   height_ = height;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::MaskMap::getDifferenceMask (const MaskMap & mask0,
+                                 const MaskMap & mask1,
+                                 MaskMap & diff_mask)
+{
+  const size_t width = mask0.getWidth ();
+  const size_t height = mask0.getHeight ();
+
+  assert (width == mask1.getWidth ());
+  assert (height == mask1.getHeight ());
+
+  diff_mask.resize (width, height);
+  diff_mask.reset ();
+
+  for (size_t row_index = 0; row_index < height; ++row_index)
+  {
+    for (size_t col_index = 0; col_index < width; ++col_index)
+    {
+      if (mask0 (col_index, row_index) != mask1 (col_index, row_index))
+      {
+        diff_mask (col_index, row_index) = 255;
+      }
+    }
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::MaskMap::erode (MaskMap & eroded_mask) const
+{
+  const MaskMap & mask_in = *this;
+  eroded_mask.resize (width_, height_);
+
+  for (size_t row_index = 1; row_index < height_-1; ++row_index)
+  {
+    for (size_t col_index = 1; col_index < width_-1; ++col_index)
+    {
+      if (!mask_in.isSet (col_index, row_index-1) ||
+          !mask_in.isSet (col_index-1, row_index) ||
+          !mask_in.isSet (col_index+1, row_index) ||
+          !mask_in.isSet (col_index, row_index+1))
+      {
+        eroded_mask.unset (col_index, row_index);
+      }
+      else
+      {
+        eroded_mask.set (col_index, row_index);
+      }
+    }
+  }
 }

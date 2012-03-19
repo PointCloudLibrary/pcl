@@ -65,6 +65,35 @@ namespace pcl
       inline const unsigned char* 
       getData () const { return (&data_[0]); }
 
+      static void
+      getDifferenceMask (const MaskMap & mask0,
+                         const MaskMap & mask1,
+                         MaskMap & diff_mask);
+
+      inline void
+      set (const size_t x, const size_t y)
+      {
+        data_[y*width_+x] = 255;
+      }
+
+      inline void
+      unset (const size_t x, const size_t y)
+      {
+        data_[y*width_+x] = 0;
+      }
+
+      inline bool
+      isSet (const size_t x, const size_t y) const
+      {
+        return (data_[y*width_+x] != 0);
+      }
+
+      inline void
+      reset ()
+      {
+        memset (&data_[0], 0, width_*height_);
+      }
+
       inline unsigned char & 
       operator() (const size_t x, const size_t y) 
       { 
@@ -76,6 +105,9 @@ namespace pcl
       { 
         return (data_[y*width_+x]); 
       }
+
+      void
+      erode (MaskMap & eroded_mask) const;
 
     private:
       //unsigned char * data_;
