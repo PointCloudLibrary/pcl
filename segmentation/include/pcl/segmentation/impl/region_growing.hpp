@@ -53,6 +53,13 @@
 #include <time.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::comparePair (std::pair<float, int> i, std::pair<float, int> j)
+{
+  return (i.first < j.first);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 pcl::RegionGrowing<PointT>::RegionGrowing () :
   curvature_flag_ (true),
@@ -62,10 +69,15 @@ pcl::RegionGrowing<PointT>::RegionGrowing () :
   residual_threshold_ (0.05f),
   curvature_threshold_ (0.05f),
   neighbour_number_ (30),
+  normal_flag_ (true),
+  number_of_segments_ (0),
+  segments_ (0),
+  point_labels_ (0),
+  num_pts_in_segment_ (0),
+  point_neighbours_ (0),
   search_ (),
   normals_ (),
-  cloud_for_segmentation_ (),
-  segments_ (0)
+  cloud_for_segmentation_ ()
 {
 }
 
@@ -80,6 +92,9 @@ pcl::RegionGrowing<PointT>::~RegionGrowing ()
     search_.reset ();
 
   segments_.clear ();
+  point_labels_.clear ();
+  num_pts_in_segment_.clear ();
+  point_neighbours_.clear ();
 
   if (cloud_for_segmentation_ != 0)
     cloud_for_segmentation_.reset ();
@@ -183,17 +198,17 @@ pcl::RegionGrowing<PointT>::getCloud () const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> std::vector<std::list<int> >
+template <typename PointT> std::vector<std::vector<int> >
 pcl::RegionGrowing<PointT>::getSegments () const
 {
   return (segments_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> std::list<int>
+template <typename PointT> std::vector<int>
 pcl::RegionGrowing<PointT>::getSegmentFromPoint (int index)
 {
-  std::list<int> result;
+  std::vector<int> result;
   if (cloud_for_segmentation_ == 0)
     return (result);
 
@@ -204,53 +219,42 @@ pcl::RegionGrowing<PointT>::getSegmentFromPoint (int index)
 
   if (point_was_found)
   {
-    if (!segments_.empty ())
+    if (segments_.empty ())
     {
-      // if we have already made the segmentation, then find the segment
-      // to which this point belongs
-      std::vector<std::list<int> >::iterator i_segment;
-      for (i_segment = segments_.begin(); i_segment != segments_.end(); i_segment++)
+      segmentPoints ();
+    }
+    // if we have already made the segmentation, then find the segment
+    // to which this point belongs
+    std::vector<std::vector<int> >::iterator i_segment;
+    for (i_segment = segments_.begin (); i_segment != segments_.end (); i_segment++)
+    {
+      bool segment_was_found = false;
+      result.clear ();
+      result = *i_segment;
+      std::vector<int>::iterator i_point;
+      for (i_point = result.begin (); i_point != result.end (); i_point++)
       {
-        bool segment_was_found = false;
-        result.clear();
-        result = *i_segment;
-        std::list<int>::iterator i_point;
-        for (i_point = result.begin(); i_point != result.end(); i_point++)
+        if (*i_point == index)
         {
-          if (*i_point == index)
-          {
-            segment_was_found = true;
-            break;
-          }
-        }
-        if (segment_was_found)
-        {
+          segment_was_found = true;
           break;
         }
-      }// next segment
-    }// end if segments are not empty
-    else
-    {
-      bool segmentation_is_possible = prepareForSegmentation();
-      if ( !segmentation_is_possible )
-      {
-        return (result);
       }
-      // if we haven't done the segmentation yet, then we need to grow the segment
-      std::vector<int> point_is_used;
-      point_is_used.resize(cloud_for_segmentation_->points.size(), 0);
-      growRegion(index, point_is_used, result);
-    }
+      if (segment_was_found)
+      {
+        break;
+      }
+    }// next segment
   }// end if point was found
 
   return (result);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> std::list<int>
+template <typename PointT> std::vector<int>
 pcl::RegionGrowing<PointT>::getSegmentFromPoint (const PointT &point)
 {
-  std::list<int> result;
+  std::vector<int> result;
   if (cloud_for_segmentation_ == 0)
     return (result);
 
@@ -260,8 +264,8 @@ pcl::RegionGrowing<PointT>::getSegmentFromPoint (const PointT &point)
   for (size_t i = 0; i < cloud_for_segmentation_->points.size (); i++)
   {
     if (cloud_for_segmentation_->points[i].x != point.x) continue;
-    if (cloud_for_segmentation_->points[i].x != point.x) continue;
-    if (cloud_for_segmentation_->points[i].x != point.x) continue;
+    if (cloud_for_segmentation_->points[i].y != point.y) continue;
+    if (cloud_for_segmentation_->points[i].z != point.z) continue;
 
     point_was_found = true;
     index = static_cast<int> (i);
@@ -270,43 +274,32 @@ pcl::RegionGrowing<PointT>::getSegmentFromPoint (const PointT &point)
 
   if (point_was_found)
   {
-    if (!segments_.empty ())
+    if (segments_.empty ())
     {
-      // if we have already made the segmentation, then find the segment
-      // to which this point belongs
-      std::vector<std::list<int> >::iterator i_segment;
-      for (i_segment = segments_.begin (); i_segment != segments_.end (); i_segment++)
+      segmentPoints ();
+    }
+    // if we have already made the segmentation, then find the segment
+    // to which this point belongs
+    std::vector<std::vector<int> >::iterator i_segment;
+    for (i_segment = segments_.begin (); i_segment != segments_.end (); i_segment++)
+    {
+      bool segment_was_found = false;
+      result.clear ();
+      result = *i_segment;
+      std::vector<int>::iterator i_point;
+      for (i_point = result.begin (); i_point != result.end (); i_point++)
       {
-        bool segment_was_found = false;
-        result.clear();
-        result = *i_segment;
-        std::list<int>::iterator i_point;
-        for (i_point = result.begin(); i_point != result.end(); i_point++)
+        if (*i_point == index)
         {
-          if (*i_point == index)
-          {
-            segment_was_found = true;
-            break;
-          }
-        }
-        if (segment_was_found)
-        {
+          segment_was_found = true;
           break;
         }
-      }// next segment
-    }// end if segments are not empty
-    else
-    {
-      bool segmentation_is_possible = prepareForSegmentation();
-      if ( !segmentation_is_possible )
-      {
-        return (result);
       }
-      // if we haven't done the segmentation yet, then we need to grow the segment
-      std::vector<int> point_is_used;
-      point_is_used.resize(cloud_for_segmentation_->points.size(), 0);
-      growRegion(index, point_is_used, result);
-    }
+      if (segment_was_found)
+      {
+        break;
+      }
+    }// next segment
   }// end if point was found
 
   return (result);
@@ -320,9 +313,9 @@ pcl::RegionGrowing<PointT>::getColoredCloud ()
 
   if (!segments_.empty ())
   {
-    colored_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGB>);
+    colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGB>)->makeShared ();
 
-    srand (static_cast<unsigned int>(time(0)));
+    srand (static_cast<unsigned int> (time (0)));
     std::vector<unsigned char> colors;
     for (size_t i_segment = 0; i_segment < segments_.size (); i_segment++)
     {
@@ -334,21 +327,21 @@ pcl::RegionGrowing<PointT>::getColoredCloud ()
     colored_cloud->width = cloud_for_segmentation_->width;
     colored_cloud->height = cloud_for_segmentation_->height;
     colored_cloud->is_dense = cloud_for_segmentation_->is_dense;
-    for (size_t i_point = 0; i_point < cloud_for_segmentation_->points.size(); i_point++)
+    for (size_t i_point = 0; i_point < cloud_for_segmentation_->points.size (); i_point++)
     {
       pcl::PointXYZRGB point;
       point.x = *(cloud_for_segmentation_->points[i_point].data);
       point.y = *(cloud_for_segmentation_->points[i_point].data + 1);
       point.z = *(cloud_for_segmentation_->points[i_point].data + 2);
-      colored_cloud->points.push_back(point);
+      colored_cloud->points.push_back (point);
     }
 
-    std::vector<std::list<int> >::iterator i_segment;
+    std::vector<std::vector<int> >::iterator i_segment;
     int next_color = 0;
-    for (i_segment = segments_.begin(); i_segment != segments_.end(); i_segment++)
+    for (i_segment = segments_.begin (); i_segment != segments_.end (); i_segment++)
     {
-      std::list<int>::iterator i_point;
-      for (i_point = i_segment->begin(); i_point != i_segment->end(); i_point++)
+      std::vector<int>::iterator i_point;
+      for (i_point = i_segment->begin (); i_point != i_segment->end (); i_point++)
       {
         int index;
         index = *i_point;
@@ -425,30 +418,52 @@ pcl::RegionGrowing<PointT>::setCloud (typename pcl::PointCloud<PointT>::Ptr inpu
 template <typename PointT> unsigned int
 pcl::RegionGrowing<PointT>::segmentPoints ()
 {
+  number_of_segments_ = 0;
+
   segments_.clear ();
-  unsigned int number_of_segments = 0;
-  number_of_segments = applySmoothRegionGrowingAlgorithm ();
-  return (number_of_segments);
+  point_labels_.clear ();
+  num_pts_in_segment_.clear ();
+  point_neighbours_.clear ();
+
+  bool segmentation_is_possible = prepareForSegmentation ();
+  if ( !segmentation_is_possible )
+    return (number_of_segments_);
+
+  findPointNeighbours ();
+  number_of_segments_ = applySmoothRegionGrowingAlgorithm ();
+  assembleRegions ();
+
+  return (number_of_segments_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::RegionGrowing<PointT>::prepareForSegmentation ()
 {
-  // if user forgot to pass points or normals
-  if (cloud_for_segmentation_ == 0 || normals_ == 0)
+  // if user forgot to pass point cloud or if it is empty
+  if ( cloud_for_segmentation_ == 0 || cloud_for_segmentation_->points.size () == 0 )
     return (false);
 
-  // if number of points an number of normals are different
-  if (cloud_for_segmentation_->points.size () != normals_->points.size ())
+  // if user forgot to pass normals or the sizes of point and normal cloud are different
+  if ( normals_ == 0 || cloud_for_segmentation_->points.size () != normals_->points.size () )
     return (false);
 
-  // if the cloud is empty
-  if (cloud_for_segmentation_->points.size () == 0 || normals_->points.size () == 0)
-    return (false);
+  // if residual test is on then we need to check if all needed parameters were correctly initialized
+  if (residual_flag_)
+  {
+    if (residual_threshold_ <= 0.0f)
+      return (false);
+  }
 
-  // if user passed wrong parameters
-  if (neighbour_number_ == 0 || residual_threshold_ <= 0.0f)
+  // if curvature test is on ...
+  // if (curvature_flag_)
+  // {
+  //   in this case we do not need to check anything that related to it
+  //   so we simply commented it
+  // }
+
+  // from here we check those parameters that are always valuable
+  if (neighbour_number_ == 0)
     return (false);
 
   // if user didn't set search method
@@ -464,94 +479,105 @@ pcl::RegionGrowing<PointT>::prepareForSegmentation ()
 template <typename PointT> unsigned int
 pcl::RegionGrowing<PointT>::applySmoothRegionGrowingAlgorithm ()
 {
-  bool segmentation_is_possible = prepareForSegmentation ();
-  if (!segmentation_is_possible)
+  int num_of_pts = static_cast<int> (cloud_for_segmentation_->points.size ());
+  point_labels_.resize (num_of_pts, -1);
+
+  std::vector< std::pair<float, int> > point_residual;
+  std::pair<float, int> pair;
+  point_residual.resize (num_of_pts, pair);
+
+  if (normal_flag_ == true)
   {
-    return (0);
+    for (int i_point = 0; i_point < num_of_pts; i_point++)
+    {
+      point_residual[i_point].first = normals_->points[i_point].curvature;
+      point_residual[i_point].second = i_point;
+    }
+    std::sort (point_residual.begin (), point_residual.end (), comparePair);
   }
-
-  int num_of_pts = static_cast<int>(cloud_for_segmentation_->points.size ());
-
-  std::vector<float> point_residual;
-  point_residual.resize(num_of_pts, -1.0);
-
-  std::vector<int> point_is_used;
-  point_is_used.resize(num_of_pts, 0);
-
-  for (int i_point = 0; i_point < num_of_pts; i_point++)
-    point_residual[i_point] = normals_->points[i_point].curvature;
-  std::sort(point_residual.begin(), point_residual.end());
-  int seed = 0;
+  else
+  {
+    for (int i_point = 0; i_point < num_of_pts; i_point++)
+    {
+      point_residual[i_point].first = 0;
+      point_residual[i_point].second = i_point;
+    }
+  }
+  int seed_counter = 0;
+  int seed = point_residual[seed_counter].second;
 
   int segmented_pts_num = 0;
+  int number_of_segments = 0;
   while ( segmented_pts_num < num_of_pts )
   {
     int pts_in_segment;
-    std::list<int> curr_segment;
-    pts_in_segment = growRegion(seed, point_is_used, curr_segment);
-    segments_.push_back(curr_segment);
+    pts_in_segment = growRegion (seed, number_of_segments);
     segmented_pts_num += pts_in_segment;
+    num_pts_in_segment_.push_back (pts_in_segment);
+    number_of_segments++;
 
-    for (int i_seed = seed + 1; i_seed < num_of_pts; i_seed++)
+    for (int i_seed = seed_counter + 1; i_seed < num_of_pts; i_seed++)
     {
-      if (point_is_used[i_seed] == 0)
+      int index = point_residual[i_seed].second;
+      if (point_labels_[index] == -1)
       {
-        seed = i_seed;
+        seed = index;
         break;
       }
     }
   }
 
-  return (static_cast<int>( segments_.size() ));
+  return (number_of_segments);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
-pcl::RegionGrowing<PointT>::growRegion (int initial_seed, std::vector<int>& point_is_used, std::list<int>& out_new_segment)
+pcl::RegionGrowing<PointT>::growRegion (int initial_seed, int segment_number)
 {
   std::queue<int> seeds;
-  seeds.push(initial_seed);
-  out_new_segment.push_back(initial_seed);
+  seeds.push (initial_seed);
+  point_labels_[initial_seed] = segment_number;
 
-  point_is_used[initial_seed] = 1;
+  int num_pts_in_segment = 1;
 
-  while (!seeds.empty())
+  while (!seeds.empty ())
   {
     int curr_seed;
-    curr_seed = seeds.front();
-    seeds.pop();
+    curr_seed = seeds.front ();
+    seeds.pop ();
 
-    std::vector<int> nghbr_indices;
-    std::vector<float> nghbr_distances;
-    search_->nearestKSearch(curr_seed, neighbour_number_, nghbr_indices, nghbr_distances);
-
-    for (size_t i_nghbr = 0; i_nghbr < nghbr_indices.size(); i_nghbr++)
+    size_t i_nghbr = 0;
+    while ( i_nghbr < neighbour_number_ && i_nghbr < point_neighbours_[curr_seed].size () )
     {
-      int index = nghbr_indices[i_nghbr];
-      if (point_is_used[index] == 1)
+      int index = point_neighbours_[curr_seed][i_nghbr];
+      if (point_labels_[index] != -1)
       {
+        i_nghbr++;
         continue;
       }
 
       bool is_a_seed = false;
-      bool belongs_to_segment = validatePoint(initial_seed, curr_seed, index, is_a_seed);
+      bool belongs_to_segment = validatePoint (initial_seed, curr_seed, index, is_a_seed);
 
       if (belongs_to_segment == false)
       {
+        i_nghbr++;
         continue;
       }
 
-      point_is_used[index] = 1;
-      out_new_segment.push_back(index);
+      point_labels_[index] = segment_number;
+      num_pts_in_segment++;
 
       if (is_a_seed)
       {
-        seeds.push(index);
+        seeds.push (index);
       }
+
+      i_nghbr++;
     }// next neighbour
   }// next seed
 
-  return (static_cast<int>( out_new_segment.size() ));
+  return (num_pts_in_segment);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -560,15 +586,15 @@ pcl::RegionGrowing<PointT>::validatePoint (int initial_seed, int point, int nghb
 {
   is_a_seed = true;
 
-  float cosine_threshold = cosf (theta_threshold_);
-  Eigen::Map<Eigen::Vector3f> initial_point (reinterpret_cast<float*> (cloud_for_segmentation_->points[point].data));
-  Eigen::Map<Eigen::Vector3f> initial_normal (reinterpret_cast<float*> (normals_->points[point].normal));
+  float cosine_threshold = cos (theta_threshold_);
+  Eigen::Map<Eigen::Vector3f> initial_point ( (float*)cloud_for_segmentation_->points[point].data );
+  Eigen::Map<Eigen::Vector3f> initial_normal ( (float*)normals_->points[point].normal );
 
   //check the angle between normals
   if (smooth_mode_ == true)
   {
-    Eigen::Map<Eigen::Vector3f> nghbr_normal (reinterpret_cast<float*> (normals_->points[nghbr].normal));
-    float dot_product = fabsf (nghbr_normal.dot (initial_normal));
+    Eigen::Map<Eigen::Vector3f> nghbr_normal ( (float*)normals_->points[nghbr].normal );
+    float dot_product = fabs ( nghbr_normal.dot (initial_normal) );
     if (dot_product < cosine_threshold)
     {
       return (false);
@@ -576,9 +602,9 @@ pcl::RegionGrowing<PointT>::validatePoint (int initial_seed, int point, int nghb
   }
   else
   {
-    Eigen::Map<Eigen::Vector3f> nghbr_normal (reinterpret_cast<float*> (normals_->points[nghbr].normal));
-    Eigen::Map<Eigen::Vector3f> initial_seed_normal (reinterpret_cast<float*> (normals_->points[initial_seed].normal));
-    float dot_product = fabsf (nghbr_normal.dot (initial_seed_normal));
+    Eigen::Map<Eigen::Vector3f> nghbr_normal ( (float*)normals_->points[nghbr].normal );
+    Eigen::Map<Eigen::Vector3f> initial_seed_normal ( (float*)normals_->points[initial_seed].normal );
+    float dot_product = fabs ( nghbr_normal.dot (initial_seed_normal) );
     if (dot_product < cosine_threshold)
       return (false);
   }
@@ -590,12 +616,57 @@ pcl::RegionGrowing<PointT>::validatePoint (int initial_seed, int point, int nghb
   }
 
   // check the residual if needed
-  Eigen::Map<Eigen::Vector3f> nghbr_point (reinterpret_cast<float*> (cloud_for_segmentation_->points[nghbr].data));
-  float residual = fabsf (initial_normal.dot (initial_point - nghbr_point));
+  Eigen::Map<Eigen::Vector3f> nghbr_point ( (float*)cloud_for_segmentation_->points[nghbr].data );
+  float residual = fabs ( initial_normal.dot (initial_point - nghbr_point) );
   if (residual_flag_ && residual > residual_threshold_)
     is_a_seed = false;
 
   return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::RegionGrowing<PointT>::assembleRegions ()
+{
+  int number_of_segments = static_cast<int> (num_pts_in_segment_.size ());
+  int number_of_points = static_cast<int> (cloud_for_segmentation_->points.size ());
+
+  std::vector<int> segment;
+  segments_.resize (number_of_segments, segment);
+
+  for(int i_seg = 0; i_seg < number_of_segments; i_seg++)
+  {
+    segments_[i_seg].resize ( num_pts_in_segment_[i_seg], 0);
+  }
+
+  std::vector<int> counter;
+  counter.resize (number_of_segments, 0);
+
+  for (int i_point = 0; i_point < number_of_points; i_point++)
+  {
+    int segment_index = point_labels_[i_point];
+    int point_index = counter[segment_index];
+	segments_[segment_index][point_index] = i_point;
+    counter[segment_index] = point_index + 1;
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::RegionGrowing<PointT>::findPointNeighbours ()
+{
+  int point_number = static_cast<int> (cloud_for_segmentation_->points.size ());
+  std::vector<int> neighbours;
+  std::vector<float> distances;
+
+  point_neighbours_.resize (point_number, neighbours);
+
+  for (int i_point = 0; i_point < point_number; i_point++)
+  {
+    neighbours.clear ();
+    search_->nearestKSearch (i_point, neighbour_number_, neighbours, distances);
+    point_neighbours_[i_point].swap (neighbours);
+  }
 }
 
 #define PCL_INSTANTIATE_RegionGrowing(T) template class pcl::RegionGrowing<T>;
