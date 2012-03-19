@@ -10,120 +10,150 @@ do so. Changes to these rules are always possible, but the person proposing and
 changing a rule will have the unfortunate task to go and apply the rule change
 to all the existing code.
 
-Chapter 1 -- Naming
-===================
+.. contents:: Table of Contents
+   :backlinks: none
+   :local:
 
-1.1 Files
-^^^^^^^^^
+1. Naming
+=========
+
+1.1. Files
+^^^^^^^^^^
 
 All files should be **under_scored**.
 
- * Header files have the extension **.h**
- * Templated implementation files have the extension **.hpp**
- * Source files have the extension **.cpp**
+* Header files have the extension **.h**
+* Templated implementation files have the extension **.hpp**
+* Source files have the extension **.cpp**
 
-
-1.2 Directories
-^^^^^^^^^^^^^^^
+1.2. Directories
+^^^^^^^^^^^^^^^^
 
 All directories and subdirectories should be **under_scored**.
 
- * Header files should go under **include/**
- * Templated implementation files should go under **include/impl/**
- * Source files should go under **src/**
+* Header files should go under **include/**
+* Templated implementation files should go under **include/impl/**
+* Source files should go under **src/**
 
-
-1.3 Classes / Structs
-^^^^^^^^^^^^^^^^^^^^^
-
-Class names (and other type names) should be **CamelCased**, e.g.:
-
-.. code-block:: cpp
-
-  class ExampleClass;
-
-Exception: if the class name contains a short acronym, the acronym itself
-should be all capitals, e.g.:
-
-.. code-block:: cpp
-
-  class PFHEstimation;
-
-
-1.4 Functions / Methods
-^^^^^^^^^^^^^^^^^^^^^^^
-
-Functions and class method names should be **camelCased**, and arguments are
-**under_scored**, e.g.:
-
-.. code-block:: cpp
-
-  int 
-  exampleMethod (int example_arg);
-
-Functions and methods usually performs an action, so the name should make clear
-what it does: checkForErrors() instead of errorCheck(), dumpDataToFile()
-instead of dataFile(). Classes are often nouns. By making function names verbs
-and following other naming conventions programs can be read more naturally.
-
-
-1.5 Variables
+1.3. Includes
 ^^^^^^^^^^^^^
 
-Variable names should be **under_scored**.
+Include statements are made with **"quotes"** only if the file is in the
+same directory, in any other case the include statement is made with
+**<chevron_brackets>**, e.g.:
 
-.. code-block:: cpp
+ .. code-block:: cpp
 
-  int my_variable;
+  #include <pcl/module_name/file_name.h>
+  #incluce <pcl/module_name/impl/file_name.hpp>
 
-1.5.1 Iterators
-"""""""""""""""
+1.4. Defines & Macros
+^^^^^^^^^^^^^^^^^^^^^
 
-Iterator variables should indicate what they're iterating over, e.g.:
+Macros should all be **ALL_CAPITALS_AND_UNDERSCORED**. Defines for header type
+files also need a trailing underscore. Their naming should be mapped from their
+include name: ``pcl/filters/bilateral.h`` becomes ``PCL_FILTERS_BILATERAL_H_``.
+The ``#ifndef`` and ``#define`` lines should be placed just past the BSD license.
+The ``#endif`` goes all the way at the bottom and needs to have the define name in
+its comment, e.g:
 
-.. code-block:: cpp
+ .. code-block:: cpp
 
-  std::list<int> pid_list;
-  std::list<int>::iterator pid_it;
+  // the license
+  
+  #ifndef PCL_MODULE_NAME_IMPL_FILE_NAME_HPP_
+  #define PCL_MODULE_NAME_IMPL_FILE_NAME_HPP_
+  
+  // the code
+  
+  #endif // PCL_MODULE_NAME_IMPL_FILE_NAME_HPP_
 
-1.5.2 Constants
-"""""""""""""""
-
-Constants should be **ALL_CAPITALS**, e.g.:
-
-.. code-block:: cpp
-
-  const static int MY_CONSTANT = 1000;
-
-1.5.3 Member variables
-""""""""""""""""""""""
-
-Variables that are members of a class are **under_scored**, with a trailing
-underscore added, e.g.:
-
-.. code-block:: cpp
-
-  int example_int_;
-
-
-1.6 Namespaces
-^^^^^^^^^^^^^^
+1.5. Namespaces
+^^^^^^^^^^^^^^^
 
 Namespaces should be **under_scored**, e.g.:
 
-.. code-block:: cpp
+ .. code-block:: cpp
 
   namespace pcl_io
   {
     ...
   }
 
-1.7 Return statements
-^^^^^^^^^^^^^^^^^^^^^
+1.6. Classes / Structs
+^^^^^^^^^^^^^^^^^^^^^^
+
+Class names (and other type names) should be **CamelCased**.
+Exception: if the class name contains a short acronym, the acronym itself
+should be all capitals. Class and struct names are preferably **nouns**:
+PFHEstimation instead of EstimatePFH.
+
+Correct examples:
+
+ .. code-block:: cpp
+
+  class ExampleClass;
+  class PFHEstimation;
+
+1.7. Functions / Methods
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Functions and class method names should be **camelCased**, and arguments are
+**under_scored**. Function and method names are preferably **verbs**, and the name
+should make clear what it does: checkForErrors() instead of errorCheck(),
+dumpDataToFile() instead of dataFile().
+
+Correct usage:
+
+ .. code-block:: cpp
+
+  int 
+  applyExample (int example_arg);
+
+1.8. Variables
+^^^^^^^^^^^^^^
+
+Variable names should be **under_scored**.
+
+ .. code-block:: cpp
+
+  int my_variable;
+
+1.8.1. Iterators
+""""""""""""""""
+
+Iterator variables should indicate what they're iterating over, e.g.:
+
+ .. code-block:: cpp
+
+  std::list<int> pid_list;
+  std::list<int>::iterator pid_it;
+
+1.8.2. Constants
+""""""""""""""""
+
+Constants should be **ALL_CAPITALS**, e.g.:
+
+ .. code-block:: cpp
+
+  const static int MY_CONSTANT = 1000;
+
+1.8.3. Member variables
+"""""""""""""""""""""""
+
+Variables that are members of a class are **under_scored_**, with a trailing
+underscore added, e.g.:
+
+ .. code-block:: cpp
+
+  int example_int_;
+
+1.9. Return statements
+^^^^^^^^^^^^^^^^^^^^^^
 
 Return statements should have their values in parentheses, e.g.:
 
-.. code-block:: cpp
+ .. code-block:: cpp
 
   int
   main ()
@@ -131,40 +161,17 @@ Return statements should have their values in parentheses, e.g.:
     return (0);
   }
 
+|
 
-1.8 Includes
-^^^^^^^^^^^^
-
-Include statements are made with quotes only if the header file is in the same directory, in any other case the include statement is
-made as:
-
-.. code-block:: cpp
-
-  #include <pcl/library/file.h>
-  #incluce <pcl/library/impl_file.hpp>
-
-Ifdef statements on top of header files should be made as follows:
-
-.. code-block:: cpp
-
-  #ifdef PCL_LIBRARYNAME_FILENAME_H_
-  #define PCL_LIBRARYNAME_FILENAME_H_
-  <your very good code>
-  #endif // PCL_LIBRARYNAME_FILENAME_H_
-
-1.9 Macros
-^^^^^^^^^^
-Macros should all be **ALL_CAPITALS**.
-
-Chapter 2 - Indentation and Formatting
-======================================
+2. Indentation and Formatting
+=============================
 
 The standard indentation for each block in PCL is **2 spaces**. Under no
 circumstances, tabs or other spacing measures should be used. PCL uses a
 variant of the GNU style formatting. 
 
-2.1 Namespaces
-^^^^^^^^^^^^^^
+2.1. Namespaces
+^^^^^^^^^^^^^^^
 
 In a header file, the contets of a namespace should be indented, e.g.:
 
@@ -178,7 +185,8 @@ In a header file, the contets of a namespace should be indented, e.g.:
     };
   }
 
-In an implementation file, the namespace must be added to each individual method or function definition, e.g.:
+In an implementation file, the namespace must be added to each individual
+method or function definition, e.g.:
 
 .. code-block:: cpp
 
@@ -189,8 +197,8 @@ In an implementation file, the namespace must be added to each individual method
   }
 
 
-2.2 Classes
-^^^^^^^^^^^
+2.2. Classes
+^^^^^^^^^^^^
 
 The template parameters of a class should be declared on a different line,
 e.g.:
@@ -203,8 +211,8 @@ e.g.:
      ...
    }
 
-2.3 Functions / Methods
-^^^^^^^^^^^^^^^^^^^^^^^
+2.3. Functions / Methods
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 The return type of each function declaration must be placed on a different
 line, e.g.:
@@ -244,8 +252,8 @@ or
      ...
    }
 
-2.4 Braces
-^^^^^^^^^^
+2.4. Braces
+^^^^^^^^^^^
 
 Braces, both open and close, go on their own lines, e.g.:
 
@@ -267,8 +275,8 @@ Braces can be omitted if the enclosed block is a single-line statement, e.g.:
    if (a < b)
      x = 2 * a;
 
-2.5 Spacing
-^^^^^^^^^^^
+2.5. Spacing
+^^^^^^^^^^^^
 
 We'll say it again: the standard indentation for each block in PCL is **2
 spaces**. We also include a space before the bracketed list of arguments to a
@@ -278,7 +286,6 @@ function/method, e.g.:
 
    int 
    exampleMethod (int example_arg);
-
 
 If multiple namespaces are declared within header files, always use **2
 spaces** to indent them, e.g.:
@@ -293,7 +300,6 @@ spaces** to indent them, e.g.:
         method (int my_var);
       }
    }
-
 
 Class and struct members are indented by **2 spaces**. Access qualifiers (public, private and protected) are put at the
 indentation level of the class body and members affected by these qualifiers are indented by one more level, i.e. 2 spaces. E.g.:
@@ -314,14 +320,14 @@ indentation level of the class body and members affected by these qualifiers are
    }
 
 
-2.6 Automatic code indentation
+2.6. Automatic code formatting
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The following set of rules can be automatically used by various different IDEs,
 editors, etc.
 
-2.6.1 Eclipse
-"""""""""""""
+2.6.1. Eclipse
+""""""""""""""
 
 Please us the following `formatting XML file
 <http://dev.pointclouds.org/attachments/download/25/pcl_eclipse_formatting.xml>`_,
@@ -337,14 +343,19 @@ As you edit a file, Eclipse should use this new profile to format your code
 following the PCL conventions. To reformat an entire file, select **Edit ->
 Format**.
 
-2.6.2 Uncrustify
-""""""""""""""""
+Note: This XML file may not be compatible with all versions of Eclipse. Please
+check if the formatting applies correctly. Specifically, the formatting related
+to templating in C++ can fail.
+
+2.6.2. Uncrustify
+"""""""""""""""""
 
 You can find a config for `Uncrustify <http://uncrustify.sourceforge.net/>`_
 `here <http://dev.pointclouds.org/attachments/download/537/uncrustify.cfg>`_
 
-2.6.3 Emacs
-"""""""""""
+2.6.3. Emacs
+""""""""""""
+
 You can use the following `PCL C/C++ style file
 <http://dev.pointclouds.org/attachments/download/748/pcl-c-style.el>`_,
 download it to some known location and then:
@@ -357,8 +368,44 @@ download it to some known location and then:
    (load-file "/location/to/pcl-c-style.el")
    (add-hook 'c-mode-common-hook 'pcl-set-c-style)
 
-2.6.4 UniversalIndent
-"""""""""""""""""""""
+2.6.4. UniversalIndent
+""""""""""""""""""""""
 
 TBD...
+
+|
+
+3. Structuring
+==============
+
+3.1. Classes and API
+^^^^^^^^^^^^^^^^^^^^
+
+For most classes in PCL, it is preferred that the interface (all public
+members) does not contain variables and only two types of methods:
+
+* The first method type is the get/set type that allows to manipulate the
+  parameters and input data used by the class.
+* The second type of methods is actually performing the class functionality
+  and produces output, e.g. compute, filter, segment.
+
+3.2. Passing arguments
+^^^^^^^^^^^^^^^^^^^^^^
+
+For get/set type methods the following rules apply:
+
+* If large amounts of data needs to be set (usually the case with input data
+  in PCL) it is preferred to pass a boost shared pointer instead of the actual
+  data.
+* Getters always need to pass exactly the same types as their repsective setters
+  and vice versa.
+* For getters, if only one argument needs to be passed this will be done via
+  the return keyword. If two or more arguments need to be passed they will
+  all be passed by reference instead.
+
+For the compute, filter, segment, etc. type methods the following rules apply:
+
+* The output arguments are preferably non-pointer type, regardless of data
+  size.
+* The output arguments will always be passed by reference.
 
