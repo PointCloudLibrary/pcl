@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id:$
  *
  */
 
@@ -42,8 +42,9 @@
 
 #include <pcl/recognition/cg/hough_3d.h>
 #include <pcl/registration/correspondence_types.h>
-#include <pcl/sample_consensus/ransac.h>
-#include <pcl/sample_consensus/sac_model_registration.h>
+#include <pcl/registration/correspondence_rejection_sample_consensus.h>
+//#include <pcl/sample_consensus/ransac.h>
+//#include <pcl/sample_consensus/sac_model_registration.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/board.h>
 
@@ -245,6 +246,9 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::ho
 template<typename PointModelT, typename PointSceneT, typename PointModelRfT, typename PointSceneRfT> void
 pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::clusterCorrespondences (std::vector<Correspondences> &model_instances)
 {
+  model_instances.clear ();
+  found_transformations_.clear ();
+
   if (!hough_space_initialized_ && !houghVoting ())
   {
     return;
@@ -255,48 +259,63 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::cl
   std::vector<std::vector<int> > max_ids;
 
   hough_space_->findMaxima (hough_threshold_, max_values, max_ids);
-  model_instances.clear ();
-  //insert maximas into result vector
+
+  //insert maximas into result vector, after Ransac correspondence rejection
+  //temp copy of scene cloud with the type cast to ModelT in order to use Ransac
+  PointCloudPtr temp_scene_cloud_ptr (new PointCloud);
+  pcl::copyPointCloud<PointSceneT, PointModelT> (*scene_, *temp_scene_cloud_ptr);
+
+  pcl::registration::CorrespondenceRejectorSampleConsensus<PointModelT> corr_rejector;
+  corr_rejector.setMaxIterations (10000);
+  corr_rejector.setInlierThreshold (hough_bin_size_);
+  corr_rejector.setInputCloud (input_);
+  corr_rejector.setTargetCloud (temp_scene_cloud_ptr);
+
   for (size_t j = 0; j < max_values.size (); ++j)
   {
-    Correspondences temp_corrs;
+    Correspondences temp_corrs, filtered_corrs;
     for (size_t i = 0; i < max_ids[j].size (); ++i)
     {
       temp_corrs.push_back (model_scene_corrs_->at (max_ids[j][i]));
     }
-    model_instances.push_back (temp_corrs);
+    //ransac filtering
+    corr_rejector.getRemainingCorrespondences (temp_corrs, filtered_corrs);
+    //save transformations for recognize
+    found_transformations_.push_back (corr_rejector.getBestTransformation ());
+
+    model_instances.push_back (filtered_corrs);
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointModelT, typename PointSceneT, typename PointModelRfT, typename PointSceneRfT> bool
-pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::getTransformMatrix (const PointCloudConstPtr &scene_cloud, const Correspondences &corrs, Eigen::Matrix4f &transform)
-{
-  std::vector<int> model_indices;
-  std::vector<int> scene_indices;
-  pcl::registration::getQueryIndices (corrs, model_indices);
-  pcl::registration::getMatchIndices (corrs, scene_indices);
-
-  typename pcl::SampleConsensusModelRegistration<PointModelT>::Ptr model (new pcl::SampleConsensusModelRegistration<PointModelT> (input_, model_indices));
-  model->setInputTarget (scene_cloud, scene_indices);
-
-  pcl::RandomSampleConsensus<PointModelT> ransac (model);
-  ransac.setDistanceThreshold (hough_bin_size_);
-  ransac.setMaxIterations (10000);
-  if (!ransac.computeModel ())
-    return (false);
-
-  //transform model coefficients from vectorXf to matrix4f
-  Eigen::VectorXf coeffs;
-  ransac.getModelCoefficients (coeffs);
-
-  transform.row (0) = coeffs.segment<4> (0);
-  transform.row (1) = coeffs.segment<4> (4);
-  transform.row (2) = coeffs.segment<4> (8);
-  transform.row (3) = coeffs.segment<4> (12);
-
-  return (true);
-}
+//template<typename PointModelT, typename PointSceneT, typename PointModelRfT, typename PointSceneRfT> bool
+//pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::getTransformMatrix (const PointCloudConstPtr &scene_cloud, const Correspondences &corrs, Eigen::Matrix4f &transform)
+//{
+//  std::vector<int> model_indices;
+//  std::vector<int> scene_indices;
+//  pcl::registration::getQueryIndices (corrs, model_indices);
+//  pcl::registration::getMatchIndices (corrs, scene_indices);
+//
+//  typename pcl::SampleConsensusModelRegistration<PointModelT>::Ptr model (new pcl::SampleConsensusModelRegistration<PointModelT> (input_, model_indices));
+//  model->setInputTarget (scene_cloud, scene_indices);
+//
+//  pcl::RandomSampleConsensus<PointModelT> ransac (model);
+//  ransac.setDistanceThreshold (hough_bin_size_);
+//  ransac.setMaxIterations (10000);
+//  if (!ransac.computeModel ())
+//    return (false);
+//
+//  //transform model coefficients from vectorXf to matrix4f
+//  Eigen::VectorXf coeffs;
+//  ransac.getModelCoefficients (coeffs);
+//
+//  transform.row (0) = coeffs.segment<4> (0);
+//  transform.row (1) = coeffs.segment<4> (4);
+//  transform.row (2) = coeffs.segment<4> (8);
+//  transform.row (3) = coeffs.segment<4> (12);
+//
+//  return (true);
+//}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointModelT, typename PointSceneT, typename PointModelRfT, typename PointSceneRfT> bool
@@ -314,16 +333,18 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::re
   std::vector<pcl::Correspondences> model_instances;
   clusterCorrespondences (model_instances);
 
-  //temp copy of scene cloud with the type cast to ModelT in order to use Ransac
-  PointCloudPtr temp_scene_cloud_ptr (new PointCloud);
-  pcl::copyPointCloud<PointSceneT, PointModelT> (*scene_, *temp_scene_cloud_ptr);
+  transformations = found_transformations_;
 
-  for (size_t i = 0; i < model_instances.size (); ++i)
-  {
-    Eigen::Matrix4f curr_transf;
-    if (getTransformMatrix (temp_scene_cloud_ptr, model_instances[i], curr_transf))
-      transformations.push_back (curr_transf);
-  }
+  ////temp copy of scene cloud with the type cast to ModelT in order to use Ransac
+  //PointCloudPtr temp_scene_cloud_ptr (new PointCloud);
+  //pcl::copyPointCloud<PointSceneT, PointModelT> (*scene_, *temp_scene_cloud_ptr);
+
+  //for (size_t i = 0; i < model_instances.size (); ++i)
+  //{
+  //  Eigen::Matrix4f curr_transf;
+  //  if (getTransformMatrix (temp_scene_cloud_ptr, model_instances[i], curr_transf))
+  //    transformations.push_back (curr_transf);
+  //}
 
   this->deinitCompute ();
   return (true);

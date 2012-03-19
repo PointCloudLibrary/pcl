@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id:$
  *
  */
 
@@ -173,6 +173,7 @@ namespace pcl
         , local_rf_search_radius_ (0.0f)
         , hough_space_ ()
         , hough_space_initialized_ (false)
+        , found_transformations_ ()
       {}
 
       /** \brief Provide a pointer to the input dataset.
@@ -427,6 +428,9 @@ namespace pcl
       /** \brief The Hough space. */
       boost::shared_ptr<pcl::recognition::HoughSpace3D> hough_space_;
 
+      /** \brief Transformations found by clusterCorrespondences method. */
+      std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > found_transformations_;
+
       /** \brief Whether the Hough space already contains the correct votes for the current input parameters and so the cluster and recognize calls don't need to recompute each value.
         * Reset on the change of any parameter except the hough_threshold.
         */
@@ -440,15 +444,15 @@ namespace pcl
       void
       clusterCorrespondences (std::vector<Correspondences> &model_instances);
 
-      /** \brief Finds the transformation matrix between the input and the scene cloud for a set of correspondences using a RANSAC algorithm.
-        * 
-        * \param[in] the scene cloud in which the PointSceneT has been converted to PointModelT.
-        * \param[in] corrs a set of correspondences.
-        * \param[out] transform the transformation matrix between the input cloud and the scene cloud that aligns the found correspondences.
-        * \return true if the recognition had been successful or false if errors have occurred.
-        */
-      bool
-      getTransformMatrix (const PointCloudConstPtr &scene_cloud, const Correspondences &corrs, Eigen::Matrix4f &transform);
+      ///** \brief Finds the transformation matrix between the input and the scene cloud for a set of correspondences using a RANSAC algorithm.
+      //  * 
+      //  * \param[in] the scene cloud in which the PointSceneT has been converted to PointModelT.
+      //  * \param[in] corrs a set of correspondences.
+      //  * \param[out] transform the transformation matrix between the input cloud and the scene cloud that aligns the found correspondences.
+      //  * \return true if the recognition had been successful or false if errors have occurred.
+      //  */
+      //bool
+      //getTransformMatrix (const PointCloudConstPtr &scene_cloud, const Correspondences &corrs, Eigen::Matrix4f &transform);
 
       /** \brief The Hough space voting procedure.
         *
