@@ -513,11 +513,11 @@ struct KinFuApp
 {
   enum { PCD_BIN = 1, PCD_ASCII = 2, PLY = 3, MESH_PLY = 7, MESH_VTK = 8 };
   
-  KinFuApp(CaptureOpenNI& source) : exit_ (false), scan_ (false), scan_mesh_(false), scan_volume_ (false), independent_camera_ (false),
+  KinFuApp(CaptureOpenNI& source, float vsz) : exit_ (false), scan_ (false), scan_mesh_(false), scan_volume_ (false), independent_camera_ (false),
     registration_ (false), integrate_colors_ (false), capture_ (source)
   {    
     //Init Kinfu Tracker
-    Eigen::Vector3f volume_size = Vector3f::Constant (3.f/*meters*/);
+    Eigen::Vector3f volume_size = Vector3f::Constant (vsz/*meters*/);
 
     float f = capture_.depth_focal_length_VGA;
     kinfu_.setDepthIntrinsics (f, f);
@@ -853,6 +853,7 @@ print_cli_help ()
   cout << "    --save-views, -sv               : accumulate scene view and save in the end ( Requires OpenCV. Will cause 'bad_alloc' after some time )" << endl;  
   cout << "    --registration, -r              : enable registration mode" << endl; 
   cout << "    --integrate-colors, -ic         : enable color integration mode ( allows to get cloud with colors )" << endl;   
+  cout << "    -volume_suze <size_in_meters>   : define integration volume size" << endl;   
   cout << "    -dev <deivce>, -oni <oni_file>  : select depth source. Default will be selected if not specified" << endl;
   cout << "";
   cout << " For RGBD benchmark (Requires OpenCV):" << endl; 
@@ -907,8 +908,11 @@ main (int argc, char* argv[])
     //capture.open("d:/onis/20111013-224551.oni");
     //capture.open("d:/onis/20111013-224719.oni");
   }
-      
-  KinFuApp app (capture);
+
+  float volume_size = 3.f;
+  pc::parse_argument (argc, argv, "-volume_size", volume_size);
+          
+  KinFuApp app (capture, volume_size);
 
   if (pc::parse_argument (argc, argv, "-eval", eval_folder) > 0)
     app.toggleEvaluationMode(eval_folder, match_file);
