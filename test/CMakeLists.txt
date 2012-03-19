@@ -53,7 +53,7 @@ if(build)
     PCL_ADD_TEST(a_segmentation_test test_segmentation
                  FILES test_segmentation.cpp
                  LINK_WITH pcl_io pcl_segmentation pcl_features
-                 ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/bun4.pcd)
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/bun4.pcd ${PCL_SOURCE_DIR}/test/colored_cloud.pcd)
     
     PCL_ADD_TEST(a_registration_test test_registration
                  FILES test_registration.cpp
