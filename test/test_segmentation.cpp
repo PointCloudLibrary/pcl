@@ -48,6 +48,7 @@
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
 #include <pcl/segmentation/segment_differences.h>
 #include <pcl/segmentation/region_growing.h>
+#include <pcl/segmentation/region_growing_rgb.h>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -56,9 +57,29 @@ PointCloud<PointXYZ>::Ptr cloud_;
 PointCloud<PointXYZ>::Ptr cloud_t_;
 KdTree<PointXYZ>::Ptr tree_;
 
+pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud;
 pcl::PointCloud<pcl::PointXYZ>::Ptr another_cloud_;
 pcl::PointCloud<pcl::Normal>::Ptr normals_;
 pcl::PointCloud<pcl::Normal>::Ptr another_normals_;
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (RegionGrowingRGBTest, Segment)
+{
+  pcl::RegionGrowingRGB<pcl::PointXYZRGB> rg;
+
+  rg.setCloud (colored_cloud);
+  rg.setDistanceThreshold (10);
+  rg.setRegionColorThreshold (5);
+  rg.setPointColorThreshold (6);
+  rg.setMinPointNumber (20);
+
+  rg.segmentPoints ();
+
+  std::vector< std::vector<int> > segments;
+  segments = rg.getSegments ();
+
+  EXPECT_NE(0, segments.size());
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (RegionGrowingTest, Segment)
@@ -70,7 +91,7 @@ TEST (RegionGrowingTest, Segment)
   int num_of_segments = rg.segmentPoints();
   EXPECT_NE(0, num_of_segments);
 
-  std::vector<std::list<int> > segments;
+  std::vector<std::vector<int> > segments;
   segments = rg.getSegments();
   EXPECT_NE(0, segments.size());
 }
@@ -84,7 +105,7 @@ TEST (RegionGrowingTest, SegmentWithoutCloud)
   int num_of_segments = rg.segmentPoints();
   EXPECT_EQ(0, num_of_segments);
 
-  std::vector<std::list<int> > segments;
+  std::vector<std::vector<int> > segments;
   segments = rg.getSegments();
   EXPECT_EQ(0, segments.size());
 }
@@ -98,7 +119,7 @@ TEST (RegionGrowingTest, SegmentWithoutNormals)
   int num_of_segments = rg.segmentPoints();
   EXPECT_EQ(0, num_of_segments);
 
-  std::vector<std::list<int> > segments;
+  std::vector<std::vector<int> > segments;
   segments = rg.getSegments();
   EXPECT_EQ(0, segments.size());
 }
@@ -116,7 +137,7 @@ TEST (RegionGrowingTest, SegmentEmptyCloud)
   int num_of_segments = rg.segmentPoints();
   EXPECT_EQ(0, num_of_segments);
 
-  std::vector<std::list<int> > segments;
+  std::vector<std::vector<int> > segments;
   segments = rg.getSegments();
   EXPECT_EQ(0, segments.size());
 }
@@ -135,7 +156,7 @@ TEST (RegionGrowingTest, SegmentWithDifferentNormalAndCloudSize)
   int num_of_segments = rg.segmentPoints();
   EXPECT_EQ(0, num_of_segments);
 
-  std::vector<std::list<int> > segments;
+  std::vector<std::vector<int> > segments;
   segments = rg.getSegments();
   EXPECT_EQ(0, segments.size());
 
@@ -161,15 +182,19 @@ TEST (RegionGrowingTest, SegmentWithWrongThresholdParameters)
   int num_of_segments = rg.segmentPoints();
   EXPECT_EQ(0, num_of_segments);
 
-  std::vector<std::list<int> > segments;
+  std::vector<std::vector<int> > segments;
   segments = rg.getSegments();
   EXPECT_EQ(0, segments.size());
 
   rg.setNumberOfNeighbours(30);
+  rg.setResidualTest(true);
   rg.setResidualThreshold(-10.0);
 
   num_of_segments = rg.segmentPoints();
   EXPECT_EQ(0, num_of_segments);
+
+  rg.setCurvatureTest(true);
+  rg.setCurvatureThreshold(-10.0f);
 
   segments = rg.getSegments();
   EXPECT_EQ(0, segments.size());
@@ -180,7 +205,7 @@ TEST (RegionGrowingTest, SegmentFromPoint)
 {
   pcl::RegionGrowing<pcl::PointXYZ> rg;
 
-  std::list<int> segment = rg.getSegmentFromPoint(0);
+  std::vector<int> segment = rg.getSegmentFromPoint(0);
   EXPECT_EQ(0, segment.size());
 
   rg.setCloud(cloud_);
@@ -244,15 +269,17 @@ TEST (ExtractPolygonalPrism, Segmentation)
 int
 main (int argc, char** argv)
 {
-  if (argc < 3)
+  if (argc < 4)
   {
     std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to the test." << std::endl;
-    std::cerr << "The test needs two files. Please, pass two paths of different pcd files." << std::endl;
+    std::cerr << "The test needs three files. Please, pass three paths of different pcd files." << std::endl;
+    std::cerr << "The third cloud must be the colored cloud(points must r, g and b components). For example 'colored_cloud.pcd'" << std::endl;
     return (-1);
   }
 
   // Load a standard PCD file from disk
   PointCloud<PointXYZ> cloud, cloud_t, another_cloud;
+  PointCloud<PointXYZRGB> colored_cloud_1;
   if (loadPCDFile (argv[1], cloud) < 0)
   {
     std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its path to the test." << std::endl;
@@ -260,9 +287,16 @@ main (int argc, char** argv)
   }
   if (pcl::io::loadPCDFile (argv[2], another_cloud) < 0)
   {
-    std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+    std::cerr << "Failed to read test file. Please download `bun01.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
+  if (pcl::io::loadPCDFile (argv[3], colored_cloud_1) < 0)
+  {
+    std::cerr << "Failed to read test file. Please download `colored_cloud.pcd` and pass its path to the test." << std::endl;
+    return (-1);
+  }
+
+  colored_cloud = colored_cloud_1.makeShared();
 
   // Tranpose the cloud
   cloud_t = cloud;
