@@ -44,6 +44,7 @@
 #include <pcl/segmentation/organized_multi_plane_segmentation.h>
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 #include <pcl/filters/extract_indices.h>
+#include <pcl/console/parse.h>
 
 template<typename PointT>
 class PCDOrganizedMultiPlaneSegmentation
@@ -51,10 +52,12 @@ class PCDOrganizedMultiPlaneSegmentation
   private:
     pcl::visualization::PCLVisualizer viewer;
     typename pcl::PointCloud<PointT>::ConstPtr cloud;
+    bool refine_;
   public:
-    PCDOrganizedMultiPlaneSegmentation (typename pcl::PointCloud<PointT>::ConstPtr cloud_)
+    PCDOrganizedMultiPlaneSegmentation (typename pcl::PointCloud<PointT>::ConstPtr cloud_, bool refine)
     : viewer ("Viewer")
     , cloud (cloud_)
+    , refine_ (refine)
     {
       viewer.setBackgroundColor (0, 0, 0);
       pcl::visualization::PointCloudColorHandlerCustom<PointT> single_color (cloud, 0, 255, 0);
@@ -96,7 +99,10 @@ class PCDOrganizedMultiPlaneSegmentation
       double plane_extract_start = pcl::getTime ();
       mps.setInputNormals (normal_cloud);
       mps.setInputCloud (cloud);
-      mps.segment (regions);
+      if (refine_)
+        mps.segmentAndRefine (regions);
+      else
+        mps.segment (regions);
       double plane_extract_end = pcl::getTime ();
       std::cout << "Plane extraction took " << double (plane_extract_end - plane_extract_start) << " with planar regions found: " << regions.size () << std::endl;
       std::cout << "Frame took " << double (plane_extract_end - normal_start) << std::endl;
@@ -127,11 +133,13 @@ class PCDOrganizedMultiPlaneSegmentation
 };
 
 int
-main (int, char** argv)
+main (int argc, char** argv)
 {
+  bool refine = pcl::console::find_switch (argc, argv, "-refine");
+  
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::io::loadPCDFile (argv[1], *cloud_xyz);
-  PCDOrganizedMultiPlaneSegmentation<pcl::PointXYZ> multi_plane_app (cloud_xyz);
+  PCDOrganizedMultiPlaneSegmentation<pcl::PointXYZ> multi_plane_app (cloud_xyz, refine);
   multi_plane_app.run ();
   return 0;
 }

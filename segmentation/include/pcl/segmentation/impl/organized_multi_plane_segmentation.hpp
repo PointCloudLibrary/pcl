@@ -271,7 +271,8 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
     for (unsigned colIdx = 0; colIdx < labels->width - 1; ++colIdx)
     {
       int current_label = (*labels)[current_row+colIdx].label;
-      if (current_label == -1)
+      int right_label = (*labels)[current_row+colIdx+1].label;
+      if (current_label < 0 || right_label < 0)
         continue;
       
       //Check right
@@ -319,6 +320,10 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
       //  printf ("Both growing!\n");
       */      
 
+      int lower_label = (*labels)[next_row+colIdx].label;
+      if (lower_label < 0)
+        continue;
+      
       //Check down
       if (refinement_compare_->compare (current_row+colIdx, next_row+colIdx))
       {
@@ -338,7 +343,8 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
     for (int colIdx = labels->width - 1; colIdx >= 0; --colIdx)
     {
       int current_label = (*labels)[current_row+colIdx].label;
-      if (current_label == -1)
+      int left_label    = (*labels)[current_row+colIdx-1].label;
+      if (current_label < 0 || left_label < 0)
         continue;
 
       //Check left
@@ -349,6 +355,9 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
         inlier_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx-1);
       }
       
+      int upper_label    = (*labels)[prev_row+colIdx].label;
+      if (upper_label < 0)
+        continue;
       //Check up
       if (refinement_compare_->compare (current_row+colIdx, prev_row+colIdx))
       {
