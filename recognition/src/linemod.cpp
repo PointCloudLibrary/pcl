@@ -37,6 +37,8 @@
 
 #include <pcl/recognition/linemod.h>
 
+#include <emmintrin.h>
+
 #include <fstream>
 
 
