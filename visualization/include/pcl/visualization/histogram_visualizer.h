@@ -268,7 +268,9 @@ namespace pcl
           {
             if (event_id != vtkCommand::ExitEvent)
               return;
+#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
             his->stopped_ = true;
+#endif
           }
           PCLHistogramVisualizer *his;
         };
