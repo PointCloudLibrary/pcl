@@ -41,108 +41,257 @@
 #define PCL_SURFACE_TEXTURE_MAPPING_H_
 
 #include <pcl/surface/reconstruction.h>
+#include <pcl/common/transforms.h>
 #include <pcl/TextureMesh.h>
+
+//structure to store camera pose and focal-lenght
+struct Camera
+{
+  Eigen::Affine3f pose;
+  double focal_length;
+  double height;
+  double width;
+  std::string texture_file;
+};
+
+typedef Eigen::Matrix< float, 6, 1 >    Vector6f;
 
 namespace pcl
 {
   /** \brief The texture mapping algorithm
-    * \author Khai Tran
-    * \ingroup surface
-    */
-  template <typename PointInT>
+   * \author Khai Tran
+   * \ingroup surface
+   */
+  template<typename PointInT>
   class TextureMapping
   {
-    public:
-      /** \brief Constructor. */
-      TextureMapping () : f_ (), vector_field_ (), tex_files_ (), tex_material_ () {};
+  public:
 
-      /** \brief Destructor. */
-      ~TextureMapping () {};
+    typedef boost::shared_ptr< PointInT > Ptr;
+    typedef boost::shared_ptr< const PointInT > ConstPtr;
 
-      /** \brief Set mesh scale control
-        * \param[in] f 
-        */
-      inline void
-      setF (float f)
+    typedef pcl::PointCloud<PointInT> PointCloud;
+    typedef typename PointCloud::Ptr PointCloudPtr;
+    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+
+    typedef pcl::octree::OctreePointCloudSearch<PointInT> Octree;
+    typedef typename Octree::Ptr OctreePtr;
+    typedef typename Octree::ConstPtr OctreeConstPtr;
+
+    /** \brief Constructor. */
+    TextureMapping () :
+      f_ (), vector_field_ (), tex_files_ (), tex_material_ ()
+    {
+    }
+    ;
+
+    /** \brief Destructor. */
+    ~TextureMapping ()
+    {
+    }
+    ;
+
+    /** \brief Set mesh scale control
+     * \param[in] f
+     */
+    inline void
+    setF (float f)
+    {
+      f_ = f;
+    }
+    ;
+
+    /** \brief Set vector field
+     * \param[in] x data point x
+     * \param[in] y data point y
+     * \param[in] z data point z
+     */
+    inline void
+    setVectorField (float x, float y, float z)
+    {
+      vector_field_ = Eigen::Vector3f (x, y, z);
+      // normalize vector field
+      vector_field_ = vector_field_ / std::sqrt (vector_field_.dot (vector_field_));
+    }
+    ;
+
+    /** \brief Set texture files
+     * \param[in] tex_files list of texture files
+     */
+    inline void
+    setTextureFiles (std::vector<std::string> tex_files)
+    {
+      tex_files_ = tex_files;
+    }
+    ;
+
+    /** \brief Set texture materials
+     * \param[in] tex_material texture material
+     */
+    inline void
+    setTextureMaterials (TexMaterial tex_material)
+    {
+      tex_material_ = tex_material;
+    }
+    ;
+
+    /** \brief Map texture to a mesh synthesis algorithm
+     * \param[in] tex_mesh texture mesh
+     */
+    void
+    mapTexture2Mesh (pcl::TextureMesh &tex_mesh);
+
+    /** \brief map texture to a mesh UV mapping
+     * \param[in] tex_mesh texture mesh
+     */
+    void
+    mapTexture2MeshUV (pcl::TextureMesh &tex_mesh);
+
+
+/////////////////////////////////////////////////////RAPH
+
+
+    /** \brief map textures aquired from a set of cameras onto a mesh, with UV mapping
+     *  the mesh must be divided into NbCamera + 1 sub-meshes. Each sub-mesh corresponding
+     *  to the faces visible by one camera. The last submesh containing all non-visible faces
+     * \param[in] tex_mesh texture mesh
+     * \param[in] cams cameras used for UV mapping
+     */
+    void
+    mapMultipleTexturesToMeshUV (pcl::TextureMesh &tex_mesh, std::vector<Camera> &cams);
+
+    /** \brief computes UV coordinates of point, observed by one particular camera
+     *  returns false if the point is not visible by the camera.
+     */
+    inline bool
+    getPointUVCoordinates (pcl::PointXYZ &pt, Camera &cam, Eigen::Vector2f &UV_coordinates)
+    {
+      //if the point is in front of the camera
+      if (pt.z > 0)
       {
-        f_ = f;
-      };
+        //compute image center and dimension
+        double sizeX = cam.width;
+        double sizeY = cam.height;
+        double cx = (sizeX) / 2.0;
+        double cy = (sizeY) / 2.0;
 
-      /** \brief Set vector field
-        * \param[in] x data point x
-        * \param[in] y data point y
-        * \param[in] z data point z
-        */
-      inline void
-      setVectorField (float x, float y, float z)
-      {
-        vector_field_ =  Eigen::Vector3f(x, y, z);
-        // normalize vector field
-        vector_field_ = vector_field_/std::sqrt(vector_field_.dot(vector_field_));
-      };
+        double focal_x = cam.focal_length;
+        double focal_y = cam.focal_length;
 
-      /** \brief Set texture files
-        * \param[in] tex_files list of texture files
-        */
-      inline void
-      setTextureFiles (std::vector<std::string> tex_files)
-      {
-        tex_files_ = tex_files;
-      };
+        //project point on image frame
+        UV_coordinates[0] = ((focal_x * (pt.x / pt.z) + cx) / sizeX); //horizontal
+        UV_coordinates[1] = 1.0 - (((focal_y * (pt.y / pt.z) + cy) / sizeY)); //vertical
 
-      /** \brief Set texture materials
-        * \param[in] tex_material texture material
-        */
-      inline void
-      setTextureMaterials (TexMaterial tex_material)
-      {
-        tex_material_ = tex_material;
-      };
+        //point is visible!
+        if (UV_coordinates[0] >= 0.0 && UV_coordinates[0] <= 1.0 && UV_coordinates[1] >= 0.0 && UV_coordinates[1]
+                                                                                                               <= 1.0)
+          return (true); //victory!
+      }
 
-      /** \brief Map texture to a mesh synthesis algorithm
-        * \param[in] tex_mesh texture mesh
-        */
-      void
-      mapTexture2Mesh (pcl::TextureMesh &tex_mesh);
+      //point is NOT visible by the camera
+      UV_coordinates[0] = -1.0;
+      UV_coordinates[1] = -1.0;
+      return (false); //defeat!
+    }
 
-      /** \brief map texture to a mesh UV mapping
-        * \param[in] tex_mesh texture mesh
-        */
-      void
-      mapTexture2MeshUV (pcl::TextureMesh &tex_mesh);
-
-    protected:
-
-      /** \brief mesh scale control. */
-      float f_;
-
-      /** \brief vector field */
-      Eigen::Vector3f vector_field_;
-
-      /** \brief list of texture files */
-      std::vector<std::string> tex_files_;
-
-      /** \brief list of texture materials */
-      TexMaterial tex_material_;
+    /** \brief Return true if point is occluded
+     * The octree must be initialized with a cloud transformed into the camera's frame
+     */
+    inline bool
+    pointIsOccluded(pcl::PointXYZ &pt, OctreePtr octree);
 
 
-      /** \brief get the distance of 2 3D points.
-        * \param[in] p1 the first point
-        * \param[in] p2 the second point
-        */
-      float
-      getDistance (Eigen::Vector3f &p1, Eigen::Vector3f &p2);
+    /** \brief Remove occluded points from a point cloud
+     */
+    void
+    removeOccludedPoints (PointCloudPtr &input_cloud,
+                          PointCloudPtr &filtered_cloud, double octree_voxel_size,
+                          std::vector<int> &visible_indices, std::vector<int> &occluded_indices);
 
-      /** \brief Map texture to a face
-        * \param[in] p1 the first point
-        * \param[in] p2 the second point
-        * \param[in] p3 the third point
-        */
-      std::vector<Eigen::Vector2f>
-      mapTexture2Face (Eigen::Vector3f  &p1, Eigen::Vector3f  &p2, Eigen::Vector3f &p3);
+    /** \brief Remove occluded points from a textureMesh
+     *
+     */
+    void
+    removeOccludedPoints (pcl::TextureMesh &tex_mesh, pcl::TextureMesh &cleaned_mesh, double octree_voxel_size);
 
-       /** \brief Class get name method. */
-      std::string getClassName () const { return ("TextureMapping"); }
+
+    /* \brief Remove occluded points from a textureMesh
+     */
+    void
+    removeOccludedPoints (pcl::TextureMesh &tex_mesh, PointCloudPtr &filtered_cloud, double octree_voxel_size);
+
+
+    /* \brief Segment faces by camera visibility.
+     * With N camera, faces are gonna be segmented into N+1 groups:
+     * 1 for each camera, plus one for faces not visible from any camera.
+     */
+    int
+    sortFacesByCamera (pcl::TextureMesh &tex_mesh, pcl::TextureMesh &sorted_mesh, std::vector<Camera> &cameras,
+                       double octree_voxel_size, PointCloud &visible_pts);
+
+    int
+    sortFacesByCameraExperimental (pcl::TextureMesh &tex_mesh, pcl::TextureMesh &sorted_mesh, std::vector<Camera> &cameras,
+                           double octree_voxel_size, PointCloud &visible_pts);
+
+
+    /** \brief Colors a point cloud, depending on its occlusions
+     * If showNbOcclusions is set to True, each point is colored depending on the number of points occluding it
+     * Else, each point is given a different a 0 value is not occluded, 1 if occluded.
+     * By default, the number of occlusions is bounded to 4
+     */
+    void
+    showOcclusions (PointCloudPtr &input_cloud, pcl::PointCloud<pcl::PointXYZI>::Ptr &colored_cloud,
+                    double octree_voxel_size, bool show_nb_occlusions = true,
+                    int max_occlusions = 4);
+
+    /** \brief Colors the point cloud of a Mesh, depending on its occlusions
+     * If showNbOcclusions is set to True, each point is colored depending on the number of points occluding it
+     * Else, each point is given a different a 0 value is not occluded, 1 if occluded.
+     * By default, the number of occlusions is bounded to 4
+     */
+    void
+    showOcclusions (pcl::TextureMesh &tex_mesh, pcl::PointCloud<pcl::PointXYZI>::Ptr &colored_cloud,
+                    double octree_voxel_size, bool show_nb_occlusions = true, int max_occlusions = 4);
+
+
+
+//////////////////////////////////////////////////////EORAPH
+
+  protected:
+
+    /** \brief mesh scale control. */
+    float f_;
+
+    /** \brief vector field */
+    Eigen::Vector3f vector_field_;
+
+    /** \brief list of texture files */
+    std::vector<std::string> tex_files_;
+
+    /** \brief list of texture materials */
+    TexMaterial tex_material_;
+
+    /** \brief get the distance of 2 3D points.
+     * \param[in] p1 the first point
+     * \param[in] p2 the second point
+     */
+    float
+    getDistance (Eigen::Vector3f &p1, Eigen::Vector3f &p2);
+
+    /** \brief Map texture to a face
+     * \param[in] p1 the first point
+     * \param[in] p2 the second point
+     * \param[in] p3 the third point
+     */
+    std::vector<Eigen::Vector2f>
+    mapTexture2Face (Eigen::Vector3f &p1, Eigen::Vector3f &p2, Eigen::Vector3f &p3);
+
+    /** \brief Class get name method. */
+    std::string
+    getClassName () const
+    {
+      return ("TextureMapping");
+    }
   };
 }
 
