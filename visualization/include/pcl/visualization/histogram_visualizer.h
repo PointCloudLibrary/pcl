@@ -268,9 +268,7 @@ namespace pcl
           {
             if (event_id != vtkCommand::ExitEvent)
               return;
-#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
             his->stopped_ = true;
-#endif
           }
           PCLHistogramVisualizer *his;
         };
@@ -278,10 +276,8 @@ namespace pcl
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
         vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
         vtkSmartPointer<ExitCallback> exit_callback_;
-#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
         /** \brief Set to true when the histogram visualizer is ready to be terminated. */
         bool stopped_;
-#endif
     };
   }
 }
