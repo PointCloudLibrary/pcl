@@ -49,8 +49,8 @@
 pcl::visualization::PCLHistogramVisualizer::PCLHistogramVisualizer () : 
   wins_ (),
   exit_main_loop_timer_callback_ (vtkSmartPointer<ExitMainLoopTimerCallback>::New ()), 
-  exit_callback_ (vtkSmartPointer<ExitCallback>::New ())
-  , stopped_ ()
+  exit_callback_ (vtkSmartPointer<ExitCallback>::New ()), 
+  stopped_ ()
 {
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
   resetStoppedFlag ();
@@ -76,8 +76,7 @@ pcl::visualization::PCLHistogramVisualizer::spinOnce (int time, bool force_redra
     {
       (*am_it).second.interactor_->Render ();
       exit_main_loop_timer_callback_->right_timer_id = (*am_it).second.interactor_->CreateRepeatingTimer (time);
-      // Set the correct interactor to both callbacks
-      exit_callback_->interact = (*am_it).second.interactor_;
+
       exit_main_loop_timer_callback_->interact = (*am_it).second.interactor_;
 
       (*am_it).second.interactor_->Start ();
@@ -92,8 +91,6 @@ pcl::visualization::PCLHistogramVisualizer::spinOnce (int time, bool force_redra
       (*am_it).second.interactor_->Render ();
       exit_main_loop_timer_callback_->right_timer_id = (*am_it).second.interactor_->CreateRepeatingTimer (time);
 
-      // Set the correct interactor to both callbacks
-      exit_callback_->interact = (*am_it).second.interactor_;
       exit_main_loop_timer_callback_->interact = (*am_it).second.interactor_;
 
       (*am_it).second.interactor_->Start ();
