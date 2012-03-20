@@ -128,56 +128,56 @@ namespace pcl
 #endif
 
       // index routines
-      int
-      A (int I, int J)
+      std::size_t
+      A (std::size_t I, std::size_t J)
       {
-        return m_surf->nbControlPointsV () * I + J;
+        return (m_surf->nbControlPointsV () * I + J);
       }
 
       // two global indices to one global index (lexicographic)
-      int
-      a (int i, int j)
+      std::size_t
+      a (std::size_t i, std::size_t j)
       {
-        return (m_surf->degreeV () + 1) * i + j;
+        return ((m_surf->degreeV () + 1) * i + j);
       }
 
       // two local indices into one local index (lexicographic)
-      int
-      i (int a)
+      std::size_t
+      i (std::size_t a)
       {
-        return (int)(a / (m_surf->degreeV () + 1));
+        return (std::size_t(a / (m_surf->degreeV () + 1)));
       } // local lexicographic in local row index
-      int
-      j (int a)
+      std::size_t
+      j (std::size_t a)
       {
-        return (int)(a % (m_surf->degreeV () + 1));
+        return (a % (m_surf->degreeV () + 1));
       } // local lexicographic in local col index
-      int
-      I (int A)
+      std::size_t
+      I (std::size_t A)
       {
-        return (int)(A / (m_surf->degreeV () + 1));
+        return (A / (m_surf->degreeV () + 1));
       } // global lexicographic in global row index
-      int
-      J (int A)
+      std::size_t
+      J (std::size_t A)
       {
-        return (int)(A % (m_surf->degreeV () + 1));
+        return (A % (m_surf->degreeV () + 1));
       } // global lexicographic in global col index
-      int
-      A (int E, int F, int i, int j)
+      std::size_t
+      A (std::size_t E, std::size_t F, std::size_t i, std::size_t j)
       {
-        return A (E + i, F + j);
+        return (A (E + i, F + j));
       }
       // check this: element + local indices to one global index (lexicographic)
-      int
-      E (double u)
+      std::size_t
+      E (const double &u)
       {
-        return m_surf->basis_u_.getSpan (u) - m_surf->degreeU ();
+        return (m_surf->basis_u_.getSpan (u) - m_surf->degreeU ());
         //    return ON_NurbsSpanIndex((m_surf->Degree(0)+1), (m_surf->Degree(0)+1), m_surf->m_knot[0], u, 0, 0);
       } // element index in u-direction
-      int
-      F (double v)
+      std::size_t
+      F (const double &v)
       {
-        return m_surf->basis_u_.getSpan (v) - m_surf->degreeV ();
+        return (m_surf->basis_u_.getSpan (v) - m_surf->degreeV ());
         //    return ON_NurbsSpanIndex(m_surf->m_order[1], m_surf->m_cv_count[1], m_surf->m_knot[1], v, 0, 0);
       } // element index in v-direction
 

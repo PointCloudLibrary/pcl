@@ -68,7 +68,7 @@ namespace pcl
       // http://eigen.tuxfamily.org/dox-devel/TopicStlContainers.html
 
       inline void
-      clear_interior ()
+      clearInterior ()
       {
         interior.clear ();
         interior_error.clear ();
@@ -79,7 +79,7 @@ namespace pcl
       }
 
       inline void
-      clear_boundary ()
+      clearBoundary ()
       {
         boundary.clear ();
         boundary_error.clear ();

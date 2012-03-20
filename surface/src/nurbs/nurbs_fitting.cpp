@@ -83,40 +83,40 @@ GetBoundingBox (const vector_vec3 &v, vec3 &vmin, vec3 &vmax)
   }
 }
 
-NurbsFitting::NurbsFitting (int order, NurbsData *data, vec4 ll, vec4 lr, vec4 ur, vec4 ul)
+NurbsFitting::NurbsFitting (std::size_t order, NurbsData *data, vec4 ll, vec4 lr, vec4 ur, vec4 ul)
 {
   if (order < 2)
     throw std::runtime_error ("[NurbsFitting::NurbsFitting] Error order to low (order<2).");
 
   this->data = data;
 
-  std::map<int, std::map<int, vec4> > cv_map;
+  std::map<std::size_t, std::map<std::size_t, vec4> > cv_map;
   vector_vec4 cps;
 
-  double dc = 1.0 / (order - 1);
+  double dc = 1.0 / static_cast<double> (order - 1);
 
-  for (int i = 0; i < order; i++)
+  for (std::size_t i = 0; i < order; ++i)
   {
-    double di = dc * i;
+    double di = dc * static_cast<double> (i);
     cv_map[i][0] = ll + (lr - ll) * di;
     cv_map[0][i] = ll + (ul - ll) * di;
     cv_map[i][order - 1] = ul + (ur - ul) * di;
     cv_map[order - 1][i] = lr + (ur - lr) * di;
   }
 
-  for (int i = 1; i < order - 1; i++)
+  for (std::size_t i = 1; i < order - 1; ++i)
   {
-    for (int j = 1; j < order - 1; j++)
+    for (std::size_t j = 1; j < order - 1; ++j)
     {
-      vec4 du = cv_map[0][j] + (cv_map[order - 1][j] - cv_map[0][j]) * dc * j;
-      vec4 dv = cv_map[i][0] + (cv_map[i][order - 1] - cv_map[i][0]) * dc * i;
+      vec4 du = cv_map[0][j] + (cv_map[order - 1][j] - cv_map[0][j]) * dc * static_cast<double> (j);
+      vec4 dv = cv_map[i][0] + (cv_map[i][order - 1] - cv_map[i][0]) * dc * static_cast<double> (i);
       cv_map[i][j] = du * 0.5 + dv * 0.5;
       cv_map[i][j] (3) = 1.0;
     }
   }
 
-  for (int i = 0; i < order; i++)
-    for (int j = 0; j < order; j++)
+  for (std::size_t i = 0; i < order; ++i)
+    for (std::size_t j = 0; j < order; ++j)
       cps.push_back (cv_map[i][j]);
 
   m_patch = new NurbsSurface (order - 1, order, order, cps);
@@ -124,12 +124,12 @@ NurbsFitting::NurbsFitting (int order, NurbsData *data, vec4 ll, vec4 lr, vec4 u
   this->init ();
 }
 
-NurbsFitting::NurbsFitting (int order, NurbsData *data, const vector_vec3 &cv)
+NurbsFitting::NurbsFitting (std::size_t order, NurbsData *data, const vector_vec3 &cv)
 {
   if (order < 2)
     throw std::runtime_error ("[NurbsFitting::NurbsFitting] Error order to low (order<2).");
 
-  if (order * order != (int)cv.size ())
+  if (order * order != cv.size ())
     throw std::runtime_error (
                               "[NurbsFitting::NurbsFitting] Error number of control points don't match: (order*order != cps.size()).\n");
 
@@ -137,10 +137,10 @@ NurbsFitting::NurbsFitting (int order, NurbsData *data, const vector_vec3 &cv)
 
   vector_vec4 cps;
 
-  unsigned cvi (0);
-  for (int i = 0; i < order; i++)
+  std::size_t cvi (0);
+  for (std::size_t i = 0; i < order; ++i)
   {
-    for (int j = 0; j < order; j++)
+    for (std::size_t j = 0; j < order; ++j)
     {
       vec3 cp = cv[cvi++];
       cps.push_back (vec4 (cp (0), cp (1), cp (2), 1.0));
@@ -152,7 +152,7 @@ NurbsFitting::NurbsFitting (int order, NurbsData *data, const vector_vec3 &cv)
   this->init ();
 }
 
-NurbsFitting::NurbsFitting (int order, NurbsData *data, vec3 z)
+NurbsFitting::NurbsFitting (std::size_t order, NurbsData *data, vec3 z)
 {
   if (order < 2)
     throw std::runtime_error ("[NurbsFitting::NurbsFitting] Error order to low (order<2).");
@@ -506,7 +506,6 @@ NurbsFitting::assemble (int resU, int resV, double wBnd, double wInt, double wCu
     data->boundary_line_end.push_back (pt);
 
     addPointConstraint (params, pcp, wBnd, row);
-
   }
 
   // interior points should lie on surface

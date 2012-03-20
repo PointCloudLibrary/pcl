@@ -71,7 +71,7 @@ namespace pcl
         , basis_v_ (degree, nb_control_points_v)
         , nb_control_points_u_ (nb_control_points_u)
         , nb_control_points_v_ (nb_control_points_v)
-        , control_points_ (control_points_)
+        , control_points_ (control_points)
         {}
 
         void

@@ -50,8 +50,8 @@ pcl::nurbs::NurbsCurve::evaluate (const double &xi, vec3 &point) const
   std::vector<double> N, Nd;
   basis_.cox (xi, span, N, Nd);
 
-  unsigned degree = basis_.degree ();
-  for (unsigned s = 0; s < (degree + 1); s++)
+  std::size_t degree = basis_.degree ();
+  for (std::size_t s = 0; s < (degree + 1); ++s)
   {
     pt = pt + control_points_[span - degree + s] * N[s + degree * (degree + 1)];
   }

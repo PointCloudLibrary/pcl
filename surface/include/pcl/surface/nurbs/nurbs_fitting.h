@@ -53,10 +53,10 @@ namespace pcl
         NurbsSurface* m_patch;
         NurbsData *data;
 
-        NurbsFitting (int order, NurbsData *data, vec4 ll, vec4 lr, vec4 ur, vec4 ul);
-        NurbsFitting (int order, NurbsData *data, const vector_vec3 &cv);
+        NurbsFitting (std::size_t order, NurbsData *data, vec4 ll, vec4 lr, vec4 ur, vec4 ul);
+        NurbsFitting (std::size_t order, NurbsData *data, const vector_vec3 &cv);
         NurbsFitting (NurbsData *data, const NurbsSurface &ns);
-        NurbsFitting (int order, NurbsData *data, vec3 z = vec3(0.0, 0.0, 1.0));
+        NurbsFitting (std::size_t order, NurbsData *data, vec3 z = vec3(0.0, 0.0, 1.0));
         ~NurbsFitting ();
 
         void

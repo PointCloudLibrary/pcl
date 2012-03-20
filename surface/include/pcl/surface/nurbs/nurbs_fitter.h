@@ -90,26 +90,26 @@ namespace pcl
         typedef typename PointCloud::Ptr PointCloudPtr;
 
       private:
-        Parameter m_params;
+        Parameter params_;
 
-        nurbs::NurbsData m_data;
-        nurbs::NurbsSurface m_nurbs;
+        nurbs::NurbsData nurbs_data_;
+        nurbs::NurbsSurface nurbs_surface_;
 
-        nurbs::vec4 m_corners[4];
-        PointCloudPtr m_cloud;
-        pcl::PointIndices::Ptr m_boundary_indices;
-        pcl::PointIndices::Ptr m_interior_indices;
+        nurbs::vec4 corners_[4];
+        PointCloudPtr cloud_;
+        pcl::PointIndices::Ptr boundary_indices_;
+        pcl::PointIndices::Ptr interior_indices_;
 
-        Eigen::Matrix4d m_intrinsic;
-        Eigen::Matrix4d m_extrinsic;
+        Eigen::Matrix4d intrinsics_;
+        Eigen::Matrix4d extrinsics_;
 
-        bool m_have_cloud;
-        bool m_have_corners;
+        bool have_cloud_;
+        bool have_corners_;
 
-        int m_surf_id;
+        int surface_id_;
 
         void
-        compute_quadfit ();
+        computeQuadFit ();
         void
         computeRefinement (nurbs::NurbsFitting* fitting);
         void
@@ -130,7 +130,7 @@ namespace pcl
         inline void
         setParams (const Parameter &p)
         {
-          m_params = p;
+          params_ = p;
         }
 
         /** Set input point cloud **/
@@ -147,7 +147,7 @@ namespace pcl
         setCorners (pcl::PointIndices::Ptr &corners, bool flip_on_demand = true);
 
         void
-        setProjectionMatrix (Eigen::Matrix4d &intrinsic, Eigen::Matrix4d &extrinsic);
+        setProjectionMatrix (const Eigen::Matrix4d &intrinsics, const Eigen::Matrix4d &extrinsics);
 
         /** Compute point cloud and fit (multiple) models **/
         nurbs::NurbsSurface
@@ -162,7 +162,7 @@ namespace pcl
         inline nurbs::NurbsSurface
         getNurbs ()
         {
-          return m_nurbs;
+          return nurbs_surface_;
         }
 
         /** @brief Get error of each interior point (L2-norm of point to closest point on surface) and square-error */
@@ -202,7 +202,7 @@ namespace pcl
         nurbs::NurbsSurface
         grow (float max_dist = 1.0f, float max_angle = M_PI_4, unsigned min_length = 0, unsigned max_length = 10);
 
-        static unsigned
+        static std::size_t
         PCL2Eigen (PointCloudPtr &pcl_cloud, const std::vector<int> &indices, nurbs::vector_vec3 &on_cloud);
 
       };
