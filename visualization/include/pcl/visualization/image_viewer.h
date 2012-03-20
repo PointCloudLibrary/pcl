@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -50,11 +50,25 @@ namespace pcl
   namespace visualization
   {
     typedef Eigen::Array<unsigned char, 3, 1> Vector3ub;
-    static const Vector3ub green_color(0,255,0);
-    static const Vector3ub red_color(255,0,0);
-    static const Vector3ub blue_color(0,0,255);
+    static const Vector3ub green_color (0, 255, 0);
+    static const Vector3ub red_color (255, 0, 0);
+    static const Vector3ub blue_color (0, 0, 255);
 
     /** \brief ImageViewer is a class for 2D image visualization.
+      *
+      * Features include:
+      *  - add and remove different layers with different opacity (transparency) values
+      *  - add 2D geometric shapes (circles, boxes, etc) in separate layers
+      *  - display RGB, monochrome, float, angle images
+      *
+      * Simple usage example:
+      * \code
+      * pcl::visualization::ImageViewer iv;
+      * iv.addCircle (10, 10, 5, 1.0, 0.0, 0.0, "circles", 1.0);    // add a red, fully opaque circle with radius 5 pixels at (10,10) in layer "circles"
+      * iv.addBox (10, 20, 10, 20, 0.0, 1.0, 0.0, "boxes", 0.5);    // add a green, 50% transparent box at (10,10->20,20) in layer "boxes"
+      * iv.removeLayer ("circles");                                 // remove layer "circles"
+      * \endcode
+      * 
       * \author Radu B. Rusu, Suat Gedikli
       */
     class PCL_EXPORTS ImageViewer
@@ -72,29 +86,44 @@ namespace pcl
           * \param[in] data the input data representing the image
           * \param[in] width the width of the image
           * \param[in] height the height of the image
+          * \param[in] layer_id the name of the layer (default: "image")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
           */
         void 
-        showMonoImage (const unsigned char* data, unsigned width, unsigned height);
+        showMonoImage (const unsigned char* data, unsigned width, unsigned height,
+                       const std::string &layer_id = "image", double opacity = 1.0);
 
         /** \brief Show a 2D RGB image on screen.
           * \param[in] data the input data representing the image
           * \param[in] width the width of the image
           * \param[in] height the height of the image
+          * \param[in] layer_id the name of the layer (default: "image")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
           */
         void 
-        showRGBImage (const unsigned char* data, unsigned width, unsigned height);
+        showRGBImage (const unsigned char* data, unsigned width, unsigned height, 
+                      const std::string &layer_id = "image", double opacity = 1.0);
 
-        /** \brief Show a 2D image on screen, obtained from the RGB channel of a PointXYZRGB-type point cloud.
-          * \param[in] data the input data representing the PointXYZRGB point cloud 
+        /** \brief Show a 2D image on screen, obtained from the RGB channel of a point cloud.
+          * \param[in] data the input data representing the RGB point cloud 
+          * \param[in] layer_id the name of the layer (default: "image")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
           */
-        void 
-        showRGBImage (const pcl::PointCloud<pcl::PointXYZRGB> &data);
+        template <typename T> inline void 
+        showRGBImage (const typename pcl::PointCloud<T>::ConstPtr &cloud,
+                      const std::string &layer_id = "image", double opacity = 1.0)
+        {
+          return (showRGBImage<T> (*cloud, layer_id, opacity));
+        }
 
-        /** \brief Show a 2D image on screen, obtained from the RGB channel of a PointXYZRGBA-type point cloud.
-          * \param[in] data the input data representing the PointXYZRGBA point cloud 
+        /** \brief Show a 2D image on screen, obtained from the RGB channel of a point cloud.
+          * \param[in] data the input data representing the RGB point cloud 
+          * \param[in] layer_id the name of the layer (default: "image")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
           */
-        void 
-        showRGBImage (const pcl::PointCloud<pcl::PointXYZRGBA> &data);
+        template <typename T> void 
+        showRGBImage (const pcl::PointCloud<T> &cloud,
+                      const std::string &layer_id = "image", double opacity = 1.0);
 
         /** \brief Show a 2D image (float) on screen.
           * \param[in] data the input data representing the image in float format
@@ -103,11 +132,14 @@ namespace pcl
           * \param[in] min_value filter all values in the image to be larger than this minimum value
           * \param[in] max_value filter all values in the image to be smaller than this maximum value
           * \param[in] grayscale show data as grayscale (true) or not (false). Default: false
+          * \param[in] layer_id the name of the layer (default: "image")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
           */
         void 
         showFloatImage (const float* data, unsigned int width, unsigned int height, 
                         float min_value = std::numeric_limits<float>::min (), 
-                        float max_value = std::numeric_limits<float>::max (), bool grayscale = false);
+                        float max_value = std::numeric_limits<float>::max (), bool grayscale = false,
+                        const std::string &layer_id = "image", double opacity = 1.0);
         
         /** \brief Show a 2D image (unsigned short) on screen.
           * \param[in] short_image the input data representing the image in unsigned short format
@@ -116,27 +148,36 @@ namespace pcl
           * \param[in] min_value filter all values in the image to be larger than this minimum value
           * \param[in] max_value filter all values in the image to be smaller than this maximum value
           * \param[in] grayscale show data as grayscale (true) or not (false). Default: false
+          * \param[in] layer_id the name of the layer (default: "image")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
           */
         void
         showShortImage (const unsigned short* short_image, unsigned int width, unsigned int height, 
                         unsigned short min_value = std::numeric_limits<unsigned short>::min (), 
-                        unsigned short max_value = std::numeric_limits<unsigned short>::max (), bool grayscale = false);
+                        unsigned short max_value = std::numeric_limits<unsigned short>::max (), bool grayscale = false,
+                        const std::string &layer_id = "image", double opacity = 1.0);
 
         /** \brief Show a 2D image on screen representing angle data.
           * \param[in] data the input data representing the image
           * \param[in] width the width of the image
           * \param[in] height the height of the image
+          * \param[in] layer_id the name of the layer (default: "image")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
           */
         void 
-        showAngleImage (const float* data, unsigned width, unsigned height);
+        showAngleImage (const float* data, unsigned width, unsigned height,
+                        const std::string &layer_id = "image", double opacity = 1.0);
 
         /** \brief Show a 2D image on screen representing half angle data.
           * \param[in] data the input data representing the image
           * \param[in] width the width of the image
           * \param[in] height the height of the image
+          * \param[in] layer_id the name of the layer (default: "image")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
           */
         void 
-        showHalfAngleImage (const float* data, unsigned width, unsigned height);
+        showHalfAngleImage (const float* data, unsigned width, unsigned height,
+                            const std::string &layer_id = "image", double opacity = 1.0);
 
         /** \brief Sets the pixel at coordinates(u,v) to color while setting the neighborhood to another
           * \param[in] u the u/x coordinate of the pixel
@@ -144,9 +185,12 @@ namespace pcl
           * \param[in] fg_color the pixel color
           * \param[in] bg_color the neighborhood color
           * \param[in] radius the circle radius around the pixel
+          * \param[in] layer_id the name of the layer (default: "points")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
           */
         void
-        markPoint (size_t u, size_t v, Vector3ub fg_color, Vector3ub bg_color = red_color, float radius = 2);
+        markPoint (size_t u, size_t v, Vector3ub fg_color, Vector3ub bg_color = red_color, double radius = 3.0,
+                   const std::string &layer_id = "points", double opacity = 1.0);
 
         /** \brief Set the window title name
           * \param[in] name the window title
@@ -154,7 +198,7 @@ namespace pcl
         void
         setWindowTitle (const std::string& name)
         {
-          strcpy (image_viewer_->GetWindowName (), name.c_str ());
+          image_viewer_->GetRenderWindow ()->SetWindowName (name.c_str ());
         }
 
         /** \brief Spin method. Calls the interactor and runs an internal loop. */
@@ -257,6 +301,74 @@ namespace pcl
         bool
         wasStopped () const { if (image_viewer_) return (stopped_); else return (true); }
 
+        /** \brief Add a circle shape from a point and a radius
+          * \param[in] x the x coordinate of the circle center
+          * \param[in] y the y coordinate of the circle center
+          * \param[in] radius the radius of the circle
+          * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn. 
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          */
+        bool
+        addCircle (unsigned int x, unsigned int y, double radius, 
+                   const std::string &layer_id = "circles", double opacity = 0.5);
+
+        /** \brief Add a circle shape from a point and a radius
+          * \param[in] x the x coordinate of the circle center
+          * \param[in] y the y coordinate of the circle center
+          * \param[in] radius the radius of the circle
+          * \param[in] r the red channel of the color that the sphere should be rendered with (0.0 -> 1.0)
+          * \param[in] g the green channel of the color that the sphere should be rendered with (0.0 -> 1.0)
+          * \param[in] b the blue channel of the color that the sphere should be rendered with (0.0 -> 1.0)
+          * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn. 
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          */
+        bool
+        addCircle (unsigned int x, unsigned int y, double radius, 
+                   double r, double g, double b,
+                   const std::string &layer_id = "circles", double opacity = 0.5);
+
+        /** \brief Add a box and fill it in with a given color
+          * \param[in] x_min the X min coordinate
+          * \param[in] x_max the X max coordinate
+          * \param[in] y_min the Y min coordinate
+          * \param[in] y_max the Y max coordinate 
+          * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn. 
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          */
+        bool
+        addBox (unsigned int x_min, unsigned int x_max, unsigned int y_min, unsigned int y_max,  
+               const std::string &layer_id = "boxes", double opacity = 0.5);
+
+        /** \brief Add a box and fill it in with a given color
+          * \param[in] x_min the X min coordinate
+          * \param[in] x_max the X max coordinate
+          * \param[in] y_min the Y min coordinate
+          * \param[in] y_max the Y max coordinate 
+          * \param[in] r the red channel of the color that the sphere should be rendered with (0.0 -> 1.0)
+          * \param[in] g the green channel of the color that the sphere should be rendered with (0.0 -> 1.0)
+          * \param[in] b the blue channel of the color that the sphere should be rendered with (0.0 -> 1.0)
+          * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn. 
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          */
+        bool
+        addBox (unsigned int x_min, unsigned int x_max, unsigned int y_min, unsigned int y_max,  
+                double r, double g, double b,
+                const std::string &layer_id = "boxes", double opacity = 0.5);
+
+        /** \brief Add a new 2D rendering layer to the viewer. 
+          * \param[in] layer_id the name of the layer
+          * \param[in] width the width of the layer
+          * \param[in] height the height of the layer
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          */
+        bool
+        addLayer (const std::string &layer_id, int width, int height, double opacity = 0.5);
+
+        /** \brief Remove a 2D layer given by its ID.
+          * \param[in] layer_id the name of the layer
+          */
+        void
+        removeLayer (const std::string &layer_id);
       protected:
         /** \brief Set the stopped flag back to false */
         void
@@ -322,12 +434,33 @@ namespace pcl
         };
 
     private:
+
+        /** \brief Internal structure describing a layer. */
+        struct Layer
+        {
+          vtkSmartPointer<vtkImageCanvasSource2D> canvas;
+          std::string layer_name;
+          double opacity;
+        };
+
+        typedef std::vector<Layer> LayerMap;
+
+        /** \brief Add a new 2D rendering layer to the viewer. 
+          * \param[in] layer_id the name of the layer
+          * \param[in] width the width of the layer
+          * \param[in] height the height of the layer
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          * \param[in] fill_box set to true to fill in the image with one black box before starting
+          */
+        LayerMap::iterator
+        addLayer (const std::string &layer_id, int width, int height, double opacity = 0.5, bool fill_box = true);
+
         boost::signals2::signal<void (const pcl::visualization::MouseEvent&)> mouse_signal_;
         boost::signals2::signal<void (const pcl::visualization::KeyboardEvent&)> keyboard_signal_;
         
         vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
-        vtkCallbackCommand* mouse_command_;
-        vtkCallbackCommand* keyboard_command_;
+        vtkSmartPointer<vtkCallbackCommand> mouse_command_;
+        vtkSmartPointer<vtkCallbackCommand> keyboard_command_;
 
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
         vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
@@ -338,6 +471,7 @@ namespace pcl
    
         /** \brief The data array representing the image. Used internally. */
         boost::shared_array<unsigned char> data_;
+
         /** \brief The data array (representing the image) size. Used internally. */
         size_t data_size_;
 
@@ -346,9 +480,35 @@ namespace pcl
 
         /** \brief Global timer ID. Used in destructor only. */
         int timer_id_;
-     };
+
+        /** \brief Internal blender used to overlay 2D geometry over the image. */
+        vtkSmartPointer<vtkImageBlend> blend_;
+ 
+        /** \brief Internal list with different 2D layers shapes. */
+        LayerMap layer_map_;
+
+        struct LayerComparator
+        {
+          LayerComparator (const std::string &str) : str_ (str) {}
+          const std::string &str_;
+
+          bool
+          operator () (const Layer &layer)
+          {
+            return (layer.layer_name == str_);
+          }
+        };
+
+        /** \brief Set to true to reinitialize the layer connections. */
+        std::vector<int> layers_to_remove_;
+
+      public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    };
   }
 }
+
+#include <pcl/visualization/impl/image_viewer.hpp>
 
 #endif	/* __IMAGE_VISUALIZER_H__ */
 
