@@ -41,54 +41,46 @@
 
 #include <stdio.h>
 
-using namespace pcl;
-using namespace nurbs;
-
-NurbsBasis::NurbsBasis ()
-{
-
-}
-
-NurbsBasis::NurbsBasis (unsigned degree, unsigned ncps)
+pcl::nurbs::NurbsBasis::NurbsBasis (std::size_t degree, std::size_t ncps)
 {
   if (degree >= ncps)
-    throw std::runtime_error ("[NurbsBasis::NurbsBasis] Number of control points must be greater than degree");
+    throw std::runtime_error ("[pcl::nurbs::NurbsBasis::NurbsBasis] Number of control points must be greater than degree");
 
-  this->degree = degree;
+  this->degree_ = degree;
 
   // make clamped knot vector
-  unsigned nknots = ncps + (degree + 1);
-  unsigned intknots = nknots - 2 * (degree + 1);
+  std::size_t nknots = ncps + (degree + 1);
+  std::size_t intknots = nknots - 2 * (degree + 1);
   double d = 1.0 / double (intknots + 1);
 
-  for (unsigned i = 0; i < (degree + 1); i++)
-    this->knots.push_back (0.0);
+  for (std::size_t i = 0; i < (degree + 1); i++)
+    knots_.push_back (0.0);
 
-  for (unsigned i = 0; i < intknots; i++)
-    this->knots.push_back (d * (i + 1));
+  for (std::size_t i = 0; i < intknots; i++)
+    knots_.push_back (d * static_cast<double> (i + 1));
 
-  for (unsigned i = 0; i < (degree + 1); i++)
-    this->knots.push_back (1.0);
+  for (std::size_t i = 0; i < (degree + 1); i++)
+    knots_.push_back (1.0);
 
 }
 
 int
-NurbsBasis::GetSpan (double xi) const
+pcl::nurbs::NurbsBasis::getSpan (const double &xi) const
 {
   int span = -1;
-  unsigned nknots = knots.size ();
+  std::size_t nknots = knots_.size ();
 
   // find knot span
-  for (unsigned s = 0; s < nknots - 1; s++)
+  for (std::size_t s = 0; s < nknots - 1; ++s)
   {
-    if (xi >= knots[s] && xi < knots[s + 1])
+    if (xi >= knots_[s] && xi < knots_[s + 1])
     {
-      span = s;
+      span = static_cast<int> (s);
       break;
     }
-    else if (xi == knots[nknots - 1])
+    else if (xi == knots_[nknots - 1])
     {
-      span = nknots - (degree + 1) - 1;
+      span = static_cast<int> (nknots - (degree_ + 1) - 1);
       break;
     }
   }
@@ -97,43 +89,47 @@ NurbsBasis::GetSpan (double xi) const
 }
 
 void
-NurbsBasis::GetElementVector (std::vector<double> &result) const
+pcl::nurbs::NurbsBasis::getElementVector (std::vector<double> &result) const
 {
-  unsigned nknots = knots.size ();
+  std::size_t nknots = knots_.size ();
 
   // assuming interpolating ends
-  for (unsigned i = degree; i < nknots - degree; i++)
-    result.push_back (knots[i]);
+  for (std::size_t i = degree_; i < nknots - degree_; ++i)
+    result.push_back (knots_[i]);
 }
 
 void
-NurbsBasis::InsertKnot (double xi)
+pcl::nurbs::NurbsBasis::insertKnot (const double &xi)
 {
-  unsigned nknots = knots.size ();
-  if (xi < knots[0] || xi > knots[nknots - 1])
-    throw std::runtime_error ("[NurbsBasis::InsertKnot] parameter 'xi' out of range.");
+  std::size_t nknots = knots_.size ();
+  if (xi < knots_[0] || xi > knots_[nknots - 1])
+    throw std::runtime_error ("[pcl::nurbs::NurbsBasis::InsertKnot] parameter 'xi' out of range.");
 
   // find knot span
   std::vector<double> knots_new;
-  for (unsigned s = 0; s < nknots; s++)
+  for (std::size_t s = 0; s < nknots; s++)
   {
-    knots_new.push_back (knots[s]);
-    if (s < nknots - 1 && xi >= knots[s] && xi < knots[s + 1])
+    knots_new.push_back (knots_[s]);
+    if (s < nknots - 1 && xi >= knots_[s] && xi < knots_[s + 1])
     {
       knots_new.push_back (xi);
     }
   }
-  knots = knots_new;
+  knots_ = knots_new;
 }
 
 void
-NurbsBasis::cox (double xi, int knotSpan, unsigned degree, const std::vector<double> &supKnot, std::vector<double> &N)
+pcl::nurbs::NurbsBasis::cox (const double &xi,
+                             int knotSpan,
+                             std::size_t degree,
+                             const std::vector<double> &supKnot,
+                             std::vector<double> &N)
 {
   N.assign ((degree + 1) * (degree + 1), 0.0);
-  for (unsigned p = 0; p < (degree + 1); p++)
+  for (std::size_t p = 0; p < (degree + 1); p++)
   { // loop from lower degree to higher -> unwrapped recursion
 
-    for (unsigned s = 0; s < (degree + 1); s++)
+    for (std::size_t s = 0; s < (degree + 1); s++)
     { // evaluate the basis N for each knotspan s
 
       if (p == 0)
@@ -156,7 +152,9 @@ NurbsBasis::cox (double xi, int knotSpan, unsigned degree, const std::vector<dou
         if ((xi - supKnot[s]) != 0.0 && (supKnot[s + p] - supKnot[s]) != 0.0)
           A = (xi - supKnot[s]) / (supKnot[s + p] - supKnot[s]);
 
-        if ((supKnot[s + p + 1] - xi) != 0.0 && (supKnot[s + p + 1] - supKnot[s + 1]) != 0.0 && s < degree) // (s<degree) because N(s+i,p-1) does not support
+        if (((supKnot[s + p + 1] - xi) != 0.0) &&
+            ((supKnot[s + p + 1] - supKnot[s + 1]) != 0.0) &&
+            s < degree) // (s<degree) because N(s+i,p-1) does not support
           B = (supKnot[s + p + 1] - xi) / (supKnot[s + p + 1] - supKnot[s + 1]);
 
         N[s + p * (degree + 1)] = A * N[s + (p - 1) * (degree + 1)] + B * N[(s + 1) + (p - 1) * (degree + 1)];
@@ -167,73 +165,78 @@ NurbsBasis::cox (double xi, int knotSpan, unsigned degree, const std::vector<dou
 }
 
 void
-NurbsBasis::coxder (unsigned degree, const std::vector<double> &supKnot, const std::vector<double> &N,
-                    std::vector<double> &Nd)
+pcl::nurbs::NurbsBasis::coxder (std::size_t degree,
+                                const std::vector<double> &supKnot,
+                                const std::vector<double> &N,
+                                std::vector<double> &Nd)
 {
   Nd.assign ((degree + 1) * (degree + 1), 0.0);
-  unsigned p = degree;
+  std::size_t p = degree;
 
-  for (unsigned s = 0; s < (degree + 1); s++)
-  { // evaluate the basis N for each knotspan s
+  for (std::size_t s = 0; s < (degree + 1); s++)
+  {
+    // evaluate the basis N for each knotspan s
     // Equation (2.7)
     double Ad = 0.0;
     double Bd = 0.0;
     if ((supKnot[s + p] - supKnot[s]) != 0.0)
-      Ad = p / (supKnot[s + p] - supKnot[s]);
+      Ad = static_cast<double> (p) / (supKnot[s + p] - supKnot[s]);
 
     if ((supKnot[s + p + 1] - supKnot[s + 1]) != 0.0 && s < degree) // (s<degree) because N(s+i,p-1) does not support
-      Bd = p / (supKnot[s + p + 1] - supKnot[s + 1]);
+      Bd = static_cast<double> (p) / (supKnot[s + p + 1] - supKnot[s + 1]);
 
     Nd[s + p * (degree + 1)] = Ad * N[s + (p - 1) * (degree + 1)] - Bd * N[(s + 1) + (p - 1) * (degree + 1)];
   }
 }
 
 void
-NurbsBasis::Cox (double xi, std::vector<double> &N) const
+pcl::nurbs::NurbsBasis::cox (const double &xi, std::vector<double> &N) const
 {
-  int knotSpan = this->GetSpan (xi);
+  int knotSpan = this->getSpan (xi);
   if (knotSpan < 0)
-    throw std::runtime_error ("[NurbsBasis::Cox] Paramater value 'xi' out of range");
+    throw std::runtime_error ("[pcl::nurbs::NurbsBasis::Cox] Paramater value 'xi' out of range");
 
-  this->Cox (xi, knotSpan, N);
-
+  cox (xi, knotSpan, N);
 }
 
 void
-NurbsBasis::Cox (double xi, std::vector<double> &N, std::vector<double> &Nd) const
+pcl::nurbs::NurbsBasis::cox (const double &xi, std::vector<double> &N, std::vector<double> &Nd) const
 {
-  int knotSpan = this->GetSpan (xi);
+  int knotSpan = this->getSpan (xi);
   if (knotSpan < 0)
-    throw std::runtime_error ("[NurbsBasis::Cox] Paramater value 'xi' out of range");
+    throw std::runtime_error ("[pcl::nurbs::NurbsBasis::Cox] Paramater value 'xi' out of range");
 
-  this->Cox (xi, knotSpan, N, Nd);
+  cox (xi, knotSpan, N, Nd);
 }
 
 void
-NurbsBasis::Cox (double xi, int knotSpan, std::vector<double> &N) const
+pcl::nurbs::NurbsBasis::cox (const double &xi, int knotSpan, std::vector<double> &N) const
 {
   // get supporting knots
-  int nsupKnot = 2 * (degree + 1);
+  std::size_t nsupKnot = 2 * (degree_ + 1);
   std::vector<double> supKnot;
-  for (int s = 0; s < nsupKnot; s++)
-    supKnot.push_back (knots[knotSpan - degree + s]);
+  for (std::size_t s = 0; s < nsupKnot; ++s)
+    supKnot.push_back (knots_[knotSpan - degree_ + s]);
 
   // evaluate cox-de-boor recursion
-  cox (xi, knotSpan, degree, supKnot, N);
+  cox (xi, knotSpan, degree_, supKnot, N);
 }
 
 void
-NurbsBasis::Cox (double xi, int knotSpan, std::vector<double> &N, std::vector<double> &Nd) const
+pcl::nurbs::NurbsBasis::cox (const double &xi,
+                             int knotSpan,
+                             std::vector<double> &N,
+                             std::vector<double> &Nd) const
 {
   // get supporting knots
-  int nsupKnot = 2 * (degree + 1);
+  std::size_t nsupKnot = 2 * (degree_ + 1);
   std::vector<double> supKnot;
-  for (int s = 0; s < nsupKnot; s++)
-    supKnot.push_back (knots[knotSpan - degree + s]);
+  for (std::size_t s = 0; s < nsupKnot; ++s)
+    supKnot.push_back (knots_[knotSpan - degree_ + s]);
 
   // evaluate cox-de-boor recursion
-  cox (xi, knotSpan, degree, supKnot, N);
+  cox (xi, knotSpan, degree_, supKnot, N);
 
   // evaluate cox-de-boor recursion for derivatives
-  coxder (degree, supKnot, N, Nd);
+  coxder (degree_, supKnot, N, Nd);
 }

@@ -47,59 +47,62 @@ namespace pcl
 {
   namespace nurbs
   {
-
     class PCL_EXPORTS NurbsCurve
     {
+      public:
+        NurbsCurve ()
+        {}
 
-    private:
-      NurbsBasis basis;
-      vector_vec4 cps;
+        NurbsCurve (unsigned degree, const vector_vec4 &control_points)
+        : basis_ (degree, control_points.size ())
+        , control_points_ (control_points)
+        {}
 
-    public:
-      NurbsCurve ();
-      NurbsCurve (unsigned degree, const vector_vec4 &cps);
+        void
+        evaluate (const double &xi, vec3 &point) const;
 
-      void
-      Evaluate (double xi, vec3 &point) const;
+        void
+        evaluate (const double &xi, vec3 &point, vec3 &grad) const;
 
-      void
-      Evaluate (double xi, vec3 &point, vec3 &grad) const;
+        void
+        insertKnot (const double &xi);
 
-      void
-      InsertKnot (double xi);
+        inline vec4
+        getControlPoint (std::size_t i) const
+        {
+          return control_points_[i];
+        }
 
-      inline vec4
-      GetCP (unsigned i) const
-      {
-        return cps[i];
-      }
+        inline void
+        setControlPoint (std::size_t i, const vec4 &cp)
+        {
+          control_points_[i] = cp;
+        }
 
-      inline void
-      SetCP (unsigned i, const vec4 &cp)
-      {
-        cps[i] = cp;
-      }
+        inline std::size_t
+        countControlPoints () const
+        {
+          return control_points_.size ();
+        }
 
-      inline unsigned
-      CountCP () const
-      {
-        return cps.size ();
-      }
+        inline std::size_t
+        degree () const
+        {
+          return basis_.degree ();
+        }
 
-      inline unsigned
-      Degree () const
-      {
-        return basis.degree;
-      }
+        inline void
+        getElementVector (std::vector<double> &result) const
+        {
+          basis_.getElementVector (result);
+        }
 
-      inline void
-      GetElementVector (std::vector<double> &result) const
-      {
-        basis.GetElementVector (result);
-      }
+        void
+        dump () const;
 
-      void
-      Dump () const;
+      private:
+        NurbsBasis basis_;
+        vector_vec4 control_points_;
     };
   }
 }

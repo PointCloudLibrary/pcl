@@ -38,36 +38,22 @@
 #include <pcl/surface/nurbs/nurbs_curve.h>
 #include <stdio.h>
 
-using namespace pcl;
-using namespace nurbs;
-
-NurbsCurve::NurbsCurve ()
-{
-
-}
-
-NurbsCurve::NurbsCurve (unsigned degree, const vector_vec4 &cps) :
-  basis (degree, cps.size ())
-{
-  this->cps = cps;
-}
-
 void
-NurbsCurve::Evaluate (double xi, vec3 &point) const
+pcl::nurbs::NurbsCurve::evaluate (const double &xi, vec3 &point) const
 {
   vec4 pt (0.0f, 0.0f, 0.0f, 0.0f);
 
-  int span = basis.GetSpan (xi);
+  int span = basis_.getSpan (xi);
   if (span < 0)
-    throw std::runtime_error ("[NurbsCurve::Evaluate] Paramater value 'xi' out of range");
+    throw std::runtime_error ("[pcl::nurbs::NurbsCurve::Evaluate] Paramater value 'xi' out of range");
 
   std::vector<double> N, Nd;
-  basis.Cox (xi, span, N, Nd);
+  basis_.cox (xi, span, N, Nd);
 
-  unsigned degree = basis.degree;
+  unsigned degree = basis_.degree ();
   for (unsigned s = 0; s < (degree + 1); s++)
   {
-    pt = pt + cps[span - degree + s] * N[s + degree * (degree + 1)];
+    pt = pt + control_points_[span - degree + s] * N[s + degree * (degree + 1)];
   }
 
   point (0) = pt (0);
@@ -76,23 +62,23 @@ NurbsCurve::Evaluate (double xi, vec3 &point) const
 }
 
 void
-NurbsCurve::Evaluate (double xi, vec3 &point, vec3 &grad) const
+pcl::nurbs::NurbsCurve::evaluate (const double &xi, vec3 &point, vec3 &grad) const
 {
   vec4 pt (0.0f, 0.0f, 0.0f, 0.0f);
   vec4 gd (0.0f, 0.0f, 0.0f, 0.0f);
 
-  int span = basis.GetSpan (xi);
+  int span = basis_.getSpan (xi);
   if (span < 0)
-    throw std::runtime_error ("[NurbsCurve::Evaluate] Paramater value 'xi' out of range");
+    throw std::runtime_error ("[pcl::nurbs::NurbsCurve::Evaluate] Paramater value 'xi' out of range");
 
   std::vector<double> N, Nd;
-  basis.Cox (xi, span, N, Nd);
+  basis_.cox (xi, span, N, Nd);
 
-  unsigned degree = basis.degree;
+  std::size_t degree = basis_.degree ();
   for (unsigned s = 0; s < (degree + 1); s++)
   {
-    pt = pt + cps[span - degree + s] * N[s + degree * (degree + 1)];
-    gd = gd + cps[span - degree + s] * Nd[s + degree * (degree + 1)];
+    pt = pt + control_points_[span - degree + s] * N[s + degree * (degree + 1)];
+    gd = gd + control_points_[span - degree + s] * Nd[s + degree * (degree + 1)];
   }
 
   point (0) = pt (0);
@@ -105,42 +91,42 @@ NurbsCurve::Evaluate (double xi, vec3 &point, vec3 &grad) const
 }
 
 void
-NurbsCurve::InsertKnot (double xi)
+pcl::nurbs::NurbsCurve::insertKnot (const double &xi)
 {
   // http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/NURBS-knot-insert.html
-  unsigned p = basis.degree;
-  unsigned k = basis.GetSpan (xi);
+  std::size_t p = basis_.degree ();
+  std::size_t k = basis_.getSpan (xi);
   vector_vec4 q;
-  for (unsigned i = k - p + 1; i <= k; i++)
+  for (std::size_t i = k - p + 1; i <= k; i++)
   {
-    double ai = (xi - basis.knots[i]) / (basis.knots[i + p] - basis.knots[i]);
-    vec4 qi = (1.0 - ai) * cps[i - 1] + ai * cps[i];
+    double ai = (xi - basis_.knot (i)) / (basis_.knot (i + p) - basis_.knot (i));
+    vec4 qi = (1.0 - ai) * control_points_[i - 1] + ai * control_points_[i];
     q.push_back (qi);
   }
 
   vector_vec4 cps_new;
-  for (unsigned i = 0; i <= k - p; i++)
-    cps_new.push_back (cps[i]);
+  for (std::size_t i = 0; i <= k - p; i++)
+    cps_new.push_back (control_points_[i]);
 
-  for (unsigned i = 0; i < q.size (); i++)
+  for (std::size_t i = 0; i < q.size (); i++)
     cps_new.push_back (q[i]);
 
-  for (unsigned i = k; i < cps.size (); i++)
-    cps_new.push_back (cps[i]);
+  for (std::size_t i = k; i < control_points_.size (); i++)
+    cps_new.push_back (control_points_[i]);
 
-  cps = cps_new;
-  basis.InsertKnot (xi);
+  control_points_ = cps_new;
+  basis_.insertKnot (xi);
 }
 
 void
-NurbsCurve::Dump () const
+pcl::nurbs::NurbsCurve::dump () const
 {
-  printf ("[NurbsCurve::Dump]");
-  printf ("  Degree: %d\n", basis.degree);
+  printf ("[pcl::nurbs::NurbsCurve::Dump]");
+  printf ("  Degree: %d\n", basis_.degree ());
   printf ("  Knot Vector:\n");
-  for (unsigned i = 0; i < basis.knots.size (); i++)
-    printf ("    [%d] %.2f\n", i, basis.knots[i]);
+  for (std::size_t i = 0; i < basis_.nbKnots (); i++)
+    printf ("    [%d] %.2f\n", i, basis_.knot (i));
   printf ("  Control Points:\n");
-  for (unsigned i = 0; i < cps.size (); i++)
-    printf ("    [%d] %.2f  %.2f  %.2f\n", i, cps[i] (0), cps[i] (1), cps[i] (2));
+  for (std::size_t i = 0; i < control_points_.size (); i++)
+    printf ("    [%d] %.2f  %.2f  %.2f\n", i, control_points_[i] (0), control_points_[i] (1), control_points_[i] (2));
 }

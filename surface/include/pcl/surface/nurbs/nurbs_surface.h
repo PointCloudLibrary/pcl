@@ -47,79 +47,105 @@ namespace pcl
 {
   namespace nurbs
   {
-
     class PCL_EXPORTS NurbsSurface
     {
 
-    public:
-      NurbsBasis basisU;
-      NurbsBasis basisV;
+      public:
+        NurbsBasis basis_u_;
+        NurbsBasis basis_v_;
 
-      unsigned ncpsU;
-      unsigned ncpsV;
+        std::size_t nb_control_points_u_;
+        std::size_t nb_control_points_v_;
 
-      vector_vec4 cps;
+        vector_vec4 control_points_;
 
-    public:
-      NurbsSurface ();
-      NurbsSurface (unsigned degree, unsigned ncpsU, unsigned ncpsV, const vector_vec4 &cps);
+      public:
+        NurbsSurface ()
+        {}
 
-      void
-      Evaluate (double u, double v, vec3 &point) const;
+        NurbsSurface (std::size_t degree,
+                      std::size_t nb_control_points_u,
+                      std::size_t nb_control_points_v,
+                      const vector_vec4 &control_points)
+        : basis_u_ (degree, nb_control_points_u)
+        , basis_v_ (degree, nb_control_points_v)
+        , nb_control_points_u_ (nb_control_points_u)
+        , nb_control_points_v_ (nb_control_points_v)
+        , control_points_ (control_points_)
+        {}
 
-      void
-      Evaluate (double u, double v, vec3 &point, vec3 &grad_u, vec3 &grad_v) const;
+        void
+        evaluate (double u, double v, vec3 &point) const;
 
-      void
-      InsertKnotU (double u);
+        void
+        evaluate (double u, double v, vec3 &point, vec3 &grad_u, vec3 &grad_v) const;
 
-      void
-      InsertKnotV (double v);
+        void
+        insertKnotU (double u);
 
-      unsigned
-      I (unsigned i, unsigned j) const;
+        void
+        insertKnotV (double v);
 
-      vec4
-      GetCP (unsigned i, unsigned j) const;
+        /** \return the linear coordinate
+          * \param i coordinate in U
+          * \param j coordinate in V
+          */
+        std::size_t
+        index (std::size_t i, std::size_t j) const;
 
-      void
-      SetCP (unsigned i, unsigned j, const vec4 &cp);
+        /** \return control point at coordinate (i,j)
+          * \param i coordinate in U
+          * \param j coordinate in V
+          */
+        vec4
+        getControlPoint (std::size_t i, std::size_t j) const;
 
-      inline unsigned
-      CountCPU () const
-      {
-        return ncpsU;
-      }
-      inline unsigned
-      CountCPV () const
-      {
-        return ncpsV;
-      }
+        /** set control point at coordinate (i,j)
+          * \param i coordinate in U
+          * \param j coordinate in V
+          * \param cp control point
+          */
+        void
+        setControlPoint (std::size_t i, std::size_t j, const vec4 &cp);
 
-      inline unsigned
-      DegreeU () const
-      {
-        return basisU.degree;
-      }
-      inline unsigned
-      DegreeV () const
-      {
-        return basisV.degree;
-      }
+        inline std::size_t
+        nbControlPointsU () const
+        {
+          return nb_control_points_u_;
+        }
 
-      inline void
-      GetElementVectorU (std::vector<double> &result) const
-      {
-        basisU.GetElementVector (result);
-      }
-      inline void
-      GetElementVectorV (std::vector<double> &result) const
-      {
-        basisV.GetElementVector (result);
-      }
+        inline std::size_t
+        nbControlPointsV () const
+        {
+          return nb_control_points_v_;
+        }
 
-      void
-      Dump () const;
+        inline std::size_t
+        degreeU () const
+        {
+          return basis_u_.degree ();
+        }
+
+        inline std::size_t
+        degreeV () const
+        {
+            return basis_v_.degree ();
+        }
+
+        inline void
+        getElementVectorU (std::vector<double> &result) const
+        {
+          basis_u_.getElementVector (result);
+        }
+
+        inline void
+        getElementVectorV (std::vector<double> &result) const
+        {
+          basis_v_.getElementVector (result);
+        }
+
+        void
+        dump () const;
 
     };
   }

@@ -44,17 +44,13 @@
 #undef Success
 #include <Eigen/Dense>
 
-using namespace pcl;
-using namespace nurbs;
-using namespace Eigen;
-
-NurbsTools::NurbsTools (NurbsSurface* surf)
+pcl::nurbs::NurbsTools::NurbsTools (NurbsSurface* surf)
 {
   m_surf = surf;
 }
 
 void
-NurbsTools::initNurbsPCA (NurbsSurface *nurbs, NurbsData *data, Eigen::Vector3d z)
+pcl::nurbs::NurbsTools::initNurbsPCA (NurbsSurface *nurbs, NurbsData *data, Eigen::Vector3d z)
 {
   Eigen::Vector3d mean;
   Eigen::Matrix3d eigenvectors;
@@ -62,7 +58,7 @@ NurbsTools::initNurbsPCA (NurbsSurface *nurbs, NurbsData *data, Eigen::Vector3d 
 
   unsigned s = data->interior.size ();
 
-  NurbsTools::pca (data->interior, mean, eigenvectors, eigenvalues);
+  pcl::nurbs::NurbsTools::pca (data->interior, mean, eigenvectors, eigenvalues);
 
   data->mean = mean;
   data->eigenvectors = eigenvectors;
@@ -76,25 +72,25 @@ NurbsTools::initNurbsPCA (NurbsSurface *nurbs, NurbsData *data, Eigen::Vector3d 
   Eigen::Vector3d sigma (sqrt (eigenvalues (0)), sqrt (eigenvalues (1)), sqrt (eigenvalues (2)));
 
   // +- 2 sigma -> 95,45 % aller Messwerte
-  double dcu = (4.0 * sigma (0)) / (nurbs->DegreeU ());
-  double dcv = (4.0 * sigma (1)) / (nurbs->DegreeV ());
+  double dcu = (4.0 * sigma (0)) / (nurbs->degreeU ());
+  double dcv = (4.0 * sigma (1)) / (nurbs->degreeV ());
 
   Eigen::Vector3d cv_t, cv;
-  for (unsigned i = 0; i < nurbs->DegreeU () + 1; i++)
+  for (unsigned i = 0; i < nurbs->degreeU () + 1; i++)
   {
-    for (unsigned j = 0; j < nurbs->DegreeV () + 1; j++)
+    for (unsigned j = 0; j < nurbs->degreeV () + 1; j++)
     {
       flip ? cv (0) = 2.0 * sigma (0) - dcu * i : cv (0) = -2.0 * sigma (0) + dcu * i;
       cv (1) = -2.0 * sigma (1) + dcv * j;
       cv (2) = 0.0;
       cv_t = eigenvectors * cv + mean;
-      nurbs->SetCP (i, j, vec4(cv_t(0), cv_t(1), cv_t(2), 1.0));
+      nurbs->setControlPoint (i, j, vec4(cv_t(0), cv_t(1), cv_t(2), 1.0));
     }
   }
 }
 
 void
-NurbsTools::initNurbsPCABoundingBox (NurbsSurface *nurbs, NurbsData *data, Eigen::Vector3d z)
+pcl::nurbs::NurbsTools::initNurbsPCABoundingBox (NurbsSurface *nurbs, NurbsData *data, Eigen::Vector3d z)
 {
   Eigen::Vector3d mean;
   Eigen::Matrix3d eigenvectors;
@@ -102,7 +98,7 @@ NurbsTools::initNurbsPCABoundingBox (NurbsSurface *nurbs, NurbsData *data, Eigen
 
   unsigned s = data->interior.size ();
 
-  NurbsTools::pca (data->interior, mean, eigenvectors, eigenvalues);
+  pcl::nurbs::NurbsTools::pca (data->interior, mean, eigenvectors, eigenvalues);
 
   data->mean = mean;
   data->eigenvectors = eigenvectors;
@@ -136,25 +132,25 @@ NurbsTools::initNurbsPCABoundingBox (NurbsSurface *nurbs, NurbsData *data, Eigen
       v_min (2) = p (2);
   }
 
-  double dcu = (v_max (0) - v_min (0)) / (nurbs->DegreeU ());
-  double dcv = (v_max (1) - v_min (1)) / (nurbs->DegreeV ());
+  double dcu = (v_max (0) - v_min (0)) / (nurbs->degreeU ());
+  double dcv = (v_max (1) - v_min (1)) / (nurbs->degreeV ());
 
   Eigen::Vector3d cv_t, cv;
-  for (unsigned i = 0; i < nurbs->DegreeU () + 1; i++)
+  for (unsigned i = 0; i < nurbs->degreeU () + 1; i++)
   {
-    for (unsigned j = 0; j < nurbs->DegreeV () + 1; j++)
+    for (unsigned j = 0; j < nurbs->degreeV () + 1; j++)
     {
       flip ? cv (0) = -v_min (0) - dcu * i : cv (0) = v_min (0) + dcu * i;
       cv (1) = v_min (1) + dcv * j;
       cv (2) = 0.0;
       cv_t = eigenvectors * cv + mean;
-      nurbs->SetCP (i, j, vec4(cv_t(0), cv_t(1), cv_t(2), 1.0));
+      nurbs->setControlPoint (i, j, vec4(cv_t(0), cv_t(1), cv_t(2), 1.0));
     }
   }
 }
 
 Eigen::Vector3d
-NurbsTools::computeMean (const vector_vec3d &data)
+pcl::nurbs::NurbsTools::computeMean (const vector_vec3d &data)
 {
   Eigen::Vector3d u (0.0, 0.0, 0.0);
 
@@ -168,12 +164,12 @@ NurbsTools::computeMean (const vector_vec3d &data)
 }
 
 void
-NurbsTools::pca (const vector_vec3d &data, Eigen::Vector3d &mean, Eigen::Matrix3d &eigenvectors,
+pcl::nurbs::NurbsTools::pca (const vector_vec3d &data, Eigen::Vector3d &mean, Eigen::Matrix3d &eigenvectors,
                  Eigen::Vector3d &eigenvalues)
 {
   if (data.empty ())
   {
-    printf ("[NurbsTools::pca] Error, data is empty\n");
+    printf ("[pcl::nurbs::NurbsTools::pca] Error, data is empty\n");
     abort ();
   }
 
@@ -189,9 +185,9 @@ NurbsTools::pca (const vector_vec3d &data, Eigen::Vector3d &mean, Eigen::Matrix3
   Eigen::Matrix3d C = Q * Q.transpose ();
 
   Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> eigensolver (C);
-  if (eigensolver.info () != Success)
+  if (eigensolver.info () != Eigen::Success)
   {
-    printf ("[nurbsfitting::NurbsTools::pca] Can not find eigenvalues.\n");
+    printf ("[nurbsfitting::pcl::nurbs::NurbsTools::pca] Can not find eigenvalues.\n");
     abort ();
   }
 
@@ -206,7 +202,7 @@ NurbsTools::pca (const vector_vec3d &data, Eigen::Vector3d &mean, Eigen::Matrix3
 }
 
 void
-NurbsTools::downsample_random (vector_vec3d &data, unsigned size)
+pcl::nurbs::NurbsTools::downSampleRandom (vector_vec3d &data, unsigned size)
 {
   if (data.size () <= size && size > 0)
     return;
@@ -224,26 +220,26 @@ NurbsTools::downsample_random (vector_vec3d &data, unsigned size)
   data = data_tmp;
 }
 
-vec3
-NurbsTools::x (double u, double v)
+pcl::nurbs::vec3
+pcl::nurbs::NurbsTools::x (double u, double v)
 {
 
   vec3 result;
 
-  m_surf->Evaluate (u, v, result);
+  m_surf->evaluate (u, v, result);
 
   return result;
 
 }
 
-MatrixXd
-NurbsTools::jacX (double u, double v) // !
+Eigen::MatrixXd
+pcl::nurbs::NurbsTools::jacX (double u, double v) // !
 {
 
-  MatrixXd Dx = MatrixXd::Zero (3, 2);
+  Eigen::MatrixXd Dx = Eigen::MatrixXd::Zero (3, 2);
 
-  vec3 pt, gu, gv;
-  m_surf->Evaluate (u, v, pt, gu, gv);
+  pcl::nurbs::vec3 pt, gu, gv;
+  m_surf->evaluate (u, v, pt, gu, gv);
 
   Dx (0, 0) = gu (0);
   Dx (1, 0) = gu (1);
@@ -269,48 +265,43 @@ NurbsTools::jacX (double u, double v) // !
 }
 
 std::vector<double>
-NurbsTools::getElementVector (int dim) // !
+pcl::nurbs::NurbsTools::getElementVector (int dim) // !
 {
   std::vector<double> result;
 
   if (dim == 0)
   {
-    m_surf->GetElementVectorU (result);
+    m_surf->getElementVectorU (result);
   }
   else
   {
-    m_surf->GetElementVectorV (result);
+    m_surf->getElementVectorV (result);
   }
 
   return result;
 }
 
 std::vector<double>
-NurbsTools::getElementVectorDeltas (int dim)
+pcl::nurbs::NurbsTools::getElementVectorDeltas (int dim)
 {
 
   std::vector<double> elements = this->getElementVector (dim);
   std::vector<double> deltas;
 
-  for (unsigned i = 0; i < elements.size () - 1; i++)
-  {
-
+  for (unsigned i = 0; i < elements.size () - 1; ++i)
     deltas.push_back (elements[i + 1] - elements[i]);
 
-  }
-
   return deltas;
-
 }
 
-vec2
-NurbsTools::inverseMapping (const vec3 &pt, const vec2 &hint, double &error, vec3 &p, vec3 &tu, vec3 &tv, int maxSteps,
+pcl::nurbs::vec2
+pcl::nurbs::NurbsTools::inverseMapping (const vec3 &pt, const vec2 &hint, double &error, vec3 &p, vec3 &tu, vec3 &tv, int maxSteps,
                             double accuracy, bool quiet)
 {
-  vec2 current (0.0, 0.0), delta (0.0, 0.0);
-  Matrix2d A;
-  vec2 b (0.0, 0.0);
-  vec3 r (0.0, 0.0, 0.0);
+  pcl::nurbs::vec2 current (0.0, 0.0), delta (0.0, 0.0);
+  Eigen::Matrix2d A;
+  pcl::nurbs::vec2 b (0.0, 0.0);
+  pcl::nurbs::vec3 r (0.0, 0.0, 0.0);
   std::vector<double> elementsU = getElementVector (0);
   std::vector<double> elementsV = getElementVector (1);
   double minU = elementsU[0];
@@ -323,7 +314,7 @@ NurbsTools::inverseMapping (const vec3 &pt, const vec2 &hint, double &error, vec
   for (int k = 0; k < maxSteps; k++)
   {
 
-    m_surf->Evaluate (current (0), current (1), p, tu, tv);
+    m_surf->evaluate (current (0), current (1), p, tu, tv);
 
     r = p - pt;
 
@@ -382,7 +373,7 @@ NurbsTools::inverseMapping (const vec3 &pt, const vec2 &hint, double &error, vec
   }
 
   if (!quiet)
-    std::cout << "[NurbsTools::inverseMapping] Warning: Method did not converge after maximum number of steps!"
+    std::cout << "[pcl::nurbs::NurbsTools::inverseMapping] Warning: Method did not converge after maximum number of steps!"
         << std::endl;
 
   error = r.norm ();
@@ -394,13 +385,13 @@ NurbsTools::inverseMapping (const vec3 &pt, const vec2 &hint, double &error, vec
 
 }
 
-vec2
-NurbsTools::inverseMapping (const vec3 &pt, vec2* phint, double &error, vec3 &p, vec3 &tu, vec3 &tv, int maxSteps,
+pcl::nurbs::vec2
+pcl::nurbs::NurbsTools::inverseMapping (const vec3 &pt, vec2* phint, double &error, vec3 &p, vec3 &tu, vec3 &tv, int maxSteps,
                             double accuracy, bool quiet)
 {
 
-  vec2 hint;
-  vec3 r;
+  pcl::nurbs::vec2 hint;
+  pcl::nurbs::vec3 r;
   std::vector<double> elementsU = getElementVector (0);
   std::vector<double> elementsV = getElementVector (1);
 
@@ -417,7 +408,7 @@ NurbsTools::inverseMapping (const vec3 &pt, vec2* phint, double &error, vec3 &p,
         double xi = elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i]);
         double eta = elementsV[j] + 0.5 * (elementsV[j + 1] - elementsV[j]);
 
-        m_surf->Evaluate (xi, eta, point);
+        m_surf->evaluate (xi, eta, point);
 
         r = point - pt;
 
@@ -440,16 +431,16 @@ NurbsTools::inverseMapping (const vec3 &pt, vec2* phint, double &error, vec3 &p,
   return inverseMapping (pt, hint, error, p, tu, tv, maxSteps, accuracy, quiet);
 }
 
-vec2
-NurbsTools::inverseMappingBoundary (const vec3 &pt, double &error, vec3 &p, vec3 &tu, vec3 &tv, int maxSteps,
+pcl::nurbs::vec2
+pcl::nurbs::NurbsTools::inverseMappingBoundary (const vec3 &pt, double &error, vec3 &p, vec3 &tu, vec3 &tv, int maxSteps,
                                     double accuracy, bool quiet)
 {
 
-  vec2 result;
+  pcl::nurbs::vec2 result;
   double min_err = 100.0;
   std::vector<myvec> ini_points;
   double err_tmp;
-  vec3 p_tmp, tu_tmp, tv_tmp;
+  pcl::nurbs::vec3 p_tmp, tu_tmp, tv_tmp;
 
   std::vector<double> elementsU = getElementVector (0);
   std::vector<double> elementsV = getElementVector (1);
@@ -471,7 +462,7 @@ NurbsTools::inverseMappingBoundary (const vec3 &pt, double &error, vec3 &p, vec3
   for (unsigned i = 0; i < ini_points.size (); i++)
   {
 
-    vec2 params = inverseMappingBoundary (pt, ini_points[i].side, ini_points[i].hint, err_tmp, p_tmp, tu_tmp, tv_tmp,
+    vec2 params = inverseMappingBoundary (pt, ini_points[i].side_, ini_points[i].hint_, err_tmp, p_tmp, tu_tmp, tv_tmp,
                                           maxSteps, accuracy, quiet);
 
     if (i == 0 || err_tmp < min_err)
@@ -489,13 +480,14 @@ NurbsTools::inverseMappingBoundary (const vec3 &pt, double &error, vec3 &p, vec3
 
 }
 
-vec2
-NurbsTools::inverseMappingBoundary (const vec3 &pt, int side, double hint, double &error, vec3 &p, vec3 &tu, vec3 &tv,
-                                    int maxSteps, double accuracy, bool quiet)
+pcl::nurbs::vec2
+pcl::nurbs::NurbsTools::inverseMappingBoundary (const pcl::nurbs::vec3 &pt, int side, double hint,
+                                                double &error, pcl::nurbs::vec3 &p, pcl::nurbs::vec3 &tu, pcl::nurbs::vec3 &tv,
+                                                int maxSteps, double accuracy, bool quiet)
 {
   double current (0.0), delta (0.0);
-  vec3 r (0.0, 0.0, 0.0), t (0.0, 0.0, 0.0);
-  vec2 params (0.0, 0.0);
+  pcl::nurbs::vec3 r (0.0, 0.0, 0.0), t (0.0, 0.0, 0.0);
+  pcl::nurbs::vec2 params (0.0, 0.0);
 
   current = hint;
 
@@ -516,7 +508,7 @@ NurbsTools::inverseMappingBoundary (const vec3 &pt, int side, double hint, doubl
 
         params (0) = minU;
         params (1) = current;
-        m_surf->Evaluate (minU, current, p, tu, tv);
+        m_surf->evaluate (minU, current, p, tu, tv);
 
         t = tv; // use tv
 
@@ -525,7 +517,7 @@ NurbsTools::inverseMappingBoundary (const vec3 &pt, int side, double hint, doubl
 
         params (0) = current;
         params (1) = maxV;
-        m_surf->Evaluate (current, maxV, p, tu, tv);
+        m_surf->evaluate (current, maxV, p, tu, tv);
 
         t = tu; // use tu
 
@@ -534,7 +526,7 @@ NurbsTools::inverseMappingBoundary (const vec3 &pt, int side, double hint, doubl
 
         params (0) = maxU;
         params (1) = current;
-        m_surf->Evaluate (maxU, current, p, tu, tv);
+        m_surf->evaluate (maxU, current, p, tu, tv);
 
         t = tv; // use tv
 
@@ -543,7 +535,7 @@ NurbsTools::inverseMappingBoundary (const vec3 &pt, int side, double hint, doubl
 
         params (0) = current;
         params (1) = minV;
-        m_surf->Evaluate (current, minV, p, tu, tv);
+        m_surf->evaluate (current, minV, p, tu, tv);
 
         t = tu; // use tu
 
@@ -618,14 +610,14 @@ NurbsTools::inverseMappingBoundary (const vec3 &pt, int side, double hint, doubl
   error = r.norm ();
   if (!quiet)
     printf (
-            "[NurbsTools::inverseMappingBoundary] Warning: Method did not converge! (residual: %f, delta: %f, params: %f %f)\n",
+            "[pcl::nurbs::NurbsTools::inverseMappingBoundary] Warning: Method did not converge! (residual: %f, delta: %f, params: %f %f)\n",
             error, delta, params (0), params (1));
 
   return params;
 }
 
 #ifdef USE_UMFPACK
-bool NurbsTools::solveSparseLinearSystem(cholmod_sparse* A, cholmod_dense* b, cholmod_dense* x, bool transpose)
+bool pcl::nurbs::NurbsTools::solveSparseLinearSystem(cholmod_sparse* A, cholmod_dense* b, cholmod_dense* x, bool transpose)
 {
 
   double* vals = (double*) A->x;
@@ -649,7 +641,7 @@ bool NurbsTools::solveSparseLinearSystem(cholmod_sparse* A, cholmod_dense* b, ch
   if( status != 0 )
   {
 
-    std::cout << "[NurbsTools::solveSparseLinearSystem] Warning: something is wrong with input matrix!" << std::endl;
+    std::cout << "[pcl::nurbs::NurbsTools::solveSparseLinearSystem] Warning: something is wrong with input matrix!" << std::endl;
     return 1;
 
   }
@@ -659,7 +651,7 @@ bool NurbsTools::solveSparseLinearSystem(cholmod_sparse* A, cholmod_dense* b, ch
   if( status != 0 )
   {
 
-    std::cout << "[NurbsTools::solveSparseLinearSystem] Warning: ordering was ok but factorization failed!" << std::endl;
+    std::cout << "[pcl::nurbs::NurbsTools::solveSparseLinearSystem] Warning: ordering was ok but factorization failed!" << std::endl;
     return 1;
 
   }
@@ -692,7 +684,7 @@ bool NurbsTools::solveSparseLinearSystem(cholmod_sparse* A, cholmod_dense* b, ch
 
 }
 
-bool NurbsTools::solveSparseLinearSystemLQ(cholmod_sparse* A, cholmod_dense* b, cholmod_dense* x)
+bool pcl::nurbs::NurbsTools::solveSparseLinearSystemLQ(cholmod_sparse* A, cholmod_dense* b, cholmod_dense* x)
 {
 
   cholmod_common c;

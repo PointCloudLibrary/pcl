@@ -47,54 +47,62 @@ namespace pcl
 {
   namespace nurbs
   {
-
-    class NurbsCurve;
-    class NurbsSurface;
-
     class PCL_EXPORTS NurbsBasis
     {
 
     protected:
-      unsigned degree; ///< polynomial degree
-      std::vector<double> knots; ///< knot vector
+      std::size_t degree_; ///< polynomial degree
+      std::vector<double> knots_; ///< knot vector
 
       static void
-      cox (double xi, int knotSpan, unsigned degree, const std::vector<double> &supKnot, std::vector<double> &N);
+      cox (const double &xi, int knotSpan, std::size_t degree, const std::vector<double> &supKnot, std::vector<double> &N);
+
       static void
-      coxder (unsigned degree, const std::vector<double> &supKnot, const std::vector<double> &N,
+      coxder (std::size_t degree, const std::vector<double> &supKnot, const std::vector<double> &N,
               std::vector<double> &Nd);
 
     public:
-      NurbsBasis ();
-      NurbsBasis (unsigned order, unsigned ncps);
+      NurbsBasis ()
+      {}
+
+      NurbsBasis (std::size_t order, std::size_t ncps);
 
       /** @brief Find the knot span to a parameter xi */
       int
-      GetSpan (double xi) const;
+      getSpan (const double &xi) const;
 
       void
-      GetElementVector (std::vector<double> &result) const;
+      getElementVector (std::vector<double> &result) const;
 
       void
-      InsertKnot (double xi);
+      insertKnot (const double &xi);
 
-      unsigned Knots() const { return knots.size(); }
+      std::size_t
+      nbKnots () const
+      {
+        return (knots_.size ());
+      }
 
-      double Knot(unsigned i) const { return knots[i]; }
+      const double &
+      knot (std::size_t i) const
+      {
+        return (knots_ [i]);
+      }
 
+      inline size_t
+      degree () const
+      {
+          return (degree_);
+      }
       /** @brief Cox-De-Boor recursion formula */
       void
-      Cox (double xi, std::vector<double> &N) const;
+      cox (const double &xi, std::vector<double> &N) const;
       void
-      Cox (double xi, std::vector<double> &N, std::vector<double> &Nd) const;
+      cox (const double &xi, std::vector<double> &N, std::vector<double> &Nd) const;
       void
-      Cox (double xi, int span, std::vector<double> &N) const;
+      cox (const double &xi, int span, std::vector<double> &N) const;
       void
-      Cox (double xi, int span, std::vector<double> &N, std::vector<double> &Nd) const;
-
-      friend class NurbsCurve;
-      friend class NurbsSurface;
-
+      cox (const double &xi, int span, std::vector<double> &N, std::vector<double> &Nd) const;
     };
   }
 }

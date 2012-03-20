@@ -81,15 +81,15 @@ template<typename PointInT>
     else
     {
       fitting = new NurbsFitting (2, &m_data);
-      m_corners[0] = fitting->m_patch->GetCP (0, 0);
-      m_corners[1] = fitting->m_patch->GetCP (1, 0);
-      m_corners[2] = fitting->m_patch->GetCP (1, 1);
-      m_corners[3] = fitting->m_patch->GetCP (0, 1);
+      m_corners[0] = fitting->m_patch->getControlPoint (0, 0);
+      m_corners[1] = fitting->m_patch->getControlPoint (1, 0);
+      m_corners[2] = fitting->m_patch->getControlPoint (1, 1);
+      m_corners[3] = fitting->m_patch->getControlPoint (0, 1);
       Eigen::Vector3d v0 (m_corners[0] (0), m_corners[0] (1), m_corners[0] (2));
       Eigen::Vector3d v1 (m_corners[1] (0), m_corners[1] (1), m_corners[1] (2));
       Eigen::Vector3d v2 (m_corners[2] (0), m_corners[2] (1), m_corners[2] (2));
       Eigen::Vector3d v3 (m_corners[3] (0), m_corners[3] (1), m_corners[3] (2));
-      if (is_back_facing (v0, v1, v2, v3))
+      if (isBackFacing (v0, v1, v2, v3))
       {
         vec4 tmp[4];
         tmp[0] = m_corners[0];
@@ -114,17 +114,17 @@ template<typename PointInT>
       fitting->assemble (0, 0, m_params.forceBoundary, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0);
       fitting->solve ();
     }
-    m_corners[0] = fitting->m_patch->GetCP (0, 0);
-    m_corners[1] = fitting->m_patch->GetCP (1, 0);
-    m_corners[2] = fitting->m_patch->GetCP (1, 1);
-    m_corners[3] = fitting->m_patch->GetCP (0, 1);
+    m_corners[0] = fitting->m_patch->getControlPoint (0, 0);
+    m_corners[1] = fitting->m_patch->getControlPoint (1, 0);
+    m_corners[2] = fitting->m_patch->getControlPoint (1, 1);
+    m_corners[3] = fitting->m_patch->getControlPoint (0, 1);
 
     delete (fitting);
   }
 
 template<typename PointInT>
   void
-  NurbsFitter<PointInT>::compute_refinement (NurbsFitting* fitting)
+  NurbsFitter<PointInT>::computeRefinement (NurbsFitting* fitting)
   {
     // Refinement
     for (int r = 0; r < m_params.refinement; r++)
@@ -138,7 +138,7 @@ template<typename PointInT>
 
 template<typename PointInT>
   void
-  NurbsFitter<PointInT>::compute_boundary (NurbsFitting* fitting)
+  NurbsFitter<PointInT>::computeBoundary (NurbsFitting* fitting)
   {
     // iterate boundary points
     for (int i = 0; i < m_params.iterationsBoundary; i++)
@@ -149,7 +149,7 @@ template<typename PointInT>
   }
 template<typename PointInT>
   void
-  NurbsFitter<PointInT>::compute_interior (NurbsFitting* fitting)
+  NurbsFitter<PointInT>::computeInterior (NurbsFitting* fitting)
   {
     // iterate interior points
     //std::vector<double> wInt(m_data.interior.PointCount(), m_params.forceInterior);
@@ -179,7 +179,7 @@ template<typename PointInT>
 
 template<typename PointInT>
   bool
-  NurbsFitter<PointInT>::is_back_facing (const Eigen::Vector3d &v0, const Eigen::Vector3d &v1,
+  NurbsFitter<PointInT>::isBackFacing (const Eigen::Vector3d &v0, const Eigen::Vector3d &v1,
                                          const Eigen::Vector3d &v2, const Eigen::Vector3d &v3)
   {
     Eigen::Vector3d e1, e2, e3;
@@ -256,7 +256,7 @@ template<typename PointInT>
       Eigen::Vector3d v1 (pt1.x, pt1.y, pt1.z);
       Eigen::Vector3d v2 (pt2.x, pt2.y, pt2.z);
       Eigen::Vector3d v3 (pt3.x, pt3.y, pt3.z);
-      flip = is_back_facing (v0, v1, v2, v3);
+      flip = isBackFacing (v0, v1, v2, v3);
     }
 
     if (flip)
@@ -303,9 +303,9 @@ template<typename PointInT>
 
       fitting = new NurbsFitting (m_params.order, &m_data, m_corners[0], m_corners[1], m_corners[2], m_corners[3]);
 
-      compute_refinement (fitting);
+      computeRefinement (fitting);
 
-      compute_boundary (fitting);
+      computeBoundary (fitting);
     }
     else
     {
@@ -316,20 +316,20 @@ template<typename PointInT>
       else
       {
         fitting = new NurbsFitting (m_params.order, &m_data);
-        int ncv0 = fitting->m_patch->CountCPU ();
-        int ncv1 = fitting->m_patch->CountCPV ();
+        int ncv0 = fitting->m_patch->nbControlPointsU ();
+        int ncv1 = fitting->m_patch->nbControlPointsV ();
 
-        m_corners[0] = fitting->m_patch->GetCP (0, 0);
-        m_corners[1] = fitting->m_patch->GetCP (ncv0 - 1, 0);
-        m_corners[2] = fitting->m_patch->GetCP (ncv0 - 1, ncv1 - 1);
-        m_corners[3] = fitting->m_patch->GetCP (0, ncv1 - 1);
+        m_corners[0] = fitting->m_patch->getControlPoint (0, 0);
+        m_corners[1] = fitting->m_patch->getControlPoint (ncv0 - 1, 0);
+        m_corners[2] = fitting->m_patch->getControlPoint (ncv0 - 1, ncv1 - 1);
+        m_corners[3] = fitting->m_patch->getControlPoint (0, ncv1 - 1);
 
         Eigen::Vector3d v0 (m_corners[0] (0), m_corners[0] (1), m_corners[0] (2));
         Eigen::Vector3d v1 (m_corners[1] (0), m_corners[1] (1), m_corners[1] (2));
         Eigen::Vector3d v2 (m_corners[2] (0), m_corners[2] (1), m_corners[2] (2));
         Eigen::Vector3d v3 (m_corners[3] (0), m_corners[3] (1), m_corners[3] (2));
 
-        if (is_back_facing (v0, v1, v2, v3))
+        if (isBackFacing (v0, v1, v2, v3))
         {
           vec4 tmp[4];
           tmp[0] = m_corners[0];
@@ -353,7 +353,7 @@ template<typename PointInT>
     }
 
     if (m_data.interior.size () > 0)
-      compute_interior (fitting);
+      computeInterior (fitting);
 
     // update error
     fitting->assemble (0, 0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
@@ -367,7 +367,7 @@ template<typename PointInT>
 
 template<typename PointInT>
   NurbsSurface
-  NurbsFitter<PointInT>::compute_boundary (const NurbsSurface &nurbs)
+  NurbsFitter<PointInT>::computeBoundary (const NurbsSurface &nurbs)
   {
     if (m_data.boundary.size () <= 0)
     {
@@ -377,7 +377,7 @@ template<typename PointInT>
 
     NurbsFitting *fitting = new NurbsFitting (&m_data, nurbs);
 
-    this->compute_boundary (fitting);
+    this->computeBoundary (fitting);
 
     m_nurbs = *fitting->m_patch;
 
@@ -391,7 +391,7 @@ template<typename PointInT>
 
 template<typename PointInT>
   NurbsSurface
-  NurbsFitter<PointInT>::compute_interior (const NurbsSurface &nurbs)
+  NurbsFitter<PointInT>::computeInterior (const NurbsSurface &nurbs)
   {
     if (m_data.boundary.size () <= 0)
     {
@@ -400,7 +400,7 @@ template<typename PointInT>
     }
     NurbsFitting *fitting = new NurbsFitting (&m_data, nurbs);
 
-    this->compute_interior (fitting);
+    this->computeInterior (fitting);
 
     // update error
     fitting->assemble (0, 0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
@@ -502,7 +502,7 @@ template<typename PointInT>
       double v = this->m_data.boundary_param[i] (1);
 
       // Evaluate point and tangents
-      m_nurbs.Evaluate (u, v, r, tu, tv);
+      m_nurbs.evaluate (u, v, r, tu, tv);
 
       n = tu.cross (tv);
       n.normalize ();
@@ -581,7 +581,7 @@ template<typename PointInT>
 
     } // i
 
-    compute_interior (m_nurbs);
+    computeInterior (m_nurbs);
 
     double int_err (0.0);
     double div_err = 1.0 / m_data.interior_error.size ();

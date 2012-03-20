@@ -111,16 +111,16 @@ namespace pcl
         void
         compute_quadfit ();
         void
-        compute_refinement (nurbs::NurbsFitting* fitting);
+        computeRefinement (nurbs::NurbsFitting* fitting);
         void
-        compute_boundary (nurbs::NurbsFitting* fitting);
+        computeBoundary (nurbs::NurbsFitting* fitting);
         void
-        compute_interior (nurbs::NurbsFitting* fitting);
+        computeInterior (nurbs::NurbsFitting* fitting);
 
         Eigen::Vector2d
         project (const Eigen::Vector3d &pt);
         bool
-        is_back_facing (const Eigen::Vector3d &v0, const Eigen::Vector3d &v1, const Eigen::Vector3d &v2,
+        isBackFacing (const Eigen::Vector3d &v0, const Eigen::Vector3d &v1, const Eigen::Vector3d &v2,
                         const Eigen::Vector3d &v3);
 
       public:
@@ -154,10 +154,10 @@ namespace pcl
         compute ();
 
         nurbs::NurbsSurface
-        compute_boundary (const nurbs::NurbsSurface &nurbs);
+        computeBoundary (const nurbs::NurbsSurface &nurbs);
 
         nurbs::NurbsSurface
-        compute_interior (const nurbs::NurbsSurface &nurbs);
+        computeInterior (const nurbs::NurbsSurface &nurbs);
 
         inline nurbs::NurbsSurface
         getNurbs ()

@@ -68,13 +68,12 @@ namespace pcl
       class myvec
       {
       public:
-        int side;
-        double hint;
+        int side_;
+        double hint_;
         myvec (int side, double hint)
-        {
-          this->side = side;
-          this->hint = hint;
-        }
+            : side_(side)
+            , hint_(hint)
+        {}
       };
 
       NurbsTools (NurbsSurface* surf);
@@ -93,7 +92,7 @@ namespace pcl
                Eigen::Vector3d &eigenvalues);
 
       static void
-      downsample_random (vector_vec3d &data, unsigned size);
+      downSampleRandom (vector_vec3d &data, unsigned size);
 
       // evaluations in the parameter domain
       vec3
@@ -132,32 +131,36 @@ namespace pcl
       int
       A (int I, int J)
       {
-        return m_surf->CountCPV () * I + J;
-      } // two global indices to one global index (lexicographic)
+        return m_surf->nbControlPointsV () * I + J;
+      }
+
+      // two global indices to one global index (lexicographic)
       int
       a (int i, int j)
       {
-        return (m_surf->DegreeV () + 1) * i + j;
-      } // two local indices into one local index (lexicographic)
+        return (m_surf->degreeV () + 1) * i + j;
+      }
+
+      // two local indices into one local index (lexicographic)
       int
       i (int a)
       {
-        return (int)(a / (m_surf->DegreeV () + 1));
+        return (int)(a / (m_surf->degreeV () + 1));
       } // local lexicographic in local row index
       int
       j (int a)
       {
-        return (int)(a % (m_surf->DegreeV () + 1));
+        return (int)(a % (m_surf->degreeV () + 1));
       } // local lexicographic in local col index
       int
       I (int A)
       {
-        return (int)(A / (m_surf->DegreeV () + 1));
+        return (int)(A / (m_surf->degreeV () + 1));
       } // global lexicographic in global row index
       int
       J (int A)
       {
-        return (int)(A % (m_surf->DegreeV () + 1));
+        return (int)(A % (m_surf->degreeV () + 1));
       } // global lexicographic in global col index
       int
       A (int E, int F, int i, int j)
@@ -168,13 +171,13 @@ namespace pcl
       int
       E (double u)
       {
-        return m_surf->basisU.GetSpan (u) - m_surf->DegreeU ();
+        return m_surf->basis_u_.getSpan (u) - m_surf->degreeU ();
         //    return ON_NurbsSpanIndex((m_surf->Degree(0)+1), (m_surf->Degree(0)+1), m_surf->m_knot[0], u, 0, 0);
       } // element index in u-direction
       int
       F (double v)
       {
-        return m_surf->basisU.GetSpan (v) - m_surf->DegreeV ();
+        return m_surf->basis_u_.getSpan (v) - m_surf->degreeV ();
         //    return ON_NurbsSpanIndex(m_surf->m_order[1], m_surf->m_cv_count[1], m_surf->m_knot[1], v, 0, 0);
       } // element index in v-direction
 

@@ -38,46 +38,30 @@
 #include <pcl/surface/nurbs/nurbs_surface.h>
 #include <stdio.h>
 
-using namespace pcl;
-using namespace nurbs;
-
-NurbsSurface::NurbsSurface ()
-{
-}
-
-NurbsSurface::NurbsSurface (unsigned degree, unsigned ncpsU, unsigned ncpsV, const vector_vec4 &cps) :
-  basisU (degree, ncpsU), basisV (degree, ncpsV)
-{
-  this->cps = cps;
-
-  this->ncpsU = ncpsU;
-  this->ncpsV = ncpsV;
-}
-
 void
-NurbsSurface::Evaluate (double u, double v, vec3 &point) const
+pcl::nurbs::NurbsSurface::evaluate (double u, double v, vec3 &point) const
 {
   vec4 pt (0.0f, 0.0f, 0.0f, 0.0f);
 
-  int spanU = basisU.GetSpan (u);
+  int spanU = basis_u_.getSpan (u);
   if (spanU < 0)
     throw std::runtime_error ("[NurbsCurve::Evaluate] Paramater value 'u' out of range");
-  int spanV = basisV.GetSpan (v);
+  int spanV = basis_v_.getSpan (v);
   if (spanV < 0)
     throw std::runtime_error ("[NurbsCurve::Evaluate] Paramater value 'v' out of range");
 
   std::vector<double> Nu, Nv, Ndu, Ndv;
-  basisU.Cox (u, spanU, Nu, Ndu);
-  basisV.Cox (v, spanV, Nv, Ndv);
+  basis_u_.cox (u, spanU, Nu, Ndu);
+  basis_v_.cox (v, spanV, Nv, Ndv);
 
-  unsigned degreeU = basisU.degree;
-  unsigned degreeV = basisV.degree;
+  std::size_t degreeU = basis_u_.degree ();
+  std::size_t degreeV = basis_v_.degree ();
 
-  for (unsigned su = 0; su < (degreeU + 1); su++)
+  for (std::size_t su = 0; su < (degreeU + 1); ++su)
   {
-    for (unsigned sv = 0; sv < (degreeV + 1); sv++)
+    for (std::size_t sv = 0; sv < (degreeV + 1); ++sv)
     {
-      vec4 B = GetCP (spanU - degreeU + su, spanV - degreeV + sv);
+      vec4 B = getControlPoint (spanU - degreeU + su, spanV - degreeV + sv);
       double R = Nu[su + degreeU * (degreeU + 1)] * Nv[sv + degreeV * (degreeV + 1)]; // * B.w; // * dW;
       pt = pt + B * R;
     }
@@ -88,33 +72,33 @@ NurbsSurface::Evaluate (double u, double v, vec3 &point) const
 }
 
 void
-NurbsSurface::Evaluate (double u, double v, vec3 &point, vec3 &gradU, vec3 &gradV) const
+pcl::nurbs::NurbsSurface::evaluate (double u, double v, vec3 &point, vec3 &gradU, vec3 &gradV) const
 {
   vec4 pt (0.0f, 0.0f, 0.0f, 0.0f);
   vec4 gu (0.0f, 0.0f, 0.0f, 0.0f);
   vec4 gv (0.0f, 0.0f, 0.0f, 0.0f);
 
-  int spanU = basisU.GetSpan (u);
+  int spanU = basis_u_.getSpan (u);
   if (spanU < 0)
     throw std::runtime_error ("[NurbsCurve::Evaluate] Paramater value 'u' out of range");
-  int spanV = basisV.GetSpan (v);
+  int spanV = basis_v_.getSpan (v);
   if (spanV < 0)
     throw std::runtime_error ("[NurbsCurve::Evaluate] Paramater value 'v' out of range");
 
   std::vector<double> Nu, Nv, Ndu, Ndv;
-  basisU.Cox (u, spanU, Nu, Ndu);
-  basisV.Cox (v, spanV, Nv, Ndv);
+  basis_u_.cox (u, spanU, Nu, Ndu);
+  basis_v_.cox (v, spanV, Nv, Ndv);
 
-  unsigned degreeU = basisU.degree;
-  unsigned degreeV = basisV.degree;
+  std::size_t degreeU = basis_u_.degree ();
+  std::size_t degreeV = basis_v_.degree ();
 
   //  printf("knotsV: %d spanV: %d degreeV: %d %f %f\n", basisV.knots.size(), spanV, degreeV, u, v);
 
-  for (unsigned su = 0; su < (degreeU + 1); su++)
+  for (std::size_t su = 0; su < (degreeU + 1); ++su)
   {
-    for (unsigned sv = 0; sv < (degreeV + 1); sv++)
+    for (std::size_t sv = 0; sv < (degreeV + 1); ++sv)
     {
-      vec4 B = GetCP (spanU - degreeU + su, spanV - degreeV + sv);
+      vec4 B = getControlPoint (spanU - degreeU + su, spanV - degreeV + sv);
       double R = Nu[su + degreeU * (degreeU + 1)] * Nv[sv + degreeV * (degreeV + 1)]; // * B.w; // * dW;
       pt = pt + B * R;
 
@@ -139,145 +123,145 @@ NurbsSurface::Evaluate (double u, double v, vec3 &point, vec3 &gradU, vec3 &grad
 }
 
 void
-NurbsSurface::InsertKnotU (double u)
+pcl::nurbs::NurbsSurface::insertKnotU (double u)
 {
   // http://www.cs.mtu.edu/~shene/COURSES/cs3621/LAB/surface/knot-insrt.html
-  unsigned p = basisU.degree;
-  unsigned k = basisU.GetSpan (u);
+  std::size_t p = basis_u_.degree ();
+  std::size_t k = basis_u_.getSpan (u);
 
   vector_vec4 cps_new;
 
-  for (unsigned j = 0; j < ncpsV; j++)
+  for (std::size_t j = 0; j < nb_control_points_v_; ++j)
   {
 
-    for (unsigned i = 0; i <= k - p; i++)
-      cps_new.push_back (cps[I (i, j)]);
+    for (std::size_t i = 0; i <= k - p; ++i)
+      cps_new.push_back (control_points_[index (i, j)]);
 
-    for (unsigned i = k - p + 1; i <= k; i++)
+    for (std::size_t i = k - p + 1; i <= k; ++i)
     {
-      double ai = (u - basisU.knots[i]) / (basisU.knots[i + p] - basisU.knots[i]);
-      vec4 qi = (1.0 - ai) * cps[I (i - 1, j)] + ai * cps[I (i, j)];
+      double ai = (u - basis_u_.knot (i)) / (basis_u_.knot (i + p) - basis_u_.knot (i));
+      vec4 qi = (1.0 - ai) * control_points_[index (i - 1, j)] + ai * control_points_[index (i, j)];
       //      vec4 qi = (1.0 - ai) * cv[i - 1] + ai * cv[i];
       cps_new.push_back (qi);
     }
 
-    //    for (unsigned i = 0; i < q.size(); i++)
+    //    for (std::size_t i = 0; i < q.size(); i++)
     //      cps_new.push_back(q[i]);
 
-    for (unsigned i = k; i < ncpsU; i++)
-      cps_new.push_back (cps[I (i, j)]);
+    for (std::size_t i = k; i < nb_control_points_u_; i++)
+      cps_new.push_back (control_points_[index (i, j)]);
 
   }
 
-  ncpsU++;
-  cps = cps_new;
-  basisU.InsertKnot (u);
+  nb_control_points_u_++;
+  control_points_ = cps_new;
+  basis_u_.insertKnot (u);
 }
 
 void
-NurbsSurface::InsertKnotV (double v)
+pcl::nurbs::NurbsSurface::insertKnotV (double v)
 {
   // http://www.cs.mtu.edu/~shene/COURSES/cs3621/LAB/surface/knot-insrt.html
-  unsigned p = basisV.degree;
-  unsigned k = basisV.GetSpan (v);
+  std::size_t p = basis_v_.degree ();
+  std::size_t k = basis_v_.getSpan (v);
 
   vector_vec4 cps_new;
 
-  for (unsigned j = 0; j <= k - p; j++)
+  for (std::size_t j = 0; j <= k - p; ++j)
   {
-    for (unsigned i = 0; i < ncpsU; i++)
+    for (std::size_t i = 0; i < nb_control_points_u_; ++i)
     {
-      cps_new.push_back (cps[I (i, j)]);
+      cps_new.push_back (control_points_[index (i, j)]);
     }
   }
 
-  for (unsigned j = k - p + 1; j <= k; j++)
+  for (std::size_t j = k - p + 1; j <= k; ++j)
   {
-    for (unsigned i = 0; i < ncpsU; i++)
+    for (std::size_t i = 0; i < nb_control_points_u_; ++i)
     {
-      double aj = (v - basisV.knots[j]) / (basisV.knots[j + p] - basisV.knots[j]);
-      vec4 qj = (1.0 - aj) * cps[I (i, j - 1)] + aj * cps[I (i, j)];
+      double aj = (v - basis_v_.knot (j)) / (basis_v_.knot (j + p) - basis_v_.knot (j));
+      vec4 qj = (1.0 - aj) * control_points_[index (i, j - 1)] + aj * control_points_[index (i, j)];
       //      vec4 qi = (1.0 - ai) * cv[i - 1] + ai * cv[i];
       cps_new.push_back (qj);
     }
   }
 
-  for (unsigned j = k; j < ncpsV; j++)
+  for (std::size_t j = k; j < nb_control_points_v_; ++j)
   {
-    for (unsigned i = 0; i < ncpsU; i++)
+    for (std::size_t i = 0; i < nb_control_points_u_; ++i)
     {
-      cps_new.push_back (cps[I (i, j)]);
+      cps_new.push_back (control_points_[index (i, j)]);
     }
   }
 
-  ncpsV++;
-  cps = cps_new;
-  basisV.InsertKnot (v);
+  nb_control_points_v_++;
+  control_points_ = cps_new;
+  basis_v_.insertKnot (v);
 }
 
-unsigned
-NurbsSurface::I (unsigned i, unsigned j) const
+std::size_t
+pcl::nurbs::NurbsSurface::index (std::size_t i, std::size_t j) const
 {
-  return (j * ncpsU + i);
+  return (j * nb_control_points_u_ + i);
 }
 
-vec4
-NurbsSurface::GetCP (unsigned i, unsigned j) const
+pcl::nurbs::vec4
+pcl::nurbs::NurbsSurface::getControlPoint (std::size_t i, std::size_t j) const
 {
-  unsigned idx = I (i, j);
-  if (idx >= cps.size () || idx < 0)
+  std::size_t idx = index (i, j);
+  if (idx >= control_points_.size ())
   {
-    printf ("[NurbsSurface::GetCP] Warning: index out of bounds. %d %d (i: %d, j: %d)\n", (unsigned)cps.size (), idx,
+    printf ("[pcl::nurbs::NurbsSurface::GetCP] Warning: index out of bounds. %d %d (i: %d, j: %d)\n", (std::size_t)control_points_.size (), idx,
             i, j);
-    return cps[0];
+    return control_points_[0];
   }
-  return cps[idx];
+  return control_points_[idx];
 }
 
 void
-NurbsSurface::SetCP (unsigned i, unsigned j, const vec4 &cp)
+pcl::nurbs::NurbsSurface::setControlPoint (std::size_t i, std::size_t j, const vec4 &cp)
 {
-  unsigned idx = I (i, j);
-  if (idx >= cps.size () || idx < 0)
+  std::size_t idx = index (i, j);
+  if (idx >= control_points_.size ())
   {
-    printf ("[NurbsSurface::GetCP] Warning: index out of bounds. %d %d\n", (unsigned)cps.size (), idx);
+    printf ("[pcl::nurbs::NurbsSurface::GetCP] Warning: index out of bounds. %d %d\n", control_points_.size (), idx);
   }
   else
   {
-    cps[idx] = cp;
+    control_points_[idx] = cp;
   }
 }
 
 void
-NurbsSurface::Dump () const
+pcl::nurbs::NurbsSurface::dump () const
 {
-  printf ("\n[NurbsSurface::Dump]");
-  printf ("  Degree: u: %d  v: %d\n", basisU.degree, basisV.degree);
+  printf ("\n[pcl::nurbs::NurbsSurface::Dump]");
+  printf ("  Degree: u: %d  v: %d\n", basis_u_.degree (), basis_v_.degree ());
   printf ("  Knot Vector:\n    u: ");
-  for (unsigned i = 0; i < basisU.knots.size (); i++)
+  for (std::size_t i = 0; i < basis_u_.nbKnots (); ++i)
   {
-    if (basisU.knots[i] >= 0.0)
-      printf ("  %.4f, ", basisU.knots[i]);
+    if (basis_u_.knot (i) >= 0.0)
+      printf ("  %.4f, ", basis_u_.knot (i));
     else
-      printf (" %.4f, ", basisU.knots[i]);
+      printf (" %.4f, ", basis_u_.knot (i));
   }
   printf ("\n    v: ");
-  for (unsigned j = 0; j < basisV.knots.size (); j++)
+  for (std::size_t j = 0; j < basis_v_.nbKnots (); ++j)
   {
-    if (basisV.knots[j] >= 0.0)
-      printf ("  %.4f, ", basisV.knots[j]);
+    if (basis_v_.knot (j) >= 0.0)
+      printf ("  %.4f, ", basis_v_.knot (j));
     else
-      printf (" %.4f, ", basisV.knots[j]);
+      printf (" %.4f, ", basis_v_.knot (j));
   }
 
   printf ("\n  Control Points:\n");
-  for (unsigned i = 0; i < ncpsU; i++)
+  for (std::size_t i = 0; i < nb_control_points_u_; ++i)
   {
-    for (unsigned j = 0; j < ncpsU; j++)
+    for (std::size_t j = 0; j < nb_control_points_u_; ++j)
     {
       printf ("    CV [%d][%d] ", i, j);
-      vec4 cp = cps[I (i, j)];
-      for (unsigned k = 0; k < 3; k++)
+      vec4 cp = control_points_[index (i, j)];
+      for (std::size_t k = 0; k < 3; k++)
       {
         if (cp (k) >= 0.0)
           printf ("  %f", cp (k));
