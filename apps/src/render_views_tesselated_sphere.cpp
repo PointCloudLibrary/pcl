@@ -4,7 +4,7 @@
  *  Created on: Dec 23, 2011
  *      Author: aitor
  */
-
+#include <pcl/point_types.h>
 #include <pcl/apps/render_views_tesselated_sphere.h>
 #include <vtkCellData.h>
 #include <vtkWorldPointPicker.h>
