@@ -693,6 +693,10 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
         pt.x = static_cast<float> (u) * pt.z * constant;
         pt.y = static_cast<float> (v) * pt.z * constant;
       }
+      else
+      {
+        pt.x = pt.y = pt.z = bad_point;
+      }
     }
   }
 
