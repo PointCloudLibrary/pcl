@@ -31,6 +31,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/hv/hv_papazov.h
         include/pcl/${SUBSYS_NAME}/cg/correspondence_grouping.h
         include/pcl/${SUBSYS_NAME}/cg/hough_3d.h		
+        include/pcl/${SUBSYS_NAME}/cg/geometric_consistency.h
         )
 
     set(impl_incs 
@@ -38,6 +39,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/hv/hv_papazov.hpp        
         include/pcl/${SUBSYS_NAME}/impl/cg/correspondence_grouping.hpp
         include/pcl/${SUBSYS_NAME}/impl/cg/hough_3d.hpp
+        include/pcl/${SUBSYS_NAME}/impl/cg/geometric_consistency.hpp
         )
 
     set(srcs
@@ -48,6 +50,7 @@ if(build)
         src/hv/occlusion_reasoning.cpp
         src/hv/hv_papazov.cpp
         src/cg/hough_3d.cpp
+        src/cg/geometric_consistency.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
