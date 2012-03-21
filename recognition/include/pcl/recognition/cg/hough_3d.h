@@ -172,8 +172,8 @@ namespace pcl
         , use_distance_weight_ (false)
         , local_rf_search_radius_ (0.0f)
         , hough_space_ ()
-        , hough_space_initialized_ (false)
         , found_transformations_ ()
+        , hough_space_initialized_ (false)
       {}
 
       /** \brief Provide a pointer to the input dataset.

@@ -44,7 +44,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/recognition/point_types.h>
-
+#include <list>
 
 namespace pcl
 {
@@ -278,8 +278,8 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
         float smallest_distance = std::numeric_limits<float>::max ();
         for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
         {
-          const float dx = iter1->x - iter2->x;
-          const float dy = iter1->y - iter2->y;
+          const float dx = static_cast<float> (iter1->x - iter2->x);
+          const float dy = static_cast<float> (iter1->y - iter2->y);
 
           const float distance = dx*dx + dy*dy;
 
@@ -362,7 +362,7 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
         {
           const int dx = iter1->x - iter2->x;
           const int dy = iter1->y - iter2->y;
-          const int tmp_distance = dx*dx + dy*dy;
+          const unsigned int tmp_distance = dx*dx + dy*dy;
 
           //if (tmp_distance < distance) 
           if (tmp_distance < sqr_distance) /// \todo Ask Stefan if this fix is correct
@@ -495,7 +495,7 @@ computeMaxColorGradientsSobel ()
   color_gradients_.width = width;
   color_gradients_.height = height;
 
-  const float pi = tan(1.0f)*4;
+  const float pi = tanf (1.0f) * 4.0f;
   for (int row_index = 1; row_index < height-1; ++row_index)
   {
     for (int col_index = 1; col_index < width-1; ++col_index)
@@ -547,8 +547,8 @@ computeMaxColorGradientsSobel ()
       if (sqr_mag_r > sqr_mag_g && sqr_mag_r > sqr_mag_b)
       {
         GradientXY gradient;
-        gradient.magnitude = sqrt (static_cast<float> (sqr_mag_r));
-        gradient.angle = atan2 (static_cast<float> (r_dy), static_cast<float> (r_dx)) * 180.0f / pi;
+        gradient.magnitude = sqrtf (static_cast<float> (sqr_mag_r));
+        gradient.angle = atan2f (static_cast<float> (r_dy), static_cast<float> (r_dx)) * 180.0f / pi;
         gradient.x = static_cast<float> (col_index);
         gradient.y = static_cast<float> (row_index);
 
@@ -557,8 +557,8 @@ computeMaxColorGradientsSobel ()
       else if (sqr_mag_g > sqr_mag_b)
       {
         GradientXY gradient;
-        gradient.magnitude = sqrt (static_cast<float> (sqr_mag_g));
-        gradient.angle = atan2 (static_cast<float> (g_dy), static_cast<float> (g_dx)) * 180.0f / pi;
+        gradient.magnitude = sqrtf (static_cast<float> (sqr_mag_g));
+        gradient.angle = atan2f (static_cast<float> (g_dy), static_cast<float> (g_dx)) * 180.0f / pi;
         gradient.x = static_cast<float> (col_index);
         gradient.y = static_cast<float> (row_index);
 
@@ -567,8 +567,8 @@ computeMaxColorGradientsSobel ()
       else
       {
         GradientXY gradient;
-        gradient.magnitude = sqrt (static_cast<float> (sqr_mag_b));
-        gradient.angle = atan2 (static_cast<float> (b_dy), static_cast<float> (b_dx)) * 180.0f / pi;
+        gradient.magnitude = sqrtf (static_cast<float> (sqr_mag_b));
+        gradient.angle = atan2f (static_cast<float> (b_dy), static_cast<float> (b_dx)) * 180.0f / pi;
         gradient.x = static_cast<float> (col_index);
         gradient.y = static_cast<float> (row_index);
 
@@ -611,7 +611,7 @@ quantizeColorGradients ()
       const int quantized_value = static_cast<int> (color_gradients_ (col_index, row_index).angle * angleScale) + 8;
       assert (0 <= quantized_value && quantized_value < 16);
       //quantized_color_gradients_ (col_index, row_index) = quantization_map[quantized_value];
-      quantized_color_gradients_ (col_index, row_index) = (quantized_value & 7) + 1; // = (quantized_value % 8) + 1
+      quantized_color_gradients_ (col_index, row_index) = static_cast<unsigned char> ((quantized_value & 7) + 1); // = (quantized_value % 8) + 1
     }
   }
 }
@@ -684,7 +684,7 @@ filterQuantizedColorGradients ()
       if (max_hist_value < histogram[8]) {max_hist_index = 7; max_hist_value = histogram[8];}
 
       if (max_hist_index != -1 && max_hist_value >= 5)
-        filtered_quantized_color_gradients_ (col_index, row_index) = 0x1 << max_hist_index;
+        filtered_quantized_color_gradients_ (col_index, row_index) = static_cast<unsigned char> (0x1 << max_hist_index);
       else
         filtered_quantized_color_gradients_ (col_index, row_index) = 0;
 

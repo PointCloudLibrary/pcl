@@ -102,17 +102,17 @@ namespace pcl
       std::vector<PointXYZ, Eigen::aligned_allocator<PointXYZ> > ref_normals (nr_normals);
       
       const float normal0_angle = 40.0f * 3.14f / 180.0f;
-      ref_normals[0].x = cos (normal0_angle);
+      ref_normals[0].x = cosf (normal0_angle);
       ref_normals[0].y = 0.0f;
-      ref_normals[0].z = -sin (normal0_angle);
+      ref_normals[0].z = -sinf (normal0_angle);
 
       const float inv_nr_normals = 1.0f/nr_normals;
       for (int normal_index = 1; normal_index < nr_normals; ++normal_index)
       {
-        const float angle = normal_index * 3.14f * 2.0f * inv_nr_normals;
+        const float angle = 2.0f * static_cast<float> (M_PI * normal_index * inv_nr_normals);
 
-        ref_normals[normal_index].x = cos(angle)*ref_normals[0].x - sin(angle)*ref_normals[0].y;
-        ref_normals[normal_index].y = sin(angle)*ref_normals[0].x + cos(angle)*ref_normals[0].y;
+        ref_normals[normal_index].x = cosf (angle) * ref_normals[0].x - sinf (angle) * ref_normals[0].y;
+        ref_normals[normal_index].y = sinf (angle) * ref_normals[0].x + cosf (angle) * ref_normals[0].y;
         ref_normals[normal_index].z = ref_normals[0].z;
       }
 
@@ -156,14 +156,14 @@ namespace pcl
                                      normal.y * ref_normals[normal_index].y +
                                      normal.z * ref_normals[normal_index].z;
 
-              const float abs_response = fabs (response);
+              const float abs_response = fabsf (response);
               if (max_response < abs_response)
               {
                 max_response = abs_response;
                 max_index = normal_index;
               }
 
-              lut[z_index*size_y*size_x + y_index*size_x + x_index] = 0x1 << max_index;
+              lut[z_index*size_y*size_x + y_index*size_x + x_index] = static_cast<unsigned char> (0x1 << max_index);
             }
           }
         }
@@ -173,9 +173,9 @@ namespace pcl
     inline unsigned char 
     operator() (const float x, const float y, const float z) const
     {
-      const size_t x_index = static_cast<size_t> (x*offset_x + offset_x);
-      const size_t y_index = static_cast<size_t> (y*offset_y + offset_y);
-      const size_t z_index = static_cast<size_t> (z*range_z + range_z);
+      const size_t x_index = static_cast<size_t> (x * static_cast<float> (offset_x) + static_cast<float> (offset_x));
+      const size_t y_index = static_cast<size_t> (y * static_cast<float> (offset_y) + static_cast<float> (offset_y));
+      const size_t z_index = static_cast<size_t> (z * static_cast<float> (range_z) + static_cast<float> (range_z));
 
       const size_t index = z_index*size_y*size_x + y_index*size_x + x_index;
 
@@ -365,7 +365,7 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
           continue;
         const int dist_map_index = map[quantized_value];
 
-        distance_map_indices (col_index, row_index) = dist_map_index;
+        distance_map_indices (col_index, row_index) = static_cast<unsigned char> (dist_map_index);
         //distance_maps[dist_map_index].at<unsigned char>(row_index, col_index) = 255;
         mask_maps[dist_map_index] (col_index, row_index) = 255;
       }
@@ -409,7 +409,7 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
             candidate.distance = distance;
             candidate.x = col_index;
             candidate.y = row_index;
-            candidate.bin_index = distance_map_index;
+            candidate.bin_index = static_cast<unsigned char> (distance_map_index);
 
             list1.push_back (candidate);
 
@@ -511,7 +511,7 @@ pcl::SurfaceNormalModality<PointInT>::quantizeSurfaceNormals ()
       //quantized_surface_normals_.data[row_index*width+col_index] =
       //  normal_lookup_(normal_x, normal_y, normal_z);
 
-      float angle = atan2 (normal_y, normal_x)*180.0f/3.14f;
+      float angle = atan2f (normal_y, normal_x)*180.0f/3.14f;
 
       if (angle < 0.0f) angle += 360.0f;
       if (angle >= 360.0f) angle -= 360.0f;
@@ -519,7 +519,7 @@ pcl::SurfaceNormalModality<PointInT>::quantizeSurfaceNormals ()
       int bin_index = static_cast<int> (angle*8.0f/360.0f);
 
       //quantized_surface_normals_.data[row_index*width+col_index] = 0x1 << bin_index;
-      quantized_surface_normals_ (col_index, row_index) = bin_index;
+      quantized_surface_normals_ (col_index, row_index) = static_cast<unsigned char> (bin_index);
     }
   }
 
@@ -575,7 +575,7 @@ pcl::SurfaceNormalModality<PointInT>::filterQuantizedSurfaceNormals ()
 
       if (max_hist_index != -1 && max_hist_value >= 1)
       {
-        filtered_quantized_surface_normals_ (col_index, row_index) = 0x1 << max_hist_index;
+        filtered_quantized_surface_normals_ (col_index, row_index) = static_cast<unsigned char> (0x1 << max_hist_index);
       }
       else
       {

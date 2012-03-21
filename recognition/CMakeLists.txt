@@ -1,6 +1,6 @@
 set(SUBSYS_NAME recognition)
 set(SUBSYS_DESC "Point cloud recognition library")
-set(SUBSYS_DEPS common search kdtree octree features filters registration sample_consensus)
+set(SUBSYS_DEPS common io search kdtree octree features filters registration sample_consensus)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -40,6 +40,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/cg/correspondence_grouping.hpp
         include/pcl/${SUBSYS_NAME}/impl/cg/hough_3d.hpp
         include/pcl/${SUBSYS_NAME}/impl/cg/geometric_consistency.hpp
+        include/pcl/${SUBSYS_NAME}/impl/linemod/line_rgbd.hpp
         )
 
     set(srcs
