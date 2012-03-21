@@ -593,10 +593,10 @@ pcl::visualization::PCLVisualizer::removeAllShapes (int viewport)
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud,
-                                                                    const pcl::PointCloud<pcl::Normal>::ConstPtr &normals,
-                                                                    const pcl::PointCloud<pcl::PrincipalCurvatures>::ConstPtr &pcs,
-                                                                    int level, double scale,
-                                                                    const std::string &id, int viewport)
+                                                                     const pcl::PointCloud<pcl::Normal>::ConstPtr &normals,
+                                                                     const pcl::PointCloud<pcl::PrincipalCurvatures>::ConstPtr &pcs,
+                                                                     int level, float scale,
+                                                                     const std::string &id, int viewport)
 {
   if (pcs->points.size () != cloud->points.size () || normals->points.size () != cloud->points.size ())
   {
