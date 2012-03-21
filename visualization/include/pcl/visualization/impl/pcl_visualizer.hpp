@@ -543,19 +543,19 @@ pcl::visualization::PCLVisualizer::addText3D (
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> bool
 pcl::visualization::PCLVisualizer::addPointCloudNormals (
-    const typename pcl::PointCloud<PointNT>::ConstPtr &cloud,
-    int level, double scale, const std::string &id, int viewport)
+  const typename pcl::PointCloud<PointNT>::ConstPtr &cloud,
+  int level, float scale, const std::string &id, int viewport)
 {
-  return (addPointCloudNormals<PointNT, PointNT>(cloud, cloud, level, scale, id, viewport));
+  return (addPointCloudNormals<PointNT, PointNT> (cloud, cloud, level, scale, id, viewport));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool
 pcl::visualization::PCLVisualizer::addPointCloudNormals (
-    const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
-    const typename pcl::PointCloud<PointNT>::ConstPtr &normals,
-    int level, double scale,
-    const std::string &id, int viewport)
+  const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
+  const typename pcl::PointCloud<PointNT>::ConstPtr &normals,
+  int level, float scale,
+  const std::string &id, int viewport)
 {
   if (normals->points.size () != cloud->points.size ())
   {
@@ -595,9 +595,9 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
     pts[2 * j * 3 + 4] = p.y;
     pts[2 * j * 3 + 5] = p.z;
 
-    lines->InsertNextCell(2);
-    lines->InsertCellPoint(2*j);
-    lines->InsertCellPoint(2*j+1);
+    lines->InsertNextCell (2);
+    lines->InsertCellPoint (2 * j);
+    lines->InsertCellPoint (2 * j + 1);
   }
 
   data->SetArray (&pts[0], 2 * nr_normals * 3, 0);
