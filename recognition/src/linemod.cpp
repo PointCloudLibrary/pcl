@@ -43,23 +43,20 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::LINEMOD::
-LINEMOD() :
+pcl::LINEMOD::LINEMOD () :
   template_threshold_ (0.75f),
   templates_ ()
 {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::LINEMOD::
-~LINEMOD()
+pcl::LINEMOD::~LINEMOD()
 {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 int 
-pcl::LINEMOD::
-createAndAddTemplate (const std::vector<pcl::QuantizableModality*> & modalities,
+pcl::LINEMOD::createAndAddTemplate (const std::vector<pcl::QuantizableModality*> & modalities,
                       const std::vector<pcl::MaskMap*> & masks,
                       const pcl::RegionXY & region)
 {
@@ -108,8 +105,7 @@ createAndAddTemplate (const std::vector<pcl::QuantizableModality*> & modalities,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 int 
-pcl::LINEMOD::
-addTemplate (const SparseQuantizedMultiModTemplate & linemod_template)
+pcl::LINEMOD::addTemplate (const SparseQuantizedMultiModTemplate & linemod_template)
 {
   // add template to template storage
   templates_.push_back(linemod_template);
@@ -119,8 +115,7 @@ addTemplate (const SparseQuantizedMultiModTemplate & linemod_template)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::LINEMOD::
-matchTemplates (const std::vector<QuantizableModality*> & modalities, std::vector<LINEMODDetection> & detections) const
+pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modalities, std::vector<LINEMODDetection> & detections) const
 {
   // create energy maps
   std::vector<EnergyMaps> modality_energy_maps;
@@ -367,8 +362,7 @@ matchTemplates (const std::vector<QuantizableModality*> & modalities, std::vecto
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::LINEMOD::
-detectTemplates (const std::vector<QuantizableModality*> & modalities, std::vector<LINEMODDetection> & detections) const
+pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalities, std::vector<LINEMODDetection> & detections) const
 {
   // create energy maps
   std::vector<EnergyMaps> modality_energy_maps;
@@ -620,8 +614,7 @@ detectTemplates (const std::vector<QuantizableModality*> & modalities, std::vect
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::LINEMOD::
-saveTemplates (const char * file_name) const
+pcl::LINEMOD::saveTemplates (const char * file_name) const
 {
   std::ofstream file_stream;
   file_stream.open (file_name, std::ofstream::out | std::ofstream::binary);
@@ -633,8 +626,7 @@ saveTemplates (const char * file_name) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::LINEMOD::
-loadTemplates (const char * file_name)
+pcl::LINEMOD::loadTemplates (const char * file_name)
 {
   std::ifstream file_stream;
   file_stream.open (file_name, std::ofstream::in | std::ofstream::binary);
@@ -646,8 +638,7 @@ loadTemplates (const char * file_name)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::LINEMOD::
-serialize (std::ostream & stream) const
+pcl::LINEMOD::serialize (std::ostream & stream) const
 {
   const int nr_templates = static_cast<int> (templates_.size ());
   write (stream, nr_templates);
@@ -656,9 +647,8 @@ serialize (std::ostream & stream) const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::LINEMOD::
-deserialize (std::istream & stream)
+void 
+pcl::LINEMOD::deserialize (std::istream & stream)
 {
   templates_.clear ();
 

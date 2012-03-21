@@ -39,6 +39,9 @@
 #define PCL_RECOGNITION_LINEMOD_LINE_RGBD_IMPL_HPP_
 
 //#include <pcl/recognition/linemod/line_rgbd.h>
+#include <pcl/io/pcd_io.h>
+#include <fcntl.h>
+#include <unistd.h>
 #ifdef _WIN32
 # include <io.h>
 # include <windows.h>
@@ -51,15 +54,13 @@
 # define pcl_close(fd)               close(fd)
 # define pcl_lseek(fd,offset,origin) lseek(fd,offset,origin)
 #endif
-#include <pcl/io/pcd_io.h>
-#include <fcntl.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointXYZT, typename PointRGBT> bool
 pcl::LineRGBD<PointXYZT, PointRGBT>::readLTMHeader (int fd, pcl::io::TARHeader &header)
 {
   // Read in the header
-  int result = static_cast<int> (::read (fd, reinterpret_cast<char*> (&header), 512));
+  int result = static_cast<int> (::read (fd, reinterpret_cast<char*> (&header.file_name[0]), 512));
   if (result == -1)
     return (false);
 
@@ -92,20 +93,62 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name
 
   pcl::io::TARHeader ltm_header;
   PCDReader pcd_reader;
-  pcl::PointCloud<pcl::PointXYZRGB> cloud;
+
+  std::string pcd_ext (".pcd");
+  std::string sqmmt_ext (".sqmmt");
 
   // While there still is an LTM header to be read
   while (readLTMHeader (ltm_fd, ltm_header))
   {
     ltm_offset += 512;
 
-    // Read the next PCD file
-    template_point_clouds_.resize (template_point_clouds_.size () + 1);
-    pcd_reader.read (file_name, template_point_clouds_[template_point_clouds_.size () - 1], ltm_offset);
+    // Search for extension
+    std::string chunk_name (ltm_header.file_name);
+    std::transform (chunk_name.begin (), chunk_name.end (), chunk_name.begin (), tolower);
+    std::string::size_type it;
 
-    // Increment the offset for the next file
-    ltm_offset += (ltm_header.getFileSize ()) + (512 - ltm_header.getFileSize () % 512);
-    // Read a SQMMT file
+    if ((it = chunk_name.find (pcd_ext)) != std::string::npos &&
+        (pcd_ext.size () - (chunk_name.size () - it)) == 0)
+    {
+      PCL_DEBUG ("[pcl::LineRGBD::loadTemplates] Reading and parsing %s as a PCD file.\n", chunk_name.c_str ());
+      // Read the next PCD file
+      template_point_clouds_.resize (template_point_clouds_.size () + 1);
+      pcd_reader.read (file_name, template_point_clouds_[template_point_clouds_.size () - 1], ltm_offset);
+
+      // Increment the offset for the next file
+      ltm_offset += (ltm_header.getFileSize ()) + (512 - ltm_header.getFileSize () % 512);
+    }
+    else if ((it = chunk_name.find (sqmmt_ext)) != std::string::npos &&
+             (sqmmt_ext.size () - (chunk_name.size () - it)) == 0)
+    {
+      PCL_DEBUG ("[pcl::LineRGBD::loadTemplates] Reading and parsing %s as a SQMMT file.\n", chunk_name.c_str ());
+
+      unsigned int fsize = ltm_header.getFileSize ();
+      char *buffer = new char[fsize];
+      int result = static_cast<int> (::read (ltm_fd, reinterpret_cast<char*> (&buffer[0]), fsize));
+      if (result == -1)
+      {
+        delete [] buffer;
+        PCL_ERROR ("[pcl::LineRGBD::loadTemplates] Error reading SQMMT template from file!\n");
+        break;
+      }
+
+      // Read a SQMMT file
+      std::stringstream stream (std::stringstream::in | std::stringstream::out | std::stringstream::binary);
+      stream.write (buffer, fsize);
+      SparseQuantizedMultiModTemplate sqmmt;
+      sqmmt.deserialize (stream);
+
+      linemod_.addTemplate (sqmmt);
+
+      // Increment the offset for the next file
+      ltm_offset += (ltm_header.getFileSize ()) + (512 - ltm_header.getFileSize () % 512);
+
+      delete [] buffer;
+    }
+
+    if (static_cast<int> (pcl_lseek (ltm_fd, ltm_offset, SEEK_SET)) < 0)
+      break;
   }
 
   // Close the file
