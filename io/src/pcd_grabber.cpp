@@ -40,6 +40,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/io/tar.h>
 
 #ifdef _WIN32
 # include <io.h>
@@ -85,41 +86,7 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
   int tar_fd_;
   int tar_offset_;
   std::string tar_file_;
-  /** \brief A TAR file's header, as described on http://en.wikipedia.org/wiki/Tar_%28file_format%29. */
-  struct TARHeader
-  {
-    char file_name[100];
-    char file_mode[8];
-    char uid[8];
-    char gid[8];
-    char file_size[12];
-    char mtime[12];
-    char chksum[8];
-    char file_type[1];
-    char link_file_name[100];
-    char ustar[6];
-    char ustar_version[2];
-    char uname[32];
-    char gname[32];
-    char dev_major[8];
-    char dev_minor[8];
-    char file_name_prefix[155];
-    char _padding[12];
-
-    unsigned int 
-    getFileSize ()
-    {
-      unsigned int output = 0;
-      char *str = file_size;
-      for (int i = 0; i < 11; i++)
-      {
-        output = output * 8 + *str - '0';
-        str++;
-      }
-      return (output);
-    }
-  };
-  TARHeader tar_header_;
+  pcl::io::TARHeader tar_header_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////

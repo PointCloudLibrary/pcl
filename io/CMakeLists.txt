@@ -96,6 +96,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/pcl_io_exception.h
         include/pcl/${SUBSYS_NAME}/vtk_io.h
         include/pcl/${SUBSYS_NAME}/ply_io.h
+        include/pcl/${SUBSYS_NAME}/tar.h
         include/pcl/${SUBSYS_NAME}/obj_io.h 
         ${VTK_IO_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
