@@ -70,6 +70,7 @@ namespace pcl
       * \endcode
       * 
       * \author Radu B. Rusu, Suat Gedikli
+      * \ingroup visualization
       */
     class PCL_EXPORTS ImageViewer
     {
