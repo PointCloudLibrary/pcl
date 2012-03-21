@@ -55,8 +55,10 @@ namespace pcl
   class GeometricConsistencyGrouping : public CorrespondenceGrouping<PointModelT, PointSceneT>
   {
     public:
-      typedef typename pcl::PCLBase<PointModelT>::PointCloudConstPtr PointCloudConstPtr;
-      typedef typename pcl::PCLBase<PointModelT>::PointCloudPtr PointCloudPtr;
+      typedef pcl::PointCloud<PointModelT> PointCloud;
+      typedef typename PointCloud::Ptr PointCloudPtr;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+
       typedef typename pcl::CorrespondenceGrouping<PointModelT, PointSceneT>::SceneCloudConstPtr SceneCloudConstPtr;
 
       /** \brief Constructor */

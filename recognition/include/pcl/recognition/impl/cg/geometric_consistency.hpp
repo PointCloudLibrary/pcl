@@ -45,12 +45,14 @@
 #include <pcl/registration/correspondence_rejection_sample_consensus.h>
 #include <pcl/common/io.h>
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
 gcCorrespSorter (pcl::Correspondence i, pcl::Correspondence j) 
 { 
   return (i.distance < j.distance); 
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointModelT, typename PointSceneT> void
 pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::clusterCorrespondences (std::vector<Correspondences> &model_instances)
 {
@@ -91,7 +93,7 @@ pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::clusterCorresponden
       continue;
 
     consensus_set.clear ();
-    consensus_set.push_back (i);
+    consensus_set.push_back (static_cast<int> (i));
     
     for (size_t j = 0; j < model_scene_corrs_->size (); ++j)
     {
@@ -114,7 +116,7 @@ pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::clusterCorresponden
           dist_ref = scene_point_k - scene_point_j;
           dist_trg = model_point_k - model_point_j;
 
-          double distance = abs (dist_ref.norm () - dist_trg.norm ());
+          double distance = fabs (dist_ref.norm () - dist_trg.norm ());
 
           if (distance > gc_size_)
           {
@@ -123,7 +125,7 @@ pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::clusterCorresponden
           }
         }
         if (is_a_good_candidate)
-          consensus_set.push_back (j);
+          consensus_set.push_back (static_cast<int> (j));
       }
     }
     
@@ -145,9 +147,10 @@ pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::clusterCorresponden
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointModelT, typename PointSceneT> bool
-pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::recognize (std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > &transformations)
+pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::recognize (
+    std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > &transformations)
 {
   transformations.clear ();
   if (!this->initCompute ())
