@@ -52,27 +52,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 // VTK includes
-#include <vtkAxes.h>
-#include <vtkFloatArray.h>
-#include <vtkAppendPolyData.h>
-#include <vtkPointData.h>
-#include <vtkPolyData.h>
-#include <vtkUnstructuredGrid.h>
-#include <vtkTubeFilter.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkDataSetMapper.h>
-#include <vtkCellArray.h>
-#include <vtkCommand.h>
-#include <vtkPLYReader.h>
-#include <vtkTransformFilter.h>
-#include <vtkPolyLine.h>
-#include <vtkVectorText.h>
-#include <vtkFollower.h>
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-#include <pcl/visualization/interactor.h>
-#else
-#include <vtkRenderWindowInteractor.h>
-#endif
+#include <pcl/visualization/vtk.h>
 
 namespace pcl
 {
@@ -418,7 +398,7 @@ namespace pcl
           */
         template <typename PointNT> bool
         addPointCloudNormals (const typename pcl::PointCloud<PointNT>::ConstPtr &cloud,
-                              int level = 100, double scale = 0.02,
+                              int level = 100, float scale = 0.02f,
                               const std::string &id = "cloud", int viewport = 0);
 
         /** \brief Add the estimated surface normals of a Point Cloud to screen.
@@ -432,7 +412,7 @@ namespace pcl
         template <typename PointT, typename PointNT> bool
         addPointCloudNormals (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
                               const typename pcl::PointCloud<PointNT>::ConstPtr &normals,
-                              int level = 100, double scale = 0.02,
+                              int level = 100, float scale = 0.02f,
                               const std::string &id = "cloud", int viewport = 0);
 
         /** \brief Add the estimated principal curvatures of a Point Cloud to screen.
@@ -449,7 +429,7 @@ namespace pcl
             const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud,
             const pcl::PointCloud<pcl::Normal>::ConstPtr &normals,
             const pcl::PointCloud<pcl::PrincipalCurvatures>::ConstPtr &pcs,
-            int level = 100, double scale = 1.0,
+            int level = 100, float scale = 1.0f,
             const std::string &id = "cloud", int viewport = 0);
 
         /** \brief Add the estimated surface intensity gradients of a Point Cloud to screen.
@@ -925,6 +905,22 @@ namespace pcl
         void
         resetStoppedFlag () { if (interactor_ != NULL) stopped_ = false; }
 #endif
+
+        /** \brief Stop the interaction and close the visualizaton window. */
+        void
+        close ()
+        {
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+          interactor_->stopped = true;
+          // This tends to close the window...
+          interactor_->stopLoop ();
+#else
+          stopped_ = true;
+          // This tends to close the window...
+          interactor_->TerminateApp ();
+#endif
+        }
+
         /** \brief Create a new viewport from [xmin,ymin] -> [xmax,ymax].
           * \param[in] xmin the minimum X coordinate for the viewport (0.0 <= 1.0)
           * \param[in] ymin the minimum Y coordinate for the viewport (0.0 <= 1.0)
@@ -989,7 +985,7 @@ namespace pcl
           * \param[in] r the red channel of the color that the line should be rendered with
           * \param[in] g the green channel of the color that the line should be rendered with
           * \param[in] b the blue channel of the color that the line should be rendered with
-          * \param[in] id the line id/name (default: "arrow")
+          * \param[in] id the arrow id/name (default: "arrow")
           * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
         template <typename P1, typename P2> bool
@@ -999,7 +995,7 @@ namespace pcl
         /** \brief Add a sphere shape from a point and a radius
           * \param[in] center the center of the sphere
           * \param[in] radius the radius of the sphere
-          * \param[in] id the line id/name (default: "sphere")
+          * \param[in] id the sphere id/name (default: "sphere")
           * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
         template <typename PointT> bool
@@ -1012,7 +1008,7 @@ namespace pcl
           * \param[in] r the red channel of the color that the sphere should be rendered with
           * \param[in] g the green channel of the color that the sphere should be rendered with
           * \param[in] b the blue channel of the color that the sphere should be rendered with
-          * \param[in] id the line id/name (default: "sphere")
+          * \param[in] id the sphere id/name (default: "sphere")
           * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
         template <typename PointT> bool
@@ -1352,6 +1348,26 @@ namespace pcl
         getRenderWindow ()
         {
           return (win_);
+        }
+
+        /** \brief Set the position in screen coordinates.
+          * \param[in] x where to move the window to (X)
+          * \param[in] y where to move the window to (Y)
+          */
+        void
+        setPosition (int x, int y)
+        {
+          win_->SetPosition (x, y);
+        }
+
+        /** \brief Set the window size in screen coordinates.
+          * \param[in] xw window size in horizontal (pixels)
+          * \param[in] yw window size in vertical (pixels)
+          */
+        void
+        setSize (int xw, int yw)
+        {
+          win_->SetSize (xw, yw);
         }
 
         /** \brief Create the internal Interactor object. */
