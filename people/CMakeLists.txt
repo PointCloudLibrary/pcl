@@ -11,7 +11,7 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 set(CUDA_FIND_QUIETLY TRUE)
   
 if(build)
-  FIND_PACKAGE( CUDA REQUIRED )
+  find_package(CUDA 4.1)
 
   if(CUDA_FOUND)
 
