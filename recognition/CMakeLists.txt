@@ -25,6 +25,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/dense_quantized_multi_mod_template.h
         include/pcl/${SUBSYS_NAME}/sparse_quantized_multi_mod_template.h
         include/pcl/${SUBSYS_NAME}/surface_normal_modality.h
+        include/pcl/${SUBSYS_NAME}/linemod/line_rgbd.h
         include/pcl/${SUBSYS_NAME}/hv/occlusion_reasoning.h
         include/pcl/${SUBSYS_NAME}/hv/hypotheses_verification.h
         include/pcl/${SUBSYS_NAME}/hv/hv_papazov.h
