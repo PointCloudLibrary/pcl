@@ -427,7 +427,7 @@ inline bool
   octree->getIntersectedVoxelIndices(direction, -direction, indices);
 
   int nbocc = indices.size ();
-  for (int j = 0; j < indices.size (); j++)
+  for (size_t j = 0; j < indices.size (); j++)
   {
    //if intersected point is on the over side of the camera
    if (pt.z * cloud->points[indices[j]].z < 0)
@@ -490,7 +490,7 @@ template<typename PointInT>
       octree->getIntersectedVoxelIndices (direction, -direction, indices);
 
       int nbocc = indices.size ();
-      for (int j = 0; j < indices.size (); j++)
+      for (size_t j = 0; j < indices.size (); j++)
       {
         //if intersected point is on the over side of the camera
         if (input_cloud->points[i].z * input_cloud->points[indices[j]].z < 0)
@@ -611,7 +611,7 @@ template<typename PointInT>
   int
   pcl::TextureMapping<PointInT>::sortFacesByCameraExperimental (pcl::TextureMesh &tex_mesh, pcl::TextureMesh &sorted_mesh,
                                                     std::vector<Camera> &cameras, double octree_voxel_size,
-                                                    PointCloud &visible_pts)
+                                                    PointCloud &/*visible_pts*/)
   {
     if (tex_mesh.tex_polygons.size () != 1)
     {
@@ -641,7 +641,7 @@ template<typename PointInT>
     pcl::fromROSMsg (tex_mesh.cloud, *original_cloud);
 
     //FOR EACH CAMERA INFO
-    for (int cam = 0; cam < cameras.size (); ++cam)
+    for (size_t cam = 0; cam < cameras.size (); ++cam)
     {
       //get camera pose as transform
       Eigen::Affine3f cam_trans = cameras[cam].pose;
@@ -771,7 +771,7 @@ template<typename PointInT>
     pcl::fromROSMsg (tex_mesh.cloud, *original_cloud);
 
     //FOR EACH CAMERA INFO
-    for (int cam = 0; cam < cameras.size (); ++cam)
+    for (size_t cam = 0; cam < cameras.size (); ++cam)
     {
       //get camera pose as transform
       Eigen::Affine3f cam_trans = cameras[cam].pose;
@@ -896,7 +896,7 @@ pcl::TextureMapping<PointInT>::showOcclusions (PointCloudPtr &input_cloud,
     nbocc = indices.size ();
 
     //TODO need to clean this up and find tricks to get remove aliasaing effect on planes
-    for (int j = 0; j < indices.size (); j++)
+    for (size_t j = 0; j < indices.size (); j++)
     {
       //if intersected point is on the over side of the camera
       if (pt.z * input_cloud->points[indices[j]].z < 0)
