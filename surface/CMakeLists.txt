@@ -37,10 +37,11 @@ if(build)
             include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_smoothing_laplacian.h
             include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.h)
 
-        set(VTK_SMOOTHING_SOURCE src/vtk_smoothing/vtk_utils.cpp
-                                 src/vtk_smoothing/vtk_mesh_subdivision.cpp
-                                 src/vtk_smoothing/vtk_mesh_smoothing_laplacian.cpp
-                                 src/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.cpp)
+        set(VTK_SMOOTHING_SOURCE 
+	    src/vtk_smoothing/vtk_utils.cpp
+            src/vtk_smoothing/vtk_mesh_subdivision.cpp
+            src/vtk_smoothing/vtk_mesh_smoothing_laplacian.cpp
+            src/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.cpp)
         set(VTK_SMOOTHING_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets)
     endif()
     
@@ -181,7 +182,10 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl/poisson ${POISSON_IMPLS})
 
     if(BUILD_surface_nurbs)
-        PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/nurbs ${NURBS_INCLUDES})
+      PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/nurbs ${NURBS_INCLUDES})
     endif(BUILD_surface_nurbs)
 
+    if (VTK_FOUND AND NOT ANDROID_NDK)
+      PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/vtk_smoothing ${VTK_SMOOTHING_INCLUDES})
+    endif (VTK_FOUND AND NOT ANDROID_NDK)
 endif(build)
