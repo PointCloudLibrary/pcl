@@ -28,14 +28,14 @@ find_path(FLANN_INCLUDE_DIR flann/flann.hpp
           PATH_SUFFIXES include)
 
 find_library(FLANN_LIBRARY
-             NAMES "${FLANN_RELSE_NAME}"
+             NAMES ${FLANN_RELSE_NAME}
              HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
              PATHS "$ENV{PROGRAMFILES}/Flann" "$ENV{PROGRAMW6432}/Flann" 
 	           "$ENV{PROGRAMFILES}/flann 1.6.9" "$ENV{PROGRAMW6432}/flann 1.6.9" 
 	     PATH_SUFFIXES lib)
 
 find_library(FLANN_LIBRARY_DEBUG 
-             NAMES "${FLANN_DEBUG_NAME}" "${FLANN_RELSE_NAME}"
+             NAMES ${FLANN_DEBUG_NAME} ${FLANN_RELSE_NAME}
 	     HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
 	     PATHS "$ENV{PROGRAMFILES}/Flann" "$ENV{PROGRAMW6432}/Flann" 
 	           "$ENV{PROGRAMFILES}/flann 1.6.9" "$ENV{PROGRAMW6432}/flann 1.6.9" 

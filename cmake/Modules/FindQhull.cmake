@@ -44,13 +44,13 @@ endif(QHULL_HEADER)
 set(QHULL_INCLUDE_DIR "${QHULL_INCLUDE_DIR}" CACHE PATH "QHull include dir." FORCE)
 
 find_library(QHULL_LIBRARY 
-             NAMES "${QHULL_RELSE_NAME}"
+             NAMES ${QHULL_RELSE_NAME}
              HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
              PATHS "$ENV{PROGRAMFILES}/QHull" "$ENV{PROGRAMW6432}/QHull" 
              PATH_SUFFIXES project build bin lib)
 
 find_library(QHULL_LIBRARY_DEBUG 
-             NAMES "${QHULL_DEBUG_NAME}" "${QHULL_RELSE_NAME}"
+             NAMES ${QHULL_DEBUG_NAME} ${QHULL_RELSE_NAME}
              HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
              PATHS "$ENV{PROGRAMFILES}/QHull" "$ENV{PROGRAMW6432}/QHull" 
              PATH_SUFFIXES project build bin lib)
