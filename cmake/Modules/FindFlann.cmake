@@ -6,6 +6,16 @@
 # FLANN_INCLUDE_DIRS - Directories containing the FLANN include files.
 # FLANN_LIBRARIES - Libraries needed to use FLANN.
 # FLANN_DEFINITIONS - Compiler flags for FLANN.
+# If FLANN_USE_STATIC is specified and then look for static libraries ONLY else
+# look for shared ones
+
+if(FLANN_USE_STATIC)
+  set(FLANN_RELSE_NAME flann_cpp_s)
+  set(FLANN_DEBUG_NAME flann_cpp_s-gd)
+else(FLANN_USE_STATIC)
+  set(FLANN_RELSE_NAME flann_cpp)
+  set(FLANN_DEBUG_NAME flann_cpp-gd)
+endif(FLANN_USE_STATIC)
 
 find_package(PkgConfig)
 pkg_check_modules(PC_FLANN flann)
@@ -17,53 +27,35 @@ find_path(FLANN_INCLUDE_DIR flann/flann.hpp
                 "$ENV{PROGRAMFILES}/flann 1.6.9" "$ENV{PROGRAMW6432}/flann 1.6.9" 
           PATH_SUFFIXES include)
 
-# Prefer static libraries in Windows over shared ones
-if(WIN32)
-  find_library(FLANN_LIBRARY
-               NAMES flann_cpp_s flann_cpp
-               HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
-               PATHS "$ENV{PROGRAMFILES}/Flann" "$ENV{PROGRAMW6432}/Flann" 
-                     "$ENV{PROGRAMFILES}/flann 1.6.9" "$ENV{PROGRAMW6432}/flann 1.6.9" 
-               PATH_SUFFIXES lib)
+find_library(FLANN_LIBRARY
+             NAMES "${FLANN_RELSE_NAME}"
+             HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
+             PATHS "$ENV{PROGRAMFILES}/Flann" "$ENV{PROGRAMW6432}/Flann" 
+	           "$ENV{PROGRAMFILES}/flann 1.6.9" "$ENV{PROGRAMW6432}/flann 1.6.9" 
+	     PATH_SUFFIXES lib)
 
-  find_library(FLANN_LIBRARY_DEBUG 
-               NAMES flann_cpp_s-gd flann_cpp-gd flann_cpp_s flann_cpp
-               HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
-               PATHS "$ENV{PROGRAMFILES}/Flann" "$ENV{PROGRAMW6432}/Flann" 
-                     "$ENV{PROGRAMFILES}/flann 1.6.9" "$ENV{PROGRAMW6432}/flann 1.6.9" 
-               PATH_SUFFIXES lib)
-else(WIN32)
-  find_library(FLANN_LIBRARY
-               NAMES flann_cpp
-               HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
-               PATH_SUFFIXES lib)
-
-  find_library(FLANN_LIBRARY_DEBUG 
-               NAMES flann_cpp-gd flann_cpp
-               HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
-               PATH_SUFFIXES lib)
-endif(WIN32)
+find_library(FLANN_LIBRARY_DEBUG 
+             NAMES "${FLANN_DEBUG_NAME}" "${FLANN_RELSE_NAME}"
+	     HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
+	     PATHS "$ENV{PROGRAMFILES}/Flann" "$ENV{PROGRAMW6432}/Flann" 
+	           "$ENV{PROGRAMFILES}/flann 1.6.9" "$ENV{PROGRAMW6432}/flann 1.6.9" 
+	     PATH_SUFFIXES lib)
 
 if(NOT FLANN_LIBRARY_DEBUG)
-    set(FLANN_LIBRARY_DEBUG ${FLANN_LIBRARY})
+  set(FLANN_LIBRARY_DEBUG ${FLANN_LIBRARY})
 endif(NOT FLANN_LIBRARY_DEBUG)
 
 set(FLANN_INCLUDE_DIRS ${FLANN_INCLUDE_DIR})
 set(FLANN_LIBRARIES optimized ${FLANN_LIBRARY} debug ${FLANN_LIBRARY_DEBUG})
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Flann DEFAULT_MSG
-    FLANN_LIBRARY FLANN_INCLUDE_DIR)
+find_package_handle_standard_args(Flann DEFAULT_MSG FLANN_LIBRARY FLANN_INCLUDE_DIR)
 
 mark_as_advanced(FLANN_LIBRARY FLANN_LIBRARY_DEBUG FLANN_INCLUDE_DIR)
 
 if(FLANN_FOUND)
   message(STATUS "FLANN found (include: ${FLANN_INCLUDE_DIRS}, lib: ${FLANN_LIBRARIES})")
-  if(WIN32)
-    get_filename_component(flann_lib ${FLANN_LIBRARY} NAME_WE)
-    if("${flann_lib}" STREQUAL "flann_cpp_s")
-      add_definitions(-DFLANN_STATIC)
-    endif("${flann_lib}" STREQUAL "flann_cpp_s")
-  endif(WIN32)
+  if(FLANN_USE_STATIC)
+    add_definitions(-DFLANN_STATIC)
+  endif(FLANN_USE_STATIC)
 endif(FLANN_FOUND)
-

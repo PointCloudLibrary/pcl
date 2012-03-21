@@ -175,11 +175,17 @@ include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
 add_definitions(-DEIGEN_USE_NEW_STDVECTOR
                 -DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
 # FLANN (required)
+if(NOT PCL_SHARED_LIBS OR WIN32)
+  set(FLANN_USE_STATIC ON)
+endif(NOT PCL_SHARED_LIBS OR WIN32)
 find_package(Flann REQUIRED)
 include_directories(SYSTEM ${FLANN_INCLUDE_DIRS})
 # OpenNI
 find_package(OpenNI)
 # Qhull
+if(NOT PCL_SHARED_LIBS OR WIN32)
+  set(QHULL_USE_STATIC ON)
+endif(NOT PCL_SHARED_LIBS OR WIN32)
 find_package(Qhull)
 # Find ROS
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_ros.cmake)
