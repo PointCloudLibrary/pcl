@@ -294,4 +294,4 @@ namespace pcl
 
 }
 
-#endif    // PCL_RECOGNITION_LINEMOD
+#endif 
