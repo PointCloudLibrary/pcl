@@ -81,6 +81,7 @@ namespace pcl
         , labels_ ()
         , refine_labels_ ()
         , label_to_model_ ()
+        , depth_dependent_ (true)
       {
       }
 
@@ -93,6 +94,7 @@ namespace pcl
         , labels_ ()
         , refine_labels_ (refine_labels)
         , label_to_model_ ()
+        , depth_dependent_ (true)
       {
       }
 
@@ -171,9 +173,10 @@ namespace pcl
         * \param[in] distance_threshold the tolerance in meters
         */
       inline void
-      setDistanceThreshold (float distance_threshold)
+      setDistanceThreshold (float distance_threshold, bool depth_dependent = true)
       {
         distance_threshold_ = distance_threshold;// * distance_threshold;
+        depth_dependent_ = depth_dependent;
       }
 
       void
@@ -234,8 +237,8 @@ namespace pcl
         label_to_model_ = boost::make_shared<std::vector<int> >(label_to_model);
       }
 
-      void
-      getModelCoefficients ()
+      boost::shared_ptr<std::vector<pcl::ModelCoefficients> >
+      getModelCoefficients () const
       {
         return (models_);
       }
@@ -263,14 +266,13 @@ namespace pcl
       compare (int idx1, int idx2) const
       {
         int current_label = labels_->points[idx1].label;
-        
-        //printf ("idx1: %d idx2: %d\n",idx1,idx2);
-        //printf ("L1: %d L2: %d\n",current_label, (labels_->points[idx2].label));
+        int next_label = labels_->points[idx2].label;
 
-        if (!((*refine_labels_)[current_label] && !(*refine_labels_)[labels_->points[idx2].label]))
-          return false;  
+        // Suat: ????
+        if (!((*refine_labels_)[current_label] && !(*refine_labels_)[next_label]))
+          return false;
         
-        pcl::ModelCoefficients model_coeff = (*models_)[(*label_to_model_)[current_label]];
+        const pcl::ModelCoefficients& model_coeff = (*models_)[(*label_to_model_)[current_label]];
         
         PointT pt = input_->points[idx2];
         double ptp_dist = fabs (model_coeff.values[0] * pt.x + 
@@ -285,9 +287,19 @@ namespace pcl
 
         //bool dist_ok = (dist < distance_threshold_);
         //bool curvature_ok = normals_->points[idx1].curvature < 0.04;
-        bool ptp_dist_ok = ptp_dist < distance_threshold_ * pt.z;
-
-        return (ptp_dist_ok);
+        
+        // depth dependent
+        float threshold = distance_threshold_;
+        if (depth_dependent_)
+        {
+          Eigen::Vector4f origin = input_->sensor_origin_;
+          Eigen::Vector3f vec = input_->points[idx1].getVector3fMap () - origin.head<3> ();
+          
+          float z = vec.dot (z_axis_);
+          threshold *= z * z;
+        }
+        
+        return (ptp_dist < threshold);
         //return (dist_ok && curvature_ok && ptp_dist_ok);
       }
 
@@ -299,6 +311,8 @@ namespace pcl
       PointCloudLPtr labels_;
       boost::shared_ptr<std::vector<bool> > refine_labels_;
       boost::shared_ptr<std::vector<int> > label_to_model_;
+      bool depth_dependent_;
+      using PlaneCoefficientComparator<PointT, PointNT>::z_axis_;
   };
 }
 

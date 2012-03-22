@@ -108,7 +108,7 @@ namespace pcl
         * \param[out] label_indices a vector of PointIndices corresponding to each label / component id.
         */
       void
-      segment (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices);
+      segment (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const;
       
       /** \brief Find the boundary points / contour of a connected component
         * \param[in] start_idx the first (lowest) index of the connected component for which a boundary shoudl be returned
@@ -122,11 +122,15 @@ namespace pcl
     protected:
       ComparatorConstPtr compare_;
       
-      unsigned
-      findRoot (const std::vector<unsigned>& runs, unsigned index);
-      
-      static void
-      getNextIdxs(int& p1, int& p2, int& p3, int curr_idx, int dir, int width);
+      inline unsigned
+      findRoot (const std::vector<unsigned>& runs, unsigned index) const
+      {
+        register unsigned idx = index;
+        while (runs[idx] != idx)
+          idx = runs[idx];
+
+        return (idx);
+      }
 
     private:
       struct Neighbor

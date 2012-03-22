@@ -52,7 +52,7 @@
 template<typename PointT, typename PointLT> void
 pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::findLabeledRegionBoundary (int start_idx, PointCloudLPtr labels, pcl::PointIndices& boundary_indices)
 {
-  boundary_indices.indices.push_back (start_idx);
+  boundary_indices.indices.clear ();
   int curr_idx = start_idx;
   int curr_x   = start_idx % labels->width;
   int curr_y   = start_idx / labels->width;
@@ -84,12 +84,12 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::findLabeledRegion
       break;
     }
   }
-  
-  //std::cout << "found initial direction at: " << direction << std::endl;
-  
-  // region with single pixel
+
+  // no connection to outer regions => start_idx is not on the border
   if (direction == -1)
     return;
+  
+  boundary_indices.indices.push_back (start_idx);
   
   do {
     unsigned nIdx;
@@ -110,24 +110,12 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::findLabeledRegion
     curr_x   += directions [nIdx].d_x;
     curr_y   += directions [nIdx].d_y;
     boundary_indices.indices.push_back(curr_idx);
-    //std::cout << "add point: " << curr_idx << " :: " << curr_x << " , " << curr_y << std::endl;
   } while ( curr_idx != start_idx);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT, typename PointLT> unsigned
-pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::findRoot (const std::vector<unsigned>& runs, unsigned index)
-{
-  unsigned idx = index;
-  while (runs[idx] != idx)
-    idx = runs[idx];
-
-  return (idx);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointLT> void
-pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices)
+pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const
 {
   std::vector<unsigned> run_ids;
 
