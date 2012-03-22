@@ -103,12 +103,12 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
     if (min_depth < z && z < max_depth)
     {
       foreground_mask[i] = true;
-      indices->push_back (i);
+      indices->push_back (static_cast<int> (i));
     }
   }
 
   // Find the dominant plane between the specified near/far thresholds
-  const float distance_threshold = 0.02;
+  const float distance_threshold = 0.02f;
   const int max_iterations = 500;
   pcl::SACSegmentation<pcl::PointXYZRGBA> seg;
   seg.setOptimizeCoefficients (true);
@@ -133,7 +133,7 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
     if (foreground_mask[i])
     {
       const pcl::PointXYZRGBA & p = input->points[i];
-      float d = fabs (c[0]*p.x + c[1]*p.y + c[2]*p.z + c[3]);
+      float d = fabsf (c[0]*p.x + c[1]*p.y + c[2]*p.z + c[3]);
       foreground_mask[i] = (d < max_height);
     }
   }
@@ -200,10 +200,10 @@ trainTemplate (const PointCloudXYZRGBA::ConstPtr & input, const std::vector<bool
   masks[1] = &mask_map;
 
   pcl::RegionXY region;
-  region.x = min_x;
-  region.y = min_y;
-  region.width = max_x - min_x + 1;
-  region.height = max_y - min_y + 1;
+  region.x = static_cast<int> (min_x);
+  region.y = static_cast<int> (min_y);
+  region.width = static_cast<int> (max_x - min_x + 1);
+  region.height = static_cast<int> (max_y - min_y + 1);
 
   printf ("%d %d %d %d\n", region.x, region.y, region.width, region.height);
 
@@ -240,7 +240,7 @@ main (int argc, char** argv)
     return (-1);
 
   // Train the LINE-MOD template and output it to the specified file
-  compute (cloud, atof (argv[2]), atof (argv[3]), atof (argv[4]), argv[5]);
+  compute (cloud, static_cast<float> (atof (argv[2])), static_cast<float> (atof (argv[3])), static_cast<float> (atof (argv[4])), argv[5]);
 
 }
 
