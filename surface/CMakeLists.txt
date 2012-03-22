@@ -37,10 +37,12 @@ if(build)
             include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_smoothing_laplacian.h
             include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.h)
 
-        set(VTK_SMOOTHING_SOURCE src/vtk_smoothing/vtk_utils.cpp
-                                 src/vtk_smoothing/vtk_mesh_subdivision.cpp
-                                 src/vtk_smoothing/vtk_mesh_smoothing_laplacian.cpp
-                                 src/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.cpp)
+        set(VTK_SMOOTHING_SOURCE 
+	    src/vtk_smoothing/vtk_utils.cpp
+            src/vtk_smoothing/vtk_mesh_subdivision.cpp
+            src/vtk_smoothing/vtk_mesh_smoothing_laplacian.cpp
+            src/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.cpp)
+
         set(VTK_SMOOTHING_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets)
     endif()
     
@@ -107,4 +109,8 @@ if(build)
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
+
+    if (VTK_FOUND AND NOT ANDROID_NDK)
+      PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/vtk_smoothing ${VTK_SMOOTHING_INCLUDES})
+    endif (VTK_FOUND AND NOT ANDROID_NDK)
 endif(build)
