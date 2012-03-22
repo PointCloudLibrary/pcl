@@ -76,11 +76,14 @@ class SimpleOpenNIViewer
 {
   public:
     SimpleOpenNIViewer (pcl::OpenNIGrabber& grabber)
-      : grabber_ (grabber),
-        importer_ (vtkSmartPointer<vtkImageImport>::New ()),
-        depth_importer_ (vtkSmartPointer<vtkImageImport>::New ()),
-        writer_ (vtkSmartPointer<vtkTIFFWriter>::New ()),
-        flipper_ (vtkSmartPointer<vtkImageFlip>::New ())
+      : grabber_ (grabber)
+      , image_mutex_ ()
+      , image_ ()
+      , depth_image_ ()
+      , importer_ (vtkSmartPointer<vtkImageImport>::New ())
+      , depth_importer_ (vtkSmartPointer<vtkImageImport>::New ())
+      , writer_ (vtkSmartPointer<vtkTIFFWriter>::New ())
+      , flipper_ (vtkSmartPointer<vtkImageFlip>::New ())
     {
       importer_->SetNumberOfScalarComponents (3);
       importer_->SetDataScalarTypeToUnsignedChar ();

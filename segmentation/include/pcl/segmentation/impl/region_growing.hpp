@@ -587,13 +587,13 @@ pcl::RegionGrowing<PointT>::validatePoint (int initial_seed, int point, int nghb
   is_a_seed = true;
 
   float cosine_threshold = cos (theta_threshold_);
-  Eigen::Map<Eigen::Vector3f> initial_point ( (float*)cloud_for_segmentation_->points[point].data );
-  Eigen::Map<Eigen::Vector3f> initial_normal ( (float*)normals_->points[point].normal );
+  Eigen::Map<Eigen::Vector3f> initial_point (static_cast<float*> (cloud_for_segmentation_->points[point].data));
+  Eigen::Map<Eigen::Vector3f> initial_normal (static_cast<float*> (normals_->points[point].normal));
 
   //check the angle between normals
   if (smooth_mode_ == true)
   {
-    Eigen::Map<Eigen::Vector3f> nghbr_normal ( (float*)normals_->points[nghbr].normal );
+    Eigen::Map<Eigen::Vector3f> nghbr_normal (static_cast<float*> (normals_->points[nghbr].normal));
     float dot_product = fabs ( nghbr_normal.dot (initial_normal) );
     if (dot_product < cosine_threshold)
     {
@@ -602,9 +602,9 @@ pcl::RegionGrowing<PointT>::validatePoint (int initial_seed, int point, int nghb
   }
   else
   {
-    Eigen::Map<Eigen::Vector3f> nghbr_normal ( (float*)normals_->points[nghbr].normal );
-    Eigen::Map<Eigen::Vector3f> initial_seed_normal ( (float*)normals_->points[initial_seed].normal );
-    float dot_product = fabs ( nghbr_normal.dot (initial_seed_normal) );
+    Eigen::Map<Eigen::Vector3f> nghbr_normal (static_cast<float*> (normals_->points[nghbr].normal));
+    Eigen::Map<Eigen::Vector3f> initial_seed_normal (static_cast<float*> (normals_->points[initial_seed].normal));
+    float dot_product = fabsf ( nghbr_normal.dot (initial_seed_normal) );
     if (dot_product < cosine_threshold)
       return (false);
   }

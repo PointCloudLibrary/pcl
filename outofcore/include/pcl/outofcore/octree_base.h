@@ -207,7 +207,7 @@ namespace pcl
         double
         getVoxelSideLength (const boost::uint64_t depth) const
         {
-          return (root_->max_[0] - root_->min_[0]) * pow (.5, double (max_depth_)) * (double)(1 << (max_depth_ - depth));
+          return (root_->max_[0] - root_->min_[0]) * pow (.5, double (max_depth_)) * double (1 << (max_depth_ - depth));
         }
 
         double
