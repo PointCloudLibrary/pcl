@@ -44,7 +44,9 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
-pcl::MarchingCubes<PointNT>::MarchingCubes ()
+pcl::MarchingCubes<PointNT>::MarchingCubes () 
+  : data_ (), leaves_ (), min_p_ (), max_p_ (), leaf_size_ (), gaussian_scale_ (), 
+    data_size_ (), padding_size_ (), iso_level_ (), cell_hash_map_ ()
 {
 }
 
