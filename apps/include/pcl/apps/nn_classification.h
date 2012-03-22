@@ -67,6 +67,8 @@ namespace pcl
 
     public:
 
+      NNClassification () : tree_ (), classes_ (), labels_idx_ () {}
+
       /** \brief Result is a list of class labels and scores */
       typedef std::pair<std::vector<std::string>, std::vector<float> > Result;
       typedef boost::shared_ptr<Result> ResultPtr;
@@ -74,9 +76,10 @@ namespace pcl
       // TODO setIndices method, distance metrics and reset tree
 
       /** \brief Setting the training features.
-        * \param features the training features
+        * \param[in] features the training features
         */
-      void setTrainingFeatures (const typename pcl::PointCloud<PointT>::ConstPtr &features)
+      void 
+      setTrainingFeatures (const typename pcl::PointCloud<PointT>::ConstPtr &features)
       {
         // Do not limit the number of dimensions used in the tree
         typename pcl::CustomPointRepresentation<PointT>::Ptr cpr (new pcl::CustomPointRepresentation<PointT> (INT_MAX, 0));
@@ -89,7 +92,8 @@ namespace pcl
         * \param classes the class labels
         * \param labels_idx the index in the class labels list for each training example
         */
-      void setTrainingLabelIndicesAndLUT (const std::vector<std::string> &classes, const std::vector<int> &labels_idx)
+      void 
+      setTrainingLabelIndicesAndLUT (const std::vector<std::string> &classes, const std::vector<int> &labels_idx)
       {
         // TODO check if min/max index is inside classes?
         classes_ = classes;
@@ -102,7 +106,8 @@ namespace pcl
         * \note See the setTrainingLabelIndicesAndLUT method for easily re-labeling.
         * \param labels the class label for each training example
         */
-      void setTrainingLabels (const std::vector<std::string> &labels)
+      void 
+      setTrainingLabels (const std::vector<std::string> &labels)
       {
         // Create a list of unique labels
         classes_ = labels;
@@ -127,11 +132,12 @@ namespace pcl
         * \param labels_file_name the class label for each training example
         * \return true on success, false on failure (read error or number of entries don't match)
         */
-      bool loadTrainingFeatures(std::string file_name, std::string labels_file_name)
+      bool 
+      loadTrainingFeatures(std::string file_name, std::string labels_file_name)
       {
         typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
         if (pcl::io::loadPCDFile (file_name.c_str (), *cloud) != 0)
-          return false;
+          return (false);
         std::vector<std::string> labels;
         std::ifstream f (labels_file_name.c_str ());
         std::string label;
@@ -139,10 +145,10 @@ namespace pcl
           if (label.size () > 0)
             labels.push_back(label);
         if (labels.size () != cloud->points.size ())
-          return false;
+          return (false);
         setTrainingFeatures (cloud);
         setTrainingLabels (labels);
-        return true;
+        return (true);
       }
 
       /** \brief Save the list of training examples and corresponding labels.
@@ -150,19 +156,20 @@ namespace pcl
         * \param labels_file_name file name for writing the class label for each training example
         * \return true on success, false on failure (write error or number of entries don't match)
         */
-      bool saveTrainingFeatures(std::string file_name, std::string labels_file_name)
+      bool 
+      saveTrainingFeatures (std::string file_name, std::string labels_file_name)
       {
         typename pcl::PointCloud<PointT>::ConstPtr training_features = tree_->getInputCloud ();
         if (labels_idx_.size () == training_features->points.size ())
         {
           if (pcl::io::savePCDFile (file_name.c_str (), *training_features) != 0)
-            return false;
+            return (false);
           std::ofstream f (labels_file_name.c_str ());
           BOOST_FOREACH (int i, labels_idx_)
             f << classes_[i] << "\n";
-          return true;
+          return (true);
         }
-        return false;
+        return (false);
       }
 
       /** \brief Utility function for the default classification process.
@@ -172,12 +179,13 @@ namespace pcl
         * \param max_nn if given, bounds the maximum returned neighbors to this value
         * \return pair of label and score for each training class from the neighborhood
         */
-      ResultPtr classify (const PointT &p_q, double radius, float gaussian_param, int max_nn = INT_MAX)
+      ResultPtr 
+      classify (const PointT &p_q, double radius, float gaussian_param, int max_nn = INT_MAX)
       {
         std::vector<int> k_indices;
         std::vector<float> k_sqr_distances;
         getSimilarExemplars (p_q, radius, k_indices, k_sqr_distances, max_nn);
-        return getGaussianBestScores (gaussian_param, k_indices, k_sqr_distances);
+        return (getGaussianBestScores (gaussian_param, k_indices, k_sqr_distances));
       }
 
       /** \brief Search for k-nearest neighbors for the given query point.
@@ -188,11 +196,12 @@ namespace pcl
         * a priori!)
         * \return number of neighbors found
         */
-      int getKNearestExemplars (const PointT &p_q, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
+      int 
+      getKNearestExemplars (const PointT &p_q, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
       {
         k_indices.resize (k);
         k_sqr_distances.resize (k);
-        return tree_->nearestKSearch (p_q, k, k_indices, k_sqr_distances);
+        return (tree_->nearestKSearch (p_q, k, k_indices, k_sqr_distances));
       }
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius.
@@ -203,10 +212,11 @@ namespace pcl
         * \param max_nn if given, bounds the maximum returned neighbors to this value
         * \return number of neighbors found in radius
         */
-      int getSimilarExemplars (const PointT &p_q, double radius, std::vector<int> &k_indices,
-                                 std::vector<float> &k_sqr_distances, int max_nn = INT_MAX)
+      int 
+      getSimilarExemplars (const PointT &p_q, double radius, std::vector<int> &k_indices,
+                           std::vector<float> &k_sqr_distances, int max_nn = INT_MAX)
       {
-        return tree_->radiusSearch (p_q, radius, k_indices, k_sqr_distances, max_nn);
+        return (tree_->radiusSearch (p_q, radius, k_indices, k_sqr_distances, max_nn));
       }
 
       /** \brief Gets the smallest square distance to each class given a neighborhood.
@@ -214,7 +224,8 @@ namespace pcl
         * \param k_sqr_distances the resultant squared distances to the neighboring points
         * \return a square distance to each training class
         */
-      boost::shared_ptr<std::vector<float> > getSmallestSquaredDistances (std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
+      boost::shared_ptr<std::vector<float> > 
+      getSmallestSquaredDistances (std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
       {
         // Reserve space for distances
         boost::shared_ptr<std::vector<float> > sqr_distances (new std::vector<float> (classes_.size (), FLT_MAX));
@@ -223,7 +234,7 @@ namespace pcl
         for (std::vector<int>::const_iterator i = k_indices.begin (); i != k_indices.end (); ++i)
           if ((*sqr_distances)[labels_idx_[*i]] > k_sqr_distances[i - k_indices.begin ()])
             (*sqr_distances)[labels_idx_[*i]] = k_sqr_distances[i - k_indices.begin ()];
-        return sqr_distances;
+        return (sqr_distances);
       }
 
       /** \brief Computes a score that is inversely proportional to the distance to each class given a neighborhood.
@@ -232,7 +243,8 @@ namespace pcl
         * \param k_sqr_distances the resultant squared distances to the neighboring points
         * \return pair of label and score for each training class from the neighborhood
         */
-      ResultPtr getLinearBestScores (std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
+      ResultPtr 
+      getLinearBestScores (std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
       {
         // Get smallest squared distances and transform them to a score for each class
         boost::shared_ptr<std::vector<float> > sqr_distances = getSmallestSquaredDistances (k_indices, k_sqr_distances);
@@ -253,16 +265,17 @@ namespace pcl
           *it = 1 - *it/sum_dist;
 
         // Return label/score list pair
-        return result;
+        return (result);
       }
 
       /** \brief Computes a score exponentially decreasing with the distance for each class given a neighborhood.
-        * \param gaussian_param influences the width of the Gaussian: score = exp(-distance/gaussioan_param)
-        * \param k_indices the resultant indices of the neighboring points
-        * \param k_sqr_distances the resultant squared distances to the neighboring points
+        * \param[in] gaussian_param influences the width of the Gaussian: score = exp(-distance/gaussioan_param)
+        * \param[out] k_indices the resultant indices of the neighboring points
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
         * \return pair of label and score for each training class from the neighborhood
         */
-      ResultPtr getGaussianBestScores (float gaussian_param, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
+      ResultPtr 
+      getGaussianBestScores (float gaussian_param, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
       {
         // Get smallest squared distances and transform them to a score for each class
         boost::shared_ptr<std::vector<float> > sqr_distances = getSmallestSquaredDistances (k_indices, k_sqr_distances);
@@ -280,7 +293,7 @@ namespace pcl
           }
 
         // Return label/score list pair
-        return result;
+        return (result);
       }
   };
 }
