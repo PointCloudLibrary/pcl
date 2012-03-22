@@ -71,7 +71,7 @@ So let's look at the code. From *visualization/tools/openni_viewer_simple.cpp*
               
           while (!viewer.wasStopped())
           {   
-            sleep (1);
+            boost::this_thread::sleep (boost::posix_time::seconds (1));
           }   
 
           interface->stop (); 
