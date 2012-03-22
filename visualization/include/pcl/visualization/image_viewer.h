@@ -438,6 +438,7 @@ namespace pcl
         /** \brief Internal structure describing a layer. */
         struct Layer
         {
+          Layer () : canvas (), layer_name (), opacity () {}
           vtkSmartPointer<vtkImageCanvasSource2D> canvas;
           std::string layer_name;
           double opacity;
