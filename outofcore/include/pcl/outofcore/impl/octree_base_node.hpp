@@ -112,7 +112,7 @@ namespace pcl
 
         if (!boost::filesystem::exists (thisdir_))
         {
-          PCL_DEBUG ("Could not find dir %s\n",thisdir_.c_str ());
+          PCL_ERROR ("Could not find dir %s\n",thisdir_.c_str ());
           throw(OctreeException (OctreeException::OCT_MISSING_DIR));
         }
 
@@ -1237,6 +1237,56 @@ namespace pcl
       }
       return (false);
     }
+
+////////////////////////////////////////////////////////////////////////////////
+    template<typename Container, typename PointT> void
+    octree_base_node<Container, PointT>::printBBox(const size_t query_depth) const
+    {
+      if (this->depth_ < query_depth){
+        for (size_t i = 0; i < this->depth_; i++)
+          std::cout << "  ";
+
+        std::cout << "[" << min_[0] << ", " << min_[1] << ", " << min_[2] << "] - " <<
+                "[" << max_[0] << ", " << max_[1] << ", " << max_[2] << "] - " <<
+                //"[" << midx_ << ", " << midy_ << ", " << midz_ << "]" << std::endl;
+                "[" << max_[0] - min_[0] << ", " << max_[1] - min_[1] << ", " << max_[2] - min_[2] << "]" << std::endl;
+
+        if (num_child_ > 0)
+        {
+          for (size_t i = 0; i < 8; i++)
+          {
+            if (children_[i])
+              children_[i]->printBBox (query_depth);
+          }
+        }
+      }
+    }
+
+////////////////////////////////////////////////////////////////////////////////
+    template<typename Container, typename PointT> void
+    octree_base_node<Container, PointT>::getVoxelCenters(AlignedPointTVector &voxel_centers, const size_t query_depth)
+    {
+      if (this->depth_ < query_depth){
+        if (num_child_ > 0)
+        {
+          for (size_t i = 0; i < 8; i++)
+          {
+            if (children_[i])
+              children_[i]->getVoxelCenters (voxel_centers, query_depth);
+          }
+        }
+      }
+      else
+      {
+        PointT voxel_center;
+        voxel_center.x = midx_;
+        voxel_center.y = midy_;
+        voxel_center.z = midz_;
+
+        voxel_centers.push_back(voxel_center);
+      }
+    }
+
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> void
@@ -1702,17 +1752,17 @@ namespace pcl
       //Validate
       if (!((version) && (bb_min) && (bb_max) && (bin)))
       {
-        PCL_DEBUG ( "index %s failed to parse!\n", path.c_str () );
+        PCL_ERROR ( "index %s failed to parse! Doesn't contain all attributes\n", path.c_str () );
         throw (OctreeException (OctreeException::OCT_PARSE_FAILURE));
       }
       if ((version->type != cJSON_Number) || (bb_min->type != cJSON_Array) || (bb_max->type != cJSON_Array) || (bin->type != cJSON_String))
       {
-        PCL_DEBUG ( "index %s failed to parse!\n", path.c_str () );
+        PCL_ERROR ( "index %s failed to parse! Invalid data types\n", path.c_str () );
         throw (OctreeException (OctreeException::OCT_PARSE_FAILURE));        
       }
       if (version->valuedouble != 2.0)
       {
-        PCL_DEBUG ( "index %s failed to parse!\n", path.c_str () );
+        PCL_ERROR ( "index %s failed to parse!\n  Incompatible version", path.c_str () );
         throw (OctreeException (OctreeException::OCT_PARSE_FAILURE));
       }
 

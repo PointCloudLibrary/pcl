@@ -96,6 +96,8 @@ namespace pcl
         typedef octree_base<octree_disk_container < PointT > , PointT > octree_disk;
         typedef octree_base_node<octree_disk_container < PointT > , PointT > octree_disk_node;
 
+        typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
+
 //    typedef octree_base<octree_ram_container< PointT> , PointT> octree_ram;
 //    typedef octree_base_node< octree_ram_container<PointT> , PointT> octree_ram_node;
 
@@ -179,6 +181,9 @@ namespace pcl
          */
         void
         queryBBIntersects (const double min_bb[3], const double max_bb[3], const boost::uint32_t query_depth, std::list<std::string>& file_names);
+
+        void
+        printBBox(const size_t query_depth) const;
 
         //bb check
         //checks if 
@@ -366,6 +371,9 @@ namespace pcl
         /** \brief Load nodes child data creating new nodes for each */
         void
         loadChildren (bool recursive);
+
+        void
+        getVoxelCenters(AlignedPointTVector &voxel_centers, const size_t query_depth);
 
         boost::filesystem::path thisdir_;//the dir containing the node's data and its children
         boost::filesystem::path thisnodeindex_;//the node's index file, node.idx

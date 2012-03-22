@@ -48,45 +48,93 @@
 #include <pcl/outofcore/outofcore.h>
 #include <pcl/outofcore/outofcore_impl.h>
 
+// todo: Read clouds as PointCloud2 so we don't need to define PointT explicitly.
+//       This also requires our octree to take PointCloud2 as an input.
 typedef pcl::PointXYZ PointT;
 
 using namespace pcl;
 using namespace pcl::outofcore;
 
 using pcl::console::parse_argument;
+using pcl::console::parse_file_extension_argument;
 using pcl::console::find_switch;
 using pcl::console::print_error;
 using pcl::console::print_warn;
 using pcl::console::print_info;
 
-typedef octree_base<octree_disk_container < PointT > , PointT > octree_disk;
+#include <boost/foreach.hpp>
+
+typedef octree_base<octree_disk_container<PointT> , PointT> octree_disk;
 
 const int OCTREE_DEPTH (0);
 const int OCTREE_RESOLUTION (1);
 
-int
-pcl_outofcore_process (boost::filesystem::path pcd_path, boost::filesystem::path root_dir,
-                       int depth, double resolution, int build_octree_with, bool gen_lod, bool overwrite)
+PointCloud<PointT>::Ptr
+getCloudFromFile (boost::filesystem::path pcd_path)
 {
-
   // Read PCD file
   PointCloud<PointT>::Ptr cloud (new PointCloud<PointT> ());
 
-  print_info ("Reading: %s\n", pcd_path.c_str ());
+  print_info ("Reading: %s ", pcd_path.c_str ());
 
   if (io::loadPCDFile<PointT> (pcd_path.string (), *cloud) == -1) //* load the file
   {
     PCL_ERROR ("Couldn't read file\n");
-    return (-1);
+    exit (-1);
   }
 
-  // Get bounding box
-  PointT min_pt, max_pt;
-  getMinMax3D (*cloud, min_pt, max_pt);
+  print_info ("(%d)\n", (cloud->width * cloud->height));
+  return cloud;
+}
 
-  //the bounding box of the root node of the out-of-core octree must be specified
-  const double bounding_box_min[3] = { min_pt.x, min_pt.y, min_pt.z };
-  const double bounding_box_max[3] = { max_pt.x, max_pt.y, max_pt.z };
+int
+outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesystem::path root_dir, int depth,
+                  double resolution, int build_octree_with, bool gen_lod, bool overwrite)
+{
+  // Bounding box min/max pts
+  PointT min_pt, max_pt;
+
+  // Iterate over all pcd files resizing min/max
+  for (int i = 0; i < pcd_paths.size (); i++)
+  {
+
+    // Get cloud
+    PointCloud<PointT>::Ptr cloud = getCloudFromFile (pcd_paths[i]);
+
+    PointT tmp_min_pt, tmp_max_pt;
+
+    if (i == 0)
+    {
+      // Get initial min/max
+      getMinMax3D (*cloud, min_pt, max_pt);
+    }
+    else
+    {
+      getMinMax3D (*cloud, tmp_min_pt, tmp_max_pt);
+
+      // Resize new min
+      if (tmp_min_pt.x < min_pt.x)
+        min_pt.x = tmp_min_pt.x;
+      if (tmp_min_pt.y < min_pt.y)
+        min_pt.y = tmp_min_pt.y;
+      if (tmp_min_pt.z < min_pt.z)
+        min_pt.z = tmp_min_pt.z;
+
+      // Resize new max
+      if (tmp_max_pt.x > max_pt.x)
+        max_pt.x = tmp_max_pt.x;
+      if (tmp_max_pt.y > max_pt.y)
+        max_pt.y = tmp_max_pt.y;
+      if (tmp_max_pt.z > max_pt.z)
+        max_pt.z = tmp_max_pt.z;
+    }
+  }
+
+  std::cout << "Bounds: " << min_pt << " - " << max_pt << std::endl;
+
+  // The bounding box of the root node of the out-of-core octree must be specified
+  const double bounding_box_min[3] = {min_pt.x, min_pt.y, min_pt.z};
+  const double bounding_box_max[3] = {max_pt.x, max_pt.y, max_pt.z};
 
   //specify the directory and the root node's meta data file with a
   //".oct_idx" extension (currently it must be this extension)
@@ -94,7 +142,7 @@ pcl_outofcore_process (boost::filesystem::path pcd_path, boost::filesystem::path
 
   print_info ("Writing: %s\n", octree_path_on_disk.c_str ());
   //make sure there isn't an octree there already
-  if(boost::filesystem::exists (octree_path_on_disk))
+  if (boost::filesystem::exists (octree_path_on_disk))
   {
     if (overwrite)
     {
@@ -119,19 +167,25 @@ pcl_outofcore_process (boost::filesystem::path pcd_path, boost::filesystem::path
     outofcore_octree = new octree_disk (bounding_box_min, bounding_box_max, resolution, octree_path_on_disk, "ECEF");
   }
 
-  //load the points into the outofcore octree
-  if (gen_lod)
+  // Iterate over all pcd files adding points to the octree
+  for (int i = 0; i < pcd_paths.size (); i++)
   {
-    print_info ("  Generating LODs\n");
-    outofcore_octree->addPointCloud_and_genLOD (cloud);
-  }
-  else
-  {
-    outofcore_octree->addPointCloud (cloud);
+
+    PointCloud<PointT>::Ptr cloud = getCloudFromFile (pcd_paths[i]);
+    //load the points into the outofcore octree
+    if (gen_lod)
+    {
+      print_info ("  Generating LODs\n");
+      outofcore_octree->addPointCloud_and_genLOD (cloud);
+    }
+    else
+    {
+      outofcore_octree->addPointCloud (cloud);
+    }
   }
 
   double x, y;
-  outofcore_octree->getBinDimension(x, y);
+  outofcore_octree->getBinDimension (x, y);
 
   print_info ("  Depth: %i\n", outofcore_octree->getDepth ());
   print_info ("  Resolution: [%f, %f]\n", x, y);
@@ -155,21 +209,21 @@ printHelp (int, char **argv)
   print_info ("\n");
 }
 
-int 
-main(int argc, char* argv[]) 
+int
+main (int argc, char* argv[])
 {
   // Check for help (-h) flag
   if (argc > 1)
   {
     if (find_switch (argc, argv, "-h"))
     {
-        printHelp (argc, argv);
-        return (-1);
+      printHelp (argc, argv);
+      return (-1);
     }
   }
 
   // If no arguments specified
-  if (argc-1 < 1)
+  if (argc - 1 < 1)
   {
     printHelp (argc, argv);
     return (-1);
@@ -199,17 +253,35 @@ main(int argc, char* argv[])
   gen_lod = find_switch (argc, argv, "-gen_lod");
   overwrite = find_switch (argc, argv, "-overwrite");
 
-  // Parse non-option arguments
-  boost::filesystem::path pcd_path (argv[argc-2]);
-  boost::filesystem::path root_dir(argv[argc-1]);
+  // Parse non-option arguments for pcd files
+  std::vector<int> file_arg_indices = parse_file_extension_argument (argc, argv, ".pcd");
 
-  // Check if a root directory was specified, use directory of pcd file
-  if (pcd_path.extension () != ".pcd" && root_dir.extension () == ".pcd")
+  std::vector<boost::filesystem::path> pcd_paths;
+  for (int i = 0; i < file_arg_indices.size (); i++)
   {
-    pcd_path = root_dir;
-    root_dir = pcd_path.parent_path () / "tree";
+    boost::filesystem::path pcd_path (argv[file_arg_indices[i]]);
+    if (!boost::filesystem::exists (pcd_path))
+    {
+      PCL_WARN ("File %s doesn't exist", pcd_path);
+      continue;
+    }
+    pcd_paths.push_back (pcd_path);
+
   }
 
-  return pcl_outofcore_process(pcd_path, root_dir, depth, resolution, build_octree_with, gen_lod, overwrite);
+  // Check if we should process any files
+  if (pcd_paths.size () < 1)
+  {
+    PCL_ERROR ("No .pcd files specified\n");
+    return -1;
+  }
 
+  // Get root directory
+  boost::filesystem::path root_dir (argv[argc - 1]);
+
+  // Check if a root directory was specified, use directory of pcd file
+  if (root_dir.extension () == ".pcd")
+    root_dir = root_dir.parent_path () / "tree";
+
+  return outofcoreProcess (pcd_paths, root_dir, depth, resolution, build_octree_with, gen_lod, overwrite);
 }

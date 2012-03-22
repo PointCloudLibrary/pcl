@@ -90,6 +90,9 @@ namespace pcl
 
         typedef boost::shared_ptr<PointCloud> PointCloudPtr;
         typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
+
+        typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
+
         // Constructors
         // -----------------------------------------------------------------------
 
@@ -201,6 +204,18 @@ namespace pcl
           return true;
         }
 
+        double
+        getVoxelSideLength (const boost::uint64_t depth) const
+        {
+          return (root_->max_[0] - root_->min_[0]) * pow (.5, double (max_depth_)) * (double)(1 << (max_depth_ - depth));
+        }
+
+        double
+        getVoxelSideLength () const
+        {
+          return getVoxelSideLength (max_depth_);
+        }
+
         /** \brief Get coord system tag in the metadata */
         const std::string&
         getCoordSystem ()
@@ -264,6 +279,24 @@ namespace pcl
          *  \todo adjust for varying densities at different LODs */
         void
         queryBBIncludes_subsample (const double min[3], const double max[3], size_t query_depth, const double percent, std::list<PointT>& v) const;
+
+        void
+        printBBox(const size_t query_depth) const;
+
+        void
+        printBBox() const
+        {
+          printBBox(max_depth_);
+        }
+
+        void
+        getVoxelCenters(AlignedPointTVector &voxel_centers, size_t query_depth) const;
+
+        void
+        getVoxelCenters(AlignedPointTVector &voxel_centers) const
+        {
+          getVoxelCenters(voxel_centers, max_depth_);
+        }
 
         // Serializers
         // -----------------------------------------------------------------------

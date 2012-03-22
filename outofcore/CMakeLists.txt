@@ -1,6 +1,6 @@
 set(SUBSYS_NAME outofcore)
 set(SUBSYS_DESC "Point cloud outofcore library")
-set(SUBSYS_DEPS common io)
+set(SUBSYS_DEPS common io visualization)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} OFF)
@@ -11,6 +11,7 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 if(build)
     set(srcs
         src/cJSON.cpp
+        #tools/vtkVBOPolyDataMapper.cxx
         )
 
     set(incs
@@ -19,6 +20,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/octree_exceptions.h
         include/pcl/${SUBSYS_NAME}/point_cloud_tools.h
         include/pcl/${SUBSYS_NAME}/cJSON.h
+        #tools/vtkVBOPolyDataMapper.h
         )
 
     set(impl_incs

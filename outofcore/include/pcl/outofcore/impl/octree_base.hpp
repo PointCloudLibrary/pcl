@@ -366,6 +366,27 @@ namespace pcl
       v.clear ();
       root_->queryBBIncludes_subsample (min, max, query_depth, percent, v);
     }
+
+////////////////////////////////////////////////////////////////////////////////
+
+    template<typename Container, typename PointT> void
+    octree_base<Container, PointT>::printBBox(const size_t query_depth) const
+    {
+      boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
+      root_->printBBox (query_depth);
+    }
+
+////////////////////////////////////////////////////////////////////////////////
+
+    template<typename Container, typename PointT> void
+    octree_base<Container, PointT>::getVoxelCenters(AlignedPointTVector &voxel_centers, size_t query_depth) const
+    {
+      if (query_depth > max_depth_) query_depth = max_depth_;
+
+      boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
+      root_->getVoxelCenters (voxel_centers, query_depth);
+    }
+
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> void
