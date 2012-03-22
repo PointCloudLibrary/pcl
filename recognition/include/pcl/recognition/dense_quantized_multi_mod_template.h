@@ -78,6 +78,7 @@ namespace pcl
   struct DenseQuantizedMultiModTemplate
   {
     std::vector<DenseQuantizedSingleModTemplate> modalities;
+    float response_factor;
 
     RegionXY region;
 

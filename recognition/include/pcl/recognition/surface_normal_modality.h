@@ -220,6 +220,12 @@ namespace pcl
 
       virtual ~SurfaceNormalModality ();
 
+      inline void
+      setSpreadingSize (const size_t spreading_size)
+      {
+        spreading_size_ = spreading_size;
+      }
+
       inline QuantizedMap &
       getQuantizedMap () 
       { 
@@ -265,6 +271,8 @@ namespace pcl
 
       QuantizedNormalLookUpTable normal_lookup_;
 
+      size_t spreading_size_;
+
       pcl::PointCloud<pcl::Normal> surface_normals_;
       pcl::QuantizedMap quantized_surface_normals_;
       pcl::QuantizedMap filtered_quantized_surface_normals_;
@@ -278,7 +286,13 @@ namespace pcl
 template <typename PointInT>
 pcl::SurfaceNormalModality<PointInT>::
 SurfaceNormalModality ()
-: feature_distance_threshold_ (1.0f)
+  : feature_distance_threshold_ (1.0f)
+  , normal_lookup_ ()
+  , spreading_size_ (8)
+  , surface_normals_ ()
+  , quantized_surface_normals_ ()
+  , filtered_quantized_surface_normals_ ()
+  , spreaded_quantized_surface_normals_ ()
 {
 }
 
@@ -307,10 +321,9 @@ pcl::SurfaceNormalModality<PointInT>::processInputData ()
   filterQuantizedSurfaceNormals ();
 
   // spread quantized surface normals
-  const int spreading_size = 8;
   pcl::QuantizedMap::spreadQuantizedMap (filtered_quantized_surface_normals_,
                                          spreaded_quantized_surface_normals_,
-                                         spreading_size);
+                                         spreading_size_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

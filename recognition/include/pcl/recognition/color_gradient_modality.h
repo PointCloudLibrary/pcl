@@ -103,6 +103,12 @@ namespace pcl
         feature_selection_method_ = method;
       }
   
+      inline void
+      setSpreadingSize (const size_t spreading_size)
+      {
+        spreading_size_ = spreading_size;
+      }
+
       inline QuantizedMap &
       getQuantizedMap () 
       { 
@@ -161,6 +167,8 @@ namespace pcl
       float gradient_magnitude_threshold_feature_extraction_;
 
       pcl::PointCloud<pcl::GradientXY> color_gradients_;
+
+      size_t spreading_size_;
   
       pcl::QuantizedMap quantized_color_gradients_;
       pcl::QuantizedMap filtered_quantized_color_gradients_;
@@ -178,6 +186,7 @@ ColorGradientModality ()
   , gradient_magnitude_threshold_ (10.0f)
   , gradient_magnitude_threshold_feature_extraction_ (55.0f)
   , color_gradients_ ()
+  , spreading_size_ (8)
   , quantized_color_gradients_ ()
   , filtered_quantized_color_gradients_ ()
   , spreaded_filtered_quantized_color_gradients_ ()
@@ -208,10 +217,9 @@ processInputData ()
 
   // spread filtered quantized gradients
   //spreadFilteredQunatizedColorGradients ();
-  const int spreading_size = 8;
   pcl::QuantizedMap::spreadQuantizedMap (filtered_quantized_color_gradients_,
                                          spreaded_filtered_quantized_color_gradients_, 
-                                         spreading_size);
+                                         spreading_size_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

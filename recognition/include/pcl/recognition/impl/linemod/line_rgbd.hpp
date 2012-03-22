@@ -41,7 +41,6 @@
 //#include <pcl/recognition/linemod/line_rgbd.h>
 #include <pcl/io/pcd_io.h>
 #include <fcntl.h>
-#include <unistd.h>
 #ifdef _WIN32
 # include <io.h>
 # include <windows.h>
@@ -49,6 +48,7 @@
 # define pcl_close(fd)               _close(fd)
 # define pcl_lseek(fd,offset,origin) _lseek(fd,offset,origin)
 #else
+#include <unistd.h>
 # include <sys/mman.h>
 # define pcl_open                    open
 # define pcl_close(fd)               close(fd)
@@ -82,7 +82,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::readLTMHeader (int fd, pcl::io::TARHeader &
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointXYZT, typename PointRGBT> bool
-pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name)
+pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, const size_t object_id)
 {
   // Open the file
   int ltm_fd = pcl_open (file_name.c_str (), O_RDONLY);
@@ -140,6 +140,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name
       sqmmt.deserialize (stream);
 
       linemod_.addTemplate (sqmmt);
+      object_ids_.push_back (object_id);
 
       // Increment the offset for the next file
       ltm_offset += (ltm_header.getFileSize ()) + (512 - ltm_header.getFileSize () % 512);
@@ -179,6 +180,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
 
     pcl::LineRGBD<PointXYZT, PointRGBT>::Detection detection;
     detection.template_id = linemod_detection.template_id;
+    detection.object_id = object_ids_[linemod_detection.template_id];
     detection.detection_id = detection_id;
     detection.response = linemod_detection.score;
     

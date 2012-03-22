@@ -76,6 +76,8 @@ namespace pcl
       {
         /** The ID of the template. */
         size_t template_id;
+        /** The ID of the object corresponding to the template. */
+        size_t object_id;
         /** The ID of this detection. This is only valid for the last call of the method detect (...). */
         size_t detection_id;
         /** The response of this detection. Responses are between 0 and 1, where 1 is best. */
@@ -105,7 +107,7 @@ namespace pcl
         * \return true, if the operation was succesful, false otherwise.
         */
       bool
-      loadTemplates (const std::string &file_name);
+      loadTemplates (const std::string &file_name, size_t object_id = 0);
 
       /** \brief Sets the threshold for the detection responses. Responses are between 0 and 1, where 1 is a best. 
         * \param[in] threshold The threshold used to decide where a template is detected.
@@ -198,7 +200,7 @@ namespace pcl
       readLTMHeader (int fd, pcl::io::TARHeader &header);
 
       /** \brief LINEMOD instance. */
-      pcl::LINEMOD linemod_;
+      public: pcl::LINEMOD linemod_;
       /** Color gradient modality */
       pcl::ColorGradientModality<PointRGBT> color_gradient_mod_;
       /** Surface normal modality */
@@ -213,6 +215,8 @@ namespace pcl
       std::vector<pcl::PointCloud<pcl::PointXYZRGB> > template_point_clouds_;
       /** Bounding boxes corresonding to the templates */
       std::vector<pcl::BoundingBoxXYZ> bounding_boxes_;
+      /** Object IDs corresponding to the templates */
+      std::vector<size_t> object_ids_;
 
       /** Detections from last call of method detect (...) */
       std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> detections_; 
