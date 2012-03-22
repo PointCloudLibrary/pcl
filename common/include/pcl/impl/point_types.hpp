@@ -68,7 +68,7 @@
   (pcl::NormalBasedSignature12) \
   (pcl::FPFHSignature33)        \
   (pcl::VFHSignature308)        \
-  (pcl::ESFSignature640)        \  
+  (pcl::ESFSignature640)        \
   (pcl::Narf36)                 \
   (pcl::IntensityGradient)      \
   (pcl::PointWithScale)         \
@@ -113,7 +113,7 @@
   (pcl::NormalBasedSignature12) \
   (pcl::FPFHSignature33)        \
   (pcl::VFHSignature308)        \
-  (pcl::ESFSignature640)        \  
+  (pcl::ESFSignature640)        \
   (pcl::Narf36)
 
 namespace pcl
