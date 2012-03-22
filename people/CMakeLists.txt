@@ -9,7 +9,7 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 PCL_ADD_DOC(${SUBSYS_NAME})
 
 set(CUDA_FIND_QUIETLY TRUE)
-  
+
 if(build)
   find_package(CUDA 4.1)
 
@@ -17,10 +17,12 @@ if(build)
 
     FILE(GLOB incs  trees/include/pcl/${SUBSYS_NAME}/trees/*.h 
                     display/include/pcl/${SUBSYS_NAME}/display/*.h 
-                    conversion/include/pcl/${SUBSYS_NAME}/conversion/*.h)    
+                    conversion/include/pcl/${SUBSYS_NAME}/conversion/*.h
+        )
     FIlE(GLOB srcs  conversion/src/*.cpp 
                     display/src/*.cpp 
-                    trees/src/*.cpp)  
+                    trees/src/*.cpp
+        )
     FILE(GLOB srcs_cuda trees/src/kernels/*.cu 
                         trees/src/kernels/*.h)
 
@@ -50,6 +52,6 @@ if(build)
     #PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
   endif(CUDA_FOUND)
 
-add_subdirectory(apps)
+#add_subdirectory(apps)
 
 endif(build)
