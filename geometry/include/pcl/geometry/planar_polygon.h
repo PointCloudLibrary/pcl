@@ -69,19 +69,33 @@ namespace pcl
       virtual ~PlanarPolygon () {}
 
       /** \brief Getter for the contour / boundary */
-      std::vector<PointT, Eigen::aligned_allocator<PointT> >
+      std::vector<PointT, Eigen::aligned_allocator<PointT> >&
       getContour ()
       {
         return (contour_);
       }
       
+      /** \brief Getter for the contour / boundary */
+      const std::vector<PointT, Eigen::aligned_allocator<PointT> >&
+      getContour () const
+      {
+        return (contour_);
+      }
+
       /** \brief Getter for the coefficients */
-      Eigen::Vector4f
+      Eigen::Vector4f&
       getCoefficients ()
       {
         return (coefficients_);
       }
 
+      /** \brief Getter for the coefficients */
+      const Eigen::Vector4f&
+      getCoefficients () const
+      {
+        return (coefficients_);
+      }
+      
     protected:
       /** \brief A list of points on the boundary/contour of the planar region. */
       std::vector<PointT, Eigen::aligned_allocator<PointT> > contour_;

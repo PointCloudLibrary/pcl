@@ -46,6 +46,39 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/console/parse.h>
 
+/*
+template<typename PointT>
+class ContourLabeling
+{
+  public:
+    ContourLabeling (unsigned size, float threshold, bool depth_dependent)
+    : size_ (size)
+    , threshold_ (threshold)
+    , depth_dependent_ (depth_dependent)
+    {
+    }
+    
+    ~ContourLabeling ()
+    {
+    }
+    
+    virtual void label (const pcl::PointCloud<PointT>& cloud, pcl::PlanarRegion<PointT>& region) const
+    {
+      std::vector<pcl::PlanarRegion<PointT>::BorderLabel>& labels = region.getContourLabels ();
+      std::vector<PointT>& contour = region.getContour ();
+      
+      for (unsigned cIdx = 1; cIdx < contour.size () - 1; ++cIdx)
+      {
+        float dx = contour [cIdx].x - 
+      }
+    }
+  protected:
+    unsigned size_;
+    float threshold_;
+    bool depth_dependent_;
+};
+*/
+
 template<typename PointT>
 class PCDOrganizedMultiPlaneSegmentation
 {
@@ -53,24 +86,57 @@ class PCDOrganizedMultiPlaneSegmentation
     pcl::visualization::PCLVisualizer viewer;
     typename pcl::PointCloud<PointT>::ConstPtr cloud;
     bool refine_;
+    float threshold_;
+    bool depth_dependent_;
   public:
     PCDOrganizedMultiPlaneSegmentation (typename pcl::PointCloud<PointT>::ConstPtr cloud_, bool refine)
     : viewer ("Viewer")
     , cloud (cloud_)
     , refine_ (refine)
+    , threshold_ (0.02)
+    , depth_dependent_ (true)
     {
       viewer.setBackgroundColor (0, 0, 0);
-      pcl::visualization::PointCloudColorHandlerCustom<PointT> single_color (cloud, 0, 255, 0);
-      viewer.addPointCloud<PointT> (cloud, single_color, "cloud");
       viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "cloud");
       viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.15, "cloud");
       viewer.addCoordinateSystem (1.0);
       viewer.initCameraParameters ();
+      viewer.registerKeyboardCallback(&PCDOrganizedMultiPlaneSegmentation::keyboard_callback, *this, 0);
     }
 
-    void
-    run ()
+    void keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
     {
+      // do stuff and visualize here
+      if (event.keyUp ())
+      {
+        switch (event.getKeyCode ())
+        {
+          case 'b':
+          case 'B':
+            if (threshold_ < 0.1)
+              threshold_ += 0.001;
+            break;
+          case 'v':
+          case 'V':
+            if (threshold_ > 0.001)
+              threshold_ -= 0.001;
+            break;
+            
+          case 'n':
+          case 'N':
+            depth_dependent_ = !depth_dependent_;
+            break;
+        }
+        
+        process ();
+      }
+    }
+    
+    void
+    process ()
+    {
+      std::cout << "threshold: " << threshold_ << std::endl;
+      std::cout << "depth dependent: " << (depth_dependent_ ? "true\n" : "false\n");
       unsigned char red [6] = {255,   0,   0, 255, 255,   0};
       unsigned char grn [6] = {  0, 255,   0, 255,   0, 255};
       unsigned char blu [6] = {  0,   0, 255,   0, 255, 255};
@@ -79,12 +145,16 @@ class PCDOrganizedMultiPlaneSegmentation
       ne.setNormalEstimationMethod (ne.COVARIANCE_MATRIX);
       ne.setMaxDepthChangeFactor (0.02f);
       ne.setNormalSmoothingSize (10.0f);
-
+      
+      typename pcl::PlaneRefinementComparator<PointT, pcl::Normal, pcl::Label>::Ptr refinement_compare (new pcl::PlaneRefinementComparator<PointT, pcl::Normal, pcl::Label> ());
+      refinement_compare->setDistanceThreshold (threshold_, depth_dependent_);
+      
       pcl::OrganizedMultiPlaneSegmentation<PointT, pcl::Normal, pcl::Label> mps;
       mps.setMinInliers (5000);
       mps.setAngularThreshold (0.017453 * 3.0); //3 degrees
       mps.setDistanceThreshold (0.03); //2cm
-
+      mps.setRefinementComparator (refinement_compare);
+      
       std::vector<pcl::PlanarRegion<PointT> > regions;
       typename pcl::PointCloud<PointT>::Ptr contour (new pcl::PointCloud<PointT>);
       char name[1024];
@@ -109,6 +179,10 @@ class PCDOrganizedMultiPlaneSegmentation
 
       typename pcl::PointCloud<PointT>::Ptr cluster (new pcl::PointCloud<PointT>);
 
+      viewer.removeAllPointClouds (0);
+      viewer.removeAllShapes (0);
+      pcl::visualization::PointCloudColorHandlerCustom<PointT> single_color (cloud, 0, 255, 0);
+      viewer.addPointCloud<PointT> (cloud, single_color, "cloud");      
       //Draw Visualization
       for (size_t i = 0; i < regions.size (); i++)
       {
@@ -126,6 +200,13 @@ class PCDOrganizedMultiPlaneSegmentation
         pcl::visualization::PointCloudColorHandlerCustom <PointT> color (contour, red[i], grn[i], blu[i]);
         viewer.addPointCloud (contour, color, name);
       }
+    }
+    
+    void
+    run ()
+    {
+      // initial processing
+      process ();
     
       while (!viewer.wasStopped ())
         viewer.spinOnce (100);
