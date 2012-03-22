@@ -5,8 +5,8 @@
  * @brief This file contains the function prototypes for the segmentation functions
 **/
 
-#ifndef LABELSKEL_SEGMENT_H
-#define LABELSKEL_SEGMENT_H
+#ifndef PCL_PEOPLE_LABEL_SKELETON_SEGMENT_H_
+#define PCL_PEOPLE_LABEL_SKELETON_SEGMENT_H_
 
 // our headers
 #include "pcl/people/label_skeleton/blob2.h"
@@ -28,31 +28,33 @@
 #include <pcl/common/centroid.h>
 #include <pcl/PointIndices.h>
 
-
-namespace LabelSkel 
+namespace pcl
 {
+  namespace people
+  {
+    namespace label_skeleton 
+    {
+      void smoothLabelImage ( cv::Mat&  lmap_in,
+                              cv::Mat&  dmap,
+                              cv::Mat&  lmap_out);
 
-void smoothLabelImage ( cv::Mat&  lmap_in,
-                        cv::Mat&  dmap,
-                        cv::Mat&  lmap_out);
+      void smoothLabelImage2 ( cv::Mat&  lmap_in,
+                              cv::Mat&  dmap,
+                              cv::Mat&  lmap_out);
 
-void smoothLabelImage2 ( cv::Mat&  lmap_in,
-                        cv::Mat&  dmap,
-                        cv::Mat&  lmap_out);
+      void sortIndicesToBlob2 ( pcl::PointCloud<pcl::PointXYZRGBL>              cloud_in,
+                                unsigned int                                    sizeThres,
+                                std::vector< std::vector<Blob2> >&              sorted,
+                                std::vector< std::vector<pcl::PointIndices> >&  indices);
 
-void sortIndicesToBlob2 ( pcl::PointCloud<pcl::PointXYZRGBL>              cloud_in,
-                          unsigned int                                    sizeThres,
-                          std::vector< std::vector<Blob2> >&              sorted,
-                          std::vector< std::vector<pcl::PointIndices> >&  indices);
+      void sortIndicesToBlob3 ( pcl::PointCloud<pcl::PointXYZRGBL>              cloud_in,
+                                unsigned int                                    sizeThres,
+                                std::vector< std::vector<Blob2> >&              sorted,
+                                std::vector< std::vector<pcl::PointIndices> >&  indices);
 
-void sortIndicesToBlob3 ( pcl::PointCloud<pcl::PointXYZRGBL>              cloud_in,
-                          unsigned int                                    sizeThres,
-                          std::vector< std::vector<Blob2> >&              sorted,
-                          std::vector< std::vector<pcl::PointIndices> >&  indices);
+      int giveSortedBlobsInfo ( std::vector<std::vector<Blob2> >& sorted);
 
-int giveSortedBlobsInfo ( std::vector<std::vector<Blob2> >& sorted);
-
-}
+    }
 
 
 #endif //#ifndef LABELSKEL_SEGMENT_H

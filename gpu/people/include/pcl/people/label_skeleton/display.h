@@ -4,8 +4,8 @@
  * @file display.h
  * @brief This file contains the function prototypes for display functions
  **/
-#ifndef LABELSKEL_DISPLAY_H
-#define LABELSKEL_DISPLAY_H
+#ifndef PCL_PEOPLE_LABEL_SKELETON_DISPLAY_H_
+#define PCL_PEOPLE_LABEL_SKELETON_DISPLAY_H_
 // our headers
 #include "pcl/people/label_skeleton/blob2.h"
 #include "pcl/people/label_skeleton/common.h"
@@ -36,53 +36,57 @@
 
 //#include <image_geometry/pinhole_camera_model.h>
 
-namespace LabelSkel 
+namespace pcl
 {
+  namespace people
+  {
+    namespace label_skeleton 
+    {
 
-  typedef std::pair<int,int> two_labels_t;
-  typedef std::vector<two_labels_t> two_labels_list_t;
+      typedef std::pair<int,int> two_labels_t;
+      typedef std::vector<two_labels_t> two_labels_list_t;
 
-void drawMarkerTree(  std::vector<std::vector<Blob2> >& sorted,
-                      int                               part_label,
-                      int                               part_lid,
-                      visualization_msgs::MarkerArray&  markerArray);
+//      void drawMarkerTree(  std::vector<std::vector<Blob2> >& sorted,
+//                            int                               part_label,
+//                            int                               part_lid,
+//                            visualization_msgs::MarkerArray&  markerArray);
+//
+//      void drawPrettyMarkerTree( std::vector<std::vector<Blob2> >& sorted,
+//      			   int                               part_label,
+//      			   int                               part_lid,
+//      			   visualization_msgs::MarkerArray&  markerArray);
+//
+//      void drawPrettyMarkerTreeRecurse(  std::vector<std::vector<Blob2> >& sorted,
+//      				   int                               part_label,
+//      				   int                               part_lid,
+//      				   two_labels_list_t& omit_list,
+//      				   visualization_msgs::MarkerArray&  markerArray,
+//      				   std::vector<geometry_msgs::Point>& part_label_locations
+//      				   );
 
-void drawPrettyMarkerTree( std::vector<std::vector<Blob2> >& sorted,
-			   int                               part_label,
-			   int                               part_lid,
-			   visualization_msgs::MarkerArray&  markerArray);
+      int makeTreePointIndices( std::vector<std::vector<Blob2> >&   sorted,
+                                int                                 part_label,
+                                int                                 part_lid,
+                                pcl::PointCloud<pcl::PointXYZRGB>&  cloud_in,
+                                pcl::PointIndices&                  cloud_list);
 
-void drawPrettyMarkerTreeRecurse(  std::vector<std::vector<Blob2> >& sorted,
-				   int                               part_label,
-				   int                               part_lid,
-				   two_labels_list_t& omit_list,
-				   visualization_msgs::MarkerArray&  markerArray,
-				   std::vector<geometry_msgs::Point>& part_label_locations
-				   );
+      int makeTreePointCloud( std::vector<std::vector<Blob2> >&   sorted,
+                              int                                 part_label,
+                              int                                 part_lid,
+                              pcl::PointCloud<pcl::PointXYZRGB>&  cloud_in,
+                              pcl::PointCloud<pcl::PointXYZRGB>&  cloud_out);
 
+      int makeBlobPointCloud( std::vector<std::vector<Blob2> >&   sorted,
+                              cv::Mat&                            cmap,
+                              pcl::PointCloud<pcl::PointXYZRGB>&  cloud_in,
+                              pcl::PointCloud<pcl::PointXYZRGB>&  cloud_out);
 
+      // Helper functions
+//       bool isValidPart(std::vector<geometry_msgs::Point> part_label_locations, int pid);
+//       void addLine(geometry_msgs::Point p0, geometry_msgs::Point p1, int id, int plabel, int clabel, visualization_msgs::Marker& marker);
 
-int makeTreePointIndices( std::vector<std::vector<Blob2> >&   sorted,
-                          int                                 part_label,
-                          int                                 part_lid,
-                          pcl::PointCloud<pcl::PointXYZRGB>&  cloud_in,
-                          pcl::PointIndices&                  cloud_list);
-
-int makeTreePointCloud( std::vector<std::vector<Blob2> >&   sorted,
-                        int                                 part_label,
-                        int                                 part_lid,
-                        pcl::PointCloud<pcl::PointXYZRGB>&  cloud_in,
-                        pcl::PointCloud<pcl::PointXYZRGB>&  cloud_out);
-
-int makeBlobPointCloud( std::vector<std::vector<Blob2> >&   sorted,
-                        cv::Mat&                            cmap,
-                        pcl::PointCloud<pcl::PointXYZRGB>&  cloud_in,
-                        pcl::PointCloud<pcl::PointXYZRGB>&  cloud_out);
-
-// Helper functions
- bool isValidPart(std::vector<geometry_msgs::Point> part_label_locations, int pid);
- void addLine(geometry_msgs::Point p0, geometry_msgs::Point p1, int id, int plabel, int clabel, visualization_msgs::Marker& marker);
-
-} // end namespace LabelSkel
+    } // end namespace LabelSkel
+  } // end namespace people
+} // end namespace pcl
 #endif //#ifndef LABELSKEL_DISPLAY_H
 

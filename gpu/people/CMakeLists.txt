@@ -12,30 +12,30 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 if(build)
 
   find_package(OpenCV QUIET)
-    
+
   #Label_skeleton
-  #FILE(GLOB srcs src/*.cpp src/*.h* src/label_skeleton/*.cpp)                   
-  FILE(GLOB srcs src/*.cpp src/*.h*)                   
-  FILE(GLOB_RECURSE hdrs include/pcl/people/*.h)                            
+  #FILE(GLOB srcs src/*.cpp src/*.h* src/label_skeleton/*.cpp)
+  FILE(GLOB srcs src/*.cpp src/*.h*)
+  FILE(GLOB_RECURSE hdrs include/pcl/people/*.h)
   FILE(GLOB srcs_cuda src/cuda/*.cu src/cuda/*.h)
 
   source_group("source files\\cuda" FILES ${srcs_cuda} )
-  source_group("source files" FILES ${srcs} )	
+  source_group("source files" FILES ${srcs} )
 
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/cuda)
   include_directories(${OpenCV_INCLUDE_DIRS} ${CUDA_INCLUDE_DIRS})
-     
+
   if (UNIX OR APPLE)
-	set (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}  "-Xcompiler;-fPIC;")			
+    set (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}  "-Xcompiler;-fPIC;")
   endif()
-	
+
   if(NOT UNIX OR APPLE)
-	add_definitions(-DPCLAPI_EXPORTS)
+    add_definitions(-DPCLAPI_EXPORTS)
   endif()
 
   CUDA_COMPILE(objs_cuda ${srcs_cuda})
 
-  set(LIB_NAME pcl_${SUBSYS_NAME})    
+  set(LIB_NAME pcl_${SUBSYS_NAME})
 
   PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${hdrs} ${srcs_cuda} ${objs_cuda})
   target_link_libraries(${LIB_NAME} pcl_search pcl_sample_consensus pcl_gpu_utils pcl_gpu_containers ${CUDA_CUDART_LIBRARY} ${OpenCV_LIBS})
