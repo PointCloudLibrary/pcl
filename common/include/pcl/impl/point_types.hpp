@@ -68,6 +68,7 @@
   (pcl::NormalBasedSignature12) \
   (pcl::FPFHSignature33)        \
   (pcl::VFHSignature308)        \
+  (pcl::ESFSignature640)        \  
   (pcl::Narf36)                 \
   (pcl::IntensityGradient)      \
   (pcl::PointWithScale)         \
@@ -112,6 +113,7 @@
   (pcl::NormalBasedSignature12) \
   (pcl::FPFHSignature33)        \
   (pcl::VFHSignature308)        \
+  (pcl::ESFSignature640)        \  
   (pcl::Narf36)
 
 namespace pcl
@@ -1057,6 +1059,20 @@ namespace pcl
   {
     for (int i = 0; i < 308; ++i)
     os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 307 ? ", " : ")");
+    return (os);
+  }
+
+  /** \brief A point structure representing the Ensemble of Shape Functions (ESF).
+   * \ingroup common
+   */
+  struct ESFSignature640
+  {
+    float histogram[640];
+  };
+  inline std::ostream& operator << (std::ostream& os, const ESFSignature640& p)
+  {
+    for (int i = 0; i < 640; ++i)
+    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 639 ? ", " : ")");
     return (os);
   }
 
