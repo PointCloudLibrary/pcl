@@ -41,17 +41,11 @@
 #include <pcl/surface/texture_mapping.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointInT> float
-pcl::TextureMapping<PointInT>::getDistance (Eigen::Vector3f &p1, Eigen::Vector3f &p2)
-{
-  return std::sqrt (
-                    (p1[0] - p2[0]) * (p1[0] - p2[0]) + (p1[1] - p2[1]) * (p1[1] - p2[1]) + (p1[2] - p2[2]) * (p1[2]
-                        - p2[2]));
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> std::vector<Eigen::Vector2f>
-pcl::TextureMapping<PointInT>::mapTexture2Face (Eigen::Vector3f &p1, Eigen::Vector3f &p2, Eigen::Vector3f &p3)
+pcl::TextureMapping<PointInT>::mapTexture2Face (
+    const Eigen::Vector3f &p1, 
+    const Eigen::Vector3f &p2, 
+    const Eigen::Vector3f &p3)
 {
   std::vector<Eigen::Vector2f> tex_coordinates;
   // process for each face
@@ -80,9 +74,9 @@ pcl::TextureMapping<PointInT>::mapTexture2Face (Eigen::Vector3f &p1, Eigen::Vect
   double alpha = std::acos (f_vector_field.dot (p1p2));
 
   // distance between 3 vertices of triangles
-  double e1 = getDistance (p2, p3) / f_;
-  double e2 = getDistance (p1, p3) / f_;
-  double e3 = getDistance (p1, p2) / f_;
+  double e1 = (p2 - p3).norm () / f_;
+  double e2 = (p1 - p3).norm () / f_;
+  double e3 = (p1 - p2).norm () / f_;
 
   // initialize
   tp1[0] = 0.0;
@@ -204,7 +198,6 @@ pcl::TextureMapping<PointInT>::mapTexture2Mesh (pcl::TextureMesh &tex_mesh)
 template<typename PointInT> void
 pcl::TextureMapping<PointInT>::mapTexture2MeshUV (pcl::TextureMesh &tex_mesh)
 {
-
   // mesh information
   int nr_points = tex_mesh.cloud.width * tex_mesh.cloud.height;
   int point_size = static_cast<int> (tex_mesh.cloud.data.size ()) / nr_points;
@@ -295,18 +288,14 @@ pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &te
 
   if (tex_mesh.tex_polygons.size () != cams.size () + 1)
   {
-    std::cerr << "ERROR, you mesh should be divided into nbCamera+1 sub-meshes." << std::endl;
+    PCL_ERROR ("The mesh should be divided into nbCamera+1 sub-meshes.\n");
     std::cerr << "You provided " << cams.size () << " cameras and a mesh containing "
         << tex_mesh.tex_polygons.size () << " sub-meshes." << std::endl;
-    std::cerr << "EXITING..." << std::endl;
     return;
   }
 
   std::cout << "You provided " << cams.size () << " cameras and a mesh containing " << tex_mesh.tex_polygons.size ()
       << " sub-meshes." << std::endl;
-
-
-
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr originalCloud (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::PointXYZ>::Ptr camera_transformed_cloud (new pcl::PointCloud<pcl::PointXYZ>);
@@ -316,16 +305,16 @@ pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &te
 
   // texture coordinates for each mesh
   std::vector<std::vector<Eigen::Vector2f> > texture_map;
-  //FOR EACH CAMERA
+
   for (size_t m = 0; m < cams.size (); ++m)
   {
-    //get current camera parameters
+    // get current camera parameters
     Camera current_cam = cams[m];
 
-    //get camera transform
+    // get camera transform
     Eigen::Affine3f cam_trans = current_cam.pose;
 
-    //transform cloud into current camera frame
+    // transform cloud into current camera frame
     pcl::transformPointCloud (*originalCloud, *camera_transformed_cloud, cam_trans.inverse ());
 
     //save transformed cloud
@@ -340,14 +329,14 @@ pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &te
     for (size_t i = 0; i < tex_mesh.tex_polygons[m].size (); ++i)
     {
       Eigen::Vector2f tmp_VT;
-      //for each point of this face
+      // for each point of this face
       for (size_t j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
       {
-        //get point
+        // get point
         idx = tex_mesh.tex_polygons[m][i].vertices[j];
         pt = camera_transformed_cloud->points[idx];
 
-        //compute UV coordinates for this point
+        // compute UV coordinates for this point
         getPointUVCoordinates (pt, current_cam, tmp_VT);
         texture_map_tmp.push_back (tmp_VT);
 
@@ -365,7 +354,7 @@ pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &te
     tex_mesh.tex_coordinates.push_back (texture_map_tmp);
   }// end cameras
 
-  //push on extra empty UV map (for unseen faces) so that obj writer does not crash!
+  // push on extra empty UV map (for unseen faces) so that obj writer does not crash!
   std::vector<Eigen::Vector2f> texture_map_tmp;
   for (size_t i = 0; i < tex_mesh.tex_polygons[cams.size ()].size (); ++i)
     for (size_t j = 0; j < tex_mesh.tex_polygons[cams.size ()][i].vertices.size (); ++j)
@@ -389,7 +378,7 @@ pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &te
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> bool
-pcl::TextureMapping<PointInT>::pointIsOccluded(pcl::PointXYZ &pt, OctreePtr octree)
+pcl::TextureMapping<PointInT>::isPointOccluded (const pcl::PointXYZ &pt, OctreePtr octree) const
 {
   Eigen::Vector3f direction;
   direction (0) = pt.x;
@@ -424,13 +413,9 @@ pcl::TextureMapping<PointInT>::pointIsOccluded(pcl::PointXYZ &pt, OctreePtr octr
   }
 
   if (nbocc == 0)
-  {
-   return false;
-  }
+   return (false);
   else
-  {
-   return true;
-  }
+   return (true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -572,142 +557,26 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (pcl::TextureMesh &tex_mesh,
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> int
-pcl::TextureMapping<PointInT>::sortFacesByCameraExperimental (pcl::TextureMesh &tex_mesh, pcl::TextureMesh &sorted_mesh,
-                                                  std::vector<Camera> &cameras, double octree_voxel_size,
-                                                  PointCloud &/*visible_pts*/)
-{
-  if (tex_mesh.tex_polygons.size () != 1)
-  {
-    std::cerr << "ERROR, the mesh must contain only 1 sub-mesh" << std::endl;
-    return (-1);
-  }
-
-  if (cameras.size () == 0)
-  {
-    std::cerr << "ERROR, you must provide at least one camera info" << std::endl;
-    return (-1);
-  }
-
-  std::cout << "SEGMENTING FACES FOR " << cameras.size () << " CAMERAS" << std::endl;
-  //copy mesh
-  sorted_mesh = tex_mesh;
-  //clear polygons from cleaned_mesh
-  sorted_mesh.tex_polygons.clear ();
-
-  std::cout << "Mesh copied and ready for action!" << std::endl;
-
-  pcl::PointCloud<pcl::PointXYZ>::Ptr original_cloud (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::PointCloud<pcl::PointXYZ>::Ptr filtered_cloud (new pcl::PointCloud<pcl::PointXYZ>);
-
-  //load points into a PCL format
-  pcl::fromROSMsg (tex_mesh.cloud, *original_cloud);
-
-  //FOR EACH CAMERA INFO
-  for (size_t cam = 0; cam < cameras.size (); ++cam)
-  {
-    //get camera pose as transform
-    Eigen::Affine3f cam_trans = cameras[cam].pose;
-
-    //transform original cloud in camera coordinates
-    pcl::transformPointCloud (*original_cloud, *transformed_cloud, cam_trans.inverse ());
-
-    //create an octree to perform rayTracing
-    OctreePtr octree (new Octree (octree_voxel_size));
-    //create octree structure
-    octree->setInputCloud (transformed_cloud);
-    //update bounding box automatically
-    octree->defineBoundingBox ();
-    //add points in the tree
-    octree->addPointsFromInputCloud ();
-
-
-    std::cout << "segmenting visible faces for camera " << cam << "...  " << std::flush;
-    std::cout << "(" << tex_mesh.tex_polygons[0].size () << ") faces" << std::flush;
-    //find visible faces => add them to polygon N for camera N
-    //add polygon group for current camera in clean
-    std::vector<pcl::Vertices> visibleFaces_currentCam;
-    //iterate over the faces of the current mesh
-    for (size_t faces = 0; faces < tex_mesh.tex_polygons[0].size (); ++faces)
-    {
-      //check if all the face's points are visible
-      bool faceIsVisible = true;
-      std::vector<int>::iterator it;
-
-      std::cout << tex_mesh.tex_polygons[0].size() - faces << " faces left to sort out." << std::endl;
-
-      //iterate over face's vertex
-      for (size_t current_pt_indice = 0; faceIsVisible && current_pt_indice < tex_mesh.tex_polygons[0][faces].vertices.size (); ++current_pt_indice)
-      {
-
-        pcl::PointXYZ pt = transformed_cloud->points[tex_mesh.tex_polygons[0][faces].vertices[current_pt_indice]];
-
-        if (!pointIsOccluded(pt, octree) )
-        {
-          //point is not occluded
-          //does it land on the camera's image plane?
-
-          Eigen::Vector2f dummy_UV;
-          if (!getPointUVCoordinates (pt, cameras[cam], dummy_UV))
-          {
-            //point is not visible by the camera
-            faceIsVisible = false;
-          }
-        }
-        else
-        {
-          faceIsVisible = false;
-        }
-      }
-
-      if (faceIsVisible)
-      {
-        //push current visible face into the sorted mesh
-        visibleFaces_currentCam.push_back (tex_mesh.tex_polygons[0][faces]);
-        //remove it from the unsorted mesh
-        tex_mesh.tex_polygons[0].erase (tex_mesh.tex_polygons[0].begin () + faces);
-        faces--;
-      }
-
-    }
-    std::cout << "  Found " << visibleFaces_currentCam.size () << " visible faces for camera " << cam << std::endl;
-    sorted_mesh.tex_polygons.push_back (visibleFaces_currentCam);
-
-
-
-  }
-
-  //we should only have occluded and non-visible faces left in tex_mesh.tex_polygons[0]
-  //we need to add them as an extra polygon in the sorted mesh
-  sorted_mesh.tex_polygons.push_back (tex_mesh.tex_polygons[0]);
-  return (0);
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointInT> int
 pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pcl::TextureMesh &sorted_mesh,
                                                   std::vector<Camera> &cameras, double octree_voxel_size,
                                                   PointCloud &visible_pts)
 {
   if (tex_mesh.tex_polygons.size () != 1)
   {
-    std::cerr << "ERROR, the mesh must contain only 1 sub-mesh" << std::endl;
+    PCL_ERROR ("The mesh must contain only 1 sub-mesh!\n");
     return (-1);
   }
 
   if (cameras.size () == 0)
   {
-    std::cerr << "ERROR, you must provide at least one camera info" << std::endl;
+    PCL_ERROR ("Must provide at least one camera info!\n");
     return (-1);
   }
 
-  std::cout << "SEGMENTING FACES FOR " << cameras.size () << " CAMERAS" << std::endl;
   //copy mesh
   sorted_mesh = tex_mesh;
   //clear polygons from cleaned_mesh
   sorted_mesh.tex_polygons.clear ();
-
-  std::cout << "Mesh copied and ready for action!" << std::endl;
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr original_cloud (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud (new pcl::PointCloud<pcl::PointXYZ>);
@@ -728,12 +597,9 @@ pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pc
     //find occlusions on transformed cloud
     std::vector<int> visible, occluded;
     removeOccludedPoints (transformed_cloud, filtered_cloud, octree_voxel_size, visible, occluded);
-    std::cout << "cloud filtered" << std::endl;
     //TODO quick hack for debug. At least clear filtered_cloud before calling remove_occluded_points
     visible_pts = *filtered_cloud;
 
-    std::cout << "segmenting visible faces for camera " << cam << "...  " << std::flush;
-    std::cout << "(" << tex_mesh.tex_polygons[0].size () << ") faces" << std::flush;
     //find visible faces => add them to polygon N for camera N
     //add polygon group for current camera in clean
     std::vector<pcl::Vertices> visibleFaces_currentCam;
@@ -778,11 +644,7 @@ pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pc
       }
 
     }
-    std::cout << "  Found " << visibleFaces_currentCam.size () << " visible faces for camera " << cam << std::endl;
     sorted_mesh.tex_polygons.push_back (visibleFaces_currentCam);
-
-
-
   }
 
   //we should only have occluded and non-visible faces left in tex_mesh.tex_polygons[0]
@@ -868,11 +730,8 @@ pcl::TextureMapping<PointInT>::showOcclusions (PointCloudPtr &input_cloud,
   {
     std::sort (zDist.begin (), zDist.end ());
     std::sort (ptDist.begin (), ptDist.end ());
-
-    std::cout << zDist[0] << " " << zDist[zDist.size () - 1] << " --- " << ptDist[0] << " " << ptDist[ptDist.size ()
-                                                                                                      - 1] << "  (" << octree_voxel_size << ")" << std::endl;
   }
-                                               }
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> void
