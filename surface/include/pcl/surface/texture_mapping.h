@@ -179,19 +179,19 @@ namespace pcl
         double focal_y = cam.focal_length;
 
         //project point on image frame
-        UV_coordinates[0] = ((focal_x * (pt.x / pt.z) + cx) / sizeX); //horizontal
-        UV_coordinates[1] = 1.0 - (((focal_y * (pt.y / pt.z) + cy) / sizeY)); //vertical
+        UV_coordinates[0] = static_cast<float> ((focal_x * (pt.x / pt.z) + cx) / sizeX); //horizontal
+        UV_coordinates[1] = 1.0f - static_cast<float> (((focal_y * (pt.y / pt.z) + cy) / sizeY)); //vertical
 
         //point is visible!
         if (UV_coordinates[0] >= 0.0 && UV_coordinates[0] <= 1.0 && UV_coordinates[1] >= 0.0 && UV_coordinates[1]
                                                                                                                <= 1.0)
-          return (true); //victory!
+          return (true);
       }
 
       //point is NOT visible by the camera
       UV_coordinates[0] = -1.0;
       UV_coordinates[1] = -1.0;
-      return (false); //defeat!
+      return (false);
     }
 
     /** \brief Return true if point is occluded

@@ -54,14 +54,15 @@ namespace pcl
     public:
       /** \brief Empty constructor that sets the values of the algorithm parameters to the VTK defaults */
       MeshSmoothingLaplacianVTK ()
-        : MeshProcessing (),
-          num_iter_ (20),
-          convergence_ (0.0f),
-          relaxation_factor_ (0.01f),
-          feature_edge_smoothing_ (false),
-          feature_angle_ (45.f),
-          edge_angle_ (15.f),
-          boundary_smoothing_ (true)
+        : MeshProcessing ()
+        , vtk_polygons_ ()
+        , num_iter_ (20)
+        , convergence_ (0.0f)
+        , relaxation_factor_ (0.01f)
+        , feature_edge_smoothing_ (false)
+        , feature_angle_ (45.f)
+        , edge_angle_ (15.f)
+        , boundary_smoothing_ (true)
       {};
 
       /** \brief Set the number of iterations for the smoothing filter.

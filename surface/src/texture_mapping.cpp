@@ -43,4 +43,4 @@
 
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(TextureMapping, (pcl::PointXYZ));
+PCL_INSTANTIATE(TextureMapping, (pcl::PointXYZ))
