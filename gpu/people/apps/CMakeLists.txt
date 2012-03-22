@@ -1,2 +1,0 @@
-add_executable (people_tracking src/people_tracking.cpp)
-target_link_libraries (people_tracking pcl_common pcl_kdtree pcl_segmentation pcl_kdtree pcl_people pcl_filters pcl_io pcl_visualization)
