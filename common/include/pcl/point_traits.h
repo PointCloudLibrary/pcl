@@ -174,7 +174,7 @@ namespace pcl
 
       "Priming the pump" with the trivial assertion below somehow fixes the problem...
      */
-    BOOST_MPL_ASSERT_MSG((!(bool)mpl_::bool_<false>::value), WTF_GCC443, (bool));
+    BOOST_MPL_ASSERT_MSG((!bool (mpl_::bool_<false>::value)), WTF_GCC443, (bool));
 
   } //namespace traits
 
