@@ -198,6 +198,8 @@ namespace pcl
 
       struct Candidate
       {
+        Candidate () : normal (), distance (0.0f), bin_index (0), x (0), y (0) {}
+
         Normal normal;
         float distance;
 

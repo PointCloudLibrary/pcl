@@ -47,6 +47,8 @@ namespace pcl
 
   struct QuantizedMultiModFeature
   {
+    QuantizedMultiModFeature () : x (0), y (0), modality_index (0), quantized_value (0) {}
+
     int x;
     int y;
     size_t modality_index;
@@ -73,6 +75,8 @@ namespace pcl
 
   struct SparseQuantizedMultiModTemplate
   {
+    SparseQuantizedMultiModTemplate () : features (), region () {}
+
     std::vector<QuantizedMultiModFeature> features;
 
     RegionXY region;
@@ -109,4 +113,4 @@ namespace pcl
 
 }
 
-#endif    // PCL_FEATURES_SPARSE_QUANTIZED_MULTI_MOD_TEMPLATE
+#endif 
