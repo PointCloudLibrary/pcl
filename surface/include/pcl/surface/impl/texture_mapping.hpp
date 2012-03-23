@@ -376,7 +376,7 @@ pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &te
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> bool
-pcl::TextureMapping<PointInT>::isPointOccluded (const pcl::PointXYZ &pt, OctreePtr octree) const
+pcl::TextureMapping<PointInT>::isPointOccluded (const pcl::PointXYZ &pt, OctreePtr octree)
 {
   Eigen::Vector3f direction;
   direction (0) = pt.x;
@@ -418,9 +418,9 @@ pcl::TextureMapping<PointInT>::isPointOccluded (const pcl::PointXYZ &pt, OctreeP
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> void
-pcl::TextureMapping<PointInT>::removeOccludedPoints (PointCloudPtr &input_cloud,
+pcl::TextureMapping<PointInT>::removeOccludedPoints (const PointCloudPtr &input_cloud,
                                                      PointCloudPtr &filtered_cloud,
-                                                     double octree_voxel_size, std::vector<int> &visible_indices,
+                                                     const double octree_voxel_size, std::vector<int> &visible_indices,
                                                      std::vector<int> &occluded_indices)
 {
   // variable used to filter occluded points by depth
@@ -482,7 +482,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (PointCloudPtr &input_cloud,
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> void
-pcl::TextureMapping<PointInT>::removeOccludedPoints (pcl::TextureMesh &tex_mesh, pcl::TextureMesh &cleaned_mesh, double octree_voxel_size)
+pcl::TextureMapping<PointInT>::removeOccludedPoints (const pcl::TextureMesh &tex_mesh, pcl::TextureMesh &cleaned_mesh, const double octree_voxel_size)
 {
   // copy mesh
   cleaned_mesh = tex_mesh;
@@ -538,8 +538,8 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (pcl::TextureMesh &tex_mesh,
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> void
-pcl::TextureMapping<PointInT>::removeOccludedPoints (pcl::TextureMesh &tex_mesh, PointCloudPtr &filtered_cloud,
-                      double octree_voxel_size)
+pcl::TextureMapping<PointInT>::removeOccludedPoints (const pcl::TextureMesh &tex_mesh, PointCloudPtr &filtered_cloud,
+                      const double octree_voxel_size)
 {
   PointCloudPtr cloud (new PointCloud);
 
@@ -554,7 +554,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (pcl::TextureMesh &tex_mesh,
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> int
 pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pcl::TextureMesh &sorted_mesh,
-                                                  std::vector<Camera> &cameras, double octree_voxel_size,
+                                                  const std::vector<Camera> &cameras, const double octree_voxel_size,
                                                   PointCloud &visible_pts)
 {
   if (tex_mesh.tex_polygons.size () != 1)
@@ -650,10 +650,10 @@ pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pc
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> void
-pcl::TextureMapping<PointInT>::showOcclusions (PointCloudPtr &input_cloud,
+pcl::TextureMapping<PointInT>::showOcclusions (const PointCloudPtr &input_cloud,
                                                pcl::PointCloud<pcl::PointXYZI>::Ptr &colored_cloud,
-                                               double octree_voxel_size, bool show_nb_occlusions,
-                                               int max_occlusions)
+                                               const double octree_voxel_size, const bool show_nb_occlusions,
+                                               const int max_occlusions)
                                                {
   // variable used to filter occluded points by depth
   double maxDeltaZ = octree_voxel_size * 2.0;
