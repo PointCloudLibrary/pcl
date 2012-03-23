@@ -11,6 +11,8 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 if(build)
     set(incs 
         include/pcl/${SUBSYS_NAME}/planar_polygon.h
+        include/pcl/${SUBSYS_NAME}/organized_index_iterator.h
+        include/pcl/${SUBSYS_NAME}/line_iterator.h
         )
 
     set(impl_incs 
@@ -29,4 +31,7 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
+    if(BUILD_TESTS)
+       add_subdirectory(test)
+    endif(BUILD_TESTS)
 endif(build)
