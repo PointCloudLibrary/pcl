@@ -129,7 +129,7 @@ pcl::PapazovHV<ModelT, SceneT>::nonMaximaSuppresion ()
     boost::shared_ptr<RecognitionModel> current = static_cast<boost::shared_ptr<RecognitionModel> > (graph_id_model_map_[int (v)]);
 
     bool a_better_one = false;
-    for (tie (ai, ai_end) = boost::adjacent_vertices (v, conflict_graph_); (ai != ai_end) && !a_better_one; ++ai)
+    for (boost::tie (ai, ai_end) = boost::adjacent_vertices (v, conflict_graph_); (ai != ai_end) && !a_better_one; ++ai)
     {
       boost::shared_ptr<RecognitionModel> neighbour = static_cast<boost::shared_ptr<RecognitionModel> > (graph_id_model_map_[int (*ai)]);
       if (neighbour->explained_.size () >= current->explained_.size () && mask_[neighbour->id_])
