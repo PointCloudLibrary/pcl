@@ -213,7 +213,7 @@ compute (const PointCloudXYZRGBA::ConstPtr & input, float min_depth, float max_d
     if (!foreground_mask[i])
     {
       pcl::PointXYZRGBA & p = template_cloud.points[i];
-      p.x = p.y = p.z = 0.0f / 0.0f;
+      p.x = p.y = p.z = std::numeric_limits<float>::quiet_NaN ();
     }
   }
   pcl::io::savePCDFile (template_pcd_filename, template_cloud);
