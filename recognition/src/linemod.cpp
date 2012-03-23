@@ -43,9 +43,10 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::LINEMOD::LINEMOD () :
-  template_threshold_ (0.75f),
-  templates_ ()
+pcl::LINEMOD::LINEMOD () 
+  : template_threshold_ (0.75f)
+  , use_non_max_suppression_ (false)
+  , templates_ ()
 {
 }
 
@@ -576,6 +577,8 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
 
     //std::cerr << max_score << " ";
 
+    // we compute a new threshold based on the threshold supplied by the user;
+    // this is due to the use of the cosine approx. in the response computation;
     const float raw_threshold = (max_score/2.0f + template_threshold_*(max_score/2.0f));
 
     //int max_value = 0;
@@ -584,11 +587,38 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
     {
       const float score = score_sums[mem_index] * inv_max_score;
 
-      if (score > template_threshold_) 
-      //if (score_sums[mem_index] > raw_threshold) /// \todo Ask Stefan why this line was used instead of the one above
+      //if (score > template_threshold_) 
+      if (score_sums[mem_index] > raw_threshold) /// \todo Ask Stefan why this line was used instead of the one above
       {
-        const size_t detection_col_index = (mem_index % mem_width) * step_size;
-        const size_t detection_row_index = (mem_index / mem_width) * step_size;
+        const size_t mem_col_index = (mem_index % mem_width);
+        const size_t mem_row_index = (mem_index / mem_width);
+        const size_t detection_col_index = mem_col_index * step_size;
+        const size_t detection_row_index = mem_row_index * step_size;
+
+        if (use_non_max_suppression_)
+        {
+          bool is_local_max = true;
+          for (size_t sup_row_index = mem_row_index-1; sup_row_index <= mem_row_index+1 && is_local_max; ++sup_row_index)
+          {
+            if (sup_row_index >= mem_height)
+              continue;
+
+            for (size_t sup_col_index = mem_col_index-1; sup_col_index <= mem_col_index+1; ++sup_col_index)
+            {
+              if (sup_col_index >= mem_width)
+                continue;
+
+              if (score_sums[mem_index] < score_sums[sup_row_index*mem_width + sup_col_index])
+              {
+                is_local_max = false;
+                break;
+              }
+            } 
+          }
+
+          if (!is_local_max)
+            continue;
+        }
 
         LINEMODDetection detection;
         detection.x = static_cast<int> (detection_col_index);

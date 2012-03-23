@@ -220,6 +220,8 @@ namespace pcl
 
   struct LINEMODDetection
   {
+    LINEMODDetection () : x (0), y (0), template_id (0), score (0.0f) {}
+
     int x;
     int y;
     int template_id;
@@ -266,6 +268,12 @@ namespace pcl
         template_threshold_ = threshold;
       }
 
+      inline void
+      setNonMaxSuppression (bool use_non_max_suppression)
+      {
+        use_non_max_suppression_ = use_non_max_suppression;
+      }
+
       inline const SparseQuantizedMultiModTemplate &
       getTemplate (int template_id) const
       { 
@@ -288,6 +296,8 @@ namespace pcl
     private:
       /** template response threshold */
       float template_threshold_;
+      /** states whether non-max-suppression on detections is enabled or not */
+      bool use_non_max_suppression_;
       /** template storage */
       std::vector<SparseQuantizedMultiModTemplate> templates_;
   };
