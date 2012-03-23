@@ -111,9 +111,9 @@ v31.normalize();
 v23.normalize();
 
 //TODO: .dot gives nan's
-th1 = static_cast<int>(round(acos(fabs(v21.dot(v31)))/pih * (binsize-1)));
-th2 = static_cast<int>(round(acos(fabs(v23.dot(v31)))/pih * (binsize-1)));
-th3 = static_cast<int>(round(acos(fabs(v23.dot(v21)))/pih * (binsize-1)));
+th1 = static_cast<int>(pcl_round(acos(fabs(v21.dot(v31)))/pih * (binsize-1)));
+th2 = static_cast<int>(pcl_round(acos(fabs(v23.dot(v31)))/pih * (binsize-1)));
+th3 = static_cast<int>(pcl_round(acos(fabs(v23.dot(v21)))/pih * (binsize-1)));
 if (th1 < 0 || th1 >= binsize)
 {
   nn_idx--;
@@ -151,7 +151,7 @@ int p_cnt = 0;
   const int zt = p2[2] < 0.0? static_cast<int>(floor(p2[2])+GRIDSIZE_H): static_cast<int>(ceil(p2[2])+GRIDSIZE_H-1);
   wt_d2.push_back( this->lci(xs,ys,zs,xt,yt,zt,ratio,vxlcnt,pcnt1) );
   if (wt_d2.back() == 2)
-          h_mix_ratio[static_cast<int>(round(ratio * (binsize-1)))]++;
+          h_mix_ratio[static_cast<int>(pcl_round(ratio * (binsize-1)))]++;
   vxlcnt_sum += vxlcnt;
   p_cnt += pcnt1;
 }
@@ -165,7 +165,7 @@ int p_cnt = 0;
   const int zt = p3[2] < 0.0? static_cast<int>(floor(p3[2])+GRIDSIZE_H): static_cast<int>(ceil(p3[2])+GRIDSIZE_H-1);
   wt_d2.push_back( this->lci(xs,ys,zs,xt,yt,zt,ratio,vxlcnt,pcnt2) );
   if (wt_d2.back() == 2)
-          h_mix_ratio[static_cast<int>(round(ratio * (binsize-1)))]++;
+          h_mix_ratio[static_cast<int>(pcl_round(ratio * (binsize-1)))]++;
   vxlcnt_sum += vxlcnt;
   p_cnt += pcnt2;
 }
@@ -179,7 +179,7 @@ int p_cnt = 0;
   const int zt = p3[2] < 0.0? static_cast<int>(floor(p3[2])+GRIDSIZE_H): static_cast<int>(ceil(p3[2])+GRIDSIZE_H-1);
   wt_d2.push_back( this->lci(xs,ys,zs,xt,yt,zt,ratio,vxlcnt,pcnt3) );
   if (wt_d2.back() == 2)
-          h_mix_ratio[static_cast<int>(round(ratio * (binsize-1)))]++;
+          h_mix_ratio[static_cast<int>(pcl_round(ratio * (binsize-1)))]++;
   vxlcnt_sum += vxlcnt;
   p_cnt += pcnt3;
 }
@@ -235,24 +235,24 @@ if ( d3v[nn_idx] > maxd3)
 int index;
 for (size_t nn_idx = 0; nn_idx < sample_size; ++nn_idx )
 {
-h_d1[static_cast<int>(round ( d1v[nn_idx] / maxd1 * (binsize-1) ))]++ ;
+h_d1[static_cast<int>(pcl_round ( d1v[nn_idx] / maxd1 * (binsize-1) ))]++ ;
 
 if (wt_d3[nn_idx] >= 0.999) // IN
 {
-  index = static_cast<int>(round ( d3v[nn_idx] / maxd3 * (binsize-1) ));
+  index = static_cast<int>(pcl_round ( d3v[nn_idx] / maxd3 * (binsize-1) ));
   if (index >= 0 && index < binsize)
           h_d3_in[index]++ ;
 }
 else
   if (wt_d3[nn_idx] <= 0.001) // OUT
   {
-          index = static_cast<int>(round ( d3v[nn_idx] / maxd3 * (binsize-1) ));
+          index = static_cast<int>(pcl_round ( d3v[nn_idx] / maxd3 * (binsize-1) ));
           if (index >= 0 && index < binsize)
                   h_d3_out[index]++ ;
   }
   else
   {
-          index = static_cast<int>(round ( d3v[nn_idx] / maxd3 * (binsize-1) ));
+          index = static_cast<int>(pcl_round ( d3v[nn_idx] / maxd3 * (binsize-1) ));
           if (index >= 0 && index < binsize)
                   h_d3_mix[index]++ ;
   }
@@ -262,11 +262,11 @@ else
 for (size_t nn_idx = 0; nn_idx < d2v.size(); ++nn_idx )
 {
 if (wt_d2[nn_idx] == 0)
-  h_in[static_cast<int>(round ( d2v[nn_idx] / maxd2 * (binsize-1) ))]++ ;
+  h_in[static_cast<int>(pcl_round ( d2v[nn_idx] / maxd2 * (binsize-1) ))]++ ;
 if (wt_d2[nn_idx] == 1)
-  h_out[static_cast<int>(round ( d2v[nn_idx] / maxd2 * (binsize-1) ))]++;
+  h_out[static_cast<int>(pcl_round ( d2v[nn_idx] / maxd2 * (binsize-1) ))]++;
 if (wt_d2[nn_idx] == 2)
-  h_mix[static_cast<int>(round ( d2v[nn_idx] / maxd2 * (binsize-1) ))]++ ;
+  h_mix[static_cast<int>(pcl_round ( d2v[nn_idx] / maxd2 * (binsize-1) ))]++ ;
 }
 
 //float weights[10] = {1,  1,  1,  1,  1,  1,  1,  1 , 1 ,  1};
