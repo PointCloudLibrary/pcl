@@ -44,17 +44,19 @@
 #include <pcl/common/transforms.h>
 #include <pcl/TextureMesh.h>
 
+
 namespace pcl
 {
   /** \brief The texture mapping algorithm
-    * \author Khai Tran
+    * \author Khai Tran, Raphael Favier
     * \ingroup surface
     */
   template<typename PointInT>
   class TextureMapping
   {
     public:
-      /** \brief Structure to store camera pose and focal length. */
+      /** \brief Structure to store camera pose and focal length.
+        */
       struct Camera
       {
         Camera () : pose (), focal_length (), height (), width (), texture_file () {}
@@ -78,7 +80,8 @@ namespace pcl
       typedef typename Octree::Ptr OctreePtr;
       typedef typename Octree::ConstPtr OctreeConstPtr;
 
-      /** \brief Constructor. */
+      /** \brief Constructor.
+        */
       TextureMapping () :
         f_ (), vector_field_ (), tex_files_ (), tex_material_ ()
       {
@@ -151,18 +154,18 @@ namespace pcl
       mapMultipleTexturesToMeshUV (pcl::TextureMesh &tex_mesh, std::vector<Camera> &cams);
 
       /** \brief computes UV coordinates of point, observed by one particular camera
-        * \param ...
-        * \param ...
-        * \param ...
-        * \returns false if the point is not visible by the camera.
+        * \param[in] pt XYZ point to project on camera plane
+        * \param[in] cam the camera used for projection
+        * \param[out] UV_coordinates the resulting uv coordinates. Set to (-1.0,-1.0) if the point is not visible by the camera
+        * \returns false if the point is not visible by the camera
         */
       inline bool
       getPointUVCoordinates (pcl::PointXYZ &pt, Camera &cam, Eigen::Vector2f &UV_coordinates)
       {
-        //if the point is in front of the camera
+        // if the point is in front of the camera
         if (pt.z > 0)
         {
-          //compute image center and dimension
+          // compute image center and dimension
           double sizeX = cam.width;
           double sizeY = cam.height;
           double cx = (sizeX) / 2.0;
@@ -171,61 +174,82 @@ namespace pcl
           double focal_x = cam.focal_length;
           double focal_y = cam.focal_length;
 
-          //project point on image frame
+          // project point on image frame
           UV_coordinates[0] = static_cast<float> ((focal_x * (pt.x / pt.z) + cx) / sizeX); //horizontal
           UV_coordinates[1] = 1.0f - static_cast<float> (((focal_y * (pt.y / pt.z) + cy) / sizeY)); //vertical
 
-          //point is visible!
+          // point is visible!
           if (UV_coordinates[0] >= 0.0 && UV_coordinates[0] <= 1.0 && UV_coordinates[1] >= 0.0 && UV_coordinates[1]
                                                                                                                  <= 1.0)
             return (true);
         }
 
-        //point is NOT visible by the camera
+        // point is NOT visible by the camera
         UV_coordinates[0] = -1.0;
         UV_coordinates[1] = -1.0;
         return (false);
       }
 
-      /** \brief Return true if point is occluded
-        * The octree must be initialized with a cloud transformed into the camera's frame
+      /** \brief Check if a point is occluded using raycasting on octree.
+        * \param[in] pt XYZ from which the ray will start (toward the camera)
+        * \param[in] octree the octree used for raycasting. It must be initialized with a cloud transformed into the camera's frame
+        * \returns true if the point is occluded.
         */
       inline bool
       isPointOccluded (const pcl::PointXYZ &pt, OctreePtr octree) const;
 
       /** \brief Remove occluded points from a point cloud
-       */
+        * \param[in] input_cloud the cloud on which to perform occlusion detection
+        * \param[out] filtered_cloud resulting cloud, containing only visible points
+        * \param[in] octree_voxel_size octree resolution (in meters)
+        * \param[out] visible_indices will contain indices of visible points
+        * \param[out] occluded_indices will contain indices of occluded points
+        */
       void
       removeOccludedPoints (PointCloudPtr &input_cloud,
                             PointCloudPtr &filtered_cloud, double octree_voxel_size,
                             std::vector<int> &visible_indices, std::vector<int> &occluded_indices);
 
       /** \brief Remove occluded points from a textureMesh
-       *
-       */
+        * \param[in] tex_mesh input mesh, on witch to perform occlusion detection
+        * \param[out] cleaned_mesh resulting mesh, containing only visible points
+        * \param[in] octree_voxel_size octree resolution (in meters)
+        */
       void
       removeOccludedPoints (pcl::TextureMesh &tex_mesh, pcl::TextureMesh &cleaned_mesh, double octree_voxel_size);
 
 
-      /* \brief Remove occluded points from a textureMesh
-       */
+      /** \brief Remove occluded points from a textureMesh
+        * \param[in] tex_mesh input mesh, on witch to perform occlusion detection
+        * \param[out] filtered_cloud resulting cloud, containing only visible points
+        * \param[in] octree_voxel_size octree resolution (in meters)
+        */
       void
       removeOccludedPoints (pcl::TextureMesh &tex_mesh, PointCloudPtr &filtered_cloud, double octree_voxel_size);
 
 
-      /* \brief Segment faces by camera visibility.
-       * With N camera, faces are gonna be segmented into N+1 groups:
-       * 1 for each camera, plus one for faces not visible from any camera.
-       */
+      /** \brief Segment faces by camera visibility.
+        * With N camera, faces will be arranged into N+1 groups: 1 for each camera, plus 1 for faces not visible from any camera.
+        * \param[in] tex_mesh input mesh that needs sorting. Must contain only 1 sub-mesh.
+        * \param[in] sorted_mesh resulting mesh, will contain nbCamera + 1 sub-mesh.
+        * \param[in] cameras vector containing the cameras used for texture mapping.
+        * \param[in] octree_voxel_size octree resolution (in meters)
+        * \param[out] visible_pts cloud containing only visible points
+        */
       int
       sortFacesByCamera (pcl::TextureMesh &tex_mesh, pcl::TextureMesh &sorted_mesh, std::vector<Camera> &cameras,
                          double octree_voxel_size, PointCloud &visible_pts);
 
-      /** \brief Colors a point cloud, depending on its occlusions
-       * If showNbOcclusions is set to True, each point is colored depending on the number of points occluding it
-       * Else, each point is given a different a 0 value is not occluded, 1 if occluded.
-       * By default, the number of occlusions is bounded to 4
-       */
+      /** \brief Colors a point cloud, depending on its occlusions.
+        * If showNbOcclusions is set to True, each point is colored depending on the number of points occluding it
+        * Else, each point is given a different a 0 value is not occluded, 1 if occluded.
+        * By default, the number of occlusions is bounded to 4.
+        * \param[in] input_cloud input cloud on which occlusions will be computed.
+        * \param[out] colored_cloud resulting colored cloud showing the number of occlusions per point.
+        * \param[in] octree_voxel_size octree resolution (in meters).
+        * \param[in] show_nb_occlusions If false, color information will only represent.
+        * \param[in] max_occlusions Limit the number of occlusions per point.
+        */
       void
       showOcclusions (PointCloudPtr &input_cloud, pcl::PointCloud<pcl::PointXYZI>::Ptr &colored_cloud,
                       double octree_voxel_size, bool show_nb_occlusions = true,
@@ -235,6 +259,11 @@ namespace pcl
         * If showNbOcclusions is set to True, each point is colored depending on the number of points occluding it
         * Else, each point is given a different a 0 value is not occluded, 1 if occluded.
         * By default, the number of occlusions is bounded to 4
+        * \param[in] tex_mesh input mesh on which occlusions will be computed.
+        * \param[out] colored_cloud resulting colored cloud showing the number of occlusions per point.
+        * \param[in] octree_voxel_size octree resolution (in meters).
+        * \param[in] show_nb_occlusions If false, color information will only represent.
+        * \param[in] max_occlusions Limit the number of occlusions per point.
         */
       void
       showOcclusions (pcl::TextureMesh &tex_mesh, pcl::PointCloud<pcl::PointXYZI>::Ptr &colored_cloud,
