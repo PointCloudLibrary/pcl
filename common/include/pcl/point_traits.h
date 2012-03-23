@@ -167,6 +167,15 @@ namespace pcl
                            POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
     };
 
+    /*
+      At least on GCC 4.4.3, but not later versions, some valid usages of the above traits for
+      non-POD (but registered) point types fail with:
+      error: ‘!(bool)mpl_::bool_<false>::value’ is not a valid template argument for type ‘bool’ because it is a non-constant expression
+
+      "Priming the pump" with the trivial assertion below somehow fixes the problem...
+     */
+    BOOST_MPL_ASSERT_MSG((!(bool)mpl_::bool_<false>::value), WTF_GCC443, (bool));
+
   } //namespace traits
 
 
