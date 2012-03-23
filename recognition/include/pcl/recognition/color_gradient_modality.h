@@ -644,27 +644,21 @@ filterQuantizedColorGradients ()
 
       {
         const unsigned char * data_ptr = quantized_color_gradients_.getData () + (row_index-1)*width+col_index-1;
-        assert (0 <= data_ptr[0] && data_ptr[0] < 9 && 
-                0 <= data_ptr[1] && data_ptr[1] < 9 && 
-                0 <= data_ptr[2] && data_ptr[2] < 9);
+        assert (data_ptr[0] < 9 && data_ptr[1] < 9 && data_ptr[2] < 9);
         ++histogram[data_ptr[0]];
         ++histogram[data_ptr[1]];
         ++histogram[data_ptr[2]];
       }
       {
         const unsigned char * data_ptr = quantized_color_gradients_.getData () + row_index*width+col_index-1;
-        assert (0 <= data_ptr[0] && data_ptr[0] < 9 && 
-                0 <= data_ptr[1] && data_ptr[1] < 9 && 
-                0 <= data_ptr[2] && data_ptr[2] < 9);
+        assert (data_ptr[0] < 9 && data_ptr[1] < 9 && data_ptr[2] < 9);
         ++histogram[data_ptr[0]];
         ++histogram[data_ptr[1]];
         ++histogram[data_ptr[2]];
       }
       {
         const unsigned char * data_ptr = quantized_color_gradients_.getData () + (row_index+1)*width+col_index-1;
-        assert (0 <= data_ptr[0] && data_ptr[0] < 9 && 
-                0 <= data_ptr[1] && data_ptr[1] < 9 && 
-                0 <= data_ptr[2] && data_ptr[2] < 9);
+        assert (data_ptr[0] < 9 && data_ptr[1] < 9 && data_ptr[2] < 9);
         ++histogram[data_ptr[0]];
         ++histogram[data_ptr[1]];
         ++histogram[data_ptr[2]];

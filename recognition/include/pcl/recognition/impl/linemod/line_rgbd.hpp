@@ -138,7 +138,9 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name
       stream.write (buffer, fsize);
       SparseQuantizedMultiModTemplate sqmmt;
       sqmmt.deserialize (stream);
-
+      PCL_DEBUG ("%zu %d %d %d %d\n", 
+                 sqmmt.features.size (), 
+                 sqmmt.region.x, sqmmt.region.y, sqmmt.region.width, sqmmt.region.height);
       linemod_.addTemplate (sqmmt);
       object_ids_.push_back (object_id);
 
@@ -154,6 +156,26 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name
 
   // Close the file
   pcl_close (ltm_fd);
+
+  // Compute 3D bounding boxes from the template point clouds
+  bounding_boxes_.resize (template_point_clouds_.size ());
+  for (size_t i = 0; i < template_point_clouds_.size (); ++i)
+  {
+    const PointCloud<PointXYZRGB> & template_point_cloud = template_point_clouds_[i];
+    BoundingBoxXYZ & bb = bounding_boxes_[i];
+    bb.x = bb.y = bb.z = std::numeric_limits<float>::max ();
+    bb.width = bb.height = bb.depth = 0.0f;
+    for (size_t j = 0; j < template_point_cloud.size (); ++j)
+    {
+      const PointXYZRGB & p = template_point_cloud.points[j];
+      bb.x = std::min (bb.x, p.x);
+      bb.y = std::min (bb.y, p.y);
+      bb.z = std::min (bb.z, p.z);
+      bb.height = std::max (bb.height, p.x - bb.x);
+      bb.width = std::max (bb.width, p.y - bb.y);
+      bb.depth = std::max (bb.depth, p.z - bb.z);
+    }
+  }
 
   return (true);
 }
@@ -174,6 +196,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
   detections_.reserve (linemod_detections.size ());
   detections.clear ();
   detections.reserve (linemod_detections.size ());
+PCL_DEBUG ("%zu\n", linemod_detections.size ());
   for (size_t detection_id = 0; detection_id < linemod_detections.size (); ++detection_id)
   {
     pcl::LINEMODDetection & linemod_detection = linemod_detections[detection_id];
@@ -183,7 +206,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
     detection.object_id = object_ids_[linemod_detection.template_id];
     detection.detection_id = detection_id;
     detection.response = linemod_detection.score;
-    
+
     // compute bounding box:
     // we assume that the bounding boxes of the templates are relative to the center of mass 
     // of the template points; so we also compute the center of mass of the points
@@ -204,7 +227,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
     {
       for (size_t col_index = start_x; col_index < end_x; ++col_index)
       {
-        const pcl::PointXYZ & point = (*cloud_xyz_) (col_index, row_index);
+        const PointXYZT & point = (*cloud_xyz_) (col_index, row_index);
 
         if (pcl_isfinite (point.x) && pcl_isfinite (point.y) && pcl_isfinite (point.z))
         {
@@ -221,6 +244,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
     center_z *= inv_counter;
 
     pcl::BoundingBoxXYZ template_bounding_box = bounding_boxes_[detection.template_id];
+
     detection.bounding_box = template_bounding_box;
     detection.bounding_box.x += center_x;
     detection.bounding_box.y += center_y;

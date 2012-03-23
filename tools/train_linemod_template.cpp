@@ -35,6 +35,8 @@
  *
  */
 
+#include <math.h>
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
@@ -61,8 +63,16 @@ typedef pcl::PointCloud<pcl::PointXYZRGBA> PointCloudXYZRGBA;
 void
 printHelp (int, char **argv)
 {
-  print_error ("Syntax is: %s input.pcd  min_depth  max_depth  max_height  output_template.lmt\n", argv[0]);
+  print_error ("Syntax is: %s input1.pcd input2.pcd input3.pcd (etc.)\n", argv[0]);
   print_info ("  where options are:\n");
+  print_info ("           -min_depth z_min   = the depth of the near clipping plane\n"); 
+  print_info ("           -max_depth z_max   = the depth of the far clipping plane\n"); 
+  print_info ("           -max_height y_max  = the height of the vertical clipping plane\n");
+  print_info ("Two new template files will be created for each input file.  They will append ");
+  print_info ("the following suffixes to the original filename:\n");
+  print_info ("   _template.pcd (A PCD containing segmented points)\n");
+  print_info ("   _template.sqmmt (A file storing LINEMOD's 'Sparse Quantized Multi-Modal Template' representation)\n");
+
 }
 
 void printElapsedTimeAndNumberOfPoints (double t, int w, int h=1)
@@ -138,27 +148,6 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
     }
   }
 
-  // Just for temporary visualization
-  PointCloudXYZRGBA visualization_cloud (*input);
-  for (size_t i = 0; i < foreground_mask.size (); ++i)
-  {
-    if (!foreground_mask[i])
-    {
-      pcl::PointXYZRGBA & p = visualization_cloud.points[i];
-      p.r = 64;
-      p.g = 0;
-      p.b = 0;
-    }
-    else
-    {
-      pcl::PointXYZRGBA & p = visualization_cloud.points[i];
-      p.r = 0;
-      p.g = 128;
-      p.b = 0;
-    }
-  }
-  pcl::io::savePCDFile ("temp.pcd", visualization_cloud);
-
   return (foreground_mask);
 }
 
@@ -212,35 +201,88 @@ trainTemplate (const PointCloudXYZRGBA::ConstPtr & input, const std::vector<bool
 
 void
 compute (const PointCloudXYZRGBA::ConstPtr & input, float min_depth, float max_depth, float max_height,
-         const char * template_filename)
+         const std::string & template_pcd_filename, const std::string & template_sqmmt_filename)
 {
+  // Segment the foreground object
   std::vector<bool> foreground_mask = maskForegroundPoints (input, min_depth, max_depth, max_height);
 
+  // Save the masked template cloud (masking with NaNs to preserve its organized structure)
+  PointCloudXYZRGBA template_cloud (*input);
+  for (size_t i = 0; i < foreground_mask.size (); ++i)
+  {
+    if (!foreground_mask[i])
+    {
+      pcl::PointXYZRGBA & p = template_cloud.points[i];
+      p.x = p.y = p.z = 0.0f / 0.0f;
+    }
+  }
+  pcl::io::savePCDFile (template_pcd_filename, template_cloud);
+
+  // Create a LINEMOD template
   pcl::LINEMOD linemod;
   trainTemplate (input, foreground_mask, linemod);
 
-  linemod.saveTemplates (template_filename);
+  // Save the LINEMOD template
+  std::ofstream file_stream;
+  file_stream.open (template_sqmmt_filename.c_str (), std::ofstream::out | std::ofstream::binary);
+  linemod.getTemplate (0).serialize (file_stream);
+  file_stream.close ();
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  print_info ("Train a linemod template. For more information, use: %s -h\n", argv[0]);
+  print_info ("Train one or more linemod templates. For more information, use: %s -h\n", argv[0]);
 
-  if (argc < 6)
+  // If no arguments are given, print the help text
+  if (argc == 1)
   {
     printHelp (argc, argv);
     return (-1);
   }
 
-  // Load the input point cloud from the provided PCD file
-  PointCloudXYZRGBA::Ptr cloud (new PointCloudXYZRGBA);
-  if (!loadCloud (argv[1], *cloud)) 
+  // Parse the command line arguments for .pcd files
+  std::vector<int> p_file_indices;
+  p_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
+  if (p_file_indices.empty ())
+  {
+    print_error ("Need at least one input PCD file.\n");
     return (-1);
+  }
 
-  // Train the LINE-MOD template and output it to the specified file
-  compute (cloud, static_cast<float> (atof (argv[2])), static_cast<float> (atof (argv[3])), static_cast<float> (atof (argv[4])), argv[5]);
+  // Parse the min_depth, max_depth, and max_height parameters
+  float min_depth = 0;
+  parse_argument (argc, argv, "-min_depth", min_depth);
+
+  float max_depth = std::numeric_limits<float>::max ();
+  parse_argument (argc, argv, "-max_depth", max_depth);
+
+  float max_height = std::numeric_limits<float>::max ();
+  parse_argument (argc, argv, "-max_height", max_height);
+
+  // Segment and create templates for each input file
+  for (size_t i_file = 0; i_file < p_file_indices.size (); ++i_file)
+  {
+    // Load input file
+    const std::string input_filename = argv[p_file_indices[i_file]];
+    PointCloudXYZRGBA::Ptr cloud (new PointCloudXYZRGBA);
+    if (!loadCloud (input_filename, *cloud)) 
+      return (-1);
+
+    // Construct output filenames
+    std::string sqmmt_filename = input_filename;
+    sqmmt_filename.replace(sqmmt_filename.length () - 4, 13, "_template.sqmmt");
+
+    std::string pcd_filename = input_filename;
+    pcd_filename.replace(pcd_filename.length () - 4, 13, "_template.pcd");
+
+    std::cout << sqmmt_filename << std::endl;
+    std::cout << pcd_filename << std::endl;
+
+    // Train the LINE-MOD template and output it to the specified file
+    compute (cloud, min_depth, max_depth, max_height, pcd_filename, sqmmt_filename);
+  }
 
 }
 

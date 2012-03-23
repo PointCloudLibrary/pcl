@@ -66,7 +66,7 @@ namespace pcl
   /** \brief High-level class for template matching using the LINEMOD approach based on RGB and Depth data.
     * \author Stefan Holzer
     */
-  template <typename PointXYZT, typename PointRGBT>
+  template <typename PointXYZT, typename PointRGBT=PointXYZT>
   class PCL_EXPORTS LineRGBD
   {
     public:

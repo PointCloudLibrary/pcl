@@ -93,6 +93,10 @@ if (build)
   PCL_ADD_EXECUTABLE(pcl_match_linemod_template ${SUBSYS_NAME} match_linemod_template.cpp)
   target_link_libraries(pcl_match_linemod_template pcl_common pcl_io pcl_recognition)
 
+  PCL_ADD_EXECUTABLE(pcl_linemod_detection ${SUBSYS_NAME} linemod_detection.cpp)
+  target_link_libraries(pcl_linemod_detection pcl_common pcl_io pcl_recognition)
+
+
   if (QHULL_FOUND)
     PCL_ADD_EXECUTABLE(pcl_crop_to_hull ${SUBSYS_NAME} crop_to_hull.cpp)
     target_link_libraries(pcl_crop_to_hull pcl_common pcl_io pcl_filters pcl_surface)
