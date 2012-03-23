@@ -48,18 +48,21 @@ namespace pcl
 
   struct BoundingBoxXYZ
   {
-    /** x-coordinate of the upper left front point */
+    /** \brief Constructor. */
+    BoundingBoxXYZ () : x (0.0f), y (0.0f), z (0.0f), width (0.0f), height (0.0f), depth (0.0f) {}
+
+    /** \brief X-coordinate of the upper left front point */
     float x;
-    /** y-coordinate of the upper left front point */
+    /** \brief Y-coordinate of the upper left front point */
     float y;
-    /** z-coordinate of the upper left front point */
+    /** \brief Z-coordinate of the upper left front point */
     float z;
 
-    /** width of the bounding box */
+    /** \brief Width of the bounding box */
     float width;
-    /** height of the bounding box */
+    /** \brief Height of the bounding box */
     float height;
-    /** depth of the bounding box */
+    /** \brief Depth of the bounding box */
     float depth;
   };
 
@@ -74,20 +77,33 @@ namespace pcl
       /** \brief A LineRGBD detection. */
       struct Detection
       {
-        /** The ID of the template. */
+        /** \brief Constructor. */
+        Detection () : template_id (0), object_id (0), detection_id (0), response (0.0f), bounding_box () {}
+
+        /** \brief The ID of the template. */
         size_t template_id;
-        /** The ID of the object corresponding to the template. */
+        /** \brief The ID of the object corresponding to the template. */
         size_t object_id;
-        /** The ID of this detection. This is only valid for the last call of the method detect (...). */
+        /** \brief The ID of this detection. This is only valid for the last call of the method detect (...). */
         size_t detection_id;
-        /** The response of this detection. Responses are between 0 and 1, where 1 is best. */
+        /** \brief The response of this detection. Responses are between 0 and 1, where 1 is best. */
         float response;
-        /** The 3D bounding box of the detection. */
+        /** \brief The 3D bounding box of the detection. */
         BoundingBoxXYZ bounding_box;
       };
 
       /** \brief Constructor */
       LineRGBD ()
+        : intersection_volume_threshold_ (1.0f)
+        , linemod_ ()
+        , color_gradient_mod_ ()
+        , surface_normal_mod_ ()
+        , cloud_xyz_ ()
+        , cloud_rgb_ ()
+        , template_point_clouds_ ()
+        , bounding_boxes_ ()
+        , object_ids_ ()
+        , detections_ ()
       {
       }
 
@@ -118,13 +134,27 @@ namespace pcl
         linemod_.setDetectionThreshold (threshold);
       }
 
-      /** \brief Sets the threshold on the magnitude of color gradients. Color gradients with a magnitude below this threshold are not considered in the detection process.
+      /** \brief Sets the threshold on the magnitude of color gradients. Color gradients with a magnitude below 
+        *        this threshold are not considered in the detection process.
         * \param[in] threshold The threshold on the magnitude of color gradients.
         */
       inline void
       setGradientMagnitudeThreshold (const float threshold)
       {
         color_gradient_mod_.setGradientMagnitudeThreshold (threshold);
+      }
+
+      /** \brief Sets the threshold for the decision whether two detections of the same template are merged or not. 
+        *        If ratio between the intersection of the bounding boxes of two detections and the original bounding 
+        *        boxes is larger than the specified threshold then they are merged. If detection A overlaps with 
+        *        detection B and B with C than A, B, and C are merged. Threshold has to be between 0 and 1.
+        * \param[in] threshold The threshold on the ratio between the intersection bounding box and the original 
+        *                      bounding box.
+        */
+      inline void
+      setIntersectionVolumeThreshold (const float threshold = 1.0f)
+      {
+        intersection_volume_threshold_ = threshold;
       }
 
       /** \brief Sets the input cloud with xyz point coordinates. The cloud has to be organized. 
@@ -157,7 +187,9 @@ namespace pcl
       void 
       detect (std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections);
 
-      /** Computes and returns the point cloud of the specified detection. This is the template point cloud transformed to the detection coordinates. The detection ID refers to the last call of the method detect (...).
+      /** \brief Computes and returns the point cloud of the specified detection. This is the template point 
+        *        cloud transformed to the detection coordinates. The detection ID refers to the last call of 
+        *        the method detect (...).
         * \param[in] detection_id The ID of the detection (according to the last call of the method detect (...)).
         * \param[out] cloud The storage for the transformed points.
         */
@@ -165,7 +197,8 @@ namespace pcl
       computeTransformedTemplatePoints (const size_t detection_id,
                                         pcl::PointCloud<pcl::PointXYZRGB> & cloud);
 
-      /** Finds the indices of the points in the input cloud which correspond to the specified detection. The detection ID refers to the last call of the method detect (...).
+      /** \brief Finds the indices of the points in the input cloud which correspond to the specified detection. 
+        *        The detection ID refers to the last call of the method detect (...).
         * \param[in] detection_id The ID of the detection (according to the last call of the method detect (...)).
         */
       inline std::vector<size_t>
@@ -181,7 +214,8 @@ namespace pcl
 
     protected:
 
-      /** Aligns the template points with the points found at the detection position of the specified detection. The detection ID refers to the last call of the method detect (...). 
+      /** \brief Aligns the template points with the points found at the detection position of the specified detection. 
+        *        The detection ID refers to the last call of the method detect (...). 
         * \param[in] detection_id The ID of the detection (according to the last call of the method detect (...)).
         */
       inline std::vector<size_t>
@@ -194,31 +228,45 @@ namespace pcl
         // TODO: transform template points
       }
 
+      /** \brief Checks for overlapping detections, removes them and keeps only the strongest one. */
+      void
+      removeOverlappingDetections ();
+
+      /** \brief Computes the volume of the intersection between two bounding boxes.
+        * \param[in] First bounding box.
+        * \param[in] Second bounding box.
+        */
+      static float
+      computeBoundingBoxIntersectionVolume (const BoundingBoxXYZ &box1, const BoundingBoxXYZ &box2);
+
     private:
       /** \brief Read another LTM header chunk. */
       bool 
       readLTMHeader (int fd, pcl::io::TARHeader &header);
 
+      /** \brief Intersection volume threshold. */
+      float intersection_volume_threshold_;
+
       /** \brief LINEMOD instance. */
       public: pcl::LINEMOD linemod_;
-      /** Color gradient modality */
+      /** \brief Color gradient modality. */
       pcl::ColorGradientModality<PointRGBT> color_gradient_mod_;
-      /** Surface normal modality */
+      /** \brief Surface normal modality. */
       pcl::SurfaceNormalModality<PointXYZT> surface_normal_mod_;
 
-      /** XYZ point cloud */
+      /** \brief XYZ point cloud. */
       typename pcl::PointCloud<PointXYZT>::ConstPtr cloud_xyz_;
-      /** RGB point cloud */
+      /** \brief RGB point cloud. */
       typename pcl::PointCloud<PointRGBT>::ConstPtr cloud_rgb_;
 
-      /** Point clouds corresponding to the templates */
+      /** \brief Point clouds corresponding to the templates. */
       std::vector<pcl::PointCloud<pcl::PointXYZRGB> > template_point_clouds_;
-      /** Bounding boxes corresonding to the templates */
+      /** \brief Bounding boxes corresonding to the templates. */
       std::vector<pcl::BoundingBoxXYZ> bounding_boxes_;
-      /** Object IDs corresponding to the templates */
+      /** \brief Object IDs corresponding to the templates. */
       std::vector<size_t> object_ids_;
 
-      /** Detections from last call of method detect (...) */
+      /** \brief Detections from last call of method detect (...). */
       std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> detections_; 
   };
 

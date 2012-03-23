@@ -46,6 +46,7 @@
 pcl::LINEMOD::LINEMOD () 
   : template_threshold_ (0.75f)
   , use_non_max_suppression_ (false)
+  , average_detections_ (false)
   , templates_ ()
 {
 }
@@ -592,8 +593,6 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
       {
         const size_t mem_col_index = (mem_index % mem_width);
         const size_t mem_row_index = (mem_index / mem_width);
-        const size_t detection_col_index = mem_col_index * step_size;
-        const size_t detection_row_index = mem_row_index * step_size;
 
         if (use_non_max_suppression_)
         {
@@ -621,8 +620,54 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
         }
 
         LINEMODDetection detection;
-        detection.x = static_cast<int> (detection_col_index);
-        detection.y = static_cast<int> (detection_row_index);
+
+        if (average_detections_)
+        {
+          size_t average_col = 0;
+          size_t average_row = 0;
+          size_t sum = 0;
+
+          for (size_t sup_row_index = mem_row_index-1; sup_row_index <= mem_row_index+1; ++sup_row_index)
+          {
+            if (sup_row_index >= mem_height)
+              continue;
+
+            for (size_t sup_col_index = mem_col_index-1; sup_col_index <= mem_col_index+1; ++sup_col_index)
+            {
+              if (sup_col_index >= mem_width)
+                continue;
+
+              const size_t weight = static_cast<size_t> (score_sums[sup_row_index*mem_width + sup_col_index]);
+              average_col += sup_col_index * weight;
+              average_row += sup_row_index * weight;
+              sum += weight;
+            } 
+          }
+
+          average_col *= step_size;
+          average_row *= step_size;
+
+          average_col /= sum;
+          average_row /= sum;
+
+          //std::cerr << mem_col_index << ", " << mem_row_index << " - " << average_col << ", " << average_row << std::endl;
+          std::cerr << mem_col_index*step_size << ", " << mem_row_index*step_size << " - " << average_col << ", " << average_row << std::endl;
+
+          const size_t detection_col_index = average_col;// * step_size;
+          const size_t detection_row_index = average_row;// * step_size;
+
+          detection.x = static_cast<int> (detection_col_index);
+          detection.y = static_cast<int> (detection_row_index);
+        }
+        else
+        {
+          const size_t detection_col_index = mem_col_index * step_size;
+          const size_t detection_row_index = mem_row_index * step_size;
+
+          detection.x = static_cast<int> (detection_col_index);
+          detection.y = static_cast<int> (detection_row_index);
+        }
+
         detection.template_id = static_cast<int> (template_index);
         detection.score = score;
 

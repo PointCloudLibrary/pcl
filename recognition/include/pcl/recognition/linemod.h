@@ -274,6 +274,12 @@ namespace pcl
         use_non_max_suppression_ = use_non_max_suppression;
       }
 
+      inline void
+      setDetectionAveraging (bool average_detections)
+      {
+        average_detections_ = average_detections;
+      }
+
       inline const SparseQuantizedMultiModTemplate &
       getTemplate (int template_id) const
       { 
@@ -298,6 +304,8 @@ namespace pcl
       float template_threshold_;
       /** states whether non-max-suppression on detections is enabled or not */
       bool use_non_max_suppression_;
+      /** states whether to return an averaged detection */
+      bool average_detections_;
       /** template storage */
       std::vector<SparseQuantizedMultiModTemplate> templates_;
   };
