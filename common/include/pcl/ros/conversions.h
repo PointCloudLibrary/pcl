@@ -86,29 +86,20 @@ namespace pcl
       template<typename Tag> void 
       operator () ()
       {
-        const char* name = traits::name<PointT, Tag>::value;
         BOOST_FOREACH (const sensor_msgs::PointField& field, fields_)
         {
-          //if (field.name == "_")
-          //  continue;
-          if (field.name == name)
+          if (FieldMatches<PointT, Tag>()(field))
           {
-            typedef traits::datatype<PointT, Tag> Data;
-            assert (Data::value == field.datatype);
-            
             FieldMapping mapping;
             mapping.serialized_offset = field.offset;
             mapping.struct_offset = traits::offset<PointT, Tag>::value;
-            mapping.size = sizeof (typename Data::type);
+            mapping.size = sizeof (typename traits::datatype<PointT, Tag>::type);
             map_.push_back (mapping);
             return;
           }
         }
-        // Disable the above code per #595: http://dev.pointclouds.org/issues/595
-        //std::stringstream ss;
-        //ss << "Failed to find a field named: '" << name
-        //   << "'. Cannot convert message to PCL type.";
-        //PCL_WARN ("%s\n", ss.str().c_str());
+        // Disable thrown exception per #595: http://dev.pointclouds.org/issues/595
+        PCL_WARN ("Failed to find match for field '%s'.\n", traits::name<PointT, Tag>::value);
         //throw pcl::InvalidConversionException (ss.str ());
       }
 

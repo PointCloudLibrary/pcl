@@ -178,6 +178,18 @@ namespace pcl
 
   } //namespace traits
 
+  // Return true if the PointField matches the expected name and data type.
+  // Written as a struct to allow partially specializing on Tag.
+  template<typename PointT, typename Tag>
+  struct FieldMatches
+  {
+    bool operator() (const sensor_msgs::PointField& field)
+    {
+      return (field.name == traits::name<PointT, Tag>::value &&
+              field.datatype == traits::datatype<PointT, Tag>::value &&
+              field.count == traits::datatype<PointT, Tag>::size);
+    }
+  };
 
   /** \brief A helper functor that can copy a specific value if the given field exists. */
   template <typename PointInT, typename OutT>

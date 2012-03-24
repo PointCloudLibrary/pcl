@@ -557,6 +557,29 @@ POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::ReferenceFrame, pcl::_ReferenceFrame)
 //                                  (uint32_t, traits, traits)
 //)
 
+namespace pcl {
+  // Allow float 'rgb' data to match to the newer uint32 'rgba' tag. This is so
+  // you can load old 'rgb' PCD files into e.g. a PointCloud<PointXYZRGBA>.
+  template<typename PointT>
+  struct FieldMatches<PointT, fields::rgba>
+  {
+    bool operator() (const sensor_msgs::PointField& field)
+    {
+      if (field.name == "rgb")
+      {
+        return (field.datatype == sensor_msgs::PointField::FLOAT32 &&
+                field.count == 1);
+      }
+      else
+      {
+        return (field.name == traits::name<PointT, fields::rgba>::value &&
+                field.datatype == traits::datatype<PointT, fields::rgba>::value &&
+                field.count == traits::datatype<PointT, fields::rgba>::size);
+      }
+    }
+  };
+} // namespace pcl
+
 #pragma warning(default: 4201)
 //#pragma warning(pop)
 #ifdef BUILD_Maintainer
