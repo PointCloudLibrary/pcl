@@ -40,7 +40,7 @@
 #ifndef PCL_TEXTUREMESH_H_
 #define PCL_TEXTUREMESH_H_
 
-#include <Eigen/Core>
+#include <pcl/common/eigen.h>
 #include <std_msgs/Header.h>
 #include <pcl/PolygonMesh.h>
 #include <string>

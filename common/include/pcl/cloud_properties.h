@@ -40,6 +40,8 @@
 #ifndef PCL_CLOUD_PROPERTIES_H_
 #define PCL_CLOUD_PROPERTIES_H_
 
+#include <pcl/common/eigen.h>
+
 namespace pcl
 {
   /** \brief CloudProperties stores a list of \b optional point cloud properties such as:

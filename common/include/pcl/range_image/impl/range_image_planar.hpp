@@ -34,7 +34,7 @@
  */
 
 #include <pcl/pcl_macros.h>
-#include <Eigen/Geometry>
+#include <pcl/common/eigen.h>
 
 namespace pcl
 {

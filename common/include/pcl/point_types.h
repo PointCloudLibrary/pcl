@@ -40,7 +40,7 @@
 #define PCL_DATA_TYPES_H_
 
 #include <pcl/pcl_macros.h>
-#include <Eigen/Core>
+#include <pcl/common/eigen.h>
 #include <bitset>
 #include <vector>
 #include <pcl/ros/register_point_struct.h>
