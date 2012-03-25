@@ -123,9 +123,9 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::computeModelCoefficients (
   // cone radius
   model_coefficients[6] = opening_angle;
 
-  if (model_coefficients[6] != -DBL_MAX && model_coefficients[6] < min_angle_)
+  if (model_coefficients[6] != -std::numeric_limits<double>::max() && model_coefficients[6] < min_angle_)
     return (false);
-  if (model_coefficients[6] !=  DBL_MAX && model_coefficients[6] > max_angle_)
+  if (model_coefficients[6] !=  std::numeric_limits<double>::max() && model_coefficients[6] > max_angle_)
     return (false);
 
   return (true);
@@ -509,9 +509,9 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::isModelValid (const Eigen::Vecto
       return (false);
   }
 
-  if (model_coefficients[6] != -DBL_MAX && model_coefficients[6] < min_angle_)
+  if (model_coefficients[6] != -std::numeric_limits<double>::max() && model_coefficients[6] < min_angle_)
     return (false);
-  if (model_coefficients[6] !=  DBL_MAX && model_coefficients[6] > max_angle_)
+  if (model_coefficients[6] !=  std::numeric_limits<double>::max() && model_coefficients[6] > max_angle_)
     return (false);
 
   return (true);

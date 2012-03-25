@@ -45,7 +45,7 @@ template <typename PointT> bool
 pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
 {
   // Warn and exit if no threshold was set
-  if (threshold_ == DBL_MAX)
+  if (threshold_ == std::numeric_limits<double>::max())
   {
     PCL_ERROR ("[pcl::RandomizedRandomSampleConsensus::computeModel] No threshold set!\n");
     return (false);

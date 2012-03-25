@@ -324,9 +324,9 @@ pcl::SampleConsensusModelCircle2D<PointT>::isModelValid (const Eigen::VectorXf &
     return (false);
   }
 
-  if (radius_min_ != -DBL_MAX && model_coefficients[2] < radius_min_)
+  if (radius_min_ != -std::numeric_limits<double>::max() && model_coefficients[2] < radius_min_)
     return (false);
-  if (radius_max_ != DBL_MAX && model_coefficients[2] > radius_max_)
+  if (radius_max_ != std::numeric_limits<double>::max() && model_coefficients[2] > radius_max_)
     return (false);
 
   return (true);

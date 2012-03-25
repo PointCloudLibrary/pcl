@@ -75,7 +75,7 @@ namespace pcl
         model_coefficients_ (), 
         probability_ (0.99), 
         iterations_ (0), 
-        threshold_ (DBL_MAX), 
+        threshold_ (std::numeric_limits<double>::max()),
         max_iterations_ (1000), 
         rng_alg_ (), 
         rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))

@@ -83,7 +83,7 @@ namespace pcl
         * \param[in] cloud the input point cloud dataset
         */
       SampleConsensusModelCone (const PointCloudConstPtr &cloud) : 
-        SampleConsensusModel<PointT> (cloud), axis_ (Eigen::Vector3f::Zero ()), eps_angle_ (0), min_angle_ (-DBL_MAX), max_angle_ (DBL_MAX),
+        SampleConsensusModel<PointT> (cloud), axis_ (Eigen::Vector3f::Zero ()), eps_angle_ (0), min_angle_ (-std::numeric_limits<double>::max()), max_angle_ (std::numeric_limits<double>::max()),
         tmp_inliers_ ()
       {
       }
@@ -94,7 +94,7 @@ namespace pcl
         */
       SampleConsensusModelCone (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : 
         SampleConsensusModel<PointT> (cloud, indices),
-        axis_ (Eigen::Vector3f::Zero ()), eps_angle_ (0), min_angle_ (-DBL_MAX), max_angle_ (DBL_MAX),
+        axis_ (Eigen::Vector3f::Zero ()), eps_angle_ (0), min_angle_ (-std::numeric_limits<double>::max()), max_angle_ (std::numeric_limits<double>::max()),
         tmp_inliers_ ()
       {
       }

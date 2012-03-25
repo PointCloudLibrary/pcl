@@ -45,14 +45,14 @@ template <typename PointT> bool
 pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
 {
   // Warn and exit if no threshold was set
-  if (threshold_ == DBL_MAX)
+  if (threshold_ == std::numeric_limits<double>::max())
   {
     PCL_ERROR ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] No threshold set!\n");
     return (false);
   }
 
   iterations_ = 0;
-  double d_best_penalty = DBL_MAX;
+  double d_best_penalty = std::numeric_limits<double>::max();
   double k = 1.0;
 
   std::vector<int> best_model;
