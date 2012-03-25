@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,23 +33,22 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * ww
+ * $Id: pfh.hpp 5027 2012-03-12 03:10:45Z rusu $
+ *
  */
-
 #ifndef PCL_ESF_H_
 #define PCL_ESF_H_
 
-#include "pcl/features/feature.h"
+#include <pcl/features/feature.h>
 #define GRIDSIZE 64
 #define GRIDSIZE_H GRIDSIZE/2
-#include "boost/multi_array.hpp"
+#include <boost/multi_array.hpp>
 #include <vector>
+
 namespace pcl
 {
   /** \brief @b ESFEstimation estimates the ensemble of shape functions descriptors for a given point cloud
     * dataset containing points. Shape functions are D2, D3, A3.  For more information about the ESF descriptor, see:
-    *
-    *
     * \author Walter Wohlkinger
     * \ingroup features
     */
@@ -56,27 +57,25 @@ namespace pcl
   class ESFEstimation: public Feature<PointInT, PointOutT>
   {
     public:
-    using Feature<PointInT, PointOutT>::feature_name_;
-    using Feature<PointInT, PointOutT>::getClassName;
-    using Feature<PointInT, PointOutT>::indices_;
-    using Feature<PointInT, PointOutT>::k_;
-    using Feature<PointInT, PointOutT>::search_radius_;
-    using Feature<PointInT, PointOutT>::input_;
-    using Feature<PointInT, PointOutT>::surface_;
+      using Feature<PointInT, PointOutT>::feature_name_;
+      using Feature<PointInT, PointOutT>::getClassName;
+      using Feature<PointInT, PointOutT>::indices_;
+      using Feature<PointInT, PointOutT>::k_;
+      using Feature<PointInT, PointOutT>::search_radius_;
+      using Feature<PointInT, PointOutT>::input_;
+      using Feature<PointInT, PointOutT>::surface_;
 
       typedef typename pcl::PointCloud<PointInT> PointCloudIn;
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
       /** \brief Empty constructor. */
-      ESFEstimation ()
+      ESFEstimation () : lut_ (), local_cloud_ ()
       {
         feature_name_ = "ESFEstimation";
-        lut.resize(boost::extents[GRIDSIZE][GRIDSIZE][GRIDSIZE]);
+        lut_.resize (boost::extents[GRIDSIZE][GRIDSIZE][GRIDSIZE]);
         search_radius_ = 0;
         k_ = 5;
       }
-
-
 
       /** \brief Estimate the Ensebmel of Shape Function (ESF) descriptors at a set of points given by
         * <setInputCloud (),
@@ -87,24 +86,41 @@ namespace pcl
 
     protected:
 
-      int      lci(const int x1, const int y1, const int z1, const int x2, const int y2, const int z2, float &ratio, int &incnt, int &pointcount);
-      void     computeESF (PointCloudIn &pc, std::vector<float> &hist);
-      void     voxelize9 (PointCloudIn &cluster);
-      void     cleanup9 (PointCloudIn &cluster);
-      void     scale_points_unit_sphere (const pcl::PointCloud<PointInT> &pc, float scalefactor, Eigen::Vector4f& centroid);
+      /** \brief ... */
+      int
+      lci (const int x1, const int y1, const int z1, 
+           const int x2, const int y2, const int z2, 
+           float &ratio, int &incnt, int &pointcount);
+     
+      /** \brief ... */
+      void
+      computeESF (PointCloudIn &pc, std::vector<float> &hist);
+      
+      /** \brief ... */
+      void
+      voxelize9 (PointCloudIn &cluster);
+      
+      /** \brief ... */
+      void
+      cleanup9 (PointCloudIn &cluster);
 
-
+      /** \brief ... */
+      void
+      scale_points_unit_sphere (const pcl::PointCloud<PointInT> &pc, float scalefactor, Eigen::Vector4f& centroid);
 
     private:
 
-      boost::multi_array<int, 3> lut;
-      PointCloudIn local_cloud;
+      /** \brief ... */
+      boost::multi_array<int, 3> lut_;
+      
+      /** \brief ... */
+      PointCloudIn local_cloud_;
+
       /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
         * \param[out] output the output point cloud
         */
       void
       computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
-
   };
 }
 
