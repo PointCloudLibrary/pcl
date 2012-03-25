@@ -35,13 +35,10 @@
  */
 
 #include <cstddef>
-#include <Eigen/StdVector>
 #include <iostream>
-using std::cout;
-using std::cerr;
 #include <cmath>
 #include <set>
-
+#include <pcl/common/eigen.h>
 #include <pcl/range_image/range_image.h>
 #include <pcl/common/transformation_from_correspondences.h>
 
@@ -104,7 +101,6 @@ RangeImage::getCoordinateFrameTransformation (RangeImage::CoordinateFrame coordi
       transformation.setIdentity ();
       break;
   }
-  //std::cout << PVARN (transformation * Eigen::Vector3f (1,2,3));
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -184,7 +180,6 @@ RangeImage::integrateFarRanges (const PointCloud<PointWithViewpoint>& far_ranges
     neighbor_x[1]=floor_x; neighbor_y[1]=ceil_y;
     neighbor_x[2]=ceil_x;  neighbor_y[2]=floor_y;
     neighbor_x[3]=ceil_x;  neighbor_y[3]=ceil_y;
-    //std::cout << x_real<<","<<y_real<<": ";
     
     for (int i=0; i<4; ++i)
     {
@@ -203,7 +198,6 @@ void
 RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left) {
   //MEASURE_FUNCTION_TIME;
   
-  //std::cout << PVARC (top) << PVARC (right) << PVARC (bottom) << PVARN (left);
   bool topIsDone=true, rightIsDone=true, bottomIsDone=true, leftIsDone=true;
   if (top < 0) {
     top=-1;
@@ -237,7 +231,6 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
   // Check if range image is empty
   if (top > bottom) 
   {
-    std::cerr << __PRETTY_FUNCTION__ << ": Range image is empty.\n";
     points.clear ();
     width = height = 0;
     return;
@@ -266,10 +259,8 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
       if (pcl_isfinite (points[y*width + left].range))
         leftIsDone = true;
   } 
-  //cout << "borderSize is "<<borderSize<<"\n";
   left-=borderSize; top-=borderSize; right+=borderSize; bottom+=borderSize;
   
-  //cout << top<<","<<right<<","<<bottom<<","<<left<<"\n";
   
   // Create copy without copying the old points - vector::swap only copies a few pointers, not the content
   std::vector<PointWithRange, Eigen::aligned_allocator<PointWithRange> > tmpPoints;
@@ -411,8 +402,6 @@ RangeImage::getBlurredImageUsingIntegralImage (int blur_radius, float* integral_
                              top_right_valid_points;
       new_point.range = (bottom_right_value + top_left_value - bottom_left_value - top_right_value) / 
                         static_cast<float> (valid_points_num);
-      //cout << PVARC (new_point.range)<<PVARC (top_left_value)<<PVARC (top_right_value)<<PVARC (bottom_left_value)
-      //     << PVARC (bottom_right_value);
     }
   }
   blurred_image.recalculate3DPointPositions ();
@@ -679,8 +668,6 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
         if (max_cell_x<min_cell_x || max_cell_y<min_cell_y)
           continue;
         
-        //cout << "Current triangle covers area of size "<<max_cell_x-min_cell_x<<"x"<<max_cell_y-min_cell_y<<".\n";
-        
         // We will now do the following:
         //   For each cell in the rectangle defined by the four values above,
         //   we test if it is in the original triangle (in 2D).
@@ -708,18 +695,10 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
                   v = (dot00 * dot12 - dot01 * dot02) * invDenom;
             bool point_in_triangle = (u > -0.01) && (v >= -0.01) && (u + v <= 1.01);
             
-            //cout << "Is point ("<<current_cell[0]<<","<<current_cell[1]<<") in triangle "
-                 //<< " ("<<cell1[0]<<","<<cell1[1]<<"), "
-                 //<< " ("<<cell2[0]<<","<<cell2[1]<<"), "
-                 //<< " ("<<cell3[0]<<","<<cell3[1]<<"): "
-                 //<< (point_in_triangle ? "Yes":"No") << "\n";
-            
             if (!point_in_triangle)
               continue;
             
             float new_value = cell1_z + u* (cell3_z-cell1_z) + v* (cell2_z-cell1_z);
-            //if (fabs (new_value) > max_dist)
-              //cerr << "WTF:"<<PVARN (new_value)<<"\n";
             
             float& value = surface_patch[cell_y*pixel_size + cell_x];
             if (pcl_isinf (value))
@@ -761,7 +740,6 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
             float range_difference = getRangeDifference (fake_point);
             if (range_difference > max_dist)
             {
-              //if (debug) cout << PVARN (range_difference);
               value = std::numeric_limits<float>::infinity ();
               is_background = true;
               break;
@@ -821,14 +799,12 @@ RangeImage::getNormalBasedUprightTransformation (const Eigen::Vector3f& point, f
       if (i<=2*radius) ++x2; else if (i<=4*radius) ++y2; else if (i<=6*radius) --x2; else --y2;
       if (!isValid (x2, y2))
       {
-        //cout << "v";
         continue;
       }
       getPoint (x2, y2, neighbor);
       float distance_squared = (neighbor-point).squaredNorm ();
       if (distance_squared > max_dist_squared)
       {
-        //cout << "d";
         continue;
       }
       still_in_range = true;
@@ -968,11 +944,8 @@ RangeImage::extractFarRanges (const sensor_msgs::PointCloud2& point_cloud_data,
   
   if (x_idx<0 || y_idx<0 || z_idx<0 || vp_x_idx<0 || vp_y_idx<0 || vp_z_idx<0 || distance_idx<0)
   {
-    //cout << PVARC (x_idx)<<PVARC (y_idx)<<PVARC (z_idx)<<PVARC (vp_x_idx)
-    //     << PVARC (vp_y_idx)<<PVARC (vp_z_idx)<<PVARN (distance_idx);
     return;
   }
-  //cout << "Point cloud might have far ranges\n";
   
   int point_step = point_cloud_data.point_step;
   const unsigned char* data = &point_cloud_data.data[0];
@@ -997,7 +970,6 @@ RangeImage::extractFarRanges (const sensor_msgs::PointCloud2& point_cloud_data,
     
     if (!pcl_isfinite (x) && pcl_isfinite (distance))
     {
-      //std::cout << "Found max range.\n";
       PointWithViewpoint point;
       point.x=distance; point.y=y; point.z=z;
       point.vp_x=vp_x; point.vp_y=vp_y; point.vp_z=vp_z;
