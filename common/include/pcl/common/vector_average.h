@@ -37,7 +37,6 @@
 #ifndef PCL_VECTOR_AVERAGE_H
 #define PCL_VECTOR_AVERAGE_H
 
-#include <Eigen/Core>
 #include <pcl/common/eigen.h>
 
 namespace pcl 

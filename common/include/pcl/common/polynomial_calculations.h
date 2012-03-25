@@ -36,8 +36,7 @@
 #ifndef PCL_POLYNOMIAL_CALCULATIONS_H_
 #define PCL_POLYNOMIAL_CALCULATIONS_H_
 
-#include <Eigen/Core>
-#include <Eigen/Geometry>
+#include <pcl/common/eigen.h>
 #include <pcl/common/bivariate_polynomial.h>
 
 namespace pcl 

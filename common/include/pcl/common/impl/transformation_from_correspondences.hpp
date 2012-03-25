@@ -34,14 +34,12 @@
  * $Id$
  *
  */
-#include <Eigen/SVD> 
-#include <Eigen/LU> 
-#include <Eigen/Dense>
 
-namespace pcl {
+#include <pcl/common/eigen.h>
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 inline void
-TransformationFromCorrespondences::reset ()
+pcl::TransformationFromCorrespondences::reset ()
 {
   no_of_samples_ = 0;
   accumulated_weight_ = 0.0;
@@ -50,9 +48,10 @@ TransformationFromCorrespondences::reset ()
   covariance_.fill(0);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 inline void
-TransformationFromCorrespondences::add (const Eigen::Vector3f& point, const Eigen::Vector3f& corresponding_point,
-                                        float weight)
+pcl::TransformationFromCorrespondences::add (const Eigen::Vector3f& point, const Eigen::Vector3f& corresponding_point,
+                                             float weight)
 {
   if (weight==0.0f)
     return;
@@ -68,8 +67,9 @@ TransformationFromCorrespondences::add (const Eigen::Vector3f& point, const Eige
   mean2_ += alpha*(diff2);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 inline Eigen::Affine3f
-TransformationFromCorrespondences::getTransformation ()
+pcl::TransformationFromCorrespondences::getTransformation ()
 {
   //Eigen::JacobiSVD<Eigen::Matrix<float, 3, 3> > svd (covariance_, Eigen::ComputeFullU | Eigen::ComputeFullV);
   Eigen::JacobiSVD<Eigen::Matrix<float, 3, 3> > svd (covariance_, Eigen::ComputeFullU | Eigen::ComputeFullV);
@@ -89,7 +89,5 @@ TransformationFromCorrespondences::getTransformation ()
   ret(2,0)=r(2,0); ret(2,1)=r(2,1); ret(2,2)=r(2,2); ret(2,3)=t(2);
   ret(3,0)=0.0f;   ret(3,1)=0.0f;   ret(3,2)=0.0f;   ret(3,3)=1.0f;
   
-  return ret;
+  return (ret);
 }
-
-}  // END namespace

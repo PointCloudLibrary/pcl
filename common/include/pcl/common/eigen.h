@@ -1,8 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
  *  Copyright (C) 2010 Gael Guennebaud <gael.guennebaud@inria.fr>
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -71,9 +73,22 @@
 #define NOMINMAX
 #endif
 
+#if defined __GNUC__
+#  pragma GCC system_header
+#elif defined __SUNPRO_CC
+#  pragma disable_warn
+#elif defined _MSC_VER
+#  pragma warning(push, 1)
+#endif
+
+#include <Eigen/StdVector>
 #include <Eigen/Core>
 #include <Eigen/Eigenvalues>
 #include <Eigen/Geometry>
+#include <Eigen/SVD>
+#include <Eigen/LU>
+#include <Eigen/Dense>
+#include <Eigen/Eigenvalues>
 
 namespace pcl
 {
@@ -119,8 +134,7 @@ namespace pcl
     roots (1) = 0.5f * (b - sd);
   }
 
-  /**
-    * \brief computes the roots of the characteristic polynomial of the input matrix m, which are the eigenvalues
+  /** \brief computes the roots of the characteristic polynomial of the input matrix m, which are the eigenvalues
     * \param[in] m input matrix
     * \param[out] roots roots of the characteristic polynomial of the input matrix m, which are the eigenvalues
     */
@@ -189,11 +203,11 @@ namespace pcl
     }
   }
 
-  /**
-    * \brief determine the smallest eigenvalue and its corresponding eigenvector
-    * \param mat input matrix that needs to be symmetric and positive semi definite
-    * \param eigenvalue the smallest eigenvalue of the input matrix
-    * \param eigenvector the corresponding eigenvector to the smallest eigenvalue of the input matrix
+  /** \brief determine the smallest eigenvalue and its corresponding eigenvector
+    * \param[in] mat input matrix that needs to be symmetric and positive semi definite
+    * \param[out] eigenvalue the smallest eigenvalue of the input matrix
+    * \param[out] eigenvector the corresponding eigenvector to the smallest eigenvalue of the input matrix
+    * \ingroup common
     */
   template <typename Matrix, typename Vector> inline void
   eigen22 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& eigenvector)
@@ -218,6 +232,7 @@ namespace pcl
     * \param[in] mat input matrix that needs to be symmetric and positive semi definite
     * \param[out] eigenvectors the corresponding eigenvector to the smallest eigenvalue of the input matrix
     * \param[out] eigenvalues the smallest eigenvalue of the input matrix
+    * \ingroup common
     */
   template <typename Matrix, typename Vector> inline void
   eigen22 (const Matrix& mat, Matrix& eigenvectors, Vector& eigenvalues)
@@ -546,7 +561,7 @@ namespace pcl
     evals *= scale;
   }
 
-  /** \brief calculates the inverse of a 2x2 matrix
+  /** \brief Calculate the inverse of a 2x2 matrix
     * \param[in] matrix matrix to be inverted
     * \param[out] inverse the resultant inverted matrix
     * \note only the upper triangular part is taken into account => non symmetric matrices will give wrong results
@@ -571,7 +586,7 @@ namespace pcl
     return det;
   }
 
-  /** \brief calculates the inverse of a 3x3 symmetric matrix.
+  /** \brief Calculate the inverse of a 3x3 symmetric matrix.
     * \param[in] matrix matrix to be inverted
     * \param[out] inverse the resultant inverted matrix
     * \note only the upper triangular part is taken into account => non symmetric matrices will give wrong results
@@ -612,7 +627,7 @@ namespace pcl
     return det;
   }
 
-  /** \brief calculates the inverse of a general 3x3 matrix.
+  /** \brief Calculate the inverse of a general 3x3 matrix.
     * \param[in] matrix matrix to be inverted
     * \param[out] inverse the resultant inverted matrix
     * \return determinant of the original matrix => if 0 no inverse exists => result is invalid
@@ -802,5 +817,11 @@ namespace pcl
 }
 
 #include <pcl/common/impl/eigen.hpp>
+
+#if defined __SUNPRO_CC
+#  pragma enable_warn
+#elif defined _MSC_VER
+#  pragma warning(pop)
+#endif
 
 #endif  //#ifndef PCL_EIGEN_H_
