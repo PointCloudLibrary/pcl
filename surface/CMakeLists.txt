@@ -42,7 +42,7 @@ if(build)
             src/vtk_smoothing/vtk_mesh_subdivision.cpp
             src/vtk_smoothing/vtk_mesh_smoothing_laplacian.cpp
             src/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.cpp)
-        set(VTK_SMOOTHING_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets)
+        set(VTK_SMOOTHING_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkGraphics)
     endif()
     
     ####### NURBS FITTING by thomas.moerwald #########

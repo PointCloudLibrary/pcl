@@ -1,6 +1,6 @@
 set (SUBSYS_NAME tools)
 set (SUBSYS_DESC "Useful PCL-based command line tools")
-set (SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree registration visualization recognition)
+set (SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree registration visualization recognition geometry)
 set (DEFAULT ON)
 set (REASON "")
 
@@ -125,7 +125,7 @@ if (build)
       target_link_libraries(pcl_mesh_sampling pcl_common pcl_io pcl_visualization pcl_filters vtkCommon)
       
       PCL_ADD_EXECUTABLE(pcl_virtual_scanner ${SUBSYS_NAME} virtual_scanner.cpp)
-      target_link_libraries(pcl_virtual_scanner pcl_common pcl_io pcl_filters pcl_visualization vtkCommon)
+      target_link_libraries(pcl_virtual_scanner pcl_common pcl_io pcl_filters pcl_visualization vtkCommon vtkGraphics)
       
       if(BUILD_OPENNI AND OPENNI_FOUND)
         PCL_ADD_EXECUTABLE(pcl_openni_save_image ${SUBSYS_NAME} openni_save_image.cpp)
