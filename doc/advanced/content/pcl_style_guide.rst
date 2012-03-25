@@ -326,34 +326,7 @@ indentation level of the class body and members affected by these qualifiers are
 The following set of rules can be automatically used by various different IDEs,
 editors, etc.
 
-2.6.1. Eclipse
-""""""""""""""
-
-Please us the following `formatting XML file
-<http://dev.pointclouds.org/attachments/download/25/pcl_eclipse_formatting.xml>`_,
-download it to some known location, and then:
-
-* start Eclipse
-* select **Window -> Preferences -> C/C++ -> Code Style**
-* click **Import...**
-* select ``pcl_eclipse_formatting.xml`` from the location you saved it to
-* click **OK**
-
-As you edit a file, Eclipse should use this new profile to format your code
-following the PCL conventions. To reformat an entire file, select **Edit ->
-Format**.
-
-Note: This XML file may not be compatible with all versions of Eclipse. Please
-check if the formatting applies correctly. Specifically, the formatting related
-to templating in C++ can fail.
-
-2.6.2. Uncrustify
-"""""""""""""""""
-
-You can find a config for `Uncrustify <http://uncrustify.sourceforge.net/>`_
-`here <http://dev.pointclouds.org/attachments/download/537/uncrustify.cfg>`_
-
-2.6.3. Emacs
+2.6.1. Emacs
 """"""""""""
 
 You can use the following `PCL C/C++ style file
@@ -368,12 +341,11 @@ download it to some known location and then:
    (load-file "/location/to/pcl-c-style.el")
    (add-hook 'c-mode-common-hook 'pcl-set-c-style)
 
-2.6.4. UniversalIndent
-""""""""""""""""""""""
+2.6.2. Uncrustify
+"""""""""""""""""
 
-TBD...
-
-|
+You can find a semi-finished config for `Uncrustify <http://uncrustify.sourceforge.net/>`_ `here
+<http://dev.pointclouds.org/attachments/download/537/uncrustify.cfg>`_
 
 3. Structuring
 ==============
