@@ -37,10 +37,10 @@
 
 #include <pcl/pcl_exports.h>
 
-#include "pcl/cuda/point_cloud.h"
-//#include "pcl/cuda/io/extract_indices.h"
-#include "pcl/cuda/io/predicate.h"
-#include <thrust/copy.h>
+#include <pcl/cuda/point_cloud.h>
+//#include <pcl/cuda/io/extract_indices.h>
+#include <pcl/cuda/io/predicate.h>
+#include <pcl/cuda/thrust.h>
 
 namespace pcl
 {

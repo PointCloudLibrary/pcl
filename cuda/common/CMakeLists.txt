@@ -15,6 +15,7 @@ set(incs
     include/pcl/cuda/cutil_math.h
     include/pcl/cuda/point_cloud.h
     include/pcl/cuda/point_types.h
+    include/pcl/cuda/thrust.h
     include/pcl/cuda/time_gpu.h
     include/pcl/cuda/time_cpu.h
     include/pcl/cuda/cutil_inline.h

@@ -2,7 +2,7 @@ set(SUBSYS_NAME cuda)
 set(SUBSYS_DESC "Point cloud CUDA libraries")
 set(SUBSYS_DEPS )
 
-# pcl_cuda depends on PCL, CUDA, OpenNI, VTK, maybe: OpenCV
+# pcl_cuda depends on PCL, CUDA, OpenNI, VTK
 
 # Find CUDA
 set(CUDA_FIND_QUIETLY TRUE)

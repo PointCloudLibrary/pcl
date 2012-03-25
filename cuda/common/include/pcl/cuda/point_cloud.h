@@ -39,10 +39,7 @@
 #define PCL_CUDA_POINT_CLOUD_H_
 
 #include <pcl/cuda/point_types.h>
-
-#include <thrust/host_vector.h>
-#include <thrust/device_vector.h>
-
+#include <pcl/cuda/thrust.h>
 #include <boost/shared_ptr.hpp>
 
 namespace pcl
