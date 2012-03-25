@@ -37,7 +37,7 @@
 #ifndef PCL_TRANSFORMATION_FROM_CORRESPONDENCES_H
 #define PCL_TRANSFORMATION_FROM_CORRESPONDENCES_H
 
-#include <Eigen/Core>
+#include <pcl/common/eigen.h>
 
 namespace pcl 
 {

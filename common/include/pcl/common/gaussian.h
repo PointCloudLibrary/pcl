@@ -41,8 +41,7 @@
 #define PCL_GAUSSIAN_KERNEL
 
 #include <sstream>
-#include <Eigen/Core>
-
+#include <pcl/common/eigen.h>
 #include <pcl/point_cloud.h>
 #include <boost/function.hpp>
 

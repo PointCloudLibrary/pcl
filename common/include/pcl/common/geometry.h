@@ -37,7 +37,7 @@
 #ifndef PCL_GEOMETRY_H_
 #define PCL_GEOMETRY_H_
 
-#include <Eigen/Core>
+#include <pcl/common/eigen.h>
 
 /**
   * \file geometry.h

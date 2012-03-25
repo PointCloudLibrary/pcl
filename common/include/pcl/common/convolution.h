@@ -40,7 +40,7 @@
 #ifndef PCL_COMMON_CONVOLUTION_H_
 #define PCL_COMMON_CONVOLUTION_H_
 
-#include <Eigen/Core>
+#include <pcl/common/eigen.h>
 #include <pcl/common/point_operators.h>
 #include <pcl/point_cloud.h>
 #include <pcl/exceptions.h>
