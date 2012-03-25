@@ -101,7 +101,7 @@ if (build)
       target_link_libraries(mesh_sampling pcl_common pcl_io pcl_visualization pcl_filters vtkCommon)
       
       PCL_ADD_EXECUTABLE(virtual_scanner ${SUBSYS_NAME} virtual_scanner.cpp)
-      target_link_libraries(virtual_scanner pcl_common pcl_io pcl_filters pcl_visualization vtkCommon)
+      target_link_libraries(virtual_scanner pcl_common pcl_io pcl_filters pcl_visualization vtkCommon vtkGraphics)
       
       if(BUILD_OPENNI AND OPENNI_FOUND)
         PCL_ADD_EXECUTABLE(openni_save_image ${SUBSYS_NAME} openni_save_image.cpp)
