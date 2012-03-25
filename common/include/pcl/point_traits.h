@@ -44,6 +44,7 @@
 #include <boost/type_traits/remove_all_extents.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/mpl/assert.hpp>
+#include <boost/mpl/bool.hpp>
 
 // We're doing a lot of black magic with Boost here, so disable warnings in Maintainer mode, as we will never
 // be able to fix them anyway
@@ -174,8 +175,8 @@ namespace pcl
 
       "Priming the pump" with the trivial assertion below somehow fixes the problem...
      */
-    BOOST_MPL_ASSERT_MSG((!bool (mpl_::bool_<false>::value)), WTF_GCC443, (bool));
-
+    //BOOST_MPL_ASSERT_MSG((!bool (mpl_::bool_<false>::value)), WTF_GCC443, (bool));
+    BOOST_MPL_ASSERT_MSG((!bool (boost::mpl::bool_<false>::value)), WTF_GCC443, (bool));
   } //namespace traits
 
   // Return true if the PointField matches the expected name and data type.
