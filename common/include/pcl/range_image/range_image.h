@@ -37,19 +37,16 @@
 #ifndef PCL_RANGE_IMAGE_H_
 #define PCL_RANGE_IMAGE_H_
 
+#include <pcl/common/eigen.h>
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/common/common_headers.h>
-#include <Eigen/Core>
-#include <Eigen/Geometry>
 #include <pcl/common/vector_average.h>
 #include <typeinfo>
 
-
 namespace pcl
 {
-
   /** \brief RangeImage is derived from pcl/PointCloud and provides functionalities with focus on situations where
     *  a 3D scene was captured from a specific view point. 
     * \author Bastian Steder

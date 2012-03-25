@@ -40,8 +40,7 @@
 #ifndef PCL_POINT_CLOUD_H_
 #define PCL_POINT_CLOUD_H_
 
-#include <Eigen/StdVector>
-#include <Eigen/Geometry>
+#include <pcl/common/eigen.h>
 #include <cstddef>
 #include <std_msgs/Header.h>
 #include <pcl/pcl_macros.h>

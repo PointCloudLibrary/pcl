@@ -38,9 +38,8 @@
 #ifndef PCL_COMMON_CORRESPONDENCE_H_
 #define PCL_COMMON_CORRESPONDENCE_H_
 
-#include <Eigen/Core>
 #include <boost/shared_ptr.hpp>
-#include <Eigen/Geometry>
+#include <pcl/common/eigen.h>
 #include <vector>
 
 namespace pcl
@@ -122,6 +121,9 @@ namespace pcl
   {
     Eigen::Vector3f point1;  //!< The 3D position of the point in the first coordinate frame
     Eigen::Vector3f point2;  //!< The 3D position of the point in the second coordinate frame
+
+    /** \brief Empty constructor. */
+    PointCorrespondence3D () : point1 (), point2 () {}
 
     /** \brief Empty destructor. */
     virtual ~PointCorrespondence3D () {}

@@ -41,7 +41,7 @@
 
 #include <cstddef>
 // Eigen includes
-#include <Eigen/StdVector>
+#include <pcl/common/eigen.h>
 // STD includes
 #include <vector>
 
