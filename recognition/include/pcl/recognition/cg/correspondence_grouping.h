@@ -122,6 +122,8 @@ namespace pcl
       /** \brief The scene cloud. */
       SceneCloudConstPtr scene_;
 
+      using PCLBase<PointModelT>::input_;
+
       /** \brief The correspondences between points in the input and the scene datasets. */
       CorrespondencesConstPtr model_scene_corrs_;
 
@@ -150,6 +152,12 @@ namespace pcl
         if (!scene_)
         {
           PCL_ERROR ("[initCompute] Scene not set.\n");
+          return (false);
+        }
+
+        if (!input_)
+        {
+          PCL_ERROR ("[initCompute] Input not set.\n");
           return (false);
         }
 
