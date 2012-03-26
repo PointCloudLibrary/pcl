@@ -214,6 +214,7 @@ namespace pcl
   class SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf, PointRFT> : public SHOTEstimationBase<PointInT, PointNT, pcl::SHOT, PointRFT>
   {
     public:
+      using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT, PointRFT>::getClassName;
       using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT, PointRFT>::input_;
       using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT, PointRFT>::indices_;
       using SHOTEstimationBase<PointInT, PointNT, pcl::SHOT, PointRFT>::k_;

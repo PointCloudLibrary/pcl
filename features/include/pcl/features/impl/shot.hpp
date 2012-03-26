@@ -189,8 +189,8 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::createBinDistan
   bin_distance_shape.resize (indices.size ());
 
   const PointRFT& current_frame = frames_->points[index];
-  if (!pcl_isfinite (current_frame.rf[0]) || !pcl_isfinite (current_frame.rf[4]) || !pcl_isfinite (current_frame.rf[11]))
-    return;
+  //if (!pcl_isfinite (current_frame.rf[0]) || !pcl_isfinite (current_frame.rf[4]) || !pcl_isfinite (current_frame.rf[11]))
+    //return;
 
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
@@ -616,8 +616,8 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT>::computePoi
   }
 
   const PointRFT& current_frame = frames_->points[index];
-  if (!pcl_isfinite (current_frame.rf[0]) || !pcl_isfinite (current_frame.rf[4]) || !pcl_isfinite (current_frame.rf[11]))
-    return;
+  //if (!pcl_isfinite (current_frame.rf[0]) || !pcl_isfinite (current_frame.rf[4]) || !pcl_isfinite (current_frame.rf[11]))
+    //return;
 
   //If shape description is enabled, compute the bins activated by each neighbor of the current feature in the shape histogram
   if (b_describe_shape_)
@@ -782,7 +782,18 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT>::computeFea
   // Iterating over the entire index vector
   for (size_t idx = 0; idx < indices_->size (); ++idx)
   {
+    bool lrf_is_nan = false;
+    const PointRFT& current_frame = (*frames_)[idx];
+    if (!pcl_isfinite (current_frame.rf[0]) ||
+        !pcl_isfinite (current_frame.rf[4]) ||
+        !pcl_isfinite (current_frame.rf[11]))
+    {
+      PCL_WARN ("[pcl::%s::computeFeature] Point index %d does not have a valid local reference frame!\n", getClassName ().c_str (), (*indices_)[idx]);
+      lrf_is_nan = true;
+    }
+
     if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+        lrf_is_nan ||
         this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
     {
       // Copy into the resultant cloud
@@ -842,7 +853,18 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, Eigen::MatrixXf, PointRFT>::comp
   // Iterating over the entire index vector
   for (size_t idx = 0; idx < indices_->size (); ++idx)
   {
+    bool lrf_is_nan = false;
+    const PointRFT& current_frame = (*frames_)[idx];
+    if (!pcl_isfinite (current_frame.rf[0]) ||
+        !pcl_isfinite (current_frame.rf[4]) ||
+        !pcl_isfinite (current_frame.rf[11]))
+    {
+      PCL_WARN ("[pcl::%s::computeFeatureEigen] Point index %d does not have a valid local reference frame!\n", getClassName ().c_str (), (*indices_)[idx]);
+      lrf_is_nan = true;
+    }
+
     if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+        lrf_is_nan ||
         this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
     {
       output.points.row (idx).setConstant (std::numeric_limits<float>::quiet_NaN ());
@@ -896,7 +918,18 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::computeFeature 
   // Iterating over the entire index vector
   for (size_t idx = 0; idx < indices_->size (); ++idx)
   {
+    bool lrf_is_nan = false;
+    const PointRFT& current_frame = (*frames_)[idx];
+    if (!pcl_isfinite (current_frame.rf[0]) ||
+        !pcl_isfinite (current_frame.rf[4]) ||
+        !pcl_isfinite (current_frame.rf[11]))
+    {
+      PCL_WARN ("[pcl::%s::computeFeature] Point index %d does not have a valid local reference frame!\n", getClassName ().c_str (), (*indices_)[idx]);
+      lrf_is_nan = true;
+    }
+
     if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+        lrf_is_nan ||
         this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
     {
       // Copy into the resultant cloud
@@ -907,7 +940,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::computeFeature 
 
       output.is_dense = false;
       continue;
-     }
+    }
 
     // Estimate the SHOT at each patch
     computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot_);
@@ -953,7 +986,18 @@ pcl::SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf, PointRFT>::computeFe
   // Iterating over the entire index vector
   for (size_t idx = 0; idx < indices_->size (); ++idx)
   {
+    bool lrf_is_nan = false;
+    const PointRFT& current_frame = (*frames_)[idx];
+    if (!pcl_isfinite (current_frame.rf[0]) ||
+        !pcl_isfinite (current_frame.rf[4]) ||
+        !pcl_isfinite (current_frame.rf[11]))
+    {
+      PCL_WARN ("[pcl::%s::computeFeature] Point index %d does not have a valid local reference frame!\n", getClassName ().c_str (), (*indices_)[idx]);
+      lrf_is_nan = true;
+    }
+
     if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+        lrf_is_nan ||
         this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
     {
       output.points.row (idx).setConstant (std::numeric_limits<float>::quiet_NaN ());
