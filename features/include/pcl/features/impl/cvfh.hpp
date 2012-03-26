@@ -205,7 +205,8 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
 
   std::vector<pcl::PointIndices> clusters;
 
-  if(normals_filtered_cloud->points.size() >= min_points_) {
+  if(normals_filtered_cloud->points.size() >= min_points_)
+  {
     //recompute normals and use them for clustering
     KdTreePtr normals_tree_filtered (new pcl::search::KdTree<pcl::PointNormal> (false));
     normals_tree_filtered->setInputCloud (normals_filtered_cloud);
