@@ -64,43 +64,31 @@ TEST (PointOperators, PointXYZI)
   EXPECT_EQ (p2.intensity, p3.intensity);
 }
 
-TEST (PointOperators, PointXYZItoIntensity)
+TEST (PointOperators, PointXYZRGB)
 {
   using namespace pcl::common;
-  PointInToPointOut <PointXYZI, float> convert;
-  PointXYZI p0; p0.x = 0.1f; p0.y = 0.2f;  p0.z = 0.3f; p0.intensity = 123;
-  PointXYZI p1; p1.x = 0.05f; p1.y = 0.05f; p1.z = 0.05f; p1.intensity = 133;
-  float p2 = convert (p0 + p1);
+  PointXYZRGB p0; p0.x = 0.1f; p0.y = 0.2f;  p0.z = 0.3f; p0.r = 123; p0.g = 125; p0.b = 127;
+  PointXYZRGB p1; p1.x = 0.05f; p1.y = 0.05f; p1.z = 0.05f; p1.r = 123; p1.g = 125; p1.b = 127;
+  PointXYZRGB p2 = p0 + p1;
 
-  EXPECT_EQ (p2, p0.intensity + p1.intensity);
-  p2 = 0.1f * convert (p1);
-  EXPECT_NEAR (p2, 0.1 * p1.intensity, 1e-4);
-}
-
-TEST (PointOperators, PointXYZRGBtoIntensity)
-{
-  using namespace pcl::common;
-  PointInToPointOut <PointXYZRGB, float> convert;
-  PointXYZRGB p0; p0.x = 0.1f; p0.y = 0.2f;  p0.z = 0.3f; p0.r = 0; p0.g = 127; p0.b = 127;
-  PointXYZRGB p1; p1.x = 0.05f; p1.y = 0.05f; p1.z = 0.05f; p1.r = 0; p1.g = 127; p1.b = 127;
-  float p2 = convert (p0 + p1);
-
-  EXPECT_EQ (p2, static_cast<float> (299*p0.r + 587*p0.g + 114*p0.b)/1000.0f + static_cast<float> (299*p1.r + 587*p1.g + 114*p1.b)/1000.0f);
-  p2 = 0.1f * convert (p1);
-  EXPECT_NEAR (p2, 0.1 * static_cast<float> (299*p1.r + 587*p1.g + 114*p1.b)/1000.0f, 1e-4);
-}
-
-TEST (PointOperators, PointXYZRGBtoPointXYZI)
-{
-  using namespace pcl::common;
-  PointInToPointOut <PointXYZRGB, PointXYZI> convert;
-  PointXYZRGB p0; p0.x = 0.1f; p0.y = 0.2f;  p0.z = 0.3f; p0.r = 0; p0.g = 127; p0.b = 127;
-  PointXYZRGB p1; p1.x = 0.05f; p1.y = 0.05f; p1.z = 0.05f; p1.r = 0; p1.g = 127; p1.b = 127;
-  PointXYZI p2 = convert (p0 + p1);
-
-  EXPECT_EQ (p2.intensity, static_cast<float> (299*p0.r + 587*p0.g + 114*p0.b)/1000.0f + static_cast<float> (299*p1.r + 587*p1.g + 114*p1.b)/1000.0f);
-  p2 = convert (p1) * 0.1f;
-  EXPECT_NEAR (p2.intensity, static_cast<float> (299*p1.r + 587*p1.g + 114*p1.b) / 1000.0f * 0.1, 1e-4);
+  EXPECT_EQ (p2.x, p0.x + p1.x);
+  EXPECT_EQ (p2.y, p0.y + p1.y);
+  EXPECT_EQ (p2.z, p0.z + p1.z);
+  EXPECT_EQ (p2.r, p0.r + p1.r);
+  EXPECT_EQ (p2.g, p0.g + p1.g);
+  EXPECT_EQ (p2.b, p0.b + p1.b);
+  p2 = 0.1f * p1;
+  EXPECT_NEAR (p2.x, 0.1 * p1.x, 1e-4);
+  EXPECT_NEAR (p2.y, 0.1 * p1.y, 1e-4);
+  EXPECT_NEAR (p2.z, 0.1 * p1.z, 1e-4);
+  EXPECT_EQ (p2.r, static_cast<pcl::uint8_t> (0.1 * p1.r));
+  EXPECT_EQ (p2.g, static_cast<pcl::uint8_t> (0.1 * p1.g));
+  EXPECT_EQ (p2.b, static_cast<pcl::uint8_t> (0.1 * p1.b));
+  PointXYZRGB p3 = p1 * 0.1f;
+  EXPECT_EQ_VECTORS (p2.getVector3fMap (), p3.getVector3fMap ());
+  EXPECT_EQ (p2.r, p3.r);
+  EXPECT_EQ (p2.g, p3.g);
+  EXPECT_EQ (p2.b, p3.b);
 }
 
 int
