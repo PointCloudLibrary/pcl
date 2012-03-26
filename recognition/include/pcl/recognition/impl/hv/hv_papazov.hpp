@@ -40,10 +40,22 @@
 template<typename ModelT, typename SceneT> void
 pcl::PapazovHV<ModelT, SceneT>::initialize ()
 {
+
+  //clear stuff
+  recognition_models_.clear();
+  graph_id_model_map_.clear();
+  conflict_graph_.clear();
+  explained_by_RM_.clear();
+  points_explained_by_rm_.clear();
+
   // initialize mask...
   mask_.resize (complete_models_.size ());
   for (size_t i = 0; i < complete_models_.size (); i++)
     mask_[i] = true;
+
+  // initialize explained_by_RM
+  explained_by_RM_.resize(scene_cloud_downsampled_->points.size());
+  points_explained_by_rm_.resize(scene_cloud_downsampled_->points.size());
 
   // initalize model
   for (size_t m = 0; m < complete_models_.size (); m++)

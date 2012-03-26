@@ -185,6 +185,7 @@ namespace pcl
         PCLBase<PointModelT>::setInputCloud (cloud);
         needs_training_ = true;
         hough_space_initialized_ = false;
+        input_rf_.reset();
       }
 
       /** \brief Provide a pointer to the input dataset's reference frames. 
@@ -222,6 +223,7 @@ namespace pcl
       {
         scene_ = scene;
         hough_space_initialized_ = false;
+        scene_rf_.reset();
       }
 
       /** \brief Provide a pointer to the scene dataset's reference frames. 

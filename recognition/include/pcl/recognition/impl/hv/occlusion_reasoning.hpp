@@ -38,12 +38,10 @@
 #define PCL_RECOGNITION_OCCLUSION_REASONING_HPP_
 
 #include <pcl/recognition/hv/occlusion_reasoning.h>
-#include <pcl/common/transforms.h>
-#include <pcl/common/io.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template<typename ModelT, typename SceneT>
-pcl::ZBuffering<ModelT, SceneT>::ZBuffering (int resx, int resy, float f)
+pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::ZBuffering (int resx, int resy, float f)
   : f_ (f)
   , cx_ (resx)
   , cy_ (resy)
@@ -53,7 +51,7 @@ pcl::ZBuffering<ModelT, SceneT>::ZBuffering (int resx, int resy, float f)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template<typename ModelT, typename SceneT>
-pcl::ZBuffering<ModelT, SceneT>::ZBuffering ()
+pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::ZBuffering ()
   : f_ ()
   , cx_ ()
   , cy_ ()
@@ -63,7 +61,7 @@ pcl::ZBuffering<ModelT, SceneT>::ZBuffering ()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template<typename ModelT, typename SceneT>
-pcl::ZBuffering<ModelT, SceneT>::~ZBuffering ()
+pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::~ZBuffering ()
 {
   if (depth_ != NULL)
     delete[] depth_;
@@ -71,7 +69,7 @@ pcl::ZBuffering<ModelT, SceneT>::~ZBuffering ()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template<typename ModelT, typename SceneT> void
-pcl::ZBuffering<ModelT, SceneT>::filter (typename pcl::PointCloud<ModelT>::Ptr & model, typename pcl::PointCloud<ModelT>::Ptr & filtered,
+pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::filter (typename pcl::PointCloud<ModelT>::ConstPtr & model, typename pcl::PointCloud<ModelT>::Ptr & filtered,
                                          float thres)
 {
 
@@ -107,7 +105,7 @@ pcl::ZBuffering<ModelT, SceneT>::filter (typename pcl::PointCloud<ModelT>::Ptr &
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template<typename ModelT, typename SceneT> void
-pcl::ZBuffering<ModelT, SceneT>::computeDepthMap (typename pcl::PointCloud<SceneT>::Ptr & scene, bool compute_focal)
+pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::computeDepthMap (typename pcl::PointCloud<SceneT>::ConstPtr & scene, bool compute_focal)
 {
   //compute the focal length
 
@@ -148,56 +146,6 @@ pcl::ZBuffering<ModelT, SceneT>::computeDepthMap (typename pcl::PointCloud<Scene
 
     if ((z < depth_[u * cy_ + v]) || (!pcl_isfinite(depth_[u * cy_ + v])))
       depth_[u * cx_ + v] = z;
-  }
-}
-
-namespace pcl
-{
-  namespace occlusion_reasoning
-  {
-    template<typename ModelT, typename SceneT>
-    typename pcl::PointCloud<ModelT>::Ptr
-    filter (typename pcl::PointCloud<SceneT>::Ptr & organized_cloud, typename pcl::PointCloud<ModelT>::Ptr & to_be_filtered, float f,
-            float threshold)
-    {
-      float cx = (static_cast<float> (organized_cloud->width) / 2.f - 0.5f);
-      float cy = (static_cast<float> (organized_cloud->height) / 2.f - 0.5f);
-      typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
-
-      std::vector<int> indices_to_keep;
-      indices_to_keep.resize (to_be_filtered->points.size ());
-
-      int keep = 0;
-      for (size_t i = 0; i < to_be_filtered->points.size (); i++)
-      {
-        float x = to_be_filtered->points[i].x;
-        float y = to_be_filtered->points[i].y;
-        float z = to_be_filtered->points[i].z;
-        int u = static_cast<int> (f * x / z + cx);
-        int v = static_cast<int> (f * y / z + cy);
-
-        //Not out of bounds
-        if (u >= static_cast<int> (organized_cloud->width) || v >= static_cast<int> (organized_cloud->height))
-          continue;
-
-        //Check for invalid depth
-        if (!pcl_isfinite (organized_cloud->at (u, v).x) || !pcl_isfinite (organized_cloud->at (u, v).y)
-            || !pcl_isfinite (organized_cloud->at (u, v).z))
-          continue;
-
-        float z_oc = organized_cloud->at (u, v).z;
-
-        //Check if point depth (distance to camera) is greater than the (u,v)
-        if ((z - z_oc) > threshold)
-          continue;
-
-        indices_to_keep[keep] = static_cast<int> (i);
-        keep++;
-      }
-
-      pcl::copyPointCloud (*to_be_filtered, indices_to_keep, *filtered);
-      return filtered;
-    }
   }
 }
 

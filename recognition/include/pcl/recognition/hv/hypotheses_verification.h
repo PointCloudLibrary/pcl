@@ -38,7 +38,8 @@
 #define PCL_RECOGNITION_HYPOTHESIS_VERIFICATION_H_
 
 #include <pcl/pcl_macros.h>
-#include "occlusion_reasoning.h"
+#include "pcl/recognition/hv/occlusion_reasoning.h"
+#include "pcl/recognition/impl/hv/occlusion_reasoning.hpp"
 #include <pcl/common/common.h>
 #include <pcl/search/kdtree.h>
 #include <pcl/filters/voxel_grid.h>
@@ -63,7 +64,7 @@ namespace pcl
     /*
      * \brief Scene point cloud
      */
-    typename pcl::PointCloud<SceneT>::Ptr scene_cloud_;
+    typename pcl::PointCloud<SceneT>::ConstPtr scene_cloud_;
 
     /*
      * \brief Downsampled scene point cloud
@@ -80,11 +81,11 @@ namespace pcl
 	 * the 3D models are pruned of occluded points, and only visible points are left. 
 	 * the coordinate system is that of the scene cloud
      */
-    typename std::vector<typename pcl::PointCloud<ModelT>::Ptr> visible_models_;
+    typename std::vector<typename pcl::PointCloud<ModelT>::ConstPtr> visible_models_;
     /*
      * \brief Vector of point clouds representing the complete 3D model (in same coordinates as the scene cloud)
      */
-    typename std::vector<typename pcl::PointCloud<ModelT>::Ptr> complete_models_;
+    typename std::vector<typename pcl::PointCloud<ModelT>::ConstPtr> complete_models_;
     /*
      * \brief Resolutions in pixel for the depth scene buffer
      */
@@ -159,8 +160,11 @@ namespace pcl
      *  mask models Vector of point clouds representing the models (in same coordinates as the scene_cloud_)
      */
     void
-    addModels (std::vector<const typename pcl::PointCloud<ModelT>::Ptr> & models, bool occlusion_reasoning = false)
+    addModels (std::vector<typename pcl::PointCloud<ModelT>::ConstPtr> & models, bool occlusion_reasoning = false)
     {
+
+      mask_.clear();
+
       if (!occlusion_reasoning)
         visible_models_ = models;
       else
@@ -171,7 +175,7 @@ namespace pcl
           PCL_ERROR("setSceneCloud should be called before adding the model if reasoning about occlusions...");
         }
 
-        pcl::ZBuffering<ModelT, SceneT> zbuffer_scene (zbuffer_scene_resolution_, zbuffer_scene_resolution_, 1.f);
+        pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT> zbuffer_scene (zbuffer_scene_resolution_, zbuffer_scene_resolution_, 1.f);
         if (!scene_cloud_->isOrganized ())
         {
           zbuffer_scene.computeDepthMap (scene_cloud_, true);
@@ -182,18 +186,20 @@ namespace pcl
 
           //self-occlusions
           typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
-          typename pcl::ZBuffering<ModelT, SceneT> zbuffer_self_occlusion (150, 150, 1.f);
+          typename pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT> zbuffer_self_occlusion (150, 150, 1.f);
           zbuffer_self_occlusion.computeDepthMap (models[i], true);
-          zbuffer_self_occlusion.filter (models[i], filtered, 0.005);
+          zbuffer_self_occlusion.filter (models[i], filtered, 0.005f);
+
+          typename pcl::PointCloud<ModelT>::ConstPtr const_filtered(new pcl::PointCloud<ModelT> (*filtered));
 
           //scene-occlusions
           if (scene_cloud_->isOrganized ())
           {
-            filtered = pcl::occlusion_reasoning::filter (scene_cloud_, filtered, 525.f, 0.01f);
+            filtered = pcl::occlusion_reasoning::filter<ModelT,SceneT> (scene_cloud_, const_filtered, 525.f, 0.01f);
           }
           else
           {
-            zbuffer_scene.filter (filtered, filtered, 0.01);
+            zbuffer_scene.filter (const_filtered, filtered, 0.01f);
           }
 
           visible_models_.push_back (filtered);
@@ -211,7 +217,12 @@ namespace pcl
     void
     setSceneCloud (const typename pcl::PointCloud<SceneT>::Ptr & scene_cloud)
     {
+
+      complete_models_.clear();
+      visible_models_.clear();
+
       scene_cloud_ = scene_cloud;
+      scene_cloud_downsampled_.reset(new pcl::PointCloud<SceneT>());
 
       pcl::VoxelGrid<SceneT> voxel_grid;
       voxel_grid.setInputCloud (scene_cloud);

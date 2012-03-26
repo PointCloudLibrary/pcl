@@ -38,40 +38,84 @@
 #define PCL_RECOGNITION_OCCLUSION_REASONING_H_
 
 #include <pcl/common/common.h>
+#include <pcl/common/transforms.h>
+#include <pcl/common/io.h>
 
 namespace pcl
 {
 
-  /**
-   * \brief Class to reason about occlusions
-   * \author Aitor Aldoma
-   */
+  namespace occlusion_reasoning
+  {
+    /**
+     * \brief Class to reason about occlusions
+     * \author Aitor Aldoma
+     */
 
     template<typename ModelT, typename SceneT>
-    class ZBuffering
+      class ZBuffering
+      {
+      private:
+        float f_;
+        int cx_, cy_;
+        float * depth_;
+
+      public:
+
+        ZBuffering ();
+        ZBuffering (int resx, int resy, float f);
+        ~ZBuffering ();
+        void
+        computeDepthMap (typename pcl::PointCloud<SceneT>::ConstPtr & scene, bool compute_focal = false);
+        void
+        filter (typename pcl::PointCloud<ModelT>::ConstPtr & model, typename pcl::PointCloud<ModelT>::Ptr & filtered, float thres = 0.01);
+
+      };
+
+
+    template<typename ModelT, typename SceneT>
+    typename pcl::PointCloud<ModelT>::Ptr
+    filter (typename pcl::PointCloud<SceneT>::ConstPtr & organized_cloud, typename pcl::PointCloud<ModelT>::ConstPtr & to_be_filtered, float f,
+            float threshold)
     {
-    private:
-      float f_;
-      int cx_, cy_;
-      float * depth_;
+      float cx = (static_cast<float> (organized_cloud->width) / 2.f - 0.5f);
+      float cy = (static_cast<float> (organized_cloud->height) / 2.f - 0.5f);
+      typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
 
-    public:
+      std::vector<int> indices_to_keep;
+      indices_to_keep.resize (to_be_filtered->points.size ());
 
-      ZBuffering();
-      ZBuffering (int resx, int resy, float f);
-      ~ZBuffering ();
-      void
-      computeDepthMap (typename pcl::PointCloud<SceneT>::Ptr & scene, bool compute_focal = false);
-      void
-      filter (typename pcl::PointCloud<ModelT>::Ptr & model, typename pcl::PointCloud<ModelT>::Ptr & filtered, float thres = 0.01);
+      int keep = 0;
+      for (size_t i = 0; i < to_be_filtered->points.size (); i++)
+      {
+        float x = to_be_filtered->points[i].x;
+        float y = to_be_filtered->points[i].y;
+        float z = to_be_filtered->points[i].z;
+        int u = static_cast<int> (f * x / z + cx);
+        int v = static_cast<int> (f * y / z + cy);
 
-    };
+        //Not out of bounds
+        if (u >= static_cast<int> (organized_cloud->width) || v >= static_cast<int> (organized_cloud->height))
+          continue;
 
-    namespace occlusion_reasoning {
-      template<typename ModelT, typename SceneT> typename pcl::PointCloud<ModelT>::Ptr
-      filter (typename pcl::PointCloud<SceneT>::Ptr & organized_cloud, typename pcl::PointCloud<ModelT>::Ptr & to_be_filtered, float f=525.f, float threshold = 0.01);
+        //Check for invalid depth
+        if (!pcl_isfinite (organized_cloud->at (u, v).x) || !pcl_isfinite (organized_cloud->at (u, v).y)
+            || !pcl_isfinite (organized_cloud->at (u, v).z))
+          continue;
+
+        float z_oc = organized_cloud->at (u, v).z;
+
+        //Check if point depth (distance to camera) is greater than the (u,v)
+        if ((z - z_oc) > threshold)
+          continue;
+
+        indices_to_keep[keep] = static_cast<int> (i);
+        keep++;
+      }
+
+      pcl::copyPointCloud (*to_be_filtered, indices_to_keep, *filtered);
+      return filtered;
     }
-
+  }
 }
 
 #endif /* PCL_RECOGNITION_OCCLUSION_REASONING_H_ */

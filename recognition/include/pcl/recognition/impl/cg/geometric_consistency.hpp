@@ -103,8 +103,8 @@ pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::clusterCorresponden
         bool is_a_good_candidate = true;
         for (size_t k = 0; k < consensus_set.size (); ++k)
         {
-          int scene_index_k = model_scene_corrs_->at (k).index_match;
-          int model_index_k = model_scene_corrs_->at (k).index_query;
+          int scene_index_k = model_scene_corrs_->at (consensus_set[k]).index_match;
+          int model_index_k = model_scene_corrs_->at (consensus_set[k]).index_query;
           int scene_index_j = model_scene_corrs_->at (j).index_match;
           int model_index_j = model_scene_corrs_->at (j).index_query;
           
@@ -124,6 +124,7 @@ pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::clusterCorresponden
             break;
           }
         }
+
         if (is_a_good_candidate)
           consensus_set.push_back (static_cast<int> (j));
       }
