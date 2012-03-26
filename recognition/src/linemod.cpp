@@ -214,8 +214,7 @@ pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modaliti
     const size_t mem_height = height / step_size;
     const size_t mem_size = mem_width * mem_height;
 
-#define USE_OPTIMIZED_LINEMOD
-#ifdef USE_OPTIMIZED_LINEMOD
+#ifdef __SSE2__
     unsigned short * score_sums = reinterpret_cast<unsigned short*> (aligned_malloc (mem_size*sizeof(unsigned short)));
     unsigned char * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
     memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
@@ -461,8 +460,7 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
     const size_t mem_height = height / step_size;
     const size_t mem_size = mem_width * mem_height;
 
-#define USE_OPTIMIZED_LINEMOD
-#ifdef USE_OPTIMIZED_LINEMOD
+#ifdef __SSE2__
     unsigned short * score_sums = reinterpret_cast<unsigned short*> (aligned_malloc (mem_size*sizeof(unsigned short)));
     unsigned char * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
     memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
