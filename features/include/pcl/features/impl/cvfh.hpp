@@ -203,27 +203,31 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
     normals_filtered_cloud->points[i].z = surface_->points[indices_in[i]].z;
   }
 
-  //recompute normals and use them for clustering
-  KdTreePtr normals_tree_filtered (new pcl::search::KdTree<pcl::PointNormal> (false));
-  normals_tree_filtered->setInputCloud (normals_filtered_cloud);
-
-  NormalEstimator n3d;
-  n3d.setRadiusSearch (radius_normals_);
-  n3d.setSearchMethod (normals_tree_filtered);
-  n3d.setInputCloud (normals_filtered_cloud);
-  n3d.compute (*normals_filtered_cloud);
-
-  KdTreePtr normals_tree (new pcl::search::KdTree<pcl::PointNormal> (false));
-  normals_tree->setInputCloud (normals_filtered_cloud);
   std::vector<pcl::PointIndices> clusters;
 
-  extractEuclideanClustersSmooth (*normals_filtered_cloud, 
-                                  *normals_filtered_cloud, 
-                                  cluster_tolerance_, 
-                                  normals_tree,
-                                  clusters, 
-                                  eps_angle_threshold_, 
-                                  static_cast<unsigned int> (min_points_));
+  if(normals_filtered_cloud->points.size() >= min_points_) {
+    //recompute normals and use them for clustering
+    KdTreePtr normals_tree_filtered (new pcl::search::KdTree<pcl::PointNormal> (false));
+    normals_tree_filtered->setInputCloud (normals_filtered_cloud);
+
+    NormalEstimator n3d;
+    n3d.setRadiusSearch (radius_normals_);
+    n3d.setSearchMethod (normals_tree_filtered);
+    n3d.setInputCloud (normals_filtered_cloud);
+    n3d.compute (*normals_filtered_cloud);
+
+    KdTreePtr normals_tree (new pcl::search::KdTree<pcl::PointNormal> (false));
+    normals_tree->setInputCloud (normals_filtered_cloud);
+
+    extractEuclideanClustersSmooth (*normals_filtered_cloud,
+                                    *normals_filtered_cloud,
+                                    cluster_tolerance_,
+                                    normals_tree,
+                                    clusters,
+                                    eps_angle_threshold_,
+                                    static_cast<unsigned int> (min_points_));
+
+  }
 
   VFHEstimator vfh;
   vfh.setInputCloud (surface_);
