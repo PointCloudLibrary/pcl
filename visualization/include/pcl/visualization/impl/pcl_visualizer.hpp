@@ -226,7 +226,7 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
   points->SetNumberOfPoints (nr_points);
 
   // Get a pointer to the beginning of the data array
-  float *data = ((vtkFloatArray*)points->GetData ())->GetPointer (0);
+  float *data = (static_cast<vtkFloatArray*> (points->GetData ()))->GetPointer (0);
 
   // Set the points
   if (cloud->is_dense)
@@ -1109,7 +1109,7 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   points->SetNumberOfPoints (nr_points);
 
   // Get a pointer to the beginning of the data array
-  float *data = ((vtkFloatArray*)points->GetData ())->GetPointer (0);
+  float *data = (static_cast<vtkFloatArray*> (points->GetData ()))->GetPointer (0);
 
   int pts = 0;
   // If the dataset is dense (no NaNs)
@@ -1185,7 +1185,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
   vtkSmartPointer<vtkLODActor> actor;
 
   // Get a pointer to the beginning of the data array
-  float *data = ((vtkFloatArray*)points->GetData ())->GetPointer (0);
+  float *data = (static_cast<vtkFloatArray*> (points->GetData ()))->GetPointer (0);
 
   int ptr = 0;
   std::vector<int> lookup;
@@ -1217,7 +1217,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
   // Get the maximum size of a polygon
   int max_size_of_polygon = -1;
   for (size_t i = 0; i < vertices.size (); ++i)
-    if (max_size_of_polygon < (int)vertices[i].vertices.size ())
+    if (max_size_of_polygon < static_cast<int> (vertices[i].vertices.size ()))
       max_size_of_polygon = vertices[i].vertices.size ();
 
   if (vertices.size () > 1)
@@ -1328,7 +1328,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   points->SetNumberOfPoints (nr_points);
 
   // Get a pointer to the beginning of the data array
-  float *data = ((vtkFloatArray*)points->GetData ())->GetPointer (0);
+  float *data = (static_cast<vtkFloatArray*> (points->GetData ()))->GetPointer (0);
 
   int ptr = 0;
   std::vector<int> lookup;
@@ -1360,7 +1360,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   // Get the maximum size of a polygon
   int max_size_of_polygon = -1;
   for (size_t i = 0; i < verts.size (); ++i)
-    if (max_size_of_polygon < (int)verts[i].vertices.size ())
+    if (max_size_of_polygon < static_cast<int> (verts[i].vertices.size ()))
       max_size_of_polygon = verts[i].vertices.size ();
 
   // Update the cells
@@ -1462,7 +1462,7 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const pcl::PointCloud<pcl::
   unsigned char* colors = scalars->GetPointer (0);
 
   // Get a pointer to the beginning of the data array
-  float *data = ((vtkFloatArray*)points->GetData ())->GetPointer (0);
+  float *data = (static_cast<vtkFloatArray*> (points->GetData ()))->GetPointer (0);
 
   // If the dataset is dense (no NaNs)
   if (cloud->is_dense)
