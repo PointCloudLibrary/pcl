@@ -1,6 +1,6 @@
 set(SUBSYS_NAME global_tests)
 set(SUBSYS_DESC "Point cloud library global tests")
-set(SUBSYS_DEPS common sample_consensus io kdtree features filters keypoints search surface registration segmentation octree)
+set(SUBSYS_DEPS common sample_consensus io kdtree features filters keypoints search surface registration segmentation octree recognition)
 
 find_package(GTest)
 if(GTEST_FOUND)
@@ -79,6 +79,11 @@ if(build)
                  FILES test_non_linear.cpp
                  LINK_WITH pcl_common pcl_io pcl_sample_consensus pcl_segmentation
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/noisy_slice_displaced.pcd)
+
+    PCL_ADD_TEST(a_recognition_cg_test test_recognition_cg
+                 FILES test_recognition_cg.cpp
+                 LINK_WITH pcl_common pcl_io pcl_kdtree pcl_features pcl_recognition pcl_keypoints
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/milk.pcd ${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd)
 
                 #Needs office1.pcd
                #PCL_ADD_TEST(organized_index test_organized_index

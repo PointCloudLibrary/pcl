@@ -82,7 +82,7 @@ namespace pcl
         * 
         * \return the minimum cluster size used by GC.
         */
-      inline double
+      inline int
       getGCThreshold () const
       {
         return (gc_threshold_);
@@ -123,7 +123,7 @@ namespace pcl
       using CorrespondenceGrouping<PointModelT, PointSceneT>::model_scene_corrs_;
 
       /** \brief Minimum cluster size. It shouldn't be less than 3, since at least 3 correspondences are needed to compute the 6DOF pose */
-      double gc_threshold_;
+      int gc_threshold_;
 
       /** \brief Resolution of the consensus set used to cluster correspondences together*/
       double gc_size_;

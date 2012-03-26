@@ -129,7 +129,7 @@ pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::clusterCorresponden
       }
     }
     
-    if (consensus_set.size () > gc_threshold_)
+    if (static_cast<int> (consensus_set.size ()) > gc_threshold_)
     {
       Correspondences temp_corrs, filtered_corrs;
       for (size_t j = 0; j < consensus_set.size (); j++)
