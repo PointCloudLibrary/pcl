@@ -286,9 +286,12 @@ void pcl::apps::RenderViewsTesselatedSphere::generateViews() {
 
         worldPicker->Pick (x, y, value, renderer);
         worldPicker->GetPickPosition (coords);
-        cloud->points[count_valid_depth_pixels].x = static_cast<pcl::traits::datatype<pcl::PointXYZ, pcl::fields::x>::type> (coords[0]);
+        /*cloud->points[count_valid_depth_pixels].x = static_cast<pcl::traits::datatype<pcl::PointXYZ, pcl::fields::x>::type> (coords[0]);
         cloud->points[count_valid_depth_pixels].y = static_cast<pcl::traits::datatype<pcl::PointXYZ, pcl::fields::x>::type> (coords[1]);
-        cloud->points[count_valid_depth_pixels].z = static_cast<pcl::traits::datatype<pcl::PointXYZ, pcl::fields::x>::type> (coords[2]);
+        cloud->points[count_valid_depth_pixels].z = static_cast<pcl::traits::datatype<pcl::PointXYZ, pcl::fields::x>::type> (coords[2]);*/
+        cloud->points[count_valid_depth_pixels].x = static_cast<float> (coords[0]);
+        cloud->points[count_valid_depth_pixels].y = static_cast<float> (coords[1]);
+        cloud->points[count_valid_depth_pixels].z = static_cast<float> (coords[2]);
         cloud->points[count_valid_depth_pixels].getVector4fMap () = backToRealScale_eigen
             * cloud->points[count_valid_depth_pixels].getVector4fMap ();
         count_valid_depth_pixels++;
@@ -401,7 +404,7 @@ void pcl::apps::RenderViewsTesselatedSphere::generateViews() {
 
     renderer->RemoveActor (actor_view);
 
-    generated_views_.push_back (*cloud);
+    generated_views_.push_back (cloud);
 
     //create pose, from OBJECT coordinates to CAMERA coordinates!
     vtkSmartPointer<vtkTransform> transOCtoCC = vtkSmartPointer<vtkTransform>::New ();

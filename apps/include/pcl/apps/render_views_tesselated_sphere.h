@@ -27,7 +27,7 @@ namespace pcl
     {
     private:
       std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > poses_;
-      std::vector<pcl::PointCloud<pcl::PointXYZ>, Eigen::aligned_allocator<pcl::PointCloud<pcl::PointXYZ> > > generated_views_;
+      std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr, Eigen::aligned_allocator<pcl::PointCloud<pcl::PointXYZ>::Ptr > > generated_views_;
       std::vector<float> entropies_;
       int resolution_;
       int tesselation_level_;
@@ -130,7 +130,7 @@ namespace pcl
        * \param views generated pointclouds in camera coordinates
        */
       void
-      getViews (std::vector<pcl::PointCloud<pcl::PointXYZ>, Eigen::aligned_allocator<pcl::PointCloud<pcl::PointXYZ> > > & views)
+      getViews (std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr, Eigen::aligned_allocator<pcl::PointCloud<pcl::PointXYZ>::Ptr > > & views)
       {
         views = generated_views_;
       }

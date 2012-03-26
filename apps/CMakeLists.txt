@@ -146,4 +146,6 @@ if(build)
     
   endif() # VTK_FOUND
 
+  add_subdirectory(3d_rec_framework)
+
 endif(build)
