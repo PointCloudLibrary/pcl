@@ -788,7 +788,8 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT>::computeFea
         !pcl_isfinite (current_frame.rf[4]) ||
         !pcl_isfinite (current_frame.rf[11]))
     {
-      PCL_WARN ("[pcl::%s::computeFeature] Point index %d does not have a valid local reference frame!\n", getClassName ().c_str (), (*indices_)[idx]);
+      PCL_WARN ("[pcl::%s::computeFeature] The local reference frame is not valid! Aborting description of point with index %d\n",
+        getClassName ().c_str (), (*indices_)[idx]);
       lrf_is_nan = true;
     }
 
@@ -859,7 +860,8 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, Eigen::MatrixXf, PointRFT>::comp
         !pcl_isfinite (current_frame.rf[4]) ||
         !pcl_isfinite (current_frame.rf[11]))
     {
-      PCL_WARN ("[pcl::%s::computeFeatureEigen] Point index %d does not have a valid local reference frame!\n", getClassName ().c_str (), (*indices_)[idx]);
+      PCL_WARN ("[pcl::%s::computeFeature] The local reference frame is not valid! Aborting description of point with index %d\n",
+        getClassName ().c_str (), (*indices_)[idx]);
       lrf_is_nan = true;
     }
 
@@ -924,7 +926,8 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::computeFeature 
         !pcl_isfinite (current_frame.rf[4]) ||
         !pcl_isfinite (current_frame.rf[11]))
     {
-      PCL_WARN ("[pcl::%s::computeFeature] Point index %d does not have a valid local reference frame!\n", getClassName ().c_str (), (*indices_)[idx]);
+      PCL_WARN ("[pcl::%s::computeFeature] The local reference frame is not valid! Aborting description of point with index %d\n",
+        getClassName ().c_str (), (*indices_)[idx]);
       lrf_is_nan = true;
     }
 
@@ -992,7 +995,8 @@ pcl::SHOTEstimationBase<PointInT, PointNT, Eigen::MatrixXf, PointRFT>::computeFe
         !pcl_isfinite (current_frame.rf[4]) ||
         !pcl_isfinite (current_frame.rf[11]))
     {
-      PCL_WARN ("[pcl::%s::computeFeature] Point index %d does not have a valid local reference frame!\n", getClassName ().c_str (), (*indices_)[idx]);
+      PCL_WARN ("[pcl::%s::computeFeature] The local reference frame is not valid! Aborting description of point with index %d\n",
+        getClassName ().c_str (), (*indices_)[idx]);
       lrf_is_nan = true;
     }
 
