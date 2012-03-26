@@ -40,6 +40,7 @@
 #define PCL_INTENSITY_GRADIENT_H_
 
 #include <pcl/features/feature.h>
+#include <pcl/common/intensity.h>
 
 namespace pcl
 {
@@ -50,7 +51,7 @@ namespace pcl
     * \author Michael Dixon
     * \ingroup features
     */
-  template <typename PointInT, typename PointNT, typename PointOutT>
+  template <typename PointInT, typename PointNT, typename PointOutT, typename IntensitySelectorT = pcl::common::IntensityFieldAccessor<PointInT> >
   class IntensityGradientEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
@@ -68,7 +69,17 @@ namespace pcl
       IntensityGradientEstimation ()
       {
         feature_name_ = "IntensityGradientEstimation";
+        threads_ = 1;
       };
+
+      /** \brief Initialize the scheduler and set the number of threads to use.
+        * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
+        */
+      inline void
+      setNumberOfThreads (int nr_threads)
+      {
+        threads_ = nr_threads == 0 ? 1 : nr_threads;
+      }
 
     protected:
       /** \brief Estimate the intensity gradients for a set of points given in <setInputCloud (), setIndices ()> using
@@ -88,15 +99,23 @@ namespace pcl
       void
       computePointIntensityGradient (const pcl::PointCloud<PointInT> &cloud,
                                      const std::vector<int> &indices,
-                                     const Eigen::Vector3f &point, float mean_intensity, const Eigen::Vector3f &normal,
+                                     const Eigen::Vector3f &point, 
+                                     float mean_intensity, 
+                                     const Eigen::Vector3f &normal,
                                      Eigen::Vector3f &gradient);
 
     private:
       /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
-        * \param[out] output the output point cloud 
+        * \param[out] output the output point cloud
         */
-      void 
+      void
       computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
+
+    protected:
+      ///intensity field accessor structure
+      IntensitySelectorT intensity_;
+      ///number of threads to be used, default 1
+      int threads_;
   };
 
   /** \brief IntensityGradientEstimation estimates the intensity gradient for a point cloud that contains position
@@ -127,9 +146,9 @@ namespace pcl
       computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output);
 
       /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
-        * \param[out] output the output point cloud 
+        * \param[out] output the output point cloud
         */
-      void 
+      void
       compute (pcl::PointCloud<pcl::Normal> &) {}
   };
 }
