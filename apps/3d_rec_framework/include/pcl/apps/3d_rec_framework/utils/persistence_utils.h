@@ -1,7 +1,7 @@
 #include <fstream>
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
-#include <opencv2/opencv.hpp>
+//#include <opencv2/opencv.hpp>
 #include <pcl/io/pcd_io.h>
 
 namespace pcl

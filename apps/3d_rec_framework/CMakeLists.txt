@@ -2,27 +2,10 @@ set(SUBSYS_NAME 3d_rec_framework)
 set(SUBSYS_DESC "3D recognition framework")
 set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search recognition)
 
-# Find VTK 
-if(NOT VTK_FOUND)
-    set(DEFAULT FALSE)
-    set(REASON "VTK was not found.")
-else(NOT VTK_FOUND)
-    set(DEFAULT TRUE)
-    set(REASON)
-    include (${VTK_USE_FILE})
-endif(NOT VTK_FOUND)
-
-# OpenNI found?
-if(NOT OPENNI_FOUND)
-    set(DEFAULT FALSE)
-    set(REASON "OpenNI was not found.")
-else(NOT OPENNI_FOUND)
-    set(DEFAULT TRUE)
-    set(REASON)
-endif(NOT OPENNI_FOUND)
+set(build OFF)
 
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk)
+PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} openni vtk)
 
 if(build)
 

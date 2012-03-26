@@ -8,7 +8,7 @@
 #ifndef REC_FRAMEWORK_LOCAL_RECOGNIZER_H_
 #define REC_FRAMEWORK_LOCAL_RECOGNIZER_H_
 
-#include <opencv2/opencv.hpp>
+//#include <opencv2/opencv.hpp>
 #include <flann/flann.h>
 #include <pcl/common/common.h>
 #include <pcl/apps/3d_rec_framework/pc_source/source.h>
