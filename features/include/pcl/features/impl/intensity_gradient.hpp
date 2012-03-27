@@ -152,7 +152,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
 #ifdef HAVE_OPENMP
 #pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
 #endif
-  for (size_t idx = 0; idx < indices_->size (); ++idx)
+  for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
   {
     PointOutT &p_out = output.points[idx];
 
