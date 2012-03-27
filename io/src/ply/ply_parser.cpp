@@ -88,7 +88,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
     if (stringstream.eof ())
     {
       if (warning_callback_)
-        warning_callback_ (line_number_, "ignoring line ‘" + line + "’");
+        warning_callback_ (line_number_, "ignoring line '" + line + "'");
     }
     else
     {
@@ -134,7 +134,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         {
           if (error_callback_)
           {
-            error_callback_ (line_number_, "version ‘" + version + "’ is not supported");
+            error_callback_ (line_number_, "version '" + version + "' is not supported");
           }
           return false;
         }
@@ -497,7 +497,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
       else
       {
         if (warning_callback_)
-          warning_callback_ (line_number_, "ignoring line ‘" + line + "’");
+          warning_callback_ (line_number_, "ignoring line '" + line + "'");
       }
     }
   }
