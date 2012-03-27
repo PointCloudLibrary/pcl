@@ -1,6 +1,6 @@
 set(SUBSYS_NAME cuda_apps)
 set(SUBSYS_DESC "Point cloud library CUDA apps")
-set(SUBSYS_DEPS cuda_common cuda_io cuda_features cuda_segmentation cuda_sample_consensus common io visualization)
+set(SUBSYS_DEPS cuda_common cuda_io cuda_features cuda_segmentation cuda_sample_consensus common io visualization geometry)
 
 # ---[ Point Cloud Library - pcl/cuda/apps
 # Find VTK 

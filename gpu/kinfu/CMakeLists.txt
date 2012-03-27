@@ -1,7 +1,7 @@
 set(SUBSYS_NAME gpu_kinfu)
 set(SUBSYS_PATH gpu/kinfu)
 set(SUBSYS_DESC "Kinect Fusion implementation")
-set(SUBSYS_DEPS common visualization io gpu_containers gpu_utils gpu_features)
+set(SUBSYS_DEPS common visualization io gpu_containers gpu_utils gpu_features geometry)
 
 set(build FALSE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
