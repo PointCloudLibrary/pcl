@@ -462,7 +462,7 @@ namespace pcl
       typedef typename PointCloudLRF::ConstPtr PointCloudLRFConstPtr;
 
       /** \brief Empty constructor. */
-      FeatureWithLocalReferenceFrames () : frames_ () {}
+      FeatureWithLocalReferenceFrames () : frames_ (), frames_never_defined_ (true) {}
 
        /** \brief Empty destructor. */
       virtual ~FeatureWithLocalReferenceFrames () {}
@@ -477,6 +477,7 @@ namespace pcl
       setInputReferenceFrames (const PointCloudLRFConstPtr &frames)
       {
         frames_ = frames;
+        frames_never_defined_ = false;
       }
 
       /** \brief Get a pointer to the local reference frames. */
@@ -489,6 +490,8 @@ namespace pcl
     protected:
       /** \brief A boost shared pointer to the local reference frames. */
       PointCloudLRFConstPtr frames_;
+      /** \brief The user has never set the frames. */
+      bool frames_never_defined_;
 
       /** \brief Check if frames_ has been correctly initialized and compute it if needed.
         * \param input the subclass' input cloud dataset.

@@ -341,6 +341,9 @@ template <typename PointInT, typename PointRFT> bool
 pcl::FeatureWithLocalReferenceFrames<PointInT, PointRFT>::initLocalReferenceFrames (const size_t& indices_size,
                                                                                     const LRFEstimationPtr& lrf_estimation)
 {
+  if (frames_never_defined_)
+    frames_.reset ();
+
   // Check if input frames are set
   if (!frames_)
   {
@@ -366,7 +369,7 @@ pcl::FeatureWithLocalReferenceFrames<PointInT, PointRFT>::initLocalReferenceFram
       return (false);
     } else
     {
-      PCL_WARN ("[initLocalReferenceFrames] The number of points in the input dataset differs from the number of points in the dataset containing the reference frames! Proceed using default\n");
+      //PCL_WARN ("[initLocalReferenceFrames] The number of points in the input dataset differs from the number of points in the dataset containing the reference frames! Proceed using default\n");
       PointCloudLRFPtr default_frames (new PointCloudLRF());
       lrf_estimation->compute (*default_frames);
       frames_ = default_frames;
