@@ -133,11 +133,11 @@ pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modaliti
 
     const unsigned char * quantized_data = quantized_map.getData ();
 
-    const size_t nr_bins = 8;
+    const unsigned char nr_bins = 8;
     EnergyMaps energy_maps;
     energy_maps.initialize (width, height, nr_bins);
     //std::vector< unsigned char* > energy_maps(nr_bins);
-    for (size_t bin_index = 0; bin_index < nr_bins; ++bin_index)
+    for (unsigned char bin_index = 0; bin_index < nr_bins; ++bin_index)
     {
       //energy_maps[bin_index] = new unsigned char[width*height];
       //memset (energy_maps[bin_index], 0, width*height);

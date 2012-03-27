@@ -273,6 +273,11 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
     detection.region.width  = linemod_template.region.width;
     detection.region.height = linemod_template.region.height;
 
+    //std::cerr << "detection region: " << linemod_detection.x << ", "
+    //  << linemod_detection.y << ", "
+    //  << linemod_template.region.width << ", "
+    //  << linemod_template.region.height << std::endl;
+
     float center_x = 0.0f;
     float center_y = 0.0f;
     float center_z = 0.0f;
@@ -309,7 +314,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
 
   // refine detections along depth
   //refineDetectionsAlongDepth ();
-  //applyProjectiveDepthICPOnDetections();
+  applyProjectiveDepthICPOnDetections();
 
   // remove overlaps
   removeOverlappingDetections ();
@@ -334,22 +339,22 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::computeTransformedTemplatePoints (
   const pcl::BoundingBoxXYZ & template_bounding_box = bounding_boxes_[template_id];
   const pcl::BoundingBoxXYZ & detection_bounding_box = detections_[detection_id].bounding_box;
 
-  std::cerr << "detection: " 
-    << detection_bounding_box.x << ", "
-    << detection_bounding_box.y << ", "
-    << detection_bounding_box.z << std::endl;
-  std::cerr << "template: " 
-    << template_bounding_box.x << ", "
-    << template_bounding_box.y << ", "
-    << template_bounding_box.z << std::endl;
+  //std::cerr << "detection: " 
+  //  << detection_bounding_box.x << ", "
+  //  << detection_bounding_box.y << ", "
+  //  << detection_bounding_box.z << std::endl;
+  //std::cerr << "template: " 
+  //  << template_bounding_box.x << ", "
+  //  << template_bounding_box.y << ", "
+  //  << template_bounding_box.z << std::endl;
   const float translation_x = detection_bounding_box.x - template_bounding_box.x;
   const float translation_y = detection_bounding_box.y - template_bounding_box.y;
   const float translation_z = detection_bounding_box.z - template_bounding_box.z;
 
-  std::cerr << "translation: " 
-    << translation_x << ", "
-    << translation_y << ", "
-    << translation_z << std::endl;
+  //std::cerr << "translation: " 
+  //  << translation_x << ", "
+  //  << translation_y << ", "
+  //  << translation_z << std::endl;
 
   const size_t nr_points = template_point_cloud.size ();
   cloud.resize (nr_points);
@@ -468,7 +473,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections ()
       for (size_t col_index = 0; col_index < pc_width; ++col_index)
       {
         const pcl::PointXYZRGB & point_template = point_cloud (col_index, row_index);
-        const PointXYZT & point_input = (*cloud_xyz_) (col_index, row_index);
+        const PointXYZT & point_input = (*cloud_xyz_) (col_index + start_x, row_index + start_y);
 
         if (!pcl_isfinite (point_template.z) || !pcl_isfinite (point_input.z))
           continue;
@@ -479,8 +484,8 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections ()
 
     // apply ransac on matches
     const size_t nr_matches = depth_matches.size ();
-    const size_t nr_iterations = 50; // todo: should be a parameter...
-    const float inlier_threshold = 0.05f; // 5cm // todo: should be a parameter...
+    const size_t nr_iterations = 100; // todo: should be a parameter...
+    const float inlier_threshold = 0.01f; // 5cm // todo: should be a parameter...
     size_t best_nr_inliers = 0;
     float best_z_translation = 0.0f;
     for (size_t iteration_index = 0; iteration_index < nr_iterations; ++iteration_index)
@@ -492,7 +497,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections ()
       size_t nr_inliers = 0;
       for (size_t match_index = 0; match_index < nr_matches; ++match_index)
       {
-        const float error = depth_matches[match_index].first + z_translation - depth_matches[match_index].second;
+        const float error = abs (depth_matches[match_index].first + z_translation - depth_matches[match_index].second);
 
         if (error <= inlier_threshold)
         {
@@ -508,18 +513,21 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections ()
     }
 
     float average_depth = 0.0f;
+    size_t average_counter = 0;
     for (size_t match_index = 0; match_index < nr_matches; ++match_index)
     {
-      const float error = depth_matches[match_index].first + best_z_translation - depth_matches[match_index].second;
+      const float error = abs (depth_matches[match_index].first + best_z_translation - depth_matches[match_index].second);
 
       if (error <= inlier_threshold)
       {
-        average_depth += depth_matches[match_index].second;
+        //average_depth += depth_matches[match_index].second;
+        average_depth += depth_matches[match_index].second - depth_matches[match_index].first;
+        ++average_counter;
       }
     }
-    average_depth /= static_cast<float> (best_nr_inliers);
+    average_depth /= static_cast<float> (average_counter);
 
-    detection.bounding_box.z = average_depth - detection.bounding_box.depth/2.0f;
+    detection.bounding_box.z = bounding_boxes_[template_id].z + average_depth;// - detection.bounding_box.depth/2.0f;
   }
 }
 
@@ -598,6 +606,9 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
     float best_response = 0.0f;
     size_t best_detection_id = 0;
 
+    float average_region_x = 0.0f;
+    float average_region_y = 0.0f;
+
     const size_t elements_in_cluster = cluster.size ();
     for (size_t cluster_index = 0; cluster_index < elements_in_cluster; ++cluster_index)
     {
@@ -620,6 +631,9 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
       average_center_y += p_center_y * weight;
       average_center_z += p_center_z * weight;
       weight_sum += weight;
+
+      average_region_x += detections_[detection_id].region.x * weight;
+      average_region_y += detections_[detection_id].region.y * weight;
     }
 
     LineRGBD<PointXYZT, PointRGBT>::Detection detection;
@@ -639,6 +653,11 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
     detection.bounding_box.width  = best_detection_bb_width;
     detection.bounding_box.height = best_detection_bb_height;
     detection.bounding_box.depth  = best_detection_bb_depth;
+
+    detection.region.x = average_region_x * inv_weight_sum;
+    detection.region.y = average_region_y * inv_weight_sum;
+    detection.region.width = detections_[best_detection_id].region.width;
+    detection.region.height = detections_[best_detection_id].region.height;
 
     clustered_detections.push_back (detection);
   }
