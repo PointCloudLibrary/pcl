@@ -390,8 +390,8 @@ namespace pcl
     operator*= (pcl::PointXYZRGB& lhs, const float& scalar)
     {
       lhs.getVector3fMap () *= scalar;
-      lhs.r = static_cast<uint8_t> (lhs.r * scalar); 
-      lhs.g = static_cast<uint8_t> (lhs.g * scalar); 
+      lhs.r = static_cast<uint8_t> (lhs.r * scalar);
+      lhs.g = static_cast<uint8_t> (lhs.g * scalar);
       lhs.b = static_cast<uint8_t> (lhs.b * scalar);
       return (lhs);
     }
@@ -469,8 +469,76 @@ namespace pcl
     operator*= (pcl::PointXYZRGBA& lhs, const float& scalar)
     {
       lhs.getVector3fMap () *= scalar;
-      lhs.r = static_cast<uint8_t> (lhs.r * scalar); 
-      lhs.g = static_cast<uint8_t> (lhs.g * scalar); 
+      lhs.r = static_cast<uint8_t> (lhs.r * scalar);
+      lhs.g = static_cast<uint8_t> (lhs.g * scalar);
+      lhs.b = static_cast<uint8_t> (lhs.b * scalar);
+      return (lhs);
+    }
+
+    ///addition operator for RGBA
+    template <> inline pcl::RGB
+    operator+ (const pcl::RGB& lhs, const pcl::RGB& rhs)
+    {
+      pcl::RGB result;
+      result.r = static_cast<uint8_t> (lhs.r + rhs.r);
+      result.g = static_cast<uint8_t> (lhs.g + rhs.g);
+      result.b = static_cast<uint8_t> (lhs.b + rhs.b);
+      return (result);
+    }
+    ///subtraction operator for RGB
+    template <> inline pcl::RGB
+    operator- (const pcl::RGB& lhs, const pcl::RGB& rhs)
+    {
+      pcl::RGB result;
+      result.r = static_cast<uint8_t> (lhs.r - rhs.r);
+      result.g = static_cast<uint8_t> (lhs.g - rhs.g);
+      result.b = static_cast<uint8_t> (lhs.b - rhs.b);
+      return (result);
+    }
+
+    template <> inline pcl::RGB
+    operator* (const float& scalar, const pcl::RGB& p)
+    {
+      pcl::RGB result;
+      result.r = static_cast<uint8_t> (scalar * p.r);
+      result.g = static_cast<uint8_t> (scalar * p.g);
+      result.b = static_cast<uint8_t> (scalar * p.b);
+      return (result);
+    }
+
+    template <> inline pcl::RGB
+    operator* (const pcl::RGB& p, const float& scalar)
+    {
+      pcl::RGB result;
+      result.r = static_cast<uint8_t> (scalar * p.r);
+      result.g = static_cast<uint8_t> (scalar * p.g);
+      result.b = static_cast<uint8_t> (scalar * p.b);
+      return (result);
+    }
+
+    template <> inline pcl::RGB&
+    operator+= (pcl::RGB& lhs, const pcl::RGB& rhs)
+    {
+      lhs.r = static_cast<uint8_t> (lhs.r + rhs.r);
+      lhs.g = static_cast<uint8_t> (lhs.g + rhs.g);
+      lhs.b = static_cast<uint8_t> (lhs.b + rhs.b);
+      return (lhs);
+    }
+
+    template <> inline pcl::RGB&
+    operator-= (pcl::RGB& lhs, const pcl::RGB& rhs)
+    {
+      lhs.r = static_cast<uint8_t> (lhs.r - rhs.r);
+      lhs.g = static_cast<uint8_t> (lhs.g - rhs.g);
+      lhs.b = static_cast<uint8_t> (lhs.b - rhs.b);
+      return (lhs);
+    }
+
+    template <> inline pcl::RGB&
+    operator*= (pcl::RGB& lhs, const float& scalar)
+    {
+      lhs.r = static_cast<uint8_t> (lhs.r * scalar);
+      lhs.g = static_cast<uint8_t> (lhs.g * scalar);
       lhs.b = static_cast<uint8_t> (lhs.b * scalar);
       return (lhs);
     }
