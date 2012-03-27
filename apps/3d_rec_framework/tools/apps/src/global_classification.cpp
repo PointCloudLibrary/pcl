@@ -137,7 +137,7 @@ main (int argc, char ** argv)
 {
 
   std::string path = "models/";
-  std::string desc_name = "esf";
+  std::string desc_name = "cvfh";
   std::string training_dir = "trained_models/";
   int NN = 1;
 
@@ -208,7 +208,7 @@ main (int argc, char ** argv)
     segmentAndClassify<Metrics::HistIntersectionUnionDistance, pcl::PointXYZ, pcl::VFHSignature308> (global);
   }
 
-  if (desc_name.compare ("esf") == 0)
+  /*if (desc_name.compare ("esf") == 0)
   {
     boost::shared_ptr<pcl::rec_3d_framework::ESFEstimation<pcl::PointXYZ, pcl::ESFSignature640> > estimator;
     estimator.reset (new pcl::rec_3d_framework::ESFEstimation<pcl::PointXYZ, pcl::ESFSignature640>);
@@ -225,6 +225,6 @@ main (int argc, char ** argv)
     global.initialize (false);
 
     segmentAndClassify<flann::L1, pcl::PointXYZ, pcl::ESFSignature640> (global);
-  }
+  }*/
 
 }
