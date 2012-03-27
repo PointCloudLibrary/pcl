@@ -22,6 +22,7 @@ namespace pcl
     typedef boost::shared_ptr<Vertices const> ConstPtr;
   }; // struct Vertices
 
+
   typedef boost::shared_ptr<Vertices> VerticesPtr;
   typedef boost::shared_ptr<Vertices const> VerticesConstPtr;
 
