@@ -34,7 +34,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: ply_parser.cpp 4165 2012-02-01 06:37:03Z nizar $
+ * $Id: ply_parser.cpp 5323 2012-03-27 12:57:27Z bouffa $
  *
  */
 
@@ -54,7 +54,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
   std::size_t number_of_comment_statements = 0;
 
   format_type format = pcl::io::ply::unknown;
-  std::vector< std::tr1::shared_ptr<element> > elements;
+  std::vector< boost::shared_ptr<element> > elements;
 
   // magic
   char magic[3];
@@ -88,7 +88,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
     if (stringstream.eof ())
     {
       if (warning_callback_)
-        warning_callback_ (line_number_, "ignoring line ‘" + line + "’");
+        warning_callback_ (line_number_, "ignoring line '" + line + "'");
     }
     else
     {
@@ -134,7 +134,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         {
           if (error_callback_)
           {
-            error_callback_ (line_number_, "version ‘" + version + "’ is not supported");
+            error_callback_ (line_number_, "version '" + version + "' is not supported");
           }
           return false;
         }
@@ -170,7 +170,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
           }
           return false;
         }
-        std::vector< std::tr1::shared_ptr<element> >::const_iterator iterator;
+        std::vector< boost::shared_ptr<element> >::const_iterator iterator;
         for (iterator = elements.begin (); iterator != elements.end (); ++iterator)
         {
           const struct element& element = *(iterator->get ());
@@ -193,11 +193,11 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         {
           element_callbacks = element_definition_callbacks_ (name, count);
         }
-        std::tr1::shared_ptr<element> element_ptr (new element (name, 
+        boost::shared_ptr<element> element_ptr (new element (name, 
                                                                 count, 
-                                                                std::tr1::get<0>(element_callbacks), 
-                                                                std::tr1::get<1>(element_callbacks)));
-        elements.push_back (std::tr1::shared_ptr<element>(element_ptr));
+                                                                boost::get<0>(element_callbacks), 
+                                                                boost::get<1>(element_callbacks)));
+        elements.push_back (boost::shared_ptr<element>(element_ptr));
         current_element_ = element_ptr.get ();
       }
 
@@ -236,7 +236,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
             }
             return false;
           }
-          std::vector< std::tr1::shared_ptr<property> >::const_iterator iterator;
+          std::vector< boost::shared_ptr<property> >::const_iterator iterator;
           for (iterator = current_element_->properties.begin (); 
                iterator != current_element_->properties.end (); 
                ++iterator)
@@ -314,7 +314,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
               error_callback_ (line_number_, "parse error");
             return false;
           }
-          std::vector< std::tr1::shared_ptr<property> >::const_iterator iterator;
+          std::vector< boost::shared_ptr<property> >::const_iterator iterator;
           for (iterator = current_element_->properties.begin (); 
                iterator != current_element_->properties.end (); 
                ++iterator) 
@@ -497,7 +497,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
       else
       {
         if (warning_callback_)
-          warning_callback_ (line_number_, "ignoring line ‘" + line + "’");
+          warning_callback_ (line_number_, "ignoring line '" + line + "'");
       }
     }
   }
@@ -512,7 +512,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
   // ascii
   if (format == ascii_format)
   {
-    for (std::vector< std::tr1::shared_ptr<element> >::const_iterator element_iterator = elements.begin (); 
+    for (std::vector< boost::shared_ptr<element> >::const_iterator element_iterator = elements.begin (); 
          element_iterator != elements.end (); 
          ++element_iterator)
     {
@@ -531,7 +531,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         std::istringstream stringstream (line);
         stringstream.unsetf (std::ios_base::skipws);
         stringstream >> std::ws;
-        for (std::vector< std::tr1::shared_ptr<property> >::const_iterator property_iterator = element.properties.begin (); 
+        for (std::vector< boost::shared_ptr<property> >::const_iterator property_iterator = element.properties.begin (); 
              property_iterator != element.properties.end (); 
              ++property_iterator)
         {
@@ -567,7 +567,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
     istream.open (filename.c_str (), std::ios::binary);
     istream.seekg (data_start);
 
-    for (std::vector< std::tr1::shared_ptr<element> >::const_iterator element_iterator = elements.begin (); 
+    for (std::vector< boost::shared_ptr<element> >::const_iterator element_iterator = elements.begin (); 
          element_iterator != elements.end (); 
          ++element_iterator)
     {
@@ -577,7 +577,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         if (element.begin_element_callback) {
           element.begin_element_callback ();
         }
-        for (std::vector< std::tr1::shared_ptr<property> >::const_iterator property_iterator = element.properties.begin (); 
+        for (std::vector< boost::shared_ptr<property> >::const_iterator property_iterator = element.properties.begin (); 
              property_iterator != element.properties.end (); 
              ++property_iterator)
         {
