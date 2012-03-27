@@ -72,12 +72,12 @@ namespace pcl
       ESFEstimation () : lut_ (), local_cloud_ ()
       {
         feature_name_ = "ESFEstimation";
-        lut.resize (GRIDSIZE);
+        lut_.resize (GRIDSIZE);
         for (int i = 0; i < GRIDSIZE; ++i)
         {
-          lut[i].resize (GRIDSIZE);
+          lut_[i].resize (GRIDSIZE);
           for (int j = 0; j < GRIDSIZE; ++j)
-            lut[i][j].resize (GRIDSIZE);
+            lut_[i][j].resize (GRIDSIZE);
         }
         //lut_.resize (boost::extents[GRIDSIZE][GRIDSIZE][GRIDSIZE]);
         search_radius_ = 0;
@@ -119,7 +119,7 @@ namespace pcl
 
       /** \brief ... */
       //boost::multi_array<int, 3> lut_;
-      std::vector<std::vector<std::vector<int> > > lut;
+      std::vector<std::vector<std::vector<int> > > lut_;
       
       /** \brief ... */
       PointCloudIn local_cloud_;
