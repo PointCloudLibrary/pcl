@@ -176,7 +176,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
   {
 
     models_.reset (new std::vector<ModelT>);
-	transforms_.reset (new std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> >);
+    transforms_.reset (new std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> >);
 
     std::cout << models_->size () << std::endl;
 
@@ -333,7 +333,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
       source_->voxelizeAllModels (VOXEL_SIZE_ICP_);
 
 #pragma omp parallel for num_threads(omp_get_num_procs())
-      for (int i = 0; i < (int) models_->size (); i++)
+      for (int i = 0; i < (int)models_->size (); i++)
       {
 
         ConstPointInTPtr model_cloud = models_->at (i).getAssembled (VOXEL_SIZE_ICP_);
@@ -378,10 +378,10 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
       hv_algorithm_->getMask (mask_hv);
 
       boost::shared_ptr < std::vector<ModelT> > models_temp;
-      boost::shared_ptr < std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>> > transforms_temp;
+      boost::shared_ptr < std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > transforms_temp;
 
       models_temp.reset (new std::vector<ModelT>);
-      transforms_temp.reset (new std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>);
+      transforms_temp.reset (new std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> >);
 
       for (size_t i = 0; i < models_->size (); i++)
       {
@@ -405,13 +405,11 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
     if (use_cache_)
     {
-      std::pair<std::string, int> pair_model_view = std::make_pair (model.id_, view_id);
-      
-	  //std::map<std::pair<std::string, int>, Eigen::Matrix4f, std::less<std::pair<std::string, int> >, Eigen::aligned_allocator<Eigen::Matrix4f> >::iterator it = poses_cache_.find (pair_model_view);
-	
-	 typedef std::pair<std::string, int> mv_pair;
-     pair_model_view = std::make_pair (model.id_, view_id);
-     std::map<mv_pair, Eigen::Matrix4f, std::less<mv_pair>, Eigen::aligned_allocator<std::pair<mv_pair, Eigen::Matrix4f> > >::iterator it = poses_cache_.find (pair_model_view);
+      typedef std::pair<std::string, int> mv_pair;
+      mv_pair pair_model_view = std::make_pair (model.id_, view_id);
+
+      std::map<mv_pair, Eigen::Matrix4f, std::less<mv_pair>, Eigen::aligned_allocator<std::pair<mv_pair, Eigen::Matrix4f> > >::iterator it =
+          poses_cache_.find (pair_model_view);
 
       if (it != poses_cache_.end ())
       {
