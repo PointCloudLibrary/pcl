@@ -44,7 +44,7 @@ if(build)
         #include/pcl/${SUBSYS_NAME}/rsd.h
         include/pcl/${SUBSYS_NAME}/statistical_multiscale_interest_region_extraction.h
         include/pcl/${SUBSYS_NAME}/vfh.h
-        include/pcl/${SUBSYS_NAME}/esf.h        
+        #include/pcl/${SUBSYS_NAME}/esf.h        
         include/pcl/${SUBSYS_NAME}/3dsc.h
         include/pcl/${SUBSYS_NAME}/usc.h
         include/pcl/${SUBSYS_NAME}/boundary.h
@@ -88,7 +88,7 @@ if(build)
         #include/pcl/${SUBSYS_NAME}/impl/rsd.hpp
         include/pcl/${SUBSYS_NAME}/impl/statistical_multiscale_interest_region_extraction.hpp
         include/pcl/${SUBSYS_NAME}/impl/vfh.hpp
-        include/pcl/${SUBSYS_NAME}/impl/esf.hpp         
+        #include/pcl/${SUBSYS_NAME}/impl/esf.hpp         
         include/pcl/${SUBSYS_NAME}/impl/3dsc.hpp
         include/pcl/${SUBSYS_NAME}/impl/usc.hpp
         include/pcl/${SUBSYS_NAME}/impl/boundary.hpp
@@ -127,7 +127,7 @@ if(build)
         #src/rsd.cpp
         src/statistical_multiscale_interest_region_extraction.cpp
         src/vfh.cpp
-        src/esf.cpp        
+        #src/esf.cpp        
         src/3dsc.cpp
         src/usc.cpp
         src/range_image_border_extractor.cpp
