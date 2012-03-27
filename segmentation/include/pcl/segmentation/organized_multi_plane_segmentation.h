@@ -215,6 +215,14 @@ namespace pcl
         */
       void
       segmentAndRefine (std::vector<PlanarRegion<PointT> >& regions);
+
+      void
+      segmentAndRefine (std::vector<PlanarRegion<PointT> >& regions,
+                        std::vector<ModelCoefficients>& model_coefficients,
+                        std::vector<PointIndices>& inlier_indices,
+                        PointCloudLPtr& labels,
+                        std::vector<pcl::PointIndices>& label_indices,
+                        std::vector<pcl::PointIndices>& boundary_indices);
       
       /** \brief Perform a refinement of an initial segmentation, by comparing points to adjacent regions detected by the initial segmentation.
         * \param [in] model_coefficients The list of segmented model coefficients
