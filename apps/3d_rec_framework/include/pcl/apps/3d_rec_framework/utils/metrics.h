@@ -97,7 +97,7 @@ namespace Metrics
 
       template<typename Iterator1, typename Iterator2>
         ResultType
-        operator() (Iterator1 a, Iterator2 b, size_t size) const
+        operator() (Iterator1 a, Iterator2 b, size_t size, ResultType worst_dist = -1) const
         {
           ResultType result = ResultType ();
           ResultType min0, min1, min2, min3;
