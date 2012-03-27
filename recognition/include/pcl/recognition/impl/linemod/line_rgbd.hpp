@@ -353,6 +353,8 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::computeTransformedTemplatePoints (
 
   const size_t nr_points = template_point_cloud.size ();
   cloud.resize (nr_points);
+  cloud.width = template_point_cloud.width;
+  cloud.height = template_point_cloud.height;
   for (size_t point_index = 0; point_index < nr_points; ++point_index)
   {
     pcl::PointXYZRGBA point = template_point_cloud.points[point_index];
