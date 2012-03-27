@@ -283,7 +283,7 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV (pcl::TextureMesh &tex_mesh)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> void
-pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &tex_mesh, std::vector<Camera> &cams)
+	pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &tex_mesh, std::vector<Camera, Eigen::aligned_allocator<Camera> > &cams)
 {
 
   if (tex_mesh.tex_polygons.size () != cams.size () + 1)
@@ -554,7 +554,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const pcl::TextureMesh &tex
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> int
 pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pcl::TextureMesh &sorted_mesh,
-                                                  const std::vector<Camera> &cameras, const double octree_voxel_size,
+                                                  const std::vector<Camera, Eigen::aligned_allocator<Camera> > &cameras, const double octree_voxel_size,
                                                   PointCloud &visible_pts)
 {
   if (tex_mesh.tex_polygons.size () != 1)

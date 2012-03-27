@@ -150,7 +150,7 @@ namespace pcl
         * \param[in] cams cameras used for UV mapping
         */
       void
-      mapMultipleTexturesToMeshUV (pcl::TextureMesh &tex_mesh, std::vector<Camera> &cams);
+      mapMultipleTexturesToMeshUV (pcl::TextureMesh &tex_mesh, std::vector<Camera, Eigen::aligned_allocator<Camera> > &cams);
 
       /** \brief computes UV coordinates of point, observed by one particular camera
         * \param[in] pt XYZ point to project on camera plane
@@ -236,7 +236,7 @@ namespace pcl
         * \param[out] visible_pts cloud containing only visible points
         */
       int
-      sortFacesByCamera (pcl::TextureMesh &tex_mesh, pcl::TextureMesh &sorted_mesh, const std::vector<Camera> &cameras,
+      sortFacesByCamera (pcl::TextureMesh &tex_mesh, pcl::TextureMesh &sorted_mesh, const std::vector<Camera, Eigen::aligned_allocator<Camera> > &cameras,
                          const double octree_voxel_size, PointCloud &visible_pts);
 
       /** \brief Colors a point cloud, depending on its occlusions.

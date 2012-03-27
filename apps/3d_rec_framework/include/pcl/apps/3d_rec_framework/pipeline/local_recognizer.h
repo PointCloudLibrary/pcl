@@ -91,7 +91,7 @@ namespace pcl
         int ICP_iterations_;
 
         boost::shared_ptr<std::vector<ModelT> > models_;
-        boost::shared_ptr<std::vector<Eigen::Matrix4f> > transforms_;
+        boost::shared_ptr<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > transforms_;
 
         //load features from disk and create flann structure
         void
@@ -193,7 +193,7 @@ namespace pcl
           return models_;
         }
 
-        boost::shared_ptr<std::vector<Eigen::Matrix4f> >
+        boost::shared_ptr<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > >
         getTransforms ()
         {
           return transforms_;
