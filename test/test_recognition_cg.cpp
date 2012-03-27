@@ -130,7 +130,7 @@ TEST (PCL, Hough3DGrouping)
   clusterer.setSceneRf (scene_rf);
   clusterer.setModelSceneCorrespondences (model_scene_corrs_);
   clusterer.setHoughBinSize (0.03);
-  clusterer.setHoughThreshold (5);
+  clusterer.setHoughThreshold (25);
   EXPECT_TRUE (clusterer.recognize (rototranslations));
 
   //Assertions
