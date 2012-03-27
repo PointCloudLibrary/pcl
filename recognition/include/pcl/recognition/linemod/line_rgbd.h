@@ -197,7 +197,7 @@ namespace pcl
         */
       void
       computeTransformedTemplatePoints (const size_t detection_id,
-                                        pcl::PointCloud<pcl::PointXYZRGB> & cloud);
+                                        pcl::PointCloud<pcl::PointXYZRGBA> & cloud);
 
       /** \brief Finds the indices of the points in the input cloud which correspond to the specified detection. 
         *        The detection ID refers to the last call of the method detect (...).
@@ -207,7 +207,7 @@ namespace pcl
       findObjectPointIndices (const size_t detection_id)
       {
         if (detection_id >= detections_.size ())
-          std::cerr << "ERROR pcl::LineRGBD::computeTransformedTemplatePoints - detection_id is out of bounds" << std::endl;
+          PCL_ERROR ("ERROR pcl::LineRGBD::computeTransformedTemplatePoints - detection_id is out of bounds\n");
 
         // TODO: compute transform from detection
         // TODO: transform template points
@@ -224,7 +224,7 @@ namespace pcl
       alignTemplatePoints (const size_t detection_id)
       {
         if (detection_id >= detections_.size ())
-          std::cerr << "ERROR pcl::LineRGBD::computeTransformedTemplatePoints - detection_id is out of bounds" << std::endl;
+          PCL_ERROR ("ERROR pcl::LineRGBD::computeTransformedTemplatePoints - detection_id is out of bounds\n");
 
         // TODO: compute transform from detection
         // TODO: transform template points
@@ -270,7 +270,8 @@ namespace pcl
       typename pcl::PointCloud<PointRGBT>::ConstPtr cloud_rgb_;
 
       /** \brief Point clouds corresponding to the templates. */
-      std::vector<pcl::PointCloud<pcl::PointXYZRGB>, Eigen::aligned_allocator<pcl::PointCloud<pcl::PointXYZRGB> > > template_point_clouds_;
+      std::vector<pcl::PointCloud<pcl::PointXYZRGBA>,
+                  Eigen::aligned_allocator<pcl::PointCloud<pcl::PointXYZRGBA> > > template_point_clouds_;
       /** \brief Bounding boxes corresonding to the templates. */
       std::vector<pcl::BoundingBoxXYZ> bounding_boxes_;
       /** \brief Object IDs corresponding to the templates. */
