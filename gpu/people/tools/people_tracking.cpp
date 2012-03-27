@@ -14,9 +14,11 @@
 #include <pcl/segmentation/extract_labeled_clusters.h>
 #include <pcl/segmentation/seeded_hue_segmentation.h>
 #include <pcl/people/conversion/conversions.h>
+#include <opencv2/opencv.hpp>
+#include <pcl/people/label_skeleton/conversion.h>
 #include <pcl/people/trees/tree_live.h>
-#include <pcl/filters/passthrough.h>
-#include <pcl/common/time.h>
+//#include <pcl/filters/passthrough.h>
+//#include <pcl/common/time.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/console/parse.h>
@@ -26,17 +28,34 @@ class PeopleTrackingApp
   public:
     PeopleTrackingApp () : viewer ("PCL People Tracking App") {}
 
-    void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud)
+    void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
     {
       if (!viewer.wasStopped())
         viewer.showCloud (cloud);
+      ////////////////////CALLBACK IMPL/////////////////////
+
+      /// @todo rewrite this to a pointcloud::Ptr
+      pcl::PointCloud<pcl::PointXYZRGB> cloud_in;
+      pcl::PointCloud<pcl::PointXYZRGB> cloud_in_filt;
+      cloud_in = *cloud;
+
+      cv::Mat dmat(cloud_in.height, cloud_in.width, CV_16U);
+
+      // Project pointcloud back into the imageplane
+      // TODO: do this directly in GPU?
+      pcl::people::label_skeleton::makeDepthImage16FromPointCloud(dmat, cloud_in);
+
+      // Process the depthimage (CUDA)
+      m_proc->process(dmat, m_lmap);
+
+      ////////////////////END CALLBACK IMPL/////////////////
     }
 
     void run ()
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
-      boost::function<void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&)> f =
+      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
         boost::bind (&PeopleTrackingApp::cloud_cb_, this, _1);
 
       interface->registerCallback (f);
@@ -49,7 +68,12 @@ class PeopleTrackingApp
       interface->stop ();
     }
 
-    pcl::visualization::CloudViewer viewer;
+    pcl::visualization::CloudViewer         viewer;
+    pcl::people::trees::MultiTreeLiveProc*  m_proc;
+    cv::Mat                                 m_lmap;
+    cv::Mat                                 m_cmap;
+    cv::Mat                                 cmap;
+    cv::Mat                                 m_bmap;
 };
 
 int print_help()
@@ -79,23 +103,23 @@ int main(int argc, char** argv)
   assert(numTrees > 0 );
   assert(numTrees <= 4 );
 
-  PeopleTrackingApp a;
-  a.run();
+  /// Create the app
+  PeopleTrackingApp app;
 
-/*
-  /// load the first tree file
+  /// Load the first tree
   std::ifstream fin0(treeFilenames[0].c_str() );
   assert(fin0.is_open() );
-  m_proc = new MultiTreeLiveProc(fin0);
+  app.m_proc = new pcl::people::trees::MultiTreeLiveProc(fin0);
   fin0.close();
 
   /// Load the other tree files
   for(int ti=1;ti<numTrees;++ti) {
     std::ifstream fin(treeFilenames[ti].c_str() );
     assert(fin.is_open() );
-    m_proc->addTree(fin);
+    app.m_proc->addTree(fin);
     fin.close();
   }
-*/
+  /// Run the app
+  app.run();
   return 0;
 }

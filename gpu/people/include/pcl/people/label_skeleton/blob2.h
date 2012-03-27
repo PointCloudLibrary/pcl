@@ -5,8 +5,8 @@
  * @brief This file contains the Blob2 structure and the inline <<-operator for it
  **/
 
-#ifndef PCL_PEOPLE_LABELSKELETON_BLOB2_H
-#define PCL_PEOPLE_LABELSKELETON_BLOB2_H
+#ifndef PCL_PEOPLE_LABEL_SKELETON_BLOB2_H_
+#define PCL_PEOPLE_LABEL_SKELETON_BLOB2_H_
 
 #include <vector>
 
@@ -92,6 +92,7 @@ namespace pcl
         }
         return (os);
       }
+    } // end namespace label_skeleton
   } // end namespace people
 } // end namespace pcl
 

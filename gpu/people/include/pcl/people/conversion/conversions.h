@@ -34,8 +34,8 @@
  *  @author: Koen Buys
  */
 
-#ifndef PCL_PEOPLE_DISPLAY_CONVERSION_H_
-#define PCL_PEOPLE_DISPLAY_CONVERSION_H_
+#ifndef PCL_PEOPLE_CONVERSION_CONVERSIONS_H_
+#define PCL_PEOPLE_CONVERSION_CONVERSIONS_H_
 
 #include <pcl/pcl_base.h>
 #include <pcl/people/display/colormap.h>

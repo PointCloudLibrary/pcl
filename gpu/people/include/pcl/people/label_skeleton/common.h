@@ -4,8 +4,8 @@
  * @file common.h
  * @brief This file contains all LUT for the library and all common defines
  **/
-#ifndef PCL_PEOPLE_LABELSKELETON_COMMON_H_
-#define PCL_PEOPLE_LABELSKELETON_COMMON_H_
+#ifndef PCL_PEOPLE_LABEL_SKELETON_COMMON_H_
+#define PCL_PEOPLE_LABEL_SKELETON_COMMON_H_
 
 // Some defines for the tree
 #define ROOT        -1
@@ -199,7 +199,7 @@ namespace pcl
     2             // 24 Lchest
     };
 
-    } // End namespace LabelSkel
+    } // End namespace label_skeletons
   } // End namespace people
 } // End namespace pcl
 #endif

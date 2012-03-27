@@ -79,7 +79,6 @@ namespace pcl
           void*                  m_multilmap_device;
           void*                  m_lmap_device;
       };
-
     } // end namespace trees
   } // end namespace people
 } // end namespace pcl
