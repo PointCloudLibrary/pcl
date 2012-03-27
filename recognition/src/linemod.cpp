@@ -37,7 +37,9 @@
 
 #include <pcl/recognition/linemod.h>
 
+#ifdef __SSE2__
 #include <emmintrin.h>
+#endif
 
 #include <fstream>
 
