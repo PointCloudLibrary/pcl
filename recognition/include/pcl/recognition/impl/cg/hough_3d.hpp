@@ -61,7 +61,14 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::co
   pcl::PointCloud<Normal>::Ptr normal_cloud (new pcl::PointCloud<Normal> ());
   NormalEstimation<PointType, Normal> norm_est;
   norm_est.setInputCloud (input);
-  norm_est.setRadiusSearch (local_rf_search_radius_);
+  if (local_rf_normals_search_radius_ <= 0.0f)
+  {
+    norm_est.setKSearch (15);
+  }
+  else
+  {
+    norm_est.setRadiusSearch (local_rf_normals_search_radius_);
+  }  
   norm_est.compute (*normal_cloud);
 
   BOARDLocalReferenceFrameEstimation<PointType, Normal, PointRfType> rf_est;

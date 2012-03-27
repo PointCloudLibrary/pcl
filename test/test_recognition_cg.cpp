@@ -220,17 +220,17 @@ main (int argc, char** argv)
 
   for (size_t i = 0; i < scene_descriptors_->size (); ++i)
   {
-	  if ( pcl_isfinite( scene_descriptors_->at (i).descriptor[0] ) )
-	  {
-		vector<int> neigh_indices (1);
-		vector<float> neigh_sqr_dists (1);
-		int found_neighs = match_search.nearestKSearch (scene_descriptors_->at (i), 1, neigh_indices, neigh_sqr_dists);
-		if(found_neighs == 1 && neigh_sqr_dists[0] < 0.25f)
-		{
-			Correspondence corr (neigh_indices[0], i, neigh_sqr_dists[0]);
-			model_scene_corrs_->push_back (corr);
-		}
-	  }
+    if ( pcl_isfinite( scene_descriptors_->at (i).descriptor[0] ) )
+    {
+      vector<int> neigh_indices (1);
+      vector<float> neigh_sqr_dists (1);
+      int found_neighs = match_search.nearestKSearch (scene_descriptors_->at (i), 1, neigh_indices, neigh_sqr_dists);
+      if(found_neighs == 1 && neigh_sqr_dists[0] < 0.25f)
+      {
+        Correspondence corr (neigh_indices[0], i, neigh_sqr_dists[0]);
+        model_scene_corrs_->push_back (corr);
+      }
+    }
   }
 
   testing::InitGoogleTest (&argc, argv);

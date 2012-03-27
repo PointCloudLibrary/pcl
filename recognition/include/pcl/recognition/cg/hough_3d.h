@@ -170,6 +170,7 @@ namespace pcl
         , hough_bin_size_ (1.0)
         , use_interpolation_ (true)
         , use_distance_weight_ (false)
+        , local_rf_normals_search_radius_ (0.0f)
         , local_rf_search_radius_ (0.0f)
         , hough_space_ ()
         , found_transformations_ ()
@@ -351,6 +352,32 @@ namespace pcl
       }	
 
       /** \brief If the Local reference frame has not been set for either the model cloud or the scene cloud,
+        * this algorithm makes the computation itself but needs a suitable search radius to compute the normals
+        * in order to subsequently compute the RF (if not set a default 15 nearest neighbors search is performed).
+        *
+        * \param[in] local_rf_normals_search_radius the normals search radius for the local reference frame calculation.
+        */
+      inline void
+      setLocalRfNormalsSearchRadius (float local_rf_normals_search_radius)
+      {
+        local_rf_normals_search_radius_ = local_rf_normals_search_radius;
+        needs_training_ = true;
+        hough_space_initialized_ = false;
+      }
+
+      /** \brief If the Local reference frame has not been set for either the model cloud or the scene cloud,
+        * this algorithm makes the computation itself but needs a suitable search radius to compute the normals
+        * in order to subsequently compute the RF (if not set a default 15 nearest neighbors search is performed).
+        *
+        * \return the normals search radius for the local reference frame calculation.
+        */
+      inline float
+      getLocalRfNormalsSearchRadius () const
+      {
+        return (local_rf_normals_search_radius_);
+      }
+
+      /** \brief If the Local reference frame has not been set for either the model cloud or the scene cloud,
         * this algorithm makes the computation itself but needs a suitable search radius to do so.
         * \attention This parameter NEEDS to be set if the reference frames are not precomputed externally, 
         * otherwise the recognition results won't be correct.
@@ -423,6 +450,9 @@ namespace pcl
 
       /** \brief Use the weighted correspondence distance when casting votes. */
       bool use_distance_weight_;
+
+      /** \brief Normals search radius for the potential Rf calculation. */
+      float local_rf_normals_search_radius_;
 
       /** \brief Search radius for the potential Rf calculation. */
       float local_rf_search_radius_;
