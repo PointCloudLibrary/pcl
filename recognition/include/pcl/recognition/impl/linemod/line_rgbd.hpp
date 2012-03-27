@@ -398,7 +398,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth ()
     }
 
     const size_t nr_bins = 1000;
-    const float step_size = (max_depth - min_depth) / static_cast<float> (nr_bins+1);
+    const float step_size = (max_depth - min_depth) / static_cast<float> (nr_bins-1);
     std::vector<size_t> depth_bins (nr_bins, 0);
     for (size_t row_index = start_y; row_index < end_y; ++row_index)
     {
