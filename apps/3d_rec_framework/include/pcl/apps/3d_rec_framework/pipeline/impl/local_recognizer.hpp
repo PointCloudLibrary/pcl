@@ -406,10 +406,8 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     if (use_cache_)
     {
       std::pair<std::string, int> pair_model_view = std::make_pair (model.id_, view_id);
-      //std::map<std::pair<std::string, int>, Eigen::Matrix4f, std::less<std::pair<std::string, int> >, Eigen::aligned_allocator<Eigen::Matrix4f> >::iterator it = poses_cache_.find (pair_model_view);
-	  std::map<std::pair<std::string, int>, Eigen::Matrix4f>::iterator it;
-	  it = poses_cache_.find (pair_model_view);
-
+      std::map<std::pair<std::string, int>, Eigen::Matrix4f, std::less<std::pair<std::string, int> >, Eigen::aligned_allocator<Eigen::Matrix4f> >::iterator it = poses_cache_.find (pair_model_view);
+	
       if (it != poses_cache_.end ())
       {
         pose_matrix = it->second;
