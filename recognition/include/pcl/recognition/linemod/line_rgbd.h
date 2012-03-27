@@ -90,6 +90,8 @@ namespace pcl
         float response;
         /** \brief The 3D bounding box of the detection. */
         BoundingBoxXYZ bounding_box;
+        /** \brief The 2D template region of the detection. */
+        RegionXY region;
       };
 
       /** \brief Constructor */
@@ -227,6 +229,14 @@ namespace pcl
         // TODO: compute transform from detection
         // TODO: transform template points
       }
+
+      /** \brief Refines the found detections along the depth. */
+      void
+      refineDetectionsAlongDepth ();
+
+      /** \brief Applies projective ICP on detections to find their correct position in depth. */
+      void
+      applyProjectiveDepthICPOnDetections ();
 
       /** \brief Checks for overlapping detections, removes them and keeps only the strongest one. */
       void
