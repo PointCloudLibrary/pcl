@@ -67,6 +67,7 @@ namespace pcl
     public:
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
+      using Feature<PointInT, PointOutT>::input_;
       using Feature<PointInT, PointOutT>::indices_;
       using Feature<PointInT, PointOutT>::k_;
       using Feature<PointInT, PointOutT>::search_parameter_;
@@ -122,6 +123,7 @@ namespace pcl
     public:
       using Feature<pcl::PointXYZRGBA, PointOutT>::feature_name_;
       using Feature<pcl::PointXYZRGBA, PointOutT>::getClassName;
+      using Feature<pcl::PointXYZRGBA, PointOutT>::input_;
       using Feature<pcl::PointXYZRGBA, PointOutT>::indices_;
       using Feature<pcl::PointXYZRGBA, PointOutT>::k_;
       using Feature<pcl::PointXYZRGBA, PointOutT>::search_parameter_;

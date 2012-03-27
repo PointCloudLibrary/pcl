@@ -63,23 +63,48 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
   for (int i = 0; i < threads_; i++)
     shot[i].setZero (descLength_);
 
+  output.is_dense = true;
   // Iterating over the entire index vector
   #pragma omp parallel for num_threads(threads_)
   for (int idx = 0; idx < data_size; ++idx)
   {
-	 // Allocate enough space to hold the results
-    // \note This resize is irrelevant for a radiusSearch ().
-    std::vector<int> nn_indices (k_);
-    std::vector<float> nn_dists (k_);
-
-    this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
-
-	// Estimate the SHOT at each patch
 #ifdef _OPENMP
     int tid = omp_get_thread_num ();
 #else
     int tid = 0;
 #endif
+
+	 // Allocate enough space to hold the results
+    // \note This resize is irrelevant for a radiusSearch ().
+    std::vector<int> nn_indices (k_);
+    std::vector<float> nn_dists (k_);
+
+    bool lrf_is_nan = false;
+    const PointRFT& current_frame = (*frames_)[idx];
+    if (!pcl_isfinite (current_frame.rf[0]) ||
+        !pcl_isfinite (current_frame.rf[4]) ||
+        !pcl_isfinite (current_frame.rf[11]))
+    {
+      PCL_WARN ("[pcl::%s::computeFeature] The local reference frame is not valid! Aborting description of point with index %d\n",
+        getClassName ().c_str (), (*indices_)[idx]);
+      lrf_is_nan = true;
+    }
+
+    if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+        lrf_is_nan ||
+        this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+    {
+      // Copy into the resultant cloud
+      for (int d = 0; d < shot[tid].size (); ++d)
+        output.points[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
+      for (int d = 0; d < 9; ++d)
+        output.points[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
+
+      output.is_dense = false;
+      continue;
+    }
+
+  // Estimate the SHOT at each patch
     this->computePointSHOT (idx, nn_indices, nn_dists, shot[tid]);
 
 	// Copy into the resultant cloud
@@ -116,23 +141,47 @@ pcl::SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT>::compute
   for (int i = 0; i < threads_; i++)
     shot[i].setZero (descLength_);
 
+  output.is_dense = true;
   // Iterating over the entire index vector
 #pragma omp parallel for num_threads(threads_)
   for (int idx = 0; idx < data_size; ++idx)
   {
-    // Allocate enough space to hold the results
-    // \note This resize is irrelevant for a radiusSearch ().
-    std::vector<int> nn_indices (k_);
-    std::vector<float> nn_dists (k_);
-
-    this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
-
-    // Estimate the SHOT at each patch
 #ifdef _OPENMP
     int tid = omp_get_thread_num ();
 #else
     int tid = 0;
 #endif
+    // Allocate enough space to hold the results
+    // \note This resize is irrelevant for a radiusSearch ().
+    std::vector<int> nn_indices (k_);
+    std::vector<float> nn_dists (k_);
+
+    bool lrf_is_nan = false;
+    const PointRFT& current_frame = (*frames_)[idx];
+    if (!pcl_isfinite (current_frame.rf[0]) ||
+        !pcl_isfinite (current_frame.rf[4]) ||
+        !pcl_isfinite (current_frame.rf[11]))
+    {
+      PCL_WARN ("[pcl::%s::computeFeature] The local reference frame is not valid! Aborting description of point with index %d\n",
+        getClassName ().c_str (), (*indices_)[idx]);
+      lrf_is_nan = true;
+    }
+
+    if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+        lrf_is_nan ||
+        this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+    {
+      // Copy into the resultant cloud
+      for (int d = 0; d < shot[tid].size (); ++d)
+        output.points[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
+      for (int d = 0; d < 9; ++d)
+        output.points[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
+
+      output.is_dense = false;
+      continue;
+    }
+
+    // Estimate the SHOT at each patch
     this->computePointSHOT (idx, nn_indices, nn_dists, shot[tid]);
 
     // Copy into the resultant cloud
