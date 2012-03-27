@@ -161,7 +161,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name
   bounding_boxes_.resize (template_point_clouds_.size ());
   for (size_t i = 0; i < template_point_clouds_.size (); ++i)
   {
-    PointCloud<PointXYZRGB> & template_point_cloud = template_point_clouds_[i];
+    PointCloud<PointXYZRGBA> & template_point_cloud = template_point_clouds_[i];
     BoundingBoxXYZ & bb = bounding_boxes_[i];
     bb.x = bb.y = bb.z = std::numeric_limits<float>::max ();
     bb.width = bb.height = bb.depth = 0.0f;
@@ -211,7 +211,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name
 
     for (size_t j = 0; j < template_point_cloud.size (); ++j)
     {
-      PointXYZRGB p = template_point_cloud.points[j];
+      PointXYZRGBA p = template_point_cloud.points[j];
 
       if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
         continue;
@@ -460,7 +460,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections ()
     typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & detection = detections_[detection_index];
 
     const size_t template_id = detection.template_id;
-    pcl::PointCloud<pcl::PointXYZRGB> & point_cloud = template_point_clouds_[template_id];
+    pcl::PointCloud<pcl::PointXYZRGBA> & point_cloud = template_point_clouds_[template_id];
 
     const size_t start_x = detection.region.x;
     const size_t start_y = detection.region.y;
@@ -472,7 +472,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections ()
     {
       for (size_t col_index = 0; col_index < pc_width; ++col_index)
       {
-        const pcl::PointXYZRGB & point_template = point_cloud (col_index, row_index);
+        const pcl::PointXYZRGBA & point_template = point_cloud (col_index, row_index);
         const PointXYZT & point_input = (*cloud_xyz_) (col_index + start_x, row_index + start_y);
 
         if (!pcl_isfinite (point_template.z) || !pcl_isfinite (point_input.z))
