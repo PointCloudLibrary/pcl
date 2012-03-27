@@ -84,7 +84,6 @@ main (int argc, char** argv)
   line_rgbd.setDetectionThreshold (detect_thresh);
 
   // Load the template LMT and PCD files
-  std::vector<PointCloudXYZRGBA> template_points (lmt_file_indices.size ());
   for (size_t i = 0; i < lmt_file_indices.size (); ++i)
   {
     // Load the LMT file
