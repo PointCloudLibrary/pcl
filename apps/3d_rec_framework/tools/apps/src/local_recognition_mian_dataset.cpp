@@ -129,7 +129,7 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
 
       //visualize results
       boost::shared_ptr < std::vector<ModelT> > models = local.getModels ();
-      boost::shared_ptr<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > transforms = local.getTransforms ();
+      boost::shared_ptr < std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > transforms = local.getTransforms ();
 
       for (size_t j = 0; j < models->size (); j++)
       {
@@ -157,11 +157,56 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
     }
   }
 
+void
+getModelsInDirectory (bf::path & dir, std::string & rel_path_so_far, std::vector<std::string> & relative_paths, std::string & ext)
+{
+  bf::directory_iterator end_itr;
+  for (bf::directory_iterator itr (dir); itr != end_itr; ++itr)
+  {
+    //check if its a directory, then get models in it
+    if (bf::is_directory (*itr))
+    {
+#if BOOST_FILESYSTEM_VERSION == 3
+      std::string so_far = rel_path_so_far + (itr->path ().filename ()).string() + "/";
+#else
+      std::string so_far = rel_path_so_far + (itr->path ()).filename () + "/";
+#endif
+
+      bf::path curr_path = itr->path ();
+      getModelsInDirectory (curr_path, so_far, relative_paths, ext);
+    }
+    else
+    {
+      //check that it is a ply file and then add, otherwise ignore..
+      std::vector < std::string > strs;
+#if BOOST_FILESYSTEM_VERSION == 3
+      std::string file = (itr->path ().filename ()).string();
+#else
+      std::string file = (itr->path ()).filename ();
+#endif
+
+      boost::split (strs, file, boost::is_any_of ("."));
+      std::string extension = strs[strs.size () - 1];
+
+      if (extension.compare (ext) == 0)
+      {
+#if BOOST_FILESYSTEM_VERSION == 3
+        std::string path = rel_path_so_far + (itr->path ().filename ()).string();
+#else
+        std::string path = rel_path_so_far + (itr->path ()).filename ();
+#endif
+
+        relative_paths.push_back (path);
+      }
+    }
+  }
+}
+
 typedef pcl::ReferenceFrame RFType;
 
 int CG_SIZE_ = 5;
 float CG_THRESHOLD_ = 0.005f;
-int CG_ALG=0;
+int CG_ALG = 0;
 
 int
 main (int argc, char ** argv)
@@ -184,8 +229,22 @@ main (int argc, char ** argv)
 
   if (mians_scenes.compare ("") == 0)
   {
-    PCL_ERROR("Set the directory containing mians scenes using the -mians_scenes_dir [dir] option");
+    PCL_ERROR("Set the directory containing mians scenes using the -mians_scenes_dir [dir] option\n");
     return -1;
+  }
+
+  bf::path models_dir_path = path;
+  if (!bf::exists (models_dir_path))
+  {
+    PCL_ERROR("Models dir path %s does not exist, use -models_dir [dir] option\n", path.c_str());
+    return -1;
+  } else {
+    std::vector < std::string > files;
+    std::string start = "";
+    std::string ext = std::string ("ply");
+    bf::path dir = models_dir_path;
+    getModelsInDirectory (dir, start, files, ext);
+    assert(files.size() == 4);
   }
 
   //configure mesh source
@@ -216,18 +275,21 @@ main (int argc, char ** argv)
   //configure cg algorithm (geometric consistency grouping)
   boost::shared_ptr<pcl::CorrespondenceGrouping<pcl::PointXYZ, pcl::PointXYZ> > cast_cg_alg;
 
-  if(CG_ALG==0) {
+  if (CG_ALG == 0)
+  {
     boost::shared_ptr<pcl::GeometricConsistencyGrouping<pcl::PointXYZ, pcl::PointXYZ> > gcg_alg (
                                                                                                  new pcl::GeometricConsistencyGrouping<pcl::PointXYZ,
                                                                                                      pcl::PointXYZ>);
     gcg_alg->setGCThreshold (CG_SIZE_);
     gcg_alg->setGCSize (CG_THRESHOLD_);
     cast_cg_alg = boost::static_pointer_cast<pcl::CorrespondenceGrouping<pcl::PointXYZ, pcl::PointXYZ> > (gcg_alg);
-  } else if(CG_ALG==1){
+  }
+  else if (CG_ALG == 1)
+  {
     //configure cg algorithm (hough 3d)
     boost::shared_ptr<pcl::Hough3DGrouping<pcl::PointXYZ, pcl::PointXYZ> > hough_3d_alg (new pcl::Hough3DGrouping<pcl::PointXYZ, pcl::PointXYZ>);
     hough_3d_alg->setLocalRfSearchRadius (0.04f);
-    hough_3d_alg->setLocalRfNormalsSearchRadius(0.015f);
+    hough_3d_alg->setLocalRfNormalsSearchRadius (0.015f);
     hough_3d_alg->setHoughBinSize (CG_THRESHOLD_);
     hough_3d_alg->setHoughThreshold (CG_SIZE_);
     cast_cg_alg = boost::static_pointer_cast<pcl::CorrespondenceGrouping<pcl::PointXYZ, pcl::PointXYZ> > (hough_3d_alg);
