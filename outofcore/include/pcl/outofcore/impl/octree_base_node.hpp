@@ -113,7 +113,7 @@ namespace pcl
         if (!boost::filesystem::exists (thisdir_))
         {
           PCL_ERROR ("Could not find dir %s\n",thisdir_.c_str ());
-          throw(OctreeException (OctreeException::OCT_MISSING_DIR));
+          PCL_THROW_EXCEPTION (PCLException, "Outofcore Exception: missing directory")
         }
 
         thisnodeindex_ = path;
@@ -146,7 +146,7 @@ namespace pcl
         if (!loaded)
         {
           PCL_DEBUG ("Could not find index\n");
-          throw(OctreeException (OctreeException::OCT_MISSING_IDX));
+          PCL_THROW_EXCEPTION (PCLException, "Outofcore: Could not find node index");
         }
 
       }
@@ -193,7 +193,7 @@ namespace pcl
         //boost::filesystem::remove_all(dir);
         //boost::filesystem::create_directory(dir);
         PCL_DEBUG ("Need empty directory structure. Dir %s exists and is a file.\n",dir.c_str ());
-        throw(OctreeException::OCT_BAD_PATH);
+        PCL_THROW_EXCEPTION (PCLException, "Bad Path: Directory Already Exists");
       }
 
       // Create a unique id for node file name
@@ -471,7 +471,7 @@ namespace pcl
       {
         if (skip_bb_check)//trust me, just add the points
         {
-          root_->m_tree_->count_point (this->depth_, p.size ());
+          root_->m_tree_->incrementPointsInLOD (this->depth_, p.size ());
           payload_->insertRange (p.data (), p.size ());
           return (p.size ());
         }
@@ -488,7 +488,7 @@ namespace pcl
 
           if (!buff.empty ())
           {
-            root_->m_tree_->count_point (this->depth_, buff.size ());
+            root_->m_tree_->incrementPointsInLOD (this->depth_, buff.size ());
             payload_->insertRange (buff.data (), buff.size ());
           }
           return (buff.size ());
@@ -661,7 +661,7 @@ namespace pcl
       if(skip_bb_check)
       {
         // Increment point count for node
-        root_->m_tree_->count_point (this->depth_, p.size ());
+        root_->m_tree_->incrementPointsInLOD (this->depth_, p.size ());
 
         // Insert point data
         payload_->insertRange (p.data (), p.size ());
@@ -682,7 +682,7 @@ namespace pcl
 
         if (!buff.empty ())
         {
-          root_->m_tree_->count_point (this->depth_, buff.size ());
+          root_->m_tree_->incrementPointsInLOD (this->depth_, buff.size ());
           payload_->insertRange (buff.data (), buff.size ());
         }
         return (buff.size ());
@@ -806,7 +806,7 @@ namespace pcl
       if(!insertBuff.empty())
       {
         // Increment point count for node
-        root_->m_tree_->count_point (this->depth_, insertBuff.size());
+        root_->m_tree_->incrementPointsInLOD (this->depth_, insertBuff.size());
         // Insert sampled point data
         payload_->insertRange ( &(insertBuff.front ()), insertBuff.size());
       }
@@ -1217,7 +1217,7 @@ namespace pcl
       if (super == NULL)
       {
         PCL_DEBUG ( "super is null - don't make a root node this way!\n" );
-        throw(OctreeException (OctreeException::OCT_BAD_PARENT));
+        PCL_THROW_EXCEPTION (PCLException, "Outofcore Exception: Bad parent");
       }
 
       this->parent_ = super;
@@ -1380,7 +1380,6 @@ namespace pcl
     template<typename Container, typename PointT> void
     octree_base_node<Container, PointT>::flushToDisk ()
     {
-      payload_->flush (true);
       for (size_t i = 0; i < 8; i++)
       {
         if (children_[i])
@@ -1453,17 +1452,17 @@ namespace pcl
       if (!((version) && (bb_min) && (bb_max) && (bin)))
       {
         PCL_ERROR ( "index %s failed to parse! Doesn't contain all attributes\n", path.c_str () );
-        throw (OctreeException (OctreeException::OCT_PARSE_FAILURE));
+        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Parse Failure: Metadata does not contain all attributes");
       }
       if ((version->type != cJSON_Number) || (bb_min->type != cJSON_Array) || (bb_max->type != cJSON_Array) || (bin->type != cJSON_String))
       {
         PCL_ERROR ( "index %s failed to parse! Invalid data types\n", path.c_str () );
-        throw (OctreeException (OctreeException::OCT_PARSE_FAILURE));        
+        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Parse Failure: Metadata contains invalid data types");
       }
       if (version->valuedouble != 2.0)
       {
         PCL_ERROR ( "index %s failed to parse!\n  Incompatible version", path.c_str () );
-        throw (OctreeException (OctreeException::OCT_PARSE_FAILURE));
+        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Parse Failure: Incompatible version");
       }
 
       //	version->valuedouble;
@@ -1535,8 +1534,7 @@ namespace pcl
         if (!boost::filesystem::exists (thisnode->thisdir_))
         {
           PCL_DEBUG ( "could not find dir %s\n",thisnode->thisdir_.c_str () );
-          throw (OctreeException (OctreeException::OCT_BAD_PATH));
-          
+          PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Exception: Could not find directory");
         }
 
         thisnode->thisnodeindex_ = path;
@@ -1574,7 +1572,7 @@ namespace pcl
         if (!loaded)
         {
           PCL_DEBUG ( "could not find index!\n");
-          throw (OctreeException (OctreeException::OCT_MISSING_IDX));
+          PCL_THROW_EXCEPTION (PCLException, "Could not find node metadata index file");
         }
 
       }

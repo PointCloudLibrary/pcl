@@ -226,7 +226,8 @@ namespace pcl
       // use this api, will allow counts up to 2^52 points to be stored correctly
       std::vector<double> lodPoints_db;
       lodPoints_db.insert (lodPoints_db.begin (), lodPoints_.begin (), lodPoints_.end ());
-      cJSON* numpts = cJSON_CreateDoubleArray (&(lodPoints_db.front ()), static_cast<double> (lodPoints_db.size ()));
+      assert ( static_cast<double> (lodPoints_db.size ()) - lodPoints_db.size () == 0 );
+      cJSON* numpts = cJSON_CreateDoubleArray (&(lodPoints_db.front ()), static_cast<double> (lodPoints_db.size ())); 
 
       cJSON_AddItemToObject (idx.get (), "name", name);
       cJSON_AddItemToObject (idx.get (), "version", version);
@@ -294,7 +295,7 @@ namespace pcl
       for (int i = 0; i < (lod->valueint + 1); i++)
       {
         //cJSON doesn't have explicit 64bit int, have to use double, get up to 2^52
-        lodPoints_[i] = boost::uint64_t (cJSON_GetArrayItem (numpts, i)->valuedouble);
+        lodPoints_[i] = static_cast<boost::uint64_t> (cJSON_GetArrayItem (numpts, i)->valuedouble );
       }
       max_depth_ = lod->valueint;
       coord_system_ = coord->valuestring;
@@ -302,7 +303,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> boost::uint64_t
-    octree_base<Container, PointT>::addDataToLeaf (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p)
+    octree_base<Container, PointT>::addDataToLeaf (const AlignedPointTVector& p)
     {
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
       boost::uint64_t pt_added = root_->addDataToLeaf (p, false);
@@ -339,7 +340,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> boost::uint64_t
-    octree_base<Container, PointT>::addDataToLeaf_and_genLOD (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p)
+    octree_base<Container, PointT>::addDataToLeaf_and_genLOD (const AlignedPointTVector& p)
     {
       // Lock the tree while writing
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
@@ -381,7 +382,10 @@ namespace pcl
     template<typename Container, typename PointT> void
     octree_base<Container, PointT>::getVoxelCenters(AlignedPointTVector &voxel_centers, size_t query_depth) const
     {
-      if (query_depth > max_depth_) query_depth = max_depth_;
+      if (query_depth > max_depth_) 
+      {
+        query_depth = max_depth_;
+      }
 
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       root_->getVoxelCenters (voxel_centers, query_depth);
@@ -492,7 +496,7 @@ namespace pcl
       {
         return;
       }
-
+      /** \todo @b loadcount mystery constant 2e7 for loading points; should parameterize */
       static const boost::uint64_t loadcount = boost::uint64_t (2e7);
       if ((current_branch[current_dims - 1]->numchildren () == 0)
           && (!current_branch[current_dims - 1]->hasUnloadedChildren ()))//at leaf: subsample, remove, and copy to higher nodes
@@ -503,7 +507,7 @@ namespace pcl
         boost::uint64_t leaf_start_size = leaf->payload->size ();
         if (leaf_start_size > 0)//skip empty
         {
-          for (boost::uint64_t startp = 0; startp < leaf_start_size; startp += loadcount)//load up to 5e7 pts at a time
+          for (boost::uint64_t startp = 0; startp < leaf_start_size; startp += loadcount)
           {
             //there are (current_dims-1) nodes above this one, indexed 0 thru (current_dims-2)
             for (size_t level = (current_dims - 1); level >= 1; level--)
@@ -516,7 +520,7 @@ namespace pcl
                                     double (current_dims - level));//each level up the chain gets sample_precent^l of the leaf's data
 
               //read in percent of node
-              std::vector<PointT, Eigen::aligned_allocator<PointT> > v;
+              AlignedPointTVector v;
               if ((startp + loadcount) < leaf_start_size)
               {
                 leaf->payload->readRangeSubSample (startp, loadcount, percent, v);
@@ -530,7 +534,7 @@ namespace pcl
               if (!v.empty ())
               {
                 target_parent->payload->insertRange (&(v.front ()), v.size ());
-                this->count_point (target_parent->depth, v.size ());
+                this->incrementPointsInLOD (target_parent->depth, v.size ());
               }
 
             }

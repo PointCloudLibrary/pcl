@@ -180,7 +180,7 @@ namespace pcl
          * Assume fully balanced tree -- all nodes have 8 children, and all branches
          * are same depth
          */
-        boost::uint64_t
+        inline boost::uint64_t
         getDepth () const
         {
           return max_depth_;
@@ -237,7 +237,7 @@ namespace pcl
          *  \todo overload this to use shared point cloud pointer
          */
         boost::uint64_t
-        addDataToLeaf (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p);
+        addDataToLeaf (const AlignedPointTVector& p);
 
         /** \brief Copies the points from the point_cloud falling within the bounding box of the octree to the
          *   out-of-core octree; this is an interface to addDataToLeaf and can be used multiple times.
@@ -257,7 +257,7 @@ namespace pcl
          * \todo overload this to use shared point cloud pointer
          */
         boost::uint64_t
-        addDataToLeaf_and_genLOD (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p);
+        addDataToLeaf_and_genLOD (const AlignedPointTVector& p);
 
         // DB Access
         // -----------------------------------------------------------------------
@@ -336,33 +336,6 @@ namespace pcl
         void
         DeAllocEmptyNodeCache ();
 
-        ////////////////////////////////////////////////////////////////////////////////
-        //New Point Cloud Methods
-        ////////////////////////////////////////////////////////////////////////////////
-#if 0
-        void
-        setInputCloud (const PointCloudConstPtr &cloud_arg)
-        //                   const IndicesConstPtr &indices_arg )// = IndicesConstPointer () )
-        {
-          if( (input_ != cloud_arg ))
-          {  
-            input_ = cloud_arg;
-//        indices_ = indices_arg;
-          }
-        }
-
-        /** \brief Get a pointer to the input cloud
-         *  \return pointer to point cloud input class
-         */
-        inline PointCloudConstPtr
-        getInputCloud () const
-        {
-          return (input_);
-        }
-
-        boost::uint64_t
-        addPointsFromInputCloud ();
-#endif
       protected:
 
         octree_base (octree_base& rval);
@@ -393,8 +366,8 @@ namespace pcl
         /** \brief Increment current depths (LOD for branch nodes) point count; called by addDataAtMaxDepth in octree_base_node
          * \todo rename count_point to something more informative
          */
-        void
-        count_point (boost::uint64_t depth, boost::uint64_t inc)
+        inline void
+        incrementPointsInLOD (boost::uint64_t depth, boost::uint64_t inc)
         {
           //if we overflow here, we've got one massive octree
           assert ( std::numeric_limits<uint64_t>::max () - inc > inc );

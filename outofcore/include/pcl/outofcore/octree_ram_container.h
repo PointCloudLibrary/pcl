@@ -117,16 +117,6 @@ namespace pcl
           return container_.size ();
         }
 
-        /** \brief NOT IMPLEMENTED*/ //commented out to suppress warnings
-        inline void
-        flush (const bool force_cache_dealloc) 
-        { 
-          if(force_cache_dealloc)
-          {
-            //not implemented. what is this for?
-          }
-        } //???
-
         /** \brief clears the vector of points in this class */
         inline void
         clear ()
