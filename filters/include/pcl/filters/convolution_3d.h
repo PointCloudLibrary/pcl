@@ -154,14 +154,42 @@ namespace pcl
         /** Must call this methode before doing any computation */
         bool initCompute ();
 
-        PointOutT
+        virtual PointOutT
         operator() (const std::vector<int>& indices, const std::vector<float>& distances);
 
-      private:
+      protected:
         float sigma_;
         float sigma_sqr_;
         float threshold_;
         boost::optional<float> sigma_coefficient_;
+    };
+
+    /** \brief Gaussian kernel implementation interface with RGB channel handling
+      * Use this as implementation reference
+      * \ingroup filters
+      */
+    template<typename PointInT, typename PointOutT>
+    class GaussianKernelRGB : public GaussianKernel <PointInT, PointOutT>
+    {
+      public:
+        using GaussianKernel<PointInT, PointOutT>::initCompute;
+        using GaussianKernel<PointInT, PointOutT>::input_;
+        using GaussianKernel<PointInT, PointOutT>::operator ();
+        using GaussianKernel<PointInT, PointOutT>::makeInfinite;
+        using GaussianKernel<PointInT, PointOutT>::sigma_sqr_;
+        using GaussianKernel<PointInT, PointOutT>::threshold_;
+        typedef boost::shared_ptr<GaussianKernelRGB<PointInT, PointOutT> > Ptr;
+        typedef boost::shared_ptr<GaussianKernelRGB<PointInT, PointOutT> > ConstPtr;
+
+        /** Default constructor */
+        GaussianKernelRGB ()
+          : GaussianKernel <PointInT, PointOutT> ()
+        {}
+
+        ~GaussianKernelRGB () {}
+
+        PointOutT
+        operator() (const std::vector<int>& indices, const std::vector<float>& distances);
     };
 
     /** Convolution3D handles the non organized case where width and height are unknown or if you

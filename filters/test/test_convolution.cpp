@@ -39,7 +39,7 @@
 
 #include <gtest/gtest.h>
 #include <pcl/pcl_tests.h>
-#include <pcl/common/convolution.h>
+#include <pcl/filters/convolution.h>
 #include <pcl/point_types.h>
 
 using namespace pcl;
@@ -52,7 +52,7 @@ TEST (Convolution, convolveRows)
 {
   using namespace pcl::common;
   using namespace pcl::filters;
-  Convolution<PointXYZI, PointXYZI> convolve;
+  pcl::filters::Convolution<PointXYZI, PointXYZI> convolve;
   PointCloud<PointXYZI>::Ptr output;
   output.reset (new PointCloud<PointXYZI> ());
   convolve.setInputCloud (input);

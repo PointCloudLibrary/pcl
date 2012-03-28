@@ -239,7 +239,9 @@ namespace pcl
       float r = 0, g = 0, b = 0;
       for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l)
       {
-        result.x += (*input_) (l,j).x * kernel_[k]; result.y += (*input_) (l,j).y * kernel_[k]; result.z += (*input_) (l,j).z * kernel_[k];
+        result.x += (*input_) (l,j).x * kernel_[k];
+        result.y += (*input_) (l,j).y * kernel_[k];
+        result.z += (*input_) (l,j).z * kernel_[k];
         r += kernel_[k] * static_cast<float> ((*input_) (l,j).r);
         g += kernel_[k] * static_cast<float> ((*input_) (l,j).g);
         b += kernel_[k] * static_cast<float> ((*input_) (l,j).b);
@@ -257,7 +259,9 @@ namespace pcl
       float r = 0, g = 0, b = 0;
       for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
       {
-        result.x += (*input_) (i,l).x * kernel_[k]; result.y += (*input_) (i,l).y * kernel_[k]; result.z += (*input_) (i,l).z * kernel_[k];
+        result.x += (*input_) (i,l).x * kernel_[k];
+        result.y += (*input_) (i,l).y * kernel_[k];
+        result.z += (*input_) (i,l).z * kernel_[k];
         r += kernel_[k] * static_cast<float> ((*input_) (i,l).r);
         g += kernel_[k] * static_cast<float> ((*input_) (i,l).g);
         b += kernel_[k] * static_cast<float> ((*input_) (i,l).b);

@@ -62,13 +62,14 @@ namespace pcl
     ConvolvingKernel<PointT, pcl::PointXY>
     {
       void
-      makeInfinite (pcl::Normal& n)
+      makeInfinite (pcl::PointXY& p)
       {
-        n.normal_x = n.normal_y = std::numeric_limits<float>::quiet_NaN ();
+        p.x = p.y = std::numeric_limits<float>::quiet_NaN ();
       }
     };
   }
 }
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointOutT> bool
 pcl::filters::GaussianKernel<PointInT, PointOutT>::initCompute ()
@@ -108,15 +109,56 @@ pcl::filters::GaussianKernel<PointInT, PointOutT>::operator() (const std::vector
        idx_it != indices.end ();
        ++idx_it, ++dist_it)
   {
-    if (*dist_it <= threshold_ && isFinite (input_->at (*idx_it)))
+    if (*dist_it <= threshold_ && isFinite ((*input_) [*idx_it]))
     {
       float weight = expf (-0.5f * (*dist_it) / sigma_sqr_);
-      result += weight * (input_->at (*idx_it));
+      result += weight * (*input_) [*idx_it];
       total_weight += weight;
     }
   }
   if (total_weight != 0)
-    result /= (total_weight * 2 * float (M_PI) * sigma_sqr_);
+    result /= total_weight;
+  else
+    makeInfinite (result);
+
+  return (result);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointInT, typename PointOutT> PointOutT
+pcl::filters::GaussianKernelRGB<PointInT, PointOutT>::operator() (const std::vector<int>& indices, const std::vector<float>& distances)
+{
+  using namespace pcl::common;
+  PointOutT result;
+  float total_weight = 0;
+  float r = 0, g = 0, b = 0;
+  std::vector<float>::const_iterator dist_it = distances.begin ();
+
+  for (std::vector<int>::const_iterator idx_it = indices.begin ();
+       idx_it != indices.end ();
+       ++idx_it, ++dist_it)
+  {
+    if (*dist_it <= threshold_ && isFinite ((*input_) [*idx_it]))
+    {
+      float weight = expf (-0.5f * (*dist_it) / sigma_sqr_);
+      result.x += weight * (*input_) [*idx_it].x;
+      result.y += weight * (*input_) [*idx_it].y;
+      result.z += weight * (*input_) [*idx_it].z;
+      r += weight * static_cast<float> ((*input_) [*idx_it].r);
+      g += weight * static_cast<float> ((*input_) [*idx_it].g);
+      b += weight * static_cast<float> ((*input_) [*idx_it].b);
+      total_weight += weight;
+    }
+  }
+  if (total_weight != 0)
+  {
+    total_weight = 1.f/total_weight;
+    r*= total_weight; g*= total_weight; b*= total_weight;
+    result.x*= total_weight; result.y*= total_weight; result.z*= total_weight;
+    result.r = static_cast<pcl::uint8_t> (r);
+    result.g = static_cast<pcl::uint8_t> (g);
+    result.b = static_cast<pcl::uint8_t> (b);
+  }
   else
     makeInfinite (result);
 
@@ -178,7 +220,7 @@ pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::initCompute ()
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename KernelT> void
 pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::convolve (PointCloud<PointOutT>& output)
 {
@@ -193,10 +235,10 @@ pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::convolve (PointCloud<
   output.is_dense = surface_->is_dense;
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
-  std::cout << "size set " << output.width << "x" << output.height << std::endl;
 
-  #pragma omp parallel for shared (output) private (nn_indices, nn_distances) num_threads (threads_)
-
+#ifdef HAVE_OPENMP
+#pragma omp parallel for shared (output) private (nn_indices, nn_distances) num_threads (threads_)
+#endif
   for (std::size_t point_idx = 0; point_idx < surface_->size (); ++point_idx)
   {
     const PointInT& point_in = surface_->points [point_idx];
