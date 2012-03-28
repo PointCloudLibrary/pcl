@@ -139,7 +139,8 @@ namespace pcl
                                                       const double percent, 
                                                       std::vector<PointT, Eigen::aligned_allocator<PointT> >& v)
     {
-      boost::uint64_t samplesize = percent * static_cast<double> (count);
+      /** \todo change the subsampling technique to use built in PCL sampling */
+      boost::uint64_t samplesize = static_cast<boost::uint64_t> (percent * static_cast<double> (count));
 
       boost::mutex::scoped_lock lock (rng_mutex_);
 

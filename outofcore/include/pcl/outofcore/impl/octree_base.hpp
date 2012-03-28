@@ -71,7 +71,9 @@ namespace pcl
 
     template<typename Container, typename PointT>
     const std::string octree_base<Container, PointT>::TREE_EXTENSION_ = ".octree";
-
+    template<typename Container, typename PointT>
+    const int octree_base<Container, PointT>::OUTOFCORE_VERSION_ (3.0);
+    
 // Constructors
 // ---------------------------------------------------------------------------
     template<typename Container, typename PointT>
@@ -90,7 +92,7 @@ namespace pcl
       if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointT>::node_index_extension)
       {
         PCL_DEBUG ( "the tree must be have a root_ node ending in .oct_idx\n" );
-        throw (OctreeException (OctreeException::OCT_BAD_EXTENTION));
+        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Exception: Bad extension. Tree must have a root node ending in .oct_idx\n");
       }
 
       // Create root_ node
@@ -121,8 +123,8 @@ namespace pcl
       // Check file extension
       if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointT>::node_index_extension)
       {
-        PCL_DEBUG ( "the tree must be created with a root_ node ending in .oct_idx\n" );
-        throw (OctreeException (OctreeException::OCT_BAD_EXTENTION));
+        PCL_ERROR ( "the tree must be created with a root_ node ending in .oct_idx\n" );
+        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Exception: Root file extension does not match .oct_idx\n");
       }
 
       coord_system_ = coord_sys;
@@ -162,8 +164,8 @@ namespace pcl
       // Check file extension
       if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointT>::node_index_extension)
       {
-        PCL_DEBUG ( "the tree must be created with a root_ node ending in .oct_idx\n" );
-        throw (OctreeException (OctreeException::OCT_BAD_EXTENTION));
+        PCL_ERROR ( "the tree must be created with a root_ node ending in .oct_idx\n" );
+        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Exception: Bad extension. Tree must be created with node ending in .oct_idx\n");
       }
 
       coord_system_ = coord_sys;
@@ -183,8 +185,8 @@ namespace pcl
         boost::filesystem::path childdir = dir / boost::lexical_cast<std::string> (i);
         if (boost::filesystem::exists (childdir))
         {
-          PCL_DEBUG ("A dir named %d exists under the root_ node. Overwriting an existant tree is not supported!\n", i);
-          throw (OctreeException (OctreeException::OCT_CHILD_EXISTS));
+          PCL_ERROR ("A dir named %d exists under the root_ node. Overwriting an existant tree is not supported!\n", i);
+          PCL_THROW_EXCEPTION ( PCLException, "Outofcore Octree Exception: Directory exists; Overwriting existing trees is not supported\n");
         }
       }
 
@@ -218,7 +220,7 @@ namespace pcl
       boost::shared_ptr<cJSON> idx (cJSON_CreateObject (), cJSON_Delete);
   
       cJSON* name = cJSON_CreateString ("test");
-      cJSON* version = cJSON_CreateNumber (2.0);
+      cJSON* version = cJSON_CreateNumber ( OUTOFCORE_VERSION_ );
       cJSON* pointtype = cJSON_CreateString ("urp");
       cJSON* lod = cJSON_CreateNumber (static_cast<double>(root_->m_tree_->max_depth_));
 
@@ -270,24 +272,25 @@ namespace pcl
       // Validate JSON
       if (!((name) && (version) && (pointtype) && (lod) && (numpts) && (coord)))
       {
-        PCL_DEBUG ( "index %s failed to parse!\n", treepath_.c_str ());
-        throw (OctreeException (OctreeException::OCT_PARSE_FAILURE));
+        PCL_ERROR ( "index %s failed to parse!\n", treepath_.c_str ());
+        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Parse Failure\n");
       }
       if ((name->type != cJSON_String) || (version->type != cJSON_Number) || (pointtype->type != cJSON_String)
           || (lod->type != cJSON_Number) || (numpts->type != cJSON_Array) || (coord->type != cJSON_String))
       {
-        PCL_DEBUG ( "index failed to parse!\n",treepath_.c_str ());
-        throw OctreeException (OctreeException::OCT_PARSE_FAILURE);
+        PCL_ERROR ( "index failed to parse!\n",treepath_.c_str ());
+        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Exception: Index failed to parse\n");
       }
-      if (version->valuedouble != 2.0)
+      if (version->valuedouble != 2.0 && version->valuedouble != 3.0)// || version->valuedouble != 3.0)
       {
-        PCL_DEBUG ( "index failed to parse!\n",treepath_.c_str ());
-        throw OctreeException (OctreeException::OCT_PARSE_FAILURE);
+        PCL_ERROR ( "index failed to parse!\n",treepath_.c_str ());
+        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Parse Failure: Incompatible Version of Outofcore Octree\n");
+        
       }
       if ((lod->valueint + 1) != cJSON_GetArraySize (numpts))
       {
         PCL_DEBUG ( "index failed to parse!\n",treepath_.c_str ());
-        throw OctreeException (OctreeException::OCT_PARSE_FAILURE);
+        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Prase Failure: LOD and array size of points is not valid\n");
       }
 
       // Get Data

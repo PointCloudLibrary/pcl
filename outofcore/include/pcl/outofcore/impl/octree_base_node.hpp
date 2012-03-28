@@ -1405,7 +1405,7 @@ namespace pcl
     {
       boost::shared_ptr<cJSON> idx (cJSON_CreateObject (), cJSON_Delete);
 
-      cJSON* version = cJSON_CreateNumber (2.0);
+      cJSON* version = cJSON_CreateNumber ( octree_base<Container,PointT>::OUTOFCORE_VERSION_ );
       cJSON* bb_min = cJSON_CreateDoubleArray (min_, 3);
       cJSON* bb_max = cJSON_CreateDoubleArray (max_, 3);
 
@@ -1456,7 +1456,7 @@ namespace pcl
         PCL_ERROR ( "index %s failed to parse! Invalid data types\n", path.c_str () );
         PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Parse Failure: Metadata contains invalid data types");
       }
-      if (version->valuedouble != 2.0)
+      if (version->valuedouble != 2.0 && version->valuedouble != 3.0)
       {
         PCL_ERROR ( "index %s failed to parse!\n  Incompatible version", path.c_str () );
         PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Parse Failure: Incompatible version");

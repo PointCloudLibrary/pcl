@@ -292,34 +292,23 @@ namespace pcl
       assert (seekret == 0);
 
       //read at most 2 million elements at a time
-      const static boost::uint32_t blocksize = boost::uint32_t (2e6);
+      const static boost::uint64_t blocksize = 2e6;//boost::uint64_t (2e6);
       for (boost::uint64_t pos = 0; pos < filecount; pos += blocksize)
       {
         if ((pos + blocksize) < filecount)
         {
           size_t readlen = fread (loc, sizeof(PointT), blocksize, f);
-          if (readlen != blocksize) 
-          {
-            //suppressed warning. empty if statement; error?
-          }
-          // error out?
           assert (readlen == blocksize);
           loc += blocksize;
         }
         else
         {
           size_t readlen = fread (loc, sizeof(PointT), static_cast<size_t>(filecount - pos), f);
-          if (readlen != filecount - pos)
-          {
-            //suppressed warning. empty if statement; error?
-          }
-          // error out?
           assert (readlen == filecount - pos);
           loc += filecount - pos;
         }
       }
 
-      //	int closeret = fclose(f);
       fclose (f);
 
       //copy the extra
@@ -377,7 +366,7 @@ namespace pcl
           boost::bernoulli_distribution<double> buffdist (percent);
           boost::variate_generator<boost::mt19937&, boost::bernoulli_distribution<double> > buffcoin (rand_gen_, buffdist);
 
-          for (boost::uint64_t i = buffstart; i < buffcount; i++)
+          for (size_t i = buffstart; i < buffcount; i++)
           {
             if (buffcoin ())
             {
@@ -421,7 +410,8 @@ namespace pcl
 
           v.push_back (p);
         }
-        int closeret = fclose (f);
+//        int closeret = 
+        fclose (f);
       }
     }
 ////////////////////////////////////////////////////////////////////////////////
