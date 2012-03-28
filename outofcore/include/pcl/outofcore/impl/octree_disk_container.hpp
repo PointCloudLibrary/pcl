@@ -294,7 +294,7 @@ namespace pcl
       assert (seekret == 0);
 
       //read at most 2 million elements at a time
-      const static uint64_t blocksize = 2e6;//uint64_t (2e6);
+      const static uint64_t blocksize = 2e12;//uint64_t (2e6);
       for (uint64_t pos = 0; pos < filecount; pos += blocksize)
       {
         if ((pos + blocksize) < filecount)
@@ -535,7 +535,7 @@ namespace pcl
       FILE* f = fopen (fileback_name_->c_str (), "a+b");
 
       //write at most 2 million elements at a time; mystery constant, this should be parametrized
-      const static uint64_t blocksize = static_cast<uint64_t> ( 2e9 );
+      const static uint64_t blocksize = static_cast<uint64_t> ( 2e12 );
 
       for (uint64_t pos = 0; pos < count; pos += blocksize)
       {

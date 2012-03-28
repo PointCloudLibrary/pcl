@@ -309,7 +309,13 @@ namespace pcl
     octree_base<Container, PointT>::addDataToLeaf (const AlignedPointTVector& p)
     {
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
-      boost::uint64_t pt_added = root_->addDataToLeaf (p, false);
+
+      const bool _FORCE_BB_CHECK = true;
+      
+      uint64_t pt_added = root_->addDataToLeaf (p, _FORCE_BB_CHECK);
+
+      assert (p.size () == pt_added);
+
       return (pt_added);
     }
 ////////////////////////////////////////////////////////////////////////////////
@@ -500,7 +506,7 @@ namespace pcl
         return;
       }
       /** \todo @b loadcount mystery constant 2e7 for loading points; should parameterize */
-      static const boost::uint64_t loadcount = boost::uint64_t (2e7);
+      static const boost::uint64_t loadcount = boost::uint64_t (2e9);
       if ((current_branch[current_dims - 1]->numchildren () == 0)
           && (!current_branch[current_dims - 1]->hasUnloadedChildren ()))//at leaf: subsample, remove, and copy to higher nodes
       {

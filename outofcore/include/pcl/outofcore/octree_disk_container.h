@@ -284,7 +284,7 @@ namespace pcl
         /** \todo Consult with the literature about optimizing out of core read/write */
         /** \todo this will be handled by the write method in pcl::FileWriter */
         //static const size_t writebuffmax = 100000;
-        static const size_t writebuffmax = 50000;
+        static const size_t writebuffmax = 2e12;//50000;
         //static const size_t writebuffmax = 10000;
         //static const size_t writebuffmax = 1000;
         //static const size_t writebuffmax = 100;
