@@ -50,7 +50,7 @@
 
 // todo: Read clouds as PointCloud2 so we don't need to define PointT explicitly.
 //       This also requires our octree to take PointCloud2 as an input.
-typedef pcl::PointXYZRGBA PointT;
+typedef pcl::PointXYZ PointT;
 
 using namespace pcl;
 using namespace pcl::outofcore;
