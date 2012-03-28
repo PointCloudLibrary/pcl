@@ -53,6 +53,8 @@
 #include <boost/thread.hpp>
 #include <boost/random/mersenne_twister.hpp>
 
+#include <pcl/outofcore/octree_abstract_node_container.h>
+
 //todo - Consider using per-node RNG (it is currently a shared static rng,
 //       which is mutexed. I did i this way to be sure that node of the nodes
 //       had RNGs seeded to the same value). the mutex could effect performance
@@ -66,7 +68,7 @@ namespace pcl
   namespace outofcore
   {
     template<typename PointT>
-    class octree_ram_container
+    class octree_ram_container : public OutofcoreAbstractNodeContainer<PointT>
     {
       public:
 
@@ -107,8 +109,7 @@ namespace pcl
          * points from given input rangerange
          */
         void
-        readRangeSubSample (const boost::uint64_t start, const boost::uint64_t count, const double percent,
-                            std::vector<PointT, Eigen::aligned_allocator<PointT> >& v);
+        readRangeSubSample (const boost::uint64_t start, const boost::uint64_t count, const double percent, std::vector<PointT, Eigen::aligned_allocator<PointT> >& v);
 
         /** \brief returns the size of the vector of points stored in this class */
         inline boost::uint64_t
@@ -116,6 +117,13 @@ namespace pcl
         {
           return container_.size ();
         }
+
+        inline bool
+        empty () 
+        {
+          return container_.empty ();
+        }
+        
 
         /** \brief clears the vector of points in this class */
         inline void
