@@ -249,12 +249,6 @@ namespace pcl
         labels_ = labels;
       }
 
-      //void
-      //setLabels (PointCloudL& labels)
-      //{
-      //  labels_ = boost::make_shared<PointCloudL>(labels);
-      //}
-
       /** \brief Get the distance threshold in meters (d component of plane equation) between neighboring points, to be considered part of the same plane. */
       inline float
       getDistanceThreshold () const
@@ -279,28 +273,19 @@ namespace pcl
                                 model_coeff.values[1] * pt.y + 
                                 model_coeff.values[2] * pt.z +
                                 model_coeff.values[3]);
-
-        //float dx = input_->points[idx1].x - input_->points[idx2].x;
-        //float dy = input_->points[idx1].y - input_->points[idx2].y;
-        //float dz = input_->points[idx1].z - input_->points[idx2].z;
-        //float dist = sqrt (dx*dx + dy*dy + dz*dz);
-
-        //bool dist_ok = (dist < distance_threshold_);
-        //bool curvature_ok = normals_->points[idx1].curvature < 0.04;
         
         // depth dependent
         float threshold = distance_threshold_;
         if (depth_dependent_)
         {
-          Eigen::Vector4f origin = input_->sensor_origin_;
-          Eigen::Vector3f vec = input_->points[idx1].getVector3fMap () - origin.head<3> ();
+          //Eigen::Vector4f origin = input_->sensor_origin_;
+          Eigen::Vector3f vec = input_->points[idx1].getVector3fMap ();// - origin.head<3> ();
           
           float z = vec.dot (z_axis_);
           threshold *= z * z;
         }
         
         return (ptp_dist < threshold);
-        //return (dist_ok && curvature_ok && ptp_dist_ok);
       }
 
     protected:
