@@ -70,7 +70,7 @@ using namespace pcl::outofcore;
 
 // For doing exhaustive checks this is set low remove those, and this can be
 // set much higher
-const static uint64_t numPts = 1e4;
+const static uint64_t numPts ( 2e4 );
 
 const static boost::uint32_t rngseed = 0xAAFF33DD;
 
@@ -195,7 +195,7 @@ TEST (PCL, Outofcore_Octree_Build_LOD)
     p.x = dist (rng);
     p.y = dist (rng);
     p.z = dist (rng);
-
+    
     points[i] = p;
   }
 
@@ -293,6 +293,7 @@ void point_test(octree_disk& t)
   }
 }
 
+#if 0
 TEST (PCL, Outofcore_Point_Query)
 {
   octree_disk treeA(filename_otreeA, false);
@@ -385,7 +386,7 @@ TEST (PCL, Outofcore_Ram_Tree)
     ASSERT_TRUE(p_ot1.empty());
   }
 }
-
+#endif
 class OutofcoreTest : public testing::Test
 {
   protected:
@@ -444,14 +445,15 @@ TEST_F (OutofcoreTest, Outofcore_Constructors)
   //Create Octree based on resolution of smallest voxel, automatically computing depth
   octree_disk octreeA (min, max, smallest_voxel_dim, filename_otreeA, "ECEF");
   octreeA.addDataToLeaf (some_points);
-  ASSERT_EQ ( octreeA.getNumPoints (octreeA.getDepth ()), some_points.size () );
+
+  ASSERT_EQ ( some_points.size (), octreeA.getNumPointsAtDepth ( octreeA.getDepth () ) );
   
   //(Case 2)
   //create Octree by prespecified depth in constructor
   int depth = 4;
   octree_disk octreeB (depth, min, max, filename_otreeB, "ECEF");
-  octreeB.addDataToLeaf (some_points);
-  ASSERT_EQ ( octreeB.getNumPoints (octreeB.getDepth ()), some_points.size () );
+  octreeB.addDataToLeaf ( some_points );
+  ASSERT_EQ ( some_points.size (), octreeB.getNumPointsAtDepth ( octreeB.getDepth () ) );
 }
 
 TEST_F (OutofcoreTest, Outofcore_ConstructorSafety)
@@ -473,15 +475,14 @@ TEST_F (OutofcoreTest, Outofcore_ConstructorSafety)
   //      octree_disk octreeC (min, max, smallest_voxel_dim, filename_otreeA, "ECEF");
   //    });
 
-  EXPECT_ANY_THROW ({
-      octree_disk octreeD (4, min, max, filename_otreeB, "ECEF");
-    });
+  EXPECT_ANY_THROW ({ octree_disk octreeD (4, min, max, filename_otreeB, "ECEF"); });
 
   //(Case 4): Load existing tree from disk
   octree_disk octree_from_disk (filename_otreeB, true);
-  vector<uint64_t> numPoints = octree_from_disk.getNumPoints ();
+  vector<uint64_t> numPoints = octree_from_disk.getNumPointsVector ();
   
-  EXPECT_EQ ( octree_from_disk.getNumPoints (octree_from_disk.getDepth ()), 1000 ) << octree_from_disk.getDepth ();
+  EXPECT_EQ ( 1000, octree_from_disk.getNumPointsAtDepth (octree_from_disk.getDepth () ) );
+  
 }
 
 TEST_F (OutofcoreTest, Outofcore_ConstructorBadPaths)
@@ -501,7 +502,6 @@ TEST_F (OutofcoreTest, Outofcore_ConstructorBadPaths)
   cleanUpFilesystem ();
 }
 
-#if 1
 TEST_F (OutofcoreTest, Outofcore_PointcloudConstructor)
 {
   cleanUpFilesystem ();
@@ -517,7 +517,7 @@ TEST_F (OutofcoreTest, Outofcore_PointcloudConstructor)
   
   test_cloud->width = numPts;
   test_cloud->height = 1;
-  test_cloud->resize (numPts);
+  test_cloud->reserve (numPts);
   
   //generate some random points
   for(size_t i=0; i < numPts; i++)
@@ -529,15 +529,106 @@ TEST_F (OutofcoreTest, Outofcore_PointcloudConstructor)
     test_cloud->points.push_back (tmp);
   }
 
+  ASSERT_EQ (numPts, test_cloud->points.size ());
+  
   octree_disk pcl_cloud (min, max, 32.0, outofcore_path, "ECEF");
 
   pcl_cloud.addPointCloud (test_cloud);
   
-  ASSERT_EQ ( test_cloud->points.size (), pcl_cloud.getNumPoints (pcl_cloud.getDepth ()));
+  EXPECT_EQ ( test_cloud->points.size (), pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ()));
   
   cleanUpFilesystem ();
 }
-#endif
+
+TEST_F (OutofcoreTest, Outofcore_PointsOnBoundaries)
+{
+  cleanUpFilesystem ();
+  
+  const double min[3] = { -1.0, -1.0, -1.0 };
+  const double max[3] = { 1.0, 1.0, 1.0 };
+  
+  PointCloud<PointT>::Ptr cloud (new PointCloud<PointT> ());
+  cloud->width = 8;
+  cloud->height =1;
+  cloud->reserve (8);
+  
+  for(int i=0; i<8; i++)
+  {
+    PointT tmp;
+    tmp.x = static_cast<float>(pow (-1,i)) * 1.0f;
+    tmp.y = static_cast<float>(pow (-1,i+1)) * 1.0f;
+    tmp.z = static_cast<float>(pow (-1, 3*i)) * 1.0f;
+    
+    cloud->points.push_back (tmp);
+  }
+
+  octree_disk octree ( min, max, 32.0, outofcore_path, "ECEF" );
+
+  octree.addPointCloud ( cloud );
+
+  ASSERT_EQ ( 8, octree.getNumPointsAtDepth ( octree.getDepth () ));
+
+}
+
+
+
+
+
+
+TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
+{
+  cleanUpFilesystem ();
+
+  //Specify the lower corner of the axis-aligned bounding box
+  const double min[3] = { -1024, -1024, -1024 };
+  
+  //Specify the upper corner of the axis-aligned bounding box
+  const double max[3] = { 1024, 1024, 1024 };
+  
+  //create a point cloud
+  PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> () );
+  PointCloud<PointT>::Ptr second_cloud (new PointCloud<PointT> () );
+
+  test_cloud->width = numPts;
+  test_cloud->height = 1;
+  test_cloud->reserve (numPts);
+
+  second_cloud->width = numPts;
+  second_cloud->height = 1;
+  second_cloud->reserve (numPts);
+  
+  //generate some random points
+  for(size_t i=0; i < numPts; i++)
+  {
+    PointT tmp ( static_cast<float> (i % 1024), 
+                 static_cast<float> (i % 1024), 
+                 static_cast<float> (i % 1024));
+    
+    test_cloud->points.push_back (tmp);
+  }
+
+  for(size_t i=0; i < numPts; i++)
+  {
+    PointT tmp ( static_cast<float> (i % 1024), 
+                 static_cast<float> (i % 1024), 
+                 static_cast<float> (i % 1024));
+    
+    second_cloud->points.push_back (tmp);
+  }
+
+  octree_disk pcl_cloud (min, max, 32.0, outofcore_path, "ECEF");
+
+  ASSERT_EQ ( test_cloud->points.size () , pcl_cloud.addPointCloud (test_cloud) );
+
+  ASSERT_EQ ( numPts, pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth () ));
+
+  pcl_cloud.addPointCloud (second_cloud);
+
+  EXPECT_EQ ( 2*numPts, pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ()) ) << "Points are lost when two points clouds are added to the outofcore file system\n";
+  
+}
+
+  
 
 /* [--- */
 int
