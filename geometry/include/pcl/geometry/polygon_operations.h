@@ -48,24 +48,25 @@ namespace pcl
     * possible non-convex - contour of the polygon union will be determined
     * \param[in] planar_polygon1 first input polygon
     * \param[in] planar_polygon2 second input polygon
-    * \param[out] fused the outer contour of the polygon-union 
+    * \param[out] fused_polygon the outer contour of the polygon-union
     * \return true if merging was successful - this means basically if the polygons were intersecting or nor
     */
   template <typename PointT>
-  bool fusePlanarPolygons (const PlanarPolygon<PointT>& polygon1, const PlanarPolygon<PointT>& planar_polygon2, PlanarPolygon<PointT>& fused_polygon);
+  bool fusePlanarPolygons (const PlanarPolygon<PointT>& planar_polygon1, const PlanarPolygon<PointT>& planar_polygon2, PlanarPolygon<PointT>& fused_polygon);
 
   /** \brief computes the convex hull of a polygon by exploiting the polygon structure
     * \param[in] polygon input polygon
     * \param[out] convex_hull indices of the convex polygon that contains the input polygon completely
-    * \attention input polygon must be planar AND counter clockwise => normal direction is important 
+    * \attention input polygon must be planar AND counter clockwise => normal direction is important
     */
 //  template <typename PointT> void
 //  computeConvexHull2D (const PlanarPolygon<PointT>& polygon, std::vector<unsigned>& convex_hull);
 
-  /** \brief computes the bounding box with smallest area that completely encloses the input polygon 
+  /** \brief computes the bounding box with smallest area that completely encloses the input polygon
     * \param[in] polygon input polygon
     * \param[out] bounding_box the bounding box
     */
 //  template <typename PointT> void
 //  getMinimumBoundingRectangle (const PlanarPolygon<PointT>& polygon, Box2D& bounding_box );
 }
+
