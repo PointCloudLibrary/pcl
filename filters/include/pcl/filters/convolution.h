@@ -162,8 +162,6 @@ namespace pcl
         convolve (PointCloudOut& output);
 
       protected:
-        /** \brief The number of threads the scheduler should use. */
-        int threads_;
         /// \brief convolve rows and ignore borders
         void
         convolve_rows (PointCloudOut& output);
@@ -222,6 +220,9 @@ namespace pcl
         int half_width_;
         /// kernel size - 1
         int kernel_width_;
+      protected:
+        /** \brief The number of threads the scheduler should use. */
+        int threads_;
     };
   }
 }
