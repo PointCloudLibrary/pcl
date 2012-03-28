@@ -48,6 +48,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/approximate_voxel_grid.h
         include/pcl/${SUBSYS_NAME}/bilateral.h
         include/pcl/${SUBSYS_NAME}/voxel_grid_covariance.h
+        include/pcl/${SUBSYS_NAME}/convolution.h
+        include/pcl/${SUBSYS_NAME}/convolution_3d.h
         )
 
     set(impl_incs
@@ -69,6 +71,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/approximate_voxel_grid.hpp
         include/pcl/${SUBSYS_NAME}/impl/bilateral.hpp
         include/pcl/${SUBSYS_NAME}/impl/voxel_grid_covariance.hpp
+        include/pcl/${SUBSYS_NAME}/impl/convolution.hpp
+        include/pcl/${SUBSYS_NAME}/impl/convolution_3d.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
