@@ -58,6 +58,8 @@
 #include <boost/random/uniform_int.hpp>
 #include <boost/random/bernoulli_distribution.hpp>
 
+#include <pcl/outofcore/octree_abstract_node_container.h>
+
 //allows operation on POSIX
 #ifndef WIN32
 #define _fseeki64 fseeko
@@ -78,7 +80,7 @@ namespace pcl
  *  \brief Class responsible for serialization and deserialization of out of core point data
  */
     template<typename PointT>
-    class octree_disk_container
+    class octree_disk_container : public OutofcoreAbstractNodeContainer<PointT>
     {
   
       public:
@@ -105,6 +107,7 @@ namespace pcl
         inline void
         push_back (const PointT& p);
 
+        /** \todo this might be where the bug is coming from with binary pcd files */
         void
         insertRange (const PointT* const * start, const boost::uint64_t count)
         {
@@ -169,7 +172,7 @@ namespace pcl
 
         /** \brief Returns the total number of points for which this container is responsible, \ref filelen_ + points in \ref writebuff_ that have not yet been flushed to the disk
          */
-        boost::uint64_t
+        uint64_t
         size () const
         {
           return filelen_ + writebuff_.size ();
@@ -184,9 +187,9 @@ namespace pcl
         }
 
         void
-        flush (const bool forceCacheDeAlloc)
+        flush (const bool force_cache_dealloc)
         {
-          flushWritebuff (forceCacheDeAlloc);
+          flushWritebuff (force_cache_dealloc);
         }
 
         inline std::string&
@@ -219,7 +222,7 @@ namespace pcl
 
             boost::uint64_t num = size ();
             PointT p;
-            char* loc = static_cast<char*> ( &p );
+            char* loc = reinterpret_cast<char*> ( &p );
             for (boost::uint64_t i = 0; i < num; i++)
             {
               int seekret = _fseeki64 (f, i * sizeof(PointT), SEEK_SET);
@@ -255,6 +258,7 @@ namespace pcl
       private:
         //no copy construction
         octree_disk_container (const octree_disk_container& rval) { }
+
 
         octree_disk_container&
         operator= (const octree_disk_container& rval) { }

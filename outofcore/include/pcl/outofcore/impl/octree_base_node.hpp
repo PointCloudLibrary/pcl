@@ -214,10 +214,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT>
-    octree_base_node<Container, PointT>::octree_base_node (const double bb_min[3], const double bb_max[3],
-                                                           const double node_dim_meters,
-                                                           octree_base<Container, PointT> * const tree,
-                                                           const boost::filesystem::path& rootname)
+    octree_base_node<Container, PointT>::octree_base_node (const double bb_min[3], const double bb_max[3], const double node_dim_meters, octree_base<Container, PointT> * const tree, const boost::filesystem::path& rootname)
       : thisdir_ ()
       , thisnodeindex_ ()
       , thisnodestorage_ ()

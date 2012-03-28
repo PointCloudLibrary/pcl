@@ -42,6 +42,8 @@
 #include <pcl/outofcore/octree_base.h>
 #include <pcl/outofcore/octree_base_node.h>
 
+#include <pcl/outofcore/octree_abstract_node_container.h>
+
 #include <pcl/outofcore/octree_disk_container.h>
 #include <pcl/outofcore/octree_ram_container.h>
 

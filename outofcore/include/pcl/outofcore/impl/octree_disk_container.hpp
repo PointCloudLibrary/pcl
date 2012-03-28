@@ -409,7 +409,7 @@ namespace pcl
         FILE* f = fopen (fileback_name_->c_str (), "rb");
         assert (f != NULL);
         PointT p;
-        char* loc = static_cast<char*> ( &p );
+        char* loc = reinterpret_cast<char*> ( &p );
         
         boost::uint64_t filesamp = offsets.size ();
         for (boost::uint64_t i = 0; i < filesamp; i++)
@@ -507,7 +507,7 @@ namespace pcl
         FILE* f = fopen (fileback_name_->c_str (), "rb");
         assert (f != NULL);
         PointT p;
-        char* loc = static_cast<char*> ( &p );
+        char* loc = reinterpret_cast<char*> ( &p );
         for (boost::uint64_t i = 0; i < filesamp; i++)
         {
           int seekret = _fseeki64 (f, offsets[i] * static_cast<boost::uint64_t> (sizeof(PointT)), SEEK_SET);
