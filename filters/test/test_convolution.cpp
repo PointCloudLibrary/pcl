@@ -51,11 +51,12 @@ Eigen::ArrayXf filter(7);
 TEST (Convolution, convolveRows)
 {
   using namespace pcl::common;
-  Convolution<PointXYZI> convolve;
+  using namespace pcl::filters;
+  Convolution<PointXYZI, PointXYZI> convolve;
   PointCloud<PointXYZI>::Ptr output;
   output.reset (new PointCloud<PointXYZI> ());
   convolve.setInputCloud (input);
-	convolve.setKernel (filter);
+  convolve.setKernel (filter);
   convolve.convolveRows (*output);
 
   // first output row

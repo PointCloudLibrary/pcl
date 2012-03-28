@@ -40,9 +40,9 @@
 #ifndef PCL_FILTERS_CONVOLUTION_IMPL_HPP
 #define PCL_FILTERS_CONVOLUTION_IMPL_HPP
 
-template <typename PointIn, typename PointOut> void
+template <typename PointIn, typename PointOut>
 pcl::filters::Convolution<PointIn, PointOut>::Convolution ()
-  : borders_policy_ (IGNORE)
+  : borders_policy_ (BORDERS_POLICY_IGNORE)
   , distance_threshold_ (std::numeric_limits<float>::infinity ())
   , input_ ()
   , kernel_ ()
@@ -52,7 +52,7 @@ pcl::filters::Convolution<PointIn, PointOut>::Convolution ()
 {}
 
 template <typename PointIn, typename PointOut> void
-pcl::filters::Convolution<PointIn, PointOut>::initCompute (PointCloud<PointT>& output)
+pcl::filters::Convolution<PointIn, PointOut>::initCompute (PointCloud<PointOut>& output)
 {
   if (borders_policy_ != BORDERS_POLICY_IGNORE &&
       borders_policy_ != BORDERS_POLICY_MIRROR &&
@@ -125,11 +125,11 @@ pcl::filters::Convolution<PointIn, PointOut>::convolveCols (PointCloudOut& outpu
 template <typename PointIn, typename PointOut> inline void
 pcl::filters::Convolution<PointIn, PointOut>::convolve (const Eigen::ArrayXf& h_kernel,
                                                        const Eigen::ArrayXf& v_kernel,
-                                                       PointCloud<PointT>& output)
+                                                       PointCloud<PointOut>& output)
 {
   try
   {
-    PointCloudPtr tmp (new PointCloud<PointIn> ());
+    PointCloudInPtr tmp (new PointCloud<PointIn> ());
     setKernel (h_kernel);
     convolveRows (*tmp);
     setInputCloud (tmp);
@@ -144,11 +144,11 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve (const Eigen::ArrayXf& h_
 }
 
 template <typename PointIn, typename PointOut> inline void
-pcl::filters::Convolution<PointIn, PointOut>::convolve (PointCloud<PointT>& output)
+pcl::filters::Convolution<PointIn, PointOut>::convolve (PointCloud<PointOut>& output)
 {
   try
   {
-    PointCloudPtr tmp (new PointCloud<PointIn> ());
+    PointCloudInPtr tmp (new PointCloud<PointIn> ());
     convolveRows (*tmp);
     setInputCloud (tmp);
     convolveCols (output);
@@ -230,7 +230,7 @@ pcl::filters::Convolution<PointIn, PointOut>::convolveOneColNonDense (int i, int
 
 namespace pcl
 {
-  namespace common
+  namespace filters
   {
     template<> pcl::PointXYZRGB
     Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowDense (int i, int j)
@@ -607,7 +607,7 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols_mirror (PointCloudOu
       for (int j = last, l = 0; j < height; ++j, ++l)
         output (i,j) = output (i,h-l);
 
-      for (int j = 0; j < half_width_; ++j)<
+      for (int j = 0; j < half_width_; ++j)
         output (i,j) = output (i, half_width_+1-j);
     }
   }

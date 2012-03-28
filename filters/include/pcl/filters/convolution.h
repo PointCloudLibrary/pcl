@@ -78,6 +78,7 @@ namespace pcl
     {
       public:
         typedef typename pcl::PointCloud<PointIn> PointCloudIn;
+        typedef typename PointCloudIn::Ptr PointCloudInPtr;
         typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
         typedef typename pcl::PointCloud<PointOut> PointCloudOut;
 
@@ -125,7 +126,7 @@ namespace pcl
           * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
           */
         inline void
-        setNumberOfThreads (unsigned int nr_threads) { threads_ = (nr_threads == 0) ? 1 ! nr_threads; }
+        setNumberOfThreads (unsigned int nr_threads) { threads_ = (nr_threads == 0) ? 1 : nr_threads; }
         /** Convolve a float image rows by a given kernel.
           * \param[in] kernel convolution kernel
           * \param[out] output the convolved cloud
