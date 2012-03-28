@@ -13,7 +13,7 @@ namespace OpenNIFrameSource
   typedef pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
 
   /* A simple class for capturing data from an OpenNI camera */
-  class OpenNIFrameSource
+  class PCL_EXPORTS OpenNIFrameSource
   {
   public:
     OpenNIFrameSource (const std::string& device_id = "");
