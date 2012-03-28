@@ -84,6 +84,8 @@ namespace pcl
     {
   
       public:
+        typedef typename OutofcoreAbstractNodeContainer<PointT>::AlignedPointTVector AlignedPointTVector;
+        
         /** \brief Empty constructor creates disk container and sets filename from random uuid string*/
         octree_disk_container ();
 
@@ -102,21 +104,24 @@ namespace pcl
          *  \todo benchmark this; compare to Julius' octree
          */
         inline PointT
-        operator[] (boost::uint64_t idx);
+        operator[] (uint64_t idx);
 
         inline void
         push_back (const PointT& p);
 
         /** \todo this might be where the bug is coming from with binary pcd files */
         void
-        insertRange (const PointT* const * start, const boost::uint64_t count)
+        insertRange (const PointT* const * start, const uint64_t count)
         {
           //copy the handles to a continuous block
           PointT* arr = new PointT[count];
+
+          //copy from start of array, element by element
           for (size_t i = 0; i < count; i++)
           {
             arr[i] = *(start[i]);
           }
+
           insertRange (arr, count);
           delete[] arr;
         }
@@ -127,7 +132,7 @@ namespace pcl
          * \param[in] count offset from start of the last point to insert
          */
         void
-        insertRange (const PointT* start, const boost::uint64_t count);
+        insertRange (const PointT* start, const uint64_t count);
 
         /** \brief Reads \b count points into memory from the disk container
          *
@@ -139,7 +144,7 @@ namespace pcl
          * \param[out] v std::vector as destination for points read from disk into memory
          */
         void
-        readRange (const boost::uint64_t start, const boost::uint64_t count, std::vector<PointT, Eigen::aligned_allocator<PointT> >& v);
+        readRange (const uint64_t start, const uint64_t count, AlignedPointTVector& v);
 
         /** \brief  grab percent*count random points. points are \b not guaranteed to be
          * unique (could have multiple identical points!)
@@ -154,8 +159,8 @@ namespace pcl
          * be percentage*count
          */
         void
-        readRangeSubSample (const boost::uint64_t start, const boost::uint64_t count, const double percent,
-                            std::vector<PointT, Eigen::aligned_allocator<PointT> >& v);
+        readRangeSubSample (const uint64_t start, const uint64_t count, const double percent,
+                            AlignedPointTVector& v);
 
         /** \brief Use bernoulli trials to select points. All points selected will be unique.
          *
@@ -167,7 +172,7 @@ namespace pcl
          * be percentage*count
          */
         void
-        readRangeSubSample_bernoulli (const boost::uint64_t start, const boost::uint64_t count, 
+        readRangeSubSample_bernoulli (const uint64_t start, const uint64_t count, 
                                       const double percent, std::vector<PointT, Eigen::aligned_allocator<PointT> >& v);
 
         /** \brief Returns the total number of points for which this container is responsible, \ref filelen_ + points in \ref writebuff_ that have not yet been flushed to the disk
@@ -187,7 +192,7 @@ namespace pcl
         }
 
         void
-        flush (const bool force_cache_dealloc)
+       flush (const bool force_cache_dealloc)
         {
           flushWritebuff (force_cache_dealloc);
         }
@@ -220,10 +225,10 @@ namespace pcl
             FILE* f = fopen (fileback_name_->c_str (), "rb");
             assert (f != NULL);
 
-            boost::uint64_t num = size ();
+            uint64_t num = size ();
             PointT p;
             char* loc = reinterpret_cast<char*> ( &p );
-            for (boost::uint64_t i = 0; i < num; i++)
+            for (uint64_t i = 0; i < num; i++)
             {
               int seekret = _fseeki64 (f, i * sizeof(PointT), SEEK_SET);
               assert (seekret == 0);
@@ -250,6 +255,7 @@ namespace pcl
          *
          * \todo Does this need to be on a templated class?  Seems like this could
          * be a general utility function.
+         * \todo Does this need to be random?
          *
          */
         static void
@@ -267,15 +273,16 @@ namespace pcl
         flushWritebuff (const bool force_cache_dealloc);
     
         /** \brief elements [0,...,size()-1] map to [filelen, ..., filelen + size()-1] */
-        std::vector<PointT, Eigen::aligned_allocator<PointT> > writebuff_;
+        AlignedPointTVector writebuff_;
 
         //std::fstream fileback;//elements [0,...,filelen-1]
         std::string *fileback_name_;
 
         //number of elements in file
-        boost::uint64_t filelen_;
+        uint64_t filelen_;
 
         /** \todo Consult with the literature about optimizing out of core read/write */
+        /** \todo this will be handled by the write method in pcl::FileWriter */
         //static const size_t writebuffmax = 100000;
         static const size_t writebuffmax = 50000;
         //static const size_t writebuffmax = 10000;

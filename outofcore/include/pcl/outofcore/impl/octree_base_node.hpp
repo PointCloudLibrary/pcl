@@ -342,8 +342,8 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> boost::uint64_t
-    octree_base_node<Container, PointT>::addDataToLeaf (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, const bool skip_bb_check)
+    template<typename Container, typename PointT> uint64_t
+    octree_base_node<Container, PointT>::addDataToLeaf (const AlignedPointTVector& p, const bool skip_bb_check)
     {
       //quit if there are no points to add
       if (p.empty ())
@@ -600,10 +600,10 @@ namespace pcl
 /** todo: This seems like a lot of work to get a random uniform sample? */
 /** todo: Need to refactor this further as to not pass in a BBCheck */
     template<typename Container, typename PointT> void
-    octree_base_node<Container, PointT>::randomSample(const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, std::vector<PointT, Eigen::aligned_allocator<PointT> >& insertBuff, const bool skip_bb_check)
+    octree_base_node<Container, PointT>::randomSample(const AlignedPointTVector& p, AlignedPointTVector& insertBuff, const bool skip_bb_check)
     {
 //    std::cout << "randomSample" << std::endl;
-      std::vector<PointT, Eigen::aligned_allocator<PointT> > sampleBuff;
+      AlignedPointTVector sampleBuff;
       if (!skip_bb_check)
       {
         BOOST_FOREACH (const PointT& pt, p)
@@ -617,8 +617,8 @@ namespace pcl
 
       // Derive percentage from specified sample_precent and tree depth
       const double percent = pow(sample_precent, double((root_->m_tree_->max_depth_ - depth_)));
-      const boost::uint64_t samplesize = static_cast<boost::uint64_t>(percent * static_cast<double>(sampleBuff.size()));
-      const boost::uint64_t inputsize = sampleBuff.size();
+      const uint64_t samplesize = static_cast<uint64_t>(percent * static_cast<double>(sampleBuff.size()));
+      const uint64_t inputsize = sampleBuff.size();
 
       if(samplesize > 0)
       {
@@ -652,7 +652,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> boost::uint64_t
-    octree_base_node<Container, PointT>::addDataAtMaxDepth (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, const bool skip_bb_check)
+    octree_base_node<Container, PointT>::addDataAtMaxDepth (const AlignedPointTVector& p, const bool skip_bb_check)
     {
       // Trust me, just add the points
       if(skip_bb_check)
@@ -674,9 +674,13 @@ namespace pcl
         const size_t len = p.size ();
 
         for (size_t i = 0; i < len; i++)
+        {
           if (pointWithinBB (p[i]))
+          {
             buff.push_back (p[i]);
-
+          }
+        }
+        
         if (!buff.empty ())
         {
           root_->m_tree_->incrementPointsInLOD (this->depth_, buff.size ());
@@ -689,9 +693,8 @@ namespace pcl
 
 
     template<typename Container, typename PointT> void
-    octree_base_node<Container, PointT>::subdividePoints (const std::vector<PointT,
-                                                          Eigen::aligned_allocator<PointT> >& p,
-                                                          std::vector< std::vector<PointT, Eigen::aligned_allocator<PointT> > >& c,
+    octree_base_node<Container, PointT>::subdividePoints (const AlignedPointTVector& p,
+                                                          std::vector< AlignedPointTVector >& c,
                                                           const bool skip_bb_check)
     {
       // Reserve space for children nodes
@@ -715,7 +718,7 @@ namespace pcl
 
 
     template<typename Container, typename PointT> void
-    octree_base_node<Container, PointT>::subdividePoint (const PointT& pt, std::vector< std::vector<PointT, Eigen::aligned_allocator<PointT> > >& c)
+    octree_base_node<Container, PointT>::subdividePoint (const PointT& pt, std::vector< AlignedPointTVector >& c)
     {
       if((pt.z >= midz_))
       {
@@ -779,7 +782,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> boost::uint64_t
-    octree_base_node<Container, PointT>::addDataToLeaf_and_genLOD (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, const bool skip_bb_check)
+    octree_base_node<Container, PointT>::addDataToLeaf_and_genLOD (const AlignedPointTVector& p, const bool skip_bb_check)
     {
       // If there's no points return
       if (p.empty ())
@@ -797,7 +800,7 @@ namespace pcl
           loadChildren (false);
 
       // Randomly sample data
-      std::vector<PointT, Eigen::aligned_allocator<PointT> > insertBuff;
+      AlignedPointTVector insertBuff;
       randomSample(p, insertBuff, skip_bb_check);
 
       if(!insertBuff.empty())
@@ -809,7 +812,7 @@ namespace pcl
       }
 
       //subdivide vec to pass data down lower
-      std::vector< std::vector<PointT, Eigen::aligned_allocator<PointT> > > c;
+      std::vector< AlignedPointTVector > c;
       subdividePoints(p, c, skip_bb_check);
 
       /// \todo: Perhaps do a quick loop through the lists here and dealloc the reserved mem for empty lists
@@ -882,15 +885,6 @@ namespace pcl
       children_[idx] = new octree_base_node<Container, PointT> (childbb_min, childbb_max, childdir.string ().c_str (), this);
 
       num_child_++;
-    }
-////////////////////////////////////////////////////////////////////////////////
-
-    // todo: Does this refactor work?  createChildren isn't called anywhere...
-    template<typename Container, typename PointT> void
-    octree_base_node<Container, PointT>::createChildren ()
-    {
-      for (int idx=0; idx < 8; idx++)
-        createChild(idx);
     }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1009,10 +1003,7 @@ namespace pcl
     template<typename Container, typename PointT> void
     octree_base_node<Container, PointT>::queryBBIntersects (const double min_bb[3], const double max_bb[3], const boost::uint32_t query_depth, std::list<std::string>& file_names)
     {
-      //
-      //  Do a quick check to see if the caller passed in a lat/lon/alt bounding box.
-      //  If so, convert to UTM
-      //
+
       double my_min[3];
       double my_max[3];
 
@@ -1087,7 +1078,7 @@ namespace pcl
           if (withinBB (min_bb, max_bb))
           {
             //get all the points from the payload and return
-            std::vector<PointT, Eigen::aligned_allocator<PointT> > payload_cache;
+            AlignedPointTVector payload_cache;
             payload_->readRange (0, payload_->size (), payload_cache);
             v.insert (v.end (), payload_cache.begin (), payload_cache.end ());
             return;
@@ -1098,12 +1089,12 @@ namespace pcl
           else
           {
             //read _all_ the points in from the disk container
-            std::vector<PointT, Eigen::aligned_allocator<PointT> > payload_cache;
+            AlignedPointTVector payload_cache;
             payload_->readRange (0, payload_->size (), payload_cache);
         
-            boost::uint64_t len = payload_->size ();
+            uint64_t len = payload_->size ();
             //iterate through each of them
-            for (boost::uint64_t i = 0; i < len; i++)
+            for (uint64_t i = 0; i < len; i++)
             {
               const PointT& p = payload_cache[i];
               //if it falls within this bounding box
@@ -1153,7 +1144,7 @@ namespace pcl
           if (withinBB (min_bb, max_bb))
           {
             //add a random sample of all the points
-            std::vector<PointT, Eigen::aligned_allocator<PointT> > payload_cache;
+            AlignedPointTVector payload_cache;
             payload_->readRangeSubSample (0, payload_->size (), percent, payload_cache);
             v.insert (v.end (), payload_cache.begin (), payload_cache.end ());
             return;
@@ -1162,9 +1153,9 @@ namespace pcl
           else
           {
             //brute force selection of all valid points
-            std::vector<PointT, Eigen::aligned_allocator<PointT> > payload_cache_within_region;
+            AlignedPointTVector payload_cache_within_region;
             {
-              std::vector<PointT, Eigen::aligned_allocator<PointT> > payload_cache;
+              AlignedPointTVector payload_cache;
               payload_->readRange (0, payload_->size (), payload_cache);
               for (size_t i = 0; i < payload_->size (); i++)
               {
@@ -1264,7 +1255,7 @@ namespace pcl
         children_[i]->copyAllCurrentAndChildPointsRec (v);
       }
 
-      std::vector<PointT, Eigen::aligned_allocator<PointT> > payload_cache;
+      AlignedPointTVector payload_cache;
       payload_->readRange (0, payload_->size (), payload_cache);
 
       {

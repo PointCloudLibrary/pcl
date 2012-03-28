@@ -211,7 +211,7 @@ namespace pcl
          *  \param[in] skipBBCheck whether to check if the point's coordinates fall within the bounding box
          */
         boost::uint64_t
-        addDataToLeaf (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, const bool skip_bb_check);
+        addDataToLeaf (const AlignedPointTVector& p, const bool skip_bb_check);
 
         boost::uint64_t
         addDataToLeaf (const std::vector<const PointT*>& p, const bool skip_bb_check);
@@ -229,7 +229,7 @@ namespace pcl
          * \note rng_mutex_ lock occurs
          */
         boost::uint64_t
-        addDataToLeaf_and_genLOD (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, const bool skip_bb_check);
+        addDataToLeaf_and_genLOD (const AlignedPointTVector& p, const bool skip_bb_check);
 
         /** \todo Do we need to support std::vector<PointT*>?
          *
@@ -249,19 +249,19 @@ namespace pcl
          *  \return number of points successfully added
          */
         boost::uint64_t
-        addDataAtMaxDepth (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, const bool skip_bb_check);
+        addDataAtMaxDepth (const AlignedPointTVector& p, const bool skip_bb_check);
 
         /** \brief Randomly sample point data */
         void
-        randomSample(const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, std::vector<PointT, Eigen::aligned_allocator<PointT> >& insertBuff, const bool skip_bb_check);
+        randomSample(const AlignedPointTVector& p, AlignedPointTVector& insertBuff, const bool skip_bb_check);
 
         /** \brief Subdivide points to pass to child nodes */
         void
-        subdividePoints (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, std::vector< std::vector<PointT, Eigen::aligned_allocator<PointT> > >& c, const bool skip_bb_check);
+        subdividePoints (const AlignedPointTVector& p, std::vector< AlignedPointTVector >& c, const bool skip_bb_check);
 
         /** \brief Subdivide a single point into a specific child node */
         void
-        subdividePoint (const PointT& pt, std::vector< std::vector<PointT, Eigen::aligned_allocator<PointT> > >& c);
+        subdividePoint (const PointT& pt, std::vector< AlignedPointTVector >& c);
 
         /** \brief Write a python visual script to @b file
          * \param[in] file output file stream to write the python visual script
@@ -296,9 +296,6 @@ namespace pcl
 
         void
         createChild (const int idx);
-
-        void
-        createChildren ();//add empty children
 
         /** \brief Write JSON metadata for this node to file */
         void

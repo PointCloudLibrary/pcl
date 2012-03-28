@@ -34,6 +34,8 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ *  $Id: $
+ *
  */
 
 /*
@@ -128,7 +130,7 @@ namespace pcl
         }
         else
         {
-          boost::uint64_t len = boost::filesystem::file_size (path);
+          uint64_t len = boost::filesystem::file_size (path);
 
           fileback_name_ = new std::string (path.string ());
 
@@ -198,7 +200,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> PointT
-    octree_disk_container<PointT>::operator[] (boost::uint64_t idx)
+    octree_disk_container<PointT>::operator[] (uint64_t idx)
     {
       //if the index is on disk
       if (idx < filelen_)
@@ -239,7 +241,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    octree_disk_container<PointT>::readRange (const boost::uint64_t start, const boost::uint64_t count, std::vector<PointT, Eigen::aligned_allocator<PointT> >& v)
+    octree_disk_container<PointT>::readRange (const uint64_t start, const uint64_t count, AlignedPointTVector& v)
     {
       if ((start + count) > size ())
       {
@@ -252,8 +254,8 @@ namespace pcl
         return;
       }
 
-      boost::uint64_t filestart = 0;
-      boost::uint64_t filecount = 0;
+      uint64_t filestart = 0;
+      uint64_t filecount = 0;
 
       boost::int64_t buffstart = -1;
       boost::int64_t buffcount = -1;
@@ -283,7 +285,7 @@ namespace pcl
       //do the read
       FILE* f = fopen (fileback_name_->c_str (), "rb");
       assert (f != NULL);
-      int seekret = _fseeki64 (f, filestart * static_cast<boost::uint64_t>(sizeof(PointT)), SEEK_SET);
+      int seekret = _fseeki64 (f, filestart * static_cast<uint64_t>(sizeof(PointT)), SEEK_SET);
       if (seekret != 0)
       {
         //suppressed warning. empty if statement?
@@ -292,8 +294,8 @@ namespace pcl
       assert (seekret == 0);
 
       //read at most 2 million elements at a time
-      const static boost::uint64_t blocksize = 2e6;//boost::uint64_t (2e6);
-      for (boost::uint64_t pos = 0; pos < filecount; pos += blocksize)
+      const static uint64_t blocksize = 2e6;//uint64_t (2e6);
+      for (uint64_t pos = 0; pos < filecount; pos += blocksize)
       {
         if ((pos + blocksize) < filecount)
         {
@@ -327,7 +329,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    octree_disk_container<PointT>::readRangeSubSample_bernoulli (const boost::uint64_t start, const boost::uint64_t count, const double percent, std::vector<PointT, Eigen::aligned_allocator<PointT> >& v)
+    octree_disk_container<PointT>::readRangeSubSample_bernoulli (const uint64_t start, const uint64_t count, const double percent, std::vector<PointT, Eigen::aligned_allocator<PointT> >& v)
     {
       if (count == 0)
       {
@@ -336,8 +338,8 @@ namespace pcl
 
       v.clear ();
 
-      boost::uint64_t filestart = 0;
-      boost::uint64_t filecount = 0;
+      uint64_t filestart = 0;
+      uint64_t filecount = 0;
 
       boost::int64_t buffstart = -1;
       boost::int64_t buffcount = -1;
@@ -379,13 +381,13 @@ namespace pcl
       if (filecount > 0)
       {
         //pregen and then sort the offsets to reduce the amount of seek
-        std::vector < boost::uint64_t > offsets;
+        std::vector < uint64_t > offsets;
         {
           boost::mutex::scoped_lock lock (rng_mutex_);
 
           boost::bernoulli_distribution<double> filedist (percent);
           boost::variate_generator<boost::mt19937&, boost::bernoulli_distribution<double> > filecoin (rand_gen_, filedist);
-          for (boost::uint64_t i = filestart; i < (filestart + filecount); i++)
+          for (uint64_t i = filestart; i < (filestart + filecount); i++)
           {
             if (filecoin ())
             {
@@ -400,10 +402,10 @@ namespace pcl
         PointT p;
         char* loc = reinterpret_cast<char*> ( &p );
         
-        boost::uint64_t filesamp = offsets.size ();
-        for (boost::uint64_t i = 0; i < filesamp; i++)
+        uint64_t filesamp = offsets.size ();
+        for (uint64_t i = 0; i < filesamp; i++)
         {
-          int seekret = _fseeki64 (f, offsets[i] * static_cast<boost::uint64_t>(sizeof(PointT)), SEEK_SET);
+          int seekret = _fseeki64 (f, offsets[i] * static_cast<uint64_t>(sizeof(PointT)), SEEK_SET);
           assert (seekret == 0);
           size_t readlen = fread (loc, sizeof(PointT), 1, f);
           assert (readlen == 1);
@@ -418,7 +420,7 @@ namespace pcl
 
 //change this to use a weighted coin flip, to allow sparse sampling of small clouds (eg the bernoulli above)
     template<typename PointT> void
-    octree_disk_container<PointT>::readRangeSubSample (const boost::uint64_t start, const boost::uint64_t count, const double percent, std::vector<PointT, Eigen::aligned_allocator<PointT> >& v)
+    octree_disk_container<PointT>::readRangeSubSample (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector& v)
     {
       if (count == 0)
       {
@@ -427,8 +429,8 @@ namespace pcl
 
       v.clear ();
 
-      boost::uint64_t filestart = 0;
-      boost::uint64_t filecount = 0;
+      uint64_t filestart = 0;
+      uint64_t filecount = 0;
 
       boost::int64_t buffstart = -1;
       boost::int64_t buffcount = -1;
@@ -450,8 +452,8 @@ namespace pcl
         buffcount = count - filecount;
       }
 
-      boost::uint64_t filesamp = boost::uint64_t (percent * filecount);
-      boost::uint64_t buffsamp = (buffcount > 0) ? (static_cast<boost::uint64_t > (percent * buffcount) ) : 0;
+      uint64_t filesamp = uint64_t (percent * filecount);
+      uint64_t buffsamp = (buffcount > 0) ? (static_cast<uint64_t > (percent * buffcount) ) : 0;
 
       if ((filesamp == 0) && (buffsamp == 0) && (size () > 0))
       {
@@ -465,12 +467,12 @@ namespace pcl
         {
           boost::mutex::scoped_lock lock (rng_mutex_);
 
-          boost::uniform_int < boost::uint64_t > buffdist (0, buffcount - 1);
-          boost::variate_generator<boost::mt19937&, boost::uniform_int<boost::uint64_t> > buffdie (rand_gen_, buffdist);
+          boost::uniform_int < uint64_t > buffdist (0, buffcount - 1);
+          boost::variate_generator<boost::mt19937&, boost::uniform_int<uint64_t> > buffdie (rand_gen_, buffdist);
 
-          for (boost::uint64_t i = 0; i < buffsamp; i++)
+          for (uint64_t i = 0; i < buffsamp; i++)
           {
-            boost::uint64_t buffstart = buffdie ();
+            uint64_t buffstart = buffdie ();
             v.push_back (writebuff_[buffstart]);
           }
         }
@@ -479,16 +481,16 @@ namespace pcl
       if (filesamp > 0)
       {
         //pregen and then sort the offsets to reduce the amount of seek
-        std::vector < boost::uint64_t > offsets;
+        std::vector < uint64_t > offsets;
         {
           boost::mutex::scoped_lock lock (rng_mutex_);
 
           offsets.resize (filesamp);
-          boost::uniform_int < boost::uint64_t > filedist (filestart, filestart + filecount - 1);
-          boost::variate_generator<boost::mt19937&, boost::uniform_int<boost::uint64_t> > filedie (rand_gen_, filedist);
-          for (boost::uint64_t i = 0; i < filesamp; i++)
+          boost::uniform_int < uint64_t > filedist (filestart, filestart + filecount - 1);
+          boost::variate_generator<boost::mt19937&, boost::uniform_int<uint64_t> > filedie (rand_gen_, filedist);
+          for (uint64_t i = 0; i < filesamp; i++)
           {
-            boost::uint64_t filestart = filedie ();
+            uint64_t filestart = filedie ();
             offsets[i] = filestart;
           }
         }
@@ -498,9 +500,9 @@ namespace pcl
         assert (f != NULL);
         PointT p;
         char* loc = reinterpret_cast<char*> ( &p );
-        for (boost::uint64_t i = 0; i < filesamp; i++)
+        for (uint64_t i = 0; i < filesamp; i++)
         {
-          int seekret = _fseeki64 (f, offsets[i] * static_cast<boost::uint64_t> (sizeof(PointT)), SEEK_SET);
+          int seekret = _fseeki64 (f, offsets[i] * static_cast<uint64_t> (sizeof(PointT)), SEEK_SET);
           assert (seekret == 0);
           size_t readlen = fread (loc, sizeof(PointT), 1, f);
           assert (readlen == 1);
@@ -524,32 +526,26 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> inline void
-    octree_disk_container<PointT>::insertRange (const PointT* start, const boost::uint64_t count)
+    octree_disk_container<PointT>::insertRange (const PointT* start, const uint64_t count)
     {
+
+//      FileWriter<PointT> writer;
+
       //open the file for appending binary
       FILE* f = fopen (fileback_name_->c_str (), "a+b");
 
       //write at most 2 million elements at a time; mystery constant, this should be parametrized
       const static uint64_t blocksize = static_cast<uint64_t> ( 2e9 );
 
-      for (boost::uint64_t pos = 0; pos < count; pos += blocksize)
+      for (uint64_t pos = 0; pos < count; pos += blocksize)
       {
         const PointT* loc = start + pos;
         if ((pos + blocksize) < count)
         {
-          if (loc)
-          {
-            //suppressed warning. empty if statement; error?
-          }
           assert (fwrite (loc, sizeof(PointT), blocksize, f) == blocksize);
         }
         else
         {
-          if (loc)
-          {
-            //suppressed warning. empty if statement; error?
-          }
-          
           assert (fwrite (loc, sizeof(PointT), static_cast<size_t> (count - pos), f) == count - pos);
         }
       }
