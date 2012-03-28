@@ -354,7 +354,7 @@ namespace pcl
         return (0);
       }
 
-      //if this depth is the max depth of the tree, then add the point
+      //if this depth is the max depth of the tree, then add the points
       if (this->depth_ == root_->m_tree_->max_depth_)
         return (addDataAtMaxDepth(p, skip_bb_check));
 
@@ -668,7 +668,9 @@ namespace pcl
         return (p.size ());
       }
 
-      // Add points found within the current nodes bounding box
+      // Add points found within the current node's bounding box
+      /// \todo standardize the boundary case
+      /// \todo I suspect Justin's bug has to do with 
       else
       {
         std::vector<PointT> buff;
@@ -839,228 +841,6 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-
-// todo: Do we need to support std::vector<PointT*>
-//template<typename Container, typename PointT>
-//  boost::uint64_t
-//  octree_base_node<Container, PointT>::addDataToLeaf_and_genLOD (const std::vector<PointT*>& p,
-//                                                                     const bool skip_bb_check)
-//  {
-//    if (p.empty ())
-//    {
-//      return 0;
-//    }
-//
-//    if (this->depth == root_->m_tree_->max_depth_)
-//    {
-//      //if(skip_bb_check)//trust me, just add the points
-//      if (false)//trust me, just add the points
-//      {
-//        root_->m_tree_->count_point (this->depth, p.size ());
-//        payload->insertRange (p.data (), p.size ());
-//        return p.size ();
-//      }
-//      else//check which points belong to this node, throw away the rest
-//      {
-//        std::vector<PointT> buff;
-//
-//        const size_t len = p.size ();
-//        for (size_t i = 0; i < len; i++)
-//        {
-//          //const PointT& pt = p[i];
-//          if (pointWithinBB (p[i]))
-//          {
-//            buff.push_back (p[i]);
-//          }
-//          else
-//          {
-//            //	std::cerr << "failed to place point";
-//          }
-//        }
-//
-//        root_->m_tree_->count_point (this->depth, buff.size ());
-//        payload->insertRange (buff.data (), buff.size ());
-//        return buff.size ();
-//      }
-//    }
-//    else
-//    {
-//      if (num_child_ < 8)
-//      {
-//        if (hasUnloadedChildren ())
-//        {
-//          loadChildren (false);
-//        }
-//      }
-//
-//      //add code to subsample here
-//      std::vector<PointT> insertBuff;
-//      {
-//        std::vector<PointT> sampleBuff;
-//        if (!skip_bb_check)
-//        {
-//BOOST_FOREACH        (const PointT& pt, p)
-//        {
-//          if(pointWithinBB(pt))
-//          {
-//            sampleBuff.push_back(pt);
-//          }
-//        }
-//      }
-//      else
-//      {
-//        sampleBuff = p;
-//      }
-//
-//      const double percent = pow(sample_precent, double((root->m_tree_->max_depth_ - depth)));
-//      const boost::uint64_t samplesize = (boost::uint64_t)(percent * double(sampleBuff.size()));
-//      const boost::uint64_t inputsize = sampleBuff.size();
-//      if(samplesize > 0)
-//      {
-//        insertBuff.resize(samplesize);
-//
-//        boost::mutex::scoped_lock lock(rng_mutex_);
-//        boost::uniform_int<boost::uint64_t> buffdist(0, inputsize-1);
-//        boost::variate_generator<boost::mt19937&, boost::uniform_int<boost::uint64_t> > buffdie(rand_gen_, buffdist);
-//
-//        for(boost::uint64_t i = 0; i < samplesize; ++i)
-//        {
-//          boost::uint64_t buffstart = buffdie();
-//          insertBuff[i] = ( sampleBuff[buffstart] );
-//        }
-//      }
-//      else//have to do it the slow way
-//
-//      {
-//        boost::mutex::scoped_lock lock(rng_mutex_);
-//        boost::bernoulli_distribution<double> buffdist(percent);
-//        boost::variate_generator<boost::mt19937&, boost::bernoulli_distribution<double> > buffcoin(rand_gen_, buffdist);
-//
-//        for(boost::uint64_t i = 0; i < inputsize; ++i)
-//        {
-//          if(buffcoin())
-//          {
-//            insertBuff.push_back( p[i] );
-//          }
-//        }
-//      }
-//    }
-//    if(!insertBuff.empty())
-//    {
-//      root_->m_tree_->count_point(this->depth, insertBuff.size());
-//      payload->insertRange(&(insertBuff.front()), insertBuff.size());
-//    }
-//    //end subsample
-//
-//    //subdivide vec to pass data down lower
-//    std::vector<PointT*> c;
-//    c.resize(8);
-//    for(int i = 0; i < 8; i++)
-//    {
-//      c[i].reserve(p.size() / 8);
-//    }
-//
-//    const size_t len = p.size();
-//    for(size_t i = 0; i < len; i++)
-//    {
-//      //const PointT& pt = p[i];
-//
-//      if(!skip_bb_check)
-//      {
-//        if(!this->pointWithinBB(p[i]))
-//        {
-//          //	std::cerr << "\nfailed to place point!!!\n" << std::endl;
-//          continue;
-//        }
-//      }
-//
-//      if((p[i].z >= midz_))
-//      {
-//        if((p[i].y >= midy_))
-//        {
-//          if((p[i].x >= midx_))
-//          {
-//            c[7].push_back(p[i]);
-//            continue;
-//          }
-//          else
-//          {
-//            c[6].push_back(p[i]);
-//            continue;
-//          }
-//        }
-//        else
-//        {
-//          if((p[i].x >= midx_))
-//          {
-//            c[5].push_back(p[i]);
-//            continue;
-//          }
-//          else
-//          {
-//            c[4].push_back(p[i]);
-//            continue;
-//          }
-//        }
-//      }
-//      else
-//      {
-//        if((p[i].y >= midy_))
-//        {
-//          if((p[i].x >= midx_))
-//          {
-//            c[3].push_back(p[i]);
-//            continue;
-//          }
-//          else
-//          {
-//            c[2].push_back(p[i]);
-//            continue;
-//          }
-//        }
-//        else
-//        {
-//          if((p[i].x >= midx_))
-//          {
-//            c[1].push_back(p[i]);
-//            continue;
-//          }
-//          else
-//          {
-//            c[0].push_back(p[i]);
-//            continue;
-//          }
-//        }
-//      }
-//    }
-//
-//    //perhaps do a quick loop through the lists here and dealloc the reserved mem for empty lists
-//    boost::uint64_t points_added = 0;
-//    for(int i = 0; i < 8; i++)
-//    {
-//      if(c[i].empty()) continue;
-//      if(!children[i]) createChild(i);
-//      points_added += children[i]->addDataToLeaf_and_genLOD(c[i], true);
-//      c[i].clear();
-//    }
-//    return points_added;
-//  }
-//  // std::cerr << "failed to place point!!!" << std::endl;
-//  return 0;
-//}
-
-/*
-  Child order:
-
-  bottom stack (low z):
-  1 3
-  0 2
-
-  top stack (high z):
-  5 7
-  4 6
-*/
-
     template<typename Container, typename PointT> void
     octree_base_node<Container, PointT>::createChild (const int idx)
     {
@@ -1114,69 +894,8 @@ namespace pcl
     {
       for (int idx=0; idx < 8; idx++)
         createChild(idx);
-//      const double zstart = min_[2];
-//      const double ystart = min_[1];
-//      const double xstart = min_[0];
-//
-//      const double zstep = (max_[2] - min_[2]) / double (2);
-//      const double ystep = (max_[1] - min_[1]) / double (2);
-//      const double xstep = (max_[0] - min_[0]) / double (2);
-//
-//      int i = 0;
-//
-//      double childbb_min[3];
-//      double childbb_max[3];
-//      for (int z = 0; z < 2; z++)
-//      {
-//        childbb_min[2] = zstart + double (z) * zstep;
-//        childbb_max[2] = zstart + double (z + 1) * zstep;
-//
-//        for (int y = 0; y < 2; y++)
-//        {
-//          childbb_min[1] = ystart + double (y) * ystep;
-//          childbb_max[1] = ystart + double (y + 1) * ystep;
-//
-//          for (int x = 0; x < 2; x++)
-//          {
-//            childbb_min[0] = xstart + double (x) * xstep;
-//            childbb_max[0] = xstart + double (x + 1) * xstep;
-//
-//            boost::filesystem::path childdir = thisdir_ / boost::filesystem::path (boost::lexical_cast<std::string> (i));
-//            children_[i] = new octree_base_node<Container, PointT> (childbb_min, childbb_max, childdir.string ().c_str (), this);
-//            i++;
-//          }
-//        }
-//      }
-//      num_child_ = 8;
     }
 ////////////////////////////////////////////////////////////////////////////////
-
-//template<typename Container, typename PointT>
-//void octree_base_node<Container, PointT>::createChildrenToDim(const double dim)
-//{
-//	double side[3];
-//
-//	for (int i = 0; i < 3; i++) {
-//		side[i] = max_bb[i] - min_bb[i];
-//	};
-//
-//
-//	if( (side[0] < dim) || (side[1] < dim) || (side[2] < dim) )
-//	{
-//		this->root->max_depth_ = this->depth;
-//		return;
-//	}
-//
-//	if(num_child_ == 0)
-//	{
-//		createChildren();
-//	}
-//
-//	for(size_t i = 0; i < num_child_; i++)
-//	{
-//		children[i]->createChildrenToDim(dim);
-//	}
-//}
 
     template<typename Container, typename PointT> int
     octree_base_node<Container, PointT>::calcDepthForDim (const double min_bb[3], const double max_bb[3], const double dim)
@@ -1228,6 +947,7 @@ namespace pcl
     template<typename Container, typename PointT> inline bool
     octree_base_node<Container, PointT>::pointWithinBB (const PointT& p) const
     {
+      // won't <= lead to points being added to more than one voxel?
       if (((min_[0] <= p.x) && (p.x <= max_[0])) &&
           ((min_[1] <= p.y) && (p.y <= max_[1])) &&
           ((min_[2] <= p.z) && (p.z <= max_[2])))
@@ -1279,9 +999,9 @@ namespace pcl
       else
       {
         PointT voxel_center;
-        voxel_center.x = midx_;
-        voxel_center.y = midy_;
-        voxel_center.z = midz_;
+        voxel_center.x = static_cast<float>(midx_);
+        voxel_center.y = static_cast<float>(midy_);
+        voxel_center.z = static_cast<float>(midz_);
 
         voxel_centers.push_back(voxel_center);
       }
@@ -1301,26 +1021,6 @@ namespace pcl
 
       memcpy (my_min, min_bb, 3 * sizeof(double));
       memcpy (my_max, max_bb, 3 * sizeof(double));
-
-      //	printf("DEBUG! - automatic LLA detection removed\n");
-      //	if (false) {
-      //		if ((min_bb[1] >= -180) && (max_bb[1] <= 180) && (min_bb[0] >= -90) && (max_bb[0] <= 90)) {
-      //			char   zone[256];
-      //			double min_northing;
-      //			double min_easting;
-      //			double max_northing;
-      //			double max_easting;
-      //			int    utmZone;
-      //			CgeoMath::ll2utm(UTM_WGS_84, min_bb[0], min_bb[1], &utmZone, zone, &min_northing, &min_easting);
-      //			CgeoMath::ll2utm(UTM_WGS_84, max_bb[0], max_bb[1], &utmZone, zone, &max_northing, &max_easting);
-      //
-      //			my_min[0] = min_easting;
-      //			my_min[1] = min_northing;
-      //			my_max[0] = max_easting;
-      //			my_max[1] = max_northing;
-      //		};
-      //	}
-
 
       if (intersectsWithBB (my_min, my_max))
       {

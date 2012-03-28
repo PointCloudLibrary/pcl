@@ -90,7 +90,7 @@ typedef Eigen::aligned_allocator<PointT> AlignedPointT;
 #include <boost/filesystem.hpp>
 
 // Definitions
-#define MAX_DEPTH -1
+const int MAX_DEPTH (-1);
 
 vtkSmartPointer<vtkPolyData>
 getCuboid (double x_min, double x_max, double y_min, double y_max, double z_min, double z_max)
@@ -186,13 +186,13 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
 
   // Get point count every LOD
   cout << " LOD Points: [";
-  std::vector<boost::uint64_t> lodPoints = octree.getNumPoints ();
+  std::vector<boost::uint64_t> lodPoints = octree.getNumPointsVector ();
   for (boost::uint64_t i = 0; i < lodPoints.size () - 1; i++)
     cout << lodPoints[i] << " ";
   cout << lodPoints[lodPoints.size () - 1] << "]" << endl;
 
   // Get voxel size and divide by 2 - we +/- from the center for bounding cubes
-  double voxel_side_length = octree.getVoxelSideLength ((size_t)depth);
+  double voxel_side_length = octree.getVoxelSideLength (static_cast<uint64_t>(depth));
   cout << " Voxel Side Length: " << voxel_side_length << endl;
 
   // Print bounding box info
@@ -200,13 +200,13 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
 
   // Print voxel count
   std::vector<PointT, AlignedPointT> voxel_centers;
-  octree.getVoxelCenters (voxel_centers, (size_t)depth);
+  octree.getVoxelCenters (voxel_centers, static_cast<uint64_t>(depth));
   cout << " Voxel Count: " << voxel_centers.size () << " - " << voxel_centers[0] << endl;
   //  cout << " Voxel Bounds: [" << voxel_centers[0].x - voxel_side_length << ", " << voxel_centers[0].y - voxel_side_length << ", " << voxel_centers[0].z - voxel_side_length << "] -" <<
   //          " [" << voxel_centers[0].x + voxel_side_length << ", " << voxel_centers[0].y + voxel_side_length << ", " << voxel_centers[0].z + voxel_side_length << "]" << endl;
 
   std::list<PointT> points;
-  octree.queryBBIncludes (min, max, (size_t)depth, points);
+  octree.queryBBIncludes (min, max, static_cast<uint64_t>(depth), points);
   cout << " Point Count: " << points.size () << endl;
 
   vtkRenderer *renderer = vtkRenderer::New ();
@@ -238,6 +238,9 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
 void
 print_help (int argc, char **argv)
 {
+  //suppress unused parameter warning
+  assert (argc == argc);
+
   print_info ("This program is used to visualize outofcore data structure");
   print_info ("%s <options> <input_tree_dir> \n", argv[0]);
   print_info ("\n");

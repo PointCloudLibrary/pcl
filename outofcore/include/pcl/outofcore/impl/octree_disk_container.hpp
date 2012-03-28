@@ -212,8 +212,10 @@ namespace pcl
 
         int seekret = _fseeki64 (f, idx * sizeof(PointT), SEEK_SET);
         assert (seekret == 0);
+
         size_t readlen = fread (&temp, 1, sizeof(PointT), f);
         assert (readlen == sizeof(PointT));
+
         int closeret = fclose (f);
 
         //fileback.open(fileback_name_->c_str(), std::fstream::in|std::fstream::out|std::fstream::binary);
@@ -231,7 +233,8 @@ namespace pcl
 
       //else, throw out of range exception
       /** \todo standardize the exceptions to PCL's */
-      throw("out of range");
+      PCL_THROW_EXCEPTION (PCLException, "Index is out of range");
+//      throw("out of range");
     }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -240,7 +243,8 @@ namespace pcl
     {
       if ((start + count) > size ())
       {
-        throw("out of range");
+        PCL_THROW_EXCEPTION (PCLException, "Read indices exceed range");
+//        throw("out of range");
       }
 
       if (count == 0)
@@ -273,7 +277,7 @@ namespace pcl
 
       //resize
       PointT* loc = NULL;
-      v.resize (static_cast<unsigned int>(count));
+      v.resize (static_cast<uint64_t>(count));
       loc = &(v.front ());
 
       //do the read
@@ -532,10 +536,11 @@ namespace pcl
     template<typename PointT> inline void
     octree_disk_container<PointT>::insertRange (const PointT* start, const boost::uint64_t count)
     {
+      //open the file for appending binary
       FILE* f = fopen (fileback_name_->c_str (), "a+b");
 
-      //write at most 2 million elements at a ime
-      const static size_t blocksize = static_cast<size_t> ( 2e6 );
+      //write at most 2 million elements at a time; mystery constant, this should be parametrized
+      const static uint64_t blocksize = static_cast<uint64_t> ( 2e9 );
 
       for (boost::uint64_t pos = 0; pos < count; pos += blocksize)
       {

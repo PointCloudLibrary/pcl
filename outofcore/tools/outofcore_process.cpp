@@ -50,7 +50,7 @@
 
 // todo: Read clouds as PointCloud2 so we don't need to define PointT explicitly.
 //       This also requires our octree to take PointCloud2 as an input.
-typedef pcl::PointXYZ PointT;
+typedef pcl::PointXYZRGBA PointT;
 
 using namespace pcl;
 using namespace pcl::outofcore;
@@ -88,14 +88,14 @@ getCloudFromFile (boost::filesystem::path pcd_path)
 }
 
 int
-outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesystem::path root_dir, int depth,
-                  double resolution, int build_octree_with, bool gen_lod, bool overwrite)
+outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesystem::path root_dir, 
+                  int depth, double resolution, int build_octree_with, bool gen_lod, bool overwrite)
 {
   // Bounding box min/max pts
   PointT min_pt, max_pt;
 
   // Iterate over all pcd files resizing min/max
-  for (int i = 0; i < pcd_paths.size (); i++)
+  for (size_t i = 0; i < pcd_paths.size (); i++)
   {
 
     // Get cloud
@@ -135,6 +135,10 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
   // The bounding box of the root node of the out-of-core octree must be specified
   const double bounding_box_min[3] = {min_pt.x, min_pt.y, min_pt.z};
   const double bounding_box_max[3] = {max_pt.x, max_pt.y, max_pt.z};
+  
+//arbitrarily large bounding box
+//  const double bounding_box_min[3] = { -1e8, -1e8, -1e8 };
+//  const double bounding_box_max[3] = { 1e8, 1e8, 1e8 };
 
   //specify the directory and the root node's meta data file with a
   //".oct_idx" extension (currently it must be this extension)
@@ -167,28 +171,43 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
     outofcore_octree = new octree_disk (bounding_box_min, bounding_box_max, resolution, octree_path_on_disk, "ECEF");
   }
 
+  uint64_t total_pts = 0;
+
   // Iterate over all pcd files adding points to the octree
-  for (int i = 0; i < pcd_paths.size (); i++)
+  for (size_t i = 0; i < pcd_paths.size (); i++)
   {
 
     PointCloud<PointT>::Ptr cloud = getCloudFromFile (pcd_paths[i]);
+
+    uint64_t pts = 0;
+    
     //load the points into the outofcore octree
     if (gen_lod)
     {
       print_info ("  Generating LODs\n");
-      outofcore_octree->addPointCloud_and_genLOD (cloud);
+      pts = outofcore_octree->addPointCloud_and_genLOD (cloud);
     }
     else
     {
-      outofcore_octree->addPointCloud (cloud);
+      pts = outofcore_octree->addPointCloud (cloud);
     }
+    print_info ("Successfully added %lu points\n",pts);
+    assert ( pts == cloud->points.size () );
+    
+    total_pts += pts;
   }
+
+  print_info ("Added a total of %lu from %d clouds\n",total_pts, pcd_paths.size ());
+  
 
   double x, y;
   outofcore_octree->getBinDimension (x, y);
 
   print_info ("  Depth: %i\n", outofcore_octree->getDepth ());
   print_info ("  Resolution: [%f, %f]\n", x, y);
+
+  //free outofcore data structure; the destructor forces buffer flush to disk
+  delete outofcore_octree;
 
   return 0;
 }
@@ -257,7 +276,7 @@ main (int argc, char* argv[])
   std::vector<int> file_arg_indices = parse_file_extension_argument (argc, argv, ".pcd");
 
   std::vector<boost::filesystem::path> pcd_paths;
-  for (int i = 0; i < file_arg_indices.size (); i++)
+  for (size_t i = 0; i < file_arg_indices.size (); i++)
   {
     boost::filesystem::path pcd_path (argv[file_arg_indices[i]]);
     if (!boost::filesystem::exists (pcd_path))

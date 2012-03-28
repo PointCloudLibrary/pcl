@@ -207,8 +207,8 @@ namespace pcl
          */
 
         /** \brief add point to this node if we are a leaf, or find the leaf below us that is supposed to take the point 
-         *  \param[in] p vector of points to add to the leaf; \note @b not eigen aligned yet
-         *  \param[in] skipBBCheck 
+         *  \param[in] p vector of points to add to the leaf
+         *  \param[in] skipBBCheck whether to check if the point's coordinates fall within the bounding box
          */
         boost::uint64_t
         addDataToLeaf (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& p, const bool skip_bb_check);

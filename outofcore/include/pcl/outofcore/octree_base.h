@@ -161,14 +161,16 @@ namespace pcl
          * \return number of points in the lodPoints_ cache 
          */
         inline boost::uint64_t
-        getNumPoints (const boost::uint64_t depth) const
+        getNumPointsAtDepth (const boost::uint64_t depth) const
         {
+          assert ( depth < lodPoints_.size () );
+          
           return lodPoints_[depth];
         }
 
         /** \brief Get number of points at each LOD */
         inline const std::vector<boost::uint64_t>&
-        getNumPoints () const
+        getNumPointsVector () const
         {
           return lodPoints_;
         }
@@ -388,10 +390,15 @@ namespace pcl
         void
         buildLOD (octree_base_node<Container, PointT>** current_branch, const int current_dims);
 
-        /** \brief Increment current depths (LOD for branch nodes) point count */
+        /** \brief Increment current depths (LOD for branch nodes) point count; called by addDataAtMaxDepth in octree_base_node
+         * \todo rename count_point to something more informative
+         */
         void
         count_point (boost::uint64_t depth, boost::uint64_t inc)
         {
+          //if we overflow here, we've got one massive octree
+          assert ( std::numeric_limits<uint64_t>::max () - inc > inc );
+
           lodPoints_[depth] += inc;
         }
     

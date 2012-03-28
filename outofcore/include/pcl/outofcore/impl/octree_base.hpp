@@ -226,7 +226,7 @@ namespace pcl
       // use this api, will allow counts up to 2^52 points to be stored correctly
       std::vector<double> lodPoints_db;
       lodPoints_db.insert (lodPoints_db.begin (), lodPoints_.begin (), lodPoints_.end ());
-      cJSON* numpts = cJSON_CreateDoubleArray (&(lodPoints_db.front ()), static_cast<int> (lodPoints_db.size ()));
+      cJSON* numpts = cJSON_CreateDoubleArray (&(lodPoints_db.front ()), static_cast<double> (lodPoints_db.size ()));
 
       cJSON_AddItemToObject (idx.get (), "name", name);
       cJSON_AddItemToObject (idx.get (), "version", version);
