@@ -79,7 +79,7 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
     NormalCloud projected_points_normals;
 
     // Get a plane approximating the local surface's tangent and project point onto it
-    computeMLSPointNormal ((*indices_)[cp], *input_, nn_indices, nn_sqr_dists, projected_points, projected_points_normals);
+    this->computeMLSPointNormal ((*indices_)[cp], *input_, nn_indices, nn_sqr_dists, projected_points, projected_points_normals);
 
     // Append projected points to output
     output.insert (output.end (), projected_points.begin (), projected_points.end ());
@@ -132,14 +132,14 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
 
       PointOutT result_point;
       pcl::Normal result_normal;
-      projectPointToMLSSurface (u_disp, v_disp,
-                                mls_results_[input_index].u, mls_results_[input_index].v,
-                                mls_results_[input_index].plane_normal,
-                                mls_results_[input_index].curvature,
-                                input_point,
-                                mls_results_[input_index].c_vec,
-                                mls_results_[input_index].num_neighbors,
-                                result_point, result_normal);
+      this->projectPointToMLSSurface (u_disp, v_disp,
+                                      mls_results_[input_index].u, mls_results_[input_index].v,
+                                      mls_results_[input_index].plane_normal,
+                                      mls_results_[input_index].curvature,
+                                      input_point,
+                                      mls_results_[input_index].c_vec,
+                                      mls_results_[input_index].num_neighbors,
+                                      result_point, result_normal);
 
       float d_before = (pos - input_point).norm (),
             d_after = (result_point.getVector3fMap () - input_point). norm();

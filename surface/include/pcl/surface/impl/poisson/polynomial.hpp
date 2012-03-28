@@ -43,6 +43,8 @@
 #include <math.h>
 #include <algorithm>
 
+#include <pcl/surface/poisson/factor.h>
+
 
 namespace pcl {
   namespace poisson {

@@ -626,7 +626,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, Eigen::MatrixXf>::com
     Eigen::Matrix3f currentLrf;
     //output.points (point_idx, 9) = computePointLRF (*indices_[point_idx], currentLrf);
     //if (output.points (point_idx, 9) == std::numeric_limits<float>::max ())
-    if (computePointLRF ((*indices_)[point_idx], currentLrf) == std::numeric_limits<float>::max ())
+    if (this->computePointLRF ((*indices_)[point_idx], currentLrf) == std::numeric_limits<float>::max ())
     {
       output.is_dense = false;
     }
