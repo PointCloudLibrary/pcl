@@ -37,7 +37,7 @@ namespace pcl
      */
 
     template<template<class > class Distance, typename PointInT, typename FeatureT>
-      class LocalRecognitionPipeline
+      class PCL_EXPORTS LocalRecognitionPipeline
       {
 
         typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;

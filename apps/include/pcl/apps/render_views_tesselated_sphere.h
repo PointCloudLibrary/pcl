@@ -23,7 +23,7 @@ namespace pcl
      * \author Aitor Aldoma
      * \ingroup apps
      */
-    class RenderViewsTesselatedSphere
+    class PCL_EXPORTS RenderViewsTesselatedSphere
     {
     private:
       std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > poses_;

@@ -29,7 +29,7 @@ namespace pcl
      */
 
     template<template<class > class Distance, typename PointInT, typename FeatureT>
-      class GlobalNNPipeline
+      class PCL_EXPORTS GlobalNNPipeline
       {
 
       protected:

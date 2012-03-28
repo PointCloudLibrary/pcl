@@ -227,6 +227,7 @@ main (int argc, char ** argv)
     //configure cg algorithm (hough 3d)
     boost::shared_ptr<pcl::Hough3DGrouping<pcl::PointXYZ, pcl::PointXYZ> > hough_3d_alg (new pcl::Hough3DGrouping<pcl::PointXYZ, pcl::PointXYZ>);
     hough_3d_alg->setLocalRfSearchRadius (0.04f);
+    hough_3d_alg->setLocalRfNormalsSearchRadius(0.015f);
     hough_3d_alg->setHoughBinSize (CG_THRESHOLD_);
     hough_3d_alg->setHoughThreshold (CG_SIZE_);
     cast_cg_alg = boost::static_pointer_cast<pcl::CorrespondenceGrouping<pcl::PointXYZ, pcl::PointXYZ> > (hough_3d_alg);

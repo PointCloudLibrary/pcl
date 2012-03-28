@@ -63,7 +63,7 @@ namespace pcl
        */
 
     template<typename PointType>
-      class DominantPlaneSegmentation
+      class PCL_EXPORTS DominantPlaneSegmentation
       {
       public:
         typedef pcl::PointCloud<PointType> Cloud;
