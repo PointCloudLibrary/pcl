@@ -56,7 +56,6 @@ using namespace std;
 using namespace pcl;
 
 #include <pcl/outofcore/outofcore.h>
-#include <pcl/outofcore/outofcore_impl.h>
 
 using namespace pcl::outofcore;
 

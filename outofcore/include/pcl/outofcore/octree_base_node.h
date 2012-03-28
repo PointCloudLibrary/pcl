@@ -300,8 +300,9 @@ namespace pcl
         void
         createChildren ();//add empty children
 
-        //void
-        //createChildrenToDim(const double dim);//add empty children until their bounding box is less than dim meters on a side
+        /** \brief Write JSON metadata for this node to file */
+        void
+        saveMetadataToFile (const boost::filesystem::path& path);
 
         int
         calcDepthForDim (const double min_bb[3], const double max_bb[3], const double dim);
@@ -336,13 +337,13 @@ namespace pcl
         void
         flush_DeAlloc_this_only ();
 
-        /** \brief Serialize */
-        void
-        saveToFile (const boost::filesystem::path& path);
-
         void
         loadFromFile (const boost::filesystem::path& path, octree_base_node* super);
 
+        /** \brief Save node's metadata to file
+         * \param[in] recursive: if false, save only this node's metadata to file; if true, recursively
+         * save all children's metadata to files as well
+         */
         void
         saveIdx (bool recursive);
 

@@ -1405,7 +1405,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> void
-    octree_base_node<Container, PointT>::saveToFile (const boost::filesystem::path& path)
+    octree_base_node<Container, PointT>::saveMetadataToFile (const boost::filesystem::path& path)
     {
       boost::shared_ptr<cJSON> idx (cJSON_CreateObject (), cJSON_Delete);
 
@@ -1486,11 +1486,10 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT>
-    void
+    template<typename Container, typename PointT> void
     octree_base_node<Container, PointT>::saveIdx (bool recursive)
     {
-      saveToFile (thisnodeindex_);
+      saveMetadataToFile(thisnodeindex_);
 
       if (recursive)
       {

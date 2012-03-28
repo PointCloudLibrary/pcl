@@ -203,7 +203,7 @@ namespace pcl
           filelen_ = 0;
         }
 
-        /** \brief serialize the points and write to disk
+        /** \brief write points to disk as ascii
          *
          * \param[in] path
          */

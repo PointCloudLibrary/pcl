@@ -562,26 +562,6 @@ namespace pcl
         delete[] next_branch;
       }
     }
-////////////////////////////////////////////////////////////////////////////////
-#if 0
-    template<typename Container, typename PointT> boost::uint64_t
-    octree_base<Container, PointT>::addPointsFromInputCloud ()
-    {
-
-/*
-  boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
-  boost::uint64_t pt_added = root_->addDataToLeaf ( input_->points, false );
-
-  return pt_added;
-*/
-
-      //ensure the octree is empty
-
-      //if indicies is not null, then add by list of indices
-      //otherwise, add all the points in the cloud to the octree
-    }
-#endif
-////////////////////////////////////////////////////////////////////////////////
 
   }//namespace outofcore
 }//namespace pcl
