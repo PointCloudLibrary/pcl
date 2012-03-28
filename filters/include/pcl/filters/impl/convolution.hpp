@@ -37,8 +37,8 @@
  *
  */
 
-#ifndef PCL_COMMON_CONVOLUTION_IMPL_HPP
-#define PCL_COMMON_CONVOLUTION_IMPL_HPP
+#ifndef PCL_FILTERS_CONVOLUTION_IMPL_HPP
+#define PCL_FILTERS_CONVOLUTION_IMPL_HPP
 
 template <typename PointIn, typename PointOut> void
 pcl::filters::Convolution<PointIn, PointOut>::Convolution ()
@@ -627,3 +627,5 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols_mirror (PointCloudOu
     }
   }
 }
+
+#endif //PCL_FILTERS_CONVOLUTION_IMPL_HPP
