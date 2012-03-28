@@ -93,6 +93,8 @@ namespace pcl
         boost::shared_ptr<std::vector<ModelT> > models_;
         boost::shared_ptr<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > transforms_;
 
+        int kdtree_splits_;
+
         //load features from disk and create flann structure
         void
         loadFeaturesAndCreateFLANN ();
@@ -168,11 +170,16 @@ namespace pcl
           use_cache_ = false;
           threshold_accept_model_hypothesis_ = 0.2f;
           ICP_iterations_ = 30;
+          kdtree_splits_ = 512;
         }
 
         ~LocalRecognitionPipeline ()
         {
 
+        }
+
+        void setKdtreeSplits(int n) {
+          kdtree_splits_ = n;
         }
 
         void

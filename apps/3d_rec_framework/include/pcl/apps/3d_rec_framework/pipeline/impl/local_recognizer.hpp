@@ -95,7 +95,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
     indices = flann::Matrix<int> (new int[k], 1, k);
     distances = flann::Matrix<float> (new float[k], 1, k);
-    index->knnSearch (p, indices, distances, k, flann::SearchParams (512));
+    index->knnSearch (p, indices, distances, k, flann::SearchParams (kdtree_splits_));
     delete[] p.ptr ();
   }
 
@@ -333,7 +333,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
       source_->voxelizeAllModels (VOXEL_SIZE_ICP_);
 
 #pragma omp parallel for num_threads(omp_get_num_procs())
-      for (int i = 0; i < (int)models_->size (); i++)
+      for (int i = 0; i < static_cast<int>(models_->size ()); i++)
       {
 
         ConstPointInTPtr model_cloud = models_->at (i).getAssembled (VOXEL_SIZE_ICP_);

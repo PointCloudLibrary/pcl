@@ -189,8 +189,6 @@ namespace pcl
             render_views.addModelFromPolyData (mapper->GetInput ());
             render_views.generateViews ();
 
-            std::vector < pcl::PointCloud<pcl::PointXYZ>, Eigen::aligned_allocator<pcl::PointCloud<pcl::PointXYZ> > > views_xyz;
-
             render_views.getViews (*(model.views_));
             render_views.getPoses (*(model.poses_));
             render_views.getEntropies (*(model.self_occlusions_));
@@ -216,6 +214,8 @@ namespace pcl
               path_entropy << direc.str () << "/entropy_" << i << ".txt";
               pcl::rec_3d_framework::PersistenceUtils::writeFloatToFile (path_entropy.str (), model.self_occlusions_->at (i));
             }
+
+            loadOrGenerate(dir, model_path, model);
 
           }
         }

@@ -33,7 +33,7 @@ segmentAndClassify (typename pcl::rec_3d_framework::GlobalNNPipeline<DistT, Poin
   size_t previous_cluster_size = 0;
   size_t previous_categories_size = 0;
 
-  float Z_DIST_ = 1.f;
+  float Z_DIST_ = 1.25f;
   float text_scale = 0.015f;
 
   while (camera.isActive ())

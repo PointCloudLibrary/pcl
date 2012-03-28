@@ -218,6 +218,7 @@ main (int argc, char ** argv)
   int force_retrain = 0;
   int icp_iterations = 10;
   int use_cache = 0;
+  int splits = 512;
 
   pcl::console::parse_argument (argc, argv, "-models_dir", path);
   pcl::console::parse_argument (argc, argv, "-training_dir", training_dir);
@@ -226,6 +227,7 @@ main (int argc, char ** argv)
   pcl::console::parse_argument (argc, argv, "-force_retrain", force_retrain);
   pcl::console::parse_argument (argc, argv, "-icp_iterations", icp_iterations);
   pcl::console::parse_argument (argc, argv, "-use_cache", use_cache);
+  pcl::console::parse_argument (argc, argv, "-splits", splits);
 
   if (mians_scenes.compare ("") == 0)
   {
@@ -326,6 +328,7 @@ main (int argc, char ** argv)
 
     keypoint_extractor->setRadiusSearch (0.005f);
     local.setICPIterations (icp_iterations);
+    local.setKdtreeSplits(splits);
 
     recognizeAndVisualize<flann::L1, pcl::PointXYZ, pcl::Histogram<352> > (local, mians_scenes);
 
@@ -354,6 +357,7 @@ main (int argc, char ** argv)
 
     keypoint_extractor->setRadiusSearch (0.005f);
     local.setICPIterations (icp_iterations);
+    local.setKdtreeSplits(splits);
 
     recognizeAndVisualize<flann::L1, pcl::PointXYZ, pcl::FPFHSignature33> (local, mians_scenes);
   }
