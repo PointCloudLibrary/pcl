@@ -39,7 +39,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
-#include <pcl/common/convolution.h>
+#include <pcl/filters/convolution.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
 void
@@ -66,9 +66,9 @@ main (int argc, char ** argv)
   int nb_threads = 0;
   char border_policy = 'Z';
   double threshold = 0.001;
-	pcl::common::Convolution<pcl::PointXYZRGB> convolution;
-	Eigen::ArrayXf gaussian_kernel(5);
-	gaussian_kernel << 1.f/16, 1.f/4, 3.f/8, 1.f/4, 1.f/16;
+  pcl::filters::Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB> convolution;
+  Eigen::ArrayXf gaussian_kernel(5);
+  gaussian_kernel << 1.f/16, 1.f/4, 3.f/8, 1.f/4, 1.f/16;
   pcl::console::print_info ("convolution kernel:");
   for (int i = 0; i < gaussian_kernel.size (); ++i)
     pcl::console::print_info (" %f", gaussian_kernel[i]);
@@ -93,7 +93,7 @@ main (int argc, char ** argv)
   // convolve row
   if (pcl::console::find_switch (argc, argv, "-r"))
     direction = 0;
-  else 
+  else
   {
     // convolve column
     if (pcl::console::find_switch (argc, argv, "-c"))
@@ -107,7 +107,7 @@ main (int argc, char ** argv)
         // wrong direction given print usage
         usage (argv);
         return 1;
-      } 
+      }
   }
 
   // number of threads if any
@@ -117,70 +117,69 @@ main (int argc, char ** argv)
       nb_threads = 1;
   }
   convolution.setNumberOfThreads (nb_threads);
-  
+
   // borders policy if any
   if (pcl::console::parse_argument (argc, argv, "-p", border_policy) != -1 )
   {
     switch (border_policy)
     {
-      case 'Z' : convolution.setBordersPolicy (pcl::common::Convolution<pcl::PointXYZRGB>::IGNORE);
+      case 'Z' : convolution.setBordersPolicy (pcl::filters::Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::BORDERS_POLICY_IGNORE);
         break;
-      case 'M' : convolution.setBordersPolicy (pcl::common::Convolution<pcl::PointXYZRGB>::MIRROR);
+      case 'M' : convolution.setBordersPolicy (pcl::filters::Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::BORDERS_POLICY_MIRROR);
         break;
-      case 'D' : convolution.setBordersPolicy (pcl::common::Convolution<pcl::PointXYZRGB>::DUPLICATE);
+      case 'D' : convolution.setBordersPolicy (pcl::filters::Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::BORDERS_POLICY_DUPLICATE);
         break;
-      default : 
+      default :
       {
         usage (argv);
         return (1);
-      }      
+      }
     }
   }
   else
-    convolution.setBordersPolicy (pcl::common::Convolution<pcl::PointXYZRGB>::IGNORE);
+    convolution.setBordersPolicy (pcl::filters::Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::BORDERS_POLICY_IGNORE);
 
   // distance threshold if any
   if (pcl::console::parse_argument (argc, argv, "-d", threshold) == -1 )
   {
-    threshold = 0.001;
+    threshold = 0.01;
   }
-  convolution.setDistanceThreshold (static_cast<float> (threshold));  
+  convolution.setDistanceThreshold (static_cast<float> (threshold));
 
   // all set
   // we have file name and convolving direction
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB> ());
-	if (pcl::io::loadPCDFile (argv[1], *cloud) == -1)
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB> ());
+  if (pcl::io::loadPCDFile (argv[1], *cloud) == -1)
   {
     pcl::console::print_error ("Couldn't read file %s \n", argv[1]);
     return (-1);
   }
-	cloud->is_dense = false;
-	convolution.setInputCloud (cloud);
-	convolution.setKernel (gaussian_kernel);
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr convolved (new pcl::PointCloud<pcl::PointXYZRGB> ());
-  
+  cloud->is_dense = false;
+  convolution.setInputCloud (cloud);
+  convolution.setKernel (gaussian_kernel);
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr convolved (new pcl::PointCloud<pcl::PointXYZRGB> ());
   double t0;
   pcl::console::print_info ("convolving %s along \n", argv[1]);
   std::ostringstream convolved_label;
   convolved_label << "convolved along ";
   switch (direction)
   {
-    case 0: 
+    case 0:
     {
       convolved_label << "rows... ";
       t0 = pcl::getTime ();
       convolution.convolveRows (*convolved);
       break;
     }
-    case 1: 
+    case 1:
     {
       convolved_label << "columns... ";
       t0 = pcl::getTime ();
       convolution.convolveCols (*convolved);
       break;
     }
-    case 2: 
-    { 
+    case 2:
+    {
       convolved_label << "rows and columns... ";
       t0 = pcl::getTime ();
       convolution.convolve (*convolved);
@@ -189,7 +188,7 @@ main (int argc, char ** argv)
   }
   convolved_label << pcl::getTime () - t0 << "s";
   // Display
-	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Convolution"));
+  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Convolution"));
   // viewport stuff
   viewer->createViewPort (0, 0, 0.5, 1, viewport_source);
   viewer->createViewPort (0.5, 0, 1, 1, viewport_convolved);
@@ -201,8 +200,10 @@ main (int argc, char ** argv)
   viewer->addText ("source", 10, 10, "source_label", viewport_source);
 
   // Convolved
-	pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> color_handler_convolved (convolved);
+  pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> color_handler_convolved (convolved);
   viewer->addPointCloud<pcl::PointXYZRGB> (convolved, color_handler_convolved, "convolved", viewport_convolved);
   viewer->addText (convolved_label.str (), 10, 10, "convolved_label", viewport_convolved);
-	viewer->spin ();
+  viewer->spin ();
+  pcl::PCDWriter writer;
+  writer.write<pcl::PointXYZRGB> ("convolved.pcd", *convolved, false);
 }
