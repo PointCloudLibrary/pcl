@@ -104,6 +104,12 @@ if(build)
         QT4_WRAP_CPP(openni_passthrough_moc include/pcl/apps/openni_passthrough.h)
         PCL_ADD_EXECUTABLE(pcl_openni_passthrough ${SUBSYS_NAME} ${openni_passthrough_ui} ${openni_passthrough_moc} src/openni_passthrough.cpp)
         target_link_libraries(pcl_openni_passthrough pcl_common pcl_io pcl_filters pcl_visualization QVTK ${QT_LIBRARIES})
+
+	# OpenNI Organized Connected Component application demo
+	QT4_WRAP_UI(organized_segmentation_demo_ui src/organized_segmentation_demo.ui)
+	QT4_WRAP_CPP(organized_segmentation_demo_moc include/pcl/apps/organized_segmentation_demo.h)
+	PCL_ADD_EXECUTABLE(pcl_organized_segmentation_demo ${SUBSYS_NAME} ${organized_segmentation_demo_ui} ${organized_segmentation_demo_moc} src/organized_segmentation_demo.cpp)
+	target_link_libraries(pcl_organized_segmentation_demo pcl_common pcl_io pcl_visualization pcl_segmentation pcl_geometry pcl_features pcl_surface QVTK ${QT_LIBRARIES})
       endif ()
       
       set(incs include/pcl/${SUBSYS_NAME}/render_views_tesselated_sphere.h)  
