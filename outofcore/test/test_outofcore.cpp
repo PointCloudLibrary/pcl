@@ -293,7 +293,7 @@ void point_test(octree_disk& t)
   }
 }
 
-#if 0
+#if 1
 TEST (PCL, Outofcore_Point_Query)
 {
   octree_disk treeA(filename_otreeA, false);
