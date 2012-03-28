@@ -1421,7 +1421,7 @@ namespace pcl
           {
             if (event_id != vtkCommand::TimerEvent)
               return;
-            int timer_id = *(int*)call_data;
+            int timer_id = * static_cast<int*> (call_data);
             //PCL_WARN ("[pcl::visualization::PCLVisualizer::ExitMainLoopTimerCallback] Timer %d called.\n", timer_id);
             if (timer_id != right_timer_id)
               return;

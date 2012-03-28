@@ -134,8 +134,8 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   camera_set_ = getCameraParameters (argc, argv);
   updateCamera ();
   // Set the window size as 1/2 of the screen size or the user given parameter
-  win_->SetSize (camera_.window_size[0], camera_.window_size[1]);
-  win_->SetPosition (camera_.window_pos[0], camera_.window_pos[1]);
+  win_->SetSize (int (camera_.window_size[0]), int (camera_.window_size[1]));
+  win_->SetPosition (int (camera_.window_pos[0]), int (camera_.window_pos[1]));
 
   // Add all renderers to the window
   rens_->InitTraversal ();
@@ -460,9 +460,10 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const Eige
   }
 
   // Convert from radian to degree.
-  pitch = pitch * 180.0 / (double)M_PI;
-  roll  = roll  * 180.0 / (double)M_PI;
-  yaw   = yaw   * 180.0 / (double)M_PI;
+  const double PI (M_PI);
+  pitch = pitch * 180.0 / PI;
+  roll  = roll  * 180.0 / PI;
+  yaw   = yaw   * 180.0 / PI;
 
   axes_actor->SetPosition (t (0, 3), t(1, 3), t(2, 3));
   axes_actor->SetOrientation (roll, pitch, yaw);
@@ -797,7 +798,7 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
   }
   mapper->ImmediateModeRenderingOff ();
 
-  actor->SetNumberOfCloudPoints (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10));
+  actor->SetNumberOfCloudPoints (int (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
   actor->GetProperty ()->SetInterpolationToFlat ();
 
   /// FIXME disabling backface culling due to known VTK bug: vtkTextActors are not
@@ -962,7 +963,7 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
   {
     case PCL_VISUALIZER_POINT_SIZE:
     {
-      actor->GetProperty ()->SetPointSize (value);
+      actor->GetProperty ()->SetPointSize (float (value));
       actor->Modified ();
       break;
     }
@@ -979,13 +980,13 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
     // using immediate more rendering.
     case PCL_VISUALIZER_IMMEDIATE_RENDERING:
     {
-      actor->GetMapper ()->SetImmediateModeRendering ((int)value);
+      actor->GetMapper ()->SetImmediateModeRendering (int (value));
       actor->Modified ();
       break;
     }
     case PCL_VISUALIZER_LINE_WIDTH:
     {
-      actor->GetProperty ()->SetLineWidth (value);
+      actor->GetProperty ()->SetLineWidth (float (value));
       actor->Modified ();
       break;
     }
@@ -1062,7 +1063,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
   {
     case PCL_VISUALIZER_POINT_SIZE:
     {
-      actor->GetProperty ()->SetPointSize (value);
+      actor->GetProperty ()->SetPointSize (float (value));
       actor->Modified ();
       break;
     }
@@ -1074,7 +1075,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
     }
     case PCL_VISUALIZER_LINE_WIDTH:
     {
-      actor->GetProperty ()->SetLineWidth (value);
+      actor->GetProperty ()->SetLineWidth (float (value));
       actor->Modified ();
       break;
     }
@@ -1082,13 +1083,13 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
     {
       vtkTextActor* text_actor = vtkTextActor::SafeDownCast (am_it->second);
       vtkSmartPointer<vtkTextProperty> tprop = text_actor->GetTextProperty ();
-      tprop->SetFontSize (value);
+      tprop->SetFontSize (int (value));
       text_actor->Modified ();
       break;
     }
     case PCL_VISUALIZER_REPRESENTATION:
     {
-      switch ((int)value)
+      switch (int (value))
       {
         case PCL_VISUALIZER_REPRESENTATION_POINTS:
         {
@@ -1195,9 +1196,9 @@ pcl::visualization::PCLVisualizer::getViewerPose ()
   x_axis = -x_axis;
   camera.GetViewUp (z_axis[0], z_axis[1], z_axis[2]);
   y_axis = z_axis.cross(x_axis).normalized();
-  ret(0,0)=x_axis[0], ret(0,1)=y_axis[0], ret(0,2)=z_axis[0], ret(0,3)=pos[0],
-  ret(1,0)=x_axis[1], ret(1,1)=y_axis[1], ret(1,2)=z_axis[1], ret(1,3)=pos[1],
-  ret(2,0)=x_axis[2], ret(2,1)=y_axis[2], ret(2,2)=z_axis[2], ret(2,3)=pos[2];
+  ret(0,0)= float (x_axis[0]), ret(0,1)= float (y_axis[0]), ret(0,2)= float (z_axis[0]), ret(0,3)= float (pos[0]),
+  ret(1,0)= float (x_axis[1]), ret(1,1)= float (y_axis[1]), ret(1,2)= float (z_axis[1]), ret(1,3)= float (pos[1]),
+  ret(2,0)= float (x_axis[2]), ret(2,1)= float (y_axis[2]), ret(2,2)= float (z_axis[2]), ret(2,3)= float (pos[2]);
   return ret;
 }
 
@@ -1267,7 +1268,7 @@ pcl::visualization::PCLVisualizer::setCameraPosition (
 void
 pcl::visualization::PCLVisualizer::resetCameraViewpoint (const std::string &id)
 {
-  
+
   vtkSmartPointer<vtkMatrix4x4> camera_pose;
   static CloudActorMap::iterator it = cloud_actor_map_->find (id);
   if (it != cloud_actor_map_->end ())
@@ -1292,7 +1293,7 @@ pcl::visualization::PCLVisualizer::resetCameraViewpoint (const std::string &id)
     cam->SetViewUp (camera_pose->GetElement (0, 1),
                     camera_pose->GetElement (1, 1),
                     camera_pose->GetElement (2, 1));
-    
+
     renderer->SetActiveCamera (cam);
     renderer->ResetCameraClippingRange ();
     renderer->Render ();
@@ -1336,7 +1337,7 @@ pcl::visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
       // look for '/' as a separator
       if (camera.size () != 7)
       {
-        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Camera parameters given, but with an invalid number of options (%lu vs 7)!\n", (unsigned long)camera.size ());
+        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Camera parameters given, but with an invalid number of options (%lu vs 7)!\n", static_cast<unsigned long> (camera.size ()));
         return (false);
       }
 
@@ -1899,9 +1900,10 @@ pcl::visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &i
     return (false);
   }
 
-  if (index >= (int)am_it->second.color_handlers.size ())
+  int color_handler_size (am_it->second.color_handlers.size ());
+  if (index >= color_handler_size)
   {
-    pcl::console::print_warn ("[updateColorHandlerIndex] Invalid index <%d> given! Maximum range is: 0-%lu.\n", index, (unsigned long)am_it->second.color_handlers.size ());
+    pcl::console::print_warn ("[updateColorHandlerIndex] Invalid index <%d> given! Maximum range is: 0-%lu.\n", index, static_cast<unsigned long> (am_it->second.color_handlers.size ()));
     return (false);
   }
   // Get the handler
@@ -1994,8 +1996,8 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
 
     for (i = 0; i < poly_mesh.polygons.size (); i++)
     {
-      size_t n_points = poly_mesh.polygons[i].vertices.size ();
-      cell_array->InsertNextCell (n_points);
+      size_t n_points (poly_mesh.polygons[i].vertices.size ());
+      cell_array->InsertNextCell (int (n_points));
       for (size_t j = 0; j < n_points; j++)
         cell_array->InsertCellPoint (poly_mesh.polygons[i].vertices[j]);
     }
@@ -2406,9 +2408,11 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     render_win->GetZbufferData (0, 0, xres - 1, yres - 1, &(depth[0]));
 
     int count_valid_depth_pixels = 0;
-    for (size_t x = 0; x < (size_t)xres; x++)
+    size_t xresolution (xres);
+    size_t yresolution (yres);
+    for (size_t x = 0; x < xresolution; x++)
     {
-      for (size_t y = 0; y < (size_t)yres; y++)
+      for (size_t y = 0; y < yresolution; y++)
       {
         float value = depth[y * xres + x];
         if (value == 1.0)
