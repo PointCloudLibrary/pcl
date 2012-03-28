@@ -54,7 +54,9 @@ pcl::filters::Convolution<PointIn, PointOut>::Convolution ()
 template <typename PointIn, typename PointOut> void
 pcl::filters::Convolution<PointIn, PointOut>::initCompute (PointCloud<PointT>& output)
 {
-  if (borders_policy_ != IGNORE && borders_policy_ != MIRROR && borders_policy_ != DUPLICATE)
+  if (borders_policy_ != BORDERS_POLICY_IGNORE &&
+      borders_policy_ != BORDERS_POLICY_MIRROR &&
+      borders_policy_ != BORDERS_POLICY_DUPLICATE)
     PCL_THROW_EXCEPTION (InitFailedException,
                          "[pcl::filters::Convolution::initCompute] unknown borders policy.");
 
@@ -88,9 +90,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolveRows (PointCloudOut& outpu
     initCompute (output);
     switch (borders_policy_)
     {
-      case MIRROR : convolve_rows_mirror (output);
-      case DUPLICATE : convolve_rows_duplicate (output);
-      case IGNORE : convolve_rows (output);
+      case BORDERS_POLICY_MIRROR : convolve_rows_mirror (output);
+      case BORDERS_POLICY_DUPLICATE : convolve_rows_duplicate (output);
+      case BORDERS_POLICY_IGNORE : convolve_rows (output);
     }
   }
   catch (InitFailedException& e)
@@ -108,9 +110,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolveCols (PointCloudOut& outpu
     initCompute (output);
     switch (borders_policy_)
     {
-      case MIRROR : convolve_cols_mirror (output);
-      case DUPLICATE : convolve_cols_duplicate (output);
-      case IGNORE : convolve_cols (output);
+      case BORDERS_POLICY_MIRROR : convolve_cols_mirror (output);
+      case BORDERS_POLICY_DUPLICATE : convolve_cols_duplicate (output);
+      case BORDERS_POLICY_IGNORE : convolve_cols (output);
     }
   }
   catch (InitFailedException& e)

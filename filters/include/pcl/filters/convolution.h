@@ -82,7 +82,12 @@ namespace pcl
         typedef typename pcl::PointCloud<PointOut> PointCloudOut;
 
         /// The borders policy available
-        enum BORDERS_POLICY { IGNORE = -1, MIRROR = 0, DUPLICATE = 1};
+        enum BORDERS_POLICY
+        {
+          BORDERS_POLICY_IGNORE = -1,
+          BORDERS_POLICY_MIRROR = 0,
+          BORDERS_POLICY_DUPLICATE = 1
+        };
         /// Constructor
         Convolution ();
         /// Empty destructor
