@@ -10,6 +10,7 @@
 #include <pcl/apps/3d_rec_framework/pc_source/mesh_source.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/normal_estimator.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/shot_local_estimator.h>
+#include <pcl/apps/3d_rec_framework/feature_wrapper/local/shot_local_estimator_omp.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/fpfh_local_estimator.h>
 #include <pcl/keypoints/uniform_sampling.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -204,7 +205,7 @@ getModelsInDirectory (bf::path & dir, std::string & rel_path_so_far, std::vector
 
 typedef pcl::ReferenceFrame RFType;
 
-int CG_SIZE_ = 5;
+int CG_SIZE_ = 9;
 float CG_THRESHOLD_ = 0.005f;
 int CG_ALG = 0;
 
@@ -309,6 +310,36 @@ main (int argc, char ** argv)
   {
     boost::shared_ptr<pcl::rec_3d_framework::SHOTLocalEstimation<pcl::PointXYZ, pcl::Histogram<352> > > estimator;
     estimator.reset (new pcl::rec_3d_framework::SHOTLocalEstimation<pcl::PointXYZ, pcl::Histogram<352> >);
+    estimator->setNormalEstimator (normal_estimator);
+    estimator->setKeypointExtractor (keypoint_extractor);
+    estimator->setSupportRadius (0.04f);
+
+    boost::shared_ptr<pcl::rec_3d_framework::LocalEstimator<pcl::PointXYZ, pcl::Histogram<352> > > cast_estimator;
+    cast_estimator = boost::dynamic_pointer_cast<pcl::rec_3d_framework::LocalEstimator<pcl::PointXYZ, pcl::Histogram<352> > > (estimator);
+
+    pcl::rec_3d_framework::LocalRecognitionPipeline<flann::L1, pcl::PointXYZ, pcl::Histogram<352> > local;
+    local.setDataSource (cast_source);
+    local.setTrainingDir (training_dir);
+    local.setDescriptorName (desc_name);
+    local.setFeatureEstimator (cast_estimator);
+    local.setCGAlgorithm (cast_cg_alg);
+    local.setHVAlgorithm (cast_hv_alg);
+    local.setUseCache (static_cast<bool> (use_cache));
+    local.initialize (static_cast<bool> (force_retrain));
+
+    keypoint_extractor->setRadiusSearch (0.005f);
+    local.setICPIterations (icp_iterations);
+    local.setKdtreeSplits(splits);
+
+    recognizeAndVisualize<flann::L1, pcl::PointXYZ, pcl::Histogram<352> > (local, mians_scenes);
+
+  }
+
+  if (desc_name.compare ("shot_omp") == 0)
+  {
+    desc_name = std::string("shot");
+    boost::shared_ptr<pcl::rec_3d_framework::SHOTLocalEstimationOMP<pcl::PointXYZ, pcl::Histogram<352> > > estimator;
+    estimator.reset (new pcl::rec_3d_framework::SHOTLocalEstimationOMP<pcl::PointXYZ, pcl::Histogram<352> >);
     estimator->setNormalEstimator (normal_estimator);
     estimator->setKeypointExtractor (keypoint_extractor);
     estimator->setSupportRadius (0.04f);
