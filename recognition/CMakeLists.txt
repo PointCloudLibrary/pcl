@@ -9,6 +9,13 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
+    set(LINEMOD_INCLUDES
+        include/pcl/${SUBSYS_NAME}/linemod/line_rgbd.h
+        )
+    set(LINEMOD_IMPLS
+        include/pcl/${SUBSYS_NAME}/impl/linemod/line_rgbd.hpp
+        )
+
     set(incs 
         include/pcl/${SUBSYS_NAME}/color_gradient_dot_modality.h
         include/pcl/${SUBSYS_NAME}/color_gradient_modality.h
@@ -62,5 +69,7 @@ if(build)
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/linemod ${LINEMOD_INCLUDES})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl/linemod ${LINEMOD_IMPLS})
 
 endif(build)
