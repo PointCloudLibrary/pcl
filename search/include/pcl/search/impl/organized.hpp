@@ -85,7 +85,7 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
   {
     for (; idx < xEnd; ++idx)
     {
-      if (!mask_[idx])
+      if (!mask_[idx] || !isFinite (input_->points[idx]))
         continue;
 
       squared_distance = (input_->points[idx].getVector3fMap () - query.getVector3fMap ()).squaredNorm ();
@@ -98,7 +98,7 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
         {
           if (sorted_results_)
             this->sortResults (k_indices, k_sqr_distances);
-          return max_nn;
+          return (max_nn);
         }
       }
     }
@@ -120,7 +120,7 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
   {
     k_indices.clear ();
     k_sqr_distances.clear ();
-    return 0;
+    return (0);
   }
 
   // project query point on the image plane
