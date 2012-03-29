@@ -150,7 +150,8 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
   output.is_dense = true;
   // Iterating over the entire index vector
 #ifdef HAVE_OPENMP
-#pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
+//#pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
+#pragma omp parallel for private (nn_indices, nn_dists) num_threads(threads_)
 #endif
   for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
   {
