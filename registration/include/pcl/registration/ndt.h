@@ -423,14 +423,14 @@ namespace pcl
       /** \brief The probability score of the transform applied to the input cloud, Equation 6.9 and 6.10 [Magnusson 2009]. */
       double trans_probability_;
 
-      /** @defgroup angularJacobian Precomputed Angular Gradient
-        * @{
-        *  The precomputed angular derivatives for the jacobian of a transformation vector, Equation 6.19 [Magnusson 2009]. */
+      /** \brief Precomputed Angular Gradient
+        *
+        * The precomputed angular derivatives for the jacobian of a transformation vector, Equation 6.19 [Magnusson 2009]. 
+        */
       Eigen::Vector3d j_ang_a_, j_ang_b_, j_ang_c_, j_ang_d_, j_ang_e_, j_ang_f_, j_ang_g_, j_ang_h_;
-      /** @} */
 
-      /** @defgroup angularHessian Precomputed Angular Hessian
-        * @{
+      /** \brief Precomputed Angular Hessian
+        *
         * The precomputed angular derivatives for the hessian of a transformation vector, Equation 6.19 [Magnusson 2009].
         */
       Eigen::Vector3d h_ang_a2_, h_ang_a3_,
@@ -439,7 +439,6 @@ namespace pcl
                       h_ang_d1_, h_ang_d2_, h_ang_d3_,
                       h_ang_e1_, h_ang_e2_, h_ang_e3_,
                       h_ang_f1_, h_ang_f2_, h_ang_f3_;
-      /** @} */
 
       /** \brief The first order derivative of the transformation of a point w.r.t. the transform vector, \f$ J_E \f$ in Equation 6.18 [Magnusson 2009]. */
       Eigen::Matrix<double, 3, 6> point_gradient_;
