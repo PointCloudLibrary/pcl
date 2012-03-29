@@ -207,7 +207,6 @@ namespace pcl
               std::stringstream path_pose;
               path_pose << direc.str () << "/pose_" << i << ".txt";
 
-              //Eigen::Matrix4f pose = poses[i].transpose();
               pcl::rec_3d_framework::PersistenceUtils::writeMatrixToFile (path_pose.str (), model.poses_->at (i));
 
               std::stringstream path_entropy;

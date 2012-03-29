@@ -144,9 +144,11 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
             path_pose << path << "/pose_" << v << ".txt";
             PersistenceUtils::writeMatrixToFile (path_pose.str (), models->at (i).poses_->at (v));
 
-            std::stringstream path_entropy;
-            path_entropy << path << "/entropy_" << v << ".txt";
-            PersistenceUtils::writeFloatToFile (path_entropy.str (), models->at (i).self_occlusions_->at (v));
+            if(v < models->at (i).self_occlusions_->size()) {
+              std::stringstream path_entropy;
+              path_entropy << path << "/entropy_" << v << ".txt";
+              PersistenceUtils::writeFloatToFile (path_entropy.str (), models->at (i).self_occlusions_->at (v));
+            }
 
             //save keypoints and signatures to disk
             std::stringstream keypoints_sstr;
@@ -178,7 +180,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     models_.reset (new std::vector<ModelT>);
     transforms_.reset (new std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> >);
 
-    std::cout << models_->size () << std::endl;
+    //std::cout << models_->size () << std::endl;
 
     PointInTPtr processed (new pcl::PointCloud<PointInT>);
     typename pcl::PointCloud<FeatureT>::Ptr signatures (new pcl::PointCloud<FeatureT> ());
@@ -284,7 +286,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
           int max_cardinality = -1;
           for (size_t i = 0; i < corresp_clusters.size (); i++)
           {
-            //std::cout <<  (*(corresp_clusters[i])).size() << " -- " << (*(*it_map).second.correspondences_to_inputcloud).size() << std::endl;
+            //std::cout <<  (corresp_clusters[i]).size() << " -- " << (*(*it_map).second.correspondences_to_inputcloud).size() << std::endl;
             if (max_cardinality < static_cast<int> (corresp_clusters[i].size ()))
             {
               max_cardinality = static_cast<int> (corresp_clusters[i].size ());

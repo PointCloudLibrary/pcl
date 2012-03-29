@@ -173,6 +173,10 @@ namespace pcl
           kdtree_splits_ = 512;
         }
 
+        void setThresholdAcceptHyp(float t) {
+          threshold_accept_model_hypothesis_ = t;
+        }
+
         ~LocalRecognitionPipeline ()
         {
 

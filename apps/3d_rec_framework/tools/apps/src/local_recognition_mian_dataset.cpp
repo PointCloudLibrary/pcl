@@ -229,6 +229,7 @@ main (int argc, char ** argv)
   pcl::console::parse_argument (argc, argv, "-icp_iterations", icp_iterations);
   pcl::console::parse_argument (argc, argv, "-use_cache", use_cache);
   pcl::console::parse_argument (argc, argv, "-splits", splits);
+  pcl::console::parse_argument (argc, argv, "-gc_size", CG_SIZE_);
 
   if (mians_scenes.compare ("") == 0)
   {
