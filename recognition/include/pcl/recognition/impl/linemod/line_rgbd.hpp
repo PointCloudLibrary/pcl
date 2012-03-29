@@ -247,7 +247,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
   {
     pcl::LINEMODDetection & linemod_detection = linemod_detections[detection_id];
 
-    pcl::LineRGBD<PointXYZT, PointRGBT>::Detection detection;
+    typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection detection;
     detection.template_id = linemod_detection.template_id;
     detection.object_id = object_ids_[linemod_detection.template_id];
     detection.detection_id = detection_id;
