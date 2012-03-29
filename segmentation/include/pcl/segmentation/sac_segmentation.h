@@ -79,7 +79,7 @@ namespace pcl
       /** \brief Empty constructor. */
       SACSegmentation () :  model_ (), sac_ (), model_type_ (-1), method_type_ (0), 
                             threshold_ (0), optimize_coefficients_ (true), 
-                            radius_min_ (-DBL_MAX), radius_max_ (DBL_MAX), eps_angle_ (0.0),
+                            radius_min_ (-std::numeric_limits<double>::max()), radius_max_ (std::numeric_limits<double>::max()), eps_angle_ (0.0),
                             axis_ (Eigen::Vector3f::Zero ()), max_iterations_ (50), probability_ (0.99)
       {
         //srand ((unsigned)time (0)); // set a random seed
