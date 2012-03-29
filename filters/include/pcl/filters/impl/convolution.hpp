@@ -385,6 +385,12 @@ namespace pcl
     {
       return (convolveOneColDense (i,j));
     }
+
+    template<> void
+    Convolution<pcl::RGB, pcl::RGB>::makeInfinite (pcl::RGB& p)
+    {
+      p.r = 0; p.g = 0; p.b = 0;
+    }    
   }
 }
 
@@ -402,13 +408,13 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows (PointCloudOut& outp
     for(int j = 0; j < height; ++j)
     {
       for (int i = 0; i < half_width_; ++i)
-        output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
+        makeInfinite (output (i,j));
 
       for (int i = half_width_; i < last; ++i)
         output (i,j) = convolveOneRowDense (i,j);
 
       for (int i = last; i < width; ++i)
-        output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
+        makeInfinite (output (i,j));
     }
   }
   else
@@ -417,13 +423,13 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows (PointCloudOut& outp
     for(int j = 0; j < height; ++j)
     {
       for (int i = 0; i < half_width_; ++i)
-        output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
+        makeInfinite (output (i,j));
 
       for (int i = half_width_; i < last; ++i)
         output (i,j) = convolveOneRowNonDense (i,j);
 
       for (int i = last; i < width; ++i)
-        output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
+        makeInfinite (output (i,j));
     }
   }
 }
@@ -524,13 +530,13 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols (PointCloudOut& outp
     for(int i = 0; i < width; ++i)
     {
       for (int j = 0; j < half_width_; ++j)
-        output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
+        makeInfinite (output (i,j));
 
       for (int j = half_width_; j < last; ++j)
         output (i,j) = convolveOneColDense (i,j);
 
       for (int j = last; j < height; ++j)
-        output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
+        makeInfinite (output (i,j));
     }
   }
   else
@@ -539,13 +545,13 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols (PointCloudOut& outp
     for(int i = 0; i < width; ++i)
     {
       for (int j = 0; j < half_width_; ++j)
-        output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
+        makeInfinite (output (i,j));
 
       for (int j = half_width_; j < last; ++j)
         output (i,j) = convolveOneColNonDense (i,j);
 
       for (int j = last; j < height; ++j)
-        output (i,j).x = output (i,j).y = output (i,j).z = std::numeric_limits<float>::quiet_NaN ();
+        makeInfinite (output (i,j));
     }
   }
 }

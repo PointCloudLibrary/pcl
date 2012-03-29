@@ -223,6 +223,12 @@ namespace pcl
       protected:
         /** \brief The number of threads the scheduler should use. */
         int threads_;
+
+        void
+        makeInfinite (PointOut& p)
+        {
+          p.x = p.y = p.z = std::numeric_limits<float>::quiet_NaN ();
+        }      
     };
   }
 }
