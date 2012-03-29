@@ -150,7 +150,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
 
 #ifdef HAVE_OPENMP
 #ifdef __APPLE__
-#pragma omp parallel for schedule (dynamic, threads_)
+#pragma omp parallel for schedule(static, threads_)
 #else
 #pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
 #endif
