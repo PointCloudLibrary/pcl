@@ -162,6 +162,15 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::initCompute ()
     return (false);
   }
 
+  // SHOT cannot work with k-search
+  if (this->getKSearch () != 0)
+  {
+    PCL_ERROR(
+      "[pcl::%s::initCompute] Error! Search method set to k-neighborhood. Call setKSearch(0) and setRadiusSearch( radius ) to use this class.\n",
+      getClassName().c_str ());
+    return (false);
+  }
+
   // Default LRF estimation alg: SHOTLocalReferenceFrameEstimation
   typename SHOTLocalReferenceFrameEstimation<PointInT, PointRFT>::Ptr lrf_estimator(new SHOTLocalReferenceFrameEstimation<PointInT, PointRFT>());
   lrf_estimator->setRadiusSearch (search_radius_);
