@@ -40,6 +40,8 @@
 #ifndef PCL_FILTERS_CONVOLUTION_IMPL_HPP
 #define PCL_FILTERS_CONVOLUTION_IMPL_HPP
 
+#include <pcl/pcl_config.h>
+
 template <typename PointIn, typename PointOut>
 pcl::filters::Convolution<PointIn, PointOut>::Convolution ()
   : borders_policy_ (BORDERS_POLICY_IGNORE)
@@ -404,7 +406,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows (PointCloudOut& outp
   int last = input_->width - half_width_;
   if (input_->is_dense)
   {
+#if !defined __APPLE__ && defined HAVE_OPENMP
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#endif
     for(int j = 0; j < height; ++j)
     {
       for (int i = 0; i < half_width_; ++i)
@@ -419,7 +423,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows (PointCloudOut& outp
   }
   else
   {
+#if !defined __APPLE__ && defined HAVE_OPENMP
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#endif
     for(int j = 0; j < height; ++j)
     {
       for (int i = 0; i < half_width_; ++i)
@@ -445,7 +451,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows_duplicate (PointClou
   int w = last - 1;
   if (input_->is_dense)
   {
+#if !defined __APPLE__ && defined HAVE_OPENMP
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#endif
     for(int j = 0; j < height; ++j)
     {
       for (int i = half_width_; i < last; ++i)
@@ -460,7 +468,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows_duplicate (PointClou
   }
   else
   {
+#if !defined __APPLE__ && defined HAVE_OPENMP
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#endif
     for(int j = 0; j < height; ++j)
     {
       for (int i = half_width_; i < last; ++i)
@@ -486,7 +496,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows_mirror (PointCloudOu
   int w = last - 1;
   if (input_->is_dense)
   {
+#if !defined __APPLE__ && defined HAVE_OPENMP
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#endif
     for(int j = 0; j < height; ++j)
     {
       for (int i = half_width_; i < last; ++i)
@@ -501,7 +513,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows_mirror (PointCloudOu
   }
   else
   {
+#if !defined __APPLE__ && defined HAVE_OPENMP
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#endif
     for(int j = 0; j < height; ++j)
     {
       for (int i = half_width_; i < last; ++i)
@@ -526,7 +540,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols (PointCloudOut& outp
   int last = input_->height - half_width_;
   if (input_->is_dense)
   {
+#if !defined __APPLE__ && defined HAVE_OPENMP
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#endif
     for(int i = 0; i < width; ++i)
     {
       for (int j = 0; j < half_width_; ++j)
@@ -541,7 +557,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols (PointCloudOut& outp
   }
   else
   {
+#if !defined __APPLE__ && defined HAVE_OPENMP
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#endif
     for(int i = 0; i < width; ++i)
     {
       for (int j = 0; j < half_width_; ++j)
@@ -567,7 +585,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols_duplicate (PointClou
   int h = last -1;
   if (input_->is_dense)
   {
+#if !defined __APPLE__ && defined HAVE_OPENMP
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#endif
     for(int i = 0; i < width; ++i)
     {
       for (int j = half_width_; j < last; ++j)
@@ -582,7 +602,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols_duplicate (PointClou
   }
   else
   {
+#if !defined __APPLE__ && defined HAVE_OPENMP
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#endif
     for(int i = 0; i < width; ++i)
     {
       for (int j = half_width_; j < last; ++j)
@@ -608,7 +630,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols_mirror (PointCloudOu
   int h = last -1;
   if (input_->is_dense)
   {
+#if !defined __APPLE__ && defined HAVE_OPENMP
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#endif
     for(int i = 0; i < width; ++i)
     {
       for (int j = half_width_; j < last; ++j)
@@ -623,7 +647,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols_mirror (PointCloudOu
   }
   else
   {
+#if !defined __APPLE__ && defined HAVE_OPENMP
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#endif
     for(int i = 0; i < width; ++i)
     {
       for (int j = half_width_; j < last; ++j)
