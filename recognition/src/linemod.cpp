@@ -586,7 +586,8 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
     //size_t max_index = 0;
     for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
     {
-      const float score = score_sums[mem_index] * inv_max_score;
+      //const float score = score_sums[mem_index] * inv_max_score;
+      const float score = 2.0f * static_cast<float> (score_sums[mem_index]) * inv_max_score - 1.0f;
 
       //if (score > template_threshold_) 
       if (score_sums[mem_index] > raw_threshold) /// \todo Ask Stefan why this line was used instead of the one above
