@@ -400,21 +400,11 @@ namespace pcl
          */
         const static std::string TREE_EXTENSION_;
         const static int OUTOFCORE_VERSION_;
-        ////////////////////////////////////////////////////////////////////////////////
-        //New Globals
-        ////////////////////////////////////////////////////////////////////////////////
-        /** \todo add support for adding multiple point clouds, saved in many pcd files 
-         * - if bounding box for set of files is prespecified, then can begin adding points
-         * - if not prespecified, compute bounding box for each point cloud (is this built into PCL ?) and get the bounding box of the union of them
-         */
-    
-        /** \brief Pointer to input point cloud dataset (currently unused)*/
-        PointCloudConstPtr input_;
-        /** \brief maximum sidelength of the smallest voxel represented (currently unused)*/
+
+        /** \todo @b loadcount mystery constant 2e9 points at a time to subsample; should parameterize; use mmap */
+        const static uint64_t LOAD_COUNT_;
+
         double resolution_;
-        /** \brief Indicies to use in building the octree from the input pointcloud (currently unused) */
-        IndicesPtr indices_;
- 
     };
   }
 }

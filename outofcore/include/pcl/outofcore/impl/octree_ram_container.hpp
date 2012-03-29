@@ -66,7 +66,7 @@ namespace pcl
     boost::mutex octree_ram_container<PointT>::rng_mutex_;
 
     template<typename PointT> 
-    boost::mt19937 octree_ram_container<PointT>::rand_gen_ (std::time( NULL));
+    boost::mt19937 octree_ram_container<PointT>::rand_gen_ (static_cast<unsigned int>(std::time( NULL)));
 
     template<typename PointT> void
     octree_ram_container<PointT>::convertToXYZ (const boost::filesystem::path& path)
@@ -88,7 +88,7 @@ namespace pcl
           fwrite (ss.str ().c_str (), 1, ss.str ().size (), fxyz);
         }
 
-        int closeretxyz = fclose (fxyz);
+        assert ( fclose (fxyz) == 0 );
       }
     }
 ////////////////////////////////////////////////////////////////////////////////
@@ -102,7 +102,7 @@ namespace pcl
     template<typename PointT> inline void
     octree_ram_container<PointT>::insertRange (const PointT* const * start, const boost::uint64_t count)
     {
-      std::vector<PointT, Eigen::aligned_allocator<PointT> > temp;
+      AlignedPointTVector temp;
       temp.resize (count);
       for (boost::uint64_t i = 0; i < count; i++)
       {
@@ -114,7 +114,7 @@ namespace pcl
 
     template<typename PointT> void
     octree_ram_container<PointT>::readRange (const boost::uint64_t start, const boost::uint64_t count,
-                                             std::vector<PointT, Eigen::aligned_allocator<PointT> >& v)
+                                             AlignedPointTVector& v)
     {
       /*
         v.resize(count);
@@ -137,7 +137,7 @@ namespace pcl
     octree_ram_container<PointT>::readRangeSubSample (const boost::uint64_t start, 
                                                       const boost::uint64_t count,
                                                       const double percent, 
-                                                      std::vector<PointT, Eigen::aligned_allocator<PointT> >& v)
+                                                      AlignedPointTVector& v)
     {
       /** \todo change the subsampling technique to use built in PCL sampling */
       boost::uint64_t samplesize = static_cast<boost::uint64_t> (percent * static_cast<double> (count));

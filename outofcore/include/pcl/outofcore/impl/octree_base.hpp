@@ -69,10 +69,18 @@ namespace pcl
   namespace outofcore
   {
 
+    //Static constants
+    // --------------------------------------------------------------------------------
     template<typename Container, typename PointT>
     const std::string octree_base<Container, PointT>::TREE_EXTENSION_ = ".octree";
+
     template<typename Container, typename PointT>
-    const int octree_base<Container, PointT>::OUTOFCORE_VERSION_ (3.0);
+    const int octree_base<Container, PointT>::OUTOFCORE_VERSION_ ( 3.0 );
+
+    template<typename Container, typename PointT>
+    const uint64_t octree_base<Container, PointT>::LOAD_COUNT_ ( 2e9 );
+
+
     
 // Constructors
 // ---------------------------------------------------------------------------
@@ -84,9 +92,7 @@ namespace pcl
       , max_depth_ ()
       , treepath_ ()
       , coord_system_ ()
-      , input_ ()
       , resolution_ ()
-      , indices_ ()
     {
       // Check file extension
       if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointT>::node_index_extension)
@@ -116,9 +122,7 @@ namespace pcl
       , max_depth_ ()
       , treepath_ ()
       , coord_system_ ()
-      , input_ ()
       , resolution_ ()
-      , indices_ ()
     {
       // Check file extension
       if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointT>::node_index_extension)
@@ -144,7 +148,7 @@ namespace pcl
 
       // Set root_ nodes file path
       treepath_ = dir / (boost::filesystem::basename (rootname) + TREE_EXTENSION_);
-      saveToFile ();
+      this->saveToFile ();
     }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -157,9 +161,7 @@ namespace pcl
       , max_depth_ ()
       , treepath_ ()
       , coord_system_ ()
-      , input_ ()
       , resolution_ ()
-      , indices_ ()
     {
       // Check file extension
       if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointT>::node_index_extension)
@@ -185,8 +187,8 @@ namespace pcl
         boost::filesystem::path childdir = dir / boost::lexical_cast<std::string> (i);
         if (boost::filesystem::exists (childdir))
         {
-          PCL_ERROR ("A dir named %d exists under the root_ node. Overwriting an existant tree is not supported!\n", i);
-          PCL_THROW_EXCEPTION ( PCLException, "Outofcore Octree Exception: Directory exists; Overwriting existing trees is not supported\n");
+          PCL_ERROR ("A dir named %d exists under the root_ node. Overwriting an existing tree is not supported.\n", i);
+          PCL_THROW_EXCEPTION ( PCLException, "Outofcore Octree Exception: Directory exists; Overwriting an existing tree is not supported\n");
         }
       }
 
@@ -228,8 +230,8 @@ namespace pcl
       // use this api, will allow counts up to 2^52 points to be stored correctly
       std::vector<double> lodPoints_db;
       lodPoints_db.insert (lodPoints_db.begin (), lodPoints_.begin (), lodPoints_.end ());
-      assert ( static_cast<double> (lodPoints_db.size ()) - lodPoints_db.size () == 0 );
-      cJSON* numpts = cJSON_CreateDoubleArray (&(lodPoints_db.front ()), static_cast<double> (lodPoints_db.size ())); 
+
+      cJSON* numpts = cJSON_CreateDoubleArray ( &(lodPoints_db.front ()), static_cast<int>(lodPoints_db.size ()) );
 
       cJSON_AddItemToObject (idx.get (), "name", name);
       cJSON_AddItemToObject (idx.get (), "version", version);
@@ -484,7 +486,7 @@ namespace pcl
     {
       if (root_ == NULL)
       {
-        PCL_DEBUG ( "root is null, aborting buildLOD\n" );
+        PCL_ERROR ( "root is null, aborting buildLOD\n" );
         return;
       }
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
@@ -495,18 +497,16 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-//loads chunks of up to 2e7 pts at a time
+//loads chunks of up to 2e9 pts at a time; this is a completely arbitrary number
     template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::buildLOD (octree_base_node<Container, PointT>** current_branch,
-                                              const int current_dims)
+    octree_base<Container, PointT>::buildLOD (octree_base_node<Container, PointT>** current_branch, const int current_dims)
     {
       //stop if this brach DNE
       if (!current_branch[current_dims - 1])
       {
         return;
       }
-      /** \todo @b loadcount mystery constant 2e7 for loading points; should parameterize */
-      static const boost::uint64_t loadcount = boost::uint64_t (2e9);
+
       if ((current_branch[current_dims - 1]->numchildren () == 0)
           && (!current_branch[current_dims - 1]->hasUnloadedChildren ()))//at leaf: subsample, remove, and copy to higher nodes
       {
@@ -516,7 +516,7 @@ namespace pcl
         boost::uint64_t leaf_start_size = leaf->payload->size ();
         if (leaf_start_size > 0)//skip empty
         {
-          for (boost::uint64_t startp = 0; startp < leaf_start_size; startp += loadcount)
+          for (boost::uint64_t startp = 0; startp < leaf_start_size; startp += LOAD_COUNT_)
           {
             //there are (current_dims-1) nodes above this one, indexed 0 thru (current_dims-2)
             for (size_t level = (current_dims - 1); level >= 1; level--)
@@ -525,14 +525,14 @@ namespace pcl
               octree_base_node<Container, PointT>* target_parent = current_branch[level - 1];
 
               //the percent to copy
-              double percent = pow (double (octree_base_node<Container, PointT>::sample_precent),
-                                    double (current_dims - level));//each level up the chain gets sample_precent^l of the leaf's data
+              //each level up the chain gets sample_precent^l of the leaf's data
+              double percent = pow (double (octree_base_node<Container, PointT>::sample_precent), double (current_dims - level));
 
               //read in percent of node
               AlignedPointTVector v;
-              if ((startp + loadcount) < leaf_start_size)
+              if ((startp + LOAD_COUNT_) < leaf_start_size)
               {
-                leaf->payload->readRangeSubSample (startp, loadcount, percent, v);
+                leaf->payload->readRangeSubSample (startp, LOAD_COUNT_, percent, v);
               }
               else
               {

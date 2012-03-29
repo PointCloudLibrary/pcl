@@ -83,6 +83,11 @@ namespace pcl
     template<typename PointT>
     boost::uuids::random_generator octree_disk_container<PointT>::uuid_gen_ (&rand_gen_);
 
+    template<typename PointT>
+    const uint64_t octree_disk_container<PointT>::READ_BLOCK_SIZE_ (2e12);
+    template<typename PointT>
+    const uint64_t octree_disk_container<PointT>::WRITE_BUFF_MAX_ (2e12);
+
     template<typename PointT> void
     octree_disk_container<PointT>::getRandomUUIDString (std::string& s)
     {
@@ -105,7 +110,7 @@ namespace pcl
       fileback_name_ = new std::string ();
       *fileback_name_ = temp;
       filelen_ = 0;
-      //writebuff.reserve(writebuffmax);
+      //writebuff.reserve(WRITE_BUFF_MAX_);
     }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -143,7 +148,7 @@ namespace pcl
         filelen_ = 0;
       }
 
-      //writebuff.reserve(writebuffmax);
+      //writebuff.reserve(WRITE_BUFF_MAX_);
     }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -193,14 +198,14 @@ namespace pcl
       else
       {
         //we are still accepting data, preallocate the storage
-        //writebuff.reserve(writebuffmax);
+        //writebuff.reserve(WRITE_BUFF_MAX_);
       }
 
     }
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> PointT
-    octree_disk_container<PointT>::operator[] (uint64_t idx)
+    octree_disk_container<PointT>::operator[] (uint64_t idx) const
     {
       //if the index is on disk
       if (idx < filelen_)
@@ -210,20 +215,16 @@ namespace pcl
         //open our file
         FILE* f = fopen (fileback_name_->c_str (), "rb");
         assert (f != NULL);
-        //seek the right length; 
 
+        //seek the right length; 
         int seekret = _fseeki64 (f, idx * sizeof(PointT), SEEK_SET);
         assert (seekret == 0);
 
         size_t readlen = fread (&temp, 1, sizeof(PointT), f);
         assert (readlen == sizeof(PointT));
 
-        int closeret = fclose (f);
+        assert ( fclose (f) == 0 );
 
-        //fileback.open(fileback_name_->c_str(), std::fstream::in|std::fstream::out|std::fstream::binary);
-        //fileback.seekp(idx*sizeof(PointT), std::ios_base::beg);
-        //fileback.read((char*)&temp, sizeof(PointT));
-        //fileback.close();
         return temp;
       }
       //otherwise if the index is still in the write buffer
@@ -234,9 +235,7 @@ namespace pcl
       }
 
       //else, throw out of range exception
-      /** \todo standardize the exceptions to PCL's */
       PCL_THROW_EXCEPTION (PCLException, "Index is out of range");
-//      throw("out of range");
     }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -245,25 +244,28 @@ namespace pcl
     {
       if ((start + count) > size ())
       {
-        PCL_THROW_EXCEPTION (PCLException, "Read indices exceed range");
-//        throw("out of range");
+        PCL_ERROR ( "Indicies out of range; start + count exceeds the size of the stored points" );
+        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Exception: Read indices exceed range");
       }
 
       if (count == 0)
       {
+        PCL_DEBUG ( "No points requested for reading" );
         return;
       }
 
       uint64_t filestart = 0;
       uint64_t filecount = 0;
 
-      boost::int64_t buffstart = -1;
-      boost::int64_t buffcount = -1;
-
+      //this can never happen.
       if (start < filelen_)
       {
         filestart = start;
       }
+
+      int64_t buffstart = -1;
+      int64_t buffcount = -1;
+
 
       if ((start + count) <= filelen_)
       {
@@ -285,23 +287,19 @@ namespace pcl
       //do the read
       FILE* f = fopen (fileback_name_->c_str (), "rb");
       assert (f != NULL);
+
       int seekret = _fseeki64 (f, filestart * static_cast<uint64_t>(sizeof(PointT)), SEEK_SET);
-      if (seekret != 0)
-      {
-        //suppressed warning. empty if statement?
-      }
-      // error out?
       assert (seekret == 0);
 
-      //read at most 2 million elements at a time
-      const static uint64_t blocksize = 2e12;//uint64_t (2e6);
-      for (uint64_t pos = 0; pos < filecount; pos += blocksize)
+      //read at most 2e12 elements at a time; mystery constant again
+      const static uint64_t READ_BLOCK_SIZE_ = 2e12;//uint64_t (2e6);
+      for (uint64_t pos = 0; pos < filecount; pos += READ_BLOCK_SIZE_)
       {
-        if ((pos + blocksize) < filecount)
+        if ((pos + READ_BLOCK_SIZE_) < filecount)
         {
-          size_t readlen = fread (loc, sizeof(PointT), blocksize, f);
-          assert (readlen == blocksize);
-          loc += blocksize;
+          size_t readlen = fread (loc, sizeof(PointT), READ_BLOCK_SIZE_, f);
+          assert (readlen == READ_BLOCK_SIZE_);
+          loc += READ_BLOCK_SIZE_;
         }
         else
         {
@@ -316,8 +314,8 @@ namespace pcl
       //copy the extra
       if (buffstart != -1)
       {
-        typename std::vector<PointT, Eigen::aligned_allocator<PointT> >::const_iterator start = writebuff_.begin ();
-        typename std::vector<PointT, Eigen::aligned_allocator<PointT> >::const_iterator end = writebuff_.begin ();
+        typename AlignedPointTVector::const_iterator start = writebuff_.begin ();
+        typename AlignedPointTVector::const_iterator end = writebuff_.begin ();
 
         std::advance (start, buffstart);
         std::advance (end, buffstart + buffcount);
@@ -329,7 +327,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    octree_disk_container<PointT>::readRangeSubSample_bernoulli (const uint64_t start, const uint64_t count, const double percent, std::vector<PointT, Eigen::aligned_allocator<PointT> >& v)
+    octree_disk_container<PointT>::readRangeSubSample_bernoulli (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector& v)
     {
       if (count == 0)
       {
@@ -341,8 +339,8 @@ namespace pcl
       uint64_t filestart = 0;
       uint64_t filecount = 0;
 
-      boost::int64_t buffstart = -1;
-      boost::int64_t buffcount = -1;
+      int64_t buffstart = -1;
+      int64_t buffcount = -1;
 
       if (start < filelen_)
       {
@@ -368,7 +366,7 @@ namespace pcl
           boost::bernoulli_distribution<double> buffdist (percent);
           boost::variate_generator<boost::mt19937&, boost::bernoulli_distribution<double> > buffcoin (rand_gen_, buffdist);
 
-          for (size_t i = buffstart; i < buffcount; i++)
+          for (size_t i = buffstart; i < static_cast<uint64_t>(buffcount); i++)
           {
             if (buffcoin ())
             {
@@ -432,8 +430,7 @@ namespace pcl
       uint64_t filestart = 0;
       uint64_t filecount = 0;
 
-      boost::int64_t buffstart = -1;
-      boost::int64_t buffcount = -1;
+      int64_t buffcount = -1;
 
       if (start < filelen_)
       {
@@ -447,13 +444,12 @@ namespace pcl
       else
       {
         filecount = filelen_ - start;
-
-        buffstart = 0;
         buffcount = count - filecount;
       }
 
-      uint64_t filesamp = uint64_t (percent * filecount);
-      uint64_t buffsamp = (buffcount > 0) ? (static_cast<uint64_t > (percent * buffcount) ) : 0;
+      uint64_t filesamp = static_cast<uint64_t> (percent * static_cast<double>(filecount));
+      
+      uint64_t buffsamp = (buffcount > 0) ? (static_cast<uint64_t > (percent * static_cast<double>(buffcount))) : 0;
 
       if ((filesamp == 0) && (buffsamp == 0) && (size () > 0))
       {
@@ -490,8 +486,8 @@ namespace pcl
           boost::variate_generator<boost::mt19937&, boost::uniform_int<uint64_t> > filedie (rand_gen_, filedist);
           for (uint64_t i = 0; i < filesamp; i++)
           {
-            uint64_t filestart = filedie ();
-            offsets[i] = filestart;
+            uint64_t _filestart = filedie ();
+            offsets[i] = _filestart;
           }
         }
         std::sort (offsets.begin (), offsets.end ());
@@ -509,7 +505,7 @@ namespace pcl
 
           v.push_back (p);
         }
-        int closeret = fclose (f);
+        assert ( fclose (f) == 0 );
       }
     }
 ////////////////////////////////////////////////////////////////////////////////
@@ -518,7 +514,7 @@ namespace pcl
     octree_disk_container<PointT>::push_back (const PointT& p)
     {
       writebuff_.push_back (p);
-      if (writebuff_.size () > writebuffmax)
+      if (writebuff_.size () > WRITE_BUFF_MAX_)
       {
         flushWritebuff (false);
       }
@@ -534,15 +530,14 @@ namespace pcl
       //open the file for appending binary
       FILE* f = fopen (fileback_name_->c_str (), "a+b");
 
-      //write at most 2 million elements at a time; mystery constant, this should be parametrized
-      const static uint64_t blocksize = static_cast<uint64_t> ( 2e12 );
+      //write at most WRITE_BUFF_MAX_/sizeof(PointT) points at a time
 
-      for (uint64_t pos = 0; pos < count; pos += blocksize)
+      for (uint64_t pos = 0; pos < count; pos += WRITE_BUFF_MAX_)
       {
         const PointT* loc = start + pos;
-        if ((pos + blocksize) < count)
+        if ((pos + WRITE_BUFF_MAX_) < count)
         {
-          assert (fwrite (loc, sizeof(PointT), blocksize, f) == blocksize);
+          assert (fwrite (loc, sizeof(PointT), WRITE_BUFF_MAX_, f) == WRITE_BUFF_MAX_);
         }
         else
         {

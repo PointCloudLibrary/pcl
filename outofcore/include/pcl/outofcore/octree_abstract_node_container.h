@@ -75,7 +75,7 @@ namespace pcl
         readRangeSubSample (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector& v) =0;
 
         virtual bool
-        empty ()=0;
+        empty () const=0;
         
         virtual uint64_t
         size () const =0;
@@ -96,10 +96,8 @@ namespace pcl
         virtual void
         flush (const bool force_cache_dealloc)=0;
 */
-/*
         virtual PointT
-        operator[] (uint64_t idx)=0;
-*/
+        operator[] (uint64_t idx) const=0;
 /*
         virtual void
         push_back (const PointT& p)=0;

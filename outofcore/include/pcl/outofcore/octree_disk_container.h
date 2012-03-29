@@ -104,7 +104,7 @@ namespace pcl
          *  \todo benchmark this; compare to Julius' octree
          */
         inline PointT
-        operator[] (uint64_t idx);
+        operator[] (uint64_t idx) const;
 
         inline void
         push_back (const PointT& p);
@@ -173,7 +173,7 @@ namespace pcl
          */
         void
         readRangeSubSample_bernoulli (const uint64_t start, const uint64_t count, 
-                                      const double percent, std::vector<PointT, Eigen::aligned_allocator<PointT> >& v);
+                                      const double percent, AlignedPointTVector& v);
 
         /** \brief Returns the total number of points for which this container is responsible, \ref filelen_ + points in \ref writebuff_ that have not yet been flushed to the disk
          */
@@ -185,8 +185,8 @@ namespace pcl
 
         /** \brief STL-like empty test
          * \return true if container has no data on disk or waiting to be written in \ref writebuff_ */
-        bool
-        empty ()
+        inline bool
+        empty () const
         {
           return ((filelen_ == 0) && writebuff_.empty ());
         }
@@ -206,8 +206,11 @@ namespace pcl
         inline void
         clear ()
         {
+          //clear elements that have not yet been written to disk
           writebuff_.clear ();
+          //remove the binary data in the directory
           boost::filesystem::remove (boost::filesystem::path (fileback_name_->c_str ()));
+          //reset the size-of-file counter
           filelen_ = 0;
         }
 
@@ -228,6 +231,7 @@ namespace pcl
             uint64_t num = size ();
             PointT p;
             char* loc = reinterpret_cast<char*> ( &p );
+
             for (uint64_t i = 0; i < num; i++)
             {
               int seekret = _fseeki64 (f, i * sizeof(PointT), SEEK_SET);
@@ -243,9 +247,8 @@ namespace pcl
 
               fwrite (ss.str ().c_str (), 1, ss.str ().size (), fxyz);
             }
-
-            int closeret = fclose (f);
-            int closeretxyz = fclose (fxyz);
+            assert ( fclose (f) == 0 );
+            assert ( fclose (fxyz) == 0);
           }
         }
 
@@ -281,16 +284,11 @@ namespace pcl
         //number of elements in file
         uint64_t filelen_;
 
+        const static uint64_t READ_BLOCK_SIZE_;
+
         /** \todo Consult with the literature about optimizing out of core read/write */
         /** \todo this will be handled by the write method in pcl::FileWriter */
-        //static const size_t writebuffmax = 100000;
-        static const size_t writebuffmax = 2e12;//50000;
-        //static const size_t writebuffmax = 10000;
-        //static const size_t writebuffmax = 1000;
-        //static const size_t writebuffmax = 100;
-        //static const size_t writebuffmax = 0;
-
-        //boost::posix_time::ptime lastwrite;
+        static const uint64_t WRITE_BUFF_MAX_;
 
         static boost::mutex rng_mutex_;
         static boost::mt19937 rand_gen_;

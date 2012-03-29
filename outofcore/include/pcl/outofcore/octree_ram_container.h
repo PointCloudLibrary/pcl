@@ -55,14 +55,6 @@
 
 #include <pcl/outofcore/octree_abstract_node_container.h>
 
-//todo - Consider using per-node RNG (it is currently a shared static rng,
-//       which is mutexed. I did i this way to be sure that node of the nodes
-//       had RNGs seeded to the same value). the mutex could effect performance
-
-/*  According to the Urban Robotics documentation, this class was not
- *  maintained with the rest of the disk_container code base. 
- */
-
 namespace pcl
 {
   namespace outofcore
@@ -71,6 +63,7 @@ namespace pcl
     class octree_ram_container : public OutofcoreAbstractNodeContainer<PointT>
     {
       public:
+        typedef typename OutofcoreAbstractNodeContainer<PointT>::AlignedPointTVector AlignedPointTVector;
 
         /** \brief empty contructor (with a path parameter?)
          */
@@ -82,14 +75,14 @@ namespace pcl
          * \param[in] count - the maximum offset from start of points inserted 
          **/
         inline void
-        insertRange (const PointT* start, const boost::uint64_t count);
+        insertRange (const PointT* start, const uint64_t count);
 
         /** \brief inserts count points into container 
          * \param[in] start - address of first point in array
          * \param[in] count - the maximum offset from start of points inserted 
          **/
         inline void
-        insertRange (const PointT* const * start, const boost::uint64_t count);
+        insertRange (const PointT* const * start, const uint64_t count);
 
         /** \brief 
          * \param[in] start Index of first point to return from container
@@ -97,7 +90,7 @@ namespace pcl
          * \param[out] v Array of points read from the input range
          */
         void
-        readRange (const boost::uint64_t start, const boost::uint64_t count, std::vector<PointT, Eigen::aligned_allocator<PointT> >& v);
+        readRange (const uint64_t start, const uint64_t count, AlignedPointTVector& v);
 
         /** \brief grab percent*count random points. points are NOT
          *   guaranteed to be unique (could have multiple identical points!)
@@ -109,17 +102,17 @@ namespace pcl
          * points from given input rangerange
          */
         void
-        readRangeSubSample (const boost::uint64_t start, const boost::uint64_t count, const double percent, std::vector<PointT, Eigen::aligned_allocator<PointT> >& v);
+        readRangeSubSample (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector& v);
 
         /** \brief returns the size of the vector of points stored in this class */
-        inline boost::uint64_t
+        inline uint64_t
         size () const
         {
           return container_.size ();
         }
 
         inline bool
-        empty () 
+        empty () const
         {
           return container_.empty ();
         }
@@ -129,6 +122,7 @@ namespace pcl
         inline void
         clear ()
         {
+          //clear the elements in the vector of points
           container_.clear ();
         }
 
@@ -138,7 +132,15 @@ namespace pcl
         void
         convertToXYZ (const boost::filesystem::path& path);
 
-      private:
+        inline PointT
+        operator[] (uint64_t index) const
+        {
+          assert ( index < container_.size () );
+          return ( container_[index] );
+        }
+        
+
+      protected:
         //no copy construction
         octree_ram_container (const octree_ram_container& rval) { }
 
@@ -149,13 +151,12 @@ namespace pcl
         //std::deque<PointT> container;
 
         /** \brief linear container to hold the points */
-        std::vector<PointT, Eigen::aligned_allocator<PointT> > container_;
+        AlignedPointTVector container_;
 
         static boost::mutex rng_mutex_;
         static boost::mt19937 rand_gen_;
     };
   }
 }
-
 
 #endif //PCL_OUTOFCORE_OCTREE_RAM_CONTAINER_H_
