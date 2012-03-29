@@ -379,7 +379,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth ()
   const size_t nr_detections = detections_.size ();
   for (size_t detection_index = 0; detection_index < nr_detections; ++detection_index)
   {
-    LineRGBD<PointXYZT, PointRGBT>::Detection & detection = detections_[detection_index];
+    typename LineRGBD<PointXYZT, PointRGBT>::Detection & detection = detections_[detection_index];
 
     // find depth with most valid points
     const size_t start_x = detection.region.x;
@@ -591,7 +591,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
   }
 
   // compute detection representatives for every cluster
-  std::vector<LineRGBD<PointXYZT, PointRGBT>::Detection> clustered_detections;
+  std::vector<typename LineRGBD<PointXYZT, PointRGBT>::Detection> clustered_detections;
 
   const size_t nr_clusters = clusters.size ();
   for (size_t cluster_id = 0; cluster_id < nr_clusters; ++cluster_id)
@@ -636,7 +636,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
       average_region_y += detections_[detection_id].region.y * weight;
     }
 
-    LineRGBD<PointXYZT, PointRGBT>::Detection detection;
+    typename LineRGBD<PointXYZT, PointRGBT>::Detection detection;
     detection.template_id = detections_[best_detection_id].template_id;
     detection.object_id = detections_[best_detection_id].object_id;
     detection.detection_id = cluster_id;
