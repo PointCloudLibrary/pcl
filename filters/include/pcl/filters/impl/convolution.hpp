@@ -165,6 +165,7 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve (PointCloud<PointOut>& ou
 template <typename PointIn, typename PointOut> inline PointOut
 pcl::filters::Convolution<PointIn, PointOut>::convolveOneRowDense (int i, int j)
 {
+  using namespace pcl::common;
   PointOut result;
   for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l)
     result+= (*input_) (l,j) * kernel_[k];
@@ -174,6 +175,7 @@ pcl::filters::Convolution<PointIn, PointOut>::convolveOneRowDense (int i, int j)
 template <typename PointIn, typename PointOut> inline PointOut
 pcl::filters::Convolution<PointIn, PointOut>::convolveOneColDense (int i, int j)
 {
+  using namespace pcl::common;
   PointOut result;
   for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
     result+= (*input_) (i,l) * kernel_[k];
@@ -183,6 +185,7 @@ pcl::filters::Convolution<PointIn, PointOut>::convolveOneColDense (int i, int j)
 template <typename PointIn, typename PointOut> inline PointOut
 pcl::filters::Convolution<PointIn, PointOut>::convolveOneRowNonDense (int i, int j)
 {
+  using namespace pcl::common;
   PointOut result;
   float weight = 0;
   for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l)
@@ -208,6 +211,7 @@ pcl::filters::Convolution<PointIn, PointOut>::convolveOneRowNonDense (int i, int
 template <typename PointIn, typename PointOut> inline PointOut
 pcl::filters::Convolution<PointIn, PointOut>::convolveOneColNonDense (int i, int j)
 {
+  using namespace pcl::common;
   PointOut result;
   float weight = 0;
   for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
