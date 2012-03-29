@@ -44,6 +44,7 @@
 #include <boost/signals2.hpp>
 #include <pcl/visualization/interactor_style.h>
 #include <pcl/visualization/vtk.h>
+#include <pcl/geometry/planar_polygon.h>
 
 namespace pcl
 {
@@ -92,7 +93,7 @@ namespace pcl
           */
         void 
         showMonoImage (const unsigned char* data, unsigned width, unsigned height,
-                       const std::string &layer_id = "image", double opacity = 1.0);
+                       const std::string &layer_id = "mono_image", double opacity = 1.0);
 
         /** \brief Show a 2D RGB image on screen.
           * \param[in] data the input data representing the image
@@ -103,7 +104,7 @@ namespace pcl
           */
         void 
         showRGBImage (const unsigned char* data, unsigned width, unsigned height, 
-                      const std::string &layer_id = "image", double opacity = 1.0);
+                      const std::string &layer_id = "rgb_image", double opacity = 1.0);
 
         /** \brief Show a 2D image on screen, obtained from the RGB channel of a point cloud.
           * \param[in] data the input data representing the RGB point cloud 
@@ -112,7 +113,7 @@ namespace pcl
           */
         template <typename T> inline void 
         showRGBImage (const typename pcl::PointCloud<T>::ConstPtr &cloud,
-                      const std::string &layer_id = "image", double opacity = 1.0)
+                      const std::string &layer_id = "rgb_image", double opacity = 1.0)
         {
           return (showRGBImage<T> (*cloud, layer_id, opacity));
         }
@@ -124,7 +125,7 @@ namespace pcl
           */
         template <typename T> void 
         showRGBImage (const pcl::PointCloud<T> &cloud,
-                      const std::string &layer_id = "image", double opacity = 1.0);
+                      const std::string &layer_id = "rgb_image", double opacity = 1.0);
 
         /** \brief Show a 2D image (float) on screen.
           * \param[in] data the input data representing the image in float format
@@ -140,7 +141,7 @@ namespace pcl
         showFloatImage (const float* data, unsigned int width, unsigned int height, 
                         float min_value = std::numeric_limits<float>::min (), 
                         float max_value = std::numeric_limits<float>::max (), bool grayscale = false,
-                        const std::string &layer_id = "image", double opacity = 1.0);
+                        const std::string &layer_id = "float_image", double opacity = 1.0);
         
         /** \brief Show a 2D image (unsigned short) on screen.
           * \param[in] short_image the input data representing the image in unsigned short format
@@ -156,7 +157,7 @@ namespace pcl
         showShortImage (const unsigned short* short_image, unsigned int width, unsigned int height, 
                         unsigned short min_value = std::numeric_limits<unsigned short>::min (), 
                         unsigned short max_value = std::numeric_limits<unsigned short>::max (), bool grayscale = false,
-                        const std::string &layer_id = "image", double opacity = 1.0);
+                        const std::string &layer_id = "short_image", double opacity = 1.0);
 
         /** \brief Show a 2D image on screen representing angle data.
           * \param[in] data the input data representing the image
@@ -167,7 +168,7 @@ namespace pcl
           */
         void 
         showAngleImage (const float* data, unsigned width, unsigned height,
-                        const std::string &layer_id = "image", double opacity = 1.0);
+                        const std::string &layer_id = "angle_image", double opacity = 1.0);
 
         /** \brief Show a 2D image on screen representing half angle data.
           * \param[in] data the input data representing the image
@@ -178,7 +179,7 @@ namespace pcl
           */
         void 
         showHalfAngleImage (const float* data, unsigned width, unsigned height,
-                            const std::string &layer_id = "image", double opacity = 1.0);
+                            const std::string &layer_id = "half_angle_image", double opacity = 1.0);
 
         /** \brief Sets the pixel at coordinates(u,v) to color while setting the neighborhood to another
           * \param[in] u the u/x coordinate of the pixel
@@ -345,9 +346,9 @@ namespace pcl
           * \param[in] x_max the X max coordinate
           * \param[in] y_min the Y min coordinate
           * \param[in] y_max the Y max coordinate 
-          * \param[in] r the red channel of the color that the sphere should be rendered with (0.0 -> 1.0)
-          * \param[in] g the green channel of the color that the sphere should be rendered with (0.0 -> 1.0)
-          * \param[in] b the blue channel of the color that the sphere should be rendered with (0.0 -> 1.0)
+          * \param[in] r the red channel of the color that the box should be rendered with (0.0 -> 1.0)
+          * \param[in] g the green channel of the color that the box should be rendered with (0.0 -> 1.0)
+          * \param[in] b the blue channel of the color that the box should be rendered with (0.0 -> 1.0)
           * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn. 
           * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
           */
@@ -355,6 +356,34 @@ namespace pcl
         addBox (unsigned int x_min, unsigned int x_max, unsigned int y_min, unsigned int y_max,  
                 double r, double g, double b,
                 const std::string &layer_id = "boxes", double opacity = 0.5);
+
+        /** \brief Add a 2D line with a given color
+          * \param[in] x_min the X min coordinate
+          * \param[in] y_min the Y min coordinate
+          * \param[in] x_max the X max coordinate
+          * \param[in] y_max the Y max coordinate 
+          * \param[in] r the red channel of the color that the line should be rendered with (0.0 -> 1.0)
+          * \param[in] g the green channel of the color that the line should be rendered with (0.0 -> 1.0)
+          * \param[in] b the blue channel of the color that the line should be rendered with (0.0 -> 1.0)
+          * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn. 
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          */
+         bool
+         addLine (unsigned int x_min, unsigned int y_min, unsigned int x_max, unsigned int y_max,
+                  double r, double g, double b, 
+                  const std::string &layer_id = "line", double opacity = 0.5);
+
+        /** \brief Add a 2D line with a given color
+          * \param[in] x_min the X min coordinate
+          * \param[in] y_min the Y min coordinate
+          * \param[in] x_max the X max coordinate
+          * \param[in] y_max the Y max coordinate 
+          * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn. 
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          */
+         bool
+         addLine (unsigned int x_min, unsigned int y_min, unsigned int x_max, unsigned int y_max,
+                  const std::string &layer_id = "line", double opacity = 0.5);
 
         /** \brief Add a new 2D rendering layer to the viewer. 
           * \param[in] layer_id the name of the layer

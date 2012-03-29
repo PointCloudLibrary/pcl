@@ -596,6 +596,46 @@ pcl::visualization::ImageViewer::addBox (
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::ImageViewer::addLine (unsigned int x_min, unsigned int y_min, 
+                                          unsigned int x_max, unsigned int y_max,
+                                          const std::string &layer_id, double opacity)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  if (am_it == layer_map_.end ())
+  {
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addLine] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
+    am_it = addLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
+  }
+
+  am_it->canvas->DrawSegment (x_min, y_min, x_max, y_max);
+
+  return (true);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::ImageViewer::addLine (unsigned int x_min, unsigned int y_min, 
+                                          unsigned int x_max, unsigned int y_max,
+                                          double r, double g, double b, 
+                                          const std::string &layer_id, double opacity)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  if (am_it == layer_map_.end ())
+  {
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addLine] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
+    am_it = addLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
+  }
+
+  am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
+  am_it->canvas->DrawSegment (x_min, y_min, x_max, y_max);
+
+  return (true);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::ImageViewer::markPoint (
     size_t u, size_t v, Vector3ub fg_color, Vector3ub bg_color, double radius,
