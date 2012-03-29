@@ -43,6 +43,7 @@
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <pcl/search/pcl_search.h>
+#include <pcl/pcl_config.h>
 
 namespace pcl
 {
