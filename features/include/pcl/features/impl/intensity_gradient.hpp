@@ -148,11 +148,11 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
   std::vector<float> nn_dists (k_);
 
   output.is_dense = true;
-  // Iterating over the entire index vector
-#ifdef HAVE_OPENMP
-//#pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
-#pragma omp parallel for private (nn_indices, nn_dists) num_threads(threads_)
+// This line creates internal error on MacOS (I have no clue why)
+#if !defined __APPLE__ && defined HAVE_OPENMP
+#pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
 #endif
+  // Iterating over the entire index vector
   for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
   {
     PointOutT &p_out = output.points[idx];
