@@ -192,7 +192,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &outp
   derivatives_cols_(0,0) = (intensity_ ((*input_) (0,1)) - intensity_ ((*input_) (0,0))) * 0.5;
   derivatives_rows_(0,0) = (intensity_ ((*input_) (1,0)) - intensity_ ((*input_) (0,0))) * 0.5;
 
-// #ifdef HAVE_OPENMP
+// #if !defined __APPLE__ && defined HAVE_OPENMP
 // //#pragma omp parallel for shared (derivatives_cols_, input_) num_threads (threads_)
 // #pragma omp parallel for num_threads (threads_)
 // #endif
@@ -204,7 +204,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &outp
   derivatives_rows_(w,0) = (intensity_ ((*input_) (w,0)) - intensity_ ((*input_) (w-1,0))) * 0.5;
   derivatives_cols_(w,0) = (intensity_ ((*input_) (w,1)) - intensity_ ((*input_) (w,0))) * 0.5;
 
-// #ifdef HAVE_OPENMP
+// #if !defined __APPLE__ && defined HAVE_OPENMP
 // //#pragma omp parallel for shared (derivatives_cols_, derivatives_rows_, input_) num_threads (threads_)
 // #pragma omp parallel for num_threads (threads_)
 // #endif
@@ -228,7 +228,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &outp
   derivatives_cols_(0,h) = (intensity_ ((*input_) (0,h)) - intensity_ ((*input_) (0,h-1))) * 0.5;
   derivatives_rows_(0,h) = (intensity_ ((*input_) (1,h)) - intensity_ ((*input_) (0,h))) * 0.5;
 
-// #ifdef HAVE_OPENMP
+// #if !defined __APPLE__ && defined HAVE_OPENMP
 // //#pragma omp parallel for shared (derivatives_cols_, input_) num_threads (threads_)
 // #pragma omp parallel for num_threads (threads_)
 // #endif
@@ -272,7 +272,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &outp
     
     int width = static_cast<int> (response_->width);
     int height = static_cast<int> (response_->height);
-#ifdef HAVE_OPENMP
+#if !defined __APPLE__ && defined HAVE_OPENMP
 #pragma omp parallel for shared (output, occupency_map) private (width, height) num_threads(threads_)   
 #endif
     for (size_t idx = 0; idx < occupency_map.size (); ++idx)
@@ -280,7 +280,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &outp
       if (occupency_map[idx] || response_->points [indices_->at (idx)].intensity < threshold_ || !isFinite (response_->points[idx]))
         continue;
         
-#ifdef HAVE_OPENMP
+#if !defined __APPLE__ && defined HAVE_OPENMP
 #pragma omp critical
 #endif
       output.push_back (response_->at (indices_->at (idx)));
@@ -314,7 +314,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT>::responseHarris (PointCloudOut &outpu
   std::cout << output.size () << "X" << input_->size () << std::endl;
   highest_response = std::numeric_limits<float>::min ();
 
-#ifdef HAVE_OPENMP
+#if !defined __APPLE__ && defined HAVE_OPENMP
   #pragma omp parallel for shared (output, highest_response) private (covar) num_threads(threads_)
 #endif
 
@@ -351,7 +351,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT>::responseNoble (PointCloudOut &output
   PCL_ALIGN (16) float covar [3];
   output.resize (input_->size ());
 
-#ifdef HAVE_OPENMP
+#if !defined __APPLE__ && defined HAVE_OPENMP
 #pragma omp parallel for shared (output, highest_response) private (covar) num_threads(threads_)
 #endif
 
@@ -388,7 +388,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT>::responseLowe (PointCloudOut &output,
   PCL_ALIGN (16) float covar [3];
   output.resize (input_->size ());
 
-#ifdef HAVE_OPENMP
+#if !defined __APPLE__ && defined HAVE_OPENMP
 #pragma omp parallel for shared (output, highest_response) private (covar) num_threads(threads_)
 #endif
   for (size_t index = 0; index < output.size (); ++index)      
@@ -424,7 +424,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT>::responseTomasi (PointCloudOut &outpu
   PCL_ALIGN (16) float covar [3];
   output.resize (input_->size ());
 
-#ifdef HAVE_OPENMP
+#if !defined __APPLE__ && defined HAVE_OPENMP
 #pragma omp parallel for shared (output, highest_response) private (covar) num_threads(threads_)
 #endif
   for (size_t index = 0; index < output.size (); ++index)
@@ -461,7 +461,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT>::responseTomasi (PointCloudOut &outpu
 //   Eigen::Vector2f NNTp;
 //   float diff;
 //   const unsigned max_iterations = 10;
-// #ifdef HAVE_OPENMP
+// #if !defined __APPLE__ && defined HAVE_OPENMP
 //   #pragma omp parallel for shared (corners) private (nnT, NNT, NNTInv, NNTp, diff, nn_indices, nn_dists) num_threads(threads_)
 // #endif
 //   for (int cIdx = 0; cIdx < static_cast<int> (corners.size ()); ++cIdx)
