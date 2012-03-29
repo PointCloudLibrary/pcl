@@ -146,11 +146,14 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
   // \note This resize is irrelevant for a radiusSearch ().
   std::vector<int> nn_indices (k_);
   std::vector<float> nn_dists (k_);
-
   output.is_dense = true;
-// This line creates internal error on MacOS (I have no clue why)
-#if !defined __APPLE__ && defined HAVE_OPENMP
+
+#ifdef HAVE_OPENMP
+#ifdef __APPLE__
+#pragma omp parallel for schedule (dynamic, threads_)
+#else
 #pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
+#endif
 #endif
   // Iterating over the entire index vector
   for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
@@ -172,10 +175,10 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
     if (surface_->is_dense)
     {
       for (size_t i = 0; i < nn_indices.size (); ++i)
-      {          
+      {
         centroid += surface_->points[nn_indices[i]].getVector3fMap ();
         mean_intensity += intensity_ (surface_->points[nn_indices[i]]);
-      }        
+      }
       centroid /= static_cast<float> (nn_indices.size ());
       mean_intensity /= static_cast<float> (nn_indices.size ());
     }
@@ -188,7 +191,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
         // Check if the point is invalid
         if (!isFinite ((*surface_) [nn_indices[i]]))
           continue;
-        
+
         centroid += surface_->points [nn_indices[i]].getVector3fMap ();
         mean_intensity += intensity_ (surface_->points [nn_indices[i]]);
         ++cp;
