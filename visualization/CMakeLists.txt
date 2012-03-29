@@ -1,6 +1,6 @@
 set(SUBSYS_NAME visualization)
 set(SUBSYS_DESC "Point cloud visualization library")
-set(SUBSYS_DEPS common io kdtree)
+set(SUBSYS_DEPS common io kdtree geometry)
 
 if(NOT VTK_FOUND)
     set(DEFAULT FALSE)
