@@ -44,6 +44,8 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/recognition/point_types.h>
+#include <pcl/filters/convolution.h>
+
 #include <list>
 
 namespace pcl
@@ -146,10 +148,10 @@ namespace pcl
     protected:
 
       void
-      computeMaxColorGradients ();
+      computeMaxColorGradients (const typename PointCloudIn::ConstPtr & cloud);
 
       void
-      computeMaxColorGradientsSobel ();
+      computeMaxColorGradientsSobel (const typename PointCloudIn::ConstPtr & cloud);
   
       void
       quantizeColorGradients ();
@@ -161,6 +163,8 @@ namespace pcl
       erode (const pcl::MaskMap & mask_in, pcl::MaskMap & mask_out);
   
     private:
+	    typename PointCloudIn::Ptr smoothed_input_;
+
       FeatureSelectionMethod feature_selection_method_;
 
       float gradient_magnitude_threshold_;
@@ -182,7 +186,8 @@ namespace pcl
 template <typename PointInT>
 pcl::ColorGradientModality<PointInT>::
 ColorGradientModality ()
-  : feature_selection_method_ (DISTANCE_MAGNITUDE_SCORE)
+  : smoothed_input_ (new pcl::PointCloud<PointInT> ())
+  , feature_selection_method_ (DISTANCE_MAGNITUDE_SCORE)
   , gradient_magnitude_threshold_ (10.0f)
   , gradient_magnitude_threshold_feature_extraction_ (55.0f)
   , color_gradients_ ()
@@ -206,8 +211,18 @@ void
 pcl::ColorGradientModality<PointInT>::
 processInputData ()
 {
+  // smooth input
+	pcl::filters::Convolution<PointInT, PointInT> convolution;
+	Eigen::ArrayXf gaussian_kernel(5);
+	gaussian_kernel << 1.f/16, 1.f/4, 3.f/8, 1.f/4, 1.f/16;
+
+	convolution.setInputCloud (input_);
+	convolution.setKernel (gaussian_kernel);
+
+  convolution.convolve (*smoothed_input_);
+
   // extract color gradients
-  computeMaxColorGradientsSobel ();
+  computeMaxColorGradientsSobel (smoothed_input_);
 
   // quantize gradients
   quantizeColorGradients ();
@@ -407,10 +422,10 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
 template <typename PointInT>
 void
 pcl::ColorGradientModality<PointInT>::
-computeMaxColorGradients ()
+computeMaxColorGradients (const typename PointCloudIn::ConstPtr & cloud)
 {
-  const int width = input_->width;
-  const int height = input_->height;
+  const int width = cloud->width;
+  const int height = cloud->height;
 
   color_gradients_.points.resize (width*height);
   color_gradients_.width = width;
@@ -427,17 +442,17 @@ computeMaxColorGradients ()
 
       //const int index_d = (row_index+1)*width+col_index+1;
 
-      const unsigned char r0 = input_->points[index0].r;
-      const unsigned char g0 = input_->points[index0].g;
-      const unsigned char b0 = input_->points[index0].b;
+      const unsigned char r0 = cloud->points[index0].r;
+      const unsigned char g0 = cloud->points[index0].g;
+      const unsigned char b0 = cloud->points[index0].b;
 
-      const unsigned char r_c = input_->points[index_c].r;
-      const unsigned char g_c = input_->points[index_c].g;
-      const unsigned char b_c = input_->points[index_c].b;
+      const unsigned char r_c = cloud->points[index_c].r;
+      const unsigned char g_c = cloud->points[index_c].g;
+      const unsigned char b_c = cloud->points[index_c].b;
 
-      const unsigned char r_r = input_->points[index_r].r;
-      const unsigned char g_r = input_->points[index_r].g;
-      const unsigned char b_r = input_->points[index_r].b;
+      const unsigned char r_r = cloud->points[index_r].r;
+      const unsigned char g_r = cloud->points[index_r].g;
+      const unsigned char b_r = cloud->points[index_r].b;
 
       const float r_dx = static_cast<float> (r_c) - static_cast<float> (r0);
       const float g_dx = static_cast<float> (g_c) - static_cast<float> (g0);
@@ -494,10 +509,10 @@ computeMaxColorGradients ()
 template <typename PointInT>
 void
 pcl::ColorGradientModality<PointInT>::
-computeMaxColorGradientsSobel ()
+computeMaxColorGradientsSobel (const typename PointCloudIn::ConstPtr & cloud)
 {
-  const int width = input_->width;
-  const int height = input_->height;
+  const int width = cloud->width;
+  const int height = cloud->height;
 
   color_gradients_.points.resize (width*height);
   color_gradients_.width = width;
@@ -508,30 +523,30 @@ computeMaxColorGradientsSobel ()
   {
     for (int col_index = 1; col_index < width-1; ++col_index)
     {
-      const int r7 = static_cast<int> (input_->points[(row_index-1)*width + (col_index-1)].r);
-      const int g7 = static_cast<int> (input_->points[(row_index-1)*width + (col_index-1)].g);
-      const int b7 = static_cast<int> (input_->points[(row_index-1)*width + (col_index-1)].b);
-      const int r8 = static_cast<int> (input_->points[(row_index-1)*width + (col_index)].r);
-      const int g8 = static_cast<int> (input_->points[(row_index-1)*width + (col_index)].g);
-      const int b8 = static_cast<int> (input_->points[(row_index-1)*width + (col_index)].b);
-      const int r9 = static_cast<int> (input_->points[(row_index-1)*width + (col_index+1)].r);
-      const int g9 = static_cast<int> (input_->points[(row_index-1)*width + (col_index+1)].g);
-      const int b9 = static_cast<int> (input_->points[(row_index-1)*width + (col_index+1)].b);
-      const int r4 = static_cast<int> (input_->points[(row_index)*width + (col_index-1)].r);
-      const int g4 = static_cast<int> (input_->points[(row_index)*width + (col_index-1)].g);
-      const int b4 = static_cast<int> (input_->points[(row_index)*width + (col_index-1)].b);
-      const int r6 = static_cast<int> (input_->points[(row_index)*width + (col_index+1)].r);
-      const int g6 = static_cast<int> (input_->points[(row_index)*width + (col_index+1)].g);
-      const int b6 = static_cast<int> (input_->points[(row_index)*width + (col_index+1)].b);
-      const int r1 = static_cast<int> (input_->points[(row_index+1)*width + (col_index-1)].r);
-      const int g1 = static_cast<int> (input_->points[(row_index+1)*width + (col_index-1)].g);
-      const int b1 = static_cast<int> (input_->points[(row_index+1)*width + (col_index-1)].b);
-      const int r2 = static_cast<int> (input_->points[(row_index+1)*width + (col_index)].r);
-      const int g2 = static_cast<int> (input_->points[(row_index+1)*width + (col_index)].g);
-      const int b2 = static_cast<int> (input_->points[(row_index+1)*width + (col_index)].b);
-      const int r3 = static_cast<int> (input_->points[(row_index+1)*width + (col_index+1)].r);
-      const int g3 = static_cast<int> (input_->points[(row_index+1)*width + (col_index+1)].g);
-      const int b3 = static_cast<int> (input_->points[(row_index+1)*width + (col_index+1)].b);
+      const int r7 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index-1)].r);
+      const int g7 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index-1)].g);
+      const int b7 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index-1)].b);
+      const int r8 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index)].r);
+      const int g8 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index)].g);
+      const int b8 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index)].b);
+      const int r9 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index+1)].r);
+      const int g9 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index+1)].g);
+      const int b9 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index+1)].b);
+      const int r4 = static_cast<int> (cloud->points[(row_index)*width + (col_index-1)].r);
+      const int g4 = static_cast<int> (cloud->points[(row_index)*width + (col_index-1)].g);
+      const int b4 = static_cast<int> (cloud->points[(row_index)*width + (col_index-1)].b);
+      const int r6 = static_cast<int> (cloud->points[(row_index)*width + (col_index+1)].r);
+      const int g6 = static_cast<int> (cloud->points[(row_index)*width + (col_index+1)].g);
+      const int b6 = static_cast<int> (cloud->points[(row_index)*width + (col_index+1)].b);
+      const int r1 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index-1)].r);
+      const int g1 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index-1)].g);
+      const int b1 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index-1)].b);
+      const int r2 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index)].r);
+      const int g2 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index)].g);
+      const int b2 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index)].b);
+      const int r3 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index+1)].r);
+      const int g3 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index+1)].g);
+      const int b3 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index+1)].b);
 
       const int r_tmp1 = - r7 + r3;
       const int r_tmp2 = - r1 + r9;
