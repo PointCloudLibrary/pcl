@@ -598,10 +598,14 @@ pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRG
   bool make_global,
   const Eigen::Isometry3d & pose)
 {
-  // TODO: check if this works for for rows/cols >1
+  // TODO: check if this works for for rows/cols >1  and for width&height != 640x480
   // i.e. multiple tiled images
-  pc->width    = camera_width_;
-  pc->height   = camera_height_;
+  pc->width    = col_width_;
+  pc->height   = row_height_;
+  // Was:
+  //pc->width    = camera_width_;
+  //pc->height   = camera_height_;
+
   pc->is_dense = false;
   pc->points.resize (pc->width*pc->height);
 
@@ -615,14 +619,14 @@ pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRG
   // TODO: support decimation
   // Copied the format of RangeImagePlanar::setDepthImage()
   // Use this as a template for decimation
-  for (int y = 0; y < (int)camera_height_; ++y)
+  for (int y = 0; y < (int)row_height_ ; ++y) //camera_height_
   {
-    for (int x = 0; x < (int)camera_width_; ++x)
+    for (int x = 0; x < (int)col_width_ ; ++x)  // camera_width_
     {
       // Find XYZ from normalized 0->1 mapped disparity
       int idx = points_added; // y*camera_width_ + x;
       float d = depth_buffer_[y*camera_width_ + x] ;
-      if (d < 1.0)
+      if (d < 1.0) // only add points with depth buffer less than max (20m) range
       {
         float z = zf*zn/((zf-zn)*(d - zf/(zf-zn)));
 
@@ -636,12 +640,10 @@ pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRG
         pc->points[idx].x = (x-camera_cx_) * z * (-camera_fx_reciprocal_);
         pc->points[idx].y = (y-camera_cy_) * z * (-camera_fy_reciprocal_);
 
-        unsigned char* rgba_ptr = (unsigned char*)&pc->points[idx].rgba;
-        (*rgba_ptr) =  color_buffer_[idx*3+2]; // blue
-        (*(rgba_ptr+1)) = color_buffer_[idx*3+1]; // green
-        (*(rgba_ptr+2)) = color_buffer_[idx*3];// red
-        (*(rgba_ptr+3)) = 0;
-
+	int rgb_idx = y*col_width_ + x;  //camera_width_
+        pc->points[idx].b =  color_buffer_[rgb_idx*3+2]; // blue
+        pc->points[idx].g = color_buffer_[rgb_idx*3+1]; // green
+        pc->points[idx].r = color_buffer_[rgb_idx*3];// red
         points_added++;
       }
     }
@@ -723,7 +725,7 @@ pcl::simulation::RangeLikelihood::addNoise ()
   // TODO: better fit this:
   // 0.6m  = ~600 kinect return
   // 20m   = ~1070 kinect return - not not well calibrated
-  // The fitted model here cannot work for long ranges:
+  // The fitted model stated here cannot work for long ranges:
   // http://www.ros.org/wiki/kinect_calibration/technical
   // TODO: make a parameter
   int bins = 470;

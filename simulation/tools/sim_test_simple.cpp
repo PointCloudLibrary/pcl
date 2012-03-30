@@ -72,7 +72,7 @@ uint16_t t_gamma[2048];
 
 Scene::Ptr scene_;
 Camera::Ptr camera_;
-RangeLikelihoodGLSL::Ptr range_likelihood_;
+RangeLikelihood::Ptr range_likelihood_;
 
 int window_width_;
 int window_height_;
@@ -119,6 +119,84 @@ void display_score_image(const float* score_buffer)
   delete [] score_img;
 }
 
+
+
+
+void display_depth_image (const float* depth_buffer, int width, int height)
+{
+  int npixels = width * height;
+  uint8_t* depth_img = new uint8_t[npixels * 3];
+
+  float min_depth = depth_buffer[0];
+  float max_depth = depth_buffer[0];
+  for (int i = 1; i < npixels; ++i)
+  {
+    if (depth_buffer[i] < min_depth) min_depth = depth_buffer[i];
+    if (depth_buffer[i] > max_depth) max_depth = depth_buffer[i];
+  }
+
+  for (int i = 0; i < npixels; ++i)
+  {
+    float zn = 0.7f;
+    float zf = 20.0f;
+    float d = depth_buffer[i];
+    float z = -zf*zn/((zf-zn)*(d - zf/(zf-zn)));
+    float b = 0.075f;
+    float f = 580.0f;
+    uint16_t kd = static_cast<uint16_t>(1090 - b*f/z*8);
+    if (kd < 0) kd = 0;
+    else if (kd > 2047) kd = 2047;
+
+    int pval = t_gamma[kd];
+    int lb = pval & 0xff;
+    switch (pval >> 8)
+    {
+      case 0:
+	  depth_img[3*i+0] = 255;
+	  depth_img[3*i+1] = 255-lb;
+	  depth_img[3*i+2] = 255-lb;
+	  break;
+      case 1:
+	  depth_img[3*i+0] = 255;
+	  depth_img[3*i+1] = lb;
+	  depth_img[3*i+2] = 0;
+	  break;
+      case 2:
+	  depth_img[3*i+0] = 255-lb;
+	  depth_img[3*i+1] = 255;
+	  depth_img[3*i+2] = 0;
+	  break;
+      case 3:
+	  depth_img[3*i+0] = 0;
+	  depth_img[3*i+1] = 255;
+	  depth_img[3*i+2] = lb;
+	  break;
+      case 4:
+	  depth_img[3*i+0] = 0;
+	  depth_img[3*i+1] = 255-lb;
+	  depth_img[3*i+2] = 255;
+	  break;
+      case 5:
+	  depth_img[3*i+0] = 0;
+	  depth_img[3*i+1] = 0;
+	  depth_img[3*i+2] = 255-lb;
+	  break;
+      default:
+	  depth_img[3*i+0] = 0;
+	  depth_img[3*i+1] = 0;
+	  depth_img[3*i+2] = 0;
+	  break;
+    }
+  }
+
+  glRasterPos2i (-1,-1);
+  glDrawPixels (width, height,
+                GL_RGB, GL_UNSIGNED_BYTE, depth_img);
+
+  delete [] depth_img;
+}
+
+/*
 void display_depth_image(const float* depth_buffer)
 {
   int npixels = range_likelihood_->getWidth() * range_likelihood_->getHeight();
@@ -190,7 +268,7 @@ void display_depth_image(const float* depth_buffer)
 
   delete [] depth_img;
 }
-
+*/
 
 boost::shared_ptr<pcl::visualization::PCLVisualizer> simpleVis (pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud)
 {
@@ -231,9 +309,10 @@ void display ()
     //camera.move(0.0,i*0.02,0.0);
     poses.push_back (camera.pose ());
   }
-  float* depth_field = NULL;
-  bool do_depth_field = false;
-  range_likelihood_->computeLikelihoods (reference, poses, scores, depth_field, do_depth_field);
+  
+  range_likelihood_->computeLikelihoods (reference, poses, scores);
+  
+  range_likelihood_->computeLikelihoods (reference, poses, scores);
   std::cout << "score: ";
   for (size_t i = 0; i<scores.size (); ++i)
   {
@@ -250,7 +329,6 @@ void display ()
        << std::endl;
 
   delete [] reference;
-  delete [] depth_field;
 
   glDrawBuffer (GL_BACK);
   glReadBuffer (GL_BACK);
@@ -278,8 +356,11 @@ void display ()
   glLoadIdentity ();
   glMatrixMode (GL_MODELVIEW);
   glLoadIdentity ();
-  display_depth_image (range_likelihood_->getDepthBuffer ());
-
+//  display_depth_image (range_likelihood_->getDepthBuffer ());
+  display_depth_image (range_likelihood_->getDepthBuffer (),
+                       range_likelihood_->getWidth (), range_likelihood_->getHeight ());
+  
+  
   // Draw the score image
   glViewport (0, range_likelihood_->getHeight (),
               range_likelihood_->getWidth (), range_likelihood_->getHeight ());
@@ -376,7 +457,7 @@ on_keyboard (unsigned char key, int x, int y)
     camera_->move(0,0,-speed);
   else if (key == 'p' || key == 'P')
     paused_ = !paused_;
-  else if (key == 'f' || key == 'F')
+  else if (key == 'v' || key == 'V')
     write_file_ = 1;
   
   // Use glutGetModifiers for modifiers
@@ -531,13 +612,14 @@ main (int argc, char** argv)
     std::cerr << "Error: OpenGL 2.0 not supported" << std::endl;
     exit(1);
   }
+  std::cout << "GL_MAX_VIEWPORTS: " << GL_MAX_VIEWPORTS << std::endl;
 
   camera_ = Camera::Ptr (new Camera ());
   scene_ = Scene::Ptr (new Scene ());
 
   //range_likelihood_ = RangeLikelihoodGLSL::Ptr(new RangeLikelihoodGLSL(1, 1, height, width, scene_, 0));
 
-  range_likelihood_ = RangeLikelihoodGLSL::Ptr (new RangeLikelihoodGLSL (2, 2, height/2, width/2, scene_, 0));
+  range_likelihood_ = RangeLikelihood::Ptr (new RangeLikelihood (2, 2, height/2, width/2, scene_));
   // range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(10, 10, 96, 96, scene_));
   // range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, 480, 640, scene_));
 
@@ -546,7 +628,8 @@ main (int argc, char** argv)
             576.09757860, 321.06398107, 242.97676897);
   range_likelihood_->setComputeOnCPU (false);
   range_likelihood_->setSumOnCPU (true);
-
+  range_likelihood_->setUseColor (true);
+  
   initialize (argc, argv);
 
   glutReshapeFunc (on_reshape);

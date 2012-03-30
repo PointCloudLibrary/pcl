@@ -1,5 +1,4 @@
 #include <pcl/simulation/model.h>
-
 namespace pcl
 {
 

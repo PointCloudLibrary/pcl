@@ -7,7 +7,7 @@
  * 0 - static camera, 100 poses
  * 1 - circular camera flying around the scene, 16 poses
  * 2 - camera translates between 2 poses using slerp, 20 poses
- * range_terminal_demo 2 ../../../../kmcl/models/table_models/meta_model.ply  
+ * pcl_sim_terminal_demo 2 ../../../../kmcl/models/table_models/meta_model.ply  
  */
 
 #include <Eigen/Dense>
@@ -70,7 +70,7 @@ uint16_t t_gamma[2048];
 
 Scene::Ptr scene_;
 Camera::Ptr camera_;
-RangeLikelihoodGLSL::Ptr range_likelihood_;
+RangeLikelihood::Ptr range_likelihood_;
 
 int window_width_;
 int window_height_;
@@ -211,10 +211,11 @@ void write_rgb_image(const uint8_t* rgb_buffer)
   {
     for (int x = 0; x < 640; ++x)
     {
-      int px = y*640 + x ;
-      rgb_img [3* (px) +0] = rgb_buffer[3*px+0];
-      rgb_img [3* (px) +1] = rgb_buffer[3*px+1];
-      rgb_img [3* (px) +2] = rgb_buffer[3*px+2];      
+      int px= y*640 + x ;
+      int px_in= (480-1 -y) *640 + x ; // flip up down
+      rgb_img [3* (px) +0] = rgb_buffer[3*px_in+0];
+      rgb_img [3* (px) +1] = rgb_buffer[3*px_in+1];
+      rgb_img [3* (px) +2] = rgb_buffer[3*px_in+2];      
     }
   }  
   
@@ -272,16 +273,7 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
     
     poses.push_back (pose_in);
 //  }
-  float* depth_field = NULL;
-  bool do_depth_field = false;
-  range_likelihood_->computeLikelihoods (reference, poses, scores, depth_field, do_depth_field);
-  std::cout << "score: ";
-  for (size_t i = 0; i<scores.size (); ++i)
-  {
-    std::cout << " " << scores[i];
-  }
-  std::cout << std::endl;
-
+  range_likelihood_->computeLikelihoods (reference, poses, scores);
   std::cout << "camera: " << camera_->x ()
        << " " << camera_->y ()
        << " " << camera_->z ()
@@ -291,10 +283,9 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
        << std::endl;
        
   delete [] reference;
-  delete [] depth_field;
 
 
-  // Benchmark Values for 
+  // Benchmark Values for sim_terminal_demo ( march 27 2012): >>> used PolygonMeshModel<< 
   // 27840 triangle faces
   // 13670 vertices
   
@@ -310,45 +301,61 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
   // writeBinary   0.012     16%
   // total	   0.07222	
 
+  // Update: march 29: >>> using TriangleMeshModel now <<<
+  // 57.00Hz: simuation only
+  // 30.61Hz: simuation, getPointCloud
+  // 40.00Hz: simuation, getPointCloud, writeBinary (on average
+  // 28.50Hz: simuation, addNoise, getPointCloud, writeBinary
+  
+  
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc_out (new pcl::PointCloud<pcl::PointXYZRGB>);
-  if (1==1)//(write_file_)
+  bool write_cloud=true;
+  bool demo_other_stuff=false;
+  
+  if (write_cloud)
   {
+    // Read Color Buffer from the GPU before creating PointCloud:
+    // By default the buffers are not read back from the GPU
+    range_likelihood_->getColorBuffer ();
+    range_likelihood_->getDepthBuffer ();  
+    
+    // Add noise directly to the CPU depth buffer 
     range_likelihood_->addNoise ();
 
     // Optional argument to save point cloud in global frame:
     // Save camera relative:
-    
     //range_likelihood_->getPointCloud(pc_out);
     // Save in global frame - applying the camera frame:
     //range_likelihood_->getPointCloud(pc_out,true,camera_->pose());
     // Save in local frame
     range_likelihood_->getPointCloud (pc_out,false,camera_->pose ());
     // TODO: what to do when there are more than one simulated view?
-    cout << pc_out->points.size() << " points written to file\n";
+    std::cout << pc_out->points.size() << " points written to file\n";
    
     pcl::PCDWriter writer;
-    //writer.write (point_cloud_fname, *pc_out,	false);  
+    //writer.write (point_cloud_fname, *pc_out,	false);  /// ASCII
     writer.writeBinary (point_cloud_fname, *pc_out);
-    
-    cout << "finished writing file\n";
-    
+    //cout << "finished writing file\n";
   }
-  if (1==0)
+  if (demo_other_stuff && write_cloud)
   {
-    write_depth_image (range_likelihood_->getDepthBuffer ());  
     write_score_image (range_likelihood_->getScoreBuffer ());  
     write_rgb_image (range_likelihood_->getColorBuffer ());  
+    write_depth_image (range_likelihood_->getDepthBuffer ());  
     
-    
+    // Demo interacton with RangeImage:
     pcl::RangeImagePlanar rangeImage;
     range_likelihood_->getRangeImagePlanar (rangeImage);
  
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
-    viewer = simpleVis(pc_out);
-  
-    while (!viewer->wasStopped ()){
-      viewer->spinOnce (100);
-      boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    // display viewer: (currently seqfaults on exit of viewer)
+    if (1==0){
+      boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+      viewer = simpleVis(pc_out);
+    
+      while (!viewer->wasStopped ()){
+	viewer->spinOnce (100);
+	boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+      }
     }
   }
 }
@@ -362,9 +369,6 @@ void load_PolygonMesh_model (char* polygon_file)
   pcl::io::loadPolygonFile (polygon_file, mesh);
   pcl::PolygonMesh::Ptr cloud (new pcl::PolygonMesh (mesh));
   
-  // Not sure if PolygonMesh assumes triangles if to
-  // TODO: Ask a developer
-//  PolygonMeshModel::Ptr model = PolygonMeshModel::Ptr (new PolygonMeshModel (GL_POLYGON, cloud));
   TriangleMeshModel::Ptr model = TriangleMeshModel::Ptr (new TriangleMeshModel (cloud));
   scene_->add (model);
   
@@ -480,10 +484,12 @@ main (int argc, char** argv)
     exit(1);
   }
   
+  std::cout << "GL_MAX_VIEWPORTS: " << GL_MAX_VIEWPORTS << std::endl;
+
   camera_ = Camera::Ptr (new Camera ());
   scene_ = Scene::Ptr (new Scene ());
 
-  range_likelihood_ = RangeLikelihoodGLSL::Ptr (new RangeLikelihoodGLSL (1, 1, height, width, scene_, 0));
+  range_likelihood_ = RangeLikelihood::Ptr (new RangeLikelihood (1, 1, height, width, scene_));
   // range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(10, 10, 96, 96, scene_));
   // range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, 480, 640, scene_));
 
@@ -492,6 +498,7 @@ main (int argc, char** argv)
             576.09757860, 321.06398107, 242.97676897);
   range_likelihood_->setComputeOnCPU (false);
   range_likelihood_->setSumOnCPU (true);
+  range_likelihood_->setUseColor (true);  
   initialize (argc, argv);
   
   // simulation mode:
@@ -564,5 +571,7 @@ main (int argc, char** argv)
     cout << (getTime() -tic) << " sec\n";
   }
   cout << poses.size() << " poses simulated in " << (getTime() -tic_main) << "seconds\n";
+  cout << (poses.size()/ (getTime() -tic_main) ) << "Hz on average\n";
+  
   return 0;
 }

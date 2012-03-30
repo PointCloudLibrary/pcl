@@ -83,10 +83,11 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <boost/thread/thread.hpp>
 
+/*
 // Writing PNG files:
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
-
+*/
 
 
 
@@ -126,7 +127,7 @@ typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
 uint16_t t_gamma[2048];
 Scene::Ptr scene_;
 Camera::Ptr camera_;
-RangeLikelihoodGLSL::Ptr range_likelihood_;
+RangeLikelihood::Ptr range_likelihood_;
 int window_width_;
 int window_height_;
 bool paused_;
@@ -230,8 +231,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
 }
 
 
-
-
+/*
 void write_score_image(const float* score_buffer)
 {
   int npixels = range_likelihood_->getWidth() * range_likelihood_->getHeight();
@@ -393,7 +393,7 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> simpleVis (pcl::PointCloud<
   
   return (viewer);
 }
-
+*/
 
 void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
 {
@@ -411,19 +411,9 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
 
   std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses;
   std::vector<float> scores;
-  int n = 1;//range_likelihood_->getRows ()*range_likelihood_->getCols ();
-//  for (int i = 0; i < n; ++i)
-//  {
-//     Camera camera(*camera_);
-//     camera.set( 1.31762, 0.382931, 1.89533, 0, 0.20944, -9.14989);
-//     camera.set_pitch(0.20944); // not sure why this is here: 
-//     poses.push_back (camera.pose ());
-    
-    poses.push_back (pose_in);
-//  }
-  float* depth_field = NULL;
-  bool do_depth_field = false;
-  range_likelihood_->computeLikelihoods (reference, poses, scores, depth_field, do_depth_field);
+  poses.push_back (pose_in);
+
+  range_likelihood_->computeLikelihoods (reference, poses, scores);
   std::cout << "score: ";
   for (size_t i = 0; i<scores.size (); ++i)
   {
@@ -440,7 +430,6 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
        << std::endl;
        
   delete [] reference;
-  delete [] depth_field;
 
 
   // Benchmark Values for 
@@ -460,46 +449,58 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
   // total	   0.07222	
 
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc_out (new pcl::PointCloud<pcl::PointXYZRGB>);
-  if (1==1)//(write_file_)
+  bool write_cloud=true;
+  bool demo_other_stuff=false;
+  
+  if (write_cloud)
   {
+    // Read Color Buffer from the GPU before creating PointCloud:
+    // By default the buffers are not read back from the GPU
+    range_likelihood_->getColorBuffer ();
+    range_likelihood_->getDepthBuffer ();  
+    
+    // Add noise directly to the CPU depth buffer 
     range_likelihood_->addNoise ();
 
     // Optional argument to save point cloud in global frame:
     // Save camera relative:
-    
     //range_likelihood_->getPointCloud(pc_out);
     // Save in global frame - applying the camera frame:
     //range_likelihood_->getPointCloud(pc_out,true,camera_->pose());
     // Save in local frame
     range_likelihood_->getPointCloud (pc_out,false,camera_->pose ());
     // TODO: what to do when there are more than one simulated view?
-    cout << pc_out->points.size() << " points written to file\n";
+    std::cout << pc_out->points.size() << " points written to file\n";
    
     pcl::PCDWriter writer;
-    //writer.write (point_cloud_fname, *pc_out,	false);  
+    //writer.write (point_cloud_fname, *pc_out,	false);  /// ASCII
     writer.writeBinary (point_cloud_fname, *pc_out);
-    
-    cout << "finished writing file\n";
-    
+    //cout << "finished writing file\n";
   }
-  if (1==1)
+  // Disabled all OpenCV stuff for now: dont want the dependency
+  /*
+  if (demo_other_stuff && write_cloud)
   {
-    write_depth_image (range_likelihood_->getDepthBuffer ());  
     write_score_image (range_likelihood_->getScoreBuffer ());  
     write_rgb_image (range_likelihood_->getColorBuffer ());  
-    /*
+    write_depth_image (range_likelihood_->getDepthBuffer ());  
     
+    // Demo interacton with RangeImage:
     pcl::RangeImagePlanar rangeImage;
     range_likelihood_->getRangeImagePlanar (rangeImage);
  
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
-    viewer = simpleVis(pc_out);
-  
-    while (!viewer->wasStopped ()){
-      viewer->spinOnce (100);
-      boost::this_thread::sleep (boost::posix_time::microseconds (100000));
-    }*/
+    // display viewer: (currently seqfaults on exit of viewer)
+    if (1==0){
+      boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+      viewer = simpleVis(pc_out);
+    
+      while (!viewer->wasStopped ()){
+	viewer->spinOnce (100);
+	boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+      }
+    }
   }
+  */
 }
 
 
@@ -1103,7 +1104,7 @@ main (int argc, char** argv)
   camera_ = Camera::Ptr (new Camera ());
   scene_ = Scene::Ptr (new Scene ());
 
-  range_likelihood_ = RangeLikelihoodGLSL::Ptr (new RangeLikelihoodGLSL (1, 1, height, width, scene_, 0));
+  range_likelihood_ = RangeLikelihood::Ptr (new RangeLikelihood(1, 1, height, width, scene_));
   // range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(10, 10, 96, 96, scene_));
   // range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, 480, 640, scene_));
 
@@ -1112,6 +1113,7 @@ main (int argc, char** argv)
             576.09757860, 321.06398107, 242.97676897);
   range_likelihood_->setComputeOnCPU (false);
   range_likelihood_->setSumOnCPU (true);
+  range_likelihood_->setUseColor (true);
   initialize (argc, argv); 
   
   

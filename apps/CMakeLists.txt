@@ -61,8 +61,8 @@ if(build)
 #    target_link_libraries(pcl_convolve pcl_common pcl_io pcl_visualization)
 
     if (OPENNI_FOUND AND BUILD_OPENNI)  
-      PCL_ADD_EXECUTABLE(pcl_openni_fast_mesh ${SUBSYS_NAME} src/openni_fast_mesh.cpp)
-      target_link_libraries(pcl_openni_fast_mesh pcl_common pcl_io pcl_visualization pcl_surface)
+#      PCL_ADD_EXECUTABLE(pcl_openni_fast_mesh ${SUBSYS_NAME} src/openni_fast_mesh.cpp)
+ #     target_link_libraries(pcl_openni_fast_mesh pcl_common pcl_io pcl_visualization pcl_surface)
       
       PCL_ADD_EXECUTABLE(pcl_openni_voxel_grid ${SUBSYS_NAME} src/openni_voxel_grid.cpp)
       target_link_libraries(pcl_openni_voxel_grid pcl_common pcl_io pcl_filters pcl_visualization)
@@ -122,8 +122,8 @@ if(build)
         PCL_ADD_EXECUTABLE(pcl_openni_3d_concave_hull ${SUBSYS_NAME} src/openni_3d_concave_hull.cpp)
         target_link_libraries(pcl_openni_3d_concave_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
       
-        PCL_ADD_EXECUTABLE(pcl_openni_tracking ${SUBSYS_NAME} src/openni_tracking.cpp)
-        target_link_libraries(pcl_openni_tracking pcl_common pcl_io pcl_surface pcl_visualization pcl_filters pcl_features pcl_segmentation pcl_tracking pcl_search)
+#        PCL_ADD_EXECUTABLE(pcl_openni_tracking ${SUBSYS_NAME} src/openni_tracking.cpp)
+#        target_link_libraries(pcl_openni_tracking pcl_common pcl_io pcl_surface pcl_visualization pcl_filters pcl_features pcl_segmentation pcl_tracking pcl_search)
 
         set(incs include/pcl/${SUBSYS_NAME}/dominant_plane_segmentation.h ${incs})  
         set(impl_incs include/pcl/${SUBSYS_NAME}/impl/dominant_plane_segmentation.hpp)
@@ -145,8 +145,8 @@ if(build)
       PCL_ADD_EXECUTABLE(pcl_openni_planar_convex_hull ${SUBSYS_NAME} src/openni_planar_convex_hull.cpp)
       target_link_libraries(pcl_openni_planar_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface)
       
-      PCL_ADD_EXECUTABLE(pcl_openni_icp_reg ${SUBSYS_NAME} src/openni_icp_reg.cpp)
-      target_link_libraries(pcl_openni_icp_reg pcl_common pcl_kdtree pcl_registration pcl_visualization pcl_filters)
+#      PCL_ADD_EXECUTABLE(pcl_openni_icp_reg ${SUBSYS_NAME} src/openni_icp_reg.cpp)
+ #     target_link_libraries(pcl_openni_icp_reg pcl_common pcl_kdtree pcl_registration pcl_visualization pcl_filters)
     
     endif() # OPENNI_FOUND + BUILD_OPENNI
     
