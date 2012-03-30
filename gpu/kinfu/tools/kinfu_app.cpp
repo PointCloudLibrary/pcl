@@ -215,6 +215,8 @@ struct CurrentFrameCloudView
     cloud_viewer_.setPointCloudRenderingProperties (visualization::PCL_VISUALIZER_POINT_SIZE, 1);
     cloud_viewer_.addCoordinateSystem (1.0);
     cloud_viewer_.initCameraParameters ();
+    cloud_viewer_.setPosition (0, 500);
+    cloud_viewer_.setSize (640, 480);
     cloud_viewer_.camera_.clip[0] = 0.01;
     cloud_viewer_.camera_.clip[1] = 10.01;
   }
@@ -252,7 +254,9 @@ struct ImageView
   ImageView() : paint_image_ (false), accumulate_views_ (false)
   {
     viewerScene_.setWindowTitle ("View3D from ray tracing");
+    viewerScene_.setPosition (0, 0);
     viewerDepth_.setWindowTitle ("Kinect Depth stream");
+    viewerDepth_.setPosition (640, 0);
     //viewerColor_.setWindowTitle ("Kinect RGB stream");
   }
 
@@ -275,11 +279,9 @@ struct ImageView
 
     int cols;
     view_device_.download (view_host_, cols);
-    viewerScene_.showRGBImage ((unsigned char*)&view_host_[0], view_device_.cols (), view_device_.rows ());
-    //viewerScene_.spinOnce();
+    viewerScene_.showRGBImage (reinterpret_cast<unsigned char*> (&view_host_[0]), view_device_.cols (), view_device_.rows ());
 
     //viewerColor_.showRGBImage ((unsigned char*)&rgb24.data, rgb24.cols, rgb24.rows);
-    //viewerColor_.spinOnce();
 
 #ifdef HAVE_OPENCV
     if (accumulate_views_)
@@ -292,7 +294,10 @@ struct ImageView
   }
 
   void
-  showDepth (const PtrStepSz<const unsigned short>& depth) { viewerDepth_.showShortImage (depth.data, depth.cols, depth.rows, 0, 5000, true); }
+  showDepth (const PtrStepSz<const unsigned short>& depth) 
+  { 
+    viewerDepth_.showShortImage (depth.data, depth.cols, depth.rows, 0, 5000, true); 
+  }
   
   void
   showGeneratedDepth (KinfuTracker& kinfu, const Eigen::Affine3f& pose)
@@ -351,6 +356,8 @@ struct SceneCloudView
     cloud_viewer_.setBackgroundColor (0, 0, 0);
     cloud_viewer_.addCoordinateSystem (1.0);
     cloud_viewer_.initCameraParameters ();
+    cloud_viewer_.setPosition (0, 500);
+    cloud_viewer_.setSize (640, 480);
     cloud_viewer_.camera_.clip[0] = 0.01;
     cloud_viewer_.camera_.clip[1] = 10.01;
 
