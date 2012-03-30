@@ -214,9 +214,9 @@ pcl::Poisson<PointNT>::performReconstruction (PolygonMesh &output)
 
     for (int i = 0; i < static_cast<int> (polygon.size ()); ++i)
       if (polygon[i].inCore )
-        v.vertices[polygon.size ()-1-i] = polygon[i].idx;
+        v.vertices[i] = polygon[i].idx;
       else
-        v.vertices[polygon.size ()-1-i] = polygon[i].idx + int (mesh.inCorePoints.size ());
+        v.vertices[i] = polygon[i].idx + int (mesh.inCorePoints.size ());
 
     output.polygons[p_i] = v;
   }
@@ -297,9 +297,9 @@ pcl::Poisson<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
 
     for (int i = 0; i < static_cast<int> (polygon.size ()); ++i)
       if (polygon[i].inCore )
-        v.vertices[polygon.size ()-1-i] = polygon[i].idx;
+        v.vertices[i] = polygon[i].idx;
       else
-        v.vertices[polygon.size ()-1-i] = polygon[i].idx + int (mesh.inCorePoints.size ());
+        v.vertices[i] = polygon[i].idx + int (mesh.inCorePoints.size ());
 
     polygons[p_i] = v;
   }
