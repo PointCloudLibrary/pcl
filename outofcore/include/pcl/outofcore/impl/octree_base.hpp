@@ -78,7 +78,7 @@ namespace pcl
     const int octree_base<Container, PointT>::OUTOFCORE_VERSION_ ( 3 );
 
     template<typename Container, typename PointT>
-    const uint64_t octree_base<Container, PointT>::LOAD_COUNT_ ( 2e9 );
+    const uint64_t octree_base<Container, PointT>::LOAD_COUNT_ ( static_cast<uint64_t>(2e9) );
 
 
     
