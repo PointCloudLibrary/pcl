@@ -44,6 +44,7 @@
 #include <boost/signals2.hpp>
 #include <pcl/visualization/interactor_style.h>
 #include <pcl/visualization/vtk.h>
+#include <pcl/visualization/vtk/pcl_image_canvas_source_2d.h>
 #include <pcl/geometry/planar_polygon.h>
 
 namespace pcl
@@ -436,7 +437,7 @@ namespace pcl
           {
             if (event_id != vtkCommand::TimerEvent)
               return;
-            int timer_id = *reinterpret_cast<int*> (call_data);
+            int timer_id = *static_cast<int*> (call_data);
             if (timer_id != right_timer_id)
               return;
             window->interactor_->TerminateApp ();
@@ -469,7 +470,7 @@ namespace pcl
         struct Layer
         {
           Layer () : canvas (), layer_name (), opacity () {}
-          vtkSmartPointer<vtkImageCanvasSource2D> canvas;
+          vtkSmartPointer<PCLImageCanvasSource2D> canvas;
           std::string layer_name;
           double opacity;
         };
@@ -484,7 +485,7 @@ namespace pcl
           * \param[in] fill_box set to true to fill in the image with one black box before starting
           */
         LayerMap::iterator
-        addLayer (const std::string &layer_id, int width, int height, double opacity = 0.5, bool fill_box = true);
+        createLayer (const std::string &layer_id, int width, int height, double opacity = 0.5, bool fill_box = true);
 
         boost::signals2::signal<void (const pcl::visualization::MouseEvent&)> mouse_signal_;
         boost::signals2::signal<void (const pcl::visualization::KeyboardEvent&)> keyboard_signal_;
