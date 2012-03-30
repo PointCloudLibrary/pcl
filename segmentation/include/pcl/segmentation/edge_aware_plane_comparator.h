@@ -68,14 +68,14 @@ namespace pcl
 
       /** \brief Empty constructor for PlaneCoefficientComparator. */
      EdgeAwarePlaneComparator ()
-        : angular_threshold_ (0), distance_threshold_ (0.02)
+        : angular_threshold_ (0.0f), distance_threshold_ (0.02f)
       {
       }
       /** \brief Constructor for PlaneCoefficientComparator.
         * \param[in] plane_coeff_d a reference to a vector of d coefficients of plane equations.  Must be the same size as the input cloud and input normals.  a, b, and c coefficients are in the input normals.
         */
       EdgeAwarePlaneComparator (boost::shared_ptr<std::vector<float> >& plane_coeff_d) 
-        : angular_threshold_ (0), distance_threshold_ (0.02)
+        : angular_threshold_ (0.0f), distance_threshold_ (0.02f)
       {
       }   
       /** \brief Destructor for PlaneCoefficientComparator. */
@@ -131,15 +131,14 @@ namespace pcl
       inline void
       setAngularThreshold (float angular_threshold)
       {
-        printf ("euclidean set angular threshold!\n");
-        angular_threshold_ = cos (angular_threshold);
+        angular_threshold_ = cosf (angular_threshold);
       }
       
       /** \brief Get the angular threshold in radians for difference in normal direction between neighboring points, to be considered part of the same plane. */
       inline float
       getAngularThreshold () const
       {
-        return (acos (angular_threshold_) );
+        return (acosf (angular_threshold_) );
       }
 
       /** \brief Set the tolerance in meters for difference in perpendicular distance (d component of plane equation) to the plane between neighboring points, to be considered part of the same plane.
@@ -148,7 +147,6 @@ namespace pcl
       inline void
       setDistanceThreshold (float distance_threshold)
       {
-        printf ("euclidean set distance threshold\n");
         distance_threshold_ = distance_threshold;// * distance_threshold;
       }
 
@@ -166,13 +164,14 @@ namespace pcl
         return (distance_threshold_);
       }
 
+    protected:
       bool
       compare (int idx1, int idx2) const
       {
         float dx = input_->points[idx1].x - input_->points[idx2].x;
         float dy = input_->points[idx1].y - input_->points[idx2].y;
         float dz = input_->points[idx1].z - input_->points[idx2].z;
-        float dist = sqrt (dx*dx + dy*dy + dz*dz);
+        float dist = sqrtf (dx*dx + dy*dy + dz*dz);
 
         bool normal_ok = (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ );
         bool dist_ok = (dist < distance_threshold_);
@@ -180,11 +179,9 @@ namespace pcl
         bool plane_d_ok = fabs((*plane_coeff_d_)[idx1] - (*plane_coeff_d_)[idx2]) < 0.04;
         
         if (distance_map_[idx1] < 5)
-        {
           curvature_ok = false;
-        }
         
-        return ( dist_ok && normal_ok && curvature_ok && plane_d_ok);
+        return (dist_ok && normal_ok && curvature_ok && plane_d_ok);
       }
 
     protected:

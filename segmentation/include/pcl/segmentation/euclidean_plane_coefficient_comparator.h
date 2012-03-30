@@ -67,10 +67,6 @@ namespace pcl
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::plane_coeff_d_;
       
       /** \brief Empty constructor for PlaneCoefficientComparator. */
-      // EuclideanPlaneCoefficientComparator ()
-      //   : normals_ (), plane_coeff_d_ (), angular_threshold_ (0), distance_threshold_ (0.02)
-      //{
-      //}
       EuclideanPlaneCoefficientComparator ()
         :  angular_threshold_ (0), distance_threshold_ (0.02)
       {
@@ -79,10 +75,6 @@ namespace pcl
       /** \brief Constructor for PlaneCoefficientComparator.
         * \param[in] plane_coeff_d a reference to a vector of d coefficients of plane equations.  Must be the same size as the input cloud and input normals.  a, b, and c coefficients are in the input normals.
         */
-      //EuclideanPlaneCoefficientComparator (boost::shared_ptr<std::vector<float> >& plane_coeff_d) 
-      //  : normals_ (), plane_coeff_d_ (plane_coeff_d), angular_threshold_ (0), distance_threshold_ (0.02)
-      //{
-      //}
       EuclideanPlaneCoefficientComparator (boost::shared_ptr<std::vector<float> >& plane_coeff_d) 
         :  angular_threshold_ (0), distance_threshold_ (0.02)
       {
@@ -141,8 +133,7 @@ namespace pcl
       inline void
       setAngularThreshold (float angular_threshold)
       {
-        printf ("euclidean set angular threshold!\n");
-        angular_threshold_ = cos (angular_threshold);
+        angular_threshold_ = cosf (angular_threshold);
       }
       
       /** \brief Get the angular threshold in radians for difference in normal direction between neighboring points, to be considered part of the same plane. */
@@ -158,7 +149,6 @@ namespace pcl
       inline void
       setDistanceThreshold (float distance_threshold)
       {
-        printf ("euclidean set distance threshold\n");
         distance_threshold_ = distance_threshold;// * distance_threshold;
       }
 
@@ -175,21 +165,13 @@ namespace pcl
         float dx = input_->points[idx1].x - input_->points[idx2].x;
         float dy = input_->points[idx1].y - input_->points[idx2].y;
         float dz = input_->points[idx1].z - input_->points[idx2].z;
-        float dist = sqrt (dx*dx + dy*dy + dz*dz);
-        //printf ("dist: %f thresh: %f\n",dist, distance_threshold_);
-        //printf ("euclidean\n");
-        //printf ("input size: %d\n",input_->points.size ());
-        //printf ("normals size: %d\n",normals_->points.size ());
-        
+        float dist = sqrtf (dx*dx + dy*dy + dz*dz);
         
         return ( (dist < distance_threshold_)
                  && (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ ) );
       }
       
     protected:
-      //PointCloudNConstPtr normals_;
-      //boost::shared_ptr<std::vector<float> > plane_coeff_d_;
-      //std::vector<float> plane_coeff_d_;
       float angular_threshold_;
       float distance_threshold_;
 
