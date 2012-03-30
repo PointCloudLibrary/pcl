@@ -37,36 +37,32 @@
  *
  */
 
-#ifndef PCL_COMMON_POLYGON_OPERATORS_H
-#define PCL_COMMON_POLYGON_OPERATORS_H
+#ifndef PCL_GEOMETRY_POLYGON_OPERATORS_H
+#define PCL_GEOMETRY_POLYGON_OPERATORS_H
 
 #include "planar_polygon.h"
 
 namespace pcl
 {
-  /** \brief fuses two planar polygons (only X and Y coordinates will be used!), where fusing means that the outer
-    * possible non-convex - contour of the polygon union will be determined
-    * \param[in] planar_polygon1 first input polygon
-    * \param[in] planar_polygon2 second input polygon
-    * \param[out] fused_polygon the outer contour of the polygon-union
-    * \return true if merging was successful - this means basically if the polygons were intersecting or nor
+  /** \brief see approximatePolygon2D
+    * \author Suat Gedikli <gedikli@willowgarage.com>
     */
   template <typename PointT>
-  bool fusePlanarPolygons (const PlanarPolygon<PointT>& planar_polygon1, const PlanarPolygon<PointT>& planar_polygon2, PlanarPolygon<PointT>& fused_polygon);
+  void approximatePolygon (const PlanarPolygon<PointT>& polygon, PlanarPolygon<PointT>& approx_polygon, float threshold, bool refine = false, bool closed = true);
 
-  /** \brief computes the convex hull of a polygon by exploiting the polygon structure
+  /** \brief returns an approximate polygon to given 2D contour. Uses just X and Y values.
+    * \note  if refinement is not turned on, the resulting polygon will contain points from the original contour with their original z values (if any)
+    * \note  if refinement is turned on, the z values of the refined polygon are not valid and should be set to 0 if point contains z attribute. 
     * \param[in] polygon input polygon
-    * \param[out] convex_hull indices of the convex polygon that contains the input polygon completely
-    * \attention input polygon must be planar AND counter clockwise => normal direction is important
+    * \param [out] approx_polygon approximate polygon
+    * \param [in] threshold maximum allowed distance of an input vertex to an output edge
+    * \param [in] closed whether it is a closed polygon or a polyline
+    * \author Suat Gedikli <gedikli@willowgarage.com>
     */
-//  template <typename PointT> void
-//  computeConvexHull2D (const PlanarPolygon<PointT>& polygon, std::vector<unsigned>& convex_hull);
-
-  /** \brief computes the bounding box with smallest area that completely encloses the input polygon
-    * \param[in] polygon input polygon
-    * \param[out] bounding_box the bounding box
-    */
-//  template <typename PointT> void
+  template <typename PointT>
+  void approximatePolygon2D (const std::vector<PointT>& polygon, std::vector<PointT>& approx_polygon, float threshold, bool refine = false, bool closed = true);
 //  getMinimumBoundingRectangle (const PlanarPolygon<PointT>& polygon, Box2D& bounding_box );
 }
 
+#include "impl/polygon_operations.hpp"
+#endif // PCL_GEOMETRY_POLYGON_OPERATORS_H=======

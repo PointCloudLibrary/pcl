@@ -11,11 +11,13 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 if(build)
     set(incs 
         include/pcl/${SUBSYS_NAME}/planar_polygon.h
+        include/pcl/${SUBSYS_NAME}/polygon_operations.h
         include/pcl/${SUBSYS_NAME}/organized_index_iterator.h
         include/pcl/${SUBSYS_NAME}/line_iterator.h
         )
 
     set(impl_incs 
+        include/pcl/${SUBSYS_NAME}/impl/polygon_operations.hpp
         )
 
     set(srcs
