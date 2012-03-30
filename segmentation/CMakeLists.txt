@@ -10,7 +10,6 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
     set(srcs 
-        src/automated_tree_segmentation.cpp
         src/extract_clusters.cpp
         src/extract_polygonal_prism_data.cpp
         src/sac_segmentation.cpp
@@ -24,8 +23,6 @@ if(build)
        )
 
     set(incs 
-        include/pcl/${SUBSYS_NAME}/automated_segmentation.h
-        include/pcl/${SUBSYS_NAME}/automated_tree_segmentation.h
         include/pcl/${SUBSYS_NAME}/extract_clusters.h
         include/pcl/${SUBSYS_NAME}/extract_labeled_clusters.h
         include/pcl/${SUBSYS_NAME}/extract_polygonal_prism_data.h
@@ -49,7 +46,6 @@ if(build)
         )
 
     set(impl_incs 
-        include/pcl/${SUBSYS_NAME}/impl/automated_tree_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/extract_clusters.hpp
         include/pcl/${SUBSYS_NAME}/impl/extract_labeled_clusters.hpp
         include/pcl/${SUBSYS_NAME}/impl/extract_polygonal_prism_data.hpp
