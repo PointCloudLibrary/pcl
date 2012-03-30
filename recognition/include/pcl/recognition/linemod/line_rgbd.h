@@ -189,6 +189,15 @@ namespace pcl
       void 
       detect (std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections);
 
+      /** \brief Applies the detection process in a semi-scale-invariant manner. This is done by acutally
+        *        scaling the template to different sizes.
+        */
+      void
+      detectSemiScaleInvariant (std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections,
+                                float min_scale = 0.6944444f,
+                                float max_scale = 1.44f,
+                                float scale_multiplier = 1.2f);
+
       /** \brief Computes and returns the point cloud of the specified detection. This is the template point 
         *        cloud transformed to the detection coordinates. The detection ID refers to the last call of 
         *        the method detect (...).

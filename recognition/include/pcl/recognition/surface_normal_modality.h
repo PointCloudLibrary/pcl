@@ -106,7 +106,7 @@ namespace pcl
       ref_normals[0].y = 0.0f;
       ref_normals[0].z = -sinf (normal0_angle);
 
-      const float inv_nr_normals = 1.0f/nr_normals;
+      const float inv_nr_normals = 1.0f / static_cast<float> (nr_normals);
       for (int normal_index = 1; normal_index < nr_normals; ++normal_index)
       {
         const float angle = 2.0f * static_cast<float> (M_PI * normal_index * inv_nr_normals);

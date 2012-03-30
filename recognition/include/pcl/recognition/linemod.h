@@ -220,12 +220,13 @@ namespace pcl
 
   struct LINEMODDetection
   {
-    LINEMODDetection () : x (0), y (0), template_id (0), score (0.0f) {}
+    LINEMODDetection () : x (0), y (0), template_id (0), score (0.0f), scale (1.0f) {}
 
     int x;
     int y;
     int template_id;
     float score;
+    float scale;
   };
 
   /**
@@ -257,6 +258,13 @@ namespace pcl
       void
       detectTemplates (const std::vector<QuantizableModality*> & modalities,
                        std::vector<LINEMODDetection> & detections) const;
+
+      void
+      detectTemplatesSemiScaleInvariant (const std::vector<QuantizableModality*> & modalities,
+                                         std::vector<LINEMODDetection> & detections,
+                                         float min_scale = 0.6944444f,
+                                         float max_scale = 1.44f,
+                                         float scale_multiplier = 1.2f) const;
 
       void
       matchTemplates (const std::vector<QuantizableModality*> & modalities,
