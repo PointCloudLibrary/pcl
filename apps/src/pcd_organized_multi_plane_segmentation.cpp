@@ -45,39 +45,7 @@
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/console/parse.h>
-
-/*
-template<typename PointT>
-class ContourLabeling
-{
-  public:
-    ContourLabeling (unsigned size, float threshold, bool depth_dependent)
-    : size_ (size)
-    , threshold_ (threshold)
-    , depth_dependent_ (depth_dependent)
-    {
-    }
-    
-    ~ContourLabeling ()
-    {
-    }
-    
-    virtual void label (const pcl::PointCloud<PointT>& cloud, pcl::PlanarRegion<PointT>& region) const
-    {
-      std::vector<pcl::PlanarRegion<PointT>::BorderLabel>& labels = region.getContourLabels ();
-      std::vector<PointT>& contour = region.getContour ();
-      
-      for (unsigned cIdx = 1; cIdx < contour.size () - 1; ++cIdx)
-      {
-        float dx = contour [cIdx].x - 
-      }
-    }
-  protected:
-    unsigned size_;
-    float threshold_;
-    bool depth_dependent_;
-};
-*/
+#include <pcl/geometry/polygon_operations.h>
 
 template<typename PointT>
 class PCDOrganizedMultiPlaneSegmentation
@@ -88,6 +56,7 @@ class PCDOrganizedMultiPlaneSegmentation
     bool refine_;
     float threshold_;
     bool depth_dependent_;
+    bool polygon_refinement_;
   public:
     PCDOrganizedMultiPlaneSegmentation (typename pcl::PointCloud<PointT>::ConstPtr cloud_, bool refine)
     : viewer ("Viewer")
@@ -95,6 +64,7 @@ class PCDOrganizedMultiPlaneSegmentation
     , refine_ (refine)
     , threshold_ (0.02)
     , depth_dependent_ (true)
+    , polygon_refinement_ (true)
     {
       viewer.setBackgroundColor (0, 0, 0);
       viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "cloud");
@@ -125,6 +95,11 @@ class PCDOrganizedMultiPlaneSegmentation
           case 'n':
           case 'N':
             depth_dependent_ = !depth_dependent_;
+            break;
+            
+          case 'm':
+          case 'M':
+            polygon_refinement_ = !polygon_refinement_;
             break;
         }
         
@@ -157,6 +132,7 @@ class PCDOrganizedMultiPlaneSegmentation
       
       std::vector<pcl::PlanarRegion<PointT> > regions;
       typename pcl::PointCloud<PointT>::Ptr contour (new pcl::PointCloud<PointT>);
+      typename pcl::PointCloud<PointT>::Ptr approx_contour (new pcl::PointCloud<PointT>);
       char name[1024];
 
       typename pcl::PointCloud<pcl::Normal>::Ptr normal_cloud (new pcl::PointCloud<pcl::Normal>);
@@ -182,7 +158,9 @@ class PCDOrganizedMultiPlaneSegmentation
       viewer.removeAllPointClouds (0);
       viewer.removeAllShapes (0);
       pcl::visualization::PointCloudColorHandlerCustom<PointT> single_color (cloud, 0, 255, 0);
-      viewer.addPointCloud<PointT> (cloud, single_color, "cloud");      
+      //viewer.addPointCloud<PointT> (cloud, single_color, "cloud");
+      
+      pcl::PlanarPolygon<PointT> approx_polygon;
       //Draw Visualization
       for (size_t i = 0; i < regions.size (); i++)
       {
@@ -195,10 +173,23 @@ class PCDOrganizedMultiPlaneSegmentation
         sprintf (name, "normal_%d", unsigned (i));
         viewer.addArrow (pt2, pt1, 1.0, 0, 0, name);
 
-        contour->points = regions[i].getContour ();
+        contour->points = regions[i].getContour ();        
         sprintf (name, "plane_%02d", int (i));
         pcl::visualization::PointCloudColorHandlerCustom <PointT> color (contour, red[i], grn[i], blu[i]);
         viewer.addPointCloud (contour, color, name);
+
+        pcl::approximatePolygon (regions[i], approx_polygon, threshold_, polygon_refinement_);
+        approx_contour->points = approx_polygon.getContour ();
+        std::cout << "polygon: " << contour->size () << " -> " << approx_contour->size () << std::endl;
+        typename pcl::PointCloud<PointT>::ConstPtr approx_contour_const = approx_contour;
+        
+//        sprintf (name, "approx_plane_%02d", int (i));
+//        viewer.addPolygon<PointT> (approx_contour_const, 0.5 * red[i], 0.5 * grn[i], 0.5 * blu[i], name);
+        for (unsigned idx = 0; idx < approx_contour->points.size (); ++idx)
+        {
+          sprintf (name, "approx_plane_%02d_%03d", int (i), int(idx));
+          viewer.addLine (approx_contour->points [idx], approx_contour->points [(idx+1)%approx_contour->points.size ()], 0.5 * red[i], 0.5 * grn[i], 0.5 * blu[i], name);
+        }
       }
     }
     
