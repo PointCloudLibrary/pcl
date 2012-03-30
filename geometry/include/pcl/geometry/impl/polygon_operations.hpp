@@ -193,16 +193,17 @@ pcl::approximatePolygon2D (const std::vector<PointT>& polygon, std::vector<Point
       direction [1] = polygon[result[nIdx]].y - polygon[result[rIdx]].y;
       direction.normalize ();
       
-      if (fabs (direction.dot (normal)) < float(M_SQRT1_2))
+      if (fabs (direction.dot (normal)) > float(M_SQRT1_2))
       {
-        lines [rIdx] [0] = normal [0];
-        lines [rIdx] [1] = normal [1];
+        std::swap (normal [0], normal [1]);
+        normal [0] = -normal [0];
       }
-      else
-      {
-        lines [rIdx] [0] = -normal [1];
-        lines [rIdx] [1] = normal [0];
-      }
+      
+      // needs to be on the left side of the edge
+      if (direction [0] * normal [1] < direction [1] * normal [0])
+        normal *= -1.0;
+      
+      lines [rIdx].head<2> () = normal;
       lines [rIdx] [2] = -normal.dot (centroid);
     }
     
@@ -219,19 +220,27 @@ pcl::approximatePolygon2D (const std::vector<PointT>& polygon, std::vector<Point
 
       PointT point;      
       // test whether we need another edge since the intersection point is too far away from the original vertex
-      float distance = (vertex - polygon [result[nIdx]].getVector3fMap ()).squaredNorm ();
+      Eigen::Vector3f pq = polygon [result[nIdx]].getVector3fMap () - vertex;
+      pq [2] = 0.0;
+      
+      float distance = pq.squaredNorm ();
       if (distance > threshold2)
       {
-        float distance1 = lines [rIdx] [0] * polygon[result[nIdx]].x + lines [rIdx] [1] * polygon[result[nIdx]].y + lines [rIdx] [2];
-        float distance2 = lines [nIdx] [0] * polygon[result[nIdx]].x + lines [nIdx] [1] * polygon[result[nIdx]].y + lines [nIdx] [2];
-        
-        point.x = polygon[result[nIdx]].x - distance1 * lines [rIdx] [0];
-        point.y = polygon[result[nIdx]].y - distance1 * lines [rIdx] [1];
+        // test whether the old point is inside the new polygon or outside
+        if ((pq [0] * lines [rIdx] [0] + pq [1] * lines [rIdx] [1] < 0.0) &&
+            (pq [0] * lines [nIdx] [0] + pq [1] * lines [nIdx] [1] < 0.0) )
+        {
+          float distance1 = lines [rIdx] [0] * polygon[result[nIdx]].x + lines [rIdx] [1] * polygon[result[nIdx]].y + lines [rIdx] [2];
+          float distance2 = lines [nIdx] [0] * polygon[result[nIdx]].x + lines [nIdx] [1] * polygon[result[nIdx]].y + lines [nIdx] [2];
 
-        approx_polygon.push_back (point);
-        
-        vertex [0] = polygon[result[nIdx]].x - distance2 * lines [nIdx] [0];
-        vertex [1] = polygon[result[nIdx]].y - distance2 * lines [nIdx] [1];        
+          point.x = polygon[result[nIdx]].x - distance1 * lines [rIdx] [0];
+          point.y = polygon[result[nIdx]].y - distance1 * lines [rIdx] [1];
+
+          approx_polygon.push_back (point);
+
+          vertex [0] = polygon[result[nIdx]].x - distance2 * lines [nIdx] [0];
+          vertex [1] = polygon[result[nIdx]].y - distance2 * lines [nIdx] [1];
+        }
       }
       point.getVector3fMap () = vertex;
       approx_polygon.push_back (point);
