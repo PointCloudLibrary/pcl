@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: pcl_image_canvas_source_2d.h 5422 2012-03-30 03:20:41Z svn $
+ * $Id: pcl_image_canvas_source_2d.h 5440 2012-03-30 15:37:46Z rusu $
  *
  */
 #ifndef PCL_VTK_IMAGE_CANVAS_SOURCE_2D_H_

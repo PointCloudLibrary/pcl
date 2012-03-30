@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: interactor_style.cpp 5093 2012-03-14 23:28:07Z gedikli $
+ * $Id: pcl_image_canvas_source_2d.cpp 5422 2012-03-30 03:20:41Z svn $
  *
  */
 

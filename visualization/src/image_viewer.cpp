@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: image_viewer.cpp 5424 2012-03-30 03:41:06Z rusu $
+ * $Id: image_viewer.cpp 5433 2012-03-30 04:34:55Z rusu $
  */
 
 #include <pcl/visualization/image_viewer.h>
