@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: pcl_visualizer.h 5368 2012-03-28 04:27:59Z nizar $
+ * $Id: pcl_image_canvas_source_2d.h 5422 2012-03-30 03:20:41Z svn $
  *
  */
 #ifndef PCL_VTK_IMAGE_CANVAS_SOURCE_2D_H_
@@ -41,8 +41,6 @@
 
 #include <pcl/pcl_macros.h>
 #include <pcl/visualization/vtk.h>
-#include <vtkImageClip.h>
-#include <vtkImageCast.h>
 
 namespace pcl
 {
