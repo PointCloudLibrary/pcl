@@ -263,16 +263,8 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
 
   std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses;
   std::vector<float> scores;
-  int n = 1;//range_likelihood_->getRows ()*range_likelihood_->getCols ();
-//  for (int i = 0; i < n; ++i)
-//  {
-//     Camera camera(*camera_);
-//     camera.set( 1.31762, 0.382931, 1.89533, 0, 0.20944, -9.14989);
-//     camera.set_pitch(0.20944); // not sure why this is here: 
-//     poses.push_back (camera.pose ());
-    
-    poses.push_back (pose_in);
-//  }
+  int n = 1;
+  poses.push_back (pose_in);
   range_likelihood_->computeLikelihoods (reference, poses, scores);
   std::cout << "camera: " << camera_->x ()
        << " " << camera_->y ()
