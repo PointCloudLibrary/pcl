@@ -13,13 +13,9 @@ pcl::approximatePolygon (const PlanarPolygon<PointT>& polygon, PlanarPolygon<Poi
   Eigen::Affine3f transformation = Eigen::Translation3f (0, 0, coefficients [3]) * Eigen::AngleAxisf (rotation_angle, rotation_axis);
 
   std::vector<PointT> polygon2D (contour.size ());
-  std::cout << "plane params:\n" << coefficients << std::endl;
   for (unsigned pIdx = 0; pIdx < polygon2D.size (); ++pIdx)
-  {
     polygon2D [pIdx].getVector3fMap () = transformation * contour [pIdx].getVector3fMap ();
-    //std::cout << contour [pIdx] << " -> " << polygon2D [pIdx] << std::endl;
-  }
-  //return;
+
   std::vector<PointT> approx_polygon2D;
   approximatePolygon2D (polygon2D, approx_polygon2D, threshold, refine, closed);
   
@@ -28,10 +24,7 @@ pcl::approximatePolygon (const PlanarPolygon<PointT>& polygon, PlanarPolygon<Poi
   
   Eigen::Affine3f inv_transformation = transformation.inverse ();
   for (unsigned pIdx = 0; pIdx < approx_polygon2D.size (); ++pIdx)
-  {
-    //std::cout << "polygon point " << pIdx << " :: " << approx_polygon2D [pIdx] << std::endl;
     approx_contour [pIdx].getVector3fMap () = inv_transformation * approx_polygon2D [pIdx].getVector3fMap ();
-  }
 }
 
 template <typename PointT> void
@@ -44,38 +37,44 @@ pcl::approximatePolygon2D (const std::vector<PointT>& polygon, std::vector<Point
   std::vector<std::pair<unsigned, unsigned> > intervals;
   std::pair<unsigned,unsigned> interval (0, 0);
   
-  float max_distance = .0f;
-  for (unsigned idx = 1; idx < polygon.size (); ++idx)
-  {
-    float distance = (polygon [0].x - polygon [idx].x) * (polygon [0].x - polygon [idx].x) + 
-                     (polygon [0].y - polygon [idx].y) * (polygon [0].y - polygon [idx].y) ;
-    
-    if (distance > max_distance)
-    {
-      max_distance = distance;
-      interval.second = idx;
-    }
-  }
-  
-  for (unsigned idx = 1; idx < polygon.size (); ++idx)
-  {
-    float distance = (polygon [interval.second].x - polygon [idx].x) * (polygon [interval.second].x - polygon [idx].x) + 
-                     (polygon [interval.second].y - polygon [idx].y) * (polygon [interval.second].y - polygon [idx].y) ;
-    
-    if (distance > max_distance)
-    {
-      max_distance = distance;
-      interval.first = idx;
-    }
-  }
-  
-  if (max_distance < threshold * threshold)
-    return;
-  
-  intervals.push_back (interval);
   if (closed)
   {
+    float max_distance = .0f;
+    for (unsigned idx = 1; idx < polygon.size (); ++idx)
+    {
+      float distance = (polygon [0].x - polygon [idx].x) * (polygon [0].x - polygon [idx].x) + 
+                      (polygon [0].y - polygon [idx].y) * (polygon [0].y - polygon [idx].y) ;
+
+      if (distance > max_distance)
+      {
+        max_distance = distance;
+        interval.second = idx;
+      }
+    }
+
+    for (unsigned idx = 1; idx < polygon.size (); ++idx)
+    {
+      float distance = (polygon [interval.second].x - polygon [idx].x) * (polygon [interval.second].x - polygon [idx].x) + 
+                      (polygon [interval.second].y - polygon [idx].y) * (polygon [interval.second].y - polygon [idx].y) ;
+
+      if (distance > max_distance)
+      {
+        max_distance = distance;
+        interval.first = idx;
+      }
+    }
+
+    if (max_distance < threshold * threshold)
+      return;
+
+    intervals.push_back (interval);
     std::swap (interval.first, interval.second);
+    intervals.push_back (interval);
+  }
+  else
+  {
+    interval.first = 0;
+    interval.second = polygon.size () - 1;
     intervals.push_back (interval);
   }
   
@@ -125,9 +124,6 @@ pcl::approximatePolygon2D (const std::vector<PointT>& polygon, std::vector<Point
 
     if( max_distance > threshold )
     {
-//      std::cout << currentInterval.first << " - " << currentInterval.second << " -> " 
-//                << currentInterval.first << " - " << max_index << " + "
-//                << max_index << " - " << currentInterval.second << std::endl;
       std::pair<unsigned, unsigned> interval (max_index, currentInterval.second);
       currentInterval.second = max_index;
       intervals.push_back (interval);
@@ -139,6 +135,7 @@ pcl::approximatePolygon2D (const std::vector<PointT>& polygon, std::vector<Point
     }
   }
   
+  approx_polygon.reserve (result.size ());
   if (refine)
   {
     std::vector<Eigen::Vector3f> lines (result.size ());
@@ -149,69 +146,100 @@ pcl::approximatePolygon2D (const std::vector<PointT>& polygon, std::vector<Point
       if (nIdx == result.size ())
         nIdx = 0;
       
-      Eigen::Matrix3f covar = Eigen::Matrix3f::Zero ();
+      Eigen::Vector2f centroid = Eigen::Vector2f::Zero ();
+      Eigen::Matrix2f covariance = Eigen::Matrix2f::Zero ();
       unsigned pIdx = result[rIdx];
+      unsigned num_points = 0;
       if (pIdx > result[nIdx])
       {
+        num_points = polygon.size () - pIdx;
         for (; pIdx < polygon.size (); ++pIdx)
         {
-          covar.coeffRef (0) += polygon [pIdx].x * polygon [pIdx].x;
-          covar.coeffRef (1) += polygon [pIdx].x * polygon [pIdx].y;
-          covar.coeffRef (2) += polygon [pIdx].x;
-          covar.coeffRef (4) += polygon [pIdx].y * polygon [pIdx].y;
-          covar.coeffRef (5) += polygon [pIdx].y;
-          covar.coeffRef (8) += 1.0;
+          covariance.coeffRef (0) += polygon [pIdx].x * polygon [pIdx].x;
+          covariance.coeffRef (1) += polygon [pIdx].x * polygon [pIdx].y;
+          covariance.coeffRef (3) += polygon [pIdx].y * polygon [pIdx].y;
+          centroid [0] += polygon [pIdx].x;
+          centroid [1] += polygon [pIdx].y;
         }
         pIdx = 0;
       }
       
+      num_points += result[nIdx] - pIdx;
       for (; pIdx < result[nIdx]; ++pIdx)
       {
-        covar.coeffRef (0) += polygon [pIdx].x * polygon [pIdx].x;
-        covar.coeffRef (1) += polygon [pIdx].x * polygon [pIdx].y;
-        covar.coeffRef (2) += polygon [pIdx].x;
-        covar.coeffRef (4) += polygon [pIdx].y * polygon [pIdx].y;
-        covar.coeffRef (5) += polygon [pIdx].y;
-        covar.coeffRef (8) += 1.0;
+        covariance.coeffRef (0) += polygon [pIdx].x * polygon [pIdx].x;
+        covariance.coeffRef (1) += polygon [pIdx].x * polygon [pIdx].y;
+        covariance.coeffRef (3) += polygon [pIdx].y * polygon [pIdx].y;
+        centroid [0] += polygon [pIdx].x;
+        centroid [1] += polygon [pIdx].y;
       }
       
-      covar.coeffRef (3) = covar.coeff (1);
-      covar.coeffRef (6) = covar.coeff (2);
-      covar.coeffRef (7) = covar.coeff (5);
-
-      float eval;
-      eigen33 (covar, eval, lines [rIdx]);
+      covariance.coeffRef (2) = covariance.coeff (1);
       
-      // need normalized later to find almost parallel lines
-      lines [rIdx] /= sqrt (lines [rIdx][0] * lines [rIdx][0] + lines [rIdx][1] * lines [rIdx][1]);
+      float norm = 1.0f / float(num_points);
+      centroid *= norm;
+      covariance *= norm;
+      covariance.coeffRef (0) -= centroid [0] * centroid [0];
+      covariance.coeffRef (1) -= centroid [0] * centroid [1];
+      covariance.coeffRef (3) -= centroid [1] * centroid [1];
+      
+      float eval;
+      Eigen::Vector2f normal;
+      eigen22 (covariance, eval, normal);
+
+      // select the one which is more "parallel" to the original line
+      Eigen::Vector2f direction;
+      direction [0] = polygon[result[nIdx]].x - polygon[result[rIdx]].x;
+      direction [1] = polygon[result[nIdx]].y - polygon[result[rIdx]].y;
+      direction.normalize ();
+      
+      if (fabs (direction.dot (normal)) < float(M_SQRT1_2))
+      {
+        lines [rIdx] [0] = normal [0];
+        lines [rIdx] [1] = normal [1];
+      }
+      else
+      {
+        lines [rIdx] [0] = -normal [1];
+        lines [rIdx] [1] = normal [0];
+      }
+      lines [rIdx] [2] = -normal.dot (centroid);
     }
     
-    approx_polygon.resize (result.size ());
-    const float angle_threshold_ = 0.966f; // = cos (165deg)
+    float threshold2 = threshold * threshold;
     for (unsigned rIdx = 0; rIdx < lines.size (); ++rIdx)
     {
       unsigned nIdx = rIdx + 1;
       if (nIdx == result.size ())
         nIdx = 0;      
       
-      // if almost parallel
-      if (lines [rIdx][0] * lines [nIdx][0] + lines [rIdx][1] * lines [nIdx][1] > angle_threshold_)
+      Eigen::Vector3f vertex = lines [rIdx].cross (lines [nIdx]);
+      vertex /= vertex [2];
+      vertex [2] = 0.0;
+
+      PointT point;      
+      // test whether we need another edge since the intersection point is too far away from the original vertex
+      float distance = (vertex - polygon [result[nIdx]].getVector3fMap ()).squaredNorm ();
+      if (distance > threshold2)
       {
-        approx_polygon[nIdx] = polygon [result[nIdx]];
+        float distance1 = lines [rIdx] [0] * polygon[result[nIdx]].x + lines [rIdx] [1] * polygon[result[nIdx]].y + lines [rIdx] [2];
+        float distance2 = lines [nIdx] [0] * polygon[result[nIdx]].x + lines [nIdx] [1] * polygon[result[nIdx]].y + lines [nIdx] [2];
+        
+        point.x = polygon[result[nIdx]].x - distance1 * lines [rIdx] [0];
+        point.y = polygon[result[nIdx]].y - distance1 * lines [rIdx] [1];
+
+        approx_polygon.push_back (point);
+        
+        vertex [0] = polygon[result[nIdx]].x - distance2 * lines [nIdx] [0];
+        vertex [1] = polygon[result[nIdx]].y - distance2 * lines [nIdx] [1];        
       }
-      else
-      {
-        Eigen::Vector3f vertex = lines [rIdx].cross (lines [nIdx]);
-        vertex /= vertex [2];
-        vertex [2] = 0.0;
-        approx_polygon[nIdx].getVector3fMap () = vertex;
-      }
+      point.getVector3fMap () = vertex;
+      approx_polygon.push_back (point);
     }
   }
   else
   {
-    // we have a new polygon in results, but inverted (clockwise <-> counter-clockwise)
-    approx_polygon.reserve (result.size ());
+    // we have a new polygon in results, but inverted (clockwise <-> counter-clockwise)    
     for (std::vector<unsigned>::reverse_iterator it = result.rbegin (); it != result.rend (); ++it)
       approx_polygon.push_back (polygon [*it]);
   }

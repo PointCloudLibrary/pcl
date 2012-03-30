@@ -44,12 +44,8 @@
 
 namespace pcl
 {
-  /** \brief fuses two planar polygons (only X and Y coordinates will be used!), where fusing means that the outer
-    * possible non-convex - contour of the polygon union will be determined
-    * \param[in] planar_polygon1 first input polygon
-    * \param[in] planar_polygon2 second input polygon
-    * \param[out] fused_polygon the outer contour of the polygon-union
-    * \return true if merging was successful - this means basically if the polygons were intersecting or nor
+  /** \brief see approximatePolygon2D
+    * \author Suat Gedikli <gedikli@willowgarage.com>
     */
   template <typename PointT>
   void approximatePolygon (const PlanarPolygon<PointT>& polygon, PlanarPolygon<PointT>& approx_polygon, float threshold, bool refine = false, bool closed = true);
@@ -66,8 +62,6 @@ namespace pcl
   template <typename PointT>
   void approximatePolygon2D (const std::vector<PointT>& polygon, std::vector<PointT>& approx_polygon, float threshold, bool refine = false, bool closed = true);
 
-  //template <typename PointT>
-  //bool fusePlanarPolygons (const PlanarPolygon<PointT>& planar_polygon1, const PlanarPolygon<PointT>& planar_polygon2, PlanarPolygon<PointT>& fused_polygon);
 } // namespace pcl
 
 #include "impl/polygon_operations.hpp"
