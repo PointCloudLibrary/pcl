@@ -440,20 +440,23 @@ inline void generateSymPosMatrix2x2 (Matrix& matrix)
     val1 = 0.0;
 
   Scalar sqrNorm;
-  Matrix eigenvectors = Matrix::Zero ();
+  Matrix eigenvectors = Matrix::Identity ();
   Matrix eigenvalues = Matrix::Zero ();
 
-  do
+  unsigned test_case2 = rand_uint () % 10;
+  if (test_case2 != 0)
   {
-    eigenvectors.col (0)[0] = Scalar (rand_double ());
-    eigenvectors.col (0)[1] = Scalar (rand_double ());
-    sqrNorm = eigenvectors.col (0).squaredNorm ();
-  } while (sqrNorm == 0);
-  eigenvectors.col (0) /= sqrt (sqrNorm);
+    do
+    {
+      eigenvectors.col (0)[0] = Scalar (rand_double ());
+      eigenvectors.col (0)[1] = Scalar (rand_double ());
+      sqrNorm = eigenvectors.col (0).squaredNorm ();
+    } while (sqrNorm == 0);
+    eigenvectors.col (0) /= sqrt (sqrNorm);
 
-  eigenvectors.col (1)[0] = -eigenvectors.col (1)[1];
-  eigenvectors.col (1)[1] =  eigenvectors.col (1)[0];
-
+    eigenvectors.col (1)[0] = -eigenvectors.col (1)[1];
+    eigenvectors.col (1)[1] =  eigenvectors.col (1)[0];
+  }
   eigenvalues (0, 0) = val1;
   eigenvalues (1, 1) = val2;
 	matrix = eigenvectors * eigenvalues * eigenvectors.adjoint();
@@ -479,7 +482,7 @@ TEST (PCL, eigen22d)
   Eigen::Matrix<Scalar, 2, 2> c_error;
   Scalar diff;
 
-  const Scalar epsilon = 1e-14;
+  const Scalar epsilon = 1.25e-14;
   const unsigned iterations = 1000000;
 
   // test floating point row-major : row-major
@@ -538,7 +541,7 @@ TEST (PCL, eigen22f)
   Eigen::Matrix<Scalar, 2, 2> c_error;
   Scalar diff;
 
-  const Scalar epsilon = 1e-6f;
+  const Scalar epsilon = 3.1e-5f;
   const unsigned iterations = 1000000;
 
   // test floating point row-major : row-major
