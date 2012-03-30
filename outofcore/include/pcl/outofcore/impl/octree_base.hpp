@@ -75,7 +75,7 @@ namespace pcl
     const std::string octree_base<Container, PointT>::TREE_EXTENSION_ = ".octree";
 
     template<typename Container, typename PointT>
-    const int octree_base<Container, PointT>::OUTOFCORE_VERSION_ ( 3 );
+    const int octree_base<Container, PointT>::OUTOFCORE_VERSION_ ( static_cast<int>(3) );
 
     template<typename Container, typename PointT>
     const uint64_t octree_base<Container, PointT>::LOAD_COUNT_ ( static_cast<uint64_t>(2e9) );

@@ -84,9 +84,9 @@ namespace pcl
     boost::uuids::random_generator octree_disk_container<PointT>::uuid_gen_ (&rand_gen_);
 
     template<typename PointT>
-    const uint64_t octree_disk_container<PointT>::READ_BLOCK_SIZE_ (2e12);
+    const uint64_t octree_disk_container<PointT>::READ_BLOCK_SIZE_ (static_cast<uint64_t>(2e12));
     template<typename PointT>
-    const uint64_t octree_disk_container<PointT>::WRITE_BUFF_MAX_ (2e12);
+    const uint64_t octree_disk_container<PointT>::WRITE_BUFF_MAX_ (static_cast<uint64_t>(2e12));
 
     template<typename PointT> void
     octree_disk_container<PointT>::getRandomUUIDString (std::string& s)
