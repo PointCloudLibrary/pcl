@@ -420,7 +420,7 @@ pcl::visualization::PointCloudGeometryHandlerXYZ<PointT>::getGeometry (vtkSmartP
 
   // Add all points
   vtkIdType j = 0;    // true point index
-  float* pts = new float[nr_points * 3];
+  float* pts = static_cast<float*> (malloc (nr_points * 3 * sizeof (float)));
 
   // If the dataset has no invalid values, just copy all of them
   if (cloud_->is_dense)
