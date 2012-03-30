@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2009-2012, Willow Garage, Inc.
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -33,37 +33,38 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: image_viewer.hpp 5207 2012-03-20 22:55:35Z svn $
+ * $Id: pcl_visualizer.h 5368 2012-03-28 04:27:59Z nizar $
+ *
  */
+#ifndef PCL_VTK_IMAGE_CANVAS_SOURCE_2D_H_
+#define PCL_VTK_IMAGE_CANVAS_SOURCE_2D_H_
 
-#ifndef PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_
-#define	PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_
+#include <pcl/pcl_macros.h>
+#include <pcl/visualization/vtk.h>
+#include <vtkImageClip.h>
+#include <vtkImageCast.h>
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-template <typename T> void
-pcl::visualization::ImageViewer::showRGBImage (const pcl::PointCloud<T> &cloud,
-                                               const std::string &layer_id,
-                                               double opacity)
+namespace pcl
 {
-  if (data_size_ < cloud.width * cloud.height)
+  namespace visualization
   {
-    data_size_ = cloud.width * cloud.height * 3;
-    data_.reset (new unsigned char[data_size_]);
+    /** \brief pclImageCanvasSource2D represents our own custom version of vtkImageCanvasSource2D, used by 
+      * the ImageViewer class.
+      */
+    class PCL_EXPORTS PCLImageCanvasSource2D : public vtkImageCanvasSource2D
+    {
+      public:
+        static PCLImageCanvasSource2D *New ();
+
+      inline void 
+      DrawImage (vtkImageData* image)
+      {
+        this->ImageData->DeepCopy (image);
+        this->Modified();
+        return;
+      }
+    };
   }
-  
-  for (size_t i = 0; i < cloud.points.size (); ++i)
-  {
-    memcpy (&data_[i * 3], reinterpret_cast<const unsigned char*> (&cloud.points[i].rgba), sizeof (unsigned char) * 3);
-    /// Convert from BGR to RGB
-    unsigned char aux = data_[i*3];
-    data_[i*3] = data_[i*3+2];
-    data_[i*3+2] = aux;
-    for (int j = 0; j < 3; ++j)
-      if (pcl_isnan (data_[i * 3 + j]))
-          data_[i * 3 + j] = 0;
-  }
-  return (showRGBImage (data_.get (), cloud.width, cloud.height, layer_id, opacity));
 }
 
-
-#endif      // PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_
+#endif      // PCL_VTK_IMAGE_CANVAS_SOURCE_2D_H_
