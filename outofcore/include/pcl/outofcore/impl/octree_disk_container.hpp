@@ -292,7 +292,7 @@ namespace pcl
       assert (seekret == 0);
 
       //read at most 2e12 elements at a time; mystery constant again
-      const static uint64_t READ_BLOCK_SIZE_ = 2e12;//uint64_t (2e6);
+
       for (uint64_t pos = 0; pos < filecount; pos += READ_BLOCK_SIZE_)
       {
         if ((pos + READ_BLOCK_SIZE_) < filecount)
