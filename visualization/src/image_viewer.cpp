@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: vtk.h 5081 2012-03-14 18:29:24Z svn $
+ * $Id: image_viewer.cpp 5424 2012-03-30 03:41:06Z rusu $
  */
 
 #include <pcl/visualization/image_viewer.h>
@@ -109,7 +109,7 @@ pcl::visualization::ImageViewer::showRGBImage (
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::showRGBImage] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = addLayer (layer_id, width, height, opacity, false);
+    am_it = createLayer (layer_id, width, height, opacity, false);
   }
 
   vtkSmartPointer<vtkImageImport> importer = vtkSmartPointer<vtkImageImport>::New ();
@@ -136,11 +136,22 @@ pcl::visualization::ImageViewer::showRGBImage (
   algo->SetInterpolationModeToCubic ();
   algo->Update ();
 
-  am_it->canvas->SetNumberOfScalarComponents (3);
-  am_it->canvas->DrawImage (0, 0, algo->GetOutput ());
-  //blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), algo->GetOutputPort ());
-  blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), am_it->canvas->GetOutputPort ());
-  image_viewer_->SetInputConnection (blend_->GetOutputPort ());
+  // If we already have other layers, then it makes sense to use a blender
+//  if (layer_map_.size () != 1)
+//  {
+    am_it->canvas->SetNumberOfScalarComponents (3);
+    am_it->canvas->DrawImage (algo->GetOutput ());
+    //am_it->canvas->DrawImage (0, 0, rgb_data, width, height);
+
+    //blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), algo->GetOutputPort ());
+    blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), am_it->canvas->GetOutputPort ());
+    image_viewer_->SetInputConnection (blend_->GetOutputPort ());
+//  }
+//  // If not, pass the data directly to the viewer
+//  else
+//    image_viewer_->SetInput (algo->GetOutput ());
+
+  image_viewer_->Render ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,10 +169,10 @@ pcl::visualization::ImageViewer::showMonoImage (
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::showMonoImage] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = addLayer (layer_id, width, height, opacity, false);
+    am_it = createLayer (layer_id, width, height, opacity, false);
   }
 
-   vtkSmartPointer<vtkImageImport> importer = vtkSmartPointer<vtkImageImport>::New ();
+  vtkSmartPointer<vtkImageImport> importer = vtkSmartPointer<vtkImageImport>::New ();
   importer->SetNumberOfScalarComponents (1);
   importer->SetWholeExtent (0, width - 1, 0, height - 1, 0, 0);
   importer->SetDataScalarTypeToUnsignedChar ();
@@ -185,13 +196,21 @@ pcl::visualization::ImageViewer::showMonoImage (
   algo->SetInterpolationModeToCubic ();
   algo->Update ();
 
-  image_viewer_->SetInput (algo->GetOutput ());
+  // If we already have other layers, then it makes sense to use a blender
+//  if (layer_map_.size () != 1)
+//  {
+    am_it->canvas->SetNumberOfScalarComponents (1);
+    //am_it->canvas->DrawImage (0, 0, algo->GetOutput ());
+    am_it->canvas->DrawImage (algo->GetOutput ());
 
-  am_it->canvas->SetNumberOfScalarComponents (1);
-  am_it->canvas->DrawImage (0, 0, algo->GetOutput ());
-  //blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), algo->GetOutputPort ());
-  blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), am_it->canvas->GetOutputPort ());
-  image_viewer_->SetInputConnection (blend_->GetOutputPort ());
+    //blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), algo->GetOutputPort ());
+    blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), am_it->canvas->GetOutputPort ());
+    image_viewer_->SetInputConnection (blend_->GetOutputPort ());
+//  }
+//  // If not, pass the data directly to the viewer
+//  else
+//    image_viewer_->SetInput (algo->GetOutput ());
+  image_viewer_->Render ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -254,7 +273,7 @@ pcl::visualization::ImageViewer::spin ()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::ImageViewer::spinOnce (int time, bool force_redraw)
+pcl::visualization::ImageViewer::spinOnce (int time, bool)
 {
   if (time <= 0)
     time = 1;
@@ -389,7 +408,7 @@ pcl::visualization::ImageViewer::emitKeyboardEvent (unsigned long event_id)
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl::visualization::ImageViewer::MouseCallback (vtkObject*, unsigned long eid, void* clientdata, void* calldata)
+pcl::visualization::ImageViewer::MouseCallback (vtkObject*, unsigned long eid, void* clientdata, void*)
 {
   ImageViewer* window = reinterpret_cast<ImageViewer*> (clientdata);
   window->emitMouseEvent (eid);
@@ -397,7 +416,7 @@ pcl::visualization::ImageViewer::MouseCallback (vtkObject*, unsigned long eid, v
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl::visualization::ImageViewer::KeyboardCallback (vtkObject*, unsigned long eid, void* clientdata, void* calldata)
+pcl::visualization::ImageViewer::KeyboardCallback (vtkObject*, unsigned long eid, void* clientdata, void*)
 {
   ImageViewer* window = reinterpret_cast<ImageViewer*> (clientdata);
   window->emitKeyboardEvent (eid);
@@ -405,14 +424,14 @@ pcl::visualization::ImageViewer::KeyboardCallback (vtkObject*, unsigned long eid
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::ImageViewer::LayerMap::iterator
-pcl::visualization::ImageViewer::addLayer (
+pcl::visualization::ImageViewer::createLayer (
     const std::string &layer_id, int width, int height, double opacity, bool fill_box)
 {
   Layer l;
   l.layer_name = layer_id;
   l.opacity = opacity;
   // Create a new layer
-  l.canvas = vtkSmartPointer<vtkImageCanvasSource2D>::New ();
+  l.canvas = vtkSmartPointer<PCLImageCanvasSource2D>::New ();
   l.canvas->SetScalarTypeToUnsignedChar ();
   l.canvas->SetExtent (0, width, 0, height, 0, 0);
   l.canvas->SetNumberOfScalarComponents (4);
@@ -449,7 +468,7 @@ pcl::visualization::ImageViewer::addLayer (
   l.layer_name = layer_id;
   l.opacity = opacity;
   // Create a new layer
-  l.canvas = vtkSmartPointer<vtkImageCanvasSource2D>::New ();
+  l.canvas = vtkSmartPointer<PCLImageCanvasSource2D>::New ();
   l.canvas->SetScalarTypeToUnsignedChar ();
   l.canvas->SetExtent (0, width, 0, height, 0, 0);
   l.canvas->SetNumberOfScalarComponents (4);
@@ -486,6 +505,7 @@ pcl::visualization::ImageViewer::removeLayer (const std::string &layer_id)
     blend_->SetOpacity (blend_->GetNumberOfInputs () - 1, layer_map_[i].opacity);
   }
   image_viewer_->SetInputConnection (blend_->GetOutputPort ());
+  image_viewer_->Render ();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -499,13 +519,14 @@ pcl::visualization::ImageViewer::addCircle (
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addCircle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = addLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
+    am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
   }
 
   am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
   am_it->canvas->DrawCircle (x, y, radius);
 //  blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), am_it->canvas->GetOutputPort ());
 //  image_viewer_->SetInputConnection (blend_->GetOutputPort ());
+  image_viewer_->Render ();
 
   return (true);
 }
@@ -520,10 +541,11 @@ pcl::visualization::ImageViewer::addCircle (unsigned int x, unsigned int y, doub
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addCircle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = addLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
+    am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
   }
 
   am_it->canvas->DrawCircle (x, y, radius);
+  image_viewer_->Render ();
   return (true);
 }
 
@@ -538,13 +560,14 @@ pcl::visualization::ImageViewer::addBox (
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addBox] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = addLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
+    am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
   }
 
   am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
   am_it->canvas->FillBox (x_min, x_max, y_min, y_max);
 //  blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), am_it->canvas->GetOutputPort ());
 //  image_viewer_->SetInputConnection (blend_->GetOutputPort ());
+  image_viewer_->Render ();
 
   return (true);
 }
@@ -560,10 +583,11 @@ pcl::visualization::ImageViewer::addBox (
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addBox] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = addLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
+    am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
   }
 
   am_it->canvas->FillBox (x_min, x_max, y_min, y_max);
+  image_viewer_->Render ();
   return (true);
 }
 
@@ -578,10 +602,11 @@ pcl::visualization::ImageViewer::addLine (unsigned int x_min, unsigned int y_min
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addLine] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = addLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
+    am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
   }
 
   am_it->canvas->DrawSegment (x_min, y_min, x_max, y_max);
+  image_viewer_->Render ();
 
   return (true);
 }
@@ -598,11 +623,12 @@ pcl::visualization::ImageViewer::addLine (unsigned int x_min, unsigned int y_min
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addLine] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = addLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
+    am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
   }
 
   am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
   am_it->canvas->DrawSegment (x_min, y_min, x_max, y_max);
+  image_viewer_->Render ();
 
   return (true);
 }
@@ -618,13 +644,14 @@ pcl::visualization::ImageViewer::markPoint (
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::markPoint] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = addLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
+    am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
   }
 
   am_it->canvas->SetDrawColor (fg_color[0], fg_color[1], fg_color[2], opacity * 255.0);
   am_it->canvas->DrawPoint (int (u), int (v));
   am_it->canvas->SetDrawColor (bg_color[0], bg_color[1], bg_color[2], opacity * 255.0);
   am_it->canvas->DrawCircle (int (u), int (v), radius);
+  image_viewer_->Render ();
 }
 
 
