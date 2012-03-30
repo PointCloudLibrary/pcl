@@ -140,12 +140,12 @@ pcl::visualization::ImageViewer::addRGBImage (
 //  if (layer_map_.size () != 1)
 //  {
 #if ((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 6))
+    image_viewer_->SetInput (algo->GetOutput ());
+#else
     am_it->canvas->SetNumberOfScalarComponents (3);
     am_it->canvas->DrawImage (algo->GetOutput ());
 
     blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), am_it->canvas->GetOutputPort ());
-    image_viewer_->SetInput (algo->GetOutput ());
-#else
     image_viewer_->SetInputConnection (blend_->GetOutputPort ());
 #endif
 //  }
@@ -210,12 +210,12 @@ pcl::visualization::ImageViewer::addMonoImage (
 //  if (layer_map_.size () != 1)
 //  {
 #if ((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 6))
+    image_viewer_->SetInput (algo->GetOutput ());
+#else
     am_it->canvas->SetNumberOfScalarComponents (1);
     am_it->canvas->DrawImage (algo->GetOutput ());
 
     blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), am_it->canvas->GetOutputPort ());
-    image_viewer_->SetInput (algo->GetOutput ());
-#else
     image_viewer_->SetInputConnection (blend_->GetOutputPort ());
 #endif
 //  }
