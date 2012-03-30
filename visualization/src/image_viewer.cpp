@@ -505,6 +505,7 @@ pcl::visualization::ImageViewer::removeLayer (const std::string &layer_id)
     blend_->SetOpacity (blend_->GetNumberOfInputs () - 1, layer_map_[i].opacity);
   }
   image_viewer_->SetInputConnection (blend_->GetOutputPort ());
+  image_viewer_->Render ();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
