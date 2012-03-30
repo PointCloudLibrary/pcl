@@ -139,13 +139,15 @@ pcl::visualization::ImageViewer::addRGBImage (
   // If we already have other layers, then it makes sense to use a blender
 //  if (layer_map_.size () != 1)
 //  {
+#if ((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 6))
     am_it->canvas->SetNumberOfScalarComponents (3);
     am_it->canvas->DrawImage (algo->GetOutput ());
-    //am_it->canvas->DrawImage (0, 0, rgb_data, width, height);
 
-    //blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), algo->GetOutputPort ());
     blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), am_it->canvas->GetOutputPort ());
+    image_viewer_->SetInput (algo->GetOutput ());
+#else
     image_viewer_->SetInputConnection (blend_->GetOutputPort ());
+#endif
 //  }
 //  // If not, pass the data directly to the viewer
 //  else
@@ -207,13 +209,15 @@ pcl::visualization::ImageViewer::addMonoImage (
   // If we already have other layers, then it makes sense to use a blender
 //  if (layer_map_.size () != 1)
 //  {
+#if ((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 6))
     am_it->canvas->SetNumberOfScalarComponents (1);
-    //am_it->canvas->DrawImage (0, 0, algo->GetOutput ());
     am_it->canvas->DrawImage (algo->GetOutput ());
 
-    //blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), algo->GetOutputPort ());
     blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), am_it->canvas->GetOutputPort ());
+    image_viewer_->SetInput (algo->GetOutput ());
+#else
     image_viewer_->SetInputConnection (blend_->GetOutputPort ());
+#endif
 //  }
 //  // If not, pass the data directly to the viewer
 //  else
