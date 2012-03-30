@@ -41,8 +41,6 @@
 
 #include <pcl/pcl_macros.h>
 #include <pcl/visualization/vtk.h>
-#include <vtkImageClip.h>
-#include <vtkImageCast.h>
 
 namespace pcl
 {
