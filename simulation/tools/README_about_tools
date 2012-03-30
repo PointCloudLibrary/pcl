@@ -1,0 +1,23 @@
+1. sim_viewer.cpp
+purpose: visualize within VTK environment - almost same as PCL viewer
+status : use the mouse to drive around, and 'v' to capture a cloud. reads vtk and obj. visualizes vtk and makes pcd of obj. conflict between RL and VTK means doesnt visualize properly
+range_pcd_viewer.cpp
+
+2. sim_terminal_demo.cpp
+purpose: simple app to demo speed and api to pcl_simulation
+status : reads obj, make a series of 640x480 simulated point clouds and exits
+
+3. sim_test_performance.cpp
+purpose: GLUT/GLEW viewer used by Hordur to test GLSL optimizations
+status : reads obj, creates window, use keyboard to drive around environment
+range_performance_test.cpp
+
+4. sim_test_simple
+purpose: similar code to #3 but only has a single 640x480 window, but operates as #1
+status : reads obj, creates window, use keyboard to drive around environment
+range_test_v2.cpp
+
+Dead Versions:
+range_viewer.cpp - certain not useful. Hordur created this as barebones vtk viewer, not useful
+range_viewer_v2.cpp - uses the above, but never really worked properly.
+range_test.cpp - out of date demo program (used old style PointCloudModel)
