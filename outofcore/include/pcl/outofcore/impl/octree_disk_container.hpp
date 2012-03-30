@@ -282,7 +282,7 @@ namespace pcl
       //resize
       PointT* loc = NULL;
       v.resize (static_cast<uint64_t>(count));
-      loc = &(v.front ());
+      loc = reinterpret_cast<PointT*> (&(v.front ()));
 
       //do the read
       FILE* f = fopen (fileback_name_->c_str (), "rb");
