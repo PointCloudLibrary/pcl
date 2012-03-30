@@ -39,12 +39,29 @@
 
 namespace pcl
 {
+/** \brief Organized Index Iterator for iterating over the "pixels" for a given line using the Bresenham algorithm.
+  * Supports 4 and 8 neighborhood connectivity
+  * \note iterator does not visit the given end-point (by purpose).
+  * \author Suat Gedikli <gedikli@willowgarage.com>
+  * \ingroup  geometry
+  */
 class LineIterator : public OrganizedIndexIterator
 {
   public:
+    /** \brief Neighborhood connectivity  */
     typedef enum {Neighbor4 = 4, Neighbor8 = 8} Neighborhood;
   public:
+    /** \brief Constructor
+      * \param x_start column of the start pixel of the line
+      * \param y_start row of the start pixel of the line
+      * \param x_end column of the end pixel of the line
+      * \param y_end row of the end pixel of the line
+      * \param width width of the organized structure e.g. image/cloud/map etc..
+      * \param neighborhood connectivity of the neighborhood
+      */
     LineIterator (unsigned x_start, unsigned y_start, unsigned x_end, unsigned y_end, unsigned width, const Neighborhood& neighborhood = Neighbor8);
+    
+    /** \brief Destructor*/
     virtual ~LineIterator ();
     
     virtual void operator ++ ();
@@ -53,25 +70,59 @@ class LineIterator : public OrganizedIndexIterator
     virtual bool isValid () const;
     virtual void reset ();
   protected:
+    /** \brief initializes the variables for the Bresenham algorithm
+      * \param[in] neighborhood connectivity to the neighborhood. Either 4 or 8
+      */
     void init (const Neighborhood& neighborhood);
+    
+    /** \brief current column index*/
     unsigned x_;
+    
+    /** \brief current row index*/
     unsigned y_;
+    
+    /** \brief column index of first pixel/point*/
     unsigned x_start_;
+    
+    /** \brief row index of first pixel/point*/
     unsigned y_start_;
+    
+    /** \brief column index of end pixel/point*/
     unsigned x_end_;
+    
+    /** \brief row index of end pixel/point*/
     unsigned y_end_;
     
     // calculated values
+    /** \brief current distance to the line*/
     int error_;
+    
+    /** \brief error threshold*/
     int error_max_;
+    
+    /** \brief increment of error (distance) value in case of an y-step (if dx > dy)*/
     int error_minus_;
+    
+    /** \brief increment of error (distance) value in case of just an x-step (if dx > dy)*/
     int error_plus_;
+    
+    /** \brief increment of column index in case of just an x-step (if dx > dy)*/
     int x_plus_;
+
+    /** \brief increment of row index in case of just an x-step (if dx > dy)*/
     int y_plus_;
+    
+    /** \brief increment of column index in case of just an y-step (if dx > dy)*/
     int x_minus_;
+
+    /** \brief increment of row index in case of just an y-step (if dx > dy)*/
     int y_minus_;
-    int point_plus_;
-    int point_minus_;
+    
+    /** \brief increment pixel/point index in case of just an x-step (if dx > dy)*/
+    int index_plus_;
+
+    /** \brief increment pixel/point index in case of just an y-step (if dx > dy)*/
+    int index_minus_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -164,8 +215,8 @@ LineIterator::init (const Neighborhood& neighborhood)
     }
   }
 
-  point_minus_ = x_minus_ + y_minus_ * width_;
-  point_plus_ = x_plus_ + y_plus_ * width_;  
+  index_minus_ = x_minus_ + y_minus_ * width_;
+  index_plus_ = x_plus_ + y_plus_ * width_;  
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -177,14 +228,14 @@ LineIterator::operator ++ ()
     x_ += x_minus_;
     y_ += y_minus_;
     error_ += error_minus_;
-    index_ += point_minus_;
+    index_ += index_minus_;
   }
   else
   {
     x_ += x_plus_;
     y_ += y_plus_;
     error_ += error_plus_;
-    index_ += point_plus_;
+    index_ += index_plus_;
   }  
 }
 
