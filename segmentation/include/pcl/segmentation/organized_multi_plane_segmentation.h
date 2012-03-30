@@ -87,7 +87,8 @@ namespace pcl
 
       /** \brief Constructor for OrganizedMultiPlaneSegmentation. */
       OrganizedMultiPlaneSegmentation () :
-        normals_ (), min_inliers_ (1000), angular_threshold_ (3.0 * 0.017453), distance_threshold_ (0.02), 
+        normals_ (), min_inliers_ (1000), angular_threshold_ (3.0 * 0.017453), distance_threshold_ (0.02),
+        project_points_ (true),
         compare_ (new PlaneComparator ()), refinement_compare_ (new PlaneRefinementComparator ())
       {
       }
@@ -179,7 +180,16 @@ namespace pcl
       {
         refinement_compare_ = compare;
       }
-      
+
+      /** \brief Set whether or not to project boundary points to the plane, or leave them in the original 3D space.
+        * \param[in] project_points true if points should be projected, false if not.
+        */
+      void
+      setProjectPoints (bool project_points)
+      {
+        project_points_ = project_points;
+      }
+
       /** \brief Segmentation of all planes in a point cloud given by setInputCloud(), setIndices()
         * \param[out] model_coefficients a vector of model_coefficients for each plane found in the input cloud
         * \param[out] inlier_indices a vector of inliers for each detected plane
@@ -253,6 +263,9 @@ namespace pcl
 
       /** \brief The tolerance in meters for difference in perpendicular distance (d component of plane equation) to the plane between neighboring points, to be considered part of the same plane. */
       double distance_threshold_;
+
+      /** \brief Whether or not points should be projected to the plane, or left in the original 3D space. */
+      bool project_points_;
 
       /** \brief A comparator for comparing neighboring pixels' plane equations. */
       PlaneComparatorPtr compare_;

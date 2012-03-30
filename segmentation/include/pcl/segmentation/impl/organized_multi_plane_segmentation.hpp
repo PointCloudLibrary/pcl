@@ -46,6 +46,33 @@
 #include <pcl/common/eigen.h>
 #include <boost/make_shared.hpp>
 
+///////////////////////////////////////////////////////////////
+Eigen::Vector3f linePlaneIntersection (Eigen::Vector3f& p1, Eigen::Vector3f& p2, Eigen::Vector3f& norm, Eigen::Vector3f& p3)
+{
+  double u = norm.dot ((p3 - p1)) / norm.dot ((p2 - p1));
+  Eigen::Vector3f intersection = p1 + u * (p2 - p1);
+  return (intersection);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> pcl::PointCloud<PointT>
+projectToPlaneFromViewpoint (pcl::PointCloud<PointT>& cloud, Eigen::Vector4f& normal, Eigen::Vector3f& centroid, Eigen::Vector3f& vp)
+{
+  Eigen::Vector3f norm (normal[0], normal[1], normal[2]); //(region.coefficients_[0], region.coefficients_[1], region.coefficients_[2]); 
+  pcl::PointCloud<PointT> projected_cloud;
+  projected_cloud.resize (cloud.points.size ());
+  for (size_t i = 0; i < cloud.points.size (); i++)
+  {
+    Eigen::Vector3f pt (cloud.points[i].x, cloud.points[i].y, cloud.points[i].z);
+    Eigen::Vector3f intersection = linePlaneIntersection (vp, pt, norm, centroid);
+    projected_cloud[i].x = intersection[0];
+    projected_cloud[i].y = intersection[1];
+    projected_cloud[i].z = intersection[2];
+  }
+  
+  return (projected_cloud);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointNT, typename PointLT> void
 pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::vector<ModelCoefficients>& model_coefficients, 
@@ -219,6 +246,11 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
                                              model_coefficients[i].values[1],
                                              model_coefficients[i].values[2],
                                              model_coefficients[i].values[3]);
+
+    Eigen::Vector3f vp (0.0, 0.0, 0.0);
+    if (project_points_)
+      boundary_cloud = projectToPlaneFromViewpoint (boundary_cloud, model, centroid, vp);
+
     regions[i] = PlanarRegion<PointT> (centroid,
                                        covariances[i], 
                                        static_cast<unsigned int> (inlier_indices[i].indices.size ()),
@@ -252,12 +284,17 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
     boundary_cloud.points.resize (boundary_indices[i].indices.size ());
     for (unsigned j = 0; j < boundary_indices[i].indices.size (); j++)
       boundary_cloud.points[j] = input_->points[boundary_indices[i].indices[j]];
-    
+
     Eigen::Vector3f centroid = Eigen::Vector3f (centroids[i][0],centroids[i][1],centroids[i][2]);
     Eigen::Vector4f model = Eigen::Vector4f (model_coefficients[i].values[0],
                                              model_coefficients[i].values[1],
                                              model_coefficients[i].values[2],
                                              model_coefficients[i].values[3]);
+
+    Eigen::Vector3f vp (0.0, 0.0, 0.0);
+    if (project_points_ && boundary_cloud.points.size () > 0)
+      boundary_cloud = projectToPlaneFromViewpoint (boundary_cloud, model, centroid, vp);
+
     regions[i] = PlanarRegion<PointT> (centroid,
                                        covariances[i], 
                                        static_cast<unsigned int> (inlier_indices[i].indices.size ()),
