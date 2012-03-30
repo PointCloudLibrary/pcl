@@ -31,8 +31,8 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 
-#include <pcl/common/common.h>
-#include <pcl/common/transforms.h>
+#include "pcl/common/common.h"
+#include "pcl/common/transforms.h"
 
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
@@ -44,10 +44,10 @@
 #define VTK_EXCLUDE_STRSTREAM_HEADERS
 #include <pcl/io/vtk_lib_io.h>
 
-#include <pcl/simulation/camera.h>
-#include <pcl/simulation/model.h>
-#include <pcl/simulation/scene.h>
-#include <pcl/simulation/range_likelihood.h>
+#include "pcl/simulation/camera.h"
+#include "pcl/simulation/model.h"
+#include "pcl/simulation/scene.h"
+#include "pcl/simulation/range_likelihood.h"
 
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
@@ -58,6 +58,7 @@
 
 // Pop-up viewer
 #include <pcl/visualization/cloud_viewer.h>
+#include <boost/thread/thread.hpp>
 
 using namespace Eigen;
 using namespace pcl;
@@ -71,7 +72,7 @@ uint16_t t_gamma[2048];
 
 Scene::Ptr scene_;
 Camera::Ptr camera_;
-RangeLikelihood::Ptr range_likelihood_;
+RangeLikelihoodGLSL::Ptr range_likelihood_;
 
 int window_width_;
 int window_height_;
@@ -190,6 +191,23 @@ void display_depth_image(const float* depth_buffer)
   delete [] depth_img;
 }
 
+
+boost::shared_ptr<pcl::visualization::PCLVisualizer> simpleVis (pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud)
+{
+  // --------------------------------------------
+  // -----Open 3D viewer and add point cloud-----
+  // --------------------------------------------
+  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+  viewer->setBackgroundColor (0, 0, 0);
+  pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> rgb(cloud);
+  viewer->addPointCloud<pcl::PointXYZRGB> (cloud, rgb, "sample cloud");
+  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
+  viewer->addCoordinateSystem (1.0);
+  viewer->initCameraParameters ();
+  return (viewer);
+}
+
+
 void display ()
 {
   float* reference = new float[range_likelihood_->getRowHeight() * range_likelihood_->getColWidth()];
@@ -213,7 +231,9 @@ void display ()
     //camera.move(0.0,i*0.02,0.0);
     poses.push_back (camera.pose ());
   }
-  range_likelihood_->computeLikelihoods (reference, poses, scores);
+  float* depth_field = NULL;
+  bool do_depth_field = false;
+  range_likelihood_->computeLikelihoods (reference, poses, scores, depth_field, do_depth_field);
   std::cout << "score: ";
   for (size_t i = 0; i<scores.size (); ++i)
   {
@@ -230,6 +250,7 @@ void display ()
        << std::endl;
 
   delete [] reference;
+  delete [] depth_field;
 
   glDrawBuffer (GL_BACK);
   glReadBuffer (GL_BACK);
@@ -291,9 +312,24 @@ void display ()
     writer.write ("simulated_range_image.pcd", *pc_out,	false);  
     cout << "finished writing file\n";
     
-    pcl::visualization::CloudViewer viewer ("Simple Cloud Viewer");
-    viewer.showCloud (pc_out);
+//     pcl::visualization::CloudViewer viewer ("Simple Cloud Viewer");
+//     viewer.showCloud (pc_out);
 
+
+  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+  viewer = simpleVis(pc_out);
+  while (!viewer->wasStopped ())
+  {
+    viewer->spinOnce (100);
+    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+  }    
+  
+  // doesnt work:
+//    viewer->~PCLVisualizer();
+//    viewer.reset();
+    
+    
+    cout << "done\n";
     // Problem: vtk and opengl dont seem to play very well together
     // vtk seems to misbehave after a little while and wont keep the window on the screen
 
@@ -309,11 +345,11 @@ void display ()
     
     // method 3: if you interact with the window with keys, the window is not closed properly
     // TODO: use pcl methods as this time stuff is probably not cross playform
-    struct timespec t;
-    t.tv_sec = 100;
-    //t.tv_nsec = (time_t)(20000000); // short sleep
-    t.tv_nsec = (time_t)(0);  // long sleep - normal speed
-    nanosleep (&t, NULL);
+//     struct timespec t;
+//     t.tv_sec = 100;
+//     //t.tv_nsec = (time_t)(20000000); // short sleep
+//     t.tv_nsec = (time_t)(0);  // long sleep - normal speed
+//     nanosleep (&t, NULL);
     write_file_ = 0;
   }
 }
@@ -434,10 +470,12 @@ initialize (int argc, char** argv)
   //camera_->set(4.04454, 44.9377, 1.1, 0.0, 0.0, -2.00352);
 
   // works well for MIT CSAIL model 2nd floor:
-  camera_->set (27.4503, 37.383, 4.30908, 0.0, 0.0654498, -2.25802);
+//  camera_->set (27.4503, 37.383, 4.30908, 0.0, 0.0654498, -2.25802);
 
   // works for small files:
   //camera_->set(-5.0, 0.0, 1.0, 0.0, 0.0, 0.0);
+  camera_->set( 1.31762, 0.382931, 1.89533, 0, 0.20944, -9.14989);
+  camera_->set_pitch(0.20944); // not sure why this is here: 
   //camera_->set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
   
   cout << "About to read: " << argv[1] << endl;
@@ -497,8 +535,11 @@ main (int argc, char** argv)
   camera_ = Camera::Ptr (new Camera ());
   scene_ = Scene::Ptr (new Scene ());
 
-  //range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, height, width, scene_));
-  range_likelihood_ = RangeLikelihood::Ptr (new RangeLikelihood (2, 2, height/2, width/2, scene_));
+  //range_likelihood_ = RangeLikelihoodGLSL::Ptr(new RangeLikelihoodGLSL(1, 1, height, width, scene_, 0));
+
+  range_likelihood_ = RangeLikelihoodGLSL::Ptr (new RangeLikelihoodGLSL (2, 2, height/2, width/2, scene_, 0));
+  // range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(10, 10, 96, 96, scene_));
+  // range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, 480, 640, scene_));
 
   // Actually corresponds to default parameters:
   range_likelihood_->setCameraIntrinsicsParameters (640,480, 576.09757860,
