@@ -96,7 +96,7 @@ pcl::visualization::ImageViewer::~ImageViewer ()
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::ImageViewer::showRGBImage (
+pcl::visualization::ImageViewer::addRGBImage (
     const unsigned char* rgb_data, unsigned width, unsigned height,
     const std::string &layer_id, double opacity)
 {
@@ -150,13 +150,21 @@ pcl::visualization::ImageViewer::showRGBImage (
 //  // If not, pass the data directly to the viewer
 //  else
 //    image_viewer_->SetInput (algo->GetOutput ());
+}
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::ImageViewer::showRGBImage (
+    const unsigned char* rgb_data, unsigned width, unsigned height,
+    const std::string &layer_id, double opacity)
+{
+  addRGBImage (rgb_data, width, height, layer_id, opacity);
   image_viewer_->Render ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::ImageViewer::showMonoImage (
+pcl::visualization::ImageViewer::addMonoImage (
     const unsigned char* rgb_data, unsigned width, unsigned height,
     const std::string &layer_id, double opacity)
 {
@@ -210,12 +218,21 @@ pcl::visualization::ImageViewer::showMonoImage (
 //  // If not, pass the data directly to the viewer
 //  else
 //    image_viewer_->SetInput (algo->GetOutput ());
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::ImageViewer::showMonoImage (
+    const unsigned char* rgb_data, unsigned width, unsigned height,
+    const std::string &layer_id, double opacity)
+{
+  addMonoImage (rgb_data, width, height, layer_id, opacity);
   image_viewer_->Render ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::ImageViewer::showFloatImage (
+pcl::visualization::ImageViewer::addFloatImage (
     const float* float_image, unsigned int width, unsigned int height,
     float min_value, float max_value, bool grayscale,
     const std::string &layer_id, double opacity)
@@ -225,10 +242,21 @@ pcl::visualization::ImageViewer::showFloatImage (
   showRGBImage (rgb_image, width, height, layer_id, opacity);
   delete[] rgb_image;  
  }
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::ImageViewer::showFloatImage (
+    const float* float_image, unsigned int width, unsigned int height,
+    float min_value, float max_value, bool grayscale,
+    const std::string &layer_id, double opacity)
+{
+  addFloatImage (float_image, width, height, min_value, max_value, grayscale, layer_id, opacity);
+  image_viewer_->Render ();
+ }
  
 /////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl::visualization::ImageViewer::showAngleImage (
+pcl::visualization::ImageViewer::addAngleImage (
     const float* angle_image, unsigned int width, unsigned int height,
     const std::string &layer_id, double opacity)
 {
@@ -239,7 +267,17 @@ pcl::visualization::ImageViewer::showAngleImage (
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl::visualization::ImageViewer::showHalfAngleImage (
+pcl::visualization::ImageViewer::showAngleImage (
+    const float* angle_image, unsigned int width, unsigned int height,
+    const std::string &layer_id, double opacity)
+{
+  addAngleImage (angle_image, width, height, layer_id, opacity);
+  image_viewer_->Render ();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::visualization::ImageViewer::addHalfAngleImage (
     const float* angle_image, unsigned int width, unsigned int height,
     const std::string &layer_id, double opacity)
 {
@@ -250,7 +288,17 @@ pcl::visualization::ImageViewer::showHalfAngleImage (
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl::visualization::ImageViewer::showShortImage (
+pcl::visualization::ImageViewer::showHalfAngleImage (
+    const float* angle_image, unsigned int width, unsigned int height,
+    const std::string &layer_id, double opacity)
+{
+  addHalfAngleImage (angle_image, width, height, layer_id, opacity);
+  image_viewer_->Render ();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::visualization::ImageViewer::addShortImage (
     const unsigned short* short_image, unsigned int width, unsigned int height, 
     unsigned short min_value, unsigned short max_value, bool grayscale,
     const std::string &layer_id, double opacity)
@@ -263,8 +311,20 @@ pcl::visualization::ImageViewer::showShortImage (
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void 
+pcl::visualization::ImageViewer::showShortImage (
+    const unsigned short* short_image, unsigned int width, unsigned int height, 
+    unsigned short min_value, unsigned short max_value, bool grayscale,
+    const std::string &layer_id, double opacity)
+{
+  addShortImage (short_image, width, height, min_value, max_value, grayscale, layer_id, opacity);
+  image_viewer_->Render ();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void 
 pcl::visualization::ImageViewer::spin ()
 {
+  image_viewer_->Render ();
   resetStoppedFlag ();
   // Render the window before we start the interactor
   interactor_->Render ();
@@ -273,13 +333,18 @@ pcl::visualization::ImageViewer::spin ()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::ImageViewer::spinOnce (int time, bool)
+pcl::visualization::ImageViewer::spinOnce (int time, bool force_redraw)
 {
+  if (force_redraw)
+  {
+    image_viewer_->Render ();
+    interactor_->Render ();
+  }
+
   if (time <= 0)
     time = 1;
   
   DO_EVERY (1.0 / interactor_->GetDesiredUpdateRate (),
-    interactor_->Render ();
     exit_main_loop_timer_callback_->right_timer_id = interactor_->CreateRepeatingTimer (time);
     interactor_->Start ();
     interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
@@ -505,7 +570,6 @@ pcl::visualization::ImageViewer::removeLayer (const std::string &layer_id)
     blend_->SetOpacity (blend_->GetNumberOfInputs () - 1, layer_map_[i].opacity);
   }
   image_viewer_->SetInputConnection (blend_->GetOutputPort ());
-  image_viewer_->Render ();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -526,7 +590,6 @@ pcl::visualization::ImageViewer::addCircle (
   am_it->canvas->DrawCircle (x, y, radius);
 //  blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), am_it->canvas->GetOutputPort ());
 //  image_viewer_->SetInputConnection (blend_->GetOutputPort ());
-  image_viewer_->Render ();
 
   return (true);
 }
@@ -545,7 +608,6 @@ pcl::visualization::ImageViewer::addCircle (unsigned int x, unsigned int y, doub
   }
 
   am_it->canvas->DrawCircle (x, y, radius);
-  image_viewer_->Render ();
   return (true);
 }
 
@@ -567,7 +629,6 @@ pcl::visualization::ImageViewer::addBox (
   am_it->canvas->FillBox (x_min, x_max, y_min, y_max);
 //  blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), am_it->canvas->GetOutputPort ());
 //  image_viewer_->SetInputConnection (blend_->GetOutputPort ());
-  image_viewer_->Render ();
 
   return (true);
 }
@@ -587,7 +648,6 @@ pcl::visualization::ImageViewer::addBox (
   }
 
   am_it->canvas->FillBox (x_min, x_max, y_min, y_max);
-  image_viewer_->Render ();
   return (true);
 }
 
@@ -606,7 +666,6 @@ pcl::visualization::ImageViewer::addLine (unsigned int x_min, unsigned int y_min
   }
 
   am_it->canvas->DrawSegment (x_min, y_min, x_max, y_max);
-  image_viewer_->Render ();
 
   return (true);
 }
@@ -628,7 +687,6 @@ pcl::visualization::ImageViewer::addLine (unsigned int x_min, unsigned int y_min
 
   am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
   am_it->canvas->DrawSegment (x_min, y_min, x_max, y_max);
-  image_viewer_->Render ();
 
   return (true);
 }
@@ -651,7 +709,6 @@ pcl::visualization::ImageViewer::markPoint (
   am_it->canvas->DrawPoint (int (u), int (v));
   am_it->canvas->SetDrawColor (bg_color[0], bg_color[1], bg_color[2], opacity * 255.0);
   am_it->canvas->DrawCircle (int (u), int (v), radius);
-  image_viewer_->Render ();
 }
 
 

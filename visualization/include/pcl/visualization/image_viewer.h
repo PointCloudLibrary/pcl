@@ -94,6 +94,17 @@ namespace pcl
         showMonoImage (const unsigned char* data, unsigned width, unsigned height,
                        const std::string &layer_id = "mono_image", double opacity = 1.0);
 
+        /** \brief Add a monochrome 2D image layer, but do not render it (use spin/spinOnce to update).
+          * \param[in] data the input data representing the image
+          * \param[in] width the width of the image
+          * \param[in] height the height of the image
+          * \param[in] layer_id the name of the layer (default: "image")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
+          */
+        void 
+        addMonoImage (const unsigned char* data, unsigned width, unsigned height,
+                      const std::string &layer_id = "mono_image", double opacity = 1.0);
+
         /** \brief Show a 2D RGB image on screen.
           * \param[in] data the input data representing the image
           * \param[in] width the width of the image
@@ -104,6 +115,17 @@ namespace pcl
         void 
         showRGBImage (const unsigned char* data, unsigned width, unsigned height, 
                       const std::string &layer_id = "rgb_image", double opacity = 1.0);
+
+        /** \brief Add an RGB 2D image layer, but do not render it (use spin/spinOnce to update).
+          * \param[in] data the input data representing the image
+          * \param[in] width the width of the image
+          * \param[in] height the height of the image
+          * \param[in] layer_id the name of the layer (default: "image")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
+          */
+        void 
+        addRGBImage (const unsigned char* data, unsigned width, unsigned height, 
+                     const std::string &layer_id = "rgb_image", double opacity = 1.0);
 
         /** \brief Show a 2D image on screen, obtained from the RGB channel of a point cloud.
           * \param[in] data the input data representing the RGB point cloud 
@@ -117,6 +139,18 @@ namespace pcl
           return (showRGBImage<T> (*cloud, layer_id, opacity));
         }
 
+        /** \brief Add an RGB 2D image layer, but do not render it (use spin/spinOnce to update).
+          * \param[in] data the input data representing the RGB point cloud 
+          * \param[in] layer_id the name of the layer (default: "image")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
+          */
+        template <typename T> inline void 
+        addRGBImage (const typename pcl::PointCloud<T>::ConstPtr &cloud,
+                      const std::string &layer_id = "rgb_image", double opacity = 1.0)
+        {
+          return (addRGBImage<T> (*cloud, layer_id, opacity));
+        }
+
         /** \brief Show a 2D image on screen, obtained from the RGB channel of a point cloud.
           * \param[in] data the input data representing the RGB point cloud 
           * \param[in] layer_id the name of the layer (default: "image")
@@ -125,6 +159,15 @@ namespace pcl
         template <typename T> void 
         showRGBImage (const pcl::PointCloud<T> &cloud,
                       const std::string &layer_id = "rgb_image", double opacity = 1.0);
+
+        /** \brief Add an RGB 2D image layer, but do not render it (use spin/spinOnce to update).
+          * \param[in] data the input data representing the RGB point cloud 
+          * \param[in] layer_id the name of the layer (default: "image")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
+          */
+        template <typename T> void 
+        addRGBImage (const pcl::PointCloud<T> &cloud,
+                     const std::string &layer_id = "rgb_image", double opacity = 1.0);
 
         /** \brief Show a 2D image (float) on screen.
           * \param[in] data the input data representing the image in float format
@@ -141,6 +184,22 @@ namespace pcl
                         float min_value = std::numeric_limits<float>::min (), 
                         float max_value = std::numeric_limits<float>::max (), bool grayscale = false,
                         const std::string &layer_id = "float_image", double opacity = 1.0);
+
+        /** \brief Add a float 2D image layer, but do not render it (use spin/spinOnce to update).
+          * \param[in] data the input data representing the image in float format
+          * \param[in] width the width of the image
+          * \param[in] height the height of the image
+          * \param[in] min_value filter all values in the image to be larger than this minimum value
+          * \param[in] max_value filter all values in the image to be smaller than this maximum value
+          * \param[in] grayscale show data as grayscale (true) or not (false). Default: false
+          * \param[in] layer_id the name of the layer (default: "image")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
+          */
+        void 
+        addFloatImage (const float* data, unsigned int width, unsigned int height, 
+                       float min_value = std::numeric_limits<float>::min (), 
+                       float max_value = std::numeric_limits<float>::max (), bool grayscale = false,
+                       const std::string &layer_id = "float_image", double opacity = 1.0);
         
         /** \brief Show a 2D image (unsigned short) on screen.
           * \param[in] short_image the input data representing the image in unsigned short format
@@ -158,6 +217,22 @@ namespace pcl
                         unsigned short max_value = std::numeric_limits<unsigned short>::max (), bool grayscale = false,
                         const std::string &layer_id = "short_image", double opacity = 1.0);
 
+        /** \brief Add a short 2D image layer, but do not render it (use spin/spinOnce to update).
+          * \param[in] short_image the input data representing the image in unsigned short format
+          * \param[in] width the width of the image
+          * \param[in] height the height of the image
+          * \param[in] min_value filter all values in the image to be larger than this minimum value
+          * \param[in] max_value filter all values in the image to be smaller than this maximum value
+          * \param[in] grayscale show data as grayscale (true) or not (false). Default: false
+          * \param[in] layer_id the name of the layer (default: "image")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
+          */
+        void
+        addShortImage (const unsigned short* short_image, unsigned int width, unsigned int height, 
+                       unsigned short min_value = std::numeric_limits<unsigned short>::min (), 
+                       unsigned short max_value = std::numeric_limits<unsigned short>::max (), bool grayscale = false,
+                       const std::string &layer_id = "short_image", double opacity = 1.0);
+
         /** \brief Show a 2D image on screen representing angle data.
           * \param[in] data the input data representing the image
           * \param[in] width the width of the image
@@ -169,6 +244,17 @@ namespace pcl
         showAngleImage (const float* data, unsigned width, unsigned height,
                         const std::string &layer_id = "angle_image", double opacity = 1.0);
 
+        /** \brief Add an angle 2D image layer, but do not render it (use spin/spinOnce to update).
+          * \param[in] data the input data representing the image
+          * \param[in] width the width of the image
+          * \param[in] height the height of the image
+          * \param[in] layer_id the name of the layer (default: "image")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
+          */
+        void 
+        addAngleImage (const float* data, unsigned width, unsigned height,
+                       const std::string &layer_id = "angle_image", double opacity = 1.0);
+
         /** \brief Show a 2D image on screen representing half angle data.
           * \param[in] data the input data representing the image
           * \param[in] width the width of the image
@@ -179,6 +265,17 @@ namespace pcl
         void 
         showHalfAngleImage (const float* data, unsigned width, unsigned height,
                             const std::string &layer_id = "half_angle_image", double opacity = 1.0);
+
+        /** \brief Add a half angle 2D image layer, but do not render it (use spin/spinOnce to update).
+          * \param[in] data the input data representing the image
+          * \param[in] width the width of the image
+          * \param[in] height the height of the image
+          * \param[in] layer_id the name of the layer (default: "image")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
+          */
+        void 
+        addHalfAngleImage (const float* data, unsigned width, unsigned height,
+                           const std::string &layer_id = "half_angle_image", double opacity = 1.0);
 
         /** \brief Sets the pixel at coordinates(u,v) to color while setting the neighborhood to another
           * \param[in] u the u/x coordinate of the pixel
@@ -212,7 +309,7 @@ namespace pcl
           * interactor's framerate does not require a redraw yet.
           */
         void 
-        spinOnce (int time = 1, bool force_redraw = false);
+        spinOnce (int time = 1, bool force_redraw = true);
         
         /** \brief Register a callback function for keyboard events
           * \param[in] callback  the function that will be registered as a callback for a keyboard event
