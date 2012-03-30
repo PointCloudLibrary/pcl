@@ -44,17 +44,16 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
-  : interactor_ (vtkSmartPointer<vtkRenderWindowInteractor>::New ()),
-    mouse_command_ (vtkSmartPointer<vtkCallbackCommand>::New ()), 
-    keyboard_command_ (vtkSmartPointer<vtkCallbackCommand>::New ()),
-    image_viewer_ (vtkSmartPointer<vtkImageViewer>::New ()),
-    data_ (),
-    data_size_ (0),
-    stopped_ (),
-    timer_id_ (),
-    blend_ (vtkSmartPointer<vtkImageBlend>::New ()),
-    layer_map_ (),
-    layers_to_remove_ ()
+  : interactor_ (vtkSmartPointer<vtkRenderWindowInteractor>::New ())
+  , mouse_command_ (vtkSmartPointer<vtkCallbackCommand>::New ())
+  , keyboard_command_ (vtkSmartPointer<vtkCallbackCommand>::New ())
+  , image_viewer_ (vtkSmartPointer<vtkImageViewer>::New ())
+  , data_ ()
+  , data_size_ (0)
+  , stopped_ ()
+  , timer_id_ ()
+  , blend_ (vtkSmartPointer<vtkImageBlend>::New ())
+  , layer_map_ ()
 {
   blend_->SetBlendModeToNormal ();
   blend_->SetNumberOfThreads (1);
@@ -247,25 +246,6 @@ pcl::visualization::ImageViewer::showShortImage (
 void 
 pcl::visualization::ImageViewer::spin ()
 {
-  // Check if we want to remove any layers
-  if (!layers_to_remove_.empty ())
-  {
-    // Remove the layers that we don't want anymore
-    for (size_t i = 0; i < layers_to_remove_.size (); ++i)
-      layer_map_.erase (layer_map_.begin () + layers_to_remove_[i]);
-
-    layers_to_remove_.clear ();
-    // Clear the blender
-    blend_->RemoveAllInputs ();
-    // Add the remaining layers back to the blender
-    for (size_t i = 0; i < layer_map_.size (); ++i)
-    {
-      blend_->AddInputConnection (layer_map_[i].canvas->GetOutputPort ());
-      blend_->SetOpacity (blend_->GetNumberOfInputs () - 1, layer_map_[i].opacity);
-    }
-    image_viewer_->SetInputConnection (blend_->GetOutputPort ());
-   }
-
   resetStoppedFlag ();
   // Render the window before we start the interactor
   interactor_->Render ();
@@ -276,25 +256,6 @@ pcl::visualization::ImageViewer::spin ()
 void
 pcl::visualization::ImageViewer::spinOnce (int time, bool force_redraw)
 {
-  // Check if we want to remove any layers
-  if (!layers_to_remove_.empty ())
-  {
-    // Remove the layers that we don't want anymore
-    for (size_t i = 0; i < layers_to_remove_.size (); ++i)
-      layer_map_.erase (layer_map_.begin () + layers_to_remove_[i]);
-
-    layers_to_remove_.clear ();
-    // Clear the blender
-    blend_->RemoveAllInputs ();
-    // Add the remaining layers back to the blender
-    for (size_t i = 0; i < layer_map_.size (); ++i)
-    {
-      blend_->AddInputConnection (layer_map_[i].canvas->GetOutputPort ());
-      blend_->SetOpacity (blend_->GetNumberOfInputs () - 1, layer_map_[i].opacity);
-    }
-    image_viewer_->SetInputConnection (blend_->GetOutputPort ());
-   }
-  
   if (time <= 0)
     time = 1;
   
@@ -513,7 +474,18 @@ pcl::visualization::ImageViewer::removeLayer (const std::string &layer_id)
     return;
   }
 
-  layers_to_remove_.push_back (int (am_it - layer_map_.begin ()));
+  // Remove the layers that we don't want anymore
+  layer_map_.erase (layer_map_.begin () + int (am_it - layer_map_.begin ()));
+
+  // Clear the blender
+  blend_->RemoveAllInputs ();
+  // Add the remaining layers back to the blender
+  for (size_t i = 0; i < layer_map_.size (); ++i)
+  {
+    blend_->AddInputConnection (layer_map_[i].canvas->GetOutputPort ());
+    blend_->SetOpacity (blend_->GetNumberOfInputs () - 1, layer_map_[i].opacity);
+  }
+  image_viewer_->SetInputConnection (blend_->GetOutputPort ());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

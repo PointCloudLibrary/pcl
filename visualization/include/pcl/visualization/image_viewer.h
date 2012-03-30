@@ -529,9 +529,6 @@ namespace pcl
           }
         };
 
-        /** \brief Set to true to reinitialize the layer connections. */
-        std::vector<int> layers_to_remove_;
-
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
