@@ -552,12 +552,12 @@ TEST_F (OutofcoreTest, Outofcore_PointsOnBoundaries)
   cloud->height =1;
   cloud->reserve (8);
   
-  for(int i=0; i<8; i++)
+  for (int i=0; i<8; i++)
   {
     PointT tmp;
-    tmp.x = static_cast<float>(pow (-1,i)) * 1.0f;
-    tmp.y = static_cast<float>(pow (-1,i+1)) * 1.0f;
-    tmp.z = static_cast<float>(pow (-1, 3*i)) * 1.0f;
+    tmp.x = static_cast<float> (pow (-1.0, i)) * 1.0f;
+    tmp.y = static_cast<float> (pow (-1.0, i+1)) * 1.0f;
+    tmp.z = static_cast<float> (pow (-1.0, 3*i)) * 1.0f;
     
     cloud->points.push_back (tmp);
   }
@@ -569,11 +569,6 @@ TEST_F (OutofcoreTest, Outofcore_PointsOnBoundaries)
   ASSERT_EQ ( 8, octree.getNumPointsAtDepth ( octree.getDepth () ));
 
 }
-
-
-
-
-
 
 TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
 {
