@@ -48,7 +48,7 @@ namespace pcl
 
   /**
    * \brief hypothesis verification method proposed in
-   * "An Efficient RANSAC for 3D Object Recognition in Noisy and Occluded Scenes", C. Papazov and D. Burschka, ACCV 2010
+   * "An Efficient RANSAC for 3D Object Recognition in Noisy and Occluded Scenes", C. Papazov and D. Burschka, ACCV 2010
    * \author Aitor Aldoma, Federico Tombari
    */
 

@@ -94,7 +94,7 @@ namespace pcl
         int v = static_cast<int> (f * y / z + cy);
 
         //Not out of bounds
-        if (u >= static_cast<int> (organized_cloud->width) || v >= static_cast<int> (organized_cloud->height))
+        if ((u >= static_cast<int> (organized_cloud->width)) || (v >= static_cast<int> (organized_cloud->height)) || (u < 0) || (v < 0))
           continue;
 
         //Check for invalid depth
