@@ -502,17 +502,17 @@ pcl::PLYWriter::generateHeader (const sensor_msgs::PointCloud2 &cloud,
     if (fields_list.find ("intensity", xyz_found) != std::string::npos)
       oss << "\nproperty float intensity";
 
+    if (fields_list.find ("rgb", xyz_found) != std::string::npos)
+      oss << "\nproperty uchar red"
+        "\nproperty uchar green"
+        "\nproperty uchar blue";
+    
     if (fields_list.find ("normal_x normal_y normal_z", xyz_found) != std::string::npos)
       oss << "\nproperty float nx"
         "\nproperty float ny"
         "\nproperty float nz"
         "\nproperty float curvature";
         
-    if (fields_list.find ("rgb", xyz_found) != std::string::npos)
-      oss << "\nproperty uchar red"
-        "\nproperty uchar green"
-        "\nproperty uchar blue";
-    
     if (fields_list.find ("radius", xyz_found) != std::string::npos)
       oss << "\nproperty float radius";
 
