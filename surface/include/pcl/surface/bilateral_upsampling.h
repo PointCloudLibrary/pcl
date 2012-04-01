@@ -46,7 +46,19 @@
 namespace pcl
 {
 
-  /** \brief ... */
+  /** \brief Bilateral filtering implementation, based on the following paper:
+    *   * Kopf, Johannes and Cohen, Michael F. and Lischinski, Dani and Uyttendaele, Matt - Joint Bilateral Upsampling,
+    *   * ACM Transations in Graphics, July 2007
+    *
+    * Takes in a colored organized point cloud (i.e. PointXYZRGB or PointXYZRGBA), that might contain nan values for the
+    * depth information, and it will returned an upsampled version of this cloud, based on the formula:
+    * \f[
+    *    \tilde{S}_p = \frac{1}{k_p} \sum_{q_d \in \Omega} {S_{q_d} f(||p_d - q_d|| g(||\tilde{I}_p-\tilde{I}_q||})
+    * \f]
+    *
+    * where S is the depth image, I is the RGB image and f and g are Gaussian functions centered at 0 and with
+    * standard deviations \f$\sigma_{color}\f$ and \f$\sigma_{depth}\f$
+    */
   template <typename PointInT, typename PointOutT>
   class BilateralUpsampling: public CloudSurfaceProcessing<PointInT, PointOutT>
   {
@@ -59,8 +71,6 @@ namespace pcl
 
       typedef pcl::PointCloud<PointOutT> PointCloudOut;
 
-
-      // TODO make this const
       Eigen::Matrix3f KinectVGAProjectionMatrix, KinectSXGAProjectionMatrix;
 
       /** \brief Constructor. */
@@ -81,53 +91,60 @@ namespace pcl
                                       0.0f, 0.0f, 1.0f;
       };
 
-      /** \brief ... */
+      /** \brief Method that sets the window size for the filter
+        * \param[in] window_size the given window size
+        */
       inline void
       setWindowSize (int window_size) { window_size_ = window_size; }
 
-      /** \brief ... */
+      /** \brief Returns the filter window size */
       inline int
       getWindowSize () const { return (window_size_); }
 
-      /** \brief ... */
+      /** \brief Method that sets the sigma color parameter
+        * \param[in] sigma_color the new value to be set
+        */
       inline void
       setSigmaColor (const float &sigma_color) { sigma_color_ = sigma_color; }
 
-      /** \brief ... */
+      /** \brief Returns the current sigma color value */
       inline float
       getSigmaColor () const { return (sigma_color_); }
 
-      /** \brief ... */
+      /** \brief Method that sets the sigma depth parameter
+        * \param[in] sigma_depth the new value to be set
+        */
       inline void
       setSigmaDepth (const float &sigma_depth) { sigma_depth_ = sigma_depth; }
 
-      /** \brief ... */
+      /** \brief Returns the current sigma depth value */
       inline float
       getSigmaDepth () const { return (sigma_depth_); }
 
-      /** \brief ... */
+      /** \brief Method that sets the projection matrix to be used when unprojecting the points in the depth image
+        * back to (x,y,z) positions.
+        * \note There are 2 matrices already set in the class, used for the 2 modes available for the Kinect. They
+        * are tuned to be the same as the ones in the OpenNiGrabber
+        * \param[in] projection_matrix the new projection matrix to be set */
       inline void
       setProjectionMatrix (const Eigen::Matrix3f &projection_matrix) { projection_matrix_ = projection_matrix; }
 
-      /** \brief ... */
+      /** \brief Returns the current projection matrix */
       inline Eigen::Matrix3f
       getProjectionMatrix () const { return (projection_matrix_); }
 
-      /** \brief ... */
+      /** \brief Method that does the actual processing on the input cloud.
+        * \param[out] output the container of the resulting upsampled cloud */
       void
       process (pcl::PointCloud<PointOutT> &output);
 
     protected:
-      /** \brief ... */
       void
       performProcessing (pcl::PointCloud<PointOutT> &output);
 
     private:
-      /** \brief ... */
       int window_size_;
-      /** \brief ... */
       float sigma_color_, sigma_depth_;
-      /** \brief ... */
       Eigen::Matrix3f projection_matrix_, unprojection_matrix_;
 
     public:
