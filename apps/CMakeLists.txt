@@ -129,6 +129,9 @@ if(build)
         set(impl_incs include/pcl/${SUBSYS_NAME}/impl/dominant_plane_segmentation.hpp)
         set(srcs src/dominant_plane_segmentation.cpp ${srcs})
                                    
+      PCL_ADD_EXECUTABLE(pcl_openni_planar_convex_hull ${SUBSYS_NAME} src/openni_planar_convex_hull.cpp)
+      target_link_libraries(pcl_openni_planar_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface)
+
       endif() # QHULL_FOUND
       
       # Install include files
@@ -141,9 +144,6 @@ if(build)
           
       PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" "" "" "" "")
     
-      
-      PCL_ADD_EXECUTABLE(pcl_openni_planar_convex_hull ${SUBSYS_NAME} src/openni_planar_convex_hull.cpp)
-      target_link_libraries(pcl_openni_planar_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface)
       
 #      PCL_ADD_EXECUTABLE(pcl_openni_icp_reg ${SUBSYS_NAME} src/openni_icp_reg.cpp)
  #     target_link_libraries(pcl_openni_icp_reg pcl_common pcl_kdtree pcl_registration pcl_visualization pcl_filters)
