@@ -41,6 +41,7 @@
 #define PCL_GEOMETRY_POLYGON_OPERATORS_H
 
 #include "planar_polygon.h"
+#include <pcl/point_cloud.h>
 
 namespace pcl
 {
@@ -60,7 +61,9 @@ namespace pcl
     * \author Suat Gedikli <gedikli@willowgarage.com>
     */
   template <typename PointT>
-  void approximatePolygon2D (const std::vector<PointT>& polygon, std::vector<PointT>& approx_polygon, float threshold, bool refine = false, bool closed = true);
+  void approximatePolygon2D (const typename PointCloud<PointT>::VectorType &polygon, 
+                             typename PointCloud<PointT>::VectorType &approx_polygon, 
+                             float threshold, bool refine = false, bool closed = true);
 
 } // namespace pcl
 

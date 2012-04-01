@@ -13,9 +13,11 @@ if(build)
         include/pcl/${SUBSYS_NAME}/planar_polygon.h
         include/pcl/${SUBSYS_NAME}/organized_index_iterator.h
         include/pcl/${SUBSYS_NAME}/line_iterator.h
+        include/pcl/${SUBSYS_NAME}/polygon_operations.h
         )
 
     set(impl_incs 
+        include/pcl/${SUBSYS_NAME}/impl/polygon_operations.hpp
         )
 
     set(srcs

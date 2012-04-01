@@ -6,20 +6,20 @@ template<typename PointT> void
 pcl::approximatePolygon (const PlanarPolygon<PointT>& polygon, PlanarPolygon<PointT>& approx_polygon, float threshold, bool refine, bool closed)
 {
   const Eigen::Vector4f& coefficients = polygon.getCoefficients ();
-  const std::vector<PointT, Eigen::aligned_allocator<PointT> >& contour = polygon.getContour ();
+  const typename pcl::PointCloud<PointT>::VectorType &contour = polygon.getContour ();
   
   Eigen::Vector3f rotation_axis = Eigen::Vector3f(coefficients[1], -coefficients[0], 0).normalized ();
   float rotation_angle = acos(coefficients [2]);
   Eigen::Affine3f transformation = Eigen::Translation3f (0, 0, coefficients [3]) * Eigen::AngleAxisf (rotation_angle, rotation_axis);
 
-  std::vector<PointT> polygon2D (contour.size ());
+  typename pcl::PointCloud<PointT>::VectorType polygon2D (contour.size ());
   for (unsigned pIdx = 0; pIdx < polygon2D.size (); ++pIdx)
     polygon2D [pIdx].getVector3fMap () = transformation * contour [pIdx].getVector3fMap ();
 
-  std::vector<PointT> approx_polygon2D;
-  approximatePolygon2D (polygon2D, approx_polygon2D, threshold, refine, closed);
+  typename pcl::PointCloud<PointT>::VectorType approx_polygon2D;
+  approximatePolygon2D<PointT> (polygon2D, approx_polygon2D, threshold, refine, closed);
   
-  std::vector<PointT, Eigen::aligned_allocator<PointT> >& approx_contour = approx_polygon.getContour ();
+  typename pcl::PointCloud<PointT>::VectorType &approx_contour = approx_polygon.getContour ();
   approx_contour.resize (approx_polygon2D.size ());
   
   Eigen::Affine3f inv_transformation = transformation.inverse ();
@@ -28,7 +28,9 @@ pcl::approximatePolygon (const PlanarPolygon<PointT>& polygon, PlanarPolygon<Poi
 }
 
 template <typename PointT> void
-pcl::approximatePolygon2D (const std::vector<PointT>& polygon, std::vector<PointT>& approx_polygon, float threshold, bool refine, bool closed)
+pcl::approximatePolygon2D (const typename pcl::PointCloud<PointT>::VectorType &polygon, 
+                           typename pcl::PointCloud<PointT>::VectorType &approx_polygon, 
+                           float threshold, bool refine, bool closed)
 {
   approx_polygon.clear ();
   if (polygon.size () < 3)
