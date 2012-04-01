@@ -81,7 +81,7 @@ class OrganizedSegmentationDemo : public QMainWindow
     std::vector<pcl::PlanarRegion<PointT> > prev_regions_;
     float* prev_distance_map_;
     
-    std::vector<pcl::PointCloud<PointT> > prev_clusters_;
+    std::vector<pcl::PointCloud<PointT>, Eigen::aligned_allocator<pcl::PointCloud<PointT> > > prev_clusters_;
     
     pcl::IntegralImageNormalEstimation<PointT, pcl::Normal> ne;
     pcl::OrganizedMultiPlaneSegmentation<PointT, pcl::Normal, pcl::Label> mps;

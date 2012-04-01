@@ -41,7 +41,8 @@ displayPlanarRegions (std::vector<pcl::PlanarRegion<PointT> >& regions, boost::s
 }
 
 void
-displayEuclideanClusters (std::vector<pcl::PointCloud<PointT> >& clusters, boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
+displayEuclideanClusters (const std::vector<pcl::PointCloud<PointT>, Eigen::aligned_allocator<pcl::PointCloud<PointT> > > &clusters, 
+                          boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
 {
   char name[1024];
   unsigned char red [6] = {255,   0,   0, 255, 255,   0};
@@ -307,7 +308,7 @@ OrganizedSegmentationDemo::cloud_cb (const CloudConstPtr& cloud)
   std::cout << "MPS+Refine took: " << double(mps_end - mps_start) << std::endl;
 
   //Segment Objects
-  std::vector<pcl::PointCloud<PointT> > clusters;
+  std::vector<pcl::PointCloud<PointT>, Eigen::aligned_allocator<pcl::PointCloud<PointT> > > clusters;
 
   if (use_clustering_ && regions.size () > 0)
   {
