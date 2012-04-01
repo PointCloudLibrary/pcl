@@ -67,6 +67,14 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::process (pcl::PointCloud<PointOut
   // Invert projection matrix
   unprojection_matrix_ = projection_matrix_.inverse ();
 
+  for (int i = 0; i < 3; ++i)
+  {
+    for (int j = 0; j < 3; ++j)
+      printf ("%f ", unprojection_matrix_(i, j));
+
+    printf ("\n");
+  }
+
 
   // Perform the actual surface reconstruction
   performProcessing (output);
@@ -78,58 +86,66 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::process (pcl::PointCloud<PointOut
 template <typename PointInT, typename PointOutT> void
 pcl::BilateralUpsampling<PointInT, PointOutT>::performProcessing (PointCloudOut &output)
 {
-  output.resize (input_->size ());
+    output.resize (input_->size ());
+    float nan = std::numeric_limits<float>::quiet_NaN ();
 
-  for (int x = 0; x < static_cast<int> (input_->width); ++x)
-    for (int y = 0; y < static_cast<int> (input_->height); ++y)
-    {
-      int start_window_x = std::max (x - window_size_, 0),
-          start_window_y = std::max (y - window_size_, 0),
-          end_window_x = std::min (x + window_size_, static_cast<int> (input_->width)),
-          end_window_y = std::min (y + window_size_, static_cast<int> (input_->height));
 
-      float sum = 0.0f,
+    for (int x = 0; x < static_cast<int> (input_->width); ++x)
+      for (int y = 0; y < static_cast<int> (input_->height); ++y)
+      {
+        int start_window_x = std::max (x - window_size_, 0),
+            start_window_y = std::max (y - window_size_, 0),
+            end_window_x = std::min (x + window_size_, static_cast<int> (input_->width)),
+            end_window_y = std::min (y + window_size_, static_cast<int> (input_->height));
+
+        float sum = 0.0f,
             norm_sum = 0.0f;
 
-      for (int x_w = start_window_x; x_w < end_window_x; ++ x_w)
-        for (int y_w = start_window_y; y_w < end_window_y; ++ y_w)
-        {
-          float dx = float (x - x_w),
+        for (int x_w = start_window_x; x_w < end_window_x; ++ x_w)
+          for (int y_w = start_window_y; y_w < end_window_y; ++ y_w)
+          {
+            float dx = float (x - x_w),
                 dy = float (y - y_w);
 
-          float val_exp_depth = expf (- (dx*dx + dy*dy) / (2.0f * static_cast<float> (sigma_depth_ * sigma_depth_)));
+            float val_exp_depth = expf (- (dx*dx + dy*dy) / (2.0f * static_cast<float> (sigma_depth_ * sigma_depth_)));
 
-          float d_color = static_cast<float> (
-                          abs (input_->points[y_w * input_->width + x_w].r - input_->points[y * input_->width + x].r) +
-                          abs (input_->points[y_w * input_->width + x_w].g - input_->points[y * input_->width + x].g) +
-                          abs (input_->points[y_w * input_->width + x_w].b - input_->points[y * input_->width + x].b));
-          float val_exp_rgb = expf (- d_color * d_color / (2.0f * sigma_color_ * sigma_color_));
+            float d_color = static_cast<float> (
+                abs (input_->points[y_w * input_->width + x_w].r - input_->points[y * input_->width + x].r) +
+                abs (input_->points[y_w * input_->width + x_w].g - input_->points[y * input_->width + x].g) +
+                abs (input_->points[y_w * input_->width + x_w].b - input_->points[y * input_->width + x].b));
+            float val_exp_rgb = expf (- d_color * d_color / (2.0f * sigma_color_ * sigma_color_));
 
-          if (pcl_isfinite (input_->points[y_w*input_->width + x_w].z))
-          {
-            sum += val_exp_depth * val_exp_rgb * input_->points[y_w*input_->width + x_w].z;
-            norm_sum += val_exp_depth * val_exp_rgb;
+            if (pcl_isfinite (input_->points[y_w*input_->width + x_w].z))
+            {
+              sum += val_exp_depth * val_exp_rgb * input_->points[y_w*input_->width + x_w].z;
+              norm_sum += val_exp_depth * val_exp_rgb;
+            }
           }
+
+        output.points[y*input_->width + x].r = input_->points[y*input_->width + x].r;
+        output.points[y*input_->width + x].g = input_->points[y*input_->width + x].g;
+        output.points[y*input_->width + x].b = input_->points[y*input_->width + x].b;
+
+        if (norm_sum != 0.0f)
+        {
+          float depth = sum / norm_sum;
+          Eigen::Vector3f pc (static_cast<float> (x) * depth, static_cast<float> (y) * depth, depth);
+          Eigen::Vector3f pw (unprojection_matrix_ * pc);
+          output.points[y*input_->width + x].x = pw[0];
+          output.points[y*input_->width + x].y = pw[1];
+          output.points[y*input_->width + x].z = pw[2];
         }
-
-      output.points[y*input_->width + x].r = input_->points[y*input_->width + x].r;
-      output.points[y*input_->width + x].g = input_->points[y*input_->width + x].g;
-      output.points[y*input_->width + x].b = input_->points[y*input_->width + x].b;
-
-      if (norm_sum != 0.0f)
-      {
-        float depth = sum / norm_sum;
-        Eigen::Vector3f pc (static_cast<float> (y) * depth, static_cast<float> (x) * depth, depth);
-        Eigen::Vector3f pw (unprojection_matrix_ * pc);
-        output.points[y*input_->width + x].y = pw[0];
-        output.points[y*input_->width + x].x = pw[1];
-        output.points[y*input_->width + x].z = pw[2];
+        else
+        {
+          output.points[y*input_->width + x].x = nan;
+          output.points[y*input_->width + x].y = nan;
+          output.points[y*input_->width + x].z = nan;
+        }
       }
-    }
 
-  output.header = input_->header;
-  output.width = input_->width;
-  output.height = input_->height;
+    output.header = input_->header;
+    output.width = input_->width;
+    output.height = input_->height;
 }
 
 

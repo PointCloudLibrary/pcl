@@ -59,6 +59,8 @@ namespace pcl
 
       typedef pcl::PointCloud<PointOutT> PointCloudOut;
 
+
+      // TODO make this const
       Eigen::Matrix3f KinectVGAProjectionMatrix, KinectSXGAProjectionMatrix;
 
       /** \brief Constructor. */
@@ -71,11 +73,11 @@ namespace pcl
         , projection_matrix_ ()
         , unprojection_matrix_ ()
       {
-        KinectVGAProjectionMatrix << 575.0f, 0.0f, 320.0f,
-                                     0.0f, 575.0f, 240.0f,
+        KinectVGAProjectionMatrix << 525.0f, 0.0f, 320.0f,
+                                     0.0f, 525.0f, 240.0f,
                                      0.0f, 0.0f, 1.0f;
-        KinectSXGAProjectionMatrix << 1056.0f, 0.0f, 640.0f,
-                                      0.0f, 1056.0f, 480.0f,
+        KinectSXGAProjectionMatrix << 1050.0f, 0.0f, 640.0f,
+                                      0.0f, 1050.0f, 480.0f,
                                       0.0f, 0.0f, 1.0f;
       };
 
