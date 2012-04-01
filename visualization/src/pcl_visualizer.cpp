@@ -401,7 +401,7 @@ feq (double a, double b) {
 }
 
 void
-quat_to_angle_axis (Eigen::Quaternionf qx, double &theta, double axis[3])
+quat_to_angle_axis (const Eigen::Quaternionf &qx, double &theta, double axis[3])
 {
 double q[4];
   q[0] = qx.w();
