@@ -144,7 +144,7 @@ compareClusterToRegion (pcl::PlanarRegion<PointT>& region, pcl::PointCloud<Point
                             model[1] * cluster.points[i].y +
                             model[2] * cluster.points[i].z +
                             model[3]);
-    bool in_poly = pcl::isPointIn2DPolygon (cluster.points[i], poly);
+    bool in_poly = pcl::isPointIn2DPolygon<PointT> (cluster.points[i], poly);
     if (in_poly && ptp_dist < 0.02)
       return true;
   }
