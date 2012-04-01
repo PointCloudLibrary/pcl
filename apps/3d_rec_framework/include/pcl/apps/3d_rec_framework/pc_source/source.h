@@ -33,7 +33,7 @@ namespace pcl
         typedef typename pcl::PointCloud<PointT>::ConstPtr PointTPtrConst;
 
       public:
-        boost::shared_ptr<std::vector<PointTPtr, Eigen::aligned_allocator<PointTPtr> > > views_;
+        boost::shared_ptr<std::vector<PointTPtr> > views_;
         boost::shared_ptr<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > poses_;
         boost::shared_ptr<std::vector<float> > self_occlusions_;
         std::string id_;

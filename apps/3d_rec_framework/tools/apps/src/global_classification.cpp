@@ -53,7 +53,7 @@ segmentAndClassify (typename pcl::rec_3d_framework::GlobalNNPipeline<DistT, Poin
     dps.setWSize (9);
     dps.setDistanceBetweenClusters (0.1f);
 
-    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr, Eigen::aligned_allocator<pcl::PointCloud<pcl::PointXYZ>::Ptr> > clusters;
+    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters;
     std::vector<pcl::PointIndices> indices;
     dps.setDownsamplingSize (0.02f);
     dps.compute_fast (clusters);

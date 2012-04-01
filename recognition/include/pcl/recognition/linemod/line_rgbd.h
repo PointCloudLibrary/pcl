@@ -279,8 +279,7 @@ namespace pcl
       typename pcl::PointCloud<PointRGBT>::ConstPtr cloud_rgb_;
 
       /** \brief Point clouds corresponding to the templates. */
-      std::vector<pcl::PointCloud<pcl::PointXYZRGBA>,
-                  Eigen::aligned_allocator<pcl::PointCloud<pcl::PointXYZRGBA> > > template_point_clouds_;
+      pcl::PointCloud<pcl::PointXYZRGBA>::CloudVectorType template_point_clouds_;
       /** \brief Bounding boxes corresonding to the templates. */
       std::vector<pcl::BoundingBoxXYZ> bounding_boxes_;
       /** \brief Object IDs corresponding to the templates. */

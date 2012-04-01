@@ -1177,7 +1177,7 @@ TEST (PCL, Octree_Pointcloud_Voxel_Centroid_Test)
   // add points from cloud to octree
   octree.addPointsFromInputCloud ();
 
-  std::vector<PointXYZ, Eigen::aligned_allocator<PointXYZ> > voxelCentroids;
+  pcl::PointCloud<PointXYZ>::VectorType voxelCentroids;
   octree.getVoxelCentroids (voxelCentroids);
 
   // we expect 10 voxel centroids
@@ -1234,8 +1234,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
 
   unsigned int K;
 
-  std::priority_queue<prioPointQueueEntry,
-      std::vector<prioPointQueueEntry, Eigen::aligned_allocator<prioPointQueueEntry> > > pointCandidates;
+  std::priority_queue<prioPointQueueEntry, pcl::PointCloud<prioPointQueueEntry>::VectorType> pointCandidates;
 
   // create octree
   OctreePointCloudSearch<PointXYZ> octree (0.1);
@@ -1584,7 +1583,7 @@ TEST (PCL, Octree_Pointcloud_Ray_Traversal)
   octree::OctreePointCloudSearch<PointXYZ> octree_search (0.02f);
 
   // Voxels in ray
-  std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ> > voxelsInRay;
+  pcl::PointCloud<pcl::PointXYZ>::VectorType voxelsInRay;
 
   // Indices in ray
   std::vector<int> indicesInRay;

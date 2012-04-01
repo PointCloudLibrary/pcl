@@ -2136,9 +2136,7 @@ void
 pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
                                                                int xres,
                                                                int yres,
-                                                               std::vector<pcl::PointCloud<pcl::PointXYZ>,
-                                                                   Eigen::aligned_allocator<pcl::PointCloud<
-                                                                       pcl::PointXYZ> > > & clouds,
+                                                               pcl::PointCloud<pcl::PointXYZ>::CloudVectorType &clouds,
                                                                std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<
                                                                    Eigen::Matrix4f> > & poses,
                                                                std::vector<float> & enthropies, int tesselation_level,

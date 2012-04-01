@@ -189,7 +189,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::deleteVoxelAtPoint (const
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT> int
 pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getOccupiedVoxelCenters (
-    std::vector<PointT, Eigen::aligned_allocator<PointT> > &voxelCenterList_arg) const
+    AlignedPointTVector &voxelCenterList_arg) const
 {
   OctreeKey key;
   key.x = key.y = key.z = 0;
@@ -709,8 +709,7 @@ template<typename PointT, typename LeafT, typename OctreeT> int
 pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getOccupiedVoxelCentersRecursive (
     const OctreeBranch* node_arg,
     const OctreeKey& key_arg,
-    std::vector<PointT,
-    Eigen::aligned_allocator<PointT> > &voxelCenterList_arg) const
+    AlignedPointTVector &voxelCenterList_arg) const
 {
   // child iterator
   unsigned char childIdx;

@@ -437,6 +437,7 @@ namespace pcl
 
       typedef PointT PointType;  // Make the template class available from the outside
       typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > VectorType;
+      typedef std::vector<PointCloud<PointT>, Eigen::aligned_allocator<PointCloud<PointT> > > CloudVectorType;
       typedef boost::shared_ptr<PointCloud<PointT> > Ptr;
       typedef boost::shared_ptr<const PointCloud<PointT> > ConstPtr;
 

@@ -754,7 +754,7 @@ NarfKeypoint::calculateInterestPoints ()
   std::vector<int> types;
   std::vector<bool> invalid_beams, old_invalid_beams;
   
-  std::vector<InterestPoint, Eigen::aligned_allocator<InterestPoint> > tmp_interest_points;
+  pcl::PointCloud<InterestPoint>::VectorType tmp_interest_points;
   for (int y=0; y<height; ++y)
   {
     for (int x=0; x<width; ++x)

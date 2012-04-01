@@ -75,7 +75,7 @@ seededHueSegmentation (const boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB>
     // Create the query queue on the device, point based not indices
     pcl::gpu::Octree::Queries queries_device;
     // Create the query queue on the host
-    std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>  > queries_host;
+    pcl::PointCloud<pcl::PointXYZ>::VectorType queries_host;
     // Push the starting point in the vector
     queries_host.push_back (host_cloud_->points[i]);
 

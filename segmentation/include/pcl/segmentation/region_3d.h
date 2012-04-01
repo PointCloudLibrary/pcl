@@ -98,6 +98,9 @@ namespace pcl
       
       /** \brief The number of points in the region. */
       unsigned count_;
+
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

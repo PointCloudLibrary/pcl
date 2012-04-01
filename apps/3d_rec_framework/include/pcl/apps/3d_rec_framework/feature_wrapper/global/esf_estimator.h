@@ -24,7 +24,7 @@ namespace pcl
       public:
         void
         estimate (PointInTPtr & in, PointInTPtr & processed,
-                  std::vector<pcl::PointCloud<FeatureT>, Eigen::aligned_allocator<pcl::PointCloud<FeatureT> > > & signatures,
+                  pcl::PointCloud<FeatureT>::CloudVectorType & signatures,
                   std::vector<Eigen::Vector3f> & centroids)
         {
 

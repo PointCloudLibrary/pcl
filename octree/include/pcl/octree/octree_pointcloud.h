@@ -511,7 +511,7 @@ namespace pcl
         int
         getOccupiedVoxelCentersRecursive (const OctreeBranch* node_arg,
                                           const OctreeKey& key_arg,
-                                          std::vector<PointT, Eigen::aligned_allocator<PointT> > &voxelCenterList_arg) const;
+                                          AlignedPointTVector &voxelCenterList_arg) const;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Globals

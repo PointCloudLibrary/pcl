@@ -161,7 +161,7 @@ void
 RangeImage::integrateFarRanges (const PointCloud<PointWithViewpoint>& far_ranges)
 {
   float x_real, y_real, range_of_current_point;
-  for (std::vector<PointWithViewpoint, Eigen::aligned_allocator<PointWithViewpoint> >::const_iterator it
+  for (PointCloud<PointWithViewpoint>::const_iterator it
        =far_ranges.points.begin (); it!=far_ranges.points.end (); ++it)
   {
     //if (!isFinite (*it))  // Check for NAN etc
@@ -263,7 +263,7 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
   
   
   // Create copy without copying the old points - vector::swap only copies a few pointers, not the content
-  std::vector<PointWithRange, Eigen::aligned_allocator<PointWithRange> > tmpPoints;
+  PointCloud<PointWithRange>::VectorType tmpPoints;
   points.swap (tmpPoints);
   RangeImage oldRangeImage = *this;
   tmpPoints.swap (oldRangeImage.points);

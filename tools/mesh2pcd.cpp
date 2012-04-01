@@ -129,7 +129,7 @@ main (int argc, char **argv)
   vis.addModelFromPolyData (polydata1, "mesh1", 0);
   vis.setRepresentationToSurfaceForAllActors ();
 
-  std::vector<PointCloud<PointXYZ> , Eigen::aligned_allocator<PointCloud<PointXYZ> > > views_xyz;
+  PointCloud<PointXYZ>::CloudVectorType views_xyz;
   std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > poses;
   std::vector<float> enthropies;
   vis.renderViewTesselatedSphere (resolution, resolution, views_xyz, poses, enthropies, tesselated_sphere_level);

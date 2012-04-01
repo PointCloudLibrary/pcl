@@ -86,7 +86,7 @@ namespace pcl
         * \param[in] coefficients the model coefficients (a,b,c,d) for the plane
         */
       PlanarRegion (const Eigen::Vector3f& centroid, const Eigen::Matrix3f& covariance, unsigned count,
-                    const std::vector<PointT, Eigen::aligned_allocator<PointT> >& contour,
+                    const typename pcl::PointCloud<PointT>::VectorType& contour,
                     const Eigen::Vector4f& coefficients) :
         contour_labels_ ()
       {
@@ -102,7 +102,10 @@ namespace pcl
         * or was due to edge of frame / occlusion boundary. 
         */
       std::vector<bool> contour_labels_;
-      
+
+    public:
+      typedef std::vector<PlanarRegion<PointT>, Eigen::aligned_allocator<PlanarRegion<PointT> > > PlanarRegionVectorType;
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW      
   };
 }
 

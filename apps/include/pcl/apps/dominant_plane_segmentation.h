@@ -90,14 +90,14 @@ namespace pcl
          * specified by downsample_leaf_
          */
         void
-        compute (std::vector<CloudPtr, Eigen::aligned_allocator<CloudPtr> > & clusters);
+        compute (std::vector<CloudPtr> & clusters);
 
         /* \brief Extract the clusters.
          * \param clusters Clusters extracted from the initial point cloud. The returned
          * clusters are not downsampled.
          */
         void
-        compute_full (std::vector<CloudPtr, Eigen::aligned_allocator<CloudPtr> > & clusters);
+        compute_full (std::vector<CloudPtr> & clusters);
 
         /* \brief Extract clusters on a plane using connected components on an organized pointcloud.
          * The method expects a the input cloud to have the is_dense attribute set to false.
@@ -105,7 +105,7 @@ namespace pcl
           * clusters are not downsampled.
           */
         void
-        compute_fast (std::vector<CloudPtr, Eigen::aligned_allocator<CloudPtr> > & clusters);
+        compute_fast (std::vector<CloudPtr> & clusters);
 
         /* \brief Computes the table plane.
          */

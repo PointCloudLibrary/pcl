@@ -78,10 +78,10 @@ class OrganizedSegmentationDemo : public QMainWindow
     QTimer *vis_timer_;
     pcl::PointCloud<PointT> prev_cloud_;
     pcl::PointCloud<pcl::Normal> prev_normals_;
-    std::vector<pcl::PlanarRegion<PointT> > prev_regions_;
+    pcl::PlanarRegion<PointT>::PlanarRegionVectorType prev_regions_;
     float* prev_distance_map_;
     
-    std::vector<pcl::PointCloud<PointT>, Eigen::aligned_allocator<pcl::PointCloud<PointT> > > prev_clusters_;
+    pcl::PointCloud<PointT>::CloudVectorType prev_clusters_;
     
     pcl::IntegralImageNormalEstimation<PointT, pcl::Normal> ne;
     pcl::OrganizedMultiPlaneSegmentation<PointT, pcl::Normal, pcl::Label> mps;

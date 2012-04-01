@@ -1277,7 +1277,7 @@ namespace pcl
         void
         renderViewTesselatedSphere (
             int xres, int yres,
-            std::vector<pcl::PointCloud<pcl::PointXYZ>,Eigen::aligned_allocator< pcl::PointCloud<pcl::PointXYZ> > > & cloud,
+            pcl::PointCloud<pcl::PointXYZ>::CloudVectorType & cloud,
             std::vector<Eigen::Matrix4f,Eigen::aligned_allocator< Eigen::Matrix4f > > & poses, std::vector<float> & enthropies, int tesselation_level,
             float view_angle = 45, float radius_sphere = 1, bool use_vertices = true);
 

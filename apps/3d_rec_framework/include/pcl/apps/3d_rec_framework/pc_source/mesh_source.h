@@ -73,7 +73,7 @@ namespace pcl
           pathmodel << dir << "/" << model.class_ << "/" << model.id_;
           bf::path trained_dir = pathmodel.str ();
 
-          model.views_.reset (new std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr, Eigen::aligned_allocator<pcl::PointCloud<pcl::PointXYZ>::Ptr> >);
+          model.views_.reset (new std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr>);
           model.poses_.reset (new std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> >);
           model.self_occlusions_.reset (new std::vector<float>);
           model.assembled_.reset (new pcl::PointCloud<pcl::PointXYZ>);

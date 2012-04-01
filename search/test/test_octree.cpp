@@ -83,8 +83,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   srand (static_cast<unsigned int> (time (NULL)));
   unsigned int K;
 
-  std::priority_queue<prioPointQueueEntry, std::vector<prioPointQueueEntry, Eigen::aligned_allocator<
-      prioPointQueueEntry> > > pointCandidates;
+  std::priority_queue<prioPointQueueEntry, pcl::PointCloud<prioPointQueueEntry>::VectorType> pointCandidates;
 
   // create octree
   pcl::search::Search<PointXYZ>* octree = new pcl::search::Octree<PointXYZ> (0.1);

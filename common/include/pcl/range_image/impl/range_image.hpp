@@ -176,7 +176,7 @@ template <typename PointCloudType> void
 RangeImage::doZBuffer(const PointCloudType& point_cloud, float noise_level, float min_range, int& top, int& right, int& bottom, int& left)
 {
   typedef typename PointCloudType::PointType PointType2;
-  const std::vector<PointType2, Eigen::aligned_allocator<PointType2> >& points2 = point_cloud.points;
+  const pcl::PointCloud<PointType2>::VectorType &points2 = point_cloud.points;
   
   unsigned int size = width*height;
   int* counters = new int[size];
@@ -186,7 +186,7 @@ RangeImage::doZBuffer(const PointCloudType& point_cloud, float noise_level, floa
   
   float x_real, y_real, range_of_current_point;
   int x, y;
-  for (typename std::vector<PointType2, Eigen::aligned_allocator<PointType2> >::const_iterator it=points2.begin(); it!=points2.end(); ++it)
+  for (typename pcl::PointCloud<PointType2>::VectorType::const_iterator it=points2.begin(); it!=points2.end(); ++it)
   {
     if (!isFinite (*it))  // Check for NAN etc
       continue;

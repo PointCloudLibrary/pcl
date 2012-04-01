@@ -154,7 +154,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_table_plane ()
 }
 
 template<typename PointType> void
-pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<CloudPtr, Eigen::aligned_allocator<CloudPtr> > & clusters)
+pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<CloudPtr> & clusters)
 {
   // Has the input dataset been set already?
   if (!input_)
@@ -531,7 +531,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<Cloud
 }
 
 template<typename PointType> void
-pcl::apps::DominantPlaneSegmentation<PointType>::compute (std::vector<CloudPtr, Eigen::aligned_allocator<CloudPtr> > & clusters)
+pcl::apps::DominantPlaneSegmentation<PointType>::compute (std::vector<CloudPtr> & clusters)
 {
 
   // Has the input dataset been set already?
@@ -694,7 +694,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute (std::vector<CloudPtr, 
 
 template<typename PointType>
 void
-pcl::apps::DominantPlaneSegmentation<PointType>::compute_full (std::vector<CloudPtr, Eigen::aligned_allocator<CloudPtr> > & clusters)
+pcl::apps::DominantPlaneSegmentation<PointType>::compute_full (std::vector<CloudPtr> & clusters)
 {
 
   // Has the input dataset been set already?

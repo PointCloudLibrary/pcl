@@ -60,7 +60,7 @@ namespace pcl
         * \param[in] contour a vector of points bounding the polygon
         * \param[in] coefficients a vector of the plane's coefficients (a,b,c,d)
         */
-      PlanarPolygon (std::vector<PointT, Eigen::aligned_allocator<PointT> >& contour,
+      PlanarPolygon (typename pcl::PointCloud<PointT>::VectorType &contour,
                      Eigen::Vector4f& coefficients) 
         : contour_ (contour), coefficients_ (coefficients)
       {}
@@ -69,14 +69,14 @@ namespace pcl
       virtual ~PlanarPolygon () {}
 
       /** \brief Getter for the contour / boundary */
-      std::vector<PointT, Eigen::aligned_allocator<PointT> >&
+      typename pcl::PointCloud<PointT>::VectorType&
       getContour ()
       {
         return (contour_);
       }
       
       /** \brief Getter for the contour / boundary */
-      const std::vector<PointT, Eigen::aligned_allocator<PointT> >&
+      const typename pcl::PointCloud<PointT>::VectorType&
       getContour () const
       {
         return (contour_);
@@ -98,7 +98,7 @@ namespace pcl
       
     protected:
       /** \brief A list of points on the boundary/contour of the planar region. */
-      std::vector<PointT, Eigen::aligned_allocator<PointT> > contour_;
+      typename pcl::PointCloud<PointT>::VectorType contour_;
       
       /** \brief A list of model coefficients (a,b,c,d). */
       Eigen::Vector4f coefficients_;
