@@ -54,7 +54,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOu
   octree.setInputCloud (input_);
   octree.addPointsFromInputCloud ();
 
-  pcl::PointCloud<PointInT>::VectorType occupied_cells;
+  typename pcl::PointCloud<PointInT>::VectorType occupied_cells;
   octree.getOccupiedVoxelCenters (occupied_cells);
 
   // Determine the voxels crosses along the line segments
@@ -66,7 +66,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOu
 
     for (size_t j = i+1; j < occupied_cells.size (); ++j)
     {
-      pcl::PointCloud<PointInT>::VectorType intersected_cells;
+      typename pcl::PointCloud<PointInT>::VectorType intersected_cells;
       Eigen::Vector3f end = occupied_cells[j].getVector3fMap ();
       octree.getApproxIntersectedVoxelCentersBySegment (origin, end, intersected_cells, 0.5f);
 

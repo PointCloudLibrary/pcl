@@ -176,7 +176,7 @@ template <typename PointCloudType> void
 RangeImage::doZBuffer(const PointCloudType& point_cloud, float noise_level, float min_range, int& top, int& right, int& bottom, int& left)
 {
   typedef typename PointCloudType::PointType PointType2;
-  const pcl::PointCloud<PointType2>::VectorType &points2 = point_cloud.points;
+  const typename pcl::PointCloud<PointType2>::VectorType &points2 = point_cloud.points;
   
   unsigned int size = width*height;
   int* counters = new int[size];

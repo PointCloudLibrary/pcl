@@ -11,7 +11,7 @@
 #include <pcl/surface/convex_hull.h>
 
 void
-displayPlanarRegions (pcl::PlanarRegion<PointT>::PlanarRegionVectorType& regions, 
+displayPlanarRegions (std::vector<pcl::PlanarRegion<PointT> > &regions, 
                       boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
 {
   char name[1024];

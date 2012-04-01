@@ -103,9 +103,6 @@ namespace pcl
         */
       std::vector<bool> contour_labels_;
 
-    public:
-      typedef std::vector<PlanarRegion<PointT>, Eigen::aligned_allocator<PlanarRegion<PointT> > > PlanarRegionVectorType;
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW      
   };
 }
 

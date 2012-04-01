@@ -68,6 +68,9 @@ namespace pcl
         typedef OctreePointCloudVoxelCentroid<PointT, LeafT, OctreeBase<int, LeafT> > SingleBuffer;
         typedef OctreePointCloudVoxelCentroid<PointT, LeafT, Octree2BufBase<int, LeafT> > DoubleBuffer;
 
+        // Eigen aligned allocator
+        typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::AlignedPointTVector AlignedPointTVector;
+
         /** \brief OctreePointCloudVoxelCentroids class constructor.
          *  \param resolution_arg:  octree resolution at lowest octree level
          * */
