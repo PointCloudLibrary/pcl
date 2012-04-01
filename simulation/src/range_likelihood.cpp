@@ -83,7 +83,7 @@ float hard_coded_log_lhood[] = {-1.0614388f, -1.0614480f, -1.0614757f, -1.061521
 
 // Disparity:
 // sigma 0.025
-float top_lookup[]={15.9577f, 15.8165f, 15.4003f, 14.7308f, 13.8422f, 12.7779f, 11.5877f, 10.3231f, 9.0345f, 7.7674f, 6.5604f, 5.4433f, 4.4368f, 3.5527f, 2.7947f, 2.1596f, 1.6395f, 1.2227f, 0.89578f, 0.64471f, 0.45584f, 0.31662f, 0.21604f, 0.14482f, 0.095364f, 0.061691f, 0.039205f, 0.024476f, 0.015011f, 0.0090444f, 0.0053532f, 0.0031126f, 0.001778f, 0.0009977f, 0.00054999f, 0.00029784f, 0.00015845f, 8.2811e-05f, 4.2517e-05f, 2.1444e-05f, 1.0625e-05f, 5.1718e-06f, 2.473e-06f, 1.1617e-06f, 5.361e-07f, 2.4304e-07f, 1.0824e-07f, 4.7354e-08f, 2.0353e-08f, 8.5933e-09f, 3.5644e-09f, 1.4524e-09f, 5.8138e-10f, 2.2862e-10f, 8.832e-11f, 3.3518e-11f, 1.2496e-11f, 4.5766e-12f, 1.6466e-12f, 5.8201e-13f, 2.0209e-13f, 6.8935e-14f, 2.31e-14f, 7.6043e-15f, 2.4592e-15f, 7.8127e-16f, 2.4383e-16f, 7.4758e-17f, 2.2517e-17f, 6.6624e-18f, 1.9366e-18f, 5.5299e-19f, 1.5512e-19f, 4.2749e-20f, 1.1573e-20f, 3.0778e-21f, 8.0413e-22f, 2.0639e-22f, 5.2038e-23f, 1.289e-23f, 3.1365e-24f, 7.4975e-25f, 1.7606e-25f, 4.0617e-26f, 9.2049e-27f, 2.0493e-27f, 4.4821e-28f, 9.6302e-29f, 2.0327e-29f, 4.2148e-30f, 8.5855e-31f, 1.718e-31f, 3.3774e-32f, 6.5224e-33f, 1.2374e-33f, 2.3062e-34f, 4.2225e-35f, 7.5947e-36f, 1.3419e-36f, 2.3294e-37f, 3.9721e-38f, 6.6539e-39f, 1.095e-39f, 1.7703e-40f, 2.8115e-41f, 4.3864e-42f, 6.7231e-43f, 1.0123e-43f, 1.4973e-44f, 2.1758e-45f, 3.1059e-46f, 4.3555e-47f, 6.0003e-48f, 8.1205e-49f, 1.0796e-49f, 1.4101e-50f, 1.8092e-51f, 2.2804e-52f, 2.8237e-53f, 3.4349e-54f, 4.1047e-55f, 4.8186e-56f, 5.5571e-57f, 6.2958e-58f, 7.007e-59f, 7.6611e-60f, 8.2287e-61f, 8.6827e-62f, 9.0002e-63f, 9.165e-64f, 9.1683e-65f, 9.01e-66f, 8.6984e-67f, 8.2497e-68f, 7.6862e-69f, 7.035e-70f, 6.3255e-71f, 5.5874e-72f, 4.8484e-73f, 4.133e-74f, 3.4611e-75f, 2.8474e-76f, 2.3012e-77f, 1.827e-78f, 1.425e-79f, 1.0918e-80f, 8.2183e-82f, 6.077e-83f, 4.4144e-84f, 3.1502e-85f, 2.2084e-86f, 1.5209e-87f, 1.029e-88f, 6.8387e-90f, 4.4651e-91f, 2.864e-92f, 1.8046e-93f, 1.1171e-94f, 6.793e-96f, 4.058e-97f, 2.3815e-98f, 1.373e-99f, 7.7759e-101f, 4.3264e-102f, 2.3647e-103f, 1.2697e-104f, 6.6975e-106f, 3.4706e-107f, 1.7667e-108f, 8.8352e-110f, 4.3405e-111f, 2.0948e-112f, 9.9319e-114f, 4.6259e-115f, 2.1166e-116f, 9.514e-118f, 4.2011e-119f, 1.8224e-120f, 7.7661e-122f, 3.2512e-123f, 1.3371e-124f, 5.402e-126f, 2.144e-127f, 8.3597e-129f, 3.202e-130f, 1.2049e-131f, 4.4538e-133f, 1.6173e-134f, 5.7697e-136f, 2.022e-137f, 6.9614e-139f, 2.3544e-140f, 7.8227e-142f, 2.5533e-143f, 8.1871e-145f, 2.5789e-146f, 7.9803e-148f, 2.426e-149f, 7.2448e-151f, 2.1255e-152f, 6.1257e-154f, 1.7343e-155f, 4.8239e-157f, 1.3181e-158f, 3.538e-160f, 9.3294e-162f, 2.4167e-163f, 6.1502e-165f, 1.5375e-166f, 3.7761e-168f, 9.1103e-170f, 2.1593e-171f, 5.0276e-173f, 1.15e-174f, 2.5841e-176f, 5.7042e-178f, 1.237e-179f, 2.6352e-181f, 5.5149e-183f, 1.1338e-184f, 2.29e-186f, 4.5436e-188f, 8.8561e-190f, 1.6958e-191f, 3.1899e-193f, 5.8946e-195f, 1.0701e-196f, 1.9083e-198f, 3.3433e-200f, 5.7541e-202f, 9.7287e-204f, 1.6159e-205f, 2.6366e-207f, 4.2263e-209f, 6.6552e-211f, 1.0295e-212f, 1.5645e-214f, 2.3357e-216f, 3.4256e-218f, 4.9354e-220f, 6.9855e-222f, 9.7128e-224f, 1.3267e-225f, 1.7803e-227f, 2.3468e-229f, 3.039e-231f, 3.8662e-233f, 4.8318e-235f, 5.9321e-237f, 7.1548e-239f, 8.4773e-241f, 9.8673e-243f, 1.1283e-244f, 1.2674e-246f, 1.3986e-248f, 1.5162e-250f, 1.6147e-252f, 1.6893e-254f, 1.7362e-256f, 1.753e-258f, 1.7388e-260f, 1.6942e-262f, 1.6218e-264f, 1.525e-266f, 1.4088e-268f, 1.2785e-270f, 1.1398e-272f, 9.9826e-275f, 8.5888e-277f, 7.2594e-279f, 6.0276e-281f, 4.9167e-283f, 3.9398e-285f, 3.1014e-287f, 2.3984e-289f, 1.8221e-291f, 1.3598e-293f, 9.9699e-296f, 7.1808e-298f, 5.0808e-300f, 3.5316e-302f, 2.4115e-304f, 1.6177e-306f, 1.066e-308f, 6.9011e-311f, 4.3889e-313f, 2.742e-315f, 1.6829e-317f, 1.0147e-319f, 6.324e-322f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+double top_lookup[]={15.9577, 15.8165, 15.4003, 14.7308, 13.8422, 12.7779, 11.5877, 10.3231, 9.0345, 7.7674, 6.5604, 5.4433, 4.4368, 3.5527, 2.7947, 2.1596, 1.6395, 1.2227, 0.89578, 0.64471, 0.45584, 0.31662, 0.21604, 0.14482, 0.095364, 0.061691, 0.039205, 0.024476, 0.015011, 0.0090444, 0.0053532, 0.0031126, 0.001778, 0.0009977, 0.00054999, 0.00029784, 0.00015845, 8.2811e-05, 4.2517e-05, 2.1444e-05, 1.0625e-05, 5.1718e-06, 2.473e-06, 1.1617e-06, 5.361e-07, 2.4304e-07, 1.0824e-07, 4.7354e-08, 2.0353e-08, 8.5933e-09, 3.5644e-09, 1.4524e-09, 5.8138e-10, 2.2862e-10, 8.832e-11, 3.3518e-11, 1.2496e-11, 4.5766e-12, 1.6466e-12, 5.8201e-13, 2.0209e-13, 6.8935e-14, 2.31e-14, 7.6043e-15, 2.4592e-15, 7.8127e-16, 2.4383e-16, 7.4758e-17, 2.2517e-17, 6.6624e-18, 1.9366e-18, 5.5299e-19, 1.5512e-19, 4.2749e-20, 1.1573e-20, 3.0778e-21, 8.0413e-22, 2.0639e-22, 5.2038e-23, 1.289e-23, 3.1365e-24, 7.4975e-25, 1.7606e-25, 4.0617e-26, 9.2049e-27, 2.0493e-27, 4.4821e-28, 9.6302e-29, 2.0327e-29, 4.2148e-30, 8.5855e-31, 1.718e-31, 3.3774e-32, 6.5224e-33, 1.2374e-33, 2.3062e-34, 4.2225e-35, 7.5947e-36, 1.3419e-36, 2.3294e-37, 3.9721e-38, 6.6539e-39, 1.095e-39, 1.7703e-40, 2.8115e-41, 4.3864e-42, 6.7231e-43, 1.0123e-43, 1.4973e-44, 2.1758e-45, 3.1059e-46, 4.3555e-47, 6.0003e-48, 8.1205e-49, 1.0796e-49, 1.4101e-50, 1.8092e-51, 2.2804e-52, 2.8237e-53, 3.4349e-54, 4.1047e-55, 4.8186e-56, 5.5571e-57, 6.2958e-58, 7.007e-59, 7.6611e-60, 8.2287e-61, 8.6827e-62, 9.0002e-63, 9.165e-64, 9.1683e-65, 9.01e-66, 8.6984e-67, 8.2497e-68, 7.6862e-69, 7.035e-70, 6.3255e-71, 5.5874e-72, 4.8484e-73, 4.133e-74, 3.4611e-75, 2.8474e-76, 2.3012e-77, 1.827e-78, 1.425e-79, 1.0918e-80, 8.2183e-82, 6.077e-83, 4.4144e-84, 3.1502e-85, 2.2084e-86, 1.5209e-87, 1.029e-88, 6.8387e-90, 4.4651e-91, 2.864e-92, 1.8046e-93, 1.1171e-94, 6.793e-96, 4.058e-97, 2.3815e-98, 1.373e-99, 7.7759e-101, 4.3264e-102, 2.3647e-103, 1.2697e-104, 6.6975e-106, 3.4706e-107, 1.7667e-108, 8.8352e-110, 4.3405e-111, 2.0948e-112, 9.9319e-114, 4.6259e-115, 2.1166e-116, 9.514e-118, 4.2011e-119, 1.8224e-120, 7.7661e-122, 3.2512e-123, 1.3371e-124, 5.402e-126, 2.144e-127, 8.3597e-129, 3.202e-130, 1.2049e-131, 4.4538e-133, 1.6173e-134, 5.7697e-136, 2.022e-137, 6.9614e-139, 2.3544e-140, 7.8227e-142, 2.5533e-143, 8.1871e-145, 2.5789e-146, 7.9803e-148, 2.426e-149, 7.2448e-151, 2.1255e-152, 6.1257e-154, 1.7343e-155, 4.8239e-157, 1.3181e-158, 3.538e-160, 9.3294e-162, 2.4167e-163, 6.1502e-165, 1.5375e-166, 3.7761e-168, 9.1103e-170, 2.1593e-171, 5.0276e-173, 1.15e-174, 2.5841e-176, 5.7042e-178, 1.237e-179, 2.6352e-181, 5.5149e-183, 1.1338e-184, 2.29e-186, 4.5436e-188, 8.8561e-190, 1.6958e-191, 3.1899e-193, 5.8946e-195, 1.0701e-196, 1.9083e-198, 3.3433e-200, 5.7541e-202, 9.7287e-204, 1.6159e-205, 2.6366e-207, 4.2263e-209, 6.6552e-211, 1.0295e-212, 1.5645e-214, 2.3357e-216, 3.4256e-218, 4.9354e-220, 6.9855e-222, 9.7128e-224, 1.3267e-225, 1.7803e-227, 2.3468e-229, 3.039e-231, 3.8662e-233, 4.8318e-235, 5.9321e-237, 7.1548e-239, 8.4773e-241, 9.8673e-243, 1.1283e-244, 1.2674e-246, 1.3986e-248, 1.5162e-250, 1.6147e-252, 1.6893e-254, 1.7362e-256, 1.753e-258, 1.7388e-260, 1.6942e-262, 1.6218e-264, 1.525e-266, 1.4088e-268, 1.2785e-270, 1.1398e-272, 9.9826e-275, 8.5888e-277, 7.2594e-279, 6.0276e-281, 4.9167e-283, 3.9398e-285, 3.1014e-287, 2.3984e-289, 1.8221e-291, 1.3598e-293, 9.9699e-296, 7.1808e-298, 5.0808e-300, 3.5316e-302, 2.4115e-304, 1.6177e-306, 1.066e-308, 6.9011e-311, 4.3889e-313, 2.742e-315, 1.6829e-317, 1.0147e-319, 6.324e-322, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 float bottom_lookup[]={0.5f, 0.55304f, 0.60514f, 0.65542f, 0.7031f, 0.74751f, 0.78814f, 0.82468f, 0.85694f, 0.88493f, 0.90879f, 0.92877f, 0.9452f, 0.95848f, 0.96903f, 0.97725f, 0.98355f, 0.98829f, 0.9918f, 0.99435f, 0.99617f, 0.99744f, 0.99832f, 0.99892f, 0.99931f, 0.99957f, 0.99974f, 0.99984f, 0.99991f, 0.99994f, 0.99997f, 0.99998f, 0.99999f, 0.99999f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.99999f, 0.99999f, 0.99998f, 0.99997f, 0.99994f, 0.99991f, 0.99984f, 0.99974f, 0.99957f, 0.99931f, 0.99892f, 0.99832f, 0.99744f, 0.99617f, 0.99435f, 0.9918f, 0.98829f, 0.98355f, 0.97725f, 0.96903f, 0.95848f, 0.9452f, 0.92877f, 0.90879f, 0.88493f, 0.85694f, 0.82468f, 0.78814f, 0.74751f, 0.7031f, 0.65542f, 0.60514f, 0.55304f, 0.5f};
 
 using namespace pcl::simulation;
@@ -109,22 +109,22 @@ max_level (int a, int b)
 void
 display_tic_toc (vector<double> &tic_toc,const string &fun_name)
 {
-  int tic_toc_size = tic_toc.size ();
+  size_t tic_toc_size = tic_toc.size ();
 
   double percent_tic_toc_last = 0;
-  double dtime = ((double) (tic_toc[tic_toc_size-1] - tic_toc[0]));
+  double dtime = tic_toc[tic_toc_size-1] - tic_toc[0];
   cout << "fraction_" << fun_name << ",";
-  for (int i = 0; i < tic_toc_size; i++)
+  for (size_t i = 0; i < tic_toc_size; i++)
   {
-    double percent_tic_toc = (double) (tic_toc[i] - tic_toc[0])/(tic_toc[tic_toc_size-1] - tic_toc[0]);
+    double percent_tic_toc =  (tic_toc[i] - tic_toc[0])/(tic_toc[tic_toc_size-1] - tic_toc[0]);
     cout <<  percent_tic_toc - percent_tic_toc_last << ", ";
     percent_tic_toc_last = percent_tic_toc;
   }
   cout << "\ntime_" << fun_name << ",";
   double time_tic_toc_last = 0;
-  for (int i=0; i < tic_toc_size;i++)
+  for (size_t i = 0; i < tic_toc_size; i++)
   {
-    double percent_tic_toc = (double) (tic_toc[i] - tic_toc[0])/(tic_toc[tic_toc_size-1] - tic_toc[0]);
+    double percent_tic_toc = (tic_toc[i] - tic_toc[0])/(tic_toc[tic_toc_size-1] - tic_toc[0]);
     cout <<  percent_tic_toc*dtime - time_tic_toc_last << ", ";
     time_tic_toc_last = percent_tic_toc*dtime;
   }
@@ -161,13 +161,13 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
   // http://www.ros.org/wiki/kinect_calibration/technical
   camera_width_ = 640;
   camera_height_ = 480;
-  camera_fx_ = 576.09757860;
-  camera_fy_ = 576.09757860;
-  camera_cx_ = 321.06398107;
-  camera_cy_ = 242.97676897;
+  camera_fx_ = 576.09757860f;
+  camera_fy_ = 576.09757860f;
+  camera_cx_ = 321.06398107f;
+  camera_cy_ = 242.97676897f;
 
-  z_near_ = 0.7;
-  z_far_ = 20.0;
+  z_near_ = 0.7f;
+  z_far_ = 20.0f;
   
   which_cost_function_ = 2; // default to commonly used meter based function
   
@@ -262,7 +262,7 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
   glFramebufferTexture2D (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth_texture_, 0);
   glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_texture_, 0);
 
-  if (gllib::get_gl_error() != GL_NO_ERROR)
+  if (gllib::getGLError() != GL_NO_ERROR)
   {
     std::cerr << "RangeLikelihoodGLSL::RangeLikelihoodGLSL: Failed initializing OpenGL buffers" << std::endl;
     exit(-1);
@@ -276,13 +276,13 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
   // Load shader
   likelihood_program_ = gllib::Program::Ptr (new gllib::Program ());
   // TODO: to remove file dependency include the shader source in the binary
-  if (!likelihood_program_->add_shader_file ("compute_score.vert", gllib::VERTEX))
+  if (!likelihood_program_->addShaderFile ("compute_score.vert", gllib::VERTEX))
   {
     std::cout << "Failed loading vertex shader" << std::endl;
     exit (-1);
   }
 
-  if (!likelihood_program_->add_shader_file ("compute_score.frag", gllib::FRAGMENT))
+  if (!likelihood_program_->addShaderFile ("compute_score.frag", gllib::FRAGMENT))
   {
     std::cout << "Failed loading fragment shader" << std::endl;
     exit (-1);
@@ -300,7 +300,7 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
   glBufferData (GL_ARRAY_BUFFER, sizeof (Eigen::Vector3f) * vertices_.size (), &(vertices_[0]), GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  gllib::get_gl_error ();
+  gllib::getGLError ();
 
   // Go back to the default pipeline
   glUseProgram (0);
@@ -343,10 +343,10 @@ pcl::simulation::RangeLikelihood::setup_projection_matrix ()
   glLoadIdentity ();
 
   // Prepare scaled simulated camera projection matrix
-  float sx = ((float) camera_width_) / col_width_;
-  float sy = ((float) camera_height_) / row_height_;
-  float width = col_width_;
-  float height = row_height_;
+  float sx = static_cast<float> (camera_width_) / static_cast<float> (col_width_);
+  float sy = static_cast<float> (camera_height_) / static_cast<float> (row_height_);
+  float width = static_cast<float> (col_width_);
+  float height = static_cast<float> (row_height_);
 
   float fx = camera_fx_/sx;
   float fy = camera_fy_/sy;
@@ -355,10 +355,10 @@ pcl::simulation::RangeLikelihood::setup_projection_matrix ()
   float m[16];
   float z_nf = (z_near_-z_far_);
 
-  m[0] = 2*fx/width;  m[4] = 0;            m[ 8] = 1.0-(2*cx/width);      m[12] = 0;
-  m[1] = 0;           m[5] = 2*fy/height;  m[ 9] = 1.0-(2*cy/height);     m[13] = 0;
-  m[2] = 0;           m[6] = 0;            m[10] = (z_far_+z_near_)/z_nf; m[14] = 2.0*z_near_*z_far_/z_nf;
-  m[3] = 0;           m[7] = 0;            m[11] = -1;                    m[15] = 0;
+  m[0] = 2.0f*fx/width;  m[4] = 0;              m[ 8] = 1.0f-(2*cx/width);      m[12] = 0;
+  m[1] = 0;              m[5] = 2.0f*fy/height; m[ 9] = 1.0f-(2*cy/height);     m[13] = 0;
+  m[2] = 0;              m[6] = 0;              m[10] = (z_far_+z_near_)/z_nf;  m[14] = 2.0f*z_near_*z_far_/z_nf;
+  m[3] = 0;              m[7] = 0;              m[11] = -1.0f;                  m[15] = 0;
   glMultMatrixf (m);
 }
 
@@ -366,7 +366,7 @@ void
 pcl::simulation::RangeLikelihood::apply_camera_transform(const Eigen::Isometry3d & pose)
 {
   float T[16];
-  Eigen::Matrix4d m = pose.matrix ().inverse ();
+  Eigen::Matrix4f m = (pose.matrix ().inverse ()).cast<float> ();
   T[0] = m(0,0); T[4] = m(0,1); T[8] = m(0,2); T[12] = m(0,3);
   T[1] = m(1,0); T[5] = m(1,1); T[9] = m(1,2); T[13] = m(1,3);
   T[2] = m(2,0); T[6] = m(2,1); T[10] = m(2,2); T[14] = m(2,3);
@@ -419,31 +419,39 @@ float costFunction0(float ref_val,float depth_val){
 // TRUEDEPTH =  1/(1.33 -(DEPTHBUFFER)*1.29)
 //float cost = sqr(ref[col%col_width] - 1/(1.33 -(*depth)*1.29));
 // Version 1: [29 aug 2011] Exact version using correct mappings:
-float costFunction1(float ref_val,float depth_val){
-  float cost = sqr (ref_val - 1/(1.4285 -(depth_val)*1.3788));
-  if (ref_val < 0){ // all images pixels with no range
+float
+costFunction1 (float ref_val, float depth_val)
+{
+  float cost = sqr (ref_val - 1/(1.4285f -(depth_val)*1.3788f));
+  //std::cout << " [" << ref_val << "," << 1/(1.4285 -(depth_val)*1.3788) << "] ";
+  if (ref_val < 0)
+  { // all images pixels with no range
     cost =1;
   }
-  if (cost > 10){ // required to lessen the effect of modelpixel with no range (ie holes in the model)
+  if (cost > 10)
+  { // required to lessen the effect of modelpixel with no range (ie holes in the model)
     cost =10;
   }
-  return log (cost);
+  //return log (cost);
+  return (cost);
 }
 
-
 // 1st working likelihood function (by far most commonly used)
-float costFunction2(float ref_val,float depth_val){
-  float min_dist = abs(ref_val - 1/(1.4285 -(depth_val)*1.3788));
-  int lup = (int) ceil (min_dist*100); // has resolution of 0.01m
+float
+costFunction2 (float ref_val, float depth_val)
+{
+  float min_dist = abs(ref_val - 1/(1.4285f - (depth_val)*1.3788f));
+  int lup = static_cast<int> (ceil (min_dist*100)); // has resolution of 0.01m
+
   if (lup > 300){ // implicitly this caps the cost if there is a hole in the model
     lup = 300;
   }
   
-  float lhood=1;
-  if (pcl_isnan(depth_val)){ // pixels with nan depth - for openNI null points
-    lhood =1; // log(1) = 0 ---> has no effect
+  double lhood = 1;
+  if (pcl_isnan (depth_val)){ // pixels with nan depth - for openNI null points
+    lhood = 1; // log(1) = 0 ---> has no effect
   }else if(ref_val < 0){ // all RGB pixels with no depth - for freenect null points
-    lhood =1; // log(1) = 0 ---> has no effect
+    lhood = 1; // log(1) = 0 ---> has no effect
   }else{
     lhood = normal_sigma0x5_normal1x0_range0to3_step0x01[lup];
     // add a ground floor:
@@ -452,14 +460,15 @@ float costFunction2(float ref_val,float depth_val){
     // with ~90particles user 0.999, for example in the quad dataset
     // ratio of uniform to	normal
     double ratio = 0.99;//was always 0.99; 
-    double r_min =0; // metres
+    double r_min = 0; // metres
     double r_max = 3; // metres
-    lhood = ratio/(r_max -r_min)  + (1-ratio)*lhood ;
+    lhood = ratio/(r_max -r_min) + (1-ratio)*lhood ;
   }
-  return log(lhood);
+  return static_cast<float> (log (lhood));
 }
 
-float costFunction3(float ref_val,float depth_val){
+float costFunction3 (float ref_val,float depth_val)
+{
   float log_lhood=0;
   // log(1) = 0 ---> has no effect
   if (ref_val < 0){
@@ -467,37 +476,37 @@ float costFunction3(float ref_val,float depth_val){
   }  else if (ref_val > 7){
     // ignore long ranges... for now
   }else{ // working range
-    float min_dist = abs (ref_val - 0.7253/(1.0360 - (depth_val)));
+    float min_dist = abs (ref_val - 0.7253f/(1.0360f - (depth_val)));
 
-    int lup = (int) ceil (min_dist*100); // has resulution of 0.01m
+    int lup = static_cast<int> (ceil (min_dist*100)); // has resulution of 0.01m
     if (lup > 300)
     { // implicitly this caps the cost if there is a hole in the model
       lup = 300;
     }
-    log_lhood= hard_coded_log_lhood[lup];
+    log_lhood = hard_coded_log_lhood[lup];
   }
-  return  log_lhood;
+  return log_lhood;
 }
 
 float costFunction4(float ref_val,float depth_val){
-  float disparity_diff = abs( ( -0.7253/ref_val +1.0360 ) -  depth_val );
+  float disparity_diff = abs( ( -0.7253f/ref_val +1.0360f ) -  depth_val );
 
-  int top_lup = (int) ceil (disparity_diff*300); // has resulution of 0.001m
+  int top_lup = static_cast<int> (ceil (disparity_diff*300)); // has resulution of 0.001m
   if (top_lup > 300)
   {
     top_lup =300;
   }
-  float top = top_lookup[top_lup];// round( abs(x-mu) *1000+1) );
+  float top = static_cast<float> (top_lookup[top_lup]);// round( abs(x-mu) *1000+1) );
 
   // bottom:
   //bottom = bottom_lookup(   round(mu*1000+1));
-  int bottom_lup = (int) ceil( (depth_val) *300 ); // has resulution of 0.001m
+  int bottom_lup = static_cast<int> (ceil( (depth_val) * 300)); // has resulution of 0.001m
   if (bottom_lup > 300){
     bottom_lup =300;
   }
   float bottom = bottom_lookup[bottom_lup];// round( abs(x-mu) *1000+1) );
 
-  float proportion = 0.999;
+  float proportion = 0.999f;
   float lhood = proportion + (1-proportion)*(top/bottom);
 
   // safety fix thats seems to be required due to opengl ayschronizate
@@ -506,8 +515,8 @@ float costFunction4(float ref_val,float depth_val){
     lhood = proportion;
   }
 
-  if (ref_val< 0){ // all images pixels with no range
-    lhood =1; // log(1) = 0 ---> has no effect
+  if (ref_val< 0) { // all images pixels with no range
+    lhood = 1; // log(1) = 0 ---> has no effect
   }
   return log(lhood);
 }
@@ -517,11 +526,11 @@ float costFunction4(float ref_val,float depth_val){
 // abd use sigma and floor_proportion directly from class also
 using boost::math::normal; // typedef provides default type is double.
 normal unit_norm_dist(0,1); // (default mean = zero, and standard deviation = unity)
-double costFunction5(double measured_depth,double model_disp, double sigma, double floor_proportion)
+double costFunction5(double measured_depth, double model_disp, double sigma, double floor_proportion)
 {
   // NEED TO CONVERT MEASURED TO DISPARITY
-  double measured_disp =  ( -0.7253/measured_depth +1.0360 );
-  
+  double measured_disp =  (-0.7253/measured_depth + 1.0360 );
+
   // measured_depth = ref_val  [m]
   // model_disp = depth_val [0-1]
   // upper and lower bound on depth buffer:
@@ -534,8 +543,9 @@ double costFunction5(double measured_depth,double model_disp, double sigma, doub
   double trunc_gaussian_part = truncation*gaussian_part;
 
   double lhood= (floor_proportion/(upper_bound-lower_bound) + (1-floor_proportion)*trunc_gaussian_part);
+
   if (measured_depth< 0){ // all images pixels with no range
-    lhood =1; // log(1) = 0 ---> has no effect
+    lhood = 1; // log(1) = 0 ---> has no effect
   }
 
   return log(lhood);
@@ -584,10 +594,11 @@ pcl::simulation::RangeLikelihood::computeScores (float* reference,
       }else if (which_cost_function_ == 5){
 	//double sigma = 0.025;
 	//double floor_proportion_ = 0.999;
-        score = costFunction5(ref[col%col_width_],depth_val,sigma_,floor_proportion_);
+        score = static_cast<float> (costFunction5 (ref[col%col_width_],depth_val,sigma_,floor_proportion_));
       }
       scores[row/row_height_ * cols_ + col/col_width_] += score;
-      score_buffer_[row*cols_*col_width_ + col] =  score;
+      //std::cout << "(" << scores[row/row_height_ * cols_ + col/col_width_] <<"," << score << "," << ref[col%col_width_] << "," << depth_val << ") ";
+      score_buffer_[row*width_ + col] =  score;
     }
   }
   score_buffer_dirty_ = false;
@@ -619,9 +630,9 @@ pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRG
   // TODO: support decimation
   // Copied the format of RangeImagePlanar::setDepthImage()
   // Use this as a template for decimation
-  for (int y = 0; y < (int)row_height_ ; ++y) //camera_height_
+  for (int y = 0; y < row_height_ ; ++y) //camera_height_
   {
-    for (int x = 0; x < (int)col_width_ ; ++x)  // camera_width_
+    for (int x = 0; x < col_width_ ; ++x)  // camera_width_
     {
       // Find XYZ from normalized 0->1 mapped disparity
       int idx = points_added; // y*camera_width_ + x;
@@ -637,8 +648,8 @@ pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRG
         // ... so by negating y we get to a right-hand computer vision system
         // which is also used by PCL and OpenNi
         pc->points[idx].z = z;
-        pc->points[idx].x = (x-camera_cx_) * z * (-camera_fx_reciprocal_);
-        pc->points[idx].y = (y-camera_cy_) * z * (-camera_fy_reciprocal_);
+        pc->points[idx].x = (static_cast<float> (x)-camera_cx_) * z * (-camera_fx_reciprocal_);
+        pc->points[idx].y = (static_cast<float> (y)-camera_cy_) * z * (-camera_fy_reciprocal_);
 
 	int rgb_idx = y*col_width_ + x;  //camera_width_
         pc->points[idx].b =  color_buffer_[rgb_idx*3+2]; // blue
@@ -660,7 +671,8 @@ pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRG
          -1, 0,  0, 0,
           0, 1,  0, 0,
           0, 0,  0, 1;
-    Eigen::Matrix4f m =  pose.matrix ().cast<float> () * T;
+    Eigen::Matrix4f m = pose.matrix ().cast<float> ();
+    m = m * T;
     pcl::transformPointCloud (*pc, *pc, m);
   }
   else
@@ -679,7 +691,8 @@ pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRG
                    -1,  0, 0, 0,
                     0, -1, 0, 0,
                     0,  0, 0, 1;
-    Eigen::Matrix4f camera = pose.matrix ().cast<float> () * cam_to_body;
+    Eigen::Matrix4f camera = pose.matrix ().cast<float> ();
+    camera = camera * cam_to_body;
     pc->sensor_origin_ = camera.rightCols (1);
     Eigen::Quaternion<float> quat (camera.block<3,3> (0,0));
     pc->sensor_orientation_ = quat;
@@ -704,12 +717,12 @@ pcl::simulation::RangeLikelihood::addNoise ()
   // Add Gaussian Noise
   // TODO: make the variance a parameter
   // TODO: might want to add a range-based variance
-  float variance = 0.0015;
+  float variance = 0.0015f;
   for (int i = 0; i < camera_width_*camera_height_ ; i++)
   {
     if (depth_buffer_[i] < 1)
     {
-      depth_buffer_[i] = depth_buffer_[i] + variance*sampleNormal ();
+      depth_buffer_[i] = depth_buffer_[i] + variance * static_cast<float> (sampleNormal ());
       if (depth_buffer_[i] > 1)
       {
         depth_buffer_[i] = 1.0;
@@ -728,10 +741,10 @@ pcl::simulation::RangeLikelihood::addNoise ()
   // The fitted model stated here cannot work for long ranges:
   // http://www.ros.org/wiki/kinect_calibration/technical
   // TODO: make a parameter
-  int bins = 470;
+  float bins = 470;
   for (int i = 0; i < camera_width_*camera_height_ ; i++)
   {
-    depth_buffer_[i] =  float (int (depth_buffer_[i]*bins + 0.5))/bins;
+    depth_buffer_[i] =  ceil (depth_buffer_[i]*bins)/bins;
   }
   cout << "in add noise\n";
 }
@@ -768,7 +781,7 @@ RangeLikelihood::computeLikelihoods (float* reference,
   }
   else
   {
-    computeScoresShader (reference, scores);
+    computeScoresShader (reference);
     
     // Aggregate results (we do not use GPU to sum cpu scores)
     if (aggregate_on_cpu_)
@@ -812,39 +825,38 @@ RangeLikelihood::computeLikelihoods (float* reference,
 
 // Computes the likelihood scores using a shader
 void
-pcl::simulation::RangeLikelihood::computeScoresShader(float* reference,
-                                                      std::vector<float> & scores)
+pcl::simulation::RangeLikelihood::computeScoresShader(float* reference)
 {
-  if (gllib::get_gl_error () != GL_NO_ERROR)
+  if (gllib::getGLError () != GL_NO_ERROR)
   {
     std::cout << "GL error: RangeLikelihood::compute_scores_shader - enter" << std::endl;
   }
 
 #ifdef SIMULATION_DEBUG
-  std::cout << "DepthSampler location: " << likelihood_program_->get_uniform_location ("DepthSampler") << std::endl;
-  std::cout << "ReferenceSampler location: " << likelihood_program_->get_uniform_location ("ReferenceSampler") << std::endl;
-  std::cout << "CostSampler location: " << likelihood_program_->get_uniform_location ("CostSampler") << std::endl;
+  std::cout << "DepthSampler location: " << likelihood_program_->getUniformLocation ("DepthSampler") << std::endl;
+  std::cout << "ReferenceSampler location: " << likelihood_program_->getUniformLocation ("ReferenceSampler") << std::endl;
+  std::cout << "CostSampler location: " << likelihood_program_->getUniformLocation ("CostSampler") << std::endl;
 
   int depth_tex_id;
   int ref_tex_id;
   int cost_tex_id;
 
-  glGetUniformiv(likelihood_program_->program_id (), likelihood_program_->get_uniform_location ("DepthSampler"), &depth_tex_id);
-  glGetUniformiv(likelihood_program_->program_id (), likelihood_program_->get_uniform_location ("ReferenceSampler"), &ref_tex_id);
-  glGetUniformiv(likelihood_program_->program_id (), likelihood_program_->get_uniform_location ("CostSampler"), &cost_tex_id);
+  glGetUniformiv(likelihood_program_->programId (), likelihood_program_->getUniformLocation ("DepthSampler"), &depth_tex_id);
+  glGetUniformiv(likelihood_program_->programId (), likelihood_program_->getUniformLocation ("ReferenceSampler"), &ref_tex_id);
+  glGetUniformiv(likelihood_program_->programId (), likelihood_program_->getUniformLocation ("CostSampler"), &cost_tex_id);
   std::cout << "depth id: " << depth_tex_id << " " << GL_TEXTURE0 << std::endl;
   std::cout << "ref id: " << ref_tex_id  << " " << GL_TEXTURE1 << std::endl;
   std::cout << "cost id: " << cost_tex_id << " " << GL_TEXTURE2 << std::endl;
 #endif
 
   likelihood_program_->use ();
-  likelihood_program_->set_uniform ("DepthSampler", 0);
-  likelihood_program_->set_uniform ("ReferenceSampler", 1);
-  likelihood_program_->set_uniform ("CostSampler", 2);
-  likelihood_program_->set_uniform ("cols", cols_);
-  likelihood_program_->set_uniform ("rows", rows_);
-  likelihood_program_->set_uniform ("near", z_near_);
-  likelihood_program_->set_uniform ("far", z_far_);
+  likelihood_program_->setUniform ("DepthSampler", 0);
+  likelihood_program_->setUniform ("ReferenceSampler", 1);
+  likelihood_program_->setUniform ("CostSampler", 2);
+  likelihood_program_->setUniform ("cols", cols_);
+  likelihood_program_->setUniform ("rows", rows_);
+  likelihood_program_->setUniform ("near", z_near_);
+  likelihood_program_->setUniform ("far", z_far_);
 
   glBindFramebuffer (GL_FRAMEBUFFER, score_fbo_);
   glDrawBuffer (GL_COLOR_ATTACHMENT0);
@@ -877,7 +889,7 @@ pcl::simulation::RangeLikelihood::computeScoresShader(float* reference,
   glActiveTexture (GL_TEXTURE2);
   glBindTexture (GL_TEXTURE_2D, 0);
 
-  if (gllib::get_gl_error () != GL_NO_ERROR)
+  if (gllib::getGLError () != GL_NO_ERROR)
   {
     std::cout << "GL error: RangeLikelihood::compute_scores_shader - exit" << std::endl;
   }
@@ -886,7 +898,7 @@ pcl::simulation::RangeLikelihood::computeScoresShader(float* reference,
 void
 RangeLikelihood::render (const std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > & poses)
 {
-  if (gllib::get_gl_error () != GL_NO_ERROR)
+  if (gllib::getGLError () != GL_NO_ERROR)
   {
     std::cerr << "GL Error: RangeLikelihood::render" << std::endl;
   }
@@ -952,7 +964,7 @@ RangeLikelihood::getDepthBuffer ()
     glReadPixels (0, 0, width_, height_, GL_DEPTH_COMPONENT, GL_FLOAT, depth_buffer_);
     glBindFramebuffer (GL_FRAMEBUFFER, 0);
 
-    if (gllib::get_gl_error () != GL_NO_ERROR)
+    if (gllib::getGLError () != GL_NO_ERROR)
     {
       std::cerr << "GL Error: RangeLikelihoodGLSL::getDepthBuffer" << std::endl;
     }
@@ -977,7 +989,7 @@ RangeLikelihood::getColorBuffer ()
     glReadPixels (0, 0, width_, height_, GL_RGB, GL_UNSIGNED_BYTE, color_buffer_);
     glBindFramebuffer (GL_FRAMEBUFFER, 0);
 
-    if (gllib::get_gl_error () != GL_NO_ERROR)
+    if (gllib::getGLError () != GL_NO_ERROR)
     {
       std::cerr << "GL Error: RangeLikelihood::getColorBuffer" << std::endl;
     }
@@ -997,7 +1009,7 @@ RangeLikelihood::getScoreBuffer ()
     glBindTexture (GL_TEXTURE_2D, score_texture_);
     glGetTexImage (GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, score_buffer_);
     glBindTexture (GL_TEXTURE_2D, 0);
-    if (gllib::get_gl_error () != GL_NO_ERROR)
+    if (gllib::getGLError () != GL_NO_ERROR)
     {
       std::cerr << "GL Error: RangeLikelihood::getScoreBuffer" << std::endl;
     }

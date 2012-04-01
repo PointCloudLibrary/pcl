@@ -5,8 +5,8 @@
  *      Author: Hordur Johannsson
  */
 
-#ifndef PCL_SCENE_HPP_
-#define PCL_SCENE_HPP_
+#ifndef PCL_SIMULATION_SCENE_HPP_
+#define PCL_SIMULATION_SCENE_HPP_
 
 #include <boost/shared_ptr.hpp>
 
@@ -18,25 +18,28 @@
 
 namespace pcl
 {
-namespace simulation
-{
+  namespace simulation
+  {
+    class PCL_EXPORTS Scene
+    {
+    public:
+      typedef boost::shared_ptr<Scene> Ptr;
+      typedef boost::shared_ptr<Scene> ConstPtr;
 
-class PCL_EXPORTS Scene
-{
-public:
-  void draw();
+      void
+      draw ();
 
-  void add(Model::Ptr model);
+      void
+      add (Model::Ptr model);
 
-  void addCompleteModel(std::vector<Model::Ptr> model);
+      void
+      addCompleteModel (std::vector<Model::Ptr> model);
+
+    private:
+      std::vector<Model::Ptr> models_;
+    };
   
-  typedef boost::shared_ptr<Scene> Ptr;
-  typedef boost::shared_ptr<Scene> ConstPtr;
-private:
-  std::vector<Model::Ptr> models_;
-};
-
-} // namespace - simulation
+  } // namespace - simulation
 } // namespace - pcl
 
 #endif

@@ -33,16 +33,17 @@ namespace pcl
          * \param width[in] the height of the input array.
          * \param levels[in] the number of levels to carry out the reduction.
          */
-        SumReduce(int width, int height, int levels);
+        SumReduce (int width, int height, int levels);
 
         /** \brief Release any allocated resources. */
-        ~SumReduce();
+        ~SumReduce ();
 
         /** \brief Reduce the array with summation over set number of levels.
          *  \param[in] input_array name of the input texture.
          *  \param[out] a pointer to an array that can store the summation result.
          */
-        void sum(GLuint input_array, float* output_array);
+        void sum (GLuint input_array, float* output_array);
+
       private:
         GLuint fbo_;
         GLuint* arrays_;

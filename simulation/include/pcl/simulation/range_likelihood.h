@@ -150,8 +150,7 @@ namespace pcl
                        std::vector<float> & scores);
 
         void
-        computeScoresShader (float* reference,
-                             std::vector<float> & scores);
+        computeScoresShader (float* reference);
 
         void
         render (const std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > & poses);

@@ -89,10 +89,10 @@ display_score_image (const float* score_buffer)
   {
     float d = (score_buffer[i]-min_score)/(max_score-min_score);
     score_img[3*i+0] = 0;
-    score_img[3*i+1] = static_cast<unsigned char> (d)*255;
+    score_img[3*i+1] = static_cast<unsigned char> (d*255);
     score_img[3*i+2] = 0;
   }
-  textured_quad_->set_texture (score_img);
+  textured_quad_->setTexture (score_img);
   textured_quad_->render ();
 
   delete [] score_img;
@@ -119,18 +119,18 @@ void display_depth_image (const float* depth_buffer, int width, int height)
     float z = -zf*zn/((zf-zn)*(d - zf/(zf-zn)));
     float b = 0.075f;
     float f = 580.0f;
-    uint16_t kd = static_cast<uint16_t>(1090 - b*f/z*8);
+    int kd = static_cast<int>(1090 - b*f/z*8);
     if (kd < 0) kd = 0;
     else if (kd > 2047) kd = 2047;
 
     int pval = t_gamma[kd];
-    int lb = pval & 0xff;
+    uint8_t lb = static_cast<uint8_t> (pval & 0xff);
     switch (pval >> 8)
     {
       case 0:
 	  depth_img[3*i+0] = 255;
-	  depth_img[3*i+1] = 255-lb;
-	  depth_img[3*i+2] = 255-lb;
+	  depth_img[3*i+1] = static_cast<uint8_t> (255-lb);
+	  depth_img[3*i+2] = static_cast<uint8_t> (255-lb);
 	  break;
       case 1:
 	  depth_img[3*i+0] = 255;
@@ -138,7 +138,7 @@ void display_depth_image (const float* depth_buffer, int width, int height)
 	  depth_img[3*i+2] = 0;
 	  break;
       case 2:
-	  depth_img[3*i+0] = 255-lb;
+	  depth_img[3*i+0] = static_cast<uint8_t> (255-lb);
 	  depth_img[3*i+1] = 255;
 	  depth_img[3*i+2] = 0;
 	  break;
@@ -149,13 +149,13 @@ void display_depth_image (const float* depth_buffer, int width, int height)
 	  break;
       case 4:
 	  depth_img[3*i+0] = 0;
-	  depth_img[3*i+1] = 255-lb;
+	  depth_img[3*i+1] = static_cast<uint8_t> (255-lb);
 	  depth_img[3*i+2] = 255;
 	  break;
       case 5:
 	  depth_img[3*i+0] = 0;
 	  depth_img[3*i+1] = 0;
-	  depth_img[3*i+2] = 255-lb;
+	  depth_img[3*i+2] = static_cast<uint8_t> (255-lb);
 	  break;
       default:
 	  depth_img[3*i+0] = 0;
@@ -259,7 +259,7 @@ display ()
   tt.toc();
   tt.toc_print();
 
-  if (gllib::get_gl_error () != GL_NO_ERROR)
+  if (gllib::getGLError () != GL_NO_ERROR)
   {
     std::cerr << "GL Error: RangeLikelihood::computeLikelihoods: finished" << std::endl;
   }
@@ -284,7 +284,7 @@ display ()
   delete [] reference_vis;
   delete [] reference;
 
-  if (gllib::get_gl_error () != GL_NO_ERROR)
+  if (gllib::getGLError () != GL_NO_ERROR)
   {
     std::cerr << "GL Error: before buffers" << std::endl;
   }
@@ -293,7 +293,7 @@ display ()
   glDrawBuffer (GL_BACK);
   glReadBuffer (GL_BACK);
 
-  if (gllib::get_gl_error () != GL_NO_ERROR)
+  if (gllib::getGLError () != GL_NO_ERROR)
   {
     std::cerr << "GL Error: after buffers" << std::endl;
   }
@@ -304,7 +304,7 @@ display ()
   glMatrixMode (GL_MODELVIEW);
   glLoadIdentity ();
 
-  if (gllib::get_gl_error () != GL_NO_ERROR)
+  if (gllib::getGLError () != GL_NO_ERROR)
   {
     std::cerr << "GL Error: before viewport" << std::endl;
   }
@@ -314,7 +314,7 @@ display ()
               range_likelihood_visualization_->getWidth (), range_likelihood_visualization_->getHeight ());
 
 
-  if (gllib::get_gl_error () != GL_NO_ERROR)
+  if (gllib::getGLError () != GL_NO_ERROR)
   {
     std::cerr << "GL Error: after viewport" << std::endl;
   }
@@ -336,18 +336,6 @@ on_keyboard (unsigned char key, int, int)
 {
   if (key == 27)
     exit (0);
-}
-
-// Handle special keys, e.g. F1, F2, ...
-void
-on_special (int key, int x, int y)
-{
-  switch (key) {
-  case GLUT_KEY_F1:
-    break;
-  case GLUT_KEY_HOME:
-    break;
-  }
 }
 
 // Read in a 3D model
@@ -375,7 +363,7 @@ initialize (int argc, char** argv)
   // works well for MIT CSAIL model 2nd floor:
   camera_->set (27.4503, 37.383, 4.30908, 0.0, 0.0654498, -2.25802);
 
-  loadPolygonMeshModel (argv[1]);
+  if (argc > 1) loadPolygonMeshModel (argv[1]);
 }
 
 int
@@ -402,9 +390,9 @@ main (int argc, char** argv)
   
   for (int i = 0; i < 2048; ++i)
   {
-    float v = i/2048.0;
+    float v = static_cast<float> (i / 2048.0);
     v = powf(v, 3)* 6;
-    t_gamma[i] = v*6*256;
+    t_gamma[i] = static_cast<uint16_t> (v*6*256);
   }  
 
   glutInit (&argc, argv);

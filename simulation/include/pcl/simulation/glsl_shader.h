@@ -14,92 +14,91 @@
 
 namespace pcl
 {
-namespace simulation
-{
-namespace gllib
-{
-  enum ShaderType { VERTEX = GL_VERTEX_SHADER,
-                    FRAGMENT = GL_FRAGMENT_SHADER,
-                    GEOMETRY = GL_GEOMETRY_SHADER,
-                    TESS_CONTROL = GL_TESS_CONTROL_SHADER,
-                    TESS_EVALUATION = GL_TESS_EVALUATION_SHADER };
-
-  /**
-   * A GLSL shader program.
-   */
-  class Program
+  namespace simulation
   {
-    public:
-      typedef boost::shared_ptr<Program> Ptr;
-      typedef boost::shared_ptr<const Program> ConstPtr;
+    namespace gllib
+    {
+      enum ShaderType { VERTEX = GL_VERTEX_SHADER,
+                        FRAGMENT = GL_FRAGMENT_SHADER,
+                        GEOMETRY = GL_GEOMETRY_SHADER,
+                        TESS_CONTROL = GL_TESS_CONTROL_SHADER,
+                        TESS_EVALUATION = GL_TESS_EVALUATION_SHADER };
 
       /**
-       * Construct an empty shader program.
+       * A GLSL shader program.
        */
-      Program();
+      class Program
+      {
+        public:
+          typedef boost::shared_ptr<Program> Ptr;
+          typedef boost::shared_ptr<const Program> ConstPtr;
 
-      /**
-       * Destruct the shader program.
-       */
-      ~Program();
+          /**
+           * Construct an empty shader program.
+           */
+          Program ();
 
-      /**
-       * Add a new shader object to the program.
-       */
-      bool add_shader_text(const std::string& text, ShaderType shader_type);
+          /**
+           * Destruct the shader program.
+           */
+          ~Program ();
 
-      /**
-       * Add a new shader object to the program.
-       */
-      bool add_shader_file(const std::string& text, ShaderType shader_type);
+          /**
+           * Add a new shader object to the program.
+           */
+          bool addShaderText (const std::string& text, ShaderType shader_type);
 
-      /**
-       * Link the program.
-       */
-      bool link();
+          /**
+           * Add a new shader object to the program.
+           */
+          bool addShaderFile (const std::string& text, ShaderType shader_type);
 
-      /**
-       * Return true if the program is linked.
-       */
-      bool is_linked();
+          /**
+           * Link the program.
+           */
+          bool link ();
 
-      /**
-       * Use the program.
-       */
-      void use();
+          /**
+           * Return true if the program is linked.
+           */
+          bool isLinked ();
 
-      // Set uniforms
-      void set_uniform(const std::string& name, const Eigen::Vector2f& v);
-      void set_uniform(const std::string& name, const Eigen::Vector3f& v);
-      void set_uniform(const std::string& name, const Eigen::Vector4f& v);
-      void set_uniform(const std::string& name, const Eigen::Matrix2f& v);
-      void set_uniform(const std::string& name, const Eigen::Matrix3f& v);
-      void set_uniform(const std::string& name, const Eigen::Matrix4f& v);
-      void set_uniform(const std::string& name, float v);
-      void set_uniform(const std::string& name, int v);
-      void set_uniform(const std::string& name, bool v);
+          /**
+           * Use the program.
+           */
+          void use ();
 
-      int get_uniform_location(const std::string& name);
+          // Set uniforms
+          void setUniform (const std::string& name, const Eigen::Vector2f& v);
+          void setUniform (const std::string& name, const Eigen::Vector3f& v);
+          void setUniform (const std::string& name, const Eigen::Vector4f& v);
+          void setUniform (const std::string& name, const Eigen::Matrix2f& v);
+          void setUniform (const std::string& name, const Eigen::Matrix3f& v);
+          void setUniform (const std::string& name, const Eigen::Matrix4f& v);
+          void setUniform (const std::string& name, float v);
+          void setUniform (const std::string& name, int v);
+          void setUniform (const std::string& name, bool v);
 
-      void print_active_uniforms();
-      void print_active_attribs();
+          int getUniformLocation (const std::string& name);
 
-      GLuint program_id() { return program_id_; }
+          void printActiveUniforms ();
+          void printActiveAttribs ();
 
-      static Ptr load_program_from_file(const std::string& vertex_shader_file, const std::string& fragment_shader_file);
-      static Ptr load_program_from_text(const std::string& vertex_shader_text, const std::string& fragment_shader_text);
+          GLuint programId () { return program_id_; }
 
-    private:
-      GLuint program_id_;
-  };
+          static Ptr loadProgramFromFile (const std::string& vertex_shader_file, const std::string& fragment_shader_file);
+          static Ptr loadProgramFromText (const std::string& vertex_shader_text, const std::string& fragment_shader_text);
 
-  GLenum get_gl_error();
-  void print_shader_info_log(GLuint shader);
-  void print_program_info_log(GLuint program);
+        private:
+          GLuint program_id_;
+      };
 
-//  static const char*
-} // namespace - gllib
-} // namespace - simulation
+      GLenum getGLError ();
+      void printShaderInfoLog (GLuint shader);
+      void printProgramInfoLog (GLuint program);
+
+    } // namespace - gllib
+  } // namespace - simulation
 } // namespace - pcl
 
 #endif /* PCL_SIMULATION_GLSL_SHADER_HPP_ */
