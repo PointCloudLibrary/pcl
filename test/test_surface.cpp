@@ -878,17 +878,17 @@ TEST (PCL, Poisson)
   for (size_t i = 0; i < mesh.polygons.size (); ++i)
     EXPECT_EQ (mesh.polygons[i].vertices.size (), 3);
 
-  EXPECT_EQ (mesh.polygons[10].vertices[0], 23);
+  EXPECT_EQ (mesh.polygons[10].vertices[0], 121);
   EXPECT_EQ (mesh.polygons[10].vertices[1], 120);
-  EXPECT_EQ (mesh.polygons[10].vertices[2], 121);
+  EXPECT_EQ (mesh.polygons[10].vertices[2], 23);
 
-  EXPECT_EQ (mesh.polygons[200].vertices[0], 131);
+  EXPECT_EQ (mesh.polygons[200].vertices[0], 130);
   EXPECT_EQ (mesh.polygons[200].vertices[1], 119);
-  EXPECT_EQ (mesh.polygons[200].vertices[2], 130);
+  EXPECT_EQ (mesh.polygons[200].vertices[2], 131);
 
-  EXPECT_EQ (mesh.polygons[1000].vertices[0], 517);
+  EXPECT_EQ (mesh.polygons[1000].vertices[0], 521);
   EXPECT_EQ (mesh.polygons[1000].vertices[1], 516);
-  EXPECT_EQ (mesh.polygons[1000].vertices[2], 521);
+  EXPECT_EQ (mesh.polygons[1000].vertices[2], 517);
 }
 
 
