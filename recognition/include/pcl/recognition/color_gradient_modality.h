@@ -111,6 +111,12 @@ namespace pcl
         spreading_size_ = spreading_size;
       }
 
+      inline void
+      setVariableFeatureNr (const bool enabled)
+      {
+        variable_feature_nr_ = enabled;
+      }
+
       inline QuantizedMap &
       getQuantizedMap () 
       { 
@@ -163,6 +169,9 @@ namespace pcl
       erode (const pcl::MaskMap & mask_in, pcl::MaskMap & mask_out);
   
     private:
+
+      bool variable_feature_nr_;
+
 	    typename PointCloudIn::Ptr smoothed_input_;
 
       FeatureSelectionMethod feature_selection_method_;
@@ -186,7 +195,8 @@ namespace pcl
 template <typename PointInT>
 pcl::ColorGradientModality<PointInT>::
 ColorGradientModality ()
-  : smoothed_input_ (new pcl::PointCloud<PointInT> ())
+  : variable_feature_nr_ (false)
+  , smoothed_input_ (new pcl::PointCloud<PointInT> ())
   , feature_selection_method_ (DISTANCE_MAGNITUDE_SCORE)
   , gradient_magnitude_threshold_ (10.0f)
   , gradient_magnitude_threshold_feature_extraction_ (55.0f)
@@ -274,58 +284,158 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
 
     list1.sort();
 
-    if (list1.size () <= nr_features)
+    if (variable_feature_nr_)
     {
-      for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
+      list2.push_back (*(list1.begin ()));
+      //while (list2.size () != nr_features)
+      bool feature_selection_finished = false;
+      while (!feature_selection_finished)
       {
-        QuantizedMultiModFeature feature;
-          
-        feature.x = iter1->x;
-        feature.y = iter1->y;
-        feature.modality_index = modality_index;
-        feature.quantized_value = filtered_quantized_color_gradients_ (iter1->x, iter1->y);
-
-        features.push_back (feature);
-      }
-      return;
-    }
-
-    list2.push_back (*(list1.begin ()));
-    while (list2.size () != nr_features)
-    {
-      float best_score = 0.0f;
-      typename std::list<Candidate>::iterator best_iter = list1.end ();
-      for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
-      {
-        // find smallest distance
-        float smallest_distance = std::numeric_limits<float>::max ();
-        for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+        float best_score = 0.0f;
+        typename std::list<Candidate>::iterator best_iter = list1.end ();
+        for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
         {
-          const float dx = static_cast<float> (iter1->x - iter2->x);
-          const float dy = static_cast<float> (iter1->y - iter2->y);
-
-          const float distance = dx*dx + dy*dy;
-
-          if (distance < smallest_distance)
+          // find smallest distance
+          float smallest_distance = std::numeric_limits<float>::max ();
+          for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
           {
-            smallest_distance = distance;
+            const float dx = static_cast<float> (iter1->x - iter2->x);
+            const float dy = static_cast<float> (iter1->y - iter2->y);
+
+            const float distance = dx*dx + dy*dy;
+
+            if (distance < smallest_distance)
+            {
+              smallest_distance = distance;
+            }
+          }
+
+          const float score = smallest_distance * iter1->gradient.magnitude;
+
+          if (score > best_score)
+          {
+            best_score = score;
+            best_iter = iter1;
           }
         }
 
-        const float score = smallest_distance * iter1->gradient.magnitude;
 
-        if (score > best_score)
+        float min_min_sqr_distance = std::numeric_limits<float>::max ();
+        float max_min_sqr_distance = 0;
+        for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
         {
-          best_score = score;
-          best_iter = iter1;
+          float min_sqr_distance = std::numeric_limits<float>::max ();
+          for (typename std::list<Candidate>::iterator iter3 = list2.begin (); iter3 != list2.end (); ++iter3)
+          {
+            if (iter2 == iter3)
+              continue;
+
+            const float dx = static_cast<int> (iter2->x) - static_cast<int> (iter3->x);
+            const float dy = static_cast<int> (iter2->y) - static_cast<int> (iter3->y);
+
+            const float sqr_distance = dx*dx + dy*dy;
+
+            if (sqr_distance < min_sqr_distance)
+            {
+              min_sqr_distance = sqr_distance;
+            }
+
+            //std::cerr << min_sqr_distance;
+          }
+          //std::cerr << std::endl;
+
+          // check current feature
+          {
+            const float dx = static_cast<int> (iter2->x) - static_cast<int> (best_iter->x);
+            const float dy = static_cast<int> (iter2->y) - static_cast<int> (best_iter->y);
+
+            const float sqr_distance = dx*dx + dy*dy;
+
+            if (sqr_distance < min_sqr_distance)
+            {
+              min_sqr_distance = sqr_distance;
+            }
+          }
+
+          if (min_sqr_distance < min_min_sqr_distance)
+            min_min_sqr_distance = min_sqr_distance;
+          if (min_sqr_distance > max_min_sqr_distance)
+            max_min_sqr_distance = min_sqr_distance;
+
+          //std::cerr << min_sqr_distance << ", " << min_min_sqr_distance << ", " << max_min_sqr_distance << std::endl;
         }
+
+        if (best_iter != list1.end ())
+        {
+          std::cerr << "feature_index: " << list2.size () << std::endl;
+          std::cerr << "min_min_sqr_distance: " << min_min_sqr_distance << std::endl;
+          std::cerr << "max_min_sqr_distance: " << max_min_sqr_distance << std::endl;
+
+          if (min_min_sqr_distance < 50)
+          {
+            feature_selection_finished = true;
+            break;
+          }
+
+          list2.push_back (*best_iter);
+        }
+      } 
+    }
+    else
+    {
+      if (list1.size () <= nr_features)
+      {
+        for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
+        {
+          QuantizedMultiModFeature feature;
+          
+          feature.x = iter1->x;
+          feature.y = iter1->y;
+          feature.modality_index = modality_index;
+          feature.quantized_value = filtered_quantized_color_gradients_ (iter1->x, iter1->y);
+
+          features.push_back (feature);
+        }
+        return;
       }
 
-      if (best_iter != list1.end ())
+      list2.push_back (*(list1.begin ()));
+      while (list2.size () != nr_features)
       {
-        list2.push_back (*best_iter);
-      }
-    }  
+        float best_score = 0.0f;
+        typename std::list<Candidate>::iterator best_iter = list1.end ();
+        for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
+        {
+          // find smallest distance
+          float smallest_distance = std::numeric_limits<float>::max ();
+          for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+          {
+            const float dx = static_cast<float> (iter1->x - iter2->x);
+            const float dy = static_cast<float> (iter1->y - iter2->y);
+
+            const float distance = dx*dx + dy*dy;
+
+            if (distance < smallest_distance)
+            {
+              smallest_distance = distance;
+            }
+          }
+
+          const float score = smallest_distance * iter1->gradient.magnitude;
+
+          if (score > best_score)
+          {
+            best_score = score;
+            best_iter = iter1;
+          }
+        }
+
+        if (best_iter != list1.end ())
+        {
+          list2.push_back (*best_iter);
+        }
+      }  
+    }
   }
   else if (feature_selection_method_ == MASK_BORDER_HIGH_GRADIENTS || feature_selection_method_ == MASK_BORDER_EQUALLY)
   {
@@ -388,7 +498,7 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
           const unsigned int tmp_distance = dx*dx + dy*dy;
 
           //if (tmp_distance < distance) 
-          if (tmp_distance < sqr_distance) /// \todo Ask Stefan if this fix is correct
+          if (tmp_distance < sqr_distance)
           {
             candidate_accepted = false;
             break;

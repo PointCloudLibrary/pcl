@@ -228,6 +228,12 @@ namespace pcl
         spreading_size_ = spreading_size;
       }
 
+      inline void
+      setVariableFeatureNr (const bool enabled)
+      {
+        variable_feature_nr_ = enabled;
+      }
+
       inline QuantizedMap &
       getQuantizedMap () 
       { 
@@ -269,7 +275,10 @@ namespace pcl
 
     private:
 
+      bool variable_feature_nr_;
+
       float feature_distance_threshold_;
+      float min_distance_to_border_;
 
       QuantizedNormalLookUpTable normal_lookup_;
 
@@ -288,7 +297,9 @@ namespace pcl
 template <typename PointInT>
 pcl::SurfaceNormalModality<PointInT>::
 SurfaceNormalModality ()
-  : feature_distance_threshold_ (1.0f)
+  : variable_feature_nr_ (false)
+  , feature_distance_threshold_ (1.0f)
+  , min_distance_to_border_ (5.0f)
   , normal_lookup_ ()
   , spreading_size_ (8)
   , surface_normals_ ()
@@ -391,6 +402,9 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
   for (int map_index = 0; map_index < 8; ++map_index)
     computeDistanceMap (mask_maps[map_index], distance_maps[map_index]);
 
+  DistanceMap mask_distance_maps;
+  computeDistanceMap (mask, mask_distance_maps);
+
   std::list<Candidate> list1;
   std::list<Candidate> list2;
 
@@ -416,8 +430,9 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
 
           //const float distance = distance_maps[distance_map_index].at<float> (row_index, col_index);
           const float distance = distance_maps[distance_map_index] (col_index, row_index);
+          const float distance_to_border = mask_distance_maps (col_index, row_index);
 
-          if (distance >= feature_distance_threshold_)
+          if (distance >= feature_distance_threshold_ && distance_to_border >= min_distance_to_border_)
           {
             Candidate candidate;
 
@@ -440,51 +455,147 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
 
   list1.sort ();
 
-  if (list1.size () <= nr_features)
+  if (variable_feature_nr_)
   {
-    features.reserve (list1.size ());
-    for (typename std::list<Candidate>::iterator iter = list1.begin (); iter != list1.end (); ++iter)
+    int distance = list1.size ();
+    bool feature_selection_finished = false;
+    while (!feature_selection_finished)
     {
-      QuantizedMultiModFeature feature;
-
-      feature.x = static_cast<int> (iter->x);
-      feature.y = static_cast<int> (iter->y);
-      feature.modality_index = modality_index;
-      feature.quantized_value = filtered_quantized_surface_normals_ (iter->x, iter->y);
-
-      features.push_back (feature);
-    }
-
-    return;
-  }
-
-  int distance = static_cast<int> (list1.size () / nr_features + 1); // ???  @todo:!:!:!:!:!:!
-  while (list2.size () != nr_features)
-  {
-    const int sqr_distance = distance*distance;
-    for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
-    {
-      bool candidate_accepted = true;
-
-      for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+      const int sqr_distance = distance*distance;
+      for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
       {
-        const int dx = static_cast<int> (iter1->x) - static_cast<int> (iter2->x);
-        const int dy = static_cast<int> (iter1->y) - static_cast<int> (iter2->y);
-        const int tmp_distance = dx*dx + dy*dy;
-
-        if (tmp_distance < sqr_distance)
+        bool candidate_accepted = true;
+        for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
         {
-          candidate_accepted = false;
-          break;
+          const int dx = static_cast<int> (iter1->x) - static_cast<int> (iter2->x);
+          const int dy = static_cast<int> (iter1->y) - static_cast<int> (iter2->y);
+          const int tmp_distance = dx*dx + dy*dy;
+
+          if (tmp_distance < sqr_distance)
+          {
+            candidate_accepted = false;
+            break;
+          }
         }
+
+
+        float min_min_sqr_distance = std::numeric_limits<float>::max ();
+        float max_min_sqr_distance = 0;
+        for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+        {
+          float min_sqr_distance = std::numeric_limits<float>::max ();
+          for (typename std::list<Candidate>::iterator iter3 = list2.begin (); iter3 != list2.end (); ++iter3)
+          {
+            if (iter2 == iter3)
+              continue;
+
+            const float dx = static_cast<int> (iter2->x) - static_cast<int> (iter3->x);
+            const float dy = static_cast<int> (iter2->y) - static_cast<int> (iter3->y);
+
+            const float sqr_distance = dx*dx + dy*dy;
+
+            if (sqr_distance < min_sqr_distance)
+            {
+              min_sqr_distance = sqr_distance;
+            }
+
+            //std::cerr << min_sqr_distance;
+          }
+          //std::cerr << std::endl;
+
+          // check current feature
+          {
+            const float dx = static_cast<int> (iter2->x) - static_cast<int> (iter1->x);
+            const float dy = static_cast<int> (iter2->y) - static_cast<int> (iter1->y);
+
+            const float sqr_distance = dx*dx + dy*dy;
+
+            if (sqr_distance < min_sqr_distance)
+            {
+              min_sqr_distance = sqr_distance;
+            }
+          }
+
+          if (min_sqr_distance < min_min_sqr_distance)
+            min_min_sqr_distance = min_sqr_distance;
+          if (min_sqr_distance > max_min_sqr_distance)
+            max_min_sqr_distance = min_sqr_distance;
+
+          //std::cerr << min_sqr_distance << ", " << min_min_sqr_distance << ", " << max_min_sqr_distance << std::endl;
+        }
+
+        if (candidate_accepted)
+        {
+          std::cerr << "feature_index: " << list2.size () << std::endl;
+          std::cerr << "min_min_sqr_distance: " << min_min_sqr_distance << std::endl;
+          std::cerr << "max_min_sqr_distance: " << max_min_sqr_distance << std::endl;
+
+          if (min_min_sqr_distance < 50)
+          {
+            feature_selection_finished = true;
+            break;
+          }
+
+          list2.push_back (*iter1);
+        }
+
+        //if (list2.size () == nr_features) 
+        //{
+        //  feature_selection_finished = true;
+        //  break;
+        //}
+      }
+      --distance;
+    }
+  }
+  else
+  {
+    if (list1.size () <= nr_features)
+    {
+      features.reserve (list1.size ());
+      for (typename std::list<Candidate>::iterator iter = list1.begin (); iter != list1.end (); ++iter)
+      {
+        QuantizedMultiModFeature feature;
+
+        feature.x = static_cast<int> (iter->x);
+        feature.y = static_cast<int> (iter->y);
+        feature.modality_index = modality_index;
+        feature.quantized_value = filtered_quantized_surface_normals_ (iter->x, iter->y);
+
+        features.push_back (feature);
       }
 
-      if (candidate_accepted)
-        list2.push_back (*iter1);
-
-      if (list2.size () == nr_features) break;
+      return;
     }
-    --distance;
+
+    int distance = static_cast<int> (list1.size () / nr_features + 1); // ???  @todo:!:!:!:!:!:!
+    while (list2.size () != nr_features)
+    {
+      const int sqr_distance = distance*distance;
+      for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
+      {
+        bool candidate_accepted = true;
+
+        for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+        {
+          const int dx = static_cast<int> (iter1->x) - static_cast<int> (iter2->x);
+          const int dy = static_cast<int> (iter1->y) - static_cast<int> (iter2->y);
+          const int tmp_distance = dx*dx + dy*dy;
+
+          if (tmp_distance < sqr_distance)
+          {
+            candidate_accepted = false;
+            break;
+          }
+        }
+
+        if (candidate_accepted)
+          list2.push_back (*iter1);
+
+        if (list2.size () == nr_features) break;
+      }
+      --distance;
+    }
   }
 
   for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
