@@ -187,10 +187,12 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
   glGenRenderbuffers (1, &depth_render_buffer_);
   glBindRenderbuffer (GL_RENDERBUFFER, depth_render_buffer_);
   glRenderbufferStorage (GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, width, height);
+  glBindRenderbuffer (GL_RENDERBUFFER, 0);
 
   glGenRenderbuffers (1, &color_render_buffer_);
   glBindRenderbuffer (GL_RENDERBUFFER, color_render_buffer_);
   glRenderbufferStorage (GL_RENDERBUFFER, GL_RGB8UI, width, height);
+  glBindRenderbuffer (GL_RENDERBUFFER, 0);
 
   // Setup texture to store depth image
   glGenTextures (1, &depth_texture_);
@@ -261,6 +263,7 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
   glBindFramebuffer (GL_FRAMEBUFFER, fbo_);
   glFramebufferTexture2D (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth_texture_, 0);
   glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_texture_, 0);
+  glBindFramebuffer (GL_FRAMEBUFFER, 0);
 
   if (gllib::getGLError() != GL_NO_ERROR)
   {
@@ -272,6 +275,7 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
   glBindFramebuffer (GL_FRAMEBUFFER, score_fbo_);
   glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0);
   glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, score_texture_, 0);
+  glBindFramebuffer (GL_FRAMEBUFFER, 0);
 
   // Load shader
   likelihood_program_ = gllib::Program::Ptr (new gllib::Program ());
@@ -862,6 +866,8 @@ pcl::simulation::RangeLikelihood::computeScoresShader(float* reference)
   glDrawBuffer (GL_COLOR_ATTACHMENT0);
 
   glReadBuffer (GL_NONE);
+  GLboolean enable_depth_test;
+  glGetBooleanv (GL_DEPTH_TEST, &enable_depth_test);
   glDisable (GL_DEPTH_TEST);
   glViewport (0, 0, width_, height_);
 
@@ -893,6 +899,9 @@ pcl::simulation::RangeLikelihood::computeScoresShader(float* reference)
   {
     std::cout << "GL error: RangeLikelihood::compute_scores_shader - exit" << std::endl;
   }
+
+  if (enable_depth_test == GL_TRUE) glEnable (GL_DEPTH_TEST);
+
 }
 
 void
@@ -902,6 +911,19 @@ RangeLikelihood::render (const std::vector<Eigen::Isometry3d, Eigen::aligned_all
   {
     std::cerr << "GL Error: RangeLikelihood::render" << std::endl;
   }
+
+  GLint old_matrix_mode;
+  GLint old_draw_buffer;
+  GLint old_read_buffer;
+  glGetIntegerv (GL_DRAW_BUFFER, &old_draw_buffer);
+  glGetIntegerv (GL_READ_BUFFER, &old_read_buffer);
+  glGetIntegerv (GL_MATRIX_MODE, &old_matrix_mode);
+
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
 
   glBindFramebuffer (GL_FRAMEBUFFER, fbo_);
 
@@ -949,6 +971,19 @@ RangeLikelihood::render (const std::vector<Eigen::Isometry3d, Eigen::aligned_all
 
   glFlush ();
   
+  // Restore OpenGL state
+  glReadBuffer (old_read_buffer);
+  glDrawBuffer (old_draw_buffer);
+  glBindFramebuffer (GL_FRAMEBUFFER, 0);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPopMatrix();
+
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+
+  glMatrixMode(old_matrix_mode);
+
   color_buffer_dirty_ = true;
   depth_buffer_dirty_ = true;
   score_buffer_dirty_ = true;
@@ -984,10 +1019,14 @@ RangeLikelihood::getColorBuffer ()
   if (color_buffer_dirty_)
   {
     // Read Color
+    GLint old_read_buffer;
+    glGetIntegerv (GL_READ_BUFFER, &old_read_buffer);
+
     glBindFramebuffer (GL_FRAMEBUFFER, fbo_);
     glReadBuffer (GL_COLOR_ATTACHMENT0);
     glReadPixels (0, 0, width_, height_, GL_RGB, GL_UNSIGNED_BYTE, color_buffer_);
     glBindFramebuffer (GL_FRAMEBUFFER, 0);
+    glReadBuffer (old_read_buffer);
 
     if (gllib::getGLError () != GL_NO_ERROR)
     {
