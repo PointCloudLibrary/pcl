@@ -81,8 +81,8 @@ namespace pcl
         bool
         operator() (const boost::shared_ptr<RecognitionModel> & n1, const boost::shared_ptr<RecognitionModel> & n2)
         {
-          int val1 = n1->good_information_ - n1->bad_information_ * n1->regularizer_;
-          int val2 = n2->good_information_ - n2->bad_information_ * n2->regularizer_;
+          float val1 = static_cast<float>(n1->good_information_) - static_cast<float>(n1->bad_information_) * n1->regularizer_;
+          float val2 = static_cast<float>(n2->good_information_) - static_cast<float>(n2->bad_information_) * n2->regularizer_;
           return val1 > val2;
         }
       } sortModelsOp;
@@ -105,8 +105,8 @@ namespace pcl
         bool
         operator() (const modelIndices & n1, const modelIndices & n2)
         {
-          int val1 = n1.model_->good_information_ - n1.model_->bad_information_ * n1.model_->regularizer_;
-          int val2 = n2.model_->good_information_ - n2.model_->bad_information_ * n2.model_->regularizer_;
+          float val1 = static_cast<float>(n1.model_->good_information_) - static_cast<float>(n1.model_->bad_information_) * n1.model_->regularizer_;
+          float val2 = static_cast<float>(n2.model_->good_information_) - static_cast<float>(n2.model_->bad_information_) * n2.model_->regularizer_;
           return val1 > val2;
         }
       } sortModelsIndicesOp;
