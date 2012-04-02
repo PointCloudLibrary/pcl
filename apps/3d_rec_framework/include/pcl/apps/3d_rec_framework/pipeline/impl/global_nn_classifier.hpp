@@ -82,7 +82,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     PointInTPtr processed (new pcl::PointCloud<PointInT>);
     PointInTPtr in (new pcl::PointCloud<PointInT>);
 
-    pcl::PointCloud<FeatureT>::CloudVectorType signatures;
+    typename pcl::PointCloud<FeatureT>::CloudVectorType signatures;
     std::vector < Eigen::Vector3f > centroids;
 
     if (indices_.size ())
@@ -186,7 +186,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         {
           PointInTPtr processed (new pcl::PointCloud<PointInT>);
           //pro view, compute signatures
-          pcl::PointCloud<FeatureT>::CloudVectorType signatures;
+          typename pcl::PointCloud<FeatureT>::CloudVectorType signatures;
           std::vector < Eigen::Vector3f > centroids;
           estimator_->estimate (models->at (i).views_->at (v), processed, signatures, centroids);
 

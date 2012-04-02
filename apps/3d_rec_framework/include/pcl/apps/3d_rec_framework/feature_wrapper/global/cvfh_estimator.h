@@ -36,7 +36,7 @@ namespace pcl
 
       void
       estimate (PointInTPtr & in, PointInTPtr & processed,
-                pcl::PointCloud<FeatureT>::CloudVectorType & signatures,
+                typename pcl::PointCloud<FeatureT>::CloudVectorType & signatures,
                 std::vector<Eigen::Vector3f> & centroids)
       {
 
