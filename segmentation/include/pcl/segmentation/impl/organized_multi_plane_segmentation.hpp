@@ -50,7 +50,7 @@
 Eigen::Vector3f linePlaneIntersection (Eigen::Vector3f& p1, Eigen::Vector3f& p2, Eigen::Vector3f& norm, Eigen::Vector3f& p3)
 {
   double u = norm.dot ((p3 - p1)) / norm.dot ((p2 - p1));
-  Eigen::Vector3f intersection = p1 + u * (p2 - p1);
+  Eigen::Vector3f intersection (p1 + u * (p2 - p1));
   return (intersection);
 }
 
