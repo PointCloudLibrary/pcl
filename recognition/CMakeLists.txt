@@ -36,6 +36,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/hv/occlusion_reasoning.h
         include/pcl/${SUBSYS_NAME}/hv/hypotheses_verification.h
         include/pcl/${SUBSYS_NAME}/hv/hv_papazov.h
+        include/pcl/${SUBSYS_NAME}/hv/greedy_verification.h
         include/pcl/${SUBSYS_NAME}/cg/correspondence_grouping.h
         include/pcl/${SUBSYS_NAME}/cg/hough_3d.h		
         include/pcl/${SUBSYS_NAME}/cg/geometric_consistency.h
@@ -44,6 +45,7 @@ if(build)
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/hv/occlusion_reasoning.hpp
         include/pcl/${SUBSYS_NAME}/impl/hv/hv_papazov.hpp        
+        include/pcl/${SUBSYS_NAME}/impl/hv/greedy_verification.hpp
         include/pcl/${SUBSYS_NAME}/impl/cg/correspondence_grouping.hpp
         include/pcl/${SUBSYS_NAME}/impl/cg/hough_3d.hpp
         include/pcl/${SUBSYS_NAME}/impl/cg/geometric_consistency.hpp
@@ -57,6 +59,7 @@ if(build)
         src/mask_map.cpp
         src/hv/occlusion_reasoning.cpp
         src/hv/hv_papazov.cpp
+        src/hv/greedy_verification.cpp
         src/cg/hough_3d.cpp
         src/cg/geometric_consistency.cpp
         )
