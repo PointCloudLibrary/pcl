@@ -222,17 +222,18 @@ pcl::ColorGradientModality<PointInT>::
 processInputData ()
 {
   // smooth input
-	pcl::filters::Convolution<PointInT, PointInT> convolution;
-	Eigen::ArrayXf gaussian_kernel(5);
-	gaussian_kernel << 1.f/16, 1.f/4, 3.f/8, 1.f/4, 1.f/16;
+	//pcl::filters::Convolution<PointInT, PointInT> convolution;
+	//Eigen::ArrayXf gaussian_kernel(5);
+	//gaussian_kernel << 1.f/16, 1.f/4, 3.f/8, 1.f/4, 1.f/16;
 
-	convolution.setInputCloud (input_);
-	convolution.setKernel (gaussian_kernel);
+	//convolution.setInputCloud (input_);
+	//convolution.setKernel (gaussian_kernel);
 
-  convolution.convolve (*smoothed_input_);
+ // convolution.convolve (*smoothed_input_);
 
   // extract color gradients
-  computeMaxColorGradientsSobel (smoothed_input_);
+  //computeMaxColorGradientsSobel (smoothed_input_);
+  computeMaxColorGradientsSobel (input_);
 
   // quantize gradients
   quantizeColorGradients ();
