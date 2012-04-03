@@ -69,6 +69,15 @@ namespace pcl
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       };
 
+      /** \brief Structure that links a uv coordinate to its 3D point and face.
+        */
+      struct UvIndex
+      {
+        UvIndex () : idx_cloud (), idx_face () {}
+        int idx_cloud; // Index of the PointXYZ in the camera's cloud
+        int idx_face; // Face corresponding to that projection
+       };
+
       typedef boost::shared_ptr< PointInT > Ptr;
       typedef boost::shared_ptr< const PointInT > ConstPtr;
 
@@ -227,7 +236,7 @@ namespace pcl
       removeOccludedPoints (const pcl::TextureMesh &tex_mesh, PointCloudPtr &filtered_cloud, const double octree_voxel_size);
 
 
-      /** \brief Segment faces by camera visibility.
+      /** \brief Segment faces by camera visibility. Point-based segmentation.
         * With N camera, faces will be arranged into N+1 groups: 1 for each camera, plus 1 for faces not visible from any camera.
         * \param[in] tex_mesh input mesh that needs sorting. Must contain only 1 sub-mesh.
         * \param[in] sorted_mesh resulting mesh, will contain nbCamera + 1 sub-mesh.
@@ -268,6 +277,14 @@ namespace pcl
       showOcclusions (pcl::TextureMesh &tex_mesh, pcl::PointCloud<pcl::PointXYZI>::Ptr &colored_cloud,
                       double octree_voxel_size, bool show_nb_occlusions = true, int max_occlusions = 4);
 
+      /** \brief Segment and texture faces by camera visibility. Face-based segmentation.
+        * With N camera, faces will be arranged into N+1 groups: 1 for each camera, plus 1 for faces not visible from any camera.
+        * The mesh will also contain uv coordinates for each face
+        * \param[in/out] tex_mesh input mesh that needs sorting. Should contain only 1 sub-mesh.
+        * \param[in] cameras vector containing the cameras used for texture mapping.
+        */
+      void textureMeshwithMultipleCameras(pcl::TextureMesh &mesh, const std::vector<Camera> &cameras);
+
     protected:
       /** \brief mesh scale control. */
       float f_;
@@ -288,6 +305,48 @@ namespace pcl
         */
       std::vector<Eigen::Vector2f>
       mapTexture2Face (const Eigen::Vector3f &p1, const Eigen::Vector3f &p2, const Eigen::Vector3f &p3);
+
+      /** \brief Returns the circumcenter of a triangle and the circle's radius.
+         *  see http://en.wikipedia.org/wiki/Circumcenter for formulas.
+         *  param[in] p1 first point of the triangle.
+         *  param[in] p2 second point of the triangle.
+         *  param[in] p3 third point of the triangle.
+         *  param[out] circumcenter resulting circumcenter
+         *  param[out] radius the radius of the circumscribed circle.
+        */
+      inline void
+      getTriangleCircumcenterAndSize(const pcl::PointXY &p1, const pcl::PointXY &p2, const pcl::PointXY &p3, pcl::PointXY &circomcenter, double &radius);
+
+      /** \brief computes UV coordinates of point, observed by one particular camera
+        * \param[in] pt XYZ point to project on camera plane
+        * \param[in] cam the camera used for projection
+        * \param[out] UV_coordinates the resulting UV coordinates. Set to (-1.0,-1.0) if the point is not visible by the camera
+        * \returns false if the point is not visible by the camera
+        */
+      inline bool
+      getPointUVCoordinates (const pcl::PointXYZ &pt, const Camera &cam, pcl::PointXY &UV_coordinates);
+
+      /** \brief Returns true if all the vertices of one face are projected on the camera's image plane.
+         *  param[in] camera camera on which to project the face.
+         *  param[in] p1 first point of the face.
+         *  param[in] p2 second point of the face.
+         *  param[in] p3 third point of the face.
+         *  param[out] proj1 UV coordinates corresponding to p1.
+         *  param[out] proj2 UV coordinates corresponding to p2.
+         *  param[out] proj3 UV coordinates corresponding to p3.
+        */
+      inline bool
+      isFaceProjected(const Camera camera, const pcl::PointXYZ &p1, const pcl::PointXYZ &p2, const pcl::PointXYZ &p3, pcl::PointXY &proj1, pcl::PointXY &proj2, pcl::PointXY &proj3);
+
+      /** \brief Returns True if a point lays within a triangle
+        *  see http://www.blackpawn.com/texts/pointinpoly/default.html
+        *  param[in] p1 first point of the triangle.
+        *  param[in] p2 second point of the triangle.
+        *  param[in] p3 third point of the triangle.
+        *  param[in] pt the querry point.
+       */
+      inline bool
+      checkPointInsideTriangle(const pcl::PointXY &p1, const pcl::PointXY &p2, const pcl::PointXY &p3, const pcl::PointXY &pt);
 
       /** \brief Class get name method. */
       std::string
