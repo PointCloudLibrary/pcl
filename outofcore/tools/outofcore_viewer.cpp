@@ -51,7 +51,7 @@
 
 // PCL - visualziation
 //#include <pcl/visualization/pcl_visualizer.h>
-//#include "vtkVBOPolyDataMapper.h"
+#include "vtkVBOPolyDataMapper.h"
 
 // PCL - outofcore
 #include <pcl/outofcore/outofcore.h>
@@ -75,6 +75,7 @@ typedef Eigen::aligned_allocator<PointT> AlignedPointT;
 #include <vtkActor.h>
 #include <vtkAppendPolyData.h>
 #include <vtkCellArray.h>
+#include <vtkCellData.h>
 #include <vtkCubeSource.h>
 #include <vtkDataSetMapper.h>
 #include <vtkInteractorStyleTrackballCamera.h>
@@ -152,11 +153,11 @@ getCloudActor (std::list<PointT> points)
   cloud->SetPoints (cloud_points);
   cloud->SetVerts (cloud_vertices);
 
-  //cloud->GetCellData()->SetScalars(colors);
+  cloud->GetCellData()->SetScalars(colors);
 
   vtkSmartPointer<vtkActor> cloud_actor = vtkSmartPointer<vtkActor>::New ();
-  vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
-  //vtkSmartPointer<vtkVBOPolyDataMapper> mapper = vtkSmartPointer<vtkVBOPolyDataMapper>::New ();
+//  vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
+  vtkSmartPointer<vtkVBOPolyDataMapper> mapper = vtkSmartPointer<vtkVBOPolyDataMapper>::New ();
   mapper->SetInput (cloud);
   cloud_actor->SetMapper (mapper);
   cloud_actor->GetProperty ()->SetColor (0.0, 0.0, 1.0);
@@ -171,7 +172,7 @@ getCloudActor (std::list<PointT> points)
 }
 
 int
-outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octree)
+outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octree=true)
 {
   cout << boost::filesystem::absolute (tree_root) << endl;
   octree_disk octree (tree_root, true);

@@ -11,20 +11,20 @@ else(NOT VTK_FOUND)
   include (${VTK_USE_FILE})
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-  PCL_ADD_EXECUTABLE(pcl_outofcore_viewer ${SUBSYS_NAME} outofcore_viewer.cpp)
-  target_link_libraries(pcl_outofcore_viewer pcl_common pcl_io pcl_outofcore pcl_visualization)
-
-  #set(srcs
-  #    outofcore_viewer.cpp
-  #    vtkVBOPolyDataMapper.cxx
-  #    )
-  #
-  #  set(incs 
-  #      vtkVBOPolyDataMapper.h
-  #      )
-  #  
-  #PCL_ADD_INCLUDES(pcl_outofcore_viewer ${SUBSYS_NAME} ${incs})
-  #PCL_ADD_EXECUTABLE(pcl_outofcore_viewer ${SUBSYS_NAME} ${srcs})
+  #PCL_ADD_EXECUTABLE(pcl_outofcore_viewer ${SUBSYS_NAME} outofcore_viewer.cpp)
   #target_link_libraries(pcl_outofcore_viewer pcl_common pcl_io pcl_outofcore pcl_visualization)
+
+  set(srcs
+      outofcore_viewer.cpp
+      vtkVBOPolyDataMapper.cxx
+      )
+  
+    set(incs 
+        vtkVBOPolyDataMapper.h
+        )
+    
+  PCL_ADD_INCLUDES(pcl_outofcore_viewer ${SUBSYS_NAME} ${incs})
+  PCL_ADD_EXECUTABLE(pcl_outofcore_viewer ${SUBSYS_NAME} ${srcs})
+  target_link_libraries(pcl_outofcore_viewer pcl_common pcl_io pcl_outofcore pcl_visualization)
   
 endif(NOT VTK_FOUND)
