@@ -130,6 +130,14 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
 
     //Calculate step length with guarnteed sufficient decrease [More, Thuente 1994]
     delta_p_norm = delta_p.norm ();
+
+    if (delta_p_norm == 0 || delta_p_norm != delta_p_norm)
+    {
+      trans_probability_ = score / input_->points.size ();
+      converged_ = delta_p_norm == delta_p_norm;
+      return;
+    }
+
     delta_p.normalize ();
     delta_p_norm = computeStepLengthMT (p, delta_p, delta_p_norm, step_size_, transformation_epsilon_ / 2, score, score_gradient, hessian, output);
     delta_p *= delta_p_norm;
