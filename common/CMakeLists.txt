@@ -137,10 +137,20 @@ if(build)
         include/pcl/console/print.h
         include/pcl/console/time.h
         )
+        
+    set(kissfft_incs
+        include/pcl/common/fft/_kiss_fft_guts.h
+        include/pcl/common/fft/kiss_fft.h
+        include/pcl/common/fft/kiss_fftr.h)
+        
+    set(kissfft_srcs
+        src/fft/kiss_fft.c
+        src/fft/kiss_fftr.c)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${common_incs_impl} ${sensor_msg_incs} ${std_msg_incs} ${range_image_incs} ${range_image_incs_impl})
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${sensor_msg_incs} ${std_msg_incs} ${range_image_incs} ${range_image_incs_impl})
+    #PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${common_incs_impl} ${sensor_msg_incs} ${std_msg_incs} ${range_image_incs} ${range_image_incs_impl})
     link_ros_libs (${LIB_NAME})
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" ""
         "" "" "")
@@ -152,6 +162,7 @@ if(build)
         PCL_ADD_INCLUDES(${SUBSYS_NAME} "../std_msgs" ${std_msg_incs})
     endif(NOT USE_ROS)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common ${common_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} common ${kissfft_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common/impl ${common_incs_impl})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} impl ${impl_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ros ${ros_incs})
