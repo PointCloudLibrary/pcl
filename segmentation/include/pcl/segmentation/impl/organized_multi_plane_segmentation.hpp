@@ -165,14 +165,25 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
         plane_params[3] = -1 * plane_params.dot (clust_centroid);
       }
       
-      model.values[0] = plane_params[0];
-      model.values[1] = plane_params[1];
-      model.values[2] = plane_params[2];
-      model.values[3] = plane_params[3];
-      model_coefficients.push_back (model);
-      inlier_indices.push_back (label_indices[i]);
-      centroids.push_back (clust_centroid);
-      covariances.push_back (clust_cov);
+      // Compute the curvature surface change
+      float curvature;
+      float eig_sum = clust_cov.coeff (0) + clust_cov.coeff (4) + clust_cov.coeff (8);
+      if (eig_sum != 0)
+        curvature = fabsf (eigen_value / eig_sum);
+      else
+        curvature = 0;
+
+      if (curvature < maximum_curvature_)
+      {
+        model.values[0] = plane_params[0];
+        model.values[1] = plane_params[1];
+        model.values[2] = plane_params[2];
+        model.values[3] = plane_params[3];
+        model_coefficients.push_back (model);
+        inlier_indices.push_back (label_indices[i]);
+        centroids.push_back (clust_centroid);
+        covariances.push_back (clust_cov);
+      }
     }
   }
   deinitCompute ();
@@ -317,18 +328,12 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
   std::vector<int> label_to_model;
   grow_labels.resize (label_indices.size (), false);
   label_to_model.resize (label_indices.size (), 0);
-  for (size_t i = 0; i < label_indices.size (); i++)
-  {
-    if (label_indices[i].indices.size () > min_inliers_)
-    {
-      grow_labels[i] = true;
-    }
-  }
 
   for (size_t i = 0; i < model_coefficients.size (); i++)
   {
     int model_label = (*labels)[inlier_indices[i].indices[0]].label;
     label_to_model[model_label] = static_cast<int> (i);
+    grow_labels[model_label] = true;
   }
   
   //refinement_compare_->setDistanceThreshold (0.015f, true);

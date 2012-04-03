@@ -88,7 +88,7 @@ namespace pcl
       /** \brief Constructor for OrganizedMultiPlaneSegmentation. */
       OrganizedMultiPlaneSegmentation () :
         normals_ (), min_inliers_ (1000), angular_threshold_ (3.0 * 0.017453), distance_threshold_ (0.02),
-        project_points_ (true),
+        project_points_ (false), maximum_curvature_ (0.001),
         compare_ (new PlaneComparator ()), refinement_compare_ (new PlaneRefinementComparator ())
       {
       }
@@ -161,6 +161,22 @@ namespace pcl
       getDistanceThreshold () const
       {
         return (distance_threshold_);
+      }
+
+      /** \brief Set the maximum curvature allowed for a planar region.
+        * \param[in] maximum_curvature the maximum curvature
+        */
+      inline void
+      setMaximumCurvature (double maximum_curvature)
+      {
+        maximum_curvature_ = maximum_curvature;
+      }
+
+      /** \brief Get the maximum curvature allowed for a planar region. */
+      inline double
+      getMaximumCurvature () const
+      {
+        return (maximum_curvature_);
       }
 
       /** \brief Provide a pointer to the comparator to be used for segmentation.
@@ -263,6 +279,9 @@ namespace pcl
 
       /** \brief The tolerance in meters for difference in perpendicular distance (d component of plane equation) to the plane between neighboring points, to be considered part of the same plane. */
       double distance_threshold_;
+
+      /** \brief The tolerance for maximum curvature after fitting a plane.  Used to remove smooth, but non-planar regions. */
+      double maximum_curvature_;
 
       /** \brief Whether or not points should be projected to the plane, or left in the original 3D space. */
       bool project_points_;
