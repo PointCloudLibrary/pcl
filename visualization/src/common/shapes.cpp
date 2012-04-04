@@ -126,6 +126,20 @@ pcl::visualization::createCube (const Eigen::Vector3f &translation, const Eigen:
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 vtkSmartPointer<vtkDataSet> 
+pcl::visualization::createCube (double x_min, double x_max,
+                                double y_min, double y_max,
+                                double z_min, double z_max)
+{
+  vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New ();
+  
+  vtkSmartPointer<vtkCubeSource> cube = vtkSmartPointer<vtkCubeSource>::New ();
+  cube->SetBounds (x_min, x_max, y_min, y_max, z_min, z_max);
+
+  return (cube->GetOutput ());
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+vtkSmartPointer<vtkDataSet> 
 pcl::visualization::createLine (const pcl::ModelCoefficients &coefficients)
 {
   vtkSmartPointer<vtkLineSource> line = vtkSmartPointer<vtkLineSource>::New ();

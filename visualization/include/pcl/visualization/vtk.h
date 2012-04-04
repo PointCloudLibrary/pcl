@@ -43,13 +43,28 @@
 #  pragma GCC system_header 
 #endif
 
+#include <vtkAppendPolyData.h>
+#include <vtkAssemblyPath.h>
+#include <vtkAxesActor.h>
+#include <vtkActor.h>
+#include <vtkBoxRepresentation.h>
+#include <vtkBoxWidget.h>
+#include <vtkBoxWidget2.h>
+#include <vtkCellData.h>
 #include <vtkMath.h>
 #include <vtkLoopSubdivisionFilter.h>
+#include <vtkLineSource.h>
+#include <vtkLegendScaleActor.h>
+#include <vtkLightKit.h>
 #include <vtkPlatonicSolidSource.h>
+#include <vtkPropPicker.h>
 #include <vtkGeneralTransform.h>
 #include <vtkSmartPointer.h>
 #include <vtkDataSet.h>
+#include <vtkDataSetSurfaceFilter.h>
+#include <vtkExecutive.h>
 #include <vtkPolygon.h>
+#include <vtkPointPicker.h>
 #include <vtkUnstructuredGrid.h>
 #include <vtkConeSource.h>
 #include <vtkDiskSource.h>
@@ -57,12 +72,10 @@
 #include <vtkSphereSource.h>
 #include <vtkTransform.h>
 #include <vtkTransformPolyDataFilter.h>
-#include <vtkLineSource.h>
 #include <vtkTubeFilter.h>
 #include <vtkCubeSource.h>
 #include <vtkAxes.h>
 #include <vtkFloatArray.h>
-#include <vtkAppendPolyData.h>
 #include <vtkPointData.h>
 #include <vtkPolyData.h>
 #include <vtkPolyDataMapper.h>
@@ -77,23 +90,19 @@
 #include <vtkFollower.h>
 #include <vtkCallbackCommand.h>
 #include <vtkInteractorStyle.h>
+#include <vtkInformationVector.h>
 #include <vtkDataArray.h>
 #include <vtkUnsignedCharArray.h>
 #include <vtkPoints.h>
 #include <vtkRendererCollection.h>
-#include <vtkLegendScaleActor.h>
 #include <vtkPNGWriter.h>
 #include <vtkWindowToImageFilter.h>
 #include <vtkInteractorStyleTrackballCamera.h>
-#include <vtkAssemblyPath.h>
 #include <vtkProperty.h>
 #include <vtkCamera.h>
 #include <vtkObjectFactory.h>
 #include <vtkScalarBarActor.h>
 #include <vtkScalarsToColors.h>
-#include <vtkBoxRepresentation.h>
-#include <vtkBoxWidget.h>
-#include <vtkBoxWidget2.h>
 #include <vtkClipPolyData.h>
 #include <vtkPlanes.h>
 #include <vtkImageImport.h>
@@ -110,14 +119,12 @@
 #include <vtkFieldData.h>
 #include <vtkDoubleArray.h>
 #include <vtkLODActor.h>
-#include <vtkActor.h>
 #include <vtkPolyDataWriter.h>
 #include <vtkTextActor.h>
 #include <vtkCleanPolyData.h>
 #include <vtkRenderer.h>
 #include <vtkObject.h>
 #include <vtkOrientationMarkerWidget.h>
-#include <vtkAxesActor.h>
 #include <vtkImageReslice.h>
 #include <vtkImageChangeInformation.h>
 #include <vtkImageCanvasSource2D.h>
@@ -128,6 +135,10 @@
 #else
 #  include <vtkRenderWindowInteractor.h>
 #endif
+#include <vtkSelection.h>
+#include <vtkVisibleCellSelector.h>
+#include <vtkTriangle.h>
+#include <vtkWorldPointPicker.h>
 
 #endif    // PCL_PCL_VISUALIZER_VTK_H_
 
