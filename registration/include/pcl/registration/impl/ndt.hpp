@@ -133,7 +133,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
 
     if (delta_p_norm == 0 || delta_p_norm != delta_p_norm)
     {
-      trans_probability_ = score / input_->points.size ();
+      trans_probability_ = score / static_cast<double> (input_->points.size ());
       converged_ = delta_p_norm == delta_p_norm;
       return;
     }
