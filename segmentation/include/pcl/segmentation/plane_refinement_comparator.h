@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
+ * $Id: extract_clusters.h 5027 2012-03-12 03:10:45Z rusu $
  *
  */
 
@@ -68,121 +68,39 @@ namespace pcl
 
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::input_;
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::normals_;
+      using pcl::PlaneCoefficientComparator<PointT, PointNT>::distance_threshold_;
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::plane_coeff_d_;
 
       typedef boost::shared_ptr<PlaneRefinementComparator<PointT, PointNT, PointLT> > Ptr;
 
       /** \brief Empty constructor for PlaneCoefficientComparator. */
      PlaneRefinementComparator ()
-        : distance_map_ ()
-        , angular_threshold_ (0.0f)
-        , distance_threshold_ (0.02f)
-        , models_ ()
+        : models_ ()
         , labels_ ()
         , refine_labels_ ()
         , label_to_model_ ()
-        , depth_dependent_ (true)
+        , depth_dependent_ (false)
       {
       }
 
+      /** \brief Empty constructor for PlaneCoefficientComparator. 
+        * \param[in] models
+        * \param[in] refine_labels
+        */
       PlaneRefinementComparator (boost::shared_ptr<std::vector<pcl::ModelCoefficients> >& models,
                                  boost::shared_ptr<std::vector<bool> >& refine_labels)
-        : distance_map_ ()
-        , angular_threshold_ (0.0f)
-        , distance_threshold_ (0.02f)
-        , models_ (models)
+        : models_ (models)
         , labels_ ()
         , refine_labels_ (refine_labels)
         , label_to_model_ ()
-        , depth_dependent_ (true)
+        , depth_dependent_ (false)
       {
       }
 
-      /** \brief Constructor for PlaneCoefficientComparator.
-        * \param[in] plane_coeff_d a reference to a vector of d coefficients of plane equations.  Must be the same size as the input cloud and input normals.  a, b, and c coefficients are in the input normals.
-        */
-      PlaneRefinementComparator (boost::shared_ptr<std::vector<float> >& plane_coeff_d) 
-        : angular_threshold_ (0), distance_threshold_ (0.02)
-      {
-      }   
       /** \brief Destructor for PlaneCoefficientComparator. */
       virtual
       ~PlaneRefinementComparator ()
       {
-      }
-
-      /** \brief Provide a pointer to the input normals.
-        * \param[in] normals the input normal cloud
-        */
-      inline void
-      setInputNormals (const PointCloudNConstPtr &normals)
-      {
-        normals_ = normals;
-      }
-
-      /** \brief Get the input normals. */
-      inline PointCloudNConstPtr
-      getInputNormals () const
-      {
-        return (normals_);
-      }
-
-      /** \brief Provide a pointer to a vector of the d-coefficient of the planes' hessian normal form.  a, b, and c are provided by the normal cloud.
-        * \param[in] plane_coeff_d a pointer to the plane coefficients.
-        */
-      void
-      setPlaneCoeffD (boost::shared_ptr<std::vector<float> >& plane_coeff_d)
-      {
-        plane_coeff_d_ = plane_coeff_d;
-      }
-
-      /** \brief Provide a pointer to a vector of the d-coefficient of the planes' hessian normal form.  a, b, and c are provided by the normal cloud.
-        * \param[in] plane_coeff_d a pointer to the plane coefficients.
-        */
-      void
-      setPlaneCoeffD (std::vector<float>& plane_coeff_d)
-      {
-        plane_coeff_d_ = boost::make_shared<std::vector<float> >(plane_coeff_d);
-      }
-      
-      /** \brief Get a pointer to the vector of the d-coefficient of the planes' hessian normal form. */
-      const std::vector<float>&
-      getPlaneCoeffD () const
-      {
-        return (plane_coeff_d_);
-      }
-
-      /** \brief Set the tolerance in radians for difference in normal direction between neighboring points, to be considered part of the same plane.
-        * \param[in] angular_threshold the tolerance in radians
-        */
-      inline void
-      setAngularThreshold (float angular_threshold)
-      {
-        printf ("euclidean set angular threshold!\n");
-        angular_threshold_ = cosf (angular_threshold);
-      }
-      
-      /** \brief Get the angular threshold in radians for difference in normal direction between neighboring points, to be considered part of the same plane. */
-      inline float
-      getAngularThreshold () const
-      {
-        return (acos (angular_threshold_) );
-      }
-
-      /** \brief Set the tolerance in meters for difference in perpendicular distance (d component of plane equation) to the plane between neighboring points, to be considered part of the same plane.
-        * \param[in] distance_threshold the tolerance in meters
-        */
-      inline void
-      setDistanceThreshold (float distance_threshold, bool depth_dependent = true)
-      {
-        distance_threshold_ = distance_threshold;// * distance_threshold;
-        depth_dependent_ = depth_dependent;
-      }
-
-      void
-      setDistanceMap (float* distance_map)
-      {
-        distance_map_ = distance_map;
       }
 
       /** \brief Set the vector of model coefficients to which we will compare.
@@ -237,26 +155,28 @@ namespace pcl
         label_to_model_ = boost::make_shared<std::vector<int> >(label_to_model);
       }
 
+      /** \brief ...
+        */
       boost::shared_ptr<std::vector<pcl::ModelCoefficients> >
       getModelCoefficients () const
       {
         return (models_);
       }
 
+      /** \brief ...
+        * \param[in] labels
+        */
       void
       setLabels (PointCloudLPtr& labels)
       {
         labels_ = labels;
       }
 
-      /** \brief Get the distance threshold in meters (d component of plane equation) between neighboring points, to be considered part of the same plane. */
-      inline float
-      getDistanceThreshold () const
-      {
-        return (distance_threshold_);
-      }
-
-      bool
+      /** \brief Compare two neighboring points
+        * \param[in] idx1 The index of the first point.
+        * \param[in] idx2 The index of the second point.
+        */
+      virtual bool
       compare (int idx1, int idx2) const
       {
         int current_label = labels_->points[idx1].label;
@@ -264,7 +184,7 @@ namespace pcl
 
         // Suat: ????
         if (!((*refine_labels_)[current_label] && !(*refine_labels_)[next_label]))
-          return false;
+          return (false);
         
         const pcl::ModelCoefficients& model_coeff = (*models_)[(*label_to_model_)[current_label]];
         
@@ -289,9 +209,6 @@ namespace pcl
       }
 
     protected:
-      float* distance_map_;
-      float angular_threshold_;
-      float distance_threshold_;
       boost::shared_ptr<std::vector<pcl::ModelCoefficients> > models_;
       PointCloudLPtr labels_;
       boost::shared_ptr<std::vector<bool> > refine_labels_;

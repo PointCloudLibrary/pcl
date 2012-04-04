@@ -49,7 +49,7 @@
 ///////////////////////////////////////////////////////////////
 Eigen::Vector3f linePlaneIntersection (Eigen::Vector3f& p1, Eigen::Vector3f& p2, Eigen::Vector3f& norm, Eigen::Vector3f& p3)
 {
-  double u = norm.dot ((p3 - p1)) / norm.dot ((p2 - p1));
+  float u = norm.dot ((p3 - p1)) / norm.dot ((p2 - p1));
   Eigen::Vector3f intersection (p1 + u * (p2 - p1));
   return (intersection);
 }
@@ -366,41 +366,6 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
         inlier_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx+1);
       }
       
-      /*
-      //bool test2 = false;
-      //printf ("first idx1: %d first idx2: %d\n",current_row+colIdx,current_row+colIdx+1);
-      
-      //printf ("first L1: %d first L2: %d\n",current_label, labels[current_row+colIdx+1].label);
-      if (grow_labels[current_label] && !grow_labels[(*labels)[current_row+colIdx+1].label])
-      { 
-        //Check neighbor against this label's model
-        pcl::ModelCoefficients model_coeff = model_coefficients[label_to_model[current_label]];
-        
-        //Check color?
-        //Check normal? 
-        //Check point-to-plane distance
-        PointT pt = input_->points[current_row+colIdx+1];
-        double point_to_plane_dist = fabs (model_coeff.values[0] * pt.x + 
-                                           model_coeff.values[1] * pt.y + 
-                                           model_coeff.values[2] * pt.z +
-                                           model_coeff.values[3]);
-        //printf ("first ptp dist: %lf\n",point_to_plane_dist);
-        
-        if (point_to_plane_dist < (point_to_plane_dist_thresh * pt.z))//TODO: Make a thresh, and better comparisons
-        {
-          //test2 = true;
-          //labels->points[current_row+colIdx+1].label = current_label;
-          //label_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx+1);
-          //inlier_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx+1);
-        }
-        
-      }
-      //if (test1 != test2)
-      //  printf ("ERR: %d %d\n", test1, test2);
-      //else if (test1 && test2)
-      //  printf ("Both growing!\n");
-      */      
-
       int lower_label = (*labels)[next_row+colIdx].label;
       if (lower_label < 0)
         continue;

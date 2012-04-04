@@ -135,7 +135,7 @@ pcl::TextureMapping<PointInT>::mapTexture2Face (
   tex_coordinates.push_back (tp1);
   tex_coordinates.push_back (tp2);
   tex_coordinates.push_back (tp3);
-  return tex_coordinates;
+  return (tex_coordinates);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -283,7 +283,7 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV (pcl::TextureMesh &tex_mesh)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> void
-	pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &tex_mesh, std::vector<Camera, Eigen::aligned_allocator<Camera> > &cams)
+pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &tex_mesh, std::vector<Camera, Eigen::aligned_allocator<Camera> > &cams)
 {
 
   if (tex_mesh.tex_polygons.size () != cams.size () + 1)
@@ -314,9 +314,6 @@ template<typename PointInT> void
 
     // transform cloud into current camera frame
     pcl::transformPointCloud (*originalCloud, *camera_transformed_cloud, cam_trans.inverse ());
-
-    // save transformed cloud
-    // pcl::io::savePCDFile("cloud_cam.pcd", *camera_transformed_cloud);
 
     // vector of texture coordinates for each face
     std::vector<Eigen::Vector2f> texture_map_tmp;
@@ -742,42 +739,31 @@ pcl::TextureMapping<PointInT>::showOcclusions (pcl::TextureMesh &tex_mesh, pcl::
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> void
-pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras(pcl::TextureMesh &mesh, const std::vector<Camera> &cameras)
+pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh &mesh, const std::vector<Camera, Eigen::aligned_allocator<Camera> > &cameras)
 {
 
-  if(mesh.tex_polygons.size()!=1)
-  {
-    std::cerr << "WARNING THE MESH CONTAINS MORE THAN 1 SUBMESH!!" << std::endl;
-  }
+  if (mesh.tex_polygons.size () != 1)
+    return;
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr mesh_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr mesh_cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
-  pcl::fromROSMsg(mesh.cloud, *mesh_cloud);
+  pcl::fromROSMsg (mesh.cloud, *mesh_cloud);
 
   std::vector<pcl::Vertices> faces;
 
-  std::cout << "Initial number of frames: " << mesh.tex_polygons[0].size() << std::endl;
-
-  for(int current_cam = 0 ; current_cam < cameras.size() ; ++current_cam)
+  for (int current_cam = 0; current_cam < static_cast<int> (cameras.size ()); ++current_cam)
   {
-
-    std::cout << "\nProcessing camera: " << current_cam << " Initial number of frames: " << mesh.tex_polygons[current_cam].size() << std::endl;
-
     // transform mesh into camera's frame
-    pcl::PointCloud<pcl::PointXYZ>::Ptr camera_cloud(new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::transformPointCloud(*mesh_cloud, *camera_cloud, cameras[current_cam].pose.inverse());
+    pcl::PointCloud<pcl::PointXYZ>::Ptr camera_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::transformPointCloud (*mesh_cloud, *camera_cloud, cameras[current_cam].pose.inverse ());
 
     // CREATE UV MAP FOR CURRENT FACES
-    pcl::PointCloud<pcl::PointXY>::Ptr projections(new pcl::PointCloud<pcl::PointXY>);
+    pcl::PointCloud<pcl::PointXY>::Ptr projections (new pcl::PointCloud<pcl::PointXY>);
     std::vector<pcl::Vertices>::iterator current_face;
     std::vector<bool> visibility;
-    visibility.resize(mesh.tex_polygons[current_cam].size());
+    visibility.resize (mesh.tex_polygons[current_cam].size ());
     std::vector<UvIndex> indexes_uv_to_points;
     // for each current face
-
-    std::cout << "\tCreating UV map for current faces... " << std::endl;
-    std::cout << "\tVisibility vector has " << visibility.size() << " elements" << std::endl;
-
 
     //TODO change this
     pcl::PointXY nan_point;
@@ -788,34 +774,27 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras(pcl::TextureMesh &
     u_null.idx_face = -1;
 
     int cpt_invisible=0;
-    for(int idx_face = 0; idx_face <  mesh.tex_polygons[current_cam].size() ; ++idx_face)
+    for (int idx_face = 0; idx_face <  static_cast<int> (mesh.tex_polygons[current_cam].size ()); ++idx_face)
     {
       //project each vertice, if one is out of view, stop
       pcl::PointXY uv_coord1;
       pcl::PointXY uv_coord2;
       pcl::PointXY uv_coord3;
 
-//            std::cout << "a" << std::endl;
-//            std::cout << "Current submesh has " << mesh.tex_polygons[current_cam].size() << " faces" << std::endl;
-//            std::cout << "the Camera cloud contains " << camera_cloud->points.size() << " points." << std::endl;
-//            std::cout << "we will querry vertices " << mesh.tex_polygons[current_cam][idx_face].vertices[0] << "  " <<  mesh.tex_polygons[current_cam][idx_face].vertices[1]<< "  "<< mesh.tex_polygons[current_cam][idx_face].vertices[2] << std::endl;
-
-      if( isFaceProjected(cameras[current_cam],
-                          camera_cloud->points[mesh.tex_polygons[current_cam][idx_face].vertices[0]],
-                          camera_cloud->points[mesh.tex_polygons[current_cam][idx_face].vertices[1]],
-                          camera_cloud->points[mesh.tex_polygons[current_cam][idx_face].vertices[2]],
-                          uv_coord1,
-                          uv_coord2,
-                          uv_coord3))
+      if (isFaceProjected (cameras[current_cam],
+                           camera_cloud->points[mesh.tex_polygons[current_cam][idx_face].vertices[0]],
+                           camera_cloud->points[mesh.tex_polygons[current_cam][idx_face].vertices[1]],
+                           camera_cloud->points[mesh.tex_polygons[current_cam][idx_face].vertices[2]],
+                           uv_coord1,
+                           uv_coord2,
+                           uv_coord3))
        {
         // face is in the camera's FOV
 
-//              std::cout << "face " << idx_face << " could be projected onto the texture" << std::endl;
-
         // add UV coordinates
-        projections->points.push_back(uv_coord1);
-        projections->points.push_back(uv_coord2);
-        projections->points.push_back(uv_coord3);
+        projections->points.push_back (uv_coord1);
+        projections->points.push_back (uv_coord2);
+        projections->points.push_back (uv_coord3);
 
         // remember corresponding face
         UvIndex u1, u2, u3;
@@ -823,37 +802,33 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras(pcl::TextureMesh &
         u2.idx_cloud = mesh.tex_polygons[current_cam][idx_face].vertices[1];
         u3.idx_cloud = mesh.tex_polygons[current_cam][idx_face].vertices[2];
         u1.idx_face = idx_face; u2.idx_face = idx_face; u3.idx_face = idx_face;
-        indexes_uv_to_points.push_back(u1);
-        indexes_uv_to_points.push_back(u2);
-        indexes_uv_to_points.push_back(u3);
+        indexes_uv_to_points.push_back (u1);
+        indexes_uv_to_points.push_back (u2);
+        indexes_uv_to_points.push_back (u3);
 
         //keep track of visibility
         visibility[idx_face] = true;
       }
       else
       {
-        projections->points.push_back(nan_point);
-        projections->points.push_back(nan_point);
-        projections->points.push_back(nan_point);
-        indexes_uv_to_points.push_back(u_null);
-        indexes_uv_to_points.push_back(u_null);
-        indexes_uv_to_points.push_back(u_null);
-//              std::cout << "face " << idx_face << " could NOT be projected onto the texture" << std::endl;
+        projections->points.push_back (nan_point);
+        projections->points.push_back (nan_point);
+        projections->points.push_back (nan_point);
+        indexes_uv_to_points.push_back (u_null);
+        indexes_uv_to_points.push_back (u_null);
+        indexes_uv_to_points.push_back (u_null);
         //keep track of visibility
         visibility[idx_face] = false;
         cpt_invisible++;
       }
     }
 
-
-    std::cout << "\t" << visibility.size() << " faces projected => " << cpt_invisible << " not visible, (" << visibility.size() - cpt_invisible << " left) => " << projections->points.size() << " uv_coordinates generated" << std::endl;
-
     // projections contains all UV points of the current faces
     // indexes_uv_to_points links a uv point to its point in the camera cloud
     // visibility contains tells if a face was in the camera FOV (false = skip)
 
     //TODO handle case were no face could be projected
-    if(visibility.size() - cpt_invisible !=0)
+    if (visibility.size () - cpt_invisible !=0)
     {
         //create kdtree
         pcl::KdTreeFLANN<pcl::PointXY> kdtree;
@@ -863,16 +838,14 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras(pcl::TextureMesh &
         std::vector<float> neighborsSquaredDistance;
         // af first (idx_pcan < current_cam), check if some of the faces attached to previous cameras occlude the current faces
         // then (idx_pcam == current_cam), check for self occlusions. At this stage, we skip faces that were already marked as occluded
-        std::cout << "\tChecking occlusions with camera(s)... " << std::flush;
         cpt_invisible = 0;
-        for(int idx_pcam = 0 ; idx_pcam <= current_cam ; ++idx_pcam)
+        for (int idx_pcam = 0 ; idx_pcam <= current_cam ; ++idx_pcam)
         {
-          std:: cout << idx_pcam << " (" << mesh.tex_polygons[idx_pcam].size() << " faces )... " << std::flush;
           // project all faces
-          for(int idx_face = 0; idx_face <  mesh.tex_polygons[idx_pcam].size() ; ++idx_face)
+          for (int idx_face = 0; idx_face <  static_cast<int> (mesh.tex_polygons[idx_pcam].size ()); ++idx_face)
           {
 
-            if(idx_pcam == current_cam && !visibility[idx_face])
+            if (idx_pcam == current_cam && !visibility[idx_face])
             {
               // we are now checking for self occlusions within the current faces
               // the current face was already declared as occluded.
@@ -885,32 +858,33 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras(pcl::TextureMesh &
             pcl::PointXY uv_coord2;
             pcl::PointXY uv_coord3;
 
-            if( isFaceProjected(cameras[current_cam],
-                                camera_cloud->points[mesh.tex_polygons[idx_pcam][idx_face].vertices[0]],
-                                camera_cloud->points[mesh.tex_polygons[idx_pcam][idx_face].vertices[1]],
-                                camera_cloud->points[mesh.tex_polygons[idx_pcam][idx_face].vertices[2]],
-                                uv_coord1,
-                                uv_coord2,
-                                uv_coord3))
+            if (isFaceProjected (cameras[current_cam],
+                                 camera_cloud->points[mesh.tex_polygons[idx_pcam][idx_face].vertices[0]],
+                                 camera_cloud->points[mesh.tex_polygons[idx_pcam][idx_face].vertices[1]],
+                                 camera_cloud->points[mesh.tex_polygons[idx_pcam][idx_face].vertices[2]],
+                                 uv_coord1,
+                                 uv_coord2,
+                                 uv_coord3))
              {
               // face is in the camera's FOV
               //get its circumsribed circle
               double radius;
               pcl::PointXY center;
-              getTriangleCircumcenterAndSize(uv_coord1, uv_coord2, uv_coord3, center, radius);
+              getTriangleCircumcenterAndSize (uv_coord1, uv_coord2, uv_coord3, center, radius);
 
               // get points inside circ.circle
-              if ( kdtree.radiusSearch (center, radius, idxNeighbors, neighborsSquaredDistance) > 0 )
+              if (kdtree.radiusSearch (center, radius, idxNeighbors, neighborsSquaredDistance) > 0 )
               {
                 // for each neighbor
                 for (size_t i = 0; i < idxNeighbors.size (); ++i)
                 {
-                  if(std::max(camera_cloud->points[mesh.tex_polygons[idx_pcam][idx_face].vertices[0]].z,
-                         std::max(camera_cloud->points[mesh.tex_polygons[idx_pcam][idx_face].vertices[1]].z, camera_cloud->points[mesh.tex_polygons[idx_pcam][idx_face].vertices[2]].z))
+                  if (std::max (camera_cloud->points[mesh.tex_polygons[idx_pcam][idx_face].vertices[0]].z,
+                                std::max (camera_cloud->points[mesh.tex_polygons[idx_pcam][idx_face].vertices[1]].z, 
+                                          camera_cloud->points[mesh.tex_polygons[idx_pcam][idx_face].vertices[2]].z))
                      < camera_cloud->points[indexes_uv_to_points[idxNeighbors[i]].idx_cloud].z)
                   {
                     // neighbor is farther than all the face's points. Check if it falls into the triangle
-                    if(checkPointInsideTriangle(uv_coord1, uv_coord2, uv_coord3, projections->points[idxNeighbors[i]]))
+                    if (checkPointInsideTriangle(uv_coord1, uv_coord2, uv_coord3, projections->points[idxNeighbors[i]]))
                     {
                       // current neighbor is inside triangle and is closer => the corresponding face
                       visibility[indexes_uv_to_points[idxNeighbors[i]].idx_face] = false;
@@ -924,102 +898,69 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras(pcl::TextureMesh &
           }
         }
     }
-    std::cout << std::endl;
-
-    std::cout << "\t" << cpt_invisible << " more faces were occluded!" << std::endl;
-
 
     // now, visibility is true for each face that belongs to the current camera
     // if a face is not visible, we push it into the next one.
 
+    if (static_cast<int> (mesh.tex_coordinates.size ()) <= current_cam)
+    {
+      std::vector<Eigen::Vector2f> dummy_container;
+      mesh.tex_coordinates.push_back (dummy_container);
+    }
+    mesh.tex_coordinates[current_cam].resize (3 * visibility.size ());
 
-     std::cout << "\tSorting visible faces for this camera (and writing UV coordinates). The visibility vector is " << visibility.size() << " long" << std::endl;
+    std::vector<pcl::Vertices> occluded_faces;
+    occluded_faces.resize (visibility.size ());
+    std::vector<pcl::Vertices> visible_faces;
+    visible_faces.resize (visibility.size ());
 
-     if(mesh.tex_coordinates.size() <= current_cam)
-     {
-       std::vector<Eigen::Vector2f> dummy_container;
-       mesh.tex_coordinates.push_back(dummy_container);
-     }
-     mesh.tex_coordinates[current_cam].resize(3 * visibility.size());
+    int cpt_occluded_faces = 0;
+    int cpt_visible_faces = 0;
 
-     std::vector<pcl::Vertices> occluded_faces;
-     occluded_faces.resize(visibility.size());
-     std::vector<pcl::Vertices> visible_faces;
-     visible_faces.resize(visibility.size());
+    for (size_t idx_face = 0 ; idx_face < visibility.size () ; ++idx_face)
+    {
+      if (visibility[idx_face])
+      {
+        // face is visible by the current camera copy UV coordinates
+        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3](0) = projections->points[idx_face*3].x;
+        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3](1) = projections->points[idx_face*3].y;
 
-     int cpt_occluded_faces = 0;
-     int cpt_visible_faces = 0;
+        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 1](0) = projections->points[idx_face*3 + 1].x;
+        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 1](1) = projections->points[idx_face*3 + 1].y;
 
-     for(size_t idx_face = 0 ; idx_face < visibility.size() ; ++idx_face)
-     {
+        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 2](0) = projections->points[idx_face*3 + 2].x;
+        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 2](1) = projections->points[idx_face*3 + 2].y;
 
-       if(idx_face % 50000 == 0)
-         std::cout << 100.0 * (idx_face+1)/visibility.size() << "% processed" << std::endl;
+        visible_faces[cpt_visible_faces] = mesh.tex_polygons[current_cam][idx_face];
 
-       if(visibility[idx_face])
-       {
-//               std::cout << "face " << idx_face << " is visible" << std::endl;
-//               std::cout << "trying to access fields " << cpt_visible_faces * 3 << " to " << cpt_visible_faces * 3 + 2 << " when size is " << mesh.tex_coordinates[current_cam].size() << std::endl;
-//               std::cout << "we have " << projections->points.size() << " projections and we try to read values at indexes " << idx_face*3 << " to " << idx_face*3 + 2 << std::endl;
-         // face is visible by the current camera copy UV coordinates
-         mesh.tex_coordinates[current_cam][cpt_visible_faces * 3](0) = projections->points[idx_face*3].x;
-         mesh.tex_coordinates[current_cam][cpt_visible_faces * 3](1) = projections->points[idx_face*3].y;
+        cpt_visible_faces++;
+      }
+      else
+      {
+        // face is occluded copy face into temp vector
+        occluded_faces[cpt_occluded_faces] = mesh.tex_polygons[current_cam][idx_face];
+        cpt_occluded_faces++;
+      }
+    }
+    mesh.tex_coordinates[current_cam].resize (cpt_visible_faces*3);
 
-         mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 1](0) = projections->points[idx_face*3 + 1].x;
-         mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 1](1) = projections->points[idx_face*3 + 1].y;
+    occluded_faces.resize (cpt_occluded_faces);
+    mesh.tex_polygons.push_back (occluded_faces);
 
-         mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 2](0) = projections->points[idx_face*3 + 2].x;
-         mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 2](1) = projections->points[idx_face*3 + 2].y;
+    visible_faces.resize (cpt_visible_faces);
+    mesh.tex_polygons[current_cam].clear ();
+    mesh.tex_polygons[current_cam] = visible_faces;
 
-         visible_faces[cpt_visible_faces] = mesh.tex_polygons[current_cam][idx_face];
-
-         cpt_visible_faces++;
-       }
-       else
-       {
-
-         // face is occluded copy face into temp vector
-         occluded_faces[cpt_occluded_faces] = mesh.tex_polygons[current_cam][idx_face];
-         cpt_occluded_faces++;
-       }
-     }
-
-     std::cout << "done" << std::endl;
-
-     mesh.tex_coordinates[current_cam].resize(cpt_visible_faces*3);
-
-     occluded_faces.resize(cpt_occluded_faces);
-     mesh.tex_polygons.push_back(occluded_faces);
-
-     visible_faces.resize(cpt_visible_faces);
-     mesh.tex_polygons[current_cam].clear();
-     mesh.tex_polygons[current_cam] = visible_faces;
-
-//           std::cout << cpt_occluded_faces << " faces counted as occluded" << std::endl;
-//           std::cout << "Trying to move " << occluded_faces.size() << " faces." << std::endl;
-
-
-     std::cout << "\t"<< mesh.tex_polygons[current_cam+1].size() << " frames moved to the next camera. " << mesh.tex_polygons[current_cam].size() << " frames set for camera " << current_cam << std::endl;
-
-
-     int nb_faces = 0;
-     for(int i = 0 ; i < mesh.tex_polygons.size() ; i++)
-       nb_faces+=mesh.tex_polygons[i].size();
-
-     std::cout << "Total number of faces in the mesh: " << nb_faces << std::endl;
-
-
-
+    int nb_faces = 0;
+    for (int i = 0; i < static_cast<int> (mesh.tex_polygons.size ()); i++)
+      nb_faces += static_cast<int> (mesh.tex_polygons[i].size ());
   }
-
 
   // we have been through all the cameras.
   // if any faces are left, they were not visible by any camera
   // we still need to produce uv coordinates for them
 
-  std::cout << "\nProceeded " << cameras.size() << " cameras. " << mesh.tex_polygons[cameras.size()].size() << " faces left untextured" << std::endl;
-
-  if(mesh.tex_coordinates.size() <= cameras.size())
+  if (mesh.tex_coordinates.size() <= cameras.size ())
   {
    std::vector<Eigen::Vector2f> dummy_container;
    mesh.tex_coordinates.push_back(dummy_container);
@@ -1038,16 +979,6 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras(pcl::TextureMesh &
   }
 
 }
-
-
-
-
-
-
-
-
-
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> inline void
@@ -1075,12 +1006,11 @@ pcl::TextureMapping<PointInT>::getTriangleCircumcenterAndSize(const pcl::PointXY
     double cy2 = ptC.y * ptC.y; // C'y^2
 
     // compute circomcenter's coordinates (translate back to original coordinates)
-    circomcenter.x = p1.x + (ptC.y*(bx2 + by2) - ptB.y*(cx2 + cy2)) / D;
-    circomcenter.y = p1.y + (ptB.x*(cx2 + cy2) - ptC.x*(bx2 + by2)) / D;
+    circomcenter.x = static_cast<float> (p1.x + (ptC.y*(bx2 + by2) - ptB.y*(cx2 + cy2)) / D);
+    circomcenter.y = static_cast<float> (p1.y + (ptB.x*(cx2 + cy2) - ptC.x*(bx2 + by2)) / D);
   }
 
   radius = sqrt( (circomcenter.x - p1.x)*(circomcenter.x - p1.x)  + (circomcenter.y - p1.y)*(circomcenter.y - p1.y));//2.0* (p1.x*(p2.y - p3.y)  + p2.x*(p3.y - p1.y) + p3.x*(p1.y - p2.y));
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -1096,8 +1026,8 @@ pcl::TextureMapping<PointInT>::getPointUVCoordinates(const pcl::PointXYZ &pt, co
     double cy = sizeY / 2.0;
 
     // project point on camera's image plane
-    UV_coordinates.x = (cam.focal_length * (pt.x / pt.z) + cx) / sizeX; //horizontal
-    UV_coordinates.y = 1.0 - (cam.focal_length * (pt.y / pt.z) + cy) / sizeY; //vertical
+    UV_coordinates.x = static_cast<float> ((cam.focal_length * (pt.x / pt.z) + cx) / sizeX); //horizontal
+    UV_coordinates.y = 1.0f - static_cast<float> ((cam.focal_length * (pt.y / pt.z) + cy) / sizeY); //vertical
 
     // point is visible!
     if (UV_coordinates.x >= 0.0 && UV_coordinates.x <= 1.0 && UV_coordinates.y >= 0.0 && UV_coordinates.y <= 1.0)
@@ -1105,8 +1035,8 @@ pcl::TextureMapping<PointInT>::getPointUVCoordinates(const pcl::PointXYZ &pt, co
   }
 
   // point is NOT visible by the camera
-  UV_coordinates.x = -1.0;
-  UV_coordinates.y = -1.0;
+  UV_coordinates.x = -1.0f;
+  UV_coordinates.y = -1.0f;
   return (false); // point was not visible by the camera
 }
 

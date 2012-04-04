@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
+ * $Id$
  *
  */
 
@@ -42,6 +42,7 @@
 
 #include <pcl/segmentation/planar_region.h>
 #include <pcl/pcl_base.h>
+#include <pcl/common/angles.h>
 #include <pcl/PointIndices.h>
 #include <pcl/ModelCoefficients.h>
 #include <pcl/segmentation/plane_coefficient_comparator.h>
@@ -88,8 +89,12 @@ namespace pcl
 
       /** \brief Constructor for OrganizedMultiPlaneSegmentation. */
       OrganizedMultiPlaneSegmentation () :
-        normals_ (), min_inliers_ (1000), angular_threshold_ (3.0 * 0.017453), distance_threshold_ (0.02),
-        project_points_ (false), maximum_curvature_ (0.001),
+        normals_ (), 
+        min_inliers_ (1000), 
+        angular_threshold_ (pcl::deg2rad (3.0)), 
+        distance_threshold_ (0.02),
+        maximum_curvature_ (0.001),
+        project_points_ (false), 
         compare_ (new PlaneComparator ()), refinement_compare_ (new PlaneRefinementComparator ())
       {
       }

@@ -33,13 +33,14 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
+ * $Id$
  *
  */
 
 #ifndef PCL_SEGMENTATION_PLANE_COEFFICIENT_COMPARATOR_H_
 #define PCL_SEGMENTATION_PLANE_COEFFICIENT_COMPARATOR_H_
 
+#include <pcl/common/angles.h>
 #include <pcl/segmentation/comparator.h>
 #include <boost/make_shared.hpp>
 
@@ -70,8 +71,8 @@ namespace pcl
       PlaneCoefficientComparator ()
         : normals_ ()
         , plane_coeff_d_ ()
-        , angular_threshold_ (0.0f)
-        , distance_threshold_ (0.0f)
+        , angular_threshold_ (pcl::deg2rad (2.0f))
+        , distance_threshold_ (0.02f)
         , depth_dependent_ (true)
         , z_axis_ (Eigen::Vector3f (0.0, 0.0, 1.0) )
       {
@@ -83,10 +84,10 @@ namespace pcl
       PlaneCoefficientComparator (boost::shared_ptr<std::vector<float> >& plane_coeff_d) 
         : normals_ ()
         , plane_coeff_d_ (plane_coeff_d)
-        , angular_threshold_ (0)
-        , distance_threshold_ (0)
+        , angular_threshold_ (pcl::deg2rad (2.0f))
+        , distance_threshold_ (0.02f)
         , depth_dependent_ (true)
-        , z_axis_ (Eigen::Vector3f (0.0, 0.0, 1.0) )
+        , z_axis_ (Eigen::Vector3f (0.0f, 0.0f, 1.0f) )
       {
       }
       
@@ -146,7 +147,7 @@ namespace pcl
       /** \brief Set the tolerance in radians for difference in normal direction between neighboring points, to be considered part of the same plane.
         * \param[in] angular_threshold the tolerance in radians
         */
-      virtual inline void
+      virtual void
       setAngularThreshold (float angular_threshold)
       {
         angular_threshold_ = cosf (angular_threshold);
@@ -156,14 +157,16 @@ namespace pcl
       inline float
       getAngularThreshold () const
       {
-        return (acos (angular_threshold_) );
+        return (acosf (angular_threshold_) );
       }
 
       /** \brief Set the tolerance in meters for difference in perpendicular distance (d component of plane equation) to the plane between neighboring points, to be considered part of the same plane.
-        * \param[in] distance_threshold the tolerance in meters
+        * \param[in] distance_threshold the tolerance in meters (at 1m)
+        * \param[in] depth_dependent whether to scale the threshold based on range from the sensor (default: false)
         */
-      inline void
-      setDistanceThreshold (float distance_threshold, bool depth_dependent)
+      void
+      setDistanceThreshold (float distance_threshold, 
+                            bool depth_dependent = false)
       {
         distance_threshold_ = distance_threshold;
         depth_dependent_ = depth_dependent;
@@ -203,6 +206,9 @@ namespace pcl
       float distance_threshold_;
       bool depth_dependent_;
       Eigen::Vector3f z_axis_;
+
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

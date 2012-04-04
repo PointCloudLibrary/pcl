@@ -159,7 +159,8 @@ namespace pcl
         * \param[in] cams cameras used for UV mapping
         */
       void
-      mapMultipleTexturesToMeshUV (pcl::TextureMesh &tex_mesh, std::vector<Camera, Eigen::aligned_allocator<Camera> > &cams);
+      mapMultipleTexturesToMeshUV (pcl::TextureMesh &tex_mesh, 
+                                   std::vector<Camera, Eigen::aligned_allocator<Camera> > &cams);
 
       /** \brief computes UV coordinates of point, observed by one particular camera
         * \param[in] pt XYZ point to project on camera plane
@@ -245,7 +246,9 @@ namespace pcl
         * \param[out] visible_pts cloud containing only visible points
         */
       int
-      sortFacesByCamera (pcl::TextureMesh &tex_mesh, pcl::TextureMesh &sorted_mesh, const std::vector<Camera, Eigen::aligned_allocator<Camera> > &cameras,
+      sortFacesByCamera (pcl::TextureMesh &tex_mesh, 
+                         pcl::TextureMesh &sorted_mesh, 
+                         const std::vector<Camera, Eigen::aligned_allocator<Camera> > &cameras,
                          const double octree_voxel_size, PointCloud &visible_pts);
 
       /** \brief Colors a point cloud, depending on its occlusions.
@@ -259,8 +262,10 @@ namespace pcl
         * \param[in] max_occlusions Limit the number of occlusions per point.
         */
       void
-      showOcclusions (const PointCloudPtr &input_cloud, pcl::PointCloud<pcl::PointXYZI>::Ptr &colored_cloud,
-                      const double octree_voxel_size, const bool show_nb_occlusions = true,
+      showOcclusions (const PointCloudPtr &input_cloud, 
+                      pcl::PointCloud<pcl::PointXYZI>::Ptr &colored_cloud,
+                      const double octree_voxel_size, 
+                      const bool show_nb_occlusions = true,
                       const int max_occlusions = 4);
 
       /** \brief Colors the point cloud of a Mesh, depending on its occlusions.
@@ -274,8 +279,11 @@ namespace pcl
         * \param[in] max_occlusions Limit the number of occlusions per point.
         */
       void
-      showOcclusions (pcl::TextureMesh &tex_mesh, pcl::PointCloud<pcl::PointXYZI>::Ptr &colored_cloud,
-                      double octree_voxel_size, bool show_nb_occlusions = true, int max_occlusions = 4);
+      showOcclusions (pcl::TextureMesh &tex_mesh, 
+                      pcl::PointCloud<pcl::PointXYZI>::Ptr &colored_cloud,
+                      double octree_voxel_size, 
+                      bool show_nb_occlusions = true, 
+                      int max_occlusions = 4);
 
       /** \brief Segment and texture faces by camera visibility. Face-based segmentation.
         * With N camera, faces will be arranged into N+1 groups: 1 for each camera, plus 1 for faces not visible from any camera.
@@ -283,7 +291,9 @@ namespace pcl
         * \param[in/out] tex_mesh input mesh that needs sorting. Should contain only 1 sub-mesh.
         * \param[in] cameras vector containing the cameras used for texture mapping.
         */
-      void textureMeshwithMultipleCameras(pcl::TextureMesh &mesh, const std::vector<Camera> &cameras);
+      void 
+      textureMeshwithMultipleCameras (pcl::TextureMesh &mesh, 
+                                      const std::vector<Camera, Eigen::aligned_allocator<Camera> > &cameras);
 
     protected:
       /** \brief mesh scale control. */
@@ -315,7 +325,7 @@ namespace pcl
          *  param[out] radius the radius of the circumscribed circle.
         */
       inline void
-      getTriangleCircumcenterAndSize(const pcl::PointXY &p1, const pcl::PointXY &p2, const pcl::PointXY &p3, pcl::PointXY &circomcenter, double &radius);
+      getTriangleCircumcenterAndSize (const pcl::PointXY &p1, const pcl::PointXY &p2, const pcl::PointXY &p3, pcl::PointXY &circomcenter, double &radius);
 
       /** \brief computes UV coordinates of point, observed by one particular camera
         * \param[in] pt XYZ point to project on camera plane
@@ -327,26 +337,28 @@ namespace pcl
       getPointUVCoordinates (const pcl::PointXYZ &pt, const Camera &cam, pcl::PointXY &UV_coordinates);
 
       /** \brief Returns true if all the vertices of one face are projected on the camera's image plane.
-         *  param[in] camera camera on which to project the face.
-         *  param[in] p1 first point of the face.
-         *  param[in] p2 second point of the face.
-         *  param[in] p3 third point of the face.
-         *  param[out] proj1 UV coordinates corresponding to p1.
-         *  param[out] proj2 UV coordinates corresponding to p2.
-         *  param[out] proj3 UV coordinates corresponding to p3.
+         * \param[in] camera camera on which to project the face.
+         * \param[in] p1 first point of the face.
+         * \param[in] p2 second point of the face.
+         * \param[in] p3 third point of the face.
+         * \param[out] proj1 UV coordinates corresponding to p1.
+         * \param[out] proj2 UV coordinates corresponding to p2.
+         * \param[out] proj3 UV coordinates corresponding to p3.
         */
       inline bool
-      isFaceProjected(const Camera camera, const pcl::PointXYZ &p1, const pcl::PointXYZ &p2, const pcl::PointXYZ &p3, pcl::PointXY &proj1, pcl::PointXY &proj2, pcl::PointXY &proj3);
+      isFaceProjected (const Camera camera, 
+                       const pcl::PointXYZ &p1, const pcl::PointXYZ &p2, const pcl::PointXYZ &p3, 
+                       pcl::PointXY &proj1, pcl::PointXY &proj2, pcl::PointXY &proj3);
 
       /** \brief Returns True if a point lays within a triangle
         *  see http://www.blackpawn.com/texts/pointinpoly/default.html
-        *  param[in] p1 first point of the triangle.
-        *  param[in] p2 second point of the triangle.
-        *  param[in] p3 third point of the triangle.
-        *  param[in] pt the querry point.
+        * \param[in] p1 first point of the triangle.
+        * \param[in] p2 second point of the triangle.
+        * \param[in] p3 third point of the triangle.
+        * \param[in] pt the querry point.
        */
       inline bool
-      checkPointInsideTriangle(const pcl::PointXY &p1, const pcl::PointXY &p2, const pcl::PointXY &p3, const pcl::PointXY &pt);
+      checkPointInsideTriangle (const pcl::PointXY &p1, const pcl::PointXY &p2, const pcl::PointXY &p3, const pcl::PointXY &pt);
 
       /** \brief Class get name method. */
       std::string

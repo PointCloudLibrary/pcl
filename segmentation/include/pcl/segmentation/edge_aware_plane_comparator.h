@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
+ * $Id: extract_clusters.h 5027 2012-03-12 03:10:45Z rusu $
  *
  */
 
@@ -65,106 +65,34 @@ namespace pcl
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::input_;
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::normals_;
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::plane_coeff_d_;
+      using pcl::PlaneCoefficientComparator<PointT, PointNT>::angular_threshold_;
+      using pcl::PlaneCoefficientComparator<PointT, PointNT>::distance_threshold_;
 
       /** \brief Empty constructor for PlaneCoefficientComparator. */
-     EdgeAwarePlaneComparator ()
-        : angular_threshold_ (0.0f), distance_threshold_ (0.02f)
+      EdgeAwarePlaneComparator ()
       {
       }
-      /** \brief Constructor for PlaneCoefficientComparator.
-        * \param[in] plane_coeff_d a reference to a vector of d coefficients of plane equations.  Must be the same size as the input cloud and input normals.  a, b, and c coefficients are in the input normals.
-        */
-      EdgeAwarePlaneComparator (boost::shared_ptr<std::vector<float> >& plane_coeff_d) 
-        : angular_threshold_ (0.0f), distance_threshold_ (0.02f)
-      {
-      }   
+
       /** \brief Destructor for PlaneCoefficientComparator. */
       virtual
       ~EdgeAwarePlaneComparator ()
       {
       }
 
-      /** \brief Provide a pointer to the input normals.
-        * \param[in] normals the input normal cloud
-        */
-      inline void
-      setInputNormals (const PointCloudNConstPtr &normals)
-      {
-        normals_ = normals;
-      }
-
-      /** \brief Get the input normals. */
-      inline PointCloudNConstPtr
-      getInputNormals () const
-      {
-        return (normals_);
-      }
-
-      /** \brief Provide a pointer to a vector of the d-coefficient of the planes' hessian normal form.  a, b, and c are provided by the normal cloud.
-        * \param[in] plane_coeff_d a pointer to the plane coefficients.
+      /** \brief ... 
+        * \param[in] distance_map
         */
       void
-      setPlaneCoeffD (boost::shared_ptr<std::vector<float> >& plane_coeff_d)
-      {
-        plane_coeff_d_ = plane_coeff_d;
-      }
-
-      /** \brief Provide a pointer to a vector of the d-coefficient of the planes' hessian normal form.  a, b, and c are provided by the normal cloud.
-        * \param[in] plane_coeff_d a pointer to the plane coefficients.
-        */
-      void
-      setPlaneCoeffD (std::vector<float>& plane_coeff_d)
-      {
-        plane_coeff_d_ = boost::make_shared<std::vector<float> >(plane_coeff_d);
-      }
-      
-      /** \brief Get a pointer to the vector of the d-coefficient of the planes' hessian normal form. */
-      const std::vector<float>&
-      getPlaneCoeffD () const
-      {
-        return (plane_coeff_d_);
-      }
-
-      /** \brief Set the tolerance in radians for difference in normal direction between neighboring points, to be considered part of the same plane.
-        * \param[in] angular_threshold the tolerance in radians
-        */
-      inline void
-      setAngularThreshold (float angular_threshold)
-      {
-        angular_threshold_ = cosf (angular_threshold);
-      }
-      
-      /** \brief Get the angular threshold in radians for difference in normal direction between neighboring points, to be considered part of the same plane. */
-      inline float
-      getAngularThreshold () const
-      {
-        return (acosf (angular_threshold_) );
-      }
-
-      /** \brief Set the tolerance in meters for difference in perpendicular distance (d component of plane equation) to the plane between neighboring points, to be considered part of the same plane.
-        * \param[in] distance_threshold the tolerance in meters
-        */
-      inline void
-      setDistanceThreshold (float distance_threshold)
-      {
-        distance_threshold_ = distance_threshold;// * distance_threshold;
-      }
-
-      void
-      setDistanceMap (float* distance_map)
+      setDistanceMap (const float* distance_map)
       {
         distance_map_ = distance_map;
       }
       
-
-      /** \brief Get the distance threshold in meters (d component of plane equation) between neighboring points, to be considered part of the same plane. */
-      inline float
-      getDistanceThreshold () const
-      {
-        return (distance_threshold_);
-      }
-
     protected:
+      /** \brief Compare two neighboring points, by using normal information, curvature, and euclidean distance information.
+        * \param[in] idx1 The index of the first point.
+        * \param[in] idx2 The index of the second point.
+        */
       bool
       compare (int idx1, int idx2) const
       {
@@ -175,20 +103,18 @@ namespace pcl
 
         bool normal_ok = (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ );
         bool dist_ok = (dist < distance_threshold_);
+
         bool curvature_ok = normals_->points[idx1].curvature < 0.04;
-        bool plane_d_ok = fabs((*plane_coeff_d_)[idx1] - (*plane_coeff_d_)[idx2]) < 0.04;
+        bool plane_d_ok = fabs ((*plane_coeff_d_)[idx1] - (*plane_coeff_d_)[idx2]) < 0.04;
         
-        if (distance_map_[idx1] < 5)
+        if (distance_map_[idx1] < 5)    // 5 pixels
           curvature_ok = false;
         
         return (dist_ok && normal_ok && curvature_ok && plane_d_ok);
       }
 
     protected:
-      float* distance_map_;
-      float angular_threshold_;
-      float distance_threshold_;
-
+      const float* distance_map_;
   };
 }
 
