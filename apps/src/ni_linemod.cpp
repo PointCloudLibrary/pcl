@@ -39,9 +39,11 @@
 
 #include <boost/thread/thread.hpp>
 #include <pcl/apps/timer.h>
+#include <pcl/common/angles.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/search/organized.h>
 #include <pcl/features/integral_image_normal.h>
+#include <pcl/filters/extract_indices.h>
 #include <pcl/segmentation/organized_multi_plane_segmentation.h>
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
@@ -129,7 +131,9 @@ class NILinemod
       * segment out all the objects supported by it.
       */
     void
-    segmentObject (const CloudConstPtr &cloud, const PointIndices::Ptr &plane_indices, 
+    segmentObject (int picked_idx, 
+                   const CloudConstPtr &cloud, 
+                   const PointIndices::Ptr &plane_indices, 
                    Cloud &object)
     {
       CloudPtr plane_hull (new Cloud);
@@ -141,22 +145,36 @@ class NILinemod
       chull.setIndices (plane_indices);
       chull.reconstruct (*plane_hull);
 
+      // Remove the plane indices from the data
+      PointIndices::Ptr everything_but_the_plane (new PointIndices);
+      std::vector<int> indices_fullset (cloud->points.size ());
+      for (int p_it = 0; p_it < static_cast<int> (indices_fullset.size ()); ++p_it)
+        indices_fullset[p_it] = p_it;
+      std::vector<int> indices_subset = plane_indices->indices;
+      std::sort (indices_subset.begin (), indices_subset.end ());
+      set_difference (indices_fullset.begin (), indices_fullset.end (), 
+                      indices_subset.begin (), indices_subset.end (), 
+                      inserter (everything_but_the_plane->indices, everything_but_the_plane->indices.begin ()));
+
       // Extract all clusters on the hull
-      PointIndices::Ptr inliers (new PointIndices);
-      ExtractPolygonalPrismData<PointT> ex;
-      ex.setInputCloud (cloud);
-      ex.setInputPlanarHull (plane_hull);
-      ex.setHeightLimits (0.01, 0.5);
-      ex.segment (*inliers);
+      PointIndices::Ptr points_above_plane (new PointIndices);
+      ExtractPolygonalPrismData<PointT> exppd;
+      exppd.setInputCloud (cloud);
+      exppd.setInputPlanarHull (plane_hull);
+      exppd.setIndices (everything_but_the_plane);
+      exppd.setHeightLimits (0.0, 0.5);
+      exppd.segment (*points_above_plane);
 
       // Use an organized clustering segmentation to extract the individual clusters
       EuclideanClusterComparator<PointT, Normal, Label>::Ptr euclidean_cluster_comparator (new EuclideanClusterComparator<PointT, Normal, Label>);
       euclidean_cluster_comparator->setInputCloud (cloud);
+      euclidean_cluster_comparator->setDistanceThreshold (0.03, false);
       // Set the entire scene to false, and the inliers of the objects located on top of the plane to true
       Label l; l.label = 0;
       PointCloud<Label>::Ptr scene (new PointCloud<Label> (cloud->width, cloud->height, l));
-      for (int i = 0; i < static_cast<int> (inliers->indices.size ()); ++i)
-        scene->points[inliers->indices[i]].label = 1;
+      // Mask the objects that we want to split into clusters
+      for (int i = 0; i < static_cast<int> (points_above_plane->indices.size ()); ++i)
+        scene->points[points_above_plane->indices[i]].label = 1;
       euclidean_cluster_comparator->setLabels (scene);
 
       vector<bool> exclude_labels (2);  exclude_labels[0] = true; exclude_labels[1] = false;
@@ -169,47 +187,69 @@ class NILinemod
       vector<PointIndices> euclidean_label_indices;
       euclidean_segmentation.segment (euclidean_labels, euclidean_label_indices);
 
+      // For each cluster found
+      bool cluster_found = false;
       for (size_t i = 0; i < euclidean_label_indices.size (); i++)
       {
-        if (euclidean_label_indices[i].indices.size () > 1000)
+        if (cluster_found)
+          break;
+        // Check if the point that we picked belongs to it
+        for (size_t j = 0; j < euclidean_label_indices[i].indices.size (); ++j)
         {
+          if (picked_idx != euclidean_label_indices[i].indices[j])
+            continue;
           //pcl::PointCloud<PointT> cluster;
           pcl::copyPointCloud (*cloud, euclidean_label_indices[i].indices, object);
           std::cerr << "inliers: " << euclidean_label_indices[i].indices.size () << std::endl;
+          cluster_found = true;
+          break;
           //object_indices = euclidean_label_indices[i].indices;
           //clusters.push_back (cluster);
-        }    
+        }
       }
     }
+
 
     /////////////////////////////////////////////////////////////////////////
     void
     segment (const PointT &picked_point, 
+             int picked_idx,
              PlanarRegion<PointT> &region,
              PointIndices &indices)
     {
       // First frame is segmented using an organized multi plane segmentation approach from points and their normals
       if (first_frame_)
       {
+        if (search_.getInputCloud ()->points.empty ())
+        {
+          PCL_ERROR ("[segment] Input cloud empty!\n");
+          return;
+        }
         // Estimate normals in the cloud
         IntegralImageNormalEstimation<PointT, Normal> ne;
         ne.setNormalEstimationMethod (ne.COVARIANCE_MATRIX);
         ne.setMaxDepthChangeFactor (0.02f);
-        ne.setNormalSmoothingSize (10.0f);
+        ne.setNormalSmoothingSize (20.0f);
         PointCloud<Normal>::Ptr normal_cloud (new PointCloud<Normal>);
         ne.setInputCloud (search_.getInputCloud ());
         ne.compute (*normal_cloud);
 
+        if (normal_cloud->points.empty ())
+        {
+          PCL_ERROR ("[segment] Estimated normals empty!\n");
+          return;
+        }
+
         // Segment out all planes
         OrganizedMultiPlaneSegmentation<PointT, Normal, Label> mps;
         mps.setMinInliers (5000);
-        mps.setAngularThreshold (0.017453 * 3.0); //3 degrees
-        mps.setDistanceThreshold (0.03); //2cm
+        mps.setAngularThreshold (pcl::deg2rad (3.0)); // 3 degrees
+        mps.setDistanceThreshold (0.02); // 2 cm
+        mps.setMaximumCurvature (0.001); // a small curvature
         mps.setInputNormals (normal_cloud);
         mps.setInputCloud (search_.getInputCloud ());
 
         vector<PlanarRegion<PointT> > regions;
-        //mps.segmentAndRefine (regions);
         vector<ModelCoefficients> model_coefficients;
         vector<PointIndices> inlier_indices;  
         PointCloud<Label>::Ptr labels (new PointCloud<Label>);
@@ -218,6 +258,7 @@ class NILinemod
         PointIndices::Ptr plane_boundaries;
         mps.segmentAndRefine (regions, model_coefficients, inlier_indices, labels, label_indices, boundary_indices);
         //mps.segmentAndRefine (regions);//, model_coefficients, inlier_indices, labels, label_indices, boundary_indices);
+        PCL_INFO ("Number of planar regions detected: %zu for a cloud of %zu points and %zu normals.\n", regions.size (), search_.getInputCloud ()->points.size (), normal_cloud->points.size ());
 
         double max_dist = numeric_limits<double>::max ();
         // Compute the distances from all the planar regions to the picked point, and select the closest region
@@ -235,6 +276,7 @@ class NILinemod
         // Get the plane that holds the object of interest
         if (idx != -1)
         {
+          std::cerr << "found region closest with idx " << idx << std::endl;
           region = regions[idx]; 
           plane_boundaries.reset (new PointIndices (inlier_indices[idx]));
         }
@@ -243,7 +285,7 @@ class NILinemod
         if (plane_boundaries && !plane_boundaries->indices.empty ())
         {
           CloudPtr object (new Cloud);
-          segmentObject (search_.getInputCloud (), plane_boundaries, *object);
+          segmentObject (picked_idx, search_.getInputCloud (), plane_boundaries, *object);
           visualization::PointCloudColorHandlerCustom<PointT> red (object, 255, 0, 0);
           if (!cloud_viewer_.updatePointCloud (object, red, "object"))
             cloud_viewer_.addPointCloud (object, red, "object");
@@ -283,19 +325,18 @@ class NILinemod
       {
         // Use mutices to make sure we get the right cloud
         boost::mutex::scoped_lock lock1 (cloud_mutex_);
-        //boost::mutex::scoped_lock lock2 (image_mutex_);
 
-        PointT pos;
-        event.getPoint (pos.x, pos.y, pos.z);
+        PointT picked_pt;
+        event.getPoint (picked_pt.x, picked_pt.y, picked_pt.z);
 
         stringstream ss;
         ss << "sphere_" << idx;
-        cloud_viewer_.addSphere (pos, 0.01, 1.0, 0.0, 0.0, ss.str ());
+        cloud_viewer_.addSphere (picked_pt, 0.01, 1.0, 0.0, 0.0, ss.str ());
 
         if (!search_.isValid ())
           return;
 
-        search_.nearestKSearch (pos, 1, indices, distances);
+        search_.nearestKSearch (picked_pt, 1, indices, distances);
 
         uint32_t width  = search_.getInputCloud ()->width,
                  height = search_.getInputCloud ()->height;
@@ -309,15 +350,17 @@ class NILinemod
 
         PlanarRegion<PointT> region;
         PointIndices region_indices;
-        segment (pos, region, region_indices);
-
-        cloud_viewer_.addPolygon (region, 0.0, 1.0, 0.0);
-        cloud_viewer_.setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "polygon");
+        segment (picked_pt, indices[0], region, region_indices);
 
         if (region.getContour ().empty ())
         {
           PCL_ERROR ("No region detected. Please select another point and continue.\n");
           return;
+        }
+        else
+        {
+          cloud_viewer_.addPolygon (region, 0.0, 1.0, 0.0);
+          cloud_viewer_.setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "polygon");
         }
 
 /*        search_.nearestKSearch (region.getContour ()[0], 1, indices, distances);
