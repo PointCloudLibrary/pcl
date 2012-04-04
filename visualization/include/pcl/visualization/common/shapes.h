@@ -43,6 +43,7 @@
 #include <pcl/ModelCoefficients.h>
 #include <pcl/point_cloud.h>
 #include <pcl/visualization/vtk.h>
+#include <pcl/geometry/planar_polygon.h>
 
 /**
   * \file pcl/visualization/common/shapes.h
@@ -61,6 +62,13 @@ namespace pcl
       */
     template <typename PointT> vtkSmartPointer<vtkDataSet> inline 
     createPolygon (const typename pcl::PointCloud<PointT>::ConstPtr &cloud);
+
+    /** \brief Create a 3d poly line from a set of points on the boundary of a planar region. 
+      * \param[in] planar_polygon the set of points used to create the 3d polyline
+      * \ingroup visualization
+      */
+    template <typename PointT> vtkSmartPointer<vtkDataSet> inline 
+    createPolygon (const pcl::PlanarPolygon<PointT> &planar_polygon);
 
     /** \brief Create a line shape from two points
       * \param[in] pt1 the first point on the line
@@ -228,6 +236,21 @@ namespace pcl
     PCL_EXPORTS vtkSmartPointer<vtkDataSet> 
     createCube (const Eigen::Vector3f &translation, const Eigen::Quaternionf &rotation,
                 double width, double height, double depth);
+    
+    /** \brief Create a cube from a set of bounding points
+      * \param[in] x_min is the minimum x value of the box
+      * \param[in] x_max is the maximum x value of the box
+      * \param[in] y_min is the minimum y value of the box 
+      * \param[in] y_max is the maximum y value of the box
+      * \param[in] z_min is the minimum z value of the box
+      * \param[in] z_max is the maximum z value of the box
+      * \param[in] id the cube id/name (default: "cube")
+      * \param[in] viewport (optional) the id of the new viewport (default: 0)
+      */
+    PCL_EXPORTS vtkSmartPointer<vtkDataSet> 
+    createCube (double x_min, double x_max,
+                double y_min, double y_max,
+                double z_min, double z_max);
     
     /** \brief Allocate a new unstructured grid smartpointer. For internal use only.
       * \param[out] polydata the resultant unstructured grid. 
