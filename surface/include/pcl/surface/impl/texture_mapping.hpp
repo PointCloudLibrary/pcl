@@ -743,7 +743,10 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
 {
 
   if (mesh.tex_polygons.size () != 1)
+  {
+    PCL_ERROR("Your mesh must contain only 1 sub-mesh. The Mesh you provided contains %d.\nExiting.", mesh.tex_polygons.size ());
     return;
+  }
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr mesh_cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
@@ -765,7 +768,7 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
     std::vector<UvIndex> indexes_uv_to_points;
     // for each current face
 
-    //TODO change this
+    // we will use a nan-valued UV coordinate for
     pcl::PointXY nan_point;
     nan_point.x = std::numeric_limits<float>::quiet_NaN ();
     nan_point.y = std::numeric_limits<float>::quiet_NaN ();
@@ -776,7 +779,7 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
     int cpt_invisible=0;
     for (int idx_face = 0; idx_face <  static_cast<int> (mesh.tex_polygons[current_cam].size ()); ++idx_face)
     {
-      //project each vertice, if one is out of view, stop
+      // project each vertice, if one is out of view, stop
       pcl::PointXY uv_coord1;
       pcl::PointXY uv_coord2;
       pcl::PointXY uv_coord3;
@@ -806,7 +809,7 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
         indexes_uv_to_points.push_back (u2);
         indexes_uv_to_points.push_back (u3);
 
-        //keep track of visibility
+        // keep track of visibility
         visibility[idx_face] = true;
       }
       else
@@ -817,7 +820,7 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
         indexes_uv_to_points.push_back (u_null);
         indexes_uv_to_points.push_back (u_null);
         indexes_uv_to_points.push_back (u_null);
-        //keep track of visibility
+        // keep track of visibility
         visibility[idx_face] = false;
         cpt_invisible++;
       }
@@ -827,7 +830,7 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
     // indexes_uv_to_points links a uv point to its point in the camera cloud
     // visibility contains tells if a face was in the camera FOV (false = skip)
 
-    //TODO handle case were no face could be projected
+    // TODO handle case were no face could be projected
     if (visibility.size () - cpt_invisible !=0)
     {
         //create kdtree
@@ -867,7 +870,7 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
                                  uv_coord3))
              {
               // face is in the camera's FOV
-              //get its circumsribed circle
+              // get its circumsribed circle
               double radius;
               pcl::PointXY center;
               getTriangleCircumcenterAndSize (uv_coord1, uv_coord2, uv_coord3, center, radius);
@@ -922,14 +925,14 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
       if (visibility[idx_face])
       {
         // face is visible by the current camera copy UV coordinates
-        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3](0) = projections->points[idx_face*3].x;
-        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3](1) = projections->points[idx_face*3].y;
+        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3] (0) = projections->points[idx_face*3].x;
+        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3] (1) = projections->points[idx_face*3].y;
 
-        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 1](0) = projections->points[idx_face*3 + 1].x;
-        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 1](1) = projections->points[idx_face*3 + 1].y;
+        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 1] (0) = projections->points[idx_face*3 + 1].x;
+        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 1] (1) = projections->points[idx_face*3 + 1].y;
 
-        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 2](0) = projections->points[idx_face*3 + 2].x;
-        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 2](1) = projections->points[idx_face*3 + 2].y;
+        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 2] (0) = projections->points[idx_face*3 + 2].x;
+        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 2] (1) = projections->points[idx_face*3 + 2].y;
 
         visible_faces[cpt_visible_faces] = mesh.tex_polygons[current_cam][idx_face];
 
@@ -960,22 +963,22 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
   // if any faces are left, they were not visible by any camera
   // we still need to produce uv coordinates for them
 
-  if (mesh.tex_coordinates.size() <= cameras.size ())
+  if (mesh.tex_coordinates.size () <= cameras.size ())
   {
    std::vector<Eigen::Vector2f> dummy_container;
-   mesh.tex_coordinates.push_back(dummy_container);
+   mesh.tex_coordinates.push_back (dummy_container);
    }
 
 
-  for(size_t idx_face = 0 ; idx_face < mesh.tex_polygons[cameras.size()].size() ; ++idx_face)
+  for(size_t idx_face = 0 ; idx_face < mesh.tex_polygons[cameras.size ()].size () ; ++idx_face)
   {
     Eigen::Vector2f UV1, UV2, UV3;
     UV1(0) = -1.0; UV1(1) = -1.0;
     UV2(0) = -1.0; UV2(1) = -1.0;
     UV3(0) = -1.0; UV3(1) = -1.0;
-    mesh.tex_coordinates[cameras.size()].push_back(UV1);
-    mesh.tex_coordinates[cameras.size()].push_back(UV2);
-    mesh.tex_coordinates[cameras.size()].push_back(UV3);
+    mesh.tex_coordinates[cameras.size()].push_back (UV1);
+    mesh.tex_coordinates[cameras.size()].push_back (UV2);
+    mesh.tex_coordinates[cameras.size()].push_back (UV3);
   }
 
 }
@@ -1010,7 +1013,7 @@ pcl::TextureMapping<PointInT>::getTriangleCircumcenterAndSize(const pcl::PointXY
     circomcenter.y = static_cast<float> (p1.y + (ptB.x*(cx2 + cy2) - ptC.x*(bx2 + by2)) / D);
   }
 
-  radius = sqrt( (circomcenter.x - p1.x)*(circomcenter.x - p1.x)  + (circomcenter.y - p1.y)*(circomcenter.y - p1.y));//2.0* (p1.x*(p2.y - p3.y)  + p2.x*(p3.y - p1.y) + p3.x*(p1.y - p2.y));
+  radius = sqrt( (circomcenter.x - p1.x)*(circomcenter.x - p1.x) + (circomcenter.y - p1.y)*(circomcenter.y - p1.y));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -1046,21 +1049,21 @@ pcl::TextureMapping<PointInT>::checkPointInsideTriangle(const pcl::PointXY &p1, 
 {
    // Compute vectors
    Eigen::Vector2d v0, v1, v2;
-   v0(0) = p3.x - p1.x; v0(1) = p3.y - p1.y; // v0= C - A
-   v1(0) = p2.x - p1.x; v1(1) = p2.y - p1.y; // v1= B - A
-   v2(0) = pt.x - p1.x; v2(1) = pt.y - p1.y; // v2= P - A
+   v0(0) = p3.x - p1.x; v0 (1) = p3.y - p1.y; // v0= C - A
+   v1(0) = p2.x - p1.x; v1 (1) = p2.y - p1.y; // v1= B - A
+   v2(0) = pt.x - p1.x; v2 (1) = pt.y - p1.y; // v2= P - A
 
    // Compute dot products
-   double dot00 = v0.dot(v0); // dot00 = dot(v0, v0)
-   double dot01 = v0.dot(v1); // dot01 = dot(v0, v1)
-   double dot02 = v0.dot(v2); // dot02 = dot(v0, v2)
-   double dot11 = v1.dot(v1); // dot11 = dot(v1, v1)
-   double dot12 = v1.dot(v2); // dot12 = dot(v1, v2)
+   double dot00 = v0.dot (v0); // dot00 = dot(v0, v0)
+   double dot01 = v0.dot (v1); // dot01 = dot(v0, v1)
+   double dot02 = v0.dot (v2); // dot02 = dot(v0, v2)
+   double dot11 = v1.dot (v1); // dot11 = dot(v1, v1)
+   double dot12 = v1.dot (v2); // dot12 = dot(v1, v2)
 
    // Compute barycentric coordinates
    double invDenom = 1.0 / (dot00*dot11 - dot01*dot01);
-   double u = (dot11*dot02 - dot01*dot12) * invDenom;
-   double v = (dot00*dot12 - dot01*dot02) * invDenom;
+   double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+   double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
    // Check if point is in triangle
    return ((u >= 0) && (v >= 0) && (u + v < 1));
@@ -1072,11 +1075,11 @@ pcl::TextureMapping<PointInT>::isFaceProjected(const Camera &camera, const pcl::
                                                const pcl::PointXYZ &p2, const pcl::PointXYZ &p3, 
                                                pcl::PointXY &proj1, pcl::PointXY &proj2, pcl::PointXY &proj3)
 {
-  return (getPointUVCoordinates(p1, camera, proj1)
+  return (getPointUVCoordinates (p1, camera, proj1)
       &&
-      getPointUVCoordinates(p2, camera, proj2)
+      getPointUVCoordinates (p2, camera, proj2)
       &&
-      getPointUVCoordinates(p3, camera, proj3)
+      getPointUVCoordinates (p3, camera, proj3)
   );
 }
 
