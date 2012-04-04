@@ -28,7 +28,7 @@ namespace pcl
    */
 
   template<typename PointT, int nbins_>
-    class CRHAlignment
+    class PCL_EXPORTS CRHAlignment
     {
     private:
 
