@@ -14,6 +14,7 @@ if(build)
     set(incs
         include/pcl/${SUBSYS_NAME}/board.h
         include/pcl/${SUBSYS_NAME}/cvfh.h
+        include/pcl/${SUBSYS_NAME}/crh.h
         include/pcl/${SUBSYS_NAME}/feature.h
         include/pcl/${SUBSYS_NAME}/fpfh.h
         include/pcl/${SUBSYS_NAME}/fpfh_omp.h
@@ -59,6 +60,7 @@ if(build)
     set(impl_incs
         include/pcl/${SUBSYS_NAME}/impl/board.hpp
         include/pcl/${SUBSYS_NAME}/impl/cvfh.hpp
+        include/pcl/${SUBSYS_NAME}/impl/crh.hpp
         include/pcl/${SUBSYS_NAME}/impl/feature.hpp
         include/pcl/${SUBSYS_NAME}/impl/fpfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/fpfh_omp.hpp
@@ -99,6 +101,7 @@ if(build)
         src/board.cpp
         src/boundary.cpp
         src/cvfh.cpp
+        src/crh.cpp
         src/fpfh.cpp
         src/fpfh_omp.cpp
         src/gfpfh.cpp
