@@ -182,7 +182,7 @@ namespace pcl
         int current_label = labels_->points[idx1].label;
         int next_label = labels_->points[idx2].label;
 
-        if ((*refine_labels_)[current_label] || (*refine_labels_)[next_label])
+        if (!((*refine_labels_)[current_label] && !(*refine_labels_)[next_label]))
           return (false);
         
         const pcl::ModelCoefficients& model_coeff = (*models_)[(*label_to_model_)[current_label]];
