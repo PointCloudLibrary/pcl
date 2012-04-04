@@ -1,6 +1,6 @@
 set(SUBSYS_NAME proctor)
 set(SUBSYS_DESC "Proctor: 3D feature benchmarking")
-set(SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree search registration visualization keypoints)
+set(SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree search registration visualization keypoints geometry)
 set(DEFAULT OFF)
 set(REASON "")
 

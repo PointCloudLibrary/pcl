@@ -1,6 +1,6 @@
 set(SUBSYS_NAME simulation)
 set(SUBSYS_DESC "Point Cloud Library Simulation")
-set(SUBSYS_DEPS common io surface kdtree features search octree visualization filters)
+set(SUBSYS_DEPS common io surface kdtree features search octree visualization filters geometry)
 
 set(build FALSE)
 
