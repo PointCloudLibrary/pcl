@@ -43,6 +43,7 @@
 #include <pcl/ModelCoefficients.h>
 #include <pcl/point_cloud.h>
 #include <pcl/visualization/vtk.h>
+#include <pcl/geometry/planar_polygon.h>
 
 /**
   * \file pcl/visualization/common/shapes.h
@@ -61,6 +62,13 @@ namespace pcl
       */
     template <typename PointT> vtkSmartPointer<vtkDataSet> inline 
     createPolygon (const typename pcl::PointCloud<PointT>::ConstPtr &cloud);
+
+    /** \brief Create a 3d poly line from a set of points on the boundary of a planar region. 
+      * \param[in] planar_polygon the set of points used to create the 3d polyline
+      * \ingroup visualization
+      */
+    template <typename PointT> vtkSmartPointer<vtkDataSet> inline 
+    createPolygon (const pcl::PlanarPolygon<PointT> &planar_polygon);
 
     /** \brief Create a line shape from two points
       * \param[in] pt1 the first point on the line

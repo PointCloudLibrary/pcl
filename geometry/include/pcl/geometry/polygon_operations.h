@@ -41,6 +41,7 @@
 #define PCL_GEOMETRY_POLYGON_OPERATORS_H
 
 #include "planar_polygon.h"
+#include <pcl/point_cloud.h>
 
 namespace pcl
 {
@@ -49,20 +50,22 @@ namespace pcl
     */
   template <typename PointT>
   void approximatePolygon (const PlanarPolygon<PointT>& polygon, PlanarPolygon<PointT>& approx_polygon, float threshold, bool refine = false, bool closed = true);
-
+  
   /** \brief returns an approximate polygon to given 2D contour. Uses just X and Y values.
     * \note  if refinement is not turned on, the resulting polygon will contain points from the original contour with their original z values (if any)
     * \note  if refinement is turned on, the z values of the refined polygon are not valid and should be set to 0 if point contains z attribute. 
-    * \param[in] polygon input polygon
+    * \param [in] polygon input polygon
     * \param [out] approx_polygon approximate polygon
     * \param [in] threshold maximum allowed distance of an input vertex to an output edge
     * \param [in] closed whether it is a closed polygon or a polyline
     * \author Suat Gedikli <gedikli@willowgarage.com>
     */
   template <typename PointT>
-  void approximatePolygon2D (const std::vector<PointT>& polygon, std::vector<PointT>& approx_polygon, float threshold, bool refine = false, bool closed = true);
-//  getMinimumBoundingRectangle (const PlanarPolygon<PointT>& polygon, Box2D& bounding_box );
-}
+  void approximatePolygon2D (const typename PointCloud<PointT>::VectorType &polygon, 
+                             typename PointCloud<PointT>::VectorType &approx_polygon, 
+                             float threshold, bool refine = false, bool closed = true);
+
+} // namespace pcl
 
 #include "impl/polygon_operations.hpp"
 #endif // PCL_GEOMETRY_POLYGON_OPERATORS_H=======

@@ -6,20 +6,20 @@ template<typename PointT> void
 pcl::approximatePolygon (const PlanarPolygon<PointT>& polygon, PlanarPolygon<PointT>& approx_polygon, float threshold, bool refine, bool closed)
 {
   const Eigen::Vector4f& coefficients = polygon.getCoefficients ();
-  const std::vector<PointT, Eigen::aligned_allocator<PointT> >& contour = polygon.getContour ();
- //td::vector<
+  const typename pcl::PointCloud<PointT>::VectorType &contour = polygon.getContour ();
+  
   Eigen::Vector3f rotation_axis = Eigen::Vector3f(coefficients[1], -coefficients[0], 0).normalized ();
   float rotation_angle = acos(coefficients [2]);
   Eigen::Affine3f transformation = Eigen::Translation3f (0, 0, coefficients [3]) * Eigen::AngleAxisf (rotation_angle, rotation_axis);
 
-  std::vector<PointT> polygon2D (contour.size ());
+  typename pcl::PointCloud<PointT>::VectorType polygon2D (contour.size ());
   for (unsigned pIdx = 0; pIdx < polygon2D.size (); ++pIdx)
     polygon2D [pIdx].getVector3fMap () = transformation * contour [pIdx].getVector3fMap ();
 
-  std::vector<PointT> approx_polygon2D;
-  approximatePolygon2D (polygon2D, approx_polygon2D, threshold, refine, closed);
+  typename pcl::PointCloud<PointT>::VectorType approx_polygon2D;
+  approximatePolygon2D<PointT> (polygon2D, approx_polygon2D, threshold, refine, closed);
   
-  std::vector<PointT, Eigen::aligned_allocator<PointT> >& approx_contour = approx_polygon.getContour ();
+  typename pcl::PointCloud<PointT>::VectorType &approx_contour = approx_polygon.getContour ();
   approx_contour.resize (approx_polygon2D.size ());
   
   Eigen::Affine3f inv_transformation = transformation.inverse ();
@@ -28,7 +28,9 @@ pcl::approximatePolygon (const PlanarPolygon<PointT>& polygon, PlanarPolygon<Poi
 }
 
 template <typename PointT> void
-pcl::approximatePolygon2D (const std::vector<PointT>& polygon, std::vector<PointT>& approx_polygon, float threshold, bool refine, bool closed)
+pcl::approximatePolygon2D (const typename pcl::PointCloud<PointT>::VectorType &polygon, 
+                           typename pcl::PointCloud<PointT>::VectorType &approx_polygon, 
+                           float threshold, bool refine, bool closed)
 {
   approx_polygon.clear ();
   if (polygon.size () < 3)
@@ -193,16 +195,17 @@ pcl::approximatePolygon2D (const std::vector<PointT>& polygon, std::vector<Point
       direction [1] = polygon[result[nIdx]].y - polygon[result[rIdx]].y;
       direction.normalize ();
       
-      if (fabs (direction.dot (normal)) < float(M_SQRT1_2))
+      if (fabs (direction.dot (normal)) > float(M_SQRT1_2))
       {
-        lines [rIdx] [0] = normal [0];
-        lines [rIdx] [1] = normal [1];
+        std::swap (normal [0], normal [1]);
+        normal [0] = -normal [0];
       }
-      else
-      {
-        lines [rIdx] [0] = -normal [1];
-        lines [rIdx] [1] = normal [0];
-      }
+      
+      // needs to be on the left side of the edge
+      if (direction [0] * normal [1] < direction [1] * normal [0])
+        normal *= -1.0;
+      
+      lines [rIdx].head<2> () = normal;
       lines [rIdx] [2] = -normal.dot (centroid);
     }
     
@@ -219,22 +222,27 @@ pcl::approximatePolygon2D (const std::vector<PointT>& polygon, std::vector<Point
 
       PointT point;      
       // test whether we need another edge since the intersection point is too far away from the original vertex
-      float distance = (vertex - polygon [result[nIdx]].getVector3fMap ()).squaredNorm ();
+      Eigen::Vector3f pq = polygon [result[nIdx]].getVector3fMap () - vertex;
+      pq [2] = 0.0;
+      
+      float distance = pq.squaredNorm ();
       if (distance > threshold2)
       {
         // test whether the old point is inside the new polygon or outside
-        
-        
-        float distance1 = lines [rIdx] [0] * polygon[result[nIdx]].x + lines [rIdx] [1] * polygon[result[nIdx]].y + lines [rIdx] [2];
-        float distance2 = lines [nIdx] [0] * polygon[result[nIdx]].x + lines [nIdx] [1] * polygon[result[nIdx]].y + lines [nIdx] [2];
-        
-        point.x = polygon[result[nIdx]].x - distance1 * lines [rIdx] [0];
-        point.y = polygon[result[nIdx]].y - distance1 * lines [rIdx] [1];
+        if ((pq [0] * lines [rIdx] [0] + pq [1] * lines [rIdx] [1] < 0.0) &&
+            (pq [0] * lines [nIdx] [0] + pq [1] * lines [nIdx] [1] < 0.0) )
+        {
+          float distance1 = lines [rIdx] [0] * polygon[result[nIdx]].x + lines [rIdx] [1] * polygon[result[nIdx]].y + lines [rIdx] [2];
+          float distance2 = lines [nIdx] [0] * polygon[result[nIdx]].x + lines [nIdx] [1] * polygon[result[nIdx]].y + lines [nIdx] [2];
 
-        approx_polygon.push_back (point);
-        
-        vertex [0] = polygon[result[nIdx]].x - distance2 * lines [nIdx] [0];
-        vertex [1] = polygon[result[nIdx]].y - distance2 * lines [nIdx] [1];        
+          point.x = polygon[result[nIdx]].x - distance1 * lines [rIdx] [0];
+          point.y = polygon[result[nIdx]].y - distance1 * lines [rIdx] [1];
+
+          approx_polygon.push_back (point);
+
+          vertex [0] = polygon[result[nIdx]].x - distance2 * lines [nIdx] [0];
+          vertex [1] = polygon[result[nIdx]].y - distance2 * lines [nIdx] [1];
+        }
       }
       point.getVector3fMap () = vertex;
       approx_polygon.push_back (point);

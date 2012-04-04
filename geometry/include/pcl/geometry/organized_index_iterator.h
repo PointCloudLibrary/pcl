@@ -150,4 +150,4 @@ pcl::OrganizedIndexIterator::getColumnIndex () const
 }
 } // namespace pcl
 
-#endif // __PCL_ORGANIZED_IMAGE_ITERATOR__
+#endif // __PCL_ORGANIZED_INDEX_ITERATOR__
