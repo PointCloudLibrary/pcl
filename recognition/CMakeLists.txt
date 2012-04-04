@@ -19,7 +19,8 @@ if(build)
     set(incs 
         include/pcl/${SUBSYS_NAME}/color_gradient_dot_modality.h
         include/pcl/${SUBSYS_NAME}/color_gradient_modality.h
-		include/pcl/${SUBSYS_NAME}/color_modality.h
+		    include/pcl/${SUBSYS_NAME}/color_modality.h
+		    include/pcl/${SUBSYS_NAME}/crh_alignment.h
         include/pcl/${SUBSYS_NAME}/linemod.h
         include/pcl/${SUBSYS_NAME}/dotmod.h
         include/pcl/${SUBSYS_NAME}/quantizable_modality.h
