@@ -1,49 +1,48 @@
-/**
-  * Software License Agreement (BSD License)
-  *
-  *  Copyright (c) 2011, Willow Garage, Inc.
-  *  All rights reserved.
-  *
-  *  Redistribution and use in source and binary forms, with or without
-  *  modification, are permitted provided that the following conditions
-  *  are met:
-  *
-  *   * Redistributions of source code must retain the above copyright
-  *     notice, this list of conditions and the following disclaimer.
-  *   * Redistributions in binary form must reproduce the above
-  *     copyright notice, this list of conditions and the following
-  *     disclaimer in the documentation and/or other materials provided
-  *     with the distribution.
-  *   * Neither the name of Willow Garage, Inc. nor the names of its
-  *     contributors may be used to endorse or promote products derived
-  *     from this software without specific prior written permission.
-  *
-  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-  *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-  *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-  *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-  *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-  *  POSSIBILITY OF SUCH DAMAGE.
-  *
-  * Author: Suat Gedikli (gedikli@willowgarage.com)
-  */
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2009-2012, Willow Garage, Inc.
+ *
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ * $Id$
+ *
+ */
 
 #ifndef PCL_VISUALIZER_WINDOW_H__
 #define	PCL_VISUALIZER_WINDOW_H__
+
 #include <pcl/pcl_macros.h>
 #include <pcl/console/print.h>
-#include <vtkRenderWindow.h>
-#include <vtkSmartPointer.h>
-#include <boost/signals2.hpp>
-#include <vtkCallbackCommand.h>
-#include <vtkInteractorStyle.h>
-#include <vtkRenderWindowInteractor.h>
+#include <pcl/visualization/vtk.h>
 #include <pcl/visualization/interactor_style.h>
 
 namespace pcl
@@ -57,6 +56,9 @@ namespace pcl
     {
       public:
         Window (const std::string& window_name = "");
+        Window (const Window &src);
+        Window& operator = (const Window &src);
+
         virtual ~Window ();
 
         /** \brief Spin method. Calls the interactor and runs an internal loop. */
@@ -73,8 +75,7 @@ namespace pcl
 
         /** \brief Returns true when the user tried to close the window */
         bool
-        //wasStopped () const { return (interactor_->stopped); }
-        wasStopped () const { return (stopped); }
+        wasStopped () const { return (stopped_); }
 
         /**
           * @brief registering a callback function for keyboard events
@@ -134,8 +135,7 @@ namespace pcl
 
         /** \brief Set the stopped flag back to false */
         void
-        //resetStoppedFlag () { interactor_->stopped = false; }
-        resetStoppedFlag () { stopped = false; }
+        resetStoppedFlag () { stopped_ = false; }
 
         /**
           * @brief   registering a callback function for mouse events
@@ -170,9 +170,15 @@ namespace pcl
         {
           static ExitMainLoopTimerCallback* New()
           {
-            return new ExitMainLoopTimerCallback;
+            return (new ExitMainLoopTimerCallback);
           }
-          virtual void Execute(vtkObject* vtkNotUsed(caller), unsigned long event_id, void* call_data)
+
+          ExitMainLoopTimerCallback () : right_timer_id (), window () {}
+          ExitMainLoopTimerCallback (const ExitMainLoopTimerCallback& src) : vtkCommand (), right_timer_id (src.right_timer_id), window (src.window) {}
+          ExitMainLoopTimerCallback& operator = (const ExitMainLoopTimerCallback& src) { right_timer_id = src.right_timer_id; window = src.window; return (*this); }
+
+          virtual void 
+          Execute (vtkObject*, unsigned long event_id, void* call_data)
           {
             if (event_id != vtkCommand::TimerEvent)
               return;
@@ -186,26 +192,30 @@ namespace pcl
           int right_timer_id;
           Window* window;
         };
+
         struct ExitCallback : public vtkCommand
         {
           static ExitCallback* New ()
           {
-            return new ExitCallback;
+            return (new ExitCallback);
           }
-          virtual void Execute (vtkObject*, unsigned long event_id, void*)
+
+          ExitCallback () : window () {}
+          ExitCallback (const ExitCallback &src) : vtkCommand (), window (src.window) {}
+          ExitCallback& operator = (const ExitCallback &src) { window = src.window; return (*this); }
+ 
+          virtual void 
+          Execute (vtkObject*, unsigned long event_id, void*)
           {
             if (event_id != vtkCommand::ExitEvent)
               return;
             window->interactor_->TerminateApp ();
-            //window->interactor_->stopped = true;
-            window->stopped = true;
-            // This tends to close the window...
-            //window->interactor_->stopLoop ();
+            window->stopped_ = true;
           }
           Window* window;
         };
 
-        bool stopped;
+        bool stopped_;
         int timer_id_;
 
     protected: // member fields

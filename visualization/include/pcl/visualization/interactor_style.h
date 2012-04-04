@@ -39,35 +39,13 @@
 #ifndef PCL_PCL_VISUALIZER_INTERACTOR_STYLE_H_
 #define PCL_PCL_VISUALIZER_INTERACTOR_STYLE_H_
 
-// VTK includes
-#include <vtkSmartPointer.h>
-#include <vtkRendererCollection.h>
-#include <vtkLegendScaleActor.h>
-#include <vtkPNGWriter.h>
-#include <vtkWindowToImageFilter.h>
-#include <vtkInteractorStyleTrackballCamera.h>
-#include <vtkRenderWindowInteractor.h>
-#include <vtkRenderWindow.h>
-#include <vtkAssemblyPath.h>
-#include <vtkCommand.h>
-#include <vtkProperty.h>
-#include <vtkCamera.h>
-#include <vtkObjectFactory.h>
-#include <vtkScalarBarActor.h>
-#include <vtkScalarsToColors.h>
-#include <vtkBoxRepresentation.h>
-#include <vtkBoxWidget.h>
-#include <vtkBoxWidget2.h>
-#include <vtkClipPolyData.h>
-#include <vtkPlanes.h>
-
+#include <pcl/visualization/vtk.h>
 #include <boost/shared_ptr.hpp>
 #include <pcl/console/print.h>
 #include <pcl/visualization/common/actor_map.h>
 #include <pcl/visualization/common/ren_win_interact_map.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/signals2.hpp>
-//#include <boost/signals2/slot.hpp>
 #include <pcl/visualization/keyboard_event.h>
 #include <pcl/visualization/mouse_event.h>
 #include <pcl/visualization/point_picking_event.h>
@@ -121,6 +99,15 @@ namespace pcl
 
       public:
         static PCLVisualizerInteractorStyle *New ();
+
+        /** \brief Empty constructor. */
+        PCLVisualizerInteractorStyle () : 
+          init_ (), rens_ (), actors_ (), win_height_ (), win_width_ (), win_pos_x_ (), win_pos_y_ (),
+          max_win_height_ (), max_win_width_ (), grid_enabled_ (), grid_actor_ (), lut_enabled_ (),
+          lut_actor_ (), snapshot_writer_ (), wif_ (), mouse_signal_ (), keyboard_signal_ (),
+          point_picking_signal_ (), stereo_anaglyph_mask_default_ (), mouse_callback_ (), modifier_ ()
+        {}
+
         // this macro defines Superclass, the isA functionality and the safe downcast method
         vtkTypeMacro (PCLVisualizerInteractorStyle, vtkInteractorStyleTrackballCamera);
         
@@ -275,6 +262,7 @@ namespace pcl
         InteractorKeyboardModifier modifier_;
 
         friend class PointPickingCallback;
+       vtkSmartPointer<vtkPolyData> full_data_; 
     };
 
     /** \brief PCL histogram visualizer interactory style class.
@@ -284,6 +272,9 @@ namespace pcl
     {
       public:
         static PCLHistogramVisualizerInteractorStyle *New ();
+
+        /** \brief Empty constructor. */
+        PCLHistogramVisualizerInteractorStyle () : wins_ (), init_ (false) {}
 
         /** \brief Initialization routine. Must be called before anything else. */
         void 
