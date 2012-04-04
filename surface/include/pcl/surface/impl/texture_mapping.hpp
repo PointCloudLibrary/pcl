@@ -1068,7 +1068,9 @@ pcl::TextureMapping<PointInT>::checkPointInsideTriangle(const pcl::PointXY &p1, 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> inline bool
-pcl::TextureMapping<PointInT>::isFaceProjected(const Camera camera, const pcl::PointXYZ &p1, const pcl::PointXYZ &p2, const pcl::PointXYZ &p3, pcl::PointXY &proj1, pcl::PointXY &proj2, pcl::PointXY &proj3)
+pcl::TextureMapping<PointInT>::isFaceProjected(const Camera &camera, const pcl::PointXYZ &p1, 
+                                               const pcl::PointXYZ &p2, const pcl::PointXYZ &p3, 
+                                               pcl::PointXY &proj1, pcl::PointXY &proj2, pcl::PointXY &proj3)
 {
   return (getPointUVCoordinates(p1, camera, proj1)
       &&
