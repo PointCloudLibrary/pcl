@@ -46,10 +46,10 @@
 #include <sstream>
 #include <boost/algorithm/string.hpp>
 
-boost::tuple<boost::function<void ()>, boost::function<void ()> > 
+boost::tuple<boost::function<void ()>, boost::function<void ()> >
 pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std::size_t count)
 {
-  if (element_name == "vertex") 
+  if (element_name == "vertex")
   {
     cloud_->data.clear ();
     cloud_->fields.clear ();
@@ -103,14 +103,14 @@ pcl::PLYReader::appendFloatProperty (const std::string& name, const size_t& size
   current_field.name = name;
   current_field.offset = cloud_->point_step;
   current_field.datatype = ::sensor_msgs::PointField::FLOAT32;
-  current_field.count = static_cast<uint32_t> (size);  
+  current_field.count = static_cast<uint32_t> (size);
   cloud_->point_step += static_cast<uint32_t> (pcl::getFieldSize (::sensor_msgs::PointField::FLOAT32) * size);
 }
 
 namespace pcl
 {
-  template <> 
-  boost::function<void (pcl::io::ply::float32)> 
+  template <>
+  boost::function<void (pcl::io::ply::float32)>
   PLYReader::scalarPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
   {
     if (element_name == "vertex")
@@ -123,11 +123,11 @@ namespace pcl
       if (property_name == "view_px")
       {
         return boost::bind (&pcl::PLYReader::originXCallback, this, _1);
-      } 
+      }
       else if (property_name == "view_py")
       {
         return boost::bind (&pcl::PLYReader::originYCallback, this, _1);
-      } 
+      }
       else if (property_name == "view_pz")
       {
         return boost::bind (&pcl::PLYReader::originZCallback, this, _1);
@@ -135,23 +135,23 @@ namespace pcl
       else if (property_name == "x_axisx")
       {
         return boost::bind (&pcl::PLYReader::orientationXaxisXCallback, this, _1);
-      } 
+      }
       else if (property_name == "x_axisy")
       {
         return boost::bind (&pcl::PLYReader::orientationXaxisYCallback, this, _1);
-      } 
+      }
       else if (property_name == "x_axisz")
       {
         return boost::bind (&pcl::PLYReader::orientationXaxisZCallback, this, _1);
-      }    
+      }
       else if (property_name == "y_axisx")
       {
         return boost::bind (&pcl::PLYReader::orientationYaxisXCallback, this, _1);
-      } 
+      }
       else if (property_name == "y_axisy")
       {
         return boost::bind (&pcl::PLYReader::orientationYaxisYCallback, this, _1);
-      } 
+      }
       else if (property_name == "y_axisz")
       {
         return boost::bind (&pcl::PLYReader::orientationYaxisZCallback, this, _1);
@@ -159,11 +159,11 @@ namespace pcl
       else if (property_name == "z_axisx")
       {
         return boost::bind (&pcl::PLYReader::orientationZaxisXCallback, this, _1);
-      } 
+      }
       else if (property_name == "z_axisy")
       {
         return boost::bind (&pcl::PLYReader::orientationZaxisYCallback, this, _1);
-      } 
+      }
       else if (property_name == "z_axisz")
       {
         return boost::bind (&pcl::PLYReader::orientationZaxisZCallback, this, _1);
@@ -173,20 +173,21 @@ namespace pcl
         return (0);
       }
     }
-    else 
+    else
     {
       return (0);
     }
   }
-  
-  template <> boost::function<void (pcl::io::ply::uint8)> 
+
+  template <> boost::function<void (pcl::io::ply::uint8)>
   PLYReader::scalarPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
   {
-    if (element_name == "vertex") 
+    if (element_name == "vertex")
     {
-      if ((property_name == "red") || (property_name == "green") || (property_name == "blue"))
+      if ((property_name == "red") || (property_name == "green") || (property_name == "blue") ||
+          (property_name == "diffuse_red") || (property_name == "diffuse_green") || (property_name == "diffuse_blue") )
       {
-        if (property_name == "red")
+        if ((property_name == "red") || (property_name == "diffuse_red"))
           appendFloatProperty ("rgb");
         return boost::bind (&pcl::PLYReader::vertexColorCallback, this, property_name, _1);
       }
@@ -201,8 +202,8 @@ namespace pcl
     else
       return (0);
   }
-  
-  template <> boost::function<void (pcl::io::ply::int32)> 
+
+  template <> boost::function<void (pcl::io::ply::int32)>
   PLYReader::scalarPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
   {
     if (element_name == "camera")
@@ -223,9 +224,9 @@ namespace pcl
     else
       return (0);
   }
-  
+
   template <>
-  boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> > 
+  boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> >
   pcl::PLYReader::listPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
   {
     if ((element_name == "range_grid") && (property_name == "vertex_indices")) {
@@ -241,36 +242,36 @@ namespace pcl
     //     boost::bind (&pcl::PLYReader::faceVertexIndicesElement, this, _1),
     //     boost::bind (&pcl::PLYReader::faceVertexIndicesEnd, this)
     //   );
-    // } 
+    // }
     else {
       return boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> > (0, 0, 0);
     }
   }
 }
 
-void 
+void
 pcl::PLYReader::vertexFloatPropertyCallback (pcl::io::ply::float32 value)
 {
-  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_], 
+  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
           &value,
           sizeof (pcl::io::ply::float32));
   vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::float32));
 }
 
-void 
+void
 pcl::PLYReader::vertexColorCallback (const std::string& color_name, pcl::io::ply::uint8 color)
 {
   static int32_t r, g, b;
-  if (color_name == "red")
+  if ((color_name == "red") || (color_name == "diffuse_red"))
   {
     r = int32_t (color);
     rgb_offset_before_ = vertex_offset_before_;
   }
-  if (color_name == "green")
+  if ((color_name == "green") || (color_name == "diffuse_green"))
   {
     g = int32_t (color);
   }
-  if (color_name == "blue")
+  if ((color_name == "blue") || (color_name == "diffuse_blue"))
   {
     b = int32_t (color);
     int32_t rgb = r << 16 | g << 8 | b;
@@ -281,32 +282,32 @@ pcl::PLYReader::vertexColorCallback (const std::string& color_name, pcl::io::ply
   }
 }
 
-void 
+void
 pcl::PLYReader::vertexIntensityCallback (pcl::io::ply::uint8 intensity)
 {
   pcl::io::ply::float32 intensity_ (intensity);
-  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_], 
+  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
           &intensity_,
           sizeof (pcl::io::ply::float32));
   vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::float32));
 }
 
-void 
+void
 pcl::PLYReader::vertexBeginCallback ()
 {
   vertex_offset_before_ = 0;
 }
 
-void 
+void
 pcl::PLYReader::vertexEndCallback ()
 {
   ++vertex_count_;
 }
 
-void 
+void
 pcl::PLYReader::rangeGridBeginCallback () { }
 
-void 
+void
 pcl::PLYReader::rangeGridVertexIndicesBeginCallback (pcl::io::ply::uint8 size)
 {
   (*range_grid_)[range_count_].reserve (size);
@@ -317,16 +318,16 @@ void pcl::PLYReader::rangeGridVertexIndicesElementCallback (pcl::io::ply::int32 
   (*range_grid_)[range_count_].push_back (vertex_index);
 }
 
-void 
+void
 pcl::PLYReader::rangeGridVertexIndicesEndCallback () { }
 
-void 
+void
 pcl::PLYReader::rangeGridEndCallback ()
 {
   ++range_count_;
 }
 
-void 
+void
 pcl::PLYReader::objInfoCallback (const std::string& line)
 {
   std::vector<std::string> st;
@@ -345,11 +346,11 @@ pcl::PLYReader::objInfoCallback (const std::string& line)
         originYCallback (static_cast<float> (atof (st[2].c_str ())));
       else if (st[1] == "echo_rgb_offset_z")
         originZCallback (static_cast<float> (atof (st[2].c_str ())));
-    }    
+    }
   }
 }
 
-bool 
+bool
 pcl::PLYReader::parse (const std::string& istream_filename)
 {
   pcl::io::ply::ply_parser::flags_type ply_parser_flags = 0;
@@ -357,7 +358,7 @@ pcl::PLYReader::parse (const std::string& istream_filename)
 
   ply_parser.info_callback (boost::bind (&pcl::PLYReader::infoCallback, this, boost::ref (istream_filename), _1, _2));
   ply_parser.warning_callback (boost::bind (&pcl::PLYReader::warningCallback, this, boost::ref (istream_filename), _1, _2));
-  ply_parser.error_callback (boost::bind (&pcl::PLYReader::errorCallback, this, boost::ref (istream_filename), _1, _2)); 
+  ply_parser.error_callback (boost::bind (&pcl::PLYReader::errorCallback, this, boost::ref (istream_filename), _1, _2));
 
   ply_parser.element_definition_callback (boost::bind (&pcl::PLYReader::elementDefinitionCallback, this, _1, _2));
   ply_parser.end_header_callback (boost::bind (&pcl::PLYReader::endHeaderCallback, this));
@@ -376,7 +377,7 @@ pcl::PLYReader::parse (const std::string& istream_filename)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
-int 
+int
 pcl::PLYReader::readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
                             Eigen::Vector4f &, Eigen::Quaternionf &,
                             int &, int &, unsigned int &, const int)
@@ -407,7 +408,7 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     PCL_ERROR ("[pcl::PLYReader::read] problem parsing header!\n");
     return (-1);
   }
-    
+
   // a range_grid element was found ?
   size_t r_size;
   if ((r_size  = (*range_grid_).size ()) > 0 && r_size != vertex_count_)
@@ -425,7 +426,7 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
             memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset + cloud_->fields[f].count * sizeof (float)],
                     reinterpret_cast<const char*> (&f_nan), sizeof (float));
           else if (cloud_->fields[f].datatype == ::sensor_msgs::PointField::FLOAT64)
-            memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset + cloud_->fields[f].count * sizeof (double)], 
+            memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset + cloud_->fields[f].count * sizeof (double)],
                     reinterpret_cast<const char*> (&d_nan), sizeof (double));
           else
             memset (&data[r * cloud_->point_step + cloud_->fields[f].offset], 0,
@@ -436,7 +437,7 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     }
     cloud_->data.swap (data);
     cloud_->is_dense = true;
-  } 
+  }
 
   orientation = Eigen::Quaternionf (orientation_);
   origin = origin_;
@@ -447,10 +448,10 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
 ////////////////////////////////////////////////////////////////////////////////////////
 
 std::string
-pcl::PLYWriter::generateHeader (const sensor_msgs::PointCloud2 &cloud, 
-                                const Eigen::Vector4f &origin, 
+pcl::PLYWriter::generateHeader (const sensor_msgs::PointCloud2 &cloud,
+                                const Eigen::Vector4f &origin,
                                 const Eigen::Quaternionf &,
-                                bool binary, 
+                                bool binary,
                                 bool use_camera,
                                 int valid_points)
 {
@@ -465,9 +466,9 @@ pcl::PLYWriter::generateHeader (const sensor_msgs::PointCloud2 &cloud,
       oss << "\nformat binary_big_endian 1.0";
     else
       oss << "\nformat binary_little_endian 1.0";
-  } 
+  }
   oss << "\ncomment PCL generated";
-  
+
   if (!use_camera)
   {
     oss << "\nobj_info is_cyberware_data 0"
@@ -506,13 +507,13 @@ pcl::PLYWriter::generateHeader (const sensor_msgs::PointCloud2 &cloud,
       oss << "\nproperty uchar red"
         "\nproperty uchar green"
         "\nproperty uchar blue";
-    
+
     if (fields_list.find ("normal_x normal_y normal_z", xyz_found) != std::string::npos)
       oss << "\nproperty float nx"
         "\nproperty float ny"
         "\nproperty float nz"
         "\nproperty float curvature";
-        
+
     if (fields_list.find ("radius", xyz_found) != std::string::npos)
       oss << "\nproperty float radius";
 
@@ -526,11 +527,11 @@ pcl::PLYWriter::generateHeader (const sensor_msgs::PointCloud2 &cloud,
 
     if (fields_list.find ("strength", xyz_found) != std::string::npos)
       oss << "\nproperty float strength";
-    
+
     if (fields_list.find ("confidence", xyz_found) != std::string::npos)
       oss << "\nproperty float confidence";
-  } 
-  else 
+  }
+  else
   {
     if (fields_list.find ("normal_x normal_y normal_z", 0) != std::string::npos)
     {
@@ -592,9 +593,9 @@ pcl::PLYWriter::generateHeader (const sensor_msgs::PointCloud2 &cloud,
 ////////////////////////////////////////////////////////////////////////////////////////
 
 int
-pcl::PLYWriter::writeASCII (const std::string &file_name, 
-                            const sensor_msgs::PointCloud2 &cloud, 
-                            const Eigen::Vector4f &origin, 
+pcl::PLYWriter::writeASCII (const std::string &file_name,
+                            const sensor_msgs::PointCloud2 &cloud,
+                            const Eigen::Vector4f &origin,
                             const Eigen::Quaternionf &orientation,
                             int precision,
                             bool use_camera)
@@ -634,15 +635,15 @@ pcl::PLYWriter::writeASCII (const std::string &file_name,
   }
 
   // Close file
-  fs.close ();              
+  fs.close ();
   return (0);
 }
 
 void
-pcl::PLYWriter::writeContentWithCameraASCII (int nr_points, 
+pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
                                              int point_size,
-                                             const sensor_msgs::PointCloud2 &cloud, 
-                                             const Eigen::Vector4f &origin, 
+                                             const sensor_msgs::PointCloud2 &cloud,
+                                             const Eigen::Vector4f &origin,
                                              const Eigen::Quaternionf &orientation,
                                              std::ofstream& fs)
 {
@@ -652,7 +653,7 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
     for (size_t d = 0; d < cloud.fields.size (); ++d)
     {
       int count = cloud.fields[d].count;
-      if (count == 0) 
+      if (count == 0)
         count = 1; //workaround
 
       for (int c = 0; c < count; ++c)
@@ -709,7 +710,7 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
               memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
               fs << value;
             }
-            else 
+            else
             {
               pcl::RGB color;
               memcpy (&color, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (pcl::RGB));
@@ -763,9 +764,9 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
 }
 
 void
-pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points, 
+pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
                                                 int point_size,
-                                                const sensor_msgs::PointCloud2 &cloud, 
+                                                const sensor_msgs::PointCloud2 &cloud,
                                                 std::ostringstream& fs,
                                                 int& valid_points)
 {
@@ -779,7 +780,7 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
     for (size_t d = 0; d < cloud.fields.size (); ++d)
     {
       int count = cloud.fields[d].count;
-      if (count == 0) 
+      if (count == 0)
         count = 1; //workaround
       for (int c = 0; c < count; ++c)
       {
@@ -840,7 +841,7 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
               }
               line << value;
             }
-            else 
+            else
             {
               pcl::RGB color;
               memcpy (&color, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (pcl::RGB));
@@ -867,7 +868,7 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
           line << " ";
       }
     }
-    
+
     if (is_valid_line)
     {
       grids[i].push_back (valid_points);
@@ -891,9 +892,9 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
 
 ////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::PLYWriter::writeBinary (const std::string &file_name, 
-                             const sensor_msgs::PointCloud2 &cloud, 
-                             const Eigen::Vector4f &origin, 
+pcl::PLYWriter::writeBinary (const std::string &file_name,
+                             const sensor_msgs::PointCloud2 &cloud,
+                             const Eigen::Vector4f &origin,
                              const Eigen::Quaternionf &orientation)
 {
   if (cloud.data.empty ())
@@ -924,7 +925,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
     PCL_ERROR ("[pcl::PLYWriter::writeBinary] Error during reopening (%s)!\n", file_name.c_str ());
     return (-1);
   }
-  // Unlike PCD format file, PLY doesn't like 
+  // Unlike PCD format file, PLY doesn't like
   // Iterate through the points
   for (unsigned int i = 0; i < nr_points; ++i)
   {
@@ -932,7 +933,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
     for (size_t d = 0; d < cloud.fields.size (); ++d)
     {
       int count = cloud.fields[d].count;
-      if (count == 0) 
+      if (count == 0)
         count = 1; //workaround
       // Ignore invalid padded dimensions that are inherited from binary data
       if (cloud.fields[d].name == "_")
@@ -1068,7 +1069,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
     fpout.write (reinterpret_cast<const char*> (&zerof), sizeof (float));
 
   // Close file
-  fpout.close ();              
+  fpout.close ();
   return (0);
 }
 
@@ -1113,7 +1114,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
   {
     fs << "\nproperty uchar red"
       "\nproperty uchar green"
-      "\nproperty uchar blue";    
+      "\nproperty uchar blue";
   }
 
   // Faces
@@ -1131,7 +1132,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
       if (count == 0)
         count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
       int c = 0;
-      
+
       // adding vertex
       if ((mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32) && (
           mesh.cloud.fields[d].name == "x" ||
@@ -1144,7 +1145,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
         // if (++xyz == 3)
         //   break;
         ++xyz;
-      } 
+      }
       else if (mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32 && mesh.cloud.fields[d].name == "rgb")
       {
         pcl::RGB color;
@@ -1163,7 +1164,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
     }
     fs << std::endl;
   }
-  
+
   // Write down faces
   for (size_t i = 0; i < nr_faces; i++)
   {
@@ -1173,7 +1174,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
       fs << mesh.polygons[i].vertices[j] << " ";
     fs << mesh.polygons[i].vertices[j] << std::endl;
   }
-  
+
   // Close file
   fs.close ();
   return (0);
