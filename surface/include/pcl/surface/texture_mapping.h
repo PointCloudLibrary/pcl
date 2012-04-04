@@ -346,7 +346,7 @@ namespace pcl
          * \param[out] proj3 UV coordinates corresponding to p3.
         */
       inline bool
-      isFaceProjected (const Camera camera, 
+      isFaceProjected (const Camera &camera, 
                        const pcl::PointXYZ &p1, const pcl::PointXYZ &p2, const pcl::PointXYZ &p3, 
                        pcl::PointXY &proj1, pcl::PointXY &proj2, pcl::PointXY &proj3);
 
