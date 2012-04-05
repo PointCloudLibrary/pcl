@@ -329,6 +329,15 @@ template <typename PointModelT, typename PointSceneT, typename PointModelRfT, ty
 pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::recognize (
     std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > &transformations)
 {
+  std::vector<pcl::Correspondences> model_instances;
+  return (this->recognize (transformations, model_instances));
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointModelT, typename PointSceneT, typename PointModelRfT, typename PointSceneRfT> bool
+pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::recognize (
+    std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > &transformations, std::vector<pcl::Correspondences> &clustered_corrs)
+{
   transformations.clear ();
   if (!this->initCompute ())
   {
@@ -337,8 +346,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::re
     return (false);
   }
 
-  std::vector<pcl::Correspondences> model_instances;
-  clusterCorrespondences (model_instances);
+  clusterCorrespondences (clustered_corrs);
 
   transformations = found_transformations_;
 

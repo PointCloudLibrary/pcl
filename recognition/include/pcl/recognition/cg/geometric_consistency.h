@@ -117,6 +117,16 @@ namespace pcl
       bool
       recognize (std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > &transformations);
 
+      /** \brief The main function, recognizes instances of the model into the scene set by the user.
+        * 
+        * \param[out] transformations a vector containing one transformation matrix for each instance of the model recognized into the scene.
+        * \param[out] clustered_corrs a vector containing the correspondences for each instance of the model found within the input data (the same output of clusterCorrespondences).
+        *
+        * \return true if the recognition had been successful or false if errors have occurred.
+        */
+      bool
+      recognize (std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > &transformations, std::vector<pcl::Correspondences> &clustered_corrs);
+
     protected:
       using CorrespondenceGrouping<PointModelT, PointSceneT>::input_;
       using CorrespondenceGrouping<PointModelT, PointSceneT>::scene_;

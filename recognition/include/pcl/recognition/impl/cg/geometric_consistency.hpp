@@ -153,6 +153,15 @@ template<typename PointModelT, typename PointSceneT> bool
 pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::recognize (
     std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > &transformations)
 {
+  std::vector<pcl::Correspondences> model_instances;
+  return (this->recognize (transformations, model_instances));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointModelT, typename PointSceneT> bool
+pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::recognize (
+    std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > &transformations, std::vector<pcl::Correspondences> &clustered_corrs)
+{
   transformations.clear ();
   if (!this->initCompute ())
   {
@@ -161,8 +170,7 @@ pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::recognize (
     return (false);
   }
 
-  std::vector<pcl::Correspondences> model_instances;
-  clusterCorrespondences (model_instances);
+  clusterCorrespondences (clustered_corrs);
 
   transformations = found_transformations_;
 
