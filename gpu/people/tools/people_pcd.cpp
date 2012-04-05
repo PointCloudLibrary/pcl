@@ -289,6 +289,7 @@ int print_help()
   cout << "\t -tree1 \t<path_to_tree_file>" << std::endl;
   cout << "\t -tree2 \t<path_to_tree_file>" << std::endl;
   cout << "\t -tree3 \t<path_to_tree_file>" << std::endl;
+  cout << "\t -pcd   \t<path_to_pcd_file>" << std::endl;
   return 0;
 }
 
