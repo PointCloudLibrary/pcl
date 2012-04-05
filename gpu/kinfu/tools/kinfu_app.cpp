@@ -573,6 +573,8 @@ struct KinFuApp
   tryRegistrationInit ()
   {
     registration_ = capture_.setRegistration (true);
+	float f = capture_.depth_focal_length_VGA;
+    kinfu_.setDepthIntrinsics (f, f);
     cout << "Registration mode: " << (registration_ ?  "On" : "Off (not supported by source)") << endl;
   }
 
