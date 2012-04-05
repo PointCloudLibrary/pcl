@@ -22,6 +22,7 @@ if(build)
   source_group("source files\\cuda" FILES ${srcs_cuda} )
   source_group("source files" FILES ${srcs} )
 
+  include_directories(${VTK_INCLUDE_DIRS})
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/cuda)
   include_directories(${OpenCV_INCLUDE_DIRS} ${CUDA_INCLUDE_DIRS})
 
@@ -33,7 +34,7 @@ if(build)
     add_definitions(-DPCLAPI_EXPORTS)
   endif()
 
-  CUDA_COMPILE(objs_cuda ${srcs_cuda})
+  CUDA_COMPILE(objs_cuda ${srcs_cuda} ${hdrs})
 
   set(LIB_NAME pcl_${SUBSYS_NAME})
 
@@ -42,7 +43,7 @@ if(build)
   PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
 
   # install include files
-  PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${hdrs})
+  PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_PATH} ${hdrs})
 
   add_subdirectory(tools)
 endif(build)

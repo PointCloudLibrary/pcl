@@ -16,10 +16,10 @@
 
 #include <opencv2/opencv.hpp>
 
-#include <pcl/people/conversion/conversions.h>
-#include <pcl/people/label_skeleton/conversion.h>
-#include <pcl/people/label_skeleton/segment.h>
-#include <pcl/people/trees/tree_live.h>
+#include <pcl/gpu/people/conversion/conversions.h>
+#include <pcl/gpu/people/label_skeleton/conversion.h>
+#include <pcl/gpu/people/label_skeleton/segment.h>
+#include <pcl/gpu/people/trees/tree_live.h>
 
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/console/parse.h>
@@ -49,13 +49,13 @@ class PeoplePCDApp
 
       // Project pointcloud back into the imageplane
       // TODO: do this directly in GPU?
-      pcl::people::label_skeleton::makeDepthImage16FromPointCloud(dmat, cloud_in);
+      pcl::gpu::people::label_skeleton::makeDepthImage16FromPointCloud(dmat, cloud_in);
 
       // Process the depthimage (CUDA)
       m_proc->process(dmat, m_lmap);
 
       cv::Mat lmap(cloud_in.height, cloud_in.width, CV_8UC1);
-      pcl::people::label_skeleton::smoothLabelImage(m_lmap, dmat, lmap);
+      pcl::gpu::people::label_skeleton::smoothLabelImage(m_lmap, dmat, lmap);
 
 #ifdef WRITE
       std::stringstream ss;
@@ -69,7 +69,7 @@ class PeoplePCDApp
       cv::imwrite(ss.str(), lmap);
 
       cv::Mat input(cloud_in.height, cloud_in.width, CV_8UC3);
-      pcl::people::label_skeleton::makeImageFromPointCloud(input, cloud_in);
+      pcl::gpu::people::label_skeleton::makeImageFromPointCloud(input, cloud_in);
 
       ss.str("");
       ss << "i_"  << counter << ".png";
@@ -78,7 +78,7 @@ class PeoplePCDApp
 
       pcl::PointCloud<pcl::PointXYZRGBL> cloud_labels;
 /*
-      pcl::people::conversion::colorLabelPointCloudfromArray(cloud_in, lmap.data, cloud_labels);
+      pcl::gpu::people::conversion::colorLabelPointCloudfromArray(cloud_in, lmap.data, cloud_labels);
 
       // Creating the Search object for the search method of the extraction
       pcl::search::OrganizedNeighbor<pcl::PointXYZRGBL>::Ptr stree (new pcl::search::OrganizedNeighbor<pcl::PointXYZRGBL>);
@@ -90,15 +90,15 @@ class PeoplePCDApp
       // Make all the clusters
       optimized_elec(cloud_in, lmap, CLUST_TOL, cluster_indices, AREA_THRES, MAX_CLUST_SIZE, NUM_PARTS);
       // Create a new struct to put the results in
-      std::vector<std::vector<pcl::people::label_skeleton::Blob2> >       sorted;
+      std::vector<std::vector<pcl::gpu::people::label_skeleton::Blob2> >       sorted;
       //clear out our matrix before starting again with it
       sorted.clear();
       //Set fixed size of outer vector length = number of parts
       sorted.resize(NUM_PARTS);
       //create the blob2 matrix
-      pcl::people::label_skeleton::sortIndicesToBlob2 ( cloud_labels, AREA_THRES, sorted, cluster_indices );
+      pcl::gpu::people::label_skeleton::sortIndicesToBlob2 ( cloud_labels, AREA_THRES, sorted, cluster_indices );
       //Build relationships between the blobs
-      pcl::people::label_skeleton::buildRelations ( sorted );
+      pcl::gpu::people::label_skeleton::buildRelations ( sorted );
 
   // ////////////////////////////////////////////////////////////////////////////////////////// //
 
@@ -274,7 +274,7 @@ class PeoplePCDApp
     }
 
     pcl::visualization::CloudViewer         viewer;
-    pcl::people::trees::MultiTreeLiveProc*  m_proc;
+    pcl::gpu::people::trees::MultiTreeLiveProc*  m_proc;
     cv::Mat                                 m_lmap;
     cv::Mat                                 m_cmap;
     cv::Mat                                 cmap;
@@ -316,7 +316,7 @@ int main(int argc, char** argv)
   /// Load the first tree
   std::ifstream fin0(treeFilenames[0].c_str() );
   assert(fin0.is_open() );
-  app.m_proc = new pcl::people::trees::MultiTreeLiveProc(fin0);
+  app.m_proc = new pcl::gpu::people::trees::MultiTreeLiveProc(fin0);
   fin0.close();
 
   /// Load the other tree files
@@ -333,7 +333,8 @@ int main(int argc, char** argv)
 
   if (pcl::io::loadPCDFile<pcl::PointXYZRGBA> (pcdname, *cloud) == -1) //* load the file
   {
-    PCL_ERROR ("Couldn't read file %s \n", pcdname);
+    //PCL_ERROR ("Couldn't read file %s \n", pcdname);
+    PCL_ERROR ("Couldn't read file\n");
     return (-1);
   }
   std::cout << "Loaded "

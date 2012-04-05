@@ -2,15 +2,15 @@
  * @authors: Cedric Cagniart, Koen Buys
  */
 
-#include <pcl/people/trees/tree.h>
+#include <pcl/gpu/people/trees/tree.h>
 #include "CUDA_run_multi_tree.h"
 #include <cuda.h>
 #include <assert.h>
 
-using pcl::people::trees::Node;
-using pcl::people::trees::Label;
-using pcl::people::trees::AttribLocation;
-using pcl::people::trees::NUMLABELS;
+using pcl::gpu::people::trees::Node;
+using pcl::gpu::people::trees::Label;
+using pcl::gpu::people::trees::AttribLocation;
+using pcl::gpu::people::trees::NUMLABELS;
 
 typedef unsigned int uint;
 

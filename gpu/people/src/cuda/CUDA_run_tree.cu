@@ -1,17 +1,18 @@
 /** 
  * @authors: Cedric Cagniart, Koen Buys
  */
+
 //#include <cutil.h>
-#include <pcl/people/trees/tree.h>
+#include <pcl/gpu/people/trees/tree.h>
 #include <stdio.h>
 #include <cuda.h>
 
 texture<unsigned short, 2, cudaReadModeElementType> depthTex;
 texture<unsigned short, 2, cudaReadModeElementType> maskTex;
 
-using pcl::people::trees::Node;
-using pcl::people::trees::Label;
-using pcl::people::trees::AttribLocation;
+using pcl::gpu::people::trees::Node;
+using pcl::gpu::people::trees::Label;
+using pcl::gpu::people::trees::AttribLocation;
 
 typedef unsigned int uint;
 
@@ -154,6 +155,3 @@ void CUDA_runTree_masked( const int    W,
   CUDAPERROR
 }
 */
-
-
-
