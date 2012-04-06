@@ -181,6 +181,13 @@ namespace pcl
                         std::vector<int> &k_indices,
                         std::vector<float> &k_sqr_distances) const;
 
+        /** \brief projects a point into the image
+          * \param[in] p point in 3D World Coordinate Frame to be projected onto the image plane
+          * \param[out] q the 2D projected point in pixel coordinates (u,v)
+          * @return true if projection is valid, false otherwise
+          */
+        bool projectPoint (const PointT& p, pcl::PointXY& q) const;
+        
       protected:
 
         struct Entry
