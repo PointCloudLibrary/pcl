@@ -1,3 +1,4 @@
+#include <pcl/common/angles.h>
 #include <pcl/apps/organized_segmentation_demo.h>
 //QT4
 #include <QApplication>
@@ -26,10 +27,10 @@ displayPlanarRegions (std::vector<pcl::PlanarRegion<PointT> > &regions,
     Eigen::Vector3f centroid = regions[i].getCentroid ();
     Eigen::Vector4f model = regions[i].getCoefficients ();
     pcl::PointXYZ pt1 = pcl::PointXYZ (centroid[0], centroid[1], centroid[2]);
-    pcl::PointXYZ pt2 = pcl::PointXYZ (centroid[0] + (0.5 * model[0]),
-                                       centroid[1] + (0.5 * model[1]),
-                                       centroid[2] + (0.5 * model[2]));
-    sprintf (name, "normal_%d", (unsigned)i);
+    pcl::PointXYZ pt2 = pcl::PointXYZ (centroid[0] + (0.5f * model[0]),
+                                       centroid[1] + (0.5f * model[1]),
+                                       centroid[2] + (0.5f * model[2]));
+    sprintf (name, "normal_%d", unsigned (i));
     viewer->addArrow (pt2, pt1, 1.0, 0, 0, false, name);
     
     contour->points = regions[i].getContour ();
@@ -116,16 +117,16 @@ removePreviousDataFromScreen (size_t prev_models_size, size_t prev_clusters_size
   char name[1024];
   for (size_t i = 0; i < prev_models_size; i++)
   {
-    sprintf (name, "normal_%d", (unsigned)i);
+    sprintf (name, "normal_%d", unsigned (i));
     viewer->removeShape (name);
     
-    sprintf (name, "plane_%02d", (int)i);
+    sprintf (name, "plane_%02d", int (i));
     viewer->removePointCloud (name);
   }
   
   for (size_t i = 0; i < prev_clusters_size; i++)
   {
-    sprintf (name, "cluster_%d", (int)i);
+    sprintf (name, "cluster_%d", int (i));
     viewer->removePointCloud (name);
   }
 }
@@ -174,22 +175,22 @@ comparePointToRegion (PointT& pt, pcl::ModelCoefficients& model, pcl::PointCloud
   pt_vec[0] = pt.x;
   pt_vec[1] = pt.y;
   pt_vec[2] = pt.z;
-  Eigen::Vector3f projected = pt_vec - mc * ptp_dist;
+  Eigen::Vector3f projected (pt_vec - mc * ptp_dist);
   PointT projected_pt;
   projected_pt.x = projected[0];
   projected_pt.y = projected[1];
   projected_pt.z = projected[2];  
 
-  printf ("pt: %lf %lf %lf\n", projected_pt.x, projected_pt.y, projected_pt.z);
+  PCL_INFO ("pt: %lf %lf %lf\n", projected_pt.x, projected_pt.y, projected_pt.z);
 
   if (pcl::isPointIn2DPolygon (projected_pt, poly))
   {
-    printf ("inside!\n");
+    PCL_INFO ("inside!\n");
     return true;
   }
   else
   {
-    printf ("not inside!\n");
+    PCL_INFO ("not inside!\n");
     return false;
   }
   
@@ -253,41 +254,40 @@ OrganizedSegmentationDemo::OrganizedSegmentationDemo (pcl::Grabber& grabber) : g
   ne.setMaxDepthChangeFactor (0.02f);
   ne.setNormalSmoothingSize (20.0f);
 
-  plane_comparator_ = pcl::PlaneCoefficientComparator<PointT, pcl::Normal>::Ptr (new pcl::PlaneCoefficientComparator<PointT, pcl::Normal> ());
-  euclidean_comparator_ = pcl::PlaneCoefficientComparator<PointT, pcl::Normal>::Ptr (new pcl::EuclideanPlaneCoefficientComparator<PointT, pcl::Normal> ());
-  rgb_comparator_ = pcl::PlaneCoefficientComparator<PointT, pcl::Normal>::Ptr (new pcl::RGBPlaneCoefficientComparator<PointT, pcl::Normal> ());
-  edge_aware_comparator_ = pcl::PlaneCoefficientComparator<PointT, pcl::Normal>::Ptr (new pcl::EdgeAwarePlaneComparator<PointT, pcl::Normal> ());
+  plane_comparator_.reset (new pcl::PlaneCoefficientComparator<PointT, pcl::Normal> ());
+  euclidean_comparator_.reset (new pcl::EuclideanPlaneCoefficientComparator<PointT, pcl::Normal> ());
+  rgb_comparator_.reset (new pcl::RGBPlaneCoefficientComparator<PointT, pcl::Normal> ());
+  edge_aware_comparator_.reset (new pcl::EdgeAwarePlaneComparator<PointT, pcl::Normal> ());
   euclidean_cluster_comparator_ = pcl::EuclideanClusterComparator<PointT, pcl::Normal, pcl::Label>::Ptr (new pcl::EuclideanClusterComparator<PointT, pcl::Normal, pcl::Label> ());
 
   // Set up Organized Multi Plane Segmentation
   mps.setMinInliers (10000);
-  mps.setAngularThreshold (0.017453 * 3.0); //3 degrees
+  mps.setAngularThreshold (pcl::deg2rad (3.0)); //3 degrees
   mps.setDistanceThreshold (0.02); //2cm
+  
 
-  printf ("starting grabber\n");
+  PCL_INFO ("starting grabber\n");
   grabber_.start ();
 }
 
 void 
 OrganizedSegmentationDemo::cloud_cb (const CloudConstPtr& cloud)
 {  
-  if(!capture_){
+  if (!capture_)
     return;
-  }
   QMutexLocker locker (&mtx_);
-  FPS_CALC("computation");
+  FPS_CALC ("computation");
 
   // Estimate Normals
-  printf ("Estimating normals...\n");
   pcl::PointCloud<pcl::Normal>::Ptr normal_cloud (new pcl::PointCloud<pcl::Normal>);
   ne.setInputCloud (cloud);
   ne.compute (*normal_cloud);
   float* distance_map = ne.getDistanceMap ();
   boost::shared_ptr<pcl::EdgeAwarePlaneComparator<PointT,pcl::Normal> > eapc = boost::dynamic_pointer_cast<pcl::EdgeAwarePlaneComparator<PointT,pcl::Normal> >(edge_aware_comparator_);
   eapc->setDistanceMap (distance_map);
-  
+  eapc->setDistanceThreshold (0.01f, false);
+
   // Segment Planes
-  printf ("Segmenting planes...\n");
   double mps_start = pcl::getTime ();
   std::vector<pcl::PlanarRegion<PointT> > regions;
   std::vector<pcl::ModelCoefficients> model_coefficients;
@@ -326,6 +326,7 @@ OrganizedSegmentationDemo::cloud_cb (const CloudConstPtr& cloud)
     euclidean_cluster_comparator_->setInputCloud (cloud);
     euclidean_cluster_comparator_->setLabels (labels);
     euclidean_cluster_comparator_->setExcludeLabels (plane_labels);
+    euclidean_cluster_comparator_->setDistanceThreshold (0.01f, false);
 
     pcl::PointCloud<pcl::Label> euclidean_labels;
     std::vector<pcl::PointIndices> euclidean_label_indices;
@@ -343,7 +344,7 @@ OrganizedSegmentationDemo::cloud_cb (const CloudConstPtr& cloud)
       }    
     }
     
-    printf ("Got %d euclidean clusters!\n", clusters.size ());
+    PCL_INFO ("Got %d euclidean clusters!\n", clusters.size ());
   }          
 
   {  
@@ -362,12 +363,14 @@ OrganizedSegmentationDemo::timeoutSlot ()
 {
   {
     QMutexLocker vis_locker (&vis_mtx_);
-    if (capture_ && data_modified_){
-      printf ("displaying cloud with %zu pts\n",prev_cloud_.points.size ());
-      
+    if (capture_ && data_modified_)
+    {
       removePreviousDataFromScreen (previous_data_size_, previous_clusters_size_, vis_);
       if (!vis_->updatePointCloud (boost::make_shared<pcl::PointCloud<PointT> >(prev_cloud_), "cloud"))
+      {
         vis_->addPointCloud (boost::make_shared<pcl::PointCloud<PointT> >(prev_cloud_), "cloud");
+        vis_->resetCameraViewpoint ("cloud");
+      }
 
       displayPlanarRegions (prev_regions_, vis_);
 
@@ -384,7 +387,7 @@ OrganizedSegmentationDemo::timeoutSlot ()
       if (display_normals_)
       {
         vis_->removePointCloud ("normals");
-        vis_->addPointCloudNormals<PointT,pcl::Normal>(boost::make_shared<pcl::PointCloud<PointT> >(prev_cloud_), boost::make_shared<pcl::PointCloud<pcl::Normal> >(prev_normals_), 10, 0.05, "normals");
+        vis_->addPointCloudNormals<PointT,pcl::Normal>(boost::make_shared<pcl::PointCloud<PointT> >(prev_cloud_), boost::make_shared<pcl::PointCloud<pcl::Normal> >(prev_normals_), 10, 0.05f, "normals");
         vis_->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "normals");
       }
       else
@@ -407,7 +410,7 @@ void
 OrganizedSegmentationDemo::useEuclideanComparatorPressed ()
 {
   QMutexLocker locker (&mtx_);
-  printf ("Setting Comparator to Euclidean\n");
+  PCL_INFO ("Setting Comparator to Euclidean\n");
   mps.setComparator (euclidean_comparator_);
 }
 
@@ -415,7 +418,7 @@ void
 OrganizedSegmentationDemo::useRGBComparatorPressed ()
 {
   QMutexLocker locker (&mtx_);
-  printf ("Setting Comparator to RGB\n");
+  PCL_INFO ("Setting Comparator to RGB\n");
   mps.setComparator (rgb_comparator_);
 }
 
@@ -423,7 +426,7 @@ void
 OrganizedSegmentationDemo::usePlaneComparatorPressed ()
 {
   QMutexLocker locker (&mtx_);
-  printf ("Setting Comparator to Plane\n");
+  PCL_INFO ("Setting Comparator to Plane\n");
   mps.setComparator (plane_comparator_);
 }
 
@@ -431,7 +434,7 @@ void
 OrganizedSegmentationDemo::useEdgeAwareComparatorPressed ()
 {
   QMutexLocker locker (&mtx_);
-  printf ("Setting Comparator to edge aware\n");
+  PCL_INFO ("Setting Comparator to edge aware\n");
   mps.setComparator (edge_aware_comparator_);
 }
 
@@ -458,7 +461,7 @@ main (int argc, char ** argv)
 {
   QApplication app(argc, argv);
   
-  //printf ("Creating PCD Grabber\n");
+  //PCL_INFO ("Creating PCD Grabber\n");
   //std::vector<std::string> pcd_files;
   //boost::filesystem::directory_iterator end_itr;
   //for (boost::filesystem::directory_iterator itr("/u/atrevor/data/sushi_long_pcds_compressed"); itr != end_itr; ++itr)
@@ -469,7 +472,7 @@ main (int argc, char ** argv)
   //sort (pcd_files.begin (),pcd_files.end ());
 
   //pcl::PCDGrabber<pcl::PointXYZRGB> grabber(pcd_files,5.0,false);
-  //printf ("PCD Grabber created\n");
+  //PCL_INFO ("PCD Grabber created\n");
 
   pcl::OpenNIGrabber grabber ("#1");
   

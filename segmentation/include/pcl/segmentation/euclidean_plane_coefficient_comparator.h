@@ -61,7 +61,9 @@ namespace pcl
       typedef typename PointCloudN::Ptr PointCloudNPtr;
       typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
       
-      //using pcl::PlaneCoefficientComparator<PointT, PointNT>::input_;
+      typedef boost::shared_ptr<EuclideanPlaneCoefficientComparator<PointT, PointNT> > Ptr;
+      typedef boost::shared_ptr<const EuclideanPlaneCoefficientComparator<PointT, PointNT> > ConstPtr;
+
       using pcl::Comparator<PointT>::input_;
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::normals_;
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::angular_threshold_;
@@ -78,7 +80,6 @@ namespace pcl
       {
       }
 
-    protected:
       /** \brief Compare two neighboring points, by using normal information, and euclidean distance information.
         * \param[in] idx1 The index of the first point.
         * \param[in] idx2 The index of the second point.

@@ -62,6 +62,9 @@ namespace pcl
       typedef typename PointCloudN::Ptr PointCloudNPtr;
       typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
       
+      typedef boost::shared_ptr<EdgeAwarePlaneComparator<PointT, PointNT> > Ptr;
+      typedef boost::shared_ptr<const EdgeAwarePlaneComparator<PointT, PointNT> > ConstPtr;
+
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::input_;
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::normals_;
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::plane_coeff_d_;
@@ -73,19 +76,35 @@ namespace pcl
       {
       }
 
+      /** \brief Empty constructor for PlaneCoefficientComparator. 
+        * \param[in] distance_map the distance map to use
+        */
+      EdgeAwarePlaneComparator (const float *distance_map) : 
+        distance_map_ (distance_map)
+      {
+      }
+
       /** \brief Destructor for PlaneCoefficientComparator. */
       virtual
       ~EdgeAwarePlaneComparator ()
       {
       }
 
-      /** \brief ... 
-        * \param[in] distance_map
+      /** \brief Set a distance map to use. For an example of a valid distance map see 
+        * \ref OrganizedIntegralImageNormalEstimation
+        * \param[in] distance_map the distance map to use
         */
-      void
-      setDistanceMap (const float* distance_map)
+      inline void
+      setDistanceMap (const float *distance_map)
       {
         distance_map_ = distance_map;
+      }
+
+      /** \brief Return the distance map used. */
+      const float*
+      getDistanceMap () const
+      {
+        return (distance_map_);
       }
       
     protected:

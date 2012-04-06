@@ -62,6 +62,9 @@ namespace pcl
       typedef typename PointCloudN::Ptr PointCloudNPtr;
       typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
       
+      typedef boost::shared_ptr<RGBPlaneCoefficientComparator<PointT, PointNT> > Ptr;
+      typedef boost::shared_ptr<const RGBPlaneCoefficientComparator<PointT, PointNT> > ConstPtr;
+
       using pcl::Comparator<PointT>::input_;
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::normals_;
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::angular_threshold_;
@@ -103,7 +106,6 @@ namespace pcl
         return (color_threshold_);
       }
 
-    protected:
       /** \brief Compare two neighboring points, by using normal information, euclidean distance, and color information.
         * \param[in] idx1 The index of the first point.
         * \param[in] idx2 The index of the second point.

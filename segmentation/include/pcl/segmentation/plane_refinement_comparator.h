@@ -66,12 +66,14 @@ namespace pcl
       typedef typename PointCloudL::Ptr PointCloudLPtr;
       typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
 
+      typedef boost::shared_ptr<PlaneRefinementComparator<PointT, PointNT, PointLT> > Ptr;
+      typedef boost::shared_ptr<const PlaneRefinementComparator<PointT, PointNT, PointLT> > ConstPtr;
+
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::input_;
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::normals_;
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::distance_threshold_;
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::plane_coeff_d_;
 
-      typedef boost::shared_ptr<PlaneRefinementComparator<PointT, PointNT, PointLT> > Ptr;
 
       /** \brief Empty constructor for PlaneCoefficientComparator. */
      PlaneRefinementComparator ()
@@ -142,22 +144,23 @@ namespace pcl
       /** \brief A mapping from label to index in the vector of models, allowing the model coefficients of a label to be accessed.
         * \param[in] label_to_model A vector of size max_label, with the index of each corresponding model in models
         */
-      void
+      inline void
       setLabelToModel (boost::shared_ptr<std::vector<int> >& label_to_model)
       {
         label_to_model_ = label_to_model;
       }
       
-
-      void
+      /** \brief A mapping from label to index in the vector of models, allowing the model coefficients of a label to be accessed.
+        * \param[in] label_to_model A vector of size max_label, with the index of each corresponding model in models
+        */
+      inline void
       setLabelToModel (std::vector<int>& label_to_model)
       {
         label_to_model_ = boost::make_shared<std::vector<int> >(label_to_model);
       }
 
-      /** \brief ...
-        */
-      boost::shared_ptr<std::vector<pcl::ModelCoefficients> >
+      /** \brief Get the vector of model coefficients to which we will compare. */
+      inline boost::shared_ptr<std::vector<pcl::ModelCoefficients> >
       getModelCoefficients () const
       {
         return (models_);
@@ -166,7 +169,7 @@ namespace pcl
       /** \brief ...
         * \param[in] labels
         */
-      void
+      inline void
       setLabels (PointCloudLPtr& labels)
       {
         labels_ = labels;
