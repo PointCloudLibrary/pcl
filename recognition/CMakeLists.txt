@@ -41,6 +41,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/cg/correspondence_grouping.h
         include/pcl/${SUBSYS_NAME}/cg/hough_3d.h		
         include/pcl/${SUBSYS_NAME}/cg/geometric_consistency.h
+        include/pcl/${SUBSYS_NAME}/ransac_based/obj_rec_ransac.h
         )
 
     set(impl_incs 
@@ -63,6 +64,7 @@ if(build)
         src/hv/greedy_verification.cpp
         src/cg/hough_3d.cpp
         src/cg/geometric_consistency.cpp
+        src/ransac_based/obj_rec_ransac.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
