@@ -711,4 +711,3 @@ pcl::visualization::ImageViewer::markPoint (
   am_it->canvas->DrawCircle (int (u), int (v), radius);
 }
 
-

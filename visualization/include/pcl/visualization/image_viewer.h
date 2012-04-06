@@ -68,7 +68,10 @@ namespace pcl
       * pcl::visualization::ImageViewer iv;
       * iv.addCircle (10, 10, 5, 1.0, 0.0, 0.0, "circles", 1.0);    // add a red, fully opaque circle with radius 5 pixels at (10,10) in layer "circles"
       * iv.addBox (10, 20, 10, 20, 0.0, 1.0, 0.0, "boxes", 0.5);    // add a green, 50% transparent box at (10,10->20,20) in layer "boxes"
+      * iv.addRGBImage<pcl::PointXYZRGBA> (cloud);                  // add a RGB image from a point cloud dataset in an "rgb_image" default layer
+      * iv.spin ();                                                 // press 'q' to exit
       * iv.removeLayer ("circles");                                 // remove layer "circles"
+      * iv.spin ();                                                 // press 'q' to exit
       * \endcode
       * 
       * \author Radu B. Rusu, Suat Gedikli
@@ -466,10 +469,10 @@ namespace pcl
           * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn. 
           * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
           */
-         bool
-         addLine (unsigned int x_min, unsigned int y_min, unsigned int x_max, unsigned int y_max,
-                  double r, double g, double b, 
-                  const std::string &layer_id = "line", double opacity = 0.5);
+        bool
+        addLine (unsigned int x_min, unsigned int y_min, unsigned int x_max, unsigned int y_max,
+                 double r, double g, double b, 
+                 const std::string &layer_id = "line", double opacity = 0.5);
 
         /** \brief Add a 2D line with a given color
           * \param[in] x_min the X min coordinate
@@ -479,9 +482,34 @@ namespace pcl
           * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn. 
           * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
           */
-         bool
-         addLine (unsigned int x_min, unsigned int y_min, unsigned int x_max, unsigned int y_max,
-                  const std::string &layer_id = "line", double opacity = 0.5);
+        bool
+        addLine (unsigned int x_min, unsigned int y_min, unsigned int x_max, unsigned int y_max,
+                 const std::string &layer_id = "line", double opacity = 0.5);
+
+
+        /** \brief Add a generic 2D mask to an image 
+          * \param[in] image the organized point cloud dataset containing the image data
+          * \param[in] mask the point data representing the mask that we want to draw
+          * \param[in] r the red channel of the color that the line should be rendered with 
+          * \param[in] g the green channel of the color that the line should be rendered with
+          * \param[in] b the blue channel of the color that the line should be rendered with
+          * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn.
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          */
+        template <typename T> bool
+        addMask (const typename pcl::PointCloud<T>::ConstPtr &image, const pcl::PointCloud<T> &mask, 
+                 double r, double g, double b, 
+                 const std::string &layer_id = "image_mask", double opacity = 0.5);
+
+        /** \brief Add a generic 2D mask to an image (colored in red)
+          * \param[in] image the organized point cloud dataset containing the image data
+          * \param[in] mask the point data representing the mask that we want to draw
+          * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn.
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          */
+        template <typename T> bool
+        addMask (const typename pcl::PointCloud<T>::ConstPtr &image, const pcl::PointCloud<T> &mask, 
+                 const std::string &layer_id = "image_mask", double opacity = 0.5);
 
         /** \brief Add a new 2D rendering layer to the viewer. 
           * \param[in] layer_id the name of the layer
