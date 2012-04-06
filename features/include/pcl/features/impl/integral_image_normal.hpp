@@ -474,6 +474,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
 
   // Set all normals that we do not touch to NaN
   // top and bottom borders
+  // That sets the output density to false!
+  output.is_dense = false;
   unsigned border = int(normal_smoothing_size_);
   PointOutT* vec1 = &output [0];
   PointOutT* vec2 = vec1 + input_->width * (input_->height - border);
