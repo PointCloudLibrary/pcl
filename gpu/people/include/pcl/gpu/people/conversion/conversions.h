@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,9 +33,10 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  $id$
- *  @author: Koen Buys
+ * $Id: $
+ * @author: Koen Buys
  */
+
 
 #ifndef PCL_PEOPLE_GPU_CONVERSION_CONVERSIONS_H_
 #define PCL_PEOPLE_GPU_CONVERSION_CONVERSIONS_H_
