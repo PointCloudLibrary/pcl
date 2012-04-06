@@ -39,6 +39,8 @@
 #ifndef PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_
 #define	PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_
 
+#include <pcl/search/organized.h>
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T> void
 pcl::visualization::ImageViewer::showRGBImage (const pcl::PointCloud<T> &cloud,
@@ -65,5 +67,77 @@ pcl::visualization::ImageViewer::showRGBImage (const pcl::PointCloud<T> &cloud,
   return (showRGBImage (data_.get (), cloud.width, cloud.height, layer_id, opacity));
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+template <typename T> bool
+pcl::visualization::ImageViewer::addMask (
+    const typename pcl::PointCloud<T>::ConstPtr &image,
+    const pcl::PointCloud<T> &mask, 
+    double r, double g, double b,
+    const std::string &layer_id, double opacity)
+{
+  // We assume that the data passed into image is organized, otherwise this doesn't make sense
+  if (!image->isOrganized ())
+    return (false);
+
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  if (am_it == layer_map_.end ())
+  {
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addMask] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
+    am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
+  }
+
+  am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
+
+  // Construct a search object to get the camera parameters
+  pcl::search::OrganizedNeighbor<T> search;
+  search.setInputCloud (image);
+  for (size_t i = 0; i < mask.points.size (); ++i)
+  {
+    pcl::PointXY p_projected;
+    search.projectPoint (mask.points[i], p_projected);
+
+    am_it->canvas->DrawPoint (int (p_projected.x), 
+                              int (float (image->height) - p_projected.y));
+  }
+
+  return (true);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+template <typename T> bool
+pcl::visualization::ImageViewer::addMask (
+    const typename pcl::PointCloud<T>::ConstPtr &image,
+    const pcl::PointCloud<T> &mask, 
+    const std::string &layer_id, double opacity)
+{
+  // We assume that the data passed into image is organized, otherwise this doesn't make sense
+  if (!image->isOrganized ())
+    return (false);
+
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  if (am_it == layer_map_.end ())
+  {
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addMask] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
+    am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
+  }
+
+  am_it->canvas->SetDrawColor (255.0, 0.0, 0.0, opacity * 255.0);
+
+  // Construct a search object to get the camera parameters
+  pcl::search::OrganizedNeighbor<T> search;
+  search.setInputCloud (image);
+  for (size_t i = 0; i < mask.points.size (); ++i)
+  {
+    pcl::PointXY p_projected;
+    search.projectPoint (mask.points[i], p_projected);
+
+    am_it->canvas->DrawPoint (int (p_projected.x), 
+                              int (float (image->height) - p_projected.y));
+  }
+
+  return (true);
+}
 
 #endif      // PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_
