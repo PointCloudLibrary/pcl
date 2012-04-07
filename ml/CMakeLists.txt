@@ -11,12 +11,14 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 if(build)
     set(incs 
         include/pcl/${SUBSYS_NAME}/dt/decision_tree.h
+        include/pcl/${SUBSYS_NAME}/dt/decision_tree_evaluator.h
         include/pcl/${SUBSYS_NAME}/dt/decision_tree_learner.h
         include/pcl/${SUBSYS_NAME}/dt/feature_handler.h
         include/pcl/${SUBSYS_NAME}/dt/stats_estimator.h
         )
 
     set(impl_incs 
+        include/pcl/${SUBSYS_NAME}/impl/dt/decision_tree_evaluator.hpp
         include/pcl/${SUBSYS_NAME}/impl/dt/decision_tree_learner.hpp
         )
 

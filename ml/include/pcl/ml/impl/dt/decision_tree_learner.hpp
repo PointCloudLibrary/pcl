@@ -34,6 +34,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+#ifndef PCL_ML_DT_DECISION_TREE_LEARNER_HPP_
+#define PCL_ML_DT_DECISION_TREE_LEARNER_HPP_
   
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
@@ -114,10 +117,10 @@ pcl::DecisionTreeLearner<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   for (size_t feature_index = 0; feature_index < num_of_features; ++feature_index)
   {
     // evaluate features
-    std::vector<float> feature_results;
-    std::vector<unsigned char> flags;
-    feature_results.reserve (num_of_examples);
-    flags.reserve (num_of_examples);
+    //std::vector<float> feature_results;
+    //std::vector<unsigned char> flags;
+    //feature_results.reserve (num_of_examples);
+    //flags.reserve (num_of_examples);
 
     feature_handler_->evaluateFeature (features[feature_index],
                                        data_set_,
@@ -258,4 +261,4 @@ pcl::DecisionTreeLearner<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   }
 }
   
-
+#endif

@@ -35,8 +35,8 @@
  *
  */
   
-#ifndef PCL_ML_DT_DECISION_TREE_LEARNER
-#define PCL_ML_DT_DECISION_TREE_LEARNER
+#ifndef PCL_ML_DT_DECISION_TREE_LEARNER_H_
+#define PCL_ML_DT_DECISION_TREE_LEARNER_H_
 
 #include <pcl/common/common.h>
 

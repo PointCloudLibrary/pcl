@@ -35,8 +35,8 @@
  *
  */
   
-#ifndef PCL_ML_DT_FEATURE_HANDLER
-#define PCL_ML_DT_FEATURE_HANDLER
+#ifndef PCL_ML_DT_FEATURE_HANDLER_H_
+#define PCL_ML_DT_FEATURE_HANDLER_H_
 
 #include <pcl/common/common.h>
 
@@ -78,7 +78,21 @@ namespace pcl
                        DataSet & data_set,
                        std::vector<ExampleIndex> & examples,
                        std::vector<float> & results,
-                       std::vector<unsigned char> & flags ) const = 0;
+                       std::vector<unsigned char> & flags) const = 0;
+
+      /** \brief Evaluates a feature on the specified data. 
+        * \param[in] features The features to evaluate.
+        * \param[in] data_set The data set on which the feature is evaluated.
+        * \param[in] examples The examples which specify on which parts of the data set the feature is evaluated.
+        * \param[out] results The destination for the results of the feature evaluation.
+        * \param[out] flags Flags that are supplied together with the results.
+        */
+      virtual void 
+      evaluateFeature (const FeatureType & feature,
+                       DataSet & data_set,
+                       ExampleIndex & example,
+                       float & result,
+                       unsigned char & flag) const = 0;
 
       /** \brief Generates evaluation code for the specified feature and writes it to the specified stream.
         * \param[in] feature The feature for which code is generated.
@@ -86,7 +100,7 @@ namespace pcl
         */
       virtual void 
       generateCodeForEvaluation (const FeatureType & feature,
-                                 ::std::ostream & stream ) const = 0;
+                                 ::std::ostream & stream) const = 0;
 
   };
 

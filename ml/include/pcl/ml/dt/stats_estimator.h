@@ -35,8 +35,8 @@
  *
  */
   
-#ifndef PCL_ML_DT_STATS_ESTIMATOR
-#define PCL_ML_DT_STATS_ESTIMATOR
+#ifndef PCL_ML_DT_STATS_ESTIMATOR_H_
+#define PCL_ML_DT_STATS_ESTIMATOR_H_
 
 #include <pcl/common/common.h>
 
@@ -109,6 +109,18 @@ namespace pcl
                             std::vector<unsigned char> & flags,
                             const float threshold,
                             std::vector<unsigned char> & branch_indices) const = 0;
+
+      /** \brief Computes the branch indices obtained by the specified threshold on the supplied feature evaluation results.
+        * \param[in] result The result obtained from the feature evaluation.
+        * \param[in] flag The flag obtained together with the result.
+        * \param[in] threshold The threshold which is used to compute the branch index.
+        * \param[out] branch_index The destination for the computed branch index.
+        */
+      virtual void 
+      computeBranchIndex (const float result,
+                          const unsigned char flag,
+                          const float threshold,
+                          unsigned char & branch_index) const = 0;
 
       /** \brief Generates code for computing the branch indices for the specified node and writes it to the specified stream.
         * \param[in] node The node for which the branch index estimation code is generated.
