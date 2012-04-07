@@ -35,9 +35,6 @@
  *
  */
   
-#define DT_DEBUG_OUTPUT
-//#define DT_DEBUG_OUTPUT2
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
 pcl::DecisionTreeLearner<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::DecisionTreeLearner ()
@@ -108,10 +105,6 @@ pcl::DecisionTreeLearner<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   feature_results.reserve (num_of_examples);
   flags.reserve (num_of_examples);
 
-#ifdef DT_DEBUG_OUTPUT
-  ::std::cerr << "maxDepth: " << max_depth << ", examples: " << num_of_examples << ", ";
-#endif
-
   // find best feature for split
   int best_feature_index = -1;
   float best_feature_threshold = 0.0f;
@@ -120,10 +113,6 @@ pcl::DecisionTreeLearner<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   const size_t num_of_features = features.size ();
   for (size_t feature_index = 0; feature_index < num_of_features; ++feature_index)
   {
-#ifdef DT_DEBUG_OUTPUT2
-    ::std::cerr << "maxDepth: " << maxDepth << ", examples: " << numOfExamples << ", featureIndex: " << featureIndex << " / " << numOfFeatures << "     \r" << std::endl;
-#endif
-
     // evaluate features
     std::vector<float> feature_results;
     std::vector<unsigned char> flags;
@@ -141,17 +130,9 @@ pcl::DecisionTreeLearner<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
     thresholds.reserve (num_of_thresholds_);
     createThresholdsUniform (num_of_thresholds_, feature_results, thresholds);
 
-
-#ifdef DT_DEBUG_OUTPUT2
-    ::std::cerr << "thresholds: ";
-#endif
     for (size_t threshold_index = 0; threshold_index < num_of_thresholds_; ++threshold_index)
     {
       const float threshold = thresholds[threshold_index];
-
-#ifdef DT_DEBUG_OUTPUT2
-      ::std::cerr << threshold << "(";
-#endif
 
       const float information_gain = stats_estimator_->computeInformationGain (data_set_,
                                                                                examples,
@@ -160,10 +141,6 @@ pcl::DecisionTreeLearner<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
                                                                                flags,
                                                                                threshold);
 
-#ifdef DT_DEBUG_OUTPUT2
-      ::std::cerr << informationGain << "), ";
-#endif
-
       if (information_gain > best_feature_information_gain)
       {
         best_feature_information_gain = information_gain;
@@ -171,16 +148,7 @@ pcl::DecisionTreeLearner<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
         best_feature_threshold = threshold;
       }
     }
-#ifdef DT_DEBUG_OUTPUT2
-    ::std::cerr << ::std::endl;
-
-    ::std::cerr << "bestFeatureInformationGain: " << bestFeatureInformationGain << ", bestFeatureIndex: " << bestFeatureIndex << ", bestFeatureThreshold: " << bestFeatureThreshold << ::std::endl;
-#endif
   }
-
-#ifdef DT_DEBUG_OUTPUT
-  ::std::cerr << ::std::endl;
-#endif
 
   if (best_feature_index == -1)
   {
