@@ -73,24 +73,24 @@ namespace pcl
         static int UseAlloc;
       public:
         static Allocator<MatrixEntry<T> > AllocatorMatrixEntry;
-        static int UseAllocator(void);
-        static void SetAllocator(const int& blockSize);
+        static int UseAllocator (void);
+        static void SetAllocator (const int& blockSize);
 
         int rows;
         int* rowSizes;
         MatrixEntry<T>** m_ppElements;
 
-        SparseMatrix();
-        SparseMatrix( int rows );
-        void Resize( int rows );
-        void SetRowSize( int row , int count );
-        int Entries(void);
+        SparseMatrix ();
+        SparseMatrix (int rows);
+        void Resize (int rows);
+        void SetRowSize (int row , int count);
+        int Entries (void);
 
         SparseMatrix (const SparseMatrix& M);
-        virtual ~SparseMatrix();
+        virtual ~SparseMatrix ();
 
-        void SetZero();
-        void SetIdentity();
+        void SetZero ();
+        void SetIdentity ();
 
         SparseMatrix<T>& operator = (const SparseMatrix<T>& M);
 
@@ -99,23 +99,32 @@ namespace pcl
 
 
         SparseMatrix<T> operator * (const SparseMatrix<T>& M) const;
-        SparseMatrix<T> Multiply( const SparseMatrix<T>& M ) const;
-        SparseMatrix<T> MultiplyTranspose( const SparseMatrix<T>& Mt ) const;
+        SparseMatrix<T> Multiply (const SparseMatrix<T>& M) const;
+        SparseMatrix<T> MultiplyTranspose (const SparseMatrix<T>& Mt) const;
 
         template<class T2>
         Vector<T2> operator * (const Vector<T2>& V) const;
         template<class T2>
-        Vector<T2> Multiply( const Vector<T2>& V ) const;
+        Vector<T2> Multiply (const Vector<T2>& V) const;
         template<class T2>
-        void Multiply( const Vector<T2>& In, Vector<T2>& Out ) const;
+        void Multiply (const Vector<T2>& In, Vector<T2>& Out) const;
 
 
         SparseMatrix<T> Transpose() const;
 
-        static int Solve			(const SparseMatrix<T>& M,const Vector<T>& b,const int& iters,Vector<T>& solution,const T eps=1e-8);
+        static int Solve (const SparseMatrix<T>& M,
+                          const Vector<T>& b,
+                          const int& iters,
+                          Vector<T>& solution,
+                          const T eps = 1e-8);
 
         template<class T2>
-        static int SolveSymmetric	(const SparseMatrix<T>& M,const Vector<T2>& b,const int& iters,Vector<T2>& solution,const T2 eps=1e-8,const int& reset=1);
+        static int SolveSymmetric (const SparseMatrix<T>& M,
+                                   const Vector<T2>& b,
+                                   const int& iters,
+                                   Vector<T2>& solution,
+                                   const T2 eps = 1e-8,
+                                   const int& reset=1);
 
     };
 
@@ -125,8 +134,8 @@ namespace pcl
         static int UseAlloc;
       public:
         static Allocator<NMatrixEntry<T,Dim> > AllocatorNMatrixEntry;
-        static int UseAllocator(void);
-        static void SetAllocator(const int& blockSize);
+        static int UseAllocator (void);
+        static void SetAllocator (const int& blockSize);
 
         int rows;
         int* rowSizes;
@@ -139,7 +148,7 @@ namespace pcl
         int Entries ();
 
         SparseNMatrix (const SparseNMatrix& M);
-        ~SparseNMatrix();
+        ~SparseNMatrix ();
 
         SparseNMatrix& operator = (const SparseNMatrix& M);
 
@@ -162,16 +171,27 @@ namespace pcl
         Vector<T2> operator * (const Vector<T2>& V) const;
 
         template<class T2>
-        Vector<T2> Multiply( const Vector<T2>& V ) const;
+        Vector<T2> Multiply (const Vector<T2>& V ) const;
 
         template<class T2> void 
-        Multiply( const Vector<T2>& In, Vector<T2>& Out ) const;
+        Multiply (const Vector<T2>& In, Vector<T2>& Out ) const;
 
         template<class T2> static int 
-        Solve (const SparseSymmetricMatrix<T>& M,const Vector<T2>& b,const int& iters,Vector<T2>& solution,const T2 eps=1e-8,const int& reset=1);
+        Solve (const SparseSymmetricMatrix<T>& M,
+               const Vector<T2>& b,
+               const int& iters,
+               Vector<T2>& solution,
+               const T2 eps = 1e-8,
+               const int& reset=1);
 
         template<class T2> static int 
-        Solve (const SparseSymmetricMatrix<T>& M,const Vector<T>& diagonal,const Vector<T2>& b,const int& iters,Vector<T2>& solution,const T2 eps=1e-8,const int& reset=1);
+        Solve (const SparseSymmetricMatrix<T>& M,
+               const Vector<T>& diagonal,
+               const Vector<T2>& b,
+               const int& iters,
+               Vector<T2>& solution,
+               const T2 eps = 1e-8,
+               const int& reset=1);
     };
   }
 }

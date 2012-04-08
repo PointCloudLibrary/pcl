@@ -64,34 +64,34 @@ namespace pcl
     {
       public:
         static long long 
-        EdgeIndex (const TreeOctNode* node,const int& eIndex,const int& maxDepth,int index[DIMENSION]);
+        EdgeIndex (const TreeOctNode* node, const int& eIndex, const int& maxDepth, int index[DIMENSION]);
 
         static long long 
-        EdgeIndex (const TreeOctNode* node,const int& eIndex,const int& maxDepth);
+        EdgeIndex (const TreeOctNode* node, const int& eIndex, const int& maxDepth);
 
         static long long 
-        FaceIndex (const TreeOctNode* node,const int& fIndex,const int& maxDepth,int index[DIMENSION]);
+        FaceIndex (const TreeOctNode* node, const int& fIndex, const int& maxDepth, int index[DIMENSION]);
 
         static long long 
-        FaceIndex (const TreeOctNode* node,const int& fIndex,const int& maxDepth);
+        FaceIndex (const TreeOctNode* node, const int& fIndex, const int& maxDepth);
 
         static long long 
-        CornerIndex (const int& depth,const int offSet[DIMENSION],const int& cIndex,const int& maxDepth,int index[DIMENSION]);
+        CornerIndex (const int& depth, const int offSet[DIMENSION] ,const int& cIndex, const int& maxDepth, int index[DIMENSION]);
 
         static long long 
-        CornerIndex (const TreeOctNode* node,const int& cIndex,const int& maxDepth,int index[DIMENSION]);
+        CornerIndex (const TreeOctNode* node, const int& cIndex, const int& maxDepth, int index[DIMENSION]);
 
         static long long 
-        CornerIndex (const TreeOctNode* node,const int& cIndex,const int& maxDepth);
+        CornerIndex (const TreeOctNode* node, const int& cIndex, const int& maxDepth);
 
         static long long 
-        CenterIndex (const int& depth,const int offSet[DIMENSION],const int& maxDepth,int index[DIMENSION]);
+        CenterIndex (const int& depth, const int offSet[DIMENSION], const int& maxDepth, int index[DIMENSION]);
 
         static long long 
-        CenterIndex (const TreeOctNode* node,const int& maxDepth,int index[DIMENSION]);
+        CenterIndex (const TreeOctNode* node, const int& maxDepth, int index[DIMENSION]);
         
         static long long 
-        CenterIndex (const TreeOctNode* node,const int& maxDepth);
+        CenterIndex (const TreeOctNode* node, const int& maxDepth);
     };
 
     class SortedTreeNodes
@@ -144,7 +144,7 @@ namespace pcl
       GetLaplacian (const int index[DIMENSION]) const;
 
       Real 
-      GetDivergence (const int index[DIMENSION],const Point3D<Real>& normal) const;
+      GetDivergence (const int index[DIMENSION], const Point3D<Real>& normal) const;
 
       class DivergenceFunction
       {
@@ -154,7 +154,7 @@ namespace pcl
           int index[DIMENSION],scratch[DIMENSION];
 
           void 
-          Function (TreeOctNode* node1,const TreeOctNode* node2);
+          Function (TreeOctNode* node1, const TreeOctNode* node2);
       };
 
       class LaplacianProjectionFunction
@@ -165,7 +165,7 @@ namespace pcl
           int index[DIMENSION],scratch[DIMENSION];
 
           void 
-          Function (TreeOctNode* node1,const TreeOctNode* node2);
+          Function (TreeOctNode* node1, const TreeOctNode* node2);
       };
 
       class LaplacianMatrixFunction
@@ -178,7 +178,7 @@ namespace pcl
           MatrixEntry<float>* rowElements;
 
           int 
-          Function (const TreeOctNode* node1,const TreeOctNode* node2);
+          Function (const TreeOctNode* node1, const TreeOctNode* node2);
       };
 
       class RestrictedLaplacianMatrixFunction
@@ -187,12 +187,12 @@ namespace pcl
           int depth,offset[3];
           Octree<Degree>* ot;
           Real radius;
-          int index[DIMENSION],scratch[DIMENSION];
+          int index[DIMENSION], scratch[DIMENSION];
           int elementCount;
           MatrixEntry<float>* rowElements;
 
           int 
-          Function (const TreeOctNode* node1,const TreeOctNode* node2);
+          Function (const TreeOctNode* node1, const TreeOctNode* node2);
       };
 
       ///////////////////////////
@@ -207,7 +207,7 @@ namespace pcl
           Real value;
 
           void 
-          Function(const TreeOctNode* node);
+          Function (const TreeOctNode* node);
       };
 
       class PointIndexValueAndNormalFunction
@@ -230,7 +230,7 @@ namespace pcl
           int adjacencyCount;
 
           void 
-          Function (const TreeOctNode* node1,const TreeOctNode* node2);
+          Function (const TreeOctNode* node1, const TreeOctNode* node2);
       };
 
       class AdjacencySetFunction
@@ -238,7 +238,7 @@ namespace pcl
         public:
           int *adjacencies,adjacencyCount;
           void 
-          Function (const TreeOctNode* node1,const TreeOctNode* node2);
+          Function (const TreeOctNode* node1, const TreeOctNode* node2);
       };
 
       class RefineFunction
@@ -246,7 +246,7 @@ namespace pcl
         public:
           int depth;
           void 
-          Function (TreeOctNode* node1,const TreeOctNode* node2);
+          Function (TreeOctNode* node1, const TreeOctNode* node2);
       };
 
       class FaceEdgesFunction 
@@ -254,20 +254,20 @@ namespace pcl
         public:
           int fIndex,maxDepth;
           std::vector<std::pair<long long,long long> >* edges;
-          hash_map<long long,std::pair<RootInfo,int> >* vertexCount;
+          hash_map<long long, std::pair<RootInfo,int> >* vertexCount;
 
           void 
-          Function (const TreeOctNode* node1,const TreeOctNode* node2);
+          Function (const TreeOctNode* node1, const TreeOctNode* node2);
       };
 
       int 
-      SolveFixedDepthMatrix (const int& depth,const SortedTreeNodes& sNodes);
+      SolveFixedDepthMatrix (const int& depth, const SortedTreeNodes& sNodes);
       
       int 
-      SolveFixedDepthMatrix (const int& depth,const int& startingDepth,const SortedTreeNodes& sNodes);
+      SolveFixedDepthMatrix (const int& depth, const int& startingDepth, const SortedTreeNodes& sNodes);
 
       int 
-      GetFixedDepthLaplacian (SparseSymmetricMatrix<float>& matrix,const int& depth,const SortedTreeNodes& sNodes);
+      GetFixedDepthLaplacian (SparseSymmetricMatrix<float>& matrix, const int& depth, const SortedTreeNodes& sNodes);
 
       int 
       GetRestrictedFixedDepthLaplacian (SparseSymmetricMatrix<float>& matrix,
@@ -279,22 +279,22 @@ namespace pcl
                                         const SortedTreeNodes& sNodes);
 
       void 
-      SetIsoSurfaceCorners (const Real& isoValue,const int& subdivisionDepth,const int& fullDepthIso);
+      SetIsoSurfaceCorners (const Real& isoValue, const int& subdivisionDepth, const int& fullDepthIso);
 
       static int 
-      IsBoundaryFace (const TreeOctNode* node,const int& faceIndex,const int& subdivideDepth);
+      IsBoundaryFace (const TreeOctNode* node, const int& faceIndex, const int& subdivideDepth);
       
       static int 
-      IsBoundaryEdge (const TreeOctNode* node,const int& edgeIndex,const int& subdivideDepth);
+      IsBoundaryEdge (const TreeOctNode* node, const int& edgeIndex, const int& subdivideDepth);
       
       static int 
-      IsBoundaryEdge (const TreeOctNode* node,const int& dir,const int& x,const int& y,const int& subidivideDepth);
+      IsBoundaryEdge (const TreeOctNode* node, const int& dir, const int& x, const int& y, const int& subidivideDepth);
       
       void 
-      PreValidate (const Real& isoValue,const int& maxDepth,const int& subdivideDepth);
+      PreValidate (const Real& isoValue, const int& maxDepth, const int& subdivideDepth);
       
       void 
-      PreValidate (TreeOctNode* node,const Real& isoValue,const int& maxDepth,const int& subdivideDepth);
+      PreValidate (TreeOctNode* node, const Real& isoValue, const int& maxDepth, const int& subdivideDepth);
       
       void 
       Validate (TreeOctNode* node,
@@ -304,10 +304,10 @@ namespace pcl
                 const int& subdivideDepth);
 
       void 
-      Validate (TreeOctNode* node,const Real& isoValue,const int& maxDepth,const int& fullDepthIso);
+      Validate (TreeOctNode* node, const Real& isoValue, const int& maxDepth, const int& fullDepthIso);
 
       void 
-      Subdivide (TreeOctNode* node,const Real& isoValue,const int& maxDepth);
+      Subdivide (TreeOctNode* node, const Real& isoValue, const int& maxDepth);
 
       int 
       SetBoundaryMCRootPositions (const int& sDepth,const Real& isoValue,

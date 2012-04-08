@@ -55,8 +55,8 @@ namespace pcl {
       Polynomial(void);
       template<int Degree2>
       Polynomial(const Polynomial<Degree2>& P);
-      double operator()(const double& t) const;
-      double integral(const double& tMin,const double& tMax) const;
+      double operator() (const double& t) const;
+      double integral (const double& tMin,const double& tMax) const;
 
       int operator == (const Polynomial& p) const;
       int operator != (const Polynomial& p) const;
@@ -82,24 +82,24 @@ namespace pcl {
       Polynomial  operator *  (const double& s) const;
       Polynomial  operator /  (const double& s) const;
 
-      Polynomial scale(const double& s) const;
-      Polynomial shift(const double& t) const;
+      Polynomial scale (const double& s) const;
+      Polynomial shift (const double& t) const;
 
-      Polynomial<Degree-1> derivative(void) const;
-      Polynomial<Degree+1> integral(void) const;
+      Polynomial<Degree-1> derivative (void) const;
+      Polynomial<Degree+1> integral (void) const;
 
-      void printnl(void) const;
+      void printnl (void) const;
 
-      Polynomial& addScaled(const Polynomial& p,const double& scale);
+      Polynomial& addScaled (const Polynomial& p, const double& scale);
 
-      static void Negate(const Polynomial& in,Polynomial& out);
-      static void Subtract(const Polynomial& p1,const Polynomial& p2,Polynomial& q);
-      static void Scale(const Polynomial& p,const double& w,Polynomial& q);
-      static void AddScaled(const Polynomial& p1,const double& w1,const Polynomial& p2,const double& w2,Polynomial& q);
-      static void AddScaled(const Polynomial& p1,const Polynomial& p2,const double& w2,Polynomial& q);
-      static void AddScaled(const Polynomial& p1,const double& w1,const Polynomial& p2,Polynomial& q);
+      static void Negate (const Polynomial& in, Polynomial& out);
+      static void Subtract (const Polynomial& p1, const Polynomial& p2, Polynomial& q);
+      static void Scale (const Polynomial& p, const double& w, Polynomial& q);
+      static void AddScaled (const Polynomial& p1, const double& w1, const Polynomial& p2, const double& w2, Polynomial& q);
+      static void AddScaled (const Polynomial& p1, const Polynomial& p2, const double& w2, Polynomial& q);
+      static void AddScaled (const Polynomial& p1, const double& w1, const Polynomial& p2, Polynomial& q);
 
-      void getSolutions(const double& c,std::vector<double>& roots,const double& EPS) const;
+      void getSolutions (const double& c, std::vector<double>& roots, const double& EPS) const;
     };
 
 

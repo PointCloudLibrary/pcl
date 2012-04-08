@@ -118,8 +118,11 @@ namespace pcl
         PPolynomial<Degree-1> derivative (void) const;
         PPolynomial<Degree+1> integral (void) const;
 
-        void getSolutions (const double &c,std::vector<double> &roots,const double &EPS,const double &min=- DBL_MAX,
-        const double &max=DBL_MAX) const;
+        void getSolutions (const double &c,
+                           std::vector<double> &roots,
+                           const double &EPS,
+                           const double &min =- DBL_MAX,
+                           const double &max=DBL_MAX) const;
 
         void printnl (void) const;
 
@@ -127,7 +130,10 @@ namespace pcl
 
         static PPolynomial ConstantFunction (const double &width=0.5);
         static PPolynomial GaussianApproximation (const double &width=0.5);
-        void write (FILE *fp,const int &samples,const double &min,const double &max) const;
+        void write (FILE *fp,
+                    const int &samples,
+                    const double &min,
+                    const double &max) const;
     };
 
 

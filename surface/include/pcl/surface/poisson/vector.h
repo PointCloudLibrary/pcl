@@ -52,10 +52,10 @@ namespace pcl {
     class Vector
     {
     public:
-      Vector();
-      Vector( const Vector<T>& V );
-      Vector( size_t N );
-      Vector( size_t N, T* pV );
+      Vector ();
+      Vector (const Vector<T>& V);
+      Vector (size_t N);
+      Vector (size_t N, T* pV);
       ~Vector();
 
       const T& operator () (size_t i) const;
@@ -78,20 +78,20 @@ namespace pcl {
       Vector& operator += (const Vector& V);
       Vector& operator -= (const Vector& V);
 
-      Vector& AddScaled(const Vector& V,const T& scale);
-      Vector& SubtractScaled(const Vector& V,const T& scale);
-      static void Add(const Vector& V1,const T& scale1,const Vector& V2,const T& scale2,Vector& Out);
-      static void Add(const Vector& V1,const T& scale1,const Vector& V2,Vector& Out);
+      Vector& AddScaled (const Vector& V,const T& scale);
+      Vector& SubtractScaled (const Vector& V,const T& scale);
+      static void Add (const Vector& V1,const T& scale1,const Vector& V2,const T& scale2,Vector& Out);
+      static void Add (const Vector& V1,const T& scale1,const Vector& V2,Vector& Out);
 
       Vector operator - () const;
 
       Vector& operator = (const Vector& V);
 
-      T Dot( const Vector& V ) const;
+      T Dot (const Vector& V) const;
 
       T Length() const;
 
-      T Norm( size_t Ln ) const;
+      T Norm (size_t Ln) const;
       void Normalize();
 
       T* m_pV;
@@ -104,11 +104,11 @@ namespace pcl {
     class NVector
     {
     public:
-      NVector();
-      NVector( const NVector& V );
-      NVector( size_t N );
-      NVector( size_t N, T* pV );
-      ~NVector();
+      NVector ();
+      NVector (const NVector& V);
+      NVector (size_t N);
+      NVector (size_t N, T* pV);
+      ~NVector ();
 
       const T* operator () (size_t i) const;
       T* operator () (size_t i);
@@ -130,21 +130,21 @@ namespace pcl {
       NVector& operator += (const NVector& V);
       NVector& operator -= (const NVector& V);
 
-      NVector& AddScaled(const NVector& V,const T& scale);
-      NVector& SubtractScaled(const NVector& V,const T& scale);
-      static void Add(const NVector& V1,const T& scale1,const NVector& V2,const T& scale2,NVector& Out);
-      static void Add(const NVector& V1,const T& scale1,const NVector& V2,				NVector& Out);
+      NVector& AddScaled (const NVector& V,const T& scale);
+      NVector& SubtractScaled (const NVector& V,const T& scale);
+      static void Add (const NVector& V1,const T& scale1,const NVector& V2,const T& scale2,NVector& Out);
+      static void Add (const NVector& V1,const T& scale1,const NVector& V2, NVector& Out);
 
       NVector operator - () const;
 
       NVector& operator = (const NVector& V);
 
-      T Dot( const NVector& V ) const;
+      T Dot (const NVector& V) const;
 
-      T Length() const;
+      T Length () const;
 
-      T Norm( size_t Ln ) const;
-      void Normalize();
+      T Norm (size_t Ln) const;
+      void Normalize ();
 
       T* m_pV;
     protected:
