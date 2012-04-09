@@ -234,8 +234,6 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
   {
     output.points.clear ();
     output.points.reserve (response->points.size());
-    std::vector<int> nn_indices;
-    std::vector<float> nn_dists;
 
 #if defined __GNUC__
 #  if __GNUC__ == 4 && __GNUC_MINOR__ > 3
@@ -246,6 +244,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
     {
       if (!isFinite (response->points[idx]) || response->points[idx].intensity < threshold_)
         continue;
+		  std::vector<int> nn_indices;
+		  std::vector<float> nn_dists;
       tree_->radiusSearch (idx, search_radius_, nn_indices, nn_dists);
       bool is_maxima = true;
       for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
@@ -277,8 +277,6 @@ template <typename PointInT, typename PointOutT, typename NormalT> void
 pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseHarris (PointCloudOut &output) const
 {
   PCL_ALIGN (16) float covar [8];
-  std::vector<int> nn_indices;
-  std::vector<float> nn_dists;
   output.resize (input_->size ());
 #if defined __GNUC__
 #  if __GNUC__ == 4 && __GNUC_MINOR__ > 3
@@ -291,6 +289,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseHarris (PointCloudO
     output [pIdx].intensity = 0.0; //std::numeric_limits<float>::quiet_NaN ();
     if (isFinite (pointIn))
     {
+			std::vector<int> nn_indices;
+			std::vector<float> nn_dists;
       tree_->radiusSearch (pointIn, search_radius_, nn_indices, nn_dists);
       calculateNormalCovar (nn_indices, covar);
 
@@ -317,8 +317,6 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseHarris (PointCloudO
 template <typename PointInT, typename PointOutT, typename NormalT> void
 pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseNoble (PointCloudOut &output) const
 {
-  std::vector<int> nn_indices;
-  std::vector<float> nn_dists;
   PCL_ALIGN (16) float covar [8];
   output.resize (input_->size ());
 #if defined __GNUC__
@@ -332,6 +330,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseNoble (PointCloudOu
     output [pIdx].intensity = 0.0;
     if (isFinite (pointIn))
     {
+			std::vector<int> nn_indices;
+			std::vector<float> nn_dists;
       tree_->radiusSearch (pointIn, search_radius_, nn_indices, nn_dists);
       calculateNormalCovar (nn_indices, covar);
       float trace = covar [0] + covar [5] + covar [7];
@@ -357,8 +357,6 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseNoble (PointCloudOu
 template <typename PointInT, typename PointOutT, typename NormalT> void
 pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseLowe (PointCloudOut &output) const
 {
-  std::vector<int> nn_indices;
-  std::vector<float> nn_dists;
   PCL_ALIGN (16) float covar [8];
   output.resize (input_->size ());
 #if defined __GNUC__
@@ -372,6 +370,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseLowe (PointCloudOut
     output [pIdx].intensity = 0.0;
     if (isFinite (pointIn))
     {
+			std::vector<int> nn_indices;
+			std::vector<float> nn_dists;
       tree_->radiusSearch (pointIn, search_radius_, nn_indices, nn_dists);
       calculateNormalCovar (nn_indices, covar);
       float trace = covar [0] + covar [5] + covar [7];
@@ -415,8 +415,6 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseCurvature (PointClo
 template <typename PointInT, typename PointOutT, typename NormalT> void
 pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudOut &output) const
 {
-  std::vector<int> nn_indices;
-  std::vector<float> nn_dists;
   PCL_ALIGN (16) float covar [8];
   Eigen::Matrix3f covariance_matrix;
   output.resize (input_->size ());
@@ -431,6 +429,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
     output [pIdx].intensity = 0.0;
     if (isFinite (pointIn))
     {
+			std::vector<int> nn_indices;
+			std::vector<float> nn_dists;
       tree_->radiusSearch (pointIn, search_radius_, nn_indices, nn_dists);
       calculateNormalCovar (nn_indices, covar);
       float trace = covar [0] + covar [5] + covar [7];
@@ -460,9 +460,6 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
 template <typename PointInT, typename PointOutT, typename NormalT> void
 pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOut &corners) const
 {
-  std::vector<int> nn_indices;
-  std::vector<float> nn_dists;
-
   Eigen::Matrix3f nnT;
   Eigen::Matrix3f NNT;
   Eigen::Matrix3f NNTInv;
@@ -485,6 +482,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
       corner.x = corners[cIdx].x;
       corner.y = corners[cIdx].y;
       corner.z = corners[cIdx].z;
+			std::vector<int> nn_indices;
+			std::vector<float> nn_dists;
       tree_->radiusSearch (corner, search_radius_, nn_indices, nn_dists);
       for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
       {
@@ -499,9 +498,6 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
         corners[cIdx].getVector3fMap () = NNTInv * NNTp;
 
       diff = (corners[cIdx].getVector3fMap () - corner.getVector3fMap()).squaredNorm ();
-//      diff = (cornerIt->x - corner.x) * (cornerIt->x - corner.x) +
-//             (cornerIt->y - corner.y) * (cornerIt->y - corner.y) +
-//             (cornerIt->z - corner.z) * (cornerIt->z - corner.z);
     } while (diff > 1e-6 && ++iterations < max_iterations);
   }
 }
