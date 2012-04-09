@@ -221,16 +221,16 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
   {
     output.points.clear ();
     output.points.reserve (response->points.size());
-    std::vector<int> nn_indices;
-    std::vector<float> nn_dists;
 
 #if !defined __APPLE__ && defined HAVE_OPENMP
-  #pragma omp parallel for num_threads(threads_) default(shared) private (nn_indices, nn_dists)
+  #pragma omp parallel for num_threads(threads_) default(shared)
 #endif  
     for (size_t idx = 0; idx < response->points.size (); ++idx)
     {
       if (!isFinite (response->points[idx]) || response->points[idx].intensity < threshold_)
         continue;
+		  std::vector<int> nn_indices;
+		  std::vector<float> nn_dists;
       tree_->radiusSearch (idx, search_radius_, nn_indices, nn_dists);
       bool is_maxima = true;
       for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
@@ -263,13 +263,11 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
   // get the 6x6 covar-mat
   PointOutT pointOut;
   PCL_ALIGN (16) float covar [21];
-  std::vector<int> nn_indices;
-  std::vector<float> nn_dists;
   Eigen::SelfAdjointEigenSolver <Eigen::Matrix<float, 6, 6> > solver;
   Eigen::Matrix<float, 6, 6> covariance;
 
 #if !defined __APPLE__ && defined HAVE_OPENMP
-  #pragma omp parallel for default (shared) private (pointOut, covar, covariance, nn_indices, nn_dists, solver) num_threads(threads_)
+  #pragma omp parallel for default (shared) private (pointOut, covar, covariance, solver) num_threads(threads_)
 #endif  
   for (unsigned pIdx = 0; pIdx < input_->size (); ++pIdx)
   {
@@ -277,6 +275,8 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
     pointOut.intensity = 0.0; //std::numeric_limits<float>::quiet_NaN ();
     if (isFinite (pointIn))
     {
+			std::vector<int> nn_indices;
+			std::vector<float> nn_dists;
       tree_->radiusSearch (pointIn, search_radius_, nn_indices, nn_dists);
       calculateCombinedCovar (nn_indices, covar);
 
@@ -351,8 +351,6 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
 template <typename PointInT, typename PointOutT, typename NormalT> void
 pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOut &corners) const
 {
-  std::vector<int> nn_indices;
-  std::vector<float> nn_dists;
   pcl::search::KdTree<PointInT> search;
   search.setInputCloud(surface_);
 
@@ -373,6 +371,8 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
       corner.x = cornerIt->x;
       corner.y = cornerIt->y;
       corner.z = cornerIt->z;
+			std::vector<int> nn_indices;
+			std::vector<float> nn_dists;      
       search.radiusSearch (corner, search_radius_, nn_indices, nn_dists);
       for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
       {
