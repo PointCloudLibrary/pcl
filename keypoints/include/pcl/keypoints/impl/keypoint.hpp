@@ -53,18 +53,6 @@ pcl::Keypoint<PointInT, PointOutT>::initCompute ()
     else
       tree_.reset (new pcl::search::KdTree<PointInT> (false));
   }
-  return (true);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointOutT> inline void
-pcl::Keypoint<PointInT, PointOutT>::compute (PointCloudOut &output)
-{
-  if (!initCompute ())
-  {
-    PCL_ERROR ("[pcl::%s::compute] initCompute failed!\n", getClassName ().c_str ());
-    return;
-  }
 
   // If no search surface has been defined, use the input dataset as the search surface itself
   if (!surface_)
@@ -78,8 +66,8 @@ pcl::Keypoint<PointInT, PointOutT>::compute (PointCloudOut &output)
   {
     if (k_ != 0)
     {
-      PCL_ERROR ("[pcl::%s::compute] Both radius (%f) and K (%d) defined! Set one of them to zero first and then re-run compute ().\n", getClassName ().c_str (), search_radius_, k_);
-      return;
+      PCL_ERROR ("[pcl::%s::initCompute] Both radius (%f) and K (%d) defined! Set one of them to zero first and then re-run compute ().\n", getClassName ().c_str (), search_radius_, k_);
+      return (false);
     }
     else                  // Use the radiusSearch () function
     {
@@ -120,9 +108,22 @@ pcl::Keypoint<PointInT, PointOutT>::compute (PointCloudOut &output)
     }
     else
     {
-      PCL_ERROR ("[pcl::%s::compute] Neither radius nor K defined! Set one of them to a positive number first and then re-run compute ().\n", getClassName ().c_str ());
-      return;
+      PCL_ERROR ("[pcl::%s::initCompute] Neither radius nor K defined! Set one of them to a positive number first and then re-run compute ().\n", getClassName ().c_str ());
+      return (false);
     }
+  }
+
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> inline void
+pcl::Keypoint<PointInT, PointOutT>::compute (PointCloudOut &output)
+{
+  if (!initCompute ())
+  {
+    PCL_ERROR ("[pcl::%s::compute] initCompute failed!\n", getClassName ().c_str ());
+    return;
   }
 
   // Perform the actual computation
