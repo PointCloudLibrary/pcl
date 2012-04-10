@@ -14,11 +14,13 @@
 
 #include <opencv2/opencv.hpp>
 
-#include <pcl/gpu/people/conversion/conversions.h>
-#include <pcl/gpu/people/conversion/optimized_elec.h>
-#include <pcl/gpu/people/label_skeleton/conversion.h>
-#include <pcl/gpu/people/label_skeleton/segment.h>
-#include <pcl/gpu/people/trees/tree_live.h>
+#include <pcl/gpu/people/conversions.h>
+#include <pcl/gpu/people/optimized_elec.h>
+#include <pcl/gpu/people/optimized_shs.h>
+#include <pcl/gpu/people/label_conversion.h>
+#include <pcl/gpu/people/label_segment.h>
+#include <pcl/gpu/people/label_tree.h>
+#include <pcl/gpu/people/tree_live.h>
 
 //#include <pcl/visualization/cloud_viewer.h>
 #include <pcl/console/parse.h>
@@ -84,17 +86,18 @@ class PeoplePCDApp
 #endif
 
       pcl::PointCloud<pcl::PointXYZRGBL> cloud_labels;
-/*
-      pcl::gpu::people::conversion::colorLabelPointCloudfromArray(cloud_in, lmap.data, cloud_labels);
-*/
+
+      pcl::gpu::people::conversion::colorLabelPointCloudFromArray(cloud_in, lmap.data, cloud_labels);
+
       // Creating the Search object for the search method of the extraction
       pcl::search::OrganizedNeighbor<pcl::PointXYZRGBL>::Ptr stree (new pcl::search::OrganizedNeighbor<pcl::PointXYZRGBL>);
       stree->setInputCloud(cloud_labels.makeShared());
       std::vector<std::vector<pcl::PointIndices> > cluster_indices;
       cluster_indices.resize(NUM_PARTS);
-/*
+
       // Make all the clusters
-      optimized_elec(cloud_in, lmap, CLUST_TOL, cluster_indices, AREA_THRES, MAX_CLUST_SIZE, NUM_PARTS);
+      optimized_elec(cloud_in, lmap, CLUST_TOL, cluster_indices, AREA_THRES, MAX_CLUST_SIZE, NUM_PARTS, false, 1.f);
+
       // Create a new struct to put the results in
       std::vector<std::vector<pcl::gpu::people::label_skeleton::Blob2> >       sorted;
       //clear out our matrix before starting again with it
@@ -107,52 +110,51 @@ class PeoplePCDApp
       //Build relationships between the blobs
       pcl::gpu::people::label_skeleton::buildRelations ( sorted );
 
-  // ////////////////////////////////////////////////////////////////////////////////////////// //
-
-  // DISPLAY INTERMEDIATE RESULTS UPTILL FINDING OF THE TREES, NOT EVALUATING TREES YET
+      // ////////////////////////////////////////////////////////////////////////////////////////// //
+      // DISPLAY INTERMEDIATE RESULTS UPTILL FINDING OF THE TREES, NOT EVALUATING TREES YET
 #if defined(WRITE)
-  // color
-  TreeLive::colorLMap( lmap, cmap );
-  ss.str("");
-  ss << "c_" << counter << ".png";
-  cv::imwrite(ss.str(), cmap);
-#endif
-
-  // ////////////////////////////////////////////////////////////////////////////////////////////// //
-  // if we found a neck display the tree, and continue with processing
-  if(sorted[10].size() != 0)
-  {
-      unsigned int c = 0;
-      LabelSkel::Tree2 t;
-      LabelSkel::buildTree(sorted, cloud_in, Neck, c, t);
-
-      cv::Mat mask(cloud_in.height, cloud_in.width, CV_8UC1, cv::Scalar(0));
-
-      LabelSkel::makeFGMaskFromPointCloud(mask, t.indices, cloud_in);
-
-      pcl::PointIndices seed;
-#if defined(DISPL_BINMASK) || defined(WRITE)
-      cv::Mat binmask(cloud_in.height, cloud_in.width, CV_8UC3, cv::Scalar(0));
-#endif
-      for(v = 0; v < cloud_in.height; v++)
-      {
-        for(u = 0; u < cloud_in.width; u++)
-        {
-          if(mask.at<char>(v,u) == cv::GC_PR_FGD)
-          {
-#if defined(DISPL_BINMASK) || defined(WRITE)
-            binmask.at<cv::Vec3b>(v,u)[0] = cloud_in.points[v*cloud_in.width + u].b;
-            binmask.at<cv::Vec3b>(v,u)[1] = cloud_in.points[v*cloud_in.width + u].g;
-            binmask.at<cv::Vec3b>(v,u)[2] = cloud_in.points[v*cloud_in.width + u].r;
-#endif
-            seed.indices.push_back(v*cloud_in.width + u);
-          }
-        }
-      }
-#ifdef WRITE
+      // color
+      pcl::gpu::people::display::colorLMap( lmap, cmap );
       ss.str("");
-      ss << "b_"<< counter << ".png";
-      cv::imwrite(ss.str(), binmask);
+      ss << "c_" << counter << ".png";
+      cv::imwrite(ss.str(), cmap);
+#endif
+
+      // ////////////////////////////////////////////////////////////////////////////////////////////// //
+      // if we found a neck display the tree, and continue with processing
+      if(sorted[10].size() != 0)
+      {
+          unsigned int c = 0;
+          pcl::gpu::people::label_skeleton::Tree2 t;
+          pcl::gpu::people::label_skeleton::buildTree(sorted, cloud_in, Neck, c, t);
+
+          cv::Mat mask(cloud_in.height, cloud_in.width, CV_8UC1, cv::Scalar(0));
+
+          pcl::gpu::people::label_skeleton::makeFGMaskFromPointCloud(mask, t.indices, cloud_in);
+
+          pcl::PointIndices seed;
+#if defined(DISPL_BINMASK) || defined(WRITE)
+          cv::Mat binmask(cloud_in.height, cloud_in.width, CV_8UC3, cv::Scalar(0));
+#endif
+          for(unsigned int v = 0; v < cloud_in.height; v++)
+          {
+            for(unsigned int u = 0; u < cloud_in.width; u++)
+            {
+              if(mask.at<char>(v,u) == cv::GC_PR_FGD)
+              {
+#if defined(DISPL_BINMASK) || defined(WRITE)
+                binmask.at<cv::Vec3b>(v,u)[0] = cloud_in.points[v*cloud_in.width + u].b;
+                binmask.at<cv::Vec3b>(v,u)[1] = cloud_in.points[v*cloud_in.width + u].g;
+                binmask.at<cv::Vec3b>(v,u)[2] = cloud_in.points[v*cloud_in.width + u].r;
+#endif
+                seed.indices.push_back(v*cloud_in.width + u);
+              }
+            }
+          }
+#ifdef WRITE
+          ss.str("");
+          ss << "b_"<< counter << ".png";
+          cv::imwrite(ss.str(), binmask);
 #endif
 
       // //////////////////////////////////////////////////////////////////////////////////////////////// //
@@ -163,7 +165,7 @@ class PeoplePCDApp
       optimized_shs2(cloud_in, CLUST_TOL_SHS, seed, flower, DELTA_HUE_SHS);
 
       cv::Mat flowermat(cloud_in.height, cloud_in.width, CV_8UC3, cv::Scalar(0));
-      LabelSkel::makeImageFromPointCloud(flowermat, flower, cloud_in);
+      pcl::gpu::people::label_skeleton::makeImageFromPointCloud(flowermat, flower, cloud_in);
 
 #ifdef WRITE
       ss.str("");
@@ -186,9 +188,9 @@ class PeoplePCDApp
 #endif
 
       cv::Mat dmat2(cloud_in.height, cloud_in.width, CV_16U);
-      for(v = 0; v < cloud_in.height; v++)
+      for(unsigned int v = 0; v < cloud_in.height; v++)
       {
-        for(u = 0; u < cloud_in.width; u++)
+        for(unsigned int u = 0; u < cloud_in.width; u++)
         {
           if(flowergrownmat.at<cv::Vec3b>(v,u)[0] != 0 || flowergrownmat.at<cv::Vec3b>(v,u)[1] != 0 || flowergrownmat.at<cv::Vec3b>(v,u)[2] != 0)
           {
@@ -207,7 +209,7 @@ class PeoplePCDApp
       // Process the depthimage
       m_proc->process(dmat2, m_lmap);
       cv::Mat lmap2(cloud_in.height, cloud_in.width, CV_8UC1);
-      LabelSkel::smoothLabelImage(m_lmap, dmat2, lmap2);
+      pcl::gpu::people::label_skeleton::smoothLabelImage(m_lmap, dmat2, lmap2);
       //cv::medianBlur(m_lmap, lmap2, 3);
 
 #ifdef WRITE
@@ -221,71 +223,67 @@ class PeoplePCDApp
       ss << "s2_" << counter << ".png";
       cv::imwrite(ss.str(), lmap2);
       // Publish this on a image topic
-      TreeLive::colorLMap( lmap2, cmap );
+      pcl::gpu::people::display::colorLMap( lmap2, cmap );
       ss.str("");
       ss << "c2_"  << counter << ".png";
       cv::imwrite(ss.str(), cmap);
 #endif
 
       pcl::PointCloud<pcl::PointXYZRGBL> cloud_labels2;
-      pcl::colorLabelPointCloudfromArray(cloud_in, lmap2.data, cloud_labels2);
+      pcl::gpu::people::conversion::colorLabelPointCloudFromArray(cloud_in, lmap2.data, cloud_labels2);
 
 #ifdef WRITE
       pcl::io::savePCDFileASCII ("2de_it_colorLabeledPointCloud.pcd", cloud_labels2);
       std::cout << "Saved " << cloud_labels2.points.size () << " data points to 2de_it_colorLabeledPointCloud.pcd." << std::endl; 
 #endif
 
-      std::vector<std::vector<pcl::PointIndices> > cluster_indices2;
-      cluster_indices2.resize(NUM_PARTS);
+        std::vector<std::vector<pcl::PointIndices> > cluster_indices2;
+        cluster_indices2.resize(NUM_PARTS);
 
-      // avoid having the search tree to be build again
-      //pcl::extractLabeledEuclideanClusters<pcl::PointXYZRGBL>(cloud_labels2, stree, CLUST_TOL, cluster_indices2, AREA_THRES2, MAX_CLUST_SIZE, NUM_PARTS);
-      optimized_elec(cloud_in, lmap2, CLUST_TOL, cluster_indices2, AREA_THRES2, MAX_CLUST_SIZE, NUM_PARTS);
+        // avoid having the search tree to be build again
+        //pcl::extractLabeledEuclideanClusters<pcl::PointXYZRGBL>(cloud_labels2, stree, CLUST_TOL, cluster_indices2, AREA_THRES2, MAX_CLUST_SIZE, NUM_PARTS);
+        optimized_elec(cloud_in, lmap2, CLUST_TOL, cluster_indices2, AREA_THRES2, MAX_CLUST_SIZE, NUM_PARTS, false, 1.0f);
 
-      std::vector<std::vector<LabelSkel::Blob2> >       sorted2;
-      //clear out our matrix before starting again with it
-      sorted2.clear();
-      //Set fixed size of outer vector length = number of parts
-      sorted2.resize(NUM_PARTS);
-      //create the blob2 matrix
-      LabelSkel::sortIndicesToBlob2 ( cloud_labels2, AREA_THRES2, sorted2, cluster_indices2 );
-      LabelSkel::buildRelations ( sorted2 );
+        std::vector<std::vector<pcl::gpu::people::label_skeleton::Blob2> >       sorted2;
+        //clear out our matrix before starting again with it
+        sorted2.clear();
+        //Set fixed size of outer vector length = number of parts
+        sorted2.resize(NUM_PARTS);
+        //create the blob2 matrix
+        pcl::gpu::people::label_skeleton::sortIndicesToBlob2 ( cloud_labels2, AREA_THRES2, sorted2, cluster_indices2 );
+        pcl::gpu::people::label_skeleton::buildRelations ( sorted2 );
 
-      // //////////////////////////////////////////////////////////////////////////////////////////////// //
-      // Test if the second tree is build up correctly
-      if(sorted2[10].size() != 0)
-      {
-        LabelSkel::Tree2 t2;
-        LabelSkel::buildTree(sorted, cloud_in, Neck, c, t2);
-        int par = 0;
-        for(int f=0;f<NUM_PARTS;f++)
+        // Test if the second tree is build up correctly
+        if(sorted2[10].size() != 0)
         {
-          if(t2.parts_lid[f] == NO_CHILD)
+          pcl::gpu::people::label_skeleton::Tree2 t2;
+          pcl::gpu::people::label_skeleton::buildTree(sorted, cloud_in, Neck, c, t2);
+          int par = 0;
+          for(int f=0;f<NUM_PARTS;f++)
           {
-            std::cerr << "1;";
-            par++;
+            if(t2.parts_lid[f] == NO_CHILD)
+            {
+              std::cerr << "1;";
+              par++;
+            }
+            else
+              std::cerr << "0;";
           }
-          else
-            std::cerr << "0;";
+          std::cerr<< t2.nr_parts << ";";
+          std::cerr<< par << ";";
+          std::cerr<< t2.total_dist_error << ";";
+          std::cerr<< t2.norm_dist_error << ";";
+          std::cerr<< counter << ";" << std::endl;
         }
-        std::cerr<< t2.nr_parts << ";";
-        std::cerr<< par << ";";
-        std::cerr<< t2.total_dist_error << ";";
-        std::cerr<< t2.norm_dist_error << ";";
-        std::cerr<< counter << ";" << std::endl;
+        counter++;
       }
-      counter++;
-  }
-*/
-      ////////////////////END CALLBACK IMPL/////////////////
     }
-
     //pcl::visualization::CloudViewer         viewer;
-    pcl::gpu::people::trees::MultiTreeLiveProc*  m_proc;
-    cv::Mat                                 m_lmap;
-    cv::Mat                                 m_cmap;
-    cv::Mat                                 cmap;
-    cv::Mat                                 m_bmap;
+    pcl::gpu::people::trees::MultiTreeLiveProc* m_proc;
+    cv::Mat                                     m_lmap;
+    cv::Mat                                     m_cmap;
+    cv::Mat                                     cmap;
+    cv::Mat                                     m_bmap;
 };
 
 int print_help()

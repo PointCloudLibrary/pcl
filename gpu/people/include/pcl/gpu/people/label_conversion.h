@@ -37,12 +37,12 @@
  * @author: Koen Buys
  */
 
-#ifndef PCL_GPU_PEOPLE_LABEL_SKELETON_CONVERSION_H_
-#define PCL_GPU_PEOPLE_LABEL_SKELETON_CONVERSION_H_
+#ifndef PCL_GPU_PEOPLE_LABEL_CONVERSION_H_
+#define PCL_GPU_PEOPLE_LABEL_CONVERSION_H_
 
 // our headers
-#include <pcl/gpu/people/label_skeleton/blob2.h>
-#include <pcl/gpu/people/label_skeleton/common.h>
+#include <pcl/gpu/people/label_blob2.h>
+#include <pcl/gpu/people/label_common.h>
 
 // std
 #include <vector>

@@ -37,60 +37,10 @@
  * @author: Anatoly Baksheev
  */
 
+#ifndef PCL_GPU_PEOPLE_OPTIMIZED_SHS_H_
+#define PCL_GPU_PEOPLE_OPTIMIZED_SHS_H_
+#include "searchD.h"
 
-#include <opencv2/core/core.hpp>
-
-#include <vector>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl/PointIndices.h>
-#include <pcl/search/pcl_search.h>
-#include <pcl/common/time.h>
-
-//#include <pcl/point_types_conversion.h> // can't include because not inline function causes multiple definition errors
-namespace pcl
-{
-   void PointXYZRGBtoXYZHSV (PointXYZRGB& in, PointXYZHSV& out);
-}
-
-#include <iostream>
-#include <algorithm>
-#include <numeric>
-
-using namespace std;
-using namespace pcl;
-using namespace cv;
-
-namespace
-{
-    class SearchD : public pcl::search::OrganizedNeighbor<pcl::PointXYZRGB>
-    {
-    public:
-        typedef  pcl::search::OrganizedNeighbor<pcl::PointXYZRGB> Base;
-
-        using Base::getProjectedRadiusSearchBox;
-        /** \brief the projection matrix. Either set by user or calculated by the first / each input cloud */
-        using Base::projection_matrix_;
-        /** \brief inveser of the left 3x3 projection matrix which is K * R (with K being the camera matrix and R the rotation matrix)*/
-        using Base::KR_;
-        /** \brief inveser of the left 3x3 projection matrix which is K * R (with K being the camera matrix and R the rotation matrix)*/
-        using Base::KR_KRT_;    
-    };
-
-
-    template<typename PointT1, typename PointT2>
-    double sqnorm(const PointT1& p1, const PointT2& p2)
-    {
-        return (p1.getVector3fMap () - p2.getVector3fMap ()).squaredNorm ();
-    }
-
-    template<typename It, typename Val>
-    void yota(It beg, It end, Val seed)
-    {
-        for(It pos = beg; pos < end;)
-            *pos++ = seed++;
-    }
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -340,3 +290,4 @@ void optimized_shs3(const PointCloud<PointXYZRGB> &cloud, float tolerance, Point
     std::sort (indices_out.indices.begin (), indices_out.indices.end ());
     indices_out.indices.erase(std::unique(indices_out.indices.begin (), indices_out.indices.end ()), indices_out.indices.end());
 }
+#endif // PCL_GPU_PEOPLE_OPTIMIZED_SHS_H_

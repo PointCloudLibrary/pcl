@@ -38,11 +38,11 @@
  * @file display.h
  * @brief This file contains the function prototypes for display functions
  */
-#ifndef PCL_GPU_PEOPLE_LABEL_SKELETON_DISPLAY_H_
-#define PCL_GPU_PEOPLE_LABEL_SKELETON_DISPLAY_H_
+#ifndef PCL_GPU_PEOPLE_LABEL_DISPLAY_H_
+#define PCL_GPU_PEOPLE_LABEL_DISPLAY_H_
 // our headers
-#include "pcl/gpu/people/label_skeleton/blob2.h"
-#include "pcl/gpu/people/label_skeleton/common.h"
+#include "pcl/gpu/people/label_blob2.h"
+#include "pcl/gpu/people/label_common.h"
 
 // std
 #include <vector>

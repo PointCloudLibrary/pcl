@@ -37,8 +37,8 @@
  * @authors: Cedric Cagniart, Koen Buys
  */
 
-#ifndef PCL_GPU_PEOPLE_TREES_TREE_IO_H_
-#define PCL_GPU_PEOPLE_TREES_TREE_IO_H_
+#ifndef PCL_GPU_PEOPLE_TREE_IO_H_
+#define PCL_GPU_PEOPLE_TREE_IO_H_
 
 #include "tree.h"
 #include <fstream>

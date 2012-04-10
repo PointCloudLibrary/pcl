@@ -37,11 +37,13 @@
  * @authors: Cedric Cagniart, Koen Buys
  */
 
-#ifndef PCL_GPU_PEOPLE_TREES_TREE_H_
-#define PCL_GPU_PEOPLE_TREES_TREE_H_
 
-#include<boost/cstdint.hpp>  //#include <cstdint>
-#include <pcl/gpu/containers/device_array.h>
+#ifndef PCL_GPU_PEOPLE_TEX_FETCH_H_
+#define PCL_GPU_PEOPLE_TEX_FETCH_H_
+
+#include <boost/cstdint.hpp> //#include <cstdint>
+#include <cmath> // for round
+#include <opencv2/core/core.hpp>
 
 namespace pcl
 {
@@ -51,48 +53,32 @@ namespace pcl
     {
       namespace trees
       {
-        // this has nothing to do here...
-        static const double focal = 1000.;
 
-        // ###############################################
-        // compile type values
-        enum { NUMATTRIBS  = 2000 };
-        enum { NUMLABELS = 32 };
+        /**
+         * \brief Simple helper structure to fetch the texture without bothering about limits
+         * This will be done by CUDA directly for the run time part of the stuff
+         */
+        struct Tex2Dfetcher
+        {
+	  	    inline Tex2Dfetcher( const boost::uint16_t* dmap, int W, int H ):m_dmap(dmap),m_W(W), m_H(H){}
 
-        // ###############################################
-        // base data types used in the structures
-	      typedef boost::int16_t Attrib;
-        typedef boost::uint8_t Label;
-        typedef boost::uint32_t Label32;
-        typedef boost::uint16_t Depth;
-
-        struct AttribLocation {
-          inline AttribLocation () {du1=dv1=du2=dv2=0;}
-          inline AttribLocation (int u1, int v1, int u2, int v2): du1 (static_cast<boost::int16_t>(u1)),
-                                                                  dv1 (static_cast<boost::int16_t>(v1)),
-                                                                  du2 (static_cast<boost::int16_t>(u2)),
-                                                                  dv2 (static_cast<boost::int16_t>(v2)){}
-  
-          boost::int16_t du1,dv1,du2,dv2;
+          inline boost::uint16_t operator () ( float uf, float vf ) {
+            int u = cvRound(uf);
+            int v = cvRound(vf);
+            if( u < 0 ) u = 0;
+            if( v < 0 ) v = 0;
+            if( u >= m_W ) u = m_W-1;
+            if( v >= m_H ) v = m_H-1;
+            
+            return m_dmap[u+v*m_W]; // this is going to be SLOOOWWW
+          }
+          const boost::uint16_t*  m_dmap;
+          const int               m_W;
+          const int               m_H;
         };
-        static const Label NOLABEL = 31;
-
-        // ###############################################
-        // Tree basic Structure
-        struct Node {
-          inline Node () {}
-          inline Node (const AttribLocation& l, const Attrib& t):loc(l),thresh(t){}
-          AttribLocation loc;
-          Attrib         thresh;
-        };
-
-        // GPU Typedefs
-        typedef DeviceArray<Label>      D_Label_8;
-        typedef DeviceArray<Label32>    D_Label_32;
-        typedef DeviceArray<Depth>      D_Depth;
-
-      } // end namespace Trees
+      } // end namespace trees
     } // end namespace people
   } // end namespace gpu
 } // end namespace pcl
-#endif  // PCL_GPU_PEOPLE_TREES_TREE_H_
+
+#endif

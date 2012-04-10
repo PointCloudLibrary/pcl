@@ -38,7 +38,7 @@
  *
  */
 
-#include <pcl/gpu/people/trees/tree.h>
+#include <pcl/gpu/people/tree.h>
 #include "CUDA_run_multi_tree.h"
 #include <cuda.h>
 #include <assert.h>

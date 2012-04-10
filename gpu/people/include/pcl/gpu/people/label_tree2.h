@@ -39,8 +39,8 @@
  * @brief This file contains the Tree2 structure and the inline <<-operator for it.
  */
 
-#ifndef PCL_GPU_PEOPLE_LABEL_SKELETON_TREE2_H_
-#define PCL_GPU_PEOPLE_LABEL_SKELETON_TREE2_H_
+#ifndef PCL_GPU_PEOPLE_LABEL_TREE2_H_
+#define PCL_GPU_PEOPLE_LABEL_TREE2_H_
 
 #include <vector>
 
@@ -49,8 +49,8 @@
 #include <pcl/PointIndices.h>
 
 // Our header
-#include <pcl/gpu/people/label_skeleton/common.h>
-#include <pcl/gpu/people/label_skeleton/blob2.h>
+#include <pcl/gpu/people/label_common.h>
+#include <pcl/gpu/people/label_blob2.h>
 
 namespace pcl
 {

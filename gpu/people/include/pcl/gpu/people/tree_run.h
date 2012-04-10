@@ -5,8 +5,8 @@
  * Author : Cedric Cagniart, Koen Buys 
  * ************************************************* */
 
-#ifndef PCL_GPU_PEOPLE_TREES_TRUN_H_DEFINED
-#define PCL_GPU_PEOPLE_TREES_TRUN_H_DEFINED
+#ifndef PCL_GPU_PEOPLE_TREE_RUN_H_
+#define PCL_GPU_PEOPLE_TREE_RUN_H_
 
 #include "tree.h"
 #include "tree_io.h"

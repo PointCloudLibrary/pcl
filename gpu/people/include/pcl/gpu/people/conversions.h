@@ -38,11 +38,11 @@
  */
 
 
-#ifndef PCL_PEOPLE_GPU_CONVERSION_CONVERSIONS_H_
-#define PCL_PEOPLE_GPU_CONVERSION_CONVERSIONS_H_
+#ifndef PCL_GPU_PEOPLE_CONVERSIONS_H_
+#define PCL_GPU_PEOPLE_CONVERSIONS_H_
 
 #include <pcl/pcl_base.h>
-#include <pcl/gpu/people/display/colormap.h>
+#include <pcl/gpu/people/colormap.h>
 
 namespace pcl
 {
@@ -223,4 +223,4 @@ namespace pcl
     } // end namespace people
   } // end namespace gpu
 } // end namespace pcl
-#endif //PCL_PEOPLE_CONVERSION_H_
+#endif //PCL_GPU_PEOPLE__CONVERSIONS_H_

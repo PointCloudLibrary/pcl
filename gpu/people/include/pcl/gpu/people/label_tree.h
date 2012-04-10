@@ -39,13 +39,13 @@
  * @brief This file contains the function prototypes for the tree building functions.
  */
  
-#ifndef PCL_GPU_PEOPLE_LABEL_SKELETON_TREE_H_
-#define PCL_GPU_PEOPLE_LABEL_SKELETON_TREE_H_
+#ifndef PCL_GPU_PEOPLE_LABEL_TREE_H_
+#define PCL_GPU_PEOPLE_LABEL_TREE_H_
  
 // our headers
-#include "pcl/gpu/people/label_skeleton/blob2.h"   //this one defines the blob structure
-#include "pcl/gpu/people/label_skeleton/tree2.h"   //this one defines the blob structure
-#include "pcl/gpu/people/label_skeleton/common.h"  //this one defines the LUT's
+#include "pcl/gpu/people/label_blob2.h"   //this one defines the blob structure
+#include "pcl/gpu/people/label_tree2.h"   //this one defines the blob structure
+#include "pcl/gpu/people/label_common.h"  //this one defines the LUT's
 
 // std
 #include <vector>
@@ -70,6 +70,137 @@ namespace pcl
     {
       namespace label_skeleton
       {
+        /**
+         * @brief This function sets the children of the leaf nodes to leaf, meaning that we came to the correct end
+         * @param[in] sorted The matrix of all blobs
+         * @param[in] label The label of which all children are to be set as leafs
+         * @return Zero if everything went well
+         **/
+        int leafBlobVector(   std::vector<std::vector<Blob2> >& sorted,
+                              int                               label )
+        {
+          if(sorted[label].size() == 0)
+            return 0;
+          for(unsigned int i = 0; i < sorted[label].size(); i++)
+          {
+            for(int j = 0; j < MAX_CHILD; j++)
+              sorted[label][i].child_id[j] = LEAF;
+          }
+          return 0;
+        }
+
+        /**
+         * @brief This function sets the specific child of the vector to no child, meaning that there are no such children
+         * @param[in] sorted The matrix of all blobs
+         * @param[in] label The label of which the child must be set to NO_CHILD
+         * @param[in] child_number The index of the respective child that must be set
+         * @return Zero if everything went well
+         **/
+        int noChildBlobVector(  std::vector<std::vector<Blob2> >& sorted,
+                                int                               label,
+                                int                               child_number)
+        {
+          if(sorted[label].size() == 0)
+            return 0;
+          for(unsigned int i = 0; i < sorted[label].size(); i++){
+            sorted[label][i].child_id[child_number] = NO_CHILD;
+          }
+          return 0;
+        }
+
+        /**
+         * @brief This function test if children were found for this label
+         * @return True if this label has valid children
+         **/
+        bool hasThisLabelChildren ( std::vector<std::vector<Blob2> >& sorted,
+                                    part_t                            label,
+                                    int                               child_number)
+        {
+          if(sorted[label].size() == 0)
+            return 0;
+          for(unsigned int i = 0; i < sorted[label].size(); i++)
+            if((sorted[label][i].child_id[child_number] != NO_CHILD) && (sorted[label][i].child_id[child_number] != LEAF))
+              return 1;
+          return 0;
+        }
+
+        /**
+         * @brief This is the evaluation function used to compare two blobs
+         * @param[in] parent    pointer to the parent blob
+         * @param[in] child     pointer to the child blob
+         * @param[in] child_nr  the number of the child
+         * @return it returns the distance error from the ideal parent child distance, it returns -1.0 if it goes over threshold
+         * @todo what if child is second link in stead of first link (ea forearm in stead of elbow for arm)
+         **/
+        float evaluateBlobs (Blob2& parent, Blob2& child, int child_nr)
+        {
+          float root = sqrt(pow(parent.mean(0) - child.mean(0), 2) +
+                            pow(parent.mean(1) - child.mean(1), 2) +
+                            pow(parent.mean(2) - child.mean(2), 2));
+          float offset = fabs(LUT_ideal_length[(int)parent.label][child_nr] - root);
+          if(offset > LUT_max_length_offset[(int)parent.label][child_nr])
+            return -1.0;
+          else
+            return offset;
+        }
+
+        /**
+         * @brief This function evaluates an entire row of parent segments for the best child segments
+         * @param[in] sorted this is the array of all blobs
+         * @param[in] parent_label this is the part label that indicates the row
+         * @param[in] child_label  this is the part label that indicates the childs needed to be investigated
+         * @param[in] child_number the number of this child in the parent, some parents have multiple childs
+         * @return zero if succesfull
+         * @todo once we have good evaluation function reconsider best_value
+         **/
+        int evaluateBlobVector( std::vector<std::vector<Blob2> >& sorted,
+                                unsigned int                      parent_label,
+                                int                               child_label,
+                                int                               child_number)
+        {
+          // Check the input data
+          assert(parent_label < NUM_PARTS);
+          assert(child_label >= 0);
+          assert(child_number >= 0);
+          assert(child_number < MAX_CHILD);
+
+          if(sorted[parent_label].size() == 0){
+            return 0;   //if my size is 0, this is solved by my parent in his iteration	
+          }
+          if(sorted[child_label].size() == 0){
+            noChildBlobVector(sorted, parent_label, child_number);
+            return 0;
+          }
+          // go over all parents in this vector
+          for(unsigned int p = 0; p < sorted[parent_label].size(); p++){
+            float best_value = std::numeric_limits<float>::max(); 
+            int best_child_id = NO_CHILD;
+            int best_child_lid = 0;                               // this must be as low as possible, still overruled by id
+            float value = 0.0;
+
+            // go over all children in this vector
+            for(unsigned int c = 0; c < sorted[child_label].size(); c++){
+              value = evaluateBlobs(sorted[parent_label][p], sorted[child_label][c], child_number);
+              // Value should contain offset from the ideal position
+              // Is -1 if it goes above threshold
+              if(value < best_value && value != -1.0){
+                best_child_id = sorted[child_label][c].id;
+                best_child_lid = c;
+                best_value = value;
+              }
+            }
+            assert(parent_label < sorted.size());
+            assert(p < sorted[parent_label].size());
+            assert(child_label < (int) sorted.size());
+            //Set the correct child in the parent
+            sorted[parent_label][p].child_id[child_number] = best_child_id;
+            sorted[parent_label][p].child_lid[child_number] = best_child_lid;
+            sorted[parent_label][p].child_dist[child_number] = best_value;
+            sorted[parent_label][p].child_label[child_number] = child_label;
+          }
+          return 0;
+        }
+
         /**
          * @brief This function goes over the sorted matrix and fills in the optimal parent and child relations
          * @param[in] sorted a matrix with all found good blobs arranged according to label and order
@@ -168,136 +299,6 @@ namespace pcl
             }
           }
           return 0;	
-        }
-        
-        /**
-         * @brief This function sets the children of the leaf nodes to leaf, meaning that we came to the correct end
-         * @param[in] sorted The matrix of all blobs
-         * @param[in] label The label of which all children are to be set as leafs
-         * @return Zero if everything went well
-         **/
-        int leafBlobVector(   std::vector<std::vector<Blob2> >& sorted,
-                              int                               label )
-        {
-          if(sorted[label].size() == 0)
-            return 0;
-          for(unsigned int i = 0; i < sorted[label].size(); i++)
-          {
-            for(int j = 0; j < MAX_CHILD; j++)
-              sorted[label][i].child_id[j] = LEAF;
-          }
-          return 0;
-        }
-        
-        /**
-         * @brief This function sets the specific child of the vector to no child, meaning that there are no such children
-         * @param[in] sorted The matrix of all blobs
-         * @param[in] label The label of which the child must be set to NO_CHILD
-         * @param[in] child_number The index of the respective child that must be set
-         * @return Zero if everything went well
-         **/
-        int noChildBlobVector(  std::vector<std::vector<Blob2> >& sorted,
-                                int                               label,
-                                int                               child_number)
-        {
-          if(sorted[label].size() == 0)
-            return 0;
-          for(unsigned int i = 0; i < sorted[label].size(); i++){
-            sorted[label][i].child_id[child_number] = NO_CHILD;
-          }
-          return 0;
-        }
-        
-        /**
-         * @brief This function test if children were found for this label
-         * @return True if this label has valid children
-         **/
-        bool hasThisLabelChildren ( std::vector<std::vector<Blob2> >& sorted,
-                                    part_t                            label,
-                                    int                               child_number)
-        {
-          if(sorted[label].size() == 0)
-            return 0;
-          for(unsigned int i = 0; i < sorted[label].size(); i++)
-            if((sorted[label][i].child_id[child_number] != NO_CHILD) && (sorted[label][i].child_id[child_number] != LEAF))
-              return 1;
-          return 0;
-        }
-        
-        /**
-         * @brief This function evaluates an entire row of parent segments for the best child segments
-         * @param[in] sorted this is the array of all blobs
-         * @param[in] parent_label this is the part label that indicates the row
-         * @param[in] child_label  this is the part label that indicates the childs needed to be investigated
-         * @param[in] child_number the number of this child in the parent, some parents have multiple childs
-         * @return zero if succesfull
-         * @todo once we have good evaluation function reconsider best_value
-         **/
-        int evaluateBlobVector( std::vector<std::vector<Blob2> >& sorted,
-                                unsigned int                      parent_label,
-                                int                               child_label,
-                                int                               child_number)
-        {
-          // Check the input data
-          assert(parent_label < NUM_PARTS);
-          assert(child_label >= 0);
-          assert(child_number >= 0);
-          assert(child_number < MAX_CHILD);
-
-          if(sorted[parent_label].size() == 0){
-            return 0;   //if my size is 0, this is solved by my parent in his iteration	
-          }
-          if(sorted[child_label].size() == 0){
-            noChildBlobVector(sorted, parent_label, child_number);
-            return 0;
-          }
-          // go over all parents in this vector
-          for(unsigned int p = 0; p < sorted[parent_label].size(); p++){
-            float best_value = std::numeric_limits<float>::max(); 
-            int best_child_id = NO_CHILD;
-            int best_child_lid = 0;                               // this must be as low as possible, still overruled by id
-            float value = 0.0;
-
-            // go over all children in this vector
-            for(unsigned int c = 0; c < sorted[child_label].size(); c++){
-              value = evaluateBlobs(sorted[parent_label][p], sorted[child_label][c], child_number);
-              // Value should contain offset from the ideal position
-              // Is -1 if it goes above threshold
-              if(value < best_value && value != -1.0){
-                best_child_id = sorted[child_label][c].id;
-                best_child_lid = c;
-                best_value = value;
-              }
-            }
-            assert(parent_label < sorted.size());
-            assert(p < sorted[parent_label].size());
-            assert(child_label < (int) sorted.size());
-            //Set the correct child in the parent
-            sorted[parent_label][p].child_id[child_number] = best_child_id;
-            sorted[parent_label][p].child_lid[child_number] = best_child_lid;
-            sorted[parent_label][p].child_dist[child_number] = best_value;
-            sorted[parent_label][p].child_label[child_number] = child_label;
-          }
-          return 0;
-        }
-        /**
-         * @brief This is the evaluation function used to compare two blobs
-         * @param[in] parent    pointer to the parent blob
-         * @param[in] child     pointer to the child blob
-         * @param[in] child_nr  the number of the child
-         * @return it returns the distance error from the ideal parent child distance, it returns -1.0 if it goes over threshold
-         * @todo what if child is second link in stead of first link (ea forearm in stead of elbow for arm)
-         **/
-        float evaluateBlobs (Blob2& parent, Blob2& child, int child_nr)
-        {
-          float root = sqrt(pow(parent.mean(0) - child.mean(0), 2) +
-                            pow(parent.mean(1) - child.mean(1), 2) +
-                            pow(parent.mean(2) - child.mean(2), 2));
-          float offset = fabs(LUT_ideal_length[(int)parent.label][child_nr] - root);
-          if(offset > LUT_max_length_offset[(int)parent.label][child_nr])
-            return -1.0;
-          else
-            return offset;
         }
 
         int browseTree (  std::vector<std::vector <Blob2> >&  sorted,

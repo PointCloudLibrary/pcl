@@ -1,8 +1,8 @@
 /**
  * @authors: Cedric Cagniart, Koen Buys
  **/
-#ifndef PCL_GPU_PEOPLE_TREES_TREELIVE_H_
-#define PCL_GPU_PEOPLE_TREES_TREELIVE_H_
+#ifndef PCL_GPU_PEOPLE_TREELIVE_H_
+#define PCL_GPU_PEOPLE_TREELIVE_H_
 
 #include <iostream>
 #include <boost/noncopyable.hpp>

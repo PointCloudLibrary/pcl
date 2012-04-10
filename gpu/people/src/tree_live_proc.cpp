@@ -38,12 +38,12 @@
  *
  */
 
-#include <pcl/gpu/people/trees/tree_run.h>
-#include <pcl/gpu/people/trees/tree_live.h>
+#include <pcl/gpu/people/tree_run.h>
+#include <pcl/gpu/people/tree_live.h>
 #include <cuda_runtime_api.h>
 
 #include "cuda/CUDA_run_tree.h"
-#include <pcl/gpu/people/trees/CUDA_tree.h>
+#include <pcl/gpu/people/CUDA_tree.h>
 
 using pcl::gpu::people::trees::Node;
 using pcl::gpu::people::trees::Label;

@@ -38,17 +38,17 @@
  *
  */
 
-#include <pcl/gpu/people/trees/tree_run.h>
-#include <pcl/gpu/people/trees/handle_error.h>
-#include <pcl/gpu/people/trees/tree_live.h>
+#include <pcl/gpu/people/tree_run.h>
+#include <pcl/gpu/people/handle_error.h>
+#include <pcl/gpu/people/tree_live.h>
 
-#include <pcl/gpu/people/common.h>
+#include <pcl/gpu/people/label_common.h>
 
 #include <pcl/gpu/containers/device_array.h>
 
 #include <cuda_runtime_api.h>
 #include "cuda/CUDA_run_multi_tree.h"
-#include <pcl/gpu/people/trees/CUDA_tree.h>
+#include <pcl/gpu/people/CUDA_tree.h>
 
 #include <iostream>
 

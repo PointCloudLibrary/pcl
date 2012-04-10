@@ -34,36 +34,63 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  * $Id: $
- * @authors: Koen Buys, Cedric Cagniart
+ * @author: Anatoly Baksheev
  */
 
-#ifndef PCL_GPU_PEOPLE_TREES_HANDLE_ERROR_H_
-#define PCL_GPU_PEOPLE_TREES_HANDLE_ERROR_H_
-#include <stdio.h>
-#include <cuda_runtime_api.h>
+#ifndef PCL_GPU_PEOPLE_SEARCHD_H_
+#define PCL_GPU_PEOPLE_SEARCHD_H_
+
+#include <opencv2/core/core.hpp>
+
+#include <vector>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/PointIndices.h>
+#include <pcl/search/pcl_search.h>
+#include <pcl/common/time.h>
+
+//#include <pcl/point_types_conversion.h> // can't include because not inline function causes multiple definition errors
 namespace pcl
 {
-  namespace gpu
-  {
-    namespace people
-    {
-      namespace trees
-      {
-        static void HandleError( cudaError_t err,
-                                 const char *file,
-                                 int line ) {
-            if (err != cudaSuccess) {
-                printf( "%s in %s at line %d\n", cudaGetErrorString( err ),
-                        file, line );
-                exit( EXIT_FAILURE );
-            }
-        }
-
-        #define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))
-
-        #define HANDLE_NULL( a ) { if ((a) == NULL) { printf( "Host memory failed in %s at line %d\n", __FILE__, __LINE__ ); exit( EXIT_FAILURE );} }
-	    }
-    }
-  }
+   void PointXYZRGBtoXYZHSV (PointXYZRGB& in, PointXYZHSV& out);
 }
-#endif  // PCL_PEOPLE_TREES_HANDLE_ERROR_H_
+
+#include <iostream>
+#include <algorithm>
+#include <numeric>
+
+using namespace std;
+using namespace pcl;
+using namespace cv;
+
+namespace
+{
+    class SearchD : public pcl::search::OrganizedNeighbor<pcl::PointXYZRGB>
+    {
+    public:
+        typedef  pcl::search::OrganizedNeighbor<pcl::PointXYZRGB> Base;
+
+        using Base::getProjectedRadiusSearchBox;
+        /** \brief the projection matrix. Either set by user or calculated by the first / each input cloud */
+        using Base::projection_matrix_;
+        /** \brief inveser of the left 3x3 projection matrix which is K * R (with K being the camera matrix and R the rotation matrix)*/
+        using Base::KR_;
+        /** \brief inveser of the left 3x3 projection matrix which is K * R (with K being the camera matrix and R the rotation matrix)*/
+        using Base::KR_KRT_;    
+    };
+
+
+    template<typename PointT1, typename PointT2>
+    double sqnorm(const PointT1& p1, const PointT2& p2)
+    {
+        return (p1.getVector3fMap () - p2.getVector3fMap ()).squaredNorm ();
+    }
+
+    template<typename It, typename Val>
+    void yota(It beg, It end, Val seed)
+    {
+        for(It pos = beg; pos < end;)
+            *pos++ = seed++;
+    }
+}
+#endif // PCL_GPU_PEOPLE_SEARCHD_H_

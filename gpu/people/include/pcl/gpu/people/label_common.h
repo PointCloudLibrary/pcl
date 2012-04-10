@@ -37,8 +37,8 @@
  * @author: Koen Buys
  */
 
-#ifndef PCL_GPU_PEOPLE_LABEL_SKELETON_COMMON_H_
-#define PCL_GPU_PEOPLE_LABEL_SKELETON_COMMON_H_
+#ifndef PCL_GPU_PEOPLE_LABEL_COMMON_H_
+#define PCL_GPU_PEOPLE_LABEL_COMMON_H_
 
 // Some defines for the tree
 #define ROOT        -1
@@ -52,6 +52,10 @@
 #define WIDTH     640
 #define HEIGHT    480
 #define RATIO     WIDTH/HEIGHT
+
+#define RES_H         HEIGHT
+#define RES_W         WIDTH
+#define MAX_NR_TREES  4
 
 // Some defines for part image
 #define NO_DATA   255       // We have no depth data for this part of the image

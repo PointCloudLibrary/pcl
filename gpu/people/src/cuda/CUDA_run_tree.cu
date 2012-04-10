@@ -3,7 +3,7 @@
  */
 
 //#include <cutil.h>
-#include <pcl/gpu/people/trees/tree.h>
+#include <pcl/gpu/people/tree.h>
 #include <stdio.h>
 #include <cuda.h>
 

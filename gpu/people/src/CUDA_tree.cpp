@@ -38,7 +38,7 @@
  * 
  */
 
-#include <pcl/gpu/people/trees/CUDA_tree.h>
+#include <pcl/gpu/people/CUDA_tree.h>
 // CUDA
 #include <cuda_runtime_api.h>
 // general
@@ -46,7 +46,7 @@
 #include <cassert>
 #include <iostream>
 
-#include <pcl/gpu/people/trees/handle_error.h>
+#include <pcl/gpu/people/handle_error.h>
 
 namespace pcl
 {
