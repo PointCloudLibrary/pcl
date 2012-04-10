@@ -6,6 +6,7 @@ set(SUBSYS_DEPS common io segmentation filters octree search kdtree gpu_containe
 set(build FALSE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} OFF)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
+mark_as_advanced("BUILD_${SUBSYS_NAME}")
 
 PCL_ADD_DOC(${SUBSYS_NAME})
 
