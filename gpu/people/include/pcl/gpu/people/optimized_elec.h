@@ -432,13 +432,13 @@ void optimized_elec(const PointCloud<pcl::PointXYZRGB> &cloud, const cv::Mat& sr
                         bottom = j + (bottom - j) * radius_scale;
                     }
 
-                    for(int y = top; y < bottom + 1; ++y)
+                    for(unsigned int y = top; y < bottom + 1; ++y)
                     {
                         const uchar *sl1  = src_labels.ptr<uchar>(y);
                         const int   *dl1 = dst_labels.ptr<int>(y);
                         const pcl::PointXYZRGB* sp1 = &cloud.at(0, y);
 
-                        for(int x = left; x < right + 1; ++x)
+                        for(unsigned int x = left; x < right + 1; ++x)
                         {
                             int cc1 = dl1[x];
                             // not the same cc, the same label, and in radius

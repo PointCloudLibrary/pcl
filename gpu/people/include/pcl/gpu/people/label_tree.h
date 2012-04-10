@@ -76,7 +76,7 @@ namespace pcl
          * @param[in] label The label of which all children are to be set as leafs
          * @return Zero if everything went well
          **/
-        int leafBlobVector(   std::vector<std::vector<Blob2> >& sorted,
+        int leafBlobVector(   std::vector<std::vector<Blob2, Eigen::aligned_allocator<Blob2> > >& sorted,
                               int                               label )
         {
           if(sorted[label].size() == 0)
@@ -96,7 +96,7 @@ namespace pcl
          * @param[in] child_number The index of the respective child that must be set
          * @return Zero if everything went well
          **/
-        int noChildBlobVector(  std::vector<std::vector<Blob2> >& sorted,
+        int noChildBlobVector(  std::vector<std::vector<Blob2, Eigen::aligned_allocator<Blob2> > >& sorted,
                                 int                               label,
                                 int                               child_number)
         {
@@ -112,7 +112,7 @@ namespace pcl
          * @brief This function test if children were found for this label
          * @return True if this label has valid children
          **/
-        bool hasThisLabelChildren ( std::vector<std::vector<Blob2> >& sorted,
+        bool hasThisLabelChildren ( std::vector<std::vector<Blob2, Eigen::aligned_allocator<Blob2> > >& sorted,
                                     part_t                            label,
                                     int                               child_number)
         {
@@ -153,7 +153,7 @@ namespace pcl
          * @return zero if succesfull
          * @todo once we have good evaluation function reconsider best_value
          **/
-        int evaluateBlobVector( std::vector<std::vector<Blob2> >& sorted,
+        int evaluateBlobVector( std::vector<std::vector<Blob2, Eigen::aligned_allocator<Blob2> > >& sorted,
                                 unsigned int                      parent_label,
                                 int                               child_label,
                                 int                               child_number)
@@ -208,7 +208,7 @@ namespace pcl
          * @todo This function also fixes the kinematic chain, we should implement this in a xml or LUT
          * @todo look if we can't get a more efficient implementation (iterator together with sortBlobs perhaps?)
          */
-        int buildRelations( std::vector<std::vector<Blob2> >& sorted)
+        int buildRelations( std::vector<std::vector<Blob2, Eigen::aligned_allocator<pcl::gpu::people::label_skeleton::Blob2> > >& sorted)
         {
           if(sorted.size() == 0){
             std::cout << "(E) : Damn you, you gave me an empty matrix!" << std::endl;
@@ -301,7 +301,7 @@ namespace pcl
           return 0;	
         }
 
-        int browseTree (  std::vector<std::vector <Blob2> >&  sorted,
+        int browseTree (  std::vector<std::vector <Blob2, Eigen::aligned_allocator<Blob2> > >&  sorted,
                           Tree2&                              tree,
                           int                                 part_label,
                           int                                 part_lid)
@@ -328,7 +328,7 @@ namespace pcl
           return 0;
         }
 
-        int buildTree ( std::vector<std::vector <Blob2> >&  sorted,
+        int buildTree ( std::vector<std::vector <Blob2, Eigen::aligned_allocator<Blob2> > >&  sorted,
                         pcl::PointCloud<pcl::PointXYZRGB>&  cloud_in,
                         part_t                              part_label,
                         int                                 part_lid,

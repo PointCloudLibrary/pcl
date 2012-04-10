@@ -1,7 +1,7 @@
 set(SUBSYS_NAME gpu_people)
 set(SUBSYS_PATH gpu/people)
 set(SUBSYS_DESC "Point cloud people library")
-set(SUBSYS_DEPS common io segmentation filters octree search kdtree gpu_containers gpu_utils visualization)
+set(SUBSYS_DEPS common io segmentation filters octree search kdtree gpu_containers gpu_utils visualization geometry)
 
 set(build FALSE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} OFF)
@@ -15,12 +15,12 @@ if(build)
 
   #Label_skeleton
   #FILE(GLOB srcs src/*.cpp src/*.h* src/label_skeleton/*.cpp)
-  FILE(GLOB srcs src/*.cpp src/*.h*)
-  FILE(GLOB_RECURSE hdrs include/pcl/gpu/people/*.h)
-  FILE(GLOB srcs_cuda src/cuda/*.cu src/cuda/*.h)
-
-  source_group("source files\\cuda" FILES ${srcs_cuda} )
-  source_group("source files" FILES ${srcs} )
+  FILE(GLOB srcs src/*.cpp src/*.h*)  
+  FILE(GLOB srcs_cuda src/cuda/*.cu src/cuda/*.h)  
+  FILE(GLOB hdrs include/pcl/gpu/people/*.h*)
+  
+  source_group("Source files\\cuda" FILES ${srcs_cuda} )
+  source_group("Source files" FILES ${srcs} )    
 
   include_directories(${VTK_INCLUDE_DIRS})
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/cuda)

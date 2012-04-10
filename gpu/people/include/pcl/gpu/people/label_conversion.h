@@ -52,7 +52,7 @@
 #include <math.h>
 
 // opencv drawing stuff
-#include <opencv2/opencv.hpp>
+//#include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 //#include <opencv2/highgui/highgui.hpp>
 
@@ -232,7 +232,7 @@ namespace pcl
           for(unsigned int h = 0; h < cloud.height; h++){
             for(unsigned int w = 0; w < cloud.width; w++){
               float z = cloud.points[h*cloud.width + w].z;
-              image.at<short>(h,w) = static_cast<short> (lrintf(z * 1000));
+              image.at<short>(h,w) = static_cast<short> (pcl_round(z * 1000));
             }
           }
           return 0;
@@ -255,7 +255,7 @@ namespace pcl
           for(unsigned int h = 0; h < cloud.height; h++){
             for(unsigned int w = 0; w < cloud.width; w++){
               float z = cloud.points[h*cloud.width + w].z;
-              image.at<short>(h,w) = static_cast<short> (lrintf(z * 1000));
+              image.at<short>(h,w) = static_cast<short> (pcl_round(z * 1000));
             }
           }
           return 0;

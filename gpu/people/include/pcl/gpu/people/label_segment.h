@@ -94,7 +94,7 @@ namespace pcl
           assert(lmap_out.rows == dmap.rows);
           assert(lmap_out.cols == dmap.cols);
 
-          unsigned int half_patch = static_cast<int> (floor (patch_size/2));
+          unsigned int half_patch = static_cast<int> (patch_size/2);
 
           // iterate over the height of the image (from 2 till 478)
           for(unsigned int h = (0 + half_patch); h < (lmap_in.rows - half_patch); h++)
@@ -117,7 +117,7 @@ namespace pcl
                   // get the depth of this part of the patch
                   short depth_l = dmap.at<short>(h_l,w_l);
                   // evaluate the difference to the centroid 
-                  if(abs(depth - depth_l) < depthThres)
+                  if(abs(depth - depth_l) < (int)depthThres)
                   {
                     char label = lmap_in.at<char>(h_l,w_l);
                     if(label >= 0 && label < NUM_PARTS)
@@ -199,7 +199,7 @@ namespace pcl
                   // get the depth of this part of the patch
                   short depth_l = dmap.at<short>(h_l,w_l);
                   // evaluate the difference to the centroid 
-                  if(abs(depth - depth_l) < depthThres)
+                  if(abs(depth - depth_l) < (int)depthThres)
                   {
                     char label = lmap_in.at<char>(h_l,w_l);
                     if(label >= 0 && label < NUM_PARTS)
@@ -295,7 +295,7 @@ namespace pcl
                   // get the depth of this part of the patch
                   depth_l = drow_offset[w_l];
                   // evaluate the difference to the centroid 
-                  if(abs(depth - depth_l) < depthThres)
+                  if(abs(depth - depth_l) < (int)depthThres)
                   {
                     label = lrow_offset[w_l];
                     votes[static_cast<unsigned int>(label)]++;
@@ -327,9 +327,9 @@ namespace pcl
          * @todo implement the eigenvalue evaluation again
          * @todo do we still need sizeThres?
          **/
-        void sortIndicesToBlob2 ( pcl::PointCloud<pcl::PointXYZRGBL>              cloud_in,
+        void sortIndicesToBlob2 ( const pcl::PointCloud<pcl::PointXYZRGBL>&              cloud_in,
                                   unsigned int                                    sizeThres,
-                                  std::vector< std::vector<Blob2> >&              sorted,
+                                  std::vector< std::vector<Blob2, Eigen::aligned_allocator<Blob2> > >&              sorted,
                                   std::vector< std::vector<pcl::PointIndices> >&  indices)
         {
           clock_t totalStart = clock();
@@ -380,7 +380,7 @@ namespace pcl
          * @param[in] sorted the matrix of blobs
          * @return Zero if everything went well
          **/
-        int giveSortedBlobsInfo ( std::vector<std::vector<Blob2> >& sorted)
+        int giveSortedBlobsInfo ( std::vector<std::vector<Blob2, Eigen::aligned_allocator<Blob2>> >& sorted)
         {
           std::cout << "(I) : giveSortedBlobsInfo(): Size of outer vector: " << sorted.size() << std::endl;
           for(unsigned int i = 0; i < sorted.size(); i++)

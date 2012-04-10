@@ -12,7 +12,7 @@
 #include <pcl/segmentation/extract_labeled_clusters.h>
 #include <pcl/segmentation/seeded_hue_segmentation.h>
 
-#include <opencv2/opencv.hpp>
+//#include <opencv2/opencv.hpp>
 
 #include <pcl/gpu/people/conversions.h>
 #include <pcl/gpu/people/optimized_elec.h>
@@ -99,7 +99,7 @@ class PeoplePCDApp
       optimized_elec(cloud_in, lmap, CLUST_TOL, cluster_indices, AREA_THRES, MAX_CLUST_SIZE, NUM_PARTS, false, 1.f);
 
       // Create a new struct to put the results in
-      std::vector<std::vector<pcl::gpu::people::label_skeleton::Blob2> >       sorted;
+      std::vector<std::vector<pcl::gpu::people::label_skeleton::Blob2, Eigen::aligned_allocator<pcl::gpu::people::label_skeleton::Blob2> > >       sorted;
       //clear out our matrix before starting again with it
       sorted.clear();
       //Set fixed size of outer vector length = number of parts
@@ -244,7 +244,7 @@ class PeoplePCDApp
         //pcl::extractLabeledEuclideanClusters<pcl::PointXYZRGBL>(cloud_labels2, stree, CLUST_TOL, cluster_indices2, AREA_THRES2, MAX_CLUST_SIZE, NUM_PARTS);
         optimized_elec(cloud_in, lmap2, CLUST_TOL, cluster_indices2, AREA_THRES2, MAX_CLUST_SIZE, NUM_PARTS, false, 1.0f);
 
-        std::vector<std::vector<pcl::gpu::people::label_skeleton::Blob2> >       sorted2;
+        std::vector<std::vector<pcl::gpu::people::label_skeleton::Blob2, Eigen::aligned_allocator<pcl::gpu::people::label_skeleton::Blob2> > >       sorted2;
         //clear out our matrix before starting again with it
         sorted2.clear();
         //Set fixed size of outer vector length = number of parts
@@ -303,9 +303,15 @@ int main(int argc, char** argv)
   if(pcl::console::find_switch (argc, argv, "--help") || pcl::console::find_switch (argc, argv, "-h"))
     return print_help();
 
-  std::string treeFilenames[4];
-  int         numTrees;
-  std::string pcdname;
+  std::string treeFilenames[4] = 
+  {
+    "d:/TreeData/results/forest1/tree_20.txt",
+    "d:/TreeData/results/forest3/tree_20.txt",
+    "d:/TreeData/results/forest3/tree_20.txt",
+    "d:/TreeData/results/forest3/tree_20.txt"
+  };
+  int         numTrees = 4;
+  std::string pcdname = "d:/3/0015.pcd";
   pcl::console::parse_argument (argc, argv, "-numTrees", numTrees);
   pcl::console::parse_argument (argc, argv, "-tree0", treeFilenames[0]);
   pcl::console::parse_argument (argc, argv, "-tree1", treeFilenames[1]);
@@ -313,6 +319,7 @@ int main(int argc, char** argv)
   pcl::console::parse_argument (argc, argv, "-tree3", treeFilenames[3]);
   pcl::console::parse_argument (argc, argv, "-pcd", pcdname);
   //Don't know if this assert is still needed with pcl::console?
+  //AB: pcl::console does nothing if arg is not found
   assert(numTrees > 0 );
   assert(numTrees <= 4 );
 

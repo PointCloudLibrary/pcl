@@ -6,7 +6,8 @@
 
 #include <iostream>
 #include <boost/noncopyable.hpp>
-#include <opencv2/opencv.hpp>
+//#include <opencv2/opencv.hpp>
+#include <opencv2/core/core.hpp>
 
 namespace pcl
 {
@@ -53,7 +54,7 @@ namespace pcl
         };
 
         /** Processor using multiple trees */
-        class MultiTreeLiveProc : public boost::noncopyable 
+        class PCL_EXPORTS MultiTreeLiveProc : public boost::noncopyable 
         {
           public :
             // this is a bit crappy... the constructor will take the first tree, 
