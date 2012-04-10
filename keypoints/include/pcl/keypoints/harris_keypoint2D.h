@@ -41,7 +41,7 @@
 #define PCL_HARRIS_KEYPOINT_2D_H_
 
 #include <pcl/keypoints/keypoint.h>
-#include <pcl/keypoints/sift_keypoint.h>
+#include <pcl/common/intensity.h>
 
 namespace pcl
 {
@@ -50,7 +50,7 @@ namespace pcl
     * \author Nizar Sallem
     * \ingroup keypoints
     */
-  template <typename PointInT, typename PointOutT>
+  template <typename PointInT, typename PointOutT, typename IntensityT= pcl::common::IntensityFieldAccessor<PointInT> >
   class HarrisKeypoint2D : public Keypoint<PointInT, PointOutT>
   {
     public:
@@ -133,47 +133,65 @@ namespace pcl
       }
 
     protected:
-      bool initCompute ();
-      void detectKeypoints (PointCloudOut &output);
+      bool 
+      initCompute ();
+      void 
+      detectKeypoints (PointCloudOut &output);
       /** \brief gets the corner response for valid input points*/
-      void responseHarris (PointCloudOut &output, float& highest_response) const;
-      void responseNoble (PointCloudOut &output, float& highest_response) const;
-      void responseLowe (PointCloudOut &output, float& highest_response) const;
-      void responseTomasi (PointCloudOut &output, float& highest_response) const;
+      void 
+      responseHarris (PointCloudOut &output, float& highest_response) const;
+      void 
+      responseNoble (PointCloudOut &output, float& highest_response) const;
+      void 
+      responseLowe (PointCloudOut &output, float& highest_response) const;
+      void 
+      responseTomasi (PointCloudOut &output, float& highest_response) const;
 //      void refineCorners (PointCloudOut &corners) const;
       /** \brief calculates the upper triangular part of unnormalized 
         * covariance matrix over intensities given by the 2D coordinates 
         * and window_width_ and window_height_
         */
-      void calculateIntensityCovar (std::size_t pos, float* coefficients) const;
-
+      void 
+      computeSecondMomentMatrix (std::size_t pos, float* coefficients) const;
+      /// threshold for non maxima suppression 
       float threshold_;
+      /// corner refinement 
       bool refine_;
+      /// non maximas suppression
       bool nonmax_;
+      /// cornerness computation methode
       ResponseMethod method_;
+      /// number of threads to be used
       int threads_;      
 
     private:
       Eigen::MatrixXf derivatives_rows_;
       Eigen::MatrixXf derivatives_cols_;
+      /// intermediate holder for computed responses
       boost::shared_ptr<pcl::PointCloud<PointOutT> > response_;
-      bool greaterIntensityAtIndices (int a, int b) const
+      /// comparator for responses intensity
+      bool 
+      greaterIntensityAtIndices (int a, int b) const
       {
         return (response_->at (a).intensity > response_->at (b).intensity);
       }      
-      /// Window width ; after initCompute stores half window width
+      /// Window width 
       int window_width_;
-      /// Window height ; after initCompute stores half window height
+      /// Window height
       int window_height_;
+      /// half window width
       int half_window_width_;
+      /// half window height
       int half_window_height_;
+      /// number of pixels to skip within search window
       int skipped_pixels_;
+      /// minimum distance between two keypoints
       int min_distance_;
-      SIFTKeypointFieldSelector<PointInT> intensity_;
+      /// intensity field accessor
+      IntensityT intensity_;
   };
 }
 
 #include "pcl/keypoints/impl/harris_keypoint2D.hpp"
 
 #endif // #ifndef PCL_HARRIS_KEYPOINT_2D_H_
-
