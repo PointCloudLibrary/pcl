@@ -92,7 +92,7 @@ class PeoplePCDApp
       stree->setInputCloud(cloud_labels.makeShared());
       std::vector<std::vector<pcl::PointIndices> > cluster_indices;
       cluster_indices.resize(NUM_PARTS);
-
+/*
       // Make all the clusters
       optimized_elec(cloud_in, lmap, CLUST_TOL, cluster_indices, AREA_THRES, MAX_CLUST_SIZE, NUM_PARTS);
       // Create a new struct to put the results in
@@ -101,7 +101,7 @@ class PeoplePCDApp
       sorted.clear();
       //Set fixed size of outer vector length = number of parts
       sorted.resize(NUM_PARTS);
-/*
+
       //create the blob2 matrix
       pcl::gpu::people::label_skeleton::sortIndicesToBlob2 ( cloud_labels, AREA_THRES, sorted, cluster_indices );
       //Build relationships between the blobs

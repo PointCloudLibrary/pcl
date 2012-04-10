@@ -15,7 +15,7 @@ if(build)
   #Label_skeleton
   #FILE(GLOB srcs src/*.cpp src/*.h* src/label_skeleton/*.cpp)
   FILE(GLOB srcs src/*.cpp src/*.h*)
-  FILE(GLOB_RECURSE hdrs include/pcl/people/*.h)
+  FILE(GLOB_RECURSE hdrs include/pcl/gpu/people/*.h)
   FILE(GLOB srcs_cuda src/cuda/*.cu src/cuda/*.h)
 
   source_group("source files\\cuda" FILES ${srcs_cuda} )
