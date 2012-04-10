@@ -148,32 +148,28 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
   std::vector<float> nn_dists (k_);
   output.is_dense = true;
 
-#ifdef HAVE_OPENMP
-#ifdef __APPLE__
-#pragma omp parallel for schedule(static, threads_)
-#else
+  // If the data is dense, we don't need to check for NaN
+  if (surface_->is_dense)
+  {
+#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
 #pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
 #endif
-#endif
-  // Iterating over the entire index vector
-  for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
-  {
-    PointOutT &p_out = output.points[idx];
-
-    if (!this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists))
+    // Iterating over the entire index vector
+    for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
     {
-      p_out.gradient[0] = p_out.gradient[1] = p_out.gradient[2] = std::numeric_limits<float>::quiet_NaN ();
-      output.is_dense = false;
-      continue;
-    }
+      PointOutT &p_out = output.points[idx];
 
-    Eigen::Vector3f centroid;
-    float mean_intensity = 0;
-    // Initialize to 0
-    centroid.setZero ();
-    // If the data is dense, we don't need to check for NaN
-    if (surface_->is_dense)
-    {
+      if (!this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists))
+      {
+        p_out.gradient[0] = p_out.gradient[1] = p_out.gradient[2] = std::numeric_limits<float>::quiet_NaN ();
+        output.is_dense = false;
+        continue;
+      }
+
+      Eigen::Vector3f centroid;
+      float mean_intensity = 0;
+      // Initialize to 0
+      centroid.setZero ();
       for (size_t i = 0; i < nn_indices.size (); ++i)
       {
         centroid += surface_->points[nn_indices[i]].getVector3fMap ();
@@ -181,10 +177,36 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
       }
       centroid /= static_cast<float> (nn_indices.size ());
       mean_intensity /= static_cast<float> (nn_indices.size ());
+
+      Eigen::Vector3f normal = Eigen::Vector3f::Map (normals_->points[(*indices_) [idx]].normal);
+      Eigen::Vector3f gradient;
+      computePointIntensityGradient (*surface_, nn_indices, centroid, mean_intensity, normal, gradient);
+
+      p_out.gradient[0] = gradient[0];
+      p_out.gradient[1] = gradient[1];
+      p_out.gradient[2] = gradient[2];
     }
-    // NaN or Inf values could exist => check for them
-    else
+  }
+  else
+  {
+#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
+#pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
+#endif
+    // Iterating over the entire index vector
+    for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
     {
+      PointOutT &p_out = output.points[idx];
+      if (!isFinite ((*surface_) [(*indices_)[idx]]) ||
+          !this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists))
+      {
+        p_out.gradient[0] = p_out.gradient[1] = p_out.gradient[2] = std::numeric_limits<float>::quiet_NaN ();
+        output.is_dense = false;
+        continue;
+      }
+      Eigen::Vector3f centroid;
+      float mean_intensity = 0;
+      // Initialize to 0
+      centroid.setZero ();
       unsigned cp = 0;
       for (size_t i = 0; i < nn_indices.size (); ++i)
       {
@@ -198,15 +220,14 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
       }
       centroid /= static_cast<float> (cp);
       mean_intensity /= static_cast<float> (cp);
+      Eigen::Vector3f normal = Eigen::Vector3f::Map (normals_->points[(*indices_) [idx]].normal);
+      Eigen::Vector3f gradient;
+      computePointIntensityGradient (*surface_, nn_indices, centroid, mean_intensity, normal, gradient);
+
+      p_out.gradient[0] = gradient[0];
+      p_out.gradient[1] = gradient[1];
+      p_out.gradient[2] = gradient[2];
     }
-
-    Eigen::Vector3f normal = Eigen::Vector3f::Map (normals_->points[(*indices_) [idx]].normal);
-    Eigen::Vector3f gradient;
-    computePointIntensityGradient (*surface_, nn_indices, centroid, mean_intensity, normal, gradient);
-
-    p_out.gradient[0] = gradient[0];
-    p_out.gradient[1] = gradient[1];
-    p_out.gradient[2] = gradient[2];
   }
 }
 
