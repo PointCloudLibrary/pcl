@@ -55,8 +55,8 @@
 #include <boost/thread/thread.hpp>
 
 // Writing PNG files:
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 using namespace Eigen;
 using namespace pcl;
@@ -114,8 +114,8 @@ void write_score_image(const float* score_buffer)
   IplImage *cv_ipl = cvCreateImage( cvSize(640 ,480), 8, 3);
   cv::Mat cv_mat(cv_ipl);
   cv_mat.data = score_img;
-  cv::imwrite("score_image.png", cv_mat);     
-  
+  cv::imwrite("score_image.png", cv_mat);
+
   delete [] score_img;
 }
 
@@ -138,8 +138,7 @@ void write_depth_image(const float* depth_buffer)
     {
       int i= y*640 + x ;
       int i_in= (480-1 -y) *640 + x ; // flip up down
-    
-    
+
       float zn = 0.7;
       float zf = 20.0;
       float d = depth_buffer[i_in];
@@ -152,42 +151,43 @@ void write_depth_image(const float* depth_buffer)
 
       int pval = t_gamma[kd];
       int lb = pval & 0xff;
-      switch (pval>>8) {
-	case 0:
-	    depth_img[3*i+2] = 255;
-	    depth_img[3*i+1] = 255-lb;
-	    depth_img[3*i+0] = 255-lb;
-	    break;
-	case 1:
-	    depth_img[3*i+2] = 255;
-	    depth_img[3*i+1] = lb;
-	    depth_img[3*i+0] = 0;
-	    break;
-	case 2:
-	    depth_img[3*i+2] = 255-lb;
-	    depth_img[3*i+1] = 255;
-	    depth_img[3*i+0] = 0;
-	    break;
-	case 3:
-	    depth_img[3*i+2] = 0;
-	    depth_img[3*i+1] = 255;
-	    depth_img[3*i+0] = lb;
-	    break;
-	case 4:
-	    depth_img[3*i+2] = 0;
-	    depth_img[3*i+1] = 255-lb;
-	    depth_img[3*i+0] = 255;
-	    break;
-	case 5:
-	    depth_img[3*i+2] = 0;
-	    depth_img[3*i+1] = 0;
-	    depth_img[3*i+0] = 255-lb;
-	    break;
-	default:
-	    depth_img[3*i+2] = 0;
-	    depth_img[3*i+1] = 0;
-	    depth_img[3*i+0] = 0;
-	    break;
+      switch (pval>>8) 
+      {
+        case 0:
+            depth_img[3*i+2] = 255;
+            depth_img[3*i+1] = 255-lb;
+            depth_img[3*i+0] = 255-lb;
+            break;
+        case 1:
+            depth_img[3*i+2] = 255;
+            depth_img[3*i+1] = lb;
+            depth_img[3*i+0] = 0;
+            break;
+        case 2:
+            depth_img[3*i+2] = 255-lb;
+            depth_img[3*i+1] = 255;
+            depth_img[3*i+0] = 0;
+            break;
+        case 3:
+            depth_img[3*i+2] = 0;
+            depth_img[3*i+1] = 255;
+            depth_img[3*i+0] = lb;
+            break;
+        case 4:
+            depth_img[3*i+2] = 0;
+            depth_img[3*i+1] = 255-lb;
+            depth_img[3*i+0] = 255;
+            break;
+        case 5:
+            depth_img[3*i+2] = 0;
+            depth_img[3*i+1] = 0;
+            depth_img[3*i+0] = 255-lb;
+            break;
+        default:
+            depth_img[3*i+2] = 0;
+            depth_img[3*i+1] = 0;
+            depth_img[3*i+0] = 0;
+            break;
       }
     }
   }
@@ -196,11 +196,10 @@ void write_depth_image(const float* depth_buffer)
   IplImage *cv_ipl = cvCreateImage( cvSize(640 ,480), 8, 3);
   cv::Mat cv_mat(cv_ipl);
   cv_mat.data = depth_img;
-  cv::imwrite("depth_image.png", cv_mat);     
-  
+  cv::imwrite("depth_image.png", cv_mat);
+
   delete [] depth_img;
 }
-
 
 void write_rgb_image(const uint8_t* rgb_buffer)
 {
@@ -215,19 +214,18 @@ void write_rgb_image(const uint8_t* rgb_buffer)
       int px_in= (480-1 -y) *640 + x ; // flip up down
       rgb_img [3* (px) +0] = rgb_buffer[3*px_in+0];
       rgb_img [3* (px) +1] = rgb_buffer[3*px_in+1];
-      rgb_img [3* (px) +2] = rgb_buffer[3*px_in+2];      
+      rgb_img [3* (px) +2] = rgb_buffer[3*px_in+2];
     }
-  }  
-  
+  }
+
   // Write to file:
   IplImage *cv_ipl = cvCreateImage( cvSize(640 ,480), 8, 3);
   cv::Mat cv_mat(cv_ipl);
   cv_mat.data = rgb_img ;
-  cv::imwrite("rgb_image.png", cv_mat);     
-  
+  cv::imwrite("rgb_image.png", cv_mat);
+
   delete [] rgb_img;
 }
-
 
 boost::shared_ptr<pcl::visualization::PCLVisualizer> simpleVis (pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud)
 {
@@ -239,13 +237,11 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> simpleVis (pcl::PointCloud<
   viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
   viewer->addCoordinateSystem (1.0);
   viewer->initCameraParameters ();
-  
+
   //viewer->addModelFromPLYFile("/home/mfallon/projects/kmcl/kmcl/models/table_scene/meta_model.ply");
-  
-  
+
   return (viewer);
 }
-
 
 void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
 {
@@ -273,14 +269,14 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
        << " " << camera_->pitch ()
        << " " << camera_->yaw ()
        << std::endl;
-       
+
   delete [] reference;
 
 
   // Benchmark Values for sim_terminal_demo ( march 27 2012): >>> used PolygonMeshModel<< 
   // 27840 triangle faces
   // 13670 vertices
-  
+
   // 45.00Hz: simuation only
   //  1.28Hz: simuation, addNoise?    , getPointCloud, writeASCII
   // 33.33Hz: simuation, getPointCloud
@@ -298,19 +294,18 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
   // 30.61Hz: simuation, getPointCloud
   // 40.00Hz: simuation, getPointCloud, writeBinary (on average
   // 28.50Hz: simuation, addNoise, getPointCloud, writeBinary
-  
-  
+
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc_out (new pcl::PointCloud<pcl::PointXYZRGB>);
   bool write_cloud=true;
   bool demo_other_stuff=false;
-  
+
   if (write_cloud)
   {
     // Read Color Buffer from the GPU before creating PointCloud:
     // By default the buffers are not read back from the GPU
     range_likelihood_->getColorBuffer ();
-    range_likelihood_->getDepthBuffer ();  
-    
+    range_likelihood_->getDepthBuffer ();
+
     // Add noise directly to the CPU depth buffer 
     range_likelihood_->addNoise ();
 
@@ -323,7 +318,7 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
     range_likelihood_->getPointCloud (pc_out,false,camera_->pose ());
     // TODO: what to do when there are more than one simulated view?
     std::cout << pc_out->points.size() << " points written to file\n";
-   
+
     pcl::PCDWriter writer;
     //writer.write (point_cloud_fname, *pc_out,	false);  /// ASCII
     writer.writeBinary (point_cloud_fname, *pc_out);
@@ -334,19 +329,20 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
     write_score_image (range_likelihood_->getScoreBuffer ());  
     write_rgb_image (range_likelihood_->getColorBuffer ());  
     write_depth_image (range_likelihood_->getDepthBuffer ());  
-    
+
     // Demo interacton with RangeImage:
     pcl::RangeImagePlanar rangeImage;
     range_likelihood_->getRangeImagePlanar (rangeImage);
- 
+
     // display viewer: (currently seqfaults on exit of viewer)
     if (1==0){
       boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
       viewer = simpleVis(pc_out);
-    
-      while (!viewer->wasStopped ()){
-	viewer->spinOnce (100);
-	boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+
+      while (!viewer->wasStopped ())
+      {
+        viewer->spinOnce (100);
+        boost::this_thread::sleep (boost::posix_time::microseconds (100000));
       }
     }
   }
@@ -360,13 +356,13 @@ void load_PolygonMesh_model (char* polygon_file)
   //pcl::io::loadPolygonFile("/home/mfallon/data/models/dalet/Darlek_modified_works.obj",mesh);
   pcl::io::loadPolygonFile (polygon_file, mesh);
   pcl::PolygonMesh::Ptr cloud (new pcl::PolygonMesh (mesh));
-  
+
   TriangleMeshModel::Ptr model = TriangleMeshModel::Ptr (new TriangleMeshModel (cloud));
   scene_->add (model);
-  
+
   std::cout << "Just read " << polygon_file << std::endl;
   std::cout << mesh.polygons.size () << " polygons and "
-	    << mesh.cloud.data.size () << " triangles\n";
+            << mesh.cloud.data.size () << " triangles\n";
 }
 
 void
@@ -400,7 +396,7 @@ void
 generate_halo(
   std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > &poses,
   Eigen::Vector3d focus_center,double halo_r,double halo_dz,int n_poses){
-  
+
 //  std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses;
   for (double t=0;t < (2*M_PI);t =t + (2*M_PI)/ ((double) n_poses) ){
     double x = halo_r*cos(t);
@@ -408,13 +404,11 @@ generate_halo(
     double z = halo_dz;
     double pitch =atan2( halo_dz,halo_r); 
     double yaw = atan2(-y,-x);
-   
+
     Eigen::Isometry3d pose;
     pose.setIdentity();
     Eigen::Matrix3d m;
-    m = AngleAxisd(yaw, Eigen::Vector3d::UnitZ())
-	* AngleAxisd(pitch, Eigen::Vector3d::UnitY())
-	* AngleAxisd(0, Eigen::Vector3d::UnitZ());    
+    m = AngleAxisd(yaw, Eigen::Vector3d::UnitZ()) * AngleAxisd(pitch, Eigen::Vector3d::UnitY()) * AngleAxisd(0, Eigen::Vector3d::UnitZ());
 
     pose *=m;
     Vector3d v(x,y,z);
@@ -425,12 +419,9 @@ generate_halo(
   return ;//poses;
 }
 
-
-
 int
 main (int argc, char** argv)
 {
-
   int width = 640;
   int height = 480;
   window_width_ = width * 2;
@@ -442,15 +433,15 @@ main (int argc, char** argv)
   {
     printHelp (argc, argv);
     return (-1);
-  }  
+  }
   int mode=atoi(argv[1]); 
-  
+
   for (int i=0; i<2048; i++)
   {
     float v = i/2048.0;
     v = powf(v, 3)* 6;
     t_gamma[i] = v*6*256;
-  }  
+  }
 
   glutInit (&argc, argv);
   glutInitDisplayMode (GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);// was GLUT_RGBA
@@ -475,7 +466,7 @@ main (int argc, char** argv)
     std::cerr << "Error: OpenGL 2.0 not supported" << std::endl;
     exit(1);
   }
-  
+
   std::cout << "GL_MAX_VIEWPORTS: " << GL_MAX_VIEWPORTS << std::endl;
 
   camera_ = Camera::Ptr (new Camera ());
@@ -487,18 +478,19 @@ main (int argc, char** argv)
 
   // Actually corresponds to default parameters:
   range_likelihood_->setCameraIntrinsicsParameters (640,480, 576.09757860,
-            576.09757860, 321.06398107, 242.97676897);
+                                                    576.09757860, 321.06398107, 242.97676897);
   range_likelihood_->setComputeOnCPU (false);
   range_likelihood_->setSumOnCPU (true);
-  range_likelihood_->setUseColor (true);  
+  range_likelihood_->setUseColor (true);
   initialize (argc, argv);
-  
+
   // simulation mode:
   // 0 100 fixed poses 
   // 1 a 'halo' camera 
   // 2 slerp between two different poses
   std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses;
-  if (mode==0){
+  if (mode==0)
+  {
     // Create a pose:
     Eigen::Isometry3d pose;
     pose.setIdentity();
@@ -509,36 +501,37 @@ main (int argc, char** argv)
     Vector3d v;
     v << 1.31762, 0.382931, 1.89533;
     pose.translation() = v;  
-    for (int i=0;i< 100;i++){ // duplicate the pose 100 times
+    for (int i=0;i< 100;i++)
+    { // duplicate the pose 100 times
       poses.push_back(pose); 
     }
-  }else if(mode==1){
+  }
+  else if(mode==1)
+  {
     Eigen::Vector3d focus_center(0,0,1.3);
     double halo_r = 4;
     double halo_dz = 2;
     int n_poses=16;
     generate_halo(poses,focus_center,halo_r,halo_dz,n_poses);
-  }else if (mode==2){
+  }
+  else if (mode==2)
+  {
     Eigen::Isometry3d pose1;
     pose1.setIdentity();
     pose1.translation() << 1,0.75,2;
     Eigen::Matrix3d rot1;
-    rot1 = AngleAxisd(M_PI, Eigen::Vector3d::UnitZ())
-	* AngleAxisd(M_PI/10, Eigen::Vector3d::UnitY())
-	* AngleAxisd(0.0, Eigen::Vector3d::UnitZ()); // ypr    
-    pose1.rotate(rot1);  
-  
+    rot1 = AngleAxisd(M_PI, Eigen::Vector3d::UnitZ()) * AngleAxisd(M_PI/10, Eigen::Vector3d::UnitY()) * AngleAxisd(0.0, Eigen::Vector3d::UnitZ()); // ypr
+    pose1.rotate(rot1);
     Eigen::Isometry3d pose2;
     pose2.setIdentity();
     pose2.translation() << 1,-1,3;
     Eigen::Matrix3d rot2;
-    rot2 = AngleAxisd(3*M_PI/4, Eigen::Vector3d::UnitZ())
-	* AngleAxisd(M_PI/4, Eigen::Vector3d::UnitY())
-	* AngleAxisd(0.0, Eigen::Vector3d::UnitZ()); // ypr    
-    pose2.rotate(rot2);  
-  
+    rot2 = AngleAxisd(3*M_PI/4, Eigen::Vector3d::UnitZ()) * AngleAxisd(M_PI/4, Eigen::Vector3d::UnitY()) * AngleAxisd(0.0, Eigen::Vector3d::UnitZ()); // ypr
+    pose2.rotate(rot2);
+
     int n_poses = 20;
-    for (double i=0; i<=1;i+= 1/((double) n_poses -1) ){
+    for (double i=0; i<=1;i+= 1/((double) n_poses -1) )
+    {
       Eigen::Quaterniond rot3; 
       Eigen::Quaterniond r1(pose1.rotation());
       Eigen::Quaterniond r2(pose2.rotation());
@@ -554,7 +547,8 @@ main (int argc, char** argv)
 
   // Do the simulation:
   double tic_main = getTime();
-  for (size_t i=0;i < poses.size();i++){
+  for (size_t i=0;i < poses.size();i++)
+  {
     std::stringstream ss;
     ss.precision(20);
     ss << "simulated_pcl_" << i << ".pcd";
@@ -564,6 +558,6 @@ main (int argc, char** argv)
   }
   cout << poses.size() << " poses simulated in " << (getTime() -tic_main) << "seconds\n";
   cout << (poses.size()/ (getTime() -tic_main) ) << "Hz on average\n";
-  
+
   return 0;
 }

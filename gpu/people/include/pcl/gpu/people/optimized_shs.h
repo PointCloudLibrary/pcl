@@ -220,7 +220,7 @@ void optimized_shs3(const PointCloud<PointXYZRGB> &cloud, float tolerance, Point
 
     // Process all points in the indices vector
 #pragma omp parallel for
-    for (int k = 0; k < (int)indices_in.indices.size (); ++k)
+    for (int k = 0; k < static_cast<int> (indices_in.indices.size ()); ++k)
     {
         int i = indices_in.indices[k];
         if (processed[i])
