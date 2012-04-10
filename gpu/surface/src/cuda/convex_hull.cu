@@ -623,33 +623,33 @@ namespace pcl
   namespace device
   {
     struct SplitFacets
-	{	  	  
-	  int* head_points;	  	  
-	  int facet_count;
+    {
+      int* head_points;
+      int facet_count;
 
-	  mutable PtrStep<int>  verts_inds;
-	   
-	  __device__ __forceinline__ 
-	  void operator()(int facet) const
-	  {		  
-		  int hi = head_points[facet];		 
-		  int i1 = verts_inds.ptr(0)[facet];
-		  int i2 = verts_inds.ptr(0)[facet];
-		  int i3 = verts_inds.ptr(0)[facet];		  
+      mutable PtrStep<int>  verts_inds;
 
-		  make_facet(hi, i1, i2, facet);
-		  make_facet(hi, i2, i3, facet_count + facet);
-		  make_facet(hi, i3, i1, facet_count + facet * 2);		  		  
-	  }
+      __device__ __forceinline__ 
+      void operator()(int facet) const
+      {
+        int hi = head_points[facet];
+        int i1 = verts_inds.ptr(0)[facet];
+        int i2 = verts_inds.ptr(0)[facet];
+        int i3 = verts_inds.ptr(0)[facet];
 
-	  __device__ __forceinline 
-	  void make_facet(int i1, int i2, int i3, int out_idx) const
-	  {
-		verts_inds.ptr(0)[out_idx] = i1;
-		verts_inds.ptr(1)[out_idx] = i2;
-		verts_inds.ptr(2)[out_idx] = i3;				
-	  }
-	};
+        make_facet(hi, i1, i2, facet);
+        make_facet(hi, i2, i3, facet_count + facet);
+        make_facet(hi, i3, i1, facet_count + facet * 2);
+      }
+
+      __device__ __forceinline__
+      void make_facet(int i1, int i2, int i3, int out_idx) const
+      {
+        verts_inds.ptr(0)[out_idx] = i1;
+        verts_inds.ptr(1)[out_idx] = i2;
+        verts_inds.ptr(2)[out_idx] = i3;
+      }
+    };
   }
 }
 

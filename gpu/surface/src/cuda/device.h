@@ -44,44 +44,42 @@
 namespace pcl
 {
   namespace device
-  {    
-	/** \brief Computers plane from 3 points (v, v1, v2), ensures that point P lies positive subspace.
+  {
+    /** \brief Computers plane from 3 points (v, v1, v2), ensures that point P lies positive subspace.
       * \param[in] v 3D point volume tsdf volume container
-	  * \param[in] v1 3D point volume tsdf volume container
-	  * \param[in] v2 3D point volume tsdf volume container
-	  * \param[in] p point for sign check of plane coefs (should lie in positive subspace)
-	  * \return a,b,c,d coefs vector
+      * \param[in] v1 3D point volume tsdf volume container
+      * \param[in] v2 3D point volume tsdf volume container
+      * \param[in] p point for sign check of plane coefs (should lie in positive subspace)
+      * \return a,b,c,d coefs vector
       */ 
     __device__ __host__ __forceinline__
-    inline float4 compute_plane(const float3& v, const float3& v1, const float3& v2, const float3& p)
-	{		  
-	  float3 n = cross(v1 - v, v2 - v);
-		  
-	  float d = -dot(n, v);
-		  
-	  if (dot(n, p) + d < 0)
-	  {
-	    n*=-1.f;
-		d*=-1.f;
-	  }
-	  return make_float4(n.x, n.y, n.z, d);
-	}
+    float4 compute_plane(const float3& v, const float3& v1, const float3& v2, const float3& p)
+    {
+      float3 n = cross(v1 - v, v2 - v);
 
-	
-	__device__ __host__ __forceinline__ float3 tr(const PointType& p) { return make_float3(p.x, p.y, p.z); }
+      float d = -dot(n, v);
 
-	struct LessThanByFacet
-	{
-		__device__ __forceinline__
-		bool operator()(const uint64_type& e1, const int& e2) const
-		{
-			int i1 = (int)(e1 >> 32);			
-			return i1 < e2;
+      if (dot(n, p) + d < 0)
+      {
+        n*=-1.f;
+        d*=-1.f;
+      }
+      return make_float4(n.x, n.y, n.z, d);
+    }
 
-		}
-	};
+    __device__ __host__ __forceinline__ float3 tr(const PointType& p) { return make_float3(p.x, p.y, p.z); }
 
-	__device__ __host__ __forceinline__ float compue_inv_normal_norm(const float4& p) { return 1.f/sqrt(p.x*p.x + p.y*p.y + p.z*p.z); }
+    struct LessThanByFacet
+    {
+      __device__ __forceinline__
+      bool operator()(const uint64_type& e1, const int& e2) const
+      {
+        int i1 = (int)(e1 >> 32);
+        return i1 < e2;
+      }
+    };
+
+    __device__ __host__ __forceinline__ float compue_inv_normal_norm(const float4& p) { return 1.f/sqrt(p.x*p.x + p.y*p.y + p.z*p.z); }
 
   }
 };
