@@ -3,8 +3,6 @@
  * @copyright Copyright (2011) Willow Garage
  * @authors Koen Buys, Anatoly Baksheev
  **/
-
-////// ALL INCLUDES /////////////
 #include <pcl/pcl_base.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -17,27 +15,36 @@
 #include <opencv2/opencv.hpp>
 
 #include <pcl/gpu/people/conversion/conversions.h>
+#include <pcl/gpu/people/conversion/optimized_elec.h>
 #include <pcl/gpu/people/label_skeleton/conversion.h>
 #include <pcl/gpu/people/label_skeleton/segment.h>
 #include <pcl/gpu/people/trees/tree_live.h>
 
-#include <pcl/visualization/cloud_viewer.h>
+//#include <pcl/visualization/cloud_viewer.h>
 #include <pcl/console/parse.h>
 
 #include <iostream>
 #include <sstream>
 
 #define WRITE
+#define AREA_THRES      200
+#define AREA_THRES2     100
+#define CLUST_TOL       0.05
+#define CLUST_TOL_SHS   0.05
+#define DELTA_HUE_SHS   5
+#define MAX_CLUST_SIZE  25000
+
 
 class PeoplePCDApp
 {
   public:
-    PeoplePCDApp () : viewer ("PCL People PCD App") {}
+    //PeoplePCDApp () : viewer ("PCL People PCD App") {}
+    PeoplePCDApp (){}
 
     void cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud, int counter)
     {
-      if (!viewer.wasStopped())
-        viewer.showCloud (cloud);
+      //if (!viewer.wasStopped())
+      //  viewer.showCloud (cloud);
       ////////////////////CALLBACK IMPL/////////////////////
 
       /// @todo rewrite this to a pointcloud::Ptr
@@ -79,11 +86,10 @@ class PeoplePCDApp
       pcl::PointCloud<pcl::PointXYZRGBL> cloud_labels;
 /*
       pcl::gpu::people::conversion::colorLabelPointCloudfromArray(cloud_in, lmap.data, cloud_labels);
-
+*/
       // Creating the Search object for the search method of the extraction
       pcl::search::OrganizedNeighbor<pcl::PointXYZRGBL>::Ptr stree (new pcl::search::OrganizedNeighbor<pcl::PointXYZRGBL>);
       stree->setInputCloud(cloud_labels.makeShared());
-
       std::vector<std::vector<pcl::PointIndices> > cluster_indices;
       cluster_indices.resize(NUM_PARTS);
 
@@ -95,6 +101,7 @@ class PeoplePCDApp
       sorted.clear();
       //Set fixed size of outer vector length = number of parts
       sorted.resize(NUM_PARTS);
+/*
       //create the blob2 matrix
       pcl::gpu::people::label_skeleton::sortIndicesToBlob2 ( cloud_labels, AREA_THRES, sorted, cluster_indices );
       //Build relationships between the blobs
@@ -273,7 +280,7 @@ class PeoplePCDApp
       ////////////////////END CALLBACK IMPL/////////////////
     }
 
-    pcl::visualization::CloudViewer         viewer;
+    //pcl::visualization::CloudViewer         viewer;
     pcl::gpu::people::trees::MultiTreeLiveProc*  m_proc;
     cv::Mat                                 m_lmap;
     cv::Mat                                 m_cmap;
@@ -283,13 +290,13 @@ class PeoplePCDApp
 
 int print_help()
 {
-  cout << "\nPeople tracking app options:" << std::endl;
-  cout << "\t -numTrees \t<int> \tnumber of trees to load" << std::endl;
-  cout << "\t -tree0 \t<path_to_tree_file>" << std::endl;
-  cout << "\t -tree1 \t<path_to_tree_file>" << std::endl;
-  cout << "\t -tree2 \t<path_to_tree_file>" << std::endl;
-  cout << "\t -tree3 \t<path_to_tree_file>" << std::endl;
-  cout << "\t -pcd   \t<path_to_pcd_file>" << std::endl;
+  std::cout << "\nPeople tracking app options:" << std::endl;
+  std::cout << "\t -numTrees \t<int> \tnumber of trees to load" << std::endl;
+  std::cout << "\t -tree0 \t<path_to_tree_file>" << std::endl;
+  std::cout << "\t -tree1 \t<path_to_tree_file>" << std::endl;
+  std::cout << "\t -tree2 \t<path_to_tree_file>" << std::endl;
+  std::cout << "\t -tree3 \t<path_to_tree_file>" << std::endl;
+  std::cout << "\t -pcd   \t<path_to_pcd_file>" << std::endl;
   return 0;
 }
 

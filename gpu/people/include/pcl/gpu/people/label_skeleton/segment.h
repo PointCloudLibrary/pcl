@@ -168,7 +168,7 @@ namespace pcl
           assert(lmap_out.rows == dmap.rows);
           assert(lmap_out.cols == dmap.cols);
 
-          unsigned int patch_size = 5;
+          //unsigned int patch_size = 5;
           unsigned int half_patch = 2;
           unsigned int depthThres = 300; // Think this is in mm, verify this!!!!!
 
@@ -177,15 +177,15 @@ namespace pcl
           unsigned int endcol = (lmap_in.cols - half_patch);
           for(unsigned int h = (0 + half_patch); h < endrow; h++)
           {
-            int endheight = (h + half_patch);
+            unsigned int endheight = (h + half_patch);
 
             // iterate over the width of the image (from 2 till 638)
             for(unsigned int w = (0 + half_patch); w < endcol; w++)
             {
-              int endwidth = (w + half_patch);
+              unsigned int endwidth = (w + half_patch);
 
               short depth = dmap.at<short>(h, w);
-              int votes[NUM_PARTS];
+              unsigned int votes[NUM_PARTS];
               //this should be unneeded but to test
               for(int j = 0 ; j< NUM_PARTS; j++)
                 votes[j] = 0;
@@ -203,7 +203,7 @@ namespace pcl
                   {
                     char label = lmap_in.at<char>(h_l,w_l);
                     if(label >= 0 && label < NUM_PARTS)
-                      votes[label]++;
+                      votes[static_cast<unsigned int>(label)]++;
                     else
                       std::cout << "(E) : smoothLabelImage(): I've read a label that is non valid" << std::endl;
                   }
@@ -216,9 +216,9 @@ namespace pcl
               // iterate over the bin to find the max
               for(char i=0; i<NUM_PARTS; i++)
               {
-                if(votes[i] > max)
+                if(votes[static_cast<unsigned int>(i)] > max)
                 {
-                  max = votes[i];
+                  max = votes[static_cast<unsigned int>(i)];
                   label = i;
                 }
               }
@@ -250,15 +250,15 @@ namespace pcl
           assert(lmap_out.rows == dmap.rows);
           assert(lmap_out.cols == dmap.cols);
 
-          unsigned int patch_size = 5;
+          //unsigned int patch_size = 5;
           unsigned int half_patch = 2;
           unsigned int depthThres = 300; // Think this is in mm, verify this!!!!!
 
           // iterate over the height of the image (from 2 till 478)
-          int endrow = (lmap_in.rows - half_patch);
-          int endcol = (lmap_in.cols - half_patch);
-          int votes[NUM_PARTS];
-          int endheight, endwidth;
+          unsigned int endrow = (lmap_in.rows - half_patch);
+          unsigned int endcol = (lmap_in.cols - half_patch);
+          unsigned int votes[NUM_PARTS];
+          unsigned int endheight, endwidth;
           const short* drow;
           char *loutrow;
           short depth;
@@ -279,7 +279,7 @@ namespace pcl
               endwidth = (w + half_patch);
 
               depth = drow[w];
-
+              // reset votes
               for(int j = 0 ; j< NUM_PARTS; j++)
                 votes[j] = 0;
 
@@ -298,7 +298,7 @@ namespace pcl
                   if(abs(depth - depth_l) < depthThres)
                   {
                     label = lrow_offset[w_l];
-                    votes[label]++;
+                    votes[static_cast<unsigned int>(label)]++;
                   }
                 }
               }
@@ -308,9 +308,9 @@ namespace pcl
               // iterate over the bin to find the max
               for(char i=0; i<NUM_PARTS; i++)
               {
-                if(votes[i] > max)
+                if(votes[static_cast<unsigned int>(i)] > max)
                 {
-                  max = votes[i];
+                  max = votes[static_cast<unsigned int>(i)];
                   loutrow[w] = i;
                 }
               }
@@ -363,7 +363,7 @@ namespace pcl
                 {
                   b.id = id;
                   id++;
-                  b.label = (part_t) lab;
+                  b.label = static_cast<part_t> (lab);
                   b.lid = lid;
                   lid++;
                   sorted[lab].push_back(b); 
@@ -372,7 +372,7 @@ namespace pcl
             }
            }
 
-         printf("total sortIndicesToBlob2 took: %.10fs\n", (double)(clock() - totalStart)/(double)CLOCKS_PER_SEC);
+         printf("total sortIndicesToBlob2 took: %.10fs\n", static_cast<double>(clock() - totalStart)/static_cast<double>(CLOCKS_PER_SEC));
         }
 
         /**

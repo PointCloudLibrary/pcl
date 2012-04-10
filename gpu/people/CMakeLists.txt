@@ -10,7 +10,6 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
-
   find_package(OpenCV QUIET)
 
   #Label_skeleton

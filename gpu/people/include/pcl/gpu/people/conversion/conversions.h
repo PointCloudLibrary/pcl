@@ -125,7 +125,7 @@ namespace pcl
             PointXYZRGBL p;
             p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
             p.r = cloud_in.points[i].r; p.g = cloud_in.points[i].g; p.b = cloud_in.points[i].b;
-            p.label = cloud_in.points[i].Label;
+            p.label = cloud_label.points[i].label;
             cloud_out.points.push_back(p);
           }
         }
@@ -139,7 +139,7 @@ namespace pcl
         void
         labelPointCloudFromArray (
                       const PointCloud<PointXYZ>&  cloud_in,
-                      const PointCloud<Label>&        cloud_label,
+                      const PointCloud<Label>&     cloud_label,
                       PointCloud<PointXYZL>&       cloud_out)
         {
           assert(cloud_in.isOrganized());
@@ -151,7 +151,7 @@ namespace pcl
           {
             PointXYZL p;
             p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
-            p.label = cloud_in.points[i].Label;
+            p.label = cloud_label.points[i].label;
             cloud_out.points.push_back(p);
           }
         }
@@ -178,15 +178,15 @@ namespace pcl
             p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
             p.label = lmap[i];
             // Check if label is not larger then our LUT
-            if(p.label > LUT_COLOR_LABEL_LENGTH)
+            if(p.label > pcl::gpu::people::display::LUT_COLOR_LABEL_LENGTH)
             {
               p.b = 0; p.r = 0; p.g = 0;
             }
             else
             {
-              p.b = LUT_COLOR_LABEL[3 * p.label + 2];
-              p.g = LUT_COLOR_LABEL[3 * p.label + 1];
-              p.r = LUT_COLOR_LABEL[3 * p.label + 0];
+              p.b = pcl::gpu::people::display::LUT_COLOR_LABEL[3 * p.label + 2];
+              p.g = pcl::gpu::people::display::LUT_COLOR_LABEL[3 * p.label + 1];
+              p.r = pcl::gpu::people::display::LUT_COLOR_LABEL[3 * p.label + 0];
             }
             cloud_out.points.push_back(p);
           }
@@ -213,9 +213,9 @@ namespace pcl
             PointXYZRGBL p;
             p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
             p.label = lmap[i];
-            p.b = LUT_COLOR_LABEL[3 * p.label + 2];
-            p.g = LUT_COLOR_LABEL[3 * p.label + 1];
-            p.r = LUT_COLOR_LABEL[3 * p.label + 0];
+            p.b = pcl::gpu::people::display::LUT_COLOR_LABEL[3 * p.label + 2];
+            p.g = pcl::gpu::people::display::LUT_COLOR_LABEL[3 * p.label + 1];
+            p.r = pcl::gpu::people::display::LUT_COLOR_LABEL[3 * p.label + 0];
             cloud_out.points.push_back(p);
           }
         }
