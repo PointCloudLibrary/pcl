@@ -237,7 +237,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
 
 #if defined __GNUC__
 #  if __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#    pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
+#    pragma omp parallel for shared (output) num_threads(threads_)
 #  endif
 #endif
     for (int idx = 0; idx < static_cast<int> (response->points.size ()); ++idx)
@@ -280,7 +280,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseHarris (PointCloudO
   output.resize (input_->size ());
 #if defined __GNUC__
 #  if __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#    pragma omp parallel for shared (output) private (covar, nn_indices, nn_dists) num_threads(threads_)
+#    pragma omp parallel for shared (output) private (covar) num_threads(threads_)
 #  endif
 #endif
   for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
@@ -321,7 +321,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseNoble (PointCloudOu
   output.resize (input_->size ());
 #if defined __GNUC__
 #  if __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#    pragma omp parallel for shared (output) private (covar, nn_indices, nn_dists) num_threads(threads_)
+#    pragma omp parallel for shared (output) private (covar) num_threads(threads_)
 #  endif
 #endif
   for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
@@ -361,7 +361,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseLowe (PointCloudOut
   output.resize (input_->size ());
 #if defined __GNUC__
 #  if __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#    pragma omp parallel for shared (output) private (covar, nn_indices, nn_dists) num_threads(threads_)
+#    pragma omp parallel for shared (output) private (covar) num_threads(threads_)
 #  endif
 #endif
   for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
@@ -420,7 +420,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
   output.resize (input_->size ());
 #if defined __GNUC__
 #  if __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#    pragma omp parallel for shared (output) private (covar, nn_indices, nn_dists, covariance_matrix) num_threads(threads_)
+#    pragma omp parallel for shared (output) private (covar, covariance_matrix) num_threads(threads_)
 #  endif
 #endif
   for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
@@ -468,7 +468,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
   const unsigned max_iterations = 10;
 #if defined __GNUC__
 #  if __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#    pragma omp parallel for shared (corners) private (nnT, NNT, NNTInv, NNTp, diff, nn_indices, nn_dists) num_threads(threads_)
+#    pragma omp parallel for shared (corners) private (nnT, NNT, NNTInv, NNTp, diff) num_threads(threads_)
 #  endif
 #endif
   //for (typename PointCloudOut::iterator cornerIt = corners.begin(); cornerIt != corners.end(); ++cornerIt)
