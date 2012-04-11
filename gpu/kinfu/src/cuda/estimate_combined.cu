@@ -152,7 +152,7 @@ namespace pcl
         float3 n, d, s;
         bool found_coresp = false;
 
-        if (x < cols || y < rows)
+        if (x < cols && y < rows)
           found_coresp = search (x, y, n, d, s);
 
         float row[7];
