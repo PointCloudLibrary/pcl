@@ -234,17 +234,17 @@ class PeoplePCDApp
       pcl::gpu::people::label_skeleton::smoothLabelImage(m_lmap, dmat2, lmap2);
       //cv::medianBlur(m_lmap, lmap2, 3);
 
+      pcl::gpu::people::display::colorLMap( lmap2, cmap );
+      final_view_.showRGBImage(cmap.ptr<unsigned char>(), cmap.cols, cmap.rows);
+      final_view_.spinOnce(1, true); 
+
 #ifdef WRITE
       cv::imwrite("d2_" + lexical_cast<string>(counter) + ".png", dmat2);
       cv::imwrite("l2_" + lexical_cast<string>(counter) + ".png", m_lmap);
-      cv::imwrite("s2_" + lexical_cast<string>(counter) + ".png", lmap2);
-                        
-      
+      cv::imwrite("s2_" + lexical_cast<string>(counter) + ".png", lmap2);                              
       cv::imwrite("c2_" + lexical_cast<string>(counter) + ".png", cmap);      
 #endif
-      pcl::gpu::people::display::colorLMap( lmap2, cmap );
-      final_view_.showRGBImage(cmap.ptr<unsigned char>(), cmap.cols, cmap.rows);
-      final_view_.spinOnce(1, true);
+      
 
       pcl::PointCloud<pcl::PointXYZRGBL> cloud_labels2;
       pcl::gpu::people::conversion::colorLabelPointCloudFromArray(cloud_in, lmap2.data, cloud_labels2);
