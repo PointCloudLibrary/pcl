@@ -48,7 +48,7 @@
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
 #include <pcl/segmentation/segment_differences.h>
 #include <pcl/segmentation/region_growing.h>
-#include <pcl/segmentation/region_growing_rgb.h>
+//#include <pcl/segmentation/region_growing_rgb.h>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -63,7 +63,7 @@ pcl::PointCloud<pcl::Normal>::Ptr normals_;
 pcl::PointCloud<pcl::Normal>::Ptr another_normals_;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (RegionGrowingRGBTest, Segment)
+/*TEST (RegionGrowingRGBTest, Segment)
 {
   pcl::RegionGrowingRGB<pcl::PointXYZRGB> rg;
 
@@ -79,7 +79,7 @@ TEST (RegionGrowingRGBTest, Segment)
   segments = rg.getSegments ();
 
   EXPECT_NE(0, segments.size());
-}
+}*/
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (RegionGrowingTest, Segment)
