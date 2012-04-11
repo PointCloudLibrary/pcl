@@ -93,6 +93,10 @@ namespace pcl
         , init_average_3d_gradient_ (false)
         , init_simple_3d_gradient_ (false)
         , init_depth_change_ (false)
+        , vpx_ (0.0f)
+        , vpy_ (0.0f)
+        , vpz_ (0.0f)
+        , use_sensor_origin_ (false)
       {
         feature_name_ = "IntegralImagesNormalEstimation";
         tree_.reset ();
