@@ -40,8 +40,9 @@
 #ifndef PCL_GPU_PEOPLE_TREE_H_
 #define PCL_GPU_PEOPLE_TREE_H_
 
-#include<boost/cstdint.hpp>  //#include <cstdint>
-#include <pcl/gpu/containers/device_array.h>
+#include <boost/cstdint.hpp> 
+#include <iostream>
+#include <vector>
 
 namespace pcl
 {
@@ -50,7 +51,7 @@ namespace pcl
     namespace people
     {
       namespace trees
-      {
+      {        
         // this has nothing to do here...
         static const double focal = 1000.;
 
@@ -61,35 +62,62 @@ namespace pcl
 
         // ###############################################
         // base data types used in the structures
-        typedef boost::int16_t Attrib;
-        typedef boost::uint8_t Label;
-        typedef boost::uint32_t Label32;
-        typedef boost::uint16_t Depth;
+                        
+        using boost::uint8_t;
+        using boost::int16_t;
+        using boost::uint16_t;
+        using boost::int32_t;
+        using boost::uint32_t;
 
-        struct AttribLocation {
+        typedef int16_t Attrib;
+        typedef uint8_t Label;
+        typedef uint32_t Label32;
+        typedef uint16_t Depth;
+        
+        struct AttribLocation 
+        {
           inline AttribLocation () {du1=dv1=du2=dv2=0;}
-          inline AttribLocation (int u1, int v1, int u2, int v2): du1 (static_cast<boost::int16_t>(u1)),
-                                                                  dv1 (static_cast<boost::int16_t>(v1)),
-                                                                  du2 (static_cast<boost::int16_t>(u2)),
-                                                                  dv2 (static_cast<boost::int16_t>(v2)){}
+          inline AttribLocation (int u1, int v1, int u2, int v2): du1 (static_cast<int16_t>(u1)),
+                                                                  dv1 (static_cast<int16_t>(v1)),
+                                                                  du2 (static_cast<int16_t>(u2)),
+                                                                  dv2 (static_cast<int16_t>(v2))
+          {}
 
-          boost::int16_t du1,dv1,du2,dv2;
+          int16_t du1,dv1,du2,dv2;
         };
+
         static const Label NOLABEL = 31;
 
-        // ###############################################
+        ////////////////////////////////////////////////
         // Tree basic Structure
-        struct Node {
-          inline Node () {}
-          inline Node (const AttribLocation& l, const Attrib& t):loc(l),thresh(t){}
+        struct Node 
+        {
+          Node () {}
+          Node (const AttribLocation& l, const Attrib& t) : loc(l), thresh(t) {}
           AttribLocation loc;
           Attrib         thresh;
         };
+        
 
-        // GPU Typedefs
-        typedef DeviceArray<Label>      D_Label_8;
-        typedef DeviceArray<Label32>    D_Label_32;
-        typedef DeviceArray<Depth>      D_Depth;
+        ////////////////////////////////////////////////
+        // tree_io - Reading and writing AttributeLocations
+        inline std::ostream& operator << (std::ostream& os, const AttribLocation& aloc ) { return os<<aloc.du1<<" "<<aloc.dv1<<" "<<aloc.du2<<" "<<aloc.dv2<<"\n"; }
+        inline std::istream& operator >> (std::istream& is, AttribLocation& aloc ) { return is >> aloc.du1 >> aloc.dv1 >> aloc.du2 >> aloc.dv2; }
+        inline std::istream& operator >> (std::istream& is, Node& n) { return is >> n.loc >> n.thresh; }
+
+        void writeAttribLocs( const std::string& filename, const std::vector<AttribLocation>& alocs );        
+        void readAttribLocs( const std::string& filename, std::vector<AttribLocation>& alocs );
+        void readThreshs( const std::string& filename, std::vector<Attrib>& threshs );
+        
+        void writeThreshs( const std::string& filename, const std::vector<Attrib>& threshs );    
+
+
+        ////////////////////////////////////////////////
+        // treee_run
+       
+        int loadTree( std::istream& is, std::vector<Node>&  tree, std::vector<Label>& leaves );       
+        int loadTree( const std::string&  filename, std::vector<Node>&  tree, std::vector<Label>& leaves );        
+        void runThroughTree( int maxDepth, const std::vector<Node>& tree, const std::vector<Label>& leaves, int W, int H, const uint16_t* dmap, Label* lmap );
 
       } // end namespace Trees
     } // end namespace people

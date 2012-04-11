@@ -41,7 +41,7 @@
 #ifndef PCL_GPU_PEOPLE_TEX_FETCH_H_
 #define PCL_GPU_PEOPLE_TEX_FETCH_H_
 
-#include <boost/cstdint.hpp> //#include <cstdint>
+#include <boost/cstdint.hpp>
 #include <cmath> // for round
 #include <opencv2/core/core.hpp>
 
@@ -53,16 +53,16 @@ namespace pcl
     {
       namespace trees
       {
-
         /**
          * \brief Simple helper structure to fetch the texture without bothering about limits
          * This will be done by CUDA directly for the run time part of the stuff
          */
         struct Tex2Dfetcher
         {
-	  	    inline Tex2Dfetcher( const boost::uint16_t* dmap, int W, int H ):m_dmap(dmap),m_W(W), m_H(H){}
+	  	  Tex2Dfetcher( const boost::uint16_t* dmap, int W, int H ) : m_dmap(dmap), m_W(W), m_H(H) {}
 
-          inline boost::uint16_t operator () ( float uf, float vf ) {
+          inline boost::uint16_t operator () ( float uf, float vf ) 
+          {
             int u = cvRound(uf);
             int v = cvRound(vf);
             if( u < 0 ) u = 0;

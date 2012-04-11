@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -33,55 +33,31 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: $
- * @author: Cedric Cagniart, Koen Buys
- * 
+ * $Id$
+ *
  */
 
-#include <pcl/gpu/people/CUDA_tree.h>
-// CUDA
-#include <cuda_runtime_api.h>
-// general
-#include <cmath>
-#include <cassert>
-#include <iostream>
+#ifndef PCL_IO_PNG_IO_H_
+#define PCL_IO_PNG_IO_H_
 
-#include <pcl/gpu/people/handle_error.h>
+#include <pcl/pcl_macros.h>
+#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PolygonMesh.h>
 
 namespace pcl
 {
-  namespace gpu
+  namespace io
   {
-    namespace people
-    {
-      namespace trees
-      {
-        using pcl::gpu::people::trees::Node;
-        using pcl::gpu::people::trees::Label;
+    /** \brief Saves image to PNG file. 
+      * \param[in] file_name the name of the file to write to disk
+      * \param[in] rgb image rgb data
+      * \param[in] width image width
+      * \param[in] height image height
+      * \ingroup io
+      */
+    PCL_EXPORTS int 
+    savePNGFile (const std::string &file_name, const unsigned char *rgb, int width, int height); 
+  }
+}
 
-        CUDATree::CUDATree(int                             treeHeight, 
-                           const std::vector<pcl::gpu::people::trees::Node>&  nodes,
-                           const std::vector<pcl::gpu::people::trees::Label>& leaves ):
-        m_treeHeight(treeHeight)
-        {
-          m_numNodes = (int)pow(2.0, treeHeight) - 1;
-          assert( int(nodes.size()) == m_numNodes );
-          assert( int(leaves.size()) == pow(2.0,treeHeight) );
-
-          // allocate device memory
-          HANDLE_ERROR( cudaMalloc(&m_nodes_device, sizeof(Node)*nodes.size() ));
-          HANDLE_ERROR( cudaMalloc(&m_leaves_device, sizeof(Label)*leaves.size()));
-
-          // copy to device memory
-          HANDLE_ERROR( cudaMemcpy( m_nodes_device, &nodes[0], sizeof(Node)*nodes.size(), cudaMemcpyHostToDevice));
-          HANDLE_ERROR( cudaMemcpy( m_leaves_device, &leaves[0], sizeof(Label)*leaves.size(), cudaMemcpyHostToDevice));
-        }
-
-        CUDATree::~CUDATree() {
-          cudaFree(m_nodes_device);
-          cudaFree(m_leaves_device);
-        }
-      } // end namespace trees
-    } // end namespace people
-  } // end namespace gpu
-} // end namespace pcl
+#endif  //#ifndef PCL_IO_PNG_IO_H_

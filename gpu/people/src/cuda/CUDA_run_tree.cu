@@ -1,9 +1,11 @@
 /** 
- * @authors: Cedric Cagniart, Koen Buys
+ * @authors: Cedric Cagniart, Koen Buys, Anatoly Baksheev
  */
 
 //#include <cutil.h>
 #include <pcl/gpu/people/tree.h>
+#include <pcl/gpu/utils/safe_call.hpp>
+#include <pcl/gpu/utils/timers_cuda.hpp>
 #include <stdio.h>
 #include <cuda.h>
 
@@ -16,12 +18,6 @@ using pcl::gpu::people::trees::AttribLocation;
 
 typedef unsigned int uint;
 
-#define CUDAPERROR \
-{ \
-	cudaError_t status = cudaGetLastError(); \
-	if( status != cudaSuccess ) printf("(E) CUDA error : %s\n %s\n", __FUNCTION__, cudaGetErrorString(status) ); \
-}
-
 __global__ void KernelCUDA_runTree( const int    W,
                                     const int    H,
                                     const float  f,
@@ -31,8 +27,8 @@ __global__ void KernelCUDA_runTree( const int    W,
                                     const Label* leaves,
                                     Label*       labels)
 {
-  uint u = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  uint v = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
+  uint u = blockIdx.x * blockDim.x + threadIdx.x;
+  uint v = blockIdx.y * blockDim.y + threadIdx.y;
 
   if( u >=W ) return;
   if( v >=H ) return;
@@ -70,43 +66,30 @@ void CUDA_runTree( const int    W,
                    const void*  depth_in_device,
                    void*        label_out_device )
 {
+  using pcl::gpu::divUp; 
+  pcl::gpu::ScopeTimer scope(__FUNCTION__);  
+  
   cudaChannelFormatDesc channeldesc = cudaCreateChannelDesc<unsigned short>();
 
   depthTex.addressMode[0] = cudaAddressModeClamp;
-  cudaBindTexture2D(0, depthTex, depth_in_device, channeldesc, W, H, W*sizeof(unsigned short));
+  cudaSafeCall( cudaBindTexture2D(0, depthTex, depth_in_device, channeldesc, W, H, W*sizeof(unsigned short)) );
+    
 
-  CUDAPERROR
-
-  dim3 gridSize((W+16-1)/16, (H+16-1)/16);
-  dim3 blockSize(16,16);
-
-  cudaEvent_t startEvt, stopEvt;
-  cudaEventCreate(&startEvt);
-  cudaEventCreate(&stopEvt);
-  cudaEventRecord(startEvt, 0);
-
-  KernelCUDA_runTree<<< gridSize, blockSize >>>( W, H, focal, treeHeight, numNodes, 
+  dim3 block(16, 16);
+  dim3 grid( divUp(W, block.x), divUp(H, block.y) );
+  
+  KernelCUDA_runTree<<< grid, block >>>( W, H, focal, treeHeight, numNodes, 
                                                    (const Node*)  nodes_device, 
                                                    (const Label*) leaves_device, 
                                                    (Label*)       label_out_device);
 
-  cudaUnbindTexture(depthTex);
-  cudaEventRecord(stopEvt,0);
-  cudaThreadSynchronize();
-  float ms = 0.;
-  cudaEventElapsedTime(&ms, startEvt, stopEvt);
-  cudaEventDestroy(startEvt);
-  cudaEventDestroy(stopEvt);
-#define CUDAKERNEL_VERBOSE
-#ifdef CUDAKERNEL_VERBOSE
-  printf("CUDA -- spent %f ms in the kernel %s \n", ms, __FUNCTION__ );
-#endif
-
-  CUDAPERROR
+  cudaSafeCall( cudaGetLastError() );
+  cudaSafeCall( cudaThreadSynchronize() );
+  cudaSafeCall( cudaUnbindTexture(depthTex) );        
 }
 
 
-/*
+
 void CUDA_runTree_masked( const int    W,
                           const int    H,
                           const float  focal,
@@ -118,40 +101,30 @@ void CUDA_runTree_masked( const int    W,
                           const void*  mask_in_device,
                           void*        label_out_device )
 {
-  cudaChannelFormatDesc channeldesc = cudaCreateChannelDesc<unsigned short>();
+
+  using pcl::gpu::divUp; 
+  pcl::gpu::ScopeTimer scope(__FUNCTION__);  
 
   depthTex.addressMode[0] = cudaAddressModeClamp;
-  cudaBindTexture2D(0, depthTex, depth_in_device, channeldesc, W, H, W*sizeof(unsigned short));
-  cudaBindTexture2D(0, maskTex, mask_in_device, channeldesc, W, H, W*sizeof(unsigned short));
+  cudaChannelFormatDesc channeldesc = cudaCreateChannelDesc<unsigned short>();  
+  cudaSafeCall( cudaBindTexture2D(0, depthTex, depth_in_device, channeldesc, W, H, W*sizeof(unsigned short)) );
+  cudaSafeCall( cudaBindTexture2D(0, maskTex, mask_in_device, channeldesc, W, H, W*sizeof(unsigned short)) );
 
-  CUDAPERROR
-
-  dim3 gridSize((W+16-1)/16, (H+16-1)/16);
-  dim3 blockSize(16,16);
-
-  cudaEvent_t startEvt, stopEvt;
-  cudaEventCreate(&startEvt);
-  cudaEventCreate(&stopEvt);
-  cudaEventRecord(startEvt, 0);
-
-  KernelCUDA_runTree_masked<<< gridSize, blockSize >>>( W, H, focal, treeHeight, numNodes, 
+  dim3 block(16, 16);
+  dim3 grid( divUp(W, block.x), divUp(H, block.y) );
+  
+#if 0
+  KernelCUDA_runTree_masked<<< grid, block >>>( W, H, focal, treeHeight, numNodes, 
                                                    (const Node*)  nodes_device, 
                                                    (const Label*) leaves_device, 
                                                    (Label*)       label_out_device);
 
-  cudaUnbindTexture(depthTex);
-  cudaUnbindTexture(maskTex);
-  cudaEventRecord(stopEvt,0);
-  cudaThreadSynchronize();
-  float ms = 0.;
-  cudaEventElapsedTime(&ms, startEvt, stopEvt);
-  cudaEventDestroy(startEvt);
-  cudaEventDestroy(stopEvt);
-#define CUDAKERNEL_VERBOSE
-#ifdef CUDAKERNEL_VERBOSE
-  printf("CUDA -- spent %f ms in the kernel %s \n", ms, __FUNCTION__ );
 #endif
 
-  CUDAPERROR
+  cudaSafeCall( cudaGetLastError() );
+  cudaSafeCall( cudaThreadSynchronize() );
+  
+  cudaSafeCall( cudaUnbindTexture(depthTex) );
+  cudaSafeCall( cudaUnbindTexture(maskTex) );      
 }
-*/
+

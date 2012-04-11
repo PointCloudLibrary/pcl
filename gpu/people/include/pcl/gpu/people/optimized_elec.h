@@ -426,10 +426,10 @@ void optimized_elec(const PointCloud<pcl::PointXYZRGB> &cloud, const cv::Mat& sr
 
                     if (radius_scale != 1.f)
                     {
-                        left =  i - (i - left) * radius_scale;
-                        right = i + (right - i) * radius_scale;
-                        top =  j - (j - top) * radius_scale;
-                        bottom = j + (bottom - j) * radius_scale;
+                        left   = static_cast<unsigned int>(i - (i - left) * radius_scale);
+                        right  = static_cast<unsigned int>(i + (right - i) * radius_scale);
+                        top    = static_cast<unsigned int>(j - (j - top) * radius_scale);
+                        bottom = static_cast<unsigned int>(j + (bottom - j) * radius_scale);
                     }
 
                     for(unsigned int y = top; y < bottom + 1; ++y)
@@ -495,7 +495,7 @@ void optimized_elec(const PointCloud<pcl::PointXYZRGB> &cloud, const cv::Mat& sr
             if (cc == -1)
                 continue;
 
-            if (min_pts_per_cluster <= rsizes[cc] && rsizes[cc] <= max_pts_per_cluster)
+            if ((int)min_pts_per_cluster <= rsizes[cc] && rsizes[cc] <= (int)max_pts_per_cluster)
             {
 
                 int ccindex = remap[cc];

@@ -123,12 +123,11 @@ namespace pcl
           return p;
         }
 
-        void colorLMap ( int W, int H,
-                         const pcl::gpu::people::trees::Label* l,
-                         unsigned char* c )
+        void colorLMap ( int W, int H, const pcl::gpu::people::trees::Label* l, unsigned char* c )
         {
           int numPix = W*H;
-          for(int pi=0;pi<numPix;++pi) {
+          for(int pi=0;pi<numPix;++pi) 
+          {
             const unsigned char* color = LUT_COLOR_LABEL + 3*l[pi];
             c[3*pi+0] = color[0];
             c[3*pi+1] = color[1];
@@ -136,8 +135,7 @@ namespace pcl
           }
         }
 
-        void colorLMap (const pcl::PointCloud<pcl::Label>& cloud_in,
-                        pcl::PointCloud<pcl::RGB>&   colormap_out)
+        void colorLMap (const pcl::PointCloud<pcl::Label>& cloud_in, pcl::PointCloud<pcl::RGB>&   colormap_out)
         {
           for(size_t i = 0; i < cloud_in.size (); i++)
           {
@@ -147,18 +145,16 @@ namespace pcl
           colormap_out.height = cloud_in.height;
         } 
 
-        void colorFG ( int W, int H,
-                       const uint16_t* labels,
-                       unsigned char* c )
+        void colorFG ( int W, int H, const uint16_t* labels, unsigned char* c )
         {
           int numPix = W*H;
-          for(int pi=0;pi<numPix;++pi) {
-            if(labels[pi] !=0 ) {
+          for(int pi=0;pi<numPix;++pi)           
+            if(labels[pi] !=0 ) 
+            {
               c[3*pi+0] = 0xFF;
               c[3*pi+1] = 0x00;
               c[3*pi+2] = 0x00;
-            }
-          }
+            }          
         }
 
         int colorLMap( const cv::Mat& lmap, cv::Mat& cmap )
@@ -169,7 +165,7 @@ namespace pcl
           int W = lmap.size().width;
           int H = lmap.size().height;
 
-          cmap.create( H, W, CV_8UC(3) );
+          cmap.create( H, W, CV_8UC3 );
 
           colorLMap( W,H, static_cast<const pcl::gpu::people::trees::Label*>(lmap.data), static_cast<unsigned char*>(cmap.data));
           //colorLMap( W,H, (const pcl::gpu::people::trees::Label*)lmap.data, (unsigned char*)cmap.data);

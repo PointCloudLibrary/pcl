@@ -53,8 +53,6 @@
 #define HEIGHT    480
 #define RATIO     WIDTH/HEIGHT
 
-#define RES_H         HEIGHT
-#define RES_W         WIDTH
 #define MAX_NR_TREES  4
 
 // Some defines for part image
@@ -63,31 +61,35 @@
 // Other defines
 #define DEBUG     1
 
-enum part_t{ Lfoot = 0,
-             Lleg = 1,
-             Lknee = 2,
-             Lthigh = 3,
-             Rfoot = 4,
-             Rleg = 5,
-             Rknee = 6,
-             Rthigh = 7,
-             Rhips = 8,
-             Lhips = 9,
-             Neck = 10,
-             Rarm = 11,
-             Relbow = 12,
-             Rforearm = 13,
-             Rhand = 14,
-             Larm = 15,
-             Lelbow = 16,
-             Lforearm = 17,
-             Lhand = 18,
-             FaceLB = 19,
-             FaceRB = 20,
-             FaceLT = 21,
-             FaceRT = 22,
-             Rchest = 23,
-             Lchest = 24};
+enum part_t 
+{ 
+  Lfoot = 0,
+  Lleg = 1,
+  Lknee = 2,
+  Lthigh = 3,
+  Rfoot = 4,
+  Rleg = 5,
+  Rknee = 6,
+  Rthigh = 7,
+  Rhips = 8,
+  Lhips = 9,
+  Neck = 10,
+  Rarm = 11,
+  Relbow = 12,
+  Rforearm = 13,
+  Rhand = 14,
+  Larm = 15,
+  Lelbow = 16,
+  Lforearm = 17,
+  Lhand = 18,
+  FaceLB = 19,
+  FaceRB = 20,
+  FaceLT = 21,
+  FaceRT = 22,
+  Rchest = 23,
+  Lchest = 24
+};
+
 /** @todo get this to work
 std::string part_k[NUM_PARTS] = {"Lfoot","Lleg", "Lknee","Lthigh",
             "Rfoot","Rleg","Rknee","Rthigh",
@@ -117,7 +119,8 @@ namespace pcl
        * @brief This LUT contains the max primary eigenvalue for each part
        * @todo read this from XML file
        **/
-      static const float LUT_max_part_size[] = {
+      static const float LUT_max_part_size[] = 
+      {
       0.5f,            // 0 Lfoot
       0.7f,            // 1 Lleg
       0.6f,            // 2 Lknee

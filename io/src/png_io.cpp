@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -33,37 +33,31 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: $
- * @authors: Koen Buys, Cedric Cagniart
+ * $Id$
+ *
  */
 
-#ifndef PCL_GPU_PEOPLE_HANDLE_ERROR_H_
-#define PCL_GPU_PEOPLE_HANDLE_ERROR_H_
-#include <stdio.h>
-#include <cuda_runtime_api.h>
-namespace pcl
+#include <pcl/io/png_io.h>
+#include <vtkImageImport.h>
+#include <vtkPNGWriter.h>
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+int 
+pcl::io::savePNGFile (const std::string &file_name, const unsigned char *rgb, int width, int height); 
 {
-  namespace gpu
-  {
-    namespace people
-    {
-      namespace trees
-      {
-        static void HandleError( cudaError_t err,
-                                 const char *file,
-                                 int line ) {
-            if (err != cudaSuccess) {
-                printf( "%s in %s at line %d\n", cudaGetErrorString( err ),
-                        file, line );
-                exit( EXIT_FAILURE );
-            }
-        }
+  vtkSmartPointer<vtkImageImport> importer = vtkSmartPointer<vtkImageImport>::New ();
+  importer->SetNumberOfScalarComponents (3);
+  importer->SetDataScalarTypeToUnsignedChar ();
+  importer->SetWholeExtent (0, width - 1, 0, height - 1, 0, 0);
+  importer->SetDataExtentToWholeExtent ();
 
-        #define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))
+  void* data = const_cast<void*> (reinterpret_cast<const void*> (rgb_data));
+  importer->SetImportVoidPointer (data, 1);
+  importer->Update ();
 
-        #define HANDLE_NULL( a ) { if ((a) == NULL) { printf( "Host memory failed in %s at line %d\n", __FILE__, __LINE__ ); exit( EXIT_FAILURE );} }
-	    }
-    }
-  }
+  vtkSmartPointer<vtkPNGWriter> writer = vtkSmartPointer<vtkPNGWriter>::New();
+  writer->SetFileName(file_name.c_str());
+  writer->SetInputConnection(importer->GetOutputPort());
+  writer->Write();
 }
-#endif  // PCL_PEOPLE_TREES_HANDLE_ERROR_H_

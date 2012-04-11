@@ -12,7 +12,10 @@
 #include <pcl/segmentation/extract_labeled_clusters.h>
 #include <pcl/segmentation/seeded_hue_segmentation.h>
 
+#include <pcl/common/time.h>
 //#include <opencv2/opencv.hpp>
+
+#include <pcl/io/png_io.h>
 
 #include <pcl/gpu/people/conversions.h>
 #include <pcl/gpu/people/optimized_elec.h>
@@ -22,13 +25,17 @@
 #include <pcl/gpu/people/label_tree.h>
 #include <pcl/gpu/people/tree_live.h>
 
+#include <pcl/visualization/image_viewer.h>
 //#include <pcl/visualization/cloud_viewer.h>
 #include <pcl/console/parse.h>
 
-#include <iostream>
-#include <sstream>
+#include <boost/lexical_cast.hpp>
 
-#define WRITE
+#include <iostream>
+
+//#define WRITE
+
+
 #define AREA_THRES      200
 #define AREA_THRES2     100
 #define CLUST_TOL       0.05
@@ -36,12 +43,43 @@
 #define DELTA_HUE_SHS   5
 #define MAX_CLUST_SIZE  25000
 
+using namespace pcl::gpu::people;
+using namespace pcl::io;
+using namespace pcl::visualization;
+using namespace std;
+using namespace boost;
+namespace pc = pcl::console;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void imwrite(const std::string& prefix, int counter, const cv::Mat& mat)
+{   
+   
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 class PeoplePCDApp
 {
   public:
     //PeoplePCDApp () : viewer ("PCL People PCD App") {}
-    PeoplePCDApp (){}
+    PeoplePCDApp () : final_view_("Final labeling")
+    {
+      allocate_buffers(480, 640);
+    }
+
+    void allocate_buffers(int rows, int cols)
+    {
+        depth.resize(rows * cols);
+        depth.width = cols;
+        depth.height = rows;
+        depth.is_dense = true;
+    };
+
+    pcl::PointCloud<unsigned short> depth;
+
+    pcl::gpu::DeviceArray<pcl::PointXYZRGB> cloud_device;
 
     void cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud, int counter)
     {
@@ -54,7 +92,7 @@ class PeoplePCDApp
       pcl::PointCloud<pcl::PointXYZRGB> cloud_in_filt;
       cloud_in = *cloud;
 
-      cv::Mat dmat(cloud_in.height, cloud_in.width, CV_16U);
+      cv::Mat dmat(depth.height, depth.width, CV_16U, &depth.points[0]);
 
       // Project pointcloud back into the imageplane
       // TODO: do this directly in GPU?
@@ -66,23 +104,15 @@ class PeoplePCDApp
       cv::Mat lmap(cloud_in.height, cloud_in.width, CV_8UC1);
       pcl::gpu::people::label_skeleton::smoothLabelImage(m_lmap, dmat, lmap);
 
-#ifdef WRITE
-      std::stringstream ss;
-      ss << "d_"  << counter << ".png";
-      cv::imwrite(ss.str(), dmat);
-      ss.str("");
-      ss << "l_"  << counter << ".png";
-      cv::imwrite(ss.str(), m_lmap);
-      ss.str("");
-      ss << "s_"  << counter << ".png";
-      cv::imwrite(ss.str(), lmap);
-
+#ifdef WRITE      
+      cv::imwrite("d_" + lexical_cast<string>(counter) + ".png", dmat);
+      cv::imwrite("l_" + lexical_cast<string>(counter) + ".png", m_lmap);
+      cv::imwrite("s_" + lexical_cast<string>(counter) + ".png", lmap);
+                  
       cv::Mat input(cloud_in.height, cloud_in.width, CV_8UC3);
       pcl::gpu::people::label_skeleton::makeImageFromPointCloud(input, cloud_in);
 
-      ss.str("");
-      ss << "i_"  << counter << ".png";
-      cv::imwrite(ss.str(), input);
+      cv::imwrite("i_" + lexical_cast<string>(counter) + ".png", input);      
 #endif
 
       pcl::PointCloud<pcl::PointXYZRGBL> cloud_labels;
@@ -115,9 +145,7 @@ class PeoplePCDApp
 #if defined(WRITE)
       // color
       pcl::gpu::people::display::colorLMap( lmap, cmap );
-      ss.str("");
-      ss << "c_" << counter << ".png";
-      cv::imwrite(ss.str(), cmap);
+      cv::imwrite("c_" + lexical_cast<string>(counter) + ".png", cmap);      
 #endif
 
       // ////////////////////////////////////////////////////////////////////////////////////////////// //
@@ -151,10 +179,8 @@ class PeoplePCDApp
               }
             }
           }
-#ifdef WRITE
-          ss.str("");
-          ss << "b_"<< counter << ".png";
-          cv::imwrite(ss.str(), binmask);
+#ifdef WRITE     
+     cv::imwrite("b_" + lexical_cast<string>(counter) + ".png", binmask);
 #endif
 
       // //////////////////////////////////////////////////////////////////////////////////////////////// //
@@ -167,10 +193,8 @@ class PeoplePCDApp
       cv::Mat flowermat(cloud_in.height, cloud_in.width, CV_8UC3, cv::Scalar(0));
       pcl::gpu::people::label_skeleton::makeImageFromPointCloud(flowermat, flower, cloud_in);
 
-#ifdef WRITE
-      ss.str("");
-      ss << "f_" << counter << ".png";
-      cv::imwrite(ss.str(), flowermat);
+#ifdef WRITE      
+      cv::imwrite("f_" + lexical_cast<string>(counter) + ".png", flowermat);
 #endif
       cv::Mat flowergrownmat(cloud_in.height, cloud_in.width, CV_8UC3, cv::Scalar(0));
 
@@ -182,9 +206,7 @@ class PeoplePCDApp
       cv::dilate(flowermat, flowergrownmat, element);
 
 #ifdef WRITE
-      ss.str("");
-      ss << "g_" << counter << ".png";
-      cv::imwrite(ss.str(), flowergrownmat);
+      cv::imwrite("g_" + lexical_cast<string>(counter) + ".png", flowergrownmat);
 #endif
 
       cv::Mat dmat2(cloud_in.height, cloud_in.width, CV_16U);
@@ -213,21 +235,16 @@ class PeoplePCDApp
       //cv::medianBlur(m_lmap, lmap2, 3);
 
 #ifdef WRITE
-      ss.str("");
-      ss << "d2_" << counter << ".png";
-      cv::imwrite(ss.str(), dmat2);
-      ss.str("");
-      ss << "l2_" << counter << ".png";
-      cv::imwrite(ss.str(), m_lmap);
-      ss.str("");
-      ss << "s2_" << counter << ".png";
-      cv::imwrite(ss.str(), lmap2);
-      // Publish this on a image topic
-      pcl::gpu::people::display::colorLMap( lmap2, cmap );
-      ss.str("");
-      ss << "c2_"  << counter << ".png";
-      cv::imwrite(ss.str(), cmap);
+      cv::imwrite("d2_" + lexical_cast<string>(counter) + ".png", dmat2);
+      cv::imwrite("l2_" + lexical_cast<string>(counter) + ".png", m_lmap);
+      cv::imwrite("s2_" + lexical_cast<string>(counter) + ".png", lmap2);
+                        
+      
+      cv::imwrite("c2_" + lexical_cast<string>(counter) + ".png", cmap);      
 #endif
+      pcl::gpu::people::display::colorLMap( lmap2, cmap );
+      final_view_.showRGBImage(cmap.ptr<unsigned char>(), cmap.cols, cmap.rows);
+      final_view_.spinOnce(1, true);
 
       pcl::PointCloud<pcl::PointXYZRGBL> cloud_labels2;
       pcl::gpu::people::conversion::colorLabelPointCloudFromArray(cloud_in, lmap2.data, cloud_labels2);
@@ -279,28 +296,31 @@ class PeoplePCDApp
       }
     }
     //pcl::visualization::CloudViewer         viewer;
-    pcl::gpu::people::trees::MultiTreeLiveProc* m_proc;
+    trees::MultiTreeLiveProc::Ptr m_proc;
     cv::Mat                                     m_lmap;
     cv::Mat                                     m_cmap;
     cv::Mat                                     cmap;
     cv::Mat                                     m_bmap;
+
+
+    ImageViewer final_view_;
 };
 
 int print_help()
 {
-  std::cout << "\nPeople tracking app options:" << std::endl;
-  std::cout << "\t -numTrees \t<int> \tnumber of trees to load" << std::endl;
-  std::cout << "\t -tree0 \t<path_to_tree_file>" << std::endl;
-  std::cout << "\t -tree1 \t<path_to_tree_file>" << std::endl;
-  std::cout << "\t -tree2 \t<path_to_tree_file>" << std::endl;
-  std::cout << "\t -tree3 \t<path_to_tree_file>" << std::endl;
-  std::cout << "\t -pcd   \t<path_to_pcd_file>" << std::endl;
+  cout << "\nPeople tracking app options:" << endl;
+  cout << "\t -numTrees \t<int> \tnumber of trees to load" << endl;
+  cout << "\t -tree0 \t<path_to_tree_file>" << endl;
+  cout << "\t -tree1 \t<path_to_tree_file>" << endl;
+  cout << "\t -tree2 \t<path_to_tree_file>" << endl;
+  cout << "\t -tree3 \t<path_to_tree_file>" << endl;
+  cout << "\t -pcd   \t<path_to_pcd_file>" << endl;
   return 0;
 }
 
 int main(int argc, char** argv)
 {
-  if(pcl::console::find_switch (argc, argv, "--help") || pcl::console::find_switch (argc, argv, "-h"))
+  if(pc::find_switch (argc, argv, "--help") || pc::find_switch (argc, argv, "-h"))
     return print_help();
 
   std::string treeFilenames[4] = 
@@ -311,13 +331,13 @@ int main(int argc, char** argv)
     "d:/TreeData/results/forest3/tree_20.txt"
   };
   int         numTrees = 4;
-  std::string pcdname = "d:/3/0015.pcd";
-  pcl::console::parse_argument (argc, argv, "-numTrees", numTrees);
-  pcl::console::parse_argument (argc, argv, "-tree0", treeFilenames[0]);
-  pcl::console::parse_argument (argc, argv, "-tree1", treeFilenames[1]);
-  pcl::console::parse_argument (argc, argv, "-tree2", treeFilenames[2]);
-  pcl::console::parse_argument (argc, argv, "-tree3", treeFilenames[3]);
-  pcl::console::parse_argument (argc, argv, "-pcd", pcdname);
+  std::string pcdname = "d:/git/pcl/gpu/people/tools/test.pcd";
+  pc::parse_argument (argc, argv, "-numTrees", numTrees);
+  pc::parse_argument (argc, argv, "-tree0", treeFilenames[0]);
+  pc::parse_argument (argc, argv, "-tree1", treeFilenames[1]);
+  pc::parse_argument (argc, argv, "-tree2", treeFilenames[2]);
+  pc::parse_argument (argc, argv, "-tree3", treeFilenames[3]);
+  pc::parse_argument (argc, argv, "-pcd", pcdname);
   //Don't know if this assert is still needed with pcl::console?
   //AB: pcl::console does nothing if arg is not found
   assert(numTrees > 0 );
@@ -329,7 +349,7 @@ int main(int argc, char** argv)
   /// Load the first tree
   std::ifstream fin0(treeFilenames[0].c_str() );
   assert(fin0.is_open() );
-  app.m_proc = new pcl::gpu::people::trees::MultiTreeLiveProc(fin0);
+  app.m_proc.reset(new trees::MultiTreeLiveProc(fin0));
   fin0.close();
 
   /// Load the other tree files
@@ -340,36 +360,22 @@ int main(int argc, char** argv)
     fin.close();
   }
 
-
-  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA>);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud2 (new pcl::PointCloud<pcl::PointXYZRGB>);
-
-  if (pcl::io::loadPCDFile<pcl::PointXYZRGBA> (pcdname, *cloud) == -1) //* load the file
-  {
-    //PCL_ERROR ("Couldn't read file %s \n", pcdname);
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
+  int res = pcl::io::loadPCDFile<pcl::PointXYZRGB> (pcdname, *cloud);
+  if (res == -1) //* load the file
+  {    
     PCL_ERROR ("Couldn't read file\n");
     return (-1);
   }
-  std::cout << "Loaded "
-            << cloud->width * cloud->height
-            << " data points from " << pcdname
-            << std::endl;
-
-  for(size_t i = 0; i < cloud->points.size (); i++)
-  {
-    pcl::PointXYZRGB p;
-    p.x = cloud->points[i].x;
-    p.y = cloud->points[i].y;
-    p.z = cloud->points[i].z;
-    p.r = cloud->points[i].r;
-    p.g = cloud->points[i].g;
-    p.b = cloud->points[i].b;
-    cloud2->points.push_back(p);
-  }
-  cloud2->width = cloud->width;
-  cloud2->height = cloud->height;
+  cout << "Loaded " << cloud->width * cloud->height << " data points from " << pcdname << endl;
 
   /// Run the app
-  app.cloud_cb(cloud2, 1);
+  
+  {
+    ScopeTime frame_time("frame_time");
+    app.cloud_cb(cloud, 1);
+  }
+
+  app.final_view_.spin();
   return 0;
 }

@@ -38,18 +38,13 @@
  *
  */
 
-#include <pcl/gpu/people/tree_run.h>
-#include <pcl/gpu/people/handle_error.h>
+#include <pcl/gpu/people/tree.h>
 #include <pcl/gpu/people/tree_live.h>
-
 #include <pcl/gpu/people/label_common.h>
-
 #include <pcl/gpu/containers/device_array.h>
 
-#include <cuda_runtime_api.h>
 #include "cuda/CUDA_run_multi_tree.h"
-#include <pcl/gpu/people/CUDA_tree.h>
-
+#include "CUDA_tree.h"
 #include <iostream>
 
 using pcl::gpu::people::trees::Node;
@@ -64,7 +59,7 @@ namespace pcl
     namespace people
     {
       namespace trees
-      {
+      {        
         MultiTreeLiveProc::MultiTreeLiveProc(std::istream& is)
         {
           // load the tree file
@@ -72,27 +67,20 @@ namespace pcl
           std::vector<Label> leaves;
 
           // this might throw but we haven't done any malloc yet
-          int height = loadTree (is, nodes, leaves );  
-          CUDATree* tree = new CUDATree (height, nodes, leaves);
-          m_trees.push_back (tree);
+          int height = loadTree (is, nodes, leaves );           
+          m_trees.push_back(CUDATree(height, nodes, leaves));
 
-          // alloc cuda
-          HANDLE_ERROR( cudaMalloc(&m_dmap_device,      RES_W * RES_H * sizeof(uint16_t)));
-          HANDLE_ERROR( cudaMalloc(&m_multilmap_device, RES_W * RES_H * MAX_NR_TREES * sizeof(uint8_t)));
-          HANDLE_ERROR( cudaMalloc(&m_lmap_device,      RES_W * RES_H * sizeof(uint8_t)));
+          const int cols = 640; // default buffer sizes, 
+          const int rows = 480; // may change during 'process' method
+          
+          //preallocate buffers
+          m_dmap_device.create(cols * rows);
+          m_lmap_device.create(cols * rows);          
+          m_multilmap_device.create(cols * rows * MAX_NR_TREES);          
         }
 
-        MultiTreeLiveProc::~MultiTreeLiveProc() 
-        {
-          for( std::vector<CUDATree*>::iterator t_itr = m_trees.begin(); 
-                                                   t_itr != m_trees.end(); t_itr ++ ){
-            delete *t_itr;
-          }
-
-          cudaFree(m_dmap_device);
-          cudaFree(m_multilmap_device);
-          cudaFree(m_lmap_device);
-        }
+        MultiTreeLiveProc::~MultiTreeLiveProc()  {}
+        
 
         void MultiTreeLiveProc::addTree(std::istream& is)
         {
@@ -102,88 +90,53 @@ namespace pcl
           std::vector<Node>  nodes;
           std::vector<Label> leaves;
           // this might throw but we haven't done any malloc yet
-          int height = loadTree(is, nodes, leaves );  
-          CUDATree* tree = new CUDATree(height, nodes, leaves);
-          m_trees.push_back(tree);
+          int height = loadTree(is, nodes, leaves );            
+          m_trees.push_back(CUDATree(height, nodes, leaves));
         }
 
-        void MultiTreeLiveProc::process(const cv::Mat& dmap,
-                                        cv::Mat&       lmap )
+        void MultiTreeLiveProc::process(const cv::Mat& dmap, cv::Mat& lmap )
         {
-          process( dmap, lmap, std::numeric_limits<pcl::gpu::people::trees::Attrib>::max() );
+          process( dmap, lmap, std::numeric_limits<Attrib>::max() );
         }
 
-        void MultiTreeLiveProc::process(const cv::Mat& dmap,
-                                        cv::Mat&       lmap,
-                                        int        FGThresh)
-        {
-          if( dmap.depth()       != CV_16U ) std::cerr << "depth has incorrect channel type" << std::endl;
-          if( dmap.channels()    != 1 )      std::cerr << "depth has incorrect channel count" << std::endl;
-          if( dmap.size().width  != 640 )    std::cerr << "depth has incorrect width" << std::endl;
-          if( dmap.size().height != 480 )    std::cerr << "depth has incorrect height" << std::endl;
-          if( !dmap.isContinuous() )         std::cerr << "depth has non contiguous rows" << std::endl;
+        void MultiTreeLiveProc::process(const cv::Mat& dmap, cv::Mat& lmap, int FGThresh)
+        {  
+          m_dmap_device.create(dmap.cols * dmap.rows);
+          m_lmap_device.create(dmap.cols * dmap.rows);          
+          m_multilmap_device.create(dmap.cols * dmap.rows * MAX_NR_TREES);
+          
 
           // alloc the buffer if it isn't done yet
-          lmap.create( 480, 640, CV_8UC(1) );
+          lmap.create( dmap.size(), CV_8U );
 
           // copy depth to cuda
-          cudaMemcpy(m_dmap_device, (const void*) dmap.data, 
-                                    640*480*sizeof(uint16_t), cudaMemcpyHostToDevice);
-
+          m_dmap_device.upload((Depth*)dmap.data, dmap.cols * dmap.rows);
+          
           // 1 - run the multi passes
           int numTrees = m_trees.size();
-          for(int ti=0; ti<numTrees; ++ti ) {
-            CUDATree* t = m_trees[ti];
-            if( FGThresh == std::numeric_limits<pcl::gpu::people::trees::Attrib>::max() ) {
-              CUDA_runMultiTreePass( ti, 640,480, focal,  
-                                                       t->treeHeight(), t->numNodes(),
-                                                t->nodes_device(), t->leaves_device(),
-                                                  m_dmap_device, m_multilmap_device );
-            }
-            else {
-              CUDA_runMultiTreePassFG( ti, FGThresh, 640,480, focal,  
-                                                       t->treeHeight(), t->numNodes(),
-                                                t->nodes_device(), t->leaves_device(),
-                                                  m_dmap_device, m_multilmap_device );
-            }
-          }
-          // 2 - run the merging 
-          CUDA_runMultiTreeMerge(m_trees.size(), 640,480, 
-                                      m_dmap_device, m_multilmap_device, m_lmap_device);
-          // 3 - download back from cuda ( the copy will execute all the kernels at once)
-          cudaMemcpy((Label*)(lmap.data), m_lmap_device,
-                                       640*480*sizeof(Label), cudaMemcpyDeviceToHost);
-        }
-/*
-        void MultiTreeLiveProc::process(const pcl::gpu::DeviceArray<unsigned short>&  DepthMap,
-                                        pcl::gpu::DeviceArray<unsigned char>&         LabelMap,
-                                        int                                           FGThresh)
-        {
-          // 1 - run the multi passes
-          int numTrees = m_trees.size ();
-          for(int ti=0; ti<numTrees; ++ti ) 
+          for( int ti = 0; ti < numTrees; ++ti ) 
           {
-            CUDATree* t = m_trees[ti];
-            if( FGThresh == std::numeric_limits<pcl::people::trees::Attrib>::max () ) 
+            const CUDATree& t = m_trees[ti];
+            
+            if( FGThresh == std::numeric_limits<Attrib>::max() ) 
             {
-              CUDA_runMultiTreePass ( ti, 640,480, focal,  
-                                      t->treeHeight (), t->numNodes (),
-                                      t->nodes_device (), t->leaves_device (),
-                                      DepthMap, m_multilmap_device );
+              CUDA_runMultiTreePass( ti, dmap.cols, dmap.rows, (float)focal, t.treeHeight, t.numNodes, 
+                  t.nodes_device, t.leaves_device, m_dmap_device, m_multilmap_device );
             }
             else 
             {
-              CUDA_runMultiTreePassFG( ti, FGThresh, 640,480, focal,  
-                                       t->treeHeight (), t->numNodes (),
-                                       t->nodes_device (), t->leaves_device (),
-                                       DepthMap, m_multilmap_device );
+              CUDA_runMultiTreePassFG( ti, FGThresh, dmap.cols, dmap.rows, (float)focal, t.treeHeight, t.numNodes, 
+                  t.nodes_device, t.leaves_device, m_dmap_device, m_multilmap_device );
             }
           }
           // 2 - run the merging 
-          CUDA_runMultiTreeMerge(m_trees.size (), 640,480, 
-                                 m_dmap_device, m_multilmap_device, LabelMap);
+          CUDA_runMultiTreeMerge(m_trees.size(), dmap.cols, dmap.rows, m_dmap_device, m_multilmap_device, m_lmap_device);
+
+          // 3 - download back from cuda ( the copy will execute all the kernels at once)
+          m_lmap_device.download((Label*)lmap.data);          
         }
-*/
+
+
       } // end namespace trees
     } // end namespace people
   } // end namespace gpu
