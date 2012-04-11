@@ -102,108 +102,122 @@ namespace pcl
           void
           process (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud);
 
+          /** \brief Set the max number of pixels in a body part cluster, defaults to 25000 */
           inline void
           setMaxClusterSize (unsigned int max_cluster_size)
           {
             max_cluster_size_ = max_cluster_size;
           }
 
+          /** \brief Get the max number of pixels in a body part cluster, defaults to 25000 */
           inline unsigned int
           getMaxClusterSize () const
           {
             return (max_cluster_size_);
           }
 
+          /** \brief Set the number of body parts used in the RDF, defaults to 25 */
           inline void
           setNumberOfParts (unsigned int number_of_parts)
           {
             number_of_parts_ = number_of_parts;
           }
-
+          /** \brief Get the number of body parts used in the RDF, defaults to 25 */
           inline unsigned int
           getNumberOfParts () const
           {
             return (number_of_parts_);
           }
 
+          /** \brief Set the number of decision trees used in the RDF, defaults to one, max is 4 */
           inline void
           setNumberOfTrees (unsigned int number_of_trees)
           {
             number_of_trees_ = number_of_trees;
           }
 
+          /** \brief Set the number of decision trees used in the RDF, defaults to one */
           inline unsigned int
           getNumberOfTrees () const
           {
             return (number_of_trees_);
           }
 
+          /** \brief Set the minimal amount of pixels needed before accepting a body part cluster in Euclidean Labeled Clustering, defaults to 200 */
           inline void
           setClusterAreaThreshold (unsigned int cluster_area_threshold)
           {
             cluster_area_threshold_ = cluster_area_threshold;
           }
 
+          /** \brief Get the minimal amount of pixels needed before accepting a body part cluster in Euclidean Labeled Clustering, defaults to 200 */
           inline unsigned int
           getClusterAreaThreshold () const
           {
             return (cluster_area_threshold_);
           }
 
+          /** \brief Set the minimal amount of pixels needed before accepting a body part cluster in Seeded Hue Segmentation, defaults to 100 */
           inline void
           setClusterAreaThresholdSHS (unsigned int cluster_area_threshold_shs)
           {
             cluster_area_threshold_shs_ = cluster_area_threshold_shs;
           }
 
+          /** \brief Set the minimal amount of pixels needed before accepting a body part cluster in Seeded Hue Segmentation, defaults to 100 */
           inline unsigned int
           getClusterAreaThresholdSHS () const
           {
             return (cluster_area_threshold_shs_);
           }
-
+          /** \brief Set the sphere radius in which the cluster search and seeded hue segmentation will work, defaults to 0.05 */
           inline void
           setClusterTolerance (float cluster_tolerance)
           {
             cluster_tolerance_ = cluster_tolerance;
           }
 
+          /** \brief Get the sphere radius in which the cluster search and seeded hue segmentation will work, defaults to 0.05 */
           inline float
           getClusterTolerance () const
           {
             return (cluster_tolerance_);
           }
-
+          /** \brief Set the tolerance for the delta on the Hue in Seeded Hue Segmentation step */
           inline void
           setDeltaHueTolerance (unsigned int delta_hue_tolerance)
           {
             delta_hue_tolerance_ = delta_hue_tolerance;
           }
 
+          /** \brief Get the tolerance for the delta on the Hue in Seeded Hue Segmentation step, defaults to 5 */
           inline unsigned int
           getDeltaHueTolerance () const
           {
             return (delta_hue_tolerance_);
           }
 
+          /** \brief Set the scale of the radius for Euclidean Labeled Clustering */
           inline void
           setElecRadiusScale (float elec_radius_scale)
           {
             elec_radius_scale_ = elec_radius_scale;
           }
 
+          /** \brief Get the scale of the radius for Euclidean Labeled Clustering */
           inline float
           getElecRadiusScale () const
           {
             return (elec_radius_scale_);
           }
-
+          /** \brief Set if the Euclidean Labeled Cluster will do a brute force border search to refine it's result (=slow) */
           inline void
           setElecBruteForceBorder (bool elec_brute_force_border)
           {
             elec_brute_force_border_ = elec_brute_force_border;
           }
 
+          /** \brief Get if the Euclidean Labeled Cluster will do a brute force border search to refine it's result (=slow) */
           inline bool
           getElecBruteForceBorder () const
           {
