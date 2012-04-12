@@ -39,12 +39,13 @@
  */
 
 #include <pcl/gpu/people/tree.h>
-#include <pcl/gpu/people/tree_live.h>
+
 #include <pcl/gpu/people/label_common.h>
 #include <pcl/gpu/containers/device_array.h>
 
 #include <pcl/console/print.h>
 
+#include "tree_live.h"
 #include "cuda/CUDA_run_multi_tree.h"
 #include "CUDA_tree.h"
 #include <iostream>

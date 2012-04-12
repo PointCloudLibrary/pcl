@@ -49,11 +49,11 @@
 #include <pcl/search/pcl_search.h>
 #include <pcl/common/time.h>
 
-//#include <pcl/point_types_conversion.h> // can't include because not inline function causes multiple definition errors
-namespace pcl
-{
-   void PointXYZRGBtoXYZHSV (PointXYZRGB& in, PointXYZHSV& out);
-}
+#include <pcl/point_types_conversion.h> // can't include because not inline function causes multiple definition errors
+//namespace pcl
+//{
+//   void PointXYZRGBtoXYZHSV (PointXYZRGB& in, PointXYZHSV& out);
+//}
 
 #include <iostream>
 #include <algorithm>

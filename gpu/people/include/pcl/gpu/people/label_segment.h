@@ -61,6 +61,8 @@
 #include <pcl/common/centroid.h>
 #include <pcl/PointIndices.h>
 
+#include <pcl/common/time.h>
+
 namespace pcl
 {
   namespace gpu

@@ -63,14 +63,17 @@ namespace pcl
          * @brief This structure containts all parameters to describe blobs and their parent/child relations
          * @todo: clean this out in the end, perhaps place the children in a separate struct
          */
-        struct Blob2 {
+        struct Blob2 
+        {
           inline Blob2() {}
 
-          inline Blob2( const Blob2& B) {
+          inline Blob2( const Blob2& B) 
+          {
             *this = B;
           }
 
-          Blob2& operator = ( const Blob2& B ) {
+          Blob2& operator = ( const Blob2& B ) 
+          {
             id    = B.id;     // unique ID for every blob in the  frame
             label = B.label;  // the body part label of this blob
             lid   = B.lid;    // the label id, namingly the number of blob of this label

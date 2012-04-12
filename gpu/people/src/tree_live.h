@@ -21,6 +21,7 @@ namespace pcl
       {
         //forward declared but never shown
         struct CUDATree;
+       
 
         // utility function to get a colored map out
         int colorLMap( const cv::Mat& lmap, cv::Mat& cmap );

@@ -42,7 +42,7 @@
 
 //#include <opencv2/opencv.hpp>
 #include <pcl/point_types.h>
-#include <pcl/gpu/people/tree_live.h>
+//#include <pcl/gpu/people/tree_live.h>
 #include <pcl/gpu/people/tree.h>
 
 namespace pcl

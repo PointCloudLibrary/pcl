@@ -297,7 +297,7 @@ void optimized_elec(const PointCloud<pcl::PointXYZRGB> &cloud, const cv::Mat& sr
 
     int cc = -1;
 
-    double squared_radius = tolerance * tolerance;
+    float squared_radius = tolerance * tolerance;
 
     for(int j = 0; j < sz.height; ++j)
     {

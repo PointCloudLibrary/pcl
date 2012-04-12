@@ -46,71 +46,39 @@
 #include <pcl/console/print.h>
 #include <pcl/gpu/people/label_common.h>
 #include <pcl/gpu/people/tree.h>
-#include <pcl/gpu/people/tree_live.h>
+
+#include <opencv2/core/core.hpp>
 
 namespace pcl
 {
   namespace gpu
   {
     namespace people
-    {
-      class Person
+    {   
+      namespace trees
+      {
+        class MultiTreeLiveProc;
+      };
+
+      class PCL_EXPORTS Person
       {
         public:
+
+          typedef boost::shared_ptr<Person> Ptr;
+          typedef pcl::PointXYZRGB InputPointT;
+          
+          DeviceArray<InputPointT> cloud_device_;
+          DeviceArray<unsigned short> depth_device_;
+
           /** \brief Class constructor. */
-          Person (std::string& tree_file) : 
-                      max_cluster_size_(25000),
-                      number_of_parts_(25),
-                      number_of_trees_(1),
-                      cluster_area_threshold_(200),
-                      cluster_area_threshold_shs_(100),
-                      cluster_tolerance_(0.05),
-                      delta_hue_tolerance_(5),
-                      elec_radius_scale_(1.0f),
-                      elec_brute_force_border_(false),
-                      do_shs_(true),
-                      dilation_size_(2), 
-                      name_("Generic")
-          {
-            /// Load the first tree
-            std::ifstream fin (tree_file.c_str ());
-            assert (fin.is_open ());
-            multi_tree_live_proc_ = new pcl::gpu::people::trees::MultiTreeLiveProc (fin);
-            fin.close ();
-          };
-
+          Person (std::string& tree_file);
           /** \brief Class destructor. */
-          ~Person ()
-          {};
-
-          //// PUBLIC VARIABLES HERE ////
-          pcl::gpu::DeviceArray<pcl::PointXYZRGB>   cloud_device_;
-          pcl::gpu::DeviceArray<pcl::PointXYZRGBL>  labeled_device_;
-          pcl::gpu::DeviceArray<unsigned short>     depth_device_;
-          pcl::gpu::DeviceArray<char>               label_device_;
-          pcl::gpu::DeviceArray<float>              float_depth_device_;
-
+          ~Person () {}
+                    
           //// PUBLIC METHODS /////
           /** \brief Loads an aditional tree to the RDF */
           int
-          addTree (std::string& tree_file)
-          {
-            if(number_of_trees_ >= MAX_NR_TREES)
-            {
-              PCL_INFO ("Can't add another tree, we are already at max");
-              return -1;
-            }
-            std::ifstream fin(tree_file.c_str() );
-            if(!fin.is_open())
-            {
-              PCL_INFO ("Couldn't open this tree file");
-              return -1;
-            }
-            multi_tree_live_proc_->addTree(fin);
-            fin.close();
-            number_of_trees_++;
-            return 1;
-          }
+          addTree (std::string& tree_file);
 
           /** \brief The actuall processing callback */
           void
@@ -274,7 +242,7 @@ namespace pcl
           /** \brief Class getName method. */
           virtual std::string getClassName () const { return ("Person"); }
 
-        protected:
+        public:
           unsigned int                                max_cluster_size_;
           unsigned int                                number_of_parts_;
           unsigned int                                number_of_trees_;
@@ -286,7 +254,12 @@ namespace pcl
           bool                                        elec_brute_force_border_;
           bool                                        do_shs_;
           unsigned int                                dilation_size_;
-          pcl::gpu::people::trees::MultiTreeLiveProc* multi_tree_live_proc_;
+          
+          boost::shared_ptr<trees::MultiTreeLiveProc> m_proc;         
+          cv::Mat                             m_lmap;
+          cv::Mat                             m_cmap;
+          cv::Mat                             cmap;
+          cv::Mat                             m_bmap;
           std::string                                 name_;                  // Name of the person
           std::vector<float>                          max_part_size_;         // Max primary eigenvalue for each body part
           std::vector<std::vector<float> >            part_ideal_length_;     // Ideal length between two body parts

@@ -39,7 +39,7 @@
  */
 
 #include <pcl/gpu/people/tree.h>
-#include <pcl/gpu/people/tree_live.h>
+#include "tree_live.h"
 
 #include "cuda/CUDA_run_tree.h"
 #include "CUDA_tree.h"

@@ -152,7 +152,7 @@ void optimized_shs2(const PointCloud<PointXYZRGB> &cloud, float tolerance, Point
 
             // search window
             unsigned left, right, top, bottom;
-            double squared_radius = tolerance * tolerance;
+            float squared_radius = tolerance * tolerance;
             search.getProjectedRadiusSearchBox (q, squared_radius, left, right, top, bottom);
 
             unsigned yEnd  = (bottom + 1) * cloud.width + right + 1;
