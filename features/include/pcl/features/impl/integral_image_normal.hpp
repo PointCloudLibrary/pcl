@@ -378,6 +378,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
 template <typename PointInT, typename PointOutT> void
 pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
 {
+  output.sensor_origin_ = input_->sensor_origin_;
+  output.sensor_orientation_ = input_->sensor_orientation_;
+  
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
   // compute depth-change map

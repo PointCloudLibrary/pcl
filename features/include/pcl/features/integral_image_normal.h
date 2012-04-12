@@ -96,7 +96,7 @@ namespace pcl
         , vpx_ (0.0f)
         , vpy_ (0.0f)
         , vpz_ (0.0f)
-        , use_sensor_origin_ (false)
+        , use_sensor_origin_ (true)
       {
         feature_name_ = "IntegralImagesNormalEstimation";
         tree_.reset ();
