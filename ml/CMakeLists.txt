@@ -15,6 +15,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/dt/decision_tree_learner.h
         include/pcl/${SUBSYS_NAME}/dt/feature_handler.h
         include/pcl/${SUBSYS_NAME}/dt/stats_estimator.h
+        include/pcl/${SUBSYS_NAME}/rgbd_2d_data_set.h
         )
 
     set(impl_incs 
@@ -23,6 +24,7 @@ if(build)
         )
 
     set(srcs
+        src/rgbd_2d_data_set.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
