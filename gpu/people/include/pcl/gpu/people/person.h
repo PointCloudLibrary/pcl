@@ -68,7 +68,12 @@ namespace pcl
           typedef pcl::PointXYZRGB InputPointT;
           
           DeviceArray<InputPointT> cloud_device_;
-          DeviceArray<unsigned short> depth_device_;
+          
+          DeviceArray2D<unsigned short> depth_device_;
+          DeviceArray2D<unsigned short> depth_device2_;
+
+          DeviceArray2D<unsigned char> lmap_device_;
+          DeviceArray2D<unsigned char> lmap_device2_;
 
           /** \brief Class constructor. */
           Person (std::string& tree_file);

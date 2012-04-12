@@ -41,9 +41,9 @@
 #include <pcl/gpu/people/tree.h>
 #include "tree_live.h"
 
-#include "cuda/CUDA_run_tree.h"
-#include "CUDA_tree.h"
 #include <pcl/gpu/people/label_common.h>
+
+#include "internal.h"
 
 using pcl::gpu::people::trees::Node;
 using pcl::gpu::people::trees::Label;

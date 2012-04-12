@@ -39,9 +39,10 @@
  */
 
 #include <pcl/gpu/people/tree.h>
-#include <pcl/gpu/utils/safe_call.hpp>
+
 #include <pcl/gpu/utils/timers_cuda.hpp>
-#include "CUDA_run_multi_tree.h"
+
+#include "internal.h"
 #include <assert.h>
 
 using pcl::gpu::people::trees::Node;
@@ -169,7 +170,7 @@ __device__ int findMaxId_testTie(int numBins, char* bins)
 __global__ void KernelCUDA_MultiTreeMerge( const int    numTrees,
                                            const int    W,
                                            const int    H,
-                                           Label*       labels )
+                                           pcl::device::PtrStep<unsigned char> labels )
 {
   uint u = blockIdx.x * blockDim.x + threadIdx.x;
   uint v = blockIdx.y * blockDim.y + threadIdx.y;
@@ -210,27 +211,28 @@ __global__ void KernelCUDA_MultiTreeMerge( const int    numTrees,
     res = findMaxId( NUMLABELS, bins );
   }
   __syncthreads();
-  labels[v*W+u] = res;
+  labels.ptr(v)[u] = res;
 }
 
-void CUDA_runMultiTreePassFG( int          treeId,
-                            const int    FGThresh,
-                            const int    W,
-                            const int    H,
+void pcl::device::CUDA_runMultiTreePassFG( int          treeId,
+                            const int    FGThresh,                            
                             const float  focal,
                             const int    treeHeight,
                             const int    numNodes,
                             const void*  nodes_device,
                             const void*  leaves_device,
-                            const void*  depth_in_device,
+                            const Depth& depth,
                             void*        multilabel_device )
 {
   assert( treeId >= 0 );
   assert( treeId < 4 );
 
+  int W = depth.cols();
+  int H = depth.rows();
+
   depthTex.addressMode[0] = cudaAddressModeClamp;
   cudaChannelFormatDesc channeldesc = cudaCreateChannelDesc<unsigned short>();  
-  cudaSafeCall( cudaBindTexture2D(0, depthTex, depth_in_device, channeldesc, W, H, W*sizeof(unsigned short)) );
+  cudaSafeCall( cudaBindTexture2D(0, depthTex, depth.ptr(), channeldesc, W, H, depth.step()) );
 
   dim3 block(16, 16);
   dim3 grid( divUp(W, block.x), divUp(H, block.y) );
@@ -241,26 +243,28 @@ void CUDA_runMultiTreePassFG( int          treeId,
                                                  (Label*)       multilabel_device);
 
   cudaSafeCall( cudaGetLastError() );
+  cudaSafeCall( cudaThreadSynchronize() );
   cudaSafeCall( cudaUnbindTexture(depthTex) );
 }
 
-void CUDA_runMultiTreePass( int          treeId,
-                            const int    W,
-                            const int    H,
+void pcl::device::CUDA_runMultiTreePass( int          treeId,                            
                             const float  focal,
                             const int    treeHeight,
                             const int    numNodes,
                             const void*  nodes_device,
                             const void*  leaves_device,
-                            const void*  depth_in_device,
+                            const Depth& depth,
                             void*        multilabel_device )
 {
   assert( treeId >= 0 );
   assert( treeId < 4 );
 
+  int W = depth.cols();
+  int H = depth.rows();
+
   depthTex.addressMode[0] = cudaAddressModeClamp;
   cudaChannelFormatDesc channeldesc = cudaCreateChannelDesc<unsigned short>();  
-  cudaSafeCall( cudaBindTexture2D(0, depthTex, depth_in_device, channeldesc, W, H, W*sizeof(unsigned short)) );
+  cudaSafeCall( cudaBindTexture2D(0, depthTex, depth.ptr(), channeldesc, W, H, depth.step()) );
   
   dim3 block(16, 16);
   dim3 grid( divUp(W, block.x), divUp(H, block.y) );
@@ -271,22 +275,25 @@ void CUDA_runMultiTreePass( int          treeId,
                                                  (Label*)       multilabel_device);
 
   cudaSafeCall( cudaGetLastError() );
+  cudaSafeCall( cudaThreadSynchronize() );
   cudaSafeCall( cudaUnbindTexture(depthTex) );
 }
 
-void CUDA_runMultiTreeMerge( int          numTrees,
-                             const int    W,
-                             const int    H,
-                             const void*  depth_in_device, 
+void pcl::device::CUDA_runMultiTreeMerge( int          numTrees,                             
+                             const Depth& depth,
                              void*        multilabel_device, 
-                             void*        label_out_device)
+                             DeviceArray2D<unsigned char>& label_out_device)
 {
   assert( numTrees <= 4 );
+
+  int W = depth.cols();
+  int H = depth.rows();
+
 
   {
     depthTex.addressMode[0] = cudaAddressModeClamp;
     cudaChannelFormatDesc channeldesc = cudaCreateChannelDesc<unsigned short>();    
-    cudaSafeCall( cudaBindTexture2D(0, depthTex, depth_in_device, channeldesc, W, H, W*sizeof(unsigned short)) );
+    cudaSafeCall( cudaBindTexture2D(0, depthTex, depth.ptr(), channeldesc, W, H, depth.step()) );
   }
   {
     multilabelTex.addressMode[0] = cudaAddressModeClamp;
@@ -297,9 +304,10 @@ void CUDA_runMultiTreeMerge( int          numTrees,
   dim3 block(16, 16);
   dim3 grid( divUp(W, block.x), divUp(H, block.y) );
   
-  KernelCUDA_MultiTreeMerge<<< grid, block >>>( numTrees, W, H, (Label*) label_out_device );
+  KernelCUDA_MultiTreeMerge<<< grid, block >>>( numTrees, W, H, label_out_device );
 
   cudaSafeCall( cudaGetLastError() );
+  cudaSafeCall( cudaThreadSynchronize() );
   cudaSafeCall( cudaUnbindTexture(depthTex) );
   cudaSafeCall( cudaUnbindTexture(multilabelTex) );
 }

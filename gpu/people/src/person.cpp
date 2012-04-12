@@ -88,7 +88,7 @@ pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::Cons
     cloud_device_.upload(cloud->points);
 
     const DeviceArray<device::float8>& c = (const DeviceArray<device::float8>&)cloud_device_;
-    device::convertCloud2Depth(c, depth_device_);
+    device::convertCloud2Depth(c, cloud->height, cloud->width, depth_device_);
     
     /// @todo rewrite this to a pointcloud::Ptr
     pcl::PointCloud<pcl::PointXYZRGB> cloud_in;
@@ -100,11 +100,15 @@ pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::Cons
     // Project pointcloud back into the imageplane
     // TODO: do this directly in GPU?
     pcl::gpu::people::label_skeleton::makeDepthImage16FromPointCloud(dmat, cloud_in);
-    depth_device_.download(dmat.ptr<unsigned short>());
+    depth_device_.download(dmat.ptr<unsigned short>(), dmat.step);
 
     // Process the depthimage (CUDA)
-    m_proc->process(dmat, m_lmap);
-
+    //m_proc->process(dmat, m_lmap);    
+    //m_proc->process(depth_device_, m_lmap);
+    m_proc->process(depth_device_, lmap_device_);
+    m_lmap.create(depth_device_.rows(), depth_device_.cols(), CV_8U);
+    lmap_device_.download(m_lmap.data, m_lmap.step);
+    
     cv::Mat lmap(cloud_in.height, cloud_in.width, CV_8UC1);
     pcl::gpu::people::label_skeleton::smoothLabelImage(m_lmap, dmat, lmap);
 
@@ -126,14 +130,13 @@ pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::Cons
     pcl::search::OrganizedNeighbor<pcl::PointXYZRGBL>::Ptr stree (new pcl::search::OrganizedNeighbor<pcl::PointXYZRGBL>);
     stree->setInputCloud(cloud_labels.makeShared());
     */
-    std::vector<std::vector<pcl::PointIndices> > cluster_indices;
-    cluster_indices.resize(NUM_PARTS);
-
+    std::vector<std::vector<pcl::PointIndices> > cluster_indices(NUM_PARTS);
+    
     // Make all the clusters
     optimized_elec(cloud_in, lmap, CLUST_TOL, cluster_indices, AREA_THRES, MAX_CLUST_SIZE, NUM_PARTS, false, 1.f);
 
     // Create a new struct to put the results in
-    std::vector<std::vector<pcl::gpu::people::label_skeleton::Blob2, Eigen::aligned_allocator<pcl::gpu::people::label_skeleton::Blob2> > >       sorted;
+    std::vector<std::vector<label_skeleton::Blob2, Eigen::aligned_allocator<label_skeleton::Blob2> > >       sorted;
     //clear out our matrix before starting again with it
     sorted.clear();
     //Set fixed size of outer vector length = number of parts
@@ -232,8 +235,15 @@ pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::Cons
         // //////////////////////////////////////////////////////////////////////////////////////////////// //
         // The second label evaluation
 
+        depth_device2_.upload(dmat2.ptr<unsigned short>(), dmat2.step, dmat2.rows, dmat2.cols);
+
         // Process the depthimage
-        m_proc->process(dmat2, m_lmap);
+        //m_proc->process(dmat2, m_lmap);
+        //m_proc->process(depth_device2_, m_lmap);
+        m_proc->process(depth_device2_, lmap_device2_);
+        m_lmap.create(depth_device2_.rows(), depth_device2_.cols(), CV_8U);
+        lmap_device2_.download(m_lmap.data, m_lmap.step);
+        
         cv::Mat lmap2(cloud_in.height, cloud_in.width, CV_8UC1);
         pcl::gpu::people::label_skeleton::smoothLabelImage(m_lmap, dmat2, lmap2);
         //cv::medianBlur(m_lmap, lmap2, 3);

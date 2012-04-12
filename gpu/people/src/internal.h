@@ -33,27 +33,89 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * @authors: Cedric Cagniart, Koen Buys, Anatoly Baksheev
  */
 
 #ifndef PCL_GPU_PEOPLE_INTENAL_H_
 #define PCL_GPU_PEOPLE_INTENAL_H_
 
 #include <pcl/gpu/containers/device_array.h>
-
+#include <pcl/gpu/utils/safe_call.hpp>
 
 namespace pcl
 {
   namespace device
   {
+    typedef DeviceArray2D<unsigned short> Depth;
+
     struct float8
     {
        float x, y, z, w, f1, f2, f3, f4;      
     };
     
-    void convertCloud2Depth(const DeviceArray<float8>& cloud, DeviceArray<unsigned short>& depth);
+    void convertCloud2Depth(const DeviceArray<float8>& cloud, int rows, int cols, Depth& depth);
 
   }
 }
+
+void CUDA_runTree( const int    W,
+                   const int    H,
+                   const float  focal,
+                   const int    treeHeight,
+                   const int    numNodes,
+                   const void*  nodes_device,
+                   const void*  leaves_device,
+                   const void*  depth_in_device,
+                   void*        label_out_device );
+
+void CUDA_runTree_masked( const int    W,
+                          const int    H,
+                          const float  focal,
+                          const int    treeHeight,
+                          const int    numNodes,
+                          const void*  nodes_device,
+                          const void*  leaves_device,
+                          const void*  depth_in_device,
+                          const void*  mask_in_device,
+                          void*        label_out_device );
+
+
+namespace pcl
+{
+    namespace device
+    {
+
+        void CUDA_runMultiTreePass( int          treeId,                            
+                            const float  focal,
+                            const int    treeHeight,
+                            const int    numNodes,
+                            const void*  nodes_device,
+                            const void*  leaves_device,
+                            const Depth& depth,
+                            void*        multilabel_device );
+
+
+
+        void CUDA_runMultiTreePassFG( int          treeId,
+                            const int    FGThresh,                            
+                            const float  focal,
+                            const int    treeHeight,
+                            const int    numNodes,
+                            const void*  nodes_device,
+                            const void*  leaves_device,
+                            const Depth& depth,                            
+                            void*        multilabel_device );
+
+        void CUDA_runMultiTreeMerge( int          numTrees,                             
+                             const Depth& depth,
+                             void*        multilabel_device, 
+                             DeviceArray2D<unsigned char>& label_out_device);
+
+    }
+
+}
+
+
 
 
 #endif /* PCL_GPU_PEOPLE_INTENAL_H_ */

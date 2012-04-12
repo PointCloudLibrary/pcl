@@ -8,6 +8,9 @@
 #include <boost/noncopyable.hpp>
 #include <opencv2/core/core.hpp>
 #include <boost/shared_ptr.hpp>
+#include <pcl/gpu/people/tree.h>
+#include <pcl/gpu/containers/device_array.h>
+#include <vector>
 
 #include <pcl/gpu/containers/device_array.h>
 
@@ -20,7 +23,26 @@ namespace pcl
       namespace trees
       {
         //forward declared but never shown
-        struct CUDATree;
+        struct CUDATree
+        {                                                       
+            int treeHeight;
+            int numNodes;
+
+            DeviceArray<Node> nodes_device;
+            DeviceArray<Label> leaves_device;                      
+
+            CUDATree (int treeHeight_, const std::vector<Node>& nodes, const std::vector<Label>& leaves)                
+            {
+              treeHeight = treeHeight_;
+              numNodes = (1 << treeHeight) - 1;
+              assert( nodes.size()  == (size_t)numNodes );
+              assert( leaves.size() == (size_t)(1 << treeHeight) );
+              
+              nodes_device.upload(nodes);
+              leaves_device.upload(leaves);          
+            }
+            ~CUDATree() {}
+        };
        
 
         // utility function to get a colored map out
@@ -68,20 +90,14 @@ namespace pcl
             ~MultiTreeLiveProc();
 
             void addTree(std::istream& is);
-
-            // dmap has to be 640*480 16bit grayscale
-            // lmap will be 640*480 8bit grayscale
-            void process(const cv::Mat& dmap, cv::Mat& lmap );
-
+            
             // same as process, but runs the trick of declaring as background any
             // neighbor that is more than FGThresh away.
-            void process(const cv::Mat& dmap, cv::Mat& lmap, int FGThresh);
+            void process(const DeviceArray2D<unsigned short>& dmap, DeviceArray2D<unsigned char>& lmap, 
+                int FGThresh = std::numeric_limits<Attrib>::max());
 
           private:
-            std::vector<CUDATree> m_trees;
-
-            DeviceArray<uint16_t> m_dmap_device;
-            DeviceArray<uint8_t> m_lmap_device;
+            std::vector<CUDATree> m_trees;                        
             DeviceArray<uint8_t> m_multilmap_device;
 
         };
