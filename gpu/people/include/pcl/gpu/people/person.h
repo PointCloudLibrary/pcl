@@ -69,7 +69,8 @@ namespace pcl
                       elec_radius_scale_(1.0f),
                       elec_brute_force_border_(false),
                       do_shs_(true),
-                      dilation_size_(2)
+                      dilation_size_(2), 
+                      name_("Generic")
           {
             /// Load the first tree
             std::ifstream fin (tree_file.c_str ());
@@ -114,6 +115,14 @@ namespace pcl
           /** \brief The actuall processing callback */
           void
           process (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud);
+
+          /** \brief Read XML configuration file for a specific person */
+          void 
+          readPersonXMLConfig (std::istream& is);
+
+          /** \brief Write XML configuration file for a specific person */
+          void 
+          writePersonXMLConfig (std::ostream& os);
 
           /** \brief Set the max number of pixels in a body part cluster, defaults to 25000 */
           inline void
@@ -278,6 +287,10 @@ namespace pcl
           bool                                        do_shs_;
           unsigned int                                dilation_size_;
           pcl::gpu::people::trees::MultiTreeLiveProc* multi_tree_live_proc_;
+          std::string                                 name_;                  // Name of the person
+          std::vector<float>                          max_part_size_;         // Max primary eigenvalue for each body part
+          std::vector<std::vector<float> >            part_ideal_length_;     // Ideal length between two body parts
+          std::vector<std::vector<float> >            max_length_offset_;     // Max allowed length offset between two body parts
       };
     }
   }

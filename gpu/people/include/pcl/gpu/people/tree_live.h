@@ -50,7 +50,7 @@ namespace pcl
 
           private :
             boost::shared_ptr<CUDATree> m_tree;
-            DeviceArray<uint16_t> m_dmap_device;            
+            DeviceArray<uint16_t> m_dmap_device;
             DeviceArray<uint8_t> m_lmap_device;
         };
 
@@ -59,7 +59,7 @@ namespace pcl
         {
         public:
             typedef boost::shared_ptr<MultiTreeLiveProc> Ptr;
-            
+
             // this is a bit crappy... the constructor will take the first tree, 
             // garanteeing that there is something in there. other trees need to be 
             // added with addTree();
@@ -76,13 +76,13 @@ namespace pcl
             // neighbor that is more than FGThresh away.
             void process(const cv::Mat& dmap, cv::Mat& lmap, int FGThresh);
 
-          private:            
+          private:
             std::vector<CUDATree> m_trees;
 
-            DeviceArray<uint16_t> m_dmap_device;            
+            DeviceArray<uint16_t> m_dmap_device;
             DeviceArray<uint8_t> m_lmap_device;
             DeviceArray<uint8_t> m_multilmap_device;
-            
+
         };
       } // end namespace trees
     } // end namespace people

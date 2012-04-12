@@ -38,7 +38,12 @@
 #define PCL_GPU_PEOPLE_PERSON_HPP_
 
 #include <pcl/gpu/people/person.h>
+#include <pcl/gpu/people/label_common.h>
 #include <pcl/gpu/utils/repacks.hpp>
+
+#include <boost/foreach.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
 
 void
 pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
@@ -77,5 +82,26 @@ pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::Cons
   pcl::gpu::people::label_skeleton::buildRelations ( sorted );
 */
 }
+
+
+void
+pcl::gpu::people::Person::readPersonXMLConfig (std::istream& is)
+{
+  boost::property_tree::ptree pt;
+  read_xml(is,pt);
+}
+
+void
+pcl::gpu::people::Person::writePersonXMLConfig (std::ostream& os)
+{
+  boost::property_tree::ptree pt;
+  pt.add("version", XML_VERSION);
+//  boost::property_tree::ptree& node = pt.add("person", "");
+//  node.put("name", name_);
+  pt.add("person.name", name_);
+
+  write_xml(os,pt);
+}
+
 
 #endif // PCL_GPU_PEOPLE_PERSON_HPP_
