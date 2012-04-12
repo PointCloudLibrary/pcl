@@ -24,7 +24,6 @@
 
 
 #include <pcl/gpu/people/person.h>
-#include <pcl/gpu/people/person.hpp>
 
 //#include <pcl/visualization/cloud_viewer.h>
 #include <pcl/console/parse.h>

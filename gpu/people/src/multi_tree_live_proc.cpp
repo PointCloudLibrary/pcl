@@ -43,6 +43,8 @@
 #include <pcl/gpu/people/label_common.h>
 #include <pcl/gpu/containers/device_array.h>
 
+#include <pcl/console/print.h>
+
 #include "cuda/CUDA_run_multi_tree.h"
 #include "CUDA_tree.h"
 #include <iostream>
@@ -59,7 +61,7 @@ namespace pcl
     namespace people
     {
       namespace trees
-      {        
+      {
         MultiTreeLiveProc::MultiTreeLiveProc(std::istream& is)
         {
           // load the tree file
@@ -67,30 +69,31 @@ namespace pcl
           std::vector<Label> leaves;
 
           // this might throw but we haven't done any malloc yet
-          int height = loadTree (is, nodes, leaves );           
+          int height = loadTree (is, nodes, leaves );
           m_trees.push_back(CUDATree(height, nodes, leaves));
 
-          const int cols = 640; // default buffer sizes, 
-          const int rows = 480; // may change during 'process' method
-          
+          const int cols = WIDTH; // default buffer sizes,
+          const int rows = HEIGHT; // may change during 'process' method
+
           //preallocate buffers
           m_dmap_device.create(cols * rows);
-          m_lmap_device.create(cols * rows);          
-          m_multilmap_device.create(cols * rows * MAX_NR_TREES);          
+          m_lmap_device.create(cols * rows);
+          m_multilmap_device.create(cols * rows * MAX_NR_TREES);
         }
 
         MultiTreeLiveProc::~MultiTreeLiveProc()  {}
-        
 
         void MultiTreeLiveProc::addTree(std::istream& is)
         {
           if( m_trees.size() >= MAX_NR_TREES )
-            std::cout << "There are already the max amount of trees in this Processor" << std::endl;
-
+          {
+            PCL_INFO("There are already the max amount of trees in this Processor");
+            return;
+          }
           std::vector<Node>  nodes;
           std::vector<Label> leaves;
           // this might throw but we haven't done any malloc yet
-          int height = loadTree(is, nodes, leaves );            
+          int height = loadTree(is, nodes, leaves );
           m_trees.push_back(CUDATree(height, nodes, leaves));
         }
 
@@ -100,24 +103,23 @@ namespace pcl
         }
 
         void MultiTreeLiveProc::process(const cv::Mat& dmap, cv::Mat& lmap, int FGThresh)
-        {  
+        {
           m_dmap_device.create(dmap.cols * dmap.rows);
-          m_lmap_device.create(dmap.cols * dmap.rows);          
+          m_lmap_device.create(dmap.cols * dmap.rows);
           m_multilmap_device.create(dmap.cols * dmap.rows * MAX_NR_TREES);
-          
 
           // alloc the buffer if it isn't done yet
           lmap.create( dmap.size(), CV_8U );
 
           // copy depth to cuda
           m_dmap_device.upload((Depth*)dmap.data, dmap.cols * dmap.rows);
-          
+
           // 1 - run the multi passes
           int numTrees = m_trees.size();
           for( int ti = 0; ti < numTrees; ++ti ) 
           {
             const CUDATree& t = m_trees[ti];
-            
+
             if( FGThresh == std::numeric_limits<Attrib>::max() ) 
             {
               CUDA_runMultiTreePass( ti, dmap.cols, dmap.rows, (float)focal, t.treeHeight, t.numNodes, 
@@ -133,7 +135,7 @@ namespace pcl
           CUDA_runMultiTreeMerge(m_trees.size(), dmap.cols, dmap.rows, m_dmap_device, m_multilmap_device, m_lmap_device);
 
           // 3 - download back from cuda ( the copy will execute all the kernels at once)
-          m_lmap_device.download((Label*)lmap.data);          
+          m_lmap_device.download((Label*)lmap.data);
         }
 
 

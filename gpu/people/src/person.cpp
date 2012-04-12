@@ -38,11 +38,44 @@
 #define PCL_GPU_PEOPLE_PERSON_HPP_
 
 #include <pcl/gpu/people/person.h>
+#include <pcl/gpu/utils/repacks.hpp>
 
 void
 pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
 {
+  cloud_device_.upload(cloud->points);
+  pcl::gpu::copyFieldsZ(cloud_device_, float_depth_device_);
+  //TODO: convert float_depth_device_ to depth_device_ here
 
+  //TODO: create version of process that takes deviceArray as input and output
+  //multi_tree_live_proc_.process(depth_device_, label_device_);
+
+  //TODO: make sure that smoothLabelImage can work with in and out beeing the same array
+  //pcl::gpu::smoothLabelImage(label_device_, depth_device_, label_device_);
+
+  //TODO: create copyFields to take labels from one array and XYZRGB from other array
+  //pcl::gpu::copyFields(label_device_, labeled_device_);
+  //pcl::gpu::copyFields(cloud_device_, labeled_device_):
+
+  //TODO: bring back to CPU space here
+
+  //Resume normal operation from here:
+/*
+  // Make all the clusters
+  optimized_elec(cloud_in, lmap, CLUST_TOL, cluster_indices, AREA_THRES, MAX_CLUST_SIZE, NUM_PARTS, false, 1.f);
+
+  // Create a new struct to put the results in
+  std::vector<std::vector<pcl::gpu::people::label_skeleton::Blob2, Eigen::aligned_allocator<pcl::gpu::people::label_skeleton::Blob2> > >       sorted;
+  //clear out our matrix before starting again with it
+  sorted.clear();
+  //Set fixed size of outer vector length = number of parts
+  sorted.resize(NUM_PARTS);
+
+  //create the blob2 matrix
+  pcl::gpu::people::label_skeleton::sortIndicesToBlob2 ( cloud_labels, AREA_THRES, sorted, cluster_indices );
+  //Build relationships between the blobs
+  pcl::gpu::people::label_skeleton::buildRelations ( sorted );
+*/
 }
 
 #endif // PCL_GPU_PEOPLE_PERSON_HPP_

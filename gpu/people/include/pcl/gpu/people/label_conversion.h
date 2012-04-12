@@ -86,7 +86,7 @@ namespace pcl
           // Set output size of the cloud_out
           cloud_out.width = cmap.cols;
           cloud_out.height = cmap.rows;
-        
+
           for(int h = 0; h < cmap.rows; h++)
           {
             for(int w = 0; w < cmap.cols; w++)
@@ -121,11 +121,11 @@ namespace pcl
           // Test if input image and cloud are same size, otherwise this won't work
           assert(static_cast<int> (cloud_in.width) == cmap.cols);
           assert(static_cast<int> (cloud_in.height) == cmap.rows);
-        
+
           // Set output size of the cloud_out
           cloud_out.width = cmap.cols;
           cloud_out.height = cmap.rows;
-        
+
           for(int h = 0; h < cmap.rows; h++)
           {
             for(int w = 0; w < cmap.cols; w++)

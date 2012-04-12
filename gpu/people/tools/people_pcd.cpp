@@ -35,7 +35,6 @@
 
 //#define WRITE
 
-
 #define AREA_THRES      200
 #define AREA_THRES2     100
 #define CLUST_TOL       0.05
@@ -53,8 +52,8 @@ namespace pc = pcl::console;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void imwrite(const std::string& prefix, int counter, const cv::Mat& mat)
-{   
-   
+{
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -104,24 +103,25 @@ class PeoplePCDApp
       cv::Mat lmap(cloud_in.height, cloud_in.width, CV_8UC1);
       pcl::gpu::people::label_skeleton::smoothLabelImage(m_lmap, dmat, lmap);
 
-#ifdef WRITE      
+#ifdef WRITE
       cv::imwrite("d_" + lexical_cast<string>(counter) + ".png", dmat);
       cv::imwrite("l_" + lexical_cast<string>(counter) + ".png", m_lmap);
       cv::imwrite("s_" + lexical_cast<string>(counter) + ".png", lmap);
-                  
+
       cv::Mat input(cloud_in.height, cloud_in.width, CV_8UC3);
       pcl::gpu::people::label_skeleton::makeImageFromPointCloud(input, cloud_in);
 
-      cv::imwrite("i_" + lexical_cast<string>(counter) + ".png", input);      
+      cv::imwrite("i_" + lexical_cast<string>(counter) + ".png", input);
 #endif
 
       pcl::PointCloud<pcl::PointXYZRGBL> cloud_labels;
 
       pcl::gpu::people::conversion::colorLabelPointCloudFromArray(cloud_in, lmap.data, cloud_labels);
-
+/*
       // Creating the Search object for the search method of the extraction
       pcl::search::OrganizedNeighbor<pcl::PointXYZRGBL>::Ptr stree (new pcl::search::OrganizedNeighbor<pcl::PointXYZRGBL>);
       stree->setInputCloud(cloud_labels.makeShared());
+*/
       std::vector<std::vector<pcl::PointIndices> > cluster_indices;
       cluster_indices.resize(NUM_PARTS);
 
@@ -145,7 +145,7 @@ class PeoplePCDApp
 #if defined(WRITE)
       // color
       pcl::gpu::people::display::colorLMap( lmap, cmap );
-      cv::imwrite("c_" + lexical_cast<string>(counter) + ".png", cmap);      
+      cv::imwrite("c_" + lexical_cast<string>(counter) + ".png", cmap);
 #endif
 
       // ////////////////////////////////////////////////////////////////////////////////////////////// //
@@ -179,7 +179,7 @@ class PeoplePCDApp
               }
             }
           }
-#ifdef WRITE     
+#ifdef WRITE
      cv::imwrite("b_" + lexical_cast<string>(counter) + ".png", binmask);
 #endif
 
@@ -193,7 +193,7 @@ class PeoplePCDApp
       cv::Mat flowermat(cloud_in.height, cloud_in.width, CV_8UC3, cv::Scalar(0));
       pcl::gpu::people::label_skeleton::makeImageFromPointCloud(flowermat, flower, cloud_in);
 
-#ifdef WRITE      
+#ifdef WRITE
       cv::imwrite("f_" + lexical_cast<string>(counter) + ".png", flowermat);
 #endif
       cv::Mat flowergrownmat(cloud_in.height, cloud_in.width, CV_8UC3, cv::Scalar(0));
@@ -241,11 +241,9 @@ class PeoplePCDApp
 #ifdef WRITE
       cv::imwrite("d2_" + lexical_cast<string>(counter) + ".png", dmat2);
       cv::imwrite("l2_" + lexical_cast<string>(counter) + ".png", m_lmap);
-      cv::imwrite("s2_" + lexical_cast<string>(counter) + ".png", lmap2);                              
-      cv::imwrite("c2_" + lexical_cast<string>(counter) + ".png", cmap);      
+      cv::imwrite("s2_" + lexical_cast<string>(counter) + ".png", lmap2);
+      cv::imwrite("c2_" + lexical_cast<string>(counter) + ".png", cmap);
 #endif
-      
-
       pcl::PointCloud<pcl::PointXYZRGBL> cloud_labels2;
       pcl::gpu::people::conversion::colorLabelPointCloudFromArray(cloud_in, lmap2.data, cloud_labels2);
 
@@ -296,14 +294,13 @@ class PeoplePCDApp
       }
     }
     //pcl::visualization::CloudViewer         viewer;
-    trees::MultiTreeLiveProc::Ptr m_proc;
-    cv::Mat                                     m_lmap;
-    cv::Mat                                     m_cmap;
-    cv::Mat                                     cmap;
-    cv::Mat                                     m_bmap;
+    trees::MultiTreeLiveProc::Ptr       m_proc;
+    cv::Mat                             m_lmap;
+    cv::Mat                             m_cmap;
+    cv::Mat                             cmap;
+    cv::Mat                             m_bmap;
 
-
-    ImageViewer final_view_;
+    ImageViewer                         final_view_;
 };
 
 int print_help()
@@ -363,14 +360,13 @@ int main(int argc, char** argv)
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
   int res = pcl::io::loadPCDFile<pcl::PointXYZRGB> (pcdname, *cloud);
   if (res == -1) //* load the file
-  {    
+  {
     PCL_ERROR ("Couldn't read file\n");
     return (-1);
   }
   cout << "Loaded " << cloud->width * cloud->height << " data points from " << pcdname << endl;
 
   /// Run the app
-  
   {
     ScopeTime frame_time("frame_time");
     app.cloud_cb(cloud, 1);

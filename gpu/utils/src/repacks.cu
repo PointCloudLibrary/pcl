@@ -6,7 +6,7 @@
 namespace pcl
 {
     namespace device
-    {           
+    {
         struct Info
         {
             enum { SIZE = 4 };
@@ -22,11 +22,11 @@ namespace pcl
         template<int in, int out, typename Info>
         __global__ void deviceCopyFields4B(const Info info, const int size, const void* input, void* output)
         {
-            int idx = blockIdx.x * blockDim.x + threadIdx.x;            
+            int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
             if (idx < size)
             {
-                Point<in>  point_in  = reinterpret_cast<const  Point<in>* >( input)[idx];              
+                Point<in>  point_in  = reinterpret_cast<const  Point<in>* >( input)[idx];
                 Point<out> point_out = reinterpret_cast<      Point<out>* >(output)[idx];
 
                 for(int i = 0; i < Info::SIZE; ++i)
@@ -49,14 +49,14 @@ namespace pcl
                         point_out.data[byte >> 4] = point_in.data[byte & 0xF];
 
                     byte = ((code >> 16) & 0xFF);
-                    
+
                     if (byte == 0xFF)
                         break;
                     else
                         point_out.data[byte >> 4] = point_in.data[byte & 0xF];
 
                     byte = ((code >> 24) & 0xFF);
-                    
+
                     if (byte == 0xFF)
                         break;
                     else
@@ -64,7 +64,7 @@ namespace pcl
                 }
 
                 reinterpret_cast< Point<out>* >(output)[idx] = point_out;
-            }          
+            }
         };
 
         template<int in_size, int out_size>
@@ -84,8 +84,6 @@ namespace pcl
         typedef void (*copy_fields_t)(int info[4], int size, const void* input, void* output);
     }
 }
-
-
 
 namespace pcl
 {

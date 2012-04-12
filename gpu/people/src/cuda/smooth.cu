@@ -135,20 +135,25 @@ namespace pcl
     }
 
 }
-
-void smoothLabelImage(const Labels& src, const Depth& depth, Labels& dst, int num_parts, int  patch_size, int  depthThres)
+namespace pcl
 {
-	assert( num_parts < 28 ); //should modify kernel otherwise, uncomment ending zero int hist4 array
+  namespace gpu
+  {
+    void smoothLabelImage(const Labels& src, const Depth& depth, Labels& dst, int num_parts, int  patch_size, int  depthThres)
+    {
+      assert( num_parts < 28 ); //should modify kernel otherwise, uncomment ending zero int hist4 array
 
-    dst.create(src.rows(), src.cols());
+      dst.create(src.rows(), src.cols());
 
-    dim3 block(32, 8);
-    dim3 grid(divUp(src.cols(), block.x), divUp(src.rows(), block.y));
+      dim3 block(32, 8);
+      dim3 grid(divUp(src.cols(), block.x), divUp(src.rows(), block.y));
 
-    pcl::device::smoothKernel<<<grid, block>>>(src, depth, dst, patch_size, depthThres, num_parts);
+      pcl::device::smoothKernel<<<grid, block>>>(src, depth, dst, patch_size, depthThres, num_parts);
 
-    cudaSafeCall( cudaGetLastError() );
-    cudaSafeCall( cudaDeviceSynchronize() );
+      cudaSafeCall( cudaGetLastError() );
+      cudaSafeCall( cudaDeviceSynchronize() );
+    }
+  }
 }
 
 

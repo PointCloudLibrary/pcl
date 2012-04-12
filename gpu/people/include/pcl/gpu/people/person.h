@@ -39,9 +39,14 @@
 
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
+#include <pcl/point_types.h>
+#include <pcl/gpu/containers/device_array.h>
+#include <pcl/console/print.h>
 #include <pcl/gpu/people/label_common.h>
 #include <pcl/gpu/people/tree.h>
+#include <pcl/gpu/people/tree_live.h>
 
 namespace pcl
 {
@@ -67,29 +72,37 @@ namespace pcl
                       dilation_size_(2)
           {
             /// Load the first tree
-            std::ifstream fin(tree_file.c_str() );
-            assert(fin.is_open() );
-            multi_tree_live_proc_ = new pcl::gpu::people::trees::MultiTreeLiveProc(fin);
-            fin.close();
+            std::ifstream fin (tree_file.c_str ());
+            assert (fin.is_open ());
+            multi_tree_live_proc_ = new pcl::gpu::people::trees::MultiTreeLiveProc (fin);
+            fin.close ();
           };
 
           /** \brief Class destructor. */
           ~Person ()
           {};
 
+          //// PUBLIC VARIABLES HERE ////
+          pcl::gpu::DeviceArray<pcl::PointXYZRGB>   cloud_device_;
+          pcl::gpu::DeviceArray<pcl::PointXYZRGBL>  labeled_device_;
+          pcl::gpu::DeviceArray<unsigned short>     depth_device_;
+          pcl::gpu::DeviceArray<char>               label_device_;
+          pcl::gpu::DeviceArray<float>              float_depth_device_;
+
+          //// PUBLIC METHODS /////
           /** \brief Loads an aditional tree to the RDF */
           int
           addTree (std::string& tree_file)
           {
             if(number_of_trees_ >= MAX_NR_TREES)
             {
-              std::cout << "Can't add another tree, we are already at max" << std::endl;
+              PCL_INFO ("Can't add another tree, we are already at max");
               return -1;
             }
             std::ifstream fin(tree_file.c_str() );
             if(!fin.is_open())
             {
-              std::cout << "Couldn't open this tree file" << std::endl;
+              PCL_INFO ("Couldn't open this tree file");
               return -1;
             }
             multi_tree_live_proc_->addTree(fin);

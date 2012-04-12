@@ -51,7 +51,9 @@
 // tree_run
 
 int
-pcl::gpu::people::trees::loadTree( std::istream& is, std::vector<Node>&  tree, std::vector<Label>& leaves )
+pcl::gpu::people::trees::loadTree ( std::istream&       is,
+                                    std::vector<Node>&  tree,
+                                    std::vector<Label>& leaves )
 {
   // load the depth
   int maxDepth;
@@ -66,10 +68,10 @@ pcl::gpu::people::trees::loadTree( std::istream& is, std::vector<Node>&  tree, s
   // read
   for(int ni = 0; ni < numNodes; ++ni)
     is >> tree[ni];
-  
+
   // the int is necessary.. otherwise it will format it as unsigned char
   for(int li = 0; li < numLeaves; ++li) 
-  { 
+  {
       int l; is >> l; leaves[li] = l; 
   }
 
@@ -81,16 +83,15 @@ pcl::gpu::people::trees::loadTree( std::istream& is, std::vector<Node>&  tree, s
   return maxDepth;
 }
 
-
 int 
-pcl::gpu::people::trees::loadTree( const std::string&  filename, std::vector<Node>&  tree, std::vector<Label>& leaves )
+pcl::gpu::people::trees::loadTree ( const std::string&        filename,
+                                          std::vector<Node>&  tree,
+                                          std::vector<Label>& leaves )
 {
   std::ifstream fin(filename.c_str() );
   if( !fin.is_open() ) throw std::runtime_error(std::string("(E) could not open") + filename );
   return loadTree(fin, tree, leaves);
 }
-
-
 
 void 
 pcl::gpu::people::trees::runThroughTree( int maxDepth,
@@ -116,7 +117,7 @@ pcl::gpu::people::trees::runThroughTree( int maxDepth,
       }
 
       double scale = focal / depth;
-      
+
       // and now for the tree processing 
       int nid = 0;
       for(int d = 0; d < maxDepth; ++d) 
@@ -128,34 +129,34 @@ pcl::gpu::people::trees::runThroughTree( int maxDepth,
         int32_t delta     = int32_t(d1) - int32_t(d2);
         bool test = delta > int32_t(node.thresh);
 
-        nid = test ? (nid*2+2) : (nid*2+1);        
+        nid = test ? (nid*2+2) : (nid*2+1);
       }
       lmap[x+W*y] = leaves[nid-numNodes];
     }
   }
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////
 // tree_io
-  
 
 void 
-pcl::gpu::people::trees::writeAttribLocs( const std::string& filename, const std::vector<AttribLocation>& alocs )
+pcl::gpu::people::trees::writeAttribLocs( const std::string& filename,
+                                          const std::vector<AttribLocation>& alocs )
 {
-  std::ofstream fout(filename.c_str());				
+  std::ofstream fout(filename.c_str());
   if(!fout.is_open()) 
-	throw std::runtime_error(std::string("(E) could not open ") + filename);
+    throw std::runtime_error(std::string("(E) could not open ") + filename);
 
   // first we write the number of attribs we intend to write so that we ll avoid mismatches
   assert( alocs.size() == NUMATTRIBS );
   fout << NUMATTRIBS << "\n";
-  for(int ai=0;ai<NUMATTRIBS;++ai)   
-    fout << alocs[ai];  
+  for(int ai=0;ai<NUMATTRIBS;++ai)
+    fout << alocs[ai];
 }
 
 void 
-pcl::gpu::people::trees::readAttribLocs( const std::string& filename, std::vector<AttribLocation>& alocs )
+pcl::gpu::people::trees::readAttribLocs( const std::string& filename,
+                                          std::vector<AttribLocation>& alocs )
 {
   std::ifstream fin(filename.c_str() );
   if(!fin.is_open()) 
@@ -168,11 +169,12 @@ pcl::gpu::people::trees::readAttribLocs( const std::string& filename, std::vecto
 
   alocs.resize(NUMATTRIBS);
   for(int ai = 0; ai < NUMATTRIBS; ++ai) 
-    fin >> alocs[ai];  
+    fin >> alocs[ai];
 }
 
 void 
-pcl::gpu::people::trees::readThreshs( const std::string& filename, std::vector<Attrib>& threshs )
+pcl::gpu::people::trees::readThreshs( const std::string& filename, 
+                                      std::vector<Attrib>& threshs )
 {
   std::ifstream fin(filename.c_str() );
   if(!fin.is_open()) 
@@ -183,13 +185,14 @@ pcl::gpu::people::trees::readThreshs( const std::string& filename, std::vector<A
   threshs.resize(numThreshs);
   for(int ti =0;ti<numThreshs;++ti)
     fin >> threshs[ti];
-  
+
   if( fin.fail() ) 
     throw std::runtime_error(std::string("(E) malformed thresh file: " + filename) );
 }
 
 void 
-pcl::gpu::people::trees::writeThreshs( const std::string& filename, const std::vector<Attrib>& threshs )
+pcl::gpu::people::trees::writeThreshs( const std::string& filename, 
+                                       const std::vector<Attrib>& threshs )
 {
   std::ofstream fout(filename.c_str() );
   if(!fout.is_open()) 
@@ -201,6 +204,4 @@ pcl::gpu::people::trees::writeThreshs( const std::string& filename, const std::v
   for(int ti =0;ti<numThreshs;++ti)
     fout << threshs[ti] << "\n";  
 }
-
-
 

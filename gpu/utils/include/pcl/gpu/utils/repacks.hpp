@@ -51,7 +51,7 @@ namespace pcl
         ///////////////////////////////////////
 
         const int NoCP = 0xFFFFFFFF;
-        
+
         /** \brief Returns field copy operation code. */
         inline int cp(int from, int to) 
         { 
@@ -61,12 +61,11 @@ namespace pcl
         /* Combines several field copy operations to one int (called rule) */
         inline int rule(int cp1, int cp2 = NoCP, int cp3 = NoCP, int cp4 = NoCP)
         {
-            return (cp1 & 0xFF) + ((cp2 & 0xFF) << 8) + ((cp3 & 0xFF) << 16) + ((cp4 & 0xFF) << 24);            
+            return (cp1 & 0xFF) + ((cp2 & 0xFF) << 8) + ((cp3 & 0xFF) << 16) + ((cp4 & 0xFF) << 24);
         }
 
         /* Combines performs all field copy operations in given rule array (can be 0, 1, or 16 copies) */
-        void copyFieldsImpl(int in_size, int out_size, int rules[4], int size, const void* input, void* output);
-                      
+        void copyFieldsImpl(int in_size, int out_size, int rules[4], int size, const void* input, void* output); 
 
         template<typename PointIn, typename PointOut>
         void copyFieldsEx(const DeviceArray<PointIn>& src, DeviceArray<PointOut>& dst, int rule1, int rule2 = NoCP, int rule3 = NoCP, int rule4 = NoCP)
@@ -75,7 +74,7 @@ namespace pcl
             dst.create(src.size());
             copyFieldsImpl(sizeof(PointIn)/sizeof(int), sizeof(PointOut)/sizeof(int), rules, (int)src.size(), src.ptr(), dst.ptr());
         }
-        
+
         void copyFields(const DeviceArray<PointXYZ>& src, DeviceArray<PointNormal>& dst)
         {
             //PointXYZ.x (0) -> PointNormal.x (0)
@@ -118,6 +117,12 @@ namespace pcl
         };
 
         void copyFieldsZ(const DeviceArray<PointXYZ>& src, DeviceArray<float>& dst)
+        {
+            //PointXYZRGBL.z (2) -> float (1)
+            copyFieldsEx(src, dst, rule(cp(2, 0)));
+        };
+
+        void copyFieldsZ(const DeviceArray<PointXYZRGB>& src, DeviceArray<float>& dst)
         {
             //PointXYZRGBL.z (2) -> float (1)
             copyFieldsEx(src, dst, rule(cp(2, 0)));
