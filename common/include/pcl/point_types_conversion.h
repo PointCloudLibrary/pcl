@@ -50,7 +50,7 @@ namespace pcl
     * \param[in] in the input XYZRGB point 
     * \param[out] out the output XYZI point
     */
-  void 
+  inline void 
   PointXYZRGBtoXYZI (PointXYZRGB&  in,
                      PointXYZI&    out)
   {
@@ -63,7 +63,7 @@ namespace pcl
     * \param[in] in the input XYZRGB point 
     * \param[out] out the output XYZHSV point
     */
-  void 
+  inline void 
   PointXYZRGBtoXYZHSV (PointXYZRGB& in,
                        PointXYZHSV& out)
   {
@@ -99,7 +99,7 @@ namespace pcl
     * \param[in] in the input XYZHSV point 
     * \param[out] out the output XYZRGB point
     */
-  void 
+  inline void 
   PointXYZHSVtoXYZRGB (PointXYZHSV&  in,
                        PointXYZRGB&  out)
   {
@@ -167,7 +167,7 @@ namespace pcl
     * \param[in] in the input XYZRGB point cloud
     * \param[out] out the output XYZHSV point cloud
     */
-  void 
+  inline void 
   PointCloudXYZRGBtoXYZHSV (PointCloud<PointXYZRGB>& in,
                             PointCloud<PointXYZHSV>& out)
   {
@@ -184,7 +184,7 @@ namespace pcl
     * \param[in] in the input XYZRGB point cloud
     * \param[out] out the output XYZI point cloud
     */
-  void 
+  inline void 
   PointCloudXYZRGBtoXYZI (PointCloud<PointXYZRGB>& in,
                           PointCloud<PointXYZI>& out)
   {
