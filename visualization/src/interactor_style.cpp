@@ -699,13 +699,25 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       vtkSmartPointer<vtkCamera> cam = CurrentRenderer->GetActiveCamera ();
       
       static CloudActorMap::iterator it = actors_->begin ();
-      if (actors_->size () > 0)
+      // it might be that some actors don't have a valid transformation set -> we skip them to avoid a seg fault.
+      bool found_transformation = false;
+      for (unsigned idx = 0; idx < actors_->size (); ++idx, ++it)
       {
         if (it == actors_->end ())
           it = actors_->begin ();
-
+        
         const CloudActor& actor = it->second;
-
+        if (actor.viewpoint_transformation_.GetPointer ())
+        {
+          found_transformation = true;
+          break;
+        }
+      }
+      
+      // if a valid transformation was found, use it otherwise fall back to default view point.
+      if (found_transformation)
+      {
+        const CloudActor& actor = it->second;
         cam->SetPosition (actor.viewpoint_transformation_->GetElement (0, 3),
                           actor.viewpoint_transformation_->GetElement (1, 3),
                           actor.viewpoint_transformation_->GetElement (2, 3));
@@ -717,8 +729,6 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         cam->SetViewUp (actor.viewpoint_transformation_->GetElement (0, 1),
                         actor.viewpoint_transformation_->GetElement (1, 1),
                         actor.viewpoint_transformation_->GetElement (2, 1));
-
-        ++it;
       }
       else
       {
@@ -726,6 +736,13 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         cam->SetFocalPoint (0, 0, 1);
         cam->SetViewUp (0, -1, 0);
       }
+
+      // go to the next actor for the next key-press event.
+      if (it != actors_->end ())
+        ++it;
+      else
+        it = actors_->begin ();
+      
       CurrentRenderer->SetActiveCamera (cam);
       CurrentRenderer->ResetCameraClippingRange ();
       CurrentRenderer->Render ();
