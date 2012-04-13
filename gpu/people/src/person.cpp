@@ -80,8 +80,7 @@ namespace temporary
     {  
       cv::imwrite(prefix + lexical_cast<string>(counter) + ".png", host);
     }
-
-    
+   
     template<typename T> void pngwrite(const std::string& prefix, int counter, const pcl::gpu::DeviceArray2D<T>& arr)
     {
       cv::Mat host(arr.rows(), arr.cols(), cv::DataType<T>::type);
@@ -90,10 +89,6 @@ namespace temporary
     }
 }
 using namespace temporary;
-
-
-
-
 
 
 
@@ -123,11 +118,11 @@ pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::Cons
     rdf_detector_->colorizeLabels(rdf_detector_->getLabels(), colores_labels);
     pngwrite("s1_", counter_, rdf_detector_->getLabels());
     pngwrite("c1_", counter_, colores_labels);
-    
+
+#endif
     // Create a new struct to put the results in
     RDFBodyPartsDetector::BlobMatrix sorted;    
     rdf_detector_->step2_selectBetterName(cloud, AREA_THRES, sorted);
-#endif
 
 
     // ////////////////////////////////////////////////////////////////////////////////////////// //
@@ -212,13 +207,12 @@ pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::Cons
         depth_device2_.upload(dmat2.ptr<unsigned short>(), dmat2.step, dmat2.rows, dmat2.cols);
 
         // Process the depthimage        
-        rdf_detector_->process(depth_device2_);        
+        rdf_detector_->process(depth_device2_);                        
+        RDFBodyPartsDetector::BlobMatrix sorted2;            
+        rdf_detector_->step2_selectBetterName(cloud, AREA_THRES2, sorted2);
+
         
         rdf_detector_->colorizeLabels(rdf_detector_->getLabels(), cmap_device_);                                             
-
-        RDFBodyPartsDetector::BlobMatrix sorted2;
-            
-        rdf_detector_->step2_selectBetterName(cloud, AREA_THRES2, sorted2);
 
 #if !defined(WRITE)
         pngwrite("d2_", counter_, depth_device2_);        
