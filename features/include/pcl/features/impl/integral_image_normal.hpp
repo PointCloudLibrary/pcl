@@ -225,7 +225,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     float eigen_value;
     Eigen::Vector3f eigen_vector;
     pcl::eigen33 (covariance_matrix, eigen_value, eigen_vector);
-    pcl::flipNormalTowardsViewpoint (input_->points[point_index], vpx_, vpy_, vpz_, eigen_vector);
+    //pcl::flipNormalTowardsViewpoint (input_->points[point_index], vpx_, vpy_, vpz_, eigen_vector);
+    pcl::flipNormalTowardsViewpoint (input_->points[point_index], vpx_, vpy_, vpz_, eigen_vector[0], eigen_vector[1], eigen_vector[2]);
     normal.getNormalVector3fMap () = eigen_vector;
 
     // Compute the curvature surface change
@@ -261,11 +262,17 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     }
 
     normal_vector /= sqrt (normal_length);
-    pcl::flipNormalTowardsViewpoint (input_->points[point_index], vpx_, vpy_, vpz_, normal_vector);
 
-    normal.normal_x = static_cast<float> (normal_vector [0]);
-    normal.normal_y = static_cast<float> (normal_vector [1]);
-    normal.normal_z = static_cast<float> (normal_vector [2]);
+    float nx = static_cast<float> (normal_vector [0]);
+    float ny = static_cast<float> (normal_vector [1]);
+    float nz = static_cast<float> (normal_vector [2]);
+
+    //pcl::flipNormalTowardsViewpoint (input_->points[point_index], vpx_, vpy_, vpz_, normal_vector);
+    pcl::flipNormalTowardsViewpoint (input_->points[point_index], vpx_, vpy_, vpz_, nx, ny, nz);
+
+    normal.normal_x = nx;
+    normal.normal_y = ny;
+    normal.normal_z = nz;
     normal.curvature = bad_point;
     return;
   }
@@ -360,11 +367,17 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     }
 
     normal_vector /= sqrt (normal_length);
-    pcl::flipNormalTowardsViewpoint (input_->points[point_index], vpx_, vpy_, vpz_, normal_vector);
+
+    float nx = static_cast<float> (normal_vector [0]);
+    float ny = static_cast<float> (normal_vector [1]);
+    float nz = static_cast<float> (normal_vector [2]);
+
+    //pcl::flipNormalTowardsViewpoint (input_->points[point_index], vpx_, vpy_, vpz_, normal_vector);
+    pcl::flipNormalTowardsViewpoint (input_->points[point_index], vpx_, vpy_, vpz_, nx, ny, nz);
     
-    normal.normal_x = static_cast<float> (normal_vector [0]);
-    normal.normal_y = static_cast<float> (normal_vector [1]);
-    normal.normal_z = static_cast<float> (normal_vector [2]);
+    normal.normal_x = nx;
+    normal.normal_y = ny;
+    normal.normal_z = nz;
     normal.curvature = bad_point;
     return;
   }
@@ -392,6 +405,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
   {
     for (unsigned int ci = 0; ci < input_->width-1; ++ci, ++index)
     {
+      index = ri * input_->width + ci;
+
 //      const float depth  = (*input_)(ci,     ri    ).z;
 //      const float depthR = (*input_)(ci + 1, ri    ).z;
 //      const float depthD = (*input_)(ci,     ri + 1).z;
@@ -514,6 +529,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
     {
       for (unsigned ci = border; ci < input_->width - border; ++ci, ++index)
       {
+        index = ri * input_->width + ci;
+
         const float depth = input_->points[index].z;
         if (!pcl_isfinite (depth))
         {
@@ -547,6 +564,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
     {
       for (unsigned ci = border; ci < input_->width - border; ++ci, ++index)
       {
+        index = ri * input_->width + ci;
+
         if (!pcl_isfinite (input_->points[index].z))
         {
           output [index].getNormalVector4fMap ().setConstant (bad_point);
