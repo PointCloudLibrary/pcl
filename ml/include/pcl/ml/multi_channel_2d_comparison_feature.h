@@ -35,8 +35,8 @@
  *
  */
   
-#ifndef PCL_ML_RGBD_2D_COMPARISON_FEATURE_H_
-#define PCL_ML_RGBD_2D_COMPARISON_FEATURE_H_
+#ifndef PCL_ML_MULTI_CHANNEL_2D_COMPARISON_FEATURE_H_
+#define PCL_ML_MULTI_CHANNEL_2D_COMPARISON_FEATURE_H_
 
 #include <pcl/common/common.h>
 
@@ -46,70 +46,15 @@
 namespace pcl
 {
 
-  /** \brief 2D point with integer x- and y-coordinates. */ 
-  class PCL_EXPORTS PointXY32i
-  {
-    public:
-      /** \brief Constructor. */
-      inline PointXY32i () : x (0), y (0) {}
-      /** \brief Destructor. */
-      virtual ~PointXY32i () {}
-
-      /** \brief Serializes the point to the specified stream.
-        * \param[out] The destination for the serialization.
-        */
-      inline void 
-      serialize (std::ostream & stream) const
-      {
-        stream.write (reinterpret_cast<const char*> (&x), sizeof (x));
-        stream.write (reinterpret_cast<const char*> (&y), sizeof (y));
-      }
-
-      /** \brief Deserializes the point from the specified stream.
-        * \param[in] The source for the deserialization.
-        */
-      inline void 
-      deserialize (std::istream & stream)
-      {
-        stream.read (reinterpret_cast<char*> (&x), sizeof (x));
-        stream.read (reinterpret_cast<char*> (&y), sizeof (y));
-      }
-
-      /** \brief Creates a random point within the specified window.
-        * \param[in] min_x The minimum value for the x-coordinate of the point.
-        * \param[in] max_x The maximum value for the x-coordinate of the point.
-        * \param[in] min_y The minimum value for the y-coordinate of the point.
-        * \param[in] max_y The maximum value for the y-coordinate of the point.
-        */
-      static PointXY32i 
-      randomPoint (const int min_x, const int max_x, const int min_y, const int max_y)
-      {
-        const float width = static_cast<float> (max_x - min_x);
-        const float height = static_cast<float> (max_y - min_y);
-
-        PointXY32i point;
-        point.x = static_cast<int> ( width * static_cast<float> (rand ()) / static_cast<float> (RAND_MAX) + static_cast<float> (min_x));
-        point.y = static_cast<int> ( height * static_cast<float> (rand ()) / static_cast<float> (RAND_MAX) + static_cast<float> (min_y));
-
-        return point;
-      }
-
-    public:
-      /** \brief The x-coordinate of the point. */
-      int x;
-      /** \brief The y-coordinate of the point. */
-      int y;
-  };
-
-  /** \brief Feature for comparing two sample points in 2D RGBD data. */
+  /** \brief Feature for comparing two sample points in 2D multi-channel data. */
   template <class PointT>
-  class PCL_EXPORTS RGBD2DComparisonFeature
+  class PCL_EXPORTS MultiChannel2DComparisonFeature
   {
   public:
       /** \brief Constructor. */
-      RGBD2DComparisonFeature () : p1 (), p2 (), channel (0) {}
+      MultiChannel2DComparisonFeature () : p1 (), p2 (), channel (0) {}
       /** \brief Destructor. */
-      virtual ~RGBD2DComparisonFeature () {}
+      virtual ~MultiChannel2DComparisonFeature () {}
 
       /** \brief Serializes the feature to a stream.
         * \param[out] stream The destination for the serialization.

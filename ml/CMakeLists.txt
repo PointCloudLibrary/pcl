@@ -14,12 +14,13 @@ if(build)
         include/pcl/${SUBSYS_NAME}/dt/decision_tree_evaluator.h
         include/pcl/${SUBSYS_NAME}/dt/decision_tree_learner.h
         include/pcl/${SUBSYS_NAME}/feature_handler.h
-        include/pcl/${SUBSYS_NAME}/stats_estimator.h
         include/pcl/${SUBSYS_NAME}/multiple_data_2d_example_index.h
+        include/pcl/${SUBSYS_NAME}/point_xy_32i.h
         include/pcl/${SUBSYS_NAME}/regression_variance_stats_estimator.h
-        include/pcl/${SUBSYS_NAME}/rgbd_2d_comparison_feature.h
-        include/pcl/${SUBSYS_NAME}/rgbd_2d_comparison_feature_handler.h
-        include/pcl/${SUBSYS_NAME}/rgbd_2d_data_set.h
+        include/pcl/${SUBSYS_NAME}/multi_channel_2d_comparison_feature.h
+        include/pcl/${SUBSYS_NAME}/multi_channel_2d_comparison_feature_handler.h
+        include/pcl/${SUBSYS_NAME}/multi_channel_2d_data_set.h
+        include/pcl/${SUBSYS_NAME}/stats_estimator.h
         )
 
     set(impl_incs 
@@ -28,7 +29,7 @@ if(build)
         )
 
     set(srcs
-        src/rgbd_2d_data_set.cpp
+		src/point_xy_32i.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})

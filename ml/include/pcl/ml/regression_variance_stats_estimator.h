@@ -39,7 +39,7 @@
 #define PCL_ML_REGRESSION_VARIANCE_STATS_ESTIMATOR_H_
 
 #include <pcl/common/common.h>
-#include <pcl/ml/dt/stats_estimator.h>
+#include <pcl/ml/stats_estimator.h>
 
 #include <istream>
 #include <ostream>

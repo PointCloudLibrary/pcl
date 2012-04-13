@@ -35,15 +35,16 @@
  *
  */
   
-#ifndef PCL_ML_RGBD_2D_COMPARISON_FEATURE_HANDLER_H_
-#define PCL_ML_RGBD_2D_COMPARISON_FEATURE_HANDLER_H_
+#ifndef PCL_ML_MULTI_CHANNEL_2D_COMPARISON_FEATURE_HANDLER_H_
+#define PCL_ML_MULTI_CHANNEL_2D_COMPARISON_FEATURE_HANDLER_H_
 
 #include <pcl/common/common.h>
 
-#include <pcl/ml/dt/feature_handler.h>
-#include <pcl/ml/rgbd_2d_data_set.h>
-#include <pcl/ml/rgbd_2d_comparison_feature.h>
+#include <pcl/ml/feature_handler.h>
+#include <pcl/ml/multi_channel_2d_data_set.h>
+#include <pcl/ml/multi_channel_2d_comparison_feature.h>
 #include <pcl/ml/multiple_data_2d_example_index.h>
+#include <pcl/ml/point_xy_32i.h>
 
 #include <istream>
 #include <ostream>
@@ -52,20 +53,21 @@ namespace pcl
 {
 
   /** \brief Feature utility class that handles the creation and evaluation of RGBD comparison features. */
-  class PCL_EXPORTS RGBD2DComparisonFeatureHandler
-    : public pcl::FeatureHandler<pcl::RGBD2DComparisonFeature<pcl::PointXY32i>, pcl::RGBD2DDataSet, pcl::MultipleData2DExampleIndex>
+  template <class DATA_TYPE, size_t NUM_OF_CHANNELS>
+  class PCL_EXPORTS MultiChannel2DComparisonFeatureHandler
+    : public pcl::FeatureHandler<pcl::MultiChannel2DComparisonFeature<pcl::PointXY32i>, pcl::MultiChannel2DDataSet<DATA_TYPE, NUM_OF_CHANNELS>, pcl::MultipleData2DExampleIndex>
   {
   
   public:
 
     /** \brief Constructor. */
-    RGBD2DComparisonFeatureHandler (
+    MultiChannel2DComparisonFeatureHandler (
       const int feature_window_width,
       const int feature_window_height)
       : feature_window_width_ (feature_window_width), feature_window_height_ (feature_window_height)
     {}
     /** \brief Destructor. */
-    virtual ~RGBD2DComparisonFeatureHandler () {}
+    virtual ~MultiChannel2DComparisonFeatureHandler () {}
 
     /** \brief Sets the feature window size.
       * \param[in] width The width of the feature window.
@@ -87,14 +89,14 @@ namespace pcl
     void 
     createRandomFeatures (
       const size_t num_of_features, 
-      std::vector<RGBD2DComparisonFeature<PointXY32i> > & features)
+      std::vector<MultiChannel2DComparisonFeature<PointXY32i> > & features)
     {
       features.resize (num_of_features);
       for (size_t feature_index = 0; feature_index < num_of_features; ++feature_index)
       {
         features[feature_index].p1 = PointXY32i::randomPoint(-feature_window_width_/2, feature_window_width_/2, -feature_window_height_/2, feature_window_height_/2);
         features[feature_index].p2 = PointXY32i::randomPoint(-feature_window_width_/2, feature_window_width_/2, -feature_window_height_/2, feature_window_height_/2);
-        features[feature_index].channel = static_cast<unsigned char>(4.0f*(static_cast<float>(rand()) / (RAND_MAX+1)));
+        features[feature_index].channel = static_cast<unsigned char>(NUM_OF_CHANNELS*(static_cast<float>(rand()) / (RAND_MAX+1)));
       }
     }
 
@@ -107,8 +109,8 @@ namespace pcl
       */
     void 
     evaluateFeature (
-      const RGBD2DComparisonFeature<PointXY32i> & feature,
-      RGBD2DDataSet & data_set,
+      const MultiChannel2DComparisonFeature<PointXY32i> & feature,
+      MultiChannel2DDataSet<DATA_TYPE, NUM_OF_CHANNELS> & data_set,
       std::vector<MultipleData2DExampleIndex> & examples,
       std::vector<float> & results,
       std::vector<unsigned char> & flags) const
@@ -130,8 +132,8 @@ namespace pcl
 
         const unsigned char channel = feature.channel;
 
-        const float value1 = data_set (example.data_set_id, p1_col, p1_row)[channel];
-        const float value2 = data_set (example.data_set_id, p2_col, p2_row)[channel];
+        const float value1 = static_cast<float> (data_set (example.data_set_id, p1_col, p1_row)[channel]);
+        const float value2 = static_cast<float> (data_set (example.data_set_id, p2_col, p2_row)[channel]);
 
         results[example_index] = value1 - value2;
         flags[example_index] = 0;
@@ -147,8 +149,8 @@ namespace pcl
       */
     void 
     evaluateFeature (
-      const RGBD2DComparisonFeature<PointXY32i> & feature,
-      RGBD2DDataSet & data_set,
+      const MultiChannel2DComparisonFeature<PointXY32i> & feature,
+      MultiChannel2DDataSet<DATA_TYPE, NUM_OF_CHANNELS> & data_set,
       MultipleData2DExampleIndex & example,
       float & result,
       unsigned char & flag) const
@@ -164,8 +166,8 @@ namespace pcl
 
       const unsigned char channel = feature.channel;
 
-      const float value1 = data_set (example.data_set_id, p1_col, p1_row)[channel];
-      const float value2 = data_set (example.data_set_id, p2_col, p2_row)[channel];
+      const float value1 = static_cast<float> (data_set (example.data_set_id, p1_col, p1_row)[channel]);
+      const float value2 = static_cast<float> (data_set (example.data_set_id, p2_col, p2_row)[channel]);
 
       result = value1 - value2;
       flag = 0;
@@ -177,7 +179,7 @@ namespace pcl
       */
     void 
     generateCodeForEvaluation (
-      const RGBD2DComparisonFeature<PointXY32i> & feature,
+      const MultiChannel2DComparisonFeature<PointXY32i> & feature,
       std::ostream & stream) const
     {
       stream << "ERROR: RegressionVarianceStatsEstimator does not implement generateCodeForBranchIndex(...)";
@@ -192,6 +194,9 @@ namespace pcl
     int feature_window_height_;
 
   };
+
+  typedef MultiChannel2DComparisonFeatureHandler<float, 2> IntensityDepth2DComparisonFeatureHandler;
+  typedef MultiChannel2DComparisonFeatureHandler<float, 4> RGBD2DComparisonFeatureHandler;
 
 }
 

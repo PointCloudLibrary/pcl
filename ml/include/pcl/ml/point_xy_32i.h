@@ -35,15 +35,62 @@
  *
  */
   
-#include <pcl/ml/rgbd_2d_data_set.h>
+#ifndef PCL_ML_POINT_XY_32I_H_
+#define PCL_ML_POINT_XY_32I_H_
+
+#include <pcl/common/common.h>
 
 #include <istream>
 #include <ostream>
 
-void
-pcl::RGBD2DData::resize (const size_t width, const size_t height)
+namespace pcl
 {
-  data_.resize (width*height*4);
-  width_ = width;
-  height_ = height;
+
+  /** \brief 2D point with integer x- and y-coordinates. */ 
+  class PCL_EXPORTS PointXY32i
+  {
+    public:
+      /** \brief Constructor. */
+      inline PointXY32i () : x (0), y (0) {}
+      /** \brief Destructor. */
+      inline virtual ~PointXY32i () {}
+
+      /** \brief Serializes the point to the specified stream.
+        * \param[out] The destination for the serialization.
+        */
+      inline void 
+      serialize (std::ostream & stream) const
+      {
+        stream.write (reinterpret_cast<const char*> (&x), sizeof (x));
+        stream.write (reinterpret_cast<const char*> (&y), sizeof (y));
+      }
+
+      /** \brief Deserializes the point from the specified stream.
+        * \param[in] The source for the deserialization.
+        */
+      inline void 
+      deserialize (std::istream & stream)
+      {
+        stream.read (reinterpret_cast<char*> (&x), sizeof (x));
+        stream.read (reinterpret_cast<char*> (&y), sizeof (y));
+      }
+
+      /** \brief Creates a random point within the specified window.
+        * \param[in] min_x The minimum value for the x-coordinate of the point.
+        * \param[in] max_x The maximum value for the x-coordinate of the point.
+        * \param[in] min_y The minimum value for the y-coordinate of the point.
+        * \param[in] max_y The maximum value for the y-coordinate of the point.
+        */
+      static PointXY32i 
+      randomPoint (const int min_x, const int max_x, const int min_y, const int max_y);
+
+    public:
+      /** \brief The x-coordinate of the point. */
+      int x;
+      /** \brief The y-coordinate of the point. */
+      int y;
+  };
+
 }
+
+#endif
