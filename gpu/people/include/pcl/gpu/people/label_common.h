@@ -53,8 +53,6 @@
 #define HEIGHT    480
 #define RATIO     WIDTH/HEIGHT
 
-#define MAX_NR_TREES  4
-
 // Some defines for part image
 #define NO_DATA   255       // We have no depth data for this part of the image
 

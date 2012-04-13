@@ -23,19 +23,35 @@ using namespace std;
 class PeoplePCDApp
 {
 public: 
-    PeoplePCDApp () : final_view_("Final labeling") {}
+  PeoplePCDApp () : final_view_("Final labeling")//, image_view_("Input image") 
+  {
+    final_view_.setSize (640, 480);
+    //image_view_.setSize (640, 480);
 
-    void cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
-    {
-      person_->process(cloud);
+    final_view_.setPosition (0, 0);    
+    //image_view_.setPosition (650, 0);    
+  }
 
-      cv::Mat& cmap = person_->cmap;
-      final_view_.showRGBImage(cmap.ptr<unsigned char>(), cmap.cols, cmap.rows);
-      final_view_.spinOnce(1, true); 
-    }     
+ void cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+ {
+   person_->process(cloud);
+    
+   int c;
+   pcl::PointCloud<pcl::RGB> cmap;
+   cmap.width  = person_->cmap_device_.cols();
+   cmap.height = person_->cmap_device_.rows();
+   person_->cmap_device_.download(cmap.points, c);
+      
+   final_view_.showRGBImage<pcl::RGB>(cmap);
+   final_view_.spinOnce(1, true);
+   
+   //image_view_.showRGBImage<pcl::PointXYZRGB>(cloud);
+   //image_view_.spinOnce(1, true);
+ }     
 
-    pcl::gpu::people::Person::Ptr person_;
-    ImageViewer final_view_;
+  pcl::gpu::people::Person::Ptr person_;
+  ImageViewer final_view_;
+  //ImageViewer image_view_;
 };
 
 int print_help()
@@ -73,17 +89,7 @@ int main(int argc, char** argv)
   //Don't know if this assert is still needed with pcl::console?
   //AB: pcl::console does nothing if arg is not found
   assert(numTrees > 0 );
-  assert(numTrees <= 4 );
-
-  /// Create the app
-  PeoplePCDApp app;
-
-  /// Load the first tree
-  app.person_.reset(new pcl::gpu::people::Person(treeFilenames[0]));  
-
-  /// Load the other tree files
-  for(int ti = 1; ti < numTrees; ++ti)
-      app.person_->addTree(treeFilenames[ti]);
+  assert(numTrees <= 4 ); 
 
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
   int res = pcl::io::loadPCDFile<pcl::PointXYZRGB> (pcdname, *cloud);
@@ -91,6 +97,19 @@ int main(int argc, char** argv)
     return PCL_ERROR ("Couldn't read file\n"), -1;
   
   cout << "Loaded " << cloud->width * cloud->height << " data points from " << pcdname << endl;
+
+  
+  using pcl::gpu::people::RDFBodyPartsDetector;
+  vector<string> names_vector(treeFilenames, treeFilenames + numTrees);
+  RDFBodyPartsDetector::Ptr rdf(new RDFBodyPartsDetector(names_vector));
+
+  /// Load the first tree
+  pcl::gpu::people::Person::Ptr person(new pcl::gpu::people::Person());  
+  person->rdf_detector_ = rdf;
+   
+  /// Create the app
+  PeoplePCDApp app;
+  app.person_ = person;
 
   /// Run the app
   {

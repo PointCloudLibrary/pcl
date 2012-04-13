@@ -34,145 +34,48 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  * $Id: $
- * @author: Koen Buys
+ * @author: Koen Buys, Anatoly Baksheev
  */
 
 #ifndef PCL_GPU_PEOPLE_COLORMAP_H_
 #define PCL_GPU_PEOPLE_COLORMAP_H_
 
-//#include <opencv2/opencv.hpp>
 #include <pcl/point_types.h>
-//#include <pcl/gpu/people/tree_live.h>
 #include <pcl/gpu/people/tree.h>
+#include <pcl/gpu/containers/device_array.h>
+#include <opencv2/core/core.hpp>
 
 namespace pcl
 {
   namespace gpu
   {
     namespace people
-    {
-      namespace display
-      {
-        static const unsigned char LUT_COLOR_LABEL[] = {
-         50, 34, 22,
-         24,247,196,
-         33,207,189,
-        254,194,127,
-         88,115,175,
-        158, 91, 64,
-         14, 90,  2,
-        100,156,227,
-        243,167, 17,
-        145,194,184,
-        234,171,147,
-        220,112, 93,
-         93,132,163,
-        122,  4, 85,
-         75,168, 46,
-         15,  5,108,
-        180,125,107,
-        157, 77,167,
-        214, 89, 73,
-         52,183, 58,
-         54,155, 75,
-        249, 61,187,
-        143, 57, 11,
-        246,198,  0,
-        202,177,251,
-        229,115, 80,
-        159,185,  1,
-        186,213,229,
-         82, 47,144,
-        140, 69,139,
-        189,115,117,
-         80, 57,150 };
+    {      
+      /** @brief gives a label and returns the color out of the colormap */         
+      pcl::RGB getLColor(unsigned char l);
+
+        /** @brief gives a label and returns the color out of the colormap */         
+      pcl::RGB getLColor (pcl::Label l);
         
-        static const unsigned int LUT_COLOR_LABEL_LENGTH = 32;
-/*  
-        // @todo: delete this function
-        cv::Scalar getLColor ( const uint8_t l)
-        {
-          const unsigned char* c = LUT_COLOR_LABEL + 3*l;
-          return cv::Scalar( c[0], c[1], c[2] );
-        }
-*/
-        /*
-         * @brief gives a label and returns the color out of the colormap
-         */  
-        pcl::RGB getLColor (const uint8_t l)
-        {
-          pcl::RGB p;
-          const unsigned char* c = LUT_COLOR_LABEL + 3*l;
-          p.r = c[0];
-          p.g = c[1];
-          p.b = c[2];
-          return p;
-        }
+      void colorLMap(int W, int H, const trees::Label* l, unsigned char* c);       
+      void colorLMap(const PointCloud<pcl::Label>& cloud_in, PointCloud<pcl::RGB>& colormap_out);             
+      void colorLMap(const cv::Mat& lmap, cv::Mat& cmap);
 
-        /*
-         * @brief gives a label and returns the color out of the colormap
-         */  
-        pcl::RGB getLColor (pcl::Label l)
-        {
-          pcl::RGB p;
-          unsigned char lab = static_cast<unsigned char> (l.label);
-          const unsigned char* c = LUT_COLOR_LABEL + 3*lab;
-          p.r = c[0];
-          p.g = c[1];
-          p.b = c[2];
-          return p;
-        }
-
-        void colorLMap ( int W, int H, const pcl::gpu::people::trees::Label* l, unsigned char* c )
-        {
-          int numPix = W*H;
-          for(int pi=0;pi<numPix;++pi) 
+      inline void colorFG ( int W, int H, const unsigned char* labels, unsigned char* c )
+      {
+        int numPix = W*H;
+        for(int pi = 0; pi < numPix; ++pi)           
+          if(labels[pi] !=0 ) 
           {
-            const unsigned char* color = LUT_COLOR_LABEL + 3*l[pi];
-            c[3*pi+0] = color[0];
-            c[3*pi+1] = color[1];
-            c[3*pi+2] = color[2];
-          }
-        }
+            c[3*pi+0] = 0xFF;
+            c[3*pi+1] = 0x00;
+            c[3*pi+2] = 0x00;
+          }          
+      }
 
-        void colorLMap (const pcl::PointCloud<pcl::Label>& cloud_in, pcl::PointCloud<pcl::RGB>&   colormap_out)
-        {
-          for(size_t i = 0; i < cloud_in.size (); i++)
-          {
-            colormap_out.points.push_back (getLColor (cloud_in.points[i] ));  
-          }
-          colormap_out.width = cloud_in.width;
-          colormap_out.height = cloud_in.height;
-        } 
-
-        void colorFG ( int W, int H, const uint16_t* labels, unsigned char* c )
-        {
-          int numPix = W*H;
-          for(int pi=0;pi<numPix;++pi)           
-            if(labels[pi] !=0 ) 
-            {
-              c[3*pi+0] = 0xFF;
-              c[3*pi+1] = 0x00;
-              c[3*pi+2] = 0x00;
-            }          
-        }
-
-        int colorLMap( const cv::Mat& lmap, cv::Mat& cmap )
-        {
-          if( lmap.depth() != CV_8U )  return -1;
-          if( lmap.channels() != 1 )   return -1;
-
-          int W = lmap.size().width;
-          int H = lmap.size().height;
-
-          cmap.create( H, W, CV_8UC3 );
-
-          colorLMap( W,H, static_cast<const pcl::gpu::people::trees::Label*>(lmap.data), static_cast<unsigned char*>(cmap.data));
-          //colorLMap( W,H, (const pcl::gpu::people::trees::Label*)lmap.data, (unsigned char*)cmap.data);
-
-          return 0;
-        }
-      } // end namespace display
+      extern const unsigned char LUT_COLOR_LABEL[];
+      extern const int LUT_COLOR_LABEL_LENGTH;
+           
     } // end namespace people
   } // end namespace gpu
 } // end namespace pcl

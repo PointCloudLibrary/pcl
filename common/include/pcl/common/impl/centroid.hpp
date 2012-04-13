@@ -300,9 +300,9 @@ pcl::computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud,
                                         const Eigen::Vector4f &centroid,
                                         Eigen::Matrix3f &covariance_matrix)
 {
-  unsigned point_count = pcl::computeCovarianceMatrix (cloud, indices.indices, centroid, covariance_matrix);
+  unsigned int point_count = pcl::computeCovarianceMatrix (cloud, indices.indices, centroid, covariance_matrix);
   if (point_count != 0)
-    covariance_matrix /= point_count;
+    covariance_matrix /= (int)point_count;
 
   return point_count;
 }

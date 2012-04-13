@@ -41,6 +41,8 @@
 
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/utils/safe_call.hpp>
+#include <pcl/gpu/people/tree.h>
+#include <pcl/gpu/people/label_common.h>
 
 namespace pcl
 {
@@ -48,6 +50,7 @@ namespace pcl
   {
     typedef DeviceArray2D<unsigned short> Depth;
     typedef DeviceArray2D<unsigned char> Labels;
+    typedef DeviceArray2D<uchar4> Image;
 
     struct float8
     {
@@ -55,54 +58,44 @@ namespace pcl
     };
 
     void convertCloud2Depth(const DeviceArray<float8>& cloud, int rows, int cols, Depth& depth);
+    void smoothLabelImage(const Labels& src, const Depth& depth, Labels& dst, int num_parts, int  patch_size, int depthThres);
+    void colorLMap(const Labels& labels, const DeviceArray<uchar4>& cmap, Image& rgb);
+      
+    struct CUDATree
+    {
+        typedef pcl::gpu::people::trees::Node Node;
+        typedef pcl::gpu::people::trees::Label Label;
 
-  
+        int treeHeight;
+        int numNodes;
+        
+        DeviceArray<Node> nodes_device;
+        DeviceArray<Label> leaves_device;                      
 
-void CUDA_runTree( const float  focal,
-                   const int    treeHeight,
-                   const int    numNodes,
-                   const void*  nodes_device,
-                   const void*  leaves_device,
-                   const Depth& depth,
-                   Labels& labels );
+        CUDATree (int treeHeight_, const std::vector<Node>& nodes, const std::vector<Label>& leaves);        
+    };
+                   
+    /** Processor using multiple trees */
+    class MultiTreeLiveProc
+    {
+    public:
+                       
+        MultiTreeLiveProc(size_t num_trees, int def_rows = 480, int def_cols = 640) 
+            : multilmap_device(def_rows * def_cols * num_trees) {}            
+        ~MultiTreeLiveProc() {}
+                
+        void process(const Depth& dmap, Labels& lmap);
+
+        // same as process, but runs the trick of declaring as background any
+        // neighbor that is more than FGThresh away.
+        void process(const Depth& dmap, Labels& lmap, int FGThresh);
 
 
-void CUDA_runTree_masked( const float  focal,
-                          const int    treeHeight,
-                          const int    numNodes,
-                          const void*  nodes_device,
-                          const void*  leaves_device,
-                          const Depth& depth,
-                          const void*  mask_in_device,
-                          Labels& labels );
+        std::vector<CUDATree> trees;                        
+        DeviceArray<unsigned char> multilmap_device;
 
-
-        void CUDA_runMultiTreePass( int          treeId,
-                            const float  focal,
-                            const int    treeHeight,
-                            const int    numNodes,
-                            const void*  nodes_device,
-                            const void*  leaves_device,
-                            const Depth& depth,
-                            void*        multilabel_device );
-
-        void CUDA_runMultiTreePassFG( int          treeId,
-                            const int    FGThresh,
-                            const float  focal,
-                            const int    treeHeight,
-                            const int    numNodes,
-                            const void*  nodes_device,
-                            const void*  leaves_device,
-                            const        Depth& depth,
-                            void*        multilabel_device );
-
-        void CUDA_runMultiTreeMerge( int          numTrees,
-                             const Depth& depth,
-                             void*        multilabel_device, 
-                             Labels& label_out_device);
-
-    }
-
+    };
+  }
 }
 
 #endif /* PCL_GPU_PEOPLE_INTERNAL_H_ */

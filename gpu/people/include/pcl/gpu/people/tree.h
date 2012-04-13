@@ -115,6 +115,20 @@ namespace pcl
         ////////////////////////////////////////////////
         // treee_run
        
+        
+         /** The stream points to ascii data that goes:
+           * ##################
+           * TreeHeight
+           * du1 dv1 du2 dv2 thresh
+           * du1 dv1 du2 dv2 thresh
+           * ............
+           * label
+           * label
+           * ##################
+           *
+           * there are 2^threeheight -1 nodes ( [du1 dv1 du2 dv2 thresh] lines )
+           * there are 2^threeheigh   leaves ( [label] lines )
+           */
         int loadTree( std::istream& is, std::vector<Node>&  tree, std::vector<Label>& leaves );       
         int loadTree( const std::string&  filename, std::vector<Node>&  tree, std::vector<Label>& leaves );        
         void runThroughTree( int maxDepth, const std::vector<Node>& tree, const std::vector<Label>& leaves, int W, int H, const uint16_t* dmap, Label* lmap );

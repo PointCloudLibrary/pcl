@@ -42,22 +42,28 @@
 #include <fstream>
 
 #include <pcl/point_types.h>
-#include <pcl/gpu/containers/device_array.h>
 #include <pcl/console/print.h>
+#include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/people/label_common.h>
 #include <pcl/gpu/people/tree.h>
-
 #include <opencv2/core/core.hpp>
+
+#include <pcl/gpu/people/rdf_bodyparts_detector.h>
 
 namespace pcl
 {
   namespace gpu
   {
     namespace people
-    {
-      namespace trees
+    {   
+      struct FaceDetector
       {
-        class MultiTreeLiveProc;
+          typedef boost::shared_ptr<FaceDetector> Ptr;
+      };
+
+      struct OtherDetector
+      {
+          typedef boost::shared_ptr<OtherDetector> Ptr;
       };
 
       class PCL_EXPORTS Person
@@ -69,21 +75,28 @@ namespace pcl
 
           DeviceArray<InputPointT> cloud_device_;
 
-          DeviceArray2D<unsigned short> depth_device_;
-          DeviceArray2D<unsigned short> depth_device2_;
+          typedef DeviceArray2D<unsigned short> Depth;
+          typedef DeviceArray2D<unsigned char> Labels;
+          typedef DeviceArray2D<pcl::RGB> Image;
 
-          DeviceArray2D<unsigned char> lmap_device_;
-          DeviceArray2D<unsigned char> lmap_device2_;
+          Depth depth_device_;
+          Depth depth_device2_;
+
+          Image cmap_device_;
+
+          RDFBodyPartsDetector::Ptr rdf_detector_;
+          FaceDetector::Ptr face_detector_;
+          OtherDetector::Ptr other_detector_;
 
           /** \brief Class constructor. */
-          Person (std::string& tree_file);
+          Person () : number_of_parts_(25), delta_hue_tolerance_(5),                  
+                  do_shs_(true), dilation_size_(2),  name_("Generic"), counter_(0) 
+          {}
+
           /** \brief Class destructor. */
           ~Person () {}
 
-          //// PUBLIC METHODS /////
-          /** \brief Loads an aditional tree to the RDF */
-          int
-          addTree (std::string& tree_file);
+          //// PUBLIC METHODS /////               
 
           /** \brief The actuall processing callback */
           void
@@ -96,20 +109,6 @@ namespace pcl
           /** \brief Write XML configuration file for a specific person */
           void 
           writePersonXMLConfig (std::ostream& os);
-
-          /** \brief Set the max number of pixels in a body part cluster, defaults to 25000 */
-          inline void
-          setMaxClusterSize (unsigned int max_cluster_size)
-          {
-            max_cluster_size_ = max_cluster_size;
-          }
-
-          /** \brief Get the max number of pixels in a body part cluster, defaults to 25000 */
-          inline unsigned int
-          getMaxClusterSize () const
-          {
-            return (max_cluster_size_);
-          }
 
           /** \brief Set the number of body parts used in the RDF, defaults to 25 */
           inline void
@@ -124,60 +123,6 @@ namespace pcl
             return (number_of_parts_);
           }
 
-          /** \brief Set the number of decision trees used in the RDF, defaults to one, max is 4 */
-          inline void
-          setNumberOfTrees (unsigned int number_of_trees)
-          {
-            number_of_trees_ = number_of_trees;
-          }
-
-          /** \brief Set the number of decision trees used in the RDF, defaults to one */
-          inline unsigned int
-          getNumberOfTrees () const
-          {
-            return (number_of_trees_);
-          }
-
-          /** \brief Set the minimal amount of pixels needed before accepting a body part cluster in Euclidean Labeled Clustering, defaults to 200 */
-          inline void
-          setClusterAreaThreshold (unsigned int cluster_area_threshold)
-          {
-            cluster_area_threshold_ = cluster_area_threshold;
-          }
-
-          /** \brief Get the minimal amount of pixels needed before accepting a body part cluster in Euclidean Labeled Clustering, defaults to 200 */
-          inline unsigned int
-          getClusterAreaThreshold () const
-          {
-            return (cluster_area_threshold_);
-          }
-
-          /** \brief Set the minimal amount of pixels needed before accepting a body part cluster in Seeded Hue Segmentation, defaults to 100 */
-          inline void
-          setClusterAreaThresholdSHS (unsigned int cluster_area_threshold_shs)
-          {
-            cluster_area_threshold_shs_ = cluster_area_threshold_shs;
-          }
-
-          /** \brief Set the minimal amount of pixels needed before accepting a body part cluster in Seeded Hue Segmentation, defaults to 100 */
-          inline unsigned int
-          getClusterAreaThresholdSHS () const
-          {
-            return (cluster_area_threshold_shs_);
-          }
-          /** \brief Set the sphere radius in which the cluster search and seeded hue segmentation will work, defaults to 0.05 */
-          inline void
-          setClusterTolerance (float cluster_tolerance)
-          {
-            cluster_tolerance_ = cluster_tolerance;
-          }
-
-          /** \brief Get the sphere radius in which the cluster search and seeded hue segmentation will work, defaults to 0.05 */
-          inline float
-          getClusterTolerance () const
-          {
-            return (cluster_tolerance_);
-          }
           /** \brief Set the tolerance for the delta on the Hue in Seeded Hue Segmentation step */
           inline void
           setDeltaHueTolerance (unsigned int delta_hue_tolerance)
@@ -191,34 +136,7 @@ namespace pcl
           {
             return (delta_hue_tolerance_);
           }
-
-          /** \brief Set the scale of the radius for Euclidean Labeled Clustering */
-          inline void
-          setElecRadiusScale (float elec_radius_scale)
-          {
-            elec_radius_scale_ = elec_radius_scale;
-          }
-
-          /** \brief Get the scale of the radius for Euclidean Labeled Clustering */
-          inline float
-          getElecRadiusScale () const
-          {
-            return (elec_radius_scale_);
-          }
-          /** \brief Set if the Euclidean Labeled Cluster will do a brute force border search to refine it's result (=slow) */
-          inline void
-          setElecBruteForceBorder (bool elec_brute_force_border)
-          {
-            elec_brute_force_border_ = elec_brute_force_border;
-          }
-
-          /** \brief Get if the Euclidean Labeled Cluster will do a brute force border search to refine it's result (=slow) */
-          inline bool
-          getElecBruteForceBorder () const
-          {
-            return (elec_brute_force_border_);
-          }
-
+ 
           /** \brief if set the proces step will do a second iteration with SHS */
           inline void
           setDoSHS (bool do_shs)
@@ -247,25 +165,13 @@ namespace pcl
           /** \brief Class getName method. */
           virtual std::string getClassName () const { return ("Person"); }
 
-        public:
-          unsigned int                                max_cluster_size_;
-          unsigned int                                number_of_parts_;
-          unsigned int                                number_of_trees_;
-          unsigned int                                cluster_area_threshold_;
-          unsigned int                                cluster_area_threshold_shs_;
-          float                                       cluster_tolerance_;
-          unsigned int                                delta_hue_tolerance_;
-          float                                       elec_radius_scale_;
-          bool                                        elec_brute_force_border_;
+        public:          
+          unsigned int                                number_of_parts_;                    
+          unsigned int                                delta_hue_tolerance_;          
           bool                                        do_shs_;
           unsigned int                                dilation_size_;
           unsigned int                                counter_;
-
-          boost::shared_ptr<trees::MultiTreeLiveProc> m_proc;
-          cv::Mat                                     m_lmap;
-          cv::Mat                                     m_cmap;
-          cv::Mat                                     cmap;
-          cv::Mat                                     m_bmap;
+          
           std::string                                 name_;                  // Name of the person
           std::vector<float>                          max_part_size_;         // Max primary eigenvalue for each body part
           std::vector<std::vector<float> >            part_ideal_length_;     // Ideal length between two body parts

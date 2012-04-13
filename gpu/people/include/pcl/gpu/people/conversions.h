@@ -58,7 +58,7 @@ namespace pcl
          *  \param[in] lmap vector with labels, needs to have same size as input PointCloud
          *  \param[out] cloud_out the PointCloudXYZRGBL
          **/
-        void
+        inline void
         labelPointCloudFromArray (
                       const PointCloud<PointXYZRGB>&  cloud_in,
                       const uint8_t*                  lmap,
@@ -84,7 +84,7 @@ namespace pcl
          *  \param[in] lmap vector with labels, needs to have same size as input PointCloud
          *  \param[out] cloud_out the PointCloudXYZL
          **/
-        void
+        inline void
         labelPointCloudFromArray (
                       const PointCloud<PointXYZ>&  cloud_in,
                       const uint8_t*               lmap,
@@ -109,7 +109,7 @@ namespace pcl
          *  \param[in] cloud_label the PointcloudL
          *  \param[out] cloud_out the PointCloudXYZRGBL
          **/
-        void
+        inline void
         labelPointCloudFromArray (
                       const PointCloud<PointXYZRGB>&  cloud_in,
                       const PointCloud<Label>&        cloud_label,
@@ -136,7 +136,7 @@ namespace pcl
          *  \param[in] cloud_label the PointCloudL
          *  \param[out] cloud_out the PointCloudXYZRGBL
          **/
-        void
+        inline void
         labelPointCloudFromArray (
                       const PointCloud<PointXYZ>&  cloud_in,
                       const PointCloud<Label>&     cloud_label,
@@ -161,7 +161,7 @@ namespace pcl
          *  \param[in] lmap vector with labels, needs to have same size as input PointCloud
          *  \param[out] cloud_out the PointCloudXYZRGBL
          **/
-        void
+        inline void
         colorLabelPointCloudFromArray (
                       const PointCloud<PointXYZRGB>&  cloud_in,
                       const uint8_t*                  lmap,
@@ -178,15 +178,15 @@ namespace pcl
             p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
             p.label = lmap[i];
             // Check if label is not larger then our LUT
-            if(p.label > pcl::gpu::people::display::LUT_COLOR_LABEL_LENGTH)
+            if((int)p.label > pcl::gpu::people::LUT_COLOR_LABEL_LENGTH)
             {
               p.b = 0; p.r = 0; p.g = 0;
             }
             else
             {
-              p.b = pcl::gpu::people::display::LUT_COLOR_LABEL[3 * p.label + 2];
-              p.g = pcl::gpu::people::display::LUT_COLOR_LABEL[3 * p.label + 1];
-              p.r = pcl::gpu::people::display::LUT_COLOR_LABEL[3 * p.label + 0];
+              p.b = pcl::gpu::people::LUT_COLOR_LABEL[3 * p.label + 2];
+              p.g = pcl::gpu::people::LUT_COLOR_LABEL[3 * p.label + 1];
+              p.r = pcl::gpu::people::LUT_COLOR_LABEL[3 * p.label + 0];
             }
             cloud_out.points.push_back(p);
           }
@@ -197,7 +197,7 @@ namespace pcl
          *  \param[in] lmap vector with labels, needs to have same size as input PointCloud
          *  \param[out] cloud_out the PointCloudXYZRGBL
          **/
-        void
+        inline void
         colorLabelPointCloudFromArray (
                       const PointCloud<PointXYZ>&     cloud_in,
                       const uint8_t*                  lmap,
@@ -213,9 +213,9 @@ namespace pcl
             PointXYZRGBL p;
             p.x = cloud_in.points[i].x; p.y = cloud_in.points[i].y; p.z = cloud_in.points[i].z;
             p.label = lmap[i];
-            p.b = pcl::gpu::people::display::LUT_COLOR_LABEL[3 * p.label + 2];
-            p.g = pcl::gpu::people::display::LUT_COLOR_LABEL[3 * p.label + 1];
-            p.r = pcl::gpu::people::display::LUT_COLOR_LABEL[3 * p.label + 0];
+            p.b = pcl::gpu::people::LUT_COLOR_LABEL[3 * p.label + 2];
+            p.g = pcl::gpu::people::LUT_COLOR_LABEL[3 * p.label + 1];
+            p.r = pcl::gpu::people::LUT_COLOR_LABEL[3 * p.label + 0];
             cloud_out.points.push_back(p);
           }
         }

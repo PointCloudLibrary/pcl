@@ -80,7 +80,7 @@ namespace pcl
          * @param[in] depthThres the z-distance thresshold
          * @todo add a Gaussian contribution function to depth and vote
          **/
-        void smoothLabelImage ( cv::Mat&      lmap_in,
+        inline void smoothLabelImage ( cv::Mat&      lmap_in,
                                 cv::Mat&      dmap,
                                 cv::Mat&      lmap_out,
                                 unsigned int  patch_size,
@@ -156,7 +156,7 @@ namespace pcl
          * @todo make the z-distance a parameter
          * @todo add a Gaussian contribution function to depth and vote
          **/
-        void smoothLabelImage2 ( cv::Mat&  lmap_in,
+        inline void smoothLabelImage2 ( cv::Mat&  lmap_in,
                                 cv::Mat&  dmap,
                                 cv::Mat&  lmap_out)
         {
@@ -238,7 +238,7 @@ namespace pcl
          * @todo make the z-distance a parameter
          * @todo add a Gaussian contribution function to depth and vote
          **/
-        void smoothLabelImage ( cv::Mat&  lmap_in,
+        inline void smoothLabelImage ( cv::Mat&  lmap_in,
                                 cv::Mat&  dmap,
                                 cv::Mat&  lmap_out)
         {
@@ -329,7 +329,7 @@ namespace pcl
          * @todo implement the eigenvalue evaluation again
          * @todo do we still need sizeThres?
          **/
-        void sortIndicesToBlob2 ( const pcl::PointCloud<pcl::PointXYZRGBL>&                             cloud_in,
+        inline void sortIndicesToBlob2 ( const pcl::PointCloud<pcl::PointXYZRGBL>&                             cloud_in,
                                   unsigned int                                                          sizeThres,
                                   std::vector< std::vector<Blob2, Eigen::aligned_allocator<Blob2> > >&  sorted,
                                   std::vector< std::vector<pcl::PointIndices> >&                        indices)
@@ -382,7 +382,7 @@ namespace pcl
          * @param[in] sorted the matrix of blobs
          * @return Zero if everything went well
          **/
-        int giveSortedBlobsInfo ( std::vector<std::vector<Blob2, Eigen::aligned_allocator<Blob2> > >& sorted)
+        inline int giveSortedBlobsInfo ( std::vector<std::vector<Blob2, Eigen::aligned_allocator<Blob2> > >& sorted)
         {
           std::cout << "(I) : giveSortedBlobsInfo(): Size of outer vector: " << sorted.size() << std::endl;
           for(unsigned int i = 0; i < sorted.size(); i++)
