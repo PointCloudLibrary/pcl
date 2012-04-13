@@ -35,12 +35,12 @@
  *
  */
 
-#ifndef PCL_ML_DT_DECISION_TREE_LEARNER_HPP_
-#define PCL_ML_DT_DECISION_TREE_LEARNER_HPP_
+#ifndef PCL_ML_DT_DECISION_TREE_TRAINER_HPP_
+#define PCL_ML_DT_DECISION_TREE_TRAINER_HPP_
   
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
-pcl::DecisionTreeLearner<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::DecisionTreeLearner ()
+pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::DecisionTreeTrainer ()
   : max_tree_depth_ (15)
   , num_of_features_ (1000)
   , num_of_thresholds_ (10)
@@ -55,7 +55,7 @@ pcl::DecisionTreeLearner<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
-pcl::DecisionTreeLearner<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::~DecisionTreeLearner ()
+pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::~DecisionTreeTrainer ()
 {
   
 }
@@ -63,7 +63,7 @@ pcl::DecisionTreeLearner<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
 void
-pcl::DecisionTreeLearner<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train (
+pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train (
   pcl::DecisionTree<NodeType> & tree)
 {
   // create random features
@@ -81,7 +81,7 @@ pcl::DecisionTreeLearner<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
 void
-pcl::DecisionTreeLearner<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::trainDecisionTreeNode (
+pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::trainDecisionTreeNode (
   std::vector<FeatureType> & features,
   std::vector<ExampleIndex> & examples,
   std::vector<LabelType> & label_data,
@@ -231,7 +231,7 @@ pcl::DecisionTreeLearner<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
 void
-pcl::DecisionTreeLearner<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::createThresholdsUniform (
+pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::createThresholdsUniform (
   const size_t num_of_thresholds,
   std::vector<float> & values,
   std::vector<float> & thresholds)

@@ -35,8 +35,8 @@
  *
  */
   
-#ifndef PCL_ML_DT_DECISION_TREE_LEARNER_H_
-#define PCL_ML_DT_DECISION_TREE_LEARNER_H_
+#ifndef PCL_ML_DT_DECISION_TREE_TRAINER_H_
+#define PCL_ML_DT_DECISION_TREE_TRAINER_H_
 
 #include <pcl/common/common.h>
 
@@ -49,23 +49,23 @@
 namespace pcl
 {
 
-  /** \brief Learner for decision trees. */
+  /** \brief Trainer for decision trees. */
   template <
     class FeatureType,
     class DataSet,
     class LabelType,
     class ExampleIndex,
     class NodeType >
-  class PCL_EXPORTS DecisionTreeLearner
+  class PCL_EXPORTS DecisionTreeTrainer
   {
   
     public:
 
       /** \brief Constructor. */
-      DecisionTreeLearner ();
+      DecisionTreeTrainer ();
       /** \brief Destructor. */
       virtual 
-      ~DecisionTreeLearner ();
+      ~DecisionTreeTrainer ();
 
       /** \brief Sets the feature handler used to create and evaluate features. 
         * \param[in] feature_handler The feature handler.
@@ -196,6 +196,6 @@ namespace pcl
 
 }
 
-#include <pcl/ml/impl/dt/decision_tree_learner.hpp>
+#include <pcl/ml/impl/dt/decision_tree_trainer.hpp>
 
 #endif

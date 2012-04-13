@@ -12,7 +12,7 @@ if(build)
     set(incs 
         include/pcl/${SUBSYS_NAME}/dt/decision_tree.h
         include/pcl/${SUBSYS_NAME}/dt/decision_tree_evaluator.h
-        include/pcl/${SUBSYS_NAME}/dt/decision_tree_learner.h
+        include/pcl/${SUBSYS_NAME}/dt/decision_tree_trainer.h
         include/pcl/${SUBSYS_NAME}/feature_handler.h
         include/pcl/${SUBSYS_NAME}/multiple_data_2d_example_index.h
         include/pcl/${SUBSYS_NAME}/point_xy_32i.h
@@ -25,7 +25,7 @@ if(build)
 
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/dt/decision_tree_evaluator.hpp
-        include/pcl/${SUBSYS_NAME}/impl/dt/decision_tree_learner.hpp
+        include/pcl/${SUBSYS_NAME}/impl/dt/decision_tree_trainer.hpp
         )
 
     set(srcs
