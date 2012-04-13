@@ -34,24 +34,37 @@ if(build)
         include/pcl/${SUBSYS_NAME}/sparse_quantized_multi_mod_template.h
         include/pcl/${SUBSYS_NAME}/surface_normal_modality.h
         include/pcl/${SUBSYS_NAME}/linemod/line_rgbd.h
+        include/pcl/${SUBSYS_NAME}/ransac_based/obj_rec_ransac.h
+        )
+        
+    set(hv_incs
         include/pcl/${SUBSYS_NAME}/hv/occlusion_reasoning.h
         include/pcl/${SUBSYS_NAME}/hv/hypotheses_verification.h
         include/pcl/${SUBSYS_NAME}/hv/hv_papazov.h
-        include/pcl/${SUBSYS_NAME}/hv/greedy_verification.h
+        include/pcl/${SUBSYS_NAME}/hv/greedy_verification.h    
+      )
+      
+    set(cg_incs
         include/pcl/${SUBSYS_NAME}/cg/correspondence_grouping.h
-        include/pcl/${SUBSYS_NAME}/cg/hough_3d.h		
+        include/pcl/${SUBSYS_NAME}/cg/hough_3d.h    
         include/pcl/${SUBSYS_NAME}/cg/geometric_consistency.h
-        include/pcl/${SUBSYS_NAME}/ransac_based/obj_rec_ransac.h
         )
+    
 
     set(impl_incs 
+        include/pcl/${SUBSYS_NAME}/impl/linemod/line_rgbd.hpp
+        )
+        
+    set(hv_impl_incs
         include/pcl/${SUBSYS_NAME}/impl/hv/occlusion_reasoning.hpp
         include/pcl/${SUBSYS_NAME}/impl/hv/hv_papazov.hpp        
         include/pcl/${SUBSYS_NAME}/impl/hv/greedy_verification.hpp
+    )
+    
+    set(cg_impl_incs
         include/pcl/${SUBSYS_NAME}/impl/cg/correspondence_grouping.hpp
         include/pcl/${SUBSYS_NAME}/impl/cg/hough_3d.hpp
         include/pcl/${SUBSYS_NAME}/impl/cg/geometric_consistency.hpp
-        include/pcl/${SUBSYS_NAME}/impl/linemod/line_rgbd.hpp
         )
 
     set(srcs
@@ -69,12 +82,17 @@ if(build)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs} ${hv_incs} ${hv_impl_incs} ${cg_incs} ${cg_impl_incs})
     target_link_libraries(${LIB_NAME} pcl_common pcl_kdtree pcl_octree pcl_search pcl_features pcl_registration pcl_sample_consensus pcl_filters)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/hv ${hv_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/cg ${cg_incs})
+    
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl/hv ${hv_impl_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl/cg ${cg_impl_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/linemod ${LINEMOD_INCLUDES})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl/linemod ${LINEMOD_IMPLS})
 
