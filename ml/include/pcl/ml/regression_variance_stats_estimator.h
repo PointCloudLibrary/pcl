@@ -47,9 +47,82 @@
 namespace pcl
 {
 
-  /** \brief Statistics estimator for regression trees optimizing variance. */
+  /** \brief Node for a regression trees which optimizes variance. */
+  template <class FeatureType, class LabelType>
+  class PCL_EXPORTS RegressionVarianceNode 
+  {
+    public:
+      /** \brief Constructor. */
+      RegressionVarianceNode () : value(0), variance(0), threshold(0), sub_nodes() {}
+      /** \brief Destructor. */
+      virtual ~RegressionVarianceNode () {}
+
+      /** \brief Serializes the node to the specified stream.
+        * \param[out] stream The destination for the serialization.
+        */
+      inline void 
+      serialize (std::ostream & stream) const
+      {
+        feature.serialize (stream);
+
+        stream.write (reinterpret_cast<const char*> (&threshold), sizeof (threshold));
+
+        stream.write (reinterpret_cast<const char*> (&value), sizeof (value));
+        stream.write (reinterpret_cast<const char*> (&variance), sizeof (variance));
+
+        const int num_of_sub_nodes = static_cast<int> (sub_nodes.size ());
+        stream.write (reinterpret_cast<const char*> (&num_of_sub_nodes), sizeof (num_of_sub_nodes));
+        for (int sub_node_index = 0; sub_node_index < num_of_sub_nodes; ++sub_node_index)
+        {
+          sub_nodes[sub_node_index].serialize (stream);        
+        }
+      }
+
+      /** \brief Deserializes a node from the specified stream.
+        * \param[in] stream The source for the deserialization.
+        */
+      inline void 
+      deserialize (std::istream & stream)
+      {
+        feature.deserialize (stream);
+
+        stream.read (reinterpret_cast<char*> (&threshold), sizeof (threshold));
+
+        stream.read (reinterpret_cast<char*> (&value), sizeof (value));
+        stream.read (reinterpret_cast<char*> (&variance), sizeof (variance));
+
+        int num_of_sub_nodes;
+        stream.read (reinterpret_cast<char*> (&num_of_sub_nodes), sizeof (num_of_sub_nodes));
+        sub_nodes.resize (num_of_sub_nodes);
+
+        if (num_of_sub_nodes > 0)
+        {
+          for (int sub_node_index = 0; sub_node_index < num_of_sub_nodes; ++sub_node_index)
+          {
+            sub_nodes[sub_node_index].deserialize (stream);
+          }
+        }
+      }
+
+    public:
+      /** \brief The feature associated with the node. */
+      FeatureType feature;
+      /** \brief The threshold applied on the feature response. */
+      float threshold;
+
+      /** \brief The label value of this node. */
+      LabelType value;
+      /** \brief The variance of the labels that ended up at this node during training. */
+      LabelType variance;
+
+      /** \brief The child nodes. */
+      std::vector<RegressionVarianceNode> sub_nodes;
+  };
+
+
+  /** \brief Statistics estimator for regression trees which optimizes variance. */
   template <class LabelDataType, class NodeType, class DataSet, class ExampleIndex>
-  class RegressionVarianceStatsEstimator
+  class PCL_EXPORTS RegressionVarianceStatsEstimator
     : public pcl::StatsEstimator<LabelDataType, NodeType, DataSet, ExampleIndex>
   {
   
@@ -93,47 +166,48 @@ namespace pcl
         std::vector<unsigned char> & flags,
         const float threshold) const
       {
-        const int numOfElements = examples.size ();
-
-        const int numOfBranches = getNumOfBranches();
+        const size_t num_of_examples = examples.size ();
+        const size_t num_of_branches = getNumOfBranches();
 
         // compute variance
-        std::vector<LabelDataType> sums (numOfBranches+1, 0);
-        std::vector<LabelDataType> sqrSums (numOfBranches+1, 0);
-        std::vector<int> branchElementCount (numOfBranches+1, 0);
+        std::vector<LabelDataType> sums (num_of_branches+1, 0);
+        std::vector<LabelDataType> sqr_sums (num_of_branches+1, 0);
+        std::vector<size_t> branch_element_count (num_of_branches+1, 0);
 
-        for (int elementIndex = 0; elementIndex < numOfElements; ++elementIndex)
+        for (size_t example_index = 0; example_index < num_of_examples; ++example_index)
         {
-          const int branchIndex = results[elementIndex] > threshold;
-          LabelDataType label = label_data[elementIndex];
+          unsigned char branch_index;
+          computeBranchIndex (results[example_index], flags[example_index], threshold, branch_index);
 
-          sums[branchIndex] += label;
-          sums[numOfBranches] += label;
+          LabelDataType label = label_data[example_index];
 
-          sqrSums[branchIndex] += label*label;
-          sqrSums[numOfBranches] += label*label;
+          sums[branch_index] += label;
+          sums[num_of_branches] += label;
 
-          ++branchElementCount[branchIndex];
-          ++branchElementCount[numOfBranches];
+          sqr_sums[branch_index] += label*label;
+          sqr_sums[num_of_branches] += label*label;
+
+          ++branch_element_count[branch_index];
+          ++branch_element_count[num_of_branches];
         }
 
-        std::vector<float> variances (numOfBranches+1, 0);
-        for (int branchIndex = 0; branchIndex < numOfBranches+1; ++branchIndex)
+        std::vector<float> variances (num_of_branches+1, 0);
+        for (size_t branch_index = 0; branch_index < num_of_branches+1; ++branch_index)
         {
-          const float meanSum = static_cast<float>(sums[branchIndex]) / branchElementCount[branchIndex];
-          const float meanSqrSum = static_cast<float>(sqrSums[branchIndex]) / branchElementCount[branchIndex];
-          variances[branchIndex] = meanSqrSum - meanSum*meanSum;
+          const float mean_sum = static_cast<float>(sums[branch_index]) / branch_element_count[branch_index];
+          const float mean_sqr_sum = static_cast<float>(sqr_sums[branch_index]) / branch_element_count[branch_index];
+          variances[branch_index] = mean_sqr_sum - mean_sum*mean_sum;
         }
 
-        float informationGain = variances[numOfBranches];
-        for (int branchIndex = 0; branchIndex < numOfBranches; ++branchIndex)
+        float information_gain = variances[num_of_branches];
+        for (size_t branch_index = 0; branch_index < num_of_branches; ++branch_index)
         {
           //const float weight = static_cast<float>(sums[branchIndex]) / sums[numOfBranches];
-          const float weight = static_cast<float>(branchElementCount[branchIndex]) / static_cast<float>(branchElementCount[numOfBranches]);
-          informationGain -= weight*variances[branchIndex];
+          const float weight = static_cast<float>(branch_element_count[branch_index]) / static_cast<float>(branch_element_count[num_of_branches]);
+          information_gain -= weight*variances[branch_index];
         }
 
-        return informationGain;
+        return information_gain;
       }
 
       /** \brief Computes the branch indices for all supplied results.
@@ -149,14 +223,15 @@ namespace pcl
         const float threshold,
         std::vector<unsigned char> & branch_indices) const
       {
-        const int numOfBranches = 2;
-        const int numOfElements = results.size ();
+        const size_t num_of_results = results.size ();
+        const size_t num_of_branches = getNumOfBranches();
 
-        branch_indices.resize (numOfElements);
-        for (int elementIndex = 0; elementIndex < numOfElements; ++elementIndex)
+        branch_indices.resize (num_of_results);
+        for (size_t result_index = 0; result_index < num_of_results; ++result_index)
         {
-          const int branchIndex = results[elementIndex] > threshold;
-          branch_indices[elementIndex] = branchIndex;
+          unsigned char branch_index;
+          computeBranchIndex (results[result_index], flags[result_index], threshold, branch_index);
+          branch_indices[result_index] = branch_index;
         }
       }
 
@@ -166,14 +241,14 @@ namespace pcl
         * \param[in] threshold The threshold used to compute the branch index.
         * \param[out] branch_index The destination for the computed branch index.
         */
-      void 
+      inline void 
       computeBranchIndex(
         const float result,
         const unsigned char flag,
         const float threshold,
         unsigned char & branch_index) const
       {
-        branch_index = result > threshold;
+        branch_index = (result > threshold) ? 1 : 0;
       }
 
       /** \brief Computes and sets the statistics for a node.
@@ -189,22 +264,22 @@ namespace pcl
         std::vector<LabelDataType> & label_data,
         NodeType & node) const
       {
-        const int numOfElements = examples.size ();
+        const size_t num_of_examples = examples.size ();
 
         LabelDataType sum = 0.0f;
-        LabelDataType sqrSum = 0.0f;
-        for (int elementIndex = 0; elementIndex < numOfElements; ++elementIndex)
+        LabelDataType sqr_sum = 0.0f;
+        for (size_t example_index = 0; example_index < num_of_examples; ++example_index)
         {
-          const LabelDataType label = label_data[elementIndex];
+          const LabelDataType label = label_data[example_index];
 
           sum += label;
-          sqrSum += label*label;
+          sqr_sum += label*label;
         }
 
-        sum /= numOfElements;
-        sqrSum /= numOfElements;
+        sum /= num_of_examples;
+        sqr_sum /= num_of_examples;
 
-        const float variance = sqrSum - sum*sum;
+        const float variance = sqr_sum - sum*sum;
 
         node.value = sum;
         node.variance = variance;

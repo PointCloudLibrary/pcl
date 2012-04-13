@@ -13,8 +13,12 @@ if(build)
         include/pcl/${SUBSYS_NAME}/dt/decision_tree.h
         include/pcl/${SUBSYS_NAME}/dt/decision_tree_evaluator.h
         include/pcl/${SUBSYS_NAME}/dt/decision_tree_learner.h
-        include/pcl/${SUBSYS_NAME}/dt/feature_handler.h
-        include/pcl/${SUBSYS_NAME}/dt/stats_estimator.h
+        include/pcl/${SUBSYS_NAME}/feature_handler.h
+        include/pcl/${SUBSYS_NAME}/stats_estimator.h
+        include/pcl/${SUBSYS_NAME}/multiple_data_2d_example_index.h
+        include/pcl/${SUBSYS_NAME}/regression_variance_stats_estimator.h
+        include/pcl/${SUBSYS_NAME}/rgbd_2d_comparison_feature.h
+        include/pcl/${SUBSYS_NAME}/rgbd_2d_comparison_feature_handler.h
         include/pcl/${SUBSYS_NAME}/rgbd_2d_data_set.h
         )
 

@@ -124,7 +124,7 @@ namespace pcl
         * \param[in] row The row of the desired location.
         */
       inline float * 
-      operator() (const int data_set_id, const int col, const int row)
+      operator() (const size_t data_set_id, const size_t col, const size_t row)
       {
         return (*data_set_[data_set_id]) (col, row);
       };

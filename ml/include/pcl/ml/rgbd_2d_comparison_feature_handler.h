@@ -35,11 +35,15 @@
  *
  */
   
-#ifndef PCL_ML_RGBD_COMPARISON_FEATURE_HANDLER_H_
-#define PCL_ML_RGBD_COMPARISON_FEATURE_HANDLER_H_
+#ifndef PCL_ML_RGBD_2D_COMPARISON_FEATURE_HANDLER_H_
+#define PCL_ML_RGBD_2D_COMPARISON_FEATURE_HANDLER_H_
 
 #include <pcl/common/common.h>
+
+#include <pcl/ml/dt/feature_handler.h>
 #include <pcl/ml/rgbd_2d_data_set.h>
+#include <pcl/ml/rgbd_2d_comparison_feature.h>
+#include <pcl/ml/multiple_data_2d_example_index.h>
 
 #include <istream>
 #include <ostream>
@@ -48,20 +52,20 @@ namespace pcl
 {
 
   /** \brief Feature utility class that handles the creation and evaluation of RGBD comparison features. */
-  class PCL_EXPORTS RGBDComparisonFeatureHandler
-    : public pcl::FeatureHandler<RGBDFeature<Point8i>, RGBD2DDataSet, ExampleIndexMultipleData2D>
+  class PCL_EXPORTS RGBD2DComparisonFeatureHandler
+    : public pcl::FeatureHandler<pcl::RGBD2DComparisonFeature<pcl::PointXY32i>, pcl::RGBD2DDataSet, pcl::MultipleData2DExampleIndex>
   {
   
   public:
 
     /** \brief Constructor. */
-    RGBDComparisonFeatureHandler (
+    RGBD2DComparisonFeatureHandler (
       const int feature_window_width,
       const int feature_window_height)
       : feature_window_width_ (feature_window_width), feature_window_height_ (feature_window_height)
     {}
     /** \brief Destructor. */
-    virtual ~RGBDComparisonFeatureHandler () {}
+    virtual ~RGBD2DComparisonFeatureHandler () {}
 
     /** \brief Sets the feature window size.
       * \param[in] width The width of the feature window.
@@ -83,13 +87,13 @@ namespace pcl
     void 
     createRandomFeatures (
       const size_t num_of_features, 
-      std::vector<RGBDFeature<Point8i> > & features)
+      std::vector<RGBD2DComparisonFeature<PointXY32i> > & features)
     {
       features.resize (num_of_features);
       for (size_t feature_index = 0; feature_index < num_of_features; ++feature_index)
       {
-        features[feature_index].p1 = Point8i::randomPoint(-feature_window_width_/2, feature_window_width_/2, -feature_window_height_/2, feature_window_height_/2);
-        features[feature_index].p2 = Point8i::randomPoint(-feature_window_width_/2, feature_window_width_/2, -feature_window_height_/2, feature_window_height_/2);
+        features[feature_index].p1 = PointXY32i::randomPoint(-feature_window_width_/2, feature_window_width_/2, -feature_window_height_/2, feature_window_height_/2);
+        features[feature_index].p2 = PointXY32i::randomPoint(-feature_window_width_/2, feature_window_width_/2, -feature_window_height_/2, feature_window_height_/2);
         features[feature_index].channel = static_cast<unsigned char>(4.0f*(static_cast<float>(rand()) / (RAND_MAX+1)));
       }
     }
@@ -103,9 +107,9 @@ namespace pcl
       */
     void 
     evaluateFeature (
-      const RGBDFeature<Point8i> & feature,
+      const RGBD2DComparisonFeature<PointXY32i> & feature,
       RGBD2DDataSet & data_set,
-      std::vector<ExampleIndexMultipleData2D> & examples,
+      std::vector<MultipleData2DExampleIndex> & examples,
       std::vector<float> & results,
       std::vector<unsigned char> & flags) const
     {
@@ -113,7 +117,7 @@ namespace pcl
       flags.resize (examples.size ());
       for (int example_index = 0; example_index < examples.size (); ++example_index)
       {
-        const ExampleIndexMultipleData2D & example = examples[example_index];
+        const MultipleData2DExampleIndex & example = examples[example_index];
 
         const int center_col_index = example.x;
         const int center_row_index = example.y;
@@ -143,9 +147,9 @@ namespace pcl
       */
     void 
     evaluateFeature (
-      const RGBDFeature<Point8i> & feature,
+      const RGBD2DComparisonFeature<PointXY32i> & feature,
       RGBD2DDataSet & data_set,
-      ExampleIndexMultipleData2D & example,
+      MultipleData2DExampleIndex & example,
       float & result,
       unsigned char & flag) const
     {
@@ -173,7 +177,7 @@ namespace pcl
       */
     void 
     generateCodeForEvaluation (
-      const RGBDFeature<Point8i> & feature,
+      const RGBD2DComparisonFeature<PointXY32i> & feature,
       std::ostream & stream) const
     {
       stream << "ERROR: RegressionVarianceStatsEstimator does not implement generateCodeForBranchIndex(...)";
