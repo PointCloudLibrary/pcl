@@ -7,7 +7,8 @@
 #include <pcl/gpu/utils/safe_call.hpp>
 #include <pcl/gpu/utils/timers_cuda.hpp>
 #include <stdio.h>
-#include <cuda.h>
+
+#include "internal.h"
 
 texture<unsigned short, 2, cudaReadModeElementType> depthTex;
 texture<unsigned short, 2, cudaReadModeElementType> maskTex;
@@ -25,7 +26,7 @@ __global__ void KernelCUDA_runTree( const int    W,
                                     const int    numNodes,
                                     const Node*  nodes,
                                     const Label* leaves,
-                                    Label*       labels)
+                                    pcl::device::PtrStep<Label> labels)
 {
   uint u = blockIdx.x * blockDim.x + threadIdx.x;
   uint v = blockIdx.y * blockDim.y + threadIdx.y;
@@ -53,26 +54,29 @@ __global__ void KernelCUDA_runTree( const int    W,
 
   // we try to synchronize the write
   __syncthreads();
-  labels[v*W+u] = leaves[nid-numNodes];
+  labels.ptr(v)[u] = leaves[nid-numNodes];
 }
 
-void CUDA_runTree( const int    W,
-                   const int    H,
-                   const float  focal,
+void pcl::device::CUDA_runTree( const float  focal,
                    const int    treeHeight,
                    const int    numNodes,
                    const void*  nodes_device,
                    const void*  leaves_device,
-                   const void*  depth_in_device,
-                   void*        label_out_device )
+                   const Depth& depth,
+                   Labels& labels )
 {
+  labels.create( depth.rows(), depth.cols() );
+
   using pcl::gpu::divUp; 
   pcl::gpu::ScopeTimer scope(__FUNCTION__);  
+
+  int W = depth.cols();
+  int H = depth.rows();
   
   cudaChannelFormatDesc channeldesc = cudaCreateChannelDesc<unsigned short>();
 
   depthTex.addressMode[0] = cudaAddressModeClamp;
-  cudaSafeCall( cudaBindTexture2D(0, depthTex, depth_in_device, channeldesc, W, H, W*sizeof(unsigned short)) );
+  cudaSafeCall( cudaBindTexture2D(0, depthTex, depth.ptr(), channeldesc, W, H, depth.step()) );
     
 
   dim3 block(16, 16);
@@ -81,7 +85,7 @@ void CUDA_runTree( const int    W,
   KernelCUDA_runTree<<< grid, block >>>( W, H, focal, treeHeight, numNodes, 
                                                    (const Node*)  nodes_device, 
                                                    (const Label*) leaves_device, 
-                                                   (Label*)       label_out_device);
+                                                   labels);
 
   cudaSafeCall( cudaGetLastError() );
   cudaSafeCall( cudaThreadSynchronize() );
@@ -90,24 +94,26 @@ void CUDA_runTree( const int    W,
 
 
 
-void CUDA_runTree_masked( const int    W,
-                          const int    H,
-                          const float  focal,
+void pcl::device::CUDA_runTree_masked( const float  focal,
                           const int    treeHeight,
                           const int    numNodes,
                           const void*  nodes_device,
                           const void*  leaves_device,
-                          const void*  depth_in_device,
+                          const Depth& depth,
                           const void*  mask_in_device,
-                          void*        label_out_device )
+                          Labels& labels )
+
 {
+  labels.create( depth.rows(), depth.cols() );
+  int W = depth.cols();
+  int H = depth.rows();
 
   using pcl::gpu::divUp; 
   pcl::gpu::ScopeTimer scope(__FUNCTION__);  
 
   depthTex.addressMode[0] = cudaAddressModeClamp;
   cudaChannelFormatDesc channeldesc = cudaCreateChannelDesc<unsigned short>();  
-  cudaSafeCall( cudaBindTexture2D(0, depthTex, depth_in_device, channeldesc, W, H, W*sizeof(unsigned short)) );
+  cudaSafeCall( cudaBindTexture2D(0, depthTex, depth.ptr(), channeldesc, W, H, depth.step()) );
   cudaSafeCall( cudaBindTexture2D(0, maskTex, mask_in_device, channeldesc, W, H, W*sizeof(unsigned short)) );
 
   dim3 block(16, 16);

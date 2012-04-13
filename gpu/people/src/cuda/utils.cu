@@ -12,6 +12,7 @@ namespace pcl
       if (idx < cloud.size)
       {
         float d = cloud.data[idx].z * 1000; // m -> mm
+        d = isnan(d) ? 0 : d;
 
         int x = idx % cols;
         int y = idx / cols;

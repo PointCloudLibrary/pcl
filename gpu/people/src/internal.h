@@ -47,6 +47,7 @@ namespace pcl
   namespace device
   {
     typedef DeviceArray2D<unsigned short> Depth;
+    typedef DeviceArray2D<unsigned char> Labels;
 
     struct float8
     {
@@ -55,34 +56,27 @@ namespace pcl
 
     void convertCloud2Depth(const DeviceArray<float8>& cloud, int rows, int cols, Depth& depth);
 
-  }
-}
+  
 
-void CUDA_runTree( const int    W,
-                   const int    H,
-                   const float  focal,
+void CUDA_runTree( const float  focal,
                    const int    treeHeight,
                    const int    numNodes,
                    const void*  nodes_device,
                    const void*  leaves_device,
-                   const void*  depth_in_device,
-                   void*        label_out_device );
+                   const Depth& depth,
+                   Labels& labels );
 
-void CUDA_runTree_masked( const int    W,
-                          const int    H,
-                          const float  focal,
+
+void CUDA_runTree_masked( const float  focal,
                           const int    treeHeight,
                           const int    numNodes,
                           const void*  nodes_device,
                           const void*  leaves_device,
-                          const void*  depth_in_device,
+                          const Depth& depth,
                           const void*  mask_in_device,
-                          void*        label_out_device );
+                          Labels& labels );
 
-namespace pcl
-{
-    namespace device
-    {
+
         void CUDA_runMultiTreePass( int          treeId,
                             const float  focal,
                             const int    treeHeight,
@@ -105,7 +99,7 @@ namespace pcl
         void CUDA_runMultiTreeMerge( int          numTrees,
                              const Depth& depth,
                              void*        multilabel_device, 
-                             DeviceArray2D<unsigned char>& label_out_device);
+                             Labels& label_out_device);
 
     }
 

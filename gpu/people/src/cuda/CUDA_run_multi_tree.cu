@@ -170,7 +170,7 @@ __device__ int findMaxId_testTie(int numBins, char* bins)
 __global__ void KernelCUDA_MultiTreeMerge( const int    numTrees,
                                            const int    W,
                                            const int    H,
-                                           pcl::device::PtrStep<unsigned char> labels )
+                                           pcl::device::PtrStep<Label> labels )
 {
   uint u = blockIdx.x * blockDim.x + threadIdx.x;
   uint v = blockIdx.y * blockDim.y + threadIdx.y;
@@ -282,8 +282,11 @@ void pcl::device::CUDA_runMultiTreePass( int          treeId,
 void pcl::device::CUDA_runMultiTreeMerge( int          numTrees,                             
                              const Depth& depth,
                              void*        multilabel_device, 
-                             DeviceArray2D<unsigned char>& label_out_device)
+                             Labels& labels)
 {
+
+  labels.create(depth.rows(), depth.cols());
+
   assert( numTrees <= 4 );
 
   int W = depth.cols();
@@ -304,7 +307,7 @@ void pcl::device::CUDA_runMultiTreeMerge( int          numTrees,
   dim3 block(16, 16);
   dim3 grid( divUp(W, block.x), divUp(H, block.y) );
   
-  KernelCUDA_MultiTreeMerge<<< grid, block >>>( numTrees, W, H, label_out_device );
+  KernelCUDA_MultiTreeMerge<<< grid, block >>>( numTrees, W, H, labels );
 
   cudaSafeCall( cudaGetLastError() );
   cudaSafeCall( cudaThreadSynchronize() );
