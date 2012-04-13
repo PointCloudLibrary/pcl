@@ -54,7 +54,7 @@ namespace pcl
   namespace gpu
   {
     namespace people
-    {   
+    {
       namespace trees
       {
         class MultiTreeLiveProc;
@@ -66,9 +66,9 @@ namespace pcl
 
           typedef boost::shared_ptr<Person> Ptr;
           typedef pcl::PointXYZRGB InputPointT;
-          
+
           DeviceArray<InputPointT> cloud_device_;
-          
+
           DeviceArray2D<unsigned short> depth_device_;
           DeviceArray2D<unsigned short> depth_device2_;
 
@@ -79,7 +79,7 @@ namespace pcl
           Person (std::string& tree_file);
           /** \brief Class destructor. */
           ~Person () {}
-                    
+
           //// PUBLIC METHODS /////
           /** \brief Loads an aditional tree to the RDF */
           int
@@ -259,12 +259,13 @@ namespace pcl
           bool                                        elec_brute_force_border_;
           bool                                        do_shs_;
           unsigned int                                dilation_size_;
-          
-          boost::shared_ptr<trees::MultiTreeLiveProc> m_proc;         
-          cv::Mat                             m_lmap;
-          cv::Mat                             m_cmap;
-          cv::Mat                             cmap;
-          cv::Mat                             m_bmap;
+          unsigned int                                counter_;
+
+          boost::shared_ptr<trees::MultiTreeLiveProc> m_proc;
+          cv::Mat                                     m_lmap;
+          cv::Mat                                     m_cmap;
+          cv::Mat                                     cmap;
+          cv::Mat                                     m_bmap;
           std::string                                 name_;                  // Name of the person
           std::vector<float>                          max_part_size_;         // Max primary eigenvalue for each body part
           std::vector<std::vector<float> >            part_ideal_length_;     // Ideal length between two body parts

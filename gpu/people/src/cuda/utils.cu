@@ -9,12 +9,12 @@ namespace pcl
     {
       int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
-      if (idx < cloud.size)                
+      if (idx < cloud.size)
       {
-        float d = cloud.data[idx].z * 1000; // m -> mm      
-        
+        float d = cloud.data[idx].z * 1000; // m -> mm
+
         int x = idx % cols;
-        int y = idx / cols;        
+        int y = idx / cols;
         depth.ptr(y)[x] = d;
       }
     }

@@ -34,9 +34,6 @@
 * @author: Koen Buys, Anatoly Baksheev
 */
 
-#ifndef PCL_GPU_PEOPLE_PERSON_HPP_
-#define PCL_GPU_PEOPLE_PERSON_HPP_
-
 #include <pcl/gpu/people/person.h>
 #include <pcl/gpu/people/label_common.h>
 #include <pcl/gpu/utils/repacks.hpp>
@@ -57,16 +54,13 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 
-
 #define AREA_THRES      200
 #define AREA_THRES2     100
 #define CLUST_TOL       0.05
 #define CLUST_TOL_SHS   0.05
 #define DELTA_HUE_SHS   5
 #define MAX_CLUST_SIZE  25000
-#define WRITE
-
-
+//#define WRITE
 
 using namespace boost;
 using namespace std;
@@ -82,14 +76,14 @@ void optimized_shs2(const PointCloud<PointXYZRGB> &cloud, float tolerance, Point
 void
 pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
 {
-    static int counter = 0;
-    ++counter;
 
+    // Bring the pointcloud to the GPU memory
     cloud_device_.upload(cloud->points);
 
+    // Convert the float z values to unsigned shorts, also converts from m to mm
     const DeviceArray<device::float8>& c = (const DeviceArray<device::float8>&)cloud_device_;
     device::convertCloud2Depth(c, cloud->height, cloud->width, depth_device_);
-    
+
     /// @todo rewrite this to a pointcloud::Ptr
     pcl::PointCloud<pcl::PointXYZRGB> cloud_in;
     pcl::PointCloud<pcl::PointXYZRGB> cloud_in_filt;
@@ -103,23 +97,23 @@ pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::Cons
     depth_device_.download(dmat.ptr<unsigned short>(), dmat.step);
 
     // Process the depthimage (CUDA)
-    //m_proc->process(dmat, m_lmap);    
+    //m_proc->process(dmat, m_lmap);
     //m_proc->process(depth_device_, m_lmap);
     m_proc->process(depth_device_, lmap_device_);
     m_lmap.create(depth_device_.rows(), depth_device_.cols(), CV_8U);
     lmap_device_.download(m_lmap.data, m_lmap.step);
-    
+
     cv::Mat lmap(cloud_in.height, cloud_in.width, CV_8UC1);
     pcl::gpu::people::label_skeleton::smoothLabelImage(m_lmap, dmat, lmap);
 
 #ifdef WRITE
-    cv::imwrite("d_" + lexical_cast<string>(counter) + ".png", dmat);
-    cv::imwrite("l_" + lexical_cast<string>(counter) + ".png", m_lmap);
-    cv::imwrite("s_" + lexical_cast<string>(counter) + ".png", lmap);
+    cv::imwrite("d_" + lexical_cast<string>(counter_) + ".png", dmat);
+    cv::imwrite("l_" + lexical_cast<string>(counter_) + ".png", m_lmap);
+    cv::imwrite("s_" + lexical_cast<string>(counter_) + ".png", lmap);
 
     cv::Mat input(cloud_in.height, cloud_in.width, CV_8UC3);
     pcl::gpu::people::label_skeleton::makeImageFromPointCloud(input, cloud_in);
-    cv::imwrite("i_" + lexical_cast<string>(counter) + ".png", input);
+    cv::imwrite("i_" + lexical_cast<string>(counter_) + ".png", input);
 #endif
 
     pcl::PointCloud<pcl::PointXYZRGBL> cloud_labels;
@@ -131,7 +125,7 @@ pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::Cons
     stree->setInputCloud(cloud_labels.makeShared());
     */
     std::vector<std::vector<pcl::PointIndices> > cluster_indices(NUM_PARTS);
-    
+
     // Make all the clusters
     optimized_elec(cloud_in, lmap, CLUST_TOL, cluster_indices, AREA_THRES, MAX_CLUST_SIZE, NUM_PARTS, false, 1.f);
 
@@ -152,7 +146,7 @@ pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::Cons
 #if defined(WRITE)
     // color
     pcl::gpu::people::display::colorLMap( lmap, cmap );
-    cv::imwrite("c_" + lexical_cast<string>(counter) + ".png", cmap);
+    cv::imwrite("c_" + lexical_cast<string>(counter_) + ".png", cmap);
 #endif
 
     // ////////////////////////////////////////////////////////////////////////////////////////////// //
@@ -187,7 +181,7 @@ pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::Cons
             }
         }
 #ifdef WRITE
-        cv::imwrite("b_" + lexical_cast<string>(counter) + ".png", binmask);
+        cv::imwrite("b_" + lexical_cast<string>(counter_) + ".png", binmask);
 #endif
 
         // //////////////////////////////////////////////////////////////////////////////////////////////// //
@@ -201,7 +195,7 @@ pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::Cons
         pcl::gpu::people::label_skeleton::makeImageFromPointCloud(flowermat, flower, cloud_in);
 
 #ifdef WRITE
-        cv::imwrite("f_" + lexical_cast<string>(counter) + ".png", flowermat);
+        cv::imwrite("f_" + lexical_cast<string>(counter_) + ".png", flowermat);
 #endif
         cv::Mat flowergrownmat(cloud_in.height, cloud_in.width, CV_8UC3, cv::Scalar(0));
 
@@ -213,7 +207,7 @@ pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::Cons
         cv::dilate(flowermat, flowergrownmat, element);
 
 #ifdef WRITE
-        cv::imwrite("g_" + lexical_cast<string>(counter) + ".png", flowergrownmat);
+        cv::imwrite("g_" + lexical_cast<string>(counter_) + ".png", flowergrownmat);
 #endif
 
         cv::Mat dmat2(cloud_in.height, cloud_in.width, CV_16U);
@@ -243,7 +237,7 @@ pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::Cons
         m_proc->process(depth_device2_, lmap_device2_);
         m_lmap.create(depth_device2_.rows(), depth_device2_.cols(), CV_8U);
         lmap_device2_.download(m_lmap.data, m_lmap.step);
-        
+
         cv::Mat lmap2(cloud_in.height, cloud_in.width, CV_8UC1);
         pcl::gpu::people::label_skeleton::smoothLabelImage(m_lmap, dmat2, lmap2);
         //cv::medianBlur(m_lmap, lmap2, 3);
@@ -251,10 +245,10 @@ pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::Cons
         pcl::gpu::people::display::colorLMap( lmap2, cmap );
 
 #ifdef WRITE
-        cv::imwrite("d2_" + lexical_cast<string>(counter) + ".png", dmat2);
-        cv::imwrite("l2_" + lexical_cast<string>(counter) + ".png", m_lmap);
-        cv::imwrite("s2_" + lexical_cast<string>(counter) + ".png", lmap2);
-        cv::imwrite("c2_" + lexical_cast<string>(counter) + ".png", cmap);
+        cv::imwrite("d2_" + lexical_cast<string>(counter_) + ".png", dmat2);
+        cv::imwrite("l2_" + lexical_cast<string>(counter_) + ".png", m_lmap);
+        cv::imwrite("s2_" + lexical_cast<string>(counter_) + ".png", lmap2);
+        cv::imwrite("c2_" + lexical_cast<string>(counter_) + ".png", cmap);
 #endif
         pcl::PointCloud<pcl::PointXYZRGBL> cloud_labels2;
         pcl::gpu::people::conversion::colorLabelPointCloudFromArray(cloud_in, lmap2.data, cloud_labels2);
@@ -296,12 +290,12 @@ pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::Cons
                 else
                     cerr << "0;";
             }
-            cerr<< t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter << ";" << endl;
+            cerr<< t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter_ << ";" << endl;
         }
-        counter++;
     }
+    // This is kept to count the number of process steps have been taken
+    counter_++;
 }
-
 
 pcl::gpu::people::Person::Person (std::string& tree_file) : 
                   max_cluster_size_(25000),
@@ -315,13 +309,14 @@ pcl::gpu::people::Person::Person (std::string& tree_file) :
                   elec_brute_force_border_(false),
                   do_shs_(true),
                   dilation_size_(2), 
-                  name_("Generic")
+                  name_("Generic"),
+                  counter_(0)
 {
-/// Load the first tree
-std::ifstream fin (tree_file.c_str ());
-assert (fin.is_open ());
-m_proc.reset(new pcl::gpu::people::trees::MultiTreeLiveProc (fin));
-fin.close ();
+  /// Load the first tree
+  std::ifstream fin (tree_file.c_str ());
+  assert (fin.is_open ());
+  m_proc.reset(new pcl::gpu::people::trees::MultiTreeLiveProc (fin));
+  fin.close ();
 };
 
 int
@@ -362,6 +357,3 @@ pcl::gpu::people::Person::writePersonXMLConfig (std::ostream& os)
 
   write_xml(os,pt);
 }
-
-
-#endif // PCL_GPU_PEOPLE_PERSON_HPP_
