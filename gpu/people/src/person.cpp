@@ -111,6 +111,10 @@ pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::Cons
          
     // Process the depthimage (CUDA)    
     rdf_detector_->process(depth_device_);
+
+    // Create a new struct to put the results in
+    RDFBodyPartsDetector::BlobMatrix sorted;    
+    rdf_detector_->step2_selectBetterName(cloud, AREA_THRES, sorted);
     
 #if !defined(WRITE)
     /// how to save it now
@@ -120,11 +124,7 @@ pcl::gpu::people::Person::process (const pcl::PointCloud<pcl::PointXYZRGB>::Cons
     pngwrite("c1_", counter_, colores_labels);
 
 #endif
-    // Create a new struct to put the results in
-    RDFBodyPartsDetector::BlobMatrix sorted;    
-    rdf_detector_->step2_selectBetterName(cloud, AREA_THRES, sorted);
-
-
+    
     // ////////////////////////////////////////////////////////////////////////////////////////// //
     // DISPLAY INTERMEDIATE RESULTS UPTILL FINDING OF THE TREES, NOT EVALUATING TREES YET
 #if defined(WRITE)
