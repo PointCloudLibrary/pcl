@@ -3,7 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
- *  
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,36 +37,25 @@
  *
  */
 
-#include "pcl/recognition/ransac_based/obj_rec_ransac.h"
+#include "pcl/recognition/ransac_based/model_library.h"
 
-pcl::recognition::ObjRecRANSAC::ObjRecRANSAC(double /*pair_width*/, double /*voxel_size*/, double /*fraction_of_pairs_in_hash_table*/)
-{
-  // to be implemented
-}
+using namespace std;
 
-//===========================================================================================================================================================================================
-
-pcl::recognition::ObjRecRANSAC::~ObjRecRANSAC()
-{
-  // to be implemented
-}
-
-//===========================================================================================================================================================================================
+//============================================================================================================================================
 
 bool
-pcl::recognition::ObjRecRANSAC::addModel(const pcl::PointCloud<pcl::PointXYZ>& /*model*/, const pcl::PointCloud<pcl::Normal>& /*normals*/, const std::string& /*object_name*/)
+pcl::recognition::ModelLibrary::addModel(const PointCloudIn& /*model*/, const PointCloudN& /*normals*/, const std::string& object_name)
 {
-  // to be implemented
-  return (false);
+  // Try to insert a new model entry
+  pair<map<string,Entry*>::iterator, bool> result = model_entries_.insert(pair<string,Entry*>(object_name, NULL));
+
+  // Check if 'object_name' is unique
+  if ( !result.second )
+    return false;
+
+//  Entry* new_entry = new Entry(object_name);
+
+  return true;
 }
 
-//===========================================================================================================================================================================================
-
-void
-pcl::recognition::ObjRecRANSAC::recognize(const pcl::PointCloud<pcl::PointXYZ>& /*scene*/, const pcl::PointCloud<pcl::Normal>& /*normals*/, std::list<ObjRecRANSAC::Output>& /*recognized_objects*/)
-{
-  // to be implemented
-}
-
-//===========================================================================================================================================================================================
-
+//============================================================================================================================================

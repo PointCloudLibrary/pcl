@@ -3,7 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
- *  
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,40 +33,46 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
  *
  */
 
-#include "pcl/recognition/ransac_based/obj_rec_ransac.h"
+#ifndef PCL_RECOGNITION_MODEL_LIBRARY_H_
+#define PCL_RECOGNITION_MODEL_LIBRARY_H_
 
-pcl::recognition::ObjRecRANSAC::ObjRecRANSAC(double /*pair_width*/, double /*voxel_size*/, double /*fraction_of_pairs_in_hash_table*/)
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+#include <string>
+
+namespace pcl
 {
-  // to be implemented
-}
+  namespace recognition
+  {
+    class ModelLibrary
+    {
+    typedef pcl::PointCloud<pcl::PointXYZ> PointCloudIn; // For now, only pcl::PointXYZ makes sense
+    typedef pcl::PointCloud<pcl::Normal> PointCloudN;
 
-//===========================================================================================================================================================================================
+    public:
+      class Entry
+      {
+      public:
+        Entry(){}
+        virtual ~Entry(){}
+      };
 
-pcl::recognition::ObjRecRANSAC::~ObjRecRANSAC()
-{
-  // to be implemented
-}
+    public:
+      /** \brief This class is used by 'ObjRecRANSAC' to maintain the object models to be recognized. Normally, you do not need to use
+        * this class directly. */
+      ModelLibrary(){}
+      virtual ~ModelLibrary(){}
 
-//===========================================================================================================================================================================================
+      bool
+      addModel(const PointCloudIn& model, const PointCloudN& normals, const std::string& object_name);
 
-bool
-pcl::recognition::ObjRecRANSAC::addModel(const pcl::PointCloud<pcl::PointXYZ>& /*model*/, const pcl::PointCloud<pcl::Normal>& /*normals*/, const std::string& /*object_name*/)
-{
-  // to be implemented
-  return (false);
-}
+    protected:
+      std::map<std::string,Entry*> model_entries_;
+    };
+  } // namespace recognition
+} // namespace pcl
 
-//===========================================================================================================================================================================================
-
-void
-pcl::recognition::ObjRecRANSAC::recognize(const pcl::PointCloud<pcl::PointXYZ>& /*scene*/, const pcl::PointCloud<pcl::Normal>& /*normals*/, std::list<ObjRecRANSAC::Output>& /*recognized_objects*/)
-{
-  // to be implemented
-}
-
-//===========================================================================================================================================================================================
-
+#endif // PCL_RECOGNITION_MODEL_LIBRARY_H_
