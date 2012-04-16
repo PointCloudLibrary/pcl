@@ -92,7 +92,38 @@ pcl::DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeTy
   }
 }
   
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
+void
+pcl::DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::evaluateAndAdd (
+  pcl::DecisionTree<NodeType> & tree,
+  pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex> & feature_handler,
+  pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex> & stats_estimator,
+  DataSet & data_set,
+  std::vector<ExampleIndex> & examples,
+  std::vector<LabelType> & label_data)
+{
+  const size_t num_of_examples = examples.size ();
+  for (int example_index = 0; example_index < num_of_examples; ++example_index)
+  {
+    NodeType * node = &(tree.getRoot ());
 
+    while (node->sub_nodes.size () != 0)
+    {
+      float feature_result = 0.0f;
+      unsigned char flag = 0;
+      unsigned char branch_index = 0;
+
+      feature_handler.evaluateFeature (node->feature, data_set, examples[example_index], feature_result, flag);
+      stats_estimator.computeBranchIndex (feature_result, flag, node->threshold, branch_index);
+
+      node = &(node->sub_nodes[branch_index]);
+    }
+
+    label_data[example_index] += stats_estimator.getLabelOfNode (*node);
+  }
+}
+  
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
 void

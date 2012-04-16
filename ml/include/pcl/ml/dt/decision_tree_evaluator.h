@@ -83,6 +83,22 @@ namespace pcl
               std::vector<ExampleIndex> & examples,
               std::vector<LabelType> & label_data);
     
+    /** \brief Evaluates the specified examples using the supplied tree and adds the results to the supplied results array. 
+      * \param[in] tree The decision tree.
+      * \param[in] feature_handler The feature handler used to train the tree.
+      * \param[in] stats_estimator The statistics estimation instance used while training the tree.
+      * \param[in] data_set The data set used for evaluation.
+      * \param[in] examples The examples that have to be evaluated.
+      * \param[out] label_data The destination where the resulting label data is added to.
+      */
+    void
+    evaluateAndAdd (pcl::DecisionTree<NodeType> & tree,
+                    pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex> & feature_handler,
+                    pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex> & stats_estimator,
+                    DataSet & data_set,
+                    std::vector<ExampleIndex> & examples,
+                    std::vector<LabelType> & label_data);
+    
     /** \brief Evaluates the specified examples using the supplied tree. 
       * \param[in] tree The decision tree.
       * \param[in] feature_handler The feature handler used to train the tree.

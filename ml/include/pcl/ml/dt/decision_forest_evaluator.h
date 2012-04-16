@@ -35,71 +35,59 @@
  *
  */
   
-#ifndef PCL_ML_DT_DECISION_TREE
-#define PCL_ML_DT_DECISION_TREE
+#ifndef PCL_ML_DT_DECISION_FOREST_EVALUATOR_H_
+#define PCL_ML_DT_DECISION_FOREST_EVALUATOR_H_
 
 #include <pcl/common/common.h>
 
-#include <istream>
-#include <ostream>
+#include <pcl/ml/dt/decision_forest.h>
+#include <pcl/ml/feature_handler.h>
+#include <pcl/ml/stats_estimator.h>
+
+#include <vector>
 
 namespace pcl
 {
 
-  /** \brief Class representing a decision tree. */
-  template <class NodeType>
-  class PCL_EXPORTS DecisionTree
+  /** \brief Utility class for evaluating a decision forests. */
+  template <
+    class FeatureType,
+    class DataSet,
+    class LabelType,
+    class ExampleIndex,
+    class NodeType >
+  class DecisionForestEvaluator
   {
-  
     public:
-
       /** \brief Constructor. */
-      DecisionTree () : root_ () {}
+      DecisionForestEvaluator();
       /** \brief Destructor. */
       virtual 
-      ~DecisionTree () {}
+      ~DecisionForestEvaluator();
 
-      /** \brief Sets the root node of the tree.
-        * \param[in] root The root node.
+      /** \brief Evaluates the specified examples using the supplied forest. 
+        * \param[in] DecisionForestEvaluator The decision forest.
+        * \param[in] feature_handler The feature handler used to train the tree.
+        * \param[in] stats_estimator The statistics estimation instance used while training the tree.
+        * \param[in] data_set The data set used for evaluation.
+        * \param[in] examples The examples that have to be evaluated.
+        * \param[out] label_data The destination for the resulting label data.
         */
       void
-      setRoot (const NodeType & root)
-      {
-        root_ = root;
-      }
-
-      /** \brief Returns the root node of the tree. */
-      NodeType &
-      getRoot ()
-      {
-        return root_;
-      }
-
-      /** \brief Serializes the decision tree. 
-        * \param[out] stream The destination for the serialization.
-        */
-      void 
-      serialize (::std::ostream & stream) const
-      {
-        root_.serialize (stream);
-      }
-
-      /** \brief Deserializes the decision tree. 
-        * \param[in] stream The source for the deserialization.
-        */
-      void deserialize (::std::istream & stream)
-      {
-        root_.deserialize (stream);
-      }
-
+      evaluate (pcl::DecisionForest<NodeType> & DecisionForestEvaluator,
+                pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex> & feature_handler,
+                pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex> & stats_estimator,
+                DataSet & data_set,
+                std::vector<ExampleIndex> & examples,
+                std::vector<LabelType> & label_data);
+    
     private:
-
-      /** \brief The root node of the decision tree. */
-      NodeType root_;
-
+      /** \brief Evaluator for decision trees. */
+      DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType> tree_evaluator_;
   };
 
-
 }
+
+#include <pcl/ml/impl/dt/decision_forest_evaluator.hpp>
 
 #endif

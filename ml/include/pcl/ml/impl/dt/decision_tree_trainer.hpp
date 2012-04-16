@@ -117,11 +117,6 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   for (size_t feature_index = 0; feature_index < num_of_features; ++feature_index)
   {
     // evaluate features
-    //std::vector<float> feature_results;
-    //std::vector<unsigned char> flags;
-    //feature_results.reserve (num_of_examples);
-    //flags.reserve (num_of_examples);
-
     feature_handler_->evaluateFeature (features[feature_index],
                                        data_set_,
                                        examples,
@@ -133,10 +128,12 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
     thresholds.reserve (num_of_thresholds_);
     createThresholdsUniform (num_of_thresholds_, feature_results, thresholds);
 
+    // compute information gain for each threshold and store threshold with highest information gain
     for (size_t threshold_index = 0; threshold_index < num_of_thresholds_; ++threshold_index)
     {
       const float threshold = thresholds[threshold_index];
 
+      // compute information gain
       const float information_gain = stats_estimator_->computeInformationGain (data_set_,
                                                                                examples,
                                                                                label_data,

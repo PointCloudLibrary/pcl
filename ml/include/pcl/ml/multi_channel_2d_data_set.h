@@ -209,7 +209,9 @@ namespace pcl
       std::vector<MultiChannel2DData<DATA_TYPE, NUM_OF_CHANNELS>*> data_set_;
   };
 
+  typedef MultiChannel2DDataSet<float, 1> Depth2DDataSet;
   typedef MultiChannel2DDataSet<float, 2> IntensityDepth2DDataSet;
+  typedef MultiChannel2DDataSet<float, 3> RGB2DDataSet;
   typedef MultiChannel2DDataSet<float, 4> RGBD2DDataSet;
 
 }

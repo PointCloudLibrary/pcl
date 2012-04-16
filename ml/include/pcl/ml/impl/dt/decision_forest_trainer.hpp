@@ -34,72 +34,39 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+#ifndef PCL_ML_DT_DECISION_FOREST_TRAINER_HPP_
+#define PCL_ML_DT_DECISION_FOREST_TRAINER_HPP_
   
-#ifndef PCL_ML_DT_DECISION_TREE
-#define PCL_ML_DT_DECISION_TREE
-
-#include <pcl/common/common.h>
-
-#include <istream>
-#include <ostream>
-
-namespace pcl
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
+pcl::DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::DecisionForestTrainer ()
+  : num_of_trees_to_train_ (1)
+  , decision_tree_trainer_ ()
 {
-
-  /** \brief Class representing a decision tree. */
-  template <class NodeType>
-  class PCL_EXPORTS DecisionTree
-  {
   
-    public:
+}
 
-      /** \brief Constructor. */
-      DecisionTree () : root_ () {}
-      /** \brief Destructor. */
-      virtual 
-      ~DecisionTree () {}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
+pcl::DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::~DecisionForestTrainer ()
+{
+  
+}
 
-      /** \brief Sets the root node of the tree.
-        * \param[in] root The root node.
-        */
-      void
-      setRoot (const NodeType & root)
-      {
-        root_ = root;
-      }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
+void
+pcl::DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train (
+  pcl::DecisionForest<NodeType> & forest)
+{
+  for (size_t tree_index = 0; tree_index < num_of_trees_to_train_; ++tree_index)
+  {
+    pcl::DecisionTree<NodeType> tree;
+    decision_tree_trainer_.train (tree);
 
-      /** \brief Returns the root node of the tree. */
-      NodeType &
-      getRoot ()
-      {
-        return root_;
-      }
-
-      /** \brief Serializes the decision tree. 
-        * \param[out] stream The destination for the serialization.
-        */
-      void 
-      serialize (::std::ostream & stream) const
-      {
-        root_.serialize (stream);
-      }
-
-      /** \brief Deserializes the decision tree. 
-        * \param[in] stream The source for the deserialization.
-        */
-      void deserialize (::std::istream & stream)
-      {
-        root_.deserialize (stream);
-      }
-
-    private:
-
-      /** \brief The root node of the decision tree. */
-      NodeType root_;
-
-  };
-
-
+    forest.push_back (tree);
+  }
 }
 
 #endif

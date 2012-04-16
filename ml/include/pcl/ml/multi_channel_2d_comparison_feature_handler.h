@@ -195,7 +195,9 @@ namespace pcl
 
   };
 
+  typedef MultiChannel2DComparisonFeatureHandler<float, 1> Depth2DComparisonFeatureHandler;
   typedef MultiChannel2DComparisonFeatureHandler<float, 2> IntensityDepth2DComparisonFeatureHandler;
+  typedef MultiChannel2DComparisonFeatureHandler<float, 3> RGB2DComparisonFeatureHandler;
   typedef MultiChannel2DComparisonFeatureHandler<float, 4> RGBD2DComparisonFeatureHandler;
 
 }

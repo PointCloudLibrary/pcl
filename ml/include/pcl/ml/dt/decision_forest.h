@@ -35,10 +35,12 @@
  *
  */
   
-#ifndef PCL_ML_DT_DECISION_TREE
-#define PCL_ML_DT_DECISION_TREE
+#ifndef PCL_ML_DT_DECISION_FOREST_H_
+#define PCL_ML_DT_DECISION_FOREST_H_
 
 #include <pcl/common/common.h>
+
+#include <pcl/ml/dt/decision_tree.h>
 
 #include <istream>
 #include <ostream>
@@ -46,34 +48,31 @@
 namespace pcl
 {
 
-  /** \brief Class representing a decision tree. */
+  /** \brief Class representing a decision forest. */
   template <class NodeType>
-  class PCL_EXPORTS DecisionTree
+  class PCL_EXPORTS DecisionForest
+    : public std::vector<pcl::DecisionTree<NodeType> >
   {
   
     public:
 
       /** \brief Constructor. */
-      DecisionTree () : root_ () {}
+      DecisionForest () {}
       /** \brief Destructor. */
       virtual 
-      ~DecisionTree () {}
+      ~DecisionForest () {}
 
-      /** \brief Sets the root node of the tree.
-        * \param[in] root The root node.
-        */
-      void
-      setRoot (const NodeType & root)
-      {
-        root_ = root;
-      }
+      ///** \brief Adds the specified tree to the forest.
+      //  * \param[in] tree The tree to be added to the forest.
+      //  */
+      //void
+      //addTree (DecisionTree<NodeType> & tree)
+      //{
+      //  trees_.push_back (tree);
+      //}
 
-      /** \brief Returns the root node of the tree. */
-      NodeType &
-      getRoot ()
-      {
-        return root_;
-      }
+      ///** \brief Returns the number of trees in the forest. */
+      //inline size_t
 
       /** \brief Serializes the decision tree. 
         * \param[out] stream The destination for the serialization.
@@ -81,21 +80,52 @@ namespace pcl
       void 
       serialize (::std::ostream & stream) const
       {
-        root_.serialize (stream);
+        const int num_of_trees = static_cast<int> (this->size ());
+        stream.write (reinterpret_cast<const char*> (&num_of_trees), sizeof (num_of_trees));
+
+        for (size_t tree_index = 0; tree_index < this->size (); ++tree_index)
+        {
+          (*this) [tree_index].serialize (stream);
+        }
+
+        //const int num_of_trees = static_cast<int> (trees_.size ());
+        //stream.write (reinterpret_cast<const char*> (&num_of_trees), sizeof (num_of_trees));
+
+        //for (size_t tree_index = 0; tree_index < trees_.size (); ++tree_index)
+        //{
+        //  tree_[tree_index].serialize (stream);
+        //}
       }
 
       /** \brief Deserializes the decision tree. 
         * \param[in] stream The source for the deserialization.
         */
-      void deserialize (::std::istream & stream)
+      void 
+      deserialize (::std::istream & stream)
       {
-        root_.deserialize (stream);
+        int num_of_trees;
+        stream.read (reinterpret_cast<char*> (&num_of_trees), sizeof (num_of_trees));
+        this->resize (num_of_trees);
+
+        for (size_t tree_index = 0; tree_index < this->size (); ++tree_index)
+        {
+          (*this) [tree_index].deserialize (stream);
+        }
+
+        //int num_of_trees;
+        //stream.read (reinterpret_cast<char*> (&num_of_trees), sizeof (num_of_trees));
+        //trees_.resize (num_of_trees);
+
+        //for (size_t tree_index = 0; tree_index < trees_.size (); ++tree_index)
+        //{
+        //  tree_[tree_index].deserialize (stream);
+        //}
       }
 
     private:
 
-      /** \brief The root node of the decision tree. */
-      NodeType root_;
+      /** \brief The decision trees contained in the forest. */
+      //std::vector<DecisionTree<NodeType> > trees_;
 
   };
 

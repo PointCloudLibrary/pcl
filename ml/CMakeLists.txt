@@ -10,6 +10,9 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
     set(incs 
+        include/pcl/${SUBSYS_NAME}/dt/decision_forest.h
+        include/pcl/${SUBSYS_NAME}/dt/decision_forest_evaluator.h
+        include/pcl/${SUBSYS_NAME}/dt/decision_forest_trainer.h
         include/pcl/${SUBSYS_NAME}/dt/decision_tree.h
         include/pcl/${SUBSYS_NAME}/dt/decision_tree_evaluator.h
         include/pcl/${SUBSYS_NAME}/dt/decision_tree_trainer.h
@@ -24,6 +27,8 @@ if(build)
         )
 
     set(impl_incs 
+        include/pcl/${SUBSYS_NAME}/impl/dt/decision_forest_evaluator.hpp
+        include/pcl/${SUBSYS_NAME}/impl/dt/decision_forest_trainer.hpp
         include/pcl/${SUBSYS_NAME}/impl/dt/decision_tree_evaluator.hpp
         include/pcl/${SUBSYS_NAME}/impl/dt/decision_tree_trainer.hpp
         )
