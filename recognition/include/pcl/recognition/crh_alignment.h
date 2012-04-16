@@ -45,11 +45,11 @@ namespace pcl
       typedef typename pcl::PointCloud<PointT>::Ptr PointTPtr;
 
       /** \brief View of the model to be aligned to input_view_ */
-      PointTPtr model_view_;
+      PointTPtr target_view_;
       /** \brief View of the input */
       PointTPtr input_view_;
       /** \brief Centroid of the model_view_ */
-      Eigen::Vector3f centroid_mview_;
+      Eigen::Vector3f centroid_target_;
       /** \brief Centroid of the input_view_ */
       Eigen::Vector3f centroid_input_;
       /** \brief transforms from model view to input view */
@@ -95,9 +95,7 @@ namespace pcl
         computeTransformToZAxes (centroidInput, transformInputToZ);
 
         transformInputToZ = transformInputToZ.inverse ();
-
-        Eigen::Affine3f transformRoll (Eigen::AngleAxisf (-(roll_angle * M_PI / 180), Eigen::Vector3f::UnitZ ()));
-
+        Eigen::Affine3f transformRoll (Eigen::AngleAxisf (-static_cast<float>(roll_angle * M_PI / 180), Eigen::Vector3f::UnitZ ()));
         Eigen::Affine3f transformDBResultToZ;
         computeTransformToZAxes (centroidResult, transformDBResultToZ);
 
@@ -124,9 +122,9 @@ namespace pcl
        * \param[in] input_view
        */
       void
-      setModelAndInputView (PointTPtr & model_view, PointTPtr & input_view)
+      setInputAndTargetView (PointTPtr & input_view, PointTPtr & target_view)
       {
-        model_view_ = model_view;
+        target_view_ = target_view;
         input_view_ = input_view;
       }
 
@@ -135,10 +133,10 @@ namespace pcl
         * \param[in] input view centroid
         */
       void
-      setModelAndInputCentroids (Eigen::Vector3f & c1, Eigen::Vector3f & c2)
+      setInputAndTargetCentroids (Eigen::Vector3f & c1, Eigen::Vector3f & c2)
       {
-        centroid_mview_ = c1;
-        centroid_input_ = c2;
+        centroid_target_ = c2;
+        centroid_input_ = c1;
       }
 
       /** \brief Computes the transformation aligning model to input
@@ -154,10 +152,12 @@ namespace pcl
         std::vector<float> peaks;
         computeRollAngle (input_ftt, target_ftt, peaks);
 
+        //if the number of peaks is too big, we should try to reduce using siluette matching
+
         for (size_t i = 0; i < peaks.size(); i++)
         {
           Eigen::Affine3f rollToRot;
-          computeRollTransform (centroid_input_, centroid_mview_, peaks[i], rollToRot);
+          computeRollTransform (centroid_input_, centroid_target_, peaks[i], rollToRot);
 
           Eigen::Matrix4f rollHomMatrix = Eigen::Matrix4f ();
           rollHomMatrix.setIdentity (4, 4);
@@ -165,13 +165,13 @@ namespace pcl
 
           Eigen::Matrix4f translation2;
           translation2.setIdentity (4, 4);
-          Eigen::Vector3f centr = rollToRot * centroid_mview_;
+          Eigen::Vector3f centr = rollToRot * centroid_target_;
           translation2 (0, 3) = centroid_input_[0] - centr[0];
           translation2 (1, 3) = centroid_input_[1] - centr[1];
           translation2 (2, 3) = centroid_input_[2] - centr[2];
 
           Eigen::Matrix4f resultHom = translation2 * rollHomMatrix;
-          transforms_.push_back(resultHom);
+          transforms_.push_back(resultHom.inverse());
         }
 
       }
@@ -192,7 +192,7 @@ namespace pcl
           input_ftt_negate.points[0].histogram[i] = -input_ftt_negate.points[0].histogram[i];
 
         int nr_bins_after_padding = 180;
-        int peak_distance = 1;
+        int peak_distance = 5;
         int cutoff = nbins_ - 1;
 
         kiss_fft_cpx * multAB = new kiss_fft_cpx[nr_bins_after_padding];
