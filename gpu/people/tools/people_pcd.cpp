@@ -67,7 +67,7 @@ public:
    savePNGFile("c2_" + boost::lexical_cast<string>(counter_) + ".png", cmap);
    savePNGFile("s2_" + boost::lexical_cast<string>(counter_) + ".png", labels);
 
-   savePNGFile("d_"  + boost::lexical_cast<string>(counter_) + ".png", people_detector_.depth_device1_);
+   savePNGFile("d_"  + boost::lexical_cast<string>(counter_) + ".png", people_detector_.depth_device_);
    savePNGFile("d2_" + boost::lexical_cast<string>(counter_) + ".png", people_detector_.depth_device2_);   
  }
 
