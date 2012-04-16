@@ -103,8 +103,40 @@ namespace pcl
 
 void pcl::device::setZero(Mask& mask)
 {
-  NppiSize sz = { mask.cols(), mask.rows() };  
-  nppSafeCall( nppiSet_8u_C1R( 0, mask.ptr(), (int)mask.step(), sz) );
+  NppiSize sz;
+  sz.width  = mask.cols();
+  sz.height = mask.rows();   
+  nppSafeCall( nppiSet_8u_C1R( 0, mask, (int)mask.step(), sz) );
+}
+
+void pcl::device::Dilatation::prepareRect5x5Kernel(DeviceArray<unsigned char>& kernel)
+{
+  if (kernel.size() == KSIZE_X * KSIZE_Y)
+    return;
+    
+  std::vector<unsigned char> host(KSIZE_X * KSIZE_Y, (unsigned char)1);
+  kernel.upload(host);  
+}
+
+void pcl::device::Dilatation::invoke(const Mask& src, const Kernel& kernel, Mask& dst)
+{
+  dst.create(src.rows(), src.cols());  
+
+
+  NppiSize sz;
+  sz.width  = src.cols() - KSIZE_X;
+  sz.height = src.rows() - KSIZE_Y; 
+
+  NppiSize ksz;
+  ksz.width  = KSIZE_X;
+  ksz.height = KSIZE_Y;
+
+  NppiPoint anchor;
+  anchor.x = ANCH_X;
+  anchor.y = ANCH_Y;
+               
+  nppSafeCall( nppiDilate_8u_C1R(src.ptr(ANCH_Y) + ANCH_X, (int)src.step(), 
+                                 dst.ptr(ANCH_Y) + ANCH_X, (int)dst.step(), sz, kernel, ksz, anchor) );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////

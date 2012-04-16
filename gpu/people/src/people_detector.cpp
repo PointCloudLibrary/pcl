@@ -43,6 +43,8 @@
 #include <pcl/gpu/people/label_tree.h>
 #include "internal.h"
 
+#include <pcl/common/time.h>
+
 #define AREA_THRES      200 // for euclidean clusterization 1 
 #define AREA_THRES2     100 // for euclidean clusterization 2 
 #define CLUST_TOL_SHS   0.05
@@ -54,20 +56,104 @@ using namespace pcl::gpu::people;
 
 void optimized_shs2(const PointCloud<PointXYZRGB> &cloud, float tolerance, const PointIndices &indices_in, PointIndices &indices_out, float delta_hue);
 void optimized_shs3(const PointCloud<PointXYZRGB> &cloud, float tolerance, const PointIndices &indices_in, PointIndices &indices_out, float delta_hue);
+void optimized_shs4(const PointCloud<PointXYZRGB> &cloud, float tolerance, const PointIndices &indices_in, cv::Mat flowermat, float delta_hue);
 
-namespace
+
+void pcl::gpu::people::PeopleDetector::allocate_buffers(int rows, int cols)
 {
-  void 
-  testIfCorrectTree(const PointCloud<PointXYZRGB>::ConstPtr &cloud, const RDFBodyPartsDetector::BlobMatrix& sorted, int c)
-  {    
-    static int counter = 0;
-    ++counter;
+  // allocation buffers with default sizes
+  // if input size is other than the defaults, 
+  // then the buffers will be reallocated at processing time.
+  // This cause only penalty for first frame ( one reallocation of each buffer )
+  
+  cloud_device_.create(rows * cols);
 
+  depth_device_.create(rows, cols);
+  depth_device2_.create(rows, cols);
+  fg_mask_.create(rows, cols);
+  fg_mask_grown_.create(rows, cols);
+    
+  device::Dilatation::prepareRect5x5Kernel(kernelRect5x5_);
+}
+
+void
+pcl::gpu::people::PeopleDetector::process (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+{
+  int cols = cloud->width;
+  int rows = cloud->height;
+
+  allocate_buffers(rows, cols);
+
+  // Bring the pointcloud to the GPU memory
+  cloud_device_.upload(cloud->points);
+
+  // Convert the float z values to unsigned shorts, also converts from m to mm
+  const DeviceArray<device::float8>& c = (const DeviceArray<device::float8>&)cloud_device_;
+  device::convertCloud2Depth(c, rows, cols, depth_device_);    
+  
+  
+  RDFBodyPartsDetector::BlobMatrix sorted;    
+
+  { ScopeTime time("ev1");    
+    rdf_detector_->computeLabels(depth_device_);          
+    rdf_detector_->step2_selectBetterName(cloud, AREA_THRES, sorted);
+  }
+     
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // if we found a neck display the tree, and continue with processing
+  if(sorted[Neck].size() != 0)
+  {
+    int c = 0;
+    label_skeleton::Tree2 t;
+    label_skeleton::buildTree(sorted, *cloud, Neck, c, t);
+
+    cv::Mat mask(rows, cols, CV_8UC1, cv::Scalar(0));
+
+    label_skeleton::makeFGMaskFromPointCloud(mask, t.indices, *cloud);
+
+    const pcl::PointIndices& seed = t.indices;
+    // //////////////////////////////////////////////////////////////////////////////////////////////// //
+    // The second kdtree evaluation = seeded hue segmentation
+    // Reuse the fist searchtree for this, in order to NOT build it again!
+
+
+    cv::Mat flowermat(rows, cols, CV_8U, cv::Scalar(0));
+
+    //pcl::PointIndices flower;
+        { ScopeTime time("shs");
+    //pcl::seededHueSegmentation(cloud_in, stree, CLUST_TOL_SHS, seed, flower, DELTA_HUE_SHS);
+    //optimized_shs3(*cloud, CLUST_TOL_SHS, seed, flower, DELTA_HUE_SHS);
+        optimized_shs4(*cloud, CLUST_TOL_SHS, seed, flowermat, DELTA_HUE_SHS);
+        }
+
+    //for(size_t i = 0; i < flower.indices.size(); i++)
+    //{
+    //  int index = flower.indices[i];
+    //  unsigned int y = index / cloud->width;
+    //  unsigned int x = index % cloud->width;
+    //  flowermat.at<unsigned char>(y,x) = 255;      
+    //}
+                   
+    fg_mask_.upload(flowermat.data, flowermat.step, rows, cols);    
+    device::Dilatation::invoke(fg_mask_, kernelRect5x5_, fg_mask_grown_);
+    
+    device::prepareForeGroundDepth(depth_device_, fg_mask_grown_, depth_device2_);
+
+    //// //////////////////////////////////////////////////////////////////////////////////////////////// //
+    //// The second label evaluation
+
+    RDFBodyPartsDetector::BlobMatrix sorted2;                
+    { ScopeTime time("ev2");
+    rdf_detector_->computeLabels(depth_device2_);                            
+    rdf_detector_->step2_selectBetterName(cloud, AREA_THRES2, sorted2);
+    }
+        
     //brief Test if the second tree is build up correctly
-    if(sorted[Neck].size() != 0)
+    if(sorted2[Neck].size() != 0)
     {
+        ScopeTime time("bt");
       label_skeleton::Tree2 t2;
-      label_skeleton::buildTree(sorted, *cloud, Neck, c, t2);
+      label_skeleton::buildTree(sorted2, *cloud, Neck, c, t2);
       int par = 0;
       for(int f = 0; f < NUM_PARTS; f++)
       {
@@ -79,94 +165,13 @@ namespace
         else
            cerr << "0;";
       }
-      cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter << ";" << endl;
+    
+
+      static int counter = 0; // TODO move this logging to PeopleApp
+      cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << endl;
     }
+
+    //output: Tree2 and PointCloud<XYZRGBL> 
   }
-}
-
-void
-pcl::gpu::people::PeopleDetector::process (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
-{
-    int cols = cloud->width;
-    int rows = cloud->height;
-
-    // Bring the pointcloud to the GPU memory
-    cloud_device_.upload(cloud->points);
-
-    // Convert the float z values to unsigned shorts, also converts from m to mm
-    const DeviceArray<device::float8>& c = (const DeviceArray<device::float8>&)cloud_device_;
-    device::convertCloud2Depth(c, rows, cols, depth_device_);    
-             
-    rdf_detector_->computeLabels(depth_device_);
-
-    // Create a new struct to put the results in
-    RDFBodyPartsDetector::BlobMatrix sorted;    
-    rdf_detector_->step2_selectBetterName(cloud, AREA_THRES, sorted);
-     
-    //////////////////////////////////////////////////////////////////////////////////////////////////
-    // if we found a neck display the tree, and continue with processing
-    if(sorted[Neck].size() != 0)
-    {
-      int c = 0;
-      label_skeleton::Tree2 t;
-      label_skeleton::buildTree(sorted, *cloud, Neck, c, t);
-
-      cv::Mat mask(rows, cols, CV_8UC1, cv::Scalar(0));
-
-      label_skeleton::makeFGMaskFromPointCloud(mask, t.indices, *cloud);
-
-      const pcl::PointIndices& seed = t.indices;
-      // //////////////////////////////////////////////////////////////////////////////////////////////// //
-      // The second kdtree evaluation = seeded hue segmentation
-      // Reuse the fist searchtree for this, in order to NOT build it again!
-      pcl::PointIndices flower;
-      //pcl::seededHueSegmentation(cloud_in, stree, CLUST_TOL_SHS, seed, flower, DELTA_HUE_SHS);
-      optimized_shs2(*cloud, CLUST_TOL_SHS, seed, flower, DELTA_HUE_SHS);
-
-      cv::Mat flowermat(rows, cols, CV_8UC3, cv::Scalar(0));
-      label_skeleton::makeImageFromPointCloud(flowermat, flower, *cloud);
-
-#ifdef WRITE
-      pngwrite("f_",counter_, flowermat);
-#endif
-      cv::Mat flowergrownmat(rows, cols, CV_8UC3, cv::Scalar(0));               
-      cv::dilate(flowermat, flowergrownmat, getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5)));
-
-      //cv::Mat mask7;
-      //cv::cvtColor(flowergrownmat, mask7, CV_BGR2GRAY);
-      //cv::threshold(mask7, mask7, 0, 255, cv::THRESH_BINARY);
-
-      //DeviceArray2D<unsigned char> mask7_dev;
-      //mask7_dev.upload(mask7.ptr(), mask7.step, mask7.rows, mask7.cols);      
-
-      cv::Mat dmat(rows, cols, CV_16U);
-      depth_device_.download(dmat.ptr<unsigned short>(), dmat.step);
-
-      //device::prepareForeGroundDepth(depth_device_, mask7_dev, depth_device2_);
-
-      cv::Mat dmat2(rows, cols, CV_16U);
-      for(int v = 0; v < rows; v++)
-      {
-        for(int u = 0; u < cols; u++)
-        {
-          bool cond = flowergrownmat.at<cv::Vec3b>(v,u)[0] != 0 || flowergrownmat.at<cv::Vec3b>(v,u)[1] != 0 || flowergrownmat.at<cv::Vec3b>(v,u)[2] != 0;
-              
-          dmat2.at<short>(v,u) = cond ? dmat.at<short>(v,u) : std::numeric_limits<short>::max();
-        }
-      }
-      
-      depth_device2_.upload(dmat2.ptr<unsigned short>(), dmat2.step, dmat2.rows, dmat2.cols);
-
-      //// //////////////////////////////////////////////////////////////////////////////////////////////// //
-      //// The second label evaluation
-
-      // Process the depthimage        
-      rdf_detector_->computeLabels(depth_device2_);                        
-      RDFBodyPartsDetector::BlobMatrix sorted2;            
-      rdf_detector_->step2_selectBetterName(cloud, AREA_THRES2, sorted2);
-                
-      testIfCorrectTree(cloud, sorted2, c);                
-    }
-    // This is kept to count the number of process steps have been taken    
 }
 

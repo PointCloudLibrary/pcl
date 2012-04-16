@@ -290,4 +290,118 @@ void optimized_shs3(const PointCloud<PointXYZRGB> &cloud, float tolerance, const
     std::sort (indices_out.indices.begin (), indices_out.indices.end ());
     indices_out.indices.erase(std::unique(indices_out.indices.begin (), indices_out.indices.end ()), indices_out.indices.end());
 }
+
+
+#include <pcl/common/time.h>
+
+void optimized_shs4(const PointCloud<PointXYZRGB> &cloud, float tolerance, const PointIndices &indices_in, cv::Mat flowermat, float delta_hue)
+{
+    cv::Mat huebuf(cloud.height, cloud.width, CV_32F);
+    float *hue = huebuf.ptr<float>();
+
+    
+    {
+        //ScopeTime time("aaa");
+    for(size_t i = 0; i < cloud.points.size(); ++i)
+    {
+        PointXYZHSV h;
+        PointXYZRGB p = cloud.points[i];
+        PointXYZRGBtoXYZHSV(p, h);
+        hue[i] = h.h;
+    }    
+
+    
+    }
+
+    unsigned char *mask = flowermat.ptr<unsigned char>();
+
+    
+    
+
+    SearchD search;
+
+    {  //ScopeTime time("bbb");
+    search.setInputCloud(cloud.makeShared());
+    }
+
+    vector< vector<int> > storage(100);
+
+    // Process all points in the indices vector
+#pragma omp parallel for
+    for (int k = 0; k < static_cast<int> (indices_in.indices.size ()); ++k)
+    {
+        int i = indices_in.indices[k];
+        if (mask[i])
+            continue;
+
+        mask[i] = 255;
+
+        int id = omp_get_thread_num();
+        std::vector<int>& seed_queue = storage[id];
+        seed_queue.clear();
+        seed_queue.reserve(cloud.size());
+        int sq_idx = 0;
+        seed_queue.push_back (i);
+
+        PointXYZRGB p = cloud.points[i];
+        float h = hue[i];
+
+        while (sq_idx < (int)seed_queue.size ())
+        {
+            int index = seed_queue[sq_idx];
+            const PointXYZRGB& q = cloud.points[index];
+
+            if(!isFinite (q))
+                continue;
+
+            // search window
+            unsigned left, right, top, bottom;
+            double squared_radius = tolerance * tolerance;
+            search.getProjectedRadiusSearchBox (q, squared_radius, left, right, top, bottom);
+
+            unsigned yEnd  = (bottom + 1) * cloud.width + right + 1;
+            unsigned idx  = top * cloud.width + left;
+            unsigned skip = cloud.width - right + left - 1;
+            unsigned xEnd = idx - left + right + 1;
+
+            for (; xEnd != yEnd; idx += skip, xEnd += cloud.width)
+            {
+                for (; idx < xEnd; ++idx)
+                {
+                    if (mask[idx])
+                        continue;
+
+                    if (sqnorm(cloud.points[idx], q) <= squared_radius)
+                    {
+                        float h_l = hue[idx];
+
+                        if (fabs(h_l - h) < delta_hue)
+                        {
+                            if(idx & 1)
+                              seed_queue.push_back (idx);
+                            mask[idx] = 255;
+                        }
+
+                    }
+                }
+            }
+            sq_idx++;
+
+        }
+        // Copy the seed queue into the output indices
+        //int id = omp_get_thread_num();
+        //storage[id].insert(storage[id].end(), seed_queue.begin(), seed_queue.end());
+    }
+
+    /*indices_out.indices.clear();
+    for(size_t i = 0; i < storage.size(); ++i)
+        indices_out.indices.insert(indices_out.indices.begin(), storage[i].begin(), storage[i].end());
+
+    std::sort (indices_out.indices.begin (), indices_out.indices.end ());
+    indices_out.indices.erase(std::unique(indices_out.indices.begin (), indices_out.indices.end ()), indices_out.indices.end());*/
+}
+
+
+
+
 #endif // PCL_GPU_PEOPLE_OPTIMIZED_SHS_H_

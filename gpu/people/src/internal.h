@@ -64,6 +64,23 @@ namespace pcl
 
     void setZero(Mask& mask);    
     void prepareForeGroundDepth(const Depth& depth1, Mask& inverse_mask, Depth& depth2);
+    
+    void shs(const DeviceArray<float8> &cloud, float tolerance, const std::vector<int> indices_in, float delta_hue, Mask& indices_out);
+
+    struct Dilatation
+    {
+        typedef DeviceArray<unsigned char> Kernel;
+        enum 
+        { 
+            KSIZE_X = 5, 
+            KSIZE_Y = 5,
+            ANCH_X = KSIZE_X/2,
+            ANCH_Y = KSIZE_Y/2,
+        };
+
+        static void prepareRect5x5Kernel(Kernel& kernel);      
+        static void invoke(const Mask& src, const Kernel& kernel, Mask& dst);        
+    };    
       
     struct CUDATree
     {

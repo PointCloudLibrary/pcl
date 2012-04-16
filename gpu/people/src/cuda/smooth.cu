@@ -40,12 +40,13 @@
 
 #include "internal.h"
 #include <pcl/gpu/utils/device/funcattrib.hpp>
-#include <assert.h>
+#include <exception>
 
 namespace pcl
 {
   namespace device
   {
+    template<int N>
     __global__ void smoothKernel(const PtrStep<unsigned char> src, const PtrStep<unsigned short> depth, PtrStepSz<unsigned char> dst,
                                  int patch, int depthThres, int num_parts)
     {
@@ -58,7 +59,11 @@ namespace pcl
 
         int depth_center = depth.ptr(y + patch2)[x+patch2];
 
-        unsigned int hist4[] = { 0, 0, 0, 0,/**/ 0, 0, 0/*, 0*/ };
+        unsigned int hist4[(N + 4 - 1) / 4];
+
+        #pragma unroll
+        for(int i = 0; i < sizeof(hist4)/sizeof(hist4[0]); ++i)
+            hist4[i] = 0;
 
         for (int dy = 0; dy < patch; ++dy)
         {
@@ -126,14 +131,18 @@ namespace pcl
 
 void pcl::device::smoothLabelImage(const Labels& src, const Depth& depth, Labels& dst, int num_parts, int  patch_size, int  depthThres)
 {
-  assert( num_parts < 28 ); //should modify kernel otherwise, uncomment ending zero int hist4 array
-
   dst.create(src.rows(), src.cols());
 
   dim3 block(32, 8);
   dim3 grid(divUp(src.cols(), block.x), divUp(src.rows(), block.y));
 
-  pcl::device::smoothKernel<<<grid, block>>>(src, depth, dst, patch_size, depthThres, num_parts);
+  if (num_parts <= 28)
+    pcl::device::smoothKernel<28><<<grid, block>>>(src, depth, dst, patch_size, depthThres, num_parts);
+  else
+  if (num_parts <= 32)
+    pcl::device::smoothKernel<32><<<grid, block>>>(src, depth, dst, patch_size, depthThres, num_parts);
+  else
+    throw std::exception(); //should instanciate another smoothKernel<N>
 
   cudaSafeCall( cudaGetLastError() );
   cudaSafeCall( cudaDeviceSynchronize() );
