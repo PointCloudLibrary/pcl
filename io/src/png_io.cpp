@@ -40,11 +40,28 @@
 #include <pcl/io/png_io.h>
 #include <vtkImageImport.h>
 #include <vtkPNGWriter.h>
+#include <vtkSmartPointer.h>
+#include <vtkImageFlip.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+namespace 
+{
+  void flipAndWritePng(const std::string &file_name, vtkSmartPointer<vtkImageImport>& importer)
+  {
+    vtkSmartPointer<vtkImageFlip> flipYFilter = vtkSmartPointer<vtkImageFlip>::New();
+    flipYFilter->SetFilteredAxis(1); // flip y axis
+    flipYFilter->SetInputConnection(importer->GetOutputPort());
+    flipYFilter->Update();
 
-int 
-pcl::io::savePNGFile (const std::string &file_name, const unsigned char *rgb, int width, int height); 
+    vtkSmartPointer<vtkPNGWriter> writer = vtkSmartPointer<vtkPNGWriter>::New();
+    writer->SetFileName(file_name.c_str());
+    writer->SetInputConnection(flipYFilter->GetOutputPort());
+    writer->Write();
+  }
+};
+
+
+void 
+pcl::io::saveRgbPNGFile (const std::string &file_name, const unsigned char *rgb_data, int width, int height)
 {
   vtkSmartPointer<vtkImageImport> importer = vtkSmartPointer<vtkImageImport>::New ();
   importer->SetNumberOfScalarComponents (3);
@@ -56,8 +73,37 @@ pcl::io::savePNGFile (const std::string &file_name, const unsigned char *rgb, in
   importer->SetImportVoidPointer (data, 1);
   importer->Update ();
 
-  vtkSmartPointer<vtkPNGWriter> writer = vtkSmartPointer<vtkPNGWriter>::New();
-  writer->SetFileName(file_name.c_str());
-  writer->SetInputConnection(importer->GetOutputPort());
-  writer->Write();
+  flipAndWritePng(file_name, importer);  
+}
+
+void 
+pcl::io::saveMonoPNGFile (const std::string &file_name, const unsigned char *mono_image, int width, int height)
+{
+  vtkSmartPointer<vtkImageImport> importer = vtkSmartPointer<vtkImageImport>::New ();
+  importer->SetNumberOfScalarComponents (1);
+  importer->SetDataScalarTypeToUnsignedChar ();
+  importer->SetWholeExtent (0, width - 1, 0, height - 1, 0, 0);
+  importer->SetDataExtentToWholeExtent ();
+
+  void* data = const_cast<void*> (reinterpret_cast<const void*> (mono_image));
+  importer->SetImportVoidPointer (data, 1);
+  importer->Update ();
+
+  flipAndWritePng(file_name, importer);
+}
+
+void 
+pcl::io::saveShortPNGFile (const std::string &file_name, const unsigned short *short_image, int width, int height)
+{
+  vtkSmartPointer<vtkImageImport> importer = vtkSmartPointer<vtkImageImport>::New ();
+  importer->SetNumberOfScalarComponents (1);
+  importer->SetDataScalarTypeToUnsignedShort ();
+  importer->SetWholeExtent (0, width - 1, 0, height - 1, 0, 0);
+  importer->SetDataExtentToWholeExtent ();
+
+  void* data = const_cast<void*> (reinterpret_cast<const void*> (short_image));
+  importer->SetImportVoidPointer (data, 1);
+  importer->Update ();
+
+  flipAndWritePng(file_name, importer);
 }
