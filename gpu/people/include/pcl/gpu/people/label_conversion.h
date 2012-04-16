@@ -176,7 +176,7 @@ namespace pcl
          **/
         int makeImageFromPointCloud(cv::Mat&                            image,
                                     pcl::PointIndices                   indices,
-                                    pcl::PointCloud<pcl::PointXYZRGB>&  cloud)
+                                    const pcl::PointCloud<pcl::PointXYZRGB>&  cloud)
         {
           assert(image.cols == static_cast<int> (cloud.width));
           assert(image.rows == static_cast<int> (cloud.height));
@@ -201,7 +201,7 @@ namespace pcl
          **/
         int makeFGMaskFromPointCloud(cv::Mat&                            image,
                                      pcl::PointIndices                   indices,
-                                     pcl::PointCloud<pcl::PointXYZRGB>&  cloud)
+                                     const pcl::PointCloud<pcl::PointXYZRGB>&  cloud)
         {
           assert(image.cols == static_cast<int> (cloud.width));
           assert(image.rows == static_cast<int> (cloud.height));

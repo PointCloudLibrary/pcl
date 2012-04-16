@@ -46,6 +46,7 @@
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/people/label_common.h>
 #include <pcl/gpu/people/tree.h>
+#include <pcl/gpu/people/person_attribs.h>
 #include <opencv2/core/core.hpp>
 
 #include <pcl/gpu/people/rdf_bodyparts_detector.h>
@@ -66,11 +67,11 @@ namespace pcl
           typedef boost::shared_ptr<OtherDetector> Ptr;
       };
 
-      class PCL_EXPORTS Person
+      class PCL_EXPORTS PeopleDetector
       {
         public:
 
-          typedef boost::shared_ptr<Person> Ptr;
+          typedef boost::shared_ptr<PeopleDetector> Ptr;
           typedef pcl::PointXYZRGB InputPointT;
 
           DeviceArray<InputPointT> cloud_device_;
@@ -82,19 +83,20 @@ namespace pcl
           Depth depth_device_;
           Depth depth_device2_;
 
-          Image cmap_device_;
+          
 
           RDFBodyPartsDetector::Ptr rdf_detector_;
           FaceDetector::Ptr face_detector_;
           OtherDetector::Ptr other_detector_;
+          PersonAttribs::Ptr person_attribs_;
 
           /** \brief Class constructor. */
-          Person () : number_of_parts_(25), delta_hue_tolerance_(5),                  
-                  do_shs_(true), dilation_size_(2),  name_("Generic"), counter_(0) 
+          PeopleDetector () : number_of_parts_(25), delta_hue_tolerance_(5),                  
+                  do_shs_(true), dilation_size_(2)
           {}
 
           /** \brief Class destructor. */
-          ~Person () {}
+          ~PeopleDetector () {}
 
           //// PUBLIC METHODS /////               
 
@@ -102,14 +104,7 @@ namespace pcl
           void
           process (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud);
 
-          /** \brief Read XML configuration file for a specific person */
-          void 
-          readPersonXMLConfig (std::istream& is);
-
-          /** \brief Write XML configuration file for a specific person */
-          void 
-          writePersonXMLConfig (std::ostream& os);
-
+        
           /** \brief Set the number of body parts used in the RDF, defaults to 25 */
           inline void
           setNumberOfParts (unsigned int number_of_parts)
@@ -163,19 +158,13 @@ namespace pcl
           }
 
           /** \brief Class getName method. */
-          virtual std::string getClassName () const { return ("Person"); }
+          virtual std::string getClassName () const { return "PeopleDetector"; }
 
         public:          
-          unsigned int                                number_of_parts_;                    
-          unsigned int                                delta_hue_tolerance_;          
-          bool                                        do_shs_;
-          unsigned int                                dilation_size_;
-          unsigned int                                counter_;
-          
-          std::string                                 name_;                  // Name of the person
-          std::vector<float>                          max_part_size_;         // Max primary eigenvalue for each body part
-          std::vector<std::vector<float> >            part_ideal_length_;     // Ideal length between two body parts
-          std::vector<std::vector<float> >            max_length_offset_;     // Max allowed length offset between two body parts
+          unsigned int  number_of_parts_;                    
+          unsigned int  delta_hue_tolerance_;          
+          bool          do_shs_;
+          unsigned int  dilation_size_;                             
       };
     }
   }

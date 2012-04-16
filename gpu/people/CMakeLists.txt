@@ -12,6 +12,10 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
   find_package(OpenCV QUIET)
+  
+  #find NPP
+  unset(CUDA_npp_LIBRARY CACHE)
+  find_cuda_helper_libs(npp)
 
   #Label_skeleton
   #FILE(GLOB srcs src/*.cpp src/*.h* src/label_skeleton/*.cpp)
@@ -39,7 +43,7 @@ if(build)
   set(LIB_NAME pcl_${SUBSYS_NAME})
 
   PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${hdrs} ${srcs_cuda} ${objs_cuda})
-  target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_search pcl_sample_consensus pcl_gpu_utils pcl_gpu_containers ${CUDA_CUDART_LIBRARY} ${OpenCV_LIBS})
+  target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_search pcl_sample_consensus pcl_gpu_utils pcl_gpu_containers ${CUDA_CUDART_LIBRARY} ${CUDA_npp_LIBRARY} ${OpenCV_LIBS})
   PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
 
   # install include files

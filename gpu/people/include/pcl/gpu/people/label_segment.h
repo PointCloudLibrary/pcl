@@ -329,13 +329,11 @@ namespace pcl
          * @todo implement the eigenvalue evaluation again
          * @todo do we still need sizeThres?
          **/
-        inline void sortIndicesToBlob2 ( const pcl::PointCloud<pcl::PointXYZRGBL>&                             cloud_in,
+        inline void sortIndicesToBlob2 ( const pcl::PointCloud<pcl::PointXYZRGB>&                       cloud_in,
                                   unsigned int                                                          sizeThres,
                                   std::vector< std::vector<Blob2, Eigen::aligned_allocator<Blob2> > >&  sorted,
                                   std::vector< std::vector<pcl::PointIndices> >&                        indices)
         {
-          clock_t totalStart = clock();
-
           assert(sorted.size () == indices.size ());
 
           unsigned int id = 0;
@@ -372,9 +370,7 @@ namespace pcl
                 }
               }
             }
-           }
-
-         printf("total sortIndicesToBlob2 took: %.10fs\n", static_cast<double>(clock() - totalStart)/static_cast<double>(CLOCKS_PER_SEC));
+          }         
         }
 
         /**

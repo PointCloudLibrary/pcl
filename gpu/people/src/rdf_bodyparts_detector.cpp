@@ -36,9 +36,7 @@
 
 #include <pcl/gpu/people/rdf_bodyparts_detector.h>
 #include <cassert>
-#include <fstream>
 #include <opencv2/core/core.hpp>
-
 #include "internal.h"
 
 using namespace std;
@@ -55,18 +53,14 @@ pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector(const vector<string
   impl_.reset( new device::MultiTreeLiveProc(tree_files.size(), rows, cols) );
   
   for(size_t i = 0; i < tree_files.size(); ++i)
-  {
-    ifstream ifs(tree_files[i].c_str());
-    assert(ifs.is_open());
-
+  {    
     // load the tree file
     vector<trees::Node>  nodes;
     vector<trees::Label> leaves;
 
     // this might throw but we haven't done any malloc yet
-    int height = loadTree (ifs, nodes, leaves );
-    impl_->trees.push_back(device::CUDATree(height, nodes, leaves));    
-    ifs.close ();
+    int height = loadTree (tree_files[i], nodes, leaves );
+    impl_->trees.push_back(device::CUDATree(height, nodes, leaves));       
   }
   
   vector<pcl::RGB> rgba(LUT_COLOR_LABEL_LENGTH);
@@ -105,7 +99,7 @@ pcl::gpu::people::RDFBodyPartsDetector::colorizeLabels(const Labels& labels, Ima
 }       
 
 void 
-pcl::gpu::people::RDFBodyPartsDetector::process(const Depth& depth)
+pcl::gpu::people::RDFBodyPartsDetector::computeLabels(const Depth& depth)
 {
   // Process the depthimage (CUDA)    
   impl_->process(depth, labels_);
@@ -145,10 +139,8 @@ pcl::gpu::people::RDFBodyPartsDetector::step2_selectBetterName(const pcl::PointC
   sorted.clear();
   sorted.resize(NUM_PARTS);
     
-    //create the blob2 matrix
-  PointCloud<PointXYZRGBL> cloud_labels;
-  conversion::colorLabelPointCloudFromArray(*cloud, lmap.data, cloud_labels);
-  label_skeleton::sortIndicesToBlob2 ( cloud_labels, cluster_area_threshold, sorted, cluster_indices );
+  //create the blob2 matrix  
+  label_skeleton::sortIndicesToBlob2 ( *cloud, cluster_area_threshold, sorted, cluster_indices );
     //Build relationships between the blobs
   label_skeleton::buildRelations ( sorted );
 }

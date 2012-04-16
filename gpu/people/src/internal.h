@@ -51,6 +51,7 @@ namespace pcl
     typedef DeviceArray2D<unsigned short> Depth;
     typedef DeviceArray2D<unsigned char> Labels;
     typedef DeviceArray2D<uchar4> Image;
+    typedef DeviceArray2D<unsigned char> Mask;
 
     struct float8
     {
@@ -60,6 +61,9 @@ namespace pcl
     void convertCloud2Depth(const DeviceArray<float8>& cloud, int rows, int cols, Depth& depth);
     void smoothLabelImage(const Labels& src, const Depth& depth, Labels& dst, int num_parts, int  patch_size, int depthThres);
     void colorLMap(const Labels& labels, const DeviceArray<uchar4>& cmap, Image& rgb);
+
+    void setZero(Mask& mask);    
+    void prepareForeGroundDepth(const Depth& depth1, Mask& inverse_mask, Depth& depth2);
       
     struct CUDATree
     {

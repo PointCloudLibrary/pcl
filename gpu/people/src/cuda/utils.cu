@@ -1,6 +1,7 @@
 #include "internal.h"
 #include <pcl/gpu/utils/safe_call.hpp>
-
+#include <pcl/gpu/utils/device/limits.hpp>
+#include "npp.h"
 
 namespace pcl
 {
@@ -70,4 +71,76 @@ void pcl::device::colorLMap(const Labels& labels, const DeviceArray<uchar4>& map
   cudaSafeCall( cudaGetLastError() );
   cudaSafeCall( cudaThreadSynchronize() );
   cudaSafeCall( cudaUnbindTexture(cmapTex) );        
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+/// TODO implement getError string for NPP and move this to the same place with cudaSafeCall
+
+#if defined(__GNUC__)
+  #define nppSafeCall(expr)  pcl::gpu::___nppSafeCall(expr, __FILE__, __LINE__, __func__)    
+#else /* defined(__CUDACC__) || defined(__MSVC__) */
+  #define nppSafeCall(expr)  pcl::gpu::___nppSafeCall(expr, __FILE__, __LINE__)    
+#endif
+
+namespace pcl
+{
+  namespace gpu
+  {
+
+    void ___nppSafeCall(int err_code, const char *file, const int line, const char *func = "")
+    {    
+      if (err_code < 0)
+      {
+          char buf[4096];
+          sprintf(buf, "NppErrorCode = %d", err_code);
+          error(buf, file, line, func);   
+      }    
+    }
+  }
+}
+
+
+void pcl::device::setZero(Mask& mask)
+{
+  NppiSize sz = { mask.cols(), mask.rows() };  
+  nppSafeCall( nppiSet_8u_C1R( 0, mask.ptr(), (int)mask.step(), sz) );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+  namespace device
+  {
+    __global__ void fgDepthKernel(const PtrStepSz<unsigned short> depth1, const PtrStep<unsigned char> inv_mask, PtrStep<unsigned short> depth2)
+    {
+      int x = blockIdx.x * blockDim.x + threadIdx.x;
+      int y = blockIdx.y * blockDim.y + threadIdx.y;
+
+      if (x < depth1.cols && y < depth1.rows)              
+      {
+        unsigned short d = depth1.ptr(y)[x];
+        depth2.ptr(y)[x] = inv_mask.ptr(y)[x] ? d : numeric_limits<unsigned short>::max();         
+      }
+    }
+  }
+}
+
+void pcl::device::prepareForeGroundDepth(const Depth& depth1, Mask& inverse_mask, Depth& depth2)
+{
+  int cols = depth1.cols();
+  int rows = depth1.rows();
+
+  depth2.create(rows, cols);
+    
+  dim3 block(32, 8);
+  dim3 grid( divUp(cols, block.x), divUp(rows, block.y) );
+  
+  fgDepthKernel<<< grid, block >>>( depth1, inverse_mask, depth2 );
+
+  cudaSafeCall( cudaGetLastError() );
+  cudaSafeCall( cudaThreadSynchronize() );
+
 }

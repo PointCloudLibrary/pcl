@@ -301,7 +301,7 @@ namespace pcl
           return 0;	
         }
 
-        inline int browseTree (  std::vector<std::vector <Blob2, Eigen::aligned_allocator<Blob2> > >&  sorted,
+        inline int browseTree (const std::vector<std::vector <Blob2, Eigen::aligned_allocator<Blob2> > >&  sorted,
                           Tree2&                              tree,
                           int                                 part_label,
                           int                                 part_lid)
@@ -328,8 +328,8 @@ namespace pcl
           return 0;
         }
 
-        inline int buildTree ( std::vector<std::vector <Blob2, Eigen::aligned_allocator<Blob2> > >&  sorted,
-                        pcl::PointCloud<pcl::PointXYZRGB>&  cloud_in,
+        inline int buildTree ( const std::vector<std::vector <Blob2, Eigen::aligned_allocator<Blob2> > >&  sorted,
+                        const pcl::PointCloud<pcl::PointXYZRGB>&  cloud_in,
                         part_t                              part_label,
                         int                                 part_lid,
                         Tree2&                              tree)

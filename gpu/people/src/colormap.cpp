@@ -3,6 +3,7 @@
 #include "internal.h"
 
 using namespace std;
+using namespace pcl::gpu::people;
 
 pcl::RGB pcl::gpu::people::getLColor (unsigned char l)
 {
@@ -87,4 +88,4 @@ const unsigned char pcl::gpu::people::LUT_COLOR_LABEL[] =
      80, 57,150 
 };
         
-const int pcl::gpu::people::LUT_COLOR_LABEL_LENGTH = sizeof(pcl::gpu::people::LUT_COLOR_LABEL)/(sizeof(pcl::gpu::people::LUT_COLOR_LABEL[0]) * 3);
+const int pcl::gpu::people::LUT_COLOR_LABEL_LENGTH = sizeof(LUT_COLOR_LABEL)/(sizeof(LUT_COLOR_LABEL[0]) * 3);

@@ -113,7 +113,7 @@ void optimized_shs(const PointCloud<PointXYZRGB> &cloud, float tolerance, PointI
 }
 
 
-void optimized_shs2(const PointCloud<PointXYZRGB> &cloud, float tolerance, PointIndices &indices_in, PointIndices &indices_out, float delta_hue)
+void optimized_shs2(const PointCloud<PointXYZRGB> &cloud, float tolerance, const PointIndices &indices_in, PointIndices &indices_out, float delta_hue)
 {
     // Create a bool vector of processed point indices, and initialize it to false
     std::vector<char> processed (cloud.points.size (), 0);
@@ -197,7 +197,7 @@ void optimized_shs2(const PointCloud<PointXYZRGB> &cloud, float tolerance, Point
 
 
 
-void optimized_shs3(const PointCloud<PointXYZRGB> &cloud, float tolerance, PointIndices &indices_in, PointIndices &indices_out, float delta_hue)
+void optimized_shs3(const PointCloud<PointXYZRGB> &cloud, float tolerance, const PointIndices &indices_in, PointIndices &indices_out, float delta_hue)
 {
     cv::Mat huebuf(cloud.height, cloud.width, CV_32F);
     float *hue = huebuf.ptr<float>();

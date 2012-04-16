@@ -72,7 +72,7 @@ namespace pcl
             int default_buffer_rows = 480, int default_buffer_cols = 640);
         
         //RDF & smooth
-        void process(const Depth& depth);
+        void computeLabels(const Depth& depth);
 
 
 
