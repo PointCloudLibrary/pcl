@@ -62,9 +62,9 @@ namespace pcl
     void smoothLabelImage(const Labels& src, const Depth& depth, Labels& dst, int num_parts, int  patch_size, int depthThres);
     void colorLMap(const Labels& labels, const DeviceArray<uchar4>& cmap, Image& rgb);
 
-    void setZero(Mask& mask);    
+    void setZero(Mask& mask);
     void prepareForeGroundDepth(const Depth& depth1, Mask& inverse_mask, Depth& depth2);
-    
+
     void shs(const DeviceArray<float8> &cloud, float tolerance, const std::vector<int> indices_in, float delta_hue, Mask& indices_out);
 
     struct Dilatation
@@ -78,10 +78,10 @@ namespace pcl
             ANCH_Y = KSIZE_Y/2,
         };
 
-        static void prepareRect5x5Kernel(Kernel& kernel);      
-        static void invoke(const Mask& src, const Kernel& kernel, Mask& dst);        
-    };    
-      
+        static void prepareRect5x5Kernel(Kernel& kernel);
+        static void invoke(const Mask& src, const Kernel& kernel, Mask& dst);
+    };
+
     struct CUDATree
     {
         typedef pcl::gpu::people::trees::Node Node;
@@ -89,32 +89,29 @@ namespace pcl
 
         int treeHeight;
         int numNodes;
-        
-        DeviceArray<Node> nodes_device;
-        DeviceArray<Label> leaves_device;                      
 
-        CUDATree (int treeHeight_, const std::vector<Node>& nodes, const std::vector<Label>& leaves);        
+        DeviceArray<Node> nodes_device;
+        DeviceArray<Label> leaves_device;
+
+        CUDATree (int treeHeight_, const std::vector<Node>& nodes, const std::vector<Label>& leaves);
     };
-                   
+
     /** Processor using multiple trees */
     class MultiTreeLiveProc
     {
     public:
-                       
         MultiTreeLiveProc(size_t num_trees, int def_rows = 480, int def_cols = 640) 
-            : multilmap_device(def_rows * def_cols * num_trees) {}            
+            : multilmap_device(def_rows * def_cols * num_trees) {}
         ~MultiTreeLiveProc() {}
-                
+
         void process(const Depth& dmap, Labels& lmap);
 
         // same as process, but runs the trick of declaring as background any
         // neighbor that is more than FGThresh away.
         void process(const Depth& dmap, Labels& lmap, int FGThresh);
 
-
-        std::vector<CUDATree> trees;                        
+        std::vector<CUDATree> trees;
         DeviceArray<unsigned char> multilmap_device;
-
     };
   }
 }

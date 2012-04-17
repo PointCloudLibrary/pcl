@@ -63,31 +63,24 @@ namespace pcl
       {
       public:
         typedef boost::shared_ptr<RDFBodyPartsDetector> Ptr;
-        
+
         typedef DeviceArray2D<unsigned short> Depth;
         typedef DeviceArray2D<unsigned char> Labels;
         typedef DeviceArray2D<pcl::RGB> Image;
 
         RDFBodyPartsDetector(const std::vector<std::string>& tree_files, 
             int default_buffer_rows = 480, int default_buffer_cols = 640);
-        
+
         //RDF & smooth
         void computeLabels(const Depth& depth);
-
-
-
 
         ////////// in development (dirty ) //////////
 
         typedef std::vector<std::vector<label_skeleton::Blob2, Eigen::aligned_allocator<label_skeleton::Blob2> > > BlobMatrix;
-        
 
         void step2_selectBetterName(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud, int cluster_area_threshold, BlobMatrix& blobs);
         ////////////////////////////////////////////
-                
-               
-        
-        
+
         //getters
         const Labels& getLabels() const;
         size_t treesNumber() const;
@@ -96,13 +89,13 @@ namespace pcl
         void colorizeLabels(const Labels& labels, Image& color_labels) const;
       private:
         boost::shared_ptr<device::MultiTreeLiveProc> impl_;
-          
+
         Labels labels_;
-        Labels labels_smoothed_;        
+        Labels labels_smoothed_;
         DeviceArray<pcl::RGB> color_map_;
 
         int max_cluster_size_;
-        float cluster_tolerance_;        
+        float cluster_tolerance_;
       };
     }
   }

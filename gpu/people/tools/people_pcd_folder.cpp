@@ -16,6 +16,11 @@
 #include <pcl/io/png_io.h>
 
 #include <iostream>
+#include <sys/types.h>
+#include <dirent.h>
+#include <errno.h>
+#include <vector>
+#include <string>
 
 using namespace pcl::visualization;
 using namespace pcl::console;
@@ -100,7 +105,34 @@ void print_help()
   cout << "\t -tree1 \t<path_to_tree_file>" << endl;
   cout << "\t -tree2 \t<path_to_tree_file>" << endl;
   cout << "\t -tree3 \t<path_to_tree_file>" << endl;
-  cout << "\t -pcd   \t<path_to_pcd_file>" << endl;  
+  cout << "\t -pcd   \t<path_to_pcd_folder>" << endl;
+}
+
+std::string getFileExtension(const std::string& FileName)
+{
+    if(FileName.find_last_of(".") != std::string::npos)
+        return FileName.substr(FileName.find_last_of(".")+1);
+    return "";
+}
+
+/*function... might want it in some class?*/
+int getFilesInDir (string dir, vector<string> &files)
+{
+    DIR *dp;
+    struct dirent *dirp;
+    if((dp  = opendir(dir.c_str())) == NULL) {
+        cout << "Error(" << errno << ") opening " << dir << endl;
+        return errno;
+    }
+
+    while ((dirp = readdir(dp)) != NULL) {
+        string fullpath = dir;
+        fullpath.append("/");
+        fullpath.append(string(dirp->d_name));
+        files.push_back(fullpath);
+    }
+    closedir(dp);
+    return 0;
 }
 
 int main(int argc, char** argv)
@@ -108,6 +140,7 @@ int main(int argc, char** argv)
   if(find_switch (argc, argv, "--help") || find_switch (argc, argv, "-h"))
     return print_help(), 0;
  
+  // Hardcoded for Anatoly
   std::string treeFilenames[4] = 
   {
     "d:/TreeData/results/forest1/tree_20.txt",
@@ -125,16 +158,9 @@ int main(int argc, char** argv)
   if (numTrees == 0 || numTrees > 4)
       return cout << "Invalid number of trees" << endl, -1;
 
-  string pcdname = "d:/git/pcl/gpu/people/tools/test.pcd";
-  parse_argument (argc, argv, "-pcd", pcdname);
-
-  // loading cloud file
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
-  int res = pcl::io::loadPCDFile<pcl::PointXYZRGB> (pcdname, *cloud);
-  if (res == -1) //* load the file
-    return cout << "Couldn't read tree file" << endl, -1;
-
-  cout << "Loaded " << cloud->width * cloud->height << " data points from " << pcdname << endl;
+  // Anatoly: you can enter your hardcoded path here again
+  string pcdfolder;
+  parse_argument (argc, argv, "-pcd", pcdfolder);
 
   // loading trees
   using pcl::gpu::people::RDFBodyPartsDetector;
@@ -145,14 +171,32 @@ int main(int argc, char** argv)
   PeoplePCDApp app;
   app.people_detector_.rdf_detector_ = rdf;
 
-  /// Run the app
+  // Create list of pcd files
+  vector<string> files = vector<string>();
+  getFilesInDir(pcdfolder,files);
+
+  for (unsigned int i = 0;i < files.size();i++) 
   {
-    pcl::ScopeTime frame_time("frame_time");
-    app.cloud_cb(cloud);
+    string ext = getFileExtension(files[i]);
+    cout << "file: " << files[i] << " ext: " << ext << std::endl;
+    if( ext == "pcd" )
+    {
+      // loading cloud file
+      pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
+      int res = pcl::io::loadPCDFile<pcl::PointXYZRGB> (files[i], *cloud);
+      if (res == -1) //* load the file
+        return cout << "Couldn't read tree file" << endl, -1;
+
+      cout << "Loaded " << cloud->width * cloud->height << " data points from " << files[i] << endl;
+
+      /// Run the app
+      {
+        pcl::ScopeTime frame_time("frame_time");
+        app.cloud_cb(cloud);
+      }
+      app.visualizeAndWrite(cloud);
+      app.final_view_.spin();
+    }
   }
-
-  app.visualizeAndWrite(cloud);
-  app.final_view_.spin();
-
   return 0;
 }

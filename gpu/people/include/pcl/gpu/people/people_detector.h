@@ -56,7 +56,7 @@ namespace pcl
   namespace gpu
   {
     namespace people
-    {   
+    {
       struct FaceDetector
       {
           typedef boost::shared_ptr<FaceDetector> Ptr;
@@ -85,7 +85,6 @@ namespace pcl
           Depth depth_device2_;
           Mask fg_mask_;
           Mask fg_mask_grown_;
-                   
 
           RDFBodyPartsDetector::Ptr rdf_detector_;
           FaceDetector::Ptr face_detector_;
@@ -93,7 +92,7 @@ namespace pcl
           PersonAttribs::Ptr person_attribs_;
 
           /** \brief Class constructor. */
-          PeopleDetector () : number_of_parts_(25), delta_hue_tolerance_(5),                  
+          PeopleDetector () : number_of_parts_(25), delta_hue_tolerance_(5),
                   do_shs_(true), dilation_size_(2)
           {
             allocate_buffers(480, 640);
@@ -102,13 +101,12 @@ namespace pcl
           /** \brief Class destructor. */
           ~PeopleDetector () {}
 
-          //// PUBLIC METHODS /////               
+          //// PUBLIC METHODS /////
 
           /** \brief The actuall processing callback */
           void
           process (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud);
 
-        
           /** \brief Set the number of body parts used in the RDF, defaults to 25 */
           inline void
           setNumberOfParts (unsigned int number_of_parts)
@@ -135,7 +133,7 @@ namespace pcl
           {
             return (delta_hue_tolerance_);
           }
- 
+
           /** \brief if set the proces step will do a second iteration with SHS */
           inline void
           setDoSHS (bool do_shs)
@@ -164,14 +162,13 @@ namespace pcl
           /** \brief Class getName method. */
           virtual std::string getClassName () const { return "PeopleDetector"; }
 
-        public:          
-          unsigned int  number_of_parts_;                    
-          unsigned int  delta_hue_tolerance_;          
+        public:
+          unsigned int  number_of_parts_;
+          unsigned int  delta_hue_tolerance_;
           bool          do_shs_;
           unsigned int  dilation_size_;
 
-          DeviceArray<unsigned char> kernelRect5x5_;          
-
+          DeviceArray<unsigned char> kernelRect5x5_;
 
           void allocate_buffers(int rows, int cols);
       };
