@@ -49,7 +49,7 @@ template<typename PointT, typename LeafT, typename OctreeT>
 pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::OctreePointCloud (const double resolution) :
     OctreeT (), input_ (PointCloudConstPtr ()), indices_ (IndicesConstPtr ()),
     epsilon_ (0), resolution_ (resolution), minX_ (0.0f), maxX_ (resolution), minY_ (0.0f),
-    maxY_ (resolution), minZ_ (0.0f), maxZ_ (resolution), maxKeys_ (1), boundingBoxDefined_ (false)
+    maxY_ (resolution), minZ_ (0.0f), maxZ_ (resolution), boundingBoxDefined_ (false)
 {
   assert (resolution > 0.0f);
 }
@@ -449,7 +449,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
 
         this->rootNode_ = newRootBranch;
 
-        octreeSideLen = static_cast<double> (maxKeys_) * resolution_ ;
+        octreeSideLen = static_cast<double> (1 << this->octreeDepth_) * resolution_ ;
 
         if (!bUpperBoundViolationX)
           minX_ -= octreeSideLen;
@@ -463,10 +463,9 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
        // configure tree depth of octree
         this->octreeDepth_ ++;
         this->setTreeDepth (this->octreeDepth_);
-        maxKeys_ = (1 << this->octreeDepth_);
 
         // recalculate bounding box width
-        octreeSideLen = static_cast<double> (maxKeys_) * resolution_ - minValue;
+        octreeSideLen = static_cast<double> (1 << this->octreeDepth_) * resolution_ - minValue;
 
         // increase octree bounding box
         maxX_ = minX_ + octreeSideLen;
@@ -564,9 +563,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getKeyBitSize ()
   this->octreeDepth_ = max ((min (static_cast<unsigned int> (OCT_MAXTREEDEPTH), static_cast<unsigned int> (ceil (this->Log2 (maxVoxels)-minValue)))),
                                   static_cast<unsigned int> (0));
 
-  maxKeys_ = (1 << this->octreeDepth_);
-
-  octreeSideLen = static_cast<double> (maxKeys_) * resolution_-minValue;
+  octreeSideLen = static_cast<double> (1 << this->octreeDepth_) * resolution_-minValue;
 
   if (this->leafCount_ == 0)
   {

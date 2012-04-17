@@ -46,7 +46,6 @@
 
 #include "octree_base.h"
 #include "octree2buf_base.h"
-
 #include "octree_nodes.h"
 
 namespace pcl
@@ -84,7 +83,6 @@ namespace pcl
         typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
 
         typedef typename OctreeT::OctreeBranch OctreeBranch;
-        typedef typename OctreeT::OctreeKey OctreeKey;
         typedef typename OctreeT::OctreeLeaf OctreeLeaf;
 
         /** \brief Constructor.

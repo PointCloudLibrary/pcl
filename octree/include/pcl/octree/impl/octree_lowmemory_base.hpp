@@ -61,7 +61,7 @@ namespace pcl
       rootNode_ (new OctreeBranch ()),
       depthMask_  (0),
       octreeDepth_ (0),
-      keyRange_ (),
+      maxKey_ (),
       unusedBranchesPool_ (), unusedLeafsPool_ ()
     {
     }
@@ -105,18 +105,16 @@ namespace pcl
       depthMask_ = (1 << (depth_arg - 1));
 
       // define max. keys
-      keyRange_.x = keyRange_.y = keyRange_.z = (1 << depth_arg) - 1;
+      maxKey_.x = maxKey_.y = maxKey_.z = (1 << depth_arg) - 1;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT> void
-    OctreeLowMemBase<DataT, LeafT>::add (const unsigned int idxX_arg, const unsigned int idxY_arg,
-                                         const unsigned int idxZ_arg, const DataT& data_arg)
+    OctreeLowMemBase<DataT, LeafT>::add (unsigned int idxX_arg, unsigned int idxY_arg,
+                                         unsigned int idxZ_arg, const DataT& data_arg)
     {
-      OctreeKey key;
-
       // generate key
-      genOctreeKeyByIntIdx (idxX_arg, idxY_arg, idxZ_arg, key);
+      OctreeKey key (idxX_arg, idxY_arg, idxZ_arg);
 
       // add data_arg to octree
       add (key, data_arg);
@@ -126,13 +124,11 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT> bool
-    OctreeLowMemBase<DataT, LeafT>::get (const unsigned int idxX_arg, const unsigned int idxY_arg,
-                                         const unsigned int idxZ_arg, DataT& data_arg) const
+    OctreeLowMemBase<DataT, LeafT>::get (unsigned int idxX_arg, unsigned int idxY_arg,
+                                         unsigned int idxZ_arg, DataT& data_arg) const
     {
-      OctreeKey key;
-
       // generate key
-      genOctreeKeyByIntIdx (idxX_arg, idxY_arg, idxZ_arg, key);
+      OctreeKey key (idxX_arg, idxY_arg, idxZ_arg);
 
       // search for leaf at key
       LeafT* leaf = findLeaf (key);
@@ -151,13 +147,11 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT> bool
-    OctreeLowMemBase<DataT, LeafT>::existLeaf (const unsigned int idxX_arg, const unsigned int idxY_arg,
-                                               const unsigned int idxZ_arg) const
+    OctreeLowMemBase<DataT, LeafT>::existLeaf (unsigned int idxX_arg, unsigned int idxY_arg,
+                                               unsigned int idxZ_arg) const
     {
-      OctreeKey key;
-
       // generate key
-      this->genOctreeKeyByIntIdx (idxX_arg, idxY_arg, idxZ_arg, key);
+      OctreeKey key (idxX_arg, idxY_arg, idxZ_arg);
 
       // check if key exist in octree
       return (existLeaf (key));
@@ -165,13 +159,11 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT> void
-    OctreeLowMemBase<DataT, LeafT>::removeLeaf (const unsigned int idxX_arg, const unsigned int idxY_arg,
-                                                const unsigned int idxZ_arg)
+    OctreeLowMemBase<DataT, LeafT>::removeLeaf (unsigned int idxX_arg, unsigned int idxY_arg,
+                                                unsigned int idxZ_arg)
     {
-      OctreeKey key;
-
       // generate key
-      this->genOctreeKeyByIntIdx (idxX_arg, idxY_arg, idxZ_arg, key);
+      OctreeKey key (idxX_arg, idxY_arg, idxZ_arg);
 
       // check if key exist in octree
       deleteLeafRecursive (key, depthMask_, rootNode_);
@@ -198,7 +190,6 @@ namespace pcl
                                                    bool)
     {
       OctreeKey newKey;
-      newKey.x = newKey.y = newKey.z = 0;
 
       // clear binary vector
       binaryTreeOut_arg.clear ();
@@ -213,7 +204,6 @@ namespace pcl
                                                    std::vector<DataT>& dataVector_arg, bool)
     {
       OctreeKey newKey;
-      newKey.x = newKey.y = newKey.z = 0;
 
       // clear output vectors
       binaryTreeOut_arg.clear ();
@@ -230,7 +220,6 @@ namespace pcl
     OctreeLowMemBase<DataT, LeafT>::serializeLeafs (std::vector<DataT>& dataVector_arg)
     {
       OctreeKey newKey;
-      newKey.x = newKey.y = newKey.z = 0;
 
       // clear output vector
       dataVector_arg.clear ();
@@ -246,7 +235,6 @@ namespace pcl
                                                      bool)
     {
       OctreeKey newKey;
-      newKey.x = newKey.y = newKey.z = 0;
 
       // free existing tree before tree rebuild
       deleteTree ();
@@ -266,7 +254,6 @@ namespace pcl
                                                      bool)
     {
       OctreeKey newKey;
-      newKey.x = newKey.y = newKey.z = 0;
 
       // set data iterator to first element
       typename std::vector<DataT>::const_iterator dataVectorIterator = dataVector_arg.begin ();
@@ -293,7 +280,6 @@ namespace pcl
     {
 
       OctreeKey newKey;
-      newKey.x = newKey.y = newKey.z = 0;
 
       // free existing tree before tree rebuild
       deleteTree ();
@@ -309,7 +295,7 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT> LeafT*
-    OctreeLowMemBase<DataT, LeafT>::getLeafRecursive (const OctreeKey& key_arg, const unsigned int depthMask_arg,
+    OctreeLowMemBase<DataT, LeafT>::createLeafRecursive (const OctreeKey& key_arg, unsigned int depthMask_arg,
                                                       OctreeBranch* branch_arg)
     {
 
@@ -344,7 +330,7 @@ namespace pcl
         }
 
         // recursively proceed with indexed child branch
-        result = getLeafRecursive (key_arg, depthMask_arg / 2, childBranch);
+        result = createLeafRecursive (key_arg, depthMask_arg / 2, childBranch);
       }
       else
       {
@@ -376,7 +362,7 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT> LeafT*
-    OctreeLowMemBase<DataT, LeafT>::findLeafRecursive (const OctreeKey& key_arg, const unsigned int depthMask_arg,
+    OctreeLowMemBase<DataT, LeafT>::findLeafRecursive (const OctreeKey& key_arg, unsigned int depthMask_arg,
                                                        OctreeBranch* branch_arg) const
     {
       // index to branch child
@@ -414,7 +400,7 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT> bool
-    OctreeLowMemBase<DataT, LeafT>::deleteLeafRecursive (const OctreeKey& key_arg, const unsigned int depthMask_arg,
+    OctreeLowMemBase<DataT, LeafT>::deleteLeafRecursive (const OctreeKey& key_arg, unsigned int depthMask_arg,
                                                          OctreeBranch* branch_arg)
     {
       // index to branch child
@@ -475,10 +461,11 @@ namespace pcl
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT> void
-    OctreeLowMemBase<DataT, LeafT>::serializeTreeRecursive (std::vector<char>& binaryTreeOut_arg,
-                                                            const OctreeBranch* branch_arg, const OctreeKey& key_arg)
-    {
+    template<typename DataT, typename LeafT>
+      void
+      OctreeLowMemBase<DataT, LeafT>::serializeTreeRecursive (std::vector<char>& binaryTreeOut_arg,
+                                                              const OctreeBranch* branch_arg, OctreeKey& key_arg)
+      {
 
       // child iterator
       unsigned char childIdx;
@@ -498,11 +485,8 @@ namespace pcl
         if (branchHasChild (*branch_arg, childIdx))
         {
 
-          // generate new key for current branch voxel
-          OctreeKey newKey;
-          newKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
-          newKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
-          newKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
+          // add current branch voxel to key
+          key_arg.pushBranch(childIdx);
 
           const OctreeNode *childNode = getBranchChild (*branch_arg, childIdx);
 
@@ -510,20 +494,23 @@ namespace pcl
           {
             case BRANCH_NODE:
               // recursively proceed with indexed child branch
-              serializeTreeRecursive (binaryTreeOut_arg, static_cast<const OctreeBranch*> (childNode), newKey);
+              serializeTreeRecursive (binaryTreeOut_arg, static_cast<const OctreeBranch*> (childNode), key_arg);
               break;
             case LEAF_NODE:
             {
               const OctreeLeaf* childLeaf = static_cast<const OctreeLeaf*> (childNode);
               
               // we reached a leaf node -> execute serialization callback
-              serializeLeafCallback (*childLeaf, newKey);
+              serializeLeafCallback (*childLeaf, key_arg);
             }
             break;
             default:
             break;
 
           }
+
+          // pop current branch voxel from key
+          key_arg.popBranch();
         }
       }
     }
@@ -531,7 +518,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT> void
     OctreeLowMemBase<DataT, LeafT>::serializeTreeRecursive (std::vector<char>& binaryTreeOut_arg,
-                                                            const OctreeBranch* branch_arg, const OctreeKey& key_arg,
+                                                            const OctreeBranch* branch_arg, OctreeKey& key_arg,
                                                             typename std::vector<DataT>& dataVector_arg)
     {
       // child iterator
@@ -550,11 +537,8 @@ namespace pcl
         // if child exist
         if (branchHasChild (*branch_arg, childIdx))
         {
-          // generate new key for current branch voxel
-          OctreeKey newKey;
-          newKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
-          newKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
-          newKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
+          // add current branch voxel to key
+          key_arg.pushBranch(childIdx);
 
           const OctreeNode *childNode = getBranchChild (*branch_arg, childIdx);
 
@@ -563,7 +547,7 @@ namespace pcl
             case BRANCH_NODE:
             {
               // recursively proceed with indexed child branch
-              serializeTreeRecursive (binaryTreeOut_arg, static_cast<const OctreeBranch*>(childNode), newKey, dataVector_arg);
+              serializeTreeRecursive (binaryTreeOut_arg, static_cast<const OctreeBranch*>(childNode), key_arg, dataVector_arg);
               break;
             }
             case LEAF_NODE:
@@ -572,19 +556,22 @@ namespace pcl
               const OctreeLeaf* childLeaf = static_cast<const OctreeLeaf*> (childNode);
               
               // we reached a leaf node -> execute serialization callback
-              serializeLeafCallback (*childLeaf, newKey, dataVector_arg);
+              serializeLeafCallback (*childLeaf, key_arg, dataVector_arg);
               break;
             }
             default:
               break;
           }
+
+          // pop current branch voxel from key
+          key_arg.popBranch();
         }
       }
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT> void
-    OctreeLowMemBase<DataT, LeafT>::serializeLeafsRecursive (const OctreeBranch* branch_arg, const OctreeKey& key_arg,
+    OctreeLowMemBase<DataT, LeafT>::serializeLeafsRecursive (const OctreeBranch* branch_arg, OctreeKey& key_arg,
                                                              std::vector<DataT>& dataVector_arg)
     {
       // child iterator
@@ -599,18 +586,15 @@ namespace pcl
         {
           const OctreeNode *childNode = getBranchChild (*branch_arg, childIdx);
 
-          // generate new key for current branch voxel
-          OctreeKey newKey;
-          newKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
-          newKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
-          newKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
+          // add current branch voxel to key
+          key_arg.pushBranch(childIdx);
 
           switch (childNode->getNodeType ())
           {
             case BRANCH_NODE:
             {
               // recursively proceed with indexed child branch
-              serializeLeafsRecursive (static_cast<const OctreeBranch*> (childNode), newKey, dataVector_arg);
+              serializeLeafsRecursive (static_cast<const OctreeBranch*> (childNode), key_arg, dataVector_arg);
               break;
             }
             case LEAF_NODE:
@@ -618,12 +602,15 @@ namespace pcl
               const OctreeLeaf* childLeaf = static_cast<const OctreeLeaf*> (childNode);
 
               // we reached a leaf node -> execute serialization callback
-              serializeLeafCallback (*childLeaf, newKey, dataVector_arg);
+              serializeLeafCallback (*childLeaf, key_arg, dataVector_arg);
             }
             break;
             default:
               break;
           }
+
+          // pop current branch voxel from key
+          key_arg.popBranch();
         }
       }
     }
@@ -631,8 +618,8 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT> void
     OctreeLowMemBase<DataT, LeafT>::deserializeTreeRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,
-                                                              OctreeBranch* branch_arg, const unsigned int depthMask_arg,
-                                                              const OctreeKey& key_arg)
+                                                              OctreeBranch* branch_arg, unsigned int depthMask_arg,
+                                                              OctreeKey& key_arg)
     {
       // child iterator
       unsigned char childIdx;
@@ -649,11 +636,8 @@ namespace pcl
         if (nodeBits & (1 << childIdx))
         {
 
-          // generate new key for current branch voxel
-          OctreeKey newKey;
-          newKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
-          newKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
-          newKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
+          // add current branch voxel to key
+          key_arg.pushBranch(childIdx);
 
           if (depthMask_arg > 1)
           {
@@ -666,7 +650,7 @@ namespace pcl
             branchCount_++;
 
             // recursively proceed with new child branch
-            deserializeTreeRecursive (binaryTreeIn_arg, newBranch, depthMask_arg / 2, newKey);
+            deserializeTreeRecursive (binaryTreeIn_arg, newBranch, depthMask_arg / 2, key_arg);
 
           }
           else
@@ -678,10 +662,13 @@ namespace pcl
             createLeafChild (*branch_arg, childIdx, childLeaf);
 
             // execute deserialization callback
-            deserializeLeafCallback (*childLeaf, newKey);
+            deserializeLeafCallback (*childLeaf, key_arg);
 
             leafCount_++;
           }
+
+          // pop current branch voxel from key
+          key_arg.popBranch();
         }
       }
 
@@ -692,8 +679,8 @@ namespace pcl
     OctreeLowMemBase<DataT, LeafT>::deserializeTreeRecursive (
       typename std::vector<char>::const_iterator& binaryTreeIn_arg,
       OctreeBranch* branch_arg,
-      const unsigned int depthMask_arg,
-      const OctreeKey& key_arg,
+      unsigned int depthMask_arg,
+      OctreeKey& key_arg,
       typename std::vector<DataT>::const_iterator& dataVectorIterator_arg,
       typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg)
     {
@@ -711,11 +698,8 @@ namespace pcl
         // if occupancy bit for childIdx is set..
         if (nodeBits & (1 << childIdx))
         {
-          // generate new key for current branch voxel
-          OctreeKey newKey;
-          newKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
-          newKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
-          newKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
+          // add current branch voxel to key
+          key_arg.pushBranch(childIdx);
 
           if (depthMask_arg > 1)
           {
@@ -728,7 +712,7 @@ namespace pcl
             branchCount_++;
 
             // recursively proceed with new child branch
-            deserializeTreeRecursive (binaryTreeIn_arg, newBranch, depthMask_arg / 2, newKey, dataVectorIterator_arg,
+            deserializeTreeRecursive (binaryTreeIn_arg, newBranch, depthMask_arg / 2, key_arg, dataVectorIterator_arg,
                                       dataVectorEndIterator_arg);
 
           }
@@ -742,11 +726,14 @@ namespace pcl
             createLeafChild (*branch_arg, childIdx, childLeaf);
 
             // execute deserialization callback
-            deserializeLeafCallback (*childLeaf, newKey, dataVectorIterator_arg, dataVectorEndIterator_arg);
+            deserializeLeafCallback (*childLeaf, key_arg, dataVectorIterator_arg, dataVectorEndIterator_arg);
 
             leafCount_++;
           }
         }
+
+        // pop current branch voxel from key
+        key_arg.popBranch();
       }
     }
 
@@ -754,8 +741,8 @@ namespace pcl
     template<typename DataT, typename LeafT> void
     OctreeLowMemBase<DataT, LeafT>::deserializeTreeAndOutputLeafDataRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,
                                                                                OctreeBranch* branch_arg,
-                                                                               const unsigned int depthMask_arg,
-                                                                               const OctreeKey& key_arg,
+                                                                               unsigned int depthMask_arg,
+                                                                               OctreeKey& key_arg,
                                                                                std::vector<DataT>& dataVector_arg)
     {
       // child iterator
@@ -773,11 +760,8 @@ namespace pcl
         if (nodeBits & (1 << childIdx))
         {
 
-          // generate new key for current branch voxel
-          OctreeKey newKey;
-          newKey.x = (key_arg.x << 1) | (!!(childIdx & (1 << 2)));
-          newKey.y = (key_arg.y << 1) | (!!(childIdx & (1 << 1)));
-          newKey.z = (key_arg.z << 1) | (!!(childIdx & (1 << 0)));
+          // add current branch voxel to key
+          key_arg.pushBranch(childIdx);
 
           if (depthMask_arg > 1)
           {
@@ -790,7 +774,7 @@ namespace pcl
             branchCount_++;
 
             // recursively proceed with new child branch
-            deserializeTreeAndOutputLeafDataRecursive (binaryTreeIn_arg, newBranch, depthMask_arg / 2, newKey,
+            deserializeTreeAndOutputLeafDataRecursive (binaryTreeIn_arg, newBranch, depthMask_arg / 2, key_arg,
                                                        dataVector_arg);
 
           }
@@ -803,10 +787,13 @@ namespace pcl
             createLeafChild (*branch_arg, childIdx, childLeaf);
 
             // execute deserialization callback
-            deserializeTreeAndSerializeLeafCallback (*childLeaf, newKey, dataVector_arg);
+            deserializeTreeAndSerializeLeafCallback (*childLeaf, key_arg, dataVector_arg);
 
             leafCount_++;
           }
+
+          // pop current branch voxel from key
+          key_arg.popBranch();
         }
       }
     }

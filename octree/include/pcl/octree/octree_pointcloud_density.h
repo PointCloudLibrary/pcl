@@ -74,7 +74,6 @@ namespace pcl
         }
 
         /** \brief Read input data. Only an internal counter is increased.
-          * \param[in] point_arg: input point - this argument is ignored
           */
         virtual void
         setData (const DataT&)
@@ -92,7 +91,6 @@ namespace pcl
         }
 
         /** \brief Empty getData data vector implementation as this leaf node does not store any data. \
-          * \param[out] dataVector_arg: reference to dummy DataT vector that is extended with leaf node DataT elements.
           */
         virtual void
         getData (std::vector<DataT>&) const

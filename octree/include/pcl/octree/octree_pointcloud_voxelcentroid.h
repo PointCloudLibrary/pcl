@@ -95,7 +95,7 @@ namespace pcl
 
           size_t i;
           unsigned int pointCounter;
-          typename OctreePointCloud<PointT, LeafT, OctreeT>::OctreeKey keyC, keyP;
+          OctreeKey keyC, keyP;
           PointT meanPoint;
           PointT idxPoint;
 

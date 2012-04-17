@@ -245,7 +245,6 @@ namespace pcl
         {
           // reset bounding box
           minX_ = minY_ = maxY_ = minZ_ = maxZ_ = 0;
-          maxKeys_ = 1;
           this->boundingBoxDefined_ = false;
 
           OctreeT::deleteTree ();
@@ -427,7 +426,6 @@ namespace pcl
         // Protected octree methods based on octree keys
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        typedef typename OctreeT::OctreeKey OctreeKey;
         typedef typename OctreeT::OctreeBranch OctreeBranch;
 
         /** \brief Define octree key setting and octree depth based on defined bounding box. */
@@ -537,9 +535,6 @@ namespace pcl
 
         double minZ_;
         double maxZ_;
-
-        /** \brief Maximum amount of keys available in octree. */
-        unsigned int maxKeys_;
 
         /** \brief Flag indicating if octree has defined bounding box. */
         bool boundingBoxDefined_;

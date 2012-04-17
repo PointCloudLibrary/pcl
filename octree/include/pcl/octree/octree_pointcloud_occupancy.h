@@ -75,8 +75,6 @@ namespace pcl
         typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::PointCloudPtr PointCloudPtr;
         typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::PointCloudConstPtr PointCloudConstPtr;
 
-        typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::OctreeKey OctreeKey;
-
         /** \brief Constructor.
          *  \param resolution_arg:  octree resolution at lowest octree level
          * */

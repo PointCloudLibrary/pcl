@@ -44,6 +44,7 @@
 #include <deque>
 
 #include "octree_nodes.h"
+#include "octree_key.h"
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -70,7 +71,6 @@ namespace pcl
       public:
         // public typedefs
         typedef typename OctreeT::OctreeBranch OctreeBranch;
-        typedef typename OctreeT::OctreeKey OctreeKey;
 
         /** \brief Constructor.
           * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its root node.
@@ -218,7 +218,7 @@ namespace pcl
         }
 
         /** \brief Method for retrieving a vector of DataT elements from the octree laef node
-          * \param[out] dataVector_arg reference to DataT vector that is extended with leaf node DataT elements.
+          * \param[in] dataVector_arg reference to DataT vector that is extended with leaf node DataT elements.
           */
         virtual void
         getData (std::vector<DataT>& dataVector_arg) const
@@ -275,7 +275,6 @@ namespace pcl
       {
         // public typedefs
         typedef typename OctreeIteratorBase<DataT, LeafT, OctreeT>::OctreeBranch OctreeBranch;
-        typedef typename OctreeIteratorBase<DataT, LeafT, OctreeT>::OctreeKey OctreeKey;
 
       public:
         /** \brief Constructor.
@@ -334,7 +333,6 @@ namespace pcl
       {
         // public typedefs
         typedef typename OctreeIteratorBase<DataT, LeafT, OctreeT>::OctreeBranch OctreeBranch;
-        typedef typename OctreeIteratorBase<DataT, LeafT, OctreeT>::OctreeKey OctreeKey;
 
         struct FIFOElement {
           const OctreeNode* node;

@@ -75,7 +75,6 @@ namespace pcl
         typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::PointCloudPtr PointCloudPtr;
         typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::PointCloudConstPtr PointCloudConstPtr;
 
-        typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::OctreeKey OctreeKey;
         typedef typename OctreeT::OctreeLeaf OctreeLeaf;
 
         typedef PointCloudCompression<PointT, LeafT, Octree2BufBase<int, LeafT> > RealTimeStreamCompression;

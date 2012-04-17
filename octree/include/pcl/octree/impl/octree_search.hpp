@@ -57,7 +57,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::voxelSearch (const 
   // generate key
   this->genOctreeKeyforPoint (point, key);
 
-  LeafT* leaf = this->getLeaf (key);
+  LeafT* leaf = this->findLeaf (key);
 
   if (leaf)
   {

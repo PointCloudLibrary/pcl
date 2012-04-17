@@ -155,7 +155,6 @@ namespace pcl
       }
 
       /** \brief Empty setData data implementation. This leaf node does not store any data.
-        * \param[in] data_arg reference to dummy DataT element to be stored.
         */
 
       virtual void
@@ -173,7 +172,7 @@ namespace pcl
       }
 
       /** \brief Empty getData data vector implementation as this leaf node does not store any data. \
-        * \param[out] dataVector_arg reference to dummy DataT vector that is extended with leaf node DataT elements.
+        * \param[in] dataVector_arg reference to dummy DataT vector that is extended with leaf node DataT elements.
         */
       virtual void
       getData (std::vector<DataT>&) const
@@ -365,7 +364,8 @@ namespace pcl
         }
 
         /** \brief Copy operator
-          * \param[in] o the octree branch to copy into this
+          * \param[in] source the octree branch to copy into this
+          * \param[out] copy of octree branch
           */
         inline OctreeBranch&
         operator = (const OctreeBranch& source)
