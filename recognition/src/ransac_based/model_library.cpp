@@ -47,7 +47,7 @@ bool
 pcl::recognition::ModelLibrary::addModel(const PointCloudIn& /*model*/, const PointCloudN& /*normals*/, const std::string& object_name)
 {
   // Try to insert a new model entry
-  pair<map<string,Entry*>::iterator, bool> result = model_entries_.insert(pair<string,Entry*>(object_name, NULL));
+  pair<map<string,Entry*>::iterator, bool> result = model_entries_.insert(pair<string,Entry*>(object_name, reinterpret_cast<Entry*> (NULL)));
 
   // Check if 'object_name' is unique
   if ( !result.second )
