@@ -127,7 +127,7 @@ namespace pcl
     public:
       /** \brief Empty constructor. */
       Feature () :
-        feature_name_ (), search_method_ (), search_method_surface_ (),
+        feature_name_ (), search_method_surface_ (),
         surface_(), tree_(),
         search_parameter_(0), search_radius_(0), k_(0),
         fake_surface_(false)
@@ -225,9 +225,6 @@ namespace pcl
       /** \brief The feature name. */
       std::string feature_name_;
 
-      /** \brief The search method template for indices. */
-      SearchMethod search_method_;
-
       /** \brief The search method template for points. */
       SearchMethodSurface search_method_surface_;
 
@@ -277,10 +274,7 @@ namespace pcl
       searchForNeighbors (size_t index, double parameter,
                           std::vector<int> &indices, std::vector<float> &distances) const
       {
-        if (surface_ == input_)       // if the two surfaces are the same
-          return (search_method_ (index, parameter, indices, distances));
-        else
-          return (search_method_surface_ (*input_, index, parameter, indices, distances));
+        return (search_method_surface_ (*input_, index, parameter, indices, distances));
       }
 
       /** \brief Search for k-nearest neighbors using the spatial locator from
