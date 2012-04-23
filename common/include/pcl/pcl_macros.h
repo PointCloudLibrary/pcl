@@ -70,6 +70,17 @@ namespace pcl
 // MSCV doesn't have std::{isnan,isfinite}
 #if defined _WIN32 && defined _MSC_VER
 
+// If M_PI is not defined, then probably all of them are undefined
+#ifndef M_PI
+// Copied from math.h
+# define M_PI   3.14159265358979323846     // pi
+# define M_PI_2    1.57079632679489661923  // pi/2
+# define M_PI_4    0.78539816339744830962  // pi/4 
+# define M_PIl   3.1415926535897932384626433832795029L  // pi
+# define M_PI_2l 1.5707963267948966192313216916397514L  // pi/2
+# define M_PI_4l 0.7853981633974483096156608458198757L  // pi/4
+#endif
+
 // Stupid. This should be removed when all the PCL dependencies have min/max fixed.
 #ifndef NOMINMAX
 # define NOMINMAX
