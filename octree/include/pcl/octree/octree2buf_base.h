@@ -198,7 +198,7 @@ namespace pcl
         inline unsigned int
         getBranchCount () const
         {
-          return (branchCount_);
+          return (static_cast<unsigned int> (branchCount_));
         }
 
         /** \brief Delete the octree structure and its leaf nodes.
