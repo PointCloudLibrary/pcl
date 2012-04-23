@@ -121,7 +121,7 @@ namespace pcl
         setMaxVoxelIndex (unsigned int maxVoxelIndex_arg);
 
         /** \brief Set the maximum depth of the octree.
-          *  \param[in] depth_arg maximum depth of octree
+          * \param[in] depth_arg maximum depth of octree
           */
         void
         setTreeDepth (unsigned int depth_arg);
@@ -136,62 +136,61 @@ namespace pcl
         }
 
         /** \brief Add a const DataT element to leaf node at (idxX, idxY, idxZ). If leaf node does not exist, it is created and added to the octree.
-         *  \param idxX_arg: index of leaf node in the X axis.
-         *  \param idxY_arg: index of leaf node in the Y axis.
-         *  \param idxZ_arg: index of leaf node in the Z axis.
-         *  \param data_arg: const reference to DataT object to be added.
-         * */
+          * \param[in] idxX_arg index of leaf node in the X axis.
+          * \param[in] idxY_arg index of leaf node in the Y axis.
+          * \param[in] idxZ_arg index of leaf node in the Z axis.
+          * \param[in] data_arg const reference to DataT object to be added.
+          */
         void
         add (unsigned int idxX_arg, unsigned int idxY_arg, unsigned int idxZ_arg,
              const DataT& data_arg);
 
         /** \brief Retrieve a DataT element from leaf node at (idxX, idxY, idxZ). It returns false if leaf node does not exist.
-         *  \param idxX_arg: index of leaf node in the X axis.
-         *  \param idxY_arg: index of leaf node in the Y axis.
-         *  \param idxZ_arg: index of leaf node in the Z axis.
-         *  \param data_arg: reference to DataT object that contains content of leaf node if search was successful.
-         *  \return "true" if leaf node search is successful, otherwise it returns "false".
-         * */
+          * \param[in] idxX_arg index of leaf node in the X axis.
+          * \param[in] idxY_arg index of leaf node in the Y axis.
+          * \param[in] idxZ_arg index of leaf node in the Z axis.
+          * \param[in] data_arg reference to DataT object that contains content of leaf node if search was successful.
+          * \return "true" if leaf node search is successful, otherwise it returns "false".
+          */
         bool
         get (unsigned int idxX_arg, unsigned int idxY_arg, unsigned int idxZ_arg, DataT& data_arg) const ;
 
         /** \brief Check for the existence of leaf node at (idxX, idxY, idxZ).
-         *  \param idxX_arg: index of leaf node in the X axis.
-         *  \param idxY_arg: index of leaf node in the Y axis.
-         *  \param idxZ_arg: index of leaf node in the Z axis.
-         *  \return "true" if leaf node search is successful, otherwise it returns "false".
-         * */
+          * \param[in] idxX_arg index of leaf node in the X axis.
+          * \param[in] idxY_arg index of leaf node in the Y axis.
+          * \param[in] idxZ_arg index of leaf node in the Z axis.
+          * \return "true" if leaf node search is successful, otherwise it returns "false".
+          */
         bool
         existLeaf (unsigned int idxX_arg, unsigned int idxY_arg, unsigned int idxZ_arg) const ;
 
         /** \brief Remove leaf node at (idxX_arg, idxY_arg, idxZ_arg).
-         *  \param idxX_arg: index of leaf node in the X axis.
-         *  \param idxY_arg: index of leaf node in the Y axis.
-         *  \param idxZ_arg: index of leaf node in the Z axis.
-         * */
+          * \param[in] idxX_arg index of leaf node in the X axis.
+          * \param[in] idxY_arg index of leaf node in the Y axis.
+          * \param[in] idxZ_arg index of leaf node in the Z axis.
+          */
         void
         removeLeaf (unsigned int idxX_arg, unsigned int idxY_arg, unsigned int idxZ_arg);
 
         /** \brief Return the amount of existing leafs in the octree.
-         *  \return amount of registered leaf nodes.
-         * */
+          * \return amount of registered leaf nodes.
+          */
         inline unsigned int
         getLeafCount () const
         {
-          return leafCount_;
+          return (static_cast<unsigned int> (leafCount_));
         }
 
         /** \brief Return the amount of existing branches in the octree.
-         *  \return amount of branch nodes.
-         * */
+          * \return amount of branch nodes.
+          */
         inline unsigned int
         getBranchCount () const
         {
-          return branchCount_;
+          return (static_cast<unsigned int> (branchCount_));
         }
 
-        /** \brief Delete the octree structure and its leaf nodes.
-         * */
+        /** \brief Delete the octree structure and its leaf nodes. */
         void
         deleteTree ();
 
