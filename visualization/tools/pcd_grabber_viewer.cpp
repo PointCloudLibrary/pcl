@@ -51,8 +51,8 @@ using pcl::console::print_info;
 using pcl::console::print_value;
 
 boost::mutex mutex_;
-boost::shared_ptr<pcl::PCDGrabber<pcl::PointXYZRGBA> > grabber;
-pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud_;
+boost::shared_ptr<pcl::PCDGrabber<pcl::PointXYZRGB> > grabber;
+pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud_;
 
 void
 printHelp (int, char **argv)
@@ -81,7 +81,7 @@ bool fcolorparam = false;
 struct EventHelper
 {
   void 
-  cloud_cb (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr & cloud)
+  cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr & cloud)
   {
     if (mutex_.try_lock ())
     {
@@ -101,7 +101,7 @@ keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
 
 void mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
 {
-  std::string* message = (std::string*) cookie;
+  std::string* message = static_cast<std::string*> (cookie);
   if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton)
   {
     cout << (*message) << " :: " << mouse_event.getX () << " , " << mouse_event.getY () << endl;
@@ -112,7 +112,7 @@ void mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* co
 int
 main (int argc, char** argv)
 {
-  srand (time (0));
+  srand (unsigned (time (0)));
 
   if (argc > 1)
   {
@@ -159,7 +159,7 @@ main (int argc, char** argv)
   pcl::console::parse_argument (argc, argv, "-ax", axes);
   if (axes != 0.0 && cloud_viewer)
   {
-    double ax_x = 0.0, ax_y = 0.0, ax_z = 0.0;
+    float ax_x = 0.0, ax_y = 0.0, ax_z = 0.0;
     pcl::console::parse_3x_arguments (argc, argv, "-ax_pos", ax_x, ax_y, ax_z, false);
     // Draw XYZ axes if command-line enabled
     cloud_viewer->addCoordinateSystem (axes, ax_x, ax_y, ax_z);
@@ -170,7 +170,6 @@ main (int argc, char** argv)
   if (frames_per_second < 0)
     frames_per_second = 0.0;
 
-  std::cout << pcl::console::find_argument (argc, argv, "-repeat") << " : repaet" << std::endl;
   bool repeat = (pcl::console::find_argument (argc, argv, "-repeat") != -1);
 
   std::cout << "fps: " << frames_per_second << " , repeat: " << repeat << std::endl;
@@ -179,7 +178,7 @@ main (int argc, char** argv)
   std::cout << "path: " << path << std::endl;
   if (path != "" && boost::filesystem::exists (path))
   {
-    grabber.reset (new pcl::PCDGrabber<pcl::PointXYZRGBA> (path, frames_per_second, repeat));
+    grabber.reset (new pcl::PCDGrabber<pcl::PointXYZRGB> (path, frames_per_second, repeat));
   }
   else
   {
@@ -205,28 +204,27 @@ main (int argc, char** argv)
 
     // Sort the read files by name
     sort (pcd_files.begin (), pcd_files.end ());
-    grabber.reset (new pcl::PCDGrabber<pcl::PointXYZRGBA> (pcd_files, frames_per_second, repeat));
+    grabber.reset (new pcl::PCDGrabber<pcl::PointXYZRGB> (pcd_files, frames_per_second, repeat));
   }
 
   EventHelper h;
-  boost::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &h, _1);
+  boost::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &h, _1);
   boost::signals2::connection c1 = grabber->registerCallback (f);
 
   std::string mouseMsg3D ("Mouse coordinates in PCL Visualizer");
   std::string keyMsg3D ("Key event for PCL Visualizer");
 
-  cloud_viewer->registerMouseCallback (&mouse_callback, (void*)(&mouseMsg3D));
-  cloud_viewer->registerKeyboardCallback(&keyboard_callback, (void*)(&keyMsg3D));
+  cloud_viewer->registerMouseCallback (&mouse_callback, reinterpret_cast<void*> (&mouseMsg3D));
+  cloud_viewer->registerKeyboardCallback(&keyboard_callback, reinterpret_cast<void*> (&keyMsg3D));
 
   grabber->start ();
-  while (true)
+  while (!cloud_viewer->wasStopped ())
   {
     cloud_viewer->spinOnce ();
 
 #if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
     img_viewer->spinOnce ();
 #endif
-
 
     if (!cloud_)
     {
@@ -236,7 +234,7 @@ main (int argc, char** argv)
 
     if (mutex_.try_lock ())
     {
-      pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr temp_cloud;
+      pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr temp_cloud;
       temp_cloud.swap (cloud_);
       mutex_.unlock ();
 
@@ -244,16 +242,12 @@ main (int argc, char** argv)
       img_viewer->showRGBImage (*temp_cloud);
 #endif
 
-
       if (!cloud_viewer->updatePointCloud (temp_cloud, "PCDCloud"))
       {
         cloud_viewer->addPointCloud (temp_cloud, "PCDCloud");
         cloud_viewer->resetCameraViewpoint ("PCDCloud");
       }
     }
-
-    if (cloud_viewer->wasStopped ())
-      break;
   }
 
   grabber->stop ();
