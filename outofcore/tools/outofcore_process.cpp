@@ -248,6 +248,11 @@ main (int argc, char* argv[])
     return (-1);
   }
 
+  if (find_switch (argc, argv, "-debug"))
+  {
+    pcl::console::setVerbosityLevel ( pcl::console::L_DEBUG );
+  }
+  
   // Defaults
   int depth = 4;
   double resolution = .1;

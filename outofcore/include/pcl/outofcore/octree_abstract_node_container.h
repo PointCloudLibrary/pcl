@@ -67,7 +67,7 @@ namespace pcl
         
         virtual void
         insertRange (const PointT* const* start, const uint64_t count)=0;
-        
+
         virtual void
         readRange (const uint64_t start, const uint64_t count, AlignedPointTVector& v)=0;
         

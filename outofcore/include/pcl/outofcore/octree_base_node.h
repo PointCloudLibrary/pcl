@@ -416,6 +416,9 @@ namespace pcl
         /** \brief Random number generator seed */
         const static boost::uint32_t rngseed = 0xAABBCCDD;
 
+        const static std::string pcd_extension;
+        
+
     };
   }//namespace outofcore
 }//namespace pcl

@@ -77,8 +77,8 @@ namespace pcl
     template<typename Container, typename PointT>
     const int octree_base<Container, PointT>::OUTOFCORE_VERSION_ = static_cast<int>(3);
 
-    template<typename Container, typename PointT>
-    const uint64_t octree_base<Container, PointT>::LOAD_COUNT_ = static_cast<uint64_t>(2e9);
+//    template<typename Container, typename PointT>
+//    const uint64_t octree_base::LOAD_COUNT_ = static_cast<uint64_t>(2e9);
 
 
     
@@ -97,8 +97,8 @@ namespace pcl
       // Check file extension
       if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointT>::node_index_extension)
       {
-        PCL_DEBUG ( "the tree must be have a root_ node ending in .oct_idx\n" );
-        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Exception: Bad extension. Tree must have a root node ending in .oct_idx\n");
+        PCL_ERROR ( "[pcl::outofcore::octree_base] Wrong root node file extension: %s. The tree must have a root node ending in %s\n", boost::filesystem::extension (rootname).c_str (), octree_base_node<Container, PointT>::node_index_extension.c_str () );
+        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base] Bad extension. Tree must have a root node ending in .oct_idx\n");
       }
 
       // Create root_ node
@@ -124,11 +124,17 @@ namespace pcl
       , coord_system_ ()
       , resolution_ ()
     {
-      // Check file extension
+      if (boost::filesystem::exists (rootname.parent_path ()))
+      {
+        PCL_ERROR ("[pcl::outofcore::octree_base] A dir named %s already exists. Overwriting an existing tree is not supported.\n", rootname.parent_path ().c_str () );
+        PCL_THROW_EXCEPTION ( PCLException, "[pcl::outofcore::octree_base] Directory exists; Overwriting an existing tree is not supported\n");
+      }
+
+     // Check file extension
       if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointT>::node_index_extension)
       {
-        PCL_ERROR ( "the tree must be created with a root_ node ending in .oct_idx\n" );
-        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Exception: Root file extension does not match .oct_idx\n");
+        PCL_ERROR ( "[pcl::outofcore::octree_base] The tree must be created with a root node ending in .oct_idx\n" );
+        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base] Root file extension does not match .oct_idx\n");
       }
 
       coord_system_ = coord_sys;
@@ -166,8 +172,8 @@ namespace pcl
       // Check file extension
       if (boost::filesystem::extension (rootname) != octree_base_node<Container, PointT>::node_index_extension)
       {
-        PCL_ERROR ( "the tree must be created with a root_ node ending in .oct_idx\n" );
-        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Exception: Bad extension. Tree must be created with node ending in .oct_idx\n");
+        PCL_ERROR ( "[pcl::outofcore::octree_base] the tree must be created with a root_ node ending in .oct_idx\n" );
+        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base] Bad extension. Tree must be created with node ending in .oct_idx\n");
       }
 
       coord_system_ = coord_sys;
@@ -187,8 +193,8 @@ namespace pcl
         boost::filesystem::path childdir = dir / boost::lexical_cast<std::string> (i);
         if (boost::filesystem::exists (childdir))
         {
-          PCL_ERROR ("A dir named %d exists under the root_ node. Overwriting an existing tree is not supported.\n", i);
-          PCL_THROW_EXCEPTION ( PCLException, "Outofcore Octree Exception: Directory exists; Overwriting an existing tree is not supported\n");
+          PCL_ERROR ("[pcl::outofcore::octree_base] A dir named %d exists under the root node. Overwriting an existing tree is not supported.\n", i);
+          PCL_THROW_EXCEPTION ( PCLException, "[pcl::outofcore::octree_base] Directory exists; Overwriting an existing tree is not supported\n");
         }
       }
 
@@ -291,7 +297,7 @@ namespace pcl
       }
       if ((lod->valueint + 1) != cJSON_GetArraySize (numpts))
       {
-        PCL_DEBUG ( "index failed to parse!\n",treepath_.c_str ());
+        PCL_ERROR ( "[pcl::outofcore::octree_base] Index failed to parse: %s\n",treepath_.c_str ());
         PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Prase Failure: LOD and array size of points is not valid\n");
       }
 
@@ -333,7 +339,11 @@ namespace pcl
     template<typename Container, typename PointT> boost::uint64_t
     octree_base<Container, PointT>::addPointCloud_and_genLOD (PointCloudConstPtr point_cloud)
     {
-      return addDataToLeaf_and_genLOD (point_cloud->points);
+      PCL_ERROR ("[pcl::outofcore::octree_base::%s] Function not yet implemented to support point clouds + gen LOD with new PCD dat node files\n",__FUNCTION__);
+      PCL_THROW_EXCEPTION ( PCLException, "Function not implemented");
+
+      //and keep the compiler happy
+      return 0;//      return addDataToLeaf_and_genLOD (point_cloud->points);
     }
 
 
@@ -351,7 +361,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> boost::uint64_t
-    octree_base<Container, PointT>::addDataToLeaf_and_genLOD (const AlignedPointTVector& p)
+    octree_base<Container, PointT>::addDataToLeaf_and_genLOD (AlignedPointTVector& p)
     {
       // Lock the tree while writing
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
@@ -542,7 +552,8 @@ namespace pcl
               //write to the target
               if (!v.empty ())
               {
-                target_parent->payload->insertRange (&(v.front ()), v.size ());
+                target_parent->payload->insertRange ( v );
+//                target_parent->payload->insertRange (&(v.front ()), v.size ());
                 this->incrementPointsInLOD (target_parent->depth, v.size ());
               }
 

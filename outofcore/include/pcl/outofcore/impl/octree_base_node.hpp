@@ -89,6 +89,9 @@ namespace pcl
     const double octree_base_node<Container, PointT>::sample_precent = .125;
 
     template<typename Container, typename PointT>
+    const std::string octree_base_node<Container, PointT>::pcd_extension = ".pcd";
+
+    template<typename Container, typename PointT>
     octree_base_node<Container, PointT>::octree_base_node (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super, bool loadAll)
       : thisdir_ ()
       , thisnodeindex_ ()
@@ -112,8 +115,8 @@ namespace pcl
 
         if (!boost::filesystem::exists (thisdir_))
         {
-          PCL_ERROR ("Could not find dir %s\n",thisdir_.c_str ());
-          PCL_THROW_EXCEPTION (PCLException, "Outofcore Exception: missing directory")
+          PCL_ERROR ("[pcl::outofcore::octree_base_node] Could not find dir %s\n",thisdir_.c_str ());
+          PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base_node] Outofcore Exception: missing directory")
         }
 
         thisnodeindex_ = path;
@@ -145,8 +148,8 @@ namespace pcl
 
         if (!loaded)
         {
-          PCL_DEBUG ("Could not find index\n");
-          PCL_THROW_EXCEPTION (PCLException, "Outofcore: Could not find node index");
+          PCL_ERROR ("[pcl::outofcore::octree_base_node] Could not find index\n");
+          PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base_node] Outofcore: Could not find node index");
         }
 
       }
@@ -192,16 +195,26 @@ namespace pcl
       {
         //boost::filesystem::remove_all(dir);
         //boost::filesystem::create_directory(dir);
-        PCL_DEBUG ("Need empty directory structure. Dir %s exists and is a file.\n",dir.c_str ());
-        PCL_THROW_EXCEPTION (PCLException, "Bad Path: Directory Already Exists");
+        PCL_ERROR ("[pcl::outofcore::octree_base_node] Need empty directory structure. Dir %s exists and is a file.\n",dir.c_str ());
+        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base_node] Bad Path: Directory Already Exists");
       }
 
       // Create a unique id for node file name
       /** \todo: getRandomUUIDString shouldn't be in class octree_disk_container; also this is pretty slow*/
       std::string uuid;
+      
       octree_disk_container<PointT>::getRandomUUIDString (uuid);
-      std::string node_container_name = uuid + std::string ("_") + node_container_basename + node_container_extension;
 
+      std::string node_container_name;
+      if( true )//OUTOFCORE_VERSION_ >= 3 )
+      {
+        node_container_name = uuid + std::string ("_") + node_container_basename + pcd_extension;
+      }
+      else
+      {
+        node_container_name = uuid + std::string ("_") + node_container_basename + node_container_extension;
+      }
+      
       // Setup all file paths related to this node
       thisdir_ = boost::filesystem::path (dir);
       thisnodeindex_ = thisdir_ / rootname.filename ();
@@ -304,7 +317,7 @@ namespace pcl
           directories live on disk.  This just bails if anything is loaded? */
       if (num_child_ != 0)
       {
-        PCL_DEBUG ("Calling loadChildren on a node that already has loaded children! - skipping\n");
+        PCL_ERROR ("[pcl::outofcore::octree_base_node] Calling loadChildren on a node that already has loaded children! - skipping\n");
         return;
       }
 
@@ -345,6 +358,8 @@ namespace pcl
     template<typename Container, typename PointT> uint64_t
     octree_base_node<Container, PointT>::addDataToLeaf (const AlignedPointTVector& p, const bool skip_bb_check)
     {
+      ///\todo consider using fr/p 02 locational codes
+
       //quit if there are no points to add
       if (p.empty ())
       {
@@ -353,7 +368,7 @@ namespace pcl
 
       //if this depth is the max depth of the tree, then add the points
       if (this->depth_ == root_->m_tree_->max_depth_)
-        return (addDataAtMaxDepth(p, skip_bb_check));
+        return (addDataAtMaxDepth( p, skip_bb_check));
 
       if (num_child_ < 8)
         if (hasUnloadedChildren ())
@@ -375,11 +390,18 @@ namespace pcl
         {
           if (!this->pointWithinBB (pt))
           {
+            PCL_ERROR ( "[pcl::outofcore::octree_base_node::%s] Failed to place point within bounding box\n", __FUNCTION__ );
+            
             //	std::cerr << "failed to place point!!!" << std::endl;
             continue;
           }
         }
 
+        uint8_t box = 00;
+        box = ((pt.z >= midz_) << 2) | ((pt.y >= midy_) << 1) | ((pt.x >= midx_) << 0);
+        c[box].push_back (&pt);
+      
+        /*
         if ((pt.z >= midz_))
         {
           if ((pt.y >= midy_))
@@ -439,7 +461,9 @@ namespace pcl
           }
         }
       }
-
+        */
+      }
+      
       boost::uint64_t points_added = 0;
       for (int i = 0; i < 8; i++)
       {
@@ -469,7 +493,9 @@ namespace pcl
         if (skip_bb_check)//trust me, just add the points
         {
           root_->m_tree_->incrementPointsInLOD (this->depth_, p.size ());
+          
           payload_->insertRange (p.data (), p.size ());
+          
           return (p.size ());
         }
         else//check which points belong to this node, throw away the rest
@@ -487,6 +513,8 @@ namespace pcl
           {
             root_->m_tree_->incrementPointsInLOD (this->depth_, buff.size ());
             payload_->insertRange (buff.data (), buff.size ());
+//            payload_->insertRange ( buff );
+            
           }
           return (buff.size ());
         }
@@ -521,6 +549,12 @@ namespace pcl
             }
           }
 
+          uint8_t box = 00;
+          //hash each coordinate to the appropriate octant
+          box = ((p[i]->z >= midz_) << 2) | ((p[i]->y >= midy_) << 1) | ((p[i]->x >= midx_ ));
+          //3 bit, 8 octants
+          c[box].push_back (p[i]);
+/*
           if ((p[i]->z >= midz_))
           {
             if ((p[i]->y >= midy_))
@@ -579,7 +613,10 @@ namespace pcl
               }
             }
           }
+       }
+*/
         }
+        
         boost::uint64_t points_added = 0;
         for (int i = 0; i < 8; i++)
         {
@@ -655,19 +692,21 @@ namespace pcl
     octree_base_node<Container, PointT>::addDataAtMaxDepth (const AlignedPointTVector& p, const bool skip_bb_check)
     {
       // Trust me, just add the points
-      if(skip_bb_check)
+      if (skip_bb_check)
       {
         // Increment point count for node
         root_->m_tree_->incrementPointsInLOD (this->depth_, p.size ());
 
         // Insert point data
-        payload_->insertRange (p.data (), p.size ());
+//        payload_->insertRange (p.data (), p.size ());
+        payload_->insertRange ( p );
+        
+        //this is not a failsafe way to know all the points were written
         return (p.size ());
       }
 
       // Add points found within the current node's bounding box
       /// \todo standardize the boundary case
-      /// \todo I suspect Justin's bug has to do with 
       else
       {
         std::vector<PointT> buff;
@@ -685,6 +724,7 @@ namespace pcl
         {
           root_->m_tree_->incrementPointsInLOD (this->depth_, buff.size ());
           payload_->insertRange (buff.data (), buff.size ());
+          //payload_->insertRange ( const_cast<AlignedPointTVector&> (buff) );
         }
         return (buff.size ());
       }
@@ -808,7 +848,9 @@ namespace pcl
         // Increment point count for node
         root_->m_tree_->incrementPointsInLOD (this->depth_, insertBuff.size());
         // Insert sampled point data
-        payload_->insertRange ( &(insertBuff.front ()), insertBuff.size());
+//        payload_->insertRange ( &(insertBuff.front ()), insertBuff.size());
+        payload_->insertRange ( insertBuff );
+        
       }
 
       //subdivide vec to pass data down lower
@@ -939,9 +981,9 @@ namespace pcl
     octree_base_node<Container, PointT>::pointWithinBB (const PointT& p) const
     {
       // won't <= lead to points being added to more than one voxel?
-      if (((min_[0] <= p.x) && (p.x <= max_[0])) &&
-          ((min_[1] <= p.y) && (p.y <= max_[1])) &&
-          ((min_[2] <= p.z) && (p.z <= max_[2])))
+      if (((min_[0] <= p.x) && (p.x < max_[0])) &&
+          ((min_[1] <= p.y) && (p.y < max_[1])) &&
+          ((min_[2] <= p.z) && (p.z < max_[2])))
       {
         return (true);
     
@@ -1062,7 +1104,7 @@ namespace pcl
           //if this node has children
           if (num_child_ > 0)
           {
-            //recursively store any points that falls into the queried bounding box into v and return
+            //recursively store any points that fall into the queried bounding box into v and return
             for (size_t i = 0; i < 8; i++)
             {
               if (children_[i])
@@ -1204,8 +1246,8 @@ namespace pcl
     {
       if (super == NULL)
       {
-        PCL_DEBUG ( "super is null - don't make a root node this way!\n" );
-        PCL_THROW_EXCEPTION (PCLException, "Outofcore Exception: Bad parent");
+        PCL_ERROR ( "[pc::outofcore::octree_base_node] Super is null - don't make a root node this way!\n" );
+        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base_node] Outofcore Exception: Bad parent");
       }
 
       this->parent_ = super;
@@ -1227,8 +1269,16 @@ namespace pcl
       octree_disk_container<PointT>::getRandomUUIDString (uuid_cont);
 
       std::string node_index_name = uuid_idx + std::string ("_") + node_index_basename + node_index_extension;
-      std::string node_container_name = uuid_cont + std::string ("_") + node_container_basename
-      + node_container_extension;
+
+      std::string node_container_name;
+      if( true )//OUTOFCORE_VERSION_ >= 3 )
+      {
+        node_container_name = uuid_cont + std::string ("_") + node_container_basename + pcd_extension;
+      }
+      else
+      {
+        node_container_name = uuid_cont + std::string ("_") + node_container_basename + node_container_extension;
+      }
 
       thisdir_ = boost::filesystem::path (dir);
       thisnodeindex_ = thisdir_ / boost::filesystem::path (node_index_name);
@@ -1311,11 +1361,11 @@ namespace pcl
     octree_base_node<Container, PointT>::withinBB (const double min_bb[3], const double max_bb[3]) const
     {
 
-      if ((min_bb[0] <= min_[0]) && (max_[0] <= max_bb[0]))
+      if ((min_bb[0] <= min_[0]) && (max_[0] < max_bb[0]))
       {
-        if ((min_bb[1] <= min_[1]) && (max_[1] <= max_bb[1]))
+        if ((min_bb[1] <= min_[1]) && (max_[1] < max_bb[1]))
         {
-          if ((min_bb[2] <= min_[2]) && (max_[2] <= max_bb[2]))
+          if ((min_bb[2] <= min_[2]) && (max_[2] < max_bb[2]))
           {
             return (true);
           }
@@ -1330,11 +1380,13 @@ namespace pcl
     octree_base_node<Container, PointT>::pointWithinBB (const double min_bb[3], const double max_bb[3],
                                                         const PointT& p)
     {
-      if ((min_bb[0] <= p.x) && (p.x <= max_bb[0]))
+      //by convention, minimum boundary is included; maximum boundary is not
+      /// \todo go through all of the code to standardize this
+      if ((min_bb[0] <= p.x) && (p.x < max_bb[0]))
       {
-        if ((min_bb[1] <= p.y) && (p.y <= max_bb[1]))
+        if ((min_bb[1] <= p.y) && (p.y < max_bb[1]))
         {
-          if ((min_bb[2] <= p.z) && (p.z <= max_bb[2]))
+          if ((min_bb[2] <= p.z) && (p.z < max_bb[2]))
           {
             return (true);
           }
@@ -1439,18 +1491,18 @@ namespace pcl
       //Validate
       if (!((version) && (bb_min) && (bb_max) && (bin)))
       {
-        PCL_ERROR ( "index %s failed to parse! Doesn't contain all attributes\n", path.c_str () );
-        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Parse Failure: Metadata does not contain all attributes");
+        PCL_ERROR ( "[pcl::outofcore::octree_base_node] index %s failed to parse! Doesn't contain all attributes\n", path.c_str () );
+        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base_node] Outofcore Octree Parse Failure: Metadata does not contain all attributes");
       }
       if ((version->type != cJSON_Number) || (bb_min->type != cJSON_Array) || (bb_max->type != cJSON_Array) || (bin->type != cJSON_String))
       {
-        PCL_ERROR ( "index %s failed to parse! Invalid data types\n", path.c_str () );
-        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Parse Failure: Metadata contains invalid data types");
+        PCL_ERROR ( "[pcl::outofcore::octree_base_node] index %s failed to parse! Invalid data types\n", path.c_str () );
+        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base_node] Outofcore Octree Parse Failure: Metadata contains invalid data types");
       }
       if (version->valuedouble != 2.0 && version->valuedouble != 3.0)
       {
-        PCL_ERROR ( "index %s failed to parse!\n  Incompatible version", path.c_str () );
-        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Parse Failure: Incompatible version");
+        PCL_ERROR ( "[pcl::outofcore::octree_base_node] index %s failed to parse!\n  Incompatible version", path.c_str () );
+        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base_node] Outofcore Octree Parse Failure: Incompatible version");
       }
 
       //	version->valuedouble;
@@ -1521,8 +1573,8 @@ namespace pcl
 
         if (!boost::filesystem::exists (thisnode->thisdir_))
         {
-          PCL_DEBUG ( "could not find dir %s\n",thisnode->thisdir_.c_str () );
-          PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Exception: Could not find directory");
+          PCL_ERROR ( "[pcl::outofcore::octree_base_node] could not find dir %s\n",thisnode->thisdir_.c_str () );
+          PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base_node] Outofcore Octree Exception: Could not find directory");
         }
 
         thisnode->thisnodeindex_ = path;
@@ -1559,8 +1611,8 @@ namespace pcl
 
         if (!loaded)
         {
-          PCL_DEBUG ( "could not find index!\n");
-          PCL_THROW_EXCEPTION (PCLException, "Could not find node metadata index file");
+          PCL_ERROR ( "[pcl::outofcore::octree_base_node] Could not find index!\n");
+          PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base_node] Could not find node metadata index file");
         }
 
       }
@@ -1597,7 +1649,7 @@ namespace pcl
     template<typename Container, typename PointT> void
     queryBBIntersects_noload2 (const boost::filesystem::path& rootnode, const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name)
     {
-      //this class already has a private "root" member
+      ///\todo this class already has a private "root" member
       //it also has min[3] and max[3] members
       octree_base_node<Container, PointT>* root = makenode_norec<Container, PointT> (rootnode, NULL);
       if (root == NULL)

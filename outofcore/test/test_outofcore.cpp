@@ -70,7 +70,7 @@ using namespace pcl::outofcore;
 
 // For doing exhaustive checks this is set low remove those, and this can be
 // set much higher
-const static uint64_t numPts ( 2e4 );
+const static uint64_t numPts ( 5000 );
 
 const static boost::uint32_t rngseed = 0xAAFF33DD;
 
@@ -110,8 +110,8 @@ TEST (PCL, Outofcore_Octree_Build)
   boost::filesystem::remove_all (filename_otreeA.parent_path ());
   boost::filesystem::remove_all (filename_otreeB.parent_path ());
 
-  double min[3] = {0, 0, 0};
-  double max[3] = {1, 1, 1};
+  double min[3] = {-32, -32, -32};
+  double max[3] = {32, 32, 32};
 
   // Build two trees using each constructor
   // depth of treeA will be same as B because 1/2^3 > .1 and 1/2^4 < .1
@@ -209,8 +209,10 @@ TEST (PCL, Outofcore_Octree_Build_LOD)
 TEST(PCL, Outofcore_Bounding_Box)
 {
 
-  double min[3] = {0, 0, 0};
-  double max[3] = {1, 1, 1};
+  double min[3] = {-32,-32,-32};
+  
+  double max[3] = {32,32,32};
+  
 
   octree_disk treeA (filename_otreeA, false);
   octree_disk treeB (filename_otreeB, false);
@@ -225,11 +227,11 @@ TEST(PCL, Outofcore_Bounding_Box)
 
   for(int i=0; i<3; i++)
   {
-    ASSERT_EQ (min_otreeA[i], min[i]);
-    ASSERT_EQ (max_otreeA[i], max[i]);
+    EXPECT_EQ (min_otreeA[i], min[i]);
+    EXPECT_EQ (max_otreeA[i], max[i]);
 
-    ASSERT_EQ (min_otreeB[i], min[i]);
-    ASSERT_EQ (max_otreeB[i], max[i]);
+    EXPECT_EQ (min_otreeB[i], min[i]);
+    EXPECT_EQ (max_otreeB[i], max[i]);
   }
 }
 
@@ -264,13 +266,13 @@ void point_test(octree_disk& t)
 
     for(vector<PointT, Eigen::aligned_allocator<PointT> >::iterator pointit = points.begin (); pointit != points.end (); ++pointit)
     {
-      if((query_box_min[0] <= pointit->x) && (pointit->x <= qboxmax[0]) && (query_box_min[1] <= pointit->y) && (pointit->y <= qboxmax[1]) && (query_box_min[2] <= pointit->z) && (pointit->z <= qboxmax[2]))
+      if((query_box_min[0] <= pointit->x) && (pointit->x < qboxmax[0]) && (query_box_min[1] < pointit->y) && (pointit->y < qboxmax[1]) && (query_box_min[2] <= pointit->z) && (pointit->z < qboxmax[2]))
       {
         pointsinregion.push_back(*pointit);
       }
     }
 
-    ASSERT_EQ (p_ot.size (), pointsinregion.size ());
+    EXPECT_EQ (p_ot.size (), pointsinregion.size ());
 
     //very slow exhaustive comparison
     while( !p_ot.empty () )
@@ -289,7 +291,7 @@ void point_test(octree_disk& t)
       }
     }
 
-    ASSERT_TRUE(p_ot.empty());
+    EXPECT_TRUE(p_ot.empty());
   }
 }
 
@@ -307,6 +309,8 @@ TEST (PCL, Outofcore_Ram_Tree)
 {
   double min[3] = {0,0,0};
   double max[3] = {1,1,1};
+
+  const boost::filesystem::path filename_otreeA = "ram_tree/ram_tree.oct_idx";
 
   octree_ram t(min, max, .1, filename_otreeA, "ECEF");
 
@@ -364,7 +368,7 @@ TEST (PCL, Outofcore_Ram_Tree)
       }
     }
 
-    ASSERT_EQ(p_ot1.size(), pointsinregion.size());
+    EXPECT_EQ(p_ot1.size(), pointsinregion.size());
 
     //very slow exhaustive comparison
     while( !p_ot1.empty () )
@@ -383,7 +387,7 @@ TEST (PCL, Outofcore_Ram_Tree)
       }
     }
 
-    ASSERT_TRUE(p_ot1.empty());
+    EXPECT_TRUE(p_ot1.empty());
   }
 }
 #endif
@@ -406,6 +410,7 @@ class OutofcoreTest : public testing::Test
     void cleanUpFilesystem ()
     {
       //clear existing trees from test path
+
       boost::filesystem::remove_all (filename_otreeA.parent_path ());
       boost::filesystem::remove_all (filename_otreeB.parent_path ());
 
@@ -413,6 +418,7 @@ class OutofcoreTest : public testing::Test
       boost::filesystem::remove_all (filename_otreeB_LOD.parent_path ());
 
       boost::filesystem::remove_all (outofcore_path.parent_path ());
+
     }
 
     double smallest_voxel_dim;
@@ -437,23 +443,24 @@ TEST_F (OutofcoreTest, Outofcore_Constructors)
   const double max[3] = { 1024, 1024, 1024 };
 
   vector<PointT, Eigen::aligned_allocator<PointT> > some_points;
-  for(int i=0; i< 1000; i++)
+  for(int i=0; i< numPts; i++)
     some_points.push_back (PointT (static_cast<float>( rand () % 1024 ), static_cast<float>( rand () % 1024 ), static_cast<float>( rand () % 1024 ) ));
   
 
   //(Case 1)
   //Create Octree based on resolution of smallest voxel, automatically computing depth
   octree_disk octreeA (min, max, smallest_voxel_dim, filename_otreeA, "ECEF");
-  octreeA.addDataToLeaf (some_points);
+  EXPECT_EQ ( some_points.size (), octreeA.addDataToLeaf (some_points) ) << "Dropped points in voxel resolution constructor\n";
 
-  ASSERT_EQ ( some_points.size (), octreeA.getNumPointsAtDepth ( octreeA.getDepth () ) );
+  EXPECT_EQ ( some_points.size (), octreeA.getNumPointsAtDepth ( octreeA.getDepth () ) );
   
   //(Case 2)
   //create Octree by prespecified depth in constructor
   int depth = 4;
   octree_disk octreeB (depth, min, max, filename_otreeB, "ECEF");
-  octreeB.addDataToLeaf ( some_points );
-  ASSERT_EQ ( some_points.size (), octreeB.getNumPointsAtDepth ( octreeB.getDepth () ) );
+  EXPECT_EQ (some_points.size (), octreeB.addDataToLeaf ( some_points ) ) << "Dropped points in fixed-depth constructor\n";
+  
+  EXPECT_EQ ( some_points.size (), octreeB.getNumPointsAtDepth ( octreeB.getDepth () ) );
 }
 
 TEST_F (OutofcoreTest, Outofcore_ConstructorSafety)
@@ -471,9 +478,9 @@ TEST_F (OutofcoreTest, Outofcore_ConstructorSafety)
   /**\todo behaviors of the two constructors don't match. the one with resolution in the constructor doesn't check if a tree is being overwritten.
    */
 
-  //  EXPECT_ANY_THROW ({
-  //      octree_disk octreeC (min, max, smallest_voxel_dim, filename_otreeA, "ECEF");
-  //    });
+  EXPECT_ANY_THROW ({
+        octree_disk octreeC (min, max, smallest_voxel_dim, filename_otreeA, "ECEF");
+      });
 
   EXPECT_ANY_THROW ({ octree_disk octreeD (4, min, max, filename_otreeB, "ECEF"); });
 
@@ -481,7 +488,7 @@ TEST_F (OutofcoreTest, Outofcore_ConstructorSafety)
   octree_disk octree_from_disk (filename_otreeB, true);
   vector<uint64_t> numPoints = octree_from_disk.getNumPointsVector ();
   
-  EXPECT_EQ ( 1000, octree_from_disk.getNumPointsAtDepth (octree_from_disk.getDepth () ) );
+  EXPECT_EQ ( numPts , octree_from_disk.getNumPointsAtDepth (octree_from_disk.getDepth () ) );
   
 }
 
@@ -493,13 +500,12 @@ TEST_F (OutofcoreTest, Outofcore_ConstructorBadPaths)
   boost::filesystem::path non_existent_path_name ("treeBogus/tree_bogus.oct_idx");
   boost::filesystem::path bad_extension_path ("treeBadExtension/tree_bogus.bad_extension");
 
-  ASSERT_FALSE (boost::filesystem::exists (non_existent_path_name));
+  EXPECT_FALSE (boost::filesystem::exists (non_existent_path_name));
   EXPECT_ANY_THROW ({octree_disk octree_bogus_path ( non_existent_path_name, true );});
 
-  ASSERT_FALSE (boost::filesystem::exists (bad_extension_path));
+  EXPECT_FALSE (boost::filesystem::exists (bad_extension_path));
   EXPECT_ANY_THROW ({octree_disk octree_bad_extension ( bad_extension_path, true );});
 
-  cleanUpFilesystem ();
 }
 
 TEST_F (OutofcoreTest, Outofcore_PointcloudConstructor)
@@ -529,9 +535,9 @@ TEST_F (OutofcoreTest, Outofcore_PointcloudConstructor)
     test_cloud->points.push_back (tmp);
   }
 
-  ASSERT_EQ (numPts, test_cloud->points.size ());
+  EXPECT_EQ (numPts, test_cloud->points.size ());
   
-  octree_disk pcl_cloud (min, max, 32.0, outofcore_path, "ECEF");
+  octree_disk pcl_cloud (min, max, 4, outofcore_path, "ECEF");
 
   pcl_cloud.addPointCloud (test_cloud);
   
@@ -544,8 +550,8 @@ TEST_F (OutofcoreTest, Outofcore_PointsOnBoundaries)
 {
   cleanUpFilesystem ();
   
-  const double min[3] = { -1.0, -1.0, -1.0 };
-  const double max[3] = { 1.0, 1.0, 1.0 };
+  const double min[3] = { -2.0, -2.0, -2.0 };
+  const double max[3] = { 2.0, 2.0, 2.0 };
   
   PointCloud<PointT>::Ptr cloud (new PointCloud<PointT> ());
   cloud->width = 8;
@@ -562,11 +568,11 @@ TEST_F (OutofcoreTest, Outofcore_PointsOnBoundaries)
     cloud->points.push_back (tmp);
   }
 
-  octree_disk octree ( min, max, 32.0, outofcore_path, "ECEF" );
+  octree_disk octree ( min, max, 4, outofcore_path, "ECEF" );
 
   octree.addPointCloud ( cloud );
 
-  ASSERT_EQ ( 8, octree.getNumPointsAtDepth ( octree.getDepth () ));
+  EXPECT_EQ ( 8, octree.getNumPointsAtDepth ( octree.getDepth () ));
 
 }
 
@@ -611,11 +617,11 @@ TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
     second_cloud->points.push_back (tmp);
   }
 
-  octree_disk pcl_cloud (min, max, 32.0, outofcore_path, "ECEF");
+  octree_disk pcl_cloud (min, max, 4, outofcore_path, "ECEF");
 
-  ASSERT_EQ ( test_cloud->points.size () , pcl_cloud.addPointCloud (test_cloud) );
+  EXPECT_EQ ( test_cloud->points.size () , pcl_cloud.addPointCloud (test_cloud) );
 
-  ASSERT_EQ ( numPts, pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth () ));
+  EXPECT_EQ ( numPts, pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth () ));
 
   pcl_cloud.addPointCloud (second_cloud);
 
@@ -629,6 +635,8 @@ TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
 int
 main (int argc, char** argv)
 {
+  pcl::console::setVerbosityLevel ( pcl::console::L_DEBUG );
+  
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
 }

@@ -257,7 +257,7 @@ namespace pcl
          * \todo overload this to use shared point cloud pointer
          */
         boost::uint64_t
-        addDataToLeaf_and_genLOD (const AlignedPointTVector& p);
+        addDataToLeaf_and_genLOD (AlignedPointTVector& p);
 
         // DB Access
         // -----------------------------------------------------------------------
@@ -402,7 +402,7 @@ namespace pcl
         const static int OUTOFCORE_VERSION_;
 
         /** \todo @b loadcount mystery constant 2e9 points at a time to subsample; should parameterize; use mmap */
-        const static uint64_t LOAD_COUNT_;
+        const static uint64_t LOAD_COUNT_ = static_cast<uint64_t>(2e9);
 
         double resolution_;
     };

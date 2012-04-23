@@ -109,7 +109,10 @@ namespace pcl
         inline void
         push_back (const PointT& p);
 
-        /** \todo this might be where the bug is coming from with binary pcd files */
+        void
+        insertRange (const AlignedPointTVector& p);
+
+        /** \todo standardize the interface for writing binary data to the files .oct_dat files */
         void
         insertRange (const PointT* const * start, const uint64_t count)
         {
@@ -126,7 +129,21 @@ namespace pcl
           delete[] arr;
         }
     
-        /** \brief insert using the underlying container_ type's insert method
+        /** \brief This is the primary method for serialization of
+         * blocks of point data. This is called by the outofcore
+         * octree interface, opens the binary file for appending data,
+         * and writes it to disk.
+         *
+         * \todo With the current implementation of \b insertRange,
+         * frequently the file is open and sometimes 1-3 points are
+         * written to disk. This might be normal if the resolution is
+         * low enough, but performance could be improved if points are
+         * first sorted into buckets by locational code, then sent to
+         * their appropriate container for being written to
+         * disk. Furthermore, for OUTOFCORE_VERSION_ >= 3, this will
+         * use PCD files (and possibly Julius's octree compression)
+         * rather than an unorganized linear dump of the binary PointT
+         * data.
          *
          * \param[in] start address of the first point to insert
          * \param[in] count offset from start of the last point to insert
@@ -192,7 +209,7 @@ namespace pcl
         }
 
         void
-       flush (const bool force_cache_dealloc)
+        flush (const bool force_cache_dealloc)
         {
           flushWritebuff (force_cache_dealloc);
         }
@@ -209,6 +226,7 @@ namespace pcl
           //clear elements that have not yet been written to disk
           writebuff_.clear ();
           //remove the binary data in the directory
+          PCL_DEBUG ("[Octree Disk Container] Removing the point data from disk, in file %s\n",fileback_name_->c_str ());
           boost::filesystem::remove (boost::filesystem::path (fileback_name_->c_str ()));
           //reset the size-of-file counter
           filelen_ = 0;
@@ -288,7 +306,15 @@ namespace pcl
 
         /** \todo Consult with the literature about optimizing out of core read/write */
         /** \todo this will be handled by the write method in pcl::FileWriter */
-        static const uint64_t WRITE_BUFF_MAX_;
+        /** \todo WRITE_BUFF_MAX_ is something of a misnomer; this is
+         *  used in two different ways in the class which accounts for
+         *  a bug. It should be the maximum number of points written
+         *  to disk. However, in some places it is also used as the
+         *  maximum number of points allowed to exist in \b writebuff_
+         *  at any given time.
+         */
+        static const uint64_t
+        WRITE_BUFF_MAX_;
 
         static boost::mutex rng_mutex_;
         static boost::mt19937 rand_gen_;

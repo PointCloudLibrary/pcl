@@ -61,6 +61,11 @@
 #include <boost/random/uniform_int.hpp>
 #include <boost/random/bernoulli_distribution.hpp>
 
+// PCL
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
+#include <sensor_msgs/PointCloud2.h>
+
 // PCL (Urban Robotics)
 #include <pcl/outofcore/octree_disk_container.h>
 
@@ -110,7 +115,6 @@ namespace pcl
       fileback_name_ = new std::string ();
       *fileback_name_ = temp;
       filelen_ = 0;
-      //writebuff.reserve(WRITE_BUFF_MAX_);
     }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -140,6 +144,19 @@ namespace pcl
           fileback_name_ = new std::string (path.string ());
 
           filelen_ = len / sizeof(PointT);
+
+          sensor_msgs::PointCloud2 cloud_info;
+          Eigen::Vector4f origin;
+          Eigen::Quaternionf orientation;
+          int pcd_version;
+          int data_type;
+          unsigned int data_index;
+          
+          //read the header of the pcd file and get the number of points
+          PCDReader reader;
+          reader.readHeader (*fileback_name_, cloud_info, origin, orientation, pcd_version, data_type, data_index, 0);
+          
+          filelen_ = cloud_info.width * cloud_info.height;
         }
       }
       else
@@ -147,8 +164,6 @@ namespace pcl
         fileback_name_ = new std::string (path.string ());
         filelen_ = 0;
       }
-
-      //writebuff.reserve(WRITE_BUFF_MAX_);
     }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -156,51 +171,57 @@ namespace pcl
     octree_disk_container<PointT>::~octree_disk_container ()
     {
       flushWritebuff (true);
-      //fileback.flush();
-      //fileback.close();
-      //std::remove(persistant->c_str());
-      //boost::filesystem::remove(fileback_name_);//for testing!
-      //std::cerr << "deleted file " << *persistant << std::endl;
-      //std::cerr << "destruct container" << std::endl;
       delete fileback_name_;
     }
 ////////////////////////////////////////////////////////////////////////////////
 
+    /// \todo deprecate flushWritebuff ? unused? 
     template<typename PointT> void
     octree_disk_container<PointT>::flushWritebuff (const bool force_cache_dealloc)
     {
-      if (writebuff_.size () > 0)
+      int outofcore_v = 3;
+      
+      if ( outofcore_v >= 3 && writebuff_.size () > 0 )
       {
-        FILE* f = fopen (fileback_name_->c_str (), "a+b");
+        //construct the point cloud for this node
+        typename pcl::PointCloud<PointT>::Ptr cloud ( new pcl::PointCloud<PointT> );
+        
+        cloud->width = writebuff_.size ();
+        cloud->height = 1;
 
-        size_t len = writebuff_.size () * sizeof(PointT);
-        /** \todo study and optimize the serialization to disk */
-        char* loc = reinterpret_cast<char*> ( & (writebuff_.front ()) );
-        size_t w = fwrite (loc, 1, len, f);
-        (void)w;
-        assert (w == len);
+        cloud->points = writebuff_;
 
-        //		int closeret = fclose(f);
-        fclose (f);
+        //write data to a pcd file
+        pcl::PCDWriter writer;
 
-        filelen_ += writebuff_.size ();
-        writebuff_.clear ();
+        //write ascii for now to debug
+        assert ( writer.write (*fileback_name_, *cloud, false) == 0); 
       }
-
-      //if(forceCacheDeAlloc || (size() >= node<octree_disk_container<PointT>, PointT>::split_thresh))  //if told to dump cache, or if we have more nodes than the split threshold
-      if (force_cache_dealloc)//if told to dump cache, or if we have more nodes than the split threshold
+      
+      if ( outofcore_v < 3 )
       {
-        //don't reserve anymore -- lets us have more nodes and be fairly
-        //lazy about dumping the cache. but once it is dumped for the last
-        //time, this needs to be empty.
-        writebuff_.resize (0);
-      }
-      else
-      {
-        //we are still accepting data, preallocate the storage
-        //writebuff.reserve(WRITE_BUFF_MAX_);
-      }
+        if (writebuff_.size () > 0)
+        {
+          FILE* f = fopen (fileback_name_->c_str (), "a+b");
 
+          size_t len = writebuff_.size () * sizeof(PointT);
+          /** \todo study and optimize the serialization to disk */
+          char* loc = reinterpret_cast<char*> ( & (writebuff_.front ()) );
+          size_t w = fwrite (loc, 1, len, f);
+          (void)w;
+          assert (w == len);
+
+          assert ( fclose (f) ==  0 );
+
+          filelen_ += writebuff_.size ();
+          writebuff_.clear ();
+        }
+
+        if (force_cache_dealloc)
+        {
+          writebuff_.resize (0);
+        }
+      }
     }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -235,28 +256,37 @@ namespace pcl
       }
 
       //else, throw out of range exception
-      PCL_THROW_EXCEPTION (PCLException, "Index is out of range");
+      PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_disk_container] Index is out of range");
     }
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
     octree_disk_container<PointT>::readRange (const uint64_t start, const uint64_t count, AlignedPointTVector& v)
     {
-      if ((start + count) > size ())
-      {
-        PCL_ERROR ( "Indicies out of range; start + count exceeds the size of the stored points" );
-        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Exception: Read indices exceed range");
-      }
-
       if (count == 0)
       {
-        PCL_DEBUG ( "No points requested for reading" );
+        PCL_DEBUG ( "[pcl::outofcore::octree_disk_container] No points requested for reading\n" );
         return;
+      }
+
+      if ((start + count) > size ())
+      {
+        PCL_ERROR ( "[pcl::outofcore::octree_disk_container] Indicies out of range; start + count exceeds the size of the stored points\n" );
+        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_disk_container] Outofcore Octree Exception: Read indices exceed range");
       }
 
       uint64_t filestart = 0;
       uint64_t filecount = 0;
 
+      pcl::PCDReader reader;
+      typename pcl::PointCloud<PointT>::Ptr cloud ( new pcl::PointCloud<PointT>() );
+      
+      reader.read ( *fileback_name_ , *cloud);
+      
+      for(size_t i=0; i < cloud->points.size (); i++)
+        v.push_back (cloud->points[i]);
+      
+/* //reinsert this when adding backward compatability (version <= 2)
       //this can never happen.
       if (start < filelen_)
       {
@@ -291,8 +321,6 @@ namespace pcl
       int seekret = _fseeki64 (f, filestart * static_cast<uint64_t>(sizeof(PointT)), SEEK_SET);
       assert (seekret == 0);
 
-      //read at most 2e12 elements at a time; mystery constant again
-
       for (uint64_t pos = 0; pos < filecount; pos += READ_BLOCK_SIZE_)
       {
         if ((pos + READ_BLOCK_SIZE_) < filecount)
@@ -310,15 +338,16 @@ namespace pcl
       }
 
       fclose (f);
-
+*/
       //copy the extra
-      if (buffstart != -1)
+      if (cloud->points.size () < count && !writebuff_.empty () )
       {
-        typename AlignedPointTVector::const_iterator start = writebuff_.begin ();
-        typename AlignedPointTVector::const_iterator end = writebuff_.begin ();
 
-        std::advance (start, buffstart);
-        std::advance (end, buffstart + buffcount);
+        typename AlignedPointTVector::const_iterator start = writebuff_.begin ();
+        typename AlignedPointTVector::const_iterator end = writebuff_.end ();
+
+        std::advance (start, 0);
+        std::advance (end, writebuff_.size ());
 
         v.insert (v.end (), start, end);
       }
@@ -510,7 +539,7 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename PointT> inline void
+    template<typename PointT> void
     octree_disk_container<PointT>::push_back (const PointT& p)
     {
       writebuff_.push_back (p);
@@ -521,33 +550,123 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename PointT> inline void
-    octree_disk_container<PointT>::insertRange (const PointT* start, const uint64_t count)
+    template<typename PointT> void
+    octree_disk_container<PointT>::insertRange (const AlignedPointTVector& p)
     {
-
-//      FileWriter<PointT> writer;
-
-      //open the file for appending binary
-      FILE* f = fopen (fileback_name_->c_str (), "a+b");
-
-      //write at most WRITE_BUFF_MAX_/sizeof(PointT) points at a time
-
-      for (uint64_t pos = 0; pos < count; pos += WRITE_BUFF_MAX_)
+      const uint64_t count = p.size ();
+      
+      typename pcl::PointCloud<PointT>::Ptr tmp_cloud (new pcl::PointCloud<PointT> () );
+      
+      //if there's a pcd file with data          
+      if ( boost::filesystem::exists ( *fileback_name_ ) )
       {
-        const PointT* loc = start + pos;
-        if ((pos + WRITE_BUFF_MAX_) < count)
-        {
-          assert (fwrite (loc, sizeof(PointT), WRITE_BUFF_MAX_, f) == WRITE_BUFF_MAX_);
-        }
-        else
-        {
-          assert (fwrite (loc, sizeof(PointT), static_cast<size_t> (count - pos), f) == count - pos);
-        }
+        //open the existing file
+        pcl::PCDReader reader;
+        assert ( reader.read ( *fileback_name_, *tmp_cloud) == 0 );
+      }
+      else //otherwise create the point cloud which will be saved to the pcd file for the first time
+      {
+        tmp_cloud->width = count + writebuff_.size ();
+        tmp_cloud->height = 1;
+      }            
+
+      for(size_t i=0; i<p.size (); i++)
+        tmp_cloud->points.push_back (p[i]);
+      
+      //if there are any points in the write cache writebuff_, a different write cache than this one, concatenate
+      for ( size_t i = 0; i < writebuff_.size (); i++ )
+      {
+        tmp_cloud->points.push_back ( writebuff_ [i] );
       }
 
-      //	int closeret = fclose(f);
-      fclose (f);
+      //assume unorganized point cloud
+      tmp_cloud->width = tmp_cloud->points.size ();
+            
+      //save and close
+      PCDWriter writer;
 
+      /// \todo allow appending to pcd file without loading all of the point data into memory
+      assert ( writer.write ( *fileback_name_, *tmp_cloud, false) == 0 );
+        
+    }
+  
+////////////////////////////////////////////////////////////////////////////////
+
+    template<typename PointT> void
+    octree_disk_container<PointT>::insertRange (const PointT* start, const uint64_t count)
+    {
+      ///\todo standardize the interface for writing points to disk with this class
+
+      //variables which ultimately need to be global
+      int outofcore_v = 3;
+      //only flush the write buffer if there are enough points for it
+      //to be worth the seek the tradeoff here is RAM; sorting first,
+      //then dumping to nodes would be more efficient for disk I/O
+      int flush_size = 1000;
+
+      if( outofcore_v >= 3)
+      {
+        typename pcl::PointCloud<PointT>::Ptr tmp_cloud (new pcl::PointCloud<PointT> () );
+
+        //if there's a pcd file with data          
+        if ( boost::filesystem::exists ( *fileback_name_ ) )
+        {
+          pcl::PCDReader reader;
+          //open it
+          assert ( reader.read (fileback_name_->c_str (), *tmp_cloud) == 0 );
+        }
+        else //otherwise create the pcd file
+        {
+          tmp_cloud->width = count + writebuff_.size ();
+          tmp_cloud->height = 1;
+        }            
+
+        //add any points in the cache
+        for ( size_t i = 0; i < writebuff_.size (); i++ )
+        {
+          tmp_cloud->points.push_back ( writebuff_ [i] );
+        }
+
+        //add the new points passed with this function
+        for ( size_t i = 0; i < count; i++ )
+        {
+          tmp_cloud->points.push_back ( *(start + i ) );
+        }
+
+        tmp_cloud->width = tmp_cloud->points.size ();
+        tmp_cloud->height = 1;
+            
+        //save and close
+        PCDWriter writer;
+
+        /// \todo allow appending to pcd file without loading all of the point data into memory
+        assert ( writer.write ( *fileback_name_, *tmp_cloud, false) == 0 );
+        
+      }
+      else //less than version 3
+      {
+        
+        //open the file for appending binary
+        FILE* f = fopen (fileback_name_->c_str (), "a+b");
+        assert ( f != NULL );
+
+        for (uint64_t pos = 0; pos < count; pos += WRITE_BUFF_MAX_)
+        {
+          const PointT* loc = start + pos;
+          if ((pos + WRITE_BUFF_MAX_) < count)
+          {
+            assert (fwrite (loc, sizeof(PointT), WRITE_BUFF_MAX_, f) == WRITE_BUFF_MAX_);
+          }
+          else
+          {
+            assert (fwrite (loc, sizeof(PointT), static_cast<size_t> (count - pos), f) == count - pos);
+          }
+        }
+
+        //	int closeret = fclose(f);
+        assert ( fclose (f) == 0 );
+      }
+      
       filelen_ += count;
     }
 ////////////////////////////////////////////////////////////////////////////////

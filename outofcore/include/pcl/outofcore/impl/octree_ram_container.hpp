@@ -97,8 +97,8 @@ namespace pcl
     {
       container_.insert (container_.end (), start, start + count);
     }
-////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////
     template<typename PointT> inline void
     octree_ram_container<PointT>::insertRange (const PointT* const * start, const boost::uint64_t count)
     {
@@ -116,20 +116,8 @@ namespace pcl
     octree_ram_container<PointT>::readRange (const boost::uint64_t start, const boost::uint64_t count,
                                              AlignedPointTVector& v)
     {
-      /*
-        v.resize(count);
-
-        auto start_it = container.cbegin();
-        std::advance(start_it, start);
-        auto end_it = container.cbegin();
-        std::advance(end_it, start+count);
-
-        v.assign(start_it, end_it);
-      */
-
       v.resize (count);
       memcpy (v.data (), container_.data () + start, count * sizeof(PointT));
-
     }
 ////////////////////////////////////////////////////////////////////////////////
 
