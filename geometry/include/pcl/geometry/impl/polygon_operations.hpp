@@ -1,15 +1,54 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Copyright (c) 2010, Willow Garage, Inc.
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
 #ifndef PCL_GEOMETRY_POLYGON_OPERATIONS_HPP_
 #define PCL_GEOMETRY_POLYGON_OPERATIONS_HPP_
+
 #include <pcl/geometry/polygon_operations.h>
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
 pcl::approximatePolygon (const PlanarPolygon<PointT>& polygon, PlanarPolygon<PointT>& approx_polygon, float threshold, bool refine, bool closed)
 {
   const Eigen::Vector4f& coefficients = polygon.getCoefficients ();
   const typename pcl::PointCloud<PointT>::VectorType &contour = polygon.getContour ();
   
-  Eigen::Vector3f rotation_axis = Eigen::Vector3f(coefficients[1], -coefficients[0], 0).normalized ();
-  float rotation_angle = acos(coefficients [2]);
+  Eigen::Vector3f rotation_axis (coefficients[1], -coefficients[0], 0.0f);
+  rotation_axis.normalize ();
+
+  float rotation_angle = acosf (coefficients [2]);
   Eigen::Affine3f transformation = Eigen::Translation3f (0, 0, coefficients [3]) * Eigen::AngleAxisf (rotation_angle, rotation_axis);
 
   typename pcl::PointCloud<PointT>::VectorType polygon2D (contour.size ());
@@ -27,6 +66,7 @@ pcl::approximatePolygon (const PlanarPolygon<PointT>& polygon, PlanarPolygon<Poi
     approx_contour [pIdx].getVector3fMap () = inv_transformation * approx_polygon2D [pIdx].getVector3fMap ();
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::approximatePolygon2D (const typename pcl::PointCloud<PointT>::VectorType &polygon, 
                            typename pcl::PointCloud<PointT>::VectorType &approx_polygon, 
@@ -45,7 +85,7 @@ pcl::approximatePolygon2D (const typename pcl::PointCloud<PointT>::VectorType &p
     for (unsigned idx = 1; idx < polygon.size (); ++idx)
     {
       float distance = (polygon [0].x - polygon [idx].x) * (polygon [0].x - polygon [idx].x) + 
-                      (polygon [0].y - polygon [idx].y) * (polygon [0].y - polygon [idx].y) ;
+                       (polygon [0].y - polygon [idx].y) * (polygon [0].y - polygon [idx].y);
 
       if (distance > max_distance)
       {
@@ -57,7 +97,7 @@ pcl::approximatePolygon2D (const typename pcl::PointCloud<PointT>::VectorType &p
     for (unsigned idx = 1; idx < polygon.size (); ++idx)
     {
       float distance = (polygon [interval.second].x - polygon [idx].x) * (polygon [interval.second].x - polygon [idx].x) + 
-                      (polygon [interval.second].y - polygon [idx].y) * (polygon [interval.second].y - polygon [idx].y) ;
+                       (polygon [interval.second].y - polygon [idx].y) * (polygon [interval.second].y - polygon [idx].y);
 
       if (distance > max_distance)
       {
@@ -76,7 +116,7 @@ pcl::approximatePolygon2D (const typename pcl::PointCloud<PointT>::VectorType &p
   else
   {
     interval.first = 0;
-    interval.second = polygon.size () - 1;
+    interval.second = static_cast<unsigned int> (polygon.size ()) - 1;
     intervals.push_back (interval);
   }
   
@@ -84,7 +124,7 @@ pcl::approximatePolygon2D (const typename pcl::PointCloud<PointT>::VectorType &p
   // recursively refine
   while (!intervals.empty ())
   {
-    std::pair<unsigned, unsigned>& currentInterval = intervals.back();
+    std::pair<unsigned, unsigned>& currentInterval = intervals.back ();
     float line_x = polygon [currentInterval.first].y - polygon [currentInterval.second].y;
     float line_y = polygon [currentInterval.second].x - polygon [currentInterval.first].x;
     float line_d = polygon [currentInterval.first].x * polygon [currentInterval.second].y - polygon [currentInterval.first].y * polygon [currentInterval.second].x;
@@ -100,12 +140,12 @@ pcl::approximatePolygon2D (const typename pcl::PointCloud<PointT>::VectorType &p
     unsigned max_index = 0;
 
     // => 0-crossing
-    if( currentInterval.first > currentInterval.second )
+    if (currentInterval.first > currentInterval.second)
     {
-      for( unsigned idx = first_index; idx < polygon.size(); idx++ )
+      for (unsigned idx = first_index; idx < polygon.size(); idx++)
       {
-        float distance = fabs( line_x * polygon[idx].x + line_y * polygon[idx].y + line_d );
-        if( distance > max_distance )
+        float distance = fabsf (line_x * polygon[idx].x + line_y * polygon[idx].y + line_d);
+        if (distance > max_distance)
         {
           max_distance = distance;
           max_index  = idx;
@@ -114,17 +154,17 @@ pcl::approximatePolygon2D (const typename pcl::PointCloud<PointT>::VectorType &p
       first_index = 0;
     }
 
-    for( int idx = first_index; idx < currentInterval.second; idx++ )
+    for (unsigned int idx = first_index; idx < currentInterval.second; idx++)
     {
-      float distance = fabs( line_x * polygon[idx].x + line_y * polygon[idx].y + line_d );
-      if( distance > max_distance )
+      float distance = fabsf (line_x * polygon[idx].x + line_y * polygon[idx].y + line_d);
+      if (distance > max_distance)
       {
         max_distance = distance;
         max_index  = idx;
       }
     }
 
-    if( max_distance > threshold )
+    if (max_distance > threshold)
     {
       std::pair<unsigned, unsigned> interval (max_index, currentInterval.second);
       currentInterval.second = max_index;
@@ -154,7 +194,7 @@ pcl::approximatePolygon2D (const typename pcl::PointCloud<PointT>::VectorType &p
       unsigned num_points = 0;
       if (pIdx > result[nIdx])
       {
-        num_points = polygon.size () - pIdx;
+        num_points = static_cast<unsigned> (polygon.size ()) - pIdx;
         for (; pIdx < polygon.size (); ++pIdx)
         {
           covariance.coeffRef (0) += polygon [pIdx].x * polygon [pIdx].x;
@@ -178,7 +218,7 @@ pcl::approximatePolygon2D (const typename pcl::PointCloud<PointT>::VectorType &p
       
       covariance.coeffRef (2) = covariance.coeff (1);
       
-      float norm = 1.0f / float(num_points);
+      float norm = 1.0f / float (num_points);
       centroid *= norm;
       covariance *= norm;
       covariance.coeffRef (0) -= centroid [0] * centroid [0];
@@ -255,4 +295,5 @@ pcl::approximatePolygon2D (const typename pcl::PointCloud<PointT>::VectorType &p
       approx_polygon.push_back (polygon [*it]);
   }
 }
+
 #endif // PCL_GEOMETRY_POLYGON_OPERATIONS_HPP_
