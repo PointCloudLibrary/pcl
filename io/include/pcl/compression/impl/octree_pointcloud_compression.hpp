@@ -108,7 +108,7 @@ namespace pcl
       // initialize color encoding
       colorCoder_.initializeEncoding ();
       colorCoder_.setPointCount (static_cast<unsigned int> (cloud_arg->points.size ()));
-      colorCoder_.setVoxelCount (this->leafCount_);
+      colorCoder_.setVoxelCount (static_cast<unsigned int> (this->leafCount_));
 
       // initialize point encoding
       pointCoder_.initializeEncoding ();
