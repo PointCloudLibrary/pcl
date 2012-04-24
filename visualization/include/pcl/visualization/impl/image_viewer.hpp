@@ -140,4 +140,94 @@ pcl::visualization::ImageViewer::addMask (
   return (true);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+template <typename T> bool
+pcl::visualization::ImageViewer::addPlanarPolygon (
+    const typename pcl::PointCloud<T>::ConstPtr &image,
+    const pcl::PlanarPolygon<T> &polygon, 
+    double r, double g, double b,
+    const std::string &layer_id, double opacity)
+{
+  // We assume that the data passed into image is organized, otherwise this doesn't make sense
+  if (!image->isOrganized ())
+    return (false);
+
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  if (am_it == layer_map_.end ())
+  {
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addPlanarPolygon] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
+    am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
+  }
+
+  am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
+
+  // Construct a search object to get the camera parameters
+  pcl::search::OrganizedNeighbor<T> search;
+  search.setInputCloud (image);
+  for (size_t i = 0; i < polygon.getContour ().points.size () - 1; ++i)
+  {
+    pcl::PointXY p1, p2;
+    search.projectPoint (polygon.getContour ()[i], p1);
+    search.projectPoint (polygon.getContour ()[i+1], p2);
+
+    am_it->canvas->DrawSegment (int (p1.x), int (float (image->height) - p1.y),
+                                int (p2.x), int (float (image->height) - p2.y));
+  }
+
+  // Close the polygon
+  pcl::PointXY p1, p2;
+  search.projectPoint (polygon.getContour ()[polygon.getContour ().size () - 1], p1);
+  search.projectPoint (polygon.getContour ()[0], p2);
+
+  am_it->canvas->DrawSegment (int (p1.x), int (float (image->height) - p1.y),
+                              int (p2.x), int (float (image->height) - p2.y));
+ 
+  return (true);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+template <typename T> bool
+pcl::visualization::ImageViewer::addPlanarPolygon (
+    const typename pcl::PointCloud<T>::ConstPtr &image,
+    const pcl::PlanarPolygon<T> &polygon, 
+    const std::string &layer_id, double opacity)
+{
+  // We assume that the data passed into image is organized, otherwise this doesn't make sense
+  if (!image->isOrganized ())
+    return (false);
+
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  if (am_it == layer_map_.end ())
+  {
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addPlanarPolygon] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
+    am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
+  }
+
+  am_it->canvas->SetDrawColor (255.0, 0.0, 0.0, opacity * 255.0);
+
+  // Construct a search object to get the camera parameters
+  pcl::search::OrganizedNeighbor<T> search;
+  search.setInputCloud (image);
+  for (size_t i = 0; i < polygon.getContour ().size () - 1; ++i)
+  {
+    pcl::PointXY p1, p2;
+    search.projectPoint (polygon.getContour ()[i], p1);
+    search.projectPoint (polygon.getContour ()[i+1], p2);
+
+    am_it->canvas->DrawSegment (int (p1.x), int (float (image->height) - p1.y),
+                                int (p2.x), int (float (image->height) - p2.y));
+  }
+
+  // Close the polygon
+  pcl::PointXY p1, p2;
+  search.projectPoint (polygon.getContour ()[polygon.getContour ().size () - 1], p1);
+  search.projectPoint (polygon.getContour ()[0], p2);
+
+  am_it->canvas->DrawSegment (int (p1.x), int (float (image->height) - p1.y),
+                              int (p2.x), int (float (image->height) - p2.y));
+   return (true);
+}
+
 #endif      // PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_

@@ -490,9 +490,9 @@ namespace pcl
         /** \brief Add a generic 2D mask to an image 
           * \param[in] image the organized point cloud dataset containing the image data
           * \param[in] mask the point data representing the mask that we want to draw
-          * \param[in] r the red channel of the color that the line should be rendered with 
-          * \param[in] g the green channel of the color that the line should be rendered with
-          * \param[in] b the blue channel of the color that the line should be rendered with
+          * \param[in] r the red channel of the color that the mask should be rendered with 
+          * \param[in] g the green channel of the color that the mask should be rendered with
+          * \param[in] b the blue channel of the color that the mask should be rendered with
           * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn.
           * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
           */
@@ -510,6 +510,32 @@ namespace pcl
         template <typename T> bool
         addMask (const typename pcl::PointCloud<T>::ConstPtr &image, const pcl::PointCloud<T> &mask, 
                  const std::string &layer_id = "image_mask", double opacity = 0.5);
+
+        /** \brief Add a generic 2D planar polygon to an image 
+          * \param[in] image the organized point cloud dataset containing the image data
+          * \param[in] polygon the point data representing the polygon that we want to draw. 
+          * A line will be drawn from each point to the next in the dataset.
+          * \param[in] r the red channel of the color that the polygon should be rendered with 
+          * \param[in] g the green channel of the color that the polygon should be rendered with
+          * \param[in] b the blue channel of the color that the polygon should be rendered with
+          * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn.
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          */
+        template <typename T> bool
+        addPlanarPolygon (const typename pcl::PointCloud<T>::ConstPtr &image, const pcl::PlanarPolygon<T> &polygon, 
+                          double r, double g, double b, 
+                          const std::string &layer_id = "planar_polygon", double opacity = 0.5);
+
+        /** \brief Add a generic 2D planar polygon to an image 
+          * \param[in] image the organized point cloud dataset containing the image data
+          * \param[in] polygon the point data representing the polygon that we want to draw. 
+          * A line will be drawn from each point to the next in the dataset.
+          * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn.
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          */
+        template <typename T> bool
+        addPlanarPolygon (const typename pcl::PointCloud<T>::ConstPtr &image, const pcl::PlanarPolygon<T> &polygon, 
+                          const std::string &layer_id = "planar_polygon", double opacity = 0.5);
 
         /** \brief Add a new 2D rendering layer to the viewer. 
           * \param[in] layer_id the name of the layer
