@@ -54,7 +54,7 @@ pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::resample ()
   // initializing for sampling without replacement
   std::vector<int> a (particles_->points.size ());
   std::vector<double> q (particles_->points.size ());
-  this->genAliasTable (a, q, particles_);
+  genAliasTable (a, q, particles_);
   
   const std::vector<double> zero_mean (StateT::stateDimension (), 0.0);
   
