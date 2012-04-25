@@ -9,17 +9,15 @@ namespace pcl
 {
   namespace device
   {
-    __global__ void c2dKernel(const PtrSz<float8> cloud, int cols, PtrStep<unsigned short> depth)
+    __global__ void c2dKernel(const PtrStepSz<float8> cloud, PtrStep<unsigned short> depth)
     {
-      int idx = threadIdx.x + blockIdx.x * blockDim.x;
+      int x = threadIdx.x + blockIdx.x * blockDim.x;
+      int y = threadIdx.x + blockIdx.x * blockDim.x;
 
-      if (idx < cloud.size)
+      if (x < cloud.cols && y < cloud.rows)
       {
-        float d = cloud.data[idx].z * 1000; // m -> mm
-        d = isnan(d) ? 0 : d;
-
-        int x = idx % cols;
-        int y = idx / cols;
+        float d = cloud.ptr(y)[x].z * 1000; // m -> mm
+        d = isnan(d) ? 0 : d;        
         depth.ptr(y)[x] = d;
       }
     }
@@ -27,14 +25,17 @@ namespace pcl
 }
 
 void 
-pcl::device::convertCloud2Depth(const DeviceArray<float8>& cloud, int rows, int cols, Depth& depth)
+pcl::device::convertCloud2Depth(const DeviceArray2D<float8>& cloud, Depth& depth)
 {
+  int cols = cloud.cols();
+  int rows = cloud.rows();
+
   depth.create(rows, cols);
 
-  int block = 256;
-  int total = (int)cloud.size();
-
-  c2dKernel<<<divUp(total, block), block>>>(cloud, cols, depth);
+  dim3 block(32, 8);
+  dim3 grid(divUp(cols, block.x), divUp(rows, block.y));
+  
+  c2dKernel<<<grid, block>>>(cloud, depth);
   cudaSafeCall( cudaGetLastError() );
   cudaSafeCall( cudaThreadSynchronize() );
 }
@@ -116,13 +117,14 @@ void pcl::device::Dilatation::prepareRect5x5Kernel(DeviceArray<unsigned char>& k
   if (kernel.size() == KSIZE_X * KSIZE_Y)
     return;
 
-  std::vector<unsigned char> host(KSIZE_X * KSIZE_Y, (unsigned char)1);
+  std::vector<unsigned char> host(KSIZE_X * KSIZE_Y, (unsigned char)255);
   kernel.upload(host);
 }
 
 void pcl::device::Dilatation::invoke(const Mask& src, const Kernel& kernel, Mask& dst)
 {
   dst.create(src.rows(), src.cols());  
+  setZero(dst);
 
   NppiSize sz;
   sz.width  = src.cols() - KSIZE_X;
@@ -155,7 +157,7 @@ namespace pcl
       if (x < depth1.cols && y < depth1.rows)
       {
         unsigned short d = depth1.ptr(y)[x];
-        depth2.ptr(y)[x] = inv_mask.ptr(y)[x] ? d : numeric_limits<short>::max();
+        depth2.ptr(y)[x] = inv_mask.ptr(y)[x] ? d : numeric_limits<unsigned short>::max();
       }
     }
   }

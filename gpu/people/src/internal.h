@@ -49,23 +49,36 @@ namespace pcl
   namespace device
   {
     typedef DeviceArray2D<unsigned short> Depth;
-    typedef DeviceArray2D<unsigned char> Labels;
-    typedef DeviceArray2D<uchar4> Image;
+    typedef DeviceArray2D<unsigned char> Labels;    
     typedef DeviceArray2D<unsigned char> Mask;
+    typedef DeviceArray2D<uchar4> Image;
+    typedef DeviceArray2D<float> Hue;
 
     struct float8
     {
        float x, y, z, w, f1, f2, f3, f4;
     };
 
-    void convertCloud2Depth(const DeviceArray<float8>& cloud, int rows, int cols, Depth& depth);
+     
+    struct Intr
+    {
+      float fx, fy, cx, cy;
+      Intr () {}
+      Intr (float fx_, float fy_, float cx_, float cy_) : fx(fx_), fy(fy_), cx(cx_), cy(cy_) {}
+    };
+        
+    void convertCloud2Depth(const DeviceArray2D<float8>& cloud, Depth& depth);
     void smoothLabelImage(const Labels& src, const Depth& depth, Labels& dst, int num_parts, int  patch_size, int depthThres);
     void colorLMap(const Labels& labels, const DeviceArray<uchar4>& cmap, Image& rgb);
 
     void setZero(Mask& mask);
     void prepareForeGroundDepth(const Depth& depth1, Mask& inverse_mask, Depth& depth2);
 
-    void shs(const DeviceArray<float8> &cloud, float tolerance, const std::vector<int>& indices_in, float delta_hue, Mask& indices_out);
+
+    float computeHue(int rgba);
+    void  computeHueWithNans(const Image& image, const Depth& depth, Hue& hue);
+
+    void shs(const DeviceArray2D<float8> &cloud, float tolerance, const std::vector<int>& indices_in, float delta_hue, Mask& indices_out);
 
     struct Dilatation
     {

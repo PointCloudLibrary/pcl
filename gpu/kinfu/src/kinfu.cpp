@@ -109,8 +109,8 @@ pcl::gpu::KinfuTracker::setDepthIntrinsics (float fx, float fy, float cx, float 
 {
   fx_ = fx;
   fy_ = fy;
-  cx_ = (cx == -1) ? cols_/2 : cx;
-  cy_ = (cy == -1) ? rows_/2 : cy;  
+  cx_ = (cx == -1) ? cols_/2-0.5f : cx;
+  cy_ = (cy == -1) ? rows_/2-0.5f : cy;  
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

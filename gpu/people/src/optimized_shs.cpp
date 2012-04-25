@@ -37,10 +37,8 @@
  * @author: Anatoly Baksheev
  */
 
-#ifndef PCL_GPU_PEOPLE_OPTIMIZED_SHS_H_
-#define PCL_GPU_PEOPLE_OPTIMIZED_SHS_H_
 #include "searchD.h"
-
+#include "internal.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -121,7 +119,7 @@ void optimized_shs2(const PointCloud<PointXYZRGB> &cloud, float tolerance, const
     std::vector<int> nn_indices;
     std::vector<float> nn_distances;
 
-    SearchD search;
+    SearchD<PointXYZRGB> search;
     search.setInputCloud(cloud.makeShared());
 
     // Process all points in the indices vector
@@ -213,7 +211,7 @@ void optimized_shs3(const PointCloud<PointXYZRGB> &cloud, float tolerance, const
     // Create a bool vector of processed point indices, and initialize it to false
     std::vector<char> processed (cloud.points.size (), 0);
 
-    SearchD search;
+    SearchD<PointXYZRGB> search;
     search.setInputCloud(cloud.makeShared());
 
     vector< vector<int> > storage(100);
@@ -292,43 +290,29 @@ void optimized_shs3(const PointCloud<PointXYZRGB> &cloud, float tolerance, const
 }
 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+
 #include <pcl/common/time.h>
 
-void optimized_shs4(const PointCloud<PointXYZRGB> &cloud, float tolerance, const PointIndices &indices_in, cv::Mat flowermat, float delta_hue)
-{
-    cv::Mat huebuf(cloud.height, cloud.width, CV_32F);
-    float *hue = huebuf.ptr<float>();
+void optimized_shs4(const PointCloud<PointXYZ> &cloud, const float *hue, float tolerance, const PointIndices &indices_in, cv::Mat flowermat, float delta_hue)
+{        
+    unsigned char *mask = flowermat.ptr<unsigned char>();        
 
-    
-    {
-        //ScopeTime time("aaa");
-    for(size_t i = 0; i < cloud.points.size(); ++i)
-    {
-        PointXYZHSV h;
-        PointXYZRGB p = cloud.points[i];
-        PointXYZRGBtoXYZHSV(p, h);
-        hue[i] = h.h;
-    }    
-
-    
-    }
-
-    unsigned char *mask = flowermat.ptr<unsigned char>();
-
-    
-    
-
-    SearchD search;
-
-    {  //ScopeTime time("bbb");
+    SearchD<PointXYZ> search;    
     search.setInputCloud(cloud.makeShared());
-    }
-
+    
     vector< vector<int> > storage(100);
 
     // Process all points in the indices vector
+    int total = static_cast<int> (indices_in.indices.size ());
 #pragma omp parallel for
-    for (int k = 0; k < static_cast<int> (indices_in.indices.size ()); ++k)
+    for (int k = 0; k < total; ++k)
     {
         int i = indices_in.indices[k];
         if (mask[i])
@@ -343,13 +327,13 @@ void optimized_shs4(const PointCloud<PointXYZRGB> &cloud, float tolerance, const
         int sq_idx = 0;
         seed_queue.push_back (i);
 
-        PointXYZRGB p = cloud.points[i];
+        PointXYZ p = cloud.points[i];
         float h = hue[i];
 
         while (sq_idx < (int)seed_queue.size ())
         {
             int index = seed_queue[sq_idx];
-            const PointXYZRGB& q = cloud.points[index];
+            const PointXYZ& q = cloud.points[index];
 
             if(!isFinite (q))
                 continue;
@@ -387,21 +371,93 @@ void optimized_shs4(const PointCloud<PointXYZRGB> &cloud, float tolerance, const
             }
             sq_idx++;
 
-        }
-        // Copy the seed queue into the output indices
-        //int id = omp_get_thread_num();
-        //storage[id].insert(storage[id].end(), seed_queue.begin(), seed_queue.end());
-    }
-
-    /*indices_out.indices.clear();
-    for(size_t i = 0; i < storage.size(); ++i)
-        indices_out.indices.insert(indices_out.indices.begin(), storage[i].begin(), storage[i].end());
-
-    std::sort (indices_out.indices.begin (), indices_out.indices.end ());
-    indices_out.indices.erase(std::unique(indices_out.indices.begin (), indices_out.indices.end ()), indices_out.indices.end());*/
+        }        
+    }    
 }
 
 
 
+#include "compute_search_radius.h"
 
-#endif // PCL_GPU_PEOPLE_OPTIMIZED_SHS_H_
+
+void optimized_shs5(const PointCloud<PointXYZ> &cloud, const float *hue, float tolerance, const PointIndices &indices_in, cv::Mat flowermat, float delta_hue)
+{
+    int rows = 480;
+    int cols = 640;
+    device::Intr intr(525, 525, cols/2-0.5f, rows/2-0.5f);
+
+    unsigned char *mask = flowermat.ptr<unsigned char>();        
+    
+    vector< vector<int> > storage(100);
+
+    // Process all points in the indices vector
+    int total = static_cast<int> (indices_in.indices.size ());
+#pragma omp parallel for
+    for (int k = 0; k < total; ++k)
+    {
+        int i = indices_in.indices[k];
+        if (mask[i])
+            continue;
+
+        mask[i] = 255;
+
+        int id = omp_get_thread_num();
+        std::vector<int>& seed_queue = storage[id];
+        seed_queue.clear();
+        seed_queue.reserve(cloud.size());
+        int sq_idx = 0;
+        seed_queue.push_back (i);
+
+        PointXYZ p = cloud.points[i];
+        float h = hue[i];
+
+        while (sq_idx < (int)seed_queue.size ())
+        {
+            int index = seed_queue[sq_idx];
+            const PointXYZ& q = cloud.points[index];
+
+            if(!isFinite (q))
+                continue;
+
+            // search window            
+            double squared_radius = tolerance * tolerance;
+
+            int left, right, top, bottom;
+            getProjectedRadiusSearchBox(rows, cols, intr, q, squared_radius, left, right, top, bottom);
+            
+            unsigned yEnd  = (bottom + 1) * cloud.width + right + 1;
+            unsigned idx  = top * cloud.width + left;
+            unsigned skip = cloud.width - right + left - 1;
+            unsigned xEnd = idx - left + right + 1;
+
+            for (; xEnd != yEnd; idx += skip, xEnd += cloud.width)
+            {
+                for (; idx < xEnd; ++idx)
+                {
+                    if (mask[idx])
+                        continue;
+
+                    if (sqnorm(cloud.points[idx], q) <= squared_radius)
+                    {
+                        float h_l = hue[idx];
+
+                        if (fabs(h_l - h) < delta_hue)
+                        {
+                            if(idx & 1)
+                              seed_queue.push_back (idx);
+                            mask[idx] = 255;
+                        }
+
+                    }
+                }
+            }
+            sq_idx++;
+
+        }        
+    }       
+         
+
+                                            
+
+}
+

@@ -67,59 +67,46 @@ namespace pcl
           typedef boost::shared_ptr<OtherDetector> Ptr;
       };
 
+
+      PCL_EXPORTS float estimateFocalLength(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud);
+
+
       class PCL_EXPORTS PeopleDetector
       {
         public:
+          typedef boost::shared_ptr<PeopleDetector> Ptr;                              
 
-          typedef boost::shared_ptr<PeopleDetector> Ptr;
-          typedef pcl::PointXYZRGB InputPointT;
-
-          DeviceArray<InputPointT> cloud_device_;
-
-          typedef DeviceArray2D<unsigned short> Depth;
-          typedef DeviceArray2D<unsigned char> Labels;
-          typedef DeviceArray2D<unsigned char> Mask;
+          typedef pcl::PointXYZ PointType;
+          typedef DeviceArray2D<unsigned short> Depth;                    
           typedef DeviceArray2D<pcl::RGB> Image;
 
-          Depth depth_device_;
-          Depth depth_device2_;
-          Mask fg_mask_;
-          Mask fg_mask_grown_;
-
+                
           RDFBodyPartsDetector::Ptr rdf_detector_;
           FaceDetector::Ptr face_detector_;
           OtherDetector::Ptr other_detector_;
           PersonAttribs::Ptr person_attribs_;
 
           /** \brief Class constructor. */
-          PeopleDetector () : number_of_parts_(25), delta_hue_tolerance_(5),
-                  do_shs_(true), dilation_size_(2)
-          {
-            allocate_buffers(480, 640);
-          }
+          PeopleDetector();
+          
 
           /** \brief Class destructor. */
-          ~PeopleDetector () {}
+          ~PeopleDetector () {}                   
 
-          //// PUBLIC METHODS /////
-
-          /** \brief The actuall processing callback */
+          /** \brief User must set non standard intrinsics */
           void
-          process (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud);
+          setIntrinsics (float fx, float fy, float cx = -1, float cy = -1);                    
 
-          /** \brief Set the number of body parts used in the RDF, defaults to 25 */
-          inline void
-          setNumberOfParts (unsigned int number_of_parts)
-          {
-            number_of_parts_ = number_of_parts;
-          }
-          /** \brief Get the number of body parts used in the RDF, defaults to 25 */
-          inline unsigned int
-          getNumberOfParts () const
-          {
-            return (number_of_parts_);
-          }
 
+          /** \brief Possible will be removed because of extra overheads */
+          void
+          process (const PointCloud<PointXYZRGB>::ConstPtr &cloud);
+
+
+          void 
+          process(const Depth& depth, const Image& rgba);
+         
+     
           /** \brief Set the tolerance for the delta on the Hue in Seeded Hue Segmentation step */
           inline void
           setDeltaHueTolerance (unsigned int delta_hue_tolerance)
@@ -146,31 +133,44 @@ namespace pcl
           {
             return (do_shs_);
           }
-          /** \brief Sets how much the results from SHS are dilated before annotating them */
-          inline void
-          setDilationSize (unsigned int dilation_size)
-          {
-            dilation_size_ = dilation_size;
-          }
-          /** \brief Returns the dilation size in second iteration */
-          inline unsigned int 
-          getDilationSize () const
-          {
-            return (dilation_size_);
-          }
-
+         
           /** \brief Class getName method. */
           virtual std::string getClassName () const { return "PeopleDetector"; }
 
-        public:
-          unsigned int  number_of_parts_;
+        public:       
+          typedef DeviceArray2D<unsigned char> Labels;
+          typedef DeviceArray2D<unsigned char> Mask;
+          typedef DeviceArray2D<float> Hue;
+
+          float fx_, fy_, cx_, cy_;
           unsigned int  delta_hue_tolerance_;
           bool          do_shs_;
-          unsigned int  dilation_size_;
-
+         
           DeviceArray<unsigned char> kernelRect5x5_;
 
-          void allocate_buffers(int rows, int cols);
+          PointCloud<PointType> cloud_host_;
+          PointCloud<float> hue_host_;
+          PointCloud<unsigned short> depth_host_;
+          
+          DeviceArray2D<PointType> cloud_device_;
+
+          Hue hue_device_;
+
+          Depth depth_device1_;
+          Depth depth_device2_;
+          
+          Mask fg_mask_;
+          Mask fg_mask_grown_;
+
+
+          void 
+          process();
+
+          void 
+          allocate_buffers(int rows = 480, int cols = 640);
+
+          //!!! only for debug purposes TODO: remove this. 
+          friend class PeoplePCDApp;
       };
     }
   }

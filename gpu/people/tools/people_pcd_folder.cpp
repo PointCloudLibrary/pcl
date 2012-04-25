@@ -96,8 +96,8 @@ public:
    savePNGFile(make_name(counter_, "ii"), *cloud);
    savePNGFile(make_name(counter_, "c2"), cmap);
    savePNGFile(make_name(counter_, "s2"), labels);
-   savePNGFile(make_name(counter_, "s1"), people_detector_.depth_device_);
-   savePNGFile(make_name(counter_, "s3"), people_detector_.depth_device2_);
+   savePNGFile(make_name(counter_, "d1"), people_detector_.depth_device1_);
+   savePNGFile(make_name(counter_, "d2"), people_detector_.depth_device2_);
  }
 
   int counter_;

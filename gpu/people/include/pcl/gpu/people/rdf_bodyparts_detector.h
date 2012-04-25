@@ -78,7 +78,7 @@ namespace pcl
 
         typedef std::vector<std::vector<label_skeleton::Blob2, Eigen::aligned_allocator<label_skeleton::Blob2> > > BlobMatrix;
 
-        void step2_selectBetterName(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud, int cluster_area_threshold, BlobMatrix& blobs);
+        void step2_selectBetterName(const PointCloud<PointXYZ>& cloud, int cluster_area_threshold, BlobMatrix& blobs);
         ////////////////////////////////////////////
 
         //getters
@@ -96,6 +96,12 @@ namespace pcl
 
         int max_cluster_size_;
         float cluster_tolerance_;
+
+        void optimized_elec4(const PointCloud<pcl::PointXYZ>& cloud, const cv::Mat& src_labels, float tolerance,
+                    std::vector<std::vector<PointIndices> > &labeled_clusters,
+                    unsigned int min_pts_per_cluster, unsigned int max_pts_per_cluster, unsigned int num_parts,
+                    bool brute_force_border, float radius_scale);
+
       };
     }
   }

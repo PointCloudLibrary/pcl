@@ -56,46 +56,115 @@ using namespace pcl::gpu::people;
 
 void optimized_shs2(const PointCloud<PointXYZRGB> &cloud, float tolerance, const PointIndices &indices_in, PointIndices &indices_out, float delta_hue);
 void optimized_shs3(const PointCloud<PointXYZRGB> &cloud, float tolerance, const PointIndices &indices_in, PointIndices &indices_out, float delta_hue);
-void optimized_shs4(const PointCloud<PointXYZRGB> &cloud, float tolerance, const PointIndices &indices_in, cv::Mat flowermat, float delta_hue);
+void optimized_shs4(const PointCloud<PointXYZ> &cloud, const float *hue, float tolerance, const PointIndices &indices_in, cv::Mat flowermat, float delta_hue);
+void optimized_shs5(const PointCloud<PointXYZ> &cloud, const float *hue, float tolerance, const PointIndices &indices_in, cv::Mat flowermat, float delta_hue);
 
-void pcl::gpu::people::PeopleDetector::allocate_buffers(int rows, int cols)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+pcl::gpu::people::PeopleDetector::PeopleDetector() 
+    : fx_(525.f), fy_(525.f), cx_(319.5f), cy_(239.5f), delta_hue_tolerance_(5), do_shs_(true)
 {
   // allocation buffers with default sizes
   // if input size is other than the defaults, 
   // then the buffers will be reallocated at processing time.
   // This cause only penalty for first frame ( one reallocation of each buffer )
+  allocate_buffers();
+}
 
-  cloud_device_.create(rows * cols);
+void
+pcl::gpu::people::PeopleDetector::setIntrinsics (float fx, float fy, float cx, float cy)
+{
+  fx_ = fx; fy_ = fy; cx_ = cx; cy_ = cy;
+}
 
-  depth_device_.create(rows, cols);
+void pcl::gpu::people::PeopleDetector::allocate_buffers(int rows, int cols)
+{ 
+  device::Dilatation::prepareRect5x5Kernel(kernelRect5x5_);  
+
+  cloud_host_.width  = cols;
+  cloud_host_.height = rows;
+  cloud_host_.points.resize(cols * rows);
+  cloud_host_.is_dense = false;
+
+  hue_host_.width  = cols;
+  hue_host_.height = rows;
+  hue_host_.points.resize(cols * rows);
+  hue_host_.is_dense = false;
+
+  depth_host_.width  = cols;
+  depth_host_.height = rows;
+  depth_host_.points.resize(cols * rows);
+  depth_host_.is_dense = false;
+
+  cloud_device_.create(rows, cols);
+  hue_device_.create(rows, cols);
+
+  depth_device1_.create(rows, cols);
   depth_device2_.create(rows, cols);
   fg_mask_.create(rows, cols);
   fg_mask_grown_.create(rows, cols);
 
-  device::Dilatation::prepareRect5x5Kernel(kernelRect5x5_);
+  
+}
+
+void pcl::gpu::people::PeopleDetector::process(const Depth& depth, const Image& rgba)
+{  
+  allocate_buffers(depth.rows(), depth.cols());
+
+  depth_device1_ = depth;
+
+  const device::Image& i = (const device::Image&)rgba;
+  device::computeHueWithNans(i, depth_device1_, hue_device_);  
+  //TODO compute cloud device on GPU using intrinsics; 
+  //TODO download cloud as some part of the algorithm are CPU only
+  
+  //TODO Hope this is temporary and after porting to GPU the download will be deleted
+  int c;
+  hue_device_.download(hue_host_.points, c);
+  
+  // uses cloud device, cloud host, depth device, hue device and other buffers
+  process();
 }
 
 void
 pcl::gpu::people::PeopleDetector::process (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
 {
-  int cols = cloud->width;
-  int rows = cloud->height;
+  allocate_buffers(cloud->height, cloud->width);
 
-  allocate_buffers(rows, cols);
+  const float qnan = std::numeric_limits<float>::quiet_NaN();
 
-  // Bring the pointcloud to the GPU memory
-  cloud_device_.upload(cloud->points);
+  for(size_t i = 0; i < cloud->points.size(); ++i)
+  {
+    cloud_host_.points[i].x = cloud->points[i].x;
+    cloud_host_.points[i].y = cloud->points[i].y;
+    cloud_host_.points[i].z = cloud->points[i].z;
 
-  // Convert the float z values to unsigned shorts, also converts from m to mm
-  const DeviceArray<device::float8>& c = (const DeviceArray<device::float8>&)cloud_device_;
-  device::convertCloud2Depth(c, rows, cols, depth_device_);
+    bool valid = isFinite(cloud_host_.points[i]);
 
+    hue_host_.points[i] = !valid ? qnan : device::computeHue(cloud->points[i].rgba);
+    depth_host_.points[i] = !valid ? 0 : static_cast<unsigned short>(cloud_host_.points[i].z * 1000); //m -> mm
+  }
+  cloud_device_.upload(cloud_host_.points, cloud_host_.width);
+  hue_device_.upload(hue_host_.points, hue_host_.width);
+  depth_device1_.upload(depth_host_.points, depth_host_.width);
+
+
+  // uses cloud device, cloud host, depth device, hue device and other buffers
+  process();
+}
+
+void
+pcl::gpu::people::PeopleDetector::process ()
+{
+  int cols = cloud_device_.cols();
+  int rows = cloud_device_.rows();
+      
   RDFBodyPartsDetector::BlobMatrix sorted;
 
   {
     ScopeTime time("ev1");
-    rdf_detector_->computeLabels(depth_device_);
-    rdf_detector_->step2_selectBetterName(cloud, AREA_THRES, sorted);
+    rdf_detector_->computeLabels(depth_device1_);
+    rdf_detector_->step2_selectBetterName(cloud_host_, AREA_THRES, sorted);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -104,39 +173,20 @@ pcl::gpu::people::PeopleDetector::process (const pcl::PointCloud<pcl::PointXYZRG
   {
     int c = 0;
     label_skeleton::Tree2 t;
-    label_skeleton::buildTree(sorted, *cloud, Neck, c, t);
-
-    cv::Mat mask(rows, cols, CV_8UC1, cv::Scalar(0));
-
-    label_skeleton::makeFGMaskFromPointCloud(mask, t.indices, *cloud);
-
+    label_skeleton::buildTree(sorted, cloud_host_, Neck, c, t);
+    
     const pcl::PointIndices& seed = t.indices;
-    // //////////////////////////////////////////////////////////////////////////////////////////////// //
-    // The second kdtree evaluation = seeded hue segmentation
-    // Reuse the fist searchtree for this, in order to NOT build it again!
-
-    cv::Mat flowermat(rows, cols, CV_8U, cv::Scalar(0));
-
-    //pcl::PointIndices flower;
+    
+    cv::Mat flowermat(rows, cols, CV_8U, cv::Scalar(0));    
     {
-      ScopeTime time("shs");
-    //pcl::seededHueSegmentation(cloud_in, stree, CLUST_TOL_SHS, seed, flower, DELTA_HUE_SHS);
-    //optimized_shs3(*cloud, CLUST_TOL_SHS, seed, flower, DELTA_HUE_SHS);
-      optimized_shs4(*cloud, CLUST_TOL_SHS, seed, flowermat, DELTA_HUE_SHS);
+      ScopeTime time("shs");    
+      optimized_shs5(cloud_host_, &hue_host_.points[0], CLUST_TOL_SHS, seed, flowermat, DELTA_HUE_SHS);
     }
-
-    //for(size_t i = 0; i < flower.indices.size(); i++)
-    //{
-    //  int index = flower.indices[i];
-    //  unsigned int y = index / cloud->width;
-    //  unsigned int x = index % cloud->width;
-    //  flowermat.at<unsigned char>(y,x) = 255;
-    //}
-
+    
     fg_mask_.upload(flowermat.data, flowermat.step, rows, cols);
     device::Dilatation::invoke(fg_mask_, kernelRect5x5_, fg_mask_grown_);
 
-    device::prepareForeGroundDepth(depth_device_, fg_mask_grown_, depth_device2_);
+    device::prepareForeGroundDepth(depth_device1_, fg_mask_grown_, depth_device2_);
 
     //// //////////////////////////////////////////////////////////////////////////////////////////////// //
     //// The second label evaluation
@@ -145,7 +195,7 @@ pcl::gpu::people::PeopleDetector::process (const pcl::PointCloud<pcl::PointXYZRG
     {
       ScopeTime time("ev2");
       rdf_detector_->computeLabels(depth_device2_);
-      rdf_detector_->step2_selectBetterName(cloud, AREA_THRES2, sorted2);
+      rdf_detector_->step2_selectBetterName(cloud_host_, AREA_THRES2, sorted2);
     }
 
     //brief Test if the second tree is build up correctly
@@ -153,7 +203,7 @@ pcl::gpu::people::PeopleDetector::process (const pcl::PointCloud<pcl::PointXYZRG
     {
       ScopeTime time("bt");
       label_skeleton::Tree2 t2;
-      label_skeleton::buildTree(sorted2, *cloud, Neck, c, t2);
+      label_skeleton::buildTree(sorted2, cloud_host_, Neck, c, t2);
       int par = 0;
       for(int f = 0; f < NUM_PARTS; f++)
       {

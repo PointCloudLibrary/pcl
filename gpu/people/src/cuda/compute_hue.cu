@@ -34,64 +34,87 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  * $Id: $
- * @author: Anatoly Baksheev
+ * @authors: Koen Buys, Anatoly Baksheev
+ *
  */
 
-#ifndef PCL_GPU_PEOPLE_SEARCHD_H_
-#define PCL_GPU_PEOPLE_SEARCHD_H_
+#include "internal.h"
+#include <pcl/gpu/utils/device/limits.hpp>
 
-#include <opencv2/core/core.hpp>
 
-#include <vector>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl/PointIndices.h>
-#include <pcl/search/pcl_search.h>
-#include <pcl/common/time.h>
-
-#include <pcl/point_types_conversion.h> // can't include because not inline function causes multiple definition errors
-//namespace pcl
-//{
-//   void PointXYZRGBtoXYZHSV (PointXYZRGB& in, PointXYZHSV& out);
-//}
-
-#include <iostream>
-#include <algorithm>
-#include <numeric>
-
-using namespace std;
-using namespace pcl;
-using namespace cv;
-
-namespace
+namespace pcl
 {
-    template<typename T>
-    class SearchD : public pcl::search::OrganizedNeighbor<T>
+  namespace device
+  {
+    __device__ __host__ __forceinline__ float computeHueFunc (int rgba)
     {
-    public:
-        typedef  pcl::search::OrganizedNeighbor<T> Base;
+      int r = (rgba      ) & 0xFF;
+      int g = (rgba >>  8) & 0xFF;
+      int b = (rgba >> 16) & 0xFF;
 
-        using Base::getProjectedRadiusSearchBox;
-        /** \brief the projection matrix. Either set by user or calculated by the first / each input cloud */
-        using Base::projection_matrix_;
-        /** \brief inveser of the left 3x3 projection matrix which is K * R (with K being the camera matrix and R the rotation matrix)*/
-        using Base::KR_;
-        /** \brief inveser of the left 3x3 projection matrix which is K * R (with K being the camera matrix and R the rotation matrix)*/
-        using Base::KR_KRT_;    
-    };
+      int v = max (r, max (g, b));
+      float h;
 
+      float div_inv = 1.f / (v - min (r, min (g, b)) );
 
-    template<typename PointT1, typename PointT2>
-    double sqnorm(const PointT1& p1, const PointT2& p2)
-    {
-        return (p1.getVector3fMap () - p2.getVector3fMap ()).squaredNorm ();
+      if (v == 0)
+          return -1;
+
+      if (r == v)
+          h = (    (g - b)) * div_inv;
+      else if (g == v)
+          h = (2 + (b - r)) * div_inv;
+      else 
+          h = (4 + (r - g)) * div_inv;
+
+      h *= 60;    
+      if (h < 0)
+          h += 360;
+
+      return h;
     }
 
-    template<typename It, typename Val>
-    void yota(It beg, It end, Val seed)
-    {
-        for(It pos = beg; pos < end;)
-            *pos++ = seed++;
-    }
+  }
 }
-#endif // PCL_GPU_PEOPLE_SEARCHD_H_
+
+float pcl::device::computeHue(int rgba) 
+{ 
+  return computeHueFunc(rgba); 
+}
+
+namespace pcl
+{
+  namespace device
+  {
+    __global__ void computeHueKernel(const PtrStepSz<int> rgba, const PtrStep<unsigned short> depth, PtrStep<float> hue)
+    {
+      int x = blockIdx.x * blockDim.x + threadIdx.x;
+      int y = blockIdx.y * blockDim.y + threadIdx.y;
+
+      if (x < rgba.cols && y < rgba.rows)
+      {
+        const float qnan = numeric_limits<float>::quiet_NaN();
+
+        unsigned short d = depth.ptr(y)[x];            
+        hue.ptr(y)[x] = (d == 0) ? qnan : computeHueFunc(rgba.ptr(y)[x]);           
+      }
+    }
+  }
+}
+
+void pcl::device::computeHueWithNans(const Image& rgba, const Depth& depth, Hue& hue)
+{
+  hue.create(rgba.rows(), rgba.cols());
+
+  dim3 block(32, 8);
+  dim3 grid;
+
+  grid.x = divUp(rgba.cols(), block.x);
+  grid.y = divUp(rgba.rows(), block.y);
+
+  computeHueKernel<<<grid, block>>>(rgba, depth, hue);
+
+  cudaSafeCall( cudaGetLastError() );
+  cudaSafeCall( cudaDeviceSynchronize() );
+}
+

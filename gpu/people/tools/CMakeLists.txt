@@ -17,10 +17,10 @@ include_directories(${VTK_INCLUDE_DIRS})
 #target_link_libraries (${the_target} pcl_common pcl_filters pcl_kdtree pcl_segmentation pcl_kdtree pcl_gpu_people pcl_filters pcl_io pcl_visualization)
 
 PCL_ADD_EXECUTABLE(people_pcd ${SUBSYS_NAME} people_pcd.cpp)
-target_link_libraries (people_pcd pcl_common pcl_filters pcl_kdtree pcl_segmentation pcl_kdtree pcl_gpu_people pcl_filters pcl_io pcl_visualization)
+target_link_libraries (people_pcd pcl_common pcl_filters pcl_kdtree pcl_segmentation pcl_kdtree pcl_gpu_people pcl_filters pcl_io pcl_visualization ${Boost_LIBRARIES})
 
 PCL_ADD_EXECUTABLE(people_pcd_folder ${SUBSYS_NAME} people_pcd_folder.cpp)
-target_link_libraries (people_pcd_folder pcl_common pcl_filters pcl_kdtree pcl_segmentation pcl_kdtree pcl_gpu_people pcl_filters pcl_io pcl_visualization)
+target_link_libraries (people_pcd_folder pcl_common pcl_filters pcl_kdtree pcl_segmentation pcl_kdtree pcl_gpu_people pcl_filters pcl_io pcl_visualization ${Boost_LIBRARIES})
 
 #PCL_ADD_EXECUTABLE(people_pcd_person ${SUBSYS_NAME} people_pcd_person.cpp)
 #target_link_libraries (people_pcd_person pcl_common pcl_filters pcl_kdtree pcl_segmentation pcl_kdtree pcl_gpu_people pcl_filters pcl_io pcl_visualization)

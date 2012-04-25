@@ -329,7 +329,7 @@ namespace pcl
         }
 
         inline int buildTree ( const std::vector<std::vector <Blob2, Eigen::aligned_allocator<Blob2> > >&  sorted,
-                        const pcl::PointCloud<pcl::PointXYZRGB>&  cloud_in,
+                        const pcl::PointCloud<pcl::PointXYZ>&  cloud_in,
                         part_t                              part_label,
                         int                                 part_lid,
                         Tree2&                              tree)
