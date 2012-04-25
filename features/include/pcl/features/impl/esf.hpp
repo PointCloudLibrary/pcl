@@ -524,8 +524,8 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
   output.width = 1;
   output.height = 1;
 
-  //for (size_t d = 0; d < hist.size (); ++d)
-//    output.points[0].histogram[d] = hist[d];
+  for (size_t d = 0; d < hist.size (); ++d)
+    output.points[0].histogram[d] = hist[d];
 }
 
 #define PCL_INSTANTIATE_ESFEstimation(T,OutT) template class PCL_EXPORTS pcl::ESFEstimation<T,OutT>;
