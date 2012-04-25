@@ -155,7 +155,7 @@ namespace pcl
       if (x < depth1.cols && y < depth1.rows)
       {
         unsigned short d = depth1.ptr(y)[x];
-        depth2.ptr(y)[x] = inv_mask.ptr(y)[x] ? d : numeric_limits<unsigned short>::max();
+        depth2.ptr(y)[x] = inv_mask.ptr(y)[x] ? d : numeric_limits<short>::max();
       }
     }
   }

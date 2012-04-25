@@ -17,14 +17,40 @@
 
 #include <iostream>
 #include <sys/types.h>
-#include <dirent.h>
-#include <errno.h>
 #include <vector>
 #include <string>
+
+#include <boost/filesystem.hpp>
 
 using namespace pcl::visualization;
 using namespace pcl::console;
 using namespace std;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+string 
+make_name(int counter, const char* suffix)
+{
+  char buf[4096];
+  sprintf (buf, "./people%04d_%s.png", counter, suffix);
+  return buf;
+}
+
+template<typename T> void 
+savePNGFile(const std::string& filename, const pcl::gpu::DeviceArray2D<T>& arr)
+{
+  int c;
+  pcl::PointCloud<T> cloud(arr.cols(), arr.rows());
+  arr.download(cloud.points, c);
+  pcl::io::savePNGFile(filename, cloud);
+}
+
+template <typename T> void
+savePNGFile (const std::string& filename, const pcl::PointCloud<T>& cloud)
+{
+  pcl::io::savePNGFile(filename, cloud);
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -67,27 +93,12 @@ public:
    //image_view_.showRGBImage<pcl::PointXYZRGB>(cloud);
    //image_view_.spinOnce(1, true);
 
-   savePNGFile("ii_" + boost::lexical_cast<string>(counter_) + ".png", *cloud);
-   savePNGFile("c2_" + boost::lexical_cast<string>(counter_) + ".png", cmap);
-   savePNGFile("s2_" + boost::lexical_cast<string>(counter_) + ".png", labels);
-   savePNGFile("d_"  + boost::lexical_cast<string>(counter_) + ".png", people_detector_.depth_device_);
-   savePNGFile("d2_" + boost::lexical_cast<string>(counter_) + ".png", people_detector_.depth_device2_);
+   savePNGFile(make_name(counter_, "ii"), *cloud);
+   savePNGFile(make_name(counter_, "c2"), cmap);
+   savePNGFile(make_name(counter_, "s2"), labels);
+   savePNGFile(make_name(counter_, "s1"), people_detector_.depth_device_);
+   savePNGFile(make_name(counter_, "s3"), people_detector_.depth_device2_);
  }
-
-  template<typename T> 
-  void savePNGFile(const std::string& filename, const pcl::gpu::DeviceArray2D<T>& arr)
-  {
-    int c;
-    pcl::PointCloud<T> cloud(arr.cols(), arr.rows());
-    arr.download(cloud.points, c);
-    pcl::io::savePNGFile(filename, cloud);
-  }
-
-  template <typename T> void
-  savePNGFile (const std::string& filename, const pcl::PointCloud<T>& cloud)
-  {
-    pcl::io::savePNGFile(filename, cloud);
-  }
 
   int counter_;
   PeopleDetector people_detector_;
@@ -108,31 +119,26 @@ void print_help()
   cout << "\t -pcd   \t<path_to_pcd_folder>" << endl;
 }
 
-std::string getFileExtension(const std::string& FileName)
-{
-    if(FileName.find_last_of(".") != std::string::npos)
-        return FileName.substr(FileName.find_last_of(".")+1);
-    return "";
-}
-
 /*function... might want it in some class?*/
-int getFilesInDir (string dir, vector<string> &files)
+bool getPcdFilesInDir (const string& directory, vector<string>& files)
 {
-    DIR *dp;
-    struct dirent *dirp;
-    if((dp  = opendir(dir.c_str())) == NULL) {
-        cout << "Error(" << errno << ") opening " << dir << endl;
-        return errno;
-    }
+  namespace fs = boost::filesystem;
+  fs::path dir(directory);
+        
+  if (!fs::exists(dir) || !fs::is_directory(dir))
+    return false;
+    
+  vector<string> result;
+  fs::directory_iterator pos(dir);
+  fs::directory_iterator end;           
 
-    while ((dirp = readdir(dp)) != NULL) {
-        string fullpath = dir;
-        fullpath.append("/");
-        fullpath.append(string(dirp->d_name));
-        files.push_back(fullpath);
-    }
-    closedir(dp);
-    return 0;
+  for(; pos != end ; ++pos)
+    if (fs::is_regular_file(pos->status()) )
+      if (fs::extension(*pos) == ".pcd")
+        result.push_back(pos->path().string());
+    
+  files.swap(result);
+  return true;
 }
 
 int main(int argc, char** argv)
@@ -159,7 +165,7 @@ int main(int argc, char** argv)
       return cout << "Invalid number of trees" << endl, -1;
 
   // Anatoly: you can enter your hardcoded path here again
-  string pcdfolder;
+  string pcdfolder = "d:/3/";
   parse_argument (argc, argv, "-pcd", pcdfolder);
 
   // loading trees
@@ -171,32 +177,29 @@ int main(int argc, char** argv)
   PeoplePCDApp app;
   app.people_detector_.rdf_detector_ = rdf;
 
-  // Create list of pcd files
-  vector<string> files = vector<string>();
-  getFilesInDir(pcdfolder,files);
+  // Create list of pcd files  
+  vector<string> files;
+  getPcdFilesInDir(pcdfolder, files);
 
-  for (unsigned int i = 0;i < files.size();i++) 
-  {
-    string ext = getFileExtension(files[i]);
-    cout << "file: " << files[i] << " ext: " << ext << std::endl;
-    if( ext == "pcd" )
+  cout << files.size() << endl;
+  
+  for (size_t i = 0; i < files.size(); i++) 
+  {        
+    // loading cloud file
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
+    int res = pcl::io::loadPCDFile<pcl::PointXYZRGB> (files[i], *cloud);
+    if (res == -1) //* load the file
+      return cout << "Couldn't read tree file" << endl, -1;
+
+    cout << "Loaded " << cloud->width * cloud->height << " data points from " << files[i] << endl;
+
+    /// Run the app
     {
-      // loading cloud file
-      pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
-      int res = pcl::io::loadPCDFile<pcl::PointXYZRGB> (files[i], *cloud);
-      if (res == -1) //* load the file
-        return cout << "Couldn't read tree file" << endl, -1;
-
-      cout << "Loaded " << cloud->width * cloud->height << " data points from " << files[i] << endl;
-
-      /// Run the app
-      {
-        pcl::ScopeTime frame_time("frame_time");
-        app.cloud_cb(cloud);
-      }
-      app.visualizeAndWrite(cloud);
-      app.final_view_.spin();
+      pcl::ScopeTime frame_time("frame_time");
+      app.cloud_cb(cloud);
     }
+    app.visualizeAndWrite(cloud);
+    app.final_view_.spinOnce(1, true);    
   }
   return 0;
 }

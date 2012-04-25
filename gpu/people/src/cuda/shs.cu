@@ -43,7 +43,7 @@
 
 
 
-void pcl::device::shs(const DeviceArray<float8> &cloud, float tolerance, const std::vector<int> indices_in, float delta_hue, Mask& indices_out)
+void pcl::device::shs(const DeviceArray<float8> &cloud, float tolerance, const std::vector<int>& indices_in, float delta_hue, Mask& indices_out)
 {
 
 }

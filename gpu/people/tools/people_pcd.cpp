@@ -21,6 +21,34 @@ using namespace pcl::visualization;
 using namespace pcl::console;
 using namespace std;
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+string 
+make_name(int counter, const char* suffix)
+{
+  char buf[4096];
+  sprintf (buf, "./people%04d_%s.png", counter, suffix);
+  return buf;
+}
+
+template<typename T> void 
+savePNGFile(const std::string& filename, const pcl::gpu::DeviceArray2D<T>& arr)
+{
+  int c;
+  pcl::PointCloud<T> cloud(arr.cols(), arr.rows());
+  arr.download(cloud.points, c);
+  pcl::io::savePNGFile(filename, cloud);
+}
+
+template <typename T> void
+savePNGFile (const std::string& filename, const pcl::PointCloud<T>& cloud)
+{
+  pcl::io::savePNGFile(filename, cloud);
+}
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class PeoplePCDApp
@@ -62,28 +90,13 @@ public:
    //image_view_.showRGBImage<pcl::PointXYZRGB>(cloud);
    //image_view_.spinOnce(1, true);
 
-   savePNGFile("ii_" + boost::lexical_cast<string>(counter_) + ".png", *cloud);
-   savePNGFile("c2_" + boost::lexical_cast<string>(counter_) + ".png", cmap);
-   savePNGFile("s2_" + boost::lexical_cast<string>(counter_) + ".png", labels);
-   savePNGFile("d_"  + boost::lexical_cast<string>(counter_) + ".png", people_detector_.depth_device_);
-   savePNGFile("d2_" + boost::lexical_cast<string>(counter_) + ".png", people_detector_.depth_device2_);
+   savePNGFile(make_name(counter_, "ii"), *cloud);
+   savePNGFile(make_name(counter_, "c2"), cmap);
+   savePNGFile(make_name(counter_, "s2"), labels);
+   savePNGFile(make_name(counter_, "s1"), people_detector_.depth_device_);
+   savePNGFile(make_name(counter_, "s3"), people_detector_.depth_device2_);
  }
-
-  template<typename T> 
-  void savePNGFile(const std::string& filename, const pcl::gpu::DeviceArray2D<T>& arr)
-  {
-    int c;
-    pcl::PointCloud<T> cloud(arr.cols(), arr.rows());
-    arr.download(cloud.points, c);
-    pcl::io::savePNGFile(filename, cloud);
-  }
-
-  template <typename T> void
-  savePNGFile (const std::string& filename, const pcl::PointCloud<T>& cloud)
-  {
-    pcl::io::savePNGFile(filename, cloud);
-  }
-
+ 
   int counter_;
   PeopleDetector people_detector_;
   PeopleDetector::Image cmap_device_;
@@ -125,7 +138,8 @@ int main(int argc, char** argv)
   if (numTrees == 0 || numTrees > 4)
       return cout << "Invalid number of trees" << endl, -1;
 
-  string pcdname = "d:/git/pcl/gpu/people/tools/test.pcd";
+  //string pcdname = "d:/git/pcl/gpu/people/tools/test.pcd";
+  string pcdname = "d:/3/0011.pcd";
   parse_argument (argc, argv, "-pcd", pcdname);
 
   // loading cloud file
