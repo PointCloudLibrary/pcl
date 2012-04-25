@@ -135,12 +135,12 @@ namespace pcl
 
           if (indices_.get () != NULL && indices_->size () != 0)
           {
-            mask_.assign (input_->size (), false);
+            mask_.assign (input_->size (), 0);
             for (std::vector<int>::const_iterator iIt = indices_->begin (); iIt != indices_->end (); ++iIt)
-              mask_[*iIt] = true;
+              mask_[*iIt] = 1;
           }
           else
-            mask_.assign (input_->size (), true);
+            mask_.assign (input_->size (), 1);
 
           estimateProjectionMatrix ();
         }
@@ -270,7 +270,7 @@ namespace pcl
         const unsigned pyramid_level_;
         
         /** \brief mask, indicating whether the point was in the indices list or not.*/
-        std::vector<bool> mask_;
+        std::vector<unsigned char> mask_;
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
