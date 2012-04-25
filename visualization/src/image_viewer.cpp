@@ -613,7 +613,7 @@ pcl::visualization::ImageViewer::addCircle (unsigned int x, unsigned int y, doub
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::ImageViewer::addBox (
+pcl::visualization::ImageViewer::addFilledRectangle (
     unsigned int x_min, unsigned int x_max, unsigned int y_min, unsigned int y_max, 
     double r, double g, double b, const std::string &layer_id, double opacity)
 {
@@ -621,7 +621,7 @@ pcl::visualization::ImageViewer::addBox (
   LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
-    PCL_DEBUG ("[pcl::visualization::ImageViewer::addBox] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addFilledRectangle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
     am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
   }
 
@@ -635,7 +635,7 @@ pcl::visualization::ImageViewer::addBox (
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::ImageViewer::addBox (
+pcl::visualization::ImageViewer::addFilledRectangle (
     unsigned int x_min, unsigned int x_max, unsigned int y_min, unsigned int y_max, 
     const std::string &layer_id, double opacity)
 {
@@ -643,11 +643,102 @@ pcl::visualization::ImageViewer::addBox (
   LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
-    PCL_DEBUG ("[pcl::visualization::ImageViewer::addBox] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addFilledRectangle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
     am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
   }
 
   am_it->canvas->FillBox (x_min, x_max, y_min, y_max);
+  return (true);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::ImageViewer::addRectangle (
+    unsigned int x_min, unsigned int x_max, unsigned int y_min, unsigned int y_max, 
+    double r, double g, double b, const std::string &layer_id, double opacity)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  if (am_it == layer_map_.end ())
+  {
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addFilledRectangle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
+    am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
+  }
+
+  am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
+  am_it->canvas->DrawSegment (x_min, y_min, x_min, y_max);
+  am_it->canvas->DrawSegment (x_min, y_max, x_max, y_max);
+  am_it->canvas->DrawSegment (x_max, y_max, x_max, y_min);
+  am_it->canvas->DrawSegment (x_max, y_min, x_min, y_min);
+
+  return (true);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::ImageViewer::addRectangle (
+    unsigned int x_min, unsigned int x_max, unsigned int y_min, unsigned int y_max, 
+    const std::string &layer_id, double opacity)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  if (am_it == layer_map_.end ())
+  {
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addFilledRectangle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
+    am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
+  }
+
+  am_it->canvas->DrawSegment (x_min, y_min, x_min, y_max);
+  am_it->canvas->DrawSegment (x_min, y_max, x_max, y_max);
+  am_it->canvas->DrawSegment (x_max, y_max, x_max, y_min);
+  am_it->canvas->DrawSegment (x_max, y_min, x_min, y_min);
+
+  return (true);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::ImageViewer::addRectangle (
+    const pcl::PointXY &min_pt, const pcl::PointXY &max_pt,
+    double r, double g, double b, const std::string &layer_id, double opacity)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  if (am_it == layer_map_.end ())
+  {
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addFilledRectangle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
+    am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
+  }
+
+  am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
+  am_it->canvas->DrawSegment (int (min_pt.x), int (min_pt.y), int (min_pt.x), int (max_pt.y));
+  am_it->canvas->DrawSegment (int (min_pt.x), int (max_pt.y), int (max_pt.x), int (max_pt.y));
+  am_it->canvas->DrawSegment (int (max_pt.x), int (max_pt.y), int (max_pt.x), int (min_pt.y));
+  am_it->canvas->DrawSegment (int (max_pt.x), int (min_pt.y), int (min_pt.x), int (min_pt.y));
+
+  return (true);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::ImageViewer::addRectangle (
+    const pcl::PointXY &min_pt, const pcl::PointXY &max_pt,
+    const std::string &layer_id, double opacity)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  if (am_it == layer_map_.end ())
+  {
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addFilledRectangle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
+    am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
+  }
+
+  am_it->canvas->SetDrawColor (0.0, 255.0, 0.0, 255.0);
+  am_it->canvas->DrawSegment (int (min_pt.x), int (min_pt.y), int (min_pt.x), int (max_pt.y));
+  am_it->canvas->DrawSegment (int (min_pt.x), int (max_pt.y), int (max_pt.x), int (max_pt.y));
+  am_it->canvas->DrawSegment (int (max_pt.x), int (max_pt.y), int (max_pt.x), int (min_pt.y));
+  am_it->canvas->DrawSegment (int (max_pt.x), int (min_pt.y), int (min_pt.x), int (min_pt.y));
+
   return (true);
 }
 

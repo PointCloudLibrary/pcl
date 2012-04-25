@@ -165,7 +165,7 @@ pcl::visualization::ImageViewer::addPlanarPolygon (
   // Construct a search object to get the camera parameters
   pcl::search::OrganizedNeighbor<T> search;
   search.setInputCloud (image);
-  for (size_t i = 0; i < polygon.getContour ().points.size () - 1; ++i)
+  for (size_t i = 0; i < polygon.getContour ().size () - 1; ++i)
   {
     pcl::PointXY p1, p2;
     search.projectPoint (polygon.getContour ()[i], p1);
