@@ -37,6 +37,7 @@
 #include <pcl/gpu/people/rdf_bodyparts_detector.h>
 #include <cassert>
 #include <opencv2/core/core.hpp>
+#include <opencv2/contrib/contrib.hpp>
 #include "internal.h"
 
 using namespace std;
@@ -55,7 +56,7 @@ pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector( const vector<strin
   //TODO replace all asserts with exceptions
   assert(!tree_files.empty());
 
-  impl_.reset( new device::MultiTreeLiveProc(tree_files.size(), rows, cols) );
+  impl_.reset( new device::MultiTreeLiveProc(rows, cols) );
 
   for(size_t i = 0; i < tree_files.size(); ++i)
   {

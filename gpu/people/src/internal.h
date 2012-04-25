@@ -62,6 +62,7 @@ namespace pcl
 
     typedef DeviceArray2D<unsigned short> Depth;
     typedef DeviceArray2D<unsigned char>  Labels;
+    typedef DeviceArray2D<char4>         MultiLabels;
     typedef DeviceArray2D<probLabel>      Probabilities;
     typedef DeviceArray2D<uchar4>         Image;
     typedef DeviceArray2D<float>          Hue;
@@ -121,8 +122,8 @@ namespace pcl
     class MultiTreeLiveProc
     {
     public:
-        MultiTreeLiveProc(size_t num_trees, int def_rows = 480, int def_cols = 640) 
-            : multilmap_device(def_rows * def_cols * num_trees) {}
+        MultiTreeLiveProc(int def_rows = 480, int def_cols = 640) 
+            : multilmap(def_rows, def_cols) {}
         ~MultiTreeLiveProc() {}
 
         void process(const Depth& dmap, Labels& lmap);
@@ -132,7 +133,7 @@ namespace pcl
         void process(const Depth& dmap, Labels& lmap, int FGThresh);
 
         std::vector<CUDATree> trees;
-        DeviceArray<unsigned char> multilmap_device;
+        MultiLabels multilmap;
     };
   }
 }
