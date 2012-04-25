@@ -8,7 +8,7 @@ using namespace pcl::gpu::people;
 pcl::RGB pcl::gpu::people::getLColor (unsigned char l)
 {
   const unsigned char* c = LUT_COLOR_LABEL + 3 * l;
-  pcl::RGB p;  
+  pcl::RGB p;
   p.r = c[0];
   p.g = c[1];
   p.b = c[2];
@@ -16,8 +16,8 @@ pcl::RGB pcl::gpu::people::getLColor (unsigned char l)
 }
 
 pcl::RGB pcl::gpu::people::getLColor (pcl::Label l)
-{     
-  return getLColor(static_cast<unsigned char> (l.label));    
+{
+  return getLColor(static_cast<unsigned char> (l.label));
 }
 
 void pcl::gpu::people::colorLMap ( int W, int H, const trees::Label* l, unsigned char* c )
@@ -35,17 +35,17 @@ void pcl::gpu::people::colorLMap ( int W, int H, const trees::Label* l, unsigned
 void pcl::gpu::people::colorLMap (const pcl::PointCloud<pcl::Label>& cloud_in, pcl::PointCloud<pcl::RGB>& colormap_out)
 {
   colormap_out.resize(cloud_in.size());
-  for(size_t i = 0; i < cloud_in.size (); i++)  
-    colormap_out.points[i] = getLColor(cloud_in.points[i]);  
-  
+  for(size_t i = 0; i < cloud_in.size (); i++)
+    colormap_out.points[i] = getLColor(cloud_in.points[i]);
+
   colormap_out.width = cloud_in.width;
   colormap_out.height = cloud_in.height;
-} 
-    
+}
+
 void pcl::gpu::people::colorLMap( const cv::Mat& lmap, cv::Mat& cmap )
 {
   CV_Assert( lmap.type() == CV_8UC1 );
-    
+
   cmap.create( lmap.size(), CV_8UC3 );
   colorLMap( lmap.cols, lmap.rows, lmap.ptr<trees::Label>(), cmap.ptr<unsigned char>());  
 }

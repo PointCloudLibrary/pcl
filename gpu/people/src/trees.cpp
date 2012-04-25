@@ -39,6 +39,7 @@
  */
 
 #include <pcl/gpu/people/tree.h>
+#include <pcl/gpu/people/label_common.h>
 
 #include <fstream>
 #include <cassert>
@@ -46,6 +47,8 @@
 #include <limits>
 #include <iostream>
 #include <pcl/gpu/people/tex_fetch.h>
+
+using pcl::gpu::people::NUM_ATTRIBS;
 
 //////////////////////////////////////////////////////////////////////////////////
 // tree_run
@@ -112,7 +115,7 @@ pcl::gpu::people::trees::runThroughTree( int maxDepth,
       uint16_t depth = tfetch(x,y);
       if(depth == std::numeric_limits<uint16_t>::max() ) 
       {
-        lmap[x+W*y] = NOLABEL;
+        lmap[x+W*y] = pcl::gpu::people::NOLABEL;
         continue;
       }
 
@@ -148,9 +151,9 @@ pcl::gpu::people::trees::writeAttribLocs( const std::string& filename,
     throw std::runtime_error(std::string("(E) could not open ") + filename);
 
   // first we write the number of attribs we intend to write so that we ll avoid mismatches
-  assert( alocs.size() == NUMATTRIBS );
-  fout << NUMATTRIBS << "\n";
-  for(int ai=0;ai<NUMATTRIBS;++ai)
+  assert( alocs.size() == NUM_ATTRIBS );
+  fout << NUM_ATTRIBS << "\n";
+  for(int ai=0;ai<NUM_ATTRIBS;++ai)
     fout << alocs[ai];
 }
 
@@ -164,11 +167,11 @@ pcl::gpu::people::trees::readAttribLocs( const std::string& filename,
 
   int numAttribs;
   fin >> numAttribs;
-  if( numAttribs != NUMATTRIBS ) 
+  if( numAttribs != NUM_ATTRIBS ) 
     throw std::runtime_error(std::string("(E) the attribloc file has a wrong number of attribs ") + filename );
 
-  alocs.resize(NUMATTRIBS);
-  for(int ai = 0; ai < NUMATTRIBS; ++ai) 
+  alocs.resize(NUM_ATTRIBS);
+  for(int ai = 0; ai < NUM_ATTRIBS; ++ai) 
     fin >> alocs[ai];
 }
 

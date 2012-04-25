@@ -5,7 +5,6 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 
-
 void
 pcl::gpu::people::PersonAttribs::readPersonXMLConfig (std::istream& is)
 {
@@ -17,14 +16,10 @@ void
 pcl::gpu::people::PersonAttribs::writePersonXMLConfig (std::ostream& os)
 {
   boost::property_tree::ptree pt;
-  pt.add("version", XML_VERSION);
+  pt.add("version", static_cast<int>(pcl::gpu::people::XML_VERSION));
 //  boost::property_tree::ptree& node = pt.add("person", "");
 //  node.put("name", name_);
   pt.add("person.name", name_);
 
   write_xml(os,pt);
 }
-
-
-
-
