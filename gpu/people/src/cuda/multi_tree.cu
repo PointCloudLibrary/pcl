@@ -40,6 +40,7 @@
 
 #include <pcl/gpu/people/tree.h>
 #include <pcl/gpu/people/label_common.h>
+#include <pcl/gpu/people/tree.h>
 #include <pcl/gpu/utils/safe_call.hpp>
 #include <pcl/gpu/utils/timers_cuda.hpp>
 #include <stdio.h>
@@ -52,7 +53,7 @@ using pcl::gpu::people::trees::Label;
 using pcl::gpu::people::trees::AttribLocation;
 using pcl::gpu::people::trees::Attrib;
 using pcl::gpu::people::trees::focal;
-using pcl::gpu::people::NUM_LABELS;
+using pcl::gpu::people::trees::NUM_LABELS;
 
 using namespace std;
 typedef unsigned int uint;
@@ -559,7 +560,7 @@ void pcl::device::MultiTreeLiveProc::process(const Depth& dmap, Labels& lmap)
   if (trees.size() == 1)
   {
     const CUDATree& t = trees[0];
-    device::CUDA_runTree( focal, t.treeHeight, t.numNodes, t.nodes_device, t.leaves_device, dmap,  lmap );
+    CUDA_runTree( focal, t.treeHeight, t.numNodes, t.nodes_device, t.leaves_device, dmap,  lmap );
     return;
   }
 
@@ -581,11 +582,11 @@ void pcl::device::MultiTreeLiveProc::process(const Depth& dmap, Labels& lmap, in
 
     if( FGThresh == std::numeric_limits<Attrib>::max () ) 
     {
-      device::CUDA_runMultiTreePass ( ti, static_cast<float> (focal), t.treeHeight, t.numNodes, t.nodes_device, t.leaves_device, dmap, multilmap_device );
+      CUDA_runMultiTreePass ( ti, static_cast<float> (focal), t.treeHeight, t.numNodes, t.nodes_device, t.leaves_device, dmap, multilmap_device );
     }
     else
     {
-      device::CUDA_runMultiTreePassFG ( ti, FGThresh, static_cast<float> (focal), t.treeHeight, t.numNodes, t.nodes_device, t.leaves_device, dmap, multilmap_device );
+      CUDA_runMultiTreePassFG ( ti, FGThresh, static_cast<float> (focal), t.treeHeight, t.numNodes, t.nodes_device, t.leaves_device, dmap, multilmap_device );
     }
   }
   // 2 - run the merging 

@@ -57,8 +57,8 @@ namespace pcl
 
         // ###############################################
         // compile type values
-        enum { NUMATTRIBS  = 2000 };
-        enum { NUMLABELS = 32 };
+        enum { NUM_ATTRIBS  = 2000 };
+        enum { NUM_LABELS = 32 };
 
         // ###############################################
         // base data types used in the structures

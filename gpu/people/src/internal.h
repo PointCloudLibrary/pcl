@@ -43,6 +43,7 @@
 #include <pcl/gpu/utils/safe_call.hpp>
 #include <pcl/gpu/people/tree.h>
 #include <pcl/gpu/people/label_common.h>
+#include <pcl/gpu/people/tree.h>
 
 namespace pcl
 {
@@ -55,8 +56,8 @@ namespace pcl
 
     /** \brief  This struct stores the probabilities for a pixel **/
     struct probLabel
-    {
-      float probability[pcl::gpu::people::NUM_PARTS];
+    {      
+      float probability[NUM_PARTS];
     };
 
     typedef DeviceArray2D<unsigned short> Depth;

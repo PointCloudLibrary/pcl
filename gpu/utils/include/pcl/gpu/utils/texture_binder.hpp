@@ -55,10 +55,10 @@ namespace pcl
       }
 
       template<class T, enum cudaTextureReadMode readMode>
-      TextureBinder(Texconst DeviceArray<T>& arr, const struct texture<T, 1, readMode> &tex) : texref(&tex)
+      TextureBinder(const DeviceArray<T>& arr, const struct texture<T, 1, readMode> &tex) : texref(&tex)
       {
         cudaChannelFormatDesc desc = cudaCreateChannelDesc<T>();  
-        cudaSafeCall( cudaBindTexture(0, tex, arr.ptr(), desc, arr.sizeBytes() );
+        cudaSafeCall( cudaBindTexture(0, tex, arr.ptr(), desc, arr.sizeBytes()) );
       }
       ~TextureBinder()
       {

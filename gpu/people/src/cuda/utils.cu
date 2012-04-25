@@ -1,5 +1,6 @@
 #include "internal.h"
 #include <pcl/gpu/utils/safe_call.hpp>
+#include <pcl/gpu/utils/texture_binder.hpp>
 #include <pcl/gpu/utils/device/limits.hpp>
 #include "npp.h"
 
@@ -63,8 +64,11 @@ namespace pcl
 void pcl::device::colorLMap(const Labels& labels, const DeviceArray<uchar4>& map, Image& rgba)
 {
   cmapTex.addressMode[0] = cudaAddressModeClamp;
-  cudaChannelFormatDesc desc = cudaCreateChannelDesc<uchar4>();  
-  cudaSafeCall( cudaBindTexture(0, cmapTex, map.ptr(), desc, map.size() * sizeof(uchar4) ) );
+
+  TextureBinder binder(map, cmapTex);
+
+  //cudaChannelFormatDesc desc = cudaCreateChannelDesc<uchar4>();  
+  //cudaSafeCall( cudaBindTexture(0, cmapTex, map.ptr(), desc, map.size() * sizeof(uchar4) ) );
 
   dim3 block(32, 8);
   dim3 grid( divUp(labels.cols(), block.x), divUp(labels.rows(), block.y) );
@@ -73,7 +77,7 @@ void pcl::device::colorLMap(const Labels& labels, const DeviceArray<uchar4>& map
 
   cudaSafeCall( cudaGetLastError() );
   cudaSafeCall( cudaThreadSynchronize() );
-  cudaSafeCall( cudaUnbindTexture(cmapTex) );
+  //cudaSafeCall( cudaUnbindTexture(cmapTex) );
 }
 
 

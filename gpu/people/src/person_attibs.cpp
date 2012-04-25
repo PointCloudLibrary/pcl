@@ -16,7 +16,7 @@ void
 pcl::gpu::people::PersonAttribs::writePersonXMLConfig (std::ostream& os)
 {
   boost::property_tree::ptree pt;
-  pt.add("version", static_cast<int>(pcl::gpu::people::XML_VERSION));
+  pt.add("version", static_cast<int>(XML_VERSION));
 //  boost::property_tree::ptree& node = pt.add("person", "");
 //  node.put("name", name_);
   pt.add("person.name", name_);
