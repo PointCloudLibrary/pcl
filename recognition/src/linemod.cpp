@@ -1035,7 +1035,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
           {
             max_score += 4;
 
-            unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (feature.x*scale, feature.y*scale);
+            unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (static_cast<size_t> (feature.x*scale), static_cast<size_t> (feature.y*scale));
             __m128i * data_m128i = reinterpret_cast<__m128i*> (data);
 
             for (size_t mem_index = 0; mem_index < mem_size_16; ++mem_index)
