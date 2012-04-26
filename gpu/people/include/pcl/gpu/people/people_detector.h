@@ -49,7 +49,7 @@
 #include <pcl/gpu/people/person_attribs.h>
 #include <opencv2/core/core.hpp>
 
-#include <pcl/gpu/people/rdf_bodyparts_detector.h>
+#include <pcl/gpu/people/bodyparts_detector.h>
 
 namespace pcl
 {
@@ -66,11 +66,7 @@ namespace pcl
       {
           typedef boost::shared_ptr<OtherDetector> Ptr;
       };
-
-
-      PCL_EXPORTS float estimateFocalLength(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud);
-
-
+      
       class PCL_EXPORTS PeopleDetector
       {
         public:
@@ -168,6 +164,11 @@ namespace pcl
 
           void 
           allocate_buffers(int rows = 480, int cols = 640);
+
+
+          void 
+          shs5(const pcl::PointCloud<pcl::PointXYZ> &cloud, const std::vector<int>& indices, unsigned char *mask);
+
 
           //!!! only for debug purposes TODO: remove this. 
           friend class PeoplePCDApp;

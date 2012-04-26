@@ -97,10 +97,16 @@ namespace pcl
         int max_cluster_size_;
         float cluster_tolerance_;
 
-        void optimized_elec4(const PointCloud<pcl::PointXYZ>& cloud, const cv::Mat& src_labels, float tolerance,
-                    std::vector<std::vector<PointIndices> > &labeled_clusters,
-                    unsigned int min_pts_per_cluster, unsigned int max_pts_per_cluster, unsigned int num_parts,
-                    bool brute_force_border, float radius_scale);
+
+        std::vector<unsigned char> lmap_host_;
+        std::vector<int> dst_labels_;        
+        std::vector<int> region_sizes_;
+        std::vector<int> wavefront_;   
+
+        void allocate_buffers(int rows = 480, int cols = 640);
+
+        void optimized_elec4(const pcl::PointCloud<pcl::PointXYZ>& cloud, int num_parts);
+                
 
       };
     }

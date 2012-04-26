@@ -56,8 +56,8 @@ using namespace pcl::gpu::people;
 
 void optimized_shs2(const PointCloud<PointXYZRGB> &cloud, float tolerance, const PointIndices &indices_in, PointIndices &indices_out, float delta_hue);
 void optimized_shs3(const PointCloud<PointXYZRGB> &cloud, float tolerance, const PointIndices &indices_in, PointIndices &indices_out, float delta_hue);
-void optimized_shs4(const PointCloud<PointXYZ> &cloud, const float *hue, float tolerance, const PointIndices &indices_in, cv::Mat flowermat, float delta_hue);
-void optimized_shs5(const PointCloud<PointXYZ> &cloud, const float *hue, float tolerance, const PointIndices &indices_in, cv::Mat flowermat, float delta_hue);
+void optimized_shs4(const PointCloud<PointXYZ> &cloud, const float *hue, float tolerance, const PointIndices &indices_in, cv::Mat& flowermat, float delta_hue);
+void optimized_shs5(const PointCloud<PointXYZ> &cloud, const float *hue, float tolerance, const PointIndices &indices_in, unsigned char *mask, float delta_hue);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -175,12 +175,12 @@ pcl::gpu::people::PeopleDetector::process ()
     label_skeleton::Tree2 t;
     label_skeleton::buildTree(sorted, cloud_host_, Neck, c, t);
     
-    const pcl::PointIndices& seed = t.indices;
+    const std::vector<int>& seed = t.indices.indices;
     
     cv::Mat flowermat(rows, cols, CV_8U, cv::Scalar(0));    
     {
       ScopeTime time("shs");    
-      optimized_shs5(cloud_host_, &hue_host_.points[0], CLUST_TOL_SHS, seed, flowermat, DELTA_HUE_SHS);
+      shs5(cloud_host_, seed, flowermat.ptr<unsigned char>());
     }
     
     fg_mask_.upload(flowermat.data, flowermat.step, rows, cols);
@@ -200,8 +200,7 @@ pcl::gpu::people::PeopleDetector::process ()
 
     //brief Test if the second tree is build up correctly
     if(sorted2[Neck].size() != 0)
-    {
-      ScopeTime time("bt");
+    {      
       label_skeleton::Tree2 t2;
       label_skeleton::buildTree(sorted2, cloud_host_, Neck, c, t2);
       int par = 0;
@@ -220,6 +219,161 @@ pcl::gpu::people::PeopleDetector::process ()
     }
 
     //output: Tree2 and PointCloud<XYZRGBL> 
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace 
+{
+
+  void 
+  getProjectedRadiusSearchBox (int rows, int cols, const pcl::device::Intr& intr, const pcl::PointXYZ& point, float squared_radius, 
+                                  int &minX, int &maxX, int &minY, int &maxY)
+  {  
+    int min, max;
+
+    float3 q;
+    q.x = intr.fx * point.x + intr.cx * point.z;
+    q.y = intr.fy * point.y + intr.cy * point.z;
+    q.z = point.z;
+
+    // http://www.wolframalpha.com/input/?i=%7B%7Ba%2C+0%2C+b%7D%2C+%7B0%2C+c%2C+d%7D%2C+%7B0%2C+0%2C+1%7D%7D+*+%7B%7Ba%2C+0%2C+0%7D%2C+%7B0%2C+c%2C+0%7D%2C+%7Bb%2C+d%2C+1%7D%7D
+
+    float coeff8 = 1;                                   //K_KT_.coeff (8);
+    float coeff7 = intr.cy;                             //K_KT_.coeff (7);
+    float coeff4 = intr.fy * intr.fy + intr.cy*intr.cy; //K_KT_.coeff (4);
+
+    float coeff6 = intr.cx;                             //K_KT_.coeff (6);
+    float coeff0 = intr.fx * intr.fx + intr.cx*intr.cx; //K_KT_.coeff (0);
+
+    float a = squared_radius * coeff8 - q.z * q.z;
+    float b = squared_radius * coeff7 - q.y * q.z;
+    float c = squared_radius * coeff4 - q.y * q.y;
+    
+    // a and c are multiplied by two already => - 4ac -> - ac
+    float det = b * b - a * c;
+  
+    if (det < 0)
+    {
+      minY = 0;
+      maxY = rows - 1;
+    }
+    else
+    {
+      float y1 = (b - sqrt (det)) / a;
+      float y2 = (b + sqrt (det)) / a;
+
+      min = (int)std::min(floor(y1), floor(y2));
+      max = (int)std::max( ceil(y1),  ceil(y2));
+      minY = std::min (rows - 1, std::max (0, min));
+      maxY = std::max (std::min (rows - 1, max), 0);
+    }
+
+    b = squared_radius * coeff6 - q.x * q.z;
+    c = squared_radius * coeff0 - q.x * q.x;
+
+    det = b * b - a * c;
+    if (det < 0)
+    {
+      minX = 0;
+      maxX = cols - 1;
+    }
+    else
+    {
+      float x1 = (b - sqrt (det)) / a;
+      float x2 = (b + sqrt (det)) / a;
+ 
+      min = (int)std::min (floor(x1), floor(x2));
+      max = (int)std::max ( ceil(x1),  ceil(x2));
+      minX = std::min (cols- 1, std::max (0, min));
+      maxX = std::max (std::min (cols - 1, max), 0);
+    }
+  }
+ 
+  float 
+  sqnorm(const pcl::PointXYZ& p1, const pcl::PointXYZ& p2)
+  {
+    float dx = (p1.x - p2.x);
+    float dy = (p1.y - p2.y);
+    float dz = (p1.z - p2.z);
+    return dx*dx + dy*dy + dz*dz;    
+  }
+}
+
+void 
+pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<pcl::PointXYZ> &cloud, const std::vector<int>& indices, unsigned char *mask)
+{
+  pcl::device::Intr intr(fx_, fy_, cx_, cy_);
+  intr.setDefaultPPInIncorrect(cloud.width, cloud.height);
+  
+  const float *hue = &hue_host_.points[0];
+  double squared_radius = CLUST_TOL_SHS * CLUST_TOL_SHS;
+
+        
+  std::vector< std::vector<int> > storage(100);
+
+  // Process all points in the indices vector
+  int total = static_cast<int> (indices.size ());
+#pragma omp parallel for
+  for (int k = 0; k < total; ++k)
+  {
+    int i = indices[k];
+    if (mask[i])
+      continue;
+
+    mask[i] = 255;
+
+    int id = omp_get_thread_num();
+    std::vector<int>& seed_queue = storage[id];
+    seed_queue.clear();
+    seed_queue.reserve(cloud.size());
+    int sq_idx = 0;
+    seed_queue.push_back (i);
+
+    pcl::PointXYZ p = cloud.points[i];
+    float h = hue[i];    
+
+    while (sq_idx < (int)seed_queue.size ())
+    {
+      int index = seed_queue[sq_idx];
+      const pcl::PointXYZ& q = cloud.points[index];
+
+      if(!pcl::isFinite (q))
+        continue;
+
+      // search window                  
+      int left, right, top, bottom;
+      getProjectedRadiusSearchBox(cloud.height, cloud.width, intr, q, squared_radius, left, right, top, bottom);
+        
+      int yEnd  = (bottom + 1) * cloud.width + right + 1;
+      int idx  = top * cloud.width + left;
+      int skip = cloud.width - right + left - 1;
+      int xEnd = idx - left + right + 1;
+
+      for (; xEnd < yEnd; idx += 2*skip, xEnd += 2*cloud.width)
+        for (; idx < xEnd; idx += 2)
+        {
+          if (mask[idx])
+            continue;
+
+          if (sqnorm(cloud.points[idx], q) <= squared_radius)
+          {
+            float h_l = hue[idx];
+
+            if (fabs(h_l - h) < DELTA_HUE_SHS)
+            {                   
+              seed_queue.push_back (idx);
+              mask[idx] = 255;
+            }
+          }
+        }
+      
+      sq_idx++;
+    }        
   }
 }
 

@@ -62,7 +62,7 @@ namespace pcl
 
     typedef DeviceArray2D<unsigned short> Depth;
     typedef DeviceArray2D<unsigned char>  Labels;
-    typedef DeviceArray2D<char4>         MultiLabels;
+    typedef DeviceArray2D<char4>          MultiLabels;
     typedef DeviceArray2D<probLabel>      Probabilities;
     typedef DeviceArray2D<uchar4>         Image;
     typedef DeviceArray2D<float>          Hue;
@@ -74,6 +74,12 @@ namespace pcl
       float fx, fy, cx, cy;
       Intr () {}
       Intr (float fx_, float fy_, float cx_, float cy_) : fx(fx_), fy(fy_), cx(cx_), cy(cy_) {}
+
+      void setDefaultPPInIncorrect(int cols, int rows)
+      {
+        cx = cx > 0 ? cx : cols/2 - 0.5f;
+        cy = cy > 0 ? cy : rows/2 - 0.5f;
+      }
     };
 
     void convertCloud2Depth(const DeviceArray2D<float8>& cloud, Depth& depth);

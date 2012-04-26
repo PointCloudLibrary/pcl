@@ -11,7 +11,8 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/gpu/people/people_detector.h>
 #include <pcl/visualization/image_viewer.h>
-#include <boost/lexical_cast.hpp>
+#include <pcl/search/pcl_search.h>
+#include <Eigen/Core>
 
 #include <pcl/io/png_io.h>
 
@@ -25,6 +26,23 @@
 using namespace pcl::visualization;
 using namespace pcl::console;
 using namespace std;
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+struct ProjMatrix : public pcl::search::OrganizedNeighbor<pcl::PointXYZRGB>
+{  
+  using pcl::search::OrganizedNeighbor<pcl::PointXYZRGB>::projection_matrix_;
+};
+
+float estimateFocalLength(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+{
+  ProjMatrix proj_matrix;
+  proj_matrix.setInputCloud(cloud);  
+  Eigen::Matrix3f KR = proj_matrix.projection_matrix_.topLeftCorner <3, 3> ();    
+  return (KR(0,0) + KR(1,1))/KR(2,2)/2;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -150,7 +168,7 @@ int main(int argc, char** argv)
   std::string treeFilenames[4] = 
   {
     "d:/TreeData/results/forest1/tree_20.txt",
-    "d:/TreeData/results/forest3/tree_20.txt",
+    "d:/TreeData/results/forest2/tree_20.txt",
     "d:/TreeData/results/forest3/tree_20.txt",
     "d:/TreeData/results/forest3/tree_20.txt"
   };
@@ -189,7 +207,7 @@ int main(int argc, char** argv)
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
     int res = pcl::io::loadPCDFile<pcl::PointXYZRGB> (files[i], *cloud);
     if (res == -1) //* load the file
-      return cout << "Couldn't read tree file" << endl, -1;
+      return cout << "Couldn't read cloud file" << endl, -1;
 
     cout << "Loaded " << cloud->width * cloud->height << " data points from " << files[i] << endl;
 

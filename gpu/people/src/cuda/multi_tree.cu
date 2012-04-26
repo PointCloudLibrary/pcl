@@ -71,7 +71,7 @@ namespace pcl
     template<bool testFG> __device__ __forceinline__ Label 
     evaluateTree(int u, int v, float f, int treeHeight, int numNodes, const Node* nodes, const Label* leaves)
     {
-      int    depth = tex2D(depthTex, u,v );
+      int    depth = tex2D(depthTex, u, v);
       float  scale = f / depth;
 
       // go down the tree
@@ -129,7 +129,7 @@ namespace pcl
       int u = blockIdx.x * blockDim.x + threadIdx.x;
       int v = blockIdx.y * blockDim.y + threadIdx.y;
 
-      if( u < multiLabels.cols && v < multiLabels.rows)
+      if(u < multiLabels.cols && v < multiLabels.rows)
       {        
           char* pixel = (char*)&multiLabels.ptr(v)[u];
           pixel[treeId] = evaluateTree<testFG>(u, v, f, treeHeight, numNodes, nodes, leaves);
@@ -167,7 +167,7 @@ namespace pcl
       TextureBinder binder(depth, depthTex);                  
       
       dim3 block(32, 8);
-      dim3 grid( divUp(multilabel.cols(), block.x), divUp(multilabel.rows(), block.y) );
+      dim3 grid( divUp(depth.cols(), block.x), divUp(depth.rows(), block.y) );
 
       if(FGThresh == std::numeric_limits<Attrib>::max()) 
       {

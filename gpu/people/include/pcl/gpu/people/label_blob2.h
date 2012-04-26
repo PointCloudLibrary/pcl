@@ -65,37 +65,6 @@ namespace pcl
          */
         struct Blob2 
         {
-          inline Blob2() {}
-
-          inline Blob2( const Blob2& B) 
-          {
-            *this = B;
-          }
-
-          Blob2& operator = ( const Blob2& B ) 
-          {
-            id    = B.id;     // unique ID for every blob in the  frame
-            label = B.label;  // the body part label of this blob
-            lid   = B.lid;    // the label id, namingly the number of blob of this label
-
-            for(int i=0;i<3;++i)       mean(i) = B.mean(i);
-            for(int i=0;i<9;++i)        cov(i) = B.cov(i);
-            for(int i=0;i<3;++i)   eigenval(i) = B.eigenval(i);
-            for(int i=0;i<9;++i)  eigenvect(i) = B.eigenvect(i);
-
-            for(int i=0;i<MAX_CHILD;++i) child_id[i]      = B.child_id[i];
-            for(int i=0;i<MAX_CHILD;++i) child_lid[i]     = B.child_lid[i];
-            for(int i=0;i<MAX_CHILD;++i) child_dist[i]    = B.child_dist[i];
-            for(int i=0;i<MAX_CHILD;++i) child_label[i]   = B.child_label[i];
-
-            indices = B.indices;
-
-            for(int i=0;i<3;++i)   min(i) = B.min(i);
-            for(int i=0;i<3;++i)   max(i) = B.max(i);
-
-            return *this;
-          }
-
           int    id;                      // specific identification number of this blob
           part_t label;                   // labels which part this blob is, defined in common.
           int    lid;                     // label id, which number of this type of part is this

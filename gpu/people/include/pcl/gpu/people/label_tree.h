@@ -81,7 +81,7 @@ namespace pcl
         {
           if(sorted[label].size() == 0)
             return 0;
-          for(unsigned int i = 0; i < sorted[label].size(); i++)
+          for(size_t i = 0; i < sorted[label].size(); i++)
           {
             for(int j = 0; j < MAX_CHILD; j++)
               sorted[label][i].child_id[j] = LEAF;
@@ -102,7 +102,7 @@ namespace pcl
         {
           if(sorted[label].size() == 0)
             return 0;
-          for(unsigned int i = 0; i < sorted[label].size(); i++){
+          for(size_t i = 0; i < sorted[label].size(); i++){
             sorted[label][i].child_id[child_number] = NO_CHILD;
           }
           return 0;
@@ -118,7 +118,7 @@ namespace pcl
         {
           if(sorted[label].size() == 0)
             return 0;
-          for(unsigned int i = 0; i < sorted[label].size(); i++)
+          for(size_t i = 0; i < sorted[label].size(); i++)
             if((sorted[label][i].child_id[child_number] != NO_CHILD) && (sorted[label][i].child_id[child_number] != LEAF))
               return 1;
           return 0;
@@ -172,14 +172,14 @@ namespace pcl
             return 0;
           }
           // go over all parents in this vector
-          for(unsigned int p = 0; p < sorted[parent_label].size(); p++){
+          for(size_t p = 0; p < sorted[parent_label].size(); p++){
             float best_value = std::numeric_limits<float>::max(); 
             int best_child_id = NO_CHILD;
             int best_child_lid = 0;                               // this must be as low as possible, still overruled by id
             float value = 0.0;
 
             // go over all children in this vector
-            for(unsigned int c = 0; c < sorted[child_label].size(); c++){
+            for(size_t c = 0; c < sorted[child_label].size(); c++){
               value = evaluateBlobs(sorted[parent_label][p], sorted[child_label][c], child_number);
               // Value should contain offset from the ideal position
               // Is -1 if it goes above threshold
@@ -215,7 +215,7 @@ namespace pcl
             return (-1);
           }
           // Iterate over all parts
-          for(unsigned int p = 0; p < sorted.size(); p ++)
+          for(size_t p = 0; p < sorted.size(); p ++)
           {
             switch(p){
               // These are multinodes and end nodes ///
@@ -311,7 +311,7 @@ namespace pcl
           tree.parts_lid[part_label] = part_lid;
 
           // iterate over the number of pixels that are part of this label
-          for(unsigned int in = 0; in < sorted[part_label][part_lid].indices.indices.size(); in++)
+          for(size_t in = 0; in < sorted[part_label][part_lid].indices.indices.size(); in++)
             tree.indices.indices.push_back(sorted[part_label][part_lid].indices.indices[in]);
 
           if(nr_children == 0)

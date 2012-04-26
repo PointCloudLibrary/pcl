@@ -64,20 +64,15 @@ namespace pcl
 void pcl::device::colorLMap(const Labels& labels, const DeviceArray<uchar4>& map, Image& rgba)
 {
   cmapTex.addressMode[0] = cudaAddressModeClamp;
-
   TextureBinder binder(map, cmapTex);
-
-  //cudaChannelFormatDesc desc = cudaCreateChannelDesc<uchar4>();  
-  //cudaSafeCall( cudaBindTexture(0, cmapTex, map.ptr(), desc, map.size() * sizeof(uchar4) ) );
-
+  
   dim3 block(32, 8);
   dim3 grid( divUp(labels.cols(), block.x), divUp(labels.rows(), block.y) );
 
   colorKernel<<< grid, block >>>( labels, rgba );
 
   cudaSafeCall( cudaGetLastError() );
-  cudaSafeCall( cudaThreadSynchronize() );
-  //cudaSafeCall( cudaUnbindTexture(cmapTex) );
+  cudaSafeCall( cudaThreadSynchronize() );  
 }
 
 

@@ -5,6 +5,7 @@
 #include "internal.h"
 
 #include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 
 inline void getProjectedRadiusSearchBox (int rows, int cols, const pcl::device::Intr& intr, const pcl::PointXYZ& point, float squared_radius, 
                                   int &minX, int &maxX, int &minY, int &maxY)
