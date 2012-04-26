@@ -44,7 +44,7 @@
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(ESFEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointNormal))((pcl::Normal)(pcl::PointNormal))((pcl::ESFSignature640)))
+  PCL_INSTANTIATE_PRODUCT(ESFEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointNormal))((pcl::ESFSignature640)))
 #else
   PCL_INSTANTIATE_PRODUCT(ESFEstimation, (PCL_XYZ_POINT_TYPES)((pcl::ESFSignature640)))
 #endif
