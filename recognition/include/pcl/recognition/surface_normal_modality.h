@@ -527,7 +527,7 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Contains GRANULARITY and NORMAL_LUT
-#include "normal_lut.i"
+//#include "normal_lut.i"
 
 static void accumBilateral(long delta, long i, long j, long * A, long * b, int threshold)
 {
