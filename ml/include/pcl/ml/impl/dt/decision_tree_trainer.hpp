@@ -186,7 +186,6 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
 
     node.feature = features[best_feature_index];
     node.threshold = best_feature_threshold;
-    //node.num_of_sub_nodes = num_of_branches;
     node.sub_nodes.resize (num_of_branches);
 
     for (size_t branch_index = 0; branch_index < num_of_branches; ++branch_index)
@@ -207,15 +206,12 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
       branch_labels.reserve (branch_counts[branch_index]);
       branch_examples.reserve (branch_counts[branch_index]);
 
-      //size_t branch_example_index = 0;
       for (size_t example_index = 0; example_index < num_of_examples; ++example_index)
       {
         if (branch_indices[example_index] == branch_index)
         {
           branch_examples.push_back (examples[example_index]);
           branch_labels.push_back (label_data[example_index]);
-
-          //++branch_example_index;
         }
       }
 

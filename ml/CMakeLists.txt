@@ -16,13 +16,18 @@ if(build)
         include/pcl/${SUBSYS_NAME}/dt/decision_tree.h
         include/pcl/${SUBSYS_NAME}/dt/decision_tree_evaluator.h
         include/pcl/${SUBSYS_NAME}/dt/decision_tree_trainer.h
+        include/pcl/${SUBSYS_NAME}/ferns/fern.h
+        include/pcl/${SUBSYS_NAME}/ferns/fern_evaluator.h
+        include/pcl/${SUBSYS_NAME}/ferns/fern_trainer.h
+        include/pcl/${SUBSYS_NAME}/branch_estimator.h
         include/pcl/${SUBSYS_NAME}/feature_handler.h
-        include/pcl/${SUBSYS_NAME}/multiple_data_2d_example_index.h
-        include/pcl/${SUBSYS_NAME}/point_xy_32i.h
-        include/pcl/${SUBSYS_NAME}/regression_variance_stats_estimator.h
         include/pcl/${SUBSYS_NAME}/multi_channel_2d_comparison_feature.h
         include/pcl/${SUBSYS_NAME}/multi_channel_2d_comparison_feature_handler.h
         include/pcl/${SUBSYS_NAME}/multi_channel_2d_data_set.h
+        include/pcl/${SUBSYS_NAME}/multiple_data_2d_example_index.h
+        include/pcl/${SUBSYS_NAME}/point_xy_32i.h
+        include/pcl/${SUBSYS_NAME}/point_xy_32f.h
+        include/pcl/${SUBSYS_NAME}/regression_variance_stats_estimator.h
         include/pcl/${SUBSYS_NAME}/stats_estimator.h
         )
 
@@ -31,10 +36,13 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/dt/decision_forest_trainer.hpp
         include/pcl/${SUBSYS_NAME}/impl/dt/decision_tree_evaluator.hpp
         include/pcl/${SUBSYS_NAME}/impl/dt/decision_tree_trainer.hpp
+        include/pcl/${SUBSYS_NAME}/impl/ferns/fern_evaluator.hpp
+        include/pcl/${SUBSYS_NAME}/impl/ferns/fern_trainer.hpp
         )
 
     set(srcs
 		src/point_xy_32i.cpp
+		src/point_xy_32f.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})

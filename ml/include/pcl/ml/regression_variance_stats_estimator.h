@@ -40,6 +40,7 @@
 
 #include <pcl/common/common.h>
 #include <pcl/ml/stats_estimator.h>
+#include <pcl/ml/branch_estimator.h>
 
 #include <istream>
 #include <ostream>
@@ -119,7 +120,6 @@ namespace pcl
       std::vector<RegressionVarianceNode> sub_nodes;
   };
 
-
   /** \brief Statistics estimator for regression trees which optimizes variance. */
   template <class LabelDataType, class NodeType, class DataSet, class ExampleIndex>
   class PCL_EXPORTS RegressionVarianceStatsEstimator
@@ -128,21 +128,24 @@ namespace pcl
   
     public:
       /** \brief Constructor. */
-      RegressionVarianceStatsEstimator () {}
+      RegressionVarianceStatsEstimator (BranchEstimator * branch_estimator) 
+        : branch_estimator_ (branch_estimator)
+      {}
       /** \brief Destructor. */
       virtual ~RegressionVarianceStatsEstimator () {}
   
       /** \brief Returns the number of branches the corresponding tree has. */
-      size_t 
+      inline size_t 
       getNumOfBranches () const 
       { 
-        return 2; 
+        //return 2; 
+        return branch_estimator_->getNumOfBranches ();
       }
 
       /** \brief Returns the label of the specified node. 
         * \param[in] node The node which label is returned.
         */
-      LabelDataType 
+      inline LabelDataType 
       getLabelOfNode (
         NodeType & node) const
       {
@@ -173,6 +176,12 @@ namespace pcl
         std::vector<LabelDataType> sums (num_of_branches+1, 0);
         std::vector<LabelDataType> sqr_sums (num_of_branches+1, 0);
         std::vector<size_t> branch_element_count (num_of_branches+1, 0);
+
+        for (size_t branch_index = 0; branch_index < num_of_branches; ++branch_index)
+        {
+          branch_element_count[branch_index] = 1;
+          ++branch_element_count[num_of_branches];
+        }
 
         for (size_t example_index = 0; example_index < num_of_examples; ++example_index)
         {
@@ -248,7 +257,8 @@ namespace pcl
         const float threshold,
         unsigned char & branch_index) const
       {
-        branch_index = (result > threshold) ? 1 : 0;
+        branch_estimator_->computeBranchIndex (result, flag, threshold, branch_index);
+        //branch_index = (result > threshold) ? 1 : 0;
       }
 
       /** \brief Computes and sets the statistics for a node.
@@ -309,6 +319,9 @@ namespace pcl
         stream << "ERROR: RegressionVarianceStatsEstimator does not implement generateCodeForBranchIndex(...)";
       }
 
+    private:
+      /** \brief The branch estimator. */
+      pcl::BranchEstimator * branch_estimator_;
   };
 
 }

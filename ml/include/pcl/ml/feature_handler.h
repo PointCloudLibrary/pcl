@@ -90,7 +90,7 @@ namespace pcl
       virtual void 
       evaluateFeature (const FeatureType & feature,
                        DataSet & data_set,
-                       ExampleIndex & example,
+                       const ExampleIndex & example,
                        float & result,
                        unsigned char & flag) const = 0;
 
