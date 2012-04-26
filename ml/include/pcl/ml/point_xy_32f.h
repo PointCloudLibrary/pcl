@@ -51,7 +51,7 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      inline PointXY32f () : x (0), y (0) {}
+      inline PointXY32f () : x (0.0f), y (0.0f) {}
       /** \brief Destructor. */
       inline virtual ~PointXY32f () {}
 
@@ -86,9 +86,9 @@ namespace pcl
 
     public:
       /** \brief The x-coordinate of the point. */
-      int x;
+      float x;
       /** \brief The y-coordinate of the point. */
-      int y;
+      float y;
   };
 
 }
