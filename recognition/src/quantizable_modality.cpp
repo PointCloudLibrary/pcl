@@ -91,36 +91,38 @@ spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, c
   // TODO: implement differently (as in opencv)
   const size_t width = input_map.getWidth ();
   const size_t height = input_map.getHeight ();
+  const size_t half_spreading_size = spreading_size / 2;
 
   QuantizedMap tmp_map (width, height);
-
   output_map.resize (width, height);
 
-  for (size_t row_index = spreading_size; row_index < height-spreading_size-1; ++row_index)
+  for (size_t row_index = 0; row_index < height-spreading_size-1; ++row_index)
   {
-    for (size_t col_index = spreading_size; col_index < width-spreading_size-1; ++col_index)
+    for (size_t col_index = 0; col_index < width-spreading_size-1; ++col_index)
     {
       unsigned char value = 0;
-      for (size_t col_index2 = col_index-spreading_size/2; col_index2 <= col_index+spreading_size/2; ++col_index2)
+      const unsigned char * data_ptr = &(input_map (col_index, row_index));
+      for (size_t spreading_index = 0; spreading_index < spreading_size; ++spreading_index, ++data_ptr)
       {
-        //if (row_index2 < 0 || row_index2 >= height || col_index2 < 0 || col_index2 >= width) continue;
-        value |= input_map (col_index2, row_index);
+        value |= *data_ptr;
       }
-      tmp_map (col_index, row_index) = value;
+
+      tmp_map (col_index + half_spreading_size, row_index) = value;
     }
   }
 
-  for (size_t row_index = spreading_size; row_index < height-spreading_size-1; ++row_index)
+  for (size_t row_index = 0; row_index < height-spreading_size-1; ++row_index)
   {
-    for (size_t col_index = spreading_size; col_index < width-spreading_size-1; ++col_index)
+    for (size_t col_index = 0; col_index < width-spreading_size-1; ++col_index)
     {
       unsigned char value = 0;
-      for (size_t row_index2 = row_index-spreading_size/2; row_index2 <= row_index+spreading_size/2; ++row_index2)
+      const unsigned char * data_ptr = &(tmp_map (col_index, row_index));
+      for (size_t spreading_index = 0; spreading_index < spreading_size; ++spreading_index, data_ptr += width)
       {
-        //if (row_index2 < 0 || row_index2 >= height || col_index2 < 0 || col_index2 >= width) continue;
-        value |= tmp_map (col_index, row_index2);
+        value |= *data_ptr;
       }
-      output_map (col_index, row_index) = value;
+
+      output_map (col_index, row_index + half_spreading_size) = value;
     }
   }
 }

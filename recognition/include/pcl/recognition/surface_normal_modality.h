@@ -234,6 +234,18 @@ namespace pcl
         variable_feature_nr_ = enabled;
       }
 
+      inline pcl::PointCloud<pcl::Normal> &
+      getSurfaceNormals ()
+      {
+        return surface_normals_;
+      }
+
+      inline const pcl::PointCloud<pcl::Normal> &
+      getSurfaceNormals () const
+      {
+        return surface_normals_;
+      }
+
       inline QuantizedMap &
       getQuantizedMap () 
       { 
@@ -262,7 +274,19 @@ namespace pcl
       virtual void
       processInputData ();
 
-    protected:
+      virtual void
+      processInputDataFromFiltered ();
+
+  protected:
+
+      void
+      computeSurfaceNormals ();
+
+      void
+      computeAndQuantizeSurfaceNormals ();
+
+      void
+      computeAndQuantizeSurfaceNormals2 ();
 
       void
       quantizeSurfaceNormals ();
@@ -298,8 +322,8 @@ template <typename PointInT>
 pcl::SurfaceNormalModality<PointInT>::
 SurfaceNormalModality ()
   : variable_feature_nr_ (false)
-  , feature_distance_threshold_ (1.0f)
-  , min_distance_to_border_ (5.0f)
+  , feature_distance_threshold_ (2.0f)
+  , min_distance_to_border_ (2.0f)
   , normal_lookup_ ()
   , spreading_size_ (8)
   , surface_normals_ ()
@@ -320,15 +344,12 @@ template <typename PointInT> void
 pcl::SurfaceNormalModality<PointInT>::processInputData ()
 {
   // compute surface normals
-  pcl::LinearLeastSquaresNormalEstimation<PointInT, pcl::Normal> ne;
-  //ne.setMaxDepthChangeFactor(1.0f);
-  //ne.setNormalSmoothingSize(9.0f);
-  //ne.setDepthDependentSmoothing(true);
-  ne.setInputCloud (input_);
-  ne.compute (surface_normals_);
+  //computeSurfaceNormals ();
 
   // quantize surface normals
-  quantizeSurfaceNormals ();
+  //quantizeSurfaceNormals ();
+
+  computeAndQuantizeSurfaceNormals2 ();
 
   // filter quantized surface normals
   filterQuantizedSurfaceNormals ();
@@ -338,6 +359,440 @@ pcl::SurfaceNormalModality<PointInT>::processInputData ()
                                          spreaded_quantized_surface_normals_,
                                          spreading_size_);
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT> void
+pcl::SurfaceNormalModality<PointInT>::processInputDataFromFiltered ()
+{
+  // spread quantized surface normals
+  pcl::QuantizedMap::spreadQuantizedMap (filtered_quantized_surface_normals_,
+                                         spreaded_quantized_surface_normals_,
+                                         spreading_size_);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT> void
+pcl::SurfaceNormalModality<PointInT>::computeSurfaceNormals ()
+{
+  // compute surface normals
+  pcl::LinearLeastSquaresNormalEstimation<PointInT, pcl::Normal> ne;
+  ne.setMaxDepthChangeFactor(0.05f);
+  ne.setNormalSmoothingSize(5.0f);
+  ne.setDepthDependentSmoothing(false);
+  ne.setInputCloud (input_);
+  ne.compute (surface_normals_);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT> void
+pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals ()
+{
+  // compute surface normals
+  //pcl::LinearLeastSquaresNormalEstimation<PointInT, pcl::Normal> ne;
+  //ne.setMaxDepthChangeFactor(0.05f);
+  //ne.setNormalSmoothingSize(5.0f);
+  //ne.setDepthDependentSmoothing(false);
+  //ne.setInputCloud (input_);
+  //ne.compute (surface_normals_);
+
+
+  const float bad_point = std::numeric_limits<float>::quiet_NaN ();
+
+  const int width = input_->width;
+  const int height = input_->height;
+
+  surface_normals_.resize (width*height);
+  surface_normals_.width = width;
+  surface_normals_.height = height;
+  surface_normals_.is_dense = false;
+
+  quantized_surface_normals_.resize (width, height);
+
+  // we compute the normals as follows:
+  // ----------------------------------
+  // 
+  // for the depth-gradient you can make the following first-order Taylor approximation:
+  //   D(x + dx) - D(x) = dx^T \Delta D + h.o.t.
+  //     
+  // build linear system by stacking up equation for 8 neighbor points:
+  //   Y = X \Delta D
+  // 
+  // => \Delta D = (X^T X)^{-1} X^T Y
+  // => \Delta D = (A)^{-1} b
+
+  for (int y = 0; y < height; ++y)
+  {
+    for (int x = 0; x < width; ++x)
+    {
+      const int index = y * width + x;
+
+      const float px = input_->points[index].x;
+      const float py = input_->points[index].y;
+      const float pz = input_->points[index].z;
+
+      if (pcl_isnan(px) || pz > 2.0f) 
+      {
+        surface_normals_.points[index].normal_x = bad_point;
+        surface_normals_.points[index].normal_y = bad_point;
+        surface_normals_.points[index].normal_z = bad_point;
+        surface_normals_.points[index].curvature = bad_point;
+
+        quantized_surface_normals_ (x, y) = 0;
+
+        continue;
+      }
+
+      const int smoothingSizeInt = 5;
+
+      float matA0 = 0.0f;
+      float matA1 = 0.0f;
+      float matA3 = 0.0f;
+
+      float vecb0 = 0.0f;
+      float vecb1 = 0.0f;
+
+      for (int v = y - smoothingSizeInt; v <= y + smoothingSizeInt; v += smoothingSizeInt)
+      {
+        for (int u = x - smoothingSizeInt; u <= x + smoothingSizeInt; u += smoothingSizeInt)
+        {
+          if (u < 0 || u >= width || v < 0 || v >= height) continue;
+
+          const size_t index2 = v * width + u;
+
+          const float qx = input_->points[index2].x;
+          const float qy = input_->points[index2].y;
+          const float qz = input_->points[index2].z;
+
+          if (pcl_isnan(qx)) continue;
+
+          const float delta = qz - pz;
+          const float i = qx - px;
+          const float j = qy - py;
+
+          const float f = fabs(delta) < 0.05f ? 1.0f : 0.0f;
+
+          matA0 += f * i * i;
+          matA1 += f * i * j;
+          matA3 += f * j * j;
+          vecb0 += f * i * delta;
+          vecb1 += f * j * delta;
+        }
+      }
+
+      const float det = matA0 * matA3 - matA1 * matA1;
+      const float ddx = matA3 * vecb0 - matA1 * vecb1;
+      const float ddy = -matA1 * vecb0 + matA0 * vecb1;
+
+      const float nx = ddx;
+      const float ny = ddy;
+      const float nz = -det * pz;
+
+      const float length = nx * nx + ny * ny + nz * nz;
+
+      if (length <= 0.0f)
+      {
+        surface_normals_.points[index].normal_x = bad_point;
+        surface_normals_.points[index].normal_y = bad_point;
+        surface_normals_.points[index].normal_z = bad_point;
+        surface_normals_.points[index].curvature = bad_point;
+
+        quantized_surface_normals_ (x, y) = 0;
+      }
+      else
+      {
+        const float normInv = 1.0f / sqrtf (length);
+
+        const float normal_x = nx * normInv;
+        const float normal_y = ny * normInv;
+        const float normal_z = nz * normInv;
+
+        surface_normals_.points[index].normal_x = normal_x;
+        surface_normals_.points[index].normal_y = normal_y;
+        surface_normals_.points[index].normal_z = normal_z;
+        surface_normals_.points[index].curvature = bad_point;
+
+        float angle = 11.25f + atan2 (normal_y, normal_x)*180.0f/3.14f;
+
+        if (angle < 0.0f) angle += 360.0f;
+        if (angle >= 360.0f) angle -= 360.0f;
+
+        int bin_index = static_cast<int> (angle*8.0f/360.0f) & 7;
+
+        quantized_surface_normals_ (x, y) = static_cast<unsigned char> (bin_index);
+      }
+    }
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Contains GRANULARITY and NORMAL_LUT
+#include "normal_lut.i"
+
+static void accumBilateral(long delta, long i, long j, long * A, long * b, int threshold)
+{
+  long f = std::abs(delta) < threshold ? 1 : 0;
+
+  const long fi = f * i;
+  const long fj = f * j;
+
+  A[0] += fi * i;
+  A[1] += fi * j;
+  A[3] += fj * j;
+  b[0]  += fi * delta;
+  b[1]  += fj * delta;
+}
+
+/**
+ * \brief Compute quantized normal image from depth image.
+ *
+ * Implements section 2.6 "Extension to Dense Depth Sensors."
+ *
+ * \param[in]  src  The source 16-bit depth image (in mm).
+ * \param[out] dst  The destination 8-bit image. Each bit represents one bin of
+ *                  the view cone.
+ * \param distance_threshold   Ignore pixels beyond this distance.
+ * \param difference_threshold When computing normals, ignore contributions of pixels whose
+ *                             depth difference with the central pixel is above this threshold.
+ *
+ * \todo Should also need camera model, or at least focal lengths? Replace distance_threshold with mask?
+ */
+template <typename PointInT> void
+pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
+{
+  const int width = input_->width;
+  const int height = input_->height;
+
+  unsigned short * lp_depth = new unsigned short[width*height];
+  unsigned char * lp_normals = new unsigned char[width*height];
+  memset (lp_normals, 0, width*height);
+
+  for (size_t row_index = 0; row_index < height; ++row_index)
+  {
+    for (size_t col_index = 0; col_index < width; ++col_index)
+    {
+      const float value = input_->points[row_index*width + col_index].z;
+      if (pcl_isfinite (value))
+      {
+        lp_depth[row_index*width + col_index] = static_cast<unsigned short> (value * 1000.0f);
+      }
+      else
+      {
+        lp_depth[row_index*width + col_index] = 0;
+      }
+    }
+  }
+
+  const int l_W = width;
+  const int l_H = height;
+
+  const int l_r = 5; // used to be 7
+  const int l_offset0 = -l_r - l_r * l_W;
+  const int l_offset1 =    0 - l_r * l_W;
+  const int l_offset2 = +l_r - l_r * l_W;
+  const int l_offset3 = -l_r;
+  const int l_offset4 = +l_r;
+  const int l_offset5 = -l_r + l_r * l_W;
+  const int l_offset6 =    0 + l_r * l_W;
+  const int l_offset7 = +l_r + l_r * l_W;
+
+  const int offsets_i[] = {-l_r, 0, l_r, -l_r, l_r, -l_r, 0, l_r};
+  const int offsets_j[] = {-l_r, -l_r, -l_r, 0, 0, l_r, l_r, l_r};
+  const int offsets[] = { offsets_i[0] + offsets_j[0] * l_W
+                        , offsets_i[1] + offsets_j[1] * l_W
+                        , offsets_i[2] + offsets_j[2] * l_W
+                        , offsets_i[3] + offsets_j[3] * l_W
+                        , offsets_i[4] + offsets_j[4] * l_W
+                        , offsets_i[5] + offsets_j[5] * l_W
+                        , offsets_i[6] + offsets_j[6] * l_W
+                        , offsets_i[7] + offsets_j[7] * l_W };
+
+
+  const int l_offsetx = GRANULARITY / 2;
+  const int l_offsety = GRANULARITY / 2;
+
+  const int difference_threshold = 50;
+  const int distance_threshold = 2000;
+
+  //const double scale = 1000.0;
+  //const double difference_threshold = 0.05 * scale;
+  //const double distance_threshold = 2.0 * scale;
+
+  for (int l_y = l_r; l_y < l_H - l_r - 1; ++l_y)
+  {
+    unsigned short * lp_line = lp_depth + (l_y * l_W + l_r);
+    unsigned char * lp_norm = lp_normals + (l_y * l_W + l_r);
+
+    for (int l_x = l_r; l_x < l_W - l_r - 1; ++l_x)
+    {
+      long l_d = lp_line[0];
+      //float l_d = input_->points[(l_y * l_W + l_r) + l_x].z;
+      //float px = input_->points[(l_y * l_W + l_r) + l_x].x;
+      //float py = input_->points[(l_y * l_W + l_r) + l_x].y;
+
+      if (l_d < distance_threshold)
+      {
+        // accum
+        long l_A[4]; l_A[0] = l_A[1] = l_A[2] = l_A[3] = 0;
+        long l_b[2]; l_b[0] = l_b[1] = 0;
+        //double l_A[4]; l_A[0] = l_A[1] = l_A[2] = l_A[3] = 0;
+        //double l_b[2]; l_b[0] = l_b[1] = 0;
+
+        accumBilateral(lp_line[l_offset0] - l_d, -l_r, -l_r, l_A, l_b, difference_threshold);
+        accumBilateral(lp_line[l_offset1] - l_d,    0, -l_r, l_A, l_b, difference_threshold);
+        accumBilateral(lp_line[l_offset2] - l_d, +l_r, -l_r, l_A, l_b, difference_threshold);
+        accumBilateral(lp_line[l_offset3] - l_d, -l_r,    0, l_A, l_b, difference_threshold);
+        accumBilateral(lp_line[l_offset4] - l_d, +l_r,    0, l_A, l_b, difference_threshold);
+        accumBilateral(lp_line[l_offset5] - l_d, -l_r, +l_r, l_A, l_b, difference_threshold);
+        accumBilateral(lp_line[l_offset6] - l_d,    0, +l_r, l_A, l_b, difference_threshold);
+        accumBilateral(lp_line[l_offset7] - l_d, +l_r, +l_r, l_A, l_b, difference_threshold);
+
+        //for (size_t index = 0; index < 8; ++index)
+        //{
+        //  //accumBilateral(lp_line[offsets[index]] - l_d, offsets_i[index], offsets_j[index], l_A, l_b, difference_threshold);
+
+        //  //const long delta = lp_line[offsets[index]] - l_d;
+        //  //const long i = offsets_i[index];
+        //  //const long j = offsets_j[index];
+        //  //long * A = l_A;
+        //  //long * b = l_b;
+        //  //const int threshold = difference_threshold;
+
+        //  //const long f = std::abs(delta) < threshold ? 1 : 0;
+
+        //  //const long fi = f * i;
+        //  //const long fj = f * j;
+
+        //  //A[0] += fi * i;
+        //  //A[1] += fi * j;
+        //  //A[3] += fj * j;
+        //  //b[0] += fi * delta;
+        //  //b[1] += fj * delta;
+
+
+        //  const double delta = 1000.0f * (input_->points[(l_y * l_W + l_r) + l_x + offsets[index]].z - l_d);
+        //  const double i = offsets_i[index];
+        //  const double j = offsets_j[index];
+        //  //const float i = input_->points[(l_y * l_W + l_r) + l_x + offsets[index]].x - px;//offsets_i[index];
+        //  //const float j = input_->points[(l_y * l_W + l_r) + l_x + offsets[index]].y - py;//offsets_j[index];
+        //  double * A = l_A;
+        //  double * b = l_b;
+        //  const double threshold = difference_threshold;
+
+        //  const double f = std::fabs(delta) < threshold ? 1.0f : 0.0f;
+
+        //  const double fi = f * i;
+        //  const double fj = f * j;
+
+        //  A[0] += fi * i;
+        //  A[1] += fi * j;
+        //  A[3] += fj * j;
+        //  b[0] += fi * delta;
+        //  b[1] += fj * delta;
+        //}
+
+        //long f = std::abs(delta) < threshold ? 1 : 0;
+
+        //const long fi = f * i;
+        //const long fj = f * j;
+
+        //A[0] += fi * i;
+        //A[1] += fi * j;
+        //A[3] += fj * j;
+        //b[0]  += fi * delta;
+        //b[1]  += fj * delta;
+
+
+        // solve
+        long l_det =  l_A[0] * l_A[3] - l_A[1] * l_A[1];
+        long l_ddx =  l_A[3] * l_b[0] - l_A[1] * l_b[1];
+        long l_ddy = -l_A[1] * l_b[0] + l_A[0] * l_b[1];
+
+        /// @todo Magic number 1150 is focal length? This is something like
+        /// f in SXGA mode, but in VGA is more like 530.
+        float l_nx = static_cast<float>(1150 * l_ddx);
+        float l_ny = static_cast<float>(1150 * l_ddy);
+        float l_nz = static_cast<float>(-l_det * l_d);
+
+        //// solve
+        //double l_det =  l_A[0] * l_A[3] - l_A[1] * l_A[1];
+        //double l_ddx =  l_A[3] * l_b[0] - l_A[1] * l_b[1];
+        //double l_ddy = -l_A[1] * l_b[0] + l_A[0] * l_b[1];
+
+        ///// @todo Magic number 1150 is focal length? This is something like
+        ///// f in SXGA mode, but in VGA is more like 530.
+        //const double dummy_focal_length = 1150.0f;
+        //double l_nx = l_ddx * dummy_focal_length;
+        //double l_ny = l_ddy * dummy_focal_length;
+        //double l_nz = -l_det * l_d;
+
+        float l_sqrt = sqrt(l_nx * l_nx + l_ny * l_ny + l_nz * l_nz);
+
+        if (l_sqrt > 0)
+        {
+          float l_norminv = 1.0f / (l_sqrt);
+
+          l_nx *= l_norminv;
+          l_ny *= l_norminv;
+          l_nz *= l_norminv;
+
+          float angle = 22.5f + atan2 (l_ny, l_nx)*180.0f/3.14f;
+
+          if (angle < 0.0f) angle += 360.0f;
+          if (angle >= 360.0f) angle -= 360.0f;
+
+          int bin_index = static_cast<int> (angle*8.0f/360.0f) & 7;
+
+
+          //*lp_norm = fabs(l_nz)*255;
+
+          //int l_val1 = static_cast<int>(l_nx * l_offsetx + l_offsetx);
+          //int l_val2 = static_cast<int>(l_ny * l_offsety + l_offsety);
+          //int l_val3 = static_cast<int>(l_nz * GRANULARITY + GRANULARITY);
+
+          //*lp_norm = NORMAL_LUT[l_val3][l_val2][l_val1];
+          *lp_norm = 0x1 << bin_index;
+        }
+        else
+        {
+          *lp_norm = 0; // Discard shadows from depth sensor
+        }
+      }
+      else
+      {
+        *lp_norm = 0; //out of depth
+      }
+      ++lp_line;
+      ++lp_norm;
+    }
+  }
+  /*cvSmooth(m_dep[0], m_dep[0], CV_MEDIAN, 5, 5);*/
+
+  unsigned char map[255];
+  memset(map, 0, 255);
+
+  map[0x1<<0] = 0;
+  map[0x1<<1] = 1;
+  map[0x1<<2] = 2;
+  map[0x1<<3] = 3;
+  map[0x1<<4] = 4;
+  map[0x1<<5] = 5;
+  map[0x1<<6] = 6;
+  map[0x1<<7] = 7;
+
+  quantized_surface_normals_.resize (width, height);
+  for (size_t row_index = 0; row_index < height; ++row_index)
+  {
+    for (size_t col_index = 0; col_index < width; ++col_index)
+    {
+      quantized_surface_normals_ (col_index, row_index) = map[lp_normals[row_index*width + col_index]];
+    }
+  }
+
+  delete[] lp_depth;
+  delete[] lp_normals;
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
@@ -420,11 +875,11 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
         //const unsigned char quantized_value = quantized_surface_normals_ (row_index, col_index);
         const unsigned char quantized_value = filtered_quantized_surface_normals_ (col_index, row_index);
 
-        const float nx = surface_normals_ (col_index, row_index).normal_x;
-        const float ny = surface_normals_ (col_index, row_index).normal_y;
-        const float nz = surface_normals_ (col_index, row_index).normal_z;
+        //const float nx = surface_normals_ (col_index, row_index).normal_x;
+        //const float ny = surface_normals_ (col_index, row_index).normal_y;
+        //const float nz = surface_normals_ (col_index, row_index).normal_z;
 
-        if (quantized_value != 0 && !(pcl_isnan (nx) || pcl_isnan (ny) || pcl_isnan (nz)))
+        if (quantized_value != 0)// && !(pcl_isnan (nx) || pcl_isnan (ny) || pcl_isnan (nz)))
         {
           const int distance_map_index = map[quantized_value];
 
@@ -526,9 +981,9 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
 
         if (candidate_accepted)
         {
-          std::cerr << "feature_index: " << list2.size () << std::endl;
-          std::cerr << "min_min_sqr_distance: " << min_min_sqr_distance << std::endl;
-          std::cerr << "max_min_sqr_distance: " << max_min_sqr_distance << std::endl;
+          //std::cerr << "feature_index: " << list2.size () << std::endl;
+          //std::cerr << "min_min_sqr_distance: " << min_min_sqr_distance << std::endl;
+          //std::cerr << "max_min_sqr_distance: " << max_min_sqr_distance << std::endl;
 
           if (min_min_sqr_distance < 50)
           {
@@ -637,7 +1092,7 @@ pcl::SurfaceNormalModality<PointInT>::quantizeSurfaceNormals ()
       //quantized_surface_normals_.data[row_index*width+col_index] =
       //  normal_lookup_(normal_x, normal_y, normal_z);
 
-      float angle = atan2f (normal_y, normal_x)*180.0f/3.14f;
+      float angle = 11.25f + atan2f (normal_y, normal_x)*180.0f/3.14f;
 
       if (angle < 0.0f) angle += 360.0f;
       if (angle >= 360.0f) angle -= 360.0f;
@@ -661,31 +1116,127 @@ pcl::SurfaceNormalModality<PointInT>::filterQuantizedSurfaceNormals ()
 
   filtered_quantized_surface_normals_.resize (width, height);
 
+  //for (int row_index = 2; row_index < height-2; ++row_index)
+  //{
+  //  for (int col_index = 2; col_index < width-2; ++col_index)
+  //  {
+  //    std::list<unsigned char> values;
+  //    values.reserve (25);
+
+  //    unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index-2)*width+col_index-2;
+  //    values.push_back (dataPtr[0]);
+  //    values.push_back (dataPtr[1]);
+  //    values.push_back (dataPtr[2]);
+  //    values.push_back (dataPtr[3]);
+  //    values.push_back (dataPtr[4]);
+  //    dataPtr += width;
+  //    values.push_back (dataPtr[0]);
+  //    values.push_back (dataPtr[1]);
+  //    values.push_back (dataPtr[2]);
+  //    values.push_back (dataPtr[3]);
+  //    values.push_back (dataPtr[4]);
+  //    dataPtr += width;
+  //    values.push_back (dataPtr[0]);
+  //    values.push_back (dataPtr[1]);
+  //    values.push_back (dataPtr[2]);
+  //    values.push_back (dataPtr[3]);
+  //    values.push_back (dataPtr[4]);
+  //    dataPtr += width;
+  //    values.push_back (dataPtr[0]);
+  //    values.push_back (dataPtr[1]);
+  //    values.push_back (dataPtr[2]);
+  //    values.push_back (dataPtr[3]);
+  //    values.push_back (dataPtr[4]);
+  //    dataPtr += width;
+  //    values.push_back (dataPtr[0]);
+  //    values.push_back (dataPtr[1]);
+  //    values.push_back (dataPtr[2]);
+  //    values.push_back (dataPtr[3]);
+  //    values.push_back (dataPtr[4]);
+
+  //    values.sort ();
+
+  //    filtered_quantized_surface_normals_ (col_index, row_index) = values[12];
+  //  }
+  //}
+
+
+  //for (int row_index = 2; row_index < height-2; ++row_index)
+  //{
+  //  for (int col_index = 2; col_index < width-2; ++col_index)
+  //  {
+  //    filtered_quantized_surface_normals_ (col_index, row_index) = static_cast<unsigned char> (0x1 << (quantized_surface_normals_ (col_index, row_index) - 1));
+  //  }
+  //}
+
+
   // filter data
-  for (int row_index = 1; row_index < height-1; ++row_index)
+  for (int row_index = 2; row_index < height-2; ++row_index)
   {
-    for (int col_index = 1; col_index < width-1; ++col_index)
+    for (int col_index = 2; col_index < width-2; ++col_index)
     {
       unsigned char histogram[9] = {0,0,0,0,0,0,0,0,0};
 
+      //{
+      //  unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index-1)*width+col_index-1;
+      //  ++histogram[dataPtr[0]];
+      //  ++histogram[dataPtr[1]];
+      //  ++histogram[dataPtr[2]];
+      //}
+      //{
+      //  unsigned char * dataPtr = quantized_surface_normals_.getData () + row_index*width+col_index-1;
+      //  ++histogram[dataPtr[0]];
+      //  ++histogram[dataPtr[1]];
+      //  ++histogram[dataPtr[2]];
+      //}
+      //{
+      //  unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index+1)*width+col_index-1;
+      //  ++histogram[dataPtr[0]];
+      //  ++histogram[dataPtr[1]];
+      //  ++histogram[dataPtr[2]];
+      //}
+
       {
-        unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index-1)*width+col_index-1;
+        unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index-2)*width+col_index-2;
         ++histogram[dataPtr[0]];
         ++histogram[dataPtr[1]];
         ++histogram[dataPtr[2]];
+        ++histogram[dataPtr[3]];
+        ++histogram[dataPtr[4]];
       }
       {
-        unsigned char * dataPtr = quantized_surface_normals_.getData () + row_index*width+col_index-1;
+        unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index-1)*width+col_index-2;
         ++histogram[dataPtr[0]];
         ++histogram[dataPtr[1]];
         ++histogram[dataPtr[2]];
+        ++histogram[dataPtr[3]];
+        ++histogram[dataPtr[4]];
       }
       {
-        unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index+1)*width+col_index-1;
+        unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index)*width+col_index-2;
         ++histogram[dataPtr[0]];
         ++histogram[dataPtr[1]];
         ++histogram[dataPtr[2]];
+        ++histogram[dataPtr[3]];
+        ++histogram[dataPtr[4]];
       }
+      {
+        unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index+1)*width+col_index-2;
+        ++histogram[dataPtr[0]];
+        ++histogram[dataPtr[1]];
+        ++histogram[dataPtr[2]];
+        ++histogram[dataPtr[3]];
+        ++histogram[dataPtr[4]];
+      }
+      {
+        unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index+2)*width+col_index-2;
+        ++histogram[dataPtr[0]];
+        ++histogram[dataPtr[1]];
+        ++histogram[dataPtr[2]];
+        ++histogram[dataPtr[3]];
+        ++histogram[dataPtr[4]];
+      }
+
 
       unsigned char max_hist_value = 0;
       int max_hist_index = -1;
@@ -711,6 +1262,8 @@ pcl::SurfaceNormalModality<PointInT>::filterQuantizedSurfaceNormals ()
       //filtered_quantized_color_gradients_.data[row_index*width+col_index] = quantized_color_gradients_.data[row_index*width+col_index];
     }
   }
+
+
 
   //cv::Mat data1(quantized_surface_normals_.height, quantized_surface_normals_.width, CV_8U, quantized_surface_normals_.data);
   //cv::Mat data2(filtered_quantized_surface_normals_.height, filtered_quantized_surface_normals_.width, CV_8U, filtered_quantized_surface_normals_.data);

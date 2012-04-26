@@ -151,7 +151,13 @@ namespace pcl
       virtual void
       processInputData ();
 
+      virtual void
+      processInputDataFromFiltered ();
+
     protected:
+
+      void
+      computeGaussianKernel (const size_t kernel_size, const float sigma, std::vector <float> & kernel_values);
 
       void
       computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & cloud);
@@ -219,12 +225,67 @@ pcl::ColorGradientModality<PointInT>::
 template <typename PointInT>
 void
 pcl::ColorGradientModality<PointInT>::
+computeGaussianKernel (const size_t kernel_size, const float sigma, std::vector <float> & kernel_values)
+{
+  // code taken from OpenCV
+
+  const int n = kernel_size;
+  const int SMALL_GAUSSIAN_SIZE = 7;
+  static const float small_gaussian_tab[][SMALL_GAUSSIAN_SIZE] =
+  {
+      {1.f},
+      {0.25f, 0.5f, 0.25f},
+      {0.0625f, 0.25f, 0.375f, 0.25f, 0.0625f},
+      {0.03125f, 0.109375f, 0.21875f, 0.28125f, 0.21875f, 0.109375f, 0.03125f}
+  };
+
+  const float* fixed_kernel = n % 2 == 1 && n <= SMALL_GAUSSIAN_SIZE && sigma <= 0 ?
+      small_gaussian_tab[n>>1] : 0;
+
+  //CV_Assert( ktype == CV_32F || ktype == CV_64F );
+  /*Mat kernel(n, 1, ktype);*/
+  kernel_values.resize (n);
+  float* cf = &(kernel_values[0]);
+  //double* cd = (double*)kernel.data;
+
+  double sigmaX = sigma > 0 ? sigma : ((n-1)*0.5 - 1)*0.3 + 0.8;
+  double scale2X = -0.5/(sigmaX*sigmaX);
+  double sum = 0;
+
+  int i;
+  for( i = 0; i < n; i++ )
+  {
+    double x = i - (n-1)*0.5;
+    double t = fixed_kernel ? (double)fixed_kernel[i] : std::exp(scale2X*x*x);
+
+    cf[i] = (float)t;
+    sum += cf[i];
+  }
+
+  sum = 1./sum;
+  for( i = 0; i < n; i++ )
+  {
+    cf[i] = (float)(cf[i]*sum);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT>
+void
+pcl::ColorGradientModality<PointInT>::
 processInputData ()
 {
+  // compute gaussian kernel values
+  const size_t kernel_size = 7;
+  std::vector<float> kernel_values;
+  computeGaussianKernel (kernel_size, 0.0f, kernel_values);
+
   // smooth input
 	pcl::filters::Convolution<pcl::RGB, pcl::RGB> convolution;
-	Eigen::ArrayXf gaussian_kernel(5);
-	gaussian_kernel << 1.f/16, 1.f/4, 3.f/8, 1.f/4, 1.f/16;
+	Eigen::ArrayXf gaussian_kernel(kernel_size);
+	//gaussian_kernel << 1.f/16, 1.f/8, 3.f/16, 2.f/8, 3.f/16, 1.f/8, 1.f/16;
+	//gaussian_kernel << 16.f/1600.f,  32.f/1600.f,  64.f/1600.f, 128.f/1600.f, 256.f/1600.f, 128.f/1600.f,  64.f/1600.f,  32.f/1600.f,  16.f/1600.f;
+  gaussian_kernel << kernel_values[0], kernel_values[1], kernel_values[2], kernel_values[3], kernel_values[4], kernel_values[5], kernel_values[6];
 
   pcl::PointCloud<pcl::RGB>::Ptr rgb_input_ (new pcl::PointCloud<pcl::RGB>());
   
@@ -259,6 +320,19 @@ processInputData ()
   // filter quantized gradients to get only dominants one + thresholding
   filterQuantizedColorGradients ();
 
+  // spread filtered quantized gradients
+  //spreadFilteredQunatizedColorGradients ();
+  pcl::QuantizedMap::spreadQuantizedMap (filtered_quantized_color_gradients_,
+                                         spreaded_filtered_quantized_color_gradients_, 
+                                         spreading_size_);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT>
+void
+pcl::ColorGradientModality<PointInT>::
+processInputDataFromFiltered ()
+{
   // spread filtered quantized gradients
   //spreadFilteredQunatizedColorGradients ();
   pcl::QuantizedMap::spreadQuantizedMap (filtered_quantized_color_gradients_,
@@ -318,8 +392,8 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
           float smallest_distance = std::numeric_limits<float>::max ();
           for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
           {
-            const float dx = static_cast<float> (iter1->x - iter2->x);
-            const float dy = static_cast<float> (iter1->y - iter2->y);
+            const float dx = static_cast<float> (iter1->x) - static_cast<float> (iter2->x);
+            const float dy = static_cast<float> (iter1->y) - static_cast<float> (iter2->y);
 
             const float distance = dx*dx + dy*dy;
 
@@ -349,8 +423,8 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
             if (iter2 == iter3)
               continue;
 
-            const float dx = static_cast<int> (iter2->x) - static_cast<int> (iter3->x);
-            const float dy = static_cast<int> (iter2->y) - static_cast<int> (iter3->y);
+            const float dx = static_cast<float> (iter2->x) - static_cast<float> (iter3->x);
+            const float dy = static_cast<float> (iter2->y) - static_cast<float> (iter3->y);
 
             const float sqr_distance = dx*dx + dy*dy;
 
@@ -365,8 +439,8 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
 
           // check current feature
           {
-            const float dx = static_cast<int> (iter2->x) - static_cast<int> (best_iter->x);
-            const float dy = static_cast<int> (iter2->y) - static_cast<int> (best_iter->y);
+            const float dx = static_cast<float> (iter2->x) - static_cast<float> (best_iter->x);
+            const float dy = static_cast<float> (iter2->y) - static_cast<float> (best_iter->y);
 
             const float sqr_distance = dx*dx + dy*dy;
 
@@ -386,9 +460,9 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
 
         if (best_iter != list1.end ())
         {
-          std::cerr << "feature_index: " << list2.size () << std::endl;
-          std::cerr << "min_min_sqr_distance: " << min_min_sqr_distance << std::endl;
-          std::cerr << "max_min_sqr_distance: " << max_min_sqr_distance << std::endl;
+          //std::cerr << "feature_index: " << list2.size () << std::endl;
+          //std::cerr << "min_min_sqr_distance: " << min_min_sqr_distance << std::endl;
+          //std::cerr << "max_min_sqr_distance: " << max_min_sqr_distance << std::endl;
 
           if (min_min_sqr_distance < 50)
           {
@@ -429,8 +503,8 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
           float smallest_distance = std::numeric_limits<float>::max ();
           for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
           {
-            const float dx = static_cast<float> (iter1->x - iter2->x);
-            const float dy = static_cast<float> (iter1->y - iter2->y);
+            const float dx = static_cast<float> (iter1->x) - static_cast<float> (iter2->x);
+            const float dy = static_cast<float> (iter1->y) - static_cast<float> (iter2->y);
 
             const float distance = dx*dx + dy*dy;
 
@@ -452,6 +526,10 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
         if (best_iter != list1.end ())
         {
           list2.push_back (*best_iter);
+        }
+        else
+        {
+          break;
         }
       }  
     }
@@ -560,7 +638,7 @@ computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & c
   color_gradients_.width = width;
   color_gradients_.height = height;
 
-  const float pi = tan(1.0f)*4;
+  const float pi = tan(1.0f)*2;
   for (int row_index = 0; row_index < height-2; ++row_index)
   {
     for (int col_index = 0; col_index < width-2; ++col_index)
@@ -647,7 +725,7 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
   color_gradients_.width = width;
   color_gradients_.height = height;
 
-  const float pi = tanf (1.0f) * 4.0f;
+  const float pi = tanf (1.0f) * 2.0f;
   for (int row_index = 1; row_index < height-1; ++row_index)
   {
     for (int col_index = 1; col_index < width-1; ++col_index)
@@ -677,20 +755,35 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
       const int g3 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index+1)].g);
       const int b3 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index+1)].b);
 
-      const int r_tmp1 = - r7 + r3;
-      const int r_tmp2 = - r1 + r9;
-      const int g_tmp1 = - g7 + g3;
-      const int g_tmp2 = - g1 + g9;
-      const int b_tmp1 = - b7 + b3;
-      const int b_tmp2 = - b1 + b9;
+      //const int r_tmp1 = - r7 + r3;
+      //const int r_tmp2 = - r1 + r9;
+      //const int g_tmp1 = - g7 + g3;
+      //const int g_tmp2 = - g1 + g9;
+      //const int b_tmp1 = - b7 + b3;
+      //const int b_tmp2 = - b1 + b9;
+      ////const int gx = - r7 - (r4<<2) - r1 + r3 + (r6<<2) + r9;
+      ////const int gy = - r7 - (r8<<2) - r9 + r1 + (r2<<2) + r3;
+      //const int r_dx = r_tmp1 + r_tmp2 - (r4<<2) + (r6<<2);
+      //const int r_dy = r_tmp1 - r_tmp2 - (r8<<2) + (r2<<2);
+      //const int g_dx = g_tmp1 + g_tmp2 - (g4<<2) + (g6<<2);
+      //const int g_dy = g_tmp1 - g_tmp2 - (g8<<2) + (g2<<2);
+      //const int b_dx = b_tmp1 + b_tmp2 - (b4<<2) + (b6<<2);
+      //const int b_dy = b_tmp1 - b_tmp2 - (b8<<2) + (b2<<2);
+
+      //const int r_tmp1 = - r7 + r3;
+      //const int r_tmp2 = - r1 + r9;
+      //const int g_tmp1 = - g7 + g3;
+      //const int g_tmp2 = - g1 + g9;
+      //const int b_tmp1 = - b7 + b3;
+      //const int b_tmp2 = - b1 + b9;
       //const int gx = - r7 - (r4<<2) - r1 + r3 + (r6<<2) + r9;
       //const int gy = - r7 - (r8<<2) - r9 + r1 + (r2<<2) + r3;
-      const int r_dx = r_tmp1 + r_tmp2 - (r4<<2) + (r6<<2);
-      const int r_dy = r_tmp1 - r_tmp2 - (r8<<2) + (r2<<2);
-      const int g_dx = g_tmp1 + g_tmp2 - (g4<<2) + (g6<<2);
-      const int g_dy = g_tmp1 - g_tmp2 - (g8<<2) + (g2<<2);
-      const int b_dx = b_tmp1 + b_tmp2 - (b4<<2) + (b6<<2);
-      const int b_dy = b_tmp1 - b_tmp2 - (b8<<2) + (b2<<2);
+      const int r_dx = r9 + 2*r6 + r3 - (r7 + 2*r4 + r1);
+      const int r_dy = r1 + 2*r2 + r3 - (r7 + 2*r8 + r9);
+      const int g_dx = g9 + 2*g6 + g3 - (g7 + 2*g4 + g1);
+      const int g_dy = g1 + 2*g2 + g3 - (g7 + 2*g8 + g9);
+      const int b_dx = b9 + 2*b6 + b3 - (b7 + 2*b4 + b1);
+      const int b_dy = b1 + 2*b2 + b3 - (b7 + 2*b8 + b9);
 
       const int sqr_mag_r = r_dx*r_dx + r_dy*r_dy;
       const int sqr_mag_g = g_dx*g_dx + g_dy*g_dy;
@@ -700,35 +793,41 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
       {
         GradientXY gradient;
         gradient.magnitude = sqrtf (static_cast<float> (sqr_mag_r));
-        gradient.angle = atan2f (static_cast<float> (r_dy), static_cast<float> (r_dx)) * 180.0f / pi;
+        gradient.angle = atan2 (static_cast<float> (r_dy), static_cast<float> (r_dx)) * 180.0f / pi;
+        if (gradient.angle < -180.0f) gradient.angle += 360.0f;
+        if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
         gradient.x = static_cast<float> (col_index);
         gradient.y = static_cast<float> (row_index);
 
-        color_gradients_ (col_index+1, row_index+1) = gradient;
+        color_gradients_ (col_index, row_index) = gradient;
       }
       else if (sqr_mag_g > sqr_mag_b)
       {
         GradientXY gradient;
         gradient.magnitude = sqrtf (static_cast<float> (sqr_mag_g));
-        gradient.angle = atan2f (static_cast<float> (g_dy), static_cast<float> (g_dx)) * 180.0f / pi;
+        gradient.angle = atan2 (static_cast<float> (g_dy), static_cast<float> (g_dx)) * 180.0f / pi;
+        if (gradient.angle < -180.0f) gradient.angle += 360.0f;
+        if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
         gradient.x = static_cast<float> (col_index);
         gradient.y = static_cast<float> (row_index);
 
-        color_gradients_ (col_index+1, row_index+1) = gradient;
+        color_gradients_ (col_index, row_index) = gradient;
       }
       else
       {
         GradientXY gradient;
         gradient.magnitude = sqrtf (static_cast<float> (sqr_mag_b));
-        gradient.angle = atan2f (static_cast<float> (b_dy), static_cast<float> (b_dx)) * 180.0f / pi;
+        gradient.angle = atan2 (static_cast<float> (b_dy), static_cast<float> (b_dx)) * 180.0f / pi;
+        if (gradient.angle < -180.0f) gradient.angle += 360.0f;
+        if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
         gradient.x = static_cast<float> (col_index);
         gradient.y = static_cast<float> (row_index);
 
-        color_gradients_ (col_index+1, row_index+1) = gradient;
+        color_gradients_ (col_index, row_index) = gradient;
       }
 
-      assert (color_gradients_ (col_index+1, row_index+1).angle >= -180 &&
-              color_gradients_ (col_index+1, row_index+1).angle <=  180);
+      assert (color_gradients_ (col_index, row_index).angle >= -180 &&
+              color_gradients_ (col_index, row_index).angle <=  180);
     }
   }
 
@@ -741,15 +840,27 @@ void
 pcl::ColorGradientModality<PointInT>::
 quantizeColorGradients ()
 {
+  //std::cerr << "quantize this, bastard!!!" << std::endl;
+
+  //unsigned char quantization_map[16] = {0,1,2,3,4,5,6,7,0,1,2,3,4,5,6,7};
+  //unsigned char quantization_map[16] = {1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8};
+
+  //for (float angle = 0.0f; angle < 360.0f; angle += 1.0f)
+  //{
+  //  const int quantized_value = quantization_map[static_cast<int> (angle * angleScale)];
+  //  std::cerr << angle << ": " << quantized_value << std::endl;
+  //}
+
+
   const size_t width = input_->width;
   const size_t height = input_->height;
 
   quantized_color_gradients_.resize (width, height);
 
-  //unsigned char quantization_map[16] = {0,1,2,3,4,5,6,7,0,1,2,3,4,5,6,7};
-  //unsigned char quantization_map[16] = {1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8};
+  const float angleScale = 16.0f/360.0f;
 
-  const float angleScale = 1.0f/22.6f;
+  float min_angle = std::numeric_limits<float>::max ();
+  float max_angle = -std::numeric_limits<float>::max ();
   for (size_t row_index = 0; row_index < height; ++row_index)
   {
     for (size_t col_index = 0; col_index < width; ++col_index)
@@ -760,12 +871,30 @@ quantizeColorGradients ()
         continue;
       }
 
-      const int quantized_value = static_cast<int> (color_gradients_ (col_index, row_index).angle * angleScale) + 8;
-      assert (0 <= quantized_value && quantized_value < 16);
+      const float angle = 11.25f + color_gradients_ (col_index, row_index).angle + 180.0f;
+      const int quantized_value = (static_cast<int> (angle * angleScale)) & 7;
+      quantized_color_gradients_ (col_index, row_index) = static_cast<unsigned char> (quantized_value + 1); 
+
+      //const float angle = color_gradients_ (col_index, row_index).angle + 180.0f;
+
+      //min_angle = std::min (min_angle, angle);
+      //max_angle = std::max (max_angle, angle);
+
+      //if (angle < 0.0f || angle >= 360.0f)
+      //{
+      //  std::cerr << "angle shitty: " << angle << std::endl;
+      //}
+
+      //const int quantized_value = quantization_map[static_cast<int> (angle * angleScale)];
+      //quantized_color_gradients_ (col_index, row_index) = static_cast<unsigned char> (quantized_value); 
+
+      //assert (0 <= quantized_value && quantized_value < 16);
       //quantized_color_gradients_ (col_index, row_index) = quantization_map[quantized_value];
-      quantized_color_gradients_ (col_index, row_index) = static_cast<unsigned char> ((quantized_value & 7) + 1); // = (quantized_value % 8) + 1
+      //quantized_color_gradients_ (col_index, row_index) = static_cast<unsigned char> ((quantized_value & 7) + 1); // = (quantized_value % 8) + 1
     }
   }
+
+  //std::cerr << ">>>>> " << min_angle << ", " << max_angle << std::endl;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
