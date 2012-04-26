@@ -607,6 +607,7 @@ pcl::visualization::ImageViewer::addCircle (unsigned int x, unsigned int y, doub
     am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
   }
 
+  am_it->canvas->SetDrawColor (0.0, 255.0, 0.0, opacity * 255.0);
   am_it->canvas->DrawCircle (x, y, radius);
   return (true);
 }
@@ -647,6 +648,7 @@ pcl::visualization::ImageViewer::addFilledRectangle (
     am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
   }
 
+  am_it->canvas->SetDrawColor (0.0, 255.0, 0.0, opacity * 255.0);
   am_it->canvas->FillBox (x_min, x_max, y_min, y_max);
   return (true);
 }
@@ -661,7 +663,7 @@ pcl::visualization::ImageViewer::addRectangle (
   LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
-    PCL_DEBUG ("[pcl::visualization::ImageViewer::addFilledRectangle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
     am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
   }
 
@@ -684,10 +686,11 @@ pcl::visualization::ImageViewer::addRectangle (
   LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
-    PCL_DEBUG ("[pcl::visualization::ImageViewer::addFilledRectangle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
     am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
   }
 
+  am_it->canvas->SetDrawColor (0.0, 255.0, 0.0, opacity * 255.0);
   am_it->canvas->DrawSegment (x_min, y_min, x_min, y_max);
   am_it->canvas->DrawSegment (x_min, y_max, x_max, y_max);
   am_it->canvas->DrawSegment (x_max, y_max, x_max, y_min);
@@ -706,7 +709,7 @@ pcl::visualization::ImageViewer::addRectangle (
   LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
-    PCL_DEBUG ("[pcl::visualization::ImageViewer::addFilledRectangle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
     am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
   }
 
@@ -729,11 +732,11 @@ pcl::visualization::ImageViewer::addRectangle (
   LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
-    PCL_DEBUG ("[pcl::visualization::ImageViewer::addFilledRectangle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
     am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
   }
 
-  am_it->canvas->SetDrawColor (0.0, 255.0, 0.0, 255.0);
+  am_it->canvas->SetDrawColor (0.0, 255.0, 0.0, opacity * 255.0);
   am_it->canvas->DrawSegment (int (min_pt.x), int (min_pt.y), int (min_pt.x), int (max_pt.y));
   am_it->canvas->DrawSegment (int (min_pt.x), int (max_pt.y), int (max_pt.x), int (max_pt.y));
   am_it->canvas->DrawSegment (int (max_pt.x), int (max_pt.y), int (max_pt.x), int (min_pt.y));
@@ -756,6 +759,7 @@ pcl::visualization::ImageViewer::addLine (unsigned int x_min, unsigned int y_min
     am_it = createLayer (layer_id, image_viewer_->GetRenderWindow ()->GetSize ()[0] - 1, image_viewer_->GetRenderWindow ()->GetSize ()[1] - 1, opacity, true);
   }
 
+  am_it->canvas->SetDrawColor (0.0, 255.0, 0.0, opacity * 255.0);
   am_it->canvas->DrawSegment (x_min, y_min, x_max, y_max);
 
   return (true);

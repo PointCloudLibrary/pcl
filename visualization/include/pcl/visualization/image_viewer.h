@@ -409,11 +409,11 @@ namespace pcl
           * \param[in] y the y coordinate of the circle center
           * \param[in] radius the radius of the circle
           * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn. 
-          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 1.0)
           */
         bool
         addCircle (unsigned int x, unsigned int y, double radius, 
-                   const std::string &layer_id = "circles", double opacity = 0.5);
+                   const std::string &layer_id = "circles", double opacity = 1.0);
 
         /** \brief Add a circle shape from a point and a radius
           * \param[in] x the x coordinate of the circle center
@@ -423,22 +423,22 @@ namespace pcl
           * \param[in] g the green channel of the color that the sphere should be rendered with (0.0 -> 1.0)
           * \param[in] b the blue channel of the color that the sphere should be rendered with (0.0 -> 1.0)
           * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn. 
-          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 1.0)
           */
         bool
         addCircle (unsigned int x, unsigned int y, double radius, 
                    double r, double g, double b,
-                   const std::string &layer_id = "circles", double opacity = 0.5);
+                   const std::string &layer_id = "circles", double opacity = 1.0);
 
         /** \brief Add a 2D box and color its edges with a given color
           * \param[in] min_pt the X,Y min coordinate
           * \param[in] max_pt the X,Y max coordinate
           * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn. 
-          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 1.0)
           */
         bool
         addRectangle (const pcl::PointXY &min_pt, const pcl::PointXY &max_pt,
-                      const std::string &layer_id = "rectangles", double opacity = 0.5);
+                      const std::string &layer_id = "rectangles", double opacity = 1.0);
 
         /** \brief Add a 2D box and color its edges with a given color
           * \param[in] min_pt the X,Y min coordinate
@@ -447,12 +447,12 @@ namespace pcl
           * \param[in] g the green channel of the color that the box should be rendered with (0.0 -> 1.0)
           * \param[in] b the blue channel of the color that the box should be rendered with (0.0 -> 1.0)
           * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn. 
-          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 1.0)
           */
         bool
         addRectangle (const pcl::PointXY &min_pt, const pcl::PointXY &max_pt,
                       double r, double g, double b,
-                      const std::string &layer_id = "rectangles", double opacity = 0.5);
+                      const std::string &layer_id = "rectangles", double opacity = 1.0);
 
         /** \brief Add a 2D box and color its edges with a given color
           * \param[in] x_min the X min coordinate
@@ -460,11 +460,11 @@ namespace pcl
           * \param[in] y_min the Y min coordinate
           * \param[in] y_max the Y max coordinate 
           * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn. 
-          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 1.0)
           */
         bool
         addRectangle (unsigned int x_min, unsigned int x_max, unsigned int y_min, unsigned int y_max,  
-                      const std::string &layer_id = "rectangles", double opacity = 0.5);
+                      const std::string &layer_id = "rectangles", double opacity = 1.0);
 
         /** \brief Add a 2D box and color its edges with a given color
           * \param[in] x_min the X min coordinate
@@ -475,12 +475,64 @@ namespace pcl
           * \param[in] g the green channel of the color that the box should be rendered with (0.0 -> 1.0)
           * \param[in] b the blue channel of the color that the box should be rendered with (0.0 -> 1.0)
           * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn. 
-          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 1.0)
           */
         bool
         addRectangle (unsigned int x_min, unsigned int x_max, unsigned int y_min, unsigned int y_max,  
                       double r, double g, double b,
-                      const std::string &layer_id = "rectangles", double opacity = 0.5);
+                      const std::string &layer_id = "rectangles", double opacity = 1.0);
+
+        /** \brief Add a 2D box and color its edges with a given color
+          * \param[in] image the organized point cloud dataset containing the image data
+          * \param[in] min_pt the X,Y min coordinate
+          * \param[in] max_pt the X,Y max coordinate
+          * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn. 
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 1.0)
+          */
+        template <typename T> bool
+        addRectangle (const typename pcl::PointCloud<T>::ConstPtr &image, 
+                      const T &min_pt, const T &max_pt,
+                      const std::string &layer_id = "rectangles", double opacity = 1.0);
+
+        /** \brief Add a 2D box and color its edges with a given color
+          * \param[in] image the organized point cloud dataset containing the image data
+          * \param[in] min_pt the X,Y min coordinate
+          * \param[in] max_pt the X,Y max coordinate
+          * \param[in] r the red channel of the color that the box should be rendered with (0.0 -> 1.0)
+          * \param[in] g the green channel of the color that the box should be rendered with (0.0 -> 1.0)
+          * \param[in] b the blue channel of the color that the box should be rendered with (0.0 -> 1.0)
+          * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn. 
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 1.0)
+          */
+        template <typename T> bool
+        addRectangle (const typename pcl::PointCloud<T>::ConstPtr &image, 
+                      const T &min_pt, const T &max_pt,
+                      double r, double g, double b,
+                      const std::string &layer_id = "rectangles", double opacity = 1.0);
+
+        /** \brief Add a 2D box that contains a given image mask and color its edges
+          * \param[in] image the organized point cloud dataset containing the image data
+          * \param[in] mask the point data representing the mask that we want to draw
+          * \param[in] r the red channel of the color that the mask should be rendered with 
+          * \param[in] g the green channel of the color that the mask should be rendered with
+          * \param[in] b the blue channel of the color that the mask should be rendered with
+          * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn.
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 1.0)
+          */
+        template <typename T> bool
+        addRectangle (const typename pcl::PointCloud<T>::ConstPtr &image, const pcl::PointCloud<T> &mask, 
+                      double r, double g, double b, 
+                      const std::string &layer_id = "rectangles", double opacity = 1.0);
+
+        /** \brief Add a 2D box that contains a given image mask and color its edges in red
+          * \param[in] image the organized point cloud dataset containing the image data
+          * \param[in] mask the point data representing the mask that we want to draw
+          * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn.
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 1.0)
+          */
+        template <typename T> bool
+        addRectangle (const typename pcl::PointCloud<T>::ConstPtr &image, const pcl::PointCloud<T> &mask, 
+                      const std::string &layer_id = "image_mask", double opacity = 1.0);
 
         /** \brief Add a 2D box and fill it in with a given color
           * \param[in] x_min the X min coordinate
@@ -519,12 +571,12 @@ namespace pcl
           * \param[in] g the green channel of the color that the line should be rendered with (0.0 -> 1.0)
           * \param[in] b the blue channel of the color that the line should be rendered with (0.0 -> 1.0)
           * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn. 
-          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 1.0)
           */
         bool
         addLine (unsigned int x_min, unsigned int y_min, unsigned int x_max, unsigned int y_max,
                  double r, double g, double b, 
-                 const std::string &layer_id = "line", double opacity = 0.5);
+                 const std::string &layer_id = "line", double opacity = 1.0);
 
         /** \brief Add a 2D line with a given color
           * \param[in] x_min the X min coordinate
@@ -532,11 +584,11 @@ namespace pcl
           * \param[in] x_max the X max coordinate
           * \param[in] y_max the Y max coordinate 
           * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn. 
-          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 1.0)
           */
         bool
         addLine (unsigned int x_min, unsigned int y_min, unsigned int x_max, unsigned int y_max,
-                 const std::string &layer_id = "line", double opacity = 0.5);
+                 const std::string &layer_id = "line", double opacity = 1.0);
 
 
         /** \brief Add a generic 2D mask to an image 
@@ -571,23 +623,23 @@ namespace pcl
           * \param[in] g the green channel of the color that the polygon should be rendered with
           * \param[in] b the blue channel of the color that the polygon should be rendered with
           * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn.
-          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 1.0)
           */
         template <typename T> bool
         addPlanarPolygon (const typename pcl::PointCloud<T>::ConstPtr &image, const pcl::PlanarPolygon<T> &polygon, 
                           double r, double g, double b, 
-                          const std::string &layer_id = "planar_polygon", double opacity = 0.5);
+                          const std::string &layer_id = "planar_polygon", double opacity = 1.0);
 
         /** \brief Add a generic 2D planar polygon to an image 
           * \param[in] image the organized point cloud dataset containing the image data
           * \param[in] polygon the point data representing the polygon that we want to draw. 
           * A line will be drawn from each point to the next in the dataset.
           * \param[in] layer_id the 2D layer ID where we want the extra information to be drawn.
-          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 0.5)
+          * \param[in] opacity the opacity of the layer: 0 for invisible, 1 for opaque. (default: 1.0)
           */
         template <typename T> bool
         addPlanarPolygon (const typename pcl::PointCloud<T>::ConstPtr &image, const pcl::PlanarPolygon<T> &polygon, 
-                          const std::string &layer_id = "planar_polygon", double opacity = 0.5);
+                          const std::string &layer_id = "planar_polygon", double opacity = 1.0);
 
         /** \brief Add a new 2D rendering layer to the viewer. 
           * \param[in] layer_id the name of the layer
