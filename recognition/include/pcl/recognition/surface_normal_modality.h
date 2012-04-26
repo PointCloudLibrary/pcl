@@ -608,8 +608,8 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
                         , offsets_i[7] + offsets_j[7] * l_W };
 
 
-  const int l_offsetx = GRANULARITY / 2;
-  const int l_offsety = GRANULARITY / 2;
+  //const int l_offsetx = GRANULARITY / 2;
+  //const int l_offsety = GRANULARITY / 2;
 
   const int difference_threshold = 50;
   const int distance_threshold = 2000;
