@@ -150,7 +150,6 @@ pcl::gpu::people::RDFBodyPartsDetector::step2_selectBetterName(const PointCloud<
       sorted[i].reserve(1000);
   }
 
-  vector< vector< vector<int> > > cluster_indices(NUM_PARTS);
   {
      //ScopeTime time("elec4");     
      optimized_elec4(cloud, NUM_PARTS);
