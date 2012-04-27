@@ -25,7 +25,7 @@ namespace pcl
      * \author Hordur Johannsson
      * \ingroup simulation
      */
-    class SumReduce
+    class PCL_EXPORTS SumReduce
     {
       public:
         /** \brief Construct a new summation object for an array of given size.

@@ -127,9 +127,10 @@ bool
 pcl::simulation::gllib::Program::addShaderFile (const std::string& filename, ShaderType shader_type)
 {
   char* text = readTextFile (filename.c_str ());
+  if(text == NULL)  return (false);
+
   std::string source(text);
 
-  if (text == NULL) return false;
   bool rval = addShaderText (text, shader_type);
   delete [] text;
   return rval;

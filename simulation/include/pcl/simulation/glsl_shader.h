@@ -8,6 +8,8 @@
 #ifndef PCL_SIMULATION_GLSL_SHADER
 #define PCL_SIMULATION_GLSL_SHADER
 
+#include <pcl/pcl_exports.h>
+
 #include <GL/glew.h>
 #include <Eigen/Core>
 #include <boost/shared_ptr.hpp>
@@ -27,7 +29,7 @@ namespace pcl
       /**
        * A GLSL shader program.
        */
-      class Program
+      class PCL_EXPORTS Program
       {
         public:
           typedef boost::shared_ptr<Program> Ptr;
@@ -93,9 +95,9 @@ namespace pcl
           GLuint program_id_;
       };
 
-      GLenum getGLError ();
-      void printShaderInfoLog (GLuint shader);
-      void printProgramInfoLog (GLuint program);
+      GLenum PCL_EXPORTS getGLError ();
+      void PCL_EXPORTS printShaderInfoLog (GLuint shader);
+      void PCL_EXPORTS printProgramInfoLog (GLuint program);
 
     } // namespace - gllib
   } // namespace - simulation

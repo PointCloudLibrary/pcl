@@ -151,7 +151,7 @@ namespace pcl
      * Position is set as vertex attribute 0 and the texture coordinate
      * as vertex attribute 1.
      */
-    class Quad
+    class PCL_EXPORTS Quad
     {
       public:
         /**
@@ -175,7 +175,7 @@ namespace pcl
         GLuint quad_vbo_;
     };
 
-    class TexturedQuad
+    class PCL_EXPORTS TexturedQuad
     {
       public:
         typedef boost::shared_ptr<TexturedQuad> Ptr;
