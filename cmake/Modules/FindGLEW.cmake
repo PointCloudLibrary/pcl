@@ -26,13 +26,13 @@ IF (WIN32)
   ELSE(CYGWIN)
   
     FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h
-      $ENV{GLEW_ROOT_PATH}/include
+      $ENV{GLEW_ROOT}/include
     )
 
     FIND_LIBRARY( GLEW_GLEW_LIBRARY
-      NAMES glew glew32
+      NAMES glew glew32 glew32s
       PATHS
-      $ENV{GLEW_ROOT_PATH}/lib
+      $ENV{GLEW_ROOT}/lib
       ${OPENGL_LIBRARY_DIR}
     )
 
@@ -69,7 +69,7 @@ ELSE (WIN32)
 
 ENDIF (WIN32)
 
-SET( GLEW_FOUND "NO" )
+SET( GLEW_FOUND FALSE )
 IF(GLEW_INCLUDE_DIR)
   IF(GLEW_GLEW_LIBRARY)
     # Is -lXi and -lXmu required on all platforms that have it?
@@ -78,7 +78,7 @@ IF(GLEW_INCLUDE_DIR)
       ${GLEW_GLEW_LIBRARY}
       ${GLEW_cocoa_LIBRARY}
     )
-    SET( GLEW_FOUND "YES" )
+    SET( GLEW_FOUND TRUE )
 
 #The following deprecated settings are for backwards compatibility with CMake1.4
     SET (GLEW_LIBRARY ${GLEW_LIBRARIES})
@@ -91,6 +91,9 @@ IF(GLEW_FOUND)
   IF(NOT GLEW_FIND_QUIETLY)
     MESSAGE(STATUS "Found Glew: ${GLEW_LIBRARIES}")
   ENDIF(NOT GLEW_FIND_QUIETLY)
+  IF(GLEW_GLEW_LIBRARY MATCHES glew32s)
+    ADD_DEFINITIONS(-DGLEW_STATIC)
+  ENDIF(GLEW_GLEW_LIBRARY MATCHES glew32s)
 ELSE(GLEW_FOUND)
   IF(GLEW_FIND_REQUIRED)
     MESSAGE(FATAL_ERROR "Could not find Glew")
