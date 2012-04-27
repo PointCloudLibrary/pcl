@@ -156,16 +156,16 @@ namespace pcl
         render (const std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > & poses);
 
         void
-        draw_particles (std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses);
+        drawParticles (std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses);
 
         void
-        apply_camera_transform (const Eigen::Isometry3d & pose);
+        applyCameraTransform (const Eigen::Isometry3d & pose);
 
         void
-        apply_camera_transform (const Camera & camera);
+        applyCameraTransform (const Camera & camera);
 
         void
-        setup_projection_matrix ();
+        setupProjectionMatrix ();
 
         Scene::Ptr scene_;
         int rows_;
@@ -224,12 +224,6 @@ namespace pcl
         SumReduce sum_reduce_;
     };
 
-    template<class T> T
-    rad_to_deg (T rad) { return rad/M_PI*180.0; }
-
-    template<class T> T
-    deg_to_rad (T deg) { return deg/180.0*M_PI; }
-    
     template<class T> T
     sqr(T val) { return val*val; }
     

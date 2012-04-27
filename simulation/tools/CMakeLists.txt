@@ -23,13 +23,14 @@ if(GLEW_FOUND)
       pcl_simulation   pcl_common  pcl_io pcl_visualization
       ${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
 
-    find_package( OpenCV REQUIRED )
-    if(OpenCV_FOUND)
-      PCL_ADD_EXECUTABLE(pcl_sim_terminal_demo ${SUBSYS_NAME} sim_terminal_demo.cpp)
-      target_link_libraries (pcl_sim_terminal_demo
-	${VTK_IO_TARGET_LINK_LIBRARIES}   
-	pcl_simulation   pcl_common  pcl_io pcl_visualization  ${OpenCV_LIBS}
-	${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
-    endif(OpenCV_FOUND)
+#    find_package( OpenCV REQUIRED )
+#    if(OpenCV_FOUND)
+#      PCL_ADD_EXECUTABLE(pcl_sim_terminal_demo ${SUBSYS_NAME} sim_terminal_demo.cpp)
+#      include_directories(${OpenCV_INCLUDE_DIR})
+#      target_link_libraries (pcl_sim_terminal_demo
+	#${VTK_IO_TARGET_LINK_LIBRARIES}   
+#	pcl_simulation   pcl_common  pcl_io pcl_visualization  ${OpenCV_LIBS}
+#	${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
+#    endif(OpenCV_FOUND)
   endif(GLUT_FOUND)
 endif (GLEW_FOUND)

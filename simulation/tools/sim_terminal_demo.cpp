@@ -56,7 +56,6 @@
 
 // Writing PNG files:
 #include <opencv2/opencv.hpp>
-#include <opencv2/highgui/highgui.hpp>
 
 using namespace Eigen;
 using namespace pcl;
@@ -262,12 +261,12 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
   int n = 1;
   poses.push_back (pose_in);
   range_likelihood_->computeLikelihoods (reference, poses, scores);
-  std::cout << "camera: " << camera_->x ()
-       << " " << camera_->y ()
-       << " " << camera_->z ()
-       << " " << camera_->roll ()
-       << " " << camera_->pitch ()
-       << " " << camera_->yaw ()
+  std::cout << "camera: " << camera_->getX ()
+       << " " << camera_->getY ()
+       << " " << camera_->getZ ()
+       << " " << camera_->getRoll ()
+       << " " << camera_->getPitch ()
+       << " " << camera_->getYaw ()
        << std::endl;
 
   delete [] reference;
@@ -283,17 +282,17 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
   // 23.81Hz: simuation, getPointCloud, writeBinary
   // 14.28Hz: simuation, addNoise, getPointCloud, writeBinary
   // MODULE        TIME      FRACTION
-  // simuation     0.02222   31%
+  // simulation     0.02222   31%
   // addNoise      0.03	     41%
   // getPointCloud 0.008     11%
   // writeBinary   0.012     16%
   // total	   0.07222	
 
   // Update: march 29: >>> using TriangleMeshModel now <<<
-  // 57.00Hz: simuation only
-  // 30.61Hz: simuation, getPointCloud
-  // 40.00Hz: simuation, getPointCloud, writeBinary (on average
-  // 28.50Hz: simuation, addNoise, getPointCloud, writeBinary
+  // 57.00Hz: simulation only
+  // 30.61Hz: simulation, getPointCloud
+  // 40.00Hz: simulation, getPointCloud, writeBinary (on average
+  // 28.50Hz: simulation, addNoise, getPointCloud, writeBinary
 
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc_out (new pcl::PointCloud<pcl::PointXYZRGB>);
   bool write_cloud=true;
@@ -315,7 +314,7 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
     // Save in global frame - applying the camera frame:
     //range_likelihood_->getPointCloud(pc_out,true,camera_->pose());
     // Save in local frame
-    range_likelihood_->getPointCloud (pc_out,false,camera_->pose ());
+    range_likelihood_->getPointCloud (pc_out,false,camera_->getPose ());
     // TODO: what to do when there are more than one simulated view?
     std::cout << pc_out->points.size() << " points written to file\n";
 
@@ -380,7 +379,7 @@ initialize (int argc, char** argv)
   // works for small files:
   //camera_->set(-5.0, 0.0, 1.0, 0.0, 0.0, 0.0);
   camera_->set(0.471703, 1.59862, 3.10937, 0, 0.418879, -12.2129);
-  camera_->set_pitch(0.418879); // not sure why this is here:
+  camera_->setPitch(0.418879); // not sure why this is here:
 
   cout << "About to read: " << argv[2] << endl;
   load_PolygonMesh_model (argv[2]);

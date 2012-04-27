@@ -47,9 +47,6 @@
 #endif
 #include <GL/glew.h>
 #include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
-
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
@@ -89,8 +86,6 @@
 #include <opencv/highgui.h>
 */
 
-
-
 #include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
 #include <cfloat>
@@ -123,7 +118,6 @@ typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
 #define NORMALS_SCALE 0.01
 #define PC_SCALE 0.001
 
-
 uint16_t t_gamma[2048];
 Scene::Ptr scene_;
 Camera::Ptr camera_;
@@ -132,7 +126,6 @@ int window_width_;
 int window_height_;
 bool paused_;
 bool write_file_;
-
 
 bool
 isValidFieldName (const std::string &field)
@@ -197,7 +190,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
 {
   if (event.getPointIndex () == -1)
     return;
-  sensor_msgs::PointCloud2::Ptr cloud = *(sensor_msgs::PointCloud2::Ptr*)cookie;
+  sensor_msgs::PointCloud2::Ptr cloud = *static_cast<sensor_msgs::PointCloud2::Ptr*>(cookie);
   if (!cloud)
     return;
 
@@ -421,12 +414,12 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
   }
   std::cout << std::endl;
 
-  std::cout << "camera: " << camera_->x ()
-       << " " << camera_->y ()
-       << " " << camera_->z ()
-       << " " << camera_->roll ()
-       << " " << camera_->pitch ()
-       << " " << camera_->yaw ()
+  std::cout << "camera: " << camera_->getX ()
+       << " " << camera_->getY ()
+       << " " << camera_->getZ ()
+       << " " << camera_->getRoll ()
+       << " " << camera_->getPitch ()
+       << " " << camera_->getYaw ()
        << std::endl;
        
   delete [] reference;
@@ -449,8 +442,7 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
   // total	   0.07222	
 
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc_out (new pcl::PointCloud<pcl::PointXYZRGB>);
-  bool write_cloud=true;
-  bool demo_other_stuff=false;
+  bool write_cloud = true;
   
   if (write_cloud)
   {
@@ -468,17 +460,18 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
     // Save in global frame - applying the camera frame:
     //range_likelihood_->getPointCloud(pc_out,true,camera_->pose());
     // Save in local frame
-    range_likelihood_->getPointCloud (pc_out,false,camera_->pose ());
+    range_likelihood_->getPointCloud (pc_out,false,camera_->getPose ());
     // TODO: what to do when there are more than one simulated view?
     std::cout << pc_out->points.size() << " points written to file\n";
    
     pcl::PCDWriter writer;
-    //writer.write (point_cloud_fname, *pc_out,	false);  /// ASCII
+    //writer.write (point_cloud_fname, *pc_out, false);  /// ASCII
     writer.writeBinary (point_cloud_fname, *pc_out);
     //cout << "finished writing file\n";
   }
   // Disabled all OpenCV stuff for now: dont want the dependency
   /*
+  bool demo_other_stuff = false;
   if (demo_other_stuff && write_cloud)
   {
     write_score_image (range_likelihood_->getScoreBuffer ());  
@@ -660,13 +653,9 @@ void simulate_callback (const pcl::visualization::KeyboardEvent &event,
 
 /* ---[ */
 
-
-
-
-
-
 // Read in a 3D model
-void load_PolygonMesh_model (char* polygon_file)
+void
+loadPolygonMeshModel (char* polygon_file)
 {
   pcl::PolygonMesh mesh;	// (new pcl::PolygonMesh);
   //pcl::io::loadPolygonFile("/home/mfallon/data/models/dalet/Darlek_modified_works.obj",mesh);
@@ -675,7 +664,8 @@ void load_PolygonMesh_model (char* polygon_file)
   
   // Not sure if PolygonMesh assumes triangles if to
   // TODO: Ask a developer
-  PolygonMeshModel::Ptr model = PolygonMeshModel::Ptr (new PolygonMeshModel (GL_POLYGON, cloud));
+  //PolygonMeshModel::Ptr model = PolygonMeshModel::Ptr (new PolygonMeshModel (GL_POLYGON, cloud));
+  TriangleMeshModel::Ptr model = TriangleMeshModel::Ptr (new TriangleMeshModel (cloud));
   scene_->add (model);
   
   std::cout << "Just read " << polygon_file << std::endl;
@@ -689,31 +679,11 @@ initialize (int argc, char** argv)
   const GLubyte* version = glGetString (GL_VERSION);
   std::cout << "OpenGL Version: " << version << std::endl;
 
-  // works well for MIT CSAIL model 3rd floor:
-  //camera_->set(4.04454, 44.9377, 1.1, 0.0, 0.0, -2.00352);
-
-  // works well for MIT CSAIL model 2nd floor:
-//  camera_->set (27.4503, 37.383, 4.30908, 0.0, 0.0654498, -2.25802);
-
   // works for small files:
-  //camera_->set(-5.0, 0.0, 1.0, 0.0, 0.0, 0.0);
-  camera_->set(0.471703, 1.59862, 3.10937, 0, 0.418879, -12.2129);
-  camera_->set_pitch(0.418879); // not sure why this is here:
-
-//  cout << "About to read: " << argv[2] << endl;
-  cout << "About to read: ply" << endl;   
-  load_PolygonMesh_model ("/home/mfallon/projects/kmcl/kmcl/models/table_models/meta_model.ply");
-  
-  
+  camera_->set(-5.0, 0.0, 1.0, 0.0, 0.0, 0.0);
+  pcl::console::print_info("About to read: %s", argv[2]);
+  loadPolygonMeshModel (argv[2]);
 }
-
-
-
-
-
-
-
-
 
 int
 main (int argc, char** argv)
@@ -1063,26 +1033,12 @@ main (int argc, char** argv)
 
   print_info ("Manually generate a simulated RGB-D point cloud using pcl::simulation. For more information, use: %s -h\n", argv[0]);
 
-  if (argc < 3)
-  {
-    printHelp (argc, argv);
-    return (-1);
-  }  
-  int mode=atoi(argv[1]); 
-  
   for (int i=0; i<2048; i++)
   {
     float v = i/2048.0;
     v = powf(v, 3)* 6;
     t_gamma[i] = v*6*256;
   }    
-  
-  glutInit (&argc, argv);
-  glutInitDisplayMode (GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);// was GLUT_RGBA
-  glutInitWindowPosition (10, 10);
-  glutInitWindowSize (10, 10);
-  //glutInitWindowSize (window_width_, window_height_);
-  glutCreateWindow ("OpenGL range likelihood");
 
   GLenum err = glewInit ();
   if (GLEW_OK != err)
@@ -1100,11 +1056,13 @@ main (int argc, char** argv)
     std::cerr << "Error: OpenGL 2.0 not supported" << std::endl;
     exit(1);
   }
-  
+
+
   camera_ = Camera::Ptr (new Camera ());
   scene_ = Scene::Ptr (new Scene ());
 
   range_likelihood_ = RangeLikelihood::Ptr (new RangeLikelihood(1, 1, height, width, scene_));
+
   // range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(10, 10, 96, 96, scene_));
   // range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, 480, 640, scene_));
 
@@ -1115,9 +1073,6 @@ main (int argc, char** argv)
   range_likelihood_->setSumOnCPU (true);
   range_likelihood_->setUseColor (true);
   initialize (argc, argv); 
-  
-  
-  
 
   if (p)
     p->setBackgroundColor (bcolor[0], bcolor[1], bcolor[2]);

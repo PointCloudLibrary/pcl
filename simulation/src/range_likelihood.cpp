@@ -313,7 +313,7 @@ pcl::simulation::RangeLikelihood::RangeLikelihood (int rows, int cols, int row_h
 
 }
 
-pcl::simulation::RangeLikelihood::~RangeLikelihood()
+pcl::simulation::RangeLikelihood::~RangeLikelihood ()
 {
   glDeleteBuffers (1, &quad_vbo_);
   glDeleteTextures (1, &depth_texture_);
@@ -333,7 +333,8 @@ pcl::simulation::RangeLikelihood::~RangeLikelihood()
 }
 
 double
-pcl::simulation::RangeLikelihood::sampleNormal (double sigma) {
+pcl::simulation::RangeLikelihood::sampleNormal (double sigma)
+{
   typedef boost::normal_distribution<double> Normal;
   Normal dist (0.0, sigma);
   boost::variate_generator<boost::minstd_rand&, Normal> norm (generator, dist);
@@ -341,7 +342,7 @@ pcl::simulation::RangeLikelihood::sampleNormal (double sigma) {
 }
 
 void
-pcl::simulation::RangeLikelihood::setup_projection_matrix ()
+pcl::simulation::RangeLikelihood::setupProjectionMatrix ()
 {
   glMatrixMode (GL_PROJECTION);
   glLoadIdentity ();
@@ -367,7 +368,7 @@ pcl::simulation::RangeLikelihood::setup_projection_matrix ()
 }
 
 void
-pcl::simulation::RangeLikelihood::apply_camera_transform(const Eigen::Isometry3d & pose)
+pcl::simulation::RangeLikelihood::applyCameraTransform (const Eigen::Isometry3d & pose)
 {
   float T[16];
   Eigen::Matrix4f m = (pose.matrix ().inverse ()).cast<float> ();
@@ -379,15 +380,15 @@ pcl::simulation::RangeLikelihood::apply_camera_transform(const Eigen::Isometry3d
 }
 
 void
-pcl::simulation::RangeLikelihood::draw_particles(std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses)
+pcl::simulation::RangeLikelihood::drawParticles (std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses)
 {
   int n = 0;
   for (int i=0; i<rows_; ++i)
   {
     for (int j=0; j<cols_; ++j)
     {
-      glMatrixMode(GL_MODELVIEW);
-      glLoadIdentity();
+      glMatrixMode (GL_MODELVIEW);
+      glLoadIdentity ();
 
       glViewport(j*col_width_, i*row_height_, col_width_, row_height_);
 
@@ -398,13 +399,13 @@ pcl::simulation::RangeLikelihood::draw_particles(std::vector<Eigen::Isometry3d, 
       T[1] =  0;   T[5] = 0;    T[9] =  1; T[13] = 0;
       T[2] = -1.0; T[6] = 0;    T[10] = 0; T[14] = 0;
       T[3] =  0;   T[7] = 0;    T[11] = 0; T[15] = 1;
-      glMultMatrixf(T);
+      glMultMatrixf (T);
 
       // Apply camera transformation
-      apply_camera_transform(poses[n++]);
+      applyCameraTransform (poses[n++]);
 
       // Draw the planes in each location:
-      scene_->draw();
+      scene_->draw ();
     }
   }
 }
@@ -413,7 +414,9 @@ pcl::simulation::RangeLikelihood::draw_particles(std::vector<Eigen::Isometry3d, 
 /////////////////////////////////////////////////////////////////
 // Below are 4 previously used cost functions:
 // 0 original scoring method
-float costFunction0(float ref_val,float depth_val){
+float
+costFunction0 (float ref_val,float depth_val)
+{
   return  (sqr(ref_val - depth_val));
 }
 
@@ -426,7 +429,7 @@ float costFunction0(float ref_val,float depth_val){
 float
 costFunction1 (float ref_val, float depth_val)
 {
-  float cost = sqr (ref_val - 1/(1.4285f -(depth_val)*1.3788f));
+  float cost = sqr (ref_val - 1/(1.4285f - (depth_val)*1.3788f));
   //std::cout << " [" << ref_val << "," << 1/(1.4285 -(depth_val)*1.3788) << "] ";
   if (ref_val < 0)
   { // all images pixels with no range
@@ -434,7 +437,7 @@ costFunction1 (float ref_val, float depth_val)
   }
   if (cost > 10)
   { // required to lessen the effect of modelpixel with no range (ie holes in the model)
-    cost =10;
+    cost = 10;
   }
   //return log (cost);
   return (cost);
@@ -447,16 +450,22 @@ costFunction2 (float ref_val, float depth_val)
   float min_dist = abs(ref_val - 1/(1.4285f - (depth_val)*1.3788f));
   int lup = static_cast<int> (ceil (min_dist*100)); // has resolution of 0.01m
 
-  if (lup > 300){ // implicitly this caps the cost if there is a hole in the model
+  if (lup > 300)
+  { // implicitly this caps the cost if there is a hole in the model
     lup = 300;
   }
   
   double lhood = 1;
-  if (pcl_isnan (depth_val)){ // pixels with nan depth - for openNI null points
+  if (pcl_isnan (depth_val))
+  { // pixels with nan depth - for openNI null points
     lhood = 1; // log(1) = 0 ---> has no effect
-  }else if(ref_val < 0){ // all RGB pixels with no depth - for freenect null points
+  }
+  else if(ref_val < 0)
+  { // all RGB pixels with no depth - for freenect null points
     lhood = 1; // log(1) = 0 ---> has no effect
-  }else{
+  }
+  else
+  {
     lhood = normal_sigma0x5_normal1x0_range0to3_step0x01[lup];
     // add a ground floor:
     // increasing this will mean that the likelihood is less peaked
@@ -471,15 +480,21 @@ costFunction2 (float ref_val, float depth_val)
   return static_cast<float> (log (lhood));
 }
 
-float costFunction3 (float ref_val,float depth_val)
+float
+costFunction3 (float ref_val,float depth_val)
 {
   float log_lhood=0;
   // log(1) = 0 ---> has no effect
-  if (ref_val < 0){
+  if (ref_val < 0)
+  {
     // all images pixels with no range
-  }  else if (ref_val > 7){
+  }
+  else if (ref_val > 7)
+  {
     // ignore long ranges... for now
-  }else{ // working range
+  }
+  else
+  { // working range
     float min_dist = abs (ref_val - 0.7253f/(1.0360f - (depth_val)));
 
     int lup = static_cast<int> (ceil (min_dist*100)); // has resulution of 0.01m
@@ -492,7 +507,9 @@ float costFunction3 (float ref_val,float depth_val)
   return log_lhood;
 }
 
-float costFunction4(float ref_val,float depth_val){
+float
+costFunction4(float ref_val,float depth_val)
+{
   float disparity_diff = abs( ( -0.7253f/ref_val +1.0360f ) -  depth_val );
 
   int top_lup = static_cast<int> (ceil (disparity_diff*300)); // has resulution of 0.001m
@@ -505,7 +522,8 @@ float costFunction4(float ref_val,float depth_val){
   // bottom:
   //bottom = bottom_lookup(   round(mu*1000+1));
   int bottom_lup = static_cast<int> (ceil( (depth_val) * 300)); // has resulution of 0.001m
-  if (bottom_lup > 300){
+  if (bottom_lup > 300)
+  {
     bottom_lup =300;
   }
   float bottom = bottom_lookup[bottom_lup];// round( abs(x-mu) *1000+1) );
@@ -515,11 +533,13 @@ float costFunction4(float ref_val,float depth_val){
 
   // safety fix thats seems to be required due to opengl ayschronizate
   // ask hordur about this
-  if (bottom == 0){
+  if (bottom == 0)
+  {
     lhood = proportion;
   }
 
-  if (ref_val< 0) { // all images pixels with no range
+  if (ref_val< 0)
+  { // all images pixels with no range
     lhood = 1; // log(1) = 0 ---> has no effect
   }
   return log(lhood);
@@ -552,7 +572,7 @@ double costFunction5(double measured_depth, double model_disp, double sigma, dou
     lhood = 1; // log(1) = 0 ---> has no effect
   }
 
-  return log(lhood);
+  return log (lhood);
 }
 
 void
@@ -585,17 +605,28 @@ pcl::simulation::RangeLikelihood::computeScores (float* reference,
     {
       float depth_val = (*depth++); // added jan 2012 - check this is not a breaking fix later mfallon
       float score = 0;
-      if (which_cost_function_ == 0){
-        score = costFunction0(ref[col%col_width_],depth_val);
-      }else if (which_cost_function_ == 1) { 
-	score = costFunction1(ref[col%col_width_],depth_val);
-      }else if (which_cost_function_ == 2){ 
-        score = costFunction2(ref[col%col_width_],depth_val);
-      }else if(which_cost_function_==3){
-	score = costFunction3(ref[col%col_width_],depth_val);
-      }else if (which_cost_function_ == 4){
-        score = costFunction4(ref[col%col_width_],depth_val);
-      }else if (which_cost_function_ == 5){
+      if (which_cost_function_ == 0)
+      {
+        score = costFunction0 (ref[col%col_width_],depth_val);
+      }
+      else if (which_cost_function_ == 1)
+      {
+	score = costFunction1 (ref[col%col_width_],depth_val);
+      }
+      else if (which_cost_function_ == 2)
+      {
+        score = costFunction2 (ref[col%col_width_],depth_val);
+      }
+      else if(which_cost_function_==3)
+      {
+	score = costFunction3 (ref[col%col_width_],depth_val);
+      }
+      else if (which_cost_function_ == 4)
+      {
+        score = costFunction4 (ref[col%col_width_],depth_val);
+      }
+      else if (which_cost_function_ == 5)
+      {
 	//double sigma = 0.025;
 	//double floor_proportion_ = 0.999;
         score = static_cast<float> (costFunction5 (ref[col%col_width_],depth_val,sigma_,floor_proportion_));
@@ -631,6 +662,8 @@ pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRG
   float zn = z_near_;
   float zf = z_far_;
 
+  const uint8_t* color_buffer = getColorBuffer();
+
   // TODO: support decimation
   // Copied the format of RangeImagePlanar::setDepthImage()
   // Use this as a template for decimation
@@ -656,9 +689,9 @@ pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRG
         pc->points[idx].y = (static_cast<float> (y)-camera_cy_) * z * (-camera_fy_reciprocal_);
 
 	int rgb_idx = y*col_width_ + x;  //camera_width_
-        pc->points[idx].b =  color_buffer_[rgb_idx*3+2]; // blue
-        pc->points[idx].g = color_buffer_[rgb_idx*3+1]; // green
-        pc->points[idx].r = color_buffer_[rgb_idx*3];// red
+        pc->points[idx].b = color_buffer[rgb_idx*3+2]; // blue
+        pc->points[idx].g = color_buffer[rgb_idx*3+1]; // green
+        pc->points[idx].r = color_buffer[rgb_idx*3]; // red
         points_added++;
       }
     }
@@ -829,7 +862,7 @@ RangeLikelihood::computeLikelihoods (float* reference,
 
 // Computes the likelihood scores using a shader
 void
-pcl::simulation::RangeLikelihood::computeScoresShader(float* reference)
+pcl::simulation::RangeLikelihood::computeScoresShader (float* reference)
 {
   if (gllib::getGLError () != GL_NO_ERROR)
   {
@@ -909,7 +942,7 @@ RangeLikelihood::render (const std::vector<Eigen::Isometry3d, Eigen::aligned_all
 {
   if (gllib::getGLError () != GL_NO_ERROR)
   {
-    std::cerr << "GL Error: RangeLikelihood::render" << std::endl;
+    std::cerr << "GL Error: RangeLikelihood::render - enter" << std::endl;
   }
 
   GLint old_matrix_mode;
@@ -919,11 +952,11 @@ RangeLikelihood::render (const std::vector<Eigen::Isometry3d, Eigen::aligned_all
   glGetIntegerv (GL_READ_BUFFER, &old_read_buffer);
   glGetIntegerv (GL_MATRIX_MODE, &old_matrix_mode);
 
-  glMatrixMode(GL_PROJECTION);
-  glPushMatrix();
+  glMatrixMode (GL_PROJECTION);
+  glPushMatrix ();
 
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
+  glMatrixMode (GL_MODELVIEW);
+  glPushMatrix ();
 
   glBindFramebuffer (GL_FRAMEBUFFER, fbo_);
 
@@ -960,29 +993,34 @@ RangeLikelihood::render (const std::vector<Eigen::Isometry3d, Eigen::aligned_all
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Setup projection matrix
-  setup_projection_matrix ();
+  setupProjectionMatrix ();
 
   glEnable (GL_DEPTH_TEST);
   glDepthMask (GL_TRUE);
   glCullFace (GL_FRONT);
-  draw_particles (poses);
+  drawParticles (poses);
 
   glPopAttrib ();
-
   glFlush ();
+
+  glBindFramebuffer (GL_FRAMEBUFFER, 0);
   
   // Restore OpenGL state
   glReadBuffer (old_read_buffer);
   glDrawBuffer (old_draw_buffer);
-  glBindFramebuffer (GL_FRAMEBUFFER, 0);
 
-  glMatrixMode(GL_MODELVIEW);
-  glPopMatrix();
+  glMatrixMode (GL_MODELVIEW);
+  glPopMatrix ();
 
-  glMatrixMode(GL_PROJECTION);
-  glPopMatrix();
+  glMatrixMode (GL_PROJECTION);
+  glPopMatrix ();
 
-  glMatrixMode(old_matrix_mode);
+  glMatrixMode (old_matrix_mode);
+
+  if (gllib::getGLError () != GL_NO_ERROR)
+  {
+    std::cerr << "GL Error: RangeLikelihood::render - exit" << std::endl;
+  }
 
   color_buffer_dirty_ = true;
   depth_buffer_dirty_ = true;
@@ -1014,10 +1052,12 @@ RangeLikelihood::getColorBuffer ()
 {
   // It's only possible to read the color buffer if it
   // was rendered in the first place.
-  assert(use_color_);
+  assert (use_color_);
 
   if (color_buffer_dirty_)
   {
+    std::cout << "Read color buffer" << std::endl;
+
     // Read Color
     GLint old_read_buffer;
     glGetIntegerv (GL_READ_BUFFER, &old_read_buffer);

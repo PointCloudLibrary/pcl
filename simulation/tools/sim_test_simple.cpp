@@ -307,7 +307,7 @@ void display ()
     Camera camera(*camera_);
     camera.move(0.0,i*0.02,0.0);
     //camera.move(0.0,i*0.02,0.0);
-    poses.push_back (camera.pose ());
+    poses.push_back (camera.getPose ());
   }
   
   range_likelihood_->computeLikelihoods (reference, poses, scores);
@@ -320,12 +320,12 @@ void display ()
   }
   std::cout << std::endl;
 
-  std::cout << "camera: " << camera_->x ()
-       << " " << camera_->y ()
-       << " " << camera_->z ()
-       << " " << camera_->roll ()
-       << " " << camera_->pitch ()
-       << " " << camera_->yaw ()
+  std::cout << "camera: " << camera_->getX ()
+       << " " << camera_->getY ()
+       << " " << camera_->getZ ()
+       << " " << camera_->getRoll ()
+       << " " << camera_->getPitch ()
+       << " " << camera_->getYaw ()
        << std::endl;
 
   delete [] reference;
@@ -386,7 +386,7 @@ void display ()
     // Save in global frame - applying the camera frame:
     //range_likelihood_->getPointCloud(pc_out,true,camera_->pose());
     // Save in local frame
-    range_likelihood_->getPointCloud (pc_out,false,camera_->pose ());
+    range_likelihood_->getPointCloud (pc_out,false,camera_->getPose ());
     // TODO: what to do when there are more than one simulated view?
     
     pcl::PCDWriter writer;
@@ -510,8 +510,8 @@ on_passive_motion(int x, int y)
   double pitch = -(0.5-(double)y/window_height_)*M_PI * 4; // in window coordinates positive y-axis is down
   double yaw =    (0.5-(double)x/window_width_)*M_PI*2 * 4;
 
-  camera_->set_pitch (pitch);
-  camera_->set_yaw (yaw);
+  camera_->setPitch (pitch);
+  camera_->setYaw (yaw);
 }
 
 void on_entry (int state)
@@ -556,7 +556,7 @@ initialize (int argc, char** argv)
   // works for small files:
   //camera_->set(-5.0, 0.0, 1.0, 0.0, 0.0, 0.0);
   camera_->set( 1.31762, 0.382931, 1.89533, 0, 0.20944, -9.14989);
-  camera_->set_pitch(0.20944); // not sure why this is here: 
+  camera_->setPitch(0.20944); // not sure why this is here: 
   //camera_->set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
   
   cout << "About to read: " << argv[1] << endl;

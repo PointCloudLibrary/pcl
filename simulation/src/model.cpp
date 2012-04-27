@@ -16,9 +16,9 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel (pcl::PolygonMesh::Ptr plg
     pcl::PointCloud<pcl::PointXYZRGB> newcloud;
     pcl::fromROSMsg (plg->cloud, newcloud);
 
-    std::cout << "RGB Triangle mesh: " << std::endl;
-    std::cout << "Mesh polygons: " << plg->polygons.size () << std::endl;
-    std::cout << "Mesh points: " << newcloud.points.size () << std::endl;
+    PCL_DEBUG("RGB Triangle mesh: ");
+    PCL_DEBUG("Mesh polygons: %ld", plg->polygons.size ());
+    PCL_DEBUG("Mesh points: %ld", newcloud.points.size ());
 
     Eigen::Vector4f tmp;
     for(size_t i=0; i< plg->polygons.size (); ++i)
@@ -55,8 +55,8 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel (pcl::PolygonMesh::Ptr plg
     }
   }
 
-  std::cout << "Vertices: " << vertices.size () << std::endl;
-  std::cout << "Indices: " << indices.size () << std::endl;
+  PCL_DEBUG("Vertices: %ld", vertices.size ());
+  PCL_DEBUG("Indices: %ld", indices.size ());
 
   glGenBuffers (1, &vbo_);
   glBindBuffer (GL_ARRAY_BUFFER, vbo_);
@@ -68,7 +68,10 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel (pcl::PolygonMesh::Ptr plg
   glBufferData (GL_ELEMENT_ARRAY_BUFFER, indices.size () * sizeof (indices[0]), &(indices[0]), GL_STATIC_DRAW);
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, 0);
 
-  size_ = indices.size ();
+  if (indices.size () > std::numeric_limits<GLuint>::max ())
+    PCL_THROW_EXCEPTION(PCLException, "Too many vertices");
+
+  size_ = static_cast<GLuint>(indices.size ());
 }
 
 void
@@ -83,7 +86,7 @@ pcl::simulation::TriangleMeshModel::draw ()
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, ibo_);
 
   glVertexPointer (3, GL_FLOAT, sizeof (Vertex), 0);
-  glColorPointer (3, GL_FLOAT, sizeof (Vertex), (GLvoid*)(12));
+  glColorPointer (3, GL_FLOAT, sizeof (Vertex), reinterpret_cast<GLvoid*> (12));
 
   // glNormalPointer(GL_FLOAT, sizeof(Vertex), (GLvoid*)((char*)&(vertices_[0].norm)-(char*)&(vertices_[0].pos)));
   //  glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, 0);
@@ -121,7 +124,7 @@ pcl::simulation::PolygonMeshModel::PolygonMeshModel (GLenum mode, pcl::PolygonMe
     pcl::PointCloud<pcl::PointXYZRGB> newcloud;  
     pcl::fromROSMsg (plg->cloud, newcloud);
     Eigen::Vector4f tmp;
-    for(size_t i=0; i< plg->polygons.size (); i++)
+    for(size_t i = 0; i< plg->polygons.size (); i++)
     { // each triangle/polygon
       pcl::Vertices apoly_in = plg->polygons[i];
       SinglePoly apoly;
@@ -134,14 +137,14 @@ pcl::simulation::PolygonMeshModel::PolygonMeshModel (GLenum mode, pcl::PolygonMe
 	uint32_t pt = apoly_in.vertices[j];
 	tmp = newcloud.points[pt].getVector4fMap ();
 	// x,y,z
-	apoly.vertices_[3*j + 0] = (float) tmp (0);
-	apoly.vertices_[3*j + 1] = (float) tmp (1);
-	apoly.vertices_[3*j + 2] = (float) tmp (2);
+	apoly.vertices_[3*j + 0] = tmp (0);
+	apoly.vertices_[3*j + 1] = tmp (1);
+	apoly.vertices_[3*j + 2] = tmp (2);
 	// r,g,b: input is ints 0->255, opengl wants floats 0->1
-	apoly.colors_[4*j + 0] = (float) newcloud.points[pt].r/255.0; // Red
-	apoly.colors_[4*j + 1] = (float) newcloud.points[pt].g/255.0; // Green
-	apoly.colors_[4*j + 2] = (float) newcloud.points[pt].b/255.0; // Blue
-	apoly.colors_[4*j + 3] = (float) 1.0; // transparancy? unnecessary?
+	apoly.colors_[4*j + 0] = newcloud.points[pt].r/255.0f; // Red
+	apoly.colors_[4*j + 1] = newcloud.points[pt].g/255.0f; // Green
+	apoly.colors_[4*j + 2] = newcloud.points[pt].b/255.0f; // Blue
+	apoly.colors_[4*j + 3] = 1.0f; // transparancy? unnecessary?
       }
       polygons.push_back (apoly);
     }
@@ -164,14 +167,14 @@ pcl::simulation::PolygonMeshModel::PolygonMeshModel (GLenum mode, pcl::PolygonMe
 	uint32_t pt = apoly_in.vertices[j];
 	tmp = newcloud.points[pt].getVector4fMap ();
 	// x,y,z
-	apoly.vertices_[3*j + 0] = (float) tmp (0);
-	apoly.vertices_[3*j + 1] = (float) tmp (1);
-	apoly.vertices_[3*j + 2] = (float) tmp (2);
+	apoly.vertices_[3*j + 0] = tmp (0);
+	apoly.vertices_[3*j + 1] = tmp (1);
+	apoly.vertices_[3*j + 2] = tmp (2);
 	// r,g,b: input is ints 0->255, opengl wants floats 0->1
-	apoly.colors_[4*j + 0] =(float) 255/255.0; // Red  
-	apoly.colors_[4*j + 1] =(float) 0.0/255.0; // Green
-	apoly.colors_[4*j + 2] =(float) 0.0/255.0; // Blue
-	apoly.colors_[4*j + 3] =(float) 1.0; // transparancy? 
+	apoly.colors_[4*j + 0] = 1.0f; // Red
+	apoly.colors_[4*j + 1] = 0.0f; // Green
+	apoly.colors_[4*j + 2] = 0.0f; // Blue
+	apoly.colors_[4*j + 3] = 1.0;
       }
       polygons.push_back (apoly);
     }
@@ -197,7 +200,7 @@ pcl::simulation::PolygonMeshModel::draw ()
   glEnableClientState (GL_VERTEX_ARRAY);
   glEnableClientState (GL_COLOR_ARRAY);
 
-  for (size_t i=0; i < polygons.size (); i++)
+  for (size_t i = 0; i < polygons.size (); i++)
   {
     glVertexPointer (3, GL_FLOAT, 0, polygons[i].vertices_);
     glColorPointer (4, GL_FLOAT, 0, polygons[i].colors_);
@@ -219,13 +222,10 @@ pcl::simulation::PointCloudModel::PointCloudModel (GLenum mode, pcl::PointCloud<
     vertices_[3*i + 1] = pc->points[i].y;
     vertices_[3*i + 2] = pc->points[i].z;
 
-    // TODO: is this necessary or correct if we are using rgb and not rgba?
-    int rgba_one = *reinterpret_cast<int*> (&pc->points[i].rgba);
-    colors_[4*i + 3] = (float (((rgba_one >> 24) & 0xff))/255.0);
-    //
-    colors_[4*i + 2] = (float (((rgba_one >> 16) & 0xff))/255.0);
-    colors_[4*i + 1] = (float (((rgba_one >> 8) & 0xff))/255.0);
-    colors_[4*i + 0] = (float ((rgba_one & 0xff) )/255.0 );
+    colors_[4*i + 0] = pc->points[i].r / 255.0f;
+    colors_[4*i + 1] = pc->points[i].g / 255.0f;
+    colors_[4*i + 2] = pc->points[i].b / 255.0f;
+    colors_[4*i + 3] = 1.0;
   }
 }
 
@@ -243,6 +243,12 @@ pcl::simulation::PointCloudModel::draw ()
   glEnableClientState (GL_VERTEX_ARRAY);
   glEnableClientState (GL_COLOR_ARRAY);
 
+  float att[3] = {0.0f, 0.25f, 0.0f};
+  glPointParameterf(GL_POINT_SIZE_MIN, 1.0f);
+  glPointParameterf(GL_POINT_SIZE_MAX, 500.0f); 
+  glPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, att);
+  glEnable(GL_POINT_SPRITE);
+
   glVertexPointer (3, GL_FLOAT, 0, vertices_);
   glColorPointer (4, GL_FLOAT, 0, colors_);
 
@@ -250,6 +256,8 @@ pcl::simulation::PointCloudModel::draw ()
 
   glDisableClientState (GL_COLOR_ARRAY);
   glDisableClientState (GL_VERTEX_ARRAY);
+
+  glDisable(GL_POINT_SPRITE);
 }
 
 pcl::simulation::Quad::Quad ()

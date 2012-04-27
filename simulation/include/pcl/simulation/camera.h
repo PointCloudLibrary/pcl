@@ -17,9 +17,10 @@ namespace pcl
       typedef boost::shared_ptr<Camera> Ptr;
       typedef boost::shared_ptr<const Camera> ConstPtr;
 
-      Camera () : x_(0), y_(0), z_(0), roll_(0), pitch_(0), yaw_(0)
+      Camera () : x_ (0), y_ (0), z_ (0), roll_ (0), pitch_ (0), yaw_ (0)
       {
-        updatePose();
+        updatePose ();
+        initializeCameraParameters ();
       }
 
       Camera (double x, double y, double z,
@@ -31,34 +32,44 @@ namespace pcl
                                                        yaw_ (yaw)
       {
         updatePose ();
+        initializeCameraParameters ();
       }
 
-      double x () const { return x_; }
-      void set_x (double x) { x_ = x; updatePose (); }
+      void
+      setParameters (int width, int height,
+                     float fx, float fy,
+                     float cx, float cy,
+                     float z_near, float z_far);
 
-      double y () const { return y_; }
-      void set_y (double y) { y_ = y; updatePose(); }
+      Eigen::Matrix4f
+      getProjectionMatrix () { return projection_matrix_; }
 
-      double z () const { return z_; }
-      void set_z (double z) { z_ = z; updatePose(); }
+      double getX () const { return x_; }
+      void setX (double x) { x_ = x; updatePose (); }
+
+      double getY () const { return y_; }
+      void setY (double y) { y_ = y; updatePose(); }
+
+      double getZ () const { return z_; }
+      void setZ (double z) { z_ = z; updatePose(); }
 
       double
-      roll () const { return roll_; }
+      getRoll () const { return roll_; }
       void
-      set_roll (double roll) { roll_ = roll; updatePose (); }
+      setRoll (double roll) { roll_ = roll; updatePose (); }
 
       double
-      pitch() const {return pitch_;}
+      getPitch() const {return pitch_;}
       void
-      set_pitch(double pitch) { pitch_ = pitch; updatePose (); }
+      setPitch(double pitch) { pitch_ = pitch; updatePose (); }
 
       double
-      yaw () const { return yaw_; }
+      getYaw () const { return yaw_; }
       void
-      set_yaw (double yaw) { yaw_ = yaw; updatePose (); }
+      setYaw (double yaw) { yaw_ = yaw; updatePose (); }
 
       Eigen::Isometry3d
-      pose () const { return pose_; }
+      getPose () const { return pose_; }
 
       void set (double x, double y, double z, double roll, double pitch, double yaw)
       {
@@ -70,7 +81,7 @@ namespace pcl
       void move (double vx, double vy, double vz);
 
       // Return the pose of the camera:
-      Eigen::Vector3d get_ypr ()
+      Eigen::Vector3d getYPR ()
       {
         return Eigen::Vector3d (yaw_, pitch_, roll_);
       }
@@ -79,11 +90,31 @@ namespace pcl
     private:
       void
       updatePose ();
+
+      void
+      initializeCameraParameters ();
+
+      void
+      updateProjectionMatrix ();
     
       double x_,y_,z_;
       double roll_,pitch_,yaw_;
     
       Eigen::Isometry3d pose_;
+
+      // Camera Intrinsic Parameters
+      int width_;
+      int height_;
+      float fx_;
+      float fy_;
+      float cx_;
+      float cy_;
+
+      // min and max range of the camera
+      float z_near_;
+      float z_far_;
+
+      Eigen::Matrix4f projection_matrix_;
     };
   } // namespace - simulation
 } // namespace - pcl

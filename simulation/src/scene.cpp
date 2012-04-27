@@ -22,14 +22,14 @@ Scene::add (Model::Ptr model)
 void
 Scene::addCompleteModel (std::vector<Model::Ptr> model)
 {
-  models_.push_back(model[0]);
+  models_.push_back (model[0]);
 }
 
 void
 Scene::draw ()
 {
-  for (std::vector<Model::Ptr>::iterator model = models_.begin(); model != models_.end(); ++model)
-    (*model)->draw();
+  for (std::vector<Model::Ptr>::iterator model = models_.begin (); model != models_.end (); ++model)
+    (*model)->draw ();
 }
 
 } // namespace - simulation

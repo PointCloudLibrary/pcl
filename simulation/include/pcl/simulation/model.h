@@ -25,7 +25,7 @@ namespace pcl
       float* vertices_;
       float* colors_;
       GLenum mode_;
-      size_t nvertices_;
+      GLuint nvertices_;
     } SinglePoly;
 
     struct Vertex
@@ -50,7 +50,7 @@ namespace pcl
     };
 
     typedef std::vector<Vertex> Vertices;
-    typedef std::vector<unsigned int> Indices;
+    typedef std::vector<size_t> Indices;
 
     class Model
     {
@@ -78,7 +78,7 @@ namespace pcl
       private:
         GLuint vbo_;
         GLuint ibo_;
-        int size_;
+        GLuint size_;
         //Vertices vertices_;
         //Indices indices_;
     };

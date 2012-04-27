@@ -203,7 +203,7 @@ display ()
 
   // Render a single pose for visualization
   poses.clear ();
-  poses.push_back (camera_->pose ());
+  poses.push_back (camera_->getPose ());
   range_likelihood_visualization_->computeLikelihoods (reference_vis, poses, scores);
 
   glDrawBuffer (GL_BACK);
@@ -248,7 +248,7 @@ display ()
       camera.move ((j - range_likelihood_->getCols () / 2.0) * 0.1,
                    (i - range_likelihood_->getRows () / 2.0) * 0.1,
                    0.0);
-      poses.push_back (camera.pose ());
+      poses.push_back (camera.getPose ());
     }
   }
   std::cout << std::endl;
@@ -273,12 +273,12 @@ display ()
   std::cout << std::endl;
 #endif
 
-  std::cout << "camera: " << camera_->x ()
-       << " " << camera_->y ()
-       << " " << camera_->z ()
-       << " " << camera_->roll ()
-       << " " << camera_->pitch ()
-       << " " << camera_->yaw ()
+  std::cout << "camera: " << camera_->getX ()
+       << " " << camera_->getY ()
+       << " " << camera_->getZ ()
+       << " " << camera_->getRoll ()
+       << " " << camera_->getPitch ()
+       << " " << camera_->getYaw ()
        << std::endl;
 
   delete [] reference_vis;
