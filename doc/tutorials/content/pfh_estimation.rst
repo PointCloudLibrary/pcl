@@ -40,7 +40,7 @@ circle (sphere in 3D) with radius **r**, and all its **k** neighbors (points
 with distances smaller than the radius **r**) are fully interconnected in a
 mesh. The final PFH descriptor is computed as a histogram of relationships
 between all pairs of points in the neighborhood, and thus has a computational
-complexity of :math:`O(k)`.
+complexity of :math:`O(k^2)`.
 
 .. image:: images/pfh_estimation/pfh_diagram.png
    :align: center
