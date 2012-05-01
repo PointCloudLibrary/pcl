@@ -91,8 +91,8 @@ pcl::simulation::SumReduce::sum (GLuint input_array, float* output_array)
 
     glViewport (0, 0, width/2, height/2);
 
-    float step_x = 1.0f / width;
-    float step_y = 1.0f / height;
+    float step_x = 1.0f / float (width);
+    float step_y = 1.0f / float (height);
     sum_program_->setUniform ("step_x", step_x);
     sum_program_->setUniform ("step_y", step_y);
     //float step_x = 1.0f / static_cast<float> (width);
