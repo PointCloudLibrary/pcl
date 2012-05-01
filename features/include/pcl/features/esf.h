@@ -49,6 +49,8 @@ namespace pcl
 {
   /** \brief @b ESFEstimation estimates the ensemble of shape functions descriptors for a given point cloud
     * dataset containing points. Shape functions are D2, D3, A3.  For more information about the ESF descriptor, see:
+    * Walter Wohlkinger and Markus Vincze, "Ensemble of Shape Functions for 3D Object Classification", 
+    * IEEE International Conference on Robotics and Biomimetics (IEEE-ROBIO), 2011
     * \author Walter Wohlkinger
     * \ingroup features
     */
