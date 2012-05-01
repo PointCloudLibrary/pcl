@@ -77,7 +77,7 @@ namespace pcl
       SampleConsensusModelParallelPlane (const PointCloudConstPtr &cloud) : 
         SampleConsensusModelPlane<PointT> (cloud),
         axis_ (Eigen::Vector3f::Zero ()),
-        eps_angle_ (0.0), cos_angle_ (-1.0)
+        eps_angle_ (0.0), sin_angle_ (-1.0)
       {
       }
 
@@ -88,7 +88,7 @@ namespace pcl
       SampleConsensusModelParallelPlane (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : 
         SampleConsensusModelPlane<PointT> (cloud, indices),
         axis_ (Eigen::Vector3f::Zero ()),
-        eps_angle_ (0.0), cos_angle_ (-1.0)
+        eps_angle_ (0.0), sin_angle_ (-1.0)
       {
       }
 
@@ -107,7 +107,7 @@ namespace pcl
         * \note You need to specify an angle > 0 in order to activate the axis-angle constraint!
         */
       inline void
-      setEpsAngle (const double ea) { eps_angle_ = ea; cos_angle_ = fabs (cos (ea));}
+      setEpsAngle (const double ea) { eps_angle_ = ea; sin_angle_ = fabs (sin (ea));}
 
       /** \brief Get the angle epsilon (delta) threshold. */
       inline double
@@ -158,8 +158,8 @@ namespace pcl
       /** \brief The maximum allowed difference between the plane normal and the given axis. */
       double eps_angle_;
 
-      /** \brief The cosine of the angle*/
-      double cos_angle_;
+      /** \brief The sine of the angle*/
+      double sin_angle_;
   };
 }
 
