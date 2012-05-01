@@ -93,6 +93,13 @@ void pcl::getTransformationFromTwoUnitVectorsAndOrigin(const Eigen::Vector3f& y_
   transformation(0,3)=-translation[0];  transformation(1,3)=-translation[1];  transformation(2,3)=-translation[2];
 }
 
+void pcl::getEulerAngles(const Eigen::Affine3f& t, float& roll, float& pitch, float& yaw)
+{
+  roll  = atan2f(t(2,1), t(2,2));
+  pitch = asinf(-t(2,0));
+  yaw   = atan2f(t(1,0), t(0,0));
+}
+
 void pcl::getTranslationAndEulerAngles(const Eigen::Affine3f& t, float& x, float& y, float& z, float& roll, float& pitch, float& yaw)
 {
   x = t(0,3);
