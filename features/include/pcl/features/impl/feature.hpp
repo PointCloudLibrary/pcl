@@ -121,8 +121,10 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
     else
       tree_.reset (new pcl::search::KdTree<PointInT> (false));
   }
-  // Send the surface dataset to the spatial locator
-  tree_->setInputCloud (surface_);
+  
+  if (tree_->getInputCloud () != surface_) // Make sure the tree searches the surface
+    tree_->setInputCloud (surface_); 
+
 
   // Do a fast check to see if the search parameters are well defined
   if (search_radius_ != 0.0)
