@@ -333,7 +333,7 @@ main (int argc, char *argv[])
     pcl::transformPointCloud (*model, *rotated_model, rototranslations[i]);
 
     char instance_number[10];
-    sprintf_s (instance_number, 10, "%d", i);
+    snprintf (instance_number, 10, "%zu", i);
 
     pcl::visualization::PointCloudColorHandlerCustom<PointType> rotated_model_color_handler (rotated_model, 255, 0, 0);
     viewer.addPointCloud (rotated_model, rotated_model_color_handler, std::string ("instance") + instance_number);
@@ -343,7 +343,7 @@ main (int argc, char *argv[])
       for (size_t j = 0; j < clustered_corrs[i].size (); ++j)
       {
         char line_number[10];
-        sprintf_s (line_number, 10, "%d", j);
+        snprintf (line_number, 10, "%zu", j);
         PointType& model_point = off_scene_model_keypoints->at (clustered_corrs[i][j].index_query);
         PointType& scene_point = scene_keypoints->at (clustered_corrs[i][j].index_match);
 
