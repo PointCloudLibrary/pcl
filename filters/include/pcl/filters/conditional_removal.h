@@ -281,7 +281,145 @@ namespace pcl
       {
       } // not allowed
   };
+  
+  //////////////////////////////////////////////////////////////////////////////////////////
+  /**\brief A comparison whether the (x,y,z) components of a given point satisfy (p'Ap + 2v'p + c [OP] 0).
+   * Here [OP] stands for the defined pcl::ComparisonOps, i.e. for GT, GE, LT, LE or EQ;
+   * p = (x,y,z) is a point of the point cloud; A is 3x3 matrix; v is the 3x1 vector; c is a scalar.
+   *
+   * \author Julian Löchner
+   */
+  template<typename PointT>
+  class TfQuadraticXYZComparison : public pcl::ComparisonBase<PointT>
+  {
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW     //needed whenever there is a fixed size Eigen:: vector or matrix in a class
 
+      typedef boost::shared_ptr<TfQuadraticXYZComparison<PointT> > Ptr;
+      typedef boost::shared_ptr<const TfQuadraticXYZComparison<PointT> > ConstPtr;
+
+      /** \brief Constructor.
+       */
+      TfQuadraticXYZComparison ();
+
+      /** \brief Constructor.
+       * \param op the operator "[OP]" of the comparison "p'Ap + 2v'p + c [OP] 0".
+       * \param comparison_matrix the matrix "A" of the comparison "p'Ap + 2v'p + c [OP] 0".
+       * \param comparison_vector the vector "v" of the comparison "p'Ap + 2v'p + c [OP] 0".
+       * \param comparison_scalar the scalar "c" of the comparison "p'Ap + 2v'p + c [OP] 0".
+       * \param comparison_transform the transformation of the comparison.
+       */
+      TfQuadraticXYZComparison (const pcl::ComparisonOps::CompareOp op, const Eigen::Matrix3f &comparison_matrix,
+                                const Eigen::Vector3f &comparison_vector, const float &comparison_scalar,
+                                const Eigen::Affine3f &comparison_transform = Eigen::Affine3f::Identity ());
+
+      /** \brief set the operator "[OP]" of the comparison "p'Ap + 2v'p + c [OP] 0".
+       */
+      inline void
+      setComparisonOperator (const pcl::ComparisonOps::CompareOp op)
+      {
+        op_ = op;
+      }
+
+      /** \brief set the matrix "A" of the comparison "p'Ap + 2v'p + c [OP] 0".
+       */
+      inline void
+      setComparisonMatrix (const Eigen::Matrix3f &matrix)
+      {
+        //define comp_matr_ as an homogeneous matrix of the given matrix
+        comp_matr_.block<3, 3> (0, 0) = matrix;
+        comp_matr_.col (3) << 0, 0, 0, 1;
+        comp_matr_.block<1, 3> (3, 0) << 0, 0, 0;
+        tf_comp_matr_ = comp_matr_;
+      }
+
+      /** \brief set the matrix "A" of the comparison "p'Ap + 2v'p + c [OP] 0".
+       */
+      inline void
+      setComparisonMatrix (const Eigen::Matrix4f &homogeneousMatrix)
+      {
+        comp_matr_ = homogeneousMatrix;
+        tf_comp_matr_ = comp_matr_;
+      }
+
+      /** \brief set the vector "v" of the comparison "p'Ap + 2v'p + c [OP] 0".
+       */
+      inline void
+      setComparisonVector (const Eigen::Vector3f &vector)
+      {
+        comp_vect_ = vector.homogeneous ();
+        tf_comp_vect_ = comp_vect_;
+      }
+
+      /** \brief set the vector "v" of the comparison "p'Ap + 2v'p + c [OP] 0".
+       */
+      inline void
+      setComparisonVector (const Eigen::Vector4f &homogeneousVector)
+      {
+        comp_vect_ = homogeneousVector;
+        tf_comp_vect_ = comp_vect_;
+      }
+
+      /** \brief set the scalar "c" of the comparison "p'Ap + 2v'p + c [OP] 0".
+       */
+      inline void
+      setComparisonScalar (const float &scalar)
+      {
+        comp_scalar_ = scalar;
+      }
+
+      /** \brief transform the coordinate system of the comparison. If you think of
+       * the transformation to be a translation and rotation of the comparison in the
+       * same coordinate system, you have to provide the inverse transformation.
+       * This function does not change the original definition of the comparison. Thus,
+       * each call of this function will assume the original definition of the comparison
+       * as starting point for the transformation.
+       *
+       * @param transform the transformation (rotation and translation) as an affine matrix.
+       */
+      inline void
+      transformComparison (const Eigen::Matrix4f &transform)
+      {
+        tf_comp_matr_ = transform.transpose () * comp_matr_ * transform;
+        tf_comp_vect_ = comp_vect_.transpose () * transform;
+      }
+
+      /** \brief transform the coordinate system of the comparison. If you think of
+       * the transformation to be a translation and rotation of the comparison in the
+       * same coordinate system, you have to provide the inverse transformation.
+       * This function does not change the original definition of the comparison. Thus,
+       * each call of this function will assume the original definition of the comparison
+       * as starting point for the transformation.
+       *
+       * @param transform the transformation (rotation and translation) as an affine matrix.
+       */
+      inline void
+      transformComparison (const Eigen::Affine3f &transform)
+      {
+        transformComparison (transform.matrix ());
+      }
+
+      /** \brief Determine the result of this comparison.
+       * \param point the point to evaluate
+       * \return the result of this comparison.
+       */
+      virtual bool
+      evaluate (const PointT &point) const;
+
+    protected:
+      using pcl::ComparisonBase<PointT>::capable_;
+      using pcl::ComparisonBase<PointT>::op_;
+
+      Eigen::Matrix4f comp_matr_;
+      Eigen::Vector4f comp_vect_;
+
+      float comp_scalar_;
+
+    private:
+      Eigen::Matrix4f tf_comp_matr_;
+      Eigen::Vector4f tf_comp_vect_;
+  };
+  
   //////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Base condition class. */
   template<typename PointT>
