@@ -332,23 +332,23 @@ main (int argc, char *argv[])
     pcl::PointCloud<PointType>::Ptr rotated_model (new pcl::PointCloud<PointType> ());
     pcl::transformPointCloud (*model, *rotated_model, rototranslations[i]);
 
-    char instance_number[10];
-    snprintf (instance_number, 10, "%zu", i);
+    std::stringstream ss_cloud;
+    ss_cloud << "instance" << i;
 
     pcl::visualization::PointCloudColorHandlerCustom<PointType> rotated_model_color_handler (rotated_model, 255, 0, 0);
-    viewer.addPointCloud (rotated_model, rotated_model_color_handler, std::string ("instance") + instance_number);
+    viewer.addPointCloud (rotated_model, rotated_model_color_handler, ss_cloud.str ());
 
     if (show_correspondences_)
     {
       for (size_t j = 0; j < clustered_corrs[i].size (); ++j)
       {
-        char line_number[10];
-        snprintf (line_number, 10, "%zu", j);
+        std::stringstream ss_line;
+        ss_line << "correspondence_line" << i << "_" << j;
         PointType& model_point = off_scene_model_keypoints->at (clustered_corrs[i][j].index_query);
         PointType& scene_point = scene_keypoints->at (clustered_corrs[i][j].index_match);
 
         //  We are drawing a line for each pair of clustered correspondences found between the model and the scene
-        viewer.addLine<PointType, PointType> (model_point, scene_point, 0, 255, 0, std::string ("correspondence_line") + instance_number + "_" + line_number);
+        viewer.addLine<PointType, PointType> (model_point, scene_point, 0, 255, 0, ss_line.str ());
       }
     }
   }
