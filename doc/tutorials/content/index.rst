@@ -25,6 +25,7 @@ Table of contents
   * :ref:`kdtree_tutorial`
   * :ref:`octree_tutorial`
   * :ref:`range_images`
+  * :ref:`recognition_tutorial`
   * :ref:`registration_tutorial`
   * :ref:`sample_consensus`
   * :ref:`segmentation_tutorial`
@@ -604,6 +605,27 @@ Range Images
      .. |ri_2| image:: images/range_image_border_points.png
                :height: 100px
 
+.. _recognition_tutorial:
+
+Recognition
+-----------
+
+  * :ref:`correspondence_grouping`
+
+     ======  ======
+     |rc_1|  Title: **The PCL Registration API**
+
+             Author: *Tommaso Cavallari*
+
+             Compatibility: > PCL 1.5
+
+             This tutorial aims at explaining how to perform 3D Object Recognition based on the pcl_recognition module.
+     ======  ======
+
+     .. |rc_1| image:: images/correspondence_grouping/correspondence_grouping.png
+               :height: 100px
+
+
 .. _registration_tutorial:
 
 Registration
@@ -616,7 +638,7 @@ Registration
 
              Author: *Dirk Holz, Radu B. Rusu, Jochen Sprickerhof*
 
-             Compatibility: PCL 1.2
+             Compatibility: > PCL 1.5
 
              In this document, we describe the point cloud registration API and its modules: the estimation and rejection of point correspondences, and the estimation of rigid transformations.
      ======  ======
