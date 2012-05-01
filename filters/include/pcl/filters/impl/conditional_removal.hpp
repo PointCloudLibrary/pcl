@@ -41,6 +41,7 @@
 #include <pcl/common/io.h>
 #include <boost/shared_ptr.hpp>
 #include <vector>
+#include <Eigen/Geometry>
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -377,6 +378,163 @@ pcl::PackedHSIComparison<PointT>::evaluate (const PointT &point) const
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
+template<typename PointT>
+pcl::TfQuadraticXYZComparison<PointT>::TfQuadraticXYZComparison () :
+  comp_matr_ (), comp_vect_ (), comp_scalar_ (0.0)
+{
+  // get all the fields
+  std::vector<sensor_msgs::PointField> point_fields;
+  // Use a dummy cloud to get the field types in a clever way
+  PointCloud<PointT> dummyCloud;
+  pcl::getFields (dummyCloud, point_fields);
+
+  // Locate the "x" field
+  size_t dX;
+  for (dX = 0; dX < point_fields.size (); ++dX)
+  {
+    if (point_fields[dX].name == "x")
+      break;
+  }
+  if (dX == point_fields.size ())
+  {
+    PCL_WARN ("[pcl::TfQuadraticXYZComparison::TfQuadraticXYZComparison] x field not found!\n");
+    capable_ = false;
+    return;
+  }
+
+  // Locate the "y" field
+  size_t dY;
+  for (dY = 0; dY < point_fields.size (); ++dY)
+  {
+    if (point_fields[dY].name == "y")
+      break;
+  }
+  if (dY == point_fields.size ())
+  {
+    PCL_WARN ("[pcl::TfQuadraticXYZComparison::TfQuadraticXYZComparison] y field not found!\n");
+    capable_ = false;
+    return;
+  }
+
+  // Locate the "z" field
+  size_t dZ;
+  for (dZ = 0; dZ < point_fields.size (); ++dZ)
+  {
+    if (point_fields[dZ].name == "z")
+      break;
+  }
+  if (dZ == point_fields.size ())
+  {
+    PCL_WARN ("[pcl::TfQuadraticXYZComparison::TfQuadraticXYZComparison] z field not found!\n");
+    capable_ = false;
+    return;
+  }
+
+  comp_matr_ << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0;
+  comp_vect_ << 0.0, 0.0, 0.0, 1.0;
+  tf_comp_matr_ = comp_matr_;
+  tf_comp_vect_ = comp_vect_;
+  op_ = pcl::ComparisonOps::EQ;
+  capable_ = true;
+}
+
+//////////////////////////////////////////////////////////////////////////
+template<typename PointT>
+pcl::TfQuadraticXYZComparison<PointT>::TfQuadraticXYZComparison (const pcl::ComparisonOps::CompareOp op,
+                                                                 const Eigen::Matrix3f &comparison_matrix,
+                                                                 const Eigen::Vector3f &comparison_vector,
+                                                                 const float &comparison_scalar,
+                                                                 const Eigen::Affine3f &comparison_transform) :
+  comp_matr_ (), comp_vect_ (), comp_scalar_ (comparison_scalar)
+{
+  // get all the fields
+  std::vector<sensor_msgs::PointField> point_fields;
+  // Use a dummy cloud to get the field types in a clever way
+  PointCloud<PointT> dummyCloud;
+  pcl::getFields (dummyCloud, point_fields);
+
+  // Locate the "x" field
+  size_t dX;
+  for (dX = 0; dX < point_fields.size (); ++dX)
+  {
+    if (point_fields[dX].name == "x")
+      break;
+  }
+  if (dX == point_fields.size ())
+  {
+    PCL_WARN ("[pcl::TfQuadraticXYZComparison::TfQuadraticXYZComparison] x field not found!\n");
+    capable_ = false;
+    return;
+  }
+
+  // Locate the "y" field
+  size_t dY;
+  for (dY = 0; dY < point_fields.size (); ++dY)
+  {
+    if (point_fields[dY].name == "y")
+      break;
+  }
+  if (dY == point_fields.size ())
+  {
+    PCL_WARN ("[pcl::TfQuadraticXYZComparison::TfQuadraticXYZComparison] y field not found!\n");
+    capable_ = false;
+    return;
+  }
+
+  // Locate the "z" field
+  size_t dZ;
+  for (dZ = 0; dZ < point_fields.size (); ++dZ)
+  {
+    if (point_fields[dZ].name == "z")
+      break;
+  }
+  if (dZ == point_fields.size ())
+  {
+    PCL_WARN ("[pcl::TfQuadraticXYZComparison::TfQuadraticXYZComparison] z field not found!\n");
+    capable_ = false;
+    return;
+  }
+
+  capable_ = true;
+  op_ = op;
+  setComparisonMatrix (comparison_matrix);
+  setComparisonVector (comparison_vector);
+  if (!comparison_transform.matrix ().isIdentity ())
+    transformComparison (comparison_transform);
+}
+
+//////////////////////////////////////////////////////////////////////////
+template<typename PointT>
+bool
+pcl::TfQuadraticXYZComparison<PointT>::evaluate (const PointT &point) const
+{
+  Eigen::Vector4f pointAffine;
+  pointAffine << point.x, point.y, point.z, 1; 
+  
+  float myVal = static_cast<float>(2.0f * tf_comp_vect_.transpose () * pointAffine) + static_cast<float>(pointAffine.transpose () * tf_comp_matr_ * pointAffine) + comp_scalar_ - 3.0f;
+  
+  // now do the comparison
+  switch (this->op_)
+  {
+    case pcl::ComparisonOps::GT:
+      return (myVal > 0);
+    case pcl::ComparisonOps::GE:
+      return (myVal >= 0);
+    case pcl::ComparisonOps::LT:
+      return (myVal < 0);
+    case pcl::ComparisonOps::LE:
+      return (myVal <= 0);
+    case pcl::ComparisonOps::EQ:
+      return (myVal == 0);
+    default:
+      PCL_WARN ("[pcl::transformableQuadricXYZComparison::evaluate] unrecognized op_!\n");
+      return (false);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::PointDataAtOffset<PointT>::compare (const PointT& p, const double& val) 
 {
@@ -551,31 +709,34 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
 
   if (!keep_organized_)
   {
-    for (int cp = 0; cp < static_cast<int> (input_->points.size ()); ++cp)
+    for (size_t cp = 0; cp < Filter<PointT>::indices_->size (); ++cp)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (input_->points[cp].x) || 
-          !pcl_isfinite (input_->points[cp].y) || 
-          !pcl_isfinite (input_->points[cp].z))
+      if (!pcl_isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].x)
+          || !pcl_isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].y)
+          || !pcl_isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].z))
       {
         if (extract_removed_indices_)
         {
-          (*removed_indices_)[nr_removed_p] = cp;
+          (*removed_indices_)[nr_removed_p] = (*Filter<PointT>::indices_)[cp];
           nr_removed_p++;
         }
         continue;
-      } 
+      }
 
-      if (condition_->evaluate (input_->points[cp]))
+      if (condition_->evaluate (input_->points[(*Filter < PointT > ::indices_)[cp]]))
       {
-        pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (input_->points[cp], output.points[nr_p]));
+        pcl::for_each_type<FieldList> (
+                                       pcl::NdConcatenateFunctor<PointT, PointT> (
+                                                                                  input_->points[(*Filter < PointT > ::indices_)[cp]],
+                                                                                  output.points[nr_p]));
         nr_p++;
       }
       else
       {
         if (extract_removed_indices_)
         {
-          (*removed_indices_)[nr_removed_p] = cp;
+          (*removed_indices_)[nr_removed_p] = (*Filter<PointT>::indices_)[cp];
           nr_removed_p++;
         }
       }
@@ -583,22 +744,41 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
 
     output.width = nr_p;
     output.points.resize (nr_p);
-  } 
-  else 
+  }
+  else
   {
-    for (int cp = 0; cp < static_cast<int> (input_->points.size ()); ++cp)
+    std::vector<int> indices = *Filter<PointT>::indices_;
+    std::sort (indices.begin (), indices.end ());   //TODO: is this necessary or can we assume the indices to be sorted?
+    size_t ci = 0;
+    for (size_t cp = 0; cp < input_->points.size (); ++cp)
     {
-      // copy all the fields
-      pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (input_->points[cp], output.points[cp]));
-      if (!condition_->evaluate (input_->points[cp]))
+      if (cp == static_cast<size_t> (indices[ci]))
+      {
+        if (ci < indices.size ())
+        {
+          ci++;
+          if (cp == static_cast<size_t> (indices[ci]))   //check whether the next index will have the same value. TODO: necessary?
+            continue;
+        }
+
+        // copy all the fields
+        pcl::for_each_type<FieldList> (pcl::NdConcatenateFunctor<PointT, PointT> (input_->points[cp],
+                                                                                  output.points[cp]));
+        if (!condition_->evaluate (input_->points[cp]))
+        {
+          output.points[cp].getVector4fMap ().setConstant (user_filter_value_);
+
+          if (extract_removed_indices_)
+          {
+            (*removed_indices_)[nr_removed_p] = static_cast<int> (cp);
+            nr_removed_p++;
+          }
+        }
+      }
+      else
       {
         output.points[cp].getVector4fMap ().setConstant (user_filter_value_);
-
-        if (extract_removed_indices_)
-        {
-          (*removed_indices_)[nr_removed_p] = cp;
-          nr_removed_p++;
-        }
+        //as for !keep_organized_: removed points due to setIndices are not considered as removed_indices_
       }
     }
   }
@@ -610,6 +790,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
 #define PCL_INSTANTIATE_FieldComparison(T) template class PCL_EXPORTS pcl::FieldComparison<T>;
 #define PCL_INSTANTIATE_PackedRGBComparison(T) template class PCL_EXPORTS pcl::PackedRGBComparison<T>;
 #define PCL_INSTANTIATE_PackedHSIComparison(T) template class PCL_EXPORTS pcl::PackedHSIComparison<T>;
+#define PCL_INSTANTIATE_TfQuadraticXYZComparison(T) template class PCL_EXPORTS pcl::TfQuadraticXYZComparison<T>;
 #define PCL_INSTANTIATE_ConditionBase(T) template class PCL_EXPORTS pcl::ConditionBase<T>;
 #define PCL_INSTANTIATE_ConditionAnd(T) template class PCL_EXPORTS pcl::ConditionAnd<T>;
 #define PCL_INSTANTIATE_ConditionOr(T) template class PCL_EXPORTS pcl::ConditionOr<T>;

@@ -1387,6 +1387,204 @@ TEST (ConditionalRemoval, Filters)
   EXPECT_EQ (int (num_not_nan), cloud->points.size()-condrem_.getRemovedIndices()->size());
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+TEST (ConditionalRemovalSetIndices, Filters)
+{
+  // Test the PointCloud<PointT> method
+  PointCloud<PointXYZ> output;
+
+  // build some indices
+  boost::shared_ptr<vector<int> > indices (new vector<int> (2));
+  (*indices)[0] = 0;
+  (*indices)[1] = static_cast<int> (cloud->points.size ()) - 1;
+
+  // build a condition which is always true
+  ConditionAnd<PointXYZ>::Ptr true_cond (new ConditionAnd<PointXYZ> ());
+  true_cond->addComparison (TfQuadraticXYZComparison<PointXYZ>::ConstPtr (new TfQuadraticXYZComparison<PointXYZ> (ComparisonOps::EQ, Eigen::Matrix3f::Zero (),
+                                                                                                                  Eigen::Vector3f::Zero (), 0)));
+
+  // build the filter
+  ConditionalRemoval<PointXYZ> condrem2 (true_cond);
+  condrem2.setInputCloud (cloud);
+  condrem2.setIndices (indices);
+
+  // try the dense version
+  condrem2.setKeepOrganized (false);
+  condrem2.filter (output);
+
+  EXPECT_EQ (int (output.points.size ()), 2);
+  EXPECT_EQ (int (output.width), 2);
+  EXPECT_EQ (int (output.height), 1);
+
+  EXPECT_EQ (cloud->points[0].x, output.points[0].x);
+  EXPECT_EQ (cloud->points[0].y, output.points[0].y);
+  EXPECT_EQ (cloud->points[0].z, output.points[0].z);
+
+  EXPECT_EQ (cloud->points[cloud->points.size () - 1].x, output.points[1].x);
+  EXPECT_EQ (cloud->points[cloud->points.size () - 1].y, output.points[1].y);
+  EXPECT_EQ (cloud->points[cloud->points.size () - 1].z, output.points[1].z);
+
+  // try the not dense version
+  condrem2.setKeepOrganized (true);
+  condrem2.filter (output);
+
+  EXPECT_EQ (cloud->points[0].x, output.points[0].x);
+  EXPECT_EQ (cloud->points[0].y, output.points[0].y);
+  EXPECT_EQ (cloud->points[0].z, output.points[0].z);
+
+  EXPECT_EQ (cloud->points[cloud->points.size () - 1].x, output.points[output.points.size () - 1].x);
+  EXPECT_EQ (cloud->points[cloud->points.size () - 1].y, output.points[output.points.size () - 1].y);
+  EXPECT_EQ (cloud->points[cloud->points.size () - 1].z, output.points[output.points.size () - 1].z);
+
+  int num_not_nan = 0;
+  for (size_t i = 0; i < output.points.size (); i++)
+  {
+    if (pcl_isfinite (output.points[i].x) &&
+        pcl_isfinite (output.points[i].y) &&
+        pcl_isfinite (output.points[i].z))
+      num_not_nan++;
+  }
+
+  EXPECT_EQ (int (output.points.size ()), int (cloud->points.size ()));
+  EXPECT_EQ (int (output.width), int (cloud->width));
+  EXPECT_EQ (int (output.height), int (cloud->height));
+  EXPECT_EQ (num_not_nan, 2);
+
+  // build the filter
+  ConditionalRemoval<PointXYZ> condrem2_ (true_cond, true);
+  condrem2_.setIndices (indices);
+  condrem2_.setInputCloud (cloud);
+
+  // try the dense version
+  condrem2_.setKeepOrganized (false);
+  condrem2_.filter (output);
+
+  EXPECT_EQ (int (output.points.size ()), 2);
+  EXPECT_EQ (int (output.width), 2);
+  EXPECT_EQ (int (output.height), 1);
+
+  EXPECT_EQ (cloud->points[0].x, output.points[0].x);
+  EXPECT_EQ (cloud->points[0].y, output.points[0].y);
+  EXPECT_EQ (cloud->points[0].z, output.points[0].z);
+
+  EXPECT_EQ (cloud->points[cloud->points.size () - 1].x, output.points[1].x);
+  EXPECT_EQ (cloud->points[cloud->points.size () - 1].y, output.points[1].y);
+  EXPECT_EQ (cloud->points[cloud->points.size () - 1].z, output.points[1].z);
+
+  EXPECT_EQ (int (output.points.size ()), int (indices->size ()) - int (condrem2_.getRemovedIndices ()->size ()));
+
+  // try the not dense version
+  condrem2_.setKeepOrganized (true);
+  condrem2_.filter (output);
+
+  EXPECT_EQ (cloud->points[0].x, output.points[0].x);
+  EXPECT_EQ (cloud->points[0].y, output.points[0].y);
+  EXPECT_EQ (cloud->points[0].z, output.points[0].z);
+
+  EXPECT_EQ (cloud->points[cloud->points.size () - 1].x, output.points[output.points.size () - 1].x);
+  EXPECT_EQ (cloud->points[cloud->points.size () - 1].y, output.points[output.points.size () - 1].y);
+  EXPECT_EQ (cloud->points[cloud->points.size () - 1].z, output.points[output.points.size () - 1].z);
+
+  num_not_nan = 0;
+  for (size_t i = 0; i < output.points.size (); i++)
+  {
+    if (pcl_isfinite (output.points[i].x) &&
+        pcl_isfinite (output.points[i].y) &&
+        pcl_isfinite (output.points[i].z))
+      num_not_nan++;
+  }
+
+  EXPECT_EQ (int (output.points.size ()), int (cloud->points.size ()));
+  EXPECT_EQ (int (output.width), int (cloud->width));
+  EXPECT_EQ (int (output.height), int (cloud->height));
+  EXPECT_EQ (num_not_nan, 2);
+
+  EXPECT_EQ (num_not_nan, int (indices->size ()) - int (condrem2_.getRemovedIndices ()->size ()));
+}
+
+TEST (ConditionalRemovalTfQuadraticXYZComparison, Filters)
+{
+  // Test the PointCloud<PointT> method
+  PointCloud<PointXYZ> output;
+
+  // Create cloud: a line along the x-axis
+  PointCloud<PointXYZ>::Ptr input (new PointCloud<PointXYZ> ());
+
+  input->push_back (PointXYZ (-1.0, 0.0, 0.0));
+  input->push_back (PointXYZ (0.0, 0.0, 0.0));
+  input->push_back (PointXYZ (1.0, 0.0, 0.0));
+  input->push_back (PointXYZ (2.0, 0.0, 0.0));
+  input->push_back (PointXYZ (3.0, 0.0, 0.0));
+  input->push_back (PointXYZ (4.0, 0.0, 0.0));
+  input->push_back (PointXYZ (5.0, 0.0, 0.0));
+  input->push_back (PointXYZ (6.0, 0.0, 0.0));
+  input->push_back (PointXYZ (7.0, 0.0, 0.0));
+  input->push_back (PointXYZ (8.0, 0.0, 0.0));
+
+  // build a condition representing the inner of a cylinder including the edge located at the origin and pointing along the x-axis.
+  ConditionAnd<PointXYZ>::Ptr cyl_cond (new ConditionAnd<PointXYZ> ());
+  Eigen::Matrix3f cylinderMatrix;
+  cylinderMatrix << 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0;
+  float cylinderScalar = -4; //radius² of cylinder
+  TfQuadraticXYZComparison<PointXYZ>::Ptr cyl_comp (new TfQuadraticXYZComparison<PointXYZ> (ComparisonOps::LE, cylinderMatrix,
+                                                                                            Eigen::Vector3f::Zero (), cylinderScalar));
+  cyl_cond->addComparison (cyl_comp);
+
+  // build the filter
+  ConditionalRemoval<PointXYZ> condrem (cyl_cond);
+  condrem.setInputCloud (input);
+  condrem.setKeepOrganized (false);
+
+  // apply it
+  condrem.filter (output);
+
+  EXPECT_EQ (10, int (output.points.size ()));
+
+  EXPECT_EQ (input->points[0].x, output.points[0].x);
+  EXPECT_EQ (input->points[0].y, output.points[0].y);
+  EXPECT_EQ (input->points[0].z, output.points[0].z);
+
+  EXPECT_EQ (input->points[9].x, output.points[9].x);
+  EXPECT_EQ (input->points[9].y, output.points[9].y);
+  EXPECT_EQ (input->points[9].z, output.points[9].z);
+
+  // rotate cylinder comparison along z-axis by PI/2
+  cyl_comp->transformComparison (getTransformation (0, 0, 0, 0, 0, PI / 2).inverse ());
+
+  condrem.filter (output);
+
+  EXPECT_EQ (4, int (output.points.size ()));
+
+  EXPECT_EQ (input->points[0].x, output.points[0].x);
+  EXPECT_EQ (input->points[0].y, output.points[0].y);
+  EXPECT_EQ (input->points[0].z, output.points[0].z);
+
+  EXPECT_EQ (input->points[3].x, output.points[3].x);
+  EXPECT_EQ (input->points[3].y, output.points[3].y);
+  EXPECT_EQ (input->points[3].z, output.points[3].z);
+
+  // change comparison to a simple plane (x < 5)
+  Eigen::Vector3f planeVector;
+  planeVector << 1.0, 0.0, 0.0;
+  Eigen::Matrix3f planeMatrix = Eigen::Matrix3f::Zero ();
+  cyl_comp->setComparisonMatrix (planeMatrix);
+  cyl_comp->setComparisonVector (planeVector);
+  cyl_comp->setComparisonScalar (-2 * 5.0);
+  cyl_comp->setComparisonOperator (ComparisonOps::LT); 
+
+  condrem.filter (output);
+
+  EXPECT_EQ (6, int (output.points.size ()));
+
+  EXPECT_EQ (input->points[0].x, output.points[0].x);
+  EXPECT_EQ (input->points[0].y, output.points[0].y);
+  EXPECT_EQ (input->points[0].z, output.points[0].z);
+
+  EXPECT_EQ (input->points[5].x, output.points[5].x);
+  EXPECT_EQ (input->points[5].y, output.points[5].y);
+  EXPECT_EQ (input->points[5].z, output.points[5].z);
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
