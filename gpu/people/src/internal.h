@@ -59,7 +59,8 @@ namespace pcl
     {      
       float probability[NUM_PARTS];
     };
-
+    
+    typedef DeviceArray2D<float4>         Cloud;    
     typedef DeviceArray2D<unsigned short> Depth;
     typedef DeviceArray2D<unsigned char>  Labels;
     typedef DeviceArray2D<char4>          MultiLabels;
@@ -75,20 +76,31 @@ namespace pcl
       Intr () {}
       Intr (float fx_, float fy_, float cx_, float cy_) : fx(fx_), fy(fy_), cx(cx_), cy(cy_) {}
 
-      void setDefaultPPInIncorrect(int cols, int rows)
+      void setDefaultPPIfIncorrect(int cols, int rows)
       {
         cx = cx > 0 ? cx : cols/2 - 0.5f;
         cy = cy > 0 ? cy : rows/2 - 0.5f;
       }
     };
-
-    void convertCloud2Depth(const DeviceArray2D<float8>& cloud, Depth& depth);
+    
     void smoothLabelImage(const Labels& src, const Depth& depth, Labels& dst, int num_parts, int  patch_size, int depthThres);
     void colorLMap(const Labels& labels, const DeviceArray<uchar4>& cmap, Image& rgb);
 
+
+    ////////////// connected components ///////////////////        
+
+    struct ConnectedComponents
+    {
+      static void initEdges(int rows, int cols, DeviceArray2D<unsigned char>& edges);    
+      static void computeEdges(const Labels& labels, const Cloud& cloud, int num_parts, float sq_radius, DeviceArray2D<unsigned char>& edges);
+      static void labelComonents(const DeviceArray2D<unsigned char>& edges, DeviceArray2D<int>& comps);
+    };
+
+    void connected_components(const Labels& labels, const DeviceArray2D<float4>& cloud, int num_parts, float sq_radius, DeviceArray2D<int>& components);
+
+
     void setZero(Mask& mask);
     void prepareForeGroundDepth(const Depth& depth1, Mask& inverse_mask, Depth& depth2);
-
 
     float computeHue(int rgba);
     void  computeHueWithNans(const Image& image, const Depth& depth, Hue& hue);

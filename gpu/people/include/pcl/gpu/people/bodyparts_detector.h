@@ -63,6 +63,8 @@ namespace pcl
       {
       public:
         typedef boost::shared_ptr<RDFBodyPartsDetector> Ptr;
+        typedef label_skeleton::Blob2 Blob2;
+        typedef std::vector<std::vector<Blob2, Eigen::aligned_allocator<Blob2> > > BlobMatrix;
 
         typedef DeviceArray2D<unsigned short> Depth;
         typedef DeviceArray2D<unsigned char> Labels;
@@ -70,20 +72,13 @@ namespace pcl
 
         RDFBodyPartsDetector(const std::vector<std::string>& tree_files, 
             int default_buffer_rows = 480, int default_buffer_cols = 640);
-
-        //RDF & smooth
-        void computeLabels(const Depth& depth);
-
-        ////////// in development (dirty ) //////////
-
-        typedef std::vector<std::vector<label_skeleton::Blob2, Eigen::aligned_allocator<label_skeleton::Blob2> > > BlobMatrix;
-
-        void step2_selectBetterName(const PointCloud<PointXYZ>& cloud, int cluster_area_threshold, BlobMatrix& blobs);
-        ////////////////////////////////////////////
+        
+        void process(const Depth& depth, const pcl::PointCloud<pcl::PointXYZ>& cloud, int min_pts_per_cluster);
 
         //getters
         const Labels& getLabels() const;
         size_t treesNumber() const;
+        const BlobMatrix& getBlobMatrix() const;
 
         //utility
         void colorizeLabels(const Labels& labels, Image& color_labels) const;
@@ -97,17 +92,18 @@ namespace pcl
         int max_cluster_size_;
         float cluster_tolerance_;
 
+        BlobMatrix blob_matrix_;
 
+        // hide this buffer using pImpl
         std::vector<unsigned char> lmap_host_;
         std::vector<int> dst_labels_;        
         std::vector<int> region_sizes_;
-        std::vector<int> wavefront_;   
+        std::vector<int> remap_; 
+        std::vector<float> means_storage_;
+        DeviceArray2D<int> comps_;
+        DeviceArray2D<unsigned char> edges_;        
 
         void allocate_buffers(int rows = 480, int cols = 640);
-
-        void optimized_elec4(const pcl::PointCloud<pcl::PointXYZ>& cloud, int num_parts);
-                
-
       };
     }
   }

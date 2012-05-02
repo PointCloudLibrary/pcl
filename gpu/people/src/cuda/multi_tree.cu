@@ -394,7 +394,7 @@ void pcl::device::MultiTreeLiveProc::process(const Depth& dmap, Labels& lmap, in
     CUDA_runMultiTreePass ( FGThresh, ti, static_cast<float> (focal), t.treeHeight, t.numNodes, t.nodes_device, t.leaves_device, dmap, multilmap );    
   }
   // 2 - run the merging 
-  assert( numTrees <= pcl::gpu::people::NR_TREES );
+  assert( numTrees <= 4 );
 
   device::CUDA_runMultiTreeMerge(numTrees, dmap, multilmap, lmap);
 }

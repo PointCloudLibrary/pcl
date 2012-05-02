@@ -116,20 +116,7 @@ namespace pcl
           {
             return (delta_hue_tolerance_);
           }
-
-          /** \brief if set the proces step will do a second iteration with SHS */
-          inline void
-          setDoSHS (bool do_shs)
-          {
-            do_shs_ = do_shs;
-          }
-          /** \brief returns if the process step does or doesn't do a reiteration with SHS */
-          inline bool
-          getDoSHS () const
-          {
-            return (do_shs_);
-          }
-         
+              
           /** \brief Class getName method. */
           virtual std::string getClassName () const { return "PeopleDetector"; }
 
@@ -140,8 +127,7 @@ namespace pcl
 
           float fx_, fy_, cx_, cy_;
           unsigned int  delta_hue_tolerance_;
-          bool          do_shs_;
-         
+                   
           DeviceArray<unsigned char> kernelRect5x5_;
 
           PointCloud<PointType> cloud_host_;

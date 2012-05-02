@@ -35,22 +35,25 @@
  */
 
 #include <pcl/gpu/people/bodyparts_detector.h>
-#include <cassert>
+#include <pcl/gpu/people/conversions.h>
+#include <pcl/gpu/people/label_segment.h>
+#include <pcl/gpu/people/label_tree.h>
+
 #include <pcl/common/time.h>
+#include "cuda.h"
+#include "emmintrin.h"
+
+#include <cassert>
 #include "internal.h"
+#include "cuda_async_copy.h"
 
 using namespace std;
 
 const int MAX_CLUST_SIZE = 25000;
 const float CLUST_TOL = 0.05f;
 
-pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector( const vector<string>& tree_files, 
-                                                              int rows, 
-                                                              int cols)
-    : labels_(rows, cols), 
-      labels_smoothed_(rows, cols), 
-      max_cluster_size_(MAX_CLUST_SIZE), 
-      cluster_tolerance_(CLUST_TOL)
+pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector( const vector<string>& tree_files, int rows, int cols)    
+  : max_cluster_size_(MAX_CLUST_SIZE), cluster_tolerance_(CLUST_TOL)
 {
   //TODO replace all asserts with exceptions
   assert(!tree_files.empty());
@@ -80,8 +83,12 @@ pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector( const vector<strin
   }
   color_map_.upload(rgba);
 
-  allocate_buffers();
+  allocate_buffers(rows, cols);
 }
+
+
+////////////////////////////////////////////////////////////////////////////////////
+/// getters
 
 size_t 
 pcl::gpu::people::RDFBodyPartsDetector::treesNumber() const
@@ -95,6 +102,15 @@ pcl::gpu::people::RDFBodyPartsDetector::getLabels() const
   return labels_smoothed_;
 }
 
+const pcl::gpu::people::RDFBodyPartsDetector::BlobMatrix& 
+pcl::gpu::people::RDFBodyPartsDetector::getBlobMatrix() const
+{
+  return blob_matrix_;
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+///  colorizeLabels
+
 void 
 pcl::gpu::people::RDFBodyPartsDetector::colorizeLabels(const Labels& labels, Image& color_labels) const
 {  
@@ -105,190 +121,125 @@ pcl::gpu::people::RDFBodyPartsDetector::colorizeLabels(const Labels& labels, Ima
   device::colorLMap(labels, map, img);
 }
 
-void 
-pcl::gpu::people::RDFBodyPartsDetector::computeLabels(const Depth& depth)
-{
-  allocate_buffers(depth.rows(), depth.cols());
-  // Process the depthimage (CUDA)
-  impl_->process(depth, labels_);
-  device::smoothLabelImage(labels_, depth, labels_smoothed_, NUM_PARTS, 5, 300);
-}
+////////////////////////////////////////////////////////////////////////////////////
+///  colorizeLabels
 
 void 
 pcl::gpu::people::RDFBodyPartsDetector::allocate_buffers(int rows, int cols)
 {
-    lmap_host_.resize(rows * cols);
+  labels_.create(rows, cols);
+  labels_smoothed_.create(rows, cols);
+
+  lmap_host_.resize(rows * cols);
     
-    dst_labels_.resize(rows * cols);
-    region_sizes_.resize(rows*cols);
-    wavefront_.resize(rows*cols*2);                  
+  dst_labels_.resize(rows * cols);
+  region_sizes_.resize(rows*cols+1);
+  remap_.resize(rows*cols);
+
+  comps_.create(rows, cols);  
+  device::ConnectedComponents::initEdges(rows, cols, edges_);
+
+  means_storage_.resize((cols * rows + 1) * 3); // float3 * cols * rows and float3 for cc == -1.
+
+  blob_matrix_.resize(NUM_PARTS);
+  for(size_t i = 0; i < blob_matrix_.size(); ++i)
+  {
+    blob_matrix_[i].clear();
+    blob_matrix_[i].reserve(5000);
+  }
 }
-
-//////////////////////////////////////////////////////////////////////
-///////////////////// in development (dirty) /////////////////////////
-
-#include <pcl/gpu/people/conversions.h>
-#include <pcl/gpu/people/label_segment.h>
-#include <pcl/gpu/people/label_tree.h>
-#include "cuda.h"
-#include "vector_functions.h"
 
 void 
-pcl::gpu::people::RDFBodyPartsDetector::step2_selectBetterName(const PointCloud<PointXYZ>& cloud, int min_pts_per_cluster, BlobMatrix& sorted)
+pcl::gpu::people::RDFBodyPartsDetector::process(const Depth& depth, const PointCloud<PointXYZ>& cloud, int min_pts_per_cluster)
 {
-  int cols = labels_smoothed_.cols();
-  int rows = labels_smoothed_.rows();
+  //ScopeTime time("ev");
+
+  int cols = depth.cols();
+  int rows = depth.rows();
+
+  allocate_buffers(rows, cols);
   
+  {
+  //ScopeTime time("cc");
+
+  // Process the depthimage (CUDA)
+  impl_->process(depth, labels_);
+  device::smoothLabelImage(labels_, depth, labels_smoothed_, NUM_PARTS, 5, 300);
+  
+  //AsyncCopy<unsigned char> async_labels_download(lmap_host_);
+
   int c;  
   labels_smoothed_.download(lmap_host_, c);
+  //async_labels_download.download(labels_smoothed_);
+
+  device::Cloud cloud_device;
+  cloud_device.upload((const std::vector<float4>&)cloud.points, cols);
   
-  // Create a new struct to put the results in    
-  sorted.resize(NUM_PARTS);
-  for(size_t i = 0; i < sorted.size(); ++i)
+  device::ConnectedComponents::computeEdges(labels_smoothed_, cloud_device, NUM_PARTS, cluster_tolerance_ * cluster_tolerance_, edges_);
+  device::ConnectedComponents::labelComonents(edges_, comps_);
+      
+  comps_.download(dst_labels_, c);
+
+  //async_labels_download.waitForCompeltion();
+
+  }      
   {
-      sorted[i].clear();
-      sorted[i].reserve(1000);
+  //ScopeTime time("cvt");    
+  std::fill(remap_.begin(), remap_.end(), -1);
+  std::fill(region_sizes_.begin(), region_sizes_.end(), 0);    
+    
+  std::fill(means_storage_.begin(), means_storage_.end(), 0);
+  float3* means = (float3*)&means_storage_[3];
+  int *rsizes = &region_sizes_[1];
+  
+  for(size_t i = 0; i < blob_matrix_.size(); ++i)  
+    blob_matrix_[i].clear();
+  
+  for(size_t k = 0; k < dst_labels_.size(); ++k)  
+  {    
+    const PointXYZ& p = cloud.points[k];    
+    int cc = dst_labels_[k];       
+    means[cc].x += p.x;  
+    means[cc].y += p.y;
+    means[cc].z += p.z;
+    ++rsizes[cc];       
   }
 
-  {
-     //ScopeTime time("elec4");     
-     optimized_elec4(cloud, NUM_PARTS);
-     
-     int *rsizes = &region_sizes_[0];
-     int *remap = &wavefront_[0]; // sure that size is enought
-     std::fill(remap, remap + cols * rows, -1);   
+  means[-1].z = 0; // cc == -1 means invalid 
 
-     std::vector<float3> means(cols * rows, make_float3(0, 0, 0));
-     for(size_t k = 0; k < dst_labels_.size(); ++k)
-     {
-       int cc = dst_labels_[k];
-       if (cc != -1 && min_pts_per_cluster <= rsizes[cc] && rsizes[cc] <= max_cluster_size_)
-       {
-         const PointXYZ& p = cloud.points[k];
-         means[cc].x += p.x;
-         means[cc].y += p.y;
-         means[cc].z += p.z;
-        }
-     }
-
-     for(size_t k = 0; k < dst_labels_.size(); ++k)
-     {       
-       int label = lmap_host_[k];
-       int cc    = dst_labels_[k];
-       
-       if (cc != -1 && means[cc].z != 0)
-       {
-         int ccindex = remap[cc];
-         if (ccindex == -1)
-         {
-           ccindex = (int)sorted[label].size();
-           sorted[label].resize(ccindex + 1);
-           remap[cc] = ccindex;
-
-           sorted[label][ccindex].label = (part_t)label;
-           sorted[label][ccindex].mean.coeffRef(0) = means[cc].x/rsizes[cc];
-           sorted[label][ccindex].mean.coeffRef(1) = means[cc].y/rsizes[cc];
-           sorted[label][ccindex].mean.coeffRef(2) = means[cc].z/rsizes[cc];
-         }                 
-         sorted[label][ccindex].indices.indices.push_back(k);
-       }                           
-     }
-
-     int id = 0;
-     for(size_t label = 0; label < sorted.size(); ++label)            
-       for(size_t b = 0; b < sorted[label].size(); ++b)
-       {         
-         sorted[label][b].id = id++;                                
-         sorted[label][b].lid = (int)b;                        
-       }     
-  }  //ScopeTime time("elec4");     
-  
-
-  label_skeleton::buildRelations ( sorted );  
-}
-
-static float sqnorm(const pcl::PointXYZ& p1, const pcl::PointXYZ& p2)
-{
-    float dx = (p1.x - p2.x);
-    float dy = (p1.y - p2.y);
-    float dz = (p1.z - p2.z);
-    return dx*dx + dy*dy + dz*dz;    
-}
-
-void pcl::gpu::people::RDFBodyPartsDetector::optimized_elec4(const PointCloud<pcl::PointXYZ>& cloud, int num_parts)
-{      
-  int width = cloud.width;
-  int height = cloud.height;    
-    
-  std::fill(dst_labels_.begin(), dst_labels_.end(), -1);    
-  int2 *wf = (int2*)&wavefront_[0];
-  int *rsizes = &region_sizes_[0];       
-
-  int cc = -1;
-
-  float squared_radius = cluster_tolerance_ * cluster_tolerance_;
-
-  for(int j = 0; j < height; ++j)
-  {
-    for(int i = 0; i < width; ++i)
-    {           
-      if (lmap_host_[j * width + i] >= num_parts || dst_labels_[j * width + i] != -1) // invalid label && has been labeled
-        continue;
-
-      int2* ws = wf; // initialize wavefront
-      int2 p = make_int2(i, j);  // current pixel
-
-      cc++;	// next label
-
-      dst_labels_[j * width + i] = cc;            
-      int count = 0;	// current region size
-
-      // wavefront propagation
-      while( ws >= wf ) // wavefront not empty
+  for(size_t k = 0; k < dst_labels_.size(); ++k)
+  {       
+    int label = lmap_host_[k];
+    int cc    = dst_labels_[k];
+   
+    if (means[cc].z != 0 && min_pts_per_cluster <= rsizes[cc] && rsizes[cc] <= max_cluster_size_)
+    {
+      int ccindex = remap_[cc];
+      if (ccindex == -1)
       {
-        // put neighbors onto wavefront
-        const unsigned char* sl = &lmap_host_[p.y * width + p.x];
-        int*                 dl = &dst_labels_[p.y * width + p.x];
-        const pcl::PointXYZ *sp = &cloud.points[p.y * width + p.x];
+        ccindex = (int)blob_matrix_[label].size();
+        blob_matrix_[label].resize(ccindex + 1);
+        remap_[cc] = ccindex;
+ 
+        blob_matrix_[label][ccindex].label = (part_t)label;
+        blob_matrix_[label][ccindex].mean.coeffRef(0) = means[cc].x / rsizes[cc];
+        blob_matrix_[label][ccindex].mean.coeffRef(1) = means[cc].y / rsizes[cc];
+        blob_matrix_[label][ccindex].mean.coeffRef(2) = means[cc].z / rsizes[cc];
+        blob_matrix_[label][ccindex].indices.indices.reserve(rsizes[cc]);
+      }                 
+      blob_matrix_[label][ccindex].indices.indices.push_back(k);
+    }                           
+  }
 
-        //right
-        if( p.x < width-1 && dl[+1] == -1 && sl[+1] == sl[0])
-          if (sqnorm(sp[0], sp[+1]) <= squared_radius)
-          {
-            dl[+1] = cc;
-            *ws++ = make_int2(p.x+1, p.y);
-          }
-
-        //left
-        if( p.x > 0 && dl[-1] == -1 && sl[-1] == sl[0])
-          if (sqnorm(sp[0], sp[-1]) <= squared_radius)
-          {
-            dl[-1] = cc;
-            *ws++ = make_int2(p.x-1, p.y);
-          }
-
-        //top
-        if( p.y < height-1 && dl[+width] == -1 && sl[+width] == sl[0])
-          if (sqnorm(sp[0], sp[+width]) <= squared_radius)
-          {
-            dl[+width] = cc;
-            *ws++ = make_int2(p.x, p.y+1);
-          }
-
-        //top
-        if( p.y > 0 && dl[-width] == -1 && sl[-width] == sl[0])
-          if (sqnorm(sp[0], sp[-width]) <= squared_radius)
-          {
-            dl[-width] = cc;
-            *ws++ = make_int2(p.x, p.y-1);
-          }
-
-        // pop most recent and propagate
-        p = *--ws;
-        count++;
-      }
-
-      rsizes[cc] = count;
-    } /* for(int i = 0; i < sz.width; ++i) */
-  } /* for(int j = 0; j < sz.height; ++j) */    
+  int id = 0;
+  for(size_t label = 0; label < blob_matrix_.size(); ++label)            
+    for(size_t b = 0; b < blob_matrix_[label].size(); ++b)
+    {         
+      blob_matrix_[label][b].id = id++;                                
+      blob_matrix_[label][b].lid = (int)b;                        
+    }     
+  
+  label_skeleton::buildRelations ( blob_matrix_ );   
+  }
 }
+

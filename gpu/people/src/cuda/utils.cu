@@ -6,40 +6,41 @@
 
 #include <stdio.h>
 
-namespace pcl
-{
-  namespace device
-  {
-    __global__ void c2dKernel(const PtrStepSz<float8> cloud, PtrStep<unsigned short> depth)
-    {
-      int x = threadIdx.x + blockIdx.x * blockDim.x;
-      int y = threadIdx.x + blockIdx.x * blockDim.x;
-
-      if (x < cloud.cols && y < cloud.rows)
-      {
-        float d = cloud.ptr(y)[x].z * 1000; // m -> mm
-        d = isnan(d) ? 0 : d;        
-        depth.ptr(y)[x] = d;
-      }
-    }
-  }
-}
-
-void 
-pcl::device::convertCloud2Depth(const DeviceArray2D<float8>& cloud, Depth& depth)
-{
-  int cols = cloud.cols();
-  int rows = cloud.rows();
-
-  depth.create(rows, cols);
-
-  dim3 block(32, 8);
-  dim3 grid(divUp(cols, block.x), divUp(rows, block.y));
-  
-  c2dKernel<<<grid, block>>>(cloud, depth);
-  cudaSafeCall( cudaGetLastError() );
-  cudaSafeCall( cudaThreadSynchronize() );
-}
+// TODO delete this
+//namespace pcl
+//{
+//  namespace device
+//  {
+//    __global__ void c2dKernel(const PtrStepSz<float8> cloud, PtrStep<unsigned short> depth)
+//    {
+//      int x = threadIdx.x + blockIdx.x * blockDim.x;
+//      int y = threadIdx.x + blockIdx.x * blockDim.x;
+//
+//      if (x < cloud.cols && y < cloud.rows)
+//      {
+//        float d = cloud.ptr(y)[x].z * 1000; // m -> mm
+//        d = isnan(d) ? 0 : d;        
+//        depth.ptr(y)[x] = d;
+//      }
+//    }
+//  }
+//}
+//
+//void 
+//pcl::device::convertCloud2Depth(const DeviceArray2D<float8>& cloud, Depth& depth)
+//{
+//  int cols = cloud.cols();
+//  int rows = cloud.rows();
+//
+//  depth.create(rows, cols);
+//
+//  dim3 block(32, 8);
+//  dim3 grid(divUp(cols, block.x), divUp(rows, block.y));
+//  
+//  c2dKernel<<<grid, block>>>(cloud, depth);
+//  cudaSafeCall( cudaGetLastError() );
+//  cudaSafeCall( cudaThreadSynchronize() );
+//}
 
 namespace pcl
 {

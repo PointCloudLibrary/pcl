@@ -54,15 +54,10 @@ using namespace std;
 using namespace pcl;
 using namespace pcl::gpu::people;
 
-void optimized_shs2(const PointCloud<PointXYZRGB> &cloud, float tolerance, const PointIndices &indices_in, PointIndices &indices_out, float delta_hue);
-void optimized_shs3(const PointCloud<PointXYZRGB> &cloud, float tolerance, const PointIndices &indices_in, PointIndices &indices_out, float delta_hue);
-void optimized_shs4(const PointCloud<PointXYZ> &cloud, const float *hue, float tolerance, const PointIndices &indices_in, cv::Mat& flowermat, float delta_hue);
-void optimized_shs5(const PointCloud<PointXYZ> &cloud, const float *hue, float tolerance, const PointIndices &indices_in, unsigned char *mask, float delta_hue);
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pcl::gpu::people::PeopleDetector::PeopleDetector() 
-    : fx_(525.f), fy_(525.f), cx_(319.5f), cy_(239.5f), delta_hue_tolerance_(5), do_shs_(true)
+    : fx_(525.f), fy_(525.f), cx_(319.5f), cy_(239.5f), delta_hue_tolerance_(5)
 {
   // allocation buffers with default sizes
   // if input size is other than the defaults, 
@@ -157,15 +152,10 @@ void
 pcl::gpu::people::PeopleDetector::process ()
 {
   int cols = cloud_device_.cols();
-  int rows = cloud_device_.rows();
-      
-  RDFBodyPartsDetector::BlobMatrix sorted;
-
-  {
-    ScopeTime time("ev1");
-    rdf_detector_->computeLabels(depth_device1_);
-    rdf_detector_->step2_selectBetterName(cloud_host_, AREA_THRES, sorted);
-  }
+  int rows = cloud_device_.rows();      
+  
+  rdf_detector_->process(depth_device1_, cloud_host_, AREA_THRES);
+  const RDFBodyPartsDetector::BlobMatrix& sorted = rdf_detector_->getBlobMatrix();
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // if we found a neck display the tree, and continue with processing
@@ -176,27 +166,23 @@ pcl::gpu::people::PeopleDetector::process ()
     label_skeleton::buildTree(sorted, cloud_host_, Neck, c, t);
     
     const std::vector<int>& seed = t.indices.indices;
-    
-    cv::Mat flowermat(rows, cols, CV_8U, cv::Scalar(0));    
+        
+    vector<unsigned char> flowermat(rows * cols, 0);
     {
-      ScopeTime time("shs");    
-      shs5(cloud_host_, seed, flowermat.ptr<unsigned char>());
+      //ScopeTime time("shs");    
+      shs5(cloud_host_, seed, &flowermat[0]);
     }
     
-    fg_mask_.upload(flowermat.data, flowermat.step, rows, cols);
+    fg_mask_.upload(flowermat, cols);
     device::Dilatation::invoke(fg_mask_, kernelRect5x5_, fg_mask_grown_);
 
     device::prepareForeGroundDepth(depth_device1_, fg_mask_grown_, depth_device2_);
 
     //// //////////////////////////////////////////////////////////////////////////////////////////////// //
-    //// The second label evaluation
-
-    RDFBodyPartsDetector::BlobMatrix sorted2;
-    {
-      ScopeTime time("ev2");
-      rdf_detector_->computeLabels(depth_device2_);
-      rdf_detector_->step2_selectBetterName(cloud_host_, AREA_THRES2, sorted2);
-    }
+    //// The second label evaluation    
+        
+    rdf_detector_->process(depth_device2_, cloud_host_, AREA_THRES2);    
+    const RDFBodyPartsDetector::BlobMatrix& sorted2 = rdf_detector_->getBlobMatrix();
 
     //brief Test if the second tree is build up correctly
     if(sorted2[Neck].size() != 0)
@@ -308,7 +294,7 @@ void
 pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<pcl::PointXYZ> &cloud, const std::vector<int>& indices, unsigned char *mask)
 {
   pcl::device::Intr intr(fx_, fy_, cx_, cy_);
-  intr.setDefaultPPInIncorrect(cloud.width, cloud.height);
+  intr.setDefaultPPIfIncorrect(cloud.width, cloud.height);
   
   const float *hue = &hue_host_.points[0];
   double squared_radius = CLUST_TOL_SHS * CLUST_TOL_SHS;
