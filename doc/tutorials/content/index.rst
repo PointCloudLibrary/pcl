@@ -615,7 +615,7 @@ Recognition
      ======  ======
      |rc_1|  Title: **The PCL Registration API**
 
-             Author: *Tommaso Cavallari*
+             Author: *Tommaso Cavallari, Federico Tombari*
 
              Compatibility: > PCL 1.5
 
