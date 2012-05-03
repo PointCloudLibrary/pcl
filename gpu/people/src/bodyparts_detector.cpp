@@ -71,8 +71,8 @@ pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector( const vector<strin
     impl_->trees.push_back(device::CUDATree(height, nodes, leaves));
   }
 
+  // Copy the list of label colors into the devices
   vector<pcl::RGB> rgba(LUT_COLOR_LABEL_LENGTH);
-
   for(int i = 0; i < LUT_COLOR_LABEL_LENGTH; ++i)
   {
       // !!!! generate in RGB format, not BGR
@@ -85,7 +85,6 @@ pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector( const vector<strin
 
   allocate_buffers(rows, cols);
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////
 /// getters
@@ -122,8 +121,6 @@ pcl::gpu::people::RDFBodyPartsDetector::colorizeLabels(const Labels& labels, Ima
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
-///  colorizeLabels
-
 void 
 pcl::gpu::people::RDFBodyPartsDetector::allocate_buffers(int rows, int cols)
 {
@@ -172,14 +169,16 @@ pcl::gpu::people::RDFBodyPartsDetector::process(const Depth& depth, const PointC
   labels_smoothed_.download(lmap_host_, c);
   //async_labels_download.download(labels_smoothed_); 
     
+  // cc = generalized floodfill = approximation of euclidian clusterisation
   device::ConnectedComponents::computeEdges(labels_smoothed_, depth, NUM_PARTS, cluster_tolerance_ * cluster_tolerance_, edges_);
-  device::ConnectedComponents::labelComonents(edges_, comps_);
+  device::ConnectedComponents::labelComponents(edges_, comps_);
       
   comps_.download(dst_labels_, c);
 
   //async_labels_download.waitForCompeltion();
-
   }      
+
+  // This was sort indices to blob (sortIndicesToBlob2) method (till line 236)
   {
   //ScopeTime time("cvt");    
   std::fill(remap_.begin(), remap_.end(), -1);

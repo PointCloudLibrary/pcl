@@ -115,7 +115,7 @@ pcl::gpu::people::trees::runThroughTree( int maxDepth,
       uint16_t depth = tfetch(x,y);
       if(depth == std::numeric_limits<uint16_t>::max() ) 
       {
-        lmap[x+W*y] = pcl::gpu::people::trees::NOLABEL;
+        lmap[x+W*y] = pcl::gpu::people::NOLABEL;
         continue;
       }
 

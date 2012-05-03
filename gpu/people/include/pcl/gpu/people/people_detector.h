@@ -76,16 +76,14 @@ namespace pcl
           typedef DeviceArray2D<unsigned short> Depth;                    
           typedef DeviceArray2D<pcl::RGB> Image;
 
-                
           RDFBodyPartsDetector::Ptr rdf_detector_;
-          FaceDetector::Ptr face_detector_;
-          OtherDetector::Ptr other_detector_;
-          PersonAttribs::Ptr person_attribs_;
+          FaceDetector::Ptr         face_detector_;
+          OtherDetector::Ptr        other_detector_;
+          PersonAttribs::Ptr        person_attribs_;
 
           /** \brief Class constructor. */
           PeopleDetector();
           
-
           /** \brief Class destructor. */
           ~PeopleDetector () {}                   
 
@@ -93,16 +91,13 @@ namespace pcl
           void
           setIntrinsics (float fx, float fy, float cx = -1, float cy = -1);                    
 
-
           /** \brief Possible will be removed because of extra overheads */
           void
           process (const PointCloud<PointXYZRGB>::ConstPtr &cloud);
 
-
           void 
           process(const Depth& depth, const Image& rgba);
          
-     
           /** \brief Set the tolerance for the delta on the Hue in Seeded Hue Segmentation step */
           inline void
           setDeltaHueTolerance (unsigned int delta_hue_tolerance)
@@ -144,17 +139,14 @@ namespace pcl
           Mask fg_mask_;
           Mask fg_mask_grown_;
 
-
           void 
           process();
 
           void 
           allocate_buffers(int rows = 480, int cols = 640);
 
-
           void 
           shs5(const pcl::PointCloud<pcl::PointXYZ> &cloud, const std::vector<int>& indices, unsigned char *mask);
-
 
           //!!! only for debug purposes TODO: remove this. 
           friend class PeoplePCDApp;

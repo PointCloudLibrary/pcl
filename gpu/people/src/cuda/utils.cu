@@ -138,6 +138,7 @@ void pcl::device::Dilatation::invoke(const Mask& src, const Kernel& kernel, Mask
   anchor.x = ANCH_X;
   anchor.y = ANCH_Y;
 
+  // This one uses Nvidia performance primitives
   nppSafeCall( nppiDilate_8u_C1R(src.ptr(ANCH_Y) + ANCH_X, (int)src.step(), 
                                  dst.ptr(ANCH_Y) + ANCH_X, (int)dst.step(), sz, kernel, ksz, anchor) );
 }

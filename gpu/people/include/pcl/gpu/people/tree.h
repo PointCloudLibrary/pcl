@@ -40,6 +40,7 @@
 #ifndef PCL_GPU_PEOPLE_TREE_H_
 #define PCL_GPU_PEOPLE_TREE_H_
 
+#include "label_common.h"
 #include <boost/cstdint.hpp> 
 #include <iostream>
 #include <vector>
@@ -51,7 +52,7 @@ namespace pcl
     namespace people
     {
       namespace trees
-      {        
+      {
         // this has nothing to do here...
         static const double focal = 1000.;
 
@@ -62,7 +63,7 @@ namespace pcl
 
         // ###############################################
         // base data types used in the structures
-                        
+
         using boost::uint8_t;
         using boost::int16_t;
         using boost::uint16_t;
@@ -73,8 +74,8 @@ namespace pcl
         typedef uint8_t Label;
         typedef uint32_t Label32;
         typedef uint16_t Depth;
-        
-        struct AttribLocation 
+
+        struct AttribLocation
         {
           inline AttribLocation () {du1=dv1=du2=dv2=0;}
           inline AttribLocation (int u1, int v1, int u2, int v2): du1 (static_cast<int16_t>(u1)),
@@ -86,8 +87,6 @@ namespace pcl
           int16_t du1,dv1,du2,dv2;
         };
 
-        static const Label NOLABEL = 31;
-
         ////////////////////////////////////////////////
         // Tree basic Structure
         struct Node 
@@ -97,7 +96,11 @@ namespace pcl
           AttribLocation loc;
           Attrib         thresh;
         };
-        
+
+        struct Histogram
+        {
+          float label_prob[NUM_PARTS];
+        };
 
         ////////////////////////////////////////////////
         // tree_io - Reading and writing AttributeLocations
@@ -105,32 +108,29 @@ namespace pcl
         inline std::istream& operator >> (std::istream& is, AttribLocation& aloc ) { return is >> aloc.du1 >> aloc.dv1 >> aloc.du2 >> aloc.dv2; }
         inline std::istream& operator >> (std::istream& is, Node& n) { return is >> n.loc >> n.thresh; }
 
-        void writeAttribLocs( const std::string& filename, const std::vector<AttribLocation>& alocs );        
+        void writeAttribLocs( const std::string& filename, const std::vector<AttribLocation>& alocs );
         void readAttribLocs( const std::string& filename, std::vector<AttribLocation>& alocs );
         void readThreshs( const std::string& filename, std::vector<Attrib>& threshs );
-        
-        void writeThreshs( const std::string& filename, const std::vector<Attrib>& threshs );    
-
+        void writeThreshs( const std::string& filename, const std::vector<Attrib>& threshs );
 
         ////////////////////////////////////////////////
-        // treee_run
-       
-        
-         /** The stream points to ascii data that goes:
-           * ##################
-           * TreeHeight
-           * du1 dv1 du2 dv2 thresh
-           * du1 dv1 du2 dv2 thresh
-           * ............
-           * label
-           * label
-           * ##################
-           *
-           * there are 2^threeheight -1 nodes ( [du1 dv1 du2 dv2 thresh] lines )
-           * there are 2^threeheigh   leaves ( [label] lines )
-           */
-        int loadTree( std::istream& is, std::vector<Node>&  tree, std::vector<Label>& leaves );       
-        int loadTree( const std::string&  filename, std::vector<Node>&  tree, std::vector<Label>& leaves );        
+        // tree_run
+
+        /** The stream points to ascii data that goes:
+          * ##################
+          * TreeHeight
+          * du1 dv1 du2 dv2 thresh
+          * du1 dv1 du2 dv2 thresh
+          * ............
+          * label
+          * label
+          * ##################
+          *
+          * there are 2^threeheight -1 nodes ( [du1 dv1 du2 dv2 thresh] lines )
+          * there are 2^threeheight   leaves ( [label] lines )
+          */
+        int loadTree( std::istream& is, std::vector<Node>&  tree, std::vector<Label>& leaves );
+        int loadTree( const std::string&  filename, std::vector<Node>&  tree, std::vector<Label>& leaves );
         void runThroughTree( int maxDepth, const std::vector<Node>& tree, const std::vector<Label>& leaves, int W, int H, const uint16_t* dmap, Label* lmap );
 
       } // end namespace Trees

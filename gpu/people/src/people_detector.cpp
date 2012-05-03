@@ -72,7 +72,9 @@ pcl::gpu::people::PeopleDetector::setIntrinsics (float fx, float fy, float cx, f
   fx_ = fx; fy_ = fy; cx_ = cx; cy_ = cy;
 }
 
-void pcl::gpu::people::PeopleDetector::allocate_buffers(int rows, int cols)
+/** @brief This function prepares the needed buffers on both host and device **/
+void
+pcl::gpu::people::PeopleDetector::allocate_buffers(int rows, int cols)
 { 
   device::Dilatation::prepareRect5x5Kernel(kernelRect5x5_);  
 
@@ -98,11 +100,10 @@ void pcl::gpu::people::PeopleDetector::allocate_buffers(int rows, int cols)
   depth_device2_.create(rows, cols);
   fg_mask_.create(rows, cols);
   fg_mask_grown_.create(rows, cols);
-
-  
 }
 
-void pcl::gpu::people::PeopleDetector::process(const Depth& depth, const Image& rgba)
+void
+pcl::gpu::people::PeopleDetector::process(const Depth& depth, const Image& rgba)
 {  
   allocate_buffers(depth.rows(), depth.cols());
 
@@ -142,7 +143,6 @@ pcl::gpu::people::PeopleDetector::process (const pcl::PointCloud<pcl::PointXYZRG
   cloud_device_.upload(cloud_host_.points, cloud_host_.width);
   hue_device_.upload(hue_host_.points, hue_host_.width);
   depth_device1_.upload(depth_host_.points, depth_host_.width);
-
 
   // uses cloud device, cloud host, depth device, hue device and other buffers
   process();
@@ -203,7 +203,6 @@ pcl::gpu::people::PeopleDetector::process ()
       static int counter = 0; // TODO move this logging to PeopleApp
       cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << endl;
     }
-
     //output: Tree2 and PointCloud<XYZRGBL> 
   }
 }

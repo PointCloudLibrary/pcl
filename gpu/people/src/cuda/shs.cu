@@ -222,9 +222,6 @@ namespace pcl
     }
 }
 
-
-
-
 void pcl::device::shs(const DeviceArray2D<float8> &cloud, float tolerance/*radius*/, const std::vector<int>& indices_in, float delta_hue, Mask& output)
 {
     int cols = cloud.cols();
@@ -235,8 +232,6 @@ void pcl::device::shs(const DeviceArray2D<float8> &cloud, float tolerance/*radiu
 
     DeviceArray<int> indices_device;
     indices_device.upload(indices_in);
-
-
 }
 
 #if 0
@@ -339,9 +334,5 @@ void optimized_shs5(const PointCloud<PointXYZRGB> &cloud, float tolerance, const
         }        
     }       
 }
-
-
-
-
 
 #endif

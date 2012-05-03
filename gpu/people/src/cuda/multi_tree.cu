@@ -40,7 +40,6 @@
 
 #include <pcl/gpu/people/tree.h>
 #include <pcl/gpu/people/label_common.h>
-#include <pcl/gpu/people/tree.h>
 #include <pcl/gpu/utils/device/limits.hpp>
 #include <pcl/gpu/utils/safe_call.hpp>
 #include <pcl/gpu/utils/texture_binder.hpp>
@@ -63,7 +62,7 @@ namespace pcl
 {
   namespace device
   {
-    texture<unsigned short, 2, cudaReadModeElementType> depthTex;    
+    texture<unsigned short, 2, cudaReadModeElementType> depthTex;
     texture<char4, 2, cudaReadModeElementType> multilabelTex;
 
     __constant__ int constFGThresh;
@@ -79,7 +78,7 @@ namespace pcl
       for(int nodeDepth = 0; nodeDepth < treeHeight; ++nodeDepth)
       {
         const Node node = nodes[nid];
-        
+
         const AttribLocation& loc = node.loc;
         int d1 = tex2D (depthTex, u + loc.du1 * scale, v + loc.dv1 * scale);
         int d2 = tex2D (depthTex, u + loc.du2 * scale, v + loc.dv2 * scale);
@@ -88,7 +87,7 @@ namespace pcl
         {
           if( d1 - depth > constFGThresh ) 
               d1 = numeric_limits<short>::max(); 
-          
+
           if( d2 - depth > constFGThresh ) 
               d2 = numeric_limits<short>::max();
         }
@@ -103,22 +102,23 @@ namespace pcl
     }
 
     /** \brief This is the CUDA kernel doing the actual RDF evaluation */    
-    __global__ void KernelCUDA_runTree( const float     f, 
-                                        const int       treeHeight, 
-                                        const int       numNodes,
-                                        const Node*     nodes,
-                                        const Label*    leaves,
-                                        PtrStepSz<Label>  labels)
+    __global__ void
+    KernelCUDA_runTree( const float     f,
+                        const int       treeHeight,
+                        const int       numNodes,
+                        const Node*     nodes,
+                        const Label*    leaves,
+                        PtrStepSz<Label>  labels)
     {
       int u = blockIdx.x * blockDim.x + threadIdx.x;
       int v = blockIdx.y * blockDim.y + threadIdx.y;
 
-      if( u < labels.cols && v < labels.rows)                            
+      if( u < labels.cols && v < labels.rows)
         labels.ptr(v)[u] = evaluateTree<false>(u, v, f, treeHeight, numNodes, nodes, leaves);
     }
 
-    template<bool testFG> __global__ void 
-    KernelCUDA_MultiTreePass( const int    treeId,                              
+    template<bool testFG> __global__ void
+    KernelCUDA_MultiTreePass( const int    treeId,
                               const float  f,
                               const int    treeHeight,
                               const int    numNodes,
@@ -130,29 +130,29 @@ namespace pcl
       int v = blockIdx.y * blockDim.y + threadIdx.y;
 
       if(u < multiLabels.cols && v < multiLabels.rows)
-      {        
-          char* pixel = (char*)&multiLabels.ptr(v)[u];
-          pixel[treeId] = evaluateTree<testFG>(u, v, f, treeHeight, numNodes, nodes, leaves);
+      {
+        char* pixel = (char*)&multiLabels.ptr(v)[u];
+        pixel[treeId] = evaluateTree<testFG>(u, v, f, treeHeight, numNodes, nodes, leaves);
       }
     }
 
 
     /** \brief This function wraps the actual CUDA kernel doing the RDF evaluation */    
     void CUDA_runTree( float focal, int treeHeight, int numNodes, const Node* nodes, const Label* leaves, const Depth& depth, Labels& labels )
-    {      
-      labels.create( depth.rows(), depth.cols() );                   
+    {
+      labels.create( depth.rows(), depth.cols() );
 
       depthTex.addressMode[0] = cudaAddressModeClamp;
       TextureBinder binder(depth, depthTex);      
-            
+
       dim3 block(32, 8);      
       dim3 grid(divUp(depth.cols(), block.x), divUp(depth.rows(), block.y) );      
-      
+
       KernelCUDA_runTree<<< grid, block >>>( focal, treeHeight, numNodes, nodes, leaves, labels);
       cudaSafeCall( cudaGetLastError() );
       cudaSafeCall( cudaThreadSynchronize() );      
-    }    
-    
+    }
+
     void CUDA_runMultiTreePass( int   FGThresh,
                                 int   treeId,                                
                                 float focal,
@@ -252,6 +252,7 @@ namespace pcl
             int   depth_neighbor  = tex2D(depthTex,u+i,v+j);
             char4 labels_neighbor = tex2D(multilabelTex, u+i,v+j); 
             char* bob = (char*)&labels_neighbor; //horrible but char4's have xyzw members
+            //TODO: redo this part
             int weight = abs(depth-depth_neighbor) < 50 ? 1:0; // 5cms
             for(int ti = 0; ti < numTrees; ++ti)
               bins[ bob[ti] ] += weight;
@@ -262,48 +263,72 @@ namespace pcl
       labels.ptr(v)[u] = res;
     }
 
-    __global__ void KernelCUDA_MultiTreeMergeProb (const int numTrees, PtrStepSz<Label> labels )
+    /** \brief This merges the labels from all trees into a histogram of probabilities **/
+    __global__ void KernelCUDA_MultiTreeCreateProb (const int numTrees, PtrStepSz<prob_histogram> prob)
     {
+      // map block and thread onto image coordinates
       int u = blockIdx.x * blockDim.x + threadIdx.x;
       int v = blockIdx.y * blockDim.y + threadIdx.y;
 
-      if( u >= labels.cols || v >= labels.rows ) 
+      if( u >= prob.cols || v >= prob.rows )
           return;
-      
-      // create the bins
-      char bins[NUM_LABELS];
-      // reset the bins
-      for(int li = 0; li < NUM_LABELS; ++li)
-        bins[li] = 0;
 
-      // find a consensus with the current trees
+      char4 pixlabels = tex2D (multilabelTex, u ,v);
+      char* bob = (char*)&pixlabels; //horrible but char4's have xyzw members
+      for(int ti = 0; ti < numTrees; ++ti)
       {
-        char4 pixlabels = tex2D (multilabelTex, u ,v);
-        char* bob = (char*)&pixlabels; //horrible but char4's have xyzw members
-        for(int ti = 0; ti < numTrees; ++ti) 
-          bins[ bob[ti] ]++;
+          // Each tree casts a vote to the probability
+          // TODO: replace this with a histogram copy
+          // @Anatoly: need help with the following line:
+          prob.ptr(v)[u].probs[bob[ti]] += 1/numTrees;
       }
+    }
 
-      int res = findMaxId_testTie(NUM_LABELS, bins);
+    /** \brief This combines two probabilities into a single according to their weight = p(d|{I,x}) **/
+    __global__ void KernelCUDA_MultiTreeCombineProb (PtrStepSz<prob_histogram> probIn1, float weight1, PtrStepSz<prob_histogram> probIn2, float weight2, PtrStepSz<prob_histogram> probOut)
+    {
+      // map block and thread onto image coordinates
+      int u = blockIdx.x * blockDim.x + threadIdx.x;
+      int v = blockIdx.y * blockDim.y + threadIdx.y;
 
-      // if this fails... find a consensus in a 1 neighbourhood
-      if( res < 0 ) {
-        int depth = tex2D(depthTex, u,v);
-        for(int i = -1; i <= 1; ++i) 
+      if( u >= probIn1.cols || v >= probIn1.rows )
+          return;
+
+      for(int l = 0; l < NUM_LABELS; ++l)
+      {
+        // TODO: replace this with a histogram copy
+        probOut.ptr(v)[u].probs[l] = weight1 * probIn1.ptr(v)[u].probs[l] + weight2 * probIn2.ptr(v)[u].probs[l];
+      }
+    }
+
+    /** \brief This merges the histogram of probabilities into a final label **/
+    __global__ void KernelCUDA_MultiTreeMergeLabel (const int numTrees, PtrStepSz<Label> labels, PtrStepSz<prob_histogram> Prob)
+    {
+      // map block and thread onto image coordinates
+      int u = blockIdx.x * blockDim.x + threadIdx.x;
+      int v = blockIdx.y * blockDim.y + threadIdx.y;
+
+      if( u >= labels.cols || v >= labels.rows )
+          return;
+
+      float maxValue = 0;
+      int maxID = 31;             // 31 equals to NOLABEL in label_common.h for some reason not resolved here
+      prob_histogram p = Prob.ptr(v)[u];
+      for(int l = 0; l < NUM_LABELS; ++l)
+      {
+        // TODO: problem is that this one doesn't handle ties very well
+        if(maxValue < p.probs[l])
         {
-          for(int j = -1; j <= 1; ++j) 
-          {
-            int   depth_neighbor  = tex2D(depthTex,u+i,v+j);
-            char4 labels_neighbor = tex2D(multilabelTex, u+i,v+j); 
-            char* bob = (char*)&labels_neighbor; //horrible but char4's have xyzw members
-            int weight = abs(depth-depth_neighbor) < 50 ? 1:0; // 5cms
-            for(int ti = 0; ti < numTrees; ++ti)
-              bins[ bob[ti] ] += weight;
-          }
+          maxValue = p.probs[l];
+          maxID = l;
         }
-        res = findMaxId( NUM_LABELS, bins );
-      }      
-      labels.ptr(v)[u] = res;
+        if(maxValue == p.probs[l])
+        {
+          //DAMN WE HAVE A TIE
+          //TODO: solve this
+        }
+      }
+      labels.ptr(v)[u] = maxID;
     }
 
     /** \brief This will merge the votes from the different trees into one final vote */    
@@ -326,22 +351,23 @@ namespace pcl
       cudaSafeCall( cudaThreadSynchronize() );            
     }
     
-    /** \brief This will merge the votes from the different trees into one final vote */    
+    /** \brief This will merge the votes from the different trees into one final vote, including probabilistics */
     void CUDA_runMultiTreeMergeProb (int numTrees, const Depth& depth, const MultiLabels& multilabel, Labels& labels, 
-                                     Probabilities& probabilities)
+                                     Probability& probabilities)
     {
       labels.create(depth.rows(), depth.cols());
-      
+
       depthTex.addressMode[0] = cudaAddressModeClamp;
       TextureBinder binder(depth, depthTex);               
-            
+
       multilabelTex.addressMode[0] = cudaAddressModeClamp;
       TextureBinder mlabels_binder(multilabel, multilabelTex);
-            
+
       dim3 block(32, 8);      
       dim3 grid(divUp(depth.cols(), block.x), divUp(depth.rows(), block.y) );      
 
-      KernelCUDA_MultiTreeMerge<<< grid, block >>>( numTrees, labels );
+      KernelCUDA_MultiTreeCreateProb<<< grid, block >>>( numTrees, probabilities );
+      KernelCUDA_MultiTreeMergeLabel<<< grid, block >>>( numTrees, labels, probabilities );
 
       cudaSafeCall( cudaGetLastError() );
       cudaSafeCall( cudaThreadSynchronize() );            
@@ -349,8 +375,6 @@ namespace pcl
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pcl::device::CUDATree::CUDATree(int treeHeight_arg, const vector<Node>& nodes, const vector<Label>& leaves)
@@ -397,4 +421,39 @@ void pcl::device::MultiTreeLiveProc::process(const Depth& dmap, Labels& lmap, in
   assert( numTrees <= 4 );
 
   device::CUDA_runMultiTreeMerge(numTrees, dmap, multilmap, lmap);
+}
+
+void pcl::device::MultiTreeLiveProc::processProb(const Depth& dmap, Labels& lmap, Probability& prob)
+{
+  assert(!trees.empty());
+
+  if (trees.size() == 1)
+  {
+    const CUDATree& t = trees[0];
+    CUDA_runTree( focal, t.treeHeight, t.numNodes, t.nodes_device, t.leaves_device, dmap,  lmap );
+    return;
+  }
+
+  processProb(dmap, lmap, prob, std::numeric_limits<Attrib>::max());
+}
+
+void pcl::device::MultiTreeLiveProc::processProb(const Depth& dmap, Labels& lmap, Probability& prob, int FGThresh)
+{
+  assert(!trees.empty());
+
+  unsigned int numTrees = static_cast<int> (trees.size ());
+
+  multilmap.create(dmap.rows(), dmap.cols());
+
+  // 1 - run the multi passes
+  for( int ti = 0; ti < numTrees; ++ti )
+  {
+    const CUDATree& t = trees[ti];
+
+    CUDA_runMultiTreePass ( FGThresh, ti, static_cast<float> (focal), t.treeHeight, t.numNodes, t.nodes_device, t.leaves_device, dmap, multilmap );
+  }
+  // 2 - run the merging
+  assert( numTrees <= pcl::gpu::people::NR_TREES );
+
+  device::CUDA_runMultiTreeMergeProb(numTrees, dmap, multilmap, lmap, prob);
 }

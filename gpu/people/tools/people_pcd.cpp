@@ -1,4 +1,39 @@
 /**
+ *  Software License Agreement (BSD License)
+ *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ * $Id: $
  * @brief This file is the execution node of the Human Tracking 
  * @copyright Copyright (2011) Willow Garage
  * @authors Koen Buys, Anatoly Baksheev
@@ -37,7 +72,6 @@ float estimateFocalLength(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &clo
   return (KR(0,0) + KR(1,1))/KR(2,2)/2;
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 string 
@@ -63,62 +97,60 @@ savePNGFile (const std::string& filename, const pcl::PointCloud<T>& cloud)
   pcl::io::savePNGFile(filename, cloud);
 }
 
-
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class PeoplePCDApp
 {
-public: 
-  typedef pcl::gpu::people::PeopleDetector PeopleDetector;
+  public:
+    typedef pcl::gpu::people::PeopleDetector PeopleDetector;
 
-  enum { COLS = 640, ROWS = 480 };
+    enum { COLS = 640, ROWS = 480 };
 
-  PeoplePCDApp () : counter_(0), cmap_device_(ROWS, COLS), final_view_("Final labeling")//, image_view_("Input image")
-  {
-    final_view_.setSize (COLS, ROWS);
-    //image_view_.setSize (COLS, ROWS);
+    PeoplePCDApp () : counter_(0), cmap_device_(ROWS, COLS), final_view_("Final labeling")//, image_view_("Input image")
+    {
+      final_view_.setSize (COLS, ROWS);
+      //image_view_.setSize (COLS, ROWS);
 
-    final_view_.setPosition (0, 0);
-    //image_view_.setPosition (650, 0);
-  }
+      final_view_.setPosition (0, 0);
+      //image_view_.setPosition (650, 0);
+    }
 
- void cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
- {
-   people_detector_.process(cloud);
-   ++counter_;
-   //visualizeAndWrite(cloud);
- }
+    void cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+    {
+      people_detector_.process(cloud);
+      ++counter_;
+      //visualizeAndWrite(cloud);
+    }
 
- void
- visualizeAndWrite(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
- {
-   const pcl::gpu::people::RDFBodyPartsDetector::Labels& labels = people_detector_.rdf_detector_->getLabels();
-   people_detector_.rdf_detector_->colorizeLabels(labels, cmap_device_);
+    void
+    visualizeAndWrite(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+    {
+      const pcl::gpu::people::RDFBodyPartsDetector::Labels& labels = people_detector_.rdf_detector_->getLabels();
+      people_detector_.rdf_detector_->colorizeLabels(labels, cmap_device_);
 
-   int c;
-   pcl::PointCloud<pcl::RGB> cmap(cmap_device_.cols(), cmap_device_.rows());
-   cmap_device_.download(cmap.points, c);
+      int c;
+      pcl::PointCloud<pcl::RGB> cmap(cmap_device_.cols(), cmap_device_.rows());
+      cmap_device_.download(cmap.points, c);
 
-   final_view_.showRGBImage<pcl::RGB>(cmap);
-   final_view_.spinOnce(1, true);
+      final_view_.showRGBImage<pcl::RGB>(cmap);
+      final_view_.spinOnce(1, true);
 
-   //image_view_.showRGBImage<pcl::PointXYZRGB>(cloud);
-   //image_view_.spinOnce(1, true);
+      //image_view_.showRGBImage<pcl::PointXYZRGB>(cloud);
+      //image_view_.spinOnce(1, true);
 
-   savePNGFile(make_name(counter_, "ii"), *cloud);
-   savePNGFile(make_name(counter_, "c2"), cmap);
-   savePNGFile(make_name(counter_, "s2"), labels);
-   savePNGFile(make_name(counter_, "d1"), people_detector_.depth_device1_);
-   savePNGFile(make_name(counter_, "d2"), people_detector_.depth_device2_);
- }
- 
-  int counter_;
-  PeopleDetector people_detector_;
-  PeopleDetector::Image cmap_device_;
+      savePNGFile(make_name(counter_, "ii"), *cloud);
+      savePNGFile(make_name(counter_, "c2"), cmap);
+      savePNGFile(make_name(counter_, "s2"), labels);
+      savePNGFile(make_name(counter_, "d1"), people_detector_.depth_device1_);
+      savePNGFile(make_name(counter_, "d2"), people_detector_.depth_device2_);
+    }
 
-  ImageViewer final_view_;
-  //ImageViewer image_view_;
+    int counter_;
+    PeopleDetector people_detector_;
+    PeopleDetector::Image cmap_device_;
+
+    ImageViewer final_view_;
+    //ImageViewer image_view_;
 };
 
 void print_help()

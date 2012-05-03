@@ -45,6 +45,8 @@
 #include <pcl/gpu/people/label_common.h>
 #include <pcl/gpu/people/tree.h>
 
+using pcl::gpu::people::NUM_PARTS;
+
 namespace pcl
 {
   namespace device
@@ -54,20 +56,21 @@ namespace pcl
       float x, y, z, w, f1, f2, f3, f4;
     };
 
-    /** \brief  This struct stores the probabilities for a pixel **/
-    struct probLabel
-    {      
-      float probability[NUM_PARTS];
+    struct prob_histogram
+    {
+        float probs[NUM_PARTS];
     };
     
     typedef DeviceArray2D<float4>         Cloud;    
     typedef DeviceArray2D<unsigned short> Depth;
     typedef DeviceArray2D<unsigned char>  Labels;
     typedef DeviceArray2D<char4>          MultiLabels;
-    typedef DeviceArray2D<probLabel>      Probabilities;
+
     typedef DeviceArray2D<uchar4>         Image;
     typedef DeviceArray2D<float>          Hue;
     typedef DeviceArray2D<unsigned char>  Mask;
+
+    typedef DeviceArray2D<prob_histogram> Probability;
 
     /** \brief The intrinsic camera calibration **/
     struct Intr
@@ -86,7 +89,6 @@ namespace pcl
     void smoothLabelImage(const Labels& src, const Depth& depth, Labels& dst, int num_parts, int  patch_size, int depthThres);
     void colorLMap(const Labels& labels, const DeviceArray<uchar4>& cmap, Image& rgb);
 
-
     ////////////// connected components ///////////////////        
 
     struct ConnectedComponents
@@ -94,11 +96,10 @@ namespace pcl
       static void initEdges(int rows, int cols, DeviceArray2D<unsigned char>& edges);    
       //static void computeEdges(const Labels& labels, const Cloud& cloud, int num_parts, float sq_radius, DeviceArray2D<unsigned char>& edges);
       static void computeEdges(const Labels& labels, const Depth& depth, int num_parts, float sq_radius, DeviceArray2D<unsigned char>& edges);
-      static void labelComonents(const DeviceArray2D<unsigned char>& edges, DeviceArray2D<int>& comps);
+      static void labelComponents(const DeviceArray2D<unsigned char>& edges, DeviceArray2D<int>& comps);
     };
 
     void connected_components(const Labels& labels, const DeviceArray2D<float4>& cloud, int num_parts, float sq_radius, DeviceArray2D<int>& components);
-
 
     void setZero(Mask& mask);
     void prepareForeGroundDepth(const Depth& depth1, Mask& inverse_mask, Depth& depth2);
@@ -147,9 +148,13 @@ namespace pcl
 
         void process(const Depth& dmap, Labels& lmap);
 
-        // same as process, but runs the trick of declaring as background any
-        // neighbor that is more than FGThresh away.
+        /** \brief same as process, but runs the trick of declaring as background any neighbor that is more than FGThresh away.**/
         void process(const Depth& dmap, Labels& lmap, int FGThresh);
+
+        void processProb(const Depth& dmap, Labels& lmap, Probability& prob);
+
+        /** \brief same as processProb, but runs the trick of declaring as background any neighbor that is more than FGThresh away.**/
+        void processProb(const Depth& dmap, Labels& lmap, Probability& prob, int FGThresh);
 
         std::vector<CUDATree> trees;
         MultiLabels multilmap;

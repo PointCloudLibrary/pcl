@@ -82,6 +82,7 @@ namespace pcl
 
         //utility
         void colorizeLabels(const Labels& labels, Image& color_labels) const;
+
       private:
         boost::shared_ptr<device::MultiTreeLiveProc> impl_;
 

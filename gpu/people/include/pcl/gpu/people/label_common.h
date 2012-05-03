@@ -40,55 +40,69 @@
 #ifndef PCL_GPU_PEOPLE_LABEL_COMMON_H_
 #define PCL_GPU_PEOPLE_LABEL_COMMON_H_
 
-// Some defines for the tree
-#define ROOT        -1
-#define LEAF        -2
-#define NO_CHILD    -3
-#define NUM_PARTS   25      // We have 25 body parts defined
-#define MAX_CHILD   4       // a parent node has maximum 4 children
+namespace pcl
+{
+  namespace gpu
+  {
+    namespace people
+    {
+      // Some types for the tree
+      enum { NO_CHILD   = -3,
+             LEAF       = -2,
+             ROOT       = -1,
+             NO_DATA    = 255 };  /** \brief We have no depth data for this part of the image **/
+      enum { NUM_PARTS  = 25 };     // We have 25 body parts defined
+      enum { MAX_CHILD  = 4  };     // a parent node has maximum 4 children
+      enum { NR_TREES   = 4  };     // The maximum supported number of trees
+      // Some defines for geometry
+      enum { FOCAL      = 525 };       // Focal length of rgb camera in pixels
+      enum { WIDTH      = 640 };
+      enum { HEIGHT     = 480 };
+      enum { RATIO      = WIDTH/HEIGHT };
+      enum { XML_VERSION = 1 };    /** \brief This indicates the current used xml file version (for people lib only) **/
 
-// Some defines for geometry
-#define FOCAL     525       // Focal length of rgb camera in pixels
-#define WIDTH     640
-#define HEIGHT    480
-#define RATIO     WIDTH/HEIGHT
+      enum { NUM_ATTRIBS = 2000 };
+      enum { NUM_LABELS  = 32 };  /** \brief Our code is forseen to use maximal use 32 labels **/
 
-// Some defines for part image
-#define NO_DATA   255       // We have no depth data for this part of the image
+      /** @todo implement label 25 to 29 **/
+      enum part_t
+      {
+        Lfoot       = 0,
+        Lleg        = 1,
+        Lknee       = 2,
+        Lthigh      = 3,
+        Rfoot       = 4,
+        Rleg        = 5,
+        Rknee       = 6,
+        Rthigh      = 7,
+        Rhips       = 8,
+        Lhips       = 9,
+        Neck        = 10,
+        Rarm        = 11,
+        Relbow      = 12,
+        Rforearm    = 13,
+        Rhand       = 14,
+        Larm        = 15,
+        Lelbow      = 16,
+        Lforearm    = 17,
+        Lhand       = 18,
+        FaceLB      = 19,
+        FaceRB      = 20,
+        FaceLT      = 21,
+        FaceRT      = 22,
+        Rchest      = 23,
+        Lchest      = 24,
+        Lshoulder   = 25,
+        Rshoulder   = 26,
+        Groundplane = 27,
+        Ceiling     = 28,
+        Background  = 29,
+        NOLABEL     = 31
+      };
+    }
+  }
+}
 
-// Other defines
-#define DEBUG     1
-
-#define XML_VERSION 1
-
-enum part_t 
-{ 
-  Lfoot = 0,
-  Lleg = 1,
-  Lknee = 2,
-  Lthigh = 3,
-  Rfoot = 4,
-  Rleg = 5,
-  Rknee = 6,
-  Rthigh = 7,
-  Rhips = 8,
-  Lhips = 9,
-  Neck = 10,
-  Rarm = 11,
-  Relbow = 12,
-  Rforearm = 13,
-  Rhand = 14,
-  Larm = 15,
-  Lelbow = 16,
-  Lforearm = 17,
-  Lhand = 18,
-  FaceLB = 19,
-  FaceRB = 20,
-  FaceLT = 21,
-  FaceRT = 22,
-  Rchest = 23,
-  Lchest = 24
-};
 
 /** @todo get this to work
 std::string part_k[NUM_PARTS] = {"Lfoot","Lleg", "Lknee","Lthigh",

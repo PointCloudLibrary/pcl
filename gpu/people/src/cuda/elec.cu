@@ -36,7 +36,6 @@ namespace pcl
         TILE_COLS = CTA_SIZE_X * TPB_X, 
         TILE_ROWS = CTA_SIZE_Y * TPB_Y,
 
-
         MERGE_CTA_SIZE = 256
     };
   }
@@ -520,7 +519,7 @@ namespace pcl
 }
 
     
-void pcl::device::ConnectedComponents::labelComonents(const DeviceArray2D<unsigned char>& edges, DeviceArray2D<int>& comps)
+void pcl::device::ConnectedComponents::labelComponents(const DeviceArray2D<unsigned char>& edges, DeviceArray2D<int>& comps)
 {             
   comps.create(edges.rows(), edges.cols());
 
