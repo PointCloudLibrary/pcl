@@ -170,12 +170,9 @@ pcl::gpu::people::RDFBodyPartsDetector::process(const Depth& depth, const PointC
 
   int c;  
   labels_smoothed_.download(lmap_host_, c);
-  //async_labels_download.download(labels_smoothed_);
-
-  device::Cloud cloud_device;
-  cloud_device.upload((const std::vector<float4>&)cloud.points, cols);
-  
-  device::ConnectedComponents::computeEdges(labels_smoothed_, cloud_device, NUM_PARTS, cluster_tolerance_ * cluster_tolerance_, edges_);
+  //async_labels_download.download(labels_smoothed_); 
+    
+  device::ConnectedComponents::computeEdges(labels_smoothed_, depth, NUM_PARTS, cluster_tolerance_ * cluster_tolerance_, edges_);
   device::ConnectedComponents::labelComonents(edges_, comps_);
       
   comps_.download(dst_labels_, c);

@@ -92,7 +92,8 @@ namespace pcl
     struct ConnectedComponents
     {
       static void initEdges(int rows, int cols, DeviceArray2D<unsigned char>& edges);    
-      static void computeEdges(const Labels& labels, const Cloud& cloud, int num_parts, float sq_radius, DeviceArray2D<unsigned char>& edges);
+      //static void computeEdges(const Labels& labels, const Cloud& cloud, int num_parts, float sq_radius, DeviceArray2D<unsigned char>& edges);
+      static void computeEdges(const Labels& labels, const Depth& depth, int num_parts, float sq_radius, DeviceArray2D<unsigned char>& edges);
       static void labelComonents(const DeviceArray2D<unsigned char>& edges, DeviceArray2D<int>& comps);
     };
 

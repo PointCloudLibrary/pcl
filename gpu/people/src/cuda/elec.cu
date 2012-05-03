@@ -84,7 +84,8 @@ namespace pcl
 {
   namespace device
   {
-    __device__ __forceinline__ float sqnorm(const float4& p1, const float4& p2) 
+    template<typename Point> 
+    __device__ __forceinline__ float sqnorm(const Point& p1, const Point& p2) 
     { 
         float dx = (p1.x - p2.x);
         float dy = (p1.y - p2.y);
@@ -92,8 +93,21 @@ namespace pcl
         return dx * dx + dy * dy + dz * dz; 
     }
 
+    __device__ __forceinline__ float3 computePoint(unsigned short depth, int x, int y, const Intr& intr)
+    {                  
+       float z = depth * 0.001; // mm -> meters
+       float3 result;
+       
+       result.x = z * (x - intr.cx) / intr.fx;
+       result.y = z * (y - intr.cy) / intr.fy;
+       result.z = z;
+       
+       return result;
+    }
+
     __global__ void 
-    computeEdgesKernel(const PtrStepSz<unsigned char> labels, const PtrStep<float4> cloud, const int num_parts, const float sq_radius, PtrStep<Edges> output)
+    computeEdgesKernel(const PtrStepSz<unsigned char> labels, const PtrStep<unsigned short> depth, const Intr intr, 
+        const int num_parts, const float sq_radius, PtrStep<Edges> output)
     {
       int x = threadIdx.x + blockIdx.x * blockDim.x;
       int y = threadIdx.y + blockIdx.y * blockDim.y;       
@@ -104,27 +118,44 @@ namespace pcl
         
         if (label < num_parts)
         {
-          float4 point = cloud.ptr(y)[x];
+          unsigned short d = depth.ptr(y)[x];
 
-          if (!isnan(point.x) && !isnan(point.y) && !isnan(point.z))
+          if (d)
           {   
+            float3 point = computePoint(d, x, y, intr);
             Edges edges;
             
             if (x > 0)
-              if(labels.ptr(y)[x-1] == label && sqnorm(cloud.ptr(y)[x-1], point) < sq_radius)              
-                edges.data |= Edges::LEFT;
+              if(labels.ptr(y)[x-1] == label)
+              {
+                float3 pl = computePoint(depth.ptr(y)[x-1], x-1, y, intr);               
+                if (sqnorm(pl, point) < sq_radius)              
+                  edges.data |= Edges::LEFT;
+              }
 
             if (x < labels.cols - 1)
-              if(labels.ptr(y)[x+1] == label && sqnorm(cloud.ptr(y)[x+1], point) < sq_radius)
-                edges.data |= Edges::RIGHT;
+              if(labels.ptr(y)[x+1] == label)
+              {
+                float3 pr = computePoint(depth.ptr(y)[x+1], x+1, y, intr);
+                if (sqnorm(pr, point) < sq_radius)
+                  edges.data |= Edges::RIGHT;
+              }
 
             if (y > 0)
-              if(labels.ptr(y-1)[x] == label && sqnorm(cloud.ptr(y-1)[x], point) < sq_radius)
-                edges.data |= Edges::UP;
+              if(labels.ptr(y-1)[x] == label)
+              {
+                float3 pu = computePoint(depth.ptr(y-1)[x], x, y-1, intr);
+                if(sqnorm(pu, point) < sq_radius)
+                  edges.data |= Edges::UP;
+              }
 
             if (y < labels.rows - 1)
-              if(labels.ptr(y+1)[x] == label && sqnorm(cloud.ptr(y+1)[x], point) < sq_radius)
-                edges.data |= Edges::DOWN;    
+              if(labels.ptr(y+1)[x] == label)
+              {
+                float3 pd = computePoint(depth.ptr(y+1)[x], x, y+1, intr);
+                if (sqnorm(pd, point) < sq_radius)
+                  edges.data |= Edges::DOWN;    
+              }
 
             output.ptr(y)[x] = edges;
           }
@@ -135,14 +166,16 @@ namespace pcl
 }
 
 void
-pcl::device::ConnectedComponents::computeEdges(const Labels& labels, const Cloud& cloud, int num_parts, float sq_radius, DeviceArray2D<unsigned char>& edges)
+pcl::device::ConnectedComponents::computeEdges(const Labels& labels, const Depth& depth, int num_parts, float sq_radius, DeviceArray2D<unsigned char>& edges)
 {
+  device::Intr intr(525.f, 525.f, 319.5, 239.5);
+
   initEdges(labels.rows(), labels.cols(), edges);
   
   dim3 block(32, 8);
   dim3 grid(divUp(labels.cols(), block.x), divUp(labels.rows(), block.y));
  
-  computeEdgesKernel<<<grid, block>>>(labels, cloud, num_parts, sq_radius, edges);
+  computeEdgesKernel<<<grid, block>>>(labels, depth, intr, num_parts, sq_radius, edges);
   cudaSafeCall( cudaGetLastError() );
   cudaSafeCall( cudaDeviceSynchronize() );
 }
