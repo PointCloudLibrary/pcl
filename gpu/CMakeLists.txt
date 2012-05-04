@@ -15,14 +15,19 @@ endif(NOT CUDA_FOUND)
 OPTION(BUILD_GPU "Build the GPU-related subsystems" ${DEFAULT})
 
 if(BUILD_GPU)
-    if(CUDA_FOUND)      
-        set(CUDA_ARCH_BIN "20" CACHE STRING "Specify 'real' GPU arch to build binaries for, BIN(PTX) format is supported. Example: 1.3 2.1(1.3) or 13 21(13)")
-        set(CUDA_ARCH_PTX "" CACHE STRING "Specify 'virtual' PTX arch to build PTX intermediate code for. Example: 1.0 1.2 or 10 12")              
-        
+    if(CUDA_FOUND)
+        if("CUDA_VERSION_STRING" VERSION_GREATER "4.1")
+            set(CUDA_ARCH_BIN "2.0 2.1(2.0) 3.0" CACHE STRING "Specify 'real' GPU architectures to build binaries for, BIN(PTX) format is supported")
+        else()
+            set(CUDA_ARCH_BIN "2.0 2.1(2.0)" CACHE STRING "Specify 'real' GPU architectures to build binaries for, BIN(PTX) format is supported")
+        endif()
+
+        set(CUDA_ARCH_PTX "" CACHE STRING "Specify 'virtual' PTX arch to build PTX intermediate code for. Example: 1.0 1.2 or 10 12")
+
         # Guess this macros will be included in cmake distributive
-        include(${PCL_SOURCE_DIR}/cmake/CudaComputeTargetFlags.cmake)                  
+        include(${PCL_SOURCE_DIR}/cmake/CudaComputeTargetFlags.cmake)
         APPEND_TARGET_ARCH_FLAGS()
-		
+
         collect_subproject_directory_names(${CMAKE_CURRENT_SOURCE_DIR} "CMakeLists.txt" PCL_GPU_MODULES_NAMES PCL_GPU_MODULES_DIRS)
         set(PCL_GPU_MODULES_NAMES_UNSORTED ${PCL_GPU_MODULES_NAMES})
         topological_sort(PCL_GPU_MODULES_NAMES PCL_ _DEPENDS)
