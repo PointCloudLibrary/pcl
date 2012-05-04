@@ -166,7 +166,7 @@ namespace pcl
         *                         This is always according to absolute 0,0 meaning -180°,-90°
         *                         and it is already in the system of the new image, so the
         *                         actual pixel used in the original image is
-        *                         combine_pixels*(image_offset_x-image_offset_x_)
+        *                         combine_pixels* (image_offset_x-image_offset_x_)
         * \param sub_image_image_offset_y - Same as image_offset_x for the y coordinate
         * \param sub_image_width - width of the new image
         * \param sub_image_height - height of the new image
@@ -180,7 +180,7 @@ namespace pcl
       
       //! Get a range image with half the resolution
       PCL_EXPORTS virtual void 
-      getHalfImage(RangeImage& half_image) const;
+      getHalfImage (RangeImage& half_image) const;
       
     protected:
       float focal_length_x_, focal_length_y_; //!< The focal length of the image in pixels

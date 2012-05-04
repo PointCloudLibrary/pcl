@@ -49,7 +49,7 @@ RangeImagePlanar::createFromPointCloudWithFixedSize (const PointCloudType& point
                                                      CoordinateFrame coordinate_frame, float noise_level,
                                                      float min_range)
 {
-  //std::cout << "Starting to create range image from "<<point_cloud.points.size()<<" points.\n";
+  //std::cout << "Starting to create range image from "<<point_cloud.points.size ()<<" points.\n";
 
   width = di_width;
   height = di_height;
@@ -62,22 +62,22 @@ RangeImagePlanar::createFromPointCloudWithFixedSize (const PointCloudType& point
 
   is_dense = false;
   
-  getCoordinateFrameTransformation(coordinate_frame, to_world_system_);
+  getCoordinateFrameTransformation (coordinate_frame, to_world_system_);
   to_world_system_ = sensor_pose * to_world_system_;
 
-  to_range_image_system_ = to_world_system_.inverse ();
+  to_range_image_system_ = to_world_system_.inverse (Eigen::Isometry);
 
   unsigned int size = width*height;
-  points.clear();
-  points.resize(size, unobserved_point);
+  points.clear ();
+  points.resize (size, unobserved_point);
 
   int top=height, right=-1, bottom=-1, left=width;
-  doZBuffer(point_cloud, noise_level, min_range, top, right, bottom, left);
+  doZBuffer (point_cloud, noise_level, min_range, top, right, bottom, left);
 
   // Do not crop
-  //cropImage(border_size, top, right, bottom, left);
+  //cropImage (border_size, top, right, bottom, left);
 
-  recalculate3DPointPositions();
+  recalculate3DPointPositions ();
 }
 
 
@@ -99,7 +99,7 @@ inline void
 RangeImagePlanar::getImagePoint (const Eigen::Vector3f& point, float& image_x, float& image_y, float& range) const 
 {
   Eigen::Vector3f transformedPoint = to_range_image_system_ * point;
-  range = transformedPoint.norm();
+  range = transformedPoint.norm ();
   
   image_x = center_x_ + focal_length_x_*transformedPoint[0]/transformedPoint[2];
   image_y = center_y_ + focal_length_y_*transformedPoint[1]/transformedPoint[2];

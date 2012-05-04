@@ -130,11 +130,11 @@ namespace pcl
       
       /** \brief Create the depth image from a point cloud
         * \param point_cloud the input point cloud
-        * \param angular_resolution the angle (in radians) between each sample in the depth image
+        * \param angular_resolution the angular difference (in radians) between the individual pixels in the image
         * \param max_angle_width an angle (in radians) defining the horizontal bounds of the sensor
         * \param max_angle_height an angle (in radians) defining the vertical bounds of the sensor
         * \param sensor_pose an affine matrix defining the pose of the sensor (defaults to
-        *                    Eigen::Affine3f::Identity() )
+        *                    Eigen::Affine3f::Identity () )
         * \param coordinate_frame the coordinate frame (defaults to CAMERA_FRAME)
         * \param noise_level - The distance in meters inside of which the z-buffer will not use the minimum,
         *                      but the mean of the points. If 0.0 it is equivalent to a normal z-buffer and
@@ -143,11 +143,37 @@ namespace pcl
         * \param border_size the border size (defaults to 0)
         */
       template <typename PointCloudType> void
-      createFromPointCloud (const PointCloudType& point_cloud, float angular_resolution, float max_angle_width,
-                            float max_angle_height, const Eigen::Affine3f& sensor_pose = Eigen::Affine3f::Identity(),
-                            CoordinateFrame coordinate_frame=CAMERA_FRAME, float noise_level=0.0f,
-                            float min_range=0.0f, int border_size=0);
-  
+      createFromPointCloud (const PointCloudType& point_cloud, float angular_resolution=pcl::deg2rad (0.5f),
+          float max_angle_width=pcl::deg2rad (360.0f), float max_angle_height=pcl::deg2rad (180.0f),
+          const Eigen::Affine3f& sensor_pose = Eigen::Affine3f::Identity (),
+          CoordinateFrame coordinate_frame=CAMERA_FRAME, float noise_level=0.0f,
+          float min_range=0.0f, int border_size=0);
+      
+      /** \brief Create the depth image from a point cloud
+        * \param point_cloud the input point cloud
+        * \param angular_resolution_x the angular difference (in radians) between the
+        *                             individual pixels in the image in the x-direction
+        * \param angular_resolution_y the angular difference (in radians) between the
+        *                             individual pixels in the image in the y-direction
+        * \param max_angle_width an angle (in radians) defining the horizontal bounds of the sensor
+        * \param max_angle_height an angle (in radians) defining the vertical bounds of the sensor
+        * \param sensor_pose an affine matrix defining the pose of the sensor (defaults to
+        *                    Eigen::Affine3f::Identity () )
+        * \param coordinate_frame the coordinate frame (defaults to CAMERA_FRAME)
+        * \param noise_level - The distance in meters inside of which the z-buffer will not use the minimum,
+        *                      but the mean of the points. If 0.0 it is equivalent to a normal z-buffer and
+        *                      will always take the minimum per cell.
+        * \param min_range the minimum visible range (defaults to 0)
+        * \param border_size the border size (defaults to 0)
+        */
+      template <typename PointCloudType> void
+      createFromPointCloud (const PointCloudType& point_cloud,
+          float angular_resolution_x=pcl::deg2rad (0.5f), float angular_resolution_y=pcl::deg2rad (0.5f),
+          float max_angle_width=pcl::deg2rad (360.0f), float max_angle_height=pcl::deg2rad (180.0f),
+          const Eigen::Affine3f& sensor_pose = Eigen::Affine3f::Identity (),
+          CoordinateFrame coordinate_frame=CAMERA_FRAME,
+          float noise_level=0.0f, float min_range=0.0f, int border_size=0);
+      
       /** \brief Create the depth image from a point cloud, getting a hint about the size of the scene for 
         * faster calculation.
         * \param point_cloud the input point cloud
@@ -155,7 +181,7 @@ namespace pcl
         * \param point_cloud_center the center of bounding sphere
         * \param point_cloud_radius the radius of the bounding sphere
         * \param sensor_pose an affine matrix defining the pose of the sensor (defaults to
-        *                     Eigen::Affine3f::Identity() )
+        *                     Eigen::Affine3f::Identity () )
         * \param coordinate_frame the coordinate frame (defaults to CAMERA_FRAME)
         * \param noise_level - The distance in meters inside of which the z-buffer will not use the minimum,
         *                      but the mean of the points. If 0.0 it is equivalent to a normal z-buffer and
@@ -166,7 +192,7 @@ namespace pcl
       template <typename PointCloudType> void
       createFromPointCloudWithKnownSize (const PointCloudType& point_cloud, float angular_resolution,
                                          const Eigen::Vector3f& point_cloud_center, float point_cloud_radius,
-                                         const Eigen::Affine3f& sensor_pose = Eigen::Affine3f::Identity(),
+                                         const Eigen::Affine3f& sensor_pose = Eigen::Affine3f::Identity (),
                                          CoordinateFrame coordinate_frame=CAMERA_FRAME,
                                          float noise_level=0.0f, float min_range=0.0f, int border_size=0);
       
@@ -193,14 +219,15 @@ namespace pcl
 
       /** \brief Create an empty depth image (filled with unobserved points)
         * \param[in] angular_resolution the angle (in radians) between each sample in the depth image
-        * \param[in] sensor_pose an affine matrix defining the pose of the sensor (defaults to  Eigen::Affine3f::Identity() )
+        * \param[in] sensor_pose an affine matrix defining the pose of the sensor (defaults to  Eigen::Affine3f::Identity () )
         * \param[in] coordinate_frame the coordinate frame (defaults to CAMERA_FRAME)
         * \param[in] angle_width an angle (in radians) defining the horizontal bounds of the sensor (defaults to 2*pi (360deg))
         * \param[in] angle_height an angle (in radians) defining the vertical bounds of the sensor (defaults to pi (180deg))
         */
       void
-      createEmpty (float angular_resolution, const Eigen::Affine3f& sensor_pose=Eigen::Affine3f::Identity(),
-                   RangeImage::CoordinateFrame coordinate_frame=CAMERA_FRAME, float angle_width=pcl::deg2rad(360.0f), float angle_height=pcl::deg2rad(180.0f));
+      createEmpty (float angular_resolution, const Eigen::Affine3f& sensor_pose=Eigen::Affine3f::Identity (),
+                   RangeImage::CoordinateFrame coordinate_frame=CAMERA_FRAME, float angle_width=pcl::deg2rad (360.0f),
+                   float angle_height=pcl::deg2rad (180.0f));
       
       /** \brief Integrates the given far range measurements into the range image */
       PCL_EXPORTS void
@@ -238,15 +265,36 @@ namespace pcl
       inline const Eigen::Affine3f&
       getTransformationToWorldSystem () const { return to_world_system_;}
       
-      /** Getter for the angular resolution of the range image in radians per pixel */
+      /** Getter for the angular resolution of the range image in x direction in radians per pixel.
+       *  Provided for downwards compatability */
       inline float
-      getAngularResolution () const { return angular_resolution_;}
+      getAngularResolution () const { return angular_resolution_x_;}
       
-      /** \brief Set the angular resolution of the range image 
-        * \param angular_resolution the new angular resolution (in radians per pixel)
+      /** Getter for the angular resolution of the range image in x direction in radians per pixel. */
+      inline float
+      getAngularResolutionX () const { return angular_resolution_x_;}
+      
+      /** Getter for the angular resolution of the range image in y direction in radians per pixel. */
+      inline float
+      getAngularResolutionY () const { return angular_resolution_y_;}
+      
+      /** Getter for the angular resolution of the range image in x and y direction (in radians). */
+      inline void
+      getAngularResolution (float& angular_resolution_x, float& angular_resolution_y) const;
+      
+      /** \brief Set the angular resolution of the range image
+        * \param angular_resolution the new angular resolution in x and y direction (in radians per pixel)
         */
       inline void
       setAngularResolution (float angular_resolution);
+      
+      /** \brief Set the angular resolution of the range image
+        * \param angular_resolution_x the new angular resolution in x direction (in radians per pixel)
+        * \param angular_resolution_y the new angular resolution in y direction (in radians per pixel)
+        */
+      inline void
+      setAngularResolution (float angular_resolution_x, float angular_resolution_y);
+
       
       /** \brief Return the 3D point with range at the given image position
         * \param image_x the x coordinate
@@ -464,7 +512,7 @@ namespace pcl
       /** Calculates, how much the surface changes at a point. Pi meaning a flat suface and 0.0f
        *  would be a needle point */
       //inline float
-      //  getSurfaceChange(const PointWithRange& point, const PointWithRange& neighbor1,
+      //  getSurfaceChange (const PointWithRange& point, const PointWithRange& neighbor1,
       //                   const PointWithRange& neighbor2) const;
       
       /** Calculates, how much the surface changes at a point. 1 meaning a 90deg angle and 0 a flat suface */
@@ -514,7 +562,7 @@ namespace pcl
         *                         This is always according to absolute 0,0 meaning -180°,-90°
         *                         and it is already in the system of the new image, so the
         *                         actual pixel used in the original image is
-        *                         combine_pixels*(image_offset_x-image_offset_x_)
+        *                         combine_pixels* (image_offset_x-image_offset_x_)
         * \param sub_image_image_offset_y - Same as image_offset_x for the y coordinate
         * \param sub_image_width - width of the new image
         * \param sub_image_height - height of the new image
@@ -528,7 +576,7 @@ namespace pcl
       
       //! Get a range image with half the resolution
       virtual void 
-      getHalfImage(RangeImage& half_image) const;
+      getHalfImage (RangeImage& half_image) const;
       
       //! Find the minimum and maximum range in the image
       PCL_EXPORTS void
@@ -590,7 +638,7 @@ namespace pcl
       //! Project all points on the local plane approximation, thereby smoothing the surface of the scan
       PCL_EXPORTS void
       getRangeImageWithSmoothedSurface (int radius, RangeImage& smoothed_range_image) const;
-      //void getLocalNormals(int radius) const;
+      //void getLocalNormals (int radius) const;
       
       /** Calculates the average 3D position of the no_of_points points described by the start
        *  point x,y in the direction delta.
@@ -632,10 +680,13 @@ namespace pcl
       
     protected:
       // =====PROTECTED MEMBER VARIABLES=====
-      Eigen::Affine3f to_range_image_system_; /**< Inverse of to_world_system_ */
-      Eigen::Affine3f to_world_system_;       /**< Inverse of to_range_image_system_ */
-      float angular_resolution_;               /**< Angular resolution of the range image in radians per pixel */
-      float angular_resolution_reciprocal_;    /**< 1.0/angular_resolution - provided for better performace of
+      Eigen::Affine3f to_range_image_system_;  /**< Inverse of to_world_system_ */
+      Eigen::Affine3f to_world_system_;        /**< Inverse of to_range_image_system_ */
+      float angular_resolution_x_;             /**< Angular resolution of the range image in x direction in radians per pixel */
+      float angular_resolution_y_;             /**< Angular resolution of the range image in y direction in radians per pixel */
+      float angular_resolution_x_reciprocal_;  /**< 1.0/angular_resolution_x_ - provided for better performace of
+                                                *   multiplication compared to division */
+      float angular_resolution_y_reciprocal_;  /**< 1.0/angular_resolution_y_ - provided for better performace of
                                                 *   multiplication compared to division */
       int image_offset_x_, image_offset_y_;    /**< Position of the top left corner of the range image compared to
                                                 *   an image of full size (360x180 degrees) */
@@ -695,7 +746,8 @@ namespace pcl
        << r.sensor_orientation_.w () << std::endl;
     os << "is_dense: " << r.is_dense << std::endl;
     os << "angular resolution: "
-       << RAD2DEG (r.getAngularResolution ()) << "deg/pixel" << std::endl;
+       << RAD2DEG (r.getAngularResolutionX ()) << "deg/pixel in x and "
+       << RAD2DEG (r.getAngularResolutionY ()) << "deg/pixel in y.\n" << std::endl;
     return (os);
   }
 

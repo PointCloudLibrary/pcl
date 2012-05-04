@@ -14,7 +14,8 @@ typedef pcl::PointXYZ PointType;
 // --------------------
 // -----Parameters-----
 // --------------------
-float angular_resolution = 0.5f;
+float angular_resolution_x = 0.5f,
+      angular_resolution_y = angular_resolution_x;
 pcl::RangeImage::CoordinateFrame coordinate_frame = pcl::RangeImage::CAMERA_FRAME;
 bool live_update = false;
 
@@ -27,7 +28,8 @@ printUsage (const char* progName)
   std::cout << "\n\nUsage: "<<progName<<" [options] <scene.pcd>\n\n"
             << "Options:\n"
             << "-------------------------------------------\n"
-            << "-r <float>   angular resolution in degrees (default "<<angular_resolution<<")\n"
+            << "-rx <float>  angular resolution in degrees (default "<<angular_resolution_x<<")\n"
+            << "-ry <float>  angular resolution in degrees (default "<<angular_resolution_y<<")\n"
             << "-c <int>     coordinate frame (default "<< (int)coordinate_frame<<")\n"
             << "-l           live update - update the range image according to the selected view in the 3D viewer.\n"
             << "-h           this help\n"
@@ -71,15 +73,18 @@ main (int argc, char** argv)
     live_update = true;
     std::cout << "Live update is on.\n";
   }
-  if (pcl::console::parse (argc, argv, "-r", angular_resolution) >= 0)
-    std::cout << "Setting angular resolution to "<<angular_resolution<<"deg.\n";
+  if (pcl::console::parse (argc, argv, "-rx", angular_resolution_x) >= 0)
+    std::cout << "Setting angular resolution in x-direction to "<<angular_resolution_x<<"deg.\n";
+  if (pcl::console::parse (argc, argv, "-ry", angular_resolution_y) >= 0)
+    std::cout << "Setting angular resolution in y-direction to "<<angular_resolution_y<<"deg.\n";
   int tmp_coordinate_frame;
   if (pcl::console::parse (argc, argv, "-c", tmp_coordinate_frame) >= 0)
   {
     coordinate_frame = pcl::RangeImage::CoordinateFrame (tmp_coordinate_frame);
     std::cout << "Using coordinate frame "<< (int)coordinate_frame<<".\n";
   }
-  angular_resolution = pcl::deg2rad (angular_resolution);
+  angular_resolution_x = pcl::deg2rad (angular_resolution_x);
+  angular_resolution_y = pcl::deg2rad (angular_resolution_y);
   
   // ------------------------------------------------------------------
   // -----Read pcd file or create example point cloud if not given-----
@@ -124,7 +129,8 @@ main (int argc, char** argv)
   int border_size = 1;
   boost::shared_ptr<pcl::RangeImage> range_image_ptr(new pcl::RangeImage);
   pcl::RangeImage& range_image = *range_image_ptr;   
-  range_image.createFromPointCloud (point_cloud, angular_resolution, pcl::deg2rad (360.0f), pcl::deg2rad (180.0f),
+  range_image.createFromPointCloud (point_cloud, angular_resolution_x, angular_resolution_y,
+                                    pcl::deg2rad (360.0f), pcl::deg2rad (180.0f),
                                     scene_sensor_pose, coordinate_frame, noise_level, min_range, border_size);
   
   // --------------------------------------------
@@ -159,7 +165,8 @@ main (int argc, char** argv)
     if (live_update)
     {
       scene_sensor_pose = viewer.getViewerPose();
-      range_image.createFromPointCloud (point_cloud, angular_resolution, pcl::deg2rad (360.0f), pcl::deg2rad (180.0f),
+      range_image.createFromPointCloud (point_cloud, angular_resolution_x, angular_resolution_y,
+                                        pcl::deg2rad (360.0f), pcl::deg2rad (180.0f),
                                         scene_sensor_pose, pcl::RangeImage::LASER_FRAME, noise_level, min_range, border_size);
       range_image_widget.showRangeImage (range_image);
     }
