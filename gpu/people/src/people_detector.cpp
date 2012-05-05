@@ -93,6 +93,11 @@ pcl::gpu::people::PeopleDetector::allocate_buffers(int rows, int cols)
   depth_host_.points.resize(cols * rows);
   depth_host_.is_dense = false;
 
+  flowermat_host_.width  = cols;
+  flowermat_host_.height = rows;
+  flowermat_host_.points.resize(cols * rows);
+  flowermat_host_.is_dense = false;
+  
   cloud_device_.create(rows, cols);
   hue_device_.create(rows, cols);
 
@@ -104,20 +109,24 @@ pcl::gpu::people::PeopleDetector::allocate_buffers(int rows, int cols)
 
 void
 pcl::gpu::people::PeopleDetector::process(const Depth& depth, const Image& rgba)
-{  
+{ 
+  int cols;
   allocate_buffers(depth.rows(), depth.cols());
 
   depth_device1_ = depth;
 
   const device::Image& i = (const device::Image&)rgba;
-  device::computeHueWithNans(i, depth_device1_, hue_device_);  
-  //TODO compute cloud device on GPU using intrinsics; 
-  //TODO download cloud as some part of the algorithm are CPU only
-  
-  //TODO Hope this is temporary and after porting to GPU the download will be deleted
-  int c;
-  hue_device_.download(hue_host_.points, c);
-  
+  device::computeHueWithNans(i, depth_device1_, hue_device_);
+  //TODO Hope this is temporary and after porting to GPU the download will be deleted  
+  hue_device_.download(hue_host_.points, cols);
+      
+  device::Intr intr(fx_, fy_, cx_, cy_);
+  intr.setDefaultPPIfIncorrect(depth.cols(), depth.rows());
+
+  device::Cloud& c = (device::Cloud&)cloud_device_;
+  device::computeCloud(depth, intr, c);  
+  cloud_device_.download(cloud_host_.points, cols);    
+    
   // uses cloud device, cloud host, depth device, hue device and other buffers
   process();
 }
@@ -167,13 +176,13 @@ pcl::gpu::people::PeopleDetector::process ()
     
     const std::vector<int>& seed = t.indices.indices;
         
-    vector<unsigned char> flowermat(rows * cols, 0);
+    std::fill(flowermat_host_.points.begin(), flowermat_host_.points.end(), 0);
     {
       //ScopeTime time("shs");    
-      shs5(cloud_host_, seed, &flowermat[0]);
+      shs5(cloud_host_, seed, &flowermat_host_.points[0]);
     }
     
-    fg_mask_.upload(flowermat, cols);
+    fg_mask_.upload(flowermat_host_.points, cols);
     device::Dilatation::invoke(fg_mask_, kernelRect5x5_, fg_mask_grown_);
 
     device::prepareForeGroundDepth(depth_device1_, fg_mask_grown_, depth_device2_);

@@ -118,3 +118,45 @@ void pcl::device::computeHueWithNans(const Image& rgba, const Depth& depth, Hue&
   cudaSafeCall( cudaDeviceSynchronize() );
 }
 
+namespace pcl
+{
+  namespace device
+  {
+    __global__ void reprojectDepthKenrel(const PtrStepSz<unsigned short> depth, const Intr intr, PtrStep<float4> cloud)
+    {
+      int x = blockIdx.x * blockDim.x + threadIdx.x;
+      int y = blockIdx.y * blockDim.y + threadIdx.y;
+
+      const float qnan = numeric_limits<float>::quiet_NaN();
+
+      if (x < depth.cols && y < depth.rows)
+      {
+        float4 p = make_float4(qnan, qnan, qnan, qnan);
+
+        int d = depth.ptr(y)[x];
+        float z = d * 0.001f; // mm -> meters
+
+        p.x = z * (x - intr.cx) / intr.fx;
+        p.y = z * (y - intr.cy) / intr.fy;
+        p.z = z;
+
+        cloud.ptr(y)[x] = p;
+      }      
+    }
+  }
+}
+
+void pcl::device::computeCloud(const Depth& depth, const Intr& intr, Cloud& cloud)
+{
+  cloud.create(depth.rows(), depth.cols());
+
+  dim3 block(32, 8);
+  dim3 grid;
+  grid.x = divUp(depth.cols(), block.x);
+  grid.y = divUp(depth.rows(), block.y);
+
+  reprojectDepthKenrel<<<grid, block>>>(depth, intr, cloud);
+
+  cudaSafeCall( cudaGetLastError() );
+  cudaSafeCall( cudaDeviceSynchronize() );
+}

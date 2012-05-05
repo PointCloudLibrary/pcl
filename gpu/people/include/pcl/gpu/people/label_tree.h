@@ -307,28 +307,29 @@ namespace pcl
           return 0;	
         }
 
-        inline int browseTree (const std::vector<std::vector <Blob2, Eigen::aligned_allocator<Blob2> > >&  sorted,
-                          Tree2&                              tree,
-                          int                                 part_label,
-                          int                                 part_lid)
+        inline int browseTree (const std::vector<std::vector <Blob2, Eigen::aligned_allocator<Blob2> > >&  sorted, Tree2& tree, int part_label, int part_lid)
         {
           int nr_children = LUT_nr_children[part_label];
           tree.nr_parts++;
           tree.parts_lid[part_label] = part_lid;
 
-          // iterate over the number of pixels that are part of this label
-          for(size_t in = 0; in < sorted[part_label][part_lid].indices.indices.size(); in++)
-            tree.indices.indices.push_back(sorted[part_label][part_lid].indices.indices[in]);
+          const Blob2& blob = sorted[part_label][part_lid];
 
+          // iterate over the number of pixels that are part of this label
+          const std::vector<int>& indices = blob.indices.indices;
+          tree.indices.indices.insert(tree.indices.indices.end(), indices.begin(), indices.end());
+          
           if(nr_children == 0)
             return 0;
 
           // iterate over all possible children
-          for(int i = 0; i < nr_children; i++){
+          for(int i = 0; i < nr_children; i++)
+          {
             // check if this child has a valid child_id, leaf test should be redundant
-            if(( sorted[part_label][part_lid].child_id[i] != NO_CHILD) && ( sorted[part_label][part_lid].child_id[i] != LEAF)){
-                tree.total_dist_error += sorted[part_label][part_lid].child_dist[i];
-                browseTree( sorted, tree, sorted[part_label][part_lid].child_label[i], sorted[part_label][part_lid].child_lid[i]);
+            if(blob.child_id[i] != NO_CHILD && blob.child_id[i] != LEAF)
+            {
+              tree.total_dist_error += blob.child_dist[i];
+              browseTree( sorted, tree, blob.child_label[i], blob.child_lid[i]);
             }
           }
           return 0;

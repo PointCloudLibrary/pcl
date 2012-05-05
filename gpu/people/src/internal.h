@@ -98,8 +98,8 @@ namespace pcl
       static void computeEdges(const Labels& labels, const Depth& depth, int num_parts, float sq_radius, DeviceArray2D<unsigned char>& edges);
       static void labelComponents(const DeviceArray2D<unsigned char>& edges, DeviceArray2D<int>& comps);
     };
-
-    void connected_components(const Labels& labels, const DeviceArray2D<float4>& cloud, int num_parts, float sq_radius, DeviceArray2D<int>& components);
+    
+    void computeCloud(const Depth& depth, const Intr& intr, Cloud& cloud);
 
     void setZero(Mask& mask);
     void prepareForeGroundDepth(const Depth& depth1, Mask& inverse_mask, Depth& depth2);

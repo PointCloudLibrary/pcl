@@ -98,7 +98,6 @@ savePNGFile (const std::string& filename, const pcl::PointCloud<T>& cloud)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 class PeoplePCDApp
 {
   public:
@@ -117,6 +116,7 @@ class PeoplePCDApp
 
     void cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
     {
+      std::cout << "Cloud Callback" << std::endl;
       people_detector_.process(cloud);
       ++counter_;
       //visualizeAndWrite(cloud);
@@ -155,7 +155,7 @@ class PeoplePCDApp
 
 void print_help()
 {
-  cout << "\nPeople tracking app options:" << endl;
+  cout << "\nPeople tracking app options (help):" << endl;
   cout << "\t -numTrees \t<int> \tnumber of trees to load" << endl;
   cout << "\t -tree0 \t<path_to_tree_file>" << endl;
   cout << "\t -tree1 \t<path_to_tree_file>" << endl;
@@ -166,6 +166,7 @@ void print_help()
 
 int main(int argc, char** argv)
 {
+  cout << "People tracking on PCD files version 0.1" << std::endl;
   if(find_switch (argc, argv, "--help") || find_switch (argc, argv, "-h"))
     return print_help(), 0;
  
@@ -201,10 +202,13 @@ int main(int argc, char** argv)
   // loading trees
   using pcl::gpu::people::RDFBodyPartsDetector;
   vector<string> names_vector(treeFilenames, treeFilenames + numTrees);
+  std::cout << "Trees collected " << std::endl;
   RDFBodyPartsDetector::Ptr rdf(new RDFBodyPartsDetector(names_vector));
+  std::cout << "Loaded files into rdf" << std::endl;
 
   // Create the app
   PeoplePCDApp app;
+  std::cout << "App created" << std::endl;
   app.people_detector_.rdf_detector_ = rdf;
 
   /// Run the app
@@ -212,7 +216,7 @@ int main(int argc, char** argv)
     pcl::ScopeTime frame_time("frame_time");
     app.cloud_cb(cloud);
   }
-
+  std::cout << "calling visualisation" << std::endl;
   app.visualizeAndWrite(cloud);
   app.final_view_.spin();
 

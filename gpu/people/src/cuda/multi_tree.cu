@@ -71,6 +71,10 @@ namespace pcl
     evaluateTree(int u, int v, float f, int treeHeight, int numNodes, const Node* nodes, const Label* leaves)
     {
       int    depth = tex2D(depthTex, u, v);
+
+      //if (depth == numeric_limits<unsigned short>::max())
+      //  return pcl::gpu::people::part_t::NOLABEL;
+
       float  scale = f / depth;
 
       // go down the tree

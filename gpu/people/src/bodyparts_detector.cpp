@@ -149,7 +149,7 @@ pcl::gpu::people::RDFBodyPartsDetector::allocate_buffers(int rows, int cols)
 void 
 pcl::gpu::people::RDFBodyPartsDetector::process(const Depth& depth, const PointCloud<PointXYZ>& cloud, int min_pts_per_cluster)
 {
-  //ScopeTime time("ev");
+  ScopeTime time("ev");
 
   int cols = depth.cols();
   int rows = depth.rows();
@@ -157,11 +157,12 @@ pcl::gpu::people::RDFBodyPartsDetector::process(const Depth& depth, const PointC
   allocate_buffers(rows, cols);
   
   {
-  //ScopeTime time("cc");
-
+  
+      {ScopeTime time("--");
   // Process the depthimage (CUDA)
   impl_->process(depth, labels_);
   device::smoothLabelImage(labels_, depth, labels_smoothed_, NUM_PARTS, 5, 300);
+      }
   
   //AsyncCopy<unsigned char> async_labels_download(lmap_host_);
 
@@ -180,7 +181,7 @@ pcl::gpu::people::RDFBodyPartsDetector::process(const Depth& depth, const PointC
 
   // This was sort indices to blob (sortIndicesToBlob2) method (till line 236)
   {
-  //ScopeTime time("cvt");    
+  ScopeTime time("cvt");  
   std::fill(remap_.begin(), remap_.end(), -1);
   std::fill(region_sizes_.begin(), region_sizes_.end(), 0);    
     

@@ -128,7 +128,8 @@ namespace pcl
           PointCloud<PointType> cloud_host_;
           PointCloud<float> hue_host_;
           PointCloud<unsigned short> depth_host_;
-          
+          PointCloud<unsigned char> flowermat_host_;
+                    
           DeviceArray2D<PointType> cloud_device_;
 
           Hue hue_device_;
@@ -138,6 +139,7 @@ namespace pcl
           
           Mask fg_mask_;
           Mask fg_mask_grown_;
+
 
           void 
           process();
