@@ -53,6 +53,8 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/io/vtk_io.h>
+#include <pcl/io/openni_grabber.h>
+#include <pcl/io/oni_grabber.h>
 
 #include "openni_capture.h"
 #include "color_handler.h"
@@ -95,20 +97,20 @@ namespace pcl
 struct SampledScopeTime : public StopWatch
 {          
   enum { EACH = 33 };
-  SampledScopeTime(int& time_ms, int i) : time_ms_(time_ms), i_(i) {}
+  SampledScopeTime(int& time_ms) : time_ms_(time_ms) {}
   ~SampledScopeTime()
   {
-    time_ms_ += stopWatch_.getTime ();        
+    static int i_ = 0;
+    time_ms_ += getTime ();    
     if (i_ % EACH == 0 && i_)
     {
       cout << "Average frame time = " << time_ms_ / EACH << "ms ( " << 1000.f * EACH / time_ms_ << "fps )" << endl;
       time_ms_ = 0;        
     }
+    ++i_;
   }
-private:
-    StopWatch stopWatch_;
-    int& time_ms_;
-    int i_;
+private:    
+    int& time_ms_;    
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -165,10 +167,7 @@ typename PointCloud<MergedT>::Ptr merge(const PointCloud<PointT>& points, const 
 {    
   typename PointCloud<MergedT>::Ptr merged_ptr(new PointCloud<MergedT>());
     
-  pcl::copyPointCloud (points, *merged_ptr);
-  //pcl::copyPointCloud (colors, *merged_ptr); why error?
-  //pcl::concatenateFields (points, colors, *merged_ptr); why error? 
-    
+  pcl::copyPointCloud (points, *merged_ptr);      
   for (size_t i = 0; i < colors.size (); ++i)
     merged_ptr->points[i].rgba = colors.points[i].rgba;
       
@@ -520,14 +519,11 @@ struct KinFuApp
 {
   enum { PCD_BIN = 1, PCD_ASCII = 2, PLY = 3, MESH_PLY = 7, MESH_VTK = 8 };
   
-  KinFuApp(CaptureOpenNI& source, float vsz) : exit_ (false), scan_ (false), scan_mesh_(false), scan_volume_ (false), independent_camera_ (false),
-    registration_ (false), integrate_colors_ (false), capture_ (source)
+  KinFuApp(pcl::Grabber& source, float vsz) : exit_ (false), scan_ (false), scan_mesh_(false), scan_volume_ (false), independent_camera_ (false),
+    registration_ (false), integrate_colors_ (false), focal_length_(-1.f), capture_ (source), time_ms_(0)
   {    
     //Init Kinfu Tracker
-    Eigen::Vector3f volume_size = Vector3f::Constant (vsz/*meters*/);
-
-    float f = capture_.depth_focal_length_VGA;
-    kinfu_.setDepthIntrinsics (f, f);
+    Eigen::Vector3f volume_size = Vector3f::Constant (vsz/*meters*/);    
     kinfu_.volume().setSize (volume_size);
 
     Eigen::Matrix3f R = Eigen::Matrix3f::Identity ();   // * AngleAxisf( pcl::deg2rad(-30.f), Vector3f::UnitX());
@@ -543,16 +539,13 @@ struct KinFuApp
     
     //Init KinfuApp            
     tsdf_cloud_ptr_ = pcl::PointCloud<pcl::PointXYZI>::Ptr (new pcl::PointCloud<pcl::PointXYZI>);
-    image_view_.raycaster_ptr_ = RayCaster::Ptr( new RayCaster(kinfu_.rows (), kinfu_.cols (), f, f) );
+    image_view_.raycaster_ptr_ = RayCaster::Ptr( new RayCaster(kinfu_.rows (), kinfu_.cols ()) );
 
     scene_cloud_view_.cloud_viewer_.registerKeyboardCallback (keyboard_callback, (void*)this);
     image_view_.viewerScene_.registerKeyboardCallback (keyboard_callback, (void*)this);
     image_view_.viewerDepth_.registerKeyboardCallback (keyboard_callback, (void*)this);
-
-    float diag = sqrt ((float)kinfu_.cols () * kinfu_.cols () + kinfu_.rows () * kinfu_.rows ());
-    scene_cloud_view_.cloud_viewer_.camera_.fovy = 2 * atan (diag / (2 * f)) * 1.5;
-    
-    scene_cloud_view_.toggleCube(volume_size);    
+        
+    scene_cloud_view_.toggleCube(volume_size);
   }
 
   ~KinFuApp()
@@ -570,24 +563,22 @@ struct KinFuApp
   }
 
   void
-  tryRegistrationInit ()
-  {
-    registration_ = capture_.setRegistration (true);
-	float f = capture_.depth_focal_length_VGA;
-    kinfu_.setDepthIntrinsics (f, f);
-    cout << "Registration mode: " << (registration_ ?  "On" : "Off (not supported by source)") << endl;
+  initRegistration ()
+  {        
+    registration_ = capture_.providesCallback<pcl::ONIGrabber::sig_cb_openni_image_depth_image> ();
+    cout << "Registration mode: " << (registration_ ? "On" : "Off (not supported by source)") << endl;
   }
 
   void 
-  toggleColorIntegration(bool force = false)
+  toggleColorIntegration()
   {
-    if (registration_ || force)
+    if(registration_)
     {
       const int max_color_integration_weight = 2;
       kinfu_.initColorIntegration(max_color_integration_weight);
       integrate_colors_ = true;      
-    }
-    cout << "Color integration: " << (integrate_colors_ ? "On" : "Off (not supported by source)") << endl;
+    }    
+    cout << "Color integration: " << (integrate_colors_ ? "On" : "Off ( requires registration mode )") << endl;
   }
 
   void
@@ -608,87 +599,142 @@ struct KinFuApp
     image_view_.raycaster_ptr_ = RayCaster::Ptr( new RayCaster(kinfu_.rows (), kinfu_.cols (), 
         evaluation_ptr_->fx, evaluation_ptr_->fy, evaluation_ptr_->cx, evaluation_ptr_->cy) );
   }
+  
+  void execute(const PtrStepSz<const unsigned short>& depth, const PtrStepSz<const KinfuTracker::PixelRGB>& rgb24)
+  {        
+    bool has_image = false;
+      
+    depth_device_.upload (depth.data, depth.step, depth.rows, depth.cols);
+    if (integrate_colors_)
+        image_view_.colors_device_.upload (rgb24.data, rgb24.step, rgb24.rows, rgb24.cols);
+    
+    {
+      SampledScopeTime fps(time_ms_);
+    
+      //run kinfu algorithm
+      if (integrate_colors_)
+        has_image = kinfu_ (depth_device_, image_view_.colors_device_);
+      else
+        has_image = kinfu_ (depth_device_);                  
+    }
+
+    if (scan_)
+    {
+      scan_ = false;
+      scene_cloud_view_.show (kinfu_, integrate_colors_);
+                    
+      if (scan_volume_)
+      {                
+        cout << "Downloading TSDF volume from device ... " << flush;
+        kinfu_.volume().downloadTsdfAndWeighs (tsdf_volume_.volumeWriteable (), tsdf_volume_.weightsWriteable ());
+        tsdf_volume_.setHeader (Eigen::Vector3i (pcl::device::VOLUME_X, pcl::device::VOLUME_Y, pcl::device::VOLUME_Z), kinfu_.volume().getSize ());
+        cout << "done [" << tsdf_volume_.size () << " voxels]" << endl << endl;
+                
+        cout << "Converting volume to TSDF cloud ... " << flush;
+        tsdf_volume_.convertToTsdfCloud (tsdf_cloud_ptr_);
+        cout << "done [" << tsdf_cloud_ptr_->size () << " points]" << endl << endl;        
+      }
+      else
+        cout << "[!] tsdf volume download is disabled" << endl << endl;
+    }
+
+    if (scan_mesh_)
+    {
+        scan_mesh_ = false;
+        scene_cloud_view_.showMesh(kinfu_, integrate_colors_);
+    }
+     
+    if (has_image)
+    {
+      Eigen::Affine3f viewer_pose = getViewerPose(scene_cloud_view_.cloud_viewer_);
+      image_view_.showScene (kinfu_, rgb24, registration_, independent_camera_ ? &viewer_pose : 0);
+    }
+
+    if (current_frame_cloud_view_)
+      current_frame_cloud_view_->show (kinfu_);
+    
+    image_view_.showDepth (depth);
+    //image_view_.showGeneratedDepth(kinfu_, kinfu_.getCameraPose());
+    
+    if (!independent_camera_)
+      setViewerPose (scene_cloud_view_.cloud_viewer_, kinfu_.getCameraPose());    
+  }
+  
+  void source_cb1(const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper)  
+  {        
+    {
+      boost::mutex::scoped_lock lock(data_ready_mutex_);
+      if (exit_)
+          return;
+      
+      depth_.cols = depth_wrapper->getWidth();
+      depth_.rows = depth_wrapper->getHeight();
+      depth_.step = depth_.cols * depth_.elemSize();
+
+      source_depth_data_.resize(depth_.cols * depth_.rows);
+      depth_wrapper->fillDepthImageRaw(depth_.cols, depth_.rows, &source_depth_data_[0]);
+      depth_.data = &source_depth_data_[0];     
+    }
+    data_ready_cond_.notify_one();
+  }
+
+  void source_cb2(const boost::shared_ptr<openni_wrapper::Image>& image_wrapper, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper, float)
+  {
+    {
+      boost::mutex::scoped_lock lock(data_ready_mutex_);
+      if (exit_)
+          return;
+                  
+      depth_.cols = depth_wrapper->getWidth();
+      depth_.rows = depth_wrapper->getHeight();
+      depth_.step = depth_.cols * depth_.elemSize();
+
+      source_depth_data_.resize(depth_.cols * depth_.rows);
+      depth_wrapper->fillDepthImageRaw(depth_.cols, depth_.rows, &source_depth_data_[0]);
+      depth_.data = &source_depth_data_[0];      
+      
+      rgb24_.cols = image_wrapper->getWidth();
+      rgb24_.rows = image_wrapper->getHeight();
+      rgb24_.step = rgb24_.cols * rgb24_.elemSize(); 
+
+      source_image_data_.resize(rgb24_.cols * rgb24_.rows);
+      image_wrapper->fillRGB(rgb24_.cols, rgb24_.rows, (unsigned char*)&source_image_data_[0]);
+      rgb24_.data = &source_image_data_[0];           
+    }
+    data_ready_cond_.notify_one();
+  }
 
   void
-  execute ()
-  {
-    PtrStepSz<const unsigned short> depth;
-    PtrStepSz<const KinfuTracker::PixelRGB> rgb24;
-    int time_ms = 0;
-    bool has_image = false;
+  startMainLoop ()
+  {   
+    using namespace openni_wrapper;
+    typedef boost::shared_ptr<DepthImage> DepthImagePtr;
+    typedef boost::shared_ptr<Image> ImagePtr;
+        
+    boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1 = boost::bind (&KinFuApp::source_cb2, this, _1, _2, _3);
+    boost::function<void (const DepthImagePtr&)> func2 = boost::bind (&KinFuApp::source_cb1, this, _1);
 
-    for (int i = 0; !exit_; ++i)
-    {      
-      bool has_frame = evaluation_ptr_ ? evaluation_ptr_->grab(i, depth) : capture_.grab (depth, rgb24);      
-      if (!has_frame)
-      {
-        cout << "Can't grab" << endl;
-        break;
-      }
+    bool need_colors = integrate_colors_ || registration_;
+    boost::signals2::connection c = need_colors ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
 
-      depth_device_.upload (depth.data, depth.step, depth.rows, depth.cols);
-      if (integrate_colors_)
-          image_view_.colors_device_.upload (rgb24.data, rgb24.step, rgb24.rows, rgb24.cols);
-      
-      {
-        SampledScopeTime fps(time_ms, i);
-      
-        //run kinfu algorithm
-        if (integrate_colors_)
-          has_image = kinfu_ (depth_device_, image_view_.colors_device_);
-        else
-          has_image = kinfu_ (depth_device_);                  
-      }
+    {
+      boost::unique_lock<boost::mutex> lock(data_ready_mutex_);
 
-      if (scan_)
-      {
-        scan_ = false;
-        scene_cloud_view_.show (kinfu_, integrate_colors_);
-                      
-        if (scan_volume_)
-        {
-          // download tsdf volume
-          {
-            ScopeTimeT time ("tsdf volume download");
-            cout << "Downloading TSDF volume from device ... " << flush;
-            kinfu_.volume().downloadTsdfAndWeighs (tsdf_volume_.volumeWriteable (), tsdf_volume_.weightsWriteable ());
-            tsdf_volume_.setHeader (Eigen::Vector3i (pcl::device::VOLUME_X, pcl::device::VOLUME_Y, pcl::device::VOLUME_Z), kinfu_.volume().getSize ());
-            cout << "done [" << tsdf_volume_.size () << " voxels]" << endl << endl;
-          }
-          {
-            ScopeTimeT time ("converting");
-            cout << "Converting volume to TSDF cloud ... " << flush;
-            tsdf_volume_.convertToTsdfCloud (tsdf_cloud_ptr_);
-            cout << "done [" << tsdf_cloud_ptr_->size () << " points]" << endl << endl;
-          }
+      capture_.start ();
+      while (!exit_ && !scene_cloud_view_.cloud_viewer_.wasStopped() && !image_view_.viewerScene_.wasStopped())
+      {      
+        bool has_data = data_ready_cond_.timed_wait(lock, boost::posix_time::millisec(100));
+        if(has_data)
+        {                           
+          try { this->execute (depth_, rgb24_); }
+          catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; break; }
+          catch (const std::exception& /*e*/) { cout << "Exception" << endl; break; }
         }
-        else
-          cout << "[!] tsdf volume download is disabled" << endl << endl;
-      }
-
-      if (scan_mesh_)
-      {
-          scan_mesh_ = false;
-          scene_cloud_view_.showMesh(kinfu_, integrate_colors_);
-      }
-       
-      if (has_image)
-      {
-        Eigen::Affine3f viewer_pose = getViewerPose(scene_cloud_view_.cloud_viewer_);
-        image_view_.showScene (kinfu_, rgb24, registration_, independent_camera_ ? &viewer_pose : 0);
-      }
-
-      if (current_frame_cloud_view_)
-        current_frame_cloud_view_->show (kinfu_);
-      
-      image_view_.showDepth (depth);
-      //image_view_.showGeneratedDepth(kinfu_, kinfu_.getCameraPose());
-      
-      if (!independent_camera_)
-        setViewerPose (scene_cloud_view_.cloud_viewer_, kinfu_.getCameraPose());
-      
-      scene_cloud_view_.cloud_viewer_.spinOnce (3);      
+        scene_cloud_view_.cloud_viewer_.spinOnce (3);                  
+      }        
+      capture_.stop ();
     }
+    c.disconnect();
   }
 
   void
@@ -749,9 +795,10 @@ struct KinFuApp
   bool independent_camera_;
 
   bool registration_;
-  bool integrate_colors_;
+  bool integrate_colors_;  
+  float focal_length_;
   
-  CaptureOpenNI& capture_;
+  pcl::Grabber& capture_;
   KinfuTracker kinfu_;
 
   SceneCloudView scene_cloud_view_;
@@ -764,6 +811,16 @@ struct KinFuApp
   pcl::PointCloud<pcl::PointXYZI>::Ptr tsdf_cloud_ptr_;
 
   Evaluation::Ptr evaluation_ptr_;
+  
+  boost::mutex data_ready_mutex_;
+  boost::condition_variable data_ready_cond_;
+ 
+  std::vector<KinfuTracker::PixelRGB> source_image_data_;
+  std::vector<unsigned short> source_depth_data_;
+  PtrStepSz<const unsigned short> depth_;
+  PtrStepSz<const KinfuTracker::PixelRGB> rgb24_;  
+
+  int time_ms_;
 
   static void
   keyboard_callback (const visualization::KeyboardEvent &e, void *cookie)
@@ -885,20 +942,20 @@ main (int argc, char* argv[])
   pcl::gpu::printShortCudaDeviceInfo (device);
 
   if(checkIfPreFermiGPU(device))
-    return cout << endl << "Kinfu is not supported for pre-Fermi GPU architectures, and not built for them by default. Exiting..." << endl, 1;
-
-  CaptureOpenNI capture;
+    return cout << endl << "Kinfu is supported only for Fermi and Kepler arhitectures. It is not even compiled for pre-Fermi by default. Exiting..." << endl, 1;
   
-  int openni_device = 0;
+  boost::shared_ptr<pcl::Grabber> capture;
+  
+  std::string openni_device;
   std::string oni_file, eval_folder, match_file;
   if (pc::parse_argument (argc, argv, "-dev", openni_device) > 0)
   {
-    capture.open (openni_device);
+    capture.reset( new pcl::OpenNIGrabber(openni_device) );
   }
   else
   if (pc::parse_argument (argc, argv, "-oni", oni_file) > 0)
-  {
-    capture.open (oni_file);
+  {    
+    capture.reset( new pcl::ONIGrabber(oni_file, true, true) );
   }
   else
   if (pc::parse_argument (argc, argv, "-eval", eval_folder) > 0)
@@ -908,20 +965,19 @@ main (int argc, char* argv[])
   }
   else
   {
-    capture.open (openni_device);
-    //capture.open("d:/onis/20111013-224932.oni");
-    //capture.open("d:/onis/reg20111229-180846.oni");
-    //capture.open("d:/onis/white1.oni");
-    //capture.open("/media/Main/onis/20111013-224932.oni");
-    //capture.open("20111013-225218.oni");
-    //capture.open("d:/onis/20111013-224551.oni");
-    //capture.open("d:/onis/20111013-224719.oni");
+    capture.reset( new pcl::OpenNIGrabber() );
+
+    //capture.reset( new pcl::ONIGrabber("d:/onis/20111013-224932.oni", true, true) );
+    //capture.reset( new pcl::ONIGrabber("d:/onis/reg20111229-180846.oni, true, true) );    
+    //capture.reset( new pcl::ONIGrabber("/media/Main/onis/20111013-224932.oni", true, true) );
+    //capture.reset( new pcl::ONIGrabber("d:/onis/20111013-224551.oni", true, true) );
+    //capture.reset( new pcl::ONIGrabber("d:/onis/20111013-224719.oni", true, true) );    
   }
 
   float volume_size = 3.f;
   pc::parse_argument (argc, argv, "-volume_size", volume_size);
           
-  KinFuApp app (capture, volume_size);
+  KinFuApp app (*capture, volume_size);
 
   if (pc::parse_argument (argc, argv, "-eval", eval_folder) > 0)
     app.toggleEvaluationMode(eval_folder, match_file);
@@ -933,15 +989,14 @@ main (int argc, char* argv[])
     app.image_view_.accumulate_views_ = true;  //will cause bad alloc after some time  
     
   if (pc::find_switch (argc, argv, "--registration") || pc::find_switch (argc, argv, "-r"))  
-      app.tryRegistrationInit();
-      
-  bool force = pc::find_switch (argc, argv, "-icf");
-  if (force || pc::find_switch (argc, argv, "--integrate-colors") || pc::find_switch (argc, argv, "-ic"))      
-    app.toggleColorIntegration(force);
+    app.initRegistration();
+        
+  if (pc::find_switch (argc, argv, "--integrate-colors") || pc::find_switch (argc, argv, "-ic"))      
+    app.toggleColorIntegration();
 
   
   // executing
-  try { app.execute (); }
+  try { app.startMainLoop (); }
   catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; }
   catch (const std::exception& /*e*/) { cout << "Exception" << endl; }
 

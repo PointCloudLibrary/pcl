@@ -442,7 +442,8 @@ pcl::gpu::KinfuTracker::colorVolume()
 void
 pcl::gpu::KinfuTracker::getImage (View& view) const
 {
-  Eigen::Vector3f light_source_pose = tsdf_volume_->getSize() * (-3.f);
+  //Eigen::Vector3f light_source_pose = tsdf_volume_->getSize() * (-3.f);
+  Eigen::Vector3f light_source_pose = tvecs_[tvecs_.size () - 1];
 
   device::LightSource light;
   light.number = 1;

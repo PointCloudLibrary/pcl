@@ -254,7 +254,7 @@ namespace pcl
         std::vector<Matrix3frm> rmats_;
         
         /** \brief Array of camera translations for each moment of time. */
-        std::vector<Vector3f>   tvecs_;
+        std::vector<Vector3f> tvecs_;
 
         /** \brief Camera movement threshold. TSDF is integrated iff a camera movement metric exceedes some value. */
         float integration_metric_threshold_;
