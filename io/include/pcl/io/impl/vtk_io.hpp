@@ -45,6 +45,10 @@
 #include <pcl/point_types.h>
 
 // VTK
+// Ignore warnings in the above headers
+#ifdef __GNUC__
+#pragma GCC system_header 
+#endif
 #include <vtkFloatArray.h>
 #include <vtkPointData.h>
 #include <vtkPoints.h>

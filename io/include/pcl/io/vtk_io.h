@@ -88,6 +88,6 @@ namespace pcl
   }
 }
 
-#include <pcl/io/impl/vtk_io.hpp>
+
 
 #endif  //#ifndef PCL_IO_VTK_IO_H_
