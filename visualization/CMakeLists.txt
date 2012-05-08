@@ -38,7 +38,9 @@ if(build)
         src/window.cpp
         src/range_image_visualizer.cpp
         src/common/float_image_utils.cpp
-        src/pcl_image_canvas_source_2d.cpp
+        src/vtk/pcl_image_canvas_source_2d.cpp
+        src/vtk/vtkVertexBufferObject.cxx
+        src/vtk/vtkVertexBufferObjectMapper.cxx
         )
     if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "5.6")
         # A custom interactor is necessary on VTK 5.4 and below
@@ -60,7 +62,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/range_image_visualizer.h
         include/pcl/${SUBSYS_NAME}/interactor.h
         include/pcl/${SUBSYS_NAME}/vtk.h
-        include/pcl/${SUBSYS_NAME}/vtk/pcl_image_canvas_source_2d.h
         )
 
     set(common_incs 
@@ -84,6 +85,8 @@ if(build)
 
     set(vtk_incs 
         include/pcl/${SUBSYS_NAME}/vtk/pcl_image_canvas_source_2d.h
+        include/pcl/${SUBSYS_NAME}/vtk/vtkVertexBufferObject.h
+        include/pcl/${SUBSYS_NAME}/vtk/vtkVertexBufferObjectMapper.h
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
