@@ -98,7 +98,7 @@ public:
  void
  visualizeAndWrite(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
  {
-   const pcl::gpu::people::RDFBodyPartsDetector::Labels& labels = people_detector_.rdf_detector_->getLabels();
+   const pcl::device::Labels& labels = people_detector_.rdf_detector_->getLabels();
    people_detector_.rdf_detector_->colorizeLabels(labels, cmap_device_);
 
    int c;

@@ -117,7 +117,7 @@ class PeoplePCDApp
     void cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
     {
       std::cout << "Cloud Callback" << std::endl;
-      people_detector_.process(cloud);
+      people_detector_.processProb(cloud);
       ++counter_;
       //visualizeAndWrite(cloud);
     }

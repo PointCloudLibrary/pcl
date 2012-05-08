@@ -50,6 +50,7 @@
 #include <opencv2/core/core.hpp>
 
 #include <pcl/gpu/people/bodyparts_detector.h>
+#include <pcl/gpu/people/probability_processor.h>
 
 namespace pcl
 {
@@ -80,9 +81,10 @@ namespace pcl
           FaceDetector::Ptr         face_detector_;
           OtherDetector::Ptr        other_detector_;
           PersonAttribs::Ptr        person_attribs_;
+          ProbabilityProcessor::Ptr probability_processor_;
 
           /** \brief Class constructor. */
-          PeopleDetector();
+          PeopleDetector ();
           
           /** \brief Class destructor. */
           ~PeopleDetector () {}                   
@@ -95,8 +97,11 @@ namespace pcl
           void
           process (const PointCloud<PointXYZRGB>::ConstPtr &cloud);
 
+          void
+          processProb (const PointCloud<PointXYZRGB>::ConstPtr &cloud);
+
           void 
-          process(const Depth& depth, const Image& rgba);
+          process (const Depth& depth, const Image& rgba);
          
           /** \brief Set the tolerance for the delta on the Hue in Seeded Hue Segmentation step */
           inline void
@@ -140,15 +145,18 @@ namespace pcl
           Mask fg_mask_;
           Mask fg_mask_grown_;
 
+          void 
+          process ();
+
+          /** \brief Process the depth based on probabilities supporting tracking **/
+          void
+          processProb ();
 
           void 
-          process();
+          allocate_buffers (int rows = 480, int cols = 640);
 
           void 
-          allocate_buffers(int rows = 480, int cols = 640);
-
-          void 
-          shs5(const pcl::PointCloud<pcl::PointXYZ> &cloud, const std::vector<int>& indices, unsigned char *mask);
+          shs5 (const pcl::PointCloud<pcl::PointXYZ> &cloud, const std::vector<int>& indices, unsigned char *mask);
 
           //!!! only for debug purposes TODO: remove this. 
           friend class PeoplePCDApp;

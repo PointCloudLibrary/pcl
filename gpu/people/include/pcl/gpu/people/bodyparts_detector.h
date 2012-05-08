@@ -44,6 +44,7 @@
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/people/colormap.h>
 #include <pcl/gpu/people/label_blob2.h>
+#include <pcl/gpu/people/label_common.h>
 #include <boost/shared_ptr.hpp>
 #include <string>
 #include <vector>
@@ -52,6 +53,7 @@ namespace pcl
 {
   namespace device
   {
+    // This just seems hacky ...
     class MultiTreeLiveProc;
   }
 
@@ -61,50 +63,63 @@ namespace pcl
     {
       class PCL_EXPORTS RDFBodyPartsDetector
       {
-      public:
-        typedef boost::shared_ptr<RDFBodyPartsDetector> Ptr;
-        typedef label_skeleton::Blob2 Blob2;
-        typedef std::vector<std::vector<Blob2, Eigen::aligned_allocator<Blob2> > > BlobMatrix;
+        public:
+          typedef boost::shared_ptr<RDFBodyPartsDetector> Ptr;
+          typedef label_skeleton::Blob2 Blob2;
+          typedef std::vector<std::vector<Blob2, Eigen::aligned_allocator<Blob2> > > BlobMatrix;
 
-        typedef DeviceArray2D<unsigned short> Depth;
-        typedef DeviceArray2D<unsigned char> Labels;
-        typedef DeviceArray2D<pcl::RGB> Image;
+          typedef DeviceArray2D<pcl::RGB> Image;
 
-        RDFBodyPartsDetector(const std::vector<std::string>& tree_files, 
-            int default_buffer_rows = 480, int default_buffer_cols = 640);
-        
-        void process(const Depth& depth, const pcl::PointCloud<pcl::PointXYZ>& cloud, int min_pts_per_cluster);
+          RDFBodyPartsDetector(const std::vector<std::string>& tree_files,
+              int default_buffer_rows = 480, int default_buffer_cols = 640);
 
-        //getters
-        const Labels& getLabels() const;
-        size_t treesNumber() const;
-        const BlobMatrix& getBlobMatrix() const;
+          void process(const pcl::device::Depth& depth, const pcl::PointCloud<pcl::PointXYZ>& cloud, int min_pts_per_cluster);
+          // This are the different sub-parts of process()
+          void processProb (const pcl::device::Depth& depth);
+          void processSmooth (const pcl::device::Depth& depth, const PointCloud<PointXYZ>& cloud, int min_pts_per_cluster);
+          void processRelations ();
 
-        //utility
-        void colorizeLabels(const Labels& labels, Image& color_labels) const;
+          //getters
+          const pcl::device::Labels& getLabels() const;
+          const pcl::device::LabelProbability& getProbability() const;
+          const pcl::device::LabelProbability& getPrevProbability() const;
+          size_t treesNumber() const;
+          const BlobMatrix& getBlobMatrix() const;
 
-      private:
-        boost::shared_ptr<device::MultiTreeLiveProc> impl_;
+          //utility
+          void colorizeLabels(const pcl::device::Labels& labels, Image& color_labels) const;
 
-        Labels labels_;
-        Labels labels_smoothed_;
-        DeviceArray<pcl::RGB> color_map_;
+          /** \brief This contains the final body part labels **/
+          pcl::device::Labels labels_;
+          /** \brief This contains the smoothed final body part labels **/
+          pcl::device::Labels labels_smoothed_;
 
-        int max_cluster_size_;
-        float cluster_tolerance_;
+          /** These contain the histograms of the labels for this detector **/
+          pcl::device::LabelProbability P_l_;
+          /** These contain the histograms of the labels for this detector of the previous timestep **/
+          pcl::device::LabelProbability P_l_prev_;
 
-        BlobMatrix blob_matrix_;
+        private:
+          boost::shared_ptr<device::MultiTreeLiveProc> impl_;
 
-        // hide this buffer using pImpl
-        std::vector<unsigned char> lmap_host_;
-        std::vector<int> dst_labels_;        
-        std::vector<int> region_sizes_;
-        std::vector<int> remap_; 
-        std::vector<float> means_storage_;
-        DeviceArray2D<int> comps_;
-        DeviceArray2D<unsigned char> edges_;        
+          /** This one is used to convert labels to colors from LUT **/
+          DeviceArray<pcl::RGB> color_map_;
 
-        void allocate_buffers(int rows = 480, int cols = 640);
+          int max_cluster_size_;
+          float cluster_tolerance_;
+
+          BlobMatrix blob_matrix_;
+
+          // hide this buffer using pImpl
+          std::vector<unsigned char> lmap_host_;
+          std::vector<int> dst_labels_;
+          std::vector<int> region_sizes_;
+          std::vector<int> remap_;
+          std::vector<float> means_storage_;
+          DeviceArray2D<int> comps_;
+          DeviceArray2D<unsigned char> edges_;
+
+          void allocate_buffers(int rows = 480, int cols = 640);
       };
     }
   }

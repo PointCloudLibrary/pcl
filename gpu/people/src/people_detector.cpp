@@ -41,6 +41,7 @@
 #include <pcl/gpu/people/label_conversion.h>
 #include <pcl/gpu/people/label_segment.h>
 #include <pcl/gpu/people/label_tree.h>
+#include <pcl/gpu/people/probability_processor.h>
 #include "internal.h"
 
 #include <pcl/common/time.h>
@@ -63,6 +64,10 @@ pcl::gpu::people::PeopleDetector::PeopleDetector()
   // if input size is other than the defaults, 
   // then the buffers will be reallocated at processing time.
   // This cause only penalty for first frame ( one reallocation of each buffer )
+
+  //probability_processor_ = ProbabilityProcessor::Ptr pp (new ProbabilityProcessor());
+  probability_processor_ = ProbabilityProcessor::Ptr (new ProbabilityProcessor());
+
   allocate_buffers();
 }
 
@@ -164,6 +169,7 @@ pcl::gpu::people::PeopleDetector::process ()
   int rows = cloud_device_.rows();      
   
   rdf_detector_->process(depth_device1_, cloud_host_, AREA_THRES);
+
   const RDFBodyPartsDetector::BlobMatrix& sorted = rdf_detector_->getBlobMatrix();
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -216,14 +222,104 @@ pcl::gpu::people::PeopleDetector::process ()
   }
 }
 
+void
+pcl::gpu::people::PeopleDetector::processProb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+{
+  allocate_buffers(cloud->height, cloud->width);
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  const float qnan = std::numeric_limits<float>::quiet_NaN();
+
+  for(size_t i = 0; i < cloud->points.size(); ++i)
+  {
+    cloud_host_.points[i].x = cloud->points[i].x;
+    cloud_host_.points[i].y = cloud->points[i].y;
+    cloud_host_.points[i].z = cloud->points[i].z;
+
+    bool valid = isFinite(cloud_host_.points[i]);
+
+    hue_host_.points[i] = !valid ? qnan : device::computeHue(cloud->points[i].rgba);
+    depth_host_.points[i] = !valid ? 0 : static_cast<unsigned short>(cloud_host_.points[i].z * 1000); //m -> mm
+  }
+  cloud_device_.upload(cloud_host_.points, cloud_host_.width);
+  hue_device_.upload(hue_host_.points, hue_host_.width);
+  depth_device1_.upload(depth_host_.points, depth_host_.width);
+
+  // uses cloud device, cloud host, depth device, hue device and other buffers
+  processProb();
+}
+
+void
+pcl::gpu::people::PeopleDetector::processProb ()
+{
+  int cols = cloud_device_.cols();
+  int rows = cloud_device_.rows();
+
+  rdf_detector_->processProb(depth_device1_);
+  // TODO: merge with prior probabilities at this line
+
+  // get labels
+  probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
+  // This executes the connected components
+  rdf_detector_->processSmooth(depth_device1_, cloud_host_, AREA_THRES);
+  // This creates the blobmatrix
+  rdf_detector_->processRelations();
+
+  const RDFBodyPartsDetector::BlobMatrix& sorted = rdf_detector_->getBlobMatrix();
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // if we found a neck display the tree, and continue with processing
+  if(sorted[Neck].size() != 0)
+  {
+    int c = 0;
+    label_skeleton::Tree2 t;
+    label_skeleton::buildTree(sorted, cloud_host_, Neck, c, t);
+
+    const std::vector<int>& seed = t.indices.indices;
+
+    std::fill(flowermat_host_.points.begin(), flowermat_host_.points.end(), 0);
+    {
+      //ScopeTime time("shs");
+      shs5(cloud_host_, seed, &flowermat_host_.points[0]);
+    }
+
+    fg_mask_.upload(flowermat_host_.points, cols);
+    device::Dilatation::invoke(fg_mask_, kernelRect5x5_, fg_mask_grown_);
+
+    device::prepareForeGroundDepth(depth_device1_, fg_mask_grown_, depth_device2_);
+
+    //// //////////////////////////////////////////////////////////////////////////////////////////////// //
+    //// The second label evaluation
+
+    rdf_detector_->process(depth_device2_, cloud_host_, AREA_THRES2);
+    const RDFBodyPartsDetector::BlobMatrix& sorted2 = rdf_detector_->getBlobMatrix();
+
+    //brief Test if the second tree is build up correctly
+    if(sorted2[Neck].size() != 0)
+    {
+      label_skeleton::Tree2 t2;
+      label_skeleton::buildTree(sorted2, cloud_host_, Neck, c, t2);
+      int par = 0;
+      for(int f = 0; f < NUM_PARTS; f++)
+      {
+        if(t2.parts_lid[f] == NO_CHILD)
+        {
+          cerr << "1;";
+          par++;
+        }
+        else
+           cerr << "0;";
+      }
+      static int counter = 0; // TODO move this logging to PeopleApp
+      cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << endl;
+    }
+    //output: Tree2 and PointCloud<XYZRGBL>
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 namespace 
 {
-
   void 
   getProjectedRadiusSearchBox (int rows, int cols, const pcl::device::Intr& intr, const pcl::PointXYZ& point, float squared_radius, 
                                   int &minX, int &maxX, int &minY, int &maxY)
@@ -307,7 +403,6 @@ pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<pcl::PointXYZ> &clo
   const float *hue = &hue_host_.points[0];
   double squared_radius = CLUST_TOL_SHS * CLUST_TOL_SHS;
 
-        
   std::vector< std::vector<int> > storage(100);
 
   // Process all points in the indices vector

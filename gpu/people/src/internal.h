@@ -51,27 +51,6 @@ namespace pcl
 {
   namespace device
   {
-    struct float8
-    {
-      float x, y, z, w, f1, f2, f3, f4;
-    };
-
-    struct prob_histogram
-    {
-        float probs[NUM_PARTS];
-    };
-    
-    typedef DeviceArray2D<float4>         Cloud;    
-    typedef DeviceArray2D<unsigned short> Depth;
-    typedef DeviceArray2D<unsigned char>  Labels;
-    typedef DeviceArray2D<char4>          MultiLabels;
-
-    typedef DeviceArray2D<uchar4>         Image;
-    typedef DeviceArray2D<float>          Hue;
-    typedef DeviceArray2D<unsigned char>  Mask;
-
-    typedef DeviceArray2D<prob_histogram> Probability;
-
     /** \brief The intrinsic camera calibration **/
     struct Intr
     {
@@ -124,6 +103,7 @@ namespace pcl
         static void invoke(const Mask& src, const Kernel& kernel, Mask& dst);
     };
 
+    /** \brief Struct that holds a single RDF tree in GPU **/
     struct CUDATree
     {
         typedef pcl::gpu::people::trees::Node Node;
@@ -138,26 +118,55 @@ namespace pcl
         CUDATree (int treeHeight_, const std::vector<Node>& nodes, const std::vector<Label>& leaves);
     };
 
-    /** Processor using multiple trees */
+    /** \brief Processor using multiple trees */
     class MultiTreeLiveProc
     {
-    public:
-        MultiTreeLiveProc(int def_rows = 480, int def_cols = 640) 
-            : multilmap(def_rows, def_cols) {}
+      public:
+        /** \brief Constructor with default values, allocates multilmap device memory **/
+        MultiTreeLiveProc(int def_rows = 480, int def_cols = 640) : multilmap (def_rows, def_cols) {}
+        /** \brief Empty destructor **/
         ~MultiTreeLiveProc() {}
 
-        void process(const Depth& dmap, Labels& lmap);
+        void
+        process (const Depth& dmap, Labels& lmap);
 
         /** \brief same as process, but runs the trick of declaring as background any neighbor that is more than FGThresh away.**/
-        void process(const Depth& dmap, Labels& lmap, int FGThresh);
-
-        void processProb(const Depth& dmap, Labels& lmap, Probability& prob);
+        void
+        process (const Depth& dmap, Labels& lmap, int FGThresh);
 
         /** \brief same as processProb, but runs the trick of declaring as background any neighbor that is more than FGThresh away.**/
-        void processProb(const Depth& dmap, Labels& lmap, Probability& prob, int FGThresh);
+        void
+        processProb (const Depth& dmap, Labels& lmap, LabelProbability& prob, int FGThresh);
 
         std::vector<CUDATree> trees;
         MultiLabels multilmap;
+    };
+
+    /** \brief Implementation Class to process probability histograms on GPU **/
+    class ProbabilityProc
+    {
+      public:
+        /** \brief Default constructor **/
+        ProbabilityProc()
+        {
+          std::cout << "ProbabilityProc constructor called" << std::endl;
+        }
+
+        /** \brief Default destructor **/
+        ~ProbabilityProc() {}
+
+        /** \brief This will merge the votes from the different trees into one final vote, including probabilistic's **/
+        void
+        CUDA_SelectLabel ( const Depth& depth, Labels& labels, LabelProbability& probabilities);
+
+        /** \brief This will combine two probabilities according their weight **/
+        void
+        CUDA_CombineProb ( const Depth& depth, LabelProbability& probIn1, float weight1,
+                      LabelProbability& probIn2, float weight2, LabelProbability& probOut);
+
+        /** \brief This will sum a probability multiplied with it's weight **/
+        void
+        CUDA_WeightedSumProb ( const Depth& depth, LabelProbability& probIn, float weight, LabelProbability& probOut);
     };
   }
 }

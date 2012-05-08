@@ -65,7 +65,12 @@ namespace pcl
     /**
      * \brief This combines two probabilities into a single according to their weight = p(d|{I,x})
      **/
-    __global__ void KernelCUDA_CombineProb (PtrStepSz<prob_histogram> probIn1, float weight1, PtrStepSz<prob_histogram> probIn2, float weight2, PtrStepSz<prob_histogram> probOut)
+    __global__ void
+    KernelCUDA_CombineProb (PtrStepSz<prob_histogram> probIn1,
+        float weight1,
+        PtrStepSz<prob_histogram> probIn2,
+        float weight2,
+        PtrStepSz<prob_histogram> probOut)
     {
       // map block and thread onto image coordinates
       int u = blockIdx.x * blockDim.x + threadIdx.x;
@@ -84,16 +89,17 @@ namespace pcl
     /**
      * \brief This sums a probabilities into a another according to its weight = p(d|{I,x})
      **/
-    __global__ void KernelCUDA_WeightedSumProb (PtrStepSz<prob_histogram> probIn,
-                                                float weight,
-                                                PtrStepSz<prob_histogram> probOut)
+    __global__ void
+    KernelCUDA_WeightedSumProb (PtrStepSz<prob_histogram> probIn,
+                                float weight,
+                                PtrStepSz<prob_histogram> probOut)
     {
       // map block and thread onto image coordinates
       int u = blockIdx.x * blockDim.x + threadIdx.x;
       int v = blockIdx.y * blockDim.y + threadIdx.y;
 
       if( u >= probIn.cols || v >= probIn.rows )
-          return;
+        return;
 
       for(int l = 0; l < NUM_LABELS; ++l)
       {
@@ -103,7 +109,8 @@ namespace pcl
     }
 
     /** \brief This merges the histogram of probabilities into a final label **/
-    __global__ void KernelCUDA_SelectLabel (const int numTrees, PtrStepSz<Label> labels, PtrStepSz<prob_histogram> Prob)
+    __global__ void
+    KernelCUDA_SelectLabel (PtrStepSz<Label> labels, PtrStepSz<prob_histogram> Prob)
     {
       // map block and thread onto image coordinates
       int u = blockIdx.x * blockDim.x + threadIdx.x;
@@ -132,6 +139,60 @@ namespace pcl
       labels.ptr(v)[u] = maxID;
     }
 
+    /** \brief This will merge the votes from the different trees into one final vote, including probabilistic's **/
+    void
+    ProbabilityProc::CUDA_SelectLabel ( const Depth& depth,
+                                   Labels& labels,
+                                   LabelProbability& probabilities)
+    {
+      std::cout << "CUDA_SelectLabel called" << std::endl;
+      labels.create(depth.rows(), depth.cols());
+      probabilities.create(depth.rows(), depth.cols());
+
+      dim3 block(32, 8);
+      dim3 grid(divUp(depth.cols(), block.x), divUp(depth.rows(), block.y) );
+
+      KernelCUDA_SelectLabel<<< grid, block >>>( labels, probabilities );
+
+      cudaSafeCall( cudaGetLastError() );
+      cudaSafeCall( cudaThreadSynchronize() );
+    }
+
+    /** \brief This will combine two probabilities according their weight **/
+    void
+    ProbabilityProc::CUDA_CombineProb ( const Depth& depth,
+                                   LabelProbability& probIn1,
+                                   float weight1,
+                                   LabelProbability& probIn2,
+                                   float weight2,
+                                   LabelProbability& probOut)
+    {
+      dim3 block(32, 8);
+      dim3 grid(divUp(depth.cols(), block.x), divUp(depth.rows(), block.y) );
+
+      // CUDA kernel call
+      KernelCUDA_CombineProb<<< grid, block >>>( probIn1, weight1, probIn2, weight2, probOut );
+
+      cudaSafeCall( cudaGetLastError() );
+      cudaSafeCall( cudaThreadSynchronize() );
+    }
+
+    /** \brief This will combine two probabilities according their weight **/
+    void
+    ProbabilityProc::CUDA_WeightedSumProb ( const Depth& depth,
+                                   LabelProbability& probIn,
+                                   float weight,
+                                   LabelProbability& probOut)
+    {
+      dim3 block(32, 8);
+      dim3 grid(divUp(depth.cols(), block.x), divUp(depth.rows(), block.y) );
+
+      // CUDA kernel call
+      KernelCUDA_WeightedSumProb<<< grid, block >>>( probIn, weight, probOut );
+
+      cudaSafeCall( cudaGetLastError() );
+      cudaSafeCall( cudaThreadSynchronize() );
+    }
   }
 }
 

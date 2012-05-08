@@ -84,6 +84,7 @@ namespace pcl
           Eigen::Vector4f   min;          // The min of the bounding box
           Eigen::Vector4f   max;          // The max of the bounding box
         };
+
         inline std::ostream& operator << (std::ostream& os, const Blob2& b)
         {
           os << " Blob2 id " << b.id << " label " << b.label << " lid " << b.lid << std::endl;
