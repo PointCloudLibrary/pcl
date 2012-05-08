@@ -52,6 +52,8 @@
 #include <vtkPointPicker.h>
 #include <boost/unordered/unordered_map.hpp>
 
+#include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const bool create_interactor) :
     rens_ (vtkSmartPointer<vtkRendererCollection>::New ()),
@@ -80,6 +82,9 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
   // Set the window size as 1/2 of the screen size
   win_->SetSize (scr_size[0] / 2, scr_size[1] / 2);
 
+  // By default, don't use vertex buffer objects
+  use_vbos_ = false;
+
   // Add all renderers to the window
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
@@ -91,6 +96,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
   style_->setRendererCollection (rens_);
   style_->setCloudActorMap (cloud_actor_map_);
   style_->UseTimersOn ();
+  style_->setUseVbos(use_vbos_);
 
   if (create_interactor)
     createInteractor ();
@@ -136,6 +142,9 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   // Set the window size as 1/2 of the screen size or the user given parameter
   win_->SetSize (int (camera_.window_size[0]), int (camera_.window_size[1]));
   win_->SetPosition (int (camera_.window_pos[0]), int (camera_.window_pos[1]));
+
+  // By default, don't use vertex buffer objects
+  use_vbos_ = false;
 
   // Add all renderers to the window
   rens_->InitTraversal ();
@@ -783,34 +792,70 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
   if (!actor)
     actor = vtkSmartPointer<vtkLODActor>::New ();
 
-  vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
-  mapper->SetInput (data);
-
-  if (use_scalars)
+  if (use_vbos_)
   {
-    vtkSmartPointer<vtkDataArray> scalars = data->GetPointData ()->GetScalars ();
-    double minmax[2];
-    if (scalars)
+    vtkSmartPointer<vtkVertexBufferObjectMapper> mapper = vtkSmartPointer<vtkVertexBufferObjectMapper>::New ();
+
+    mapper->SetInput (data);
+
+    if (use_scalars)
     {
-      scalars->GetRange (minmax);
-      mapper->SetScalarRange (minmax);
+      vtkSmartPointer<vtkDataArray> scalars = data->GetPointData ()->GetScalars ();
+      double minmax[2];
+      if (scalars)
+      {
+        scalars->GetRange (minmax);
+        mapper->SetScalarRange (minmax);
 
-      mapper->SetScalarModeToUsePointData ();
-      mapper->InterpolateScalarsBeforeMappingOn ();
-      mapper->ScalarVisibilityOn ();
+        mapper->SetScalarModeToUsePointData ();
+        mapper->InterpolateScalarsBeforeMappingOn ();
+        mapper->ScalarVisibilityOn ();
+      }
     }
+
+    actor->SetNumberOfCloudPoints (int (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
+    actor->GetProperty ()->SetInterpolationToFlat ();
+
+    /// FIXME disabling backface culling due to known VTK bug: vtkTextActors are not
+    /// shown when there is a vtkActor with backface culling on present in the scene
+    /// Please see VTK bug tracker for more details: http://www.vtk.org/Bug/view.php?id=12588
+    // actor->GetProperty ()->BackfaceCullingOn ();
+
+    actor->SetMapper (mapper);
   }
-  mapper->ImmediateModeRenderingOff ();
+  else
+  {
+    vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
+    mapper->SetInput (data);
 
-  actor->SetNumberOfCloudPoints (int (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
-  actor->GetProperty ()->SetInterpolationToFlat ();
+    if (use_scalars)
+    {
+      vtkSmartPointer<vtkDataArray> scalars = data->GetPointData ()->GetScalars ();
+      double minmax[2];
+      if (scalars)
+      {
+        scalars->GetRange (minmax);
+        mapper->SetScalarRange (minmax);
 
-  /// FIXME disabling backface culling due to known VTK bug: vtkTextActors are not
-  /// shown when there is a vtkActor with backface culling on present in the scene
-  /// Please see VTK bug tracker for more details: http://www.vtk.org/Bug/view.php?id=12588
-  // actor->GetProperty ()->BackfaceCullingOn ();
+        mapper->SetScalarModeToUsePointData ();
+        mapper->InterpolateScalarsBeforeMappingOn ();
+        mapper->ScalarVisibilityOn ();
+      }
+    }
+    mapper->ImmediateModeRenderingOff ();
 
-  actor->SetMapper (mapper);
+    actor->SetNumberOfCloudPoints (int (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
+    actor->GetProperty ()->SetInterpolationToFlat ();
+
+    /// FIXME disabling backface culling due to known VTK bug: vtkTextActors are not
+    /// shown when there is a vtkActor with backface culling on present in the scene
+    /// Please see VTK bug tracker for more details: http://www.vtk.org/Bug/view.php?id=12588
+    // actor->GetProperty ()->BackfaceCullingOn ();
+
+    actor->SetMapper (mapper);
+  }
+
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1922,16 +1967,32 @@ pcl::visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &i
   data->GetPointData ()->SetScalars (scalars);
   data->Update ();
   // Modify the mapper
-  vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ());
-  mapper->SetScalarRange (minmax);
-  mapper->SetScalarModeToUsePointData ();
-  mapper->SetInput (data);
-  // Modify the actor
-  am_it->second.actor->SetMapper (mapper);
-  am_it->second.actor->Modified ();
-  am_it->second.color_handler_index_ = index;
+  if (use_vbos_)
+  {
+    vtkVertexBufferObjectMapper* mapper = static_cast<vtkVertexBufferObjectMapper*>(am_it->second.actor->GetMapper ());
+    mapper->SetScalarRange (minmax);
+    mapper->SetScalarModeToUsePointData ();
+    mapper->SetInput (data);
+    // Modify the actor
+    am_it->second.actor->SetMapper (mapper);
+    am_it->second.actor->Modified ();
+    am_it->second.color_handler_index_ = index;
 
-  //style_->setCloudActorMap (cloud_actor_map_);
+    //style_->setCloudActorMap (cloud_actor_map_);
+  }
+  else
+  {
+    vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ());
+    mapper->SetScalarRange (minmax);
+    mapper->SetScalarModeToUsePointData ();
+    mapper->SetInput (data);
+    // Modify the actor
+    am_it->second.actor->SetMapper (mapper);
+    am_it->second.actor->Modified ();
+    am_it->second.color_handler_index_ = index;
+
+    //style_->setCloudActorMap (cloud_actor_map_);
+  }
 
   return (true);
 }

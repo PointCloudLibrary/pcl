@@ -1384,6 +1384,17 @@ namespace pcl
           win_->SetSize (xw, yw);
         }
 
+        /** \brief Set the window size in screen coordinates.
+          * \param[in] xw window size in horizontal (pixels)
+          * \param[in] yw window size in vertical (pixels)
+          */
+        void
+        setUseVbos (bool use_vbos)
+        {
+          use_vbos_ = use_vbos;
+          style_->setUseVbos(use_vbos_);
+        }
+
         /** \brief Create the internal Interactor object. */
         void
         createInteractor ();
@@ -1489,6 +1500,9 @@ namespace pcl
 
         /** \brief Boolean that holds whether or not the camera parameters were manually initialized*/
         bool camera_set_;
+
+        /** \brief Boolean that holds whether or not to use the vtkVertexBufferObjectMapper*/
+        bool use_vbos_;
 
         /** \brief Internal method. Removes a vtk actor from the screen.
           * \param[in] actor a pointer to the vtk actor object

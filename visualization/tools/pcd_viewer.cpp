@@ -111,6 +111,7 @@ printHelp (int, char **argv)
   print_info ("\n");
   print_info ("                     -pc 0/X                  = disable/enable the display of every Xth point's principal curvatures as lines (default "); print_value ("disabled"); print_info (")\n");
   print_info ("                     -pc_scale X              = resize the principal curvatures vectors size to X (default "); print_value ("0.02"); print_info (")\n");
+  print_info ("                     -use_vbos                = use OpenGL vertex buffer objects\n");
   print_info ("\n");
 
   print_info ("\n(Note: for multiple .pcd files, provide multiple -{fc,ps,opaque} parameters; they will be automatically assigned to the right file)\n");
@@ -197,6 +198,8 @@ main (int argc, char** argv)
   pcl::console::parse_argument (argc, argv, "-pc", pc);
   double pc_scale = PC_SCALE;
   pcl::console::parse_argument (argc, argv, "-pc_scale", pc_scale);
+
+  bool use_vbos = pcl::console::find_switch (argc, argv, "-use_vbos");
 
   // Parse the command line arguments for .pcd files
   std::vector<int> p_file_indices   = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
@@ -368,6 +371,9 @@ main (int argc, char** argv)
     }
     print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", (int)cloud->width * cloud->height); print_info (" points]\n");
     print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (*cloud).c_str ());
+
+    // Set whether or not we should be using the vtkVertexBufferObjectMapper
+    p->setUseVbos(use_vbos);
 
     // If no color was given, get random colors
     if (fcolorparam)

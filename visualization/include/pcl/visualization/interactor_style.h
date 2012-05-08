@@ -131,6 +131,12 @@ namespace pcl
         void 
         setRendererCollection (vtkSmartPointer<vtkRendererCollection> &rens) { rens_ = rens; }
 
+        /** \brief Pass a pointer to the actor map
+          * \param[in] actors the actor map that will be used with this style
+          */
+        inline void
+        setUseVbos (const bool use_vbos) { use_vbos_ = use_vbos; }
+
         /** \brief Register a callback function for mouse events
           * \param[in] cb a boost function that will be registered as a callback for a mouse event
           * \return a connection object that allows to disconnect the callback function.
@@ -189,6 +195,9 @@ namespace pcl
 
         /** \brief The maximum resizeable window width/height. */
         int max_win_height_, max_win_width_;
+
+        /** \brief The maximum resizeable window width/height. */
+        bool use_vbos_;
 
         /** \brief Set to true if the grid actor is enabled. */
         bool grid_enabled_;

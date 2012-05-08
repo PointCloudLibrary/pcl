@@ -53,6 +53,8 @@
 #include <vtkInteractorObserver.h>
 #include <vtkCamera.h>
 
+#include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizerInteractorStyle::Initialize ()
@@ -320,10 +322,20 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         data->SetPoints (points);
         data->SetVerts (vertices);
         // Modify the mapper
-        vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act->actor->GetMapper ());
-        mapper->SetInput (data);
-        // Modify the actor
-        act->actor->SetMapper (mapper);
+        if (use_vbos_)
+        {
+          vtkVertexBufferObjectMapper* mapper = static_cast<vtkVertexBufferObjectMapper*>(act->actor->GetMapper ());
+          mapper->SetInput (data);
+          // Modify the actor
+          act->actor->SetMapper (mapper);
+        }
+        else
+        {
+          vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act->actor->GetMapper ());
+          mapper->SetInput (data);
+          // Modify the actor
+          act->actor->SetMapper (mapper);
+        }
         act->actor->Modified ();
       }
     }
@@ -351,12 +363,24 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         data->GetPointData ()->SetScalars (scalars);
         data->Update ();
         // Modify the mapper
-        vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act->actor->GetMapper ());
-        mapper->SetScalarRange (minmax);
-        mapper->SetScalarModeToUsePointData ();
-        mapper->SetInput (data);
-        // Modify the actor
-        act->actor->SetMapper (mapper);
+        if (use_vbos_)
+        {
+          vtkVertexBufferObjectMapper* mapper = static_cast<vtkVertexBufferObjectMapper*>(act->actor->GetMapper ());
+          mapper->SetScalarRange (minmax);
+          mapper->SetScalarModeToUsePointData ();
+          mapper->SetInput (data);
+          // Modify the actor
+          act->actor->SetMapper (mapper);
+        }
+        else
+        {
+          vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act->actor->GetMapper ());
+          mapper->SetScalarRange (minmax);
+          mapper->SetScalarModeToUsePointData ();
+          mapper->SetInput (data);
+          // Modify the actor
+          act->actor->SetMapper (mapper);
+        }
         act->actor->Modified ();
       }
     }
