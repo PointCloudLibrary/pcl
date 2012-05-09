@@ -278,7 +278,7 @@ namespace pcl
 
       // we modified the octree structure -> clean-up/tree-reset might be required
       resetTree_ = false;
-      treeDirtyFlag_ = true;
+      treeDirtyFlag_ = false;
 
       objectCount_ = this->leafCount_;
     }
@@ -307,7 +307,7 @@ namespace pcl
 
       // we modified the octree structure -> clean-up/tree-reset might be required
       resetTree_ = false;
-      treeDirtyFlag_ = true;
+      treeDirtyFlag_ = false;
 
       objectCount_ = static_cast<unsigned int> (dataVector_arg.size ());
     }
@@ -331,7 +331,7 @@ namespace pcl
 
       // we modified the octree structure -> clean-up/tree-reset might be required
       resetTree_ = false;
-      treeDirtyFlag_ = true;
+      treeDirtyFlag_ = false;
 
       objectCount_ = static_cast<unsigned int> (dataVector_arg.size ());
     }
@@ -389,10 +389,18 @@ namespace pcl
           if (branchHasChild (*branch_arg, !bufferSelector_, childIdx))
           {
 
-            // take child branch from previous buffer
-            childBranch = static_cast<OctreeBranch*> (getBranchChild (*branch_arg, !bufferSelector_, childIdx));
-            setBranchChild (*branch_arg, bufferSelector_, childIdx, static_cast<OctreeNode*> (childBranch));
+            OctreeNode* childNode = getBranchChild (*branch_arg, !bufferSelector_, childIdx);
 
+            if (childNode->getNodeType()==BRANCH_NODE) {
+              childBranch = static_cast<OctreeBranch*> (childNode);
+              setBranchChild (*branch_arg, bufferSelector_, childIdx, childNode);
+            } else {
+              // depth has changed.. child in preceeding buffer is a leaf node.
+              deleteBranchChild (*branch_arg, !bufferSelector_, childIdx);
+              createBranchChild (*branch_arg, childIdx, childBranch);
+            }
+
+            // take child branch from previous buffer
             doNodeReset = true; // reset the branch pointer array of stolen child node
 
           }
@@ -422,10 +430,17 @@ namespace pcl
           // check if we can take copy a reference from previous buffer
           if (branchHasChild (*branch_arg, !bufferSelector_, childIdx))
           {
-            // take child leaf node from previous buffer
-            childLeaf = static_cast<OctreeLeaf*> (getBranchChild (*branch_arg, !bufferSelector_, childIdx));
-            setBranchChild (*branch_arg, bufferSelector_, childIdx, static_cast<OctreeNode*> (childLeaf));
-            childLeaf->reset ();
+
+            OctreeNode* childNode = getBranchChild (*branch_arg, !bufferSelector_, childIdx);
+            if (childNode->getNodeType()==LEAF_NODE) {
+              childLeaf = static_cast<OctreeLeaf*> (childNode);
+              setBranchChild (*branch_arg, bufferSelector_, childIdx, childNode);
+              childLeaf->reset ();
+            } else {
+              // depth has changed.. child in preceeding buffer is a leaf node.
+              deleteBranchChild (*branch_arg, !bufferSelector_, childIdx);
+              createLeafChild (*branch_arg, childIdx, childLeaf);
+            }
             leafCount_++;  
           }
           else
@@ -898,10 +913,20 @@ namespace pcl
               // check if we find a branch node reference in previous buffer
               if (branchHasChild (*branch_arg, !bufferSelector_, childIdx))
               {
+                OctreeNode* childNode = getBranchChild (*branch_arg, !bufferSelector_, childIdx);
+
+                if (childNode->getNodeType()==BRANCH_NODE) {
+                  childBranch = static_cast<OctreeBranch*> (childNode);
+                  setBranchChild (*branch_arg, bufferSelector_, childIdx, childNode);
+                } else {
+                  // depth has changed.. child in preceeding buffer is a leaf node.
+                  deleteBranchChild (*branch_arg, !bufferSelector_, childIdx);
+                  createBranchChild (*branch_arg, childIdx, childBranch);
+                }
+
                 // take child branch from previous buffer
-                childBranch = static_cast<OctreeBranch*> (getBranchChild (*branch_arg, !bufferSelector_, childIdx));
-                setBranchChild (*branch_arg, bufferSelector_, childIdx, static_cast<OctreeNode*> (childBranch));
-                doNodeReset = true;
+                doNodeReset = true; // reset the branch pointer array of stolen child node
+
               }
               else
               {
@@ -928,12 +953,16 @@ namespace pcl
             // check if we can take copy a reference from previous buffer
             if (branchHasChild (*branch_arg, !bufferSelector_, childIdx))
             {
-              // take child leaf node from previous buffer
-              childLeaf = static_cast<OctreeLeaf*> (getBranchChild (*branch_arg, !bufferSelector_, childIdx));
-              setBranchChild (*branch_arg, bufferSelector_, childIdx, static_cast<OctreeNode*> (childLeaf));
-              
-              // reset child leaf
-              childLeaf->reset ();
+              OctreeNode* childNode = getBranchChild (*branch_arg, !bufferSelector_, childIdx);
+              if (childNode->getNodeType()==LEAF_NODE) {
+                childLeaf = static_cast<OctreeLeaf*> (childNode);
+                setBranchChild (*branch_arg, bufferSelector_, childIdx, childNode);
+                childLeaf->reset ();
+              } else {
+                // depth has changed.. child in preceeding buffer is a leaf node.
+                deleteBranchChild (*branch_arg, !bufferSelector_, childIdx);
+                createLeafChild (*branch_arg, childIdx, childLeaf);
+              }
             }
             else
             {
@@ -1027,10 +1056,19 @@ namespace pcl
               
               if (branchHasChild (*branch_arg, !bufferSelector_, childIdx))
               {
+                OctreeNode* childNode = getBranchChild (*branch_arg, !bufferSelector_, childIdx);
+
+                if (childNode->getNodeType()==BRANCH_NODE) {
+                  childBranch = static_cast<OctreeBranch*> (childNode);
+                  setBranchChild (*branch_arg, bufferSelector_, childIdx, childNode);
+                } else {
+                  // depth has changed.. child in preceeding buffer is a leaf node.
+                  deleteBranchChild (*branch_arg, !bufferSelector_, childIdx);
+                  createBranchChild (*branch_arg, childIdx, childBranch);
+                }
+
                 // take child branch from previous buffer
-                childBranch = static_cast<OctreeBranch*> (getBranchChild (*branch_arg, !bufferSelector_, childIdx));
-                setBranchChild (*branch_arg, bufferSelector_, childIdx, static_cast<OctreeNode*> (childBranch));
-                doNodeReset = true;
+                doNodeReset = true; // reset the branch pointer array of stolen child node
               }
               else
               {
@@ -1060,11 +1098,16 @@ namespace pcl
             if (branchHasChild (*branch_arg, !bufferSelector_, childIdx))
             {
               // take child leaf node from previous buffer
-              childLeaf = static_cast<OctreeLeaf*> (getBranchChild (*branch_arg, !bufferSelector_, childIdx));
-              setBranchChild (*branch_arg, bufferSelector_, childIdx, static_cast<OctreeNode*> (childLeaf));
-              
-              // reset child leaf
-              childLeaf->reset ();
+              OctreeNode* childNode = getBranchChild (*branch_arg, !bufferSelector_, childIdx);
+              if (childNode->getNodeType()==LEAF_NODE) {
+                childLeaf = static_cast<OctreeLeaf*> (childNode);
+                setBranchChild (*branch_arg, bufferSelector_, childIdx, childNode);
+                childLeaf->reset ();
+              } else {
+                // depth has changed.. child in preceeding buffer is a leaf node.
+                deleteBranchChild (*branch_arg, !bufferSelector_, childIdx);
+                createLeafChild (*branch_arg, childIdx, childLeaf);
+              }
             }
             else
             {
@@ -1155,10 +1198,19 @@ namespace pcl
               // check if we find a branch node reference in previous buffer
               if (branchHasChild (*branch_arg, !bufferSelector_, childIdx))
               {
+                OctreeNode* childNode = getBranchChild (*branch_arg, !bufferSelector_, childIdx);
+
+                if (childNode->getNodeType()==BRANCH_NODE) {
+                  childBranch = static_cast<OctreeBranch*> (childNode);
+                  setBranchChild (*branch_arg, bufferSelector_, childIdx, childNode);
+                } else {
+                  // depth has changed.. child in preceeding buffer is a leaf node.
+                  deleteBranchChild (*branch_arg, !bufferSelector_, childIdx);
+                  createBranchChild (*branch_arg, childIdx, childBranch);
+                }
+
                 // take child branch from previous buffer
-                childBranch = static_cast<OctreeBranch*> (getBranchChild (*branch_arg, !bufferSelector_, childIdx));
-                setBranchChild (*branch_arg, bufferSelector_, childIdx, static_cast<OctreeNode*> (childBranch));
-                doNodeReset = true;       
+                doNodeReset = true; // reset the branch pointer array of stolen child node
               }
               else
               {
@@ -1185,11 +1237,16 @@ namespace pcl
             if (branchHasChild (*branch_arg, !bufferSelector_, childIdx))
             {
               // take child leaf node from previous buffer
-              childLeaf = static_cast<OctreeLeaf*> (getBranchChild (*branch_arg, !bufferSelector_, childIdx));
-              setBranchChild (*branch_arg, bufferSelector_, childIdx, static_cast<OctreeNode*> (childLeaf));
-              
-              // reset child leaf
-              childLeaf->reset ();
+              OctreeNode* childNode = getBranchChild (*branch_arg, !bufferSelector_, childIdx);
+              if (childNode->getNodeType()==LEAF_NODE) {
+                childLeaf = static_cast<OctreeLeaf*> (childNode);
+                setBranchChild (*branch_arg, bufferSelector_, childIdx, childNode);
+                childLeaf->reset ();
+              } else {
+                // depth has changed.. child in preceeding buffer is a leaf node.
+                deleteBranchChild (*branch_arg, !bufferSelector_, childIdx);
+                createLeafChild (*branch_arg, childIdx, childLeaf);
+              }
             }
             else
             {
