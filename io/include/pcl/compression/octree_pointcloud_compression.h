@@ -197,6 +197,12 @@ namespace pcl
         void
         readFrameHeader (std::istream& compressedTreeDataIn_arg);
 
+        /** \brief Synchronize to frame header
+          * \param compressedTreeDataIn_arg: binary input stream
+          */
+        void
+        syncToHeader (std::istream& compressedTreeDataIn_arg);
+
         /** \brief Apply entropy encoding to encoded information and output to binary stream
           * \param compressedTreeDataOut_arg: binary output stream
           */
