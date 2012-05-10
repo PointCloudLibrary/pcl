@@ -22,13 +22,10 @@
 #ifndef __vtkVertexBufferObjectMapper_h
 #define __vtkVertexBufferObjectMapper_h
 
-#include <vtkMapper.h>
-#include <vtkSmartPointer.h>
+#include "vtkMapper.h"
+#include "vtkSmartPointer.h"
 
-//class vtkCellArray;
-//class vtkOpenGLRenderer;
 class vtkOpenGLRenderWindow;
-//class vtkPoints;
 class vtkPolyData;
 class vtkRenderer;
 class vtkRenderWindow;

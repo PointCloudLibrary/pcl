@@ -29,6 +29,7 @@
 
 #include <vector>
 
+#include "vtkObject.h"
 #include "vtkWeakPointer.h"
 
 #include "vtkgl.h" // Needed for gl data types exposed in API
