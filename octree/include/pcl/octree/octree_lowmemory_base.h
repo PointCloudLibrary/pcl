@@ -259,13 +259,13 @@ namespace pcl
 
           public:
             /** \brief Constructor for initializing child node pointer array. */
-            OctreeBranch () : occupancyByte_ (0), subNodes_ ()
+            OctreeBranch () : OctreeNode(), occupancyByte_ (0), subNodes_ ()
             {
               this->reset ();
             }
 
             /** \brief Copy constructor. */
-            OctreeBranch (const OctreeBranch &source) : occupancyByte_ (0), subNodes_ ()
+            OctreeBranch (const OctreeBranch &source) : OctreeNode(), occupancyByte_ (0), subNodes_ ()
             {
               *this = source;
             }

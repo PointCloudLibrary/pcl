@@ -217,7 +217,8 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getApproxIntersectedVoxel
   const int nsteps = std::max (1, static_cast<int> (norm / step_size));
 
   OctreeKey prev_key;
-  prev_key.x = prev_key.y = prev_key.z = -1;
+
+  bool bkeyDefined = false;
 
   // Walk along the line segment with small steps.
   for (int i = 0; i < nsteps; ++i)
@@ -233,10 +234,11 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getApproxIntersectedVoxel
     this->genOctreeKeyforPoint (octree_p, key);
 
     // Not a new key, still the same voxel.
-    if (key == prev_key)
+    if ((key == prev_key) && (bkeyDefined) )
       continue;
 
     prev_key = key;
+    bkeyDefined = true;
 
     PointT center;
     genLeafNodeCenterFromOctreeKey (key, center);

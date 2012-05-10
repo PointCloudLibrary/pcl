@@ -341,13 +341,13 @@ namespace pcl
         typedef OctreeNode *octree_node_ptr;
 
         /** \brief Constructor for initializing child node pointer array. */
-        OctreeBranch ()
+        OctreeBranch () : OctreeNode()
         {
           memset (this->subNodes_, 0, sizeof (this->subNodes_));
         }
         
         /** \brief Copy constructor */
-        OctreeBranch (const OctreeBranch& source)
+        OctreeBranch (const OctreeBranch& source) : OctreeNode()
         {
           memset (subNodes_, 0, sizeof (subNodes_));
           // iterate over the 8 child nodes
