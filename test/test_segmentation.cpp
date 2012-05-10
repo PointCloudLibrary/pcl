@@ -48,7 +48,8 @@
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
 #include <pcl/segmentation/segment_differences.h>
 #include <pcl/segmentation/region_growing.h>
-//#include <pcl/segmentation/region_growing_rgb.h>
+#include <pcl/segmentation/region_growing_rgb.h>
+#include <pcl/segmentation/min_cut_segmentation.h>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -63,7 +64,7 @@ pcl::PointCloud<pcl::Normal>::Ptr normals_;
 pcl::PointCloud<pcl::Normal>::Ptr another_normals_;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-/*TEST (RegionGrowingRGBTest, Segment)
+TEST (RegionGrowingRGBTest, Segment)
 {
   pcl::RegionGrowingRGB<pcl::PointXYZRGB> rg;
 
@@ -79,7 +80,7 @@ pcl::PointCloud<pcl::Normal>::Ptr another_normals_;
   segments = rg.getSegments ();
 
   EXPECT_NE(0, segments.size());
-}*/
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (RegionGrowingTest, Segment)
@@ -214,6 +215,145 @@ TEST (RegionGrowingTest, SegmentFromPoint)
   EXPECT_NE(0, segment.size());
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (MinCutSegmentationTest, Segment)
+{
+  pcl::MinCutSegmentation<pcl::PointXYZ> mcSeg;
+
+  pcl::PointXYZ object_center;
+  double radius = 0.0;
+  double sigma = 0.0;
+  double source_weight = 0.0;
+  unsigned int neighbor_number = 0;
+
+  object_center.x = -36.01;
+  object_center.y = -64.73;
+  object_center.z = -6.18;
+  radius = 3.8003856;
+  sigma = 0.25;
+  source_weight = 0.8;
+  neighbor_number = 14;
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr foreground_points(new pcl::PointCloud<pcl::PointXYZ> ());
+  foreground_points->points.push_back (object_center);
+
+  mcSeg.setForegroundPoints (foreground_points);
+  mcSeg.setInputCloud (another_cloud_);
+  mcSeg.setRadius (radius);
+  mcSeg.setSigma (sigma);
+  mcSeg.setSourceWeight (source_weight);
+  mcSeg.setNeighbourNumber (neighbor_number);
+
+  bool success = mcSeg.segmentPoints ();
+  EXPECT_EQ (true, success);
+
+  std::vector<int> labels = mcSeg.getSegments ();
+  int number_of_points = static_cast<int> (another_cloud_->points.size ());
+  int number_of_labels = static_cast<int> (labels.size ());
+  EXPECT_EQ (number_of_points, number_of_labels);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (MinCutSegmentationTest, SegmentWithoutForegroundPoints)
+{
+  pcl::MinCutSegmentation<pcl::PointXYZ> mcSeg;
+  mcSeg.setInputCloud (another_cloud_);
+  mcSeg.setRadius (3.8003856);
+
+  bool success = mcSeg.segmentPoints ();
+  EXPECT_EQ (false, success);
+
+  std::vector<int> labels = mcSeg.getSegments ();
+  int number_of_labels = static_cast<int> (labels.size ());
+  EXPECT_EQ (0, number_of_labels);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (MinCutSegmentationTest, SegmentWithoutCloud)
+{
+  pcl::MinCutSegmentation<pcl::PointXYZ> mcSeg;
+
+  bool success = mcSeg.segmentPoints ();
+  EXPECT_EQ (false, success);
+
+  std::vector<int> labels = mcSeg.getSegments ();
+  int number_of_labels = static_cast<int> (labels.size ());
+  EXPECT_EQ (0, number_of_labels);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (MinCutSegmentationTest, SegmentEmptyCloud)
+{
+  pcl::PointCloud<pcl::PointXYZ>::Ptr empty_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::MinCutSegmentation<pcl::PointXYZ> mcSeg;
+  mcSeg.setInputCloud (empty_cloud);
+
+  bool success = mcSeg.segmentPoints ();
+  EXPECT_EQ (false, success);
+
+  std::vector<int> labels = mcSeg.getSegments ();
+  int number_of_labels = static_cast<int> (labels.size ());
+  EXPECT_EQ (0, number_of_labels);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (MinCutSegmentationTest, SegmentWithWrongParameters)
+{
+  pcl::MinCutSegmentation<pcl::PointXYZ> mcSeg;
+  mcSeg.setInputCloud (another_cloud_);
+  pcl::PointXYZ object_center;
+  object_center.x = -36.01;
+  object_center.y = -64.73;
+  object_center.z = -6.18;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr foreground_points(new pcl::PointCloud<pcl::PointXYZ> ());
+  foreground_points->points.push_back (object_center);
+  mcSeg.setForegroundPoints (foreground_points);
+
+  unsigned int prev_neighbor_number = mcSeg.getNeighbourNumber ();
+  EXPECT_LT (0, prev_neighbor_number);
+
+  mcSeg.setNeighbourNumber (0);
+  unsigned int curr_neighbor_number = mcSeg.getNeighbourNumber ();
+  EXPECT_EQ (prev_neighbor_number, curr_neighbor_number);
+
+  double prev_radius = mcSeg.getRadius ();
+  EXPECT_LT (0.0, prev_radius);
+
+  mcSeg.setRadius (0.0);
+  double curr_radius = mcSeg.getRadius ();
+  EXPECT_EQ (prev_radius, curr_radius);
+
+  mcSeg.setRadius (-10.0);
+  curr_radius = mcSeg.getRadius ();
+  EXPECT_EQ (prev_radius, curr_radius);
+
+  double prev_sigma = mcSeg.getSigma ();
+  EXPECT_LT (0.0, prev_sigma);
+
+  mcSeg.setSigma (0.0);
+  double curr_sigma = mcSeg.getSigma ();
+  EXPECT_EQ (prev_sigma, curr_sigma);
+
+  mcSeg.setSigma (-10.0);
+  curr_sigma = mcSeg.getSigma ();
+  EXPECT_EQ (prev_sigma, curr_sigma);
+
+  double prev_source_weight = mcSeg.getSourceWeight ();
+  EXPECT_LT (0.0, prev_source_weight);
+
+  mcSeg.setSourceWeight (0.0);
+  double curr_source_weight = mcSeg.getSourceWeight ();
+  EXPECT_EQ (prev_source_weight, curr_source_weight);
+
+  mcSeg.setSourceWeight (-10.0);
+  curr_source_weight = mcSeg.getSourceWeight ();
+  EXPECT_EQ (prev_source_weight, curr_source_weight);
+
+  mcSeg.setRadius (3.8003856);
+  bool success = mcSeg.segmentPoints ();
+  EXPECT_EQ (true, success);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 TEST (SegmentDifferences, Segmentation)
 {
@@ -271,9 +411,9 @@ main (int argc, char** argv)
 {
   if (argc < 4)
   {
-    std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to the test." << std::endl;
-    std::cerr << "The test needs three files. Please, pass three paths of different pcd files." << std::endl;
-    std::cerr << "The third cloud must be the colored cloud(points must r, g and b components). For example 'colored_cloud.pcd'" << std::endl;
+    std::cerr << "This test requires three point clouds. The first one must be 'bun0.pcd'." << std::endl;
+    std::cerr << "The second must be 'car6.pcd'. The last one must be 'colored_cloud.pcd'." << std::endl;
+    std::cerr << "Please download and pass them in the specified order(including the path to them)." << std::endl;
     return (-1);
   }
 
@@ -287,7 +427,7 @@ main (int argc, char** argv)
   }
   if (pcl::io::loadPCDFile (argv[2], another_cloud) < 0)
   {
-    std::cerr << "Failed to read test file. Please download `bun01.pcd` and pass its path to the test." << std::endl;
+    std::cerr << "Failed to read test file. Please download `car6.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
   if (pcl::io::loadPCDFile (argv[3], colored_cloud_1) < 0)
