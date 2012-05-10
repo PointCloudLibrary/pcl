@@ -40,7 +40,7 @@
 
 pcl::gpu::people::ProbabilityProcessor::ProbabilityProcessor()
 {
-  std::cout << "PP Constructor called" << std::endl;
+  std::cout << "(I) : ProbabilityProcessor Constructor called" << std::endl;
   impl_.reset (new device::ProbabilityProc());
 }
 
@@ -48,7 +48,7 @@ pcl::gpu::people::ProbabilityProcessor::ProbabilityProcessor()
 void
 pcl::gpu::people::ProbabilityProcessor::SelectLabel (const pcl::device::Depth& depth, pcl::device::Labels& labels, pcl::device::LabelProbability& probabilities)
 {
-  std::cout << "PP SelectLabel called" << std::endl;
+  std::cout << "(I) : ProbabilityProcessor SelectLabel called" << std::endl;
   impl_->CUDA_SelectLabel(depth, labels, probabilities);
 }
 

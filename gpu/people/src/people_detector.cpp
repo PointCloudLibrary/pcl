@@ -66,6 +66,7 @@ pcl::gpu::people::PeopleDetector::PeopleDetector()
   // This cause only penalty for first frame ( one reallocation of each buffer )
 
   //probability_processor_ = ProbabilityProcessor::Ptr pp (new ProbabilityProcessor());
+  std::cout << "(I) : PeopleDector Constructor called" << std::endl;
   probability_processor_ = ProbabilityProcessor::Ptr (new ProbabilityProcessor());
 
   allocate_buffers();
@@ -254,11 +255,11 @@ pcl::gpu::people::PeopleDetector::processProb ()
   int cols = cloud_device_.cols();
   int rows = cloud_device_.rows();
 
+  std::cout << "(I) : PeopleDetector::processProb() called" << std::endl;
   rdf_detector_->processProb(depth_device1_);
   // TODO: merge with prior probabilities at this line
-
   // get labels
-  probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
+  //probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
   // This executes the connected components
   rdf_detector_->processSmooth(depth_device1_, cloud_host_, AREA_THRES);
   // This creates the blobmatrix
@@ -290,7 +291,15 @@ pcl::gpu::people::PeopleDetector::processProb ()
     //// //////////////////////////////////////////////////////////////////////////////////////////////// //
     //// The second label evaluation
 
-    rdf_detector_->process(depth_device2_, cloud_host_, AREA_THRES2);
+    rdf_detector_->processProb(depth_device2_);
+    // TODO: merge with prior probabilities at this line
+    // get labels
+    //probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
+    // This executes the connected components
+    rdf_detector_->processSmooth(depth_device2_, cloud_host_, AREA_THRES2);
+    // This creates the blobmatrix
+    rdf_detector_->processRelations();
+
     const RDFBodyPartsDetector::BlobMatrix& sorted2 = rdf_detector_->getBlobMatrix();
 
     //brief Test if the second tree is build up correctly

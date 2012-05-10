@@ -165,7 +165,8 @@ namespace pcl
                                  const Label* leaves_device,
                                  const Depth& depth,
                                  MultiLabels& multilabel )
-    {                  
+    {
+      std::cout << "(I) : CUDA_runMultiTreePass() called" << std::endl;
       depthTex.addressMode[0] = cudaAddressModeClamp;
       TextureBinder binder(depth, depthTex);                  
 
@@ -278,18 +279,50 @@ namespace pcl
 
       char4 pixlabels = tex2D (multilabelTex, u ,v);
       char* bob = (char*)&pixlabels; //horrible but char4's have xyzw members
+
       for(int ti = 0; ti < numTrees; ++ti)
       {
         // Each tree casts a vote to the probability
         // TODO: replace this with a histogram copy
         // @Anatoly: need help with the following line:
-        prob.ptr(v)[u].probs[bob[ti]] += 1/numTrees;
+        //prob.ptr(v)[u].probs[bob[ti]] += 1/numTrees;
+        prob.ptr(v)[u].probs[pixlabels.x] += 1/numTrees;
+        prob.ptr(v)[u].probs[pixlabels.y] += 1/numTrees;
+        prob.ptr(v)[u].probs[pixlabels.z] += 1/numTrees;
+        prob.ptr(v)[u].probs[pixlabels.w] += 1/numTrees;
+      }
+    }
+
+    /** \brief This merges the labels from all trees into a histogram of probabilities **/
+    __global__ void KernelCUDA_MultiTreeCreateProb2 (const int numTrees, prob_histogram* prob, int cols, int rows)
+    {
+      // map block and thread onto image coordinates
+      int u = blockIdx.x * blockDim.x + threadIdx.x;
+      int v = blockIdx.y * blockDim.y + threadIdx.y;
+
+      if( u >= cols || v >= rows )
+        return;
+
+      char4 pixlabels = tex2D (multilabelTex, u ,v);
+      char* bob = (char*)&pixlabels; //horrible but char4's have xyzw members
+
+      for(int ti = 0; ti < numTrees; ++ti)
+      {
+        // Each tree casts a vote to the probability
+        // TODO: replace this with a histogram copy
+        // @Anatoly: need help with the following line:
+        //prob.ptr(v)[u].probs[bob[ti]] += 1/numTrees;
+        prob[v * cols + u].probs[pixlabels.x] += 1/numTrees;
+        prob[v * cols + u].probs[pixlabels.y] += 1/numTrees;
+        prob[v * cols + u].probs[pixlabels.z] += 1/numTrees;
+        prob[v * cols + u].probs[pixlabels.w] += 1/numTrees;
       }
     }
 
     /** \brief This will merge the votes from the different trees into one final vote */    
     void CUDA_runMultiTreeMerge( int numTrees, const Depth& depth, const MultiLabels& multilabel, Labels& labels)
     {     
+      std::cout << "(I) : CUDA_runMultiTreeMerge() called" << std::endl;
       labels.create(depth.rows(), depth.cols());
 
       depthTex.addressMode[0] = cudaAddressModeClamp;
@@ -308,16 +341,17 @@ namespace pcl
     }
 
     /** \brief This will merge the votes from the different trees into one final vote, including probabilistic's */
-    void CUDA_runMultiTreeMergeProb ( int numTrees,
-                                      const Depth& depth,
-                                      const MultiLabels& multilabel,
-                                      Labels& labels,
-                                      LabelProbability& probabilities)
+    void CUDA_runMultiTreeProb ( int numTrees,
+                                 const Depth& depth,
+                                 const MultiLabels& multilabel,
+                                 Labels& labels,
+                                 LabelProbability& probabilities)
     {
-      labels.create(depth.rows(), depth.cols());
+      std::cout << "(I) : CUDA_runMultiTreeProb() called" << std::endl;
 
-      depthTex.addressMode[0] = cudaAddressModeClamp;
-      TextureBinder binder(depth, depthTex);               
+      //labels.create(depth.rows(), depth.cols());
+      //depthTex.addressMode[0] = cudaAddressModeClamp;
+      //TextureBinder binder(depth, depthTex);
 
       multilabelTex.addressMode[0] = cudaAddressModeClamp;
       TextureBinder mlabels_binder(multilabel, multilabelTex);
@@ -325,7 +359,8 @@ namespace pcl
       dim3 block(32, 8);      
       dim3 grid(divUp(depth.cols(), block.x), divUp(depth.rows(), block.y) );      
 
-      KernelCUDA_MultiTreeCreateProb<<< grid, block >>>( numTrees, probabilities );
+      KernelCUDA_MultiTreeCreateProb<<< grid, block >>>( numTrees, probabilities);
+      KernelCUDA_MultiTreeCreateProb2<<< grid, block >>>( numTrees, probabilities, depth.cols(), depth.rows() );
 
       cudaSafeCall( cudaGetLastError() );
       cudaSafeCall( cudaThreadSynchronize() );            
@@ -389,8 +424,9 @@ void
 pcl::device::MultiTreeLiveProc::processProb (const Depth& dmap, Labels& lmap, LabelProbability& prob, int FGThresh)
 {
   assert(!trees.empty());
+  std::cout << "(I) : MultiTreeLiveProc::processProb() called" << std::endl;
 
-  unsigned int numTrees = static_cast<int> (trees.size ());
+  unsigned int numTrees = static_cast<unsigned int> (trees.size ());
 
   multilmap.create(dmap.rows(), dmap.cols());
 
@@ -398,11 +434,12 @@ pcl::device::MultiTreeLiveProc::processProb (const Depth& dmap, Labels& lmap, La
   for( int ti = 0; ti < numTrees; ++ti )
   {
     const CUDATree& t = trees[ti];
-
     CUDA_runMultiTreePass ( FGThresh, ti, static_cast<float> (focal), t.treeHeight, t.numNodes, t.nodes_device, t.leaves_device, dmap, multilmap );
   }
   // 2 - run the merging
   assert( numTrees <= 4 );
 
+  std::cout << "(I) : MultiTreeLiveProc::processProb() calling CUDA_runMultiTreeProb() with: " << prob.cols() << "x" << prob.rows() << std::endl;
+  device::CUDA_runMultiTreeProb(numTrees, dmap, multilmap, lmap, prob);
   device::CUDA_runMultiTreeMerge(numTrees, dmap, multilmap, lmap);
 }

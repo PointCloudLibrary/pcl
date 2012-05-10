@@ -95,7 +95,7 @@ namespace pcl
           pcl::device::Labels labels_smoothed_;
 
           /** These contain the histograms of the labels for this detector **/
-          pcl::device::LabelProbability P_l_;
+          pcl::device::LabelProbability P_l_ ;
           /** These contain the histograms of the labels for this detector of the previous timestep **/
           pcl::device::LabelProbability P_l_prev_;
 

@@ -138,6 +138,8 @@ pcl::gpu::people::RDFBodyPartsDetector::colorizeLabels(const pcl::device::Labels
 void 
 pcl::gpu::people::RDFBodyPartsDetector::allocate_buffers(int rows, int cols)
 {
+  std::cout << "(I) : RDFBodyPartsDetector::allocate_buffers called with: " << cols << "x" << rows << std::endl;
+
   labels_.create(rows, cols);
   labels_smoothed_.create(rows, cols);
 

@@ -145,9 +145,9 @@ namespace pcl
                                    Labels& labels,
                                    LabelProbability& probabilities)
     {
-      std::cout << "CUDA_SelectLabel called" << std::endl;
-      labels.create(depth.rows(), depth.cols());
-      probabilities.create(depth.rows(), depth.cols());
+      std::cout << "(I) : ProbabilityProc::CUDA_SelectLabel() called" << std::endl;
+      //labels.create(depth.rows(), depth.cols());
+      //probabilities.create(depth.rows(), depth.cols());
 
       dim3 block(32, 8);
       dim3 grid(divUp(depth.cols(), block.x), divUp(depth.rows(), block.y) );

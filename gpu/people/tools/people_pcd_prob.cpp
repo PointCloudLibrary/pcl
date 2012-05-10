@@ -116,7 +116,7 @@ class PeoplePCDApp
 
     void cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
     {
-      std::cout << "Cloud Callback" << std::endl;
+      std::cout << "(I) : Cloud Callback" << std::endl;
       people_detector_.processProb(cloud);
       ++counter_;
       //visualizeAndWrite(cloud);
@@ -145,6 +145,49 @@ class PeoplePCDApp
       savePNGFile(make_name(counter_, "d2"), people_detector_.depth_device2_);
     }
 
+    void
+    convertProbToRGB (pcl::PointCloud<pcl::device::prob_histogram>& histograms, int label, pcl::PointCloud<pcl::RGB>& rgb)
+    {
+      for(size_t t; t < histograms.points.size(); t++)
+      {
+        float value = histograms.points[t].probs[label];
+        float value8 = value * 255;
+        char val = static_cast<char> (value8);
+        pcl::RGB p;
+        p.r = val; p.b = val; p.g = val;
+        rgb.points.push_back(p);
+      }
+      rgb.width = histograms.width;
+      rgb.height = histograms.height;
+    }
+
+    void
+    visualizeAndWriteProb(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+    {
+      std::cout << "(I) : visualizeAndWriteProb() Callback" << std::endl;
+      const pcl::device::LabelProbability& prob = people_detector_.rdf_detector_->getProbability();
+
+      int c;
+      pcl::PointCloud<pcl::device::prob_histogram> prob_host(people_detector_.rdf_detector_->P_l_.cols(), people_detector_.rdf_detector_->P_l_.rows());
+      people_detector_.rdf_detector_->P_l_.download(prob_host.points, c);
+      prob_host.width = people_detector_.rdf_detector_->P_l_.cols();
+      prob_host.height = people_detector_.rdf_detector_->P_l_.rows();
+
+      std::cout << "(I) : visualizeAndWriteProb() savePNGFile" << std::endl;
+      for(int i = 0; i < 25; i++)
+      {
+        pcl::PointCloud<pcl::RGB> rgb;
+        convertProbToRGB(prob_host, i, rgb);
+        savePNGFile(make_name(i, "hist"), rgb);
+      }
+
+      std::cout << "(I) : visualizeAndWriteProb() : cols: " << people_detector_.rdf_detector_->P_l_.cols() << std::endl;
+      std::cout << "(I) : visualizeAndWriteProb() : rows: " << people_detector_.rdf_detector_->P_l_.rows() << std::endl;
+      //std::cout << "(I) : visualizeAndWriteProb() : width: " << rgb.width << std::endl;
+      //std::cout << "(I) : visualizeAndWriteProb() : height: " << rgb.height << std::endl;
+      //std::cout << "(I) : visualizeAndWriteProb() : size: " << rgb.points.size() << std::endl;
+    }
+
     int counter_;
     PeopleDetector people_detector_;
     PeopleDetector::Image cmap_device_;
@@ -166,7 +209,7 @@ void print_help()
 
 int main(int argc, char** argv)
 {
-  cout << "People tracking on PCD files version 0.1" << std::endl;
+  cout << "(I) : Main : People tracking on PCD files version 0.1" << std::endl;
   if(find_switch (argc, argv, "--help") || find_switch (argc, argv, "-h"))
     return print_help(), 0;
  
@@ -195,29 +238,30 @@ int main(int argc, char** argv)
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
   int res = pcl::io::loadPCDFile<pcl::PointXYZRGB> (pcdname, *cloud);
   if (res == -1) //* load the file
-    return cout << "Couldn't read cloud file" << endl, -1;
+    return std::cout << "(E) : Main : Couldn't read cloud file" << endl, -1;
 
-  cout << "Loaded " << cloud->width * cloud->height << " data points from " << pcdname << endl;
+  std::cout << "(I) : Main : Loaded " << cloud->width * cloud->height << " data points from " << pcdname << endl;
 
   // loading trees
   using pcl::gpu::people::RDFBodyPartsDetector;
   vector<string> names_vector(treeFilenames, treeFilenames + numTrees);
-  std::cout << "Trees collected " << std::endl;
+  std::cout << "(I) : Main : Trees collected " << std::endl;
   RDFBodyPartsDetector::Ptr rdf(new RDFBodyPartsDetector(names_vector));
-  std::cout << "Loaded files into rdf" << std::endl;
+  std::cout << "(I) : Main : Loaded files into rdf" << std::endl;
 
   // Create the app
   PeoplePCDApp app;
-  std::cout << "App created" << std::endl;
+  std::cout << "(I) : Main : App created" << std::endl;
   app.people_detector_.rdf_detector_ = rdf;
 
   /// Run the app
   {
-    pcl::ScopeTime frame_time("frame_time");
+    pcl::ScopeTime frame_time("(I) : frame_time");
     app.cloud_cb(cloud);
   }
-  std::cout << "calling visualisation" << std::endl;
+  std::cout << "(I) : Main : calling visualisation" << std::endl;
   app.visualizeAndWrite(cloud);
+  app.visualizeAndWriteProb(cloud);
   app.final_view_.spin();
 
   return 0;
