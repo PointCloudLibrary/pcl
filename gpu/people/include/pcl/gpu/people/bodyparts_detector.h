@@ -82,7 +82,10 @@ namespace pcl
           //getters
           const pcl::device::Labels& getLabels() const;
           const pcl::device::LabelProbability& getProbability() const;
-          const pcl::device::LabelProbability& getPrevProbability() const;
+          const pcl::device::LabelProbability& getProbability1() const;
+          const pcl::device::LabelProbability& getProbability2() const;
+          const pcl::device::LabelProbability& getPrevProbability1() const;
+          const pcl::device::LabelProbability& getPrevProbability2() const;
           size_t treesNumber() const;
           const BlobMatrix& getBlobMatrix() const;
 
@@ -95,9 +98,13 @@ namespace pcl
           pcl::device::Labels labels_smoothed_;
 
           /** These contain the histograms of the labels for this detector **/
-          pcl::device::LabelProbability P_l_;
+          pcl::device::LabelProbability P_l_; // the one is current worked in
+          pcl::device::LabelProbability P_l_1_; // for the first iteration
+          pcl::device::LabelProbability P_l_2_; // for the second iteration
+
           /** These contain the histograms of the labels for this detector of the previous timestep **/
-          pcl::device::LabelProbability P_l_prev_;
+          pcl::device::LabelProbability P_l_prev_1_; // for the first iteration
+          pcl::device::LabelProbability P_l_prev_2_; // for the second iteration
 
         private:
           boost::shared_ptr<device::MultiTreeLiveProc> impl_;

@@ -259,11 +259,14 @@ pcl::gpu::people::PeopleDetector::processProb ()
   rdf_detector_->processProb(depth_device1_);
   // TODO: merge with prior probabilities at this line
   // get labels
-  //probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
+  probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
   // This executes the connected components
   rdf_detector_->processSmooth(depth_device1_, cloud_host_, AREA_THRES);
   // This creates the blobmatrix
   rdf_detector_->processRelations();
+
+  // Backup this value in P_l_1_;
+  rdf_detector_->P_l_1_.swap(rdf_detector_->P_l_);
 
   const RDFBodyPartsDetector::BlobMatrix& sorted = rdf_detector_->getBlobMatrix();
 
@@ -294,11 +297,14 @@ pcl::gpu::people::PeopleDetector::processProb ()
     rdf_detector_->processProb(depth_device2_);
     // TODO: merge with prior probabilities at this line
     // get labels
-    //probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
+    probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
     // This executes the connected components
     rdf_detector_->processSmooth(depth_device2_, cloud_host_, AREA_THRES2);
     // This creates the blobmatrix
     rdf_detector_->processRelations();
+
+    // Backup this value in P_l_2_;
+    rdf_detector_->P_l_2_.swap(rdf_detector_->P_l_);
 
     const RDFBodyPartsDetector::BlobMatrix& sorted2 = rdf_detector_->getBlobMatrix();
 

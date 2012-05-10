@@ -415,5 +415,5 @@ pcl::device::MultiTreeLiveProc::processProb (const Depth& dmap, Labels& lmap, La
 
   std::cout << "(I) : MultiTreeLiveProc::processProb() calling CUDA_runMultiTreeProb() with: " << prob.cols() << "x" << prob.rows() << std::endl;
   device::CUDA_runMultiTreeProb(numTrees, dmap, multilmap, lmap, prob);
-  device::CUDA_runMultiTreeMerge(numTrees, dmap, multilmap, lmap);
+  //device::CUDA_runMultiTreeMerge(numTrees, dmap, multilmap, lmap);
 }

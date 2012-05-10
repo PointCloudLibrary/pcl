@@ -82,6 +82,14 @@ make_name(int counter, const char* suffix)
   return buf;
 }
 
+string
+make_ext_name(int counter1, int counter2, const char* suffix)
+{
+  char buf[4096];
+  sprintf (buf, "./people_%04d_%04d_%s.png", counter1, counter2, suffix);
+  return buf;
+}
+
 template<typename T> void 
 savePNGFile(const std::string& filename, const pcl::gpu::DeviceArray2D<T>& arr)
 {
@@ -165,27 +173,42 @@ class PeoplePCDApp
     visualizeAndWriteProb(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
     {
       std::cout << "(I) : visualizeAndWriteProb() Callback" << std::endl;
-      const pcl::device::LabelProbability& prob = people_detector_.rdf_detector_->getProbability();
+      //const pcl::device::LabelProbability& prob = people_detector_.rdf_detector_->getProbability1();
 
+      // first write the first iteration
       int c;
-      pcl::PointCloud<pcl::device::prob_histogram> prob_host(people_detector_.rdf_detector_->P_l_.cols(), people_detector_.rdf_detector_->P_l_.rows());
-      people_detector_.rdf_detector_->P_l_.download(prob_host.points, c);
-      prob_host.width = people_detector_.rdf_detector_->P_l_.cols();
-      prob_host.height = people_detector_.rdf_detector_->P_l_.rows();
+      pcl::PointCloud<pcl::device::prob_histogram> prob_host(people_detector_.rdf_detector_->P_l_1_.cols(), people_detector_.rdf_detector_->P_l_1_.rows());
+      people_detector_.rdf_detector_->P_l_1_.download(prob_host.points, c);
+      prob_host.width = people_detector_.rdf_detector_->P_l_1_.cols();
+      prob_host.height = people_detector_.rdf_detector_->P_l_1_.rows();
+
+      std::cout << "(I) : visualizeAndWriteProb() savePNGFile" << std::endl;
+      for(int i = 0; i < 25; i++)  //NUM_LABELS
+      {
+        pcl::PointCloud<pcl::RGB> rgb;
+        convertProbToRGB(prob_host, i, rgb);
+        savePNGFile(make_ext_name(counter_,i, "hist1"), rgb);
+      }
+
+      std::cout << "(I) : visualizeAndWriteProb() : cols1: " << people_detector_.rdf_detector_->P_l_1_.cols() << std::endl;
+      std::cout << "(I) : visualizeAndWriteProb() : rows1: " << people_detector_.rdf_detector_->P_l_1_.rows() << std::endl;
+
+      // and now again for the second iteration
+      pcl::PointCloud<pcl::device::prob_histogram> prob_host2(people_detector_.rdf_detector_->P_l_2_.cols(), people_detector_.rdf_detector_->P_l_2_.rows());
+      people_detector_.rdf_detector_->P_l_2_.download(prob_host2.points, c);
+      prob_host.width = people_detector_.rdf_detector_->P_l_2_.cols();
+      prob_host.height = people_detector_.rdf_detector_->P_l_2_.rows();
 
       std::cout << "(I) : visualizeAndWriteProb() savePNGFile" << std::endl;
       for(int i = 0; i < 25; i++)
       {
         pcl::PointCloud<pcl::RGB> rgb;
-        convertProbToRGB(prob_host, i, rgb);
-        savePNGFile(make_name(i, "hist"), rgb);
+        convertProbToRGB(prob_host2, i, rgb);
+        savePNGFile(make_ext_name(counter_, i, "hist2"), rgb);
       }
 
-      std::cout << "(I) : visualizeAndWriteProb() : cols: " << people_detector_.rdf_detector_->P_l_.cols() << std::endl;
-      std::cout << "(I) : visualizeAndWriteProb() : rows: " << people_detector_.rdf_detector_->P_l_.rows() << std::endl;
-      //std::cout << "(I) : visualizeAndWriteProb() : width: " << rgb.width << std::endl;
-      //std::cout << "(I) : visualizeAndWriteProb() : height: " << rgb.height << std::endl;
-      //std::cout << "(I) : visualizeAndWriteProb() : size: " << rgb.points.size() << std::endl;
+      std::cout << "(I) : visualizeAndWriteProb() : cols2: " << people_detector_.rdf_detector_->P_l_2_.cols() << std::endl;
+      std::cout << "(I) : visualizeAndWriteProb() : rows2: " << people_detector_.rdf_detector_->P_l_2_.rows() << std::endl;
     }
 
     int counter_;

@@ -110,9 +110,27 @@ pcl::gpu::people::RDFBodyPartsDetector::getProbability() const
 }
 
 const pcl::device::LabelProbability&
-pcl::gpu::people::RDFBodyPartsDetector::getPrevProbability() const
+pcl::gpu::people::RDFBodyPartsDetector::getProbability1() const
 {
-  return P_l_prev_;
+  return P_l_1_;
+}
+
+const pcl::device::LabelProbability&
+pcl::gpu::people::RDFBodyPartsDetector::getProbability2() const
+{
+  return P_l_2_;
+}
+
+const pcl::device::LabelProbability&
+pcl::gpu::people::RDFBodyPartsDetector::getPrevProbability1() const
+{
+  return P_l_prev_1_;
+}
+
+const pcl::device::LabelProbability&
+pcl::gpu::people::RDFBodyPartsDetector::getPrevProbability2() const
+{
+  return P_l_prev_2_;
 }
 
 const pcl::gpu::people::RDFBodyPartsDetector::BlobMatrix& 
@@ -144,7 +162,10 @@ pcl::gpu::people::RDFBodyPartsDetector::allocate_buffers(int rows, int cols)
   labels_smoothed_.create(rows, cols);
 
   P_l_.create(rows,cols);
-  P_l_prev_.create(rows,cols);
+  P_l_1_.create(rows,cols);
+  P_l_2_.create(rows,cols);
+  P_l_prev_1_.create(rows,cols);
+  P_l_prev_2_.create(rows,cols);
 
   lmap_host_.resize(rows * cols);
 
