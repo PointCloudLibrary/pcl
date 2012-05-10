@@ -280,42 +280,17 @@ namespace pcl
       char4 pixlabels = tex2D (multilabelTex, u ,v);
       char* bob = (char*)&pixlabels; //horrible but char4's have xyzw members
 
-      for(int ti = 0; ti < numTrees; ++ti)
+      // Reset prob first, this should become NUM_LABELS
+      for(int in = 0; in < NUM_PARTS; in++)
       {
-        // Each tree casts a vote to the probability
-        // TODO: replace this with a histogram copy
-        // @Anatoly: need help with the following line:
-        //prob.ptr(v)[u].probs[bob[ti]] += 1/numTrees;
-        prob.ptr(v)[u].probs[pixlabels.x] += 1/numTrees;
-        prob.ptr(v)[u].probs[pixlabels.y] += 1/numTrees;
-        prob.ptr(v)[u].probs[pixlabels.z] += 1/numTrees;
-        prob.ptr(v)[u].probs[pixlabels.w] += 1/numTrees;
+        prob.ptr(v)[u].probs[in] = 0;
       }
-    }
-
-    /** \brief This merges the labels from all trees into a histogram of probabilities **/
-    __global__ void KernelCUDA_MultiTreeCreateProb2 (const int numTrees, prob_histogram* prob, int cols, int rows)
-    {
-      // map block and thread onto image coordinates
-      int u = blockIdx.x * blockDim.x + threadIdx.x;
-      int v = blockIdx.y * blockDim.y + threadIdx.y;
-
-      if( u >= cols || v >= rows )
-        return;
-
-      char4 pixlabels = tex2D (multilabelTex, u ,v);
-      char* bob = (char*)&pixlabels; //horrible but char4's have xyzw members
 
       for(int ti = 0; ti < numTrees; ++ti)
       {
         // Each tree casts a vote to the probability
         // TODO: replace this with a histogram copy
-        // @Anatoly: need help with the following line:
-        //prob.ptr(v)[u].probs[bob[ti]] += 1/numTrees;
-        prob[v * cols + u].probs[pixlabels.x] += 1/numTrees;
-        prob[v * cols + u].probs[pixlabels.y] += 1/numTrees;
-        prob[v * cols + u].probs[pixlabels.z] += 1/numTrees;
-        prob[v * cols + u].probs[pixlabels.w] += 1/numTrees;
+        prob.ptr(v)[u].probs[bob[ti]] += 0.25;  //TODO 0.25 = 1/numTrees
       }
     }
 
@@ -360,7 +335,6 @@ namespace pcl
       dim3 grid(divUp(depth.cols(), block.x), divUp(depth.rows(), block.y) );      
 
       KernelCUDA_MultiTreeCreateProb<<< grid, block >>>( numTrees, probabilities);
-      KernelCUDA_MultiTreeCreateProb2<<< grid, block >>>( numTrees, probabilities, depth.cols(), depth.rows() );
 
       cudaSafeCall( cudaGetLastError() );
       cudaSafeCall( cudaThreadSynchronize() );            
