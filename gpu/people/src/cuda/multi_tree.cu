@@ -166,7 +166,7 @@ namespace pcl
                                  const Depth& depth,
                                  MultiLabels& multilabel )
     {
-      std::cout << "(I) : CUDA_runMultiTreePass() called" << std::endl;
+      //std::cout << "(I) : CUDA_runMultiTreePass() called" << std::endl;
       depthTex.addressMode[0] = cudaAddressModeClamp;
       TextureBinder binder(depth, depthTex);                  
 
@@ -297,7 +297,7 @@ namespace pcl
     /** \brief This will merge the votes from the different trees into one final vote */    
     void CUDA_runMultiTreeMerge( int numTrees, const Depth& depth, const MultiLabels& multilabel, Labels& labels)
     {     
-      std::cout << "(I) : CUDA_runMultiTreeMerge() called" << std::endl;
+      //std::cout << "(I) : CUDA_runMultiTreeMerge() called" << std::endl;
       labels.create(depth.rows(), depth.cols());
 
       depthTex.addressMode[0] = cudaAddressModeClamp;
@@ -398,7 +398,7 @@ void
 pcl::device::MultiTreeLiveProc::processProb (const Depth& dmap, Labels& lmap, LabelProbability& prob, int FGThresh)
 {
   assert(!trees.empty());
-  std::cout << "(I) : MultiTreeLiveProc::processProb() called" << std::endl;
+  //std::cout << "(I) : MultiTreeLiveProc::processProb() called" << std::endl;
 
   unsigned int numTrees = static_cast<unsigned int> (trees.size ());
 
@@ -413,7 +413,7 @@ pcl::device::MultiTreeLiveProc::processProb (const Depth& dmap, Labels& lmap, La
   // 2 - run the merging
   assert( numTrees <= 4 );
 
-  std::cout << "(I) : MultiTreeLiveProc::processProb() calling CUDA_runMultiTreeProb() with: " << prob.cols() << "x" << prob.rows() << std::endl;
+  //std::cout << "(I) : MultiTreeLiveProc::processProb() calling CUDA_runMultiTreeProb() with: " << prob.cols() << "x" << prob.rows() << std::endl;
   device::CUDA_runMultiTreeProb(numTrees, dmap, multilmap, lmap, prob);
   //device::CUDA_runMultiTreeMerge(numTrees, dmap, multilmap, lmap);
 }

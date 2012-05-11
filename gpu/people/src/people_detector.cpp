@@ -208,16 +208,16 @@ pcl::gpu::people::PeopleDetector::process ()
       int par = 0;
       for(int f = 0; f < NUM_PARTS; f++)
       {
-        if(t2.parts_lid[f] == NO_CHILD)
+       /* if(t2.parts_lid[f] == NO_CHILD)
         {
           cerr << "1;";
           par++;
         }
         else
-           cerr << "0;";
+           cerr << "0;";*/
       }
       static int counter = 0; // TODO move this logging to PeopleApp
-      cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << endl;
+      //cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << endl;
     }
     //output: Tree2 and PointCloud<XYZRGBL> 
   }

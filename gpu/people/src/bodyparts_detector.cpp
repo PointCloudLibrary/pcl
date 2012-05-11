@@ -156,7 +156,7 @@ pcl::gpu::people::RDFBodyPartsDetector::colorizeLabels(const pcl::device::Labels
 void 
 pcl::gpu::people::RDFBodyPartsDetector::allocate_buffers(int rows, int cols)
 {
-  std::cout << "(I) : RDFBodyPartsDetector::allocate_buffers called with: " << cols << "x" << rows << std::endl;
+  //std::cout << "(I) : RDFBodyPartsDetector::allocate_buffers called with: " << cols << "x" << rows << std::endl;
 
   labels_.create(rows, cols);
   labels_smoothed_.create(rows, cols);
@@ -189,7 +189,7 @@ pcl::gpu::people::RDFBodyPartsDetector::allocate_buffers(int rows, int cols)
 void 
 pcl::gpu::people::RDFBodyPartsDetector::process (const pcl::device::Depth& depth, const PointCloud<PointXYZ>& cloud, int min_pts_per_cluster)
 {
-  ScopeTime time("ev");
+  //ScopeTime time("ev");
 
   int cols = depth.cols();
   int rows = depth.rows();
@@ -198,7 +198,7 @@ pcl::gpu::people::RDFBodyPartsDetector::process (const pcl::device::Depth& depth
 
   {
     {
-      ScopeTime time("--");
+      //ScopeTime time("--");
       // Process the depthimage (CUDA)
       impl_->process(depth, labels_);
       device::smoothLabelImage(labels_, depth, labels_smoothed_, NUM_PARTS, 5, 300);
@@ -221,7 +221,7 @@ pcl::gpu::people::RDFBodyPartsDetector::process (const pcl::device::Depth& depth
 
   // This was sort indices to blob (sortIndicesToBlob2) method (till line 236)
   {
-    ScopeTime time("cvt");
+    //ScopeTime time("cvt");
     std::fill(remap_.begin(), remap_.end(), -1);
     std::fill(region_sizes_.begin(), region_sizes_.end(), 0);
 

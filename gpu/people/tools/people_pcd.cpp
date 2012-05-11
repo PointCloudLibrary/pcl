@@ -78,6 +78,27 @@ using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+struct SampledScopeTime : public StopWatch
+{          
+  enum { EACH = 33 };
+  SampledScopeTime(int& time_ms) : time_ms_(time_ms) {}
+  ~SampledScopeTime()
+  {
+    static int i_ = 0;
+    time_ms_ += getTime ();    
+    if (i_ % EACH == 0 && i_)
+    {
+      cout << "Average frame time = " << time_ms_ / EACH << "ms ( " << 1000.f * EACH / time_ms_ << "fps )" << endl;
+      time_ms_ = 0;        
+    }
+    ++i_;
+  }
+private:    
+    int& time_ms_;    
+};
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 string 
 make_name(int counter, const char* suffix)
 {
@@ -109,7 +130,7 @@ class PeoplePCDApp
 
     enum { COLS = 640, ROWS = 480 };
 
-    PeoplePCDApp (pcl::Grabber& capture) : capture_(capture), exit_(false), cloud_cb_(true), counter_(0), final_view_("Final labeling")//, image_view_("Input image")
+    PeoplePCDApp (pcl::Grabber& capture) : capture_(capture), exit_(false), time_ms_(0), cloud_cb_(true), counter_(0), final_view_("Final labeling")//, image_view_("Input image")
     {
       final_view_.setSize (COLS, ROWS);
       //image_view_.setSize (COLS, ROWS);
@@ -239,12 +260,11 @@ class PeoplePCDApp
             /*pcl::PCDGrabberBase *ispcd = dynamic_cast<pcl::PCDGrabberBase*>(&capture_);
             if(ispcd)
               ispcd ->trigger();*/
-
          
             bool has_data = cloud ? true : data_ready_cond_.timed_wait(lock, boost::posix_time::millisec(100));
             if(has_data)
-            {                                       
-              pcl::ScopeTime frame_time("frame_time");
+            {                   
+              SampledScopeTime fps(time_ms_);
 
               if (cloud_cb_)
                 people_detector_.process(cloud_host_.makeShared());
@@ -274,6 +294,7 @@ class PeoplePCDApp
 
     bool cloud_cb_;
     bool exit_;
+    int time_ms_;
     int counter_;
     PeopleDetector people_detector_;
     PeopleDetector::Image cmap_device_;
@@ -343,8 +364,8 @@ int main(int argc, char** argv)
       if(pcl::io::loadPCDFile<pcl::PointXYZRGBA> (pcd_file, *cloud) == -1)
         return cout << "Couldn't read cloud file" << endl, -1;
       
-      //vector<string> single_file(1, pcd_file);
-      //capture.reset( new pcl::PCDGrabber<PointXYZRGBA>(single_file, 0, true) );            
+      vector<string> single_file(1, pcd_file);
+      capture.reset( new pcl::PCDGrabber<PointXYZRGBA>(single_file, 0, true) );            
     }    
     else
     if (pc::parse_argument (argc, argv, "-pcd_folder", pcd_folder) > 0)
@@ -360,11 +381,11 @@ int main(int argc, char** argv)
       const char* f1 = "d:/3/0008.pcd";
       const char* f2 = "d:/git/pcl/gpu/people/tools/test.pcd";     
 
-      if(pcl::io::loadPCDFile<pcl::PointXYZRGBA> (f1, *cloud) == -1)
-        return cout << "Couldn't read cloud file" << endl, -1;
+      /*if(pcl::io::loadPCDFile<pcl::PointXYZRGBA> (f1, *cloud) == -1)
+        return cout << "Couldn't read cloud file" << endl, -1;*/
             
       //capture.reset( new pcl::PCDGrabber<PointXYZRGBA>(vector<string>(1, f1), 0, true) );
-      //capture.reset( new pcl::PCDGrabber<PointXYZRGBA>("d:/3", 0, true) );
+      ///capture.reset( new pcl::PCDGrabber<PointXYZRGBA>("d:/3", 0, true) );
     }
   }
   catch (const pcl::PCLException& /*e*/) { return cout << "Can't opencv depth source" << endl, -1; }
@@ -399,6 +420,10 @@ int main(int argc, char** argv)
     PeoplePCDApp app(*capture);  
     app.people_detector_.rdf_detector_ = rdf;
     
+    
+    if(cloud->points.empty())
+        cloud.reset();
+
     // executing
     app.startMainLoop (cloud);
   }
