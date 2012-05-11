@@ -86,7 +86,7 @@ namespace pcl
     float computeHue(int rgba);
     void  computeHueWithNans(const Image& image, const Depth& depth, Hue& hue);
 
-    void shs(const DeviceArray2D<float8> &cloud, float tolerance, const std::vector<int>& indices_in, float delta_hue, Mask& indices_out);
+    void shs(const DeviceArray2D<float4> &cloud, float tolerance, const std::vector<int>& indices_in, float delta_hue, Mask& indices_out);
 
     struct Dilatation
     {

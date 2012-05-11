@@ -113,7 +113,6 @@ namespace pcl
                 minX = std::min (cols- 1, std::max (0, min));
                 maxX = std::max (std::min (cols - 1, max), 0);
             }
-
         }
 
         struct Shs
@@ -124,105 +123,17 @@ namespace pcl
             float radius;
 
             mutable PtrStep<unsigned char> output_mask;
-
-            __device__ __forceinline__ void 
-            getProjectedRadiusSearchBox (const float3& point, float squared_radius, int& minX, int& maxX, int& minY, int& maxY)
-            {  
-                float3 q = intr * point;
-
-                // http://www.wolframalpha.com/input/?i=K+%3D+%7B%7Ba%2C+0%2C+b%7D%2C+%7B0%2C+c%2C+d%7D%2C+%7B0%2C+0%2C+1%7D%7D%2C+matrix%5BK+.+transpose%5BK%5D%5D
-
-                const float coeff8 = 1;                             //K_KT_.coeff (8);
-                float coeff7 = intr.cy;                             //K_KT_.coeff (7);
-                float coeff4 = intr.fy * intr.fy + intr.cy*intr.cy; //K_KT_.coeff (4);
-
-                float coeff6 = intr.cx;                             //K_KT_.coeff (6);
-                float coeff0 = intr.fx * intr.fx + intr.cx*intr.cx; //K_KT_.coeff (0);
-
-                float a = squared_radius * coeff8 - q.z * q.z;
-                float b = squared_radius * coeff7 - q.y * q.z;
-                float c = squared_radius * coeff4 - q.y * q.y;
-
-                // a and c are multiplied by two already => - 4ac -> - ac
-                float det = b * b - a * c;
-
-                if (det < 0)
-                {
-                    minY = 0;
-                    maxY = cloud.rows - 1;
-                }
-                else
-                {
-                    float y1 = (b - sqrt (det)) / a;
-                    float y2 = (b + sqrt (det)) / a;
-
-                    int minv = (int)fmin( floorf(y1), floorf(y2) );
-                    int maxv = (int)fmax(  ceilf(y1),  ceilf(y2) );                
-                    minY = min(cloud.rows - 1, max (0, minv));
-                    maxY = max(min (cloud.rows - 1, maxv), 0);
-                }
-
-                b = squared_radius * coeff6 - q.x * q.z;
-                c = squared_radius * coeff0 - q.x * q.x;
-
-                det = b * b - a * c;
-
-                if (det < 0)
-                {
-                    minX = 0;
-                    maxX = cloud.cols - 1;
-                }
-                else
-                {
-                    float x1 = (b - sqrt (det)) / a;
-                    float x2 = (b + sqrt (det)) / a;
-
-                    int minv = (int)fmin( floorf(x1), floorf(x2) );
-                    int maxv = (int)fmax(  ceilf(x1),  ceilf(x2) );
-
-                    minX = min (cloud.cols- 1, max (0, minv));
-                    maxX = max (min (cloud.cols - 1, maxv), 0);
-                }
-            }
-            __device__ __forceinline__ bool 
-            isFinite(const float3& p)
-            {
-                return isfinite(p.x) && isfinite(p.y) && isfinite(p.z);
-            }
+        
 
             __device__ __forceinline__ void operator()() const
             {
-               /* int idx = blockIdx.x * blockDim.x + threadIdx.x;
-
-                if (idx < indices.size)
-                {
-                    int index = indices.data[idx];
-
-                    int y = index / cloud.cols;
-                    int x = index - cloud.cols * y;
-
-                    float8 xyzrgba = cloud.ptr(y)[x];                    
-                    float hue = computeHue(__float_as_int(xyzrgba.f1));
-                    float3 p = make_float3(xyzrgba.x, xyzrgba.y, xyzrgba.z);
-
-                    int marked = output_mask.ptr(y)[x];
-                    if (marked)
-                        return;
-
-                    float squared_radius = radius * radius;
-                    
-                    int minX, maxX, minY, maxY;
-                    getProjectedRadiusSearchBox (p, squared_radius, minX, maxX, minY, maxY);
-
-
-
-                }*/
+              
             }
         };
     }
 }
 
-void pcl::device::shs(const DeviceArray2D<float8> &cloud, float tolerance/*radius*/, const std::vector<int>& indices_in, float delta_hue, Mask& output)
+void pcl::device::shs(const DeviceArray2D<float4> &cloud, float tolerance/*radius*/, const std::vector<int>& indices_in, float delta_hue, Mask& output)
 {
     int cols = cloud.cols();
     int rows = cloud.rows();
