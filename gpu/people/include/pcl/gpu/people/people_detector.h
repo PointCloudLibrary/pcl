@@ -74,7 +74,7 @@ namespace pcl
           typedef boost::shared_ptr<PeopleDetector> Ptr;                              
 
           typedef pcl::PointXYZ PointType;
-          typedef DeviceArray2D<unsigned short> Depth;                    
+          typedef DeviceArray2D<unsigned short> Depth;
           typedef DeviceArray2D<pcl::RGB> Image;
 
           RDFBodyPartsDetector::Ptr rdf_detector_;
