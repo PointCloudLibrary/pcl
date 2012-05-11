@@ -81,7 +81,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 
       for (size_t j = 1; j < nn_indices.size (); ++j)             // nn_indices[0] should be sq_idx
       {
-        if (processed[nn_indices[j]])                             // Has this point been processed before ?
+        if (nn_indices[j] == -1 || processed[nn_indices[j]])        // Has this point been processed before ?
           continue;
 
         // Perform a simple Euclidean clustering
@@ -166,7 +166,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 
       for (size_t j = 1; j < nn_indices.size (); ++j)             // nn_indices[0] should be sq_idx
       {
-        if (processed[nn_indices[j]])                             // Has this point been processed before ?
+        if (nn_indices[j] == -1 || processed[nn_indices[j]])        // Has this point been processed before ?
           continue;
 
         // Perform a simple Euclidean clustering
