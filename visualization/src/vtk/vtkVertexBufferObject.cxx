@@ -251,7 +251,7 @@ bool vtkVertexBufferObject::SetData(std::vector<unsigned int> *indices)
   this->Size = this->Count * sizeof(unsigned int);
   this->BufferTarget = vtkgl::ELEMENT_ARRAY_BUFFER;
 
-  return this->SetData(reinterpret_cast<GLvoid *>(indices->data()));
+  return this->SetData(reinterpret_cast<GLvoid *>(&indices[0]));
 }
 
 //----------------------------------------------------------------------------
