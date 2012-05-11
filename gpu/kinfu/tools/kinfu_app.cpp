@@ -935,7 +935,7 @@ main (int argc, char* argv[])
 {  
   if (pc::find_switch (argc, argv, "--help") || pc::find_switch (argc, argv, "-h"))
     return print_cli_help ();
-
+  
   int device = 0;
   pc::parse_argument (argc, argv, "-gpu", device);
   pcl::gpu::setDevice (device);
@@ -946,39 +946,43 @@ main (int argc, char* argv[])
   
   boost::shared_ptr<pcl::Grabber> capture;
   
-  std::string openni_device;
-  std::string oni_file, eval_folder, match_file;
-  if (pc::parse_argument (argc, argv, "-dev", openni_device) > 0)
-  {
-    capture.reset( new pcl::OpenNIGrabber(openni_device) );
-  }
-  else
-  if (pc::parse_argument (argc, argv, "-oni", oni_file) > 0)
+  std::string eval_folder, match_file, openni_device, oni_file;
+  try
   {    
-    capture.reset( new pcl::ONIGrabber(oni_file, true, true) );
+    if (pc::parse_argument (argc, argv, "-dev", openni_device) > 0)
+    {
+      capture.reset( new pcl::OpenNIGrabber(openni_device) );
+    }
+    else
+    if (pc::parse_argument (argc, argv, "-oni", oni_file) > 0)
+    {    
+      capture.reset( new pcl::ONIGrabber(oni_file, true, true) );
+    }
+    else
+    if (pc::parse_argument (argc, argv, "-eval", eval_folder) > 0)
+    {
+      //init data source latter
+      pc::parse_argument (argc, argv, "-match_file", match_file);
+    }
+    else
+    {
+      capture.reset( new pcl::OpenNIGrabber() );
+  
+      //capture.reset( new pcl::ONIGrabber("d:/onis/20111013-224932.oni", true, true) );
+      //capture.reset( new pcl::ONIGrabber("d:/onis/reg20111229-180846.oni, true, true) );    
+      //capture.reset( new pcl::ONIGrabber("/media/Main/onis/20111013-224932.oni", true, true) );
+      //capture.reset( new pcl::ONIGrabber("d:/onis/20111013-224551.oni", true, true) );
+      //capture.reset( new pcl::ONIGrabber("d:/onis/20111013-224719.oni", true, true) );    
+    }
   }
-  else
-  if (pc::parse_argument (argc, argv, "-eval", eval_folder) > 0)
-  {
-    //init data source latter
-    pc::parse_argument (argc, argv, "-match_file", match_file);
-  }
-  else
-  {
-    capture.reset( new pcl::OpenNIGrabber() );
-
-    //capture.reset( new pcl::ONIGrabber("d:/onis/20111013-224932.oni", true, true) );
-    //capture.reset( new pcl::ONIGrabber("d:/onis/reg20111229-180846.oni, true, true) );    
-    //capture.reset( new pcl::ONIGrabber("/media/Main/onis/20111013-224932.oni", true, true) );
-    //capture.reset( new pcl::ONIGrabber("d:/onis/20111013-224551.oni", true, true) );
-    //capture.reset( new pcl::ONIGrabber("d:/onis/20111013-224719.oni", true, true) );    
-  }
+  catch (const pcl::PCLException& /*e*/) { return cout << "Can't opencv depth source" << endl, -1; }
 
   float volume_size = 3.f;
   pc::parse_argument (argc, argv, "-volume_size", volume_size);
-          
+        
   KinFuApp app (*capture, volume_size);
 
+  
   if (pc::parse_argument (argc, argv, "-eval", eval_folder) > 0)
     app.toggleEvaluationMode(eval_folder, match_file);
 
@@ -987,16 +991,16 @@ main (int argc, char* argv[])
 
   if (pc::find_switch (argc, argv, "--save-views") || pc::find_switch (argc, argv, "-sv"))
     app.image_view_.accumulate_views_ = true;  //will cause bad alloc after some time  
-    
+  
   if (pc::find_switch (argc, argv, "--registration") || pc::find_switch (argc, argv, "-r"))  
     app.initRegistration();
-        
+      
   if (pc::find_switch (argc, argv, "--integrate-colors") || pc::find_switch (argc, argv, "-ic"))      
     app.toggleColorIntegration();
 
-  
   // executing
-  try { app.startMainLoop (); }
+  try { app.startMainLoop (); }  
+  catch (const pcl::PCLException& /*e*/) { cout << "PCLException" << endl; }
   catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; }
   catch (const std::exception& /*e*/) { cout << "Exception" << endl; }
 
@@ -1015,5 +1019,6 @@ main (int argc, char* argv[])
     printf ("writing: %s\n", buf);
   }
 #endif
+
   return 0;
 }
