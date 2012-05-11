@@ -16,8 +16,8 @@ include_directories(${VTK_INCLUDE_DIRS})
 #PCL_ADD_EXECUTABLE(${the_target} ${SUBSYS_NAME} people_tracking.cpp)
 #target_link_libraries (${the_target} pcl_common pcl_filters pcl_kdtree pcl_segmentation pcl_kdtree pcl_gpu_people pcl_filters pcl_io pcl_visualization)
 
-PCL_ADD_EXECUTABLE(people_pcd ${SUBSYS_NAME} people_app.cpp)
-target_link_libraries (people_pcd pcl_common pcl_filters pcl_kdtree pcl_segmentation pcl_kdtree pcl_gpu_people pcl_filters pcl_io pcl_visualization ${Boost_LIBRARIES})
+PCL_ADD_EXECUTABLE(people_app ${SUBSYS_NAME} people_app.cpp)
+target_link_libraries (people_app pcl_common pcl_filters pcl_kdtree pcl_segmentation pcl_kdtree pcl_gpu_people pcl_filters pcl_io pcl_visualization ${Boost_LIBRARIES})
 
 PCL_ADD_EXECUTABLE(people_pcd_prob ${SUBSYS_NAME} people_pcd_prob.cpp)
 target_link_libraries (people_pcd_prob pcl_common pcl_filters pcl_kdtree pcl_segmentation pcl_kdtree pcl_gpu_people pcl_filters pcl_io pcl_visualization ${Boost_LIBRARIES})
