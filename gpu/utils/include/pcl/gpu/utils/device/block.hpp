@@ -111,7 +111,7 @@ namespace pcl
 			{
 				int STRIDE = stride();
 				InIt1 t1 = beg1 + flattenedThreadId();
-				InIt1 t2 = beg2 + flattenedThreadId();
+				InIt2 t2 = beg2 + flattenedThreadId();
 				OutIt o  = out + (t1 - beg1);
 
 				for(; t1 < end1; t1 += STRIDE, t2 += STRIDE, o += STRIDE)
