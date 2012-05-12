@@ -64,7 +64,7 @@ pcl::PointCloud<pcl::Normal>::Ptr normals_;
 pcl::PointCloud<pcl::Normal>::Ptr another_normals_;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (RegionGrowingRGBTest, Segment)
+/*TEST (RegionGrowingRGBTest, Segment)
 {
   pcl::RegionGrowingRGB<pcl::PointXYZRGB> rg;
 
@@ -81,7 +81,7 @@ TEST (RegionGrowingRGBTest, Segment)
 
   EXPECT_NE(0, segments.size());
 }
-
+*/
 ////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (RegionGrowingTest, Segment)
 {
