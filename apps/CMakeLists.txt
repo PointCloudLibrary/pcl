@@ -70,6 +70,9 @@ if(build)
       
       PCL_ADD_EXECUTABLE(pcl_openni_stream_compression ${SUBSYS_NAME} src/openni_stream_compression.cpp)
       target_link_libraries(pcl_openni_stream_compression pcl_common pcl_io pcl_filters pcl_visualization pcl_octree)
+
+      PCL_ADD_EXECUTABLE(pcl_openni_mobile_server ${SUBSYS_NAME} src/openni_mobile_server.cpp)
+      target_link_libraries(pcl_openni_mobile_server pcl_common pcl_io pcl_filters pcl_visualization)
       
       PCL_ADD_EXECUTABLE(pcl_openni_planar_segmentation ${SUBSYS_NAME} src/openni_planar_segmentation.cpp)
       target_link_libraries(pcl_openni_planar_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus)
