@@ -1,0 +1,14 @@
+This app uses VES and Kiwi mobile visualization framework.  Visit
+the developer's guide at http://vtk.org/Wiki/VES for download and
+build instructions.
+
+To build this app, edit tools.sh and set the paths correctly for your
+environment.  Set the ANDROID_NDK environment variable to the location
+of your Android NDK installation, and then run the bash scripts in order:
+
+./configure_cmake.sh
+./configure_ant.sh
+./compile.sh
+./install.sh
+
+Make sure your device is connected before running install.sh.
