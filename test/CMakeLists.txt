@@ -50,10 +50,10 @@ if(build)
                  LINK_WITH pcl_io
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
     
-#    PCL_ADD_TEST(a_segmentation_test test_segmentation
-#                 FILES test_segmentation.cpp
-#                 LINK_WITH pcl_io pcl_segmentation pcl_features
-#                 ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/car6.pcd ${PCL_SOURCE_DIR}/test/colored_cloud.pcd)
+    PCL_ADD_TEST(a_segmentation_test test_segmentation
+                 FILES test_segmentation.cpp
+                 LINK_WITH pcl_io pcl_segmentation pcl_features
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/car6.pcd ${PCL_SOURCE_DIR}/test/colored_cloud.pcd)
     
     PCL_ADD_TEST(a_registration_test test_registration
                  FILES test_registration.cpp
@@ -101,4 +101,7 @@ if(build)
                #PCL_ADD_EXECUTABLE (sample_feature_test ${SUBSYS_NAME} sample_feature_test.cpp)
                #target_link_libraries (sample_feature_test pcl_io pcl_features pcl_search pcl_kdtree pcl_filters)
 
+               #PCL_ADD_TEST(common_point_types test_common_point_types 
+               #FILES test_point_types.cpp 
+               #LINK_WITH pcl_common pcl_io)
 endif(build)
