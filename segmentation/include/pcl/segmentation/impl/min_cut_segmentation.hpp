@@ -40,8 +40,7 @@
 #ifndef PCL_SEGMENTATION_MIN_CUT_SEGMENTATION_HPP_
 #define PCL_SEGMENTATION_MIN_CUT_SEGMENTATION_HPP_
 
-#include "pcl/segmentation/min_cut_segmentation.h"
-
+#include <pcl/segmentation/min_cut_segmentation.h>
 #include <pcl/search/search.h>
 #include <pcl/search/kdtree.h>
 #include <boost/graph/boykov_kolmogorov_max_flow.hpp>
@@ -174,7 +173,7 @@ pcl::MinCutSegmentation<PointT>::setForegroundPoints (typename pcl::PointCloud<P
 {
   foreground_points_.clear ();
   foreground_points_.reserve (foreground_points->points.size ());
-  for (int i_point = 0; i_point < foreground_points->points.size (); i_point++)
+  for (size_t i_point = 0; i_point < foreground_points->points.size (); i_point++)
     foreground_points_.push_back (foreground_points->points[i_point]);
 
   unary_potentials_are_valid_ = false;
@@ -187,7 +186,7 @@ pcl::MinCutSegmentation<PointT>::setForegroundPoints (std::vector<int>& foregrou
   foreground_points_.clear ();
   foreground_points_.reserve (foreground_points_indices.size ());
 
-  for (int i_point = 0; i_point < foreground_points_indices.size (); i_point++)
+  for (size_t i_point = 0; i_point < foreground_points_indices.size (); i_point++)
     if (foreground_points_indices[i_point] < number_of_points_)
       foreground_points_.push_back ( input_cloud_->points[ foreground_points_indices[i_point] ] );
 
@@ -200,7 +199,7 @@ pcl::MinCutSegmentation<PointT>::setBackgroundPoints (typename pcl::PointCloud<P
 {
   background_points_.clear ();
   background_points_.reserve (background_points->points.size ());
-  for (int i_point = 0; i_point < background_points->points.size (); i_point++)
+  for (size_t i_point = 0; i_point < background_points->points.size (); i_point++)
     background_points_.push_back (background_points->points[i_point]);
 
   unary_potentials_are_valid_ = false;
@@ -213,7 +212,7 @@ pcl::MinCutSegmentation<PointT>::setBackgroundPoints (std::vector<int>& backgrou
   background_points_.clear ();
   background_points_.reserve (background_points_indices.size ());
 
-  for (int i_point = 0; i_point < background_points_indices.size (); i_point++)
+  for (size_t i_point = 0; i_point < background_points_indices.size (); i_point++)
     if (background_points_indices[i_point] < number_of_points_)
       background_points_.push_back ( input_cloud_->points[ background_points_indices[i_point] ] );
 
@@ -340,7 +339,7 @@ pcl::MinCutSegmentation<PointT>::buildGraph ()
     search_ = boost::shared_ptr<pcl::search::Search<PointT> > (new pcl::search::KdTree<PointT>);
 
   graph_.reset ();
-  graph_ = boost::shared_ptr< Graph > (new Graph ());
+  graph_ = boost::shared_ptr< mGraph > (new mGraph ());
 
   capacity_.reset ();
   capacity_ = boost::shared_ptr<CapacityMap> (new CapacityMap ());
@@ -379,7 +378,7 @@ pcl::MinCutSegmentation<PointT>::buildGraph ()
   for (int i_point = 0; i_point < number_of_points_; i_point++)
   {
     search_->nearestKSearch (i_point, number_of_neighbours_, neighbours, distances);
-    for (int i_nghbr = 1; i_nghbr < neighbours.size (); i_nghbr++)
+    for (size_t i_nghbr = 1; i_nghbr < neighbours.size (); i_nghbr++)
     {
       double weight = calculateBinaryPotential (i_point, neighbours[i_nghbr]);
       addEdge (i_point, neighbours[i_nghbr], weight);
@@ -412,15 +411,15 @@ template <typename PointT> void
 pcl::MinCutSegmentation<PointT>::calculateUnaryPotential (int point, double& source_weight, double& sink_weight) const
 {
   double min_dist_to_foreground = std::numeric_limits<double>::max ();
-  double min_dist_to_background = std::numeric_limits<double>::max ();
+  //double min_dist_to_background = std::numeric_limits<double>::max ();
   double closest_foreground_point[] = {0.0, 0.0};
-  double closest_background_point[] = {0.0, 0.0};
+  //double closest_background_point[] = {0.0, 0.0};
   double initial_point[] = {0.0, 0.0};
 
   initial_point[0] = input_cloud_->points[point].x;
   initial_point[1] = input_cloud_->points[point].y;
 
-  for (int i_point = 0; i_point < foreground_points_.size (); i_point++)
+  for (size_t i_point = 0; i_point < foreground_points_.size (); i_point++)
   {
     double dist = 0.0;
     dist += (foreground_points_[i_point].x - initial_point[0]) * (foreground_points_[i_point].x - initial_point[0]);
@@ -589,7 +588,7 @@ pcl::MinCutSegmentation<PointT>::getColoredCloud ()
     colored_cloud->width = input_cloud_->width;
     colored_cloud->height = input_cloud_->height;
     colored_cloud->is_dense = input_cloud_->is_dense;
-    for (size_t i_point = 0; i_point < number_of_points_; i_point++)
+    for (size_t i_point = 0; i_point < size_t (number_of_points_); i_point++)
     {
       pcl::PointXYZRGB point;
       point.x = *(input_cloud_->points[i_point].data);
@@ -615,14 +614,14 @@ pcl::MinCutSegmentation<PointT>::getColoredCloud ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> boost::shared_ptr<typename const pcl::MinCutSegmentation<PointT>::Graph>
+template <typename PointT> typename boost::shared_ptr<typename pcl::MinCutSegmentation<PointT>::mGraph>
 pcl::MinCutSegmentation<PointT>::getGraph () const
 {
   return (graph_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>std::vector<int>
+template <typename PointT> std::vector<int>
 pcl::MinCutSegmentation<PointT>::getSegments () const
 {
   return (labels_);
