@@ -6,7 +6,7 @@
 #include <pcl/surface/convex_hull.h>
 #include <pcl/surface/concave_hull.h>
 #include <pcl/surface/gp3.h>
-#include <pcl/surface/marching_cubes_greedy.h>
+#include <pcl/surface/marching_cubes_hoppe.h>
 
 #include "typedefs.h"
 
