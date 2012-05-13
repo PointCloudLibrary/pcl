@@ -25,8 +25,7 @@
 #include <pcl/common/transforms.h>
 #include <pcl/surface/grid_projection.h>
 #include <pcl/surface/gp3.h>
-#include <pcl/surface/marching_cubes_greedy.h>
-#include <pcl/surface/marching_cubes_greedy_dot.h>
+#include <pcl/surface/marching_cubes_hoppe.h>
 
 template<typename FeatureType>
 class ICCVTutorial
@@ -598,9 +597,9 @@ main (int argc, char ** argv)
   }
   else if (surface_type == 2)
   {
-    pcl::MarchingCubes<pcl::PointXYZRGBNormal>* mc = new pcl::MarchingCubesGreedy<pcl::PointXYZRGBNormal>;
+    pcl::MarchingCubes<pcl::PointXYZRGBNormal>* mc = new pcl::MarchingCubesHoppe<pcl::PointXYZRGBNormal>;
     mc->setIsoLevel(0.001);
-    mc->setLeafSize(0.001);
+    mc->setGridResolution(50, 50, 50);
     surface_reconstruction.reset(mc);
   }
   else
