@@ -53,6 +53,24 @@ namespace pcl
   template <typename PointT>
   class PCL_EXPORTS RegionGrowingRGB : public RegionGrowing<PointT>
   {
+    using RegionGrowing<PointT>::normal_flag_;
+    using RegionGrowing<PointT>::curvature_flag_;
+    using RegionGrowing<PointT>::residual_flag_;
+    using RegionGrowing<PointT>::number_of_segments_;
+    using RegionGrowing<PointT>::segments_;
+    using RegionGrowing<PointT>::point_labels_;
+    using RegionGrowing<PointT>::num_pts_in_segment_;
+    using RegionGrowing<PointT>::point_neighbours_;
+    using RegionGrowing<PointT>::applySmoothRegionGrowingAlgorithm;
+    using RegionGrowing<PointT>::cloud_for_segmentation_;
+    using RegionGrowing<PointT>::theta_threshold_;
+    using RegionGrowing<PointT>::normals_;
+    using RegionGrowing<PointT>::smooth_mode_;
+    using RegionGrowing<PointT>::curvature_threshold_;
+    using RegionGrowing<PointT>::residual_threshold_;
+    using RegionGrowing<PointT>::neighbour_number_;
+    using RegionGrowing<PointT>::search_;
+
     public:
 
       /** \brief Constructor that sets default values for member variables. */

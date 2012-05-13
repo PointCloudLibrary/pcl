@@ -64,7 +64,7 @@ pcl::PointCloud<pcl::Normal>::Ptr normals_;
 pcl::PointCloud<pcl::Normal>::Ptr another_normals_;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-/*TEST (RegionGrowingRGBTest, Segment)
+TEST (RegionGrowingRGBTest, Segment)
 {
   pcl::RegionGrowingRGB<pcl::PointXYZRGB> rg;
 
@@ -81,7 +81,7 @@ pcl::PointCloud<pcl::Normal>::Ptr another_normals_;
 
   EXPECT_NE(0, segments.size());
 }
-*/
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (RegionGrowingTest, Segment)
 {
@@ -226,9 +226,9 @@ TEST (MinCutSegmentationTest, Segment)
   double source_weight = 0.0;
   unsigned int neighbor_number = 0;
 
-  object_center.x = -36.01;
-  object_center.y = -64.73;
-  object_center.z = -6.18;
+  object_center.x = -36.01f;
+  object_center.y = -64.73f;
+  object_center.z = -6.18f;
   radius = 3.8003856;
   sigma = 0.25;
   source_weight = 0.8;
@@ -302,9 +302,9 @@ TEST (MinCutSegmentationTest, SegmentWithWrongParameters)
   pcl::MinCutSegmentation<pcl::PointXYZ> mcSeg;
   mcSeg.setInputCloud (another_cloud_);
   pcl::PointXYZ object_center;
-  object_center.x = -36.01;
-  object_center.y = -64.73;
-  object_center.z = -6.18;
+  object_center.x = -36.01f;
+  object_center.y = -64.73f;
+  object_center.z = -6.18f;
   pcl::PointCloud<pcl::PointXYZ>::Ptr foreground_points(new pcl::PointCloud<pcl::PointXYZ> ());
   foreground_points->points.push_back (object_center);
   mcSeg.setForegroundPoints (foreground_points);
