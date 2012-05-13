@@ -108,8 +108,7 @@ if(build)
         src/gp3.cpp
         src/grid_projection.cpp
         src/marching_cubes.cpp
-        src/marching_cubes_greedy.cpp
-        src/marching_cubes_greedy_dot.cpp
+        src/marching_cubes_hoppe.cpp
         src/bilateral_upsampling.cpp
         src/mls.cpp
         src/mls_omp.cpp
@@ -128,8 +127,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/gp3.h
         include/pcl/${SUBSYS_NAME}/grid_projection.h
         include/pcl/${SUBSYS_NAME}/marching_cubes.h
-        include/pcl/${SUBSYS_NAME}/marching_cubes_greedy.h
-        include/pcl/${SUBSYS_NAME}/marching_cubes_greedy_dot.h
+        include/pcl/${SUBSYS_NAME}/marching_cubes_hoppe.h
         include/pcl/${SUBSYS_NAME}/bilateral_upsampling.h
         include/pcl/${SUBSYS_NAME}/mls.h
         include/pcl/${SUBSYS_NAME}/mls_omp.h
@@ -149,8 +147,7 @@ if(build)
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/gp3.hpp
         include/pcl/${SUBSYS_NAME}/impl/grid_projection.hpp
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes.hpp
-        include/pcl/${SUBSYS_NAME}/impl/marching_cubes_greedy.hpp
-        include/pcl/${SUBSYS_NAME}/impl/marching_cubes_greedy_dot.hpp
+        include/pcl/${SUBSYS_NAME}/impl/marching_cubes_hoppe.hpp
         include/pcl/${SUBSYS_NAME}/impl/bilateral_upsampling.hpp
         include/pcl/${SUBSYS_NAME}/impl/mls.hpp
         include/pcl/${SUBSYS_NAME}/impl/mls_omp.hpp

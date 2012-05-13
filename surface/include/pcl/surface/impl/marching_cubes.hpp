@@ -45,8 +45,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
 pcl::MarchingCubes<PointNT>::MarchingCubes () 
-  : data_ (), leaves_ (), min_p_ (), max_p_ (), leaf_size_ (), gaussian_scale_ (), 
-    data_size_ (), padding_size_ (), iso_level_ (), cell_hash_map_ ()
+: min_p_ (), max_p_ (), gaussian_scale_ (), iso_level_ ()
 {
 }
 
@@ -62,25 +61,30 @@ pcl::MarchingCubes<PointNT>::getBoundingBox ()
 {
   pcl::getMinMax3D (*input_, min_p_, max_p_);
 
+  min_p_ -= (max_p_ - min_p_) * 0.1;
+  max_p_ += (max_p_ - min_p_) * 0.1;
+
   Eigen::Vector4f bounding_box_size = max_p_ - min_p_;
 
   bounding_box_size = max_p_ - min_p_;
-  PCL_DEBUG ("[pcl::MarchingCubes::getBoundingBox] Size of Bounding Box is [%f, %f, %f]\n",
-      bounding_box_size.x (), bounding_box_size.y (), bounding_box_size.z ());
+  PCL_DEBUG ("[pcl::MarchingCubesHoppe::getBoundingBox] Size of Bounding Box is [%f, %f, %f]\n",
+             bounding_box_size.x (), bounding_box_size.y (), bounding_box_size.z ());
   double max_size =
-    (std::max) ((std::max)(bounding_box_size.x (), bounding_box_size.y ()),
-                bounding_box_size.z ());
+      (std::max) ((std::max)(bounding_box_size.x (), bounding_box_size.y ()),
+          bounding_box_size.z ());
 
-  data_size_ = static_cast<uint64_t> (max_size / leaf_size_);
-  PCL_DEBUG ("[pcl::MarchingCubes::getBoundingBox] Lower left point is [%f, %f, %f]\n",
-      min_p_.x (), min_p_.y (), min_p_.z ());
-  PCL_DEBUG ("[pcl::MarchingCubes::getBoundingBox] Upper left point is [%f, %f, %f]\n",
-      max_p_.x (), max_p_.y (), max_p_.z ());
-  PCL_DEBUG ("[pcl::MarchingCubes::getBoundingBox] Padding size: %d\n", padding_size_);
-  PCL_DEBUG ("[pcl::MarchingCubes::getBoundingBox] Leaf size: %f\n", leaf_size_);
+  //  data_size_ = static_cast<uint64_t> (max_size / leaf_size_);
+  PCL_DEBUG ("[pcl::MarchingCubesHoppe::getBoundingBox] Lower left point is [%f, %f, %f]\n",
+             min_p_.x (), min_p_.y (), min_p_.z ());
+  PCL_DEBUG ("[pcl::MarchingCubesHoppe::getBoundingBox] Upper left point is [%f, %f, %f]\n",
+             max_p_.x (), max_p_.y (), max_p_.z ());
 
-  gaussian_scale_ = pow ((padding_size_+1) * leaf_size_ / 2.0, 2.0);
+  //  gaussian_scale_ = pow ((padding_size_+1) * leaf_size_ / 2.0, 2.0);
+  /// TODO check how this should be computed
+  float padding_size_ = 0.0f;
+  gaussian_scale_ = pow ((padding_size_+1) * (max_p_[0]-min_p_[0]) / res_x_ / 2.0, 2.0);
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
@@ -91,91 +95,81 @@ pcl::MarchingCubes<PointNT>::interpolateEdge (float iso_level,
                                               float val_p2,
                                               Eigen::Vector3f &output)
 {
-  if (iso_level - val_p1 < 0.00001)
-    output = p1;
-  if (iso_level - val_p2 < 0.00001)
-    output = p2;
-  if (val_p1 - val_p2 < 0.00001)
-    output = p1;
-
   float mu = (iso_level - val_p1) / (val_p2-val_p1);
-  output[0] = p1[0] + mu * (p2[0] - p1[0]);
-  output[1] = p1[1] + mu * (p2[1] - p1[1]);
-  output[2] = p1[2] + mu * (p2[2] - p1[2]);
+  output = p1 + mu * (p2 - p1);
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
-pcl::MarchingCubes<PointNT>::createSurface (Leaf leaf_node,
+pcl::MarchingCubes<PointNT>::createSurface (std::vector<float> &leaf_node,
                                             Eigen::Vector3i &index_3d,
-                                            pcl::PointCloud<PointNT> &cloud,
-                                            float iso_level)
+                                            pcl::PointCloud<PointNT> &cloud)
 {
   int cubeindex = 0;
   Eigen::Vector3f vertex_list[12];
-  if (leaf_node.vertex[0] < iso_level) cubeindex |= 1;
-  if (leaf_node.vertex[1] < iso_level) cubeindex |= 2;
-  if (leaf_node.vertex[2] < iso_level) cubeindex |= 4;
-  if (leaf_node.vertex[3] < iso_level) cubeindex |= 8;
-  if (leaf_node.vertex[4] < iso_level) cubeindex |= 16;
-  if (leaf_node.vertex[5] < iso_level) cubeindex |= 32;
-  if (leaf_node.vertex[6] < iso_level) cubeindex |= 64;
-  if (leaf_node.vertex[7] < iso_level) cubeindex |= 128;
+  if (leaf_node[0] < iso_level_) cubeindex |= 1;
+  if (leaf_node[1] < iso_level_) cubeindex |= 2;
+  if (leaf_node[2] < iso_level_) cubeindex |= 4;
+  if (leaf_node[3] < iso_level_) cubeindex |= 8;
+  if (leaf_node[4] < iso_level_) cubeindex |= 16;
+  if (leaf_node[5] < iso_level_) cubeindex |= 32;
+  if (leaf_node[6] < iso_level_) cubeindex |= 64;
+  if (leaf_node[7] < iso_level_) cubeindex |= 128;
 
   // Cube is entirely in/out of the surface
   if (edgeTable[cubeindex] == 0)
-     return;
+    return;
+
+  //Eigen::Vector4f index_3df (index_3d[0], index_3d[1], index_3d[2], 0.0f);
+  Eigen::Vector3f center;// TODO coeff wise product = min_p_ + Eigen::Vector4f (1.0f/res_x_, 1.0f/res_y_, 1.0f/res_z_) * index_3df * (max_p_ - min_p_);
+  center[0] = min_p_[0] + (max_p_[0] - min_p_[0]) * index_3d[0] / res_x_;
+  center[1] = min_p_[1] + (max_p_[1] - min_p_[1]) * index_3d[1] / res_y_;
+  center[2] = min_p_[2] + (max_p_[2] - min_p_[2]) * index_3d[2] / res_z_;
 
   std::vector<Eigen::Vector3f> p;
   p.resize (8);
-  Eigen::Vector4f center;
-  getCellCenterFromIndex (index_3d, center);
   for (int i = 0; i < 8; ++i)
   {
-    Eigen::Vector3f point;
+    Eigen::Vector3f point = center;
     if(i & 0x4)
-      point[1] = static_cast<float> (center[1] + leaf_size_/2);
-    else
-      point[1] = static_cast<float> (center[1] - leaf_size_/2);
+      point[1] = static_cast<float> (center[1] + (max_p_[1] - min_p_[1]) / float (res_y_));
 
     if(i & 0x2)
-      point[2] = static_cast<float> (center[2] + leaf_size_/2);
-    else
-      point[2] = static_cast<float> (center[2] - leaf_size_/2);
+      point[2] = static_cast<float> (center[2] + (max_p_[2] - min_p_[2]) / float (res_z_));
 
     if((i & 0x1) ^ ((i >> 1) & 0x1))
-      point[0] = static_cast<float> (center[0] + leaf_size_/2);
-    else
-      point[0] = static_cast<float> (center[0] - leaf_size_/2);
+      point[0] = static_cast<float> (center[0] + (max_p_[0] - min_p_[0]) / float (res_x_));
 
     p[i] = point;
   }
 
+
   // Find the vertices where the surface intersects the cube
   if (edgeTable[cubeindex] & 1)
-    interpolateEdge (iso_level,p[0],p[1],leaf_node.vertex[0],leaf_node.vertex[1], vertex_list[0]);
+    interpolateEdge (iso_level_, p[0], p[1], leaf_node[0], leaf_node[1], vertex_list[0]);
   if (edgeTable[cubeindex] & 2)
-    interpolateEdge (iso_level,p[1],p[2],leaf_node.vertex[1],leaf_node.vertex[2], vertex_list[1]);
+    interpolateEdge (iso_level_, p[1], p[2], leaf_node[1], leaf_node[2], vertex_list[1]);
   if (edgeTable[cubeindex] & 4)
-    interpolateEdge (iso_level,p[2],p[3],leaf_node.vertex[2],leaf_node.vertex[3], vertex_list[2]);
+    interpolateEdge (iso_level_, p[2], p[3], leaf_node[2], leaf_node[3], vertex_list[2]);
   if (edgeTable[cubeindex] & 8)
-    interpolateEdge (iso_level,p[3],p[0],leaf_node.vertex[3],leaf_node.vertex[0], vertex_list[3]);
+    interpolateEdge (iso_level_, p[3], p[0], leaf_node[3], leaf_node[0], vertex_list[3]);
   if (edgeTable[cubeindex] & 16)
-    interpolateEdge (iso_level,p[4],p[5],leaf_node.vertex[4],leaf_node.vertex[5], vertex_list[4]);
+    interpolateEdge (iso_level_, p[4], p[5], leaf_node[4], leaf_node[5], vertex_list[4]);
   if (edgeTable[cubeindex] & 32)
-    interpolateEdge (iso_level,p[5],p[6],leaf_node.vertex[5],leaf_node.vertex[6], vertex_list[5]);
+    interpolateEdge (iso_level_, p[5], p[6], leaf_node[5], leaf_node[6], vertex_list[5]);
   if (edgeTable[cubeindex] & 64)
-    interpolateEdge (iso_level,p[6],p[7],leaf_node.vertex[6],leaf_node.vertex[7], vertex_list[6]);
+    interpolateEdge (iso_level_, p[6], p[7], leaf_node[6], leaf_node[7], vertex_list[6]);
   if (edgeTable[cubeindex] & 128)
-    interpolateEdge (iso_level,p[7],p[4],leaf_node.vertex[7],leaf_node.vertex[4], vertex_list[7]);
+    interpolateEdge (iso_level_, p[7], p[4], leaf_node[7], leaf_node[4], vertex_list[7]);
   if (edgeTable[cubeindex] & 256)
-    interpolateEdge (iso_level,p[0],p[4],leaf_node.vertex[0],leaf_node.vertex[4], vertex_list[8]);
+    interpolateEdge (iso_level_, p[0], p[4], leaf_node[0], leaf_node[4], vertex_list[8]);
   if (edgeTable[cubeindex] & 512)
-    interpolateEdge (iso_level,p[1],p[5],leaf_node.vertex[1],leaf_node.vertex[5], vertex_list[9]);
+    interpolateEdge (iso_level_, p[1], p[5], leaf_node[1], leaf_node[5], vertex_list[9]);
   if (edgeTable[cubeindex] & 1024)
-    interpolateEdge (iso_level,p[2],p[6],leaf_node.vertex[2],leaf_node.vertex[6], vertex_list[10]);
+    interpolateEdge (iso_level_, p[2], p[6], leaf_node[2], leaf_node[6], vertex_list[10]);
   if (edgeTable[cubeindex] & 2048)
-    interpolateEdge (iso_level,p[3],p[7],leaf_node.vertex[3],leaf_node.vertex[7], vertex_list[11]);
+    interpolateEdge (iso_level_, p[3], p[7], leaf_node[3], leaf_node[7], vertex_list[11]);
 
   // Create the triangle
   for (int i = 0; triTable[cubeindex][i] != -1; i+=3)
@@ -196,85 +190,46 @@ pcl::MarchingCubes<PointNT>::createSurface (Leaf leaf_node,
   }
 }
 
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
-pcl::MarchingCubes<PointNT>::getNeighborList1D (Leaf leaf,
-                                                Eigen::Vector3i &index3d,
-                                                HashMap &neighbor_list)
+pcl::MarchingCubes<PointNT>::getNeighborList1D (std::vector<float> &leaf,
+                                                Eigen::Vector3i &index3d)
 {
-  for (int x = -1; x < 2; ++x)
-  {
-    for (int y = -1; y < 2; ++y)
-    {
-      for (int z = -1; z < 2; ++z)
-      {
-        if (x == 0 && y == 0 && z == 0)
-          continue;
+  leaf = std::vector<float> (8, 0.0f);
 
-        if (index3d[0] == 0 && x == -1)
-          continue;
-        if (index3d[1] == 0 && y == -1)
-          continue;
-        if (index3d[2] == 0 && z == -1)
-          continue;
-
-        Eigen::Vector3i neighbor_index;
-        neighbor_index[0] = index3d[0] + x;
-        neighbor_index[1] = index3d[1] + y;
-        neighbor_index[2] = index3d[2] + z;
-        Leaf neighbor_leaf;
-
-        if ((x == 0 || x == 1) &&
-            (y == 0 || y == 1) &&
-            (z == 0 || z == 1))
-          neighbor_leaf.vertex[0] = leaf.vertex[0];
-
-        if ((x == 0 || x == -1) &&
-            (y == 0 || y == 1) &&
-            (z == 0 || z == 1))
-          neighbor_leaf.vertex[1] = leaf.vertex[1];
-
-        if ((x == 0 || x == -1) &&
-            (y == 0 || y == 1) &&
-            (z == 0 || z == -1))
-          neighbor_leaf.vertex[2] = leaf.vertex[2];
-
-        if ((x == 0 || x == 1) &&
-            (y == 0 || y == 1) &&
-            (z == 0 || z == -1))
-          neighbor_leaf.vertex[3] = leaf.vertex[3];
-
-        if ((x == 0 || x == 1) &&
-            (y == 0 || y == -1) &&
-            (z == 0 || z == 1))
-          neighbor_leaf.vertex[4] = leaf.vertex[4];
-
-        if ((x == 0 || x == -1) &&
-            (y == 0 || y == -1) &&
-            (z == 0 || z == 1))
-          neighbor_leaf.vertex[5] = leaf.vertex[5];
-
-        if ((x == 0 || x == -1) &&
-            (y == 0 || y == -1) &&
-            (z == 0 || z == -1))
-          neighbor_leaf.vertex[6] = leaf.vertex[6];
-
-        if ((x == 0 || x == 1) &&
-            (y == 0 || y == -1) &&
-            (z == 0 || z == -1))
-          neighbor_leaf.vertex[7] = leaf.vertex[7];
-
-        neighbor_list[getIndexIn1D (neighbor_index)] = neighbor_leaf;
-      }
-    }
-  }
+  leaf[0] = getGridValue (index3d);
+  leaf[1] = getGridValue (index3d + Eigen::Vector3i (1, 0, 0));
+  leaf[2] = getGridValue (index3d + Eigen::Vector3i (1, 0, 1));
+  leaf[3] = getGridValue (index3d + Eigen::Vector3i (0, 0, 1));
+  leaf[4] = getGridValue (index3d + Eigen::Vector3i (0, 1, 0));
+  leaf[5] = getGridValue (index3d + Eigen::Vector3i (1, 1, 0));
+  leaf[6] = getGridValue (index3d + Eigen::Vector3i (1, 1, 1));
+  leaf[7] = getGridValue (index3d + Eigen::Vector3i (0, 1, 1));
 }
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointNT> float
+pcl::MarchingCubes<PointNT>::getGridValue (Eigen::Vector3i pos)
+{
+  /// TODO what to return?
+  if (pos[0] < 0 || pos[0] >= res_x_)
+    return -1.0f;
+  if (pos[1] < 0 || pos[1] >= res_y_)
+    return -1.0f;
+  if (pos[2] < 0 || pos[2] >= res_z_)
+    return -1.0f;
+
+  return grid_[pos[0]*res_y_*res_z_ + pos[1]*res_z_ + pos[2]];
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
 pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PolygonMesh &output)
 {
-  if (!(iso_level_ > 0 && iso_level_ < 1))
+  if (!(iso_level_ >= 0 && iso_level_ < 1))
   {
     PCL_ERROR ("[pcl::%s::performReconstruction] Invalid iso level %f! Please use a number between 0 and 1.\n", getClassName ().c_str (), iso_level_);
     output.cloud.width = output.cloud.height = 0;
@@ -282,15 +237,14 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PolygonMesh &output)
     output.polygons.clear ();
     return;
   }
-  if (leaf_size_ <=0)
-  {
-    PCL_ERROR ("[pcl::%s::performReconstruction] Invalid leaf size %f! Please use a number greater than 0.\n", getClassName ().c_str (), leaf_size_);
-    output.cloud.width = output.cloud.height = 0;
-    output.cloud.data.clear ();
-    output.polygons.clear ();
-    return;
-    
-  }
+
+  printf ("Marching cubes using the PolygonMesh performReconstruction method\n");
+
+  // Create grid
+  grid_ = std::vector<float> (res_x_*res_y_*res_z_, 0.0f);
+
+  // Populate tree
+  tree_->setInputCloud (input_);
 
   getBoundingBox ();
 
@@ -298,51 +252,56 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PolygonMesh &output)
   // this needs to be implemented in a child class
   voxelizeData ();
 
+
+
   // run the actual marching cubes algorithm, store it into a point cloud,
   // and copy the point cloud + connectivity into output
   pcl::PointCloud<PointNT> cloud;
-  BOOST_FOREACH (typename HashMap::value_type entry, cell_hash_map_)
-  {
-    Eigen::Vector3i leaf_index;
-    getIndexIn3D (entry.first, leaf_index);
-    createSurface (entry.second, leaf_index, cloud, iso_level_);
-  }
-  pcl::toROSMsg (cloud, output.cloud);
-  output.polygons.resize (cloud.size () / 3);
 
+  for (int x = 1; x < res_x_-1; ++x)
+    for (int y = 1; y < res_y_-1; ++y)
+      for (int z = 1; z < res_z_-1; ++z)
+      {
+        Eigen::Vector3i index_3d (x, y, z);
+        std::vector<float> leaf_node;
+        getNeighborList1D (leaf_node, index_3d);
+        createSurface (leaf_node, index_3d, cloud);
+      }
+  pcl::toROSMsg (cloud, output.cloud);
+
+  output.polygons.resize (cloud.size () / 3);
   for (size_t i = 0; i < output.polygons.size (); ++i)
   {
     pcl::Vertices v;
     v.vertices.resize (3);
     for (int j = 0; j < 3; ++j)
       v.vertices[j] = static_cast<int> (i) * 3 + j;
-     output.polygons[i] = v;
+    output.polygons[i] = v;
   }
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
 pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
                                                     std::vector<pcl::Vertices> &polygons)
 {
-  /// TODO these should go to initCompute ()
-  if (!(iso_level_ > 0 && iso_level_ < 1))
+  if (!(iso_level_ >= 0 && iso_level_ < 1))
   {
     PCL_ERROR ("[pcl::%s::performReconstruction] Invalid iso level %f! Please use a number between 0 and 1.\n", getClassName ().c_str (), iso_level_);
     points.width = points.height = 0;
-    points.clear ();
+    points.points.clear ();
     polygons.clear ();
     return;
   }
-  if (leaf_size_ <=0)
-  {
-    PCL_ERROR ("[pcl::%s::performReconstruction] Invalid leaf size %f! Please use a number greater than 0.\n", getClassName ().c_str (), leaf_size_);
-    points.width = points.height = 0;
-    points.clear ();
-    polygons.clear ();
-    return;
 
-  }
+  printf ("Marching cubes using the PolygonMesh performReconstruction method\n");
+
+  // Create grid
+  grid_ = std::vector<float> (res_x_*res_y_*res_z_, 0.0f);
+
+  // Populate tree
+  tree_->setInputCloud (input_);
 
   getBoundingBox ();
 
@@ -352,21 +311,25 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
 
   // run the actual marching cubes algorithm, store it into a point cloud,
   // and copy the point cloud + connectivity into output
-  BOOST_FOREACH (typename HashMap::value_type entry, cell_hash_map_)
-  {
-    Eigen::Vector3i leaf_index;
-    getIndexIn3D (entry.first, leaf_index);
-    createSurface (entry.second, leaf_index, points, iso_level_);
-  }
-  polygons.resize (points.size () / 3);
+  points.clear ();
+  for (int x = 1; x < res_x_-1; ++x)
+    for (int y = 1; y < res_y_-1; ++y)
+      for (int z = 1; z < res_z_-1; ++z)
+      {
+        Eigen::Vector3i index_3d (x, y, z);
+        std::vector<float> leaf_node;
+        getNeighborList1D (leaf_node, index_3d);
+        createSurface (leaf_node, index_3d, points);
+      }
 
+  polygons.resize (points.size () / 3);
   for (size_t i = 0; i < polygons.size (); ++i)
   {
     pcl::Vertices v;
     v.vertices.resize (3);
     for (int j = 0; j < 3; ++j)
       v.vertices[j] = static_cast<int> (i) * 3 + j;
-     polygons[i] = v;
+    polygons[i] = v;
   }
 }
 
