@@ -109,6 +109,7 @@ if(build)
         src/grid_projection.cpp
         src/marching_cubes.cpp
         src/marching_cubes_hoppe.cpp
+        src/marching_cubes_rbf.cpp
         src/bilateral_upsampling.cpp
         src/mls.cpp
         src/mls_omp.cpp
@@ -128,6 +129,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/grid_projection.h
         include/pcl/${SUBSYS_NAME}/marching_cubes.h
         include/pcl/${SUBSYS_NAME}/marching_cubes_hoppe.h
+        include/pcl/${SUBSYS_NAME}/marching_cubes_rbf.h
         include/pcl/${SUBSYS_NAME}/bilateral_upsampling.h
         include/pcl/${SUBSYS_NAME}/mls.h
         include/pcl/${SUBSYS_NAME}/mls_omp.h
@@ -148,6 +150,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/grid_projection.hpp
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes.hpp
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes_hoppe.hpp
+        include/pcl/${SUBSYS_NAME}/impl/marching_cubes_rbf.hpp
         include/pcl/${SUBSYS_NAME}/impl/bilateral_upsampling.hpp
         include/pcl/${SUBSYS_NAME}/impl/mls.hpp
         include/pcl/${SUBSYS_NAME}/impl/mls_omp.hpp
