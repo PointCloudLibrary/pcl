@@ -31,6 +31,7 @@ Table of contents
   * :ref:`segmentation_tutorial`
   * :ref:`surface_tutorial`
   * :ref:`visualization_tutorial`
+  * :ref:`applications_tutorial`
 
 
 .. _basic_usage:
