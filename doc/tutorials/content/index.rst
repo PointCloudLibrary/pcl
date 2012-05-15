@@ -897,6 +897,21 @@ Applications
      .. |ap_2| image:: images/vfh_recognition.jpg
                :height: 100px
 
+  * :ref:`mobile_streaming`
+    
+     ======  ======
+     |ap_3|  Title: **Point Cloud Streaming to Mobile Devices with Real-time Visualization**
+
+             Author: *Pat Marion*
+
+             Compatibility: > PCL 1.3
+
+             This tutorial describes how to send point cloud data over the network from a desktop server to a client running on a mobile device.
+     ======  ======
+     
+     .. |ap_3| image:: images/mobile_streaming_1.png
+               :height: 100px
+
  ..
   * :ref:`normal_estimation_integral_images`
     Surface normal estimation
