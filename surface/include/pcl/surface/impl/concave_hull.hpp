@@ -561,7 +561,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     for (size_t i = 0; i < alpha_shape.points.size (); i++)
     {
       tree.nearestKSearch (alpha_shape.points[i], 1, neighbor, distances);
-      indices[i] = (*indices_)[neighbor[0]];
+      indices[i] = neighbor[0];
     }
 
     // replace point with the closest neighbor in the original point cloud
