@@ -70,7 +70,12 @@ TEST (PCL, lineWithLineIntersection)
   double default_sqr_eps = 1e-4;
   EXPECT_GT(sqr_dist_case_1, default_sqr_eps);
   Eigen::Vector4f zero(0.0f, 0.0f, 0.0f, 0.0f);
-  EXPECT_EQ(point_case_1, zero);
+  
+  EXPECT_EQ(point_case_1[0], zero[0]);
+  EXPECT_EQ(point_case_1[1], zero[1]);
+  EXPECT_EQ(point_case_1[2], zero[2]);
+  EXPECT_EQ(point_case_1[3], zero[3]);
+
   EXPECT_FALSE(result_case_1);
 
   pcl::ModelCoefficients line_a_mod;
@@ -94,7 +99,11 @@ TEST (PCL, lineWithLineIntersection)
   Eigen::Vector4f point_mod_1;
   EXPECT_FALSE(lineWithLineIntersection(line_a_mod, line_b_mod, point_mod_1));
   EXPECT_EQ(result_case_1, lineWithLineIntersection(line_a_mod, line_b_mod, point_mod_1));
-  EXPECT_EQ(point_mod_1, zero);
+
+  EXPECT_EQ(point_mod_1[0], zero[0]);
+  EXPECT_EQ(point_mod_1[1], zero[1]);
+  EXPECT_EQ(point_mod_1[2], zero[2]); 
+  EXPECT_EQ(point_mod_1[3], zero[3]);
 
   //case 2
   line_a.x() = 0.09100f;
@@ -115,7 +124,12 @@ TEST (PCL, lineWithLineIntersection)
 
   double sqr_dist_case_2 = (p1 - p2).squaredNorm ();
   EXPECT_LT(sqr_dist_case_2, sqr_eps_case_2);
-  EXPECT_EQ(point_case_2, p1);
+
+  EXPECT_EQ(point_case_2[0], p1[0]);
+  EXPECT_EQ(point_case_2[1], p1[1]);
+  EXPECT_EQ(point_case_2[2], p1[2]);
+  EXPECT_EQ(point_case_2[3], p1[3]);
+
   EXPECT_TRUE(result_case_2);
 
   pcl::ModelCoefficients line_a_mod_2;
@@ -151,7 +165,11 @@ TEST (PCL, lineWithLineIntersection)
   EXPECT_EQ(lineWithLineIntersection (coeff1, coeff2, point_mod_case_2, sqr_mod_case_2),
                       lineWithLineIntersection(line_a_mod_2, line_b_mod_2, point_mod_2, sqr_mod_case_2));
   EXPECT_TRUE(lineWithLineIntersection(line_a_mod_2, line_b_mod_2, point_mod_2, sqr_mod_case_2));
-  EXPECT_EQ(point_mod_2, point_mod_case_2);
+
+  EXPECT_EQ(point_mod_2[0], point_mod_case_2[0]);
+  EXPECT_EQ(point_mod_2[1], point_mod_case_2[1]);
+  EXPECT_EQ(point_mod_2[2], point_mod_case_2[2]);
+  EXPECT_EQ(point_mod_2[3], point_mod_case_2[3]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
