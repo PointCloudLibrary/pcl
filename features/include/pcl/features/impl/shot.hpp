@@ -621,6 +621,9 @@ pcl::SHOTEstimation<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT>::computePoi
   {
     PCL_WARN ("[pcl::%s::computePointSHOT] Warning! Neighborhood has less than 5 vertexes. Aborting description of point with index %d\n",
                   getClassName ().c_str (), (*indices_)[index]);
+	
+	shot.setConstant(descLength_, 1, std::numeric_limits<float>::quiet_NaN () );
+
     return;
   }
 
@@ -713,6 +716,9 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computePointSHOT (
   {
     PCL_WARN ("[pcl::%s::computePointSHOT] Warning! Neighborhood has less than 5 vertexes. Aborting description of point with index %d\n",
                   getClassName ().c_str (), (*indices_)[index]);
+
+	shot.setConstant(descLength_, 1, std::numeric_limits<float>::quiet_NaN () );
+
     return;
   }
 
@@ -739,6 +745,8 @@ pcl::SHOTEstimation<PointInT, PointNT, Eigen::MatrixXf, PointRFT>::computePointS
   {
     PCL_WARN ("[pcl::%s::computePointSHOT] Warning! Neighborhood has less than 5 vertexes. Aborting description of point with index %d\n",
                   getClassName ().c_str (), (*indices_)[index]);
+
+	shot.setConstant(descLength_, 1, std::numeric_limits<float>::quiet_NaN () );
     return;
   }
 
