@@ -259,7 +259,7 @@ namespace pcl
   {
     struct TrianglesGenerator : public CubeIndexEstimator
     {
-      enum { CTA_SIZE = 256 };
+      enum { CTA_SIZE = 256, MAX_GRID_SIZE_X = 65536 };
 
       const int* occupied_voxels;
       const int* vertex_ofssets;
@@ -295,7 +295,8 @@ namespace pcl
       operator () () const
       {
         int tid = threadIdx.x;
-        int idx = blockIdx.x * CTA_SIZE + tid;
+        int idx = (blockIdx.y * MAX_GRID_SIZE_X + blockIdx.x) * CTA_SIZE + tid;
+      
 
         if (idx >= voxels_count)
           return;
@@ -368,8 +369,9 @@ namespace pcl
 
 void
 pcl::device::generateTriangles (const PtrStep<short2>& volume, const DeviceArray2D<int>& occupied_voxels, const float3& volume_size, DeviceArray<PointType>& output)
-{
-  TrianglesGenerator tg;
+{    
+  typedef TrianglesGenerator Tg;
+  Tg tg;
 
   tg.volume = volume;
   tg.occupied_voxels = occupied_voxels.ptr (0);
@@ -380,8 +382,10 @@ pcl::device::generateTriangles (const PtrStep<short2>& volume, const DeviceArray
   tg.cell_size.z = volume_size.z / VOLUME_Z;
   tg.output = output;
 
-  dim3 block (TrianglesGenerator::CTA_SIZE);
-  dim3 grid (divUp (tg.voxels_count, block.x));
+  int blocks_num = divUp (tg.voxels_count, Tg::CTA_SIZE);
+
+  dim3 block (Tg::CTA_SIZE);     
+  dim3 grid(min(blocks_num, Tg::MAX_GRID_SIZE_X), divUp(blocks_num, Tg::MAX_GRID_SIZE_X));
 
   trianglesGeneratorKernel<<<grid, block>>>(tg);
   cudaSafeCall ( cudaGetLastError () );
