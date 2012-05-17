@@ -37,7 +37,7 @@ if(build)
         src/time_trigger.cpp
         src/gaussian.cpp
         ${range_image_srcs}
-	)
+        )
 
     set(incs 
         include/pcl/correspondence.h
@@ -103,6 +103,7 @@ if(build)
         include/pcl/common/gaussian.h
         include/pcl/common/point_operators.h
         include/pcl/common/spring.h
+        include/pcl/common/intensity.h
         )
 
     set(common_incs_impl
@@ -122,11 +123,12 @@ if(build)
         include/pcl/common/impl/vector_average.hpp
         include/pcl/common/impl/gaussian.hpp
         include/pcl/common/impl/spring.hpp
-       )
+        include/pcl/common/impl/intensity.hpp
+        )
 
     set(impl_incs include/pcl/impl/instantiate.hpp
         include/pcl/impl/point_types.hpp
-	)
+        )
 
     set(ros_incs include/pcl/ros/conversions.h
         include/pcl/ros/register_point_struct.h
