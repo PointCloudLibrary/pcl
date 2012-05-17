@@ -45,8 +45,8 @@ using namespace pcl;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, lineWithLineIntersection)
 {
-  Eigen::VectorXf line_a(4);
-  Eigen::VectorXf line_b(4);
+  Eigen::VectorXf line_a(6);
+  Eigen::VectorXf line_b(6);
 
   //case 1
   line_a[0] = 0.01f;
