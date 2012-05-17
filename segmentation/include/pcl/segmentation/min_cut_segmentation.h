@@ -32,8 +32,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author : Sergey Ushakov
- * Email  : mine_all_mine@bk.ru
+ * $Id:$
  *
  */
 
@@ -54,7 +53,7 @@ namespace pcl
     * This class implements the segmentation algorithm based on minimal cut of the graph.
     * Description can be found in the article
     * "Min-Cut Based Segmentation of Point Clouds"
-    * by Aleksey Golovinskiy and Thomas Funkhouser.
+    * \author: Aleksey Golovinskiy (mine_all_mine@bk.ru) and Thomas Funkhouser.
     */
   template <typename PointT>
   class PCL_EXPORTS MinCutSegmentation
@@ -127,11 +126,11 @@ namespace pcl
       getNeighbourNumber () const;
 
       /** \brief Returns the points that must belong to foreground. */
-      std::vector<PointT>
+      std::vector<PointT, Eigen::aligned_allocator<PointT> >
       getForegroundPoints () const;
 
       /** \brief Returns the points that must belong to background. */
-      std::vector<PointT>
+      std::vector<PointT, Eigen::aligned_allocator<PointT> >
       getBackgroundPoints () const;
 
       /** \brief Returns that flow value that was calculated during the segmentation. */
@@ -328,10 +327,10 @@ namespace pcl
       std::vector<int> labels_;
 
       /** \brief Stores the points that are known to be in the foreground. */
-      std::vector<PointT> foreground_points_;
+      std::vector<PointT, Eigen::aligned_allocator<PointT> > foreground_points_;
 
       /** \brief Stores the points that are known to be in the background. */
-      std::vector<PointT> background_points_;
+      std::vector<PointT, Eigen::aligned_allocator<PointT> > background_points_;
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW

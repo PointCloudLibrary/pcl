@@ -32,8 +32,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author : Sergey Ushakov
- * Email  : mine_all_mine@bk.ru
+ * $Id:$
  *
  */
 

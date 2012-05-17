@@ -32,8 +32,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author : Sergey Ushakov
- * Email  : mine_all_mine@bk.ru
+ * $Id:$
  *
  */
 
@@ -262,14 +261,14 @@ pcl::MinCutSegmentation<PointT>::getNeighbourNumber () const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> std::vector<PointT>
+template <typename PointT> std::vector<PointT, Eigen::aligned_allocator<PointT> >
 pcl::MinCutSegmentation<PointT>::getForegroundPoints () const
 {
   return (foreground_points_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> std::vector<PointT>
+template <typename PointT> std::vector<PointT, Eigen::aligned_allocator<PointT> >
 pcl::MinCutSegmentation<PointT>::getBackgroundPoints () const
 {
   return (background_points_);
