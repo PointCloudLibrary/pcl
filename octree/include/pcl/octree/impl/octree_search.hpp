@@ -586,7 +586,8 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::boxSearchRecursive 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT> int
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxelCenters (
-    Eigen::Vector3f origin, Eigen::Vector3f direction, AlignedPointTVector &voxelCenterList) const
+    Eigen::Vector3f origin, Eigen::Vector3f direction, AlignedPointTVector &voxelCenterList,
+    int maxVoxelCount) const
 {
   OctreeKey key;
   key.x = key.y = key.z = 0;
@@ -602,7 +603,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
 
   if (max (max (minX, minY), minZ) < min (min (maxX, maxY), maxZ))
     return getIntersectedVoxelCentersRecursive (minX, minY, minZ, maxX, maxY, maxZ, a, this->rootNode_, key,
-                                                voxelCenterList);
+                                                voxelCenterList, maxVoxelCount);
 
   return (0);
 }
@@ -610,7 +611,8 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename OctreeT> int
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxelIndices (
-    Eigen::Vector3f origin, Eigen::Vector3f direction, std::vector<int> &k_indices) const
+    Eigen::Vector3f origin, Eigen::Vector3f direction, std::vector<int> &k_indices,
+    int maxVoxelCount) const
 {
   OctreeKey key;
   key.x = key.y = key.z = 0;
@@ -625,7 +627,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
 
   if (max (max (minX, minY), minZ) < min (min (maxX, maxY), maxZ))
     return getIntersectedVoxelIndicesRecursive (minX, minY, minZ, maxX, maxY, maxZ, a, this->rootNode_, key,
-                                                k_indices);
+                                                k_indices, maxVoxelCount);
   return (0);
 }
 
@@ -633,7 +635,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
 template<typename PointT, typename LeafT, typename OctreeT> int
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxelCentersRecursive (
     double minX, double minY, double minZ, double maxX, double maxY, double maxZ, unsigned char a,
-    const OctreeNode* node, const OctreeKey& key, AlignedPointTVector &voxelCenterList) const
+    const OctreeNode* node, const OctreeKey& key, AlignedPointTVector &voxelCenterList, int maxVoxelCount) const
 {
   if (maxX < 0.0 || maxY < 0.0 || maxZ < 0.0)
     return (0);
@@ -690,60 +692,60 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
       case 0:
         if (childNode)
           voxelCount += getIntersectedVoxelCentersRecursive (minX, minY, minZ, midX, midY, midZ, a, childNode,
-                                                             childKey, voxelCenterList);
+                                                             childKey, voxelCenterList, maxVoxelCount);
         currNode = getNextIntersectedNode (midX, midY, midZ, 4, 2, 1);
         break;
 
       case 1:
         if (childNode)
           voxelCount += getIntersectedVoxelCentersRecursive (minX, minY, midZ, midX, midY, maxZ, a, childNode,
-                                                             childKey, voxelCenterList);
+                                                             childKey, voxelCenterList, maxVoxelCount);
         currNode = getNextIntersectedNode (midX, midY, maxZ, 5, 3, 8);
         break;
 
       case 2:
         if (childNode)
           voxelCount += getIntersectedVoxelCentersRecursive (minX, midY, minZ, midX, maxY, midZ, a, childNode,
-                                                             childKey, voxelCenterList);
+                                                             childKey, voxelCenterList, maxVoxelCount);
         currNode = getNextIntersectedNode (midX, maxY, midZ, 6, 8, 3);
         break;
 
       case 3:
         if (childNode)
           voxelCount += getIntersectedVoxelCentersRecursive (minX, midY, midZ, midX, maxY, maxZ, a, childNode,
-                                                             childKey, voxelCenterList);
+                                                             childKey, voxelCenterList, maxVoxelCount);
         currNode = getNextIntersectedNode (midX, maxY, maxZ, 7, 8, 8);
         break;
 
       case 4:
         if (childNode)
           voxelCount += getIntersectedVoxelCentersRecursive (midX, minY, minZ, maxX, midY, midZ, a, childNode,
-                                                             childKey, voxelCenterList);
+                                                             childKey, voxelCenterList, maxVoxelCount);
         currNode = getNextIntersectedNode (maxX, midY, midZ, 8, 6, 5);
         break;
 
       case 5:
         if (childNode)
           voxelCount += getIntersectedVoxelCentersRecursive (midX, minY, midZ, maxX, midY, maxZ, a, childNode,
-                                                             childKey, voxelCenterList);
+                                                             childKey, voxelCenterList, maxVoxelCount);
         currNode = getNextIntersectedNode (maxX, midY, maxZ, 8, 7, 8);
         break;
 
       case 6:
         if (childNode)
           voxelCount += getIntersectedVoxelCentersRecursive (midX, midY, minZ, maxX, maxY, midZ, a, childNode,
-                                                             childKey, voxelCenterList);
+                                                             childKey, voxelCenterList, maxVoxelCount);
         currNode = getNextIntersectedNode (maxX, maxY, midZ, 8, 8, 7);
         break;
 
       case 7:
         if (childNode)
           voxelCount += getIntersectedVoxelCentersRecursive (midX, midY, midZ, maxX, maxY, maxZ, a, childNode,
-                                                             childKey, voxelCenterList);
+                                                             childKey, voxelCenterList, maxVoxelCount);
         currNode = 8;
         break;
     }
-  } while (currNode < 8);
+  } while ((currNode < 8) && (maxVoxelCount <= 0 || voxelCount < maxVoxelCount));
   return (voxelCount);
 }
 
@@ -751,7 +753,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
 template<typename PointT, typename LeafT, typename OctreeT> int
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxelIndicesRecursive (
     double minX, double minY, double minZ, double maxX, double maxY, double maxZ, unsigned char a,
-    const OctreeNode* node, const OctreeKey& key, std::vector<int> &k_indices) const
+    const OctreeNode* node, const OctreeKey& key, std::vector<int> &k_indices, int maxVoxelCount) const
 {
   if (maxX < 0.0 || maxY < 0.0 || maxZ < 0.0)
     return (0);
@@ -804,60 +806,60 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafT, OctreeT>::getIntersectedVoxel
       case 0:
         if (childNode)
           voxelCount += getIntersectedVoxelIndicesRecursive (minX, minY, minZ, midX, midY, midZ, a, childNode,
-                                                             childKey, k_indices);
+                                                             childKey, k_indices, maxVoxelCount);
         currNode = getNextIntersectedNode (midX, midY, midZ, 4, 2, 1);
         break;
 
       case 1:
         if (childNode)
           voxelCount += getIntersectedVoxelIndicesRecursive (minX, minY, midZ, midX, midY, maxZ, a, childNode,
-                                                             childKey, k_indices);
+                                                             childKey, k_indices, maxVoxelCount);
         currNode = getNextIntersectedNode (midX, midY, maxZ, 5, 3, 8);
         break;
 
       case 2:
         if (childNode)
           voxelCount += getIntersectedVoxelIndicesRecursive (minX, midY, minZ, midX, maxY, midZ, a, childNode,
-                                                             childKey, k_indices);
+                                                             childKey, k_indices, maxVoxelCount);
         currNode = getNextIntersectedNode (midX, maxY, midZ, 6, 8, 3);
         break;
 
       case 3:
         if (childNode)
           voxelCount += getIntersectedVoxelIndicesRecursive (minX, midY, midZ, midX, maxY, maxZ, a, childNode,
-                                                             childKey, k_indices);
+                                                             childKey, k_indices, maxVoxelCount);
         currNode = getNextIntersectedNode (midX, maxY, maxZ, 7, 8, 8);
         break;
 
       case 4:
         if (childNode)
           voxelCount += getIntersectedVoxelIndicesRecursive (midX, minY, minZ, maxX, midY, midZ, a, childNode,
-                                                             childKey, k_indices);
+                                                             childKey, k_indices, maxVoxelCount);
         currNode = getNextIntersectedNode (maxX, midY, midZ, 8, 6, 5);
         break;
 
       case 5:
         if (childNode)
           voxelCount += getIntersectedVoxelIndicesRecursive (midX, minY, midZ, maxX, midY, maxZ, a, childNode,
-                                                             childKey, k_indices);
+                                                             childKey, k_indices, maxVoxelCount);
         currNode = getNextIntersectedNode (maxX, midY, maxZ, 8, 7, 8);
         break;
 
       case 6:
         if (childNode)
           voxelCount += getIntersectedVoxelIndicesRecursive (midX, midY, minZ, maxX, maxY, midZ, a, childNode,
-                                                             childKey, k_indices);
+                                                             childKey, k_indices, maxVoxelCount);
         currNode = getNextIntersectedNode (maxX, maxY, midZ, 8, 8, 7);
         break;
 
       case 7:
         if (childNode)
           voxelCount += getIntersectedVoxelIndicesRecursive (midX, midY, midZ, maxX, maxY, maxZ, a, childNode,
-                                                             childKey, k_indices);
+                                                             childKey, k_indices, maxVoxelCount);
         currNode = 8;
         break;
     }
-  } while (currNode < 8);
+  } while ((currNode < 8) && (maxVoxelCount <= 0 || voxelCount < maxVoxelCount));
 
   return (voxelCount);
 }

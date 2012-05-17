@@ -1583,10 +1583,10 @@ TEST (PCL, Octree_Pointcloud_Ray_Traversal)
   octree::OctreePointCloudSearch<PointXYZ> octree_search (0.02f);
 
   // Voxels in ray
-  pcl::PointCloud<pcl::PointXYZ>::VectorType voxelsInRay;
+  pcl::PointCloud<pcl::PointXYZ>::VectorType voxelsInRay, voxelsInRay2;
 
   // Indices in ray
-  std::vector<int> indicesInRay;
+  std::vector<int> indicesInRay, indicesInRay2;
 
   srand (static_cast<unsigned int> (time (NULL)));
 
@@ -1634,6 +1634,25 @@ TEST (PCL, Octree_Pointcloud_Ray_Traversal)
     ASSERT_EQ( voxelsInRay.size (), cloudIn->points.size ());
     // check if all indices of penetrated voxels are in cloud
     ASSERT_EQ( indicesInRay.size (), cloudIn->points.size ());
+
+    octree_search.getIntersectedVoxelCenters (o, dir, voxelsInRay2, 1);
+    octree_search.getIntersectedVoxelIndices (o, dir, indicesInRay2, 1);
+
+    // check if only the point from a single voxel has been returned
+    ASSERT_EQ( voxelsInRay2.size (), 1u );
+    ASSERT_EQ( indicesInRay2.size (), 1u );
+
+    // check if this point is the closest point to the origin
+    pcl::PointXYZ pt = cloudIn->points[ indicesInRay2[0] ];
+    Eigen::Vector3f d = Eigen::Vector3f (pt.x, pt.y, pt.z) - o;
+    float min_dist = d.norm ();
+
+    for (unsigned int i = 0; i < cloudIn->width * cloudIn->height; i++) {
+    	pt = cloudIn->points[i];
+    	d = Eigen::Vector3f (pt.x, pt.y, pt.z) - o;
+    	ASSERT_GE( d.norm (), min_dist );
+    }
+
   }
 
 }

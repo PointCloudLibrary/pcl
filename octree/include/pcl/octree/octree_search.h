@@ -233,21 +233,25 @@ namespace pcl
           * \param[in] origin ray origin
           * \param[in] direction ray direction vector
           * \param[out] voxelCenterList results are written to this vector of PointT elements
+          * \param[in] maxVoxelCount stop raycasting when this many voxels intersected (0: disable)
           * \return number of intersected voxels
           */
         int
         getIntersectedVoxelCenters (Eigen::Vector3f origin, Eigen::Vector3f direction,
-                                    AlignedPointTVector &voxelCenterList) const;
+                                    AlignedPointTVector &voxelCenterList,
+                                    int maxVoxelCount = 0) const;
 
         /** \brief Get indices of all voxels that are intersected by a ray (origin, direction).
           * \param[in] origin ray origin
           * \param[in] direction ray direction vector
           * \param[out] k_indices resulting point indices from intersected voxels
+          * \param[in] maxVoxelCount stop raycasting when this many voxels intersected (0: disable)
           * \return number of intersected voxels
           */
         int
         getIntersectedVoxelIndices (Eigen::Vector3f origin, Eigen::Vector3f direction,
-                                    std::vector<int> &k_indices) const;
+                                    std::vector<int> &k_indices,
+                                    int maxVoxelCount = 0) const;
 
 
         /** \brief Search for points within rectangular search area
@@ -413,12 +417,14 @@ namespace pcl
           * \param[in] node current octree node to be explored
           * \param[in] key octree key addressing a leaf node.
           * \param[out] voxelCenterList results are written to this vector of PointT elements
+          * \param[in] maxVoxelCount stop raycasting when this many voxels intersected (0: disable)
           * \return number of voxels found
           */
         int
         getIntersectedVoxelCentersRecursive (double minX, double minY, double minZ, double maxX, double maxY,
                                              double maxZ, unsigned char a, const OctreeNode* node,
-                                             const OctreeKey& key, AlignedPointTVector &voxelCenterList) const;
+                                             const OctreeKey& key, AlignedPointTVector &voxelCenterList,
+                                             int maxVoxelCount) const;
 
 
         /** \brief Recursive search method that explores the octree and finds points within a rectangular search area
@@ -446,13 +452,15 @@ namespace pcl
           * \param[in] node current octree node to be explored
           * \param[in] key octree key addressing a leaf node.
           * \param[out] k_indices resulting indices
+          * \param[in] maxVoxelCount stop raycasting when this many voxels intersected (0: disable)
           * \return number of voxels found
           */
         int
         getIntersectedVoxelIndicesRecursive (double minX, double minY, double minZ,
                                              double maxX, double maxY, double maxZ,
                                              unsigned char a, const OctreeNode* node, const OctreeKey& key,
-                                             std::vector<int> &k_indices) const;
+                                             std::vector<int> &k_indices,
+                                             int maxVoxelCount) const;
 
         /** \brief Initialize raytracing algorithm
           * \param origin
