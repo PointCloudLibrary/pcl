@@ -45,19 +45,23 @@ using namespace pcl;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, lineWithLineIntersection)
 {
-  Eigen::Vector4f line_a;
-  Eigen::Vector4f line_b;
+  Eigen::VectorXf line_a(4);
+  Eigen::VectorXf line_b(4);
 
   //case 1
-  line_a.x() = 0.09100f;
-  line_a.y() = 0.00200f;
-  line_a.z() = 0.00300f;
-  line_a.w() = 0.00400f;
+  line_a[0] = 0.01f;
+  line_a[1] = 0.02f;
+  line_a[2] = 0.03f;
+  line_a[3] = 0.4f;
+  line_a[4] = 0.5f;
+  line_a[5] = 0.6f;
 
-  line_b.x() = 0.0157f;
-  line_b.y() = 0.0333f;
-  line_b.z() = 0.0678f;
-  line_b.w() = 0.0995f;
+  line_b[0] = 0.1f;
+  line_b[1] = 0.2f;
+  line_b[2] = 0.3f;
+  line_b[3] = 0.04f;
+  line_b[4] = 0.05f;
+  line_b[5] = 0.06f;
 
   Eigen::Vector4f p1, p2;
   lineToLineSegment (line_a, line_b, p1, p2);
@@ -70,28 +74,32 @@ TEST (PCL, lineWithLineIntersection)
   double default_sqr_eps = 1e-4;
   EXPECT_GT(sqr_dist_case_1, default_sqr_eps);
   Eigen::Vector4f zero(0.0f, 0.0f, 0.0f, 0.0f);
-  
+
   EXPECT_EQ(point_case_1[0], zero[0]);
   EXPECT_EQ(point_case_1[1], zero[1]);
   EXPECT_EQ(point_case_1[2], zero[2]);
   EXPECT_EQ(point_case_1[3], zero[3]);
 
   EXPECT_FALSE(result_case_1);
-
+  
   pcl::ModelCoefficients line_a_mod;
   pcl::ModelCoefficients line_b_mod;
 
   std::vector<float> values_a_case_1;
-  values_a_case_1.push_back(line_a.x());
-  values_a_case_1.push_back(line_a.y());
-  values_a_case_1.push_back(line_a.z());
-  values_a_case_1.push_back(line_a.w());
+  values_a_case_1.push_back(line_a[0]);
+  values_a_case_1.push_back(line_a[1]);
+  values_a_case_1.push_back(line_a[2]);
+  values_a_case_1.push_back(line_a[3]);
+  values_a_case_1.push_back(line_a[4]);
+  values_a_case_1.push_back(line_a[5]);
 
   std::vector<float> values_b_case_1;
-  values_b_case_1.push_back(line_b.x());
-  values_b_case_1.push_back(line_b.y());
-  values_b_case_1.push_back(line_b.z());
-  values_b_case_1.push_back(line_b.w());
+  values_b_case_1.push_back(line_b[0]);
+  values_b_case_1.push_back(line_b[1]);
+  values_b_case_1.push_back(line_b[2]);
+  values_b_case_1.push_back(line_b[3]);
+  values_b_case_1.push_back(line_b[4]);
+  values_b_case_1.push_back(line_b[5]);
 
   line_a_mod.values = values_a_case_1;
   line_b_mod.values = values_b_case_1;
@@ -102,19 +110,23 @@ TEST (PCL, lineWithLineIntersection)
 
   EXPECT_EQ(point_mod_1[0], zero[0]);
   EXPECT_EQ(point_mod_1[1], zero[1]);
-  EXPECT_EQ(point_mod_1[2], zero[2]); 
+  EXPECT_EQ(point_mod_1[2], zero[2]);
   EXPECT_EQ(point_mod_1[3], zero[3]);
 
   //case 2
-  line_a.x() = 0.09100f;
-  line_a.y() = 0.00200f;
-  line_a.z() = 0.00300f;
-  line_a.w() = 0.00400f;
+  line_a[0] = 0.00100f;
+  line_a[1] = 0.00200f;
+  line_a[2] = 0.00300f;
+  line_a[3] = 0.00400f;
+  line_a[4] = 0.00500f;
+  line_a[5] = 0.00600f;
 
-  line_b.x() = 0.00157f;
-  line_b.y() = 0.00333f;
-  line_b.z() = 0.00678f;
-  line_b.w() = 0.00995f;
+  line_b[0] = 0.00157f;
+  line_b[1] = 0.00233f;
+  line_b[2] = 0.00378f;
+  line_b[3] = 0.00495f;
+  line_b[4] = 0.00565f;
+  line_b[5] = 0.00666f;
 
   lineToLineSegment (line_a, line_b, p1, p2);
 
@@ -140,12 +152,16 @@ TEST (PCL, lineWithLineIntersection)
   values_a_case_2.push_back(0.2000f);
   values_a_case_2.push_back(0.3000f);
   values_a_case_2.push_back(0.4000f);
+  values_a_case_2.push_back(0.5000f);
+  values_a_case_2.push_back(0.6000f);
 
   std::vector<float> values_b_case_2;
   values_b_case_2.push_back(0.1001f);
   values_b_case_2.push_back(0.2001f);
   values_b_case_2.push_back(0.3001f);
   values_b_case_2.push_back(0.4001f);
+  values_b_case_2.push_back(0.5001f);
+  values_b_case_2.push_back(0.6001f);
 
   line_a_mod_2.values = values_a_case_2;
   line_b_mod_2.values = values_b_case_2;
@@ -154,8 +170,8 @@ TEST (PCL, lineWithLineIntersection)
   Eigen::Vector4f point_mod_case_2;
   double sqr_mod_case_2 = 1e-1;
 
-  Eigen::Vector4f coeff1 = Eigen::Vector4f::Map (&line_a_mod_2.values[0], line_a_mod_2.values.size ());
-  Eigen::Vector4f coeff2 = Eigen::Vector4f::Map (&line_b_mod_2.values[0], line_b_mod_2.values.size ());
+  Eigen::VectorXf coeff1 = Eigen::VectorXf::Map (&line_a_mod_2.values[0], line_a_mod_2.values.size ());
+  Eigen::VectorXf coeff2 = Eigen::VectorXf::Map (&line_b_mod_2.values[0], line_b_mod_2.values.size ());
 
   Eigen::Vector4f p1_mod, p2_mod;
   lineToLineSegment (coeff1, coeff2, p1_mod, p2_mod);
@@ -163,13 +179,14 @@ TEST (PCL, lineWithLineIntersection)
 
   EXPECT_LT(sqr_mod_act_2, sqr_mod_case_2);
   EXPECT_EQ(lineWithLineIntersection (coeff1, coeff2, point_mod_case_2, sqr_mod_case_2),
-                      lineWithLineIntersection(line_a_mod_2, line_b_mod_2, point_mod_2, sqr_mod_case_2));
+                        lineWithLineIntersection(line_a_mod_2, line_b_mod_2, point_mod_2, sqr_mod_case_2));
   EXPECT_TRUE(lineWithLineIntersection(line_a_mod_2, line_b_mod_2, point_mod_2, sqr_mod_case_2));
 
   EXPECT_EQ(point_mod_2[0], point_mod_case_2[0]);
   EXPECT_EQ(point_mod_2[1], point_mod_case_2[1]);
   EXPECT_EQ(point_mod_2[2], point_mod_case_2[2]);
   EXPECT_EQ(point_mod_2[3], point_mod_case_2[3]);
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
