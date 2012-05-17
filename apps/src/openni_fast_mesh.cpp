@@ -142,7 +142,7 @@ class OpenNIFastMesh
         if (!view->updatePolygonMesh<PointType> (temp_cloud, *temp_verts, "surface"))
         {
           view->addPolygonMesh<PointType> (temp_cloud, *temp_verts, "surface");
-          view->resetCameraViewpoint ("surface");
+          //view->resetCameraViewpoint ("surface");
         }
 
         FPS_CALC ("visualization");

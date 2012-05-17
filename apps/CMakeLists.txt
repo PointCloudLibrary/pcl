@@ -61,8 +61,8 @@ if(build)
 #    target_link_libraries(pcl_convolve pcl_common pcl_io pcl_visualization)
 
     if (OPENNI_FOUND AND BUILD_OPENNI)  
-#      PCL_ADD_EXECUTABLE(pcl_openni_fast_mesh ${SUBSYS_NAME} src/openni_fast_mesh.cpp)
- #     target_link_libraries(pcl_openni_fast_mesh pcl_common pcl_io pcl_visualization pcl_surface)
+      PCL_ADD_EXECUTABLE(pcl_openni_fast_mesh ${SUBSYS_NAME} src/openni_fast_mesh.cpp)
+      target_link_libraries(pcl_openni_fast_mesh pcl_common pcl_io pcl_visualization pcl_surface)
       
       PCL_ADD_EXECUTABLE(pcl_openni_voxel_grid ${SUBSYS_NAME} src/openni_voxel_grid.cpp)
       target_link_libraries(pcl_openni_voxel_grid pcl_common pcl_io pcl_filters pcl_visualization)
