@@ -100,6 +100,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
       for (size_t j = 0; j < seed_queue.size (); ++j)
         r.indices[j] = seed_queue[j];
 
+      // These two lines should not be needed: (can anyone confirm?) -FF
       std::sort (r.indices.begin (), r.indices.end ());
       r.indices.erase (std::unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
 
@@ -140,14 +141,14 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
   // Process all points in the indices vector
   for (int i = 0; i < static_cast<int> (indices.size ()); ++i)
   {
-    if (processed[i])
+    if (processed[indices[i]])
       continue;
 
     std::vector<int> seed_queue;
     int sq_idx = 0;
-    seed_queue.push_back (i);
+    seed_queue.push_back (indices[i]);
 
-    processed[i] = true;
+    processed[indices[i]] = true;
 
     while (sq_idx < static_cast<int> (seed_queue.size ()))
     {
@@ -184,8 +185,9 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
       r.indices.resize (seed_queue.size ());
       for (size_t j = 0; j < seed_queue.size (); ++j)
         // This is the only place where indices come into play
-        r.indices[j] = indices[seed_queue[j]];
+        r.indices[j] = seed_queue[j];
 
+      // These two lines should not be needed: (can anyone confirm?) -FF
       //r.indices.assign(seed_queue.begin(), seed_queue.end());
       std::sort (r.indices.begin (), r.indices.end ());
       r.indices.erase (std::unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
