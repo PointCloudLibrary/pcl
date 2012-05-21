@@ -182,7 +182,7 @@ namespace pcl
       } // element index in v-direction
 
     };
-  }
-} // namespace nurbsfitting
+  } // namespace nurbs
+} // namespace pcl
 
 #endif /* NTOOLS_H_ */

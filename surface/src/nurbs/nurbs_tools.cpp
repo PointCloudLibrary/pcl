@@ -187,7 +187,7 @@ pcl::nurbs::NurbsTools::pca (const vector_vec3d &data, Eigen::Vector3d &mean, Ei
   Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> eigensolver (C);
   if (eigensolver.info () != Eigen::Success)
   {
-    printf ("[nurbsfitting::pcl::nurbs::NurbsTools::pca] Can not find eigenvalues.\n");
+    printf ("[pcl::nurbs::NurbsTools::pca] Can not find eigenvalues.\n");
     abort ();
   }
 
