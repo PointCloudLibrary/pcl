@@ -71,6 +71,12 @@ if(build)
         )
     ENDIF(BUILD_surface_nurbs)
     
+    SET(BUILD_surface_on_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds using openNURBS" )
+    IF(BUILD_surface_on_nurbs)
+        include(src/openNURBS/openNURBS.cmake)
+        include(src/on_nurbs/on_nurbs.cmake) 
+    ENDIF(BUILD_surface_on_nurbs)
+    
 
     set(POISSON_INCLUDES
         include/pcl/${SUBSYS_NAME}/poisson/allocator.h
@@ -122,6 +128,8 @@ if(build)
         ${HULL_SOURCES}
         ${POISSON_SOURCES}
         ${NURBS_SOURCES}
+        ${OPENNURBS_SOURCES}
+        ${ON_NURBS_SOURCES}
         )
 
     set(incs include/pcl/${SUBSYS_NAME}/ear_clipping.h
@@ -144,6 +152,8 @@ if(build)
         ${HULL_INCLUDES}
         ${POISSON_INCLUDES}
         ${NURBS_INCLUDES}
+        ${OPENNURBS_INCLUDES}
+        ${ON_NURBS_INCLUDES}
         )
 
     set(impl_incs include/pcl/${SUBSYS_NAME}/impl/gp3.hpp
@@ -163,13 +173,15 @@ if(build)
         ${POISSON_IMPLS}
         ${HULL_IMPLS}
         ${NURBS_IMPLS}
+        ${OPENNURBS_IMPLS}
+        ${ON_NURBS_IMPLS}
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${VTK_INCLUDE_DIRS})
     link_directories(${VTK_LIBRARY_DIRS})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
-    target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_search pcl_kdtree pcl_octree ${OpenCV_LIBS} ${VTK_SMOOTHING_TARGET_LINK_LIBRARIES})
+    target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_search pcl_kdtree pcl_octree ${OpenCV_LIBS} ${VTK_SMOOTHING_TARGET_LINK_LIBRARIES} ${ON_NURBS_LIBRARIES})
     if(QHULL_FOUND)
       target_link_libraries(${LIB_NAME} ${QHULL_LIBRARIES})
     endif(QHULL_FOUND)
@@ -184,6 +196,11 @@ if(build)
     if(BUILD_surface_nurbs)
       PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/nurbs ${NURBS_INCLUDES})
     endif(BUILD_surface_nurbs)
+    
+    if(BUILD_surface_on_nurbs)
+      PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/openNURBS ${OPENNURBS_INCLUDES})
+      PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/on_nurbs ${ON_NURBS_INCLUDES})
+    endif(BUILD_surface_on_nurbs)
 
     if (VTK_FOUND AND NOT ANDROID_NDK)
       PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/vtk_smoothing ${VTK_SMOOTHING_INCLUDES})

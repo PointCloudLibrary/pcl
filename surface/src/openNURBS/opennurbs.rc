@@ -1,0 +1,120 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "opennurbs_dll_resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#if defined(_WIN32) || defined(WIN64) || defined(_WIN64)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "opennurbs_dll_resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 5,0,2011,1122
+ PRODUCTVERSION 5,0,2011,1122
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "Robert McNeel & Associates"
+            VALUE "FileDescription", "openNURBS Dynamic Link Library"
+            VALUE "FileVersion", "5, 0, 2011, 1122"
+            VALUE "InternalName", "openNURBS"
+            VALUE "LegalCopyright", "Copyright 1993-2011 Robert McNeel & Associates. All Rights Reserved."
+            VALUE "LegalTrademarks", "openNURBS is a trademark of Robert McNeel & Associates."
+#ifdef _DEBUG
+#if defined(WIN64) || defined(_WIN64)
+            VALUE "OriginalFilename", "opennurbsx64_d.dll"
+#else
+            VALUE "OriginalFilename", "opennurbs_d.dll"
+#endif
+#else
+#if defined(WIN64) || defined(_WIN64)
+            VALUE "OriginalFilename", "opennurbsx64.dll"
+#else
+            VALUE "OriginalFilename", "opennurbs.dll"
+#endif
+#endif
+            VALUE "ProductName", "openNURBS"
+            VALUE "ProductVersion", "5, 0, 2011, 1122"
+#ifdef _DEBUG
+            VALUE "openNURBSVersion", "201111229"
+#else
+            VALUE "openNURBSVersion", "201111225"
+#endif
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
