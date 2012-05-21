@@ -25,7 +25,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/icp_nl.h
         include/pcl/${SUBSYS_NAME}/lum.h
         include/pcl/${SUBSYS_NAME}/elch.h
-        #include/pcl/${SUBSYS_NAME}/incremental_registration.h
         include/pcl/${SUBSYS_NAME}/ndt.h
         include/pcl/${SUBSYS_NAME}/ndt_2d.h
         include/pcl/${SUBSYS_NAME}/ppf_registration.h

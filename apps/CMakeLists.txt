@@ -148,9 +148,6 @@ if(build)
       PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" "" "" "" "")
     
       
-#      PCL_ADD_EXECUTABLE(pcl_openni_icp_reg ${SUBSYS_NAME} src/openni_icp_reg.cpp)
- #     target_link_libraries(pcl_openni_icp_reg pcl_common pcl_kdtree pcl_registration pcl_visualization pcl_filters)
-    
     endif() # OPENNI_FOUND + BUILD_OPENNI
     
   endif() # VTK_FOUND
