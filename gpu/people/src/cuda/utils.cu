@@ -12,7 +12,7 @@ namespace pcl
   {
     texture<uchar4, cudaTextureType1D, cudaReadModeElementType> cmapTex;
 
-    __global__ void colorKernel(const PtrStepSz<unsigned char> labels, PtrStep<uchar4> rgba)
+    __global__ void colorKernel(const PtrStepSz<unsigned char> labels, PtrStep<uchar4> output)
     {
       int x = threadIdx.x + blockIdx.x * blockDim.x;
       int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -20,7 +20,24 @@ namespace pcl
       if (x < labels.cols && y < labels.rows)
       {
         int l = labels.ptr(y)[x];
-        rgba.ptr(y)[x] = tex1Dfetch(cmapTex, l);
+        output.ptr(y)[x] = tex1Dfetch(cmapTex, l);
+      }
+    }
+
+    __global__ void mixedColorKernel(const PtrStepSz<unsigned char> labels, PtrStepSz<uchar4> rgba, PtrStep<uchar4> output)
+    {
+      int x = threadIdx.x + blockIdx.x * blockDim.x;
+      int y = threadIdx.y + blockIdx.y * blockDim.y;
+
+      if (x < labels.cols && y < labels.rows)
+      {        
+        uchar4 c = rgba.ptr(y)[x];
+
+        int l = labels.ptr(y)[x];
+        if (l != 8) // RHip but should be background
+          c = tex1Dfetch(cmapTex, l);
+
+        output.ptr(y)[x] = c;
       }
     }
   }
@@ -40,6 +57,18 @@ void pcl::device::colorLMap(const Labels& labels, const DeviceArray<uchar4>& map
   cudaSafeCall( cudaThreadSynchronize() );  
 }
 
+void pcl::device::mixedColorMap(const Labels& labels, const DeviceArray<uchar4>& map, const Image& rgba, Image& output)
+{
+  cmapTex.addressMode[0] = cudaAddressModeClamp;
+  TextureBinder binder(map, cmapTex);
+
+  dim3 block(32, 8);
+  dim3 grid(divUp(labels.cols(), block.x), divUp(labels.rows(), block.y));
+
+  mixedColorKernel<<<grid, block>>>(labels, rgba, output);
+  cudaSafeCall( cudaGetLastError() );
+  cudaSafeCall( cudaDeviceSynchronize() );
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 /// TODO implement getError string for NPP and move this to the same place with cudaSafeCall
@@ -142,4 +171,129 @@ void pcl::device::prepareForeGroundDepth(const Depth& depth1, Mask& inverse_mask
 
   cudaSafeCall( cudaGetLastError() );
   cudaSafeCall( cudaThreadSynchronize() );
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+/// compute hue functionality 
+
+namespace pcl
+{
+  namespace device
+  {
+    __device__ __host__ __forceinline__ float computeHueFunc (int rgba)
+    {
+      int r = (rgba      ) & 0xFF;
+      int g = (rgba >>  8) & 0xFF;
+      int b = (rgba >> 16) & 0xFF;
+
+      int v = max (r, max (g, b));
+      float h;
+
+      float div_inv = 1.f / (v - min (r, min (g, b)) );
+
+      if (v == 0)
+          return -1;
+
+      if (r == v)
+          h = (    (g - b)) * div_inv;
+      else if (g == v)
+          h = (2 + (b - r)) * div_inv;
+      else 
+          h = (4 + (r - g)) * div_inv;
+
+      h *= 60;    
+      if (h < 0)
+          h += 360;
+
+      return h;
+    }
+
+  }
+}
+
+float pcl::device::computeHue(int rgba) 
+{ 
+  return computeHueFunc(rgba); 
+}
+
+namespace pcl
+{
+  namespace device
+  {
+    __global__ void computeHueKernel(const PtrStepSz<int> rgba, const PtrStep<unsigned short> depth, PtrStep<float> hue)
+    {
+      int x = blockIdx.x * blockDim.x + threadIdx.x;
+      int y = blockIdx.y * blockDim.y + threadIdx.y;
+
+      if (x < rgba.cols && y < rgba.rows)
+      {
+        const float qnan = numeric_limits<float>::quiet_NaN();
+
+        unsigned short d = depth.ptr(y)[x];            
+        hue.ptr(y)[x] = (d == 0) ? qnan : computeHueFunc(rgba.ptr(y)[x]);           
+      }
+    }
+  }
+}
+
+
+void pcl::device::computeHueWithNans(const Image& rgba, const Depth& depth, HueImage& hue)
+{
+  hue.create(rgba.rows(), rgba.cols());
+
+  dim3 block(32, 8);
+  dim3 grid;
+
+  grid.x = divUp(rgba.cols(), block.x);
+  grid.y = divUp(rgba.rows(), block.y);
+
+  computeHueKernel<<<grid, block>>>(rgba, depth, hue);
+
+  cudaSafeCall( cudaGetLastError() );
+  cudaSafeCall( cudaDeviceSynchronize() );
+}
+
+namespace pcl
+{
+  namespace device
+  {
+    __global__ void reprojectDepthKenrel(const PtrStepSz<unsigned short> depth, const Intr intr, PtrStep<float4> cloud)
+    {
+      int x = blockIdx.x * blockDim.x + threadIdx.x;
+      int y = blockIdx.y * blockDim.y + threadIdx.y;
+
+      const float qnan = numeric_limits<float>::quiet_NaN();
+
+      if (x < depth.cols && y < depth.rows)
+      {
+        float4 p = make_float4(qnan, qnan, qnan, qnan);
+
+        int d = depth.ptr(y)[x];
+        float z = d * 0.001f; // mm -> meters
+
+        p.x = z * (x - intr.cx) / intr.fx;
+        p.y = z * (y - intr.cy) / intr.fy;
+        p.z = z;
+
+        cloud.ptr(y)[x] = p;
+      }      
+    }
+  }
+}
+
+void pcl::device::computeCloud(const Depth& depth, const Intr& intr, Cloud& cloud)
+{
+  cloud.create(depth.rows(), depth.cols());
+
+  dim3 block(32, 8);
+  dim3 grid;
+  grid.x = divUp(depth.cols(), block.x);
+  grid.y = divUp(depth.rows(), block.y);
+
+  reprojectDepthKenrel<<<grid, block>>>(depth, intr, cloud);
+
+  cudaSafeCall( cudaGetLastError() );
+  cudaSafeCall( cudaDeviceSynchronize() );
 }

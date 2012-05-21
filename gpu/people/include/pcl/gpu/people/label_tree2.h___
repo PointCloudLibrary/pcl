@@ -1,3 +1,6 @@
+
+#if 0
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -34,16 +37,23 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  * $Id: $
- * @authors: Cedric Cagniart, Koen Buys
+ * @author Koen Buys
+ * @file tree2.h
+ * @brief This file contains the Tree2 structure and the inline <<-operator for it.
  */
 
+#ifndef PCL_GPU_PEOPLE_LABEL_TREE2_H_
+#define PCL_GPU_PEOPLE_LABEL_TREE2_H_
 
-#ifndef PCL_GPU_PEOPLE_TEX_FETCH_H_
-#define PCL_GPU_PEOPLE_TEX_FETCH_H_
+#include <vector>
 
-#include <boost/cstdint.hpp>
-#include <cmath> // for round
-#include <opencv2/core/core.hpp>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/PointIndices.h>
+
+// Our header
+#include <pcl/gpu/people/label_common.h>
+#include <pcl/gpu/people/label_blob2.h>
 
 namespace pcl
 {
@@ -51,34 +61,11 @@ namespace pcl
   {
     namespace people
     {
-      namespace trees
-      {
-        /**
-         * \brief Simple helper structure to fetch the texture without bothering about limits
-         * This will be done by CUDA directly for the run time part of the stuff
-         */
-        struct Tex2Dfetcher
-        {
-	  	  Tex2Dfetcher( const boost::uint16_t* dmap, int W, int H ) : m_dmap(dmap), m_W(W), m_H(H) {}
-
-          inline boost::uint16_t operator () ( float uf, float vf ) 
-          {
-            int u = cvRound(uf);
-            int v = cvRound(vf);
-            if( u < 0 ) u = 0;
-            if( v < 0 ) v = 0;
-            if( u >= m_W ) u = m_W-1;
-            if( v >= m_H ) v = m_H-1;
-            
-            return m_dmap[u+v*m_W]; // this is going to be SLOOOWWW
-          }
-          const boost::uint16_t*  m_dmap;
-          const int               m_W;
-          const int               m_H;
-        };
-      } // end namespace trees
+      
     } // end namespace people
   } // end namespace gpu
 } // end namespace pcl
+#endif
+
 
 #endif

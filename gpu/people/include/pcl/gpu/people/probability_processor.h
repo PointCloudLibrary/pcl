@@ -58,27 +58,29 @@ namespace pcl
     namespace people
     {
       class PCL_EXPORTS ProbabilityProcessor
-      {
-        private:
-          boost::shared_ptr<pcl::device::ProbabilityProc> impl_;
-
+      {        
         public:
           typedef boost::shared_ptr<ProbabilityProcessor> Ptr;
+          typedef DeviceArray2D<unsigned short> Depth;
+          typedef DeviceArray2D<unsigned char> Labels;
 
           ProbabilityProcessor();
 
           /** \brief This will merge the votes from the different trees into one final vote, including probabilistic's **/
           void
-          SelectLabel (const pcl::device::Depth& depth, pcl::device::Labels& labels, pcl::device::LabelProbability& probabilities);
+          SelectLabel (const Depth& depth, Labels& labels, pcl::device::LabelProbability& probabilities);
 
           /** \brief This will combine two probabilities according their weight **/
           void
-          CombineProb ( const pcl::device::Depth& depth, pcl::device::LabelProbability& probIn1, float weight1,
+          CombineProb ( const Depth& depth, pcl::device::LabelProbability& probIn1, float weight1,
                         pcl::device::LabelProbability& probIn2, float weight2, pcl::device::LabelProbability& probOut);
 
           /** \brief This will sum a probability multiplied with it's weight **/
           void
-          WeightedSumProb ( const pcl::device::Depth& depth, pcl::device::LabelProbability& probIn, float weight, pcl::device::LabelProbability& probOut);
+          WeightedSumProb ( const Depth& depth, pcl::device::LabelProbability& probIn, float weight, pcl::device::LabelProbability& probOut);
+
+        private:
+          boost::shared_ptr<pcl::device::ProbabilityProc> impl_;
 
       };
     }

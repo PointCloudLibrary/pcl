@@ -47,7 +47,7 @@
 #include <pcl/gpu/people/label_common.h>
 #include <pcl/gpu/people/tree.h>
 #include <pcl/gpu/people/person_attribs.h>
-#include <opencv2/core/core.hpp>
+//#include <opencv2/core/core.hpp>
 
 #include <pcl/gpu/people/bodyparts_detector.h>
 #include <pcl/gpu/people/probability_processor.h>

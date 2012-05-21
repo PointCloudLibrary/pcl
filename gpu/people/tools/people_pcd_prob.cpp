@@ -45,6 +45,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/gpu/people/people_detector.h>
+#include <pcl/gpu/people/colormap.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/search/pcl_search.h>
 #include <Eigen/Core>
@@ -55,6 +56,7 @@
 
 using namespace pcl::visualization;
 using namespace pcl::console;
+using namespace pcl::gpu;
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -120,6 +122,9 @@ class PeoplePCDApp
 
       final_view_.setPosition (0, 0);
       //image_view_.setPosition (650, 0);
+
+      people::uploadColorMap(color_map_);
+      
     }
 
     void cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
@@ -133,8 +138,8 @@ class PeoplePCDApp
     void
     visualizeAndWrite(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
     {
-      const pcl::device::Labels& labels = people_detector_.rdf_detector_->getLabels();
-      people_detector_.rdf_detector_->colorizeLabels(labels, cmap_device_);
+      const PeopleDetector::Labels& labels = people_detector_.rdf_detector_->getLabels();           
+      people::colorizeLabels(color_map_, labels, cmap_device_);
 
       int c;
       pcl::PointCloud<pcl::RGB> cmap(cmap_device_.cols(), cmap_device_.rows());
@@ -217,6 +222,8 @@ class PeoplePCDApp
 
     ImageViewer final_view_;
     //ImageViewer image_view_;
+
+    pcl::gpu::DeviceArray<pcl::RGB> color_map_;
 };
 
 void print_help()

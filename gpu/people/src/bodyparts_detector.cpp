@@ -35,9 +35,9 @@
  */
 
 #include <pcl/gpu/people/bodyparts_detector.h>
-#include <pcl/gpu/people/conversions.h>
+//#include <pcl/gpu/people/conversions.h>
 #include <pcl/gpu/people/label_common.h>
-#include <pcl/gpu/people/label_segment.h>
+//#include <pcl/gpu/people/label_segment.h>
 #include <pcl/gpu/people/label_tree.h>
 
 #include <pcl/common/time.h>
@@ -72,18 +72,6 @@ pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector( const vector<strin
     int height = loadTree (tree_files[i], nodes, leaves );
     impl_->trees.push_back(device::CUDATree(height, nodes, leaves));
   }
-
-  // Copy the list of label colors into the devices
-  vector<pcl::RGB> rgba(LUT_COLOR_LABEL_LENGTH);
-  for(int i = 0; i < LUT_COLOR_LABEL_LENGTH; ++i)
-  {
-    // !!!! generate in RGB format, not BGR
-    rgba[i].r = LUT_COLOR_LABEL[i*3 + 2];
-    rgba[i].g = LUT_COLOR_LABEL[i*3 + 1];
-    rgba[i].b = LUT_COLOR_LABEL[i*3 + 0];
-    rgba[i].a = 255;
-  }
-  color_map_.upload(rgba);
 
   allocate_buffers(rows, cols);
 }
@@ -139,18 +127,7 @@ pcl::gpu::people::RDFBodyPartsDetector::getBlobMatrix() const
   return blob_matrix_;
 }
 
-////////////////////////////////////////////////////////////////////////////////////
-///  colorizeLabels
 
-void 
-pcl::gpu::people::RDFBodyPartsDetector::colorizeLabels(const pcl::device::Labels& labels, Image& color_labels) const
-{  
-  color_labels.create(labels.rows(), labels.cols());
-
-  const DeviceArray<uchar4>& map = (const DeviceArray<uchar4>&)color_map_;
-  device::Image& img = (device::Image&)color_labels;
-  device::colorLMap(labels, map, img);
-}
 
 ////////////////////////////////////////////////////////////////////////////////////
 void 
@@ -276,7 +253,7 @@ pcl::gpu::people::RDFBodyPartsDetector::process (const pcl::device::Depth& depth
         blob_matrix_[label][b].lid = static_cast<int> (b);
       }
 
-    label_skeleton::buildRelations ( blob_matrix_ );
+    buildRelations ( blob_matrix_ );
   }
 }
 
@@ -375,5 +352,5 @@ pcl::gpu::people::RDFBodyPartsDetector::processSmooth (const pcl::device::Depth&
 void
 pcl::gpu::people::RDFBodyPartsDetector::processRelations ()
 {
-  label_skeleton::buildRelations ( blob_matrix_ );
+  buildRelations ( blob_matrix_ );
 }

@@ -46,7 +46,7 @@ pcl::gpu::people::ProbabilityProcessor::ProbabilityProcessor()
 
 /** \brief This will merge the votes from the different trees into one final vote, including probabilistic's **/
 void
-pcl::gpu::people::ProbabilityProcessor::SelectLabel (const pcl::device::Depth& depth, pcl::device::Labels& labels, pcl::device::LabelProbability& probabilities)
+pcl::gpu::people::ProbabilityProcessor::SelectLabel (const Depth& depth, Labels& labels, pcl::device::LabelProbability& probabilities)
 {
   std::cout << "(I) : ProbabilityProcessor SelectLabel called" << std::endl;
   impl_->CUDA_SelectLabel(depth, labels, probabilities);
@@ -54,7 +54,7 @@ pcl::gpu::people::ProbabilityProcessor::SelectLabel (const pcl::device::Depth& d
 
 /** \brief This will combine two probabilities according their weight **/
 void
-pcl::gpu::people::ProbabilityProcessor::CombineProb ( const pcl::device::Depth& depth, pcl::device::LabelProbability& probIn1, float weight1,
+pcl::gpu::people::ProbabilityProcessor::CombineProb ( const Depth& depth, pcl::device::LabelProbability& probIn1, float weight1,
               pcl::device::LabelProbability& probIn2, float weight2, pcl::device::LabelProbability& probOut)
 {
   impl_->CUDA_CombineProb(depth, probIn1, weight1, probIn2, weight2, probOut);
@@ -62,7 +62,7 @@ pcl::gpu::people::ProbabilityProcessor::CombineProb ( const pcl::device::Depth& 
 
 /** \brief This will sum a probability multiplied with it's weight **/
 void
-pcl::gpu::people::ProbabilityProcessor::WeightedSumProb ( const pcl::device::Depth& depth, pcl::device::LabelProbability& probIn, float weight, pcl::device::LabelProbability& probOut)
+pcl::gpu::people::ProbabilityProcessor::WeightedSumProb ( const Depth& depth, pcl::device::LabelProbability& probIn, float weight, pcl::device::LabelProbability& probOut)
 {
   impl_->CUDA_WeightedSumProb(depth, probIn, weight, probOut);
 }

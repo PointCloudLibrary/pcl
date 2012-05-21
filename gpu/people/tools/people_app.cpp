@@ -43,39 +43,24 @@
 #include <pcl/point_cloud.h>
 #include <pcl/common/time.h>
 #include <pcl/console/parse.h>
+#include <pcl/gpu/containers/initialization.h>
 #include <pcl/gpu/people/people_detector.h>
+#include <pcl/gpu/people/colormap.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/oni_grabber.h>
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/png_io.h>
-
 #include <boost/filesystem.hpp>
-
 
 #include <iostream>
 
 namespace pc = pcl::console;
 using namespace pcl::visualization;
+using namespace pcl::gpu;
 using namespace pcl;
 using namespace std;
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//#include <pcl/search/pcl_search.>
-//#include <Eigen/Core>
-//struct ProjMatrix : public pcl::search::OrganizedNeighbor<pcl::PointXYZRGB>
-//{  
-//  using pcl::search::OrganizedNeighbor<pcl::PointXYZRGB>::projection_matrix_;
-//};
-//
-//float estimateFocalLength(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
-//{
-//  ProjMatrix proj_matrix;
-//  proj_matrix.setInputCloud(cloud);  
-//  Eigen::Matrix3f KR = proj_matrix.projection_matrix_.topLeftCorner <3, 3> ();    
-//  return (KR(0,0) + KR(1,1))/KR(2,2)/2;
-//}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -153,29 +138,35 @@ class PeoplePCDApp
 
     enum { COLS = 640, ROWS = 480 };
 
-    PeoplePCDApp (pcl::Grabber& capture) : capture_(capture), exit_(false), time_ms_(0), cloud_cb_(true), counter_(0), final_view_("Final labeling")//, image_view_("Input image")
+    PeoplePCDApp (pcl::Grabber& capture) : capture_(capture), exit_(false), time_ms_(0), cloud_cb_(true), counter_(0), final_view_("Final labeling"), depth_view_("Depth")
     {
       final_view_.setSize (COLS, ROWS);
-      //image_view_.setSize (COLS, ROWS);
+      depth_view_.setSize (COLS, ROWS);
 
       final_view_.setPosition (0, 0);
-      //image_view_.setPosition (650, 0);
+      depth_view_.setPosition (650, 0);
 
       cmap_device_.create(ROWS, COLS);
       cmap_host_.points.resize(COLS * ROWS);
       depth_device_.create(ROWS, COLS);
       image_device_.create(ROWS, COLS);
 
+      depth_host_.points.resize(COLS * ROWS);
+
       rgba_host_.points.resize(COLS * ROWS);
       rgb_host_.resize(COLS * ROWS * 3);
+
+      people::uploadColorMap(color_map_);
+
     }
 
     void
     visualizeAndWrite(bool write = false)
     {
-      const pcl::device::Labels& labels = people_detector_.rdf_detector_->getLabels();
-      people_detector_.rdf_detector_->colorizeLabels(labels, cmap_device_);
-      
+      const PeopleDetector::Labels& labels = people_detector_.rdf_detector_->getLabels();
+      people::colorizeLabels(color_map_, labels, cmap_device_);
+      //people::colorizeMixedLabels(
+            
       int c;
       cmap_host_.width = cmap_device_.cols();
       cmap_host_.height = cmap_device_.rows();
@@ -185,11 +176,16 @@ class PeoplePCDApp
       final_view_.showRGBImage<pcl::RGB>(cmap_host_);
       final_view_.spinOnce(1, true);
 
-      //if (cloud_cb_)      
-      //  image_view_.showRGBImage<pcl::PointXYZRGB>(cloud_host_);            
-      //else      
-      //  image_view_.showRGBImage(&rgb_host_[0], cmap_host_.width, cmap_host_.height);      
-      //image_view_.spinOnce(1, true);
+      if (cloud_cb_)      
+      {
+        depth_host_.width = people_detector_.depth_device1_.cols();
+        depth_host_.height = people_detector_.depth_device1_.rows();
+        depth_host_.points.resize(depth_host_.width * depth_host_.height);        
+        people_detector_.depth_device1_.download(depth_host_.points, c);        
+      }      
+      
+      depth_view_.showShortImage(&depth_host_.points[0], depth_host_.width, depth_host_.height, 0, 5000, true);      
+      depth_view_.spinOnce(1, true);
 
       if (write)
       {
@@ -227,7 +223,13 @@ class PeoplePCDApp
         int w = depth_wrapper->getWidth();
         int h = depth_wrapper->getHeight();
         int s = w * PeopleDetector::Depth::elem_size;
-        depth_device_.upload(depth_wrapper->getDepthMetaData().Data(), s, h, w);
+        const unsigned short *data = depth_wrapper->getDepthMetaData().Data();
+        depth_device_.upload(data, s, h, w);
+
+        depth_host_.points.resize(w *h);
+        depth_host_.width = w;
+        depth_host_.height = h;
+        std::copy(data, data + w * h, &depth_host_.points[0]);
                       
         //getting image
         w = image_wrapper->getWidth();
@@ -321,13 +323,16 @@ class PeoplePCDApp
     PeopleDetector::Depth depth_device_;
     PeopleDetector::Image image_device_;
     
+    pcl::PointCloud<unsigned short> depth_host_;
     pcl::PointCloud<pcl::RGB> rgba_host_;
     std::vector<unsigned char> rgb_host_;
 
     PointCloud<PointXYZRGB> cloud_host_;        
 
     ImageViewer final_view_;
-    //ImageViewer image_view_;    
+    ImageViewer depth_view_;   
+
+    DeviceArray<pcl::RGB> color_map_;
 };
 
 void print_help()

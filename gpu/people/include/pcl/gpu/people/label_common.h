@@ -41,7 +41,7 @@
 #define PCL_GPU_PEOPLE_LABEL_COMMON_H_
 
 #include <pcl/gpu/containers/device_array.h>
-#include <pcl/gpu/utils/safe_call.hpp>
+#include <cuda_runtime.h> // for float4, uchar4, delete this in future
 
 namespace pcl
 {
@@ -50,18 +50,23 @@ namespace pcl
     namespace people
     {
       // Some types for the tree
-      enum { NO_CHILD   = -3,
-        LEAF       = -2,
-        ROOT       = -1,
-        NO_DATA    = 255 };  /** \brief We have no depth data for this part of the image **/
+      enum 
+      { 
+        NO_CHILD  = -3,
+        LEAF      = -2,
+        ROOT      = -1,
+        NO_DATA   = 255  /** \brief We have no depth data for this part of the image **/
+      };  
+
       enum { NUM_PARTS  = 25 };         /** \brief We have 25 body parts defined **/
       enum { MAX_CHILD  = 4  };         /** \brief a parent node has maximum 4 children **/
       enum { NR_TREES   = 4  };         /** \brief The maximum supported number of trees **/
+
       // Some defines for geometry
-      enum { FOCAL      = 525 };        /** \brief Focal length of rgb camera in pixels **/
-      enum { WIDTH      = 640 };
-      enum { HEIGHT     = 480 };
-      enum { RATIO      = WIDTH/HEIGHT };
+      enum { FOCAL       = 525 };        /** \brief Focal length of rgb camera in pixels **/
+      enum { WIDTH       = 640 };
+      enum { HEIGHT      = 480 };
+      enum { RATIO       = WIDTH/HEIGHT };
       enum { XML_VERSION = 1 };         /** \brief This indicates the current used xml file version (for people lib only) **/
 
       enum { NUM_ATTRIBS = 2000 };
@@ -102,9 +107,147 @@ namespace pcl
         Background  = 29,
         NOLABEL     = 31
       };
-    }
-  }
-}
+
+      typedef DeviceArray2D<float4> Cloud;
+      typedef DeviceArray2D<uchar4> Image;
+
+      typedef DeviceArray2D<unsigned short> Depth;
+      typedef DeviceArray2D<unsigned char>  Labels;      
+      typedef DeviceArray2D<float>          HueImage;
+      typedef DeviceArray2D<unsigned char>  Mask;      
+      
+      /**
+       * @brief This LUT contains the max primary eigenvalue for each part
+       * @todo read this from XML file
+       **/
+      static const float LUT_max_part_size[] =
+      {
+          0.5f,            // 0 Lfoot
+          0.7f,            // 1 Lleg
+          0.6f,            // 2 Lknee
+          0.6f,            // 3 Lthigh
+          0.5f,            // 4 Rfoot
+          0.7f,            // 5 Rleg
+          0.6f,            // 6 Rknee
+          0.6f,            // 7 Rthigh
+          0.9f,            // 8 Rhips
+          0.9f,            // 9 Lhips
+          0.5f,            // 10 Neck
+          0.7f,            // 11 Rarm
+          0.5f,            // 12 Relbow
+          0.7f,            // 13 Rforearm
+          0.5f,            // 14 Rhand
+          0.7f,            // 15 Larm
+          0.5f,            // 16 Lelbow
+          0.7f,            // 17 Lforearm
+          0.5f,            // 18 Lhand
+          0.5f,            // 19 FaceLB
+          0.5f,            // 20 FaceRB
+          0.5f,            // 21 FaceLT
+          0.5f,            // 22 FaceRT
+          0.9f,            // 23 Rchest
+          0.9f             // 24 Lchest
+      };
+
+      /**
+       *  @brief This LUT contains the ideal lenght between this part and his children
+       **/
+      static const float LUT_ideal_length[][4] = 
+      {
+        { -1.0f,  -1.0f,  -1.0f,  -1.0f}, // 0 Lfoot
+        {  0.2f,  -1.0f,  -1.0f,  -1.0f}, // 1 Lleg
+        {  0.2f,  -1.0f,  -1.0f,  -1.0f}, // 2 Lknee
+        {  0.3f,  -1.0f,  -1.0f,  -1.0f}, // 3 Lthigh
+        { -1.0f,  -1.0f,  -1.0f,  -1.0f}, // 4 Rfoot
+        {  0.2f,  -1.0f,  -1.0f,  -1.0f}, // 5 Rleg
+        {  0.2f,  -1.0f,  -1.0f,  -1.0f}, // 6 Rknee
+        {  0.3f,  -1.0f,  -1.0f,  -1.0f}, // 7 Rthigh
+        {  0.3f,  -1.0f,  -1.0f,  -1.0f}, // 8 Rhips
+        {  0.3f,  -1.0f,  -1.0f,  -1.0f}, // 9 Lhips
+        { 0.15f,  0.15f,   0.2f,   0.2f}, // 10 Neck
+        { 0.15f,  -1.0f,  -1.0f,  -1.0f}, // 11 Rarm
+        {  0.1f,  -1.0f,  -1.0f,  -1.0f}, // 12 Relbow
+        { 0.15f,  -1.0f,  -1.0f,  -1.0f}, // 13 Rforearm
+        { -1.0f,  -1.0f,  -1.0f,  -1.0f}, // 14 Rhand
+        { 0.15f,  -1.0f,  -1.0f,  -1.0f}, // 15 Larm
+        {  0.1f,  -1.0f,  -1.0f,  -1.0f}, // 16 Lelbow
+        { 0.15f,  -1.0f,  -1.0f,  -1.0f}, // 17 Lforearm
+        { -1.0f,  -1.0f,  -1.0f,  -1.0f}, // 18 Lhand
+        { 0.15f,  -1.0f,  -1.0f,  -1.0f}, // 19 FaceLB
+        { 0.15f,  -1.0f,  -1.0f,  -1.0f}, // 20 FaceRB
+        { -1.0f,  -1.0f,  -1.0f,  -1.0f}, // 21 FaceLT
+        { -1.0f,  -1.0f,  -1.0f,  -1.0f}, // 22 FaceRT
+        {  0.3f,   0.3f,  -1.0f,  -1.0f}, // 23 Rchest
+        {  0.3f,   0.3f,  -1.0f,  -1.0f}  // 24 Lchest
+      };
+
+      /**
+       * @brief This LUT contains the max lenght between this part and his children
+       **/
+      static const float LUT_max_length_offset[][4] = 
+      {
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 0 Lfoot
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 1 Lleg
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 2 Lknee
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 3 Lthigh
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 4 Rfoot
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 5 Rleg
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 6 Rknee
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 7 Rthigh
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 8 Rhips
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 9 Lhips
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 10 Neck
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 11 Rarm
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 12 Relbow
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 13 Rforearm
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 14 Rhand
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 15 Larm
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 16 Lelbow
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 17 Lforearm
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 18 Lhand
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 19 FaceLB
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 20 FaceRB
+        {  0.3f,  0.15f,  0.15f,  0.15f}, // 21 FaceLT
+        {  0.3f,  0.15f,  0.15f,  0.15f}, // 22 FaceRT
+        { 0.15f,  0.15f,  0.15f,  0.15f}, // 23 Rchest
+        { 0.15f,  0.15f,  0.15f,  0.15f} // 24 Lchest
+      };
+
+      /**
+       * @brief This LUT contains the number of children for each parent
+       **/
+      static const unsigned int LUT_nr_children[] = 
+      {
+        0,            // 0 Lfoot
+        1,            // 1 Lleg
+        1,            // 2 Lknee
+        1,            // 3 Lthigh
+        0,            // 4 Rfoot
+        1,            // 5 Rleg
+        1,            // 6 Rknee
+        1,            // 7 Rthigh
+        1,            // 8 Rhips
+        1,            // 9 Lhips
+        4,            // 10 Neck
+        1,            // 11 Rarm
+        1,            // 12 Relbow
+        1,            // 13 Rforearm
+        0,            // 14 Rhand
+        1,            // 15 Larm
+        1,            // 16 Lelbow
+        1,            // 17 Lforearm
+        0,            // 18 Lhand
+        1,            // 19 FaceLB
+        1,            // 20 FaceRB
+        0,            // 21 FaceLT
+        0,            // 22 FaceRT
+        2,            // 23 Rchest
+        2             // 24 Lchest
+      };      
+    } // End namespace people
+  } // End namespace gpu
+} // End namespace pcl
+
 
 // All typedefs to be used in device name space:
 // Moved to common because of multiple declarations conflicting
@@ -118,22 +261,7 @@ namespace pcl
         float probs[pcl::gpu::people::NUM_PARTS];       /** \brief A single float probability for each body part **/
     };
 
-    struct float8
-    {
-        float x, y, z, w, f1, f2, f3, f4;
-    };
-
-    typedef DeviceArray2D<float4>         Cloud;
-    typedef DeviceArray2D<unsigned short> Depth;
-    typedef DeviceArray2D<unsigned char>  Labels;
-    typedef DeviceArray2D<char4>          MultiLabels;
-
-    typedef DeviceArray2D<uchar4>         Image;
-
-    typedef DeviceArray2D<float>          Hue;
-    typedef DeviceArray2D<unsigned char>  Mask;
-
-    typedef DeviceArray2D<prob_histogram> LabelProbability;
+    typedef DeviceArray2D<prob_histogram> LabelProbability;    
   }
 }
 
@@ -153,143 +281,7 @@ inline std::ostream& operator << (std::ostream& os, const part_t& p)
 }
  **/
 
-namespace pcl
-{
-  namespace gpu
-  {
-    namespace people
-    {
-      namespace label_skeleton
-      {
 
-        /**
-         * @brief This LUT contains the max primary eigenvalue for each part
-         * @todo read this from XML file
-         **/
-        static const float LUT_max_part_size[] =
-        {
-            0.5f,            // 0 Lfoot
-            0.7f,            // 1 Lleg
-            0.6f,            // 2 Lknee
-            0.6f,            // 3 Lthigh
-            0.5f,            // 4 Rfoot
-            0.7f,            // 5 Rleg
-            0.6f,            // 6 Rknee
-            0.6f,            // 7 Rthigh
-            0.9f,            // 8 Rhips
-            0.9f,            // 9 Lhips
-            0.5f,            // 10 Neck
-            0.7f,            // 11 Rarm
-            0.5f,            // 12 Relbow
-            0.7f,            // 13 Rforearm
-            0.5f,            // 14 Rhand
-            0.7f,            // 15 Larm
-            0.5f,            // 16 Lelbow
-            0.7f,            // 17 Lforearm
-            0.5f,            // 18 Lhand
-            0.5f,            // 19 FaceLB
-            0.5f,            // 20 FaceRB
-            0.5f,            // 21 FaceLT
-            0.5f,            // 22 FaceRT
-            0.9f,            // 23 Rchest
-            0.9f             // 24 Lchest
-        };
 
-        /**
-         *  @brief This LUT contains the ideal lenght between this part and his children
-         **/
-        static const float LUT_ideal_length[][4] = {
-            { -1.0f,  -1.0f,  -1.0f,  -1.0f}, // 0 Lfoot
-            {  0.2f,  -1.0f,  -1.0f,  -1.0f}, // 1 Lleg
-            {  0.2f,  -1.0f,  -1.0f,  -1.0f}, // 2 Lknee
-            {  0.3f,  -1.0f,  -1.0f,  -1.0f}, // 3 Lthigh
-            { -1.0f,  -1.0f,  -1.0f,  -1.0f}, // 4 Rfoot
-            {  0.2f,  -1.0f,  -1.0f,  -1.0f}, // 5 Rleg
-            {  0.2f,  -1.0f,  -1.0f,  -1.0f}, // 6 Rknee
-            {  0.3f,  -1.0f,  -1.0f,  -1.0f}, // 7 Rthigh
-            {  0.3f,  -1.0f,  -1.0f,  -1.0f}, // 8 Rhips
-            {  0.3f,  -1.0f,  -1.0f,  -1.0f}, // 9 Lhips
-            { 0.15f,  0.15f,   0.2f,   0.2f}, // 10 Neck
-            { 0.15f,  -1.0f,  -1.0f,  -1.0f}, // 11 Rarm
-            {  0.1f,  -1.0f,  -1.0f,  -1.0f}, // 12 Relbow
-            { 0.15f,  -1.0f,  -1.0f,  -1.0f}, // 13 Rforearm
-            { -1.0f,  -1.0f,  -1.0f,  -1.0f}, // 14 Rhand
-            { 0.15f,  -1.0f,  -1.0f,  -1.0f}, // 15 Larm
-            {  0.1f,  -1.0f,  -1.0f,  -1.0f}, // 16 Lelbow
-            { 0.15f,  -1.0f,  -1.0f,  -1.0f}, // 17 Lforearm
-            { -1.0f,  -1.0f,  -1.0f,  -1.0f}, // 18 Lhand
-            { 0.15f,  -1.0f,  -1.0f,  -1.0f}, // 19 FaceLB
-            { 0.15f,  -1.0f,  -1.0f,  -1.0f}, // 20 FaceRB
-            { -1.0f,  -1.0f,  -1.0f,  -1.0f}, // 21 FaceLT
-            { -1.0f,  -1.0f,  -1.0f,  -1.0f}, // 22 FaceRT
-            {  0.3f,   0.3f,  -1.0f,  -1.0f}, // 23 Rchest
-            {  0.3f,   0.3f,  -1.0f,  -1.0f}  // 24 Lchest
-        };
 
-        /**
-         * @brief This LUT contains the max lenght between this part and his children
-         **/
-        static const float LUT_max_length_offset[][4] = {
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 0 Lfoot
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 1 Lleg
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 2 Lknee
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 3 Lthigh
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 4 Rfoot
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 5 Rleg
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 6 Rknee
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 7 Rthigh
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 8 Rhips
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 9 Lhips
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 10 Neck
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 11 Rarm
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 12 Relbow
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 13 Rforearm
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 14 Rhand
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 15 Larm
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 16 Lelbow
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 17 Lforearm
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 18 Lhand
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 19 FaceLB
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 20 FaceRB
-            {  0.3f,  0.15f,  0.15f,  0.15f}, // 21 FaceLT
-            {  0.3f,  0.15f,  0.15f,  0.15f}, // 22 FaceRT
-            { 0.15f,  0.15f,  0.15f,  0.15f}, // 23 Rchest
-            { 0.15f,  0.15f,  0.15f,  0.15f} // 24 Lchest
-        };
-
-        /**
-         * @brief This LUT contains the number of children for each parent
-         **/
-        static const unsigned int LUT_nr_children[] = {
-            0,            // 0 Lfoot
-            1,            // 1 Lleg
-            1,            // 2 Lknee
-            1,            // 3 Lthigh
-            0,            // 4 Rfoot
-            1,            // 5 Rleg
-            1,            // 6 Rknee
-            1,            // 7 Rthigh
-            1,            // 8 Rhips
-            1,            // 9 Lhips
-            4,            // 10 Neck
-            1,            // 11 Rarm
-            1,            // 12 Relbow
-            1,            // 13 Rforearm
-            0,            // 14 Rhand
-            1,            // 15 Larm
-            1,            // 16 Lelbow
-            1,            // 17 Lforearm
-            0,            // 18 Lhand
-            1,            // 19 FaceLB
-            1,            // 20 FaceRB
-            0,            // 21 FaceLT
-            0,            // 22 FaceRT
-            2,            // 23 Rchest
-            2             // 24 Lchest
-        };
-
-      } // End namespace label_skeletons
-    } // End namespace people
-  } // End namespace gpu
-} // End namespace pcl
 #endif

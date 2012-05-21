@@ -42,11 +42,50 @@
 #include <pcl/gpu/people/label_common.h>
 
 #include <fstream>
+#include <string>
 #include <cassert>
 #include <stdexcept>
 #include <limits>
 #include <iostream>
-#include <pcl/gpu/people/tex_fetch.h>
+
+namespace pcl
+{
+  namespace gpu
+  {
+    namespace people
+    {
+      namespace trees
+      {
+        /**
+         * \brief Simple helper structure to fetch the texture without bothering about limits
+         * This will be done by CUDA directly for the run time part of the stuff
+         */
+        struct Tex2Dfetcher
+        {
+	  	  Tex2Dfetcher( const boost::uint16_t* dmap, int W, int H ) : m_dmap(dmap), m_W(W), m_H(H) {}
+
+          inline boost::uint16_t operator () ( float uf, float vf ) 
+          {
+            int u = static_cast<int>(uf);
+            int v = static_cast<int>(vf);
+            if( u < 0 ) u = 0;
+            if( v < 0 ) v = 0;
+            if( u >= m_W ) u = m_W-1;
+            if( v >= m_H ) v = m_H-1;
+            
+            return m_dmap[u+v*m_W]; // this is going to be SLOOOWWW
+          }
+          const boost::uint16_t*  m_dmap;
+          const int               m_W;
+          const int               m_H;
+        };
+      } // end namespace trees
+    } // end namespace people
+  } // end namespace gpu
+} // end namespace pcl
+
+
+
 
 using pcl::gpu::people::trees::NUM_ATTRIBS;
 
@@ -92,7 +131,8 @@ pcl::gpu::people::trees::loadTree ( const std::string&        filename,
                                           std::vector<Label>& leaves )
 {
   std::ifstream fin(filename.c_str() );
-  if( !fin.is_open() ) throw std::runtime_error(std::string("(E) could not open") + filename );
+  if( !fin.is_open() ) 
+    throw std::runtime_error(std::string("(E) could not open") + filename );
   return loadTree(fin, tree, leaves);
 }
 
@@ -112,7 +152,7 @@ pcl::gpu::people::trees::runThroughTree( int maxDepth,
   {
     for(int x = 0; x < W; ++x) 
     {
-      uint16_t depth = tfetch(x,y);
+      uint16_t depth = tfetch((float)x,(float)y);
       if(depth == std::numeric_limits<uint16_t>::max() ) 
       {
         lmap[x+W*y] = pcl::gpu::people::NOLABEL;
@@ -127,8 +167,8 @@ pcl::gpu::people::trees::runThroughTree( int maxDepth,
       {
         const Node& node = tree[nid];
         const AttribLocation& loc = node.loc;
-        uint16_t d1       = tfetch(x+loc.du1*scale, y+loc.dv1*scale);
-        uint16_t d2       = tfetch(x+loc.du2*scale, y+loc.dv2*scale);
+        uint16_t d1       = tfetch((float)(x+loc.du1*scale), (float)(y+loc.dv1*scale));
+        uint16_t d2       = tfetch((float)(x+loc.du2*scale), (float)(y+loc.dv2*scale));
         int32_t delta     = int32_t(d1) - int32_t(d2);
         bool test = delta > int32_t(node.thresh);
 
@@ -163,7 +203,7 @@ pcl::gpu::people::trees::readAttribLocs( const std::string& filename,
 {
   std::ifstream fin(filename.c_str() );
   if(!fin.is_open()) 
-    throw std::runtime_error(std::string("(E) could not open " + filename) );
+    throw std::runtime_error(std::string("(E) could not open ") + filename );
 
   int numAttribs;
   fin >> numAttribs;

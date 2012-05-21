@@ -1,3 +1,6 @@
+
+#if 0
+
 /*
 * Software License Agreement (BSD License)
 *
@@ -245,5 +248,8 @@ void optimized_shs5(const PointCloud<PointXYZRGB> &cloud, float tolerance, const
         }        
     }       
 }
+
+#endif
+
 
 #endif

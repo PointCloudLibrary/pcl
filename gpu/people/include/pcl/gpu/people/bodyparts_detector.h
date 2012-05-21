@@ -64,23 +64,24 @@ namespace pcl
       class PCL_EXPORTS RDFBodyPartsDetector
       {
         public:
-          typedef boost::shared_ptr<RDFBodyPartsDetector> Ptr;
-          typedef label_skeleton::Blob2 Blob2;
+          typedef boost::shared_ptr<RDFBodyPartsDetector> Ptr;          
           typedef std::vector<std::vector<Blob2, Eigen::aligned_allocator<Blob2> > > BlobMatrix;
-
+          
+          typedef DeviceArray2D<unsigned char> Labels;
+          typedef DeviceArray2D<unsigned short> Depth;
           typedef DeviceArray2D<pcl::RGB> Image;
 
           RDFBodyPartsDetector(const std::vector<std::string>& tree_files,
               int default_buffer_rows = 480, int default_buffer_cols = 640);
 
-          void process(const pcl::device::Depth& depth, const pcl::PointCloud<pcl::PointXYZ>& cloud, int min_pts_per_cluster);
+          void process(const Depth& depth, const PointCloud<PointXYZ>& cloud, int min_pts_per_cluster);
           // This are the different sub-parts of process()
-          void processProb (const pcl::device::Depth& depth);
-          void processSmooth (const pcl::device::Depth& depth, const PointCloud<PointXYZ>& cloud, int min_pts_per_cluster);
+          void processProb (const Depth& depth);
+          void processSmooth (const Depth& depth, const PointCloud<PointXYZ>& cloud, int min_pts_per_cluster);
           void processRelations ();
 
           //getters
-          const pcl::device::Labels& getLabels() const;
+          const Labels& getLabels() const;
           const pcl::device::LabelProbability& getProbability() const;
           const pcl::device::LabelProbability& getProbability1() const;
           const pcl::device::LabelProbability& getProbability2() const;
@@ -89,13 +90,11 @@ namespace pcl
           size_t treesNumber() const;
           const BlobMatrix& getBlobMatrix() const;
 
-          //utility
-          void colorizeLabels(const pcl::device::Labels& labels, Image& color_labels) const;
-
+          
           /** \brief This contains the final body part labels **/
-          pcl::device::Labels labels_;
+          Labels labels_;
           /** \brief This contains the smoothed final body part labels **/
-          pcl::device::Labels labels_smoothed_;
+          Labels labels_smoothed_;
 
           /** These contain the histograms of the labels for this detector **/
           pcl::device::LabelProbability P_l_; // the one is current worked in
@@ -108,9 +107,7 @@ namespace pcl
 
         private:
           boost::shared_ptr<device::MultiTreeLiveProc> impl_;
-
-          /** This one is used to convert labels to colors from LUT **/
-          DeviceArray<pcl::RGB> color_map_;
+          
 
           int max_cluster_size_;
           float cluster_tolerance_;

@@ -41,7 +41,6 @@
 
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/utils/safe_call.hpp>
-#include <pcl/gpu/people/tree.h>
 #include <pcl/gpu/people/label_common.h>
 #include <pcl/gpu/people/tree.h>
 
@@ -51,6 +50,16 @@ namespace pcl
 {
   namespace device
   {
+    typedef DeviceArray2D<float4> Cloud;
+    typedef DeviceArray2D<uchar4> Image;
+
+    typedef DeviceArray2D<unsigned short> Depth;
+    typedef DeviceArray2D<unsigned char>  Labels;      
+    typedef DeviceArray2D<float>          HueImage;
+    typedef DeviceArray2D<unsigned char>  Mask;  
+
+    typedef DeviceArray2D<char4> MultiLabels;
+
     /** \brief The intrinsic camera calibration **/
     struct Intr
     {
@@ -67,6 +76,7 @@ namespace pcl
     
     void smoothLabelImage(const Labels& src, const Depth& depth, Labels& dst, int num_parts, int  patch_size, int depthThres);
     void colorLMap(const Labels& labels, const DeviceArray<uchar4>& cmap, Image& rgb);
+    void mixedColorMap(const Labels& labels, const DeviceArray<uchar4>& map, const Image& rgba, Image& output);
 
     ////////////// connected components ///////////////////        
 
@@ -84,9 +94,9 @@ namespace pcl
     void prepareForeGroundDepth(const Depth& depth1, Mask& inverse_mask, Depth& depth2);
 
     float computeHue(int rgba);
-    void  computeHueWithNans(const Image& image, const Depth& depth, Hue& hue);
+    void  computeHueWithNans(const Image& image, const Depth& depth, HueImage& hue);
 
-    void shs(const DeviceArray2D<float4> &cloud, float tolerance, const std::vector<int>& indices_in, float delta_hue, Mask& indices_out);
+    //void shs(const DeviceArray2D<float4> &cloud, float tolerance, const std::vector<int>& indices_in, float delta_hue, Mask& indices_out);
 
     struct Dilatation
     {

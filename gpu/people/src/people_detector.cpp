@@ -37,9 +37,9 @@
 #include <pcl/gpu/people/people_detector.h>
 #include <pcl/gpu/people/label_common.h>
 
-#include <pcl/gpu/people/conversions.h>
-#include <pcl/gpu/people/label_conversion.h>
-#include <pcl/gpu/people/label_segment.h>
+//#include <pcl/gpu/people/conversions.h>
+//#include <pcl/gpu/people/label_conversion.h>
+//#include <pcl/gpu/people/label_segment.h>
 #include <pcl/gpu/people/label_tree.h>
 #include <pcl/gpu/people/probability_processor.h>
 #include "internal.h"
@@ -178,8 +178,8 @@ pcl::gpu::people::PeopleDetector::process ()
   if(sorted[Neck].size() != 0)
   {
     int c = 0;
-    label_skeleton::Tree2 t;
-    label_skeleton::buildTree(sorted, cloud_host_, Neck, c, t);
+    Tree2 t;
+    buildTree(sorted, cloud_host_, Neck, c, t);
     
     const std::vector<int>& seed = t.indices.indices;
         
@@ -203,8 +203,8 @@ pcl::gpu::people::PeopleDetector::process ()
     //brief Test if the second tree is build up correctly
     if(sorted2[Neck].size() != 0)
     {      
-      label_skeleton::Tree2 t2;
-      label_skeleton::buildTree(sorted2, cloud_host_, Neck, c, t2);
+      Tree2 t2;
+      buildTree(sorted2, cloud_host_, Neck, c, t2);
       int par = 0;
       for(int f = 0; f < NUM_PARTS; f++)
       {
@@ -275,8 +275,8 @@ pcl::gpu::people::PeopleDetector::processProb ()
   if(sorted[Neck].size() != 0)
   {
     int c = 0;
-    label_skeleton::Tree2 t;
-    label_skeleton::buildTree(sorted, cloud_host_, Neck, c, t);
+    Tree2 t;
+    buildTree(sorted, cloud_host_, Neck, c, t);
 
     const std::vector<int>& seed = t.indices.indices;
 
@@ -311,8 +311,8 @@ pcl::gpu::people::PeopleDetector::processProb ()
     //brief Test if the second tree is build up correctly
     if(sorted2[Neck].size() != 0)
     {
-      label_skeleton::Tree2 t2;
-      label_skeleton::buildTree(sorted2, cloud_host_, Neck, c, t2);
+      Tree2 t2;
+      buildTree(sorted2, cloud_host_, Neck, c, t2);
       int par = 0;
       for(int f = 0; f < NUM_PARTS; f++)
       {

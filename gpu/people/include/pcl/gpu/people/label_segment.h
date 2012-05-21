@@ -50,7 +50,7 @@
 #include <vector>
 
 // opencv drawing stuff
-#include <opencv2/highgui/highgui.hpp>
+//#include <opencv2/highgui/highgui.hpp>
 
 // PCL specific includes
 #include <pcl/point_cloud.h>
@@ -80,72 +80,72 @@ namespace pcl
          * @param[in] depthThres the z-distance thresshold
          * @todo add a Gaussian contribution function to depth and vote
          **/
-        inline void smoothLabelImage ( cv::Mat&      lmap_in,
-                                cv::Mat&      dmap,
-                                cv::Mat&      lmap_out,
-                                unsigned int  patch_size,
-                                unsigned int  depthThres)
-        {
-          // check depth
-          assert(lmap_in.depth() == CV_8UC1);
-          assert(dmap.depth() == CV_16U);
-          assert(lmap_out.depth() == CV_8UC1);
-          // check size
-          assert(lmap_in.rows == dmap.rows);
-          assert(lmap_in.cols == dmap.cols);
-          assert(lmap_out.rows == dmap.rows);
-          assert(lmap_out.cols == dmap.cols);
+        //inline void smoothLabelImage ( cv::Mat&      lmap_in,
+        //                        cv::Mat&      dmap,
+        //                        cv::Mat&      lmap_out,
+        //                        unsigned int  patch_size,
+        //                        unsigned int  depthThres)
+        //{
+        //  // check depth
+        //  assert(lmap_in.depth() == CV_8UC1);
+        //  assert(dmap.depth() == CV_16U);
+        //  assert(lmap_out.depth() == CV_8UC1);
+        //  // check size
+        //  assert(lmap_in.rows == dmap.rows);
+        //  assert(lmap_in.cols == dmap.cols);
+        //  assert(lmap_out.rows == dmap.rows);
+        //  assert(lmap_out.cols == dmap.cols);
 
-          unsigned int half_patch = static_cast<int> (patch_size/2);
+        //  unsigned int half_patch = static_cast<int> (patch_size/2);
 
-          // iterate over the height of the image (from 2 till 478)
-          for(unsigned int h = (0 + half_patch); h < (lmap_in.rows - half_patch); h++)
-          {
-            // iterate over the width of the image (from 2 till 638)
-            for(unsigned int w = (0 + half_patch); w < (lmap_in.cols - half_patch); w++)
-            {
-              short depth = dmap.at<short>(h, w);
-              unsigned int votes[NUM_PARTS];
-              //this should be unneeded but to test
-              for(int j = 0 ; j< NUM_PARTS; j++)
-                votes[j] = 0;
+        //  // iterate over the height of the image (from 2 till 478)
+        //  for(unsigned int h = (0 + half_patch); h < (lmap_in.rows - half_patch); h++)
+        //  {
+        //    // iterate over the width of the image (from 2 till 638)
+        //    for(unsigned int w = (0 + half_patch); w < (lmap_in.cols - half_patch); w++)
+        //    {
+        //      short depth = dmap.at<short>(h, w);
+        //      unsigned int votes[NUM_PARTS];
+        //      //this should be unneeded but to test
+        //      for(int j = 0 ; j< NUM_PARTS; j++)
+        //        votes[j] = 0;
 
-              // iterate over the size of the patch in the height
-              for(unsigned int h_l = (h - half_patch); h_l <= (h + half_patch); h_l++)
-              {
-                // iterate over the size of the patch in the width
-                for(unsigned int w_l = (w - half_patch); w_l <= (w + half_patch); w_l++)
-                {
-                  // get the depth of this part of the patch
-                  short depth_l = dmap.at<short>(h_l,w_l);
-                  // evaluate the difference to the centroid 
-                  if(abs(depth - depth_l) < static_cast<int> (depthThres))
-                  {
-                    char label = lmap_in.at<char>(h_l,w_l);
-                    if(label >= 0 && label < NUM_PARTS)
-                      votes[static_cast<unsigned int> (label)]++;
-                    else
-                      std::cout << "(E) : smoothLabelImage(): I've read a label that is non valid" << std::endl;
-                  }
-                }
-              }
+        //      // iterate over the size of the patch in the height
+        //      for(unsigned int h_l = (h - half_patch); h_l <= (h + half_patch); h_l++)
+        //      {
+        //        // iterate over the size of the patch in the width
+        //        for(unsigned int w_l = (w - half_patch); w_l <= (w + half_patch); w_l++)
+        //        {
+        //          // get the depth of this part of the patch
+        //          short depth_l = dmap.at<short>(h_l,w_l);
+        //          // evaluate the difference to the centroid 
+        //          if(abs(depth - depth_l) < static_cast<int> (depthThres))
+        //          {
+        //            char label = lmap_in.at<char>(h_l,w_l);
+        //            if(label >= 0 && label < NUM_PARTS)
+        //              votes[static_cast<unsigned int> (label)]++;
+        //            else
+        //              std::cout << "(E) : smoothLabelImage(): I've read a label that is non valid" << std::endl;
+        //          }
+        //        }
+        //      }
 
-              unsigned int max = 0;
-              char label = lmap_in.at<char>(h,w);
+        //      unsigned int max = 0;
+        //      char label = lmap_in.at<char>(h,w);
 
-              // iterate over the bin to find the max
-              for(char i=0; i<NUM_PARTS; i++)
-              {
-                if(votes[static_cast<int> (i)] > max)
-                {
-                  max = votes[static_cast<int> (i)];
-                  label = i;
-                }
-              }
-              lmap_out.at<char>(h,w) = label;
-            }
-          }
-        }
+        //      // iterate over the bin to find the max
+        //      for(char i=0; i<NUM_PARTS; i++)
+        //      {
+        //        if(votes[static_cast<int> (i)] > max)
+        //        {
+        //          max = votes[static_cast<int> (i)];
+        //          label = i;
+        //        }
+        //      }
+        //      lmap_out.at<char>(h,w) = label;
+        //    }
+        //  }
+        //}
 
         /**
          * @brief this function smooths the label image based on label and depth
@@ -156,78 +156,78 @@ namespace pcl
          * @todo make the z-distance a parameter
          * @todo add a Gaussian contribution function to depth and vote
          **/
-        inline void smoothLabelImage2 ( cv::Mat&  lmap_in,
-                                cv::Mat&  dmap,
-                                cv::Mat&  lmap_out)
-        {
-          // check depth
-          assert(lmap_in.depth() == CV_8UC1);
-          assert(dmap.depth() == CV_16U);
-          assert(lmap_out.depth() == CV_8UC1);
-          // check size
-          assert(lmap_in.rows == dmap.rows);
-          assert(lmap_in.cols == dmap.cols);
-          assert(lmap_out.rows == dmap.rows);
-          assert(lmap_out.cols == dmap.cols);
+        //inline void smoothLabelImage2 ( cv::Mat&  lmap_in,
+        //                        cv::Mat&  dmap,
+        //                        cv::Mat&  lmap_out)
+        //{
+        //  // check depth
+        //  assert(lmap_in.depth() == CV_8UC1);
+        //  assert(dmap.depth() == CV_16U);
+        //  assert(lmap_out.depth() == CV_8UC1);
+        //  // check size
+        //  assert(lmap_in.rows == dmap.rows);
+        //  assert(lmap_in.cols == dmap.cols);
+        //  assert(lmap_out.rows == dmap.rows);
+        //  assert(lmap_out.cols == dmap.cols);
 
-          //unsigned int patch_size = 5;
-          unsigned int half_patch = 2;
-          unsigned int depthThres = 300; // Think this is in mm, verify this!!!!!
+        //  //unsigned int patch_size = 5;
+        //  unsigned int half_patch = 2;
+        //  unsigned int depthThres = 300; // Think this is in mm, verify this!!!!!
 
-          // iterate over the height of the image (from 2 till 478)
-          unsigned int endrow = (lmap_in.rows - half_patch);
-          unsigned int endcol = (lmap_in.cols - half_patch);
-          for(unsigned int h = (0 + half_patch); h < endrow; h++)
-          {
-            unsigned int endheight = (h + half_patch);
+        //  // iterate over the height of the image (from 2 till 478)
+        //  unsigned int endrow = (lmap_in.rows - half_patch);
+        //  unsigned int endcol = (lmap_in.cols - half_patch);
+        //  for(unsigned int h = (0 + half_patch); h < endrow; h++)
+        //  {
+        //    unsigned int endheight = (h + half_patch);
 
-            // iterate over the width of the image (from 2 till 638)
-            for(unsigned int w = (0 + half_patch); w < endcol; w++)
-            {
-              unsigned int endwidth = (w + half_patch);
+        //    // iterate over the width of the image (from 2 till 638)
+        //    for(unsigned int w = (0 + half_patch); w < endcol; w++)
+        //    {
+        //      unsigned int endwidth = (w + half_patch);
 
-              short depth = dmap.at<short>(h, w);
-              unsigned int votes[NUM_PARTS];
-              //this should be unneeded but to test
-              for(int j = 0 ; j< NUM_PARTS; j++)
-                votes[j] = 0;
+        //      short depth = dmap.at<short>(h, w);
+        //      unsigned int votes[NUM_PARTS];
+        //      //this should be unneeded but to test
+        //      for(int j = 0 ; j< NUM_PARTS; j++)
+        //        votes[j] = 0;
 
-              // iterate over the size of the patch in the height
-              for(unsigned int h_l = (h - half_patch); h_l <= endheight; h_l++)
-              {
-                // iterate over the size of the patch in the width
-                for(unsigned int w_l = (w - half_patch); w_l <= endwidth; w_l++)
-                {
-                  // get the depth of this part of the patch
-                  short depth_l = dmap.at<short>(h_l,w_l);
-                  // evaluate the difference to the centroid 
-                  if(abs(depth - depth_l) < static_cast<int> (depthThres))
-                  {
-                    char label = lmap_in.at<char>(h_l,w_l);
-                    if(label >= 0 && label < NUM_PARTS)
-                      votes[static_cast<unsigned int>(label)]++;
-                    else
-                      std::cout << "(E) : smoothLabelImage(): I've read a label that is non valid" << std::endl;
-                  }
-                }
-              }
+        //      // iterate over the size of the patch in the height
+        //      for(unsigned int h_l = (h - half_patch); h_l <= endheight; h_l++)
+        //      {
+        //        // iterate over the size of the patch in the width
+        //        for(unsigned int w_l = (w - half_patch); w_l <= endwidth; w_l++)
+        //        {
+        //          // get the depth of this part of the patch
+        //          short depth_l = dmap.at<short>(h_l,w_l);
+        //          // evaluate the difference to the centroid 
+        //          if(abs(depth - depth_l) < static_cast<int> (depthThres))
+        //          {
+        //            char label = lmap_in.at<char>(h_l,w_l);
+        //            if(label >= 0 && label < NUM_PARTS)
+        //              votes[static_cast<unsigned int>(label)]++;
+        //            else
+        //              std::cout << "(E) : smoothLabelImage(): I've read a label that is non valid" << std::endl;
+        //          }
+        //        }
+        //      }
 
-              unsigned int max = 0;
-              char label = lmap_in.at<char>(h,w);
+        //      unsigned int max = 0;
+        //      char label = lmap_in.at<char>(h,w);
 
-              // iterate over the bin to find the max
-              for(char i=0; i<NUM_PARTS; i++)
-              {
-                if(votes[static_cast<unsigned int>(i)] > max)
-                {
-                  max = votes[static_cast<unsigned int>(i)];
-                  label = i;
-                }
-              }
-              lmap_out.at<char>(h,w) = label;
-            }
-          }
-        }
+        //      // iterate over the bin to find the max
+        //      for(char i=0; i<NUM_PARTS; i++)
+        //      {
+        //        if(votes[static_cast<unsigned int>(i)] > max)
+        //        {
+        //          max = votes[static_cast<unsigned int>(i)];
+        //          label = i;
+        //        }
+        //      }
+        //      lmap_out.at<char>(h,w) = label;
+        //    }
+        //  }
+        //}
 
         /**
          * @brief this function smooths the label image based on label and depth

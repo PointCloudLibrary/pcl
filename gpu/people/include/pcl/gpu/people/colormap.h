@@ -43,14 +43,14 @@
 #include <pcl/point_types.h>
 #include <pcl/gpu/people/tree.h>
 #include <pcl/gpu/containers/device_array.h>
-#include <opencv2/core/core.hpp>
 
 namespace pcl
 {
   namespace gpu
   {
     namespace people
-    {      
+    {         
+
       /** @brief gives a label and returns the color out of the colormap */         
       pcl::RGB getLColor(unsigned char l);
 
@@ -59,7 +59,19 @@ namespace pcl
         
       void colorLMap(int W, int H, const trees::Label* l, unsigned char* c);       
       void colorLMap(const PointCloud<pcl::Label>& cloud_in, PointCloud<pcl::RGB>& colormap_out);             
-      void colorLMap(const cv::Mat& lmap, cv::Mat& cmap);
+      
+ 
+      extern const unsigned char LUT_COLOR_LABEL[];
+      extern const int LUT_COLOR_LABEL_LENGTH;
+      
+      PCL_EXPORTS void uploadColorMap(DeviceArray<pcl::RGB>& color_map);      
+      PCL_EXPORTS void colorizeLabels(const DeviceArray<pcl::RGB>& color_map, const DeviceArray2D<unsigned char>& labels, DeviceArray2D<pcl::RGB>& color_labels);
+
+
+
+      PCL_EXPORTS void colorizeMixedLabels(const DeviceArray<RGB>& color_map, const DeviceArray2D<unsigned char>& labels, 
+                                           const DeviceArray2D<RGB>& image, DeviceArray2D<RGB>& color_labels);
+
 
       inline void colorFG ( int W, int H, const unsigned char* labels, unsigned char* c )
       {
@@ -73,9 +85,8 @@ namespace pcl
           }          
       }
 
-      extern const unsigned char LUT_COLOR_LABEL[];
-      extern const int LUT_COLOR_LABEL_LENGTH;
-           
+
+
     } // end namespace people
   } // end namespace gpu
 } // end namespace pcl

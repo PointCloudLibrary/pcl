@@ -42,12 +42,39 @@ void pcl::gpu::people::colorLMap (const pcl::PointCloud<pcl::Label>& cloud_in, p
   colormap_out.height = cloud_in.height;
 }
 
-void pcl::gpu::people::colorLMap( const cv::Mat& lmap, cv::Mat& cmap )
+void pcl::gpu::people::uploadColorMap(DeviceArray<pcl::RGB>& color_map)
 {
-  CV_Assert( lmap.type() == CV_8UC1 );
+  // Copy the list of label colors into the devices
+  vector<pcl::RGB> rgba(LUT_COLOR_LABEL_LENGTH);
+  for(int i = 0; i < LUT_COLOR_LABEL_LENGTH; ++i)
+  {
+    // !!!! generate in RGB format, not BGR
+    rgba[i].r = LUT_COLOR_LABEL[i*3 + 2];
+    rgba[i].g = LUT_COLOR_LABEL[i*3 + 1];
+    rgba[i].b = LUT_COLOR_LABEL[i*3 + 0];
+    rgba[i].a = 255;
+  }
+  color_map.upload(rgba);
+}
 
-  cmap.create( lmap.size(), CV_8UC3 );
-  colorLMap( lmap.cols, lmap.rows, lmap.ptr<trees::Label>(), cmap.ptr<unsigned char>());  
+void pcl::gpu::people::colorizeLabels(const DeviceArray<pcl::RGB>& color_map, const DeviceArray2D<unsigned char>& labels, DeviceArray2D<pcl::RGB>& color_labels)
+{
+  color_labels.create(labels.rows(), labels.cols());
+
+  const DeviceArray<uchar4>& map = (const DeviceArray<uchar4>&)color_map;
+  device::Image& img = (device::Image&)color_labels;  
+  device::colorLMap(labels, map, img);
+}
+
+void pcl::gpu::people::colorizeMixedLabels(const DeviceArray<pcl::RGB>& color_map, const DeviceArray2D<unsigned char>& labels, 
+                                           const DeviceArray2D<pcl::RGB>& image, DeviceArray2D<pcl::RGB>& color_labels)
+{
+  color_labels.create(labels.rows(), labels.cols());
+
+  const DeviceArray<uchar4>& map = (const DeviceArray<uchar4>&)color_map;
+  device::Image& img = (device::Image&)color_labels;
+  device::Image& rgba = (device::Image&)image;
+  device::mixedColorMap(labels, map, rgba, img);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
