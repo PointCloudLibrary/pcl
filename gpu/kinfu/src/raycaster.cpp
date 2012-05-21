@@ -74,7 +74,8 @@ pcl::gpu::RayCaster::setIntrinsics(float fx, float fy, float cx, float cy)
 void 
 pcl::gpu::RayCaster::run(const TsdfVolume& volume, const Affine3f& camera_pose)
 {  
-  camera_pose_ = camera_pose;
+  camera_pose_.linear() = camera_pose.linear();
+  camera_pose_.translation() = camera_pose.translation();
   volume_size_ = volume.getSize();
   device::Intr intr (fx_, fy_, cx_, cy_);
 
