@@ -52,6 +52,7 @@ using namespace pcl::console;
 float default_min = 0.0f,
       default_max = 1.0f;
 bool default_inside = true;
+bool default_keep_organized = true;
 std::string default_field_name = "z";
 
 void
@@ -86,7 +87,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 
 void
 compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointCloud2 &output,
-         std::string field_name, float min, float max, bool inside)
+         std::string field_name, float min, float max, bool inside, bool keep_organized)
 {
   // Estimate
   TicToc tt;
@@ -99,6 +100,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   passthrough_filter.setFilterFieldName (field_name);
   passthrough_filter.setFilterLimits (min, max);
   passthrough_filter.setFilterLimitsNegative (!inside);
+  passthrough_filter.setKeepOrganized (keep_organized);
   passthrough_filter.filter (output);
 
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
@@ -112,7 +114,8 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
 
   print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
 
-  pcl::io::savePCDFile (filename, output);
+  PCDWriter w;
+  w.writeBinaryCompressed (filename, output);
 
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }
@@ -141,11 +144,13 @@ main (int argc, char** argv)
   // Command line parsing
   float min = default_min, max = default_max;
   bool inside = default_inside;
+  bool keep_organized = default_keep_organized;
   std::string field_name = default_field_name;
   parse_argument (argc, argv, "-min", min);
   parse_argument (argc, argv, "-max", max);
   parse_argument (argc, argv, "-inside", inside);
   parse_argument (argc, argv, "-field", field_name);
+  parse_argument (argc, argv, "-keep", keep_organized);
 
   // Load the first file
   sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
@@ -154,7 +159,7 @@ main (int argc, char** argv)
 
   // Perform the feature estimation
   sensor_msgs::PointCloud2 output;
-  compute (cloud, output, field_name, min, max, inside);
+  compute (cloud, output, field_name, min, max, inside, keep_organized);
 
   // Save into the second file
   saveCloud (argv[p_file_indices[1]], output);
