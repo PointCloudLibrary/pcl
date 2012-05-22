@@ -14,7 +14,8 @@ set(ON_NURBS_INCLUDES
 	include/pcl/${SUBSYS_NAME}/on_nurbs/nurbs_solve.h
 	include/pcl/${SUBSYS_NAME}/on_nurbs/nurbs_tools.h
 	include/pcl/${SUBSYS_NAME}/on_nurbs/sequential_fitter.h
-	include/pcl/${SUBSYS_NAME}/on_nurbs/sparse_mat.h)
+	include/pcl/${SUBSYS_NAME}/on_nurbs/sparse_mat.h
+	include/pcl/${SUBSYS_NAME}/on_nurbs/triangulation.h)
 
 set(ON_NURBS_SOURCES
 	src/on_nurbs/closing_boundary.cpp
@@ -29,12 +30,14 @@ set(ON_NURBS_SOURCES
 	src/on_nurbs/global_optimization_tdm.cpp
 	src/on_nurbs/nurbs_tools.cpp
 	src/on_nurbs/sequential_fitter.cpp
-	src/on_nurbs/sparse_mat.cpp)
+	src/on_nurbs/sparse_mat.cpp
+	src/on_nurbs/triangulation.cpp)
 	
-if(true)
-  set(ON_NURBS_SOURCES ${ON_NURBS_SOURCES} src/on_nurbs/nurbs_solve_eigen.cpp)
-else()
+SET(USE_UMFPACK 0 CACHE BOOL "Use UmfPack for solving sparse systems of equations (e.g. in surface/on_nurbs)" )
+IF(USE_UMFPACK)
 	set(ON_NURBS_SOURCES ${ON_NURBS_SOURCES} src/on_nurbs/nurbs_solve_umfpack.cpp)
 	set(ON_NURBS_LIBRARIES ${ON_NURBS_LIBRARIES} cholmod umfpack)
-endif()
+ELSE(USE_UMFPACK)
+	set(ON_NURBS_SOURCES ${ON_NURBS_SOURCES} src/on_nurbs/nurbs_solve_eigen.cpp)
+ENDIF(USE_UMFPACK)
 

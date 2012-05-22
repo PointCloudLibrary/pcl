@@ -180,6 +180,7 @@ namespace pcl
       setQuiet (bool val)
       {
         m_quiet = val;
+        m_solver.setQuiet(val);
       }
 
     protected:

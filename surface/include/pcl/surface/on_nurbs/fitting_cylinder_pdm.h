@@ -114,6 +114,7 @@ namespace pcl
       setQuiet (bool val)
       {
         m_quiet = val;
+        m_solver.setQuiet(val);
       }
 
       /** \brief Initializing a cylindric B-Spline surface using principal-component-analysis and eigen values */

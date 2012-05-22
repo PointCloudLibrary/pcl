@@ -146,9 +146,9 @@ NurbsSolve::solve ()
   {
     double solve_time = (double)(time_end - time_start) / (double)(CLOCKS_PER_SEC);
     printf ("[NurbsSolve[Eigen]::solve_eigen()] solution found! (%f sec)\n", solve_time);
+    printf ("[NurbsSolve[Eigen]::solve()] Warning: Using dense solver is quite inefficient, use UmfPack instead.\n");
   }
 
-  printf ("[NurbsSolve[Eigen]::solve()] ToDo: return success of solving system.\n");
   return true;
 }
 

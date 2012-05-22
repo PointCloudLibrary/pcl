@@ -106,6 +106,13 @@ namespace pcl
       Eigen::MatrixXd
       diff ();
 
+      /** \brief Enable/Disable debug outputs in console. */
+      inline void
+      setQuiet (bool val)
+      {
+        m_quiet = val;
+      }
+
     private:
       bool m_quiet;
       SparseMat m_Ksparse;
