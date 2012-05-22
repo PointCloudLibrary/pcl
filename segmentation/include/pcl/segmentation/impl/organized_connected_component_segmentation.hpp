@@ -127,6 +127,13 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
   labels.height = input_->height;
   unsigned int clust_id = 0;
   
+  //First pixel
+  if (pcl_isfinite (input_->points[0].x))
+  {
+    labels[0].label = clust_id++;
+    run_ids.push_back (labels[0].label );
+  }   
+
   // First row
   for (int colIdx = 1; colIdx < static_cast<int> (input_->width); ++colIdx)
   {
