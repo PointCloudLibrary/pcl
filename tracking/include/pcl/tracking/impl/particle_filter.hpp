@@ -7,6 +7,10 @@
 #include <pcl/common/eigen.h>
 #include <pcl/common/transforms.h>
 
+#include <iostream>
+
+using namespace std;
+
 template <typename PointInT, typename StateT> bool
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initCompute ()
 {
@@ -128,6 +132,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeWeight ()
         w_max = weight;
     }
     
+    fit_ratio_ = w_min;
     if (w_max != w_min)
     {
       for ( size_t i = 0; i < particles_->points.size (); i++ )
@@ -149,7 +154,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeWeight ()
     {
         sum += particles_->points[i].weight;
     }
-    
+        
     if (sum != 0.0)
     {
       for ( size_t i = 0; i < particles_->points.size (); i++ )

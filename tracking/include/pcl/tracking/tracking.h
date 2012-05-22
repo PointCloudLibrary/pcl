@@ -56,6 +56,7 @@ namespace pcl
   {
     /* state definition */
     struct ParticleXYZRPY;
+    struct ParticleXYR;
 
     /* \brief return the value of normal distribution */
     double sampleNormal (double mean, double sigma);
@@ -76,6 +77,49 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::tracking::_ParticleXYZRPY,
     (float, yaw, yaw)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::tracking::ParticleXYZRPY, pcl::tracking::_ParticleXYZRPY)
+
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::tracking::_ParticleXYRPY,
+    (float, x, x)
+    (float, y, y)
+    (float, z, z)
+    (float, roll, roll)
+    (float, pitch, pitch)
+    (float, yaw, yaw)
+)
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::tracking::ParticleXYRPY, pcl::tracking::_ParticleXYRPY)
+
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::tracking::_ParticleXYRP,
+    (float, x, x)
+    (float, y, y)
+    (float, z, z)
+    (float, roll, roll)
+    (float, pitch, pitch)
+    (float, yaw, yaw)
+)
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::tracking::ParticleXYRP, pcl::tracking::_ParticleXYRP)
+
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::tracking::_ParticleXYR,
+    (float, x, x)
+    (float, y, y)
+    (float, z, z)
+    (float, roll, roll)
+    (float, pitch, pitch)
+    (float, yaw, yaw)
+)
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::tracking::ParticleXYR, pcl::tracking::_ParticleXYR)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::tracking::_ParticleXYZR,
+    (float, x, x)
+    (float, y, y)
+    (float, z, z)
+    (float, roll, roll)
+    (float, pitch, pitch)
+    (float, yaw, yaw)
+)
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::tracking::ParticleXYZR, pcl::tracking::_ParticleXYZR)
 
 #ifdef BUILD_Maintainer
 #  if defined _MSC_VER
