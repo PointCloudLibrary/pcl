@@ -108,6 +108,29 @@ namespace pcl
       static ON_NurbsCurve
       initNurbsCurvePCA (int order, const vector_vec3d &data);
 
+      /** \brief Inverse mapping / point inversion: Given a point pt, this function finds the closest
+       * point on the B-Spline curve using Newtons method and point-distance (L2-, Euclidean norm).
+       *  \param[in] nurbs the B-Spline curve.
+       *  \param[in] pt the point to which the closest point on the curve will be computed.
+       *  \param[in] hint the starting point in parametric domain (warning: may lead to convergence at local minima).
+       *  \param[in] error the distance between the point pt and p after convergence.
+       *  \param[in] p closest point on curve.
+       *  \param[in] t the tangent vector at point p.
+       *  \param[in] maxSteps maximum number of iterations.
+       *  \param[in] accuracy convergence criteria: if error is lower than accuracy the function returns
+       *  \return closest point on curve in parametric domain.*/
+      static double
+      inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector3d &pt, const double &hint, double &error,
+                      Eigen::Vector3d &p, Eigen::Vector3d &t, int maxSteps = 100, double accuracy = 1e-6,
+                      bool quiet = true);
+
+      /** \brief Given a point pt, the function finds the closest midpoint of the elements of the curve.
+       *  \param[in] nurbs the B-Spline curve.
+       *  \param[in] pt the point to which the closest midpoint of the elements will be computed.
+       *  return closest midpoint in parametric domain. */
+      static double
+      findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Eigen::Vector3d &pt);
+
       /** \brief Enable/Disable debug outputs in console. */
       inline void
       setQuiet (bool val)
@@ -118,8 +141,8 @@ namespace pcl
     private:
 
       /** \brief Get the elements of a B-Spline curve.*/
-      std::vector<double>
-      getElementVector ();
+      static std::vector<double>
+      getElementVector (const ON_NurbsCurve &nurbs);
 
       /** \brief Add minimization constraint: point-to-surface distance (point-distance-minimization). */
       void
@@ -129,15 +152,9 @@ namespace pcl
       void
       addCageRegularisation (double weight, unsigned &row);
 
+      /** \brief Assemble point-to-surface constraints. */
       void
-      inverseMapping ();
-
-      double
-      inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector3d &pt, const double &hint, double &error, Eigen::Vector3d &p,
-                      Eigen::Vector3d &t, int maxSteps = 100, double accuracy = 1e-6, bool quiet = true);
-      double
-      inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector3d &pt, double* phint, double &error, Eigen::Vector3d &p, Eigen::Vector3d &t,
-                      int maxSteps = 100, double accuracy = 1e-6, bool quiet = true);
+      assembleInterior (double wInt, double sigma, unsigned &row);
 
       NurbsSolve m_solver;
       bool m_quiet;

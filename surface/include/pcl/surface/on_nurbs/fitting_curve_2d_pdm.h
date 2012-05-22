@@ -183,7 +183,7 @@ namespace pcl
       }
 
     protected:
-      /** \brief Add minimization constraint: point-to-surface distance (point-distance-minimization). */
+      /** \brief Add minimization constraint: point-to-curve distance (point-distance-minimization). */
       virtual void
       addPointConstraint (const double &param, const Eigen::Vector2d &point, double weight, unsigned &row);
 
@@ -191,17 +191,17 @@ namespace pcl
       virtual void
       addCageRegularisation (double weight, unsigned &row, const std::vector<double> &elements, double wConcav = 0.0);
 
-      /** \brief Assemble point-to-surface constraints. */
+      /** \brief Assemble point-to-curve constraints. */
       virtual void
       assembleInterior (double wInt, double sigma2, unsigned &row);
 
       /** \brief Assemble closest points constraints. At each midpoint of the curve elements the closest data points
-       * are computed and point-to-surface constraints are added. */
+       * are computed and point-to-curve constraints are added. */
       virtual void
       assembleClosestPoints (const std::vector<double> &elements, double weight, double sigma2, unsigned &row);
 
       /** \brief Assemble closest points constraints. Samples curve and searches for close data points,
-       * and adds point-to-surface constraint. */
+       * and adds point-to-curve constraint. */
       virtual void
       assembleClosestPoints (int res, double weight, unsigned &row);
 

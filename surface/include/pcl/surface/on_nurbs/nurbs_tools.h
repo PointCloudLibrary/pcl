@@ -55,30 +55,64 @@ namespace pcl
       NORTH = 1, NORTHEAST = 2, EAST = 3, SOUTHEAST = 4, SOUTH = 5, SOUTHWEST = 6, WEST = 7, NORTHWEST = 8
     };
 
+    /** \brief Some useful tools for initialization, point search, ... */
     class NurbsTools
     {
     public:
 
-      static std::list<unsigned>
-      getClosestPoints (const Eigen::Vector2d &p, const vector_vec2d &data, unsigned s);
+      //      static std::list<unsigned>
+      //      getClosestPoints (const Eigen::Vector2d &p, const vector_vec2d &data, unsigned s);
+
+      /** \brief Get the closest point with respect to 'point'
+       *  \param[in] point The point to which the closest point is searched for.
+       *  \param[in] data Vector containing the set of points for searching. */
       static unsigned
       getClosestPoint (const Eigen::Vector2d &point, const vector_vec2d &data);
+
+      /** \brief Get the closest point with respect to 'point'
+       *  \param[in] point The point to which the closest point is searched for.
+       *  \param[in] data Vector containing the set of points for searching. */
       static unsigned
       getClosestPoint (const Eigen::Vector3d &point, const vector_vec3d &data);
-      static unsigned
-      getClosestPoint (const Eigen::Vector2d &p, const Eigen::Vector2d &dir, const vector_vec2d &data, unsigned &idxcp);
 
+      /** \brief Get the closest point with respect to 'point' in Non-Euclidean metric
+       *  \brief Related paper: TODO
+       *  \param[in] point The point to which the closest point is searched for.
+       *  \param[in] dir The direction defining 'inside' and 'outside'
+       *  \param[in] data Vector containing the set of points for searching.
+       *  \param[out] idxcp Closest point with respect to Euclidean metric. */
+      static unsigned
+      getClosestPoint (const Eigen::Vector2d &point, const Eigen::Vector2d &dir, const vector_vec2d &data,
+                       unsigned &idxcp);
+
+      /** \brief Compute the mean of a set of points
+       *  \param[in] data Set of points.     */
       static Eigen::Vector3d
       computeMean (const vector_vec3d &data);
+      /** \brief Compute the mean of a set of points
+       *  \param[in] data Set of points.     */
       static Eigen::Vector2d
       computeMean (const vector_vec2d &data);
 
+      /** \brief PCA - principal-component-analysis
+       *  \param[in] data Set of points.
+       *  \param[out] mean The mean of the set of points.
+       *  \param[out] eigenvectors Matrix containing column-wise the eigenvectors of the set of points.
+       *  \param[out] eigenvalues The eigenvalues of the set of points with respect to the eigenvectors. */
       static void
-                  pca (const vector_vec3d &data, Eigen::Vector3d &mean, Eigen::Matrix3d &eigenvectors,
-                       Eigen::Vector3d &eigenvalues);
+          pca (const vector_vec3d &data, Eigen::Vector3d &mean, Eigen::Matrix3d &eigenvectors,
+               Eigen::Vector3d &eigenvalues);
 
+      /** \brief Downsample data points to a certain size.
+       *  \param[in] data1 The original set of points.
+       *  \param[out] data2 The downsampled set of points of size 'size'.
+       *  \param[in] size The desired size of the resulting set of points.       */
       static void
       downsample_random (const vector_vec3d &data1, vector_vec3d &data2, unsigned size);
+      /** \brief Downsample data points to a certain size.
+       *  \param[in/out] data1 The set of points for downsampling;
+       *  will be replaced by the resulting set of points of size 'size'.
+       *  \param[in] size The desired size of the resulting set of points.       */
       static void
       downsample_random (vector_vec3d &data1, unsigned size);
 

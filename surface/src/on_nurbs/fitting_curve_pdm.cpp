@@ -73,7 +73,7 @@ FittingCurve::refine ()
 {
   std::vector<double> xi;
 
-  std::vector<double> elements = this->getElementVector ();
+  std::vector<double> elements = this->getElementVector (m_nurbs);
 
   for (unsigned i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
@@ -99,20 +99,11 @@ FittingCurve::assemble (const Parameter &parameter)
   double wInt = 1.0;
   double wCageReg = parameter.smoothness;
 
-  double ds = 1.0 / (2.0 * parameter.sigma * parameter.sigma);
-
   m_solver.assign (nrows, ncp, 3);
 
   unsigned row (0);
 
-  inverseMapping ();
-  for (int p = 0; p < nInt; p++)
-  {
-    double &error = m_data->interior_error[p];
-    double w = wInt * exp (-(error * error) * ds);
-    if (w > 1e-6) // avoids ill-conditioned matrix
-      addPointConstraint (m_data->interior_param[p], m_data->interior[p], w, row);
-  }
+  assembleInterior (wInt, parameter.sigma, row);
 
   addCageRegularisation (wCageReg, row);
 
@@ -287,19 +278,19 @@ FittingCurve::initNurbsCurvePCA (int order, const vector_vec3d &data)
 }
 
 std::vector<double>
-FittingCurve::getElementVector ()
+FittingCurve::getElementVector (const ON_NurbsCurve &nurbs)
 {
   std::vector<double> result;
 
   int idx_min = 0;
-  int idx_max = m_nurbs.m_knot_capacity - 1;
-  if (m_nurbs.IsClosed ())
+  int idx_max = nurbs.m_knot_capacity - 1;
+  if (nurbs.IsClosed ())
   {
-    idx_min = m_nurbs.m_order - 2;
-    idx_max = m_nurbs.m_knot_capacity - m_nurbs.m_order + 1;
+    idx_min = nurbs.m_order - 2;
+    idx_max = nurbs.m_knot_capacity - nurbs.m_order + 1;
   }
 
-  const double* knotsU = m_nurbs.Knot ();
+  const double* knotsU = nurbs.Knot ();
 
   result.push_back (knotsU[idx_min]);
 
@@ -316,8 +307,9 @@ FittingCurve::getElementVector ()
 }
 
 void
-FittingCurve::inverseMapping ()
+FittingCurve::assembleInterior (double wInt, double sigma, unsigned &row)
 {
+  double ds = 1.0 / (2.0 * sigma * sigma);
   int nInt = m_data->interior.size ();
   m_data->interior_line_start.clear ();
   m_data->interior_line_end.clear ();
@@ -338,19 +330,24 @@ FittingCurve::inverseMapping ()
     }
     else
     {
-      param = inverseMapping (m_nurbs, pcp, (double*)NULL, error, pt, t, in_max_steps, in_accuracy);
+      param = findClosestElementMidPoint (m_nurbs, pcp);
+      param = inverseMapping (m_nurbs, pcp, param, error, pt, t, in_max_steps, in_accuracy);
       m_data->interior_param.push_back (param);
     }
 
     m_data->interior_error.push_back (error);
     m_data->interior_line_start.push_back (pcp);
     m_data->interior_line_end.push_back (pt);
+
+    double w = wInt * exp (-(error * error) * ds);
+    if (w > 1e-6) // avoids ill-conditioned matrix
+      addPointConstraint (m_data->interior_param[p], m_data->interior[p], w, row);
   }
 }
 
 double
-FittingCurve::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector3d &pt, const double &hint, double &error, Eigen::Vector3d &p,
-                              Eigen::Vector3d &t, int maxSteps, double accuracy, bool quiet)
+FittingCurve::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector3d &pt, const double &hint, double &error,
+                              Eigen::Vector3d &p, Eigen::Vector3d &t, int maxSteps, double accuracy, bool quiet)
 {
   int cp_red = (nurbs.m_order - 2);
   int ncpj = (nurbs.m_cv_count - 2 * cp_red);
@@ -358,7 +355,7 @@ FittingCurve::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector3d 
 
   double current, delta;
   Eigen::Vector3d r;
-  std::vector<double> elements = getElementVector ();
+  std::vector<double> elements = getElementVector (nurbs);
   double minU = elements[0];
   double maxU = elements[elements.size () - 1];
 
@@ -413,44 +410,35 @@ FittingCurve::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector3d 
 }
 
 double
-FittingCurve::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector3d &pt, double* phint, double &error, Eigen::Vector3d &p,
-                              Eigen::Vector3d &t, int maxSteps, double accuracy, bool quiet)
+FittingCurve::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Eigen::Vector3d &pt)
 {
-  double hint;
-  Eigen::Vector3d r;
-  std::vector<double> elements = getElementVector ();
+  double hint (0.0);
+  Eigen::Vector3d p, r;
+  std::vector<double> elements = getElementVector (nurbs);
   double points[3];
 
-  if (phint == NULL)
+  double d_shortest (DBL_MAX);
+
+  for (unsigned i = 0; i < elements.size () - 1; i++)
   {
-    double d_shortest (DBL_MAX);
-    for (unsigned i = 0; i < elements.size () - 1; i++)
+    double xi = elements[i] + 0.5 * (elements[i + 1] - elements[i]);
+
+    nurbs.Evaluate (xi, 0, 3, points);
+    p (0) = points[0];
+    p (1) = points[1];
+    p (2) = points[2];
+
+    r = p - pt;
+
+    double d = r.squaredNorm ();
+
+    if (d < d_shortest)
     {
-      double d;
-
-      double xi = elements[i] + 0.5 * (elements[i + 1] - elements[i]);
-
-      nurbs.Evaluate (xi, 0, 3, points);
-      p (0) = points[0];
-      p (1) = points[1];
-      p (2) = points[2];
-
-      r = p - pt;
-
-      d = r.norm ();
-
-      if (d < d_shortest)
-      {
-        d_shortest = d;
-        hint = xi;
-      }
+      d_shortest = d;
+      hint = xi;
     }
   }
-  else
-  {
-    hint = *phint;
-  }
 
-  return inverseMapping (nurbs, pt, hint, error, p, t, maxSteps, accuracy, quiet);
+  return hint;
 }
 

@@ -81,13 +81,15 @@ ClosingBoundary::commonBoundaryPoint1 (ON_NurbsSurface &n1, ON_NurbsSurface &n2,
 
   Eigen::Vector3d p1, p2, tu1, tu2, tv1, tv2;
 
-  params1 = FittingPatch::inverseMapping (n1, current, NULL, error1, p1, tu1, tv1, nsteps, accuracy, true);
-  params2 = FittingPatch::inverseMapping (n2, current, NULL, error2, p2, tu2, tv2, nsteps, accuracy, true);
+  params1 = FittingSurface::findClosestElementMidPoint (n1, current);
+  params2 = FittingSurface::findClosestElementMidPoint (n2, current);
+  params1 = FittingSurface::inverseMapping (n1, current, params1, error1, p1, tu1, tv1, nsteps, accuracy, true);
+  params2 = FittingSurface::inverseMapping (n2, current, params2, error2, p2, tu2, tv2, nsteps, accuracy, true);
 
   for (unsigned i = 0; i < nsteps; i++)
   {
-    params1 = FittingPatch::inverseMapping (n1, current, params1, error1, p1, tu1, tv1, nsteps, accuracy, true);
-    params2 = FittingPatch::inverseMapping (n2, current, params2, error2, p2, tu2, tv2, nsteps, accuracy, true);
+    params1 = FittingSurface::inverseMapping (n1, current, params1, error1, p1, tu1, tv1, nsteps, accuracy, true);
+    params2 = FittingSurface::inverseMapping (n2, current, params2, error2, p2, tu2, tv2, nsteps, accuracy, true);
 
     //    dbgWin.AddLine3D(current(0), current(1), current(2), p1(0), p1(1), p1(2), 255, 0, 0);
     //    dbgWin.AddLine3D(current(0), current(1), current(2), p2(0), p2(1), p2(2), 255, 0, 0);
@@ -116,13 +118,15 @@ ClosingBoundary::commonBoundaryPoint2 (ON_NurbsSurface &n1, ON_NurbsSurface &n2,
 
   Eigen::Vector3d p1, p2, tu1, tu2, tv1, tv2;
 
-  params1 = FittingPatch::inverseMapping (n1, current, NULL, error1, p1, tu1, tv1, nsteps, accuracy, true);
-  params2 = FittingPatch::inverseMapping (n2, current, NULL, error2, p2, tu2, tv2, nsteps, accuracy, true);
+  params1 = FittingSurface::findClosestElementMidPoint (n1, current);
+  params2 = FittingSurface::findClosestElementMidPoint (n2, current);
+  params1 = FittingSurface::inverseMapping (n1, current, params1, error1, p1, tu1, tv1, nsteps, accuracy, true);
+  params2 = FittingSurface::inverseMapping (n2, current, params2, error2, p2, tu2, tv2, nsteps, accuracy, true);
 
   for (unsigned i = 0; i < nsteps; i++)
   {
-    params1 = FittingPatch::inverseMapping (n1, current, params1, error1, p1, tu1, tv1, nsteps, accuracy, true);
-    params2 = FittingPatch::inverseMapping (n2, current, params2, error2, p2, tu2, tv2, nsteps, accuracy, true);
+    params1 = FittingSurface::inverseMapping (n1, current, params1, error1, p1, tu1, tv1, nsteps, accuracy, true);
+    params2 = FittingSurface::inverseMapping (n2, current, params2, error2, p2, tu2, tv2, nsteps, accuracy, true);
 
     //    params1 = ntools1.inverseMappingBoundary(current, error1, p1, tu1, tv1, 10, 1e-2, true);
     //    params2 = ntools2.inverseMappingBoundary(current, error2, p2, tu2, tv2, 10, 1e-2, true);
@@ -173,13 +177,15 @@ ClosingBoundary::commonBoundaryPoint3 (ON_NurbsSurface &n1, ON_NurbsSurface &n2,
 
   Eigen::Vector3d p1, p2, tu1, tu2, tv1, tv2;
 
-  params1 = FittingPatch::inverseMapping (n1, current, NULL, error1, p1, tu1, tv1, nsteps, accuracy, true);
-  params2 = FittingPatch::inverseMapping (n2, current, NULL, error2, p2, tu2, tv2, nsteps, accuracy, true);
+  params1 = FittingSurface::findClosestElementMidPoint (n1, current);
+  params2 = FittingSurface::findClosestElementMidPoint (n2, current);
+  params1 = FittingSurface::inverseMapping (n1, current, params1, error1, p1, tu1, tv1, nsteps, accuracy, true);
+  params2 = FittingSurface::inverseMapping (n2, current, params2, error2, p2, tu2, tv2, nsteps, accuracy, true);
 
   for (unsigned i = 0; i < nsteps; i++)
   {
-    params1 = FittingPatch::inverseMapping (n1, current, params1, error1, p1, tu1, tv1, nsteps, accuracy, true);
-    params2 = FittingPatch::inverseMapping (n2, current, params2, error2, p2, tu2, tv2, nsteps, accuracy, true);
+    params1 = FittingSurface::inverseMapping (n1, current, params1, error1, p1, tu1, tv1, nsteps, accuracy, true);
+    params2 = FittingSurface::inverseMapping (n2, current, params2, error2, p2, tu2, tv2, nsteps, accuracy, true);
 
     //    dbgWin.AddLine3D(current(0), current(1), current(2), p1(0), p1(1), p1(2), 0, 0, 255);
     //    dbgWin.AddLine3D(current(0), current(1), current(2), p2(0), p2(1), p2(2), 0, 0, 255);
@@ -357,10 +363,11 @@ ClosingBoundary::optimizeBoundary (std::vector<ON_NurbsSurface> &nurbs_list, std
             p = commonBoundaryPoint3 (*nurbs1, *nurbs2, params1, params2, p0, param.com_iter, error, param.accuracy);
             break;
           case CLOSEST_POINTS_INTERIOR:
-            FittingPatch::inverseMapping (*nurbs2, p0, NULL, error, p, tu, tv, param.com_iter, param.accuracy, true);
+            params1 = FittingSurface::findClosestElementMidPoint (*nurbs2, p0);
+            FittingSurface::inverseMapping (*nurbs2, p0, params1, error, p, tu, tv, param.com_iter, param.accuracy, true);
             break;
           case CLOSEST_POINTS_BOUNDARY:
-            FittingPatch::inverseMappingBoundary (*nurbs2, p0, error, p, tu, tv, param.com_iter, param.accuracy, true);
+            FittingSurface::inverseMappingBoundary (*nurbs2, p0, error, p, tu, tv, param.com_iter, param.accuracy, true);
             break;
         }
 
@@ -375,8 +382,8 @@ ClosingBoundary::optimizeBoundary (std::vector<ON_NurbsSurface> &nurbs_list, std
     } // for each other nurbs
 
     // nurbs fitting
-    FittingPatch fit (&data_list[n1], nurbs_list[n1]);
-    FittingPatch::Parameter paramFP (1.0, param.smoothness, 0.0, 1.0, param.smoothness, 0.0);
+    FittingSurface fit (&data_list[n1], nurbs_list[n1]);
+    FittingSurface::Parameter paramFP (1.0, param.smoothness, 0.0, 1.0, param.smoothness, 0.0);
 
     std::vector<double> wBnd, wInt;
     for (unsigned i = 0; i < data_list[n1].boundary.size (); i++)

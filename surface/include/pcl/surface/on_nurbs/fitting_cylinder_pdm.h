@@ -47,6 +47,11 @@ namespace pcl
   namespace on_nurbs
   {
 
+    /** \brief FittingSurface: Fitting a cylindric (dim 0 clamped, dim 1 periodic) B-Spline surface
+     *  to 3D point-clouds using point-distance-minimization
+     *  Based on paper: TODO
+     * \author Thomas Mörwald
+     * \ingroup surface     */
     class FittingCylinder
     {
     public:
@@ -55,25 +60,53 @@ namespace pcl
       ON_NurbsSurface m_nurbs;
       NurbsDataSurface *m_data;
 
-      FittingCylinder (int order, NurbsDataSurface *data, Eigen::Vector3d z = Eigen::Vector3d (0.0, 0.0, 1.0));
+      /** \brief Constructor initializing B-Spline surface using initNurbsPCACylinder(...).
+       * \param[in] order the polynomial order of the B-Spline surface.
+       * \param[in] data pointer to the 2D point-cloud data to be fit.
+       * \param[in] z vector defining front face of surface.        */
+      FittingCylinder (int order, NurbsDataSurface *data);
+
+      /** \brief Constructor initializing with the B-Spline surface given in argument 2.
+       * \param[in] data pointer to the 3D point-cloud data to be fit.
+       * \param[in] ns B-Spline surface used for fitting.        */
       FittingCylinder (NurbsDataSurface *data, const ON_NurbsSurface &ns);
 
+      /** \brief Refines surface by inserting a knot in the middle of each element.
+       *  \param[in] dim dimension of refinement (0,1)  */
       void
       refine (int dim);
+
+      /** \brief Refines surface by inserting a knot in the middle of the element belonging to param.
+       *  \param[in] dim dimension of refinement (0,1)
+       *  \param[in] param parameter defining the element to be refined. */
       void
       refine (int dim, double param);
+
+      /** \brief Refines surface by inserting a knot in the middle of the element specified.
+       *  \param[in] dim dimension of refinement (0,1)
+       *  \param[in] span_index the index of the element of refinement. */
       void
       refine (int dim, unsigned span_index);
 
+      /** \brief Assemble the system of equations for fitting
+       * - for large point-clouds this is time consuming.
+       * - should be done once before refinement to initialize the starting points for point inversion. */
       void
       assemble (double smoothness = 0.000001f);
 
+      /** \brief Solve system of equations using Eigen or UmfPack (can be defined in on_nurbs.cmake),
+       *  and updates B-Spline surface if a solution can be obtained. */
       void
       solve (double damp = 1.0);
 
+      /** \brief Update surface according to the current system of equations.
+       *  \param[in] damp damping factor from one iteration to the other. */
       void
       updateSurf (double damp);
 
+      /** \brief Set parameters for inverse mapping
+       *  \param[in] in_max_steps maximum number of iterations.
+       *  \param[in] in_accuracy stops iteration if specified accuracy is reached. */
       void
       setInvMapParams (int in_max_steps, double invMapInt_accuracy);
 
@@ -83,43 +116,62 @@ namespace pcl
         m_quiet = val;
       }
 
+      /** \brief Initializing a cylindric B-Spline surface using principal-component-analysis and eigen values */
       static ON_NurbsSurface
       initNurbsPCACylinder (int order, NurbsDataSurface *data);
 
-      void
-      PrintK ();
-      void
-      Printf ();
-      void
-      Printx ();
-
+      /** \brief Get the elements of a cylindric B-Spline surface.*/
       static std::vector<double>
       getElementVector (const ON_NurbsSurface &nurbs, int dim);
 
-      void
-      inverseMappingInterior ();
+      /** \brief Inverse mapping / point inversion: Given a point pt, this function finds the closest
+       * point on the B-Spline surface using Newtons method and
+       * point-distance (L2-, Euclidean norm).
+       *  \param[in] nurbs the B-Spline surface.
+       *  \param[in] pt the point to which the closest point on the surface will be computed.
+       *  \param[in] hint the starting point in parametric domain (warning: may lead to convergence at local minima).
+       *  \param[in] error the distance between the point pt and p after convergence.
+       *  \param[in] p closest boundary point on surface.
+       *  \param[in] tu the tangent vector at point p in u-direction.
+       *  \param[in] tv the tangent vector at point p in v-direction.
+       *  \param[in] maxSteps maximum number of iterations.
+       *  \param[in] accuracy convergence criteria: if error is lower than accuracy the function returns
+       *  \return closest point on surface in parametric domain.*/
       static Eigen::Vector2d
       inverseMapping (const ON_NurbsSurface &nurbs, const Eigen::Vector3d &pt, const Eigen::Vector2d &hint,
                       double &error, Eigen::Vector3d &p, Eigen::Vector3d &tu, Eigen::Vector3d &tv, int maxSteps = 100,
                       double accuracy = 1e-6, bool quiet = true);
-      static Eigen::Vector2d
-      inverseMapping (const ON_NurbsSurface &nurbs, const Eigen::Vector3d &pt, Eigen::Vector2d* phint, double &error,
-                      Eigen::Vector3d &p, Eigen::Vector3d &tu, Eigen::Vector3d &tv, int maxSteps = 100,
-                      double accuracy = 1e-6, bool quiet = true);
 
-    private:
+      /** \brief Given a point pt, the function finds the closest midpoint of the elements of the surface.
+       *  \param[in] nurbs the B-Spline surface.
+       *  \param[in] pt the point to which the closest midpoint of the elements will be computed.
+       *  return closest midpoint in parametric domain. */
+      static Eigen::Vector2d
+      findClosestElementMidPoint (const ON_NurbsSurface &nurbs, const Eigen::Vector3d &pt);
+
+    protected:
+
+      /** \brief Initialisation of member variables */
       void
       init ();
 
+      /** \brief Assemble point-to-surface constraints for interior points. */
+      void
+      assembleInterior (double wInt, unsigned &row);
+
+      /** \brief Add minimization constraint: point-to-surface distance (point-distance-minimization). */
       void
       addPointConstraint (const Eigen::Vector2d &params, const Eigen::Vector3d &point, double weight, unsigned &row);
 
+      /** \brief Add minimization constraint: interior smoothness by control point regularisation. */
       void
       addCageInteriorRegularisation (double weight, unsigned &row);
 
+      /** \brief Add minimization constraint: corner smoothness by control point regularisation. */
       void
       addCageBoundaryRegularisation (double weight, int side, unsigned &row);
 
+    private:
       NurbsSolve m_solver;
       bool m_quiet;
 

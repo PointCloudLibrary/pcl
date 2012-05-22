@@ -42,11 +42,11 @@ using namespace pcl;
 using namespace on_nurbs;
 using namespace Eigen;
 
-//FittingPatch::FittingPatch(int order, NurbsDataSurface *m_data, ON_3dPoint ll, ON_3dPoint lr,
+//FittingSurface::FittingSurface(int order, NurbsDataSurface *m_data, ON_3dPoint ll, ON_3dPoint lr,
 //    ON_3dPoint ur, ON_3dPoint ul)
 //{
 //  if (order < 2)
-//    throw std::runtime_error("[FittingPatch::FittingPatch] Error order to low (order<2).");
+//    throw std::runtime_error("[FittingSurface::FittingSurface] Error order to low (order<2).");
 //
 //  ON::Begin();
 //
@@ -57,10 +57,10 @@ using namespace Eigen;
 //  this->init();
 //}
 
-FittingPatch::FittingPatch (int order, NurbsDataSurface *m_data, Eigen::Vector3d z)
+FittingSurface::FittingSurface (int order, NurbsDataSurface *m_data, Eigen::Vector3d z)
 {
   if (order < 2)
-    throw std::runtime_error ("[FittingPatch::FittingPatch] Error order to low (order<2).");
+    throw std::runtime_error ("[FittingSurface::FittingSurface] Error order to low (order<2).");
 
   ON::Begin ();
 
@@ -70,7 +70,7 @@ FittingPatch::FittingPatch (int order, NurbsDataSurface *m_data, Eigen::Vector3d
   this->init ();
 }
 
-FittingPatch::FittingPatch (NurbsDataSurface *m_data, const ON_NurbsSurface &ns)
+FittingSurface::FittingSurface (NurbsDataSurface *m_data, const ON_NurbsSurface &ns)
 {
   ON::Begin ();
 
@@ -81,7 +81,7 @@ FittingPatch::FittingPatch (NurbsDataSurface *m_data, const ON_NurbsSurface &ns)
 }
 
 void
-FittingPatch::refine (int dim)
+FittingSurface::refine (int dim)
 {
   std::vector<double> xi;
   std::vector<double> elements = getElementVector (m_nurbs, dim);
@@ -101,7 +101,7 @@ FittingPatch::refine (int dim)
 }
 
 void
-FittingPatch::assemble (Parameter param)
+FittingSurface::assemble (Parameter param)
 {
   clock_t time_start, time_end;
   time_start = clock ();
@@ -145,7 +145,7 @@ FittingPatch::assemble (Parameter param)
   if (nCurInt > 0)
   {
     if (m_nurbs.Order (0) < 3 || m_nurbs.Order (1) < 3)
-      printf ("[FittingPatch::assemble] Error insufficient NURBS order to add curvature regularisation.\n");
+      printf ("[FittingSurface::assemble] Error insufficient NURBS order to add curvature regularisation.\n");
     else
       addInteriorRegularisation (2, param.regularisation_resU, param.regularisation_resV,
                                  param.interior_regularisation / param.regularisation_resU, row);
@@ -155,7 +155,7 @@ FittingPatch::assemble (Parameter param)
   if (nCurBnd > 0)
   {
     if (m_nurbs.Order (0) < 3 || m_nurbs.Order (1) < 3)
-      printf ("[FittingPatch::assemble] Error insufficient NURBS order to add curvature regularisation.\n");
+      printf ("[FittingSurface::assemble] Error insufficient NURBS order to add curvature regularisation.\n");
     else
       addBoundaryRegularisation (2, param.regularisation_resU, param.regularisation_resV,
                                  param.boundary_regularisation / param.regularisation_resU, row);
@@ -178,12 +178,12 @@ FittingPatch::assemble (Parameter param)
   if (!m_quiet)
   {
     double solve_time = (double)(time_end - time_start) / (double)(CLOCKS_PER_SEC);
-    printf ("[FittingPatch::assemble()] (assemble (%d,%d): %f sec)\n", nrows, ncp, solve_time);
+    printf ("[FittingSurface::assemble()] (assemble (%d,%d): %f sec)\n", nrows, ncp, solve_time);
   }
 }
 
 void
-FittingPatch::init ()
+FittingSurface::init ()
 {
   m_elementsU = getElementVector (m_nurbs, 0);
   m_elementsV = getElementVector (m_nurbs, 1);
@@ -199,14 +199,14 @@ FittingPatch::init ()
 }
 
 void
-FittingPatch::solve (double damp)
+FittingSurface::solve (double damp)
 {
   if (m_solver.solve ())
     updateSurf (damp);
 }
 
 void
-FittingPatch::updateSurf (double damp)
+FittingSurface::updateSurf (double damp)
 {
   int ncp = m_nurbs.m_cv_count[0] * m_nurbs.m_cv_count[1];
 
@@ -231,14 +231,14 @@ FittingPatch::updateSurf (double damp)
 }
 
 void
-FittingPatch::setInvMapParams (unsigned in_max_steps, double in_accuracy)
+FittingSurface::setInvMapParams (unsigned in_max_steps, double in_accuracy)
 {
   this->in_max_steps = in_max_steps;
   this->in_accuracy = in_accuracy;
 }
 
 std::vector<double>
-FittingPatch::getElementVector (const ON_NurbsSurface &nurbs, int dim) // !
+FittingSurface::getElementVector (const ON_NurbsSurface &nurbs, int dim) // !
 {
 
   std::vector<double> result;
@@ -291,14 +291,14 @@ FittingPatch::getElementVector (const ON_NurbsSurface &nurbs, int dim) // !
 
   }
   else
-    printf ("[FittingPatch::getElementVector] Error: Index exceeds problem dimensions!\n");
+    printf ("[FittingSurface::getElementVector] Error: Index exceeds problem dimensions!\n");
 
   return result;
 
 }
 
 void
-FittingPatch::assembleInterior (double wInt, unsigned &row)
+FittingSurface::assembleInterior (double wInt, unsigned &row)
 {
   m_data->interior_line_start.clear ();
   m_data->interior_line_end.clear ();
@@ -315,12 +315,13 @@ FittingPatch::assembleInterior (double wInt, unsigned &row)
     double error;
     if (p < m_data->interior_param.size ())
     {
-      params = inverseMapping (m_nurbs, pcp, &m_data->interior_param[p], error, pt, tu, tv, in_max_steps, in_accuracy);
+      params = inverseMapping (m_nurbs, pcp, m_data->interior_param[p], error, pt, tu, tv, in_max_steps, in_accuracy);
       m_data->interior_param[p] = params;
     }
     else
     {
-      params = inverseMapping (m_nurbs, pcp, NULL, error, pt, tu, tv, in_max_steps, in_accuracy);
+      params = findClosestElementMidPoint (m_nurbs, pcp);
+      params = inverseMapping (m_nurbs, pcp, params, error, pt, tu, tv, in_max_steps, in_accuracy);
       m_data->interior_param.push_back (params);
     }
     m_data->interior_error.push_back (error);
@@ -341,7 +342,7 @@ FittingPatch::assembleInterior (double wInt, unsigned &row)
 }
 
 void
-FittingPatch::assembleBoundary (double wBnd, unsigned &row)
+FittingSurface::assembleBoundary (double wBnd, unsigned &row)
 {
   m_data->boundary_line_start.clear ();
   m_data->boundary_line_end.clear ();
@@ -382,7 +383,7 @@ FittingPatch::assembleBoundary (double wBnd, unsigned &row)
 }
 
 ON_NurbsSurface
-FittingPatch::initNurbs4Corners (int order, ON_3dPoint ll, ON_3dPoint lr, ON_3dPoint ur, ON_3dPoint ul)
+FittingSurface::initNurbs4Corners (int order, ON_3dPoint ll, ON_3dPoint lr, ON_3dPoint ur, ON_3dPoint ul)
 {
   std::map<int, std::map<int, ON_3dPoint> > cv_map;
 
@@ -422,7 +423,7 @@ FittingPatch::initNurbs4Corners (int order, ON_3dPoint ll, ON_3dPoint lr, ON_3dP
 }
 
 ON_NurbsSurface
-FittingPatch::initNurbsPCA (int order, NurbsDataSurface *m_data, Eigen::Vector3d z)
+FittingSurface::initNurbsPCA (int order, NurbsDataSurface *m_data, Eigen::Vector3d z)
 {
   Eigen::Vector3d mean;
   Eigen::Matrix3d eigenvectors;
@@ -470,7 +471,7 @@ FittingPatch::initNurbsPCA (int order, NurbsDataSurface *m_data, Eigen::Vector3d
 }
 
 ON_NurbsSurface
-FittingPatch::initNurbsPCABoundingBox (int order, NurbsDataSurface *m_data, Eigen::Vector3d z)
+FittingSurface::initNurbsPCABoundingBox (int order, NurbsDataSurface *m_data, Eigen::Vector3d z)
 {
   Eigen::Vector3d mean;
   Eigen::Matrix3d eigenvectors;
@@ -552,8 +553,8 @@ FittingPatch::initNurbsPCABoundingBox (int order, NurbsDataSurface *m_data, Eige
 }
 
 void
-FittingPatch::addPointConstraint (const Eigen::Vector2d &params, const Eigen::Vector3d &point, double weight,
-                                  unsigned &row)
+FittingSurface::addPointConstraint (const Eigen::Vector2d &params, const Eigen::Vector3d &point, double weight,
+                                    unsigned &row)
 {
   double N0[m_nurbs.Order (0) * m_nurbs.Order (0)];
   double N1[m_nurbs.Order (1) * m_nurbs.Order (1)];
@@ -584,7 +585,7 @@ FittingPatch::addPointConstraint (const Eigen::Vector2d &params, const Eigen::Ve
 
 }
 
-//void FittingPatch::addBoundaryPointConstraint(double paramU, double paramV, double weight, unsigned &row)
+//void FittingSurface::addBoundaryPointConstraint(double paramU, double paramV, double weight, unsigned &row)
 //{
 //  // edges on surface
 //  NurbsTools ntools(&m_nurbs);
@@ -630,7 +631,7 @@ FittingPatch::addPointConstraint (const Eigen::Vector2d &params, const Eigen::Ve
 //}
 
 void
-FittingPatch::addCageInteriorRegularisation (double weight, unsigned &row)
+FittingSurface::addCageInteriorRegularisation (double weight, unsigned &row)
 {
   for (int i = 1; i < (m_nurbs.m_cv_count[0] - 1); i++)
   {
@@ -653,7 +654,7 @@ FittingPatch::addCageInteriorRegularisation (double weight, unsigned &row)
 }
 
 void
-FittingPatch::addCageBoundaryRegularisation (double weight, int side, unsigned &row)
+FittingSurface::addCageBoundaryRegularisation (double weight, int side, unsigned &row)
 {
   int i = 0;
   int j = 0;
@@ -699,7 +700,7 @@ FittingPatch::addCageBoundaryRegularisation (double weight, int side, unsigned &
 }
 
 void
-FittingPatch::addCageCornerRegularisation (double weight, unsigned &row)
+FittingSurface::addCageCornerRegularisation (double weight, unsigned &row)
 {
   { // NORTH-WEST
     int i = 0;
@@ -764,7 +765,7 @@ FittingPatch::addCageCornerRegularisation (double weight, unsigned &row)
 }
 
 void
-FittingPatch::addInteriorRegularisation (int order, int resU, int resV, double weight, unsigned &row)
+FittingSurface::addInteriorRegularisation (int order, int resU, int resV, double weight, unsigned &row)
 {
   double N0[m_nurbs.Order (0) * m_nurbs.Order (0)];
   double N1[m_nurbs.Order (1) * m_nurbs.Order (1)];
@@ -816,7 +817,7 @@ FittingPatch::addInteriorRegularisation (int order, int resU, int resV, double w
 }
 
 void
-FittingPatch::addBoundaryRegularisation (int order, int resU, int resV, double weight, unsigned &row)
+FittingSurface::addBoundaryRegularisation (int order, int resU, int resV, double weight, unsigned &row)
 {
   double N0[m_nurbs.Order (0) * m_nurbs.Order (0)];
   double N1[m_nurbs.Order (1) * m_nurbs.Order (1)];
@@ -971,8 +972,8 @@ FittingPatch::addBoundaryRegularisation (int order, int resU, int resV, double w
 }
 
 Vector2d
-FittingPatch::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &pt, const Vector2d &hint, double &error,
-                              Vector3d &p, Vector3d &tu, Vector3d &tv, int maxSteps, double accuracy, bool quiet)
+FittingSurface::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &pt, const Vector2d &hint, double &error,
+                                Vector3d &p, Vector3d &tu, Vector3d &tv, int maxSteps, double accuracy, bool quiet)
 {
 
   double pointAndTangents[9];
@@ -1045,7 +1046,7 @@ FittingPatch::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &pt, 
 
   if (!quiet)
   {
-    printf ("[FittingPatch::inverseMapping] Warning: Method did not converge (%e %d)\n", accuracy, maxSteps);
+    printf ("[FittingSurface::inverseMapping] Warning: Method did not converge (%e %d)\n", accuracy, maxSteps);
     printf ("  %f %f ... %f %f\n", hint (0), hint (1), current (0), current (1));
   }
 
@@ -1054,59 +1055,51 @@ FittingPatch::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &pt, 
 }
 
 Vector2d
-FittingPatch::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &pt, Vector2d* phint, double &error,
-                              Vector3d &p, Vector3d &tu, Vector3d &tv, int maxSteps, double accuracy, bool quiet)
+FittingSurface::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, const Vector3d &pt)
 {
   Vector2d hint;
   Vector3d r;
   std::vector<double> elementsU = getElementVector (nurbs, 0);
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
-  if (phint == NULL)
+  double d_shortest (DBL_MAX);
+  for (unsigned i = 0; i < elementsU.size () - 1; i++)
   {
-    double d_shortest;
-    for (unsigned i = 0; i < elementsU.size () - 1; i++)
+    for (unsigned j = 0; j < elementsV.size () - 1; j++)
     {
-      for (unsigned j = 0; j < elementsV.size () - 1; j++)
+      double points[3];
+      double d;
+
+      double xi = elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i]);
+      double eta = elementsV[j] + 0.5 * (elementsV[j + 1] - elementsV[j]);
+
+      nurbs.Evaluate (xi, eta, 0, 3, points);
+      r (0) = points[0] - pt (0);
+      r (1) = points[1] - pt (1);
+      r (2) = points[2] - pt (2);
+
+      d = r.squaredNorm ();
+
+      if ((i == 0 && j == 0) || d < d_shortest)
       {
-        double points[3];
-        double d;
-
-        double xi = elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i]);
-        double eta = elementsV[j] + 0.5 * (elementsV[j + 1] - elementsV[j]);
-
-        nurbs.Evaluate (xi, eta, 0, 3, points);
-        r (0) = points[0] - pt (0);
-        r (1) = points[1] - pt (1);
-        r (2) = points[2] - pt (2);
-
-        d = r.norm ();
-
-        if ((i == 0 && j == 0) || d < d_shortest)
-        {
-          d_shortest = d;
-          hint (0) = xi;
-          hint (1) = eta;
-        }
+        d_shortest = d;
+        hint (0) = xi;
+        hint (1) = eta;
       }
     }
   }
-  else
-  {
-    hint = *phint;
-  }
 
-  return inverseMapping (nurbs, pt, hint, error, p, tu, tv, maxSteps, accuracy, quiet);
+  return hint;
 }
 
 Vector2d
-FittingPatch::inverseMappingBoundary (const ON_NurbsSurface &nurbs, const Vector3d &pt, double &error, Vector3d &p,
-                                      Vector3d &tu, Vector3d &tv, int maxSteps, double accuracy, bool quiet)
+FittingSurface::inverseMappingBoundary (const ON_NurbsSurface &nurbs, const Vector3d &pt, double &error, Vector3d &p,
+                                        Vector3d &tu, Vector3d &tv, int maxSteps, double accuracy, bool quiet)
 {
 
   Vector2d result;
   double min_err = 100.0;
-  std::vector < myvec > ini_points;
+  std::vector<myvec> ini_points;
   double err_tmp;
   Vector3d p_tmp, tu_tmp, tv_tmp;
 
@@ -1149,9 +1142,9 @@ FittingPatch::inverseMappingBoundary (const ON_NurbsSurface &nurbs, const Vector
 }
 
 Vector2d
-FittingPatch::inverseMappingBoundary (const ON_NurbsSurface &nurbs, const Vector3d &pt, int side, double hint,
-                                      double &error, Vector3d &p, Vector3d &tu, Vector3d &tv, int maxSteps,
-                                      double accuracy, bool quiet)
+FittingSurface::inverseMappingBoundary (const ON_NurbsSurface &nurbs, const Vector3d &pt, int side, double hint,
+                                        double &error, Vector3d &p, Vector3d &tu, Vector3d &tv, int maxSteps,
+                                        double accuracy, bool quiet)
 {
 
   double pointAndTangents[9];
@@ -1247,7 +1240,7 @@ FittingPatch::inverseMappingBoundary (const ON_NurbsSurface &nurbs, const Vector
 
         break;
       default:
-        throw std::runtime_error ("[FittingPatch::inverseMappingBoundary] ERROR: Specify a boundary!");
+        throw std::runtime_error ("[FittingSurface::inverseMappingBoundary] ERROR: Specify a boundary!");
 
     }
 
@@ -1318,7 +1311,7 @@ FittingPatch::inverseMappingBoundary (const ON_NurbsSurface &nurbs, const Vector
   error = r.norm ();
   if (!quiet)
     printf (
-            "[FittingPatch::inverseMappingBoundary] Warning: Method did not converge! (residual: %f, delta: %f, params: %f %f)\n",
+            "[FittingSurface::inverseMappingBoundary] Warning: Method did not converge! (residual: %f, delta: %f, params: %f %f)\n",
             error, delta, params (0), params (1));
 
   return params;

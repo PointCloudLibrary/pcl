@@ -75,11 +75,11 @@ SequentialFitter::compute_quadfit ()
 
   if (m_have_corners)
   {
-    nurbs = FittingPatch::initNurbs4Corners (2, m_corners[0], m_corners[1], m_corners[2], m_corners[3]);
+    nurbs = FittingSurface::initNurbs4Corners (2, m_corners[0], m_corners[1], m_corners[2], m_corners[3]);
   }
   else
   {
-    nurbs = FittingPatch::initNurbsPCA (2, &m_data);
+    nurbs = FittingSurface::initNurbsPCA (2, &m_data);
     nurbs.GetCV (0, 0, m_corners[0]);
     nurbs.GetCV (1, 0, m_corners[1]);
     nurbs.GetCV (1, 1, m_corners[2]);
@@ -99,13 +99,13 @@ SequentialFitter::compute_quadfit ()
       m_corners[2] = tmp[1];
       m_corners[1] = tmp[2];
       m_corners[0] = tmp[3];
-      nurbs = FittingPatch::initNurbs4Corners (2, m_corners[0], m_corners[1], m_corners[2], m_corners[3]);
+      nurbs = FittingSurface::initNurbs4Corners (2, m_corners[0], m_corners[1], m_corners[2], m_corners[3]);
     }
   }
 
-  FittingPatch fitting (&m_data, nurbs);
+  FittingSurface fitting (&m_data, nurbs);
 
-  FittingPatch::Parameter paramFP (m_params.forceInterior, 1.0, 0.0, m_params.forceBoundary, 1.0, 0.0);
+  FittingSurface::Parameter paramFP (m_params.forceInterior, 1.0, 0.0, m_params.forceBoundary, 1.0, 0.0);
 
   // Quad fitting
   //  if( !m_quiet && m_dbgWin != NULL )
@@ -122,10 +122,10 @@ SequentialFitter::compute_quadfit ()
 }
 
 void
-SequentialFitter::compute_refinement (FittingPatch* fitting)
+SequentialFitter::compute_refinement (FittingSurface* fitting)
 {
   // Refinement
-  FittingPatch::Parameter paramFP (0.0, 1.0, 0.0, m_params.forceBoundary, m_params.stiffnessBoundary, 0.0);
+  FittingSurface::Parameter paramFP (0.0, 1.0, 0.0, m_params.forceBoundary, m_params.stiffnessBoundary, 0.0);
 
   for (int r = 0; r < m_params.refinement; r++)
   {
@@ -137,9 +137,9 @@ SequentialFitter::compute_refinement (FittingPatch* fitting)
 }
 
 void
-SequentialFitter::compute_boundary (FittingPatch* fitting)
+SequentialFitter::compute_boundary (FittingSurface* fitting)
 {
-  FittingPatch::Parameter paramFP (0.0, 1.0, 0.0, m_params.forceBoundary, m_params.stiffnessBoundary, 0.0);
+  FittingSurface::Parameter paramFP (0.0, 1.0, 0.0, m_params.forceBoundary, m_params.stiffnessBoundary, 0.0);
 
   // iterate boundary points
   for (int i = 0; i < m_params.iterationsBoundary; i++)
@@ -149,12 +149,12 @@ SequentialFitter::compute_boundary (FittingPatch* fitting)
   }
 }
 void
-SequentialFitter::compute_interior (FittingPatch* fitting)
+SequentialFitter::compute_interior (FittingSurface* fitting)
 {
   // iterate interior points
   //std::vector<double> wInt(m_data.interior.PointCount(), m_params.forceInterior);
-  FittingPatch::Parameter paramFP (m_params.forceInterior, m_params.stiffnessInterior, 0.0, m_params.forceBoundary,
-                                   m_params.stiffnessBoundary, 0.0);
+  FittingSurface::Parameter paramFP (m_params.forceInterior, m_params.stiffnessInterior, 0.0, m_params.forceBoundary,
+                                     m_params.stiffnessBoundary, 0.0);
 
   for (int i = 0; i < m_params.iterationsInterior; i++)
   {
@@ -283,10 +283,10 @@ SequentialFitter::setProjectionMatrix (Eigen::Matrix4d &intrinsic, Eigen::Matrix
 ON_NurbsSurface
 SequentialFitter::compute (bool assemble)
 {
-  FittingPatch* fitting;
+  FittingSurface* fitting;
   ON_NurbsSurface nurbs;
-  FittingPatch::Parameter paramFP (m_params.forceInterior, m_params.stiffnessInterior, 0.0, m_params.forceBoundary,
-                                   m_params.stiffnessBoundary, 0.0);
+  FittingSurface::Parameter paramFP (m_params.forceInterior, m_params.stiffnessInterior, 0.0, m_params.forceBoundary,
+                                     m_params.stiffnessBoundary, 0.0);
 
   //  int surfid = -1;
   //  TomGine::tgRenderModel nurbs;
@@ -298,8 +298,8 @@ SequentialFitter::compute (bool assemble)
 
     compute_quadfit ();
 
-    nurbs = FittingPatch::initNurbs4Corners (m_params.order, m_corners[0], m_corners[1], m_corners[2], m_corners[3]);
-    fitting = new FittingPatch (&m_data, nurbs);
+    nurbs = FittingSurface::initNurbs4Corners (m_params.order, m_corners[0], m_corners[1], m_corners[2], m_corners[3]);
+    fitting = new FittingSurface (&m_data, nurbs);
     if (assemble)
       fitting->assemble (paramFP);
 
@@ -311,14 +311,15 @@ SequentialFitter::compute (bool assemble)
   {
     if (this->m_have_corners)
     {
-      nurbs = FittingPatch::initNurbs4Corners (m_params.order, m_corners[0], m_corners[1], m_corners[2], m_corners[3]);
-      fitting = new FittingPatch (&m_data, nurbs);
+      nurbs
+          = FittingSurface::initNurbs4Corners (m_params.order, m_corners[0], m_corners[1], m_corners[2], m_corners[3]);
+      fitting = new FittingSurface (&m_data, nurbs);
       if (assemble)
         fitting->assemble (paramFP);
     }
     else
     {
-      fitting = new FittingPatch (m_params.order, &m_data);
+      fitting = new FittingSurface (m_params.order, &m_data);
       if (assemble)
         fitting->assemble (m_params.stiffnessInterior);
       int ncv0 = fitting->m_nurbs.m_cv_count[0];
@@ -346,9 +347,9 @@ SequentialFitter::compute (bool assemble)
         m_corners[1] = tmp[2];
         m_corners[0] = tmp[3];
         delete (fitting);
-        nurbs
-            = FittingPatch::initNurbs4Corners (m_params.order, m_corners[0], m_corners[1], m_corners[2], m_corners[3]);
-        fitting = new FittingPatch (&m_data, nurbs);
+        nurbs = FittingSurface::initNurbs4Corners (m_params.order, m_corners[0], m_corners[1], m_corners[2],
+                                                   m_corners[3]);
+        fitting = new FittingSurface (&m_data, nurbs);
         if (assemble)
           fitting->assemble (paramFP);
       }
@@ -383,7 +384,7 @@ SequentialFitter::compute_boundary (const ON_NurbsSurface &nurbs)
     return nurbs;
   }
 
-  FittingPatch *fitting = new FittingPatch (&m_data, nurbs);
+  FittingSurface *fitting = new FittingSurface (&m_data, nurbs);
 
   this->compute_boundary (fitting);
 
@@ -405,7 +406,7 @@ SequentialFitter::compute_interior (const ON_NurbsSurface &nurbs)
     printf ("[SequentialFitter::compute_interior] Warning, no interior points given: setInterior()\n");
     return nurbs;
   }
-  FittingPatch *fitting = new FittingPatch (&m_data, nurbs);
+  FittingSurface *fitting = new FittingSurface (&m_data, nurbs);
 
   this->compute_interior (fitting);
 
@@ -462,7 +463,8 @@ SequentialFitter::getClosestPointOnNurbs (ON_NurbsSurface nurbs, Eigen::Vector3d
   Eigen::Vector3d p, tu, tv;
   double error;
 
-  params = FittingPatch::inverseMapping (nurbs, pt, NULL, error, p, tu, tv, maxSteps, accuracy);
+  params = FittingSurface::findClosestElementMidPoint (nurbs, pt);
+  params = FittingSurface::inverseMapping (nurbs, pt, params, error, p, tu, tv, maxSteps, accuracy);
 }
 
 ON_NurbsSurface

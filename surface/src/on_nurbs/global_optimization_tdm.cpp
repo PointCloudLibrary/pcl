@@ -289,9 +289,9 @@ GlobalOptimizationTDM::assembleCommonBoundaries (unsigned id1, double weight, un
 
     if (nurbs1->m_order[0] == nurbs2->m_order[0])
     {
-      params1 = FittingPatch::inverseMappingBoundary (*m_nurbs[id (0)], p0, error1, p1, tu1, tv1, im_max_steps,
+      params1 = FittingSurface::inverseMappingBoundary (*m_nurbs[id (0)], p0, error1, p1, tu1, tv1, im_max_steps,
                                                       im_accuracy, true);
-      params2 = FittingPatch::inverseMappingBoundary (*m_nurbs[id (1)], p0, error2, p2, tu2, tv2, im_max_steps,
+      params2 = FittingSurface::inverseMappingBoundary (*m_nurbs[id (1)], p0, error2, p2, tu2, tv2, im_max_steps,
                                                       im_accuracy, true);
 
       if (params1 (0) == 0.0 || params1 (0) == 1.0)
@@ -316,16 +316,18 @@ GlobalOptimizationTDM::assembleCommonBoundaries (unsigned id1, double weight, un
 
       if (nurbs1->m_order[0] < nurbs2->m_order[0])
       {
-        params1 = FittingPatch::inverseMapping (*m_nurbs[id (0)], p0, NULL, error1, p1, tu1, tv1, im_max_steps,
+        params1 = FittingSurface::findClosestElementMidPoint (*m_nurbs[id (0)], p0);
+        params1 = FittingSurface::inverseMapping (*m_nurbs[id (0)], p0, params1, error1, p1, tu1, tv1, im_max_steps,
                                                 im_accuracy, true);
-        params2 = FittingPatch::inverseMappingBoundary (*m_nurbs[id (1)], p0, error2, p2, tu2, tv2, im_max_steps,
+        params2 = FittingSurface::inverseMappingBoundary (*m_nurbs[id (1)], p0, error2, p2, tu2, tv2, im_max_steps,
                                                         im_accuracy, true);
       }
       else
       {
-        params1 = FittingPatch::inverseMappingBoundary (*m_nurbs[id (0)], p0, error1, p1, tu1, tv1, im_max_steps,
+        params1 = FittingSurface::inverseMappingBoundary (*m_nurbs[id (0)], p0, error1, p1, tu1, tv1, im_max_steps,
                                                         im_accuracy, true);
-        params2 = FittingPatch::inverseMapping (*m_nurbs[id (1)], p0, NULL, error2, p2, tu2, tv2, im_max_steps,
+        params2 = FittingSurface::findClosestElementMidPoint (*m_nurbs[id (1)], p0);
+        params2 = FittingSurface::inverseMapping (*m_nurbs[id (1)], p0, params2, error2, p2, tu2, tv2, im_max_steps,
                                                 im_accuracy);
       }
 
@@ -373,7 +375,7 @@ GlobalOptimizationTDM::assembleClosingBoundaries (unsigned id, unsigned samples,
       Eigen::Vector2d params;
       Eigen::Vector3d p0 = boundary1[i];
 
-      params = FittingPatch::inverseMappingBoundary (*nurbs2, p0, error, p, tu, tv, im_max_steps, im_accuracy, true);
+      params = FittingSurface::inverseMappingBoundary (*nurbs2, p0, error, p, tu, tv, im_max_steps, im_accuracy, true);
 
       //      boundary2.push_back(p);
       //      params2.push_back(params);
@@ -419,7 +421,7 @@ GlobalOptimizationTDM::assembleClosingBoundariesTD (unsigned id, unsigned sample
       Eigen::Vector2d params;
       Eigen::Vector3d p0 = boundary1[i];
 
-      params = FittingPatch::inverseMappingBoundary (*nurbs2, p0, error, p, tu, tv, im_max_steps, im_accuracy, true);
+      params = FittingSurface::inverseMappingBoundary (*nurbs2, p0, error, p, tu, tv, im_max_steps, im_accuracy, true);
 
       tu.normalize ();
       tv.normalize ();
@@ -467,13 +469,14 @@ GlobalOptimizationTDM::assembleInteriorPoints (unsigned id, int ncps, double wei
     double error;
     if (p < data->interior_param.size ())
     {
-      params = FittingPatch::inverseMapping (*nurbs, pcp, &data->interior_param[p], error, pt, tu, tv, im_max_steps,
+      params = FittingSurface::inverseMapping (*nurbs, pcp, data->interior_param[p], error, pt, tu, tv, im_max_steps,
                                              im_accuracy);
       data->interior_param[p] = params;
     }
     else
     {
-      params = FittingPatch::inverseMapping (*m_nurbs[id], pcp, NULL, error, pt, tu, tv, im_max_steps, im_accuracy);
+      params = FittingSurface::findClosestElementMidPoint (*m_nurbs[id], pcp);
+      params = FittingSurface::inverseMapping (*m_nurbs[id], pcp, params, error, pt, tu, tv, im_max_steps, im_accuracy);
       data->interior_param.push_back (params);
     }
     data->interior_error.push_back (error);
@@ -519,13 +522,14 @@ GlobalOptimizationTDM::assembleInteriorPointsTD (unsigned id, int ncps, double w
     double error;
     if (p < data->interior_param.size ())
     {
-      params = FittingPatch::inverseMapping (*nurbs, pcp, &data->interior_param[p], error, pt, tu, tv, im_max_steps,
+      params = FittingSurface::inverseMapping (*nurbs, pcp, data->interior_param[p], error, pt, tu, tv, im_max_steps,
                                              im_accuracy);
       data->interior_param[p] = params;
     }
     else
     {
-      params = FittingPatch::inverseMapping (*m_nurbs[id], pcp, NULL, error, pt, tu, tv, im_max_steps, im_accuracy);
+      params = FittingSurface::findClosestElementMidPoint (*m_nurbs[id], pcp);
+      params = FittingSurface::inverseMapping (*m_nurbs[id], pcp, params, error, pt, tu, tv, im_max_steps, im_accuracy);
       data->interior_param.push_back (params);
     }
     data->interior_error.push_back (error);
@@ -570,7 +574,7 @@ GlobalOptimizationTDM::assembleBoundaryPoints (unsigned id, int ncps, double wei
     Vector3d pt, tu, tv, n;
     double error;
 
-    Vector2d params = FittingPatch::inverseMappingBoundary (*nurbs, pcp, error, pt, tu, tv, im_max_steps, im_accuracy);
+    Vector2d params = FittingSurface::inverseMappingBoundary (*nurbs, pcp, error, pt, tu, tv, im_max_steps, im_accuracy);
     data->boundary_error.push_back (error);
 
     if (p < data->boundary_param.size ())

@@ -47,40 +47,61 @@ namespace pcl
   namespace on_nurbs
   {
 
+    /** \brief Sparse matrix implementation. */
     class SparseMat
     {
     protected:
       std::map<int, std::map<int, double> > m_mat;
 
     public:
+      /** \brief Constructor clearing memory of matrix (=set to zero) */
       SparseMat ()
       {
         m_mat.clear ();
       }
 
+      /** \brief Get a set of values defined by index vectors
+       *  \param[in] i vector of row indices
+       *  \param[in] j vector of column indices
+       *  \param[out] v vector of matrix entries at (i,j)    */
       void
       get (std::vector<int> &i, std::vector<int> &j, std::vector<double> &v);
+      /** \brief Get matrix values at index pair (i,j)
+       *  \param[in] i row index
+       *  \param[in] j column index
+       *  return v matrix value at (i,j)       */
       double
       get (int i, int j);
+      /** \brief Set matrix values at index pair (i,j)
+       *  \param[in] i row index
+       *  \param[in] j column index
+       *  \param[in] v matrix value at (i,j)       */
       void
       set (int i, int j, double v);
 
+      /** \brief Delete row at index i (= set to zero) */
       void
       deleteRow (int i);
+      /** \brief Delete column at index j (= set to zero) */
       void
       deleteColumn (int j);
 
+      /** \brief Clear memory of matrix (=set to zero) */
       inline void
       clear ()
       {
         m_mat.clear ();
       }
+      /** \brief Get size of matrix with respect to last non-zero entries */
       void
       size (int &si, int &sj);
+      /** \brief Get number of non-zero entries in matrix */
       int
       nonzeros ();
+      /** \brief Print all matrix entries with respect to size. */
       void
       printLong ();
+      /** \brief Print indices and values of non-zero entries. */
       void
       print ();
 

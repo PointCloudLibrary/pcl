@@ -608,7 +608,7 @@ FittingCurve2d::assembleInterior (double wInt, double sigma2, unsigned &row)
     }
     else
     {
-      param = findClosestElementMidPoint(m_nurbs, pcp);
+      param = findClosestElementMidPoint (m_nurbs, pcp);
       param = inverseMapping (m_nurbs, pcp, param, error, pt, t, in_max_steps, in_accuracy);
       m_data->interior_param.push_back (param);
     }
@@ -880,7 +880,7 @@ FittingCurve2d::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector2
 double
 FittingCurve2d::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt)
 {
-  double hint;
+  double hint (0.0);
   Eigen::Vector2d p, r;
   std::vector<double> elements = getElementVector (nurbs);
   double points[2];

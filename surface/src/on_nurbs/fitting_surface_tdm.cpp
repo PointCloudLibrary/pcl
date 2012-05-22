@@ -42,17 +42,17 @@ using namespace pcl;
 using namespace on_nurbs;
 using namespace Eigen;
 
-FittingPatchTDM::FittingPatchTDM (NurbsDataSurface *data, const ON_NurbsSurface &ns) :
-  FittingPatch (data, ns)
+FittingSurfaceTDM::FittingSurfaceTDM (NurbsDataSurface *data, const ON_NurbsSurface &ns) :
+  FittingSurface (data, ns)
 {
 }
-FittingPatchTDM::FittingPatchTDM (int order, NurbsDataSurface *data, Eigen::Vector3d z) :
-  FittingPatch (order, data, z)
+FittingSurfaceTDM::FittingSurfaceTDM (int order, NurbsDataSurface *data, Eigen::Vector3d z) :
+  FittingSurface (order, data, z)
 {
 }
 
 void
-FittingPatchTDM::assemble (ParameterTDM param)
+FittingSurfaceTDM::assemble (ParameterTDM param)
 {
   clock_t time_start, time_end;
   time_start = clock ();
@@ -109,19 +109,19 @@ FittingPatchTDM::assemble (ParameterTDM param)
   if (!m_quiet)
   {
     double solve_time = (double)(time_end - time_start) / (double)(CLOCKS_PER_SEC);
-    printf ("[FittingPatchTDM::assemble()] (assemble (%d,%d): %f sec)\n", nrows, ncp, solve_time);
+    printf ("[FittingSurfaceTDM::assemble()] (assemble (%d,%d): %f sec)\n", nrows, ncp, solve_time);
   }
 }
 
 void
-FittingPatchTDM::solve (double damp)
+FittingSurfaceTDM::solve (double damp)
 {
   if (m_solver.solve ())
     updateSurf (damp);
 }
 
 void
-FittingPatchTDM::updateSurf (double damp)
+FittingSurfaceTDM::updateSurf (double damp)
 {
   int ncp = m_nurbs.m_cv_count[0] * m_nurbs.m_cv_count[1];
 
@@ -146,7 +146,7 @@ FittingPatchTDM::updateSurf (double damp)
 }
 
 void
-FittingPatchTDM::assembleInterior (double wInt, double wTangent, unsigned &row)
+FittingSurfaceTDM::assembleInterior (double wInt, double wTangent, unsigned &row)
 {
   m_data->interior_line_start.clear ();
   m_data->interior_line_end.clear ();
@@ -163,12 +163,13 @@ FittingPatchTDM::assembleInterior (double wInt, double wTangent, unsigned &row)
     double error;
     if (p < m_data->interior_param.size ())
     {
-      params = inverseMapping (m_nurbs, pcp, &m_data->interior_param[p], error, pt, tu, tv, in_max_steps, in_accuracy);
+      params = inverseMapping (m_nurbs, pcp, m_data->interior_param[p], error, pt, tu, tv, in_max_steps, in_accuracy);
       m_data->interior_param[p] = params;
     }
     else
     {
-      params = inverseMapping (m_nurbs, pcp, NULL, error, pt, tu, tv, in_max_steps, in_accuracy);
+      params = FittingSurface::findClosestElementMidPoint (m_nurbs, pcp);
+      params = inverseMapping (m_nurbs, pcp, params, error, pt, tu, tv, in_max_steps, in_accuracy);
       m_data->interior_param.push_back (params);
     }
     m_data->interior_error.push_back (error);
@@ -190,7 +191,7 @@ FittingPatchTDM::assembleInterior (double wInt, double wTangent, unsigned &row)
 }
 
 void
-FittingPatchTDM::assembleBoundary (double wBnd, double wTangent, unsigned &row)
+FittingSurfaceTDM::assembleBoundary (double wBnd, double wTangent, unsigned &row)
 {
   m_data->boundary_line_start.clear ();
   m_data->boundary_line_end.clear ();
@@ -232,7 +233,7 @@ FittingPatchTDM::assembleBoundary (double wBnd, double wTangent, unsigned &row)
 }
 
 void
-FittingPatchTDM::addPointConstraint (const Eigen::Vector2d &params, const Eigen::Vector3d &p, const Eigen::Vector3d &n,
+FittingSurfaceTDM::addPointConstraint (const Eigen::Vector2d &params, const Eigen::Vector3d &p, const Eigen::Vector3d &n,
                                      const Eigen::Vector3d &tu, const Eigen::Vector3d &tv, double tangent_weight,
                                      double weight, unsigned &row)
 {
@@ -271,7 +272,7 @@ FittingPatchTDM::addPointConstraint (const Eigen::Vector2d &params, const Eigen:
 }
 
 void
-FittingPatchTDM::addCageInteriorRegularisation (double weight, unsigned &row)
+FittingSurfaceTDM::addCageInteriorRegularisation (double weight, unsigned &row)
 {
   for (int i = 1; i < (m_nurbs.m_cv_count[0] - 1); i++)
   {
@@ -306,7 +307,7 @@ FittingPatchTDM::addCageInteriorRegularisation (double weight, unsigned &row)
 }
 
 void
-FittingPatchTDM::addCageBoundaryRegularisation (double weight, int side, unsigned &row)
+FittingSurfaceTDM::addCageBoundaryRegularisation (double weight, int side, unsigned &row)
 {
   int i = 0;
   int j = 0;
@@ -368,7 +369,7 @@ FittingPatchTDM::addCageBoundaryRegularisation (double weight, int side, unsigne
 }
 
 void
-FittingPatchTDM::addCageCornerRegularisation (double weight, unsigned &row)
+FittingSurfaceTDM::addCageCornerRegularisation (double weight, unsigned &row)
 {
   { // NORTH-WEST
     int i = 0;

@@ -44,11 +44,16 @@ namespace pcl
 {
   namespace on_nurbs
   {
-
-    class FittingPatchTDM : public FittingPatch
+    /** \brief FittingSurface: Fitting a B-Spline surface to 3D point-clouds using tangent-distance-minimization
+     *  Based on paper: TODO
+     * \author Thomas Mörwald
+     * \ingroup surface     */
+    class FittingSurfaceTDM : public FittingSurface
     {
     public:
-      struct ParameterTDM : public FittingPatch::Parameter
+
+      /** \brief Parameters with TDM extensions for fitting */
+      struct ParameterTDM : public FittingSurface::Parameter
       {
         double interior_tangent_weight;
         double boundary_tangent_weight;
@@ -62,34 +67,58 @@ namespace pcl
         }
       };
 
-      FittingPatchTDM (NurbsDataSurface *data, const ON_NurbsSurface &ns);
-      FittingPatchTDM (int order, NurbsDataSurface *data, Eigen::Vector3d z = Eigen::Vector3d (0.0, 0.0, 1.0));
+      /** \brief Constructor initializing with the B-Spline surface given in argument 2.
+       * \param[in] data pointer to the 3D point-cloud data to be fit.
+       * \param[in] ns B-Spline surface used for fitting.        */
+      FittingSurfaceTDM (NurbsDataSurface *data, const ON_NurbsSurface &ns);
 
+      /** \brief Constructor initializing B-Spline surface using initNurbsPCA(...).
+       * \param[in] order the polynomial order of the B-Spline surface.
+       * \param[in] data pointer to the 2D point-cloud data to be fit.
+       * \param[in] z vector defining front face of surface.        */
+      FittingSurfaceTDM (int order, NurbsDataSurface *data, Eigen::Vector3d z = Eigen::Vector3d (0.0, 0.0, 1.0));
+
+      /** \brief Assemble the system of equations for fitting
+       * - for large point-clouds this is time consuming.
+       * - should be done once before refinement to initialize the starting points for point inversion. */
       virtual void
       assemble (ParameterTDM param = ParameterTDM ());
 
+      /** \brief Solve system of equations using Eigen or UmfPack (can be defined in on_nurbs.cmake),
+       *  and updates B-Spline surface if a solution can be obtained. */
       virtual void
       solve (double damp = 1.0);
 
+      /** \brief Update surface according to the current system of equations.
+       *  \param[in] damp damping factor from one iteration to the other. */
       virtual void
       updateSurf (double damp);
 
     protected:
 
+      /** \brief Assemble point-to-surface constraints for interior points. */
       virtual void
       assembleInterior (double wInt, double wTangent, unsigned &row);
+
+      /** \brief Assemble point-to-surface constraints for boundary points. */
       virtual void
       assembleBoundary (double wBnd, double wTangent, unsigned &row);
 
+      /** \brief Add minimization constraint: point-to-surface distance (point-distance-minimization). */
       virtual void
       addPointConstraint (const Eigen::Vector2d &params, const Eigen::Vector3d &point, const Eigen::Vector3d &normal,
                           const Eigen::Vector3d &tu, const Eigen::Vector3d &tv, double tangent_weight, double weight,
                           unsigned &row);
 
+      /** \brief Add minimization constraint: interior smoothness by control point regularisation. */
       virtual void
       addCageInteriorRegularisation (double weight, unsigned &row);
+
+      /** \brief Add minimization constraint: boundary smoothness by control point regularisation. */
       virtual void
       addCageBoundaryRegularisation (double weight, int side, unsigned &row);
+
+      /** \brief Add minimization constraint: corner smoothness by control point regularisation. */
       virtual void
       addCageCornerRegularisation (double weight, unsigned &row);
 

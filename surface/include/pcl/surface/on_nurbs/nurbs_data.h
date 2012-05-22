@@ -55,6 +55,8 @@ namespace pcl
     typedef std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > vector_vec2d;
     typedef std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > vector_vec3d;
 
+    /** \brief Data structure for NURBS surface fitting
+     * (FittingSurface, FittingSurfaceTDM, FittingCylinder, GlobalOptimization, GlobalOptimizationTDM) */
     struct NurbsDataSurface
     {
       Eigen::Matrix3d eigenvectors;
@@ -80,10 +82,12 @@ namespace pcl
       std::vector<unsigned> common_boundary_idx;
       vector_vec2d common_boundary_param;
 
+      /** \brief Clear all interior data */
       inline void
       clear_interior ()
       {
         interior.clear ();
+        interior_weight.clear ();
         interior_error.clear ();
         interior_param.clear ();
         interior_line_start.clear ();
@@ -91,10 +95,12 @@ namespace pcl
         interior_normals.clear ();
       }
 
+      /** \brief Clear all boundary data */
       inline void
       clear_boundary ()
       {
         boundary.clear ();
+        boundary_weight.clear ();
         boundary_error.clear ();
         boundary_param.clear ();
         boundary_line_start.clear ();
@@ -102,6 +108,7 @@ namespace pcl
         boundary_normals.clear ();
       }
 
+      /** \brief Clear all common data */
       inline void
       clear_common_boundary ()
       {
@@ -112,6 +119,8 @@ namespace pcl
 
     };
 
+    /** \brief Data structure for 3D NURBS curve fitting
+     * (FittingCurve) */
     struct NurbsDataCurve
     {
       Eigen::Matrix3d eigenvectors;
@@ -124,6 +133,7 @@ namespace pcl
       vector_vec3d interior_line_end; ///>> output
       vector_vec3d interior_normals; ///>> output
 
+      /** \brief Clear all interior data */
       inline void
       clear_interior ()
       {
@@ -137,6 +147,8 @@ namespace pcl
 
     };
 
+    /** \brief Data structure for 2D NURBS curve fitting
+     * (FittingCurve2d, FittingCurve2dTDM, FittingCurve2dSDM) */
     struct NurbsDataCurve2d
     {
       Eigen::Matrix2d eigenvectors;
@@ -166,6 +178,7 @@ namespace pcl
       vector_vec2d closest_normals;
       std::vector<double> closest_rho;
 
+      /** \brief Clear all interior data */
       inline void
       clear_interior ()
       {

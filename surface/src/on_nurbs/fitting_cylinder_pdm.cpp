@@ -42,7 +42,7 @@ using namespace pcl;
 using namespace on_nurbs;
 using namespace Eigen;
 
-FittingCylinder::FittingCylinder (int order, NurbsDataSurface *data, Eigen::Vector3d z)
+FittingCylinder::FittingCylinder (int order, NurbsDataSurface *data)
 {
   if (order < 2)
     throw std::runtime_error ("[FittingCylinder::FittingCylinder] Error order to low (order<2).");
@@ -154,9 +154,7 @@ FittingCylinder::assemble (double smoothness)
   unsigned row (0);
 
   // interior points should lie on surface
-  inverseMappingInterior ();
-  for (int p = 0; p < nInt; p++)
-    addPointConstraint (m_data->interior_param[p], m_data->interior[p], wInt, row);
+  assembleInterior (wInt, row);
 
   // cage regularisation
   if (nCageRegInt > 0)
@@ -351,14 +349,14 @@ FittingCylinder::getElementVector (const ON_NurbsSurface &nurbs, int dim) // !
 }
 
 void
-FittingCylinder::inverseMappingInterior ()
+FittingCylinder::assembleInterior (double wInt, unsigned &row)
 {
   m_data->interior_line_start.clear ();
   m_data->interior_line_end.clear ();
   m_data->interior_error.clear ();
   m_data->interior_normals.clear ();
-  int nInt = m_data->interior.size ();
-  for (int p = 0; p < nInt; p++)
+  unsigned nInt = m_data->interior.size ();
+  for (unsigned p = 0; p < nInt; p++)
   {
     Vector3d pcp;
     pcp = m_data->interior[p];
@@ -367,14 +365,15 @@ FittingCylinder::inverseMappingInterior ()
     Vector2d params;
     Vector3d pt, tu, tv, n;
     double error;
-    if (p < (int)m_data->interior_param.size ())
+    if (p < m_data->interior_param.size ())
     {
-      params = inverseMapping (m_nurbs, pcp, &m_data->interior_param[p], error, pt, tu, tv, in_max_steps, in_accuracy);
+      params = inverseMapping (m_nurbs, pcp, m_data->interior_param[p], error, pt, tu, tv, in_max_steps, in_accuracy);
       m_data->interior_param[p] = params;
     }
     else
     {
-      params = inverseMapping (m_nurbs, pcp, NULL, error, pt, tu, tv, in_max_steps, in_accuracy);
+      params = findClosestElementMidPoint (m_nurbs, pcp);
+      params = inverseMapping (m_nurbs, pcp, params, error, pt, tu, tv, in_max_steps, in_accuracy);
       m_data->interior_param.push_back (params);
     }
     m_data->interior_error.push_back (error);
@@ -386,6 +385,7 @@ FittingCylinder::inverseMappingInterior ()
     m_data->interior_line_start.push_back (pcp);
     m_data->interior_line_end.push_back (pt);
 
+    addPointConstraint (params, pcp, wInt, row);
   }
 }
 
@@ -556,8 +556,7 @@ FittingCylinder::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &p
 }
 
 Vector2d
-FittingCylinder::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &pt, Vector2d* phint, double &error,
-                                 Vector3d &p, Vector3d &tu, Vector3d &tv, int maxSteps, double accuracy, bool quiet)
+FittingCylinder::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, const Vector3d &pt)
 {
 
   Vector2d hint;
@@ -565,40 +564,32 @@ FittingCylinder::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &p
   std::vector<double> elementsU = getElementVector (nurbs, 0);
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
-  if (phint == NULL)
+  double d_shortest;
+  for (unsigned i = 0; i < elementsU.size () - 1; i++)
   {
-    double d_shortest;
-    for (unsigned i = 0; i < elementsU.size () - 1; i++)
+    for (unsigned j = 0; j < elementsV.size () - 1; j++)
     {
-      for (unsigned j = 0; j < elementsV.size () - 1; j++)
+      double points[3];
+
+      double xi = elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i]);
+      double eta = elementsV[j] + 0.5 * (elementsV[j + 1] - elementsV[j]);
+
+      nurbs.Evaluate (xi, eta, 0, 3, points);
+      r (0) = points[0] - pt (0);
+      r (1) = points[1] - pt (1);
+      r (2) = points[2] - pt (2);
+
+      double d = r.squaredNorm ();
+
+      if ((i == 0 && j == 0) || d < d_shortest)
       {
-        double points[3];
-        double d;
-
-        double xi = elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i]);
-        double eta = elementsV[j] + 0.5 * (elementsV[j + 1] - elementsV[j]);
-
-        nurbs.Evaluate (xi, eta, 0, 3, points);
-        r (0) = points[0] - pt (0);
-        r (1) = points[1] - pt (1);
-        r (2) = points[2] - pt (2);
-
-        d = r.norm ();
-
-        if ((i == 0 && j == 0) || d < d_shortest)
-        {
-          d_shortest = d;
-          hint (0) = xi;
-          hint (1) = eta;
-        }
+        d_shortest = d;
+        hint (0) = xi;
+        hint (1) = eta;
       }
     }
   }
-  else
-  {
-    hint = *phint;
-  }
 
-  return inverseMapping (nurbs, pt, hint, error, p, tu, tv, maxSteps, accuracy, quiet);
+  return hint;
 }
 

@@ -63,11 +63,6 @@ namespace pcl
 
     class SequentialFitter
     {
-    private:
-      //  TomGine::tgTomGineThread* m_dbgWin;
-      //  TomGine::tgEngine *m_engine;
-      //  bool m_quiet;
-
     public:
       struct Parameter
       {
@@ -89,10 +84,6 @@ namespace pcl
                    double stiffnessInterior = 0.1, int resolution = 16);
       };
 
-      //  void fitNurbsSurface(const cv::Mat_<cv::Vec4f> &matCloud, const cv::Mat_<uchar> &mask, const cv::Mat_<uchar> &contour,
-      //      const std::vector<cv::Point2i> &corners, ON_NurbsSurface &nurbs, cv::Mat_<uchar> &nurbs_mask, cv::Mat_<double> &error_img, double &error_interior,
-      //      double &error_boundary);
-
     private:
       Parameter m_params;
 
@@ -112,19 +103,14 @@ namespace pcl
 
       int m_surf_id;
 
-      //  void ExtractError(DataSet &data, cv::Mat_<double> &error_img, double &error_interior, double &error_boundary);
-      //  void UpdateInterior(const cv::Mat_<uchar> &maskNurbs, DataSet* data);
-      //  void AdjustBoundary(const cv::Mat_<cv::Vec4f> &matCloud, const cv::Mat_<uchar> &mask, FittingPatch *patchFit, DataSet* data, std::vector<double> &wBnd,
-      //      bool move_contour);
-
       void
       compute_quadfit ();
       void
-      compute_refinement (FittingPatch* fitting);
+      compute_refinement (FittingSurface* fitting);
       void
-      compute_boundary (FittingPatch* fitting);
+      compute_boundary (FittingSurface* fitting);
       void
-      compute_interior (FittingPatch* fitting);
+      compute_interior (FittingSurface* fitting);
 
       Eigen::Vector2d
       project (const Eigen::Vector3d &pt);
@@ -133,7 +119,6 @@ namespace pcl
                       const Eigen::Vector3d &v3);
 
     public:
-      //  SequentialFitter(Parameter p = Parameter(), bool quiet = true, TomGine::tgTomGineThread* dbgWin=NULL);
       SequentialFitter (Parameter p = Parameter ());
 
       inline void
@@ -142,75 +127,88 @@ namespace pcl
         m_params = p;
       }
 
-      /** Set input point cloud **/
+      /** \brief Set input point cloud **/
       void
       setInputCloud (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud);
 
+      /** \brief Set boundary points of input point cloud **/
       void
       setBoundary (pcl::PointIndices::Ptr &pcl_cloud_indices);
 
+      /** \brief Set interior points of input point cloud **/
       void
       setInterior (pcl::PointIndices::Ptr &pcl_cloud_indices);
 
+      /** \brief Set corner points of input point cloud **/
       void
       setCorners (pcl::PointIndices::Ptr &corners, bool flip_on_demand = true);
 
+      /** \brief Set camera- and world matrices, for projection and back-face detection
+       *  \param[in] intrinsic The camera projection matrix.
+       *  \param[in] intrinsic The world matrix.*/
       void
       setProjectionMatrix (Eigen::Matrix4d &intrinsic, Eigen::Matrix4d &extrinsic);
 
-      /** Compute point cloud and fit (multiple) models **/
+      /** \brief Compute point cloud and fit (multiple) models */
       ON_NurbsSurface
       compute (bool assemble = false);
 
+      /** \brief Compute boundary points and fit (multiple) models
+       * (without interior points - minimal curvature surface) */
       ON_NurbsSurface
       compute_boundary (const ON_NurbsSurface &nurbs);
 
+      /** \brief Compute interior points and fit (multiple) models
+       *  (without boundary points)*/
       ON_NurbsSurface
       compute_interior (const ON_NurbsSurface &nurbs);
 
+      /** \brief Get resulting NURBS surface. */
       inline ON_NurbsSurface
       getNurbs ()
       {
         return m_nurbs;
       }
 
-      /** @brief Get error of each interior point (L2-norm of point to closest point on surface) and square-error */
+      /** \brief Get error of each interior point (L2-norm of point to closest point on surface) and square-error */
       void
       getInteriorError (std::vector<double> &error);
 
-      /** @brief Get error of each boundary point (L2-norm of point to closest point on surface) and square-error */
+      /** \brief Get error of each boundary point (L2-norm of point to closest point on surface) and square-error */
       void
       getBoundaryError (std::vector<double> &error);
 
-      /** @brief Get parameter of each interior point */
+      /** \brief Get parameter of each interior point */
       void
       getInteriorParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params);
 
-      /** @brief Get parameter of each boundary point */
+      /** \brief Get parameter of each boundary point */
       void
       getBoundaryParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params);
 
-      /** @brief get the normals to the interior points given by setInterior() */
+      /** \brief get the normals to the interior points given by setInterior() */
       void
       getInteriorNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normal);
 
-      /** @brief get the normals to the boundary points given by setBoundary() */
+      /** \brief get the normals to the boundary points given by setBoundary() */
       void
       getBoundaryNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normals);
 
-      /** @brief Get the closest point on a NURBS from a point pt in parameter space
-       *  @param nurbs  The NURBS surface
-       *  @param pt     A point in 3D from which the closest point is calculated
-       *  @param params The closest point on the NURBS in parameter space
-       *  @param maxSteps Maximum iteration steps
-       *  @param accuracy Accuracy below which the iterations stop */
+      /** \brief Get the closest point on a NURBS from a point pt in parameter space
+       *  \param[in] nurbs  The NURBS surface
+       *  \param[in] pt     A point in 3D from which the closest point is calculated
+       *  \param[out] params The closest point on the NURBS in parameter space
+       *  \param[in] maxSteps Maximum iteration steps
+       *  \param[in] accuracy Accuracy below which the iterations stop */
       static void
       getClosestPointOnNurbs (ON_NurbsSurface nurbs, Eigen::Vector3d pt, Eigen::Vector2d& params, int maxSteps = 100,
                               double accuracy = 1e-4);
 
+      /** \brief Growing algorithm (TODO: under construction) */
       ON_NurbsSurface
       grow (float max_dist = 1.0f, float max_angle = M_PI_4, unsigned min_length = 0, unsigned max_length = 10);
 
+      /** \brief Convert point-cloud */
       static unsigned
       PCL2ON (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud, const std::vector<int> &indices, vector_vec3d &cloud);
 
