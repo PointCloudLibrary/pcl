@@ -31,7 +31,7 @@ set(ON_NURBS_SOURCES
 	src/on_nurbs/sequential_fitter.cpp
 	src/on_nurbs/sparse_mat.cpp)
 	
-if(false)
+if(true)
   set(ON_NURBS_SOURCES ${ON_NURBS_SOURCES} src/on_nurbs/nurbs_solve_eigen.cpp)
 else()
 	set(ON_NURBS_SOURCES ${ON_NURBS_SOURCES} src/on_nurbs/nurbs_solve_umfpack.cpp)
