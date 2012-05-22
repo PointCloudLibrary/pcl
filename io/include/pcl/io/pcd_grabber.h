@@ -45,6 +45,7 @@
 #include <string>
 #include <vector>
 #include <pcl/ros/conversions.h>
+#include <pcl/io/openni_camera/openni_depth_image.h>
 
 namespace pcl
 {
@@ -142,7 +143,9 @@ namespace pcl
     protected:
       virtual void 
       publish (const sensor_msgs::PointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const;
+      
       boost::signals2::signal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>* signal_;
+      boost::signals2::signal<void (const boost::shared_ptr<openni_wrapper::DepthImage>&)>*     depth_image_signal_;
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -151,6 +154,7 @@ namespace pcl
   : PCDGrabberBase (pcd_path, frames_per_second, repeat)
   {
     signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
+    depth_image_signal_ = createSignal <void (const boost::shared_ptr<openni_wrapper::DepthImage>&)> ();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,11 +163,12 @@ namespace pcl
     : PCDGrabberBase (pcd_files, frames_per_second, repeat), signal_ ()
   {
     signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
+    depth_image_signal_ = createSignal <void (const boost::shared_ptr<openni_wrapper::DepthImage>&)> ();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  template<typename PointT>
-  void PCDGrabber<PointT>::publish (const sensor_msgs::PointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const
+  template<typename PointT> void 
+  PCDGrabber<PointT>::publish (const sensor_msgs::PointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const
   {
     typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
     pcl::fromROSMsg (blob, *cloud);
@@ -171,6 +176,25 @@ namespace pcl
     cloud->sensor_orientation_ = orientation;
 
     signal_->operator () (cloud);
+
+    // If dataset is not organized, return
+    if (!cloud->isOrganized ())
+      return;
+
+    boost::shared_ptr<xn::DepthMetaData> depth_meta_data (new xn::DepthMetaData);
+    depth_meta_data->AllocateData (cloud->width, cloud->height);
+    XnDepthPixel* depth_map = depth_meta_data->WritableData ();
+    uint32_t k = 0;
+    for (uint32_t i = 0; i < cloud->height; ++i)
+      for (uint32_t j = 0; j < cloud->width; ++j)
+      {
+        depth_map[k] = static_cast<XnDepthPixel> ((*cloud)[k].z * 1000);
+        ++k;
+      }
+
+    boost::shared_ptr<openni_wrapper::DepthImage> depth_image (new openni_wrapper::DepthImage (depth_meta_data, 0.075, 525, 0, 0));
+    if (depth_image_signal_->num_slots() > 0)
+      depth_image_signal_->operator()(depth_image);
   }
 }
 #endif
