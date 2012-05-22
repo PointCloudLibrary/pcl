@@ -46,7 +46,8 @@ class SimpleOpenNIProcessor
 
     bool save;
 
-    void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud)
+    void 
+    cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud)
     {
       static unsigned count = 0;
       static double last = pcl::getTime ();
@@ -67,7 +68,8 @@ class SimpleOpenNIProcessor
       }
     }
 
-    void imageDepthImageCallback (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant)
+    void 
+    imageDepthImageCallback (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>& d_img, float constant)
     {
       static unsigned count = 0;
       static double last = pcl::getTime ();
@@ -75,6 +77,7 @@ class SimpleOpenNIProcessor
       {
         double now = pcl::getTime ();
         std::cout << "got synchronized image x depth-image with constant factor: " << constant << ". Average framerate: " << double(count)/double(now - last) << " Hz" <<  std::endl;
+        std::cout << "Depth baseline: " << d_img->getBaseline () << " and focal length: " << d_img->getFocalLength () << std::endl;
         count = 0;
         last = now;
       }
