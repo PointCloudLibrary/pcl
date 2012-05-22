@@ -40,6 +40,9 @@
 
 #include <pcl/console/parse.h>
 
+#define BOOST_FILESYSTEM_VERSION 2
+#include <boost/filesystem.hpp>
+
 #include <pcl/gpu/kinfu/kinfu.h>
 #include <pcl/gpu/kinfu/raycaster.h>
 #include <pcl/gpu/kinfu/marching_cubes.h>
@@ -55,6 +58,7 @@
 #include <pcl/io/vtk_io.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/oni_grabber.h>
+#include <pcl/io/pcd_grabber.h>
 
 #include "openni_capture.h"
 #include "color_handler.h"
@@ -704,6 +708,7 @@ struct KinFuApp
     data_ready_cond_.notify_one();
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   void
   startMainLoop ()
   {   
@@ -721,10 +726,10 @@ struct KinFuApp
       boost::unique_lock<boost::mutex> lock(data_ready_mutex_);
 
       capture_.start ();
-      while (!exit_ && !scene_cloud_view_.cloud_viewer_.wasStopped() && !image_view_.viewerScene_.wasStopped())
+      while (!exit_ && !scene_cloud_view_.cloud_viewer_.wasStopped () && !image_view_.viewerScene_.wasStopped ())
       {      
-        bool has_data = data_ready_cond_.timed_wait(lock, boost::posix_time::millisec(100));
-        if(has_data)
+        bool has_data = data_ready_cond_.timed_wait (lock, boost::posix_time::millisec(100));
+        if (has_data)
         {                           
           try { this->execute (depth_, rgb24_); }
           catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; break; }
@@ -737,6 +742,7 @@ struct KinFuApp
     c.disconnect();
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   void
   writeCloud (int format) const
   {      
@@ -758,6 +764,7 @@ struct KinFuApp
     }
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   void
   writeMesh(int format) const
   {
@@ -765,6 +772,7 @@ struct KinFuApp
       writePoligonMeshFile(format, *scene_cloud_view_.mesh_ptr_);
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   void
   printHelp ()
   {
@@ -822,6 +830,7 @@ struct KinFuApp
 
   int time_ms_;
 
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   static void
   keyboard_callback (const visualization::KeyboardEvent &e, void *cookie)
   {
@@ -865,7 +874,6 @@ struct KinFuApp
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 template<typename CloudPtr> void
 writeCloudFile (int format, const CloudPtr& cloud_prt)
 {
@@ -941,25 +949,51 @@ main (int argc, char* argv[])
   pcl::gpu::setDevice (device);
   pcl::gpu::printShortCudaDeviceInfo (device);
 
-  if(checkIfPreFermiGPU(device))
+  if (checkIfPreFermiGPU(device))
     return cout << endl << "Kinfu is supported only for Fermi and Kepler arhitectures. It is not even compiled for pre-Fermi by default. Exiting..." << endl, 1;
   
   boost::shared_ptr<pcl::Grabber> capture;
   
-  std::string eval_folder, match_file, openni_device, oni_file;
+  std::string eval_folder, match_file, openni_device, oni_file, pcd_file;
   try
   {    
     if (pc::parse_argument (argc, argv, "-dev", openni_device) > 0)
     {
-      capture.reset( new pcl::OpenNIGrabber(openni_device) );
+      capture.reset (new pcl::OpenNIGrabber (openni_device));
     }
-    else
-    if (pc::parse_argument (argc, argv, "-oni", oni_file) > 0)
-    {    
-      capture.reset( new pcl::ONIGrabber(oni_file, true, true) );
+    else if (pc::parse_argument (argc, argv, "-oni", oni_file) > 0)
+    {
+      capture.reset (new pcl::ONIGrabber (oni_file, true, true));
     }
-    else
-    if (pc::parse_argument (argc, argv, "-eval", eval_folder) > 0)
+    else if (pc::parse_argument (argc, argv, "-pcd", pcd_file) > 0)
+    {
+      float fps_pcd = 15.0f;
+      pc::parse_argument (argc, argv, "-pcd_fps", fps_pcd);
+
+      std::vector<std::string> pcd_files;
+      std::cout << "path: " << pcd_file << std::endl;
+      if (pcd_file != "" && boost::filesystem::exists (pcd_file))
+      {
+        boost::filesystem::directory_iterator end_itr;
+        for (boost::filesystem::directory_iterator itr (pcd_file); itr != end_itr; ++itr)
+        {
+          if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->leaf ())) == ".PCD" )
+          {
+            pcd_files.push_back (itr->path ().string ());
+            std::cout << "added: " << itr->path ().string () << std::endl;
+          }
+        }
+      }
+      else
+      {
+        PCL_ERROR ("No valid directory given!\n");
+      }
+     
+      // Sort the read files by name
+      sort (pcd_files.begin (), pcd_files.end ());
+      capture.reset (new pcl::PCDGrabber<pcl::PointXYZ> (pcd_files, fps_pcd, false));
+    }
+    else if (pc::parse_argument (argc, argv, "-eval", eval_folder) > 0)
     {
       //init data source latter
       pc::parse_argument (argc, argv, "-match_file", match_file);
@@ -975,7 +1009,7 @@ main (int argc, char* argv[])
       //capture.reset( new pcl::ONIGrabber("d:/onis/20111013-224719.oni", true, true) );    
     }
   }
-  catch (const pcl::PCLException& /*e*/) { return cout << "Can't opencv depth source" << endl, -1; }
+  catch (const pcl::PCLException& /*e*/) { return cout << "Can't open depth source" << endl, -1; }
 
   float volume_size = 3.f;
   pc::parse_argument (argc, argv, "-volume_size", volume_size);
