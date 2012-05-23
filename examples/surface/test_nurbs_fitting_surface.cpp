@@ -72,7 +72,7 @@ main ()
   nurbs = fit.m_nurbs;
   pcl::PolygonMesh mesh;
   std::string mesh_id = "mesh_nurbs";
-  pcl::on_nurbs::Triangulation::convert (nurbs, mesh, 128);
+  pcl::on_nurbs::Triangulation::convertSurface2PolygonMesh (nurbs, mesh, 128);
   viewer.addPolygonMesh (mesh, mesh_id);
 
   viewer.spin ();
