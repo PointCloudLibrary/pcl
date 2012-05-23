@@ -98,6 +98,32 @@ namespace pcl
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+vector<string> getPcdFilesInDir(const string& directory)
+{
+  namespace fs = boost::filesystem;
+  fs::path dir(directory);
+ 
+  std::cout << "path: " << pcd_dir << std::endl;
+  if (pcd_file.empty() || !fs::exists(dir) || !fs::is_directory(dir))
+    throw pcl::PCLIOException("No valid PCD directory given!\n");
+    
+  vector<string> result;
+  fs::directory_iterator pos(dir);
+  fs::directory_iterator end;           
+
+  for(; pos != end ; ++pos)
+    if (fs::is_regular_file(pos->status()) )
+      if (fs::extension(*pos) == ".pcd")
+      {
+        result.push_back(pos->path().string());
+        cout << "added: " << result.back() << endl;
+      }
+    
+  return result;  
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 struct SampledScopeTime : public StopWatch
 {          
   enum { EACH = 33 };
@@ -956,7 +982,7 @@ main (int argc, char* argv[])
   
   boost::shared_ptr<pcl::Grabber> capture;
   
-  std::string eval_folder, match_file, openni_device, oni_file, pcd_file;
+  std::string eval_folder, match_file, openni_device, oni_file, pcd_dir;
   try
   {    
     if (pc::parse_argument (argc, argv, "-dev", openni_device) > 0)
@@ -967,30 +993,13 @@ main (int argc, char* argv[])
     {
       capture.reset (new pcl::ONIGrabber (oni_file, true, true));
     }
-    else if (pc::parse_argument (argc, argv, "-pcd", pcd_file) > 0)
+    else if (pc::parse_argument (argc, argv, "-pcd", pcd_dir) > 0)
     {
       float fps_pcd = 15.0f;
       pc::parse_argument (argc, argv, "-pcd_fps", fps_pcd);
 
-      std::vector<std::string> pcd_files;
-      std::cout << "path: " << pcd_file << std::endl;
-      if (pcd_file != "" && boost::filesystem::exists (pcd_file))
-      {
-        boost::filesystem::directory_iterator end_itr;
-        for (boost::filesystem::directory_iterator itr (pcd_file); itr != end_itr; ++itr)
-        {
-          if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->leaf ())) == ".PCD" )
-          {
-            pcd_files.push_back (itr->path ().string ());
-            std::cout << "added: " << itr->path ().string () << std::endl;
-          }
-        }
-      }
-      else
-      {
-        PCL_ERROR ("No valid directory given!\n");
-      }
-     
+      vector<string> pcd_files = getPcdFilesInDir(pcd_dir);    
+
       // Sort the read files by name
       sort (pcd_files.begin (), pcd_files.end ());
       capture.reset (new pcl::PCDGrabber<pcl::PointXYZ> (pcd_files, fps_pcd, false));
