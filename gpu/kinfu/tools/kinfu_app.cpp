@@ -604,22 +604,28 @@ struct KinFuApp
         evaluation_ptr_->fx, evaluation_ptr_->fy, evaluation_ptr_->cx, evaluation_ptr_->cy) );
   }
   
-  void execute(const PtrStepSz<const unsigned short>& depth, const PtrStepSz<const KinfuTracker::PixelRGB>& rgb24)
+  void execute(const PtrStepSz<const unsigned short>& depth, const PtrStepSz<const KinfuTracker::PixelRGB>& rgb24, bool has_data)
   {        
     bool has_image = false;
       
-    depth_device_.upload (depth.data, depth.step, depth.rows, depth.cols);
-    if (integrate_colors_)
-        image_view_.colors_device_.upload (rgb24.data, rgb24.step, rgb24.rows, rgb24.cols);
-    
+    if (has_data)
     {
-      SampledScopeTime fps(time_ms_);
-    
-      //run kinfu algorithm
+      depth_device_.upload (depth.data, depth.step, depth.rows, depth.cols);
       if (integrate_colors_)
-        has_image = kinfu_ (depth_device_, image_view_.colors_device_);
-      else
-        has_image = kinfu_ (depth_device_);                  
+          image_view_.colors_device_.upload (rgb24.data, rgb24.step, rgb24.rows, rgb24.cols);
+    
+      {
+        SampledScopeTime fps(time_ms_);
+    
+        //run kinfu algorithm
+        if (integrate_colors_)
+          has_image = kinfu_ (depth_device_, image_view_.colors_device_);
+        else
+          has_image = kinfu_ (depth_device_);                  
+      }
+
+      image_view_.showDepth (depth);
+      //image_view_.showGeneratedDepth(kinfu_, kinfu_.getCameraPose());
     }
 
     if (scan_)
@@ -656,10 +662,7 @@ struct KinFuApp
 
     if (current_frame_cloud_view_)
       current_frame_cloud_view_->show (kinfu_);
-    
-    image_view_.showDepth (depth);
-    //image_view_.showGeneratedDepth(kinfu_, kinfu_.getCameraPose());
-    
+      
     if (!independent_camera_)
       setViewerPose (scene_cloud_view_.cloud_viewer_, kinfu_.getCameraPose());    
   }
@@ -729,12 +732,11 @@ struct KinFuApp
       while (!exit_ && !scene_cloud_view_.cloud_viewer_.wasStopped () && !image_view_.viewerScene_.wasStopped ())
       {      
         bool has_data = data_ready_cond_.timed_wait (lock, boost::posix_time::millisec(100));
-        if (has_data)
-        {                           
-          try { this->execute (depth_, rgb24_); }
-          catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; break; }
-          catch (const std::exception& /*e*/) { cout << "Exception" << endl; break; }
-        }
+                       
+        try { this->execute (depth_, rgb24_, has_data); }
+        catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; break; }
+        catch (const std::exception& /*e*/) { cout << "Exception" << endl; break; }
+        
         scene_cloud_view_.cloud_viewer_.spinOnce (3);                  
       }        
       capture_.stop ();
