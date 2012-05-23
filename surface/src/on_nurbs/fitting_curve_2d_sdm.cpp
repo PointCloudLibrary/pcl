@@ -281,7 +281,8 @@ FittingCurve2dSDM::assembleInterior (double wInt, double sigma2, unsigned &row)
   unsigned updateTNR (false);
   if (m_data->interior_ncps_prev != m_nurbs.CVCount ())
   {
-    printf ("[FittingCurve2dSDM::assembleInterior] updating T, N, rho\n");
+    if (!m_quiet)
+      printf ("[FittingCurve2dSDM::assembleInterior] updating T, N, rho\n");
     m_data->interior_tangents.clear ();
     m_data->interior_normals.clear ();
     m_data->interior_rho.clear ();
@@ -307,7 +308,7 @@ FittingCurve2dSDM::assembleInterior (double wInt, double sigma2, unsigned &row)
     }
     else
     {
-      param = findClosestElementMidPoint(m_nurbs, pcp);
+      param = findClosestElementMidPoint (m_nurbs, pcp);
       param = inverseMapping (m_nurbs, pcp, param, error, pt, t, in_max_steps, in_accuracy);
       m_data->interior_param.push_back (param);
     }
@@ -412,7 +413,8 @@ FittingCurve2dSDM::assembleClosestPoints (const std::vector<double> &elements, d
   unsigned updateTNR (false);
   if (m_data->closest_ncps_prev != m_nurbs.CVCount ())
   {
-    printf ("[FittingCurve2dSDM::assembleClosestPoints] updating T, N, rho\n");
+    if (!m_quiet)
+      printf ("[FittingCurve2dSDM::assembleClosestPoints] updating T, N, rho\n");
     m_data->closest_tangents.clear ();
     m_data->closest_normals.clear ();
     m_data->closest_rho.clear ();

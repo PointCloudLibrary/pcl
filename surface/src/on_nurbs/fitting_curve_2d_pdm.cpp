@@ -114,6 +114,53 @@ FittingCurve2d::refine (double xi)
 }
 
 void
+FittingCurve2d::fitting (FitParameter &param)
+{
+  double avgerr (DBL_MAX);
+  double maxerr (DBL_MAX);
+  bool stop (false);
+  for (unsigned j = 0; j < param.fitMaxSteps && !stop; j++)
+  {
+    if (2 * m_nurbs.CVCount () > m_data->interior.size ())
+    {
+      break;
+    }
+    else if (j > 0 && j <= param.refinement)
+    {
+      refine ();
+    }
+    else if (j > param.refinement + 1)
+    {
+      if (!(j % param.addCPsIteration) && (m_nurbs.CVCount () < param.maxCPs))
+        addCPsOnClosestPointViolation (param.addCPsAccuracy);
+    }
+
+    m_data->interior_param.clear ();
+
+    assemble (param.param);
+
+    std::size_t s = m_data->closest_points_error.size ();
+    avgerr = 0.0;
+    maxerr = 0.0;
+    for (unsigned i = 0; i < s; i++)
+    {
+      double &e = m_data->closest_points_error[i];
+      avgerr += (e / static_cast<double>(s));
+      if (e > maxerr)
+      {
+        maxerr = e;
+      }
+    }
+    maxerr = sqrt (maxerr);
+
+    if (j > param.refinement)
+      stop = (param.fitMaxError > maxerr && param.fitAvgError > avgerr);
+
+    solve ();
+  }
+}
+
+void
 FittingCurve2d::assemble (const Parameter &parameter)
 {
   clock_t time_start, time_end;

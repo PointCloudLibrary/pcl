@@ -53,9 +53,11 @@ namespace pcl
     {
 
     private:
+      /** \brief Create indices for triangulation. */
       static void
       createIndices (std::vector<pcl::Vertices> &vertices, unsigned vidx, unsigned segX, unsigned segY);
 
+      /** \brief Create vertices (cloud) for triangulation. */
       static void
       createVertices (pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud, float x0, float y0, float z0, float width,
                       float height, unsigned segX, unsigned segY);
@@ -66,7 +68,44 @@ namespace pcl
        *  \param[out] mesh The pcl::PolygonMesh
        *  \param[in] resolution mesh resolution (number of vertices along each of the two dimensions of the surface. */
       static void
-      convert (const ON_NurbsSurface &nurbs, PolygonMesh &mesh, unsigned resolution);
+      convertSurface2PolygonMesh (const ON_NurbsSurface &nurbs, PolygonMesh &mesh, unsigned resolution);
+
+      /** \brief Converts an openNURBS NurbsSurface to a pcl::PolygonMesh by sampling the NURBS according to the resolution specified.
+       *  \param[in] nurbs The nurbs surface.
+       *  \param[in] curve The nurbs curve for trimming (direction of curve decides if inside or outside is trimmed)
+       *  \param[out] mesh The pcl::PolygonMesh
+       *  \param[in] resolution mesh resolution (number of vertices along each of the two dimensions of the surface. */
+      static void
+      convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, const ON_NurbsCurve &curve, PolygonMesh &mesh,
+                                         unsigned resolution);
+
+      /** \brief Converts an openNURBS NurbsSurface to a point-cloud (vertices) and an vertex-index list
+       * by sampling the NURBS according to the resolution specified.
+       *  \param[in] nurbs The openNURBS surface.
+       *  \param[out] cloud The actual vertices (point-cloud).
+       *  \param[out] vertices The vertex-indices for a polygon mesh.
+       *  \param[in] resolution mesh resolution (number of vertices along each of the two dimensions of the surface. */
+      static void
+      convertSurface2Vertices (const ON_NurbsSurface &nurbs, pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                               std::vector<pcl::Vertices> &vertices, unsigned resolution);
+
+      /** \brief Converts an openNURBS NurbsCurve to a sequence of points 'cloud',
+       * by ELEMENT-WISE sampling of the curve according to the resolution specified.
+       *  \param[in] nurbs The openNURBS surface.
+       *  \param[out] cloud The actual vertices (point-cloud).
+       *  \param[in] resolution number of sampling points within one NurbsCurve element. */
+      static void
+      convertCurve2PointCloud (const ON_NurbsCurve &nurbs, pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud,
+                               unsigned resolution);
+
+      /** \brief Converts an openNURBS NurbsCurve, defined on an NurbsSurface to a sequence of points 'cloud',
+       * by ELEMENT-WISE sampling of the curve according to the resolution specified.
+       *  \param[in] nurbs The openNURBS surface.
+       *  \param[out] cloud The actual vertices (point-cloud).
+       *  \param[in] resolution number of sampling points within one NurbsCurve element. */
+      static void
+      convertCurve2PointCloud (const ON_NurbsCurve &curve, const ON_NurbsSurface &surf,
+                               pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud, unsigned resolution);
 
     };
   }

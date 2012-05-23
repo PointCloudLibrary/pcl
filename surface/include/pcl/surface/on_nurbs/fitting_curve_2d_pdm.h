@@ -72,6 +72,19 @@ namespace pcl
         }
       };
 
+      struct FitParameter
+      {
+        pcl::on_nurbs::FittingCurve2d::Parameter param;
+        unsigned refinement;
+        double addCPsAccuracy;
+        unsigned addCPsIteration;
+        unsigned maxCPs;
+
+        double fitAvgError;
+        double fitMaxError;
+        unsigned fitMaxSteps;
+      };
+
       ON_TextLog m_out;
       ON_NurbsCurve m_nurbs;
       NurbsDataCurve2d *m_data;
@@ -101,6 +114,11 @@ namespace pcl
        *  \param[in] xi parameter defining the element to be refined. */
       void
       refine (double xi);
+
+      /** \brief Fitting with iterative refinement and adaptive knot insertion
+       *  \param[in] param The parameters for fitting*/
+      void
+      fitting (FitParameter &param);
 
       /** \brief Assemble the system of equations for fitting
        * - for large point-clouds this is time consuming.
@@ -180,7 +198,7 @@ namespace pcl
       setQuiet (bool val)
       {
         m_quiet = val;
-        m_solver.setQuiet(val);
+        m_solver.setQuiet (val);
       }
 
     protected:
