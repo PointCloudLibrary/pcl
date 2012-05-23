@@ -103,8 +103,8 @@ vector<string> getPcdFilesInDir(const string& directory)
   namespace fs = boost::filesystem;
   fs::path dir(directory);
  
-  std::cout << "path: " << pcd_dir << std::endl;
-  if (pcd_file.empty() || !fs::exists(dir) || !fs::is_directory(dir))
+  std::cout << "path: " << directory << std::endl;
+  if (directory.empty() || !fs::exists(dir) || !fs::is_directory(dir))
     throw pcl::PCLIOException("No valid PCD directory given!\n");
     
   vector<string> result;
