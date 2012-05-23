@@ -80,7 +80,7 @@ namespace pcl
       , window_width_ (window_width)
       , window_height_ (window_height)
       , skipped_pixels_ (0)
-      , min_distance_ (min_distance_)
+      , min_distance_ (min_distance)
       {
         name_ = "HarrisKeypoint2D";
       }

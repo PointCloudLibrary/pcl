@@ -91,6 +91,13 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::setSkippedPixels (int sk
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename IntensityT> void
+pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::setMinimalDistance (int min_distance)
+{
+  min_distance_ = min_distance;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename IntensityT> void
 pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::computeSecondMomentMatrix (std::size_t index, float* coefficients) const
 {
   static const int width = static_cast<int> (input_->width);
