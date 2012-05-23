@@ -214,9 +214,10 @@ class PeoplePCDApp
 
     void source_cb2(const boost::shared_ptr<openni_wrapper::Image>& image_wrapper, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper, float)
     {
-      {          
-        boost::mutex::scoped_lock lock(data_ready_mutex_);
-        if (exit_)
+      {                    
+        boost::mutex::scoped_try_lock lock(data_ready_mutex_);
+
+        if (exit_ || !lock)
           return;
                  
         //getting depth
