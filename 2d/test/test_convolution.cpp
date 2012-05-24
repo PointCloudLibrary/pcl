@@ -54,68 +54,73 @@
 #include <vtkImageFlip.h>
 #include <vtkPNGWriter.h>
 #include <vtkUnsignedCharArray.h>
+#include <pcl/io/png_io.h>
 
-void flipAndWritePng(const std::string &file_name, vtkSmartPointer<vtkImageImport>& importer)
-{
-	vtkSmartPointer<vtkImageFlip> flipYFilter = vtkSmartPointer<vtkImageFlip>::New();
-	flipYFilter->SetFilteredAxis(1); // flip y axis
-	flipYFilter->SetInputConnection(importer->GetOutputPort());
-	flipYFilter->Update();
-
-	vtkSmartPointer<vtkPNGWriter> writer = vtkSmartPointer<vtkPNGWriter>::New();
-	writer->SetFileName(file_name.c_str());
-	writer->SetInputConnection(flipYFilter->GetOutputPort());
-	writer->Write();
+unsigned char* getUcharArray(vector<vector<float> > &data){
+	unsigned char *image_char_array = (unsigned char*)malloc(sizeof(unsigned char)*data.size()*data[0].size());
+	for(int i = 0;i < data.size();i++){
+		for(int j = 0;j < data[i].size();j++){
+			image_char_array[i*data[0].size()+j] = data[i][j];
+		}
+	}
+	return image_char_array;
 }
 
-void saveMonoPNGFile (const std::string &file_name, const unsigned char *mono_image, int width, int height)
-{
-  vtkSmartPointer<vtkImageImport> importer = vtkSmartPointer<vtkImageImport>::New ();
-  importer->SetNumberOfScalarComponents (1);
-  importer->SetDataScalarTypeToUnsignedChar ();
-  importer->SetWholeExtent (0, width - 1, 0, height - 1, 0, 0);
-  importer->SetDataExtentToWholeExtent ();
-
-  void* data = const_cast<void*> (reinterpret_cast<const void*> (mono_image));
-  importer->SetImportVoidPointer (data, 1);
-  importer->Update ();
-
-  flipAndWritePng(file_name, importer);
+void saveGrayPNG(char *fname, vector<vector<float> > &data){
+	unsigned char *image_char_array = getUcharArray(data);
+	pcl::io::saveMonoPNGFile(fname, image_char_array, data[0].size(), data.size());
+	free(image_char_array);
 }
 
-void saveFloatPNGFile (const std::string &file_name, const float *mono_image, int width, int height)
-{
-  vtkSmartPointer<vtkImageImport> importer = vtkSmartPointer<vtkImageImport>::New ();
-  importer->SetNumberOfScalarComponents (1);
-  importer->SetDataScalarTypeToUnsignedChar ();
-  importer->SetWholeExtent (0, width - 1, 0, height - 1, 0, 0);
-  importer->SetDataExtentToWholeExtent ();
+void visualizeGrayImage(vector<vector<float> > &data){
 
-  void* data = const_cast<void*> (reinterpret_cast<const void*> (mono_image));
-  importer->SetImportVoidPointer (data, 1);
-  importer->Update ();
+	unsigned char *image_char_array = getUcharArray(data);
 
-  flipAndWritePng(file_name, importer);
+	vtkSmartPointer<vtkImageImport> importer = vtkSmartPointer<vtkImageImport>::New ();
+	importer->SetNumberOfScalarComponents (1);
+	importer->SetDataScalarTypeToUnsignedChar ();
+	importer->SetWholeExtent (0, data[0].size() - 1, 0, data.size() - 1, 0, 0);
+	importer->SetDataExtentToWholeExtent ();
+	void* image_data = const_cast<void*> (reinterpret_cast<const void*> (image_char_array));
+	importer->SetImportVoidPointer (image_data, 1);
+	importer->Update ();
+
+	vtkSmartPointer<vtkImageViewer2> imageViewer =
+			vtkSmartPointer<vtkImageViewer2>::New();
+	imageViewer->SetInputConnection(importer->GetOutputPort());
+	vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor =
+			vtkSmartPointer<vtkRenderWindowInteractor>::New();
+	imageViewer->SetupInteractor(renderWindowInteractor);
+	imageViewer->Render();
+	imageViewer->GetRenderer()->ResetCamera();
+	imageViewer->Render();
+
+	renderWindowInteractor->Start();
+	free(image_char_array);
 }
+void readPNGVector(char *fname, vector<vector<vector<float> > > &image){
 
-
-void get_data_from_reader(vtkPNGReader *reader, vector<vector<vector<float> > > &image){
+	vtkSmartPointer<vtkPNGReader> reader = vtkSmartPointer<vtkPNGReader>::New();
+	reader->SetFileName(fname);
+	reader->Update();
 
 	vtkSmartPointer<vtkImageData> data = vtkSmartPointer<vtkImageData>::New();
 	data = reader->GetOutput();
 	int dim[3];
 	data->GetDimensions(dim);
-	printf("%d %d %d \n", dim[0], dim[1], dim[2]);
-	vtkUnsignedCharArray *float_data = vtkUnsignedCharArray::SafeDownCast(data->GetPointData()->GetScalars());
+
+	vtkUnsignedCharArray *image_data = vtkUnsignedCharArray::SafeDownCast(data->GetPointData()->GetScalars());
 	vtkIdType tupleIndex = 0;
 	unsigned char tuple[] = {0, 0, 0, 0};
+
+	image.resize(dim[0]);
 	for(int i = 0;i < dim[0];i++){
+		image[i].resize(dim[1]);
 		for(int j = 0;j < dim[1];j++){
-			unsigned char r=0, g=0, b=0, a=0;
-			float_data->GetTupleValue(tupleIndex++, tuple);
-			printf("%d\n", float_data->GetNumberOfComponents());
-			printf("%d %d %d\n", tuple[0], tuple[1], tuple[2]);
-			switch(float_data->GetNumberOfComponents())
+			image[i][j].resize(4);
+			float r=0, g=0, b=0, a=0;
+			image_data->GetTupleValue(tupleIndex++, tuple);
+			switch(image_data->GetNumberOfComponents())
 			{
 			case 1:
 				r = g = b = tuple[0];
@@ -138,12 +143,11 @@ void get_data_from_reader(vtkPNGReader *reader, vector<vector<vector<float> > > 
 				a = tuple[3];
 				break;
 			}
-			printf("%d\n", tupleIndex);
 			image[i][j][0] = r;
 			image[i][j][1] = g;
 			image[i][j][2] = b;
 			image[i][j][3] = a;
-
+//			fprintf(f, "%d\n", r);
 		}
 	}
 }
@@ -152,126 +156,48 @@ int main (int argc, char** argv)
 {
 	FILE *f;
 	f = fopen("image.txt", "w");
-	vtkSmartPointer<vtkPNGReader> reader = vtkSmartPointer<vtkPNGReader>::New();
-	reader->SetFileName("lena-grayscale.png");
-	reader->Update();
-
-	// Visualize
-//	vtkSmartPointer<vtkImageViewer2> imageViewer =
-//			vtkSmartPointer<vtkImageViewer2>::New();
-//	imageViewer->SetInputConnection(reader->GetOutputPort());
-//	vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor =
-//			vtkSmartPointer<vtkRenderWindowInteractor>::New();
-//	imageViewer->SetupInteractor(renderWindowInteractor);
-//	imageViewer->Render();
-//	imageViewer->GetRenderer()->ResetCamera();
-//	imageViewer->Render();
-
-//	renderWindowInteractor->Start();
 	vector<vector<vector<float> > > image;
-	//get_data_from_reader(reader, image);
+	readPNGVector("lena-grayscale.png", image);
 
-	vtkSmartPointer<vtkImageData> data = vtkSmartPointer<vtkImageData>::New();
-	data = reader->GetOutput();
-	int dim[3];
-	data->GetDimensions(dim);
-	printf("%d %d %d \n", dim[0], dim[1], dim[2]);
-
-
-	vtkUnsignedCharArray *float_data = vtkUnsignedCharArray::SafeDownCast(data->GetPointData()->GetScalars());
-	vtkIdType tupleIndex = 0;
-	unsigned char tuple[] = {0, 0, 0, 0};
-	image.resize(dim[0]);
-	for(int i = 0;i < dim[0];i++){
-		image[i].resize(dim[1]);
-		for(int j = 0;j < dim[1];j++){
-			image[i][j].resize(4);
-			unsigned char r=0, g=0, b=0, a=0;
-			float_data->GetTupleValue(tupleIndex++, tuple);
-//			printf("%d\n", tupleIndex);
-//			printf("%d %d %d\n", tuple[0], tuple[1], tuple[2]);
-			switch(float_data->GetNumberOfComponents())
-			{
-			case 1:
-				r = g = b = tuple[0];
-				a = 255;
-				break;
-			case 2:
-				r = g = b = tuple[0];
-				a = tuple[1];
-				break;
-			case 3:
-				r = tuple[0];
-				g = tuple[1];
-				b = tuple[2];
-				a = 255;
-				break;
-			case 4:
-				r = tuple[0];
-				g = tuple[1];
-				b = tuple[2];
-				a = tuple[3];
-				break;
-			}
-			image[i][j][0] = r;
-			image[i][j][1] = g;
-			image[i][j][2] = b;
-			image[i][j][3] = a;
-			fprintf(f, "%d\n", r);
-		}
-	}
-
-	vector<vector<float> > kernel;
-	kernel.resize(5);
-	for(int i = 0;i < 5;i++){
-		kernel[i].resize(5);
-		for(int j = 0;j < 5;j++)
-			kernel[i][j] = 1.0/(5*5);
-	}
+//	vector<vector<float> > kernel;
+//	kernel.resize(5);
+//	for(int i = 0;i < 5;i++){
+//		kernel[i].resize(5);
+//		for(int j = 0;j < 5;j++)
+//			kernel[i][j] = 1.0/(5*5);
+//	}
 
 	vector<vector<float> > output;
-	vector<vector<unsigned char> > outputPNG;
 	vector<vector<float> > input;
-
 	input.resize(image.size());
-	output.resize(image.size());
 	for(int i = 0;i < image.size();i++){
 		input[i].resize(image[i].size());
-		output[i].resize(image[i].size());
 		for(int j = 0;j < image[i].size();j++){
 			input[i][j] = image[i][j][0];
 		}
 	}
-//	pcl::pcl_2d::convolution_2d *conv2d = new pcl::pcl_2d::convolution_2d();
-//
-//	conv2d->conv(output, kernel, input,2);
-
-	pcl::pcl_2d::edge *e = new pcl::pcl_2d::edge();
+	saveGrayPNG("input.png", input);
+	visualizeGrayImage(input);
+	pcl::pcl_2d::convolution_2d *conv2d = new pcl::pcl_2d::convolution_2d();
+	conv2d->gaussian(kernel, 51, 2);
+	conv2d->conv(output, kernel, input,1);
 
 	vector<vector<float> > G;
 	vector<vector<float> > thet;
-
-	//e->sobelXY(G, thet, input);
+	pcl::pcl_2d::edge *e = new pcl::pcl_2d::edge();
+	e->prewitt(G, thet, input);
+	saveGrayPNG("prewitt_g.png", G);
+	saveGrayPNG("prewitt_thet.png", thet);
+	e->sobel(G, thet, input);
+	saveGrayPNG("sobel_g.png", G);
+	saveGrayPNG("sobel_thet.png", thet);
+	e->roberts(G, thet, input);
+	saveGrayPNG("roberts_g.png", G);
+	saveGrayPNG("roberts_thet.png", thet);
+	e->LoG(output, input);
+	saveGrayPNG("log.png", output);
 	e->canny(output, input);
-	outputPNG.resize(output.size());
-	for(int i = 0;i < output.size();i++){
-		outputPNG[i].resize(output[i].size());
-		for(int j = 0;j < output[i].size();j++){
-			outputPNG[i][j] = output[i][j];
-		}
-	}
-	saveMonoPNGFile("output.png", &outputPNG[0][0], outputPNG.size(), outputPNG[0].size());
-
-	outputPNG.resize(input.size());
-	for(int i = 0;i < input.size();i++){
-		outputPNG[i].resize(input[i].size());
-		for(int j = 0;j < input[i].size();j++){
-			outputPNG[i][j] = input[i][j];
-			//printf("%f\t", output[i][j]);
-		}
-	}
-	saveMonoPNGFile("input.png", &outputPNG[0][0], outputPNG.size(), outputPNG[0].size());
+	saveGrayPNG("canny.png", output);
 
 	fclose(f);
 }
-

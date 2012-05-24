@@ -4,7 +4,7 @@ set(SUBSYS_DEPS common)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS vtk)
+PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS io ${SUBSYS_DEPS} OPT_DEPS vtk)
 
 PCL_ADD_DOC(${SUBSYS_NAME})
 
@@ -37,8 +37,8 @@ if(build)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
 
 	# Install include files
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs} io)
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs} io)
     add_executable(test_2d test/test_convolution.cpp)
-    target_link_libraries(test_2d ${VTK_IO_TARGET_LINK_LIBRARIES}) 
+    target_link_libraries(test_2d ${VTK_IO_TARGET_LINK_LIBRARIES} pcl_io) 
 endif(build)
