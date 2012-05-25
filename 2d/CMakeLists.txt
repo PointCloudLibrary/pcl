@@ -11,7 +11,6 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 if(build)
     set(srcs
         src/convolution_2d.cpp
-		test/test_convolution.cpp
         )
 
     set(incs
@@ -39,6 +38,4 @@ if(build)
 	# Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
-    add_executable(test_2d test/test_convolution.cpp)
-    target_link_libraries(test_2d ${VTK_IO_TARGET_LINK_LIBRARIES} pcl_2d) 
 endif(build)
