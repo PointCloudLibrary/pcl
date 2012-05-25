@@ -104,9 +104,13 @@ RangeImage::createFromPointCloud (const PointCloudType& point_cloud,
 {
   setAngularResolution (angular_resolution_x, angular_resolution_y);
   
-  width = pcl_lrint (floor (max_angle_width*angular_resolution_x_reciprocal_));
-  height = pcl_lrint (floor (max_angle_height*angular_resolution_y_reciprocal_));
-  image_offset_x_ = image_offset_y_ = 0;  // TODO: FIX THIS
+  width  = static_cast<uint32_t> (pcl_lrint (floor (max_angle_width*angular_resolution_x_reciprocal_)));
+  height = static_cast<uint32_t> (pcl_lrint (floor (max_angle_height*angular_resolution_y_reciprocal_)));
+  
+  int full_width  = static_cast<int> (pcl_lrint (floor (pcl::deg2rad (360.0f)*angular_resolution_x_reciprocal_))),
+      full_height = static_cast<int> (pcl_lrint (floor (pcl::deg2rad (180.0f)*angular_resolution_y_reciprocal_)));
+  image_offset_x_ = (full_width -static_cast<int> (width) )/2;
+  image_offset_y_ = (full_height-static_cast<int> (height))/2;
   is_dense = false;
   
   getCoordinateFrameTransformation (coordinate_frame, to_world_system_);
@@ -127,22 +131,6 @@ RangeImage::createFromPointCloud (const PointCloudType& point_cloud,
   recalculate3DPointPositions ();
 }
 
-
-/////////////////////////////////////////////////////////////////////////
-template <typename PointCloudTypeWithViewpoints> void 
-RangeImage::createFromPointCloudWithViewpoints (const PointCloudTypeWithViewpoints& point_cloud, float angular_resolution,
-                                               float max_angle_width, float max_angle_height, RangeImage::CoordinateFrame coordinate_frame,
-                                               float noise_level, float min_range, int border_size)
-{
-  Eigen::Vector3f average_viewpoint = getAverageViewPoint (point_cloud);
-  
-  Eigen::Affine3f sensor_pose = static_cast<Eigen::Affine3f> (Eigen::Translation3f (average_viewpoint));
-
-  createFromPointCloud (point_cloud, angular_resolution, max_angle_width, max_angle_height, sensor_pose, coordinate_frame, noise_level, min_range, border_size);
-  
-  //change3dPointsToLocalCoordinateFrame ();
-}
-
 /////////////////////////////////////////////////////////////////////////
 template <typename PointCloudType> void
 RangeImage::createFromPointCloudWithKnownSize (const PointCloudType& point_cloud, float angular_resolution,
@@ -150,28 +138,48 @@ RangeImage::createFromPointCloudWithKnownSize (const PointCloudType& point_cloud
                                               const Eigen::Affine3f& sensor_pose, RangeImage::CoordinateFrame coordinate_frame,
                                               float noise_level, float min_range, int border_size)
 {
+  createFromPointCloudWithKnownSize (point_cloud, angular_resolution, angular_resolution, point_cloud_center, point_cloud_radius,
+                                     sensor_pose, coordinate_frame, noise_level, min_range, border_size);
+}
+
+/////////////////////////////////////////////////////////////////////////
+template <typename PointCloudType> void
+RangeImage::createFromPointCloudWithKnownSize (const PointCloudType& point_cloud,
+                                               float angular_resolution_x, float angular_resolution_y,
+                                               const Eigen::Vector3f& point_cloud_center, float point_cloud_radius,
+                                               const Eigen::Affine3f& sensor_pose, RangeImage::CoordinateFrame coordinate_frame,
+                                               float noise_level, float min_range, int border_size)
+{
   //MEASURE_FUNCTION_TIME;
   
   //std::cout << "Starting to create range image from "<<point_cloud.points.size ()<<" points.\n";
   
-  // TODO: Check if sensor_pose is inside of the sphere!
+  // If the sensor pose is inside of the sphere we have to calculate the image the normal way
+  if ((point_cloud_center-sensor_pose.translation()).norm() <= point_cloud_radius) {
+    createFromPointCloud (point_cloud, angular_resolution_x, angular_resolution_y,
+                          pcl::deg2rad (360.0f), pcl::deg2rad (180.0f),
+                          sensor_pose, coordinate_frame, noise_level, min_range, border_size);
+    return;
+  }
   
-  setAngularResolution (angular_resolution);
+  setAngularResolution (angular_resolution_x, angular_resolution_y);
   
   getCoordinateFrameTransformation (coordinate_frame, to_world_system_);
   to_world_system_ = sensor_pose * to_world_system_;
   to_range_image_system_ = to_world_system_.inverse (Eigen::Isometry);
   
   float max_angle_size = getMaxAngleSize (sensor_pose, point_cloud_center, point_cloud_radius);
-  int pixel_radius = pcl_lrint (ceil (0.5f*max_angle_size*angular_resolution_x_reciprocal_));
-  width = height = 2*pixel_radius;
+  int pixel_radius_x = pcl_lrint (ceil (0.5f*max_angle_size*angular_resolution_x_reciprocal_)),
+      pixel_radius_y = pcl_lrint (ceil (0.5f*max_angle_size*angular_resolution_y_reciprocal_));
+  width  = 2*pixel_radius_x;
+  height = 2*pixel_radius_y;
   is_dense = false;
   
-  image_offset_x_ = image_offset_y_ = 0;
+  image_offset_x_ = image_offset_y_ = 0;  // temporary values for getImagePoint
   int center_pixel_x, center_pixel_y;
   getImagePoint (point_cloud_center, center_pixel_x, center_pixel_y);
-  image_offset_x_ = (std::max) (0, center_pixel_x-pixel_radius);
-  image_offset_y_ = (std::max) (0, center_pixel_y-pixel_radius);
+  image_offset_x_ = (std::max) (0, center_pixel_x-pixel_radius_x);
+  image_offset_y_ = (std::max) (0, center_pixel_y-pixel_radius_y);
 
   points.clear ();
   points.resize (width*height, unobserved_point);
@@ -182,6 +190,33 @@ RangeImage::createFromPointCloudWithKnownSize (const PointCloudType& point_cloud
   cropImage (border_size, top, right, bottom, left);
   
   recalculate3DPointPositions ();
+}
+
+/////////////////////////////////////////////////////////////////////////
+template <typename PointCloudTypeWithViewpoints> void 
+RangeImage::createFromPointCloudWithViewpoints (const PointCloudTypeWithViewpoints& point_cloud,
+                                                float angular_resolution,
+                                                float max_angle_width, float max_angle_height,
+                                                RangeImage::CoordinateFrame coordinate_frame,
+                                                float noise_level, float min_range, int border_size)
+{
+  createFromPointCloudWithViewpoints (point_cloud, angular_resolution, angular_resolution,
+                                      max_angle_width, max_angle_height, coordinate_frame,
+                                      noise_level, min_range, border_size);
+}
+
+/////////////////////////////////////////////////////////////////////////
+template <typename PointCloudTypeWithViewpoints> void 
+RangeImage::createFromPointCloudWithViewpoints (const PointCloudTypeWithViewpoints& point_cloud,
+                                                float angular_resolution_x, float angular_resolution_y,
+                                                float max_angle_width, float max_angle_height,
+                                                RangeImage::CoordinateFrame coordinate_frame,
+                                                float noise_level, float min_range, int border_size)
+{
+  Eigen::Vector3f average_viewpoint = getAverageViewPoint (point_cloud);
+  Eigen::Affine3f sensor_pose = static_cast<Eigen::Affine3f> (Eigen::Translation3f (average_viewpoint));
+  createFromPointCloud (point_cloud, angular_resolution_x, angular_resolution_y, max_angle_width, max_angle_height,
+                        sensor_pose, coordinate_frame, noise_level, min_range, border_size);
 }
 
 /////////////////////////////////////////////////////////////////////////

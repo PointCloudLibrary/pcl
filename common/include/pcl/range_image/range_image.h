@@ -196,6 +196,33 @@ namespace pcl
                                          CoordinateFrame coordinate_frame=CAMERA_FRAME,
                                          float noise_level=0.0f, float min_range=0.0f, int border_size=0);
       
+      /** \brief Create the depth image from a point cloud, getting a hint about the size of the scene for 
+        * faster calculation.
+        * \param point_cloud the input point cloud
+        * \param angular_resolution_x the angular difference (in radians) between the
+        *                             individual pixels in the image in the x-direction
+        * \param angular_resolution_y the angular difference (in radians) between the
+        *                             individual pixels in the image in the y-direction
+        * \param angular_resolution the angle (in radians) between each sample in the depth image
+        * \param point_cloud_center the center of bounding sphere
+        * \param point_cloud_radius the radius of the bounding sphere
+        * \param sensor_pose an affine matrix defining the pose of the sensor (defaults to
+        *                     Eigen::Affine3f::Identity () )
+        * \param coordinate_frame the coordinate frame (defaults to CAMERA_FRAME)
+        * \param noise_level - The distance in meters inside of which the z-buffer will not use the minimum,
+        *                      but the mean of the points. If 0.0 it is equivalent to a normal z-buffer and
+        *                      will always take the minimum per cell.
+        * \param min_range the minimum visible range (defaults to 0)
+        * \param border_size the border size (defaults to 0)
+        */
+      template <typename PointCloudType> void
+      createFromPointCloudWithKnownSize (const PointCloudType& point_cloud,
+                                         float angular_resolution_x, float angular_resolution_y,
+                                         const Eigen::Vector3f& point_cloud_center, float point_cloud_radius,
+                                         const Eigen::Affine3f& sensor_pose = Eigen::Affine3f::Identity (),
+                                         CoordinateFrame coordinate_frame=CAMERA_FRAME,
+                                         float noise_level=0.0f, float min_range=0.0f, int border_size=0);
+      
       /** \brief Create the depth image from a point cloud, using the average viewpoint of the points 
         * (vp_x,vp_y,vp_z in the point type) in the point cloud as sensor pose (assuming a rotation of (0,0,0)).
         * \param point_cloud the input point cloud
@@ -216,7 +243,32 @@ namespace pcl
                                           float max_angle_width, float max_angle_height,
                                           CoordinateFrame coordinate_frame=CAMERA_FRAME, float noise_level=0.0f,
                                           float min_range=0.0f, int border_size=0);
-
+      
+      /** \brief Create the depth image from a point cloud, using the average viewpoint of the points 
+        * (vp_x,vp_y,vp_z in the point type) in the point cloud as sensor pose (assuming a rotation of (0,0,0)).
+        * \param point_cloud the input point cloud
+        * \param angular_resolution_x the angular difference (in radians) between the
+        *                             individual pixels in the image in the x-direction
+        * \param angular_resolution_y the angular difference (in radians) between the
+        *                             individual pixels in the image in the y-direction
+        * \param max_angle_width an angle (in radians) defining the horizontal bounds of the sensor
+        * \param max_angle_height an angle (in radians) defining the vertical bounds of the sensor
+        * \param coordinate_frame the coordinate frame (defaults to CAMERA_FRAME)
+        * \param noise_level - The distance in meters inside of which the z-buffer will not use the minimum,
+        *                      but the mean of the points. If 0.0 it is equivalent to a normal z-buffer and
+        *                      will always take the minimum per cell.
+        * \param min_range the minimum visible range (defaults to 0)
+        * \param border_size the border size (defaults to 0)
+        * \note If wrong_coordinate_system is true, the sensor pose will be rotated to change from a coordinate frame
+        * with x to the front, y to the left and z to the top to the coordinate frame we use here (x to the right, y 
+        * to the bottom and z to the front) */
+      template <typename PointCloudTypeWithViewpoints> void
+      createFromPointCloudWithViewpoints (const PointCloudTypeWithViewpoints& point_cloud,
+                                          float angular_resolution_x, float angular_resolution_y,
+                                          float max_angle_width, float max_angle_height,
+                                          CoordinateFrame coordinate_frame=CAMERA_FRAME, float noise_level=0.0f,
+                                          float min_range=0.0f, int border_size=0);
+      
       /** \brief Create an empty depth image (filled with unobserved points)
         * \param[in] angular_resolution the angle (in radians) between each sample in the depth image
         * \param[in] sensor_pose an affine matrix defining the pose of the sensor (defaults to  Eigen::Affine3f::Identity () )
@@ -227,7 +279,39 @@ namespace pcl
       void
       createEmpty (float angular_resolution, const Eigen::Affine3f& sensor_pose=Eigen::Affine3f::Identity (),
                    RangeImage::CoordinateFrame coordinate_frame=CAMERA_FRAME, float angle_width=pcl::deg2rad (360.0f),
+                   float angle_height=pcl::deg2rad (180.0f));     
+      
+      /** \brief Create an empty depth image (filled with unobserved points)
+        * \param angular_resolution_x the angular difference (in radians) between the
+        *                             individual pixels in the image in the x-direction
+        * \param angular_resolution_y the angular difference (in radians) between the
+        *                             individual pixels in the image in the y-direction
+        * \param[in] sensor_pose an affine matrix defining the pose of the sensor (defaults to  Eigen::Affine3f::Identity () )
+        * \param[in] coordinate_frame the coordinate frame (defaults to CAMERA_FRAME)
+        * \param[in] angle_width an angle (in radians) defining the horizontal bounds of the sensor (defaults to 2*pi (360deg))
+        * \param[in] angle_height an angle (in radians) defining the vertical bounds of the sensor (defaults to pi (180deg))
+        */
+      void
+      createEmpty (float angular_resolution_x, float angular_resolution_y,
+                   const Eigen::Affine3f& sensor_pose=Eigen::Affine3f::Identity (),
+                   RangeImage::CoordinateFrame coordinate_frame=CAMERA_FRAME, float angle_width=pcl::deg2rad (360.0f),
                    float angle_height=pcl::deg2rad (180.0f));
+      
+      /** \brief Integrate the given point cloud into the current range image using a z-buffer
+        * \param point_cloud the input point cloud
+        * \param noise_level - The distance in meters inside of which the z-buffer will not use the minimum,
+        *                      but the mean of the points. If 0.0 it is equivalent to a normal z-buffer and
+        *                      will always take the minimum per cell.
+        * \param min_range the minimum visible range
+        * \param top    returns the minimum y pixel position in the image where a point was added
+        * \param right  returns the maximum x pixel position in the image where a point was added
+        * \param bottom returns the maximum y pixel position in the image where a point was added
+        * \param top returns the minimum y position in the image where a point was added
+        * \param left   returns the minimum x pixel position in the image where a point was added
+        */
+      template <typename PointCloudType> void
+      doZBuffer (const PointCloudType& point_cloud, float noise_level,
+                 float min_range, int& top, int& right, int& bottom, int& left);
       
       /** \brief Integrates the given far range measurements into the range image */
       PCL_EXPORTS void
@@ -694,9 +778,7 @@ namespace pcl
                                                 *   a reference to a non-existing point */
       
       // =====PROTECTED METHODS=====
-      template <typename PointCloudType> void
-      doZBuffer (const PointCloudType& point_cloud, float noise_level,
-                 float min_range, int& top, int& right, int& bottom, int& left);
+
 
       // =====STATIC PROTECTED=====
       static const int lookup_table_size;
