@@ -159,7 +159,7 @@ int main (int argc, char** argv)
 	vector<vector<vector<float> > > image;
 	readPNGVector("lena-grayscale.png", image);
 
-//	vector<vector<float> > kernel;
+	vector<vector<float> > kernel;
 //	kernel.resize(5);
 //	for(int i = 0;i < 5;i++){
 //		kernel[i].resize(5);
