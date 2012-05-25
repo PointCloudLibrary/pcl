@@ -56,6 +56,7 @@
 #include <vtkUnsignedCharArray.h>
 #include <pcl/io/png_io.h>
 
+
 unsigned char* getUcharArray(vector<vector<float> > &data){
 	unsigned char *image_char_array = (unsigned char*)malloc(sizeof(unsigned char)*data.size()*data[0].size());
 	for(int i = 0;i < data.size();i++){
@@ -179,19 +180,19 @@ int main (int argc, char** argv)
 	saveGrayPNG("input.png", input);
 	visualizeGrayImage(input);
 	pcl::pcl_2d::convolution_2d *conv2d = new pcl::pcl_2d::convolution_2d();
-	conv2d->gaussian(kernel, 51, 2);
+	conv2d->gaussian(51, 2, kernel);
 	conv2d->conv(output, kernel, input,1);
 
 	vector<vector<float> > G;
 	vector<vector<float> > thet;
 	pcl::pcl_2d::edge *e = new pcl::pcl_2d::edge();
-	e->prewitt(G, thet, input);
+	e->prewittGThet(G, thet, input);
 	saveGrayPNG("prewitt_g.png", G);
 	saveGrayPNG("prewitt_thet.png", thet);
-	e->sobel(G, thet, input);
+	e->sobelGThet(G, thet, input);
 	saveGrayPNG("sobel_g.png", G);
 	saveGrayPNG("sobel_thet.png", thet);
-	e->roberts(G, thet, input);
+	e->robertsGThet(G, thet, input);
 	saveGrayPNG("roberts_g.png", G);
 	saveGrayPNG("roberts_thet.png", thet);
 	e->LoG(output, input);

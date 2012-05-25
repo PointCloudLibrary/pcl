@@ -41,21 +41,26 @@
 #define PCL_2D_CONVOLUTION_2D_H
 
 #include <vector>
-using namespace std;
-namespace pcl{
-	namespace pcl_2d{
-		class convolution_2d{
+namespace pcl
+{
+	namespace pcl_2d
+	{
+	  typedef std::vector<std::vector< float> > ImageType;
+		class convolution_2d
+		{
+
 		public :
 			static const int BOUNDARY_OPTION_CLAMP = 0;
 			static const int BOUNDARY_OPTION_MIRROR = 1;
 			static const int BOUNDARY_OPTION_ZERO_PADDING = 2;
 			
-			convolution_2d(){
+			convolution_2d()
+			{
 
 			}
-			void conv(vector<vector<float> > &output, vector<vector<float> > &kernel, vector<vector<float> > &input);
-			void conv(vector<vector<float> > &output, vector<vector<float> > &kernel, vector<vector<float> > &input, int boundary_options);
-			void gaussian(vector<vector<float> > &kernel, int dim, float sigma);
+			void conv(ImageType &output, ImageType &kernel, ImageType &input);
+			void conv(ImageType &output, ImageType &kernel, ImageType &input, const int boundary_options);
+			void gaussian(const int dim, const float sigma, ImageType &kernel);
 		};
 	}
 }

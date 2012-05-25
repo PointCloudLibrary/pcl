@@ -40,7 +40,8 @@
 #ifndef PCL_FILTERS_CONVOLUTION_2D_IMPL_HPP
 #define PCL_FILTERS_CONVOLUTION_2D_IMPL_HPP
 
-void pcl::pcl_2d::convolution_2d::gaussian(vector<vector<float> > &kernel, int dim, float sigma){
+void
+pcl::pcl_2d::convolution_2d::gaussian  (const int dim, const float sigma, ImageType &kernel){
 	float sum = 0;
 	kernel.resize(dim);
 	for(int i = 0;i < dim;i++){
@@ -50,6 +51,7 @@ void pcl::pcl_2d::convolution_2d::gaussian(vector<vector<float> > &kernel, int d
 			sum += kernel[i][j];
 		}
 	}
+	/*normalizing the kernel*/
 	for(int i = 0;i < dim;i++){
 		for(int j = 0;j < dim;j++){
 			kernel[i][j] /= sum;
@@ -57,7 +59,8 @@ void pcl::pcl_2d::convolution_2d::gaussian(vector<vector<float> > &kernel, int d
 	}
 }
 
-void pcl::pcl_2d::convolution_2d::conv(vector<vector<float> > &output, vector<vector<float> > &kernel, vector<vector<float> > &input){
+void
+pcl::pcl_2d::convolution_2d::conv  (ImageType &output, ImageType &kernel, ImageType &input){
 	int rows = input.size();
 	int cols = input[0].size();
 	int k_rows = kernel.size();
@@ -65,17 +68,22 @@ void pcl::pcl_2d::convolution_2d::conv(vector<vector<float> > &output, vector<ve
 
 	/*default boundary option : zero padding*/
 	output.resize(input.size());
-	for(int i = 0;i < rows;i++){
+	for(int i = 0;i < rows;i++)
+	{
 		output[i].resize(cols);
-		for(int j = 0;j < cols;j++){
+		for(int j = 0;j < cols;j++)
+		{
 			output[i][j] = 0;
-			for(int k = 0;k < k_rows;k++){
-				for(int l = 0;l < k_cols;l++){
-					if((i+k-k_rows/2) < 0 || (i+k-k_rows/2) >= rows || (j+l-k_cols/2) < 0 || (j+l-k_cols/2) >= cols){
-						//printf("%d %d\n", (i+k-k_rows/2), (j+l-k_cols/2));
+			for(int k = 0;k < k_rows;k++)
+			{
+				for(int l = 0;l < k_cols;l++)
+				{
+					if((i+k-k_rows/2) < 0 || (i+k-k_rows/2) >= rows || (j+l-k_cols/2) < 0 || (j+l-k_cols/2) >= cols)
+					{
 						continue;
 					}
-					else{
+					else
+					{
 						output[i][j] += kernel[k][l]*input[i+k-k_rows/2][j+l-k_cols/2];
 					}
 				}
@@ -84,7 +92,8 @@ void pcl::pcl_2d::convolution_2d::conv(vector<vector<float> > &output, vector<ve
 	}
 }
 
-void pcl::pcl_2d::convolution_2d::conv(vector<vector<float> > &output, vector<vector<float> > &kernel, vector<vector<float> > &input, int boundary_option){
+void
+pcl::pcl_2d::convolution_2d::conv  (ImageType &output, ImageType &kernel, ImageType &input, const int boundary_option){
 	int rows = input.size();
 	int cols = input[0].size();
 	int k_rows = kernel.size();
@@ -93,17 +102,21 @@ void pcl::pcl_2d::convolution_2d::conv(vector<vector<float> > &output, vector<ve
 
 	output.resize(input.size());
 
-	if(boundary_option == BOUNDARY_OPTION_CLAMP){
-		for(int i = 0;i < rows;i++){
+	if(boundary_option == BOUNDARY_OPTION_CLAMP)
+	{
+		for(int i = 0;i < rows;i++)
+		{
 			output[i].resize(cols);
-			for(int j = 0;j < cols;j++){
+			for(int j = 0;j < cols;j++)
+			{
 				output[i][j] = 0;
-				for(int k = 0;k < k_rows;k++){
-					for(int l = 0;l < k_cols;l++){
+				for(int k = 0;k < k_rows;k++)
+				{
+					for(int l = 0;l < k_cols;l++)
+					{
 						if((i+k-k_rows/2) < 0)
 							input_row = 0;
 						else if((i+k-k_rows/2) >= rows){
-							printf("%d %d\n", (i+k-k_rows/2), (j+l-k_cols/2));
 							input_row = rows-1;
 						}else
 							input_row = i+k-k_rows/2;
@@ -139,13 +152,9 @@ void pcl::pcl_2d::convolution_2d::conv(vector<vector<float> > &output, vector<ve
 							input_col = 2*cols-1-(j+l-(k_cols/2));
 						else
 							input_col = j+l-(k_cols/2);
-
-//						printf("%d %d %d %d\n", input_row, input_col,k,k_rows);
 						output[i][j] += kernel[k][l]*input[input_row][input_col];
 					}
 				}
-				//printf("%d %d\n", input_row, input_col);
-//				printf("%d %d\n", i, j);
 			}
 		}
 	}
