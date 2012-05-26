@@ -24,6 +24,7 @@ std::string scene_filename_;
 //Algorithm params
 bool show_keypoints_ (false);
 bool show_correspondences_ (false);
+bool use_cloud_resolution_ (false);
 bool use_hough_ (true);
 float model_ss_ (0.01f);
 float scene_ss_ (0.03f);
@@ -46,6 +47,8 @@ showHelp (char *filename)
   std::cout << "     -h:                     Show this help." << std::endl;
   std::cout << "     -k:                     Show used keypoints." << std::endl;
   std::cout << "     -c:                     Show used correspondences." << std::endl;
+  std::cout << "     -r:                     Compute the model cloud resolution and multiply" << std::endl;
+  std::cout << "                             each radius given by that value." << std::endl;
   std::cout << "     --algorithm (Hough|GC): Clustering algorithm used (default Hough)." << std::endl;
   std::cout << "     --model_ss val:         Model uniform sampling radius (default 0.01)" << std::endl;
   std::cout << "     --scene_ss val:         Scene uniform sampling radius (default 0.03)" << std::endl;
@@ -87,6 +90,10 @@ parseCommandLine (int argc, char *argv[])
   {
     show_correspondences_ = true;
   }
+  if (pcl::console::find_switch (argc, argv, "-r"))
+  {
+    use_cloud_resolution_ = true;
+  }
 
   std::string used_algorithm;
   if (pcl::console::parse_argument (argc, argv, "--algorithm", used_algorithm) != -1)
@@ -113,6 +120,38 @@ parseCommandLine (int argc, char *argv[])
   pcl::console::parse_argument (argc, argv, "--descr_rad", descr_rad_);
   pcl::console::parse_argument (argc, argv, "--cg_size", cg_size_);
   pcl::console::parse_argument (argc, argv, "--cg_thresh", cg_thresh_);
+}
+
+double
+computeCloudResolution (const pcl::PointCloud<PointType>::ConstPtr &cloud)
+{
+  double res = 0.0;
+  int n_points = 0;
+  int nres;
+  std::vector<int> indices (2);
+  std::vector<float> sqr_distances (2);
+  pcl::search::KdTree<PointType> tree;
+  tree.setInputCloud (cloud);
+
+  for (size_t i = 0; i < cloud->size (); ++i)
+  {
+    if (! pcl_isfinite ((*cloud)[i].x))
+    {
+      continue;
+    }
+    //Considering the second neighbor since the first is the point itself.
+    nres = tree.nearestKSearch (i, 2, indices, sqr_distances);
+    if (nres == 2)
+    {
+      res += sqrt (sqr_distances[1]);
+      ++n_points;
+    }
+  }
+  if (n_points != 0)
+  {
+    res /= n_points;
+  }
+  return res;
 }
 
 int
@@ -143,6 +182,29 @@ main (int argc, char *argv[])
     std::cout << "Error loading scene cloud." << std::endl;
     showHelp (argv[0]);
     return (-1);
+  }
+
+  //
+  //  Set up resolution invariance
+  //
+  if (use_cloud_resolution_)
+  {
+    float resolution = static_cast<float> (computeCloudResolution (model));
+    if (resolution != 0.0f)
+    {
+      model_ss_   *= resolution;
+      scene_ss_   *= resolution;
+      rf_rad_     *= resolution;
+      descr_rad_  *= resolution;
+      cg_size_    *= resolution;
+    }
+	
+    std::cout << "Model resolution:       " << resolution << std::endl;
+    std::cout << "Model sampling size:    " << model_ss_ << std::endl;
+    std::cout << "Scene sampling size:    " << scene_ss_ << std::endl;
+    std::cout << "LRF support radius:     " << rf_rad_ << std::endl;
+    std::cout << "SHOT descriptor radius: " << descr_rad_ << std::endl;
+    std::cout << "Clustering bin size:    " << cg_size_ << std::endl << std::endl;
   }
 
   //

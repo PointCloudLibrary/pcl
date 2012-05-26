@@ -33,14 +33,14 @@ that the program can accept.
 
 .. literalinclude:: sources/correspondence_grouping/correspondence_grouping.cpp
    :language: cpp
-   :lines: 35-56
+   :lines: 36-59
    
 The second function does the actual parsing of the command line 
 arguments in order to set the correct parameters for the execution.
 
 .. literalinclude:: sources/correspondence_grouping/correspondence_grouping.cpp
    :language: cpp
-   :lines: 58-116
+   :lines: 61-123
    
 It's important to say that the only command line parameters *required* when executing this tutorial are the filenames of the 
 model and the scene, in this exact order. All other parameters are set 
@@ -59,10 +59,17 @@ You can choose between two correspondence clustering algorithms with the command
   
 	  *H. Chen and B. Bhanu:* "3D free-form object recognition in range images using local surface patches", Pattern Recognition Letters, vol. 28, no. 10, pp. 1252-1262, 2007.
 	 
-Two other interesting switches are ``-k`` and ``-c``: 
+Some other interesting switches are ``-k``, ``-c`` and ``-r``: 
 
 	- ``-k`` shows the keypoints used to compute the correspondences as a blue overlay into the PCL visualizer.
 	- ``-c`` draws a line connecting each pair of model-scene correspondences that *survived* the clustering process.
+	- ``-r`` estimates the spatial resolution for the model point cloud and afterwards considers the radii used as parameters as if they were given in units of cloud resolution; thus achieving some sort of resolution invariance that might be useful when using this tutorial with the same command line and different point clouds.
+
+The next function performs the spatial resolution computation for a given point cloud averaging the distance between each cloud point and its nearest neighbor. 
+
+.. literalinclude:: sources/correspondence_grouping/correspondence_grouping.cpp
+   :language: cpp
+   :lines: 125-155	
 
 Clustering Pipeline
 *******************
@@ -75,13 +82,19 @@ supplied by the user).
 
 .. literalinclude:: sources/correspondence_grouping/correspondence_grouping.cpp
    :language: cpp
-   :lines: 121,135-146
+   :lines: 160,174-185
+   
+As a second step, only if resolution invariance flag has been enabled in the command line, the program adjusts the radii that will be used in the next sections by multiplying them for the estimated model cloud resolution.
+
+.. literalinclude:: sources/correspondence_grouping/correspondence_grouping.cpp
+   :language: cpp
+   :lines: 190-208
    
 Next, it computes the normals for each point of both the model and the scene cloud with the  :pcl:`NormalEstimationOMP <pcl::NormalEstimationOMP>` estimator, using the 10 nearest neighbors of each point (this parameter seems to be fairly ok for many datasets, not just for the one provided).
 
 .. literalinclude:: sources/correspondence_grouping/correspondence_grouping.cpp
    :language: cpp
-   :lines: 151-157
+   :lines: 213-219
    
 Then it downsamples each cloud in order to find a small number 
 of keypoints, which will then be associated to a 3D descriptor in order to perform keypoint matching and determine point-to-point correspondences. The radii used for the 
@@ -89,13 +102,13 @@ of keypoints, which will then be associated to a 3D descriptor in order to perfo
 
 .. literalinclude:: sources/correspondence_grouping/correspondence_grouping.cpp
    :language: cpp
-   :lines: 162-175
+   :lines: 224-237
    
 The next stage consists in associating a 3D descriptor to each model and scene keypoint. In our tutorial, we compute SHOT descriptors using :pcl:`SHOTEstimationOMP <pcl::SHOTEstimationOMP>`.
 
 .. literalinclude:: sources/correspondence_grouping/correspondence_grouping.cpp
    :language: cpp
-   :lines: 181-192
+   :lines: 243-254
    
 Now we need to determine point-to-point correspondences between 
 model descriptors and scene descriptors. To do this, the program uses a :pcl:`KdTreeFLANN <pcl::KdTreeFLANN>` whose input cloud has been set to the cloud containing the model descriptors.
@@ -104,7 +117,7 @@ similar model descriptor based on the Euclidean distance, and it adds this pair 
 
 .. literalinclude:: sources/correspondence_grouping/correspondence_grouping.cpp
    :language: cpp
-   :lines: 197-218
+   :lines: 259-280
 
 The last stage of the pipeline is the actual clustering of the 
 previously found correspondences.
@@ -115,7 +128,7 @@ In this example, we explicitly compute the set of LRFs using the :pcl:`BOARDLoca
 
 .. literalinclude:: sources/correspondence_grouping/correspondence_grouping.cpp
    :language: cpp
-   :lines: 227-264
+   :lines: 289-326
    
 .. note::
    It's not necessary to explicitly compute the LRFs before calling the clustering algorithm. If the clouds which are fetched to the clustering algorithm do not have a set of LRFs associated, Hough3DGrouping automatically computes them before performing clustering. In particular, this happens when calling the ``recognize`` (or ``cluster``) method without setting the LRFs: in this case you need to specify the radius of the LRF as an additional parameter for the clustering algorithm (with the ``setLocalRfSearchRadius`` method).
@@ -124,7 +137,7 @@ Alternatively to Hough3DGrouping, and by means of the appropriate command line s
 
 .. literalinclude:: sources/correspondence_grouping/correspondence_grouping.cpp
    :language: cpp
-   :lines: 265-277
+   :lines: 327-339
 
 .. note::   
 	The ``recognize`` method returns a vector of ``Eigen::Matrix4f`` representing a transformation (rotation + translation) for each instance of the model found in the scene (obtained via Absolute Orientation) and a **vector** of :pcl:`Correspondences <pcl::Correspondences>` (a vector of vectors of :pcl:`Correspondence <pcl::Correspondence>`) representing the output of the clustering i.e. each element of this vector is in turn a set of correspondences, representing the correspondences associated to a specific model instance in the scene.
@@ -140,14 +153,14 @@ As a first thing we are showing, for each instance of the model found into the s
 
 .. literalinclude:: sources/correspondence_grouping/correspondence_grouping.cpp
    :language: cpp
-   :lines: 282-298
+   :lines: 344-360
 
 The program then shows in a :pcl:`PCLVisualizer <pcl::PCLVisualizer>` window the scene cloud with a red overlay where an instance of the model has been found.
 If the command line switches ``-k`` and ``-c`` have been used, the program also shows a "stand-alone" rendering of the model cloud. If keypoint visualization is enabled, keypoints are displayed as blue dots and if correspondence visualization has been enabled they are shown as a green line for each correspondence which *survived* the clustering process.
 
 .. literalinclude:: sources/correspondence_grouping/correspondence_grouping.cpp
    :language: cpp
-   :lines: 303-359
+   :lines: 365-421
 
 Compiling and running the program
 ---------------------------------
@@ -161,8 +174,15 @@ Create a `CMakeLists.txt` file and add the following lines into it:
 After you have created the executable, you can then launch it following this example::
 
   $ ./correspondence_grouping milk.pcd milk_cartoon_all_small_clorox.pcd
+  
+Or, alternatively, if you prefer specifying the radii in units of cloud resolution::
 
+  $ ./correspondence_grouping milk.pcd milk_cartoon_all_small_clorox.pcd milk.pcd milk_cartoon_all_small_clorox.pcd -r --model_ss 7.5 --scene_ss 20 --rf_rad 10 --descr_rad 15 --cg_size 10
+  
 Remember to replace ``milk.pcd`` and ``milk_cartoon_all_small_clorox.pcd`` with model and scene filenames, in this exact order. If you want you can add other command line options as described at the beginning of this tutorial.
+
+.. note:: 
+	If you are using different point clouds and you don't know how to set the various parameters for this tutorial you can use the ``-r`` flag and try setting the LRF and descriptor radii to 5, 10, 15 or 20 times the actual cloud resolution. After that you probably will have to tweak the values by hand to achieve the best results.
 
 After a few seconds, you will see an output similar to::
 

@@ -174,7 +174,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::ho
   int n_matches = static_cast<int> (model_scene_corrs_->size ());
   if (n_matches == 0)
   {
-    return (true);
+    return (false);
   }
 
   std::vector<Eigen::Vector3d> scene_votes (n_matches);
