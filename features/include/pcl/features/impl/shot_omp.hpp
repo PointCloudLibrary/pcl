@@ -53,9 +53,9 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
   radius1_4_ = search_radius_ / 4;
   radius1_2_ = search_radius_ / 2;
 
-	if (output.points[0].descriptor.size () != static_cast<size_t> (descLength_))
-		for (size_t idx = 0; idx < indices_->size (); ++idx)
-			output.points[idx].descriptor.resize (descLength_);
+ //if (output.points[0].descriptor.size () != static_cast<size_t> (descLength_))
+  for (size_t idx = 0; idx < indices_->size (); ++idx)
+    output.points[idx].descriptor.resize (descLength_);
 
   int data_size = static_cast<int> (indices_->size ());
   Eigen::VectorXf *shot = new Eigen::VectorXf[threads_];
@@ -131,9 +131,9 @@ pcl::SHOTEstimationOMP<pcl::PointXYZRGBA, PointNT, PointOutT, PointRFT>::compute
   radius1_4_ = search_radius_ / 4;
   radius1_2_ = search_radius_ / 2;
 
-  if (output.points[0].descriptor.size () != static_cast<size_t> (descLength_))
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
-      output.points[idx].descriptor.resize (descLength_);
+ //if (output.points[0].descriptor.size () != static_cast<size_t> (descLength_))
+  for (size_t idx = 0; idx < indices_->size (); ++idx)
+    output.points[idx].descriptor.resize (descLength_);
 
   int data_size = static_cast<int> (indices_->size ());
   Eigen::VectorXf *shot = new Eigen::VectorXf[threads_];
