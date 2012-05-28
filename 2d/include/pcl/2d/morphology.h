@@ -33,36 +33,44 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: convolution_2d.h nsomani $
+ * morphology.h
  *
+ *  Created on: May 28, 2012
+ *      Author: somani
  */
 
-#ifndef PCL_2D_CONVOLUTION_2D_H
-#define PCL_2D_CONVOLUTION_2D_H
+#ifndef MORPHOLOGY_H_
+#define MORPHOLOGY_H_
 
-#include <vector>
 namespace pcl
 {
   namespace pcl_2d
   {
-    typedef std::vector<std::vector< float> > ImageType;
-    class convolution_2d
+    class morphology
     {
-
+private:
 public:
-    static const int BOUNDARY_OPTION_CLAMP = 0;
-    static const int BOUNDARY_OPTION_MIRROR = 1;
-    static const int BOUNDARY_OPTION_ZERO_PADDING = 2;
-
-    convolution_2d  ()
-    {
+    morphology  (){
 
     }
-    void conv (ImageType &output, ImageType &kernel, ImageType &input);
-    void conv  (ImageType &output, ImageType &kernel, ImageType &input, const int boundary_options);
-    void gaussian  (const int dim, const float sigma, ImageType &kernel);
+    void openingBinary  (ImageType &output, ImageType &kernel, ImageType &input);
+    void closingBinary  (ImageType &output, ImageType &kernel, ImageType &input);
+    void erosionBinary  (ImageType &output, ImageType &kernel, ImageType &input);
+    void dilationBinary  (ImageType &output, ImageType &kernel, ImageType &input);
+
+    void openingGray  (ImageType &output, ImageType &kernel, ImageType &input, const float thresh);
+    void closingGray  (ImageType &output, ImageType &kernel, ImageType &input, const float thresh);
+    void erosionGray  (ImageType &output, ImageType &kernel, ImageType &input, const float thresh);
+    void dilationGray  (ImageType &output, ImageType &kernel, ImageType &input, const float thresh);
+
+    void subtractionBinary  (ImageType &output, ImageType &input1, ImageType &input2);
+    void unionBinary  (ImageType &output, ImageType &input1, ImageType &input2);
+    void intersectionBinary  (ImageType &output, ImageType &input1, ImageType &input2);
+
+    void strelCircular  (ImageType &kernel, const int radius);
+    void strelRectangle  (ImageType &kernel, const int height, const int width);
     };
   }
 }
-#include <pcl/2d/impl/convolution_2d.hpp>
-#endif // PCL_2D_CONVOLUTION_2D_H
+#include <pcl/2d/impl/morphology.hpp>
+#endif /* MORPHOLOGY_H_ */

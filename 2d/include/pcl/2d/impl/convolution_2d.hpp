@@ -42,125 +42,145 @@
 
 void
 pcl::pcl_2d::convolution_2d::gaussian  (const int dim, const float sigma, ImageType &kernel){
-	float sum = 0;
-	kernel.resize(dim);
-	for(int i = 0;i < dim;i++){
-		kernel[i].resize(dim);
-		for(int j = 0;j < dim;j++){
-			kernel[i][j] = exp(-(((i-dim/2)*(i-dim/2)+(j-dim/2)*(j-dim/2))/(2*sigma*sigma)));
-			sum += kernel[i][j];
-		}
-	}
-	/*normalizing the kernel*/
-	for(int i = 0;i < dim;i++){
-		for(int j = 0;j < dim;j++){
-			kernel[i][j] /= sum;
-		}
-	}
+  float sum = 0;
+  kernel.resize (dim);
+  for (int i = 0; i < dim; i++)
+  {
+    kernel[i].resize (dim);
+    for (int j = 0; j < dim; j++)
+    {
+      kernel[i][j] = exp (-(((i - dim / 2) * (i - dim / 2) + (j - dim / 2) * (j - dim / 2)) / (2 * sigma * sigma)));
+      sum += kernel[i][j];
+    }
+  }
+  /*normalizing the kernel*/
+  for (int i = 0; i < dim; i++)
+  {
+    for (int j = 0; j < dim; j++)
+    {
+      kernel[i][j] /= sum;
+    }
+  }
 }
 
 void
 pcl::pcl_2d::convolution_2d::conv  (ImageType &output, ImageType &kernel, ImageType &input){
-	int rows = input.size();
-	int cols = input[0].size();
-	int k_rows = kernel.size();
-	int k_cols = kernel[0].size();
+  int rows = input.size ();
+  int cols = input[0].size ();
+  int k_rows = kernel.size ();
+  int k_cols = kernel[0].size ();
 
-	/*default boundary option : zero padding*/
-	output.resize(input.size());
-	for(int i = 0;i < rows;i++)
-	{
-		output[i].resize(cols);
-		for(int j = 0;j < cols;j++)
-		{
-			output[i][j] = 0;
-			for(int k = 0;k < k_rows;k++)
-			{
-				for(int l = 0;l < k_cols;l++)
-				{
-					if((i+k-k_rows/2) < 0 || (i+k-k_rows/2) >= rows || (j+l-k_cols/2) < 0 || (j+l-k_cols/2) >= cols)
-					{
-						continue;
-					}
-					else
-					{
-						output[i][j] += kernel[k][l]*input[i+k-k_rows/2][j+l-k_cols/2];
-					}
-				}
-			}
-		}
-	}
+  /*default boundary option : zero padding*/
+  output.resize (input.size ());
+  for (int i = 0; i < rows; i++)
+  {
+    output[i].resize (cols);
+    for (int j = 0; j < cols; j++)
+    {
+      output[i][j] = 0;
+      for (int k = 0; k < k_rows; k++)
+      {
+        for (int l = 0; l < k_cols; l++)
+        {
+          if ((i + k - k_rows / 2) < 0 || (i + k - k_rows / 2) >= rows || (j + l - k_cols / 2) < 0 || (j + l - k_cols / 2) >= cols)
+          {
+            continue;
+          }
+          else
+          {
+            output[i][j] += kernel[k][l] * input[i + k - k_rows / 2][j + l - k_cols / 2];
+          }
+        }
+      }
+    }
+  }
 }
 
 void
 pcl::pcl_2d::convolution_2d::conv  (ImageType &output, ImageType &kernel, ImageType &input, const int boundary_option){
-	int rows = input.size();
-	int cols = input[0].size();
-	int k_rows = kernel.size();
-	int k_cols = kernel[0].size();
-	int input_row = 0, input_col = 0;
+  int rows = input.size ();
+  int cols = input[0].size ();
+  int k_rows = kernel.size ();
+  int k_cols = kernel[0].size ();
+  int input_row = 0, input_col = 0;
 
-	output.resize(input.size());
+  output.resize (input.size ());
 
-	if(boundary_option == BOUNDARY_OPTION_CLAMP)
-	{
-		for(int i = 0;i < rows;i++)
-		{
-			output[i].resize(cols);
-			for(int j = 0;j < cols;j++)
-			{
-				output[i][j] = 0;
-				for(int k = 0;k < k_rows;k++)
-				{
-					for(int l = 0;l < k_cols;l++)
-					{
-						if((i+k-k_rows/2) < 0)
-							input_row = 0;
-						else if((i+k-k_rows/2) >= rows){
-							input_row = rows-1;
-						}else
-							input_row = i+k-k_rows/2;
-						if((j+l-k_cols/2) < 0)
-							input_col = 0;
-						else if((j+l-k_cols/2) >= cols)
-							input_col = cols-1;
-						else
-							input_col = j+l-k_cols/2;
-						output[i][j] += kernel[k][l]*input[input_row][input_col];
-					}
-				}
-			}
-		}
-	}
-	else if(boundary_option == BOUNDARY_OPTION_MIRROR){
-		for(int i = 0;i < rows;i++){
-			output[i].resize(cols);
-			for(int j = 0;j < cols;j++){
-				output[i][j] = 0;
-				for(int k = 0;k < k_rows;k++){
-					for(int l = 0;l < k_cols;l++){
-						if((i+k-(k_rows/2)) < 0)
-							input_row = -(i+k-(k_rows/2));
-						else if((i+k-(k_rows/2)) >= rows){
-							input_row = 2*rows-1-(i+k-(k_rows/2));
-						}else
-							input_row = i+k-(k_rows/2);
+  if (boundary_option == BOUNDARY_OPTION_CLAMP)
+  {
+    for (int i = 0; i < rows; i++)
+    {
+      output[i].resize (cols);
+      for (int j = 0; j < cols; j++)
+      {
+        output[i][j] = 0;
+        for (int k = 0; k < k_rows; k++)
+        {
+          for (int l = 0; l < k_cols; l++)
+          {
+            if ((i + k - k_rows / 2) < 0)
+              input_row = 0;
+            else
+            if ((i + k - k_rows / 2) >= rows)
+            {
+              input_row = rows - 1;
+            }
+            else
+              input_row = i + k - k_rows / 2;
+            if ((j + l - k_cols / 2) < 0)
+              input_col = 0;
+            else
+            if ((j + l - k_cols / 2) >= cols)
+              input_col = cols - 1;
+            else
+              input_col = j + l - k_cols / 2;
+            output[i][j] += kernel[k][l] * input[input_row][input_col];
+          }
+        }
+      }
+    }
+  }
+  else
+  if (boundary_option == BOUNDARY_OPTION_MIRROR)
+  {
+    for (int i = 0; i < rows; i++)
+    {
+      output[i].resize (cols);
+      for (int j = 0; j < cols; j++)
+      {
+        output[i][j] = 0;
+        for (int k = 0; k < k_rows; k++)
+        {
+          for (int l = 0; l < k_cols; l++)
+          {
+            if ((i + k - (k_rows / 2)) < 0)
+              input_row = -(i + k - (k_rows / 2));
+            else
+            if ((i + k - (k_rows / 2)) >= rows)
+            {
+              input_row = 2 * rows - 1 - (i + k - (k_rows / 2));
+            }
+            else
+              input_row = i + k - (k_rows / 2);
 
-						if((j+l-(k_cols/2)) < 0)
-							input_col = -(j+l-(k_cols/2));
-						else if((j+l-(k_cols/2)) >= cols)
-							input_col = 2*cols-1-(j+l-(k_cols/2));
-						else
-							input_col = j+l-(k_cols/2);
-						output[i][j] += kernel[k][l]*input[input_row][input_col];
-					}
-				}
-			}
-		}
-	}
-	else if(boundary_option == BOUNDARY_OPTION_ZERO_PADDING){
-		conv(output, kernel, input);
-	}
+            if ((j + l - (k_cols / 2)) < 0)
+              input_col = -(j + l - (k_cols / 2));
+            else
+            if ((j + l - (k_cols / 2)) >= cols)
+              input_col = 2 * cols - 1 - (j + l - (k_cols / 2));
+            else
+              input_col = j + l - (k_cols / 2);
+            output[i][j] += kernel[k][l] * input[input_row][input_col];
+          }
+        }
+      }
+    }
+  }
+  else
+  if (boundary_option == BOUNDARY_OPTION_ZERO_PADDING)
+  {
+    conv (output, kernel, input);
+  }
 }
 
 #endif

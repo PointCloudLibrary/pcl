@@ -42,33 +42,36 @@
 
 #include <vector>
 #include "convolution_2d.h"
-using namespace std;
 namespace pcl
 {
-	namespace pcl_2d
-	{
-		class edge
-		{
-		  private :
-	      convolution_2d *conv_2d;
-		  public :
-				edge()
-				{
-				  conv_2d = new convolution_2d();
-				}
-				void cannyTraceEdge(int rowOffset,int colOffset,int row,int col, float theta, float tLow, float tHigh, ImageType &G, ImageType &thet);
-				void canny(ImageType &output, ImageType &input);
-				void sobelXY(ImageType &Gx, ImageType &Gy, ImageType &input);
-				void sobelGThet(ImageType &G, ImageType &thet, ImageType &input);
-				void prewittXY(ImageType &Gx, ImageType &Gy, ImageType &input);
-				void prewittGThet(ImageType &G, ImageType &thet, ImageType &input);
-				void robertsXY(ImageType &Gx, ImageType &Gy, ImageType &input);
-				void robertsGThet(ImageType &G, ImageType &thet, ImageType &input);
-				void LoGKernel(ImageType &kernel, const int dim, const float sigma);
-				void LoG(ImageType &output, const int dim, const float sigma, ImageType &input);
-				void LoG(ImageType &output, ImageType &input);
-		};
-	}
+  namespace pcl_2d
+  {
+    class edge
+    {
+private:
+    convolution_2d *conv_2d;
+public:
+    edge  ()
+    {
+      conv_2d = new convolution_2d ();
+    }
+    void cannyTraceEdge  (int rowOffset, int colOffset, int row, int col, float theta, float tLow, float tHigh, ImageType &G, ImageType &thet);
+    void canny  (ImageType &output, ImageType &input);
+    void sobelXY  (ImageType &Gx, ImageType &Gy, ImageType &input);
+    void sobelGThet  (ImageType &G, ImageType &thet, ImageType &input);
+    void prewittXY  (ImageType &Gx, ImageType &Gy, ImageType &input);
+    void prewittGThet  (ImageType &G, ImageType &thet, ImageType &input);
+    void robertsXY  (ImageType &Gx, ImageType &Gy, ImageType &input);
+    void robertsGThet  (ImageType &G, ImageType &thet, ImageType &input);
+    void LoGKernel  (ImageType &kernel, const int dim, const float sigma);
+    void LoG  (ImageType &output, const int dim, const float sigma, ImageType &input);
+    void LoG  (ImageType &output, ImageType &input);
+    /*image derivative in x direction using central differences*/
+    void Ix_central  (ImageType &output, ImageType &input);
+    /*image derivative in y direction using central differences*/
+    void Iy_central  (ImageType &output, ImageType &input);
+    };
+  }
 }
 #include <pcl/2d/impl/edge.hpp>
 #endif // PCL_FILTERS_CONVOLUTION_3D_H
