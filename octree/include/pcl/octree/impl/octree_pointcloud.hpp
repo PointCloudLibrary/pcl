@@ -412,11 +412,12 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::getBoundingBox (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT, typename LeafT, typename OctreeT> void
+template<typename PointT, typename LeafT, typename OctreeT>
+void
 pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (const PointT& pointIdx_arg)
 {
 
-  const float minValue = std::numeric_limits<float>::epsilon();
+  const float minValue = std::numeric_limits<float>::epsilon ();
 
   // increase octree size until point fits into bounding box
   while (true)
@@ -431,16 +432,18 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
 
     // do we violate any bounds?
     if (bLowerBoundViolationX || bLowerBoundViolationY || bLowerBoundViolationZ || bUpperBoundViolationX
-        || bUpperBoundViolationY || bUpperBoundViolationZ || (!boundingBoxDefined_))
+        || bUpperBoundViolationY || bUpperBoundViolationZ )
     {
 
-      double octreeSideLen;
-      unsigned char childIdx;
-
-      if (this->leafCount_ > 0)
+      if (boundingBoxDefined_)
       {
+
+        double octreeSideLen;
+        unsigned char childIdx;
+
         // octree not empty - we add another tree level and thus increase its size by a factor of 2*2*2
-        childIdx = static_cast<unsigned char> (((!bUpperBoundViolationX) << 2) | ((!bUpperBoundViolationY) << 1) | ((!bUpperBoundViolationZ)));
+        childIdx = static_cast<unsigned char> (((!bUpperBoundViolationX) << 2) | ((!bUpperBoundViolationY) << 1)
+            | ((!bUpperBoundViolationZ)));
 
         OctreeBranch* newRootBranch;
 
@@ -451,7 +454,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
 
         this->rootNode_ = newRootBranch;
 
-        octreeSideLen = static_cast<double> (1 << this->octreeDepth_) * resolution_ ;
+        octreeSideLen = static_cast<double> (1 << this->octreeDepth_) * resolution_;
 
         if (!bUpperBoundViolationX)
           minX_ -= octreeSideLen;
@@ -462,8 +465,8 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
         if (!bUpperBoundViolationZ)
           minZ_ -= octreeSideLen;
 
-       // configure tree depth of octree
-        this->octreeDepth_ ++;
+        // configure tree depth of octree
+        this->octreeDepth_++;
         this->setTreeDepth (this->octreeDepth_);
 
         // recalculate bounding box width
@@ -475,6 +478,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
         maxZ_ = minZ_ + octreeSideLen;
 
       }
+      // bounding box is not defined - set it to point position
       else
       {
         // octree is empty - we set the center of the bounding box to our first pixel
@@ -486,10 +490,11 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::adoptBoundingBoxToPoint (
         this->maxY_ = pointIdx_arg.y + this->resolution_ / 2;
         this->maxZ_ = pointIdx_arg.z + this->resolution_ / 2;
 
-        getKeyBitSize();
+        getKeyBitSize ();
+
+        boundingBoxDefined_ = true;
       }
 
-      boundingBoxDefined_ = true;
     }
     else
       // no bound violations anymore - leave while loop

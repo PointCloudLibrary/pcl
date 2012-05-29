@@ -102,7 +102,6 @@ namespace pcl
           unusedBranchesPool_ (),
           unusedLeafsPool_ (),
           bufferSelector_ (source.bufferSelector_),
-          resetTree_ (source.resetTree_),
           treeDirtyFlag_ (source.treeDirtyFlag_),
           octreeDepth_ (source.octreeDepth_)
         {
@@ -119,7 +118,6 @@ namespace pcl
           depthMask_ = source.depthMask_;
           maxKey_ = source.maxKey_;
           bufferSelector_ = source.bufferSelector_;
-          resetTree_ = source.resetTree_;
           treeDirtyFlag_ = source.treeDirtyFlag_;
           octreeDepth_ = source.octreeDepth_;
           return (*this);
@@ -419,10 +417,9 @@ namespace pcl
         {
           LeafT* result;
 
-          result = createLeafRecursive (key_arg, depthMask_, rootNode_, resetTree_);
+          result = createLeafRecursive (key_arg, depthMask_, rootNode_, false);
 
           // getLeafRecursive has changed the octree -> clean-up/tree-reset might be required
-          resetTree_ = false;
           treeDirtyFlag_ = true;
 
           return result;
@@ -1081,7 +1078,6 @@ namespace pcl
         unsigned char bufferSelector_;
 
         // flags indicating if unused branches and leafs might exist in previous buffer
-        bool resetTree_;
         bool treeDirtyFlag_;
 
         /** \brief Octree depth */

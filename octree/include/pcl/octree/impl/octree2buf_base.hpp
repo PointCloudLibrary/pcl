@@ -55,7 +55,6 @@ namespace pcl
       unusedBranchesPool_ (),
       unusedLeafsPool_ (),
       bufferSelector_ (0),
-      resetTree_ (false), 
       treeDirtyFlag_ (false),
       octreeDepth_ (0)
     {
@@ -176,7 +175,6 @@ namespace pcl
         branchCount_ = 1;
         objectCount_ = 0;
         
-        resetTree_ = false;
         treeDirtyFlag_ = false;
         depthMask_ = 0;
         octreeDepth_ = 0;
@@ -205,7 +203,13 @@ namespace pcl
       leafCount_ = 0;
       objectCount_ = 0;
       branchCount_ = 1;
-      resetTree_ = true;
+
+      unsigned char childIdx;
+      // we can safely remove children references of root node
+      for (childIdx = 0; childIdx < 8; childIdx++)
+      {
+        setBranchChild (*rootNode_, bufferSelector_, childIdx, 0);
+      }
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -274,10 +278,9 @@ namespace pcl
       // iterator for binary tree structure vector
       std::vector<char>::const_iterator binaryTreeVectorIterator = binaryTreeIn_arg.begin ();
 
-      deserializeTreeRecursive (binaryTreeVectorIterator, rootNode_, depthMask_, newKey, resetTree_, doXORDecoding_arg);
+      deserializeTreeRecursive (binaryTreeVectorIterator, rootNode_, depthMask_, newKey, false, doXORDecoding_arg);
 
       // we modified the octree structure -> clean-up/tree-reset might be required
-      resetTree_ = false;
       treeDirtyFlag_ = false;
 
       objectCount_ = this->leafCount_;
@@ -303,10 +306,9 @@ namespace pcl
       std::vector<char>::const_iterator binaryTreeVectorIterator = binaryTreeIn_arg.begin ();
 
       deserializeTreeRecursive (binaryTreeVectorIterator, rootNode_, depthMask_, newKey, dataVectorIterator,
-                                dataVectorEndIterator, resetTree_, doXORDecoding_arg);
+                                dataVectorEndIterator, false, doXORDecoding_arg);
 
       // we modified the octree structure -> clean-up/tree-reset might be required
-      resetTree_ = false;
       treeDirtyFlag_ = false;
 
       objectCount_ = static_cast<unsigned int> (dataVector_arg.size ());
@@ -327,10 +329,9 @@ namespace pcl
       std::vector<char>::const_iterator binaryTreeVectorIterator = binaryTreeIn_arg.begin ();
 
       deserializeTreeAndOutputLeafDataRecursive (binaryTreeVectorIterator, rootNode_, depthMask_, newKey,
-                                                 dataVector_arg, resetTree_, doXORDecoding_arg);
+                                                 dataVector_arg, false, doXORDecoding_arg);
 
       // we modified the octree structure -> clean-up/tree-reset might be required
-      resetTree_ = false;
       treeDirtyFlag_ = false;
 
       objectCount_ = static_cast<unsigned int> (dataVector_arg.size ());
@@ -363,12 +364,16 @@ namespace pcl
       unsigned char childIdx;
       LeafT* result = 0;
 
-      // branch reset -> this branch has been taken from previous buffer
+
+
+  // branch reset -> this branch has been taken from previous buffer
       if (branchReset_arg)
       {
         // we can safely remove children references
         for (childIdx = 0; childIdx < 8; childIdx++)
-          setBranchChild (*branch_arg, childIdx, 0);
+        {
+          setBranchChild (*branch_arg, bufferSelector_, childIdx, 0);
+        }
       }
 
       // find branch child from key
