@@ -40,6 +40,7 @@
 
 #include <pcl/common/common.h>
 
+#include <pcl/ml/dt/decision_tree_evaluator.h>
 #include <pcl/ml/dt/decision_forest.h>
 #include <pcl/ml/feature_handler.h>
 #include <pcl/ml/stats_estimator.h>
