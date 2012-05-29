@@ -73,6 +73,7 @@ namespace pcl
       using Feature<PointInT, PointOutT>::search_parameter_;
       using Feature<PointInT, PointOutT>::search_radius_;
       using Feature<PointInT, PointOutT>::surface_;
+      using Feature<PointInT, PointOutT>::fake_surface_;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
       using FeatureWithLocalReferenceFrames<PointInT, PointRFT>::frames_;
       using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::descLength_;
@@ -112,6 +113,10 @@ namespace pcl
         */
       void
       computeFeature (PointCloudOut &output);
+
+      /** \brief This method should get called before starting the actual computation. */
+      bool
+      initCompute ();
 
       /** \brief The number of threads the scheduler should use. */
       int threads_;

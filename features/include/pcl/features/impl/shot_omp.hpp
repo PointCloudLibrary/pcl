@@ -38,11 +38,51 @@
 #define PCL_FEATURES_IMPL_SHOT_OMP_H_
 
 #include <pcl/features/shot_omp.h>
+#include <pcl/common/time.h>
+#include <pcl/features/shot_lrf_omp.h>
+
+template<typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> bool
+pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::initCompute ()
+{
+  if (!FeatureFromNormals<PointInT, PointNT, PointOutT>::initCompute ())
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] Init failed.\n", getClassName ().c_str ());
+    return (false);
+  }
+
+  // SHOT cannot work with k-search
+  if (this->getKSearch () != 0)
+  {
+    PCL_ERROR(
+      "[pcl::%s::initCompute] Error! Search method set to k-neighborhood. Call setKSearch(0) and setRadiusSearch( radius ) to use this class.\n",
+      getClassName().c_str ());
+    return (false);
+  }
+
+  // Default LRF estimation alg: SHOTLocalReferenceFrameEstimationOMP
+  typename boost::shared_ptr<SHOTLocalReferenceFrameEstimationOMP<PointInT, PointRFT> > lrf_estimator(new SHOTLocalReferenceFrameEstimationOMP<PointInT, PointRFT>());
+  lrf_estimator->setRadiusSearch (search_radius_);
+  lrf_estimator->setInputCloud (input_);
+  lrf_estimator->setIndices (indices_);
+  lrf_estimator->setNumberOfThreads(threads_);
+
+  if (!fake_surface_)
+    lrf_estimator->setSearchSurface(surface_);
+
+  if (!FeatureWithLocalReferenceFrames<PointInT, PointRFT>::initLocalReferenceFrames (indices_->size (), lrf_estimator))
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] Init failed.\n", getClassName ().c_str ());
+    return (false);
+  }
+
+  return (true);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> void
 pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (PointCloudOut &output)
 {
+
   if (threads_ < 0)
     threads_ = 1;
 
@@ -53,7 +93,6 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
   radius1_4_ = search_radius_ / 4;
   radius1_2_ = search_radius_ / 2;
 
- //if (output.points[0].descriptor.size () != static_cast<size_t> (descLength_))
   for (size_t idx = 0; idx < indices_->size (); ++idx)
     output.points[idx].descriptor.resize (descLength_);
 
@@ -74,11 +113,6 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
     int tid = 0;
 #endif
 
-	 // Allocate enough space to hold the results
-    // \note This resize is irrelevant for a radiusSearch ().
-    std::vector<int> nn_indices (k_);
-    std::vector<float> nn_dists (k_);
-
     bool lrf_is_nan = false;
     const PointRFT& current_frame = (*frames_)[idx];
     if (!pcl_isfinite (current_frame.rf[0]) ||
@@ -90,9 +124,13 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
       lrf_is_nan = true;
     }
 
-    if (!isFinite ((*input_)[(*indices_)[idx]]) ||
-        lrf_is_nan ||
-        this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
+    // Allocate enough space to hold the results
+    // \note This resize is irrelevant for a radiusSearch ().
+    std::vector<int> nn_indices (k_);
+    std::vector<float> nn_dists (k_);
+
+    if (!isFinite ((*input_)[(*indices_)[idx]]) || lrf_is_nan || this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices,
+                                                                                           nn_dists) == 0)
     {
       // Copy into the resultant cloud
       for (int d = 0; d < shot[tid].size (); ++d)
@@ -104,14 +142,14 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
       continue;
     }
 
-  // Estimate the SHOT at each patch
+    // Estimate the SHOT at each patch
     this->computePointSHOT (idx, nn_indices, nn_dists, shot[tid]);
 
-	// Copy into the resultant cloud
+    // Copy into the resultant cloud
     for (int d = 0; d < shot[tid].size (); ++d)
       output.points[idx].descriptor[d] = shot[tid][d];
     for (int d = 0; d < 9; ++d)
-      output.points[idx].rf[d] = frames_->points[idx].rf[ (4*(d/3) + (d%3)) ];
+      output.points[idx].rf[d] = frames_->points[idx].rf[(4 * (d / 3) + (d % 3))];
   }
   delete[] shot;
 }
