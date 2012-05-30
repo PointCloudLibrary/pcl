@@ -948,15 +948,16 @@ writePoligonMeshFile (int format, const pcl::PolygonMesh& mesh)
 int
 print_cli_help ()
 {
-  cout << "\nKinfu app concole parameters help:" << endl;
+  cout << "\nKinFu parameters:" << endl;
   cout << "    --help, -h                      : print this message" << endl;  
-  cout << "    --registration, -r              : try to enable registration ( requires source to support this )" << endl;
+  cout << "    --registration, -r              : try to enable registration (source needs to support this)" << endl;
   cout << "    --current-cloud, -cc            : show current frame cloud" << endl;
   cout << "    --save-views, -sv               : accumulate scene view and save in the end ( Requires OpenCV. Will cause 'bad_alloc' after some time )" << endl;  
   cout << "    --registration, -r              : enable registration mode" << endl; 
-  cout << "    --integrate-colors, -ic         : enable color integration mode ( allows to get cloud with colors )" << endl;   
-  cout << "    -volume_suze <size_in_meters>   : define integration volume size" << endl;   
-  cout << "    -dev <deivce>, -oni <oni_file>  : select depth source. Default will be selected if not specified" << endl;
+  cout << "    --integrate-colors, -ic         : enable color integration mode (allows to get cloud with colors)" << endl;   
+  cout << "    -volume_size <size_in_meters>   : define integration volume size" << endl;
+  cout << "Valid depth data sources:" << endl; 
+  cout << "    -dev <device> (default), -oni <oni_file>, -pcd <pcd_file or directory>" << endl;
   cout << "";
   cout << " For RGBD benchmark (Requires OpenCV):" << endl; 
   cout << "    -eval <eval_folder> [-match_file <associations_file_in_the_folder>]" << endl;
