@@ -19,8 +19,8 @@
  *   * Neither the name of Willow Garage, Inc. nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
- *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
@@ -112,13 +112,20 @@ TEST (PCL, MovingLeastSquares)
   // Reconstruct
   mls_omp.process (*mls_normals);
 
-  EXPECT_NEAR (mls_normals->points[0].x, 0.005417, 1e-3);
-  EXPECT_NEAR (mls_normals->points[0].y, 0.113463, 1e-3);
-  EXPECT_NEAR (mls_normals->points[0].z, 0.040715, 1e-3);
-  EXPECT_NEAR (fabs (mls_normals->points[0].normal[0]), 0.111894, 1e-3);
-  EXPECT_NEAR (fabs (mls_normals->points[0].normal[1]), 0.594906, 1e-3);
-  EXPECT_NEAR (fabs (mls_normals->points[0].normal[2]), 0.795969, 1e-3);
-  EXPECT_NEAR (mls_normals->points[0].curvature, 0.012019, 1e-3);
+  int count = 0;
+  for (size_t i = 0; i < mls_normals->size (); ++i)
+  {
+	if (fabs (mls_normals->points[i].x - 0.005417) < 1e-3 &&
+	    fabs (mls_normals->points[i].y - 0.113463) < 1e-3 &&
+	    fabs (mls_normals->points[i].z - 0.040715) < 1e-3 &&
+	    fabs (fabs (mls_normals->points[i].normal[0]) - 0.111894) < 1e-3 &&
+		fabs (fabs (mls_normals->points[i].normal[1]) - 0.594906) < 1e-3 &&
+		fabs (fabs (mls_normals->points[i].normal[2]) - 0.795969) < 1e-3 &&
+		fabs (mls_normals->points[i].curvature - 0.012019) < 1e-3)
+		count ++;
+  }
+
+  EXPECT_EQ (count, 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
