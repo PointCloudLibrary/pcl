@@ -51,23 +51,19 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
   // Compute the number of coefficients
   nr_coeff_ = (order_ + 1) * (order_ + 2) / 2;
 
-  // Allocate enough space to hold the results of nearest neighbor searches
-  // \note resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices;
-  std::vector<float> nn_sqr_dists;
-
-//#pragma omp parallel for schedule (dynamic, threads_)
+#pragma omp parallel for schedule (dynamic, threads_)
   // For all points
   for (int cp = 0; cp < static_cast<int> (indices_->size ()); ++cp)
   {
-    // Get the initial estimates of point positions and their neighborhoods
-//    if (!searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
-//      continue;
+    // Allocate enough space to hold the results of nearest neighbor searches
+    // \note resize is irrelevant for a radiusSearch ().
+    std::vector<int> nn_indices;
+    std::vector<float> nn_sqr_dists;
 
-    //printf ("search_radius_ %f", search_radius_);
-    //printf ("index to search: %d --- %f %f %f\n", (*indices_)[cp], input_->points[(*indices_)[cp]].x, input_->points[(*indices_)[cp]].y, input_->points[(*indices_)[cp]].z);
-    if (!tree_->radiusSearch ((*indices_)[cp], search_radius_, nn_indices, nn_sqr_dists))
+    // Get the initial estimates of point positions and their neighborhoods
+    if (!searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
       continue;
+
 
     // Check the number of nearest neighbors for normal estimation (and later
     // for polynomial fit as well)
@@ -81,10 +77,13 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
     // Get a plane approximating the local surface's tangent and project point onto it
     this->computeMLSPointNormal ((*indices_)[cp], *input_, nn_indices, nn_sqr_dists, projected_points, projected_points_normals);
 
-    // Append projected points to output
-    output.insert (output.end (), projected_points.begin (), projected_points.end ());
-    if (compute_normals_)
-      normals_->insert (normals_->end (), projected_points_normals.begin (), projected_points_normals.end ());
+#pragma omp critical
+    {
+      // Append projected points to output
+      output.insert (output.end (), projected_points.begin (), projected_points.end ());
+      if (compute_normals_)
+        normals_->insert (normals_->end (), projected_points_normals.begin (), projected_points_normals.end ());
+    }
   }
 
 
@@ -98,8 +97,15 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
       voxel_grid.dilate ();
 
 // TODO: there seems no way of putting an OpenMP directive in front of BOOST_FOREACH ?
-    BOOST_FOREACH (typename MLSVoxelGrid::HashMap::value_type voxel, voxel_grid.voxel_grid_)
+//    BOOST_FOREACH (typename MLSVoxelGrid::HashMap::value_type voxel, voxel_grid.voxel_grid_)
+    // GCC 4.2.x seems to segfault with "internal compiler error" on MacOS X here
+#if defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2))
+#pragma omp parallel for schedule (dynamic, threads_)
+#endif
+    for (typename MLSVoxelGrid::HashMap::iterator h_it = voxel_grid.voxel_grid_.begin (); h_it != voxel_grid.voxel_grid_.end (); ++h_it)
     {
+      typename MLSVoxelGrid::HashMap::value_type voxel = *h_it;
+
       // Get 3D position of point
       Eigen::Vector3f pos;
       voxel_grid.getPosition (voxel.first, pos);
@@ -146,9 +152,12 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
       if (d_after > d_before)
         continue;
 
-      output.push_back (result_point);
-      if (compute_normals_)
-        normals_->push_back (result_normal);
+#pragma critical
+      {
+        output.push_back (result_point);
+        if (compute_normals_)
+          normals_->push_back (result_normal);
+      }
     }
   }
 }

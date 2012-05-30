@@ -77,6 +77,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
   if (!initCompute ())
     return;
 
+
   // Initialize the spatial locator
   if (!tree_)
   {
