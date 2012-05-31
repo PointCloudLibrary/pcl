@@ -45,6 +45,9 @@ template<typename PointInT, typename PointOutT>
 void
 pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
 {
+  if (threads_ < 0)
+    threads_ = 1;
+
   //check whether used with search radius or search k-neighbors
   if (this->getKSearch () != 0)
   {
@@ -84,6 +87,9 @@ template<typename PointInT, typename PointOutT>
 void
 pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
 {
+  if (threads_ < 0)
+     threads_ = 1;
+
   //check whether used with search radius or search k-neighbors
   if (this->getKSearch () != 0)
   {
