@@ -144,7 +144,7 @@ namespace pcl
         void
         process (const Depth& dmap, Labels& lmap, int FGThresh);
 
-        /** \brief same as processProb, but runs the trick of declaring as background any neighbor that is more than FGThresh away.**/
+        /** \brief output a probability map from the RDF.**/
         void
         processProb (const Depth& dmap, Labels& lmap, LabelProbability& prob, int FGThresh);
 

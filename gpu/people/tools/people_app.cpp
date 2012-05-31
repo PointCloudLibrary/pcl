@@ -43,6 +43,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/common/time.h>
 #include <pcl/console/parse.h>
+#include <pcl/console/print.h>
 #include <pcl/gpu/containers/initialization.h>
 #include <pcl/gpu/people/people_detector.h>
 #include <pcl/gpu/people/colormap.h>
@@ -101,8 +102,8 @@ struct SampledScopeTime : public StopWatch
     }
     ++i_;
   }
-private:    
-    int& time_ms_;    
+  private:
+  int& time_ms_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -288,14 +289,14 @@ class PeoplePCDApp
               SampledScopeTime fps(time_ms_);
 
               if (cloud_cb_)
-                people_detector_.process(cloud_host_.makeShared());
+                process_return_ = people_detector_.process(cloud_host_.makeShared());
               else
-                people_detector_.process(depth_device_, image_device_);
+                process_return_ = people_detector_.process(depth_device_, image_device_);
       
               ++counter_;              
             }            
            
-            if(has_data)
+            if(has_data && (process_return_ == 2))
               visualizeAndWrite();
           }
           final_view_.spinOnce (3);                  
@@ -317,6 +318,7 @@ class PeoplePCDApp
     bool exit_;
     int time_ms_;
     int counter_;
+    int process_return_;
     PeopleDetector people_detector_;
     PeopleDetector::Image cmap_device_;
     pcl::PointCloud<pcl::RGB> cmap_host_;
@@ -354,11 +356,11 @@ void print_help()
 int main(int argc, char** argv)
 {
   // answering for help 
-  cout << "People tracking on PCD files version 0.1" << std::endl;
+  PCL_INFO("People tracking App version 0.1");
   if(pc::find_switch (argc, argv, "--help") || pc::find_switch (argc, argv, "-h"))
     return print_help(), 0;
   
-  // selecting GPU and pringing info
+  // selecting GPU and prining info
   int device = 0;
   pc::parse_argument (argc, argv, "-gpu", device);
   pcl::gpu::setDevice (device);
@@ -427,7 +429,7 @@ int main(int argc, char** argv)
     // loading trees
     typedef pcl::gpu::people::RDFBodyPartsDetector RDFBodyPartsDetector;
     RDFBodyPartsDetector::Ptr rdf(new RDFBodyPartsDetector(tree_files));
-    std::cout << "Loaded files into rdf" << std::endl;
+    PCL_INFO("Loaded files into rdf");
 
     // Create the app
     PeoplePCDApp app(*capture);  
@@ -440,7 +442,6 @@ int main(int argc, char** argv)
   catch (const std::runtime_error& e) { cout << e.what() << endl; }
   catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; }
   catch (const std::exception& /*e*/) { cout << "Exception" << endl; }
-  
 
   return 0;
 }  

@@ -43,6 +43,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/common/time.h>
 #include <pcl/console/parse.h>
+#include <pcl/console/print.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/gpu/people/people_detector.h>
 #include <pcl/gpu/people/colormap.h>
@@ -129,8 +130,8 @@ class PeoplePCDApp
 
     void cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
     {
-      std::cout << "(I) : Cloud Callback" << std::endl;
-      people_detector_.processProb(cloud);
+      PCL_DEBUG("(I) : Cloud Callback");
+      processReturn = people_detector_.processProb(cloud);
       ++counter_;
       //visualizeAndWrite(cloud);
     }
@@ -175,9 +176,9 @@ class PeoplePCDApp
     }
 
     void
-    visualizeAndWriteProb(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+    writeProb(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
     {
-      std::cout << "(I) : visualizeAndWriteProb() Callback" << std::endl;
+      PCL_DEBUG("(I) : visualizeAndWriteProb() Callback");
       //const pcl::device::LabelProbability& prob = people_detector_.rdf_detector_->getProbability1();
 
       // first write the first iteration
@@ -187,7 +188,7 @@ class PeoplePCDApp
       prob_host.width = people_detector_.rdf_detector_->P_l_1_.cols();
       prob_host.height = people_detector_.rdf_detector_->P_l_1_.rows();
 
-      std::cout << "(I) : visualizeAndWriteProb() savePNGFile" << std::endl;
+      PCL_DEBUG("(I) : visualizeAndWriteProb() savePNGFile");
       for(int i = 0; i < 25; i++)  //NUM_LABELS
       {
         pcl::PointCloud<pcl::RGB> rgb;
@@ -195,8 +196,8 @@ class PeoplePCDApp
         savePNGFile(make_ext_name(counter_,i, "hist1"), rgb);
       }
 
-      std::cout << "(I) : visualizeAndWriteProb() : cols1: " << people_detector_.rdf_detector_->P_l_1_.cols() << std::endl;
-      std::cout << "(I) : visualizeAndWriteProb() : rows1: " << people_detector_.rdf_detector_->P_l_1_.rows() << std::endl;
+      PCL_DEBUG("(I) : visualizeAndWriteProb() : cols1: %d", people_detector_.rdf_detector_->P_l_1_.cols ());
+      PCL_DEBUG("(I) : visualizeAndWriteProb() : rows1: %d", people_detector_.rdf_detector_->P_l_1_.rows ());
 
       // and now again for the second iteration
       pcl::PointCloud<pcl::device::prob_histogram> prob_host2(people_detector_.rdf_detector_->P_l_2_.cols(), people_detector_.rdf_detector_->P_l_2_.rows());
@@ -204,19 +205,19 @@ class PeoplePCDApp
       prob_host.width = people_detector_.rdf_detector_->P_l_2_.cols();
       prob_host.height = people_detector_.rdf_detector_->P_l_2_.rows();
 
-      std::cout << "(I) : visualizeAndWriteProb() savePNGFile" << std::endl;
+      PCL_DEBUG("(I) : visualizeAndWriteProb() savePNGFile");
       for(int i = 0; i < 25; i++)
       {
         pcl::PointCloud<pcl::RGB> rgb;
         convertProbToRGB(prob_host2, i, rgb);
         savePNGFile(make_ext_name(counter_, i, "hist2"), rgb);
       }
-
-      std::cout << "(I) : visualizeAndWriteProb() : cols2: " << people_detector_.rdf_detector_->P_l_2_.cols() << std::endl;
-      std::cout << "(I) : visualizeAndWriteProb() : rows2: " << people_detector_.rdf_detector_->P_l_2_.rows() << std::endl;
+      PCL_DEBUG("(I) : visualizeAndWriteProb() : cols2: %d", people_detector_.rdf_detector_->P_l_2_.cols());
+      PCL_DEBUG("(I) : visualizeAndWriteProb() : rows2: %d", people_detector_.rdf_detector_->P_l_2_.rows());
     }
 
     int counter_;
+    int processReturn;
     PeopleDetector people_detector_;
     PeopleDetector::Image cmap_device_;
 
@@ -228,18 +229,18 @@ class PeoplePCDApp
 
 void print_help()
 {
-  cout << "\nPeople tracking app options (help):" << endl;
-  cout << "\t -numTrees \t<int> \tnumber of trees to load" << endl;
-  cout << "\t -tree0 \t<path_to_tree_file>" << endl;
-  cout << "\t -tree1 \t<path_to_tree_file>" << endl;
-  cout << "\t -tree2 \t<path_to_tree_file>" << endl;
-  cout << "\t -tree3 \t<path_to_tree_file>" << endl;
-  cout << "\t -pcd   \t<path_to_pcd_file>" << endl;  
+  PCL_INFO("\nPeople tracking app options (help):");
+  PCL_INFO("\t -numTrees \t<int> \tnumber of trees to load");
+  PCL_INFO("\t -tree0 \t<path_to_tree_file>");
+  PCL_INFO("\t -tree1 \t<path_to_tree_file>");
+  PCL_INFO("\t -tree2 \t<path_to_tree_file>");
+  PCL_INFO("\t -tree3 \t<path_to_tree_file>");
+  PCL_INFO("\t -pcd   \t<path_to_pcd_file>");
 }
 
 int main(int argc, char** argv)
 {
-  cout << "(I) : Main : People tracking on PCD files version 0.1" << std::endl;
+  PCL_DEBUG("(I) : Main : People tracking on PCD files version 0.1");
   if(find_switch (argc, argv, "--help") || find_switch (argc, argv, "-h"))
     return print_help(), 0;
  
@@ -268,20 +269,24 @@ int main(int argc, char** argv)
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
   int res = pcl::io::loadPCDFile<pcl::PointXYZRGB> (pcdname, *cloud);
   if (res == -1) //* load the file
-    return std::cout << "(E) : Main : Couldn't read cloud file" << endl, -1;
+  {
+    PCL_ERROR("(E) : Main : Couldn't read cloud file");
+    return res;
+  }
 
-  std::cout << "(I) : Main : Loaded " << cloud->width * cloud->height << " data points from " << pcdname << endl;
+  PCL_DEBUG("(I) : Main : Loaded %d data points from %s",cloud->width * cloud->height, pcdname);
 
   // loading trees
   using pcl::gpu::people::RDFBodyPartsDetector;
+
   vector<string> names_vector(treeFilenames, treeFilenames + numTrees);
-  std::cout << "(I) : Main : Trees collected " << std::endl;
+  PCL_DEBUG("(I) : Main : Trees collected");
   RDFBodyPartsDetector::Ptr rdf(new RDFBodyPartsDetector(names_vector));
-  std::cout << "(I) : Main : Loaded files into rdf" << std::endl;
+  PCL_DEBUG("(I) : Main : Loaded files into rdf");
 
   // Create the app
   PeoplePCDApp app;
-  std::cout << "(I) : Main : App created" << std::endl;
+  PCL_DEBUG("(I) : Main : App created");
   app.people_detector_.rdf_detector_ = rdf;
 
   /// Run the app
@@ -289,9 +294,16 @@ int main(int argc, char** argv)
     pcl::ScopeTime frame_time("(I) : frame_time");
     app.cloud_cb(cloud);
   }
-  std::cout << "(I) : Main : calling visualisation" << std::endl;
-  app.visualizeAndWrite(cloud);
-  app.visualizeAndWriteProb(cloud);
+  if(app.processReturn == 2)
+  {
+    PCL_DEBUG("(I) : Main : calling visualisation");
+    app.visualizeAndWrite(cloud);
+    app.writeProb(cloud);
+  }
+  else
+  {
+    PCL_DEBUG("(I) : Main : no good person found");
+  }
   app.final_view_.spin();
 
   return 0;

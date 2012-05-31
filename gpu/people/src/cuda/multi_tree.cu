@@ -58,6 +58,14 @@ using pcl::gpu::people::trees::NUM_LABELS;
 using namespace std;
 typedef unsigned int uint;
 
+#ifdef __CDT_PARSER__ // This is an eclipse specific hack, does nothing to the code
+#define __global__
+#define __device__
+#define __shared__
+#define __forceinline__
+#define __constant__
+#endif
+
 namespace pcl
 {
   namespace device
@@ -290,7 +298,7 @@ namespace pcl
       {
         // Each tree casts a vote to the probability
         // TODO: replace this with a histogram copy
-        prob.ptr(v)[u].probs[bob[ti]] += 0.25;  //TODO 0.25 = 1/numTrees
+        prob.ptr(v)[u].probs[bob[ti]] += 63;  //TODO (0.25 = 1/numTrees) * 255 = 63
       }
     }
 
@@ -398,7 +406,6 @@ void
 pcl::device::MultiTreeLiveProc::processProb (const Depth& dmap, Labels& lmap, LabelProbability& prob, int FGThresh)
 {
   assert(!trees.empty());
-  //std::cout << "(I) : MultiTreeLiveProc::processProb() called" << std::endl;
 
   unsigned int numTrees = static_cast<unsigned int> (trees.size ());
 
@@ -415,5 +422,4 @@ pcl::device::MultiTreeLiveProc::processProb (const Depth& dmap, Labels& lmap, La
 
   //std::cout << "(I) : MultiTreeLiveProc::processProb() calling CUDA_runMultiTreeProb() with: " << prob.cols() << "x" << prob.rows() << std::endl;
   device::CUDA_runMultiTreeProb(numTrees, dmap, multilmap, lmap, prob);
-  //device::CUDA_runMultiTreeMerge(numTrees, dmap, multilmap, lmap);
 }

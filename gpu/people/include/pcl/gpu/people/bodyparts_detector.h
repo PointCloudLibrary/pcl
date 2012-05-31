@@ -74,10 +74,24 @@ namespace pcl
           RDFBodyPartsDetector(const std::vector<std::string>& tree_files,
               int default_buffer_rows = 480, int default_buffer_cols = 640);
 
+          /**
+           * \brief This function does the complete RDF evaluation in a discrete manner and builds the blob matrix
+           */
           void process(const Depth& depth, const PointCloud<PointXYZ>& cloud, int min_pts_per_cluster);
           // This are the different sub-parts of process()
+          /**
+           * \brief This function processes based on the RDF with probabilistic voting scheme
+           */
           void processProb (const Depth& depth);
+
+          /**
+           * \brief This smooths the labels and does the connected components
+           */
           void processSmooth (const Depth& depth, const PointCloud<PointXYZ>& cloud, int min_pts_per_cluster);
+
+          /**
+           * \brief This processes the blob_matrix_
+           */
           void processRelations ();
 
           //getters
@@ -87,7 +101,7 @@ namespace pcl
           const pcl::device::LabelProbability& getProbability2() const;
           const pcl::device::LabelProbability& getPrevProbability1() const;
           const pcl::device::LabelProbability& getPrevProbability2() const;
-          size_t treesNumber() const;
+          size_t getNumberTrees() const;
           const BlobMatrix& getBlobMatrix() const;
 
           
@@ -115,13 +129,13 @@ namespace pcl
           BlobMatrix blob_matrix_;
 
           // hide this buffer using pImpl
-          std::vector<unsigned char> lmap_host_;
-          std::vector<int> dst_labels_;
-          std::vector<int> region_sizes_;
-          std::vector<int> remap_;
-          std::vector<float> means_storage_;
-          DeviceArray2D<int> comps_;
-          DeviceArray2D<unsigned char> edges_;
+          std::vector<unsigned char>    lmap_host_;
+          std::vector<int>              dst_labels_;
+          std::vector<int>              region_sizes_;
+          std::vector<int>              remap_;
+          std::vector<float>            means_storage_;
+          DeviceArray2D<int>            comps_;
+          DeviceArray2D<unsigned char>  edges_;
 
           void allocate_buffers(int rows = 480, int cols = 640);
       };

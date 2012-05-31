@@ -41,6 +41,7 @@
 #include <pcl/gpu/people/label_tree.h>
 
 #include <pcl/common/time.h>
+#include <pcl/console/print.h>
 #include "cuda.h"
 #include "emmintrin.h"
 
@@ -56,7 +57,7 @@ const float CLUST_TOL = 0.05f;
 pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector( const vector<string>& tree_files, int rows, int cols)    
 : max_cluster_size_(MAX_CLUST_SIZE), cluster_tolerance_(CLUST_TOL)
 {
-  std::cout << "(I) : RDFBodyPartsDetector constructor called" << std::endl;
+  PCL_DEBUG("(I) : RDFBodyPartsDetector constructor called");
   //TODO replace all asserts with exceptions
   assert(!tree_files.empty());
 
@@ -80,7 +81,7 @@ pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector( const vector<strin
 /// getters
 
 size_t 
-pcl::gpu::people::RDFBodyPartsDetector::treesNumber() const
+pcl::gpu::people::RDFBodyPartsDetector::getNumberTrees() const
 {
   return impl_->trees.size();
 }
@@ -127,9 +128,8 @@ pcl::gpu::people::RDFBodyPartsDetector::getBlobMatrix() const
   return blob_matrix_;
 }
 
-
-
 ////////////////////////////////////////////////////////////////////////////////////
+
 void 
 pcl::gpu::people::RDFBodyPartsDetector::allocate_buffers(int rows, int cols)
 {

@@ -58,6 +58,14 @@ using pcl::gpu::people::trees::NUM_LABELS;
 using namespace std;
 typedef unsigned int uint;
 
+#ifdef __CDT_PARSER__ // This is an eclipse specific hack, does nothing to the code
+#define __global__
+#define __device__
+#define __shared__
+#define __forceinline__
+#define __constant__
+#endif
+
 namespace pcl
 {
   namespace device
@@ -119,7 +127,7 @@ namespace pcl
       if( u >= labels.cols || v >= labels.rows )
           return;
 
-      float maxValue = 0;
+      char maxValue = 0;
       int maxID = 31;             // 31 equals to NOLABEL in label_common.h for some reason not resolved here
       prob_histogram p = Prob.ptr(v)[u];
       for(int l = 0; l < NUM_LABELS; ++l)
@@ -137,6 +145,25 @@ namespace pcl
         }
       }
       labels.ptr(v)[u] = maxID;
+    }
+
+    /**
+     * \brief
+     **/
+    __global__ void
+    KernelCUDA_GaussianBlur (PtrStepSz<prob_histogram> probIn,
+                             int kernelSize,
+                             float normaliser,
+                             float* kernel,
+                             PtrStepSz<prob_histogram> probOut)
+    {
+      // map block and thread onto image coordinates
+      int u = blockIdx.x * blockDim.x + threadIdx.x;
+      int v = blockIdx.y * blockDim.y + threadIdx.y;
+
+      if( u >= probIn.cols || v >= probIn.rows )
+          return;
+
     }
 
     /** \brief This will merge the votes from the different trees into one final vote, including probabilistic's **/

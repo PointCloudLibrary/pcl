@@ -42,6 +42,7 @@
 //#include <pcl/gpu/people/label_segment.h>
 #include <pcl/gpu/people/label_tree.h>
 #include <pcl/gpu/people/probability_processor.h>
+#include <pcl/console/print.h>
 #include "internal.h"
 
 #include <pcl/common/time.h>
@@ -60,15 +61,15 @@ using namespace pcl::gpu::people;
 pcl::gpu::people::PeopleDetector::PeopleDetector() 
     : fx_(525.f), fy_(525.f), cx_(319.5f), cy_(239.5f), delta_hue_tolerance_(5)
 {
+  PCL_DEBUG ("(I) : PeopleDector Constructor called");
+
+  // Create a new probability_processor
+  probability_processor_ = ProbabilityProcessor::Ptr (new ProbabilityProcessor());
+
   // allocation buffers with default sizes
   // if input size is other than the defaults, 
   // then the buffers will be reallocated at processing time.
   // This cause only penalty for first frame ( one reallocation of each buffer )
-
-  //probability_processor_ = ProbabilityProcessor::Ptr pp (new ProbabilityProcessor());
-  std::cout << "(I) : PeopleDector Constructor called" << std::endl;
-  probability_processor_ = ProbabilityProcessor::Ptr (new ProbabilityProcessor());
-
   allocate_buffers();
 }
 
@@ -113,7 +114,7 @@ pcl::gpu::people::PeopleDetector::allocate_buffers(int rows, int cols)
   fg_mask_grown_.create(rows, cols);
 }
 
-void
+int
 pcl::gpu::people::PeopleDetector::process(const Depth& depth, const Image& rgba)
 { 
   int cols;
@@ -134,10 +135,10 @@ pcl::gpu::people::PeopleDetector::process(const Depth& depth, const Image& rgba)
   cloud_device_.download(cloud_host_.points, cols);    
     
   // uses cloud device, cloud host, depth device, hue device and other buffers
-  process();
+  return process();
 }
 
-void
+int
 pcl::gpu::people::PeopleDetector::process (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
 {
   allocate_buffers(cloud->height, cloud->width);
@@ -160,10 +161,10 @@ pcl::gpu::people::PeopleDetector::process (const pcl::PointCloud<pcl::PointXYZRG
   depth_device1_.upload(depth_host_.points, depth_host_.width);
 
   // uses cloud device, cloud host, depth device, hue device and other buffers
-  process();
+  return process();
 }
 
-void
+int
 pcl::gpu::people::PeopleDetector::process ()
 {
   int cols = cloud_device_.cols();
@@ -218,12 +219,15 @@ pcl::gpu::people::PeopleDetector::process ()
       }
       static int counter = 0; // TODO move this logging to PeopleApp
       //cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << endl;
+      return 2;
     }
+    return 1;
     //output: Tree2 and PointCloud<XYZRGBL> 
   }
+  return 0;
 }
 
-void
+int
 pcl::gpu::people::PeopleDetector::processProb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
 {
   allocate_buffers(cloud->height, cloud->width);
@@ -246,18 +250,20 @@ pcl::gpu::people::PeopleDetector::processProb (const pcl::PointCloud<pcl::PointX
   depth_device1_.upload(depth_host_.points, depth_host_.width);
 
   // uses cloud device, cloud host, depth device, hue device and other buffers
-  processProb();
+  return processProb();
 }
 
-void
+int
 pcl::gpu::people::PeopleDetector::processProb ()
 {
   int cols = cloud_device_.cols();
   int rows = cloud_device_.rows();
 
-  std::cout << "(I) : PeopleDetector::processProb() called" << std::endl;
+  PCL_DEBUG("(I) : PeopleDetector::processProb() called");
+  //Process input pointcloud with RDF
   rdf_detector_->processProb(depth_device1_);
   // TODO: merge with prior probabilities at this line
+
   // get labels
   probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
   // This executes the connected components
@@ -296,6 +302,7 @@ pcl::gpu::people::PeopleDetector::processProb ()
 
     rdf_detector_->processProb(depth_device2_);
     // TODO: merge with prior probabilities at this line
+
     // get labels
     probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
     // This executes the connected components
@@ -326,9 +333,13 @@ pcl::gpu::people::PeopleDetector::processProb ()
       }
       static int counter = 0; // TODO move this logging to PeopleApp
       cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << endl;
+
+      return 2;
     }
+    return 1;
     //output: Tree2 and PointCloud<XYZRGBL>
   }
+  return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -94,13 +94,13 @@ namespace pcl
           setIntrinsics (float fx, float fy, float cx = -1, float cy = -1);                    
 
           /** \brief Possible will be removed because of extra overheads */
-          void
+          int
           process (const PointCloud<PointXYZRGB>::ConstPtr &cloud);
 
-          void
+          int
           processProb (const PointCloud<PointXYZRGB>::ConstPtr &cloud);
 
-          void 
+          int
           process (const Depth& depth, const Image& rgba);
          
           /** \brief Set the tolerance for the delta on the Hue in Seeded Hue Segmentation step */
@@ -145,11 +145,11 @@ namespace pcl
           Mask fg_mask_;
           Mask fg_mask_grown_;
 
-          void 
+          int
           process ();
 
           /** \brief Process the depth based on probabilities supporting tracking **/
-          void
+          int
           processProb ();
 
           void 
