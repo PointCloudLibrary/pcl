@@ -153,5 +153,6 @@ if(build)
   endif() # VTK_FOUND
 
   add_subdirectory(3d_rec_framework)
+  add_subdirectory(modeler)
 
 endif(build)
