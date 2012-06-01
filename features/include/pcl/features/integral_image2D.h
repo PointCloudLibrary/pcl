@@ -153,6 +153,15 @@ namespace pcl
       inline ElementType
       getFirstOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
 
+      /** \brief Compute the first order sum within a given rectangle
+        * \param[in] start_x x position of the start of the rectangle
+        * \param[in] start_y x position of the start of the rectangle
+        * \param[in] end_x x position of the end of the rectangle
+        * \param[in] end_y x position of the end of the rectangle
+        */
+      inline ElementType
+      getFirstOrderSumSE (unsigned start_x, unsigned start_y, unsigned end_x, unsigned end_y) const;
+
       /** \brief Compute the second order sum within a given rectangle
         * \param[in] start_x x position of rectangle
         * \param[in] start_y y position of rectangle
@@ -162,6 +171,15 @@ namespace pcl
       inline SecondOrderType
       getSecondOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
 
+      /** \brief Compute the second order sum within a given rectangle
+        * \param[in] start_x x position of the start of the rectangle
+        * \param[in] start_y x position of the start of the rectangle
+        * \param[in] end_x x position of the end of the rectangle
+        * \param[in] end_y x position of the end of the rectangle
+        */
+      inline SecondOrderType
+      getSecondOrderSumSE (unsigned start_x, unsigned start_y, unsigned end_x, unsigned end_y) const;
+
       /** \brief Compute the number of finite elements within a given rectangle
         * \param[in] start_x x position of rectangle
         * \param[in] start_y y position of rectangle
@@ -170,6 +188,16 @@ namespace pcl
         */
       inline unsigned
       getFiniteElementsCount (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
+
+      /** \brief Compute the number of finite elements within a given rectangle
+        * \param[in] start_x x position of the start of the rectangle
+        * \param[in] start_y x position of the start of the rectangle
+        * \param[in] end_x x position of the end of the rectangle
+        * \param[in] end_y x position of the end of the rectangle
+        */
+      inline unsigned
+      getFiniteElementsCountSE (unsigned start_x, unsigned start_y, unsigned end_x, unsigned end_y) const;
+
     private:
       typedef Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::Type, Dimension, 1> InputType;
 
@@ -241,6 +269,15 @@ namespace pcl
       inline ElementType
       getFirstOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
 
+      /** \brief Compute the first order sum within a given rectangle
+        * \param[in] start_x x position of the start of the rectangle
+        * \param[in] start_y x position of the start of the rectangle
+        * \param[in] end_x x position of the end of the rectangle
+        * \param[in] end_y x position of the end of the rectangle
+        */
+      inline ElementType
+      getFirstOrderSumSE (unsigned start_x, unsigned start_y, unsigned end_x, unsigned end_y) const;
+
       /** \brief Compute the second order sum within a given rectangle
         * \param[in] start_x x position of rectangle
         * \param[in] start_y y position of rectangle
@@ -250,6 +287,15 @@ namespace pcl
       inline SecondOrderType
       getSecondOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
 
+      /** \brief Compute the second order sum within a given rectangle
+        * \param[in] start_x x position of the start of the rectangle
+        * \param[in] start_y x position of the start of the rectangle
+        * \param[in] end_x x position of the end of the rectangle
+        * \param[in] end_y x position of the end of the rectangle
+        */
+      inline SecondOrderType
+      getSecondOrderSumSE (unsigned start_x, unsigned start_y, unsigned end_x, unsigned end_y) const;
+
       /** \brief Compute the number of finite elements within a given rectangle
         * \param[in] start_x x position of rectangle
         * \param[in] start_y y position of rectangle
@@ -258,7 +304,17 @@ namespace pcl
         */
       inline unsigned
       getFiniteElementsCount (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
-    private:
+
+      /** \brief Compute the number of finite elements within a given rectangle
+        * \param[in] start_x x position of the start of the rectangle
+        * \param[in] start_y x position of the start of the rectangle
+        * \param[in] end_x x position of the end of the rectangle
+        * \param[in] end_y x position of the end of the rectangle
+        */
+      inline unsigned
+      getFiniteElementsCountSE (unsigned start_x, unsigned start_y, unsigned end_x, unsigned end_y) const;
+
+  private:
     //  typedef typename IntegralImageTypeTraits<DataType>::Type InputType;
 
       /** \brief Compute the actual integral image data

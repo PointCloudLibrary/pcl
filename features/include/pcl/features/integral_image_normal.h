@@ -61,6 +61,24 @@ namespace pcl
 
     public:
 
+      /** \brief Different types of border handling. */
+        enum BorderPolicy
+        {
+          BORDER_POLICY_IGNORE,
+          BORDER_POLICY_MIRROR
+        };
+
+      /** \brief Different normal estimation methods.
+        * <ul>
+        *   <li><b>COVARIANCE_MATRIX</b> - creates 9 integral images to compute the normal for a specific point
+        *   from the covariance matrix of its local neighborhood.</li>
+        *   <li><b>AVERAGE_3D_GRADIENT</b> - creates 6 integral images to compute smoothed versions of
+        *   horizontal and vertical 3D gradients and computes the normals using the cross-product between these
+        *   two gradients.
+        *   <li><b>AVERAGE_DEPTH_CHANGE</b> -  creates only a single integral image and computes the normals
+        *   from the average depth changes.
+        * </ul>
+        */
       enum NormalEstimationMethod
       {
         COVARIANCE_MATRIX,
@@ -75,6 +93,7 @@ namespace pcl
       /** \brief Constructor */
       IntegralImageNormalEstimation ()
         : normal_estimation_method_(AVERAGE_3D_GRADIENT)
+        , border_policy_ (BORDER_POLICY_IGNORE)
         , rect_width_ (0), rect_width_2_ (0), rect_width_4_ (0)
         , rect_height_ (0), rect_height_2_ (0), rect_height_4_ (0)
         , distance_threshold_ (0)
@@ -113,6 +132,15 @@ namespace pcl
       void
       setRectSize (const int width, const int height);
 
+      /** \brief Sets the policy for handling borders.
+        * \param[in] border_policy the border policy.
+        */
+      void
+      setBorderPolicy (const BorderPolicy border_policy)
+      {
+        border_policy_ = border_policy;
+      }
+
       /** \brief Computes the normal at the specified position.
         * \param[in] pos_x x position (pixel)
         * \param[in] pos_y y position (pixel)
@@ -121,6 +149,15 @@ namespace pcl
         */
       void
       computePointNormal (const int pos_x, const int pos_y, const unsigned point_index, PointOutT &normal);
+
+      /** \brief Computes the normal at the specified position with mirroring for border handling.
+        * \param[in] pos_x x position (pixel)
+        * \param[in] pos_y y position (pixel)
+        * \param[in] point_index the position index of the point
+        * \param[out] normal the output estimated normal
+        */
+      void
+      computePointNormalMirror (const int pos_x, const int pos_y, const unsigned point_index, PointOutT &normal);
 
       /** \brief The depth change threshold for computing object borders
         * \param[in] max_depth_change_factor the depth change threshold for computing object borders based on
@@ -275,6 +312,9 @@ namespace pcl
         * - AVERAGE_DEPTH_CHANGE
         */
       NormalEstimationMethod normal_estimation_method_;
+
+      /** \brief The policy for handling borders. */
+      BorderPolicy border_policy_;
 
       /** The width of the neighborhood region used for computing the normal. */
       int rect_width_;
