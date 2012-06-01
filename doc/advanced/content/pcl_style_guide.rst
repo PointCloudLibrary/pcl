@@ -347,6 +347,11 @@ download it to some known location and then:
 You can find a semi-finished config for `Uncrustify <http://uncrustify.sourceforge.net/>`_ `here
 <http://dev.pointclouds.org/attachments/download/537/uncrustify.cfg>`_
 
+2.6.3 Eclipse
+"""""""""""""
+
+You can find a PCL code style file for Eclipse here: `http://svn.pointclouds.org/pcl/trunk/doc/advanced/content/files/`
+
 3. Structuring
 ==============
 
