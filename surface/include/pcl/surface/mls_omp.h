@@ -67,6 +67,7 @@ namespace pcl
     using MovingLeastSquares<PointInT, PointOutT>::mls_results_;
     using MovingLeastSquares<PointInT, PointOutT>::search_radius_;
     using MovingLeastSquares<PointInT, PointOutT>::compute_normals_;
+    using MovingLeastSquares<PointInT, PointOutT>::searchForNeighbors;
       
     typedef typename MovingLeastSquares<PointInT, PointOutT>::PointCloudIn PointCloudIn;
     typedef typename MovingLeastSquares<PointInT, PointOutT>::PointCloudOut PointCloudOut;

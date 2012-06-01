@@ -61,7 +61,7 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
     std::vector<float> nn_sqr_dists;
 
     // Get the initial estimates of point positions and their neighborhoods
-    if (!searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
+    if (!searchForNeighbors (cp, nn_indices, nn_sqr_dists))
       continue;
 
 
@@ -75,7 +75,7 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
     NormalCloud projected_points_normals;
 
     // Get a plane approximating the local surface's tangent and project point onto it
-    this->computeMLSPointNormal ((*indices_)[cp], *input_, nn_indices, nn_sqr_dists, projected_points, projected_points_normals);
+    this->computeMLSPointNormal (cp, *input_, nn_indices, nn_sqr_dists, projected_points, projected_points_normals);
 
 #pragma omp critical
     {
@@ -96,9 +96,6 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
     for (int iteration = 0; iteration < dilation_iteration_num_; ++iteration)
       voxel_grid.dilate ();
 
-// TODO: there seems no way of putting an OpenMP directive in front of BOOST_FOREACH ?
-//    BOOST_FOREACH (typename MLSVoxelGrid::HashMap::value_type voxel, voxel_grid.voxel_grid_)
-    // GCC 4.2.x seems to segfault with "internal compiler error" on MacOS X here
 #if defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2))
 #pragma omp parallel for schedule (dynamic, threads_)
 #endif

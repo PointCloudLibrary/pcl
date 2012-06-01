@@ -168,7 +168,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
   model_coefficients[3] = -1 * model_coefficients.dot (xyz_centroid);
 
   // Projected query point
-  Eigen::Vector3f point = input[index].getVector3fMap ();
+  Eigen::Vector3f point = input[(*indices_)[index]].getVector3fMap ();
   float distance = point.dot (model_coefficients.head<3> ()) + model_coefficients[3];
   point -= distance * model_coefficients.head<3> ();
 
@@ -449,7 +449,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
   for (size_t cp = 0; cp < indices_->size (); ++cp)
   {
     // Get the initial estimates of point positions and their neighborhoods
-    if (!searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
+    if (!searchForNeighbors (cp, nn_indices, nn_sqr_dists))
       continue;
 
     // Check the number of nearest neighbors for normal estimation (and later
@@ -461,7 +461,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
     PointCloudOut projected_points;
     NormalCloud projected_points_normals;
     // Get a plane approximating the local surface's tangent and project point onto it
-    computeMLSPointNormal ((*indices_)[cp], *input_, nn_indices, nn_sqr_dists, projected_points, projected_points_normals);
+    computeMLSPointNormal (cp, *input_, nn_indices, nn_sqr_dists, projected_points, projected_points_normals);
 
     // Append projected points to output
     output.insert (output.end (), projected_points.begin (), projected_points.end ());
