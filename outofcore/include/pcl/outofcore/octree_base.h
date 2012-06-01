@@ -67,6 +67,14 @@ namespace pcl
    *   \note Code was adapted from the Urban Robotics out of core octree implementation. 
    *   Contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions. 
    *   http://www.urbanrobotics.net/
+   *
+   *  The primary purpose of this class is recursive traversal of the
+   *  in-memory/top-level octree structure. The metadata in each node
+   *  can be loaded into memory, and the tree traversed recursively in
+   *  this state. This class provides an the interface for:
+   *      I. Point/Region INSERTION methods
+   *      II. Frustrum/box/region REQUESTS/QUERIES
+   *      III. Parameterization of compression, resolution, container type, etc...
    */
     template<typename Container, typename PointT>
     class octree_base
@@ -141,8 +149,66 @@ namespace pcl
 
         ~octree_base ();
 
-        // Accessors
+        // Point/Region INSERTION methods
+        // --------------------------------------------------------------------------------
+        boost::uint64_t
+        addDataToLeaf (const AlignedPointTVector& p);
+
+        /** \brief Copies the points from the point_cloud falling within the bounding box of the octree to the
+         *   out-of-core octree; this is an interface to addDataToLeaf and can be used multiple times.
+         *  \param point_cloud Pointer to the point cloud data to copy to the outofcore octree; Assumes templated
+         *   PointT matches for each.
+         *  \return Number of points successfully copied from the point cloud to the octree.
+         */
+        boost::uint64_t
+        addPointCloud (PointCloudConstPtr point_cloud);
+
+        boost::uint64_t
+        addPointCloud_and_genLOD (PointCloudConstPtr point_cloud);
+
+        /** \brief Recursively add points to the tree subsampling LODs on the way.
+         *
+         * shared read_write_mutex lock occurs
+         * \todo overload this to use shared point cloud pointer
+         */
+        boost::uint64_t
+        addDataToLeaf_and_genLOD (AlignedPointTVector& p);
+        
+        
+
+        // Frustrum/Box/Region REQUESTS/QUERIES: DB Accessors
         // -----------------------------------------------------------------------
+
+        /** \brief Get bins at query_depth that intersect with your bin
+         *
+         * query_depth == 0 is root
+         * query_depth == (this->depth) is full
+         */
+        void
+        queryBBIntersects (const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name) const;
+
+        //get Points in BB, returning all possible matches, including just BB intersect
+        //bool queryBBInterects(const double min[3], const double max[3]);
+
+        /** \brief get Points in BB, only points inside BB */
+        void
+        queryBBIncludes (const double min[3], const double max[3], size_t query_depth, std::list<PointT>& v) const;
+
+        /** \brief random sample of points in BB includes
+         *  \todo adjust for varying densities at different LODs */
+        void
+        queryBBIncludes_subsample (const double min[3], const double max[3], size_t query_depth, const double percent, std::list<PointT>& v) const;
+
+
+        // Parameterization: getters and setters
+        // --------------------------------------------------------------------------------
+        /** 
+            \todo downsampling of queries
+            \todo downsampling of octree during construction (or leave that to the user's own preprocessing)
+            \todo parameterize compression 
+            \todo parameterize container type (template?)
+        */
+
 
         /** \brief Copy the overall BB to min max */
         inline bool
@@ -236,51 +302,6 @@ namespace pcl
          *  \note shared read_write_mutex lock occurs
          *  \todo overload this to use shared point cloud pointer
          */
-        boost::uint64_t
-        addDataToLeaf (const AlignedPointTVector& p);
-
-        /** \brief Copies the points from the point_cloud falling within the bounding box of the octree to the
-         *   out-of-core octree; this is an interface to addDataToLeaf and can be used multiple times.
-         *  \param point_cloud Pointer to the point cloud data to copy to the outofcore octree; Assumes templated
-         *   PointT matches for each.
-         *  \return Number of points successfully copied from the point cloud to the octree.
-         */
-        boost::uint64_t
-        addPointCloud (PointCloudConstPtr point_cloud);
-
-        boost::uint64_t
-        addPointCloud_and_genLOD (PointCloudConstPtr point_cloud);
-
-        /** \brief Recursively add points to the tree subsampling LODs on the way.
-         *
-         * shared read_write_mutex lock occurs
-         * \todo overload this to use shared point cloud pointer
-         */
-        boost::uint64_t
-        addDataToLeaf_and_genLOD (AlignedPointTVector& p);
-
-        // DB Access
-        // -----------------------------------------------------------------------
-
-        /** \brief Get bins at query_depth that intersect with your bin
-         *
-         * query_depth == 0 is root
-         * query_depth == (this->depth) is full
-         */
-        void
-        queryBBIntersects (const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name) const;
-
-        //get Points in BB, returning all possible matches, including just BB intersect
-        //bool queryBBInterects(const double min[3], const double max[3]);
-
-        /** \brief get Points in BB, only points inside BB */
-        void
-        queryBBIncludes (const double min[3], const double max[3], size_t query_depth, std::list<PointT>& v) const;
-
-        /** \brief random sample of points in BB includes
-         *  \todo adjust for varying densities at different LODs */
-        void
-        queryBBIncludes_subsample (const double min[3], const double max[3], size_t query_depth, const double percent, std::list<PointT>& v) const;
 
         void
         printBBox(const size_t query_depth) const;
@@ -405,6 +426,7 @@ namespace pcl
         const static uint64_t LOAD_COUNT_ = static_cast<uint64_t>(2e9);
 
         double resolution_;
+
     };
   }
 }

@@ -295,7 +295,7 @@ void point_test(octree_disk& t)
   }
 }
 
-#if 1
+#if 0
 TEST (PCL, Outofcore_Point_Query)
 {
   octree_disk treeA(filename_otreeA, false);
@@ -304,7 +304,9 @@ TEST (PCL, Outofcore_Point_Query)
   point_test(treeA);
   point_test(treeB);
 }
+#endif
 
+#if 0
 TEST (PCL, Outofcore_Ram_Tree)
 {
   double min[3] = {0,0,0};

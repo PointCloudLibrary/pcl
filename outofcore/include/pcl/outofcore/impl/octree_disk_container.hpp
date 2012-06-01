@@ -195,7 +195,8 @@ namespace pcl
         pcl::PCDWriter writer;
 
         //write ascii for now to debug
-        assert ( writer.write (*fileback_name_, *cloud, false) == 0); 
+        assert ( writer.writeBinaryCompressed (*fileback_name_, *cloud) == 0 );
+        
       }
       
       if ( outofcore_v < 3 )
@@ -281,7 +282,7 @@ namespace pcl
       pcl::PCDReader reader;
       typename pcl::PointCloud<PointT>::Ptr cloud ( new pcl::PointCloud<PointT>() );
       
-      reader.read ( *fileback_name_ , *cloud);
+      assert ( reader.read ( *fileback_name_ , *cloud) > 0 );
       
       for(size_t i=0; i < cloud->points.size (); i++)
         v.push_back (cloud->points[i]);
@@ -339,6 +340,7 @@ namespace pcl
 
       fclose (f);
 */
+#if 0
       //copy the extra
       if (cloud->points.size () < count && !writebuff_.empty () )
       {
@@ -351,7 +353,7 @@ namespace pcl
 
         v.insert (v.end (), start, end);
       }
-
+#endif
     }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -586,7 +588,7 @@ namespace pcl
       PCDWriter writer;
 
       /// \todo allow appending to pcd file without loading all of the point data into memory
-      assert ( writer.write ( *fileback_name_, *tmp_cloud, false) == 0 );
+      assert ( writer.writeBinaryCompressed ( *fileback_name_, *tmp_cloud)==0);
         
     }
   
@@ -640,7 +642,7 @@ namespace pcl
         PCDWriter writer;
 
         /// \todo allow appending to pcd file without loading all of the point data into memory
-        assert ( writer.write ( *fileback_name_, *tmp_cloud, false) == 0 );
+        assert ( writer.writeBinaryCompressed ( *fileback_name_, *tmp_cloud)==0);//, false) == 0 );
         
       }
       else //less than version 3
