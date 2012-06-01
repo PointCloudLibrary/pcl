@@ -51,8 +51,9 @@
 namespace pcl
 {
 
-  // --------------------------------------------------------------------------
-
+  /** \brief Modality based on max-RGB gradients.
+    * \author Stefan Holzer
+    */
   template <typename PointInT>
   class ColorGradientModality
     : public QuantizableModality, public PCLBase<PointInT>
@@ -60,13 +61,20 @@ namespace pcl
     protected:
       using PCLBase<PointInT>::input_;
 
+      /** \brief Candidate for a feature (used in feature extraction methods). */
       struct Candidate
       {
+        /** \brief The gradient. */
         GradientXY gradient;
     
+        /** \brief The x-position. */
         int x;
+        /** \brief The y-position. */
         int y;	
     
+        /** \brief Operator for comparing to candidates (by magnitude of the gradient).
+          * \param[in] rhs the candidate to compare with.
+          */
         bool operator< (const Candidate & rhs)
         {
           return (gradient.magnitude > rhs.gradient.magnitude);
@@ -76,6 +84,7 @@ namespace pcl
     public:
       typedef typename pcl::PointCloud<PointInT> PointCloudIn;
 
+      /** \brief Different methods for feature selection/extraction. */
       enum FeatureSelectionMethod
       {
         MASK_BORDER_HIGH_GRADIENTS,
@@ -83,61 +92,97 @@ namespace pcl
         DISTANCE_MAGNITUDE_SCORE
       };
 
+      /** \brief Constructor. */
       ColorGradientModality ();
-  
+      /** \brief Destructor. */
       virtual ~ColorGradientModality ();
   
+      /** \brief Sets the threshold for the gradient magnitude which is used when quantizing the data.
+        *        Gradients with a smaller magnitude are ignored. 
+        * \param[in] threshold the new gradient magnitude threshold.
+        */
       inline void
       setGradientMagnitudeThreshold (const float threshold)
       {
         gradient_magnitude_threshold_ = threshold;
       }
 
+      /** \brief Sets the threshold for the gradient magnitude which is used for feature extraction.
+        *        Gradients with a smaller magnitude are ignored. 
+        * \param[in] threshold the new gradient magnitude threshold.
+        */
       inline void
       setGradientMagnitudeThresholdForFeatureExtraction (const float threshold)
       {
         gradient_magnitude_threshold_feature_extraction_ = threshold;
       }
 
+      /** \brief Sets the feature selection method.
+        * \param[in] method the feature selection method.
+        */
       inline void
       setFeatureSelectionMethod (const FeatureSelectionMethod method)
       {
         feature_selection_method_ = method;
       }
   
+      /** \brief Sets the spreading size for spreading the quantized data. */
       inline void
       setSpreadingSize (const size_t spreading_size)
       {
         spreading_size_ = spreading_size;
       }
 
+      /** \brief Sets whether variable feature numbers for feature extraction is enabled.
+        * \param[in] enabled enables/disables variable feature numbers for feature extraction.
+        */
       inline void
       setVariableFeatureNr (const bool enabled)
       {
         variable_feature_nr_ = enabled;
       }
 
+      /** \brief Returns a reference to the internally computed quantized map. */
       inline QuantizedMap &
       getQuantizedMap () 
       { 
         return (filtered_quantized_color_gradients_);
       }
   
+      /** \brief Returns a reference to the internally computed spreaded quantized map. */
       inline QuantizedMap &
       getSpreadedQuantizedMap () 
       { 
         return (spreaded_filtered_quantized_color_gradients_);
       }
 
+      /** \brief Returns a point cloud containing the max-RGB gradients. */
       inline pcl::PointCloud<pcl::GradientXY> &
       getMaxColorGradients ()
       {
         return (color_gradients_);
       }
   
+      /** \brief Extracts features from this modality within the specified mask.
+        * \param[in] mask defines the areas where features are searched in. 
+        * \param[in] nr_features defines the number of features to be extracted 
+        *            (might be less if not sufficient information is present in the modality).
+        * \param[in] modality_index the index which is stored in the extracted features.
+        * \param[out] features the destination for the extracted features.
+        */
       void
       extractFeatures (const MaskMap & mask, size_t nr_features, size_t modalityIndex,
                        std::vector<QuantizedMultiModFeature> & features) const;
+  
+      /** \brief Extracts all possible features from the modality within the specified mask.
+        * \param[in] mask defines the areas where features are searched in. 
+        * \param[in] nr_features IGNORED (TODO: remove this parameter).
+        * \param[in] modality_index the index which is stored in the extracted features.
+        * \param[out] features the destination for the extracted features.
+        */
+      void
+      extractAllFeatures (const MaskMap & mask, size_t nr_features, size_t modalityIndex,
+                          std::vector<QuantizedMultiModFeature> & features) const;
   
       /** \brief Provide a pointer to the input dataset (overwrites the PCLBase::setInputCloud method)
         * \param cloud the const boost shared pointer to a PointCloud message
@@ -148,49 +193,78 @@ namespace pcl
         input_ = cloud;
       }
 
+      /** \brief Processes the input data (smoothing, computing gradients, quantizing, filtering, spreading). */
       virtual void
       processInputData ();
 
+      /** \brief Processes the input data assuming that everything up to filtering is already done/available 
+        *        (so only spreading is performed). */
       virtual void
       processInputDataFromFiltered ();
 
     protected:
 
+      /** \brief Computes the Gaussian kernel used for smoothing. 
+        * \param[in] kernel_size the size of the Gaussian kernel. 
+        * \param[in] sigma the sigma.
+        * \param[out] kernel_values the destination for the values of the kernel. */
       void
       computeGaussianKernel (const size_t kernel_size, const float sigma, std::vector <float> & kernel_values);
 
+      /** \brief Computes the max-RGB gradients for the specified cloud.
+        * \param[in] cloud the cloud for which the gradients are computed.
+        */
       void
       computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & cloud);
 
+      /** \brief Computes the max-RGB gradients for the specified cloud using sobel.
+        * \param[in] cloud the cloud for which the gradients are computed.
+        */
       void
       computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & cloud);
   
+      /** \brief Quantizes the color gradients. */
       void
       quantizeColorGradients ();
   
+      /** \brief Filters the quantized gradients. */
       void
       filterQuantizedColorGradients ();
 
+      /** \brief Erodes a mask.
+        * \param[in] mask_in the mask which will be eroded.
+        * \param[out] mask_out the destination for the eroded mask.
+        */
       static void
       erode (const pcl::MaskMap & mask_in, pcl::MaskMap & mask_out);
   
     private:
 
+      /** \brief Determines whether variable numbers of features are extracted or not. */
       bool variable_feature_nr_;
 
+      /** \brief Stores a smoothed verion of the input cloud. */
 	    pcl::PointCloud<pcl::RGB>::Ptr smoothed_input_;
 
+      /** \brief Defines which feature selection method is used. */
       FeatureSelectionMethod feature_selection_method_;
 
+      /** \brief The threshold applied on the gradient magnitudes (for quantization). */
       float gradient_magnitude_threshold_;
+      /** \brief The threshold applied on the gradient magnitudes for feature extraction. */
       float gradient_magnitude_threshold_feature_extraction_;
 
+      /** \brief The point cloud which holds the max-RGB gradients. */
       pcl::PointCloud<pcl::GradientXY> color_gradients_;
 
+      /** \brief The spreading size. */
       size_t spreading_size_;
   
+      /** \brief The map which holds the quantized max-RGB gradients. */
       pcl::QuantizedMap quantized_color_gradients_;
+      /** \brief The map which holds the filtered quantized data. */
       pcl::QuantizedMap filtered_quantized_color_gradients_;
+      /** \brief The map which holds the spreaded quantized data. */
       pcl::QuantizedMap spreaded_filtered_quantized_color_gradients_;
   
   };
@@ -362,7 +436,8 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
         if (mask (col_index, row_index) != 0)
         {
           const GradientXY & gradient = color_gradients_ (col_index, row_index);
-          if (gradient.magnitude > gradient_magnitude_threshold_feature_extraction_)
+          if (gradient.magnitude > gradient_magnitude_threshold_feature_extraction_
+            && filtered_quantized_color_gradients_ (col_index, row_index) != 0)
           {
             Candidate candidate;
             candidate.gradient = gradient;
@@ -549,7 +624,8 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
         if (diff_mask (col_index, row_index) != 0)
         {
           const GradientXY & gradient = color_gradients_ (col_index, row_index);
-          if (feature_selection_method_ == MASK_BORDER_EQUALLY || gradient.magnitude > gradient_magnitude_threshold_feature_extraction_)
+          if ((feature_selection_method_ == MASK_BORDER_EQUALLY || gradient.magnitude > gradient_magnitude_threshold_feature_extraction_)
+            && filtered_quantized_color_gradients_ (col_index, row_index) != 0)
           {
             Candidate candidate;
             candidate.gradient = gradient;
@@ -620,6 +696,55 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
     feature.y = iter2->y;
     feature.modality_index = modality_index;
     feature.quantized_value = filtered_quantized_color_gradients_ (iter2->x, iter2->y);
+
+    features.push_back (feature);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT>
+void pcl::ColorGradientModality<PointInT>::
+extractAllFeatures (const MaskMap & mask, const size_t nr_features, const size_t modality_index,
+                 std::vector<QuantizedMultiModFeature> & features) const
+{
+  const size_t width = mask.getWidth ();
+  const size_t height = mask.getHeight ();
+  
+  std::list<Candidate> list1;
+  std::list<Candidate> list2;
+
+
+  for (size_t row_index = 0; row_index < height; ++row_index)
+  {
+    for (size_t col_index = 0; col_index < width; ++col_index)
+    {
+      if (mask (col_index, row_index) != 0)
+      {
+        const GradientXY & gradient = color_gradients_ (col_index, row_index);
+        if (gradient.magnitude > gradient_magnitude_threshold_feature_extraction_
+          && filtered_quantized_color_gradients_ (col_index, row_index) != 0)
+        {
+          Candidate candidate;
+          candidate.gradient = gradient;
+          candidate.x = static_cast<int> (col_index);
+          candidate.y = static_cast<int> (row_index);
+
+          list1.push_back (candidate);
+        }
+      }
+    }
+  }
+
+  list1.sort();
+
+  for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
+  {
+    QuantizedMultiModFeature feature;
+          
+    feature.x = iter1->x;
+    feature.y = iter1->y;
+    feature.modality_index = modality_index;
+    feature.quantized_value = filtered_quantized_color_gradients_ (iter1->x, iter1->y);
 
     features.push_back (feature);
   }

@@ -41,30 +41,42 @@
 namespace pcl
 {
 
+  /** \brief Represents a distance map obtained from a distance transformation. 
+    * \author Stefan Holzer
+    */
   class DistanceMap
   {
     public:
+      /** \brief Constructor. */
       DistanceMap () : data_ (0), width_ (0), height_ (0) {}
+      /** \brief Destructor. */
       virtual ~DistanceMap () {}
 
+      /** \brief Returns the width of the map. */
       inline size_t 
       getWidth () const
       {
         return (width_); 
       }
 
+      /** \brief Returns the height of the map. */
       inline size_t 
       getHeight () const
       { 
         return (height_); 
       }
     
+      /** \brief Returns a pointer to the beginning of map. */
       inline float * 
       getData () 
       { 
         return (&data_[0]); 
       }
 
+      /** \brief Resizes the map to the specified size.
+        * \param[in] width the new width of the map.
+        * \param[in] height the new height of the map.
+        */
       void 
       resize (const size_t width, const size_t height)
       {
@@ -73,12 +85,20 @@ namespace pcl
         height_ = height;
       }
 
+      /** \brief Operator to access an element of the map.
+        * \param[in] col_index the column index of the element to access.
+        * \param[in] row_index the row index of the element to access.
+        */
       inline float & 
       operator() (const size_t col_index, const size_t row_index)
       {
         return (data_[row_index*width_ + col_index]);
       }
 
+      /** \brief Operator to access an element of the map.
+        * \param[in] col_index the column index of the element to access.
+        * \param[in] row_index the row index of the element to access.
+        */
       inline const float & 
       operator() (const size_t col_index, const size_t row_index) const
       {
@@ -86,8 +106,11 @@ namespace pcl
       }
 
     protected:
+      /** \brief The storage for the distance map data. */
       std::vector<float> data_;
+      /** \brief The width of the map. */
       size_t width_;
+      /** \brief The height of the map. */
       size_t height_;
   };
 

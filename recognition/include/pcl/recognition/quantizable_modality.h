@@ -47,32 +47,45 @@
 
 namespace pcl
 {
+  /** \brief Interface for a quantizable modality. 
+    * \author Stefan Holzer
+    */
   class PCL_EXPORTS QuantizableModality
   {
     public:
+      /** \brief Constructor. */
       QuantizableModality ();
+      /** \brief Destructor. */
       virtual ~QuantizableModality ();
 
-      //inline int getWidth () const { return width; }
-      //inline int getHeight () const { return height; }
-
-      //inline unsigned char & operator() (int x, int y) { return data[y*width+x]; }
-      //inline const unsigned char & operator() (int x, int y) const { return data[y*width+x]; }
-
+      /** \brief Returns a reference to the internally computed quantized map. */
       virtual QuantizedMap &
       getQuantizedMap () = 0;
 
+      /** \brief Returns a reference to the internally computed spreaded quantized map. */
       virtual QuantizedMap &
       getSpreadedQuantizedMap () = 0;
 
+      /** \brief Extracts features from this modality within the specified mask.
+        * \param[in] mask defines the areas where features are searched in. 
+        * \param[in] nr_features defines the number of features to be extracted 
+        *            (might be less if not sufficient information is present in the modality).
+        * \param[in] modality_index the index which is stored in the extracted features.
+        * \param[out] features the destination for the extracted features.
+        */
       virtual void 
       extractFeatures (const MaskMap & mask, size_t nr_features, size_t modality_index, 
                        std::vector<QuantizedMultiModFeature> & features) const = 0;
 
-    private:
-      //unsigned char * data_;
-      //int width_;
-      //int height_;  
+      /** \brief Extracts all possible features from the modality within the specified mask.
+        * \param[in] mask defines the areas where features are searched in. 
+        * \param[in] nr_features IGNORED (TODO: remove this parameter).
+        * \param[in] modality_index the index which is stored in the extracted features.
+        * \param[out] features the destination for the extracted features.
+        */
+      virtual void 
+      extractAllFeatures (const MaskMap & mask, size_t nr_features, size_t modality_index, 
+                       std::vector<QuantizedMultiModFeature> & features) const = 0;
   };
 }
 

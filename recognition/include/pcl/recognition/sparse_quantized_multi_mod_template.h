@@ -45,15 +45,43 @@
 namespace pcl
 {
 
+  /** \brief Feature that defines a position and quantized value in a specific modality. 
+    * \author Stefan Holzer
+    */
   struct QuantizedMultiModFeature
   {
+    /** \brief Constructor. */
     QuantizedMultiModFeature () : x (0), y (0), modality_index (0), quantized_value (0) {}
 
+    /** \brief x-position. */
     int x;
+    /** \brief y-position. */
     int y;
+    /** \brief the index of the corresponding modality. */
     size_t modality_index;
+    /** \brief the quantized value attached to the feature. */
     unsigned char quantized_value;
 
+    /** \brief Compares whether two features are the same. 
+      * \param[in] base the feature to compare to.
+      */
+    bool
+    compareForEquality (const QuantizedMultiModFeature & base)
+    {
+      if (base.x != x)
+        return false;
+      if (base.y != y)
+        return false;
+      if (base.modality_index != modality_index)
+        return false;
+      if (base.quantized_value != quantized_value)
+        return false;
+
+      return true;
+    }
+
+    /** \brief Serializes the object to the specified stream.
+      * \param[out] stream the stream the object will be serialized to. */
     void 
     serialize (std::ostream & stream) const
     {
@@ -63,6 +91,8 @@ namespace pcl
       write (stream, quantized_value);
     }
 
+    /** \brief Deserializes the object from the specified stream.
+      * \param[in] stream the stream the object will be deserialized from. */
     void 
     deserialize (std::istream & stream)
     {
@@ -73,14 +103,22 @@ namespace pcl
     }
   };
 
+  /** \brief A multi-modality template constructed from a set of quantized multi-modality features.
+    * \author Stefan Holzer 
+    */
   struct SparseQuantizedMultiModTemplate
   {
+    /** \brief Constructor. */
     SparseQuantizedMultiModTemplate () : features (), region () {}
 
+    /** \brief The storage for the multi-modality features. */
     std::vector<QuantizedMultiModFeature> features;
 
+    /** \brief The region assigned to the template. */
     RegionXY region;
 
+    /** \brief Serializes the object to the specified stream.
+      * \param[out] stream the stream the object will be serialized to. */
     void 
     serialize (std::ostream & stream) const
     {
@@ -94,6 +132,8 @@ namespace pcl
       region.serialize (stream);
     }
 
+    /** \brief Deserializes the object from the specified stream.
+      * \param[in] stream the stream the object will be deserialized from. */
     void 
     deserialize (std::istream & stream)
     {

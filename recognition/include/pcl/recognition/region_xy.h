@@ -42,12 +42,14 @@
 
 namespace pcl
 {
+  /** \brief Function for reading data from a stream. */
   template <class Type>
   void read (std::istream & stream, Type & value)
   {
     stream.read (reinterpret_cast<char*> (&value), sizeof(value));
   }
 
+  /** \brief Function for reading data arrays from a stream. */
   template <class Type>
   void read (std::istream & stream, Type * value, int nr_values)
   {
@@ -57,12 +59,14 @@ namespace pcl
     }
   }
 
+  /** \brief Function for writing data to a stream. */
   template <class Type>
   void write (std::ostream & stream, Type value)
   {
     stream.write (reinterpret_cast<char*> (&value), sizeof (value));
   }
 
+  /** \brief Function for writing data arrays to a stream. */
   template <class Type>
   void write (std::ostream & stream, Type * value, int nr_values)
   {
@@ -72,15 +76,25 @@ namespace pcl
     }
   }
 
-  struct RegionXY
+  /** \brief Defines a region in XY-space.
+    * \author Stefan Holzer
+    */
+  struct PCL_EXPORTS RegionXY
   {
+    /** \brief Constructor. */
     RegionXY () : x (0), y (0), width (0), height (0) {}
 
+    /** \brief x-position of the region. */
     int x;
+    /** \brief y-position of the region. */
     int y;
+    /** \brief width of the region. */
     int width;
+    /** \brief height of the region. */
     int height;
 
+    /** \brief Serializes the object to the specified stream.
+      * \param[out] stream the stream the object will be serialized to. */
     void
     serialize (std::ostream & stream) const
     {
@@ -90,6 +104,8 @@ namespace pcl
       write (stream, height);
     }
 
+    /** \brief Deserializes the object from the specified stream.
+      * \param[in] stream the stream the object will be deserialized from. */
     void 
     deserialize (::std::istream & stream)
     {
