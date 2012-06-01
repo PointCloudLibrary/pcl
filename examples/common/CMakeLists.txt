@@ -6,4 +6,4 @@ PCL_ADD_EXAMPLE(pcl_example_organized_point_cloud FILES example_organized_point_
 
 PCL_ADD_EXAMPLE(pcl_example_check_if_point_is_valid FILES example_check_if_point_is_valid.cpp LINK_WITH pcl_common)
 
-PCL_ADD_EXAMPLE(pcl_example_get_max_min_coordinates FILES example_get_max_min_coordinates.cpp LINK_WITH pcl_common)
+PCL_ADD_EXAMPLE(pcl_example_get_max_min_coordinates FILES example_get_max_min_coordinates.cpp LINK_WITH pcl_common pcl_io)
