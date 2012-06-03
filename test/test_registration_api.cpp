@@ -43,6 +43,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/registration/correspondence_estimation.h>
 #include <pcl/registration/correspondence_rejection_distance.h>
+#include <pcl/registration/correspondence_rejection_median_distance.h>
 #include <pcl/registration/correspondence_rejection.h>
 #include <pcl/registration/correspondence_rejection_one_to_one.h>
 #include <pcl/registration/correspondence_rejection_sample_consensus.h>
@@ -122,6 +123,32 @@ TEST (PCL, CorrespondenceRejectorDistance)
   if (int (correspondences_result_rej_dist->size ()) == nr_correspondences_result_rej_dist)
     for (int i = 0; i < nr_correspondences_result_rej_dist; ++i)
       EXPECT_EQ ((*correspondences_result_rej_dist)[i].index_match, correspondences_dist[i][1]);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, CorrespondenceRejectorMedianDistance)
+{
+  pcl::PointCloud<pcl::PointXYZ>::Ptr source (new pcl::PointCloud<pcl::PointXYZ>(cloud_source));
+  pcl::PointCloud<pcl::PointXYZ>::Ptr target (new pcl::PointCloud<pcl::PointXYZ>(cloud_target));
+
+  // re-do correspondence estimation
+  boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
+  pcl::registration::CorrespondenceEstimation<pcl::PointXYZ, pcl::PointXYZ> corr_est;
+  corr_est.setInputCloud (source);
+  corr_est.setInputTarget (target);
+  corr_est.determineCorrespondences (*correspondences);
+
+  boost::shared_ptr<pcl::Correspondences>  correspondences_result_rej_median_dist (new pcl::Correspondences);
+  pcl::registration::CorrespondenceRejectorMedianDistance corr_rej_median_dist;
+  corr_rej_median_dist.setInputCorrespondences(correspondences);
+  corr_rej_median_dist.setMedianFactor (0.5);
+
+  corr_rej_median_dist.getCorrespondences(*correspondences_result_rej_median_dist);
+
+  // check for correct matches
+  if (int (correspondences_result_rej_median_dist->size ()) == nr_correspondences_result_rej_dist)
+    for (int i = 0; i < nr_correspondences_result_rej_dist; ++i)
+      EXPECT_EQ ((*correspondences_result_rej_median_dist)[i].index_match, correspondences_dist[i][1]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

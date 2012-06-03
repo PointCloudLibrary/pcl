@@ -14,6 +14,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/correspondence_estimation_normal_shooting.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_distance.h
+        include/pcl/${SUBSYS_NAME}/correspondence_rejection_median_distance.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_features.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_one_to_one.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_sample_consensus.h
@@ -51,6 +52,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation_normal_shooting.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_distance.hpp
+        include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_median_distance.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_features.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_one_to_one.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_sample_consensus.hpp

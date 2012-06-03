@@ -42,6 +42,9 @@
 #include <pcl/registration/correspondence_types.h>
 #include <pcl/registration/correspondence_sorting.h>
 #include <pcl/console/print.h>
+#include <pcl/point_cloud.h>
+#include <pcl/kdtree/kdtree_flann.h>
+
 
 namespace pcl
 {
@@ -135,7 +138,98 @@ namespace pcl
         virtual void 
         applyRejection (Correspondences &correspondences) = 0;
     };
+ 
+    /** @b DataContainerInterface provides a generic interface for computing correspondence scores between correspondent
+      * points in the input and target clouds
+      * \ingroup registration
+      */
+    class DataContainerInterface
+    {
+      public:
+        virtual ~DataContainerInterface () {}
+        virtual double getCorrespondenceScore (int index) = 0;
+        virtual double getCorrespondenceScore (const pcl::Correspondence &) = 0;
+    };
 
+    /** @b DataContainer is a container for the input and target point clouds and implements the interface 
+      * to compute correspondence scores between correspondent points in the input and target clouds
+      * \ingroup registration
+      */
+    template <typename PointT>
+      class DataContainer : public DataContainerInterface
+    {
+      typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
+      typedef typename pcl::KdTree<PointT>::Ptr KdTreePtr;
+
+      public:
+
+      /** \brief Empty constructor. */
+      DataContainer () : input_ (), target_ ()
+      {
+        tree_.reset (new pcl::KdTreeFLANN<PointT>);
+      }
+
+      /** \brief Provide a source point cloud dataset (must contain XYZ
+       * data!), used to compute the correspondence distance.  
+       * \param[in] cloud a cloud containing XYZ data
+       */
+      inline void 
+        setInputCloud (const PointCloudConstPtr &cloud)
+        {
+          input_ = cloud;
+        }
+
+      /** \brief Provide a target point cloud dataset (must contain XYZ
+       * data!), used to compute the correspondence distance.  
+       * \param[in] target a cloud containing XYZ data
+       */
+      inline void 
+        setInputTarget (const PointCloudConstPtr &target)
+        {
+          target_ = target;
+          tree_->setInputCloud (target_);
+        }
+
+      /** \brief Get the correspondence score for a point in the input cloud
+       *  \param[index] index of the point in the input cloud
+       */
+      inline double 
+        getCorrespondenceScore (int index)
+        {
+          std::vector<int> indices (1);
+          std::vector<float> distances (1);
+          if (tree_->nearestKSearch (input_->points[index], 1, indices, distances))
+          {
+            return (distances[0]);
+          }
+          else
+            return (std::numeric_limits<double>::max ());
+        }
+
+      /** \brief Get the correspondence score for a given pair of correspondent points
+       *  \param[corr] Correspondent points
+       */
+      inline double 
+        getCorrespondenceScore (const pcl::Correspondence &corr)
+        {
+          // Get the source and the target feature from the list
+          const PointT &src = input_->points[corr.index_query];
+          const PointT &tgt = target_->points[corr.index_match];
+
+          return ((src.getVector4fMap () - tgt.getVector4fMap ()).squaredNorm ());
+        }
+
+      private:
+
+        /** \brief The input point cloud dataset target. */
+        PointCloudConstPtr input_;
+
+        /** \brief The input point cloud dataset target. */
+        PointCloudConstPtr target_;
+
+        /** \brief A pointer to the spatial search object. */
+        KdTreePtr tree_;
+    };
   }
 }
 
