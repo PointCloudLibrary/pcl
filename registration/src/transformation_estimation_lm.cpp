@@ -1,9 +1,8 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
- *
+ *  Copyright (c) 2011, Alexandru-Eugen Ichim
+ *                      Willow Garage, Inc
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,25 +32,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
+ * $Id: pyramid_feature_matching.cpp 5027 2012-03-12 03:10:45Z rusu $
  */
 
-#include <pcl/point_types.h>
-#include <pcl/registration/registration.h>
-#include <pcl/registration/icp.h>
-#include <pcl/registration/icp_nl.h>
-/*#include <pcl/registration/correspondence_estimation.h>
-#include <pcl/registration/correspondence_rejection.h>
-#include <pcl/registration/correspondence_rejection_distance.h>
-#include <pcl/registration/correspondence_rejection_one_to_one.h>
-#include <pcl/registration/correspondence_rejection_sample_consensus.h>
-#include <pcl/registration/correspondence_rejection_trimmed.h>
-#include <pcl/registration/correspondence_sorting.h>
-*/
-
-typedef pcl::IterativeClosestPoint<pcl::PointXYZ,pcl::PointXYZ> IterativeClosestPoint;
-typedef pcl::IterativeClosestPointNonLinear<pcl::PointXYZ,pcl::PointXYZ> IterativeClosestPointNonLinear;
-//PLUGINLIB_DECLARE_CLASS (pcl, IterativeClosestPoint, IterativeClosestPoint, nodelet::Nodelet);
-//PLUGINLIB_DECLARE_CLASS (pcl, IterativeClosestPointNonLinear, IterativeClosestPointNonLinear, nodelet::Nodelet);
-
+#include <pcl/registration/transformation_estimation_lm.h>

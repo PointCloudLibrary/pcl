@@ -1,6 +1,6 @@
 set(SUBSYS_NAME registration)
 set(SUBSYS_DESC "Point cloud registration library")
-set(SUBSYS_DEPS common kdtree search sample_consensus features filters)
+set(SUBSYS_DEPS common octree kdtree search sample_consensus features filters)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -29,6 +29,9 @@ if(build)
         include/pcl/${SUBSYS_NAME}/ndt.h
         include/pcl/${SUBSYS_NAME}/ndt_2d.h
         include/pcl/${SUBSYS_NAME}/ppf_registration.h
+
+        include/pcl/${SUBSYS_NAME}/impl/pairwise_graph_registration.hpp
+
         include/pcl/${SUBSYS_NAME}/pyramid_feature_matching.h
         include/pcl/${SUBSYS_NAME}/registration.h
         include/pcl/${SUBSYS_NAME}/transforms.h
@@ -77,9 +80,29 @@ if(build)
 
     set(srcs
         src/registration.cpp
+        src/correspondence_estimation.cpp
+        src/correspondence_estimation_normal_shooting.cpp
+        src/correspondence_rejection_distance.cpp
+        src/correspondence_rejection_features.cpp
+        src/correspondence_rejection_one_to_one.cpp
+        src/correspondence_types.cpp
+        src/correspondence_rejection_sample_consensus.cpp
+        src/correspondence_rejection_trimmed.cpp
         src/ppf_registration.cpp
         src/pyramid_feature_matching.cpp
+#src/pairwise_graph_registration.cpp
+        src/ia_ransac.cpp
+        src/icp.cpp
+        src/gicp.cpp
+        src/icp_nl.cpp
+        src/elch.cpp
+        src/lum.cpp
         src/ndt.cpp
+        src/ndt_2d.cpp
+        src/transformation_estimation_svd.cpp
+        src/transformation_estimation_lm.cpp
+        src/transformation_estimation_point_to_plane_lls.cpp
+        src/transformation_validation_euclidean.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
