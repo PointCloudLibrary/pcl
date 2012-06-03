@@ -38,6 +38,22 @@ Table of contents
 Basic Usage
 -----------
 
+  * :ref:`walkthrough`
+
+     ======  ======
+     |mi_0|  Title: **PCL Functionality Walkthrough**
+
+             Author: *Razvan G. Mihalyi*
+
+             Compatibility: > PCL 1.6
+             
+             Takes the reader through all of the PCL modules and offers basic explanations on their functionalities.
+     ======  ======
+
+     .. |mi_0| image:: images/pcl_logo.png
+               :height: 75px
+
+
   * :ref:`basic_structures`
 
      ======  ======
@@ -56,7 +72,7 @@ Basic Usage
   * :ref:`using_pcl_pcl_config`
 
      ======  ======
-     |mi_1|  Title: **Using PCL in own project**
+     |mi_1|  Title: **Using PCL in your own project**
 
              Author: *Nizar Sallem*
 
