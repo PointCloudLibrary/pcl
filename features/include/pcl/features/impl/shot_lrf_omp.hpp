@@ -58,8 +58,9 @@ pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeature (
   }
   tree_->setSortedResults (true);
 
+  int data_size = static_cast<int> (indices_->size ());
 #pragma omp parallel for num_threads(threads_)
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (int i = 0; i < data_size; ++i)
   {
     // point result
     Eigen::Matrix3f rf;
@@ -100,6 +101,8 @@ pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeatureEi
   }
   tree_->setSortedResults (true);
 
+  int data_size = static_cast<int> (indices_->size ());
+
   // Set up the output channels
   output.channels["shot_lrf"].name = "shot_lrf";
   output.channels["shot_lrf"].offset = 0;
@@ -108,10 +111,10 @@ pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeatureEi
   output.channels["shot_lrf"].datatype = sensor_msgs::PointField::FLOAT32;
 
   //output.points.resize (indices_->size (), 10);
-  output.points.resize (indices_->size (), 9);
+  output.points.resize (data_size, 9);
 
 #pragma omp parallel for num_threads(threads_)
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (int i = 0; i < data_size; ++i)
   {
     // point result
     Eigen::Matrix3f rf;
