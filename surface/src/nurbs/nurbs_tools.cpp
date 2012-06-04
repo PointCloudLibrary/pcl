@@ -640,27 +640,26 @@ bool pcl::nurbs::NurbsTools::solveSparseLinearSystem(cholmod_sparse* A, cholmod_
 
   if( status != 0 )
   {
-
     std::cout << "[pcl::nurbs::NurbsTools::solveSparseLinearSystem] Warning: something is wrong with input matrix!" << std::endl;
+    delete [] tempRhs;
+    delete [] tempSol;
     return 1;
-
   }
 
   status = umfpack_di_numeric(cols, rows, vals, Symbolic, &Numeric, null, null);
 
   if( status != 0 )
   {
-
     std::cout << "[pcl::nurbs::NurbsTools::solveSparseLinearSystem] Warning: ordering was ok but factorization failed!" << std::endl;
+    delete [] tempRhs;
+    delete [] tempSol;
     return 1;
-
   }
 
   umfpack_di_free_symbolic(&Symbolic);
 
   for( i = 0; i < noOfCols; i++ )
   {
-
     for( k = 0; k < noOfVerts; k++ )
     tempRhs[k] = rhs[i * noOfVerts + k];
 
@@ -677,9 +676,8 @@ bool pcl::nurbs::NurbsTools::solveSparseLinearSystem(cholmod_sparse* A, cholmod_
 
   // clean up
   umfpack_di_free_numeric(&Numeric);
-  delete tempRhs;
-  delete tempSol;
-
+  delete [] tempRhs;
+  delete [] tempSol;
   return 0;
 
 }
