@@ -16,11 +16,13 @@ if(build)
     set(incs
         include/pcl/${SUBSYS_NAME}/convolution_2d.h
         include/pcl/${SUBSYS_NAME}/edge.h
+         include/pcl/${SUBSYS_NAME}/morphology.h
         )
 
     set(impl_incs
         include/pcl/${SUBSYS_NAME}/impl/convolution_2d.hpp
         include/pcl/${SUBSYS_NAME}/impl/edge.hpp
+        include/pcl/${SUBSYS_NAME}/impl/morphology.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})

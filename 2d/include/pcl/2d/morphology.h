@@ -48,27 +48,84 @@ namespace pcl
   {
     class morphology
     {
-private:
-public:
-    morphology  (){
+      private:
+      public:
+        morphology  (){
 
-    }
-    void openingBinary  (ImageType &output, ImageType &kernel, ImageType &input);
-    void closingBinary  (ImageType &output, ImageType &kernel, ImageType &input);
-    void erosionBinary  (ImageType &output, ImageType &kernel, ImageType &input);
-    void dilationBinary  (ImageType &output, ImageType &kernel, ImageType &input);
+        }
+        /*
+         * erosion followed by dilation. It is useful for removing noise in the form of small blobs and patches
+         */
+        void openingBinary  (ImageType &output, ImageType &kernel, ImageType &input);
+        /**
+         * dilation followed by erosion. It is useful for filling up (holes/cracks/small discontinuities)
+         * in a binary segmented region
+         */
+        void closingBinary  (ImageType &output, ImageType &kernel, ImageType &input);
+        /**
+         * Binary dilation is similar to a logical disjunction of sets. At each pixel having value 1,
+         * if for all pixels in the structuring element having value 1, the corresponding pixels in the input image are
+         * also 1, the center pixel is set to 1. Otherwise, it is set to 0.
+         */
+        void erosionBinary  (ImageType &output, ImageType &kernel, ImageType &input);
+        /**
+         * Binary erosion is similar to a logical addition of sets. At each pixel having value 1,
+         * if at least one pixel in the structuring element is 1 and the corresponding point in the input image is 1,
+         * the center pixel is set to 1. Otherwise, it is set to 0.
+         */
+        void dilationBinary  (ImageType &output, ImageType &kernel, ImageType &input);
+        /**
+         * grayscale erosion followed by dilation.
+         * This is used to remove small bright artifacts from the image.
+         * Large bright objects are relatively undisturbed.
+         */
+        void openingGray  (ImageType &output, ImageType &kernel, ImageType &input);
+        /**
+         * grayscale dilation followed by erosion.
+         * This is used to remove small dark artifacts from the image.
+         * bright features or large dark features are relatively undisturbed.
+         */
+        void closingGray  (ImageType &output, ImageType &kernel, ImageType &input);
+        /**
+         * takes the min of the pixels where kernel is 1
+         */
+        void erosionGray  (ImageType &output, ImageType &kernel, ImageType &input);
+        /**
+         * takes the min of the pixels where kernel is 1
+         */
+        void dilationGray  (ImageType &output, ImageType &kernel, ImageType &input);
 
-    void openingGray  (ImageType &output, ImageType &kernel, ImageType &input, const float thresh);
-    void closingGray  (ImageType &output, ImageType &kernel, ImageType &input, const float thresh);
-    void erosionGray  (ImageType &output, ImageType &kernel, ImageType &input, const float thresh);
-    void dilationGray  (ImageType &output, ImageType &kernel, ImageType &input, const float thresh);
+        /**
+         * Set operation
+         * output = input1 - input2
+         */
+        void subtractionBinary  (ImageType &output, ImageType &input1, ImageType &input2);
 
-    void subtractionBinary  (ImageType &output, ImageType &input1, ImageType &input2);
-    void unionBinary  (ImageType &output, ImageType &input1, ImageType &input2);
-    void intersectionBinary  (ImageType &output, ImageType &input1, ImageType &input2);
+        /**
+         * Set operation
+         * output = input1 <union> input2
+         */
+        void unionBinary  (ImageType &output, ImageType &input1, ImageType &input2);
+        /**
+         * Set operation
+         * output = input1 <intersection> input2
+         */
+        void intersectionBinary  (ImageType &output, ImageType &input1, ImageType &input2);
 
-    void strelCircular  (ImageType &kernel, const int radius);
-    void strelRectangle  (ImageType &kernel, const int height, const int width);
+        /**
+         * \param radius Radius of the circular structuring element.
+         * Creates a circular structing element. The size of the kernel created is 2*radius x 2*radius.
+         * Center of the structuring element is the center of the circle.
+         * All values lying on the circle are 1 and the others are 0.
+         */
+        void structuringElementCircular  (ImageType &kernel, const int radius);
+        /**
+         * \param height number of rows in the structuring element
+         * \param width number of columns in the structuring element
+         * Creates a rectangular structing element of size height x width.         *
+         * All values are 1.
+         */
+        void structuringElementRectangle  (ImageType &kernel, const int height, const int width);
     };
   }
 }

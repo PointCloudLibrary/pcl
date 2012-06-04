@@ -49,18 +49,51 @@ namespace pcl
     class convolution_2d
     {
 
-public:
-    static const int BOUNDARY_OPTION_CLAMP = 0;
-    static const int BOUNDARY_OPTION_MIRROR = 1;
-    static const int BOUNDARY_OPTION_ZERO_PADDING = 2;
+      public:
+        /**
+         * Extra pixels are added to the input image so that convolution can be performed over the entire image.
+         *
+         * (kernel_height/2) rows are added before the first row and after the last row
+         * (kernel_column/2) columns are added before the first column and after the last column
+         * border options define what values are set for these extra rows and columns
+         *
+         * BOUNDARY_OPTION_CLAMP : the extra pixels are set to the pixel value of the boundary pixel
+         * BOUNDARY_OPTION_MIRROR : the input image is mirrored at the boundary.
+         * BOUNDARY_OPTION_ZERO_PADDING : the extra pixels are simply set to 0
+         *
+         * The input image is not actually extended in size. Instead, based on these options, the convolution is
+         * performed differently at the border pixels.
+         */
+        static const int BOUNDARY_OPTION_CLAMP = 0;
+        static const int BOUNDARY_OPTION_MIRROR = 1;
+        static const int BOUNDARY_OPTION_ZERO_PADDING = 2;
 
-    convolution_2d  ()
-    {
+        convolution_2d  ()
+        {
 
-    }
-    void conv (ImageType &output, ImageType &kernel, ImageType &input);
-    void conv  (ImageType &output, ImageType &kernel, ImageType &input, const int boundary_options);
-    void gaussian  (const int dim, const float sigma, ImageType &kernel);
+        }
+        /**
+         * Performs 2D convolution of the input image with the kernel.
+         * Uses zero padding as the default boundary option.
+         */
+        void convolve  (ImageType &output, ImageType &kernel, ImageType &input);
+        /**
+         * \param boundary_options Boundary options are available as ENUM's
+         * Performs 2D convolution of the input image with the kernel.
+         */
+        void convolve  (ImageType &output, ImageType &kernel, ImageType &input, const int boundary_options);
+        /**
+         * \param kernel_size The kernel is of size kernel_size x kernel_size.
+         * \param sigma This is the variance of the kernel.
+         *
+         * This function creates a normalized Gaussian kernel.
+         */
+        void gaussianKernel  (const int kernel_size, const float sigma, ImageType &kernel);
+        /**
+         * This function applies Gaussian smoothing to the input image.
+         * A normalized Gaussian kernel of size kernel_size x kernel_size and variance sigma is used.         *
+         */
+        void gaussianSmooth  (ImageType &input, ImageType &output, const int kernel_size, const float sigma);
     };
   }
 }

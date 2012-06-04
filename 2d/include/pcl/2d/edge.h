@@ -48,28 +48,120 @@ namespace pcl
   {
     class edge
     {
-private:
-    convolution_2d *conv_2d;
-public:
-    edge  ()
-    {
-      conv_2d = new convolution_2d ();
-    }
-    void cannyTraceEdge  (int rowOffset, int colOffset, int row, int col, float theta, float tLow, float tHigh, ImageType &G, ImageType &thet);
-    void canny  (ImageType &output, ImageType &input);
-    void sobelXY  (ImageType &Gx, ImageType &Gy, ImageType &input);
-    void sobelGThet  (ImageType &G, ImageType &thet, ImageType &input);
-    void prewittXY  (ImageType &Gx, ImageType &Gy, ImageType &input);
-    void prewittGThet  (ImageType &G, ImageType &thet, ImageType &input);
-    void robertsXY  (ImageType &Gx, ImageType &Gy, ImageType &input);
-    void robertsGThet  (ImageType &G, ImageType &thet, ImageType &input);
-    void LoGKernel  (ImageType &kernel, const int dim, const float sigma);
-    void LoG  (ImageType &output, const int dim, const float sigma, ImageType &input);
-    void LoG  (ImageType &output, ImageType &input);
-    /*image derivative in x direction using central differences*/
-    void Ix_central  (ImageType &output, ImageType &input);
-    /*image derivative in y direction using central differences*/
-    void Iy_central  (ImageType &output, ImageType &input);
+      private:
+        convolution_2d *conv_2d;
+        /* edge tracing for Canny Edge detector. This is used in the hysteresis thresholding step.*/
+        void cannyTraceEdge  (int rowOffset, int colOffset, int row, int col, float theta, float tLow, float tHigh, ImageType &G, ImageType &thet);
+      public:
+        edge  ()
+        {
+          conv_2d = new convolution_2d ();
+        }
+        void canny  (ImageType &output, ImageType &input);
+
+        /**
+         * \param t_low lower threshold for edges
+         * \param t_higher higher threshold for edges
+         *
+         * All edges of magnitude above t_high are always classified as edges. All edges below t_low are discarded.
+         * Edge values between t_low and t_high are classified as edges only if they are connected to edges having magnitude > t_high
+         * and are located in a direction perpendicular to that strong edge.
+         */
+        void canny  (ImageType &output, ImageType &input, float t_low, float t_high);
+        /**
+         * \param Gx Returns the gradients in x direction.
+         * \param Gx Returns the gradients in y direction.
+         *
+         * Uses the Sobel kernel for edge detection.
+         * This function does NOT include a smoothing step.
+         * The image should be smoothed before using this function to reduce noise.
+         *
+         */
+        void sobelXY  (ImageType &Gx, ImageType &Gy, ImageType &input);
+
+        /**
+         * \param G Returns the gradients magnitude.
+         * \param thet Returns the gradients direction.
+         *
+         * Uses the Sobel kernel for edge detection.
+         * This function does NOT include a smoothing step.
+         * The image should be smoothed before using this function to reduce noise.
+         *
+         */
+        void sobelMagnitudeDirection  (ImageType &G, ImageType &thet, ImageType &input);
+
+        /**
+         * \param Gx Returns the gradients in x direction.
+         * \param Gx Returns the gradients in y direction.
+         *
+         * Uses the Sobel kernel for edge detection.
+         * This function does NOT include a smoothing step.
+         * The image should be smoothed before using this function to reduce noise.
+         *
+         */
+        void prewittXY  (ImageType &Gx, ImageType &Gy, ImageType &input);
+        /**
+         * \param G Returns the gradients magnitude.
+         * \param thet Returns the gradients direction.
+         *
+         * Uses the Sobel kernel for edge detection.
+         * This function does NOT include a smoothing step.
+         * The image should be smoothed before using this function to reduce noise.
+         *
+         */
+        void prewittMagnitudeDirection  (ImageType &G, ImageType &thet, ImageType &input);
+        /**
+         * \param Gx Returns the gradients in x direction.
+         * \param Gx Returns the gradients in y direction.
+         *
+         * Uses the Sobel kernel for edge detection.
+         * This function does NOT include a smoothing step.
+         * The image should be smoothed before using this function to reduce noise.
+         *
+         */
+
+        void robertsXY  (ImageType &Gx, ImageType &Gy, ImageType &input);
+        /**
+         * \param G Returns the gradients magnitude.
+         * \param thet Returns the gradients direction.
+         *
+         * Uses the Sobel kernel for edge detection.
+         * This function does NOT include a smoothing step.
+         * The image should be smoothed before using this function to reduce noise.
+         *
+         */
+        void robertsMagnitudeDirection  (ImageType &G, ImageType &thet, ImageType &input);
+        /**
+         * \param kernel_size The kernel is of size kernel_size x kernel_size.
+         * \param sigma This is the variance of the Gaussian smoothing.
+         *
+         * creates Laplcian of Gausian Kernel. This kernel is useful for detecting edges.     *
+         */
+        void LoGKernel  (ImageType &kernel, const int kernel_size, const float sigma);
+        /**
+         * \param kernel_size The kernel is of size kernel_size x kernel_size.
+         * \param sigma This is the variance of the Gaussian smoothing.
+         *
+         * Uses the LoGKernel to apply LoG on the input image.
+         * Zero crossings of the Laplacian operator applied on an image indicate edges.
+         * Gaussian kernel is used to smoothen the image prior to the Laplacian. This is because Laplacian uses the
+         * second order derivative of the image and hence, is very sensitive to noise.
+         * The implementation is not two-step but rather applies the LoG kernel directly.
+         *
+         */
+        void LoG  (ImageType &output, const int kernel_size, const float sigma, ImageType &input);
+        /**
+         * Applies the LoG kernel on the image with kernel_size 9 and variance 1.4
+         */
+        void LoG  (ImageType &output, ImageType &input);
+        /**
+         * image derivative in x direction using central differences
+         */
+        void IxCentral  (ImageType &output, ImageType &input);
+        /**
+         * image derivative in y direction using central differences
+         */
+        void IyCentral  (ImageType &output, ImageType &input);
     };
   }
 }

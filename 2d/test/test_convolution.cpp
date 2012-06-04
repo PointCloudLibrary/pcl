@@ -50,6 +50,9 @@
 
 #include "../include/pcl/2d/convolution_2d.h"
 #include "../include/pcl/2d/edge.h"
+#include "../include/pcl/2d/keypoint.h"
+#include "../include/pcl/2d/morphology.h"
+
 #include <vector>
 #include <vtkImageFlip.h>
 #include <vtkPNGWriter.h>
@@ -57,7 +60,8 @@
 #include <pcl/io/png_io.h>
 
 
-unsigned char* getUcharArray(vector<vector<float> > &data){
+unsigned char*
+getUcharArray  (pcl::pcl_2d::ImageType &data){
 	unsigned char *image_char_array = (unsigned char*)malloc(sizeof(unsigned char)*data.size()*data[0].size());
 	for(int i = 0;i < data.size();i++){
 		for(int j = 0;j < data[i].size();j++){
@@ -67,13 +71,15 @@ unsigned char* getUcharArray(vector<vector<float> > &data){
 	return image_char_array;
 }
 
-void saveGrayPNG(char *fname, vector<vector<float> > &data){
+void
+saveGrayPNG  (char *fname, pcl::pcl_2d::ImageType &data){
 	unsigned char *image_char_array = getUcharArray(data);
 	pcl::io::saveMonoPNGFile(fname, image_char_array, data[0].size(), data.size());
 	free(image_char_array);
 }
 
-void visualizeGrayImage(vector<vector<float> > &data){
+void
+visualizeGrayImage  (pcl::pcl_2d::ImageType &data){
 
 	unsigned char *image_char_array = getUcharArray(data);
 
@@ -99,7 +105,9 @@ void visualizeGrayImage(vector<vector<float> > &data){
 	renderWindowInteractor->Start();
 	free(image_char_array);
 }
-void readPNGVector(char *fname, vector<vector<vector<float> > > &image){
+
+void
+readPNGVector  (char *fname, std::vector<pcl::pcl_2d::ImageType> &image){
 
 	vtkSmartPointer<vtkPNGReader> reader = vtkSmartPointer<vtkPNGReader>::New();
 	reader->SetFileName(fname);
@@ -153,38 +161,75 @@ void readPNGVector(char *fname, vector<vector<vector<float> > > &image){
 	}
 }
 
-int main (int argc, char** argv)
-{
-	FILE *f;
-	f = fopen("image.txt", "w");
-	vector<vector<vector<float> > > image;
+void
+test_morphology  (){
+	std::vector<pcl::pcl_2d::ImageType > image;
+	readPNGVector  ("lena-grayscale.png", image);
+
+	pcl::pcl_2d::ImageType kernel;
+	pcl::pcl_2d::ImageType output;
+	pcl::pcl_2d::ImageType input;
+	input.resize(image.size());
+	for(unsigned int i = 0;i < image.size();i++){
+		input[i].resize(image[i].size());
+		for(unsigned int j = 0;j < image[i].size();j++){
+			input[i][j] = image[i][j][0];
+		}
+	}
+	saveGrayPNG  ("input.png", input);
+	pcl::pcl_2d::morphology *morph = new pcl::pcl_2d::morphology  ();
+	morph->structuringElementRectangle  (kernel, 5, 5);
+	morph->erosionGray  (output, kernel, input);
+	saveGrayPNG  ("erosion.png", output);
+	morph->dilationGray  (output, kernel, input);
+	saveGrayPNG  ("dilation.png", output);
+	morph->openingGray  (output, kernel, input);
+	saveGrayPNG  ("opening.png", output);
+	morph->closingGray  (output, kernel, input);
+	saveGrayPNG  ("closing.png", output);
+	free(morph);
+}
+
+void
+test_keypoints  (){
+	std::vector<pcl::pcl_2d::ImageType > image;
 	readPNGVector("lena-grayscale.png", image);
 
-	vector<vector<float> > kernel;
-//	kernel.resize(5);
-//	for(int i = 0;i < 5;i++){
-//		kernel[i].resize(5);
-//		for(int j = 0;j < 5;j++)
-//			kernel[i][j] = 1.0/(5*5);
-//	}
-
-	vector<vector<float> > output;
-	vector<vector<float> > input;
+	pcl::pcl_2d::ImageType kernel;
+	pcl::pcl_2d::ImageType output;
+	pcl::pcl_2d::ImageType input;
 	input.resize(image.size());
-	for(int i = 0;i < image.size();i++){
+	for(unsigned int i = 0;i < image.size();i++){
 		input[i].resize(image[i].size());
-		for(int j = 0;j < image[i].size();j++){
+		for(unsigned int j = 0;j < image[i].size();j++){
 			input[i][j] = image[i][j][0];
 		}
 	}
 	saveGrayPNG("input.png", input);
-	visualizeGrayImage(input);
-	pcl::pcl_2d::convolution_2d *conv2d = new pcl::pcl_2d::convolution_2d();
-	conv2d->gaussian(51, 2, kernel);
-	conv2d->conv(output, kernel, input,1);
+	pcl::pcl_2d::keypoint *key = new pcl::pcl_2d::keypoint();
+	key->harris_corner(output, input, 2, 1.5, 0.05, 1);
+	saveGrayPNG("harris.png", output);
+}
 
-	vector<vector<float> > G;
-	vector<vector<float> > thet;
+void
+test_edge  (){
+	std::vector<pcl::pcl_2d::ImageType > image;
+	readPNGVector("lena-grayscale.png", image);
+
+	pcl::pcl_2d::ImageType kernel;
+	pcl::pcl_2d::ImageType output;
+	pcl::pcl_2d::ImageType input;
+	input.resize(image.size());
+	for(unsigned int i = 0;i < image.size();i++){
+		input[i].resize(image[i].size());
+		for(unsigned int j = 0;j < image[i].size();j++){
+			input[i][j] = image[i][j][0];
+		}
+	}
+	saveGrayPNG("input.png", input);
+
+	pcl::pcl_2d::ImageType G;
+	pcl::pcl_2d::ImageType thet;
 	pcl::pcl_2d::edge *e = new pcl::pcl_2d::edge();
 	e->prewittGThet(G, thet, input);
 	saveGrayPNG("prewitt_g.png", G);
@@ -197,8 +242,35 @@ int main (int argc, char** argv)
 	saveGrayPNG("roberts_thet.png", thet);
 	e->LoG(output, input);
 	saveGrayPNG("log.png", output);
-	e->canny(output, input);
+	e->canny(output, input, 10, 50);
 	saveGrayPNG("canny.png", output);
+}
 
-	fclose(f);
+void
+test_convolution  (){
+	std::vector<pcl::pcl_2d::ImageType > image;
+	readPNGVector("lena-grayscale.png", image);
+
+	pcl::pcl_2d::ImageType kernel;
+	pcl::pcl_2d::ImageType output;
+	pcl::pcl_2d::ImageType input;
+	input.resize(image.size());
+	for(unsigned int i = 0;i < image.size();i++){
+		input[i].resize(image[i].size());
+		for(unsigned int j = 0;j < image[i].size();j++){
+			input[i][j] = image[i][j][0];
+		}
+	}
+	saveGrayPNG("input.png", input);
+	visualizeGrayImage(input);
+	pcl::pcl_2d::convolution_2d *conv2d = new pcl::pcl_2d::convolution_2d();
+	conv2d->gaussianKernel  (51, 2, kernel);
+	conv2d->conv  (output, kernel, input,1);
+}
+
+int
+main  (int argc, char** argv)
+{
+	test_morphology();
+	return 0;
 }

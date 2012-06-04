@@ -44,7 +44,7 @@
 
 /*assumes input, kernel and output images have 0's and 1's only*/
 void
-pcl::pcl_2d::morphology::openingBinary  (ImageType &output, ImageType &kernel, ImageType &input){
+pcl::pcl_2d::morphology::erosionBinary  (ImageType &output, ImageType &kernel, ImageType &input){
   const int height = input.size ();
   const int width = input[0].size ();
   const int kernel_height = kernel.size ();
@@ -95,7 +95,7 @@ pcl::pcl_2d::morphology::openingBinary  (ImageType &output, ImageType &kernel, I
 
 /*assumes input, kernel and output images have 0's and 1's only*/
 void
-pcl::pcl_2d::morphology::closingBinary  (ImageType &output, ImageType &kernel, ImageType &input){
+pcl::pcl_2d::morphology::dilationBinary  (ImageType &output, ImageType &kernel, ImageType &input){
   const int height = input.size ();
   const int width = input[0].size ();
   const int kernel_height = kernel.size ();
@@ -138,7 +138,7 @@ pcl::pcl_2d::morphology::closingBinary  (ImageType &output, ImageType &kernel, I
 
 /*assumes input, kernel and output images have 0's and 1's only*/
 void
-pcl::pcl_2d::morphology::erosionBinary  (ImageType &output, ImageType &kernel, ImageType &input){
+pcl::pcl_2d::morphology::openingBinary  (ImageType &output, ImageType &kernel, ImageType &input){
   ImageType intermediate_output;
   openingBinary  (intermediate_output, kernel, input);
   closingBinary  (output, kernel, intermediate_output);
@@ -146,20 +146,19 @@ pcl::pcl_2d::morphology::erosionBinary  (ImageType &output, ImageType &kernel, I
 
 /*assumes input, kernel and output images have 0's and 1's only*/
 void
-pcl::pcl_2d::morphology::dilationBinary  (ImageType &output, ImageType &kernel, ImageType &input){
+pcl::pcl_2d::morphology::closingBinary  (ImageType &output, ImageType &kernel, ImageType &input){
   ImageType intermediate_output;
   closingBinary  (intermediate_output, kernel, input);
   openingBinary  (output, kernel, intermediate_output);
 }
 
-
 void
-pcl::pcl_2d::morphology::openingGray  (ImageType &output, ImageType &kernel, ImageType &input, const float thresh){
+pcl::pcl_2d::morphology::erosionGray  (ImageType &output, ImageType &kernel, ImageType &input){
   const int height = input.size ();
   const int width = input[0].size ();
   const int kernel_height = kernel.size ();
   const int kernel_width = kernel[0].size ();
-  bool mismatch_flag;
+  float min;
 
   output.resize (height);
   for (int i = 0; i < height; i++)
@@ -167,21 +166,13 @@ pcl::pcl_2d::morphology::openingGray  (ImageType &output, ImageType &kernel, Ima
     output[i].resize (width);
     for (int j = 0; j < width; j++)
     {
-      /*operation done only at 1's*/
-      if (input[i][j] < thresh)
-      {
-        output[i][j] = 0;
-        continue;
-      }
-      mismatch_flag = false;
+    	min = -1;
       for (int k = 0; k < kernel_height; k++)
       {
-        if (mismatch_flag)
-          break;
         for (int l = 0; l < kernel_width; l++)
         {
           /*we only check for 1's in the kernel*/
-          if (kernel[k][l] = 0)
+          if (kernel[k][l] == 0)
             continue;
           if ((i + k - kernel_height / 2) < 0 || (i + k - kernel_height / 2) >= height || (j + l - kernel_width / 2) < 0 || (j + l - kernel_width / 2) >= width)
           {
@@ -189,27 +180,25 @@ pcl::pcl_2d::morphology::openingGray  (ImageType &output, ImageType &kernel, Ima
           }
           /* if one of the elements of the kernel and image dont match, the output image is 0.
            * So, move to the next point.*/
-          if (input[i + k - kernel_height / 2][j + l - kernel_width / 2] < thresh)
+          if (input[i + k - kernel_height / 2][j + l - kernel_width / 2] < min || min == -1)
           {
-            output[i][j] = 0;
-            mismatch_flag = true;
-            break;
+            min = input[i + k - kernel_height / 2][j + l - kernel_width / 2];
           }
         }
       }
       /*assign value according to mismatch flag*/
-      output[i][j] = (mismatch_flag) ? 0 : input[i][j];
+      output[i][j] = min;
     }
   }
 }
 
 void
-pcl::pcl_2d::morphology::closingGray  (ImageType &output, ImageType &kernel, ImageType &input, const float thresh){
+pcl::pcl_2d::morphology::dilationGray  (ImageType &output, ImageType &kernel, ImageType &input){
   const int height = input.size ();
   const int width = input[0].size ();
   const int kernel_height = kernel.size ();
   const int kernel_width = kernel[0].size ();
-  bool match_flag;
+  float max;
 
   output.resize (height);
   for (int i = 0; i < height; i++)
@@ -217,50 +206,47 @@ pcl::pcl_2d::morphology::closingGray  (ImageType &output, ImageType &kernel, Ima
     output[i].resize (width);
     for (int j = 0; j < width; j++)
     {
-      match_flag = false;
+    	max = -1;
       for (int k = 0; k < kernel_height; k++)
       {
-        if (match_flag)
-          break;
         for (int l = 0; l < kernel_width; l++)
         {
           /*we only check for 1's in the kernel*/
           if (kernel[k][l] == 0)
             continue;
-          if ((i + k - kernel_height / 2) < 0 || (i + k - kernel_height / 2) >= height || (j + l - kernel_width / 2) < 0 || (j + l - kernel_width / 2) >= height)
+          if ((i + k - kernel_height / 2) < 0 || (i + k - kernel_height / 2) >= height || (j + l - kernel_width / 2) < 0 || (j + l - kernel_width / 2) >= width)
           {
             continue;
           }
-          /*if any position where kernel is 1 and image is also one is detected, matching occurs*/
-          if (input[i + k - kernel_height / 2][j + l - kernel_width / 2] >= thresh)
+          /* if one of the elements of the kernel and image dont match, the output image is 0.
+           * So, move to the next point.*/
+          if (input[i + k - kernel_height / 2][j + l - kernel_width / 2] > max || max == -1)
           {
-            match_flag = true;
-            break;
+            max = input[i + k - kernel_height / 2][j + l - kernel_width / 2];
           }
         }
       }
-      /*assign value according to match flag*/
-      output[i][j] = (match_flag) ? input[i][j] : 0;
+      /*assign value according to mismatch flag*/
+      output[i][j] = max;
     }
   }
 }
 
 void
-pcl::pcl_2d::morphology::erosionGray  (ImageType &output, ImageType &kernel, ImageType &input, const float thresh){
+pcl::pcl_2d::morphology::openingGray  (ImageType &output, ImageType &kernel, ImageType &input){
   ImageType intermediate_output;
-  openingGray  (intermediate_output, kernel, input, thresh);
-  closingGray  (output, kernel, intermediate_output, thresh);
+  erosionGray  (intermediate_output, kernel, input);
+  dilationGray  (output, kernel, intermediate_output);
 }
+
 
 void
-pcl::pcl_2d::morphology::dilationGray  (ImageType &output, ImageType &kernel, ImageType &input, const float thresh){
+pcl::pcl_2d::morphology::closingGray  (ImageType &output, ImageType &kernel, ImageType &input){
   ImageType intermediate_output;
-  closingGray  (intermediate_output, kernel, input, thresh);
-  openingGray  (output, kernel, intermediate_output, thresh);
+  dilationGray  (intermediate_output, kernel, input);
+  erosionGray  (output, kernel, intermediate_output);
 }
 
-
-/*output = input1 - input2*/
 void
 pcl::pcl_2d::morphology::subtractionBinary  (ImageType &output, ImageType &input1, ImageType &input2){
   const int height = (input1.size () < input2.size ()) ? input1.size () : input2.size ();
@@ -279,7 +265,6 @@ pcl::pcl_2d::morphology::subtractionBinary  (ImageType &output, ImageType &input
   }
 }
 
-/*output = input1 <union> input2*/
 void
 pcl::pcl_2d::morphology::unionBinary  (ImageType &output, ImageType &input1, ImageType &input2){
   const int height = (input1.size () < input2.size ()) ? input1.size () : input2.size ();
@@ -298,7 +283,6 @@ pcl::pcl_2d::morphology::unionBinary  (ImageType &output, ImageType &input1, Ima
   }
 }
 
-/*output = input1 <intersection> input2*/
 void
 pcl::pcl_2d::morphology::intersectionBinary  (ImageType &output, ImageType &input1, ImageType &input2){
   const int height = (input1.size () < input2.size ()) ? input1.size () : input2.size ();
@@ -317,9 +301,8 @@ pcl::pcl_2d::morphology::intersectionBinary  (ImageType &output, ImageType &inpu
   }
 }
 
-
 void
-pcl::pcl_2d::morphology::strelCircular  (ImageType &kernel, const int radius){
+pcl::pcl_2d::morphology::structuringElementCircular  (ImageType &kernel, const int radius){
   const int dim = 2 * radius;
   kernel.resize (dim);
   for (int i = 0; i < dim; i++)
@@ -336,7 +319,7 @@ pcl::pcl_2d::morphology::strelCircular  (ImageType &kernel, const int radius){
 }
 
 void
-pcl::pcl_2d::morphology::strelRectangle  (ImageType &kernel, const int height, const int width){
+pcl::pcl_2d::morphology::structuringElementRectangle  (ImageType &kernel, const int height, const int width){
   kernel.resize (height);
   for (int i = 0; i < height; i++)
   {
