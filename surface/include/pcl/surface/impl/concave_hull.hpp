@@ -132,8 +132,18 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
 
   Eigen::Affine3f transform1;
   transform1.setIdentity ();
-  int dim = 3;
-  if (eigen_values[0] / eigen_values[2] < 1.0e-3)
+
+  // If no input dimension is specified, determine automatically
+  if (dim_ == 0)
+  {
+    PCL_WARN ("[pcl::%s] WARNING: Input dimension not specified.  Automatically determining input dimension.\n", getClassName ().c_str ());
+    if (eigen_values[0] / eigen_values[2] < 1.0e-3)
+      dim_ = 2;
+    else
+      dim_ = 3;
+  } 
+
+  if (dim_ == 2)
   {
     // we have points laying on a plane, using 2d convex hull
     // compute transformation bring eigen_vectors.col(i) to z-axis
@@ -148,15 +158,12 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     transform1 (0, 0) = eigen_vectors (0, 2);
     transform1 (0, 1) = eigen_vectors (1, 2);
     transform1 (0, 2) = eigen_vectors (2, 2);
-    dim = 2;
   }
   else
   {
     transform1.setIdentity ();
   }
-
-  dim_ = dim;
-
+  
   PointCloud cloud_transformed;
   pcl::demeanPointCloud (*input_, *indices_, xyz_centroid, cloud_transformed);
   pcl::transformPointCloud (cloud_transformed, cloud_transformed, transform1);
@@ -173,19 +180,19 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   int exitcode;
 
   // Array of coordinates for each point
-  coordT *points = reinterpret_cast<coordT*> (calloc (cloud_transformed.points.size () * dim, sizeof(coordT)));
+  coordT *points = reinterpret_cast<coordT*> (calloc (cloud_transformed.points.size () * dim_, sizeof(coordT)));
 
   for (size_t i = 0; i < cloud_transformed.points.size (); ++i)
   {
-    points[i * dim + 0] = static_cast<coordT> (cloud_transformed.points[i].x);
-    points[i * dim + 1] = static_cast<coordT> (cloud_transformed.points[i].y);
+    points[i * dim_ + 0] = static_cast<coordT> (cloud_transformed.points[i].x);
+    points[i * dim_ + 1] = static_cast<coordT> (cloud_transformed.points[i].y);
 
-    if (dim > 2)
-      points[i * dim + 2] = static_cast<coordT> (cloud_transformed.points[i].z);
+    if (dim_ > 2)
+      points[i * dim_ + 2] = static_cast<coordT> (cloud_transformed.points[i].z);
   }
 
   // Compute concave hull
-  exitcode = qh_new_qhull (dim, static_cast<int> (cloud_transformed.points.size ()), points, ismalloc, flags, outfile, errfile);
+  exitcode = qh_new_qhull (dim_, static_cast<int> (cloud_transformed.points.size ()), points, ismalloc, flags, outfile, errfile);
 
   if (exitcode != 0)
   {
@@ -243,7 +250,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   int num_facets = qh num_facets;
   int dd = 0;
 
-  if (dim == 3)
+  if (dim_ == 3)
   {
     setT *triangles_set = qh_settemp (4 * num_facets);
     if (voronoi_centers_)
@@ -257,7 +264,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
       {
         vertexT *anyVertex = static_cast<vertexT*> (facet->vertices->e[0].p);
         double *center = facet->center;
-        double r = qh_pointdist (anyVertex->point,center,dim);
+        double r = qh_pointdist (anyVertex->point,center,dim_);
         facetT *neighb;
 
         if (voronoi_centers_)
@@ -433,7 +440,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
             alpha_shape.points[vertices].x = static_cast<float> (vertex->point[0]);
             alpha_shape.points[vertices].y = static_cast<float> (vertex->point[1]);
 
-            if (dim > 2)
+            if (dim_ > 2)
               alpha_shape.points[vertices].z = static_cast<float> (vertex->point[2]);
             else
               alpha_shape.points[vertices].z = 0;

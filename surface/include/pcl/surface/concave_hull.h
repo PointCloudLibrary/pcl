@@ -134,6 +134,25 @@ namespace pcl
         return dim_;
       }
 
+      /** \brief Returns the dimensionality (2 or 3) of the calculated hull. */
+      inline int
+      getDimension () const
+      {
+        return dim_;
+      }
+
+      /** \brief Sets the dimension on the input data, 2D or 3D.
+        * \param[in] dimension The dimension of the input data.  If not set, this will be determined automatically.
+        */
+      void 
+      setDimension (int dimension)
+      {
+        if ((dimension == 2) || (dimension == 3))
+          dim_ = dimension;
+        else
+          PCL_ERROR ("[pcl::%s::setDimension] Invalid input dimension specified!\n", getClassName ().c_str ());
+      }
+
     protected:
       /** \brief Class get name method. */
       std::string
