@@ -74,7 +74,7 @@ namespace pcl
     protected:
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
-      using Feature<PointInT, PointOutT>::searchForNeighbors;
+      //using Feature<PointInT, PointOutT>::searchForNeighbors;
       using Feature<PointInT, PointOutT>::input_;
       using Feature<PointInT, PointOutT>::indices_;
       using Feature<PointInT, PointOutT>::surface_;

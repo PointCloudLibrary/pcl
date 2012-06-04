@@ -96,7 +96,7 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
     for (int iteration = 0; iteration < dilation_iteration_num_; ++iteration)
       voxel_grid.dilate ();
 
-#if defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2))
+#if /*defined(_WIN32) ||*/ ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2))
 #pragma omp parallel for schedule (dynamic, threads_)
 #endif
     for (typename MLSVoxelGrid::HashMap::iterator h_it = voxel_grid.voxel_grid_.begin (); h_it != voxel_grid.voxel_grid_.end (); ++h_it)
