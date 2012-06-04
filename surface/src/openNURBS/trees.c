@@ -342,10 +342,10 @@ local void tr_static_init()
 
 void gen_trees_header()
 {
-    FILE *header = fopen("trees.h>, "w");
+    FILE *header = fopen("trees.h", "w");
     int i;
 
-    Assert (header != 0, "Can't open trees.h>);
+    Assert (header != 0, "Can't open trees.h");
     fprintf(header,
             "/* header created automatically with -DGEN_TREES_H */\n\n");
 

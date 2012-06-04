@@ -240,16 +240,22 @@ ON_SurfaceProxy::IsIsoparametric( // returns isoparametric status of 2d curve
     {
 		case x_iso:
 			iso = y_iso;
+			break;
 		case y_iso:
 			iso = x_iso;
+			break;
 		case W_iso:
 			iso = S_iso;
+			break;
 		case S_iso:
 			iso = W_iso;
+			break;
 		case N_iso:
 			iso = E_iso;
+			break;
 		case E_iso:
 			iso = N_iso;
+			break;
     default:
       // intentionally ignoring other ON_Surface::ISO enum values
       break;
@@ -279,16 +285,22 @@ ON_SurfaceProxy::IsIsoparametric( // returns isoparametric status based on bound
     {
 		case x_iso:
 			iso = y_iso;
+			break;
 		case y_iso:
 			iso = x_iso;
+			break;
 		case W_iso:
 			iso = S_iso;
+			break;
 		case S_iso:
 			iso = W_iso;
+			break;
 		case N_iso:
 			iso = E_iso;
+			break;
 		case E_iso:
 			iso = N_iso;
+			break;
     default:
       // intentionally ignoring other ON_Surface::ISO enum values
       break;

@@ -3527,7 +3527,7 @@ bool ON_NurbsCurve::ChangeEndWeights(double w0, double w1)
 {
   if ( !ON_IsValid(w0) || !ON_IsValid(w1) || 0.0 == w0 || 0.0 == w1 )
     return false;
-  if ( (w0 < 0.0 && w1 > 0.0) || (w0 > 0.0 && w0 < 0.0) )
+  if ( (w0 < 0.0 && w1 > 0.0) || (w0 > 0.0 && w1 < 0.0) )
     return false;
 
   if (!ClampEnd(2))
@@ -3562,7 +3562,7 @@ bool ON_ChangeRationalNurbsCurveEndWeights(
 
   if ( !ON_IsValid(w0) || !ON_IsValid(w1) || 0.0 == w0 || 0.0 == w1 )
     return false;
-  if ( (w0 < 0.0 && w1 > 0.0) || (w0 > 0.0 && w0 < 0.0) )
+  if ( (w0 < 0.0 && w1 > 0.0) || (w0 > 0.0 && w1 < 0.0) )
     return false;
 
   if ( !ON_ClampKnotVector( dim+1, order, cv_count, cvstride, cv, knot, 2 ) )

@@ -80,12 +80,16 @@ int ON_WindowsBitmapHelper_PaletteColorCount( int bmiHeader_biClrUsed, int bmiHe
     {
     case 1:
       color_count = 2;
+      break;
     case 4:
       color_count = 16;
+      break;
     case 8:
       color_count = 256;
+      break;
     default:
       color_count = 0;
+      break;
     }
   }  
   return color_count;

@@ -2991,7 +2991,7 @@ bool ON_ChangeRationalBezierCurveWeights(
     return false;
   if ( i0 == i1 && w0 != w1 )
     return false;
-  if ( (w0 < 0.0 && w1 > 0.0) || (w0 > 0.0 && w0 < 0.0) )
+  if ( (w0 < 0.0 && w1 > 0.0) || (w0 > 0.0 && w1 < 0.0) )
     return false;
   if (i0 > i1) 
   {
