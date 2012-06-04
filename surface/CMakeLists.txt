@@ -45,32 +45,6 @@ if(build)
         set(VTK_SMOOTHING_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkGraphics)
     endif()
     
-    ####### NURBS FITTING by thomas.moerwald #########
-    SET(BUILD_surface_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds" )
-    IF(BUILD_surface_nurbs)
-    set(NURBS_INCLUDES
-        include/pcl/${SUBSYS_NAME}/nurbs/eigen_defs.h
-        include/pcl/${SUBSYS_NAME}/nurbs/nurbs_basis.h
-        include/pcl/${SUBSYS_NAME}/nurbs/nurbs_curve.h
-        include/pcl/${SUBSYS_NAME}/nurbs/nurbs_surface.h
-        include/pcl/${SUBSYS_NAME}/nurbs/nurbs_data.h
-        include/pcl/${SUBSYS_NAME}/nurbs/nurbs_fitting.h
-        include/pcl/${SUBSYS_NAME}/nurbs/nurbs_tools.h
-        include/pcl/${SUBSYS_NAME}/nurbs/nurbs_fitter.h
-        )
-    set(NURBS_SOURCES
-        src/nurbs/nurbs_basis.cpp
-        src/nurbs/nurbs_curve.cpp
-        src/nurbs/nurbs_surface.cpp
-        src/nurbs/nurbs_fitting.cpp
-        src/nurbs/nurbs_tools.cpp
-        src/nurbs/nurbs_fitter.cpp
-        )
-    set(NURBS_IMPLS
-        include/pcl/${SUBSYS_NAME}/impl/nurbs/nurbs_fitter.hpp
-        )
-    ENDIF(BUILD_surface_nurbs)
-    
     SET(BUILD_surface_on_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds using openNURBS" )
     IF(BUILD_surface_on_nurbs)
         include(src/openNURBS/openNURBS.cmake)
@@ -127,7 +101,6 @@ if(build)
         src/poisson.cpp
         ${HULL_SOURCES}
         ${POISSON_SOURCES}
-        ${NURBS_SOURCES}
         ${OPENNURBS_SOURCES}
         ${ON_NURBS_SOURCES}
         )
@@ -151,7 +124,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/poisson.h
         ${HULL_INCLUDES}
         ${POISSON_INCLUDES}
-        ${NURBS_INCLUDES}
         ${OPENNURBS_INCLUDES}
         ${ON_NURBS_INCLUDES}
         )
@@ -172,7 +144,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/poisson.hpp
         ${POISSON_IMPLS}
         ${HULL_IMPLS}
-        ${NURBS_IMPLS}
         ${OPENNURBS_IMPLS}
         ${ON_NURBS_IMPLS}
         )
@@ -193,10 +164,6 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl/poisson ${POISSON_IMPLS})
 
-    if(BUILD_surface_nurbs)
-      PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/nurbs ${NURBS_INCLUDES})
-    endif(BUILD_surface_nurbs)
-    
     if(BUILD_surface_on_nurbs)
       PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/openNURBS ${OPENNURBS_INCLUDES})
       PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/on_nurbs ${ON_NURBS_INCLUDES})
