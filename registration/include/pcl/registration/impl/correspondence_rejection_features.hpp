@@ -123,7 +123,7 @@ pcl::registration::CorrespondenceRejectorFeatures::hasValidFeatures ()
 {
   if (features_map_.empty ())
     return (false);
-  typename FeaturesMap::const_iterator feature_itr;
+  FeaturesMap::const_iterator feature_itr;
   for (feature_itr = features_map_.begin (); feature_itr != features_map_.end (); ++feature_itr)
     if (!feature_itr->second->isValid ())
       return (false);
