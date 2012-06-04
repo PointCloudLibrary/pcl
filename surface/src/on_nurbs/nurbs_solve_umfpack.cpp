@@ -132,7 +132,6 @@ namespace pcl
     bool
     solveSparseLinearSystem (cholmod_sparse* A, cholmod_dense* b, cholmod_dense* x, bool transpose)
     {
-
       double* vals = (double*)A->x;
       int* cols = (int*)A->p;
       int* rows = (int*)A->i;
@@ -153,9 +152,10 @@ namespace pcl
 
       if (status != 0)
       {
-
         std::cout << "[NurbsSolve[UMFPACK]::solveSparseLinearSystem] Warning: something is wrong with input matrix!"
             << std::endl;
+        delete [] tempRhs;
+        delete [] tempSol;
         return false;
 
       }
@@ -164,19 +164,18 @@ namespace pcl
 
       if (status != 0)
       {
-
         std::cout
             << "[NurbsSolve[UMFPACK]::solveSparseLinearSystem] Warning: ordering was ok but factorization failed!"
             << std::endl;
+        delete [] tempRhs;
+        delete [] tempSol;
         return false;
-
       }
 
       umfpack_di_free_symbolic (&Symbolic);
 
       for (i = 0; i < noOfCols; i++)
       {
-
         for (k = 0; k < noOfVerts; k++)
           tempRhs[k] = rhs[i * noOfVerts + k];
 
@@ -188,22 +187,18 @@ namespace pcl
 
         for (k = 0; k < noOfVerts; k++)
           sol[i * noOfVerts + k] = tempSol[k];
-
       }
 
       // clean up
       umfpack_di_free_numeric (&Numeric);
-      delete tempRhs;
-      delete tempSol;
-
+      delete [] tempRhs;
+      delete [] tempSol;
       return true;
-
     }
 
     bool
     solveSparseLinearSystemLQ (cholmod_sparse* A, cholmod_dense* b, cholmod_dense* x)
     {
-
       cholmod_common c;
       cholmod_start (&c);
       c.print = 4;
@@ -235,6 +230,7 @@ namespace pcl
         cholmod_sdmult (A, 1, one, zero, b, Atb, &c);
         i++;
       }
+      
       if (i == trials)
       {
         printf ("[NurbsSolveUmfpack::solveSparseLinearSystemLQ] Not enough memory for system to solve. (%d trials)\n",
