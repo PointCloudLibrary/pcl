@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>open_project.png</file>
+        <file>insert_from_file.png</file>
+        <file>insert_from_OpenNi.png</file>
+        <file>open_cloud_as_new_project.png</file>
+        <file>save_project.png</file>
+        <file>new_project.png</file>
+    </qresource>
+</RCC>

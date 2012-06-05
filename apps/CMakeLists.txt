@@ -154,5 +154,6 @@ if(build)
 
   add_subdirectory(3d_rec_framework)
   add_subdirectory(modeler)
+  add_subdirectory(cloud_composer)
 
 endif(build)
