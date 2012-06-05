@@ -43,183 +43,101 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/common/io.h>
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
+pcl::ExtractIndices<PointT>::filterDirectly (PointCloudPtr &cloud)
 {
-  // If the subset is the empty set
-  if (indices_->empty () || input_->points.empty ())
+  std::vector<int> indices;
+  bool temp = extract_removed_indices_;
+  extract_removed_indices_ = true;
+  setInputCloud (cloud);
+  applyFilter (indices);
+  extract_removed_indices_ = temp;
+
+  std::vector<sensor_msgs::PointField> fields; 
+  pcl::for_each_type<FieldList> (pcl::detail::FieldAdder<PointT> (fields));
+  for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
   {
-    // Full set copy
-    if (negative_)
-      output = *input_;
-    // Empty set copy
-    else if (keep_organized_)
-    {
-      output = *input_;
-      std::vector<sensor_msgs::PointField> fields;
-      pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type> (pcl::detail::FieldAdder<PointT> (fields));
-      for (int p_it = 0; p_it < static_cast<int> (output.points.size ()); ++p_it)
-      {
-        uint8_t* pt_data = reinterpret_cast<uint8_t*> (&output.points[p_it]);
-        for (int f_it = 0; f_it < static_cast<int> (fields.size ()); ++f_it)
-          memcpy (pt_data + fields[f_it].offset, &user_filter_value_, sizeof (float));
-      }
-      if (pcl_isfinite (user_filter_value_))
-        output.is_dense = true;
-      else
-        output.is_dense = false;
-    }
-    else
-    {
-      output.width = output.height = 0;
-      output.points.clear ();
-    }
-    return;
-  }
-
-  // If the subset is the full set
-  if (indices_->size () == (input_->width * input_->height) || indices_->size () == input_->points.size ())
-  {
-    // Empty set copy
-    if (negative_)
-      if (keep_organized_)
-      {
-        output = *input_;
-        std::vector<sensor_msgs::PointField> fields;
-        pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type> (pcl::detail::FieldAdder<PointT> (fields));
-        for (int p_it = 0; p_it < static_cast<int> (output.points.size ()); ++p_it)
-        {
-          uint8_t* pt_data = reinterpret_cast<uint8_t*> (&output.points[p_it]);
-          for (int f_it = 0; f_it < static_cast<int> (fields.size ()); ++f_it)
-            memcpy (pt_data + fields[f_it].offset, &user_filter_value_, sizeof (float));
-        }
-        if (pcl_isfinite (user_filter_value_))
-          output.is_dense = true;
-        else
-          output.is_dense = false;
-      }
-      else
-      {
-        output.width = output.height = 0;
-        output.points.clear ();
-      }
-    // Full set copy
-    else
-      output = *input_;
-    return;
-  }
-
-  // If the subset is a proper subset
-  if (negative_)
-  {
-    if (keep_organized_)
-    {
-      // Case: negative = true, keep_organized_ = true
-      output = *input_;
-      std::vector<sensor_msgs::PointField> fields;
-      pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type> (pcl::detail::FieldAdder<PointT> (fields));
-      for (int i_it = 0; i_it < static_cast<int> (indices_->size ()); ++i_it)
-      {
-        uint8_t* pt_data = reinterpret_cast<uint8_t*> (&output.points[(*indices_)[i_it]]);
-        for (int f_it = 0; f_it < static_cast<int> (fields.size ()); ++f_it)
-          memcpy (pt_data + fields[f_it].offset, &user_filter_value_, sizeof (float));
-      }
-      if (!pcl_isfinite (user_filter_value_))
-        output.is_dense = false;
-    }
-    else
-    {
-      // Case: negative = true, keep_organized_ = false
-      std::vector<int> indices_fullset (input_->points.size ());
-      std::vector<int> indices_subset = *indices_;
-      std::vector<int> indices_difference;
-
-      // Set up the full indices set
-      for (int p_it = 0; p_it < static_cast<int> (indices_fullset.size ()); ++p_it)
-        indices_fullset[p_it] = p_it;
-      // Set up the subset input indices
-      std::sort (indices_subset.begin (), indices_subset.end ());
-      // Get the difference
-      set_difference (indices_fullset.begin (), indices_fullset.end (), indices_subset.begin (), indices_subset.end (), inserter (indices_difference, indices_difference.begin ()));
-
-      copyPointCloud (*input_, indices_difference, output);
-    }
-  }
-  else if (keep_organized_)
-  {
-    // Case: negative = false, keep_organized_ = true
-    std::vector<int> indices_fullset (input_->points.size ());
-    std::vector<int> indices_subset = *indices_;
-    std::vector<int> indices_difference;
-
-    // Set up the full indices set
-    for (int p_it = 0; p_it < static_cast<int> (indices_fullset.size ()); ++p_it)
-      indices_fullset[p_it] = p_it;
-    // Set up the subset input indices
-    std::sort (indices_subset.begin (), indices_subset.end ());
-    // Get the difference
-    set_difference (indices_fullset.begin (), indices_fullset.end (), indices_subset.begin (), indices_subset.end (), inserter (indices_difference, indices_difference.begin ()));
-
-    output = *input_;
-    std::vector<sensor_msgs::PointField> fields;
-    pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type> (pcl::detail::FieldAdder<PointT> (fields));
-    for (int i_it = 0; i_it < static_cast<int> (indices_difference.size ()); ++i_it)
-    {
-      uint8_t* pt_data = reinterpret_cast<uint8_t*> (&output.points[indices_difference[i_it]]);
-      for (int f_it = 0; f_it < static_cast<int> (fields.size ()); ++f_it)
-        memcpy (pt_data + fields[f_it].offset, &user_filter_value_, sizeof (float));
-    }
-    if (!pcl_isfinite (user_filter_value_))
-      output.is_dense = false;
-  }
-  else
-  {
-    // Case: negative = false, keep_organized_ = false
-    copyPointCloud (*input_, *indices_, output);
+    uint8_t* pt_data = reinterpret_cast<uint8_t*> (&cloud->points[(*removed_indices_)[rii]]);
+    for (int fi = 0; fi < static_cast<int> (fields.size ()); ++fi)  // fi = field iterator
+      memcpy (pt_data + fields[fi].offset, &user_filter_value_, sizeof (float));
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
+{
+  std::vector<int> indices;
+  if (keep_organized_)
+  {
+    bool temp = extract_removed_indices_;
+    extract_removed_indices_ = true;
+    applyFilter (indices);
+    extract_removed_indices_ = temp;
+
+    output = *input_;
+    std::vector<sensor_msgs::PointField> fields; 
+    pcl::for_each_type<FieldList> (pcl::detail::FieldAdder<PointT> (fields));
+    for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
+    {
+      uint8_t* pt_data = reinterpret_cast<uint8_t*> (&output.points[(*removed_indices_)[rii]]);
+      for (int fi = 0; fi < static_cast<int> (fields.size ()); ++fi)  // fi = field iterator
+        memcpy (pt_data + fields[fi].offset, &user_filter_value_, sizeof (float));
+    }
+  }
+  else
+  {
+    applyFilter (indices);
+    copyPointCloud (*input_, indices, output);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::ExtractIndices<PointT>::applyFilter (std::vector<int> &indices)
 {
-  if (negative_)
+  if (!negative_)  // Normal functionality
   {
-    // If the subset is the full set
-    if (indices_->size () == (input_->width * input_->height) || indices_->size () == input_->points.size ())
-    {
-      // Empty set copy
-      indices.clear ();
-      return;
-    }
-
-    // Set up the full indices set
-    std::vector<int> indices_fullset (input_->points.size ());
-    for (int p_it = 0; p_it < static_cast<int> (indices_fullset.size ()); ++p_it)
-      indices_fullset[p_it] = p_it;
-
-    // If the subset is the empty set
-    if (indices_->empty () || input_->points.empty ())
-    {
-      // Full set copy
-      indices = indices_fullset;
-      return;
-    }
-
-    // If the subset is a proper subset
-    // Set up the subset input indices
-    std::vector<int> indices_subset = *indices_;
-    std::sort (indices_subset.begin (), indices_subset.end ());
-
-    // Get the difference
-    set_difference (indices_fullset.begin (), indices_fullset.end (), indices_subset.begin (), indices_subset.end (), inserter (indices, indices.begin ()));
-  }
-  else
     indices = *indices_;
+
+    if (extract_removed_indices_)
+    {
+      // Set up the full indices set
+      std::vector<int> full_indices (input_->points.size ());
+      for (int fii = 0; fii < static_cast<int> (full_indices.size ()); ++fii)  // fii = full indices iterator
+        full_indices[fii] = fii;
+
+      // Set up the sorted input indices
+      std::vector<int> sorted_input_indices = *indices_;
+      std::sort (sorted_input_indices.begin (), sorted_input_indices.end ());
+
+      // Store the difference in removed_indices
+      removed_indices_->clear ();
+      set_difference (full_indices.begin (), full_indices.end (), sorted_input_indices.begin (), sorted_input_indices.end (), inserter (*removed_indices_, removed_indices_->begin ()));
+    }
+  }
+  else  // Inverted functionality
+  {
+    // Set up the full indices set
+    std::vector<int> full_indices (input_->points.size ());
+    for (int fii = 0; fii < static_cast<int> (full_indices.size ()); ++fii)  // fii = full indices iterator
+      full_indices[fii] = fii;
+
+    // Set up the sorted input indices
+    std::vector<int> sorted_input_indices = *indices_;
+    std::sort (sorted_input_indices.begin (), sorted_input_indices.end ());
+
+    // Store the difference in indices
+    indices.clear ();
+    set_difference (full_indices.begin (), full_indices.end (), sorted_input_indices.begin (), sorted_input_indices.end (), inserter (indices, indices.begin ()));
+
+    if (extract_removed_indices_)
+      removed_indices_ = indices_;
+  }
 }
 
 #define PCL_INSTANTIATE_ExtractIndices(T) template class PCL_EXPORTS pcl::ExtractIndices<T>;
 
-#endif  //#ifndef PCL_FILTERS_IMPL_EXTRACT_INDICES_HPP_
+#endif  // PCL_FILTERS_IMPL_EXTRACT_INDICES_HPP_
 

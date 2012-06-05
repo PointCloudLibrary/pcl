@@ -45,12 +45,12 @@
 namespace pcl
 {
   /** \brief @b PassThrough passes points in a cloud based on constraints for one particular field of the point type.
-    * \details Iterates through the entire cloud once, automatically filtering non-finite points and the points outside
+    * \details Iterates through the entire input once, automatically filtering non-finite points and the points outside
     * the interval specified by setFilterLimits(), which applies only to the field specified by setFilterFieldName().
     * <br><br>
     * Usage example:
     * \code
-    * pcl::PassThrough<PointType> ptfilter (true); // This will allow us to extract the removed indices
+    * pcl::PassThrough<PointType> ptfilter (true); // Initializing with true will allow us to extract the removed indices
     * ptfilter.setInputCloud (cloud_in);
     * ptfilter.setFilterFieldName ("x");
     * ptfilter.setFilterLimits (0.0, 1000.0);
@@ -67,7 +67,7 @@ namespace pcl
     * // The indices_xz array indexes all points of cloud_in that have x between 0.0 and 1000.0 and z larger than 10.0 or smaller than -10.0
     * ptfilter.setIndices (indices_xz);
     * ptfilter.setFilterFieldName ("intensity");
-    * ptfilter.setFilterLimits (DBL_MIN, 0.5);
+    * ptfilter.setFilterLimits (FLT_MIN, 0.5);
     * ptfilter.setNegative (false);
     * ptfilter.filter (*cloud_out);
     * // The resulting cloud_out contains all points of cloud_in that are finite and have:
@@ -84,10 +84,10 @@ namespace pcl
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
         */
       PassThrough (bool extract_removed_indices = false) :
-        FilterIndices <PointT>::FilterIndices (extract_removed_indices),
+        FilterIndices<PointT>::FilterIndices (extract_removed_indices),
         filter_field_name_ (""),
-        filter_limit_min_ (DBL_MIN),
-        filter_limit_max_ (DBL_MAX)
+        filter_limit_min_ (FLT_MIN),
+        filter_limit_max_ (FLT_MAX)
       {
         filter_name_ = "PassThrough";
       }
@@ -113,28 +113,28 @@ namespace pcl
 
       /** \brief Set the numerical limits for the field for filtering data.
         * \details In conjunction with setFilterFieldName(), points having values outside this interval for this field will be discarded.
-        * \param[in] limit_min The minimum allowed field value (default = DBL_MIN).
-        * \param[in] limit_max The maximum allowed field value (default = DBL_MAX).
+        * \param[in] limit_min The minimum allowed field value (default = FLT_MIN).
+        * \param[in] limit_max The maximum allowed field value (default = FLT_MAX).
         */
       inline void
-      setFilterLimits (const double &limit_min, const double &limit_max)
+      setFilterLimits (const float &limit_min, const float &limit_max)
       {
         filter_limit_min_ = limit_min;
         filter_limit_max_ = limit_max;
       }
 
       /** \brief Get the numerical limits for the field for filtering data.
-        * \param[out] limit_min The minimum allowed field value (default = DBL_MIN).
-        * \param[out] limit_max The maximum allowed field value (default = DBL_MAX).
+        * \param[out] limit_min The minimum allowed field value (default = FLT_MIN).
+        * \param[out] limit_max The maximum allowed field value (default = FLT_MAX).
         */
       inline void
-      getFilterLimits (double &limit_min, double &limit_max)
+      getFilterLimits (float &limit_min, float &limit_max)
       {
         limit_min = filter_limit_min_;
         limit_max = filter_limit_max_;
       }
 
-      /** \brief Set to true if we want to return the data outside the interval specified by setFilterLimits (min, max).
+      /** \brief Set to true if we want to return the data outside the interval specified by setFilterLimits (min, max)
         * Default: false.
         * \warning This method will be removed in the future. Use setNegative() instead.
         * \param[in] limit_negative return data inside the interval (false) or outside (true)
@@ -166,7 +166,7 @@ namespace pcl
       }
 
     protected:
-      typedef typename Filter<PointT>::PointCloud PointCloud;
+      typedef typename PassThrough<PointT>::PointCloud PointCloud;
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
       typedef typename pcl::traits::fieldList<PointT>::type FieldList;
@@ -197,11 +197,11 @@ namespace pcl
       /** \brief The name of the field that will be used for filtering. */
       std::string filter_field_name_;
 
-      /** \brief The minimum allowed field value (default = DBL_MIN). */
-      double filter_limit_min_;
+      /** \brief The minimum allowed field value (default = FLT_MIN). */
+      float filter_limit_min_;
 
-      /** \brief The maximum allowed field value (default = DBL_MIN). */
-      double filter_limit_max_;
+      /** \brief The maximum allowed field value (default = FLT_MIN). */
+      float filter_limit_max_;
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -360,5 +360,5 @@ namespace pcl
   };
 }
 
-#endif  //#ifndef PCL_FILTERS_PASSTHROUGH_H_
+#endif  // PCL_FILTERS_PASSTHROUGH_H_
 

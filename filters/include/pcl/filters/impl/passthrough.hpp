@@ -43,204 +43,30 @@
 #include <pcl/filters/passthrough.h>
 #include <pcl/common/io.h>
 
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
 {
-  // Has the input dataset been set already?
-  // This code might never run, I think this is already checked in initCompute in PCLBase -FF
-  if (!input_)
-  {
-    PCL_WARN ("[pcl::%s::applyFilter] No input dataset given!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
-    return;
-  }
-
-  // Check if we're going to keep the organized structure of the cloud or not
+  std::vector<int> indices;
   if (keep_organized_)
   {
-    if (filter_field_name_.empty ())
-    {
-      // Silly - if no filtering is actually done, and we want to keep the data organized, 
-      // just copy everything. Any optimizations that can be done here???
-      output = *input_;
-      return;
-    }
+    bool temp = extract_removed_indices_;
+    extract_removed_indices_ = true;
+    applyFilter (indices);
+    extract_removed_indices_ = temp;
 
-    output.width  = input_->width;
-    output.height = input_->height;
-    // Check what the user value is: if !finite, set is_dense to false, true otherwise
-    if (!pcl_isfinite (user_filter_value_))
-      output.is_dense = false;
-    else
-      output.is_dense = input_->is_dense;
+    output = *input_;
+    for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
+      output.points[(*removed_indices_)[rii]].x = output.points[(*removed_indices_)[rii]].y = output.points[(*removed_indices_)[rii]].z = user_filter_value_;
   }
   else
   {
-    output.height = 1;                    // filtering breaks the organized structure
-    // Because we're doing explit checks for isfinite, is_dense = true
-    output.is_dense = true;
+    applyFilter (indices);
+    copyPointCloud (*input_, indices, output);
   }
-  output.points.resize (input_->points.size ());
-  removed_indices_->resize (input_->points.size ());
-
-  size_t nr_p = 0;
-  int nr_removed_p = 0;
-
-  // If we don't want to process the entire cloud, but rather filter points far away from the viewpoint first...
-  if (!filter_field_name_.empty ())
-  {
-    // Get the distance field index
-    std::vector<sensor_msgs::PointField> fields;
-    int distance_idx = pcl::getFieldIndex (*input_, filter_field_name_, fields);
-    if (distance_idx == -1)
-    {
-      PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.\n", getClassName ().c_str (), distance_idx);
-      output.width = output.height = 0;
-      output.points.clear ();
-      return;
-    }
-
-    if (keep_organized_)
-    {
-      for (int cp = 0; cp < static_cast<int>(input_->points.size ()); ++cp)
-      {
-        if (pcl_isnan (input_->points[cp].x) ||
-            pcl_isnan (input_->points[cp].y) ||
-            pcl_isnan (input_->points[cp].z))
-        {
-          output.points[cp].x = output.points[cp].y = output.points[cp].z = user_filter_value_;
-          continue;
-        }
-
-        // Copy the point
-        pcl::for_each_type<FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (input_->points[cp], output.points[cp]));
-
-        // Filter it. Get the distance value
-        const uint8_t* pt_data = reinterpret_cast<const uint8_t*>(&input_->points[cp]);
-        float distance_value = 0;
-        memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
-
-        if (negative_)
-        {
-          // Use a threshold for cutting out points which inside the interval
-          if ((distance_value < filter_limit_max_) && (distance_value > filter_limit_min_))
-          {
-            output.points[cp].x = output.points[cp].y = output.points[cp].z = user_filter_value_;
-            continue;
-          }
-          else 
-          {
-            if (extract_removed_indices_)
-            {
-              (*removed_indices_)[nr_removed_p] = cp;
-              nr_removed_p++;
-            }
-          }
-        }
-        else
-        {
-          // Use a threshold for cutting out points which are too close/far away
-          if ((distance_value > filter_limit_max_) || (distance_value < filter_limit_min_))
-          {
-            output.points[cp].x = output.points[cp].y = output.points[cp].z = user_filter_value_;
-            continue;
-          }
-          else
-          {
-            if (extract_removed_indices_)
-            {
-              (*removed_indices_)[nr_removed_p] = cp;
-              nr_removed_p++;
-            }
-          }
-        }
-      }
-      nr_p = input_->points.size ();
-    }
-    // Remove filtered points
-    else
-    {
-      // Go over all points
-      for (int cp = 0; cp < static_cast<int>(input_->points.size ()); ++cp)
-      {
-        // Check if the point is invalid
-        if (!pcl_isfinite (input_->points[cp].x) || !pcl_isfinite (input_->points[cp].y) || !pcl_isfinite (input_->points[cp].z))
-        {
-          if (extract_removed_indices_)
-          {
-            (*removed_indices_)[nr_removed_p] = cp;
-            nr_removed_p++;
-          }
-          continue;
-        }
-
-        // Get the distance value
-        const uint8_t* pt_data = reinterpret_cast<const uint8_t*>(&input_->points[cp]);
-        float distance_value = 0;
-        memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
-
-        if (negative_)
-        {
-          // Use a threshold for cutting out points which inside the interval
-          if (distance_value < filter_limit_max_ && distance_value > filter_limit_min_)
-          {
-            if (extract_removed_indices_)
-            {
-              (*removed_indices_)[nr_removed_p] = cp;
-              nr_removed_p++;
-            }
-            continue;
-          }
-        }
-        else
-        {
-          // Use a threshold for cutting out points which are too close/far away
-          if (distance_value > filter_limit_max_ || distance_value < filter_limit_min_)
-          {
-            if (extract_removed_indices_)
-            {
-              (*removed_indices_)[nr_removed_p] = cp;
-              nr_removed_p++;
-            }
-            continue;
-          }
-        }
-
-        pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (input_->points[cp], output.points[nr_p]));
-        nr_p++;
-      }
-      output.width = static_cast<uint32_t>(nr_p);
-    } // !keep_organized_
-  }
-  // No distance filtering, process all data. No need to check for is_organized here as we did it above
-  else
-  {
-    // First pass: go over all points and insert them into the right leaf
-    for (int cp = 0; cp < static_cast<int>(input_->points.size ()); ++cp)
-    {
-      // Check if the point is invalid
-      if (!pcl_isfinite (input_->points[cp].x) || !pcl_isfinite (input_->points[cp].y) || !pcl_isfinite (input_->points[cp].z))
-      {
-        if (extract_removed_indices_)
-        {
-          (*removed_indices_)[nr_removed_p] = cp;
-          nr_removed_p++;
-        }
-        continue;
-      }
-
-      pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (input_->points[cp], output.points[nr_p]));
-      nr_p++;
-    }
-    output.width = static_cast<uint32_t>(nr_p);
-  }
-
-  output.points.resize (output.width * output.height);
-  removed_indices_->resize(nr_removed_p);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::PassThrough<PointT>::applyFilter (std::vector<int> &indices)
 {
@@ -314,7 +140,7 @@ pcl::PassThrough<PointT>::applyFilter (std::vector<int> &indices)
         continue;
       }
 
-      // Otherwise it was a normal point for output
+      // Otherwise it was a normal point for output (inlier)
       indices[oii++] = (*indices_)[iii];
     }
   }
