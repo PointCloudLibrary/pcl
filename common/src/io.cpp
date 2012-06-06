@@ -369,3 +369,27 @@ pcl::copyPointCloud (
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::copyPointCloud (
+    const sensor_msgs::PointCloud2 &cloud_in, 
+    sensor_msgs::PointCloud2 &cloud_out)
+{
+  cloud_out.header       = cloud_in.header;
+  cloud_out.height       = cloud_in.height;
+  cloud_out.width        = cloud_in.width;
+  cloud_out.fields       = cloud_in.fields;
+  cloud_out.is_bigendian = cloud_in.is_bigendian;
+  cloud_out.point_step   = cloud_in.point_step;
+  cloud_out.row_step     = cloud_in.row_step;
+
+  if (cloud_in.is_dense)
+    cloud_out.is_dense = true;
+  else
+    cloud_out.is_dense = false;
+
+  cloud_out.data.resize (cloud_out.width * cloud_out.height * cloud_out.point_step);
+
+  //copy the data directly
+  memcpy ( &cloud_out.data[0], &cloud_in.data[0], cloud_in.point_step * cloud_in.width * cloud_in.height );
+}

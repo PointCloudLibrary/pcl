@@ -255,6 +255,15 @@ namespace pcl
                   const std::vector<int> &indices, 
                   sensor_msgs::PointCloud2 &cloud_out);
 
+  /** \brief Copy fields and point cloud data from \a cloud_in to \a cloud_out
+    * \param[in] cloud_in the input point cloud dataset
+    * \param[out] cloud_out the resultant output point cloud dataset
+    * \ingroup common
+    */
+  PCL_EXPORTS void 
+  copyPointCloud (const sensor_msgs::PointCloud2 &cloud_in, 
+                  sensor_msgs::PointCloud2 &cloud_out);
+
   /** \brief Extract the indices of a given point cloud as a new point cloud
     * \param[in] cloud_in the input point cloud dataset
     * \param[in] indices the vector of indices representing the points to be copied from \a cloud_in
