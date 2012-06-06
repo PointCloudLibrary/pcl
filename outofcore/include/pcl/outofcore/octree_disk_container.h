@@ -60,6 +60,10 @@
 
 #include <pcl/outofcore/octree_abstract_node_container.h>
 
+#include <sensor_msgs/PointCloud2.h>
+
+#include <pcl/io/pcd_io.h>
+
 //allows operation on POSIX
 #ifndef WIN32
 #define _fseeki64 fseeko
@@ -110,7 +114,7 @@ namespace pcl
         push_back (const PointT& p);
 
         void
-        insertRange (const AlignedPointTVector& p);
+        insertRange (const AlignedPointTVector& src);
 
         /** \todo standardize the interface for writing binary data to the files .oct_dat files */
         void
@@ -161,7 +165,36 @@ namespace pcl
          * \param[out] v std::vector as destination for points read from disk into memory
          */
         void
-        readRange (const uint64_t start, const uint64_t count, AlignedPointTVector& v);
+        readRange (const uint64_t start, const uint64_t count, AlignedPointTVector& dst);
+
+        void
+        readRange (const uint64_t start, const uint64_t count, sensor_msgs::PointCloud2& dst)
+        {
+          if (count == 0)
+          {
+            PCL_DEBUG ( "[pcl::outofcore::octree_disk_container] No points requested for reading\n" );
+            return;
+          }
+
+          if ((start + count) > size ())
+          {
+            PCL_ERROR ( "[pcl::outofcore::octree_disk_container] Indicies out of range; start + count exceeds the size of the stored points\n" );
+            PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_disk_container] Outofcore Octree Exception: Read indices exceed range");
+          }
+
+          uint64_t filestart = 0;
+          uint64_t filecount = 0;
+
+          pcl::PCDReader reader;
+
+          Eigen::Vector4f  origin;
+          Eigen::Quaternionf  orientation;
+          int  pcd_version;
+
+          //something wrong here ?
+          assert ( reader.read ( *fileback_name_, dst, origin, orientation, pcd_version) == 0 );
+        }
+
 
         /** \brief  grab percent*count random points. points are \b not guaranteed to be
          * unique (could have multiple identical points!)
@@ -172,12 +205,12 @@ namespace pcl
          * \param count[in] The length of the range of points from which to randomly sample 
          *  (i.e. from start to start+count)
          * \param percent[in] The percentage of count that is enough points to make up this random sample
-         * \param v[out] std::vector as destination for randomly sampled points; size will 
+         * \param dst[out] std::vector as destination for randomly sampled points; size will 
          * be percentage*count
          */
         void
         readRangeSubSample (const uint64_t start, const uint64_t count, const double percent,
-                            AlignedPointTVector& v);
+                            AlignedPointTVector& dst);
 
         /** \brief Use bernoulli trials to select points. All points selected will be unique.
          *
@@ -185,12 +218,12 @@ namespace pcl
          * \param[in] count The length of the range of points from which to randomly sample 
          *  (i.e. from start to start+count)
          * \param[in] percent The percentage of count that is enough points to make up this random sample
-         * \param[out] v std::vector as destination for randomly sampled points; size will 
+         * \param[out] dst std::vector as destination for randomly sampled points; size will 
          * be percentage*count
          */
         void
         readRangeSubSample_bernoulli (const uint64_t start, const uint64_t count, 
-                                      const double percent, AlignedPointTVector& v);
+                                      const double percent, AlignedPointTVector& dst);
 
         /** \brief Returns the total number of points for which this container is responsible, \ref filelen_ + points in \ref writebuff_ that have not yet been flushed to the disk
          */

@@ -351,42 +351,42 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 #if 0
     template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::addPointToLeaf (const PointT& p)
+    octree_base<Container, PointT>::addPointToLeaf (const PointT& src)
     {
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
-      root_->addPointToLeaf (p, false);
+      root_->addPointToLeaf (src, false);
     }
 #endif    
 
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> boost::uint64_t
-    octree_base<Container, PointT>::addDataToLeaf_and_genLOD (AlignedPointTVector& p)
+    octree_base<Container, PointT>::addDataToLeaf_and_genLOD (AlignedPointTVector& src)
     {
       // Lock the tree while writing
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
-      boost::uint64_t pt_added = root_->addDataToLeaf_and_genLOD (p, false);
+      boost::uint64_t pt_added = root_->addDataToLeaf_and_genLOD (src, false);
       return (pt_added);
     }
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::queryBBIncludes (const double min[3], const double max[3], size_t query_depth, std::list<PointT>& v) const
+    octree_base<Container, PointT>::queryBBIncludes (const double min[3], const double max[3], size_t query_depth, AlignedPointTVector& dst) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
-      v.clear ();
-      root_->queryBBIncludes (min, max, query_depth, v);
+      dst.clear ();
+      root_->queryBBIncludes (min, max, query_depth, dst);
     }
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> void
     octree_base<Container, PointT>::queryBBIncludes_subsample (const double min[3], const double max[3],
                                                                size_t query_depth, const double percent,
-                                                               std::list<PointT>& v) const
+                                                               AlignedPointTVector& dst) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
-      v.clear ();
-      root_->queryBBIncludes_subsample (min, max, query_depth, percent, v);
+      dst.clear ();
+      root_->queryBBIncludes_subsample (min, max, query_depth, percent, dst);
     }
 
 ////////////////////////////////////////////////////////////////////////////////

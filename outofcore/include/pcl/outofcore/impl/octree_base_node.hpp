@@ -1086,7 +1086,95 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> void
-    octree_base_node<Container, PointT>::queryBBIncludes (const double min_bb[3], const double max_bb[3], size_t query_depth, std::list<PointT>& v)
+    octree_base_node<Container, PointT>::queryBBIncludes (const double min_bb[3], const double max_bb[3], size_t query_depth, sensor_msgs::PointCloud2& dst_blob) 
+    {
+      //if the queried bounding box has any intersection with this node's bounding box
+      if (intersectsWithBB (min_bb, max_bb))
+      {
+        //if we aren't at the max desired depth
+        if (this->depth_ < query_depth)
+        {
+          //if this node doesn't have any children, we are at the max depth for this query
+          if ((num_child_ == 0) && (hasUnloadedChildren ()))
+          {
+            loadChildren (false);
+          }
+
+          //if this node has children
+          if (num_child_ > 0)
+          {
+            //recursively store any points that fall into the queried bounding box into v and return
+            for (size_t i = 0; i < 8; i++)
+            {
+              if (children_[i])
+                children_[i]->queryBBIncludes (min_bb, max_bb, query_depth, dst_blob);
+            }
+            return;
+          }
+        }
+        //otherwise if we are at the max depth
+        else
+        {
+          //get all the points from the payload and return (easy with PointCloud2)
+          sensor_msgs::PointCloud2 tmp_blob;
+                
+          payload_->readRange (0, payload_->size (), tmp_blob);
+
+          //if this node's bounding box falls completely within the queried bounding box
+          if (withinBB (min_bb, max_bb))
+          {
+            //concatenate all of what was just read into the main dst_blob
+            //(is it safe to do in place?)
+            
+            //if there is already something in the destination blob (remember this method is recursive)
+            if( dst_blob.fields.size () != 0 )
+            {
+              PCL_INFO ("[pcl::outofcore::octree_base_node] Concatenating point cloud\n");
+              //can this be done in place?
+              assert ( pcl::concatenatePointCloud ( dst_blob, tmp_blob, dst_blob ) == 1 );
+            }
+            //otherwise, just copy the tmp_blob into the dst_blob
+            else 
+            {
+              PCL_INFO ( "[pcl::outofcore::octree_base_node] Copying point cloud\n");
+              pcl::copyPointCloud ( tmp_blob, dst_blob );
+            }
+            return;
+          }
+          //otherwise queried bounding box only partially intersects this
+          //node's bounding box, so we have to check all the points in
+          //this box for intersection with queried bounding box
+          else
+          {
+            //put the ros message into a pointxyz point cloud (just to get the indices by using getPointsInBox)
+            pcl::PointCloud<pcl::PointXYZ>::Ptr tmp_cloud ( new pcl::PointCloud<pcl::PointXYZ> () );
+            pcl::fromROSMsg ( tmp_blob, *tmp_cloud );
+                
+            Eigen::Vector4f min_pt ( min_bb[0], min_bb[1], min_bb[2], 1);
+            Eigen::Vector4f max_pt ( max_bb[0], max_bb[1], max_bb[2], 1);
+                
+            std::vector<int> indices;
+
+            pcl::getPointsInBox ( *tmp_cloud, min_pt, max_pt, indices );
+
+            PCL_DEBUG ( "Points in box: %d", indices.size () );
+
+
+            //need a new tmp destination with extracted points within BB
+            sensor_msgs::PointCloud2 tmp_blob_within_bb;
+                
+            //copy just the points marked in indices
+            pcl::copyPointCloud ( tmp_blob, indices, tmp_blob_within_bb );
+
+            //concatenate those points into the returned dst_blob
+            assert ( pcl::concatenatePointCloud ( dst_blob, tmp_blob_within_bb, dst_blob ) == 1 );
+          }
+        }
+      }
+    }
+
+    template<typename Container, typename PointT> void
+    octree_base_node<Container, PointT>::queryBBIncludes (const double min_bb[3], const double max_bb[3], size_t query_depth, AlignedPointTVector& v)
     {
 
       //if the queried bounding box has any intersection with this node's bounding box
@@ -1149,12 +1237,12 @@ namespace pcl
           }
         }
       }
-  
     }
+    
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> void
-    octree_base_node<Container, PointT>::queryBBIncludes_subsample (const double min_bb[3], const double max_bb[3], int query_depth, const double percent, std::list<PointT>& v)
+    octree_base_node<Container, PointT>::queryBBIncludes_subsample (const double min_bb[3], const double max_bb[3], int query_depth, const double percent, AlignedPointTVector& dst)
     {
       //check if the queried bounding box has any intersection with this node's bounding box
       if (intersectsWithBB (min_bb, max_bb))
@@ -1174,7 +1262,7 @@ namespace pcl
             for (size_t i = 0; i < 8; i++)
             {
               if (children_[i])
-                children_[i]->queryBBIncludes_subsample (min_bb, max_bb, query_depth, percent, v);
+                children_[i]->queryBBIncludes_subsample (min_bb, max_bb, query_depth, percent, dst);
             }
             return;
           }
@@ -1188,7 +1276,7 @@ namespace pcl
             //add a random sample of all the points
             AlignedPointTVector payload_cache;
             payload_->readRangeSubSample (0, payload_->size (), percent, payload_cache);
-            v.insert (v.end (), payload_cache.begin (), payload_cache.end ());
+            dst.insert (dst.end (), payload_cache.begin (), payload_cache.end ());
             return;
           }
           //otherwise the queried bounding box only partially intersects with this node's bounding box
@@ -1217,7 +1305,7 @@ namespace pcl
 
             for (size_t i = 0; i < numpick; i++)
             {
-              v.push_back (payload_cache_within_region[i]);
+              dst.push_back (payload_cache_within_region[i]);
             }
           }
         }

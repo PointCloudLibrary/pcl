@@ -58,6 +58,8 @@ using namespace pcl;
 #include <pcl/outofcore/outofcore.h>
 #include <pcl/outofcore/outofcore_impl.h>
 
+#include <sensor_msgs/PointCloud2.h>
+
 using namespace pcl::outofcore;
 
 #include <boost/random/mersenne_twister.hpp>
@@ -70,7 +72,7 @@ using namespace pcl::outofcore;
 
 // For doing exhaustive checks this is set low remove those, and this can be
 // set much higher
-const static uint64_t numPts ( 5000 );
+const static uint64_t numPts ( 50000 );
 
 const static boost::uint32_t rngseed = 0xAAFF33DD;
 
@@ -92,7 +94,10 @@ typedef octree_base_node<octree_disk_container < PointT > , PointT > octree_disk
 typedef octree_base<octree_ram_container< PointT> , PointT> octree_ram;
 typedef octree_base_node< octree_ram_container<PointT> , PointT> octree_ram_node;
 
-std::vector<PointT, Eigen::aligned_allocator<PointT> > points;
+typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
+
+AlignedPointTVector points;
+
 
 /** \brief helper function to compare two points. is there a templated function in pcl to do this for arbitrary point types?*/
 bool 
@@ -258,13 +263,14 @@ void point_test(octree_disk& t)
     }
 
     //query the trees
-    std::list<PointT> p_ot;
+    AlignedPointTVector p_ot;
+
     t.queryBBIncludes(query_box_min, qboxmax, t.getDepth(), p_ot);
 
     //query the list
-    std::vector<PointT, Eigen::aligned_allocator<PointT> > pointsinregion;
+    AlignedPointTVector pointsinregion;
 
-    for(vector<PointT, Eigen::aligned_allocator<PointT> >::iterator pointit = points.begin (); pointit != points.end (); ++pointit)
+    for(AlignedPointTVector::iterator pointit = points.begin (); pointit != points.end (); ++pointit)
     {
       if((query_box_min[0] <= pointit->x) && (pointit->x < qboxmax[0]) && (query_box_min[1] < pointit->y) && (pointit->y < qboxmax[1]) && (query_box_min[2] <= pointit->z) && (pointit->z < qboxmax[2]))
       {
@@ -277,7 +283,7 @@ void point_test(octree_disk& t)
     //very slow exhaustive comparison
     while( !p_ot.empty () )
     {
-      std::list<PointT>::iterator it;
+      AlignedPointTVector::iterator it;
       it = std::find_first_of(p_ot.begin(), p_ot.end(), pointsinregion.begin (), pointsinregion.end (), compPt);
 
       if(it != p_ot.end())
@@ -357,11 +363,11 @@ TEST (PCL, Outofcore_Ram_Tree)
     }
 
     //query the trees
-    std::list<PointT> p_ot1;
+    AlignedPointTVector p_ot1;
     t.queryBBIncludes(qboxmin, qboxmax, t.getDepth(), p_ot1);
 
     //query the list
-    std::vector<PointT, Eigen::aligned_allocator<PointT> > pointsinregion;
+    AlignedPointTVector pointsinregion;
     BOOST_FOREACH(const PointT& p, points)
     {
       if((qboxmin[0] <= p.x) && (p.x <= qboxmax[0]) && (qboxmin[1] <= p.y) && (p.y <= qboxmax[1]) && (qboxmin[2] <= p.z) && (p.z <= qboxmax[2]))
@@ -375,7 +381,7 @@ TEST (PCL, Outofcore_Ram_Tree)
     //very slow exhaustive comparison
     while( !p_ot1.empty () )
     {
-      std::list<PointT>::iterator it;
+      AlignedPointTVector::iterator it;
       it = std::find_first_of(p_ot1.begin(), p_ot1.end(), pointsinregion.begin (), pointsinregion.end (), compPt);
 
       if(it != p_ot1.end())
@@ -444,7 +450,7 @@ TEST_F (OutofcoreTest, Outofcore_Constructors)
   //Specify the upper corner of the axis-aligned bounding box
   const double max[3] = { 1024, 1024, 1024 };
 
-  vector<PointT, Eigen::aligned_allocator<PointT> > some_points;
+  AlignedPointTVector some_points;
   for(int i=0; i< numPts; i++)
     some_points.push_back (PointT (static_cast<float>( rand () % 1024 ), static_cast<float>( rand () % 1024 ), static_cast<float>( rand () % 1024 ) ));
   
@@ -480,9 +486,7 @@ TEST_F (OutofcoreTest, Outofcore_ConstructorSafety)
   /**\todo behaviors of the two constructors don't match. the one with resolution in the constructor doesn't check if a tree is being overwritten.
    */
 
-  EXPECT_ANY_THROW ({
-        octree_disk octreeC (min, max, smallest_voxel_dim, filename_otreeA, "ECEF");
-      });
+  EXPECT_ANY_THROW ({ octree_disk octreeC (min, max, smallest_voxel_dim, filename_otreeA, "ECEF"); });
 
   EXPECT_ANY_THROW ({ octree_disk octreeD (4, min, max, filename_otreeB, "ECEF"); });
 
@@ -629,6 +633,43 @@ TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
 
   EXPECT_EQ ( 2*numPts, pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ()) ) << "Points are lost when two points clouds are added to the outofcore file system\n";
   cleanUpFilesystem ();
+}
+
+//test that the PointCloud2 query returns the same points as the templated queries
+TEST_F ( OutofcoreTest, PointCloud2_Query )
+{
+
+  cleanUpFilesystem ();
+
+  //Specify the lower corner of the axis-aligned bounding box
+  const double min[3] = { -1024, -1024, -1024 };
+  //Specify the upper corner of the axis-aligned bounding box
+  const double max[3] = { 1024, 1024, 1024 };
+
+  AlignedPointTVector some_points;
+  for(int i=0; i< numPts; i++)
+    some_points.push_back (PointT (static_cast<float>( rand () % 1024 ), static_cast<float>( rand () % 1024 ), static_cast<float>( rand () % 1024 ) ));
+
+  //create a test tree
+  octree_disk octreeA (min, max, smallest_voxel_dim, filename_otreeA, "ECEF");
+
+  sensor_msgs::PointCloud2 dst_blob;
+
+  AlignedPointTVector cloud;
+  octreeA.addDataToLeaf ( some_points );
+  
+  octreeA.queryBBIncludes ( min, max, octreeA.getDepth (), dst_blob );
+  PCL_INFO ( " PointCloud2 Query Successful\n");
+  
+  octreeA.queryBBIncludes ( min, max, octreeA.getDepth (), cloud );
+
+  
+  EXPECT_EQ ( dst_blob.width*dst_blob.height, some_points.size () ) << "PointCloud2 Query number of points returned failed";
+  
+  EXPECT_EQ ( cloud.size () , some_points.size () ) << "Query error";
+
+  
+  
 }
 
   

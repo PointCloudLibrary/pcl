@@ -54,6 +54,8 @@
 #include <pcl/outofcore/octree_disk_container.h>
 #include <pcl/outofcore/octree_ram_container.h>
 
+#include <sensor_msgs/PointCloud2.h>
+
 /** 
  *  \todo Add support for an array of input clouds or locations of pcd files on disk
  *  \todo clean up access specifiers to streamline public interface
@@ -70,8 +72,8 @@ namespace pcl
    *
    *  The primary purpose of this class is recursive traversal of the
    *  in-memory/top-level octree structure. The metadata in each node
-   *  can be loaded into memory, and the tree traversed recursively in
-   *  this state. This class provides an the interface for:
+   *  can be loaded entirely into main memory, and the tree traversed 
+   *  recursively in this state. This class provides an the interface for:
    *      I. Point/Region INSERTION methods
    *      II. Frustrum/box/region REQUESTS/QUERIES
    *      III. Parameterization of compression, resolution, container type, etc...
@@ -179,6 +181,10 @@ namespace pcl
         // Frustrum/Box/Region REQUESTS/QUERIES: DB Accessors
         // -----------------------------------------------------------------------
 
+        //--------------------------------------------------------------------------------
+        //templated PointT methods
+        //--------------------------------------------------------------------------------
+
         /** \brief Get bins at query_depth that intersect with your bin
          *
          * query_depth == 0 is root
@@ -192,13 +198,31 @@ namespace pcl
 
         /** \brief get Points in BB, only points inside BB */
         void
-        queryBBIncludes (const double min[3], const double max[3], size_t query_depth, std::list<PointT>& v) const;
+        queryBBIncludes (const double min[3], const double max[3], size_t query_depth, AlignedPointTVector& dst) const;
+
+        /** \brief get point in BB into a pointcloud2 blob */
+        void
+        queryBBIncludes (const double min[3], const double max[3], size_t query_depth, sensor_msgs::PointCloud2& dst_blob) const
+        {
+          boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
+          //make sure the destination blob is empty
+          dst_blob.data.clear ();
+          dst_blob.height = 0;
+          dst_blob.width = 0;
+
+          root_->queryBBIncludes ( min, max, query_depth, dst_blob );
+        }
+        
+
 
         /** \brief random sample of points in BB includes
          *  \todo adjust for varying densities at different LODs */
         void
-        queryBBIncludes_subsample (const double min[3], const double max[3], size_t query_depth, const double percent, std::list<PointT>& v) const;
+        queryBBIncludes_subsample (const double min[3], const double max[3], size_t query_depth, const double percent, AlignedPointTVector& dst) const;
 
+        //--------------------------------------------------------------------------------
+        //PointCloud2 methods
+        //--------------------------------------------------------------------------------
 
         // Parameterization: getters and setters
         // --------------------------------------------------------------------------------

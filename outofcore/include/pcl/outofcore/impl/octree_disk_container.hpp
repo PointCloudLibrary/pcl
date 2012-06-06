@@ -260,9 +260,8 @@ namespace pcl
       PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_disk_container] Index is out of range");
     }
 ////////////////////////////////////////////////////////////////////////////////
-
     template<typename PointT> void
-    octree_disk_container<PointT>::readRange (const uint64_t start, const uint64_t count, AlignedPointTVector& v)
+    octree_disk_container<PointT>::readRange (const uint64_t start, const uint64_t count, AlignedPointTVector& dst)
     {
       if (count == 0)
       {
@@ -282,10 +281,10 @@ namespace pcl
       pcl::PCDReader reader;
       typename pcl::PointCloud<PointT>::Ptr cloud ( new pcl::PointCloud<PointT>() );
       
-      assert ( reader.read ( *fileback_name_ , *cloud) > 0 );
+      assert ( reader.read ( *fileback_name_ , *cloud) == 0 );
       
       for(size_t i=0; i < cloud->points.size (); i++)
-        v.push_back (cloud->points[i]);
+        dst.push_back (cloud->points[i]);
       
 /* //reinsert this when adding backward compatability (version <= 2)
       //this can never happen.
@@ -351,21 +350,21 @@ namespace pcl
         std::advance (start, 0);
         std::advance (end, writebuff_.size ());
 
-        v.insert (v.end (), start, end);
+        dst.insert (dst.end (), start, end);
       }
 #endif
     }
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    octree_disk_container<PointT>::readRangeSubSample_bernoulli (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector& v)
+    octree_disk_container<PointT>::readRangeSubSample_bernoulli (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector& dst)
     {
       if (count == 0)
       {
         return;
       }
 
-      v.clear ();
+      dst.clear ();
 
       uint64_t filestart = 0;
       uint64_t filecount = 0;
@@ -401,7 +400,7 @@ namespace pcl
           {
             if (buffcoin ())
             {
-              v.push_back (writebuff_[i]);
+              dst.push_back (writebuff_[i]);
             }
           }
         }
@@ -439,7 +438,7 @@ namespace pcl
           size_t readlen = fread (loc, sizeof(PointT), 1, f);
           assert (readlen == 1);
 
-          v.push_back (p);
+          dst.push_back (p);
         }
 //        int closeret = 
         fclose (f);
@@ -449,14 +448,14 @@ namespace pcl
 
 //change this to use a weighted coin flip, to allow sparse sampling of small clouds (eg the bernoulli above)
     template<typename PointT> void
-    octree_disk_container<PointT>::readRangeSubSample (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector& v)
+    octree_disk_container<PointT>::readRangeSubSample (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector& dst)
     {
       if (count == 0)
       {
         return;
       }
 
-      v.clear ();
+      dst.clear ();
 
       uint64_t filestart = 0;
       uint64_t filecount = 0;
@@ -485,7 +484,7 @@ namespace pcl
       if ((filesamp == 0) && (buffsamp == 0) && (size () > 0))
       {
         //std::cerr << "would not add points to LOD, falling back to bernoulli";
-        readRangeSubSample_bernoulli (start, count, percent, v);
+        readRangeSubSample_bernoulli (start, count, percent, dst);
         return;
       }
 
@@ -500,7 +499,7 @@ namespace pcl
           for (uint64_t i = 0; i < buffsamp; i++)
           {
             uint64_t buffstart = buffdie ();
-            v.push_back (writebuff_[buffstart]);
+            dst.push_back (writebuff_[buffstart]);
           }
         }
       }
@@ -534,7 +533,7 @@ namespace pcl
           size_t readlen = fread (loc, sizeof(PointT), 1, f);
           assert (readlen == 1);
 
-          v.push_back (p);
+          dst.push_back (p);
         }
         assert ( fclose (f) == 0 );
       }
@@ -553,9 +552,9 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    octree_disk_container<PointT>::insertRange (const AlignedPointTVector& p)
+    octree_disk_container<PointT>::insertRange (const AlignedPointTVector& src)
     {
-      const uint64_t count = p.size ();
+      const uint64_t count = src.size ();
       
       typename pcl::PointCloud<PointT>::Ptr tmp_cloud (new pcl::PointCloud<PointT> () );
       
@@ -572,8 +571,8 @@ namespace pcl
         tmp_cloud->height = 1;
       }            
 
-      for(size_t i=0; i<p.size (); i++)
-        tmp_cloud->points.push_back (p[i]);
+      for(size_t i=0; i < src.size (); i++)
+        tmp_cloud->points.push_back ( src[i] );
       
       //if there are any points in the write cache writebuff_, a different write cache than this one, concatenate
       for ( size_t i = 0; i < writebuff_.size (); i++ )

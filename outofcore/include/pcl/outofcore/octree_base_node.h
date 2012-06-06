@@ -52,8 +52,12 @@
 #include <boost/random/bernoulli_distribution.hpp>
 
 // PCL (Urban Robotics)
+#include <pcl/common/io.h>
+
 #include <pcl/outofcore/octree_base.h>
 #include <pcl/outofcore/octree_disk_container.h>
+
+#include <sensor_msgs/PointCloud2.h>
 
 namespace pcl
 {
@@ -146,6 +150,7 @@ namespace pcl
           memcpy (minCoord, min_, 3 * sizeof(double));
           memcpy (maxCoord, max_, 3 * sizeof(double));
         }
+    
 
         //point extraction
         /** \brief Recursively add points that fall into the queried bounding box up to the \b query_depth 
@@ -153,13 +158,98 @@ namespace pcl
          *  \param[in] min_bb the minimum corner of the bounding box, indexed by X,Y,Z coordinates
          *  \param[in] max_bb the maximum corner of the bounding box, indexed by X,Y,Z coordinates
          *  \param[in] query_depth the maximum depth to query in the octree for points within the bounding box
-         *  \param[out] v std::list of points returned by the query; 
-         *  \todo question: why std::list?
+         *  \param[out] dst destion of points returned by the queries
          *  \todo benchmark queryBBIncludes
-         *  \todo clean up the public interface
          */
         void
-        queryBBIncludes (const double min_bb[3], const double max_bb[3], size_t query_depth, std::list<PointT>& v);
+        queryBBIncludes (const double min_bb[3], const double max_bb[3], size_t query_depth, AlignedPointTVector& dst);
+
+        /** \brief Recursively add points that fall into the queried bounding box up to the \b query_depth
+         *
+         *  \param[in] min_bb the minimum corner of the bounding box, indexed by X,Y,Z coordinates
+         *  \param[in] max_bb the maximum corner of the bounding box, indexed by X,Y,Z coordinates
+         *  \param[in] query_depth the maximum depth to query in the octree for points within the bounding box
+         *  \param[out] dst_blob destion of points returned by the queries
+         *  \todo benchmark queryBBIncludes
+         *  \todo use this as wrapper for queryBBIncludes into AlignedPointTVector
+         */
+        void
+        queryBBIncludes (const double min_bb[3], const double max_bb[3], size_t query_depth, sensor_msgs::PointCloud2& dst_blob);
+        
+        
+        // {
+        //   //if the queried bounding box has any intersection with this node's bounding box
+        //   if (intersectsWithBB (min_bb, max_bb))
+        //   {
+        //     //if we aren't at the max desired depth
+        //     if (this->depth_ < query_depth)
+        //     {
+        //       //if this node doesn't have any children, we are at the max depth for this query
+        //       if ((num_child_ == 0) && (hasUnloadedChildren ()))
+        //       {
+        //         loadChildren (false);
+        //       }
+
+        //       //if this node has children
+        //       if (num_child_ > 0)
+        //       {
+        //         //recursively store any points that fall into the queried bounding box into v and return
+        //         for (size_t i = 0; i < 8; i++)
+        //         {
+        //           if (children_[i])
+        //             children_[i]->queryBBIncludes (min_bb, max_bb, query_depth, dst_blob);
+        //         }
+        //         return;
+        //       }
+        //     }
+        //     //otherwise if we are at the max depth
+        //     else
+        //     {
+        //         //get all the points from the payload and return (easy with PointCloud2)
+
+        //         sensor_msgs::PointCloud2 tmp_blob;
+                
+        //         payload_->readRange (0, payload_->size (), tmp_blob);
+
+        //       //if this node's bounding box falls completely within the queried bounding box
+        //       if (withinBB (min_bb, max_bb))
+        //       {
+        //         //concatenate all of what was just read into the main dst_blob
+        //         //(is it safe to do in place?)
+        //         assert ( pcl::concatenatePointCloud ( dst_blob, tmp_blob, dst_blob ) == 1 );
+        //         return;
+        //       }
+        //       //otherwise queried bounding box only partially intersects this
+        //       //node's bounding box, so we have to check all the points in
+        //       //this box for intersection with queried bounding box
+        //       else
+        //       {
+
+
+        //         //put the ros message into a pointxyz point cloud (just to get the indices by using getPointsInBox)
+        //         pcl::PointCloud<pcl::PointXYZ>::Ptr tmp_cloud ( new pcl::PointCloud<pcl::PointXYZ> () );
+        //         pcl::fromROSMsg ( tmp_blob, *tmp_cloud );
+                
+        //         Eigen::Vector4f min_pt ( min_bb[0], min_bb[1], min_bb[2], 1);
+        //         Eigen::Vector4f max_pt ( max_bb[0], max_bb[1], max_bb[2], 1);
+                
+        //         std::vector<int> indices;
+
+        //         pcl::getPointsInBox ( *tmp_cloud, min_pt, max_pt, indices );
+
+        //         //need a new tmp destination with extracted points within BB
+        //         sensor_msgs::PointCloud2 tmp_blob_within_bb;
+                
+        //         //copy just the points marked in indices
+        //         pcl::copyPointCloud ( tmp_blob, indices, tmp_blob_within_bb );
+
+        //         //concatenate those points into the returned dst_blob
+        //         assert ( pcl::concatenatePointCloud ( dst_blob, tmp_blob_within_bb, dst_blob ) == 1 );
+                
+        //       }
+        //     }
+//   }
+        // }
 
         /** \brief Recursively add points that fall into the queried bounding box up to the \b query_depth 
          *
@@ -171,7 +261,7 @@ namespace pcl
          *  \todo clean up the interface and standardize the parameters to these functions
          */
         void
-        queryBBIncludes_subsample (const double min_bb[3], const double max_bb[3], int query_depth, const double percent, std::list<PointT>& v);
+        queryBBIncludes_subsample (const double min_bb[3], const double max_bb[3], int query_depth, const double percent, AlignedPointTVector& v);
 
         //bin extraction
         //query_depth == 0 is root
@@ -195,6 +285,9 @@ namespace pcl
 
         static inline bool
         pointWithinBB (const double min_bb[3], const double max_bb[3], const PointT& p);
+
+        static inline bool
+        pointWithinBB ( const double min_bb[3], const double max_bb[3], const double x, const double y, const double z );
 
         /** \brief Check whether specified point is within bounds of current node */
         inline bool
