@@ -307,8 +307,11 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
 
   // Exit early: if no points have been given, there's no sense to read or check anything anymore
   if (nr_points == 0)
+  {
+    PCL_ERROR ("[pcl::PCDReader::readHeader] No points to read\n");
     return (-1);
-
+  }
+  
   // Compatibility with older PCD file versions
   if (cloud.width == 0 && cloud.height == 0)
   {
@@ -759,8 +762,11 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     // Open for reading
     int fd = pcl_open (file_name.c_str (), O_RDONLY);
     if (fd == -1)
+    {
+      PCL_ERROR ("[pcl::PCDReader::read] Failure to open file %s\n", file_name.c_str () );
       return (-1);
-
+    }
+    
     // Seek at the given offset
     int result = static_cast<int> (pcl_lseek (fd, offset, SEEK_SET));
     if (result < 0)
@@ -784,6 +790,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     {
       CloseHandle (fm);
       pcl_close (fd);
+      PCL_ERROR ("[pcl::PCDReader::read] Error mapping view of file, %s\n", file_name.c_str ());
       return (-1);
     }
 #else
@@ -791,6 +798,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
     {
       pcl_close (fd);
+      PCL_ERROR ("[pcl::PCDReader::read] Error preparing mmap for binary PCD file.\n");
       return (-1);
     }
 #endif
@@ -831,6 +839,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
       {
         free (buf);
         pcl_close (fd);
+        PCL_ERROR ("[pcl::PCDReader::read] Size of decompressed lzf data does not match value stored in PCD header\n");
         return (-1);
       }
 
@@ -884,6 +893,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     if (munmap (map, data_size) == -1)
     {
       pcl_close (fd);
+      PCL_ERROR ("[pcl::PCDReader::read] Munmap failure\n");
       return (-1);
     }
 #endif
@@ -1049,7 +1059,11 @@ pcl::PCDReader::readEigen (const std::string &file_name, pcl::PointCloud<Eigen::
     // Open for reading
     int fd = pcl_open (file_name.c_str (), O_RDONLY);
     if (fd == -1)
+    {
+      PCL_ERROR ("[pcl::PCDReader::readEigen] Failure to open file %s\n", file_name.c_str () );
       return (-1);
+    }
+    
 
     // Seek at the given offset
     int result = static_cast<int> (pcl_lseek (fd, offset, SEEK_SET));
@@ -1074,6 +1088,7 @@ pcl::PCDReader::readEigen (const std::string &file_name, pcl::PointCloud<Eigen::
     {
       CloseHandle (fm);
       pcl_close (fd);
+      PCL_ERROR ("[pcl::PCDReader::readEigen] Error mapping view of file\n");
       return (-1);
     }
 #else
@@ -1081,6 +1096,7 @@ pcl::PCDReader::readEigen (const std::string &file_name, pcl::PointCloud<Eigen::
     if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
     {
       pcl_close (fd);
+      PCL_ERROR ("[pcl::PCDReader::readEigen] Error preparing mmap for binary PCD file.\n");
       return (-1);
     }
 #endif
@@ -1111,6 +1127,7 @@ pcl::PCDReader::readEigen (const std::string &file_name, pcl::PointCloud<Eigen::
     if (munmap (map, data_size) == -1)
     {
       pcl_close (fd);
+      PCL_ERROR ("[pcl::PCDReader::readEigen] Error during munmap ()!\n");
       return (-1);
     }
 #endif
