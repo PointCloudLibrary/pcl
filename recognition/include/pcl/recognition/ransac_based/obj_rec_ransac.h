@@ -132,6 +132,9 @@ namespace pcl
           */
         void
         recognize(const pcl::PointCloud<pcl::PointXYZ>& scene, const pcl::PointCloud<pcl::Normal>& normals, std::list<ObjRecRANSAC::Output>& recognized_objects);
+
+      protected:
+        double pair_width_;
     };
   } // namespace recognition
 } // namespace pcl

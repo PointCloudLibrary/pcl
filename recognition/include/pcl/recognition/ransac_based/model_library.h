@@ -63,7 +63,7 @@ namespace pcl
     public:
       /** \brief This class is used by 'ObjRecRANSAC' to maintain the object models to be recognized. Normally, you do not need to use
         * this class directly. */
-      ModelLibrary(){}
+      ModelLibrary(double pair_width): pair_width_(pair_width), pair_width_eps_(0.1*pair_width){}
       virtual ~ModelLibrary(){}
 
       bool
@@ -71,6 +71,7 @@ namespace pcl
 
     protected:
       std::map<std::string,Entry*> model_entries_;
+      double pair_width_, pair_width_eps_;
     };
   } // namespace recognition
 } // namespace pcl

@@ -39,9 +39,9 @@
 
 #include "pcl/recognition/ransac_based/obj_rec_ransac.h"
 
-pcl::recognition::ObjRecRANSAC::ObjRecRANSAC(double /*pair_width*/, double /*voxel_size*/, double /*fraction_of_pairs_in_hash_table*/)
+pcl::recognition::ObjRecRANSAC::ObjRecRANSAC(double pair_width, double /*voxel_size*/, double /*fraction_of_pairs_in_hash_table*/)
+: pair_width_(pair_width)
 {
-  // to be implemented
 }
 
 //===========================================================================================================================================================================================

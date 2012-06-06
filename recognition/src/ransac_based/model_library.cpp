@@ -38,20 +38,48 @@
  */
 
 #include "pcl/recognition/ransac_based/model_library.h"
+#include <pcl/kdtree/kdtree_flann.h>
+#include <vector>
 
 using namespace std;
 
 //============================================================================================================================================
 
 bool
-pcl::recognition::ModelLibrary::addModel(const PointCloudIn& /*model*/, const PointCloudN& /*normals*/, const std::string& object_name)
+pcl::recognition::ModelLibrary::addModel(const PointCloudIn& model, const PointCloudN& /*normals*/, const std::string& object_name)
 {
   // Try to insert a new model entry
-  pair<map<string,Entry*>::iterator, bool> result = model_entries_.insert(pair<string,Entry*>(object_name, reinterpret_cast<Entry*> (NULL)));
+  pair<map<string,Entry*>::iterator, bool> result = model_entries_.insert(pair<string,Entry*>(object_name, static_cast<Entry*> (NULL)));
 
   // Check if 'object_name' is unique
   if ( !result.second )
     return false;
+
+  vector<std::pair<int,int> > point_pairs;
+  vector<int> point_ids;
+  vector<float> sqr_dist;
+  KdTreeFLANN<pcl::PointXYZ> kd_tree;
+  kd_tree.setInputCloud(KdTree<pcl::PointXYZ>::PointCloudConstPtr(&model));
+  // The two radii
+  double min_sqr_radius = pair_width_ - pair_width_eps_, max_radius = pair_width_ + pair_width_eps_;
+  int i, k, num_found_points, num_model_points = static_cast<int>(model.points.size());
+
+  min_sqr_radius *= min_sqr_radius;
+
+  // For each model point get the model points lying between the spheres with radii min_radius and max_radius
+  for ( i = 0 ; i < num_model_points ; ++i )
+  {
+    point_ids.clear();
+    sqr_dist.clear();
+    num_found_points = kd_tree.radiusSearch(model.points[i], max_radius, point_ids, sqr_dist);
+
+    for ( k = 0 ; k < num_found_points ; ++k )
+      // Should we take that point?
+      if ( sqr_dist[k] >= min_sqr_radius )
+        point_pairs.push_back(pair<int,int>(i,k));
+      else // Break since the points are sorted based on their distance to the query point
+        break;
+  }
 
 //  Entry* new_entry = new Entry(object_name);
 
