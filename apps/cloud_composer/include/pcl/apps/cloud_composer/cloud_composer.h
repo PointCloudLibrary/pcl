@@ -86,7 +86,10 @@ namespace pcl
     class ProjectModel;
     class CloudViewer;
     
-    
+    /** \brief MainWindow of cloud_composer application
+     * \author Jeremie Papon
+     * \ingroup cloud_composer
+     */
     class ComposerMainWindow : public QMainWindow
     {
       Q_OBJECT
@@ -117,6 +120,9 @@ namespace pcl
         void
         slotInsertFromOpenNiSource ();
 
+        void 
+        setCurrentModel (ProjectModel* model);
+        
       private:
         void
         connectFileActionsToSlots ();
@@ -125,17 +131,22 @@ namespace pcl
         
         void 
         initializeCloudBrowser ();
-        void 
-        setCurrentModel (ProjectModel* model);
+        
         QStandardItem*
         createNewCloudItem (sensor_msgs::PointCloud2::Ptr cloud_ptr, 
-                            QString cloud_name,
-                            Eigen::Vector4f origin,
-                            Eigen::Quaternionf orientation);
+                            const QString cloud_name,
+                            const Eigen::Vector4f origin,
+                            const Eigen::Quaternionf orientation);
         
+        /** \brief Pointer to ui members defined in ui file
+         *    * cloud_viewer_ is the view which contains the PCLVisualizer & QVTKWidget
+         *    * cloud_browser_ is the tree view in the left dock
+         */
         Ui::MainWindow* ui_;
+        /** \brief Pointer to the model which is currently being viewed  */
         ProjectModel* current_model_;
-        CloudViewer* cloud_viewer_;
+        /** \brief Pointer to the viewer which contains the PCLVisualizer */
+       // CloudViewer* cloud_viewer_;
         
         QDir last_directory_;
     };

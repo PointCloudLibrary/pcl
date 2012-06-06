@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1395</width>
-    <height>883</height>
+    <width>1024</width>
+    <height>768</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QVTKWidget" name="qvtkWidget"/>
+     <widget class="pcl::cloud_composer::CloudViewer" name="cloud_viewer_"/>
     </item>
    </layout>
   </widget>
@@ -25,7 +25,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1395</width>
+     <width>1024</width>
      <height>22</height>
     </rect>
    </property>
@@ -126,7 +126,7 @@
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QGridLayout" name="gridLayout_2">
      <item row="0" column="0">
-      <widget class="QTreeView" name="cloudBrowser"/>
+      <widget class="QTreeView" name="cloud_browser_"/>
      </item>
     </layout>
    </widget>
@@ -329,6 +329,11 @@
    <class>QVTKWidget</class>
    <extends>QWidget</extends>
    <header>QVTKWidget.h</header>
+  </customwidget>
+  <customwidget>
+      <class>pcl::cloud_composer::CloudViewer</class>
+      <extends>QTabWidget</extends>
+      <header>pcl/apps/cloud_composer/cloud_viewer.h</header>
   </customwidget>
  </customwidgets>
  <resources>

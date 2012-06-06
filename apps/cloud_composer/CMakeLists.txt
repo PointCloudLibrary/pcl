@@ -51,10 +51,13 @@ if(build)
     #Qt Sources, Headers, and Resources set
     set(incs include/pcl/apps/${SUBSYS_NAME}/cloud_composer.h
              include/pcl/apps/${SUBSYS_NAME}/project_model.h
-             include/pcl/apps/${SUBSYS_NAME}/cloud_viewer.h)
-    set(srcs src/cloud_composer.cpp
+             include/pcl/apps/${SUBSYS_NAME}/cloud_viewer.h
+             include/pcl/apps/${SUBSYS_NAME}/cloud_view.h)
+    set(srcs src/main.cpp 
+             src/cloud_composer.cpp
              src/project_model.cpp
-             src/cloud_viewer.cpp)
+             src/cloud_viewer.cpp
+             src/cloud_view.cpp)
     set(uis src/cloud_composer_main_window.ui)
     set(resources resources/resources.qrc)
 

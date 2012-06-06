@@ -58,6 +58,7 @@ namespace pcl
 
       public:
         ProjectModel (QObject *parent = 0);
+        ProjectModel (const ProjectModel& to_copy);
         ~ProjectModel ();
 
         
@@ -67,5 +68,8 @@ namespace pcl
     };
   }
 }
+
+Q_DECLARE_METATYPE (pcl::cloud_composer::ProjectModel);
+
 #endif //PROJECT_MODEL_H
 

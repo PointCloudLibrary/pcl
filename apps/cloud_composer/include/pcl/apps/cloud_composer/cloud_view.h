@@ -35,53 +35,85 @@
  *
  */
 
-#ifndef CLOUD_VIEWER_H_
-#define CLOUD_VIEWER_H_
+#ifndef CLOUD_VIEW_H_
+#define CLOUD_VIEW_H_
 
 
-#include <QTabWidget>
+#include <QAbstractItemView>
+#include <QVTKWidget.h>
 
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/apps/cloud_composer/project_model.h>
-#include <pcl/apps/cloud_composer/cloud_view.h>
 
 namespace pcl
 {
   namespace cloud_composer
   {
-   
-    /** \brief Tabbed widget for containing CloudView widgets
+    class ProjectModel;
+    
+    /** \brief View class for displaying ProjectModel data using PCLVisualizer
      * \author Jeremie Papon
      * \ingroup cloud_composer
      */
-    class CloudViewer : public QTabWidget
+    class CloudView : public QWidget
     {
-        Q_OBJECT
-
-      public:
-        
-        CloudViewer (QWidget* parent = 0);
-        
-        ProjectModel* getModel () const;
-
-      public slots:
-        void 
-        addModel (ProjectModel* new_model);
-        void 
-        setModel (ProjectModel* new_model);
-        void 
-        modelChanged (int index);
-        
-      signals:
-        void
-        newModelSelected (ProjectModel *new_model);
-
-      private:
-        
-        boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_;
-        QMap <ProjectModel*, CloudView*> model_view_map_;
-
+      Q_OBJECT
+      
+    public:
+      CloudView (QWidget* parent = 0);
+      CloudView (const CloudView& to_copy);
+      CloudView (ProjectModel* model, QWidget* parent = 0);
+      ~CloudView ();
+      void 
+      setModel (ProjectModel* new_model);
+      ProjectModel* getModel () const { return model_; }
+      QVTKWidget* getQVTK() const {return qvtk_; }
+    
+    public slots:
+      void 
+      refresh ();
+      
+    protected slots:
+      /** \brief Slot called when underlying model changes
+       * \param topLeft 
+       * \param bottomRight
+       */
+      void
+      dataChanged (const QModelIndex& topLeft, const QModelIndex& bottomRight);
+      
+      /** \brief Slot called when rows inserted to model
+       * \param start Start of new rows (inclusive)
+       * \param end End of new rows (inclusive)
+       */
+      void
+      rowsInserted (const QModelIndex& parent, int start, int end);
+      
+      void
+      rowsAboutToBeRemoved (const QModelIndex& parent, int start, int end);
+      
+      
+      
+    protected:
+      void
+      paintEvent (QPaintEvent* event);
+      void 
+      resizeEvent (QResizeEvent* event);
+      //   void scrollContentsBy (int dx, int dy);
+      
+      
+      
+    private:
+      void
+      connectSignalsAndSlots ();
+      
+      
+      boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_;
+      ProjectModel* model_;
+      QVTKWidget* qvtk_;
+      
+      
     };
   }
 }
+
+Q_DECLARE_METATYPE (pcl::cloud_composer::CloudView);
 #endif

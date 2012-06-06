@@ -5,6 +5,7 @@
 #include <pcl/apps/cloud_composer/cloud_composer.h>
 #include <pcl/apps/cloud_composer/project_model.h>
 #include <pcl/apps/cloud_composer/cloud_viewer.h>
+#include <pcl/apps/cloud_composer/cloud_view.h>
 
 /////////////////////////////////////////////////////////////
 pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
@@ -25,13 +26,14 @@ pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
   qRegisterMetaType<ColorHandler::ConstPtr> ("ColorHandlerConstPtr");
   qRegisterMetaType<Eigen::Vector4f> ("EigenVector4f");
   qRegisterMetaType<Eigen::Quaternionf> ("EigenQuaternionf");
+  qRegisterMetaType<ProjectModel> ("ProjectModel");
+  qRegisterMetaType<CloudView> ("CloudView");
   
   last_directory_ = QDir (".");
   
-  //Initialize the cloud viewer
-  cloud_viewer_ = new CloudViewer (ui_->qvtkWidget, this);
-  //This feels hackish - maybe I should encapsulate the QVTKWidget inside of the view instead of just hiding the view
-  cloud_viewer_->hide ();
+  //Cloud Viewer Connection
+  connect (ui_->cloud_viewer_, SIGNAL (newModelSelected (ProjectModel*)),
+           this, SLOT (setCurrentModel (ProjectModel*)));
   current_model_ = 0;
 }
 
@@ -72,14 +74,16 @@ pcl::cloud_composer::ComposerMainWindow::initializeCloudBrowser ()
   
 }
 
+
 void 
 pcl::cloud_composer::ComposerMainWindow::setCurrentModel (ProjectModel* model)
 {
   current_model_ = model;
-  ui_->cloudBrowser->setModel (current_model_);
-  cloud_viewer_->setModel (current_model_);
+  ui_->cloud_browser_->setModel (current_model_);
+  ui_->cloud_viewer_->setModel (current_model_);
   
 }
+
 
 QStandardItem* 
 pcl::cloud_composer::ComposerMainWindow::createNewCloudItem (sensor_msgs::PointCloud2::Ptr cloud_ptr, 
@@ -114,7 +118,7 @@ pcl::cloud_composer::ComposerMainWindow::slotNewProject ()
 {
   qDebug () << "Creating New Project";
   ProjectModel* newProjectModel = new ProjectModel (this);
-  newProjectModel->setHorizontalHeaderItem ( 0, new QStandardItem ( "Clouds" ));
+  newProjectModel->setHorizontalHeaderItem ( 0, new QStandardItem ( "unnamed project" ));
   setCurrentModel (newProjectModel);
 }
 
@@ -153,7 +157,7 @@ pcl::cloud_composer::ComposerMainWindow::slotExit ()
 void
 pcl::cloud_composer::ComposerMainWindow::slotInsertFromFile ()
 {
-  QString filename = QFileDialog::getOpenFileName (0,tr ("Select cloud to open"), last_directory_.absolutePath (), tr ("*.pcd"));
+  QString filename = QFileDialog::getOpenFileName (0,tr ("Select cloud to open"), last_directory_.absolutePath (), tr ("PointCloud(*.pcd)"));
   if ( !filename.isNull ())
   {
     QFileInfo file_info (filename);
@@ -199,14 +203,4 @@ pcl::cloud_composer::ComposerMainWindow::slotInsertFromOpenNiSource ()
 
 
 
-/////////// MAIN ////////////////////
-int
-main (int argc, char ** argv)
-{
-  // Initialize QT
-  QApplication app (argc, argv);
 
-  pcl::cloud_composer::ComposerMainWindow cc;
-  cc.show ();
-  return (app.exec ());
-}
