@@ -52,7 +52,7 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilter (PointCloud &output)
   {
     bool temp = extract_removed_indices_;
     extract_removed_indices_ = true;
-    applyFilter (indices);
+    applyFilterIndices (indices);
     extract_removed_indices_ = temp;
 
     output = *input_;
@@ -61,14 +61,14 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilter (PointCloud &output)
   }
   else
   {
-    applyFilter (indices);
+    applyFilterIndices (indices);
     copyPointCloud (*input_, indices, output);
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::RadiusOutlierRemoval<PointT>::applyFilter (std::vector<int> &indices)
+pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
 {
   if (search_radius_ == 0.0)
   {

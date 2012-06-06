@@ -154,7 +154,16 @@ namespace pcl
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilter (std::vector<int> &indices);
+      applyFilter (std::vector<int> &indices)
+      {
+        applyFilterIndices (indices);
+      }
+
+      /** \brief Filtered results are indexed by an indices array.
+        * \param[out] indices The resultant indices.
+        */
+      void
+      applyFilterIndices (std::vector<int> &indices);
 
     private:
       /** \brief A pointer to the spatial search object. */

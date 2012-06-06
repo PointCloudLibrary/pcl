@@ -52,7 +52,7 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
   {
     bool temp = extract_removed_indices_;
     extract_removed_indices_ = true;
-    applyFilter (indices);
+    applyFilterIndices (indices);
     extract_removed_indices_ = temp;
 
     output = *input_;
@@ -61,14 +61,14 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
   }
   else
   {
-    applyFilter (indices);
+    applyFilterIndices (indices);
     copyPointCloud (*input_, indices, output);
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::PassThrough<PointT>::applyFilter (std::vector<int> &indices)
+pcl::PassThrough<PointT>::applyFilterIndices (std::vector<int> &indices)
 {
   // The arrays to be used
   indices.resize (indices_->size ());

@@ -51,7 +51,7 @@ pcl::ExtractIndices<PointT>::filterDirectly (PointCloudPtr &cloud)
   bool temp = extract_removed_indices_;
   extract_removed_indices_ = true;
   setInputCloud (cloud);
-  applyFilter (indices);
+  applyFilterIndices (indices);
   extract_removed_indices_ = temp;
 
   std::vector<sensor_msgs::PointField> fields; 
@@ -73,7 +73,7 @@ pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
   {
     bool temp = extract_removed_indices_;
     extract_removed_indices_ = true;
-    applyFilter (indices);
+    applyFilterIndices (indices);
     extract_removed_indices_ = temp;
 
     output = *input_;
@@ -88,15 +88,23 @@ pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
   }
   else
   {
-    applyFilter (indices);
+    applyFilterIndices (indices);
     copyPointCloud (*input_, indices, output);
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::ExtractIndices<PointT>::applyFilter (std::vector<int> &indices)
+pcl::ExtractIndices<PointT>::applyFilterIndices (std::vector<int> &indices)
 {
+  if (indices_->size () > input_->points.size ())
+  {
+    PCL_ERROR ("[pcl::%s::applyFilter] The indices size exceeds the size of the input.\n", getClassName ().c_str ());
+    indices.clear ();
+    removed_indices_->clear ();
+    return;
+  }
+
   if (!negative_)  // Normal functionality
   {
     indices = *indices_;

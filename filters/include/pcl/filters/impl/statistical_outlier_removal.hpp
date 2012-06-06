@@ -52,7 +52,7 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilter (PointCloud &output)
   {
     bool temp = extract_removed_indices_;
     extract_removed_indices_ = true;
-    applyFilter (indices);
+    applyFilterIndices (indices);
     extract_removed_indices_ = temp;
 
     output = *input_;
@@ -61,14 +61,14 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilter (PointCloud &output)
   }
   else
   {
-    applyFilter (indices);
+    applyFilterIndices (indices);
     copyPointCloud (*input_, indices, output);
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::StatisticalOutlierRemoval<PointT>::applyFilter (std::vector<int> &indices)
+pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
 {
   // Initialize the search class
   if (!searcher_)
