@@ -50,7 +50,7 @@ pcl::ExtractIndices<PointT>::filterDirectly (PointCloudPtr &cloud)
   std::vector<int> indices;
   bool temp = extract_removed_indices_;
   extract_removed_indices_ = true;
-  setInputCloud (cloud);
+  this->setInputCloud (cloud);
   applyFilterIndices (indices);
   extract_removed_indices_ = temp;
 
