@@ -93,8 +93,11 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   {
     // If the dataset is dense, simply transform it!
     for (size_t i = 0; i < npts; ++i)
-      cloud_out.points[i].getVector3fMap () = transform *
-                                              cloud_in.points[indices[i]].getVector3fMap ();
+    {
+      // Copy fields first, then transform xyz data
+      cloud_out.points[i] = cloud_in.points[indices[i]]; 
+      cloud_out.points[i].getVector3fMap () = transform*cloud_out.points[i].getVector3fMap ();
+    }
   }
   else
   {
@@ -106,8 +109,8 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
           !pcl_isfinite (cloud_in.points[indices[i]].y) || 
           !pcl_isfinite (cloud_in.points[indices[i]].z))
         continue;
-      cloud_out.points[i].getVector3fMap () = transform *
-                                              cloud_in.points[indices[i]].getVector3fMap ();
+      cloud_out.points[i] = cloud_in.points[indices[i]]; 
+      cloud_out.points[i].getVector3fMap () = transform*cloud_out.points[i].getVector3fMap ();
     }
   }
 }
@@ -284,9 +287,9 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> inline PointT
-pcl::transformPoint (const PointT &point, const Eigen::Affine3f &tranform)
+pcl::transformPoint (const PointT &point, const Eigen::Affine3f &transform)
 {
   PointT ret = point;
-  ret.getVector3fMap () = tranform * point.getVector3fMap ();
-  return (ret);
+  ret.getVector3fMap () = transform * point.getVector3fMap ();
+  return ret;
 }
