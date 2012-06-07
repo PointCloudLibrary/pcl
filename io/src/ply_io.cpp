@@ -423,10 +423,12 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
       {
         for (size_t f = 0; f < cloud_->fields.size (); ++f)
           if (cloud_->fields[f].datatype == ::sensor_msgs::PointField::FLOAT32)
-            memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset + cloud_->fields[f].count * sizeof (float)],
+            //memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset + cloud_->fields[f].count * sizeof (float)],
+            memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset],
                     reinterpret_cast<const char*> (&f_nan), sizeof (float));
           else if (cloud_->fields[f].datatype == ::sensor_msgs::PointField::FLOAT64)
-            memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset + cloud_->fields[f].count * sizeof (double)],
+            //memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset + cloud_->fields[f].count * sizeof (double)],
+            memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset],
                     reinterpret_cast<const char*> (&d_nan), sizeof (double));
           else
             memset (&data[r * cloud_->point_step + cloud_->fields[f].offset], 0,

@@ -42,7 +42,7 @@
 
 bool pcl::io::ply::ply_parser::parse (const std::string& filename)
 {
-  std::ifstream istream (filename.c_str ());
+  std::ifstream istream (filename.c_str (), std::ios::in | std::ios::binary);
 
   std::string line;
   line_number_ = 0;
@@ -562,9 +562,9 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
   // binary
   else
   {
-    size_t data_start = static_cast<uint32_t> (istream.tellg ());
+    std::streampos data_start = istream.tellg ();
     istream.close ();
-    istream.open (filename.c_str (), std::ios::binary);
+    istream.open (filename.c_str (), std::ios::in | std::ios::binary);
     istream.seekg (data_start);
 
     for (std::vector< boost::shared_ptr<element> >::const_iterator element_iterator = elements.begin (); 
