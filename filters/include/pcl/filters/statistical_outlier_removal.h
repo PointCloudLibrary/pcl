@@ -134,7 +134,7 @@ namespace pcl
       }
 
     protected:
-      typedef typename StatisticalOutlierRemoval<PointT>::PointCloud PointCloud;
+      //typedef typename StatisticalOutlierRemoval<PointT>::PointCloud PointCloud;
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
       typedef typename pcl::search::Search<PointT>::Ptr SearcherPtr;
