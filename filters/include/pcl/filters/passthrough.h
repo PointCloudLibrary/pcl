@@ -79,6 +79,12 @@ namespace pcl
   template <typename PointT>
   class PassThrough : public FilterIndices<PointT>
   {
+    protected:
+      typedef typename PassThrough<PointT>::PointCloud PointCloud;
+      typedef typename PointCloud::Ptr PointCloudPtr;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+
     public:
       /** \brief Constructor.
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
@@ -166,11 +172,6 @@ namespace pcl
       }
 
     protected:
-      //typedef typename PassThrough<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-      typedef typename pcl::traits::fieldList<PointT>::type FieldList;
-
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;
       using Filter<PointT>::filter_name_;

@@ -70,7 +70,7 @@ namespace pcl
   class ExtractIndices : public FilterIndices<PointT>
   {
     protected:
-      //typedef typename Filter<PointT>::PointCloud PointCloud;
+      typedef typename ExtractIndices<PointT>::PointCloud PointCloud;
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
       typedef typename pcl::traits::fieldList<PointT>::type FieldList;

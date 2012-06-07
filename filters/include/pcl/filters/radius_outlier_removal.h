@@ -71,6 +71,12 @@ namespace pcl
   template<typename PointT>
   class RadiusOutlierRemoval : public FilterIndices<PointT>
   {
+    protected:
+      typedef typename RadiusOutlierRemoval<PointT>::PointCloud PointCloud;
+      typedef typename PointCloud::Ptr PointCloudPtr;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      typedef typename pcl::search::Search<PointT>::Ptr SearcherPtr;
+
     public:
       /** \brief Constructor.
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
@@ -129,11 +135,6 @@ namespace pcl
       }
 
     protected:
-      //typedef typename RadiusOutlierRemoval<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-      typedef typename pcl::search::Search<PointT>::Ptr SearcherPtr;
-
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;
       using Filter<PointT>::filter_name_;
