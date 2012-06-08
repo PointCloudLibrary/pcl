@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>ComposerMainWindow</class>
+ <widget class="QMainWindow" name="ComposerMainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1024</width>
+    <width>1280</width>
     <height>768</height>
    </rect>
   </property>
@@ -25,8 +25,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1024</width>
-     <height>22</height>
+     <width>1280</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -120,11 +120,14 @@
    <addaction name="actionInsertFromOpenNiSource"/>
   </widget>
   <widget class="QDockWidget" name="dockCloudBrowser">
+   <property name="windowTitle">
+    <string>Cloud Browser</string>
+   </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents">
-    <layout class="QGridLayout" name="gridLayout_2">
+   <widget class="QWidget" name="dockWidgetContentsCloudBrowser">
+    <layout class="QGridLayout" name="cloud_browser_layout_">
      <item row="0" column="0">
       <widget class="QTreeView" name="cloud_browser_"/>
      </item>
@@ -135,19 +138,72 @@
    <attribute name="dockWidgetArea">
     <number>8</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2"/>
+   <widget class="QWidget" name="dockWidgetContentsConsole"/>
   </widget>
-  <widget class="QDockWidget" name="dockCloudInspector">
+  <widget class="QDockWidget" name="dockItemInspector">
+   <property name="windowTitle">
+    <string>Inspector</string>
+   </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_3"/>
+   <widget class="QWidget" name="dockWidgetContentsItemInspector">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="0" column="0">
+      <widget class="QListView" name="item_inspector_"/>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <widget class="QDockWidget" name="dockTools">
+   <property name="windowTitle">
+    <string>Tools</string>
+   </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_4"/>
+   <widget class="QWidget" name="dockWidgetContentsTools">
+    <layout class="QGridLayout" name="gridLayout_4">
+     <item row="0" column="0">
+      <widget class="QToolBox" name="tool_box_">
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="selector_page_">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>180</width>
+          <height>553</height>
+         </rect>
+        </property>
+        <attribute name="label">
+         <string>Page 1</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="0" column="0">
+          <widget class="QTableView" name="tableView"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="page_2">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>180</width>
+          <height>553</height>
+         </rect>
+        </property>
+        <attribute name="label">
+         <string>Page 2</string>
+        </attribute>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="actionNewProject">
    <property name="icon">
@@ -326,14 +382,10 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QVTKWidget</class>
-   <extends>QWidget</extends>
-   <header>QVTKWidget.h</header>
-  </customwidget>
-  <customwidget>
-      <class>pcl::cloud_composer::CloudViewer</class>
-      <extends>QTabWidget</extends>
-      <header>pcl/apps/cloud_composer/cloud_viewer.h</header>
+   <class>pcl::cloud_composer::CloudViewer</class>
+   <extends>QTabWidget</extends>
+   <header>pcl/apps/cloud_composer/cloud_viewer.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

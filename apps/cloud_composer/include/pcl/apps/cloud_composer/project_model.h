@@ -40,12 +40,32 @@
 
 #include <QStandardItemModel>
 #include <QStandardItem>
+#include <QItemSelectionModel>
 #include <QModelIndex>
 #include <QVariant>
 
 #include <vtkSmartPointer.h>
 #include <vtkCamera.h>
 
+#include <pcl/io/pcd_io.h>
+#include <pcl/visualization/pcl_visualizer.h>
+//Define user roles
+#ifndef USER_ROLES
+#define USER_ROLES
+enum DATAELEMENTS { 
+  CLOUD = Qt::UserRole+1,
+  GEOMETRY, 
+  COLOR,
+  ORIGIN,
+  ORIENTATION
+};
+#endif
+
+//Typedefs to make things sane
+typedef pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
+typedef pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
+
+class QItemSelectionModel;
 
 namespace pcl
 {
@@ -59,17 +79,48 @@ namespace pcl
       public:
         ProjectModel (QObject *parent = 0);
         ProjectModel (const ProjectModel& to_copy);
-        ~ProjectModel ();
-
+        virtual ~ProjectModel ();
         
-      private:
+        ProjectModel (QString project_name, QObject *parent = 0);
+        
+        inline const QString
+        getName ()
+        { 
+          return horizontalHeaderItem (0)->text ();
+        }
+        
+        /** \brief Sets the name of the project using the horizontalHeaderItem         */
+        void 
+        setName (QString new_name);        
+      
+        inline QItemSelectionModel* const
+        getSelectionModel()
+        {
+          return selection_model_;
+        }
+        
+        void 
+        insertNewCloudFromFile (QString filename);
 
+        QStandardItem*
+        createNewCloudItem (sensor_msgs::PointCloud2::Ptr cloud_ptr, 
+                            const QString cloud_name,
+                            const Eigen::Vector4f origin,
+                            const Eigen::Quaternionf orientation);
+      private:
+        QItemSelectionModel* selection_model_;
         vtkSmartPointer<vtkCamera> camera_; 
     };
   }
 }
 
 Q_DECLARE_METATYPE (pcl::cloud_composer::ProjectModel);
+//Add PointCloud types to QT MetaType System
+Q_DECLARE_METATYPE (sensor_msgs::PointCloud2::Ptr);
+Q_DECLARE_METATYPE (GeometryHandler::ConstPtr);
+Q_DECLARE_METATYPE (ColorHandler::ConstPtr);
+Q_DECLARE_METATYPE (Eigen::Vector4f);
+Q_DECLARE_METATYPE (Eigen::Quaternionf);
 
 #endif //PROJECT_MODEL_H
 

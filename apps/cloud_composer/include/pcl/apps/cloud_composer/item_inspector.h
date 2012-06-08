@@ -35,52 +35,49 @@
  *
  */
 
-#ifndef CLOUD_VIEWER_H_
-#define CLOUD_VIEWER_H_
+#ifndef ITEM_INSPECTOR_H_
+#define ITEM_INSPECTOR_H_
 
+#include <QWidget>
 
-#include <QTabWidget>
-
-#include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/apps/cloud_composer/project_model.h>
-#include <pcl/apps/cloud_composer/cloud_view.h>
+
+
 
 namespace pcl
 {
   namespace cloud_composer
   {
-   
-    /** \brief Tabbed widget for containing CloudView widgets
-     * \author Jeremie Papon
-     * \ingroup cloud_composer
-     */
-    class CloudViewer : public QTabWidget
+    class ItemInspector : public QWidget
     {
-        Q_OBJECT
-
+      Q_OBJECT
       public:
-        
-        CloudViewer (QWidget* parent = 0);
-        virtual ~CloudViewer();
-        ProjectModel* getModel () const;
-
+        ItemInspector (QWidget* parent = 0);
+        virtual ~ItemInspector();
+      
       public slots:
         void 
-        addModel (ProjectModel* new_model);
-        void 
         setModel (ProjectModel* new_model);
-        void 
-        modelChanged (int index);
-        
-      signals:
-        void
-        newModelSelected (ProjectModel *new_model);
-
       private:
-        
-        boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_;
-        QMap <ProjectModel*, CloudView*> model_view_map_;
+        ProjectModel* current_model_;
     };
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #endif

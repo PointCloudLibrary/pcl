@@ -10,9 +10,8 @@
 /////////////////////////////////////////////////////////////
 pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
   : QMainWindow (parent)
-  , ui_ (new Ui::MainWindow)
 {
-  ui_->setupUi (this);
+  setupUi (this);
 
   this->setCorner (Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
   this->setCorner (Qt::BottomRightCorner, Qt::RightDockWidgetArea);
@@ -30,41 +29,43 @@ pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
   qRegisterMetaType<CloudView> ("CloudView");
   
   last_directory_ = QDir (".");
-  
-  //Cloud Viewer Connection
-  connect (ui_->cloud_viewer_, SIGNAL (newModelSelected (ProjectModel*)),
-           this, SLOT (setCurrentModel (ProjectModel*)));
   current_model_ = 0;
+  
+  initializeCloudBrowser();
+  initializeCloudViewer();
+  initializeItemInspector();
+  
 }
 
 pcl::cloud_composer::ComposerMainWindow::~ComposerMainWindow ()
 {
-  delete ui_;
+  foreach (ProjectModel* to_delete, name_model_map_.values ())
+    to_delete->deleteLater();
 }
 
 void
 pcl::cloud_composer::ComposerMainWindow::connectFileActionsToSlots ()
 {
-  connect (this->ui_->actionNewProject, SIGNAL (triggered ()),
+  connect (this->actionNewProject, SIGNAL (triggered ()),
            this, SLOT (slotNewProject ()));
-  connect (this->ui_->actionOpenCloudAsNewProject, SIGNAL (triggered ()),
+  connect (this->actionOpenCloudAsNewProject, SIGNAL (triggered ()),
            this, SLOT (slotOpenCloudAsNewProject ()));
-  connect (this->ui_->actionOpenProject, SIGNAL (triggered ()),
+  connect (this->actionOpenProject, SIGNAL (triggered ()),
            this, SLOT (slotOpenProject ()));
-  connect (this->ui_->actionSaveProject, SIGNAL (triggered ()),
+  connect (this->actionSaveProject, SIGNAL (triggered ()),
            this, SLOT (slotSaveProject ()));
-  connect (this->ui_->actionSaveProjectAs, SIGNAL (triggered ()),
+  connect (this->actionSaveProjectAs, SIGNAL (triggered ()),
            this, SLOT (slotSaveProjectAs ()));
-  connect (this->ui_->actionExit, SIGNAL (triggered ()),
+  connect (this->actionExit, SIGNAL (triggered ()),
            this, SLOT (slotExit ()));
 }
 
 void
 pcl::cloud_composer::ComposerMainWindow::connectEditActionsToSlots ()
 {
-  connect (this->ui_->actionInsertFromFile, SIGNAL (triggered ()),
+  connect (this->actionInsertFromFile, SIGNAL (triggered ()),
            this, SLOT (slotInsertFromFile ()));
-  connect (this->ui_->actionInsertFromOpenNiSource, SIGNAL (triggered ()),
+  connect (this->actionInsertFromOpenNiSource, SIGNAL (triggered ()),
            this, SLOT (slotInsertFromOpenNiSource ()));
 }
 
@@ -74,52 +75,51 @@ pcl::cloud_composer::ComposerMainWindow::initializeCloudBrowser ()
   
 }
 
+void
+pcl::cloud_composer::ComposerMainWindow::initializeCloudViewer ()
+{
+  //Signal emitted when user selects new tab (ie different project) in the viewer
+  connect (cloud_viewer_, SIGNAL (newModelSelected (ProjectModel*)),
+           this, SLOT (setCurrentModel (ProjectModel*)));
+}
+
+void
+pcl::cloud_composer::ComposerMainWindow::initializeItemInspector ()
+{
+  
+}
+
 
 void 
 pcl::cloud_composer::ComposerMainWindow::setCurrentModel (ProjectModel* model)
 {
   current_model_ = model;
-  ui_->cloud_browser_->setModel (current_model_);
-  ui_->cloud_viewer_->setModel (current_model_);
-  
+  cloud_browser_->setModel (current_model_);
+  cloud_browser_->setSelectionModel (current_model_->getSelectionModel ());
+  cloud_viewer_->setModel (current_model_);
+
 }
 
-
-QStandardItem* 
-pcl::cloud_composer::ComposerMainWindow::createNewCloudItem (sensor_msgs::PointCloud2::Ptr cloud_ptr, 
-                                                             QString cloud_name, 
-                                                             Eigen::Vector4f origin, 
-                                                             Eigen::Quaternionf orientation)
-{
-  QStandardItem* new_item = new QStandardItem (cloud_name);
-  QVariant new_cloud = QVariant::fromValue (cloud_ptr);
-  new_item->setData (new_cloud, CLOUD);
-  
-  //Create a color and geometry handler for this cloud
-  ColorHandler::ConstPtr color_handler;
-  color_handler.reset (new pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2> (cloud_ptr));
- // QVariant new_color_handler = QVariant::fromValue (color_handler);
-  new_item->setData (QVariant::fromValue (color_handler), COLOR);
-    
-  GeometryHandler::ConstPtr geometry_handler;
-  geometry_handler.reset (new pcl::visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2> (cloud_ptr));
-  //QVariant new_geometry_handler = ;
-  new_item->setData (QVariant::fromValue (geometry_handler), GEOMETRY);
-  
-  new_item->setData (QVariant::fromValue (origin), ORIGIN);
-  new_item->setData (QVariant::fromValue (orientation), ORIENTATION);
-  
-  return new_item;
-}
 
 ///////// FILE MENU SLOTS ///////////
 void
-pcl::cloud_composer::ComposerMainWindow::slotNewProject ()
+pcl::cloud_composer::ComposerMainWindow::slotNewProject (QString name)
 {
   qDebug () << "Creating New Project";
   ProjectModel* newProjectModel = new ProjectModel (this);
-  newProjectModel->setHorizontalHeaderItem ( 0, new QStandardItem ( "unnamed project" ));
+  // Check if we have a project with this name already, append int if so
+  if (name_model_map_.contains (name))
+  {
+    int k = 2;
+    while (name_model_map_.contains (name + tr ("-%1").arg (k)))
+      ++k;
+    name = name + tr ("-%1").arg (k);
+  }
+  
+  newProjectModel->setName (name);
+  name_model_map_.insert (name,newProjectModel);
   setCurrentModel (newProjectModel);
+  
 }
 
 
@@ -162,34 +162,13 @@ pcl::cloud_composer::ComposerMainWindow::slotInsertFromFile ()
   {
     QFileInfo file_info (filename);
     last_directory_ = file_info.absoluteDir ();
-    QString short_filename = file_info.baseName ();
-    
-    sensor_msgs::PointCloud2::Ptr cloud_blob (new sensor_msgs::PointCloud2);
-    Eigen::Vector4f origin;
-    Eigen::Quaternionf orientation;
-    int version;
 
-    pcl::PCDReader pcd;
-    if (pcd.read (filename.toStdString (), *cloud_blob, origin, orientation, version) < 0)
-    {
-      qDebug () << "Failed to read cloud from file";
-      return;
-    }
-    if (cloud_blob->width * cloud_blob->height == 0)
-    {
-      qDebug () << "Cloud read has zero size!";
-      return;
-    }
     
-    QStandardItem* new_item = createNewCloudItem (cloud_blob, short_filename, origin, orientation);
+    if (!current_model_)
+      actionNewProject->trigger ();
     
-    if (current_model_)
-      current_model_->appendRow (new_item);
-    else
-    {
-      ui_->actionNewProject->trigger ();
-      current_model_->appendRow (new_item);
-    }
+    current_model_->insertNewCloudFromFile (filename);
+    
   }
       
 }

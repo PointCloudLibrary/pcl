@@ -62,7 +62,7 @@ namespace pcl
       CloudView (QWidget* parent = 0);
       CloudView (const CloudView& to_copy);
       CloudView (ProjectModel* model, QWidget* parent = 0);
-      ~CloudView ();
+      virtual ~CloudView ();
       void 
       setModel (ProjectModel* new_model);
       ProjectModel* getModel () const { return model_; }

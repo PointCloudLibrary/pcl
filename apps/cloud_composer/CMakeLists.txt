@@ -52,12 +52,14 @@ if(build)
     set(incs include/pcl/apps/${SUBSYS_NAME}/cloud_composer.h
              include/pcl/apps/${SUBSYS_NAME}/project_model.h
              include/pcl/apps/${SUBSYS_NAME}/cloud_viewer.h
-             include/pcl/apps/${SUBSYS_NAME}/cloud_view.h)
+             include/pcl/apps/${SUBSYS_NAME}/cloud_view.h
+             include/pcl/apps/${SUBSYS_NAME}/item_inspector.h)
     set(srcs src/main.cpp 
              src/cloud_composer.cpp
              src/project_model.cpp
              src/cloud_viewer.cpp
-             src/cloud_view.cpp)
+             src/cloud_view.cpp
+             src/item_inspector.cpp)
     set(uis src/cloud_composer_main_window.ui)
     set(resources resources/resources.qrc)
 

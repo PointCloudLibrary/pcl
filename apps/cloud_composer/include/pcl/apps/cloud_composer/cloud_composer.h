@@ -49,32 +49,10 @@
 //PCL
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/io/pcd_io.h>
 
-//Define user roles
-#ifndef USER_ROLES
-#define USER_ROLES
-enum DATAELEMENTS { 
-                    CLOUD = Qt::UserRole+1,
-                    GEOMETRY, 
-                    COLOR,
-                    ORIGIN,
-                    ORIENTATION
-                  };
-#endif
 
-namespace Ui
-{
-  class MainWindow;
-}
 
 class QTreeView;
-    
-//Typedefs to make things sane
-typedef pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
-typedef pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
-     
 class QStandardItem;
 
 namespace pcl
@@ -89,8 +67,13 @@ namespace pcl
     /** \brief MainWindow of cloud_composer application
      * \author Jeremie Papon
      * \ingroup cloud_composer
+     * The following member objects are defined in the ui file and can be manipulated:
+     *    * cloud_viewer_ is the view which contains the PCLVisualizer & QVTKWidget
+     *    * cloud_browser_ is the tree view in the left dock
+     *    * item_inspector_ is the details view in the left dock
+     *    * tool_box_ is the tool box in right dock
      */
-    class ComposerMainWindow : public QMainWindow
+    class ComposerMainWindow : public QMainWindow, private Ui::ComposerMainWindow
     {
       Q_OBJECT
       public:
@@ -102,7 +85,7 @@ namespace pcl
       public slots:
       //Slots for File Menu Actions
         void
-        slotNewProject ();
+        slotNewProject (QString name = "unsaved project");
         void
         slotOpenCloudAsNewProject ();
         void
@@ -131,35 +114,24 @@ namespace pcl
         
         void 
         initializeCloudBrowser ();
-        
-        QStandardItem*
-        createNewCloudItem (sensor_msgs::PointCloud2::Ptr cloud_ptr, 
-                            const QString cloud_name,
-                            const Eigen::Vector4f origin,
-                            const Eigen::Quaternionf orientation);
-        
-        /** \brief Pointer to ui members defined in ui file
-         *    * cloud_viewer_ is the view which contains the PCLVisualizer & QVTKWidget
-         *    * cloud_browser_ is the tree view in the left dock
-         */
-        Ui::MainWindow* ui_;
+        void
+        initializeCloudViewer ();
+        void 
+        initializeItemInspector ();
+
+
         /** \brief Pointer to the model which is currently being viewed  */
         ProjectModel* current_model_;
-        /** \brief Pointer to the viewer which contains the PCLVisualizer */
-       // CloudViewer* cloud_viewer_;
-        
+        QItemSelectionModel* current_selection_model_;
         QDir last_directory_;
+        QMap <QString, ProjectModel*> name_model_map_;
+ 
     };
     
   }
 }
 
-//Add PointCloud types to QT MetaType System
-Q_DECLARE_METATYPE (sensor_msgs::PointCloud2::Ptr);
-Q_DECLARE_METATYPE (GeometryHandler::ConstPtr);
-Q_DECLARE_METATYPE (ColorHandler::ConstPtr);
-Q_DECLARE_METATYPE (Eigen::Vector4f);
-Q_DECLARE_METATYPE (Eigen::Quaternionf);
+
 
 
 #endif // CLOUD_COMPOSER_H
