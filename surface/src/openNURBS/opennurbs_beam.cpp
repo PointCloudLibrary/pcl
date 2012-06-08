@@ -2191,8 +2191,8 @@ int ON_Extrusion::ProfileSmoothSegmentCount( int profile_index ) const
 {
   if ( 0 == Profile(profile_index) )
     return 0;
-  ON_SimpleArray<double> * k  = 0;
-  return (1 + GetProfileKinkParameters(profile_index,*k));
+  ON_SimpleArray<double> k;
+  return (1 + GetProfileKinkParameters(profile_index, k));
 }
 
 int ON_Extrusion::GetProfileKinkParameters( int profile_index, ON_SimpleArray<double>& profile_kink_parameters ) const
