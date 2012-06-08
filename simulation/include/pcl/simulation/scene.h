@@ -35,6 +35,9 @@ namespace pcl
       void
       addCompleteModel (std::vector<Model::Ptr> model);
 
+      void
+      clear ();
+
     private:
       std::vector<Model::Ptr> models_;
     };
