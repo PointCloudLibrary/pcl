@@ -189,7 +189,7 @@ class PeoplePCDApp
       prob_host.height = people_detector_.rdf_detector_->P_l_1_.rows();
 
       PCL_DEBUG("(I) : visualizeAndWriteProb() savePNGFile");
-      for(int i = 0; i < 25; i++)  //NUM_LABELS
+      for(int i = 0; i < pcl::gpu::people::NUM_LABELS; i++)
       {
         pcl::PointCloud<pcl::RGB> rgb;
         convertProbToRGB(prob_host, i, rgb);
@@ -206,7 +206,7 @@ class PeoplePCDApp
       prob_host.height = people_detector_.rdf_detector_->P_l_2_.rows();
 
       PCL_DEBUG("(I) : visualizeAndWriteProb() savePNGFile");
-      for(int i = 0; i < 25; i++)
+      for(int i = 0; i < pcl::gpu::people::NUM_LABELS; i++)
       {
         pcl::PointCloud<pcl::RGB> rgb;
         convertProbToRGB(prob_host2, i, rgb);

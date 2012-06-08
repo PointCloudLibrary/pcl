@@ -140,10 +140,11 @@ namespace pcl
 
       if(u < multiLabels.cols && v < multiLabels.rows)
       {
+        // This maps a char4 pointer on a char pointer
         char* pixel = (char*)&multiLabels.ptr(v)[u];
         // This test assures that in next iterations the FGPreperation is taking into account see utils.cu
         if(depth.ptr(v)[u] == numeric_limits<unsigned short>::max())
-          pixel[treeId] = 29;         // see label_common.h for Background label
+          pixel[treeId] = 29;         // see label_common.h for Background label (=29)
                                       // TODO remove this hardcoded label with enum part_t label
         else
           pixel[treeId] = evaluateTree<testFG>(u, v, f, treeHeight, numNodes, nodes, leaves);
@@ -291,7 +292,7 @@ namespace pcl
       char* bob = (char*)&pixlabels; //horrible but char4's have xyzw members
 
       // Reset prob first, this should become NUM_LABELS
-      for(int in = 0; in < NUM_PARTS; in++)
+      for(int in = 0; in < NUM_LABELS; in++)
       {
         prob.ptr(v)[u].probs[in] = 0;
       }
@@ -301,7 +302,7 @@ namespace pcl
         // Each tree casts a vote to the probability
         // TODO: replace this with a histogram copy
         //prob.ptr(v)[u].probs[bob[ti]] += 63;  //TODO (0.25 = 1/numTrees) * 255 = 63
-        prob.ptr(v)[u].probs[bob[ti]] = 0.25;
+        prob.ptr(v)[u].probs[bob[ti]] += 0.25;
       }
     }
 
@@ -411,6 +412,7 @@ pcl::device::MultiTreeLiveProc::processProb (const Depth& dmap, Labels& lmap, La
   assert(!trees.empty());
 
   unsigned int numTrees = static_cast<unsigned int> (trees.size ());
+  assert( numTrees <= 4 );
 
   multilmap.create(dmap.rows(), dmap.cols());
 
@@ -420,9 +422,6 @@ pcl::device::MultiTreeLiveProc::processProb (const Depth& dmap, Labels& lmap, La
     const CUDATree& t = trees[ti];
     CUDA_runMultiTreePass ( FGThresh, ti, static_cast<float> (focal), t.treeHeight, t.numNodes, t.nodes_device, t.leaves_device, dmap, multilmap );
   }
-  // 2 - run the merging
-  assert( numTrees <= 4 );
 
-  //std::cout << "(I) : MultiTreeLiveProc::processProb() calling CUDA_runMultiTreeProb() with: " << prob.cols() << "x" << prob.rows() << std::endl;
   device::CUDA_runMultiTreeProb(numTrees, dmap, multilmap, lmap, prob);
 }

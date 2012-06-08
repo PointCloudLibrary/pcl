@@ -279,10 +279,10 @@ pcl::gpu::people::PeopleDetector::processProb ()
   kernel_device.upload(kernel_ptr_host, kernel_size * sizeof(float));
 
   // Output kernel for verification
-  std::cout << "kernel:" << std::endl;
-  for(int i = 0; i < kernel_size; i++)
-    std::cout << " "  << i << ": " << kernel_ptr_host[i];
-  std::cout << std::endl;
+  //std::cout << "kernel:" << std::endl;
+  //for(int i = 0; i < kernel_size; i++)
+  //  std::cout << " "  << i << ": " << kernel_ptr_host[i];
+  //std::cout << std::endl;
 
   // get labels
   probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
