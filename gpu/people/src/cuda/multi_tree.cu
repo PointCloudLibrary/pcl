@@ -80,9 +80,6 @@ namespace pcl
     {
       int    depth = tex2D(depthTex, u, v);
 
-      //if (depth == numeric_limits<unsigned short>::max())
-      //  return pcl::gpu::people::part_t::NOLABEL;
-
       float  scale = f / depth;
 
       // go down the tree
@@ -109,7 +106,6 @@ namespace pcl
         if( test ) nid = nid*2+2;
         else       nid = nid*2+1;
       }
-
       return leaves[nid-numNodes];
     }
 
@@ -136,6 +132,7 @@ namespace pcl
                               const int    numNodes,
                               const Node*  nodes,
                               const Label* leaves,
+                              PtrStepSz<unsigned short> depth,
                               PtrStepSz<char4> multiLabels)
     {
       int u = blockIdx.x * blockDim.x + threadIdx.x;
@@ -144,7 +141,12 @@ namespace pcl
       if(u < multiLabels.cols && v < multiLabels.rows)
       {
         char* pixel = (char*)&multiLabels.ptr(v)[u];
-        pixel[treeId] = evaluateTree<testFG>(u, v, f, treeHeight, numNodes, nodes, leaves);
+        // This test assures that in next iterations the FGPreperation is taking into account see utils.cu
+        if(depth.ptr(v)[u] == numeric_limits<unsigned short>::max())
+          pixel[treeId] = 29;         // see label_common.h for Background label
+                                      // TODO remove this hardcoded label with enum part_t label
+        else
+          pixel[treeId] = evaluateTree<testFG>(u, v, f, treeHeight, numNodes, nodes, leaves);
       }
     }
 
@@ -184,14 +186,14 @@ namespace pcl
       if(FGThresh == std::numeric_limits<int>::max())
       {
         KernelCUDA_MultiTreePass<false><<< grid, block >>>( treeId, focal, treeHeight, 
-            numNodes, nodes_device, leaves_device, multilabel);        
+            numNodes, nodes_device, leaves_device, depth, multilabel);
       }
       else
       {
         cudaSafeCall( cudaMemcpyToSymbol(constFGThresh, &FGThresh,  sizeof(FGThresh)) );
 
         KernelCUDA_MultiTreePass<true><<< grid, block >>>( treeId, focal, treeHeight, 
-            numNodes, nodes_device, leaves_device, multilabel);
+            numNodes, nodes_device, leaves_device, depth, multilabel);
       }
 
       cudaSafeCall( cudaGetLastError() );
@@ -298,7 +300,8 @@ namespace pcl
       {
         // Each tree casts a vote to the probability
         // TODO: replace this with a histogram copy
-        prob.ptr(v)[u].probs[bob[ti]] += 63;  //TODO (0.25 = 1/numTrees) * 255 = 63
+        //prob.ptr(v)[u].probs[bob[ti]] += 63;  //TODO (0.25 = 1/numTrees) * 255 = 63
+        prob.ptr(v)[u].probs[bob[ti]] = 0.25;
       }
     }
 

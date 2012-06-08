@@ -258,7 +258,7 @@ namespace pcl
   {
     struct prob_histogram
     {
-        char probs[pcl::gpu::people::NUM_PARTS];       /** \brief A single float probability for each body part **/
+        float probs[pcl::gpu::people::NUM_PARTS];       /** \brief A single float probability for each body part **/
     };
 
     typedef DeviceArray2D<prob_histogram> LabelProbability;    

@@ -128,7 +128,7 @@ namespace pcl
       if( u >= labels.cols || v >= labels.rows )
           return;
 
-      char maxValue = 0;
+      float maxValue = 0;
       int maxID = 31;             // 31 equals to NOLABEL in label_common.h for some reason not resolved here
       prob_histogram p = Prob.ptr(v)[u];
       for(int l = 0; l < NUM_LABELS; ++l)
@@ -143,6 +143,14 @@ namespace pcl
         {
           //DAMN WE HAVE A TIE
           //TODO: solve this
+
+          //Workflow
+          // 1) test if this is actually the largest value in the histogram
+
+          // 2a) if not take the other one and continue
+
+          // 2b) if it is, take the 1 neighbourhood
+
         }
       }
       labels.ptr(v)[u] = maxID;
@@ -244,8 +252,8 @@ namespace pcl
     /** \brief This will merge the votes from the different trees into one final vote, including probabilistic's **/
     void
     ProbabilityProc::CUDA_SelectLabel ( const Depth& depth,
-                                   Labels& labels,
-                                   LabelProbability& probabilities)
+                                        Labels& labels,
+                                        LabelProbability& probabilities)
     {
       std::cout << "(I) : ProbabilityProc::CUDA_SelectLabel() called" << std::endl;
       //labels.create(depth.rows(), depth.cols());

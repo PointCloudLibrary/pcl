@@ -229,18 +229,18 @@ class PeoplePCDApp
 
 void print_help()
 {
-  PCL_INFO("\nPeople tracking app options (help):");
-  PCL_INFO("\t -numTrees \t<int> \tnumber of trees to load");
-  PCL_INFO("\t -tree0 \t<path_to_tree_file>");
-  PCL_INFO("\t -tree1 \t<path_to_tree_file>");
-  PCL_INFO("\t -tree2 \t<path_to_tree_file>");
-  PCL_INFO("\t -tree3 \t<path_to_tree_file>");
-  PCL_INFO("\t -pcd   \t<path_to_pcd_file>");
+  PCL_INFO("\nPeople tracking app options (help):\n");
+  PCL_INFO("\t -numTrees \t<int> \tnumber of trees to load\n");
+  PCL_INFO("\t -tree0 \t<path_to_tree_file>\n");
+  PCL_INFO("\t -tree1 \t<path_to_tree_file>\n");
+  PCL_INFO("\t -tree2 \t<path_to_tree_file>\n");
+  PCL_INFO("\t -tree3 \t<path_to_tree_file>\n");
+  PCL_INFO("\t -pcd   \t<path_to_pcd_file>\n");
 }
 
 int main(int argc, char** argv)
 {
-  PCL_DEBUG("(I) : Main : People tracking on PCD files version 0.1");
+  PCL_INFO("(I) : Main : People tracking on PCD files version 0.1\n");
   if(find_switch (argc, argv, "--help") || find_switch (argc, argv, "-h"))
     return print_help(), 0;
  
@@ -259,22 +259,28 @@ int main(int argc, char** argv)
   parse_argument (argc, argv, "-tree3", treeFilenames[3]);
 
   if (numTrees == 0 || numTrees > 4)
-      return cout << "Invalid number of trees" << endl, -1;
-
+  {
+      PCL_ERROR("(E) : Main : Invalid number of trees\n");
+      return -1;
+  }
+  PCL_INFO("(I) : Main : Read %d Trees\n", numTrees);
+/*
   //string pcdname = "d:/git/pcl/gpu/people/tools/test.pcd";
-  string pcdname = "d:/3/0008.pcd";
-  parse_argument (argc, argv, "-pcd", pcdname);
+  string pcdname = "/home/u0062536/Data/pcd/koen.pcd";
+  //parse_argument (argc, argv, "-pcd", pcdname);
 
+  PCL_INFO("(I) : Main : Will read %s\n", pcdname);
+*/
   // loading cloud file
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
-  int res = pcl::io::loadPCDFile<pcl::PointXYZRGB> (pcdname, *cloud);
+  int res = pcl::io::loadPCDFile<pcl::PointXYZRGB> ("/home/u0062536/Data/pcd/koen.pcd", *cloud);
   if (res == -1) //* load the file
   {
     PCL_ERROR("(E) : Main : Couldn't read cloud file");
     return res;
   }
 
-  PCL_DEBUG("(I) : Main : Loaded %d data points from %s",cloud->width * cloud->height, pcdname);
+  //PCL_INFO("(I) : Main : Loaded %d data points from %s",cloud->width * cloud->height, pcdname);
 
   // loading trees
   using pcl::gpu::people::RDFBodyPartsDetector;
@@ -296,13 +302,13 @@ int main(int argc, char** argv)
   }
   if(app.processReturn == 2)
   {
-    PCL_DEBUG("(I) : Main : calling visualisation");
+    PCL_DEBUG("(I) : Main : calling visualisation\n");
     app.visualizeAndWrite(cloud);
     app.writeProb(cloud);
   }
   else
   {
-    PCL_DEBUG("(I) : Main : no good person found");
+    PCL_DEBUG("(I) : Main : no good person found\n");
   }
   app.final_view_.spin();
 
