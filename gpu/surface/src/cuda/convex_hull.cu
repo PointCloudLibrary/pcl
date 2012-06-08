@@ -37,14 +37,14 @@
 
 #include "internal.h"
 #include "device.h"
+#include <limits>
 
 #include <pcl/gpu/utils/device/limits.hpp>
 #include <pcl/gpu/utils/device/algorithm.hpp>
 #include <pcl/gpu/utils/device/warp.hpp>
 #include <pcl/gpu/utils/device/static_check.hpp>
+//#include <pcl/gpu/utils/device/funcattrib.hpp>
 #include <pcl/gpu/utils/safe_call.hpp>
-
-#include <limits>
 
 #include <thrust/tuple.h>
 #include <thrust/iterator/counting_iterator.h>
@@ -127,15 +127,14 @@ namespace pcl
 		  PlaneDist(const PointType& p1, const PointType& p2, const PointType& p3) : x1(tr(p1))
 		  {
 			  float3 x2 = tr(p2), x3 = tr(p3);
-			  float3 n = cross(x1 - x2, x1 - x3);			  			  
-			  n*=1.f/norm(n);			  
+              n = normalized(cross(x2 - x1, x3 - x1));
 		  }
 		  
 		  __device__ __forceinline__
 		  tuple<float, int> operator()(const tuple<PointType, int>& in) const
 		  {
 			  float3 x0 = tr(in.get<0>());
-			  float dist = dot(n, x0 - x1);
+              float dist = fabs(dot(n, x0 - x1));
 			  return tuple<float, int>(dist, in.get<1>());
 		  }
 	  };
@@ -194,7 +193,7 @@ void pcl::device::PointStream::computeInitalSimplex()
   int maxl = transform_reduce_max_index(beg, end, LineDist(p1, p2));
 
   PointType p3 = *(beg + maxl);
-  
+    
   int maxp = transform_reduce_max_index(beg, end, PlaneDist(p1, p2, p3));
 
   PointType p4 = *(beg + maxp);
@@ -217,34 +216,29 @@ void pcl::device::PointStream::computeInitalSimplex()
   simplex.p1 = compute_plane(simplex.x4, simplex.x2, simplex.x3, simplex.x1);
   simplex.p2 = compute_plane(simplex.x3, simplex.x1, simplex.x4, simplex.x2);
   simplex.p3 = compute_plane(simplex.x2, simplex.x1, simplex.x4, simplex.x3);
-  simplex.p4 = compute_plane(simplex.x1, simplex.x2, simplex.x3, simplex.x4);
+  simplex.p4 = compute_plane(simplex.x1, simplex.x2, simplex.x3, simplex.x4);  
 }
-
-
 
 namespace pcl
 {
   namespace device
   {
-	__global__ void init_fs(float4 planes[4], int i1, int i2, int i3, int i4, PtrStep<int> verts_inds)
-	{	  
-	  if (threadIdx.x != 0)
-		  return;
-	  
-	  *(int4*)verts_inds.ptr(0) = make_int4(i2, i4, i3, i1);
-	  *(int4*)verts_inds.ptr(1) = make_int4(i4, i3, i1, i2);
-	  *(int4*)verts_inds.ptr(2) = make_int4(i3, i1, i2, i3);	  	    
+    __global__ void init_fs(int i1, int i2, int i3, int i4, PtrStep<int> verts_inds)
+	{	  	  	  
+      *(int4*)verts_inds.ptr(0) = make_int4(i2, i1, i1, i1);
+      *(int4*)verts_inds.ptr(1) = make_int4(i3, i3, i2, i2);
+      *(int4*)verts_inds.ptr(2) = make_int4(i4, i4, i4, i3);
 	}
 
   }
 }
 
 void pcl::device::FacetStream::setInitialFacets(const InitalSimplex& s)
-{
-  float4 planes[4] = { s.p1, s.p2, s.p3, s.p4 };
-  init_fs<<<1, 4>>>(planes, s.i1, s.i2, s.i3, s.i4, verts_inds);
+{  
+  init_fs<<<1, 1>>>(s.i1, s.i2, s.i3, s.i4, verts_inds);  
   cudaSafeCall( cudaGetLastError() );
   cudaSafeCall( cudaDeviceSynchronize() );  
+  facet_count = 4;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -256,63 +250,101 @@ namespace pcl
   {
 	struct InitalClassify
 	{
-	  float4 p1, p2, p3, p4;
-	  float invNorm1, invNorm2, invNorm3, invNorm4;
-	  float diag;
-	  
-	  InitalClassify(const float4& x1, const float4& x2, const float4& x3, const float4& x4, float diagonal)
-		  : p1(x1), p2(x2), p3(x3), p4(x4)
+      float diag;
+      float4 pl1, pl2, pl3, pl4;
+	  	  
+      InitalClassify(const float4& p1, const float4& p2, const float4& p3, const float4& p4, float diagonal) 
+          : diag(diagonal), pl1(p1), pl2(p2), pl3(p3), pl4(p4)
 	  {				
-		invNorm1 = compue_inv_normal_norm(p1);
-		invNorm2 = compue_inv_normal_norm(p2);
-		invNorm3 = compue_inv_normal_norm(p3);
-		invNorm4 = compue_inv_normal_norm(p4);
+        pl1 *= compue_inv_normal_norm(pl1);
+        pl2 *= compue_inv_normal_norm(pl2);
+        pl3 *= compue_inv_normal_norm(pl3);
+        pl4 *= compue_inv_normal_norm(pl4);
 	  }
 	  	  
 	  __device__ __forceinline__
 	  uint64_type 
 	  operator()(const PointType& p) const
-	  {
+	  {                   
 		  float4 x = p;
 		  x.w = 1;
 
-		  float d1 = dot(p1, x);
-		  float d2 = dot(p2, x);
-		  float d3 = dot(p3, x);
-		  float d4 = dot(p4, x);
-		  
-		  int idx = 0;
-		  float dist = 0;
+          float d0 = dot(pl1, x);
+          float d1 = dot(pl2, x);
+          float d2 = dot(pl3, x);
+          float d3 = dot(pl4, x);
 
-		  if (d1 >= 0 && d2 >= 0 && d3 >= 0 && d4 >= 0)
-			idx = numeric_limits<int>::max();
-		  else
-		  {
-		    float dists[] = { fabs(d1) * invNorm1, fabs(d2) * invNorm2, fabs(d3) * invNorm3, fabs(d4) * invNorm4 };		    		    
-#pragma unroll
-		    for(int i = 1; i < 4; ++i)
-			  if (dists[i] < dists[idx])
-				idx = i;
+          float dists[] = { d0, d1, d2, d3 };
+          int negs_inds[4];
+          int neg_count = 0;
+          
+          int idx = numeric_limits<int>::max();
+          float dist = 0;
 
-			dist = dists[idx];
-		  }
-		  dist = diag - dist; // to ensure that sorting order is inverse, i.e. distant points go first
+          #pragma unroll
+          for(int i = 0; i < 4; ++i)
+            if (dists[i] < 0)
+              negs_inds[neg_count++] = i;
+
+          if (neg_count == 3)
+          {
+             int i1 = negs_inds[1];
+             int i2 = negs_inds[2];
+             
+             int ir = fabs(dists[i1]) < fabs(dists[i2]) ? i2 : i1;
+             negs_inds[1] = ir;
+             --neg_count;
+          }
+
+          if (neg_count == 2)
+          {
+             int i1 = negs_inds[0];
+             int i2 = negs_inds[1];
+             
+             int ir = fabs(dists[i1]) < fabs(dists[i2]) ? i2 : i1;
+             negs_inds[0] = ir;
+             --neg_count;              
+          }
+
+          if (neg_count == 1)
+          {
+            idx = negs_inds[0];
+            dist = diag - fabs(dists[idx]); // to ensure that sorting order is inverse, i.e. distant points go first
+          }
+
+          //if (neg_count == 0)
+          //  then internal point ==>> idx = INT_MAX
+
 		  uint64_type res = idx;
 		  res <<= 32;
 		  return res + *reinterpret_cast<unsigned int*>(&dist);
 	  }		
 	};		
+
+    __global__ void initalClassifyKernel(const InitalClassify ic, const PointType* points, int cloud_size, uint64_type* output) 
+    { 
+        int index = threadIdx.x + blockIdx.x * blockDim.x;
+
+        if (index < cloud_size)              
+          output[index] = ic(points[index]); 
+    }
   }
 }
 
 void pcl::device::PointStream::initalClassify()
 {        
-  thrust::device_ptr<const PointType> beg(cloud.ptr());
-  thrust::device_ptr<const PointType> end = beg + cloud_size;
+  //thrust::device_ptr<const PointType> beg(cloud.ptr());
+  //thrust::device_ptr<const PointType> end = beg + cloud_size;
   thrust::device_ptr<uint64_type> out(facets_dists.ptr());
-
+  
   InitalClassify ic(simplex.p1, simplex.p2, simplex.p3, simplex.p4, cloud_diag);
-  thrust::transform(beg, end, out, ic);
+  //thrust::transform(beg, end, out, ic);
+  
+  //printFuncAttrib(initalClassifyKernel);
+
+  initalClassifyKernel<<<divUp(cloud_size, 256), 256>>>(ic, cloud, cloud_size, facets_dists);
+  cudaSafeCall( cudaGetLastError() );
+  cudaSafeCall( cudaDeviceSynchronize() );
 
   thrust::device_ptr<int> pbeg(perm.ptr());
   thrust::sort_by_key(out, out + cloud_size, pbeg);
@@ -325,7 +357,7 @@ namespace pcl
 {
   namespace device
   {
-    __device__ int new_cloud_size;
+    __device__ int new_cloud_size;    
 	struct SearchFacetHeads
 	{		
 	  uint64_type *facets_dists;
@@ -335,27 +367,37 @@ namespace pcl
 	  const PointType* points;
 
 	  mutable int* head_points;
+      //bool logger;
 	
 	  __device__ __forceinline__
 	  void operator()(int facet) const
 	  {			
 		const uint64_type* b = facets_dists;
 		const uint64_type* e = b + cloud_size;
-		
-		int index = lower_bound(b, e, facet, LessThanByFacet()) - b;			
 
-		if (index = cloud_size || (facet != (facets_dists[index] >> 32)))
-		{
-		  if (facet == facet_count) // extra
-		    new_cloud_size = index;
-		  else
-			head_points[facet] = -1;			
+        bool last_thread = facet == facet_count;
 
-		  return;
-		}		
-		head_points[facet] = perm[index];		
+        int search_value = !last_thread ? facet : numeric_limits<int>::max();		
+		int index = lower_bound(b, e, search_value, LessThanByFacet()) - b;			
+        
+        if (last_thread)
+            new_cloud_size = index;
+        else
+        {
+          bool not_found = index == cloud_size || (facet != (facets_dists[index] >> 32));
+
+          head_points[facet] = not_found ? -1 : perm[index];		
+        }
 	  }
-	};	
+	};
+
+    __global__ void searchFacetHeadsKernel(const SearchFacetHeads sfh)
+    {
+        int facet = threadIdx.x + blockDim.x * blockIdx.x;
+
+        if (facet <= sfh.facet_count)
+          sfh(facet);
+    }
   }
 }
 
@@ -368,11 +410,15 @@ int pcl::device::PointStream::searchFacetHeads(size_t facet_count, DeviceArray<i
 	sfh.facet_count = (int)facet_count;
 	sfh.perm = perm;
 	sfh.points = cloud.ptr();
-	sfh.head_points = head_points;
+	sfh.head_points = head_points;  
 	
-    thrust::counting_iterator<int> b(0);
-    thrust::counting_iterator<int> e = b + facet_count + 1;  	
-    thrust::for_each(b, e, sfh);
+    //thrust::counting_iterator<int> b(0);
+    //thrust::counting_iterator<int> e = b + facet_count + 1;  	
+    //thrust::for_each(b, e, sfh);
+
+    searchFacetHeadsKernel<<<divUp(facet_count+1, 256), 256>>>(sfh);
+    cudaSafeCall( cudaGetLastError() );
+    cudaSafeCall( cudaDeviceSynchronize() );        
 
 	int new_size;
 	cudaSafeCall( cudaMemcpyFromSymbol(	(void*)&new_size,  pcl::device::new_cloud_size, sizeof(new_size)) );	
@@ -438,16 +484,18 @@ namespace pcl
 					verts_inds_out.ptr(0)[offset] = verts_inds_in.ptr(0)[idx];
 					verts_inds_out.ptr(1)[offset] = verts_inds_in.ptr(1)[idx];
 					verts_inds_out.ptr(2)[offset] = verts_inds_in.ptr(2)[idx];
+
+                    
 					
 				}
-				else
-				  empty = 1;
+				else                
+				  empty = 1;                
 			}
 
 			int total = __popc(__ballot(empty));
 			if (total > 0)
 			{
-				int offset = Warp::binaryExclScan(empty);
+				int offset = Warp::binaryExclScan(__ballot(empty));
 
 				volatile __shared__ int wapr_buffer[WARPS];
 
@@ -456,13 +504,18 @@ namespace pcl
 				if (laneid == 0)
 				{
 					int old = atomicAdd(empty_count, total);
-					wapr_buffer[warpid] = old;					
+					wapr_buffer[warpid] = old;                    
 				}
 				int old = wapr_buffer[warpid];
 
-				empty_facets.ptr(0)[old + offset] = verts_inds_in.ptr(0)[idx];
-				empty_facets.ptr(1)[old + offset] = verts_inds_in.ptr(1)[idx];
-				empty_facets.ptr(2)[old + offset] = verts_inds_in.ptr(2)[idx];								
+                if (empty)
+                {
+				  empty_facets.ptr(0)[old + offset] = verts_inds_in.ptr(0)[idx];
+				  empty_facets.ptr(1)[old + offset] = verts_inds_in.ptr(1)[idx];
+				  empty_facets.ptr(2)[old + offset] = verts_inds_in.ptr(2)[idx];		                  
+
+                  int a1 = verts_inds_in.ptr(0)[idx], a2 = verts_inds_in.ptr(1)[idx], a3 = verts_inds_in.ptr(2)[idx];
+                }
 			}							
 		}
 	};
@@ -482,7 +535,7 @@ void pcl::device::FacetStream::compactFacets()
   thrust::device_ptr<int> o(scan_buffer.ptr());
   
   thrust::transform_exclusive_scan(b, e, o, NotMinus1(), 0, thrust::plus<int>());                                                                                    
-
+  
   Compaction c;
 
   c.verts_inds_in   = verts_inds;
@@ -500,7 +553,7 @@ void pcl::device::FacetStream::compactFacets()
   int block = Compaction::CTA_SIZE;
   int grid = divUp(facet_count, block);
 
-  compactionKernel<<<grid, block>>>(c); 
+  compactionKernel<<<grid, block>>>(c);   
   cudaSafeCall( cudaGetLastError() );
   cudaSafeCall( cudaDeviceSynchronize() );
     
@@ -509,7 +562,7 @@ void pcl::device::FacetStream::compactFacets()
 
   int new_empty_count;  
   empty_count.download(&new_empty_count); 
-
+  
   facet_count -= new_empty_count - old_empty_count;
 }
 
@@ -523,73 +576,124 @@ namespace pcl
   {
 	  struct Classify
 	  {
-		  uint64_type* facets_dists;
-		  int* scan_buffer;
+		uint64_type* facets_dists;
+		int* scan_buffer;
 
-		  int* head_points;
-		  int* perm;
-		  PtrStep<int>  verts_inds;
+		int* head_points;
+		int* perm;
+		PtrStep<int>  verts_inds;
 
-		  const PointType *points;
+		const PointType *points;
 
-		  float diag;
+		float diag;
 
-		  int facet_count;
+		int facet_count;
 
-		  __device__ __forceinline__ 
-		  void operator()(int idx) const
-		  {
-			int facet = facets_dists[idx] >> 32;
+		__device__ __forceinline__ 
+		void operator()(int point_idx) const
+		{
+          int perm_index = perm[point_idx];
+          
+		  int facet = facets_dists[point_idx] >> 32;
+		  facet = scan_buffer[facet];
 
-			facet = scan_buffer[facet];
-			
-			int hi = head_points[facet];
-			int i1 = verts_inds.ptr(0)[facet];
-			int i2 = verts_inds.ptr(1)[facet];
-			int i3 = verts_inds.ptr(2)[facet];
+		  int hi = head_points[facet];
 
-			float3 hp = tr( points[ hi ] );
-			float3 v1 = tr( points[ i1 ] );
-			float3 v2 = tr( points[ i2 ] );
-			float3 v3 = tr( points[ i3 ] );
-			
-			float4 p1 = compute_plane(hp, v1, v2, /*opposite*/v3); // j
-			float4 p2 = compute_plane(hp, v2, v3, /*opposite*/v1); // facet_count + j
-			float4 p3 = compute_plane(hp, v3, v1, /*opposite*/v2); // facet_count + j*2			
+          if (hi == perm_index)
+          {
+            uint64_type res = numeric_limits<int>::max();
+		    res <<= 32;		                      
+            facets_dists[point_idx] = res;
+          }
+          else            
+          {
 
+		    int i1 = verts_inds.ptr(0)[facet];
+		    int i2 = verts_inds.ptr(1)[facet];
+		    int i3 = verts_inds.ptr(2)[facet];
 
-			float4 p = points[perm[idx]];
-			p.w = 1;
+		    float3 hp = tr( points[ hi ] );
+		    float3 v1 = tr( points[ i1 ] );
+		    float3 v2 = tr( points[ i2 ] );
+		    float3 v3 = tr( points[ i3 ] );
+		
+		    float4 p0 = compute_plane(hp, v1, v2, /*opposite*/v3); // j
+		    float4 p1 = compute_plane(hp, v2, v3, /*opposite*/v1); // facet_count + j
+		    float4 p2 = compute_plane(hp, v3, v1, /*opposite*/v2); // facet_count + j*2			
 
-			float d1 = dot(p, p1);
-			float d2 = dot(p, p2);
-			float d3 = dot(p, p3);
+            p0 *= compue_inv_normal_norm(p0);
+            p1 *= compue_inv_normal_norm(p1);
+            p2 *= compue_inv_normal_norm(p2);
 
-			int new_idx;
-			float dist = 0;
+          
+		    float4 p = points[perm_index];
+		    p.w = 1;
 
-			if (d1 >= 0 && d2 >= 0 && d3 >= 0)
-			  new_idx = numeric_limits<int>::max();
-		    else
-			{
-				float dists[] = { fabs(d1) * compue_inv_normal_norm(p1), fabs(d1) * compue_inv_normal_norm(p2), fabs(d3) * compue_inv_normal_norm(p3) };
-				
-				for(int i = 1; i < 3; ++i)
-				  if (dists[i] < dists[new_idx])
-				    new_idx = i;
+		    float d0 = dot(p, p0);
+		    float d1 = dot(p, p1);
+		    float d2 = dot(p, p2);
 
-				dist = dists[idx];
-			}
-			int indeces[] = { facet, facet_count + facet, facet_count + facet*2 };
+            float dists[] = { d0, d1, d2 };
+            int negs_inds[3];
+            int neg_count = 0;
 
-			dist = diag - dist; // to ensure that sorting order is inverse, i.e. distant points go first
-			uint64_type res = indeces[new_idx];
-			res <<= 32;
-			res += *reinterpret_cast<unsigned int*>(&dist);
+            int new_idx = numeric_limits<int>::max();
+            float dist = 0;
 
-			facets_dists[idx] = res;
-		  }
+            int indeces[] = { facet, facet + facet_count, facet + facet_count * 2 };
+
+            #pragma unroll
+            for(int i = 0; i < 3; ++i)
+              if (dists[i] < 0)
+               negs_inds[neg_count++] = i;
+ 
+            if (neg_count == 3)
+            {
+              int i1 = negs_inds[1];
+              int i2 = negs_inds[2];
+           
+              int ir = fabs(dists[i1]) < fabs(dists[i2]) ? i2 : i1;
+              negs_inds[1] = ir;
+              --neg_count;
+            }
+
+            if (neg_count == 2)
+            {
+              int i1 = negs_inds[0];
+              int i2 = negs_inds[1];
+           
+              int ir = fabs(dists[i1]) < fabs(dists[i2]) ? i2 : i1;
+              negs_inds[0] = ir;
+              --neg_count;              
+            }
+
+            if (neg_count == 1)
+            {
+              new_idx = negs_inds[0];
+              dist = diag - fabs(dists[new_idx]); // to ensure that sorting order is inverse, i.e. distant points go first
+              new_idx = indeces[new_idx];
+            }
+
+            // if (neg_count == 0)
+            // new_idx = INT_MAX ==>> internal point
+                      	       	 	   
+            uint64_type res = new_idx;
+		    res <<= 32;
+		    res += *reinterpret_cast<unsigned int*>(&dist);
+
+		    facets_dists[point_idx] = res;
+
+          } /* if (hi == perm_index) */            
+        }
 	  };    
+
+      __global__ void classifyKernel(const Classify c, int cloud_size)
+      {
+        int point_idx = threadIdx.x + blockIdx.x * blockDim.x;
+
+        if ( point_idx < cloud_size )
+          c(point_idx);
+      }
   }
 }
 
@@ -602,14 +706,18 @@ void pcl::device::PointStream::classify(FacetStream& fs)
   c.head_points = fs.head_points;
   c.perm = perm;
 
-  c.verts_inds = fs.verts_inds;		  
+  c.verts_inds = fs.verts_inds;
   c.points = cloud;
 
   c.diag = cloud_diag;
   c.facet_count = fs.facet_count;
 
-  thrust::counting_iterator<int> b(0);    
-  thrust::for_each(b, b + cloud_size, c);
+  //thrust::counting_iterator<int> b(0);    
+  //thrust::for_each(b, b + cloud_size, c);
+
+  classifyKernel<<<divUp(cloud_size, 256), 256>>>(c, cloud_size);
+  cudaSafeCall( cudaGetLastError() );
+  cudaSafeCall( cudaDeviceSynchronize() );
   
   thrust::device_ptr<uint64_type> beg(facets_dists.ptr());
   thrust::device_ptr<uint64_type> end = beg + cloud_size;
@@ -634,12 +742,12 @@ namespace pcl
       {
         int hi = head_points[facet];
         int i1 = verts_inds.ptr(0)[facet];
-        int i2 = verts_inds.ptr(0)[facet];
-        int i3 = verts_inds.ptr(0)[facet];
-
+        int i2 = verts_inds.ptr(1)[facet];
+        int i3 = verts_inds.ptr(2)[facet];
+        
         make_facet(hi, i1, i2, facet);
-        make_facet(hi, i2, i3, facet_count + facet);
-        make_facet(hi, i3, i1, facet_count + facet * 2);
+        make_facet(hi, i2, i3, facet + facet_count);
+        make_facet(hi, i3, i1, facet + facet_count * 2);
       }
 
       __device__ __forceinline__
@@ -650,6 +758,14 @@ namespace pcl
         verts_inds.ptr(2)[out_idx] = i3;
       }
     };
+
+    __global__ void splitFacetsKernel(const SplitFacets sf)
+    {
+      int facet = threadIdx.x + blockIdx.x * blockDim.x;
+
+      if (facet < sf.facet_count)        
+        sf(facet);        
+    }
   }
 }
 
@@ -660,8 +776,14 @@ void pcl::device::FacetStream::splitFacets()
   sf.verts_inds = verts_inds;
   sf.facet_count = facet_count;
     
-  thrust::counting_iterator<int> b(0);    
-  thrust::for_each(b, b + facet_count, sf);
+
+  //thrust::counting_iterator<int> b(0);    
+  //thrust::for_each(b, b + facet_count, sf);
+
+  splitFacetsKernel<<<divUp(facet_count, 256), 256>>>(sf);
+  cudaSafeCall( cudaGetLastError() );
+  cudaSafeCall( cudaDeviceSynchronize() );
+
   facet_count *= 3;
 }
 
@@ -675,16 +797,35 @@ size_t pcl::device::remove_duplicates(DeviceArray<int>& indeces)
 }
 
 
+namespace pcl
+{
+  namespace device
+  {
+    __global__ void gatherKernel(const PtrSz<int> indeces, const PointType* src, PointType* dst)
+    {
+        int idx = blockIdx.x * blockDim.x + threadIdx.x;
+
+        if (idx < indeces.size)
+          dst[idx] = src[indeces.data[idx]];
+    }
+  }
+}
+
+
 void pcl::device::pack_hull(const DeviceArray<PointType>& points, const DeviceArray<int>& indeces, DeviceArray<PointType>& output)
 {
   output.create(indeces.size());
 
-  device_ptr<const PointType> in(points.ptr());  
+  //device_ptr<const PointType> in(points.ptr());  
   
-  thrust::device_ptr<const int> mb(indeces.ptr());
-  thrust::device_ptr<const int> me = mb + indeces.size();
+  //thrust::device_ptr<const int> mb(indeces.ptr());
+  //thrust::device_ptr<const int> me = mb + indeces.size();
 
-  device_ptr<PointType> out(output.ptr());  
+  //device_ptr<PointType> out(output.ptr());  
 
-  thrust::gather(mb, me, in, out);
+  //thrust::gather(mb, me, in, out);
+  
+  gatherKernel<<<divUp(indeces.size(), 256), 256>>>(indeces, points, output);
+  cudaSafeCall( cudaGetLastError() );
+  cudaSafeCall( cudaDeviceSynchronize() );
 }

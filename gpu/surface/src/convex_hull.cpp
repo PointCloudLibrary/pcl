@@ -24,7 +24,8 @@
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  COPYRIGHT OWNER OR CONTR
+ IBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
@@ -54,7 +55,7 @@ pcl::device::FacetStream::FacetStream(size_t buffer_size)
   empty_facets.create(3, buffer_size);
 
   int zero = 0;  
-  empty_count.upload(&zero, sizeof(int));
+  empty_count.upload(&zero, 1);
 }
 
 bool 
@@ -63,48 +64,61 @@ pcl::device::FacetStream::canSplit()
   return facet_count * 3 < verts_inds.cols();
 }
 
-pcl::gpu::PseudoConvexHull3D::PseudoConvexHull3D(size_t bsize) : buffer_size(bsize) 
+struct pcl::gpu::PseudoConvexHull3D::Impl
 {
-  throw "Not implemented";
+    Impl(size_t buffer_size) : fs(buffer_size) {}
+    ~Impl() {};
+    
+    device::FacetStream fs;
+};
+
+pcl::gpu::PseudoConvexHull3D::PseudoConvexHull3D(size_t bsize)
+{
+  pcl::gpu::Static<sizeof(pcl::device::uint64_type) == 8>::check();
+
+  impl_.reset( new Impl(bsize) );
 }
+pcl::gpu::PseudoConvexHull3D::~PseudoConvexHull3D() {}
+
 
 void 
 pcl::gpu::PseudoConvexHull3D::reconstruct (const Cloud &cloud, DeviceArray2D<int>& vertexes)
-{ 
-  pcl::gpu::Static<sizeof(pcl::device::uint64_type) == 8>::check();
+{     
   const device::Cloud& c = (const device::Cloud&)cloud;
     
-  device::FacetStream fs(buffer_size);
+  device::FacetStream& fs = impl_->fs;
   device::PointStream ps(c);
 
   ps.computeInitalSimplex();
+
+  device::InitalSimplex simplex = ps.simplex;
+
   fs.setInitialFacets(ps.simplex);
   ps.initalClassify();
-  
+    
   for(;;)
   {
 	//new external points number
     ps.cloud_size = ps.searchFacetHeads(fs.facet_count, fs.head_points);  
 	if (ps.cloud_size == 0)
 		break;
-    
-	fs.compactFacets();
+      
+	fs.compactFacets();    
     ps.classify(fs);
-	
+    	
 	if (!fs.canSplit())
-		throw PCLException("Can't split facets, please enlarge default buffer", __FILE__, "", __LINE__);
+		throw PCLException("Can't split facets, please enlarge default buffer", __FILE__, "", __LINE__);    
 		
 	fs.splitFacets();
   }
-
-  int fcount = fs.facet_count;
+    
   int ecount;
+  int fcount = fs.facet_count;
   fs.empty_count.download(&ecount);
-
+  
   vertexes.create(3, fcount + ecount);
   DeviceArray2D<int> subf(3, fcount, vertexes.ptr(),        vertexes.step());
   DeviceArray2D<int> sube(3, ecount, vertexes.ptr()+fcount, vertexes.step());
-
   
   DeviceArray2D<int>(3, fcount, fs.verts_inds.ptr(), fs.verts_inds.step()).copyTo(subf);  
   DeviceArray2D<int>(3, ecount, fs.empty_facets.ptr(), fs.empty_facets.step()).copyTo(sube);  
@@ -119,6 +133,7 @@ pcl::gpu::PseudoConvexHull3D::reconstruct (const Cloud &points, Cloud &output)
   DeviceArray<int> cont(vertexes.cols() * vertexes.rows());
   DeviceArray2D<int> buf(3, vertexes.cols(), cont.ptr(), vertexes.cols() * sizeof(int));
   vertexes.copyTo(buf);
+   
 
   size_t new_size = device::remove_duplicates(cont);
   DeviceArray<int> new_cont(cont.ptr(), new_size);

@@ -66,7 +66,9 @@ namespace pcl
 	  public:
 		  FacetStream(size_t buffer_size);
 
+          // indeces: in each col indeces of vertexes for sigle facet
 		  DeviceArray2D<int>  verts_inds;		  
+
 		  DeviceArray<int> head_points;		  
 		  size_t facet_count;
 
@@ -83,7 +85,7 @@ namespace pcl
 		  void splitFacets();
 	  private:
 		  
-		  //for compation;
+          //for compation (double buffering)
 		  DeviceArray2D<int>  verts_inds2;
 		  DeviceArray<float4> facet_planes2;
 		  DeviceArray<int> head_points2;		  
