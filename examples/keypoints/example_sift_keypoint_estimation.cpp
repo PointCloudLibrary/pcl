@@ -33,7 +33,7 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: example_rift_estimation.cpp 5172 2012-03-18 10:43:15Z desinghkar $
+ * $Id$
  *
  *
  */
