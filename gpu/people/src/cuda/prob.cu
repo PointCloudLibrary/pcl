@@ -1,5 +1,5 @@
 /*
-  * Software License Agreement (BSD License)
+   * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
@@ -64,6 +64,7 @@ typedef unsigned int uint;
 #define __shared__
 #define __forceinline__
 #define __constant__
+#define __float2int_rn
 #endif
 
 namespace pcl
@@ -148,22 +149,96 @@ namespace pcl
     }
 
     /**
-     * \brief
+     * \brief Does Gaussian Blur in the horizontal row direction
+     * \param[in] kernelSize needs to be odd! This should be fetched in the calling function before calling this method
+     * TODO: replace this with OpenCV or NPP implementation
      **/
     __global__ void
-    KernelCUDA_GaussianBlur (PtrStepSz<prob_histogram> probIn,
-                             int kernelSize,
-                             float normaliser,
-                             float* kernel,
-                             PtrStepSz<prob_histogram> probOut)
+    KernelCUDA_GaussianBlurHor (PtrStepSz<prob_histogram> probIn,
+                                PtrSz<float>              kernel,
+                                PtrStepSz<prob_histogram> probOut)
     {
-      // map block and thread onto image coordinates
+      // map block and thread onto image coordinates a single pixel for each thread
       int u = blockIdx.x * blockDim.x + threadIdx.x;
       int v = blockIdx.y * blockDim.y + threadIdx.y;
 
+      // Skip when outside the image
       if( u >= probIn.cols || v >= probIn.rows )
           return;
 
+      // Do this for all the labels of this pixel
+      for(int l = 0; l< NUM_LABELS; l++)
+      {
+        float sum = 0;        // This contains the kernel convolution
+        float normalizer = 0; // This contains the sum of all kernel values
+        int j = 0;            // This contains the offset in the kernel
+
+        // KernelSize needs to be odd! This should be fetched in the calling function before calling this method
+        for(int i = -__float2int_rn(kernel.size/2); i < __float2int_rn(kernel.size/2); i++)
+        {
+          // check if index goes outside image, pixels are skipped
+          if((u+i) < 0 || (u+i) > probIn.cols)
+          {
+            j++;  // skip to the next point
+            normalizer += kernel.data[j];
+          }
+          else
+          {
+            sum += probIn.ptr(v)[u+i].probs[l] * kernel.data[j];
+            j++;
+            normalizer += kernel.data[j];
+          }
+        }
+        sum = sum/normalizer;
+        probOut.ptr(v)[u].probs[l] = (char) sum;
+      }
+    }
+
+    /**
+     * \brief Does Gaussian Blur in the horizontal row direction
+     * \param[in] kernelSize needs to be odd! This should be fetched in the calling function before calling this method
+     * TODO: replace this with OpenCV or NPP implementation
+     *
+     **/
+    __global__ void
+    KernelCUDA_GaussianBlurVer (PtrStepSz<prob_histogram> probIn,
+                                PtrSz<float>              kernel,
+                                PtrStepSz<prob_histogram> probOut)
+    {
+      // map block and thread onto image coordinates a single pixel for each thread
+      int u = blockIdx.x * blockDim.x + threadIdx.x;
+      int v = blockIdx.y * blockDim.y + threadIdx.y;
+
+      // Skip when outside the image
+      if( u >= probIn.cols || v >= probIn.rows )
+          return;
+
+      // Do this for all the labels of this pixel
+      for(int l = 0; l< NUM_LABELS; l++)
+      {
+        float sum = 0;        // This contains the kernel convolution
+        float normalizer = 0; // This contains the sum of all kernel values
+        int j = 0;            // This contains the offset in the kernel
+
+        // KernelSize needs to be odd! This should be fetched in the calling function before calling this method
+        for(int i = -__float2int_rn(kernel.size/2); i < __float2int_rn(kernel.size/2); i++)
+        {
+          // check if index goes outside image, pixels are skipped
+          if((v+i) < 0 || (v+i) > probIn.rows)
+          {
+            j++;  // skip to the next point
+            normalizer += kernel.data[j];
+          }
+          else
+          {
+            sum += probIn.ptr(v+i)[u].probs[l] * kernel.data[j];
+            j++;
+            normalizer += kernel.data[j];
+          }
+        }
+        sum = sum/normalizer;
+        probOut.ptr(v)[u].probs[l] = (char) sum;
+      }
     }
 
     /** \brief This will merge the votes from the different trees into one final vote, including probabilistic's **/
@@ -219,6 +294,58 @@ namespace pcl
 
       cudaSafeCall( cudaGetLastError() );
       cudaSafeCall( cudaThreadSynchronize() );
+    }
+
+    /** \brief This will blur the input labelprobability with the given kernel **/
+    int
+    ProbabilityProc::CUDA_GaussianBlur( const Depth& depth,
+                                        LabelProbability& probIn,
+                                        DeviceArray<float> kernel,
+                                        LabelProbability& probOut)
+    {
+      dim3 block(32, 8);
+      dim3 grid(divUp(depth.cols(), block.x), divUp(depth.rows(), block.y) );
+
+      if(kernel.size() % 2 == 0) //kernelSize is even, should be odd
+        return -1;
+      LabelProbability probTemp(depth.rows(), depth.cols());
+
+      // CUDA kernel call Vertical
+      KernelCUDA_GaussianBlurVer<<< grid, block >>>( probIn, kernel, probTemp );
+      cudaSafeCall( cudaGetLastError() );
+      cudaSafeCall( cudaThreadSynchronize() );
+      // CUDA kernel call Horizontal
+      KernelCUDA_GaussianBlurHor<<< grid, block >>>( probTemp, kernel, probOut );
+      cudaSafeCall( cudaGetLastError() );
+      cudaSafeCall( cudaThreadSynchronize() );
+
+      return 1;
+    }
+
+    /** \brief This will blur the input labelprobability with the given kernel, this version avoids extended allocation **/
+    int
+    ProbabilityProc::CUDA_GaussianBlur( const Depth& depth,
+                                        LabelProbability& probIn,
+                                        DeviceArray<float> kernel,
+                                        LabelProbability& probTemp,
+                                        LabelProbability& probOut)
+    {
+      dim3 block(32, 8);
+      dim3 grid(divUp(depth.cols(), block.x), divUp(depth.rows(), block.y) );
+
+      if(kernel.size() % 2 == 0) //kernelSize is even, should be odd
+        return -1;
+
+      // CUDA kernel call Vertical
+      KernelCUDA_GaussianBlurVer<<< grid, block >>>( probIn, kernel, probTemp );
+      cudaSafeCall( cudaGetLastError() );
+      cudaSafeCall( cudaThreadSynchronize() );
+      // CUDA kernel call Horizontal
+      KernelCUDA_GaussianBlurHor<<< grid, block >>>( probTemp, kernel, probOut );
+      cudaSafeCall( cudaGetLastError() );
+      cudaSafeCall( cudaThreadSynchronize() );
+
+      return 1;
     }
   }
 }

@@ -41,6 +41,11 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 
+pcl::gpu::people::PersonAttribs::PersonAttribs()
+{
+
+}
+
 void
 pcl::gpu::people::PersonAttribs::readPersonXMLConfig (std::istream& is)
 {

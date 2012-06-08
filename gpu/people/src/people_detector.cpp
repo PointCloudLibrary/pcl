@@ -260,9 +260,23 @@ pcl::gpu::people::PeopleDetector::processProb ()
   int rows = cloud_device_.rows();
 
   PCL_DEBUG("(I) : PeopleDetector::processProb() called");
+
+  // Backup P_l_1_ value in P_l_prev_1_;
+  rdf_detector_->P_l_prev_1_.swap(rdf_detector_->P_l_1_);
+  // Backup P_l_2_ value in P_l_prev_2_;
+  rdf_detector_->P_l_prev_2_.swap(rdf_detector_->P_l_2_);
+
   //Process input pointcloud with RDF
   rdf_detector_->processProb(depth_device1_);
   // TODO: merge with prior probabilities at this line
+
+  // Create Gaussian Kernel for this iteration
+  float* kernel_ptr_host;
+  int kernel_size = 5;
+  float sigma = 1.0;
+  kernel_ptr_host = probability_processor_->CreateGaussianKernel(sigma, kernel_size);
+  DeviceArray<float> kernel_device(kernel_size * sizeof(float));
+  kernel_device.upload(kernel_ptr_host, kernel_size * sizeof(float));
 
   // get labels
   probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);

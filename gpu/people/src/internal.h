@@ -63,17 +63,17 @@ namespace pcl
     /** \brief The intrinsic camera calibration **/
     struct Intr
     {
-      float fx, fy, cx, cy;
-      Intr () {}
-      Intr (float fx_, float fy_, float cx_, float cy_) : fx(fx_), fy(fy_), cx(cx_), cy(cy_) {}
+        float fx, fy, cx, cy;
+        Intr () {}
+        Intr (float fx_, float fy_, float cx_, float cy_) : fx(fx_), fy(fy_), cx(cx_), cy(cy_) {}
 
-      void setDefaultPPIfIncorrect(int cols, int rows)
-      {
-        cx = cx > 0 ? cx : cols/2 - 0.5f;
-        cy = cy > 0 ? cy : rows/2 - 0.5f;
-      }
+        void setDefaultPPIfIncorrect(int cols, int rows)
+        {
+          cx = cx > 0 ? cx : cols/2 - 0.5f;
+          cy = cy > 0 ? cy : rows/2 - 0.5f;
+        }
     };
-    
+
     void smoothLabelImage(const Labels& src, const Depth& depth, Labels& dst, int num_parts, int  patch_size, int depthThres);
     void colorLMap(const Labels& labels, const DeviceArray<uchar4>& cmap, Image& rgb);
     void mixedColorMap(const Labels& labels, const DeviceArray<uchar4>& map, const Image& rgba, Image& output);
@@ -82,12 +82,12 @@ namespace pcl
 
     struct ConnectedComponents
     {
-      static void initEdges(int rows, int cols, DeviceArray2D<unsigned char>& edges);    
-      //static void computeEdges(const Labels& labels, const Cloud& cloud, int num_parts, float sq_radius, DeviceArray2D<unsigned char>& edges);
-      static void computeEdges(const Labels& labels, const Depth& depth, int num_parts, float sq_radius, DeviceArray2D<unsigned char>& edges);
-      static void labelComponents(const DeviceArray2D<unsigned char>& edges, DeviceArray2D<int>& comps);
+        static void initEdges(int rows, int cols, DeviceArray2D<unsigned char>& edges);
+        //static void computeEdges(const Labels& labels, const Cloud& cloud, int num_parts, float sq_radius, DeviceArray2D<unsigned char>& edges);
+        static void computeEdges(const Labels& labels, const Depth& depth, int num_parts, float sq_radius, DeviceArray2D<unsigned char>& edges);
+        static void labelComponents(const DeviceArray2D<unsigned char>& edges, DeviceArray2D<int>& comps);
     };
-    
+
     void computeCloud(const Depth& depth, const Intr& intr, Cloud& cloud);
 
     void setZero(Mask& mask);
@@ -103,10 +103,10 @@ namespace pcl
         typedef DeviceArray<unsigned char> Kernel;
         enum 
         { 
-            KSIZE_X = 5, 
-            KSIZE_Y = 5,
-            ANCH_X = KSIZE_X/2,
-            ANCH_Y = KSIZE_Y/2,
+          KSIZE_X = 5,
+          KSIZE_Y = 5,
+          ANCH_X = KSIZE_X/2,
+          ANCH_Y = KSIZE_Y/2,
         };
 
         static void prepareRect5x5Kernel(Kernel& kernel);
@@ -172,11 +172,25 @@ namespace pcl
         /** \brief This will combine two probabilities according their weight **/
         void
         CUDA_CombineProb ( const Depth& depth, LabelProbability& probIn1, float weight1,
-                      LabelProbability& probIn2, float weight2, LabelProbability& probOut);
+                           LabelProbability& probIn2, float weight2, LabelProbability& probOut);
 
         /** \brief This will sum a probability multiplied with it's weight **/
         void
         CUDA_WeightedSumProb ( const Depth& depth, LabelProbability& probIn, float weight, LabelProbability& probOut);
+
+        /** \brief This will blur the input labelprobability with the given kernel **/
+        int
+        CUDA_GaussianBlur( const Depth& depth,
+                           LabelProbability& probIn,
+                           DeviceArray<float> kernel,
+                           LabelProbability& probOut);
+        /** \brief This will blur the input labelprobability with the given kernel, this version avoids extended allocation **/
+        int
+        CUDA_GaussianBlur( const Depth& depth,
+                           LabelProbability& probIn,
+                           DeviceArray<float> kernel,
+                           LabelProbability& probTemp,
+                           LabelProbability& probOut);
     };
   }
 }

@@ -14,22 +14,25 @@ namespace pcl
     {
       class PersonAttribs
       {
-      public:
-        typedef boost::shared_ptr<PersonAttribs> Ptr;
+        public:
+          typedef boost::shared_ptr<PersonAttribs> Ptr;
 
-          /** \brief Read XML configuration file for a specific person */
-        void 
-        readPersonXMLConfig (std::istream& is);
+          /** \brief Constructor creates generic values from **/
+          PersonAttribs();
 
-        /** \brief Write XML configuration file for a specific person */
-        void 
-        writePersonXMLConfig (std::ostream& os);
+          /** \brief Read XML configuration file for a specific person **/
+          void
+          readPersonXMLConfig (std::istream& is);
 
-      private:
-        std::string                                 name_;                  // Name of the person
-        std::vector<float>                          max_part_size_;         // Max primary eigenvalue for each body part
-        std::vector<std::vector<float> >            part_ideal_length_;     // Ideal length between two body parts
-        std::vector<std::vector<float> >            max_length_offset_;     // Max allowed length offset between two body parts
+          /** \brief Write XML configuration file for a specific person **/
+          void
+          writePersonXMLConfig (std::ostream& os);
+
+        private:
+          std::string                                 name_;                  // Name of the person
+          std::vector<float>                          max_part_size_;         // Max primary eigenvalue for each body part
+          std::vector<std::vector<float> >            part_ideal_length_;     // Ideal length between two body parts
+          std::vector<std::vector<float> >            max_length_offset_;     // Max allowed length offset between two body parts
       };
     }
   }

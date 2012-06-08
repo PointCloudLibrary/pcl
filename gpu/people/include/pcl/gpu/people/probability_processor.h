@@ -79,6 +79,11 @@ namespace pcl
           void
           WeightedSumProb ( const Depth& depth, pcl::device::LabelProbability& probIn, float weight, pcl::device::LabelProbability& probOut);
 
+          /** \brief This will create a Gaussian Kernel **/
+          float*
+          CreateGaussianKernel ( float sigma,
+                                 int kernelSize);
+
         private:
           boost::shared_ptr<pcl::device::ProbabilityProc> impl_;
 

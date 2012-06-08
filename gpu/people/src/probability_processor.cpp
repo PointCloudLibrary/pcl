@@ -66,3 +66,19 @@ pcl::gpu::people::ProbabilityProcessor::WeightedSumProb ( const Depth& depth, pc
 {
   impl_->CUDA_WeightedSumProb(depth, probIn, weight, probOut);
 }
+
+/** \brief This will create a Gaussian Kernel **/
+float*
+pcl::gpu::people::ProbabilityProcessor::CreateGaussianKernel ( float sigma,
+                                                               int kernelSize)
+{
+  float* f;
+  f = (float*) malloc(kernelSize * sizeof(float));
+  float sigma_sq = pow(sigma,2);
+  float mult = 1/sqrt(2*M_PI*sigma_sq);
+  for(int i = 0; i < kernelSize; i++)
+  {
+    f[i] = mult * exp(-(pow(i,2)/2*sigma_sq));
+  }
+  return f;
+}
