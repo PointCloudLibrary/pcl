@@ -81,7 +81,7 @@ namespace pcl
   class StatisticalOutlierRemoval : public FilterIndices<PointT>
   {
     protected:
-      typedef typename StatisticalOutlierRemoval<PointT>::PointCloud PointCloud;
+      typedef typename FilterIndices<PointT>::PointCloud PointCloud;
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
       typedef typename pcl::search::Search<PointT>::Ptr SearcherPtr;

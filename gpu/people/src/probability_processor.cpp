@@ -76,12 +76,12 @@ pcl::gpu::people::ProbabilityProcessor::CreateGaussianKernel ( float sigma,
   f = (float*) malloc(kernelSize * sizeof(float));
   float sigma_sq = pow(sigma,2);
   float mult = 1/sqrt(2*M_PI*sigma_sq);
-  int mid = floor(kernelSize/2);
+  int mid = floor(kernelSize/2.f);
 
   // Create a symmetric kernel, could also be solved in CUDA kernel but let's do it here :D
   for(int i = 0; i < kernelSize; i++)
   {
-    f[i] = mult * exp(-(pow(i-mid,2)/2*sigma_sq));
+    f[i] = mult * exp(-(pow(i-mid,2.f)/2*sigma_sq));
   }
   return f;
 }

@@ -72,7 +72,7 @@ namespace pcl
   class RadiusOutlierRemoval : public FilterIndices<PointT>
   {
     protected:
-      typedef typename RadiusOutlierRemoval<PointT>::PointCloud PointCloud;
+      typedef typename FilterIndices<PointT>::PointCloud PointCloud;
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
       typedef typename pcl::search::Search<PointT>::Ptr SearcherPtr;
