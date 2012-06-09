@@ -339,11 +339,18 @@ namespace pcl
     template<typename Container, typename PointT> boost::uint64_t
     octree_base<Container, PointT>::addPointCloud_and_genLOD (PointCloudConstPtr point_cloud)
     {
-      PCL_ERROR ("[pcl::outofcore::octree_base::%s] Function not yet implemented to support point clouds + gen LOD with new PCD dat node files\n",__FUNCTION__);
-      PCL_THROW_EXCEPTION ( PCLException, "Function not implemented");
+//      PCL_ERROR ("[pcl::outofcore::octree_base::%s] Function not yet implemented to support point clouds + gen LOD with new PCD dat node files\n",__FUNCTION__);
+//      PCL_THROW_EXCEPTION ( PCLException, "Function not implemented");
+      
+      // Lock the tree while writing
+      boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
+      boost::uint64_t pt_added = root_->addDataToLeaf_and_genLOD (point_cloud->points, false);
+      return (pt_added);
 
-      //and keep the compiler happy
-      return 0;//      return addDataToLeaf_and_genLOD (point_cloud->points);
+
+
+//      //and keep the compiler happy
+//      return 0;//      return addDataToLeaf_and_genLOD (point_cloud->points);
     }
 
 
