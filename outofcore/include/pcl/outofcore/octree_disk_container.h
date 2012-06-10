@@ -116,6 +116,32 @@ namespace pcl
         void
         insertRange (const AlignedPointTVector& src);
 
+        void
+        insertRange (const sensor_msgs::PointCloud2& input)
+        {
+          //this needs to be stress tested; also does no delayed-write caching (for now)
+
+          sensor_msgs::PointCloud2 tmp_cloud;
+          
+          //if there's a pcd file with data, read the data, concatenate, and resave
+          if ( boost::filesystem::exists ( *fileback_name_ ) )
+          {
+            //open the existing file
+            pcl::PCDReader reader;
+            assert ( reader.read ( *fileback_name_, tmp_cloud) == 0 );
+            pcl::PCDWriter writer;
+            pcl::concatenatePointCloud ( tmp_cloud, input, tmp_cloud );
+            writer.writeBinaryCompressed ( *fileback_name_, input );
+            
+          }
+          else //otherwise create the point cloud which will be saved to the pcd file for the first time
+          {
+            pcl::PCDWriter writer;
+            assert (writer.writeBinaryCompressed ( *fileback_name_, input ) == 0 );
+          }            
+        }
+        
+
         /** \todo standardize the interface for writing binary data to the files .oct_dat files */
         void
         insertRange (const PointT* const * start, const uint64_t count)

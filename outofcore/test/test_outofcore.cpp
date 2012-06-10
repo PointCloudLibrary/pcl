@@ -72,7 +72,7 @@ using namespace pcl::outofcore;
 
 // For doing exhaustive checks this is set low remove those, and this can be
 // set much higher
-const static uint64_t numPts ( 50000 );
+const static uint64_t numPts ( 5000 );
 
 const static boost::uint32_t rngseed = 0xAAFF33DD;
 
@@ -635,6 +635,55 @@ TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
   cleanUpFilesystem ();
 }
 
+TEST_F (OutofcoreTest, Outofcore_PointCloudInput_LOD )
+{
+  cleanUpFilesystem ();
+
+  //Specify the lower corner of the axis-aligned bounding box
+  const double min[3] = { -1024, -1024, -1024 };
+  
+  //Specify the upper corner of the axis-aligned bounding box
+  const double max[3] = { 1024, 1024, 1024 };
+  
+  //create a point cloud
+  PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> () );
+  PointCloud<PointT>::Ptr second_cloud (new PointCloud<PointT> () );
+
+  test_cloud->width = numPts;
+  test_cloud->height = 1;
+  test_cloud->reserve (numPts);
+
+  second_cloud->width = numPts;
+  second_cloud->height = 1;
+  second_cloud->reserve (numPts);
+  
+  //generate some random points
+  for(size_t i=0; i < numPts; i++)
+  {
+    PointT tmp ( static_cast<float> (i % 1024), 
+                 static_cast<float> (i % 1024), 
+                 static_cast<float> (i % 1024));
+    
+    test_cloud->points.push_back (tmp);
+  }
+
+  for(size_t i=0; i < numPts; i++)
+  {
+    PointT tmp ( static_cast<float> (i % 1024), 
+                 static_cast<float> (i % 1024), 
+                 static_cast<float> (i % 1024));
+    
+    second_cloud->points.push_back (tmp);
+  }
+
+  octree_disk pcl_cloud (min, max, 4, outofcore_path, "ECEF");
+
+  pcl_cloud.addPointCloud_and_genLOD (second_cloud);
+
+//  EXPECT_EQ ( 2*numPts, pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ()) ) << "Points are lost when two points clouds are added to the outofcore file system\n";
+  cleanUpFilesystem ();
+}
+
 //test that the PointCloud2 query returns the same points as the templated queries
 TEST_F ( OutofcoreTest, PointCloud2_Query )
 {
@@ -649,6 +698,7 @@ TEST_F ( OutofcoreTest, PointCloud2_Query )
   AlignedPointTVector some_points;
   for(int i=0; i< numPts; i++)
     some_points.push_back (PointT (static_cast<float>( rand () % 1024 ), static_cast<float>( rand () % 1024 ), static_cast<float>( rand () % 1024 ) ));
+
 
   //create a test tree
   octree_disk octreeA (min, max, smallest_voxel_dim, filename_otreeA, "ECEF");
@@ -667,9 +717,34 @@ TEST_F ( OutofcoreTest, PointCloud2_Query )
   EXPECT_EQ ( dst_blob.width*dst_blob.height, some_points.size () ) << "PointCloud2 Query number of points returned failed";
   
   EXPECT_EQ ( cloud.size () , some_points.size () ) << "Query error";
+  
+}
 
+TEST_F ( OutofcoreTest, PointCloud2_Insertion )
+{
+  cleanUpFilesystem ();
   
-  
+  const double min[3] = { -1024, -1024, -1024 };  
+  const double max[3] = {1024,1024,1024};
+
+  pcl::PointCloud<pcl::PointXYZ> point_cloud;
+
+  point_cloud.points.reserve (numPts);
+
+  for(int i=0; i < numPts; i++)
+    point_cloud.points.push_back (PointT (static_cast<float>( rand () % 1024 ), static_cast<float>( rand () % 1024 ), static_cast<float>( rand () % 1024 ) ));
+
+  point_cloud.width = point_cloud.points.size ();
+  point_cloud.height = 1;
+
+  sensor_msgs::PointCloud2 input_cloud;
+
+  toROSMsg<PointXYZ> ( point_cloud, input_cloud );
+
+  octree_disk octreeA (min, max, smallest_voxel_dim, filename_otreeA, "ECEF");
+
+  octreeA.addPointCloud ( input_cloud , false );
+
 }
 
   

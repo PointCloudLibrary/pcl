@@ -316,6 +316,91 @@ namespace pcl
         void
         addPointToLeaf (const PointT& p);
 
+        boost::uint64_t
+        addPointCloud ( sensor_msgs::PointCloud2& input_cloud, const bool skip_bb_check = false )
+        {
+      
+          if ( input_cloud.height*input_cloud.width == 0)
+            return (0);
+      
+
+          if( this->depth_ == root_->m_tree_->max_depth_)
+            return (addDataAtMaxDepth (input_cloud, true));
+      
+          if( num_child_ < 8 )
+            if(hasUnloadedChildren ())
+              loadChildren (false);
+
+          if( skip_bb_check == false )
+          {
+
+            //indices to store the points for each bin
+            //these lists will be used to copy data to new point clouds and pass down recursively
+            std::vector < std::vector<int> > indices;
+            indices.resize (8);
+
+            int x_idx = pcl::getFieldIndex (input_cloud , std::string ("x") );
+            int y_idx = pcl::getFieldIndex (input_cloud, std::string ("y") );
+            int z_idx = pcl::getFieldIndex (input_cloud, std::string ("z") );
+
+            int x_offset = input_cloud.fields[x_idx].offset;
+            int y_offset = input_cloud.fields[y_idx].offset;
+            int z_offset = input_cloud.fields[z_idx].offset;
+      
+            for ( size_t point_idx =0; point_idx < input_cloud.data.size (); point_idx +=input_cloud.point_step )
+            {
+              PointXYZ local_pt;
+
+              local_pt.x = input_cloud.data[point_idx + x_offset];
+              local_pt.y = input_cloud.data[point_idx + y_offset];
+              local_pt.z = input_cloud.data[point_idx + z_offset];
+
+              if( !this->pointWithinBB (local_pt) )
+              {
+                PCL_ERROR ( "[pcl::outofcore::octree_base_node::%s] Failed to place point within bounding box\n", __FUNCTION__ );
+                continue;
+            
+              }
+              //compute the box we are in
+              int box = ((local_pt.z >= midz_) << 2) | ((local_pt.y >= midy_) << 1) | ((local_pt.x >= midx_) << 0);
+              assert ( box < 8 );
+              
+              //insert to the vector of indices
+              indices[box].push_back (point_idx/input_cloud.point_step);
+            }
+
+            boost::uint64_t points_added = 0;
+
+            for(int i=0; i<8; i++)
+            {
+              if ( indices[i].empty () )
+                continue;
+
+              if ( children_[i] == false )
+              {
+                createChild (i);
+              }
+
+              sensor_msgs::PointCloud2 dst_cloud;
+
+              PCL_INFO ( "[pcl::outofcore::octree_base_node::%s] Extracting indices to bins\n", __FUNCTION__);
+              
+              //copy the points from extracted indices from input cloud to destination cloud
+              pcl::copyPointCloud ( input_cloud, indices[i], dst_cloud ) ;
+          
+              //recursively add the new cloud to the data
+              points_added += children_[i]->addPointCloud ( dst_cloud );
+              indices[i].clear ();
+            }
+        
+            return points_added;
+          }
+      
+          PCL_ERROR ("[pcl::outofcore::octree_base_node] Skipped bb check. Points not inserted\n");
+      
+          return 0;
+        }
+        
         /** \brief Recursively add points to the leaf and children subsampling LODs
          * on the way down.
          *
@@ -343,6 +428,25 @@ namespace pcl
          */
         boost::uint64_t
         addDataAtMaxDepth (const AlignedPointTVector& p, const bool skip_bb_check);
+
+        boost::uint64_t
+        addDataAtMaxDepth ( const sensor_msgs::PointCloud2& input_cloud, const bool skip_bb_check = false )
+        {
+          
+          //this assumes data is already in the correct bin
+          if(skip_bb_check == true)
+          {
+            
+            root_->m_tree_->incrementPointsInLOD (this->depth_, input_cloud.width * input_cloud.height );
+            payload_->insertRange (input_cloud);            
+            return (input_cloud.width * input_cloud.height);
+          }
+          else
+          {
+            PCL_ERROR ("[pcl::outofcore::octree_base_node] Not implemented\n");
+          }
+        }
+        
 
         /** \brief Randomly sample point data */
         void

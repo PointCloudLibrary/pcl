@@ -164,6 +164,12 @@ namespace pcl
          */
         boost::uint64_t
         addPointCloud (PointCloudConstPtr point_cloud);
+        
+        boost::uint64_t
+        addPointCloud (sensor_msgs::PointCloud2& input_cloud, bool skip_bb_check = false)
+        {
+          this->root_->addPointCloud ( input_cloud );
+        }
 
         boost::uint64_t
         addPointCloud_and_genLOD (PointCloudConstPtr point_cloud);

@@ -593,7 +593,6 @@ namespace pcl
         delete[] next_branch;
       }
     }
-
   }//namespace outofcore
 }//namespace pcl
 
