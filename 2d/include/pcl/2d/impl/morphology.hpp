@@ -166,7 +166,7 @@ pcl::pcl_2d::morphology::erosionGray  (ImageType &output, ImageType &kernel, Ima
     output[i].resize (width);
     for (int j = 0; j < width; j++)
     {
-    	min = -1;
+      min = -1;
       for (int k = 0; k < kernel_height; k++)
       {
         for (int l = 0; l < kernel_width; l++)
@@ -206,7 +206,7 @@ pcl::pcl_2d::morphology::dilationGray  (ImageType &output, ImageType &kernel, Im
     output[i].resize (width);
     for (int j = 0; j < width; j++)
     {
-    	max = -1;
+      max = -1;
       for (int k = 0; k < kernel_height; k++)
       {
         for (int l = 0; l < kernel_width; l++)

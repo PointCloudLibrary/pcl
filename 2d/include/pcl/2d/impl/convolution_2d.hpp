@@ -104,7 +104,7 @@ pcl::pcl_2d::convolution_2d::conv  (ImageType &output, ImageType &kernel, ImageT
 }
 
 void
-pcl::pcl_2d::convolution_2d::conv  (ImageType &output, ImageType &kernel, ImageType &input, const int boundary_option){
+pcl::pcl_2d::convolution_2d::conv  (ImageType &output, ImageType &kernel, ImageType &input, BOUNDARY_OPTIONS_ENUM boundary_option){
   int rows = input.size ();
   int cols = input[0].size ();
   int k_rows = kernel.size ();

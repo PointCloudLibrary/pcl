@@ -50,16 +50,44 @@ namespace pcl
     {
       private:
         convolution_2d *conv_2d;
-        /* edge tracing for Canny Edge detector. This is used in the hysteresis thresholding step.*/
+        /**
+         *
+         * \param rowOffset
+         * \param colOffset
+         * \param row
+         * \param col
+         * \param theta
+         * \param tLow
+         * \param tHigh
+         * \param G
+         * \param thet
+         *
+         * This function performs edge tracing for Canny Edge detector.
+         * This is used in the hysteresis thresholding step.
+         */
         void cannyTraceEdge  (int rowOffset, int colOffset, int row, int col, float theta, float tLow, float tHigh, ImageType &G, ImageType &thet);
       public:
         edge  ()
         {
           conv_2d = new convolution_2d ();
         }
+
+        /**
+         *
+         * \param output Output image passed by reference
+         * \param input Input image passed by reference
+         *
+         * This is a convenience function which calls
+         * canny(ImageType &output, ImageType &input, float t_low, float t_high)
+         * with parameters t_low = 20 and t_high = 50.
+         * These values were chosen because they seem to work well on a number of images which were used
+         * in our experiments.
+         */
         void canny  (ImageType &output, ImageType &input);
 
         /**
+         * \param output Output image passed by reference
+         * \param input Input image passed by reference
          * \param t_low lower threshold for edges
          * \param t_higher higher threshold for edges
          *
@@ -68,9 +96,11 @@ namespace pcl
          * and are located in a direction perpendicular to that strong edge.
          */
         void canny  (ImageType &output, ImageType &input, float t_low, float t_high);
+
         /**
          * \param Gx Returns the gradients in x direction.
-         * \param Gx Returns the gradients in y direction.
+         * \param Gy Returns the gradients in y direction.
+         * \param input Input image passed by reference
          *
          * Uses the Sobel kernel for edge detection.
          * This function does NOT include a smoothing step.
@@ -82,7 +112,8 @@ namespace pcl
         /**
          * \param G Returns the gradients magnitude.
          * \param thet Returns the gradients direction.
-         *
+         * \param input Input image passed by reference
+
          * Uses the Sobel kernel for edge detection.
          * This function does NOT include a smoothing step.
          * The image should be smoothed before using this function to reduce noise.
@@ -92,7 +123,8 @@ namespace pcl
 
         /**
          * \param Gx Returns the gradients in x direction.
-         * \param Gx Returns the gradients in y direction.
+         * \param Gy Returns the gradients in y direction.
+         * \param input Input image passed by reference
          *
          * Uses the Sobel kernel for edge detection.
          * This function does NOT include a smoothing step.
@@ -100,9 +132,11 @@ namespace pcl
          *
          */
         void prewittXY  (ImageType &Gx, ImageType &Gy, ImageType &input);
+
         /**
          * \param G Returns the gradients magnitude.
          * \param thet Returns the gradients direction.
+         * \param input Input image passed by reference
          *
          * Uses the Sobel kernel for edge detection.
          * This function does NOT include a smoothing step.
@@ -110,9 +144,11 @@ namespace pcl
          *
          */
         void prewittMagnitudeDirection  (ImageType &G, ImageType &thet, ImageType &input);
+
         /**
          * \param Gx Returns the gradients in x direction.
-         * \param Gx Returns the gradients in y direction.
+         * \param Gy Returns the gradients in y direction.
+         * \param input Input image passed by reference
          *
          * Uses the Sobel kernel for edge detection.
          * This function does NOT include a smoothing step.
@@ -121,9 +157,11 @@ namespace pcl
          */
 
         void robertsXY  (ImageType &Gx, ImageType &Gy, ImageType &input);
+
         /**
          * \param G Returns the gradients magnitude.
          * \param thet Returns the gradients direction.
+         * \param input Input image passed by reference
          *
          * Uses the Sobel kernel for edge detection.
          * This function does NOT include a smoothing step.
@@ -131,37 +169,55 @@ namespace pcl
          *
          */
         void robertsMagnitudeDirection  (ImageType &G, ImageType &thet, ImageType &input);
+
         /**
          * \param kernel_size The kernel is of size kernel_size x kernel_size.
          * \param sigma This is the variance of the Gaussian smoothing.
+         * \param input Input image passed by reference
          *
          * creates Laplcian of Gausian Kernel. This kernel is useful for detecting edges.     *
          */
         void LoGKernel  (ImageType &kernel, const int kernel_size, const float sigma);
+
         /**
          * \param kernel_size The kernel is of size kernel_size x kernel_size.
          * \param sigma This is the variance of the Gaussian smoothing.
+         * \param input Input image passed by reference
+         * \param output Output image passed by reference
          *
          * Uses the LoGKernel to apply LoG on the input image.
          * Zero crossings of the Laplacian operator applied on an image indicate edges.
          * Gaussian kernel is used to smoothen the image prior to the Laplacian. This is because Laplacian uses the
          * second order derivative of the image and hence, is very sensitive to noise.
          * The implementation is not two-step but rather applies the LoG kernel directly.
-         *
          */
         void LoG  (ImageType &output, const int kernel_size, const float sigma, ImageType &input);
+
         /**
-         * Applies the LoG kernel on the image with kernel_size 9 and variance 1.4
+         * \param output Output image passed by reference
+         * \param input Input image passed by reference
+         *
+         * This is a convenience function which calls LoG(output, 9, 1.4, input);
+         * These values were chosen because they seem to work well on a number of images which were used
+         * in our experiments.
          */
         void LoG  (ImageType &output, ImageType &input);
+
         /**
-         * image derivative in x direction using central differences
+         * \param output Output image passed by reference
+         * \param input Input image passed by reference
+         *
+         * Computes the image derivative in x direction using central differences
          */
-        void IxCentral  (ImageType &output, ImageType &input);
+        void ComputeDerivativeXCentral  (ImageType &output, ImageType &input);
+
         /**
-         * image derivative in y direction using central differences
+         * \param output Output image passed by reference
+         * \param input Input image passed by reference
+         *
+         * Computes the image derivative in y direction using central differences
          */
-        void IyCentral  (ImageType &output, ImageType &input);
+        void ComputeDerivativeYCentral  (ImageType &output, ImageType &input);
     };
   }
 }

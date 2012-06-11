@@ -45,51 +45,94 @@ namespace pcl
 {
   namespace pcl_2d
   {
+    /**
+     * This typedef is used to represent a single channel 2D image.     *
+     */
     typedef std::vector<std::vector< float> > ImageType;
     class convolution_2d
     {
 
       public:
+
         /**
          * Extra pixels are added to the input image so that convolution can be performed over the entire image.
          *
          * (kernel_height/2) rows are added before the first row and after the last row
-         * (kernel_column/2) columns are added before the first column and after the last column
+         * (kernel_width/2) columns are added before the first column and after the last column
          * border options define what values are set for these extra rows and columns
          *
-         * BOUNDARY_OPTION_CLAMP : the extra pixels are set to the pixel value of the boundary pixel
-         * BOUNDARY_OPTION_MIRROR : the input image is mirrored at the boundary.
-         * BOUNDARY_OPTION_ZERO_PADDING : the extra pixels are simply set to 0
+         * Assume that the three rows of right edge of the image looks like this:
+         *    .. 3 2 1
+         *    .. 6 5 4
+         *    .. 9 8 7
          *
-         * The input image is not actually extended in size. Instead, based on these options, the convolution is
-         * performed differently at the border pixels.
+         * BOUNDARY_OPTION_CLAMP : the extra pixels are set to the pixel value of the boundary pixel
+         *    This option makes it seem as if it were:
+         *    .. 3 2 1| 1 1 1 ..
+         *    .. 6 5 4| 4 4 4 ..
+         *    .. 9 8 7| 7 7 7 ..
+         *
+         * BOUNDARY_OPTION_MIRROR : the input image is mirrored at the boundary.
+         *    This option makes it seem as if it were:
+         *    .. 3 2 1| 1 2 3 ..
+         *    .. 6 5 4| 4 5 6 ..
+         *    .. 9 8 7| 7 8 9 ..
+         *
+         * BOUNDARY_OPTION_ZERO_PADDING : the extra pixels are simply set to 0
+         *    This option makes it seem as if it were:
+         *    .. 3 2 1| 0 0 0 ..
+         *    .. 6 5 4| 0 0 0 ..
+         *    .. 9 8 7| 0 0 0 ..
+         *
+         * Note that the input image is not actually extended in size. Instead, based on these options,
+         * the convolution is performed differently at the border pixels.
          */
-        static const int BOUNDARY_OPTION_CLAMP = 0;
-        static const int BOUNDARY_OPTION_MIRROR = 1;
-        static const int BOUNDARY_OPTION_ZERO_PADDING = 2;
+        typedef enum BOUNDARY_OPTIONS_ENUM{
+            BOUNDARY_OPTION_CLAMP,
+            BOUNDARY_OPTION_MIRROR,
+            BOUNDARY_OPTION_ZERO_PADDING
+        };
+//        static const int BOUNDARY_OPTION_CLAMP = 0;
+//        static const int BOUNDARY_OPTION_MIRROR = 1;
+//        static const int BOUNDARY_OPTION_ZERO_PADDING = 2;
 
         convolution_2d  ()
         {
 
         }
+
         /**
+         * \param output The output image passed by reference
+         * \param kernel The kernel for convolution
+         * \param input The input image passed by reference
+         *
          * Performs 2D convolution of the input image with the kernel.
          * Uses zero padding as the default boundary option.
          */
         void convolve  (ImageType &output, ImageType &kernel, ImageType &input);
+
         /**
+         * \param output The output image passed by reference
+         * \param kernel The kernel for convolution
+         * \param input The input image passed by reference
          * \param boundary_options Boundary options are available as ENUM's
+         *
          * Performs 2D convolution of the input image with the kernel.
          */
-        void convolve  (ImageType &output, ImageType &kernel, ImageType &input, const int boundary_options);
+        void convolve  (ImageType &output, ImageType &kernel, ImageType &input, BOUNDARY_OPTIONS_ENUM boundary_options);
+
         /**
          * \param kernel_size The kernel is of size kernel_size x kernel_size.
+         * \param kernel The output kernel passed by reference.
          * \param sigma This is the variance of the kernel.
          *
          * This function creates a normalized Gaussian kernel.
          */
         void gaussianKernel  (const int kernel_size, const float sigma, ImageType &kernel);
+
         /**
+         * \param output The output image passed by reference
+         * \param input The input image passed by reference
          * This function applies Gaussian smoothing to the input image.
          * A normalized Gaussian kernel of size kernel_size x kernel_size and variance sigma is used.         *
          */
