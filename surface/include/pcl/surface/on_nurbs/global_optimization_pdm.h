@@ -47,7 +47,7 @@ namespace pcl
   namespace on_nurbs
   {
 
-    /** \brief FittingSurface: Fitting and optimizing multiple B-Spline surfaces
+    /** \brief Fitting and optimizing multiple B-Spline surfaces
      *  to 3D point-clouds using point-distance-minimization in a single system of equations (global).
      *  Based on paper: TODO
      * \author Thomas Mörwald
@@ -127,13 +127,8 @@ namespace pcl
 
     protected:
 
-      /** \brief Initialisation of member variables */
-      void
-      init ();
-
       std::vector<NurbsDataSurface*> m_data;
       std::vector<ON_NurbsSurface*> m_nurbs;
-      std::vector<NurbsTools> m_ntools;
 
       /** \brief Assemble closing-constraint of boundaries using data.boundary for getting closest points */
       virtual void
@@ -179,11 +174,8 @@ namespace pcl
 
     protected:
       NurbsSolve m_solver;
-
       bool m_quiet;
-
       unsigned m_ncols, m_nrows;
-
       int im_max_steps;
       double im_accuracy;
 

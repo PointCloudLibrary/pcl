@@ -47,6 +47,11 @@ namespace pcl
   namespace on_nurbs
   {
 
+    /** \brief Fitting a 3D B-Spline curve to point-clouds using point-distance-minimization
+     *  and optionally asymmetric-distance-minimization
+     *  Based on paper: TODO
+     * \author Thomas Mörwald
+     * \ingroup surface     */
     class FittingCurve
     {
     public:
@@ -136,7 +141,7 @@ namespace pcl
       setQuiet (bool val)
       {
         m_quiet = val;
-        m_solver.setQuiet(val);
+        m_solver.setQuiet (val);
       }
 
     private:

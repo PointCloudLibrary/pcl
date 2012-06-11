@@ -47,7 +47,7 @@ namespace pcl
   namespace on_nurbs
   {
 
-    /** \brief FittingSurface: Fitting a cylindric (dim 0 clamped, dim 1 periodic) B-Spline surface
+    /** \brief Fitting a cylindric (dim 0 clamped, dim 1 periodic) B-Spline surface
      *  to 3D point-clouds using point-distance-minimization
      *  Based on paper: TODO
      * \author Thomas Mörwald

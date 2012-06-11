@@ -43,12 +43,14 @@
 #include <pcl/surface/openNURBS/opennurbs.h>
 #include <pcl/PolygonMesh.h>
 
+//#include <pcl/surface/on_nurbs/nurbs_object.h>
+
 namespace pcl
 {
   namespace on_nurbs
   {
 
-    /** \brief Triangulation functions for NURBS surfaces and curves */
+    /** \brief Functions for NURBS surface triangulation, trimming and curve sampling. */
     class Triangulation
     {
 
@@ -63,6 +65,14 @@ namespace pcl
                       float height, unsigned segX, unsigned segY);
 
     public:
+
+//      /** \brief Converts an NurbsObject to a pcl::PolygonMesh by sampling all NURBS according to the resolution specified.
+//       *  \param[in] object The NURBS object.
+//       *  \param[out] mesh The pcl::PolygonMesh
+//       *  \param[in] resolution mesh resolution (number of vertices along each of the two dimensions of the surface. */
+//      static void
+//      convertObject2PolygonMesh (const NurbsObject &object, PolygonMesh &mesh, unsigned resolution);
+
       /** \brief Converts an openNURBS NurbsSurface to a pcl::PolygonMesh by sampling the NURBS according to the resolution specified.
        *  \param[in] nurbs The openNURBS surface.
        *  \param[out] mesh The pcl::PolygonMesh

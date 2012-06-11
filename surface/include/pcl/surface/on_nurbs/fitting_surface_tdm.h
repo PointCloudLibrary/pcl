@@ -44,7 +44,7 @@ namespace pcl
 {
   namespace on_nurbs
   {
-    /** \brief FittingSurface: Fitting a B-Spline surface to 3D point-clouds using tangent-distance-minimization
+    /** \brief Fitting a B-Spline surface to 3D point-clouds using tangent-distance-minimization
      *  Based on paper: TODO
      * \author Thomas Mörwald
      * \ingroup surface     */

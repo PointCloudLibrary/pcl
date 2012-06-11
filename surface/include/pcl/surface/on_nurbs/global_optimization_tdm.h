@@ -45,7 +45,7 @@ namespace pcl
   namespace on_nurbs
   {
 
-    /** \brief FittingSurface: Fitting and optimizing multiple B-Spline surfaces
+    /** \brief Fitting and optimizing multiple B-Spline surfaces
      *  to 3D point-clouds using tangent-distance-minimization (TDM) in a single system of equations (global).
      *  Based on paper: TODO
      * \author Thomas Mörwald

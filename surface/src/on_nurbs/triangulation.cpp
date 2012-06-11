@@ -90,13 +90,56 @@ Triangulation::createVertices (pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud, float
   }
 }
 
+//void
+//Triangulation::convertObject2PolygonMesh (const NurbsObject &object, PolygonMesh &mesh, unsigned resolution)
+//{
+//  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+//
+//  for (unsigned s = 0; s < object.size (); s++)
+//  {
+//    ON_NurbsSurface nurbs = object.getSurface (s);
+//
+//    if (nurbs.m_knot_capacity[0] <= 1 || nurbs.m_knot_capacity[1] <= 1)
+//    {
+//      printf ("[Triangulation::convertObject2PolygonMesh] Warning surface %d: ON knot vector empty.\n", s);
+//      continue;
+//    }
+//
+//    double x0 = nurbs.Knot (0, 0);
+//    double x1 = nurbs.Knot (0, nurbs.m_knot_capacity[0] - 1);
+//    double w = x1 - x0;
+//    double y0 = nurbs.Knot (1, 0);
+//    double y1 = nurbs.Knot (1, nurbs.m_knot_capacity[1] - 1);
+//    double h = y1 - y0;
+//
+//    unsigned vidx = cloud->size ();
+//    createVertices (cloud, x0, y0, 0.0, w, h, resolution, resolution);
+//    createIndices (mesh.polygons, vidx, resolution, resolution);
+//
+//    for (unsigned i = vidx; i < cloud->size (); i++)
+//    {
+//      pcl::PointXYZ &v = cloud->at (i);
+//
+//      double point[9];
+//      nurbs.Evaluate (v.x, v.y, 1, 3, point);
+//
+//      v.x = point[0];
+//      v.y = point[1];
+//      v.z = point[2];
+//    }
+//
+//  }
+//
+//  toROSMsg (*cloud, mesh.cloud);
+//}
+
 void
 Triangulation::convertSurface2PolygonMesh (const ON_NurbsSurface &nurbs, PolygonMesh &mesh, unsigned resolution)
 {
   // copy knots
   if (nurbs.m_knot_capacity[0] <= 1 || nurbs.m_knot_capacity[1] <= 1)
   {
-    printf ("[Triangulation::convert] Warning: ON knot vector empty.\n");
+    printf ("[Triangulation::convertSurface2PolygonMesh] Warning: ON knot vector empty.\n");
     return;
   }
 
@@ -108,6 +151,7 @@ Triangulation::convertSurface2PolygonMesh (const ON_NurbsSurface &nurbs, Polygon
   double h = y1 - y0;
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+  mesh.polygons.clear();
   createVertices (cloud, x0, y0, 0.0, w, h, resolution, resolution);
   createIndices (mesh.polygons, 0, resolution, resolution);
 
@@ -133,7 +177,7 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
   // copy knots
   if (nurbs.m_knot_capacity[0] <= 1 || nurbs.m_knot_capacity[1] <= 1)
   {
-    printf ("[Triangulation::convert] Warning: ON knot vector empty.\n");
+    printf ("[Triangulation::convertTrimmedSurface2PolygonMesh] Warning: ON knot vector empty.\n");
     return;
   }
 
@@ -227,7 +271,7 @@ Triangulation::convertSurface2Vertices (const ON_NurbsSurface &nurbs, pcl::Point
   // copy knots
   if (nurbs.m_knot_capacity[0] <= 1 || nurbs.m_knot_capacity[1] <= 1)
   {
-    printf ("[Triangulation::convert] Warning: ON knot vector empty.\n");
+    printf ("[Triangulation::convertSurface2Vertices] Warning: ON knot vector empty.\n");
     return;
   }
 
@@ -264,7 +308,7 @@ Triangulation::convertCurve2PointCloud (const ON_NurbsCurve &nurbs, pcl::PointCl
   // copy knots
   if (nurbs.m_knot_capacity <= 1)
   {
-    printf ("[Triangulation::convert] Warning: ON knot vector empty.\n");
+    printf ("[Triangulation::convertCurve2PointCloud] Warning: ON knot vector empty.\n");
     return;
   }
 
@@ -309,7 +353,7 @@ Triangulation::convertCurve2PointCloud (const ON_NurbsCurve &curve, const ON_Nur
   // copy knots
   if (curve.m_knot_capacity <= 1)
   {
-    printf ("[Triangulation::Convert] Warning: ON knot vector empty.\n");
+    printf ("[Triangulation::convertCurve2PointCloud] Warning: ON knot vector empty.\n");
     return;
   }
 

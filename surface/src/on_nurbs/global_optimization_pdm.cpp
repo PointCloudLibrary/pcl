@@ -54,7 +54,10 @@ GlobalOptimization::GlobalOptimization (const std::vector<NurbsDataSurface*> &da
   m_data = data;
   m_nurbs = nurbs;
 
-  init ();
+  im_max_steps = 100;
+  im_accuracy = 1e-5;
+
+  m_quiet = true;
 }
 
 void
@@ -234,15 +237,6 @@ GlobalOptimization::refine (unsigned id, int dim)
 }
 
 void
-GlobalOptimization::init ()
-{
-  im_max_steps = 100;
-  im_accuracy = 1e-5;
-
-  m_quiet = true;
-}
-
-void
 GlobalOptimization::assembleCommonBoundaries (unsigned id1, double weight, unsigned &row)
 {
   if (weight <= 0.0)
@@ -409,8 +403,8 @@ GlobalOptimization::assembleInteriorPoints (unsigned id, int ncps, double weight
     }
     else
     {
-      params = FittingSurface::findClosestElementMidPoint (*m_nurbs[id], pcp);
-      params = FittingSurface::inverseMapping (*m_nurbs[id], pcp, params, error, pt, tu, tv, im_max_steps, im_accuracy);
+      params = FittingSurface::findClosestElementMidPoint (*nurbs, pcp);
+      params = FittingSurface::inverseMapping (*nurbs, pcp, params, error, pt, tu, tv, im_max_steps, im_accuracy);
       data->interior_param.push_back (params);
     }
     data->interior_error.push_back (error);

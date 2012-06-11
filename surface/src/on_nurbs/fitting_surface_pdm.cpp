@@ -240,61 +240,30 @@ FittingSurface::setInvMapParams (unsigned in_max_steps, double in_accuracy)
 std::vector<double>
 FittingSurface::getElementVector (const ON_NurbsSurface &nurbs, int dim) // !
 {
-
   std::vector<double> result;
 
-  if (dim == 0)
+  int idx_min = 0;
+  int idx_max = nurbs.KnotCount (dim) - 1;
+  if (nurbs.IsClosed (dim))
   {
-    int idx_min = 0;
-    int idx_max = nurbs.KnotCount (0) - 1;
-    if (nurbs.IsClosed (0))
-    {
-      idx_min = nurbs.Order (0) - 2;
-      idx_max = nurbs.KnotCount (0) - nurbs.Order (0) + 1;
-    }
+    idx_min = nurbs.Order (dim) - 2;
+    idx_max = nurbs.KnotCount (dim) - nurbs.Order (dim) + 1;
+  }
 
-    const double* knotsU = nurbs.Knot (0);
+  const double* knots = nurbs.Knot (dim);
 
-    result.push_back (knotsU[idx_min]);
+  result.push_back (knots[idx_min]);
 
-    //for(int E=(m_nurbs.Order(0)-2); E<(m_nurbs.KnotCount(0)-m_nurbs.Order(0)+2); E++) {
-    for (int E = idx_min + 1; E <= idx_max; E++)
-    {
+  //for(int E=(m_nurbs.Order(0)-2); E<(m_nurbs.KnotCount(0)-m_nurbs.Order(0)+2); E++) {
+  for (int E = idx_min + 1; E <= idx_max; E++)
+  {
 
-      if (knotsU[E] != knotsU[E - 1]) // do not count double knots
-        result.push_back (knotsU[E]);
-
-    }
+    if (knots[E] != knots[E - 1]) // do not count double knots
+      result.push_back (knots[E]);
 
   }
-  else if (dim == 1)
-  {
-    int idx_min = 0;
-    int idx_max = nurbs.KnotCount (1) - 1;
-    if (nurbs.IsClosed (1))
-    {
-      idx_min = nurbs.Order (1) - 2;
-      idx_max = nurbs.KnotCount (1) - nurbs.Order (1) + 1;
-    }
-    const double* knotsV = nurbs.Knot (1);
-
-    result.push_back (knotsV[idx_min]);
-
-    //for(int F=(m_nurbs.Order(1)-2); F<(m_nurbs.KnotCount(1)-m_nurbs.Order(1)+2); F++) {
-    for (int F = idx_min + 1; F <= idx_max; F++)
-    {
-
-      if (knotsV[F] != knotsV[F - 1])
-        result.push_back (knotsV[F]);
-
-    }
-
-  }
-  else
-    printf ("[FittingSurface::getElementVector] Error: Index exceeds problem dimensions!\n");
 
   return result;
-
 }
 
 void
@@ -490,12 +459,13 @@ FittingSurface::initNurbsPCABoundingBox (int order, NurbsDataSurface *m_data, Ei
     flip = true;
 
   eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
+  Eigen::Matrix3d eigenvectors_inv = eigenvectors.inverse ();
 
   Eigen::Vector3d v_max (0.0, 0.0, 0.0);
   Eigen::Vector3d v_min (DBL_MAX, DBL_MAX, DBL_MAX);
   for (unsigned i = 0; i < s; i++)
   {
-    Eigen::Vector3d p = eigenvectors.inverse () * (m_data->interior[i] - mean);
+    Eigen::Vector3d p = eigenvectors_inv * (m_data->interior[i] - mean);
     m_data->interior_param.push_back (Eigen::Vector2d (p (0), p (1)));
 
     if (p (0) > v_max (0))

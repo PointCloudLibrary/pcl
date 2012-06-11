@@ -47,7 +47,7 @@ namespace pcl
   namespace on_nurbs
   {
 
-    /** \brief ClosingBoundary: Functions for finding the common boundary of adjacent NURBS patches
+    /** \brief Functions for finding the common boundary of adjacent NURBS patches
      * \author Thomas Mörwald
      * \ingroup surface     */
     class ClosingBoundary

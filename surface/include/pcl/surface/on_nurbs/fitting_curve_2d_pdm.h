@@ -47,7 +47,7 @@ namespace pcl
   namespace on_nurbs
   {
 
-    /** \brief FittingCurve2d: Fitting a 2D B-Spline curve to 2D point-clouds using point-distance-minimization
+    /** \brief Fitting a 2D B-Spline curve to 2D point-clouds using point-distance-minimization
      *  and optionally asymmetric-distance-minimization
      *  Based on paper: TODO
      * \author Thomas Mörwald
