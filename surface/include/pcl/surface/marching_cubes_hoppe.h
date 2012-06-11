@@ -41,7 +41,13 @@
 
 namespace pcl
 {
-
+   /** \brief The marching cubes surface reconstruction algorithm, using a signed distance function based on the distance
+     * from tangent planes, proposed by Hoppe et. al. in:
+     * Hoppe H., DeRose T., Duchamp T., MC-Donald J., Stuetzle W., "Surface reconstruction from unorganized points",
+     * SIGGRAPH '92
+     * \author Alexandru E. Ichim
+     * \ingroup surface
+     */
   template <typename PointNT>
   class MarchingCubesHoppe : public MarchingCubes<PointNT>
   {

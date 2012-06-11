@@ -41,7 +41,15 @@
 
 namespace pcl
 {
-
+  /** \brief The marching cubes surface reconstruction algorithm, using a signed distance function based on radial
+    * basis functions. Partially based on:
+    * Carr J.C., Beatson R.K., Cherrie J.B., Mitchell T.J., Fright W.R., McCallum B.C. and Evans T.R.,
+    * "Reconstruction and representation of 3D objects with radial basis functions"
+    * SIGGRAPH '01
+    *
+    * \author Alexandru E. Ichim
+    * \ingroup surface
+    */
   template <typename PointNT>
   class MarchingCubesRBF : public MarchingCubes<PointNT>
   {

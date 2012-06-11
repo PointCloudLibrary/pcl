@@ -350,8 +350,13 @@ namespace pcl
   };
 
 
-  /** \brief The marching cubes surface reconstruction algorithm.
-    * \author Gregory Long
+  /** \brief The marching cubes surface reconstruction algorithm. This is an abstract class that takes a grid and
+    * extracts the isosurface as a mesh, based on the original marching cubes paper:
+    *
+    * Lorensen W.E., Cline H.E., "Marching cubes: A high resolution 3d surface construction algorithm",
+    * SIGGRAPH '87
+    *
+    * \author Alexandru E. Ichim
     * \ingroup surface
     */
   template <typename PointNT>
