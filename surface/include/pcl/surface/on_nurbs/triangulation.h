@@ -54,7 +54,7 @@ namespace pcl
     class Triangulation
     {
 
-    private:
+    protected:
       /** \brief Create indices for triangulation. */
       static void
       createIndices (std::vector<pcl::Vertices> &vertices, unsigned vidx, unsigned segX, unsigned segY);
