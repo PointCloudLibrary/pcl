@@ -302,13 +302,6 @@ main (int argc, char **argv)
     validArguments = true;
   }
 
-  if (pcl::console::find_argument (argc, argv, "-x")>0) 
-  {
-    bEnDecode = true;
-    bServerFileMode = false;
-    validArguments = true;
-  }
-
   if (pcl::console::find_argument (argc, argv, "-d")>0) 
   {
     bEnDecode = false;
