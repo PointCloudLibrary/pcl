@@ -2627,8 +2627,8 @@ bool ON_Extrusion::GetBrepFormComponentIndex(
   ON_COMPONENT_INDEX& brep_ci
   ) const
 {
-  const ON_Brep* null_brep_pointer = 0;
-  return GetBrepFormComponentIndex(extrusion_ci,ON_UNSET_VALUE,*null_brep_pointer,brep_ci);
+  const ON_Brep unused_brep;
+  return GetBrepFormComponentIndex(extrusion_ci,ON_UNSET_VALUE,unused_brep,brep_ci);
 }
 
 static bool GetBrepFormFaceIndex(
