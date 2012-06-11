@@ -6,6 +6,8 @@
 #include <pcl/apps/cloud_composer/project_model.h>
 #include <pcl/apps/cloud_composer/cloud_viewer.h>
 #include <pcl/apps/cloud_composer/cloud_view.h>
+#include <pcl/apps/cloud_composer/cloud_item.h>
+#include <pcl/apps/cloud_composer/item_inspector.h>
 
 /////////////////////////////////////////////////////////////
 pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
@@ -28,6 +30,9 @@ pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
   qRegisterMetaType<ProjectModel> ("ProjectModel");
   qRegisterMetaType<CloudView> ("CloudView");
   
+  //Auto connect signals and slots
+ // QMetaObject::connectSlotsByName(this);
+  
   last_directory_ = QDir (".");
   current_model_ = 0;
   
@@ -46,27 +51,14 @@ pcl::cloud_composer::ComposerMainWindow::~ComposerMainWindow ()
 void
 pcl::cloud_composer::ComposerMainWindow::connectFileActionsToSlots ()
 {
-  connect (this->actionNewProject, SIGNAL (triggered ()),
-           this, SLOT (slotNewProject ()));
-  connect (this->actionOpenCloudAsNewProject, SIGNAL (triggered ()),
-           this, SLOT (slotOpenCloudAsNewProject ()));
-  connect (this->actionOpenProject, SIGNAL (triggered ()),
-           this, SLOT (slotOpenProject ()));
-  connect (this->actionSaveProject, SIGNAL (triggered ()),
-           this, SLOT (slotSaveProject ()));
-  connect (this->actionSaveProjectAs, SIGNAL (triggered ()),
-           this, SLOT (slotSaveProjectAs ()));
-  connect (this->actionExit, SIGNAL (triggered ()),
-           this, SLOT (slotExit ()));
+
+  
 }
 
 void
 pcl::cloud_composer::ComposerMainWindow::connectEditActionsToSlots ()
 {
-  connect (this->actionInsertFromFile, SIGNAL (triggered ()),
-           this, SLOT (slotInsertFromFile ()));
-  connect (this->actionInsertFromOpenNiSource, SIGNAL (triggered ()),
-           this, SLOT (slotInsertFromOpenNiSource ()));
+
 }
 
 void
@@ -97,13 +89,15 @@ pcl::cloud_composer::ComposerMainWindow::setCurrentModel (ProjectModel* model)
   cloud_browser_->setModel (current_model_);
   cloud_browser_->setSelectionModel (current_model_->getSelectionModel ());
   cloud_viewer_->setModel (current_model_);
+  item_inspector_->setModel (current_model_);
+  item_inspector_->setSelectionModel (current_model_->getSelectionModel ());
 
 }
 
 
 ///////// FILE MENU SLOTS ///////////
 void
-pcl::cloud_composer::ComposerMainWindow::slotNewProject (QString name)
+pcl::cloud_composer::ComposerMainWindow::on_actionNewProject_triggered (QString name)
 {
   qDebug () << "Creating New Project";
   ProjectModel* newProjectModel = new ProjectModel (this);
@@ -124,39 +118,40 @@ pcl::cloud_composer::ComposerMainWindow::slotNewProject (QString name)
 
 
 void
-pcl::cloud_composer::ComposerMainWindow::slotOpenCloudAsNewProject ()
+pcl::cloud_composer::ComposerMainWindow::on_actionOpenCloudAsNewProject_triggered ()
 {
-
+  qDebug () << "Opening cloud as new project";
 }
 
 void
-pcl::cloud_composer::ComposerMainWindow::slotOpenProject ()
+pcl::cloud_composer::ComposerMainWindow::on_actionOpenProject_triggered ()
 {
-
+  qDebug () << "Opening Project";
 }
 
 void
-pcl::cloud_composer::ComposerMainWindow::slotSaveProject ()
+pcl::cloud_composer::ComposerMainWindow::on_actionSaveProject_triggered ()
 {
-
+  qDebug () << "Saving Project";
 }
 
 void
-pcl::cloud_composer::ComposerMainWindow::slotSaveProjectAs ()
+pcl::cloud_composer::ComposerMainWindow::on_actionSaveProjectAs_triggered ()
 {
-
+  qDebug () << "Saving Project As...";
 }
 
 void
-pcl::cloud_composer::ComposerMainWindow::slotExit ()
+pcl::cloud_composer::ComposerMainWindow::on_actionExit_triggered ()
 {
-
+  qDebug () << "Exiting...";
 }
 
 ///////// EDIT MENU SLOTS ////////////
 void
-pcl::cloud_composer::ComposerMainWindow::slotInsertFromFile ()
+pcl::cloud_composer::ComposerMainWindow::on_actionInsertFromFile_triggered ()
 {
+  qDebug () << "Inserting cloud from file...";
   QString filename = QFileDialog::getOpenFileName (0,tr ("Select cloud to open"), last_directory_.absolutePath (), tr ("PointCloud(*.pcd)"));
   if ( !filename.isNull ())
   {
@@ -174,9 +169,9 @@ pcl::cloud_composer::ComposerMainWindow::slotInsertFromFile ()
 }
 
 void
-pcl::cloud_composer::ComposerMainWindow::slotInsertFromOpenNiSource ()
+pcl::cloud_composer::ComposerMainWindow::on_actionInsertFromOpenNiSource_triggered ()
 {
-
+  qDebug () << "Inserting cloud from OpenNi Source...";
 }
 
 

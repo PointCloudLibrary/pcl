@@ -35,72 +35,68 @@
  *
  */
 
-#ifndef PROJECT_MODEL_H_
-#define PROJECT_MODEL_H_
+#ifndef CLOUD_ITEM_H_
+#define CLOUD_ITEM_H_
 
-#include <QStandardItemModel>
 #include <QStandardItem>
-#include <QItemSelectionModel>
-#include <QModelIndex>
-#include <QVariant>
+#include <QWidget>
+#include <QItemDelegate>
 
-#include <vtkSmartPointer.h>
-#include <vtkCamera.h>
-
-#include <pcl/io/pcd_io.h>
-#include <pcl/visualization/pcl_visualizer.h>
-
-enum ITEM_TYPES { 
-  CLOUD_ITEM = QStandardItem::UserType
+#include <pcl/apps/cloud_composer/project_model.h>
+//Define user roles
+#ifndef CLOUD_USER_ROLES
+#define CLOUD_USER_ROLES
+enum CLOUD_ITEM_ROLES { 
+  PROPERTIES = Qt::UserRole+1,
+  CLOUD ,
+  GEOMETRY, 
+  COLOR,
+  ORIGIN,
+  ORIENTATION
 };
+#endif
 
-class QItemSelectionModel;
+
+//Typedefs to make things sane
+typedef pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
+typedef pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
 
 namespace pcl
 {
   namespace cloud_composer
   {
-
-    class ProjectModel : public QStandardItemModel
+    
+    class CloudItem : public QStandardItem
     {
-        Q_OBJECT
-
       public:
-        ProjectModel (QObject *parent = 0);
-        ProjectModel (const ProjectModel& to_copy);
-        virtual ~ProjectModel ();
+        CloudItem (const QString name,
+                   const sensor_msgs::PointCloud2::Ptr cloud_ptr, 
+                   const Eigen::Vector4f origin,
+                   const Eigen::Quaternionf orientation);
+        CloudItem (const CloudItem& to_copy);
+        virtual ~CloudItem ();
         
-        ProjectModel (QString project_name, QObject *parent = 0);
-        
-        inline const QString
-        getName ()
-        { 
-          return horizontalHeaderItem (0)->text ();
-        }
-        
-        /** \brief Sets the name of the project using the horizontalHeaderItem         */
-        void 
-        setName (QString new_name);        
-        /** \brief Returns the selection model which is used for this project */
-        inline QItemSelectionModel* const
-        getSelectionModel()
-        {
-          return selection_model_;
-        }
-        /** \brief Loads from file and inserts a new pointcloud into the model   */
-        void 
-        insertNewCloudFromFile (const QString filename);
+        inline int const
+        type () { return CLOUD_ITEM; }
 
       private:
-        QItemSelectionModel* selection_model_;
-        vtkSmartPointer<vtkCamera> camera_; 
-        QMap <QString, int> name_to_type_map_;
+        sensor_msgs::PointCloud2::Ptr cloud_ptr_;
+        ColorHandler::ConstPtr color_handler_;
+        GeometryHandler::ConstPtr geometry_handler_;
+        Eigen::Vector4f origin_;
+        Eigen::Quaternionf orientation_;
+
     };
+    
+    
+    
   }
 }
 
-Q_DECLARE_METATYPE (pcl::cloud_composer::ProjectModel);
-
-
-#endif //PROJECT_MODEL_H
-
+//Add PointCloud types to QT MetaType System
+Q_DECLARE_METATYPE (sensor_msgs::PointCloud2::Ptr);
+Q_DECLARE_METATYPE (GeometryHandler::ConstPtr);
+Q_DECLARE_METATYPE (ColorHandler::ConstPtr);
+Q_DECLARE_METATYPE (Eigen::Vector4f);
+Q_DECLARE_METATYPE (Eigen::Quaternionf);
+#endif //CLOUD_ITEM_H_

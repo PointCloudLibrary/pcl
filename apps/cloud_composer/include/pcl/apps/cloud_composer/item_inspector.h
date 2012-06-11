@@ -38,17 +38,21 @@
 #ifndef ITEM_INSPECTOR_H_
 #define ITEM_INSPECTOR_H_
 
-#include <QWidget>
+#include <QTableView>
 
 #include <pcl/apps/cloud_composer/project_model.h>
 
-
+class QItemSelectionModel;
 
 namespace pcl
 {
   namespace cloud_composer
   {
-    class ItemInspector : public QWidget
+    /** \brief View class for displaying properties of an item
+     * \author Jeremie Papon
+     * \ingroup cloud_composer
+     */
+    class ItemInspector : public QTableView
     {
       Q_OBJECT
       public:
@@ -56,10 +60,23 @@ namespace pcl
         virtual ~ItemInspector();
       
       public slots:
-        void 
+       /* void
         setModel (ProjectModel* new_model);
+        void 
+        setSelectionModel (const QItemSelectionModel* new_selection_model);
+        void 
+        selectionChanged (const QModelIndex &current, const QModelIndex &previous);
+        void 
+        itemChanged (QStandardItem* item);*/
+        /** \brief Refreshes the data shown in the current displayed view widget */
+        void
+        updateView ();
+        
       private:
-        ProjectModel* current_model_;
+        void createItemWidgets ();
+        ProjectModel *current_model_;
+        const QItemSelectionModel *current_selection_model_;
+        QMap <QString, QWidget*> itemtype_widget_map;
     };
   }
 }

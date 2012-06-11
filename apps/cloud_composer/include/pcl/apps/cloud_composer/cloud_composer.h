@@ -85,23 +85,23 @@ namespace pcl
       public slots:
       //Slots for File Menu Actions
         void
-        slotNewProject (QString name = "unsaved project");
+        on_actionNewProject_triggered (QString name = "unsaved project");
         void
-        slotOpenCloudAsNewProject ();
+        on_actionOpenCloudAsNewProject_triggered ();
         void
-        slotOpenProject ();
+        on_actionOpenProject_triggered ();
         void
-        slotSaveProject ();
+        on_actionSaveProject_triggered ();
         void
-        slotSaveProjectAs ();
+        on_actionSaveProjectAs_triggered ();
         void
-        slotExit ();
+        on_actionExit_triggered ();
 
         //Slots for Edit Menu Actions
         void
-        slotInsertFromFile ();
+        on_actionInsertFromFile_triggered ();
         void
-        slotInsertFromOpenNiSource ();
+        on_actionInsertFromOpenNiSource_triggered ();
 
         void 
         setCurrentModel (ProjectModel* model);

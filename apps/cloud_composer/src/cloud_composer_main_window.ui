@@ -150,7 +150,7 @@
    <widget class="QWidget" name="dockWidgetContentsItemInspector">
     <layout class="QGridLayout" name="gridLayout_3">
      <item row="0" column="0">
-      <widget class="QListView" name="item_inspector_"/>
+      <widget class="pcl::cloud_composer::ItemInspector" name="item_inspector_"/>
      </item>
     </layout>
    </widget>
@@ -385,6 +385,12 @@
    <class>pcl::cloud_composer::CloudViewer</class>
    <extends>QTabWidget</extends>
    <header>pcl/apps/cloud_composer/cloud_viewer.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>pcl::cloud_composer::ItemInspector</class>
+   <extends>QTableView</extends>
+   <header>pcl/apps/cloud_composer/item_inspector.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
