@@ -38,9 +38,8 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_io.h>
-//#include <pcl/surface/marching_cubes_greedy.h>
-//#include <pcl/surface/marching_cubes_greedy_dot.h>
 #include <pcl/surface/marching_cubes_hoppe.h>
+#include <pcl/surface/marching_cubes_rbf.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
@@ -88,14 +87,17 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, PolygonMesh &output,
   PointCloud<PointNormal>::Ptr xyz_cloud (new pcl::PointCloud<PointNormal> ());
   fromROSMsg (*input, *xyz_cloud);
 
-  boost::shared_ptr<MarchingCubesHoppe<PointNormal> > marching_cubes (new MarchingCubesHoppe<PointNormal> ());
+//  boost::shared_ptr<MarchingCubesHoppe<PointNormal> > marching_cubes (new MarchingCubesHoppe<PointNormal> ());
+  boost::shared_ptr<MarchingCubesRBF<PointNormal> > marching_cubes (new MarchingCubesRBF<PointNormal> ());
 //  if (use_dot)
 //    marching_cubes.reset (new MarchingCubesGreedyDot<PointNormal> ());
 //  else
 //    marching_cubes.reset (new MarchingCubesGreedy<PointNormal> ());
 
 //  marching_cubes->setLeafSize (leaf_size);
-  marching_cubes->setGridResolution (100, 100, 100);
+  marching_cubes->setGridResolution (50, 50, 50);
+  marching_cubes->setOffSurfaceDisplacement (0.1f);
+  iso_level = 0;
   marching_cubes->setIsoLevel (iso_level);
   marching_cubes->setInputCloud (xyz_cloud);
 
@@ -116,6 +118,8 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, PolygonMesh &output,
           p.y = marching_cubes->min_p_[1] + (marching_cubes->max_p_[1] - marching_cubes->min_p_[1]) / marching_cubes->res_y_ * y;
           p.z = marching_cubes->min_p_[2] + (marching_cubes->max_p_[2] - marching_cubes->min_p_[2]) / marching_cubes->res_z_ * z;
           p.intensity = marching_cubes->grid_[x * marching_cubes->res_y_*marching_cubes->res_z_ + y *marching_cubes->res_z_ + z];
+          if (p.intensity < 0) p.intensity = -5;
+          else p.intensity = 5;
           dist_cloud.push_back (p);
         }
 
