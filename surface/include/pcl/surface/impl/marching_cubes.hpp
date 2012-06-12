@@ -287,8 +287,6 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
     return;
   }
 
-  printf ("Marching cubes using the PolygonMesh performReconstruction method\n");
-
   // Create grid
   grid_ = std::vector<float> (res_x_*res_y_*res_z_, 0.0f);
 
