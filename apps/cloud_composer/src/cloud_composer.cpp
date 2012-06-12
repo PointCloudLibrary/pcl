@@ -89,8 +89,7 @@ pcl::cloud_composer::ComposerMainWindow::setCurrentModel (ProjectModel* model)
   cloud_browser_->setModel (current_model_);
   cloud_browser_->setSelectionModel (current_model_->getSelectionModel ());
   cloud_viewer_->setModel (current_model_);
-  item_inspector_->setModel (current_model_);
-  item_inspector_->setSelectionModel (current_model_->getSelectionModel ());
+  item_inspector_->setProjectAndSelectionModels (current_model_, current_model_->getSelectionModel ());
 
 }
 

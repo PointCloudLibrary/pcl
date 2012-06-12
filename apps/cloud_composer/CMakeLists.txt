@@ -54,6 +54,7 @@ if(build)
              include/pcl/apps/${SUBSYS_NAME}/cloud_viewer.h
              include/pcl/apps/${SUBSYS_NAME}/cloud_view.h
              include/pcl/apps/${SUBSYS_NAME}/item_inspector.h
+             include/pcl/apps/${SUBSYS_NAME}/cloud_composer_item.h
              include/pcl/apps/${SUBSYS_NAME}/cloud_item.h)
     set(srcs src/main.cpp 
              src/cloud_composer.cpp
@@ -61,6 +62,7 @@ if(build)
              src/cloud_viewer.cpp
              src/cloud_view.cpp
              src/item_inspector.cpp
+             src/cloud_composer_item.cpp
              src/cloud_item.cpp)
     set(uis src/cloud_composer_main_window.ui)
     set(resources resources/resources.qrc)

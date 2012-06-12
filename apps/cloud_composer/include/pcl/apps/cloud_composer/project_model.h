@@ -50,9 +50,8 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
-enum ITEM_TYPES { 
-  CLOUD_ITEM = QStandardItem::UserType
-};
+
+
 
 class QItemSelectionModel;
 
@@ -90,6 +89,7 @@ namespace pcl
         /** \brief Loads from file and inserts a new pointcloud into the model   */
         void 
         insertNewCloudFromFile (const QString filename);
+      public slots:
 
       private:
         QItemSelectionModel* selection_model_;

@@ -35,70 +35,76 @@
  *
  */
 
-#ifndef CLOUD_ITEM_H_
-#define CLOUD_ITEM_H_
+#ifndef CLOUD_COMPOSER_ITEM_H_
+#define CLOUD_COMPOSER_ITEM_H_
 
-#include <QStandardItemModel>
-#include <QWidget>
-#include <QItemDelegate>
+#include <QStandardItem>
 
-#include <pcl/apps/cloud_composer/project_model.h>
-#include <pcl/apps/cloud_composer/cloud_composer_item.h>
-//Define user roles
-#ifndef CLOUD_USER_ROLES
-#define CLOUD_USER_ROLES
-enum CLOUD_ITEM_ROLES { 
-  CLOUD = Qt::UserRole + 1,
-  GEOMETRY, 
-  COLOR,
-  ORIGIN,
-  ORIENTATION
+enum ITEM_ROLES { 
+  PROPERTIES = Qt::UserRole
 };
-#endif
 
-
-//Typedefs to make things sane
-typedef pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
-typedef pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
+//This currently isn't used for anything, it will probably be removed
+enum ITEM_TYPES { 
+  CLOUD_COMPOSER_ITEM = QStandardItem::UserType,
+  CLOUD_ITEM
+};
 
 namespace pcl
 {
   namespace cloud_composer
   {
     
-    class CloudItem : public CloudComposerItem
+    class CloudComposerItem : public QStandardItem
     {
       public:
-        CloudItem (const QString name,
-                   const sensor_msgs::PointCloud2::Ptr cloud_ptr, 
-                   const Eigen::Vector4f origin,
-                   const Eigen::Quaternionf orientation);
-        CloudItem (const CloudItem& to_copy);
-        virtual ~CloudItem ();
+        CloudComposerItem (const QString name);
+        CloudComposerItem (const CloudComposerItem& to_copy);
+        virtual ~CloudComposerItem ();
         
         inline int const
-        type () { return CLOUD_ITEM; }
+        type () { return CLOUD_COMPOSER_ITEM; }
 
-      private:
+      protected:
+        /** \brief Helper function for adding a new property */
+        void
+        addProperty (const QString prop_name, QVariant value, QStandardItem* parent = 0);
+        
 
-        sensor_msgs::PointCloud2::Ptr cloud_ptr_;
-        ColorHandler::ConstPtr color_handler_;
-        GeometryHandler::ConstPtr geometry_handler_;
-        Eigen::Vector4f origin_;
-        Eigen::Quaternionf orientation_;
 
+        /** \brief Model for storing the properties of the item   */
+        QStandardItemModel* properties_;
         
     };
     
-    
+    /** \brief Templated helper class for converting QVariant to/from pointer classes   */
+    template <class T> class VPtr
+    {
+      public:
+        static T* asPtr (QVariant v)
+        {
+          return (T *) v.value<void *> ();
+        }
+
+        static QVariant asQVariant (T* ptr)
+        {
+          return qVariantFromValue ( (void *) ptr);
+        }
+    };
     
   }
 }
 
-//Add PointCloud types to QT MetaType System
-Q_DECLARE_METATYPE (sensor_msgs::PointCloud2::Ptr);
-Q_DECLARE_METATYPE (GeometryHandler::ConstPtr);
-Q_DECLARE_METATYPE (ColorHandler::ConstPtr);
-Q_DECLARE_METATYPE (Eigen::Vector4f);
-Q_DECLARE_METATYPE (Eigen::Quaternionf);
-#endif //CLOUD_ITEM_H_
+
+
+
+
+
+
+
+
+
+
+
+
+#endif //CLOUD_COMPOSER_ITEM_H_

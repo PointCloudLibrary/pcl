@@ -1,13 +1,12 @@
 #include <pcl/apps/cloud_composer/cloud_item.h>
-#include <pcl/apps/cloud_composer/project_model.h>
 
-#include <QtGui>
+
 
 pcl::cloud_composer::CloudItem::CloudItem (QString name,
                                            sensor_msgs::PointCloud2::Ptr cloud_ptr, 
                                            Eigen::Vector4f origin, 
                                            Eigen::Quaternionf orientation)
-  : QStandardItem (name)
+  : CloudComposerItem (name)
   , cloud_ptr_ (cloud_ptr)
   , origin_ (origin)
   , orientation_ (orientation)
@@ -23,17 +22,18 @@ pcl::cloud_composer::CloudItem::CloudItem (QString name,
   geometry_handler_.reset (new pcl::visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2> (cloud_ptr));
   this->setData (QVariant::fromValue (geometry_handler_), GEOMETRY);
   
-  //Set up the properties 
-  QStandardItem* height = new QStandardItem ("Height");
-  height->setData (QVariant (cloud_ptr_->height), Qt::EditRole);
-  this->appendRow (height);
-  QStandardItem* width = new QStandardItem ("Width");
-  height->setData (QVariant (cloud_ptr_->width), Qt::EditRole);
-  this->appendRow (width);
-
+  
+  QStandardItem* core = new QStandardItem ("Core Properties");
+  properties_->appendRow (core);
+  addProperty ("Name", QVariant (this->text ()), core);
+  addProperty ("Height", QVariant (cloud_ptr_->height), core);
+  addProperty ("Width", QVariant (cloud_ptr_->width), core);
+  
+  
 }
 
 pcl::cloud_composer::CloudItem::~CloudItem ()
 {
   
 }
+

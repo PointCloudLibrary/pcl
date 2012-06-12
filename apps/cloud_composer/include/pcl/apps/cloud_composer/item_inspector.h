@@ -38,10 +38,9 @@
 #ifndef ITEM_INSPECTOR_H_
 #define ITEM_INSPECTOR_H_
 
-#include <QTableView>
+#include <QTreeView>
 
 #include <pcl/apps/cloud_composer/project_model.h>
-
 class QItemSelectionModel;
 
 namespace pcl
@@ -52,7 +51,7 @@ namespace pcl
      * \author Jeremie Papon
      * \ingroup cloud_composer
      */
-    class ItemInspector : public QTableView
+    class ItemInspector : public QTreeView
     {
       Q_OBJECT
       public:
@@ -60,24 +59,34 @@ namespace pcl
         virtual ~ItemInspector();
       
       public slots:
-       /* void
-        setModel (ProjectModel* new_model);
         void 
-        setSelectionModel (const QItemSelectionModel* new_selection_model);
+        setProjectAndSelectionModels (ProjectModel* new_model, const QItemSelectionModel* new_selection_model);
         void 
         selectionChanged (const QModelIndex &current, const QModelIndex &previous);
         void 
-        itemChanged (QStandardItem* item);*/
+        itemChanged (QStandardItem* item);
         /** \brief Refreshes the data shown in the current displayed view widget */
         void
         updateView ();
         
       private:
-        void createItemWidgets ();
-        ProjectModel *current_model_;
+        void 
+        createItemWidgets ();
+        /** \brief Stores the state of the current tree view in item_treestate_map_  */
+        void 
+        storeTreeState ();
+        /** \brief Retores the state of \param model 's view from item_treestate_map_  */
+        void
+        restoreTreeState ();
+       
+        ProjectModel* current_project_model_;
+        QStandardItemModel* current_item_model_;
         const QItemSelectionModel *current_selection_model_;
         QMap <QString, QWidget*> itemtype_widget_map;
+        QMap <QStandardItemModel*, QList <QStandardItem*> > item_treestate_map_;
     };
+    
+    
   }
 }
 
