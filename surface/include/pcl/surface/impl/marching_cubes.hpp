@@ -45,7 +45,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
 pcl::MarchingCubes<PointNT>::MarchingCubes () 
-: min_p_ (), max_p_ (), gaussian_scale_ (), iso_level_ ()
+: min_p_ (), max_p_ (), percentage_extend_grid_ (), iso_level_ ()
 {
 }
 
@@ -61,8 +61,8 @@ pcl::MarchingCubes<PointNT>::getBoundingBox ()
 {
   pcl::getMinMax3D (*input_, min_p_, max_p_);
 
-//  min_p_ -= (max_p_ - min_p_) * 0.1;
-//  max_p_ += (max_p_ - min_p_) * 0.1;
+  min_p_ -= (max_p_ - min_p_) * percentage_extend_grid_/2;
+  max_p_ += (max_p_ - min_p_) * percentage_extend_grid_/2;
 
   Eigen::Vector4f bounding_box_size = max_p_ - min_p_;
 
@@ -78,24 +78,18 @@ pcl::MarchingCubes<PointNT>::getBoundingBox ()
              min_p_.x (), min_p_.y (), min_p_.z ());
   PCL_DEBUG ("[pcl::MarchingCubesHoppe::getBoundingBox] Upper left point is [%f, %f, %f]\n",
              max_p_.x (), max_p_.y (), max_p_.z ());
-
-  //  gaussian_scale_ = pow ((padding_size_+1) * leaf_size_ / 2.0, 2.0);
-  /// TODO check how this should be computed
-  float padding_size_ = 0.0f;
-  gaussian_scale_ = pow ((padding_size_+1) * (max_p_[0]-min_p_[0]) / res_x_ / 2.0, 2.0);
 }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
-pcl::MarchingCubes<PointNT>::interpolateEdge (float iso_level,
-                                              Eigen::Vector3f &p1,
+pcl::MarchingCubes<PointNT>::interpolateEdge (Eigen::Vector3f &p1,
                                               Eigen::Vector3f &p2,
                                               float val_p1,
                                               float val_p2,
                                               Eigen::Vector3f &output)
 {
-  float mu = (iso_level - val_p1) / (val_p2-val_p1);
+  float mu = (iso_level_ - val_p1) / (val_p2-val_p1);
   output = p1 + mu * (p2 - p1);
 }
 
@@ -147,29 +141,29 @@ pcl::MarchingCubes<PointNT>::createSurface (std::vector<float> &leaf_node,
 
   // Find the vertices where the surface intersects the cube
   if (edgeTable[cubeindex] & 1)
-    interpolateEdge (iso_level_, p[0], p[1], leaf_node[0], leaf_node[1], vertex_list[0]);
+    interpolateEdge (p[0], p[1], leaf_node[0], leaf_node[1], vertex_list[0]);
   if (edgeTable[cubeindex] & 2)
-    interpolateEdge (iso_level_, p[1], p[2], leaf_node[1], leaf_node[2], vertex_list[1]);
+    interpolateEdge (p[1], p[2], leaf_node[1], leaf_node[2], vertex_list[1]);
   if (edgeTable[cubeindex] & 4)
-    interpolateEdge (iso_level_, p[2], p[3], leaf_node[2], leaf_node[3], vertex_list[2]);
+    interpolateEdge (p[2], p[3], leaf_node[2], leaf_node[3], vertex_list[2]);
   if (edgeTable[cubeindex] & 8)
-    interpolateEdge (iso_level_, p[3], p[0], leaf_node[3], leaf_node[0], vertex_list[3]);
+    interpolateEdge (p[3], p[0], leaf_node[3], leaf_node[0], vertex_list[3]);
   if (edgeTable[cubeindex] & 16)
-    interpolateEdge (iso_level_, p[4], p[5], leaf_node[4], leaf_node[5], vertex_list[4]);
+    interpolateEdge (p[4], p[5], leaf_node[4], leaf_node[5], vertex_list[4]);
   if (edgeTable[cubeindex] & 32)
-    interpolateEdge (iso_level_, p[5], p[6], leaf_node[5], leaf_node[6], vertex_list[5]);
+    interpolateEdge (p[5], p[6], leaf_node[5], leaf_node[6], vertex_list[5]);
   if (edgeTable[cubeindex] & 64)
-    interpolateEdge (iso_level_, p[6], p[7], leaf_node[6], leaf_node[7], vertex_list[6]);
+    interpolateEdge (p[6], p[7], leaf_node[6], leaf_node[7], vertex_list[6]);
   if (edgeTable[cubeindex] & 128)
-    interpolateEdge (iso_level_, p[7], p[4], leaf_node[7], leaf_node[4], vertex_list[7]);
+    interpolateEdge (p[7], p[4], leaf_node[7], leaf_node[4], vertex_list[7]);
   if (edgeTable[cubeindex] & 256)
-    interpolateEdge (iso_level_, p[0], p[4], leaf_node[0], leaf_node[4], vertex_list[8]);
+    interpolateEdge (p[0], p[4], leaf_node[0], leaf_node[4], vertex_list[8]);
   if (edgeTable[cubeindex] & 512)
-    interpolateEdge (iso_level_, p[1], p[5], leaf_node[1], leaf_node[5], vertex_list[9]);
+    interpolateEdge (p[1], p[5], leaf_node[1], leaf_node[5], vertex_list[9]);
   if (edgeTable[cubeindex] & 1024)
-    interpolateEdge (iso_level_, p[2], p[6], leaf_node[2], leaf_node[6], vertex_list[10]);
+    interpolateEdge (p[2], p[6], leaf_node[2], leaf_node[6], vertex_list[10]);
   if (edgeTable[cubeindex] & 2048)
-    interpolateEdge (iso_level_, p[3], p[7], leaf_node[3], leaf_node[7], vertex_list[11]);
+    interpolateEdge (p[3], p[7], leaf_node[3], leaf_node[7], vertex_list[11]);
 
   // Create the triangle
   for (int i = 0; triTable[cubeindex][i] != -1; i+=3)
@@ -238,8 +232,6 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PolygonMesh &output)
     return;
   }
 
-  printf ("Marching cubes using the PolygonMesh performReconstruction method\n");
-
   // Create grid
   grid_ = std::vector<float> (res_x_*res_y_*res_z_, 0.0f);
 
@@ -248,13 +240,13 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PolygonMesh &output)
 
   getBoundingBox ();
 
-  // transform the point cloud into a voxel grid
-  // this needs to be implemented in a child class
+  // Transform the point cloud into a voxel grid
+  // This needs to be implemented in a child class
   voxelizeData ();
 
 
 
-  // run the actual marching cubes algorithm, store it into a point cloud,
+  // Run the actual marching cubes algorithm, store it into a point cloud,
   // and copy the point cloud + connectivity into output
   pcl::PointCloud<PointNT> cloud;
 
@@ -305,11 +297,11 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
 
   getBoundingBox ();
 
-  // transform the point cloud into a voxel grid
-  // this needs to be implemented in a child class
+  // Transform the point cloud into a voxel grid
+  // This needs to be implemented in a child class
   voxelizeData ();
 
-  // run the actual marching cubes algorithm, store it into a point cloud,
+  // Run the actual marching cubes algorithm, store it into a point cloud,
   // and copy the point cloud + connectivity into output
   points.clear ();
   for (int x = 1; x < res_x_-1; ++x)

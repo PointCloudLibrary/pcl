@@ -79,13 +79,26 @@ namespace pcl
       void
       voxelizeData ();
 
-      void
+
+      /** \brief Set the off-surface points displacement value.
+        * \param[in] epsilon the value
+        */
+      inline void
       setOffSurfaceDisplacement (float epsilon)
       { off_surface_epsilon_ = epsilon; }
 
+      /** \brief Get the off-surface points displacement value. */
+      inline float
+      getOffSurfaceDisplacement ()
+      { return off_surface_epsilon_; }
+
+
+    protected:
+      /** \brief the Radial Basis Function kernel. */
       float
       kernel (Eigen::Vector3f c, Eigen::Vector3f x);
 
+      /** \brief The off-surface displacement value. */
       float off_surface_epsilon_;
 
     public:

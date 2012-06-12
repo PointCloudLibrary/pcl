@@ -379,72 +379,111 @@ namespace pcl
       ~MarchingCubes ();
 
 
-      /** \brief set the iso level.
-        * \param iso_level the iso level.
+      /** \brief Method that sets the iso level of the surface to be extracted.
+        * \param[in] iso_level the iso level.
         */
       inline void
       setIsoLevel (float iso_level)
-      {
-        iso_level_ = iso_level;
-      };
+      { iso_level_ = iso_level; }
 
-      void
+      /** \brief Method that returns the iso level of the surface to be extracted. */
+      inline float
+      getIsoLevel ()
+      { return iso_level_; }
+
+      /** \brief Method that sets the marching cubes grid resolution.
+        * \param[in] res_x the resolution of the grid along the x-axis
+        * \param[in] res_y the resolution of the grid along the y-axis
+        * \param[in] res_z the resolution of the grid along the z-axis
+        */
+      inline void
       setGridResolution (int res_x, int res_y, int res_z)
       { res_x_ = res_x; res_y_ = res_y; res_z_ = res_z; }
 
 
+      /** \brief Method to get the marching cubes grid resolution.
+        * \param[in] res_x the resolution of the grid along the x-axis
+        * \param[in] res_y the resolution of the grid along the y-axis
+        * \param[in] res_z the resolution of the grid along the z-axis
+        */
+      inline void
+      getGridResolution (int &res_x, int &res_y, int &res_z)
+      { res_x = res_x_; res_y = res_y_; res_z = res_z_; }
+
+      /** \brief Method that sets the parameter that defines how much free space should be left inside the grid between
+        * the bounding box of the point cloud and the grid limits. Does not affect the resolution of the grid, it just
+        * changes the voxel size accordingly.
+        * \param[in] percentage the percentage of the bounding box that should be left empty between the bounding box and
+        * the grid limits.
+        */
+      inline void
+      setPercentageExtendGrid (float percentage)
+      { percentage_extend_grid_ = percentage; }
+
+      /** \brief Method that gets the parameter that defines how much free space should be left inside the grid between
+        * the bounding box of the point cloud and the grid limits, as a percentage of the bounding box.
+        */
+      inline float
+      getPercentageExtendGrid ()
+      { return percentage_extend_grid_; }
+
+protected:
+      /** \brief The data structure storing the 3D grid */
       std::vector<float> grid_;
+
+      /** \brief The grid resolution */
       int res_x_, res_y_, res_z_;
+
+      /** \brief Parameter that defines how much free space should be left inside the grid between
+        * the bounding box of the point cloud and the grid limits, as a percentage of the bounding box.*/
+      float percentage_extend_grid_;
 
       /** \brief Min and max data points. */
       Eigen::Vector4f min_p_, max_p_;
 
-
-      protected:
-      /** \brief Gaussian scale. */
-      double gaussian_scale_;
-
-      /** \brief Data size. */
-//      uint64_t data_size_;
-
-      /** \brief iso level. */
+      /** \brief The iso level to be extracted. */
       float iso_level_;
-
-
-
 
       /** \brief Convert the point cloud into voxel data. */
       virtual void
       voxelizeData () = 0;
 
-      /** \brief Interpolate along the voxel edge
-       *
-       */
+      /** \brief Interpolate along the voxel edge.
+        * \param[in] p1 The first point on the edge
+        * \param[in] p2 The second point on the edge
+        * \param[in] val_p1 The scalar value at p1
+        * \param[in] val_p2 The scalar value at p2
+        * \param[out] output The interpolated point along the edge
+        */
       void
-      interpolateEdge (float iso_level, Eigen::Vector3f &p1, Eigen::Vector3f &p2, float val_p1, float val_p2, Eigen::Vector3f &output);
+      interpolateEdge (Eigen::Vector3f &p1, Eigen::Vector3f &p2, float val_p1, float val_p2, Eigen::Vector3f &output);
 
 
       /** \brief Calculate out the corresponding polygons in the leaf node
-       *
-       * \param leaf_node the leaf node to be checked
-       * \param index_3d the 3d index of the leaf node to be checked
-       * \param cloud point cloud to store the vertices of the polygon
-       * \param iso_level the iso level to do the reconstruction on
+        * \param leaf_node the leaf node to be checked
+        * \param index_3d the 3d index of the leaf node to be checked
+        * \param cloud point cloud to store the vertices of the polygon
        */
       void
       createSurface (std::vector<float> &leaf_node,
                      Eigen::Vector3i &index_3d,
                      pcl::PointCloud<PointNT> &cloud);
 
-      /** \brief Get the bounding box for the input data points, also calculating the
-        * cell size, and the gaussian scale factor
-        */
+      /** \brief Get the bounding box for the input data points. */
       void
       getBoundingBox ();
 
+
+      /** \brief Method that returns the scalar value at the given grid position.
+        * \param[in] pos The 3D position in the grid
+        */
       float
       getGridValue (Eigen::Vector3i pos);
 
+      /** \brief Method that returns the scalar values of the neighbors of a given 3D position in the grid.
+        * \param[in] index3d the point in the grid
+        * \param[out] leaf the set of values
+        */
       void
       getNeighborList1D (std::vector<float> &leaf,
                          Eigen::Vector3i &index3d);
@@ -452,15 +491,16 @@ namespace pcl
       /** \brief Class get name method. */
       std::string getClassName () const { return ("MarchingCubes"); }
 
-      /** \brief Create the surface.
-         *
-         * More details here.
-         *
-         * \param output the resultant polygonal mesh
-         */
+      /** \brief Extract the surface.
+        * \param[out] output the resultant polygonal mesh
+        */
        void
        performReconstruction (pcl::PolygonMesh &output);
 
+       /** \brief Extract the surface.
+         * \param[out] points the points of the extracted mesh
+         * \param[out] polygons the connectivity between the point of the extracted mesh.
+         */
        void
        performReconstruction (pcl::PointCloud<PointNT> &points,
                               std::vector<pcl::Vertices> &polygons);
