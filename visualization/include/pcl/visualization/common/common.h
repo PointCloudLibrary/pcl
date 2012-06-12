@@ -135,17 +135,6 @@ namespace pcl
         template<typename PointT> void 
         cvtWindowCoordinates (const PointT& pt, Eigen::Vector4d& window_cord, const Eigen::Matrix4d& composite_mat);
     };
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    class PCL_EXPORTS FPSCallback : public vtkCommand
-    {
-      public:
-        static FPSCallback *New () { return new FPSCallback;}
-        inline void setTextActor (vtkTextActor *txt) { this->actor_ = txt; }
-        virtual void Execute (vtkObject *, unsigned long, void*);
-      protected:
-        vtkTextActor *actor_;
-    };
   }
 }
 
