@@ -45,7 +45,8 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
 pcl::MarchingCubesRBF<PointNT>::MarchingCubesRBF ()
-  : MarchingCubes<PointNT> ()
+  : MarchingCubes<PointNT> (),
+    off_surface_epsilon_ (0.1f)
 {
 }
 
@@ -62,13 +63,9 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
 {
   // Initialize data structures
   unsigned int N = input_->size ();
-  Eigen::MatrixXf M (2*N, 2*N),
+  Eigen::MatrixXd M (2*N, 2*N),
                   d (2*N, 1);
 
-
-  // Our epsilon off-surface normal displacement parameter
-  // TODO move as parameter
-  const float epsilon = 0.01;
 
   for (unsigned int row_i = 0; row_i < 2*N; ++row_i)
   {
@@ -78,29 +75,31 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
     {
       // boolean variable to determine whether we are in the off_surface domain for the columns
       bool col_off = (col_i >= N) ? 1 : 0;
-      M (row_i, col_i) = kernel (input_->points[col_i%N].getVector3fMap () + input_->points[col_i%N].getNormalVector3fMap () * col_off * epsilon,
-                                 input_->points[row_i%N].getVector3fMap () + input_->points[row_i%N].getNormalVector3fMap () * row_off * epsilon);
+      M (row_i, col_i) = kernel (input_->points[col_i%N].getVector3fMap () + input_->points[col_i%N].getNormalVector3fMap () * col_off * off_surface_epsilon_,
+                                 input_->points[row_i%N].getVector3fMap () + input_->points[row_i%N].getNormalVector3fMap () * row_off * off_surface_epsilon_);
     }
 
-    d (row_i, 0) = row_off * epsilon;
+    d (row_i, 0) = row_off * off_surface_epsilon_;
   }
 
   // Solve for the weights
-  Eigen::MatrixXf w (2*N, 1);
+  Eigen::MatrixXd w (2*N, 1);
 
-//  solve_linear_system (M, d, w);
-  w = M.fullPivLu ().solve (d);
+  // Solve_linear_system (M, d, w);
+  w = M.fullPivHouseholderQr ().solve (d);
 
-  /// TODO weights and centers should not be fields, but just local
-  // Set private members with results
+  std::vector<float> weights_;
+  std::vector<Eigen::Vector3f> centers_;
   weights_.resize (2*N);
   centers_.resize (2*N);
   for (unsigned int i = 0; i < N; ++i)
   {
     centers_[i] = input_->points[i].getVector3fMap ();
-    centers_[i + N] = input_->points[i].getVector3fMap () + input_->points[i].getNormalVector3fMap () * epsilon;
+    centers_[i + N] = input_->points[i].getVector3fMap () + input_->points[i].getNormalVector3fMap () * off_surface_epsilon_;
     weights_[i] = w (i, 0);
     weights_[i + N] = w (i + N, 0);
+    printf ("%d %f %f %f  --- %f\n", i, centers_[i][0], centers_[i][1], centers_[i][2], weights_[i]);
+    printf ("%d %f %f %f  --- %f\n", i+N, centers_[i+N][0], centers_[i+N][1], centers_[i+N][2], weights_[i+N]);
   }
 
 

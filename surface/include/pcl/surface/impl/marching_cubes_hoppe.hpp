@@ -72,7 +72,8 @@ pcl::MarchingCubesHoppe<PointNT>::voxelizeData ()
         point[1] = min_p_[1] + (max_p_[1] - min_p_[1]) * y / res_y_;
         point[2] = min_p_[2] + (max_p_[2] - min_p_[2]) * z / res_z_;
 
-        PointNT p; p.x = point[0]; p.y = point[1]; p.z = point[2];
+        PointNT p;
+        p.getVector3fMap () = point;
 
         tree_->nearestKSearch (p, 1, nn_indices, nn_sqr_dists);
 

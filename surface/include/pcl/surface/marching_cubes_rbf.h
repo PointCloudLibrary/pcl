@@ -79,11 +79,14 @@ namespace pcl
       void
       voxelizeData ();
 
+      void
+      setOffSurfaceDisplacement (float epsilon)
+      { off_surface_epsilon_ = epsilon; }
+
       float
       kernel (Eigen::Vector3f c, Eigen::Vector3f x);
 
-      std::vector<float> weights_;
-      std::vector<Eigen::Vector3f> centers_;
+      float off_surface_epsilon_;
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW

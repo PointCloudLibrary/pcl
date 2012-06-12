@@ -61,8 +61,8 @@ pcl::MarchingCubes<PointNT>::getBoundingBox ()
 {
   pcl::getMinMax3D (*input_, min_p_, max_p_);
 
-  min_p_ -= (max_p_ - min_p_) * 0.1;
-  max_p_ += (max_p_ - min_p_) * 0.1;
+//  min_p_ -= (max_p_ - min_p_) * 0.1;
+//  max_p_ += (max_p_ - min_p_) * 0.1;
 
   Eigen::Vector4f bounding_box_size = max_p_ - min_p_;
 
