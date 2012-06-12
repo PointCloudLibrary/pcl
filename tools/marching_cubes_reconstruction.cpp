@@ -48,21 +48,27 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
 
-float default_leaf_size = 0.01f;
 float default_iso_level = 0.0f;
-int   default_use_dot = 1;
+int default_hoppe_or_rbf = 0;
+float default_extend_percentage = 0.0f;
+int default_grid_res = 50;
+float default_off_surface_displacement = 0.01f;
 
 void
 printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s input.pcd output.vtk <options>\n", argv[0]);
   print_info ("  where options are:\n");
-  print_info ("                     -leaf X    = the voxel size (default: ");
-  print_value ("%f", default_leaf_size); print_info (")\n");
-  print_info ("                     -iso X     = the iso level (default: ");
+  print_info ("                     -grid_res X     = the resolution of the grid (cubic grid) (default: ");
+  print_value ("%d", default_grid_res); print_info (")\n");
+  print_info ("                     -iso_level X    = the iso level of the surface to be extracted (default: ");
   print_value ("%f", default_iso_level); print_info (")\n");
-  print_info ("                     -dot X     = use the voxelization algorithm combined with a dot product (i.e. MarchingCubesGreedy vs. MarchingCubesGreedyDot) (default: ");
-  print_value ("%d", default_use_dot); print_info (")\n");
+  print_info ("                     -hoppe X        = use the Hoppe signed distance function (MarchingCubesHoppe\n");
+  print_info ("                     -rbf X          = use the RBF signed distance function (MarchingCubesRBF\n");
+  print_info ("                     -extend X       = the percentage of the bounding box to extend the grid by (default: ");
+  print_value ("%f", default_extend_percentage); print_info (")\n");
+  print_info ("                     -displacement X = the displacement value for the off-surface points (only for RBF) (default: ");
+  print_value ("%f", default_off_surface_displacement); print_info (")\n");
 }
 
 bool
@@ -82,49 +88,31 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 
 void
 compute (const sensor_msgs::PointCloud2::ConstPtr &input, PolygonMesh &output,
-         float leaf_size, float iso_level, int use_dot)
+         int hoppe_or_rbf, float iso_level, int grid_res, float extend_percentage, float off_surface_displacement)
 {
   PointCloud<PointNormal>::Ptr xyz_cloud (new pcl::PointCloud<PointNormal> ());
   fromROSMsg (*input, *xyz_cloud);
 
-//  boost::shared_ptr<MarchingCubesHoppe<PointNormal> > marching_cubes (new MarchingCubesHoppe<PointNormal> ());
-  boost::shared_ptr<MarchingCubesRBF<PointNormal> > marching_cubes (new MarchingCubesRBF<PointNormal> ());
-//  if (use_dot)
-//    marching_cubes.reset (new MarchingCubesGreedyDot<PointNormal> ());
-//  else
-//    marching_cubes.reset (new MarchingCubesGreedy<PointNormal> ());
+  MarchingCubes<PointNormal> *mc;
+  if (hoppe_or_rbf == 0)
+    mc = new MarchingCubesHoppe<PointNormal> ();
+  else
+  {
+    mc = new MarchingCubesRBF<PointNormal> ();
+    ((MarchingCubesRBF<PointNormal>*) mc)->setOffSurfaceDisplacement (off_surface_displacement);
+  }
 
-//  marching_cubes->setLeafSize (leaf_size);
-  marching_cubes->setGridResolution (50, 50, 50);
-  marching_cubes->setOffSurfaceDisplacement (0.1f);
-  iso_level = 0;
-  marching_cubes->setIsoLevel (iso_level);
-  marching_cubes->setInputCloud (xyz_cloud);
-
+  mc->setIsoLevel (iso_level);
+  mc->setGridResolution (grid_res, grid_res, grid_res);
+  mc->setPercentageExtendGrid (extend_percentage);
+  mc->setInputCloud (xyz_cloud);
 
   TicToc tt;
   tt.tic ();
 
   print_highlight ("Computing ");
-  marching_cubes->reconstruct (output);
-
-  PointCloud<PointXYZI> dist_cloud;
-  for (int x = 0; x < marching_cubes->res_x_; ++x)
-      for (int y = 0; y < marching_cubes->res_y_; ++y)
-        for (int z = 0; z < marching_cubes->res_z_; ++z)
-        {
-          PointXYZI p;
-          p.x = marching_cubes->min_p_[0] + (marching_cubes->max_p_[0] - marching_cubes->min_p_[0]) / marching_cubes->res_x_ * x;
-          p.y = marching_cubes->min_p_[1] + (marching_cubes->max_p_[1] - marching_cubes->min_p_[1]) / marching_cubes->res_y_ * y;
-          p.z = marching_cubes->min_p_[2] + (marching_cubes->max_p_[2] - marching_cubes->min_p_[2]) / marching_cubes->res_z_ * z;
-          p.intensity = marching_cubes->grid_[x * marching_cubes->res_y_*marching_cubes->res_z_ + y *marching_cubes->res_z_ + z];
-          if (p.intensity < 0) p.intensity = -5;
-          else p.intensity = 5;
-          dist_cloud.push_back (p);
-        }
-
-  io::savePCDFile ("dist_cloud.pcd", dist_cloud);
-
+  mc->reconstruct (output);
+  delete mc;
 
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms]\n");
 }
@@ -145,7 +133,7 @@ saveCloud (const std::string &filename, const PolygonMesh &output)
 int
 main (int argc, char** argv)
 {
-  print_info ("Compute the surface reconstruction of a point cloud using the marching cubes algorithm (pcl::surface::MarchingCubesGreedy or pcl::surface::MarchingCubesGreedyDot. For more information, use: %s -h\n", argv[0]);
+  print_info ("Compute the surface reconstruction of a point cloud using the marching cubes algorithm (pcl::surface::MarchingCubesHoppe or pcl::surface::MarchingCubesRBF. For more information, use: %s -h\n", argv[0]);
 
   if (argc < 3)
   {
@@ -171,20 +159,37 @@ main (int argc, char** argv)
 
 
   // Command line parsing
-  float leaf_size = default_leaf_size;
-  parse_argument (argc, argv, "-leaf", leaf_size);
-  print_info ("Using a leaf size of: "); print_value ("%f\n", leaf_size);
+  int hoppe_or_rbf = default_hoppe_or_rbf;
+  bool ok = false;
+  parse_argument (argc, argv, "-hoppe", ok);
+  if (ok)
+  {
+    hoppe_or_rbf = 0;
+    print_info ("Selected algorithm: MarchingCubesHoppe\n");
+  }
+  ok = false;
+  parse_argument (argc, argv, "-rbf", ok);
+  if (ok)
+  {
+    hoppe_or_rbf = 1;
+    print_info ("Selected algorithm: MarchingCubesRBF\n");
+  }
 
   float iso_level = default_iso_level;
-  parse_argument (argc, argv, "-iso", iso_level);
+  parse_argument (argc, argv, "-iso_level", iso_level);
   print_info ("Setting an iso level of: "); print_value ("%f\n", iso_level);
 
-  int use_dot = default_use_dot;
-  parse_argument (argc, argv, "-dot", use_dot);
-  if (use_dot)
-    print_info ("Selected algorithm: MarchingCubesGreedyDot\n");
-  else
-    print_info ("Selected algorithm: MarchingCubesGreedy\n");
+  int grid_res = default_grid_res;
+  parse_argument (argc, argv, "-grid_res", grid_res);
+  print_info ("Setting a cubic grid resolution of: "); print_value ("%d\n", grid_res);
+
+  float extend_percentage = default_extend_percentage;
+  parse_argument (argc, argv, "-extend", extend_percentage);
+  print_info ("Setting an extend percentage of: "); print_value ("%f\n", extend_percentage);
+
+  float off_surface_displacement = default_off_surface_displacement;
+  parse_argument (argc, argv, "-displacement", off_surface_displacement);
+  print_info ("Setting an off-surface displacement of: "); print_value ("%f\n", off_surface_displacement);
 
   // Load the first file
   sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
@@ -193,7 +198,7 @@ main (int argc, char** argv)
 
   // Apply the marching cubes algorithm
   PolygonMesh output;
-  compute (cloud, output, leaf_size, iso_level, use_dot);
+  compute (cloud, output, hoppe_or_rbf, iso_level, grid_res, extend_percentage, off_surface_displacement);
 
   // Save into the second file
   saveCloud (argv[vtk_file_indices[0]], output);
