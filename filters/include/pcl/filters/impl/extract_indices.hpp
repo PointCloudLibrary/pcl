@@ -62,6 +62,8 @@ pcl::ExtractIndices<PointT>::filterDirectly (PointCloudPtr &cloud)
     for (int fi = 0; fi < static_cast<int> (fields.size ()); ++fi)  // fi = field iterator
       memcpy (pt_data + fields[fi].offset, &user_filter_value_, sizeof (float));
   }
+  if (!pcl_isfinite (user_filter_value_))
+    cloud->is_dense = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,6 +87,8 @@ pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
       for (int fi = 0; fi < static_cast<int> (fields.size ()); ++fi)  // fi = field iterator
         memcpy (pt_data + fields[fi].offset, &user_filter_value_, sizeof (float));
     }
+    if (!pcl_isfinite (user_filter_value_))
+      output.is_dense = false;
   }
   else
   {
