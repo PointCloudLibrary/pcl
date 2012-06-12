@@ -52,6 +52,8 @@
 #include <pcl/surface/organized_fast_mesh.h>
 #include <pcl/surface/ear_clipping.h>
 #include <pcl/surface/poisson.h>
+#include <pcl/surface/marching_cubes_hoppe.h>
+#include <pcl/surface/marching_cubes_rbf.h>
 #include <pcl/common/common.h>
 #include <boost/random.hpp>
 
@@ -72,6 +74,43 @@ PointCloud<PointXYZ>::Ptr cloud1 (new PointCloud<PointXYZ>);
 PointCloud<PointNormal>::Ptr cloud_with_normals1 (new PointCloud<PointNormal>);
 search::KdTree<PointXYZ>::Ptr tree3;
 search::KdTree<PointNormal>::Ptr tree4;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, MarchingCubesTest)
+{
+  MarchingCubesHoppe<PointNormal> hoppe;
+  hoppe.setIsoLevel (0);
+  hoppe.setGridResolution (30, 30, 30);
+  hoppe.setPercentageExtendGrid (0.3);
+  hoppe.setInputCloud (cloud_with_normals);
+  PointCloud<PointNormal> points;
+  std::vector<Vertices> vertices;
+  hoppe.reconstruct (points, vertices);
+
+  EXPECT_NEAR (points.points[points.size()/2].x, -0.042528, 1e-3);
+  EXPECT_NEAR (points.points[points.size()/2].y, 0.080196, 1e-3);
+  EXPECT_NEAR (points.points[points.size()/2].z, 0.043159, 1e-3);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[0], 10854);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[1], 10855);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[2], 10856);
+
+
+  MarchingCubesRBF<PointNormal> rbf;
+  rbf.setIsoLevel (0);
+  rbf.setGridResolution (20, 20, 20);
+  rbf.setPercentageExtendGrid (0.1);
+  rbf.setInputCloud (cloud_with_normals);
+  rbf.setOffSurfaceDisplacement (0.02f);
+  rbf.reconstruct (points, vertices);
+
+  EXPECT_NEAR (points.points[points.size()/2].x, -0.033919, 1e-3);
+  EXPECT_NEAR (points.points[points.size()/2].y, 0.127359, 1e-3);
+  EXPECT_NEAR (points.points[points.size()/2].z, 0.034632, 1e-3);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[0], 4344);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[1], 4345);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[2], 4346);
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, MovingLeastSquares)
