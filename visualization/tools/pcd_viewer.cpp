@@ -347,9 +347,9 @@ main (int argc, char** argv)
       p->registerPointPickingCallback (&pp_callback, (void*)&cloud);
       Eigen::Matrix3f rotation;
       rotation = orientation;
-      p->setCameraPose (origin [0]                  , origin [1]                  , origin [2],
-                        origin [0] + rotation (0, 2), origin [1] + rotation (1, 2), origin [2] + rotation (2, 2),
-                                     rotation (0, 1),              rotation (1, 1),              rotation (2, 1));
+      p->setCameraPosition (origin [0]                  , origin [1]                  , origin [2],
+                            origin [0] + rotation (0, 2), origin [1] + rotation (1, 2), origin [2] + rotation (2, 2),
+                                         rotation (0, 1),              rotation (1, 1),              rotation (2, 1));
     }
 
     // Multiview enabled?
