@@ -44,6 +44,7 @@
 #include <pcl/correspondence.h>
 #include <pcl/point_cloud.h>
 #include <pcl/PolygonMesh.h>
+#include <pcl/geometry/planar_polygon.h>
 //
 #include <pcl/console/print.h>
 #include <pcl/visualization/common/common.h>
@@ -956,6 +957,17 @@ namespace pcl
                     const std::string &id = "polygon",
                     int viewport = 0);
 
+        /** \brief Add a planar polygon that represents the input point cloud (connects all points in order)
+          * \param[in] polygon the polygon to draw
+          * \param[in] id the polygon id/name (default: "polygon")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
+          */
+        template <typename PointT> bool
+        addPolygon (const pcl::PlanarPolygon<PointT> &polygon,
+                    double r, double g, double b,
+                    const std::string &id = "polygon",
+                    int viewport = 0);
+
         /** \brief Add a line segment from two points
           * \param[in] pt1 the first (start) point on the line
           * \param[in] pt2 the second (end) point on the line
@@ -1243,6 +1255,23 @@ namespace pcl
                  const std::string &id = "cube",
                  int viewport = 0);
 
+        /** \brief Add a cube
+          * \param[in] x_min the min X coordinate
+          * \param[in] x_max the max X coordinate
+          * \param[in] y_min the min Y coordinate
+          * \param[in] y_max the max Y coordinate
+          * \param[in] z_min the min Z coordinate
+          * \param[in] z_max the max Z coordinate
+          * \param[in] r how much red (0.0 -> 1.0)
+          * \param[in] g how much green (0.0 -> 1.0)
+          * \param[in] b how much blue (0.0 -> 1.0)
+          * \param[in] id the cube id/name (default: "cube")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
+          */
+        bool
+        addCube (float x_min, float x_max, float y_min, float y_max, float z_min, float z_max,
+                 double r = 1.0, double g = 1.0, double b = 1.0, const std::string &id = "cube", int viewport = 0);
+
         /** \brief Changes the visual representation for all actors to surface representation. */
         void
         setRepresentationToSurfaceForAllActors ();
@@ -1313,35 +1342,35 @@ namespace pcl
         void
         resetCameraViewpoint (const std::string &id = "cloud");
 
-        /** \brief sets the camera pose given by position, viewpoint and up vector
-          * \param posX the x co-ordinate of the camera location
-          * \param posY the y co-ordinate of the camera location
-          * \param posZ the z co-ordinate of the camera location
-          * \param viewX the x component of the view upoint of the camera
-          * \param viewY the y component of the view point of the camera
-          * \param viewZ the z component of the view point of the camera
-          * \param upX the x component of the view up direction of the camera
-          * \param upY the y component of the view up direction of the camera
-          * \param upZ the y component of the view up direction of the camera
-          * \param viewport the viewport to modify camera of, if 0, modifies all cameras
+        /** \brief Set the camera pose given by position, viewpoint and up vector
+          * \param[in] pos_x the x co-ordinate of the camera location
+          * \param[in] pos_y the y co-ordinate of the camera location
+          * \param[in] pos_z the z co-ordinate of the camera location
+          * \param[in] view_x the x component of the view upoint of the camera
+          * \param[in] view_y the y component of the view point of the camera
+          * \param[in] view_z the z component of the view point of the camera
+          * \param[in] up_x the x component of the view up direction of the camera
+          * \param[in] up_y the y component of the view up direction of the camera
+          * \param[in] up_z the y component of the view up direction of the camera
+          * \param[in] viewport the viewport to modify camera of (0 modifies all cameras)
           */
         void
-        setCameraPose (double posX, double posY, double posZ,
-                       double viewX, double viewY, double viewZ,
-                       double upX, double upY, double upZ, int viewport = 0);
+        setCameraPosition (double pos_x, double pos_y, double pos_z,
+                           double view_x, double view_y, double view_z,
+                           double up_x, double up_y, double up_z, int viewport = 0);
 
         /** \brief Set the camera location and viewup according to the given arguments
-          * \param[in] posX the x co-ordinate of the camera location
-          * \param[in] posY the y co-ordinate of the camera location
-          * \param[in] posZ the z co-ordinate of the camera location
-          * \param[in] viewX the x component of the view up direction of the camera
-          * \param[in] viewY the y component of the view up direction of the camera
-          * \param[in] viewZ the z component of the view up direction of the camera
-          * \param[in] viewport the viewport to modify camera of, if 0, modifies all cameras
+          * \param[in] pos_x the x co-ordinate of the camera location
+          * \param[in] pos_y the y co-ordinate of the camera location
+          * \param[in] pos_z the z co-ordinate of the camera location
+          * \param[in] view_x the x component of the view up direction of the camera
+          * \param[in] view_y the y component of the view up direction of the camera
+          * \param[in] view_z the z component of the view up direction of the camera
+          * \param[in] viewport the viewport to modify camera of (0 modifies all cameras)
           */
         void
-        setCameraPosition (double posX,double posY, double posZ,
-                           double viewX, double viewY, double viewZ, int viewport = 0);
+        setCameraPosition (double pos_x,double pos_y, double pos_z,
+                           double view_x, double view_y, double view_z, int viewport = 0);
 
         /** \brief Get the current camera parameters. */
         void
@@ -1469,6 +1498,23 @@ namespace pcl
           PCLVisualizer* pcl_visualizer;
         };
 
+        //////////////////////////////////////////////////////////////////////////////////////////////
+        struct FPSCallback : public vtkCommand
+        {
+          static FPSCallback *New () { return (new FPSCallback); }
+
+          FPSCallback () : actor (), pcl_visualizer (), decimated () {}
+          FPSCallback (const FPSCallback& src) : vtkCommand (), actor (src.actor), pcl_visualizer (src.pcl_visualizer), decimated (src.decimated) {}
+          FPSCallback& operator = (const FPSCallback& src) { actor = src.actor; pcl_visualizer = src.pcl_visualizer; decimated = src.decimated; return (*this); }
+
+          virtual void 
+          Execute (vtkObject* caller, unsigned long event_id, void* call_data);
+            
+          vtkTextActor *actor;
+          PCLVisualizer* pcl_visualizer;
+          bool decimated;
+        };
+
 #if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
         /** \brief Set to false if the interaction loop is running. */
         bool stopped_;
@@ -1512,6 +1558,14 @@ namespace pcl
         removeActorFromRenderer (const vtkSmartPointer<vtkLODActor> &actor,
                                  int viewport = 0);
 
+        /** \brief Internal method. Removes a vtk actor from the screen.
+          * \param[in] actor a pointer to the vtk actor object
+          * \param[in] viewport the view port where the actor should be removed from (default: all)
+          */
+        void
+        removeActorFromRenderer (const vtkSmartPointer<vtkActor> &actor,
+                                 int viewport = 0);
+
         /** \brief Internal method. Adds a vtk actor to screen.
           * \param[in] actor a pointer to the vtk actor object
           * \param[in] viewport the view port where the actor should be added to (default: all)
@@ -1527,6 +1581,16 @@ namespace pcl
         void
         removeActorFromRenderer (const vtkSmartPointer<vtkProp> &actor,
                                  int viewport = 0);
+
+        /** \brief Internal method. Creates a vtk actor from a vtk polydata object.
+          * \param[in] data the vtk polydata object to create an actor for
+          * \param[out] actor the resultant vtk actor object
+          * \param[in] use_scalars set scalar properties to the mapper if it exists in the data. Default: true.
+          */
+        void
+        createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data,
+                                   vtkSmartPointer<vtkActor> &actor,
+                                   bool use_scalars = true);
 
         /** \brief Internal method. Creates a vtk actor from a vtk polydata object.
           * \param[in] data the vtk polydata object to create an actor for

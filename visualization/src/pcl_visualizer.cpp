@@ -55,16 +55,29 @@
 #include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const bool create_interactor) :
-    rens_ (vtkSmartPointer<vtkRendererCollection>::New ()),
-    style_ (vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle>::New ()),
-    cloud_actor_map_ (new CloudActorMap),
-    shape_actor_map_ (new ShapeActorMap)
+pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const bool create_interactor) 
+  : camera_ ()
+  , interactor_ ()
+#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+  , stopped_ ()
+  , timer_id_ ()
+#endif
+  , exit_main_loop_timer_callback_ ()
+  , exit_callback_ ()
+  , rens_ (vtkSmartPointer<vtkRendererCollection>::New ())
+  , win_ ()
+  , style_ (vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle>::New ())
+  , cloud_actor_map_ (new CloudActorMap)
+  , shape_actor_map_ (new ShapeActorMap)
+  , coordinate_actor_map_ ()
+  , camera_set_ ()
 {
   // FPS callback
   vtkSmartPointer<vtkTextActor> txt = vtkSmartPointer<vtkTextActor>::New ();
   vtkSmartPointer<FPSCallback> update_fps = vtkSmartPointer<FPSCallback>::New ();
-  update_fps->setTextActor (txt);
+  update_fps->actor = txt;
+  update_fps->pcl_visualizer = this;
+  update_fps->decimated = false;
 
   // Create a Renderer
   vtkSmartPointer<vtkRenderer> ren = vtkSmartPointer<vtkRenderer>::New ();
@@ -105,17 +118,31 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const std::string &name, PCLVisualizerInteractorStyle* style, const bool create_interactor) :
-    rens_ (vtkSmartPointer<vtkRendererCollection>::New ()),
-    cloud_actor_map_ (new CloudActorMap),
-    shape_actor_map_ (new ShapeActorMap)
+pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const std::string &name, PCLVisualizerInteractorStyle* style, const bool create_interactor)
+  : camera_ ()
+  , interactor_ ()
+#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+  , stopped_ ()
+  , timer_id_ ()
+#endif
+  , exit_main_loop_timer_callback_ ()
+  , exit_callback_ ()
+  , rens_ (vtkSmartPointer<vtkRendererCollection>::New ())
+  , win_ ()
+  , style_ (style)
+  , cloud_actor_map_ (new CloudActorMap)
+  , shape_actor_map_ (new ShapeActorMap)
+  , coordinate_actor_map_ ()
+  , camera_set_ ()
 {
   style_ = style;
 
   // FPS callback
   vtkSmartPointer<vtkTextActor> txt = vtkSmartPointer<vtkTextActor>::New ();
   vtkSmartPointer<FPSCallback> update_fps = vtkSmartPointer<FPSCallback>::New ();
-  update_fps->setTextActor (txt);
+  update_fps->actor = txt;
+  update_fps->pcl_visualizer = this;
+  update_fps->decimated = false;
 
   // Create a Renderer
   vtkSmartPointer<vtkRenderer> ren = vtkSmartPointer<vtkRenderer>::New ();
@@ -734,6 +761,31 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
+pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointer<vtkActor> &actor, int viewport)
+{
+  // Add it to all renderers
+  rens_->InitTraversal ();
+  vtkRenderer* renderer = NULL;
+  int i = 1;
+  while ((renderer = rens_->GetNextItem ()) != NULL)
+  {
+    // Should we add the actor to all renderers?
+    if (viewport == 0)
+    {
+      renderer->RemoveActor (actor);
+      renderer->Render ();
+    }
+    else if (viewport == i)               // add the actor only to the specified viewport
+    {
+      renderer->RemoveActor (actor);
+      renderer->Render ();
+    }
+    ++i;
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
 pcl::visualization::PCLVisualizer::addActorToRenderer (const vtkSmartPointer<vtkProp> &actor, int viewport)
 {
   // Add it to all renderers
@@ -855,7 +907,85 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
     actor->SetMapper (mapper);
   }
 
+  actor->SetNumberOfCloudPoints (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10));
+  actor->GetProperty ()->SetInterpolationToFlat ();
+}
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data,
+                                                              vtkSmartPointer<vtkActor> &actor,
+                                                              bool use_scalars)
+{
+  // If actor is not initialized, initialize it here
+  if (!actor)
+    actor = vtkSmartPointer<vtkActor>::New ();
+
+  if (use_vbos_)
+  {
+    vtkSmartPointer<vtkVertexBufferObjectMapper> mapper = vtkSmartPointer<vtkVertexBufferObjectMapper>::New ();
+
+    mapper->SetInput (data);
+
+    if (use_scalars)
+    {
+      vtkSmartPointer<vtkDataArray> scalars = data->GetPointData ()->GetScalars ();
+      double minmax[2];
+      if (scalars)
+      {
+        scalars->GetRange (minmax);
+        mapper->SetScalarRange (minmax);
+
+        mapper->SetScalarModeToUsePointData ();
+        mapper->InterpolateScalarsBeforeMappingOn ();
+        mapper->ScalarVisibilityOn ();
+      }
+    }
+
+    //actor->SetNumberOfCloudPoints (int (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
+    actor->GetProperty ()->SetInterpolationToFlat ();
+
+    /// FIXME disabling backface culling due to known VTK bug: vtkTextActors are not
+    /// shown when there is a vtkActor with backface culling on present in the scene
+    /// Please see VTK bug tracker for more details: http://www.vtk.org/Bug/view.php?id=12588
+    // actor->GetProperty ()->BackfaceCullingOn ();
+
+    actor->SetMapper (mapper);
+  }
+  else
+  {
+    vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
+    mapper->SetInput (data);
+
+    if (use_scalars)
+    {
+      vtkSmartPointer<vtkDataArray> scalars = data->GetPointData ()->GetScalars ();
+      double minmax[2];
+      if (scalars)
+      {
+        scalars->GetRange (minmax);
+        mapper->SetScalarRange (minmax);
+
+        mapper->SetScalarModeToUsePointData ();
+        mapper->InterpolateScalarsBeforeMappingOn ();
+        mapper->ScalarVisibilityOn ();
+      }
+    }
+    mapper->ImmediateModeRenderingOff ();
+
+    //actor->SetNumberOfCloudPoints (int (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
+    actor->GetProperty ()->SetInterpolationToFlat ();
+
+    /// FIXME disabling backface culling due to known VTK bug: vtkTextActors are not
+    /// shown when there is a vtkActor with backface culling on present in the scene
+    /// Please see VTK bug tracker for more details: http://www.vtk.org/Bug/view.php?id=12588
+    // actor->GetProperty ()->BackfaceCullingOn ();
+
+    actor->SetMapper (mapper);
+  }
+
+  //actor->SetNumberOfCloudPoints (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10));
+  actor->GetProperty ()->SetInterpolationToFlat ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1267,9 +1397,11 @@ pcl::visualization::PCLVisualizer::resetCamera ()
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizer::setCameraPose (double posX, double posY, double posZ,
-                                                  double viewX, double viewY, double viewZ,
-                                                  double upX, double upY, double upZ, int viewport)
+pcl::visualization::PCLVisualizer::setCameraPosition (
+    double pos_x, double pos_y, double pos_z,
+    double view_x, double view_y, double view_z,
+    double up_x, double up_y, double up_z, 
+    int viewport)
 {
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
@@ -1280,9 +1412,9 @@ pcl::visualization::PCLVisualizer::setCameraPose (double posX, double posY, doub
     if (viewport == 0 || viewport == i)
     {
       vtkSmartPointer<vtkCamera> cam = renderer->GetActiveCamera ();
-      cam->SetPosition (posX, posY, posZ);
-      cam->SetFocalPoint (viewX, viewY, viewZ);
-      cam->SetViewUp (upX, upY, upZ);
+      cam->SetPosition (pos_x, pos_y, pos_z);
+      cam->SetFocalPoint (view_x, view_y, view_z);
+      cam->SetViewUp (up_x, up_y, up_z);
       renderer->Render ();
     }
     ++i;
@@ -1550,6 +1682,36 @@ pcl::visualization::PCLVisualizer::addCube (
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToWireframe ();
+  addActorToRenderer (actor, viewport);
+
+  // Save the pointer/ID pair to the global actor map
+  (*shape_actor_map_)[id] = actor;
+  return (true);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::addCube (float x_min, float x_max,
+                                            float y_min, float y_max,
+                                            float z_min, float z_max,
+                                            double r, double g, double b,
+                                            const std::string &id, int viewport)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (am_it != shape_actor_map_->end ())
+  {
+    pcl::console::print_warn ("[addCube] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    return (false);
+  }
+
+  vtkSmartPointer<vtkDataSet> data = createCube (x_min, x_max, y_min, y_max, z_min, z_max);
+
+  // Create an Actor
+  vtkSmartPointer<vtkActor> actor;
+  createActorFromVTKDataSet (data, actor);
+  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetColor (r,g,b);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2945,11 +3107,12 @@ pcl::visualization::PCLVisualizer::addPointCloud (
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::FPSCallback::Execute (vtkObject *caller, unsigned long, void*)
+pcl::visualization::PCLVisualizer::FPSCallback::Execute (
+    vtkObject* caller, unsigned long event_id, void*)
 {
   vtkRenderer *ren = reinterpret_cast<vtkRenderer *> (caller);
   float fps = 1.0 / ren->GetLastRenderTimeInSeconds ();
   char buf[128];
   sprintf (buf, "%.1f FPS", fps);
-  actor_->SetInput (buf);
+  actor->SetInput (buf);
 }
