@@ -74,12 +74,12 @@ pcl::modeler::RenderWidget::initRenderer()
   win->AddRenderer(renderer);
 
   // FPS callback
-  vtkSmartPointer<vtkTextActor> txt = vtkSmartPointer<vtkTextActor>::New ();
-  typedef pcl::visualization::FPSCallback FPSCallback;
-  vtkSmartPointer<FPSCallback> update_fps = vtkSmartPointer<FPSCallback>::New ();
-  update_fps->setTextActor (txt);
-  renderer->AddObserver (vtkCommand::EndEvent, update_fps);
-  renderer->AddActor (txt);
+  //vtkSmartPointer<vtkTextActor> txt = vtkSmartPointer<vtkTextActor>::New ();
+  //typedef pcl::visualization::FPSCallback FPSCallback;
+  //vtkSmartPointer<FPSCallback> update_fps = vtkSmartPointer<FPSCallback>::New ();
+  //update_fps->setTextActor (txt);
+  //renderer->AddObserver (vtkCommand::EndEvent, update_fps);
+  //renderer->AddActor (txt);
 
   // Set up render window
   win->AlphaBitPlanesOff ();
