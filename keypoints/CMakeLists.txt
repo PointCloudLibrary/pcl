@@ -13,7 +13,8 @@ if(build)
         src/narf_keypoint.cpp
         src/uniform_sampling.cpp
         src/sift_keypoint.cpp
-				src/smoothed_surfaces_keypoint.cpp
+		src/smoothed_surfaces_keypoint.cpp
+        src/agast_keypoint2D.cpp
         src/harris_keypoint3D.cpp
         src/harris_keypoint6D.cpp
         )
@@ -24,6 +25,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/sift_keypoint.h
         include/pcl/${SUBSYS_NAME}/uniform_sampling.h
         include/pcl/${SUBSYS_NAME}/smoothed_surfaces_keypoint.h
+        include/pcl/${SUBSYS_NAME}/agast_keypoint2D.h
         include/pcl/${SUBSYS_NAME}/harris_keypoint3D.h
         include/pcl/${SUBSYS_NAME}/harris_keypoint6D.h
         )
@@ -33,6 +35,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/sift_keypoint.hpp
         include/pcl/${SUBSYS_NAME}/impl/uniform_sampling.hpp
         include/pcl/${SUBSYS_NAME}/impl/smoothed_surfaces_keypoint.hpp
+        include/pcl/${SUBSYS_NAME}/impl/agast_keypoint2D.hpp
         include/pcl/${SUBSYS_NAME}/impl/harris_keypoint3D.hpp
         include/pcl/${SUBSYS_NAME}/impl/harris_keypoint6D.hpp
         )
