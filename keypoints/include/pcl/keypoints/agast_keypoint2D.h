@@ -177,7 +177,7 @@ namespace pcl
       inline void
       setNonMaxSuppression (const bool enabled)
       {
-        non_max_suppression_ = enabled;
+        apply_non_max_suppression_ = enabled;
       }
 
     protected:
