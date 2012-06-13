@@ -86,7 +86,7 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
   Eigen::MatrixXd w (2*N, 1);
 
   // Solve_linear_system (M, d, w);
-  w = M.fullPivLu ().solve (d);
+  w = M.fullPivHouseholderQr ().solve (d);
 
   std::vector<float> weights_;
   std::vector<Eigen::Vector3f> centers_;
