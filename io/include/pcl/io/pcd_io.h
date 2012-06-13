@@ -115,6 +115,32 @@ namespace pcl
                   Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version,
                   int &data_type, unsigned int &data_idx, const int offset = 0);
 
+
+      /** \brief Read a point cloud data header from a PCD file. 
+        *
+        * Load only the meta information (number of points, their types, etc),
+        * and not the points themselves, from a given PCD file. Useful for fast
+        * evaluation of the underlying data structure.
+        *
+        * \attention The PCD data is \b always stored in ROW major format! The
+        * read/write PCD methods will detect column major input and automatically convert it.
+        *
+        * \param[in] file_name the name of the file to load
+        * \param[out] cloud the resultant point cloud dataset (only the header will be filled)
+        * \param[in] offset the offset of where to expect the PCD Header in the
+        * file (optional parameter). One usage example for setting the offset
+        * parameter is for reading data from a TAR "archive containing multiple
+        * PCD files: TAR files always add a 512 byte header in front of the
+        * actual file, so set the offset to the next byte after the header
+        * (e.g., 513).
+        *
+        * \return
+        *  * < 0 (-1) on error
+        *  * == 0 on success
+        */
+      int 
+      readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, const int offset = 0);
+
       /** \brief Read a point cloud data header from a PCD file. 
         *
         * Load only the meta information (number of points, their types, etc),
