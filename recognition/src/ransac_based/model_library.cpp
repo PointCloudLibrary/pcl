@@ -51,7 +51,7 @@ using namespace std;
 pcl::recognition::ModelLibrary::ModelLibrary(double pair_width)
 : pair_width_(pair_width), pair_width_eps_(0.1*pair_width)
 {
-  hash_table_.build(NULL, NULL);
+//  hash_table_.build();
 }
 
 //============================================================================================================================================
