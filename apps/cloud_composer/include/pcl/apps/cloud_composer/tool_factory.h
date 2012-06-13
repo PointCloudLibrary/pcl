@@ -35,76 +35,29 @@
  *
  */
 
-#ifndef CLOUD_COMPOSER_ITEM_H_
-#define CLOUD_COMPOSER_ITEM_H_
+#ifndef TOOL_FACTORY_H_
+#define TOOL_FACTORY_H_
 
+#include <QtPlugin>
 #include <QStandardItem>
-
-enum ITEM_ROLES { 
-  PROPERTIES = Qt::UserRole
-};
-
-//This currently isn't used for anything, it will probably be removed
-enum ITEM_TYPES { 
-  CLOUD_COMPOSER_ITEM = QStandardItem::UserType,
-  CLOUD_ITEM
-};
 
 namespace pcl
 {
   namespace cloud_composer
   {
+    class AbstractTool;
     
-    class CloudComposerItem : public QStandardItem
+    class ToolFactory
     {
       public:
-        CloudComposerItem (const QString name);
-        CloudComposerItem (const CloudComposerItem& to_copy);
-        virtual ~CloudComposerItem ();
-        
-        inline int const
-        type () { return CLOUD_COMPOSER_ITEM; }
+        virtual AbstractTool* createTool (QObject* parent) = 0;
+        virtual QStandardItem* toolItem() = 0;
 
-      protected:
-        /** \brief Helper function for adding a new property */
-        void
-        addProperty (const QString prop_name, QVariant value, Qt::ItemFlags flags = Qt::ItemIsSelectable, QStandardItem* parent = 0);
-        
-
-
-        /** \brief Model for storing the properties of the item   */
-        QStandardItemModel* properties_;
-        
     };
-    
-    /** \brief Templated helper class for converting QVariant to/from pointer classes   */
-    template <class T> class VPtr
-    {
-      public:
-        static T* asPtr (QVariant v)
-        {
-          return (T *) v.value<void *> ();
-        }
-
-        static QVariant asQVariant (T* ptr)
-        {
-          return qVariantFromValue ( (void *) ptr);
-        }
-    };
-    
   }
 }
 
+Q_DECLARE_INTERFACE(pcl::cloud_composer::ToolFactory,
+                    "cloud_composer.ToolFactory/1.0")
 
-
-
-
-
-
-
-
-
-
-
-
-#endif //CLOUD_COMPOSER_ITEM_H_
+#endif //TOOL_FACTORY_H_

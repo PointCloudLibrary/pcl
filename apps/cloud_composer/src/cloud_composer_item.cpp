@@ -18,18 +18,22 @@ pcl::cloud_composer::CloudComposerItem::~CloudComposerItem ()
 }
 
 void
-pcl::cloud_composer::CloudComposerItem::addProperty (const QString prop_name, QVariant value, QStandardItem* parent)
+pcl::cloud_composer::CloudComposerItem::addProperty (const QString prop_name, QVariant value,  Qt::ItemFlags flags, QStandardItem* parent)
 {
   QStandardItem* parent_item = parent;
   if (!parent_item)
     parent_item = properties_->invisibleRootItem ();
   QList <QStandardItem*> new_row;
+  
   QStandardItem* new_property = new QStandardItem (prop_name);
+  new_property->setFlags (Qt::ItemIsSelectable);
   new_row.append (new_property);
+  
   QStandardItem* new_value = new QStandardItem ();
+  new_value->setFlags (flags);
   new_value->setData (value, Qt::EditRole);
   new_row.append (new_value);
+ 
   parent_item->appendRow (new_row);
-  
   
 }

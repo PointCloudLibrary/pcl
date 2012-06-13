@@ -25,9 +25,9 @@ pcl::cloud_composer::CloudItem::CloudItem (QString name,
   
   QStandardItem* core = new QStandardItem ("Core Properties");
   properties_->appendRow (core);
-  addProperty ("Name", QVariant (this->text ()), core);
-  addProperty ("Height", QVariant (cloud_ptr_->height), core);
-  addProperty ("Width", QVariant (cloud_ptr_->width), core);
+  addProperty ("Name", QVariant (this->text ()), Qt::NoItemFlags, core);
+  addProperty ("Height", QVariant (cloud_ptr_->height), Qt::NoItemFlags, core);
+  addProperty ("Width", QVariant (cloud_ptr_->width), Qt::NoItemFlags,core);
   
   
 }
