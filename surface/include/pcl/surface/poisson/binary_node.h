@@ -57,12 +57,20 @@ namespace pcl {
       static inline Real CornerIndexPosition (int index, int maxDepth)
       {return Real (index)/ (1<<maxDepth);}
       static inline Real Width (int depth)
-      {return Real (1.0/ (1<<depth));}
+      {return Real (1.0/ (1<<depth));}      
+
+      // Fix for Bug #717 with Visual Studio that generates wrong code for this function
+      // when global optimization is enabled (release mode).
+#ifdef _MSC_VER
+      static __declspec(noinline) void CenterAndWidth (int depth, int offset, Real& center, Real& width)
+#else
       static inline void CenterAndWidth (int depth, int offset, Real& center, Real& width)
+#endif
       {
         width=Real (1.0/ (1<<depth));
         center=Real ( (0.5+offset)*width);
       }
+
       static inline void CenterAndWidth (int idx, Real& center, Real& width)
       {
         int depth, offset;
