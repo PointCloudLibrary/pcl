@@ -71,7 +71,11 @@ namespace pcl {
         center=Real ( (0.5+offset)*width);
       }
 
+#ifdef _MSC_VER
+      static __declspec(noinline) void CenterAndWidth (int idx, Real& center, Real& width)
+#else
       static inline void CenterAndWidth (int idx, Real& center, Real& width)
+#endif
       {
         int depth, offset;
         DepthAndOffset (idx, depth, offset);
