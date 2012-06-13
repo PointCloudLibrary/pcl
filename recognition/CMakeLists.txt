@@ -35,6 +35,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/surface_normal_modality.h
         include/pcl/${SUBSYS_NAME}/linemod/line_rgbd.h
         include/pcl/${SUBSYS_NAME}/ransac_based/obj_rec_ransac.h
+        include/pcl/${SUBSYS_NAME}/ransac_based/model_library.h
+        include/pcl/${SUBSYS_NAME}/ransac_based/voxel_structure.h
         )
         
     set(hv_incs
@@ -48,12 +50,12 @@ if(build)
         include/pcl/${SUBSYS_NAME}/cg/correspondence_grouping.h
         include/pcl/${SUBSYS_NAME}/cg/hough_3d.h    
         include/pcl/${SUBSYS_NAME}/cg/geometric_consistency.h
-        include/pcl/${SUBSYS_NAME}/ransac_based/model_library.h
         )
     
 
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/linemod/line_rgbd.hpp
+        include/pcl/${SUBSYS_NAME}/impl/ransac_based/voxel_structure.hpp
         )
         
     set(hv_impl_incs

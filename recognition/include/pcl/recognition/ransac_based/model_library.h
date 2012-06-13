@@ -39,6 +39,7 @@
 #ifndef PCL_RECOGNITION_MODEL_LIBRARY_H_
 #define PCL_RECOGNITION_MODEL_LIBRARY_H_
 
+#include "voxel_structure.h"
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <string>
@@ -49,8 +50,14 @@ namespace pcl
   {
     class ModelLibrary
     {
-    typedef pcl::PointCloud<pcl::PointXYZ> PointCloudIn; // For now, only pcl::PointXYZ makes sense
-    typedef pcl::PointCloud<pcl::Normal> PointCloudN;
+    typedef pcl::PointCloud<Eigen::Vector3d> PointCloudIn; // For now, only points in R3 make sense
+    typedef pcl::PointCloud<Eigen::Vector3d> PointCloudN;
+
+    public:
+      class HashTableCell
+      {
+
+      };
 
     public:
       class Entry
@@ -63,7 +70,7 @@ namespace pcl
     public:
       /** \brief This class is used by 'ObjRecRANSAC' to maintain the object models to be recognized. Normally, you do not need to use
         * this class directly. */
-      ModelLibrary(double pair_width): pair_width_(pair_width), pair_width_eps_(0.1*pair_width){}
+      ModelLibrary(double pair_width);
       virtual ~ModelLibrary(){}
 
       bool
@@ -72,6 +79,8 @@ namespace pcl
     protected:
       std::map<std::string,Entry*> model_entries_;
       double pair_width_, pair_width_eps_;
+
+      VoxelStructure<HashTableCell> hash_table_;
     };
   } // namespace recognition
 } // namespace pcl

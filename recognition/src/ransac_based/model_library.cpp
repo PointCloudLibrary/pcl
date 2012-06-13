@@ -37,11 +37,22 @@
  *
  */
 
-#include "pcl/recognition/ransac_based/model_library.h"
+#include <pcl/recognition/ransac_based/model_library.h>
+#include <pcl/recognition/ransac_based/obj_rec_ransac.h>
+#include <pcl/recognition/impl/ransac_based/voxel_structure.hpp>
 #include <pcl/kdtree/kdtree_flann.h>
+#include <Eigen/Core>
 #include <vector>
 
 using namespace std;
+
+//============================================================================================================================================
+
+pcl::recognition::ModelLibrary::ModelLibrary(double pair_width)
+: pair_width_(pair_width), pair_width_eps_(0.1*pair_width)
+{
+  hash_table_.build(NULL, NULL);
+}
 
 //============================================================================================================================================
 
@@ -58,8 +69,8 @@ pcl::recognition::ModelLibrary::addModel(const PointCloudIn& model, const PointC
   vector<std::pair<int,int> > point_pairs;
   vector<int> point_ids;
   vector<float> sqr_dist;
-  KdTreeFLANN<pcl::PointXYZ> kd_tree;
-  kd_tree.setInputCloud(KdTree<pcl::PointXYZ>::PointCloudConstPtr(&model));
+  KdTreeFLANN<Eigen::Vector3d> kd_tree;
+  kd_tree.setInputCloud(KdTree<Eigen::Vector3d>::PointCloudConstPtr(&model));
   // The two radii
   double min_sqr_radius = pair_width_ - pair_width_eps_, max_radius = pair_width_ + pair_width_eps_;
   int i, k, num_found_points, num_model_points = static_cast<int>(model.points.size());
