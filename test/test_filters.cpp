@@ -901,7 +901,7 @@ TEST (RadiusOutlierRemoval, Filters)
   RadiusOutlierRemoval<PointXYZ> outrem;
   outrem.setInputCloud (cloud);
   outrem.setRadiusSearch (0.02);
-  outrem.setMinNeighborsInRadius (15);
+  outrem.setMinNeighborsInRadius (14);
   outrem.filter (cloud_out);
 
   EXPECT_EQ (int (cloud_out.points.size ()), 307);
@@ -931,7 +931,7 @@ TEST (RadiusOutlierRemoval, Filters)
   RadiusOutlierRemoval<PointXYZ> outrem_(true);
   outrem_.setInputCloud (cloud);
   outrem_.setRadiusSearch (0.02);
-  outrem_.setMinNeighborsInRadius (15);
+  outrem_.setMinNeighborsInRadius (14);
   outrem_.filter (cloud_out);
 
   EXPECT_EQ (int (cloud_out.points.size ()), 307);
