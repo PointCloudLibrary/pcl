@@ -35,79 +35,45 @@
  *
  */
 
-#ifndef PROJECT_MODEL_H_
-#define PROJECT_MODEL_H_
+#ifndef ABSTRACT_TOOL_H_
+#define ABSTRACT_TOOL_H_
 
-#include <QStandardItemModel>
-#include <QItemSelectionModel>
-#include <QModelIndex>
-#include <QVariant>
-#include <QUndoStack>
+#include <QObject>
+#include <QUndoCommand>
 
-#include <vtkSmartPointer.h>
-#include <vtkCamera.h>
+#include <pcl/apps/cloud_composer/cloud_composer_item.h>
 
-#include <pcl/io/pcd_io.h>
-#include <pcl/visualization/pcl_visualizer.h>
-
-
-
-
-class QItemSelectionModel;
 
 namespace pcl
 {
   namespace cloud_composer
   {
-
-    class ProjectModel : public QStandardItemModel
+    
+    class AbstractTool : public QObject
     {
-        Q_OBJECT
-
+      Q_OBJECT
       public:
-        ProjectModel (QObject *parent = 0);
-        ProjectModel (const ProjectModel& to_copy);
-        virtual ~ProjectModel ();
+        AbstractTool (QObject* parent = 0) 
+                      : QObject (parent) 
+                      {}
+        virtual ~AbstractTool () { }
         
-        ProjectModel (QString project_name, QObject *parent = 0);
+        virtual bool 
+        performAction (QVariantList data) = 0;
         
-        inline const QString
-        getName () { return horizontalHeaderItem (0)->text (); }
+        const QString 
+        getActionText () {return action_text_;}
         
-        inline QUndoStack*
-        getUndoStack () { return undo_stack_; }
-        
-        /** \brief Sets the name of the project using the horizontalHeaderItem         */
-        void 
-        setName (QString new_name);     
-        
-        /** \brief Returns the selection model which is used for this project */
-        inline QItemSelectionModel* const
-        getSelectionModel ()
-        {
-          return selection_model_;
-        }
-        
-        /** \brief Loads from file and inserts a new pointcloud into the model   */
-        void 
-        insertNewCloudFromFile (const QString filename);
-        
-        /** \brief Set data reimplimentation which pushes onto undo stack and then calls standard imp.   */
-        virtual bool
-        setData (const QModelIndex &index, const QVariant &val, int role);
-      public slots:
-
+        void
+        setActionText (const QString text) { action_text_ = text; }
       private:
-        QItemSelectionModel* selection_model_;
-        vtkSmartPointer<vtkCamera> camera_; 
-        QMap <QString, int> name_to_type_map_;
-        QUndoStack* undo_stack_;
+        QString action_text_;
+        
     };
+    
+    
   }
 }
 
-Q_DECLARE_METATYPE (pcl::cloud_composer::ProjectModel);
 
-
-#endif //PROJECT_MODEL_H
-
+#endif //ABSTRACT_TOOL_H_

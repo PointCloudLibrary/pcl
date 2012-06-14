@@ -83,7 +83,7 @@ namespace pcl
         QStandardItemModel* current_item_model_;
         const QItemSelectionModel *current_selection_model_;
         QMap <QString, QWidget*> itemtype_widget_map;
-        QMap <QStandardItemModel*, QList <QStandardItem*> > item_treestate_map_;
+        QMap <QStandardItemModel*, QList <QPersistentModelIndex> > item_treestate_map_;
     };
     
     

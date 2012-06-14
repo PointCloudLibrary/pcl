@@ -35,79 +35,37 @@
  *
  */
 
-#ifndef PROJECT_MODEL_H_
-#define PROJECT_MODEL_H_
+#ifndef TOOL_FACTORY_H_
+#define TOOL_FACTORY_H_
 
-#include <QStandardItemModel>
-#include <QItemSelectionModel>
-#include <QModelIndex>
-#include <QVariant>
-#include <QUndoStack>
-
-#include <vtkSmartPointer.h>
-#include <vtkCamera.h>
-
-#include <pcl/io/pcd_io.h>
-#include <pcl/visualization/pcl_visualizer.h>
-
-
-
-
-class QItemSelectionModel;
+#include <QtPlugin>
+#include <QStandardItem>
+#include <QUndoCommand>
 
 namespace pcl
 {
   namespace cloud_composer
   {
-
-    class ProjectModel : public QStandardItemModel
+    class AbstractTool;
+    class AbstractCommand;
+    
+    class ToolFactory
     {
-        Q_OBJECT
-
       public:
-        ProjectModel (QObject *parent = 0);
-        ProjectModel (const ProjectModel& to_copy);
-        virtual ~ProjectModel ();
+        virtual AbstractTool*
+        createTool (QObject* parent) = 0;
         
-        ProjectModel (QString project_name, QObject *parent = 0);
+        virtual AbstractCommand* 
+        createCommand () = 0;
         
-        inline const QString
-        getName () { return horizontalHeaderItem (0)->text (); }
-        
-        inline QUndoStack*
-        getUndoStack () { return undo_stack_; }
-        
-        /** \brief Sets the name of the project using the horizontalHeaderItem         */
-        void 
-        setName (QString new_name);     
-        
-        /** \brief Returns the selection model which is used for this project */
-        inline QItemSelectionModel* const
-        getSelectionModel ()
-        {
-          return selection_model_;
-        }
-        
-        /** \brief Loads from file and inserts a new pointcloud into the model   */
-        void 
-        insertNewCloudFromFile (const QString filename);
-        
-        /** \brief Set data reimplimentation which pushes onto undo stack and then calls standard imp.   */
-        virtual bool
-        setData (const QModelIndex &index, const QVariant &val, int role);
-      public slots:
+        virtual
+        QStandardItem* toolItem() = 0;
 
-      private:
-        QItemSelectionModel* selection_model_;
-        vtkSmartPointer<vtkCamera> camera_; 
-        QMap <QString, int> name_to_type_map_;
-        QUndoStack* undo_stack_;
     };
   }
 }
 
-Q_DECLARE_METATYPE (pcl::cloud_composer::ProjectModel);
+Q_DECLARE_INTERFACE(pcl::cloud_composer::ToolFactory,
+                    "cloud_composer.ToolFactory/1.0")
 
-
-#endif //PROJECT_MODEL_H
-
+#endif //TOOL_FACTORY_H_

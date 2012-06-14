@@ -72,6 +72,7 @@ namespace pcl
      *    * cloud_browser_ is the tree view in the left dock
      *    * item_inspector_ is the details view in the left dock
      *    * tool_box_ is the tool box in right dock
+     *    * undo_view_ is the undo stack view in the right dock
      */
     class ComposerMainWindow : public QMainWindow, private Ui::ComposerMainWindow
     {
@@ -85,23 +86,23 @@ namespace pcl
       public slots:
       //Slots for File Menu Actions
         void
-        on_actionNewProject_triggered (QString name = "unsaved project");
+        on_action_new_project__triggered (QString name = "unsaved project");
         void
-        on_actionOpenCloudAsNewProject_triggered ();
+        on_action_open_cloud_as_new_project__triggered ();
         void
-        on_actionOpenProject_triggered ();
+        on_action_open_project__triggered ();
         void
-        on_actionSaveProject_triggered ();
+        on_action_save_project__triggered ();
         void
-        on_actionSaveProjectAs_triggered ();
+        on_action_save_project_as__triggered ();
         void
-        on_actionExit_triggered ();
+        on_action_exit__triggered ();
 
         //Slots for Edit Menu Actions
         void
-        on_actionInsertFromFile_triggered ();
+        on_action_insert_from_file__triggered ();
         void
-        on_actionInsertFromOpenNiSource_triggered ();
+        on_action_insert_from_openNi_source__triggered ();
 
         void 
         setCurrentModel (ProjectModel* model);
@@ -125,7 +126,7 @@ namespace pcl
         QItemSelectionModel* current_selection_model_;
         QDir last_directory_;
         QMap <QString, ProjectModel*> name_model_map_;
- 
+        QUndoGroup *undo_group_;
     };
     
   }

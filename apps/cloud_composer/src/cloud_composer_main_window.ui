@@ -33,14 +33,14 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="actionNewProject"/>
-    <addaction name="actionOpenCloudAsNewProject"/>
+    <addaction name="action_new_project_"/>
+    <addaction name="action_open_cloud_as_new_project_"/>
     <addaction name="separator"/>
-    <addaction name="actionOpenProject"/>
-    <addaction name="actionSaveProject"/>
-    <addaction name="actionSaveProjectAs"/>
+    <addaction name="action_open_project_"/>
+    <addaction name="action_save_project_"/>
+    <addaction name="action_save_project_as_"/>
     <addaction name="separator"/>
-    <addaction name="actionExit"/>
+    <addaction name="action_exit_"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -50,26 +50,26 @@
      <property name="title">
       <string>&amp;Insert Cloud...</string>
      </property>
-     <addaction name="actionInsertFromFile"/>
-     <addaction name="actionInsertFromOpenNiSource"/>
+     <addaction name="action_insert_from_file_"/>
+     <addaction name="action_insert_from_openNi_source_"/>
     </widget>
     <addaction name="menu_Insert_Cloud"/>
     <addaction name="separator"/>
-    <addaction name="actionUndo"/>
-    <addaction name="actionRedo"/>
+    <addaction name="action_undo_"/>
+    <addaction name="action_redo_"/>
     <addaction name="separator"/>
-    <addaction name="actionCameraUndo"/>
-    <addaction name="actionCameraRedo"/>
+    <addaction name="action_camera_undo_"/>
+    <addaction name="action_camera_redo_"/>
     <addaction name="separator"/>
-    <addaction name="actionSelectAll"/>
-    <addaction name="actionInvertSelection"/>
+    <addaction name="action_select_all_"/>
+    <addaction name="action_invert_selection_"/>
     <addaction name="separator"/>
-    <addaction name="actionCopy"/>
-    <addaction name="actionPaste"/>
-    <addaction name="actionCut"/>
-    <addaction name="actionDelete"/>
+    <addaction name="action_copy_"/>
+    <addaction name="action_paste_"/>
+    <addaction name="action_cut_"/>
+    <addaction name="action_delete_"/>
     <addaction name="separator"/>
-    <addaction name="actionPreferences"/>
+    <addaction name="action_preferences_"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -85,8 +85,8 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
-    <addaction name="actionHelp"/>
-    <addaction name="actionAbout"/>
+    <addaction name="action_help_"/>
+    <addaction name="action_about_"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -111,13 +111,13 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionNewProject"/>
-   <addaction name="actionOpenProject"/>
-   <addaction name="actionOpenCloudAsNewProject"/>
-   <addaction name="actionSaveProject"/>
+   <addaction name="action_new_project_"/>
+   <addaction name="action_open_project_"/>
+   <addaction name="action_open_cloud_as_new_project_"/>
+   <addaction name="action_save_project_"/>
    <addaction name="separator"/>
-   <addaction name="actionInsertFromFile"/>
-   <addaction name="actionInsertFromOpenNiSource"/>
+   <addaction name="action_insert_from_file_"/>
+   <addaction name="action_insert_from_openNi_source_"/>
   </widget>
   <widget class="QDockWidget" name="dockCloudBrowser">
    <property name="windowTitle">
@@ -174,8 +174,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>180</width>
-          <height>553</height>
+          <width>264</width>
+          <height>488</height>
          </rect>
         </property>
         <attribute name="label">
@@ -192,8 +192,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>180</width>
-          <height>553</height>
+          <width>94</width>
+          <height>24</height>
          </rect>
         </property>
         <attribute name="label">
@@ -205,7 +205,22 @@
     </layout>
    </widget>
   </widget>
-  <action name="actionNewProject">
+  <widget class="QDockWidget" name="dockUndoView">
+   <property name="windowTitle">
+    <string>Undo Stack View</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContentsUndoView">
+    <layout class="QGridLayout" name="gridLayout_5">
+     <item row="0" column="0">
+      <widget class="QUndoView" name="undo_view_" native="true"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="action_new_project_">
    <property name="icon">
     <iconset resource="../resources/resources.qrc">
      <normaloff>:/new_project.png</normaloff>:/new_project.png</iconset>
@@ -217,7 +232,7 @@
     <string>Ctrl+N</string>
    </property>
   </action>
-  <action name="actionOpenProject">
+  <action name="action_open_project_">
    <property name="icon">
     <iconset resource="../resources/resources.qrc">
      <normaloff>:/open_project.png</normaloff>:/open_project.png</iconset>
@@ -229,7 +244,7 @@
     <string>Ctrl+O</string>
    </property>
   </action>
-  <action name="actionOpenCloudAsNewProject">
+  <action name="action_open_cloud_as_new_project_">
    <property name="icon">
     <iconset resource="../resources/resources.qrc">
      <normaloff>:/open_cloud_as_new_project.png</normaloff>:/open_cloud_as_new_project.png</iconset>
@@ -241,7 +256,7 @@
     <string>Ctrl+Shift+O</string>
    </property>
   </action>
-  <action name="actionSaveProject">
+  <action name="action_save_project_">
    <property name="icon">
     <iconset resource="../resources/resources.qrc">
      <normaloff>:/save_project.png</normaloff>:/save_project.png</iconset>
@@ -253,12 +268,12 @@
     <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="actionExit">
+  <action name="action_exit_">
    <property name="text">
     <string>&amp;Exit</string>
    </property>
   </action>
-  <action name="actionInsertFromFile">
+  <action name="action_insert_from_file_">
    <property name="icon">
     <iconset resource="../resources/resources.qrc">
      <normaloff>:/insert_from_file.png</normaloff>:/insert_from_file.png</iconset>
@@ -270,7 +285,7 @@
     <string>Ctrl+I</string>
    </property>
   </action>
-  <action name="actionInsertFromOpenNiSource">
+  <action name="action_insert_from_openNi_source_">
    <property name="icon">
     <iconset resource="../resources/resources.qrc">
      <normaloff>:/insert_from_OpenNi.png</normaloff>:/insert_from_OpenNi.png</iconset>
@@ -282,7 +297,7 @@
     <string>Ctrl+P</string>
    </property>
   </action>
-  <action name="actionUndo">
+  <action name="action_undo_">
    <property name="text">
     <string>&amp;Undo</string>
    </property>
@@ -290,7 +305,7 @@
     <string>Ctrl+Z</string>
    </property>
   </action>
-  <action name="actionRedo">
+  <action name="action_redo_">
    <property name="text">
     <string>&amp;Redo</string>
    </property>
@@ -298,7 +313,7 @@
     <string>Ctrl+Y</string>
    </property>
   </action>
-  <action name="actionCameraUndo">
+  <action name="action_camera_undo_">
    <property name="text">
     <string>Camera Undo</string>
    </property>
@@ -306,7 +321,7 @@
     <string>Ctrl+Shift+Z</string>
    </property>
   </action>
-  <action name="actionCameraRedo">
+  <action name="action_camera_redo_">
    <property name="text">
     <string>Camera Redo</string>
    </property>
@@ -314,7 +329,7 @@
     <string>Ctrl+Shift+Y</string>
    </property>
   </action>
-  <action name="actionCopy">
+  <action name="action_copy_">
    <property name="text">
     <string>&amp;Copy</string>
    </property>
@@ -322,7 +337,7 @@
     <string>Ctrl+C</string>
    </property>
   </action>
-  <action name="actionPaste">
+  <action name="action_paste_">
    <property name="text">
     <string>&amp;Paste</string>
    </property>
@@ -330,7 +345,7 @@
     <string>Ctrl+V</string>
    </property>
   </action>
-  <action name="actionCut">
+  <action name="action_cut_">
    <property name="text">
     <string>Cut</string>
    </property>
@@ -338,22 +353,22 @@
     <string>Ctrl+X</string>
    </property>
   </action>
-  <action name="actionDelete">
+  <action name="action_delete_">
    <property name="text">
     <string>&amp;Delete</string>
    </property>
   </action>
-  <action name="actionPreferences">
+  <action name="action_preferences_">
    <property name="text">
     <string>Preferences</string>
    </property>
   </action>
-  <action name="actionAbout">
+  <action name="action_about_">
    <property name="text">
     <string>&amp;About</string>
    </property>
   </action>
-  <action name="actionHelp">
+  <action name="action_help_">
    <property name="text">
     <string>&amp;Help</string>
    </property>
@@ -361,12 +376,12 @@
     <string>F1</string>
    </property>
   </action>
-  <action name="actionSaveProjectAs">
+  <action name="action_save_project_as_">
    <property name="text">
     <string>Save Project As</string>
    </property>
   </action>
-  <action name="actionSelectAll">
+  <action name="action_select_all_">
    <property name="text">
     <string>Select &amp;All</string>
    </property>
@@ -374,7 +389,7 @@
     <string>Ctrl+A</string>
    </property>
   </action>
-  <action name="actionInvertSelection">
+  <action name="action_invert_selection_">
    <property name="text">
     <string>Invert Selection</string>
    </property>
@@ -392,6 +407,11 @@
    <extends>QTableView</extends>
    <header>pcl/apps/cloud_composer/item_inspector.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QUndoView</class>
+   <extends>QWidget</extends>
+   <header>qundoview.h</header>
   </customwidget>
  </customwidgets>
  <resources>

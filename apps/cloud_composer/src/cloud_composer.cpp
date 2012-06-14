@@ -18,9 +18,6 @@ pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
   this->setCorner (Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
   this->setCorner (Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
-  this->connectFileActionsToSlots ();
-  this->connectEditActionsToSlots ();
-  
   //Register types in Qt
   qRegisterMetaType<sensor_msgs::PointCloud2::Ptr> ("PointCloud2Ptr");
   qRegisterMetaType<GeometryHandler::ConstPtr> ("GeometryHandlerConstPtr");
@@ -30,9 +27,7 @@ pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
   qRegisterMetaType<ProjectModel> ("ProjectModel");
   qRegisterMetaType<CloudView> ("CloudView");
   
-  //Auto connect signals and slots
- // QMetaObject::connectSlotsByName(this);
-  
+
   last_directory_ = QDir (".");
   current_model_ = 0;
   
@@ -40,12 +35,19 @@ pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
   initializeCloudViewer();
   initializeItemInspector();
   
+  undo_group_ = new QUndoGroup (this);
+  undo_view_->setGroup (undo_group_);
+  
+  //Auto connect signals and slots
+  // QMetaObject::connectSlotsByName(this);
+  this->connectFileActionsToSlots ();
+  this->connectEditActionsToSlots ();
 }
 
 pcl::cloud_composer::ComposerMainWindow::~ComposerMainWindow ()
 {
   foreach (ProjectModel* to_delete, name_model_map_.values ())
-    to_delete->deleteLater();
+    to_delete->deleteLater ();
 }
 
 void
@@ -58,6 +60,19 @@ pcl::cloud_composer::ComposerMainWindow::connectFileActionsToSlots ()
 void
 pcl::cloud_composer::ComposerMainWindow::connectEditActionsToSlots ()
 {
+  //Replace the actions in the menu with undo actions created using the undo group
+  QAction* action_temp = undo_group_->createUndoAction (this);
+  action_temp->setShortcut (action_undo_->shortcut ());
+  menuEdit->insertAction (action_redo_, action_temp);
+  menuEdit->removeAction (action_undo_);
+  action_undo_ = action_temp;
+  
+  action_temp = undo_group_->createRedoAction (this);
+  action_temp->setShortcut (action_redo_->shortcut ());
+  menuEdit->insertAction (action_redo_, action_temp);
+  menuEdit->removeAction (action_redo_);
+  action_redo_ = action_temp;
+  
 
 }
 
@@ -90,16 +105,16 @@ pcl::cloud_composer::ComposerMainWindow::setCurrentModel (ProjectModel* model)
   cloud_browser_->setSelectionModel (current_model_->getSelectionModel ());
   cloud_viewer_->setModel (current_model_);
   item_inspector_->setProjectAndSelectionModels (current_model_, current_model_->getSelectionModel ());
-
+  undo_group_->setActiveStack (current_model_->getUndoStack ());
 }
 
 
 ///////// FILE MENU SLOTS ///////////
 void
-pcl::cloud_composer::ComposerMainWindow::on_actionNewProject_triggered (QString name)
+pcl::cloud_composer::ComposerMainWindow::on_action_new_project__triggered (QString name)
 {
   qDebug () << "Creating New Project";
-  ProjectModel* newProjectModel = new ProjectModel (this);
+  ProjectModel* new_project_model = new ProjectModel (this);
   // Check if we have a project with this name already, append int if so
   if (name_model_map_.contains (name))
   {
@@ -109,46 +124,47 @@ pcl::cloud_composer::ComposerMainWindow::on_actionNewProject_triggered (QString 
     name = name + tr ("-%1").arg (k);
   }
   
-  newProjectModel->setName (name);
-  name_model_map_.insert (name,newProjectModel);
-  setCurrentModel (newProjectModel);
+  new_project_model->setName (name);
+  name_model_map_.insert (name,new_project_model);
+  undo_group_->addStack (new_project_model->getUndoStack ());
+  setCurrentModel (new_project_model);
   
 }
 
 
 void
-pcl::cloud_composer::ComposerMainWindow::on_actionOpenCloudAsNewProject_triggered ()
+pcl::cloud_composer::ComposerMainWindow::on_action_open_cloud_as_new_project__triggered ()
 {
   qDebug () << "Opening cloud as new project";
 }
 
 void
-pcl::cloud_composer::ComposerMainWindow::on_actionOpenProject_triggered ()
+pcl::cloud_composer::ComposerMainWindow::on_action_open_project__triggered ()
 {
   qDebug () << "Opening Project";
 }
 
 void
-pcl::cloud_composer::ComposerMainWindow::on_actionSaveProject_triggered ()
+pcl::cloud_composer::ComposerMainWindow::on_action_save_project__triggered ()
 {
   qDebug () << "Saving Project";
 }
 
 void
-pcl::cloud_composer::ComposerMainWindow::on_actionSaveProjectAs_triggered ()
+pcl::cloud_composer::ComposerMainWindow::on_action_save_project_as__triggered ()
 {
   qDebug () << "Saving Project As...";
 }
 
 void
-pcl::cloud_composer::ComposerMainWindow::on_actionExit_triggered ()
+pcl::cloud_composer::ComposerMainWindow::on_action_exit__triggered ()
 {
   qDebug () << "Exiting...";
 }
 
 ///////// EDIT MENU SLOTS ////////////
 void
-pcl::cloud_composer::ComposerMainWindow::on_actionInsertFromFile_triggered ()
+pcl::cloud_composer::ComposerMainWindow::on_action_insert_from_file__triggered ()
 {
   qDebug () << "Inserting cloud from file...";
   QString filename = QFileDialog::getOpenFileName (0,tr ("Select cloud to open"), last_directory_.absolutePath (), tr ("PointCloud(*.pcd)"));
@@ -159,7 +175,7 @@ pcl::cloud_composer::ComposerMainWindow::on_actionInsertFromFile_triggered ()
 
     
     if (!current_model_)
-      actionNewProject->trigger ();
+      action_new_project_->trigger ();
     
     current_model_->insertNewCloudFromFile (filename);
     
@@ -168,7 +184,7 @@ pcl::cloud_composer::ComposerMainWindow::on_actionInsertFromFile_triggered ()
 }
 
 void
-pcl::cloud_composer::ComposerMainWindow::on_actionInsertFromOpenNiSource_triggered ()
+pcl::cloud_composer::ComposerMainWindow::on_action_insert_from_openNi_source__triggered ()
 {
   qDebug () << "Inserting cloud from OpenNi Source...";
 }

@@ -6,8 +6,8 @@
 pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
   : QStandardItemModel (parent)
 {
-  selection_model_ = new QItemSelectionModel(this);
-  
+  selection_model_ = new QItemSelectionModel (this);
+  undo_stack_ = new QUndoStack ();
 }
 
 pcl::cloud_composer::ProjectModel::ProjectModel (const ProjectModel& to_copy)
@@ -76,5 +76,11 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromFile (QString filename)
   QStandardItem* new_item = new CloudItem (short_filename, cloud_blob, origin, orientation);
    
   invisibleRootItem ()->appendRow (new_item);
+}
+
+bool 
+pcl::cloud_composer::ProjectModel::setData (const QModelIndex &index, const QVariant &val, int role)
+{
+  QStandardItemModel::setData (index, val, role);
 }
 

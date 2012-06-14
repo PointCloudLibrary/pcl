@@ -54,6 +54,7 @@ namespace pcl
 {
   namespace cloud_composer
   {
+    class PropertyModel;
     
     class CloudComposerItem : public QStandardItem
     {

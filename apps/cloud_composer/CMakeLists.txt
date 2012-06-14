@@ -55,7 +55,10 @@ if(build)
              include/pcl/apps/${SUBSYS_NAME}/cloud_view.h
              include/pcl/apps/${SUBSYS_NAME}/item_inspector.h
              include/pcl/apps/${SUBSYS_NAME}/cloud_composer_item.h
-             include/pcl/apps/${SUBSYS_NAME}/cloud_item.h)
+             include/pcl/apps/${SUBSYS_NAME}/cloud_item.h
+             include/pcl/apps/${SUBSYS_NAME}/tool_interface/abstract_tool.h
+             include/pcl/apps/${SUBSYS_NAME}/tool_interface/tool_factory.h
+             include/pcl/apps/${SUBSYS_NAME}/commands.h)
     set(srcs src/main.cpp 
              src/cloud_composer.cpp
              src/project_model.cpp
@@ -63,7 +66,8 @@ if(build)
              src/cloud_view.cpp
              src/item_inspector.cpp
              src/cloud_composer_item.cpp
-             src/cloud_item.cpp)
+             src/cloud_item.cpp
+             src/commands.cpp)
     set(uis src/cloud_composer_main_window.ui)
     set(resources resources/resources.qrc)
 
@@ -81,6 +85,21 @@ if(build)
     
     PCL_MAKE_PKGCONFIG(${EXE_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" "" "" "" "")
     
+
+    #TOOL BUILDING SCRIPTS
+    set(INTERFACE_HEADERS include/pcl/apps/${SUBSYS_NAME}/tool_interface/tool_factory.h 
+                          include/pcl/apps/${SUBSYS_NAME}/tool_interface/abstract_tool.h)
+
+    QT4_WRAP_CPP(INTERFACE_HEADERS_MOC ${INTERFACE_HEADERS})
+    PCL_ADD_LIBRARY(pcl_cc_tool_interface ${SUBSYS_NAME} ${INTERFACE_HEADERS_MOC})
+
+    include(ComposerTool.cmake REQUIRED)
+    
+    set (DEPS pcl_features pcl_kdtree)
+    set (TOOL_SOURCES tools/normal_estimation.cpp)
+    set (TOOL_HEADERS include/pcl/apps/${SUBSYS_NAME}/tools/normal_estimation.h)
+    define_composer_tool (normal_estimation ${TOOL_SOURCES} ${TOOL_HEADERS} ${DEPS})
+
   endif ()  #VTK_FOUND AND QT4_FOUND AND VTK_USE_QVTK
 
 

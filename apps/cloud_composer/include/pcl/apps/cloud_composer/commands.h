@@ -35,29 +35,34 @@
  *
  */
 
-#ifndef TOOL_FACTORY_H_
-#define TOOL_FACTORY_H_
+#ifndef COMMANDS_H_
+#define COMMANDS_H_
 
-#include <QtPlugin>
-#include <QStandardItem>
+#include <QUndoCommand>
+
+#include <pcl/apps/cloud_composer/cloud_item.h>
+#include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 
 namespace pcl
 {
   namespace cloud_composer
   {
-    class AbstractTool;
-    
-    class ToolFactory
+    class ModifyCloudCommand : public QUndoCommand
     {
-      public:
-        virtual AbstractTool* createTool (QObject* parent) = 0;
-        virtual QStandardItem* toolItem() = 0;
-
+      public: 
+        ModifyCloudCommand (AbstractTool* tool, CloudItem* cloud_item, QUndoCommand* parent = 0);
+      
+        void
+        undo ();
+      
+        void
+        redo ();
+      private:
+        AbstractTool* tool_;
+        CloudItem* cloud_item_;
+      
+      
     };
   }
-}
-
-Q_DECLARE_INTERFACE(pcl::cloud_composer::ToolFactory,
-                    "cloud_composer.ToolFactory/1.0")
-
-#endif //TOOL_FACTORY_H_
+} 
+#endif //COMMANDS_H_

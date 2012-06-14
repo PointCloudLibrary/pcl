@@ -69,14 +69,14 @@ pcl::cloud_composer::ItemInspector::selectionChanged (const QModelIndex &current
 void
 pcl::cloud_composer::ItemInspector::storeTreeState ()
 {
-  QList <QStandardItem*> expanded_list;
+  QList <QPersistentModelIndex> expanded_list;
   int row_count = current_item_model_->rowCount ();
   for (int i = 0; i < row_count ; ++i)
   {
     QModelIndex index = current_item_model_->index (i, 0);
     if (this->isExpanded (index))
     {
-      expanded_list << current_item_model_->itemFromIndex (index);
+      expanded_list <<  QPersistentModelIndex (index);
     }
   }
   // save list
@@ -89,10 +89,9 @@ pcl::cloud_composer::ItemInspector::restoreTreeState ()
   if (item_treestate_map_.contains (current_item_model_))
   {
     this->setUpdatesEnabled (false);
-    QList <QStandardItem*> expanded_list = item_treestate_map_.value (current_item_model_);
-    foreach (QStandardItem* item, expanded_list) 
+    ;
+    foreach (QPersistentModelIndex item_index, item_treestate_map_.value (current_item_model_)) 
     {
-      QModelIndex item_index = current_item_model_->indexFromItem (item);
       if (item_index.isValid ())
        this->setExpanded (item_index, true);
     }

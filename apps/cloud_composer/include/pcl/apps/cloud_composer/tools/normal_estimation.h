@@ -35,31 +35,39 @@
  *
  */
 
-#ifndef ABSTRACT_TOOL_H_
-#define ABSTRACT_TOOL_H_
+#ifndef NORMAL_ESTIMATION_H_
+#define NORMAL_ESTIMATION_H_
 
-#include <QObject>
+#include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
+#include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
+#include <pcl/features/normal_3d.h>
+
 
 namespace pcl
 {
   namespace cloud_composer
   {
-    
-    class AbstractTool : public QObject
+    class NormalEstimationTool : public AbstractTool
     {
-      Q_OBJECT
-      public:
-        AbstractTool (QObject* parent = 0) 
-                      : QObject (parent) 
-                      {}
-        virtual ~AbstractTool ();
-        
-        virtual 
-        
-
+    
+      
+      
     };
+
+    class NormalEstimationToolFactory : public QObject, public ToolFactory
+    {
+      
+      
+    };
+
+
+
   }
 }
 
 
-#endif //ABSTRACT_TOOL_H_
+
+
+
+
+#endif //NORMAL_ESTIMATION_H_
