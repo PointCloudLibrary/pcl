@@ -40,7 +40,7 @@
 #include <pcl/recognition/ransac_based/model_library.h>
 #include <pcl/recognition/ransac_based/obj_rec_ransac.h>
 #include <pcl/recognition/impl/ransac_based/voxel_structure.hpp>
-#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/kdtree/impl/kdtree_flann.hpp>
 #include <Eigen/Core>
 #include <vector>
 
