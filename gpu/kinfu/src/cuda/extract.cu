@@ -36,9 +36,9 @@
  */
 
 #include "device.hpp"
-#include <pcl/gpu/utils/device/funcattrib.hpp>
-#include <pcl/gpu/utils/device/block.hpp>
-#include <pcl/gpu/utils/device/warp.hpp>
+//#include <pcl/gpu/utils/device/funcattrib.hpp>
+//include <pcl/gpu/utils/device/block.hpp>
+//#include <pcl/gpu/utils/device/warp.hpp>
 
 namespace pcl
 {
@@ -85,9 +85,19 @@ namespace pcl
       {
         int x = threadIdx.x + blockIdx.x * CTA_SIZE_X;
         int y = threadIdx.y + blockIdx.y * CTA_SIZE_Y;
+       
+#if __CUDA_ARCH__ < 200
+        __shared__ int cta_buffer[CTA_SIZE];
+#endif
 
+#if __CUDA_ARCH__ >= 120
         if (__all (x >= VOLUME_X) || __all (y >= VOLUME_Y))
           return;
+#else         
+        if (Emulation::All(x >= VOLUME_X, cta_buffer) || 
+            Emulation::All(y >= VOLUME_Y, cta_buffer))
+            return;
+#endif
 
         float3 V;
         V.x = (x + 0.5f) * cell_size.x;
@@ -178,8 +188,14 @@ namespace pcl
           }            /* if (x < VOLUME_X && y < VOLUME_Y) */
 
 
+#if __CUDA_ARCH__ >= 200
           ///not we fulfilled points array at current iteration
           int total_warp = __popc (__ballot (local_count > 0)) + __popc (__ballot (local_count > 1)) + __popc (__ballot (local_count > 2));
+#else
+          int tid = Block::flattenedThreadId();				
+		  cta_buffer[tid] = local_count;
+          int total_warp = Emulation::warp_reduce(cta_buffer, tid);
+#endif
 
           if (total_warp > 0)
           {

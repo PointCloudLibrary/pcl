@@ -37,7 +37,7 @@
 
 #include "device.hpp"
 
-#include "pcl/gpu/utils/device/vector_math.hpp"
+//#include "pcl/gpu/utils/device/vector_math.hpp"
 
 namespace pcl
 {

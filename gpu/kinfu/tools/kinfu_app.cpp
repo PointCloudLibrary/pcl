@@ -306,9 +306,10 @@ struct ImageView
       paint3DView (colors_device_, view_device_);
     }
 
+
     int cols;
     view_device_.download (view_host_, cols);
-    viewerScene_.showRGBImage (reinterpret_cast<unsigned char*> (&view_host_[0]), view_device_.cols (), view_device_.rows ());
+    viewerScene_.showRGBImage (reinterpret_cast<unsigned char*> (&view_host_[0]), view_device_.cols (), view_device_.rows ());    
 
     //viewerColor_.showRGBImage ((unsigned char*)&rgb24.data, rgb24.cols, rgb24.rows);
 
@@ -649,7 +650,7 @@ struct KinFuApp
         else
           has_image = kinfu_ (depth_device_);                  
       }
-
+      
       image_view_.showDepth (depth);
       //image_view_.showGeneratedDepth(kinfu_, kinfu_.getCameraPose());
     }
@@ -684,13 +685,13 @@ struct KinFuApp
     {
       Eigen::Affine3f viewer_pose = getViewerPose(scene_cloud_view_.cloud_viewer_);
       image_view_.showScene (kinfu_, rgb24, registration_, independent_camera_ ? &viewer_pose : 0);
-    }
+    }    
 
     if (current_frame_cloud_view_)
-      current_frame_cloud_view_->show (kinfu_);
+      current_frame_cloud_view_->show (kinfu_);    
       
     if (!independent_camera_)
-      setViewerPose (scene_cloud_view_.cloud_viewer_, kinfu_.getCameraPose());    
+      setViewerPose (scene_cloud_view_.cloud_viewer_, kinfu_.getCameraPose());        
   }
   
   void source_cb1(const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper)  
@@ -978,8 +979,8 @@ main (int argc, char* argv[])
   pcl::gpu::setDevice (device);
   pcl::gpu::printShortCudaDeviceInfo (device);
 
-  if (checkIfPreFermiGPU(device))
-    return cout << endl << "Kinfu is supported only for Fermi and Kepler arhitectures. It is not even compiled for pre-Fermi by default. Exiting..." << endl, 1;
+//  if (checkIfPreFermiGPU(device))
+//    return cout << endl << "Kinfu is supported only for Fermi and Kepler arhitectures. It is not even compiled for pre-Fermi by default. Exiting..." << endl, 1;
   
   boost::shared_ptr<pcl::Grabber> capture;
   

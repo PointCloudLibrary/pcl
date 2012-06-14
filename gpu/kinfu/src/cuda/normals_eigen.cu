@@ -36,7 +36,7 @@
  */
 
 #include "device.hpp"
-#include <pcl/gpu/features/device/eigen.hpp>
+//#include <pcl/gpu/features/device/eigen.hpp>
 
 namespace pcl
 {

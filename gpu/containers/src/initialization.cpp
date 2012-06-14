@@ -124,8 +124,8 @@ namespace
                 return gpuArchCoresPerSM[index].Cores;
             index++;
         }
-        printf("\nMapSMtoCores undefined SMversion %d.%d!\n", major, minor);
-        return -1;
+        printf("\nCan't determine number of cores. Unknown SM version %d.%d!\n", major, minor);
+        return 0;
     }
 }
 
@@ -158,13 +158,13 @@ void pcl::gpu::printCudaDeviceInfo(int device)
         cudaDeviceProp prop;
         cudaSafeCall( cudaGetDeviceProperties(&prop, dev) );
 
+        int sm_cores = convertSMVer2Cores(prop.major, prop.minor);
+
         printf("\nDevice %d: \"%s\"\n", dev, prop.name);        
         printf("  CUDA Driver Version / Runtime Version          %d.%d / %d.%d\n", driverVersion/1000, driverVersion%100, runtimeVersion/1000, runtimeVersion%100);
         printf("  CUDA Capability Major/Minor version number:    %d.%d\n", prop.major, prop.minor);        
         printf("  Total amount of global memory:                 %.0f MBytes (%llu bytes)\n", (float)prop.totalGlobalMem/1048576.0f, (unsigned long long) prop.totalGlobalMem);            
-        printf("  (%2d) Multiprocessors x (%2d) CUDA Cores/MP:     %d CUDA Cores\n", 
-            prop.multiProcessorCount, convertSMVer2Cores(prop.major, prop.minor),
-            convertSMVer2Cores(prop.major, prop.minor) * prop.multiProcessorCount);
+        printf("  (%2d) Multiprocessors x (%2d) CUDA Cores/MP:     %d CUDA Cores\n", prop.multiProcessorCount, sm_cores, sm_cores * prop.multiProcessorCount);
         printf("  GPU Clock Speed:                               %.2f GHz\n", prop.clockRate * 1e-6f);
 
 #if (CUDART_VERSION >= 4000)
@@ -242,7 +242,7 @@ void pcl::gpu::printShortCudaDeviceInfo(int device)
         cudaDeviceProp prop;
         cudaSafeCall( cudaGetDeviceProperties(&prop, dev) );
 
-        const char *arch_str = prop.major < 2 ? " (not Fermi)" : "";
+        const char *arch_str = prop.major < 2 ? " (pre-Fermi)" : "";
         printf("Device %d:  \"%s\"  %.0fMb", dev, prop.name, (float)prop.totalGlobalMem/1048576.0f);                
         printf(", sm_%d%d%s, %d cores", prop.major, prop.minor, arch_str, convertSMVer2Cores(prop.major, prop.minor) * prop.multiProcessorCount);                
         printf(", Driver/Runtime ver.%d.%d/%d.%d\n", driverVersion/1000, driverVersion%100, runtimeVersion/1000, runtimeVersion%100);

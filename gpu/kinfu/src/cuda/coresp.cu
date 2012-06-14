@@ -36,7 +36,7 @@
  */
 
 #include "device.hpp"
-#include <pcl/gpu/utils/device/block.hpp>
+//#include <pcl/gpu/utils/device/block.hpp>
 
 namespace pcl
 {

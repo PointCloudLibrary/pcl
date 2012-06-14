@@ -1,7 +1,7 @@
 set(SUBSYS_NAME gpu_kinfu)
 set(SUBSYS_PATH gpu/kinfu)
 set(SUBSYS_DESC "Kinect Fusion implementation")
-set(SUBSYS_DEPS common visualization io gpu_containers gpu_utils gpu_features geometry search)
+set(SUBSYS_DEPS common visualization io gpu_containers geometry search)
 
 set(build FALSE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -40,11 +40,13 @@ if (build)
 		add_definitions(-DPCLAPI_EXPORTS)
 	endif()
 	
+	#set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} "-gencode;arch=compute_11,code=compute_11;-gencode;arch=compute_12,code=compute_12")
+	
 	if(TRUE)
 		#list(REMOVE_ITEM cuda ${est})
 		#CUDA_COMPILE(est_objs ${est})		
 				   
-		set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} "--ftz=true;--prec-div=false;--prec-sqrt=false") 
+		set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} "--ftz=true;--prec-div=false;--prec-sqrt=false")		
 		CUDA_COMPILE(cuda_objs ${cuda})		
 		
 		#LIST(APPEND cuda ${est})

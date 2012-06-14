@@ -23,6 +23,7 @@ if(BUILD_GPU)
         endif()
 
         set(CUDA_ARCH_PTX "" CACHE STRING "Specify 'virtual' PTX arch to build PTX intermediate code for. Example: 1.0 1.2 or 10 12")
+		#set(CUDA_ARCH_PTX "1.1 1.2" CACHE STRING "Specify 'virtual' PTX arch to build PTX intermediate code for. Example: 1.0 1.2 or 10 12")
 
         # Guess this macros will be included in cmake distributive
         include(${PCL_SOURCE_DIR}/cmake/CudaComputeTargetFlags.cmake)
