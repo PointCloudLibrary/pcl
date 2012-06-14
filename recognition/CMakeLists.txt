@@ -81,7 +81,7 @@ if(build)
         src/cg/hough_3d.cpp
         src/cg/geometric_consistency.cpp
         src/ransac_based/obj_rec_ransac.cpp
-        src/ransac_based/model_library.cpp
+        #src/ransac_based/model_library.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
