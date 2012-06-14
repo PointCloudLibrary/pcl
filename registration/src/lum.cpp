@@ -34,5 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 #include <pcl/registration/lum.h>
+#include <pcl/registration/impl/lum.hpp>
 
