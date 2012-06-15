@@ -436,7 +436,7 @@ pcl::pcl_2d::edge::ComputeDerivativeXCentral (ImageType &output, ImageType &inpu
   conv_2d->convolve  (output, kernel, input);
 }
 void
-pcl::pcl_2d::edge::ComputeDerivativeXCentral (ImageType &output, ImageType &input){
+pcl::pcl_2d::edge::ComputeDerivativeYCentral (ImageType &output, ImageType &input){
   ImageType kernel;
   kernel.resize (3);
   kernel[0].resize (1); kernel[1].resize (1); kernel[2].resize (1);

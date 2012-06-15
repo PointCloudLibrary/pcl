@@ -66,12 +66,12 @@ pcl::pcl_2d::convolution_2d::gaussianKernel  (const int kernel_size, const float
 void
 pcl::pcl_2d::convolution_2d::gaussianSmooth  (ImageType &input, ImageType &output, const int kernel_size, const float sigma){
   ImageType kernel;
-  gaussianKernel(kernel_size, sigma, kernel);
-  conv(output, kernel, input);
+  gaussianKernel  (kernel_size, sigma, kernel);
+  convolve  (output, kernel, input, BOUNDARY_OPTION_CLAMP);
 }
 
 void
-pcl::pcl_2d::convolution_2d::conv  (ImageType &output, ImageType &kernel, ImageType &input){
+pcl::pcl_2d::convolution_2d::convolve  (ImageType &output, ImageType &kernel, ImageType &input){
   int rows = input.size ();
   int cols = input[0].size ();
   int k_rows = kernel.size ();
@@ -104,7 +104,7 @@ pcl::pcl_2d::convolution_2d::conv  (ImageType &output, ImageType &kernel, ImageT
 }
 
 void
-pcl::pcl_2d::convolution_2d::conv  (ImageType &output, ImageType &kernel, ImageType &input, BOUNDARY_OPTIONS_ENUM boundary_option){
+pcl::pcl_2d::convolution_2d::convolve  (ImageType &output, ImageType &kernel, ImageType &input, BOUNDARY_OPTIONS_ENUM boundary_option){
   int rows = input.size ();
   int cols = input[0].size ();
   int k_rows = kernel.size ();
@@ -186,7 +186,7 @@ pcl::pcl_2d::convolution_2d::conv  (ImageType &output, ImageType &kernel, ImageT
     else
       if (boundary_option == BOUNDARY_OPTION_ZERO_PADDING)
       {
-        conv (output, kernel, input);
+        convolve (output, kernel, input);
       }
 }
 
