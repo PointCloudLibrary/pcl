@@ -37,15 +37,15 @@
 #define PCL_MODELER_CLOUD_ACTOR_H_
 
 #include <pcl/visualization/point_cloud_handlers.h>
-
-#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
+#include <pcl/apps/modeler/tree_item.h>
 
 namespace pcl
 {
   namespace modeler
   {
-    class PCL_EXPORTS CloudActor
+    class MainWindow;
+
+    class CloudActor : public TreeItem
     {
       public:
         typedef pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
@@ -59,8 +59,8 @@ namespace pcl
         typedef boost::shared_ptr<CloudActor> Ptr;
         typedef boost::shared_ptr<const CloudActor> ConstPtr;
 
-        CloudActor (const GeometryHandlerConstPtr &geometry_handler,
-          const ColorHandlerConstPtr &color_handler,
+        CloudActor (MainWindow* main_window,
+          const sensor_msgs::PointCloud2::Ptr &cloud,
           const std::string &id = "cloud",
           const Eigen::Vector4f& sensor_origin = Eigen::Vector4f (0, 0, 0, 0),
           const Eigen::Quaternion<float>& sensor_orientation = Eigen::Quaternion<float> (1, 0, 0 ,0));
@@ -72,7 +72,21 @@ namespace pcl
 
         std::string
         getID() {return id_;}
+
+        std::vector<std::string>
+        getAvaiableFieldNames() const;
+
+        void
+        setColorHandler(double r, double g, double b);
+        void
+        setColorHandler(const std::string& field_name);
+
+        virtual void
+        showContextMenu(const QPoint& position);
+
       private:
+        sensor_msgs::PointCloud2::Ptr cloud_;
+
         /** \brief geometry handler that can be used for rendering the data. */
         GeometryHandlerConstPtr geometry_handler_;
 
@@ -90,6 +104,8 @@ namespace pcl
 
         /** \brief Internal cell array. Used for optimizing updatePointCloud. */
         vtkSmartPointer<vtkIdTypeArray> cells_;
+
+        MainWindow*   main_window_;
 
         /** \brief Internal method. Converts the information present in the geometric
           * and color handlers into VTK PolyData+Scalars, constructs a vtkActor object.

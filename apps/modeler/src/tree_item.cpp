@@ -34,63 +34,33 @@
  *
  */
 
-#ifndef PCL_MODELER_RENDER_WIDGET_H_
-#define PCL_MODELER_RENDER_WIDGET_H_
-
-#include <QVTKWidget.h>
-#include <vtkSmartPointer.h>
 #include <pcl/apps/modeler/tree_item.h>
 
-class vtkRenderer;
-class QContextMenuEvent;
-
-namespace pcl
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::TreeItem::TreeItem() : 
+  QStandardItem()
 {
-  namespace modeler
-  {
-    class MainWindow;
-
-    class RenderWidget : public QVTKWidget, public TreeItem
-    {
-      public:
-        RenderWidget(MainWindow* main_window, size_t id, QWidget *parent = 0, Qt::WFlags flags = 0);
-        ~RenderWidget();
-
-        bool
-        getActive() const {return active_;}
-        void
-        setActive(bool active) {active_=active;}
-
-        size_t
-        getID() const {return id_;}
-        void
-        setID(size_t id) {id_=id;}
-
-        vtkSmartPointer<vtkRenderer>
-        getRenderer();
-
-        virtual QSize
-        sizeHint() const {return QSize(512, 512);}
-
-        virtual void
-        showContextMenu(const QPoint& position);
-
-      protected:
-        virtual void
-        focusInEvent ( QFocusEvent * event );
-        virtual void
-        contextMenuEvent(QContextMenuEvent *event);
-
-      private:
-        MainWindow*       main_window_;
-        bool              active_;
-        size_t            id_;
-
-      private:
-        void
-        initRenderer();
-    };
-  }
 }
 
-#endif // PCL_MODELER_RENDER_WIDGET_H_
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::TreeItem::TreeItem(const QString & text) : 
+  QStandardItem(text)
+{
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::TreeItem::TreeItem(const QIcon & icon, const QString & text) : 
+  QStandardItem(icon, text)
+{
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::TreeItem::TreeItem(int rows, int columns) : 
+  QStandardItem(rows, columns)
+{
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::TreeItem::~TreeItem()
+{
+}

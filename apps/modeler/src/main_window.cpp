@@ -40,10 +40,13 @@
 #include <pcl/apps/modeler/render_widget.h>
 #include <pcl/apps/modeler/dock_widget.h>
 #include <pcl/apps/modeler/cloud_actor.h>
+#include <pcl/apps/modeler/color_handler_switcher.h>
 
 #include <QFile>
 #include <QSettings>
 #include <QFileDialog>
+#include <QColor>
+#include <QColorDialog>
 #include <QMessageBox>
 #include <QStandardItem>
 #include <QStandardItemModel>
@@ -55,12 +58,11 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::MainWindow::MainWindow() :
   ui_(new Ui::MainWindow),
-  pcl_modeler_(new pcl::modeler::PCLModeler(this)),
-  scene_tree_(new QStandardItemModel)
+  pcl_modeler_(new pcl::modeler::PCLModeler(this))
 {
   ui_->setupUi(this);
   ui_->treeViewSceneExplorer->setHeaderHidden(true);
-  ui_->treeViewSceneExplorer->setModel(scene_tree_.get());
+  ui_->treeViewSceneExplorer->setModel(pcl_modeler_.get());
 
   RenderWidget* main_render_widget = new RenderWidget(this, 0);
   setCentralWidget(main_render_widget);
@@ -69,11 +71,12 @@ pcl::modeler::MainWindow::MainWindow() :
   // Set up action signals and slots
   connectFileMenuActions();
   connectViewMenuActions();
+  connectRenderMenuActions();
 
   loadGlobalSettings();
 
   showMaximized();
-};
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::MainWindow::~MainWindow()
@@ -85,18 +88,16 @@ pcl::modeler::MainWindow::~MainWindow()
 void
 pcl::modeler::MainWindow::setActiveDockWidget(RenderWidget* render_widget)
 {
-  for (RenderWidgets::iterator render_widgets_it = render_widgets_.begin();
-    render_widgets_it != render_widgets_.end();
-    render_widgets_it ++)
+  active_render_widget_idx_ = 0;
+  for (size_t i = 0, i_end = render_widgets_.size(); i < i_end; ++ i)
   {
-    RenderWidget* current_render_widget = *render_widgets_it;
+    RenderWidget* current_render_widget = render_widgets_[i];
     bool focused = (current_render_widget == render_widget);
     current_render_widget->setActive(focused);
-    DockWidget* dock_widget = dynamic_cast<DockWidget*>(current_render_widget->parent());
+    active_render_widget_idx_ = i;
+    DockWidget* dock_widget = dynamic_cast<DockWidget*>(current_render_widget->QVTKWidget::parent());
     if (dock_widget != NULL)
-    {
       dock_widget->setFocusBasedStyle(focused);
-    }
   }
 
   return;
@@ -111,32 +112,19 @@ pcl::modeler::MainWindow::getActiveRender()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::MainWindow::addItemToSceneTree(vtkSmartPointer<vtkRenderer> renderer, vtkSmartPointer<vtkActor> actor)
+pcl::modeler::MainWindow::addActionsToRenderWidget(QMenu* menu)
 {
-  RenderWidget* render_widget = NULL;
-  for (size_t i = 0, i_end = render_widgets_.size(); i < i_end; ++ i)
-  {
-    if (render_widgets_[i]->getRenderer() == renderer)
-    {
-      render_widget = render_widgets_[i];
-      break;
-    }
-  }
+  menu->addAction(ui_->actionOpenPointCloud);
+  menu->addAction(ui_->actionChangeBackgroundColor);
 
-  if (render_widget == NULL)
-    return;
-  
-  QStandardItem* render_widget_item = scene_tree_->itemFromIndex(render_widget->getModelIndex());
+  return;
+}
 
-  PCLModeler::CloudActorMap& cloud_actor_map = pcl_modeler_->getCloudActorMap();
-  PCLModeler::CloudActorMap::iterator cloud_actor_map_it = cloud_actor_map.find(actor);
-  if (cloud_actor_map_it == cloud_actor_map.end())
-    return;
-
-  QStandardItem* cloud_item = new QStandardItem(cloud_actor_map_it->second->getID().c_str());
-  render_widget_item->appendRow(cloud_item);
-
-  ui_->treeViewSceneExplorer->setExpanded(render_widget->getModelIndex(), true);
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::MainWindow::addActionsToCloudActor(QMenu* menu)
+{
+  menu->addAction(ui_->actionSwitchColorHandler);
 
   return;
 }
@@ -145,28 +133,36 @@ pcl::modeler::MainWindow::addItemToSceneTree(vtkSmartPointer<vtkRenderer> render
 void 
 pcl::modeler::MainWindow::connectFileMenuActions()
 {
-  connect(this->ui_->actionOpenPointCloud, SIGNAL(triggered()), this, SLOT(slotOpenPointCloud()));
-  connect(this->ui_->actionImportPointCloud, SIGNAL(triggered()), this, SLOT(slotImportPointCloud()));
-  connect(this->ui_->actionSavePointCloud, SIGNAL(triggered()), this, SLOT(slotSavePointCloud()));
-  connect(this->ui_->actionClosePointCloud, SIGNAL(triggered()), this, SLOT(slotClosePointCloud()));
+  connect(ui_->actionOpenPointCloud, SIGNAL(triggered()), this, SLOT(slotOpenPointCloud()));
+  connect(ui_->actionImportPointCloud, SIGNAL(triggered()), this, SLOT(slotImportPointCloud()));
+  connect(ui_->actionSavePointCloud, SIGNAL(triggered()), this, SLOT(slotSavePointCloud()));
+  connect(ui_->actionClosePointCloud, SIGNAL(triggered()), this, SLOT(slotClosePointCloud()));
   createRecentPointCloudActions();
 
-  connect(this->ui_->actionOpenProject, SIGNAL(triggered()), this, SLOT(slotOpenProject()));
-  connect(this->ui_->actionSaveProject, SIGNAL(triggered()), this, SLOT(slotSaveProject()));
-  connect(this->ui_->actionCloseProject, SIGNAL(triggered()), this, SLOT(slotCloseProject()));
+  connect(ui_->actionOpenProject, SIGNAL(triggered()), this, SLOT(slotOpenProject()));
+  connect(ui_->actionSaveProject, SIGNAL(triggered()), this, SLOT(slotSaveProject()));
+  connect(ui_->actionCloseProject, SIGNAL(triggered()), this, SLOT(slotCloseProject()));
   createRecentProjectActions();
 
-  connect(this->ui_->actionExit, SIGNAL(triggered()), this, SLOT(slotExit()));
+  connect(ui_->actionExit, SIGNAL(triggered()), this, SLOT(slotExit()));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::modeler::MainWindow::connectViewMenuActions()
 {
-  connect(this->ui_->actionCreateRenderWindow, SIGNAL(triggered()), this, SLOT(slotCreateRenderWindow()));
+  connect(ui_->actionCreateRenderWindow, SIGNAL(triggered()), this, SLOT(slotCreateRenderWindow()));
+  connect(ui_->actionChangeBackgroundColor, SIGNAL(triggered()), this, SLOT(slotChangeBackgroundColor()));
 
   QList<QAction *> actions = ui_->menuView->actions();
   ui_->menuView->insertAction(actions[actions.size()-2], ui_->dockWidgetSceneExplorer->toggleViewAction());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::modeler::MainWindow::connectRenderMenuActions()
+{
+  connect(ui_->actionSwitchColorHandler, SIGNAL(triggered()), this, SLOT(slotSwitchColorHandler()));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -293,6 +289,48 @@ pcl::modeler::MainWindow::slotOpenRecentProject()
   return;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::MainWindow::slotChangeBackgroundColor()
+{
+  double r, g, b;
+  getActiveRender()->GetBackground(r, g, b);
+  QColor color = QColorDialog::getColor(QColor(r, g, b), this);
+
+  if (color.isValid()) {
+    r = color.red();
+    g = color.green();
+    b = color.blue();
+    getActiveRender()->SetBackground(r, g, b);
+  }
+
+  return;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::MainWindow::slotSwitchColorHandler()
+{
+  std::vector<CloudActor*> cloud_actors;
+  QModelIndexList selected_indexes = ui_->treeViewSceneExplorer->selectionModel()->selectedIndexes();
+  for (QModelIndexList::const_iterator selected_indexes_it = selected_indexes.begin();
+    selected_indexes_it != selected_indexes.end();
+    ++ selected_indexes_it)
+  {
+    const QModelIndex& index = *selected_indexes_it;
+    QStandardItem* item = pcl_modeler_->itemFromIndex(index);
+    CloudActor* cloud_actor = dynamic_cast<CloudActor*>(item);
+    if (cloud_actor == NULL)
+      continue;
+
+    cloud_actors.push_back(cloud_actor);
+  }
+
+  ColorHandlerSwitcher color_handler_switcher_(cloud_actors, this);
+
+  return;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::modeler::MainWindow::createRecentPointCloudActions()
@@ -342,6 +380,8 @@ pcl::modeler::MainWindow::openPointCloudImpl(const QString& filename)
   {
     return (false);
   }
+
+  ui_->treeViewSceneExplorer->expand(pcl_modeler_->indexFromItem(getActiveRenderWidget()));
 
   recent_pointclouds_.removeAll(filename);
   recent_pointclouds_.prepend(filename);
@@ -461,42 +501,40 @@ pcl::modeler::MainWindow::saveGlobalSettings()
 pcl::modeler::RenderWidget*
 pcl::modeler::MainWindow::getActiveRenderWidget()
 {
-  pcl::modeler::RenderWidget* active_render_widget = NULL;
-  for (RenderWidgets::iterator render_widgets_it = render_widgets_.begin();
-    render_widgets_it != render_widgets_.end();
-    render_widgets_it ++)
-  {
-    if((*render_widgets_it)->getActive())
-    {
-      active_render_widget = (*render_widgets_it);
-    }
-  }
-
-  if (active_render_widget == NULL)
-  {
-    active_render_widget = dynamic_cast<RenderWidget*>(centralWidget());
-    active_render_widget->setActive(true);
-  }
-
-  return (active_render_widget);
+  return (render_widgets_[active_render_widget_idx_]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::modeler::MainWindow::addRenderWidget(pcl::modeler::RenderWidget* render_widget)
 {
-  QStandardItem* render_widget_item = NULL;
-  if (render_widgets_.empty())
-  {
-    render_widget_item = new QStandardItem(tr("Main Render Window"));
-  } else
-  {
-    render_widget_item = new QStandardItem(tr("Render Window %0").arg(render_widget->getID()));
-  }
-  scene_tree_->appendRow(render_widget_item);
-  render_widget->setModelIndex(scene_tree_->indexFromItem(render_widget_item));
-
+  pcl_modeler_->appendRow(render_widget);
   render_widgets_.push_back(render_widget);
+
+  setActiveDockWidget(render_widget);
+
+  return;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::MainWindow::triggerRender(vtkActor* actor)
+{
+  for (size_t i = 0, i_end = render_widgets_.size(); i < i_end; ++ i)
+  {
+    vtkSmartPointer<vtkRenderer> renderer = render_widgets_[i]->getRenderer();
+    vtkSmartPointer<vtkActorCollection> actors = renderer->GetActors();
+    actors->InitTraversal();
+    for(vtkIdType i = 0; i < actors->GetNumberOfItems(); i++)
+    {
+      vtkActor* nextActor = actors->GetNextActor();
+      if (nextActor == actor)
+      {
+        renderer->GetRenderWindow()->Render();
+        break;
+      }
+    }
+  }
 
   return;
 }

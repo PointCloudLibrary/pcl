@@ -47,7 +47,7 @@ namespace Ui
   class MainWindow;
 }
 
-class QStandardItemModel;
+class QMenu;
 class vtkActor;
 class vtkRenderer;
 class vtkRenderWindow;
@@ -59,6 +59,7 @@ namespace pcl
     class RenderWidget;
     class DockWidget;
     class PCLModeler;
+    class ColorHandlerSwitcher;
 
     class MainWindow : public QMainWindow
     {
@@ -74,8 +75,19 @@ namespace pcl
         vtkSmartPointer<vtkRenderer>
         getActiveRender();
 
+        RenderWidget*
+        getActiveRenderWidget();
+
         void
-        addItemToSceneTree(vtkSmartPointer<vtkRenderer> renderer, vtkSmartPointer<vtkActor> actor);
+        addActionsToRenderWidget(QMenu* menu);
+        void
+        addActionsToCloudActor(QMenu* menu);
+
+        const std::vector<RenderWidget*>&
+        getRenderWidgets() const {return render_widgets_;}
+
+        void
+        triggerRender(vtkActor* actor);
       public slots:
         // slots for file menu
         void 
@@ -98,6 +110,12 @@ namespace pcl
         // slots for view menu
         void
         slotCreateRenderWindow();
+        void
+        slotChangeBackgroundColor();
+
+        // slots for render menu
+        void
+        slotSwitchColorHandler();
 
       protected:
 
@@ -131,14 +149,15 @@ namespace pcl
         void 
         connectViewMenuActions();
 
+        // methods for render menu
+        void 
+        connectRenderMenuActions();
+
         // methods for global settings
         void 
         loadGlobalSettings();
         void 
         saveGlobalSettings();
-
-        RenderWidget*
-        getActiveRenderWidget();
 
         void
         addRenderWidget(RenderWidget* render_widget);
@@ -161,12 +180,10 @@ namespace pcl
         // data
         boost::shared_ptr<PCLModeler>  pcl_modeler_;
 
-        // scene tree
-        boost::shared_ptr<QStandardItemModel>     scene_tree_;
-
         // render widgets
         typedef std::vector<RenderWidget*> RenderWidgets;
-        RenderWidgets      render_widgets_;
+        RenderWidgets           render_widgets_;
+        size_t                  active_render_widget_idx_;
     };
   }
 }

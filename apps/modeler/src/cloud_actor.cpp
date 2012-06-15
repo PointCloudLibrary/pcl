@@ -35,20 +35,29 @@
  */
 
 #include <pcl/apps/modeler/cloud_actor.h>
+#include <pcl/apps/modeler/main_window.h>
 
+#include <QMenu>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::CloudActor::CloudActor (const GeometryHandlerConstPtr &geometry_handler,
-  const ColorHandlerConstPtr &color_handler,
+pcl::modeler::CloudActor::CloudActor (MainWindow* main_window,
+  const sensor_msgs::PointCloud2::Ptr &cloud,
   const std::string &id,
   const Eigen::Vector4f& sensor_origin,
   const Eigen::Quaternion<float>& sensor_orientation) : 
-  geometry_handler_(geometry_handler),
-  color_handler_(color_handler),
+  cloud_(cloud),
   id_(id),
   viewpoint_transformation_(vtkSmartPointer<vtkMatrix4x4>::New()),
-  actor_(vtkSmartPointer<vtkLODActor>::New ())
+  actor_(vtkSmartPointer<vtkLODActor>::New ()),
+  main_window_(main_window),
+  TreeItem(id.c_str())
 {
+  color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>(cloud));
+  geometry_handler_.reset(new pcl::visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2>(cloud));
+
+  if (!color_handler_->isCapable())
+    color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRandom<sensor_msgs::PointCloud2>(cloud));
+
   convertToVtkMatrix (sensor_origin, sensor_orientation, viewpoint_transformation_);
   createActorFromHandlers();
 }
@@ -232,4 +241,64 @@ pcl::modeler::CloudActor::createActorFromVTKDataSet (const vtkSmartPointer<vtkDa
   // actor->GetProperty ()->BackfaceCullingOn ();
 
   actor->SetMapper (mapper);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::CloudActor::showContextMenu(const QPoint& position)
+{
+  QMenu menu(main_window_);
+  main_window_->addActionsToCloudActor(&menu);
+  menu.exec(position);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+std::vector<std::string>
+pcl::modeler::CloudActor::getAvaiableFieldNames() const
+{
+  const std::vector< ::sensor_msgs::PointField >& fields = cloud_->fields;
+
+  std::vector<std::string> field_names;
+  for (size_t i = 0, i_end = fields.size(); i < i_end; ++ i)
+  {
+    field_names.push_back(fields[i].name);
+  }
+
+  return (field_names);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::CloudActor::setColorHandler(double r, double g, double b)
+{
+  color_handler_.reset(new pcl::visualization::PointCloudColorHandlerCustom<sensor_msgs::PointCloud2>(cloud_, r, g, b));
+
+  createActorFromHandlers();
+
+  return;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::CloudActor::setColorHandler(const std::string& field_name)
+{
+  if (field_name == "rgb")
+  {
+    color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>(cloud_));
+  }
+  else if (field_name == "hsv")
+  {
+    color_handler_.reset(new pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>(cloud_));
+  }
+  else
+  {
+    color_handler_.reset(new pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>(cloud_, field_name));
+  }
+
+  createActorFromHandlers();
+  main_window_->triggerRender(actor_.GetPointer());
+
+  return;
 }

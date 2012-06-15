@@ -34,65 +34,32 @@
  *
  */
 
-#ifndef PCL_MODELER_PCLMODELER_H_
-#define PCL_MODELER_PCLMODELER_H_
+#ifndef PCL_MODELER_TREE_ITEM_H_
+#define PCL_MODELER_TREE_ITEM_H_
 
-#include <map>
-
-#include <QStandardItemModel>
-
-#include <vtkLODActor.h>
-#include <pcl/visualization/point_cloud_handlers.h>
+#include <QStandardItem>
+#include <QPoint>
 
 namespace pcl
 {
   namespace modeler
   {
-    class CloudActor;
-    class MainWindow;
-    class TreeItem;
-
-    /** \brief PCL Modeler main class.
-      * \author Yangyan Li
-      * \ingroup apps
-      */
-    class PCL_EXPORTS PCLModeler : public QStandardItemModel
+    class TreeItem : public QStandardItem
     {
       public:
-        typedef pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
-        typedef GeometryHandler::Ptr GeometryHandlerPtr;
-        typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
+        TreeItem();
+        TreeItem(const QString & text);
+        TreeItem(const QIcon & icon, const QString & text);
+        TreeItem(int rows, int columns = 1);
+        ~TreeItem();
 
-        typedef pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
-        typedef ColorHandler::Ptr ColorHandlerPtr;
-        typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
+        virtual void
+        showContextMenu(const QPoint& position) = 0;
+      protected:
 
-        /** \brief PCL Modeler constructor.
-          * \param[in] main_window pointer to the MainWindow
-          */
-        PCLModeler (MainWindow* main_window);
-
-        /** \brief PCL Modeler destructor. */
-        virtual ~PCLModeler ();
-
-        bool
-        openPointCloud(const std::string& filename);
-
-        typedef std::map<vtkSmartPointer<vtkActor>, boost::shared_ptr<CloudActor> > CloudActorMap;
-        CloudActorMap&
-        getCloudActorMap() {return cloud_actor_map_;}
-        const CloudActorMap&
-        getCloudActorMap() const {return cloud_actor_map_;}
       private:
-        /** \brief Internal. actor to cloud actor map*/
-        CloudActorMap   cloud_actor_map_;
-
-        /** \brief Internal. pointer to the MainWindow*/
-        MainWindow*     main_window_;
     };
   }
 }
 
-#include <pcl/apps/modeler/impl/pcl_modeler.hpp>
-
-#endif // PCL_MODELER_PCLMODELER_H_
+#endif // PCL_MODELER_TREE_ITEM_H_

@@ -34,65 +34,52 @@
  *
  */
 
-#ifndef PCL_MODELER_PCLMODELER_H_
-#define PCL_MODELER_PCLMODELER_H_
+#ifndef PCL_MODELER_COLOR_HANDLER_SWITCHER_H_
+#define PCL_MODELER_COLOR_HANDLER_SWITCHER_H_
 
-#include <map>
-
-#include <QStandardItemModel>
-
-#include <vtkLODActor.h>
 #include <pcl/visualization/point_cloud_handlers.h>
+#include <QDialog>
+
+class QColorDialog;
+
+// Forward Qt class declarations
+namespace Ui
+{
+  class ColorHandlerSwitcher;
+}
 
 namespace pcl
 {
   namespace modeler
   {
     class CloudActor;
-    class MainWindow;
-    class TreeItem;
 
-    /** \brief PCL Modeler main class.
-      * \author Yangyan Li
-      * \ingroup apps
-      */
-    class PCL_EXPORTS PCLModeler : public QStandardItemModel
+    class ColorHandlerSwitcher : public QDialog
     {
+      Q_OBJECT
+
       public:
-        typedef pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
-        typedef GeometryHandler::Ptr GeometryHandlerPtr;
-        typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
+        ColorHandlerSwitcher(const std::vector<CloudActor*>& cloud_actors, QWidget * parent = 0, Qt::WindowFlags f = 0);
+        ~ColorHandlerSwitcher();
 
-        typedef pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
-        typedef ColorHandler::Ptr ColorHandlerPtr;
-        typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
+        void
+        apply(const std::vector<CloudActor*>& cloud_actors);
 
-        /** \brief PCL Modeler constructor.
-          * \param[in] main_window pointer to the MainWindow
-          */
-        PCLModeler (MainWindow* main_window);
-
-        /** \brief PCL Modeler destructor. */
-        virtual ~PCLModeler ();
-
-        bool
-        openPointCloud(const std::string& filename);
-
-        typedef std::map<vtkSmartPointer<vtkActor>, boost::shared_ptr<CloudActor> > CloudActorMap;
-        CloudActorMap&
-        getCloudActorMap() {return cloud_actor_map_;}
-        const CloudActorMap&
-        getCloudActorMap() const {return cloud_actor_map_;}
       private:
-        /** \brief Internal. actor to cloud actor map*/
-        CloudActorMap   cloud_actor_map_;
+        Ui::ColorHandlerSwitcher            *ui_; // Designer form
+        QColorDialog*                       color_picker_;
+        std::vector<CloudActor*>            cloud_actors_;
 
-        /** \brief Internal. pointer to the MainWindow*/
-        MainWindow*     main_window_;
+        void
+        setupAvaiableFieldNames();
+
+      private slots:
+        void
+        slotSwitchColorHandler();
+        void
+        slotToggleColorPicker(const QString &text);
     };
   }
 }
 
-#include <pcl/apps/modeler/impl/pcl_modeler.hpp>
-
-#endif // PCL_MODELER_PCLMODELER_H_
+#endif // PCL_MODELER_COLOR_HANDLER_SWITCHER_H_

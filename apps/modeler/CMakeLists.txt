@@ -31,22 +31,30 @@ if(build)
   include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include)
 
   # Set Qt files and resources here  
-  set(uis main_window.ui)
-  set(moc_incs include/pcl/apps/${SUBSYS_NAME}/main_window.h)
+  set(uis main_window.ui
+           color_handler_switcher.ui)
+  set(moc_incs include/pcl/apps/${SUBSYS_NAME}/main_window.h
+           include/pcl/apps/${SUBSYS_NAME}/color_handler_switcher.h)
+
   set(resources resources/resources.qrc)
 
   set(incs ${moc_incs}
-           include/pcl/apps/${SUBSYS_NAME}/cloud_actor.h
            include/pcl/apps/${SUBSYS_NAME}/pcl_modeler.h
+           include/pcl/apps/${SUBSYS_NAME}/cloud_actor.h
            include/pcl/apps/${SUBSYS_NAME}/render_widget.h
-           include/pcl/apps/${SUBSYS_NAME}/dock_widget.h)
+           include/pcl/apps/${SUBSYS_NAME}/dock_widget.h
+           include/pcl/apps/${SUBSYS_NAME}/tree_item.h
+           include/pcl/apps/${SUBSYS_NAME}/tree_view.h)
 
   set(srcs src/main.cpp
            src/main_window.cpp
-           src/cloud_actor.cpp
+           src/color_handler_switcher.cpp
            src/pcl_modeler.cpp
+           src/cloud_actor.cpp
            src/render_widget.cpp
-           src/dock_widget.cpp)
+           src/dock_widget.cpp
+           src/tree_item.cpp
+           src/tree_view.cpp)
 
   set(impl_incs include/pcl/apps/${SUBSYS_NAME}/impl/pcl_modeler.hpp)
 

@@ -35,20 +35,22 @@
 
 
 #include <pcl/apps/modeler/pcl_modeler.h>
+#include <pcl/apps/modeler/render_widget.h>
 #include <pcl/apps/modeler/cloud_actor.h>
 #include <pcl/apps/modeler/main_window.h>
 #include <pcl/io/pcd_io.h>
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::PCLModeler::PCLModeler (MainWindow* main_window) : 
-  main_window_(main_window)
+pcl::modeler::PCLModeler::PCLModeler(MainWindow* main_window) : 
+  main_window_(main_window),
+  QStandardItemModel(main_window)
 {
   return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::PCLModeler::~PCLModeler ()
+pcl::modeler::PCLModeler::~PCLModeler()
 {
   return;
 }
@@ -77,17 +79,13 @@ pcl::modeler::PCLModeler::openPointCloud(const std::string& filename)
   camera->SetFocalPoint(origin [0] + rotation (0, 2), origin [1] + rotation (1, 2), origin [2] + rotation (2, 2));
   camera->SetViewUp(rotation (0, 1), rotation (1, 1), rotation (2, 1));
 
-  ColorHandlerPtr color_handler;
-  color_handler.reset(new pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>(cloud));
-  GeometryHandlerPtr geometry_handler;
-  geometry_handler.reset(new pcl::visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2>(cloud));
-
-  CloudActor::Ptr cloud_actor(new CloudActor(geometry_handler, color_handler, filename, origin, orientation));
+  CloudActor::Ptr cloud_actor(new CloudActor(main_window_, cloud, filename, origin, orientation));
   renderer->AddActor(cloud_actor->getActor());
-  renderer->Render();
+  renderer->GetRenderWindow()->Render();
 
   cloud_actor_map_[cloud_actor->getActor()] = cloud_actor;
-  main_window_->addItemToSceneTree(renderer, cloud_actor->getActor());
+
+  main_window_->getActiveRenderWidget()->appendRow(cloud_actor.get());
 
   return (true);
 }

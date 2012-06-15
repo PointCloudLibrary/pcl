@@ -84,6 +84,7 @@
     </property>
     <addaction name="separator"/>
     <addaction name="actionCreateRenderWindow"/>
+    <addaction name="actionChangeBackgroundColor"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -92,8 +93,15 @@
     <addaction name="actionHelp"/>
     <addaction name="actionAboutPCLModeler"/>
    </widget>
+   <widget class="QMenu" name="menuRender">
+    <property name="title">
+     <string>Render</string>
+    </property>
+    <addaction name="actionSwitchColorHandler"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
+   <addaction name="menuRender"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -116,7 +124,7 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QTreeView" name="treeViewSceneExplorer"/>
+      <widget class="pcl::modeler::TreeView" name="treeViewSceneExplorer"/>
      </item>
     </layout>
    </widget>
@@ -197,7 +205,24 @@
     <string>Scene Explorer</string>
    </property>
   </action>
+  <action name="actionChangeBackgroundColor">
+   <property name="text">
+    <string>Change Background Color</string>
+   </property>
+  </action>
+  <action name="actionSwitchColorHandler">
+   <property name="text">
+    <string>Switch Color Handler</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>pcl::modeler::TreeView</class>
+   <extends>QTreeView</extends>
+   <header location="global">pcl/apps/modeler/tree_view.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="resources/resources.qrc"/>
  </resources>

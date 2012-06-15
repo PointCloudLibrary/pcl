@@ -43,9 +43,16 @@
 #include <vtkRendererCollection.h>
 #include <vtkRenderWindow.h>
 
+#include <QMenu>
+#include <QContextMenuEvent>
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::RenderWidget::RenderWidget(MainWindow* main_window, size_t id, QWidget *parent, Qt::WFlags flags) : 
-  QVTKWidget(parent, flags), main_window_(main_window), active_(false), id_(id)
+  QVTKWidget(parent, flags),
+  main_window_(main_window),
+  active_(false),
+  id_(id),
+  TreeItem((id == 0)?(QObject::tr("Main Render Window")):(QObject::tr("Render Window %1").arg(id)))
 {
   setFocusPolicy(Qt::StrongFocus);
   initRenderer();
@@ -64,6 +71,16 @@ pcl::modeler::RenderWidget::focusInEvent ( QFocusEvent * event )
   QVTKWidget::focusInEvent(event);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::RenderWidget::contextMenuEvent(QContextMenuEvent *event)
+{
+  if (event->modifiers()&Qt::ControlModifier) {
+    showContextMenu(event->globalPos());
+  }
+
+  return;
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -91,6 +108,15 @@ pcl::modeler::RenderWidget::initRenderer()
   win->GetInteractor()->SetDesiredUpdateRate (30.0);
 
   return;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::RenderWidget::showContextMenu(const QPoint& position)
+{
+  QMenu menu(this);
+  main_window_->addActionsToRenderWidget(&menu);
+  menu.exec(position);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
