@@ -67,8 +67,8 @@ class PCDOrganizedMultiPlaneSegmentation
     , polygon_refinement_ (true)
     {
       viewer.setBackgroundColor (0, 0, 0);
-      viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "cloud");
-      viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.15, "cloud");
+      //viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "cloud");
+      //viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.15, "cloud");
       viewer.addCoordinateSystem (1.0);
       viewer.initCameraParameters ();
       viewer.registerKeyboardCallback(&PCDOrganizedMultiPlaneSegmentation::keyboard_callback, *this, 0);
@@ -119,7 +119,7 @@ class PCDOrganizedMultiPlaneSegmentation
       pcl::IntegralImageNormalEstimation<PointT, pcl::Normal> ne;
       ne.setNormalEstimationMethod (ne.COVARIANCE_MATRIX);
       ne.setMaxDepthChangeFactor (0.02f);
-      ne.setNormalSmoothingSize (10.0f);
+      ne.setNormalSmoothingSize (20.0f);
       
       typename pcl::PlaneRefinementComparator<PointT, pcl::Normal, pcl::Label>::Ptr refinement_compare (new pcl::PlaneRefinementComparator<PointT, pcl::Normal, pcl::Label> ());
       refinement_compare->setDistanceThreshold (threshold_, depth_dependent_);
@@ -158,7 +158,7 @@ class PCDOrganizedMultiPlaneSegmentation
       viewer.removeAllPointClouds (0);
       viewer.removeAllShapes (0);
       pcl::visualization::PointCloudColorHandlerCustom<PointT> single_color (cloud, 0, 255, 0);
-      //viewer.addPointCloud<PointT> (cloud, single_color, "cloud");
+      viewer.addPointCloud<PointT> (cloud, single_color, "cloud");
       
       pcl::PlanarPolygon<PointT> approx_polygon;
       //Draw Visualization
