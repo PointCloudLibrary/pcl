@@ -135,6 +135,7 @@
 #include <vtkTable.h>
 #include <vtkContextView.h>
 #include <vtkContextScene.h>
+#include <vtkColorSeries.h>
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
 #  include <pcl/visualization/interactor.h>
 #else
