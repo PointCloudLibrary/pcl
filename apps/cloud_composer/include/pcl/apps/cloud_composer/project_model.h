@@ -59,7 +59,11 @@ namespace pcl
 {
   namespace cloud_composer
   {
-
+    class CloudCommand;
+    class AbstractTool;
+    class WorkQueue;
+    class CloudComposerItem;
+    
     class ProjectModel : public QStandardItemModel
     {
         Q_OBJECT
@@ -92,16 +96,23 @@ namespace pcl
         void 
         insertNewCloudFromFile (const QString filename);
         
-        /** \brief Set data reimplimentation which pushes onto undo stack and then calls standard imp.   */
-        virtual bool
-        setData (const QModelIndex &index, const QVariant &val, int role);
+        /** \brief Takes tool object issues signal to work queue to take control of it */
+        void
+        enqueueToolAction (AbstractTool* tool);
       public slots:
-
+        void 
+        commandCompleted (CloudCommand* command);
+      signals:  
+        void
+        enqueueNewAction (AbstractTool* tool, QList <const CloudComposerItem*> data);
+        
       private:
         QItemSelectionModel* selection_model_;
         vtkSmartPointer<vtkCamera> camera_; 
         QMap <QString, int> name_to_type_map_;
         QUndoStack* undo_stack_;
+        WorkQueue* work_queue_; 
+
     };
   }
 }

@@ -40,29 +40,73 @@
 
 #include <QUndoCommand>
 
-#include <pcl/apps/cloud_composer/cloud_item.h>
-#include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
+#include <pcl/apps/cloud_composer/cloud_composer_item.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 
 namespace pcl
 {
   namespace cloud_composer
   {
-    class ModifyCloudCommand : public QUndoCommand
+    class AbstractTool;
+    class CloudCommand : public QUndoCommand
     {
       public: 
-        ModifyCloudCommand (AbstractTool* tool, CloudItem* cloud_item, QUndoCommand* parent = 0);
-      
-        void
+        CloudCommand (QUndoCommand* parent = 0);
+        
+        virtual bool
+        runCommand (AbstractTool* tool) = 0;
+
+        virtual void 
+        undo ()  = 0;
+        
+        virtual void
+        redo () = 0;
+      private:
+        
+    };
+    
+    class ModifyCloudCommand : public CloudCommand
+    {
+      public: 
+        ModifyCloudCommand (QList <const CloudComposerItem*> input_data, QUndoCommand* parent = 0);
+    
+        virtual bool
+        runCommand (AbstractTool* tool);
+        
+        virtual void
         undo ();
       
-        void
+        virtual void
         redo ();
-      private:
-        AbstractTool* tool_;
-        CloudItem* cloud_item_;
       
+      private:
+        QList <const CloudComposerItem*> original_data_;
+        QList <CloudComposerItem*> output_data_;
+      
+    };
+    
+    class NewItemCloudCommand : public CloudCommand
+    {
+      public: 
+        NewItemCloudCommand (QList <const CloudComposerItem*> input_data, QUndoCommand* parent = 0);
+      
+        virtual bool
+        runCommand (AbstractTool* tool);
+        
+        virtual void
+        undo ();
+      
+        virtual void
+        redo ();
+      
+      private:
+        QList <const CloudComposerItem*> original_data_;
+        QList <CloudComposerItem*> output_data_;
       
     };
   }
 } 
+
+
 #endif //COMMANDS_H_

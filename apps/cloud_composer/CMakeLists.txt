@@ -58,7 +58,8 @@ if(build)
              include/pcl/apps/${SUBSYS_NAME}/cloud_item.h
              include/pcl/apps/${SUBSYS_NAME}/tool_interface/abstract_tool.h
              include/pcl/apps/${SUBSYS_NAME}/tool_interface/tool_factory.h
-             include/pcl/apps/${SUBSYS_NAME}/commands.h)
+             include/pcl/apps/${SUBSYS_NAME}/commands.h
+             include/pcl/apps/${SUBSYS_NAME}/work_queue.h)
     set(srcs src/main.cpp 
              src/cloud_composer.cpp
              src/project_model.cpp
@@ -67,7 +68,8 @@ if(build)
              src/item_inspector.cpp
              src/cloud_composer_item.cpp
              src/cloud_item.cpp
-             src/commands.cpp)
+             src/commands.cpp
+             src/work_queue.cpp)
     set(uis src/cloud_composer_main_window.ui)
     set(resources resources/resources.qrc)
 

@@ -59,7 +59,7 @@ namespace pcl
     class CloudComposerItem : public QStandardItem
     {
       public:
-        CloudComposerItem (const QString name);
+        CloudComposerItem (const QString name = "default item");
         CloudComposerItem (const CloudComposerItem& to_copy);
         virtual ~CloudComposerItem ();
         
@@ -97,7 +97,7 @@ namespace pcl
 }
 
 
-
+Q_DECLARE_METATYPE (pcl::cloud_composer::CloudComposerItem);
 
 
 

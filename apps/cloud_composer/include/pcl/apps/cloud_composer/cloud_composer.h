@@ -63,6 +63,7 @@ namespace pcl
     
     class ProjectModel;
     class CloudViewer;
+    class CloudCommand;
     
     /** \brief MainWindow of cloud_composer application
      * \author Jeremie Papon
@@ -107,6 +108,7 @@ namespace pcl
         void 
         setCurrentModel (ProjectModel* model);
         
+       
       private:
         void
         connectFileActionsToSlots ();

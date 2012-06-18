@@ -2,12 +2,19 @@
 
 #include <pcl/apps/cloud_composer/project_model.h>
 #include <pcl/apps/cloud_composer/cloud_item.h>
+#include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
+#include <pcl/apps/cloud_composer/commands.h>
+#include <pcl/apps/cloud_composer/work_queue.h>
 
 pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
   : QStandardItemModel (parent)
 {
   selection_model_ = new QItemSelectionModel (this);
-  undo_stack_ = new QUndoStack ();
+  undo_stack_ = new QUndoStack (this);
+  
+  work_queue_ = new WorkQueue (this);
+  connect (this, SIGNAL (enqueueNewAction (AbstractTool*, QList <const CloudComposerItem*>)),
+           work_queue_, SLOT (enqueueNewAction (AbstractTool*, QList <const CloudComposerItem*>)));
 }
 
 pcl::cloud_composer::ProjectModel::ProjectModel (const ProjectModel& to_copy)
@@ -78,9 +85,27 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromFile (QString filename)
   invisibleRootItem ()->appendRow (new_item);
 }
 
-bool 
-pcl::cloud_composer::ProjectModel::setData (const QModelIndex &index, const QVariant &val, int role)
+void 
+pcl::cloud_composer::ProjectModel::enqueueToolAction (AbstractTool* tool)
 {
-  QStandardItemModel::setData (index, val, role);
+  //Get the currently selected item(s), put them in a list, and create the command
+  QList <const CloudComposerItem*> input_data;
+  foreach (QModelIndex index, selection_model_->selectedIndexes ())
+  {
+    QStandardItem* item = this->itemFromIndex (index);
+    if ( dynamic_cast <CloudComposerItem*> (item))
+      input_data.append (dynamic_cast <CloudComposerItem*> (item));
+  }
+  //Move the tool object to the work queue thread
+  tool->moveToThread (work_queue_->thread ());
+  //Emit signal which tells work queue to enqueue this new action
+  emit enqueueNewAction (tool, input_data);
+}
+
+void
+pcl::cloud_composer::ProjectModel::commandCompleted (CloudCommand* command)
+{
+ // TODO: THIS IS WHERE COMMAND GETS PUSHED ON UNDO STACK 
+  
 }
 

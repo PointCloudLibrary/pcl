@@ -39,13 +39,16 @@
 #define TOOL_FACTORY_H_
 
 #include <QtPlugin>
-#include <QStandardItem>
-#include <QUndoCommand>
+#include <QStandardItemModel>
+
+class QAction;
 
 namespace pcl
 {
   namespace cloud_composer
   {
+    
+    
     class AbstractTool;
     class AbstractCommand;
     
@@ -53,14 +56,11 @@ namespace pcl
     {
       public:
         virtual AbstractTool*
-        createTool (QObject* parent) = 0;
+        createTool (QObject* parent = 0) = 0;
+            
+        virtual QStandardItemModel*
+        createToolParameterModel () = 0;
         
-        virtual AbstractCommand* 
-        createCommand () = 0;
-        
-        virtual
-        QStandardItem* toolItem() = 0;
-
     };
   }
 }

@@ -35,52 +35,54 @@
  *
  */
 
-#ifndef NORMAL_ESTIMATION_H_
-#define NORMAL_ESTIMATION_H_
+#ifndef WORK_QUEUE_H_
+#define WORK_QUEUE_H_
 
-#include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
-#include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
-#include <pcl/apps/cloud_composer/cloud_composer_item.h>
-#include <pcl/features/normal_3d.h>
 
+#include <QObject> 
+#include <QQueue>
+
+#include <pcl/apps/cloud_composer/commands.h>
 
 namespace pcl
 {
   namespace cloud_composer
   {
-    class NormalEstimationTool : public NewItemTool
-    {
-      Q_OBJECT
-      public:
-        NormalEstimationTool (QObject* parent);
-        virtual ~NormalEstimationTool ();
-        
-        virtual QList <sensor_msgs::PointCloud2::Ptr>
-        performAction (QList <sensor_msgs::PointCloud2::ConstPtr> input_data);
-      
-      
-    };
-
+    class AbstractTool;
+    class CloudComposerItem;
     
-    class NormalEstimationToolFactory : public QObject, public ToolFactory
+    struct ActionPair
+    {
+      CloudCommand* command;  
+      AbstractTool* tool;
+    };
+    
+    class WorkQueue : public QObject
     {
       Q_OBJECT
-      Q_INTERFACES (pcl::cloud_composer::ToolFactory)
       public:
-        NewItemTool*
-        createTool (QObject* parent = 0) 
-        {
-            return new NormalEstimationTool(parent);
-        }
+        WorkQueue (QObject* parent = 0);  
+        virtual ~WorkQueue();  
+      public slots:
+        void
+        enqueueNewAction (AbstractTool* new_tool, QList <const CloudComposerItem*> input_data);
         
-        QStandardItemModel*
-        createToolParameterModel (QObject* parent);
+        void 
+        actionFinished (ActionPair finished_action);
         
-          
+        void 
+        checkQueue ();
+      signals:
+        void 
+        commandProgress (QString command_text, double progress);
+
+        void
+        commandComplete (CloudCommand* completed_command);
+        
+      private:
+        QQueue <ActionPair> work_queue_;
+        
     };
-
-
-
   }
 }
 
@@ -89,4 +91,14 @@ namespace pcl
 
 
 
-#endif //NORMAL_ESTIMATION_H_
+
+
+
+
+
+
+
+
+
+
+#endif //WORK_QUEUE_H_

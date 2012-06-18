@@ -8,6 +8,7 @@
 #include <pcl/apps/cloud_composer/cloud_view.h>
 #include <pcl/apps/cloud_composer/cloud_item.h>
 #include <pcl/apps/cloud_composer/item_inspector.h>
+#include <pcl/apps/cloud_composer/commands.h>
 
 /////////////////////////////////////////////////////////////
 pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)

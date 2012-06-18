@@ -39,15 +39,16 @@
 #define ABSTRACT_TOOL_H_
 
 #include <QObject>
-#include <QUndoCommand>
-
-#include <pcl/apps/cloud_composer/cloud_composer_item.h>
-
+#include <QDebug>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/apps/cloud_composer/commands.h>
 
 namespace pcl
 {
   namespace cloud_composer
   {
+    class CloudComposerItem;
     
     class AbstractTool : public QObject
     {
@@ -56,22 +57,75 @@ namespace pcl
         AbstractTool (QObject* parent = 0) 
                       : QObject (parent) 
                       {}
-        virtual ~AbstractTool () { }
+        virtual ~AbstractTool () { qDebug() << "Tool Destructed"; }
         
-        virtual bool 
-        performAction (QVariantList data) = 0;
+        /**  \brief Function called which does work in plugin 
+         *  \param data input_data from the model - const for good reason
+         *  Returned list will become the output, replacing input_data in the model - you must deep copy
+         *  the input_data, since undo works by switching back and forth
+         */ 
+        virtual QList <sensor_msgs::PointCloud2::Ptr>
+        performAction (QList <sensor_msgs::PointCloud2::ConstPtr> input_data) = 0;
+        
+        virtual CloudCommand*
+        createCommand (QList <const CloudComposerItem*> input_data) = 0;
         
         const QString 
         getActionText () {return action_text_;}
         
         void
         setActionText (const QString text) { action_text_ = text; }
+               
       private:
         QString action_text_;
         
     };
     
+    class ModifyTool : public AbstractTool
+    {
+      Q_OBJECT
+      public:
+        ModifyTool (QObject* parent = 0) 
+                      : AbstractTool (parent) 
+                      {}
+        
+        virtual ~ModifyTool () { }
+        
+        virtual QList <sensor_msgs::PointCloud2::Ptr> 
+        performAction (QList <sensor_msgs::PointCloud2::ConstPtr> input_data) = 0;
+        
+        inline virtual CloudCommand* 
+        createCommand (QList <const CloudComposerItem*> input_data) 
+        {
+          return new ModifyCloudCommand (input_data);
+        }
+        
+
+        
+    };
     
+    class NewItemTool : public AbstractTool
+    {
+      Q_OBJECT
+      public:
+        NewItemTool (QObject* parent = 0) 
+                      : AbstractTool (parent) 
+                      {}
+        
+        virtual ~NewItemTool () { }
+        
+        virtual QList <sensor_msgs::PointCloud2::Ptr> 
+        performAction (QList <sensor_msgs::PointCloud2::ConstPtr> input_data) = 0;
+        
+        inline virtual CloudCommand*
+        createCommand (QList <const CloudComposerItem*> input_data) 
+        {
+          return new NewItemCloudCommand (input_data);
+        }
+        
+
+        
+    };
   }
 }
 
