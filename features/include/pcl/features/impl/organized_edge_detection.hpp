@@ -105,9 +105,11 @@ pcl::OrganizedEdgeDetection<PointT, PointLT>::compute (pcl::PointCloud<PointLT>&
       {
         // Every neighboring points are valid
         std::pair<std::vector<float>::iterator, std::vector<float>::iterator> minmax;
-        minmax = std::minmax_element (nghr_dist.begin (), nghr_dist.end ());
-        float nghr_dist_min = *(minmax.first);
-        float nghr_dist_max = *(minmax.second);
+        //minmax = boost::minmax_element (nghr_dist.begin (), nghr_dist.end ());
+        std::vector<float>::iterator min_itr = std::min_element (nghr_dist.begin (), nghr_dist.end ());//*(minmax.first);
+        std::vector<float>::iterator max_itr = std::max_element (nghr_dist.begin (), nghr_dist.end ());//*(minmax.first);
+        float nghr_dist_min = *min_itr;
+        float nghr_dist_max = *max_itr;
         float dist_dominant = abs (nghr_dist_min) > abs (nghr_dist_max) ? nghr_dist_min : nghr_dist_max;
         if (abs (dist_dominant) > th_depth_discon_*abs (curr_depth))
         {
