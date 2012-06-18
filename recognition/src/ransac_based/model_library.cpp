@@ -41,14 +41,15 @@
 #include <pcl/recognition/ransac_based/obj_rec_ransac.h>
 #include <pcl/recognition/impl/ransac_based/voxel_structure.hpp>
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
-#include <Eigen/Core>
 #include <vector>
 
 using namespace std;
+using namespace pcl;
+using namespace recognition;
 
 //============================================================================================================================================
 
-pcl::recognition::ModelLibrary::ModelLibrary(double pair_width)
+ModelLibrary::ModelLibrary(double pair_width)
 : pair_width_(pair_width), pair_width_eps_(0.1*pair_width)
 {
 //  hash_table_.build();
@@ -57,23 +58,27 @@ pcl::recognition::ModelLibrary::ModelLibrary(double pair_width)
 //============================================================================================================================================
 
 bool
-pcl::recognition::ModelLibrary::addModel(const PointCloudIn& model, const PointCloudN& /*normals*/, const std::string& object_name)
+ModelLibrary::addModel(const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name)
 {
   // Try to insert a new model entry
-  pair<map<string,Entry*>::iterator, bool> result = model_entries_.insert(pair<string,Entry*>(object_name, static_cast<Entry*> (NULL)));
+  pair<map<string,Model*>::iterator, bool> result = model_entries_.insert(pair<string,Model*>(object_name, static_cast<Model*> (NULL)));
 
   // Check if 'object_name' is unique
   if ( !result.second )
     return false;
 
+  // It is unique -> create a new library model
+  Model* new_model = new Model(points, normals);
+  result.first->second = new_model;
+
   vector<std::pair<int,int> > point_pairs;
   vector<int> point_ids;
   vector<float> sqr_dist;
   KdTreeFLANN<Eigen::Vector3d> kd_tree;
-  kd_tree.setInputCloud(KdTree<Eigen::Vector3d>::PointCloudConstPtr(&model));
+  kd_tree.setInputCloud(KdTree<Eigen::Vector3d>::PointCloudConstPtr (&points));
   // The two radii
   double min_sqr_radius = pair_width_ - pair_width_eps_, max_radius = pair_width_ + pair_width_eps_;
-  int i, k, num_found_points, num_model_points = static_cast<int>(model.points.size());
+  int i, k, num_found_points, num_model_points = static_cast<int> (points.points.size());
 
   min_sqr_radius *= min_sqr_radius;
 
@@ -82,19 +87,38 @@ pcl::recognition::ModelLibrary::addModel(const PointCloudIn& model, const PointC
   {
     point_ids.clear();
     sqr_dist.clear();
-    num_found_points = kd_tree.radiusSearch(model.points[i], max_radius, point_ids, sqr_dist);
+    num_found_points = kd_tree.radiusSearch (points.points[i], max_radius, point_ids, sqr_dist);
 
     for ( k = 0 ; k < num_found_points ; ++k )
       // Should we take that point?
       if ( sqr_dist[k] >= min_sqr_radius )
-        point_pairs.push_back(pair<int,int>(i,k));
+        this->addToHashTable(new_model, i, point_ids[k]);
       else // Break since the points are sorted based on their distance to the query point
         break;
   }
 
-//  Entry* new_entry = new Entry(object_name);
-
   return true;
+}
+
+//============================================================================================================================================
+
+void
+ModelLibrary::addToHashTable(const ModelLibrary::Model* model, int i, int j)
+{
+  double key[3];
+
+  // Compute the descriptor signature for the oriented point pair (i, j)
+  ObjRecRANSAC::compute_oriented_point_pair_signature (
+      model->points_.points[i], model->normals_.points[i],
+      model->points_.points[j], model->normals_.points[j], key);
+
+  // Use the key to insert the oriented point pair at the right place in the hash table
+  HashTableCell* cell = hash_table_.getVoxel(key);
+
+  if ( cell )
+  {
+    // to be continued
+  }
 }
 
 //============================================================================================================================================

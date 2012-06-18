@@ -53,16 +53,40 @@ namespace pcl
       VoxelStructure(): voxels_(NULL){}
       virtual ~VoxelStructure(){ this->clear();}
 
-      void build(const double bounds[6], int num_of_voxels[3]);
-      void clear(){ if ( voxels_ ){ delete[] voxels_; voxels_ = NULL;}}
+      /** \brief Call this method before using an instance of this class. Parameter meaning is obvious. */
+      void
+      build(const double bounds[6], int num_of_voxels[3]);
+
+      /** \brief Release the memory allocated for the voxels. */
+      void
+      clear(){ if ( voxels_ ){ delete[] voxels_; voxels_ = NULL;}}
 
       /** \brief Returns a pointer to the voxel which contains p or NULL if p is not inside the structure. */
-      T* getVoxel(Eigen::Vector3d& p){ return NULL;}
+      inline T*
+      getVoxel(const double p[3]);
 
     protected:
       T *voxels_;
+      int num_of_voxels_[3], num_of_voxels_xy_plane_;
       double bounds_[6];
+      double spacing_[3]; // spacing betwen the voxel in x, y and z direction = voxel size in x, y and z direction
     };
+
+// === inline methods ======================================================================================================================
+
+    template<class T> inline T*
+    VoxelStructure<T>::getVoxel(const double p[3])
+    {
+      if ( p[0] < bounds_[0] || p[0] >= bounds_[1] || p[1] < bounds_[2] || p[1] >= bounds_[3] || p[2] < bounds_[4] || p[2] >= bounds_[5] )
+        return NULL;
+
+      int x = static_cast<int>((p[0] - bounds_[0])/spacing_[0] + 0.5);
+      int y = static_cast<int>((p[1] - bounds_[2])/spacing_[1] + 0.5);
+      int z = static_cast<int>((p[2] - bounds_[4])/spacing_[2] + 0.5);
+
+      return &voxels_[z*num_of_voxels_xy_plane_ + y*num_of_voxels_[0] + x];
+    }
+
   } // namespace recognition
 } // namespace pcl
 

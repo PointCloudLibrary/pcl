@@ -41,9 +41,8 @@
 
 #include <pcl/recognition/ransac_based/voxel_structure.h>
 
-template<class T>
-void
-pcl::recognition::VoxelStructure<T>::build(const double bounds[6], int /*num_of_voxels*/[3])
+template<class T> void
+pcl::recognition::VoxelStructure<T>::build(const double bounds[6], int num_of_voxels[3])
 {
   this->clear();
 
@@ -55,7 +54,18 @@ pcl::recognition::VoxelStructure<T>::build(const double bounds[6], int /*num_of_
   bounds_[4] = bounds[4];
   bounds_[5] = bounds[5];
 
-  // TO BE CONTINUED ...
+  num_of_voxels_[0] = num_of_voxels[0];
+  num_of_voxels_[1] = num_of_voxels[1];
+  num_of_voxels_[2] = num_of_voxels[2];
+  num_of_voxels_xy_plane_ = num_of_voxels[0]*num_of_voxels[1];
+
+  // Allocate memory for the voxels
+  voxels_ = new T[num_of_voxels_xy_plane_*num_of_voxels[2]];
+
+  // Compute the spacing between the voxels in x, y and z direction
+  spacing_[0] = (bounds[1]-bounds[0])/static_cast<double>(num_of_voxels[0]);
+  spacing_[1] = (bounds[3]-bounds[2])/static_cast<double>(num_of_voxels[1]);
+  spacing_[2] = (bounds[5]-bounds[4])/static_cast<double>(num_of_voxels[2]);
 }
 
 #endif // PCL_RECOGNITION_VOXEL_STRUCTURE_HPP_

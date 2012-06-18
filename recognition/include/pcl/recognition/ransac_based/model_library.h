@@ -40,9 +40,11 @@
 #define PCL_RECOGNITION_MODEL_LIBRARY_H_
 
 #include "voxel_structure.h"
-#include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
+#include <Eigen/Core>
 #include <string>
+#include <set>
+#include <map>
 
 namespace pcl
 {
@@ -54,18 +56,38 @@ namespace pcl
     typedef pcl::PointCloud<Eigen::Vector3d> PointCloudN;
 
     public:
-      class HashTableCell
+      /** \brief Saving some information about the model. */
+      class Model
       {
+        public:
+          Model(const PointCloudIn& points, const PointCloudN& normals):
+            points_ (points),
+            normals_(normals){}
+          virtual ~Model(){}
 
+        public:
+          const PointCloudIn& points_;
+          const PointCloudN& normals_;
       };
 
     public:
-      class Entry
+      /** brief This class manages the entries in a hash table cell belonging to the same model. */
+      class HashTableCellModelEntry
       {
-      public:
-        Entry(){}
-        virtual ~Entry(){}
+        public:
+          HashTableCellModelEntry(){}
+          virtual ~HashTableCellModelEntry(){}
       };
+
+    typedef std::map<std::string,HashTableCellModelEntry> HashTableCell;
+
+//    public:
+//      /** \brief This class  */
+//      class HashTableCell
+//      {
+//        public:
+//          set<HashTableModelEntry> model_entries_;
+//      };
 
     public:
       /** \brief This class is used by 'ObjRecRANSAC' to maintain the object models to be recognized. Normally, you do not need to use
@@ -73,11 +95,22 @@ namespace pcl
       ModelLibrary(double pair_width);
       virtual ~ModelLibrary(){}
 
+      /** \brief Adds a model to the hash table.
+        *
+        * \param[in]  model to be added.
+        * \param[in]  normals are the normals at the model points.
+        * \param[in] object_name is the unique name of the object to be added.
+        *
+        * Returns true if model successfully added and false otherwise (e.g., if object_name is not unique). */
       bool
       addModel(const PointCloudIn& model, const PointCloudN& normals, const std::string& object_name);
 
     protected:
-      std::map<std::string,Entry*> model_entries_;
+      void
+      addToHashTable(const Model* model, int i, int j);
+
+    protected:
+      std::map<std::string,Model*> model_entries_;
       double pair_width_, pair_width_eps_;
 
       VoxelStructure<HashTableCell> hash_table_;

@@ -39,7 +39,6 @@
 #ifndef PCL_RECOGNITION_OBJ_REC_RANSAC_H_
 #define PCL_RECOGNITION_OBJ_REC_RANSAC_H_
 
-#include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <Eigen/Core>
 #include <cmath>
@@ -141,16 +140,16 @@ namespace pcl
           *
           * \param[out] signature is an array of three doubles saving the three angles in the order shown above. */
         static inline void
-        compute_oriented_point_pair_signature(Eigen::Vector3d& p1, Eigen::Vector3d& p2, Eigen::Vector3d& n1, Eigen::Vector3d& n2, double signature[3]);
+        compute_oriented_point_pair_signature(const Eigen::Vector3d& p1, const Eigen::Vector3d& p2, const Eigen::Vector3d& n1, const Eigen::Vector3d& n2, double signature[3]);
 
       protected:
         double pair_width_;
     };
 
-    // === inline methods ===================================================================================================================================
+// === inline methods ===================================================================================================================================
 
     inline void
-    ObjRecRANSAC::compute_oriented_point_pair_signature(Eigen::Vector3d& p1, Eigen::Vector3d& p2, Eigen::Vector3d& n1, Eigen::Vector3d& n2, double signature[3])
+    ObjRecRANSAC::compute_oriented_point_pair_signature(const Eigen::Vector3d& p1, const Eigen::Vector3d& p2, const Eigen::Vector3d& n1, const Eigen::Vector3d& n2, double signature[3])
     {
       // Get the line from p1 to p2
       Eigen::Vector3d line = p2 - p1;
