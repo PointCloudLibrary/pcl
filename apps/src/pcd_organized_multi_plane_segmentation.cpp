@@ -64,7 +64,7 @@ class PCDOrganizedMultiPlaneSegmentation
     , refine_ (refine)
     , threshold_ (0.02)
     , depth_dependent_ (true)
-    , polygon_refinement_ (true)
+    , polygon_refinement_ (false)
     {
       viewer.setBackgroundColor (0, 0, 0);
       //viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "cloud");
