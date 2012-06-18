@@ -56,6 +56,7 @@ namespace pcl
 {
   namespace modeler
   {
+    class CloudActor;
     class RenderWidget;
     class DockWidget;
     class PCLModeler;
@@ -117,6 +118,10 @@ namespace pcl
         void
         slotSwitchColorHandler();
 
+        // slots for edit menu
+        void
+        slotDownSampleFilter();
+
       protected:
 
       protected slots:
@@ -153,6 +158,10 @@ namespace pcl
         void 
         connectRenderMenuActions();
 
+        // methods for edit menu
+        void 
+        connectEditMenuActions();
+
         // methods for global settings
         void 
         loadGlobalSettings();
@@ -161,6 +170,9 @@ namespace pcl
 
         void
         addRenderWidget(RenderWidget* render_widget);
+
+        std::vector<CloudActor*>
+        getSelectedCloud();
       private slots:
         void 
         slotOpenRecentPointCloud();

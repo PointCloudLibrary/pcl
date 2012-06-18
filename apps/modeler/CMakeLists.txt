@@ -1,6 +1,6 @@
 set(SUBSYS_NAME modeler)
 set(SUBSYS_DESC "PCLModeler: PCL based reconstruction platform")
-set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search recognition)
+set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search)
 set(DEFAULT OFF)
 set(REASON "")
 
@@ -34,7 +34,8 @@ if(build)
   set(uis main_window.ui
            color_handler_switcher.ui)
   set(moc_incs include/pcl/apps/${SUBSYS_NAME}/main_window.h
-           include/pcl/apps/${SUBSYS_NAME}/color_handler_switcher.h)
+           include/pcl/apps/${SUBSYS_NAME}/color_handler_switcher.h
+           include/pcl/apps/${SUBSYS_NAME}/parameter_dialog.h)
 
   set(resources resources/resources.qrc)
 
@@ -44,7 +45,10 @@ if(build)
            include/pcl/apps/${SUBSYS_NAME}/render_widget.h
            include/pcl/apps/${SUBSYS_NAME}/dock_widget.h
            include/pcl/apps/${SUBSYS_NAME}/tree_item.h
-           include/pcl/apps/${SUBSYS_NAME}/tree_view.h)
+           include/pcl/apps/${SUBSYS_NAME}/tree_view.h
+           include/pcl/apps/${SUBSYS_NAME}/parameter.h
+           include/pcl/apps/${SUBSYS_NAME}/abstract_worker.h
+           include/pcl/apps/${SUBSYS_NAME}/downsample_worker.h)
 
   set(srcs src/main.cpp
            src/main_window.cpp
@@ -54,10 +58,14 @@ if(build)
            src/render_widget.cpp
            src/dock_widget.cpp
            src/tree_item.cpp
-           src/tree_view.cpp)
+           src/tree_view.cpp
+           src/parameter.cpp
+           src/parameter_dialog.cpp
+           src/abstract_worker.cpp
+           src/downsample_worker.cpp)
 
-  set(impl_incs include/pcl/apps/${SUBSYS_NAME}/impl/pcl_modeler.hpp)
-
+  set(impl_incs include/pcl/apps/${SUBSYS_NAME}/impl/pcl_modeler.hpp
+           include/pcl/apps/${SUBSYS_NAME}/impl/parameter.hpp)
   # Qt stuff
   QT4_WRAP_UI(ui_srcs ${uis})
   QT4_WRAP_CPP(moc_srcs ${moc_incs})

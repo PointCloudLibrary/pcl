@@ -41,6 +41,7 @@
 #include <pcl/apps/modeler/dock_widget.h>
 #include <pcl/apps/modeler/cloud_actor.h>
 #include <pcl/apps/modeler/color_handler_switcher.h>
+#include <pcl/apps/modeler/downsample_worker.h>
 
 #include <QFile>
 #include <QSettings>
@@ -72,6 +73,7 @@ pcl::modeler::MainWindow::MainWindow() :
   connectFileMenuActions();
   connectViewMenuActions();
   connectRenderMenuActions();
+  connectEditMenuActions();
 
   loadGlobalSettings();
 
@@ -125,6 +127,7 @@ void
 pcl::modeler::MainWindow::addActionsToCloudActor(QMenu* menu)
 {
   menu->addAction(ui_->actionSwitchColorHandler);
+  menu->addAction(ui_->actionDownSampleFilter);
 
   return;
 }
@@ -163,6 +166,13 @@ void
 pcl::modeler::MainWindow::connectRenderMenuActions()
 {
   connect(ui_->actionSwitchColorHandler, SIGNAL(triggered()), this, SLOT(slotSwitchColorHandler()));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::modeler::MainWindow::connectEditMenuActions()
+{
+  connect(ui_->actionDownSampleFilter, SIGNAL(triggered()), this, SLOT(slotDownSampleFilter()));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -308,8 +318,8 @@ pcl::modeler::MainWindow::slotChangeBackgroundColor()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::MainWindow::slotSwitchColorHandler()
+std::vector<pcl::modeler::CloudActor*>
+pcl::modeler::MainWindow::getSelectedCloud()
 {
   std::vector<CloudActor*> cloud_actors;
   QModelIndexList selected_indexes = ui_->treeViewSceneExplorer->selectionModel()->selectedIndexes();
@@ -326,7 +336,35 @@ pcl::modeler::MainWindow::slotSwitchColorHandler()
     cloud_actors.push_back(cloud_actor);
   }
 
-  ColorHandlerSwitcher color_handler_switcher_(cloud_actors, this);
+  return (cloud_actors);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::MainWindow::slotSwitchColorHandler()
+{
+  std::vector<CloudActor*> cloud_actors = getSelectedCloud();
+
+  ColorHandlerSwitcher color_handler_switcher(cloud_actors, this);
+
+  return;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::MainWindow::slotDownSampleFilter()
+{
+  std::vector<CloudActor*> cloud_actors = getSelectedCloud();
+
+  DownSampleWorker downsample_worker(this);
+  for (size_t i = 0, i_end = cloud_actors.size(); i < i_end; ++ i)
+    cloud_actors[i]->accept(&downsample_worker);
+
+  if (downsample_worker.exec() == QDialog::Accepted)
+  {
+    for (size_t i = 0, i_end = cloud_actors.size(); i < i_end; ++ i)
+      cloud_actors[i]->accept(&downsample_worker);
+  }
 
   return;
 }

@@ -34,65 +34,48 @@
  *
  */
 
-#ifndef PCL_MODELER_RENDER_WIDGET_H_
-#define PCL_MODELER_RENDER_WIDGET_H_
+#ifndef PCL_MODELER_DOWNSAMPLE_WORKER_H_
+#define PCL_MODELER_DOWNSAMPLE_WORKER_H_
 
-#include <QVTKWidget.h>
-#include <vtkSmartPointer.h>
-#include <pcl/apps/modeler/tree_item.h>
-
-class vtkRenderer;
-class QContextMenuEvent;
+#include <pcl/apps/modeler/abstract_worker.h>
 
 namespace pcl
 {
   namespace modeler
   {
-    class MainWindow;
+    class DoubleParameter;
 
-    class RenderWidget : public QVTKWidget, public TreeItem
+    class DownSampleWorker : public AbstractWorker 
     {
       public:
-        RenderWidget(MainWindow* main_window, size_t id, QWidget *parent = 0, Qt::WFlags flags = 0);
-        ~RenderWidget();
+        DownSampleWorker(QWidget* parent=0);
+        ~DownSampleWorker(void);
 
-        bool
-        getActive() const {return active_;}
-        void
-        setActive(bool active) {active_=active;}
-
-        size_t
-        getID() const {return id_;}
-        void
-        setID(size_t id) {id_=id;}
-
-        vtkSmartPointer<vtkRenderer>
-        getRenderer();
-
-        virtual QSize
-        sizeHint() const {return QSize(512, 512);}
+        virtual std::string
+        getName () const {return ("DownSample");}
 
         virtual void
-        showContextMenu(const QPoint& position);
+        initParameters(PointCloud2Ptr input_cloud);
+
+        virtual void
+        apply(PointCloud2Ptr input_cloud, PointCloud2Ptr output_cloud) const;
 
       protected:
         virtual void
-        focusInEvent ( QFocusEvent * event );
-        virtual void
-        contextMenuEvent(QContextMenuEvent *event);
+        setupParameters();
 
       private:
-        MainWindow*       main_window_;
-        bool              active_;
-        size_t            id_;
+        double x_min_, x_max_;
+        double y_min_, y_max_;
+        double z_min_, z_max_;
 
-      private:
-        void
-        initRenderer();
+        DoubleParameter* leaf_size_x_;
+        DoubleParameter* leaf_size_y_;
+        DoubleParameter* leaf_size_z_;
+
     };
+
   }
 }
 
-#include <pcl/apps/modeler/impl/parameter.hpp>
-
-#endif // PCL_MODELER_RENDER_WIDGET_H_
+#endif // PCL_MODELER_DOWNSAMPLE_WORKER_H_

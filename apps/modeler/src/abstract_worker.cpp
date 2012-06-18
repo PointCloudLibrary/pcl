@@ -34,65 +34,29 @@
  *
  */
 
-#ifndef PCL_MODELER_RENDER_WIDGET_H_
-#define PCL_MODELER_RENDER_WIDGET_H_
+#include <pcl/apps/modeler/abstract_worker.h>
 
-#include <QVTKWidget.h>
-#include <vtkSmartPointer.h>
-#include <pcl/apps/modeler/tree_item.h>
-
-class vtkRenderer;
-class QContextMenuEvent;
-
-namespace pcl
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::AbstractWorker::AbstractWorker(QWidget* parent) :
+  parameter_ready_(false),
+  ParameterDialog(getName(), parent)
 {
-  namespace modeler
-  {
-    class MainWindow;
-
-    class RenderWidget : public QVTKWidget, public TreeItem
-    {
-      public:
-        RenderWidget(MainWindow* main_window, size_t id, QWidget *parent = 0, Qt::WFlags flags = 0);
-        ~RenderWidget();
-
-        bool
-        getActive() const {return active_;}
-        void
-        setActive(bool active) {active_=active;}
-
-        size_t
-        getID() const {return id_;}
-        void
-        setID(size_t id) {id_=id;}
-
-        vtkSmartPointer<vtkRenderer>
-        getRenderer();
-
-        virtual QSize
-        sizeHint() const {return QSize(512, 512);}
-
-        virtual void
-        showContextMenu(const QPoint& position);
-
-      protected:
-        virtual void
-        focusInEvent ( QFocusEvent * event );
-        virtual void
-        contextMenuEvent(QContextMenuEvent *event);
-
-      private:
-        MainWindow*       main_window_;
-        bool              active_;
-        size_t            id_;
-
-      private:
-        void
-        initRenderer();
-    };
-  }
 }
 
-#include <pcl/apps/modeler/impl/parameter.hpp>
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::AbstractWorker::~AbstractWorker(void)
+{
+}
 
-#endif // PCL_MODELER_RENDER_WIDGET_H_
+//////////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::modeler::AbstractWorker::exec()
+{
+  setupParameters();
+  int result = ParameterDialog::exec();
+
+  if (result == QDialog::Accepted)
+    parameter_ready_ = true;
+
+  return (result);
+}

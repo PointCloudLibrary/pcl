@@ -99,7 +99,14 @@
     </property>
     <addaction name="actionSwitchColorHandler"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionDownSampleFilter"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuRender"/>
    <addaction name="menuHelp"/>
@@ -213,6 +220,11 @@
   <action name="actionSwitchColorHandler">
    <property name="text">
     <string>Switch Color Handler</string>
+   </property>
+  </action>
+  <action name="actionDownSampleFilter">
+   <property name="text">
+    <string>Pass Through Filter</string>
    </property>
   </action>
  </widget>

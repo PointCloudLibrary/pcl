@@ -44,6 +44,7 @@ namespace pcl
   namespace modeler
   {
     class MainWindow;
+    class AbstractWorker;
 
     class CloudActor : public TreeItem
     {
@@ -83,6 +84,9 @@ namespace pcl
 
         virtual void
         showContextMenu(const QPoint& position);
+
+        void
+        accept(AbstractWorker* worker);
 
       private:
         sensor_msgs::PointCloud2::Ptr cloud_;

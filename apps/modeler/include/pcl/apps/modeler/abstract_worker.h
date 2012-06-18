@@ -34,65 +34,50 @@
  *
  */
 
-#ifndef PCL_MODELER_RENDER_WIDGET_H_
-#define PCL_MODELER_RENDER_WIDGET_H_
+#ifndef PCL_MODELER_ABSTRACT_WORKER_H_
+#define PCL_MODELER_ABSTRACT_WORKER_H_
 
-#include <QVTKWidget.h>
-#include <vtkSmartPointer.h>
-#include <pcl/apps/modeler/tree_item.h>
-
-class vtkRenderer;
-class QContextMenuEvent;
+#include <pcl/apps/modeler/parameter_dialog.h>
+#include <sensor_msgs/PointCloud2.h>
 
 namespace pcl
 {
   namespace modeler
   {
-    class MainWindow;
 
-    class RenderWidget : public QVTKWidget, public TreeItem
+    class AbstractWorker : public ParameterDialog
     {
       public:
-        RenderWidget(MainWindow* main_window, size_t id, QWidget *parent = 0, Qt::WFlags flags = 0);
-        ~RenderWidget();
+        typedef sensor_msgs::PointCloud2  PointCloud2;
+        typedef PointCloud2::Ptr          PointCloud2Ptr;
+        typedef PointCloud2::ConstPtr     PointCloud2ConstPtr;
+
+        AbstractWorker(QWidget* parent=0);
+        ~AbstractWorker(void);
+
+        virtual std::string
+        getName () const {return ("");}
+
+        virtual void
+        initParameters(PointCloud2Ptr input_cloud) = 0;
+
+        virtual int
+        exec();
+
+        virtual void
+        apply(PointCloud2Ptr input_cloud, PointCloud2Ptr output_cloud) const = 0;
 
         bool
-        getActive() const {return active_;}
-        void
-        setActive(bool active) {active_=active;}
-
-        size_t
-        getID() const {return id_;}
-        void
-        setID(size_t id) {id_=id;}
-
-        vtkSmartPointer<vtkRenderer>
-        getRenderer();
-
-        virtual QSize
-        sizeHint() const {return QSize(512, 512);}
-
-        virtual void
-        showContextMenu(const QPoint& position);
-
+        isParameterReady() const {return parameter_ready_;}
       protected:
         virtual void
-        focusInEvent ( QFocusEvent * event );
-        virtual void
-        contextMenuEvent(QContextMenuEvent *event);
+        setupParameters() = 0;
 
       private:
-        MainWindow*       main_window_;
-        bool              active_;
-        size_t            id_;
-
-      private:
-        void
-        initRenderer();
+        bool      parameter_ready_;
     };
+
   }
 }
 
-#include <pcl/apps/modeler/impl/parameter.hpp>
-
-#endif // PCL_MODELER_RENDER_WIDGET_H_
+#endif // PCL_MODELER_ABSTRACT_WORKER_H_

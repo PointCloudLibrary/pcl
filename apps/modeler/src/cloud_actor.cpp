@@ -36,6 +36,7 @@
 
 #include <pcl/apps/modeler/cloud_actor.h>
 #include <pcl/apps/modeler/main_window.h>
+#include <pcl/apps/modeler/abstract_worker.h>
 
 #include <QMenu>
 
@@ -299,6 +300,29 @@ pcl::modeler::CloudActor::setColorHandler(const std::string& field_name)
 
   createActorFromHandlers();
   main_window_->triggerRender(actor_.GetPointer());
+
+  return;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::CloudActor::accept(AbstractWorker* worker)
+{
+  if (!worker->isParameterReady())
+  {
+    worker->initParameters(cloud_);
+  }
+  else
+  {
+    sensor_msgs::PointCloud2::Ptr cloud(new sensor_msgs::PointCloud2);
+
+    worker->apply(cloud_, cloud);
+
+    *cloud_ = *cloud;
+
+    createActorFromHandlers();
+    main_window_->triggerRender(actor_.GetPointer());
+  }
 
   return;
 }
