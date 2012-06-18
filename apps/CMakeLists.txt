@@ -60,6 +60,9 @@ if(build)
 #    PCL_ADD_EXECUTABLE(pcl_convolve ${SUBSYS_NAME} src/convolve.cpp)
 #    target_link_libraries(pcl_convolve pcl_common pcl_io pcl_visualization)
 
+    PCL_ADD_EXECUTABLE(pcl_pcd_organized_edge_detection ${SUBSYS_NAME} src/pcd_organized_edge_detection.cpp)
+    target_link_libraries(pcl_pcd_organized_edge_detection pcl_common pcl_io pcl_features pcl_visualization)
+
     if (OPENNI_FOUND AND BUILD_OPENNI)  
       PCL_ADD_EXECUTABLE(pcl_openni_fast_mesh ${SUBSYS_NAME} src/openni_fast_mesh.cpp)
       target_link_libraries(pcl_openni_fast_mesh pcl_common pcl_io pcl_visualization pcl_surface)
