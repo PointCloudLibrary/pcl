@@ -43,6 +43,7 @@
 #include <pcl/point_cloud.h>
 #include <Eigen/Core>
 #include <string>
+#include <list>
 #include <set>
 #include <map>
 
@@ -60,34 +61,31 @@ namespace pcl
       class Model
       {
         public:
-          Model(const PointCloudIn& points, const PointCloudN& normals):
+          Model(const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name):
             points_ (points),
-            normals_(normals){}
+            normals_(normals),
+            obj_name_(object_name){}
           virtual ~Model(){}
 
         public:
           const PointCloudIn& points_;
           const PointCloudN& normals_;
+          const std::string obj_name_;
       };
-
-    public:
-      /** brief This class manages the entries in a hash table cell belonging to the same model. */
-      class HashTableCellModelEntry
-      {
-        public:
-          HashTableCellModelEntry(){}
-          virtual ~HashTableCellModelEntry(){}
-      };
-
-    typedef std::map<std::string,HashTableCellModelEntry> HashTableCell;
 
 //    public:
-//      /** \brief This class  */
-//      class HashTableCell
+//      /** brief This class manages the entries in a hash table cell belonging to the same model. */
+//      class HashTableCellModelEntry
 //      {
 //        public:
-//          set<HashTableModelEntry> model_entries_;
+//          HashTableCellModelEntry(){}
+//          virtual ~HashTableCellModelEntry(){}
+//
+//          ;
 //      };
+
+    typedef std::list<std::pair<int,int> > int_pair_list;
+    typedef std::map<const Model*, int_pair_list> HashTableCell;
 
     public:
       /** \brief This class is used by 'ObjRecRANSAC' to maintain the object models to be recognized. Normally, you do not need to use
@@ -110,7 +108,7 @@ namespace pcl
       addToHashTable(const Model* model, int i, int j);
 
     protected:
-      std::map<std::string,Model*> model_entries_;
+      std::map<std::string,Model*> models_;
       double pair_width_, pair_width_eps_;
 
       VoxelStructure<HashTableCell> hash_table_;

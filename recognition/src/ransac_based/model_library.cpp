@@ -61,14 +61,14 @@ bool
 ModelLibrary::addModel(const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name)
 {
   // Try to insert a new model entry
-  pair<map<string,Model*>::iterator, bool> result = model_entries_.insert(pair<string,Model*>(object_name, static_cast<Model*> (NULL)));
+  pair<map<string,Model*>::iterator, bool> result = models_.insert(pair<string,Model*>(object_name, static_cast<Model*> (NULL)));
 
   // Check if 'object_name' is unique
   if ( !result.second )
     return false;
 
   // It is unique -> create a new library model
-  Model* new_model = new Model(points, normals);
+  Model* new_model = new Model(points, normals, object_name);
   result.first->second = new_model;
 
   vector<std::pair<int,int> > point_pairs;
@@ -112,13 +112,11 @@ ModelLibrary::addToHashTable(const ModelLibrary::Model* model, int i, int j)
       model->points_.points[i], model->normals_.points[i],
       model->points_.points[j], model->normals_.points[j], key);
 
-  // Use the key to insert the oriented point pair at the right place in the hash table
+  // Get the hash table cell containing 'key' (there is for sure such a cell since the hash table bounds are large enough)
   HashTableCell* cell = hash_table_.getVoxel(key);
 
-  if ( cell )
-  {
-    // to be continued
-  }
+  // Insert the id pair (i,j)
+  (*cell)[model].push_back(std::pair<int,int>(i, j));
 }
 
 //============================================================================================================================================
