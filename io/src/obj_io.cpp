@@ -197,7 +197,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
       {
         uint32_t idx = tex_mesh.tex_polygons[m][i].vertices[j] + 1;
         fs << " " << idx
-           << "/" << 3*(i+f_idx) +j+1
+           << "/" << tex_mesh.tex_polygons[m][i].vertices.size () * (i+f_idx) +j+1
            << "/" << idx; // vertex index in obj file format starting with 1
       }
       fs << std::endl;
