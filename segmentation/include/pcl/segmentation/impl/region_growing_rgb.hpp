@@ -158,7 +158,10 @@ pcl::RegionGrowingRGB<PointT>::applyRegionMergingAlgorithm ()
     {
       int index = segment_neighbours_[i_seg][i_nghbr];
       if (segment_distances_[i_seg][i_nghbr] > dist_thresh)
+      {
+        i_nghbr++;
         continue;
+      }
       if ( segment_labels_[index] == -1 )
       {
         float difference = calculateColorimetricalDifference (segment_color[i_seg], segment_color[index]);
@@ -169,7 +172,7 @@ pcl::RegionGrowingRGB<PointT>::applyRegionMergingAlgorithm ()
           num_seg_in_homogeneous_region[curr_homogeneous_region] += 1;
         }
       }
-	  i_nghbr++;
+      i_nghbr++;
     }// next neighbour
   }// next segment
 
