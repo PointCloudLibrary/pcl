@@ -66,6 +66,12 @@ pcl::gpu::people::PeopleDetector::PeopleDetector()
   // Create a new probability_processor
   probability_processor_ = ProbabilityProcessor::Ptr (new ProbabilityProcessor());
 
+  // Create a new person attribs
+  person_attribs_ = PersonAttribs::Ptr (new PersonAttribs());
+
+  // Just created, indicates first time callback (allows for tracking features to start from second frame)
+  first_iteration = true;
+
   // allocation buffers with default sizes
   // if input size is other than the defaults, 
   // then the buffers will be reallocated at processing time.
@@ -279,17 +285,19 @@ pcl::gpu::people::PeopleDetector::processProb ()
   kernel_device.upload(kernel_ptr_host, kernel_size * sizeof(float));
 
   // Output kernel for verification
-  //std::cout << "kernel:" << std::endl;
-  //for(int i = 0; i < kernel_size; i++)
-  //  std::cout << " "  << i << ": " << kernel_ptr_host[i];
-  //std::cout << std::endl;
+  std::cout << "(I) : processProb : kernel:" << std::endl;
+  for(int i = 0; i < kernel_size; i++)
+    std::cout << " "  << i << ": " << kernel_ptr_host[i];
+  std::cout << std::endl;
+
+  probability_processor_->GaussianBlur(depth_device1_,rdf_detector_->P_l_, kernel_device, rdf_detector_->P_l_Gaus_);
 
   // get labels
   probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
   // This executes the connected components
   rdf_detector_->processSmooth(depth_device1_, cloud_host_, AREA_THRES);
   // This creates the blobmatrix
-  rdf_detector_->processRelations();
+  rdf_detector_->processRelations(person_attribs_);
 
   // Backup this value in P_l_1_;
   rdf_detector_->P_l_1_.swap(rdf_detector_->P_l_);
@@ -302,7 +310,7 @@ pcl::gpu::people::PeopleDetector::processProb ()
   {
     int c = 0;
     Tree2 t;
-    buildTree(sorted, cloud_host_, Neck, c, t);
+    buildTree(sorted, cloud_host_, Neck, c, t, person_attribs_);
 
     const std::vector<int>& seed = t.indices.indices;
 
@@ -328,7 +336,7 @@ pcl::gpu::people::PeopleDetector::processProb ()
     // This executes the connected components
     rdf_detector_->processSmooth(depth_device2_, cloud_host_, AREA_THRES2);
     // This creates the blobmatrix
-    rdf_detector_->processRelations();
+    rdf_detector_->processRelations(person_attribs_);
 
     // Backup this value in P_l_2_;
     rdf_detector_->P_l_2_.swap(rdf_detector_->P_l_);
@@ -339,7 +347,7 @@ pcl::gpu::people::PeopleDetector::processProb ()
     if(sorted2[Neck].size() != 0)
     {
       Tree2 t2;
-      buildTree(sorted2, cloud_host_, Neck, c, t2);
+      buildTree(sorted2, cloud_host_, Neck, c, t2, person_attribs_);
       int par = 0;
       for(int f = 0; f < NUM_PARTS; f++)
       {
@@ -352,13 +360,16 @@ pcl::gpu::people::PeopleDetector::processProb ()
            cerr << "0;";
       }
       static int counter = 0; // TODO move this logging to PeopleApp
-      cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << endl;
 
+      //cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << endl;
+      first_iteration = false;
       return 2;
     }
+    first_iteration = false;
     return 1;
     //output: Tree2 and PointCloud<XYZRGBL>
   }
+  first_iteration = false;
   return 0;
 }
 

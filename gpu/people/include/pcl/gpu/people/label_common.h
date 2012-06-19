@@ -67,7 +67,7 @@ namespace pcl
       enum { WIDTH       = 640 };
       enum { HEIGHT      = 480 };
       enum { RATIO       = WIDTH/HEIGHT };
-      enum { XML_VERSION = 1 };         /** \brief This indicates the current used xml file version (for people lib only) **/
+      enum { XML_VERSION = 1};          /** \brief This indicates the current used xml file version (for people lib only) **/
 
       enum { NUM_ATTRIBS = 2000 };
       enum { NUM_LABELS  = 32 };        /** \brief Our code is forseen to use maximal use 32 labels **/

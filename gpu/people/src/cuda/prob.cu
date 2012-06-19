@@ -163,7 +163,8 @@ namespace pcl
      **/
     __global__ void
     KernelCUDA_GaussianBlurHor (PtrStepSz<prob_histogram> probIn,
-                                PtrSz<float>              kernel,
+                                const float*              kernel,
+                                const int                 kernelSize,
                                 PtrStepSz<prob_histogram> probOut)
     {
       // map block and thread onto image coordinates a single pixel for each thread
@@ -182,23 +183,26 @@ namespace pcl
         int j = 0;            // This contains the offset in the kernel
 
         // KernelSize needs to be odd! This should be fetched in the calling function before calling this method
-        for(int i = -__float2int_rn(kernel.size/2); i < __float2int_rn(kernel.size/2); i++)
+        for(int i = -__float2int_rn(kernelSize/2); i < __float2int_rn(kernelSize/2); i++)
         {
           // check if index goes outside image, pixels are skipped
           if((u+i) < 0 || (u+i) > probIn.cols)
           {
             j++;  // skip to the next point
-            normalizer += kernel.data[j];
+            //normalizer += kernel[j];
           }
           else
           {
-            sum += probIn.ptr(v)[u+i].probs[l] * kernel.data[j];
+            int k = u+i;
+
+            // This line fails, why??
+            //sum += probIn.ptr(v)[u].probs[l] * kernel[j];
             j++;
-            normalizer += kernel.data[j];
+            //normalizer += kernel[j];
           }
         }
-        sum = sum/normalizer;
-        probOut.ptr(v)[u].probs[l] = (char) sum;
+        //sum = sum/normalizer;
+        probOut.ptr(v)[u].probs[l] = sum;
       }
     }
 
@@ -210,7 +214,8 @@ namespace pcl
      **/
     __global__ void
     KernelCUDA_GaussianBlurVer (PtrStepSz<prob_histogram> probIn,
-                                PtrSz<float>              kernel,
+                                const float*              kernel,
+                                const int                 kernelSize,
                                 PtrStepSz<prob_histogram> probOut)
     {
       // map block and thread onto image coordinates a single pixel for each thread
@@ -229,23 +234,23 @@ namespace pcl
         int j = 0;            // This contains the offset in the kernel
 
         // KernelSize needs to be odd! This should be fetched in the calling function before calling this method
-        for(int i = -__float2int_rn(kernel.size/2); i < __float2int_rn(kernel.size/2); i++)
+        for(int i = -__float2int_rn(kernelSize/2); i < __float2int_rn(kernelSize/2); i++)
         {
           // check if index goes outside image, pixels are skipped
           if((v+i) < 0 || (v+i) > probIn.rows)
           {
             j++;  // skip to the next point
-            normalizer += kernel.data[j];
+            //normalizer += kernel[j];
           }
           else
           {
-            sum += probIn.ptr(v+i)[u].probs[l] * kernel.data[j];
+            sum += probIn.ptr(v+i)[u].probs[l] * kernel[j];
             j++;
-            normalizer += kernel.data[j];
+            //normalizer += kernel[j];
           }
         }
-        sum = sum/normalizer;
-        probOut.ptr(v)[u].probs[l] = (char) sum;
+        //sum = sum/normalizer;
+        probOut.ptr(v)[u].probs[l] = sum;
       }
     }
 
@@ -308,51 +313,40 @@ namespace pcl
     int
     ProbabilityProc::CUDA_GaussianBlur( const Depth& depth,
                                         LabelProbability& probIn,
-                                        DeviceArray<float> kernel,
+                                        DeviceArray<float>& kernel,
                                         LabelProbability& probOut)
     {
-      dim3 block(32, 8);
-      dim3 grid(divUp(depth.cols(), block.x), divUp(depth.rows(), block.y) );
-
-      if(kernel.size() % 2 == 0) //kernelSize is even, should be odd
-        return -1;
+      // Allocate the memory
       LabelProbability probTemp(depth.rows(), depth.cols());
-
-      // CUDA kernel call Vertical
-      KernelCUDA_GaussianBlurVer<<< grid, block >>>( probIn, kernel, probTemp );
-      cudaSafeCall( cudaGetLastError() );
-      cudaSafeCall( cudaThreadSynchronize() );
-      // CUDA kernel call Horizontal
-      KernelCUDA_GaussianBlurHor<<< grid, block >>>( probTemp, kernel, probOut );
-      cudaSafeCall( cudaGetLastError() );
-      cudaSafeCall( cudaThreadSynchronize() );
-
-      return 1;
+      // Call the method
+      return CUDA_GaussianBlur(depth, probIn, kernel, probTemp, probOut);
     }
 
     /** \brief This will blur the input labelprobability with the given kernel, this version avoids extended allocation **/
     int
     ProbabilityProc::CUDA_GaussianBlur( const Depth& depth,
                                         LabelProbability& probIn,
-                                        DeviceArray<float> kernel,
+                                        DeviceArray<float>& kernel,
                                         LabelProbability& probTemp,
                                         LabelProbability& probOut)
     {
       dim3 block(32, 8);
       dim3 grid(divUp(depth.cols(), block.x), divUp(depth.rows(), block.y) );
 
-      if(kernel.size() % 2 == 0) //kernelSize is even, should be odd
+      if(kernel.size()/sizeof(float) % 2 == 0) //kernelSize is even, should be odd
         return -1;
 
+      std::cout << "(I) : CUDA_GaussianBlur called c: " << probIn.cols() << " r: " << probIn.rows() << std::endl;
+
+
       // CUDA kernel call Vertical
-      KernelCUDA_GaussianBlurVer<<< grid, block >>>( probIn, kernel, probTemp );
+      KernelCUDA_GaussianBlurVer<<< grid, block >>>( probIn, kernel, kernel.size(), probTemp );
       cudaSafeCall( cudaGetLastError() );
       cudaSafeCall( cudaThreadSynchronize() );
       // CUDA kernel call Horizontal
-      KernelCUDA_GaussianBlurHor<<< grid, block >>>( probTemp, kernel, probOut );
-      cudaSafeCall( cudaGetLastError() );
-      cudaSafeCall( cudaThreadSynchronize() );
-
+      //KernelCUDA_GaussianBlurHor<<< grid, block >>>( probTemp, kernel, kernel.size(), probOut );
+      //cudaSafeCall( cudaGetLastError() );
+      //cudaSafeCall( cudaThreadSynchronize() );
       return 1;
     }
   }

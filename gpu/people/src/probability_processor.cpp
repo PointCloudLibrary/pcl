@@ -36,11 +36,12 @@
 
 #include <pcl/gpu/people/label_common.h>
 #include <pcl/gpu/people/probability_processor.h>
+#include <pcl/console/print.h>
 #include "internal.h"
 
 pcl::gpu::people::ProbabilityProcessor::ProbabilityProcessor()
 {
-  std::cout << "(I) : ProbabilityProcessor Constructor called" << std::endl;
+  PCL_DEBUG("(I) : ProbabilityProcessor Constructor called\n");
   impl_.reset (new device::ProbabilityProc());
 }
 
@@ -48,7 +49,7 @@ pcl::gpu::people::ProbabilityProcessor::ProbabilityProcessor()
 void
 pcl::gpu::people::ProbabilityProcessor::SelectLabel (const Depth& depth, Labels& labels, pcl::device::LabelProbability& probabilities)
 {
-  std::cout << "(I) : ProbabilityProcessor SelectLabel called" << std::endl;
+  PCL_DEBUG("(I) : ProbabilityProcessor SelectLabel called\n");
   impl_->CUDA_SelectLabel(depth, labels, probabilities);
 }
 
@@ -67,21 +68,31 @@ pcl::gpu::people::ProbabilityProcessor::WeightedSumProb ( const Depth& depth, pc
   impl_->CUDA_WeightedSumProb(depth, probIn, weight, probOut);
 }
 
+/** \brief This will do a GaussianBlur over the LabelProbability **/
+int
+pcl::gpu::people::ProbabilityProcessor::GaussianBlur( const Depth&                    depth,
+                                                      pcl::device::LabelProbability&  probIn,
+                                                      DeviceArray<float>&              kernel,
+                                                      pcl::device::LabelProbability&  probOut)
+{
+  return impl_->CUDA_GaussianBlur( depth, probIn, kernel, probOut);
+}
+
 /** \brief This will create a Gaussian Kernel **/
 float*
 pcl::gpu::people::ProbabilityProcessor::CreateGaussianKernel ( float sigma,
                                                                int kernelSize)
 {
   float* f;
-  f = (float*) malloc(kernelSize * sizeof(float));
-  float sigma_sq = pow(sigma,2);
-  float mult = 1/sqrt(2*M_PI*sigma_sq);
-  int mid = floor(kernelSize/2.f);
+  f = static_cast<float*> (malloc(kernelSize * sizeof(float)));
+  float sigma_sq = static_cast<float> (pow (sigma,2.f));
+  float mult = static_cast<float> (1/sqrt (2*M_PI*sigma_sq));
+  int mid = static_cast<int> (floor (static_cast<float> (kernelSize)/2.f));
 
   // Create a symmetric kernel, could also be solved in CUDA kernel but let's do it here :D
   for(int i = 0; i < kernelSize; i++)
   {
-    f[i] = mult * exp(-(pow(i-mid,2.f)/2*sigma_sq));
+    f[i] = static_cast<float> (mult * exp (-(pow (i-mid,2.f)/2*sigma_sq)));
   }
   return f;
 }

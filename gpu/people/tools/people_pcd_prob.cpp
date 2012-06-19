@@ -54,6 +54,7 @@
 #include <pcl/io/png_io.h>
 
 #include <iostream>
+#include <fstream>
 
 using namespace pcl::visualization;
 using namespace pcl::console;
@@ -130,10 +131,30 @@ class PeoplePCDApp
 
     void cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
     {
-      PCL_DEBUG("(I) : Cloud Callback");
+      PCL_INFO("(I) : Cloud Callback\n");
       processReturn = people_detector_.processProb(cloud);
       ++counter_;
       //visualizeAndWrite(cloud);
+    }
+
+    void
+    writeXMLFile(std::string& filename)
+    {
+      filebuf fb;
+      fb.open (filename.c_str(), ios::out);
+      ostream os(&fb);
+      people_detector_.person_attribs_->writePersonXMLConfig(os);
+      fb.close();
+    }
+
+    void
+    readXMLFile(std::string& filename)
+    {
+      filebuf fb;
+      fb.open (filename.c_str(), ios::in);
+      istream is(&fb);
+      people_detector_.person_attribs_->readPersonXMLConfig(is);
+      fb.close();
     }
 
     void
@@ -178,42 +199,57 @@ class PeoplePCDApp
     void
     writeProb(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
     {
-      PCL_DEBUG("(I) : visualizeAndWriteProb() Callback");
+      PCL_INFO("(I) : visualizeAndWriteProb() Callback\n");
       //const pcl::device::LabelProbability& prob = people_detector_.rdf_detector_->getProbability1();
-
-      // first write the first iteration
       int c;
-      pcl::PointCloud<pcl::device::prob_histogram> prob_host(people_detector_.rdf_detector_->P_l_1_.cols(), people_detector_.rdf_detector_->P_l_1_.rows());
-      people_detector_.rdf_detector_->P_l_1_.download(prob_host.points, c);
-      prob_host.width = people_detector_.rdf_detector_->P_l_1_.cols();
-      prob_host.height = people_detector_.rdf_detector_->P_l_1_.rows();
+      // first write the first iteration
 
-      PCL_DEBUG("(I) : visualizeAndWriteProb() savePNGFile");
-      for(int i = 0; i < pcl::gpu::people::NUM_LABELS; i++)
-      {
-        pcl::PointCloud<pcl::RGB> rgb;
-        convertProbToRGB(prob_host, i, rgb);
-        savePNGFile(make_ext_name(counter_,i, "hist1"), rgb);
-      }
+        pcl::PointCloud<pcl::device::prob_histogram> prob_host(people_detector_.rdf_detector_->P_l_1_.cols(), people_detector_.rdf_detector_->P_l_1_.rows());
+        people_detector_.rdf_detector_->P_l_1_.download(prob_host.points, c);
+        prob_host.width = people_detector_.rdf_detector_->P_l_1_.cols();
+        prob_host.height = people_detector_.rdf_detector_->P_l_1_.rows();
 
-      PCL_DEBUG("(I) : visualizeAndWriteProb() : cols1: %d", people_detector_.rdf_detector_->P_l_1_.cols ());
-      PCL_DEBUG("(I) : visualizeAndWriteProb() : rows1: %d", people_detector_.rdf_detector_->P_l_1_.rows ());
+        PCL_DEBUG("(I) : visualizeAndWriteProb() savePNGFile");
+        for(int i = 0; i < pcl::gpu::people::NUM_LABELS; i++)
+        {
+          pcl::PointCloud<pcl::RGB> rgb;
+          convertProbToRGB(prob_host, i, rgb);
+          savePNGFile(make_ext_name(counter_,i, "hist1"), rgb);
+        }
+
+        PCL_DEBUG("(I) : visualizeAndWriteProb() : cols1: %d", people_detector_.rdf_detector_->P_l_1_.cols ());
+        PCL_DEBUG("(I) : visualizeAndWriteProb() : rows1: %d", people_detector_.rdf_detector_->P_l_1_.rows ());
 
       // and now again for the second iteration
-      pcl::PointCloud<pcl::device::prob_histogram> prob_host2(people_detector_.rdf_detector_->P_l_2_.cols(), people_detector_.rdf_detector_->P_l_2_.rows());
-      people_detector_.rdf_detector_->P_l_2_.download(prob_host2.points, c);
-      prob_host.width = people_detector_.rdf_detector_->P_l_2_.cols();
-      prob_host.height = people_detector_.rdf_detector_->P_l_2_.rows();
 
-      PCL_DEBUG("(I) : visualizeAndWriteProb() savePNGFile");
-      for(int i = 0; i < pcl::gpu::people::NUM_LABELS; i++)
-      {
-        pcl::PointCloud<pcl::RGB> rgb;
-        convertProbToRGB(prob_host2, i, rgb);
-        savePNGFile(make_ext_name(counter_, i, "hist2"), rgb);
-      }
-      PCL_DEBUG("(I) : visualizeAndWriteProb() : cols2: %d", people_detector_.rdf_detector_->P_l_2_.cols());
-      PCL_DEBUG("(I) : visualizeAndWriteProb() : rows2: %d", people_detector_.rdf_detector_->P_l_2_.rows());
+        pcl::PointCloud<pcl::device::prob_histogram> prob_host2(people_detector_.rdf_detector_->P_l_2_.cols(), people_detector_.rdf_detector_->P_l_2_.rows());
+        people_detector_.rdf_detector_->P_l_2_.download(prob_host2.points, c);
+        prob_host.width = people_detector_.rdf_detector_->P_l_2_.cols();
+        prob_host.height = people_detector_.rdf_detector_->P_l_2_.rows();
+
+        PCL_DEBUG("(I) : visualizeAndWriteProb() savePNGFile");
+        for(int i = 0; i < pcl::gpu::people::NUM_LABELS; i++)
+        {
+          pcl::PointCloud<pcl::RGB> rgb;
+          convertProbToRGB(prob_host2, i, rgb);
+          savePNGFile(make_ext_name(counter_, i, "hist2"), rgb);
+        }
+        PCL_DEBUG("(I) : visualizeAndWriteProb() : cols2: %d", people_detector_.rdf_detector_->P_l_2_.cols());
+        PCL_DEBUG("(I) : visualizeAndWriteProb() : rows2: %d", people_detector_.rdf_detector_->P_l_2_.rows());
+
+      // and now again for the Gaus test
+
+        pcl::PointCloud<pcl::device::prob_histogram> prob_host3(people_detector_.rdf_detector_->P_l_Gaus_.cols(), people_detector_.rdf_detector_->P_l_Gaus_.rows());
+        people_detector_.rdf_detector_->P_l_Gaus_.download(prob_host3.points, c);
+        prob_host3.width = people_detector_.rdf_detector_->P_l_Gaus_.cols();
+        prob_host3.height = people_detector_.rdf_detector_->P_l_Gaus_.rows();
+        for(int i = 0; i < pcl::gpu::people::NUM_LABELS; i++)
+        {
+          pcl::PointCloud<pcl::RGB> rgb;
+          convertProbToRGB(prob_host3, i, rgb);
+          savePNGFile(make_ext_name(counter_, i, "gaus"), rgb);
+        }
+
     }
 
     int counter_;
@@ -236,6 +272,7 @@ void print_help()
   PCL_INFO("\t -tree2 \t<path_to_tree_file>\n");
   PCL_INFO("\t -tree3 \t<path_to_tree_file>\n");
   PCL_INFO("\t -pcd   \t<path_to_pcd_file>\n");
+  PCL_INFO("\t -XML   \t<path_to_XML_file> \tcontains person specifics, defaults to generic.xml\n");
 }
 
 int main(int argc, char** argv)
@@ -257,6 +294,9 @@ int main(int argc, char** argv)
   parse_argument (argc, argv, "-tree1", treeFilenames[1]);
   parse_argument (argc, argv, "-tree2", treeFilenames[2]);
   parse_argument (argc, argv, "-tree3", treeFilenames[3]);
+
+  std::string XMLfilename("generic.xml");
+  parse_argument (argc, argv, "-XML", XMLfilename);
 
   if (numTrees == 0 || numTrees > 4)
   {
@@ -294,6 +334,10 @@ int main(int argc, char** argv)
   PeoplePCDApp app;
   PCL_DEBUG("(I) : Main : App created");
   app.people_detector_.rdf_detector_ = rdf;
+
+  // Read in person specific configuration
+  app.readXMLFile(XMLfilename);
+  std::cout << "(I) : filename " << XMLfilename << std::endl;
 
   /// Run the app
   {

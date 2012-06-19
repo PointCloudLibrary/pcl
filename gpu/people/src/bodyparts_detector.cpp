@@ -138,7 +138,9 @@ pcl::gpu::people::RDFBodyPartsDetector::allocate_buffers(int rows, int cols)
   labels_.create(rows, cols);
   labels_smoothed_.create(rows, cols);
 
+  // Create all the label probabilities
   P_l_.create(rows,cols);
+  P_l_Gaus_.create(rows,cols);
   P_l_1_.create(rows,cols);
   P_l_2_.create(rows,cols);
   P_l_prev_1_.create(rows,cols);
@@ -353,4 +355,10 @@ void
 pcl::gpu::people::RDFBodyPartsDetector::processRelations ()
 {
   buildRelations ( blob_matrix_ );
+}
+
+void
+pcl::gpu::people::RDFBodyPartsDetector::processRelations (PersonAttribs::Ptr person_attribs)
+{
+  buildRelations ( blob_matrix_, person_attribs );
 }

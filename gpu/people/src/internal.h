@@ -182,13 +182,13 @@ namespace pcl
         int
         CUDA_GaussianBlur( const Depth& depth,
                            LabelProbability& probIn,
-                           DeviceArray<float> kernel,
+                           DeviceArray<float>& kernel,
                            LabelProbability& probOut);
         /** \brief This will blur the input labelprobability with the given kernel, this version avoids extended allocation **/
         int
         CUDA_GaussianBlur( const Depth& depth,
                            LabelProbability& probIn,
-                           DeviceArray<float> kernel,
+                           DeviceArray<float>& kernel,
                            LabelProbability& probTemp,
                            LabelProbability& probOut);
     };

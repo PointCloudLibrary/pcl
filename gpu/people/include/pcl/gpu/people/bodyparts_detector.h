@@ -45,6 +45,7 @@
 #include <pcl/gpu/people/colormap.h>
 #include <pcl/gpu/people/label_blob2.h>
 #include <pcl/gpu/people/label_common.h>
+#include "pcl/gpu/people/person_attribs.h"
 #include <boost/shared_ptr.hpp>
 #include <string>
 #include <vector>
@@ -71,6 +72,7 @@ namespace pcl
           typedef DeviceArray2D<unsigned short> Depth;
           typedef DeviceArray2D<pcl::RGB> Image;
 
+          /** \brief This is the constructor **/
           RDFBodyPartsDetector(const std::vector<std::string>& tree_files,
               int default_buffer_rows = 480, int default_buffer_cols = 640);
 
@@ -94,6 +96,13 @@ namespace pcl
            */
           void processRelations ();
 
+          /**
+           * \brief This processes the blob_matrix_
+           * \param[in] person_attribs the custom person parameters
+           */
+          void
+          processRelations (PersonAttribs::Ptr person_attribs);
+
           //getters
           const Labels& getLabels() const;
           const pcl::device::LabelProbability& getProbability() const;
@@ -112,6 +121,7 @@ namespace pcl
 
           /** These contain the histograms of the labels for this detector **/
           pcl::device::LabelProbability P_l_; // the one is current worked in
+          pcl::device::LabelProbability P_l_Gaus_; // the current Gaussian buffer
           pcl::device::LabelProbability P_l_1_; // for the first iteration
           pcl::device::LabelProbability P_l_2_; // for the second iteration
 
@@ -122,7 +132,6 @@ namespace pcl
         private:
           boost::shared_ptr<device::MultiTreeLiveProc> impl_;
           
-
           int max_cluster_size_;
           float cluster_tolerance_;
 

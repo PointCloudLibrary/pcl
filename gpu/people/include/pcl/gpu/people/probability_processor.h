@@ -84,6 +84,13 @@ namespace pcl
           CreateGaussianKernel ( float sigma,
                                  int kernelSize);
 
+          /** \brief This will do a GaussianBlur over the LabelProbability **/
+          int
+          GaussianBlur( const Depth&                    depth,
+                        pcl::device::LabelProbability&  probIn,
+                        DeviceArray<float>&             kernel,
+                        pcl::device::LabelProbability&  probOut);
+
         private:
           boost::shared_ptr<pcl::device::ProbabilityProc> impl_;
 

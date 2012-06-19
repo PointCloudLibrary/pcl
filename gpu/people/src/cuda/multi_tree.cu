@@ -301,7 +301,6 @@ namespace pcl
       {
         // Each tree casts a vote to the probability
         // TODO: replace this with a histogram copy
-        //prob.ptr(v)[u].probs[bob[ti]] += 63;  //TODO (0.25 = 1/numTrees) * 255 = 63
         prob.ptr(v)[u].probs[bob[ti]] += 0.25;
       }
     }

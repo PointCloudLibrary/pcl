@@ -1,12 +1,7 @@
-
-#if 0
-
 /*
  * Software License Agreement (BSD License)
  *
- *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2012, Willow Garage, Inc.
- *
+ *  Copyright (c) 2011, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -36,24 +31,19 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: $
- * @author Koen Buys
- * @file tree2.h
- * @brief This file contains the Tree2 structure and the inline <<-operator for it.
+ * @author: Koen Buys
  */
 
-#ifndef PCL_GPU_PEOPLE_LABEL_TREE2_H_
-#define PCL_GPU_PEOPLE_LABEL_TREE2_H_
+#ifndef PCL_GPU_PEOPLE_FACE_DETECTOR_H_
+#define PCL_GPU_PEOPLE_FACE_DETECTOR_H_
 
-#include <vector>
-
-#include <pcl/point_cloud.h>
+#include <pcl/pcl_exports.h>
 #include <pcl/point_types.h>
-#include <pcl/PointIndices.h>
+#include <pcl/point_cloud.h>
 
-// Our header
-#include <pcl/gpu/people/label_common.h>
-#include <pcl/gpu/people/label_blob2.h>
+#include <boost/shared_ptr.hpp>
+#include <string>
+#include <vector>
 
 namespace pcl
 {
@@ -61,11 +51,24 @@ namespace pcl
   {
     namespace people
     {
-      
-    } // end namespace people
-  } // end namespace gpu
-} // end namespace pcl
-#endif
+      class PCL_EXPORTS FaceDetector
+      {
+        public:
+          typedef boost::shared_ptr<FaceDetector> Ptr;
+
+          //typedef DeviceArray2D<unsigned char> Labels;
+          //typedef DeviceArray2D<unsigned short> Depth;
+          //typedef DeviceArray2D<pcl::RGB> Image;
+
+          /** \brief This is the constructor **/
+          FaceDetector();
+
+        private:
+          void allocate_buffers(int rows = 480, int cols = 640);
+      };
+    }
+  }
+}
 
 
-#endif
+#endif /* PCL_GPU_PEOPLE_FACE_DETECTOR_H_ */

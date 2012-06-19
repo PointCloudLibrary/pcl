@@ -58,6 +58,7 @@ namespace pcl
   {
     namespace people
     {
+      /*
       struct FaceDetector
       {
           typedef boost::shared_ptr<FaceDetector> Ptr;
@@ -67,7 +68,7 @@ namespace pcl
       {
           typedef boost::shared_ptr<OtherDetector> Ptr;
       };
-      
+      */
       class PCL_EXPORTS PeopleDetector
       {
         public:
@@ -78,8 +79,8 @@ namespace pcl
           typedef DeviceArray2D<pcl::RGB> Image;
 
           RDFBodyPartsDetector::Ptr rdf_detector_;
-          FaceDetector::Ptr         face_detector_;
-          OtherDetector::Ptr        other_detector_;
+          //FaceDetector::Ptr         face_detector_;
+          //OtherDetector::Ptr        other_detector_;
           PersonAttribs::Ptr        person_attribs_;
           ProbabilityProcessor::Ptr probability_processor_;
 
@@ -118,13 +119,15 @@ namespace pcl
           }
               
           /** \brief Class getName method. */
-          virtual std::string getClassName () const { return "PeopleDetector"; }
+          inline const std::string getClassName () const { return "PeopleDetector"; }
 
         public:       
           typedef DeviceArray2D<unsigned char> Labels;
           typedef DeviceArray2D<unsigned char> Mask;
           typedef DeviceArray2D<float> Hue;
 
+          /** \brief indicates first time callback (allows for tracking features to start from second frame) **/
+          bool first_iteration;
           float fx_, fy_, cx_, cy_;
           unsigned int  delta_hue_tolerance_;
                    
@@ -148,7 +151,9 @@ namespace pcl
           int
           process ();
 
-          /** \brief Process the depth based on probabilities supporting tracking **/
+          /**
+           * \brief Process the depth based on probabilities supporting tracking, person specific files used
+           **/
           int
           processProb ();
 
