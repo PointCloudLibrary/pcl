@@ -167,7 +167,7 @@ pcl::console::parse_file_extension_argument (int argc, char** argv, const std::s
 
     // Check if found
     std::string::size_type it;
-    if ((it = fname.find (ext)) != std::string::npos)
+    if ((it = fname.rfind (ext)) != std::string::npos)
     {
       // Additional check: we want to be able to differentiate between .p and .png
       if ((ext.size () - (fname.size () - it)) == 0)
