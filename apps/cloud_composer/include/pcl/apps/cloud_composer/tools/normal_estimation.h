@@ -41,7 +41,7 @@
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
 #include <pcl/apps/cloud_composer/cloud_composer_item.h>
-#include <pcl/features/normal_3d.h>
+
 
 
 namespace pcl
@@ -55,10 +55,11 @@ namespace pcl
         NormalEstimationTool (QObject* parent);
         virtual ~NormalEstimationTool ();
         
-        virtual QList <sensor_msgs::PointCloud2::Ptr>
-        performAction (QList <sensor_msgs::PointCloud2::ConstPtr> input_data);
+        virtual QList <CloudComposerItem*>
+        performAction (QList <const CloudComposerItem*> input_data);
       
-      
+        inline virtual QString
+        getToolName () const { return "NormalEstimationTool";}
     };
 
     

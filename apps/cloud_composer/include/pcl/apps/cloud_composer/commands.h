@@ -40,7 +40,7 @@
 
 #include <QUndoCommand>
 
-#include <pcl/apps/cloud_composer/cloud_composer_item.h>
+#include <pcl/apps/cloud_composer/cloud_item.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
@@ -49,10 +49,15 @@ namespace pcl
   namespace cloud_composer
   {
     class AbstractTool;
+    struct ParentChildPair
+    {
+      const CloudComposerItem* parent;
+      CloudComposerItem* child;
+    };
     class CloudCommand : public QUndoCommand
     {
       public: 
-        CloudCommand (QUndoCommand* parent = 0);
+        CloudCommand (QList <const CloudComposerItem*> input_data, QUndoCommand* parent = 0);
         
         virtual bool
         runCommand (AbstractTool* tool) = 0;
@@ -62,7 +67,9 @@ namespace pcl
         
         virtual void
         redo () = 0;
-      private:
+      protected:
+        QList <const CloudComposerItem*> original_data_;
+        QList <ParentChildPair> output_data_;
         
     };
     
@@ -80,9 +87,7 @@ namespace pcl
         virtual void
         redo ();
       
-      private:
-        QList <const CloudComposerItem*> original_data_;
-        QList <CloudComposerItem*> output_data_;
+      
       
     };
     
@@ -99,11 +104,7 @@ namespace pcl
       
         virtual void
         redo ();
-      
-      private:
-        QList <const CloudComposerItem*> original_data_;
-        QList <CloudComposerItem*> output_data_;
-      
+
     };
   }
 } 

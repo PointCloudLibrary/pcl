@@ -40,16 +40,12 @@
 
 #include <QObject>
 #include <QDebug>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/apps/cloud_composer/commands.h>
-
+#include <pcl/apps/cloud_composer/cloud_composer_item.h>
 namespace pcl
 {
   namespace cloud_composer
   {
-    class CloudComposerItem;
-    
     class AbstractTool : public QObject
     {
       Q_OBJECT
@@ -64,18 +60,20 @@ namespace pcl
          *  Returned list will become the output, replacing input_data in the model - you must deep copy
          *  the input_data, since undo works by switching back and forth
          */ 
-        virtual QList <sensor_msgs::PointCloud2::Ptr>
-        performAction (QList <sensor_msgs::PointCloud2::ConstPtr> input_data) = 0;
+        virtual QList <CloudComposerItem*>
+        performAction (QList <const CloudComposerItem*> input_data) = 0;
         
         virtual CloudCommand*
         createCommand (QList <const CloudComposerItem*> input_data) = 0;
         
-        const QString 
-        getActionText () {return action_text_;}
+        QString 
+        getActionText () const {return action_text_;}
         
         void
         setActionText (const QString text) { action_text_ = text; }
-               
+              
+        virtual QString
+        getToolName () const = 0;
       private:
         QString action_text_;
         
@@ -91,8 +89,8 @@ namespace pcl
         
         virtual ~ModifyTool () { }
         
-        virtual QList <sensor_msgs::PointCloud2::Ptr> 
-        performAction (QList <sensor_msgs::PointCloud2::ConstPtr> input_data) = 0;
+        virtual QList <CloudComposerItem*>
+        performAction (QList <const CloudComposerItem*> input_data) = 0;
         
         inline virtual CloudCommand* 
         createCommand (QList <const CloudComposerItem*> input_data) 
@@ -100,7 +98,8 @@ namespace pcl
           return new ModifyCloudCommand (input_data);
         }
         
-
+        inline virtual QString
+        getToolName () const { return "ModifyTool";}
         
     };
     
@@ -114,8 +113,8 @@ namespace pcl
         
         virtual ~NewItemTool () { }
         
-        virtual QList <sensor_msgs::PointCloud2::Ptr> 
-        performAction (QList <sensor_msgs::PointCloud2::ConstPtr> input_data) = 0;
+        virtual QList <CloudComposerItem*>
+        performAction (QList <const CloudComposerItem*> input_data) = 0;
         
         inline virtual CloudCommand*
         createCommand (QList <const CloudComposerItem*> input_data) 
@@ -123,7 +122,8 @@ namespace pcl
           return new NewItemCloudCommand (input_data);
         }
         
-
+        inline virtual QString
+        getToolName () const { return "NewItemTool";}
         
     };
   }

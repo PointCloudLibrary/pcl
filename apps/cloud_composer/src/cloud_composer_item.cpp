@@ -14,7 +14,7 @@ pcl::cloud_composer::CloudComposerItem::CloudComposerItem (QString name)
 
 pcl::cloud_composer::CloudComposerItem::~CloudComposerItem ()
 {
- 
+  properties_->deleteLater ();
 }
 
 void
@@ -36,4 +36,23 @@ pcl::cloud_composer::CloudComposerItem::addProperty (const QString prop_name, QV
  
   parent_item->appendRow (new_row);
   
+}
+
+pcl::cloud_composer::CloudComposerItem*
+pcl::cloud_composer::CloudComposerItem::clone () const
+{
+  CloudComposerItem* new_item = new CloudComposerItem (this->text ());
+  QStandardItemModel* new_item_properties = new QStandardItemModel ();
+  new_item_properties->setHorizontalHeaderItem (0, new QStandardItem ("Name"));
+  new_item_properties->setHorizontalHeaderItem (1, new QStandardItem ("Value"));
+  
+  for (int i=0; i < properties_->rowCount (); ++i){
+    QList <QStandardItem*> new_row;
+    new_row.append (properties_->item(i,0)->clone ());
+    new_row.append (properties_->item(i,1)->clone ());
+    new_item_properties->appendRow (new_row);
+  }
+  new_item->setProperties (new_item_properties);
+  
+  return new_item;  
 }

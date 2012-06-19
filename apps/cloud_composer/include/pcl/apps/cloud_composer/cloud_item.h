@@ -76,8 +76,8 @@ namespace pcl
         CloudItem (const CloudItem& to_copy);
         virtual ~CloudItem ();
         
-        inline int const
-        type () { return CLOUD_ITEM; }
+        inline virtual int 
+        type () const { return CLOUD_ITEM; }
 
       private:
 
@@ -97,6 +97,7 @@ namespace pcl
 
 //Add PointCloud types to QT MetaType System
 Q_DECLARE_METATYPE (sensor_msgs::PointCloud2::Ptr);
+Q_DECLARE_METATYPE (sensor_msgs::PointCloud2::ConstPtr);
 Q_DECLARE_METATYPE (GeometryHandler::ConstPtr);
 Q_DECLARE_METATYPE (ColorHandler::ConstPtr);
 Q_DECLARE_METATYPE (Eigen::Vector4f);

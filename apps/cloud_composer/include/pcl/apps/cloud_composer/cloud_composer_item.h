@@ -63,9 +63,17 @@ namespace pcl
         CloudComposerItem (const CloudComposerItem& to_copy);
         virtual ~CloudComposerItem ();
         
-        inline int const
-        type () { return CLOUD_COMPOSER_ITEM; }
+        inline virtual int 
+        type () const { return CLOUD_COMPOSER_ITEM; }
 
+        virtual CloudComposerItem*
+        clone () const;
+        
+        inline void
+        setProperties (QStandardItemModel* new_props)
+        {
+          properties_ = new_props;
+        }
       protected:
         /** \brief Helper function for adding a new property */
         void
