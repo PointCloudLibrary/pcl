@@ -218,22 +218,22 @@ main (int argc, char** argv)
   {
     print_highlight ("Multi-viewport rendering enabled.\n");
 
+    y_s = static_cast<int>(floor (sqrt (static_cast<float>(p_file_indices.size () + vtk_file_indices.size ()))));
+    x_s = y_s + static_cast<int>(ceil (((p_file_indices.size () + vtk_file_indices.size ()) / static_cast<double>(y_s)) - y_s));
+
     if (p_file_indices.size () != 0)
     {
-      y_s = static_cast<int>(floor (sqrt (static_cast<float>(p_file_indices.size ()))));
-      x_s = y_s + static_cast<int>(ceil ((p_file_indices.size () / static_cast<double>(y_s)) - y_s));
-      print_highlight ("Preparing to load "); print_value ("%d", p_file_indices.size ());
+      print_highlight ("Preparing to load "); print_value ("%d", p_file_indices.size ()); print_info (" pcd files.\n");
     }
-    else if (vtk_file_indices.size () != 0)
+
+    if (vtk_file_indices.size () != 0)
     {
-      y_s = static_cast<int>(floor (sqrt (static_cast<float>(vtk_file_indices.size ()))));
-      x_s = y_s + static_cast<int>(ceil ((vtk_file_indices.size () / static_cast<double>(y_s)) - y_s));
-      print_highlight ("Preparing to load "); print_value ("%d", vtk_file_indices.size ());
+      print_highlight ("Preparing to load "); print_value ("%d", vtk_file_indices.size ()); print_info (" vtk files.\n");
     }
 
     x_step = static_cast<double>(1.0 / static_cast<double>(x_s));
     y_step = static_cast<double>(1.0 / static_cast<double>(y_s));
-    print_info (" files ("); print_value ("%d", x_s);    print_info ("x"); print_value ("%d", y_s);
+    print_value ("%d", x_s);    print_info ("x"); print_value ("%d", y_s);
     print_info (" / ");      print_value ("%f", x_step); print_info ("x"); print_value ("%f", y_step);
     print_info (")\n");
   }
