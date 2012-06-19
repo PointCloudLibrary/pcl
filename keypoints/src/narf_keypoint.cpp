@@ -250,6 +250,8 @@ namespace
 void 
 NarfKeypoint::calculateInterestImage () 
 {
+  //std::cout << __PRETTY_FUNCTION__ << " called.\n";
+  
   if (interest_image_!=NULL)  // Already done
     return;
   
@@ -262,6 +264,8 @@ NarfKeypoint::calculateInterestImage ()
 void 
 NarfKeypoint::calculateCompleteInterestImage ()
 {
+  //std::cout << __PRETTY_FUNCTION__ << " called.\n";
+  
   if (parameters_.support_size <= 0.0f)
   {
     std::cerr << __PRETTY_FUNCTION__<<": parameters_.support_size is not set!\n";
@@ -278,13 +282,17 @@ NarfKeypoint::calculateCompleteInterestImage ()
         radius_reciprocal = 1.0f / search_radius;
   
   calculateScaleSpace ();
+  //std::cout << PVARN(range_image_scale_space_.size ());
   
   std::vector<float> start_usage_ranges;
   start_usage_ranges.resize (range_image_scale_space_.size ());
   start_usage_ranges[int (range_image_scale_space_.size ())-1] = 0.0f;
   for (int scale_idx = int (range_image_scale_space_.size ())-2;  scale_idx >= 0; --scale_idx)
+  {
     start_usage_ranges[scale_idx] = parameters_.support_size / 
       tanf (static_cast<float> (parameters_.optimal_range_image_patch_size) * range_image_scale_space_[scale_idx+1]->getAngularResolution ());
+    //std::cout << PVARN(start_usage_ranges[scale_idx]);
+  }
   
   //double interest_value_calculation_start_time = getTime ();
   interest_image_scale_space_.clear ();
@@ -310,7 +318,8 @@ NarfKeypoint::calculateCompleteInterestImage ()
       //interest_image[i] = -1.0f;
     
     const int angle_histogram_size = 18;
-    float* angle_histogram = new float[angle_histogram_size];
+    std::vector<float> angle_histogram;
+    angle_histogram.resize(angle_histogram_size);
     
     std::vector<bool> was_touched;
     was_touched.resize (array_size, false);
@@ -353,7 +362,8 @@ NarfKeypoint::calculateCompleteInterestImage ()
       neighbors_to_check.push_back (index);
       was_touched[index] = true;
       
-      memset (angle_histogram, 0, angle_histogram_size*sizeof (float));
+      angle_histogram.clear ();
+      angle_histogram.resize(angle_histogram_size, 0);
       for (size_t neighbors_to_check_idx=0; neighbors_to_check_idx<neighbors_to_check.size (); ++neighbors_to_check_idx)
       {
         int index2 = neighbors_to_check[neighbors_to_check_idx];
@@ -440,7 +450,6 @@ NarfKeypoint::calculateCompleteInterestImage ()
       }
     }
     
-    delete[] angle_histogram;
     border_extractor.getParameters ().max_no_of_threads = original_max_no_of_threads;
   }
   
@@ -497,7 +506,8 @@ NarfKeypoint::calculateSparseInterestImage ()
   }
   
   const int angle_histogram_size = 18;
-  float* angle_histogram = new float[angle_histogram_size];
+  std::vector<float> angle_histogram;
+  angle_histogram.resize(angle_histogram_size);
   std::vector<std::vector<std::pair<int, float> > > angle_elements (angle_histogram_size);
   std::vector<bool> relevant_point_still_valid;
   
@@ -719,7 +729,6 @@ NarfKeypoint::calculateSparseInterestImage ()
       }
     }
   }
-  delete[] angle_histogram;
   
   border_extractor.getParameters ().max_no_of_threads = original_max_no_of_threads;
 }
@@ -727,7 +736,8 @@ NarfKeypoint::calculateSparseInterestImage ()
 void 
 NarfKeypoint::calculateInterestPoints ()
 {
-  //TODO: bivariate polynomials to get exact point position
+  //std::cout << __PRETTY_FUNCTION__ << " called.\n";
+
   if (interest_points_ != NULL)
     return;
 
@@ -942,6 +952,7 @@ NarfKeypoint::detectKeypoints (NarfKeypoint::PointCloudOut& output)
 void 
 NarfKeypoint::compute (NarfKeypoint::PointCloudOut& output)
 {
+  //std::cout << __PRETTY_FUNCTION__ << " called.\n";
   detectKeypoints (output);
 }
 
