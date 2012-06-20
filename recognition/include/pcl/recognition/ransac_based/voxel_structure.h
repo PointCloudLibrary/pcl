@@ -65,6 +65,10 @@ namespace pcl
       inline T*
       getVoxel(const double p[3]);
 
+      /** \brief Returns the linear voxel array. */
+      inline T*
+      getVoxels(){ return voxels_;}
+
     protected:
       T *voxels_;
       int num_of_voxels_[3], num_of_voxels_xy_plane_;

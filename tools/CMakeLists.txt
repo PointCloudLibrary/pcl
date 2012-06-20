@@ -96,6 +96,9 @@ if (build)
   PCL_ADD_EXECUTABLE(pcl_linemod_detection ${SUBSYS_NAME} linemod_detection.cpp)
   target_link_libraries(pcl_linemod_detection pcl_common pcl_io pcl_recognition)
 
+  PCL_ADD_EXECUTABLE(pcl_visualize_obj_rec_ransac_hash_table ${SUBSYS_NAME} visualize_obj_rec_ransac_hash_table.cpp)
+  target_link_libraries(pcl_visualize_obj_rec_ransac_hash_table pcl_common pcl_visualization pcl_io pcl_recognition)
+
 
   if (QHULL_FOUND)
     PCL_ADD_EXECUTABLE(pcl_crop_to_hull ${SUBSYS_NAME} crop_to_hull.cpp)

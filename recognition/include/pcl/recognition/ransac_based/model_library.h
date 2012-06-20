@@ -91,7 +91,11 @@ namespace pcl
       /** \brief This class is used by 'ObjRecRANSAC' to maintain the object models to be recognized. Normally, you do not need to use
         * this class directly. */
       ModelLibrary(double pair_width);
-      virtual ~ModelLibrary(){}
+      virtual ~ModelLibrary(){ this->clear();}
+
+      /** \brief Removes all models from the library and clears the hash table. */
+      void
+      clear ();
 
       /** \brief Adds a model to the hash table.
         *
@@ -112,6 +116,7 @@ namespace pcl
       double pair_width_, pair_width_eps_;
 
       VoxelStructure<HashTableCell> hash_table_;
+      int num_of_bins_[3];
     };
   } // namespace recognition
 } // namespace pcl

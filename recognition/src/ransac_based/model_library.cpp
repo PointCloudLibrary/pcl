@@ -52,7 +52,28 @@ using namespace recognition;
 ModelLibrary::ModelLibrary(double pair_width)
 : pair_width_(pair_width), pair_width_eps_(0.1*pair_width)
 {
+  num_of_bins_[0] = 60;
+  num_of_bins_[1] = 60;
+  num_of_bins_[2] = 60;
+
 //  hash_table_.build();
+}
+
+//============================================================================================================================================
+
+void
+ModelLibrary::clear()
+{
+  HashTableCell* cells = hash_table_.getVoxels();
+  int i, num_bins = num_of_bins_[0]*num_of_bins_[1]*num_of_bins_[2];
+
+  // Clear all cell entries
+  for ( i = 0 ; i < num_bins ; ++i )
+    cells[i].clear();
+
+  // Delete the models
+  for ( map<string,Model*>::iterator it = models_.begin() ; it != models_.end() ; ++i )
+    delete it->second;
 }
 
 //============================================================================================================================================
@@ -113,10 +134,10 @@ ModelLibrary::addToHashTable(const ModelLibrary::Model* model, int i, int j)
       model->points_.points[j], model->normals_.points[j], key);
 
   // Get the hash table cell containing 'key' (there is for sure such a cell since the hash table bounds are large enough)
-  HashTableCell* cell = hash_table_.getVoxel(key);
+  HashTableCell* cell = hash_table_.getVoxel (key);
 
-  // Insert the id pair (i,j)
-  (*cell)[model].push_back(std::pair<int,int>(i, j));
+  // Insert the id pair (i,j) belonging to 'model'
+  (*cell)[model].push_back (std::pair<int,int>(i, j));
 }
 
 //============================================================================================================================================
