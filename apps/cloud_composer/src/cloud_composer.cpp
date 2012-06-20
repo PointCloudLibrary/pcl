@@ -9,6 +9,9 @@
 #include <pcl/apps/cloud_composer/cloud_item.h>
 #include <pcl/apps/cloud_composer/item_inspector.h>
 #include <pcl/apps/cloud_composer/commands.h>
+#include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
+#include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
+#include <pcl/apps/cloud_composer/toolbox_model.h>
 
 /////////////////////////////////////////////////////////////
 pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
@@ -32,9 +35,11 @@ pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
   last_directory_ = QDir (".");
   current_model_ = 0;
   
-  initializeCloudBrowser();
-  initializeCloudViewer();
-  initializeItemInspector();
+  initializeCloudBrowser ();
+  initializeCloudViewer ();
+  initializeItemInspector ();
+  initializeToolBox ();
+  initializePlugins ();
   
   undo_group_ = new QUndoGroup (this);
   undo_view_->setGroup (undo_group_);
@@ -96,6 +101,84 @@ pcl::cloud_composer::ComposerMainWindow::initializeItemInspector ()
 {
   
 }
+
+void
+pcl::cloud_composer::ComposerMainWindow::initializeToolBox ()
+{
+  tool_box_model_ = new ToolBoxModel (this);
+  tool_selection_model_ = new QItemSelectionModel (tool_box_model_);
+  tool_box_view_->setModel (tool_box_model_);
+  tool_box_view_->setSelectionModel (tool_selection_model_);
+  tool_box_view_->setIconSize (QSize (32,32));
+  tool_box_view_->setIndentation (10);
+  //tool_box_view_->setStyleSheet("branch:has-siblings:!adjoins-item:image none");
+ // tool_box_view_->setStyleSheet("branch:!has-children:!has-siblings:adjoins-item:image: none");
+  
+  
+}
+
+
+void 
+pcl::cloud_composer::ComposerMainWindow::initializePlugins ()
+{
+  QDir plugin_dir = QCoreApplication::applicationDirPath ();
+  qDebug() << plugin_dir.path ()<< "   "<<QDir::cleanPath ("../lib/cloud_composer_plugins");
+  if (!plugin_dir.cd (QDir::cleanPath ("../lib/cloud_composer_plugins")))
+  {
+    qCritical () << "Could not find plugin tool directory!!!";
+  }
+  QStringList plugin_filter;
+  plugin_filter << "libpcl_cc_tool_*.so";
+  plugin_dir.setNameFilters (plugin_filter);
+  foreach (QString filename, plugin_dir.entryList (QDir::Files))
+  {
+    qDebug () << "Loading " << plugin_dir.relativeFilePath (filename);
+    QPluginLoader loader (plugin_dir.absoluteFilePath (filename), this);
+    // This is automatically deleted when the library is unloaded (on app exit)
+    QObject *plugin = loader.instance ();
+    ToolFactory* tool_factory = qobject_cast <ToolFactory*> (plugin);
+    if (tool_factory) {
+      qWarning () << "Loaded " << tool_factory->getPluginName ();
+      //Create the action button for this tool
+      tool_box_model_->addTool (tool_factory);
+      
+     /*
+      processFactoryMap.insert(processFactory->processName(),processFactory);
+      pluginFileNames.append(fileName);
+      //Check what types the plugin uses
+      QList<QString> usedTypes = processFactory->processTypes();
+      TypeCreatorMap creatorMap = processFactory->getTypeCreatorMap();
+      foreach(QString type, usedTypes){
+        if(!dataTypes.contains(type)){
+          if(creatorMap.contains(type)){
+            qWarning() << "New type " << type<< " encountered in plugin "<<processFactory->processName();
+            typeCreatorMap.insert(type,creatorMap.value(type));
+            dataTypes.insert(type);
+            //Create a temporary instance of the new datacontainer type to check if it is displayable
+            AbstractDataContainer* tempContainer;
+            //Get the function pointer
+            AbstractDataContainer* (*creatorFunction)() = static_cast< AbstractDataContainer* (*)() > (creatorMap.value(type));
+            //Create the new data container
+            tempContainer = creatorFunction();
+            //Check if this new type is displayble
+            if(tempContainer->isDisplayable())
+              displayableDataTypes.insert(type);
+            delete tempContainer;
+          }else{
+            qCritical() << "New Type "<< type<< " encountered in plugin " <<processFactory->processName()<<" but NO creator function!!";
+          }
+        }
+        
+      }*/
+    }
+    else{
+      qDebug() << "Could not load " << plugin_dir.relativeFilePath (filename);
+      qDebug() << loader.errorString ();
+    }
+    
+  }
+}
+
 
 
 void 

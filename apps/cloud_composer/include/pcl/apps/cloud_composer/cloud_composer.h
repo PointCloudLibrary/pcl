@@ -53,17 +53,16 @@
 
 
 class QTreeView;
-class QStandardItem;
 
 namespace pcl
 {
   namespace cloud_composer
   {
-
-    
     class ProjectModel;
     class CloudViewer;
     class CloudCommand;
+    class ToolFactory;
+    class ToolBoxModel;
     
     /** \brief MainWindow of cloud_composer application
      * \author Jeremie Papon
@@ -72,7 +71,8 @@ namespace pcl
      *    * cloud_viewer_ is the view which contains the PCLVisualizer & QVTKWidget
      *    * cloud_browser_ is the tree view in the left dock
      *    * item_inspector_ is the details view in the left dock
-     *    * tool_box_ is the tool box in right dock
+     *    * tool_box_view_ is the tool box in right dock
+     *    * tool_parameter_view_ shows adjustable parameters for currently selected tool
      *    * undo_view_ is the undo stack view in the right dock
      */
     class ComposerMainWindow : public QMainWindow, private Ui::ComposerMainWindow
@@ -121,14 +121,22 @@ namespace pcl
         initializeCloudViewer ();
         void 
         initializeItemInspector ();
+        
+        void 
+        initializeToolBox ();
+        void 
+        initializePlugins ();
 
-
+        
         /** \brief Pointer to the model which is currently being viewed  */
         ProjectModel* current_model_;
         QItemSelectionModel* current_selection_model_;
         QDir last_directory_;
         QMap <QString, ProjectModel*> name_model_map_;
         QUndoGroup *undo_group_;
+        
+        QItemSelectionModel* tool_selection_model_;
+        ToolBoxModel* tool_box_model_;
     };
     
   }

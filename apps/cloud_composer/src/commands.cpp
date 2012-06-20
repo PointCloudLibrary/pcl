@@ -51,7 +51,7 @@ pcl::cloud_composer::NewItemCloudCommand::runCommand (AbstractTool* tool)
 {
   
   //For new item cloud command, each selected item should be processed separately
-  // i.e. calculate normals for every selected cloud
+  //e.g. calculate normals for every selected cloud
   foreach (const CloudComposerItem *item, original_data_)
   {
     //Check to see if this is a cloud
@@ -62,12 +62,10 @@ pcl::cloud_composer::NewItemCloudCommand::runCommand (AbstractTool* tool)
       qWarning () << "Warning: Tool " << tool->getToolName () << "returned no item in a NewItemCloudCommand";
     else if (output.size () == 1)
     {
-    //Create a copy of the original item
-    //  CloudItem* copy = item->clone ();
-    //Replace the cloud 
-    //Create a new item which will be a child of the copy
-    //  CloudComposerItem* new_child;
-    //new_child->setParent (
+      //Create a copy of the original item
+      CloudComposerItem* copy = item->clone ();
+      ParentChildPair output_pair = {copy, output};
+      output_data_.append (output_pair);
     }
     else
     {

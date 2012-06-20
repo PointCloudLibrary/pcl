@@ -69,6 +69,7 @@ namespace pcl
     class CloudItem : public CloudComposerItem
     {
       public:
+
         CloudItem (const QString name,
                    const sensor_msgs::PointCloud2::Ptr cloud_ptr, 
                    const Eigen::Vector4f origin,
@@ -79,6 +80,9 @@ namespace pcl
         inline virtual int 
         type () const { return CLOUD_ITEM; }
 
+        virtual CloudItem*
+        clone () const;
+        
       private:
 
         sensor_msgs::PointCloud2::Ptr cloud_ptr_;

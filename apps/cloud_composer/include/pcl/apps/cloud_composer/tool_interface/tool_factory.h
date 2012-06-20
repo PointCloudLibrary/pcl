@@ -59,9 +59,19 @@ namespace pcl
         createTool (QObject* parent = 0) = 0;
             
         virtual QStandardItemModel*
-        createToolParameterModel () = 0;
+        createToolParameterModel (QObject* parent) = 0;
         
+        virtual QString
+        getPluginName () const = 0;
+        
+        virtual QString
+        getToolGroupName () const = 0; 
+        
+        virtual QString 
+        getIconName () const = 0;
+
     };
+
   }
 }
 

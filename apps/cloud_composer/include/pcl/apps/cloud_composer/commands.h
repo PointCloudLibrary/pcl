@@ -52,7 +52,7 @@ namespace pcl
     struct ParentChildPair
     {
       const CloudComposerItem* parent;
-      CloudComposerItem* child;
+      QList <CloudComposerItem*> children;
     };
     class CloudCommand : public QUndoCommand
     {

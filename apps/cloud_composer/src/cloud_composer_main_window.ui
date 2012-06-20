@@ -165,42 +165,20 @@
    <widget class="QWidget" name="dockWidgetContentsTools">
     <layout class="QGridLayout" name="gridLayout_4">
      <item row="0" column="0">
-      <widget class="QToolBox" name="tool_box_">
-       <property name="currentIndex">
-        <number>0</number>
+      <widget class="QTreeView" name="tool_box_view_">
+       <property name="rootIsDecorated">
+        <bool>true</bool>
        </property>
-       <widget class="QWidget" name="selector_page_">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>264</width>
-          <height>488</height>
-         </rect>
-        </property>
-        <attribute name="label">
-         <string>Page 1</string>
-        </attribute>
-        <layout class="QGridLayout" name="gridLayout_5">
-         <item row="0" column="0">
-          <widget class="QTableView" name="tableView"/>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="page_2">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>94</width>
-          <height>24</height>
-         </rect>
-        </property>
-        <attribute name="label">
-         <string>Page 2</string>
-        </attribute>
-       </widget>
+       <property name="headerHidden">
+        <bool>true</bool>
+       </property>
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
       </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QListView" name="tool_parameter_view_"/>
      </item>
     </layout>
    </widget>

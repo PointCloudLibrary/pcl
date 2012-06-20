@@ -3,6 +3,10 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/point_types.h>
 
+
+Q_EXPORT_PLUGIN2(cloud_composer_normal_estimation_tool, pcl::cloud_composer::NormalEstimationToolFactory)
+
+
 pcl::cloud_composer::NormalEstimationTool::NormalEstimationTool (QObject* parent)
   : NewItemTool(parent)
 {

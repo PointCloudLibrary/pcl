@@ -59,7 +59,8 @@ if(build)
              include/pcl/apps/${SUBSYS_NAME}/tool_interface/abstract_tool.h
              include/pcl/apps/${SUBSYS_NAME}/tool_interface/tool_factory.h
              include/pcl/apps/${SUBSYS_NAME}/commands.h
-             include/pcl/apps/${SUBSYS_NAME}/work_queue.h)
+             include/pcl/apps/${SUBSYS_NAME}/work_queue.h
+             include/pcl/apps/${SUBSYS_NAME}/toolbox_model.h)
     set(srcs src/main.cpp 
              src/cloud_composer.cpp
              src/project_model.cpp
@@ -69,7 +70,8 @@ if(build)
              src/cloud_composer_item.cpp
              src/cloud_item.cpp
              src/commands.cpp
-             src/work_queue.cpp)
+             src/work_queue.cpp
+             src/toolbox_model.cpp)
     set(uis src/cloud_composer_main_window.ui)
     set(resources resources/resources.qrc)
 
@@ -89,6 +91,10 @@ if(build)
     
 
     #TOOL BUILDING SCRIPTS
+	#Create subdirectory for plugin libs
+	set (CLOUD_COMPOSER_PLUGIN_DIR ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/cloud_composer_plugins)
+	make_directory (${CLOUD_COMPOSER_PLUGIN_DIR})
+
     set(INTERFACE_HEADERS include/pcl/apps/${SUBSYS_NAME}/tool_interface/tool_factory.h 
                           include/pcl/apps/${SUBSYS_NAME}/tool_interface/abstract_tool.h)
 

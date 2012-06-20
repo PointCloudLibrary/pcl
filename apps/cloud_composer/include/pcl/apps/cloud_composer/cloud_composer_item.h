@@ -39,6 +39,7 @@
 #define CLOUD_COMPOSER_ITEM_H_
 
 #include <QStandardItem>
+#include <boost/shared_ptr.hpp>
 
 enum ITEM_ROLES { 
   PROPERTIES = Qt::UserRole
@@ -59,6 +60,9 @@ namespace pcl
     class CloudComposerItem : public QStandardItem
     {
       public:
+        typedef boost::shared_ptr<pcl::cloud_composer::CloudComposerItem> Ptr;
+        typedef boost::shared_ptr<pcl::cloud_composer::CloudComposerItem> ConstPtr;
+        
         CloudComposerItem (const QString name = "default item");
         CloudComposerItem (const CloudComposerItem& to_copy);
         virtual ~CloudComposerItem ();
@@ -73,6 +77,12 @@ namespace pcl
         setProperties (QStandardItemModel* new_props)
         {
           properties_ = new_props;
+        }
+        
+        inline QStandardItemModel* 
+        getProperties () const 
+        { 
+          return properties_;
         }
       protected:
         /** \brief Helper function for adding a new property */

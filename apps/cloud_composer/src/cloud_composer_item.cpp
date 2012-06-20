@@ -42,9 +42,7 @@ pcl::cloud_composer::CloudComposerItem*
 pcl::cloud_composer::CloudComposerItem::clone () const
 {
   CloudComposerItem* new_item = new CloudComposerItem (this->text ());
-  QStandardItemModel* new_item_properties = new QStandardItemModel ();
-  new_item_properties->setHorizontalHeaderItem (0, new QStandardItem ("Name"));
-  new_item_properties->setHorizontalHeaderItem (1, new QStandardItem ("Value"));
+  QStandardItemModel* new_item_properties = new_item->getProperties ();
   
   for (int i=0; i < properties_->rowCount (); ++i){
     QList <QStandardItem*> new_row;

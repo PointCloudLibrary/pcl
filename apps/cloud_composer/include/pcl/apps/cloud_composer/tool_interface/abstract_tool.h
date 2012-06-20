@@ -50,6 +50,9 @@ namespace pcl
     {
       Q_OBJECT
       public:
+        typedef boost::shared_ptr<pcl::cloud_composer::AbstractTool> Ptr;
+        typedef boost::shared_ptr<pcl::cloud_composer::AbstractTool> ConstPtr;
+        
         AbstractTool (QObject* parent = 0) 
                       : QObject (parent) 
                       {}

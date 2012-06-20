@@ -35,66 +35,55 @@
  *
  */
 
-#ifndef NORMAL_ESTIMATION_H_
-#define NORMAL_ESTIMATION_H_
+#ifndef TOOLBOX_MODEL_H_
+#define TOOLBOX_MODEL_H_
 
-#include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
-#include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
-#include <pcl/apps/cloud_composer/cloud_composer_item.h>
+#include <QStandardItemModel>
+#include <QItemSelectionModel>
+#include <QVariant>
 
+enum TOOLBOX_ROLES { 
+  FACTORY = Qt::UserRole,
+  PARAMETER_MODEL
+};
 
 
 namespace pcl
 {
   namespace cloud_composer
   {
-    class NormalEstimationTool : public NewItemTool
-    {
-      Q_OBJECT
-      public:
-        NormalEstimationTool (QObject* parent);
-        virtual ~NormalEstimationTool ();
-        
-        virtual QList <CloudComposerItem*>
-        performAction (QList <const CloudComposerItem*> input_data);
-      
-        inline virtual QString
-        getToolName () const { return "Normal Estimation Tool";}
-    };
-
+    class CloudCommand;
+    class AbstractTool;
+    class ToolFactory;
     
-    class NormalEstimationToolFactory : public QObject, public ToolFactory
+    class ToolBoxModel : public QStandardItemModel
     {
       Q_OBJECT
-      Q_INTERFACES (pcl::cloud_composer::ToolFactory)
-      public:
-        NewItemTool*
-        createTool (QObject* parent = 0) 
-        {
-            return new NormalEstimationTool(parent);
-        }
-        
-        QStandardItemModel*
-        createToolParameterModel (QObject* parent);
-        
-        inline virtual QString 
-        getPluginName () const { return "Normal Estimation";}
-        
-        virtual QString 
-        getToolGroupName () const { return "Feature Estimation";}
-        
-        virtual QString
-        getIconName () const { return ":/normal_estimation.png"; }
+      
+    public:
+      ToolBoxModel (QObject *parent = 0);
+      ToolBoxModel (const ToolBoxModel& to_copy);
+      virtual ~ToolBoxModel ();
+      
+      void
+      addTool (ToolFactory* tool_factory);
+      
+    public slots:
+
+    signals:  
+
+    private:
+      QStandardItem* 
+      addToolGroup (QString tool_group_name);
+      
+      
+      
     };
-
-
-
   }
 }
 
+Q_DECLARE_METATYPE (pcl::cloud_composer::ToolBoxModel);
 
 
+#endif //TOOLBOX_MODEL_H_
 
-
-
-#endif //NORMAL_ESTIMATION_H_

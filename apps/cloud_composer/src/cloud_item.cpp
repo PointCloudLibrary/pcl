@@ -32,6 +32,25 @@ pcl::cloud_composer::CloudItem::CloudItem (QString name,
   
 }
 
+pcl::cloud_composer::CloudItem*
+pcl::cloud_composer::CloudItem::clone () const
+{
+  sensor_msgs::PointCloud2::Ptr cloud_copy (new sensor_msgs::PointCloud2 (*cloud_ptr_));
+  //Vector4f and Quaternionf do deep copies using copy constructor
+  CloudItem* new_item = new CloudItem (this->text (), cloud_copy, origin_,orientation_);
+  QStandardItemModel* new_item_properties = new_item->getProperties ();
+  
+  for (int i=0; i < properties_->rowCount (); ++i){
+    QList <QStandardItem*> new_row;
+    new_row.append (properties_->item(i,0)->clone ());
+    new_row.append (properties_->item(i,1)->clone ());
+    new_item_properties->appendRow (new_row);
+  }
+  new_item->setProperties (new_item_properties);
+  
+  return new_item;  
+}
+
 pcl::cloud_composer::CloudItem::~CloudItem ()
 {
   
