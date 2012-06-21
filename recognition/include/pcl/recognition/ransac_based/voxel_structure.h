@@ -50,24 +50,24 @@ namespace pcl
     class VoxelStructure
     {
     public:
-      VoxelStructure(): voxels_(NULL){}
-      virtual ~VoxelStructure(){ this->clear();}
+      VoxelStructure (): voxels_(NULL){}
+      virtual ~VoxelStructure (){ this->clear();}
 
       /** \brief Call this method before using an instance of this class. Parameter meaning is obvious. */
       void
-      build(const double bounds[6], int num_of_voxels[3]);
+      build (const double bounds[6], int num_of_voxels[3]);
 
       /** \brief Release the memory allocated for the voxels. */
       void
-      clear(){ if ( voxels_ ){ delete[] voxels_; voxels_ = NULL;}}
+      clear (){ if ( voxels_ ){ delete[] voxels_; voxels_ = NULL;}}
 
       /** \brief Returns a pointer to the voxel which contains p or NULL if p is not inside the structure. */
       inline T*
-      getVoxel(const double p[3]);
+      getVoxel (const double p[3]);
 
       /** \brief Returns the linear voxel array. */
       inline T*
-      getVoxels(){ return voxels_;}
+      getVoxels (){ return voxels_;}
 
     protected:
       T *voxels_;

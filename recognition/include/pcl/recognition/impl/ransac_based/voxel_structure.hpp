@@ -42,7 +42,7 @@
 #include <pcl/recognition/ransac_based/voxel_structure.h>
 
 template<class T> void
-pcl::recognition::VoxelStructure<T>::build(const double bounds[6], int num_of_voxels[3])
+pcl::recognition::VoxelStructure<T>::build (const double bounds[6], int num_of_voxels[3])
 {
   this->clear();
 

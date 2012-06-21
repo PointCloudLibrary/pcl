@@ -41,52 +41,66 @@
 #include <pcl/recognition/ransac_based/obj_rec_ransac.h>
 #include <pcl/recognition/impl/ransac_based/voxel_structure.hpp>
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
+#include <pcl/console/print.h>
+#include <cmath>
 #include <vector>
 
 using namespace std;
 using namespace pcl;
+using namespace console;
 using namespace recognition;
 
 //============================================================================================================================================
 
-ModelLibrary::ModelLibrary(double pair_width)
-: pair_width_(pair_width), pair_width_eps_(0.1*pair_width)
+ModelLibrary::ModelLibrary (double pair_width)
+: pair_width_ (pair_width), pair_width_eps_ (0.1*pair_width)
 {
   num_of_bins_[0] = 60;
   num_of_bins_[1] = 60;
   num_of_bins_[2] = 60;
 
-//  hash_table_.build();
+  // Compute the bounds of the hash table
+  double eps = 0.000001; // To be sure that an angle of 0 or PI will not be excluded because it lies on the boundary of the voxel structure
+  double bounds[6] = {-eps, M_PI+eps, -eps, M_PI+eps, -eps, M_PI+eps};
+
+  hash_table_.build (bounds, num_of_bins_);
 }
 
 //============================================================================================================================================
 
 void
-ModelLibrary::clear()
+ModelLibrary::clear ()
 {
-  HashTableCell* cells = hash_table_.getVoxels();
-  int i, num_bins = num_of_bins_[0]*num_of_bins_[1]*num_of_bins_[2];
+  // Delete the model entries
+  for ( map<string,Model*>::iterator it = models_.begin() ; it != models_.end() ; ++it )
+    delete it->second;
+  models_.clear();
 
-  // Clear all cell entries
-  for ( i = 0 ; i < num_bins ; ++i )
+  // Clear the hash table
+  HashTableCell* cells = hash_table_.getVoxels();
+  int num_bins = num_of_bins_[0]*num_of_bins_[1]*num_of_bins_[2];
+
+  // Clear each cell entry
+  for ( int i = 0 ; i < num_bins ; ++i )
     cells[i].clear();
 
-  // Delete the models
-  for ( map<string,Model*>::iterator it = models_.begin() ; it != models_.end() ; ++i )
-    delete it->second;
+  num_of_bins_[0] = num_of_bins_[1] = num_of_bins_[2] = 0;
 }
 
 //============================================================================================================================================
 
 bool
-ModelLibrary::addModel(const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name)
+ModelLibrary::addModel (PointCloudInConstPtr points, PointCloudNConstPtr normals, const std::string& object_name)
 {
   // Try to insert a new model entry
   pair<map<string,Model*>::iterator, bool> result = models_.insert(pair<string,Model*>(object_name, static_cast<Model*> (NULL)));
 
   // Check if 'object_name' is unique
   if ( !result.second )
-    return false;
+  {
+    print_error ("'%s' already exists in the model library.\n", object_name.c_str ());
+    return (false);
+  }
 
   // It is unique -> create a new library model
   Model* new_model = new Model(points, normals, object_name);
@@ -95,11 +109,13 @@ ModelLibrary::addModel(const PointCloudIn& points, const PointCloudN& normals, c
   vector<std::pair<int,int> > point_pairs;
   vector<int> point_ids;
   vector<float> sqr_dist;
+
   KdTreeFLANN<Eigen::Vector3d> kd_tree;
-  kd_tree.setInputCloud(KdTree<Eigen::Vector3d>::PointCloudConstPtr (&points));
+  kd_tree.setInputCloud(points);
+
   // The two radii
   double min_sqr_radius = pair_width_ - pair_width_eps_, max_radius = pair_width_ + pair_width_eps_;
-  int i, k, num_found_points, num_model_points = static_cast<int> (points.points.size());
+  int i, k, num_found_points, num_model_points = static_cast<int> (points.get()->points.size());
 
   min_sqr_radius *= min_sqr_radius;
 
@@ -108,17 +124,17 @@ ModelLibrary::addModel(const PointCloudIn& points, const PointCloudN& normals, c
   {
     point_ids.clear();
     sqr_dist.clear();
-    num_found_points = kd_tree.radiusSearch (points.points[i], max_radius, point_ids, sqr_dist);
+    num_found_points = kd_tree.radiusSearch (points.get()->points[i], max_radius, point_ids, sqr_dist);
 
     for ( k = 0 ; k < num_found_points ; ++k )
       // Should we take that point?
       if ( sqr_dist[k] >= min_sqr_radius )
-        this->addToHashTable(new_model, i, point_ids[k]);
+        this->addToHashTable (new_model, i, point_ids[k]);
       else // Break since the points are sorted based on their distance to the query point
         break;
   }
 
-  return true;
+  return (true);
 }
 
 //============================================================================================================================================
@@ -130,14 +146,14 @@ ModelLibrary::addToHashTable(const ModelLibrary::Model* model, int i, int j)
 
   // Compute the descriptor signature for the oriented point pair (i, j)
   ObjRecRANSAC::compute_oriented_point_pair_signature (
-      model->points_.points[i], model->normals_.points[i],
-      model->points_.points[j], model->normals_.points[j], key);
+      model->points_.get()->points[i], model->normals_.get()->points[i],
+      model->points_.get()->points[j], model->normals_.get()->points[j], key);
 
   // Get the hash table cell containing 'key' (there is for sure such a cell since the hash table bounds are large enough)
   HashTableCell* cell = hash_table_.getVoxel (key);
 
   // Insert the id pair (i,j) belonging to 'model'
-  (*cell)[model].push_back (std::pair<int,int>(i, j));
+  (*cell)[model].push_back (std::pair<int,int> (i, j));
 }
 
 //============================================================================================================================================

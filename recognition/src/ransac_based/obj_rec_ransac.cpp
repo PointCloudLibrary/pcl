@@ -39,31 +39,15 @@
 
 #include <pcl/recognition/ransac_based/obj_rec_ransac.h>
 
-pcl::recognition::ObjRecRANSAC::ObjRecRANSAC(double pair_width, double /*voxel_size*/, double /*fraction_of_pairs_in_hash_table*/)
-: pair_width_(pair_width)
+pcl::recognition::ObjRecRANSAC::ObjRecRANSAC (double pair_width, double /*voxel_size*/, double /*fraction_of_pairs_in_hash_table*/)
+: pair_width_(pair_width), model_library_(pair_width)
 {
-}
-
-//===========================================================================================================================================================================================
-
-pcl::recognition::ObjRecRANSAC::~ObjRecRANSAC()
-{
-  // to be implemented
-}
-
-//===========================================================================================================================================================================================
-
-bool
-pcl::recognition::ObjRecRANSAC::addModel(const pcl::PointCloud<Eigen::Vector3d>& /*model*/, const pcl::PointCloud<Eigen::Vector3d>& /*normals*/, const std::string& /*object_name*/)
-{
-  // to be implemented
-  return (false);
 }
 
 //===========================================================================================================================================================================================
 
 void
-pcl::recognition::ObjRecRANSAC::recognize(const pcl::PointCloud<Eigen::Vector3d>& /*scene*/, const pcl::PointCloud<Eigen::Vector3d>& /*normals*/, std::list<ObjRecRANSAC::Output>& /*recognized_objects*/)
+pcl::recognition::ObjRecRANSAC::recognize (const pcl::PointCloud<Eigen::Vector3d>& /*scene*/, const pcl::PointCloud<Eigen::Vector3d>& /*normals*/, std::list<ObjRecRANSAC::Output>& /*recognized_objects*/)
 {
   // to be implemented
 }

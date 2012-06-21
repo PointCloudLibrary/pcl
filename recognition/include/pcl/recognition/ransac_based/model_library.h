@@ -53,36 +53,31 @@ namespace pcl
   {
     class ModelLibrary
     {
-    typedef pcl::PointCloud<Eigen::Vector3d> PointCloudIn; // For now, only points in R3 make sense
-    typedef pcl::PointCloud<Eigen::Vector3d> PointCloudN;
-
     public:
-      /** \brief Saving some information about the model. */
+      typedef pcl::PointCloud<Eigen::Vector3d> PointCloudIn;
+      typedef pcl::PointCloud<Eigen::Vector3d> PointCloudN;
+
+      typedef boost::shared_ptr<PointCloudIn> PointCloudInPtr;
+      typedef boost::shared_ptr<PointCloudN> PointCloudNPtr;
+
+      typedef boost::shared_ptr<const PointCloudIn> PointCloudInConstPtr;
+      typedef boost::shared_ptr<const PointCloudN> PointCloudNConstPtr;
+
+      /** \brief Stores some information about the model. */
       class Model
       {
         public:
-          Model(const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name):
+          Model (PointCloudInConstPtr points, PointCloudNConstPtr normals, std::string object_name):
             points_ (points),
             normals_(normals),
             obj_name_(object_name){}
-          virtual ~Model(){}
+          virtual ~Model (){}
 
         public:
-          const PointCloudIn& points_;
-          const PointCloudN& normals_;
+          PointCloudInConstPtr points_;
+          PointCloudNConstPtr normals_;
           const std::string obj_name_;
       };
-
-//    public:
-//      /** brief This class manages the entries in a hash table cell belonging to the same model. */
-//      class HashTableCellModelEntry
-//      {
-//        public:
-//          HashTableCellModelEntry(){}
-//          virtual ~HashTableCellModelEntry(){}
-//
-//          ;
-//      };
 
     typedef std::list<std::pair<int,int> > int_pair_list;
     typedef std::map<const Model*, int_pair_list> HashTableCell;
@@ -90,8 +85,11 @@ namespace pcl
     public:
       /** \brief This class is used by 'ObjRecRANSAC' to maintain the object models to be recognized. Normally, you do not need to use
         * this class directly. */
-      ModelLibrary(double pair_width);
-      virtual ~ModelLibrary(){ this->clear();}
+      ModelLibrary (double pair_width);
+      virtual ~ModelLibrary ()
+      {
+        this->clear();
+      }
 
       /** \brief Removes all models from the library and clears the hash table. */
       void
@@ -99,17 +97,17 @@ namespace pcl
 
       /** \brief Adds a model to the hash table.
         *
-        * \param[in]  model to be added.
+        * \param[in]  points represents the model to be added.
         * \param[in]  normals are the normals at the model points.
         * \param[in] object_name is the unique name of the object to be added.
         *
         * Returns true if model successfully added and false otherwise (e.g., if object_name is not unique). */
       bool
-      addModel(const PointCloudIn& model, const PointCloudN& normals, const std::string& object_name);
+      addModel (PointCloudInConstPtr points, PointCloudNConstPtr normals, const std::string& object_name);
 
     protected:
       void
-      addToHashTable(const Model* model, int i, int j);
+      addToHashTable (const Model* model, int i, int j);
 
     protected:
       std::map<std::string,Model*> models_;

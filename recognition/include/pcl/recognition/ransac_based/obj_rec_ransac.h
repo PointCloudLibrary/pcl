@@ -39,6 +39,7 @@
 #ifndef PCL_RECOGNITION_OBJ_REC_RANSAC_H_
 #define PCL_RECOGNITION_OBJ_REC_RANSAC_H_
 
+#include "model_library.h"
 #include <pcl/point_cloud.h>
 #include <Eigen/Core>
 #include <cmath>
@@ -71,6 +72,12 @@ namespace pcl
     class ObjRecRANSAC
     {
       public:
+        typedef ModelLibrary::PointCloudIn PointCloudIn;
+        typedef ModelLibrary::PointCloudN PointCloudN;
+
+        typedef ModelLibrary::PointCloudInConstPtr PointCloudInConstPtr;
+        typedef ModelLibrary::PointCloudNConstPtr PointCloudNConstPtr;
+
         /** \brief This is an output item of the ObjRecRANSAC::recognize() method. It contains the recognized model, its name (the ones passed to
           * ObjRecRANSAC::addModel()), the rigid transform which aligns the model with the input scene and the match confidence which is a number
           * in the interval (0, 1] which gives the fraction of the model surface area matched to the scene. E.g., a match confidence of 0.3 means
@@ -80,17 +87,15 @@ namespace pcl
         class Output
         {
           public:
-            Output(const pcl::PointCloud<Eigen::Vector3d>& model, const std::string& object_name, const Eigen::Matrix4f& rigid_transform, double match_confidence) :
-              model_ (model),
+            Output (const std::string& object_name, const Eigen::Matrix4f& rigid_transform, double match_confidence) :
               object_name_ (object_name),
               rigid_transform_ (rigid_transform),
               match_confidence_ (match_confidence)
             { }
-            virtual ~Output(){ }
+            virtual ~Output (){ }
 
           public:
-            const pcl::PointCloud<Eigen::Vector3d>& model_;
-            const std::string& object_name_;
+            std::string object_name_;
             Eigen::Matrix4f rigid_transform_;
             double match_confidence_;
         };
@@ -108,20 +113,33 @@ namespace pcl
           *
           * \param[in] fraction_of_pairs_in_hash_table determines how many pairs (as fraction of the total number) will be kept in the hashtable. Use the default
           * value (check the papers above for more details). */
-        ObjRecRANSAC(double pair_width, double voxel_size, double fraction_of_pairs_in_hash_table = 0.8);
-        virtual ~ObjRecRANSAC();
+        ObjRecRANSAC (double pair_width, double voxel_size, double fraction_of_pairs_in_hash_table = 0.8);
+        virtual ~ObjRecRANSAC ()
+        {
+          this->clear();
+        }
+
+        /** \brief Deletes all models from the model library and releases the memory dynamically allocated by this instance. */
+        void
+        clear()
+        {
+          model_library_.clear();
+        }
 
         /** \brief Add an object model to be recognized.
           *
-          * \param[in] model represents the object to be recognized.
-          * \param[in] normals are the normals associated with 'model'.
-          * \param[in] object_name is an identifier for 'model'. If 'model' is detected in the scene 'object_name' is returned by the recognition method and you
-          * know which model has been detected. Note that 'object_name' has to be unique!
+          * \param[in] points are the object points.
+          * \param[in] normals at each point.
+          * \param[in] object_name is an identifier for the object. If that object is detected in the scene 'object_name' is returned by the recognition
+          * method and you know which object has been detected. Note that 'object_name' has to be unique!
           *
           * The method returns true if the model was successfully added to the model library and false otherwise (e.g., if 'object_name' is already in use).
           */
         bool
-        addModel(const pcl::PointCloud<Eigen::Vector3d>& model, const pcl::PointCloud<Eigen::Vector3d>& normals, const std::string& object_name);
+        addModel (PointCloudInConstPtr points, PointCloudNConstPtr normals, const std::string& object_name)
+        {
+          return (model_library_.addModel (points, normals, object_name));
+        }
 
         /** \brief This method performs the recognition of the models loaded to the model library with the method addModel().
           *
@@ -131,7 +149,7 @@ namespace pcl
           * and the match confidence (see ObjRecRANSAC::Output for further explanations).
           */
         void
-        recognize(const pcl::PointCloud<Eigen::Vector3d>& scene, const pcl::PointCloud<Eigen::Vector3d>& normals, std::list<ObjRecRANSAC::Output>& recognized_objects);
+        recognize (const pcl::PointCloud<Eigen::Vector3d>& scene, const pcl::PointCloud<Eigen::Vector3d>& normals, std::list<ObjRecRANSAC::Output>& recognized_objects);
 
         /** \brief Computes the signature of the oriented point pair ((p1, n1), (p2, n2)) consisting of the angles between
           * n1 and (p2-p1),
@@ -140,10 +158,11 @@ namespace pcl
           *
           * \param[out] signature is an array of three doubles saving the three angles in the order shown above. */
         static inline void
-        compute_oriented_point_pair_signature(const Eigen::Vector3d& p1, const Eigen::Vector3d& n1, const Eigen::Vector3d& p2, const Eigen::Vector3d& n2, double signature[3]);
+        compute_oriented_point_pair_signature (const Eigen::Vector3d& p1, const Eigen::Vector3d& n1, const Eigen::Vector3d& p2, const Eigen::Vector3d& n2, double signature[3]);
 
       protected:
         double pair_width_;
+        ModelLibrary model_library_;
     };
 
 // === inline methods ===================================================================================================================================

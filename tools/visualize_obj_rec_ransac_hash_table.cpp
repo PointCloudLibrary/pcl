@@ -44,11 +44,12 @@
  *  box sides. The more entries in a cell the larger the ellipsoid.
  */
 
-#include <pcl/point_cloud.h>
+#include <pcl/recognition/ransac_based/obj_rec_ransac.h>
+#include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/point_cloud.h>
 #include <Eigen/Core>
 #include <vtkPolyDataReader.h>
 #include <vtkDataArray.h>
@@ -58,19 +59,38 @@
 
 using namespace std;
 using namespace pcl;
+using namespace io;
 using namespace console;
+using namespace recognition;
 using namespace visualization;
 
+inline double
+my_sqr (double a){ return a*a;}
+
 bool
-vtk_to_eigen (vtkPolyData* vtk_mesh, PointCloud<Eigen::Vector3d>& eigen_points, PointCloud<Eigen::Vector3d>& eigen_normals)
+get_points_and_normals (vtkPolyData* vtk_mesh, PointCloud<Eigen::Vector3d>& eigen_points, PointCloud<Eigen::Vector3d>& eigen_normals)
 {
+  printf("Copying the points and normals from the vtk input ... "); fflush(stdout);
+
   // Does the mesh have normals?
   vtkDataArray* vtk_normals = vtk_mesh->GetPointData()->GetNormals();
   if ( !vtk_normals )
   {
-    print_error ("The vtk mesh has no normals.\n");
+    print_error ("ERROR: The vtk mesh has no normals.\n");
     return false;
   }
+
+  uint32_t num_pts = static_cast<uint32_t> (vtk_mesh->GetNumberOfPoints ());
+
+  eigen_points.width = num_pts;
+  eigen_points.height = 1; // This indicates that the point cloud is unorganized
+  eigen_points.is_dense = false;
+  eigen_points.points.resize(num_pts);
+
+  eigen_normals.width = num_pts;
+  eigen_normals.height = 1; // This indicates that the point cloud is unorganized
+  eigen_normals.is_dense = false;
+  eigen_normals.points.resize(num_pts);
 
   int i, num_points = static_cast<int> (vtk_mesh->GetNumberOfPoints ());
   double p[3], n[3];
@@ -90,6 +110,8 @@ vtk_to_eigen (vtkPolyData* vtk_mesh, PointCloud<Eigen::Vector3d>& eigen_points, 
     eigen_normals[i][2] = n[2];
   }
 
+  printf("OK\n");
+
   return true;
 }
 
@@ -99,7 +121,7 @@ main (int argc, char** argv)
   // Make sure that we have the right number of arguments
   if (argc != 2)
   {
-    print_info ("\nVisualizes the hash table after adding a mesh to it.\n"
+    print_info ("\nVisualizes the hash table after adding the provided mesh to it.\n"
         "usage:\n"
         "./visualize_obj_rec_ransac_hash_table mesh.vtk\n");
     return (-1);
@@ -117,20 +139,34 @@ main (int argc, char** argv)
   vtk_reader->SetFileName (argv[1]);
   vtk_reader->Update ();
   vtkPolyData *vtk_mesh = vtk_reader->GetOutput ();
+  // Get the bounds of the mesh
+  double mb[6];
+  vtk_mesh->ComputeBounds();
+  vtk_mesh->GetBounds(mb);
 
   // Create a point cloud with normals
-  uint32_t num_pts = static_cast<uint32_t> (vtk_mesh->GetNumberOfPoints ());
-  PointCloud<Eigen::Vector3d> eigen_points (num_pts, 0), eigen_normals (num_pts, 0);
-  if ( vtk_to_eigen(vtk_mesh, eigen_points, eigen_normals) )
+  ModelLibrary::PointCloudInPtr eigen_points(new ModelLibrary::PointCloudIn());
+  ModelLibrary::PointCloudNPtr eigen_normals(new ModelLibrary::PointCloudN());
+  if ( !get_points_and_normals (vtk_mesh, *eigen_points.get(), *eigen_normals.get()) )
   {
-    // ...
+    vtk_reader->Delete ();
+    return (-1);
   }
+
+  // Compute the bounding box diagonal
+  double diag = sqrt(my_sqr(mb[1]-mb[0]) + my_sqr(mb[3]-mb[2]) + my_sqr(mb[5]-mb[4]));
+
+  // Create the recognition object (we need it only for its hash table)
+  ObjRecRANSAC objrec(diag/8.0, diag/20.0);
+  printf("Adding a model to the library ... "); fflush(stdout);
+  objrec.addModel(eigen_points, eigen_normals, string("test_model"));
+  printf("OK\n");
 
 //  PCLVisualizer vis;
 //  vis.setBackgroundColor (0.1, 0.1, 0.1);
 //  vis.spin();
 
-  // To be continued
+  // To be continued ...
 
   // Cleanup
   vtk_reader->Delete ();
