@@ -47,7 +47,8 @@ namespace pcl
 {
   /** \brief VFHEstimation estimates the <b>Viewpoint Feature Histogram (VFH)</b> descriptor for a given point cloud
     * dataset containing points and normals. The default VFH implementation uses 45 binning subdivisions for each of
-    * the three extended FPFH values, and 128 binning subdivisions for the viewpoint component, which results in a
+    * the three extended FPFH values, plus another 45 binning subdivisions for the distances between each point and
+    * the centroid and 128 binning subdivisions for the viewpoint component, which results in a
     * 308-byte array of float values. These are stored in a pcl::VFHSignature308 point type.
     * A major difference between the PFH/FPFH descriptors and VFH, is that for a given point cloud dataset, only a
     * single VFH descriptor will be estimated (vfhs->points.size() should be 1), while the resultant PFH/FPFH data
@@ -82,8 +83,8 @@ namespace pcl
 
       /** \brief Empty constructor. */
       VFHEstimation () :
-        nr_bins_f1_ (45), nr_bins_f2_ (45), nr_bins_f3_ (45), nr_bins_f4_ (45), nr_bins_vp_ (128), 
-        vpx_ (0), vpy_ (0), vpz_ (0), 
+        nr_bins_f1_ (45), nr_bins_f2_ (45), nr_bins_f3_ (45), nr_bins_f4_ (45), nr_bins_vp_ (128),
+        vpx_ (0), vpy_ (0), vpz_ (0),
         hist_f1_ (), hist_f2_ (), hist_f3_ (), hist_f4_ (), hist_vp_ (),
         normal_to_use_ (), centroid_to_use_ (), use_given_normal_ (false), use_given_centroid_ (false),
         normalize_bins_ (true), normalize_distances_ (false), size_component_ (false),
@@ -206,7 +207,7 @@ namespace pcl
       int nr_bins_f1_, nr_bins_f2_, nr_bins_f3_, nr_bins_f4_, nr_bins_vp_;
 
       /** \brief Values describing the viewpoint ("pinhole" camera model assumed). For per point viewpoints, inherit
-        * from VFHEstimation and provide your own computeFeature (). By default, the viewpoint is set to 0,0,0. 
+        * from VFHEstimation and provide your own computeFeature (). By default, the viewpoint is set to 0,0,0.
         */
       float vpx_, vpy_, vpz_;
 
@@ -257,9 +258,9 @@ namespace pcl
       float d_pi_;
 
       /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
-        * \param[out] output the output point cloud 
+        * \param[out] output the output point cloud
         */
-      void 
+      void
       computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
   };
 
@@ -300,9 +301,9 @@ namespace pcl
 //      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
 //
 //      /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
-//        * \param[out] output the output point cloud 
+//        * \param[out] output the output point cloud
 //        */
-//      void 
+//      void
 //      compute (pcl::PointCloud<pcl::Normal> &output) {}
 //  };
 }

@@ -30,7 +30,7 @@ was to extend the FPFH to be estimated for the entire object cluster (as seen
 in the figure below), and to compute additional statistics between the
 viewpoint direction and the normals estimated at each point. To do this, we
 used the key idea of mixing the viewpoint direction directly into the relative
-normal angle calculation in the FPFH. 
+normal angle calculation in the FPFH.
 
 .. image:: images/vfh_estimation/first_component.png
    :align: center
@@ -41,12 +41,12 @@ view angle to each normal as this would not be scale invariant, but instead we
 mean the angle between the central viewpoint direction translated to each
 normal. The second component measures the relative pan, tilt and yaw angles as
 described in :ref:`fpfh_estimation` but now measured between the viewpoint
-direction at the central point and each of the normals on the surface. 
+direction at the central point and each of the normals on the surface.
 
 .. image:: images/vfh_estimation/second_component.png
    :align: center
 
-The new assembled feature is therefore called the Viewpoint Feature Histogram (VFH). The figure below presents this idea with the new feature consisting of two parts: 
+The new assembled feature is therefore called the Viewpoint Feature Histogram (VFH). The figure below presents this idea with the new feature consisting of two parts:
 
   1. a viewpoint direction component and
 
@@ -60,10 +60,10 @@ Estimating VFH features
 
 The Viewpoint Feature Histogram is implemented in PCL as part of the
 `pcl_features <http://docs.pointclouds.org/trunk/group__features.html>`_
-library. 
+library.
 
 The default VFH implementation uses 45 binning subdivisions for each of the
-three extended FPFH values, and 128 binning subdivisions for the viewpoint
+three extended FPFH values, plus another 45 binning subdivisions for the distances between each point and the centroid and 128 binning subdivisions for the viewpoint
 component, which results in a 308-byte array of float values. These are stored
 in a **pcl::VFHSignature308** point type.
 
@@ -84,7 +84,7 @@ points in the input dataset.
    {
      pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
      pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal> ());
-     
+
      ... read, pass in or create a point cloud with normals ...
      ... (note: you can create a single PointCloud<PointNormal> if you want) ...
 
@@ -94,7 +94,7 @@ points in the input dataset.
      vfh.setInputNormals (normals);
      // alternatively, if cloud is of tpe PointNormal, do vfh.setInputNormals (cloud);
 
-     // Create an empty kdtree representation, and pass it to the FPFH estimation object. 
+     // Create an empty kdtree representation, and pass it to the FPFH estimation object.
      // Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
      pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr tree (new pcl::KdTreeFLANN<pcl::PointXYZ> ());
      vfh.setSearchMethod (tree);
