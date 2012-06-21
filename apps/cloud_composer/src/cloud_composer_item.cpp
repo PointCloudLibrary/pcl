@@ -1,5 +1,7 @@
 #include <pcl/apps/cloud_composer/cloud_composer_item.h>
+#include <pcl/apps/cloud_composer/cloud_item.h>
 
+#include <QDebug>
 
 pcl::cloud_composer::CloudComposerItem::CloudComposerItem (QString name)
   : QStandardItem(name)
@@ -53,4 +55,23 @@ pcl::cloud_composer::CloudComposerItem::clone () const
   new_item->setProperties (new_item_properties);
   
   return new_item;  
+}
+
+bool
+pcl::cloud_composer::CloudComposerItem::getCloudConstPtr (sensor_msgs::PointCloud2::ConstPtr& const_ptr) const
+{
+  if (this->type () != CLOUD_ITEM)
+  {
+    qWarning () << "Attempted to get cloud from non-cloud item!";
+    return false;
+  }
+  QVariant cloud_variant = this->data (CLOUD);
+  const_ptr = cloud_variant.value <sensor_msgs::PointCloud2::Ptr> ();
+  if (const_ptr)
+    return true;
+  else
+  {
+    qWarning () << "Fetched cloud, but pointer is NULL!!!";
+    return false;
+  }
 }

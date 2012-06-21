@@ -108,6 +108,8 @@ namespace pcl
         void 
         setCurrentModel (ProjectModel* model);
         
+        void
+        enqueueToolAction (AbstractTool* tool);
        
       private:
         void

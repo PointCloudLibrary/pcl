@@ -56,7 +56,7 @@ namespace pcl
     {
       public:
         virtual AbstractTool*
-        createTool (QObject* parent = 0) = 0;
+        createTool (QStandardItemModel* parameter_model = 0, QObject* parent = 0) = 0;
             
         virtual QStandardItemModel*
         createToolParameterModel (QObject* parent) = 0;

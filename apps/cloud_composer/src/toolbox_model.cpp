@@ -1,16 +1,19 @@
-#include <QtGui>
+#include <QTreeView>
 
 #include <pcl/apps/cloud_composer/toolbox_model.h>
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
 
-pcl::cloud_composer::ToolBoxModel::ToolBoxModel (QObject* parent)
+
+pcl::cloud_composer::ToolBoxModel::ToolBoxModel (QTreeView* parameter_view_, QObject* parent)
 : QStandardItemModel (parent)
+, parameter_view_ (parameter_view_)
 {
-
-
-  
+ 
 }
+
+
+
 
 pcl::cloud_composer::ToolBoxModel::ToolBoxModel (const ToolBoxModel& to_copy)
 {
@@ -23,10 +26,14 @@ pcl::cloud_composer::ToolBoxModel::~ToolBoxModel ()
 void
 pcl::cloud_composer::ToolBoxModel::addTool (ToolFactory* tool_factory)
 {
-  qDebug () << "Icon name:"<< tool_factory->getIconName ();
+  //qDebug () << "Icon name:"<< tool_factory->getIconName ();
   QIcon new_tool_icon = QIcon (tool_factory->getIconName ());
   QStandardItem* new_tool_item = new QStandardItem (new_tool_icon, tool_factory->getPluginName ());
-  new_tool_item->isCheckable ();
+  new_tool_item->setEditable (false);
+  
+  new_tool_item->setData (QVariant::fromValue (tool_factory), FACTORY);
+  QStandardItemModel* new_tool_parameters= tool_factory->createToolParameterModel (this);  
+  new_tool_item->setData (QVariant::fromValue (new_tool_parameters), PARAMETER_MODEL);
   
   QStandardItem* group_item = addToolGroup (tool_factory->getToolGroupName ());
   group_item->appendRow (new_tool_item); 
@@ -34,6 +41,12 @@ pcl::cloud_composer::ToolBoxModel::addTool (ToolFactory* tool_factory)
   
 }
 
+void
+pcl::cloud_composer::ToolBoxModel::setSelectionModel (QItemSelectionModel* selection_model)
+{
+  selection_model_ =selection_model;
+}
+  
 QStandardItem*
 pcl::cloud_composer::ToolBoxModel::addToolGroup (QString tool_group_name)
 {
@@ -53,4 +66,30 @@ pcl::cloud_composer::ToolBoxModel::addToolGroup (QString tool_group_name)
   
   return matches_name.value (0);
   
+}
+
+void
+pcl::cloud_composer::ToolBoxModel::selectedToolChanged (const QModelIndex & current, const QModelIndex & previous)
+{
+  //qDebug() << "Selected Tool changed";
+  if (!parameter_view_)
+  {
+    qCritical () << "Toolbox parameter view not set!!!";
+    return;
+  }  
+  QVariant parameter_model = current.data (PARAMETER_MODEL);
+  parameter_view_->setModel ( parameter_model.value <QStandardItemModel*> ());
+  
+}
+
+
+void
+pcl::cloud_composer::ToolBoxModel::toolAction ()
+{
+  QModelIndex current_index = selection_model_->currentIndex ();
+  ToolFactory* tool_factory = (current_index.data (FACTORY)).value <ToolFactory*> ();
+  QStandardItemModel* parameter_model = (current_index.data (PARAMETER_MODEL)).value <QStandardItemModel*> ();
+  AbstractTool* tool = tool_factory->createTool (parameter_model);
+  
+  emit enqueueToolAction (tool);
 }

@@ -42,6 +42,7 @@
 #include <QDebug>
 #include <pcl/apps/cloud_composer/commands.h>
 #include <pcl/apps/cloud_composer/cloud_composer_item.h>
+#include <pcl/apps/cloud_composer/cloud_item.h>
 namespace pcl
 {
   namespace cloud_composer
@@ -53,8 +54,9 @@ namespace pcl
         typedef boost::shared_ptr<pcl::cloud_composer::AbstractTool> Ptr;
         typedef boost::shared_ptr<pcl::cloud_composer::AbstractTool> ConstPtr;
         
-        AbstractTool (QObject* parent = 0) 
+        AbstractTool (QStandardItemModel* parameter_model = 0, QObject* parent = 0) 
                       : QObject (parent) 
+                      , parameter_model_ (parameter_model)
                       {}
         virtual ~AbstractTool () { qDebug() << "Tool Destructed"; }
         
@@ -77,6 +79,10 @@ namespace pcl
               
         virtual QString
         getToolName () const = 0;
+        
+     protected:
+        QStandardItemModel* parameter_model_;   
+       
       private:
         QString action_text_;
         
@@ -86,8 +92,8 @@ namespace pcl
     {
       Q_OBJECT
       public:
-        ModifyTool (QObject* parent = 0) 
-                      : AbstractTool (parent) 
+        ModifyTool (QStandardItemModel* parameter_model = 0, QObject* parent = 0) 
+                      : AbstractTool (parameter_model, parent) 
                       {}
         
         virtual ~ModifyTool () { }
@@ -110,8 +116,8 @@ namespace pcl
     {
       Q_OBJECT
       public:
-        NewItemTool (QObject* parent = 0) 
-                      : AbstractTool (parent) 
+        NewItemTool (QStandardItemModel* parameter_model = 0, QObject* parent = 0) 
+                      : AbstractTool (parameter_model, parent)
                       {}
         
         virtual ~NewItemTool () { }
@@ -127,8 +133,10 @@ namespace pcl
         
         inline virtual QString
         getToolName () const { return "NewItemTool";}
-        
+      
     };
+    
+    
   }
 }
 

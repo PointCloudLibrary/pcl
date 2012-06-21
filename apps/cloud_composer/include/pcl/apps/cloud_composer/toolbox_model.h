@@ -47,11 +47,12 @@ enum TOOLBOX_ROLES {
   PARAMETER_MODEL
 };
 
-
+class QTreeView;
 namespace pcl
 {
   namespace cloud_composer
   {
+    
     class CloudCommand;
     class AbstractTool;
     class ToolFactory;
@@ -61,29 +62,40 @@ namespace pcl
       Q_OBJECT
       
     public:
-      ToolBoxModel (QObject *parent = 0);
+      ToolBoxModel (QTreeView* parameter_view = 0, QObject *parent = 0);
       ToolBoxModel (const ToolBoxModel& to_copy);
       virtual ~ToolBoxModel ();
       
       void
       addTool (ToolFactory* tool_factory);
       
+      void
+      setSelectionModel (QItemSelectionModel* selection_model);
+      
     public slots:
-
+      void 
+      selectedToolChanged (const QModelIndex & current, const QModelIndex & previous);
+      
+      void
+      toolAction ();
     signals:  
-
+      void
+      enqueueToolAction (AbstractTool* tool);
+      
     private:
       QStandardItem* 
       addToolGroup (QString tool_group_name);
       
-      
+      QTreeView* parameter_view_;
+      QItemSelectionModel* selection_model_;
       
     };
   }
 }
 
 Q_DECLARE_METATYPE (pcl::cloud_composer::ToolBoxModel);
-
+Q_DECLARE_METATYPE (pcl::cloud_composer::ToolFactory*);
+Q_DECLARE_METATYPE (QStandardItemModel*);
 
 #endif //TOOLBOX_MODEL_H_
 

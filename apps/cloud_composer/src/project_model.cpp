@@ -88,14 +88,18 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromFile (QString filename)
 void 
 pcl::cloud_composer::ProjectModel::enqueueToolAction (AbstractTool* tool)
 {
+  qDebug () << "Enqueuing tool action "<<tool->getToolName ()<<" in project model "<<this->getName ();
   //Get the currently selected item(s), put them in a list, and create the command
   QList <const CloudComposerItem*> input_data;
-  foreach (QModelIndex index, selection_model_->selectedIndexes ())
+  QModelIndexList selected_indexes = selection_model_->selectedIndexes ();
+  foreach (QModelIndex index, selected_indexes)
   {
     QStandardItem* item = this->itemFromIndex (index);
     if ( dynamic_cast <CloudComposerItem*> (item))
       input_data.append (dynamic_cast <CloudComposerItem*> (item));
   }
+  qDebug () << "Input for tool is "<<input_data.size () << " element(s)";
+ 
   //Move the tool object to the work queue thread
   tool->moveToThread (work_queue_->thread ());
   //Emit signal which tells work queue to enqueue this new action

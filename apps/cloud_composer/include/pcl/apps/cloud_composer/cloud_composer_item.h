@@ -40,6 +40,7 @@
 
 #include <QStandardItem>
 #include <boost/shared_ptr.hpp>
+#include <pcl/point_types.h>
 
 enum ITEM_ROLES { 
   PROPERTIES = Qt::UserRole
@@ -84,6 +85,11 @@ namespace pcl
         { 
           return properties_;
         }
+        
+        /** \brief Helper function to pull out a cloud from Item */
+        bool
+        getCloudConstPtr (sensor_msgs::PointCloud2::ConstPtr& const_ptr) const;
+       
       protected:
         /** \brief Helper function for adding a new property */
         void

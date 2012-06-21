@@ -105,12 +105,24 @@ pcl::cloud_composer::ComposerMainWindow::initializeItemInspector ()
 void
 pcl::cloud_composer::ComposerMainWindow::initializeToolBox ()
 {
-  tool_box_model_ = new ToolBoxModel (this);
+  tool_box_model_ = new ToolBoxModel (tool_parameter_view_,this);
   tool_selection_model_ = new QItemSelectionModel (tool_box_model_);
+  tool_box_model_->setSelectionModel (tool_selection_model_);
+  
   tool_box_view_->setModel (tool_box_model_);
   tool_box_view_->setSelectionModel (tool_selection_model_);
   tool_box_view_->setIconSize (QSize (32,32));
   tool_box_view_->setIndentation (10);
+  
+  connect ( tool_selection_model_, SIGNAL (currentChanged (const QModelIndex&, const QModelIndex&)),
+            tool_box_model_, SLOT (selectedToolChanged (const QModelIndex&, const QModelIndex&)));
+  
+  connect ( tool_box_model_, SIGNAL (enqueueToolAction (AbstractTool*)),
+            this, SLOT (enqueueToolAction (AbstractTool*)));
+  
+  //TODO : Remove this, tools should have a better way of being run
+  connect ( action_run_tool_, SIGNAL (clicked ()),
+            tool_box_model_, SLOT (toolAction ()));
   //tool_box_view_->setStyleSheet("branch:has-siblings:!adjoins-item:image none");
  // tool_box_view_->setStyleSheet("branch:!has-children:!has-siblings:adjoins-item:image: none");
   
@@ -192,7 +204,12 @@ pcl::cloud_composer::ComposerMainWindow::setCurrentModel (ProjectModel* model)
   undo_group_->setActiveStack (current_model_->getUndoStack ());
 }
 
-
+void
+pcl::cloud_composer::ComposerMainWindow::enqueueToolAction (AbstractTool* tool)
+{
+  current_model_->enqueueToolAction (tool);
+  
+}
 ///////// FILE MENU SLOTS ///////////
 void
 pcl::cloud_composer::ComposerMainWindow::on_action_new_project__triggered (QString name)
