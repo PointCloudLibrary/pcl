@@ -37,44 +37,54 @@
 #ifndef PCL_MODELER_ABSTRACT_WORKER_H_
 #define PCL_MODELER_ABSTRACT_WORKER_H_
 
-#include <pcl/apps/modeler/parameter_dialog.h>
+#include <QObject>
 #include <sensor_msgs/PointCloud2.h>
 
 namespace pcl
 {
   namespace modeler
   {
+    class CloudActor;
+    class ParameterDialog;
 
-    class AbstractWorker : public ParameterDialog
+    class AbstractWorker : public QObject
     {
+      Q_OBJECT
+
       public:
         typedef sensor_msgs::PointCloud2  PointCloud2;
         typedef PointCloud2::Ptr          PointCloud2Ptr;
         typedef PointCloud2::ConstPtr     PointCloud2ConstPtr;
 
-        AbstractWorker(QWidget* parent=0);
+        AbstractWorker(const std::vector<CloudActor*>& cloud_actors, QWidget* parent=0);
         ~AbstractWorker(void);
-
-        virtual std::string
-        getName () const {return ("");}
-
-        virtual void
-        initParameters(PointCloud2Ptr input_cloud) = 0;
 
         virtual int
         exec();
 
-        virtual void
-        apply(PointCloud2Ptr input_cloud, PointCloud2Ptr output_cloud) const = 0;
+      public slots:
+        void
+        process();
 
-        bool
-        isParameterReady() const {return parameter_ready_;}
+      signals:
+        void finished();
+
       protected:
+        virtual std::string
+        getName () const {return ("");}
+
+        virtual void
+        initParameters(PointCloud2Ptr cloud) = 0;
+
         virtual void
         setupParameters() = 0;
 
-      private:
-        bool      parameter_ready_;
+        virtual void
+        processImpl(PointCloud2Ptr input_cloud, PointCloud2Ptr output_cloud) const = 0;
+
+      protected:
+        std::vector<CloudActor*>  cloud_actors_;
+        ParameterDialog*          parameter_dialog_;
     };
 
   }

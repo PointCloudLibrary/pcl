@@ -55,6 +55,9 @@ namespace pcl
 
         virtual void
         showContextMenu(const QPoint& position) = 0;
+
+        virtual void
+        updateOnStateChange(const Qt::CheckState& check_state) = 0;
       protected:
 
       private:

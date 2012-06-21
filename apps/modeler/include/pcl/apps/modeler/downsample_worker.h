@@ -48,9 +48,10 @@ namespace pcl
     class DownSampleWorker : public AbstractWorker 
     {
       public:
-        DownSampleWorker(QWidget* parent=0);
+        DownSampleWorker(const std::vector<CloudActor*>& cloud_actors, QWidget* parent=0);
         ~DownSampleWorker(void);
 
+      protected:
         virtual std::string
         getName () const {return ("DownSample");}
 
@@ -58,11 +59,10 @@ namespace pcl
         initParameters(PointCloud2Ptr input_cloud);
 
         virtual void
-        apply(PointCloud2Ptr input_cloud, PointCloud2Ptr output_cloud) const;
-
-      protected:
-        virtual void
         setupParameters();
+
+        virtual void
+        processImpl(PointCloud2Ptr input_cloud, PointCloud2Ptr output_cloud) const;
 
       private:
         double x_min_, x_max_;

@@ -35,28 +35,48 @@
  */
 
 #include <pcl/apps/modeler/abstract_worker.h>
+#include <pcl/apps/modeler/parameter_dialog.h>
+#include <pcl/apps/modeler/cloud_actor.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::AbstractWorker::AbstractWorker(QWidget* parent) :
-  parameter_ready_(false),
-  ParameterDialog(getName(), parent)
+pcl::modeler::AbstractWorker::AbstractWorker(const std::vector<CloudActor*>& cloud_actors, QWidget* parent) :
+  cloud_actors_(cloud_actors),
+  parameter_dialog_(new ParameterDialog(getName(), parent))
 {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::AbstractWorker::~AbstractWorker(void)
 {
+  delete parameter_dialog_;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::modeler::AbstractWorker::exec()
 {
+  for (size_t i = 0, i_end = cloud_actors_.size(); i < i_end; ++ i)
+    initParameters(cloud_actors_[i]->getCloud());
+
   setupParameters();
-  int result = ParameterDialog::exec();
 
-  if (result == QDialog::Accepted)
-    parameter_ready_ = true;
+  return (parameter_dialog_->exec());
+}
 
-  return (result);
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::AbstractWorker::process()
+{
+  while (!cloud_actors_.empty())
+  {
+    sensor_msgs::PointCloud2::Ptr cloud(new sensor_msgs::PointCloud2);
+    processImpl(cloud_actors_.back()->getCloud(), cloud);
+
+    cloud_actors_.back()->updateCloud(cloud);
+    cloud_actors_.pop_back();
+  }
+
+  emit finished();
+
+  return;
 }

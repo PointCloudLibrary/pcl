@@ -35,9 +35,11 @@
 
 
 #include <pcl/apps/modeler/pcl_modeler.h>
+#include <pcl/apps/modeler/dock_widget.h>
 #include <pcl/apps/modeler/render_widget.h>
 #include <pcl/apps/modeler/cloud_actor.h>
 #include <pcl/apps/modeler/main_window.h>
+#include <pcl/common/io.h>
 #include <pcl/io/pcd_io.h>
 
 
@@ -46,6 +48,9 @@ pcl::modeler::PCLModeler::PCLModeler(MainWindow* main_window) :
   main_window_(main_window),
   QStandardItemModel(main_window)
 {
+  connect(this, SIGNAL(rowsInserted(const QModelIndex &, int, int )), this, SLOT(slotUpdateRenderWidgetTitle()));
+  connect(this, SIGNAL(rowsRemoved(const QModelIndex &, int, int )), this, SLOT(slotUpdateRenderWidgetTitle()));
+
   return;
 }
 
@@ -79,13 +84,105 @@ pcl::modeler::PCLModeler::openPointCloud(const std::string& filename)
   camera->SetFocalPoint(origin [0] + rotation (0, 2), origin [1] + rotation (1, 2), origin [2] + rotation (2, 2));
   camera->SetViewUp(rotation (0, 1), rotation (1, 1), rotation (2, 1));
 
-  CloudActor::Ptr cloud_actor(new CloudActor(main_window_, cloud, filename, origin, orientation));
+  CloudActor* cloud_actor = new CloudActor(main_window_, cloud, filename, origin, orientation);
   renderer->AddActor(cloud_actor->getActor());
   renderer->GetRenderWindow()->Render();
 
-  cloud_actor_map_[cloud_actor->getActor()] = cloud_actor;
-
-  main_window_->getActiveRenderWidget()->appendRow(cloud_actor.get());
+  main_window_->getActiveRenderWidget()->appendRow(cloud_actor);
+  cloud_actor->setCheckState(Qt::Checked);
 
   return (true);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::PCLModeler::closePointCloud()
+{
+  std::vector<CloudActor*> cloud_actors = main_window_->getSelectedCloud();
+
+  if (cloud_actors.empty())
+    return;
+
+  for (size_t i = 0, i_end = cloud_actors.size(); i < i_end; ++ i)
+  {
+    RenderWidget* render_widget = dynamic_cast<RenderWidget*>(cloud_actors[i]->TreeItem::parent());
+    render_widget->getRenderer()->RemoveActor(cloud_actors[i]->getActor());
+    render_widget->GetRenderWindow()->Render();
+
+    removeRow(cloud_actors[i]->row(), indexFromItem(render_widget));
+  }
+
+  return;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+bool
+pcl::modeler::PCLModeler::concatenatePointCloud (const sensor_msgs::PointCloud2 &cloud, sensor_msgs::PointCloud2 &cloud_out)
+{
+  if (cloud.fields.size () != cloud_out.fields.size ())
+  {
+    PCL_ERROR ("[pcl::concatenatePointCloud] Number of fields in cloud1 (%u) != Number of fields in cloud2 (%u)\n", cloud.fields.size (), cloud_out.fields.size ());
+    return (false);
+  }
+
+  for (size_t i = 0; i < cloud.fields.size (); ++i)
+    if (cloud.fields[i].name != cloud_out.fields[i].name)
+    {
+      PCL_ERROR ("[pcl::concatenatePointCloud] Name of field %d in cloud1, %s, does not match name in cloud2, %s\n", i, cloud.fields[i].name.c_str (), cloud_out.fields[i].name.c_str () );      
+      return (false);
+    }
+
+    size_t nrpts = cloud_out.data.size ();
+    cloud_out.data.resize (nrpts + cloud.data.size ());
+    memcpy (&cloud_out.data[nrpts], &cloud.data[0], cloud.data.size ());
+
+    // Height = 1 => no more organized
+    cloud_out.width    = cloud.width * cloud.height + cloud_out.width * cloud_out.height;
+    cloud_out.height   = 1;
+    if (!cloud.is_dense || !cloud_out.is_dense)
+      cloud_out.is_dense = false;
+    else
+      cloud_out.is_dense = true;
+
+    return (true);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::modeler::PCLModeler::savePointCloud(const std::string& filename)
+{
+  std::vector<CloudActor*> cloud_actors = main_window_->getSelectedCloud();
+
+  if (cloud_actors.empty())
+    return (false);
+
+  pcl::PCDWriter pcd;
+
+  if (cloud_actors.size() == 1)
+    return (pcd.write (filename, *(cloud_actors.front()->getCloud())) >= 0);
+
+  sensor_msgs::PointCloud2 cloud = *(cloud_actors[0]->getCloud());
+
+  for (size_t i = 1, i_end = cloud_actors.size(); i < i_end; ++ i)
+    concatenatePointCloud(*(cloud_actors[i]->getCloud()), cloud);
+
+  return (pcd.write (filename, cloud) >= 0);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::PCLModeler::slotUpdateRenderWidgetTitle()
+{
+  for (int i = 0, i_end = rowCount(); i < i_end; ++ i)
+  {
+    RenderWidget* render_widget = dynamic_cast<RenderWidget*>(itemFromIndex(index(i, 0)));
+    render_widget->TreeItem::setText((i == 0)?(QObject::tr("Main Render Window")):(QObject::tr("Render Window %1").arg(i)));
+
+    DockWidget* dock_widget = dynamic_cast<DockWidget*>(render_widget->QVTKWidget::parent());
+    if (dock_widget != NULL)
+      dock_widget->setWindowTitle(tr("Render Window %1").arg(i));
+  }
+
+  return;
 }

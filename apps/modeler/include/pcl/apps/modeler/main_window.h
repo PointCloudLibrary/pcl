@@ -40,6 +40,7 @@
 #include <boost/shared_ptr.hpp>
 #include <vtkSmartPointer.h>
 #include <QMainWindow>
+#include <QItemSelection>
 
 // Forward Qt class declarations
 namespace Ui
@@ -57,10 +58,8 @@ namespace pcl
   namespace modeler
   {
     class CloudActor;
-    class RenderWidget;
-    class DockWidget;
     class PCLModeler;
-    class ColorHandlerSwitcher;
+    class RenderWidget;
 
     class MainWindow : public QMainWindow
     {
@@ -73,19 +72,19 @@ namespace pcl
         void
         setActiveDockWidget(RenderWidget* render_widget);
 
-        vtkSmartPointer<vtkRenderer>
-        getActiveRender();
-
-        RenderWidget*
-        getActiveRenderWidget();
+        std::vector<CloudActor*>
+        getSelectedCloud();
 
         void
         addActionsToRenderWidget(QMenu* menu);
         void
         addActionsToCloudActor(QMenu* menu);
 
-        const std::vector<RenderWidget*>&
-        getRenderWidgets() const {return render_widgets_;}
+        vtkSmartPointer<vtkRenderer>
+        getActiveRender();
+
+        RenderWidget*
+        getActiveRenderWidget();
 
         void
         triggerRender(vtkActor* actor);
@@ -122,10 +121,8 @@ namespace pcl
         void
         slotDownSampleFilter();
 
-      protected:
-
-      protected slots:
-
+        void
+        slotUpdateSelection(const QItemSelection & selected, const QItemSelection & deselected);
       private:
         // methods for file Menu
         void 
@@ -169,15 +166,19 @@ namespace pcl
         saveGlobalSettings();
 
         void
-        addRenderWidget(RenderWidget* render_widget);
+        updateRenderWidgetSelection(const QItemSelection & selection, bool selected);
 
-        std::vector<CloudActor*>
-        getSelectedCloud();
       private slots:
         void 
         slotOpenRecentPointCloud();
         void 
         slotOpenRecentProject();
+
+        void
+        slotOnTreeViewItemClick(const QModelIndex & index);
+
+        void
+        slotOnTreeViewItemDoubleClick(const QModelIndex & index);
 
       private:
         Ui::MainWindow                    *ui_; // Designer form
@@ -191,11 +192,6 @@ namespace pcl
 
         // data
         boost::shared_ptr<PCLModeler>  pcl_modeler_;
-
-        // render widgets
-        typedef std::vector<RenderWidget*> RenderWidgets;
-        RenderWidgets           render_widgets_;
-        size_t                  active_render_widget_idx_;
     };
   }
 }

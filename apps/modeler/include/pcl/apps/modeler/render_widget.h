@@ -53,18 +53,8 @@ namespace pcl
     class RenderWidget : public QVTKWidget, public TreeItem
     {
       public:
-        RenderWidget(MainWindow* main_window, size_t id, QWidget *parent = 0, Qt::WFlags flags = 0);
+        RenderWidget(MainWindow* main_window, QWidget *parent = 0, Qt::WFlags flags = 0);
         ~RenderWidget();
-
-        bool
-        getActive() const {return active_;}
-        void
-        setActive(bool active) {active_=active;}
-
-        size_t
-        getID() const {return id_;}
-        void
-        setID(size_t id) {id_=id;}
 
         vtkSmartPointer<vtkRenderer>
         getRenderer();
@@ -75,6 +65,9 @@ namespace pcl
         virtual void
         showContextMenu(const QPoint& position);
 
+        virtual void
+        updateOnStateChange(const Qt::CheckState& check_state);
+
       protected:
         virtual void
         focusInEvent ( QFocusEvent * event );
@@ -83,8 +76,6 @@ namespace pcl
 
       private:
         MainWindow*       main_window_;
-        bool              active_;
-        size_t            id_;
 
       private:
         void

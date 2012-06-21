@@ -34,20 +34,20 @@ if(build)
   set(uis main_window.ui
            color_handler_switcher.ui)
   set(moc_incs include/pcl/apps/${SUBSYS_NAME}/main_window.h
+           include/pcl/apps/${SUBSYS_NAME}/pcl_modeler.h
            include/pcl/apps/${SUBSYS_NAME}/color_handler_switcher.h
-           include/pcl/apps/${SUBSYS_NAME}/parameter_dialog.h)
+           include/pcl/apps/${SUBSYS_NAME}/parameter_dialog.h
+           include/pcl/apps/${SUBSYS_NAME}/abstract_worker.h)
 
   set(resources resources/resources.qrc)
 
   set(incs ${moc_incs}
-           include/pcl/apps/${SUBSYS_NAME}/pcl_modeler.h
            include/pcl/apps/${SUBSYS_NAME}/cloud_actor.h
            include/pcl/apps/${SUBSYS_NAME}/render_widget.h
            include/pcl/apps/${SUBSYS_NAME}/dock_widget.h
            include/pcl/apps/${SUBSYS_NAME}/tree_item.h
            include/pcl/apps/${SUBSYS_NAME}/tree_view.h
            include/pcl/apps/${SUBSYS_NAME}/parameter.h
-           include/pcl/apps/${SUBSYS_NAME}/abstract_worker.h
            include/pcl/apps/${SUBSYS_NAME}/downsample_worker.h)
 
   set(srcs src/main.cpp

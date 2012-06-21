@@ -85,8 +85,17 @@ namespace pcl
         virtual void
         showContextMenu(const QPoint& position);
 
+        sensor_msgs::PointCloud2::Ptr
+        getCloud() {return cloud_;}
+
+        sensor_msgs::PointCloud2::ConstPtr
+        getCloud() const {return cloud_;}
+
         void
-        accept(AbstractWorker* worker);
+        updateCloud(sensor_msgs::PointCloud2::Ptr cloud);
+
+        virtual void
+        updateOnStateChange(const Qt::CheckState& check_state);
 
       private:
         sensor_msgs::PointCloud2::Ptr cloud_;

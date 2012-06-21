@@ -51,6 +51,7 @@ namespace pcl
     class CloudActor;
     class MainWindow;
     class TreeItem;
+    class RenderWidget;
 
     /** \brief PCL Modeler main class.
       * \author Yangyan Li
@@ -58,6 +59,8 @@ namespace pcl
       */
     class PCL_EXPORTS PCLModeler : public QStandardItemModel
     {
+      Q_OBJECT
+
       public:
         typedef pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
         typedef GeometryHandler::Ptr GeometryHandlerPtr;
@@ -78,17 +81,22 @@ namespace pcl
         bool
         openPointCloud(const std::string& filename);
 
-        typedef std::map<vtkSmartPointer<vtkActor>, boost::shared_ptr<CloudActor> > CloudActorMap;
-        CloudActorMap&
-        getCloudActorMap() {return cloud_actor_map_;}
-        const CloudActorMap&
-        getCloudActorMap() const {return cloud_actor_map_;}
-      private:
-        /** \brief Internal. actor to cloud actor map*/
-        CloudActorMap   cloud_actor_map_;
+        void
+        closePointCloud();
 
-        /** \brief Internal. pointer to the MainWindow*/
-        MainWindow*     main_window_;
+        static bool
+        concatenatePointCloud (const sensor_msgs::PointCloud2 &cloud, sensor_msgs::PointCloud2 &cloud_out);
+
+        bool
+        savePointCloud(const std::string& filename);
+
+      public slots:
+        void
+        slotUpdateRenderWidgetTitle();
+
+      private:
+        MainWindow*             main_window_;
+
     };
   }
 }

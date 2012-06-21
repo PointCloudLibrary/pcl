@@ -35,6 +35,7 @@
  */
 
 #include <pcl/apps/modeler/cloud_actor.h>
+#include <pcl/apps/modeler/render_widget.h>
 #include <pcl/apps/modeler/main_window.h>
 #include <pcl/apps/modeler/abstract_worker.h>
 
@@ -53,6 +54,9 @@ pcl::modeler::CloudActor::CloudActor (MainWindow* main_window,
   main_window_(main_window),
   TreeItem(id.c_str())
 {
+  setCheckable(true);
+  updateOnStateChange(Qt::Checked);
+
   color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>(cloud));
   geometry_handler_.reset(new pcl::visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2>(cloud));
 
@@ -104,6 +108,10 @@ pcl::modeler::CloudActor::createActorFromHandlers ()
   actor_->GetMapper ()->SetScalarRange (minmax);
 
   cells_ = reinterpret_cast<vtkPolyDataMapper*>(actor_->GetMapper ())->GetInput ()->GetVerts ()->GetData ();
+
+  RenderWidget* render_widget = dynamic_cast<RenderWidget*>(TreeItem::parent());
+  if (render_widget != NULL)
+    render_widget->GetRenderWindow()->Render();
 
   return (true);
 }
@@ -299,29 +307,34 @@ pcl::modeler::CloudActor::setColorHandler(const std::string& field_name)
   }
 
   createActorFromHandlers();
-  main_window_->triggerRender(actor_.GetPointer());
 
   return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::CloudActor::accept(AbstractWorker* worker)
+pcl::modeler::CloudActor::updateCloud(sensor_msgs::PointCloud2::Ptr cloud)
 {
-  if (!worker->isParameterReady())
+  pcl::copyPointCloud(*cloud, *cloud_);
+
+  createActorFromHandlers();
+
+  return;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::CloudActor::updateOnStateChange(const Qt::CheckState& check_state)
+{
+  RenderWidget* render_widget = dynamic_cast<RenderWidget*>(TreeItem::parent());
+  if (render_widget != NULL)
   {
-    worker->initParameters(cloud_);
-  }
-  else
-  {
-    sensor_msgs::PointCloud2::Ptr cloud(new sensor_msgs::PointCloud2);
+    if (check_state == Qt::Checked)
+      render_widget->getRenderer()->AddActor(actor_);
+    else
+      render_widget->getRenderer()->RemoveActor(actor_);
 
-    worker->apply(cloud_, cloud);
-
-    *cloud_ = *cloud;
-
-    createActorFromHandlers();
-    main_window_->triggerRender(actor_.GetPointer());
+    render_widget->GetRenderWindow()->Render();
   }
 
   return;

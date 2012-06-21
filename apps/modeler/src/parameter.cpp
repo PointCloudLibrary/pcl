@@ -114,6 +114,7 @@ pcl::modeler::DoubleParameter::createEditor(QWidget *parent)
   editor->setMinimum(low_);
   editor->setMaximum(high_);
   editor->setSingleStep(step_);
+  editor->setDecimals(6);
 
   return editor;
 }

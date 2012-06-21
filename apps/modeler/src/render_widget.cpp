@@ -35,6 +35,7 @@
  */
 
 #include <pcl/apps/modeler/render_widget.h>
+#include <pcl/apps/modeler/dock_widget.h>
 #include <pcl/apps/modeler/main_window.h>
 #include <pcl/visualization/common/common.h>
 
@@ -47,13 +48,17 @@
 #include <QContextMenuEvent>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::RenderWidget::RenderWidget(MainWindow* main_window, size_t id, QWidget *parent, Qt::WFlags flags) : 
+pcl::modeler::RenderWidget::RenderWidget(MainWindow* main_window, QWidget *parent, Qt::WFlags flags) : 
   QVTKWidget(parent, flags),
   main_window_(main_window),
-  active_(false),
-  id_(id),
-  TreeItem((id == 0)?(QObject::tr("Main Render Window")):(QObject::tr("Render Window %1").arg(id)))
+  TreeItem(QObject::tr("Render Window"))
 {
+  if (parent != NULL)
+  {
+    setCheckable(true);
+    updateOnStateChange(Qt::Checked);
+  }
+
   setFocusPolicy(Qt::StrongFocus);
   initRenderer();
 }
@@ -77,6 +82,22 @@ pcl::modeler::RenderWidget::contextMenuEvent(QContextMenuEvent *event)
 {
   if (event->modifiers()&Qt::ControlModifier) {
     showContextMenu(event->globalPos());
+  }
+
+  return;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::RenderWidget::updateOnStateChange(const Qt::CheckState& check_state)
+{
+  DockWidget* dock_widget = dynamic_cast<DockWidget*>(QVTKWidget::parent());
+  if (dock_widget != NULL)
+  {
+    if (check_state == Qt::Checked)
+      dock_widget->show();
+    else
+      dock_widget->hide();
   }
 
   return;

@@ -48,7 +48,7 @@
      <x>0</x>
      <y>0</y>
      <width>1063</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -224,7 +224,7 @@
   </action>
   <action name="actionDownSampleFilter">
    <property name="text">
-    <string>Pass Through Filter</string>
+    <string>Down Sample Filter</string>
    </property>
   </action>
  </widget>
