@@ -45,7 +45,10 @@
 #include <string>
 #include <vector>
 #include <pcl/ros/conversions.h>
+
+#ifdef HAVE_OPENNI
 #include <pcl/io/openni_camera/openni_depth_image.h>
+#endif
 
 namespace pcl
 {
@@ -145,7 +148,10 @@ namespace pcl
       publish (const sensor_msgs::PointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const;
       
       boost::signals2::signal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>* signal_;
+
+#ifdef HAVE_OPENNI
       boost::signals2::signal<void (const boost::shared_ptr<openni_wrapper::DepthImage>&)>*     depth_image_signal_;
+#endif
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -154,7 +160,9 @@ namespace pcl
   : PCDGrabberBase (pcd_path, frames_per_second, repeat)
   {
     signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
+#ifdef HAVE_OPENNI
     depth_image_signal_ = createSignal <void (const boost::shared_ptr<openni_wrapper::DepthImage>&)> ();
+#endif
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -163,7 +171,9 @@ namespace pcl
     : PCDGrabberBase (pcd_files, frames_per_second, repeat), signal_ ()
   {
     signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
+#ifdef HAVE_OPENNI
     depth_image_signal_ = createSignal <void (const boost::shared_ptr<openni_wrapper::DepthImage>&)> ();
+#endif
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -177,6 +187,7 @@ namespace pcl
 
     signal_->operator () (cloud);
 
+#ifdef HAVE_OPENNI
     // If dataset is not organized, return
     if (!cloud->isOrganized ())
       return;
@@ -195,6 +206,7 @@ namespace pcl
     boost::shared_ptr<openni_wrapper::DepthImage> depth_image (new openni_wrapper::DepthImage (depth_meta_data, 0.075, 525, 0, 0));
     if (depth_image_signal_->num_slots() > 0)
       depth_image_signal_->operator()(depth_image);
+#endif
   }
 }
 #endif
