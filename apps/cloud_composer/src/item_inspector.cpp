@@ -1,8 +1,9 @@
 #include <pcl/apps/cloud_composer/item_inspector.h>
-#include <pcl/apps/cloud_composer/cloud_item.h>
+#include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 
 #include <QItemSelectionModel>
 
+#include <QDebug>
 
 pcl::cloud_composer::ItemInspector::ItemInspector (QWidget* parent)
   : QTreeView(parent)
@@ -57,6 +58,7 @@ pcl::cloud_composer::ItemInspector::selectionChanged (const QModelIndex &current
   if (current_project_model_)
   {
     QStandardItem* selected_item = current_project_model_->itemFromIndex (current);
+    qDebug () << "Current item = "<<selected_item->text ();
     current_item_model_ = VPtr<QStandardItemModel>::asPtr (selected_item->data (PROPERTIES));
     if (current_item_model_)
     {

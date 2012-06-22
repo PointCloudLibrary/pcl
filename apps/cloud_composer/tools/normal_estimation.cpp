@@ -68,10 +68,8 @@ pcl::cloud_composer::NormalEstimationTool::performAction (ConstItemList input_da
     // Compute the features
     ne.compute (*cloud_normals);
     //////////////////////////////////////////////////////////////////
-    
-    CloudComposerItem* normal_item = new CloudComposerItem ("Normals");
-    normal_item->setData (QVariant::fromValue (0), Qt::UserRole);
-    output.append (normal_item);
+    NormalsItem* normals_item = new NormalsItem (tr("Normals r=%1").arg(radius),cloud_normals,radius);
+    output.append (normals_item);
   }
   else
   {

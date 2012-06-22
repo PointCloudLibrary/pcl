@@ -49,7 +49,8 @@ enum ITEM_ROLES {
 //This currently isn't used for anything, it will probably be removed
 enum ITEM_TYPES { 
   CLOUD_COMPOSER_ITEM = QStandardItem::UserType,
-  CLOUD_ITEM
+  CLOUD_ITEM,
+  NORMALS_ITEM
 };
 
 namespace pcl
@@ -90,6 +91,9 @@ namespace pcl
         bool
         getCloudConstPtr (sensor_msgs::PointCloud2::ConstPtr& const_ptr) const;
        
+        /** \brief Helper function to get a property */
+        QVariant 
+        getProperty (const QString prop_name) const;
       protected:
         /** \brief Helper function for adding a new property */
         void

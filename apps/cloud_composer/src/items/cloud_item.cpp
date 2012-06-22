@@ -1,4 +1,4 @@
-#include <pcl/apps/cloud_composer/cloud_item.h>
+#include <pcl/apps/cloud_composer/items/cloud_item.h>
 #include <QDebug>
 
 

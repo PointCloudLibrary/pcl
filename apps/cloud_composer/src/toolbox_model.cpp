@@ -1,12 +1,14 @@
 #include <QTreeView>
+#include <QMessageBox>
 
 #include <pcl/apps/cloud_composer/toolbox_model.h>
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
 
 
-pcl::cloud_composer::ToolBoxModel::ToolBoxModel (QTreeView* parameter_view_, QObject* parent)
+pcl::cloud_composer::ToolBoxModel::ToolBoxModel (QTreeView* tool_view, QTreeView* parameter_view_, QObject* parent)
 : QStandardItemModel (parent)
+, tool_view_ (tool_view)
 , parameter_view_ (parameter_view_)
 {
  
@@ -37,7 +39,9 @@ pcl::cloud_composer::ToolBoxModel::addTool (ToolFactory* tool_factory)
   
   QStandardItem* group_item = addToolGroup (tool_factory->getToolGroupName ());
   group_item->appendRow (new_tool_item); 
-  
+  //Expand the view for this tool group
+  QModelIndex group_index = this->indexFromItem(group_item);
+  tool_view_->setExpanded (group_index, true);
   
 }
 
@@ -57,6 +61,7 @@ pcl::cloud_composer::ToolBoxModel::addToolGroup (QString tool_group_name)
     appendRow (new_group_item);
     new_group_item->setSelectable (false);
     new_group_item->setEditable (false);
+
     return new_group_item;
   }
   else if (matches_name.size () > 1)
@@ -87,6 +92,11 @@ void
 pcl::cloud_composer::ToolBoxModel::toolAction ()
 {
   QModelIndex current_index = selection_model_->currentIndex ();
+  if (!current_index.isValid ())
+  {
+    QMessageBox::warning (qobject_cast<QWidget *>(this->parent ()), "No Tool Selected", "Cannot execute action, no tool selected!");
+    return;
+  }
   ToolFactory* tool_factory = (current_index.data (FACTORY)).value <ToolFactory*> ();
   QStandardItemModel* parameter_model = (current_index.data (PARAMETER_MODEL)).value <QStandardItemModel*> ();
   AbstractTool* tool = tool_factory->createTool (parameter_model);

@@ -35,13 +35,22 @@
  *
  */
 
-#ifndef NORMAL_ESTIMATION_H_
-#define NORMAL_ESTIMATION_H_
+#ifndef NORMALS_ITEM_H_
+#define NORMALS_ITEM_H_
 
-#include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
-#include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
-#include <pcl/apps/cloud_composer/items/cloud_item.h>
-#include <pcl/apps/cloud_composer/items/normals_item.h>
+#include <pcl/point_types.h>
+#include <pcl/features/normal_3d.h>
+
+#include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
+
+
+//Define user roles
+#ifndef NORMALS_USER_ROLES
+#define NORMALS_USER_ROLES
+enum NORMALS_ITEM_ROLES { 
+  NORMALS_CLOUD = Qt::UserRole + 1
+};
+#endif
 
 
 
@@ -49,53 +58,33 @@ namespace pcl
 {
   namespace cloud_composer
   {
-    class NormalEstimationTool : public NewItemTool
-    {
-      Q_OBJECT
-      public:
-        NormalEstimationTool (QStandardItemModel* parameter_model, QObject* parent);
-        virtual ~NormalEstimationTool ();
-        
-        virtual QList <CloudComposerItem*>
-        performAction (ConstItemList input_data);
-      
-        inline virtual QString
-        getToolName () const { return "Normal Estimation Tool";}
-    };
-
     
-    class NormalEstimationToolFactory : public QObject, public ToolFactory
+    class NormalsItem : public CloudComposerItem
     {
-      Q_OBJECT
-      Q_INTERFACES (pcl::cloud_composer::ToolFactory)
       public:
-        NewItemTool*
-        createTool (QStandardItemModel* parameter_model, QObject* parent = 0) 
-        {
-            return new NormalEstimationTool(parameter_model, parent);
-        }
+
+        NormalsItem (QString name, 
+                     pcl::PointCloud<pcl::Normal>::Ptr normals_ptr,
+                     double radius);
+        NormalsItem (const NormalsItem& to_copy);
+        virtual ~NormalsItem ();
         
-        QStandardItemModel*
-        createToolParameterModel (QObject* parent);
+        inline virtual int 
+        type () const { return NORMALS_ITEM; }
+
+        virtual NormalsItem*
+        clone () const;
         
-        inline virtual QString 
-        getPluginName () const { return "Normal Estimation";}
-        
-        virtual QString 
-        getToolGroupName () const { return "Feature Estimation";}
-        
-        virtual QString
-        getIconName () const { return ":/normal_estimation.png"; }
+      private:
+        pcl::PointCloud<pcl::Normal>::Ptr normals_ptr_;
+        double radius_;
     };
-
-
-
+    
+    
+    
   }
 }
 
+Q_DECLARE_METATYPE (pcl::PointCloud<pcl::Normal>::Ptr);
 
-
-
-
-
-#endif //NORMAL_ESTIMATION_H_
+#endif //NORMALS_ITEM_H_

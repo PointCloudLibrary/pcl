@@ -48,52 +48,59 @@ if(build)
   
   
   if (VTK_FOUND AND QT4_FOUND AND VTK_USE_QVTK)
-    #Qt Sources, Headers, and Resources set
+    #Sources & Headers for main application
     set(incs include/pcl/apps/${SUBSYS_NAME}/cloud_composer.h
              include/pcl/apps/${SUBSYS_NAME}/project_model.h
              include/pcl/apps/${SUBSYS_NAME}/cloud_viewer.h
              include/pcl/apps/${SUBSYS_NAME}/cloud_view.h
              include/pcl/apps/${SUBSYS_NAME}/item_inspector.h
-             include/pcl/apps/${SUBSYS_NAME}/cloud_composer_item.h
-             include/pcl/apps/${SUBSYS_NAME}/cloud_item.h
              include/pcl/apps/${SUBSYS_NAME}/tool_interface/abstract_tool.h
              include/pcl/apps/${SUBSYS_NAME}/tool_interface/tool_factory.h
              include/pcl/apps/${SUBSYS_NAME}/commands.h
              include/pcl/apps/${SUBSYS_NAME}/work_queue.h
              include/pcl/apps/${SUBSYS_NAME}/toolbox_model.h)
+          
     set(srcs src/main.cpp 
              src/cloud_composer.cpp
              src/project_model.cpp
              src/cloud_viewer.cpp
              src/cloud_view.cpp
              src/item_inspector.cpp
-             src/cloud_composer_item.cpp
-             src/cloud_item.cpp
              src/commands.cpp
              src/work_queue.cpp
              src/toolbox_model.cpp)
+          
+    #Sources and headers for item types      
+    set(item_incs include/pcl/apps/${SUBSYS_NAME}/items/cloud_composer_item.h
+                  include/pcl/apps/${SUBSYS_NAME}/items/cloud_item.h
+                  include/pcl/apps/${SUBSYS_NAME}/items/normals_item.h)
+           
+    set(item_srcs src/items/cloud_composer_item.cpp
+                  src/items/cloud_item.cpp
+                  src/items/normals_item.cpp)
+                  
     set(uis src/cloud_composer_main_window.ui)
     set(resources resources/resources.qrc)
 
     QT4_WRAP_UI(cloud_composer_ui ${uis})
-    QT4_WRAP_CPP(cloud_composer_moc ${incs})
+    QT4_WRAP_CPP(cloud_composer_moc ${incs} ${item_incs})
     QT4_ADD_RESOURCES(resource_srcs ${resources})
     
     set(EXE_NAME pcl_${SUBSYS_NAME})
-    PCL_ADD_EXECUTABLE(${EXE_NAME} ${SUBSYS_NAME} ${cloud_composer_ui} ${cloud_composer_moc} ${srcs} ${resource_srcs})
+    PCL_ADD_EXECUTABLE(${EXE_NAME} ${SUBSYS_NAME} ${cloud_composer_ui} ${cloud_composer_moc} ${srcs} ${resource_srcs} ${item_srcs})
     target_link_libraries(${EXE_NAME} pcl_common pcl_io pcl_visualization QVTK ${QT_LIBRARIES})
 
     # Install include files
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs} ${item_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
     
     PCL_MAKE_PKGCONFIG(${EXE_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" "" "" "" "")
     
 
     #TOOL BUILDING SCRIPTS
-	#Create subdirectory for plugin libs
-	set (CLOUD_COMPOSER_PLUGIN_DIR ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/cloud_composer_plugins)
-	make_directory (${CLOUD_COMPOSER_PLUGIN_DIR})
+    #Create subdirectory for plugin libs
+    set (CLOUD_COMPOSER_PLUGIN_DIR ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/cloud_composer_plugins)
+    make_directory (${CLOUD_COMPOSER_PLUGIN_DIR})
 
     set(INTERFACE_HEADERS include/pcl/apps/${SUBSYS_NAME}/tool_interface/tool_factory.h 
                           include/pcl/apps/${SUBSYS_NAME}/tool_interface/abstract_tool.h)

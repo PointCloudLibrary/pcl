@@ -6,7 +6,6 @@
 #include <pcl/apps/cloud_composer/project_model.h>
 #include <pcl/apps/cloud_composer/cloud_viewer.h>
 #include <pcl/apps/cloud_composer/cloud_view.h>
-#include <pcl/apps/cloud_composer/cloud_item.h>
 #include <pcl/apps/cloud_composer/item_inspector.h>
 #include <pcl/apps/cloud_composer/commands.h>
 #include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
@@ -106,7 +105,7 @@ pcl::cloud_composer::ComposerMainWindow::initializeItemInspector ()
 void
 pcl::cloud_composer::ComposerMainWindow::initializeToolBox ()
 {
-  tool_box_model_ = new ToolBoxModel (tool_parameter_view_,this);
+  tool_box_model_ = new ToolBoxModel (tool_box_view_, tool_parameter_view_,this);
   tool_selection_model_ = new QItemSelectionModel (tool_box_model_);
   tool_box_model_->setSelectionModel (tool_selection_model_);
   
@@ -155,34 +154,6 @@ pcl::cloud_composer::ComposerMainWindow::initializePlugins ()
       //Create the action button for this tool
       tool_box_model_->addTool (tool_factory);
       
-     /*
-      processFactoryMap.insert(processFactory->processName(),processFactory);
-      pluginFileNames.append(fileName);
-      //Check what types the plugin uses
-      QList<QString> usedTypes = processFactory->processTypes();
-      TypeCreatorMap creatorMap = processFactory->getTypeCreatorMap();
-      foreach(QString type, usedTypes){
-        if(!dataTypes.contains(type)){
-          if(creatorMap.contains(type)){
-            qWarning() << "New type " << type<< " encountered in plugin "<<processFactory->processName();
-            typeCreatorMap.insert(type,creatorMap.value(type));
-            dataTypes.insert(type);
-            //Create a temporary instance of the new datacontainer type to check if it is displayable
-            AbstractDataContainer* tempContainer;
-            //Get the function pointer
-            AbstractDataContainer* (*creatorFunction)() = static_cast< AbstractDataContainer* (*)() > (creatorMap.value(type));
-            //Create the new data container
-            tempContainer = creatorFunction();
-            //Check if this new type is displayble
-            if(tempContainer->isDisplayable())
-              displayableDataTypes.insert(type);
-            delete tempContainer;
-          }else{
-            qCritical() << "New Type "<< type<< " encountered in plugin " <<processFactory->processName()<<" but NO creator function!!";
-          }
-        }
-        
-      }*/
     }
     else{
       qDebug() << "Could not load " << plugin_dir.relativeFilePath (filename);
@@ -213,8 +184,10 @@ pcl::cloud_composer::ComposerMainWindow::setCurrentModel (ProjectModel* model)
 void
 pcl::cloud_composer::ComposerMainWindow::enqueueToolAction (AbstractTool* tool)
 {
-  current_model_->enqueueToolAction (tool);
-  
+  if (current_model_)
+    current_model_->enqueueToolAction (tool);
+  else
+    QMessageBox::warning (this, "No Project Open!", "Cannot use tool, no project is open!");
 }
 ///////// FILE MENU SLOTS ///////////
 void

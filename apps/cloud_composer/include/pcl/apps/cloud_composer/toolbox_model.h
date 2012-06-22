@@ -62,7 +62,7 @@ namespace pcl
       Q_OBJECT
       
     public:
-      ToolBoxModel (QTreeView* parameter_view = 0, QObject *parent = 0);
+      ToolBoxModel (QTreeView* tool_view = 0, QTreeView* parameter_view = 0, QObject *parent = 0);
       ToolBoxModel (const ToolBoxModel& to_copy);
       virtual ~ToolBoxModel ();
       
@@ -87,6 +87,7 @@ namespace pcl
       addToolGroup (QString tool_group_name);
       
       QTreeView* parameter_view_;
+      QTreeView* tool_view_;
       QItemSelectionModel* selection_model_;
       
     };

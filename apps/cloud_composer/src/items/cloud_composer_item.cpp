@@ -1,5 +1,6 @@
-#include <pcl/apps/cloud_composer/cloud_composer_item.h>
-#include <pcl/apps/cloud_composer/cloud_item.h>
+#include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
+//Needed for the helper function which gets a cloud ptr... this is a bad dependency
+#include <pcl/apps/cloud_composer/items/cloud_item.h>
 
 #include <QDebug>
 
@@ -38,6 +39,23 @@ pcl::cloud_composer::CloudComposerItem::addProperty (const QString prop_name, QV
  
   parent_item->appendRow (new_row);
   
+}
+
+QVariant 
+pcl::cloud_composer::CloudComposerItem::getProperty (const QString prop_name) const
+{
+  QList<QStandardItem*> items = properties_->findItems (prop_name);
+  if (items.size () == 0)
+  {
+    qWarning () << "No property named "<<prop_name<<" found in "<<this->text ();
+    return QVariant ();
+  }
+  else if (items.size () > 1)
+  {
+    qWarning () << "Multiple properties found with name "<<prop_name<<" in "<<this->text ();
+  }
+  
+  return items.value (0)->data (Qt::EditRole);
 }
 
 pcl::cloud_composer::CloudComposerItem*

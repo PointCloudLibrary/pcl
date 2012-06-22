@@ -1,11 +1,12 @@
 #include <QtGui>
 #include <QThread>
+#include <QMessageBox>
 
 #include <pcl/apps/cloud_composer/project_model.h>
-#include <pcl/apps/cloud_composer/cloud_item.h>
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/commands.h>
 #include <pcl/apps/cloud_composer/work_queue.h>
+#include <pcl/apps/cloud_composer/items/cloud_item.h>
 
 pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
   : QStandardItemModel (parent)
@@ -13,7 +14,7 @@ pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
   selection_model_ = new QItemSelectionModel (this);
   undo_stack_ = new QUndoStack (this);
   
-  work_thread_ = new QThread(this);
+  work_thread_ = new QThread();
   work_queue_ = new WorkQueue ();
   work_queue_->moveToThread (work_thread_);
   
@@ -31,6 +32,7 @@ pcl::cloud_composer::ProjectModel::ProjectModel (const ProjectModel& to_copy)
 pcl::cloud_composer::ProjectModel::~ProjectModel ()
 {
   work_thread_->quit ();
+  work_thread_->deleteLater ();
   work_queue_->deleteLater ();
 }
 
@@ -101,6 +103,11 @@ pcl::cloud_composer::ProjectModel::enqueueToolAction (AbstractTool* tool)
   //Get the currently selected item(s), put them in a list, and create the command
   ConstItemList input_data;
   QModelIndexList selected_indexes = selection_model_->selectedIndexes ();
+  if (selected_indexes.size () == 0)
+  {
+    QMessageBox::warning (qobject_cast<QWidget *>(this->parent ()), "No Items Selected", "Cannot use tool, no item is selected in the browser or cloud view");
+    return;
+  }
   foreach (QModelIndex index, selected_indexes)
   {
     QStandardItem* item = this->itemFromIndex (index);

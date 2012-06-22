@@ -41,8 +41,7 @@
 #include <QObject>
 #include <QDebug>
 #include <pcl/apps/cloud_composer/commands.h>
-#include <pcl/apps/cloud_composer/cloud_composer_item.h>
-#include <pcl/apps/cloud_composer/cloud_item.h>
+#include <pcl/apps/cloud_composer/items/cloud_item.h>
 namespace pcl
 {
   namespace cloud_composer

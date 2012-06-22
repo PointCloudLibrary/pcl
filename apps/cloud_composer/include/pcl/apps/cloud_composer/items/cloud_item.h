@@ -38,12 +38,7 @@
 #ifndef CLOUD_ITEM_H_
 #define CLOUD_ITEM_H_
 
-#include <QStandardItemModel>
-#include <QWidget>
-#include <QItemDelegate>
-
-
-#include <pcl/apps/cloud_composer/cloud_composer_item.h>
+#include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 #include <pcl/visualization/pcl_visualizer.h>
 //Define user roles
 #ifndef CLOUD_USER_ROLES
