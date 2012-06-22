@@ -56,7 +56,7 @@ namespace pcl
         virtual ~NormalEstimationTool ();
         
         virtual QList <CloudComposerItem*>
-        performAction (QList <const CloudComposerItem*> input_data);
+        performAction (ConstItemList input_data);
       
         inline virtual QString
         getToolName () const { return "Normal Estimation Tool";}

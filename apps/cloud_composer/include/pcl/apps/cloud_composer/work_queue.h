@@ -65,7 +65,7 @@ namespace pcl
         virtual ~WorkQueue();  
       public slots:
         void
-        enqueueNewAction (AbstractTool* new_tool, QList <const CloudComposerItem*> input_data);
+        enqueueNewAction (AbstractTool* new_tool, ConstItemList input_data);
         
         void 
         actionFinished (ActionPair finished_action);

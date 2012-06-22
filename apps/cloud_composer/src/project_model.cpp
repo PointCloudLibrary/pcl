@@ -1,4 +1,5 @@
 #include <QtGui>
+#include <QThread>
 
 #include <pcl/apps/cloud_composer/project_model.h>
 #include <pcl/apps/cloud_composer/cloud_item.h>
@@ -12,9 +13,15 @@ pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
   selection_model_ = new QItemSelectionModel (this);
   undo_stack_ = new QUndoStack (this);
   
-  work_queue_ = new WorkQueue (this);
-  connect (this, SIGNAL (enqueueNewAction (AbstractTool*, QList <const CloudComposerItem*>)),
-           work_queue_, SLOT (enqueueNewAction (AbstractTool*, QList <const CloudComposerItem*>)));
+  work_thread_ = new QThread(this);
+  work_queue_ = new WorkQueue ();
+  work_queue_->moveToThread (work_thread_);
+  
+  connect (this, SIGNAL (enqueueNewAction (AbstractTool*, ConstItemList)),
+           work_queue_, SLOT (enqueueNewAction (AbstractTool*, ConstItemList)));
+  connect (work_queue_, SIGNAL (commandComplete (CloudCommand*)),
+           this, SLOT (commandCompleted (CloudCommand*)));
+  work_thread_->start ();
 }
 
 pcl::cloud_composer::ProjectModel::ProjectModel (const ProjectModel& to_copy)
@@ -23,6 +30,8 @@ pcl::cloud_composer::ProjectModel::ProjectModel (const ProjectModel& to_copy)
 
 pcl::cloud_composer::ProjectModel::~ProjectModel ()
 {
+  work_thread_->quit ();
+  work_queue_->deleteLater ();
 }
 
 pcl::cloud_composer::ProjectModel::ProjectModel (QString project_name, QObject* parent)
@@ -90,7 +99,7 @@ pcl::cloud_composer::ProjectModel::enqueueToolAction (AbstractTool* tool)
 {
   qDebug () << "Enqueuing tool action "<<tool->getToolName ()<<" in project model "<<this->getName ();
   //Get the currently selected item(s), put them in a list, and create the command
-  QList <const CloudComposerItem*> input_data;
+  ConstItemList input_data;
   QModelIndexList selected_indexes = selection_model_->selectedIndexes ();
   foreach (QModelIndex index, selected_indexes)
   {
@@ -101,7 +110,7 @@ pcl::cloud_composer::ProjectModel::enqueueToolAction (AbstractTool* tool)
   qDebug () << "Input for tool is "<<input_data.size () << " element(s)";
  
   //Move the tool object to the work queue thread
-  tool->moveToThread (work_queue_->thread ());
+  tool->moveToThread (work_thread_);
   //Emit signal which tells work queue to enqueue this new action
   emit enqueueNewAction (tool, input_data);
 }
@@ -109,7 +118,11 @@ pcl::cloud_composer::ProjectModel::enqueueToolAction (AbstractTool* tool)
 void
 pcl::cloud_composer::ProjectModel::commandCompleted (CloudCommand* command)
 {
- // TODO: THIS IS WHERE COMMAND GETS PUSHED ON UNDO STACK 
+  //We set the project model here - this wasn't done earlier so model is never exposed to plugins
+  command->setProjectModel (this);
+  qDebug () << "Applying command changes to model and pushing onto undo stack";
+  //command->redo ();
+  undo_stack_->push (command);
   
 }
 

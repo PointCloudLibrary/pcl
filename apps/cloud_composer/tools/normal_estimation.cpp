@@ -20,7 +20,7 @@ pcl::cloud_composer::NormalEstimationTool::~NormalEstimationTool ()
 }
 
 QList <pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::NormalEstimationTool::performAction (QList <const CloudComposerItem*> input_data)
+pcl::cloud_composer::NormalEstimationTool::performAction (ConstItemList input_data)
 {
   QList <CloudComposerItem*> output;
   const CloudComposerItem* input_item;
@@ -69,7 +69,9 @@ pcl::cloud_composer::NormalEstimationTool::performAction (QList <const CloudComp
     ne.compute (*cloud_normals);
     //////////////////////////////////////////////////////////////////
     
-    
+    CloudComposerItem* normal_item = new CloudComposerItem ("Normals");
+    normal_item->setData (QVariant::fromValue (0), Qt::UserRole);
+    output.append (normal_item);
   }
   else
   {

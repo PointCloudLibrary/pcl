@@ -7,6 +7,7 @@
 pcl::cloud_composer::ItemInspector::ItemInspector (QWidget* parent)
   : QTreeView(parent)
 {
+  current_item_model_ = 0;
   current_project_model_ = 0;
   current_selection_model_ = 0;
 }

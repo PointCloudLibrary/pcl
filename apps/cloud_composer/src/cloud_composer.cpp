@@ -30,6 +30,7 @@ pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
   qRegisterMetaType<Eigen::Quaternionf> ("EigenQuaternionf");
   qRegisterMetaType<ProjectModel> ("ProjectModel");
   qRegisterMetaType<CloudView> ("CloudView");
+  qRegisterMetaType<ConstItemList> ("ConstComposerItemList");
   
 
   last_directory_ = QDir (".");
@@ -197,10 +198,15 @@ void
 pcl::cloud_composer::ComposerMainWindow::setCurrentModel (ProjectModel* model)
 {
   current_model_ = model;
+  //qDebug () << "Setting cloud browser model";
   cloud_browser_->setModel (current_model_);
+  //qDebug () << "Setting cloud browser selection model";
   cloud_browser_->setSelectionModel (current_model_->getSelectionModel ());
+  //qDebug () << "Setting cloud viewer model";
   cloud_viewer_->setModel (current_model_);
+  //qDebug () << "Item inspector setting project and selection models";
   item_inspector_->setProjectAndSelectionModels (current_model_, current_model_->getSelectionModel ());
+  //qDebug () << "Setting active stack in undo group";
   undo_group_->setActiveStack (current_model_->getUndoStack ());
 }
 
@@ -224,11 +230,15 @@ pcl::cloud_composer::ComposerMainWindow::on_action_new_project__triggered (QStri
       ++k;
     name = name + tr ("-%1").arg (k);
   }
-  
+  //qDebug () << "Setting name";
   new_project_model->setName (name);
+  //qDebug () << "Inserting into map";
   name_model_map_.insert (name,new_project_model);
+  //qDebug () << "Adding to undo group";
   undo_group_->addStack (new_project_model->getUndoStack ());
+  //qDebug () << "Setting current model";
   setCurrentModel (new_project_model);
+  //qDebug () << "Project " <<name<<" created!";
   
 }
 

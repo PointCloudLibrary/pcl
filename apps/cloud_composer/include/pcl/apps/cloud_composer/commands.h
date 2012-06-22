@@ -40,24 +40,26 @@
 
 #include <QUndoCommand>
 
-#include <pcl/apps/cloud_composer/cloud_item.h>
+#include <pcl/apps/cloud_composer/cloud_composer_item.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
+typedef QList<const pcl::cloud_composer::CloudComposerItem*> ConstItemList;
 namespace pcl
 {
   namespace cloud_composer
   {
     class AbstractTool;
-    struct ParentChildPair
+    class ProjectModel;
+    struct OutputPair
     {
-      const CloudComposerItem* parent;
-      QList <CloudComposerItem*> children;
+      const CloudComposerItem* input_item_;
+      QList <CloudComposerItem*> output_list_;
     };
     class CloudCommand : public QUndoCommand
     {
       public: 
-        CloudCommand (QList <const CloudComposerItem*> input_data, QUndoCommand* parent = 0);
+        CloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
         
         virtual bool
         runCommand (AbstractTool* tool) = 0;
@@ -67,16 +69,19 @@ namespace pcl
         
         virtual void
         redo () = 0;
-      protected:
-        QList <const CloudComposerItem*> original_data_;
-        QList <ParentChildPair> output_data_;
         
+        void 
+        setProjectModel (ProjectModel* model);
+      protected:
+        ConstItemList original_data_;
+        QList <OutputPair> output_data_;
+        ProjectModel* project_model_;
     };
     
     class ModifyCloudCommand : public CloudCommand
     {
       public: 
-        ModifyCloudCommand (QList <const CloudComposerItem*> input_data, QUndoCommand* parent = 0);
+        ModifyCloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
     
         virtual bool
         runCommand (AbstractTool* tool);
@@ -94,7 +99,7 @@ namespace pcl
     class NewItemCloudCommand : public CloudCommand
     {
       public: 
-        NewItemCloudCommand (QList <const CloudComposerItem*> input_data, QUndoCommand* parent = 0);
+        NewItemCloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
       
         virtual bool
         runCommand (AbstractTool* tool);
@@ -109,5 +114,5 @@ namespace pcl
   }
 } 
 
-
+Q_DECLARE_METATYPE (ConstItemList);
 #endif //COMMANDS_H_

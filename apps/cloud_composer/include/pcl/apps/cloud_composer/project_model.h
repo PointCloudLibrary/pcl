@@ -48,9 +48,8 @@
 #include <vtkCamera.h>
 
 #include <pcl/io/pcd_io.h>
-#include <pcl/visualization/pcl_visualizer.h>
 
-
+#include <pcl/apps/cloud_composer/commands.h>
 
 
 class QItemSelectionModel;
@@ -104,7 +103,7 @@ namespace pcl
         commandCompleted (CloudCommand* command);
       signals:  
         void
-        enqueueNewAction (AbstractTool* tool, QList <const CloudComposerItem*> data);
+        enqueueNewAction (AbstractTool* tool, ConstItemList data);
         
       private:
         QItemSelectionModel* selection_model_;
@@ -112,6 +111,7 @@ namespace pcl
         QMap <QString, int> name_to_type_map_;
         QUndoStack* undo_stack_;
         WorkQueue* work_queue_; 
+        QThread* work_thread_;
 
     };
   }

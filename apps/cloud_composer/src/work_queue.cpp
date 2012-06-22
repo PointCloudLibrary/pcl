@@ -19,7 +19,7 @@ pcl::cloud_composer::WorkQueue::~WorkQueue ( )
 }
 
 void
-pcl::cloud_composer::WorkQueue::enqueueNewAction (AbstractTool* new_tool, QList <const CloudComposerItem*> input_data)
+pcl::cloud_composer::WorkQueue::enqueueNewAction (AbstractTool* new_tool, ConstItemList input_data)
 {
   ActionPair new_action;
   //Create a command which will manage data for the tool

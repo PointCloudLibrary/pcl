@@ -42,8 +42,9 @@
 #include <QWidget>
 #include <QItemDelegate>
 
-#include <pcl/apps/cloud_composer/project_model.h>
+
 #include <pcl/apps/cloud_composer/cloud_composer_item.h>
+#include <pcl/visualization/pcl_visualizer.h>
 //Define user roles
 #ifndef CLOUD_USER_ROLES
 #define CLOUD_USER_ROLES
