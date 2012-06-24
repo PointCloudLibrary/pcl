@@ -51,14 +51,14 @@ pcl::pcl_2d::edge::sobelXY  (ImageType &Gx, ImageType &Gy, ImageType &input)
   kernelX[1][0] = -2; kernelX[1][1] = 0; kernelX[1][2] = 2;
   kernelX[2][0] = -1; kernelX[2][1] = 0; kernelX[2][2] = 1;
 
-  conv_2d->convolve  (Gx, kernelX, input);
+  conv_2d->convolve  (Gx, kernelX, input, pcl::pcl_2d::convolution_2d::BOUNDARY_OPTION_MIRROR);
 
   ImageType kernelY;
   kernelY.resize (3); kernelY[0].resize (3); kernelY[1].resize (3); kernelY[2].resize (3);
   kernelY[0][0] = 1; kernelY[0][1] = 2; kernelY[0][2] = 1;
   kernelY[1][0] = 0; kernelY[1][1] = 0; kernelY[1][2] = 0;
   kernelY[2][0] = -1; kernelY[2][1] = -2; kernelY[2][2] = -1;
-  conv_2d->convolve  (Gy, kernelY, input);
+  conv_2d->convolve  (Gy, kernelY, input, pcl::pcl_2d::convolution_2d::BOUNDARY_OPTION_MIRROR);
 }
 void
 pcl::pcl_2d::edge::sobelMagnitudeDirection  (ImageType &G, ImageType &thet, ImageType &input)

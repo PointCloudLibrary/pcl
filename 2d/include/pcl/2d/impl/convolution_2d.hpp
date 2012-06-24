@@ -161,7 +161,7 @@ pcl::pcl_2d::convolution_2d::convolve  (ImageType &output, ImageType &kernel, Im
             for (int l = 0; l < k_cols; l++)
             {
               if ((i + k - (k_rows / 2)) < 0)
-                input_row = -(i + k - (k_rows / 2));
+                input_row = -(i + k - (k_rows / 2))-1;
               else
                 if ((i + k - (k_rows / 2)) >= rows)
                 {
@@ -171,7 +171,7 @@ pcl::pcl_2d::convolution_2d::convolve  (ImageType &output, ImageType &kernel, Im
                   input_row = i + k - (k_rows / 2);
 
               if ((j + l - (k_cols / 2)) < 0)
-                input_col = -(j + l - (k_cols / 2));
+                input_col = -(j + l - (k_cols / 2))-1;
               else
                 if ((j + l - (k_cols / 2)) >= cols)
                   input_col = 2 * cols - 1 - (j + l - (k_cols / 2));

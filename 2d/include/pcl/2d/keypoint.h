@@ -58,8 +58,11 @@ namespace pcl
           edge_detection = new edge  ();
           conv_2d = new convolution_2d  ();
         }
-        void harris_corner  (ImageType &output, ImageType &input, const float sigma_d, const float sigma_i, const float alpha, const float thresh);
-        void image_element_multiply  (ImageType &output, ImageType &input1, ImageType &input2);
+        void harrisCorner  (ImageType &output, ImageType &input, const float sigma_d, const float sigma_i, const float alpha, const float thresh);
+        void hessianBlob  (ImageType &output, ImageType &input, const float sigma, bool SCALE);
+        void hessianBlob  (ImageType &output, ImageType &input, const float start_scale, const float scaling_factor, const int num_scales);
+
+        void imageElementMultiply  (ImageType &output, ImageType &input1, ImageType &input2);
     };
   }
 }
