@@ -482,10 +482,13 @@ pcl::visualization::PCLVisualizer::removeCoordinateSystem (int viewport)
     return (false);
 
   // Remove it from all renderers
-  removeActorFromRenderer (am_it->second, viewport);
-  // Remove the ID pair to the global actor map
-  coordinate_actor_map_.erase (am_it);
-  return (true);
+  if (removeActorFromRenderer (am_it->second, viewport))
+  {
+    // Remove the ID pair to the global actor map
+    coordinate_actor_map_.erase (am_it);
+    return (true);
+  }
+  return (false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -499,11 +502,13 @@ pcl::visualization::PCLVisualizer::removePointCloud (const std::string &id, int 
     return (false);
 
   // Remove it from all renderers
-  removeActorFromRenderer (am_it->second.actor, viewport);
-
-  // Remove the pointer/ID pair to the global actor map
-  cloud_actor_map_->erase (am_it);
-  return (true);
+  if (removeActorFromRenderer (am_it->second.actor, viewport))
+  {
+    // Remove the pointer/ID pair to the global actor map
+    cloud_actor_map_->erase (am_it);
+    return (true);
+  }
+  return (false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -529,15 +534,21 @@ pcl::visualization::PCLVisualizer::removeShape (const std::string &id, int viewp
   // Remove the pointer/ID pair to the global actor map
   if (shape)
   {
-    removeActorFromRenderer (am_it->second, viewport);
-    shape_actor_map_->erase (am_it);
+    if (removeActorFromRenderer (am_it->second, viewport))
+    {
+      shape_actor_map_->erase (am_it);
+      return (true);
+    }
   }
   else
   {
-    removeActorFromRenderer (ca_it->second.actor, viewport);
-    cloud_actor_map_->erase (ca_it);
+    if (removeActorFromRenderer (ca_it->second.actor, viewport))
+    {
+      cloud_actor_map_->erase (ca_it);
+      return (true);
+    }
   }
-  return (true);
+  return (false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -554,11 +565,13 @@ pcl::visualization::PCLVisualizer::removeText3D (const std::string &id, int view
   }
 
   // Remove it from all renderers
-  removeActorFromRenderer (am_it->second, viewport);
-
-  // Remove the pointer/ID pair to the global actor map
-  shape_actor_map_->erase (am_it);
-  return (true);
+  if (removeActorFromRenderer (am_it->second, viewport))
+  {
+    // Remove the pointer/ID pair to the global actor map
+    shape_actor_map_->erase (am_it);
+    return (true);
+  }
+  return (false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -569,8 +582,10 @@ pcl::visualization::PCLVisualizer::removeAllPointClouds (int viewport)
   CloudActorMap::iterator am_it = cloud_actor_map_->begin ();
   while (am_it != cloud_actor_map_->end () )
   {
-    removePointCloud (am_it->first, viewport);
-    am_it = cloud_actor_map_->begin ();
+    if (removePointCloud (am_it->first, viewport))
+      am_it = cloud_actor_map_->begin ();
+    else
+      ++am_it;
   }
   return (true);
 }
@@ -583,8 +598,10 @@ pcl::visualization::PCLVisualizer::removeAllShapes (int viewport)
   ShapeActorMap::iterator am_it = shape_actor_map_->begin ();
   while (am_it != shape_actor_map_->end ())
   {
-    removeShape (am_it->first, viewport);
-    am_it = shape_actor_map_->begin ();
+    if (removeShape (am_it->first, viewport))
+      am_it = shape_actor_map_->begin ();
+    else
+      ++am_it;
   }
   return (true);
 }
@@ -692,17 +709,19 @@ pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (const pcl::
   return (true);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-void
+//////////////////////////////////////////////////////////////////////////////////////////
+bool
 pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointer<vtkLODActor> &actor, int viewport)
 {
+  vtkLODActor* actor_to_remove = vtkLODActor::SafeDownCast (actor);
+  
   // Add it to all renderers
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
-  int i = 1;
+  int i = 0;
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
-    // Should we add the actor to all renderers?
+    // Should we remove the actor from all renderers?
     if (viewport == 0)
     {
       renderer->RemoveActor (actor);
@@ -710,11 +729,24 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
     }
     else if (viewport == i)               // add the actor only to the specified viewport
     {
-      renderer->RemoveActor (actor);
-      renderer->Render ();
+      // Iterate over all actors in this renderer
+      vtkPropCollection* actors = renderer->GetViewProps ();
+      actors->InitTraversal ();
+      vtkProp* current_actor = NULL;
+      while ((current_actor = actors->GetNextProp ()) != NULL)
+      {
+        if (current_actor != actor_to_remove)
+          continue;
+        renderer->RemoveActor (actor);
+        renderer->Render ();
+        // Found the correct viewport and removed the actor
+        return (true);
+      }
     }
     ++i;
   }
+  if (viewport == 0) return (true);
+  return (false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -724,7 +756,7 @@ pcl::visualization::PCLVisualizer::addActorToRenderer (const vtkSmartPointer<vtk
   // Add it to all renderers
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
-  int i = 1;
+  int i = 0;
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
     // Should we add the actor to all renderers?
@@ -743,16 +775,18 @@ pcl::visualization::PCLVisualizer::addActorToRenderer (const vtkSmartPointer<vtk
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-void
+bool
 pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointer<vtkProp> &actor, int viewport)
 {
-  // Add it to all renderers
+  vtkProp* actor_to_remove = vtkProp::SafeDownCast (actor);
+  
+  // Initialize traversal
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
-  int i = 1;
+  int i = 0;
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
-    // Should we add the actor to all renderers?
+    // Should we remove the actor from all renderers?
     if (viewport == 0)
     {
       renderer->RemoveActor (actor);
@@ -760,11 +794,24 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
     }
     else if (viewport == i)               // add the actor only to the specified viewport
     {
-      renderer->RemoveActor (actor);
-      renderer->Render ();
+      // Iterate over all actors in this renderer
+      vtkPropCollection* actors = renderer->GetViewProps ();
+      actors->InitTraversal ();
+      vtkProp* current_actor = NULL;
+      while ((current_actor = actors->GetNextProp ()) != NULL)
+      {
+        if (current_actor != actor_to_remove)
+          continue;
+        renderer->RemoveActor (actor);
+        renderer->Render ();
+        // Found the correct viewport and removed the actor
+        return (true);
+      }
     }
     ++i;
   }
+  if (viewport == 0) return (true);
+  return (false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -848,7 +895,7 @@ pcl::visualization::PCLVisualizer::setBackgroundColor (
 {
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
-  int i = 1;
+  int i = 0;
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
     // Should we add the actor to all renderers?
@@ -1861,7 +1908,7 @@ pcl::visualization::PCLVisualizer::createViewPort (double xmin, double ymin, dou
   if (rens_->GetNumberOfItems () <= 1)          // If only one renderer
     viewport = 0;                               // set viewport to 'all'
   else
-    viewport = rens_->GetNumberOfItems ();
+    viewport = rens_->GetNumberOfItems () - 1;
 
   win_->AddRenderer (ren);
   win_->Modified ();

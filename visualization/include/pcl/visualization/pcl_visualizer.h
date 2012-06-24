@@ -917,6 +917,10 @@ namespace pcl
           * \param[in] xmax the maximum X coordinate for the viewport (0.0 <= 1.0)
           * \param[in] ymax the maximum Y coordinate for the viewport (0.0 <= 1.0)
           * \param[in] viewport the id of the new viewport
+          *
+          * \note If no renderer for the current window exists, one will be created, and 
+          * the viewport will be set to 0 ('all'). In case one or multiple renderers do 
+          * exist, the viewport ID will be set to the total number of renderers - 1.
           */
         void
         createViewPort (double xmin, double ymin, double xmax, double ymax, int &viewport);
@@ -1471,7 +1475,7 @@ namespace pcl
           * \param[in] actor a pointer to the vtk actor object
           * \param[in] viewport the view port where the actor should be removed from (default: all)
           */
-        void
+        bool
         removeActorFromRenderer (const vtkSmartPointer<vtkLODActor> &actor,
                                  int viewport = 0);
 
@@ -1487,7 +1491,7 @@ namespace pcl
           * \param[in] actor a pointer to the vtk actor object
           * \param[in] viewport the view port where the actor should be added to (default: all)
           */
-        void
+        bool
         removeActorFromRenderer (const vtkSmartPointer<vtkProp> &actor,
                                  int viewport = 0);
 
