@@ -65,7 +65,7 @@ template <typename PointNT>
 pcl::GridProjection<PointNT>::~GridProjection ()
 {
   vector_at_data_point_.clear ();
-  surface_.clear ();;
+  surface_.clear ();
   cell_hash_map_.clear ();
   occupied_cell_list_.clear ();
   data_.reset ();
@@ -76,7 +76,11 @@ template <typename PointNT> void
 pcl::GridProjection<PointNT>::scaleInputDataPoint (double scale_factor)
 {
   for (size_t i = 0; i < data_->points.size(); ++i)
-    data_->points[i].getVector4fMap () /= static_cast<float> (scale_factor);
+  {
+    data_->points[i].x /= static_cast<float> (scale_factor);
+    data_->points[i].y /= static_cast<float> (scale_factor);
+    data_->points[i].z /= static_cast<float> (scale_factor);
+  }
   max_p_ /= static_cast<float> (scale_factor);
   min_p_ /= static_cast<float> (scale_factor);
 }
@@ -215,6 +219,7 @@ pcl::GridProjection<PointNT>::createSurfaceForCell (const Eigen::Vector3i &index
       end_pts[j] = pts[I_SHIFT_EDGE[i][j]];
       vect_at_end_pts[j] = vector_at_pts[I_SHIFT_EDGE[i][j]];
     }
+
     if (isIntersected (end_pts, vect_at_end_pts, pt_union_indices))
     {
       // Indices of cells that contains points which will be connected to
@@ -355,7 +360,8 @@ pcl::GridProjection<PointNT>::getVectorAtPoint (const Eigen::Vector4f &p,
 
   for (size_t i = 0; i < pt_union_indices.size (); ++i)
   {
-    pt_union_dist[i] = (data_->points[pt_union_indices[i]].getVector4fMap () - p).squaredNorm ();
+    Eigen::Vector4f pp (data_->points[pt_union_indices[i]].x, data_->points[pt_union_indices[i]].y, data_->points[pt_union_indices[i]].z, 0);
+    pt_union_dist[i] = (pp - p).squaredNorm ();
     pt_union_weight[i] = pow (M_E, -pow (pt_union_dist[i], 2.0) / gaussian_scale_);
     mag += pow (M_E, -pow (sqrt (pt_union_dist[i]), 2.0) / gaussian_scale_);
     sum += pt_union_weight[i];
@@ -431,7 +437,8 @@ pcl::GridProjection<PointNT>::getMagAtPoint (const Eigen::Vector4f &p,
   double sum = 0.0;
   for (size_t i = 0; i < pt_union_indices.size (); ++i)
   {
-    pt_union_dist[i] = (data_->points[pt_union_indices[i]].getVector4fMap () - p).norm ();
+    Eigen::Vector4f pp (data_->points[pt_union_indices[i]].x, data_->points[pt_union_indices[i]].y, data_->points[pt_union_indices[i]].z, 0);
+    pt_union_dist[i] = (pp - p).norm ();
     sum += pow (M_E, -pow (pt_union_dist[i], 2.0) / gaussian_scale_);
   }
   return (sum);
