@@ -505,15 +505,15 @@ pcl::nurbs::NurbsFitter<PointInT>::grow (float max_dist, float max_angle, unsign
     PointInT point = cloud_->at (this->boundary_indices_->indices[i]);
     for (unsigned j = min_length; j < max_length; j++)
     {
-      int col = ri (0) + bni (0) * j;
-      int row = ri (1) + bni (1) * j;
+      int col = static_cast<int> (ri (0) + bni (0) * j);
+      int row = static_cast<int> (ri (1) + bni (1) * j);
 
-      if (row >= (int)cloud_->height || row < 0)
+      if (row >= int (cloud_->height) || row < 0)
       {
         j = max_length;
         break;
       }
-      if (col >= (int)cloud_->width || col < 0)
+      if (col >= int (cloud_->width) || col < 0)
       {
         j = max_length;
         break;
