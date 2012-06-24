@@ -471,10 +471,8 @@ pcl::NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransforma
     //std::cout << "eps=" << fabs ((transformation - previous_transformation_).sum ()) << std::endl;
 
     if (nr_iterations_ > max_iterations_ ||
-       fabs ((transformation - previous_transformation_).sum ()) < transformation_epsilon_)
-    {
+       (transformation - previous_transformation_).array ().abs ().sum () < transformation_epsilon_)
       converged_ = true;
-    }
   }
   final_transformation_ = transformation;
   output = intm_cloud;

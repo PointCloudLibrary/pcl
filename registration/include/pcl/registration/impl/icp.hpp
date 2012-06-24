@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc
  *
  *  All rights reserved.
  *
@@ -190,17 +191,17 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
     //    setEuclideanFitnessEpsilon)
 
     if (nr_iterations_ >= max_iterations_ ||
-        fabs ((transformation_ - previous_transformation_).sum ()) < transformation_epsilon_ ||
+        (transformation_ - previous_transformation_).array ().abs ().sum () < transformation_epsilon_ ||
         fabs (this->getFitnessScore (correspondence_distances_, previous_correspondence_distances)) <= euclidean_fitness_epsilon_
        )
     {
       converged_ = true;
       PCL_DEBUG ("[pcl::%s::computeTransformation] Convergence reached. Number of iterations: %d out of %d. Transformation difference: %f\n",
-                 getClassName ().c_str (), nr_iterations_, max_iterations_, fabs ((transformation_ - previous_transformation_).sum ()));
+                 getClassName ().c_str (), nr_iterations_, max_iterations_, (transformation_ - previous_transformation_).array ().abs ().sum ());
 
       PCL_DEBUG ("nr_iterations_ (%d) >= max_iterations_ (%d)\n", nr_iterations_, max_iterations_);
-      PCL_DEBUG ("fabs ((transformation_ - previous_transformation_).sum ()) (%f) < transformation_epsilon_ (%f)\n",
-                 fabs ((transformation_ - previous_transformation_).sum ()), transformation_epsilon_);
+      PCL_DEBUG ("(transformation_ - previous_transformation_).array ().abs ().sum () (%f) < transformation_epsilon_ (%f)\n",
+                 (transformation_ - previous_transformation_).array ().abs ().sum (), transformation_epsilon_);
       PCL_DEBUG ("fabs (getFitnessScore (correspondence_distances_, previous_correspondence_distances)) (%f) <= euclidean_fitness_epsilon_ (%f)\n",
                  fabs (this->getFitnessScore (correspondence_distances_, previous_correspondence_distances)),
                  euclidean_fitness_epsilon_);
