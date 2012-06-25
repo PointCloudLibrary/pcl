@@ -108,7 +108,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, OctreeT>::addPointToCloud (const Po
 {
   assert (cloud_arg==input_);
 
-  cloud_arg->points.push_back (point_arg);
+  cloud_arg->push_back (point_arg);
 
   this->addPointIdx (static_cast<const int> (cloud_arg->points.size ()) - 1);
 }
