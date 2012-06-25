@@ -47,6 +47,7 @@
 #include <vtkMapper2D.h>
 #include <vtkLeaderActor2D.h>
 #include <pcl/common/time.h>
+#include <vtkAlgorithmOutput.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
@@ -451,11 +452,23 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
     return (false);
   }
 
-  vtkSmartPointer<vtkDataSet> data = createSphere (center.getVector4fMap (), radius);
+  //vtkSmartPointer<vtkDataSet> data = createSphere (center.getVector4fMap (), radius);
+  vtkSmartPointer<vtkSphereSource> data = vtkSmartPointer<vtkSphereSource>::New ();
+  data->SetRadius (radius);
+  data->SetCenter (double (center.x), double (center.y), double (center.z));
+  data->SetPhiResolution (10);
+  data->SetThetaResolution (10);
+  data->LatLongTessellationOff ();
+  data->Update ();
+ 
+  // Setup actor and mapper 
+  vtkSmartPointer <vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
+  mapper->SetInputConnection (data->GetOutputPort ());
 
   // Create an Actor
-  vtkSmartPointer<vtkLODActor> actor;
-  createActorFromVTKDataSet (data, actor);
+  vtkSmartPointer<vtkLODActor> actor = vtkSmartPointer<vtkLODActor>::New ();
+  actor->SetMapper (mapper);
+  //createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToWireframe ();
   actor->GetProperty ()->SetInterpolationToGouraud ();
   actor->GetMapper ()->ScalarVisibilityOff ();
@@ -474,7 +487,31 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
   return (addSphere (center, radius, 0.5, 0.5, 0.5, id, viewport));
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT> bool
+pcl::visualization::PCLVisualizer::updateSphere (const PointT &center, double radius, double r, double g, double b, const std::string &id)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (am_it == shape_actor_map_->end ())
+    return (false);
+
+  //////////////////////////////////////////////////////////////////////////
+  // Get the actor pointer
+  vtkLODActor* actor = vtkLODActor::SafeDownCast (am_it->second);
+  vtkAlgorithm *algo = actor->GetMapper ()->GetInput ()->GetProducerPort ()->GetProducer ();
+  vtkSphereSource *src = vtkSphereSource::SafeDownCast (algo);
+
+  src->SetCenter (double (center.x), double (center.y), double (center.z));
+  src->SetRadius (radius);
+  src->Update ();
+  actor->GetProperty ()->SetColor (r, g, b);
+  actor->Modified ();
+
+  return (true);
+}
+
+//////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addText3D (
     const std::string &text,

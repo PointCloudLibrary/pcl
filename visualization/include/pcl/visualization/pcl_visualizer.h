@@ -1061,7 +1061,19 @@ namespace pcl
         addSphere (const PointT &center, double radius, double r, double g, double b,
                    const std::string &id = "sphere", int viewport = 0);
 
-        /** \brief Add a vtkPolydata as a mesh
+        /** \brief Update an existing sphere shape from a point and a radius
+          * \param[in] center the center of the sphere
+          * \param[in] radius the radius of the sphere
+          * \param[in] r the red channel of the color that the sphere should be rendered with
+          * \param[in] g the green channel of the color that the sphere should be rendered with
+          * \param[in] b the blue channel of the color that the sphere should be rendered with
+          * \param[in] id the sphere id/name (default: "sphere")
+          */
+        template <typename PointT> bool
+        updateSphere (const PointT &center, double radius, double r, double g, double b,
+                      const std::string &id = "sphere");
+
+         /** \brief Add a vtkPolydata as a mesh
           * \param[in] polydata vtkPolyData
           * \param[in] id the model id/name (default: "PolyData")
           * \param[in] viewport (optional) the id of the new viewport (default: 0)
