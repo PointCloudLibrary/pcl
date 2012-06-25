@@ -15,10 +15,12 @@ if(build)
         include/pcl/${SUBSYS_NAME}/correspondence_rejection.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_distance.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_median_distance.h
+        include/pcl/${SUBSYS_NAME}/correspondence_rejection_surface_normal.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_features.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_one_to_one.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_sample_consensus.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_trimmed.h
+        include/pcl/${SUBSYS_NAME}/correspondence_rejection_var_trimmed.h
         include/pcl/${SUBSYS_NAME}/correspondence_sorting.h
         include/pcl/${SUBSYS_NAME}/correspondence_types.h
         include/pcl/${SUBSYS_NAME}/ia_ransac.h
@@ -56,10 +58,12 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation_normal_shooting.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_distance.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_median_distance.hpp
+        include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_surface_normal.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_features.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_one_to_one.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_sample_consensus.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_trimmed.hpp
+        include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_var_trimmed.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_types.hpp
         include/pcl/${SUBSYS_NAME}/impl/ia_ransac.hpp
         include/pcl/${SUBSYS_NAME}/impl/icp.hpp
@@ -83,11 +87,14 @@ if(build)
         src/correspondence_estimation.cpp
         src/correspondence_estimation_normal_shooting.cpp
         src/correspondence_rejection_distance.cpp
+        src/correspondence_rejection_median_distance.cpp
+        src/correspondence_rejection_surface_normal.cpp
         src/correspondence_rejection_features.cpp
         src/correspondence_rejection_one_to_one.cpp
         src/correspondence_types.cpp
         src/correspondence_rejection_sample_consensus.cpp
         src/correspondence_rejection_trimmed.cpp
+        src/correspondence_rejection_var_trimmed.cpp
         src/ppf_registration.cpp
         src/pyramid_feature_matching.cpp
 #src/pairwise_graph_registration.cpp
