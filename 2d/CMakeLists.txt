@@ -16,7 +16,7 @@ if(build)
     set(incs
         include/pcl/${SUBSYS_NAME}/convolution_2d.h
         include/pcl/${SUBSYS_NAME}/edge.h
-         include/pcl/${SUBSYS_NAME}/morphology.h
+        include/pcl/${SUBSYS_NAME}/morphology.h
         )
 
     set(impl_incs
@@ -34,10 +34,10 @@ if(build)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${VTK_INCLUDE_DIRECTORIES})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
     link_directories(${VTK_LINK_DIRECTORIES})
-    target_link_libraries(${LIB_NAME} ${VTK_IO_TARGET_LINK_LIBRARIES} pcl_io pcl_features pcl_search pcl_kdtree pcl_octree pcl_visualization pcl_geometry) 
+    target_link_libraries(${LIB_NAME} ${VTK_IO_TARGET_LINK_LIBRARIES} pcl_io pcl_features pcl_search pcl_kdtree pcl_octree pcl_visualization) 
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
 
-	# Install include files
+  # Install include files
   #  PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
   #  PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
   #  add_executable(test_2d test/test_convolution.cpp)
