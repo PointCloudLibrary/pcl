@@ -10,17 +10,6 @@ PCL_SET_SUBSYS_INCLUDE_DIR(${SUBSYS_NAME} ${SUBSYS_PATH})
 mark_as_advanced("BUILD_${SUBSYS_NAME}")
 
 if (build)
-	find_package(OpenCV QUIET)
-	#set(OpenCV_FOUND 0)
-
-
-	if(OpenCV_FOUND)
-		add_definitions(-DHAVE_OPENCV)	
-		include_directories(${OpenCV_INCLUDE_DIRS})
-	else()
-		remove_definitions(-DHAVE_OPENCV)
-	endif()
-
 	FILE(GLOB incs include/pcl/gpu/kinfu_large_scale/*.h*)
 	FILE(GLOB srcs src/*.cpp src/*.h*)
 	FILE(GLOB cuda src/cuda/*.cu src/cuda/*.h*)
@@ -66,10 +55,6 @@ if (build)
 	PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${cuda} ${cuda_objs})
 	target_link_libraries(${LIB_NAME} pcl_common pcl_gpu_utils pcl_gpu_containers pcl_gpu_octree pcl_octree pcl_filters)
 			
-	if(OpenCV_FOUND)
-		target_link_libraries(${LIB_NAME} ${OpenCV_LIBS})
-	endif()
-	 
 	set(EXT_DEPS "")
 	#set(EXT_DEPS CUDA)
 	PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")

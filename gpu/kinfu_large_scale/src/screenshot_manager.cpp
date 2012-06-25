@@ -14,6 +14,7 @@ namespace pcl
        screenshot_counter = 0;
      }
 
+#ifdef HAVE_OPENCV
      void
      ScreenshotManager::saveImage(Eigen::Affine3f camPose, PtrStepSz<const PixelRGB> rgb24)
      {
@@ -46,6 +47,7 @@ namespace pcl
         cvReleaseImage(&image); 
 
      }
+#endif
 
      void 
      ScreenshotManager::writePose(Eigen::Vector3f teVecs, Eigen::Matrix<float, 3, 3, Eigen::RowMajor> erreMats, std::string filename_pose)

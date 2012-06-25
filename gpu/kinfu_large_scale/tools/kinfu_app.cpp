@@ -699,7 +699,9 @@ struct KinFuApp
       
     if ( (frame_counter_  % 45) == 0 )
     {
+#ifdef HAVE_OPENCV
       screenshot_manager_.saveImage (kinfu_.getCameraPose(), rgb24); // RESTORE THIS LINE FOR SCREENSHOTS
+#endif
     }
         
           
