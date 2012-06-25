@@ -1394,6 +1394,29 @@ pcl::visualization::PCLVisualizer::updateCamera ()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::updateShapePose (const std::string &id, const Eigen::Affine3f& pose)
+{
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+
+  vtkLODActor* actor;
+
+  if (am_it == shape_actor_map_->end ())
+    return (false);
+  else 
+    actor = vtkLODActor::SafeDownCast (am_it->second);
+
+  vtkSmartPointer<vtkMatrix4x4> matrix = vtkSmartPointer<vtkMatrix4x4>::New ();
+  
+  convertToVtkMatrix (pose.matrix (), matrix);
+
+  actor->SetUserMatrix (matrix);
+  actor->Modified ();
+
+  return (true);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizer::getCameras (std::vector<pcl::visualization::Camera>& cameras)
 {

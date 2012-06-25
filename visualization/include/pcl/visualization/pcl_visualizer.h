@@ -413,6 +413,18 @@ namespace pcl
                     int xpos, int ypos, int fontsize, double r, double g, double b,
                     const std::string &id = "");
 
+        /** \brief Set the pose of an existing shape. 
+          * 
+          * Returns false if the shape doesn't exist, true if the pose was succesfully 
+          * updated.
+          *
+          * \param[in] id the shape or cloud object id (i.e., given on \a addLine etc.)
+          * \param[in] pose the new pose
+          * \return false if no shape or cloud with the specified ID was found
+          */
+        bool
+        updateShapePose (const std::string &id, const Eigen::Affine3f& pose);
+
         /** \brief Add a 3d text to the scene
           * \param[in] text the text to add
           * \param[in] position the world position where the text should be added
