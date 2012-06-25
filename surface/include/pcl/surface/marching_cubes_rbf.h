@@ -95,8 +95,8 @@ namespace pcl
 
     protected:
       /** \brief the Radial Basis Function kernel. */
-      float
-      kernel (Eigen::Vector3f c, Eigen::Vector3f x);
+      double
+      kernel (Eigen::Vector3d c, Eigen::Vector3d x);
 
       /** \brief The off-surface displacement value. */
       float off_surface_epsilon_;

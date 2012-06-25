@@ -62,7 +62,7 @@ template <typename PointNT> void
 pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
 {
   // Initialize data structures
-  unsigned int N = input_->size ();
+  unsigned int N = static_cast<unsigned int> (input_->size ());
   Eigen::MatrixXd M (2*N, 2*N),
                   d (2*N, 1);
 
@@ -75,8 +75,8 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
     {
       // boolean variable to determine whether we are in the off_surface domain for the columns
       bool col_off = (col_i >= N) ? 1 : 0;
-      M (row_i, col_i) = kernel (input_->points[col_i%N].getVector3fMap () + input_->points[col_i%N].getNormalVector3fMap () * col_off * off_surface_epsilon_,
-                                 input_->points[row_i%N].getVector3fMap () + input_->points[row_i%N].getNormalVector3fMap () * row_off * off_surface_epsilon_);
+      M (row_i, col_i) = kernel (Eigen::Vector3f (input_->points[col_i%N].getVector3fMap ()).cast<double> () + Eigen::Vector3f (input_->points[col_i%N].getNormalVector3fMap ()).cast<double> () * col_off * off_surface_epsilon_,
+                                 Eigen::Vector3f (input_->points[row_i%N].getVector3fMap ()).cast<double> () + Eigen::Vector3f (input_->points[row_i%N].getNormalVector3fMap ()).cast<double> () * row_off * off_surface_epsilon_);
     }
 
     d (row_i, 0) = row_off * off_surface_epsilon_;
@@ -88,12 +88,12 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
   // Solve_linear_system (M, d, w);
   w = M.fullPivLu ().solve (d);
 
-  std::vector<float> weights (2*N);
-  std::vector<Eigen::Vector3f> centers (2*N);
+  std::vector<double> weights (2*N);
+  std::vector<Eigen::Vector3d> centers (2*N);
   for (unsigned int i = 0; i < N; ++i)
   {
-    centers[i] = input_->points[i].getVector3fMap ();
-    centers[i + N] = input_->points[i].getVector3fMap () + input_->points[i].getNormalVector3fMap () * off_surface_epsilon_;
+    centers[i] = Eigen::Vector3f (input_->points[i].getVector3fMap ()).cast<double> ();
+    centers[i + N] = Eigen::Vector3f (input_->points[i].getVector3fMap ()).cast<double> () + Eigen::Vector3f (input_->points[i].getNormalVector3fMap ()).cast<double> () * off_surface_epsilon_;
     weights[i] = w (i, 0);
     weights[i + N] = w (i + N, 0);
 
@@ -107,14 +107,14 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
     for (int y = 0; y < res_y_; ++y)
       for (int z = 0; z < res_z_; ++z)
       {
-        Eigen::Vector3f point;
+        Eigen::Vector3d point;
         point[0] = min_p_[0] + (max_p_[0] - min_p_[0]) * x / res_x_;
         point[1] = min_p_[1] + (max_p_[1] - min_p_[1]) * y / res_y_;
         point[2] = min_p_[2] + (max_p_[2] - min_p_[2]) * z / res_z_;
 
-        float f = 0.0f;
-        std::vector<float>::const_iterator w_it (weights.begin());
-        for (std::vector<Eigen::Vector3f>::const_iterator c_it = centers.begin ();
+        double f = 0.0f;
+        std::vector<double>::const_iterator w_it (weights.begin());
+        for (std::vector<Eigen::Vector3d>::const_iterator c_it = centers.begin ();
              c_it != centers.end (); ++c_it, ++w_it)
           f += *w_it * kernel (*c_it, point);
 
@@ -123,10 +123,10 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointNT> float
-pcl::MarchingCubesRBF<PointNT>::kernel (Eigen::Vector3f c, Eigen::Vector3f x)
+template <typename PointNT> double
+pcl::MarchingCubesRBF<PointNT>::kernel (Eigen::Vector3d c, Eigen::Vector3d x)
 {
-  float r = (x - c).norm();
+  double r = (x - c).norm();
   return r*r*r;
 }
 
