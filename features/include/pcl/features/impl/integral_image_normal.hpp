@@ -945,8 +945,6 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
 
   if (border_policy_ == BORDER_POLICY_IGNORE)
   {
-    std::cerr << "BORDER_POLICY_IGNORE" << std::endl;
-    
     // Set all normals that we do not touch to NaN
     // top and bottom borders
     // That sets the output density to false!
@@ -1048,8 +1046,6 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
   }
   else if (border_policy_ == BORDER_POLICY_MIRROR)
   {
-    std::cerr << "BORDER_POLICY_MIRROR" << std::endl;
-
     output.is_dense = false;
 
     if (use_depth_dependent_smoothing_)
