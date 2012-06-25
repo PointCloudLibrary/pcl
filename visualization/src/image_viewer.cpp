@@ -391,8 +391,9 @@ pcl::visualization::ImageViewer::registerKeyboardCallback (
 void 
 pcl::visualization::ImageViewer::emitMouseEvent (unsigned long event_id)
 {
-  int x,y;
-  interactor_->GetMousePosition (&x, &y);
+  //interactor_->GetMousePosition (&x, &y);
+  int x = this->interactor_->GetEventPosition()[0];
+  int y = this->interactor_->GetEventPosition()[1];
   MouseEvent event (MouseEvent::MouseMove, MouseEvent::NoButton, x, y, 
                     interactor_->GetAltKey (), interactor_->GetControlKey (), interactor_->GetShiftKey ());
   bool repeat = false;
