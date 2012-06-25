@@ -86,18 +86,19 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
   Eigen::MatrixXd w (2*N, 1);
 
   // Solve_linear_system (M, d, w);
-  w = M.fullPivHouseholderQr ().solve (d);
+  w = M.fullPivLu ().solve (d);
 
-  std::vector<float> weights_;
-  std::vector<Eigen::Vector3f> centers_;
-  weights_.resize (2*N);
-  centers_.resize (2*N);
+  std::vector<float> weights (2*N);
+  std::vector<Eigen::Vector3f> centers (2*N);
   for (unsigned int i = 0; i < N; ++i)
   {
-    centers_[i] = input_->points[i].getVector3fMap ();
-    centers_[i + N] = input_->points[i].getVector3fMap () + input_->points[i].getNormalVector3fMap () * off_surface_epsilon_;
-    weights_[i] = w (i, 0);
-    weights_[i + N] = w (i + N, 0);
+    centers[i] = input_->points[i].getVector3fMap ();
+    centers[i + N] = input_->points[i].getVector3fMap () + input_->points[i].getNormalVector3fMap () * off_surface_epsilon_;
+    weights[i] = w (i, 0);
+    weights[i + N] = w (i + N, 0);
+
+    printf ("centers %d %f %f %f weights %f    %f %f %f   %f\n", i, centers[i][0], centers[i][1], centers[i][2], weights[i],
+                                                                    centers[i+N][0], centers[i+N][1], centers[i+N][2], weights[i+N]);
   }
 
 
@@ -112,9 +113,9 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
         point[2] = min_p_[2] + (max_p_[2] - min_p_[2]) * z / res_z_;
 
         float f = 0.0f;
-        std::vector<float>::const_iterator w_it (weights_.begin());
-        for (std::vector<Eigen::Vector3f>::const_iterator c_it = centers_.begin ();
-             c_it != centers_.end (); ++c_it, ++w_it)
+        std::vector<float>::const_iterator w_it (weights.begin());
+        for (std::vector<Eigen::Vector3f>::const_iterator c_it = centers.begin ();
+             c_it != centers.end (); ++c_it, ++w_it)
           f += *w_it * kernel (*c_it, point);
 
         grid_[x * res_y_*res_z_ + y * res_z_ + z] = f;
