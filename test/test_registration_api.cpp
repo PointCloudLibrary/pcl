@@ -43,12 +43,16 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/registration/correspondence_estimation.h>
 #include <pcl/registration/correspondence_rejection_distance.h>
+#include <pcl/registration/correspondence_rejection_median_distance.h>
+#include <pcl/registration/correspondence_rejection_surface_normal.h>
 #include <pcl/registration/correspondence_rejection.h>
 #include <pcl/registration/correspondence_rejection_one_to_one.h>
 #include <pcl/registration/correspondence_rejection_sample_consensus.h>
 #include <pcl/registration/correspondence_rejection_trimmed.h>
+#include <pcl/registration/correspondence_rejection_var_trimmed.h>
 #include <pcl/registration/transformation_estimation_lm.h>
 #include <pcl/registration/transformation_estimation_svd.h>
+#include <pcl/features/normal_3d.h>
 
 #include "test_registration_api_data.h"
 
@@ -186,6 +190,55 @@ TEST (PCL, CorrespondenceRejectorSampleConsensus)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, CorrespondenceRejectorSurfaceNormal)
+{
+  pcl::PointCloud<pcl::PointXYZ>::Ptr source (new pcl::PointCloud<pcl::PointXYZ>(cloud_source));
+  pcl::PointCloud<pcl::PointXYZ>::Ptr target (new pcl::PointCloud<pcl::PointXYZ>(cloud_target));
+
+  // re-do correspondence estimation
+  boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
+  pcl::registration::CorrespondenceEstimation<pcl::PointXYZ, pcl::PointXYZ> corr_est;
+  corr_est.setInputCloud (source);
+  corr_est.setInputTarget (target);
+  corr_est.determineCorrespondences (*correspondences);
+
+
+  pcl::PointCloud<pcl::PointNormal>::Ptr source_normals(new pcl::PointCloud<pcl::PointNormal>);
+  pcl::copyPointCloud(*source, *source_normals);
+  pcl::PointCloud<pcl::PointNormal>::Ptr target_normals(new pcl::PointCloud<pcl::PointNormal>);
+  pcl::copyPointCloud(*target, *target_normals);
+
+  pcl::NormalEstimation<pcl::PointNormal, pcl::PointNormal> norm_est_src;
+  norm_est_src.setSearchMethod (pcl::search::KdTree<pcl::PointNormal>::Ptr (new pcl::search::KdTree<pcl::PointNormal>));
+  norm_est_src.setKSearch (10);
+  norm_est_src.setInputCloud (source_normals);
+  norm_est_src.compute (*source_normals);
+
+  pcl::NormalEstimation<pcl::PointNormal, pcl::PointNormal> norm_est_tgt;
+  norm_est_tgt.setSearchMethod (pcl::search::KdTree<pcl::PointNormal>::Ptr (new pcl::search::KdTree<pcl::PointNormal>));
+  norm_est_tgt.setKSearch (10);
+  norm_est_tgt.setInputCloud (target_normals);
+  norm_est_tgt.compute (*target_normals);
+
+  pcl::registration::CorrespondenceRejectorSurfaceNormal  corr_rej_surf_norm;
+  corr_rej_surf_norm.initializeDataContainer <pcl::PointXYZ, pcl::PointNormal> ();
+  corr_rej_surf_norm.setInputCloud <pcl::PointXYZ> (source);
+  corr_rej_surf_norm.setInputTarget <pcl::PointXYZ> (target);
+  corr_rej_surf_norm.setInputNormals <pcl::PointXYZ, pcl::PointNormal> (source_normals);
+  corr_rej_surf_norm.setTargetNormals <pcl::PointXYZ, pcl::PointNormal> (target_normals);
+
+  boost::shared_ptr<pcl::Correspondences>  correspondences_result_rej_surf_norm (new pcl::Correspondences);
+  corr_rej_surf_norm.setInputCorrespondences (correspondences);
+  corr_rej_surf_norm.setThreshold (0.5);
+
+  corr_rej_surf_norm.getCorrespondences (*correspondences_result_rej_surf_norm);
+
+  // check for correct matches
+  if (int (correspondences_result_rej_surf_norm->size ()) == nr_correspondences_result_rej_dist)
+    for (int i = 0; i < nr_correspondences_result_rej_dist; ++i)
+      EXPECT_EQ ((*correspondences_result_rej_surf_norm)[i].index_match, correspondences_dist[i][1]);
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, CorrespondenceRejectorTrimmed)
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr source (new pcl::PointCloud<pcl::PointXYZ>(cloud_source));
@@ -213,6 +266,33 @@ TEST (PCL, CorrespondenceRejectorTrimmed)
     for (int i = 0; i < nr_correspondences_result_rej_trimmed; ++i)
       EXPECT_EQ ((*correspondences_result_rej_trimmed)[i].index_match, correspondences_trimmed[i][1]);
   }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, CorrespondenceRejectorVarTrimmed)
+{
+  pcl::PointCloud<pcl::PointXYZ>::Ptr source (new pcl::PointCloud<pcl::PointXYZ>(cloud_source));
+  pcl::PointCloud<pcl::PointXYZ>::Ptr target (new pcl::PointCloud<pcl::PointXYZ>(cloud_target));
+
+  // re-do correspondence estimation
+  boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
+  pcl::registration::CorrespondenceEstimation<pcl::PointXYZ, pcl::PointXYZ> corr_est;
+  corr_est.setInputCloud (source);
+  corr_est.setInputTarget (target);
+  corr_est.determineCorrespondences (*correspondences);
+
+  boost::shared_ptr<pcl::Correspondences>  correspondences_result_rej_var_trimmed_dist (new pcl::Correspondences);
+  pcl::registration::CorrespondenceRejectorVarTrimmed corr_rej_var_trimmed_dist;
+  corr_rej_var_trimmed_dist.setInputCloud<pcl::PointXYZ> (source);
+  corr_rej_var_trimmed_dist.setInputTarget<pcl::PointXYZ> (target);
+  corr_rej_var_trimmed_dist.setInputCorrespondences(correspondences);
+
+  corr_rej_var_trimmed_dist.getCorrespondences(*correspondences_result_rej_var_trimmed_dist);
+
+  // check for correct matches
+  if (int (correspondences_result_rej_var_trimmed_dist->size ()) == nr_correspondences_result_rej_dist)
+    for (int i = 0; i < nr_correspondences_result_rej_dist; ++i)
+      EXPECT_EQ ((*correspondences_result_rej_var_trimmed_dist)[i].index_match, correspondences_dist[i][1]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
