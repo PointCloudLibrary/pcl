@@ -220,10 +220,10 @@ TEST (PCL, MovingLeastSquares)
   EXPECT_NEAR (mls_normals->points[10].x, -0.075887, 2e-3);
   EXPECT_NEAR (mls_normals->points[10].y, 0.030984, 2e-3);
   EXPECT_NEAR (mls_normals->points[10].z, 0.020856, 2e-3);
-  EXPECT_NEAR (fabs (mls_normals->points[10].normal[0]), 0.850562, 1e-3);
-  EXPECT_NEAR (fabs (mls_normals->points[10].normal[1]), 0.303248, 1e-3);
-  EXPECT_NEAR (fabs (mls_normals->points[10].normal[2]), 0.429634, 1e-3);
-  EXPECT_NEAR (mls_normals->points[10].curvature, 0.107273, 1e-3);
+  EXPECT_NEAR (fabs (mls_normals->points[10].normal[0]), 0.850562, 2e-3);
+  EXPECT_NEAR (fabs (mls_normals->points[10].normal[1]), 0.303248, 2e-3);
+  EXPECT_NEAR (fabs (mls_normals->points[10].normal[2]), 0.429634, 2e-3);
+  EXPECT_NEAR (mls_normals->points[10].curvature, 0.107273, 2e-3);
   EXPECT_EQ (mls_normals->size (), 26266);
 }
 
