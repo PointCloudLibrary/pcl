@@ -2022,6 +2022,87 @@ pcl::visualization::PCLVisualizer::addText (const std::string &text, int xpos, i
   return (true);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::updateText (const std::string &text, int xpos, int ypos, const std::string &id)
+{
+	std::string tid;
+	if (id.empty ())
+    tid = text;
+	else
+    tid = id;
+
+	// Check to see if this ID entry already exists (has it been already added to the visualizer?)
+	ShapeActorMap::iterator am_it = shape_actor_map_->find (tid);
+	if (am_it == shape_actor_map_->end ())
+    return (false);
+
+	// Retrieve the Actor
+	vtkTextActor* actor = vtkTextActor::SafeDownCast (am_it->second); 
+	actor->SetPosition (xpos, ypos);
+	actor->SetInput (text.c_str ());
+
+	actor->Modified ();
+
+	return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::updateText (const std::string &text, int xpos, int ypos, double r, double g, double b, const std::string &id)
+{
+	std::string tid;
+	if (id.empty ())
+    tid = text;
+	else
+    tid = id;
+
+	// Check to see if this ID entry already exists (has it been already added to the visualizer?)
+	ShapeActorMap::iterator am_it = shape_actor_map_->find (tid);
+	if (am_it == shape_actor_map_->end ())
+    return (false);
+
+	// Create the Actor
+	vtkTextActor* actor = vtkTextActor::SafeDownCast (am_it->second); 
+	actor->SetPosition (xpos, ypos);
+	actor->SetInput (text.c_str ());
+
+	vtkSmartPointer<vtkTextProperty> tprop = actor->GetTextProperty ();
+	tprop->SetColor (r, g, b);
+	actor->Modified ();
+
+	return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::updateText (const std::string &text, int xpos, int ypos, int fontsize, double r, double g, double b, const std::string &id)
+{
+	std::string tid;
+	if (id.empty ())
+    tid = text;
+	else
+    tid = id;
+
+	// Check to see if this ID entry already exists (has it been already added to the visualizer?)
+	ShapeActorMap::iterator am_it = shape_actor_map_->find (tid);
+	if (am_it == shape_actor_map_->end ())
+    return (false);
+
+	// Retrieve the Actor
+	vtkTextActor *actor = vtkTextActor::SafeDownCast (am_it->second);
+	
+	actor->SetPosition (xpos, ypos);
+	actor->SetInput (text.c_str ());
+
+	vtkTextProperty* tprop = actor->GetTextProperty ();
+	tprop->SetFontSize (fontsize);
+	tprop->SetColor (r, g, b);
+
+	actor->Modified ();
+
+	return (true);
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
