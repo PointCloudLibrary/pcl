@@ -39,7 +39,8 @@
 
 #include <pcl/recognition/ransac_based/model_library.h>
 #include <pcl/recognition/ransac_based/obj_rec_ransac.h>
-#include <pcl/recognition/impl/ransac_based/voxel_structure.hpp>
+#include <pcl/recognition/ransac_based/voxel_structure.h>
+#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 #include <pcl/console/print.h>
 #include <cmath>
@@ -55,15 +56,15 @@ using namespace recognition;
 ModelLibrary::ModelLibrary (double pair_width)
 : pair_width_ (pair_width), pair_width_eps_ (0.1*pair_width)
 {
-  num_of_bins_[0] = 60;
-  num_of_bins_[1] = 60;
-  num_of_bins_[2] = 60;
+  num_of_cells_[0] = 60;
+  num_of_cells_[1] = 60;
+  num_of_cells_[2] = 60;
 
   // Compute the bounds of the hash table
   double eps = 0.000001; // To be sure that an angle of 0 or PI will not be excluded because it lies on the boundary of the voxel structure
   double bounds[6] = {-eps, M_PI+eps, -eps, M_PI+eps, -eps, M_PI+eps};
 
-  hash_table_.build (bounds, num_of_bins_);
+  hash_table_.build (bounds, num_of_cells_);
 }
 
 //============================================================================================================================================
@@ -78,13 +79,13 @@ ModelLibrary::clear ()
 
   // Clear the hash table
   HashTableCell* cells = hash_table_.getVoxels();
-  int num_bins = num_of_bins_[0]*num_of_bins_[1]*num_of_bins_[2];
+  int num_bins = num_of_cells_[0]*num_of_cells_[1]*num_of_cells_[2];
 
   // Clear each cell entry
   for ( int i = 0 ; i < num_bins ; ++i )
     cells[i].clear();
 
-  num_of_bins_[0] = num_of_bins_[1] = num_of_bins_[2] = 0;
+  num_of_cells_[0] = num_of_cells_[1] = num_of_cells_[2] = 0;
 }
 
 //============================================================================================================================================
@@ -93,17 +94,17 @@ bool
 ModelLibrary::addModel (PointCloudInConstPtr points, PointCloudNConstPtr normals, const std::string& object_name)
 {
   // Try to insert a new model entry
-  pair<map<string,Model*>::iterator, bool> result = models_.insert(pair<string,Model*>(object_name, static_cast<Model*> (NULL)));
+  pair<map<string,Model*>::iterator, bool> result = models_.insert (pair<string,Model*> (object_name, static_cast<Model*> (NULL)));
 
   // Check if 'object_name' is unique
-  if ( !result.second )
+  if (!result.second)
   {
     print_error ("'%s' already exists in the model library.\n", object_name.c_str ());
     return (false);
   }
 
   // It is unique -> create a new library model
-  Model* new_model = new Model(points, normals, object_name);
+  Model* new_model = new Model (points, normals, object_name);
   result.first->second = new_model;
 
   vector<std::pair<int,int> > point_pairs;
@@ -111,11 +112,11 @@ ModelLibrary::addModel (PointCloudInConstPtr points, PointCloudNConstPtr normals
   vector<float> sqr_dist;
 
   KdTreeFLANN<Eigen::Vector3d> kd_tree;
-  kd_tree.setInputCloud(points);
+  kd_tree.setInputCloud (points);
 
   // The two radii
   double min_sqr_radius = pair_width_ - pair_width_eps_, max_radius = pair_width_ + pair_width_eps_;
-  int i, k, num_found_points, num_model_points = static_cast<int> (points.get()->points.size());
+  int i, k, num_found_points, num_model_points = static_cast<int> (points.get ()->points.size ());
 
   min_sqr_radius *= min_sqr_radius;
 

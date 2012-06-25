@@ -66,14 +66,81 @@ namespace pcl
       getVoxel (const double p[3]);
 
       /** \brief Returns the linear voxel array. */
+      const inline T*
+      getVoxels () const
+      {
+        return voxels_;
+      }
+
+      /** \brief Returns the linear voxel array. */
       inline T*
-      getVoxels (){ return voxels_;}
+      getVoxels ()
+      {
+        return voxels_;
+      }
+
+      /** \brief Converts a linear id to a 3D id, i.e., computes the integer 3D coordinates of a voxel from its position in the voxel array.
+        *
+        * \param[in]  linear_id the position of the voxel in the internal voxel array.
+        * \param[out] id3d an array of 3 integers for the integer coordinates of the voxel. */
+      void
+      compute3dId (int linear_id, int id3d[3]) const
+      {
+        // Compute the z axis id
+        id3d[2] = linear_id / num_of_voxels_xy_plane_;
+        int proj_xy = linear_id % num_of_voxels_xy_plane_;
+        // Compute the y axis id
+        id3d[1] = proj_xy / num_of_voxels_[0];
+        // Compute the x axis id
+        id3d[0] = proj_xy % num_of_voxels_[0];
+      }
+
+      /** \brief Returns the number of voxels in x, y and z direction. */
+      const int*
+      getNumberOfVoxelsXYZ() const
+      {
+        return (num_of_voxels_);
+      }
+
+      /** \brief Computes the center of the voxel with given integer coordinates.
+       *
+       * \param[in]  id3 the integer coordinates along the x, y and z axis.
+       * \param[out] center */
+      void
+      computeVoxelCenter (const int id3[3], double center[3]) const
+      {
+        center[0] = min_center_[0] + id3[0]*spacing_[0];
+        center[1] = min_center_[1] + id3[1]*spacing_[1];
+        center[2] = min_center_[2] + id3[2]*spacing_[2];
+      }
+
+      /** \brief Returns the total number of voxels. */
+      int
+      getNumberOfVoxels() const
+      {
+        return (total_num_of_voxels_);
+      }
+
+      /** \brief Returns the bounds of the voxel structure, which is pointer to the internal array of 6 doubles: (min_x, max_x, min_y, max_y, min_z, max_z). */
+      const int*
+      getBounds() const
+      {
+        return (bounds_);
+      }
+
+      /** \brief Returns the voxel spacing in x, y and z direction. */
+      const double*
+      getVoxelSpacing() const
+      {
+        return (spacing_);
+      }
 
     protected:
       T *voxels_;
-      int num_of_voxels_[3], num_of_voxels_xy_plane_;
+      int num_of_voxels_[3], num_of_voxels_xy_plane_, total_num_of_voxels_;
       double bounds_[6];
       double spacing_[3]; // spacing betwen the voxel in x, y and z direction = voxel size in x, y and z direction
+      double min_center_[3]; // the center of the voxel with integer coordinates (0, 0, 0)
     };
 
 // === inline methods ======================================================================================================================
@@ -93,5 +160,7 @@ namespace pcl
 
   } // namespace recognition
 } // namespace pcl
+
+#include <pcl/recognition/impl/ransac_based/voxel_structure.hpp>
 
 #endif // PCL_RECOGNITION_VOXEL_STRUCTURE_H_

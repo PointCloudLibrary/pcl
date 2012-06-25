@@ -53,68 +53,76 @@ namespace pcl
   {
     class ModelLibrary
     {
-    public:
-      typedef pcl::PointCloud<Eigen::Vector3d> PointCloudIn;
-      typedef pcl::PointCloud<Eigen::Vector3d> PointCloudN;
+      public:
+        typedef pcl::PointCloud<Eigen::Vector3d> PointCloudIn;
+        typedef pcl::PointCloud<Eigen::Vector3d> PointCloudN;
 
-      typedef boost::shared_ptr<PointCloudIn> PointCloudInPtr;
-      typedef boost::shared_ptr<PointCloudN> PointCloudNPtr;
+        typedef boost::shared_ptr<PointCloudIn> PointCloudInPtr;
+        typedef boost::shared_ptr<PointCloudN> PointCloudNPtr;
 
-      typedef boost::shared_ptr<const PointCloudIn> PointCloudInConstPtr;
-      typedef boost::shared_ptr<const PointCloudN> PointCloudNConstPtr;
+        typedef boost::shared_ptr<const PointCloudIn> PointCloudInConstPtr;
+        typedef boost::shared_ptr<const PointCloudN> PointCloudNConstPtr;
 
-      /** \brief Stores some information about the model. */
-      class Model
-      {
-        public:
-          Model (PointCloudInConstPtr points, PointCloudNConstPtr normals, std::string object_name):
-            points_ (points),
-            normals_(normals),
-            obj_name_(object_name){}
-          virtual ~Model (){}
+        /** \brief Stores some information about the model. */
+        class Model
+        {
+          public:
+            Model (PointCloudInConstPtr points, PointCloudNConstPtr normals, std::string object_name):
+              points_ (points),
+              normals_(normals),
+              obj_name_(object_name){}
+            virtual ~Model (){}
 
-        public:
-          PointCloudInConstPtr points_;
-          PointCloudNConstPtr normals_;
-          const std::string obj_name_;
-      };
+          public:
+            PointCloudInConstPtr points_;
+            PointCloudNConstPtr normals_;
+            const std::string obj_name_;
+        };
 
-    typedef std::list<std::pair<int,int> > int_pair_list;
-    typedef std::map<const Model*, int_pair_list> HashTableCell;
+        typedef std::list<std::pair<int,int> > int_pair_list;
+        typedef std::map<const Model*, int_pair_list> HashTableCell;
+        typedef VoxelStructure<HashTableCell> HashTable;
 
-    public:
-      /** \brief This class is used by 'ObjRecRANSAC' to maintain the object models to be recognized. Normally, you do not need to use
-        * this class directly. */
-      ModelLibrary (double pair_width);
-      virtual ~ModelLibrary ()
-      {
-        this->clear();
-      }
+      public:
+        /** \brief This class is used by 'ObjRecRANSAC' to maintain the object models to be recognized. Normally, you do not need to use
+          * this class directly. */
+        ModelLibrary (double pair_width);
+        virtual ~ModelLibrary ()
+        {
+          this->clear();
+        }
 
-      /** \brief Removes all models from the library and clears the hash table. */
-      void
-      clear ();
+        /** \brief Removes all models from the library and clears the hash table. */
+        void
+        clear ();
 
-      /** \brief Adds a model to the hash table.
-        *
-        * \param[in]  points represents the model to be added.
-        * \param[in]  normals are the normals at the model points.
-        * \param[in] object_name is the unique name of the object to be added.
-        *
-        * Returns true if model successfully added and false otherwise (e.g., if object_name is not unique). */
-      bool
-      addModel (PointCloudInConstPtr points, PointCloudNConstPtr normals, const std::string& object_name);
+        /** \brief Adds a model to the hash table.
+          *
+          * \param[in]  points represents the model to be added.
+          * \param[in]  normals are the normals at the model points.
+          * \param[in] object_name is the unique name of the object to be added.
+          *
+          * Returns true if model successfully added and false otherwise (e.g., if object_name is not unique). */
+        bool
+        addModel (PointCloudInConstPtr points, PointCloudNConstPtr normals, const std::string& object_name);
 
-    protected:
-      void
-      addToHashTable (const Model* model, int i, int j);
+        /** \brief Returns the hash table built by this instance. */
+        const HashTable*
+        getHashTable ()
+        {
+          return (&hash_table_);
+        }
 
-    protected:
-      std::map<std::string,Model*> models_;
-      double pair_width_, pair_width_eps_;
+      protected:
+        void
+        addToHashTable (const Model* model, int i, int j);
 
-      VoxelStructure<HashTableCell> hash_table_;
-      int num_of_bins_[3];
+      protected:
+        std::map<std::string,Model*> models_;
+        double pair_width_, pair_width_eps_;
+
+        HashTable hash_table_;
+        int num_of_cells_[3];
     };
   } // namespace recognition
 } // namespace pcl

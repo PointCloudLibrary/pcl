@@ -160,6 +160,13 @@ namespace pcl
         static inline void
         compute_oriented_point_pair_signature (const Eigen::Vector3d& p1, const Eigen::Vector3d& n1, const Eigen::Vector3d& p2, const Eigen::Vector3d& n2, double signature[3]);
 
+        /** \brief Returns the hash table in the model library. */
+        const pcl::recognition::ModelLibrary::HashTable*
+        getHashTable()
+        {
+          return (model_library_.getHashTable ());
+        }
+
       protected:
         double pair_width_;
         ModelLibrary model_library_;
