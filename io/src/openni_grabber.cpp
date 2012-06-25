@@ -667,7 +667,7 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
     PointT pt;
     pt.x = pt.y = pt.z = bad_point;
     pt.b = pt.g = pt.r = 0;
-    pt._unused = 255; // point has no color info -> alpha = max => transparent 
+    pt.a = 255; // point has no color info -> alpha = max => transparent 
     cloud->points.assign (cloud->points.size (), pt);
   }
   
