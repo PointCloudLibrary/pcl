@@ -96,9 +96,6 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
     centers[i + N] = Eigen::Vector3f (input_->points[i].getVector3fMap ()).cast<double> () + Eigen::Vector3f (input_->points[i].getNormalVector3fMap ()).cast<double> () * off_surface_epsilon_;
     weights[i] = w (i, 0);
     weights[i + N] = w (i + N, 0);
-
-    printf ("centers %d %f %f %f weights %f    %f %f %f   %f\n", i, centers[i][0], centers[i][1], centers[i][2], weights[i],
-                                                                    centers[i+N][0], centers[i+N][1], centers[i+N][2], weights[i+N]);
   }
 
 

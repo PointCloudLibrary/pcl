@@ -104,11 +104,11 @@ TEST (PCL, MarchingCubesTest)
   rbf.reconstruct (points, vertices);
 
   EXPECT_NEAR (points.points[points.size()/2].x, -0.033919, 1e-3);
-  EXPECT_NEAR (points.points[points.size()/2].y, 0.127359, 1e-3);
-  EXPECT_NEAR (points.points[points.size()/2].z, 0.034632, 1e-3);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[0], 4344);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[1], 4345);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[2], 4346);
+  EXPECT_NEAR (points.points[points.size()/2].y, 0.151683, 1e-3);
+  EXPECT_NEAR (points.points[points.size()/2].z, -0.000086, 1e-3);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[0], 4284);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[1], 4285);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[2], 4286);
 }
 
 
