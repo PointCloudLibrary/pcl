@@ -1248,6 +1248,14 @@ namespace pcl
         void
         setRepresentationToSurfaceForAllActors ();
 
+        /** \brief Changes the visual representation for all actors to points representation. */
+        void
+        setRepresentationToPointsForAllActors ();
+
+        /** \brief Changes the visual representation for all actors to wireframe representation. */
+        void
+        setRepresentationToWireframeForAllActors ();
+
         /** \brief Renders a virtual scene as seen from the camera viewpoint and returns the rendered point cloud.
           * ATT: This method will only render the scene if only on viewport exists. Otherwise, returns an empty
           * point cloud and exits immediately.

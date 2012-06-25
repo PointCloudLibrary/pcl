@@ -2262,6 +2262,44 @@ pcl::visualization::PCLVisualizer::setRepresentationToSurfaceForAllActors ()
 
 ///////////////////////////////////////////////////////////////////////////////////
 void
+pcl::visualization::PCLVisualizer::setRepresentationToPointsForAllActors ()
+{
+  ShapeActorMap::iterator am_it;
+  rens_->InitTraversal ();
+  vtkRenderer* renderer = NULL;
+  while ((renderer = rens_->GetNextItem ()) != NULL)
+  {
+    vtkActorCollection * actors = renderer->GetActors ();
+    actors->InitTraversal ();
+    vtkActor * actor;
+    while ((actor = actors->GetNextActor ()) != NULL)
+    {
+      actor->GetProperty ()->SetRepresentationToPoints ();
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::setRepresentationToWireframeForAllActors ()
+{
+  ShapeActorMap::iterator am_it;
+  rens_->InitTraversal ();
+  vtkRenderer* renderer = NULL;
+  while ((renderer = rens_->GetNextItem ()) != NULL)
+  {
+    vtkActorCollection * actors = renderer->GetActors ();
+    actors->InitTraversal ();
+    vtkActor * actor;
+    while ((actor = actors->GetNextActor ()) != NULL)
+    {
+      actor->GetProperty ()->SetRepresentationToWireframe ();
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+void
 pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
                                                                int xres,
                                                                int yres,
