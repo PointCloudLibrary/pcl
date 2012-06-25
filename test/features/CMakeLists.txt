@@ -1,3 +1,7 @@
+PCL_ADD_TEST(features_ptr test_features_ptr
+             FILES test_ptr.cpp
+             LINK_WITH pcl_features)
+
 PCL_ADD_TEST(feature_base test_base_feature
              FILES test_base_feature.cpp
              LINK_WITH pcl_features pcl_io
