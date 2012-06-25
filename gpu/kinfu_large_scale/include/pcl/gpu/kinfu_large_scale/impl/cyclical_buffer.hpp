@@ -7,7 +7,7 @@
 
 
 bool 
-pcl::gpu::CyclicalBuffer::checkForShift (const pcl::gpu::TsdfVolume::Ptr volume, const Eigen::Affine3f cam_pose, const double distance_camera_target, const bool perform_shift, const bool last_shift)
+pcl::gpu::CyclicalBuffer::checkForShift (const pcl::gpu::TsdfVolume::Ptr volume, const Eigen::Affine3f &cam_pose, const double distance_camera_target, const bool perform_shift, const bool last_shift)
 {
   bool result = false;
 
@@ -40,7 +40,7 @@ pcl::gpu::CyclicalBuffer::checkForShift (const pcl::gpu::TsdfVolume::Ptr volume,
 
 
 void
-pcl::gpu::CyclicalBuffer::performShift (const pcl::gpu::TsdfVolume::Ptr volume, const pcl::PointXYZ target_point, const bool last_shift)
+pcl::gpu::CyclicalBuffer::performShift (const pcl::gpu::TsdfVolume::Ptr volume, const pcl::PointXYZ &target_point, const bool last_shift)
 {
   // compute new origin and offsets
   int offset_x, offset_y, offset_z;
@@ -139,7 +139,7 @@ pcl::gpu::CyclicalBuffer::performShift (const pcl::gpu::TsdfVolume::Ptr volume, 
 }
 
 void 
-pcl::gpu::CyclicalBuffer::computeAndSetNewCubeMetricOrigin (const pcl::PointXYZ target_point, int &shiftX, int &shiftY, int &shiftZ)
+pcl::gpu::CyclicalBuffer::computeAndSetNewCubeMetricOrigin (const pcl::PointXYZ &target_point, int &shiftX, int &shiftY, int &shiftZ)
 {
   // compute new origin for the cube, based on the target point
   float3 new_cube_origin_meters;

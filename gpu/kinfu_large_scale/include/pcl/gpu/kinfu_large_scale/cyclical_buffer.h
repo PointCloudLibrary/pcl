@@ -73,7 +73,7 @@ namespace pcl
           * \param[in] last_shift if set to true, the whole cube will be shifted. This is used to push the whole cube to the world model.
           * \return true is the cube needs to be or has been shifted.
           */
-        bool checkForShift (const pcl::gpu::TsdfVolume::Ptr volume, const Eigen::Affine3f cam_pose, const double distance_camera_target, const bool perform_shift = true, const bool last_shift = false);
+        bool checkForShift (const pcl::gpu::TsdfVolume::Ptr volume, const Eigen::Affine3f &cam_pose, const double distance_camera_target, const bool perform_shift = true, const bool last_shift = false);
         
         /** \brief Perform shifting operations:
             Compute offsets.
@@ -87,7 +87,7 @@ namespace pcl
           * \param[in] target_point target point around which the new cube will be centered
           * \param[in] last_shift if set to true, the whole cube will be shifted. This is used to push the whole cube to the world model.
           */
-        void performShift (const pcl::gpu::TsdfVolume::Ptr volume, const pcl::PointXYZ target_point, const bool last_shift = false);
+        void performShift (const pcl::gpu::TsdfVolume::Ptr volume, const pcl::PointXYZ &target_point, const bool last_shift = false);
 
         /** \brief Sets the distance threshold between cube's center and target point that triggers a shift.
           * \param[in] threshold the distance in meters at which to trigger shift.
@@ -119,7 +119,7 @@ namespace pcl
           * \param[out] shiftX shift on X axis (in indices).
           * \param[out] shiftX shift on X axis (in indices).
           */ 
-        void computeAndSetNewCubeMetricOrigin (const pcl::PointXYZ target_point, int &shiftX, int &shiftY, int &shiftZ);
+        void computeAndSetNewCubeMetricOrigin (const pcl::PointXYZ &target_point, int &shiftX, int &shiftY, int &shiftZ);
         
         /** \brief Initializes memory pointers of the  cyclical buffer (start, end, current origin)
           * \param[in] tsdf_volume pointer to the TSDF volume managed by this cyclical buffer

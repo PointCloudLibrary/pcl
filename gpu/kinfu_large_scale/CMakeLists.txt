@@ -53,7 +53,7 @@ if (build)
 	endif()
 	 
 	PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${cuda} ${cuda_objs})
-	target_link_libraries(${LIB_NAME} pcl_common pcl_gpu_utils pcl_gpu_containers pcl_gpu_octree pcl_octree pcl_filters)
+	target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_gpu_utils pcl_gpu_containers pcl_gpu_octree pcl_octree pcl_filters)
 			
 	set(EXT_DEPS "")
 	#set(EXT_DEPS CUDA)
