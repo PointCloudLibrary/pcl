@@ -1230,19 +1230,15 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
       else if (mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32 && mesh.cloud.fields[d].name.find ("rgb") != std::string::npos)
       {
         pcl::RGB color;
-        int r = color.r;
-        int g = color.g;
-        int b = color.b;
-        int a = color.a;
         if(rgb_index != -1)
         {
           memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgb_index].offset + c * sizeof (float)], sizeof (RGB));
-          fs << r << " " << g << " " << b;
+          fs << (int) color.r << " " << (int) color.g << " " << (int) color.b;
         }
         else
         {
           memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgba_index].offset + c * sizeof (float)], sizeof (RGB));
-          fs << r << " " << g << " " << b << " " << a;
+          fs << (int) color.r << " " << (int) color.g << " " << (int) color.b << " " << (int) color.a;
         }
       }
       fs << " ";
