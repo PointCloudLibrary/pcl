@@ -19,12 +19,5 @@ if(GLUT_FOUND)
       pcl_simulation pcl_common pcl_io pcl_visualization
       ${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES})
 
-#  find_package( OpenCV QUIET )
-#  if(OpenCV_FOUND)
-#    PCL_ADD_EXECUTABLE(pcl_sim_terminal_demo ${SUBSYS_NAME} sim_terminal_demo.cpp)
-#    target_link_libraries (pcl_sim_terminal_demo
-#        pcl_simulation pcl_common pcl_io pcl_visualization 
-#        ${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${OpenCV_LIBS})
-#  endif(OpenCV_FOUND)
 endif(GLUT_FOUND)
 
