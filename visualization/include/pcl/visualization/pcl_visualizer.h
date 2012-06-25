@@ -373,6 +373,46 @@ namespace pcl
                  const std::string &id = "", int viewport = 0);
 
 
+        /** \brief Update a text to screen
+          * \param[in] text the text to update
+          * \param[in] xpos the new X position on screen
+          * \param[in] ypos the new Y position on screen 
+          * \param[in] id the text object id (default: equal to the "text" parameter)
+          */
+        bool
+        updateText (const std::string &text,
+                    int xpos, int ypos,
+                    const std::string &id = "");
+
+        /** \brief Update a text to screen
+          * \param[in] text the text to update
+          * \param[in] xpos the new X position on screen
+          * \param[in] ypos the new Y position on screen 
+          * \param[in] r the red color value
+          * \param[in] g the green color value
+          * \param[in] b the blue color vlaue
+          * \param[in] id the text object id (default: equal to the "text" parameter)
+          */
+        bool
+        updateText (const std::string &text, 
+                    int xpos, int ypos, double r, double g, double b,
+                    const std::string &id = "");
+
+        /** \brief Update a text to screen
+          * \param[in] text the text to update
+          * \param[in] xpos the new X position on screen
+          * \param[in] ypos the new Y position on screen 
+          * \param[in] fontsize the fontsize of the text
+          * \param[in] r the red color value
+          * \param[in] g the green color value
+          * \param[in] b the blue color vlaue
+          * \param[in] id the text object id (default: equal to the "text" parameter)
+          */
+        bool
+        updateText (const std::string &text, 
+                    int xpos, int ypos, int fontsize, double r, double g, double b,
+                    const std::string &id = "");
+
         /** \brief Add a 3d text to the scene
           * \param[in] text the text to add
           * \param[in] position the world position where the text should be added
