@@ -81,7 +81,7 @@ TEST (PCL, MarchingCubesTest)
   MarchingCubesHoppe<PointNormal> hoppe;
   hoppe.setIsoLevel (0);
   hoppe.setGridResolution (30, 30, 30);
-  hoppe.setPercentageExtendGrid (0.3);
+  hoppe.setPercentageExtendGrid (0.3f);
   hoppe.setInputCloud (cloud_with_normals);
   PointCloud<PointNormal> points;
   std::vector<Vertices> vertices;
@@ -98,7 +98,7 @@ TEST (PCL, MarchingCubesTest)
   MarchingCubesRBF<PointNormal> rbf;
   rbf.setIsoLevel (0);
   rbf.setGridResolution (20, 20, 20);
-  rbf.setPercentageExtendGrid (0.1);
+  rbf.setPercentageExtendGrid (0.1f);
   rbf.setInputCloud (cloud_with_normals);
   rbf.setOffSurfaceDisplacement (0.02f);
   rbf.reconstruct (points, vertices);
@@ -194,6 +194,9 @@ TEST (PCL, MovingLeastSquares)
   EXPECT_EQ (mls_normals->size (), 6352);
 
 
+  /// TODO Would need to set a seed point here for the random number generator
+  /// But as long as the other 2 upsampling methods work fine, this should have no issues.
+  /// The RANDOM_UNIFORM_DENSITY upsampling will be changed soon anyway, hopefully in PCL 1.6.1
 //  mls_upsampling.setUpsamplingMethod (MovingLeastSquares<PointXYZ, PointNormal>::RANDOM_UNIFORM_DENSITY);
 //  mls_upsampling.setPointDensity (100);
 //  mls_normals->clear ();
@@ -214,9 +217,9 @@ TEST (PCL, MovingLeastSquares)
   mls_upsampling.setDilationVoxelSize (0.005f);
   mls_normals->clear ();
   mls_upsampling.process (*mls_normals);
-  EXPECT_NEAR (mls_normals->points[10].x, -0.075887, 1e-3);
-  EXPECT_NEAR (mls_normals->points[10].y, 0.030984, 1e-3);
-  EXPECT_NEAR (mls_normals->points[10].z, 0.020856, 1e-3);
+  EXPECT_NEAR (mls_normals->points[10].x, -0.075887, 2e-3);
+  EXPECT_NEAR (mls_normals->points[10].y, 0.030984, 2e-3);
+  EXPECT_NEAR (mls_normals->points[10].z, 0.020856, 2e-3);
   EXPECT_NEAR (fabs (mls_normals->points[10].normal[0]), 0.850562, 1e-3);
   EXPECT_NEAR (fabs (mls_normals->points[10].normal[1]), 0.303248, 1e-3);
   EXPECT_NEAR (fabs (mls_normals->points[10].normal[2]), 0.429634, 1e-3);
