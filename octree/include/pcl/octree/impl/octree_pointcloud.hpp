@@ -447,7 +447,7 @@ pcl::octree::OctreePointCloud<PointT, LeafT, BranchT, OctreeT>::adoptBoundingBox
 
         BranchNode* newRootBranch;
 
-        this->createBranch (newRootBranch);
+        newRootBranch = this->branchNodePool_.popNode();
         this->branchCount_++;
 
         this->setBranchChildPtr (*newRootBranch, childIdx, this->rootNode_);

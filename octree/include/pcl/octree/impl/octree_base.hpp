@@ -62,8 +62,8 @@ namespace pcl
       depthMask_ (0),
       octreeDepth_ (0),
       maxKey_ (),
-      unusedBranchesPool_ (),
-      unusedLeafsPool_ ()
+      branchNodePool_ (),
+      leafNodePool_ ()
     {
     }
 
@@ -468,7 +468,7 @@ namespace pcl
             {
               const LeafNode* childLeaf = static_cast<const LeafNode*> (childNode);
 
-              if (childLeaf)
+              if (dataVector_arg)
                 childLeaf->getData (*dataVector_arg);
 
               // we reached a leaf node -> execute serialization callback

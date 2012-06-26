@@ -45,6 +45,7 @@
 #include "octree_container.h"
 #include "octree_key.h"
 #include "octree_iterator.h"
+#include "octree_node_pool.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -214,7 +215,7 @@ namespace pcl
             leafCount_ (source.leafCount_), branchCount_ (source.branchCount_), objectCount_ (
                 source.objectCount_), rootNode_ (
                 new (BranchNode) (* (source.rootNode_))), depthMask_ (
-                source.depthMask_), maxKey_ (source.maxKey_), unusedBranchesPool_ (), unusedLeafsPool_ (), bufferSelector_ (
+                source.depthMask_), maxKey_ (source.maxKey_), branchNodePool_ (), leafNodePool_ (), bufferSelector_ (
                 source.bufferSelector_), treeDirtyFlag_ (source.treeDirtyFlag_), octreeDepth_ (
                 source.octreeDepth_)
         {
@@ -693,7 +694,7 @@ namespace pcl
                 deleteBranch (*static_cast<BranchNode*> (branchChild));
 
                 // push unused branch to branch pool
-                unusedBranchesPool_.push_back (
+                branchNodePool_.pushNode (
                     static_cast<BranchNode*> (branchChild));
                 break;
               }
@@ -701,7 +702,7 @@ namespace pcl
               case LEAF_NODE:
               {
                 // push unused leaf to branch pool
-                unusedLeafsPool_.push_back (
+                leafNodePool_.pushNode(
                     static_cast<LeafNode*> (branchChild));
                 break;
               }
@@ -750,42 +751,11 @@ namespace pcl
         inline void createBranchChild (BranchNode& branch_arg,
             unsigned char childIdx_arg, BranchNode*& newBranchChild_arg)
         {
-          if (!unusedBranchesPool_.size ())
-          {
-            newBranchChild_arg =
-                static_cast<BranchNode*> (new BranchNode ());
-          }
-          else
-          {
-            newBranchChild_arg = unusedBranchesPool_.back ();
-            unusedBranchesPool_.pop_back ();
-            newBranchChild_arg->reset();
-          }
+
+          newBranchChild_arg = branchNodePool_.popNode();
 
           branch_arg.setChildPtr (bufferSelector_, childIdx_arg,
               static_cast<OctreeNode*> (newBranchChild_arg));
-        }
-
-        /** \brief Return a new branch class and receive a pointer to it
-         * \param newBranchChild_arg writes a pointer of new branch child to this reference
-         */
-        inline void createBranch (BranchNode*& newBranchChild_arg)
-        {
-
-          if (!unusedBranchesPool_.size ())
-          {
-            // branch pool is empty
-            // we need to create a new octree branch class
-            newBranchChild_arg =
-                static_cast<BranchNode*> (new BranchNode ());
-          }
-          else
-          {
-            // reuse branch from branch pool
-            newBranchChild_arg = unusedBranchesPool_.back ();
-            unusedBranchesPool_.pop_back ();
-            newBranchChild_arg->reset();
-          }
         }
 
         /** \brief Fetch and add a new leaf child to a branch class
@@ -796,41 +766,17 @@ namespace pcl
         inline void createLeafChild (BranchNode& branch_arg,
             unsigned char childIdx_arg, LeafNode*& newLeafChild_arg)
         {
-          if (!unusedLeafsPool_.size ())
-          {
-            // leaf pool is empty
-            // we need to create a new octree leaf class
-            newLeafChild_arg = static_cast<LeafNode*> (new LeafNode ());
-          }
-          else
-          {
-            // reuse leaf node from branch pool
-            newLeafChild_arg = unusedLeafsPool_.back ();
-            unusedLeafsPool_.pop_back ();
-          }
-
-          newLeafChild_arg->reset ();
+          newLeafChild_arg = leafNodePool_.popNode();
 
           branch_arg.setChildPtr(bufferSelector_, childIdx_arg, newLeafChild_arg);
         }
 
-        /** \brief Delete all branch nodes and leaf nodes from octree node pools
+        /** \brief Delete all branch and leaf nodes from octree node pools
          * */
         inline void poolCleanUp ()
         {
-          // delete all branch instances from branch pool
-          while (!unusedBranchesPool_.empty ())
-          {
-            delete (unusedBranchesPool_.back ());
-            unusedBranchesPool_.pop_back ();
-          }
-
-          // delete all leaf instances from leaf pool
-          while (!unusedLeafsPool_.empty ())
-          {
-            delete (unusedLeafsPool_.back ());
-            unusedLeafsPool_.pop_back ();
-          }
+          branchNodePool_.deletePool();
+          leafNodePool_.deletePool();
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -988,11 +934,11 @@ namespace pcl
         /** \brief key range */
         OctreeKey maxKey_;
 
-        /** \brief Vector pools of unused branch nodes   **/
-        std::vector<BranchNode*> unusedBranchesPool_;
+        /** \brief Pool of unused branch nodes   **/
+        OctreeNodePool<BranchNode> branchNodePool_;
 
-        /** \brief Vector pools of unused leaf nodes   **/
-        std::vector<LeafNode*> unusedLeafsPool_;
+        /** \brief Pool of unused branch nodes   **/
+        OctreeNodePool<LeafNode> leafNodePool_;
 
         /** \brief Currently active octree buffer  **/
         unsigned char bufferSelector_;

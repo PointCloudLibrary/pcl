@@ -52,8 +52,8 @@ namespace pcl
       rootNode_ (new BranchNode ()),
       depthMask_ (0), 
       maxKey_ (),
-      unusedBranchesPool_ (),
-      unusedLeafsPool_ (),
+      branchNodePool_ (),
+      leafNodePool_ (),
       bufferSelector_ (0),
       treeDirtyFlag_ (false),
       octreeDepth_ (0)
