@@ -1,5 +1,5 @@
-#ifndef PCL_SCREENSHOT_MANAGER_IMPL_HPP_
-#define PCL_SCREENSHOT_MANAGER_IMPL_HPP_
+#ifndef PCL_SCREENSHOT_MANAGER_CPP_
+#define PCL_SCREENSHOT_MANAGER_CPP_
 
 #include <pcl/gpu/kinfu_large_scale/screenshot_manager.h>
 
@@ -14,11 +14,9 @@ namespace pcl
        screenshot_counter = 0;
      }
 
-#ifdef HAVE_OPENCV
      void
      ScreenshotManager::saveImage(Eigen::Affine3f camPose, PtrStepSz<const PixelRGB> rgb24)
      {
-
        std::string file_extension_image = ".png";
        std::string file_extension_pose = ".txt";
        std::string filename_image = "KinFuSnapshots/";
@@ -34,20 +32,12 @@ namespace pcl
 
 		    //Write files
 		    writePose(teVecs, erreMats, filename_pose);
-
-    		//Save Image				
-        IplImage* image = cvCreateImage(cvSize(640, 480), 8, 3);
-        memcpy(image->imageData, rgb24.data, 640 * 480 * 3); 
-        cv::Mat mat(image);         
-        cv::cvtColor(mat, mat, CV_BGR2RGB);
-
-        char buf2[4096]; 
-        sprintf (buf2, "KinFuSnapshots/%d.jpg", screenshot_counter++); 
-        cvSaveImage(buf2, image);
-        cvReleaseImage(&image); 
-
+        
+        //Save Image
+        pcl::io::saveRgbPNGFile(filename_image, (unsigned char*)rgb24.data, 640,480);
+        
+        screenshot_counter++;
      }
-#endif
 
      void 
      ScreenshotManager::writePose(Eigen::Vector3f teVecs, Eigen::Matrix<float, 3, 3, Eigen::RowMajor> erreMats, std::string filename_pose)
@@ -69,4 +59,4 @@ namespace pcl
   } // namespace gpu
 } //namespace pcl
 
-#endif // PCL_SCREENSHOT_MANAGER_IMPL_HPP_
+#endif // PCL_SCREENSHOT_MANAGER_CPP_

@@ -14,11 +14,8 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp> 
 
-#ifdef HAVE_OPENCV
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/flann/miniflann.hpp> 
-#endif
+#include <pcl/io/png_io.h>
+
 
 namespace pcl
 {
@@ -39,11 +36,10 @@ namespace pcl
         /** Destructor */
         ~ScreenshotManager(){}
 
-#ifdef HAVE_OPENCV
         /**Save Screenshot*/
         void
         saveImage(Eigen::Affine3f camPose, PtrStepSz<const PixelRGB> rgb24);
-#endif
+
       private:
 
         /**Write camera pose to file*/

@@ -76,7 +76,7 @@
   typedef pcl::ScopeTime ScopeTimeT;
 
 #include "../src/internal.h"
-#include <pcl/gpu/kinfu_large_scale/screenshot_manager.h> // RESTORE THIS LINE FOR SCREENSHOTS
+#include <pcl/gpu/kinfu_large_scale/screenshot_manager.h>
 
 using namespace std;
 using namespace pcl;
@@ -579,6 +579,7 @@ struct KinFuApp
         
     scene_cloud_view_.toggleCube(volume_size);
     frame_counter_ = 0;
+    enable_texture_extraction_ = false;
     
   }
 
@@ -696,15 +697,12 @@ struct KinFuApp
       
     if (!independent_camera_)
       setViewerPose (scene_cloud_view_.cloud_viewer_, kinfu_.getCameraPose());
-      
-    if ( (frame_counter_  % 45) == 0 )
+    
+    if (enable_texture_extraction_)
     {
-#ifdef HAVE_OPENCV
-      screenshot_manager_.saveImage (kinfu_.getCameraPose(), rgb24); // RESTORE THIS LINE FOR SCREENSHOTS
-#endif
+      if ( (frame_counter_  % 45) == 0 )
+        screenshot_manager_.saveImage (kinfu_.getCameraPose(), rgb24); 
     }
-        
-          
   }
   
   void source_cb1(const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper)  
@@ -847,7 +845,8 @@ struct KinFuApp
 
   bool independent_camera_;
   int frame_counter_;
-  pcl::gpu::ScreenshotManager screenshot_manager_; // RESTORE THIS LINE FOR SCREENSHOTS
+  bool enable_texture_extraction_;
+  pcl::gpu::ScreenshotManager screenshot_manager_;
 
   bool registration_;
   bool integrate_colors_;  
@@ -975,7 +974,8 @@ print_cli_help ()
   cout << "    --current-cloud, -cc            : show current frame cloud" << endl;
   cout << "    --save-views, -sv               : accumulate scene view and save in the end ( Requires OpenCV. Will cause 'bad_alloc' after some time )" << endl;  
   cout << "    --registration, -r              : enable registration mode" << endl; 
-  cout << "    --integrate-colors, -ic         : enable color integration mode (allows to get cloud with colors)" << endl;   
+  cout << "    --integrate-colors, -ic         : enable color integration mode (allows to get cloud with colors)" << endl;
+  cout << "    --extract-textures, -et         : (experimental) extract RGB PNG images to KinFuSnapshots folder. Causes flicker in viewer. Use with smooth Kinect movements to avoid tracking lost." << endl;   
   cout << "    -volume_size <size_in_meters>   : define integration volume size" << endl;
   cout << "Valid depth data sources:" << endl; 
   cout << "    -dev <device> (default), -oni <oni_file>, -pcd <pcd_file or directory>" << endl;
@@ -1064,6 +1064,9 @@ main (int argc, char* argv[])
       
   if (pc::find_switch (argc, argv, "--integrate-colors") || pc::find_switch (argc, argv, "-ic"))      
     app.toggleColorIntegration();
+    
+  if (pc::find_switch (argc, argv, "--extract-textures") || pc::find_switch (argc, argv, "-et"))      
+    app.enable_texture_extraction_ = true;
 
   // executing
   try { app.startMainLoop (); }  
@@ -1071,21 +1074,21 @@ main (int argc, char* argv[])
   catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; }
   catch (const std::exception& /*e*/) { cout << "Exception" << endl; }
 
-//~ #ifdef HAVE_OPENCV
-  //~ for (size_t t = 0; t < app.image_view_.views_.size (); ++t)
-  //~ {
-    //~ if (t == 0)
-    //~ {
-      //~ cout << "Saving depth map of first view." << endl;
-      //~ cv::imwrite ("./depthmap_1stview.png", app.image_view_.views_[0]);
-      //~ cout << "Saving sequence of (" << app.image_view_.views_.size () << ") views." << endl;
-    //~ }
-    //~ char buf[4096];
-    //~ sprintf (buf, "./%06d.png", (int)t);
-    //~ cv::imwrite (buf, app.image_view_.views_[t]);
-    //~ printf ("writing: %s\n", buf);
-  //~ }
-//~ #endif
+#ifdef HAVE_OPENCV
+  for (size_t t = 0; t < app.image_view_.views_.size (); ++t)
+  {
+    if (t == 0)
+    {
+      cout << "Saving depth map of first view." << endl;
+      cv::imwrite ("./depthmap_1stview.png", app.image_view_.views_[0]);
+      cout << "Saving sequence of (" << app.image_view_.views_.size () << ") views." << endl;
+    }
+    char buf[4096];
+    sprintf (buf, "./%06d.png", (int)t);
+    cv::imwrite (buf, app.image_view_.views_[t]);
+    printf ("writing: %s\n", buf);
+  }
+#endif
 
   return 0;
 }
