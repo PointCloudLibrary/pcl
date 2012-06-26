@@ -240,24 +240,22 @@ pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>::ge
 
   vtkIdType nr_points = cloud_->width * cloud_->height;
   reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
-  
-  
+
   // Allocate enough memory to hold all colors
+  // colors is taken over by SetArray (line 419)
   unsigned char* colors = new unsigned char[nr_points * 3];
 
-  float h_data;
-  float v_data;
-  float s_data;
+  float h_data, v_data, s_data;
   int point_offset = cloud_->fields[field_idx_].offset;
   int j = 0;
-  
+
   // If XYZ present, check if the points are invalid
   int x_idx = pcl::getFieldIndex (*cloud_, "x");
   if (x_idx != -1)
   {
     float x_data, y_data, z_data;
     int x_point_offset = cloud_->fields[x_idx].offset;
-    
+
     // Color every point
     for (vtkIdType cp = 0; cp < nr_points; ++cp, 
                                            point_offset += cloud_->point_step, 
@@ -269,21 +267,21 @@ pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>::ge
       memcpy (&v_data, &cloud_->data[point_offset + 2 * sizeof (float)], sizeof (float));
 
       if (!pcl_isfinite (h_data) || !pcl_isfinite (s_data) || !pcl_isfinite (v_data))
-        continue;
+        continue;   //skip to next point
 
       memcpy (&x_data, &cloud_->data[x_point_offset], sizeof (float));
       memcpy (&y_data, &cloud_->data[x_point_offset + sizeof (float)], sizeof (float));
       memcpy (&z_data, &cloud_->data[x_point_offset + 2 * sizeof (float)], sizeof (float));
 
       if (!pcl_isfinite (x_data) || !pcl_isfinite (y_data) || !pcl_isfinite (z_data))
-        continue;
+        continue;   //skip to next point
 
       int idx = j * 3;
       // Fill color data with HSV here:
       if (s_data == 0)
       {
         colors[idx] = colors[idx+1] = colors[idx+2] = static_cast<unsigned char> (v_data);
-        return;
+        continue;   //skip to next point
       } 
       float a = h_data / 60;
       int   i = static_cast<int> (floor (a));
@@ -352,14 +350,14 @@ pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>::ge
       memcpy (&v_data, &cloud_->data[point_offset + 2 * sizeof (float)], sizeof (float));
 
       if (!pcl_isfinite (h_data) || !pcl_isfinite (s_data) || !pcl_isfinite (v_data))
-        continue;
+        continue;   //skip to next point
 
       int idx = j * 3;
       // Fill color data with HSV here:
       if (s_data == 0)
       {
         colors[idx] = colors[idx+1] = colors[idx+2] = static_cast<unsigned char> (v_data);
-        return;
+        continue;   //skip to next point
       } 
       float a = h_data / 60;
       int   i = static_cast<int> (floor (a));
@@ -416,8 +414,8 @@ pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>::ge
       j++;
     }
   }
+  // Set array takes over allocation (Set save to 1 to keep the class from deleting the array when it cleans up or reallocates memory.)
   reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, 3 * j, 0);
-  //delete [] colors;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -578,8 +576,6 @@ pcl::visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2>::Poin
     return;
   capable_ = true;
 }
-
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<sensor_msgs::PointCloud2>::PointCloudGeometryHandlerSurfaceNormal (const PointCloudConstPtr &cloud) 
