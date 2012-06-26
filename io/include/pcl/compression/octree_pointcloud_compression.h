@@ -84,28 +84,6 @@ namespace pcl
         typedef PointCloudCompression<PointT, LeafT, BranchT, OctreeBase<int, LeafT, BranchT> > SinglePointCloudCompressionLowMemory;
 
 
-        /** \brief Default constructor
-          */
-        PointCloudCompression () :
-          OctreePointCloud<PointT, LeafT, BranchT, OctreeT> (0.01),
-          output_ (PointCloudPtr ()),
-          binaryTreeDataVector_ (),
-          binaryColorTreeVector_ (),
-          pointCountDataVector_ (),
-          pointCountDataVectorIterator_ (),
-          colorCoder_ (),
-          pointCoder_ (),
-          entropyCoder_ (),
-          doVoxelGridEnDecoding_ (false), iFrameRate_ (30),
-          iFrameCounter_ (0), frameID_ (0), pointCount_ (0), iFrame_ (true),
-          doColorEncoding_ (true), cloudWithColor_ (false), dataWithColor_ (false),
-          pointColorOffset_ (0), bShowStatistics (false),
-          compressedPointDataLen_ (), compressedColorDataLen_ (), selectedProfile_(MED_RES_ONLINE_COMPRESSION_WITH_COLOR),
-          pointResolution_(0.001), octreeResolution_(0.01), colorBitResolution_(6)
-        {
-          initialization();
-        }
-
         /** \brief Constructor
           * \param compressionProfile_arg:  define compression profile
           * \param octreeResolution_arg:  octree resolution at lowest octree level
