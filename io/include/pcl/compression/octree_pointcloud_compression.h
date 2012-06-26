@@ -83,6 +83,29 @@ namespace pcl
         typedef PointCloudCompression<PointT, LeafT, BranchT, Octree2BufBase<int, LeafT, BranchT> > RealTimeStreamCompression;
         typedef PointCloudCompression<PointT, LeafT, BranchT, OctreeBase<int, LeafT, BranchT> > SinglePointCloudCompressionLowMemory;
 
+
+        /** \brief Default constructor
+          */
+        PointCloudCompression () :
+          OctreePointCloud<PointT, LeafT, BranchT, OctreeT> (0.01),
+          output_ (PointCloudPtr ()),
+          binaryTreeDataVector_ (),
+          binaryColorTreeVector_ (),
+          pointCountDataVector_ (),
+          pointCountDataVectorIterator_ (),
+          colorCoder_ (),
+          pointCoder_ (),
+          entropyCoder_ (),
+          doVoxelGridEnDecoding_ (false), iFrameRate_ (30),
+          iFrameCounter_ (0), frameID_ (0), pointCount_ (0), iFrame_ (true),
+          doColorEncoding_ (true), cloudWithColor_ (false), dataWithColor_ (false),
+          pointColorOffset_ (0), bShowStatistics (false),
+          compressedPointDataLen_ (), compressedColorDataLen_ (), selectedProfile_(MED_RES_ONLINE_COMPRESSION_WITH_COLOR),
+          pointResolution_(0.001), octreeResolution_(0.01), colorBitResolution_(6)
+        {
+          initialization();
+        }
+
         /** \brief Constructor
           * \param compressionProfile_arg:  define compression profile
           * \param octreeResolution_arg:  octree resolution at lowest octree level
@@ -114,14 +137,26 @@ namespace pcl
           iFrameCounter_ (0), frameID_ (0), pointCount_ (0), iFrame_ (true),
           doColorEncoding_ (doColorEncoding_arg), cloudWithColor_ (false), dataWithColor_ (false),
           pointColorOffset_ (0), bShowStatistics (showStatistics_arg), 
-          compressedPointDataLen_ (), compressedColorDataLen_ ()
+          compressedPointDataLen_ (), compressedColorDataLen_ (), selectedProfile_(compressionProfile_arg),
+          pointResolution_(pointResolution_arg), octreeResolution_(octreeResolution_arg), colorBitResolution_(colorBitResolution_arg)
         {
-          if (compressionProfile_arg != MANUAL_CONFIGURATION)
+          initialization();
+        }
+
+        /** \brief Empty deconstructor. */
+        virtual
+        ~PointCloudCompression ()
+        {
+        }
+
+        /** \brief Initialize globals */
+        void initialization () {
+          if (selectedProfile_ != MANUAL_CONFIGURATION)
           {
             // apply selected compression profile
 
             // retrieve profile settings
-            const configurationProfile_t selectedProfile = compressionProfiles_[compressionProfile_arg];
+            const configurationProfile_t selectedProfile = compressionProfiles_[selectedProfile_];
 
             // apply profile settings
             iFrameRate_ = selectedProfile.iFrameRate;
@@ -135,20 +170,14 @@ namespace pcl
           else 
           {
             // configure point & color coder
-            pointCoder_.setPrecision (static_cast<float> (pointResolution_arg));
-            colorCoder_.setBitDepth (colorBitResolution_arg);
+            pointCoder_.setPrecision (static_cast<float> (pointResolution_));
+            colorCoder_.setBitDepth (colorBitResolution_);
           }
 
           if (pointCoder_.getPrecision () == this->getResolution ())
             //disable differential point colding
             doVoxelGridEnDecoding_ = true;
 
-        }
-
-        /** \brief Empty deconstructor. */
-        virtual
-        ~PointCloudCompression ()
-        {
         }
 
         /** \brief Provide a pointer to the output data set.
@@ -276,6 +305,11 @@ namespace pcl
 
         // frame header identifier
         static const char* frameHeaderIdentifier_;
+
+        const compression_Profiles_e selectedProfile_;
+        const double pointResolution_;
+        const double octreeResolution_;
+        const unsigned char colorBitResolution_;
 
       };
 
