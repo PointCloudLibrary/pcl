@@ -237,14 +237,16 @@ namespace pcl
         bool
         isVoxelOccupiedAtPoint (const PointT& point_arg) const;
 
-        /** \brief Delete the octree structure and its leaf nodes. */
-        void deleteTree ()
+        /** \brief Delete the octree structure and its leaf nodes.
+         *  \param freeMemory_arg: if "true", allocated octree nodes are deleted, otherwise they are pushed to the octree node pool
+         * */
+        void deleteTree (bool freeMemory_arg = false)
         {
           // reset bounding box
           minX_ = minY_ = maxY_ = minZ_ = maxZ_ = 0;
           this->boundingBoxDefined_ = false;
 
-          OctreeT::deleteTree ();
+          OctreeT::deleteTree (freeMemory_arg);
         }
 
         /** \brief Check if voxel at given point coordinates exist.
