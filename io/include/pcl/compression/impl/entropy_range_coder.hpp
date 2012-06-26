@@ -255,7 +255,7 @@ pcl::StaticRangeCoder::encodeIntVectorToStream (std::vector<unsigned int>& input
   const uint64_t bottom = static_cast<uint64_t> (1) << 48;
   const uint64_t maxRange = static_cast<uint64_t> (1) << 48;
 
-  unsigned long input_size = (inputIntVector_arg.size ());
+  unsigned long input_size = static_cast<unsigned long> (inputIntVector_arg.size ());
   uint64_t low, range;
 
   unsigned int inputSymbol;

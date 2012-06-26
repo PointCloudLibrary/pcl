@@ -96,7 +96,7 @@ pcl::visualization::PCLPlotter::addPlotData (double const* array_X, double const
 void
 pcl::visualization::PCLPlotter::addPlotData (std::vector<double> const &array_X, std::vector<double> const &array_Y, char * name /* = "Y Axis" */, int type /* = vtkChart::LINE */, std::vector<char> const &color)
 {
-  this->addPlotData (&array_X[0], &array_Y[0], array_X.size (), name, type, (color.size () == 0) ? NULL : &color[0]);
+  this->addPlotData (&array_X[0], &array_Y[0], static_cast<unsigned long> (array_X.size ()), name, type, (color.size () == 0) ? NULL : &color[0]);
 }
 
 void
@@ -110,7 +110,7 @@ pcl::visualization::PCLPlotter::addPlotData (std::vector<std::pair<double, doubl
     array_x[i] = plot_data[i].first;
     array_y[i] = plot_data[i].second;
   }
-  this->addPlotData (array_x, array_y, plot_data.size (), name, type, (color.size () == 0) ? NULL : &color[0]);
+  this->addPlotData (array_x, array_y, static_cast<unsigned long> (plot_data.size ()), name, type, (color.size () == 0) ? NULL : &color[0]);
 }
 
 void

@@ -237,7 +237,7 @@ void pcl::device::VFHEstimationImpl::compute(DeviceArray<VFHSignature308>& featu
     cudaDeviceProp prop;    
     cudaSafeCall( cudaGetDeviceProperties(&prop, device) );
     
-    int total = indices.empty() ? points.size() : indices.size();
+    int total = static_cast<int> (indices.empty() ? points.size() : indices.size());
     int total_lenght_in_blocks = (total + VfhDevice::CTA_SIZE - 1) / VfhDevice::CTA_SIZE;
 
     int block = VfhDevice::CTA_SIZE;

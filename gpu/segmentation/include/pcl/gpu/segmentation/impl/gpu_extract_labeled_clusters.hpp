@@ -56,8 +56,8 @@ pcl::gpu::extractLabeledEuclideanClusters (const boost::shared_ptr<pcl::PointClo
 
   int max_answers;
 
-  if(max_pts_per_cluster > host_cloud_->points.size())
-    max_answers = host_cloud_->points.size();
+  if(max_pts_per_cluster > host_cloud_->points.size ())
+    max_answers = static_cast<int> (host_cloud_->points.size ());
   else
     max_answers = max_pts_per_cluster;
 
@@ -86,11 +86,11 @@ pcl::gpu::extractLabeledEuclideanClusters (const boost::shared_ptr<pcl::PointClo
     // Push the starting point in the vector
     queries_host.push_back (p);
     // Clear vector
-    r.indices.clear();
+    r.indices.clear ();
     // Push the starting point in
-    r.indices.push_back(i);
+    r.indices.push_back (static_cast<int> (i));
 
-    unsigned int found_points = queries_host.size ();
+    unsigned int found_points = static_cast<unsigned int> (queries_host.size ());
     unsigned int previous_found_points = 0;
 
     pcl::gpu::NeighborIndices result_device;

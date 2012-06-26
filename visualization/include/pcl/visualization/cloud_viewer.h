@@ -202,7 +202,7 @@ namespace pcl
         
       private:
         /** \brief Private implementation. */
-        class CloudViewer_impl;
+        struct CloudViewer_impl;
         std::auto_ptr<CloudViewer_impl> impl_;
         
         boost::signals2::connection 

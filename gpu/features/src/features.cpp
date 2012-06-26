@@ -47,7 +47,7 @@ using namespace pcl::device;
 /////////////////////////////////////////////////////////////////////////
 /// Feature
 
-pcl::gpu::Feature::Feature() { radius_ = 0.f, max_results_ = 0.f; } 
+pcl::gpu::Feature::Feature() { radius_ = 0.f, max_results_ = 0; } 
 void pcl::gpu::Feature::setInputCloud(const PointCloud& cloud) { cloud_ = cloud; }
 void pcl::gpu::Feature::setSearchSurface(const PointCloud& surface) { surface_ = surface; }
 void pcl::gpu::Feature::setIndices(const Indices& indices) { indices_ = indices; }
@@ -134,7 +134,7 @@ void pcl::gpu::PFHEstimation::compute(const PointCloud& cloud, const Normals& no
     const device::PointCloud& c = (const device::PointCloud&)cloud;
     const device::Normals&    n = (const device::Normals&)normals;    
 
-    features.create(neighbours.sizes.size(), 1);
+    features.create (static_cast<int> (neighbours.sizes.size ()), 1);
 
     DeviceArray2D<device::PFHSignature125>& f = (DeviceArray2D<device::PFHSignature125>&)features;
 
@@ -172,7 +172,7 @@ void pcl::gpu::PFHRGBEstimation::compute(const PointCloud& cloud, const Normals&
     const device::PointCloud& c = (const device::PointCloud&)cloud;
     const device::Normals&    n = (const device::Normals&)normals;    
 
-    features.create(neighbours.sizes.size(), 1);
+    features.create (static_cast<int> (neighbours.sizes.size ()), 1);
 
     DeviceArray2D<device::PFHRGBSignature250>& f = (DeviceArray2D<device::PFHRGBSignature250>&)features;
 
@@ -221,8 +221,8 @@ void pcl::gpu::FPFHEstimation::compute(const PointCloud& cloud, const Normals& n
     const device::PointCloud& c = (const device::PointCloud&)cloud;
     const device::Normals&    n = (const device::Normals&)normals;    
 
-    features.create(cloud.size(), 1);    
-    spfh.create(cloud.size(), 1);
+    features.create (static_cast<int> (cloud.size ()), 1);    
+    spfh.create (static_cast<int> (cloud.size ()), 1);
 
     DeviceArray2D<device::FPFHSignature33>& s = (DeviceArray2D<device::FPFHSignature33>&)spfh;
     DeviceArray2D<device::FPFHSignature33>& f = (DeviceArray2D<device::FPFHSignature33>&)features;
@@ -236,11 +236,11 @@ void pcl::gpu::FPFHEstimation::compute(DeviceArray2D<FPFHSignature33>& features)
     bool hasInds = !indices_.empty() && indices_.size() != cloud_.size();
     bool hasSurf = !surface_.empty();
 
-    features.create( hasInds ? indices_.size() : cloud_.size(), 1);
+    features.create (static_cast<int> (hasInds ? indices_.size () : cloud_.size ()), 1);
 
     if (!hasInds && !hasSurf)
     {
-        features.create(cloud_.size(), 1);
+        features.create (static_cast<int> (cloud_.size ()), 1);
         octree_.setCloud(cloud_);
         octree_.build();
         assert( cloud_.size() == normals_.size());    
@@ -507,7 +507,7 @@ void pcl::gpu::SpinImageEstimation::compute(DeviceArray2D<SpinImage>& features, 
 	Static<sizeof(SpinImageEstimation:: PointType) == sizeof(device:: PointType)>::check();
     Static<sizeof(SpinImageEstimation::NormalType) == sizeof(device::NormalType)>::check();
 
-	features.create(indices_.size(), 1);
+	features.create (static_cast<int> (indices_.size ()), 1);
 	mask.create(indices_.size());
 
 	//////////////////////////////
