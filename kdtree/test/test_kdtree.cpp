@@ -133,9 +133,6 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   {
     KdTreeFLANN<MyPoint> kdtree;
     kdtree.setInputCloud (cloud_big.makeShared ());
-    // preallocate indices and dists arrays
-    k_indices.resize(cloud_big.points.size ());
-    k_distances.resize(cloud_big.points.size ());
 
     ScopeTime scopeTime ("FLANN radiusSearch");
     {
@@ -145,11 +142,21 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   }
   
   {
+    KdTreeFLANN<MyPoint> kdtree;
+    kdtree.setInputCloud (cloud_big.makeShared ());
+
+    ScopeTime scopeTime ("FLANN radiusSearch (max neighbors in radius)");
+    {
+      for (size_t i = 0; i < cloud_big.points.size (); ++i)
+        kdtree.radiusSearch (cloud_big.points[i], 0.1, k_indices, k_distances, 10);
+    }
+  }
+  
+  
+  {
     KdTreeFLANN<MyPoint> kdtree (false);
     kdtree.setInputCloud (cloud_big.makeShared ());
-    // preallocate indices and dists arrays
-    k_indices.resize(cloud_big.points.size ());
-    k_distances.resize(cloud_big.points.size ());
+	
     ScopeTime scopeTime ("FLANN radiusSearch (unsorted results)");
     {
       for (size_t i = 0; i < cloud_big.points.size (); ++i)
@@ -190,9 +197,6 @@ TEST (PCL, KdTreeFLANN_radiusSearchEigen)
   {
     KdTreeFLANN<Eigen::MatrixXf> kdtree;
     kdtree.setInputCloud (cloud_eigen.makeShared ());
-    // preallocate indices and dists arrays
-    k_indices.resize (cloud_eigen.points.rows ());
-    k_distances.resize (cloud_eigen.points.rows ());
 
     ScopeTime scopeTime ("FLANN radiusSearch");
     {
@@ -204,9 +208,7 @@ TEST (PCL, KdTreeFLANN_radiusSearchEigen)
   {
     KdTreeFLANN<Eigen::MatrixXf> kdtree (false);
     kdtree.setInputCloud (cloud_eigen.makeShared ());
-    // preallocate indices and dists arrays
-    k_indices.resize (cloud_eigen.points.rows ());
-    k_distances.resize (cloud_eigen.points.rows ());
+
     ScopeTime scopeTime ("FLANN radiusSearch (unsorted results)");
     {
       for (int i = 0; i < cloud_eigen.points.rows (); ++i)
