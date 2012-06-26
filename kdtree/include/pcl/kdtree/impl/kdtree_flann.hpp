@@ -121,48 +121,27 @@ pcl::KdTreeFLANN<PointT, Dist>::radiusSearch (const PointT &point, double radius
   std::vector<float> query (dim_);
   point_representation_->vectorize (static_cast<PointT> (point), query);
 
-  int neighbors_in_radius = 0;
+  // Has max_nn been set properly?
+  if (max_nn == 0 || max_nn > static_cast<unsigned int> (total_nr_points_))
+    max_nn = total_nr_points_;
 
-  // If the user pre-allocated the arrays, we are only going to 
-  if (k_indices.size () == static_cast<size_t> (total_nr_points_) && 
-      k_sqr_dists.size () == static_cast<size_t> (total_nr_points_))
-  {
-    flann::Matrix<int> k_indices_mat (&k_indices[0], 1, k_indices.size ());
-    flann::Matrix<float> k_distances_mat (&k_sqr_dists[0], 1, k_sqr_dists.size ());
-    neighbors_in_radius = flann_index_->radiusSearch (flann::Matrix<float> (&query[0], 1, dim_),
-                                                      k_indices_mat,
-                                                      k_distances_mat,
-                                                      static_cast<float> (radius * radius), 
-                                                      param_radius_);
-  }
+  std::vector<std::vector<int> > indices(1);
+  std::vector<std::vector<float> > dists(1);
+
+  flann::SearchParams params(param_radius_);
+  if (max_nn == static_cast<unsigned int>(total_nr_points_))
+    params.max_neighbors = -1;  // return all neighbors in radius
   else
-  {
-    // Has max_nn been set properly?
-    if (max_nn == 0 || max_nn > static_cast<unsigned int> (total_nr_points_))
-      max_nn = total_nr_points_;
+    params.max_neighbors = max_nn;
 
-    static flann::Matrix<int> indices_empty;
-    static flann::Matrix<float> dists_empty;
-    neighbors_in_radius = flann_index_->radiusSearch (flann::Matrix<float> (&query[0], 1, dim_),
-                                                      indices_empty,
-                                                      dists_empty,
-                                                      static_cast<float> (radius * radius), 
-                                                      param_radius_);
-    neighbors_in_radius = std::min (static_cast<unsigned int> (neighbors_in_radius), max_nn);
+  int neighbors_in_radius = flann_index_->radiusSearch (flann::Matrix<float> (&query[0], 1, dim_),
+      indices,
+      dists,
+      static_cast<float> (radius * radius), 
+      params);
 
-    k_indices.resize (neighbors_in_radius);
-    k_sqr_dists.resize (neighbors_in_radius);
-    if(neighbors_in_radius != 0)
-    {
-      flann::Matrix<int> k_indices_mat (&k_indices[0], 1, k_indices.size ());
-      flann::Matrix<float> k_distances_mat (&k_sqr_dists[0], 1, k_sqr_dists.size ());
-      flann_index_->radiusSearch (flann::Matrix<float> (&query[0], 1, dim_),
-                                  k_indices_mat,
-                                  k_distances_mat,
-                                  static_cast<float> (radius * radius), 
-                                  param_radius_);
-    }
-  }
+  k_indices = indices[0];
+  k_sqr_dists = dists[0];
 
   // Do mapping to original point cloud
   if (!identity_mapping_) 
