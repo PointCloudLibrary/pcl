@@ -559,7 +559,7 @@ namespace pcl
   }
 }
 
-#define PCL_INSTANTIATE_PointCloudCompression(T) template class PCL_EXPORTS pcl::octree::PointCloudCompression<T>;
+#define PCL_INSTANTIATE_PointCloudCompression(T) template class PCL_EXPORTS pcl::octree::PointCloudCompression<T, pcl::octree::OctreeContainerDataTVector<int>, pcl::octree::OctreeContainerEmpty<int>, pcl::octree::Octree2BufBase<int, pcl::octree::OctreeContainerDataTVector<int>, pcl::octree::OctreeContainerEmpty<int> > >;
 
 #endif
 
