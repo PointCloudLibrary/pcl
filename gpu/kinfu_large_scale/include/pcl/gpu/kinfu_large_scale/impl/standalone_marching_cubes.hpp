@@ -65,7 +65,7 @@ pcl::gpu::StandaloneMarchingCubes<PointT>::StandaloneMarchingCubes (int new_voxe
 ///////////////////////////////////////////////////////////////////////////////
 
 template <typename PointT> typename pcl::gpu::StandaloneMarchingCubes<PointT>::MeshPtr
-pcl::gpu::StandaloneMarchingCubes<PointT>::getMeshFromTSDFCloud (PointCloud cloud)
+pcl::gpu::StandaloneMarchingCubes<PointT>::getMeshFromTSDFCloud (const PointCloud &cloud)
 {
 
   //Clearing TSDF GPU and cPU
@@ -88,7 +88,7 @@ pcl::gpu::StandaloneMarchingCubes<PointT>::getMeshFromTSDFCloud (PointCloud clou
 ///////////////////////////////////////////////////////////////////////////////
 
 template <typename PointT> std::vector< typename pcl::gpu::StandaloneMarchingCubes<PointT>::MeshPtr >
-pcl::gpu::StandaloneMarchingCubes<PointT>::getMeshesFromTSDFVector (std::vector<PointCloudPtr> tsdf_clouds, std::vector<Eigen::Vector3f> tsdf_offsets)
+pcl::gpu::StandaloneMarchingCubes<PointT>::getMeshesFromTSDFVector (const std::vector<PointCloudPtr> &tsdf_clouds, const std::vector<Eigen::Vector3f> &tsdf_offsets)
 {
   std::vector< MeshPtr > meshes_vector;
   
@@ -162,7 +162,7 @@ pcl::gpu::StandaloneMarchingCubes<PointT>::tsdfVolumeCPU ()
 ///////////////////////////////////////////////////////////////////////////////
 
 template <typename PointT> void
-pcl::gpu::StandaloneMarchingCubes<PointT>::loadTsdfCloudToGPU (PointCloud cloud)
+pcl::gpu::StandaloneMarchingCubes<PointT>::loadTsdfCloudToGPU (const PointCloud &cloud)
 {
   //Converting Values
   convertTsdfVectors (cloud, tsdf_volume_cpu_);
@@ -175,7 +175,7 @@ pcl::gpu::StandaloneMarchingCubes<PointT>::loadTsdfCloudToGPU (PointCloud cloud)
 ///////////////////////////////////////////////////////////////////////////////
 
 template <typename PointT> void 
-pcl::gpu::StandaloneMarchingCubes<PointT>::convertTsdfVectors (PointCloud cloud, std::vector<int> &output)
+pcl::gpu::StandaloneMarchingCubes<PointT>::convertTsdfVectors (const PointCloud &cloud, std::vector<int> &output)
 {
 	  const int DIVISOR = 32767;     // SHRT_MAX;
 

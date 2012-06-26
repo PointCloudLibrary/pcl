@@ -7,6 +7,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
+#include <pcl/pcl_exports.h>
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/containers/kernel_containers.h>
 #include <pcl/gpu/kinfu_large_scale/pixel_rgb.h> 
@@ -26,7 +27,7 @@ namespace pcl
     /** \brief Screenshot Manager saves a screenshot with the corresponding camera pose from Kinfu. Please create a folder named "KinFuSnapshots" in the folder where you call kinfu.
       * \author Francisco Heredia
       */
-    class ScreenshotManager
+    class PCL_EXPORTS ScreenshotManager
     {
       public:
 
