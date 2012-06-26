@@ -59,11 +59,13 @@ namespace pcl
      *  \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafT = OctreeLeafDataTVector<int> >
+    template<typename PointT, typename LeafT = OctreeContainerDataTVector<int>,
+        typename BranchT = OctreeContainerEmpty<int> >
 
-      class OctreePointCloudChangeDetector : public OctreePointCloud<PointT, LeafT, Octree2BufBase<int, LeafT> >
+    class OctreePointCloudChangeDetector : public OctreePointCloud<PointT,
+        LeafT, BranchT, Octree2BufBase<int, LeafT, BranchT> >
 
-      {
+    {
 
       public:
 
@@ -71,13 +73,13 @@ namespace pcl
          *  \param resolution_arg:  octree resolution at lowest octree level
          * */
         OctreePointCloudChangeDetector (const double resolution_arg) :
-          OctreePointCloud<PointT, LeafT, Octree2BufBase<int, LeafT> > (resolution_arg)
+            OctreePointCloud<PointT, LeafT, BranchT,
+                Octree2BufBase<int, LeafT, BranchT> > (resolution_arg)
         {
         }
 
         /** \brief Empty class constructor. */
-        virtual
-        ~OctreePointCloudChangeDetector ()
+        virtual ~OctreePointCloudChangeDetector ()
         {
         }
 
@@ -86,8 +88,8 @@ namespace pcl
          * \param minPointsPerLeaf_arg: minimum amount of points required within leaf node to become serialized.
          * \return number of point indices
          */
-        int
-        getPointIndicesFromNewVoxels (std::vector<int> &indicesVector_arg, const int minPointsPerLeaf_arg = 0)
+        int getPointIndicesFromNewVoxels (std::vector<int> &indicesVector_arg,
+            const int minPointsPerLeaf_arg = 0)
         {
           this->serializeNewLeafs (indicesVector_arg, minPointsPerLeaf_arg);
           return (static_cast<int> (indicesVector_arg.size ()));

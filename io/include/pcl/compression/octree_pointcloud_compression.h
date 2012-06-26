@@ -65,20 +65,23 @@ namespace pcl
      *  \note typename: PointT: type of point used in pointcloud
      *  \author Julius Kammerl (julius@kammerl.de)
      */
-    template<typename PointT, typename LeafT = OctreeLeafDataTVector<int> , typename OctreeT = Octree2BufBase<int,
-        OctreeLeafDataTVector<int> > >
-    class PointCloudCompression : public OctreePointCloud<PointT, LeafT, OctreeT>
+    template<typename PointT, typename LeafT = OctreeContainerDataTVector<int>,
+        typename BranchT = OctreeContainerEmpty<int>,
+        typename OctreeT = Octree2BufBase<int, LeafT, BranchT> >
+    class PointCloudCompression : public OctreePointCloud<PointT, LeafT,
+        BranchT, OctreeT>
     {
       public:
         // public typedefs
-        typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::PointCloud PointCloud;
-        typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::PointCloudPtr PointCloudPtr;
-        typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::PointCloudConstPtr PointCloudConstPtr;
+        typedef typename OctreePointCloud<PointT, LeafT, BranchT, OctreeT>::PointCloud PointCloud;
+        typedef typename OctreePointCloud<PointT, LeafT, BranchT, OctreeT>::PointCloudPtr PointCloudPtr;
+        typedef typename OctreePointCloud<PointT, LeafT, BranchT, OctreeT>::PointCloudConstPtr PointCloudConstPtr;
 
-        typedef typename OctreeT::OctreeLeaf OctreeLeaf;
+        typedef typename OctreeT::LeafNode LeafNode;
+        typedef typename OctreeT::BranchNode BranchNode;
 
-        typedef PointCloudCompression<PointT, LeafT, Octree2BufBase<int, LeafT> > RealTimeStreamCompression;
-        typedef PointCloudCompression<PointT, LeafT, OctreeLowMemBase<int, LeafT> > SinglePointCloudCompressionLowMemory;
+        typedef PointCloudCompression<PointT, LeafT, BranchT, Octree2BufBase<int, LeafT, BranchT> > RealTimeStreamCompression;
+        typedef PointCloudCompression<PointT, LeafT, BranchT, OctreeBase<int, LeafT, BranchT> > SinglePointCloudCompressionLowMemory;
 
         /** \brief Constructor
           * \param compressionProfile_arg:  define compression profile
@@ -98,7 +101,7 @@ namespace pcl
                                const unsigned int iFrameRate_arg = 30,
                                bool doColorEncoding_arg = true,
                                const unsigned char colorBitResolution_arg = 6) :
-          OctreePointCloud<PointT, LeafT, OctreeT> (octreeResolution_arg),
+          OctreePointCloud<PointT, LeafT, BranchT, OctreeT> (octreeResolution_arg),
           output_ (PointCloudPtr ()),
           binaryTreeDataVector_ (),
           binaryColorTreeVector_ (),
@@ -218,16 +221,17 @@ namespace pcl
         /** \brief Encode leaf node information during serialization
           * \param leaf_arg: reference to new leaf node
           * \param key_arg: octree key of new leaf node
-          */
+         */
         virtual void
-        serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg);
+        serializeTreeCallback (LeafNode &leaf_arg, const OctreeKey& key_arg);
 
         /** \brief Decode leaf nodes information during deserialization
           * \param leaf_arg: reference to new leaf node
-          * \param key_arg: octree key of new leaf node
-          */
+         * \param key_arg: octree key of new leaf node
+         */
         virtual void
-        deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg);
+        deserializeTreeCallback (LeafNode&, const OctreeKey& key_arg);
+
 
         /** \brief Pointer to output point cloud dataset. */
         PointCloudPtr output_;
@@ -276,8 +280,8 @@ namespace pcl
       };
 
     // define frame header initialization
-    template<typename PointT, typename LeafT, typename OctreeT>
-      const char* PointCloudCompression<PointT, LeafT, OctreeT>::frameHeaderIdentifier_ = "<PCL-COMPRESSED>";
+    template<typename PointT, typename LeafT, typename BranchT, typename OctreeT>
+      const char* PointCloudCompression<PointT, LeafT, BranchT, OctreeT>::frameHeaderIdentifier_ = "<PCL-COMPRESSED>";
   }
 
 }

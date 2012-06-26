@@ -61,30 +61,34 @@ namespace pcl
      *  \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafT = OctreeLeafDataTVector<int> , typename OctreeT = OctreeBase<int, LeafT> >
-      class OctreePointCloudPointVector : public OctreePointCloud<PointT, LeafT, OctreeT>
-      {
+    template<typename PointT, typename LeafT = OctreeContainerDataTVector<int>,
+        typename BranchT = OctreeContainerEmpty<int>,
+        typename OctreeT = OctreeBase<int, LeafT, BranchT> >
+    class OctreePointCloudPointVector : public OctreePointCloud<PointT, LeafT,
+        BranchT, OctreeT>
+    {
 
       public:
         // public typedefs for single/double buffering
-        typedef OctreePointCloudPointVector<PointT, LeafT, OctreeBase<int, LeafT> > SingleBuffer;
-        typedef OctreePointCloudPointVector<PointT, LeafT, Octree2BufBase<int, LeafT> > DoubleBuffer;
+        typedef OctreePointCloudPointVector<PointT, LeafT, BranchT,
+            OctreeBase<int, LeafT, BranchT> > SingleBuffer;
+        typedef OctreePointCloudPointVector<PointT, LeafT, BranchT,
+            Octree2BufBase<int, LeafT, BranchT> > DoubleBuffer;
 
         /** \brief Constructor.
          *  \param resolution_arg: octree resolution at lowest octree level
          * */
         OctreePointCloudPointVector (const double resolution_arg) :
-          OctreePointCloud<PointT, LeafT, OctreeT> (resolution_arg)
+            OctreePointCloud<PointT, LeafT, BranchT, OctreeT> (resolution_arg)
         {
         }
 
         /** \brief Empty class constructor. */
-        virtual
-        ~OctreePointCloudPointVector ()
+        virtual ~OctreePointCloudPointVector ()
         {
         }
 
-      };
+    };
   }
 }
 

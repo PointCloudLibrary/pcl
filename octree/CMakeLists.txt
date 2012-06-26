@@ -14,7 +14,7 @@ if(build)
 
     set(incs 
         include/pcl/${SUBSYS_NAME}/octree_base.h 
-        include/pcl/${SUBSYS_NAME}/octree_base_state.h
+        include/pcl/${SUBSYS_NAME}/octree_container.h
         include/pcl/${SUBSYS_NAME}/octree_impl.h 
         include/pcl/${SUBSYS_NAME}/octree_nodes.h
         include/pcl/${SUBSYS_NAME}/octree_key.h 
@@ -29,14 +29,12 @@ if(build)
         include/pcl/${SUBSYS_NAME}/octree_search.h        
         include/pcl/${SUBSYS_NAME}/octree.h
         include/pcl/${SUBSYS_NAME}/octree2buf_base.h
-        include/pcl/${SUBSYS_NAME}/octree_lowmemory_base.h
         )
 
     set(impl_incs    
         include/pcl/${SUBSYS_NAME}/impl/octree_base.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud.hpp
-        include/pcl/${SUBSYS_NAME}/impl/octree2buf_base.hpp
-        include/pcl/${SUBSYS_NAME}/impl/octree_lowmemory_base.hpp      
+        include/pcl/${SUBSYS_NAME}/impl/octree2buf_base.hpp   
         include/pcl/${SUBSYS_NAME}/impl/octree_iterator.hpp      
         include/pcl/${SUBSYS_NAME}/impl/octree_search.hpp        
         )

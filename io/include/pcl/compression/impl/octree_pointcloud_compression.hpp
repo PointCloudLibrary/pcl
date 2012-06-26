@@ -54,11 +54,13 @@ namespace pcl
   namespace octree
   {
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafT, typename OctreeT> void
-    PointCloudCompression<PointT, LeafT, OctreeT>::encodePointCloud (const PointCloudConstPtr &cloud_arg,
-                                                                     std::ostream& compressedTreeDataOut_arg)
+    template<typename PointT, typename LeafT, typename BranchT, typename OctreeT> void PointCloudCompression<
+        PointT, LeafT, BranchT, OctreeT>::encodePointCloud (
+        const PointCloudConstPtr &cloud_arg,
+        std::ostream& compressedTreeDataOut_arg)
     {
-      unsigned char recentTreeDepth = static_cast<unsigned char> (this->getTreeDepth ());
+      unsigned char recentTreeDepth =
+          static_cast<unsigned char> (this->getTreeDepth ());
 
       // initialize octree
       this->setInputCloud (cloud_arg);
@@ -168,8 +170,8 @@ namespace pcl
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafT, typename OctreeT> void
-    PointCloudCompression<PointT, LeafT, OctreeT>::decodePointCloud (
+    template<typename PointT, typename LeafT, typename BranchT, typename OctreeT> void
+    PointCloudCompression<PointT, LeafT, BranchT, OctreeT>::decodePointCloud (
         std::istream& compressedTreeDataIn_arg,
         PointCloudPtr &cloud_arg)
     {
@@ -245,8 +247,8 @@ namespace pcl
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafT, typename OctreeT> void
-    PointCloudCompression<PointT, LeafT, OctreeT>::entropyEncoding (std::ostream& compressedTreeDataOut_arg)
+    template<typename PointT, typename LeafT, typename BranchT, typename OctreeT> void
+    PointCloudCompression<PointT, LeafT, BranchT, OctreeT>::entropyEncoding (std::ostream& compressedTreeDataOut_arg)
     {
       uint64_t binaryTreeDataVector_size;
       uint64_t pointAvgColorDataVector_size;
@@ -305,8 +307,8 @@ namespace pcl
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafT, typename OctreeT> void
-    PointCloudCompression<PointT, LeafT, OctreeT>::entropyDecoding (std::istream& compressedTreeDataIn_arg)
+    template<typename PointT, typename LeafT, typename BranchT, typename OctreeT> void
+    PointCloudCompression<PointT, LeafT, BranchT, OctreeT>::entropyDecoding (std::istream& compressedTreeDataIn_arg)
     {
       uint64_t binaryTreeDataVector_size;
       uint64_t pointAvgColorDataVector_size;
@@ -362,8 +364,8 @@ namespace pcl
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafT, typename OctreeT> void
-    PointCloudCompression<PointT, LeafT, OctreeT>::writeFrameHeader (std::ostream& compressedTreeDataOut_arg)
+    template<typename PointT, typename LeafT, typename BranchT, typename OctreeT> void
+    PointCloudCompression<PointT, LeafT, BranchT, OctreeT>::writeFrameHeader (std::ostream& compressedTreeDataOut_arg)
     {
       // encode header identifier
       compressedTreeDataOut_arg.write (reinterpret_cast<const char*> (frameHeaderIdentifier_), strlen (frameHeaderIdentifier_));
@@ -409,8 +411,8 @@ namespace pcl
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafT, typename OctreeT> void
-    PointCloudCompression<PointT, LeafT, OctreeT>::syncToHeader ( std::istream& compressedTreeDataIn_arg)
+    template<typename PointT, typename LeafT, typename BranchT, typename OctreeT> void
+    PointCloudCompression<PointT, LeafT, BranchT, OctreeT>::syncToHeader ( std::istream& compressedTreeDataIn_arg)
     {
       // sync to frame header
       unsigned int headerIdPos = 0;
@@ -424,8 +426,8 @@ namespace pcl
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafT, typename OctreeT> void
-    PointCloudCompression<PointT, LeafT, OctreeT>::readFrameHeader ( std::istream& compressedTreeDataIn_arg)
+    template<typename PointT, typename LeafT, typename BranchT, typename OctreeT> void
+    PointCloudCompression<PointT, LeafT, BranchT, OctreeT>::readFrameHeader ( std::istream& compressedTreeDataIn_arg)
     {
       // read header
       compressedTreeDataIn_arg.read (reinterpret_cast<char*> (&frameID_), sizeof (frameID_));
@@ -465,8 +467,9 @@ namespace pcl
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafT, typename OctreeT> void
-    PointCloudCompression<PointT, LeafT, OctreeT>::serializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg)
+    template<typename PointT, typename LeafT, typename BranchT, typename OctreeT> void
+    PointCloudCompression<PointT, LeafT, BranchT, OctreeT>::serializeTreeCallback (
+        LeafNode &leaf_arg, const OctreeKey & key_arg)
     {
       // reference to point indices vector stored within octree leaf
       const std::vector<int>& leafIdx = leaf_arg.getIdxVector ();
@@ -499,8 +502,9 @@ namespace pcl
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafT, typename OctreeT> void
-    PointCloudCompression<PointT, LeafT, OctreeT>::deserializeLeafCallback (OctreeLeaf&, const OctreeKey& key_arg)
+    template<typename PointT, typename LeafT, typename BranchT, typename OctreeT> void
+    PointCloudCompression<PointT, LeafT, BranchT, OctreeT>::deserializeTreeCallback (LeafNode&,
+        const OctreeKey& key_arg)
     {
       double lowerVoxelCorner[3];
       std::size_t pointCount, i, cloudSize;

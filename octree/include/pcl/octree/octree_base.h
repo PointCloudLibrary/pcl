@@ -43,6 +43,7 @@
 #include <vector>
 
 #include "octree_nodes.h"
+#include "octree_container.h"
 #include "octree_key.h"
 #include "octree_iterator.h"
 
@@ -54,32 +55,38 @@ namespace pcl
       * \note The tree depth defines the maximum amount of octree voxels / leaf nodes (should be initially defined).
       * \note All leaf nodes are addressed by integer indices.
       * \note Note: The tree depth equates to the bit length of the voxel indices.
-      * \ingroup octree
-      * \author Julius Kammerl (julius@kammerl.de)
-      */
-    template<typename DataT, typename LeafT = OctreeLeafDataT<DataT>, typename OctreeBranchT = OctreeBranch>
+     * \ingroup octree
+     * \author Julius Kammerl (julius@kammerl.de)
+     */
+    template<typename DataT, typename LeafT = OctreeContainerDataT<DataT>,
+        typename BranchT = OctreeContainerEmpty<DataT> >
     class OctreeBase
     {
-      // iterators are friends
-      friend class OctreeIteratorBase<DataT, LeafT, OctreeBase> ;
-      friend class OctreeDepthFirstIterator<DataT, LeafT, OctreeBase> ;
-      friend class OctreeBreadthFirstIterator<DataT, LeafT, OctreeBase> ;
-      friend class OctreeLeafNodeIterator<DataT, LeafT, OctreeBase> ;
+        typedef OctreeBase<DataT,LeafT,BranchT> OctreeT;
+
+        // iterators are friends
+         friend class OctreeIteratorBase<DataT, OctreeT> ;
+         friend class OctreeDepthFirstIterator<DataT, OctreeT> ;
+         friend class OctreeBreadthFirstIterator<DataT, OctreeT> ;
+         friend class OctreeLeafNodeIterator<DataT, OctreeT> ;
 
       public:
-        typedef OctreeBranchT OctreeBranch;
+
+        typedef OctreeBranchNode<BranchT> BranchNode;
+        typedef OctreeLeafNode<LeafT> LeafNode;
 
         // Octree iterators
-        typedef OctreeDepthFirstIterator<DataT, LeafT, OctreeBase> Iterator;
-        typedef const OctreeDepthFirstIterator<DataT, LeafT, OctreeBase> ConstIterator;
+        typedef OctreeDepthFirstIterator<DataT, OctreeT> Iterator;
+        typedef const OctreeDepthFirstIterator<DataT, OctreeT> ConstIterator;
 
-        typedef OctreeLeafNodeIterator<DataT, LeafT, OctreeBase> LeafNodeIterator;
-        typedef const OctreeLeafNodeIterator<DataT, LeafT, OctreeBase> ConstLeafNodeIterator;
+        typedef OctreeLeafNodeIterator<DataT, OctreeT> LeafNodeIterator;
+        typedef const OctreeLeafNodeIterator<DataT, OctreeT> ConstLeafNodeIterator;
 
-        typedef OctreeDepthFirstIterator<DataT, LeafT, OctreeBase> DepthFirstIterator;
-        typedef const OctreeDepthFirstIterator<DataT, LeafT, OctreeBase> ConstDepthFirstIterator;
-        typedef OctreeBreadthFirstIterator<DataT, LeafT, OctreeBase> BreadthFirstIterator;
-        typedef const OctreeBreadthFirstIterator<DataT, LeafT, OctreeBase> ConstBreadthFirstIterator;
+        typedef OctreeDepthFirstIterator<DataT, OctreeT> DepthFirstIterator;
+        typedef const OctreeDepthFirstIterator<DataT, OctreeT> ConstDepthFirstIterator;
+        typedef OctreeBreadthFirstIterator<DataT, OctreeT> BreadthFirstIterator;
+        typedef const OctreeBreadthFirstIterator<DataT, OctreeT> ConstBreadthFirstIterator;
+
 
         /** \brief Empty constructor. */
         OctreeBase ();
@@ -93,7 +100,7 @@ namespace pcl
           leafCount_ (source.leafCount_),
           branchCount_ (source.branchCount_),
           objectCount_ (source.objectCount_),
-          rootNode_ (new (OctreeBranch) (*(source.rootNode_))),
+          rootNode_ (new (BranchNode) (*(source.rootNode_))),
           depthMask_ (source.depthMask_),
           octreeDepth_ (source.octreeDepth_),
           maxKey_ (source.maxKey_),
@@ -109,7 +116,7 @@ namespace pcl
           leafCount_ = source.leafCount_;
           branchCount_ = source.branchCount_;
           objectCount_ = source.objectCount_;
-          rootNode_ = new (OctreeBranch) (*(source.rootNode_));
+          rootNode_ = new (BranchNode) (*(source.rootNode_));
           depthMask_ = source.depthMask_;
           maxKey_ = source.maxKey_;
           octreeDepth_ = source.octreeDepth_;
@@ -144,7 +151,7 @@ namespace pcl
          *  \param data_arg: const reference to DataT object to be added.
          * */
         void
-        add (unsigned int idxX_arg, unsigned int idxY_arg, unsigned int idxZ_arg,
+        addData (unsigned int idxX_arg, unsigned int idxY_arg, unsigned int idxZ_arg,
              const DataT& data_arg);
 
         /** \brief Retrieve a DataT element from leaf node at (idxX, idxY, idxZ). It returns false if leaf node does not exist.
@@ -155,7 +162,7 @@ namespace pcl
          *  \return "true" if leaf node search is successful, otherwise it returns "false".
          * */
         bool
-        get (unsigned int idxX_arg, unsigned int idxY_arg, unsigned int idxZ_arg, DataT& data_arg) const ;
+        getData (unsigned int idxX_arg, unsigned int idxY_arg, unsigned int idxZ_arg, DataT& data_arg) const ;
 
         /** \brief Check for the existence of leaf node at (idxX, idxY, idxZ).
          *  \param idxX_arg: index of leaf node in the X axis.
@@ -238,20 +245,10 @@ namespace pcl
         deserializeTreeAndOutputLeafData (std::vector<char>& binaryTreeIn_arg, std::vector<DataT>& dataVector_arg);
 
       protected:
-
-
-        typedef LeafT OctreeLeaf;
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Protected octree methods based on octree keys
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /** \brief Retrieve root node */
-        const OctreeNode*
-        getRootNode () const
-        {
-          return (this->rootNode_);
-        }
 
         /** \brief Virtual method for generating an octree key for a given DataT object.
           * \param[in] data_arg reference to DataT object
@@ -282,10 +279,10 @@ namespace pcl
          *  \param data_arg: DataT object to be added.
          * */
         inline void
-        add (const OctreeKey& key_arg, const DataT& data_arg)
+        addData (const OctreeKey& key_arg, const DataT& data_arg)
         {
           // request a (new) leaf from tree
-          LeafT* leaf = createLeaf (key_arg);
+          LeafNode* leaf = createLeaf (key_arg);
 
           // assign data to leaf
           if (leaf)
@@ -299,10 +296,12 @@ namespace pcl
          *  \param key_arg: octree key addressing a leaf node.
          *  \return pointer to leaf node. If leaf node is not found, this pointer returns 0.
          * */
-        inline LeafT*
+        inline LeafNode*
         findLeaf (const OctreeKey& key_arg) const
         {
-          return findLeafRecursive (key_arg, depthMask_, rootNode_);
+          LeafNode* result;
+          findLeafRecursive (key_arg, depthMask_, rootNode_, result);
+          return result;
         }
 
         /** \brief Create a leaf node in the octree.
@@ -310,10 +309,12 @@ namespace pcl
          *  \param key_arg: octree key addressing a leaf node.
          *  \return pointer to an existing or created leaf node.
          * */
-        inline LeafT*
+        inline LeafNode*
         createLeaf (const OctreeKey& key_arg)
         {
-          return createLeafRecursive (key_arg, depthMask_, rootNode_);
+          LeafNode* result;
+          createLeafRecursive (key_arg, depthMask_, rootNode_, result);
+          return result;
         }
 
         /** \brief Check for existance of a leaf node in the octree
@@ -323,7 +324,10 @@ namespace pcl
         inline bool
         existLeaf (const OctreeKey& key_arg) const
         {
-          return ((key_arg <= maxKey_) && (findLeafRecursive (key_arg, depthMask_, rootNode_) != 0));
+          LeafNode* leafNode = 0;
+          if (key_arg <= maxKey_)
+            findLeafRecursive (key_arg, depthMask_, rootNode_, leafNode);
+          return (leafNode != 0);
         }
 
         /** \brief Remove leaf node from octree
@@ -340,26 +344,11 @@ namespace pcl
         // Branch node accessor inline functions
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        /** \brief Retrieve a const child node pointer for child node at childIdx.
-          * \param[in] branch_arg reference to octree branch class
-          * \param[in] childIdx_arg index to child node
-          * \return const pointer to octree child node class
-          */
-        inline OctreeNode*
-        getBranchChild (OctreeBranch& branch_arg, const unsigned char childIdx_arg) const
+        /** \brief Retrieve root node */
+        OctreeNode*
+        getRootNode () const
         {
-          return (branch_arg[childIdx_arg]);
-        }
-
-        /** \brief Retrieve a const child node pointer for child node at childIdx.
-          * \param[in] branch_arg reference to octree branch class
-          * \param[in] childIdx_arg index to child node
-          * \return const pointer to octree child node class
-          */
-        inline const OctreeNode*
-        getBranchChild (const OctreeBranch& branch_arg, const unsigned char childIdx_arg) const
-        {
-          return (branch_arg[childIdx_arg]);
+          return this->rootNode_;
         }
 
         /** \brief Check if branch is pointing to a particular child node
@@ -368,38 +357,113 @@ namespace pcl
          *  \return "true" if pointer to child node exists; "false" otherwise
          * */
         inline bool
-        branchHasChild (const OctreeBranch& branch_arg, const unsigned char childIdx_arg) const
+        branchHasChild (const BranchNode& branch_arg, unsigned char childIdx_arg) const
         {
-          return (branch_arg[childIdx_arg] != 0);
+          // test occupancyByte for child existence
+          return (branch_arg.getChildPtr(childIdx_arg) != 0);
         }
 
+        /** \brief Retrieve a child node pointer for child node at childIdx.
+         * \param branch_arg: reference to octree branch class
+         * \param childIdx_arg: index to child node
+         * \return pointer to octree child node class
+         */
+        inline OctreeNode*
+        getBranchChildPtr (const BranchNode& branch_arg,
+            unsigned char childIdx_arg) const
+        {
+          return branch_arg.getChildPtr(childIdx_arg);
+        }
+
+        /** \brief Assign new child node to branch
+         *  \param branch_arg: reference to octree branch class
+         *  \param childIdx_arg: index to child node
+         *  \param newChild_arg: pointer to new child node
+         * */
+        inline void setBranchChildPtr (BranchNode& branch_arg,
+            unsigned char childIdx_arg, OctreeNode* newChild_arg)
+        {
+          branch_arg[childIdx_arg] = newChild_arg;
+        }
+
+        /** \brief Get data from octree node
+         *  \param node_arg: node in octree
+         *  \param data_arg: obtain single DataT object from octree node
+         * */
+        inline void getDataFromOctreeNode (const OctreeNode* node_arg,
+            DataT& data_arg)
+        {
+          if (node_arg->getNodeType () == LEAF_NODE)
+          {
+            const LeafT* leafContainer = dynamic_cast<const LeafT*> (node_arg);
+            leafContainer->getData (data_arg);
+          }
+          else
+          {
+            const BranchT* branchContainer =
+                dynamic_cast<const BranchT*> (node_arg);
+            branchContainer->getData (data_arg);
+          }
+        }
+
+        /** \brief Get data from octree node
+         *  \param node_arg: node in octree
+         *  \param data_arg: obtain vector of all DataT objects stored in octree node
+         * */
+        inline void getDataFromOctreeNode (const OctreeNode* node_arg,
+            std::vector<DataT>& data_arg)
+        {
+          if (node_arg->getNodeType () == LEAF_NODE)
+          {
+            const LeafT* leafContainer = dynamic_cast<const LeafT*> (node_arg);
+            leafContainer->getData (data_arg);
+          }
+          else
+          {
+            const BranchT* branchContainer =
+                dynamic_cast<const BranchT*> (node_arg);
+            branchContainer->getData (data_arg);
+          }
+        }
+
+        /** \brief Get data size of octree node container
+         *  \param node_arg: node in octree
+         *  \return data_arg: returns number of DataT objects stored in node container
+         * */
+        inline size_t getDataSizeFromOctreeNode (const OctreeNode* node_arg)
+        {
+          size_t nodeSize;
+          if (node_arg->getNodeType () == LEAF_NODE)
+          {
+            const LeafT* leafContainer = dynamic_cast<const LeafT*> (node_arg);
+            nodeSize = leafContainer->getSize ();
+          }
+          else
+          {
+            const BranchT* branchContainer =
+                dynamic_cast<const BranchT*> (node_arg);
+            nodeSize = branchContainer->getSize ();
+          }
+          return nodeSize;
+        }
         /** \brief Generate bit pattern reflecting the existence of child node pointers
          *  \param branch_arg: reference to octree branch class
          *  \return a single byte with 8 bits of child node information
          * */
         inline char
-        getBranchBitPattern (const OctreeBranch& branch_arg) const
+        getBranchBitPattern (const BranchNode& branch_arg) const
         {
           unsigned char i;
           char nodeBits;
 
           // create bit pattern
           nodeBits = 0;
-          for (i = 0; i < 8; i++)
-            nodeBits |= static_cast<char> ((!!branch_arg[i]) << i);
+          for (i = 0; i < 8; i++) {
+            const OctreeNode* child = branch_arg.getChildPtr(i);
+            nodeBits |= static_cast<char> ((!!child) << i);
+          }
 
           return (nodeBits);
-        }
-         
-        /** \brief Assign new child node to branch
-         *  \param branch_arg: reference to octree branch class
-         *  \param childIdx_arg: index to child node
-         *  \param newChild_arg: pointer to new child node
-         * */
-        inline void
-        setBranchChild (OctreeBranch& branch_arg, const unsigned char childIdx_arg, OctreeNode *newChild_arg)
-        {
-          branch_arg[childIdx_arg] = newChild_arg;
         }
 
         /** \brief Delete child node and all its subchilds from octree
@@ -407,27 +471,27 @@ namespace pcl
          *  \param childIdx_arg: index to child node
          * */
         inline void
-        deleteBranchChild (OctreeBranch& branch_arg, const unsigned char childIdx_arg)
+        deleteBranchChild (BranchNode& branch_arg, unsigned char childIdx_arg)
         {
-          if (branchHasChild (branch_arg, childIdx_arg))
+          if (branch_arg.hasChild(childIdx_arg))
           {
-            OctreeNode* branchChild = getBranchChild (branch_arg, childIdx_arg);
+            OctreeNode* branchChild = branch_arg[childIdx_arg];
             
             switch (branchChild->getNodeType ())
             {
               case BRANCH_NODE:
               {
                 // free child branch recursively
-                deleteBranch (*static_cast<OctreeBranch*> (branchChild));
+                deleteBranch (*static_cast<BranchNode*> (branchChild));
                 // push unused branch to branch pool
-                unusedBranchesPool_.push_back (static_cast<OctreeBranch*> (branchChild));
+                unusedBranchesPool_.push_back (static_cast<BranchNode*> (branchChild));
               }
               break;
 
               case LEAF_NODE:
               {
                 // push unused leaf to branch pool
-                unusedLeafsPool_.push_back (static_cast<OctreeLeaf*> (branchChild));
+                unusedLeafsPool_.push_back (static_cast<LeafNode*> (branchChild));
                 break;
               } 
               default:
@@ -435,7 +499,7 @@ namespace pcl
             }
 
             // set branch child pointer to 0
-            setBranchChild (branch_arg, childIdx_arg, 0);
+            branch_arg[childIdx_arg] = 0;
           }
         }
 
@@ -443,7 +507,7 @@ namespace pcl
          *  \param branch_arg: reference to octree branch class
          * */
         inline void
-        deleteBranch (OctreeBranch& branch_arg)
+        deleteBranch (BranchNode& branch_arg)
         {
           char i;
 
@@ -456,13 +520,13 @@ namespace pcl
          *  \param newBranchChild_arg: writes a pointer of new branch child to this reference
          * */
         inline void
-        createBranch (OctreeBranch*& newBranchChild_arg)
+        createBranch (BranchNode*& newBranchChild_arg)
         {
           if (!unusedBranchesPool_.size ())
           {
             // branch pool is empty
             // we need to create a new octree branch class
-            newBranchChild_arg = static_cast<OctreeBranch*> (new OctreeBranch ());
+            newBranchChild_arg = static_cast<BranchNode*> (new BranchNode ());
           }
           else
           {
@@ -479,11 +543,11 @@ namespace pcl
          *  \param newBranchChild_arg: write a pointer of new branch child to this reference
          * */
         inline void
-        createBranchChild (OctreeBranch& branch_arg, const unsigned char childIdx_arg,
-                           OctreeBranch*& newBranchChild_arg)
+        createBranchChild (BranchNode& branch_arg, unsigned char childIdx_arg,
+                           BranchNode*& newBranchChild_arg)
         {
           createBranch (newBranchChild_arg);
-          setBranchChild (branch_arg, childIdx_arg, static_cast<OctreeNode*> (newBranchChild_arg));
+          branch_arg[childIdx_arg] = static_cast<OctreeNode*> (newBranchChild_arg);
         }
 
         /** \brief Create and add a new leaf child to a branch class
@@ -492,14 +556,14 @@ namespace pcl
          *  \param newLeafChild_arg: writes a pointer of new leaf child to this reference
          * */
         inline void
-        createLeafChild (OctreeBranch& branch_arg, const unsigned char childIdx_arg, OctreeLeaf*& newLeafChild_arg)
+        createLeafChild (BranchNode& branch_arg, unsigned char childIdx_arg, LeafNode*& newLeafChild_arg)
         {
 
           if (!unusedLeafsPool_.size ())
           {
             // leaf pool is empty
             // we need to create a new octree leaf class
-            newLeafChild_arg = static_cast<OctreeLeaf*> (new OctreeLeaf ());
+            newLeafChild_arg = static_cast<LeafNode*> (new LeafNode ());
           }
           else
           {
@@ -510,14 +574,14 @@ namespace pcl
 
           newLeafChild_arg->reset ();
 
-          setBranchChild (branch_arg, childIdx_arg, static_cast<OctreeNode*> (newLeafChild_arg));
+          branch_arg[childIdx_arg] = static_cast<OctreeNode*> (newLeafChild_arg);
         }
 
         /** \brief Reset branch class
          *  \param branch_arg: reference to octree branch class
          * */
         inline void
-        branchReset (OctreeBranch& branch_arg)
+        branchReset (BranchNode& branch_arg)
         {
           branch_arg.reset ();
         }
@@ -550,20 +614,20 @@ namespace pcl
          *  \param key_arg: reference to an octree key
          *  \param depthMask_arg: depth mask used for octree key analysis and for branch depth indicator
          *  \param branch_arg: current branch node
-         *  \return pointer to leaf node class
+         *  \param result_arg: pointer to leaf node class
          **/
-        LeafT*
-        createLeafRecursive (const OctreeKey& key_arg, unsigned int depthMask_arg, OctreeBranch* branch_arg);
+        void
+        createLeafRecursive (const OctreeKey& key_arg, unsigned int depthMask_arg, BranchNode* branch_arg, LeafNode*& result_arg);
 
         /** \brief Recursively search for a given leaf node and return a pointer.
          *  \note  If leaf node does not exist, a 0 pointer is returned.
          *  \param key_arg: reference to an octree key
          *  \param depthMask_arg: depth mask used for octree key analysis and for branch depth indicator
          *  \param branch_arg: current branch node
-         *  \return pointer to leaf node class. Returns 0 if leaf node is not found.
+         *  \param result_arg: pointer to leaf node class
          **/
-        LeafT*
-        findLeafRecursive (const OctreeKey& key_arg, unsigned int depthMask_arg, OctreeBranch* branch_arg) const;
+        void
+        findLeafRecursive (const OctreeKey& key_arg, unsigned int depthMask_arg, BranchNode* branch_arg, LeafNode*& result_arg) const;
 
         /** \brief Recursively search and delete leaf node
          *  \param key_arg: reference to an octree key
@@ -572,117 +636,55 @@ namespace pcl
          *  \return "true" if branch does not contain any childs; "false" otherwise. This indicates if current branch can be deleted, too.
          **/
         bool
-        deleteLeafRecursive (const OctreeKey& key_arg, unsigned int depthMask_arg, OctreeBranch* branch_arg);
-
-        /** \brief Recursively explore the octree and output binary octree description
-         *  \param binaryTreeOut_arg: binary output vector
-         *  \param branch_arg: current branch node
-         *  \param key_arg: reference to an octree key
-         **/
-        void
-        serializeTreeRecursive (std::vector<char>& binaryTreeOut_arg, const OctreeBranch* branch_arg, OctreeKey& key_arg);
+        deleteLeafRecursive (const OctreeKey& key_arg, unsigned int depthMask_arg, BranchNode* branch_arg);
 
         /** \brief Recursively explore the octree and output binary octree description together with a vector of leaf node DataT content.
-         *  \param binaryTreeOut_arg: binary output vector
-         *  \param branch_arg: current branch node
-         *  \param key_arg: reference to an octree key
-         *  \param dataVector_arg: writes DataT content to this DataT vector iterator.
+          *  \param binaryTreeOut_arg: binary output vector
+          *  \param branch_arg: current branch node
+          *  \param key_arg: reference to an octree key
+         *  \param dataVector_arg: writes DataT content to this DataT vector.
          **/
         void
-        serializeTreeRecursive (std::vector<char>& binaryTreeOut_arg, const OctreeBranch* branch_arg,
-                                OctreeKey& key_arg, typename std::vector<DataT>& dataVector_arg);
+        serializeTreeRecursive (const BranchNode* branch_arg, OctreeKey& key_arg,
+            std::vector<char>* binaryTreeOut_arg,
+            typename std::vector<DataT>* dataVector_arg) const;
 
-        /** \brief Recursively explore the octree and output DataT objects to DataT vector.
-         *  \param branch_arg: current branch node
-         *  \param key_arg: reference to an octree key
-         *  \param dataVector_arg: DataT objects from leaf nodes are written to this DataT vector .
+         /** \brief Rebuild an octree based on binary XOR octree description and DataT objects for leaf node initialization.
+          *  \param binaryTreeIn_arg: iterator to input vector
+          *  \param branch_arg: current branch node
+          *  \param depthMask_arg: depth mask used for octree key analysis and branch depth indicator
+          *  \param key_arg: reference to an octree key
+          *  \param dataVectorIterator_arg: iterator pointing to current DataT object to be added to a leaf node
+          *  \param dataVectorEndIterator_arg: iterator pointing to last object in DataT input vector.
+          **/
+
+         void
+         deserializeTreeRecursive (BranchNode* branch_arg,
+             unsigned int depthMask_arg, OctreeKey& key_arg,
+             typename std::vector<char>::const_iterator& binaryTreeIT_arg,
+             typename std::vector<char>::const_iterator& binaryTreeIT_End_arg,
+             typename std::vector<DataT>::const_iterator* dataVectorIterator_arg,
+             typename std::vector<DataT>::const_iterator* dataVectorEndIterator_arg);
+
+
+         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+         // Serialization callbacks
+         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /** \brief Callback executed for every leaf node during serialization
          **/
-        void
-        serializeLeafsRecursive (const OctreeBranch* branch_arg, OctreeKey& key_arg,
-                                 typename std::vector<DataT>& dataVector_arg);
+        virtual void serializeTreeCallback (const LeafNode &,
+            const OctreeKey &) const
+        {
 
-        /** \brief Rebuild an octree based on binary octree description.
-         *  \param binaryTreeIn_arg: iterator to input vector
-         *  \param branch_arg: current branch node
-         *  \param depthMask_arg: depth mask used for octree key analysis and branch depth indicator
-         *  \param key_arg: reference to an octree key
+        }
+
+        /** \brief Callback executed for every leaf node during deserialization
          **/
-        void
-        deserializeTreeRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,
-                                  OctreeBranch* branch_arg, unsigned int depthMask_arg, OctreeKey& key_arg);
+        virtual void deserializeTreeCallback (LeafNode&, const OctreeKey&)
+        {
 
-        /** \brief Rebuild an octree based on binary octree description and DataT objects for leaf node initialization.
-         *  \param binaryTreeIn_arg: iterator to input vector
-         *  \param branch_arg: current branch node
-         *  \param depthMask_arg: depth mask used for octree key analysis and branch depth indicator
-         *  \param key_arg: reference to an octree key
-         *  \param dataVectorIterator_arg: iterator pointing to current DataT object to be added to a leaf node
-         *  \param dataVectorEndIterator_arg: iterator pointing to last object in DataT input vector.
-         **/
-        void
-        deserializeTreeRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,
-                                  OctreeBranch* branch_arg, unsigned int depthMask_arg, OctreeKey& key_arg,
-                                  typename std::vector<DataT>::const_iterator& dataVectorIterator_arg,
-                                  typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg);
-
-        /** \brief Rebuild an octree based on binary octree description and output generated DataT objects.
-         *  \param binaryTreeIn_arg: iterator to input vector
-         *  \param branch_arg: current branch node
-         *  \param depthMask_arg: depth mask used for octree key analysis and branch depth indicator
-         *  \param key_arg: reference to an octree key
-         *  \param dataVector_arg: iterator of DataT vector that receives a copy of generated DataT objects.
-         **/
-        void
-        deserializeTreeAndOutputLeafDataRecursive (typename std::vector<char>::const_iterator& binaryTreeIn_arg,
-                                                   OctreeBranch* branch_arg, unsigned int depthMask_arg,
-                                                   OctreeKey& key_arg,
-                                                   typename std::vector<DataT>& dataVector_arg);
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Serialization callbacks
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /** \brief Decode leaf node data during serialization
-         *  \param leaf_arg: reference to new leaf node
-         *  \param key_arg: octree key of new leaf node
-         **/
-        virtual void
-        serializeLeafCallback (const OctreeLeaf& leaf_arg, const OctreeKey& key_arg);
-
-        /** \brief Decode leaf node data during serialization
-         *  \param leaf_arg: reference to new leaf node
-         *  \param key_arg: octree key of new leaf node
-         *  \param dataVector_arg: DataT objects from leaf are pushed to this DataT vector
-         **/
-        virtual void
-        serializeLeafCallback (const OctreeLeaf& leaf_arg, const OctreeKey& key_arg, std::vector<DataT>& dataVector_arg);
-
-        /** \brief Initialize leaf nodes during deserialization
-         *  \param leaf_arg: reference to new leaf node
-         *  \param key_arg: octree key of new leaf node
-         **/
-        virtual void
-        deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg);
-
-        /** \brief Initialize leaf nodes during deserialization
-         *  \param leaf_arg: reference to new leaf node
-         *  \param key_arg: octree key of new leaf node
-         *  \param dataVectorIterator_arg: iterator pointing to current DataT object to be added to the new leaf node
-         *  \param dataVectorEndIterator_arg: iterator pointing to last object in DataT input vector.
-         **/
-        virtual void
-        deserializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey& key_arg,
-                                 typename std::vector<DataT>::const_iterator& dataVectorIterator_arg,
-                                 typename std::vector<DataT>::const_iterator& dataVectorEndIterator_arg);
-
-        /** \brief Initialize leaf nodes during deserialization
-         *  \param leaf_arg: reference to new leaf node
-         *  \param key_arg: octree key of new leaf node
-         *  \param dataVector_arg: generated DataT objects are pushed to this DataT vector
-         **/
-        virtual void
-        deserializeTreeAndSerializeLeafCallback (OctreeLeaf& leaf_arg, const OctreeKey & key_arg,
-                                                 std::vector<DataT>& dataVector_arg);
+        }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Helpers
@@ -721,7 +723,7 @@ namespace pcl
         std::size_t objectCount_;
 
         /** \brief Pointer to root branch node of octree   **/
-        OctreeBranch* rootNode_;
+        BranchNode* rootNode_;
 
         /** \brief Depth mask based on octree depth   **/
         unsigned int depthMask_;
@@ -733,10 +735,10 @@ namespace pcl
         OctreeKey maxKey_;
 
         /** \brief Vector pools of unused branch nodes   **/
-        std::vector<OctreeBranch*> unusedBranchesPool_;
+        std::vector<BranchNode*> unusedBranchesPool_;
 
         /** \brief Vector pools of unused leaf nodes   **/
-        std::vector<LeafT*> unusedLeafsPool_;
+        std::vector<LeafNode*> unusedLeafsPool_;
     };
   }
 }

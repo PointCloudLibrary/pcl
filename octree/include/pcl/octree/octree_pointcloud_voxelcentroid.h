@@ -59,23 +59,21 @@ namespace pcl
      *  \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafT = OctreeLeafDataTVector<int> , typename OctreeT = OctreeBase<int, LeafT> >
-      class OctreePointCloudVoxelCentroid : public OctreePointCloud<PointT, LeafT, OctreeT>
+    template<typename PointT, typename LeafT = OctreeContainerDataTVector<int> , typename BranchT = OctreeContainerEmpty<int> >
+      class OctreePointCloudVoxelCentroid : public OctreePointCloud<PointT, LeafT, BranchT>
       {
 
       public:
         // public typedefs for single/double buffering
-        typedef OctreePointCloudVoxelCentroid<PointT, LeafT, OctreeBase<int, LeafT> > SingleBuffer;
-        typedef OctreePointCloudVoxelCentroid<PointT, LeafT, Octree2BufBase<int, LeafT> > DoubleBuffer;
 
         // Eigen aligned allocator
-        typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::AlignedPointTVector AlignedPointTVector;
+        typedef typename OctreePointCloud<PointT, LeafT, BranchT>::AlignedPointTVector AlignedPointTVector;
 
         /** \brief OctreePointCloudVoxelCentroids class constructor.
          *  \param resolution_arg:  octree resolution at lowest octree level
          * */
         OctreePointCloudVoxelCentroid (const double resolution_arg) :
-          OctreePointCloud<PointT, LeafT, OctreeT> (resolution_arg)
+          OctreePointCloud<PointT, LeafT, BranchT> (resolution_arg)
         {
         }
 

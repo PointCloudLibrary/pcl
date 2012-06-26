@@ -61,41 +61,41 @@ namespace pcl
   namespace octree
   {
     /** \brief @b Abstract octree iterator class
-      * \note Octree iterator base class
-      * \ingroup octree
-      * \author Julius Kammerl (julius@kammerl.de)
-      */
-    template<typename DataT, typename LeafT, typename OctreeT>
-    class OctreeIteratorBase : public std::iterator<std::forward_iterator_tag, const OctreeNode, void, const OctreeNode*, const OctreeNode&>
-    {
+     * \note Octree iterator base class
+     * \ingroup octree
+     * \author Julius Kammerl (julius@kammerl.de)
+     */
+    template<typename DataT, typename OctreeT>
+      class OctreeIteratorBase : public std::iterator<std::forward_iterator_tag, const OctreeNode, void,
+          const OctreeNode*, const OctreeNode&>
+      {
       public:
-        // public typedefs
-        typedef typename OctreeT::OctreeBranch OctreeBranch;
+
+        typedef typename OctreeT::LeafNode LeafNode;
+        typedef typename OctreeT::BranchNode BranchNode;
 
         /** \brief Constructor.
-          * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its root node.
-          */
+         * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its root node.
+         */
         explicit
-        OctreeIteratorBase (const OctreeT& octree_arg) :
+        OctreeIteratorBase (OctreeT& octree_arg) :
             octree_ (octree_arg), currentNode_ (NULL)
         {
           reset ();
         }
 
         /** \brief Copy constructor.
-          * \param[in] src the iterator to copy into this
-          */
+         * \param[in] src the iterator to copy into this
+         */
         OctreeIteratorBase (const OctreeIteratorBase& src) :
-            octree_ (src.octree_), 
-            currentNode_ (src.currentNode_), 
-            currentOctreeDepth_ (src.currentOctreeDepth_),
-            currentOctreeKey_ (src.currentOctreeKey_)
+            octree_ (src.octree_), currentNode_ (src.currentNode_), currentOctreeDepth_ (src.currentOctreeDepth_), currentOctreeKey_ (
+                src.currentOctreeKey_)
         {
         }
 
         /** \brief Copy operator.
-          * \param[in] src the iterator to copy into this
-          */
+         * \param[in] src the iterator to copy into this
+         */
         inline OctreeIteratorBase&
         operator = (const OctreeIteratorBase& src)
         {
@@ -117,7 +117,7 @@ namespace pcl
         reset ()
         {
           // initialize iterator globals
-          currentNode_ = static_cast<const OctreeNode*> (octree_.getRootNode ());
+          currentNode_ = static_cast<OctreeNode*> (octree_.getRootNode ());
           currentOctreeDepth_ = 0;
 
           // reset octree key
@@ -125,8 +125,8 @@ namespace pcl
         }
 
         /** \brief Get octree key for the current iterator octree node
-          * \return octree key of current node
-          */
+         * \return octree key of current node
+         */
         inline const OctreeKey&
         getCurrentOctreeKey () const
         {
@@ -134,8 +134,8 @@ namespace pcl
         }
 
         /** \brief Get the current depth level of octree
-          * \return depth level
-          */
+         * \return depth level
+         */
         inline unsigned int
         getCurrentOctreeDepth () const
         {
@@ -143,26 +143,26 @@ namespace pcl
         }
 
         /** \brief Get the current octree node
-          * \return pointer to current octree node
-          */
-        inline const OctreeNode*
+         * \return pointer to current octree node
+         */
+        inline OctreeNode*
         getCurrentOctreeNode () const
         {
           return (currentNode_);
         }
 
         /** \brief *operator.
-          * \return pointer to the current octree node
-          */
-        inline const OctreeNode*
+         * \return pointer to the current octree node
+         */
+        inline OctreeNode*
         operator* () const
         { // return designated object
           return (this->getCurrentOctreeNode ());
         }
 
         /** \brief check if current node is a branch node
-          * \return true if current node is a branch node, false otherwise
-          */
+         * \return true if current node is a branch node, false otherwise
+         */
         inline bool
         isBranchNode () const
         {
@@ -170,8 +170,8 @@ namespace pcl
         }
 
         /** \brief check if current node is a branch node
-          * \return true if current node is a branch node, false otherwise
-          */
+         * \return true if current node is a branch node, false otherwise
+         */
         inline bool
         isLeafNode () const
         {
@@ -179,8 +179,8 @@ namespace pcl
         }
 
         /** \brief Get bit pattern of children configuration of current node
-          * \return bit pattern (byte) describing the existence of 8 children of the current node
-          */
+         * \return bit pattern (byte) describing the existence of 8 children of the current node
+         */
         inline char
         getNodeConfiguration () const
         {
@@ -190,7 +190,7 @@ namespace pcl
           {
 
             // current node is a branch node
-            const OctreeBranch* currentBranch = static_cast<const OctreeBranch*> (this->currentNode_);
+            const BranchNode* currentBranch = static_cast<const BranchNode*> (this->currentNode_);
 
             // get child configuration bit pattern
             ret = octree_.getBranchBitPattern (*currentBranch);
@@ -200,39 +200,32 @@ namespace pcl
           return (ret);
         }
 
-
         /** \brief Method for retrieving a single DataT element from the octree leaf node
-          * \param[in] data_arg reference to return pointer of leaf node DataT element.
-          */
+         * \param[in] data_arg reference to return pointer of leaf node DataT element.
+         */
         virtual void
-        getData (const DataT*& data_arg) const
+        getData (DataT& data_arg) const
         {
-          const DataT* result = 0;
 
-          if (this->currentNode_ && (this->currentNode_->getNodeType () == LEAF_NODE))
-          {
-            const LeafT* leafNode = static_cast<const LeafT*> (this->currentNode_);
-            leafNode->getData (result);
-          }
-          data_arg = result;
+          assert(this->currentNode_ );
+
+          octree_.getDataFromOctreeNode(this->currentNode_, data_arg);
         }
 
         /** \brief Method for retrieving a vector of DataT elements from the octree laef node
-          * \param[in] dataVector_arg reference to DataT vector that is extended with leaf node DataT elements.
-          */
+         * \param[in] dataVector_arg reference to DataT vector that is extended with leaf node DataT elements.
+         */
         virtual void
         getData (std::vector<DataT>& dataVector_arg) const
         {
-          if (this->currentNode_ && (this->currentNode_->getNodeType () == LEAF_NODE))
-          {
-            const LeafT* leafNode = static_cast<const LeafT*> (this->currentNode_);
-            leafNode->getData (dataVector_arg);
-          }
+          assert(this->currentNode_);
+
+          octree_.getDataFromOctreeNode(this->currentNode_, dataVector_arg);
         }
 
         /** \brief get a integer identifier for current node (note: identifier depends on tree depth).
-          * \param[out] node id.
-          */
+         * \return node id.
+         */
         virtual unsigned long
         getNodeID () const
         {
@@ -241,10 +234,9 @@ namespace pcl
           if (this->currentNode_)
           {
             // calculate integer id with respect to octree key
-            unsigned int depth = octree_.getTreeDepth();
-            id = currentOctreeKey_.x << (depth*2) |
-                 currentOctreeKey_.y << (depth*1) |
-                 currentOctreeKey_.z << (depth*0);
+            unsigned int depth = octree_.getTreeDepth ();
+            id = currentOctreeKey_.x << (depth * 2) | currentOctreeKey_.y << (depth * 1)
+                | currentOctreeKey_.z << (depth * 0);
           }
 
           return id;
@@ -252,10 +244,10 @@ namespace pcl
 
       protected:
         /** \brief Reference to octree class. */
-        const OctreeT& octree_;
+        OctreeT& octree_;
 
         /** Pointer to current octree node. */
-        const OctreeNode* currentNode_;
+        OctreeNode* currentNode_;
 
         /** Depth level in the octree structure. */
         unsigned int currentOctreeDepth_;
@@ -270,22 +262,26 @@ namespace pcl
      * \ingroup octree
      * \author Julius Kammerl (julius@kammerl.de)
      */
-    template<typename DataT, typename LeafT, typename OctreeT>
-      class OctreeDepthFirstIterator : public OctreeIteratorBase<DataT, LeafT, OctreeT>
+    template<typename DataT, typename OctreeT>
+      class OctreeDepthFirstIterator : public OctreeIteratorBase<DataT, OctreeT>
       {
-        // public typedefs
-        typedef typename OctreeIteratorBase<DataT, LeafT, OctreeT>::OctreeBranch OctreeBranch;
 
       public:
+
+        typedef typename OctreeIteratorBase<DataT, OctreeT>::LeafNode LeafNode;
+        typedef typename OctreeIteratorBase<DataT, OctreeT>::BranchNode BranchNode;
+
+
         /** \brief Constructor.
          * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its root node.
          */
         explicit
-        OctreeDepthFirstIterator (const OctreeT& octree_arg);
+        OctreeDepthFirstIterator (OctreeT& octree_arg);
 
         /** \brief Empty deconstructor. */
         virtual
         ~OctreeDepthFirstIterator ();
+
 
         /** \brief Reset the iterator to the root node of the octree
          */
@@ -319,7 +315,7 @@ namespace pcl
         unsigned char currentChildIdx_;
 
         /** Stack structure. */
-        std::vector<std::pair<OctreeNode const*, unsigned char> > stack_;
+        std::vector<std::pair<OctreeNode*, unsigned char> > stack_;
       };
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -328,14 +324,16 @@ namespace pcl
      * \ingroup octree
      * \author Julius Kammerl (julius@kammerl.de)
      */
-    template<typename DataT, typename LeafT, typename OctreeT>
-      class OctreeBreadthFirstIterator : public OctreeIteratorBase<DataT, LeafT, OctreeT>
+    template<typename DataT, typename OctreeT>
+      class OctreeBreadthFirstIterator : public OctreeIteratorBase<DataT, OctreeT>
       {
         // public typedefs
-        typedef typename OctreeIteratorBase<DataT, LeafT, OctreeT>::OctreeBranch OctreeBranch;
+        typedef typename OctreeIteratorBase<DataT, OctreeT>::BranchNode BranchNode;
+        typedef typename OctreeIteratorBase<DataT, OctreeT>::LeafNode LeafNode;
 
-        struct FIFOElement {
-          const OctreeNode* node;
+        struct FIFOElement
+        {
+          OctreeNode* node;
           OctreeKey key;
           unsigned int depth;
         };
@@ -345,7 +343,7 @@ namespace pcl
          * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its root node.
          */
         explicit
-        OctreeBreadthFirstIterator (const OctreeT& octree_arg);
+        OctreeBreadthFirstIterator (OctreeT& octree_arg);
 
         /** \brief Empty deconstructor. */
         virtual
@@ -391,16 +389,19 @@ namespace pcl
      * \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT, typename OctreeT>
-      class OctreeLeafNodeIterator : public OctreeDepthFirstIterator<DataT, LeafT, OctreeT>
+    template<typename DataT, typename OctreeT>
+      class OctreeLeafNodeIterator : public OctreeDepthFirstIterator<DataT, OctreeT>
       {
+        typedef typename OctreeDepthFirstIterator<DataT, OctreeT>::BranchNode BranchNode;
+        typedef typename OctreeDepthFirstIterator<DataT, OctreeT>::LeafNode LeafNode;
+
       public:
         /** \brief Constructor.
          * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its root node.
          */
         explicit
-        OctreeLeafNodeIterator (const OctreeT& octree_arg) :
-            OctreeDepthFirstIterator<DataT, LeafT, OctreeT> (octree_arg)
+        OctreeLeafNodeIterator (OctreeT& octree_arg) :
+            OctreeDepthFirstIterator<DataT, OctreeT> (octree_arg)
         {
           reset ();
         }
@@ -416,7 +417,7 @@ namespace pcl
         inline void
         reset ()
         {
-          OctreeDepthFirstIterator<DataT, LeafT, OctreeT>::reset ();
+          OctreeDepthFirstIterator<DataT, OctreeT>::reset ();
         }
 
         /** \brief Preincrement operator.
@@ -427,7 +428,7 @@ namespace pcl
         {
           do
           {
-            OctreeDepthFirstIterator<DataT, LeafT, OctreeT>::operator++ ();
+            OctreeDepthFirstIterator<DataT, OctreeT>::operator++ ();
           } while ((this->currentNode_) && (this->currentNode_->getNodeType () != LEAF_NODE));
 
           return (*this);
@@ -445,16 +446,16 @@ namespace pcl
         }
 
         /** \brief *operator.
-         * \return const pointer to the current octree leaf node
+         * \return pointer to the current octree leaf node
          */
-        const LeafT*
+        OctreeNode*
         operator* () const
         {
           // return designated object
-          const LeafT* ret = NULL;
+          OctreeNode* ret = 0;
 
           if (this->currentNode_ && (this->currentNode_->getNodeType () == LEAF_NODE))
-            ret = static_cast<const LeafT*> (this->currentNode_);
+            ret = this->currentNode_;
           return (ret);
         }
       };

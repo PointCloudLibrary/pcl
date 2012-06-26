@@ -53,29 +53,38 @@ namespace pcl
       * \author Julius Kammerl (julius@kammerl.de)
       */
     template<typename DataT>
-    class OctreePointCloudDensityLeaf : public OctreeLeafAbstract<DataT>
+    class OctreePointCloudDensityContainer
     {
       public:
         /** \brief Class initialization. */
-        OctreePointCloudDensityLeaf () : pointCounter_ (0)
+        OctreePointCloudDensityContainer () : pointCounter_ (0)
         {
         }
 
         /** \brief Empty class deconstructor. */
-        ~OctreePointCloudDensityLeaf ()
+        virtual ~OctreePointCloudDensityContainer ()
         {
         }
 
         /** \brief deep copy function */
-        virtual OctreeNode *
+        virtual OctreePointCloudDensityContainer *
         deepCopy () const
         {
-          return (static_cast<OctreeNode*> (new OctreePointCloudDensityLeaf (*this)));
+          return (new OctreePointCloudDensityContainer (*this));
+        }
+
+        /** \brief Get size of container (number of DataT objects)
+         * \return number of DataT elements in leaf node container.
+         */
+        size_t
+        getSize () const
+        {
+          return 0;
         }
 
         /** \brief Read input data. Only an internal counter is increased.
           */
-        virtual void
+        void
         setData (const DataT&)
         {
           pointCounter_++;
@@ -84,7 +93,7 @@ namespace pcl
         /** \brief Returns a null pointer as this leaf node does not store any data.
           * \param[out] data_arg: reference to return pointer of leaf node DataT element (will be set to 0).
           */
-        virtual void
+        void
         getData (const DataT*& data_arg) const
         {
           data_arg = 0;
@@ -92,7 +101,7 @@ namespace pcl
 
         /** \brief Empty getData data vector implementation as this leaf node does not store any data. \
           */
-        virtual void
+        void
         getData (std::vector<DataT>&) const
         {
         }
@@ -107,7 +116,7 @@ namespace pcl
         }
 
         /** \brief Empty reset leaf node implementation as this leaf node does not store any data. */
-        virtual void
+        void
         reset ()
         {
           pointCounter_ = 0;
@@ -126,19 +135,16 @@ namespace pcl
       * \ingroup octree
       * \author Julius Kammerl (julius@kammerl.de)
       */
-    template<typename PointT, typename LeafT = OctreePointCloudDensityLeaf<int> , typename OctreeT = OctreeBase<int, LeafT> >
-    class OctreePointCloudDensity : public OctreePointCloud<PointT, LeafT, OctreeT>
+    template<typename PointT, typename LeafT = OctreePointCloudDensityContainer<int> , typename BranchT = OctreeContainerEmpty<int> >
+    class OctreePointCloudDensity : public OctreePointCloud<PointT, LeafT, BranchT>
     {
       public:
-        // public typedefs for single/double buffering
-        typedef OctreePointCloudDensity<PointT, LeafT, OctreeBase<int, LeafT> > SingleBuffer;
-        typedef OctreePointCloudDensity<PointT, LeafT, Octree2BufBase<int, LeafT> > DoubleBuffer;
 
-        /** \brief OctreePointCloudDensity class constructor.
+      /** \brief OctreePointCloudDensity class constructor.
          *  \param resolution_arg:  octree resolution at lowest octree level
          * */
         OctreePointCloudDensity (const double resolution_arg) :
-        OctreePointCloud<PointT, LeafT, OctreeT> (resolution_arg)
+        OctreePointCloud<PointT, LeafT, BranchT> (resolution_arg)
         {
         }
 
@@ -157,7 +163,7 @@ namespace pcl
         {
           unsigned int pointCount = 0;
 
-          OctreePointCloudDensityLeaf<int>* leaf = this->findLeafAtPoint (point_arg);
+          OctreePointCloudDensityContainer<int>* leaf = this->findLeafAtPoint (point_arg);
 
           if (leaf)
             pointCount = leaf->getPointCounter ();
@@ -169,9 +175,6 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_OctreePointCloudDensity(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudDensity<T>;
-
-#define PCL_INSTANTIATE_OctreePointCloudSingleBufferWithDensityLeaf(T) template class PCL_EXPORTS pcl::octree::OctreePointCloud<T, pcl::octree::OctreePointCloudDensityLeaf<int> , pcl::octree::OctreeBase<int, pcl::octree::OctreePointCloudDensityLeaf<int> > >;
-#define PCL_INSTANTIATE_OctreePointCloudDoubleBufferWithDensityLeaf(T) template class PCL_EXPORTS pcl::octree::OctreePointCloud<T, pcl::octree::OctreePointCloudDensityLeaf<int> , pcl::octree::Octree2BufBase<int, pcl::octree::OctreePointCloudDensityLeaf<int> > >;
 
 #endif
 

@@ -59,27 +59,29 @@ namespace pcl
      *  \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafT = OctreeLeafEmpty<int> , typename OctreeT = OctreeBase<int, LeafT> >
+    template<typename PointT, typename LeafT = OctreeContainerEmpty<int>,
+        typename BranchT = OctreeContainerEmpty<int> >
+    class OctreePointCloudOccupancy : public OctreePointCloud<PointT, LeafT,
+        BranchT, OctreeBase<int, LeafT, BranchT> >
 
-      class OctreePointCloudOccupancy : public OctreePointCloud<PointT, LeafT, OctreeT>
-
-      {
+    {
 
       public:
         // public typedefs for single/double buffering
-        typedef OctreePointCloudOccupancy<PointT, LeafT, OctreeBase<int, LeafT> > SingleBuffer;
-        typedef OctreePointCloudOccupancy<PointT, LeafT, Octree2BufBase<int, LeafT> > DoubleBuffer;
+        typedef OctreePointCloudOccupancy<PointT, LeafT, BranchT> SingleBuffer;
+        typedef OctreePointCloudOccupancy<PointT, LeafT, BranchT> DoubleBuffer;
 
         // public point cloud typedefs
-        typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::PointCloud PointCloud;
-        typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::PointCloudPtr PointCloudPtr;
-        typedef typename OctreePointCloud<PointT, LeafT, OctreeT>::PointCloudConstPtr PointCloudConstPtr;
+        typedef typename OctreePointCloud<PointT, LeafT, BranchT>::PointCloud PointCloud;
+        typedef typename OctreePointCloud<PointT, LeafT, BranchT>::PointCloudPtr PointCloudPtr;
+        typedef typename OctreePointCloud<PointT, LeafT, BranchT>::PointCloudConstPtr PointCloudConstPtr;
 
         /** \brief Constructor.
          *  \param resolution_arg:  octree resolution at lowest octree level
          * */
         OctreePointCloudOccupancy (const double resolution_arg) :
-          OctreePointCloud<PointT, LeafT, OctreeT> (resolution_arg)
+            OctreePointCloud<PointT, LeafT, BranchT,
+                OctreeBase<int, LeafT, BranchT> > (resolution_arg)
         {
         }
 

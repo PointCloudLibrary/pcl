@@ -42,10 +42,7 @@
 
 #include <pcl/octree/octree_base.h>
 #include <pcl/octree/octree2buf_base.h>
-#include <pcl/octree/octree_lowmemory_base.h>
-
 #include <pcl/octree/octree_iterator.h>
-
 #include <pcl/octree/octree_pointcloud.h>
 
 #include <pcl/octree/octree_pointcloud_density.h>
