@@ -40,6 +40,7 @@
 #define PCL_RECOGNITION_MODEL_LIBRARY_H_
 
 #include "voxel_structure.h"
+#include <pcl/pcl_exports.h>
 #include <pcl/point_cloud.h>
 #include <Eigen/Core>
 #include <string>
@@ -51,7 +52,7 @@ namespace pcl
 {
   namespace recognition
   {
-    class ModelLibrary
+    class PCL_EXPORTS ModelLibrary
     {
       public:
         typedef pcl::PointCloud<Eigen::Vector3d> PointCloudIn;

@@ -40,6 +40,7 @@
 #define PCL_RECOGNITION_OBJ_REC_RANSAC_H_
 
 #include "model_library.h"
+#include <pcl/pcl_exports.h>
 #include <pcl/point_cloud.h>
 #include <Eigen/Core>
 #include <cmath>
@@ -69,7 +70,7 @@ namespace pcl
       * \author Chavdar Papazov
       * \ingroup recognition
       */
-    class ObjRecRANSAC
+    class PCL_EXPORTS ObjRecRANSAC
     {
       public:
         typedef ModelLibrary::PointCloudIn PointCloudIn;
