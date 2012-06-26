@@ -16,6 +16,7 @@ OPTION(BUILD_GPU "Build the GPU-related subsystems" ${DEFAULT})
 
 if(BUILD_GPU)
     if(CUDA_FOUND)
+        # Find a complete list for CUDA compute capabilities at http://developer.nvidia.com/cuda-gpus
         if(${CUDA_VERSION_STRING} VERSION_GREATER "4.1")
             set(CUDA_ARCH_BIN "2.0 2.1(2.0) 3.0" CACHE STRING "Specify 'real' GPU architectures to build binaries for, BIN(PTX) format is supported")
         else()
