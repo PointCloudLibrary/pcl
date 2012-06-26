@@ -454,14 +454,16 @@ namespace pcl
       inline bool empty () const { return points.empty (); }
 
       /** \brief Resize the cloud
-        * \note This breaks the organized structure of the cloud by setting the height to 1!
         * \param[in] n the new cloud size
         */
       inline void resize (size_t n) 
       { 
-        points.resize (n); 
-        width = static_cast<uint32_t> (n);
-        height = 1;
+        points.resize (n);
+        if (width * height != n)
+        {
+          width = static_cast<uint32_t> (n);
+          height = 1;
+        }
       }
 
       //element access
