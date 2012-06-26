@@ -340,9 +340,7 @@ namespace pcl
       unsigned char childIdx;
       LeafT* result = 0;
 
-
-
-  // branch reset -> this branch has been taken from previous buffer
+      // branch reset -> this branch has been taken from previous buffer
       if (branchReset_arg)
       {
         // we can safely remove children references

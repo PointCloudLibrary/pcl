@@ -178,21 +178,21 @@ namespace pcl
     class Octree2BufBase
     {
 
-        typedef OctreeBase<DataT,LeafT,BranchT> OctreeT;
+      public:
+
+        typedef OctreeBase<DataT, LeafT, BranchT> OctreeT;
 
         // iterators are friends
-         friend class OctreeIteratorBase<DataT, OctreeT> ;
-         friend class OctreeDepthFirstIterator<DataT, OctreeT> ;
-         friend class OctreeBreadthFirstIterator<DataT, OctreeT> ;
-         friend class OctreeLeafNodeIterator<DataT, OctreeT> ;
-
-      public:
+        friend class OctreeIteratorBase<DataT, OctreeT> ;
+        friend class OctreeDepthFirstIterator<DataT, OctreeT> ;
+        friend class OctreeBreadthFirstIterator<DataT, OctreeT> ;
+        friend class OctreeLeafNodeIterator<DataT, OctreeT> ;
 
         typedef BufferedBranchNode<BranchT> BranchNode;
         typedef OctreeLeafNode<LeafT> LeafNode;
 
         // Octree iterators
-         typedef OctreeDepthFirstIterator<DataT, OctreeT> Iterator;
+        typedef OctreeDepthFirstIterator<DataT, OctreeT> Iterator;
          typedef const OctreeDepthFirstIterator<DataT, OctreeT> ConstIterator;
 
          typedef OctreeLeafNodeIterator<DataT, OctreeT> LeafNodeIterator;

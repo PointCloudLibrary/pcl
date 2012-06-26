@@ -63,15 +63,16 @@ namespace pcl
         typename BranchT = OctreeContainerEmpty<DataT> >
     class OctreeBase
     {
-        typedef OctreeBase<DataT,LeafT,BranchT> OctreeT;
-
-        // iterators are friends
-         friend class OctreeIteratorBase<DataT, OctreeT> ;
-         friend class OctreeDepthFirstIterator<DataT, OctreeT> ;
-         friend class OctreeBreadthFirstIterator<DataT, OctreeT> ;
-         friend class OctreeLeafNodeIterator<DataT, OctreeT> ;
 
       public:
+
+        typedef OctreeBase<DataT, LeafT, BranchT> OctreeT;
+
+        // iterators are friends
+        friend class OctreeIteratorBase<DataT, OctreeT> ;
+        friend class OctreeDepthFirstIterator<DataT, OctreeT> ;
+        friend class OctreeBreadthFirstIterator<DataT, OctreeT> ;
+        friend class OctreeLeafNodeIterator<DataT, OctreeT> ;
 
         typedef OctreeBranchNode<BranchT> BranchNode;
         typedef OctreeLeafNode<LeafT> LeafNode;
