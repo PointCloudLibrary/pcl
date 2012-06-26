@@ -47,8 +47,18 @@
 template class PCL_EXPORTS pcl::octree::OctreeBase<int>;
 template class PCL_EXPORTS pcl::octree::Octree2BufBase<int>;
 
-PCL_INSTANTIATE(OctreePointCloudSingleBufferWithLeafDataTVector, PCL_XYZ_POINT_TYPES)
-PCL_INSTANTIATE(OctreePointCloudDoubleBufferWithLeafDataTVector, PCL_XYZ_POINT_TYPES)
+template class PCL_EXPORTS pcl::octree::OctreeBase<int,
+    pcl::octree::OctreeContainerDataTVector<int>,
+    pcl::octree::OctreeContainerEmpty<int> >;
+
+template class PCL_EXPORTS pcl::octree::Octree2BufBase<int,
+    pcl::octree::OctreeContainerDataTVector<int>,
+    pcl::octree::OctreeContainerEmpty<int> >;
+
+PCL_INSTANTIATE(OctreePointCloudSingleBufferWithLeafDataTVector,
+    PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(OctreePointCloudDoubleBufferWithLeafDataTVector,
+    PCL_XYZ_POINT_TYPES)
 
 PCL_INSTANTIATE(OctreePointCloudSearch, PCL_XYZ_POINT_TYPES)
 
