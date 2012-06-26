@@ -180,7 +180,7 @@ namespace pcl
 
       public:
 
-        typedef OctreeBase<DataT, LeafT, BranchT> OctreeT;
+        typedef Octree2BufBase<DataT, LeafT, BranchT> OctreeT;
 
         // iterators are friends
         friend class OctreeIteratorBase<DataT, OctreeT> ;
