@@ -452,8 +452,18 @@ namespace pcl
       //capacity
       inline size_t size () const { return (points.size ()); }
       inline void reserve (size_t n) { points.reserve (n); }
-      inline void resize (size_t n) { points.resize (n); }
       inline bool empty () const { return points.empty (); }
+
+      /** \brief Resize the cloud
+        * \note This breaks the organized structure of the cloud by setting the height to 1!
+        * \param[in] n the new cloud size
+        */
+      inline void resize (size_t n) 
+      { 
+        points.resize (n); 
+        width = static_cast<uint32_t> (n);
+        height = 1;
+      }
 
       //element access
       inline const PointT& operator[] (size_t n) const { return (points[n]); }
