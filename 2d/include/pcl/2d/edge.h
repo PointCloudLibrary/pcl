@@ -51,21 +51,36 @@ namespace pcl
       private:
         convolution_2d *conv_2d;
         /**
-         *
          * \param rowOffset
          * \param colOffset
          * \param row
          * \param col
-         * \param theta
-         * \param tLow
-         * \param tHigh
-         * \param G
-         * \param thet
+         * \param maxima
          *
          * This function performs edge tracing for Canny Edge detector.
          * This is used in the hysteresis thresholding step.
          */
-        void cannyTraceEdge  (int rowOffset, int colOffset, int row, int col, float theta, float tLow, float tHigh, ImageType &G, ImageType &thet);
+        void
+        cannyTraceEdge (int rowOffset, int colOffset, int row, int col, ImageType &maxima);
+
+        /** 
+        * \param thet angle image passed by reference
+        * 
+        * Discretize the direction of gradient.
+        */
+        void 
+        discretizeAngles (ImageType &thet);
+
+        /** 
+        * \param[in] G gradient image passed by reference
+        * \param[in] thet angle image passed by reference
+        * \param[out] maxima local maxima image passed by reference
+        * \param[in] tLow lower threshold for edges
+        * Suppress non maxima
+        */
+        void
+        suppressNonMaxima (ImageType &G, ImageType &thet, ImageType &maxima, float tLow);
+
       public:
         edge  ()
         {
@@ -98,6 +113,21 @@ namespace pcl
         void canny  (ImageType &output, ImageType &input, float t_low, float t_high);
 
         /**
+         * \param output Output image passed by reference
+         * \param input_x Input image passed by reference for the first derivative in the horizontal direction
+         * \param input_y Input image passed by reference for the first derivative in the vertical direction
+         * \param t_low lower threshold for edges
+         * \param t_higher higher threshold for edges
+         *
+         * Perform Canny edge detection with two separated input images for horizontal and vertical derivatives.
+         * All edges of magnitude above t_high are always classified as edges. All edges below t_low are discarded.
+         * Edge values between t_low and t_high are classified as edges only if they are connected to edges having magnitude > t_high
+         * and are located in a direction perpendicular to that strong edge.
+         */
+        void
+        canny (ImageType &output, ImageType &input_x, ImageType &input_y, float t_low, float t_high);
+
+        /**
          * \param Gx Returns the gradients in x direction.
          * \param Gy Returns the gradients in y direction.
          * \param input Input image passed by reference
@@ -113,13 +143,27 @@ namespace pcl
          * \param G Returns the gradients magnitude.
          * \param thet Returns the gradients direction.
          * \param input Input image passed by reference
-
+         * 
          * Uses the Sobel kernel for edge detection.
          * This function does NOT include a smoothing step.
          * The image should be smoothed before using this function to reduce noise.
          *
          */
         void sobelMagnitudeDirection  (ImageType &G, ImageType &thet, ImageType &input);
+
+        /**
+         * \param G Returns the gradients magnitude.
+         * \param thet Returns the gradients direction.
+         * \param input_x Input image passed by reference for the first derivative in the horizontal direction
+         * \param input_y Input image passed by reference for the first derivative in the vertical direction
+         * 
+         * Uses the Sobel kernel for edge detection.
+         * This function does NOT include a smoothing step.
+         * The image should be smoothed before using this function to reduce noise.
+         *
+         */
+        void
+        sobelMagnitudeDirection (ImageType &G, ImageType &thet, ImageType &input_x, ImageType &input_y);
 
         /**
          * \param Gx Returns the gradients in x direction.
