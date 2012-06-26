@@ -50,8 +50,8 @@ namespace pcl
   {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Octree leaf class that does not store any information.
-     * \note Can be used for occupancy trees that are used for checking only the existence of leaf nodes in the tree
+    /** \brief @b Octree node pool
+     * \note Used to reduce memory allocation and class instantiation events when generating octrees at high rate
      * \author Julius Kammerl (julius@kammerl.de)
      */
     template<typename NodeT>
@@ -71,6 +71,9 @@ namespace pcl
           deletePool ();
         }
 
+        /** \brief Push node to pool
+        *  \param childIdx_arg: pointer of noe
+        *  */
         inline
         void
         pushNode (NodeT* node_arg)
@@ -78,6 +81,9 @@ namespace pcl
           nodePool_.push_back (node_arg);
         }
 
+        /** \brief Pop node from pool - Allocates new nodes if pool is empty
+        *  \return Pointer to octree node
+        *  */
         inline NodeT*
         popNode ()
         {
@@ -101,6 +107,9 @@ namespace pcl
           return newLeafNode;
         }
 
+
+        /** \brief Delete all nodes in pool
+        *  */
         void
         deletePool ()
         {
