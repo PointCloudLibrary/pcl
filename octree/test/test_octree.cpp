@@ -617,7 +617,7 @@ TEST (PCL, Octree_Pointcloud_Test)
       }
 
       // OctreePointCloudPointVector can store all points..
-      cloudB->points.push_back (newPoint);
+      cloudB->push_back (newPoint);
     }
 
     ASSERT_EQ(octreeA.getLeafCount(), cloudA->points.size());
@@ -757,7 +757,7 @@ TEST (PCL, Octree_Pointcloud_Density_Test)
   for (float z = 0.05f; z < 7.0f; z += 0.1f)
     for (float y = 0.05f; y < 7.0f; y += 0.1f)
       for (float x = 0.05f; x < 7.0f; x += 0.1f)
-        cloudIn->points.push_back (PointXYZ (x, y, z));
+        cloudIn->push_back (PointXYZ (x, y, z));
 
   cloudIn->width = static_cast<uint32_t> (cloudIn->points.size ());
   cloudIn->height = 1;
@@ -796,7 +796,7 @@ TEST (PCL, Octree_Pointcloud_Iterator_Test)
   for (float z = 0.05f; z < 7.0f; z += 0.1f)
     for (float y = 0.05f; y < 7.0f; y += 0.1f)
       for (float x = 0.05f; x < 7.0f; x += 0.1f)
-        cloudIn->points.push_back (PointXYZ (x, y, z));
+        cloudIn->push_back (PointXYZ (x, y, z));
 
   cloudIn->width = static_cast<uint32_t> (cloudIn->points.size ());
   cloudIn->height = 1;
