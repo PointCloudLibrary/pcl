@@ -48,7 +48,7 @@
 #include <pcl/keypoints/sift_keypoint.h>
 #include <pcl/keypoints/impl/sift_keypoint.hpp>
 #include <pcl/features/normal_3d.h>
-//#include <pcl/visualization/pcl_visualizer.h>
+// #include <pcl/visualization/pcl_visualizer.h>
 	
 int
 main(int, char** argv)
