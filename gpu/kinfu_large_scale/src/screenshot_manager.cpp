@@ -15,7 +15,7 @@ namespace pcl
      }
 
      void
-     ScreenshotManager::saveImage(Eigen::Affine3f camPose, PtrStepSz<const PixelRGB> rgb24)
+     ScreenshotManager::saveImage(const Eigen::Affine3f &camPose, PtrStepSz<const PixelRGB> rgb24)
      {
        std::string file_extension_image = ".png";
        std::string file_extension_pose = ".txt";
@@ -40,7 +40,7 @@ namespace pcl
      }
 
      void 
-     ScreenshotManager::writePose(Eigen::Vector3f teVecs, Eigen::Matrix<float, 3, 3, Eigen::RowMajor> erreMats, std::string filename_pose)
+     ScreenshotManager::writePose(const Eigen::Vector3f &teVecs, const Eigen::Matrix<float, 3, 3, Eigen::RowMajor> &erreMats, const std::string &filename_pose)
      {
         std::ofstream poseFile;
         poseFile.open (filename_pose.c_str());

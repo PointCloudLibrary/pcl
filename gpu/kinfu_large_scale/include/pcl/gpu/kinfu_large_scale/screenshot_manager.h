@@ -38,13 +38,13 @@ namespace pcl
 
         /**Save Screenshot*/
         void
-        saveImage(Eigen::Affine3f camPose, PtrStepSz<const PixelRGB> rgb24);
+        saveImage(const Eigen::Affine3f &camPose, PtrStepSz<const PixelRGB> rgb24);
 
       private:
 
         /**Write camera pose to file*/
         void 
-        writePose(Eigen::Vector3f teVecs, Eigen::Matrix<float, 3, 3, Eigen::RowMajor> erreMats, std::string filename_pose);
+        writePose(const Eigen::Vector3f &teVecs, const Eigen::Matrix<float, 3, 3, Eigen::RowMajor> &erreMats, const std::string &filename_pose);
 
         /**Counter of the number of screenshots taken*/
         int screenshot_counter;
