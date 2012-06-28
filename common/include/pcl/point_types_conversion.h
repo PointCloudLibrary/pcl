@@ -86,9 +86,9 @@ namespace pcl
     if (in.r == out.v)
       out.h = static_cast<float> (in.g - in.b) / (out.v - min);
     else if (in.g == out.v)
-      out.h = static_cast<float> (2 + (in.b - in.r)) / (out.v - min);
+      out.h = static_cast<float> (2 + (in.b - in.r) / (out.v - min));
     else 
-      out.h = static_cast<float> (4 + (in.r - in.g)) / (out.v - min);
+      out.h = static_cast<float> (4 + (in.r - in.g) / (out.v - min));
     out.h *= 60;
     if (out.h < 0)
       out.h += 360;
@@ -119,44 +119,44 @@ namespace pcl
     {
       case 0:
       {
-        out.r = static_cast<uint8_t> (in.v);
-        out.g = static_cast<uint8_t> (t);
-        out.b = static_cast<uint8_t> (p);
+        out.r = static_cast<uint8_t> (255 * in.v);
+        out.g = static_cast<uint8_t> (255 * t);
+        out.b = static_cast<uint8_t> (255 * p);
         break;
       }
       case 1:
       {
-        out.r = static_cast<uint8_t> (q); 
-        out.g = static_cast<uint8_t> (in.v); 
-        out.b = static_cast<uint8_t> (p); 
+        out.r = static_cast<uint8_t> (255 * q); 
+        out.g = static_cast<uint8_t> (255 * in.v); 
+        out.b = static_cast<uint8_t> (255 * p); 
         break;
       }
       case 2:
       {
-        out.r = static_cast<uint8_t> (p);
-        out.g = static_cast<uint8_t> (in.v);
-        out.b = static_cast<uint8_t> (t);
+        out.r = static_cast<uint8_t> (255 * p);
+        out.g = static_cast<uint8_t> (255 * in.v);
+        out.b = static_cast<uint8_t> (255 * t);
         break;
       }
       case 3:
       {
-        out.r = static_cast<uint8_t> (p);
-        out.g = static_cast<uint8_t> (q);
-        out.b = static_cast<uint8_t> (in.v);
+        out.r = static_cast<uint8_t> (255 * p);
+        out.g = static_cast<uint8_t> (255 * q);
+        out.b = static_cast<uint8_t> (255 * in.v);
         break;
       }
       case 4:
       {
-        out.r = static_cast<uint8_t> (t);
-        out.g = static_cast<uint8_t> (p); 
-        out.b = static_cast<uint8_t> (in.v); 
+        out.r = static_cast<uint8_t> (255 * t);
+        out.g = static_cast<uint8_t> (255 * p); 
+        out.b = static_cast<uint8_t> (255 * in.v); 
         break;
       }
       default:
       {
-        out.r = static_cast<uint8_t> (in.v); 
-        out.g = static_cast<uint8_t> (p); 
-        out.b = static_cast<uint8_t> (q);
+        out.r = static_cast<uint8_t> (255 * in.v); 
+        out.g = static_cast<uint8_t> (255 * p); 
+        out.b = static_cast<uint8_t> (255 * q);
         break;
       }      
     }
