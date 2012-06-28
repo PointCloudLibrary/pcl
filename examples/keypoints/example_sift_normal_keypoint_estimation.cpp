@@ -33,7 +33,7 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: example_sift_keypoint_estimation.cpp 6030 2012-06-26 06:45:01Z desinghkar $
  *
  *
  */
@@ -46,56 +46,76 @@
 #include <pcl/point_types.h>
 #include <pcl/common/io.h>
 #include <pcl/keypoints/sift_keypoint.h>
-#include <pcl/keypoints/impl/sift_keypoint.hpp>
 #include <pcl/features/normal_3d.h>
 // #include <pcl/visualization/pcl_visualizer.h>
-	
+
+/* This example shows how to estimate the SIFT points based on the
+ * Normal gradients i.e. curvature than using the Intensity gradient
+ * as usually used for SIFT keypoint estimation.
+ */
+
 int
 main(int, char** argv)
 {
   std::string filename = argv[1];
   std::cout << "Reading " << filename << std::endl;
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
-  if(pcl::io::loadPCDFile<pcl::PointXYZRGB> (filename, *cloud) == -1) // load the file
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
+  if(pcl::io::loadPCDFile<pcl::PointXYZ> (filename, *cloud_xyz) == -1) // load the file
   {
-  PCL_ERROR ("Couldn't read file");
-  return -1;
+    PCL_ERROR ("Couldn't read file");
+    return -1;
   }
-  std::cout << "points: " << cloud->points.size () <<std::endl;
+  std::cout << "points: " << cloud_xyz->points.size () <<std::endl;
   
   // Parameters for sift computation
-  const float min_scale = 0.1f;
-  const int n_octaves = 6;
-  const int n_scales_per_octave = 10;
-  const float min_contrast = 0.5f;
+  const float min_scale = 0.01f;
+  const int n_octaves = 3;
+  const int n_scales_per_octave = 4;
+  const float min_contrast = 0.001f;
   
-  
-  // Estimate the sift interest points using Intensity values from RGB values
-  pcl::SIFTKeypoint<pcl::PointXYZRGB, pcl::PointWithScale> sift;
+  // Estimate the normals of the cloud_xyz
+  pcl::NormalEstimation<pcl::PointXYZ, pcl::PointNormal> ne;
+  pcl::PointCloud<pcl::PointNormal>::Ptr cloud_normals (new pcl::PointCloud<pcl::PointNormal>);
+  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree_n(new pcl::search::KdTree<pcl::PointXYZ>());
+
+  ne.setInputCloud(cloud_xyz);
+  ne.setSearchMethod(tree_n);
+  ne.setRadiusSearch(0.2);
+  ne.compute(*cloud_normals);
+
+  // Copy the xyz info from cloud_xyz and add it to cloud_normals as the xyz field in PointNormals estimation is zero
+  for(size_t i = 0; i<cloud_normals->points.size(); ++i)
+  {
+    cloud_normals->points[i].x = cloud_xyz->points[i].x;
+    cloud_normals->points[i].y = cloud_xyz->points[i].y;
+    cloud_normals->points[i].z = cloud_xyz->points[i].z;
+  }
+
+  // Estimate the sift interest points using normals values from xyz as the Intensity variants
+  pcl::SIFTKeypoint<pcl::PointNormal, pcl::PointWithScale> sift;
   pcl::PointCloud<pcl::PointWithScale> result;
-  pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZRGB> ());
+  pcl::search::KdTree<pcl::PointNormal>::Ptr tree(new pcl::search::KdTree<pcl::PointNormal> ());
   sift.setSearchMethod(tree);
   sift.setScales(min_scale, n_octaves, n_scales_per_octave);
   sift.setMinimumContrast(min_contrast);
-  sift.setInputCloud(cloud);
+  sift.setInputCloud(cloud_normals);
   sift.compute(result);
-  
+
+  std::cout << "No of SIFT points in the result are " << result.points.size () << std::endl;
+
+/*
   // Copying the pointwithscale to pointxyz so as visualize the cloud
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_temp (new pcl::PointCloud<pcl::PointXYZ>);
   copyPointCloud(result, *cloud_temp);
-
-  // Saving the resultant cloud 
-  std::cout << "Resulting sift points are of size: " << cloud_temp->points.size () <<std::endl;
-  pcl::io::savePCDFileASCII("sift_points.pcd", *cloud_temp);
-
+  std::cout << "SIFT points in the cloud_temp are " << cloud_temp->points.size () << std::endl;
   
-/*  
+  
   // Visualization of keypoints along with the original cloud
   pcl::visualization::PCLVisualizer viewer("PCL Viewer");
   pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> keypoints_color_handler (cloud_temp, 0, 255, 0);
-  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> cloud_color_handler (cloud, 255, 255, 0);
+  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> cloud_color_handler (cloud_xyz, 255, 0, 0);
   viewer.setBackgroundColor( 0.0, 0.0, 0.0 );
-  viewer.addPointCloud(cloud, "cloud");
+  viewer.addPointCloud(cloud_xyz, cloud_color_handler, "cloud");
   viewer.addPointCloud(cloud_temp, keypoints_color_handler, "keypoints");
   viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 7, "keypoints");
   
@@ -103,9 +123,9 @@ main(int, char** argv)
   {
   viewer.spinOnce ();
   }
-*/  
-
   
+*/
+
   return 0;
   
 }
