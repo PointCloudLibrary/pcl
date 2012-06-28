@@ -104,10 +104,6 @@ pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(c
   
   // initialize cyclical buffer
   cyclical_.initBuffer(tsdf_volume_);
-  
-  debug_stop = false;
-  freeze_ = false;
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -213,9 +209,7 @@ pcl::gpu::KinfuTracker::reset ()
     // clear world model
     cyclical_.getWorldModel ()->reset ();
   }
-
-  debug_stop = false;
-    
+   
 
     
   if (color_volume_) // color integration mode is enabled
@@ -266,17 +260,6 @@ pcl::gpu::KinfuTracker::allocateBufffers (int rows, int cols)
 bool
 pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
 {  
-  
-  //~ if(debug_stop)
-    //~ return (true);
-    
-    
-    
-  if(debug_stop)
-  {
-      PCL_WARN ("We are frozen!\n");  
-      return (true);
-  }
   
   device::Intr intr (fx_, fy_, cx_, cy_);
   {
@@ -450,7 +433,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
 
     
   
-		if (!debug_stop && (fabs (det) < 1e-15 || pcl_isnan (det)) )
+		if ( fabs (det) < 1e-15 || pcl_isnan (det) )
         {
           if (pcl_isnan (det)) cout << "qnan" << endl;
           
@@ -492,10 +475,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
   bool has_shifted = cyclical_.checkForShift(tsdf_volume_, getCameraPose (), 0.6 * VOLUME_SIZE, true, perform_last_scan_);
 
   if(has_shifted)
-    PCL_WARN ("WE ARE SHIFTING, I REPEAT, WE ARE SHIFTING!\n");
-
-  if(has_shifted && freeze_)
-    debug_stop = true;
+    PCL_WARN ("WE ARE SHIFTING\n");
     
     
   // get NEW local rotation 
@@ -525,7 +505,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
   Matrix3frm Rcurr_inv = Rcurr.inverse ();
   Mat33&  device_Rcurr_inv = device_cast<Mat33> (Rcurr_inv);
   float3& device_tcurr = device_cast<float3> (tcurr);*/
-  if (integrate && !debug_stop)
+  if (integrate)
   {
     //integrateTsdfVolume(depth_raw, intr, device_volume_size, device_Rcurr_inv, device_tcurr, tranc_dist, volume_);
     integrateTsdfVolume (depth_raw, intr, device_volume_size, device_cam_rot_local_curr_inv, device_cam_trans_local_curr, tsdf_volume_->getTsdfTruncDist (), tsdf_volume_->data (), getCyclicalBufferStructure (), depthRawScaled_);
@@ -558,10 +538,6 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
 
   if(has_shifted && perform_last_scan_)
     extractAndMeshWorld ();
-    
-    //~ 
-    //~ if(has_shifted)
-      //~ debug_stop = true;
 
   ++global_time_;
   return (true);

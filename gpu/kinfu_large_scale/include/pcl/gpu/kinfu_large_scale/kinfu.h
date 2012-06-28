@@ -217,8 +217,6 @@ namespace pcl
         void
         extractAndMeshWorld ();
 
-                bool freeze_;
-
       private:
         
         /** \brief Cycical buffer object */

@@ -901,8 +901,7 @@ struct KinFuApp
       case (int)'i': case (int)'I': app->toggleIndependentCamera (); break;
       case (int)'b': case (int)'B': app->scene_cloud_view_.toggleCube(app->kinfu_.volume().getSize()); break;
       case (int)'l': case (int)'L': app->kinfu_.performLastScan (); break;
-      case (int)'7': case (int)'8': app->writeMesh (key - (int)'0'); break;
-      case (int)'f': case (int)'F': app->kinfu_.freeze_ = true; break;   
+      case (int)'7': case (int)'8': app->writeMesh (key - (int)'0'); break;  
       case (int)'1': case (int)'2': case (int)'3': app->writeCloud (key - (int)'0'); break;      
       case '*': app->image_view_.toggleImagePaint (); break;
 
