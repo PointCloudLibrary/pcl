@@ -47,6 +47,31 @@
 
 namespace pcl
 {
+  namespace texture_mapping
+  {
+    /** \brief Structure to store camera pose and focal length. */
+    struct Camera
+    {
+      Camera () : pose (), focal_length (), height (), width (), texture_file () {}
+      Eigen::Affine3f pose;
+      double focal_length;
+      double height;
+      double width;
+      std::string texture_file;
+
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    };
+
+    /** \brief Structure that links a uv coordinate to its 3D point and face.
+      */
+    struct UvIndex
+    {
+      UvIndex () : idx_cloud (), idx_face () {}
+      int idx_cloud; // Index of the PointXYZ in the camera's cloud
+      int idx_face; // Face corresponding to that projection
+    };
+  }
+  
   /** \brief The texture mapping algorithm
     * \author Khai Tran, Raphael Favier
     * \ingroup surface
@@ -55,29 +80,7 @@ namespace pcl
   class TextureMapping
   {
     public:
-      /** \brief Structure to store camera pose and focal length.
-        */
-      struct Camera
-      {
-        Camera () : pose (), focal_length (), height (), width (), texture_file () {}
-        Eigen::Affine3f pose;
-        double focal_length;
-        double height;
-        double width;
-        std::string texture_file;
-
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-      };
-
-      /** \brief Structure that links a uv coordinate to its 3D point and face.
-        */
-      struct UvIndex
-      {
-        UvIndex () : idx_cloud (), idx_face () {}
-        int idx_cloud; // Index of the PointXYZ in the camera's cloud
-        int idx_face; // Face corresponding to that projection
-       };
-
+     
       typedef boost::shared_ptr< PointInT > Ptr;
       typedef boost::shared_ptr< const PointInT > ConstPtr;
 
@@ -88,6 +91,9 @@ namespace pcl
       typedef pcl::octree::OctreePointCloudSearch<PointInT> Octree;
       typedef typename Octree::Ptr OctreePtr;
       typedef typename Octree::ConstPtr OctreeConstPtr;
+      
+      typedef pcl::texture_mapping::Camera Camera;
+      typedef pcl::texture_mapping::UvIndex UvIndex;
 
       /** \brief Constructor. */
       TextureMapping () :
