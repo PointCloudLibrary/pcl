@@ -289,7 +289,9 @@ namespace pcl
       /** \brief The number of iterations the internal optimization ran for (used internally). */
       int nr_iterations_;
 
-      /** \brief The maximum number of iterations the internal optimization should run for. */
+      /** \brief The maximum number of iterations the internal optimization should run for.
+        * The default value is 10.
+        */
       int max_iterations_;
 
       /** \brief The number of iterations RANSAC should run for. */
@@ -325,7 +327,7 @@ namespace pcl
 
       /** \brief The inlier distance threshold for the internal RANSAC outlier rejection loop.
         * The method considers a point to be an inlier, if the distance between the target data index and the transformed 
-        * source index is smaller than the given inlier distance threshold. 
+        * source index is smaller than the given inlier distance threshold. The default value is 0.05. 
         */
       double inlier_threshold_;
 
@@ -333,7 +335,7 @@ namespace pcl
       bool converged_;
 
       /** \brief The minimum number of correspondences that the algorithm needs before attempting to estimate the 
-        * transformation. 
+        * transformation. The default value is 3.
         */
       int min_number_correspondences_;
 
