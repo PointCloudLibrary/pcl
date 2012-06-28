@@ -112,6 +112,16 @@ pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(c
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
+pcl::gpu::KinfuTracker::getDepthIntrinsics (float& fx, float& fy, float& cx, float& cy)
+{
+  fx = fx_;
+  fy = fy_;
+  cx = cx_;
+  cy = cy_;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
 pcl::gpu::KinfuTracker::setDepthIntrinsics (float fx, float fy, float cx, float cy)
 {
   fx_ = fx;

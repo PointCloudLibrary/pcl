@@ -12,7 +12,10 @@ namespace pcl
        boost::filesystem::path p("KinFuSnapshots"); 
        boost::filesystem::create_directory(p);
        screenshot_counter = 0;
+       setDepthIntrinsics();
      }
+
+     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
      void
      ScreenshotManager::saveImage(const Eigen::Affine3f &camPose, PtrStepSz<const PixelRGB> rgb24)
@@ -31,23 +34,38 @@ namespace pcl
 		    filename_image = filename_image + boost::lexical_cast<std::string>(screenshot_counter) + file_extension_image;
 
 		    //Write files
-		    writePose(teVecs, erreMats, filename_pose);
+		    writePose(filename_pose, teVecs, erreMats);
         
         //Save Image
         pcl::io::saveRgbPNGFile(filename_image, (unsigned char*)rgb24.data, 640,480);
         
         screenshot_counter++;
      }
+     
+     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     
+     void
+     ScreenshotManager::setDepthIntrinsics (float fx, float fy, float cx, float cy)
+     {
+       fx_ = fx;
+       fy_ = fy;
+       cx_ = cx;
+       cy_ = cy;  
+     }
 
+     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
      void 
-     ScreenshotManager::writePose(const Eigen::Vector3f &teVecs, const Eigen::Matrix<float, 3, 3, Eigen::RowMajor> &erreMats, const std::string &filename_pose)
+     ScreenshotManager::writePose(const std::string &filename_pose, const Eigen::Vector3f &teVecs, const Eigen::Matrix<float, 3, 3, Eigen::RowMajor> &erreMats)
      {
         std::ofstream poseFile;
         poseFile.open (filename_pose.c_str());
 
         if (poseFile.is_open())
         {
-          poseFile << "TVector" << std::endl << teVecs << std::endl << std::endl << "RMatrix" << std::endl << erreMats << std::endl << std::endl;
+          poseFile << "TVector" << std::endl << teVecs << std::endl << std::endl 
+                   << "RMatrix" << std::endl << erreMats << std::endl << std::endl 
+                   << "Camera Intrinsics: fx fy cx cy" << std::endl << fx_ << " " << fy_ << " " << cx_ << " " << cy_ << std::endl << std::endl;
           poseFile.close();
         }
         else

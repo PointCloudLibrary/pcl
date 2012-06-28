@@ -3,7 +3,6 @@
 
 
 #include <pcl/gpu/kinfu_large_scale/cyclical_buffer.h>
-//~ #include "cyclical_buffer.h"
 
 
 bool 

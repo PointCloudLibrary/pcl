@@ -581,6 +581,10 @@ struct KinFuApp
     frame_counter_ = 0;
     enable_texture_extraction_ = false;
     
+    float fx, fy, cx, cy;
+    kinfu_.getDepthIntrinsics (fx, fy, cx, cy);
+    screenshot_manager_.setDepthIntrinsics (fx, fy, cx, cy);
+    
   }
 
   ~KinFuApp()
@@ -701,7 +705,9 @@ struct KinFuApp
     if (enable_texture_extraction_)
     {
       if ( (frame_counter_  % 45) == 0 )
+      {
         screenshot_manager_.saveImage (kinfu_.getCameraPose(), rgb24); 
+      }
     }
   }
   
@@ -769,8 +775,6 @@ struct KinFuApp
       capture_.start ();
       while (!exit_ && !scene_cloud_view_.cloud_viewer_.wasStopped () && !image_view_.viewerScene_.wasStopped () && !this->kinfu_.isFinished ())
       { 
-        
-        //~ cout <<  "Kinfu finished: " << this->kinfu_.isFinished ()  << std::endl;
         bool has_data = data_ready_cond_.timed_wait (lock, boost::posix_time::millisec(100));
                        
         try { this->execute (depth_, rgb24_, has_data); }
@@ -1074,21 +1078,21 @@ main (int argc, char* argv[])
   catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; }
   catch (const std::exception& /*e*/) { cout << "Exception" << endl; }
 
-#ifdef HAVE_OPENCV
-  for (size_t t = 0; t < app.image_view_.views_.size (); ++t)
-  {
-    if (t == 0)
-    {
-      cout << "Saving depth map of first view." << endl;
-      cv::imwrite ("./depthmap_1stview.png", app.image_view_.views_[0]);
-      cout << "Saving sequence of (" << app.image_view_.views_.size () << ") views." << endl;
-    }
-    char buf[4096];
-    sprintf (buf, "./%06d.png", (int)t);
-    cv::imwrite (buf, app.image_view_.views_[t]);
-    printf ("writing: %s\n", buf);
-  }
-#endif
+//~ #ifdef HAVE_OPENCV
+  //~ for (size_t t = 0; t < app.image_view_.views_.size (); ++t)
+  //~ {
+    //~ if (t == 0)
+    //~ {
+      //~ cout << "Saving depth map of first view." << endl;
+      //~ cv::imwrite ("./depthmap_1stview.png", app.image_view_.views_[0]);
+      //~ cout << "Saving sequence of (" << app.image_view_.views_.size () << ") views." << endl;
+    //~ }
+    //~ char buf[4096];
+    //~ sprintf (buf, "./%06d.png", (int)t);
+    //~ cv::imwrite (buf, app.image_view_.views_[t]);
+    //~ printf ("writing: %s\n", buf);
+  //~ }
+//~ #endif
 
   return 0;
 }

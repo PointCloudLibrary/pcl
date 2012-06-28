@@ -11,9 +11,8 @@ pcl::WorldModel<PointT>::addSlice ( PointCloudPtr new_cloud)
 {
   PCL_DEBUG ("Adding new cloud. Current world contains %d points.\n", world_->points.size ());
 
-  
   PCL_DEBUG ("New slice contains %d points.\n", new_cloud->points.size ());
- 
+
   *world_ += *new_cloud;
 
   PCL_DEBUG ("World now contains  %d points.\n", world_->points.size ());
