@@ -10,23 +10,21 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
     set(srcs
-        src/examples.cpp
+        src/convolution_2d.cpp
         )
 
     set(incs
         include/pcl/${SUBSYS_NAME}/convolution.h
-        include/pcl/${SUBSYS_NAME}/kernel.h
         include/pcl/${SUBSYS_NAME}/edge.h
         include/pcl/${SUBSYS_NAME}/morphology.h
         include/pcl/${SUBSYS_NAME}/keypoint.h
         )
 
     set(impl_incs
-        #include/pcl/${SUBSYS_NAME}/Convolution.hpp
-        #include/pcl/${SUBSYS_NAME}/Kernel.hpp
-        #include/pcl/${SUBSYS_NAME}/Edge.hpp
-        #include/pcl/${SUBSYS_NAME}/Morphology.hpp
-        #include/pcl/${SUBSYS_NAME}/Keypoint.hpp
+        #include/pcl/${SUBSYS_NAME}/convolution.hpp
+        #include/pcl/${SUBSYS_NAME}/edge.hpp
+        #include/pcl/${SUBSYS_NAME}/morphology.hpp
+        #include/pcl/${SUBSYS_NAME}/keypoint.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
