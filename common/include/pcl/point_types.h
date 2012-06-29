@@ -183,8 +183,20 @@ namespace pcl
 
   /** \brief Members: std::vector<float> descriptor, rf[9]
     * \ingroup common
+    * \deprecated USE SHOT352 FOR SHAPE AND SHOT1344 FOR SHAPE+COLOR INSTEAD
     */
-  struct SHOT;
+  struct
+  PCL_DEPRECATED_CLASS (SHOT, "USE SHOT352 FOR SHAPE AND SHOT1344 FOR SHAPE+COLOR INSTEAD");
+
+  /** \brief Members: float descriptor[352], rf[9]
+    * \ingroup common
+    */
+  struct SHOT352;
+
+  /** \brief Members: float descriptor[1344], rf[9]
+    * \ingroup common
+    */
+  struct SHOT1344;
 
   /** \brief Members: Axis x_axis, y_axis, z_axis
     * \ingroup common
@@ -237,7 +249,7 @@ namespace pcl
   /** \brief Members: float x, y, z, roll, pitch, yaw; float descriptor[36]
     * \ingroup common
     */
-    
+
   struct Narf36;
 
   /** \brief Data type to store extended information about a transition from foreground to backgroundSpecification of the fields for BorderDescription::traits.
@@ -484,20 +496,15 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::NormalBasedSignature12,
     (float[12], values, values)
 )
 
-//POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_SHOT352,
-//                                   (float[352], descriptor, shot)
-//																	 (float[9], rf, rf)
-//                                   (uint32_t, size, size)
-//)
-//POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::SHOT352, pcl::_SHOT352)
-//
-//POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_SHOT1344,
-//                                   (float[1344], descriptor, shot)
-//																	 (float[9], rf, rf)
-//                                   (uint32_t, size, size)
-//)
-//POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::SHOT1344, pcl::_SHOT1344)
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::SHOT352,
+    (float[352], descriptor, shot)
+    (float[9], rf, rf)
+)
 
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::SHOT1344,
+    (float[1344], descriptor, shot)
+    (float[9], rf, rf)
+)
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::FPFHSignature33,
     (float[33], histogram, fpfh)

@@ -722,7 +722,7 @@ namespace pcl
   {
     inline PointXYZRGBNormal ()
     {
-      x = y = z = 0.0f; 
+      x = y = z = 0.0f;
       data[3] = 1.0f;
       r = g = b = a = 0;
       normal_x = normal_y = normal_z = data_n[3] = 0.0f;
@@ -1005,12 +1005,49 @@ namespace pcl
     float rf[9];
   };
 
+  PCL_DEPRECATED (inline std::ostream& operator << (std::ostream& os, const SHOT& p), "SHOT POINT IS DEPRECATED, USE SHOT352 FOR SHAPE AND SHOT1344 FOR SHAPE+COLOR INSTEAD");
   inline std::ostream& operator << (std::ostream& os, const SHOT& p)
   {
     for (int i = 0; i < 9; ++i)
     os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
     for (size_t i = 0; i < p.descriptor.size (); ++i)
     os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < p.descriptor.size()-1 ? ", " : ")");
+    return (os);
+  }
+
+  /** \brief A point structure representing the generic Signature of Histograms of OrienTations (SHOT) - shape only.
+    * \ingroup common
+    */
+  struct SHOT352
+  {
+    float descriptor[352];
+    float rf[9];
+  };
+
+  inline std::ostream& operator << (std::ostream& os, const SHOT352& p)
+  {
+    for (int i = 0; i < 9; ++i)
+    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
+    for (size_t i = 0; i < 352; ++i)
+    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 351 ? ", " : ")");
+    return (os);
+  }
+
+  /** \brief A point structure representing the generic Signature of Histograms of OrienTations (SHOT) - shape+color.
+    * \ingroup common
+    */
+  struct SHOT1344
+  {
+    float descriptor[1344];
+    float rf[9];
+  };
+
+  inline std::ostream& operator << (std::ostream& os, const SHOT1344& p)
+  {
+    for (int i = 0; i < 9; ++i)
+    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
+    for (size_t i = 0; i < 1344; ++i)
+    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 1343 ? ", " : ")");
     return (os);
   }
 
@@ -1107,7 +1144,7 @@ namespace pcl
     os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 639 ? ", " : ")");
     return (os);
   }
-  
+
   /** \brief A point structure representing the GFPFH descriptor with 16 bins.
    * \ingroup common
    */

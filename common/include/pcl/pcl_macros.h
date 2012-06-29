@@ -75,7 +75,7 @@ namespace pcl
 // Copied from math.h
 # define M_PI   3.14159265358979323846     // pi
 # define M_PI_2    1.57079632679489661923  // pi/2
-# define M_PI_4    0.78539816339744830962  // pi/4 
+# define M_PI_4    0.78539816339744830962  // pi/4
 # define M_PIl   3.1415926535897932384626433832795029L  // pi
 # define M_PI_2l 1.5707963267948966192313216916397514L  // pi/2
 # define M_PI_4l 0.7853981633974483096156608458198757L  // pi/4
@@ -155,7 +155,7 @@ pcl_round (float number)
 #define pcl_lrintf(x) (static_cast<long int>(pcl_round(x)))
 
 #ifdef _WIN32
-__inline float 
+__inline float
 log2f (float x)
 {
   return (static_cast<float> (logf (x) * M_LOG2E));
@@ -298,6 +298,40 @@ log2f (float x)
 #define PCL_DEPRECATED(func) func
 #endif
 
+// Macro to deprecate old classes/structs
+//
+// Usage:
+// don't use me any more
+// class PCL_DEPRECATED_CLASS(OldClass, "Use newClass instead, this class will be gone in the next major release")
+// {
+//   public:
+//     OldClass() {}
+// };
+// use me instead
+// class NewFunc
+// {
+//   public:
+//     NewClass() {}
+// };
+
+// gcc supports this starting from 4.5 : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43666
+#ifdef __GNUC__
+#define GCC_VERSION (__GNUC__ * 10000 \
+    + __GNUC_MINOR__ * 100 \
+    + __GNUC_PATCHLEVEL__)
+#if GCC_VERSION < 40500
+#define PCL_DEPRECATED_CLASS(func, message) __attribute__ ((deprecated)) func
+#else
+#define PCL_DEPRECATED_CLASS(func, message) __attribute__ ((deprecated(message))) func
+#endif
+
+#elif defined(_MSC_VER)
+#define PCL_DEPRECATED_CLASS(func, message) __declspec(deprecated(message)) func
+#else
+#pragma message("WARNING: You need to implement PCL_DEPRECATED for this compiler")
+#define PCL_DEPRECATED_CLASS(func) func
+#endif
+
 #if defined (__GNUC__) || defined (__PGI) || defined (__IBMCPP__) || defined (__SUNPRO_CC)
   #define PCL_ALIGN(alignment) __attribute__((aligned(alignment)))
 #elif defined (_MSC_VER)
@@ -325,7 +359,7 @@ log2f (float x)
   #define MALLOC_ALIGNED 0
 #endif
 
-inline void* 
+inline void*
 aligned_malloc (size_t size)
 {
   void *ptr;
@@ -345,7 +379,7 @@ aligned_malloc (size_t size)
   return (ptr);
 }
 
-inline void 
+inline void
 aligned_free (void* ptr)
 {
 #if   defined (MALLOC_ALIGNED) || defined (HAVE_POSIX_MEMALIGN)
