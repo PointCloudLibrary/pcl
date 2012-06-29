@@ -562,10 +562,8 @@ struct KinFuApp
     kinfu_.setInitalCameraPose (pose);
     kinfu_.volume().setTsdfTruncDist (0.030f/*meters*/);    
     kinfu_.setIcpCorespFilteringParams (0.1f/*meters*/, sin ( pcl::deg2rad(20.f) ));
-    
-    
+
     //kinfu_.setDepthTruncationForICP(3.f/*meters*/);
-    
     
     kinfu_.setCameraMovementThreshold(0.001f);
     
@@ -581,9 +579,14 @@ struct KinFuApp
     frame_counter_ = 0;
     enable_texture_extraction_ = false;
     
-    float fx, fy, cx, cy;
-    kinfu_.getDepthIntrinsics (fx, fy, cx, cy);
-    screenshot_manager_.setDepthIntrinsics (fx, fy, cx, cy);
+    //~ float fx, fy, cx, cy;
+    //~ boost::shared_ptr<openni_wrapper::OpenNIDevice> d = ((pcl::OpenNIGrabber)source).getDevice ();
+    //~ kinfu_.getDepthIntrinsics (fx, fy, cx, cy);
+    
+    float height = 480.0f;
+    float width = 640.0f;
+    screenshot_manager_.setCameraIntrinsics (pcl::device::FOCAL_LENGTH, height, width);
+    
     
   }
 
@@ -781,11 +784,16 @@ struct KinFuApp
         catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; break; }
         catch (const std::exception& /*e*/) { cout << "Exception" << endl; break; }
         
-        scene_cloud_view_.cloud_viewer_.spinOnce (3);                  
-      }        
+        scene_cloud_view_.cloud_viewer_.spinOnce (3);
+        //~ cout << "In main loop" << endl;                  
+      } 
+      //~ cout << "Out of main loop, stopping capture" << endl;       
       capture_.stop ();
+      //~ cout << "Capture stopped" << endl;       
     }
+    //~ cout << "Disconnecting from signal" << endl;       
     c.disconnect();
+    //~ cout << "Disconnected from signal" << endl;  
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -283,7 +283,7 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV (pcl::TextureMesh &tex_mesh)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> void
-pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &tex_mesh, std::vector<Camera, Eigen::aligned_allocator<Camera> > &cams)
+pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &tex_mesh, pcl::texture_mapping::CameraVector &cams)
 {
 
   if (tex_mesh.tex_polygons.size () != cams.size () + 1)
@@ -551,7 +551,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const pcl::TextureMesh &tex
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> int
 pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pcl::TextureMesh &sorted_mesh,
-                                                  const std::vector<Camera, Eigen::aligned_allocator<Camera> > &cameras, const double octree_voxel_size,
+                                                  const pcl::texture_mapping::CameraVector &cameras, const double octree_voxel_size,
                                                   PointCloud &visible_pts)
 {
   if (tex_mesh.tex_polygons.size () != 1)
@@ -739,7 +739,7 @@ pcl::TextureMapping<PointInT>::showOcclusions (pcl::TextureMesh &tex_mesh, pcl::
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> void
-pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh &mesh, const std::vector<Camera, Eigen::aligned_allocator<Camera> > &cameras)
+pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh &mesh, const pcl::texture_mapping::CameraVector &cameras)
 {
 
   if (mesh.tex_polygons.size () != 1)
@@ -753,6 +753,8 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
 
   for (int current_cam = 0; current_cam < static_cast<int> (cameras.size ()); ++current_cam)
   {
+    PCL_INFO ("Processing camera %d of %d.\n", current_cam+1, cameras.size ());
+    
     // transform mesh into camera's frame
     pcl::PointCloud<pcl::PointXYZ>::Ptr camera_cloud (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::transformPointCloud (*mesh_cloud, *camera_cloud, cameras[current_cam].pose.inverse ());
@@ -827,7 +829,7 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
     // indexes_uv_to_points links a uv point to its point in the camera cloud
     // visibility contains tells if a face was in the camera FOV (false = skip)
 
-    //TODO handle case were no face could be projected
+    // TODO handle case were no face could be projected
     if (visibility.size () - cpt_invisible !=0)
     {
         //create kdtree

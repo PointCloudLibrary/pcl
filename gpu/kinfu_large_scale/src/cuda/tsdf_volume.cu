@@ -73,17 +73,17 @@ namespace pcl
       int idX, idY;
       
       if(x <= minBounds.x)
-        idX = x + VOLUME_X;
+        idX = x + buffer.voxels_size.x;
       else
         idX = x;
       
       if(y <= minBounds.y)
-        idY = y + VOLUME_Y;
+        idY = y + buffer.voxels_size.y;
       else
         idY = y;	 
               
       
-      if ( x < VOLUME_X && y < VOLUME_Y)
+      if ( x < buffer.voxels_size.x && y < buffer.voxels_size.y)
       {
           if( (idX >= minBounds.x && idX <= maxBounds.x) || (idY >= minBounds.y && idY <= maxBounds.y) )
           {
@@ -93,14 +93,14 @@ namespace pcl
               T *pos = volume.ptr(y) + x;
               
               ///Get the step on Z
-              int z_step = VOLUME_Y * volume.step / sizeof(*pos);
+              int z_step = buffer.voxels_size.y * volume.step / sizeof(*pos);
                                   
               ///Get the size of the whole TSDF memory
               int size = buffer.tsdf_memory_end - buffer.tsdf_memory_start;
                                 
               ///Move along z axis
     #pragma unroll
-              for(int z = 0; z < VOLUME_Z; ++z, pos+=z_step)
+              for(int z = 0; z < buffer.voxels_size.z; ++z, pos+=z_step)
               {
                 ///If we went outside of the memory, make sure we go back to the begining of it
                 if(pos > buffer.tsdf_memory_end)
@@ -118,7 +118,7 @@ namespace pcl
               T *pos = volume.ptr(y) + x;
               
               ///Get the step on Z
-              int z_step = VOLUME_Y * volume.step / sizeof(*pos);
+              int z_step = buffer.voxels_size.y * volume.step / sizeof(*pos);
                            
               ///Get the size of the whole TSDF memory 
               int size = buffer.tsdf_memory_end - buffer.tsdf_memory_start;
@@ -407,7 +407,7 @@ namespace pcl
       int x = threadIdx.x + blockIdx.x * blockDim.x;
       int y = threadIdx.y + blockIdx.y * blockDim.y;
 
-      if (x >= VOLUME_X || y >= VOLUME_Y)
+      if (x >= buffer.voxels_size.x || y >= buffer.voxels_size.y)
         return;
 
       float v_g_x = (x + 0.5f) * cell_size.x - tcurr.x;
@@ -432,10 +432,10 @@ namespace pcl
       // shift the pointer to relative indices
       shift_tsdf_pointer(&pos, buffer);
       
-      int elem_step = volume.step * VOLUME_Y / sizeof(short2);
+      int elem_step = volume.step * buffer.voxels_size.y / sizeof(short2);
 
 //#pragma unroll
-      for (int z = 0; z < VOLUME_Z;
+      for (int z = 0; z < buffer.voxels_size.z;
            ++z,
            v_g_z += cell_size.z,
            z_scaled += cell_size.z,
@@ -625,13 +625,13 @@ pcl::device::integrateTsdfVolume (const PtrStepSz<ushort>& depth, const Intr& in
   cudaSafeCall ( cudaGetLastError () );
 
   float3 cell_size;
-  cell_size.x = volume_size.x / VOLUME_X;
-  cell_size.y = volume_size.y / VOLUME_Y;
-  cell_size.z = volume_size.z / VOLUME_Z;
+  cell_size.x = volume_size.x / buffer->voxels_size.x;
+  cell_size.y = volume_size.y / buffer->voxels_size.y;
+  cell_size.z = volume_size.z / buffer->voxels_size.z;
 
   //dim3 block(Tsdf::CTA_SIZE_X, Tsdf::CTA_SIZE_Y);
   dim3 block (16, 16);
-  dim3 grid (divUp (VOLUME_X, block.x), divUp (VOLUME_Y, block.y));
+  dim3 grid (divUp (buffer->voxels_size.x, block.x), divUp (buffer->voxels_size.y, block.y));
 
   tsdf23<<<grid, block>>>(depthScaled, volume, tranc_dist, Rcurr_inv, tcurr, intr, cell_size, *buffer);    
   //tsdf23normal_hack<<<grid, block>>>(depthScaled, volume, tranc_dist, Rcurr_inv, tcurr, intr, cell_size);

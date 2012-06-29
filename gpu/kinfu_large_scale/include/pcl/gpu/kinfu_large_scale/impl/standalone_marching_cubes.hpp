@@ -71,10 +71,12 @@ pcl::gpu::StandaloneMarchingCubes<PointT>::getMeshFromTSDFCloud (const PointClou
   //Clearing TSDF GPU and cPU
   const Eigen::Vector3f volume_size = Eigen::Vector3f::Constant (VOLUME_SIZE);
   const Eigen::Vector3i volume_resolution (VOXELS_X, VOXELS_Y, VOXELS_Z);
-  tsdf_volume_gpu_ = pcl::gpu::TsdfVolume::Ptr ( new pcl::gpu::TsdfVolume (volume_resolution) );
-  tsdf_volume_gpu_->setSize (volume_size);
-  
-   int tsdf_total_size = VOXELS_X * VOXELS_Y * VOXELS_Z;
+
+  //Clear values in TSDF Volume GPU
+  tsdf_volume_gpu_->reset (); // This one uses the same tsdf volume but clears it before loading new values. This one is our friend.
+
+  //Clear values in TSDF Volume CPU
+  int tsdf_total_size = VOXELS_X * VOXELS_Y * VOXELS_Z;
   tsdf_volume_cpu_= std::vector<int> (tsdf_total_size,0);
   
   //Loading values to GPU
@@ -98,7 +100,6 @@ pcl::gpu::StandaloneMarchingCubes<PointT>::getMeshesFromTSDFVector (const std::v
   
   for(int i = 0; i < max_iterations; ++i)
   {
-    //std::cout << "Processing cube number " << i << std::endl;
     PCL_INFO ("Processing cube number %d\n", i);
     
     //Making cloud local
@@ -115,6 +116,7 @@ pcl::gpu::StandaloneMarchingCubes<PointT>::getMeshesFromTSDFVector (const std::v
     
     transformPointCloud (*tsdf_clouds[i], *tsdf_clouds[i], cloud_transform);
 
+    //Get mesh
     MeshPtr tmp = getMeshFromTSDFCloud (*tsdf_clouds[i]);
         
     if(tmp != 0)

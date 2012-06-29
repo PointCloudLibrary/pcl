@@ -50,16 +50,16 @@ namespace pcl
         float4 *tsdfvalue_ptr = point_ptr + 1;  
       
         if( //Indices x,y,z are within [0...VOLUME_{X,Y,Z}]
-            ( ( (int) ( (*point_ptr).x ) < pcl::device::VOLUME_X) && ( (int) ( (*point_ptr).x ) >= 0) ) || 
-            ( ( (int) ( (*point_ptr).y ) < pcl::device::VOLUME_Y) && ( (int) ( (*point_ptr).y ) >= 0) ) ||
-            ( ( (int) ( (*point_ptr).z ) < pcl::device::VOLUME_Z) && ( (int) ( (*point_ptr).z ) >= 0) )
+            ( ( (int) ( (*point_ptr).x ) < buffer.voxels_size.x) && ( (int) ( (*point_ptr).x ) >= 0) ) || 
+            ( ( (int) ( (*point_ptr).y ) < buffer.voxels_size.y) && ( (int) ( (*point_ptr).y ) >= 0) ) ||
+            ( ( (int) ( (*point_ptr).z ) < buffer.voxels_size.z) && ( (int) ( (*point_ptr).z ) >= 0) )
           )//Not sure whether this long condition is necessary since destination indices are calculated based on rolling buffer 
         {
-           int dest_x = ( (int) ( (*point_ptr).x ) + buffer.origin_GRID.x ) % pcl::device::VOLUME_X;
-           int dest_y = ( (int) ( (*point_ptr).y ) + buffer.origin_GRID.y ) % pcl::device::VOLUME_Y;
-           int dest_z = ( (int) ( (*point_ptr).z ) + buffer.origin_GRID.z ) % pcl::device::VOLUME_Z;
+           int dest_x = ( (int) ( (*point_ptr).x ) + buffer.origin_GRID.x ) % buffer.voxels_size.x;
+           int dest_y = ( (int) ( (*point_ptr).y ) + buffer.origin_GRID.y ) % buffer.voxels_size.y;
+           int dest_z = ( (int) ( (*point_ptr).z ) + buffer.origin_GRID.z ) % buffer.voxels_size.z;
 
-           short2 *dest_tsdf_index = first_point_pointer + ( pcl::device::VOLUME_Y * pcl::device::VOLUME_X * dest_z + ( pcl::device::VOLUME_X * dest_y ) ) + dest_x;
+           short2 *dest_tsdf_index = first_point_pointer + ( buffer.voxels_size.y * buffer.voxels_size.x * dest_z + ( buffer.voxels_size.x * dest_y ) ) + dest_x;
            (*dest_tsdf_index).x = (*tsdfvalue_ptr).x * divisor;
            (*dest_tsdf_index).y = 1.0;
         }

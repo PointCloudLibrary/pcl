@@ -1,3 +1,43 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ *  Author: Francisco Heredia, Technical University Eindhoven, (f.j.mysurname.soriano < aT > tue.nl)
+ */
+
+
+
 #ifndef PCL_SCREENSHOT_MANAGER_CPP_
 #define PCL_SCREENSHOT_MANAGER_CPP_
 
@@ -12,7 +52,7 @@ namespace pcl
        boost::filesystem::path p("KinFuSnapshots"); 
        boost::filesystem::create_directory(p);
        screenshot_counter = 0;
-       setDepthIntrinsics();
+       setCameraIntrinsics();
      }
 
      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -45,12 +85,11 @@ namespace pcl
      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
      
      void
-     ScreenshotManager::setDepthIntrinsics (float fx, float fy, float cx, float cy)
+     ScreenshotManager::setCameraIntrinsics (float focal, float height, float width)
      {
-       fx_ = fx;
-       fy_ = fy;
-       cx_ = cx;
-       cy_ = cy;  
+       focal_ = focal;
+       height_ = height;
+       width_ = width;
      }
 
      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,7 +104,7 @@ namespace pcl
         {
           poseFile << "TVector" << std::endl << teVecs << std::endl << std::endl 
                    << "RMatrix" << std::endl << erreMats << std::endl << std::endl 
-                   << "Camera Intrinsics: fx fy cx cy" << std::endl << fx_ << " " << fy_ << " " << cx_ << " " << cy_ << std::endl << std::endl;
+                   << "Camera Intrinsics: focal height width" << std::endl << focal_ << " " << height_ << " " << width_ << std::endl << std::endl;
           poseFile.close();
         }
         else

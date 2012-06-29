@@ -126,13 +126,13 @@ namespace pcl
       {
         int3 g = getVoxel (point);
 
-        if (g.x <= 0 || g.x >= VOLUME_X - 1)
+        if (g.x <= 0 || g.x >= buffer.voxels_size.x - 1)
           return numeric_limits<float>::quiet_NaN ();
 
-        if (g.y <= 0 || g.y >= VOLUME_Y - 1)
+        if (g.y <= 0 || g.y >= buffer.voxels_size.y - 1)
           return numeric_limits<float>::quiet_NaN ();
 
-        if (g.z <= 0 || g.z >= VOLUME_Z - 1)
+        if (g.z <= 0 || g.z >= buffer.voxels_size.z - 1)
           return numeric_limits<float>::quiet_NaN ();
 
         float vx = (g.x + 0.5f) * cell_size.x;
@@ -190,9 +190,9 @@ namespace pcl
 
         float time_curr = time_start_volume;
         int3 g = getVoxel (ray_start + ray_dir * time_curr);
-        g.x = max (0, min (g.x, VOLUME_X - 1));
-        g.y = max (0, min (g.y, VOLUME_Y - 1));
-        g.z = max (0, min (g.z, VOLUME_Z - 1));
+        g.x = max (0, min (g.x, buffer.voxels_size.x - 1));
+        g.y = max (0, min (g.y, buffer.voxels_size.y - 1));
+        g.z = max (0, min (g.z, buffer.voxels_size.z - 1));
 
         float tsdf = readTsdf (g.x, g.y, g.z, buffer);
 
@@ -232,7 +232,7 @@ namespace pcl
             vmap.ptr (y + 2 * rows)[x] = vetex_found.z;
 
             int3 g = getVoxel ( ray_start + ray_dir * time_curr );
-            if (g.x > 1 && g.y > 1 && g.z > 1 && g.x < VOLUME_X - 2 && g.y < VOLUME_Y - 2 && g.z < VOLUME_Z - 2)
+            if (g.x > 1 && g.y > 1 && g.z > 1 && g.x < buffer.voxels_size.x - 2 && g.y < buffer.voxels_size.y - 2 && g.z < buffer.voxels_size.z - 2)
             {
               float3 t;
               float3 n;
@@ -303,9 +303,9 @@ pcl::device::raycast (const Intr& intr, const Mat33& Rcurr, const float3& tcurr,
 
   rc.volume_size = volume_size;
 
-  rc.cell_size.x = volume_size.x / VOLUME_X;
-  rc.cell_size.y = volume_size.y / VOLUME_Y;
-  rc.cell_size.z = volume_size.z / VOLUME_Z;
+  rc.cell_size.x = volume_size.x / buffer->voxels_size.x;
+  rc.cell_size.y = volume_size.y / buffer->voxels_size.y;
+  rc.cell_size.z = volume_size.z / buffer->voxels_size.z;
 
   rc.cols = vmap.cols ();
   rc.rows = vmap.rows () / 3;

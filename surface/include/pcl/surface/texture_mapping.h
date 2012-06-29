@@ -49,6 +49,7 @@ namespace pcl
 {
   namespace texture_mapping
   {
+        
     /** \brief Structure to store camera pose and focal length. */
     struct Camera
     {
@@ -70,6 +71,9 @@ namespace pcl
       int idx_cloud; // Index of the PointXYZ in the camera's cloud
       int idx_face; // Face corresponding to that projection
     };
+    
+    typedef std::vector<Camera, Eigen::aligned_allocator<Camera> > CameraVector;
+    
   }
   
   /** \brief The texture mapping algorithm
@@ -166,7 +170,7 @@ namespace pcl
         */
       void
       mapMultipleTexturesToMeshUV (pcl::TextureMesh &tex_mesh, 
-                                   std::vector<Camera, Eigen::aligned_allocator<Camera> > &cams);
+                                   pcl::texture_mapping::CameraVector &cams);
 
       /** \brief computes UV coordinates of point, observed by one particular camera
         * \param[in] pt XYZ point to project on camera plane
@@ -254,7 +258,7 @@ namespace pcl
       int
       sortFacesByCamera (pcl::TextureMesh &tex_mesh, 
                          pcl::TextureMesh &sorted_mesh, 
-                         const std::vector<Camera, Eigen::aligned_allocator<Camera> > &cameras,
+                         const pcl::texture_mapping::CameraVector &cameras,
                          const double octree_voxel_size, PointCloud &visible_pts);
 
       /** \brief Colors a point cloud, depending on its occlusions.
@@ -299,7 +303,7 @@ namespace pcl
         */
       void 
       textureMeshwithMultipleCameras (pcl::TextureMesh &mesh, 
-                                      const std::vector<Camera, Eigen::aligned_allocator<Camera> > &cameras);
+                                      const pcl::texture_mapping::CameraVector &cameras);
 
     protected:
       /** \brief mesh scale control. */

@@ -98,15 +98,6 @@ namespace pcl
           */
         void
         setDepthIntrinsics (float fx, float fy, float cx = -1, float cy = -1);
-        
-        /** \brief Returns Depth camera intrinsics
-          * \param[in] fx focal length x 
-          * \param[in] fy focal length y
-          * \param[in] cx principal point x
-          * \param[in] cy principal point y
-          */
-        void
-        getDepthIntrinsics (float& fx, float& fy, float& cx, float& cy);
 
         /** \brief Sets initial camera pose relative to volume coordiante space
           * \param[in] pose Initial camera pose

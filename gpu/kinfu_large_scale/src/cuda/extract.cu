@@ -49,7 +49,6 @@ namespace pcl
 
     ////////////////////////////////////////////////////////////////////////////////////////
     ///// Full Volume Scan6
-
     enum
     {
       CTA_SIZE_X = 32,
@@ -76,21 +75,18 @@ namespace pcl
       mutable PtrSz<PointType> output;
       mutable PtrSz<PointType> output_xyz;
       mutable PtrSz<float> output_intensity;
-      
+
       __device__ __forceinline__ float
       fetch (pcl::gpu::tsdf_buffer buffer, int x, int y, int z, int& weight) const
       {
         float tsdf;
-       
-        const short2* tmp_pos = &(volume.ptr (VOLUME_Y * z + y)[x]);
-        
-      
-        short2* pos = const_cast<short2*>(tmp_pos);
-        
-        shift_tsdf_pointer(&pos, buffer);
-        
+        const short2* tmp_pos = &(volume.ptr (buffer.voxels_size.y * z + y)[x]);
+        short2* pos = const_cast<short2*> (tmp_pos);
+
+        shift_tsdf_pointer (&pos, buffer);
+
         unpack_tsdf (*pos, tsdf, weight);
-      
+
         return tsdf;
       }
 
@@ -107,7 +103,7 @@ namespace pcl
       {
         int x = threadIdx.x + blockIdx.x * CTA_SIZE_X;
         int y = threadIdx.y + blockIdx.y * CTA_SIZE_Y;
-       
+
 #if __CUDA_ARCH__ < 200
         __shared__ int cta_buffer[CTA_SIZE];
 #endif
@@ -141,14 +137,14 @@ namespace pcl
             {
               V.z = (z + 0.5f) * cell_size.z;
 
-              //process dx
+              // process dx
               if (x + 1 < VOLUME_X)
               {
                 int Wn;
                 float Fn = fetch (x + 1, y, z, Wn);
 
                 if (Wn != 0 && Fn != 1.f)
-                  if ((F > 0 && Fn < 0) || (F < 0 && Fn > 0))
+                  if ( (F > 0 && Fn < 0) || (F < 0 && Fn > 0) )
                   {
                     float3 p;
                     p.y = V.y;
@@ -163,14 +159,14 @@ namespace pcl
                   }
               }               /* if (x + 1 < VOLUME_X) */
 
-              //process dy
+              // process dy
               if (y + 1 < VOLUME_Y)
               {
                 int Wn;
                 float Fn = fetch (x, y + 1, z, Wn);
 
                 if (Wn != 0 && Fn != 1.f)
-                  if ((F > 0 && Fn < 0) || (F < 0 && Fn > 0))
+                  if ( (F > 0 && Fn < 0) || (F < 0 && Fn > 0) )
                   {
                     float3 p;
                     p.x = V.x;
@@ -185,8 +181,8 @@ namespace pcl
                   }
               }                /*  if (y + 1 < VOLUME_Y) */
 
-              //process dz
-              //if (z + 1 < VOLUME_Z) // guaranteed by loop
+              // process dz
+              // if (z + 1 < VOLUME_Z) // guaranteed by loop
               {
                 int Wn;
                 float Fn = fetch (x, y, z + 1, Wn);
@@ -205,18 +201,18 @@ namespace pcl
 
                     points[local_count++] = p;
                   }
-              }               /* if (z + 1 < VOLUME_Z) */
-            }              /* if (W != 0 && F != 1.f) */
-          }            /* if (x < VOLUME_X && y < VOLUME_Y) */
+              }/* if (z + 1 < VOLUME_Z) */
+            }/* if (W != 0 && F != 1.f) */
+          }/* if (x < VOLUME_X && y < VOLUME_Y) */
 
 
 #if __CUDA_ARCH__ >= 200
-          ///not we fulfilled points array at current iteration
+          //not we fulfilled points array at current iteration
           int total_warp = __popc (__ballot (local_count > 0)) + __popc (__ballot (local_count > 1)) + __popc (__ballot (local_count > 2));
 #else
-          int tid = Block::flattenedThreadId();				
-		  cta_buffer[tid] = local_count;
-          int total_warp = Emulation::warp_reduce(cta_buffer, tid);
+          int tid = Block::flattenedThreadId ();				
+		      cta_buffer[tid] = local_count;
+          int total_warp = Emulation::warp_reduce (cta_buffer, tid);
 #endif
 
           if (total_warp > 0)
@@ -258,17 +254,16 @@ namespace pcl
               break;
           }
 
-        }         /* for(int z = 0; z < VOLUME_Z - 1; ++z) */
-
+        }/* for(int z = 0; z < VOLUME_Z - 1; ++z) */
 
         ///////////////////////////
-        // prepare for future scans
+        // Prepare for future scans
         if (ftid == 0)
         {
           unsigned int total_blocks = gridDim.x * gridDim.y * gridDim.z;
           unsigned int value = atomicInc (&blocks_done, total_blocks);
 
-          //last block
+          // Last block
           if (value == total_blocks - 1)
           {
             output_xyz_count = min ((int)output_xyz.size, global_count);
@@ -276,9 +271,12 @@ namespace pcl
             global_count = 0;
           }
         }
-      }       /* operator() */
-      
-            ///OPERATOR FOR EXTRACT_SLICE_AS_CLOUD: CHANGE NAME AND CALL TO be saved at different output_xyz. The original saves points in meters. This one accumulaets points as voxel grid indices. Benefit in using the indices because: they align naturally, load directly back from filesystem when retrieveing. Easy to divide in tree later.
+      } /* operator() */
+
+      // OPERATOR USED BY EXTRACT_SLICE_AS_CLOUD. 
+      // This operator extracts the cloud as TSDF values and X,Y,Z indices. 
+      // The previous operator generates a regular point cloud in meters. 
+      // This one generates a TSDF Point Cloud in grid indices.
       __device__ __forceinline__ void
       operator () (pcl::gpu::tsdf_buffer buffer, int3 minBounds, int3 maxBounds) const
       {
@@ -286,107 +284,98 @@ namespace pcl
         int y = threadIdx.y + blockIdx.y * CTA_SIZE_Y;
 
         int ftid = Block::flattenedThreadId ();
-        
+
         int minimum_Z = 0;
         int maximum_Z = VOLUME_Z;
-                  
+
         for (int z = minimum_Z; z < maximum_Z; ++z)
         {
-          
-          
-                bool in_black_zone = ( (x >= minBounds.x && x <= maxBounds.x) || (y >= minBounds.y && y <= maxBounds.y) || ( z >= minBounds.z && z <= maxBounds.z) ) ;
-                   
-                float4 points[MAX_LOCAL_POINTS];
-                int local_count = 0;
-               
-                ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>TRAVERSING CUBE: start
-                ///check for zero-crossing in the 3 directions
-                if (x < VOLUME_X && y < VOLUME_Y && in_black_zone)    
-                {
-                    int W;
-                    float F = fetch (buffer, x, y, z, W);
+          // The black zone is the name given to the subvolume within the TSDF Volume grid that is shifted out.
+          // In other words, the set of points in the TSDF grid that we want to extract in order to add it to the world model being built in CPU. 
+          bool in_black_zone = ( (x >= minBounds.x && x <= maxBounds.x) || (y >= minBounds.y && y <= maxBounds.y) || ( z >= minBounds.z && z <= maxBounds.z) ) ;
 
-                   
-                    if (W != 0.0f && F != 1.f && F < 0.98 && F != 0.0f && F > -1.0f)
-                    {
-                                            
-                     float4 p;
-                     p.x = x;
-                     p.y = y;
-                     p.z = z;
-                     p.w = F;
-                     points[local_count++] = p;
-                     
-                    }
+          float4 points[MAX_LOCAL_POINTS];
+          int local_count = 0;
 
-                }            /* if (x < VOLUME_X && y < VOLUME_Y) */
-                  
-                ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>TRAVERSING CUBE: end
+          if (x < buffer.voxels_size.x && y < buffer.voxels_size.y && in_black_zone)    
+          {
+            int W;
+            float F = fetch (buffer, x, y, z, W);
 
-                    ///local_count counts the number of zero crossing for the current thread. Now we need to merge this knowledge with the other thread's
-                    ///not we fulfilled points array at current iteration
-                    int total_warp = __popc (__ballot (local_count > 0)) + __popc (__ballot (local_count > 1)) + __popc (__ballot (local_count > 2));
-                    ///int total_warp = __popc (__ballot (local_count > 0)); //????? this one, no?
+            if (W != 0.0f && F != 1.f && F < 0.98 && F != 0.0f && F > -1.0f)
+            {
+              float4 p;
+              p.x = x;
+              p.y = y;
+              p.z = z;
+              p.w = F;
+              points[local_count++] = p;
+            }
+           }/* if (x < VOLUME_X && y < VOLUME_Y) */
 
-                    if (total_warp > 0)  ///more than 0 zero-crossings
-                    {
-                      int lane = Warp::laneId ();  ///index of thread within warp [0-31]
-                      int storage_index = (ftid >> Warp::LOG_WARP_SIZE) * Warp::WARP_SIZE * MAX_LOCAL_POINTS;  //   (ftid / 2^5) * 32 * 3 = (ftid / 32) * 32 * 3 = ftid * 3  (or am I wrong?)
-                      
-                      ///Pointer to the beginning of the current warp buffer
-                      volatile int* cta_buffer = (int*)(storage_X + storage_index);
+           // local_count counts the number of zero crossing for the current thread. Now we need to merge this knowledge with the other threads
+           // not we fulfilled points array at current iteration
+           int total_warp = __popc (__ballot (local_count > 0)) + __popc (__ballot (local_count > 1)) + __popc (__ballot (local_count > 2));
+           
 
-                      ///compute offset of current warp
-                      ///call in place scanning (see http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html)
-                      cta_buffer[lane] = local_count;
-                      int offset = scan_warp<exclusive>(cta_buffer, lane);   //how many crossings did we have before index "lane" ?
+           if (total_warp > 0)  ///more than 0 zero-crossings
+           {
+             int lane = Warp::laneId ();  ///index of thread within warp [0-31]
+             int storage_index = (ftid >> Warp::LOG_WARP_SIZE) * Warp::WARP_SIZE * MAX_LOCAL_POINTS;
 
-                      ///We want to do only 1 operation per warp (not thread) -> faster
-                      if (lane == 0) 
-                      {
-                        int old_global_count = atomicAdd (&global_count, total_warp); ///We use atomicAdd, so that threads do not collide
-                        cta_buffer[0] = old_global_count;
-                      }
-                      int old_global_count = cta_buffer[0];  ///At some point there was sum there
+             // Pointer to the beginning of the current warp buffer
+             volatile int* cta_buffer = (int*)(storage_X + storage_index);
 
-                      ///Perform compaction (dump all current crossings)
-                      for (int l = 0; l < local_count; ++l)
-                      {
-                        storage_X[storage_index + offset + l] = points[l].x;   ///We dump the x coordinates of the points we found in STORAGE_X
-                        storage_Y[storage_index + offset + l] = points[l].y;   ///We dump the y coordinates of the points we found in STORAGE_Y
-                        storage_Z[storage_index + offset + l] = points[l].z;   ///We dump the z coordinates of the points we found in STORAGE_Z
-                        storage_I[storage_index + offset + l] = points[l].w;   ///We dump the Intensity values of the points we found in STORAGE_I
-                      }
-                     
-                      /// Retreive Zero-crossings as 3D points
-                      int offset_storage = old_global_count + lane;
-                      for (int idx = lane; idx < total_warp; idx += Warp::STRIDE, offset_storage += Warp::STRIDE)
-                      {
-                        float x = storage_X[storage_index + idx];
-                        float y = storage_Y[storage_index + idx];
-                        float z = storage_Z[storage_index + idx];
-                        float i = storage_I[storage_index + idx];
-                        store_point_intensity (x, y, z, i, output_xyz.data, output_intensity.data, offset_storage);
-                      }
+             // Compute offset of current warp
+             // Call in place scanning (see http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html)
+             cta_buffer[lane] = local_count;
+             int offset = scan_warp<exclusive>(cta_buffer, lane);   //How many crossings did we have before index "lane" ?
 
-                      ///Sanity check to make sure our output_xyz buffer is not full already
-                      bool full = (old_global_count + total_warp) >= output_xyz.size;
+             // We want to do only 1 operation per warp (not thread) -> because it is faster
+             if (lane == 0) 
+             {
+               int old_global_count = atomicAdd (&global_count, total_warp); ///We use atomicAdd, so that threads do not collide
+               cta_buffer[0] = old_global_count;
+             }
+             int old_global_count = cta_buffer[0];
 
-                      if (full)
-                        break;
-                    }
+             // Perform compaction (dump all current crossings)
+             for (int l = 0; l < local_count; ++l)
+             {
+               storage_X[storage_index + offset + l] = points[l].x;// x coordinates of the points we found in STORAGE_X
+               storage_Y[storage_index + offset + l] = points[l].y;// y coordinates of the points we found in STORAGE_Y
+               storage_Z[storage_index + offset + l] = points[l].z;// z coordinates of the points we found in STORAGE_Z
+               storage_I[storage_index + offset + l] = points[l].w;// Intensity values of the points we found in STORAGE_I
+             }
 
-          }         /* for(int z = 0; z < VOLUME_Z - 1; ++z) */
-        
+             // Retreive Zero-crossings as 3D points
+             int offset_storage = old_global_count + lane;
+             for (int idx = lane; idx < total_warp; idx += Warp::STRIDE, offset_storage += Warp::STRIDE)
+             {
+               float x = storage_X[storage_index + idx];
+               float y = storage_Y[storage_index + idx];
+               float z = storage_Z[storage_index + idx];
+               float i = storage_I[storage_index + idx];
+               store_point_intensity (x, y, z, i, output_xyz.data, output_intensity.data, offset_storage);
+             }
+
+             // Sanity check to make sure our output_xyz buffer is not full already
+             bool full = (old_global_count + total_warp) >= output_xyz.size;
+
+             if (full)
+               break;
+           }
+
+          } /* for(int z = 0; z < VOLUME_Z - 1; ++z) */
 
         ///////////////////////////
-        /// Prepare for future scans
+        // Prepare for future scans
         if (ftid == 0)
         {
           unsigned int total_blocks = gridDim.x * gridDim.y * gridDim.z;
           unsigned int value = atomicInc (&blocks_done, total_blocks);
 
-          ///Last block
+          // Last block
           if (value == total_blocks - 1)
           {
             output_xyz_count = min ((int)output_xyz.size, global_count);
@@ -394,10 +383,11 @@ namespace pcl
             global_count = 0;
           }
         }
-      }       /* operator() */
+      } /* operator() */
 
       __device__ __forceinline__ void
-      store_point_type (float x, float y, float z, float4* ptr) const {
+      store_point_type (float x, float y, float z, float4* ptr) const 
+      {
         *ptr = make_float4 (x, y, z, 0);
       }
       
@@ -406,26 +396,28 @@ namespace pcl
       // ptr_instensity: pointer to the BEGINNING of the Intensity deviceArray
       // offset: offset to apply to both XYZ and Intensity
       __device__ __forceinline__ void
-      store_point_intensity (float x, float y, float z, float i, float4* ptr_xyz, float* ptr_intensity, int offset) const {
+      store_point_intensity (float x, float y, float z, float i, float4* ptr_xyz, float* ptr_intensity, int offset) const 
+      {
         *(ptr_xyz + offset) = make_float4 (x, y, z, 0);
-        
-        //TODO CRASHES HERE!!!
         *(ptr_intensity + offset) = i;
       }
-      
+
       __device__ __forceinline__ void
-      store_point_type (float x, float y, float z, float3* ptr) const {
+      store_point_type (float x, float y, float z, float3* ptr) const 
+      {
         *ptr = make_float3 (x, y, z);
       }
     };
 
     __global__ void
-    extractKernel (const FullScan6 fs) {
+    extractKernel (const FullScan6 fs) 
+    {
       fs ();
     }
-    
+
     __global__ void
-    extractSliceKernel (const FullScan6 fs, pcl::gpu::tsdf_buffer buffer, int3 minBounds, int3 maxBounds) {
+    extractSliceKernel (const FullScan6 fs, pcl::gpu::tsdf_buffer buffer, int3 minBounds, int3 maxBounds) 
+    {
       fs (buffer, minBounds, maxBounds);
     }
   }
@@ -433,8 +425,7 @@ namespace pcl
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 size_t
-pcl::device::extractCloud (const PtrStep<short2>& volume, const float3& volume_size, 
-                           PtrSz<PointType> output_xyz)
+pcl::device::extractCloud (const PtrStep<short2>& volume, const float3& volume_size, PtrSz<PointType> output_xyz)
 {
   FullScan6 fs;
   fs.volume = volume;
@@ -445,37 +436,36 @@ pcl::device::extractCloud (const PtrStep<short2>& volume, const float3& volume_s
 
   dim3 block (CTA_SIZE_X, CTA_SIZE_Y);
   dim3 grid (divUp (VOLUME_X, block.x), divUp (VOLUME_Y, block.y));
-
-  //cudaFuncSetCacheConfig(extractKernel, cudaFuncCachePreferL1);
-  //printFuncAttrib(extractKernel);
 
   extractKernel<<<grid, block>>>(fs);
   cudaSafeCall ( cudaGetLastError () );
   cudaSafeCall (cudaDeviceSynchronize ());
 
   int size;
-  cudaSafeCall ( cudaMemcpyFromSymbol (&size, output_xyz_count, sizeof(size)) );
-  return (size_t)size;
+  cudaSafeCall ( cudaMemcpyFromSymbol (&size, output_xyz_count, sizeof (size)) );
+  return ((size_t)size);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 size_t
-pcl::device::extractSliceAsCloud (const PtrStep<short2>& volume, const float3& volume_size, const pcl::gpu::tsdf_buffer* buffer, const int shiftX, const int shiftY, const int shiftZ, PtrSz<PointType> output_xyz, PtrSz<float> output_intensities)
+pcl::device::extractSliceAsCloud (const PtrStep<short2>& volume, const float3& volume_size, const pcl::gpu::tsdf_buffer* buffer, 
+                                  const int shiftX, const int shiftY, const int shiftZ, 
+                                  PtrSz<PointType> output_xyz, PtrSz<float> output_intensities)
 {
   
   FullScan6 fs;
   fs.volume = volume;
-  fs.cell_size.x = volume_size.x / VOLUME_X;
-  fs.cell_size.y = volume_size.y / VOLUME_Y;
-  fs.cell_size.z = volume_size.z / VOLUME_Z;
+  fs.cell_size.x = volume_size.x / buffer->voxels_size.x;
+  fs.cell_size.y = volume_size.y / buffer->voxels_size.y;
+  fs.cell_size.z = volume_size.z / buffer->voxels_size.z;
   fs.output_xyz = output_xyz;
   fs.output_intensity = output_intensities;
 
   dim3 block (CTA_SIZE_X, CTA_SIZE_Y);
   dim3 grid (divUp (VOLUME_X, block.x), divUp (VOLUME_Y, block.y));
 
-  ///COMPUTE SLICE BOUNDS: start
+  //Compute slice bounds
   int newX = buffer->origin_GRID.x + shiftX;
   int newY = buffer->origin_GRID.y + shiftY;
   int newZ = buffer->origin_GRID.z + shiftZ;
@@ -483,81 +473,78 @@ pcl::device::extractSliceAsCloud (const PtrStep<short2>& volume, const float3& v
   int3 minBounds, maxBounds;
 
   //X
-  if(newX >= 0)
+  if (newX >= 0)
   {
-   minBounds.x = buffer->origin_GRID.x;
-   maxBounds.x = newX;    
+    minBounds.x = buffer->origin_GRID.x;
+    maxBounds.x = newX;    
   }
   else
   {
-   minBounds.x = newX + VOLUME_X - 1;
-   maxBounds.x = buffer->origin_GRID.x + VOLUME_X - 1;
+    minBounds.x = newX + buffer->voxels_size.x - 1;
+    maxBounds.x = buffer->origin_GRID.x + buffer->voxels_size.x - 1;
   }
   
-  if(minBounds.x > maxBounds.x)
-   std::swap(minBounds.x, maxBounds.x);
+  if (minBounds.x > maxBounds.x)
+    std::swap (minBounds.x, maxBounds.x);
 
   //Y
-  if(newY >= 0)
+  if (newY >= 0)
   {
-   minBounds.y = buffer->origin_GRID.y;
-   maxBounds.y = newY;
+     minBounds.y = buffer->origin_GRID.y;
+     maxBounds.y = newY;
   }
   else
   {
-   minBounds.y = newY + VOLUME_Y - 1;
-   maxBounds.y = buffer->origin_GRID.y + VOLUME_Y - 1;
+    minBounds.y = newY + buffer->voxels_size.y - 1;
+    maxBounds.y = buffer->origin_GRID.y + buffer->voxels_size.y - 1;
   }
   
   if(minBounds.y > maxBounds.y)
-   std::swap(minBounds.y, maxBounds.y);
+    std::swap (minBounds.y, maxBounds.y);
 
   //Z
-  if(newZ >= 0)
+  if (newZ >= 0)
   {
    minBounds.z = buffer->origin_GRID.z;
    maxBounds.z = newZ;
   }
-  else ///Check if "-1" is needed for for Z. Related to the broken slices.
+  else
   {
-   minBounds.z = newZ + VOLUME_Z - 1;
-   maxBounds.z = buffer->origin_GRID.z + VOLUME_Z - 1;
+    minBounds.z = newZ + buffer->voxels_size.z - 1;
+    maxBounds.z = buffer->origin_GRID.z + buffer->voxels_size.z - 1;
   }
 
-  if(minBounds.z > maxBounds.z)
-   std::swap(minBounds.z, maxBounds.z);
+  if (minBounds.z > maxBounds.z)
+    std::swap(minBounds.z, maxBounds.z);
 
-  ///FRANCISCO:: the min and max should ALWAYS be sent with respect to the cube. And nothing else.
   minBounds.x -= buffer->origin_GRID.x;
   maxBounds.x -= buffer->origin_GRID.x;
-  
+
   minBounds.y -= buffer->origin_GRID.y;
   maxBounds.y -= buffer->origin_GRID.y;
-  
+
   minBounds.z -= buffer->origin_GRID.z;
   maxBounds.z -= buffer->origin_GRID.z;
 
-  if(minBounds.x < 0) // We are shifting Left
+  if (minBounds.x < 0) // We are shifting Left
   {
-    minBounds.x += VOLUME_X;
-    maxBounds.x += (VOLUME_X);
+    minBounds.x += buffer->voxels_size.x;
+    maxBounds.x += (buffer->voxels_size.x);
   }
 
-  if(minBounds.y < 0) // We are shifting up
+  if (minBounds.y < 0) // We are shifting up
   {
-    minBounds.y += VOLUME_Y;
-    maxBounds.y += (VOLUME_Y);
+    minBounds.y += buffer->voxels_size.y;
+    maxBounds.y += (buffer->voxels_size.y);
   }
 
-  if(minBounds.z < 0) // We are shifting back
+  if (minBounds.z < 0) // We are shifting back
   {
-    minBounds.z += VOLUME_Z;
-    maxBounds.z += VOLUME_Z;
+    minBounds.z += buffer->voxels_size.z;
+    maxBounds.z += buffer->voxels_size.z;
   }
 
-  std::cout << "Extracting slice with indices [" << minBounds.x << " " << maxBounds.x << "] [" << minBounds.y << " " << maxBounds.y << "] [" << minBounds.z << " " << maxBounds.z << "]" << std::endl;
-
-  ///ACTUAL EXTRACTION CALL
+  // Extraction call
   extractSliceKernel<<<grid, block>>>(fs, *buffer, minBounds, maxBounds);
 
   cudaSafeCall ( cudaGetLastError () );

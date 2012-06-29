@@ -80,7 +80,7 @@ pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(c
   tsdf_volume_ = TsdfVolume::Ptr( new TsdfVolume(volume_resolution) );
   tsdf_volume_->setSize(volume_size);
   
-  setDepthIntrinsics (525.f, 525.f); // default values, can be overwritten
+  setDepthIntrinsics (FOCAL_LENGTH, FOCAL_LENGTH); // default values, can be overwritten
   
   init_Rcam_ = Eigen::Matrix3f::Identity ();// * AngleAxisf(-30.f/180*3.1415926, Vector3f::UnitX());
   init_tcam_ = volume_size * 0.5f - Vector3f (0, 0, volume_size (2) / 2 * 1.2f);
@@ -104,16 +104,6 @@ pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(c
   
   // initialize cyclical buffer
   cyclical_.initBuffer(tsdf_volume_);
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::gpu::KinfuTracker::getDepthIntrinsics (float& fx, float& fy, float& cx, float& cy)
-{
-  fx = fx_;
-  fy = fy_;
-  cx = cx_;
-  cy = cy_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -179,7 +169,7 @@ pcl::gpu::KinfuTracker::extractAndMeshWorld ()
   PCL_INFO ("Saving current world to world.pcd\n");
   pcl::io::savePCDFile<pcl::PointXYZI> ("world.pcd", *(cyclical_.getWorldModel ()->getWorld ()), true);
   
-  PCL_INFO ("KinFu is done\n");
+  PCL_INFO ("KinFu is finished, please kill the process\n");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
