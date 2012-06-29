@@ -14,13 +14,11 @@ if(build)
         )
 
     set(incs
-        include/pcl/${SUBSYS_NAME}/Convolution.h
-        include/pcl/${SUBSYS_NAME}/Kernel.h
-        include/pcl/${SUBSYS_NAME}/Edge.h
-        include/pcl/${SUBSYS_NAME}/Morphology.h
-        include/pcl/${SUBSYS_NAME}/Keypoint.h
-        include/pcl/${SUBSYS_NAME}/WeightingPolicy.h
-        include/pcl/${SUBSYS_NAME}/ImageFilter.h
+        include/pcl/${SUBSYS_NAME}/convolution.h
+        include/pcl/${SUBSYS_NAME}/kernel.h
+        include/pcl/${SUBSYS_NAME}/edge.h
+        include/pcl/${SUBSYS_NAME}/morphology.h
+        include/pcl/${SUBSYS_NAME}/keypoint.h
         )
 
     set(impl_incs
