@@ -3,12 +3,12 @@ set(SUBSYS_DESC "Point cloud 2d")
 set(SUBSYS_DEPS common io features search kdtree octree visualization geometry)
 
 set(build FALSE)
-PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS vtk)
-
-PCL_ADD_DOC(${SUBSYS_NAME})
-
 if(build)
+    PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
+    PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS vtk)
+
+    PCL_ADD_DOC(${SUBSYS_NAME})
+
     set(srcs
         src/convolution_2d.cpp
         )
