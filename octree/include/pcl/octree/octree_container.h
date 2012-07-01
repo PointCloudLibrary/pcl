@@ -278,7 +278,7 @@ namespace pcl
         /** \brief Return const reference to internal DataT vector
          * \return  const reference to internal DataT vector
          */
-        const std::vector<DataT>& getIdxVector () const
+        const std::vector<DataT>& getDataTVector () const
         {
           return leafDataTVector_;
         }

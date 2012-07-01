@@ -146,6 +146,16 @@ namespace pcl
           return this->octreeDepth_;
         }
 
+        /** \brief Enable leaf node aggregation.
+         *  \return depth_arg: maximum number of elements per leaf
+         * */
+        inline void
+        enableLeafNodeAggregation ( size_t aggregationSize)
+        {
+          assert(leafCount_==0);
+          leafNodeAggregationSize_ = aggregationSize;
+        }
+
         /** \brief Add a const DataT element to leaf node at (idxX, idxY, idxZ). If leaf node does not exist, it is created and added to the octree.
          *  \param idxX_arg: index of leaf node in the X axis.
          *  \param idxY_arg: index of leaf node in the Y axis.
@@ -283,15 +293,7 @@ namespace pcl
         inline void
         addData (const OctreeKey& key_arg, const DataT& data_arg)
         {
-          // request a (new) leaf from tree
-          LeafNode* leaf = createLeaf (key_arg);
-
-          // assign data to leaf
-          if (leaf)
-          {
-            leaf->setData (data_arg);
-            objectCount_++;
-          }
+          addDataToLeafRecursive (key_arg, depthMask_,data_arg, rootNode_);
         }
 
         /** \brief Find leaf node
@@ -301,21 +303,8 @@ namespace pcl
         inline LeafNode*
         findLeaf (const OctreeKey& key_arg) const
         {
-          LeafNode* result;
+          LeafNode* result = 0;
           findLeafRecursive (key_arg, depthMask_, rootNode_, result);
-          return result;
-        }
-
-        /** \brief Create a leaf node in the octree.
-         *  \note If the leaf node at the given octree node does not exist, it will be created and added to the tree.
-         *  \param key_arg: octree key addressing a leaf node.
-         *  \return pointer to an existing or created leaf node.
-         * */
-        inline LeafNode*
-        createLeaf (const OctreeKey& key_arg)
-        {
-          LeafNode* result;
-          createLeafRecursive (key_arg, depthMask_, rootNode_, result);
           return result;
         }
 
@@ -570,11 +559,11 @@ namespace pcl
         /** \brief Create a leaf node at octree key. If leaf node does already exist, it is returned.
          *  \param key_arg: reference to an octree key
          *  \param depthMask_arg: depth mask used for octree key analysis and for branch depth indicator
+         *  \param data_arg data to be added
          *  \param branch_arg: current branch node
-         *  \param result_arg: pointer to leaf node class
          **/
         void
-        createLeafRecursive (const OctreeKey& key_arg, unsigned int depthMask_arg, BranchNode* branch_arg, LeafNode*& result_arg);
+        addDataToLeafRecursive (const OctreeKey& key_arg, unsigned int depthMask_arg, const DataT& data_arg, BranchNode* branch_arg);
 
         /** \brief Recursively search for a given leaf node and return a pointer.
          *  \note  If leaf node does not exist, a 0 pointer is returned.
@@ -681,6 +670,9 @@ namespace pcl
 
         /** \brief Pointer to root branch node of octree   **/
         BranchNode* rootNode_;
+
+        /** \brief Amount of DataT objects per leafNode before expanding branch  **/
+        std::size_t leafNodeAggregationSize_;
 
         /** \brief Depth mask based on octree depth   **/
         unsigned int depthMask_;

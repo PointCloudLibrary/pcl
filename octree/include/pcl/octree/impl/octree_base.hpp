@@ -59,6 +59,7 @@ namespace pcl
       branchCount_ (1),
       objectCount_ (0),
       rootNode_ (new BranchNode ()),
+      leafNodeAggregationSize_(0),
       depthMask_ (0),
       octreeDepth_ (0),
       maxKey_ (),
@@ -277,9 +278,10 @@ namespace pcl
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename LeafT, typename BranchT> void
-    OctreeBase<DataT, LeafT, BranchT>::createLeafRecursive (const OctreeKey& key_arg, unsigned int depthMask_arg,
-                                                         BranchNode* branch_arg, LeafNode*& result_arg)
+    template<typename DataT, typename LeafT, typename BranchT> void OctreeBase<
+        DataT, LeafT, BranchT>::addDataToLeafRecursive (
+        const OctreeKey& key_arg, unsigned int depthMask_arg,
+        const DataT& data_arg, BranchNode* branch_arg)
     {
       // index to branch child
       unsigned char childIdx;
@@ -287,6 +289,88 @@ namespace pcl
       // find branch child from key
       childIdx = key_arg.getChildIdxWithDepthMask(depthMask_arg);
 
+      OctreeNode* childNode = (*branch_arg)[childIdx];
+
+      if (!childNode)
+      {
+        if ((!leafNodeAggregationSize_) && (depthMask_arg > 1)) {
+          // if required branch does not exist -> create it
+          BranchNode* childBranch;
+          createBranchChild (*branch_arg, childIdx, childBranch);
+
+          branchCount_++;
+
+          // recursively proceed with indexed child branch
+          addDataToLeafRecursive (key_arg, depthMask_arg / 2, data_arg, childBranch);
+
+        } else {
+          LeafNode* childLeaf;
+
+          // if leaf node at childIdx does not exist
+          createLeafChild (*branch_arg, childIdx, childLeaf);
+          leafCount_++;
+
+          // add data to leaf
+          childLeaf->setData (data_arg);
+          objectCount_++;
+        }
+      } else {
+
+        // Node exists already
+        switch (childNode->getNodeType()) {
+          case BRANCH_NODE:
+            // recursively proceed with indexed child branch
+            addDataToLeafRecursive (key_arg, depthMask_arg / 2, data_arg, static_cast<BranchNode*> (childNode));
+            break;
+
+          case LEAF_NODE:
+            LeafNode* childLeaf = static_cast<LeafNode*> (childNode);
+
+            if ( (!leafNodeAggregationSize_) || (!depthMask_arg) )
+            {
+              // add data to leaf
+              childLeaf->setData (data_arg);
+              objectCount_++;
+            } else {
+              size_t leafObjCount = childLeaf->getSize();
+
+              if (leafObjCount<leafNodeAggregationSize_) {
+                // add data to leaf
+                childLeaf->setData (data_arg);
+                objectCount_++;
+              } else {
+                // leaf node needs to be expanded
+
+                // copy leaf data
+                std::vector<DataT> leafData(leafObjCount);
+                childLeaf->getData (leafData);
+
+                // delete current leaf node
+                deleteBranchChild(*branch_arg,childIdx);
+
+                // create new branch node
+                BranchNode* childBranch;
+                createBranchChild (*branch_arg, childIdx, childBranch);
+
+                typename std::vector<DataT>::const_iterator lData = leafData.begin();
+                typename std::vector<DataT>::const_iterator lDataEnd = leafData.end();
+
+                // add data to new branch
+                while (lData!=lDataEnd) {
+                  addDataToLeafRecursive (key_arg, depthMask_arg / 2, *lData++, childBranch);
+                }
+
+                // correct object counter
+                objectCount_ -= leafObjCount;
+              }
+            }
+            break;
+
+        }
+
+      }
+
+/*
       if (depthMask_arg > 1)
       {
         // we have not reached maximum tree depth
@@ -332,6 +416,7 @@ namespace pcl
           result_arg = childLeaf;
         }
       }
+      */
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -341,29 +426,28 @@ namespace pcl
     {
       // index to branch child
       unsigned char childIdx;
-      result_arg = 0;
 
       // find branch child from key
       childIdx = key_arg.getChildIdxWithDepthMask(depthMask_arg);
 
-      if (depthMask_arg > 1)
-      {
-        // we have not reached maximum tree depth
-        BranchNode* childBranch;
-        childBranch = static_cast<BranchNode*> ((*branch_arg)[childIdx]);
+      OctreeNode* childNode = (*branch_arg)[childIdx];
 
-        if (childBranch)
-          // recursively proceed with indexed child branch
-          findLeafRecursive (key_arg, depthMask_arg / 2, childBranch, result_arg);
-      }
-      else
-      {
-        // we reached leaf node level
-        if (branch_arg->hasChild(childIdx))
-        {
-          // return existing leaf node
-          LeafNode* childLeaf = static_cast<LeafNode*> ((*branch_arg)[childIdx]);
-          result_arg = childLeaf;
+      if (childNode) {
+        switch (childNode->getNodeType()) {
+          case BRANCH_NODE:
+            // we have not reached maximum tree depth
+            BranchNode* childBranch;
+            childBranch = static_cast<BranchNode*> (childNode);
+
+            findLeafRecursive (key_arg, depthMask_arg / 2, childBranch, result_arg);
+            break;
+
+          case LEAF_NODE:
+            // return existing leaf node
+            LeafNode* childLeaf;
+            childLeaf =  static_cast<LeafNode*> (childNode);
+            result_arg = childLeaf;
+            break;
         }
       }
     }
