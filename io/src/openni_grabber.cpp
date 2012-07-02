@@ -45,7 +45,6 @@
 #include <pcl/console/print.h>
 #include <pcl/io/pcl_io_exception.h>
 #include <boost/shared_array.hpp>
-#define BOOST_FILESYSTEM_VERSION 2
 #include <boost/filesystem.hpp>
 #include <iostream>
 

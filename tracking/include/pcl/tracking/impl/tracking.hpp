@@ -94,13 +94,13 @@ namespace pcl
       {
         switch (i)
         {
-        case 0: return x;
-        case 1: return y;
-        case 2: return z;
-        case 3: return roll;
-        case 4: return pitch;
-        case 5: return yaw;
-        default: return 0.0;
+          case 0: return x;
+          case 1: return y;
+          case 2: return z;
+          case 3: return roll;
+          case 4: return pitch;
+          case 5: return yaw;
+          default: return 0.0;
         }
       }
       
