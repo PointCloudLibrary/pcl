@@ -244,6 +244,104 @@ TEST (PCL, Octree_Test)
 
 }
 
+TEST (PCL, Octree_Dynamic_Depth_Test)
+{
+
+  size_t i;
+  int test_runs = 100;
+  int pointcount = 300;
+
+  int test, point;
+
+  float resolution = 0.01f;
+
+  const static size_t leafAggSize = 5;
+
+  OctreePointCloudPointVector<PointXYZ> octree (resolution);
+
+  // create shared pointcloud instances
+  PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ> ());
+
+  // assign input point clouds to octree
+  octree.setInputCloud (cloud);
+
+  for (test = 0; test < test_runs; ++test)
+  {
+
+    // clean up
+    cloud->points.clear ();
+    octree.deleteTree ();
+
+    for (point = 0; point < pointcount; point++)
+    {
+      // gereate a random point
+      PointXYZ newPoint (static_cast<float> (1024.0 * rand () / RAND_MAX),
+          static_cast<float> (1024.0 * rand () / RAND_MAX),
+          static_cast<float> (1024.0 * rand () / RAND_MAX));
+
+      // OctreePointCloudPointVector can store all points..
+      cloud->push_back (newPoint);
+    }
+
+    // check if all points from leaf data can be found in input pointcloud data sets
+    octree.defineBoundingBox ();
+    octree.enableDynamicDepth (leafAggSize);
+    octree.addPointsFromInputCloud ();
+
+    //  test iterator
+    OctreePointCloudPointVector<PointXYZ>::LeafNodeIterator it (octree);
+    unsigned int leaf_count = 0;
+
+
+    std::vector<int> indexVector;
+
+    // iterate over tree
+    while (*++it)
+    {
+      OctreeNode* node = it.getCurrentOctreeNode ();
+
+      ASSERT_EQ(node->getNodeType(), LEAF_NODE);
+
+      if (it.getCurrentOctreeDepth () < octree.getTreeDepth ())
+        ASSERT_LE(it.getSize(), leafAggSize);
+
+      // add points from leaf node to indexVector
+      it.getData (indexVector);
+
+      // test points against bounding box of leaf node
+      std::vector<int> tmpVector;
+      it.getData (tmpVector);
+
+      Eigen::Vector3f min_pt, max_pt;
+      octree.getVoxelBounds (it, min_pt, max_pt);
+
+      for (i=0; i<tmpVector.size(); ++i)
+      {
+        ASSERT_GE(cloud->points[tmpVector[i]].x, min_pt(0));
+        ASSERT_GE(cloud->points[tmpVector[i]].y, min_pt(1));
+        ASSERT_GE(cloud->points[tmpVector[i]].z, min_pt(2));
+        ASSERT_LE(cloud->points[tmpVector[i]].x, max_pt(0));
+        ASSERT_LE(cloud->points[tmpVector[i]].y, max_pt(1));
+        ASSERT_LE(cloud->points[tmpVector[i]].z, max_pt(2));
+      }
+
+      leaf_count++;
+
+    }
+    ASSERT_EQ(pointcount, indexVector.size());
+
+    // make sure all indices are within indexVector
+    for (i = 0; i < indexVector.size (); ++i)
+    {
+      ASSERT_NE(std::find(indexVector.begin(), indexVector.end(), i), indexVector.end());
+    }
+
+    // compare node, branch and leaf count against actual tree values
+    ASSERT_EQ(leaf_count, octree.getLeafCount ());
+
+  }
+}
+
 TEST (PCL, Octree2Buf_Test)
 {
 

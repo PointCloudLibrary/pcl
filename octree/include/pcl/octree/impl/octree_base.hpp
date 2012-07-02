@@ -59,7 +59,7 @@ namespace pcl
       branchCount_ (1),
       objectCount_ (0),
       rootNode_ (new BranchNode ()),
-      leafNodeAggregationSize_(0),
+      maxObjsPerLeaf_(0),
       depthMask_ (0),
       octreeDepth_ (0),
       maxKey_ (),
@@ -293,7 +293,7 @@ namespace pcl
 
       if (!childNode)
       {
-        if ((!leafNodeAggregationSize_) && (depthMask_arg > 1)) {
+        if ((!maxObjsPerLeaf_) && (depthMask_arg > 1)) {
           // if required branch does not exist -> create it
           BranchNode* childBranch;
           createBranchChild (*branch_arg, childIdx, childBranch);
@@ -326,7 +326,7 @@ namespace pcl
           case LEAF_NODE:
             LeafNode* childLeaf = static_cast<LeafNode*> (childNode);
 
-            if ( (!leafNodeAggregationSize_) || (!depthMask_arg) )
+            if ( (!maxObjsPerLeaf_) || (!depthMask_arg) )
             {
               // add data to leaf
               childLeaf->setData (data_arg);
@@ -334,7 +334,7 @@ namespace pcl
             } else {
               size_t leafObjCount = childLeaf->getSize();
 
-              if (leafObjCount<leafNodeAggregationSize_) {
+              if (leafObjCount<maxObjsPerLeaf_) {
                 // add data to leaf
                 childLeaf->setData (data_arg);
                 objectCount_++;
@@ -342,7 +342,9 @@ namespace pcl
                 // leaf node needs to be expanded
 
                 // copy leaf data
-                std::vector<DataT> leafData(leafObjCount);
+                std::vector<DataT> leafData;
+                leafData.reserve(leafObjCount);
+
                 childLeaf->getData (leafData);
 
                 // delete current leaf node

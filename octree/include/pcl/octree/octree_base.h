@@ -149,14 +149,15 @@ namespace pcl
           return this->octreeDepth_;
         }
 
-        /** \brief Enable leaf node aggregation.
-         *  \return depth_arg: maximum number of elements per leaf
+        /** \brief Enable dynamic octree structure
+         *  \note Leaf nodes are kept as close to the root as possible and are only expanded if the number of DataT objects within a leaf node exceeds a fixed limit.
+         *  \return maxObjsPerLeaf: maximum number of DataT objects per leaf
          * */
         inline void
-        enableLeafNodeAggregation ( size_t aggregationSize)
+        enableDynamicDepth ( size_t maxObjsPerLeaf )
         {
           assert(leafCount_==0);
-          leafNodeAggregationSize_ = aggregationSize;
+          maxObjsPerLeaf_ = maxObjsPerLeaf;
         }
 
         /** \brief Add a const DataT element to leaf node at (idxX, idxY, idxZ). If leaf node does not exist, it is created and added to the octree.
@@ -675,7 +676,7 @@ namespace pcl
         BranchNode* rootNode_;
 
         /** \brief Amount of DataT objects per leafNode before expanding branch  **/
-        std::size_t leafNodeAggregationSize_;
+        std::size_t maxObjsPerLeaf_;
 
         /** \brief Depth mask based on octree depth   **/
         unsigned int depthMask_;
