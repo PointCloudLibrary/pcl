@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *  
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,12 +34,10 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author: Radu B. Rusu, Suat Gedikli
  *
  */
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/console/parse.h>
-#define BOOST_FILESYSTEM_VERSION 2
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/thread/thread.hpp>
@@ -51,8 +52,8 @@ using pcl::console::print_info;
 using pcl::console::print_value;
 
 boost::mutex mutex_;
-boost::shared_ptr<pcl::PCDGrabber<pcl::PointXYZRGB> > grabber;
-pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud_;
+boost::shared_ptr<pcl::PCDGrabber<pcl::PointXYZRGBA> > grabber;
+pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud_;
 
 void
 printHelp (int, char **argv)
@@ -81,7 +82,7 @@ bool fcolorparam = false;
 struct EventHelper
 {
   void 
-  cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr & cloud)
+  cloud_cb (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr & cloud)
   {
     if (mutex_.try_lock ())
     {
@@ -99,7 +100,8 @@ keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
     grabber->trigger ();
 }
 
-void mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
+void 
+mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
 {
   std::string* message = static_cast<std::string*> (cookie);
   if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton)
@@ -178,7 +180,7 @@ main (int argc, char** argv)
   std::cout << "path: " << path << std::endl;
   if (path != "" && boost::filesystem::exists (path))
   {
-    grabber.reset (new pcl::PCDGrabber<pcl::PointXYZRGB> (path, frames_per_second, repeat));
+    grabber.reset (new pcl::PCDGrabber<pcl::PointXYZRGBA> (path, frames_per_second, repeat));
   }
   else
   {
@@ -190,10 +192,19 @@ main (int argc, char** argv)
       boost::filesystem::directory_iterator end_itr;
       for (boost::filesystem::directory_iterator itr (path); itr != end_itr; ++itr)
       {
-        if (!is_directory (itr->status()) && boost::algorithm::to_upper_copy(boost::filesystem::extension (itr->leaf())) == ".PCD" )
+#if BOOST_FILESYSTEM_VERSION == 3
+        if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ())) == ".PCD" )
+#else
+        if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->leaf ())) == ".PCD" )
+#endif
         {
-          pcd_files.push_back (itr->path ().string());
-          std::cout << "added: " << itr->path ().string() << std::endl;
+#if BOOST_FILESYSTEM_VERSION == 3
+          pcd_files.push_back (itr->path ().string ());
+          std::cout << "added: " << itr->path ().string () << std::endl;
+#else
+          pcd_files.push_back (itr->path ());
+          std::cout << "added: " << itr->path () << std::endl;
+#endif
         }
       }
     }
@@ -204,18 +215,24 @@ main (int argc, char** argv)
 
     // Sort the read files by name
     sort (pcd_files.begin (), pcd_files.end ());
-    grabber.reset (new pcl::PCDGrabber<pcl::PointXYZRGB> (pcd_files, frames_per_second, repeat));
+    grabber.reset (new pcl::PCDGrabber<pcl::PointXYZRGBA> (pcd_files, frames_per_second, repeat));
   }
 
   EventHelper h;
-  boost::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &h, _1);
+  boost::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &h, _1);
   boost::signals2::connection c1 = grabber->registerCallback (f);
 
-  std::string mouseMsg3D ("Mouse coordinates in PCL Visualizer");
-  std::string keyMsg3D ("Key event for PCL Visualizer");
+  std::string mouse_msg_3D ("Mouse coordinates in PCL Visualizer");
+  std::string key_msg_3D ("Key event for PCL Visualizer");
 
-  cloud_viewer->registerMouseCallback (&mouse_callback, reinterpret_cast<void*> (&mouseMsg3D));
-  cloud_viewer->registerKeyboardCallback(&keyboard_callback, reinterpret_cast<void*> (&keyMsg3D));
+  cloud_viewer->registerMouseCallback (&mouse_callback, static_cast<void*> (&mouse_msg_3D));
+  cloud_viewer->registerKeyboardCallback(&keyboard_callback, static_cast<void*> (&key_msg_3D));
+
+  std::string mouse_msg_2D ("Mouse coordinates in image viewer");
+  std::string key_msg_2D ("Key event for image viewer");
+
+  img_viewer->registerMouseCallback (&mouse_callback, static_cast<void*> (&mouse_msg_2D));
+  img_viewer->registerKeyboardCallback(&keyboard_callback, static_cast<void*> (&key_msg_2D));
 
   grabber->start ();
   while (!cloud_viewer->wasStopped ())
@@ -234,7 +251,7 @@ main (int argc, char** argv)
 
     if (mutex_.try_lock ())
     {
-      pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr temp_cloud;
+      pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr temp_cloud;
       temp_cloud.swap (cloud_);
       mutex_.unlock ();
 

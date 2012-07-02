@@ -40,7 +40,6 @@
 
 #include <pcl/console/parse.h>
 
-#define BOOST_FILESYSTEM_VERSION 2
 #include <boost/filesystem.hpp>
 
 #include <pcl/gpu/kinfu_large_scale/kinfu.h>
@@ -112,7 +111,11 @@ vector<string> getPcdFilesInDir(const string& directory)
     if (fs::is_regular_file(pos->status()) )
       if (fs::extension(*pos) == ".pcd")
       {
-        result.push_back(pos->path().string());
+#if BOOST_FILESYSTEM_VERSION == 3
+        result.push_back (pos->path ().string ());
+#else
+        result.push_back (pos->path ());
+#endif
         cout << "added: " << result.back() << endl;
       }
     

@@ -62,7 +62,7 @@ class PCDOrganizedMultiPlaneSegmentation
     : viewer ("Viewer")
     , cloud (cloud_)
     , refine_ (refine)
-    , threshold_ (0.02)
+    , threshold_ (0.02f)
     , depth_dependent_ (true)
     , polygon_refinement_ (false)
     {
@@ -83,13 +83,13 @@ class PCDOrganizedMultiPlaneSegmentation
         {
           case 'b':
           case 'B':
-            if (threshold_ < 0.1)
-              threshold_ += 0.001;
+            if (threshold_ < 0.1f)
+              threshold_ += 0.001f;
             break;
           case 'v':
           case 'V':
-            if (threshold_ > 0.001)
-              threshold_ -= 0.001;
+            if (threshold_ > 0.001f)
+              threshold_ -= 0.001f;
             break;
             
           case 'n':

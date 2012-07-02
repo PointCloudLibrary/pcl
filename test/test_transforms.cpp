@@ -150,7 +150,7 @@ TEST (PCL, Transform)
   Eigen::Quaternionf rotation (cos (angle / 2), 0, 0, sin (angle / 2));
 
   PointCloud<PointXYZ> cloud_out;
-  const PointCloud<PointXYZ>::VectorType &points (cloud_out.points);
+  const vector<PointXYZ, Eigen::aligned_allocator<PointXYZ> > &points (cloud_out.points);
   transformPointCloud (cloud, cloud_out, offset, rotation);
 
   EXPECT_EQ (cloud.points.size (), cloud_out.points.size ());
@@ -168,7 +168,7 @@ TEST (PCL, Transform)
   EXPECT_EQ (1, points[3].z);
 
   PointCloud<PointXYZ> cloud_out2;
-  const PointCloud<PointXYZ>::VectorType &points2 (cloud_out2.points);
+  const vector<PointXYZ, Eigen::aligned_allocator<PointXYZ> > &points2 (cloud_out2.points);
   Eigen::Translation3f translation (offset);
   Eigen::Affine3f transform;
   transform = translation * rotation;

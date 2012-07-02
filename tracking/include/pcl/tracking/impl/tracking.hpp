@@ -201,7 +201,7 @@ namespace pcl
       inline ParticleXYZR (float _x, float _y, float _z, float _roll, float _pitch, float _yaw)
       {
         x = _x; y = _y; z = _z;
-	roll = 0; pitch = _pitch; yaw = 0;
+        roll = 0; pitch = _pitch; yaw = 0;
         data[3] = 1.0f;
       }
 
@@ -214,9 +214,9 @@ namespace pcl
         x     += static_cast<float> (sampleNormal (mean[0], cov[0]));
         y     += static_cast<float> (sampleNormal (mean[1], cov[1]));
         z     += static_cast<float> (sampleNormal (mean[2], cov[2]));
-	roll  = 0;
+        roll  = 0;
         pitch += static_cast<float> (sampleNormal (mean[4], cov[4]));
-	yaw = 0;
+        yaw   = 0;
       }
 
       void
@@ -243,7 +243,7 @@ namespace pcl
         getTranslationAndEulerAngles (trans,
                                       trans_x, trans_y, trans_z,
                                       trans_roll, trans_pitch, trans_yaw);
-	return pcl::tracking::ParticleXYZR (trans_x, trans_y, trans_z, 0, trans_pitch, 0);
+        return (pcl::tracking::ParticleXYZR (trans_x, trans_y, trans_z, 0, trans_pitch, 0));
       }
 
       // a[i]
@@ -251,13 +251,13 @@ namespace pcl
       {
         switch (i)
         {
-        case 0: return x;
-        case 1: return y;
-        case 2: return z;
-        case 3: return roll;
-        case 4: return pitch;
-        case 5: return yaw;
-        default: return 0.0;
+          case 0: return x;
+          case 1: return y;
+          case 2: return z;
+          case 3: return roll;
+          case 4: return pitch;
+          case 5: return yaw;
+          default: return 0.0;
         }
       }
       
@@ -348,14 +348,14 @@ namespace pcl
 
       inline ParticleXYRPY (float _x, float _y, float _z)
       {
-	x = _x; y = 0; z = _z;
+        x = _x; y = 0; z = _z;
         roll = pitch = yaw = 0.0;
         data[3] = 1.0f;
       }
 
       inline ParticleXYRPY (float _x, float _y, float _z, float _roll, float _pitch, float _yaw)
       {
-	x = _x; y = 0; z = _z;
+        x = _x; y = 0; z = _z;
         roll = _roll; pitch = _pitch; yaw = _yaw;
         data[3] = 1.0f;
       }
@@ -367,7 +367,7 @@ namespace pcl
       sample (const std::vector<double>& mean, const std::vector<double>& cov)
       {
         x     += static_cast<float> (sampleNormal (mean[0], cov[0]));
-	y       = 0;
+        y     = 0;
         z     += static_cast<float> (sampleNormal (mean[2], cov[2]));
         roll  += static_cast<float> (sampleNormal (mean[3], cov[3]));
         pitch += static_cast<float> (sampleNormal (mean[4], cov[4]));
@@ -398,7 +398,7 @@ namespace pcl
         getTranslationAndEulerAngles (trans,
                                       trans_x, trans_y, trans_z,
                                       trans_roll, trans_pitch, trans_yaw);
-	return pcl::tracking::ParticleXYRPY (trans_x, 0, trans_z, trans_roll, trans_pitch, trans_yaw);
+        return (pcl::tracking::ParticleXYRPY (trans_x, 0, trans_z, trans_roll, trans_pitch, trans_yaw));
       }
 
       // a[i]
@@ -406,13 +406,13 @@ namespace pcl
       {
         switch (i)
         {
-        case 0: return x;
-        case 1: return y;
-        case 2: return z;
-        case 3: return roll;
-        case 4: return pitch;
-        case 5: return yaw;
-        default: return 0.0;
+          case 0: return x;
+          case 1: return y;
+          case 2: return z;
+          case 3: return roll;
+          case 4: return pitch;
+          case 5: return yaw;
+          default: return 0.0;
         }
       }
       
@@ -501,15 +501,15 @@ namespace pcl
 
       inline ParticleXYRP (float _x, float _y, float _z)
       {
-	x = _x; y = 0; z = _z;
+        x = _x; y = 0; z = _z;
         roll = pitch = yaw = 0.0;
         data[3] = 1.0f;
       }
 
       inline ParticleXYRP (float _x, float _y, float _z, float _roll, float _pitch, float _yaw)
       {
-	x = _x; y = 0; z = _z;
-	roll = 0; pitch = _pitch; yaw = _yaw;
+        x = _x; y = 0; z = _z;
+        roll = 0; pitch = _pitch; yaw = _yaw;
         data[3] = 1.0f;
       }
 
@@ -520,9 +520,9 @@ namespace pcl
       sample (const std::vector<double>& mean, const std::vector<double>& cov)
       {
         x     += static_cast<float> (sampleNormal (mean[0], cov[0]));
-	y       = 0;
+        y     = 0;
         z     += static_cast<float> (sampleNormal (mean[2], cov[2]));
-	roll  = 0;
+        roll  = 0;
         pitch += static_cast<float> (sampleNormal (mean[4], cov[4]));
         yaw   += static_cast<float> (sampleNormal (mean[5], cov[5]));
       }
@@ -551,7 +551,7 @@ namespace pcl
         getTranslationAndEulerAngles (trans,
                                       trans_x, trans_y, trans_z,
                                       trans_roll, trans_pitch, trans_yaw);
-	return pcl::tracking::ParticleXYRP (trans_x, 0, trans_z, 0, trans_pitch, trans_yaw);
+        return (pcl::tracking::ParticleXYRP (trans_x, 0, trans_z, 0, trans_pitch, trans_yaw));
       }
 
       // a[i]
@@ -559,13 +559,13 @@ namespace pcl
       {
         switch (i)
         {
-        case 0: return x;
-        case 1: return y;
-        case 2: return z;
-        case 3: return roll;
-        case 4: return pitch;
-        case 5: return yaw;
-        default: return 0.0;
+          case 0: return x;
+          case 1: return y;
+          case 2: return z;
+          case 3: return roll;
+          case 4: return pitch;
+          case 5: return yaw;
+          default: return 0.0;
         }
       }
       
@@ -654,15 +654,15 @@ namespace pcl
 
       inline ParticleXYR (float _x, float _y, float _z)
       {
-	x = _x; y = 0; z = _z;
+        x = _x; y = 0; z = _z;
         roll = pitch = yaw = 0.0;
         data[3] = 1.0f;
       }
 
       inline ParticleXYR (float _x, float _y, float _z, float _roll, float _pitch, float _yaw)
       {
-	x = _x; y = 0; z = _z;
-	roll = 0; pitch = _pitch; yaw = 0;
+        x = _x; y = 0; z = _z;
+        roll = 0; pitch = _pitch; yaw = 0;
         data[3] = 1.0f;
       }
 
@@ -673,11 +673,11 @@ namespace pcl
       sample (const std::vector<double>& mean, const std::vector<double>& cov)
       {
         x     += static_cast<float> (sampleNormal (mean[0], cov[0]));
-	y       = 0;
+        y     = 0;
         z     += static_cast<float> (sampleNormal (mean[2], cov[2]));
-	roll  = 0;
+        roll  = 0;
         pitch += static_cast<float> (sampleNormal (mean[4], cov[4]));
-	yaw = 0;
+        yaw   = 0;
       }
 
       void
@@ -704,7 +704,7 @@ namespace pcl
         getTranslationAndEulerAngles (trans,
                                       trans_x, trans_y, trans_z,
                                       trans_roll, trans_pitch, trans_yaw);
-	return pcl::tracking::ParticleXYR (trans_x, 0, trans_z, 0, trans_pitch, 0);
+        return (pcl::tracking::ParticleXYR (trans_x, 0, trans_z, 0, trans_pitch, 0));
       }
 
       // a[i]
@@ -712,13 +712,13 @@ namespace pcl
       {
         switch (i)
         {
-        case 0: return x;
-        case 1: return y;
-        case 2: return z;
-        case 3: return roll;
-        case 4: return pitch;
-        case 5: return yaw;
-        default: return 0.0;
+          case 0: return x;
+          case 1: return y;
+          case 2: return z;
+          case 3: return roll;
+          case 4: return pitch;
+          case 5: return yaw;
+          default: return 0.0;
         }
       }
       
