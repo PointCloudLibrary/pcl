@@ -123,6 +123,9 @@ Anything involving a slice of data should use size_t for indices and not int. E.
 Minor changes
 =============
 
+Concepts
+========
+See http://dev.pointclouds.org/issues/567.
 
 References
 ----------
