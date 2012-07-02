@@ -223,6 +223,16 @@ namespace pcl
           octree_.getDataFromOctreeNode(this->currentNode_, dataVector_arg);
         }
 
+        /** \brief Method for retrieving the size of the DataT vector from the octree laef node
+         */
+        virtual std::size_t
+        getSize () const
+        {
+          assert(this->currentNode_);
+
+          return octree_.getDataSizeFromOctreeNode(this->currentNode_);
+        }
+
         /** \brief get a integer identifier for current node (note: identifier depends on tree depth).
          * \return node id.
          */

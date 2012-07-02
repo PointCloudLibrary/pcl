@@ -66,6 +66,9 @@ namespace pcl
 
       public:
 
+        typedef OctreeBase<DataT, OctreeContainerDataT<DataT>, OctreeContainerEmpty<DataT> > SingleObjLeafContainer;
+        typedef OctreeBase<DataT, OctreeContainerDataTVector<DataT>, OctreeContainerEmpty<DataT> > MultipleObjsLeafContainer;
+
         typedef OctreeBase<DataT, LeafT, BranchT> OctreeT;
 
         // iterators are friends
@@ -270,6 +273,7 @@ namespace pcl
         virtual bool
         genOctreeKeyForDataT (const DataT &, OctreeKey &) const
         {
+          assert("OctreeKey cannot be generated for DataT object.");
           // this class cannot relate DataT objects to octree keys
           return (false);
         }

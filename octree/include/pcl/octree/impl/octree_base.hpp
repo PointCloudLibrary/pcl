@@ -347,18 +347,30 @@ namespace pcl
 
                 // delete current leaf node
                 deleteBranchChild(*branch_arg,childIdx);
+                leafCount_ --;
 
                 // create new branch node
                 BranchNode* childBranch;
                 createBranchChild (*branch_arg, childIdx, childBranch);
+                branchCount_ ++;
 
                 typename std::vector<DataT>::const_iterator lData = leafData.begin();
                 typename std::vector<DataT>::const_iterator lDataEnd = leafData.end();
 
                 // add data to new branch
+                OctreeKey dataKey;
                 while (lData!=lDataEnd) {
-                  addDataToLeafRecursive (key_arg, depthMask_arg / 2, *lData++, childBranch);
+                  // get data object
+                  const DataT& data = *lData++;
+
+                  // generate new key for data object
+                  if (this->genOctreeKeyForDataT(data, dataKey)) {
+                    addDataToLeafRecursive (dataKey, depthMask_arg / 2, data, childBranch);
+                  }
                 }
+
+                // and add new DataT object
+                addDataToLeafRecursive (key_arg, depthMask_arg / 2, data_arg, childBranch);
 
                 // correct object counter
                 objectCount_ -= leafObjCount;
