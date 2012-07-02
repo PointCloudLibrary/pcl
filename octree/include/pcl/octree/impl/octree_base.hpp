@@ -193,6 +193,10 @@ namespace pcl
     template<typename DataT, typename LeafT, typename BranchT> void
     OctreeBase<DataT, LeafT, BranchT>::serializeTree (std::vector<char>& binaryTreeOut_arg)
     {
+      // serialization requires fixed octree depth
+      // maxObjsPerLeaf_>0 indicates a dynamic octree structure
+      assert (!maxObjsPerLeaf_);
+
       OctreeKey newKey;
 
       // clear binary vector
@@ -206,6 +210,10 @@ namespace pcl
     template<typename DataT, typename LeafT, typename BranchT> void
     OctreeBase<DataT, LeafT, BranchT>::serializeTree (std::vector<char>& binaryTreeOut_arg, std::vector<DataT>& dataVector_arg)
     {
+      // serialization requires fixed octree depth
+      // maxObjsPerLeaf_>0 indicates a dynamic octree structure
+      assert (!maxObjsPerLeaf_);
+
       OctreeKey newKey;
 
       // clear output vectors
@@ -222,6 +230,9 @@ namespace pcl
     template<typename DataT, typename LeafT, typename BranchT> void
     OctreeBase<DataT, LeafT, BranchT>::serializeLeafs (std::vector<DataT>& dataVector_arg)
     {
+      // serialization requires fixed octree depth
+      // maxObjsPerLeaf_>0 indicates a dynamic octree structure
+      assert (!maxObjsPerLeaf_);
 
       OctreeKey newKey;
 
@@ -237,6 +248,9 @@ namespace pcl
     template<typename DataT, typename LeafT, typename BranchT> void
     OctreeBase<DataT, LeafT, BranchT>::deserializeTree (std::vector<char>& binaryTreeIn_arg)
     {
+      // serialization requires fixed octree depth
+      // maxObjsPerLeaf_>0 indicates a dynamic octree structure
+      assert (!maxObjsPerLeaf_);
 
       OctreeKey newKey;
 
@@ -257,6 +271,10 @@ namespace pcl
     OctreeBase<DataT, LeafT, BranchT>::deserializeTree (std::vector<char>& binaryTreeIn_arg,
                                                std::vector<DataT>& dataVector_arg)
     {
+      // serialization requires fixed octree depth
+      // maxObjsPerLeaf_>0 indicates a dynamic octree structure
+      assert (!maxObjsPerLeaf_);
+
       OctreeKey newKey;
 
       // set data iterator to first element
@@ -479,44 +497,41 @@ namespace pcl
       // find branch child from key
       childIdx = key_arg.getChildIdxWithDepthMask(depthMask_arg);
 
-      if (depthMask_arg > 1)
-      {
-        // we have not reached maximum tree depth
+      OctreeNode* childNode = (*branch_arg)[childIdx];
 
-        BranchNode* childBranch;
-        bool bBranchOccupied;
+      if (childNode) {
+        switch (childNode->getNodeType()) {
 
-        // next branch child on our path through the tree
-        childBranch = static_cast<BranchNode*> ((*branch_arg)[childIdx]);
+          case BRANCH_NODE:
+            BranchNode* childBranch;
+            childBranch = static_cast<BranchNode*> (childNode);
 
-        if (childBranch)
-        {
-          // recursively explore the indexed child branch
-          bBranchOccupied = deleteLeafRecursive (key_arg, depthMask_arg / 2, childBranch);
+            // recursively explore the indexed child branch
+            bNoChilds = deleteLeafRecursive (key_arg, depthMask_arg / 2, childBranch);
 
-          if (!bBranchOccupied)
-          {
-            // child branch does not own any sub-child nodes anymore -> delete child branch
-            delete (childBranch);
-            branch_arg->setChildPtr(0, childIdx);
-            branchCount_--;
-          }
+            if (!bNoChilds)
+            {
+              // child branch does not own any sub-child nodes anymore -> delete child branch
+              deleteBranchChild(*branch_arg, childIdx);
+              branchCount_--;
+            }
+            break;
+
+          case LEAF_NODE:
+            // return existing leaf node
+
+            // our child is a leaf node -> delete it
+            deleteBranchChild (*branch_arg, childIdx);
+            leafCount_--;
+            break;
         }
-      }
-      else
-      {
-        // our child is a leaf node -> delete it
-        deleteBranchChild (*branch_arg, childIdx);
-        leafCount_--;
       }
 
       // check if current branch still owns childs
       bNoChilds = false;
-      for (childIdx = 0; childIdx < 8; childIdx++)
+      for (childIdx = 0; (!bNoChilds) && (childIdx < 8); childIdx++)
       {
         bNoChilds = branch_arg->hasChild(childIdx);
-        if (bNoChilds)
-          break;
       }
       // return true if current branch can be deleted
       return (bNoChilds);
