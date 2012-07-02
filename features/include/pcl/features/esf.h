@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -86,14 +87,20 @@ namespace pcl
         k_ = 5;
       }
 
+      /** \brief Overloaded computed method from pcl::Feature.
+        * \param[out] output the resultant point cloud model dataset containing the estimated features
+        */
+      void
+      compute (PointCloudOut &output);
+
+    protected:
+
       /** \brief Estimate the Ensebmel of Shape Function (ESF) descriptors at a set of points given by
         * <setInputCloud (),
         * \param output the resultant point cloud model histogram that contains the ESF feature estimates
         */
       void 
       computeFeature (PointCloudOut &output);
-
-    protected:
 
       /** \brief ... */
       int

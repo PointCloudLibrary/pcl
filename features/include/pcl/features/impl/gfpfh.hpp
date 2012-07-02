@@ -2,6 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +15,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -45,6 +46,33 @@
 
 #include <algorithm>
 #include <fstream>
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointInT, typename PointNT, typename PointOutT> void
+pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::compute (PointCloudOut &output)
+{
+  if (!Feature<PointInT, PointOutT>::initCompute ())
+  {
+    output.width = output.height = 0;
+    output.points.clear ();
+    return;
+  }
+  // Copy the header
+  output.header = input_->header;
+
+  // Resize the output dataset
+  // Important! We should only allocate precisely how many elements we will need, otherwise
+  // we risk at pre-allocating too much memory which could lead to bad_alloc 
+  // (see http://dev.pointclouds.org/issues/657)
+  output.width = output.height = 1;
+  output.is_dense = input_->is_dense;
+  output.points.resize (1);
+
+  // Perform the actual feature computation
+  computeFeature (output);
+
+  Feature<PointInT, PointOutT>::deinitCompute ();
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void
