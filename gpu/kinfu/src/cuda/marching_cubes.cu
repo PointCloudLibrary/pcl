@@ -391,7 +391,15 @@ namespace pcl
 
 void
 pcl::device::generateTriangles (const PtrStep<short2>& volume, const DeviceArray2D<int>& occupied_voxels, const float3& volume_size, DeviceArray<PointType>& output)
-{    
+{   
+  int device;
+  cudaSafeCall( cudaGetDevice(&device) );
+
+  cudaDeviceProp prop;
+  cudaSafeCall( cudaGetDeviceProperties(&prop, device) );
+  
+  int block_size = prop.major < 2 ? 96 : 256; // please see TrianglesGenerator::CTA_SIZE
+
   typedef TrianglesGenerator Tg;
   Tg tg;
 
@@ -404,9 +412,9 @@ pcl::device::generateTriangles (const PtrStep<short2>& volume, const DeviceArray
   tg.cell_size.z = volume_size.z / VOLUME_Z;
   tg.output = output;
 
-  int blocks_num = divUp (tg.voxels_count, Tg::CTA_SIZE);
+  int blocks_num = divUp (tg.voxels_count, block_size);
 
-  dim3 block (Tg::CTA_SIZE);     
+  dim3 block (block_size);
   dim3 grid(min(blocks_num, Tg::MAX_GRID_SIZE_X), divUp(blocks_num, Tg::MAX_GRID_SIZE_X));
 
   trianglesGeneratorKernel<<<grid, block>>>(tg);

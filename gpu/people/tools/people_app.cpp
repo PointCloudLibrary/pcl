@@ -356,7 +356,7 @@ void print_help()
 int main(int argc, char** argv)
 {
   // answering for help 
-  PCL_INFO("People tracking App version 0.1");
+  PCL_INFO("People tracking App version 0.1\n");
   if(pc::find_switch (argc, argv, "--help") || pc::find_switch (argc, argv, "-h"))
     return print_help(), 0;
   
