@@ -675,7 +675,9 @@ namespace pcl
         /** \brief Pointer to root branch node of octree   **/
         BranchNode* rootNode_;
 
-        /** \brief Amount of DataT objects per leafNode before expanding branch  **/
+        /** \brief Amount of DataT objects per leafNode before expanding branch
+         *  \note zero indicates a fixed/maximum depth octree structure
+         * **/
         std::size_t maxObjsPerLeaf_;
 
         /** \brief Depth mask based on octree depth   **/
