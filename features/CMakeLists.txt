@@ -54,11 +54,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/range_image_border_extractor.h
         )
 
-      set(feature_evaluation_incs
-          include/pcl/${SUBSYS_NAME}/feature_evaluation/feature_evaluation_framework.h
-          include/pcl/${SUBSYS_NAME}/feature_evaluation/feature_test.h
-          )
-
     set(impl_incs
         include/pcl/${SUBSYS_NAME}/impl/board.hpp
         include/pcl/${SUBSYS_NAME}/impl/cvfh.hpp
@@ -148,7 +143,6 @@ if(build)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
     # Install headers
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/feature_evaluation ${feature_evaluation_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
     if(BUILD_TESTS)
