@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -200,6 +201,12 @@ namespace pcl
       {
         size_component_ = fill_size;
       }
+
+      /** \brief Overloaded computed method from pcl::Feature.
+        * \param[out] output the resultant point cloud model dataset containing the estimated features
+        */
+      void
+      compute (PointCloudOut &output);
 
     private:
 
