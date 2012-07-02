@@ -273,7 +273,6 @@ namespace pcl
         virtual bool
         genOctreeKeyForDataT (const DataT &, OctreeKey &) const
         {
-          assert("OctreeKey cannot be generated for DataT object.");
           // this class cannot relate DataT objects to octree keys
           return (false);
         }
