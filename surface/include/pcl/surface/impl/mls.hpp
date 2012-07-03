@@ -165,6 +165,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
   Eigen::Vector4f model_coefficients;
   pcl::eigen33 (covariance_matrix, eigen_value, eigen_vector);
   model_coefficients.head<3> () = eigen_vector;
+  model_coefficients[3] = 0;
   model_coefficients[3] = -1 * model_coefficients.dot (xyz_centroid);
 
   // Projected query point
