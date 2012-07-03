@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: organized.h 4826 2012-02-28 21:33:11Z bouffa $
+ * $Id: organized.h 5622 2012-04-25 14:17:31Z nerei $
  *
  */
 
@@ -135,12 +135,12 @@ namespace pcl
 
           if (indices_.get () != NULL && indices_->size () != 0)
           {
-            mask_.assign (input_->size (), false);
+            mask_.assign (input_->size (), 0);
             for (std::vector<int>::const_iterator iIt = indices_->begin (); iIt != indices_->end (); ++iIt)
-              mask_[*iIt] = true;
+              mask_[*iIt] = 1;
           }
           else
-            mask_.assign (input_->size (), true);
+            mask_.assign (input_->size (), 1);
 
           estimateProjectionMatrix ();
         }
@@ -181,6 +181,13 @@ namespace pcl
                         std::vector<int> &k_indices,
                         std::vector<float> &k_sqr_distances) const;
 
+        /** \brief projects a point into the image
+          * \param[in] p point in 3D World Coordinate Frame to be projected onto the image plane
+          * \param[out] q the 2D projected point in pixel coordinates (u,v)
+          * @return true if projection is valid, false otherwise
+          */
+        bool projectPoint (const PointT& p, pcl::PointXY& q) const;
+        
       protected:
 
         struct Entry
@@ -263,7 +270,7 @@ namespace pcl
         const unsigned pyramid_level_;
         
         /** \brief mask, indicating whether the point was in the indices list or not.*/
-        std::vector<bool> mask_;
+        std::vector<unsigned char> mask_;
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };

@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: kdtree.h 4502 2012-02-17 00:44:05Z gedikli $
+ * $Id: kdtree.h 4826 2012-02-28 21:33:11Z bouffa $
  */
 
 #ifndef PCL_SEARCH_KDTREE_H_
@@ -111,18 +111,18 @@ namespace pcl
         /** \brief Set the search epsilon precision (error bound) for nearest neighbors searches.
           * \param[in] eps precision (error bound) for nearest neighbors searches
           */
-      	inline void
-      	setEpsilon (double eps)
-      	{
-       	  tree_->setEpsilon (eps);
-      	}
+        inline void
+        setEpsilon (float eps)
+        {
+          tree_->setEpsilon (eps);
+        }
 
-      	/** \brief Get the search epsilon precision (error bound) for nearest neighbors searches. */
-      	inline double
-      	getEpsilon () const
-      	{
-       	  return (tree_->getEpsilon ());
-      	}
+        /** \brief Get the search epsilon precision (error bound) for nearest neighbors searches. */
+        inline float
+        getEpsilon () const
+        {
+          return (tree_->getEpsilon ());
+        }
 
         /** \brief Provide a pointer to the input dataset.
           * \param[in] cloud the const boost shared pointer to a PointCloud message
@@ -131,10 +131,6 @@ namespace pcl
         inline void
         setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices = IndicesConstPtr ())
         {
-          // if same input and same indices or same input and empty indices do nothing
-          if ((getInputCloud () == cloud && indices == getIndices ()) || 
-              (getInputCloud () == cloud && indices->empty () && getIndices ()->empty ()))
-            return;
           tree_->setInputCloud (cloud, indices);
           input_ = cloud;
           indices_ = indices;
@@ -165,7 +161,7 @@ namespace pcl
           * \return number of neighbors found in radius
           */
         inline int
-        radiusSearch (const PointT& point, const double radius, 
+        radiusSearch (const PointT& point, double radius, 
                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
                       unsigned int max_nn = 0) const
         {

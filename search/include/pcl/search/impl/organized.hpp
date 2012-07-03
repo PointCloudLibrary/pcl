@@ -512,6 +512,15 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
   KR_KRT_ = KR_ * KR_.transpose ();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT> bool
+pcl::search::OrganizedNeighbor<PointT>::projectPoint (const PointT& point, pcl::PointXY& q) const
+{
+  Eigen::Vector3f projected = KR_ * point.getVector3fMap () + projection_matrix_.block <3, 1> (0, 3);
+  q.x = projected [0] / projected [2];
+  q.y = projected [1] / projected [2];
+  return (projected[2] != 0);
+}
 #define PCL_INSTANTIATE_OrganizedNeighbor(T) template class PCL_EXPORTS pcl::search::OrganizedNeighbor<T>;
 
 #endif

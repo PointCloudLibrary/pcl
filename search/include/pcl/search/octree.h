@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: octree.h 4826 2012-02-28 21:33:11Z bouffa $
+ * $Id: octree.h 6031 2012-06-26 10:54:13Z jkammerl $
  */
 
 #ifndef PCL_SEARCH_OCTREE_H
@@ -62,8 +62,8 @@ namespace pcl
       * \author Julius Kammerl
       * \ingroup search
       */
-    template<typename PointT, typename LeafTWrap = pcl::octree::OctreeLeafDataTVector<int>,
-             typename OctreeT = pcl::octree::OctreeBase<int, LeafTWrap> >
+    template<typename PointT, typename LeafTWrap = pcl::octree::OctreeContainerDataTVector<int>, typename BranchTWrap = pcl::octree::OctreeContainerEmpty<int>,
+             typename OctreeT = pcl::octree::OctreeBase<int, LeafTWrap, BranchTWrap > >
     class Octree: public Search<PointT>
     {
       public:
@@ -76,8 +76,8 @@ namespace pcl
         typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
 
         // Boost shared pointers
-        typedef boost::shared_ptr<pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, OctreeT> > Ptr;
-        typedef boost::shared_ptr<const pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, OctreeT> > ConstPtr;
+        typedef boost::shared_ptr<pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, BranchTWrap> > Ptr;
+        typedef boost::shared_ptr<const pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, BranchTWrap> > ConstPtr;
         Ptr tree_;
 
         using pcl::search::Search<PointT>::input_;
@@ -89,7 +89,7 @@ namespace pcl
           */
         Octree (const double resolution)
           : Search<PointT> ("Octree")
-          , tree_ (new pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, OctreeT> (resolution))
+          , tree_ (new pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, BranchTWrap> (resolution))
         {
         }
 
@@ -279,6 +279,6 @@ namespace pcl
   }
 }
 
-#define PCL_INSTANTIATE_Octree(T) template class PCL_EXPORTS pcl::search::Octree<T, pcl::octree::OctreeLeafDataTVector<int>, pcl::octree::OctreeBase<int, pcl::octree::OctreeLeafDataTVector<int> > >;
+#define PCL_INSTANTIATE_Octree(T) template class PCL_EXPORTS pcl::search::Octree<T>;
 
 #endif    // PCL_SEARCH_OCTREE_H

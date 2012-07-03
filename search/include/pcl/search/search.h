@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: search.h 4826 2012-02-28 21:33:11Z bouffa $
+ * $Id: search.h 4914 2012-03-05 17:26:23Z rusu $
  *
  */
 

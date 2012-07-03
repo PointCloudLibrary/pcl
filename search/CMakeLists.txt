@@ -22,10 +22,12 @@ if(build)
         include/pcl/${SUBSYS_NAME}/brute_force.h
         include/pcl/${SUBSYS_NAME}/organized.h
         include/pcl/${SUBSYS_NAME}/octree.h
+        include/pcl/${SUBSYS_NAME}/flann_search.h
         include/pcl/${SUBSYS_NAME}/pcl_search.h
         )
 
     set(impl_incs
+        include/pcl/${SUBSYS_NAME}/impl/flann_search.hpp
         include/pcl/${SUBSYS_NAME}/impl/brute_force.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized.hpp
         )
