@@ -33,18 +33,16 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
  */
 
-#ifndef OCTREE_POINT_VECTOR_H
-#define OCTREE_POINT_VECTOR_H
+#ifndef OCTREE_NODE_POOL_H
+#define OCTREE_NODE_POOL_H
 
-#include "octree_pointcloud.h"
+#include <vector>
 
-#include "octree_base.h"
-#include "octree2buf_base.h"
+#include <pcl/pcl_macros.h>
 
-#include "octree_nodes.h"
+using namespace std;
 
 namespace pcl
 {
@@ -52,46 +50,82 @@ namespace pcl
   {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Octree pointcloud point vector class
-     *  \note This pointcloud octree class generate an octrees from a point cloud (zero-copy). Every leaf node contains a list of point indices of the dataset given by \a setInputCloud.
-     *  \note The octree pointcloud is initialized with its voxel resolution. Its bounding box is automatically adjusted or can be predefined.
-     *  \note
-     *  \note typename: PointT: type of point used in pointcloud
-     *  \ingroup octree
-     *  \author Julius Kammerl (julius@kammerl.de)
+    /** \brief @b Octree node pool
+     * \note Used to reduce memory allocation and class instantiation events when generating octrees at high rate
+     * \author Julius Kammerl (julius@kammerl.de)
      */
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafT = OctreeContainerDataTVector<int>,
-        typename BranchT = OctreeContainerEmpty<int>,
-        typename OctreeT = OctreeBase<int, LeafT, BranchT> >
-    class OctreePointCloudPointVector : public OctreePointCloud<PointT, LeafT,
-        BranchT, OctreeT>
-    {
-
+    template<typename NodeT>
+      class OctreeNodePool
+      {
       public:
-        // public typedefs for single/double buffering
-        typedef OctreePointCloudPointVector<PointT, LeafT, BranchT,
-            OctreeBase<int, LeafT, BranchT> > SingleBuffer;
-        typedef OctreePointCloudPointVector<PointT, LeafT, BranchT,
-            Octree2BufBase<int, LeafT, BranchT> > DoubleBuffer;
-
-        /** \brief Constructor.
-         *  \param resolution_arg: octree resolution at lowest octree level
-         * */
-        OctreePointCloudPointVector (const double resolution_arg) :
-            OctreePointCloud<PointT, LeafT, BranchT, OctreeT> (resolution_arg)
+        /** \brief Empty constructor. */
+        OctreeNodePool () :
+            nodePool_ ()
         {
         }
 
-        /** \brief Empty class constructor. */
-        virtual ~OctreePointCloudPointVector ()
+        /** \brief Empty deconstructor. */
+        virtual
+        ~OctreeNodePool ()
         {
+          deletePool ();
         }
 
-    };
+        /** \brief Push node to pool
+        *  \param childIdx_arg: pointer of noe
+        *  */
+        inline
+        void
+        pushNode (NodeT* node_arg)
+        {
+          nodePool_.push_back (node_arg);
+        }
+
+        /** \brief Pop node from pool - Allocates new nodes if pool is empty
+        *  \return Pointer to octree node
+        *  */
+        inline NodeT*
+        popNode ()
+        {
+
+          NodeT* newLeafNode;
+
+          if (!nodePool_.size ())
+          {
+            // leaf pool is empty
+            // we need to create a new octree leaf class
+            newLeafNode = new NodeT ();
+          }
+          else
+          {
+            // reuse leaf node from branch pool
+            newLeafNode = nodePool_.back ();
+            nodePool_.pop_back ();
+            newLeafNode->reset ();
+          }
+
+          return newLeafNode;
+        }
+
+
+        /** \brief Delete all nodes in pool
+        *  */
+        void
+        deletePool ()
+        {
+          // delete all branch instances from branch pool
+          while (!nodePool_.empty ())
+          {
+            delete (nodePool_.back ());
+            nodePool_.pop_back ();
+          }
+        }
+
+      protected:
+        vector<NodeT*> nodePool_;
+      };
+
   }
 }
-
-#define PCL_INSTANTIATE_OctreePointCloudPointVector(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudPointVector<T>;
 
 #endif

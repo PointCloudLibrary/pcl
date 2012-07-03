@@ -46,7 +46,6 @@
 
 #include "octree_base.h"
 #include "octree2buf_base.h"
-
 #include "octree_nodes.h"
 
 namespace pcl
@@ -59,8 +58,8 @@ namespace pcl
       * \ingroup octree
       * \author Julius Kammerl (julius@kammerl.de)
       */
-    template<typename PointT, typename LeafT = OctreeLeafDataTVector<int> , typename OctreeT = OctreeBase<int, LeafT> >
-    class OctreePointCloudSearch : public OctreePointCloud<PointT, LeafT, OctreeT>
+    template<typename PointT, typename LeafT = OctreeContainerDataTVector<int> ,  typename BranchT = OctreeContainerEmpty<int> >
+    class OctreePointCloudSearch : public OctreePointCloud<PointT, LeafT, BranchT>
     {
       public:
         // public typedefs
@@ -71,27 +70,22 @@ namespace pcl
         typedef boost::shared_ptr<PointCloud> PointCloudPtr;
         typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
 
-        // public typedefs for single/double buffering
-        typedef OctreePointCloudSearch<PointT, LeafT, OctreeBase<int, LeafT> > SingleBuffer;
-        typedef OctreePointCloudSearch<PointT, LeafT, Octree2BufBase<int, LeafT> > DoubleBuffer;
-        typedef OctreePointCloudSearch<PointT, LeafT, OctreeLowMemBase<int, LeafT> > LowMem;
-
         // Boost shared pointers
-        typedef boost::shared_ptr<OctreePointCloudSearch<PointT, LeafT, OctreeT> > Ptr;
-        typedef boost::shared_ptr<const OctreePointCloudSearch<PointT, LeafT, OctreeT> > ConstPtr;
+        typedef boost::shared_ptr<OctreePointCloudSearch<PointT, LeafT, BranchT> > Ptr;
+        typedef boost::shared_ptr<const OctreePointCloudSearch<PointT, LeafT, BranchT> > ConstPtr;
 
         // Eigen aligned allocator
         typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
 
-        typedef typename OctreeT::OctreeBranch OctreeBranch;
-        typedef typename OctreeT::OctreeKey OctreeKey;
-        typedef typename OctreeT::OctreeLeaf OctreeLeaf;
+        typedef OctreePointCloud<PointT, LeafT, BranchT> OctreeT;
+        typedef typename OctreeT::LeafNode LeafNode;
+        typedef typename OctreeT::BranchNode BranchNode;
 
         /** \brief Constructor.
           * \param[in] resolution octree resolution at lowest octree level
           */
         OctreePointCloudSearch (const double resolution) :
-          OctreePointCloud<PointT, LeafT, OctreeT> (resolution)
+          OctreePointCloud<PointT, LeafT, BranchT> (resolution)
         {
         }
 
@@ -235,21 +229,25 @@ namespace pcl
           * \param[in] origin ray origin
           * \param[in] direction ray direction vector
           * \param[out] voxelCenterList results are written to this vector of PointT elements
+          * \param[in] maxVoxelCount stop raycasting when this many voxels intersected (0: disable)
           * \return number of intersected voxels
           */
         int
         getIntersectedVoxelCenters (Eigen::Vector3f origin, Eigen::Vector3f direction,
-                                    AlignedPointTVector &voxelCenterList) const;
+                                    AlignedPointTVector &voxelCenterList,
+                                    int maxVoxelCount = 0) const;
 
         /** \brief Get indices of all voxels that are intersected by a ray (origin, direction).
           * \param[in] origin ray origin
           * \param[in] direction ray direction vector
-          * \param[out] k_indices resulting indices
+          * \param[out] k_indices resulting point indices from intersected voxels
+          * \param[in] maxVoxelCount stop raycasting when this many voxels intersected (0: disable)
           * \return number of intersected voxels
           */
         int
         getIntersectedVoxelIndices (Eigen::Vector3f origin, Eigen::Vector3f direction,
-                                    std::vector<int> &k_indices) const;
+                                    std::vector<int> &k_indices,
+                                    int maxVoxelCount = 0) const;
 
 
         /** \brief Search for points within rectangular search area
@@ -370,7 +368,7 @@ namespace pcl
           */
         void
         getNeighborsWithinRadiusRecursive (const PointT& point, const double radiusSquared,
-                                           const OctreeBranch* node, const OctreeKey& key,
+                                           const BranchNode* node, const OctreeKey& key,
                                            unsigned int treeDepth, std::vector<int>& k_indices,
                                            std::vector<float>& k_sqr_distances, unsigned int max_nn) const;
 
@@ -385,7 +383,7 @@ namespace pcl
           * \return squared search radius based on current point candidate set found
           */
         double
-        getKNearestNeighborRecursive (const PointT& point, unsigned int K, const OctreeBranch* node,
+        getKNearestNeighborRecursive (const PointT& point, unsigned int K, const BranchNode* node,
                                       const OctreeKey& key, unsigned int treeDepth,
                                       const double squaredSearchRadius,
                                       std::vector<prioPointQueueEntry>& pointCandidates) const;
@@ -399,7 +397,7 @@ namespace pcl
           * \param[out] sqr_distance squared distance to search
           */
         void
-        approxNearestSearchRecursive (const PointT& point, const OctreeBranch* node, const OctreeKey& key,
+        approxNearestSearchRecursive (const PointT& point, const BranchNode* node, const OctreeKey& key,
                                       unsigned int treeDepth, int& result_index, float& sqr_distance);
 
         /** \brief Recursively search the tree for all intersected leaf nodes and return a vector of voxel centers.
@@ -415,12 +413,14 @@ namespace pcl
           * \param[in] node current octree node to be explored
           * \param[in] key octree key addressing a leaf node.
           * \param[out] voxelCenterList results are written to this vector of PointT elements
+          * \param[in] maxVoxelCount stop raycasting when this many voxels intersected (0: disable)
           * \return number of voxels found
           */
         int
         getIntersectedVoxelCentersRecursive (double minX, double minY, double minZ, double maxX, double maxY,
                                              double maxZ, unsigned char a, const OctreeNode* node,
-                                             const OctreeKey& key, AlignedPointTVector &voxelCenterList) const;
+                                             const OctreeKey& key, AlignedPointTVector &voxelCenterList,
+                                             int maxVoxelCount) const;
 
 
         /** \brief Recursive search method that explores the octree and finds points within a rectangular search area
@@ -432,7 +432,7 @@ namespace pcl
          * \param[out] k_indices the resultant point indices
          */
         void
-        boxSearchRecursive (const Eigen::Vector3f &min_pt, const Eigen::Vector3f &max_pt, const OctreeBranch* node,
+        boxSearchRecursive (const Eigen::Vector3f &min_pt, const Eigen::Vector3f &max_pt, const BranchNode* node,
                             const OctreeKey& key, unsigned int treeDepth, std::vector<int>& k_indices) const;
 
         /** \brief Recursively search the tree for all intersected leaf nodes and return a vector of indices.
@@ -448,13 +448,15 @@ namespace pcl
           * \param[in] node current octree node to be explored
           * \param[in] key octree key addressing a leaf node.
           * \param[out] k_indices resulting indices
+          * \param[in] maxVoxelCount stop raycasting when this many voxels intersected (0: disable)
           * \return number of voxels found
           */
         int
         getIntersectedVoxelIndicesRecursive (double minX, double minY, double minZ,
                                              double maxX, double maxY, double maxZ,
                                              unsigned char a, const OctreeNode* node, const OctreeKey& key,
-                                             std::vector<int> &k_indices) const;
+                                             std::vector<int> &k_indices,
+                                             int maxVoxelCount) const;
 
         /** \brief Initialize raytracing algorithm
           * \param origin
