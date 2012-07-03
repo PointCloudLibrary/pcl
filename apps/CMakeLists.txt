@@ -64,6 +64,10 @@ if(build)
     target_link_libraries(pcl_pcd_organized_edge_detection pcl_common pcl_io pcl_features pcl_visualization)
 
     if (OPENNI_FOUND AND BUILD_OPENNI)  
+
+      PCL_ADD_EXECUTABLE(pcl_openni_recorder ${SUBSYS_NAME} src/openni_recorder.cpp)
+      target_link_libraries(pcl_openni_recorder pcl_common pcl_io)
+
       PCL_ADD_EXECUTABLE(pcl_openni_fast_mesh ${SUBSYS_NAME} src/openni_fast_mesh.cpp)
       target_link_libraries(pcl_openni_fast_mesh pcl_common pcl_io pcl_visualization pcl_surface)
       
