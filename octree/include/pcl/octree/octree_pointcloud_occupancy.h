@@ -116,9 +116,7 @@ namespace pcl
             for (i = 0; i < cloud_arg->points.size (); i++)
             {
               // check for NaNs
-              if ((pcl_isfinite(cloud_arg->points[i].x)) &&
-                  (pcl_isfinite(cloud_arg->points[i].y)) &&
-                  (pcl_isfinite(cloud_arg->points[i].z)) ) {
+              if (isFinite(cloud_arg->points[i])) {
                 // set voxel at point
                 this->setOccupiedVoxelAtPoint (cloud_arg->points[i]);
               }
