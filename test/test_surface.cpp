@@ -44,12 +44,16 @@
 #include <pcl/io/vtk_io.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/surface/mls.h>
+#include <pcl/surface/mls_omp.h>
 #include <pcl/surface/gp3.h>
 #include <pcl/surface/grid_projection.h>
 #include <pcl/surface/convex_hull.h>
 #include <pcl/surface/concave_hull.h>
 #include <pcl/surface/organized_fast_mesh.h>
 #include <pcl/surface/ear_clipping.h>
+#include <pcl/surface/poisson.h>
+#include <pcl/surface/marching_cubes_hoppe.h>
+#include <pcl/surface/marching_cubes_rbf.h>
 #include <pcl/common/common.h>
 #include <boost/random.hpp>
 
@@ -72,27 +76,63 @@ search::KdTree<PointXYZ>::Ptr tree3;
 search::KdTree<PointNormal>::Ptr tree4;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, MarchingCubesTest)
+{
+  MarchingCubesHoppe<PointNormal> hoppe;
+  hoppe.setIsoLevel (0);
+  hoppe.setGridResolution (30, 30, 30);
+  hoppe.setPercentageExtendGrid (0.3f);
+  hoppe.setInputCloud (cloud_with_normals);
+  PointCloud<PointNormal> points;
+  std::vector<Vertices> vertices;
+  hoppe.reconstruct (points, vertices);
+
+  EXPECT_NEAR (points.points[points.size()/2].x, -0.042528, 1e-3);
+  EXPECT_NEAR (points.points[points.size()/2].y, 0.080196, 1e-3);
+  EXPECT_NEAR (points.points[points.size()/2].z, 0.043159, 1e-3);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[0], 10854);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[1], 10855);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[2], 10856);
+
+
+  MarchingCubesRBF<PointNormal> rbf;
+  rbf.setIsoLevel (0);
+  rbf.setGridResolution (20, 20, 20);
+  rbf.setPercentageExtendGrid (0.1f);
+  rbf.setInputCloud (cloud_with_normals);
+  rbf.setOffSurfaceDisplacement (0.02f);
+  rbf.reconstruct (points, vertices);
+
+  EXPECT_NEAR (points.points[points.size()/2].x, -0.033919, 1e-3);
+  EXPECT_NEAR (points.points[points.size()/2].y, 0.151683, 1e-3);
+  EXPECT_NEAR (points.points[points.size()/2].z, -0.000086, 1e-3);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[0], 4284);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[1], 4285);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[2], 4286);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, MovingLeastSquares)
 {
   // Init objects
   PointCloud<PointXYZ> mls_points;
-  PointCloud<Normal>::Ptr mls_normals (new PointCloud<Normal> ());
-  MovingLeastSquares<PointXYZ, Normal> mls;
+  PointCloud<PointNormal>::Ptr mls_normals (new PointCloud<PointNormal> ());
+  MovingLeastSquares<PointXYZ, PointNormal> mls;
 
   // Set parameters
   mls.setInputCloud (cloud);
-  mls.setOutputNormals (mls_normals);
-  //mls.setIndices (indices);
+  mls.setComputeNormals (true);
   mls.setPolynomialFit (true);
   mls.setSearchMethod (tree);
   mls.setSearchRadius (0.03);
 
   // Reconstruct
-  mls.reconstruct (mls_points);
+  mls.process (*mls_normals);
 
-  EXPECT_NEAR (mls_points.points[0].x, 0.005417, 1e-3);
-  EXPECT_NEAR (mls_points.points[0].y, 0.113463, 1e-3);
-  EXPECT_NEAR (mls_points.points[0].z, 0.040715, 1e-3);
+  EXPECT_NEAR (mls_normals->points[0].x, 0.005417, 1e-3);
+  EXPECT_NEAR (mls_normals->points[0].y, 0.113463, 1e-3);
+  EXPECT_NEAR (mls_normals->points[0].z, 0.040715, 1e-3);
   EXPECT_NEAR (fabs (mls_normals->points[0].normal[0]), 0.111894, 1e-3);
   EXPECT_NEAR (fabs (mls_normals->points[0].normal[1]), 0.594906, 1e-3);
   EXPECT_NEAR (fabs (mls_normals->points[0].normal[2]), 0.795969, 1e-3);
@@ -839,6 +879,37 @@ TEST (PCL, EarClipping)
     EXPECT_EQ (triangulated_mesh.polygons[pi].vertices[vi], truth[pi][vi]);
   }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, Poisson)
+{
+  Poisson<PointNormal> poisson;
+  poisson.setInputCloud (cloud_with_normals);
+  PolygonMesh mesh;
+  poisson.reconstruct (mesh);
+
+
+//  io::saveVTKFile ("bunny_poisson.vtk", mesh);
+
+  ASSERT_EQ (mesh.polygons.size (), 1051);
+  // All polygons should be triangles
+  for (size_t i = 0; i < mesh.polygons.size (); ++i)
+    EXPECT_EQ (mesh.polygons[i].vertices.size (), 3);
+
+  EXPECT_EQ (mesh.polygons[10].vertices[0], 121);
+  EXPECT_EQ (mesh.polygons[10].vertices[1], 120);
+  EXPECT_EQ (mesh.polygons[10].vertices[2], 23);
+
+  EXPECT_EQ (mesh.polygons[200].vertices[0], 130);
+  EXPECT_EQ (mesh.polygons[200].vertices[1], 119);
+  EXPECT_EQ (mesh.polygons[200].vertices[2], 131);
+
+  EXPECT_EQ (mesh.polygons[1000].vertices[0], 521);
+  EXPECT_EQ (mesh.polygons[1000].vertices[1], 516);
+  EXPECT_EQ (mesh.polygons[1000].vertices[2], 517);
+}
+
+
 
 /* ---[ */
 int
